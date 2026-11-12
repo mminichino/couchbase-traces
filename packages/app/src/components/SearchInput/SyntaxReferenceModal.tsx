@@ -344,7 +344,7 @@ export default function SyntaxReferenceModal({
               size="xs"
               c="dimmed"
               component="a"
-              href="https://clickhouse.com/docs/use-cases/observability/clickstack/search"
+              href="https://github.com/mminichino/couchbase-traces/tree/main/docs"
               target="_blank"
               rel="noopener noreferrer"
               style={{ textDecoration: 'none', lineHeight: 1 }}

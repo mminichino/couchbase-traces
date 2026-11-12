@@ -1,24 +1,20 @@
-# ClickStack MCP Server
+# Couchbase Traces MCP Server
 
-HyperDX exposes a
+Couchbase Traces exposes a
 [Model Context Protocol (MCP)](https://modelcontextprotocol.io/) server that
 lets AI assistants query your observability data, manage dashboards, and explore
 data sources directly.
 
 ## Prerequisites
 
-- A running HyperDX instance (see [CONTRIBUTING.md](/CONTRIBUTING.md) for local
+- A running Couchbase Traces instance (see [CONTRIBUTING.md](/CONTRIBUTING.md) for local
   development setup, or [DEPLOY.md](/DEPLOY.md) for self-hosted deployment)
-- A **Personal API access key** — find yours in the HyperDX UI under **Team
+- A **Personal API access key** — find yours in the Couchbase Traces UI under **Team
   Settings > API keys > Personal API access key**
-
-> **Note:** HyperDX v1 ([hyperdx.io](https://hyperdx.io)) does not yet support
-> the MCP server. The documentation below applies to self-hosted HyperDX v2
-> (Free and Enterprise).
 
 ## Endpoint
 
-The MCP server is available at the `/api/mcp` path on your HyperDX instance. For
+The MCP server is available at the `/api/mcp` path on your Couchbase Traces instance. For
 local development this is:
 
 ```
@@ -35,7 +31,7 @@ the defaults.
 ## Connecting an MCP Client
 
 The MCP server uses the **Streamable HTTP** transport with Bearer token
-authentication. In the examples below, replace `<your-hyperdx-url>` with your
+authentication. In the examples below, replace `<your-couchbase-traces-url>` with your
 instance URL (e.g. `http://localhost:8080`).
 
 ### Install with the CLI (recommended)
@@ -45,7 +41,7 @@ input, checks it, and adds the server to Claude Code, Codex, Cursor and VS Code.
 The key stays out of your shell history and agent chats.
 
 ```bash
-npx @couchbase-traces/cli mcp install --app-url <your-hyperdx-url>
+npx @couchbase-traces/cli mcp install --app-url <your-couchbase-traces-url>
 ```
 
 ### Claude Code
@@ -54,9 +50,9 @@ npx @couchbase-traces/cli mcp install --app-url <your-hyperdx-url>
 so the key isn't saved in your shell history:
 
 ```bash
-read -rs CLICKSTACK_ACCESS_KEY
-claude mcp add --scope user --transport http clickstack <your-hyperdx-url>/api/mcp \
-  --header "Authorization: Bearer $CLICKSTACK_ACCESS_KEY"
+read -rs CBT_ACCESS_KEY
+claude mcp add --scope user --transport http couchbase-traces <your-couchbase-traces-url>/api/mcp \
+  --header "Authorization: Bearer $CBT_ACCESS_KEY"
 ```
 
 ### Codex CLI
@@ -65,9 +61,9 @@ The Codex CLI reads the bearer token from an environment variable rather than a
 `--header` flag, so the variable must be set wherever Codex runs:
 
 ```bash
-read -rs CLICKSTACK_ACCESS_KEY && export CLICKSTACK_ACCESS_KEY
-codex mcp add clickstack --url <your-hyperdx-url>/api/mcp \
-  --bearer-token-env-var CLICKSTACK_ACCESS_KEY
+read -rs CBT_ACCESS_KEY && export CBT_ACCESS_KEY
+codex mcp add couchbase-traces --url <your-couchbase-traces-url>/api/mcp \
+  --bearer-token-env-var CBT_ACCESS_KEY
 ```
 
 ### OpenCode
@@ -76,10 +72,10 @@ Add the following to your [OpenCode config](https://opencode.ai/docs/config):
 
 ```json
 "mcp": {
-  "clickstack": {
+  "couchbase-traces": {
     "enabled": true,
     "type": "remote",
-    "url": "<your-hyperdx-url>/api/mcp",
+    "url": "<your-couchbase-traces-url>/api/mcp",
     "headers": {
       "Authorization": "Bearer <your-personal-access-key>"
     }
@@ -95,8 +91,8 @@ settings):
 ```json
 {
   "mcpServers": {
-    "clickstack": {
-      "url": "<your-hyperdx-url>/api/mcp",
+    "couchbase-traces": {
+      "url": "<your-couchbase-traces-url>/api/mcp",
       "headers": {
         "Authorization": "Bearer <your-personal-access-key>"
       }
@@ -116,7 +112,7 @@ cd packages/api && yarn dev:mcp
 Then configure the inspector:
 
 1. **Transport Type:** Streamable HTTP
-2. **URL:** `<your-hyperdx-url>/api/mcp`
+2. **URL:** `<your-couchbase-traces-url>/api/mcp`
 3. **Authentication:** Header `Authorization` with value
    `Bearer <your-personal-access-key>`
 4. Click **Connect**
@@ -126,43 +122,43 @@ Then configure the inspector:
 Any MCP client that supports Streamable HTTP transport can connect. Configure it
 with:
 
-- **URL:** `<your-hyperdx-url>/api/mcp`
+- **URL:** `<your-couchbase-traces-url>/api/mcp`
 - **Header:** `Authorization: Bearer <your-personal-access-key>`
 
 ## Available Tools
 
 | Tool                          | Description                                                                                  |
 | ----------------------------- | -------------------------------------------------------------------------------------------- |
-| `clickstack_list_sources`        | List all data sources and connections as a lightweight catalog (IDs, names, kinds)            |
-| `clickstack_describe_source`     | Full column schema, attribute keys, sampled low-cardinality values, and a round-trippable `config` block (the exact shape `clickstack_save_source` accepts, incl. correlation IDs) for a single source; for metric sources also returns a per-kind metric-name sample |
-| `clickstack_describe_table`      | Inspect a ClickHouse table that is not a registered source: columns, keys, engine, skipping indices, approximate size, and an optional row sample. Without a table, lists the tables in a database (paginated) |
-| `clickstack_save_source`         | Create (omit id) or update (provide id) a data source (log, trace, session, metric, or promql) so shipped telemetry becomes queryable. To clone a source, read its `config` from `clickstack_describe_source`, drop `id`, and pass it here |
-| `clickstack_delete_source`       | Permanently delete a data source by ID                                                        |
-| `clickstack_list_metrics`        | Paginated catalog of metric names on a metric source with optional kind / namePattern / time-window filters |
-| `clickstack_describe_metric`     | Per-metric drill-down: kind(s), unit, description, attribute keys per map column, and sampled values |
-| `clickstack_service_health`      | One-call service health on a trace source: throughput, error rate, p50/p95 and top errors per service, compared with yesterday and ranked worst first |
-| `clickstack_timeseries`          | Plot metrics over time as a line or stacked bar chart (works on log, trace, and metric sources)        |
-| `clickstack_table`               | Compute aggregated metrics as a table, single number, or pie chart (works on log, trace, and metric sources) |
-| `clickstack_search`              | Browse individual log, event, or trace rows                                                  |
-| `clickstack_event_patterns`      | Discover the most common log messages and event patterns using Drain clustering               |
-| `clickstack_event_deltas`        | Compare two row groups and rank properties by how their value distributions differ            |
-| `clickstack_emerging_signals`    | Detect NEW or GONE log/event patterns between a baseline and a current window (two-window Drain novelty diff) |
-| `clickstack_sql`                 | Execute raw ClickHouse SQL for advanced queries (JOINs, CTEs, sub-queries); pass `queries` to run up to 10 in parallel |
-| `clickstack_promql`              | Run a PromQL expression (range or instant) against a PromQL source. Only registered when PromQL is enabled |
-| `clickstack_get_dashboard`       | List all dashboards or get full detail for a specific dashboard                              |
-| `clickstack_save_dashboard`      | Create or update a dashboard with tiles (charts, tables, numbers, search, markdown)          |
-| `clickstack_delete_dashboard`    | Permanently delete a dashboard and its attached alerts                                       |
-| `clickstack_query_tile`          | Execute the query for a specific dashboard tile to validate results                          |
-| `clickstack_query_tiles`         | Batch-validate many dashboard tiles in one call, returning a per-tile success/failure summary |
-| `clickstack_get_saved_search`    | List all saved searches or get full detail for a specific saved search                       |
-| `clickstack_save_saved_search`   | Create or update a saved search (reusable query against a data source)                       |
-| `clickstack_get_alert`           | List alerts (summary) or get full detail with evaluation history; filter by state             |
-| `clickstack_save_alert`          | Create a new alert or update an existing one                                                 |
-| `clickstack_trace_waterfall`     | Fetch all spans in a single trace as a parent/child waterfall tree with optional correlated logs |
-| `clickstack_trace_top_time_consuming_operations` | Aggregate breakdown of child operations by cumulative time across matching parent traces |
-| `clickstack_get_webhook`         | List available webhook destinations for use as alert notification channels                    |
-| `clickstack_save_webhook`        | Create (omit id) or update (provide id) a webhook notification destination (slack, generic, or incidentio) |
-| `clickstack_delete_webhook`      | Permanently delete a webhook by ID (blocked while alerts still reference it)                   |
+| `cbt_list_sources`        | List all data sources and connections as a lightweight catalog (IDs, names, kinds)            |
+| `cbt_describe_source`     | Full column schema, attribute keys, sampled low-cardinality values, and a round-trippable `config` block (the exact shape `cbt_save_source` accepts, incl. correlation IDs) for a single source; for metric sources also returns a per-kind metric-name sample |
+| `cbt_describe_table`      | Inspect a ClickHouse table that is not a registered source: columns, keys, engine, skipping indices, approximate size, and an optional row sample. Without a table, lists the tables in a database (paginated) |
+| `cbt_save_source`         | Create (omit id) or update (provide id) a data source (log, trace, session, metric, or promql) so shipped telemetry becomes queryable. To clone a source, read its `config` from `cbt_describe_source`, drop `id`, and pass it here |
+| `cbt_delete_source`       | Permanently delete a data source by ID                                                        |
+| `cbt_list_metrics`        | Paginated catalog of metric names on a metric source with optional kind / namePattern / time-window filters |
+| `cbt_describe_metric`     | Per-metric drill-down: kind(s), unit, description, attribute keys per map column, and sampled values |
+| `cbt_service_health`      | One-call service health on a trace source: throughput, error rate, p50/p95 and top errors per service, compared with yesterday and ranked worst first |
+| `cbt_timeseries`          | Plot metrics over time as a line or stacked bar chart (works on log, trace, and metric sources)        |
+| `cbt_table`               | Compute aggregated metrics as a table, single number, or pie chart (works on log, trace, and metric sources) |
+| `cbt_search`              | Browse individual log, event, or trace rows                                                  |
+| `cbt_event_patterns`      | Discover the most common log messages and event patterns using Drain clustering               |
+| `cbt_event_deltas`        | Compare two row groups and rank properties by how their value distributions differ            |
+| `cbt_emerging_signals`    | Detect NEW or GONE log/event patterns between a baseline and a current window (two-window Drain novelty diff) |
+| `cbt_sql`                 | Execute raw ClickHouse SQL for advanced queries (JOINs, CTEs, sub-queries); pass `queries` to run up to 10 in parallel |
+| `cbt_promql`              | Run a PromQL expression (range or instant) against a PromQL source. Only registered when PromQL is enabled |
+| `cbt_get_dashboard`       | List all dashboards or get full detail for a specific dashboard                              |
+| `cbt_save_dashboard`      | Create or update a dashboard with tiles (charts, tables, numbers, search, markdown)          |
+| `cbt_delete_dashboard`    | Permanently delete a dashboard and its attached alerts                                       |
+| `cbt_query_tile`          | Execute the query for a specific dashboard tile to validate results                          |
+| `cbt_query_tiles`         | Batch-validate many dashboard tiles in one call, returning a per-tile success/failure summary |
+| `cbt_get_saved_search`    | List all saved searches or get full detail for a specific saved search                       |
+| `cbt_save_saved_search`   | Create or update a saved search (reusable query against a data source)                       |
+| `cbt_get_alert`           | List alerts (summary) or get full detail with evaluation history; filter by state             |
+| `cbt_save_alert`          | Create a new alert or update an existing one                                                 |
+| `cbt_trace_waterfall`     | Fetch all spans in a single trace as a parent/child waterfall tree with optional correlated logs |
+| `cbt_trace_top_time_consuming_operations` | Aggregate breakdown of child operations by cumulative time across matching parent traces |
+| `cbt_get_webhook`         | List available webhook destinations for use as alert notification channels                    |
+| `cbt_save_webhook`        | Create (omit id) or update (provide id) a webhook notification destination (slack, generic, or incidentio) |
+| `cbt_delete_webhook`      | Permanently delete a webhook by ID (blocked while alerts still reference it)                   |
 
 > **Maintainers:** when adding/removing/renaming a query tool, update this table
 > and — for builder (non-SQL) tools — the hand-curated `BUILDER_TOOLS_LIST` in
@@ -171,7 +167,7 @@ with:
 
 ### Metric Sources
 
-`clickstack_timeseries`, `clickstack_table`, and the dashboard builder tile
+`cbt_timeseries`, `cbt_table`, and the dashboard builder tile
 tools accept metric sources transparently. Each `select` item on a metric
 query must set `metricType` (`"gauge"`, `"sum"`, `"histogram"`, or
 `"exponential histogram"`) and
@@ -201,38 +197,38 @@ Per-kind aggregation guidance:
 
 Discovery workflow for metrics:
 
-1. `clickstack_list_sources` to find the metric source ID and its
+1. `cbt_list_sources` to find the metric source ID and its
    `metricTables` map.
-2. `clickstack_describe_source` to see columns, attribute keys, and a
+2. `cbt_describe_source` to see columns, attribute keys, and a
    per-kind metric-name sample.
-3. `clickstack_list_metrics` for paginated catalog access with optional
+3. `cbt_list_metrics` for paginated catalog access with optional
    kind / namePattern / time-window filters; pass `nextCursor` unchanged
    for the next page.
-4. `clickstack_describe_metric` to drill into a specific metric and
+4. `cbt_describe_metric` to drill into a specific metric and
    discover its attribute keys + sampled values before authoring queries.
-5. `clickstack_timeseries` / `clickstack_table` to chart the metric.
+5. `cbt_timeseries` / `cbt_table` to chart the metric.
 
 ### PromQL Sources
 
 Available when PromQL is enabled for the deployment (self-hosted: the API's
 `ENABLE_PROMQL` setting). With it off, PromQL sources, tiles, label filters,
-the `clickstack_promql` tool and the PromQL prompt sections are all hidden
+the `cbt_promql` tool and the PromQL prompt sections are all hidden
 from MCP.
 
 A source with `kind: "promql"` holds Prometheus metrics, either on a
 Prometheus-compatible endpoint or in a ClickHouse `TimeSeries` table. The
 builder tools do not read it; use PromQL:
 
-1. `clickstack_list_sources` shows each PromQL source with its `backend`
+1. `cbt_list_sources` shows each PromQL source with its `backend`
    (`prometheus` or `clickhouse`).
-2. `clickstack_describe_source` lists its metric names and label names.
-3. `clickstack_promql` runs an expression. A `range` query (default) returns
+2. `cbt_describe_source` lists its metric names and label names.
+3. `cbt_promql` runs an expression. A `range` query (default) returns
    `{ __hdx_time_bucket, series_name, value }` rows plus `seriesLabels`; an
    `instant` query evaluates at `endTime` and returns one row per series with
    a column per label. `granularity` sets the step and `$__interval` in the
    same `"<number> <unit>"` format PromQL tiles use.
-4. `clickstack_save_dashboard` with a `configType: "promql"` tile keeps the
-   chart; `clickstack_query_tile` returns the same rows for the same
+4. `cbt_save_dashboard` with a `configType: "promql"` tile keeps the
+   chart; `cbt_query_tile` returns the same rows for the same
    expression and granularity. `PROMETHEUS_LABEL` filters give the dashboard
    a label dropdown that tiles reference as `{job=~"$job"}`.
 
@@ -246,5 +242,5 @@ builder tools do not read it; use PromQL:
 ```
 
 The `$__interval`, `$__rate_interval` and `$__range` macros expand as they do
-in a PromQL tile. Dashboard variables do not resolve in `clickstack_promql`;
+in a PromQL tile. Dashboard variables do not resolve in `cbt_promql`;
 write the value inline.

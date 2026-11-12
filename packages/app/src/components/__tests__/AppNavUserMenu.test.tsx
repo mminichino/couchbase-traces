@@ -16,7 +16,7 @@ const renderAppNavUserMenu = (userName?: string, logoutUrl?: string) => {
     <AppNavContext value={{ isCollapsed: false, pathname: '/' }}>
       <AppNavUserMenu
         userName={userName}
-        teamName="HyperDX"
+        teamName="Couchbase Traces"
         logoutUrl={logoutUrl}
       />
     </AppNavContext>,

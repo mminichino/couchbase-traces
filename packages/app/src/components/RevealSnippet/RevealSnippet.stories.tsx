@@ -75,7 +75,7 @@ const CLAUDE_CLI_ONELINER = `claude mcp add hyperdx -- npx -y @hyperdx/mcp-serve
  */
 const meta: Meta<typeof RevealSnippet> = {
   title: 'Components/RevealSnippet',
-  globals: { brand: 'clickstack' },
+  globals: { brand: 'couchbase-traces' },
   component: RevealSnippet,
   parameters: { layout: 'padded' },
   decorators: [

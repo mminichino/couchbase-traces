@@ -160,16 +160,16 @@ describe('runProgrammaticChecks', () => {
 describe('serializeToolCallArgs', () => {
   it('serializes input args as compact JSON, excluding the tool name', () => {
     const s = serializeToolCallArgs(
-      toolCall('clickstack_describe_metric', {
+      toolCall('cbt_describe_metric', {
         name: 'process.runtime.jvm.memory.used',
       }),
     );
     expect(s).toBe('{"name":"process.runtime.jvm.memory.used"}');
-    expect(s).not.toContain('clickstack_describe_metric');
+    expect(s).not.toContain('cbt_describe_metric');
   });
 
   it('returns an empty string when there are no args', () => {
-    expect(serializeToolCallArgs(toolCall('clickstack_list_sources'))).toBe('');
+    expect(serializeToolCallArgs(toolCall('cbt_list_sources'))).toBe('');
   });
 
   it('passes through string input verbatim (no double-encoding)', () => {
@@ -226,7 +226,7 @@ describe('runAdoptionChecks', () => {
   it('counts a dedicated metric tool naming the metric in its args', () => {
     const result = runAdoptionChecks(
       [
-        toolCall('mcp__hyperdx__clickstack_timeseries', {
+        toolCall('mcp__hyperdx__cbt_timeseries', {
           metricType: 'histogram',
           metricName: 'jvm.gc.pause',
         }),
@@ -252,7 +252,7 @@ describe('runAdoptionChecks', () => {
 
   it('ignores metric names that only appear in tool OUTPUT', () => {
     const call: ToolCallRecord = {
-      ...toolCall('mcp__hyperdx__clickstack_list_metrics', { sourceId: 's1' }),
+      ...toolCall('mcp__hyperdx__cbt_list_metrics', { sourceId: 's1' }),
       output: 'jvm.gc.pause\nprocess.runtime.jvm.memory.used',
     };
     const result = runAdoptionChecks([call], [gcCheck]);
@@ -516,12 +516,12 @@ describe('metric-saturation adoption checks (args-based, arm-agnostic)', () => {
 
   it('metric-tool calls naming the metrics satisfy the same checks (hyperdx arm)', () => {
     const ids = satisfiedIds([
-      toolCall('mcp__hyperdx__clickstack_describe_metric', {
+      toolCall('mcp__hyperdx__cbt_describe_metric', {
         sourceId: 's1',
         metricType: 'gauge',
         name: 'process.runtime.jvm.memory.used',
       }),
-      toolCall('mcp__hyperdx__clickstack_timeseries', {
+      toolCall('mcp__hyperdx__cbt_timeseries', {
         sourceId: 's1',
         metricType: 'histogram',
         metricName: 'jvm.gc.pause',
@@ -536,7 +536,7 @@ describe('metric-saturation adoption checks (args-based, arm-agnostic)', () => {
 
   it('grouping the memory metric by pod/pool in the same call satisfies the grouped check', () => {
     const ids = satisfiedIds([
-      toolCall('mcp__hyperdx__clickstack_timeseries', {
+      toolCall('mcp__hyperdx__cbt_timeseries', {
         metricType: 'gauge',
         metric: 'process.runtime.jvm.memory.used',
         groupBy: ['k8s.pod.name', 'jvm.memory.pool.name'],
@@ -547,7 +547,7 @@ describe('metric-saturation adoption checks (args-based, arm-agnostic)', () => {
 
   it('a bare list_metrics call (no metric named in args) does not count', () => {
     const ids = satisfiedIds([
-      toolCall('mcp__hyperdx__clickstack_list_metrics', { sourceId: 's1' }),
+      toolCall('mcp__hyperdx__cbt_list_metrics', { sourceId: 's1' }),
     ]);
     expect(ids).toEqual([]);
   });
@@ -556,7 +556,7 @@ describe('metric-saturation adoption checks (args-based, arm-agnostic)', () => {
     // Full metric keys are required — casual prose in a log-body filter must
     // not earn metric-adoption credit.
     const ids = satisfiedIds([
-      toolCall('mcp__hyperdx__clickstack_search', {
+      toolCall('mcp__hyperdx__cbt_search', {
         sourceId: 'logs-source',
         where: "Body LIKE '%gc pause%'",
       }),

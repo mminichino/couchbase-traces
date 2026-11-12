@@ -30,8 +30,8 @@ export const SQL_BATCH_DEADLINE_MS = 60_000;
 export const SQL_BATCH_RESPONSE_BUDGET = 100_000;
 const SQL_SINGLE_RESPONSE_LIMIT = 50_000;
 
-const batchQueryCounter = getCounter('hyperdx.mcp.sql.batch.queries', {
-  description: 'Queries run by clickstack_sql in batch mode, by outcome.',
+const batchQueryCounter = getCounter('cbt.mcp.sql.batch.queries', {
+  description: 'Queries run by cbt_sql in batch mode, by outcome.',
 });
 
 const BATCH_TRIM_NOTE =

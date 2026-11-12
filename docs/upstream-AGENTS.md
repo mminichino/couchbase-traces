@@ -1,8 +1,8 @@
-# HyperDX Development Guide
+# Couchbase Traces Development Guide
 
-## What is HyperDX?
+## What is Couchbase Traces?
 
-HyperDX is an observability platform that helps engineers search, visualize, and
+Couchbase Traces is an observability platform that helps engineers search, visualize, and
 monitor logs, metrics, traces, and session replays. It's built on ClickHouse for
 blazing-fast queries and supports OpenTelemetry natively.
 
@@ -19,7 +19,7 @@ This is a **monorepo** with six packages:
   and **OpAMP server** as sub-applications.
 - `packages/common-utils` - Shared TypeScript utilities for query parsing and
   validation
-- `packages/cli` - Terminal CLI and interactive TUI (`hdx`) for searching,
+- `packages/cli` - Terminal CLI and interactive TUI (`cbt`) for searching,
   tailing, and inspecting logs and traces (Ink/React). Has its own
   [`AGENTS.md`](packages/cli/AGENTS.md) with detailed architecture and
   keybindings.
@@ -279,8 +279,8 @@ efficient and accurate:
 
 8. **The root `CHANGELOG.md` is generated at release time.** During each
    release, CI writes an AI-generated cross-package summary section into the
-   root `CHANGELOG.md` on the "Release HyperDX" PR. Review and edit it there
-   like any other file — but keep the `<!-- hyperdx-release-notes … -->` comment
+   root `CHANGELOG.md` on the "Release Couchbase Traces" PR. Review and edit it there
+   like any other file — but keep the `<!-- cbt-release-notes … -->` comment
    marker intact; it is how your edits are recognised when the release branch is
    rebuilt. Use `###` or deeper for any heading you add — a `##` marks a release
    boundary, and the next release refuses to splice rather than risk deleting
@@ -306,7 +306,7 @@ check_changesets
     |  1. capture the branch's current CHANGELOG.md -> artifact
     |     (must happen BEFORE the next step destroys it)
     |  2. changesets/action force-rebuilds changeset-release/main from main
-    |     and opens/updates the "Release HyperDX" PR
+    |     and opens/updates the "Release Couchbase Traces" PR
     v
 release_changelog_draft            contents: read - no push token
     |

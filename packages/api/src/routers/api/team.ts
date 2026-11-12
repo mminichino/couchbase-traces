@@ -163,7 +163,7 @@ router.post(
       if (toUser) {
         return res.status(400).json({
           message:
-            'User already exists. Please contact HyperDX team for support',
+            'User already exists. Please contact Couchbase Traces team for support',
         });
       }
 

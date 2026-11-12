@@ -1937,20 +1937,6 @@
           "line": 20
         },
         {
-          "specifier": "./tasks/usageStats",
-          "target": "packages/api/src/tasks/usageStats.ts",
-          "external": null,
-          "kind": "static",
-          "typeOnly": false,
-          "bindings": [
-            {
-              "imported": "default",
-              "local": "usageStats"
-            }
-          ],
-          "line": 21
-        },
-        {
           "specifier": "./utils/aiTelemetry",
           "target": "packages/api/src/utils/aiTelemetry.ts",
           "external": null,
@@ -1962,7 +1948,7 @@
               "local": "registerAITelemetry"
             }
           ],
-          "line": 22
+          "line": 21
         },
         {
           "specifier": "./utils/logger",
@@ -1980,7 +1966,7 @@
               "local": "expressLogger"
             }
           ],
-          "line": 23
+          "line": 22
         },
         {
           "specifier": "./utils/passport",
@@ -1994,7 +1980,7 @@
               "local": "passport"
             }
           ],
-          "line": 24
+          "line": 23
         },
         {
           "specifier": "./utils/proxyBody",
@@ -2008,7 +1994,7 @@
               "local": "captureProxyBody"
             }
           ],
-          "line": 25
+          "line": 24
         },
         {
           "specifier": "./utils/swagger",
@@ -2022,7 +2008,7 @@
               "local": "setupSwagger"
             }
           ],
-          "line": 140
+          "line": 131
         }
       ],
       "exports": [
@@ -2031,7 +2017,7 @@
           "kind": "const",
           "from": null,
           "original": null,
-          "line": 150
+          "line": 141
         }
       ],
       "starReexports": []
@@ -2354,42 +2340,42 @@
           "kind": "const",
           "from": null,
           "original": null,
-          "line": 98
+          "line": 97
         },
         {
           "name": "AI_BASE_URL",
           "kind": "const",
           "from": null,
           "original": null,
-          "line": 99
+          "line": 98
         },
         {
           "name": "AI_MODEL_NAME",
           "kind": "const",
           "from": null,
           "original": null,
-          "line": 100
+          "line": 99
         },
         {
           "name": "AI_PROVIDER",
           "kind": "const",
           "from": null,
           "original": null,
-          "line": 97
+          "line": 96
         },
         {
           "name": "AI_REQUEST_HEADERS",
           "kind": "const",
           "from": null,
           "original": null,
-          "line": 101
+          "line": 100
         },
         {
           "name": "ANTHROPIC_API_KEY",
           "kind": "const",
           "from": null,
           "original": null,
-          "line": 104
+          "line": 103
         },
         {
           "name": "APP_TYPE",
@@ -2417,21 +2403,21 @@
           "kind": "const",
           "from": null,
           "original": null,
-          "line": 91
+          "line": 90
         },
         {
           "name": "CLICKHOUSE_PASSWORD",
           "kind": "const",
           "from": null,
           "original": null,
-          "line": 93
+          "line": 92
         },
         {
           "name": "CLICKHOUSE_USER",
           "kind": "const",
           "from": null,
           "original": null,
-          "line": 92
+          "line": 91
         },
         {
           "name": "CODE_VERSION",
@@ -2445,14 +2431,14 @@
           "kind": "const",
           "from": null,
           "original": null,
-          "line": 69
+          "line": 68
         },
         {
           "name": "DEFAULT_SOURCES",
           "kind": "const",
           "from": null,
           "original": null,
-          "line": 70
+          "line": 69
         },
         {
           "name": "ENABLE_DATADOG_RECEIVER",
@@ -2473,21 +2459,21 @@
           "kind": "const",
           "from": null,
           "original": null,
-          "line": 74
+          "line": 73
         },
         {
           "name": "EXTERNAL_API_SEARCH_DEFAULT_MAX_RESULTS",
           "kind": "const",
           "from": null,
           "original": null,
-          "line": 79
+          "line": 78
         },
         {
           "name": "EXTERNAL_API_SEARCH_MAX_RESULTS",
           "kind": "const",
           "from": null,
           "original": null,
-          "line": 81
+          "line": 80
         },
         {
           "name": "FRONTEND_REDIRECT_BASE",
@@ -2578,7 +2564,7 @@
           "kind": "const",
           "from": null,
           "original": null,
-          "line": 72
+          "line": 71
         },
         {
           "name": "MONGO_URI",
@@ -2620,28 +2606,21 @@
           "kind": "const",
           "from": null,
           "original": null,
-          "line": 60
+          "line": 59
         },
         {
           "name": "TOKEN_ENCRYPTION_KEY",
           "kind": "const",
           "from": null,
           "original": null,
-          "line": 66
-        },
-        {
-          "name": "USAGE_STATS_ENABLED",
-          "kind": "const",
-          "from": null,
-          "original": null,
-          "line": 58
+          "line": 65
         },
         {
           "name": "WEBHOOK_HOSTNAME_ALLOWLIST",
           "kind": "const",
           "from": null,
           "original": null,
-          "line": 59
+          "line": 58
         }
       ],
       "starReexports": []
@@ -33076,10 +33055,6 @@
             {
               "imported": "ANTHROPIC_API_KEY",
               "local": "ANTHROPIC_API_KEY"
-            },
-            {
-              "imported": "USAGE_STATS_ENABLED",
-              "local": "USAGE_STATS_ENABLED"
             }
           ],
           "line": 14
@@ -33155,7 +33130,7 @@
           "kind": "const",
           "from": null,
           "original": null,
-          "line": 135
+          "line": 134
         }
       ],
       "starReexports": []
@@ -34711,6 +34686,20 @@
           "line": 14
         },
         {
+          "specifier": "@/config",
+          "target": "packages/api/src/config.ts",
+          "external": null,
+          "kind": "static",
+          "typeOnly": false,
+          "bindings": [
+            {
+              "imported": "FRONTEND_URL",
+              "local": "FRONTEND_URL"
+            }
+          ],
+          "line": 16
+        },
+        {
           "specifier": "@/controllers/webhook",
           "target": "packages/api/src/controllers/webhook.ts",
           "external": null,
@@ -34726,7 +34715,7 @@
               "local": "deleteWebhook"
             }
           ],
-          "line": 16
+          "line": 17
         },
         {
           "specifier": "@/models/alert",
@@ -34744,7 +34733,7 @@
               "local": "AlertState"
             }
           ],
-          "line": 17
+          "line": 18
         },
         {
           "specifier": "@/models/webhook",
@@ -34762,7 +34751,7 @@
               "local": "WebhookService"
             }
           ],
-          "line": 18
+          "line": 19
         },
         {
           "specifier": "@/tasks/checkAlerts/template",
@@ -34784,7 +34773,7 @@
               "local": "COMPARATOR_BY_THRESHOLD_TYPE"
             }
           ],
-          "line": 23
+          "line": 24
         },
         {
           "specifier": "@/tasks/checkAlerts/transports",
@@ -34802,7 +34791,7 @@
               "local": "handleSendSlackWebhook"
             }
           ],
-          "line": 27
+          "line": 28
         },
         {
           "specifier": "@/tasks/checkAlerts/transports/types",
@@ -34816,7 +34805,7 @@
               "local": "Message"
             }
           ],
-          "line": 28
+          "line": 29
         },
         {
           "specifier": "@/utils/errors",
@@ -34830,7 +34819,7 @@
               "local": "isDuplicateKeyError"
             }
           ],
-          "line": 29
+          "line": 30
         },
         {
           "specifier": "@/utils/validators",
@@ -34848,7 +34837,7 @@
               "local": "validateWebhookConfig"
             }
           ],
-          "line": 33
+          "line": 34
         },
         {
           "specifier": "@/utils/zod",
@@ -34874,7 +34863,7 @@
               "local": "webhookQueryParamValueSchema"
             }
           ],
-          "line": 39
+          "line": 40
         }
       ],
       "exports": [
@@ -34883,7 +34872,7 @@
           "kind": "const",
           "from": null,
           "original": null,
-          "line": 546
+          "line": 547
         }
       ],
       "starReexports": []
@@ -40375,83 +40364,6 @@
             }
           ],
           "line": 1
-        }
-      ],
-      "exports": [],
-      "starReexports": []
-    },
-    {
-      "path": "packages/api/src/tasks/__tests__/usageStats.test.ts",
-      "workspace": "@couchbase-traces/api",
-      "test": true,
-      "imports": [
-        {
-          "specifier": "@opentelemetry/api",
-          "target": null,
-          "external": "@opentelemetry/api",
-          "kind": "static",
-          "typeOnly": false,
-          "bindings": [
-            {
-              "imported": "context",
-              "local": "context"
-            },
-            {
-              "imported": "ROOT_CONTEXT",
-              "local": "ROOT_CONTEXT"
-            },
-            {
-              "imported": "trace",
-              "local": "trace"
-            },
-            {
-              "imported": "TraceFlags",
-              "local": "TraceFlags"
-            }
-          ],
-          "line": 1
-        },
-        {
-          "specifier": "@opentelemetry/api-logs",
-          "target": null,
-          "external": "@opentelemetry/api-logs",
-          "kind": "static",
-          "typeOnly": false,
-          "bindings": [
-            {
-              "imported": "SeverityNumber",
-              "local": "SeverityNumber"
-            }
-          ],
-          "line": 2
-        },
-        {
-          "specifier": "os",
-          "target": null,
-          "external": "os",
-          "kind": "static",
-          "typeOnly": false,
-          "bindings": [
-            {
-              "imported": "default",
-              "local": "os"
-            }
-          ],
-          "line": 3
-        },
-        {
-          "specifier": "@/tasks/usageStats",
-          "target": "packages/api/src/tasks/usageStats.ts",
-          "external": null,
-          "kind": "static",
-          "typeOnly": false,
-          "bindings": [
-            {
-              "imported": "sendUsageStats",
-              "local": "sendUsageStats"
-            }
-          ],
-          "line": 5
         }
       ],
       "exports": [],
@@ -46675,308 +46587,6 @@
       "starReexports": []
     },
     {
-      "path": "packages/api/src/tasks/usageStats.ts",
-      "workspace": "@couchbase-traces/api",
-      "test": false,
-      "imports": [
-        {
-          "specifier": "@couchbase-traces/common-utils/dist/clickhouse",
-          "target": "packages/common-utils/src/clickhouse/index.ts",
-          "external": null,
-          "kind": "static",
-          "typeOnly": false,
-          "bindings": [
-            {
-              "imported": "ResponseJSON",
-              "local": "ResponseJSON"
-            }
-          ],
-          "line": 1
-        },
-        {
-          "specifier": "@couchbase-traces/common-utils/dist/types",
-          "target": "packages/common-utils/src/types.ts",
-          "external": null,
-          "kind": "static",
-          "typeOnly": false,
-          "bindings": [
-            {
-              "imported": "MetricsDataType",
-              "local": "MetricsDataType"
-            },
-            {
-              "imported": "SourceKind",
-              "local": "SourceKind"
-            }
-          ],
-          "line": 5
-        },
-        {
-          "specifier": "@opentelemetry/api",
-          "target": null,
-          "external": "@opentelemetry/api",
-          "kind": "static",
-          "typeOnly": false,
-          "bindings": [
-            {
-              "imported": "context",
-              "local": "context"
-            },
-            {
-              "imported": "ROOT_CONTEXT",
-              "local": "ROOT_CONTEXT"
-            }
-          ],
-          "line": 6
-        },
-        {
-          "specifier": "@opentelemetry/api-logs",
-          "target": null,
-          "external": "@opentelemetry/api-logs",
-          "kind": "static",
-          "typeOnly": false,
-          "bindings": [
-            {
-              "imported": "AnyValueMap",
-              "local": "AnyValueMap"
-            },
-            {
-              "imported": "SeverityNumber",
-              "local": "SeverityNumber"
-            }
-          ],
-          "line": 7
-        },
-        {
-          "specifier": "@opentelemetry/core",
-          "target": null,
-          "external": "@opentelemetry/core",
-          "kind": "static",
-          "typeOnly": false,
-          "bindings": [
-            {
-              "imported": "ExportResult",
-              "local": "ExportResult"
-            },
-            {
-              "imported": "ExportResultCode",
-              "local": "ExportResultCode"
-            },
-            {
-              "imported": "suppressTracing",
-              "local": "suppressTracing"
-            }
-          ],
-          "line": 12
-        },
-        {
-          "specifier": "@opentelemetry/otlp-transformer",
-          "target": null,
-          "external": "@opentelemetry/otlp-transformer",
-          "kind": "static",
-          "typeOnly": false,
-          "bindings": [
-            {
-              "imported": "JsonLogsSerializer",
-              "local": "JsonLogsSerializer"
-            }
-          ],
-          "line": 13
-        },
-        {
-          "specifier": "@opentelemetry/resources",
-          "target": null,
-          "external": "@opentelemetry/resources",
-          "kind": "static",
-          "typeOnly": false,
-          "bindings": [
-            {
-              "imported": "defaultResource",
-              "local": "defaultResource"
-            },
-            {
-              "imported": "resourceFromAttributes",
-              "local": "resourceFromAttributes"
-            }
-          ],
-          "line": 17
-        },
-        {
-          "specifier": "@opentelemetry/sdk-logs",
-          "target": null,
-          "external": "@opentelemetry/sdk-logs",
-          "kind": "static",
-          "typeOnly": false,
-          "bindings": [
-            {
-              "imported": "BatchLogRecordProcessor",
-              "local": "BatchLogRecordProcessor"
-            },
-            {
-              "imported": "LoggerProvider",
-              "local": "LoggerProvider"
-            },
-            {
-              "imported": "LogRecordExporter",
-              "local": "LogRecordExporter"
-            },
-            {
-              "imported": "ReadableLogRecord",
-              "local": "ReadableLogRecord"
-            }
-          ],
-          "line": 23
-        },
-        {
-          "specifier": "ms",
-          "target": null,
-          "external": "ms",
-          "kind": "static",
-          "typeOnly": false,
-          "bindings": [
-            {
-              "imported": "default",
-              "local": "ms"
-            }
-          ],
-          "line": 24
-        },
-        {
-          "specifier": "os",
-          "target": null,
-          "external": "os",
-          "kind": "static",
-          "typeOnly": false,
-          "bindings": [
-            {
-              "imported": "default",
-              "local": "os"
-            }
-          ],
-          "line": 25
-        },
-        {
-          "specifier": "@/clickhouse",
-          "target": "packages/api/src/clickhouse.ts",
-          "external": null,
-          "kind": "static",
-          "typeOnly": false,
-          "bindings": [
-            {
-              "imported": "ClickhouseClient",
-              "local": "ClickhouseClient"
-            }
-          ],
-          "line": 27
-        },
-        {
-          "specifier": "@/config",
-          "target": "packages/api/src/config.ts",
-          "external": null,
-          "kind": "static",
-          "typeOnly": false,
-          "bindings": [
-            {
-              "imported": "*",
-              "local": "config"
-            }
-          ],
-          "line": 28
-        },
-        {
-          "specifier": "@/controllers/user",
-          "target": "packages/api/src/controllers/user.ts",
-          "external": null,
-          "kind": "static",
-          "typeOnly": false,
-          "bindings": [
-            {
-              "imported": "NOT_VIRTUAL",
-              "local": "NOT_VIRTUAL"
-            }
-          ],
-          "line": 29
-        },
-        {
-          "specifier": "@/models/connection",
-          "target": "packages/api/src/models/connection.ts",
-          "external": null,
-          "kind": "static",
-          "typeOnly": false,
-          "bindings": [
-            {
-              "imported": "default",
-              "local": "Connection"
-            }
-          ],
-          "line": 30
-        },
-        {
-          "specifier": "@/models/source",
-          "target": "packages/api/src/models/source.ts",
-          "external": null,
-          "kind": "static",
-          "typeOnly": false,
-          "bindings": [
-            {
-              "imported": "Source",
-              "local": "Source"
-            },
-            {
-              "imported": "SourceDocument",
-              "local": "SourceDocument"
-            }
-          ],
-          "line": 31
-        },
-        {
-          "specifier": "@/models/team",
-          "target": "packages/api/src/models/team.ts",
-          "external": null,
-          "kind": "static",
-          "typeOnly": false,
-          "bindings": [
-            {
-              "imported": "default",
-              "local": "Team"
-            }
-          ],
-          "line": 32
-        },
-        {
-          "specifier": "@/models/user",
-          "target": "packages/api/src/models/user.ts",
-          "external": null,
-          "kind": "static",
-          "typeOnly": false,
-          "bindings": [
-            {
-              "imported": "default",
-              "local": "User"
-            }
-          ],
-          "line": 33
-        }
-      ],
-      "exports": [
-        {
-          "name": "default",
-          "kind": "function",
-          "from": null,
-          "original": null,
-          "line": 279
-        },
-        {
-          "name": "sendUsageStats",
-          "kind": "function",
-          "from": null,
-          "original": null,
-          "line": 112
-        }
-      ],
-      "starReexports": []
-    },
-    {
       "path": "packages/api/src/tasks/util.ts",
       "workspace": "@couchbase-traces/api",
       "test": false,
@@ -47739,7 +47349,7 @@
               "local": "withSpan"
             }
           ],
-          "line": 76
+          "line": 75
         }
       ],
       "exports": [],
@@ -49478,13 +49088,9 @@
             {
               "imported": "RUN_SCHEDULED_TASKS_EXTERNALLY",
               "local": "RUN_SCHEDULED_TASKS_EXTERNALLY"
-            },
-            {
-              "imported": "USAGE_STATS_ENABLED",
-              "local": "USAGE_STATS_ENABLED"
             }
           ],
-          "line": 24
+          "line": 23
         },
         {
           "specifier": "@/utils/logger",
@@ -49498,7 +49104,7 @@
               "local": "logger"
             }
           ],
-          "line": 25
+          "line": 24
         }
       ],
       "exports": [
@@ -49507,126 +49113,126 @@
           "kind": "reexport",
           "from": null,
           "original": "Attributes",
-          "line": 48
+          "line": 47
         },
         {
           "name": "BusinessContext",
           "kind": "type",
           "from": null,
           "original": null,
-          "line": 98
+          "line": 97
         },
         {
           "name": "Counter",
           "kind": "reexport",
           "from": null,
           "original": "Counter",
-          "line": 48
+          "line": 47
         },
         {
           "name": "Histogram",
           "kind": "reexport",
           "from": null,
           "original": "Histogram",
-          "line": 48
+          "line": 47
         },
         {
           "name": "OperationOutcome",
           "kind": "type",
           "from": null,
           "original": null,
-          "line": 273
+          "line": 271
         },
         {
           "name": "Span",
           "kind": "reexport",
           "from": null,
           "original": "Span",
-          "line": 48
+          "line": 47
         },
         {
           "name": "SpanKind",
           "kind": "reexport",
           "from": null,
           "original": "SpanKind",
-          "line": 48
+          "line": 47
         },
         {
           "name": "SpanStatusCode",
           "kind": "reexport",
           "from": null,
           "original": "SpanStatusCode",
-          "line": 48
+          "line": 47
         },
         {
           "name": "WithSpanOptions",
           "kind": "type",
           "from": null,
           "original": null,
-          "line": 57
+          "line": 56
         },
         {
           "name": "getActiveTraceId",
           "kind": "function",
           "from": null,
           "original": null,
-          "line": 158
+          "line": 157
         },
         {
           "name": "getCounter",
           "kind": "function",
           "from": null,
           "original": null,
-          "line": 229
+          "line": 227
         },
         {
           "name": "getHistogram",
           "kind": "function",
           "from": null,
           "original": null,
-          "line": 241
+          "line": 239
         },
         {
           "name": "getStaticFeatureFlags",
           "kind": "function",
           "from": null,
           "original": null,
-          "line": 178
+          "line": 177
         },
         {
           "name": "recordDuration",
           "kind": "function",
           "from": null,
           "original": null,
-          "line": 256
+          "line": 254
         },
         {
           "name": "recordOperationOutcome",
           "kind": "function",
           "from": null,
           "original": null,
-          "line": 305
+          "line": 303
         },
         {
           "name": "setBusinessContext",
           "kind": "function",
           "from": null,
           "original": null,
-          "line": 120
+          "line": 119
         },
         {
           "name": "withOperationMetrics",
           "kind": "function",
           "from": null,
           "original": null,
-          "line": 327
+          "line": 325
         },
         {
           "name": "withSpan",
           "kind": "function",
           "from": null,
           "original": null,
-          "line": 72
+          "line": 71
         }
       ],
       "starReexports": []
@@ -65429,10 +65035,6 @@
           "typeOnly": false,
           "bindings": [
             {
-              "imported": "useBrandDisplayName",
-              "local": "useBrandDisplayName"
-            },
-            {
               "imported": "useWordmark",
               "local": "useWordmark"
             }
@@ -71473,24 +71075,6 @@
           "line": 15
         },
         {
-          "specifier": "./brand",
-          "target": "packages/app/src/brand/index.tsx",
-          "external": null,
-          "kind": "static",
-          "typeOnly": false,
-          "bindings": [
-            {
-              "imported": "useBrandDisplayName",
-              "local": "useBrandDisplayName"
-            },
-            {
-              "imported": "useLogomark",
-              "local": "useLogomark"
-            }
-          ],
-          "line": 17
-        },
-        {
           "specifier": "./config",
           "target": "packages/app/src/config.ts",
           "external": null,
@@ -71502,7 +71086,7 @@
               "local": "IS_K8S_DASHBOARD_ENABLED"
             }
           ],
-          "line": 18
+          "line": 17
         },
         {
           "specifier": "./dashboard",
@@ -71516,7 +71100,7 @@
               "local": "useDashboards"
             }
           ],
-          "line": 19
+          "line": 18
         },
         {
           "specifier": "./savedSearch",
@@ -71530,7 +71114,7 @@
               "local": "useSavedSearches"
             }
           ],
-          "line": 20
+          "line": 19
         },
         {
           "specifier": "@mantine/spotlight/styles.css",
@@ -71539,7 +71123,7 @@
           "kind": "side_effect",
           "typeOnly": false,
           "bindings": [],
-          "line": 22
+          "line": 21
         }
       ],
       "exports": [
@@ -71548,14 +71132,14 @@
           "kind": "const",
           "from": null,
           "original": null,
-          "line": 217
+          "line": 201
         },
         {
           "name": "useSpotlightActions",
           "kind": "const",
           "from": null,
           "original": null,
-          "line": 24
+          "line": 23
         }
       ],
       "starReexports": []
@@ -78256,11 +77840,18 @@
       "imports": [],
       "exports": [
         {
+          "name": "LOGOMARK_SRC",
+          "kind": "const",
+          "from": null,
+          "original": null,
+          "line": 5
+        },
+        {
           "name": "default",
           "kind": "function",
           "from": null,
           "original": null,
-          "line": 13
+          "line": 14
         }
       ],
       "starReexports": []
@@ -78271,45 +77862,41 @@
       "test": false,
       "imports": [
         {
-          "specifier": "@mantine/core",
-          "target": null,
-          "external": "@mantine/core",
-          "kind": "static",
-          "typeOnly": false,
-          "bindings": [
-            {
-              "imported": "Group",
-              "local": "Group"
-            },
-            {
-              "imported": "Text",
-              "local": "Text"
-            }
-          ],
-          "line": 1
-        },
-        {
-          "specifier": "./Logomark",
-          "target": "packages/app/src/brand/Logomark.tsx",
+          "specifier": "@/useUserPreferences",
+          "target": "packages/app/src/useUserPreferences.tsx",
           "external": null,
           "kind": "static",
           "typeOnly": false,
           "bindings": [
             {
-              "imported": "default",
-              "local": "Logomark"
+              "imported": "useResolvedColorScheme",
+              "local": "useResolvedColorScheme"
             }
           ],
-          "line": 3
+          "line": 1
         }
       ],
       "exports": [
+        {
+          "name": "WORDMARK_DARK_SRC",
+          "kind": "const",
+          "from": null,
+          "original": null,
+          "line": 4
+        },
+        {
+          "name": "WORDMARK_LIGHT_SRC",
+          "kind": "const",
+          "from": null,
+          "original": null,
+          "line": 3
+        },
         {
           "name": "default",
           "kind": "function",
           "from": null,
           "original": null,
-          "line": 10
+          "line": 15
         }
       ],
       "starReexports": []
@@ -78359,6 +77946,10 @@
           "typeOnly": false,
           "bindings": [
             {
+              "imported": "BRAND_DISPLAY_NAME",
+              "local": "BRAND_DISPLAY_NAME"
+            },
+            {
               "imported": "useLogomark",
               "local": "useLogomark"
             },
@@ -78368,6 +77959,43 @@
             }
           ],
           "line": 4
+        },
+        {
+          "specifier": "@/brand/Logomark",
+          "target": "packages/app/src/brand/Logomark.tsx",
+          "external": null,
+          "kind": "static",
+          "typeOnly": false,
+          "bindings": [
+            {
+              "imported": "default",
+              "local": "Logomark"
+            }
+          ],
+          "line": 5
+        },
+        {
+          "specifier": "@/useUserPreferences",
+          "target": "packages/app/src/useUserPreferences.tsx",
+          "external": null,
+          "kind": "static",
+          "typeOnly": false,
+          "bindings": [
+            {
+              "imported": "useResolvedColorScheme",
+              "local": "useResolvedColorScheme"
+            }
+          ],
+          "line": 6
+        },
+        {
+          "specifier": "@/useUserPreferences",
+          "target": "packages/app/src/useUserPreferences.tsx",
+          "external": null,
+          "kind": "mock",
+          "typeOnly": false,
+          "bindings": [],
+          "line": 8
         }
       ],
       "exports": [],
@@ -78431,6 +78059,10 @@
           "kind": "static",
           "typeOnly": false,
           "bindings": [
+            {
+              "imported": "JSX",
+              "local": "JSX"
+            },
             {
               "imported": "useMemo",
               "local": "useMemo"
@@ -81473,10 +81105,6 @@
               "local": "Avatar"
             },
             {
-              "imported": "Button",
-              "local": "Button"
-            },
-            {
               "imported": "Group",
               "local": "Group"
             },
@@ -81501,7 +81129,7 @@
               "local": "UnstyledButton"
             }
           ],
-          "line": 19
+          "line": 18
         },
         {
           "specifier": "@mantine/hooks",
@@ -81515,7 +81143,7 @@
               "local": "useDisclosure"
             }
           ],
-          "line": 20
+          "line": 19
         },
         {
           "specifier": "@tabler/icons-react",
@@ -81527,10 +81155,6 @@
             {
               "imported": "IconBook",
               "local": "IconBook"
-            },
-            {
-              "imported": "IconBrandDiscord",
-              "local": "IconBrandDiscord"
             },
             {
               "imported": "IconBug",
@@ -81573,7 +81197,7 @@
               "local": "IconUserCog"
             }
           ],
-          "line": 34
+          "line": 32
         },
         {
           "specifier": "@/config",
@@ -81587,7 +81211,7 @@
               "local": "IS_LOCAL_MODE"
             }
           ],
-          "line": 36
+          "line": 34
         },
         {
           "specifier": "@/utils/clipboard",
@@ -81601,7 +81225,7 @@
               "local": "copyTextToClipboard"
             }
           ],
-          "line": 37
+          "line": 35
         },
         {
           "specifier": "./HelpSparkle",
@@ -81615,7 +81239,7 @@
               "local": "HelpSparkle"
             }
           ],
-          "line": 39
+          "line": 37
         },
         {
           "specifier": "./KeyboardShortcutsModal",
@@ -81629,7 +81253,7 @@
               "local": "KeyboardShortcutsModal"
             }
           ],
-          "line": 40
+          "line": 38
         },
         {
           "specifier": "./useWhatsNewUnseen",
@@ -81643,7 +81267,7 @@
               "local": "useWhatsNewUnseen"
             }
           ],
-          "line": 41
+          "line": 39
         },
         {
           "specifier": "./WhatsNewDrawer",
@@ -81657,7 +81281,7 @@
               "local": "WhatsNewDrawer"
             }
           ],
-          "line": 42
+          "line": 40
         },
         {
           "specifier": "./WhatsNewSection",
@@ -81671,7 +81295,7 @@
               "local": "WhatsNewSection"
             }
           ],
-          "line": 43
+          "line": 41
         },
         {
           "specifier": "./AppNav.module.scss",
@@ -81685,44 +81309,37 @@
               "local": "styles"
             }
           ],
-          "line": 45
+          "line": 43
         }
       ],
       "exports": [
-        {
-          "name": "AppNavCloudBanner",
-          "kind": "const",
-          "from": null,
-          "original": null,
-          "line": 55
-        },
         {
           "name": "AppNavContext",
           "kind": "const",
           "from": null,
           "original": null,
-          "line": 47
+          "line": 45
         },
         {
           "name": "AppNavHelpMenu",
           "kind": "const",
           "from": null,
           "original": null,
-          "line": 226
+          "line": 204
         },
         {
           "name": "AppNavLink",
           "kind": "const",
           "from": null,
           "original": null,
-          "line": 350
+          "line": 318
         },
         {
           "name": "AppNavUserMenu",
           "kind": "const",
           "from": null,
           "original": null,
-          "line": 92
+          "line": 70
         }
       ],
       "starReexports": []
@@ -81878,20 +81495,6 @@
           "line": 3
         },
         {
-          "specifier": "next/script",
-          "target": null,
-          "external": "next",
-          "kind": "static",
-          "typeOnly": false,
-          "bindings": [
-            {
-              "imported": "default",
-              "local": "Script"
-            }
-          ],
-          "line": 4
-        },
-        {
           "specifier": "classnames",
           "target": null,
           "external": "classnames",
@@ -81903,7 +81506,7 @@
               "local": "cx"
             }
           ],
-          "line": 5
+          "line": 4
         },
         {
           "specifier": "@clickhouse/click-ui",
@@ -81917,7 +81520,7 @@
               "local": "Badge"
             }
           ],
-          "line": 6
+          "line": 5
         },
         {
           "specifier": "@clickhouse/clickstack-browser",
@@ -81935,7 +81538,7 @@
               "local": "setUser"
             }
           ],
-          "line": 7
+          "line": 6
         },
         {
           "specifier": "@couchbase-traces/common-utils/dist/types",
@@ -81949,7 +81552,7 @@
               "local": "SavedSearchListApiResponse"
             }
           ],
-          "line": 8
+          "line": 7
         },
         {
           "specifier": "@mantine/core",
@@ -81983,7 +81586,7 @@
               "local": "Text"
             }
           ],
-          "line": 9
+          "line": 8
         },
         {
           "specifier": "@mantine/hooks",
@@ -82005,7 +81608,7 @@
               "local": "useLocalStorage"
             }
           ],
-          "line": 10
+          "line": 9
         },
         {
           "specifier": "@tabler/icons-react",
@@ -82047,7 +81650,7 @@
               "local": "IconTable"
             }
           ],
-          "line": 20
+          "line": 19
         },
         {
           "specifier": "@/api",
@@ -82061,7 +81664,7 @@
               "local": "api"
             }
           ],
-          "line": 22
+          "line": 21
         },
         {
           "specifier": "@/brand",
@@ -82079,7 +81682,7 @@
               "local": "useWordmark"
             }
           ],
-          "line": 23
+          "line": 22
         },
         {
           "specifier": "@/components/AlertStatusIcon",
@@ -82093,7 +81696,7 @@
               "local": "AlertStatusIcon"
             }
           ],
-          "line": 24
+          "line": 23
         },
         {
           "specifier": "@/components/AppNav/InstanceLabel",
@@ -82107,7 +81710,7 @@
               "local": "InstanceLabel"
             }
           ],
-          "line": 25
+          "line": 24
         },
         {
           "specifier": "@/components/AppNav/useMobileNavOverlay",
@@ -82121,7 +81724,7 @@
               "local": "useMobileNavOverlay"
             }
           ],
-          "line": 26
+          "line": 25
         },
         {
           "specifier": "@/components/CompactViewport/useCompactViewport",
@@ -82135,7 +81738,7 @@
               "local": "useCompactViewport"
             }
           ],
-          "line": 27
+          "line": 26
         },
         {
           "specifier": "@/config",
@@ -82153,7 +81756,7 @@
               "local": "IS_LOCAL_MODE"
             }
           ],
-          "line": 28
+          "line": 27
         },
         {
           "specifier": "@/dashboard",
@@ -82171,7 +81774,7 @@
               "local": "useDashboards"
             }
           ],
-          "line": 29
+          "line": 28
         },
         {
           "specifier": "@/favorites",
@@ -82185,7 +81788,7 @@
               "local": "useFavorites"
             }
           ],
-          "line": 30
+          "line": 29
         },
         {
           "specifier": "@/hdxDebug",
@@ -82199,7 +81802,7 @@
               "local": "setHdxIdentity"
             }
           ],
-          "line": 31
+          "line": 30
         },
         {
           "specifier": "@/InstallInstructionsModal",
@@ -82213,7 +81816,7 @@
               "local": "InstallInstructionModal"
             }
           ],
-          "line": 32
+          "line": 31
         },
         {
           "specifier": "@/OnboardingChecklist",
@@ -82227,7 +81830,7 @@
               "local": "OnboardingChecklist"
             }
           ],
-          "line": 33
+          "line": 32
         },
         {
           "specifier": "@/savedSearch",
@@ -82241,7 +81844,7 @@
               "local": "useSavedSearches"
             }
           ],
-          "line": 34
+          "line": 33
         },
         {
           "specifier": "@/timeZone",
@@ -82255,7 +81858,7 @@
               "local": "getTimeZoneShortName"
             }
           ],
-          "line": 35
+          "line": 34
         },
         {
           "specifier": "@/useDisplayTimeZone",
@@ -82269,7 +81872,7 @@
               "local": "useDisplayTimeZone"
             }
           ],
-          "line": 36
+          "line": 35
         },
         {
           "specifier": "@/UserPreferencesModal",
@@ -82283,7 +81886,7 @@
               "local": "UserPreferencesModal"
             }
           ],
-          "line": 37
+          "line": 36
         },
         {
           "specifier": "./AppNav.components",
@@ -82292,10 +81895,6 @@
           "kind": "static",
           "typeOnly": false,
           "bindings": [
-            {
-              "imported": "AppNavCloudBanner",
-              "local": "AppNavCloudBanner"
-            },
             {
               "imported": "AppNavContext",
               "local": "AppNavContext"
@@ -82313,7 +81912,7 @@
               "local": "AppNavUserMenu"
             }
           ],
-          "line": 45
+          "line": 43
         },
         {
           "specifier": "./AppNavFeedback",
@@ -82327,7 +81926,7 @@
               "local": "AppNavFeedback"
             }
           ],
-          "line": 46
+          "line": 44
         },
         {
           "specifier": "./AppNav.module.scss",
@@ -82341,7 +81940,7 @@
               "local": "styles"
             }
           ],
-          "line": 48
+          "line": 46
         }
       ],
       "exports": [
@@ -82350,7 +81949,7 @@
           "kind": "function",
           "from": null,
           "original": null,
-          "line": 107
+          "line": 96
         }
       ],
       "starReexports": []
@@ -123168,10 +122767,6 @@
               "local": "Button"
             },
             {
-              "imported": "Divider",
-              "local": "Divider"
-            },
-            {
               "imported": "Flex",
               "local": "Flex"
             },
@@ -123282,13 +122877,9 @@
             {
               "imported": "useCreateConnection",
               "local": "useCreateConnection"
-            },
-            {
-              "imported": "useUpdateConnection",
-              "local": "useUpdateConnection"
             }
           ],
-          "line": 28
+          "line": 27
         },
         {
           "specifier": "@/hooks/useMetadata",
@@ -123302,7 +122893,7 @@
               "local": "useMetadataWithSettings"
             }
           ],
-          "line": 29
+          "line": 28
         },
         {
           "specifier": "@/source",
@@ -123328,10 +122919,6 @@
               "local": "useCreateSource"
             },
             {
-              "imported": "useDeleteSource",
-              "local": "useDeleteSource"
-            },
-            {
               "imported": "useSources",
               "local": "useSources"
             },
@@ -123340,7 +122927,7 @@
               "local": "useUpdateSource"
             }
           ],
-          "line": 38
+          "line": 36
         },
         {
           "specifier": "./Sources/SourceForm",
@@ -123354,7 +122941,7 @@
               "local": "TableSourceForm"
             }
           ],
-          "line": 40
+          "line": 38
         },
         {
           "specifier": "./Sources/SourcesList",
@@ -123368,7 +122955,7 @@
               "local": "SourcesList"
             }
           ],
-          "line": 41
+          "line": 39
         }
       ],
       "exports": [
@@ -123377,7 +122964,7 @@
           "kind": "const",
           "from": null,
           "original": null,
-          "line": 995
+          "line": 621
         }
       ],
       "starReexports": []
@@ -164728,203 +164315,203 @@
           "kind": "const",
           "from": null,
           "original": null,
-          "line": 55
+          "line": 54
         },
         {
           "name": "BASE_PATH",
           "kind": "const",
           "from": null,
           "original": null,
-          "line": 66
+          "line": 65
         },
         {
           "name": "CBT_EXPORTER_ENABLED",
           "kind": "const",
           "from": null,
           "original": null,
-          "line": 18
+          "line": 17
         },
         {
           "name": "HDX_API_KEY",
           "kind": "const",
           "from": null,
           "original": null,
-          "line": 15
+          "line": 14
         },
         {
           "name": "HDX_COLLECTOR_URL",
           "kind": "const",
           "from": null,
           "original": null,
-          "line": 39
+          "line": 38
         },
         {
           "name": "HDX_LOCAL_DEFAULT_CONNECTIONS",
           "kind": "const",
           "from": null,
           "original": null,
-          "line": 8
+          "line": 7
         },
         {
           "name": "HDX_LOCAL_DEFAULT_SOURCES",
           "kind": "const",
           "from": null,
           "original": null,
-          "line": 11
+          "line": 10
         },
         {
           "name": "HDX_LOGS_COLLECTOR_URL",
           "kind": "const",
           "from": null,
           "original": null,
-          "line": 49
+          "line": 48
         },
         {
           "name": "HDX_METRICS_COLLECTOR_URL",
           "kind": "const",
           "from": null,
           "original": null,
-          "line": 46
+          "line": 45
         },
         {
           "name": "HDX_SERVICE_NAME",
           "kind": "const",
           "from": null,
           "original": null,
-          "line": 16
+          "line": 15
         },
         {
           "name": "HDX_TRACES_COLLECTOR_URL",
           "kind": "const",
           "from": null,
           "original": null,
-          "line": 43
+          "line": 42
         },
         {
           "name": "INSTANCE_LABEL",
           "kind": "const",
           "from": null,
           "original": null,
-          "line": 91
+          "line": 90
         },
         {
           "name": "INSTANCE_TITLE_SUFFIX",
           "kind": "const",
           "from": null,
           "original": null,
-          "line": 97
+          "line": 96
         },
         {
           "name": "IS_ADHOC_FILTERS_ENABLED",
           "kind": "const",
           "from": null,
           "original": null,
-          "line": 85
+          "line": 84
         },
         {
           "name": "IS_ALERT_DETAILS_ENABLED",
           "kind": "const",
           "from": null,
           "original": null,
-          "line": 100
+          "line": 99
         },
         {
           "name": "IS_CLICKHOUSE_BUILD",
           "kind": "const",
           "from": null,
           "original": null,
-          "line": 60
+          "line": 59
         },
         {
           "name": "IS_DEV",
           "kind": "const",
           "from": null,
           "original": null,
-          "line": 52
+          "line": 51
         },
         {
           "name": "IS_IAC_EXPORT_ENABLED",
           "kind": "const",
           "from": null,
           "original": null,
-          "line": 109
+          "line": 108
         },
         {
           "name": "IS_K8S_DASHBOARD_ENABLED",
           "kind": "const",
           "from": null,
           "original": null,
-          "line": 75
+          "line": 74
         },
         {
           "name": "IS_LLM_COST_ENABLED",
           "kind": "const",
           "from": null,
           "original": null,
-          "line": 79
+          "line": 78
         },
         {
           "name": "IS_LOCAL_MODE",
           "kind": "const",
           "from": null,
           "original": null,
-          "line": 58
+          "line": 57
         },
         {
           "name": "IS_METRICS_ENABLED",
           "kind": "const",
           "from": null,
           "original": null,
-          "line": 81
+          "line": 80
         },
         {
           "name": "IS_MTVIEWS_ENABLED",
           "kind": "const",
           "from": null,
           "original": null,
-          "line": 82
+          "line": 81
         },
         {
           "name": "IS_NOINDEX",
           "kind": "const",
           "from": null,
           "original": null,
-          "line": 67
+          "line": 66
         },
         {
           "name": "IS_OSS",
           "kind": "const",
           "from": null,
           "original": null,
-          "line": 57
+          "line": 56
         },
         {
           "name": "IS_PROMQL_ENABLED",
           "kind": "const",
           "from": null,
           "original": null,
-          "line": 84
+          "line": 83
         },
         {
           "name": "IS_SESSIONS_ENABLED",
           "kind": "const",
           "from": null,
           "original": null,
-          "line": 83
+          "line": 82
         },
         {
           "name": "NOW",
           "kind": "const",
           "from": null,
           "original": null,
-          "line": 71
+          "line": 70
         },
         {
           "name": "parseResourceAttributes",
           "kind": "function",
           "from": null,
           "original": null,
-          "line": 21
+          "line": 20
         }
       ],
       "starReexports": []
@@ -222365,14 +221952,14 @@
           "kind": "type",
           "from": null,
           "original": null,
-          "line": 3365
+          "line": 3364
         },
         {
           "name": "CompleteOnboardingTaskApiBodySchema",
           "kind": "const",
           "from": null,
           "original": null,
-          "line": 3361
+          "line": 3360
         },
         {
           "name": "ConditionFilter",
@@ -222407,28 +221994,28 @@
           "kind": "type",
           "from": null,
           "original": null,
-          "line": 3448
+          "line": 3447
         },
         {
           "name": "CreateOrgApiKeyApiResponseSchema",
           "kind": "const",
           "from": null,
           "original": null,
-          "line": 3446
+          "line": 3445
         },
         {
           "name": "CreateOrgApiKeyRequest",
           "kind": "type",
           "from": null,
           "original": null,
-          "line": 3413
+          "line": 3412
         },
         {
           "name": "CreateOrgApiKeyRequestSchema",
           "kind": "const",
           "from": null,
           "original": null,
-          "line": 3409
+          "line": 3408
         },
         {
           "name": "CteChartConfig",
@@ -222631,14 +222218,14 @@
           "kind": "type",
           "from": null,
           "original": null,
-          "line": 3374
+          "line": 3373
         },
         {
           "name": "DismissOnboardingApiBodySchema",
           "kind": "const",
           "from": null,
           "original": null,
-          "line": 3370
+          "line": 3369
         },
         {
           "name": "DisplayType",
@@ -222701,14 +222288,14 @@
           "kind": "type",
           "from": null,
           "original": null,
-          "line": 3514
+          "line": 3513
         },
         {
           "name": "IacImportManifestSchema",
           "kind": "const",
           "from": null,
           "original": null,
-          "line": 3466
+          "line": 3465
         },
         {
           "name": "InstallationApiResponse",
@@ -222848,7 +222435,7 @@
           "kind": "type",
           "from": null,
           "original": null,
-          "line": 3358
+          "line": 3357
         },
         {
           "name": "MeApiResponseSchema",
@@ -223072,14 +222659,14 @@
           "kind": "type",
           "from": null,
           "original": null,
-          "line": 3384
+          "line": 3383
         },
         {
           "name": "OnboardingDataApiResponseSchema",
           "kind": "const",
           "from": null,
           "original": null,
-          "line": 3380
+          "line": 3379
         },
         {
           "name": "OnboardingDataSchema",
@@ -223100,42 +222687,42 @@
           "kind": "type",
           "from": null,
           "original": null,
-          "line": 3439
+          "line": 3438
         },
         {
           "name": "OrgApiKeyApiResponseSchema",
           "kind": "const",
           "from": null,
           "original": null,
-          "line": 3424
+          "line": 3423
         },
         {
           "name": "OrgApiKeyExpiry",
           "kind": "type",
           "from": null,
           "original": null,
-          "line": 3405
+          "line": 3404
         },
         {
           "name": "OrgApiKeyExpirySchema",
           "kind": "const",
           "from": null,
           "original": null,
-          "line": 3404
+          "line": 3403
         },
         {
           "name": "OrgApiKeysApiResponse",
           "kind": "type",
           "from": null,
           "original": null,
-          "line": 3444
+          "line": 3443
         },
         {
           "name": "OrgApiKeysApiResponseSchema",
           "kind": "const",
           "from": null,
           "original": null,
-          "line": 3441
+          "line": 3440
         },
         {
           "name": "PERCENTILE_AGG_FN_LEVELS",
@@ -223429,14 +223016,14 @@
           "kind": "type",
           "from": null,
           "original": null,
-          "line": 3398
+          "line": 3397
         },
         {
           "name": "RotateAccessKeyApiResponseSchema",
           "kind": "const",
           "from": null,
           "original": null,
-          "line": 3394
+          "line": 3393
         },
         {
           "name": "RotateApiKeyApiResponse",
@@ -223926,14 +223513,14 @@
           "kind": "type",
           "from": null,
           "original": null,
-          "line": 3420
+          "line": 3419
         },
         {
           "name": "UpdateOrgApiKeyRequestSchema",
           "kind": "const",
           "from": null,
           "original": null,
-          "line": 3417
+          "line": 3416
         },
         {
           "name": "UseTextIndex",

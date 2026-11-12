@@ -29,10 +29,10 @@ describe('extractConversation', () => {
           content: 'You are a helpful assistant.',
           source: 'input',
         },
-        { role: 'user', content: 'What is HyperDX?', source: 'input' },
+        { role: 'user', content: 'What is Couchbase Traces?', source: 'input' },
         {
           role: 'assistant',
-          content: 'HyperDX is an observability platform.',
+          content: 'Couchbase Traces is an observability platform.',
           source: 'output',
         },
       ]),

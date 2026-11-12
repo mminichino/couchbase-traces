@@ -52,7 +52,7 @@ jest.mock('@/source', () => ({
 }));
 
 jest.mock('@/brand', () => ({
-  useBrandDisplayName: () => 'ClickStack',
+  useBrandDisplayName: () => 'Couchbase Traces',
 }));
 
 jest.mock('@mantine/notifications', () => ({

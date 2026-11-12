@@ -5009,7 +5009,7 @@ describe('renderChartConfig', () => {
         // multi-series gauge table grouped by a map access plus a
         // concat/if expression, ordered by the same raw text.
         const EXPR_GROUP_BY =
-          "ResourceAttributes['service.name'], concat(ResourceAttributes['host.name'], if(ResourceAttributes['hyperdx.alerts.shard.index'] != '', concat('-s', ResourceAttributes['hyperdx.alerts.shard.index']), ''))";
+          "ResourceAttributes['service.name'], concat(ResourceAttributes['host.name'], if(ResourceAttributes['cbt.alerts.shard.index'] != '', concat('-s', ResourceAttributes['cbt.alerts.shard.index']), ''))";
 
         it('sorts a table default orderBy (= groupBy text) through companion columns', async () => {
           const generatedSql = await renderChartConfig(

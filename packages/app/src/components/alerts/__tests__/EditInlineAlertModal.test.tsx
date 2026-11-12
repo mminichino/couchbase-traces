@@ -33,7 +33,7 @@ jest.mock('@/api', () => ({
 jest.mock('@/useConfirm', () => ({ useConfirm: () => jest.fn() }));
 jest.mock('@/brand', () => ({
   __esModule: true,
-  useBrandDisplayName: () => 'ClickStack',
+  useBrandDisplayName: () => 'Couchbase Traces',
 }));
 
 // The chart editor has its own suite; here it is stubbed to a "save what I was

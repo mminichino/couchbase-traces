@@ -6,7 +6,7 @@ FROM otel/opentelemetry-collector-opampsupervisor:${OTEL_COLLECTOR_VERSION} AS s
 FROM hairyhenderson/gomplate:v4.3.3-alpine AS gomplate
 FROM kukymbr/goose-docker@sha256:0cd025636df126e7f66472861ca4db3683bc649be46cd1f6ef1a316209058e23 AS goose
 
-# Build the custom HyperDX collector binary using OCB (OpenTelemetry Collector Builder).
+# Build the custom Couchbase Traces collector binary using OCB (OpenTelemetry Collector Builder).
 # This replaces the pre-built otel/opentelemetry-collector-contrib image so we can
 # include custom receiver/processor components alongside the standard contrib ones.
 # Note: Build context must be repo root (use: docker build -f docker/otel-collector/Dockerfile .)
@@ -57,7 +57,7 @@ COPY --from=migrate-builder /migrate /usr/local/bin/migrate
 USER ${USER_UID}:${USER_GID}
 
 COPY --from=supervisor --chmod=755 /usr/local/bin/opampsupervisor /opampsupervisor
-COPY --from=ocb-builder --chmod=755 /build/output/otelcol-hyperdx /otelcontribcol
+COPY --from=ocb-builder --chmod=755 /build/output/otelcol-couchbase-traces /otelcontribcol
 
 # Copy entrypoint script
 COPY --chmod=755 docker/otel-collector/entrypoint.sh /entrypoint.sh
@@ -65,10 +65,10 @@ COPY --chmod=755 docker/otel-collector/entrypoint.sh /entrypoint.sh
 ## dev ##############################################################################################
 FROM base AS dev
 
-LABEL org.opencontainers.image.vendor="HyperDX" \
-  org.opencontainers.image.title="HyperDX OTel Collector (Dev)" \
-  org.opencontainers.image.description="OpenTelemetry Collector for HyperDX development" \
-  org.opencontainers.image.source="https://github.com/ClickHouse/ClickStack" \
+LABEL org.opencontainers.image.vendor="Couchbase Traces" \
+  org.opencontainers.image.title="Couchbase Traces OTel Collector (Dev)" \
+  org.opencontainers.image.description="OpenTelemetry Collector for Couchbase Traces development" \
+  org.opencontainers.image.source="https://github.com/mminichino/couchbase-traces" \
   org.opencontainers.image.licenses="MIT"
 
 COPY --chown=10001:10001 docker/otel-collector/config.yaml /etc/otelcol-contrib/config.yaml
@@ -89,10 +89,10 @@ ENTRYPOINT ["/entrypoint.sh", "/opampsupervisor"]
 ## prod #############################################################################################
 FROM base AS prod
 
-LABEL org.opencontainers.image.vendor="HyperDX" \
-  org.opencontainers.image.title="HyperDX OTel Collector" \
-  org.opencontainers.image.description="OpenTelemetry Collector for HyperDX observability platform" \
-  org.opencontainers.image.source="https://github.com/ClickHouse/ClickStack" \
+LABEL org.opencontainers.image.vendor="Couchbase Traces" \
+  org.opencontainers.image.title="Couchbase Traces OTel Collector" \
+  org.opencontainers.image.description="OpenTelemetry Collector for Couchbase Traces observability platform" \
+  org.opencontainers.image.source="https://github.com/mminichino/couchbase-traces" \
   org.opencontainers.image.licenses="MIT"
 
 COPY --chown=10001:10001 docker/otel-collector/config.yaml /etc/otelcol-contrib/config.yaml

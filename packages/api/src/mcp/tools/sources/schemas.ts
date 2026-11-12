@@ -148,7 +148,7 @@ const metricTablesSchema = z
       .optional()
       .describe(
         'Table containing summary metrics data. Summary metrics cannot be ' +
-          'queried with clickstack_timeseries / clickstack_table; use clickstack_sql.',
+          'queried with cbt_timeseries / cbt_table; use cbt_sql.',
       ),
     'exponential histogram': z
       .string()
@@ -167,7 +167,7 @@ const mcpSaveSourceSchema = z.object({
     .string()
     .optional()
     .describe(
-      'ID of the source to update, from clickstack_list_sources. Omit to create a new source.',
+      'ID of the source to update, from cbt_list_sources. Omit to create a new source.',
     ),
 
   // ── Always required (base) ──
@@ -177,7 +177,7 @@ const mcpSaveSourceSchema = z.object({
     .string()
     .min(1)
     .describe(
-      'Connection ID this source reads from. Get IDs from clickstack_list_sources.',
+      'Connection ID this source reads from. Get IDs from cbt_list_sources.',
     ),
   databaseName: z
     .string()
@@ -401,7 +401,7 @@ const mcpSaveSourceSchema = z.object({
     .optional()
     .describe(
       'Trace and metric sources. ID of the log source holding logs related to ' +
-        'this data. Get IDs from clickstack_list_sources.',
+        'this data. Get IDs from cbt_list_sources.',
     ),
   traceSourceId: z
     .string()
@@ -409,21 +409,21 @@ const mcpSaveSourceSchema = z.object({
     .describe(
       'ID of the trace source holding traces related to this data, used to ' +
         'link rows to their traces. Required for session sources; optional ' +
-        'for log sources. Get IDs from clickstack_list_sources.',
+        'for log sources. Get IDs from cbt_list_sources.',
     ),
   metricSourceId: z
     .string()
     .optional()
     .describe(
       'Log and trace sources. ID of the metric source holding related ' +
-        'metrics. Get IDs from clickstack_list_sources.',
+        'metrics. Get IDs from cbt_list_sources.',
     ),
   sessionSourceId: z
     .string()
     .optional()
     .describe(
       'Trace sources. ID of the session source holding related session ' +
-        'replays. Get IDs from clickstack_list_sources.',
+        'replays. Get IDs from cbt_list_sources.',
     ),
 
   // ── Metric ──

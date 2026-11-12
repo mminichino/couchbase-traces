@@ -95,7 +95,7 @@ trap _hdx_cleanup_slot EXIT
 
 # Print summary
 echo "╔══════════════════════════════════════════════════════════════╗"
-echo "║  HyperDX Dev Environment — Slot ${CBT_DEV_SLOT}$(printf '%*s' $((27 - ${#CBT_DEV_SLOT})) '')║"
+echo "║  Couchbase Traces Dev Environment — Slot ${CBT_DEV_SLOT}$(printf '%*s' $((27 - ${#CBT_DEV_SLOT})) '')║"
 echo "╠══════════════════════════════════════════════════════════════╣"
 echo "║  Branch:     ${CBT_DEV_BRANCH}$(printf '%*s' $((45 - ${#CBT_DEV_BRANCH})) '')║"
 echo "║  Worktree:   ${CBT_DEV_WORKTREE}$(printf '%*s' $((45 - ${#CBT_DEV_WORKTREE})) '')║"

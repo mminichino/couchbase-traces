@@ -65,7 +65,10 @@ const RowSelectionMenuItems = ({
       <Menu.Item
         leftSection={<IconDownload size={14} />}
         onClick={() =>
-          downloadCsv(csvData, csvExportFilename('hyperdx_selected_rows'))
+          downloadCsv(
+            csvData,
+            csvExportFilename('couchbase_traces_selected_rows'),
+          )
         }
         data-testid="row-selection-download-csv"
       >

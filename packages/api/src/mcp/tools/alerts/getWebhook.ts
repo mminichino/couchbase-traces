@@ -11,14 +11,14 @@ export function registerGetWebhook({
   const { teamId } = context;
 
   registerTool(
-    'clickstack_get_webhook',
+    'cbt_get_webhook',
     {
       title: 'List Webhooks',
       annotations: READ_ONLY_TOOL,
       description:
         'List available webhook destinations (id, name, service type). ' +
         'Use the returned id as the webhookId when creating alerts with ' +
-        'clickstack_save_alert.',
+        'cbt_save_alert.',
       inputSchema: z.object({}),
     },
     async () => {

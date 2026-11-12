@@ -109,9 +109,9 @@ describe('MCP Source Tools', () => {
 
   // ── clickstack_list_sources ──────────────────────────────────────────────────
 
-  describe('clickstack_list_sources', () => {
+  describe('cbt_list_sources', () => {
     it('should list sources and connections as a lightweight catalog', async () => {
-      const result = await callTool(client, 'clickstack_list_sources');
+      const result = await callTool(client, 'cbt_list_sources');
 
       expect(result.isError).toBeFalsy();
       expect(result.content).toHaveLength(1);
@@ -140,14 +140,14 @@ describe('MCP Source Tools', () => {
 
       // Should include nextStep guidance pointing to describe_source
       expect(output.nextStep).toBeDefined();
-      expect(output.nextStep).toContain('clickstack_describe_source');
+      expect(output.nextStep).toContain('cbt_describe_source');
     });
 
     // clickstack_sql callers need this for FROM. Without it they guess
     // otel_logs, which only resolves when the tables sit in the
     // connection's default database.
     it('includes the database-qualified table each log and trace source reads', async () => {
-      const result = await callTool(client, 'clickstack_list_sources');
+      const result = await callTool(client, 'cbt_list_sources');
       const output = JSON.parse(getFirstText(result));
 
       const trace = output.sources.find(
@@ -168,7 +168,7 @@ describe('MCP Source Tools', () => {
         name: 'Quoted logs',
       });
 
-      const result = await callTool(client, 'clickstack_list_sources');
+      const result = await callTool(client, 'cbt_list_sources');
       const output = JSON.parse(getFirstText(result));
 
       const log = output.sources.find(
@@ -178,7 +178,7 @@ describe('MCP Source Tools', () => {
     });
 
     it('should include keyColumns from source config without ClickHouse queries', async () => {
-      const result = await callTool(client, 'clickstack_list_sources');
+      const result = await callTool(client, 'cbt_list_sources');
       const output = JSON.parse(getFirstText(result));
 
       const trace = output.sources.find(
@@ -195,7 +195,7 @@ describe('MCP Source Tools', () => {
     });
 
     it('includes a source section when set and omits it when unset', async () => {
-      const result = await callTool(client, 'clickstack_list_sources');
+      const result = await callTool(client, 'cbt_list_sources');
       const output = JSON.parse(getFirstText(result));
 
       const log = output.sources.find((s: any) => s.kind === SourceKind.Log);
@@ -217,7 +217,7 @@ describe('MCP Source Tools', () => {
       };
       const client2 = await createTestClient(context2);
 
-      const result = await callTool(client2, 'clickstack_list_sources');
+      const result = await callTool(client2, 'cbt_list_sources');
       const output = JSON.parse(getFirstText(result));
 
       expect(output.sources).toHaveLength(0);
@@ -265,7 +265,7 @@ describe('MCP Source Tools', () => {
           },
         ]);
 
-        const result = await callTool(client, 'clickstack_list_sources');
+        const result = await callTool(client, 'cbt_list_sources');
         expect(result.isError).toBeFalsy();
         const output = JSON.parse(getFirstText(result));
 
@@ -288,7 +288,7 @@ describe('MCP Source Tools', () => {
       it('includes the database its metricTables live in', async () => {
         const metricSource = await createMetricSource();
 
-        const result = await callTool(client, 'clickstack_list_sources');
+        const result = await callTool(client, 'cbt_list_sources');
         const output = JSON.parse(getFirstText(result));
 
         const metric = output.sources.find(
@@ -316,7 +316,7 @@ describe('MCP Source Tools', () => {
           name: 'Named metrics',
         });
 
-        const result = await callTool(client, 'clickstack_list_sources');
+        const result = await callTool(client, 'cbt_list_sources');
         const output = JSON.parse(getFirstText(result));
 
         const metric = output.sources.find(
@@ -339,7 +339,7 @@ describe('MCP Source Tools', () => {
           },
         ]);
 
-        const result = await callTool(client, 'clickstack_list_sources');
+        const result = await callTool(client, 'cbt_list_sources');
         expect(result.isError).toBeFalsy();
         const output = JSON.parse(getFirstText(result));
 
@@ -386,7 +386,7 @@ describe('MCP Source Tools', () => {
           },
         ]);
 
-        const result = await callTool(client, 'clickstack_list_sources');
+        const result = await callTool(client, 'cbt_list_sources');
         expect(result.isError).toBeFalsy();
         const output = JSON.parse(getFirstText(result));
 
@@ -407,7 +407,7 @@ describe('MCP Source Tools', () => {
       it('omits metricNamesPreview when the metric tables are empty', async () => {
         const metricSource = await createMetricSource('Empty Metrics');
 
-        const result = await callTool(client, 'clickstack_list_sources');
+        const result = await callTool(client, 'cbt_list_sources');
         expect(result.isError).toBeFalsy();
         const output = JSON.parse(getFirstText(result));
 
@@ -425,9 +425,9 @@ describe('MCP Source Tools', () => {
 
   // ── clickstack_describe_source ───────────────────────────────────────────────
 
-  describe('clickstack_describe_source', () => {
+  describe('cbt_describe_source', () => {
     it('should return full column schema for a trace source', async () => {
-      const result = await callTool(client, 'clickstack_describe_source', {
+      const result = await callTool(client, 'cbt_describe_source', {
         sourceId: traceSource._id.toString(),
       });
 
@@ -451,7 +451,7 @@ describe('MCP Source Tools', () => {
     });
 
     it('should return full column schema for a log source', async () => {
-      const result = await callTool(client, 'clickstack_describe_source', {
+      const result = await callTool(client, 'cbt_describe_source', {
         sourceId: logSource._id.toString(),
       });
 
@@ -477,25 +477,23 @@ describe('MCP Source Tools', () => {
     });
 
     it('includes the source section when set and omits it when unset', async () => {
-      const withSection = await callTool(client, 'clickstack_describe_source', {
+      const withSection = await callTool(client, 'cbt_describe_source', {
         sourceId: logSource._id.toString(),
       });
       expect(JSON.parse(getFirstText(withSection)).source.section).toBe(
         'Billing',
       );
 
-      const withoutSection = await callTool(
-        client,
-        'clickstack_describe_source',
-        { sourceId: traceSource._id.toString() },
-      );
+      const withoutSection = await callTool(client, 'cbt_describe_source', {
+        sourceId: traceSource._id.toString(),
+      });
       expect(
         JSON.parse(getFirstText(withoutSection)).source.section,
       ).toBeUndefined();
     });
 
     it('should include map attribute keys', async () => {
-      const result = await callTool(client, 'clickstack_describe_source', {
+      const result = await callTool(client, 'cbt_describe_source', {
         sourceId: traceSource._id.toString(),
       });
       const output = JSON.parse(getFirstText(result));
@@ -509,7 +507,7 @@ describe('MCP Source Tools', () => {
     });
 
     it('should include keyColumns for trace source', async () => {
-      const result = await callTool(client, 'clickstack_describe_source', {
+      const result = await callTool(client, 'cbt_describe_source', {
         sourceId: traceSource._id.toString(),
       });
       const output = JSON.parse(getFirstText(result));
@@ -539,7 +537,7 @@ describe('MCP Source Tools', () => {
         name: 'Metrics',
       });
 
-      const result = await callTool(client, 'clickstack_describe_source', {
+      const result = await callTool(client, 'cbt_describe_source', {
         sourceId: metricSource._id.toString(),
       });
 
@@ -576,10 +574,8 @@ describe('MCP Source Tools', () => {
 
       // nextSteps points at the new metric discovery tools.
       expect(output.nextSteps.query).toContain('metricType');
-      expect(output.nextSteps.discovery).toContain('clickstack_list_metrics');
-      expect(output.nextSteps.discovery).toContain(
-        'clickstack_describe_metric',
-      );
+      expect(output.nextSteps.discovery).toContain('cbt_list_metrics');
+      expect(output.nextSteps.discovery).toContain('cbt_describe_metric');
     });
 
     it('discovers and describes exponential histogram metrics', async () => {
@@ -610,7 +606,7 @@ describe('MCP Source Tools', () => {
 
       const describeSourceResult = await callTool(
         client,
-        'clickstack_describe_source',
+        'cbt_describe_source',
         { sourceId: metricSource._id.toString() },
       );
       expect(describeSourceResult.isError).toBeFalsy();
@@ -628,7 +624,7 @@ describe('MCP Source Tools', () => {
         ]),
       );
 
-      const listResult = await callTool(client, 'clickstack_list_metrics', {
+      const listResult = await callTool(client, 'cbt_list_metrics', {
         sourceId: metricSource._id.toString(),
         kind: 'exponential histogram',
       });
@@ -645,7 +641,7 @@ describe('MCP Source Tools', () => {
 
       const describeMetricResult = await callTool(
         client,
-        'clickstack_describe_metric',
+        'cbt_describe_metric',
         {
           sourceId: metricSource._id.toString(),
           metricName: 'http.server.request.duration.exponential',
@@ -663,7 +659,7 @@ describe('MCP Source Tools', () => {
       );
     });
 
-    it('discovers summary metrics and directs querying to clickstack_sql', async () => {
+    it('discovers summary metrics and directs querying to cbt_sql', async () => {
       // Summary metrics are discoverable (list/describe) but not queryable:
       // the query renderer has no summary translation, so every discovery
       // surface must redirect the agent to clickstack_sql.
@@ -695,7 +691,7 @@ describe('MCP Source Tools', () => {
 
       const describeSourceResult = await callTool(
         client,
-        'clickstack_describe_source',
+        'cbt_describe_source',
         { sourceId: metricSource._id.toString() },
       );
       expect(describeSourceResult.isError).toBeFalsy();
@@ -711,9 +707,9 @@ describe('MCP Source Tools', () => {
           expect.objectContaining({ name: 'http_request_duration_seconds' }),
         ]),
       );
-      expect(describedSource.usage.metricNames).toContain('clickstack_sql');
+      expect(describedSource.usage.metricNames).toContain('cbt_sql');
 
-      const listResult = await callTool(client, 'clickstack_list_metrics', {
+      const listResult = await callTool(client, 'cbt_list_metrics', {
         sourceId: metricSource._id.toString(),
         kind: 'summary',
       });
@@ -727,11 +723,11 @@ describe('MCP Source Tools', () => {
           }),
         ]),
       );
-      expect(listedMetrics.summaryNote).toContain('clickstack_sql');
+      expect(listedMetrics.summaryNote).toContain('cbt_sql');
 
       const describeMetricResult = await callTool(
         client,
-        'clickstack_describe_metric',
+        'cbt_describe_metric',
         {
           sourceId: metricSource._id.toString(),
           metricName: 'http_request_duration_seconds',
@@ -746,20 +742,18 @@ describe('MCP Source Tools', () => {
       expect(describedMetric.kinds[0].attributeKeys.Attributes).toContain(
         'endpoint',
       );
-      expect(describedMetric.kinds[0].usage).toContain('clickstack_sql');
-      expect(describedMetric.nextSteps.query).toContain('clickstack_sql');
+      expect(describedMetric.kinds[0].usage).toContain('cbt_sql');
+      expect(describedMetric.nextSteps.query).toContain('cbt_sql');
       // The redirect must name the database-qualified table — clickstack_sql
       // has no source context to resolve a bare table name against.
       expect(describedMetric.nextSteps.query).toContain(
         `${DEFAULT_DATABASE}.${DEFAULT_METRICS_TABLE.SUMMARY}`,
       );
-      expect(describedMetric.nextSteps.query).not.toContain(
-        'clickstack_timeseries({',
-      );
+      expect(describedMetric.nextSteps.query).not.toContain('cbt_timeseries({');
     });
 
     it('should include usage guidance and nextSteps', async () => {
-      const result = await callTool(client, 'clickstack_describe_source', {
+      const result = await callTool(client, 'cbt_describe_source', {
         sourceId: traceSource._id.toString(),
       });
       const output = JSON.parse(getFirstText(result));
@@ -770,7 +764,7 @@ describe('MCP Source Tools', () => {
     });
 
     it('should return error for non-existent source', async () => {
-      const result = await callTool(client, 'clickstack_describe_source', {
+      const result = await callTool(client, 'cbt_describe_source', {
         sourceId: '000000000000000000000000',
       });
 
@@ -799,7 +793,7 @@ describe('MCP Source Tools', () => {
         name: 'Other Traces',
       });
 
-      const result = await callTool(client, 'clickstack_describe_source', {
+      const result = await callTool(client, 'cbt_describe_source', {
         sourceId: otherSource._id.toString(),
       });
 
@@ -810,7 +804,7 @@ describe('MCP Source Tools', () => {
 
   // ── clickstack_list_metrics ──────────────────────────────────────────────
 
-  describe('clickstack_list_metrics', () => {
+  describe('cbt_list_metrics', () => {
     const createMetricSource = () =>
       Source.create({
         kind: SourceKind.Metric,
@@ -868,7 +862,7 @@ describe('MCP Source Tools', () => {
     };
 
     it('rejects non-metric sources with a friendly error', async () => {
-      const result = await callTool(client, 'clickstack_list_metrics', {
+      const result = await callTool(client, 'cbt_list_metrics', {
         sourceId: traceSource._id.toString(),
       });
       expect(result.isError).toBe(true);
@@ -876,7 +870,7 @@ describe('MCP Source Tools', () => {
     });
 
     it('returns 404 for unknown source IDs', async () => {
-      const result = await callTool(client, 'clickstack_list_metrics', {
+      const result = await callTool(client, 'cbt_list_metrics', {
         sourceId: '000000000000000000000000',
       });
       expect(result.isError).toBe(true);
@@ -887,7 +881,7 @@ describe('MCP Source Tools', () => {
       const metricSource = await createMetricSource();
       await seedMetricNames();
 
-      const result = await callTool(client, 'clickstack_list_metrics', {
+      const result = await callTool(client, 'cbt_list_metrics', {
         sourceId: metricSource._id.toString(),
       });
 
@@ -916,7 +910,7 @@ describe('MCP Source Tools', () => {
       const metricSource = await createMetricSource();
       await seedMetricNames();
 
-      const result = await callTool(client, 'clickstack_list_metrics', {
+      const result = await callTool(client, 'cbt_list_metrics', {
         sourceId: metricSource._id.toString(),
         kind: 'gauge',
       });
@@ -931,7 +925,7 @@ describe('MCP Source Tools', () => {
       const metricSource = await createMetricSource();
       await seedMetricNames();
 
-      const result = await callTool(client, 'clickstack_list_metrics', {
+      const result = await callTool(client, 'cbt_list_metrics', {
         sourceId: metricSource._id.toString(),
         namePattern: 'system.cpu.%',
       });
@@ -947,7 +941,7 @@ describe('MCP Source Tools', () => {
 
       // First page: only ask for one entry so the cap is forced even with
       // a small seed; sanity-check the cursor round-trip.
-      const first = await callTool(client, 'clickstack_list_metrics', {
+      const first = await callTool(client, 'cbt_list_metrics', {
         sourceId: metricSource._id.toString(),
         kind: 'gauge',
         limit: 1,
@@ -956,7 +950,7 @@ describe('MCP Source Tools', () => {
       expect(firstOutput.metrics.length).toBe(1);
       expect(typeof firstOutput.nextCursor).toBe('string');
 
-      const second = await callTool(client, 'clickstack_list_metrics', {
+      const second = await callTool(client, 'cbt_list_metrics', {
         sourceId: metricSource._id.toString(),
         kind: 'gauge',
         limit: 5,
@@ -980,7 +974,7 @@ describe('MCP Source Tools', () => {
       const seen: string[] = [];
       let cursor: string | undefined;
       for (let page = 0; page < 10; page++) {
-        const result = await callTool(client, 'clickstack_list_metrics', {
+        const result = await callTool(client, 'cbt_list_metrics', {
           sourceId: metricSource._id.toString(),
           limit: 1,
           ...(cursor && { cursor }),
@@ -1016,7 +1010,7 @@ describe('MCP Source Tools', () => {
         },
       ]);
 
-      const result = await callTool(client, 'clickstack_list_metrics', {
+      const result = await callTool(client, 'cbt_list_metrics', {
         sourceId: metricSource._id.toString(),
         kind: 'gauge',
       });
@@ -1033,7 +1027,7 @@ describe('MCP Source Tools', () => {
 
     it('rejects a malformed cursor with an actionable error', async () => {
       const metricSource = await createMetricSource();
-      const result = await callTool(client, 'clickstack_list_metrics', {
+      const result = await callTool(client, 'cbt_list_metrics', {
         sourceId: metricSource._id.toString(),
         cursor: 'not-base64!',
       });
@@ -1043,7 +1037,7 @@ describe('MCP Source Tools', () => {
 
     it('returns an empty-result hint when nothing matches', async () => {
       const metricSource = await createMetricSource();
-      const result = await callTool(client, 'clickstack_list_metrics', {
+      const result = await callTool(client, 'cbt_list_metrics', {
         sourceId: metricSource._id.toString(),
         namePattern: 'this.name.does.not.exist.%',
       });
@@ -1068,7 +1062,7 @@ describe('MCP Source Tools', () => {
         connection: connection._id,
         name: 'BrokenMetrics',
       });
-      const result = await callTool(client, 'clickstack_list_metrics', {
+      const result = await callTool(client, 'cbt_list_metrics', {
         sourceId: brokenSource._id.toString(),
       });
       expect(result.isError).toBeFalsy();
@@ -1085,7 +1079,7 @@ describe('MCP Source Tools', () => {
 
   // ── clickstack_describe_metric ───────────────────────────────────────────
 
-  describe('clickstack_describe_metric', () => {
+  describe('cbt_describe_metric', () => {
     const createMetricSource = () =>
       Source.create({
         kind: SourceKind.Metric,
@@ -1102,7 +1096,7 @@ describe('MCP Source Tools', () => {
       });
 
     it('rejects non-metric sources', async () => {
-      const result = await callTool(client, 'clickstack_describe_metric', {
+      const result = await callTool(client, 'cbt_describe_metric', {
         sourceId: traceSource._id.toString(),
         metricName: 'system.cpu.utilization',
         kind: 'gauge',
@@ -1115,7 +1109,7 @@ describe('MCP Source Tools', () => {
       // `kind` is required. Calling without it returns an MCP error
       // surfaced from the schema parser rather than reaching ClickHouse.
       const metricSource = await createMetricSource();
-      const result = await callTool(client, 'clickstack_describe_metric', {
+      const result = await callTool(client, 'cbt_describe_metric', {
         sourceId: metricSource._id.toString(),
         metricName: 'system.cpu.utilization',
       });
@@ -1124,7 +1118,7 @@ describe('MCP Source Tools', () => {
 
     it('returns an actionable hint when the metric has no data in the kind table', async () => {
       const metricSource = await createMetricSource();
-      const result = await callTool(client, 'clickstack_describe_metric', {
+      const result = await callTool(client, 'cbt_describe_metric', {
         sourceId: metricSource._id.toString(),
         metricName: 'definitely.not.a.metric',
         kind: 'gauge',
@@ -1155,7 +1149,7 @@ describe('MCP Source Tools', () => {
         connection: connection._id,
         name: 'BrokenMetrics',
       });
-      const result = await callTool(client, 'clickstack_describe_metric', {
+      const result = await callTool(client, 'cbt_describe_metric', {
         sourceId: brokenSource._id.toString(),
         metricName: 'whatever',
         kind: 'gauge',
@@ -1184,7 +1178,7 @@ describe('MCP Source Tools', () => {
         },
       ]);
 
-      const result = await callTool(client, 'clickstack_describe_metric', {
+      const result = await callTool(client, 'cbt_describe_metric', {
         sourceId: metricSource._id.toString(),
         metricName: 'system.cpu.utilization',
         kind: 'gauge',
@@ -1227,7 +1221,7 @@ describe('MCP Source Tools', () => {
         },
       ]);
 
-      const result = await callTool(client, 'clickstack_describe_metric', {
+      const result = await callTool(client, 'cbt_describe_metric', {
         sourceId: metricSource._id.toString(),
         metricName: 'many.attrs.metric',
         kind: 'gauge',
@@ -1261,7 +1255,7 @@ describe('MCP Source Tools', () => {
         },
       ]);
 
-      const result = await callTool(client, 'clickstack_describe_metric', {
+      const result = await callTool(client, 'cbt_describe_metric', {
         sourceId: metricSource._id.toString(),
         metricName: 'few.attrs.metric',
         kind: 'gauge',
@@ -1287,7 +1281,7 @@ describe('MCP Source Tools', () => {
         },
       ]);
 
-      const result = await callTool(client, 'clickstack_describe_metric', {
+      const result = await callTool(client, 'cbt_describe_metric', {
         sourceId: metricSource._id.toString(),
         metricName: 'system.cpu.utilization',
         kind: 'gauge',
@@ -1313,7 +1307,7 @@ describe('MCP Source Tools', () => {
         },
       ]);
 
-      const result = await callTool(client, 'clickstack_describe_metric', {
+      const result = await callTool(client, 'cbt_describe_metric', {
         sourceId: metricSource._id.toString(),
         metricName: 'http.server.request.count',
         kind: 'sum',
@@ -1339,7 +1333,7 @@ describe('MCP Source Tools', () => {
         },
       ]);
 
-      const result = await callTool(client, 'clickstack_describe_metric', {
+      const result = await callTool(client, 'cbt_describe_metric', {
         sourceId: metricSource._id.toString(),
         metricName: 'http.server.request.duration',
         kind: 'histogram',
@@ -1365,7 +1359,7 @@ describe('MCP Source Tools', () => {
         connection: connection._id,
         name: 'GaugeOnly',
       });
-      const result = await callTool(client, 'clickstack_describe_metric', {
+      const result = await callTool(client, 'cbt_describe_metric', {
         sourceId: gaugeOnly._id.toString(),
         metricName: 'whatever',
         kind: 'sum',
@@ -1377,9 +1371,9 @@ describe('MCP Source Tools', () => {
 
   // ── clickstack_save_source ─────────────────────────────────────────────────
 
-  describe('clickstack_save_source (create)', () => {
+  describe('cbt_save_source (create)', () => {
     it('creates a log source scoped to the team', async () => {
-      const result = await callTool(client, 'clickstack_save_source', {
+      const result = await callTool(client, 'cbt_save_source', {
         kind: 'log',
         name: 'New Logs',
         connection: connection._id.toString(),
@@ -1405,7 +1399,7 @@ describe('MCP Source Tools', () => {
     });
 
     it('creates a metric source with metricTables', async () => {
-      const result = await callTool(client, 'clickstack_save_source', {
+      const result = await callTool(client, 'cbt_save_source', {
         kind: 'metric',
         name: 'New Metrics',
         connection: connection._id.toString(),
@@ -1466,7 +1460,7 @@ describe('MCP Source Tools', () => {
       });
 
       // 1. describe returns a round-trippable config block.
-      const described = await callTool(client, 'clickstack_describe_source', {
+      const described = await callTool(client, 'cbt_describe_source', {
         sourceId: original._id.toString(),
       });
       expect(described.isError).toBeFalsy();
@@ -1496,7 +1490,7 @@ describe('MCP Source Tools', () => {
 
       // 2. clone: drop id, rename, feed config straight into save_source.
       const { id: _id, ...cloneInput } = config;
-      const cloned = await callTool(client, 'clickstack_save_source', {
+      const cloned = await callTool(client, 'cbt_save_source', {
         ...cloneInput,
         name: 'Correlated Traces CLONE',
       });
@@ -1519,11 +1513,9 @@ describe('MCP Source Tools', () => {
       expect(stored?.get('sampleRateExpression')).toBe('SampleRate');
 
       // 4. describe the clone: advanced config round-trips identically.
-      const describedClone = await callTool(
-        client,
-        'clickstack_describe_source',
-        { sourceId: clone.id },
-      );
+      const describedClone = await callTool(client, 'cbt_describe_source', {
+        sourceId: clone.id,
+      });
       const cloneConfig = JSON.parse(getFirstText(describedClone)).source
         .config;
       expect(cloneConfig.highlightedTraceAttributeExpressions).toEqual(
@@ -1535,7 +1527,7 @@ describe('MCP Source Tools', () => {
     });
 
     it('rejects a log source missing defaultTableSelectExpression', async () => {
-      const result = await callTool(client, 'clickstack_save_source', {
+      const result = await callTool(client, 'cbt_save_source', {
         kind: 'log',
         name: 'Incomplete Logs',
         connection: connection._id.toString(),
@@ -1549,7 +1541,7 @@ describe('MCP Source Tools', () => {
     });
 
     it('rejects a non-ObjectId connection', async () => {
-      const result = await callTool(client, 'clickstack_save_source', {
+      const result = await callTool(client, 'cbt_save_source', {
         kind: 'log',
         name: 'Bad Conn',
         connection: 'not-an-object-id',
@@ -1573,7 +1565,7 @@ describe('MCP Source Tools', () => {
         password: config.CLICKHOUSE_PASSWORD,
       });
 
-      const result = await callTool(client, 'clickstack_save_source', {
+      const result = await callTool(client, 'cbt_save_source', {
         kind: 'log',
         name: 'Cross Team',
         connection: otherConnection._id.toString(),
@@ -1591,7 +1583,7 @@ describe('MCP Source Tools', () => {
     });
   });
 
-  describe('clickstack_save_source (update)', () => {
+  describe('cbt_save_source (update)', () => {
     it('preserves minAutoGranularity through a describe -> rename -> save round trip', async () => {
       const created = await Source.create({
         kind: SourceKind.Metric,
@@ -1609,14 +1601,14 @@ describe('MCP Source Tools', () => {
       // documented clone/update flow) must not silently drop fields that
       // extractSourceConfig/mcpSaveSourceSchema haven't been told about -
       // findOneAndReplace below would otherwise wipe them with no warning.
-      const described = await callTool(client, 'clickstack_describe_source', {
+      const described = await callTool(client, 'cbt_describe_source', {
         sourceId: created._id.toString(),
       });
       const config = JSON.parse(getFirstText(described)).source.config;
       expect(config.minAutoGranularity).toBe('1 minute');
 
       const { id: _id, ...renameInput } = config;
-      const result = await callTool(client, 'clickstack_save_source', {
+      const result = await callTool(client, 'cbt_save_source', {
         ...renameInput,
         id: created._id.toString(),
         name: 'Renamed',
@@ -1639,7 +1631,7 @@ describe('MCP Source Tools', () => {
         name: 'Update Me',
       });
 
-      const result = await callTool(client, 'clickstack_save_source', {
+      const result = await callTool(client, 'cbt_save_source', {
         id: created._id.toString(),
         kind: 'log',
         name: 'Updated Name',
@@ -1668,7 +1660,7 @@ describe('MCP Source Tools', () => {
     });
 
     it('returns a user error for a non-existent id', async () => {
-      const result = await callTool(client, 'clickstack_save_source', {
+      const result = await callTool(client, 'cbt_save_source', {
         id: '000000000000000000000000',
         kind: 'log',
         name: 'Ghost',
@@ -1684,7 +1676,7 @@ describe('MCP Source Tools', () => {
     });
 
     it('rejects an invalid id', async () => {
-      const result = await callTool(client, 'clickstack_save_source', {
+      const result = await callTool(client, 'cbt_save_source', {
         id: 'not-an-object-id',
         kind: 'log',
         name: 'Bad',
@@ -1710,7 +1702,7 @@ describe('MCP Source Tools', () => {
         name: 'Log Becoming Trace',
       });
 
-      const result = await callTool(client, 'clickstack_save_source', {
+      const result = await callTool(client, 'cbt_save_source', {
         id: created._id.toString(),
         kind: 'trace',
         name: 'Now A Trace',
@@ -1757,7 +1749,7 @@ describe('MCP Source Tools', () => {
       });
 
       // Omit serviceNameExpression (=> cleared), change bodyExpression (=> stored).
-      const result = await callTool(client, 'clickstack_save_source', {
+      const result = await callTool(client, 'cbt_save_source', {
         id: created._id.toString(),
         kind: 'log',
         name: 'Field Replace',
@@ -1814,7 +1806,7 @@ describe('MCP Source Tools', () => {
         name: 'Other Team Log',
       });
 
-      const result = await callTool(client, 'clickstack_save_source', {
+      const result = await callTool(client, 'cbt_save_source', {
         id: created._id.toString(),
         kind: 'trace',
         name: 'Trace With Bad Link',
@@ -1837,7 +1829,7 @@ describe('MCP Source Tools', () => {
     });
   });
 
-  describe('clickstack_delete_source', () => {
+  describe('cbt_delete_source', () => {
     it('deletes a source', async () => {
       const created = await Source.create({
         kind: SourceKind.Log,
@@ -1849,7 +1841,7 @@ describe('MCP Source Tools', () => {
         name: 'Delete Me',
       });
 
-      const result = await callTool(client, 'clickstack_delete_source', {
+      const result = await callTool(client, 'cbt_delete_source', {
         id: created._id.toString(),
       });
 
@@ -1864,7 +1856,7 @@ describe('MCP Source Tools', () => {
     });
 
     it('returns a user error for a non-existent id', async () => {
-      const result = await callTool(client, 'clickstack_delete_source', {
+      const result = await callTool(client, 'cbt_delete_source', {
         id: '000000000000000000000000',
       });
 
@@ -1891,7 +1883,7 @@ describe('MCP Source Tools', () => {
         name: 'Other Team Source',
       });
 
-      const result = await callTool(client, 'clickstack_delete_source', {
+      const result = await callTool(client, 'cbt_delete_source', {
         id: otherSource._id.toString(),
       });
 

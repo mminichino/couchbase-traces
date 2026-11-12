@@ -36,7 +36,7 @@ const traceSchema = z.object({
     .string()
     .describe(
       'Trace source ID. Must be a source of kind "trace". ' +
-        'Call clickstack_list_sources to find available sources.',
+        'Call cbt_list_sources to find available sources.',
     ),
   traceId: z
     .string()
@@ -308,7 +308,7 @@ export function registerTraceWaterfall({
   const { teamId } = context;
 
   registerTool(
-    'clickstack_trace_waterfall',
+    'cbt_trace_waterfall',
     {
       title: 'Trace Waterfall (single trace)',
       annotations: READ_ONLY_TOOL,
@@ -318,7 +318,7 @@ export function registerTraceWaterfall({
         "instead of writing TraceId self-JOINs in raw SQL; it uses the source's " +
         'configured trace, span, and parent-span ID expressions.\n\n' +
         'NOT FOR AGGREGATE QUESTIONS. "Where does the time go across many slow traces ' +
-        'of operation X" is clickstack_trace_top_time_consuming_operations, called ' +
+        'of operation X" is cbt_trace_top_time_consuming_operations, called ' +
         'once per (service, operation) with minParentDurationMs. Use this tool for a ' +
         'single concrete example, typically after that breakdown has pointed at a ' +
         'suspicious operation.\n\n' +
@@ -346,12 +346,12 @@ export function registerTraceWaterfall({
       const source = await getSource(teamId.toString(), input.sourceId);
       if (!source) {
         return mcpUserError(
-          `Source not found: ${input.sourceId}. Call clickstack_list_sources to find available source IDs.`,
+          `Source not found: ${input.sourceId}. Call cbt_list_sources to find available source IDs.`,
         );
       }
       if (source.kind !== SourceKind.Trace) {
         return mcpUserError(
-          `Source ${input.sourceId} is kind="${source.kind}". clickstack_trace_waterfall requires a source of kind="trace".`,
+          `Source ${input.sourceId} is kind="${source.kind}". cbt_trace_waterfall requires a source of kind="trace".`,
         );
       }
 

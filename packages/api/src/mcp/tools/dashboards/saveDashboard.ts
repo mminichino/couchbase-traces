@@ -54,18 +54,18 @@ export function registerSaveDashboard({
   const promqlEnabled = isPromqlEnabled(context);
 
   registerTool(
-    'clickstack_save_dashboard',
+    'cbt_save_dashboard',
     {
       title: 'Create or Update Dashboard',
       annotations: UPSERT_TOOL,
       description:
         'Create a new dashboard (omit id) or update an existing one (provide id). ' +
-        'Call clickstack_list_sources first to obtain sourceId and connectionId values. ' +
-        'IMPORTANT: After saving a dashboard, always run clickstack_query_tiles to validate ' +
-        'every tile in one call (or clickstack_query_tile for a single tile) and confirm the ' +
+        'Call cbt_list_sources first to obtain sourceId and connectionId values. ' +
+        'IMPORTANT: After saving a dashboard, always run cbt_query_tiles to validate ' +
+        'every tile in one call (or cbt_query_tile for a single tile) and confirm the ' +
         'queries work and return expected data. Tiles can silently fail ' +
         'due to incorrect filter syntax, missing attributes, or wrong column names. ' +
-        'TIP: To update a single tile without resubmitting all tiles, use clickstack_patch_dashboard instead.',
+        'TIP: To update a single tile without resubmitting all tiles, use cbt_patch_dashboard instead.',
       inputSchema: z.object({
         id: objectIdSchema
           .optional()
@@ -75,7 +75,7 @@ export function registerSaveDashboard({
         name: z.string().describe('Dashboard name'),
         tiles: buildMcpTilesParam(promqlEnabled),
         tags: tagsSchema.describe(
-          'Labels for organizing the dashboard; clickstack_search_dashboards can filter by them.',
+          'Labels for organizing the dashboard; cbt_search_dashboards can filter by them.',
         ),
         containers: mcpContainersParam.optional(),
         filters: buildMcpFiltersParam(promqlEnabled).optional(),
@@ -250,7 +250,7 @@ async function createDashboard({
             ...(frontendUrl
               ? { url: `${frontendUrl}/dashboards/${newDashboard._id}` }
               : {}),
-            hint: 'Use clickstack_query_tiles to validate every tile in one call (or clickstack_query_tile for a single tile) before viewing the dashboard.',
+            hint: 'Use cbt_query_tiles to validate every tile in one call (or cbt_query_tile for a single tile) before viewing the dashboard.',
             ...(macroWarnings.length > 0 ? { warnings: macroWarnings } : {}),
           },
           null,
@@ -466,7 +466,7 @@ async function updateDashboard({
             ...(frontendUrl
               ? { url: `${frontendUrl}/dashboards/${updatedDashboard._id}` }
               : {}),
-            hint: 'Use clickstack_query_tiles to validate every tile in one call (or clickstack_query_tile for a single tile) before viewing the dashboard.',
+            hint: 'Use cbt_query_tiles to validate every tile in one call (or cbt_query_tile for a single tile) before viewing the dashboard.',
             ...(macroWarnings.length > 0 ? { warnings: macroWarnings } : {}),
           },
           null,

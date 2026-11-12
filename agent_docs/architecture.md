@@ -1,9 +1,9 @@
-# ClickStack Architecture
+# Couchbase Traces Architecture
 
 ## Core Services
 
-- **ClickStack UI (`packages/app`)**: Next.js frontend serving the user interface
-- **ClickStack API (`packages/api`)**: Node.js/Express backend handling queries and business logic
+- **Couchbase Traces UI (`packages/app`)**: Next.js frontend serving the user interface
+- **Couchbase Traces API (`packages/api`)**: Node.js/Express backend handling queries and business logic
 - **OpenTelemetry Collector**: Receives and processes telemetry data
 - **ClickHouse**: Primary data store for all telemetry (logs, metrics, traces)
 - **MongoDB**: Metadata storage (users, dashboards, alerts, saved searches)
@@ -89,7 +89,7 @@ Key, rate-limited to 600 req/min.
   testing
 - **Response size**: each tool call records the UTF-8 bytes it returns
   (`mcp.tool.response.size_bytes` span attribute,
-  `hyperdx.mcp.tool.response.size_bytes` histogram)
+  `cbt.mcp.tool.response.size_bytes` histogram)
 
 See `MCP.md` in the repo root for user-facing setup instructions.
 
@@ -114,7 +114,6 @@ tasks run via `yarn dev-task`; in production, they are triggered externally.
 
 - `checkAlerts/` - Alert evaluation (runs every minute in dev)
 - `provisionDashboards/` - Dashboard provisioning from config files
-- `usageStats.ts` - Usage statistics collection
 - `pingPongTask.ts` - Health check task
 - `metrics.ts` - Task execution metrics (duration, success/failure counters)
 

@@ -1,7 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef } from 'react';
 import Link from 'next/link';
 import Router, { useRouter } from 'next/router';
-import Script from 'next/script';
 import cx from 'classnames';
 import { Badge } from '@clickhouse/click-ui';
 import { setAttributes, setUser } from '@clickhouse/clickstack-browser';
@@ -37,7 +36,6 @@ import { useDisplayTimeZone } from '@/useDisplayTimeZone';
 import { UserPreferencesModal } from '@/UserPreferencesModal';
 
 import {
-  AppNavCloudBanner,
   AppNavContext,
   AppNavHelpMenu,
   AppNavLink,
@@ -52,15 +50,6 @@ import styles from './AppNav.module.scss';
 // is what the Help sparkle is for, while APP_VERSION answers "what build is
 // this?" and carries a build id that moves on every deploy.
 const WHATS_NEW_VERSION = process.env.NEXT_PUBLIC_WHATS_NEW_VERSION;
-
-// Reo.dev client ID for our usage tracking. USAGE_STATS_ENABLED is the opt-out.
-const REO_CLIENT_ID = '38b2e79cdb32fa7';
-
-declare global {
-  interface Window {
-    Reo?: { init: (options: { clientID: string; source?: string }) => void };
-  }
-}
 
 // Navigation link configuration
 type NavLinkConfig = {
@@ -228,7 +217,6 @@ export default function AppNav({ fixed = false }: { fixed?: boolean }) {
         userId: meData.id,
         teamId: meData.team.id,
         features: {
-          usageStats: meData.usageStatsEnabled,
           aiAssistant: meData.aiAssistantEnabled,
         },
       });
@@ -559,7 +547,6 @@ export default function AppNav({ fixed = false }: { fixed?: boolean }) {
               className={styles.onboardingSection}
             >
               <OnboardingChecklist onAddDataClick={openInstallInstructions} />
-              <AppNavCloudBanner />
             </div>
           )}
         </ScrollArea>
@@ -586,19 +573,6 @@ export default function AppNav({ fixed = false }: { fixed?: boolean }) {
             onClickUserPreferences={openUserPreferences}
             logoutUrl={IS_LOCAL_MODE ? null : `/api/logout`}
           />
-          {meData?.usageStatsEnabled && (
-            <Script
-              id="reo-beacon"
-              strategy="afterInteractive"
-              src={`https://static.reo.dev/${REO_CLIENT_ID}/reo.js`}
-              onLoad={() => {
-                window.Reo?.init({
-                  clientID: REO_CLIENT_ID,
-                  source: 'internal',
-                });
-              }}
-            />
-          )}
         </div>
       </div>
       <UserPreferencesModal

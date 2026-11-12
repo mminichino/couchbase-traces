@@ -158,7 +158,7 @@ export function buildAdhocChartConfig(
   const source = flags.source ? findSource(sources, flags.source) : undefined;
   if (flags.source && !source) {
     throw new AdhocChartError(
-      `Source "${flags.source}" not found. Run 'hdx sources' to list available sources.`,
+      `Source "${flags.source}" not found. Run 'cbt sources' to list available sources.`,
     );
   }
 

@@ -7,11 +7,15 @@ import { allowChangelogUrl } from '@/components/AppNav/WhatsNewDrawer';
 describe('allowChangelogUrl', () => {
   it('passes through the hosts release notes are allowed to link', () => {
     expect(
-      allowChangelogUrl('https://github.com/ClickHouse/ClickStack/pull/1'),
-    ).toBe('https://github.com/ClickHouse/ClickStack/pull/1');
-    expect(allowChangelogUrl('https://docs.hyperdx.io/formulas')).toBe(
-      'https://docs.hyperdx.io/formulas',
-    );
+      allowChangelogUrl(
+        'https://github.com/mminichino/couchbase-traces/pull/1',
+      ),
+    ).toBe('https://github.com/mminichino/couchbase-traces/pull/1');
+    expect(
+      allowChangelogUrl(
+        'https://github.com/mminichino/couchbase-traces/tree/main/docs',
+      ),
+    ).toBe('https://github.com/mminichino/couchbase-traces/tree/main/docs');
   });
 
   it('compares the whole hostname, so a lookalike is rejected', () => {

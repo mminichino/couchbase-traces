@@ -44,7 +44,7 @@ Key principles:
 - Do not ask user questions, you are not interactive tool, do the most reasonable thing possible to pass the test.
 - Never wait for networkidle or use other discouraged or deprecated apis
 
-## HyperDX Project Conventions
+## Couchbase Traces Project Conventions
 
 ### Test Runner
 Always use this command — do NOT use `npx playwright test` directly:

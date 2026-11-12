@@ -18,7 +18,7 @@ const DATABASE = 'mcp_describe_table_test';
 // Kept apart so the Distributed table does not change DATABASE's listing.
 const DIST_DATABASE = 'mcp_describe_table_dist_test';
 
-describe('clickstack_describe_table', () => {
+describe('cbt_describe_table', () => {
   const server = getServer();
   let connection: any;
   let client: Client;
@@ -92,7 +92,7 @@ describe('clickstack_describe_table', () => {
   });
 
   const call = (args: Record<string, unknown>) =>
-    callTool(client, 'clickstack_describe_table', {
+    callTool(client, 'cbt_describe_table', {
       connectionId: connection._id.toString(),
       ...args,
     });
@@ -196,7 +196,7 @@ describe('clickstack_describe_table', () => {
     }
   });
 
-  it('points to clickstack_describe_source when the table backs a source', async () => {
+  it('points to cbt_describe_source when the table backs a source', async () => {
     const source = await Source.create({
       kind: SourceKind.Log,
       team: connection.team,
@@ -229,9 +229,7 @@ describe('clickstack_describe_table', () => {
         },
       ]),
     );
-    expect(output.nextSteps.describeSource).toMatch(
-      /clickstack_describe_source/,
-    );
+    expect(output.nextSteps.describeSource).toMatch(/cbt_describe_source/);
     expect(output.nextSteps.query).toBeUndefined();
     expect(output.columns.length).toBeGreaterThan(0);
   });
@@ -257,7 +255,7 @@ describe('clickstack_describe_table', () => {
       getFirstText(await call({ database: DATABASE, table: 'events' })),
     );
     expect(output.sources).toBeUndefined();
-    expect(output.nextSteps.query).toMatch(/clickstack_save_source/);
+    expect(output.nextSteps.query).toMatch(/cbt_save_source/);
   });
 
   it('returns a capped sample of rows when asked', async () => {
@@ -328,7 +326,7 @@ describe('clickstack_describe_table', () => {
       username: config.CLICKHOUSE_USER,
       password: config.CLICKHOUSE_PASSWORD,
     });
-    const result = await callTool(client, 'clickstack_describe_table', {
+    const result = await callTool(client, 'cbt_describe_table', {
       connectionId: otherConnection._id.toString(),
       database: DATABASE,
     });

@@ -45,7 +45,7 @@ describe('terraformResourceLabel', () => {
       terraformResourceLabel({
         type: 'dashboard',
         id: ID,
-        name: 'HyperDX Usage!',
+        name: 'Couchbase Traces Usage!',
       }),
     ).toBe(`dashboard_${ID}`);
   });
@@ -404,11 +404,11 @@ describe('buildImportBlock', () => {
   it('emits an import block with the team-scoped id form', () => {
     expect(
       buildImportBlock(
-        { type: 'dashboard', id: ID, name: 'HyperDX Usage' },
+        { type: 'dashboard', id: ID, name: 'Couchbase Traces Usage' },
         TEAM_ID,
       ),
     ).toBe(
-      `# HyperDX Usage\nimport {\n  to = clickhouse_clickstack_dashboard.dashboard_${ID}\n  id = "${TEAM_ID}/${ID}"\n}`,
+      `# Couchbase Traces Usage\nimport {\n  to = clickhouse_clickstack_dashboard.dashboard_${ID}\n  id = "${TEAM_ID}/${ID}"\n}`,
     );
   });
 
@@ -501,7 +501,7 @@ describe('resource id validation', () => {
   it('refuses to emit a connection local for a bad id', () => {
     expect(() =>
       buildImportFile({
-        endpoint: 'https://hyperdx.example.com/api',
+        endpoint: 'https://couchbase-traces.example.com/api',
         teamId: TEAM_ID,
         resources: [],
         connectionLocals: [{ id: 'not-an-objectid', name: 'Sneaky' }],
@@ -520,7 +520,7 @@ describe('buildImportFile', () => {
   it('contains the provider block, import blocks, and generate-config instructions', () => {
     const otherId = 'a55b1b7d9143aa1b1b73f4f4';
     const file = buildImportFile({
-      endpoint: 'https://hyperdx.example.com/api',
+      endpoint: 'https://couchbase-traces.example.com/api',
       teamId: TEAM_ID,
       resources: [
         { type: 'dashboard', id: ID, name: 'Usage' },
@@ -536,7 +536,9 @@ describe('buildImportFile', () => {
     // the browser that generated the file, which may not resolve from wherever
     // Terraform runs.
     expect(file).toContain('variable "clickstack_endpoint"');
-    expect(file).toContain('default     = "https://hyperdx.example.com/api"');
+    expect(file).toContain(
+      'default     = "https://couchbase-traces.example.com/api"',
+    );
     expect(file).toContain('clickstack_endpoint = var.clickstack_endpoint');
     expect(file).toContain('CLICKSTACK_API_KEY');
     expect(file).toContain(
@@ -555,7 +557,7 @@ describe('buildImportFile', () => {
   // export that has none would fail `terraform init` for nothing.
   it('raises the provider version floor for a tile alert and explains the hand edit', () => {
     const file = buildImportFile({
-      endpoint: 'https://hyperdx.example.com/api',
+      endpoint: 'https://couchbase-traces.example.com/api',
       teamId: TEAM_ID,
       resources: [
         { type: 'alert', id: ID, name: 'Tile alert', tileAlert: true },
@@ -572,12 +574,12 @@ describe('buildImportFile', () => {
   // tile-alert one would make a tile-alert export ask for *less*.
   it('keeps the tile-alert floor at or above the base floor', () => {
     const base = buildImportFile({
-      endpoint: 'https://hyperdx.example.com/api',
+      endpoint: 'https://couchbase-traces.example.com/api',
       teamId: TEAM_ID,
       resources: [{ type: 'dashboard', id: ID }],
     });
     const withTileAlert = buildImportFile({
-      endpoint: 'https://hyperdx.example.com/api',
+      endpoint: 'https://couchbase-traces.example.com/api',
       teamId: TEAM_ID,
       resources: [{ type: 'alert', id: ID, tileAlert: true }],
     });
@@ -598,7 +600,7 @@ describe('buildImportFile', () => {
 
   it('keeps the lower floor and drops the tile-alert notice without one', () => {
     const file = buildImportFile({
-      endpoint: 'https://hyperdx.example.com/api',
+      endpoint: 'https://couchbase-traces.example.com/api',
       teamId: TEAM_ID,
       resources: [{ type: 'alert', id: ID, name: 'Saved search alert' }],
     });
@@ -612,7 +614,7 @@ describe('buildImportFile', () => {
   // rejects the whole file when two import blocks share a `to` address.
   it('emits a unique address per resource when names and id suffixes collide', () => {
     const file = buildImportFile({
-      endpoint: 'https://hyperdx.example.com/api',
+      endpoint: 'https://couchbase-traces.example.com/api',
       teamId: TEAM_ID,
       resources: [
         { type: 'alert', id: `${'a'.repeat(19)}11111`, name: 'Alert' },
@@ -629,7 +631,7 @@ describe('buildImportFile', () => {
   // collide on duplicate `to` addresses and Terraform rejects the whole plan.
   it('warns that re-exporting is not additive', () => {
     const file = buildImportFile({
-      endpoint: 'https://hyperdx.example.com/api',
+      endpoint: 'https://couchbase-traces.example.com/api',
       teamId: TEAM_ID,
       resources: [{ type: 'dashboard', id: ID, name: 'Usage' }],
     });
@@ -642,7 +644,7 @@ describe('buildImportFile', () => {
   // say so in the file itself, not only in the UI that generated it.
   it('marks the file partial when a listing was capped', () => {
     const file = buildImportFile({
-      endpoint: 'https://hyperdx.example.com/api',
+      endpoint: 'https://couchbase-traces.example.com/api',
       teamId: TEAM_ID,
       resources: [{ type: 'dashboard', id: ID, name: 'Usage' }],
       truncatedTypes: ['dashboards', 'alerts'],
@@ -655,7 +657,7 @@ describe('buildImportFile', () => {
 
   it('omits the partial-export marker when nothing was capped', () => {
     const file = buildImportFile({
-      endpoint: 'https://hyperdx.example.com/api',
+      endpoint: 'https://couchbase-traces.example.com/api',
       teamId: TEAM_ID,
       resources: [{ type: 'dashboard', id: ID, name: 'Usage' }],
     });
@@ -668,7 +670,7 @@ describe('buildImportFile', () => {
   // provider configured against the Cloud API rejects team scoping outright.
   it('warns about the team attribute and the Cloud-configured provider', () => {
     const file = buildImportFile({
-      endpoint: 'https://hyperdx.example.com/api',
+      endpoint: 'https://couchbase-traces.example.com/api',
       teamId: TEAM_ID,
       resources: [{ type: 'dashboard', id: ID, name: 'Usage' }],
     });
@@ -679,7 +681,7 @@ describe('buildImportFile', () => {
 
   it('explains that addresses survive a rename, and warns about whole-body writes', () => {
     const file = buildImportFile({
-      endpoint: 'https://hyperdx.example.com/api',
+      endpoint: 'https://couchbase-traces.example.com/api',
       teamId: TEAM_ID,
       resources: [{ type: 'dashboard', id: ID, name: 'Usage' }],
     });
@@ -690,7 +692,7 @@ describe('buildImportFile', () => {
 
   it('emits connections of unknown provenance as a locals block', () => {
     const file = buildImportFile({
-      endpoint: 'https://hyperdx.example.com/api',
+      endpoint: 'https://couchbase-traces.example.com/api',
       teamId: TEAM_ID,
       resources: [],
       connectionLocals: [{ id: ID, name: 'Local ClickHouse' }],
@@ -715,7 +717,7 @@ describe('buildImportFile', () => {
       ['connection'],
     );
     const file = buildImportFile({
-      endpoint: 'https://hyperdx.example.com/api',
+      endpoint: 'https://couchbase-traces.example.com/api',
       teamId: TEAM_ID,
       resources,
       connectionLocals,

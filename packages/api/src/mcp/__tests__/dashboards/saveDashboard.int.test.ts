@@ -12,13 +12,13 @@ import type { ExternalDashboardTileWithId } from '@/utils/zod';
 
 import { setupDashboardTests } from './setup';
 
-describe('MCP Dashboard Tools - clickstack_save_dashboard', () => {
+describe('MCP Dashboard Tools - cbt_save_dashboard', () => {
   const ctx = setupDashboardTests();
 
   describe('basic CRUD', () => {
     it('should create a new dashboard with tiles', async () => {
       const sourceId = ctx.traceSource._id.toString();
-      const result = await callTool(ctx.client!, 'clickstack_save_dashboard', {
+      const result = await callTool(ctx.client!, 'cbt_save_dashboard', {
         name: 'New MCP Dashboard',
         tiles: [
           {
@@ -52,7 +52,7 @@ describe('MCP Dashboard Tools - clickstack_save_dashboard', () => {
     });
 
     it('should create a dashboard with a markdown tile', async () => {
-      const result = await callTool(ctx.client!, 'clickstack_save_dashboard', {
+      const result = await callTool(ctx.client!, 'cbt_save_dashboard', {
         name: 'Markdown Dashboard',
         tiles: [
           {
@@ -75,45 +75,37 @@ describe('MCP Dashboard Tools - clickstack_save_dashboard', () => {
       const sourceId = ctx.traceSource._id.toString();
 
       // Create first
-      const createResult = await callTool(
-        ctx.client!,
-        'clickstack_save_dashboard',
-        {
-          name: 'Original Name',
-          tiles: [
-            {
-              name: 'Tile 1',
-              config: {
-                displayType: 'number',
-                sourceId,
-                select: [{ aggFn: 'count' }],
-              },
+      const createResult = await callTool(ctx.client!, 'cbt_save_dashboard', {
+        name: 'Original Name',
+        tiles: [
+          {
+            name: 'Tile 1',
+            config: {
+              displayType: 'number',
+              sourceId,
+              select: [{ aggFn: 'count' }],
             },
-          ],
-        },
-      );
+          },
+        ],
+      });
       const created = JSON.parse(getFirstText(createResult));
 
       // Update
-      const updateResult = await callTool(
-        ctx.client!,
-        'clickstack_save_dashboard',
-        {
-          id: created.id,
-          name: 'Updated Name',
-          tiles: [
-            {
-              name: 'Updated Tile',
-              config: {
-                displayType: 'table',
-                sourceId,
-                select: [{ aggFn: 'count' }],
-              },
+      const updateResult = await callTool(ctx.client!, 'cbt_save_dashboard', {
+        id: created.id,
+        name: 'Updated Name',
+        tiles: [
+          {
+            name: 'Updated Tile',
+            config: {
+              displayType: 'table',
+              sourceId,
+              select: [{ aggFn: 'count' }],
             },
-          ],
-          tags: ['updated'],
-        },
-      );
+          },
+        ],
+        tags: ['updated'],
+      });
 
       expect(updateResult.isError).toBeFalsy();
       const updated = JSON.parse(getFirstText(updateResult));
@@ -126,7 +118,7 @@ describe('MCP Dashboard Tools - clickstack_save_dashboard', () => {
 
     it('should return error for missing source ID', async () => {
       const fakeSourceId = '000000000000000000000000';
-      const result = await callTool(ctx.client!, 'clickstack_save_dashboard', {
+      const result = await callTool(ctx.client!, 'cbt_save_dashboard', {
         name: 'Bad Dashboard',
         tiles: [
           {
@@ -146,7 +138,7 @@ describe('MCP Dashboard Tools - clickstack_save_dashboard', () => {
 
     it('should return error when updating non-existent dashboard', async () => {
       const sourceId = ctx.traceSource._id.toString();
-      const result = await callTool(ctx.client!, 'clickstack_save_dashboard', {
+      const result = await callTool(ctx.client!, 'cbt_save_dashboard', {
         id: '000000000000000000000000',
         name: 'Ghost Dashboard',
         tiles: [
@@ -167,7 +159,7 @@ describe('MCP Dashboard Tools - clickstack_save_dashboard', () => {
 
     it('should create a dashboard with multiple tile types', async () => {
       const sourceId = ctx.traceSource._id.toString();
-      const result = await callTool(ctx.client!, 'clickstack_save_dashboard', {
+      const result = await callTool(ctx.client!, 'cbt_save_dashboard', {
         name: 'Multi-tile Dashboard',
         tiles: [
           {
@@ -258,7 +250,7 @@ describe('MCP Dashboard Tools - clickstack_save_dashboard', () => {
 
     it('should create a dashboard with a raw SQL tile', async () => {
       const connectionId = ctx.connection._id.toString();
-      const result = await callTool(ctx.client!, 'clickstack_save_dashboard', {
+      const result = await callTool(ctx.client!, 'cbt_save_dashboard', {
         name: 'SQL Dashboard',
         tiles: [
           {
@@ -281,7 +273,7 @@ describe('MCP Dashboard Tools - clickstack_save_dashboard', () => {
     it('should persist sourceId on a raw SQL tile that uses $__filters', async () => {
       const connectionId = ctx.connection._id.toString();
       const sourceId = ctx.traceSource._id.toString();
-      const result = await callTool(ctx.client!, 'clickstack_save_dashboard', {
+      const result = await callTool(ctx.client!, 'cbt_save_dashboard', {
         name: 'SQL Dashboard with filters',
         tiles: [
           {
@@ -310,7 +302,7 @@ describe('MCP Dashboard Tools - clickstack_save_dashboard', () => {
 
     it('should reject a raw SQL tile that uses $__filters without a sourceId', async () => {
       const connectionId = ctx.connection._id.toString();
-      const result = await callTool(ctx.client!, 'clickstack_save_dashboard', {
+      const result = await callTool(ctx.client!, 'cbt_save_dashboard', {
         name: 'SQL Dashboard missing source',
         tiles: [
           {
@@ -338,7 +330,7 @@ describe('MCP Dashboard Tools - clickstack_save_dashboard', () => {
 
     it('should reject a raw SQL tile that uses $__sourceTable without a sourceId', async () => {
       const connectionId = ctx.connection._id.toString();
-      const result = await callTool(ctx.client!, 'clickstack_save_dashboard', {
+      const result = await callTool(ctx.client!, 'cbt_save_dashboard', {
         name: 'SQL Dashboard missing source',
         tiles: [
           {
@@ -366,7 +358,7 @@ describe('MCP Dashboard Tools - clickstack_save_dashboard', () => {
 
     it('should allow a raw SQL tile without a sourceId when it does not use $__filters', async () => {
       const connectionId = ctx.connection._id.toString();
-      const result = await callTool(ctx.client!, 'clickstack_save_dashboard', {
+      const result = await callTool(ctx.client!, 'cbt_save_dashboard', {
         name: 'Multi-table SQL Dashboard',
         tiles: [
           {
@@ -413,26 +405,22 @@ describe('MCP Dashboard Tools - clickstack_save_dashboard', () => {
         color: 'chart-success' as const,
       };
 
-      const saveResult = await callTool(
-        ctx.client!,
-        'clickstack_save_dashboard',
-        {
-          name: 'SQL NumberFormat Round-Trip',
-          tiles: [
-            { name: 'CPU %', config: sqlConfig },
-            { name: 'SLO', config: sqlNumberConfig },
-            {
-              name: 'Other Tile',
-              config: {
-                configType: 'sql' as const,
-                displayType: 'table' as const,
-                connectionId,
-                sqlTemplate: 'SELECT 1 AS value LIMIT 1',
-              },
+      const saveResult = await callTool(ctx.client!, 'cbt_save_dashboard', {
+        name: 'SQL NumberFormat Round-Trip',
+        tiles: [
+          { name: 'CPU %', config: sqlConfig },
+          { name: 'SLO', config: sqlNumberConfig },
+          {
+            name: 'Other Tile',
+            config: {
+              configType: 'sql' as const,
+              displayType: 'table' as const,
+              connectionId,
+              sqlTemplate: 'SELECT 1 AS value LIMIT 1',
             },
-          ],
-        },
-      );
+          },
+        ],
+      });
       expect(saveResult.isError).toBeFalsy();
       const saved = JSON.parse(getFirstText(saveResult));
       const savedSqlTile = saved.tiles.find(
@@ -444,11 +432,9 @@ describe('MCP Dashboard Tools - clickstack_save_dashboard', () => {
       );
       expect(savedSqlNumberTile.config).toMatchObject(sqlNumberConfig);
 
-      const getResult = await callTool(
-        ctx.client!,
-        'clickstack_get_dashboard',
-        { id: saved.id },
-      );
+      const getResult = await callTool(ctx.client!, 'cbt_get_dashboard', {
+        id: saved.id,
+      });
       expect(getResult.isError).toBeFalsy();
       const fetched = JSON.parse(getFirstText(getResult));
       const fetchedSqlTile = fetched.tiles.find(
@@ -458,32 +444,26 @@ describe('MCP Dashboard Tools - clickstack_save_dashboard', () => {
 
       // Update a DIFFERENT tile, passing all fetched tiles back; the
       // formatted SQL tile must survive the round-trip untouched.
-      const updateResult = await callTool(
-        ctx.client!,
-        'clickstack_save_dashboard',
-        {
-          id: saved.id,
-          name: 'SQL NumberFormat Round-Trip',
-          tiles: fetched.tiles.map((t: { name: string; config: object }) =>
-            t.name === 'Other Tile'
-              ? {
-                  ...t,
-                  config: {
-                    ...t.config,
-                    sqlTemplate: 'SELECT 2 AS value LIMIT 1',
-                  },
-                }
-              : t,
-          ),
-        },
-      );
+      const updateResult = await callTool(ctx.client!, 'cbt_save_dashboard', {
+        id: saved.id,
+        name: 'SQL NumberFormat Round-Trip',
+        tiles: fetched.tiles.map((t: { name: string; config: object }) =>
+          t.name === 'Other Tile'
+            ? {
+                ...t,
+                config: {
+                  ...t.config,
+                  sqlTemplate: 'SELECT 2 AS value LIMIT 1',
+                },
+              }
+            : t,
+        ),
+      });
       expect(updateResult.isError).toBeFalsy();
 
-      const getAfterUpdate = await callTool(
-        ctx.client!,
-        'clickstack_get_dashboard',
-        { id: saved.id },
-      );
+      const getAfterUpdate = await callTool(ctx.client!, 'cbt_get_dashboard', {
+        id: saved.id,
+      });
       expect(getAfterUpdate.isError).toBeFalsy();
       const refetched = JSON.parse(getFirstText(getAfterUpdate));
       const refetchedSqlTile = refetched.tiles.find(
@@ -498,7 +478,7 @@ describe('MCP Dashboard Tools - clickstack_save_dashboard', () => {
 
     it('should create a dashboard with a heatmap tile on a Trace source', async () => {
       const sourceId = ctx.traceSource._id.toString();
-      const result = await callTool(ctx.client!, 'clickstack_save_dashboard', {
+      const result = await callTool(ctx.client!, 'cbt_save_dashboard', {
         name: 'Heatmap Dashboard',
         tiles: [
           {
@@ -554,7 +534,7 @@ describe('MCP Dashboard Tools - clickstack_save_dashboard', () => {
         groupBy: 'ServiceName',
       };
 
-      const result = await callTool(ctx.client!, 'clickstack_save_dashboard', {
+      const result = await callTool(ctx.client!, 'cbt_save_dashboard', {
         name: 'Series Heatmap Dashboard',
         tiles: [{ name: 'Duration by service', config }],
       });
@@ -562,7 +542,7 @@ describe('MCP Dashboard Tools - clickstack_save_dashboard', () => {
       const saved = JSON.parse(getFirstText(result));
       expect(saved.tiles[0].config).toMatchObject(config);
 
-      const get = await callTool(ctx.client!, 'clickstack_get_dashboard', {
+      const get = await callTool(ctx.client!, 'cbt_get_dashboard', {
         id: saved.id,
       });
       expect(get.isError).toBeFalsy();
@@ -603,64 +583,48 @@ describe('MCP Dashboard Tools - clickstack_save_dashboard', () => {
         where: 'level:error AND service:checkout',
       };
 
-      const saveResult = await callTool(
-        ctx.client!,
-        'clickstack_save_dashboard',
-        {
-          name: 'Heatmap Full Round-Trip',
-          tiles: [
-            {
-              name: 'Latency Heatmap',
-              x: 0,
-              y: 0,
-              w: 12,
-              h: 4,
-              config: createConfig,
-            },
-          ],
-        },
-      );
+      const saveResult = await callTool(ctx.client!, 'cbt_save_dashboard', {
+        name: 'Heatmap Full Round-Trip',
+        tiles: [
+          {
+            name: 'Latency Heatmap',
+            x: 0,
+            y: 0,
+            w: 12,
+            h: 4,
+            config: createConfig,
+          },
+        ],
+      });
       expect(saveResult.isError).toBeFalsy();
       const saved = JSON.parse(getFirstText(saveResult));
       expect(saved.tiles).toHaveLength(1);
       expect(saved.tiles[0].config).toMatchObject(createConfig);
 
-      const getResult = await callTool(
-        ctx.client!,
-        'clickstack_get_dashboard',
-        {
-          id: saved.id,
-        },
-      );
+      const getResult = await callTool(ctx.client!, 'cbt_get_dashboard', {
+        id: saved.id,
+      });
       expect(getResult.isError).toBeFalsy();
       const fetched = JSON.parse(getFirstText(getResult));
       expect(fetched.tiles[0].config).toMatchObject(createConfig);
 
-      const updateResult = await callTool(
-        ctx.client!,
-        'clickstack_save_dashboard',
-        {
-          id: saved.id,
-          name: 'Heatmap Full Round-Trip',
-          tiles: [
-            {
-              ...fetched.tiles[0],
-              config: { ...fetched.tiles[0].config, ...updatedConfig },
-            },
-          ],
-        },
-      );
+      const updateResult = await callTool(ctx.client!, 'cbt_save_dashboard', {
+        id: saved.id,
+        name: 'Heatmap Full Round-Trip',
+        tiles: [
+          {
+            ...fetched.tiles[0],
+            config: { ...fetched.tiles[0].config, ...updatedConfig },
+          },
+        ],
+      });
       expect(updateResult.isError).toBeFalsy();
       const updated = JSON.parse(getFirstText(updateResult));
       expect(updated.tiles[0].config).toMatchObject(updatedConfig);
 
-      const getAfterUpdate = await callTool(
-        ctx.client!,
-        'clickstack_get_dashboard',
-        {
-          id: saved.id,
-        },
-      );
+      const getAfterUpdate = await callTool(ctx.client!, 'cbt_get_dashboard', {
+        id: saved.id,
+      });
       expect(getAfterUpdate.isError).toBeFalsy();
       const refetched = JSON.parse(getFirstText(getAfterUpdate));
       expect(refetched.tiles[0].config).toMatchObject(updatedConfig);
@@ -668,7 +632,7 @@ describe('MCP Dashboard Tools - clickstack_save_dashboard', () => {
 
     it('should reject heatmap tile with empty valueExpression at the schema layer', async () => {
       const sourceId = ctx.traceSource._id.toString();
-      const result = await callTool(ctx.client!, 'clickstack_save_dashboard', {
+      const result = await callTool(ctx.client!, 'cbt_save_dashboard', {
         name: 'Bad Heatmap',
         tiles: [
           {
@@ -694,50 +658,42 @@ describe('MCP Dashboard Tools - clickstack_save_dashboard', () => {
       async numberFormat => {
         const sourceId = ctx.traceSource._id.toString();
 
-        const saveResult = await callTool(
-          ctx.client!,
-          'clickstack_save_dashboard',
-          {
-            name: `NumberFormat ${numberFormat.output}`,
-            tiles: [
-              {
-                name: 'Number Tile',
-                config: {
-                  displayType: 'number',
-                  sourceId,
-                  select: [{ aggFn: 'count' }],
-                  numberFormat,
-                },
+        const saveResult = await callTool(ctx.client!, 'cbt_save_dashboard', {
+          name: `NumberFormat ${numberFormat.output}`,
+          tiles: [
+            {
+              name: 'Number Tile',
+              config: {
+                displayType: 'number',
+                sourceId,
+                select: [{ aggFn: 'count' }],
+                numberFormat,
               },
-              {
-                name: 'Line Tile',
-                config: {
-                  displayType: 'line',
-                  sourceId,
-                  select: [
-                    { aggFn: 'count' },
-                    {
-                      aggFn: 'avg',
-                      valueExpression: 'Duration',
-                      numberFormat,
-                    },
-                  ],
-                },
+            },
+            {
+              name: 'Line Tile',
+              config: {
+                displayType: 'line',
+                sourceId,
+                select: [
+                  { aggFn: 'count' },
+                  {
+                    aggFn: 'avg',
+                    valueExpression: 'Duration',
+                    numberFormat,
+                  },
+                ],
               },
-            ],
-          },
-        );
+            },
+          ],
+        });
 
         expect(saveResult.isError).toBeFalsy();
         const saved = JSON.parse(getFirstText(saveResult));
 
-        const getResult = await callTool(
-          ctx.client!,
-          'clickstack_get_dashboard',
-          {
-            id: saved.id,
-          },
-        );
+        const getResult = await callTool(ctx.client!, 'cbt_get_dashboard', {
+          id: saved.id,
+        });
         expect(getResult.isError).toBeFalsy();
         const fetched = JSON.parse(getFirstText(getResult));
 
@@ -755,7 +711,7 @@ describe('MCP Dashboard Tools - clickstack_save_dashboard', () => {
 
     it('should reject numberFormat with an unknown output value', async () => {
       const sourceId = ctx.traceSource._id.toString();
-      const result = await callTool(ctx.client!, 'clickstack_save_dashboard', {
+      const result = await callTool(ctx.client!, 'cbt_save_dashboard', {
         name: 'Bad NumberFormat',
         tiles: [
           {
@@ -793,25 +749,17 @@ describe('MCP Dashboard Tools - clickstack_save_dashboard', () => {
         ],
       };
 
-      const saveResult = await callTool(
-        ctx.client!,
-        'clickstack_save_dashboard',
-        {
-          name: 'Number Color',
-          tiles: [{ name: 'Number', config: numberConfig }],
-        },
-      );
+      const saveResult = await callTool(ctx.client!, 'cbt_save_dashboard', {
+        name: 'Number Color',
+        tiles: [{ name: 'Number', config: numberConfig }],
+      });
       expect(saveResult.isError).toBeFalsy();
       const saved = JSON.parse(getFirstText(saveResult));
       expect(saved.tiles[0].config).toMatchObject(numberConfig);
 
-      const getResult = await callTool(
-        ctx.client!,
-        'clickstack_get_dashboard',
-        {
-          id: saved.id,
-        },
-      );
+      const getResult = await callTool(ctx.client!, 'cbt_get_dashboard', {
+        id: saved.id,
+      });
       expect(getResult.isError).toBeFalsy();
       const fetched = JSON.parse(getFirstText(getResult));
       expect(fetched.tiles[0].config).toMatchObject(numberConfig);
@@ -819,7 +767,7 @@ describe('MCP Dashboard Tools - clickstack_save_dashboard', () => {
 
     it('should reject a number-tile color that is not a palette token', async () => {
       const sourceId = ctx.traceSource._id.toString();
-      const result = await callTool(ctx.client!, 'clickstack_save_dashboard', {
+      const result = await callTool(ctx.client!, 'cbt_save_dashboard', {
         name: 'Bad Color',
         tiles: [
           {
@@ -842,7 +790,7 @@ describe('MCP Dashboard Tools - clickstack_save_dashboard', () => {
       // `regex` is a ColorConditionSchema operator but not part of the
       // narrower NumberTileColorConditionSchema the editor (and this tool)
       // accept, so it must be rejected.
-      const result = await callTool(ctx.client!, 'clickstack_save_dashboard', {
+      const result = await callTool(ctx.client!, 'cbt_save_dashboard', {
         name: 'Bad ColorRule',
         tiles: [
           {
@@ -876,25 +824,17 @@ describe('MCP Dashboard Tools - clickstack_save_dashboard', () => {
         ],
       };
 
-      const saveResult = await callTool(
-        ctx.client!,
-        'clickstack_save_dashboard',
-        {
-          name: 'SQL Number Color',
-          tiles: [{ name: 'SLO', config: sqlConfig }],
-        },
-      );
+      const saveResult = await callTool(ctx.client!, 'cbt_save_dashboard', {
+        name: 'SQL Number Color',
+        tiles: [{ name: 'SLO', config: sqlConfig }],
+      });
       expect(saveResult.isError).toBeFalsy();
       const saved = JSON.parse(getFirstText(saveResult));
       expect(saved.tiles[0].config).toMatchObject(sqlConfig);
 
-      const getResult = await callTool(
-        ctx.client!,
-        'clickstack_get_dashboard',
-        {
-          id: saved.id,
-        },
-      );
+      const getResult = await callTool(ctx.client!, 'cbt_get_dashboard', {
+        id: saved.id,
+      });
       expect(getResult.isError).toBeFalsy();
       const fetched = JSON.parse(getFirstText(getResult));
       expect(fetched.tiles[0].config).toMatchObject(sqlConfig);
@@ -910,25 +850,17 @@ describe('MCP Dashboard Tools - clickstack_save_dashboard', () => {
         backgroundChart: { type: 'area', color: 'chart-blue' },
       };
 
-      const saveResult = await callTool(
-        ctx.client!,
-        'clickstack_save_dashboard',
-        {
-          name: 'Number Background Chart',
-          tiles: [{ name: 'Number', config: numberConfig }],
-        },
-      );
+      const saveResult = await callTool(ctx.client!, 'cbt_save_dashboard', {
+        name: 'Number Background Chart',
+        tiles: [{ name: 'Number', config: numberConfig }],
+      });
       expect(saveResult.isError).toBeFalsy();
       const saved = JSON.parse(getFirstText(saveResult));
       expect(saved.tiles[0].config).toMatchObject(numberConfig);
 
-      const getResult = await callTool(
-        ctx.client!,
-        'clickstack_get_dashboard',
-        {
-          id: saved.id,
-        },
-      );
+      const getResult = await callTool(ctx.client!, 'cbt_get_dashboard', {
+        id: saved.id,
+      });
       expect(getResult.isError).toBeFalsy();
       const fetched = JSON.parse(getFirstText(getResult));
       expect(fetched.tiles[0].config).toMatchObject(numberConfig);
@@ -936,7 +868,7 @@ describe('MCP Dashboard Tools - clickstack_save_dashboard', () => {
 
     it('should reject a number-tile backgroundChart type outside line/area', async () => {
       const sourceId = ctx.traceSource._id.toString();
-      const result = await callTool(ctx.client!, 'clickstack_save_dashboard', {
+      const result = await callTool(ctx.client!, 'cbt_save_dashboard', {
         name: 'Bad BackgroundChart',
         tiles: [
           {
@@ -959,26 +891,22 @@ describe('MCP Dashboard Tools - clickstack_save_dashboard', () => {
       // a raw SQL tile returns a single value with no time dimension to
       // bucket), so a sent value is stripped on save.
       const connectionId = ctx.connection._id.toString();
-      const saveResult = await callTool(
-        ctx.client!,
-        'clickstack_save_dashboard',
-        {
-          name: 'SQL Number Background Chart',
-          tiles: [
-            {
-              name: 'SLO',
-              config: {
-                configType: 'sql',
-                displayType: 'number',
-                connectionId,
-                sqlTemplate: 'SELECT 0.99 AS value LIMIT 1',
-                color: 'chart-success',
-                backgroundChart: { type: 'line' },
-              },
+      const saveResult = await callTool(ctx.client!, 'cbt_save_dashboard', {
+        name: 'SQL Number Background Chart',
+        tiles: [
+          {
+            name: 'SLO',
+            config: {
+              configType: 'sql',
+              displayType: 'number',
+              connectionId,
+              sqlTemplate: 'SELECT 0.99 AS value LIMIT 1',
+              color: 'chart-success',
+              backgroundChart: { type: 'line' },
             },
-          ],
-        },
-      );
+          },
+        ],
+      });
       expect(saveResult.isError).toBeFalsy();
       const saved = JSON.parse(getFirstText(saveResult));
       expect(saved.tiles[0].config.color).toBe('chart-success');
@@ -1085,42 +1013,33 @@ describe('MCP Dashboard Tools - clickstack_save_dashboard', () => {
         }
       };
 
-      const saveResult = await callTool(
-        ctx.client!,
-        'clickstack_save_dashboard',
-        { name: 'Builder Display Fields', tiles },
-      );
+      const saveResult = await callTool(ctx.client!, 'cbt_save_dashboard', {
+        name: 'Builder Display Fields',
+        tiles,
+      });
       expect(saveResult.isError).toBeFalsy();
       const saved = JSON.parse(getFirstText(saveResult));
       assertTiles(saved);
 
-      const getResult = await callTool(
-        ctx.client!,
-        'clickstack_get_dashboard',
-        { id: saved.id },
-      );
+      const getResult = await callTool(ctx.client!, 'cbt_get_dashboard', {
+        id: saved.id,
+      });
       expect(getResult.isError).toBeFalsy();
       const fetched = JSON.parse(getFirstText(getResult));
       assertTiles(fetched);
 
       // Update passing all fetched tiles back verbatim; every display
       // field must survive a second pass through the MCP input schema.
-      const updateResult = await callTool(
-        ctx.client!,
-        'clickstack_save_dashboard',
-        {
-          id: saved.id,
-          name: 'Builder Display Fields (updated)',
-          tiles: fetched.tiles,
-        },
-      );
+      const updateResult = await callTool(ctx.client!, 'cbt_save_dashboard', {
+        id: saved.id,
+        name: 'Builder Display Fields (updated)',
+        tiles: fetched.tiles,
+      });
       expect(updateResult.isError).toBeFalsy();
 
-      const getAfterUpdate = await callTool(
-        ctx.client!,
-        'clickstack_get_dashboard',
-        { id: saved.id },
-      );
+      const getAfterUpdate = await callTool(ctx.client!, 'cbt_get_dashboard', {
+        id: saved.id,
+      });
       expect(getAfterUpdate.isError).toBeFalsy();
       assertTiles(JSON.parse(getFirstText(getAfterUpdate)));
     });
@@ -1142,7 +1061,7 @@ describe('MCP Dashboard Tools - clickstack_save_dashboard', () => {
         name: 'Logs',
       });
 
-      const result = await callTool(ctx.client!, 'clickstack_save_dashboard', {
+      const result = await callTool(ctx.client!, 'cbt_save_dashboard', {
         name: 'Heatmap on Log Source',
         tiles: [
           {
@@ -1174,7 +1093,7 @@ describe('MCP Dashboard Tools - clickstack_save_dashboard', () => {
         name: 'Logs',
       });
 
-      const created = await callTool(ctx.client!, 'clickstack_save_dashboard', {
+      const created = await callTool(ctx.client!, 'cbt_save_dashboard', {
         name: 'Line on Log Source',
         tiles: [
           {
@@ -1190,7 +1109,7 @@ describe('MCP Dashboard Tools - clickstack_save_dashboard', () => {
       expect(created.isError).toBeFalsy();
       const saved = JSON.parse(getFirstText(created));
 
-      const update = await callTool(ctx.client!, 'clickstack_save_dashboard', {
+      const update = await callTool(ctx.client!, 'cbt_save_dashboard', {
         id: saved.id,
         name: 'Line on Log Source',
         tiles: [
@@ -1222,7 +1141,7 @@ describe('MCP Dashboard Tools - clickstack_save_dashboard', () => {
         name: 'Logs',
       });
 
-      const created = await callTool(ctx.client!, 'clickstack_save_dashboard', {
+      const created = await callTool(ctx.client!, 'cbt_save_dashboard', {
         name: 'Heatmap re-pointed at Log',
         tiles: [
           {
@@ -1238,7 +1157,7 @@ describe('MCP Dashboard Tools - clickstack_save_dashboard', () => {
       expect(created.isError).toBeFalsy();
       const saved = JSON.parse(getFirstText(created));
 
-      const update = await callTool(ctx.client!, 'clickstack_save_dashboard', {
+      const update = await callTool(ctx.client!, 'cbt_save_dashboard', {
         id: saved.id,
         name: 'Heatmap re-pointed at Log',
         tiles: [
@@ -1282,7 +1201,7 @@ describe('MCP Dashboard Tools - clickstack_save_dashboard', () => {
         numberFormat: { output: 'number' as const, average: true },
       };
 
-      const save = await callTool(ctx.client!, 'clickstack_save_dashboard', {
+      const save = await callTool(ctx.client!, 'cbt_save_dashboard', {
         name: 'Mixed Tile Round-Trip',
         tiles: [
           { name: 'Heatmap Tile', config: heatmapConfig },
@@ -1304,7 +1223,7 @@ describe('MCP Dashboard Tools - clickstack_save_dashboard', () => {
 
       const fetched = JSON.parse(
         getFirstText(
-          await callTool(ctx.client!, 'clickstack_get_dashboard', {
+          await callTool(ctx.client!, 'cbt_get_dashboard', {
             id: saved.id,
           }),
         ),
@@ -1326,7 +1245,7 @@ describe('MCP Dashboard Tools - clickstack_save_dashboard', () => {
     // won't react to dashboard controls.
     it('returns a non-blocking warning when a raw SQL tile omits macros on create', async () => {
       const connectionId = ctx.connection._id.toString();
-      const result = await callTool(ctx.client!, 'clickstack_save_dashboard', {
+      const result = await callTool(ctx.client!, 'cbt_save_dashboard', {
         name: 'SQL Dashboard without macros',
         tiles: [
           {
@@ -1362,7 +1281,7 @@ describe('MCP Dashboard Tools - clickstack_save_dashboard', () => {
     it('omits warnings when a raw SQL tile uses all recommended macros', async () => {
       const connectionId = ctx.connection._id.toString();
       const sourceId = ctx.traceSource._id.toString();
-      const result = await callTool(ctx.client!, 'clickstack_save_dashboard', {
+      const result = await callTool(ctx.client!, 'cbt_save_dashboard', {
         name: 'SQL Dashboard with macros',
         tiles: [
           {
@@ -1388,7 +1307,7 @@ describe('MCP Dashboard Tools - clickstack_save_dashboard', () => {
     it('flags a missing interval macro on a time-series raw SQL tile', async () => {
       const connectionId = ctx.connection._id.toString();
       const sourceId = ctx.traceSource._id.toString();
-      const result = await callTool(ctx.client!, 'clickstack_save_dashboard', {
+      const result = await callTool(ctx.client!, 'cbt_save_dashboard', {
         name: 'SQL line tile without interval',
         tiles: [
           {
@@ -1421,46 +1340,38 @@ describe('MCP Dashboard Tools - clickstack_save_dashboard', () => {
       const sourceId = ctx.traceSource._id.toString();
 
       // Create with a well-formed builder tile (no warnings expected).
-      const createResult = await callTool(
-        ctx.client!,
-        'clickstack_save_dashboard',
-        {
-          name: 'Update to static SQL',
-          tiles: [
-            {
-              name: 'Builder Tile',
-              config: {
-                displayType: 'number',
-                sourceId,
-                select: [{ aggFn: 'count' }],
-              },
+      const createResult = await callTool(ctx.client!, 'cbt_save_dashboard', {
+        name: 'Update to static SQL',
+        tiles: [
+          {
+            name: 'Builder Tile',
+            config: {
+              displayType: 'number',
+              sourceId,
+              select: [{ aggFn: 'count' }],
             },
-          ],
-        },
-      );
+          },
+        ],
+      });
       const created = JSON.parse(getFirstText(createResult));
       expect(created.warnings).toBeUndefined();
 
       // Update, replacing the tile with a macro-less raw SQL tile.
-      const updateResult = await callTool(
-        ctx.client!,
-        'clickstack_save_dashboard',
-        {
-          id: created.id,
-          name: 'Update to static SQL',
-          tiles: [
-            {
-              name: 'Static SQL',
-              config: {
-                configType: 'sql',
-                displayType: 'table',
-                connectionId,
-                sqlTemplate: 'SELECT 1 AS value LIMIT 1',
-              },
+      const updateResult = await callTool(ctx.client!, 'cbt_save_dashboard', {
+        id: created.id,
+        name: 'Update to static SQL',
+        tiles: [
+          {
+            name: 'Static SQL',
+            config: {
+              configType: 'sql',
+              displayType: 'table',
+              connectionId,
+              sqlTemplate: 'SELECT 1 AS value LIMIT 1',
             },
-          ],
-        },
-      );
+          },
+        ],
+      });
 
       expect(updateResult.isError).toBeFalsy();
       const updated = JSON.parse(getFirstText(updateResult));
@@ -1514,40 +1425,36 @@ describe('MCP Dashboard Tools - clickstack_save_dashboard', () => {
         },
       ];
 
-      const createResult = await callTool(
-        ctx.client!,
-        'clickstack_save_dashboard',
-        {
-          name: 'Containers MCP Round-Trip',
-          tiles: [
-            buildTile(sourceId, {
-              name: 'In Group, Tab A',
-              containerId: 'service-health',
-              tabId: 'errors',
-            }),
-            buildTile(sourceId, {
-              name: 'In Group, Tab B',
-              containerId: 'service-health',
-              tabId: 'latency',
-            }),
-            // Tile inside a tabbed container without a tabId renders in
-            // the container shell rather than under a tab. Guards that the
-            // schema does not accidentally require tabId for every tile in
-            // a tabbed container.
-            buildTile(sourceId, {
-              name: 'In Tabbed Group, No Tab',
-              containerId: 'service-health',
-            }),
-            buildTile(sourceId, {
-              name: 'In Plain Group',
-              containerId: 'overview',
-            }),
-            buildTile(sourceId, { name: 'Ungrouped' }),
-          ],
-          tags: ['containers-mcp'],
-          containers,
-        },
-      );
+      const createResult = await callTool(ctx.client!, 'cbt_save_dashboard', {
+        name: 'Containers MCP Round-Trip',
+        tiles: [
+          buildTile(sourceId, {
+            name: 'In Group, Tab A',
+            containerId: 'service-health',
+            tabId: 'errors',
+          }),
+          buildTile(sourceId, {
+            name: 'In Group, Tab B',
+            containerId: 'service-health',
+            tabId: 'latency',
+          }),
+          // Tile inside a tabbed container without a tabId renders in
+          // the container shell rather than under a tab. Guards that the
+          // schema does not accidentally require tabId for every tile in
+          // a tabbed container.
+          buildTile(sourceId, {
+            name: 'In Tabbed Group, No Tab',
+            containerId: 'service-health',
+          }),
+          buildTile(sourceId, {
+            name: 'In Plain Group',
+            containerId: 'overview',
+          }),
+          buildTile(sourceId, { name: 'Ungrouped' }),
+        ],
+        tags: ['containers-mcp'],
+        containers,
+      });
 
       expect(createResult.isError).toBeFalsy();
       const created = JSON.parse(getFirstText(createResult));
@@ -1581,13 +1488,9 @@ describe('MCP Dashboard Tools - clickstack_save_dashboard', () => {
       expect(createdTilesByName.Ungrouped.tabId).toBeUndefined();
 
       // Verify a fresh GET via the get tool also returns the structure.
-      const getResult = await callTool(
-        ctx.client!,
-        'clickstack_get_dashboard',
-        {
-          id: created.id,
-        },
-      );
+      const getResult = await callTool(ctx.client!, 'cbt_get_dashboard', {
+        id: created.id,
+      });
       const fetched = JSON.parse(getFirstText(getResult));
       expect(fetched.containers).toEqual(containers);
 
@@ -1614,23 +1517,19 @@ describe('MCP Dashboard Tools - clickstack_save_dashboard', () => {
         tabId: undefined,
       };
 
-      const updateResult = await callTool(
-        ctx.client!,
-        'clickstack_save_dashboard',
-        {
-          id: created.id,
-          name: 'Containers MCP Round-Trip',
-          tiles: [
-            createdTilesByName['In Group, Tab A'],
-            createdTilesByName['In Group, Tab B'],
-            createdTilesByName['In Tabbed Group, No Tab'],
-            droppedContainerTile,
-            reHomedUngrouped,
-          ],
-          tags: ['containers-mcp'],
-          containers: updatedContainers,
-        },
-      );
+      const updateResult = await callTool(ctx.client!, 'cbt_save_dashboard', {
+        id: created.id,
+        name: 'Containers MCP Round-Trip',
+        tiles: [
+          createdTilesByName['In Group, Tab A'],
+          createdTilesByName['In Group, Tab B'],
+          createdTilesByName['In Tabbed Group, No Tab'],
+          droppedContainerTile,
+          reHomedUngrouped,
+        ],
+        tags: ['containers-mcp'],
+        containers: updatedContainers,
+      });
 
       expect(updateResult.isError).toBeFalsy();
       const updated = JSON.parse(getFirstText(updateResult));
@@ -1654,7 +1553,7 @@ describe('MCP Dashboard Tools - clickstack_save_dashboard', () => {
 
     it('should reject duplicate container ids', async () => {
       const sourceId = ctx.traceSource._id.toString();
-      const result = await callTool(ctx.client!, 'clickstack_save_dashboard', {
+      const result = await callTool(ctx.client!, 'cbt_save_dashboard', {
         name: 'Duplicate Container Ids',
         tiles: [buildTile(sourceId, {})],
         containers: [
@@ -1673,7 +1572,7 @@ describe('MCP Dashboard Tools - clickstack_save_dashboard', () => {
       // array. Cross-tile-ref rules (covered below) fire through
       // collectTileContainerRefIssues and produce plain prose.
       const sourceId = ctx.traceSource._id.toString();
-      const result = await callTool(ctx.client!, 'clickstack_save_dashboard', {
+      const result = await callTool(ctx.client!, 'cbt_save_dashboard', {
         name: 'Duplicate Tab Ids',
         tiles: [buildTile(sourceId, {})],
         containers: [
@@ -1697,7 +1596,7 @@ describe('MCP Dashboard Tools - clickstack_save_dashboard', () => {
 
     it('should reject a tile that supplies tabId without containerId', async () => {
       const sourceId = ctx.traceSource._id.toString();
-      const result = await callTool(ctx.client!, 'clickstack_save_dashboard', {
+      const result = await callTool(ctx.client!, 'cbt_save_dashboard', {
         name: 'Tab Without Container',
         tiles: [buildTile(sourceId, { tabId: 'errors' })],
         containers: [
@@ -1718,7 +1617,7 @@ describe('MCP Dashboard Tools - clickstack_save_dashboard', () => {
 
     it('should reject a tile that references an unknown containerId', async () => {
       const sourceId = ctx.traceSource._id.toString();
-      const result = await callTool(ctx.client!, 'clickstack_save_dashboard', {
+      const result = await callTool(ctx.client!, 'cbt_save_dashboard', {
         name: 'Unknown Container',
         tiles: [buildTile(sourceId, { containerId: 'does-not-exist' })],
         containers: [{ id: 'real', title: 'Real', collapsed: false }],
@@ -1732,7 +1631,7 @@ describe('MCP Dashboard Tools - clickstack_save_dashboard', () => {
 
     it('should reject a tile that references an unknown tabId within a container', async () => {
       const sourceId = ctx.traceSource._id.toString();
-      const result = await callTool(ctx.client!, 'clickstack_save_dashboard', {
+      const result = await callTool(ctx.client!, 'cbt_save_dashboard', {
         name: 'Unknown Tab',
         tiles: [
           buildTile(sourceId, {
@@ -1768,34 +1667,26 @@ describe('MCP Dashboard Tools - clickstack_save_dashboard', () => {
           tabs: [{ id: 'errors', title: 'Errors' }],
         },
       ];
-      const createResult = await callTool(
-        ctx.client!,
-        'clickstack_save_dashboard',
-        {
-          name: 'PUT-without-containers fallback',
-          tiles: [
-            buildTile(sourceId, {
-              name: 'In Group',
-              containerId: 'service-health',
-              tabId: 'errors',
-            }),
-          ],
-          containers,
-        },
-      );
+      const createResult = await callTool(ctx.client!, 'cbt_save_dashboard', {
+        name: 'PUT-without-containers fallback',
+        tiles: [
+          buildTile(sourceId, {
+            name: 'In Group',
+            containerId: 'service-health',
+            tabId: 'errors',
+          }),
+        ],
+        containers,
+      });
       expect(createResult.isError).toBeFalsy();
       const created = JSON.parse(getFirstText(createResult));
 
-      const updateResult = await callTool(
-        ctx.client!,
-        'clickstack_save_dashboard',
-        {
-          id: created.id,
-          name: 'PUT-without-containers fallback',
-          tiles: created.tiles,
-          // containers intentionally omitted
-        },
-      );
+      const updateResult = await callTool(ctx.client!, 'cbt_save_dashboard', {
+        id: created.id,
+        name: 'PUT-without-containers fallback',
+        tiles: created.tiles,
+        // containers intentionally omitted
+      });
       expect(updateResult.isError).toBeFalsy();
       const updated = JSON.parse(getFirstText(updateResult));
       expect(updated.containers).toEqual(containers);
@@ -1810,15 +1701,11 @@ describe('MCP Dashboard Tools - clickstack_save_dashboard', () => {
       // persisted containers, and the response normalizes [] back to
       // absent on read.
       const sourceId = ctx.traceSource._id.toString();
-      const createResult = await callTool(
-        ctx.client!,
-        'clickstack_save_dashboard',
-        {
-          name: 'Wipe containers',
-          tiles: [buildTile(sourceId, { name: 'Tile' })],
-          containers: [{ id: 'overview', title: 'Overview', collapsed: false }],
-        },
-      );
+      const createResult = await callTool(ctx.client!, 'cbt_save_dashboard', {
+        name: 'Wipe containers',
+        tiles: [buildTile(sourceId, { name: 'Tile' })],
+        containers: [{ id: 'overview', title: 'Overview', collapsed: false }],
+      });
       expect(createResult.isError).toBeFalsy();
       const created = JSON.parse(getFirstText(createResult));
       expect(created.containers).toHaveLength(1);
@@ -1828,27 +1715,19 @@ describe('MCP Dashboard Tools - clickstack_save_dashboard', () => {
         containerId: undefined,
         tabId: undefined,
       };
-      const updateResult = await callTool(
-        ctx.client!,
-        'clickstack_save_dashboard',
-        {
-          id: created.id,
-          name: 'Wipe containers',
-          tiles: [wipedTile],
-          containers: [],
-        },
-      );
+      const updateResult = await callTool(ctx.client!, 'cbt_save_dashboard', {
+        id: created.id,
+        name: 'Wipe containers',
+        tiles: [wipedTile],
+        containers: [],
+      });
       expect(updateResult.isError).toBeFalsy();
       const updated = JSON.parse(getFirstText(updateResult));
       expect(updated.containers).toBeUndefined();
 
-      const getResult = await callTool(
-        ctx.client!,
-        'clickstack_get_dashboard',
-        {
-          id: created.id,
-        },
-      );
+      const getResult = await callTool(ctx.client!, 'cbt_get_dashboard', {
+        id: created.id,
+      });
       const fetched = JSON.parse(getFirstText(getResult));
       expect(fetched.containers).toBeUndefined();
     });
@@ -1860,27 +1739,19 @@ describe('MCP Dashboard Tools - clickstack_save_dashboard', () => {
     it('should accept a 256-char tile.containerId and reject 257', async () => {
       const sourceId = ctx.traceSource._id.toString();
       const idAtMax = 'c'.repeat(256);
-      const okResult = await callTool(
-        ctx.client!,
-        'clickstack_save_dashboard',
-        {
-          name: '256-char containerId',
-          tiles: [buildTile(sourceId, { containerId: idAtMax })],
-          containers: [{ id: idAtMax, title: 'Max', collapsed: false }],
-        },
-      );
+      const okResult = await callTool(ctx.client!, 'cbt_save_dashboard', {
+        name: '256-char containerId',
+        tiles: [buildTile(sourceId, { containerId: idAtMax })],
+        containers: [{ id: idAtMax, title: 'Max', collapsed: false }],
+      });
       expect(okResult.isError).toBeFalsy();
 
       const idTooLong = 'c'.repeat(257);
-      const tooLongResult = await callTool(
-        ctx.client!,
-        'clickstack_save_dashboard',
-        {
-          name: '257-char containerId',
-          tiles: [buildTile(sourceId, { containerId: idTooLong })],
-          containers: [{ id: idTooLong, title: 'Too long', collapsed: false }],
-        },
-      );
+      const tooLongResult = await callTool(ctx.client!, 'cbt_save_dashboard', {
+        name: '257-char containerId',
+        tiles: [buildTile(sourceId, { containerId: idTooLong })],
+        containers: [{ id: idTooLong, title: 'Too long', collapsed: false }],
+      });
       expect(tooLongResult.isError).toBe(true);
       expect(getFirstText(tooLongResult)).toContain(
         'String must contain at most 256 character(s)',
@@ -1920,30 +1791,26 @@ describe('MCP Dashboard Tools - clickstack_save_dashboard', () => {
     it('should round-trip filters on create, get, and update', async () => {
       const sourceId = ctx.traceSource._id.toString();
 
-      const createResult = await callTool(
-        ctx.client!,
-        'clickstack_save_dashboard',
-        {
-          name: 'Service Detail (MCP filter round-trip)',
-          tiles: [traceTile(sourceId)],
-          filters: [
-            {
-              type: 'QUERY_EXPRESSION',
-              name: 'Service',
-              expression: 'ServiceName',
-              sourceId,
-            },
-            {
-              type: 'QUERY_EXPRESSION',
-              name: 'Environment',
-              expression: 'deployment.environment',
-              sourceId,
-              where: "deployment.environment = 'production'",
-              whereLanguage: 'sql',
-            },
-          ],
-        },
-      );
+      const createResult = await callTool(ctx.client!, 'cbt_save_dashboard', {
+        name: 'Service Detail (MCP filter round-trip)',
+        tiles: [traceTile(sourceId)],
+        filters: [
+          {
+            type: 'QUERY_EXPRESSION',
+            name: 'Service',
+            expression: 'ServiceName',
+            sourceId,
+          },
+          {
+            type: 'QUERY_EXPRESSION',
+            name: 'Environment',
+            expression: 'deployment.environment',
+            sourceId,
+            where: "deployment.environment = 'production'",
+            whereLanguage: 'sql',
+          },
+        ],
+      });
 
       expect(createResult.isError).toBeFalsy();
       const created = JSON.parse(getFirstText(createResult));
@@ -1972,36 +1839,28 @@ describe('MCP Dashboard Tools - clickstack_save_dashboard', () => {
       });
 
       // Fetch and assert the same shape.
-      const getResult = await callTool(
-        ctx.client!,
-        'clickstack_get_dashboard',
-        {
-          id: created.id,
-        },
-      );
+      const getResult = await callTool(ctx.client!, 'cbt_get_dashboard', {
+        id: created.id,
+      });
       const fetched = JSON.parse(getFirstText(getResult));
       expect(fetched.filters).toEqual(created.filters);
 
       // Update: rename the first filter and drop the second. The first
       // filter keeps its id, the second is dropped (not preserved).
-      const updateResult = await callTool(
-        ctx.client!,
-        'clickstack_save_dashboard',
-        {
-          id: created.id,
-          name: 'Service Detail (MCP filter round-trip)',
-          tiles: [traceTile(sourceId)],
-          filters: [
-            {
-              id: serviceFilter.id,
-              type: 'QUERY_EXPRESSION',
-              name: 'Service (renamed)',
-              expression: 'ServiceName',
-              sourceId,
-            },
-          ],
-        },
-      );
+      const updateResult = await callTool(ctx.client!, 'cbt_save_dashboard', {
+        id: created.id,
+        name: 'Service Detail (MCP filter round-trip)',
+        tiles: [traceTile(sourceId)],
+        filters: [
+          {
+            id: serviceFilter.id,
+            type: 'QUERY_EXPRESSION',
+            name: 'Service (renamed)',
+            expression: 'ServiceName',
+            sourceId,
+          },
+        ],
+      });
 
       expect(updateResult.isError).toBeFalsy();
       const updated = JSON.parse(getFirstText(updateResult));
@@ -2024,7 +1883,7 @@ describe('MCP Dashboard Tools - clickstack_save_dashboard', () => {
       // this payload would 4xx with a confusing strict-validation
       // error.
       const sourceId = ctx.traceSource._id.toString();
-      const result = await callTool(ctx.client!, 'clickstack_save_dashboard', {
+      const result = await callTool(ctx.client!, 'cbt_save_dashboard', {
         name: 'Create with stray filter id',
         tiles: [traceTile(sourceId)],
         filters: [
@@ -2056,51 +1915,43 @@ describe('MCP Dashboard Tools - clickstack_save_dashboard', () => {
       // id, so saveDashboard fills one in. Without that normalization
       // this payload would 4xx complaining that id is missing.
       const sourceId = ctx.traceSource._id.toString();
-      const createResult = await callTool(
-        ctx.client!,
-        'clickstack_save_dashboard',
-        {
-          name: 'Update adds new filter',
-          tiles: [traceTile(sourceId)],
-          filters: [
-            {
-              type: 'QUERY_EXPRESSION',
-              name: 'Service',
-              expression: 'ServiceName',
-              sourceId,
-            },
-          ],
-        },
-      );
+      const createResult = await callTool(ctx.client!, 'cbt_save_dashboard', {
+        name: 'Update adds new filter',
+        tiles: [traceTile(sourceId)],
+        filters: [
+          {
+            type: 'QUERY_EXPRESSION',
+            name: 'Service',
+            expression: 'ServiceName',
+            sourceId,
+          },
+        ],
+      });
       const created = JSON.parse(getFirstText(createResult));
       const existingFilterId = created.filters[0].id;
 
-      const updateResult = await callTool(
-        ctx.client!,
-        'clickstack_save_dashboard',
-        {
-          id: created.id,
-          name: 'Update adds new filter',
-          tiles: [traceTile(sourceId)],
-          filters: [
-            // Existing filter, preserved by id.
-            {
-              id: existingFilterId,
-              type: 'QUERY_EXPRESSION',
-              name: 'Service',
-              expression: 'ServiceName',
-              sourceId,
-            },
-            // Brand-new filter, no id. saveDashboard assigns one.
-            {
-              type: 'QUERY_EXPRESSION',
-              name: 'Environment',
-              expression: 'deployment.environment',
-              sourceId,
-            },
-          ],
-        },
-      );
+      const updateResult = await callTool(ctx.client!, 'cbt_save_dashboard', {
+        id: created.id,
+        name: 'Update adds new filter',
+        tiles: [traceTile(sourceId)],
+        filters: [
+          // Existing filter, preserved by id.
+          {
+            id: existingFilterId,
+            type: 'QUERY_EXPRESSION',
+            name: 'Service',
+            expression: 'ServiceName',
+            sourceId,
+          },
+          // Brand-new filter, no id. saveDashboard assigns one.
+          {
+            type: 'QUERY_EXPRESSION',
+            name: 'Environment',
+            expression: 'deployment.environment',
+            sourceId,
+          },
+        ],
+      });
       expect(updateResult.isError).toBeFalsy();
       const updated = JSON.parse(getFirstText(updateResult));
       expect(updated.filters).toHaveLength(2);
@@ -2138,15 +1989,11 @@ describe('MCP Dashboard Tools - clickstack_save_dashboard', () => {
       it('round-trips the variable fields through create, get, and save', async () => {
         const sourceId = ctx.traceSource._id.toString();
 
-        const createResult = await callTool(
-          ctx.client!,
-          'clickstack_save_dashboard',
-          {
-            name: 'Variable round-trip',
-            tiles: [traceTile(sourceId)],
-            filters: [variableFilter(sourceId)],
-          },
-        );
+        const createResult = await callTool(ctx.client!, 'cbt_save_dashboard', {
+          name: 'Variable round-trip',
+          tiles: [traceTile(sourceId)],
+          filters: [variableFilter(sourceId)],
+        });
         expect(createResult.isError).toBeFalsy();
         const created = JSON.parse(getFirstText(createResult));
         expect(created.filters[0]).toMatchObject({
@@ -2155,11 +2002,9 @@ describe('MCP Dashboard Tools - clickstack_save_dashboard', () => {
           variableName: 'service',
         });
 
-        const getResult = await callTool(
-          ctx.client!,
-          'clickstack_get_dashboard',
-          { id: created.id },
-        );
+        const getResult = await callTool(ctx.client!, 'cbt_get_dashboard', {
+          id: created.id,
+        });
         const fetched = JSON.parse(getFirstText(getResult));
         expect(fetched.filters[0]).toMatchObject({
           isBroadcastEnabled: false,
@@ -2168,16 +2013,12 @@ describe('MCP Dashboard Tools - clickstack_save_dashboard', () => {
         });
 
         // The whole point: feed the get response straight back in.
-        const updateResult = await callTool(
-          ctx.client!,
-          'clickstack_save_dashboard',
-          {
-            id: created.id,
-            name: fetched.name,
-            tiles: [traceTile(sourceId)],
-            filters: fetched.filters,
-          },
-        );
+        const updateResult = await callTool(ctx.client!, 'cbt_save_dashboard', {
+          id: created.id,
+          name: fetched.name,
+          tiles: [traceTile(sourceId)],
+          filters: fetched.filters,
+        });
         expect(updateResult.isError).toBeFalsy();
         const updated = JSON.parse(getFirstText(updateResult));
         expect(updated.filters[0]).toMatchObject({
@@ -2190,20 +2031,16 @@ describe('MCP Dashboard Tools - clickstack_save_dashboard', () => {
 
       it('derives the variable name from the display name when omitted', async () => {
         const sourceId = ctx.traceSource._id.toString();
-        const result = await callTool(
-          ctx.client!,
-          'clickstack_save_dashboard',
-          {
-            name: 'Derived variable name',
-            tiles: [traceTile(sourceId)],
-            filters: [
-              variableFilter(sourceId, {
-                name: 'Service Name',
-                variableName: undefined,
-              }),
-            ],
-          },
-        );
+        const result = await callTool(ctx.client!, 'cbt_save_dashboard', {
+          name: 'Derived variable name',
+          tiles: [traceTile(sourceId)],
+          filters: [
+            variableFilter(sourceId, {
+              name: 'Service Name',
+              variableName: undefined,
+            }),
+          ],
+        });
 
         expect(result.isError).toBeFalsy();
         const created = JSON.parse(getFirstText(result));
@@ -2217,44 +2054,34 @@ describe('MCP Dashboard Tools - clickstack_save_dashboard', () => {
 
       it('round-trips a derived variable name through get and save unchanged', async () => {
         const sourceId = ctx.traceSource._id.toString();
-        const createResult = await callTool(
-          ctx.client!,
-          'clickstack_save_dashboard',
-          {
-            name: 'Derived variable name round-trip',
-            tiles: [traceTile(sourceId)],
-            filters: [
-              variableFilter(sourceId, {
-                name: 'Service Name',
-                variableName: undefined,
-              }),
-            ],
-          },
-        );
+        const createResult = await callTool(ctx.client!, 'cbt_save_dashboard', {
+          name: 'Derived variable name round-trip',
+          tiles: [traceTile(sourceId)],
+          filters: [
+            variableFilter(sourceId, {
+              name: 'Service Name',
+              variableName: undefined,
+            }),
+          ],
+        });
         expect(createResult.isError).toBeFalsy();
         const created = JSON.parse(getFirstText(createResult));
         expect(created.filters[0].variableName).toBe('Service_Name');
 
-        const getResult = await callTool(
-          ctx.client!,
-          'clickstack_get_dashboard',
-          { id: created.id },
-        );
+        const getResult = await callTool(ctx.client!, 'cbt_get_dashboard', {
+          id: created.id,
+        });
         const fetched = JSON.parse(getFirstText(getResult));
         expect(fetched.filters[0].variableName).toBe('Service_Name');
 
         // Feed the derived name straight back in, unmodified, and confirm
         // it comes back the same rather than drifting or being dropped.
-        const updateResult = await callTool(
-          ctx.client!,
-          'clickstack_save_dashboard',
-          {
-            id: created.id,
-            name: fetched.name,
-            tiles: [traceTile(sourceId)],
-            filters: fetched.filters,
-          },
-        );
+        const updateResult = await callTool(ctx.client!, 'cbt_save_dashboard', {
+          id: created.id,
+          name: fetched.name,
+          tiles: [traceTile(sourceId)],
+          filters: fetched.filters,
+        });
         expect(updateResult.isError).toBeFalsy();
         const updated = JSON.parse(getFirstText(updateResult));
         expect(updated.filters[0].variableName).toBe('Service_Name');
@@ -2262,20 +2089,16 @@ describe('MCP Dashboard Tools - clickstack_save_dashboard', () => {
 
       it('rejects a filter that neither broadcasts nor exposes a variable', async () => {
         const sourceId = ctx.traceSource._id.toString();
-        const result = await callTool(
-          ctx.client!,
-          'clickstack_save_dashboard',
-          {
-            name: 'Inert filter',
-            tiles: [traceTile(sourceId)],
-            filters: [
-              variableFilter(sourceId, {
-                isVariableEnabled: false,
-                variableName: undefined,
-              }),
-            ],
-          },
-        );
+        const result = await callTool(ctx.client!, 'cbt_save_dashboard', {
+          name: 'Inert filter',
+          tiles: [traceTile(sourceId)],
+          filters: [
+            variableFilter(sourceId, {
+              isVariableEnabled: false,
+              variableName: undefined,
+            }),
+          ],
+        });
 
         expect(result.isError).toBe(true);
         expect(getFirstText(result)).toContain(
@@ -2285,21 +2108,17 @@ describe('MCP Dashboard Tools - clickstack_save_dashboard', () => {
 
       it('rejects two variable-enabled filters claiming the same name', async () => {
         const sourceId = ctx.traceSource._id.toString();
-        const result = await callTool(
-          ctx.client!,
-          'clickstack_save_dashboard',
-          {
-            name: 'Duplicate variable names',
-            tiles: [traceTile(sourceId)],
-            filters: [
-              variableFilter(sourceId),
-              variableFilter(sourceId, {
-                name: 'Service (alt)',
-                expression: 'SpanName',
-              }),
-            ],
-          },
-        );
+        const result = await callTool(ctx.client!, 'cbt_save_dashboard', {
+          name: 'Duplicate variable names',
+          tiles: [traceTile(sourceId)],
+          filters: [
+            variableFilter(sourceId),
+            variableFilter(sourceId, {
+              name: 'Service (alt)',
+              expression: 'SpanName',
+            }),
+          ],
+        });
 
         expect(result.isError).toBe(true);
         expect(getFirstText(result)).toContain(
@@ -2309,20 +2128,16 @@ describe('MCP Dashboard Tools - clickstack_save_dashboard', () => {
 
       it('rejects a variableName on a filter that is not variable-enabled', async () => {
         const sourceId = ctx.traceSource._id.toString();
-        const result = await callTool(
-          ctx.client!,
-          'clickstack_save_dashboard',
-          {
-            name: 'Stray variable name',
-            tiles: [traceTile(sourceId)],
-            filters: [
-              variableFilter(sourceId, {
-                isBroadcastEnabled: true,
-                isVariableEnabled: false,
-              }),
-            ],
-          },
-        );
+        const result = await callTool(ctx.client!, 'cbt_save_dashboard', {
+          name: 'Stray variable name',
+          tiles: [traceTile(sourceId)],
+          filters: [
+            variableFilter(sourceId, {
+              isBroadcastEnabled: true,
+              isVariableEnabled: false,
+            }),
+          ],
+        });
 
         expect(result.isError).toBe(true);
         expect(getFirstText(result)).toContain(
@@ -2332,20 +2147,16 @@ describe('MCP Dashboard Tools - clickstack_save_dashboard', () => {
 
       it('rejects a variable-enabled filter whose name derives nothing usable', async () => {
         const sourceId = ctx.traceSource._id.toString();
-        const result = await callTool(
-          ctx.client!,
-          'clickstack_save_dashboard',
-          {
-            name: 'Non-derivable variable name',
-            tiles: [traceTile(sourceId)],
-            filters: [
-              variableFilter(sourceId, {
-                name: '\u73af\u5883',
-                variableName: undefined,
-              }),
-            ],
-          },
-        );
+        const result = await callTool(ctx.client!, 'cbt_save_dashboard', {
+          name: 'Non-derivable variable name',
+          tiles: [traceTile(sourceId)],
+          filters: [
+            variableFilter(sourceId, {
+              name: '\u73af\u5883',
+              variableName: undefined,
+            }),
+          ],
+        });
 
         expect(result.isError).toBe(true);
         expect(getFirstText(result)).toContain('Variable name is required');
@@ -2353,18 +2164,14 @@ describe('MCP Dashboard Tools - clickstack_save_dashboard', () => {
 
       it('reports the validation failure as readable lines, not raw Zod JSON', async () => {
         const sourceId = ctx.traceSource._id.toString();
-        const result = await callTool(
-          ctx.client!,
-          'clickstack_save_dashboard',
-          {
-            name: 'Readable errors',
-            tiles: [traceTile(sourceId)],
-            filters: [
-              variableFilter(sourceId),
-              variableFilter(sourceId, { name: 'Service (alt)' }),
-            ],
-          },
-        );
+        const result = await callTool(ctx.client!, 'cbt_save_dashboard', {
+          name: 'Readable errors',
+          tiles: [traceTile(sourceId)],
+          filters: [
+            variableFilter(sourceId),
+            variableFilter(sourceId, { name: 'Service (alt)' }),
+          ],
+        });
 
         const text = getFirstText(result);
         expect(text).toContain('filters[1].variableName:');
@@ -2373,35 +2180,31 @@ describe('MCP Dashboard Tools - clickstack_save_dashboard', () => {
 
       it('warns about an unguarded bare reference without blocking the save', async () => {
         const sourceId = ctx.traceSource._id.toString();
-        const result = await callTool(
-          ctx.client!,
-          'clickstack_save_dashboard',
-          {
-            name: 'Unguarded reference',
-            tiles: [
-              {
-                name: 'Requests',
-                x: 0,
-                y: 0,
-                w: 6,
-                h: 3,
-                config: {
-                  displayType: 'line' as const,
-                  sourceId,
-                  select: [
-                    {
-                      aggFn: 'count' as const,
-                      alias: 'Requests',
-                      where: 'ServiceName IN ($service)',
-                      whereLanguage: 'sql' as const,
-                    },
-                  ],
-                },
+        const result = await callTool(ctx.client!, 'cbt_save_dashboard', {
+          name: 'Unguarded reference',
+          tiles: [
+            {
+              name: 'Requests',
+              x: 0,
+              y: 0,
+              w: 6,
+              h: 3,
+              config: {
+                displayType: 'line' as const,
+                sourceId,
+                select: [
+                  {
+                    aggFn: 'count' as const,
+                    alias: 'Requests',
+                    where: 'ServiceName IN ($service)',
+                    whereLanguage: 'sql' as const,
+                  },
+                ],
               },
-            ],
-            filters: [variableFilter(sourceId)],
-          },
-        );
+            },
+          ],
+          filters: [variableFilter(sourceId)],
+        });
 
         expect(result.isError).toBeFalsy();
         const created = JSON.parse(getFirstText(result));
@@ -2412,31 +2215,27 @@ describe('MCP Dashboard Tools - clickstack_save_dashboard', () => {
 
       it('warns when a tile macro names a variable no filter declares', async () => {
         const sourceId = ctx.traceSource._id.toString();
-        const result = await callTool(
-          ctx.client!,
-          'clickstack_save_dashboard',
-          {
-            name: 'Unknown variable macro',
-            tiles: [
-              {
-                name: 'Errors',
-                x: 0,
-                y: 0,
-                w: 6,
-                h: 3,
-                config: {
-                  configType: 'sql' as const,
-                  displayType: 'table' as const,
-                  connectionId: ctx.connection._id.toString(),
-                  sourceId,
-                  sqlTemplate:
-                    'SELECT count() FROM $__sourceTable WHERE $__timeFilter(Timestamp) AND $__filters AND $__filter(ServiceName, $tenant) LIMIT 10',
-                },
+        const result = await callTool(ctx.client!, 'cbt_save_dashboard', {
+          name: 'Unknown variable macro',
+          tiles: [
+            {
+              name: 'Errors',
+              x: 0,
+              y: 0,
+              w: 6,
+              h: 3,
+              config: {
+                configType: 'sql' as const,
+                displayType: 'table' as const,
+                connectionId: ctx.connection._id.toString(),
+                sourceId,
+                sqlTemplate:
+                  'SELECT count() FROM $__sourceTable WHERE $__timeFilter(Timestamp) AND $__filters AND $__filter(ServiceName, $tenant) LIMIT 10',
               },
-            ],
-            filters: [variableFilter(sourceId)],
-          },
-        );
+            },
+          ],
+          filters: [variableFilter(sourceId)],
+        });
 
         expect(result.isError).toBeFalsy();
         const created = JSON.parse(getFirstText(result));
@@ -2449,46 +2248,42 @@ describe('MCP Dashboard Tools - clickstack_save_dashboard', () => {
       // runs the dropdown query, so save is the only chance to catch it.
       it('warns about a dependent filter whose upstream publishes no variable', async () => {
         const sourceId = ctx.traceSource._id.toString();
-        const result = await callTool(
-          ctx.client!,
-          'clickstack_save_dashboard',
-          {
-            name: 'Dependent filter',
-            tiles: [
-              {
-                name: 'Requests',
-                x: 0,
-                y: 0,
-                w: 6,
-                h: 3,
-                config: {
-                  displayType: 'line' as const,
-                  sourceId,
-                  select: [{ aggFn: 'count' as const, alias: 'Requests' }],
-                },
-              },
-            ],
-            filters: [
-              // Broadcast-only: it collects a service but never publishes
-              // $service, so the Endpoint dropdown below cannot depend on it.
-              {
-                type: 'QUERY_EXPRESSION' as const,
-                name: 'Service',
-                expression: 'ServiceName',
+        const result = await callTool(ctx.client!, 'cbt_save_dashboard', {
+          name: 'Dependent filter',
+          tiles: [
+            {
+              name: 'Requests',
+              x: 0,
+              y: 0,
+              w: 6,
+              h: 3,
+              config: {
+                displayType: 'line' as const,
                 sourceId,
-                whereLanguage: 'sql' as const,
+                select: [{ aggFn: 'count' as const, alias: 'Requests' }],
               },
-              {
-                type: 'QUERY_EXPRESSION' as const,
-                name: 'Endpoint',
-                expression: 'SpanName',
-                sourceId,
-                whereLanguage: 'sql' as const,
-                where: '$__filter(ServiceName, $service)',
-              },
-            ],
-          },
-        );
+            },
+          ],
+          filters: [
+            // Broadcast-only: it collects a service but never publishes
+            // $service, so the Endpoint dropdown below cannot depend on it.
+            {
+              type: 'QUERY_EXPRESSION' as const,
+              name: 'Service',
+              expression: 'ServiceName',
+              sourceId,
+              whereLanguage: 'sql' as const,
+            },
+            {
+              type: 'QUERY_EXPRESSION' as const,
+              name: 'Endpoint',
+              expression: 'SpanName',
+              sourceId,
+              whereLanguage: 'sql' as const,
+              where: '$__filter(ServiceName, $service)',
+            },
+          ],
+        });
 
         expect(result.isError).toBeFalsy();
         const created = JSON.parse(getFirstText(result));
@@ -2503,38 +2298,34 @@ describe('MCP Dashboard Tools - clickstack_save_dashboard', () => {
 
       it('accepts a dependent filter wired to a variable-enabled upstream', async () => {
         const sourceId = ctx.traceSource._id.toString();
-        const result = await callTool(
-          ctx.client!,
-          'clickstack_save_dashboard',
-          {
-            name: 'Dependent filter, wired',
-            tiles: [
-              {
-                name: 'Requests',
-                x: 0,
-                y: 0,
-                w: 6,
-                h: 3,
-                config: {
-                  displayType: 'line' as const,
-                  sourceId,
-                  select: [{ aggFn: 'count' as const, alias: 'Requests' }],
-                },
-              },
-            ],
-            filters: [
-              variableFilter(sourceId, { isBroadcastEnabled: true }),
-              {
-                type: 'QUERY_EXPRESSION' as const,
-                name: 'Endpoint',
-                expression: 'SpanName',
+        const result = await callTool(ctx.client!, 'cbt_save_dashboard', {
+          name: 'Dependent filter, wired',
+          tiles: [
+            {
+              name: 'Requests',
+              x: 0,
+              y: 0,
+              w: 6,
+              h: 3,
+              config: {
+                displayType: 'line' as const,
                 sourceId,
-                whereLanguage: 'sql' as const,
-                where: '$__filter(ServiceName, $service)',
+                select: [{ aggFn: 'count' as const, alias: 'Requests' }],
               },
-            ],
-          },
-        );
+            },
+          ],
+          filters: [
+            variableFilter(sourceId, { isBroadcastEnabled: true }),
+            {
+              type: 'QUERY_EXPRESSION' as const,
+              name: 'Endpoint',
+              expression: 'SpanName',
+              sourceId,
+              whereLanguage: 'sql' as const,
+              where: '$__filter(ServiceName, $service)',
+            },
+          ],
+        });
 
         expect(result.isError).toBeFalsy();
         const created = JSON.parse(getFirstText(result));
@@ -2576,7 +2367,7 @@ describe('MCP Dashboard Tools - clickstack_save_dashboard', () => {
 
           const createResult = await callTool(
             ctx.client!,
-            'clickstack_save_dashboard',
+            'cbt_save_dashboard',
             {
               name: 'Preserved variable filters',
               tiles: [tile],
@@ -2589,7 +2380,7 @@ describe('MCP Dashboard Tools - clickstack_save_dashboard', () => {
 
           const updateResult = await callTool(
             ctx.client!,
-            'clickstack_save_dashboard',
+            'cbt_save_dashboard',
             {
               id: created.id,
               name: 'Preserved variable filters',
@@ -2612,7 +2403,7 @@ describe('MCP Dashboard Tools - clickstack_save_dashboard', () => {
 
           const createResult = await callTool(
             ctx.client!,
-            'clickstack_save_dashboard',
+            'cbt_save_dashboard',
             {
               name: 'Preserved filters, bad reference',
               tiles: [macroTile(sourceId, connectionId, 'service')],
@@ -2624,7 +2415,7 @@ describe('MCP Dashboard Tools - clickstack_save_dashboard', () => {
 
           const updateResult = await callTool(
             ctx.client!,
-            'clickstack_save_dashboard',
+            'cbt_save_dashboard',
             {
               id: created.id,
               name: 'Preserved filters, bad reference',
@@ -2660,7 +2451,7 @@ describe('MCP Dashboard Tools - clickstack_save_dashboard', () => {
 
           const createResult = await callTool(
             ctx.client!,
-            'clickstack_save_dashboard',
+            'cbt_save_dashboard',
             {
               name: 'Required filter round-trip',
               tiles: [traceTile(sourceId)],
@@ -2671,17 +2462,15 @@ describe('MCP Dashboard Tools - clickstack_save_dashboard', () => {
           const created = JSON.parse(getFirstText(createResult));
           expect(created.filters[0].minSelections).toBe(1);
 
-          const getResult = await callTool(
-            ctx.client!,
-            'clickstack_get_dashboard',
-            { id: created.id },
-          );
+          const getResult = await callTool(ctx.client!, 'cbt_get_dashboard', {
+            id: created.id,
+          });
           const fetched = JSON.parse(getFirstText(getResult));
           expect(fetched.filters[0].minSelections).toBe(1);
 
           const updateResult = await callTool(
             ctx.client!,
-            'clickstack_save_dashboard',
+            'cbt_save_dashboard',
             {
               id: created.id,
               name: fetched.name,
@@ -2698,15 +2487,11 @@ describe('MCP Dashboard Tools - clickstack_save_dashboard', () => {
 
       it('omits minSelections for a filter that is not required', async () => {
         const sourceId = ctx.traceSource._id.toString();
-        const result = await callTool(
-          ctx.client!,
-          'clickstack_save_dashboard',
-          {
-            name: 'Optional filter',
-            tiles: [traceTile(sourceId)],
-            filters: [queryFilter(), queryFilter({ minSelections: 0 })],
-          },
-        );
+        const result = await callTool(ctx.client!, 'cbt_save_dashboard', {
+          name: 'Optional filter',
+          tiles: [traceTile(sourceId)],
+          filters: [queryFilter(), queryFilter({ minSelections: 0 })],
+        });
 
         expect(result.isError).toBeFalsy();
         const created = JSON.parse(getFirstText(result));
@@ -2717,24 +2502,18 @@ describe('MCP Dashboard Tools - clickstack_save_dashboard', () => {
 
       it('round-trips a single-select filter through create and get', async () => {
         const sourceId = ctx.traceSource._id.toString();
-        const createResult = await callTool(
-          ctx.client!,
-          'clickstack_save_dashboard',
-          {
-            name: 'Single-select filter',
-            tiles: [traceTile(sourceId)],
-            filters: [queryFilter({ maxSelections: 1 })],
-          },
-        );
+        const createResult = await callTool(ctx.client!, 'cbt_save_dashboard', {
+          name: 'Single-select filter',
+          tiles: [traceTile(sourceId)],
+          filters: [queryFilter({ maxSelections: 1 })],
+        });
         expect(createResult.isError).toBeFalsy();
         const created = JSON.parse(getFirstText(createResult));
         expect(created.filters[0].maxSelections).toBe(1);
 
-        const getResult = await callTool(
-          ctx.client!,
-          'clickstack_get_dashboard',
-          { id: created.id },
-        );
+        const getResult = await callTool(ctx.client!, 'cbt_get_dashboard', {
+          id: created.id,
+        });
         expect(
           JSON.parse(getFirstText(getResult)).filters[0].maxSelections,
         ).toBe(1);
@@ -2742,15 +2521,11 @@ describe('MCP Dashboard Tools - clickstack_save_dashboard', () => {
 
       it.each([0, 2])('rejects maxSelections %s', async value => {
         const sourceId = ctx.traceSource._id.toString();
-        const result = await callTool(
-          ctx.client!,
-          'clickstack_save_dashboard',
-          {
-            name: 'Bad maxSelections',
-            tiles: [traceTile(sourceId)],
-            filters: [queryFilter({ maxSelections: value })],
-          },
-        );
+        const result = await callTool(ctx.client!, 'cbt_save_dashboard', {
+          name: 'Bad maxSelections',
+          tiles: [traceTile(sourceId)],
+          filters: [queryFilter({ maxSelections: value })],
+        });
 
         expect(result.isError).toBe(true);
         expect(getFirstText(result)).toContain('maxSelections');
@@ -2758,15 +2533,11 @@ describe('MCP Dashboard Tools - clickstack_save_dashboard', () => {
 
       it.each([2, -1, 1.5])('rejects minSelections %s', async value => {
         const sourceId = ctx.traceSource._id.toString();
-        const result = await callTool(
-          ctx.client!,
-          'clickstack_save_dashboard',
-          {
-            name: 'Bad minSelections',
-            tiles: [traceTile(sourceId)],
-            filters: [queryFilter({ minSelections: value })],
-          },
-        );
+        const result = await callTool(ctx.client!, 'cbt_save_dashboard', {
+          name: 'Bad minSelections',
+          tiles: [traceTile(sourceId)],
+          filters: [queryFilter({ minSelections: value })],
+        });
 
         expect(result.isError).toBe(true);
         expect(getFirstText(result)).toContain('minSelections');
@@ -2775,26 +2546,20 @@ describe('MCP Dashboard Tools - clickstack_save_dashboard', () => {
       it('round-trips a dashboard-wide requirement through create and get', async () => {
         const sourceId = ctx.traceSource._id.toString();
 
-        const createResult = await callTool(
-          ctx.client!,
-          'clickstack_save_dashboard',
-          {
-            name: 'Dashboard-wide requirement',
-            tiles: [traceTile(sourceId)],
-            filters: [
-              queryFilter({ minSelections: 1, isGlobalRequirement: true }),
-            ],
-          },
-        );
+        const createResult = await callTool(ctx.client!, 'cbt_save_dashboard', {
+          name: 'Dashboard-wide requirement',
+          tiles: [traceTile(sourceId)],
+          filters: [
+            queryFilter({ minSelections: 1, isGlobalRequirement: true }),
+          ],
+        });
         expect(createResult.isError).toBeFalsy();
         const created = JSON.parse(getFirstText(createResult));
         expect(created.filters[0].isGlobalRequirement).toBe(true);
 
-        const getResult = await callTool(
-          ctx.client!,
-          'clickstack_get_dashboard',
-          { id: created.id },
-        );
+        const getResult = await callTool(ctx.client!, 'cbt_get_dashboard', {
+          id: created.id,
+        });
         expect(
           JSON.parse(getFirstText(getResult)).filters[0].isGlobalRequirement,
         ).toBe(true);
@@ -2802,15 +2567,11 @@ describe('MCP Dashboard Tools - clickstack_save_dashboard', () => {
 
       it('omits the scope for a filter that is not required', async () => {
         const sourceId = ctx.traceSource._id.toString();
-        const result = await callTool(
-          ctx.client!,
-          'clickstack_save_dashboard',
-          {
-            name: 'Optional filter with a scope',
-            tiles: [traceTile(sourceId)],
-            filters: [queryFilter({ isGlobalRequirement: true })],
-          },
-        );
+        const result = await callTool(ctx.client!, 'cbt_save_dashboard', {
+          name: 'Optional filter with a scope',
+          tiles: [traceTile(sourceId)],
+          filters: [queryFilter({ isGlobalRequirement: true })],
+        });
 
         expect(result.isError).toBeFalsy();
         expect(JSON.parse(getFirstText(result)).filters[0]).not.toHaveProperty(
@@ -2824,15 +2585,11 @@ describe('MCP Dashboard Tools - clickstack_save_dashboard', () => {
         const sourceId = ctx.traceSource._id.toString();
 
         // Mode flags deliberately omitted: they default server-side.
-        const createResult = await callTool(
-          ctx.client!,
-          'clickstack_save_dashboard',
-          {
-            name: 'Static filter round-trip',
-            tiles: [traceTile(sourceId)],
-            filters: [staticFilter()],
-          },
-        );
+        const createResult = await callTool(ctx.client!, 'cbt_save_dashboard', {
+          name: 'Static filter round-trip',
+          tiles: [traceTile(sourceId)],
+          filters: [staticFilter()],
+        });
         expect(createResult.isError).toBeFalsy();
         const created = JSON.parse(getFirstText(createResult));
         expect(created.filters[0]).toMatchObject({
@@ -2844,11 +2601,9 @@ describe('MCP Dashboard Tools - clickstack_save_dashboard', () => {
         });
         expect(created.filters[0].id).toBeDefined();
 
-        const getResult = await callTool(
-          ctx.client!,
-          'clickstack_get_dashboard',
-          { id: created.id },
-        );
+        const getResult = await callTool(ctx.client!, 'cbt_get_dashboard', {
+          id: created.id,
+        });
         const fetched = JSON.parse(getFirstText(getResult));
         expect(fetched.filters[0]).toMatchObject({
           type: 'STATIC_LIST',
@@ -2860,16 +2615,12 @@ describe('MCP Dashboard Tools - clickstack_save_dashboard', () => {
 
         // Feed the get response straight back in — this is the round-trip
         // that a QUERY_EXPRESSION-only filter schema rejected.
-        const updateResult = await callTool(
-          ctx.client!,
-          'clickstack_save_dashboard',
-          {
-            id: created.id,
-            name: fetched.name,
-            tiles: [traceTile(sourceId)],
-            filters: fetched.filters,
-          },
-        );
+        const updateResult = await callTool(ctx.client!, 'cbt_save_dashboard', {
+          id: created.id,
+          name: fetched.name,
+          tiles: [traceTile(sourceId)],
+          filters: fetched.filters,
+        });
         expect(updateResult.isError).toBeFalsy();
         const updated = JSON.parse(getFirstText(updateResult));
         expect(updated.filters[0]).toMatchObject({
@@ -2881,17 +2632,13 @@ describe('MCP Dashboard Tools - clickstack_save_dashboard', () => {
 
       it('derives the variable name from the display name when omitted', async () => {
         const sourceId = ctx.traceSource._id.toString();
-        const result = await callTool(
-          ctx.client!,
-          'clickstack_save_dashboard',
-          {
-            name: 'Static derived variable name',
-            tiles: [traceTile(sourceId)],
-            filters: [
-              staticFilter({ name: 'Deploy Env', variableName: undefined }),
-            ],
-          },
-        );
+        const result = await callTool(ctx.client!, 'cbt_save_dashboard', {
+          name: 'Static derived variable name',
+          tiles: [traceTile(sourceId)],
+          filters: [
+            staticFilter({ name: 'Deploy Env', variableName: undefined }),
+          ],
+        });
 
         expect(result.isError).toBeFalsy();
         const created = JSON.parse(getFirstText(result));
@@ -2900,20 +2647,16 @@ describe('MCP Dashboard Tools - clickstack_save_dashboard', () => {
 
       it('ignores mode flags passed on a static filter', async () => {
         const sourceId = ctx.traceSource._id.toString();
-        const result = await callTool(
-          ctx.client!,
-          'clickstack_save_dashboard',
-          {
-            name: 'Broadcasting static filter',
-            tiles: [traceTile(sourceId)],
-            filters: [
-              staticFilter({
-                isBroadcastEnabled: true,
-                isVariableEnabled: false,
-              }),
-            ],
-          },
-        );
+        const result = await callTool(ctx.client!, 'cbt_save_dashboard', {
+          name: 'Broadcasting static filter',
+          tiles: [traceTile(sourceId)],
+          filters: [
+            staticFilter({
+              isBroadcastEnabled: true,
+              isVariableEnabled: false,
+            }),
+          ],
+        });
 
         expect(result.isError).toBeFalsy();
         const created = JSON.parse(getFirstText(result));
@@ -2925,15 +2668,11 @@ describe('MCP Dashboard Tools - clickstack_save_dashboard', () => {
 
       it('rejects empty options', async () => {
         const sourceId = ctx.traceSource._id.toString();
-        const result = await callTool(
-          ctx.client!,
-          'clickstack_save_dashboard',
-          {
-            name: 'Empty options',
-            tiles: [traceTile(sourceId)],
-            filters: [staticFilter({ options: [] })],
-          },
-        );
+        const result = await callTool(ctx.client!, 'cbt_save_dashboard', {
+          name: 'Empty options',
+          tiles: [traceTile(sourceId)],
+          filters: [staticFilter({ options: [] })],
+        });
 
         expect(result.isError).toBe(true);
         expect(getFirstText(result)).toContain('options');
@@ -2941,15 +2680,11 @@ describe('MCP Dashboard Tools - clickstack_save_dashboard', () => {
 
       it('rejects duplicate options', async () => {
         const sourceId = ctx.traceSource._id.toString();
-        const result = await callTool(
-          ctx.client!,
-          'clickstack_save_dashboard',
-          {
-            name: 'Duplicate options',
-            tiles: [traceTile(sourceId)],
-            filters: [staticFilter({ options: ['prod', 'prod'] })],
-          },
-        );
+        const result = await callTool(ctx.client!, 'cbt_save_dashboard', {
+          name: 'Duplicate options',
+          tiles: [traceTile(sourceId)],
+          filters: [staticFilter({ options: ['prod', 'prod'] })],
+        });
 
         expect(result.isError).toBe(true);
         expect(getFirstText(result)).toContain(
@@ -2959,27 +2694,23 @@ describe('MCP Dashboard Tools - clickstack_save_dashboard', () => {
 
       it('rejects a static and a query filter claiming the same variable name', async () => {
         const sourceId = ctx.traceSource._id.toString();
-        const result = await callTool(
-          ctx.client!,
-          'clickstack_save_dashboard',
-          {
-            name: 'Cross-type duplicate variable names',
-            tiles: [traceTile(sourceId)],
-            filters: [
-              staticFilter(),
-              {
-                type: 'QUERY_EXPRESSION',
-                name: 'Environment (queried)',
-                expression: "ResourceAttributes['env']",
-                sourceId,
-                whereLanguage: 'sql',
-                isBroadcastEnabled: false,
-                isVariableEnabled: true,
-                variableName: 'env',
-              },
-            ],
-          },
-        );
+        const result = await callTool(ctx.client!, 'cbt_save_dashboard', {
+          name: 'Cross-type duplicate variable names',
+          tiles: [traceTile(sourceId)],
+          filters: [
+            staticFilter(),
+            {
+              type: 'QUERY_EXPRESSION',
+              name: 'Environment (queried)',
+              expression: "ResourceAttributes['env']",
+              sourceId,
+              whereLanguage: 'sql',
+              isBroadcastEnabled: false,
+              isVariableEnabled: true,
+              variableName: 'env',
+            },
+          ],
+        });
 
         expect(result.isError).toBe(true);
         expect(getFirstText(result)).toContain(
@@ -2991,15 +2722,11 @@ describe('MCP Dashboard Tools - clickstack_save_dashboard', () => {
         const sourceId = ctx.traceSource._id.toString();
         // The MCP members are non-strict like every other schema in the
         // file, so a stray field is dropped rather than rejected.
-        const result = await callTool(
-          ctx.client!,
-          'clickstack_save_dashboard',
-          {
-            name: 'Static filter with stray fields',
-            tiles: [traceTile(sourceId)],
-            filters: [staticFilter({ expression: 'ServiceName', sourceId })],
-          },
-        );
+        const result = await callTool(ctx.client!, 'cbt_save_dashboard', {
+          name: 'Static filter with stray fields',
+          tiles: [traceTile(sourceId)],
+          filters: [staticFilter({ expression: 'ServiceName', sourceId })],
+        });
 
         expect(result.isError).toBeFalsy();
         const created = JSON.parse(getFirstText(result));
@@ -3009,34 +2736,30 @@ describe('MCP Dashboard Tools - clickstack_save_dashboard', () => {
 
       it('does not warn about a tile referencing the static variable', async () => {
         const sourceId = ctx.traceSource._id.toString();
-        const result = await callTool(
-          ctx.client!,
-          'clickstack_save_dashboard',
-          {
-            name: 'Tile references static variable',
-            tiles: [
-              {
-                name: 'Per-env count',
-                x: 0,
-                y: 0,
-                w: 6,
-                h: 3,
-                config: {
-                  displayType: 'line' as const,
-                  sourceId,
-                  select: [
-                    {
-                      aggFn: 'count' as const,
-                      where: "$__filter(ResourceAttributes['env'], $env)",
-                      whereLanguage: 'sql' as const,
-                    },
-                  ],
-                },
+        const result = await callTool(ctx.client!, 'cbt_save_dashboard', {
+          name: 'Tile references static variable',
+          tiles: [
+            {
+              name: 'Per-env count',
+              x: 0,
+              y: 0,
+              w: 6,
+              h: 3,
+              config: {
+                displayType: 'line' as const,
+                sourceId,
+                select: [
+                  {
+                    aggFn: 'count' as const,
+                    where: "$__filter(ResourceAttributes['env'], $env)",
+                    whereLanguage: 'sql' as const,
+                  },
+                ],
               },
-            ],
-            filters: [staticFilter()],
-          },
-        );
+            },
+          ],
+          filters: [staticFilter()],
+        });
 
         expect(result.isError).toBeFalsy();
         const created = JSON.parse(getFirstText(result));
@@ -3045,25 +2768,21 @@ describe('MCP Dashboard Tools - clickstack_save_dashboard', () => {
 
       it('accepts a dependent filter chaining off a static variable', async () => {
         const sourceId = ctx.traceSource._id.toString();
-        const result = await callTool(
-          ctx.client!,
-          'clickstack_save_dashboard',
-          {
-            name: 'Dependent filter on static variable',
-            tiles: [traceTile(sourceId)],
-            filters: [
-              staticFilter(),
-              {
-                type: 'QUERY_EXPRESSION',
-                name: 'Service',
-                expression: 'ServiceName',
-                sourceId,
-                whereLanguage: 'sql',
-                where: "$__filter(ResourceAttributes['env'], $env)",
-              },
-            ],
-          },
-        );
+        const result = await callTool(ctx.client!, 'cbt_save_dashboard', {
+          name: 'Dependent filter on static variable',
+          tiles: [traceTile(sourceId)],
+          filters: [
+            staticFilter(),
+            {
+              type: 'QUERY_EXPRESSION',
+              name: 'Service',
+              expression: 'ServiceName',
+              sourceId,
+              whereLanguage: 'sql',
+              where: "$__filter(ResourceAttributes['env'], $env)",
+            },
+          ],
+        });
 
         expect(result.isError).toBeFalsy();
         const created = JSON.parse(getFirstText(result));
@@ -3079,7 +2798,7 @@ describe('MCP Dashboard Tools - clickstack_save_dashboard', () => {
       // saved tile would include empty-message rows instead of the
       // filtered set the prompt promises.
       const sourceId = ctx.traceSource._id.toString();
-      const result = await callTool(ctx.client!, 'clickstack_save_dashboard', {
+      const result = await callTool(ctx.client!, 'cbt_save_dashboard', {
         name: 'Top Error Messages',
         tiles: [
           {
@@ -3113,40 +2832,36 @@ describe('MCP Dashboard Tools - clickstack_save_dashboard', () => {
     // by templated name, with optional whereTemplate/filters.
     it('should round-trip a table tile with a search onClick by ID', async () => {
       const sourceId = ctx.traceSource._id.toString();
-      const createResult = await callTool(
-        ctx.client!,
-        'clickstack_save_dashboard',
-        {
-          name: 'OnClick search by id',
-          tiles: [
-            {
-              name: 'Errors by Service',
-              x: 0,
-              y: 0,
-              w: 12,
-              h: 6,
-              config: {
-                displayType: 'table',
-                sourceId,
-                groupBy: "ResourceAttributes['service.name']",
-                select: [{ aggFn: 'count' }],
-                onClick: {
-                  type: 'search',
-                  target: { mode: 'id', id: sourceId },
-                  whereLanguage: 'sql',
-                  filters: [
-                    {
-                      kind: 'expressionTemplate',
-                      expression: 'ServiceName',
-                      template: "{{ResourceAttributes['service.name']}}",
-                    },
-                  ],
-                },
+      const createResult = await callTool(ctx.client!, 'cbt_save_dashboard', {
+        name: 'OnClick search by id',
+        tiles: [
+          {
+            name: 'Errors by Service',
+            x: 0,
+            y: 0,
+            w: 12,
+            h: 6,
+            config: {
+              displayType: 'table',
+              sourceId,
+              groupBy: "ResourceAttributes['service.name']",
+              select: [{ aggFn: 'count' }],
+              onClick: {
+                type: 'search',
+                target: { mode: 'id', id: sourceId },
+                whereLanguage: 'sql',
+                filters: [
+                  {
+                    kind: 'expressionTemplate',
+                    expression: 'ServiceName',
+                    template: "{{ResourceAttributes['service.name']}}",
+                  },
+                ],
               },
             },
-          ],
-        },
-      );
+          },
+        ],
+      });
 
       expect(createResult.isError).toBeFalsy();
       const created = JSON.parse(getFirstText(createResult));
@@ -3163,13 +2878,9 @@ describe('MCP Dashboard Tools - clickstack_save_dashboard', () => {
         ],
       });
 
-      const getResult = await callTool(
-        ctx.client!,
-        'clickstack_get_dashboard',
-        {
-          id: created.id,
-        },
-      );
+      const getResult = await callTool(ctx.client!, 'cbt_get_dashboard', {
+        id: created.id,
+      });
       const fetched = JSON.parse(getFirstText(getResult));
       expect(fetched.tiles[0].config.onClick).toEqual(
         created.tiles[0].config.onClick,
@@ -3186,7 +2897,7 @@ describe('MCP Dashboard Tools - clickstack_save_dashboard', () => {
         team: ctx.team._id,
       }).save();
 
-      const result = await callTool(ctx.client!, 'clickstack_save_dashboard', {
+      const result = await callTool(ctx.client!, 'cbt_save_dashboard', {
         name: 'OnClick dashboard by id',
         tiles: [
           {
@@ -3238,7 +2949,7 @@ describe('MCP Dashboard Tools - clickstack_save_dashboard', () => {
 
     it('should round-trip a table tile with an external onClick link', async () => {
       const sourceId = ctx.traceSource._id.toString();
-      const result = await callTool(ctx.client!, 'clickstack_save_dashboard', {
+      const result = await callTool(ctx.client!, 'cbt_save_dashboard', {
         name: 'OnClick external link',
         tiles: [
           {
@@ -3270,13 +2981,9 @@ describe('MCP Dashboard Tools - clickstack_save_dashboard', () => {
           'https://grafana.example.com/d/abc?var-service={{ServiceName}}',
       });
 
-      const getResult = await callTool(
-        ctx.client!,
-        'clickstack_get_dashboard',
-        {
-          id: output.id,
-        },
-      );
+      const getResult = await callTool(ctx.client!, 'cbt_get_dashboard', {
+        id: output.id,
+      });
       const fetched = JSON.parse(getFirstText(getResult));
       expect(fetched.tiles[0].config.onClick).toEqual(
         output.tiles[0].config.onClick,
@@ -3285,7 +2992,7 @@ describe('MCP Dashboard Tools - clickstack_save_dashboard', () => {
 
     it('should round-trip a templated dashboard onClick (mode=template)', async () => {
       const sourceId = ctx.traceSource._id.toString();
-      const result = await callTool(ctx.client!, 'clickstack_save_dashboard', {
+      const result = await callTool(ctx.client!, 'cbt_save_dashboard', {
         name: 'OnClick dashboard by template',
         tiles: [
           {
@@ -3327,7 +3034,7 @@ describe('MCP Dashboard Tools - clickstack_save_dashboard', () => {
     it('should round-trip onClick on a raw SQL table tile', async () => {
       const connectionId = ctx.connection._id.toString();
       const sourceId = ctx.traceSource._id.toString();
-      const result = await callTool(ctx.client!, 'clickstack_save_dashboard', {
+      const result = await callTool(ctx.client!, 'cbt_save_dashboard', {
         name: 'SQL onClick',
         tiles: [
           {
@@ -3378,7 +3085,7 @@ describe('MCP Dashboard Tools - clickstack_save_dashboard', () => {
     it('should reject a table tile onClick referencing a non-existent dashboard', async () => {
       const sourceId = ctx.traceSource._id.toString();
       const ghostDashboardId = new mongoose.Types.ObjectId().toString();
-      const result = await callTool(ctx.client!, 'clickstack_save_dashboard', {
+      const result = await callTool(ctx.client!, 'cbt_save_dashboard', {
         name: 'OnClick missing dashboard',
         tiles: [
           {
@@ -3426,7 +3133,7 @@ describe('MCP Dashboard Tools - clickstack_save_dashboard', () => {
       });
       const sourceId = ctx.traceSource._id.toString();
 
-      const result = await callTool(ctx.client!, 'clickstack_save_dashboard', {
+      const result = await callTool(ctx.client!, 'cbt_save_dashboard', {
         name: 'OnClick metric source',
         tiles: [
           {
@@ -3459,7 +3166,7 @@ describe('MCP Dashboard Tools - clickstack_save_dashboard', () => {
       // input schema and surfaces as the SDK's "Input validation error"
       // envelope rather than a custom 400 message.
       const sourceId = ctx.traceSource._id.toString();
-      const result = await callTool(ctx.client!, 'clickstack_save_dashboard', {
+      const result = await callTool(ctx.client!, 'cbt_save_dashboard', {
         name: 'OnClick bad object id',
         tiles: [
           {
@@ -3487,7 +3194,7 @@ describe('MCP Dashboard Tools - clickstack_save_dashboard', () => {
       // future tightening of the schema doesn't quietly change it
       // without updating the docs that callers rely on.
       const sourceId = ctx.traceSource._id.toString();
-      const result = await callTool(ctx.client!, 'clickstack_save_dashboard', {
+      const result = await callTool(ctx.client!, 'cbt_save_dashboard', {
         name: 'OnClick no whereLanguage',
         tiles: [
           {
@@ -3518,7 +3225,7 @@ describe('MCP Dashboard Tools - clickstack_save_dashboard', () => {
       // The schema is a discriminated union on `type`; a bogus type
       // must be rejected up front.
       const sourceId = ctx.traceSource._id.toString();
-      const result = await callTool(ctx.client!, 'clickstack_save_dashboard', {
+      const result = await callTool(ctx.client!, 'cbt_save_dashboard', {
         name: 'OnClick bad type',
         tiles: [
           {
@@ -3546,48 +3253,40 @@ describe('MCP Dashboard Tools - clickstack_save_dashboard', () => {
       // mirrors POST: missing dashboards are rejected with the same
       // message.
       const sourceId = ctx.traceSource._id.toString();
-      const createResult = await callTool(
-        ctx.client!,
-        'clickstack_save_dashboard',
-        {
-          name: 'OnClick update validation',
-          tiles: [
-            {
-              name: 'Top Services',
-              config: {
-                displayType: 'table',
-                sourceId,
-                select: [{ aggFn: 'count' }],
-              },
+      const createResult = await callTool(ctx.client!, 'cbt_save_dashboard', {
+        name: 'OnClick update validation',
+        tiles: [
+          {
+            name: 'Top Services',
+            config: {
+              displayType: 'table',
+              sourceId,
+              select: [{ aggFn: 'count' }],
             },
-          ],
-        },
-      );
+          },
+        ],
+      });
       expect(createResult.isError).toBeFalsy();
       const created = JSON.parse(getFirstText(createResult));
 
       const ghostDashboardId = new mongoose.Types.ObjectId().toString();
-      const updateResult = await callTool(
-        ctx.client!,
-        'clickstack_save_dashboard',
-        {
-          id: created.id,
-          name: 'OnClick update validation',
-          tiles: [
-            {
-              ...created.tiles[0],
-              config: {
-                ...created.tiles[0].config,
-                onClick: {
-                  type: 'dashboard',
-                  target: { mode: 'id', id: ghostDashboardId },
-                  whereLanguage: 'sql',
-                },
+      const updateResult = await callTool(ctx.client!, 'cbt_save_dashboard', {
+        id: created.id,
+        name: 'OnClick update validation',
+        tiles: [
+          {
+            ...created.tiles[0],
+            config: {
+              ...created.tiles[0].config,
+              onClick: {
+                type: 'dashboard',
+                target: { mode: 'id', id: ghostDashboardId },
+                whereLanguage: 'sql',
               },
             },
-          ],
-        },
-      );
+          },
+        ],
+      });
 
       expect(updateResult.isError).toBe(true);
       const text = getFirstText(updateResult);
@@ -3647,14 +3346,10 @@ describe('MCP Dashboard Tools - clickstack_save_dashboard', () => {
         // tile config must keep the flag: a dropped isDelta silently makes
         // the tile chart raw gauge values instead of per-bucket deltas.
         const metricSource = await makeMetricSource();
-        const result = await callTool(
-          ctx.client!,
-          'clickstack_save_dashboard',
-          {
-            name: `Gauge delta dashboard (${_label})`,
-            tiles: [gaugeTile(deltaFlag, metricSource._id.toString())],
-          },
-        );
+        const result = await callTool(ctx.client!, 'cbt_save_dashboard', {
+          name: `Gauge delta dashboard (${_label})`,
+          tiles: [gaugeTile(deltaFlag, metricSource._id.toString())],
+        });
 
         expect(result.isError).toBeFalsy();
         const output = JSON.parse(getFirstText(result));
@@ -3668,7 +3363,7 @@ describe('MCP Dashboard Tools - clickstack_save_dashboard', () => {
 
     it('rejects a delta on a non-gauge metric', async () => {
       const metricSource = await makeMetricSource();
-      const result = await callTool(ctx.client!, 'clickstack_save_dashboard', {
+      const result = await callTool(ctx.client!, 'cbt_save_dashboard', {
         name: 'Sum delta dashboard',
         tiles: [
           gaugeTile(
@@ -3701,7 +3396,7 @@ describe('MCP Dashboard Tools - clickstack_save_dashboard', () => {
     it('persists savedFilterValues on create and echoes them back', async () => {
       const sourceId = ctx.traceSource._id.toString();
 
-      const result = await callTool(ctx.client!, 'clickstack_save_dashboard', {
+      const result = await callTool(ctx.client!, 'cbt_save_dashboard', {
         name: 'Defaults on create',
         tiles: [tile(sourceId)],
         filters: [
@@ -3738,7 +3433,7 @@ describe('MCP Dashboard Tools - clickstack_save_dashboard', () => {
     it('defaults an omitted type to sql on a condition entry', async () => {
       const sourceId = ctx.traceSource._id.toString();
 
-      const result = await callTool(ctx.client!, 'clickstack_save_dashboard', {
+      const result = await callTool(ctx.client!, 'cbt_save_dashboard', {
         name: 'Implicit sql type',
         tiles: [tile(sourceId)],
         savedFilterValues: [{ condition: "ServiceName IN ('api')" }],
@@ -3751,25 +3446,19 @@ describe('MCP Dashboard Tools - clickstack_save_dashboard', () => {
       ]);
     });
 
-    it('returns savedFilterValues from clickstack_get_dashboard', async () => {
+    it('returns savedFilterValues from cbt_get_dashboard', async () => {
       const sourceId = ctx.traceSource._id.toString();
 
-      const createResult = await callTool(
-        ctx.client!,
-        'clickstack_save_dashboard',
-        {
-          name: 'Defaults readable on get',
-          tiles: [tile(sourceId)],
-          savedFilterValues: [{ type: 'sql', condition: 'StatusCode = 200' }],
-        },
-      );
+      const createResult = await callTool(ctx.client!, 'cbt_save_dashboard', {
+        name: 'Defaults readable on get',
+        tiles: [tile(sourceId)],
+        savedFilterValues: [{ type: 'sql', condition: 'StatusCode = 200' }],
+      });
       const created = JSON.parse(getFirstText(createResult));
 
-      const getResult = await callTool(
-        ctx.client!,
-        'clickstack_get_dashboard',
-        { id: created.id },
-      );
+      const getResult = await callTool(ctx.client!, 'cbt_get_dashboard', {
+        id: created.id,
+      });
       const fetched = JSON.parse(getFirstText(getResult));
       expect(fetched.savedFilterValues).toEqual([
         { type: 'sql', condition: 'StatusCode = 200' },
@@ -3779,26 +3468,18 @@ describe('MCP Dashboard Tools - clickstack_save_dashboard', () => {
     it('leaves saved defaults untouched when the update omits the field', async () => {
       const sourceId = ctx.traceSource._id.toString();
 
-      const createResult = await callTool(
-        ctx.client!,
-        'clickstack_save_dashboard',
-        {
-          name: 'Keep defaults on update',
-          tiles: [tile(sourceId)],
-          savedFilterValues: [{ type: 'sql', condition: 'StatusCode = 200' }],
-        },
-      );
+      const createResult = await callTool(ctx.client!, 'cbt_save_dashboard', {
+        name: 'Keep defaults on update',
+        tiles: [tile(sourceId)],
+        savedFilterValues: [{ type: 'sql', condition: 'StatusCode = 200' }],
+      });
       const created = JSON.parse(getFirstText(createResult));
 
-      const updateResult = await callTool(
-        ctx.client!,
-        'clickstack_save_dashboard',
-        {
-          id: created.id,
-          name: 'Keep defaults on update (renamed)',
-          tiles: [tile(sourceId)],
-        },
-      );
+      const updateResult = await callTool(ctx.client!, 'cbt_save_dashboard', {
+        id: created.id,
+        name: 'Keep defaults on update (renamed)',
+        tiles: [tile(sourceId)],
+      });
       expect(updateResult.isError).toBeFalsy();
       const updated = JSON.parse(getFirstText(updateResult));
       expect(updated.savedFilterValues).toEqual([
@@ -3809,27 +3490,19 @@ describe('MCP Dashboard Tools - clickstack_save_dashboard', () => {
     it('clears saved defaults when the update passes an empty array', async () => {
       const sourceId = ctx.traceSource._id.toString();
 
-      const createResult = await callTool(
-        ctx.client!,
-        'clickstack_save_dashboard',
-        {
-          name: 'Clear defaults on update',
-          tiles: [tile(sourceId)],
-          savedFilterValues: [{ type: 'sql', condition: 'StatusCode = 200' }],
-        },
-      );
+      const createResult = await callTool(ctx.client!, 'cbt_save_dashboard', {
+        name: 'Clear defaults on update',
+        tiles: [tile(sourceId)],
+        savedFilterValues: [{ type: 'sql', condition: 'StatusCode = 200' }],
+      });
       const created = JSON.parse(getFirstText(createResult));
 
-      const updateResult = await callTool(
-        ctx.client!,
-        'clickstack_save_dashboard',
-        {
-          id: created.id,
-          name: 'Clear defaults on update',
-          tiles: [tile(sourceId)],
-          savedFilterValues: [],
-        },
-      );
+      const updateResult = await callTool(ctx.client!, 'cbt_save_dashboard', {
+        id: created.id,
+        name: 'Clear defaults on update',
+        tiles: [tile(sourceId)],
+        savedFilterValues: [],
+      });
       expect(updateResult.isError).toBeFalsy();
       const updated = JSON.parse(getFirstText(updateResult));
       expect(updated.savedFilterValues).toEqual([]);
@@ -3838,29 +3511,21 @@ describe('MCP Dashboard Tools - clickstack_save_dashboard', () => {
       expect(stored?.savedFilterValues).toEqual([]);
     });
 
-    it('sets savedFilterValues via clickstack_patch_dashboard', async () => {
+    it('sets savedFilterValues via cbt_patch_dashboard', async () => {
       const sourceId = ctx.traceSource._id.toString();
 
-      const createResult = await callTool(
-        ctx.client!,
-        'clickstack_save_dashboard',
-        {
-          name: 'Patch defaults',
-          tiles: [tile(sourceId)],
-        },
-      );
+      const createResult = await callTool(ctx.client!, 'cbt_save_dashboard', {
+        name: 'Patch defaults',
+        tiles: [tile(sourceId)],
+      });
       const created = JSON.parse(getFirstText(createResult));
 
-      const patchResult = await callTool(
-        ctx.client!,
-        'clickstack_patch_dashboard',
-        {
-          dashboardId: created.id,
-          savedFilterValues: [
-            { type: 'sql', condition: "ServiceName IN ('api')" },
-          ],
-        },
-      );
+      const patchResult = await callTool(ctx.client!, 'cbt_patch_dashboard', {
+        dashboardId: created.id,
+        savedFilterValues: [
+          { type: 'sql', condition: "ServiceName IN ('api')" },
+        ],
+      });
       expect(patchResult.isError).toBeFalsy();
       const patched = JSON.parse(getFirstText(patchResult));
       expect(patched.savedFilterValues).toEqual([
@@ -3879,32 +3544,27 @@ describe('MCP Dashboard Tools - clickstack_save_dashboard', () => {
     it('patches a tile and savedFilterValues in the same call', async () => {
       const sourceId = ctx.traceSource._id.toString();
 
-      const createResult = await callTool(
-        ctx.client!,
-        'clickstack_save_dashboard',
-        { name: 'Combined patch', tiles: [tile(sourceId)] },
-      );
+      const createResult = await callTool(ctx.client!, 'cbt_save_dashboard', {
+        name: 'Combined patch',
+        tiles: [tile(sourceId)],
+      });
       const created = JSON.parse(getFirstText(createResult));
       const tileId = created.tiles[0].id;
 
-      const patchResult = await callTool(
-        ctx.client!,
-        'clickstack_patch_dashboard',
-        {
-          dashboardId: created.id,
-          savedFilterValues: [
-            { type: 'sql', condition: "ServiceName IN ('api')" },
-          ],
-          tileId,
-          tile: {
-            config: {
-              displayType: 'table',
-              sourceId,
-              select: [{ aggFn: 'count', where: '' }],
-            },
+      const patchResult = await callTool(ctx.client!, 'cbt_patch_dashboard', {
+        dashboardId: created.id,
+        savedFilterValues: [
+          { type: 'sql', condition: "ServiceName IN ('api')" },
+        ],
+        tileId,
+        tile: {
+          config: {
+            displayType: 'table',
+            sourceId,
+            select: [{ aggFn: 'count', where: '' }],
           },
         },
-      );
+      });
       expect(patchResult.isError).toBeFalsy();
       const patched = JSON.parse(getFirstText(patchResult));
       expect(patched.savedFilterValues).toEqual([
@@ -3925,7 +3585,7 @@ describe('MCP Dashboard Tools - clickstack_save_dashboard', () => {
     it('warns when a variable saved value names no declared filter', async () => {
       const sourceId = ctx.traceSource._id.toString();
 
-      const result = await callTool(ctx.client!, 'clickstack_save_dashboard', {
+      const result = await callTool(ctx.client!, 'cbt_save_dashboard', {
         name: 'Variable default typo',
         tiles: [tile(sourceId)],
         filters: [
@@ -3954,7 +3614,7 @@ describe('MCP Dashboard Tools - clickstack_save_dashboard', () => {
     it('does not warn when a variable saved value matches a declared filter', async () => {
       const sourceId = ctx.traceSource._id.toString();
 
-      const result = await callTool(ctx.client!, 'clickstack_save_dashboard', {
+      const result = await callTool(ctx.client!, 'cbt_save_dashboard', {
         name: 'Variable default match',
         tiles: [tile(sourceId)],
         filters: [
@@ -3984,23 +3644,18 @@ describe('MCP Dashboard Tools - clickstack_save_dashboard', () => {
     it('warns on a patch whose variable saved value names no declared filter', async () => {
       const sourceId = ctx.traceSource._id.toString();
 
-      const createResult = await callTool(
-        ctx.client!,
-        'clickstack_save_dashboard',
-        { name: 'Patch variable typo', tiles: [tile(sourceId)] },
-      );
+      const createResult = await callTool(ctx.client!, 'cbt_save_dashboard', {
+        name: 'Patch variable typo',
+        tiles: [tile(sourceId)],
+      });
       const created = JSON.parse(getFirstText(createResult));
 
-      const patchResult = await callTool(
-        ctx.client!,
-        'clickstack_patch_dashboard',
-        {
-          dashboardId: created.id,
-          savedFilterValues: [
-            { type: 'variable', name: 'ghost', values: ['api'] },
-          ],
-        },
-      );
+      const patchResult = await callTool(ctx.client!, 'cbt_patch_dashboard', {
+        dashboardId: created.id,
+        savedFilterValues: [
+          { type: 'variable', name: 'ghost', values: ['api'] },
+        ],
+      });
       expect(patchResult.isError).toBeFalsy();
       const patched = JSON.parse(getFirstText(patchResult));
       expect(patched.warnings).toEqual(
@@ -4011,21 +3666,15 @@ describe('MCP Dashboard Tools - clickstack_save_dashboard', () => {
     it('rejects a patch with no updatable fields', async () => {
       const sourceId = ctx.traceSource._id.toString();
 
-      const createResult = await callTool(
-        ctx.client!,
-        'clickstack_save_dashboard',
-        {
-          name: 'Empty patch',
-          tiles: [tile(sourceId)],
-        },
-      );
+      const createResult = await callTool(ctx.client!, 'cbt_save_dashboard', {
+        name: 'Empty patch',
+        tiles: [tile(sourceId)],
+      });
       const created = JSON.parse(getFirstText(createResult));
 
-      const patchResult = await callTool(
-        ctx.client!,
-        'clickstack_patch_dashboard',
-        { dashboardId: created.id },
-      );
+      const patchResult = await callTool(ctx.client!, 'cbt_patch_dashboard', {
+        dashboardId: created.id,
+      });
       expect(patchResult.isError).toBe(true);
       expect(getFirstText(patchResult)).toContain('savedFilterValues');
     });

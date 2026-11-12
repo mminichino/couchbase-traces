@@ -31,7 +31,7 @@ const IGNORED_SECTION = /package changelogs/i;
 
 // The marker the release workflow writes under each heading. Kept in sync with
 // .github/scripts/release-notes.mjs, and pinned there by a test.
-const RELEASE_NOTES_MARKER = /<!-- hyperdx-release-notes[^>]*-->\n?/g;
+const RELEASE_NOTES_MARKER = /<!-- cbt-release-notes[^>]*-->\n?/g;
 
 // The headline: a line that is nothing but bold text, which is how the notes
 // open a release before its summary paragraph.

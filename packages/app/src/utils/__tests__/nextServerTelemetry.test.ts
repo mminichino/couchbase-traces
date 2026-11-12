@@ -64,8 +64,8 @@ describe('getNextServerServiceName', () => {
 
   it('suffixes a name that already ends in -next', () => {
     expect(
-      getNextServerServiceName({ OTEL_SERVICE_NAME: 'hyperdx-next' }),
-    ).toBe('hyperdx-next-next');
+      getNextServerServiceName({ OTEL_SERVICE_NAME: 'couchbase-traces-next' }),
+    ).toBe('couchbase-traces-next-next');
   });
 });
 
@@ -77,7 +77,7 @@ describe('isStaticAssetRequest', () => {
     '/__nextjs_original-stack-frames',
     '/__ENV.js',
     '/whats-new.json',
-    '/favicons/clickstack/favicon.svg',
+    '/favicons/couchbase-traces/favicon.svg',
     '/pyodide/pyodide.js',
     '/pyodide/pyodide.asm.wasm',
     '/drain3-0.9.11-py3-none-any.whl',
@@ -96,9 +96,9 @@ describe('isStaticAssetRequest', () => {
   });
 
   it('matches below the base path', () => {
-    expect(isStaticAssetRequest('/hdx/_next/static/a.js', '/hdx')).toBe(true);
-    expect(isStaticAssetRequest('/hdx/__ENV.js', '/hdx')).toBe(true);
-    expect(isStaticAssetRequest('/hdx/api/me', '/hdx')).toBe(false);
+    expect(isStaticAssetRequest('/cbt/_next/static/a.js', '/cbt')).toBe(true);
+    expect(isStaticAssetRequest('/cbt/__ENV.js', '/cbt')).toBe(true);
+    expect(isStaticAssetRequest('/cbt/api/me', '/cbt')).toBe(false);
   });
 });
 
@@ -189,12 +189,12 @@ describe('startNextServerTelemetry', () => {
   });
 
   it('skips static asset requests below the base path', async () => {
-    mockBasePath = '/hdx';
+    mockBasePath = '/cbt';
 
     await start({ CBT_API_KEY: 'ingest-key' });
 
     const hook = ignoreHook();
-    expect(hook({ url: '/hdx/_next/static/a.js' })).toBe(true);
-    expect(hook({ url: '/hdx/api/me' })).toBe(false);
+    expect(hook({ url: '/cbt/_next/static/a.js' })).toBe(true);
+    expect(hook({ url: '/cbt/api/me' })).toBe(false);
   });
 });

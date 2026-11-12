@@ -35,14 +35,14 @@ const webhookDispatcher = new Agent({ connect: { lookup: webhookLookup } });
 // happens in the background task, so failures only show up in logs today.
 // `service` and `outcome` are bounded enums (see agent_docs/observability.md).
 export const webhookDeliveryCounter = getCounter(
-  'hyperdx.alerts.webhook_deliveries',
+  'cbt.alerts.webhook_deliveries',
   {
     description:
       'Count of alert webhook delivery attempts, labeled by service (slack, generic, incidentio) and outcome (success, error).',
   },
 );
 export const webhookDeliveryDuration = getHistogram(
-  'hyperdx.alerts.webhook_delivery.duration_ms',
+  'cbt.alerts.webhook_delivery.duration_ms',
   {
     description:
       'Duration of an alert webhook delivery attempt, labeled by service.',

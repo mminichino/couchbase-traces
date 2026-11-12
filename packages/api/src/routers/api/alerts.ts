@@ -142,8 +142,8 @@ router.get(
       } = await getAlertsPage(teamId, params);
 
       setBusinessContext({
-        'hyperdx.alerts.list.page_size': alerts.length,
-        'hyperdx.alerts.list.limit': params.limit,
+        'cbt.alerts.list.page_size': alerts.length,
+        'cbt.alerts.list.limit': params.limit,
       });
 
       const historyMap = await getRecentAlertHistoriesBatch(

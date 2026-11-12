@@ -62,7 +62,7 @@ export function registerTraceBreakdown({
   const { teamId } = context;
 
   registerTool(
-    'clickstack_trace_top_time_consuming_operations',
+    'cbt_trace_top_time_consuming_operations',
     {
       title: 'Top Time-Consuming Operations Across Matching Traces',
       annotations: READ_ONLY_TOOL,
@@ -81,12 +81,12 @@ export function registerTraceBreakdown({
       const source = await getSource(teamId.toString(), input.sourceId);
       if (!source) {
         return mcpUserError(
-          `Source not found: ${input.sourceId}. Call clickstack_list_sources to find available source IDs.`,
+          `Source not found: ${input.sourceId}. Call cbt_list_sources to find available source IDs.`,
         );
       }
       if (source.kind !== SourceKind.Trace) {
         return mcpUserError(
-          `Source ${input.sourceId} is kind="${source.kind}". clickstack_trace_top_time_consuming_operations requires a source of kind="trace".`,
+          `Source ${input.sourceId} is kind="${source.kind}". cbt_trace_top_time_consuming_operations requires a source of kind="trace".`,
         );
       }
 

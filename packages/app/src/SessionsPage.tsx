@@ -591,7 +591,7 @@ function SessionSetupInstructions() {
               <>
                 Install the{' '}
                 <Anchor
-                  href="https://clickhouse.com/docs/use-cases/observability/clickstack/sdks/browser"
+                  href="https://opentelemetry.io/docs/languages/js/"
                   target="_blank"
                   rel="noopener noreferrer"
                   size="xs"

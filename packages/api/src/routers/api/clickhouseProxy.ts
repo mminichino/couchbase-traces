@@ -200,7 +200,7 @@ const getConnection: RequestHandler =
       };
       next();
     } catch (e) {
-      console.error('Error setting up proxy hdx connection', e);
+      console.error('Error setting up proxy cbt connection', e);
       next(e);
     }
   };

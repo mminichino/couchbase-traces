@@ -1,6 +1,6 @@
 # Data Visualization Colors
 
-> Single source of truth for chart and visualization colors in ClickStack. Read
+> Single source of truth for chart and visualization colors in Couchbase Traces. Read
 > this before adding, changing, or hard-coding a color in any chart, sparkline,
 > heatmap, legend, status pill, or other data display.
 
@@ -33,9 +33,8 @@ patterns:
 The categorical palette is **unified across themes** — based on Observable 10
 ([d3 schemeObservable10](https://observablehq.com/@d3/color-schemes)), with
 `chart-blue` swapped to `#437eef` so it matches the brand link color
-(`--click-global-color-text-link-default` for ClickStack, same hue for HyperDX
-series). All other hues are straight from Observable 10. Identical on HyperDX
-and ClickStack:
+(`--click-global-color-text-link-default`). All other hues are straight from
+Observable 10. Identical in every theme:
 
 | Token              | Hex       |
 | ------------------ | --------- |
@@ -80,7 +79,7 @@ update `SEMANTIC_CHART_PALETTE` in `utils.ts` too — the SCSS and JS sources ar
 intentionally mirrored.**
 
 Chart series colors are not the brand accent. `success` and `info` reuse
-categorical `chart-green` and `chart-blue`. The yellow ClickStack accent stays
+categorical `chart-green` and `chart-blue`. The yellow Couchbase Traces accent stays
 in non-chart chrome (Mantine accent, sidebar, Click UI globals).
 
 ### Semantic chart colors (`--color-chart-{success|warning|error|info}`)
@@ -166,20 +165,20 @@ the upcoming external API surface are self-documenting.
 Existing stored configs keep working. The mapping:
 
 ```text
-chart-1  -> chart-green       (was HyperDX brand green at slot 1)
-chart-2  -> chart-blue        (was HyperDX slot 2)
+chart-1  -> chart-green       (was Couchbase Traces brand green at slot 1)
+chart-2  -> chart-blue        (was Couchbase Traces slot 2)
 chart-3  -> chart-orange
 ...
 chart-10 -> chart-gray
 ```
 
-It preserves the HyperDX slot ordering from #2265, so HyperDX users see no
-visual change.
+It preserves the slot ordering from #2265, so existing users see no visual
+change.
 
-> **⚠️ ClickStack legacy color caveat.** Pre-rename ClickStack used a different
-> slot ordering than HyperDX (`--color-chart-1` was brand blue `#437eef`, not
+> **⚠️ Legacy color caveat.** The pre-rename theme used a different
+> slot ordering (`--color-chart-1` was brand blue `#437eef`, not
 > brand green; `--color-chart-2` was orange, not blue; etc.). Because the
-> migration map preserves HyperDX slot ordering, any ClickStack dashboard saved
+> migration map preserves the #2265 slot ordering, any dashboard saved
 > via #2265 will visually shift: stored `chart-1` flips from brand blue to
 > Observable green, `chart-2` flips from orange to blue, and so on. We chose
 > this trade-off deliberately over branching the legacy map by active theme:
@@ -224,8 +223,8 @@ Migration happens at two complementary layers instead:
 - Selected at the call site by `useMantineColorScheme()` and
   `colorScheme === 'light' ? lightPalette : darkPalette`.
 
-These are **scheme-aware, not brand-aware**: HyperDX dark and ClickStack dark
-share the same heatmap gradient, same for light. Red is intentionally omitted
+These are **scheme-aware, not brand-aware**: every dark theme shares the same
+heatmap gradient, same for light. Red is intentionally omitted
 from the high end so it can be reserved for error overlays.
 
 `DBHeatmapChart.tsx` re-exports `darkPalette` and `lightPalette`.

@@ -21,9 +21,9 @@ export const SEMCONV_ATTRIBUTES_FIXTURE: SpanAttributeMap = {
   'gen_ai.system_instructions':
     '[{"type":"text","content":"You are a helpful assistant."}]',
   'gen_ai.input.messages':
-    '[{"role":"user","parts":[{"type":"text","content":"What is HyperDX?"}]}]',
+    '[{"role":"user","parts":[{"type":"text","content":"What is Couchbase Traces?"}]}]',
   'gen_ai.output.messages':
-    '[{"role":"assistant","parts":[{"type":"text","content":"HyperDX is an observability platform."}],"finish_reason":"stop"}]',
+    '[{"role":"assistant","parts":[{"type":"text","content":"Couchbase Traces is an observability platform."}],"finish_reason":"stop"}]',
 };
 
 /** OpenLLMetry (Traceloop) key-path style. */

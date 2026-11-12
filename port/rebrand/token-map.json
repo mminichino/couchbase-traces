@@ -3,9 +3,9 @@
   "entries": [
     {
       "token": "00004_hyperdx_sessions.sql",
-      "replacement": "00004_couchbase_traces_sessions.sql",
-      "status": "proposed",
-      "reason": null,
+      "replacement": null,
+      "status": "allowed",
+      "reason": "engine_reference",
       "occurrences": 5,
       "files": [
         "packages/otel-collector/cmd/migrate/main.go",
@@ -14,9 +14,9 @@
     },
     {
       "token": "00004_hyperdx_sessions_compat.sql",
-      "replacement": "00004_couchbase_traces_sessions_compat.sql",
-      "status": "proposed",
-      "reason": null,
+      "replacement": null,
+      "status": "allowed",
+      "reason": "engine_reference",
       "occurrences": 5,
       "files": [
         "packages/otel-collector/cmd/migrate/main.go",
@@ -25,29 +25,25 @@
     },
     {
       "token": "2FClickStack",
-      "replacement": "2FCouchbaseTraces",
-      "status": "proposed",
+      "replacement": "2Fcouchbase-traces",
+      "status": "approved",
       "reason": null,
-      "occurrences": 1,
-      "files": [
-        "README.md"
-      ]
+      "occurrences": 0,
+      "files": []
     },
     {
       "token": "@email-mike@hyperdx.io",
-      "replacement": "@email-mike@couchbase-traces.io",
-      "status": "proposed",
+      "replacement": "@email-mike@example.com",
+      "status": "approved",
       "reason": null,
-      "occurrences": 1,
-      "files": [
-        "packages/api/src/tasks/checkAlerts/__tests__/checkAlerts.int.test.ts"
-      ]
+      "occurrences": 0,
+      "files": []
     },
     {
       "token": "@hyperdx",
-      "replacement": "@couchbase-traces",
-      "status": "proposed",
-      "reason": null,
+      "replacement": null,
+      "status": "allowed",
+      "reason": "external_dependency",
       "occurrences": 2,
       "files": [
         ".yarnrc.yml",
@@ -56,19 +52,17 @@
     },
     {
       "token": "@hyperdx.io",
-      "replacement": "@couchbase-traces.io",
-      "status": "proposed",
+      "replacement": "@example.com",
+      "status": "approved",
       "reason": null,
-      "occurrences": 1,
-      "files": [
-        "packages/app/tests/e2e/global-setup-fullstack.ts"
-      ]
+      "occurrences": 0,
+      "files": []
     },
     {
       "token": "@service-accounts.hyperdx.invalid",
-      "replacement": "@service-accounts.couchbase-traces.invalid",
-      "status": "proposed",
-      "reason": null,
+      "replacement": null,
+      "status": "allowed",
+      "reason": "internal_identifier",
       "occurrences": 1,
       "files": [
         "packages/api/src/controllers/orgApiKey.ts"
@@ -76,19 +70,17 @@
     },
     {
       "token": "CLICKSTACK_ACCESS_KEY",
-      "replacement": "COUCHBASE_TRACES_ACCESS_KEY",
-      "status": "proposed",
+      "replacement": "CBT_ACCESS_KEY",
+      "status": "approved",
       "reason": null,
-      "occurrences": 5,
-      "files": [
-        "MCP.md"
-      ]
+      "occurrences": 0,
+      "files": []
     },
     {
       "token": "CLICKSTACK_API_KEY",
-      "replacement": "COUCHBASE_TRACES_API_KEY",
-      "status": "proposed",
-      "reason": null,
+      "replacement": null,
+      "status": "allowed",
+      "reason": "external_dependency",
       "occurrences": 3,
       "files": [
         "packages/common-utils/src/__tests__/iac.test.ts",
@@ -97,32 +89,24 @@
     },
     {
       "token": "CLICKSTACK_CAPTURE_HTTP_BODY",
-      "replacement": "COUCHBASE_TRACES_CAPTURE_HTTP_BODY",
-      "status": "proposed",
-      "reason": null,
-      "occurrences": 4,
+      "replacement": null,
+      "status": "allowed",
+      "reason": "external_dependency",
+      "occurrences": 1,
       "files": [
-        "CHANGELOG.md",
-        "packages/api/.env.development",
-        "packages/api/CHANGELOG.md",
-        "packages/app/CHANGELOG.md"
+        "packages/api/.env.development"
       ]
     },
     {
       "token": "ClickHouse Cloud",
       "replacement": null,
-      "status": "review",
-      "reason": null,
-      "occurrences": 11,
+      "status": "allowed",
+      "reason": "pending_decision",
+      "occurrences": 5,
       "files": [
         ".github/ISSUE_TEMPLATE/bug-report.md",
-        "CHANGELOG.md",
-        "README.md",
         "agent_docs/themes.md",
-        "packages/app/CHANGELOG.md",
-        "packages/app/src/components/AppNav/AppNav.components.tsx",
         "packages/app/src/components/TeamSettings/IacMigrationSection.tsx",
-        "packages/common-utils/CHANGELOG.md",
         "packages/common-utils/src/__tests__/clickhouseVersion.test.ts",
         "packages/common-utils/src/core/metadata.ts"
       ]
@@ -130,47 +114,28 @@
     {
       "token": "ClickStack",
       "replacement": "Couchbase Traces",
-      "status": "proposed",
+      "status": "approved",
       "reason": null,
-      "occurrences": 232,
+      "occurrences": 4,
       "files": [
-        ".cursor/rules/ui-sentence-case.mdc",
-        ".github/VOUCHED.td",
-        ".github/prompts/code-review.md",
-        "CHANGELOG.md",
-        "CONTRIBUTING.md",
-        "DEPLOY.md",
-        "LOCAL.md",
-        "MCP.md",
-        "README.md",
-        "SECURITY.md",
-        "agent_docs/README.md",
-        "agent_docs/architecture.md",
-        "agent_docs/code_style.md",
-        "agent_docs/data_viz_colors.md",
-        "agent_docs/evals.md",
-        "agent_docs/observability.md",
-        "agent_docs/page_layout.md",
-        "agent_docs/tech_stack.md",
-        "agent_docs/themes.md",
-        "docker/otel-collector/schema/README.md"
+        "packages/app/src/components/Iac/__tests__/ResourceTerraformPopover.test.tsx",
+        "packages/app/src/components/__tests__/DBRowSidePanelErrorState.test.tsx",
+        "packages/app/tests/e2e/core/navigation.spec.ts"
       ]
     },
     {
       "token": "ClickStack-helm-charts",
-      "replacement": "CouchbaseTraces-helm-charts",
-      "status": "proposed",
+      "replacement": "couchbase-traces-helm-charts",
+      "status": "approved",
       "reason": null,
-      "occurrences": 1,
-      "files": [
-        ".github/workflows/release.yml"
-      ]
+      "occurrences": 0,
+      "files": []
     },
     {
       "token": "ClickStackOnboarding",
-      "replacement": "CouchbaseTracesOnboarding",
-      "status": "proposed",
-      "reason": null,
+      "replacement": null,
+      "status": "allowed",
+      "reason": "internal_identifier",
       "occurrences": 2,
       "files": [
         "agent_docs/code_style.md",
@@ -179,90 +144,71 @@
     },
     {
       "token": "HDX",
-      "replacement": "cbt",
-      "status": "review",
+      "replacement": "CBT",
+      "status": "approved",
+      "reason": null,
+      "occurrences": 0,
+      "files": []
+    },
+    {
+      "token": "HYPERDX_",
+      "replacement": "CBT_",
+      "status": "approved",
       "reason": null,
       "occurrences": 1,
       "files": [
-        "packages/hdx-eval/scripts/viewer/public/index.html"
+        "scripts/__tests__/slots.test.mjs"
       ]
     },
     {
       "token": "HyperDX",
       "replacement": "Couchbase Traces",
-      "status": "proposed",
+      "status": "approved",
       "reason": null,
-      "occurrences": 431,
+      "occurrences": 4,
       "files": [
-        ".claude/agents/playwright-test-generator.md",
-        ".claude/agents/playwright-test-healer.md",
-        ".claude/agents/playwright-test-planner.md",
-        ".claude/skills/data-source-icons/SKILL.md",
-        ".claude/skills/playwright/SKILL.md",
-        ".config/wt.toml",
-        ".cursor/rules/playwright.mdc",
-        ".cursor/rules/ui-sentence-case.mdc",
-        ".github/ISSUE_TEMPLATE/bug-report.md",
-        ".github/ISSUE_TEMPLATE/feature-request.md",
-        ".github/prompts/release-changelog.md",
         ".github/scripts/__tests__/release-notes.test.mjs",
-        ".github/scripts/release-notes.mjs",
-        ".github/workflows/release-reminder.yml",
-        ".github/workflows/release.yml",
-        ".opencode/commands/eval-summary.md",
-        ".vex/openssl-mongodb.vex.json",
-        "CHANGELOG.md",
-        "CONTRIBUTING.md",
-        "LOCAL.md"
+        "README.md",
+        "packages/hdx-eval/src/__tests__/deploy-regression.test.ts"
       ]
     },
     {
       "token": "HyperDX-slot-order",
       "replacement": "CouchbaseTraces-slot-order",
-      "status": "proposed",
+      "status": "approved",
       "reason": null,
-      "occurrences": 1,
-      "files": [
-        "packages/common-utils/src/__tests__/guards.test.ts"
-      ]
+      "occurrences": 0,
+      "files": []
     },
     {
       "token": "HyperDX-specific",
-      "replacement": "CouchbaseTraces-specific",
-      "status": "proposed",
+      "replacement": "Couchbase Traces-specific",
+      "status": "approved",
       "reason": null,
-      "occurrences": 5,
-      "files": [
-        "packages/api/openapi.json",
-        "packages/app/styles/_utilities.scss",
-        "packages/otel-collector/README.md"
-      ]
+      "occurrences": 0,
+      "files": []
     },
     {
       "token": "HyperDX.io",
-      "replacement": null,
-      "status": "review",
+      "replacement": "Couchbase Traces",
+      "status": "approved",
       "reason": null,
-      "occurrences": 1,
-      "files": [
-        "packages/app/src/components/AppNav/AppNav.stories.tsx"
-      ]
+      "occurrences": 0,
+      "files": []
     },
     {
       "token": "Hyperdx",
       "replacement": "Couchbase Traces",
-      "status": "proposed",
+      "status": "approved",
       "reason": null,
-      "occurrences": 1,
-      "files": [
-        "packages/app/CHANGELOG.md"
-      ]
+      "occurrences": 0,
+      "files": []
     },
     {
       "token": "HyperdxApiClient",
-      "replacement": "CouchbaseTracesApiClient",
-      "status": "proposed",
-      "reason": null,
+      "replacement": null,
+      "status": "allowed",
+      "reason": "internal_identifier",
       "occurrences": 1,
       "files": [
         "packages/hdx-eval/src/__tests__/api.test.ts"
@@ -270,39 +216,33 @@
     },
     {
       "token": "Non-ClickStack",
-      "replacement": "Non-CouchbaseTraces",
-      "status": "proposed",
+      "replacement": "Non-Couchbase Traces",
+      "status": "approved",
       "reason": null,
-      "occurrences": 1,
-      "files": [
-        "agent_docs/evals.md"
-      ]
+      "occurrences": 0,
+      "files": []
     },
     {
       "token": "ResourceAttributes.hdx.sdk",
       "replacement": "ResourceAttributes.cbt.sdk",
-      "status": "review",
+      "status": "approved",
       "reason": null,
-      "occurrences": 1,
-      "files": [
-        "packages/app/src/components/DBSearchPageFilters/utils.test.ts"
-      ]
+      "occurrences": 0,
+      "files": []
     },
     {
       "token": "ResourceAttributes.hdx.sdk.version",
       "replacement": "ResourceAttributes.cbt.sdk.version",
-      "status": "review",
+      "status": "approved",
       "reason": null,
-      "occurrences": 1,
-      "files": [
-        "packages/app/src/components/__tests__/DBSearchPageFilters.test.tsx"
-      ]
+      "occurrences": 0,
+      "files": []
     },
     {
       "token": "ResourceAttributes.hyperdx.distro",
-      "replacement": "ResourceAttributes.couchbase-traces.distro",
-      "status": "proposed",
-      "reason": null,
+      "replacement": null,
+      "status": "allowed",
+      "reason": "external_dependency",
       "occurrences": 6,
       "files": [
         "packages/common-utils/src/__tests__/utils.test.ts"
@@ -310,9 +250,9 @@
     },
     {
       "token": "__hyperdx_",
-      "replacement": "__couchbase_traces_",
-      "status": "proposed",
-      "reason": null,
+      "replacement": null,
+      "status": "allowed",
+      "reason": "internal_identifier",
       "occurrences": 1,
       "files": [
         "packages/app/tests/e2e/features/search/row-multi-select.spec.ts"
@@ -320,9 +260,9 @@
     },
     {
       "token": "__hyperdx_alias_with",
-      "replacement": "__couchbase_traces_alias_with",
-      "status": "proposed",
-      "reason": null,
+      "replacement": null,
+      "status": "allowed",
+      "reason": "internal_identifier",
       "occurrences": 2,
       "files": [
         "packages/app/src/hooks/useRowWhere.tsx",
@@ -331,9 +271,9 @@
     },
     {
       "token": "__hyperdx_id",
-      "replacement": "__couchbase_traces_id",
-      "status": "proposed",
-      "reason": null,
+      "replacement": null,
+      "status": "allowed",
+      "reason": "internal_identifier",
       "occurrences": 2,
       "files": [
         "packages/app/src/hooks/useRowWhere.tsx",
@@ -342,9 +282,9 @@
     },
     {
       "token": "branch.hyperdxApi",
-      "replacement": "branch.couchbase-tracesApi",
-      "status": "proposed",
-      "reason": null,
+      "replacement": null,
+      "status": "allowed",
+      "reason": "internal_identifier",
       "occurrences": 1,
       "files": [
         "agent_docs/evals.md"
@@ -352,9 +292,9 @@
     },
     {
       "token": "branch.mcps.hyperdx",
-      "replacement": "branch.mcps.couchbase-traces",
-      "status": "proposed",
-      "reason": null,
+      "replacement": null,
+      "status": "allowed",
+      "reason": "internal_identifier",
       "occurrences": 1,
       "files": [
         "agent_docs/evals.md"
@@ -363,18 +303,16 @@
     {
       "token": "clickhouse-clickstack",
       "replacement": "clickhouse-couchbase-traces",
-      "status": "proposed",
+      "status": "approved",
       "reason": null,
-      "occurrences": 2,
-      "files": [
-        ".github/workflows/release.yml"
-      ]
+      "occurrences": 0,
+      "files": []
     },
     {
       "token": "clickhouse_clickstack_",
-      "replacement": "clickhouse_couchbase_traces_",
-      "status": "proposed",
-      "reason": null,
+      "replacement": null,
+      "status": "allowed",
+      "reason": "external_dependency",
       "occurrences": 1,
       "files": [
         "packages/common-utils/src/__tests__/iac.test.ts"
@@ -382,24 +320,20 @@
     },
     {
       "token": "clickhouse_clickstack_alert",
-      "replacement": "clickhouse_couchbase_traces_alert",
-      "status": "proposed",
-      "reason": null,
-      "occurrences": 7,
+      "replacement": null,
+      "status": "allowed",
+      "reason": "external_dependency",
+      "occurrences": 3,
       "files": [
-        "CHANGELOG.md",
-        "packages/api/CHANGELOG.md",
-        "packages/app/CHANGELOG.md",
-        "packages/common-utils/CHANGELOG.md",
         "packages/common-utils/src/__tests__/iac.test.ts",
         "packages/common-utils/src/iac.ts"
       ]
     },
     {
       "token": "clickhouse_clickstack_alert.alert_",
-      "replacement": "clickhouse_couchbase_traces_alert.alert_",
-      "status": "proposed",
-      "reason": null,
+      "replacement": null,
+      "status": "allowed",
+      "reason": "external_dependency",
       "occurrences": 4,
       "files": [
         "packages/app/src/components/TeamSettings/__tests__/IacMigrationSection.test.tsx",
@@ -408,9 +342,9 @@
     },
     {
       "token": "clickhouse_clickstack_alert.alert_655b1b7d9143aa1b1b73f4f6",
-      "replacement": "clickhouse_couchbase_traces_alert.alert_655b1b7d9143aa1b1b73f4f6",
-      "status": "proposed",
-      "reason": null,
+      "replacement": null,
+      "status": "allowed",
+      "reason": "external_dependency",
       "occurrences": 1,
       "files": [
         "packages/app/src/components/Iac/__tests__/ResourceTerraformPopover.test.tsx"
@@ -418,9 +352,9 @@
     },
     {
       "token": "clickhouse_clickstack_connection",
-      "replacement": "clickhouse_couchbase_traces_connection",
-      "status": "proposed",
-      "reason": null,
+      "replacement": null,
+      "status": "allowed",
+      "reason": "external_dependency",
       "occurrences": 4,
       "files": [
         "packages/app/src/components/TeamSettings/__tests__/IacMigrationSection.test.tsx",
@@ -430,9 +364,9 @@
     },
     {
       "token": "clickhouse_clickstack_connection.connection_",
-      "replacement": "clickhouse_couchbase_traces_connection.connection_",
-      "status": "proposed",
-      "reason": null,
+      "replacement": null,
+      "status": "allowed",
+      "reason": "external_dependency",
       "occurrences": 1,
       "files": [
         "packages/common-utils/src/__tests__/iac.test.ts"
@@ -440,11 +374,12 @@
     },
     {
       "token": "clickhouse_clickstack_dashboard",
-      "replacement": "clickhouse_couchbase_traces_dashboard",
-      "status": "proposed",
-      "reason": null,
-      "occurrences": 4,
+      "replacement": null,
+      "status": "allowed",
+      "reason": "external_dependency",
+      "occurrences": 5,
       "files": [
+        "packages/app/src/components/Iac/__tests__/ResourceTerraformPopover.test.tsx",
         "packages/app/src/components/Iac/useTerraformSnippets.ts",
         "packages/common-utils/src/__tests__/iac.test.ts",
         "packages/common-utils/src/iac.ts"
@@ -452,9 +387,9 @@
     },
     {
       "token": "clickhouse_clickstack_dashboard.dashboard_",
-      "replacement": "clickhouse_couchbase_traces_dashboard.dashboard_",
-      "status": "proposed",
-      "reason": null,
+      "replacement": null,
+      "status": "allowed",
+      "reason": "external_dependency",
       "occurrences": 4,
       "files": [
         "packages/app/src/components/TeamSettings/__tests__/IacMigrationSection.test.tsx",
@@ -463,9 +398,9 @@
     },
     {
       "token": "clickhouse_clickstack_dashboard.example",
-      "replacement": "clickhouse_couchbase_traces_dashboard.example",
-      "status": "proposed",
-      "reason": null,
+      "replacement": null,
+      "status": "allowed",
+      "reason": "external_dependency",
       "occurrences": 2,
       "files": [
         "packages/app/src/stories/Code.stories.tsx"
@@ -473,9 +408,9 @@
     },
     {
       "token": "clickhouse_clickstack_saved_search",
-      "replacement": "clickhouse_couchbase_traces_saved_search",
-      "status": "proposed",
-      "reason": null,
+      "replacement": null,
+      "status": "allowed",
+      "reason": "external_dependency",
       "occurrences": 2,
       "files": [
         "packages/common-utils/src/__tests__/iac.test.ts",
@@ -484,9 +419,9 @@
     },
     {
       "token": "clickhouse_clickstack_saved_search.saved_search_",
-      "replacement": "clickhouse_couchbase_traces_saved_search.saved_search_",
-      "status": "proposed",
-      "reason": null,
+      "replacement": null,
+      "status": "allowed",
+      "reason": "external_dependency",
       "occurrences": 2,
       "files": [
         "packages/app/src/components/TeamSettings/__tests__/IacMigrationSection.test.tsx",
@@ -495,9 +430,9 @@
     },
     {
       "token": "clickhouse_clickstack_saved_search.saved_search_655b1b7d9143aa1b1b73f4f6",
-      "replacement": "clickhouse_couchbase_traces_saved_search.saved_search_655b1b7d9143aa1b1b73f4f6",
-      "status": "proposed",
-      "reason": null,
+      "replacement": null,
+      "status": "allowed",
+      "reason": "external_dependency",
       "occurrences": 1,
       "files": [
         "packages/app/src/components/Iac/__tests__/ResourceTerraformPopover.test.tsx"
@@ -505,9 +440,9 @@
     },
     {
       "token": "clickhouse_clickstack_source",
-      "replacement": "clickhouse_couchbase_traces_source",
-      "status": "proposed",
-      "reason": null,
+      "replacement": null,
+      "status": "allowed",
+      "reason": "external_dependency",
       "occurrences": 2,
       "files": [
         "packages/common-utils/src/__tests__/iac.test.ts",
@@ -516,9 +451,9 @@
     },
     {
       "token": "clickhouse_clickstack_webhook",
-      "replacement": "clickhouse_couchbase_traces_webhook",
-      "status": "proposed",
-      "reason": null,
+      "replacement": null,
+      "status": "allowed",
+      "reason": "external_dependency",
       "occurrences": 2,
       "files": [
         "packages/common-utils/src/__tests__/iac.test.ts",
@@ -528,48 +463,27 @@
     {
       "token": "clickstack",
       "replacement": "couchbase-traces",
-      "status": "proposed",
+      "status": "approved",
       "reason": null,
-      "occurrences": 73,
+      "occurrences": 2,
       "files": [
-        ".vex/openssl-mongodb.vex.json",
-        "CHANGELOG.md",
-        "DEPLOY.md",
-        "MCP.md",
-        "README.md",
-        "agent_docs/code_style.md",
-        "agent_docs/themes.md",
-        "packages/api/CHANGELOG.md",
-        "packages/api/docs/auto_provision/AUTO_PROVISION.md",
-        "packages/api/src/mcp/__tests__/serverMetadata.test.ts",
-        "packages/api/src/mcp/mcpServer.ts",
-        "packages/app/CHANGELOG.md",
-        "packages/app/next.config.mjs",
-        "packages/app/package.json",
-        "packages/app/pages/_document.tsx",
-        "packages/app/scripts/move-to-clickhouse.js",
-        "packages/app/src/__tests__/DBSearchPage.saveSearch.test.tsx",
-        "packages/app/src/__tests__/hdxDebug.test.ts",
-        "packages/app/src/components/ClickStackOnboarding/installSnippets.ts",
-        "packages/app/src/components/RevealSnippet/RevealSnippet.stories.tsx"
+        "packages/app/src/CareersPage.tsx",
+        "packages/app/src/components/TeamSettings/__tests__/McpServerSection.test.tsx"
       ]
     },
     {
       "token": "clickstack-all-in-one",
       "replacement": "couchbase-traces-all-in-one",
-      "status": "proposed",
+      "status": "approved",
       "reason": null,
-      "occurrences": 2,
-      "files": [
-        "DEPLOY.md",
-        "README.md"
-      ]
+      "occurrences": 0,
+      "files": []
     },
     {
       "token": "clickstack-banner-state",
-      "replacement": "couchbase-traces-banner-state",
-      "status": "proposed",
-      "reason": null,
+      "replacement": null,
+      "status": "allowed",
+      "reason": "internal_identifier",
       "occurrences": 1,
       "files": [
         "packages/app/src/layout.tsx"
@@ -577,9 +491,9 @@
     },
     {
       "token": "clickstack-browser.ts",
-      "replacement": "couchbase-traces-browser.ts",
-      "status": "proposed",
-      "reason": null,
+      "replacement": null,
+      "status": "allowed",
+      "reason": "internal_identifier",
       "occurrences": 1,
       "files": [
         "packages/app/jest.config.js"
@@ -588,61 +502,48 @@
     {
       "token": "clickstack-local",
       "replacement": "couchbase-traces-local",
-      "status": "proposed",
+      "status": "approved",
       "reason": null,
-      "occurrences": 4,
-      "files": [
-        "DEPLOY.md",
-        "LOCAL.md"
-      ]
+      "occurrences": 0,
+      "files": []
     },
     {
       "token": "clickstack-logomark.svg",
-      "replacement": "couchbase-traces-logomark.svg",
-      "status": "proposed",
-      "reason": null,
-      "occurrences": 1,
-      "files": [
-        "packages/app/src/stories/Brand.stories.tsx"
-      ]
+      "replacement": null,
+      "status": "allowed",
+      "reason": "internal_identifier",
+      "occurrences": 0,
+      "files": []
     },
     {
       "token": "clickstack-otel-collector",
       "replacement": "couchbase-traces-otel-collector",
-      "status": "proposed",
+      "status": "approved",
       "reason": null,
-      "occurrences": 1,
-      "files": [
-        "DEPLOY.md"
-      ]
+      "occurrences": 0,
+      "files": []
     },
     {
       "token": "clickstack-wordmark.svg",
-      "replacement": "couchbase-traces-wordmark.svg",
-      "status": "proposed",
-      "reason": null,
-      "occurrences": 1,
-      "files": [
-        "packages/app/src/stories/Brand.stories.tsx"
-      ]
+      "replacement": null,
+      "status": "allowed",
+      "reason": "internal_identifier",
+      "occurrences": 0,
+      "files": []
     },
     {
       "token": "clickstack_",
-      "replacement": "couchbase_traces_",
-      "status": "proposed",
+      "replacement": "cbt_",
+      "status": "approved",
       "reason": null,
-      "occurrences": 4,
-      "files": [
-        "CHANGELOG.md",
-        "packages/api/CHANGELOG.md",
-        "packages/common-utils/CHANGELOG.md"
-      ]
+      "occurrences": 0,
+      "files": []
     },
     {
       "token": "clickstack_dashboard",
-      "replacement": "couchbase_traces_dashboard",
-      "status": "proposed",
-      "reason": null,
+      "replacement": null,
+      "status": "allowed",
+      "reason": "external_dependency",
       "occurrences": 2,
       "files": [
         "agent_docs/code_style.md",
@@ -652,136 +553,73 @@
     {
       "token": "clickstack_delete_dashboard",
       "replacement": "cbt_delete_dashboard",
-      "status": "proposed",
+      "status": "approved",
       "reason": null,
-      "occurrences": 5,
-      "files": [
-        "MCP.md",
-        "packages/api/src/mcp/__tests__/dashboards/deleteDashboard.int.test.ts",
-        "packages/api/src/mcp/tools/dashboards/deleteDashboard.ts"
-      ]
+      "occurrences": 0,
+      "files": []
     },
     {
       "token": "clickstack_delete_source",
       "replacement": "cbt_delete_source",
-      "status": "proposed",
+      "status": "approved",
       "reason": null,
-      "occurrences": 9,
-      "files": [
-        "MCP.md",
-        "packages/api/CHANGELOG.md",
-        "packages/api/src/mcp/__tests__/promqlSources.int.test.ts",
-        "packages/api/src/mcp/__tests__/sources.int.test.ts",
-        "packages/api/src/mcp/tools/sources/deleteSource.ts"
-      ]
+      "occurrences": 0,
+      "files": []
     },
     {
       "token": "clickstack_delete_webhook",
       "replacement": "cbt_delete_webhook",
-      "status": "proposed",
+      "status": "approved",
       "reason": null,
-      "occurrences": 8,
-      "files": [
-        "MCP.md",
-        "packages/api/CHANGELOG.md",
-        "packages/api/src/mcp/__tests__/webhooks.int.test.ts",
-        "packages/api/src/mcp/tools/alerts/deleteWebhook.ts"
-      ]
+      "occurrences": 0,
+      "files": []
     },
     {
       "token": "clickstack_describe_metric",
       "replacement": "cbt_describe_metric",
-      "status": "proposed",
+      "status": "approved",
       "reason": null,
-      "occurrences": 36,
+      "occurrences": 1,
       "files": [
-        "CHANGELOG.md",
-        "MCP.md",
-        "packages/api/CHANGELOG.md",
-        "packages/api/src/mcp/__tests__/dashboards/prompts.test.ts",
-        "packages/api/src/mcp/__tests__/sources.int.test.ts",
-        "packages/api/src/mcp/prompts/dashboards/content.ts",
-        "packages/api/src/mcp/tools/query/schemas.ts",
-        "packages/api/src/mcp/tools/query/table.ts",
-        "packages/api/src/mcp/tools/query/timeseries.ts",
-        "packages/api/src/mcp/tools/sources/describeMetric.ts",
-        "packages/api/src/mcp/tools/sources/describeSource.ts",
-        "packages/api/src/mcp/tools/sources/listMetrics.ts",
-        "packages/hdx-eval/src/__tests__/programmatic.test.ts"
+        "packages/api/src/mcp/__tests__/dashboards/prompts.test.ts"
       ]
     },
     {
       "token": "clickstack_describe_source",
       "replacement": "cbt_describe_source",
-      "status": "proposed",
+      "status": "approved",
       "reason": null,
-      "occurrences": 93,
+      "occurrences": 3,
       "files": [
-        "CHANGELOG.md",
-        "MCP.md",
-        "packages/api/CHANGELOG.md",
-        "packages/api/src/controllers/__tests__/metadataCacheLimits.int.test.ts",
         "packages/api/src/mcp/__tests__/dashboards/prompts.test.ts",
-        "packages/api/src/mcp/__tests__/describeSourceTimeout.test.ts",
         "packages/api/src/mcp/__tests__/describeTable.int.test.ts",
-        "packages/api/src/mcp/__tests__/promqlSources.int.test.ts",
-        "packages/api/src/mcp/__tests__/query.test.ts",
-        "packages/api/src/mcp/__tests__/sources.int.test.ts",
-        "packages/api/src/mcp/mcpServer.ts",
-        "packages/api/src/mcp/prompts/dashboards/content.ts",
-        "packages/api/src/mcp/prompts/dashboards/promqlContent.ts",
-        "packages/api/src/mcp/tools/dashboards/schemas.ts",
-        "packages/api/src/mcp/tools/query/emergingSignals.ts",
-        "packages/api/src/mcp/tools/query/eventPatterns.ts",
-        "packages/api/src/mcp/tools/query/helpers.ts",
-        "packages/api/src/mcp/tools/query/promql.ts",
-        "packages/api/src/mcp/tools/query/schemas.ts",
-        "packages/api/src/mcp/tools/query/search.ts"
+        "packages/api/src/mcp/__tests__/query.test.ts"
       ]
     },
     {
       "token": "clickstack_describe_table",
       "replacement": "cbt_describe_table",
-      "status": "proposed",
+      "status": "approved",
       "reason": null,
-      "occurrences": 15,
-      "files": [
-        "CHANGELOG.md",
-        "MCP.md",
-        "packages/api/CHANGELOG.md",
-        "packages/api/src/mcp/__tests__/describeTable.int.test.ts",
-        "packages/api/src/mcp/__tests__/describeTable.test.ts",
-        "packages/api/src/mcp/tools/query/sql.ts",
-        "packages/api/src/mcp/tools/sources/describeTable.ts"
-      ]
+      "occurrences": 0,
+      "files": []
     },
     {
       "token": "clickstack_emerging_signals",
       "replacement": "cbt_emerging_signals",
-      "status": "proposed",
+      "status": "approved",
       "reason": null,
-      "occurrences": 23,
-      "files": [
-        "CHANGELOG.md",
-        "MCP.md",
-        "packages/api/CHANGELOG.md",
-        "packages/api/src/mcp/__tests__/emergingSignalsTool.int.test.ts",
-        "packages/api/src/mcp/tools/query/builderCatalog.ts",
-        "packages/api/src/mcp/tools/query/emergingSignals.ts",
-        "packages/api/src/mcp/tools/query/eventDeltas.ts",
-        "packages/api/src/mcp/tools/query/eventPatterns.ts",
-        "packages/api/src/mcp/tools/query/serviceHealth/index.ts",
-        "packages/app/src/components/AppNav/__tests__/parse-whats-new.test.ts",
-        "packages/common-utils/CHANGELOG.md"
-      ]
+      "occurrences": 0,
+      "files": []
     },
     {
       "token": "clickstack_endpoint",
-      "replacement": "couchbase_traces_endpoint",
-      "status": "proposed",
-      "reason": null,
-      "occurrences": 6,
+      "replacement": null,
+      "status": "allowed",
+      "reason": "external_dependency",
+      "occurrences": 7,
       "files": [
+        "packages/app/src/components/Iac/__tests__/ResourceTerraformPopover.test.tsx",
         "packages/common-utils/src/__tests__/iac.test.ts",
         "packages/common-utils/src/iac.ts"
       ]
@@ -789,413 +627,194 @@
     {
       "token": "clickstack_event_deltas",
       "replacement": "cbt_event_deltas",
-      "status": "proposed",
+      "status": "approved",
       "reason": null,
-      "occurrences": 12,
-      "files": [
-        "MCP.md",
-        "packages/api/src/mcp/__tests__/deltasTool.int.test.ts",
-        "packages/api/src/mcp/tools/query/builderCatalog.ts",
-        "packages/api/src/mcp/tools/query/emergingSignals.ts",
-        "packages/api/src/mcp/tools/query/eventDeltas.ts",
-        "packages/api/src/mcp/tools/query/serviceHealth/index.ts",
-        "packages/api/src/mcp/tools/trace/breakdownSchema.ts"
-      ]
+      "occurrences": 0,
+      "files": []
     },
     {
       "token": "clickstack_event_patterns",
       "replacement": "cbt_event_patterns",
-      "status": "proposed",
+      "status": "approved",
       "reason": null,
-      "occurrences": 32,
-      "files": [
-        "CHANGELOG.md",
-        "MCP.md",
-        "packages/api/CHANGELOG.md",
-        "packages/api/src/mcp/__tests__/queryTool.int.test.ts",
-        "packages/api/src/mcp/prompts/dashboards/content.ts",
-        "packages/api/src/mcp/tools/dashboards/queryTile.ts",
-        "packages/api/src/mcp/tools/query/builderCatalog.ts",
-        "packages/api/src/mcp/tools/query/eventPatterns.ts",
-        "packages/api/src/mcp/tools/query/search.ts",
-        "packages/api/src/mcp/tools/sources/listSources.ts",
-        "packages/common-utils/CHANGELOG.md"
-      ]
+      "occurrences": 0,
+      "files": []
     },
     {
       "token": "clickstack_get_alert",
       "replacement": "cbt_get_alert",
-      "status": "proposed",
+      "status": "approved",
       "reason": null,
-      "occurrences": 24,
-      "files": [
-        "CHANGELOG.md",
-        "MCP.md",
-        "packages/api/CHANGELOG.md",
-        "packages/api/src/mcp/__tests__/alerts.int.test.ts",
-        "packages/api/src/mcp/tools/alerts/getAlert.ts",
-        "packages/api/src/mcp/tools/alerts/saveAlert.ts",
-        "packages/api/src/mcp/tools/alerts/schemas.ts"
-      ]
+      "occurrences": 0,
+      "files": []
     },
     {
       "token": "clickstack_get_dashboard",
       "replacement": "cbt_get_dashboard",
-      "status": "proposed",
+      "status": "approved",
       "reason": null,
-      "occurrences": 69,
+      "occurrences": 1,
       "files": [
-        "MCP.md",
-        "packages/api/src/mcp/__tests__/dashboards/getDashboard.int.test.ts",
-        "packages/api/src/mcp/__tests__/dashboards/patchDashboard.int.test.ts",
-        "packages/api/src/mcp/__tests__/dashboards/promqlTiles.int.test.ts",
-        "packages/api/src/mcp/__tests__/dashboards/saveDashboard.int.test.ts",
-        "packages/api/src/mcp/__tests__/query.test.ts",
-        "packages/api/src/mcp/prompts/dashboards/content.ts",
-        "packages/api/src/mcp/tools/alerts/schemas.ts",
-        "packages/api/src/mcp/tools/dashboards/deleteDashboard.ts",
-        "packages/api/src/mcp/tools/dashboards/getDashboard.ts",
-        "packages/api/src/mcp/tools/dashboards/getDashboardTile.ts",
-        "packages/api/src/mcp/tools/dashboards/queryTile.ts",
-        "packages/api/src/mcp/tools/dashboards/queryTiles.ts",
-        "packages/api/src/mcp/tools/dashboards/schemas.ts",
-        "packages/api/src/mcp/tools/dashboards/searchDashboards.ts",
-        "packages/api/src/mcp/tools/dashboards/variables.ts",
-        "packages/api/src/mcp/tools/query/helpers.ts"
+        "packages/api/src/mcp/__tests__/dashboards/prompts.test.ts"
       ]
     },
     {
       "token": "clickstack_get_dashboard_tile",
       "replacement": "cbt_get_dashboard_tile",
-      "status": "proposed",
+      "status": "approved",
       "reason": null,
-      "occurrences": 15,
-      "files": [
-        "CHANGELOG.md",
-        "packages/api/src/mcp/__tests__/dashboards/getDashboardTile.int.test.ts",
-        "packages/api/src/mcp/__tests__/dashboards/patchDashboard.int.test.ts",
-        "packages/api/src/mcp/tools/dashboards/getDashboardTile.ts",
-        "packages/api/src/mcp/tools/dashboards/patchDashboard.ts"
-      ]
+      "occurrences": 0,
+      "files": []
     },
     {
       "token": "clickstack_get_saved_search",
       "replacement": "cbt_get_saved_search",
-      "status": "proposed",
+      "status": "approved",
       "reason": null,
-      "occurrences": 12,
-      "files": [
-        "MCP.md",
-        "packages/api/src/mcp/__tests__/savedSearches.int.test.ts",
-        "packages/api/src/mcp/tools/alerts/schemas.ts",
-        "packages/api/src/mcp/tools/savedSearches/getSavedSearch.ts",
-        "packages/api/src/mcp/tools/savedSearches/saveSavedSearch.ts",
-        "packages/api/src/mcp/tools/savedSearches/schemas.ts"
-      ]
+      "occurrences": 0,
+      "files": []
     },
     {
       "token": "clickstack_get_webhook",
       "replacement": "cbt_get_webhook",
-      "status": "proposed",
+      "status": "approved",
       "reason": null,
-      "occurrences": 11,
-      "files": [
-        "MCP.md",
-        "packages/api/src/mcp/__tests__/alerts.int.test.ts",
-        "packages/api/src/mcp/tools/alerts/deleteWebhook.ts",
-        "packages/api/src/mcp/tools/alerts/getWebhook.ts",
-        "packages/api/src/mcp/tools/alerts/saveAlert.ts",
-        "packages/api/src/mcp/tools/alerts/saveWebhook.ts",
-        "packages/api/src/mcp/tools/alerts/schemas.ts"
-      ]
+      "occurrences": 0,
+      "files": []
     },
     {
       "token": "clickstack_list_metrics",
       "replacement": "cbt_list_metrics",
-      "status": "proposed",
+      "status": "approved",
       "reason": null,
-      "occurrences": 45,
+      "occurrences": 1,
       "files": [
-        "CHANGELOG.md",
-        "MCP.md",
-        "packages/api/CHANGELOG.md",
-        "packages/api/src/mcp/__tests__/dashboards/prompts.test.ts",
-        "packages/api/src/mcp/__tests__/sources.int.test.ts",
-        "packages/api/src/mcp/prompts/dashboards/content.ts",
-        "packages/api/src/mcp/tools/query/helpers.ts",
-        "packages/api/src/mcp/tools/query/schemas.ts",
-        "packages/api/src/mcp/tools/query/table.ts",
-        "packages/api/src/mcp/tools/query/timeseries.ts",
-        "packages/api/src/mcp/tools/sources/describeMetric.ts",
-        "packages/api/src/mcp/tools/sources/describeSource.ts",
-        "packages/api/src/mcp/tools/sources/listMetrics.ts",
-        "packages/api/src/mcp/tools/sources/listSources.ts"
+        "packages/api/src/mcp/__tests__/dashboards/prompts.test.ts"
       ]
     },
     {
       "token": "clickstack_list_sources",
       "replacement": "cbt_list_sources",
-      "status": "proposed",
+      "status": "approved",
       "reason": null,
-      "occurrences": 128,
+      "occurrences": 2,
       "files": [
-        "CHANGELOG.md",
-        "MCP.md",
-        "packages/api/CHANGELOG.md",
-        "packages/api/src/mcp/__tests__/promqlQueryTool.int.test.ts",
-        "packages/api/src/mcp/__tests__/promqlSources.int.test.ts",
-        "packages/api/src/mcp/__tests__/query.test.ts",
-        "packages/api/src/mcp/__tests__/queryTool.int.test.ts",
-        "packages/api/src/mcp/__tests__/sources.int.test.ts",
-        "packages/api/src/mcp/mcpServer.ts",
-        "packages/api/src/mcp/prompts/dashboards/content.ts",
-        "packages/api/src/mcp/prompts/dashboards/helpers.ts",
-        "packages/api/src/mcp/prompts/dashboards/index.ts",
-        "packages/api/src/mcp/prompts/dashboards/promqlContent.ts",
-        "packages/api/src/mcp/tools/dashboards/saveDashboard.ts",
-        "packages/api/src/mcp/tools/dashboards/schemas.ts",
-        "packages/api/src/mcp/tools/dashboards/validation.ts",
-        "packages/api/src/mcp/tools/query/emergingSignals.ts",
-        "packages/api/src/mcp/tools/query/eventDeltas.ts",
-        "packages/api/src/mcp/tools/query/eventPatterns.ts",
-        "packages/api/src/mcp/tools/query/helpers.ts"
+        "packages/api/src/mcp/__tests__/dashboards/prompts.test.ts",
+        "packages/api/src/mcp/__tests__/query.test.ts"
       ]
     },
     {
       "token": "clickstack_patch_dashboard",
       "replacement": "cbt_patch_dashboard",
-      "status": "proposed",
+      "status": "approved",
       "reason": null,
-      "occurrences": 48,
+      "occurrences": 1,
       "files": [
-        "CHANGELOG.md",
-        "packages/api/CHANGELOG.md",
-        "packages/api/src/mcp/__tests__/dashboards/patchDashboard.int.test.ts",
-        "packages/api/src/mcp/__tests__/dashboards/promqlTiles.int.test.ts",
-        "packages/api/src/mcp/__tests__/dashboards/saveDashboard.int.test.ts",
-        "packages/api/src/mcp/prompts/dashboards/content.ts",
-        "packages/api/src/mcp/tools/dashboards/patchDashboard.ts",
-        "packages/api/src/mcp/tools/dashboards/saveDashboard.ts",
-        "packages/common-utils/CHANGELOG.md"
+        "packages/hdx-eval/src/grading/dashboardInspection.ts"
       ]
     },
     {
       "token": "clickstack_promql",
       "replacement": "cbt_promql",
-      "status": "proposed",
+      "status": "approved",
       "reason": null,
-      "occurrences": 28,
+      "occurrences": 1,
       "files": [
-        "CHANGELOG.md",
-        "MCP.md",
-        "packages/api/CHANGELOG.md",
-        "packages/api/src/mcp/__tests__/dashboards/prompts.test.ts",
-        "packages/api/src/mcp/__tests__/promqlGating.test.ts",
-        "packages/api/src/mcp/__tests__/promqlQueryTool.int.test.ts",
-        "packages/api/src/mcp/mcpServer.ts",
-        "packages/api/src/mcp/prompts/dashboards/content.ts",
-        "packages/api/src/mcp/prompts/dashboards/promqlContent.ts",
-        "packages/api/src/mcp/tools/query/promql.ts",
-        "packages/api/src/mcp/utils/promql.ts"
+        "packages/api/src/mcp/__tests__/dashboards/prompts.test.ts"
       ]
     },
     {
       "token": "clickstack_query_tile",
       "replacement": "cbt_query_tile",
-      "status": "proposed",
+      "status": "approved",
       "reason": null,
-      "occurrences": 52,
+      "occurrences": 1,
       "files": [
-        "CHANGELOG.md",
-        "MCP.md",
-        "packages/api/CHANGELOG.md",
-        "packages/api/src/mcp/__tests__/dashboards/prompts.test.ts",
-        "packages/api/src/mcp/__tests__/dashboards/promqlQueryTile.int.test.ts",
-        "packages/api/src/mcp/__tests__/dashboards/queryTile.int.test.ts",
-        "packages/api/src/mcp/prompts/dashboards/content.ts",
-        "packages/api/src/mcp/prompts/dashboards/promqlContent.ts",
-        "packages/api/src/mcp/tools/dashboards/patchDashboard.ts",
-        "packages/api/src/mcp/tools/dashboards/queryTile.ts",
-        "packages/api/src/mcp/tools/dashboards/queryTiles.ts",
-        "packages/api/src/mcp/tools/dashboards/saveDashboard.ts",
-        "packages/api/src/mcp/tools/query/prepareSql.ts",
-        "packages/hdx-eval/src/hyperdx/api.ts"
+        "packages/hdx-eval/src/grading/dashboardInspection.ts"
       ]
     },
     {
       "token": "clickstack_query_tiles",
       "replacement": "cbt_query_tiles",
-      "status": "proposed",
+      "status": "approved",
       "reason": null,
-      "occurrences": 28,
-      "files": [
-        "CHANGELOG.md",
-        "MCP.md",
-        "packages/api/CHANGELOG.md",
-        "packages/api/src/mcp/__tests__/dashboards/promqlQueryTile.int.test.ts",
-        "packages/api/src/mcp/__tests__/dashboards/queryTiles.int.test.ts",
-        "packages/api/src/mcp/__tests__/dashboards/queryTilesHandler.test.ts",
-        "packages/api/src/mcp/prompts/dashboards/content.ts",
-        "packages/api/src/mcp/tools/dashboards/queryTiles.ts",
-        "packages/api/src/mcp/tools/dashboards/saveDashboard.ts"
-      ]
+      "occurrences": 0,
+      "files": []
     },
     {
       "token": "clickstack_save_alert",
       "replacement": "cbt_save_alert",
-      "status": "proposed",
+      "status": "approved",
       "reason": null,
-      "occurrences": 52,
-      "files": [
-        "CHANGELOG.md",
-        "MCP.md",
-        "packages/api/CHANGELOG.md",
-        "packages/api/src/mcp/__tests__/alerts.int.test.ts",
-        "packages/api/src/mcp/tools/alerts/getAlert.ts",
-        "packages/api/src/mcp/tools/alerts/getWebhook.ts",
-        "packages/api/src/mcp/tools/alerts/saveAlert.ts",
-        "packages/api/src/mcp/tools/alerts/saveWebhook.ts",
-        "packages/api/src/routers/external-api/__tests__/v2.int.test.ts"
-      ]
+      "occurrences": 0,
+      "files": []
     },
     {
       "token": "clickstack_save_dashboard",
       "replacement": "cbt_save_dashboard",
-      "status": "proposed",
+      "status": "approved",
       "reason": null,
-      "occurrences": 205,
+      "occurrences": 2,
       "files": [
-        "CHANGELOG.md",
-        "MCP.md",
-        "packages/api/CHANGELOG.md",
-        "packages/api/src/mcp/__tests__/dashboards/getDashboardTile.int.test.ts",
-        "packages/api/src/mcp/__tests__/dashboards/patchDashboard.int.test.ts",
-        "packages/api/src/mcp/__tests__/dashboards/promqlTiles.int.test.ts",
-        "packages/api/src/mcp/__tests__/dashboards/queryTile.int.test.ts",
-        "packages/api/src/mcp/__tests__/dashboards/queryTiles.int.test.ts",
-        "packages/api/src/mcp/__tests__/dashboards/saveDashboard.int.test.ts",
-        "packages/api/src/mcp/prompts/dashboards/content.ts",
-        "packages/api/src/mcp/tools/dashboards/queryTiles.ts",
-        "packages/api/src/mcp/tools/dashboards/saveDashboard.ts",
-        "packages/api/src/mcp/tools/dashboards/variables.ts",
-        "packages/api/src/mcp/tools/query/promql.ts",
-        "packages/common-utils/CHANGELOG.md"
+        "packages/api/src/mcp/__tests__/dashboards/prompts.test.ts",
+        "packages/hdx-eval/src/grading/dashboardInspection.ts"
       ]
     },
     {
       "token": "clickstack_save_saved_search",
       "replacement": "cbt_save_saved_search",
-      "status": "proposed",
+      "status": "approved",
       "reason": null,
-      "occurrences": 19,
-      "files": [
-        "CHANGELOG.md",
-        "MCP.md",
-        "packages/api/CHANGELOG.md",
-        "packages/api/src/mcp/__tests__/savedSearches.int.test.ts",
-        "packages/api/src/mcp/tools/savedSearches/saveSavedSearch.ts"
-      ]
+      "occurrences": 0,
+      "files": []
     },
     {
       "token": "clickstack_save_source",
       "replacement": "cbt_save_source",
-      "status": "proposed",
+      "status": "approved",
       "reason": null,
-      "occurrences": 28,
+      "occurrences": 1,
       "files": [
-        "CHANGELOG.md",
-        "MCP.md",
-        "packages/api/CHANGELOG.md",
-        "packages/api/src/mcp/__tests__/promqlSources.int.test.ts",
-        "packages/api/src/mcp/__tests__/sources.int.test.ts",
-        "packages/api/src/mcp/tools/query/serviceHealth/source.ts",
-        "packages/api/src/mcp/tools/sources/describeTable.ts",
-        "packages/api/src/mcp/tools/sources/saveSource.ts"
+        "packages/api/src/mcp/__tests__/describeTable.int.test.ts"
       ]
     },
     {
       "token": "clickstack_save_webhook",
       "replacement": "cbt_save_webhook",
-      "status": "proposed",
+      "status": "approved",
       "reason": null,
-      "occurrences": 22,
-      "files": [
-        "MCP.md",
-        "packages/api/CHANGELOG.md",
-        "packages/api/src/mcp/__tests__/webhooks.int.test.ts",
-        "packages/api/src/mcp/tools/alerts/saveWebhook.ts",
-        "packages/api/src/mcp/tools/alerts/schemas.ts"
-      ]
+      "occurrences": 0,
+      "files": []
     },
     {
       "token": "clickstack_search",
       "replacement": "cbt_search",
-      "status": "proposed",
+      "status": "approved",
       "reason": null,
-      "occurrences": 52,
-      "files": [
-        "CHANGELOG.md",
-        "MCP.md",
-        "packages/api/CHANGELOG.md",
-        "packages/api/src/mcp/__tests__/dashboards/queryTile.int.test.ts",
-        "packages/api/src/mcp/__tests__/queryTool.int.test.ts",
-        "packages/api/src/mcp/prompts/dashboards/content.ts",
-        "packages/api/src/mcp/prompts/dashboards/promqlContent.ts",
-        "packages/api/src/mcp/tools/query/builderCatalog.ts",
-        "packages/api/src/mcp/tools/query/emergingSignals.ts",
-        "packages/api/src/mcp/tools/query/eventDeltas.ts",
-        "packages/api/src/mcp/tools/query/eventPatterns.ts",
-        "packages/api/src/mcp/tools/query/promql.ts",
-        "packages/api/src/mcp/tools/query/runEventPatterns.ts",
-        "packages/api/src/mcp/tools/query/search.ts",
-        "packages/api/src/mcp/tools/sources/describeSource.ts",
-        "packages/api/src/mcp/tools/sources/describeTable.ts",
-        "packages/api/src/mcp/tools/sources/listSources.ts",
-        "packages/api/src/mcp/utils/promql.ts",
-        "packages/app/CHANGELOG.md",
-        "packages/common-utils/CHANGELOG.md"
-      ]
+      "occurrences": 0,
+      "files": []
     },
     {
       "token": "clickstack_search_dashboards",
       "replacement": "cbt_search_dashboards",
-      "status": "proposed",
+      "status": "approved",
       "reason": null,
-      "occurrences": 23,
-      "files": [
-        "CHANGELOG.md",
-        "packages/api/src/mcp/__tests__/dashboards/searchDashboards.int.test.ts",
-        "packages/api/src/mcp/tools/dashboards/deleteDashboard.ts",
-        "packages/api/src/mcp/tools/dashboards/getDashboardTile.ts",
-        "packages/api/src/mcp/tools/dashboards/queryTile.ts",
-        "packages/api/src/mcp/tools/dashboards/queryTiles.ts",
-        "packages/api/src/mcp/tools/dashboards/saveDashboard.ts",
-        "packages/api/src/mcp/tools/dashboards/schemas.ts",
-        "packages/api/src/mcp/tools/dashboards/searchDashboards.ts"
-      ]
+      "occurrences": 0,
+      "files": []
     },
     {
       "token": "clickstack_service_health",
-      "replacement": "couchbase_traces_service_health",
-      "status": "proposed",
+      "replacement": "cbt_service_health",
+      "status": "approved",
       "reason": null,
-      "occurrences": 8,
-      "files": [
-        "CHANGELOG.md",
-        "MCP.md",
-        "packages/api/CHANGELOG.md",
-        "packages/api/src/mcp/__tests__/serviceHealthTool.int.test.ts",
-        "packages/api/src/mcp/tools/query/builderCatalog.ts",
-        "packages/api/src/mcp/tools/query/serviceHealth/index.ts",
-        "packages/app/CHANGELOG.md",
-        "packages/common-utils/CHANGELOG.md"
-      ]
+      "occurrences": 0,
+      "files": []
     },
     {
       "token": "clickstack_service_id",
-      "replacement": "couchbase_traces_service_id",
-      "status": "proposed",
-      "reason": null,
+      "replacement": null,
+      "status": "allowed",
+      "reason": "external_dependency",
       "occurrences": 2,
       "files": [
         "packages/common-utils/src/__tests__/iac.test.ts",
@@ -1205,160 +824,75 @@
     {
       "token": "clickstack_sql",
       "replacement": "cbt_sql",
-      "status": "proposed",
+      "status": "approved",
       "reason": null,
-      "occurrences": 97,
-      "files": [
-        "CHANGELOG.md",
-        "MCP.md",
-        "packages/api/CHANGELOG.md",
-        "packages/api/src/mcp/__tests__/promqlSources.int.test.ts",
-        "packages/api/src/mcp/__tests__/queryTool.int.test.ts",
-        "packages/api/src/mcp/__tests__/sources.int.test.ts",
-        "packages/api/src/mcp/__tests__/sqlToolBatch.test.ts",
-        "packages/api/src/mcp/__tests__/sqlToolVariableGuard.test.ts",
-        "packages/api/src/mcp/mcpServer.ts",
-        "packages/api/src/mcp/prompts/dashboards/content.ts",
-        "packages/api/src/mcp/prompts/dashboards/promqlContent.ts",
-        "packages/api/src/mcp/tools/query/builderCatalog.ts",
-        "packages/api/src/mcp/tools/query/schemas.ts",
-        "packages/api/src/mcp/tools/query/sql.ts",
-        "packages/api/src/mcp/tools/query/sqlBatch.ts",
-        "packages/api/src/mcp/tools/query/table.ts",
-        "packages/api/src/mcp/tools/query/timeseries.ts",
-        "packages/api/src/mcp/tools/sources/describeMetric.ts",
-        "packages/api/src/mcp/tools/sources/describeSource.ts",
-        "packages/api/src/mcp/tools/sources/describeTable.ts"
-      ]
+      "occurrences": 0,
+      "files": []
     },
     {
       "token": "clickstack_table",
       "replacement": "cbt_table",
-      "status": "proposed",
+      "status": "approved",
       "reason": null,
-      "occurrences": 72,
-      "files": [
-        "CHANGELOG.md",
-        "MCP.md",
-        "packages/api/CHANGELOG.md",
-        "packages/api/src/mcp/__tests__/queryTool.int.test.ts",
-        "packages/api/src/mcp/prompts/dashboards/content.ts",
-        "packages/api/src/mcp/prompts/dashboards/promqlContent.ts",
-        "packages/api/src/mcp/tools/query/builderCatalog.ts",
-        "packages/api/src/mcp/tools/query/eventDeltas.ts",
-        "packages/api/src/mcp/tools/query/eventPatterns.ts",
-        "packages/api/src/mcp/tools/query/promql.ts",
-        "packages/api/src/mcp/tools/query/runEventPatterns.ts",
-        "packages/api/src/mcp/tools/query/search.ts",
-        "packages/api/src/mcp/tools/query/serviceHealth/index.ts",
-        "packages/api/src/mcp/tools/query/table.ts",
-        "packages/api/src/mcp/tools/sources/describeMetric.ts",
-        "packages/api/src/mcp/tools/sources/describeSource.ts",
-        "packages/api/src/mcp/tools/sources/describeTable.ts",
-        "packages/api/src/mcp/tools/sources/listMetrics.ts",
-        "packages/api/src/mcp/tools/sources/listMetricsSchema.ts",
-        "packages/api/src/mcp/tools/sources/listSources.ts"
-      ]
+      "occurrences": 0,
+      "files": []
     },
     {
       "token": "clickstack_timeseries",
       "replacement": "cbt_timeseries",
-      "status": "proposed",
+      "status": "approved",
       "reason": null,
-      "occurrences": 63,
+      "occurrences": 2,
       "files": [
-        "CHANGELOG.md",
-        "MCP.md",
-        "packages/api/CHANGELOG.md",
-        "packages/api/src/mcp/__tests__/queryTool.int.test.ts",
-        "packages/api/src/mcp/__tests__/sources.int.test.ts",
-        "packages/api/src/mcp/prompts/dashboards/content.ts",
-        "packages/api/src/mcp/prompts/dashboards/promqlContent.ts",
-        "packages/api/src/mcp/tools/query/builderCatalog.ts",
-        "packages/api/src/mcp/tools/query/eventDeltas.ts",
-        "packages/api/src/mcp/tools/query/eventPatterns.ts",
-        "packages/api/src/mcp/tools/query/promql.ts",
-        "packages/api/src/mcp/tools/query/serviceHealth/index.ts",
-        "packages/api/src/mcp/tools/query/serviceHealth/summary.ts",
-        "packages/api/src/mcp/tools/query/table.ts",
-        "packages/api/src/mcp/tools/query/timeseries.ts",
-        "packages/api/src/mcp/tools/sources/describeMetric.ts",
-        "packages/api/src/mcp/tools/sources/describeSource.ts",
-        "packages/api/src/mcp/tools/sources/describeTable.ts",
-        "packages/api/src/mcp/tools/sources/listMetrics.ts",
-        "packages/api/src/mcp/tools/sources/listMetricsSchema.ts"
+        "packages/api/src/mcp/__tests__/dashboards/prompts.test.ts",
+        "packages/api/src/mcp/tools/query/__tests__/serviceHealthRank.test.ts"
       ]
     },
     {
       "token": "clickstack_trace_top_time_consuming_operations",
       "replacement": "cbt_trace_top_time_consuming_operations",
-      "status": "proposed",
+      "status": "approved",
       "reason": null,
-      "occurrences": 23,
-      "files": [
-        "CHANGELOG.md",
-        "MCP.md",
-        "packages/api/CHANGELOG.md",
-        "packages/api/src/mcp/__tests__/trace.int.test.ts",
-        "packages/api/src/mcp/tools/query/builderCatalog.ts",
-        "packages/api/src/mcp/tools/query/serviceHealth/index.ts",
-        "packages/api/src/mcp/tools/trace/breakdown.ts",
-        "packages/api/src/mcp/tools/trace/waterfall.ts"
-      ]
+      "occurrences": 0,
+      "files": []
     },
     {
       "token": "clickstack_trace_waterfall",
       "replacement": "cbt_trace_waterfall",
-      "status": "proposed",
+      "status": "approved",
       "reason": null,
-      "occurrences": 35,
-      "files": [
-        "CHANGELOG.md",
-        "MCP.md",
-        "packages/api/CHANGELOG.md",
-        "packages/api/src/mcp/__tests__/trace.int.test.ts",
-        "packages/api/src/mcp/tools/query/builderCatalog.ts",
-        "packages/api/src/mcp/tools/trace/breakdownSchema.ts",
-        "packages/api/src/mcp/tools/trace/waterfall.ts"
-      ]
+      "occurrences": 0,
+      "files": []
     },
     {
       "token": "docker.hyperdx.io",
-      "replacement": null,
-      "status": "review",
+      "replacement": "ghcr.io",
+      "status": "approved",
       "reason": null,
-      "occurrences": 1,
-      "files": [
-        "DEPLOY.md"
-      ]
+      "occurrences": 0,
+      "files": []
     },
     {
       "token": "docs.hyperdx.io",
       "replacement": null,
-      "status": "review",
-      "reason": null,
-      "occurrences": 3,
-      "files": [
-        ".github/prompts/release-changelog.md",
-        ".github/scripts/release-notes.mjs",
-        "packages/app/src/components/AppNav/WhatsNewDrawer.tsx"
-      ]
+      "status": "allowed",
+      "reason": "pending_decision",
+      "occurrences": 0,
+      "files": []
     },
     {
       "token": "e2e-test@hyperdx.io",
-      "replacement": null,
-      "status": "review",
+      "replacement": "e2e-test@example.com",
+      "status": "approved",
       "reason": null,
-      "occurrences": 1,
-      "files": [
-        "packages/app/tests/e2e/global-setup-fullstack.ts"
-      ]
+      "occurrences": 0,
+      "files": []
     },
     {
       "token": "e2e_hyperdx_sessions",
-      "replacement": "e2e_couchbase_traces_sessions",
-      "status": "proposed",
-      "reason": null,
+      "replacement": null,
+      "status": "allowed",
+      "reason": "engine_reference",
       "occurrences": 3,
       "files": [
         "docker/clickhouse/local/init-db-e2e.sh",
@@ -1368,124 +902,80 @@
     },
     {
       "token": "fake@deploysentinel.com",
-      "replacement": null,
-      "status": "review",
+      "replacement": "fake@example.com",
+      "status": "approved",
       "reason": null,
-      "occurrences": 5,
-      "files": [
-        "packages/api/src/fixtures.ts",
-        "packages/api/src/routers/api/__tests__/me.int.test.ts",
-        "packages/api/src/routers/api/__tests__/team.int.test.ts"
-      ]
+      "occurrences": 0,
+      "files": []
     },
     {
       "token": "hdx",
       "replacement": "cbt",
-      "status": "review",
+      "status": "approved",
       "reason": null,
-      "occurrences": 233,
-      "files": [
-        ".github/prompts/code-review.md",
-        ".github/workflows/claude-code-review.yml",
-        ".github/workflows/release.yml",
-        "CHANGELOG.md",
-        "README.md",
-        "docs/upstream-AGENTS.md",
-        "packages/api/src/routers/api/clickhouseProxy.ts",
-        "packages/app/CHANGELOG.md",
-        "packages/app/src/chartSync.tsx",
-        "packages/app/src/components/DBSearchPageFilters/utils.test.ts",
-        "packages/app/src/components/__tests__/DBSearchPageFilters.test.tsx",
-        "packages/app/src/utils/__tests__/nextServerTelemetry.test.ts",
-        "packages/cli/AGENTS.md",
-        "packages/cli/CHANGELOG.md",
-        "packages/cli/CONTRIBUTING.md",
-        "packages/cli/README.md",
-        "packages/cli/package.json",
-        "packages/cli/src/cli.tsx",
-        "packages/cli/src/shared/adhocChart.ts"
-      ]
+      "occurrences": 0,
+      "files": []
     },
     {
       "token": "hdx.dev.branch",
       "replacement": "cbt.dev.branch",
-      "status": "review",
+      "status": "approved",
       "reason": null,
-      "occurrences": 3,
-      "files": [
-        "docker-compose.dev.yml",
-        "scripts/dev-portal/server.js"
-      ]
+      "occurrences": 0,
+      "files": []
     },
     {
       "token": "hdx.dev.port",
       "replacement": "cbt.dev.port",
-      "status": "review",
+      "status": "approved",
       "reason": null,
-      "occurrences": 7,
-      "files": [
-        "docker-compose.dev.yml",
-        "scripts/dev-portal/server.js"
-      ]
+      "occurrences": 0,
+      "files": []
     },
     {
       "token": "hdx.dev.service",
       "replacement": "cbt.dev.service",
-      "status": "review",
+      "status": "approved",
       "reason": null,
-      "occurrences": 7,
-      "files": [
-        "docker-compose.dev.yml",
-        "scripts/dev-portal/server.js"
-      ]
+      "occurrences": 0,
+      "files": []
     },
     {
       "token": "hdx.dev.slot",
       "replacement": "cbt.dev.slot",
-      "status": "review",
+      "status": "approved",
       "reason": null,
-      "occurrences": 1,
-      "files": [
-        "docker-compose.dev.yml"
-      ]
+      "occurrences": 0,
+      "files": []
     },
     {
       "token": "hdx.dev.url",
       "replacement": "cbt.dev.url",
-      "status": "review",
+      "status": "approved",
       "reason": null,
-      "occurrences": 5,
-      "files": [
-        "docker-compose.dev.yml",
-        "scripts/dev-portal/server.js"
-      ]
+      "occurrences": 0,
+      "files": []
     },
     {
       "token": "hdx.dev.worktree",
       "replacement": "cbt.dev.worktree",
-      "status": "review",
+      "status": "approved",
       "reason": null,
-      "occurrences": 3,
-      "files": [
-        "docker-compose.dev.yml",
-        "scripts/dev-portal/server.js"
-      ]
+      "occurrences": 0,
+      "files": []
     },
     {
       "token": "hyperdx",
-      "replacement": "couchbase-traces",
-      "status": "proposed",
-      "reason": null,
-      "occurrences": 352,
+      "replacement": null,
+      "status": "allowed",
+      "reason": "internal_identifier",
+      "occurrences": 322,
       "files": [
         ".github/scripts/__tests__/pr-triage-classify.test.js",
-        ".github/workflows/claude-code-review.yml",
+        ".github/scripts/pr-triage-classify.js",
         ".github/workflows/docker-build.yml",
-        ".github/workflows/release-nightly.yml",
-        ".github/workflows/release.yml",
         ".opencode/commands/eval-summary.md",
         ".vscode/settings.json",
-        "CHANGELOG.md",
         "DEPLOY.md",
         "Makefile",
         "agent_docs/development.md",
@@ -1497,55 +987,49 @@
         "docker/hyperdx/build.sh",
         "docker/hyperdx/entry.local.base.sh",
         "docker/hyperdx/entry.prod.sh",
-        "docker/otel-collector/config.standalone.auth.yaml"
+        "docker/otel-collector/config.standalone.auth.yaml",
+        "docker/otel-collector/config.standalone.oidc.yaml",
+        "docker/otel-collector/config.standalone.promql.yaml",
+        "docker/otel-collector/config.standalone.yaml"
       ]
     },
     {
       "token": "hyperdx-aio-smoke",
       "replacement": "couchbase-traces-aio-smoke",
-      "status": "proposed",
+      "status": "approved",
       "reason": null,
-      "occurrences": 2,
-      "files": [
-        ".github/workflows/docker-build.yml"
-      ]
+      "occurrences": 0,
+      "files": []
     },
     {
       "token": "hyperdx-alerts",
       "replacement": "couchbase-traces-alerts",
-      "status": "proposed",
+      "status": "approved",
       "reason": null,
-      "occurrences": 1,
-      "files": [
-        "packages/api/src/tasks/checkAlerts/providers/default.ts"
-      ]
+      "occurrences": 0,
+      "files": []
     },
     {
       "token": "hyperdx-all-in-one",
       "replacement": "couchbase-traces-all-in-one",
-      "status": "proposed",
+      "status": "approved",
       "reason": null,
-      "occurrences": 1,
-      "files": [
-        "DEPLOY.md"
-      ]
+      "occurrences": 0,
+      "files": []
     },
     {
       "token": "hyperdx-api",
       "replacement": "couchbase-traces-api",
-      "status": "proposed",
+      "status": "approved",
       "reason": null,
-      "occurrences": 2,
-      "files": [
-        "packages/api/docs/auto_provision/AUTO_PROVISION.md",
-        "packages/api/src/utils/instrumentation.ts"
-      ]
+      "occurrences": 0,
+      "files": []
     },
     {
       "token": "hyperdx-branch",
-      "replacement": "couchbase-traces-branch",
-      "status": "proposed",
-      "reason": null,
+      "replacement": null,
+      "status": "allowed",
+      "reason": "internal_identifier",
       "occurrences": 5,
       "files": [
         "agent_docs/evals.md"
@@ -1553,9 +1037,9 @@
     },
     {
       "token": "hyperdx-e2e",
-      "replacement": "couchbase-traces-e2e",
-      "status": "proposed",
-      "reason": null,
+      "replacement": null,
+      "status": "allowed",
+      "reason": "internal_identifier",
       "occurrences": 8,
       "files": [
         ".github/actions/e2e-setup/action.yml",
@@ -1567,9 +1051,9 @@
     },
     {
       "token": "hyperdx-ee",
-      "replacement": "couchbase-traces-ee",
-      "status": "proposed",
-      "reason": null,
+      "replacement": null,
+      "status": "allowed",
+      "reason": "internal_identifier",
       "occurrences": 1,
       "files": [
         "scripts/__tests__/slots.test.mjs"
@@ -1577,9 +1061,9 @@
     },
     {
       "token": "hyperdx-feature",
-      "replacement": "couchbase-traces-feature",
-      "status": "proposed",
-      "reason": null,
+      "replacement": null,
+      "status": "allowed",
+      "reason": "internal_identifier",
       "occurrences": 4,
       "files": [
         "packages/hdx-eval/README.md"
@@ -1588,30 +1072,24 @@
     {
       "token": "hyperdx-import.tf",
       "replacement": "couchbase-traces-import.tf",
-      "status": "proposed",
+      "status": "approved",
       "reason": null,
-      "occurrences": 4,
-      "files": [
-        "packages/app/src/components/TeamSettings/IacMigrationSection.tsx",
-        "packages/app/src/components/TeamSettings/__tests__/IacMigrationSection.test.tsx",
-        "packages/app/src/utils/__tests__/downloadFile.test.ts"
-      ]
+      "occurrences": 0,
+      "files": []
     },
     {
       "token": "hyperdx-local",
       "replacement": "couchbase-traces-local",
-      "status": "proposed",
+      "status": "approved",
       "reason": null,
-      "occurrences": 1,
-      "files": [
-        "DEPLOY.md"
-      ]
+      "occurrences": 0,
+      "files": []
     },
     {
       "token": "hyperdx-main",
-      "replacement": "couchbase-traces-main",
-      "status": "proposed",
-      "reason": null,
+      "replacement": null,
+      "status": "allowed",
+      "reason": "internal_identifier",
       "occurrences": 14,
       "files": [
         "agent_docs/evals.md",
@@ -1621,61 +1099,48 @@
     {
       "token": "hyperdx-next",
       "replacement": "couchbase-traces-next",
-      "status": "proposed",
+      "status": "approved",
       "reason": null,
-      "occurrences": 1,
-      "files": [
-        "packages/app/src/utils/__tests__/nextServerTelemetry.test.ts"
-      ]
+      "occurrences": 0,
+      "files": []
     },
     {
       "token": "hyperdx-next-next",
       "replacement": "couchbase-traces-next-next",
-      "status": "proposed",
+      "status": "approved",
       "reason": null,
-      "occurrences": 1,
-      "files": [
-        "packages/app/src/utils/__tests__/nextServerTelemetry.test.ts"
-      ]
+      "occurrences": 0,
+      "files": []
     },
     {
       "token": "hyperdx-oss-usage-stats",
       "replacement": "couchbase-traces-oss-usage-stats",
-      "status": "proposed",
+      "status": "approved",
       "reason": null,
-      "occurrences": 2,
-      "files": [
-        "packages/api/src/tasks/__tests__/usageStats.test.ts",
-        "packages/api/src/tasks/usageStats.ts"
-      ]
+      "occurrences": 0,
+      "files": []
     },
     {
       "token": "hyperdx-otel-collector",
       "replacement": "couchbase-traces-otel-collector",
-      "status": "proposed",
+      "status": "approved",
       "reason": null,
-      "occurrences": 1,
-      "files": [
-        "DEPLOY.md"
-      ]
+      "occurrences": 0,
+      "files": []
     },
     {
       "token": "hyperdx-package-list",
       "replacement": "couchbase-traces-package-list",
-      "status": "proposed",
+      "status": "approved",
       "reason": null,
-      "occurrences": 30,
-      "files": [
-        ".github/scripts/release-notes.mjs",
-        ".github/workflows/release.yml",
-        "CHANGELOG.md"
-      ]
+      "occurrences": 0,
+      "files": []
     },
     {
       "token": "hyperdx-private",
-      "replacement": "couchbase-traces-private",
-      "status": "proposed",
-      "reason": null,
+      "replacement": null,
+      "status": "allowed",
+      "reason": "internal_identifier",
       "occurrences": 1,
       "files": [
         "agent_docs/development.md"
@@ -1684,34 +1149,28 @@
     {
       "token": "hyperdx-release-notes",
       "replacement": "cbt-release-notes",
-      "status": "proposed",
+      "status": "approved",
       "reason": null,
-      "occurrences": 29,
+      "occurrences": 8,
       "files": [
-        ".github/prompts/release-changelog.md",
         ".github/scripts/__tests__/release-notes.test.mjs",
         ".github/scripts/release-notes.mjs",
-        "CHANGELOG.md",
-        "docs/upstream-AGENTS.md",
-        "packages/app/src/components/AppNav/__tests__/parse-whats-new.test.ts"
+        "packages/app/scripts/parse-whats-new.js"
       ]
     },
     {
       "token": "hyperdx-tasks",
       "replacement": "couchbase-traces-tasks",
-      "status": "proposed",
+      "status": "approved",
       "reason": null,
-      "occurrences": 2,
-      "files": [
-        "packages/api/src/tasks/metrics.ts",
-        "packages/api/src/tasks/tracer.ts"
-      ]
+      "occurrences": 0,
+      "files": []
     },
     {
       "token": "hyperdx-test",
-      "replacement": "couchbase-traces-test",
-      "status": "proposed",
-      "reason": null,
+      "replacement": null,
+      "status": "allowed",
+      "reason": "internal_identifier",
       "occurrences": 3,
       "files": [
         "packages/api/.env.test",
@@ -1720,9 +1179,9 @@
     },
     {
       "token": "hyperdx-token-encryption-check",
-      "replacement": "couchbase-traces-token-encryption-check",
-      "status": "proposed",
-      "reason": null,
+      "replacement": null,
+      "status": "allowed",
+      "reason": "internal_identifier",
       "occurrences": 1,
       "files": [
         "packages/api/src/utils/tokenEncryption.ts"
@@ -1731,316 +1190,248 @@
     {
       "token": "hyperdx-tui",
       "replacement": "couchbase-traces-tui",
-      "status": "proposed",
+      "status": "approved",
       "reason": null,
-      "occurrences": 1,
-      "files": [
-        "packages/cli/src/api/client.ts"
-      ]
+      "occurrences": 0,
+      "files": []
     },
     {
       "token": "hyperdx.alert.id",
-      "replacement": "couchbase-traces.alert.id",
-      "status": "proposed",
+      "replacement": "cbt.alert.id",
+      "status": "approved",
       "reason": null,
-      "occurrences": 2,
-      "files": [
-        "agent_docs/observability.md",
-        "packages/api/src/tasks/checkAlerts/index.ts"
-      ]
+      "occurrences": 0,
+      "files": []
     },
     {
       "token": "hyperdx.alert.source",
-      "replacement": "couchbase-traces.alert.source",
-      "status": "proposed",
+      "replacement": "cbt.alert.source",
+      "status": "approved",
       "reason": null,
-      "occurrences": 1,
-      "files": [
-        "packages/api/src/tasks/checkAlerts/index.ts"
-      ]
+      "occurrences": 0,
+      "files": []
     },
     {
       "token": "hyperdx.alerts.batch.size",
-      "replacement": "couchbase-traces.alerts.batch.size",
-      "status": "proposed",
+      "replacement": "cbt.alerts.batch.size",
+      "status": "approved",
       "reason": null,
-      "occurrences": 2,
-      "files": [
-        "agent_docs/observability.md",
-        "packages/api/src/tasks/checkAlerts/index.ts"
-      ]
+      "occurrences": 0,
+      "files": []
     },
     {
       "token": "hyperdx.alerts.batch_failures",
-      "replacement": "couchbase-traces.alerts.batch_failures",
-      "status": "proposed",
+      "replacement": "cbt.alerts.batch_failures",
+      "status": "approved",
       "reason": null,
-      "occurrences": 1,
-      "files": [
-        "packages/api/src/tasks/checkAlerts/index.ts"
-      ]
+      "occurrences": 0,
+      "files": []
     },
     {
       "token": "hyperdx.alerts.connection.id",
-      "replacement": "couchbase-traces.alerts.connection.id",
-      "status": "proposed",
+      "replacement": "cbt.alerts.connection.id",
+      "status": "approved",
       "reason": null,
-      "occurrences": 1,
-      "files": [
-        "packages/api/src/tasks/checkAlerts/index.ts"
-      ]
+      "occurrences": 0,
+      "files": []
     },
     {
       "token": "hyperdx.alerts.evaluations",
-      "replacement": "couchbase-traces.alerts.evaluations",
-      "status": "proposed",
+      "replacement": "cbt.alerts.evaluations",
+      "status": "approved",
       "reason": null,
-      "occurrences": 2,
-      "files": [
-        "agent_docs/observability.md",
-        "packages/api/src/tasks/checkAlerts/index.ts"
-      ]
+      "occurrences": 0,
+      "files": []
     },
     {
       "token": "hyperdx.alerts.list.limit",
-      "replacement": "couchbase-traces.alerts.list.limit",
-      "status": "proposed",
+      "replacement": "cbt.alerts.list.limit",
+      "status": "approved",
       "reason": null,
-      "occurrences": 1,
-      "files": [
-        "packages/api/src/routers/api/alerts.ts"
-      ]
+      "occurrences": 0,
+      "files": []
     },
     {
       "token": "hyperdx.alerts.list.page_size",
-      "replacement": "couchbase-traces.alerts.list.page_size",
-      "status": "proposed",
+      "replacement": "cbt.alerts.list.page_size",
+      "status": "approved",
       "reason": null,
-      "occurrences": 1,
-      "files": [
-        "packages/api/src/routers/api/alerts.ts"
-      ]
+      "occurrences": 0,
+      "files": []
     },
     {
       "token": "hyperdx.alerts.notification_cap_exceeded",
-      "replacement": "couchbase-traces.alerts.notification_cap_exceeded",
-      "status": "proposed",
+      "replacement": "cbt.alerts.notification_cap_exceeded",
+      "status": "approved",
       "reason": null,
-      "occurrences": 1,
-      "files": [
-        "packages/api/src/tasks/checkAlerts/template.ts"
-      ]
+      "occurrences": 0,
+      "files": []
     },
     {
       "token": "hyperdx.alerts.process_failures",
-      "replacement": "couchbase-traces.alerts.process_failures",
-      "status": "proposed",
+      "replacement": "cbt.alerts.process_failures",
+      "status": "approved",
       "reason": null,
-      "occurrences": 1,
-      "files": [
-        "packages/api/src/tasks/checkAlerts/index.ts"
-      ]
+      "occurrences": 0,
+      "files": []
     },
     {
       "token": "hyperdx.alerts.query_failures",
-      "replacement": "couchbase-traces.alerts.query_failures",
-      "status": "proposed",
+      "replacement": "cbt.alerts.query_failures",
+      "status": "approved",
       "reason": null,
-      "occurrences": 1,
-      "files": [
-        "packages/api/src/tasks/checkAlerts/index.ts"
-      ]
+      "occurrences": 0,
+      "files": []
     },
     {
       "token": "hyperdx.alerts.shard.index",
-      "replacement": "couchbase-traces.alerts.shard.index",
-      "status": "proposed",
+      "replacement": "cbt.alerts.shard.index",
+      "status": "approved",
       "reason": null,
-      "occurrences": 22,
-      "files": [
-        "packages/common-utils/src/__tests__/__snapshots__/renderChartConfig.test.ts.snap",
-        "packages/common-utils/src/__tests__/renderChartConfig.test.ts"
-      ]
+      "occurrences": 0,
+      "files": []
     },
     {
       "token": "hyperdx.alerts.team.id",
-      "replacement": "couchbase-traces.alerts.team.id",
-      "status": "proposed",
+      "replacement": "cbt.alerts.team.id",
+      "status": "approved",
       "reason": null,
-      "occurrences": 1,
-      "files": [
-        "packages/api/src/tasks/checkAlerts/index.ts"
-      ]
+      "occurrences": 0,
+      "files": []
     },
     {
       "token": "hyperdx.alerts.webhook_deliveries",
-      "replacement": "couchbase-traces.alerts.webhook_deliveries",
-      "status": "proposed",
+      "replacement": "cbt.alerts.webhook_deliveries",
+      "status": "approved",
       "reason": null,
-      "occurrences": 1,
-      "files": [
-        "packages/api/src/tasks/checkAlerts/transports/generic.ts"
-      ]
+      "occurrences": 0,
+      "files": []
     },
     {
       "token": "hyperdx.alerts.webhook_delivery.duration_ms",
-      "replacement": "couchbase-traces.alerts.webhook_delivery.duration_ms",
-      "status": "proposed",
+      "replacement": "cbt.alerts.webhook_delivery.duration_ms",
+      "status": "approved",
       "reason": null,
-      "occurrences": 1,
-      "files": [
-        "packages/api/src/tasks/checkAlerts/transports/generic.ts"
-      ]
+      "occurrences": 0,
+      "files": []
     },
     {
       "token": "hyperdx.api.errors",
-      "replacement": "couchbase-traces.api.errors",
-      "status": "proposed",
+      "replacement": "cbt.api.errors",
+      "status": "approved",
       "reason": null,
-      "occurrences": 4,
-      "files": [
-        "CHANGELOG.md",
-        "agent_docs/observability.md",
-        "packages/api/CHANGELOG.md",
-        "packages/api/src/middleware/error.ts"
-      ]
+      "occurrences": 0,
+      "files": []
     },
     {
       "token": "hyperdx.api.pagination.truncated",
-      "replacement": "couchbase-traces.api.pagination.truncated",
-      "status": "proposed",
+      "replacement": "cbt.api.pagination.truncated",
+      "status": "approved",
       "reason": null,
-      "occurrences": 1,
-      "files": [
-        "packages/api/src/utils/pagination.ts"
-      ]
+      "occurrences": 0,
+      "files": []
     },
     {
       "token": "hyperdx.api.webhook.serialization_errors",
-      "replacement": "couchbase-traces.api.webhook.serialization_errors",
-      "status": "proposed",
+      "replacement": "cbt.api.webhook.serialization_errors",
+      "status": "approved",
       "reason": null,
-      "occurrences": 1,
-      "files": [
-        "packages/api/src/routers/external-api/v2/webhooks.ts"
-      ]
+      "occurrences": 0,
+      "files": []
     },
     {
       "token": "hyperdx.charts.series.duration_ms",
-      "replacement": "couchbase-traces.charts.series.duration_ms",
-      "status": "proposed",
+      "replacement": "cbt.charts.series.duration_ms",
+      "status": "approved",
       "reason": null,
-      "occurrences": 1,
-      "files": [
-        "packages/api/src/routers/external-api/v2/charts.ts"
-      ]
+      "occurrences": 0,
+      "files": []
     },
     {
       "token": "hyperdx.charts.series.errors",
-      "replacement": "couchbase-traces.charts.series.errors",
-      "status": "proposed",
+      "replacement": "cbt.charts.series.errors",
+      "status": "approved",
       "reason": null,
-      "occurrences": 1,
-      "files": [
-        "packages/api/src/routers/external-api/v2/charts.ts"
-      ]
+      "occurrences": 0,
+      "files": []
     },
     {
       "token": "hyperdx.iac.import_manifest.truncated_types",
-      "replacement": "couchbase-traces.iac.import_manifest.truncated_types",
-      "status": "proposed",
+      "replacement": "cbt.iac.import_manifest.truncated_types",
+      "status": "approved",
       "reason": null,
-      "occurrences": 1,
-      "files": [
-        "packages/api/src/routers/api/iac.ts"
-      ]
+      "occurrences": 0,
+      "files": []
     },
     {
       "token": "hyperdx.iac.import_manifest.unaddressable_tile_alerts",
-      "replacement": "couchbase-traces.iac.import_manifest.unaddressable_tile_alerts",
-      "status": "proposed",
+      "replacement": "cbt.iac.import_manifest.unaddressable_tile_alerts",
+      "status": "approved",
       "reason": null,
-      "occurrences": 1,
-      "files": [
-        "packages/api/src/routers/api/iac.ts"
-      ]
+      "occurrences": 0,
+      "files": []
     },
     {
       "token": "hyperdx.iac.import_manifest.unexportable_dashboards",
-      "replacement": "couchbase-traces.iac.import_manifest.unexportable_dashboards",
-      "status": "proposed",
+      "replacement": "cbt.iac.import_manifest.unexportable_dashboards",
+      "status": "approved",
       "reason": null,
-      "occurrences": 1,
-      "files": [
-        "packages/api/src/routers/api/iac.ts"
-      ]
+      "occurrences": 0,
+      "files": []
     },
     {
       "token": "hyperdx.iac.import_manifest.unexportable_sources",
-      "replacement": "couchbase-traces.iac.import_manifest.unexportable_sources",
-      "status": "proposed",
+      "replacement": "cbt.iac.import_manifest.unexportable_sources",
+      "status": "approved",
       "reason": null,
-      "occurrences": 1,
-      "files": [
-        "packages/api/src/routers/api/iac.ts"
-      ]
+      "occurrences": 0,
+      "files": []
     },
     {
       "token": "hyperdx.iac.import_manifest_truncated",
-      "replacement": "couchbase-traces.iac.import_manifest_truncated",
-      "status": "proposed",
+      "replacement": "cbt.iac.import_manifest_truncated",
+      "status": "approved",
       "reason": null,
-      "occurrences": 1,
-      "files": [
-        "packages/api/src/routers/api/iac.ts"
-      ]
+      "occurrences": 0,
+      "files": []
     },
     {
       "token": "hyperdx.iac.import_manifest_unaddressable_tile_alerts",
-      "replacement": "couchbase-traces.iac.import_manifest_unaddressable_tile_alerts",
-      "status": "proposed",
+      "replacement": "cbt.iac.import_manifest_unaddressable_tile_alerts",
+      "status": "approved",
       "reason": null,
-      "occurrences": 1,
-      "files": [
-        "packages/api/src/routers/api/iac.ts"
-      ]
+      "occurrences": 0,
+      "files": []
     },
     {
       "token": "hyperdx.iac.import_manifest_unexportable_dashboards",
-      "replacement": "couchbase-traces.iac.import_manifest_unexportable_dashboards",
-      "status": "proposed",
+      "replacement": "cbt.iac.import_manifest_unexportable_dashboards",
+      "status": "approved",
       "reason": null,
-      "occurrences": 1,
-      "files": [
-        "packages/api/src/routers/api/iac.ts"
-      ]
+      "occurrences": 0,
+      "files": []
     },
     {
       "token": "hyperdx.iac.import_manifest_unexportable_sources",
-      "replacement": "couchbase-traces.iac.import_manifest_unexportable_sources",
-      "status": "proposed",
+      "replacement": "cbt.iac.import_manifest_unexportable_sources",
+      "status": "approved",
       "reason": null,
-      "occurrences": 1,
-      "files": [
-        "packages/api/src/routers/api/iac.ts"
-      ]
+      "occurrences": 0,
+      "files": []
     },
     {
       "token": "hyperdx.iac.tile_alert_lookup_failed",
-      "replacement": "couchbase-traces.iac.tile_alert_lookup_failed",
-      "status": "proposed",
+      "replacement": "cbt.iac.tile_alert_lookup_failed",
+      "status": "approved",
       "reason": null,
-      "occurrences": 2,
-      "files": [
-        "packages/api/src/utils/__tests__/iacTileAlerts.int.test.ts",
-        "packages/api/src/utils/iacTileAlerts.ts"
-      ]
+      "occurrences": 0,
+      "files": []
     },
     {
       "token": "hyperdx.io",
       "replacement": null,
-      "status": "review",
-      "reason": null,
+      "status": "allowed",
+      "reason": "pending_decision",
       "occurrences": 1,
       "files": [
         "MCP.md"
@@ -2048,363 +1439,273 @@
     },
     {
       "token": "hyperdx.local_mode",
-      "replacement": "couchbase-traces.local_mode",
-      "status": "proposed",
+      "replacement": "cbt.local_mode",
+      "status": "approved",
       "reason": null,
-      "occurrences": 1,
-      "files": [
-        "packages/api/src/middleware/auth.ts"
-      ]
+      "occurrences": 0,
+      "files": []
     },
     {
       "token": "hyperdx.mcp.event_patterns.drilldown_where_failed",
-      "replacement": "couchbase-traces.mcp.event_patterns.drilldown_where_failed",
-      "status": "proposed",
+      "replacement": "cbt.mcp.event_patterns.drilldown_where_failed",
+      "status": "approved",
       "reason": null,
-      "occurrences": 1,
-      "files": [
-        "packages/api/src/mcp/tools/query/runEventPatterns.ts"
-      ]
+      "occurrences": 0,
+      "files": []
     },
     {
       "token": "hyperdx.mcp.sql.batch.queries",
-      "replacement": "couchbase-traces.mcp.sql.batch.queries",
-      "status": "proposed",
+      "replacement": "cbt.mcp.sql.batch.queries",
+      "status": "approved",
       "reason": null,
-      "occurrences": 1,
-      "files": [
-        "packages/api/src/mcp/tools/query/sqlBatch.ts"
-      ]
+      "occurrences": 0,
+      "files": []
     },
     {
       "token": "hyperdx.mcp.tool.duration_ms",
-      "replacement": "couchbase-traces.mcp.tool.duration_ms",
-      "status": "proposed",
+      "replacement": "cbt.mcp.tool.duration_ms",
+      "status": "approved",
       "reason": null,
-      "occurrences": 1,
-      "files": [
-        "packages/api/src/mcp/utils/tracing.ts"
-      ]
+      "occurrences": 0,
+      "files": []
     },
     {
       "token": "hyperdx.mcp.tool.errors",
-      "replacement": "couchbase-traces.mcp.tool.errors",
-      "status": "proposed",
+      "replacement": "cbt.mcp.tool.errors",
+      "status": "approved",
       "reason": null,
-      "occurrences": 3,
-      "files": [
-        "CHANGELOG.md",
-        "packages/api/CHANGELOG.md",
-        "packages/api/src/mcp/utils/tracing.ts"
-      ]
+      "occurrences": 0,
+      "files": []
     },
     {
       "token": "hyperdx.mcp.tool.response.size_bytes",
-      "replacement": "couchbase-traces.mcp.tool.response.size_bytes",
-      "status": "proposed",
+      "replacement": "cbt.mcp.tool.response.size_bytes",
+      "status": "approved",
       "reason": null,
-      "occurrences": 3,
-      "files": [
-        "agent_docs/architecture.md",
-        "packages/api/src/mcp/__tests__/tracing.test.ts",
-        "packages/api/src/mcp/utils/tracing.ts"
-      ]
+      "occurrences": 0,
+      "files": []
     },
     {
       "token": "hyperdx.mongodb.connection_events",
-      "replacement": "couchbase-traces.mongodb.connection_events",
-      "status": "proposed",
+      "replacement": "cbt.mongodb.connection_events",
+      "status": "approved",
       "reason": null,
-      "occurrences": 1,
-      "files": [
-        "packages/api/src/models/index.ts"
-      ]
+      "occurrences": 0,
+      "files": []
     },
     {
       "token": "hyperdx.opamp.agent_status_reports",
-      "replacement": "couchbase-traces.opamp.agent_status_reports",
-      "status": "proposed",
+      "replacement": "cbt.opamp.agent_status_reports",
+      "status": "approved",
       "reason": null,
-      "occurrences": 2,
-      "files": [
-        "packages/api/src/opamp/services/__tests__/agentService.test.ts",
-        "packages/api/src/opamp/services/agentService.ts"
-      ]
+      "occurrences": 0,
+      "files": []
     },
     {
       "token": "hyperdx.opamp.messages",
-      "replacement": "couchbase-traces.opamp.messages",
-      "status": "proposed",
+      "replacement": "cbt.opamp.messages",
+      "status": "approved",
       "reason": null,
-      "occurrences": 1,
-      "files": [
-        "packages/api/src/opamp/controllers/opampController.ts"
-      ]
+      "occurrences": 0,
+      "files": []
     },
     {
       "token": "hyperdx.opamp.remote_config_applications",
-      "replacement": "couchbase-traces.opamp.remote_config_applications",
-      "status": "proposed",
+      "replacement": "cbt.opamp.remote_config_applications",
+      "status": "approved",
       "reason": null,
-      "occurrences": 4,
-      "files": [
-        "CHANGELOG.md",
-        "packages/api/CHANGELOG.md",
-        "packages/api/src/opamp/services/__tests__/agentService.test.ts",
-        "packages/api/src/opamp/services/agentService.ts"
-      ]
+      "occurrences": 0,
+      "files": []
     },
     {
       "token": "hyperdx.opamp.remote_configs",
-      "replacement": "couchbase-traces.opamp.remote_configs",
-      "status": "proposed",
+      "replacement": "cbt.opamp.remote_configs",
+      "status": "approved",
       "reason": null,
-      "occurrences": 1,
-      "files": [
-        "packages/api/src/opamp/controllers/opampController.ts"
-      ]
+      "occurrences": 0,
+      "files": []
     },
     {
       "token": "hyperdx.operation.duration_ms",
-      "replacement": "couchbase-traces.operation.duration_ms",
-      "status": "proposed",
+      "replacement": "cbt.operation.duration_ms",
+      "status": "approved",
       "reason": null,
-      "occurrences": 4,
-      "files": [
-        "CHANGELOG.md",
-        "agent_docs/observability.md",
-        "packages/api/CHANGELOG.md",
-        "packages/api/src/utils/instrumentation.ts"
-      ]
+      "occurrences": 0,
+      "files": []
     },
     {
       "token": "hyperdx.operation.requests",
-      "replacement": "couchbase-traces.operation.requests",
-      "status": "proposed",
+      "replacement": "cbt.operation.requests",
+      "status": "approved",
       "reason": null,
-      "occurrences": 4,
-      "files": [
-        "CHANGELOG.md",
-        "agent_docs/observability.md",
-        "packages/api/CHANGELOG.md",
-        "packages/api/src/utils/instrumentation.ts"
-      ]
+      "occurrences": 0,
+      "files": []
     },
     {
       "token": "hyperdx.org_api_key.auth_failures",
-      "replacement": "couchbase-traces.org_api_key.auth_failures",
-      "status": "proposed",
+      "replacement": "cbt.org_api_key.auth_failures",
+      "status": "approved",
       "reason": null,
-      "occurrences": 1,
-      "files": [
-        "packages/api/src/middleware/auth.ts"
-      ]
+      "occurrences": 0,
+      "files": []
     },
     {
       "token": "hyperdx.org_api_key.last_used_write_failures",
-      "replacement": "couchbase-traces.org_api_key.last_used_write_failures",
-      "status": "proposed",
+      "replacement": "cbt.org_api_key.last_used_write_failures",
+      "status": "approved",
       "reason": null,
-      "occurrences": 1,
-      "files": [
-        "packages/api/src/controllers/orgApiKey.ts"
-      ]
+      "occurrences": 0,
+      "files": []
     },
     {
       "token": "hyperdx.org_api_key.operations",
-      "replacement": "couchbase-traces.org_api_key.operations",
-      "status": "proposed",
+      "replacement": "cbt.org_api_key.operations",
+      "status": "approved",
       "reason": null,
-      "occurrences": 1,
-      "files": [
-        "packages/api/src/routers/api/orgApiKeys.ts"
-      ]
+      "occurrences": 0,
+      "files": []
     },
     {
       "token": "hyperdx.prometheus.query.duration_ms",
-      "replacement": "couchbase-traces.prometheus.query.duration_ms",
-      "status": "proposed",
+      "replacement": "cbt.prometheus.query.duration_ms",
+      "status": "approved",
       "reason": null,
-      "occurrences": 1,
-      "files": [
-        "packages/api/src/routers/api/prometheus.ts"
-      ]
+      "occurrences": 0,
+      "files": []
     },
     {
       "token": "hyperdx.prometheus.query_errors",
-      "replacement": "couchbase-traces.prometheus.query_errors",
-      "status": "proposed",
+      "replacement": "cbt.prometheus.query_errors",
+      "status": "approved",
       "reason": null,
-      "occurrences": 1,
-      "files": [
-        "packages/api/src/routers/api/prometheus.ts"
-      ]
+      "occurrences": 0,
+      "files": []
     },
     {
       "token": "hyperdx.promql.backend",
-      "replacement": "couchbase-traces.promql.backend",
-      "status": "proposed",
+      "replacement": "cbt.promql.backend",
+      "status": "approved",
       "reason": null,
-      "occurrences": 1,
-      "files": [
-        "packages/api/src/controllers/promql.ts"
-      ]
+      "occurrences": 0,
+      "files": []
     },
     {
       "token": "hyperdx.promql.query_kind",
-      "replacement": "couchbase-traces.promql.query_kind",
-      "status": "proposed",
+      "replacement": "cbt.promql.query_kind",
+      "status": "approved",
       "reason": null,
-      "occurrences": 1,
-      "files": [
-        "packages/api/src/controllers/promql.ts"
-      ]
+      "occurrences": 0,
+      "files": []
     },
     {
       "token": "hyperdx.search.query.duration_ms",
-      "replacement": "couchbase-traces.search.query.duration_ms",
-      "status": "proposed",
+      "replacement": "cbt.search.query.duration_ms",
+      "status": "approved",
       "reason": null,
-      "occurrences": 2,
-      "files": [
-        "agent_docs/observability.md",
-        "packages/api/src/routers/external-api/v2/search.ts"
-      ]
+      "occurrences": 0,
+      "files": []
     },
     {
       "token": "hyperdx.search.query_errors",
-      "replacement": "couchbase-traces.search.query_errors",
-      "status": "proposed",
+      "replacement": "cbt.search.query_errors",
+      "status": "approved",
       "reason": null,
-      "occurrences": 2,
-      "files": [
-        "agent_docs/observability.md",
-        "packages/api/src/routers/external-api/v2/search.ts"
-      ]
+      "occurrences": 0,
+      "files": []
     },
     {
       "token": "hyperdx.session_secret.generated",
-      "replacement": "couchbase-traces.session_secret.generated",
-      "status": "proposed",
+      "replacement": "cbt.session_secret.generated",
+      "status": "approved",
       "reason": null,
-      "occurrences": 1,
-      "files": [
-        "packages/api/src/utils/sessionSecret.ts"
-      ]
+      "occurrences": 0,
+      "files": []
     },
     {
       "token": "hyperdx.source.id",
-      "replacement": "couchbase-traces.source.id",
-      "status": "proposed",
+      "replacement": "cbt.source.id",
+      "status": "approved",
       "reason": null,
-      "occurrences": 2,
-      "files": [
-        "agent_docs/observability.md",
-        "packages/api/src/mcp/tools/query/serviceHealth/index.ts"
-      ]
+      "occurrences": 0,
+      "files": []
     },
     {
       "token": "hyperdx.tasks",
-      "replacement": "couchbase-traces.tasks",
-      "status": "proposed",
+      "replacement": "cbt.tasks",
+      "status": "approved",
       "reason": null,
-      "occurrences": 3,
-      "files": [
-        "packages/api/src/tasks/metrics.ts"
-      ]
+      "occurrences": 0,
+      "files": []
     },
     {
       "token": "hyperdx.team.id",
-      "replacement": "couchbase-traces.team.id",
-      "status": "proposed",
+      "replacement": "cbt.team.id",
+      "status": "approved",
       "reason": null,
-      "occurrences": 13,
-      "files": [
-        "CHANGELOG.md",
-        "agent_docs/observability.md",
-        "packages/api/CHANGELOG.md",
-        "packages/api/src/tasks/checkAlerts/index.ts",
-        "packages/api/src/utils/__tests__/aiTelemetry.test.ts",
-        "packages/api/src/utils/__tests__/instrumentation.test.ts",
-        "packages/api/src/utils/aiTelemetry.ts",
-        "packages/api/src/utils/instrumentation.ts"
-      ]
+      "occurrences": 0,
+      "files": []
     },
     {
       "token": "hyperdx.team.member_restore_failures",
-      "replacement": "couchbase-traces.team.member_restore_failures",
-      "status": "proposed",
+      "replacement": "cbt.team.member_restore_failures",
+      "status": "approved",
       "reason": null,
-      "occurrences": 1,
-      "files": [
-        "packages/api/src/controllers/user.ts"
-      ]
+      "occurrences": 0,
+      "files": []
     },
     {
       "token": "hyperdx.test.counter",
-      "replacement": "couchbase-traces.test.counter",
-      "status": "proposed",
+      "replacement": "cbt.test.counter",
+      "status": "approved",
       "reason": null,
-      "occurrences": 2,
-      "files": [
-        "packages/api/src/utils/__tests__/instrumentation.test.ts"
-      ]
+      "occurrences": 0,
+      "files": []
     },
     {
       "token": "hyperdx.test.duration",
-      "replacement": "couchbase-traces.test.duration",
-      "status": "proposed",
+      "replacement": "cbt.test.duration",
+      "status": "approved",
       "reason": null,
-      "occurrences": 2,
-      "files": [
-        "packages/api/src/utils/__tests__/instrumentation.test.ts"
-      ]
+      "occurrences": 0,
+      "files": []
     },
     {
       "token": "hyperdx.test.histogram",
-      "replacement": "couchbase-traces.test.histogram",
-      "status": "proposed",
+      "replacement": "cbt.test.histogram",
+      "status": "approved",
       "reason": null,
-      "occurrences": 2,
-      "files": [
-        "packages/api/src/utils/__tests__/instrumentation.test.ts"
-      ]
+      "occurrences": 0,
+      "files": []
     },
     {
       "token": "hyperdx.token_encryption.disabled",
-      "replacement": "couchbase-traces.token_encryption.disabled",
-      "status": "proposed",
+      "replacement": "cbt.token_encryption.disabled",
+      "status": "approved",
       "reason": null,
-      "occurrences": 1,
-      "files": [
-        "packages/api/src/utils/tokenEncryption.ts"
-      ]
+      "occurrences": 0,
+      "files": []
     },
     {
       "token": "hyperdx.token_encryption.plaintext_reads",
-      "replacement": "couchbase-traces.token_encryption.plaintext_reads",
-      "status": "proposed",
+      "replacement": "cbt.token_encryption.plaintext_reads",
+      "status": "approved",
       "reason": null,
-      "occurrences": 1,
-      "files": [
-        "packages/api/src/utils/tokenEncryption.ts"
-      ]
+      "occurrences": 0,
+      "files": []
     },
     {
       "token": "hyperdx.user.is_virtual",
-      "replacement": "couchbase-traces.user.is_virtual",
-      "status": "proposed",
+      "replacement": "cbt.user.is_virtual",
+      "status": "approved",
       "reason": null,
-      "occurrences": 1,
-      "files": [
-        "packages/api/src/middleware/auth.ts"
-      ]
+      "occurrences": 0,
+      "files": []
     },
     {
       "token": "hyperdxApi",
-      "replacement": "couchbase-tracesApi",
-      "status": "proposed",
-      "reason": null,
+      "replacement": null,
+      "status": "allowed",
+      "reason": "internal_identifier",
       "occurrences": 4,
       "files": [
         "agent_docs/evals.md",
@@ -2414,9 +1715,9 @@
     },
     {
       "token": "hyperdxApi.accessKey",
-      "replacement": "couchbase-tracesApi.accessKey",
-      "status": "proposed",
-      "reason": null,
+      "replacement": null,
+      "status": "allowed",
+      "reason": "internal_identifier",
       "occurrences": 1,
       "files": [
         "agent_docs/evals.md"
@@ -2424,9 +1725,9 @@
     },
     {
       "token": "hyperdxSettingPrefix",
-      "replacement": "couchbase-tracesSettingPrefix",
-      "status": "proposed",
-      "reason": null,
+      "replacement": null,
+      "status": "allowed",
+      "reason": "internal_identifier",
       "occurrences": 13,
       "files": [
         "packages/api/openapi.json",
@@ -2440,23 +1741,20 @@
     },
     {
       "token": "hyperdx_",
-      "replacement": "couchbase_traces_",
-      "status": "proposed",
-      "reason": null,
-      "occurrences": 13,
+      "replacement": null,
+      "status": "allowed",
+      "reason": "internal_identifier",
+      "occurrences": 9,
       "files": [
-        "CHANGELOG.md",
-        "packages/api/CHANGELOG.md",
         "packages/api/openapi.json",
-        "packages/api/src/routers/external-api/__tests__/connections.int.test.ts",
-        "packages/common-utils/CHANGELOG.md"
+        "packages/api/src/routers/external-api/__tests__/connections.int.test.ts"
       ]
     },
     {
       "token": "hyperdx__lucene",
-      "replacement": "couchbase_traces__lucene",
-      "status": "proposed",
-      "reason": null,
+      "replacement": null,
+      "status": "allowed",
+      "reason": "external_dependency",
       "occurrences": 1,
       "files": [
         "packages/common-utils/package.json"
@@ -2464,40 +1762,33 @@
     },
     {
       "token": "hyperdx_describe_source",
-      "replacement": "couchbase_traces_describe_source",
-      "status": "proposed",
+      "replacement": "cbt_describe_source",
+      "status": "approved",
       "reason": null,
-      "occurrences": 2,
-      "files": [
-        "packages/api/CHANGELOG.md"
-      ]
+      "occurrences": 0,
+      "files": []
     },
     {
       "token": "hyperdx_event_deltas",
-      "replacement": "couchbase_traces_event_deltas",
-      "status": "proposed",
+      "replacement": "cbt_event_deltas",
+      "status": "approved",
       "reason": null,
-      "occurrences": 4,
-      "files": [
-        "packages/api/CHANGELOG.md",
-        "packages/common-utils/CHANGELOG.md"
-      ]
+      "occurrences": 0,
+      "files": []
     },
     {
       "token": "hyperdx_event_patterns",
-      "replacement": "couchbase_traces_event_patterns",
-      "status": "proposed",
+      "replacement": "cbt_event_patterns",
+      "status": "approved",
       "reason": null,
-      "occurrences": 1,
-      "files": [
-        "packages/api/CHANGELOG.md"
-      ]
+      "occurrences": 0,
+      "files": []
     },
     {
       "token": "hyperdx_event_type",
-      "replacement": "couchbase_traces_event_type",
-      "status": "proposed",
-      "reason": null,
+      "replacement": null,
+      "status": "allowed",
+      "reason": "engine_reference",
       "occurrences": 5,
       "files": [
         "packages/app/src/__tests__/searchFilters.test.ts"
@@ -2505,225 +1796,202 @@
     },
     {
       "token": "hyperdx_get_alert",
-      "replacement": "couchbase_traces_get_alert",
-      "status": "proposed",
+      "replacement": "cbt_get_alert",
+      "status": "approved",
       "reason": null,
-      "occurrences": 1,
-      "files": [
-        "packages/api/CHANGELOG.md"
-      ]
+      "occurrences": 0,
+      "files": []
     },
     {
       "token": "hyperdx_get_dashboard_tile",
-      "replacement": "couchbase_traces_get_dashboard_tile",
-      "status": "proposed",
+      "replacement": "cbt_get_dashboard_tile",
+      "status": "approved",
       "reason": null,
-      "occurrences": 1,
-      "files": [
-        "packages/api/CHANGELOG.md"
-      ]
+      "occurrences": 0,
+      "files": []
     },
     {
       "token": "hyperdx_get_saved_search",
-      "replacement": "couchbase_traces_get_saved_search",
-      "status": "proposed",
+      "replacement": "cbt_get_saved_search",
+      "status": "approved",
       "reason": null,
-      "occurrences": 1,
-      "files": [
-        "packages/api/CHANGELOG.md"
-      ]
+      "occurrences": 0,
+      "files": []
     },
     {
       "token": "hyperdx_get_webhook",
-      "replacement": "couchbase_traces_get_webhook",
-      "status": "proposed",
+      "replacement": "cbt_get_webhook",
+      "status": "approved",
       "reason": null,
-      "occurrences": 1,
-      "files": [
-        "packages/api/CHANGELOG.md"
-      ]
+      "occurrences": 0,
+      "files": []
     },
     {
       "token": "hyperdx_list_sources",
-      "replacement": "couchbase_traces_list_sources",
-      "status": "proposed",
+      "replacement": "cbt_list_sources",
+      "status": "approved",
       "reason": null,
-      "occurrences": 2,
-      "files": [
-        "packages/api/CHANGELOG.md"
-      ]
+      "occurrences": 0,
+      "files": []
     },
     {
       "token": "hyperdx_patch_dashboard",
-      "replacement": "couchbase_traces_patch_dashboard",
-      "status": "proposed",
+      "replacement": "cbt_patch_dashboard",
+      "status": "approved",
       "reason": null,
       "occurrences": 1,
       "files": [
-        "packages/api/CHANGELOG.md"
+        "packages/hdx-eval/src/grading/dashboardInspection.ts"
       ]
     },
     {
       "token": "hyperdx_query",
-      "replacement": "couchbase_traces_query",
-      "status": "proposed",
+      "replacement": "cbt_query",
+      "status": "approved",
       "reason": null,
-      "occurrences": 3,
+      "occurrences": 0,
+      "files": []
+    },
+    {
+      "token": "hyperdx_query_tile",
+      "replacement": "cbt_query_tile",
+      "status": "approved",
+      "reason": null,
+      "occurrences": 1,
       "files": [
-        "packages/api/CHANGELOG.md"
+        "packages/hdx-eval/src/grading/dashboardInspection.ts"
       ]
     },
     {
       "token": "hyperdx_save_alert",
-      "replacement": "couchbase_traces_save_alert",
-      "status": "proposed",
+      "replacement": "cbt_save_alert",
+      "status": "approved",
       "reason": null,
-      "occurrences": 1,
-      "files": [
-        "packages/api/CHANGELOG.md"
-      ]
+      "occurrences": 0,
+      "files": []
     },
     {
       "token": "hyperdx_save_dashboard",
-      "replacement": "couchbase_traces_save_dashboard",
-      "status": "proposed",
+      "replacement": "cbt_save_dashboard",
+      "status": "approved",
       "reason": null,
-      "occurrences": 4,
+      "occurrences": 1,
       "files": [
-        "packages/api/CHANGELOG.md"
+        "packages/hdx-eval/src/grading/dashboardInspection.ts"
       ]
     },
     {
       "token": "hyperdx_save_saved_search",
-      "replacement": "couchbase_traces_save_saved_search",
-      "status": "proposed",
+      "replacement": "cbt_save_saved_search",
+      "status": "approved",
       "reason": null,
-      "occurrences": 1,
-      "files": [
-        "packages/api/CHANGELOG.md"
-      ]
+      "occurrences": 0,
+      "files": []
     },
     {
       "token": "hyperdx_search",
-      "replacement": "couchbase_traces_search",
-      "status": "proposed",
+      "replacement": "cbt_search",
+      "status": "approved",
       "reason": null,
-      "occurrences": 4,
-      "files": [
-        "CHANGELOG.md",
-        "packages/api/CHANGELOG.md",
-        "packages/common-utils/CHANGELOG.md"
-      ]
+      "occurrences": 0,
+      "files": []
     },
     {
       "token": "hyperdx_search_dashboards",
-      "replacement": "couchbase_traces_search_dashboards",
-      "status": "proposed",
+      "replacement": "cbt_search_dashboards",
+      "status": "approved",
       "reason": null,
-      "occurrences": 1,
-      "files": [
-        "packages/api/CHANGELOG.md"
-      ]
+      "occurrences": 0,
+      "files": []
     },
     {
       "token": "hyperdx_search_results",
       "replacement": "couchbase_traces_search_results",
-      "status": "proposed",
+      "status": "approved",
       "reason": null,
-      "occurrences": 1,
-      "files": [
-        "packages/app/src/components/DBRowTable.tsx"
-      ]
+      "occurrences": 0,
+      "files": []
     },
     {
       "token": "hyperdx_selected_rows",
       "replacement": "couchbase_traces_selected_rows",
-      "status": "proposed",
+      "status": "approved",
+      "reason": null,
+      "occurrences": 0,
+      "files": []
+    },
+    {
+      "token": "hyperdx_selected_rows_",
+      "replacement": "couchbase_traces_selected_rows_",
+      "status": "approved",
       "reason": null,
       "occurrences": 2,
       "files": [
-        "packages/app/src/components/DBTable/RowSelectionMenu.tsx",
-        "packages/app/src/utils/__tests__/csv.test.ts"
+        "packages/app/src/utils/__tests__/csv.test.ts",
+        "packages/app/tests/e2e/features/search/row-multi-select.spec.ts"
       ]
     },
     {
       "token": "hyperdx_sql",
-      "replacement": "couchbase_traces_sql",
-      "status": "proposed",
+      "replacement": "cbt_sql",
+      "status": "approved",
       "reason": null,
-      "occurrences": 1,
-      "files": [
-        "packages/api/CHANGELOG.md"
-      ]
+      "occurrences": 0,
+      "files": []
     },
     {
       "token": "hyperdx_status",
       "replacement": "couchbase_traces_status",
-      "status": "proposed",
+      "status": "approved",
       "reason": null,
-      "occurrences": 1,
-      "files": [
-        "packages/common-utils/src/types.ts"
-      ]
+      "occurrences": 0,
+      "files": []
     },
     {
       "token": "hyperdx_table",
-      "replacement": "couchbase_traces_table",
-      "status": "proposed",
+      "replacement": "cbt_table",
+      "status": "approved",
       "reason": null,
-      "occurrences": 1,
-      "files": [
-        "packages/api/CHANGELOG.md"
-      ]
+      "occurrences": 0,
+      "files": []
     },
     {
       "token": "hyperdx_timeseries",
-      "replacement": "couchbase_traces_timeseries",
-      "status": "proposed",
+      "replacement": "cbt_timeseries",
+      "status": "approved",
       "reason": null,
-      "occurrences": 1,
-      "files": [
-        "packages/api/CHANGELOG.md"
-      ]
+      "occurrences": 0,
+      "files": []
     },
     {
       "token": "hyperdx_trace_top_time_consuming_operations",
-      "replacement": "couchbase_traces_trace_top_time_consuming_operations",
-      "status": "proposed",
+      "replacement": "cbt_trace_top_time_consuming_operations",
+      "status": "approved",
       "reason": null,
-      "occurrences": 1,
-      "files": [
-        "packages/api/CHANGELOG.md"
-      ]
+      "occurrences": 0,
+      "files": []
     },
     {
       "token": "hyperdx_trace_waterfall",
-      "replacement": "couchbase_traces_trace_waterfall",
-      "status": "proposed",
+      "replacement": "cbt_trace_waterfall",
+      "status": "approved",
       "reason": null,
-      "occurrences": 1,
-      "files": [
-        "packages/api/CHANGELOG.md"
-      ]
+      "occurrences": 0,
+      "files": []
     },
     {
       "token": "hyperdxio",
-      "replacement": "couchbase-tracesio",
-      "status": "proposed",
+      "replacement": "example-org",
+      "status": "approved",
       "reason": null,
-      "occurrences": 5,
-      "files": [
-        ".github/VOUCHED.td",
-        ".github/workflows/claude-code-review.yml",
-        "packages/otel-collector/CHANGELOG.md",
-        "packages/otel-collector/README.md"
-      ]
+      "occurrences": 0,
+      "files": []
     },
     {
       "token": "local-user@hyperdx.io",
       "replacement": null,
-      "status": "review",
-      "reason": null,
+      "status": "allowed",
+      "reason": "internal_identifier",
       "occurrences": 2,
       "files": [
         "packages/api/src/middleware/auth.ts",
@@ -2732,9 +2000,9 @@
     },
     {
       "token": "mcp__hyperdx-branch__",
-      "replacement": "mcp__couchbase_traces-branch__",
-      "status": "proposed",
-      "reason": null,
+      "replacement": null,
+      "status": "allowed",
+      "reason": "internal_identifier",
       "occurrences": 1,
       "files": [
         "agent_docs/evals.md"
@@ -2742,9 +2010,9 @@
     },
     {
       "token": "mcp__hyperdx__",
-      "replacement": "mcp__couchbase_traces__",
-      "status": "proposed",
-      "reason": null,
+      "replacement": null,
+      "status": "allowed",
+      "reason": "internal_identifier",
       "occurrences": 15,
       "files": [
         "agent_docs/evals.md",
@@ -2758,40 +2026,40 @@
       ]
     },
     {
-      "token": "mcp__hyperdx__clickstack_delete_dashboard",
-      "replacement": "mcp__couchbase_traces__couchbase_traces_delete_dashboard",
-      "status": "proposed",
-      "reason": null,
+      "token": "mcp__hyperdx__cbt_delete_dashboard",
+      "replacement": null,
+      "status": "allowed",
+      "reason": "internal_identifier",
       "occurrences": 1,
       "files": [
         "packages/hdx-eval/src/hyperdx/setup.ts"
       ]
     },
     {
-      "token": "mcp__hyperdx__clickstack_delete_source",
-      "replacement": "mcp__couchbase_traces__couchbase_traces_delete_source",
-      "status": "proposed",
-      "reason": null,
+      "token": "mcp__hyperdx__cbt_delete_source",
+      "replacement": null,
+      "status": "allowed",
+      "reason": "internal_identifier",
       "occurrences": 1,
       "files": [
         "packages/hdx-eval/src/hyperdx/setup.ts"
       ]
     },
     {
-      "token": "mcp__hyperdx__clickstack_delete_webhook",
-      "replacement": "mcp__couchbase_traces__couchbase_traces_delete_webhook",
-      "status": "proposed",
-      "reason": null,
+      "token": "mcp__hyperdx__cbt_delete_webhook",
+      "replacement": null,
+      "status": "allowed",
+      "reason": "internal_identifier",
       "occurrences": 1,
       "files": [
         "packages/hdx-eval/src/hyperdx/setup.ts"
       ]
     },
     {
-      "token": "mcp__hyperdx__clickstack_describe_metric",
-      "replacement": "mcp__couchbase_traces__couchbase_traces_describe_metric",
-      "status": "proposed",
-      "reason": null,
+      "token": "mcp__hyperdx__cbt_describe_metric",
+      "replacement": null,
+      "status": "allowed",
+      "reason": "internal_identifier",
       "occurrences": 5,
       "files": [
         "packages/hdx-eval/src/__tests__/grade.test.ts",
@@ -2799,60 +2067,60 @@
       ]
     },
     {
-      "token": "mcp__hyperdx__clickstack_get_alert",
-      "replacement": "mcp__couchbase_traces__couchbase_traces_get_alert",
-      "status": "proposed",
-      "reason": null,
+      "token": "mcp__hyperdx__cbt_get_alert",
+      "replacement": null,
+      "status": "allowed",
+      "reason": "internal_identifier",
       "occurrences": 1,
       "files": [
         "packages/hdx-eval/src/hyperdx/setup.ts"
       ]
     },
     {
-      "token": "mcp__hyperdx__clickstack_get_dashboard",
-      "replacement": "mcp__couchbase_traces__couchbase_traces_get_dashboard",
-      "status": "proposed",
-      "reason": null,
+      "token": "mcp__hyperdx__cbt_get_dashboard",
+      "replacement": null,
+      "status": "allowed",
+      "reason": "internal_identifier",
       "occurrences": 1,
       "files": [
         "packages/hdx-eval/src/hyperdx/setup.ts"
       ]
     },
     {
-      "token": "mcp__hyperdx__clickstack_get_dashboard_tile",
-      "replacement": "mcp__couchbase_traces__couchbase_traces_get_dashboard_tile",
-      "status": "proposed",
-      "reason": null,
+      "token": "mcp__hyperdx__cbt_get_dashboard_tile",
+      "replacement": null,
+      "status": "allowed",
+      "reason": "internal_identifier",
       "occurrences": 1,
       "files": [
         "packages/hdx-eval/src/hyperdx/setup.ts"
       ]
     },
     {
-      "token": "mcp__hyperdx__clickstack_get_saved_search",
-      "replacement": "mcp__couchbase_traces__couchbase_traces_get_saved_search",
-      "status": "proposed",
-      "reason": null,
+      "token": "mcp__hyperdx__cbt_get_saved_search",
+      "replacement": null,
+      "status": "allowed",
+      "reason": "internal_identifier",
       "occurrences": 1,
       "files": [
         "packages/hdx-eval/src/hyperdx/setup.ts"
       ]
     },
     {
-      "token": "mcp__hyperdx__clickstack_get_webhook",
-      "replacement": "mcp__couchbase_traces__couchbase_traces_get_webhook",
-      "status": "proposed",
-      "reason": null,
+      "token": "mcp__hyperdx__cbt_get_webhook",
+      "replacement": null,
+      "status": "allowed",
+      "reason": "internal_identifier",
       "occurrences": 1,
       "files": [
         "packages/hdx-eval/src/hyperdx/setup.ts"
       ]
     },
     {
-      "token": "mcp__hyperdx__clickstack_list_metrics",
-      "replacement": "mcp__couchbase_traces__couchbase_traces_list_metrics",
-      "status": "proposed",
-      "reason": null,
+      "token": "mcp__hyperdx__cbt_list_metrics",
+      "replacement": null,
+      "status": "allowed",
+      "reason": "internal_identifier",
       "occurrences": 3,
       "files": [
         "packages/hdx-eval/src/__tests__/grade.test.ts",
@@ -2860,110 +2128,110 @@
       ]
     },
     {
-      "token": "mcp__hyperdx__clickstack_patch_dashboard",
-      "replacement": "mcp__couchbase_traces__couchbase_traces_patch_dashboard",
-      "status": "proposed",
-      "reason": null,
+      "token": "mcp__hyperdx__cbt_patch_dashboard",
+      "replacement": null,
+      "status": "allowed",
+      "reason": "internal_identifier",
       "occurrences": 1,
       "files": [
         "packages/hdx-eval/src/hyperdx/setup.ts"
       ]
     },
     {
-      "token": "mcp__hyperdx__clickstack_query_tile",
-      "replacement": "mcp__couchbase_traces__couchbase_traces_query_tile",
-      "status": "proposed",
-      "reason": null,
+      "token": "mcp__hyperdx__cbt_query_tile",
+      "replacement": null,
+      "status": "allowed",
+      "reason": "internal_identifier",
       "occurrences": 1,
       "files": [
         "packages/hdx-eval/src/hyperdx/setup.ts"
       ]
     },
     {
-      "token": "mcp__hyperdx__clickstack_save_alert",
-      "replacement": "mcp__couchbase_traces__couchbase_traces_save_alert",
-      "status": "proposed",
-      "reason": null,
+      "token": "mcp__hyperdx__cbt_save_alert",
+      "replacement": null,
+      "status": "allowed",
+      "reason": "internal_identifier",
       "occurrences": 1,
       "files": [
         "packages/hdx-eval/src/hyperdx/setup.ts"
       ]
     },
     {
-      "token": "mcp__hyperdx__clickstack_save_dashboard",
-      "replacement": "mcp__couchbase_traces__couchbase_traces_save_dashboard",
-      "status": "proposed",
-      "reason": null,
+      "token": "mcp__hyperdx__cbt_save_dashboard",
+      "replacement": null,
+      "status": "allowed",
+      "reason": "internal_identifier",
       "occurrences": 1,
       "files": [
         "packages/hdx-eval/src/hyperdx/setup.ts"
       ]
     },
     {
-      "token": "mcp__hyperdx__clickstack_save_saved_search",
-      "replacement": "mcp__couchbase_traces__couchbase_traces_save_saved_search",
-      "status": "proposed",
-      "reason": null,
+      "token": "mcp__hyperdx__cbt_save_saved_search",
+      "replacement": null,
+      "status": "allowed",
+      "reason": "internal_identifier",
       "occurrences": 1,
       "files": [
         "packages/hdx-eval/src/hyperdx/setup.ts"
       ]
     },
     {
-      "token": "mcp__hyperdx__clickstack_save_source",
-      "replacement": "mcp__couchbase_traces__couchbase_traces_save_source",
-      "status": "proposed",
-      "reason": null,
+      "token": "mcp__hyperdx__cbt_save_source",
+      "replacement": null,
+      "status": "allowed",
+      "reason": "internal_identifier",
       "occurrences": 1,
       "files": [
         "packages/hdx-eval/src/hyperdx/setup.ts"
       ]
     },
     {
-      "token": "mcp__hyperdx__clickstack_save_webhook",
-      "replacement": "mcp__couchbase_traces__couchbase_traces_save_webhook",
-      "status": "proposed",
-      "reason": null,
+      "token": "mcp__hyperdx__cbt_save_webhook",
+      "replacement": null,
+      "status": "allowed",
+      "reason": "internal_identifier",
       "occurrences": 1,
       "files": [
         "packages/hdx-eval/src/hyperdx/setup.ts"
       ]
     },
     {
-      "token": "mcp__hyperdx__clickstack_search",
-      "replacement": "mcp__couchbase_traces__couchbase_traces_search",
-      "status": "proposed",
-      "reason": null,
+      "token": "mcp__hyperdx__cbt_search",
+      "replacement": null,
+      "status": "allowed",
+      "reason": "internal_identifier",
       "occurrences": 1,
       "files": [
         "packages/hdx-eval/src/__tests__/programmatic.test.ts"
       ]
     },
     {
-      "token": "mcp__hyperdx__clickstack_search_dashboards",
-      "replacement": "mcp__couchbase_traces__couchbase_traces_search_dashboards",
-      "status": "proposed",
-      "reason": null,
+      "token": "mcp__hyperdx__cbt_search_dashboards",
+      "replacement": null,
+      "status": "allowed",
+      "reason": "internal_identifier",
       "occurrences": 1,
       "files": [
         "packages/hdx-eval/src/hyperdx/setup.ts"
       ]
     },
     {
-      "token": "mcp__hyperdx__clickstack_sql",
-      "replacement": "mcp__couchbase_traces__couchbase_traces_sql",
-      "status": "proposed",
-      "reason": null,
+      "token": "mcp__hyperdx__cbt_sql",
+      "replacement": null,
+      "status": "allowed",
+      "reason": "internal_identifier",
       "occurrences": 2,
       "files": [
         "packages/hdx-eval/src/__tests__/grade.test.ts"
       ]
     },
     {
-      "token": "mcp__hyperdx__clickstack_timeseries",
-      "replacement": "mcp__couchbase_traces__couchbase_traces_timeseries",
-      "status": "proposed",
-      "reason": null,
+      "token": "mcp__hyperdx__cbt_timeseries",
+      "replacement": null,
+      "status": "allowed",
+      "reason": "internal_identifier",
       "occurrences": 4,
       "files": [
         "packages/hdx-eval/src/__tests__/grade.test.ts",
@@ -2971,10 +2239,178 @@
       ]
     },
     {
-      "token": "mcp__hyperdx__hyperdx_delete_dashboard",
-      "replacement": "mcp__couchbase_traces__couchbase_traces_delete_dashboard",
-      "status": "proposed",
+      "token": "mcp__hyperdx__clickstack_delete_dashboard",
+      "replacement": "mcp__hyperdx__cbt_delete_dashboard",
+      "status": "approved",
       "reason": null,
+      "occurrences": 0,
+      "files": []
+    },
+    {
+      "token": "mcp__hyperdx__clickstack_delete_source",
+      "replacement": "mcp__hyperdx__cbt_delete_source",
+      "status": "approved",
+      "reason": null,
+      "occurrences": 0,
+      "files": []
+    },
+    {
+      "token": "mcp__hyperdx__clickstack_delete_webhook",
+      "replacement": "mcp__hyperdx__cbt_delete_webhook",
+      "status": "approved",
+      "reason": null,
+      "occurrences": 0,
+      "files": []
+    },
+    {
+      "token": "mcp__hyperdx__clickstack_describe_metric",
+      "replacement": "mcp__hyperdx__cbt_describe_metric",
+      "status": "approved",
+      "reason": null,
+      "occurrences": 0,
+      "files": []
+    },
+    {
+      "token": "mcp__hyperdx__clickstack_get_alert",
+      "replacement": "mcp__hyperdx__cbt_get_alert",
+      "status": "approved",
+      "reason": null,
+      "occurrences": 0,
+      "files": []
+    },
+    {
+      "token": "mcp__hyperdx__clickstack_get_dashboard",
+      "replacement": "mcp__hyperdx__cbt_get_dashboard",
+      "status": "approved",
+      "reason": null,
+      "occurrences": 0,
+      "files": []
+    },
+    {
+      "token": "mcp__hyperdx__clickstack_get_dashboard_tile",
+      "replacement": "mcp__hyperdx__cbt_get_dashboard_tile",
+      "status": "approved",
+      "reason": null,
+      "occurrences": 0,
+      "files": []
+    },
+    {
+      "token": "mcp__hyperdx__clickstack_get_saved_search",
+      "replacement": "mcp__hyperdx__cbt_get_saved_search",
+      "status": "approved",
+      "reason": null,
+      "occurrences": 0,
+      "files": []
+    },
+    {
+      "token": "mcp__hyperdx__clickstack_get_webhook",
+      "replacement": "mcp__hyperdx__cbt_get_webhook",
+      "status": "approved",
+      "reason": null,
+      "occurrences": 0,
+      "files": []
+    },
+    {
+      "token": "mcp__hyperdx__clickstack_list_metrics",
+      "replacement": "mcp__hyperdx__cbt_list_metrics",
+      "status": "approved",
+      "reason": null,
+      "occurrences": 0,
+      "files": []
+    },
+    {
+      "token": "mcp__hyperdx__clickstack_patch_dashboard",
+      "replacement": "mcp__hyperdx__cbt_patch_dashboard",
+      "status": "approved",
+      "reason": null,
+      "occurrences": 0,
+      "files": []
+    },
+    {
+      "token": "mcp__hyperdx__clickstack_query_tile",
+      "replacement": "mcp__hyperdx__cbt_query_tile",
+      "status": "approved",
+      "reason": null,
+      "occurrences": 0,
+      "files": []
+    },
+    {
+      "token": "mcp__hyperdx__clickstack_save_alert",
+      "replacement": "mcp__hyperdx__cbt_save_alert",
+      "status": "approved",
+      "reason": null,
+      "occurrences": 0,
+      "files": []
+    },
+    {
+      "token": "mcp__hyperdx__clickstack_save_dashboard",
+      "replacement": "mcp__hyperdx__cbt_save_dashboard",
+      "status": "approved",
+      "reason": null,
+      "occurrences": 0,
+      "files": []
+    },
+    {
+      "token": "mcp__hyperdx__clickstack_save_saved_search",
+      "replacement": "mcp__hyperdx__cbt_save_saved_search",
+      "status": "approved",
+      "reason": null,
+      "occurrences": 0,
+      "files": []
+    },
+    {
+      "token": "mcp__hyperdx__clickstack_save_source",
+      "replacement": "mcp__hyperdx__cbt_save_source",
+      "status": "approved",
+      "reason": null,
+      "occurrences": 0,
+      "files": []
+    },
+    {
+      "token": "mcp__hyperdx__clickstack_save_webhook",
+      "replacement": "mcp__hyperdx__cbt_save_webhook",
+      "status": "approved",
+      "reason": null,
+      "occurrences": 0,
+      "files": []
+    },
+    {
+      "token": "mcp__hyperdx__clickstack_search",
+      "replacement": "mcp__hyperdx__cbt_search",
+      "status": "approved",
+      "reason": null,
+      "occurrences": 0,
+      "files": []
+    },
+    {
+      "token": "mcp__hyperdx__clickstack_search_dashboards",
+      "replacement": "mcp__hyperdx__cbt_search_dashboards",
+      "status": "approved",
+      "reason": null,
+      "occurrences": 0,
+      "files": []
+    },
+    {
+      "token": "mcp__hyperdx__clickstack_sql",
+      "replacement": "mcp__hyperdx__cbt_sql",
+      "status": "approved",
+      "reason": null,
+      "occurrences": 0,
+      "files": []
+    },
+    {
+      "token": "mcp__hyperdx__clickstack_timeseries",
+      "replacement": "mcp__hyperdx__cbt_timeseries",
+      "status": "approved",
+      "reason": null,
+      "occurrences": 0,
+      "files": []
+    },
+    {
+      "token": "mcp__hyperdx__hyperdx_delete_dashboard",
+      "replacement": null,
+      "status": "allowed",
+      "reason": "internal_identifier",
       "occurrences": 4,
       "files": [
         "packages/hdx-eval/README.md",
@@ -2984,9 +2420,9 @@
     },
     {
       "token": "mcp__hyperdx__hyperdx_get_alert",
-      "replacement": "mcp__couchbase_traces__couchbase_traces_get_alert",
-      "status": "proposed",
-      "reason": null,
+      "replacement": null,
+      "status": "allowed",
+      "reason": "internal_identifier",
       "occurrences": 2,
       "files": [
         "packages/hdx-eval/eval.config.example.json",
@@ -2995,9 +2431,9 @@
     },
     {
       "token": "mcp__hyperdx__hyperdx_get_dashboard",
-      "replacement": "mcp__couchbase_traces__couchbase_traces_get_dashboard",
-      "status": "proposed",
-      "reason": null,
+      "replacement": null,
+      "status": "allowed",
+      "reason": "internal_identifier",
       "occurrences": 3,
       "files": [
         "packages/hdx-eval/README.md",
@@ -3007,9 +2443,9 @@
     },
     {
       "token": "mcp__hyperdx__hyperdx_get_saved_search",
-      "replacement": "mcp__couchbase_traces__couchbase_traces_get_saved_search",
-      "status": "proposed",
-      "reason": null,
+      "replacement": null,
+      "status": "allowed",
+      "reason": "internal_identifier",
       "occurrences": 2,
       "files": [
         "packages/hdx-eval/eval.config.example.json",
@@ -3018,9 +2454,9 @@
     },
     {
       "token": "mcp__hyperdx__hyperdx_get_webhook",
-      "replacement": "mcp__couchbase_traces__couchbase_traces_get_webhook",
-      "status": "proposed",
-      "reason": null,
+      "replacement": null,
+      "status": "allowed",
+      "reason": "internal_identifier",
       "occurrences": 2,
       "files": [
         "packages/hdx-eval/eval.config.example.json",
@@ -3029,9 +2465,9 @@
     },
     {
       "token": "mcp__hyperdx__hyperdx_list_sources",
-      "replacement": "mcp__couchbase_traces__couchbase_traces_list_sources",
-      "status": "proposed",
-      "reason": null,
+      "replacement": null,
+      "status": "allowed",
+      "reason": "internal_identifier",
       "occurrences": 5,
       "files": [
         "packages/hdx-eval/src/__tests__/grade.test.ts",
@@ -3040,9 +2476,9 @@
     },
     {
       "token": "mcp__hyperdx__hyperdx_query",
-      "replacement": "mcp__couchbase_traces__couchbase_traces_query",
-      "status": "proposed",
-      "reason": null,
+      "replacement": null,
+      "status": "allowed",
+      "reason": "internal_identifier",
       "occurrences": 15,
       "files": [
         "packages/hdx-eval/src/__tests__/blind.test.ts",
@@ -3054,9 +2490,9 @@
     },
     {
       "token": "mcp__hyperdx__hyperdx_query_tile",
-      "replacement": "mcp__couchbase_traces__couchbase_traces_query_tile",
-      "status": "proposed",
-      "reason": null,
+      "replacement": null,
+      "status": "allowed",
+      "reason": "internal_identifier",
       "occurrences": 2,
       "files": [
         "packages/hdx-eval/eval.config.example.json",
@@ -3065,9 +2501,9 @@
     },
     {
       "token": "mcp__hyperdx__hyperdx_save_alert",
-      "replacement": "mcp__couchbase_traces__couchbase_traces_save_alert",
-      "status": "proposed",
-      "reason": null,
+      "replacement": null,
+      "status": "allowed",
+      "reason": "internal_identifier",
       "occurrences": 2,
       "files": [
         "packages/hdx-eval/eval.config.example.json",
@@ -3076,9 +2512,9 @@
     },
     {
       "token": "mcp__hyperdx__hyperdx_save_dashboard",
-      "replacement": "mcp__couchbase_traces__couchbase_traces_save_dashboard",
-      "status": "proposed",
-      "reason": null,
+      "replacement": null,
+      "status": "allowed",
+      "reason": "internal_identifier",
       "occurrences": 2,
       "files": [
         "packages/hdx-eval/eval.config.example.json",
@@ -3087,9 +2523,9 @@
     },
     {
       "token": "mcp__hyperdx__hyperdx_save_saved_search",
-      "replacement": "mcp__couchbase_traces__couchbase_traces_save_saved_search",
-      "status": "proposed",
-      "reason": null,
+      "replacement": null,
+      "status": "allowed",
+      "reason": "internal_identifier",
       "occurrences": 2,
       "files": [
         "packages/hdx-eval/eval.config.example.json",
@@ -3099,28 +2535,24 @@
     {
       "token": "mcp_servers.clickstack",
       "replacement": "mcp_servers.couchbase-traces",
-      "status": "proposed",
+      "status": "approved",
       "reason": null,
-      "occurrences": 3,
-      "files": [
-        "packages/cli/src/__tests__/mcpInstall.test.ts"
-      ]
+      "occurrences": 0,
+      "files": []
     },
     {
       "token": "mcp_servers.clickstack.env",
       "replacement": "mcp_servers.couchbase-traces.env",
-      "status": "proposed",
+      "status": "approved",
       "reason": null,
-      "occurrences": 2,
-      "files": [
-        "packages/cli/src/__tests__/mcpInstall.test.ts"
-      ]
+      "occurrences": 0,
+      "files": []
     },
     {
       "token": "mcps.hyperdx",
-      "replacement": "mcps.couchbase-traces",
-      "status": "proposed",
-      "reason": null,
+      "replacement": null,
+      "status": "allowed",
+      "reason": "internal_identifier",
       "occurrences": 1,
       "files": [
         "agent_docs/evals.md"
@@ -3128,175 +2560,141 @@
     },
     {
       "token": "me@hyperdx.io",
-      "replacement": null,
-      "status": "review",
+      "replacement": "me@example.com",
+      "status": "approved",
       "reason": null,
-      "occurrences": 5,
-      "files": [
-        "packages/app/src/components/Dashboards/__tests__/DashboardsListPage.test.tsx",
-        "packages/app/src/components/Dashboards/__tests__/dashboardsListUtils.test.ts"
-      ]
+      "occurrences": 0,
+      "files": []
     },
     {
       "token": "member@deploysentinel.com",
-      "replacement": null,
-      "status": "review",
+      "replacement": "member@example.com",
+      "status": "approved",
       "reason": null,
-      "occurrences": 1,
-      "files": [
-        "packages/api/src/routers/external-api/__tests__/team.int.test.ts"
-      ]
+      "occurrences": 0,
+      "files": []
     },
     {
       "token": "metadata.hyperdx_status",
       "replacement": "metadata.couchbase_traces_status",
-      "status": "proposed",
+      "status": "approved",
       "reason": null,
-      "occurrences": 1,
-      "files": [
-        "docs/alert-webhook-template-variables.md"
-      ]
+      "occurrences": 0,
+      "files": []
     },
     {
       "token": "mike@hyperdx.io",
-      "replacement": null,
-      "status": "review",
+      "replacement": "mike@example.com",
+      "status": "approved",
       "reason": null,
-      "occurrences": 1,
-      "files": [
-        "packages/api/src/tasks/checkAlerts/__tests__/checkAlerts.int.test.ts"
-      ]
+      "occurrences": 0,
+      "files": []
     },
     {
       "token": "nHyperDX",
-      "replacement": "nCouchbaseTraces",
-      "status": "proposed",
+      "replacement": "nCouchbase Traces",
+      "status": "approved",
       "reason": null,
-      "occurrences": 2,
-      "files": [
-        "packages/api/openapi.json"
-      ]
+      "occurrences": 0,
+      "files": []
     },
     {
       "token": "new@deploysentinel.com",
-      "replacement": null,
-      "status": "review",
+      "replacement": "new@example.com",
+      "status": "approved",
       "reason": null,
-      "occurrences": 2,
-      "files": [
-        "packages/api/src/routers/external-api/__tests__/team.int.test.ts"
-      ]
+      "occurrences": 0,
+      "files": []
     },
     {
       "token": "notify_clickhouse_clickstack",
       "replacement": "notify_clickhouse_couchbase_traces",
-      "status": "proposed",
+      "status": "approved",
       "reason": null,
-      "occurrences": 3,
-      "files": [
-        ".github/workflows/release.yml"
-      ]
+      "occurrences": 0,
+      "files": []
     },
     {
       "token": "oss-invitee@deploysentinel.com",
-      "replacement": null,
-      "status": "review",
+      "replacement": "oss-invitee@example.com",
+      "status": "approved",
       "reason": null,
-      "occurrences": 2,
-      "files": [
-        "packages/api/src/routers/external-api/__tests__/team.int.test.ts"
-      ]
+      "occurrences": 0,
+      "files": []
     },
     {
       "token": "otelcol-hyperdx",
       "replacement": "otelcol-couchbase-traces",
-      "status": "proposed",
+      "status": "approved",
       "reason": null,
-      "occurrences": 3,
-      "files": [
-        "docker/hyperdx/Dockerfile",
-        "docker/otel-collector/Dockerfile",
-        "packages/otel-collector/builder-config.yaml"
-      ]
+      "occurrences": 0,
+      "files": []
     },
     {
       "token": "other@deploysentinel.com",
-      "replacement": null,
-      "status": "review",
+      "replacement": "other@example.com",
+      "status": "approved",
       "reason": null,
-      "occurrences": 1,
-      "files": [
-        "packages/api/src/routers/api/__tests__/me.int.test.ts"
-      ]
+      "occurrences": 0,
+      "files": []
     },
     {
       "token": "param_HYPERDX_PARAM_",
       "replacement": "param_COUCHBASE_TRACES_PARAM_",
-      "status": "proposed",
+      "status": "approved",
       "reason": null,
-      "occurrences": 1,
-      "files": [
-        "packages/api/src/routers/api/__tests__/clickhouseProxy.int.test.ts"
-      ]
+      "occurrences": 0,
+      "files": []
     },
     {
       "token": "play-clickstack",
       "replacement": "play-couchbase-traces",
-      "status": "proposed",
+      "status": "approved",
       "reason": null,
-      "occurrences": 1,
-      "files": [
-        "packages/app/src/components/DBSearchPageFilters/jsonAddToFilter.pipeline.test.ts"
-      ]
+      "occurrences": 0,
+      "files": []
     },
     {
       "token": "play.hyperdx.io",
       "replacement": null,
-      "status": "review",
-      "reason": null,
-      "occurrences": 7,
+      "status": "allowed",
+      "reason": "pending_decision",
+      "occurrences": 4,
       "files": [
         ".github/ISSUE_TEMPLATE/bug-report.md",
         ".github/pull_request_template.md",
-        "CONTRIBUTING.md",
         "docs/upstream-AGENTS.md"
       ]
     },
     {
       "token": "race@deploysentinel.com",
-      "replacement": null,
-      "status": "review",
+      "replacement": "race@example.com",
+      "status": "approved",
       "reason": null,
-      "occurrences": 1,
-      "files": [
-        "packages/api/src/routers/external-api/__tests__/team.int.test.ts"
-      ]
+      "occurrences": 0,
+      "files": []
     },
     {
       "token": "release-hyperdx-oss-workflow",
       "replacement": "release-couchbase-traces-oss-workflow",
-      "status": "proposed",
+      "status": "approved",
       "reason": null,
-      "occurrences": 1,
-      "files": [
-        ".github/workflows/release.yml"
-      ]
+      "occurrences": 0,
+      "files": []
     },
     {
       "token": "release-nightly-hyperdx-oss-workflow",
       "replacement": "release-nightly-couchbase-traces-oss-workflow",
-      "status": "proposed",
+      "status": "approved",
       "reason": null,
-      "occurrences": 1,
-      "files": [
-        ".github/workflows/release-nightly.yml"
-      ]
+      "occurrences": 0,
+      "files": []
     },
     {
       "token": "sa@service-accounts.hyperdx.invalid",
       "replacement": null,
-      "status": "review",
-      "reason": null,
+      "status": "allowed",
+      "reason": "internal_identifier",
       "occurrences": 1,
       "files": [
         "packages/api/src/routers/api/__tests__/team.int.test.ts"
@@ -3304,9 +2702,9 @@
     },
     {
       "token": "setup-hyperdx",
-      "replacement": "setup-couchbase-traces",
-      "status": "proposed",
-      "reason": null,
+      "replacement": null,
+      "status": "allowed",
+      "reason": "internal_identifier",
       "occurrences": 25,
       "files": [
         "agent_docs/evals.md",
@@ -3318,61 +2716,49 @@
     },
     {
       "token": "someone@hyperdx.io",
-      "replacement": null,
-      "status": "review",
+      "replacement": "someone@example.com",
+      "status": "approved",
       "reason": null,
-      "occurrences": 2,
-      "files": [
-        "packages/app/src/components/Dashboards/__tests__/DashboardsListPage.test.tsx",
-        "packages/app/src/components/Dashboards/__tests__/dashboardsListUtils.test.ts"
-      ]
+      "occurrences": 0,
+      "files": []
     },
     {
       "token": "support@hyperdx.io",
       "replacement": null,
-      "status": "review",
-      "reason": null,
-      "occurrences": 1,
-      "files": [
-        "README.md"
-      ]
+      "status": "allowed",
+      "reason": "pending_decision",
+      "occurrences": 0,
+      "files": []
     },
     {
       "token": "sync-hyperdx.yml",
       "replacement": "sync-couchbase-traces.yml",
-      "status": "proposed",
+      "status": "approved",
       "reason": null,
-      "occurrences": 1,
-      "files": [
-        ".github/workflows/release.yml"
-      ]
+      "occurrences": 0,
+      "files": []
     },
     {
       "token": "theme-hyperdx",
       "replacement": "theme-couchbase-traces",
-      "status": "proposed",
+      "status": "approved",
       "reason": null,
-      "occurrences": 1,
-      "files": [
-        "packages/app/CHANGELOG.md"
-      ]
+      "occurrences": 0,
+      "files": []
     },
     {
       "token": "track-hyperdx-oss-usage-stats",
       "replacement": "track-couchbase-traces-oss-usage-stats",
-      "status": "proposed",
+      "status": "approved",
       "reason": null,
-      "occurrences": 2,
-      "files": [
-        "packages/api/src/tasks/__tests__/usageStats.test.ts",
-        "packages/api/src/tasks/usageStats.ts"
-      ]
+      "occurrences": 0,
+      "files": []
     },
     {
       "token": "var.clickstack_endpoint",
-      "replacement": "var.couchbase_traces_endpoint",
-      "status": "proposed",
-      "reason": null,
+      "replacement": null,
+      "status": "allowed",
+      "reason": "external_dependency",
       "occurrences": 2,
       "files": [
         "packages/common-utils/src/__tests__/iac.test.ts",
@@ -3381,32 +2767,27 @@
     },
     {
       "token": "window.hdx",
-      "replacement": "window.cbt",
-      "status": "review",
-      "reason": null,
-      "occurrences": 3,
+      "replacement": null,
+      "status": "allowed",
+      "reason": "internal_identifier",
+      "occurrences": 1,
       "files": [
-        "CHANGELOG.md",
-        "packages/app/CHANGELOG.md",
         "packages/app/src/__tests__/hdxDebug.test.ts"
       ]
     },
     {
       "token": "window.hdx.report",
-      "replacement": "window.cbt.report",
-      "status": "proposed",
-      "reason": null,
-      "occurrences": 2,
-      "files": [
-        "CHANGELOG.md",
-        "packages/app/CHANGELOG.md"
-      ]
+      "replacement": null,
+      "status": "allowed",
+      "reason": "internal_identifier",
+      "occurrences": 0,
+      "files": []
     },
     {
       "token": "x-hyperdx-connection-id",
-      "replacement": "x-couchbase-traces-connection-id",
-      "status": "proposed",
-      "reason": null,
+      "replacement": null,
+      "status": "allowed",
+      "reason": "internal_identifier",
       "occurrences": 19,
       "files": [
         "packages/api/src/routers/api/__tests__/clickhouseProxy.int.test.ts",
@@ -3419,9 +2800,9 @@
     },
     {
       "token": "x-hyperdx-query-attribution",
-      "replacement": "x-couchbase-traces-query-attribution",
-      "status": "proposed",
-      "reason": null,
+      "replacement": null,
+      "status": "allowed",
+      "reason": "internal_identifier",
       "occurrences": 7,
       "files": [
         "agent_docs/observability.md",
@@ -3433,22 +2814,18 @@
     {
       "token": "your-hyperdx-api-url",
       "replacement": "your-couchbase-traces-api-url",
-      "status": "proposed",
+      "status": "approved",
       "reason": null,
-      "occurrences": 2,
-      "files": [
-        ".github/workflows/release.yml"
-      ]
+      "occurrences": 0,
+      "files": []
     },
     {
       "token": "your-hyperdx-url",
       "replacement": "your-couchbase-traces-url",
-      "status": "proposed",
+      "status": "approved",
       "reason": null,
-      "occurrences": 8,
-      "files": [
-        "MCP.md"
-      ]
+      "occurrences": 0,
+      "files": []
     }
   ]
 }

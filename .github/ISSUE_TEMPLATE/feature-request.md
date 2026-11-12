@@ -1,6 +1,6 @@
 ---
 name: Feature request
-about: Suggest an idea or improvement for HyperDX
+about: Suggest an idea or improvement for Couchbase Traces
 title: ''
 labels: enhancement, Needs Feedback
 ---
@@ -19,11 +19,11 @@ labels: enhancement, Needs Feedback
 
 **Anything else?**
 
-<!-- Screenshots, mockups, links, or where in HyperDX this fits (UI, API, collector, CLI). -->
+<!-- Screenshots, mockups, links, or where in Couchbase Traces this fits (UI, API, collector, CLI). -->
 
 ---
 
 New issues start as `Needs Feedback` so we can discuss scope before anyone
 writes code. Once a maintainer swaps that for `Accepting PR`, the issue is ready
 to be picked up — see
-[CONTRIBUTING.md](https://github.com/ClickHouse/ClickStack/blob/main/CONTRIBUTING.md#from-issue-to-pull-request).
+[CONTRIBUTING.md](https://github.com/mminichino/couchbase-traces/blob/main/CONTRIBUTING.md#from-issue-to-pull-request).

@@ -384,7 +384,7 @@ export class ProxyClickhouseClient extends BaseClickhouseClient {
       // Express to reject the request before reading the session cookie.
       set_basic_auth_header: false,
       request_timeout: this.requestTimeout,
-      application: 'hyperdx-tui',
+      application: 'couchbase-traces-tui',
       http_headers: baseHeaders,
       keep_alive: { enabled: false },
       // Silence the client's internal logger. Its DefaultLogger writes

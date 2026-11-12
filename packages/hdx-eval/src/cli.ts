@@ -165,7 +165,7 @@ const program = new Command();
 program
   .name('hdx-eval')
   .description(
-    'HyperDX eval framework — synthetic telemetry generators + agent harness',
+    'Couchbase Traces eval framework — synthetic telemetry generators + agent harness',
   )
   .option('--ch-url <url>', 'ClickHouse HTTP URL')
   .option('--ch-user <user>', 'ClickHouse username', 'default')
@@ -287,7 +287,7 @@ program
   .description(
     'One-time setup: register/login + create Connection + per-scenario Sources',
   )
-  .option('--api-url <url>', 'HyperDX API URL', defaultApiUrl())
+  .option('--api-url <url>', 'Couchbase Traces API URL', defaultApiUrl())
   .option('--email <email>', 'Account email', DEFAULT_EVAL_EMAIL)
   .option('--password <pw>', 'Account password', DEFAULT_EVAL_PASSWORD)
   .option(
@@ -332,7 +332,7 @@ program
           result.configOk ? 'OK' : 'MISSING/INVALID',
         );
         console.log(
-          'HyperDX MCP:      ',
+          'Couchbase Traces MCP:      ',
           result.mcpReachable ? 'OK' : 'UNREACHABLE',
         );
         console.log(
@@ -353,7 +353,9 @@ program
 
       const chUrl = opts.chUrl ?? defaultClickHouseUrl();
       const url = new URL(chUrl);
-      console.log(`Setting up HyperDX eval account at ${cmdOpts.apiUrl}`);
+      console.log(
+        `Setting up Couchbase Traces eval account at ${cmdOpts.apiUrl}`,
+      );
       const result = await runSetup({
         apiUrl: cmdOpts.apiUrl,
         email,
@@ -475,12 +477,12 @@ program
   )
   .option(
     '--email <email>',
-    `HyperDX account email for post-run inspection (default: ${DEFAULT_EVAL_EMAIL})`,
+    `Couchbase Traces account email for post-run inspection (default: ${DEFAULT_EVAL_EMAIL})`,
     DEFAULT_EVAL_EMAIL,
   )
   .option(
     '--password <pw>',
-    `HyperDX account password for post-run inspection (default: ${DEFAULT_EVAL_PASSWORD})`,
+    `Couchbase Traces account password for post-run inspection (default: ${DEFAULT_EVAL_PASSWORD})`,
     DEFAULT_EVAL_PASSWORD,
   )
   .action(
@@ -998,12 +1000,12 @@ program
   .option('--no-judge', 'Run programmatic checks only (cheap regrade)')
   .option(
     '--email <email>',
-    'HyperDX account email for post-run inspection',
+    'Couchbase Traces account email for post-run inspection',
     DEFAULT_EVAL_EMAIL,
   )
   .option(
     '--password <pw>',
-    'HyperDX account password for post-run inspection',
+    'Couchbase Traces account password for post-run inspection',
     DEFAULT_EVAL_PASSWORD,
   )
   .action(

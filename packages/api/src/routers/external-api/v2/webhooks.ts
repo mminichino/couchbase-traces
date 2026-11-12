@@ -44,7 +44,7 @@ const handleWebhookValidationError = (
 // written but can't be serialized back to the client. `service` is a
 // low-cardinality enum (slack/incidentio/generic).
 const webhookSerializationErrorCounter = getCounter(
-  'hyperdx.api.webhook.serialization_errors',
+  'cbt.api.webhook.serialization_errors',
   {
     description:
       'Count of webhooks persisted but not serializable for the external API v2 create/update response.',

@@ -1,6 +1,6 @@
 # Release changelog generation instructions
 
-You are writing the root `CHANGELOG.md` entry for a HyperDX release. HyperDX is
+You are writing the root `CHANGELOG.md` entry for a Couchbase Traces release. The product is
 an open-source observability platform (logs, metrics, traces, session replay)
 built on ClickHouse. Your summary is the first thing users read about a release
 — the per-package changelogs carry the granular detail, your job is the
@@ -31,7 +31,7 @@ splices your output into the changelog.
    understand intent. If an id is absent, omit the reference rather than
    guessing.
 4. `/tmp/inputs/contributors.txt` — one line per PR in this release that was
-   opened from outside the HyperDX team, as `#<number> @<handle>`. Empty when the
+   opened from outside the Couchbase Traces team, as `#<number> @<handle>`. Empty when the
    release has none. This file is the only authority on who contributed from
    outside; do not infer it from anything else.
 5. Style reference: read the most recent one or two entries in
@@ -106,7 +106,7 @@ Rules:
   handle once. Never thank a handle that file does not list, and when it is empty
   write nothing about contributions at all — a release with none must not gain an
   empty gesture towards them.
-- HyperDX is a monorepo: one feature often spans several packages
+- Couchbase Traces is a monorepo: one feature often spans several packages
   (`@couchbase-traces/app` + `@couchbase-traces/api` + `@couchbase-traces/common-utils` frequently move
   together). Cluster related changesets into a single bullet describing the
   feature — never one bullet per package for the same feature.
@@ -128,7 +128,7 @@ Rules:
 - Links must be inline `[text](url)` only. No reference-style links or
   definitions (`[x]: url`), and no bare autolinks (`<https://…>`) — the build
   rejects all of these. Never use a `---` or `===` underline for a heading.
-- No images, ever. Links only to `github.com` or `docs.hyperdx.io` — the summary
+- No images, ever. Links only to `github.com` — the summary
   renders in the in-app "What's new" panel for every deployment, so an off-site
   image is a tracking beacon and an off-site link a phishing surface. The build
   rejects both, and the app drops anything that gets past it.
@@ -139,7 +139,7 @@ Write the result to `/tmp/release-notes-body.md` using the **Write tool** (not
 Bash). Body only — the bolded headline is part of the body, but do NOT include:
 
 - the `## vX.Y.Z` release heading,
-- any `<!-- hyperdx-release-notes … -->` marker,
+- any `<!-- cbt-release-notes … -->` marker,
 - a package/version table or links to package changelogs.
 
 The workflow adds all of those deterministically after you finish.

@@ -41,7 +41,7 @@ import {
 } from './patternDrilldown';
 
 const drilldownWhereFailedCounter = getCounter(
-  'hyperdx.mcp.event_patterns.drilldown_where_failed',
+  'cbt.mcp.event_patterns.drilldown_where_failed',
   {
     description:
       'Count of event pattern requests whose where filter could not be rendered as SQL for the drill-down.',
@@ -100,7 +100,7 @@ export async function mineWindowPatterns(
   if (!source) {
     return {
       error: mcpUserError(
-        `Source not found: ${sourceId}. Call clickstack_list_sources to discover available source IDs.`,
+        `Source not found: ${sourceId}. Call cbt_list_sources to discover available source IDs.`,
       ),
     };
   }
@@ -112,7 +112,7 @@ export async function mineWindowPatterns(
   if (!connection) {
     return {
       error: mcpUserError(
-        `Connection not found for source: ${sourceId}. Call clickstack_list_sources to discover available source IDs.`,
+        `Connection not found for source: ${sourceId}. Call cbt_list_sources to discover available source IDs.`,
       ),
     };
   }
@@ -530,7 +530,7 @@ export async function runEventPatterns(
       timeRange,
       ...(trendSummary ? { trend: trendSummary } : {}),
       drilldown: {
-        tool: 'clickstack_search',
+        tool: 'cbt_search',
         sourceId,
         startTime: timeRange.start,
         endTime: timeRange.end,
@@ -551,7 +551,7 @@ export async function runEventPatterns(
     usage:
       'totalCount is exact. sampleCount is the number of sampled rows in the pattern. ' +
       'estimatedCount = sampleCount * sampleMultiplier, an extrapolation, not a count; ' +
-      'use clickstack_table for exact counts. shareOfTotal = sampleCount / sampledCount. ' +
+      'use cbt_table for exact counts. shareOfTotal = sampleCount / sampledCount. ' +
       (trendSummary
         ? 'trend.count = round(sampled rows in the bucket * sampleMultiplier). Buckets are ' +
           'summary.trend.bucketInterval wide and aligned to it, so there can be fewer ' +
@@ -560,7 +560,7 @@ export async function runEventPatterns(
           'sampleMultiplier is N, a bucket with fewer than about N real events often ' +
           'shows 0. Compare trends only for patterns with many sampled rows. '
         : '') +
-      'To browse raw events of a pattern, call clickstack_search with the sourceId, ' +
+      'To browse raw events of a pattern, call cbt_search with the sourceId, ' +
       'startTime and endTime from summary.drilldown, where = whereSnippet, and ' +
       'whereLanguage = "sql". whereSnippet already includes the source table filter and, ' +
       'unless summary.drilldown.includesFilters is false, your where filter, so do not ' +

@@ -181,7 +181,7 @@ describe('MCP Dashboard Tools - PromQL tiles and label filters', () => {
 
     it('round-trips every display type through save, get and save', async () => {
       const inputTiles = promqlTileInputs();
-      const created = await callTool(ctx.client!, 'clickstack_save_dashboard', {
+      const created = await callTool(ctx.client!, 'cbt_save_dashboard', {
         name: 'PromQL dashboard',
         tiles: inputTiles,
       });
@@ -189,7 +189,7 @@ describe('MCP Dashboard Tools - PromQL tiles and label filters', () => {
       const { id } = parseOutput(created);
       const storedBefore = (await Dashboard.findById(id).lean())?.tiles;
 
-      const read = await callTool(ctx.client!, 'clickstack_get_dashboard', {
+      const read = await callTool(ctx.client!, 'cbt_get_dashboard', {
         id,
       });
       const readTiles = parseOutput(read).tiles;
@@ -200,7 +200,7 @@ describe('MCP Dashboard Tools - PromQL tiles and label filters', () => {
         expect(readTile.config).toMatchObject(input.config);
       }
 
-      const saved = await callTool(ctx.client!, 'clickstack_save_dashboard', {
+      const saved = await callTool(ctx.client!, 'cbt_save_dashboard', {
         id,
         name: 'PromQL dashboard',
         tiles: readTiles,
@@ -220,7 +220,7 @@ describe('MCP Dashboard Tools - PromQL tiles and label filters', () => {
         variableName: 'job',
         maxSelections: 1,
       };
-      const created = await callTool(ctx.client!, 'clickstack_save_dashboard', {
+      const created = await callTool(ctx.client!, 'cbt_save_dashboard', {
         name: 'Filtered',
         tiles: [],
         filters: [filter],
@@ -235,7 +235,7 @@ describe('MCP Dashboard Tools - PromQL tiles and label filters', () => {
         }),
       ]);
 
-      const saved = await callTool(ctx.client!, 'clickstack_save_dashboard', {
+      const saved = await callTool(ctx.client!, 'cbt_save_dashboard', {
         id,
         name: 'Filtered',
         tiles: [],
@@ -246,7 +246,7 @@ describe('MCP Dashboard Tools - PromQL tiles and label filters', () => {
     });
 
     it('rejects a PromQL tile on a source that is not a promql source', async () => {
-      const result = await callTool(ctx.client!, 'clickstack_save_dashboard', {
+      const result = await callTool(ctx.client!, 'cbt_save_dashboard', {
         name: 'Wrong source',
         tiles: [
           {
@@ -268,7 +268,7 @@ describe('MCP Dashboard Tools - PromQL tiles and label filters', () => {
     it('deletes a PromQL tile left out of an update', async () => {
       const dashboard = await createStoredDashboard();
 
-      const result = await callTool(ctx.client!, 'clickstack_save_dashboard', {
+      const result = await callTool(ctx.client!, 'cbt_save_dashboard', {
         id: dashboard._id.toString(),
         name: 'PromQL dashboard',
         tiles: [
@@ -290,7 +290,7 @@ describe('MCP Dashboard Tools - PromQL tiles and label filters', () => {
     it('patches a PromQL tile', async () => {
       const dashboard = await createStoredDashboard();
 
-      const result = await callTool(ctx.client!, 'clickstack_patch_dashboard', {
+      const result = await callTool(ctx.client!, 'cbt_patch_dashboard', {
         dashboardId: dashboard._id.toString(),
         tileId: 'promql-tile',
         tile: {
@@ -314,7 +314,7 @@ describe('MCP Dashboard Tools - PromQL tiles and label filters', () => {
     });
 
     it('warns about a variable the dashboard does not declare', async () => {
-      const result = await callTool(ctx.client!, 'clickstack_save_dashboard', {
+      const result = await callTool(ctx.client!, 'cbt_save_dashboard', {
         name: 'Typo',
         tiles: [
           {
@@ -347,10 +347,10 @@ describe('MCP Dashboard Tools - PromQL tiles and label filters', () => {
   describe('with PromQL disabled', () => {
     beforeEach(() => ctx.reconnect({ promqlEnabled: false }));
 
-    it('hides PromQL tiles and label filters from clickstack_get_dashboard', async () => {
+    it('hides PromQL tiles and label filters from cbt_get_dashboard', async () => {
       const dashboard = await createStoredDashboard();
 
-      const result = await callTool(ctx.client!, 'clickstack_get_dashboard', {
+      const result = await callTool(ctx.client!, 'cbt_get_dashboard', {
         id: dashboard._id.toString(),
       });
 
@@ -362,10 +362,10 @@ describe('MCP Dashboard Tools - PromQL tiles and label filters', () => {
       expect(output.filters).toEqual([]);
     });
 
-    it('keeps hidden tiles and label filters when clickstack_save_dashboard updates the dashboard', async () => {
+    it('keeps hidden tiles and label filters when cbt_save_dashboard updates the dashboard', async () => {
       const dashboard = await createStoredDashboard();
 
-      const result = await callTool(ctx.client!, 'clickstack_save_dashboard', {
+      const result = await callTool(ctx.client!, 'cbt_save_dashboard', {
         id: dashboard._id.toString(),
         name: 'PromQL dashboard',
         tiles: [
@@ -402,7 +402,7 @@ describe('MCP Dashboard Tools - PromQL tiles and label filters', () => {
     it('rejects a filter whose variable name a hidden label filter already uses', async () => {
       const dashboard = await createStoredDashboard();
 
-      const result = await callTool(ctx.client!, 'clickstack_save_dashboard', {
+      const result = await callTool(ctx.client!, 'cbt_save_dashboard', {
         id: dashboard._id.toString(),
         name: 'PromQL dashboard',
         tiles: [],
@@ -419,7 +419,7 @@ describe('MCP Dashboard Tools - PromQL tiles and label filters', () => {
     });
 
     it('rejects a PromQL tile', async () => {
-      const result = await callTool(ctx.client!, 'clickstack_save_dashboard', {
+      const result = await callTool(ctx.client!, 'cbt_save_dashboard', {
         name: 'PromQL off',
         tiles: [
           {
@@ -441,7 +441,7 @@ describe('MCP Dashboard Tools - PromQL tiles and label filters', () => {
     it('does not patch a hidden PromQL tile', async () => {
       const dashboard = await createStoredDashboard();
 
-      const result = await callTool(ctx.client!, 'clickstack_patch_dashboard', {
+      const result = await callTool(ctx.client!, 'cbt_patch_dashboard', {
         dashboardId: dashboard._id.toString(),
         tileId: 'promql-tile',
         tile: {

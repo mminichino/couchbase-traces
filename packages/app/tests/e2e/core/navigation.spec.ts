@@ -133,7 +133,7 @@ test.describe('Navigation', { tag: ['@core'] }, () => {
               ],
               title: 'The big headline feature',
               summary:
-                'A **great** thing landed, see [the docs](https://docs.hyperdx.io/x) and [evil](https://evil.example/phish).',
+                'A **great** thing landed, see [the docs](https://github.com/mminichino/couchbase-traces/tree/main/docs) and [evil](https://evil.example/phish).',
             },
             {
               version: '9.9.8',
@@ -176,7 +176,6 @@ test.describe('Navigation', { tag: ['@core'] }, () => {
       const shortcutsItem = page.locator(
         '[data-testid="keyboard-shortcuts-menu-item"]',
       );
-      const discordItem = page.locator('[data-testid="discord-menu-item"]');
       const viewAllReleasesItem = page.locator(
         '[data-testid="view-all-releases-menu-item"]',
       );
@@ -184,7 +183,6 @@ test.describe('Navigation', { tag: ['@core'] }, () => {
       await expect(documentationItem).toBeVisible();
       await expect(setupItem).toBeVisible();
       await expect(shortcutsItem).toBeVisible();
-      await expect(discordItem).toBeVisible();
       await expect(viewAllReleasesItem).toBeVisible();
     });
 
@@ -255,7 +253,9 @@ test.describe('Navigation', { tag: ['@core'] }, () => {
       // syntax. Jest stubs react-markdown out, so this is the only place the
       // real urlTransform/disallowedElements run.
       await expect(
-        drawer.locator('a[href="https://docs.hyperdx.io/x"]'),
+        drawer.locator(
+          'a[href="https://github.com/mminichino/couchbase-traces/tree/main/docs"]',
+        ),
       ).toHaveCount(1);
       await expect(drawer.locator('a[href*="evil.example"]')).toHaveCount(0);
       await expect(drawer.locator('img')).toHaveCount(0);
@@ -271,7 +271,7 @@ test.describe('Navigation', { tag: ['@core'] }, () => {
       );
       await expect(drawer.getByTestId('drawer-github-link')).toHaveAttribute(
         'href',
-        /github\.com\/ClickHouse\/ClickStack.*CHANGELOG\.md/,
+        /github\.com\/ClickHouse\/Couchbase Traces.*CHANGELOG\.md/,
       );
 
       // Opening the drawer closes the menu.
@@ -442,7 +442,7 @@ test.describe('Navigation', { tag: ['@core'] }, () => {
     ).toBeVisible();
     await expect(drawer.getByRole('link')).toHaveAttribute(
       'href',
-      /github\.com\/ClickHouse\/ClickStack.*CHANGELOG\.md/,
+      /github\.com\/ClickHouse\/Couchbase Traces.*CHANGELOG\.md/,
     );
   });
 

@@ -383,21 +383,6 @@
               ]
             }
           ]
-        },
-        {
-          "path": "packages/api/src/tasks/usageStats.ts",
-          "workspace": "@couchbase-traces/api",
-          "test": false,
-          "typeOnly": false,
-          "symbols": [
-            {
-              "name": "ClickhouseClient",
-              "references": 1,
-              "lines": [
-                193
-              ]
-            }
-          ]
         }
       ],
       "serverSide": true
@@ -6468,7 +6453,7 @@
               "name": "default",
               "references": 1,
               "lines": [
-                121
+                112
               ]
             }
           ]
@@ -7412,7 +7397,7 @@
               "name": "UserPreferencesModal",
               "references": 1,
               "lines": [
-                604
+                578
               ]
             }
           ]
@@ -7777,10 +7762,6 @@
       ],
       "exports": [
         {
-          "name": "AppNavCloudBanner",
-          "kind": "const"
-        },
-        {
           "name": "AppNavContext",
           "kind": "const"
         },
@@ -7820,43 +7801,36 @@
           "typeOnly": false,
           "symbols": [
             {
-              "name": "AppNavCloudBanner",
-              "references": 1,
-              "lines": [
-                562
-              ]
-            },
-            {
               "name": "AppNavContext",
               "references": 2,
               "lines": [
-                345,
-                608
+                333,
+                582
               ]
             },
             {
               "name": "AppNavHelpMenu",
               "references": 1,
               "lines": [
-                538
+                526
               ]
             },
             {
               "name": "AppNavLink",
               "references": 5,
               "lines": [
-                458,
-                466,
-                495,
-                506,
-                548
+                446,
+                454,
+                483,
+                494,
+                536
               ]
             },
             {
               "name": "AppNavUserMenu",
               "references": 1,
               "lines": [
-                583
+                570
               ]
             }
           ]
@@ -7987,7 +7961,7 @@
               "name": "InstanceLabel",
               "references": 1,
               "lines": [
-                398
+                386
               ]
             }
           ]
@@ -8051,7 +8025,7 @@
               "name": "KeyboardShortcutsModal",
               "references": 1,
               "lines": [
-                338
+                306
               ]
             }
           ]
@@ -8086,7 +8060,7 @@
               "name": "WhatsNewDrawer",
               "references": 1,
               "lines": [
-                342
+                310
               ]
             }
           ]
@@ -10728,177 +10702,6 @@
       "serverSide": false
     },
     {
-      "path": "packages/app/src/components/OnboardingModal.tsx",
-      "workspace": "@couchbase-traces/app",
-      "reasons": [
-        "sql_builder"
-      ],
-      "exports": [
-        {
-          "name": "default",
-          "kind": "const"
-        }
-      ],
-      "importers": [
-        {
-          "path": "packages/app/src/ClickhousePage.tsx",
-          "workspace": "@couchbase-traces/app",
-          "test": false,
-          "typeOnly": false,
-          "symbols": [
-            {
-              "name": "default",
-              "references": 1,
-              "lines": [
-                649
-              ]
-            }
-          ]
-        },
-        {
-          "path": "packages/app/src/DBChartPage.tsx",
-          "workspace": "@couchbase-traces/app",
-          "test": false,
-          "typeOnly": false,
-          "symbols": [
-            {
-              "name": "default",
-              "references": 1,
-              "lines": [
-                324
-              ]
-            }
-          ]
-        },
-        {
-          "path": "packages/app/src/DBDashboardPage.tsx",
-          "workspace": "@couchbase-traces/app",
-          "test": false,
-          "typeOnly": false,
-          "symbols": [
-            {
-              "name": "default",
-              "references": 1,
-              "lines": [
-                3231
-              ]
-            }
-          ]
-        },
-        {
-          "path": "packages/app/src/DBSearchPage.tsx",
-          "workspace": "@couchbase-traces/app",
-          "test": false,
-          "typeOnly": false,
-          "symbols": [
-            {
-              "name": "default",
-              "references": 1,
-              "lines": [
-                2380
-              ]
-            }
-          ]
-        },
-        {
-          "path": "packages/app/src/DBServiceMapPage.tsx",
-          "workspace": "@couchbase-traces/app",
-          "test": false,
-          "typeOnly": false,
-          "symbols": [
-            {
-              "name": "default",
-              "references": 1,
-              "lines": [
-                255
-              ]
-            }
-          ]
-        },
-        {
-          "path": "packages/app/src/KubernetesDashboardPage.tsx",
-          "workspace": "@couchbase-traces/app",
-          "test": false,
-          "typeOnly": false,
-          "symbols": [
-            {
-              "name": "default",
-              "references": 1,
-              "lines": [
-                1351
-              ]
-            }
-          ]
-        },
-        {
-          "path": "packages/app/src/ServicesDashboardPage/ServicesDashboardPage.tsx",
-          "workspace": "@couchbase-traces/app",
-          "test": false,
-          "typeOnly": false,
-          "symbols": [
-            {
-              "name": "default",
-              "references": 1,
-              "lines": [
-                326
-              ]
-            }
-          ]
-        },
-        {
-          "path": "packages/app/src/SessionsPage.tsx",
-          "workspace": "@couchbase-traces/app",
-          "test": false,
-          "typeOnly": false,
-          "symbols": [
-            {
-              "name": "default",
-              "references": 1,
-              "lines": [
-                402
-              ]
-            }
-          ]
-        },
-        {
-          "path": "packages/app/src/components/__tests__/OnboardingModal.test.tsx",
-          "workspace": "@couchbase-traces/app",
-          "test": true,
-          "typeOnly": false,
-          "symbols": [
-            {
-              "name": "default",
-              "references": 6,
-              "lines": [
-                106,
-                127,
-                137,
-                154,
-                164,
-                174
-              ]
-            }
-          ]
-        },
-        {
-          "path": "packages/app/src/llm/dashboard/LLMDashboardPage.tsx",
-          "workspace": "@couchbase-traces/app",
-          "test": false,
-          "typeOnly": false,
-          "symbols": [
-            {
-              "name": "default",
-              "references": 1,
-              "lines": [
-                272
-              ]
-            }
-          ]
-        }
-      ],
-      "serverSide": false
-    },
-    {
       "path": "packages/app/src/components/RequestLine.tsx",
       "workspace": "@couchbase-traces/app",
       "reasons": [
@@ -11456,7 +11259,7 @@
               "name": "SourcesList",
               "references": 1,
               "lines": [
-                923
+                549
               ]
             }
           ]
@@ -12556,7 +12359,7 @@
               "name": "setHdxIdentity",
               "references": 1,
               "lines": [
-                227
+                216
               ]
             }
           ]
@@ -16269,7 +16072,7 @@
               "name": "ClickhouseClient",
               "references": 1,
               "lines": [
-                298
+                101
               ]
             }
           ]
@@ -17103,21 +16906,6 @@
               "references": 1,
               "lines": [
                 909
-              ]
-            }
-          ]
-        },
-        {
-          "path": "packages/api/src/tasks/usageStats.ts",
-          "workspace": "@couchbase-traces/api",
-          "test": false,
-          "typeOnly": false,
-          "symbols": [
-            {
-              "name": "ResponseJSON",
-              "references": 1,
-              "lines": [
-                221
               ]
             }
           ]
@@ -32597,14 +32385,14 @@
               "name": "CompleteOnboardingTaskApiBodySchema",
               "references": 1,
               "lines": [
-                97
+                96
               ]
             },
             {
               "name": "DismissOnboardingApiBodySchema",
               "references": 1,
               "lines": [
-                117
+                116
               ]
             },
             {
@@ -32618,7 +32406,7 @@
               "name": "OnboardingDataApiResponse",
               "references": 1,
               "lines": [
-                91
+                90
               ]
             },
             {
@@ -32626,15 +32414,15 @@
               "references": 3,
               "lines": [
                 54,
-                107,
-                127
+                106,
+                126
               ]
             },
             {
               "name": "RotateAccessKeyApiResponse",
               "references": 1,
               "lines": [
-                64
+                63
               ]
             }
           ]
@@ -32831,59 +32619,59 @@
               "name": "AlertThresholdType",
               "references": 1,
               "lines": [
-                509
+                510
               ]
             },
             {
               "name": "WebhookApiData",
               "references": 5,
               "lines": [
-                70,
-                81,
-                88,
-                90
+                71,
+                82,
+                89,
+                91
               ]
             },
             {
               "name": "WebhookCreateApiResponse",
               "references": 1,
               "lines": [
-                184
+                185
               ]
             },
             {
               "name": "WebhookService",
               "references": 8,
               "lines": [
-                139,
                 140,
-                178,
-                254,
-                438,
-                523,
-                526,
-                527
+                141,
+                179,
+                255,
+                439,
+                524,
+                527,
+                528
               ]
             },
             {
               "name": "WebhookTestApiResponse",
               "references": 1,
               "lines": [
-                446
+                447
               ]
             },
             {
               "name": "WebhookUpdateApiResponse",
               "references": 1,
               "lines": [
-                260
+                261
               ]
             },
             {
               "name": "WebhooksApiResponse",
               "references": 1,
               "lines": [
-                144
+                145
               ]
             }
           ]
@@ -34480,28 +34268,6 @@
               "references": 1,
               "lines": [
                 26
-              ]
-            }
-          ]
-        },
-        {
-          "path": "packages/api/src/tasks/usageStats.ts",
-          "workspace": "@couchbase-traces/api",
-          "test": false,
-          "typeOnly": false,
-          "symbols": [
-            {
-              "name": "MetricsDataType",
-              "references": 1,
-              "lines": [
-                144
-              ]
-            },
-            {
-              "name": "SourceKind",
-              "references": 1,
-              "lines": [
-                141
               ]
             }
           ]
@@ -38117,7 +37883,7 @@
               "name": "SavedSearchListApiResponse",
               "references": 1,
               "lines": [
-                239
+                227
               ]
             }
           ]
@@ -41850,90 +41616,71 @@
               "name": "MetricTable",
               "references": 1,
               "lines": [
-                451
+                254
               ]
             },
             {
               "name": "MetricsDataType",
-              "references": 15,
+              "references": 10,
               "lines": [
-                183,
-                184,
-                185,
-                186,
-                187,
-                452,
-                453,
-                454,
-                455,
-                456,
-                459,
-                463,
-                467,
-                470,
-                474
+                255,
+                256,
+                257,
+                258,
+                259,
+                262,
+                266,
+                270,
+                273,
+                277
               ]
             },
             {
               "name": "SourceKind",
-              "references": 17,
+              "references": 13,
               "lines": [
-                107,
-                134,
-                173,
-                197,
-                364,
-                372,
-                402,
-                410,
-                480,
-                498,
-                505,
-                509,
-                541,
-                562,
-                564,
-                567,
-                570
+                167,
+                175,
+                205,
+                213,
+                283,
+                301,
+                308,
+                312,
+                344,
+                365,
+                367,
+                370,
+                373
               ]
             },
             {
               "name": "TLogSource",
-              "references": 1,
-              "lines": [
-                103
-              ]
+              "references": 0,
+              "lines": []
             },
             {
               "name": "TSource",
-              "references": 3,
+              "references": 2,
               "lines": [
-                169,
-                286,
-                359
+                89,
+                162
               ]
             },
             {
               "name": "TTraceSource",
-              "references": 2,
-              "lines": [
-                96,
-                97
-              ]
+              "references": 0,
+              "lines": []
             },
             {
               "name": "isLogSource",
-              "references": 1,
-              "lines": [
-                128
-              ]
+              "references": 0,
+              "lines": []
             },
             {
               "name": "isTraceSource",
-              "references": 1,
-              "lines": [
-                165
-              ]
+              "references": 0,
+              "lines": []
             }
           ]
         },

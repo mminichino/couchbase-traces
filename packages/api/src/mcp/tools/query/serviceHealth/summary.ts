@@ -113,7 +113,7 @@ export function serviceSummary(args: {
         '(memory, GC, CPU, restarts) by pod or instance' +
         (args.metricSourceId
           ? ` on metric source ${args.metricSourceId}`
-          : ' on a kind="metric" source from clickstack_list_sources') +
+          : ' on a kind="metric" source from cbt_list_sources') +
         '; slow or failing spans are often a symptom of the service itself.',
     );
   if (args.newOperations.length > 0)
@@ -135,7 +135,7 @@ export function serviceSummary(args: {
           ? ' A short burst that stopped is transient, not an ongoing problem.'
           : '') +
         (patterns.has('spread')
-          ? ' An error spread across much of the window may still recur; check clickstack_timeseries by minute before calling it resolved.'
+          ? ' An error spread across much of the window may still recur; check cbt_timeseries by minute before calling it resolved.'
           : ''),
     );
   }

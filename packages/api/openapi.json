@@ -1,14 +1,14 @@
 {
   "openapi": "3.0.0",
   "info": {
-    "title": "HyperDX External API",
-    "description": "API for managing HyperDX alerts and dashboards",
+    "title": "Couchbase Traces External API",
+    "description": "API for managing Couchbase Traces alerts and dashboards",
     "version": "2.0.0"
   },
   "servers": [
     {
       "url": "/",
-      "description": "Your HyperDX instance (http://<host>:<port>)"
+      "description": "Your Couchbase Traces instance (http://<host>:<port>)"
     }
   ],
   "tags": [
@@ -771,7 +771,7 @@
           },
           "hyperdxSettingPrefix": {
             "type": "string",
-            "description": "Optional prefix for HyperDX-specific ClickHouse settings. Must only contain alphanumeric characters and underscores.",
+            "description": "Optional prefix for Couchbase Traces-specific ClickHouse settings. Must only contain alphanumeric characters and underscores.",
             "nullable": true,
             "example": "hyperdx_"
           },
@@ -825,7 +825,7 @@
           },
           "hyperdxSettingPrefix": {
             "type": "string",
-            "description": "Optional prefix for HyperDX-specific ClickHouse settings. Must only contain alphanumeric characters and underscores.",
+            "description": "Optional prefix for Couchbase Traces-specific ClickHouse settings. Must only contain alphanumeric characters and underscores.",
             "nullable": true,
             "example": "hyperdx_"
           },
@@ -867,7 +867,7 @@
           },
           "hyperdxSettingPrefix": {
             "type": "string",
-            "description": "Optional prefix for HyperDX-specific ClickHouse settings. Set to null or an empty string to clear the existing value. If omitted, the existing value is kept.",
+            "description": "Optional prefix for Couchbase Traces-specific ClickHouse settings. Set to null or an empty string to clear the existing value. If omitted, the existing value is kept.",
             "nullable": true,
             "example": "hyperdx_"
           },
@@ -2596,7 +2596,7 @@
           "sqlTemplate": {
             "type": "string",
             "maxLength": 100000,
-            "description": "SQL query template to execute. Supports HyperDX template variables.",
+            "description": "SQL query template to execute. Supports Couchbase Traces template variables.",
             "example": "SELECT count() FROM otel_logs WHERE timestamp > now() - INTERVAL 1 HOUR"
           },
           "sourceId": {
@@ -3488,7 +3488,7 @@
           "type",
           "target"
         ],
-        "description": "Link-out that navigates to the HyperDX search view.",
+        "description": "Link-out that navigates to the Couchbase Traces search view.",
         "properties": {
           "type": {
             "type": "string",
@@ -3526,7 +3526,7 @@
           "type",
           "target"
         ],
-        "description": "Link-out that navigates to a HyperDX dashboard.",
+        "description": "Link-out that navigates to a Couchbase Traces dashboard.",
         "properties": {
           "type": {
             "type": "string",
@@ -4791,7 +4791,7 @@
             "type": "string",
             "maxLength": 4096,
             "default": "",
-            "description": "Comma-separated list of ClickHouse column expressions to include in\neach result row. When omitted the source's default select expression\nis used.\n\nEach entry is a ClickHouse SQL expression executed under the team's\ndatabase user. Semicolons and subqueries (SELECT keyword) are\nrejected; use column references, map lookups, or function calls only.\n\nHyperDX rewrites known attribute column names to their materialized\nequivalents automatically; you can still pass the logical name.\n",
+            "description": "Comma-separated list of ClickHouse column expressions to include in\neach result row. When omitted the source's default select expression\nis used.\n\nEach entry is a ClickHouse SQL expression executed under the team's\ndatabase user. Semicolons and subqueries (SELECT keyword) are\nrejected; use column references, map lookups, or function calls only.\n\nCouchbase Traces rewrites known attribute column names to their materialized\nequivalents automatically; you can still pass the logical name.\n",
             "example": "Timestamp,SeverityText,Body,pipedream.pipeline_name"
           },
           "orderBy": {
@@ -4915,12 +4915,12 @@
           },
           "summary": {
             "type": "string",
-            "description": "Table containing summary metrics data. Note - not yet fully supported by HyperDX",
+            "description": "Table containing summary metrics data. Note - not yet fully supported by Couchbase Traces",
             "example": "otel_metrics_summary"
           },
           "exponential histogram": {
             "type": "string",
-            "description": "Table containing exponential histogram metrics data. Note - not yet fully supported by HyperDX",
+            "description": "Table containing exponential histogram metrics data. Note - not yet fully supported by Couchbase Traces",
             "example": "otel_metrics_exponential_histogram"
           }
         }
@@ -5010,7 +5010,7 @@
           "minDate": {
             "type": "string",
             "format": "date-time",
-            "description": "(Optional) The earliest date and time for which the materialized view contains data. If not provided, then HyperDX will assume that the materialized view contains data for all dates for which the source table contains data.",
+            "description": "(Optional) The earliest date and time for which the materialized view contains data. If not provided, then Couchbase Traces will assume that the materialized view contains data for all dates for which the source table contains data.",
             "nullable": true,
             "example": "2025-01-01T00:00:00Z"
           },
@@ -5158,13 +5158,13 @@
           },
           "metricSourceId": {
             "type": "string",
-            "description": "HyperDX Source for metrics associated with logs. Optional",
+            "description": "Couchbase Traces Source for metrics associated with logs. Optional",
             "nullable": true,
             "example": "507f1f77bcf86cd799439013"
           },
           "traceSourceId": {
             "type": "string",
-            "description": "HyperDX Source for traces associated with logs. Optional",
+            "description": "Couchbase Traces Source for traces associated with logs. Optional",
             "nullable": true,
             "example": "507f1f77bcf86cd799439014"
           },
@@ -5366,19 +5366,19 @@
           },
           "logSourceId": {
             "type": "string",
-            "description": "HyperDX Source for logs associated with traces. Optional",
+            "description": "Couchbase Traces Source for logs associated with traces. Optional",
             "nullable": true,
             "example": "507f1f77bcf86cd799439011"
           },
           "sessionSourceId": {
             "type": "string",
-            "description": "HyperDX Source for sessions associated with traces. Optional",
+            "description": "Couchbase Traces Source for sessions associated with traces. Optional",
             "nullable": true,
             "example": "507f1f77bcf86cd799439031"
           },
           "metricSourceId": {
             "type": "string",
-            "description": "HyperDX Source for metrics associated with traces. Optional",
+            "description": "Couchbase Traces Source for metrics associated with traces. Optional",
             "nullable": true,
             "example": "507f1f77bcf86cd799439041"
           },
@@ -5591,7 +5591,7 @@
           },
           "logSourceId": {
             "type": "string",
-            "description": "HyperDX Source for logs associated with metrics. Optional",
+            "description": "Couchbase Traces Source for logs associated with metrics. Optional",
             "nullable": true,
             "example": "507f1f77bcf86cd799439011"
           },
@@ -5669,7 +5669,7 @@
           },
           "traceSourceId": {
             "type": "string",
-            "description": "HyperDX Source for traces associated with sessions.",
+            "description": "Couchbase Traces Source for traces associated with sessions.",
             "example": "507f1f77bcf86cd799439021"
           },
           "resourceAttributesExpression": {
@@ -8416,7 +8416,7 @@
     "/api/v2/search": {
       "post": {
         "summary": "Search Raw Logs and Traces",
-        "description": "Fetch individual log or trace rows from a HyperDX source.\n\nThis endpoint mirrors the \"search\" panel mode in the HyperDX UI.\nHyperDX applies the same query optimizations used in the UI:\n  - Named attribute columns (e.g. \"pipedream.pipeline_name\") are\n    rewritten to their indexed materialized equivalents when the\n    source schema exposes them, avoiding slow Map lookups.\n  - Rows are ordered by timestamp descending (most recent first).\n  - The source's built-in PREWHERE / partition pruning is applied.\n\nAuthentication: Bearer token (personal API key from Team Settings).\n",
+        "description": "Fetch individual log or trace rows from a Couchbase Traces source.\n\nThis endpoint mirrors the \"search\" panel mode in the Couchbase Traces UI.\nIt applies the same query optimizations used in the UI:\n  - Named attribute columns (e.g. \"pipedream.pipeline_name\") are\n    rewritten to their indexed materialized equivalents when the\n    source schema exposes them, avoiding slow Map lookups.\n  - Rows are ordered by timestamp descending (most recent first).\n  - The source's built-in PREWHERE / partition pruning is applied.\n\nAuthentication: Bearer token (personal API key from Team Settings).\n",
         "operationId": "searchEvents",
         "tags": [
           "Search"

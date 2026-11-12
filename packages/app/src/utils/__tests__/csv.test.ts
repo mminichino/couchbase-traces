@@ -28,11 +28,11 @@ describe('toCsvString', () => {
 
 describe('csvExportFilename', () => {
   it('returns a timestamped name with no extension', () => {
-    const filename = csvExportFilename('hyperdx_selected_rows');
+    const filename = csvExportFilename('couchbase_traces_selected_rows');
 
     expect(filename).not.toMatch(/\.csv$/);
     expect(filename).toMatch(
-      /^hyperdx_selected_rows_\d{4}-\d{2}-\d{2}T\d{2}-\d{2}-\d{2}$/,
+      /^couchbase_traces_selected_rows_\d{4}-\d{2}-\d{2}T\d{2}-\d{2}-\d{2}$/,
     );
   });
 });

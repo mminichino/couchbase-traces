@@ -218,7 +218,7 @@ export default function IacMigrationSection({
           // was actually written.
           skipNotices: skippedRules(freshSelection).map(n => n.text),
         }),
-        'hyperdx-import.tf',
+        'couchbase-traces-import.tf',
       );
     } catch (e) {
       console.error('Failed to build the Terraform import file', e);

@@ -103,7 +103,7 @@ const COLUMN_ROWS = [
   },
 ];
 
-describe('clickstack_describe_table', () => {
+describe('cbt_describe_table', () => {
   beforeEach(() => {
     mockQuery.mockReset();
     mockGetConnectionById.mockReset().mockResolvedValue({

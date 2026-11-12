@@ -39,9 +39,9 @@ describe('MCP Webhook Tools', () => {
     await server.stop();
   });
 
-  describe('clickstack_save_webhook (create)', () => {
+  describe('cbt_save_webhook (create)', () => {
     it('creates a generic webhook and persists it scoped to the team', async () => {
-      const result = await callTool(client, 'clickstack_save_webhook', {
+      const result = await callTool(client, 'cbt_save_webhook', {
         name: 'My Generic Hook',
         service: 'generic',
         url: 'https://example.com/webhook',
@@ -65,7 +65,7 @@ describe('MCP Webhook Tools', () => {
     });
 
     it('creates a slack webhook with a slack.com host', async () => {
-      const result = await callTool(client, 'clickstack_save_webhook', {
+      const result = await callTool(client, 'cbt_save_webhook', {
         name: 'Slack Alerts',
         service: 'slack',
         url: 'https://hooks.slack.com/services/T000/B000/XXXX',
@@ -77,7 +77,7 @@ describe('MCP Webhook Tools', () => {
     });
 
     it('rejects a slack webhook that sets headers/body', async () => {
-      const result = await callTool(client, 'clickstack_save_webhook', {
+      const result = await callTool(client, 'cbt_save_webhook', {
         name: 'Bad Slack',
         service: 'slack',
         url: 'https://hooks.slack.com/services/T000/B000/XXXX',
@@ -89,7 +89,7 @@ describe('MCP Webhook Tools', () => {
     });
 
     it('rejects a slack webhook whose host is not slack.com', async () => {
-      const result = await callTool(client, 'clickstack_save_webhook', {
+      const result = await callTool(client, 'cbt_save_webhook', {
         name: 'Fake Slack',
         service: 'slack',
         url: 'https://evil.example.com/webhook',
@@ -99,7 +99,7 @@ describe('MCP Webhook Tools', () => {
     });
 
     it('rejects an invalid URL', async () => {
-      const result = await callTool(client, 'clickstack_save_webhook', {
+      const result = await callTool(client, 'cbt_save_webhook', {
         name: 'Broken',
         service: 'generic',
         url: 'not-a-url',
@@ -109,7 +109,7 @@ describe('MCP Webhook Tools', () => {
     });
 
     it('rejects a body template that does not compile', async () => {
-      const result = await callTool(client, 'clickstack_save_webhook', {
+      const result = await callTool(client, 'cbt_save_webhook', {
         name: 'Broken body',
         service: 'generic',
         url: 'https://example.com/webhook',
@@ -124,7 +124,7 @@ describe('MCP Webhook Tools', () => {
     it('accepts a body template that compiles but is not JSON as written', async () => {
       const body =
         '{"status": "{{#if (eq state "ALERT")}}firing{{else}}resolved{{/if}}"}';
-      const result = await callTool(client, 'clickstack_save_webhook', {
+      const result = await callTool(client, 'cbt_save_webhook', {
         name: 'Conditional body',
         service: 'generic',
         url: 'https://example.com/webhook',
@@ -143,7 +143,7 @@ describe('MCP Webhook Tools', () => {
         url: 'https://example.com/existing',
       });
 
-      const result = await callTool(client, 'clickstack_save_webhook', {
+      const result = await callTool(client, 'cbt_save_webhook', {
         name: 'Dup Hook',
         service: 'generic',
         url: 'https://example.com/webhook',
@@ -154,7 +154,7 @@ describe('MCP Webhook Tools', () => {
     });
   });
 
-  describe('clickstack_save_webhook (update)', () => {
+  describe('cbt_save_webhook (update)', () => {
     async function createGenericWebhook() {
       return Webhook.create({
         team: team._id,
@@ -169,7 +169,7 @@ describe('MCP Webhook Tools', () => {
     it('updates name/url and clears omitted readable fields', async () => {
       const wh = await createGenericWebhook();
 
-      const result = await callTool(client, 'clickstack_save_webhook', {
+      const result = await callTool(client, 'cbt_save_webhook', {
         id: wh._id.toString(),
         name: 'Renamed',
         service: 'generic',
@@ -192,7 +192,7 @@ describe('MCP Webhook Tools', () => {
     it('rejects a body template that does not compile on update', async () => {
       const wh = await createGenericWebhook();
 
-      const result = await callTool(client, 'clickstack_save_webhook', {
+      const result = await callTool(client, 'cbt_save_webhook', {
         id: wh._id.toString(),
         name: 'Original',
         service: 'generic',
@@ -208,7 +208,7 @@ describe('MCP Webhook Tools', () => {
     it('clears omitted write-only secrets when the destination changes', async () => {
       const wh = await createGenericWebhook();
 
-      const result = await callTool(client, 'clickstack_save_webhook', {
+      const result = await callTool(client, 'cbt_save_webhook', {
         id: wh._id.toString(),
         name: 'Original',
         service: 'generic',
@@ -244,7 +244,7 @@ describe('MCP Webhook Tools', () => {
         url: 'https://example.com/b',
       });
 
-      const result = await callTool(client, 'clickstack_save_webhook', {
+      const result = await callTool(client, 'cbt_save_webhook', {
         id: target._id.toString(),
         name: 'Existing Name', // collide with the first webhook
         service: 'generic',
@@ -258,7 +258,7 @@ describe('MCP Webhook Tools', () => {
     it('rejects switching service to slack with a non-slack.com host on update', async () => {
       const wh = await createGenericWebhook();
 
-      const result = await callTool(client, 'clickstack_save_webhook', {
+      const result = await callTool(client, 'cbt_save_webhook', {
         id: wh._id.toString(),
         name: 'Original',
         service: 'slack',
@@ -269,7 +269,7 @@ describe('MCP Webhook Tools', () => {
     });
 
     it('returns a user error for a non-existent id', async () => {
-      const result = await callTool(client, 'clickstack_save_webhook', {
+      const result = await callTool(client, 'cbt_save_webhook', {
         id: '000000000000000000000000',
         name: 'Ghost',
         service: 'generic',
@@ -281,7 +281,7 @@ describe('MCP Webhook Tools', () => {
     });
 
     it('rejects an invalid id', async () => {
-      const result = await callTool(client, 'clickstack_save_webhook', {
+      const result = await callTool(client, 'cbt_save_webhook', {
         id: 'not-an-object-id',
         name: 'Bad',
         service: 'generic',
@@ -293,7 +293,7 @@ describe('MCP Webhook Tools', () => {
     });
   });
 
-  describe('clickstack_delete_webhook', () => {
+  describe('cbt_delete_webhook', () => {
     it('deletes a webhook', async () => {
       const wh = await Webhook.create({
         team: team._id,
@@ -302,7 +302,7 @@ describe('MCP Webhook Tools', () => {
         url: 'https://example.com/webhook',
       });
 
-      const result = await callTool(client, 'clickstack_delete_webhook', {
+      const result = await callTool(client, 'cbt_delete_webhook', {
         id: wh._id.toString(),
       });
 
@@ -329,7 +329,7 @@ describe('MCP Webhook Tools', () => {
         channel: { type: 'webhook', webhookId: wh._id.toString() },
       });
 
-      const result = await callTool(client, 'clickstack_delete_webhook', {
+      const result = await callTool(client, 'cbt_delete_webhook', {
         id: wh._id.toString(),
       });
 
@@ -340,7 +340,7 @@ describe('MCP Webhook Tools', () => {
     });
 
     it('returns a user error for a non-existent id', async () => {
-      const result = await callTool(client, 'clickstack_delete_webhook', {
+      const result = await callTool(client, 'cbt_delete_webhook', {
         id: '000000000000000000000000',
       });
 
@@ -357,7 +357,7 @@ describe('MCP Webhook Tools', () => {
         url: 'https://example.com/other',
       });
 
-      const result = await callTool(client, 'clickstack_delete_webhook', {
+      const result = await callTool(client, 'cbt_delete_webhook', {
         id: otherWebhook._id.toString(),
       });
 

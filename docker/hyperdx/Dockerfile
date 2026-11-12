@@ -17,7 +17,7 @@ ARG OTEL_COLLECTOR_CORE_VERSION=1.61.0
 FROM otel/opentelemetry-collector-opampsupervisor:${OTEL_COLLECTOR_VERSION} AS otel_collector_opampsupervisor_base
 FROM kukymbr/goose-docker@sha256:0cd025636df126e7f66472861ca4db3683bc649be46cd1f6ef1a316209058e23 AS goose
 
-# Build the custom HyperDX collector binary using OCB (OpenTelemetry Collector Builder).
+# Build the custom Couchbase Traces collector binary using OCB (OpenTelemetry Collector Builder).
 # This replaces the pre-built otel/opentelemetry-collector-contrib image so we can
 # include custom receiver/processor components alongside the standard contrib ones.
 # Note: The official OCB image may ship an older Go than the contrib modules require,
@@ -108,17 +108,17 @@ RUN --mount=type=cache,target=/root/.yarn/berry/cache,id=yarn-cache \
 # prod ############################################################################################
 FROM node:${NODE_VERSION}-alpine AS prod
 
-LABEL org.opencontainers.image.vendor="HyperDX" \
-      org.opencontainers.image.title="HyperDX Production" \
-      org.opencontainers.image.description="HyperDX production image with API and App services" \
-      org.opencontainers.image.source="https://github.com/ClickHouse/ClickStack" \
+LABEL org.opencontainers.image.vendor="Couchbase Traces" \
+      org.opencontainers.image.title="Couchbase Traces Production" \
+      org.opencontainers.image.description="Couchbase Traces production image with API and App services" \
+      org.opencontainers.image.source="https://github.com/mminichino/couchbase-traces" \
       org.opencontainers.image.licenses="MIT"
 
 ARG CODE_VERSION
 
 ENV CODE_VERSION=$CODE_VERSION
 ENV OTEL_RESOURCE_ATTRIBUTES="service.version=$CODE_VERSION"
-# Service name for HyperDX's own telemetry, sent only when CBT_API_KEY or
+# Service name for Couchbase Traces's own telemetry, sent only when CBT_API_KEY or
 # OTEL_EXPORTER_OTLP_HEADERS is set. The API and alert task use it as is, the
 # Next.js server adds "-next". Override it with -e OTEL_SERVICE_NAME=<name>.
 ENV OTEL_SERVICE_NAME=hdx-oss-app
@@ -161,12 +161,12 @@ ARG USER_GID=10001
 
 ENV CODE_VERSION=$CODE_VERSION
 ENV OTEL_RESOURCE_ATTRIBUTES="service.version=$CODE_VERSION"
-# Service name for HyperDX's own telemetry, sent only when CBT_API_KEY or
+# Service name for Couchbase Traces's own telemetry, sent only when CBT_API_KEY or
 # OTEL_EXPORTER_OTLP_HEADERS is set. The API and alert task use it as is, the
 # Next.js server adds "-next". Override it with -e OTEL_SERVICE_NAME=<name>.
 ENV OTEL_SERVICE_NAME=hdx-oss-app
 # Copy from otel collector bases
-COPY --from=ocb-builder --chmod=755 /build/output/otelcol-hyperdx /otelcontribcol
+COPY --from=ocb-builder --chmod=755 /build/output/otelcol-couchbase-traces /otelcontribcol
 COPY --from=otel_collector_opampsupervisor_base --chmod=755 /usr/local/bin/opampsupervisor /usr/local/bin/opampsupervisor
 
 # Copy Node.js runtime from node base.
@@ -239,10 +239,10 @@ EXPOSE 8080 4317 4318 13133 8123 9000 8125/udp
 # all-in-one no auth ############################################################################################
 FROM all-in-one-base AS all-in-one-noauth
 
-LABEL org.opencontainers.image.vendor="HyperDX" \
-      org.opencontainers.image.title="HyperDX All-in-One (No Auth)" \
-      org.opencontainers.image.description="HyperDX all-in-one image with ClickHouse, MongoDB, and OTel Collector (no authentication)" \
-      org.opencontainers.image.source="https://github.com/ClickHouse/ClickStack" \
+LABEL org.opencontainers.image.vendor="Couchbase Traces" \
+      org.opencontainers.image.title="Couchbase Traces All-in-One (No Auth)" \
+      org.opencontainers.image.description="Couchbase Traces all-in-one image with ClickHouse, MongoDB, and OTel Collector (no authentication)" \
+      org.opencontainers.image.source="https://github.com/mminichino/couchbase-traces" \
       org.opencontainers.image.licenses="MIT"
 
 COPY --from=hyperdx ./entry.local.noauth.sh /etc/local/entry.sh
@@ -255,10 +255,10 @@ ENTRYPOINT ["sh", "/etc/local/entry.sh"]
 # all-in-one with auth ############################################################################################
 FROM all-in-one-base AS all-in-one-auth
 
-LABEL org.opencontainers.image.vendor="HyperDX" \
-      org.opencontainers.image.title="HyperDX All-in-One (With Auth)" \
-      org.opencontainers.image.description="HyperDX all-in-one image with ClickHouse, MongoDB, and OTel Collector (with authentication)" \
-      org.opencontainers.image.source="https://github.com/ClickHouse/ClickStack" \
+LABEL org.opencontainers.image.vendor="Couchbase Traces" \
+      org.opencontainers.image.title="Couchbase Traces All-in-One (With Auth)" \
+      org.opencontainers.image.description="Couchbase Traces all-in-one image with ClickHouse, MongoDB, and OTel Collector (with authentication)" \
+      org.opencontainers.image.source="https://github.com/mminichino/couchbase-traces" \
       org.opencontainers.image.licenses="MIT"
 
 COPY --from=hyperdx ./entry.local.auth.sh /etc/local/entry.sh

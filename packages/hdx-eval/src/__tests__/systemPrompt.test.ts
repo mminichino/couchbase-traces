@@ -43,7 +43,7 @@ describe('buildSystemPrompt', () => {
       '2026-01-15T10:00:00.000Z',
     );
     expect(p).toContain('DATA DISCOVERY CAVEAT');
-    expect(p).toContain('clickstack_describe_source');
+    expect(p).toContain('cbt_describe_source');
     expect(p).toContain('lowCardinalityValues');
   });
 

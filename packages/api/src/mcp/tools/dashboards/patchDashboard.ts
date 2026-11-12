@@ -36,7 +36,7 @@ export function registerPatchDashboard({
   const promqlEnabled = isPromqlEnabled(context);
 
   registerTool(
-    'clickstack_patch_dashboard',
+    'cbt_patch_dashboard',
     {
       title: 'Patch Dashboard',
       annotations: IDEMPOTENT_DESTRUCTIVE_TOOL,
@@ -48,8 +48,8 @@ export function registerPatchDashboard({
         'If the new config cannot carry alerts (anything other than a line, ' +
         'stacked_line, stacked_bar, or number tile), alerts attached to that ' +
         'tile are permanently deleted. ' +
-        'Use clickstack_get_dashboard_tile to inspect a tile before patching it. ' +
-        'IMPORTANT: After patching a tile, run clickstack_query_tile to confirm the query still works.',
+        'Use cbt_get_dashboard_tile to inspect a tile before patching it. ' +
+        'IMPORTANT: After patching a tile, run cbt_query_tile to confirm the query still works.',
       inputSchema: buildMcpPatchDashboardSchema(promqlEnabled),
     },
     async ({
@@ -291,8 +291,7 @@ export function registerPatchDashboard({
       }
       if (patchedTile) {
         output.patchedTile = patchedTile;
-        output.hint =
-          'Use clickstack_query_tile to test the patched tile query.';
+        output.hint = 'Use cbt_query_tile to test the patched tile query.';
         warnings.push(
           ...getRawSqlTileMacroWarnings([patchedTile]),
           ...getTileVariableWarnings([patchedTile], existingDashboard.filters),

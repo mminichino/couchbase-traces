@@ -438,7 +438,7 @@ export function assertSourceKindMatchesSelect(
       'Source kind is "metric", but no select item specifies metricType + metricName. ' +
         'Each select item on a metric source must set metricType ("gauge" | "sum" | "histogram" | "exponential histogram") ' +
         'and metricName (e.g. metricName:"system.cpu.utilization"). Call ' +
-        'clickstack_describe_source or clickstack_list_metrics to discover available metric names.',
+        'cbt_describe_source or cbt_list_metrics to discover available metric names.',
     );
   }
 
@@ -446,7 +446,7 @@ export function assertSourceKindMatchesSelect(
     return mcpUserError(
       `Source kind is "${source.kind}", not metric — but ${metricItemCount} select item(s) ` +
         'set metricType. metricType + metricName only work on metric sources. ' +
-        'Drop the metric fields to query this source, or call clickstack_list_sources to find a ' +
+        'Drop the metric fields to query this source, or call cbt_list_sources to find a ' +
         'source whose kind is "metric".',
     );
   }
@@ -548,7 +548,7 @@ export async function runConfigTile(
     const source = await getSource(teamId, builderConfig.source);
     if (!source) {
       return mcpUserError(
-        `Source not found: ${builderConfig.source}. Call clickstack_list_sources to discover available source IDs.`,
+        `Source not found: ${builderConfig.source}. Call cbt_list_sources to discover available source IDs.`,
       );
     }
 
@@ -773,7 +773,7 @@ export async function runConfigTile(
   );
   if (!connection) {
     return mcpUserError(
-      `Connection not found: ${savedConfig.connection}. Call clickstack_list_sources to discover available connection IDs.`,
+      `Connection not found: ${savedConfig.connection}. Call cbt_list_sources to discover available connection IDs.`,
     );
   }
 
@@ -1029,7 +1029,7 @@ export function errorHint(
   if (unknownVariableError) {
     return (
       "A variable exists only when one of the dashboard's filters sets " +
-      'isVariableEnabled. Call clickstack_get_dashboard to see the declared ' +
+      'isVariableEnabled. Call cbt_get_dashboard to see the declared ' +
       'filters and the names they can be referenced by.'
     );
   }
@@ -1089,7 +1089,7 @@ export function errorHint(
     )
   ) {
     return (
-      'Use the `table` of a source from clickstack_list_sources, which is ' +
+      'Use the `table` of a source from cbt_list_sources, which is ' +
       'qualified with its database. Unqualified names resolve only in the ' +
       "connection's default database."
     );
@@ -1100,7 +1100,7 @@ export function errorHint(
     )
   ) {
     return (
-      'Call clickstack_describe_source to discover available columns and ' +
+      'Call cbt_describe_source to discover available columns and ' +
       'map attribute keys before retrying.'
     );
   }

@@ -3,44 +3,44 @@
 ## What is @couchbase-traces/cli?
 
 A terminal CLI for searching, tailing, and inspecting logs and traces from
-HyperDX. It provides both an interactive TUI (built with Ink — React for
+Couchbase Traces. It provides both an interactive TUI (built with Ink — React for
 terminals) and non-interactive commands (`query`, `chart`, `sources`, …) for
 scripting and piping.
 
-The CLI connects to the HyperDX API server and queries ClickHouse directly
+The CLI connects to the Couchbase Traces API server and queries ClickHouse directly
 through the API's `/clickhouse-proxy` endpoint, using the same query generation
 logic (`@couchbase-traces/common-utils`) as the web frontend.
 
 ## CLI Commands
 
 ```
-hdx tui -a <url>                    # Interactive TUI (main command)
-hdx sources -a <url>                # List available sources (with schemas)
-hdx connections                     # List ClickHouse connections (id, name, host)
-hdx dashboards [list]               # List dashboards (--query, --format table|json|csv)
-hdx dashboards export --id <id>     # Export a dashboard definition as JSON
-hdx dashboards create               # Create from -f <json> or --name + --chart/--chart-file
-hdx dashboards import -f <json>     # Import an exported definition (--if-not-exists, --name-override)
-hdx saved-searches [list]           # List saved searches
-hdx saved-searches create           # Create a saved search (--name/--source/--where)
-hdx chart -d <dashboard> [-t tile]  # Render dashboard tiles as ANSI charts
-hdx chart -s <source> [--agg ...]   # Ad-hoc chart over a source (builder mode)
-hdx chart --sql <query> -s <source> # Ad-hoc chart from raw SQL
-hdx query --connection-id <id> --sql <query>  # Raw SQL to stdout (NDJSON default)
-hdx query --patterns ...            # Drain log-pattern mining over a query result
-hdx auth login -a <url>             # Sign in (interactive or -e/-p flags)
-hdx auth status                     # Show auth status (reads saved session)
-hdx auth logout                     # Clear saved session
-hdx team list                       # List teams the user belongs to (multi-team)
-hdx team current                    # Show the active team
-hdx team use <name|id>              # Switch the active team (kubectx-style)
-hdx mcp install                     # Add the MCP server to Claude Code, Codex, Cursor, VS Code (interactive only: agents hand it to the user)
-hdx upload-sourcemaps               # Upload JS source maps
+cbt tui -a <url>                    # Interactive TUI (main command)
+cbt sources -a <url>                # List available sources (with schemas)
+cbt connections                     # List ClickHouse connections (id, name, host)
+cbt dashboards [list]               # List dashboards (--query, --format table|json|csv)
+cbt dashboards export --id <id>     # Export a dashboard definition as JSON
+cbt dashboards create               # Create from -f <json> or --name + --chart/--chart-file
+cbt dashboards import -f <json>     # Import an exported definition (--if-not-exists, --name-override)
+cbt saved-searches [list]           # List saved searches
+cbt saved-searches create           # Create a saved search (--name/--source/--where)
+cbt chart -d <dashboard> [-t tile]  # Render dashboard tiles as ANSI charts
+cbt chart -s <source> [--agg ...]   # Ad-hoc chart over a source (builder mode)
+cbt chart --sql <query> -s <source> # Ad-hoc chart from raw SQL
+cbt query --connection-id <id> --sql <query>  # Raw SQL to stdout (NDJSON default)
+cbt query --patterns ...            # Drain log-pattern mining over a query result
+cbt auth login -a <url>             # Sign in (interactive or -e/-p flags)
+cbt auth status                     # Show auth status (reads saved session)
+cbt auth logout                     # Clear saved session
+cbt team list                       # List teams the user belongs to (multi-team)
+cbt team current                    # Show the active team
+cbt team use <name|id>              # Switch the active team (kubectx-style)
+cbt mcp install                     # Add the MCP server to Claude Code, Codex, Cursor, VS Code (interactive only: agents hand it to the user)
+cbt upload-sourcemaps               # Upload JS source maps
 ```
 
-The `-a, --app-url <url>` flag points commands at a HyperDX app URL. If omitted,
+The `-a, --app-url <url>` flag points commands at a Couchbase Traces app URL. If omitted,
 the CLI falls back to the app URL saved in the session file from a previous
-`hdx auth login`. (Note: `hdx chart` uses `-s` for `--source`.)
+`cbt auth login`. (Note: `cbt chart` uses `-s` for `--source`.)
 
 ## Architecture
 
@@ -74,7 +74,7 @@ src/
 │   ├── ColumnValues.tsx # Shared key-value renderer (used by Column Values tab + Event Details)
 │   ├── LoginForm.tsx    # Email/password login form (used inside TUI App)
 │   └── SourcePicker.tsx # Arrow-key source selector
-├── mcp/                 # `hdx mcp install`: key check, per-agent config writers, Ink prompt
+├── mcp/                 # `cbt mcp install`: key check, per-agent config writers, Ink prompt
 ├── shared/
 │   ├── tileConfig.ts    # Tile → queryable chart config resolution + per-displayType
 │   │                    #   transforms (ports of web DBDashboardPage / ChartUtils)
@@ -84,7 +84,7 @@ src/
 │   └── formatNumber.ts  # numbro-based formatNumber + number-format resolution ports
 ├── termchart/           # Self-contained ANSI chart renderers (only dep: chalk) —
 │                        #   line, stacked bar, categorical, number, table, markdown,
-│                        #   peak-preserving resampling + nice y-axis ticks. No HyperDX
+│                        #   peak-preserving resampling + nice y-axis ticks. No Couchbase Traces
 │                        #   imports; candidate for open-sourcing. See termchart/README.md
 └── utils/
     ├── config.ts        # Session persistence (~/.config/hyperdx/cli/session.json)
@@ -165,7 +165,7 @@ dashboard**:
 3. `shared/chartData.ts` shapes the response (ports of
    `formatResponseForTimeChart`, `formatResponseForCategoricalChart`, etc.).
 4. `termchart/` renders pure ANSI strings, consumed by both the Ink `TileChart`
-   component and the non-interactive `hdx chart` command. It is a self-contained
+   component and the non-interactive `cbt chart` command. It is a self-contained
    module (only dependency: chalk) — number formatting is injected via
    callbacks, and it must never import from the rest of the CLI.
 
@@ -184,7 +184,7 @@ buckets like the web (`maxTimeBuckets`). Y-axes use "nice" tick domains
 tick-row labels — mirroring the web's recharts `domain={[0, 'auto']}` axis
 rather than labeling every row with raw range fractions.
 
-The `hdx chart` command (designed for agent-driven troubleshooting) reuses this
+The `cbt chart` command (designed for agent-driven troubleshooting) reuses this
 same pipeline in three modes: dashboard tiles (`-d`), ad-hoc builder charts
 (`-s <source>` + `--agg/--value/--where/--group-by/--series`, built by
 `shared/adhocChart.ts`), and ad-hoc raw SQL (`--sql` with `$__timeFilter` /

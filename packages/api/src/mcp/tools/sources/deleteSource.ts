@@ -14,18 +14,18 @@ export function registerDeleteSource({
   const { teamId } = context;
 
   registerTool(
-    'clickstack_delete_source',
+    'cbt_delete_source',
     {
       title: 'Delete Source',
       annotations: IDEMPOTENT_DESTRUCTIVE_TOOL,
       description:
         'Permanently delete a data source by ID. Other sources may reference ' +
         'it (e.g. a trace source linked to a log source) — those links are ' +
-        'left dangling, so check dependencies first. Use clickstack_list_sources ' +
+        'left dangling, so check dependencies first. Use cbt_list_sources ' +
         'to find available source IDs.',
       inputSchema: z.object({
         id: objectIdSchema.describe(
-          'ID of the source to delete. Get it from clickstack_list_sources.',
+          'ID of the source to delete. Get it from cbt_list_sources.',
         ),
       }),
     },

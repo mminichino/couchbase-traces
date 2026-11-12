@@ -17,8 +17,8 @@ describe('cleanClickHouseExpression', () => {
 
   it('unwraps toString() and strips inner backticks', () => {
     expect(
-      cleanClickHouseExpression('toString(ResourceAttributes.`hdx`.`sdk`)'),
-    ).toBe('ResourceAttributes.hdx.sdk');
+      cleanClickHouseExpression('toString(ResourceAttributes.`cbt`.`sdk`)'),
+    ).toBe('ResourceAttributes.cbt.sdk');
   });
 
   it('leaves a plain identifier unchanged', () => {

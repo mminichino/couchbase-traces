@@ -57,7 +57,7 @@ jest.mock('@/hooks/useMetadata', () => ({
 }));
 
 jest.mock('@/brand', () => ({
-  useBrandDisplayName: () => 'ClickStack',
+  useBrandDisplayName: () => 'Couchbase Traces',
 }));
 jest.mock('@/components/ConnectionForm', () => ({
   ConnectionForm: () => null,

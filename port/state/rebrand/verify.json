@@ -1,13 +1,60 @@
 {
   "schemaVersion": 1,
-  "step": "env",
+  "step": "branding",
   "status": "pass",
   "checks": [
     {
-      "name": "no HYPERDX or HDX env vars",
+      "name": "brand assets",
+      "status": "pass",
+      "problems": []
+    },
+    {
+      "name": "brand module exports",
+      "status": "pass",
+      "problems": []
+    },
+    {
+      "name": "brand terms",
+      "status": "pass",
+      "problems": []
+    },
+    {
+      "name": "outbound requests",
+      "status": "pass",
+      "problems": []
+    },
+    {
+      "name": "allowlist entries all used",
+      "status": "pass",
+      "problems": []
+    },
+    {
+      "name": "urls",
+      "status": "pass",
+      "problems": []
+    },
+    {
+      "name": "workflows",
+      "status": "pass",
+      "problems": []
+    },
+    {
+      "name": "test-diff --base fb9d9ec",
+      "status": "pass",
+      "problems": []
+    },
+    {
+      "name": "features.json against a fresh scan",
       "status": "pass",
       "problems": []
     }
   ],
-  "warnings": []
+  "warnings": [
+    "W_NAME_TWICE LOCAL.md:18: <img alt=\"Demo of using Couchbase Traces Local for debugging a local app\" src=\"./.github/images/demo_local_animated.gif\"",
+    "W_NAME_TWICE packages/api/openapi.json:8419: \"description\": \"Fetch individual log or trace rows from a Couchbase Traces source.\\n\\nThis endpoint mirrors the \\\"search",
+    "W_NAME_TWICE packages/app/src/ServicesDashboardPage/__tests__/ServicesDashboardPage.test.tsx:169: page ? `${page} - Couchbase Traces` : 'Couchbase Traces',",
+    "W_NAME_TWICE packages/app/src/__tests__/DBSearchPage.directTrace.test.tsx:135: page ? `${page} - Couchbase Traces` : 'Couchbase Traces',",
+    "W_NAME_TWICE packages/app/src/__tests__/DBSearchPage.saveSearch.test.tsx:125: page ? `${page} - Couchbase Traces` : 'Couchbase Traces',",
+    "W_NAME_TWICE packages/app/src/components/Dashboards/__tests__/DashboardsListPage.test.tsx:69: page ? `${page} - Couchbase Traces` : 'Couchbase Traces',"
+  ]
 }

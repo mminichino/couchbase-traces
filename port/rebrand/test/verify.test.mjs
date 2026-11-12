@@ -92,6 +92,27 @@ describe('verify', () => {
     assert.ok(checkBrandModule(ctxOf(bad)).length >= 5);
   });
 
+  it('an allowlist entry resolves a URL review hit and counts as used', async () => {
+    const files = { 'docs/a.md': 'Engine source: https://packages.clickhouse.com/deb\n' };
+    /** @param {any} r @param {string} name */
+    const named = (r, name) => r.checks.find((/** @type {any} */ c) => c.name === name);
+    let r = await verifyStep(ctxOf(repo(files)), 'branding');
+    assert.equal(named(r, 'urls').status, 'fail');
+    r = await verifyStep(
+      ctxOf(
+        repo({
+          ...files,
+          'port/rebrand/allowlist.json': allow([
+            { path: 'docs/a.md', term: 'url', snippet: 'https://packages.clickhouse.com/deb', reason: 'engine_reference', note: 'n' },
+          ]),
+        }),
+      ),
+      'branding',
+    );
+    assert.equal(named(r, 'urls').status, 'pass');
+    assert.equal(named(r, 'allowlist entries all used').status, 'pass');
+  });
+
   it('verify env fails while HYPERDX env vars remain, passes after', async () => {
     const root = repo({ 'packages/api/src/c.ts': 'export const k = process.env.HYPERDX_API_KEY;\n' });
     let r = await verifyStep(ctxOf(root), 'env');

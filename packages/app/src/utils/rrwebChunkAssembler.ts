@@ -14,7 +14,7 @@
  * buffers chunks per event and joins them sorted by chunk index, so a
  * replay can never be corrupted by out-of-order or interleaved chunks —
  * which previously scrambled the concatenation, made JSON.parse throw, and
- * silently dropped the event (https://github.com/ClickHouse/ClickStack/issues/2569).
+ * silently dropped the event (https://github.com/mminichino/couchbase-traces/issues/2569).
  *
  * `@hyperdx/browser` and `@clickhouse/clickstack-browser` up to 1.2.0 restart
  * `rr-web.event` at 1 on every page load, so one session repeats event ids.

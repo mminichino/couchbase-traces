@@ -104,7 +104,7 @@ jest.mock('@/source', () => ({
 
 jest.mock('@/brand', () => ({
   __esModule: true,
-  useBrandDisplayName: () => 'ClickStack',
+  useBrandDisplayName: () => 'Couchbase Traces',
 }));
 
 // Heavy / visual child components are stubbed so the form still renders and

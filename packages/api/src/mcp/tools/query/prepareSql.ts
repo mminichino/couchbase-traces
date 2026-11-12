@@ -44,7 +44,7 @@ export async function prepareSqlQuery(
           'filters declare. This tool has no dashboard, so they would be ' +
           'sent to ClickHouse as literal text. Inline the condition here, ' +
           'or save the query as a dashboard tile and validate it with ' +
-          'clickstack_query_tile.',
+          'cbt_query_tile.',
       ),
     };
   }
@@ -54,7 +54,7 @@ export async function prepareSqlQuery(
     if (!source) {
       return {
         error: mcpUserError(
-          `Source not found: ${query.sourceId}. Call clickstack_list_sources to discover available source IDs.`,
+          `Source not found: ${query.sourceId}. Call cbt_list_sources to discover available source IDs.`,
         ),
       };
     }
@@ -74,7 +74,7 @@ export async function prepareSqlQuery(
     return {
       error: mcpUserError(
         '$__sourceTable needs a sourceId to know which table to expand to. ' +
-          'Pass the sourceId of a source from clickstack_list_sources, or write ' +
+          'Pass the sourceId of a source from cbt_list_sources, or write ' +
           "the source's `table` in place of the macro.",
       ),
     };

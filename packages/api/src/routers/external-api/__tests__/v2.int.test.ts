@@ -124,7 +124,7 @@ describe('external api v2', () => {
 
       const ok = await listTools();
       expect(ok.status).toBe(200);
-      expect(ok.text).toContain('clickstack_save_alert');
+      expect(ok.text).toContain('cbt_save_alert');
 
       await User.updateOne({ _id: doc._id }, { revokedAt: new Date() });
       expect((await listTools()).status).toBe(401);

@@ -20,7 +20,6 @@ import {
   IS_LOCAL_APP_MODE,
   IS_PROMQL_ENABLED,
   RUN_SCHEDULED_TASKS_EXTERNALLY,
-  USAGE_STATS_ENABLED,
 } from '@/config';
 import logger from '@/utils/logger';
 
@@ -32,7 +31,7 @@ import logger from '@/utils/logger';
  * See `agent_docs/observability.md` for conventions and usage examples.
  */
 
-const INSTRUMENTATION_SCOPE = 'hyperdx-api';
+const INSTRUMENTATION_SCOPE = 'couchbase-traces-api';
 
 const tracer = opentelemetry.trace.getTracer(
   INSTRUMENTATION_SCOPE,
@@ -122,7 +121,7 @@ export function setBusinessContext(context: BusinessContext): void {
 
   const attributes: Attributes = {};
   if (teamId != null) {
-    attributes['hyperdx.team.id'] = String(teamId);
+    attributes['cbt.team.id'] = String(teamId);
   }
   if (userId != null) {
     attributes['user.id'] = String(userId);
@@ -179,7 +178,6 @@ export function getStaticFeatureFlags(): Attributes {
   return {
     'feature_flag.local_app_mode': IS_LOCAL_APP_MODE,
     'feature_flag.promql_enabled': IS_PROMQL_ENABLED,
-    'feature_flag.usage_stats_enabled': USAGE_STATS_ENABLED,
     'feature_flag.ai_assistant_enabled': !!(AI_API_KEY || ANTHROPIC_API_KEY),
     'feature_flag.scheduled_tasks_external': RUN_SCHEDULED_TASKS_EXTERNALLY,
   };
@@ -276,18 +274,15 @@ export type OperationOutcome = 'success' | 'error';
 // two metrics, distinguished by the low-cardinality `operation` attribute, so
 // SLO dashboards/queries can be written generically (filter by `operation`)
 // rather than per-metric. See agent_docs/observability.md ("SLOs").
-const operationRequestsCounter = getCounter('hyperdx.operation.requests', {
+const operationRequestsCounter = getCounter('cbt.operation.requests', {
   description:
     'Count of instrumented application operations, labeled by operation and outcome (success, error). Availability SLI for SLOs.',
 });
-const operationDurationHistogram = getHistogram(
-  'hyperdx.operation.duration_ms',
-  {
-    description:
-      'Wall-clock duration of instrumented application operations, labeled by operation and outcome. Latency SLI for SLOs.',
-    unit: 'ms',
-  },
-);
+const operationDurationHistogram = getHistogram('cbt.operation.duration_ms', {
+  description:
+    'Wall-clock duration of instrumented application operations, labeled by operation and outcome. Latency SLI for SLOs.',
+  unit: 'ms',
+});
 
 /**
  * Records the SLI signals for a single execution of a named operation: bumps

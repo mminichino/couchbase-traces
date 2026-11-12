@@ -257,22 +257,22 @@ describe('gradeBatch metric-adoption checks', () => {
         scenario: 'metric-saturation',
         toolCalls: [
           {
-            name: 'mcp__hyperdx__clickstack_list_metrics',
+            name: 'mcp__hyperdx__cbt_list_metrics',
             isError: false,
             input: { sourceId: 's1' },
           },
           {
-            name: 'mcp__hyperdx__clickstack_describe_metric',
+            name: 'mcp__hyperdx__cbt_describe_metric',
             isError: false,
             input: { name: 'process.runtime.jvm.memory.used' },
           },
           {
-            name: 'mcp__hyperdx__clickstack_describe_metric',
+            name: 'mcp__hyperdx__cbt_describe_metric',
             isError: false,
             input: { name: 'process.runtime.jvm.gc.pause' },
           },
           {
-            name: 'mcp__hyperdx__clickstack_timeseries',
+            name: 'mcp__hyperdx__cbt_timeseries',
             isError: false,
             input: {
               metricType: 'gauge',
@@ -287,7 +287,7 @@ describe('gradeBatch metric-adoption checks', () => {
           // queried_summary_via_sql additionally needs SELECT /
           // ValueAtQuantiles in the same call's args).
           {
-            name: 'mcp__hyperdx__clickstack_sql',
+            name: 'mcp__hyperdx__cbt_sql',
             isError: false,
             input: {
               connectionId: 'c1',
@@ -361,7 +361,7 @@ describe('gradeBatch metric-adoption checks', () => {
         scenario: 'metric-saturation',
         toolCalls: [
           {
-            name: 'mcp__hyperdx__clickstack_sql',
+            name: 'mcp__hyperdx__cbt_sql',
             isError: false,
             input: { sql: 'SELECT * FROM eval_metric-saturation_otel_traces' },
           },
@@ -388,12 +388,12 @@ describe('gradeBatch metric-adoption checks', () => {
         scenario: 'metric-saturation',
         toolCalls: [
           {
-            name: 'mcp__hyperdx__clickstack_describe_metric',
+            name: 'mcp__hyperdx__cbt_describe_metric',
             isError: false,
             input: { name: 'process.runtime.jvm.memory.used' },
           },
           {
-            name: 'mcp__hyperdx__clickstack_describe_metric',
+            name: 'mcp__hyperdx__cbt_describe_metric',
             isError: false,
             input: { name: 'process.runtime.jvm.gc.pause' },
           },

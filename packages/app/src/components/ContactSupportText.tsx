@@ -4,7 +4,7 @@ import { IS_OSS } from '@/config';
 
 import styles from './ContactSupportText.module.scss';
 
-const GH_LINK = 'https://github.com/ClickHouse/ClickStack/issues';
+const GH_LINK = 'https://github.com/mminichino/couchbase-traces/issues';
 
 export const ContactSupportText = () => {
   if (IS_OSS) {

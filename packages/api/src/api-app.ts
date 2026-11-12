@@ -18,7 +18,6 @@ import pinnedFiltersRouter from './routers/api/pinnedFilters';
 import savedSearchRouter from './routers/api/savedSearch';
 import sourcesRouter from './routers/api/sources';
 import externalRoutersV2 from './routers/external-api/v2';
-import usageStats from './tasks/usageStats';
 import { registerAITelemetry } from './utils/aiTelemetry';
 import logger, { expressLogger } from './utils/logger';
 import passport from './utils/passport';
@@ -88,14 +87,6 @@ app.use(function (req, res, next) {
   next();
 });
 app.use(defaultCors);
-
-// ---------------------------------------------------------------------
-// ----------------------- Background Jobs -----------------------------
-// ---------------------------------------------------------------------
-if (config.USAGE_STATS_ENABLED && !config.IS_CI) {
-  usageStats();
-}
-// ---------------------------------------------------------------------
 
 // ---------------------------------------------------------------------
 // ----------------------- Internal Routers ----------------------------

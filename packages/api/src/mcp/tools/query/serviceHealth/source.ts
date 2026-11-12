@@ -41,7 +41,7 @@ async function sourceNotFound(
   const listed = traces.slice(0, MAX_LISTED_SOURCES).map(describe);
   return mcpUserError(
     `Source not found: "${sourceId}". sourceId must be the "id" field from ` +
-      'clickstack_list_sources, not a name or table. ' +
+      'cbt_list_sources, not a name or table. ' +
       (listed.length
         ? `Trace sources: ${listed.join('; ')}.`
         : 'This team has no trace sources.'),
@@ -65,7 +65,7 @@ export async function loadHealthSource(
     return mcpUserError(
       `Source ${sourceId} has no ` +
         `${doc.serviceNameExpression ? 'statusCodeExpression' : 'serviceNameExpression'}. ` +
-        'Set it with clickstack_save_source, then retry.',
+        'Set it with cbt_save_source, then retry.',
     );
   }
   return {

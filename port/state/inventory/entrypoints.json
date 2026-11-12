@@ -271,7 +271,7 @@
       "kind": "api_route",
       "key": "DELETE /webhooks/:id",
       "file": "packages/api/src/routers/api/webhooks.ts",
-      "line": 397,
+      "line": 398,
       "detail": {
         "method": "DELETE",
         "path": "/webhooks/:id",
@@ -887,7 +887,7 @@
       "kind": "api_route",
       "key": "GET /webhooks",
       "file": "packages/api/src/routers/api/webhooks.ts",
-      "line": 134,
+      "line": 135,
       "detail": {
         "method": "GET",
         "path": "/webhooks",
@@ -915,7 +915,7 @@
       "kind": "api_route",
       "key": "PATCH /me/accessKey",
       "file": "packages/api/src/routers/api/me.ts",
-      "line": 73,
+      "line": 72,
       "detail": {
         "method": "PATCH",
         "path": "/me/accessKey",
@@ -929,7 +929,7 @@
       "kind": "api_route",
       "key": "PATCH /me/onboarding/dismiss",
       "file": "packages/api/src/routers/api/me.ts",
-      "line": 115,
+      "line": 114,
       "detail": {
         "method": "PATCH",
         "path": "/me/onboarding/dismiss",
@@ -1293,7 +1293,7 @@
       "kind": "api_route",
       "key": "POST /me/onboarding/task",
       "file": "packages/api/src/routers/api/me.ts",
-      "line": 95,
+      "line": 94,
       "detail": {
         "method": "POST",
         "path": "/me/onboarding/task",
@@ -1433,7 +1433,7 @@
       "kind": "api_route",
       "key": "POST /webhooks",
       "file": "packages/api/src/routers/api/webhooks.ts",
-      "line": 164,
+      "line": 165,
       "detail": {
         "method": "POST",
         "path": "/webhooks",
@@ -1447,7 +1447,7 @@
       "kind": "api_route",
       "key": "POST /webhooks/test",
       "file": "packages/api/src/routers/api/webhooks.ts",
-      "line": 427,
+      "line": 428,
       "detail": {
         "method": "POST",
         "path": "/webhooks/test",
@@ -1629,7 +1629,7 @@
       "kind": "api_route",
       "key": "PUT /webhooks/:id",
       "file": "packages/api/src/routers/api/webhooks.ts",
-      "line": 235,
+      "line": 236,
       "detail": {
         "method": "PUT",
         "path": "/webhooks/:id",
@@ -2162,354 +2162,354 @@
       }
     },
     {
-      "id": "mcp_tool:clickstack_delete_dashboard",
+      "id": "mcp_tool:cbt_delete_dashboard",
       "kind": "mcp_tool",
-      "key": "clickstack_delete_dashboard",
+      "key": "cbt_delete_dashboard",
       "file": "packages/api/src/mcp/tools/dashboards/deleteDashboard.ts",
       "line": 17,
       "detail": {
-        "toolName": "clickstack_delete_dashboard",
+        "toolName": "cbt_delete_dashboard",
         "dir": "dashboards"
       }
     },
     {
-      "id": "mcp_tool:clickstack_delete_source",
+      "id": "mcp_tool:cbt_delete_source",
       "kind": "mcp_tool",
-      "key": "clickstack_delete_source",
+      "key": "cbt_delete_source",
       "file": "packages/api/src/mcp/tools/sources/deleteSource.ts",
       "line": 16,
       "detail": {
-        "toolName": "clickstack_delete_source",
+        "toolName": "cbt_delete_source",
         "dir": "sources"
       }
     },
     {
-      "id": "mcp_tool:clickstack_delete_webhook",
+      "id": "mcp_tool:cbt_delete_webhook",
       "kind": "mcp_tool",
-      "key": "clickstack_delete_webhook",
+      "key": "cbt_delete_webhook",
       "file": "packages/api/src/mcp/tools/alerts/deleteWebhook.ts",
       "line": 16,
       "detail": {
-        "toolName": "clickstack_delete_webhook",
+        "toolName": "cbt_delete_webhook",
         "dir": "alerts"
       }
     },
     {
-      "id": "mcp_tool:clickstack_describe_metric",
+      "id": "mcp_tool:cbt_describe_metric",
       "kind": "mcp_tool",
-      "key": "clickstack_describe_metric",
+      "key": "cbt_describe_metric",
       "file": "packages/api/src/mcp/tools/sources/describeMetric.ts",
       "line": 718,
       "detail": {
-        "toolName": "clickstack_describe_metric",
+        "toolName": "cbt_describe_metric",
         "dir": "sources"
       }
     },
     {
-      "id": "mcp_tool:clickstack_describe_source",
+      "id": "mcp_tool:cbt_describe_source",
       "kind": "mcp_tool",
-      "key": "clickstack_describe_source",
+      "key": "cbt_describe_source",
       "file": "packages/api/src/mcp/tools/sources/describeSource.ts",
       "line": 572,
       "detail": {
-        "toolName": "clickstack_describe_source",
+        "toolName": "cbt_describe_source",
         "dir": "sources"
       }
     },
     {
-      "id": "mcp_tool:clickstack_describe_table",
+      "id": "mcp_tool:cbt_describe_table",
       "kind": "mcp_tool",
-      "key": "clickstack_describe_table",
+      "key": "cbt_describe_table",
       "file": "packages/api/src/mcp/tools/sources/describeTable.ts",
       "line": 304,
       "detail": {
-        "toolName": "clickstack_describe_table",
+        "toolName": "cbt_describe_table",
         "dir": "sources"
       }
     },
     {
-      "id": "mcp_tool:clickstack_emerging_signals",
+      "id": "mcp_tool:cbt_emerging_signals",
       "kind": "mcp_tool",
-      "key": "clickstack_emerging_signals",
+      "key": "cbt_emerging_signals",
       "file": "packages/api/src/mcp/tools/query/emergingSignals.ts",
       "line": 144,
       "detail": {
-        "toolName": "clickstack_emerging_signals",
+        "toolName": "cbt_emerging_signals",
         "dir": "query"
       }
     },
     {
-      "id": "mcp_tool:clickstack_event_deltas",
+      "id": "mcp_tool:cbt_event_deltas",
       "kind": "mcp_tool",
-      "key": "clickstack_event_deltas",
+      "key": "cbt_event_deltas",
       "file": "packages/api/src/mcp/tools/query/eventDeltas.ts",
       "line": 163,
       "detail": {
-        "toolName": "clickstack_event_deltas",
+        "toolName": "cbt_event_deltas",
         "dir": "query"
       }
     },
     {
-      "id": "mcp_tool:clickstack_event_patterns",
+      "id": "mcp_tool:cbt_event_patterns",
       "kind": "mcp_tool",
-      "key": "clickstack_event_patterns",
+      "key": "cbt_event_patterns",
       "file": "packages/api/src/mcp/tools/query/eventPatterns.ts",
       "line": 81,
       "detail": {
-        "toolName": "clickstack_event_patterns",
+        "toolName": "cbt_event_patterns",
         "dir": "query"
       }
     },
     {
-      "id": "mcp_tool:clickstack_get_alert",
+      "id": "mcp_tool:cbt_get_alert",
       "kind": "mcp_tool",
-      "key": "clickstack_get_alert",
+      "key": "cbt_get_alert",
       "file": "packages/api/src/mcp/tools/alerts/getAlert.ts",
       "line": 25,
       "detail": {
-        "toolName": "clickstack_get_alert",
+        "toolName": "cbt_get_alert",
         "dir": "alerts"
       }
     },
     {
-      "id": "mcp_tool:clickstack_get_dashboard",
+      "id": "mcp_tool:cbt_get_dashboard",
       "kind": "mcp_tool",
-      "key": "clickstack_get_dashboard",
+      "key": "cbt_get_dashboard",
       "file": "packages/api/src/mcp/tools/dashboards/getDashboard.ts",
       "line": 22,
       "detail": {
-        "toolName": "clickstack_get_dashboard",
+        "toolName": "cbt_get_dashboard",
         "dir": "dashboards"
       }
     },
     {
-      "id": "mcp_tool:clickstack_get_dashboard_tile",
+      "id": "mcp_tool:cbt_get_dashboard_tile",
       "kind": "mcp_tool",
-      "key": "clickstack_get_dashboard_tile",
+      "key": "cbt_get_dashboard_tile",
       "file": "packages/api/src/mcp/tools/dashboards/getDashboardTile.ts",
       "line": 17,
       "detail": {
-        "toolName": "clickstack_get_dashboard_tile",
+        "toolName": "cbt_get_dashboard_tile",
         "dir": "dashboards"
       }
     },
     {
-      "id": "mcp_tool:clickstack_get_saved_search",
+      "id": "mcp_tool:cbt_get_saved_search",
       "kind": "mcp_tool",
-      "key": "clickstack_get_saved_search",
+      "key": "cbt_get_saved_search",
       "file": "packages/api/src/mcp/tools/savedSearches/getSavedSearch.ts",
       "line": 17,
       "detail": {
-        "toolName": "clickstack_get_saved_search",
+        "toolName": "cbt_get_saved_search",
         "dir": "savedSearches"
       }
     },
     {
-      "id": "mcp_tool:clickstack_get_webhook",
+      "id": "mcp_tool:cbt_get_webhook",
       "kind": "mcp_tool",
-      "key": "clickstack_get_webhook",
+      "key": "cbt_get_webhook",
       "file": "packages/api/src/mcp/tools/alerts/getWebhook.ts",
       "line": 13,
       "detail": {
-        "toolName": "clickstack_get_webhook",
+        "toolName": "cbt_get_webhook",
         "dir": "alerts"
       }
     },
     {
-      "id": "mcp_tool:clickstack_list_metrics",
+      "id": "mcp_tool:cbt_list_metrics",
       "kind": "mcp_tool",
-      "key": "clickstack_list_metrics",
+      "key": "cbt_list_metrics",
       "file": "packages/api/src/mcp/tools/sources/listMetrics.ts",
       "line": 51,
       "detail": {
-        "toolName": "clickstack_list_metrics",
+        "toolName": "cbt_list_metrics",
         "dir": "sources"
       }
     },
     {
-      "id": "mcp_tool:clickstack_list_sources",
+      "id": "mcp_tool:cbt_list_sources",
       "kind": "mcp_tool",
-      "key": "clickstack_list_sources",
+      "key": "cbt_list_sources",
       "file": "packages/api/src/mcp/tools/sources/listSources.ts",
       "line": 207,
       "detail": {
-        "toolName": "clickstack_list_sources",
+        "toolName": "cbt_list_sources",
         "dir": "sources"
       }
     },
     {
-      "id": "mcp_tool:clickstack_patch_dashboard",
+      "id": "mcp_tool:cbt_patch_dashboard",
       "kind": "mcp_tool",
-      "key": "clickstack_patch_dashboard",
+      "key": "cbt_patch_dashboard",
       "file": "packages/api/src/mcp/tools/dashboards/patchDashboard.ts",
       "line": 38,
       "detail": {
-        "toolName": "clickstack_patch_dashboard",
+        "toolName": "cbt_patch_dashboard",
         "dir": "dashboards"
       }
     },
     {
-      "id": "mcp_tool:clickstack_promql",
+      "id": "mcp_tool:cbt_promql",
       "kind": "mcp_tool",
-      "key": "clickstack_promql",
+      "key": "cbt_promql",
       "file": "packages/api/src/mcp/tools/query/promql.ts",
       "line": 55,
       "detail": {
-        "toolName": "clickstack_promql",
+        "toolName": "cbt_promql",
         "dir": "query"
       }
     },
     {
-      "id": "mcp_tool:clickstack_query_tile",
+      "id": "mcp_tool:cbt_query_tile",
       "kind": "mcp_tool",
-      "key": "clickstack_query_tile",
+      "key": "cbt_query_tile",
       "file": "packages/api/src/mcp/tools/dashboards/queryTile.ts",
       "line": 24,
       "detail": {
-        "toolName": "clickstack_query_tile",
+        "toolName": "cbt_query_tile",
         "dir": "dashboards"
       }
     },
     {
-      "id": "mcp_tool:clickstack_query_tiles",
+      "id": "mcp_tool:cbt_query_tiles",
       "kind": "mcp_tool",
-      "key": "clickstack_query_tiles",
+      "key": "cbt_query_tiles",
       "file": "packages/api/src/mcp/tools/dashboards/queryTiles.ts",
       "line": 124,
       "detail": {
-        "toolName": "clickstack_query_tiles",
+        "toolName": "cbt_query_tiles",
         "dir": "dashboards"
       }
     },
     {
-      "id": "mcp_tool:clickstack_save_alert",
+      "id": "mcp_tool:cbt_save_alert",
       "kind": "mcp_tool",
-      "key": "clickstack_save_alert",
+      "key": "cbt_save_alert",
       "file": "packages/api/src/mcp/tools/alerts/saveAlert.ts",
       "line": 42,
       "detail": {
-        "toolName": "clickstack_save_alert",
+        "toolName": "cbt_save_alert",
         "dir": "alerts"
       }
     },
     {
-      "id": "mcp_tool:clickstack_save_dashboard",
+      "id": "mcp_tool:cbt_save_dashboard",
       "kind": "mcp_tool",
-      "key": "clickstack_save_dashboard",
+      "key": "cbt_save_dashboard",
       "file": "packages/api/src/mcp/tools/dashboards/saveDashboard.ts",
       "line": 56,
       "detail": {
-        "toolName": "clickstack_save_dashboard",
+        "toolName": "cbt_save_dashboard",
         "dir": "dashboards"
       }
     },
     {
-      "id": "mcp_tool:clickstack_save_saved_search",
+      "id": "mcp_tool:cbt_save_saved_search",
       "kind": "mcp_tool",
-      "key": "clickstack_save_saved_search",
+      "key": "cbt_save_saved_search",
       "file": "packages/api/src/mcp/tools/savedSearches/saveSavedSearch.ts",
       "line": 25,
       "detail": {
-        "toolName": "clickstack_save_saved_search",
+        "toolName": "cbt_save_saved_search",
         "dir": "savedSearches"
       }
     },
     {
-      "id": "mcp_tool:clickstack_save_source",
+      "id": "mcp_tool:cbt_save_source",
       "kind": "mcp_tool",
-      "key": "clickstack_save_source",
+      "key": "cbt_save_source",
       "file": "packages/api/src/mcp/tools/sources/saveSource.ts",
       "line": 26,
       "detail": {
-        "toolName": "clickstack_save_source",
+        "toolName": "cbt_save_source",
         "dir": "sources"
       }
     },
     {
-      "id": "mcp_tool:clickstack_save_webhook",
+      "id": "mcp_tool:cbt_save_webhook",
       "kind": "mcp_tool",
-      "key": "clickstack_save_webhook",
+      "key": "cbt_save_webhook",
       "file": "packages/api/src/mcp/tools/alerts/saveWebhook.ts",
       "line": 105,
       "detail": {
-        "toolName": "clickstack_save_webhook",
+        "toolName": "cbt_save_webhook",
         "dir": "alerts"
       }
     },
     {
-      "id": "mcp_tool:clickstack_search",
+      "id": "mcp_tool:cbt_search",
       "kind": "mcp_tool",
-      "key": "clickstack_search",
+      "key": "cbt_search",
       "file": "packages/api/src/mcp/tools/query/search.ts",
       "line": 62,
       "detail": {
-        "toolName": "clickstack_search",
+        "toolName": "cbt_search",
         "dir": "query"
       }
     },
     {
-      "id": "mcp_tool:clickstack_search_dashboards",
+      "id": "mcp_tool:cbt_search_dashboards",
       "kind": "mcp_tool",
-      "key": "clickstack_search_dashboards",
+      "key": "cbt_search_dashboards",
       "file": "packages/api/src/mcp/tools/dashboards/searchDashboards.ts",
       "line": 21,
       "detail": {
-        "toolName": "clickstack_search_dashboards",
+        "toolName": "cbt_search_dashboards",
         "dir": "dashboards"
       }
     },
     {
-      "id": "mcp_tool:clickstack_sql",
+      "id": "mcp_tool:cbt_sql",
       "kind": "mcp_tool",
-      "key": "clickstack_sql",
+      "key": "cbt_sql",
       "file": "packages/api/src/mcp/tools/query/sql.ts",
       "line": 97,
       "detail": {
-        "toolName": "clickstack_sql",
+        "toolName": "cbt_sql",
         "dir": "query"
       }
     },
     {
-      "id": "mcp_tool:clickstack_table",
+      "id": "mcp_tool:cbt_table",
       "kind": "mcp_tool",
-      "key": "clickstack_table",
+      "key": "cbt_table",
       "file": "packages/api/src/mcp/tools/query/table.ts",
       "line": 261,
       "detail": {
-        "toolName": "clickstack_table",
+        "toolName": "cbt_table",
         "dir": "query"
       }
     },
     {
-      "id": "mcp_tool:clickstack_timeseries",
+      "id": "mcp_tool:cbt_timeseries",
       "kind": "mcp_tool",
-      "key": "clickstack_timeseries",
+      "key": "cbt_timeseries",
       "file": "packages/api/src/mcp/tools/query/timeseries.ts",
       "line": 77,
       "detail": {
-        "toolName": "clickstack_timeseries",
+        "toolName": "cbt_timeseries",
         "dir": "query"
       }
     },
     {
-      "id": "mcp_tool:clickstack_trace_top_time_consuming_operations",
+      "id": "mcp_tool:cbt_trace_top_time_consuming_operations",
       "kind": "mcp_tool",
-      "key": "clickstack_trace_top_time_consuming_operations",
+      "key": "cbt_trace_top_time_consuming_operations",
       "file": "packages/api/src/mcp/tools/trace/breakdown.ts",
       "line": 64,
       "detail": {
-        "toolName": "clickstack_trace_top_time_consuming_operations",
+        "toolName": "cbt_trace_top_time_consuming_operations",
         "dir": "trace"
       }
     },
     {
-      "id": "mcp_tool:clickstack_trace_waterfall",
+      "id": "mcp_tool:cbt_trace_waterfall",
       "kind": "mcp_tool",
-      "key": "clickstack_trace_waterfall",
+      "key": "cbt_trace_waterfall",
       "file": "packages/api/src/mcp/tools/trace/waterfall.ts",
       "line": 310,
       "detail": {
-        "toolName": "clickstack_trace_waterfall",
+        "toolName": "cbt_trace_waterfall",
         "dir": "trace"
       }
     },

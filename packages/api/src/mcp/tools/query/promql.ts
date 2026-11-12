@@ -16,8 +16,8 @@ import { endTimeSchema, startTimeSchema } from './schemas';
 
 const promqlSchema = z.object({
   sourceId: objectIdSchema.describe(
-    'ID of a source whose kind is "promql". Call clickstack_list_sources to ' +
-      'find it, and clickstack_describe_source for its metric and label names.',
+    'ID of a source whose kind is "promql". Call cbt_list_sources to ' +
+      'find it, and cbt_describe_source for its metric and label names.',
   ),
   expression: z
     .string()
@@ -53,17 +53,17 @@ export function registerPromql({ context, registerTool }: ToolRegistrar) {
   const { teamId } = context;
 
   registerTool(
-    'clickstack_promql',
+    'cbt_promql',
     {
       title: 'PromQL Query',
       annotations: READ_ONLY_TOOL,
       description:
         'Run a PromQL expression against a PromQL source (a Prometheus-compatible ' +
         'endpoint or a ClickHouse TimeSeries table). Use this for every question ' +
-        'about Prometheus metrics; the builder tools (clickstack_timeseries, ' +
-        'clickstack_table, clickstack_search) do not read PromQL sources.\n\n' +
-        'Discovery: clickstack_list_sources lists sources with kind "promql"; ' +
-        'clickstack_describe_source lists their metric names and label names.\n\n' +
+        'about Prometheus metrics; the builder tools (cbt_timeseries, ' +
+        'cbt_table, cbt_search) do not read PromQL sources.\n\n' +
+        'Discovery: cbt_list_sources lists sources with kind "promql"; ' +
+        'cbt_describe_source lists their metric names and label names.\n\n' +
         'A range query (the default) returns rows { __hdx_time_bucket, ' +
         'series_name, value } plus seriesLabels, which maps each series_name to ' +
         'its labels once. An instant query returns one row per series with a ' +
@@ -75,7 +75,7 @@ export function registerPromql({ context, registerTool }: ToolRegistrar) {
         'Fetch the query_guide prompt for more.\n\n' +
         'The result matches what a PromQL dashboard tile with the same ' +
         'expression and granularity shows, so an expression that works here can ' +
-        'be saved as a tile with clickstack_save_dashboard as is.',
+        'be saved as a tile with cbt_save_dashboard as is.',
       inputSchema: promqlSchema,
     },
     async input => {

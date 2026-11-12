@@ -1387,15 +1387,6 @@
       "routes": []
     },
     {
-      "path": "packages/api/src/tasks/__tests__/usageStats.test.ts",
-      "workspace": "@couchbase-traces/api",
-      "kind": "unit",
-      "directImports": [
-        "packages/api/src/tasks/usageStats.ts"
-      ],
-      "routes": []
-    },
-    {
       "path": "packages/api/src/tasks/__tests__/util.test.ts",
       "workspace": "@couchbase-traces/api",
       "kind": "unit",
@@ -2500,7 +2491,9 @@
       "workspace": "@couchbase-traces/app",
       "kind": "unit",
       "directImports": [
-        "packages/app/src/brand/index.tsx"
+        "packages/app/src/brand/Logomark.tsx",
+        "packages/app/src/brand/index.tsx",
+        "packages/app/src/useUserPreferences.tsx"
       ],
       "routes": []
     },

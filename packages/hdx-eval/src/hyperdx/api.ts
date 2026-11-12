@@ -97,7 +97,7 @@ export class HyperdxApiClient {
           ? parsed.slice(0, 500)
           : JSON.stringify(parsed).slice(0, 500);
       const err = new Error(
-        `HyperDX API ${method} ${path} → ${res.status}: ${snippet}`,
+        `Couchbase Traces API ${method} ${path} → ${res.status}: ${snippet}`,
       );
       (err as ApiError).status = res.status;
       throw err;
@@ -150,13 +150,13 @@ export class HyperdxApiClient {
     const location = res.headers.get('location') ?? '';
     if (/err=/.test(location)) {
       throw new Error(
-        `HyperDX login failed: passport returned auth-failure redirect to ${location}`,
+        `Couchbase Traces login failed: passport returned auth-failure redirect to ${location}`,
       );
     }
     if (res.status >= 400) {
       const text = await res.text();
       throw new Error(
-        `HyperDX login failed (${res.status}): ${text.slice(0, 300)}`,
+        `Couchbase Traces login failed (${res.status}): ${text.slice(0, 300)}`,
       );
     }
   }
@@ -278,7 +278,7 @@ export class HyperdxApiClient {
       id: 1,
       method: 'tools/call',
       params: {
-        name: 'clickstack_query_tile',
+        name: 'cbt_query_tile',
         arguments: {
           dashboardId: args.dashboardId,
           tileId: args.tileId,

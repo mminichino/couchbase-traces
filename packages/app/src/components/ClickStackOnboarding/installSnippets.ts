@@ -20,7 +20,7 @@
  * server routes accordingly, so we don't need to disambiguate by
  * name on the client.
  */
-export const SERVER_NAME = 'clickstack';
+export const SERVER_NAME = 'couchbase-traces';
 
 export interface DeploymentShape {
   /** Origin used to build the MCP URL, e.g. `https://example.com/api`. */

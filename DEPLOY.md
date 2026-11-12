@@ -1,11 +1,11 @@
-# ClickStack Deployment Guide
+# Couchbase Traces Deployment Guide
 
-[ClickStack](https://hyperdx.io) helps engineers quickly figure out why production
-is broken by making it easy to search & visualize logs and traces on top of any
-ClickHouse cluster (imagine Kibana, for ClickHouse). You can learn more about
-ClickStack in our [README](/README.md).
+Couchbase Traces helps engineers quickly figure out why production is broken by
+making it easy to search and visualize logs and traces. The current build still
+stores telemetry in ClickHouse. You can learn more about Couchbase Traces in the
+[README](/README.md).
 
-ClickStack can be deployed in a few different ways:
+Couchbase Traces can be deployed in a few different ways:
 
 - [Bring Your Own ClickHouse](#bring-your-own-clickhouse)
 - [All-in-one Docker Compose Stack](#all-in-one-docker-compose-stack)
@@ -13,32 +13,26 @@ ClickStack can be deployed in a few different ways:
 
 ## Container image names
 
-ClickStack images are published to Docker Hub under the `clickhouse` namespace
-and are also served from `docker.clickhouse.com`:
+Image names use `ghcr.io/mminichino`. They are not published yet; build them
+locally with the `make` targets until they are.
 
-| Image                       | Name                                   |
-| --------------------------- | -------------------------------------- |
-| ClickStack (UI + API)       | `clickhouse/clickstack`                |
-| All-in-one (with auth)      | `clickhouse/clickstack-all-in-one`     |
-| Local (all-in-one, no auth) | `clickhouse/clickstack-local`          |
-| OpenTelemetry collector     | `clickhouse/clickstack-otel-collector` |
-
-The legacy `hyperdx/hyperdx`, `hyperdx/hyperdx-all-in-one`,
-`hyperdx/hyperdx-local` and `hyperdx/hyperdx-otel-collector` names (also served
-from `docker.hyperdx.io`) keep receiving the same tags for a transition period.
-Switch to the `clickhouse/clickstack-*` names now; the date the legacy names
-stop updating will be announced in the changelog.
+| Image                       | Name                                         |
+| --------------------------- | -------------------------------------------- |
+| Couchbase Traces (UI + API) | `mminichino/couchbase-traces`                |
+| All-in-one (with auth)      | `mminichino/couchbase-traces-all-in-one`     |
+| Local (all-in-one, no auth) | `mminichino/couchbase-traces-local`          |
+| OpenTelemetry collector     | `mminichino/couchbase-traces-otel-collector` |
 
 ## Bring Your Own ClickHouse
 
 If you already have an existing ClickHouse cluster, you can simply deploy the
-ClickStack container that connects to your ClickHouse cluster. You'll need a
+Couchbase Traces container that connects to your ClickHouse cluster. You'll need a
 separate MongoDB instance to persist your users, dashboards, searches and more.
 
 To get started, you can run the following image:
 
 ```bash
-docker run -e MONGO_URI=mongodb://YOUR_MONGODB_URI -p 8080:8080 docker.clickhouse.com/clickhouse/clickstack:2
+docker run -e MONGO_URI=mongodb://YOUR_MONGODB_URI -p 8080:8080 ghcr.io/mminichino/couchbase-traces:2
 ```
 
 You'll need to set the `MONGO_URI` environment variable to the URI of your
@@ -48,17 +42,17 @@ up your connection with ClickHouse.
 Before deploying into production, set the `EXPRESS_SESSION_SECRET` environment
 variable to a random string (e.g. `openssl rand -hex 32`). Without it the API
 generates one per process, which signs users out on every restart and prevents
-replicas from sharing sessions. The old public value `hyperdx is cool 👋` is
-also replaced with a per-process secret when authentication is enabled.
+replicas from sharing sessions. The old public default value is also replaced
+with a per-process secret when authentication is enabled.
 
 To customize the frontend URL, set the `FRONTEND_URL` environment variable to
-the URL your ClickStack instance is hosted on.
+the URL your Couchbase Traces instance is hosted on.
 
 ## All-in-one Docker Compose Stack
 
-The easiest way to get started with ClickStack from scratch is to use our
+The easiest way to get started with Couchbase Traces from scratch is to use our
 all-in-one Docker Compose stack. This stack will start ClickHouse, an
-OpenTelemetry collector, the ClickStack UI and API, and MongoDB.
+OpenTelemetry collector, the Couchbase Traces UI and API, and MongoDB.
 
 To get started, clone this repository and run the following command:
 
@@ -66,7 +60,7 @@ To get started, clone this repository and run the following command:
 docker compose up -d
 ```
 
-This will start the ClickStack stack and open a port for the UI, API, and OTel
+This will start the Couchbase Traces stack and open a port for the UI, API, and OTel
 collector.
 
 When deploying into production, you'll want to disable any extra ports outside
@@ -91,13 +85,13 @@ replicas from sharing sessions. The old public value is not a production secret.
 
 ## Local Development Mode
 
-ClickStack can also be deployed alongside your existing local development stack to
+Couchbase Traces can also be deployed alongside your existing local development stack to
 help you debug issues locally. This mode will start an OpenTelemetry collector,
-ClickHouse, the ClickStack UI and API, and MongoDB in a single container, without any
+ClickHouse, the Couchbase Traces UI and API, and MongoDB in a single container, without any
 authentication or configuration persistence.
 
 To get started, spin up the local mode container:
 
 ```bash
-docker run -p 8080:8080 docker.clickhouse.com/clickhouse/clickstack-local:2
+docker run -p 8080:8080 ghcr.io/mminichino/couchbase-traces-local:2
 ```

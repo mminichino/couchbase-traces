@@ -230,14 +230,14 @@ describe('TraceLogsPanel', () => {
   it("prefixes the link with the deployment's base path", () => {
     // A hard navigation isn't prefixed the way `next/link` would be, and the
     // ClickHouse build mounts the app under /clickstack.
-    mockBasePath = '/clickstack';
+    mockBasePath = '/couchbase-traces';
     renderPanel();
 
     expect(
       screen
         .getByTestId('trace-logs-open-in-search')
         .getAttribute('href')
-        ?.startsWith('/clickstack/search?'),
+        ?.startsWith('/couchbase-traces/search?'),
     ).toBe(true);
   });
 

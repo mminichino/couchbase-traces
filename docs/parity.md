@@ -4,10 +4,10 @@ Generated from `port/features.json` and `port/state/inventory/`. Edit `port/feat
 
 | Status | Features |
 |---|---|
-| not_started | 51 |
+| not_started | 50 |
 | in_progress | 0 |
 | ported | 0 |
-| needs_decision | 2 |
+| needs_decision | 3 |
 | dropped | 0 |
 
 ## search
@@ -16,7 +16,7 @@ Generated from `port/features.json` and `port/state/inventory/`. Edit `port/feat
 |---|---|---|---|---|---|
 | Pinned filters (`api-pinned-filters`) | user | not_started | 2 | attribution.ts, index.ts, node.ts, clickhouseVersion.ts, histogram.ts, +7 | 0 / 0 / 0 |
 | Saved searches (`api-saved-search`) | user | not_started | 4 | attribution.ts, index.ts, node.ts, clickhouseVersion.ts, histogram.ts, +7 | 0 / 0 / 0 |
-| Log and trace search (`app-search`) | user | not_started | 3 | DBSearchPage.tsx, UserPreferencesModal.tsx, clickhouse.ts, AppNav.components.tsx, AppNav.tsx, +51 | 14 / 0 / 10 |
+| Log and trace search (`app-search`) | user | not_started | 3 | DBSearchPage.tsx, UserPreferencesModal.tsx, clickhouse.ts, AppNav.components.tsx, AppNav.tsx, +50 | 14 / 0 / 10 |
 
 ### Pinned filters (`api-pinned-filters`)
 
@@ -52,7 +52,7 @@ Entry points:
 
 | Feature | Visibility | Status | Entry points | Data layer | Tests (unit / int / e2e) |
 |---|---|---|---|---|---|
-| Chart explorer (`app-chart`) | user | not_started | 1 | DBChartPage.tsx, UserPreferencesModal.tsx, clickhouse.ts, AppNav.components.tsx, AppNav.tsx, +58 | 1 / 0 / 2 |
+| Chart explorer (`app-chart`) | user | not_started | 1 | DBChartPage.tsx, UserPreferencesModal.tsx, clickhouse.ts, AppNav.components.tsx, AppNav.tsx, +57 | 1 / 0 / 2 |
 
 ### Chart explorer (`app-chart`)
 
@@ -66,7 +66,7 @@ Entry points:
 
 | Feature | Visibility | Status | Entry points | Data layer | Tests (unit / int / e2e) |
 |---|---|---|---|---|---|
-| Dashboards (`app-dashboards`) | user | not_started | 13 | UserPreferencesModal.tsx, clickhouse.ts, AppNav.components.tsx, AppNav.tsx, InstanceLabel.tsx, +63 | 13 / 1 / 7 |
+| Dashboards (`app-dashboards`) | user | not_started | 13 | UserPreferencesModal.tsx, clickhouse.ts, AppNav.components.tsx, AppNav.tsx, InstanceLabel.tsx, +62 | 13 / 1 / 7 |
 
 ### Dashboards (`app-dashboards`)
 
@@ -106,7 +106,7 @@ Entry points:
 
 | Feature | Visibility | Status | Entry points | Data layer | Tests (unit / int / e2e) |
 |---|---|---|---|---|---|
-| Service map (`app-service-map`) | user | not_started | 1 | UserPreferencesModal.tsx, clickhouse.ts, AppNav.components.tsx, AppNav.tsx, InstanceLabel.tsx, +27 | 0 / 0 / 3 |
+| Service map (`app-service-map`) | user | not_started | 1 | UserPreferencesModal.tsx, clickhouse.ts, AppNav.components.tsx, AppNav.tsx, InstanceLabel.tsx, +26 | 0 / 0 / 3 |
 
 ### Service map (`app-service-map`)
 
@@ -141,7 +141,7 @@ Entry points:
 
 | Feature | Visibility | Status | Entry points | Data layer | Tests (unit / int / e2e) |
 |---|---|---|---|---|---|
-| Session replay (`app-sessions`) | user | not_started | 1 | UserPreferencesModal.tsx, clickhouse.ts, AppNav.components.tsx, AppNav.tsx, InstanceLabel.tsx, +43 | 1 / 0 / 4 |
+| Session replay (`app-sessions`) | user | not_started | 1 | UserPreferencesModal.tsx, clickhouse.ts, AppNav.components.tsx, AppNav.tsx, InstanceLabel.tsx, +42 | 1 / 0 / 4 |
 
 ### Session replay (`app-sessions`)
 
@@ -188,8 +188,8 @@ Entry points:
 
 | Feature | Visibility | Status | Entry points | Data layer | Tests (unit / int / e2e) |
 |---|---|---|---|---|---|
-| Kubernetes dashboard (`app-kubernetes`) | user | not_started | 1 | KubernetesDashboardPage.tsx, NamespaceDetailsSidePanel.tsx, NodeDetailsSidePanel.tsx, UserPreferencesModal.tsx, clickhouse.ts, +46 | 2 / 0 / 1 |
-| Services dashboard (`app-services`) | user | not_started | 1 | DatabaseTab.tsx, HttpTab.tsx, UserPreferencesModal.tsx, clickhouse.ts, AppNav.components.tsx, +48 | 0 / 0 / 2 |
+| Kubernetes dashboard (`app-kubernetes`) | user | not_started | 1 | KubernetesDashboardPage.tsx, NamespaceDetailsSidePanel.tsx, NodeDetailsSidePanel.tsx, UserPreferencesModal.tsx, clickhouse.ts, +45 | 2 / 0 / 1 |
+| Services dashboard (`app-services`) | user | not_started | 1 | DatabaseTab.tsx, HttpTab.tsx, UserPreferencesModal.tsx, clickhouse.ts, AppNav.components.tsx, +47 | 0 / 0 / 2 |
 
 ### Kubernetes dashboard (`app-kubernetes`)
 
@@ -212,7 +212,7 @@ Entry points:
 | Feature | Visibility | Status | Entry points | Data layer | Tests (unit / int / e2e) |
 |---|---|---|---|---|---|
 | AI assistant (`api-ai`) | user | not_started | 1 | clickhouse.ts, attribution.ts, index.ts, node.ts, clickhouseVersion.ts, +8 | 2 / 1 / 0 |
-| LLM dashboard (`app-llm`) | user | not_started | 1 | DatabaseTab.tsx, HttpTab.tsx, UserPreferencesModal.tsx, clickhouse.ts, AppNav.components.tsx, +56 | 14 / 0 / 0 |
+| LLM dashboard (`app-llm`) | user | not_started | 1 | DatabaseTab.tsx, HttpTab.tsx, UserPreferencesModal.tsx, clickhouse.ts, AppNav.components.tsx, +55 | 14 / 0 / 0 |
 
 ### AI assistant (`api-ai`)
 
@@ -247,11 +247,11 @@ Let an AI client list, create and delete alerts and webhooks.
 
 Entry points:
 
-- `mcp_tool:clickstack_delete_webhook`, `packages/api/src/mcp/tools/alerts/deleteWebhook.ts`
-- `mcp_tool:clickstack_get_alert`, `packages/api/src/mcp/tools/alerts/getAlert.ts`
-- `mcp_tool:clickstack_get_webhook`, `packages/api/src/mcp/tools/alerts/getWebhook.ts`
-- `mcp_tool:clickstack_save_alert`, `packages/api/src/mcp/tools/alerts/saveAlert.ts`
-- `mcp_tool:clickstack_save_webhook`, `packages/api/src/mcp/tools/alerts/saveWebhook.ts`
+- `mcp_tool:cbt_delete_webhook`, `packages/api/src/mcp/tools/alerts/deleteWebhook.ts`
+- `mcp_tool:cbt_get_alert`, `packages/api/src/mcp/tools/alerts/getAlert.ts`
+- `mcp_tool:cbt_get_webhook`, `packages/api/src/mcp/tools/alerts/getWebhook.ts`
+- `mcp_tool:cbt_save_alert`, `packages/api/src/mcp/tools/alerts/saveAlert.ts`
+- `mcp_tool:cbt_save_webhook`, `packages/api/src/mcp/tools/alerts/saveWebhook.ts`
 
 ### MCP tools: dashboards (`mcp-dashboards`)
 
@@ -259,14 +259,14 @@ Let an AI client list, create, update and delete dashboards.
 
 Entry points:
 
-- `mcp_tool:clickstack_delete_dashboard`, `packages/api/src/mcp/tools/dashboards/deleteDashboard.ts`
-- `mcp_tool:clickstack_get_dashboard`, `packages/api/src/mcp/tools/dashboards/getDashboard.ts`
-- `mcp_tool:clickstack_get_dashboard_tile`, `packages/api/src/mcp/tools/dashboards/getDashboardTile.ts`
-- `mcp_tool:clickstack_patch_dashboard`, `packages/api/src/mcp/tools/dashboards/patchDashboard.ts`
-- `mcp_tool:clickstack_query_tile`, `packages/api/src/mcp/tools/dashboards/queryTile.ts`
-- `mcp_tool:clickstack_query_tiles`, `packages/api/src/mcp/tools/dashboards/queryTiles.ts`
-- `mcp_tool:clickstack_save_dashboard`, `packages/api/src/mcp/tools/dashboards/saveDashboard.ts`
-- `mcp_tool:clickstack_search_dashboards`, `packages/api/src/mcp/tools/dashboards/searchDashboards.ts`
+- `mcp_tool:cbt_delete_dashboard`, `packages/api/src/mcp/tools/dashboards/deleteDashboard.ts`
+- `mcp_tool:cbt_get_dashboard`, `packages/api/src/mcp/tools/dashboards/getDashboard.ts`
+- `mcp_tool:cbt_get_dashboard_tile`, `packages/api/src/mcp/tools/dashboards/getDashboardTile.ts`
+- `mcp_tool:cbt_patch_dashboard`, `packages/api/src/mcp/tools/dashboards/patchDashboard.ts`
+- `mcp_tool:cbt_query_tile`, `packages/api/src/mcp/tools/dashboards/queryTile.ts`
+- `mcp_tool:cbt_query_tiles`, `packages/api/src/mcp/tools/dashboards/queryTiles.ts`
+- `mcp_tool:cbt_save_dashboard`, `packages/api/src/mcp/tools/dashboards/saveDashboard.ts`
+- `mcp_tool:cbt_search_dashboards`, `packages/api/src/mcp/tools/dashboards/searchDashboards.ts`
 
 ### MCP tools: query (`mcp-query`)
 
@@ -274,14 +274,14 @@ Let an AI client run searches and chart queries and find emerging signals.
 
 Entry points:
 
-- `mcp_tool:clickstack_emerging_signals`, `packages/api/src/mcp/tools/query/emergingSignals.ts`
-- `mcp_tool:clickstack_event_deltas`, `packages/api/src/mcp/tools/query/eventDeltas.ts`
-- `mcp_tool:clickstack_event_patterns`, `packages/api/src/mcp/tools/query/eventPatterns.ts`
-- `mcp_tool:clickstack_promql`, `packages/api/src/mcp/tools/query/promql.ts`
-- `mcp_tool:clickstack_search`, `packages/api/src/mcp/tools/query/search.ts`
-- `mcp_tool:clickstack_sql`, `packages/api/src/mcp/tools/query/sql.ts`
-- `mcp_tool:clickstack_table`, `packages/api/src/mcp/tools/query/table.ts`
-- `mcp_tool:clickstack_timeseries`, `packages/api/src/mcp/tools/query/timeseries.ts`
+- `mcp_tool:cbt_emerging_signals`, `packages/api/src/mcp/tools/query/emergingSignals.ts`
+- `mcp_tool:cbt_event_deltas`, `packages/api/src/mcp/tools/query/eventDeltas.ts`
+- `mcp_tool:cbt_event_patterns`, `packages/api/src/mcp/tools/query/eventPatterns.ts`
+- `mcp_tool:cbt_promql`, `packages/api/src/mcp/tools/query/promql.ts`
+- `mcp_tool:cbt_search`, `packages/api/src/mcp/tools/query/search.ts`
+- `mcp_tool:cbt_sql`, `packages/api/src/mcp/tools/query/sql.ts`
+- `mcp_tool:cbt_table`, `packages/api/src/mcp/tools/query/table.ts`
+- `mcp_tool:cbt_timeseries`, `packages/api/src/mcp/tools/query/timeseries.ts`
 
 ### MCP tools: saved searches (`mcp-saved-searches`)
 
@@ -289,8 +289,8 @@ Let an AI client read saved searches.
 
 Entry points:
 
-- `mcp_tool:clickstack_get_saved_search`, `packages/api/src/mcp/tools/savedSearches/getSavedSearch.ts`
-- `mcp_tool:clickstack_save_saved_search`, `packages/api/src/mcp/tools/savedSearches/saveSavedSearch.ts`
+- `mcp_tool:cbt_get_saved_search`, `packages/api/src/mcp/tools/savedSearches/getSavedSearch.ts`
+- `mcp_tool:cbt_save_saved_search`, `packages/api/src/mcp/tools/savedSearches/saveSavedSearch.ts`
 
 ### MCP tools: sources (`mcp-sources`)
 
@@ -298,13 +298,13 @@ Let an AI client list, create and delete data sources.
 
 Entry points:
 
-- `mcp_tool:clickstack_delete_source`, `packages/api/src/mcp/tools/sources/deleteSource.ts`
-- `mcp_tool:clickstack_describe_metric`, `packages/api/src/mcp/tools/sources/describeMetric.ts`
-- `mcp_tool:clickstack_describe_source`, `packages/api/src/mcp/tools/sources/describeSource.ts`
-- `mcp_tool:clickstack_describe_table`, `packages/api/src/mcp/tools/sources/describeTable.ts`
-- `mcp_tool:clickstack_list_metrics`, `packages/api/src/mcp/tools/sources/listMetrics.ts`
-- `mcp_tool:clickstack_list_sources`, `packages/api/src/mcp/tools/sources/listSources.ts`
-- `mcp_tool:clickstack_save_source`, `packages/api/src/mcp/tools/sources/saveSource.ts`
+- `mcp_tool:cbt_delete_source`, `packages/api/src/mcp/tools/sources/deleteSource.ts`
+- `mcp_tool:cbt_describe_metric`, `packages/api/src/mcp/tools/sources/describeMetric.ts`
+- `mcp_tool:cbt_describe_source`, `packages/api/src/mcp/tools/sources/describeSource.ts`
+- `mcp_tool:cbt_describe_table`, `packages/api/src/mcp/tools/sources/describeTable.ts`
+- `mcp_tool:cbt_list_metrics`, `packages/api/src/mcp/tools/sources/listMetrics.ts`
+- `mcp_tool:cbt_list_sources`, `packages/api/src/mcp/tools/sources/listSources.ts`
+- `mcp_tool:cbt_save_source`, `packages/api/src/mcp/tools/sources/saveSource.ts`
 
 ### MCP tools: trace analysis (`mcp-trace`)
 
@@ -312,8 +312,8 @@ Let an AI client find the most time-consuming trace operations.
 
 Entry points:
 
-- `mcp_tool:clickstack_trace_top_time_consuming_operations`, `packages/api/src/mcp/tools/trace/breakdown.ts`
-- `mcp_tool:clickstack_trace_waterfall`, `packages/api/src/mcp/tools/trace/waterfall.ts`
+- `mcp_tool:cbt_trace_top_time_consuming_operations`, `packages/api/src/mcp/tools/trace/breakdown.ts`
+- `mcp_tool:cbt_trace_waterfall`, `packages/api/src/mcp/tools/trace/waterfall.ts`
 
 ## iac
 
@@ -338,7 +338,7 @@ Entry points:
 | Data sources (`api-sources`) | admin | not_started | 4 | attribution.ts, index.ts, node.ts, clickhouseVersion.ts, histogram.ts, +7 | 0 / 1 / 0 |
 | ClickHouse query settings (`api-team-clickhouse-settings`) | admin | needs_decision | 1 | attribution.ts, index.ts, node.ts, clickhouseVersion.ts, histogram.ts, +7 | 0 / 0 / 0 |
 | Webhooks (`api-webhooks`) | admin | not_started | 5 | clickhouse.ts, errors.ts, attribution.ts, index.ts, node.ts, +9 | 0 / 0 / 0 |
-| ClickHouse server dashboard (`app-clickhouse`) | admin | needs_decision | 1 | clickhouse.tsx, ClickhousePage.tsx, UserPreferencesModal.tsx, clickhouse.ts, AppNav.components.tsx, +46 | 0 / 0 / 1 |
+| ClickHouse server dashboard (`app-clickhouse`) | admin | needs_decision | 1 | clickhouse.tsx, ClickhousePage.tsx, UserPreferencesModal.tsx, clickhouse.ts, AppNav.components.tsx, +45 | 0 / 0 / 1 |
 | Team settings and members (`app-team`) | admin | not_started | 14 | UserPreferencesModal.tsx, clickhouse.ts, AppNav.components.tsx, AppNav.tsx, InstanceLabel.tsx, +34 | 7 / 0 / 1 |
 
 ### Connections (`api-connections`)
@@ -673,7 +673,7 @@ Entry points:
 | Health and installation status (`api-health`) | internal | not_started | 3 | attribution.ts, index.ts, node.ts, clickhouseVersion.ts, histogram.ts, +7 | 0 / 0 / 0 |
 | App server API and config (`app-api`) | internal | not_started | 2 | - | 0 / 0 / 0 |
 | Benchmark page (`app-benchmark`) | internal | not_started | 1 | clickhouse.ts, ContactSupportText.tsx, DBRowJsonViewer.tsx, DBRowSidePanel.tsx, ExceptionSubpanel.tsx, +31 | 0 / 0 / 0 |
-| Careers page (`app-careers`) | internal | not_started | 1 | - | 0 / 0 / 0 |
+| Careers page (`app-careers`) | internal | needs_decision | 1 | attribution.ts, index.ts, clickhouseVersion.ts, histogram.ts, materializedViews.ts, +6 | 0 / 0 / 0 |
 | Home page (`app-home`) | user | not_started | 1 | attribution.ts, index.ts, clickhouseVersion.ts, histogram.ts, materializedViews.ts, +6 | 0 / 0 / 3 |
 | Ping-pong task (`task-ping-pong`) | internal | not_started | 1 | - | 0 / 0 / 0 |
 | Dashboard provisioning task (`task-provision-dashboards`) | internal | not_started | 1 | attribution.ts, index.ts, clickhouseVersion.ts, histogram.ts, materializedViews.ts, +6 | 0 / 1 / 0 |
@@ -712,6 +712,8 @@ Marketing page listing open roles at the company.
 Entry points:
 
 - `app_page:/careers`, `packages/app/pages/careers.tsx`
+
+Decision: ClickHouse recruiting page: lists ClickHouse jobs from boards-api.greenhouse.io and ClickStack commits from api.github.com. Kept unchanged until the user decides whether to remove it. Not signed off.
 
 ### Home page (`app-home`)
 

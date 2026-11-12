@@ -60,7 +60,7 @@ export function registerSearch({ context, registerTool }: ToolRegistrar) {
   const { teamId } = context;
 
   registerTool(
-    'clickstack_search',
+    'cbt_search',
     {
       title: 'Search Events',
       annotations: READ_ONLY_TOOL,
@@ -70,9 +70,9 @@ export function registerSearch({ context, registerTool }: ToolRegistrar) {
         'or drill into individual records matching a filter.\n\n' +
         PREFER_BUILDER_OVER_SQL_NUDGE +
         '\n\n' +
-        'Requires sourceId — call clickstack_list_sources then clickstack_describe_source first.\n\n' +
-        'For aggregated metrics, use clickstack_table instead. ' +
-        'For pattern discovery, use clickstack_event_patterns instead.\n\n' +
+        'Requires sourceId — call cbt_list_sources then cbt_describe_source first.\n\n' +
+        'For aggregated metrics, use cbt_table instead. ' +
+        'For pattern discovery, use cbt_event_patterns instead.\n\n' +
         'Set denoise=true to automatically filter out high-frequency repetitive patterns, ' +
         'surfacing only unusual or interesting events.\n\n' +
         'Column naming: top-level columns are PascalCase (Duration, StatusCode). ' +

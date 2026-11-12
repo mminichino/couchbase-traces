@@ -1,6 +1,6 @@
-# OpenTelemetry Collector Builder (OCB) manifest for HyperDX.
+# OpenTelemetry Collector Builder (OCB) manifest for Couchbase Traces.
 # This replaces the pre-built otel/opentelemetry-collector-contrib image with a
-# custom-built binary that includes only the components HyperDX needs, plus any
+# custom-built binary that includes only the components Couchbase Traces needs, plus any
 # custom receivers/processors we add in the future.
 #
 # Version placeholders are replaced at Docker build time via sed:
@@ -12,8 +12,8 @@
 #   https://github.com/open-telemetry/opentelemetry-collector-releases/blob/main/distributions/otelcol-contrib/manifest.yaml
 
 dist:
-  name: otelcol-hyperdx
-  description: HyperDX OpenTelemetry Collector
+  name: otelcol-couchbase-traces
+  description: Couchbase Traces OpenTelemetry Collector
   version: __OTEL_COLLECTOR_VERSION__
   output_path: /build/output
   build_tags: 'grpcnotrace'

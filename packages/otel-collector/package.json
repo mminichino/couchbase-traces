@@ -1,6 +1,6 @@
 {
   "name": "@couchbase-traces/otel-collector",
-  "description": "HyperDX OpenTelemetry Collector configuration and Docker image",
+  "description": "Couchbase Traces OpenTelemetry Collector configuration and Docker image",
   "version": "2.44.0",
   "license": "MIT",
   "private": true

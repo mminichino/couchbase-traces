@@ -29,7 +29,7 @@ type Story = StoryObj<typeof CopySnippet>;
 
 const FENCED_EXAMPLE = `<CopySnippet
   label="Import block"
-  snippet={\`import { clickstack_dashboard } from "clickhouse/clickstack"\`}
+  snippet={\`import { clickstack_dashboard } from "clickhouse/couchbase-traces"\`}
 />`;
 
 const INLINE_EXAMPLE = `Create a source with <Code>Session</Code> type.`;
@@ -38,7 +38,7 @@ export const Playground: Story = {
   args: {
     label: 'Import block',
     snippet:
-      'import {\n  clickhouse_clickstack_dashboard.example\n} from "clickhouse/clickstack"',
+      'import {\n  clickhouse_clickstack_dashboard.example\n} from "clickhouse/couchbase-traces"',
   },
 };
 
@@ -77,7 +77,7 @@ export const FencedBlocks = () => (
       label="Import block"
       snippet={`import {
   clickhouse_clickstack_dashboard.example
-} from "clickhouse/clickstack"`}
+} from "clickhouse/couchbase-traces"`}
     />
     <div>
       <Text size="sm" fw={600} mb="xs">

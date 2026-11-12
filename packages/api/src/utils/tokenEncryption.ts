@@ -39,13 +39,13 @@ export interface TokenEncryptionProvider {
 }
 
 const plaintextReadCounter = getCounter(
-  'hyperdx.token_encryption.plaintext_reads',
+  'cbt.token_encryption.plaintext_reads',
   {
     description:
       'Count of stored tokens read back unencrypted while an encrypting provider was active.',
   },
 );
-const disabledCounter = getCounter('hyperdx.token_encryption.disabled', {
+const disabledCounter = getCounter('cbt.token_encryption.disabled', {
   description:
     'Incremented at startup when token encryption is turned off, so the state is alertable.',
 });

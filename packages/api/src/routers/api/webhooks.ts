@@ -13,6 +13,7 @@ import ms from 'ms';
 import { z } from 'zod';
 import { validateRequest } from 'zod-express-middleware';
 
+import { FRONTEND_URL } from '@/config';
 import { createWebhook, deleteWebhook } from '@/controllers/webhook';
 import { AlertSource, AlertState } from '@/models/alert';
 import Webhook, { WebhookService } from '@/models/webhook';
@@ -496,8 +497,8 @@ router.post(
       // `thresholdMax` is populated.
       const now = Date.now();
       const testMessage: Message = {
-        hdxLink: 'https://hyperdx.io',
-        title: 'Test Webhook from HyperDX',
+        hdxLink: FRONTEND_URL,
+        title: 'Test Webhook from Couchbase Traces',
         body: 'This is a test message to verify your webhook configuration is working correctly.',
         startTime: now - ms('5m'),
         endTime: now,

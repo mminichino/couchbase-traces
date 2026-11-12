@@ -25,7 +25,7 @@ jest.mock('@/hooks/useChartConfig', () => ({
   useQueriedChartConfig: jest.fn(),
 }));
 jest.mock('@/brand', () => ({
-  useBrandDisplayName: () => 'ClickStack',
+  useBrandDisplayName: () => 'Couchbase Traces',
 }));
 
 const mockUseMe = jest.mocked(api.useMe);
@@ -141,7 +141,9 @@ describe('OnboardingChecklist', () => {
 
     renderChecklist();
 
-    expect(screen.getByText('Get started with ClickStack')).toBeInTheDocument();
+    expect(
+      screen.getByText('Get started with Couchbase Traces'),
+    ).toBeInTheDocument();
     expect(screen.getByText('Build a dashboard')).toBeInTheDocument();
     expect(screen.getByText('Explore your data')).toBeInTheDocument();
     // 1 of 4 product tasks complete.
@@ -170,7 +172,7 @@ describe('OnboardingChecklist', () => {
     renderChecklist();
 
     expect(
-      screen.queryByText('Get started with ClickStack'),
+      screen.queryByText('Get started with Couchbase Traces'),
     ).not.toBeInTheDocument();
     expect(screen.queryByText('Set up ClickHouse')).not.toBeInTheDocument();
   });
@@ -184,7 +186,7 @@ describe('OnboardingChecklist', () => {
     renderChecklist();
 
     expect(
-      screen.queryByText('Get started with ClickStack'),
+      screen.queryByText('Get started with Couchbase Traces'),
     ).not.toBeInTheDocument();
     expect(screen.queryByText('Set up ClickHouse')).not.toBeInTheDocument();
   });
@@ -201,7 +203,7 @@ describe('OnboardingChecklist', () => {
     renderChecklist();
 
     expect(
-      screen.queryByText('Get started with ClickStack'),
+      screen.queryByText('Get started with Couchbase Traces'),
     ).not.toBeInTheDocument();
     expect(screen.queryByText(/You're all set/)).not.toBeInTheDocument();
     expect(dismissMutate).not.toHaveBeenCalled();
@@ -219,7 +221,7 @@ describe('OnboardingChecklist', () => {
       setSetup(true, /* loading */ true);
       const { rerender } = renderChecklist();
       expect(
-        screen.queryByText('Get started with ClickStack'),
+        screen.queryByText('Get started with Couchbase Traces'),
       ).not.toBeInTheDocument();
       expect(screen.queryByText(/You're all set/)).not.toBeInTheDocument();
 
@@ -238,7 +240,7 @@ describe('OnboardingChecklist', () => {
       });
       expect(screen.queryByText(/You're all set/)).not.toBeInTheDocument();
       expect(
-        screen.queryByText('Get started with ClickStack'),
+        screen.queryByText('Get started with Couchbase Traces'),
       ).not.toBeInTheDocument();
     } finally {
       jest.useRealTimers();
@@ -296,7 +298,9 @@ describe('OnboardingChecklist', () => {
 
     renderChecklist();
 
-    expect(screen.getByText('Get started with ClickStack')).toBeInTheDocument();
+    expect(
+      screen.getByText('Get started with Couchbase Traces'),
+    ).toBeInTheDocument();
     expect(screen.getByText('3/4')).toBeInTheDocument();
   });
 
@@ -342,7 +346,9 @@ describe('OnboardingChecklist', () => {
 
     renderChecklist();
 
-    expect(screen.getByText('Get started with ClickStack')).toBeInTheDocument();
+    expect(
+      screen.getByText('Get started with Couchbase Traces'),
+    ).toBeInTheDocument();
   });
 
   it('hides the product phase for a team older than the product window (>7 days)', () => {
@@ -353,7 +359,7 @@ describe('OnboardingChecklist', () => {
     renderChecklist();
 
     expect(
-      screen.queryByText('Get started with ClickStack'),
+      screen.queryByText('Get started with Couchbase Traces'),
     ).not.toBeInTheDocument();
   });
 

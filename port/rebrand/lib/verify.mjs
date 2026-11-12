@@ -292,23 +292,29 @@ async function verifyBranding(ctx, opts) {
     outProblems.push(`${h.path}:${h.line}: ${h.context} to ${h.host} (${h.url})`);
   }
   checks.push(check('outbound requests', outProblems));
-  allow.entries.forEach((e, i) => {
-    if (e.reason === 'not_a_request' && !usedOut.has(i)) {
-      terms.warnings.push({ code: 'W_ALLOWLIST_UNUSED', message: `${e.path} [${e.term}] ${JSON.stringify(e.snippet)}` });
+
+  // URLs. A review hit is resolved by an allowlist entry for the same file whose snippet
+  // contains the URL or is contained in it.
+  const usedUrl = new Set();
+  /** @type {string[]} */
+  const urlProblems = [];
+  for (const h of planUrls(ctx)) {
+    if (h.action !== 'review') continue;
+    const idx = allow.entries.findIndex(e => e.path === h.path && e.snippet.length >= 8 && (e.snippet.includes(h.url) || h.url.includes(e.snippet)));
+    if (idx >= 0) {
+      usedUrl.add(idx);
+      continue;
     }
+    urlProblems.push(`${h.path}:${h.line}: rule ${h.rule}: ${h.url}`);
+  }
+
+  terms.warnings = terms.warnings.filter(w => w.code !== 'W_ALLOWLIST_UNUSED');
+  allow.entries.forEach((e, i) => {
+    if (terms.used.has(i) || usedOut.has(i) || usedUrl.has(i)) return;
+    terms.warnings.push({ code: 'W_ALLOWLIST_UNUSED', message: `${e.path} [${e.term}] ${JSON.stringify(e.snippet)}` });
   });
   checks.push(check('allowlist entries all used', terms.warnings.filter(w => w.code === 'W_ALLOWLIST_UNUSED').map(w => `W_ALLOWLIST_UNUSED: ${w.message}`)));
-
-  // URLs.
-  checks.push(
-    check(
-      'urls',
-      planUrls(ctx)
-        .filter(h => h.action === 'review')
-        .slice(0, 100)
-        .map(h => `${h.path}:${h.line}: rule ${h.rule}: ${h.url}`),
-    ),
-  );
+  checks.push(check('urls', urlProblems.slice(0, 100)));
 
   // Workflows.
   /** @type {string[]} */

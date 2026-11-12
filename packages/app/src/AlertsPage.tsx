@@ -160,7 +160,7 @@ export default function AlertsPage() {
             >
               Alerts can be{' '}
               <a
-                href="https://clickhouse.com/docs/use-cases/observability/clickstack/alerts"
+                href="https://github.com/mminichino/couchbase-traces/tree/main/docs"
                 target="_blank"
                 rel="noopener noreferrer"
               >

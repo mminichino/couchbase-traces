@@ -76,7 +76,6 @@ services:
       # OTEL_EXPORTER_OTLP_METRICS_ENDPOINT: 'http://otel-collector:4318/v1/metrics'
       # OTEL_EXPORTER_OTLP_LOGS_ENDPOINT: 'http://otel-collector:4318/v1/logs'
       OTEL_SERVICE_NAME: 'hdx-oss-app'
-      USAGE_STATS_ENABLED: ${USAGE_STATS_ENABLED:-true}
       # Comma-separated hostnames or exact IP literals that may receive webhooks.
       WEBHOOK_HOSTNAME_ALLOWLIST: ${WEBHOOK_HOSTNAME_ALLOWLIST:-}
       # 32-byte base64 or hex key. Setting it encrypts stored Slack and OAuth
@@ -89,7 +88,7 @@ services:
       # Uncomment to enable the alert detail page (in development)
       # NEXT_PUBLIC_ENABLE_ALERT_DETAILS: 'true'
       # Uncomment and set to append a label to the browser tab title, e.g.
-      # for operators running multiple instances (produces "HyperDX UK")
+      # for operators running multiple instances (produces "Couchbase Traces UK")
       # NEXT_PUBLIC_INSTANCE_LABEL: 'UK'
       DEFAULT_CONNECTIONS:
         '[{"name":"Local

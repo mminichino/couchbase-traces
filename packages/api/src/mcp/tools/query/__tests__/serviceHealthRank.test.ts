@@ -377,7 +377,7 @@ describe('errorTiming', () => {
     const trickle = summary(group('17:06', '17:58'));
     expect(trickle).toMatch(/spread across 17:06-17:58 UTC, none since 17:58/);
     expect(trickle).not.toMatch(/transient/);
-    expect(trickle).toMatch(/check clickstack_timeseries/);
+    expect(trickle).toMatch(/check cbt_timeseries/);
     expect(summary(group('17:20', '17:21'))).toMatch(/transient/);
   });
 });

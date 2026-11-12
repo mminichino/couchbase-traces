@@ -23,7 +23,7 @@ const sqlSchema = z.object({
     .string()
     .describe(
       'Connection to query. This is the only query tool that takes a connectionId ' +
-        'instead of sourceId. Call clickstack_list_sources to find available connections.',
+        'instead of sourceId. Call cbt_list_sources to find available connections.',
     ),
   sourceId: z
     .string()
@@ -31,7 +31,7 @@ const sqlSchema = z.object({
     .describe(
       'Source ID. Set it when the query reads a table backed by a source, so ' +
         "`$__sourceTable` expands to that source's database.table. The source's " +
-        'connection must match connectionId. Call clickstack_list_sources to find source IDs.',
+        'connection must match connectionId. Call cbt_list_sources to find source IDs.',
     ),
   sql: z
     .string()
@@ -59,7 +59,7 @@ const sqlSchema = z.object({
         '  {intervalSeconds:Int64} / {intervalMilliseconds:Int64} — bucket size parameters\n\n' +
         "In the examples, replace <table> with a source's `table` and <timestampColumn> " +
         'with the first expression in its `timestampColumn`, both from ' +
-        'clickstack_list_sources, or pass that source as sourceId and use ' +
+        'cbt_list_sources, or pass that source as sourceId and use ' +
         '$__sourceTable. For a metric source, use a table from its metricTables ' +
         'qualified with its `database`. Table and column names differ between ' +
         'sources, so do not guess them.\n\n' +
@@ -95,7 +95,7 @@ export function registerSql({ context, registerTool }: ToolRegistrar) {
   const { teamId } = context;
 
   registerTool(
-    'clickstack_sql',
+    'cbt_sql',
     {
       title: 'Raw SQL Query',
       // Enforces ClickHouse readonly=2, so effectively read-only.
@@ -110,10 +110,10 @@ export function registerSql({ context, registerTool }: ToolRegistrar) {
         `i.e. it requires ${SQL_FALLBACK_CRITERIA}. ` +
         'A single-table aggregation, top-N, time-series, or row browse is ALWAYS a ' +
         'builder-tool job, never raw SQL.\n\n' +
-        'Requires connectionId — call clickstack_list_sources to find connections. Pass sourceId ' +
+        'Requires connectionId — call cbt_list_sources to find connections. Pass sourceId ' +
         'too when querying a source, so $__sourceTable resolves to its table. ' +
-        'Before writing SQL, get column names from clickstack_describe_source, or ' +
-        'clickstack_describe_table for tables that are not sources (instead of ' +
+        'Before writing SQL, get column names from cbt_describe_source, or ' +
+        'cbt_describe_table for tables that are not sources (instead of ' +
         'querying system.columns / system.tables).\n\n' +
         'Results are always returned as table rows — for time-series semantics, ' +
         'include a time column and ORDER BY it in your SQL.\n\n' +

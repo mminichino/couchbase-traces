@@ -79,7 +79,7 @@ export function registerEventPatterns({
   const { teamId } = context;
 
   registerTool(
-    'clickstack_event_patterns',
+    'cbt_event_patterns',
     {
       title: 'Event Pattern Mining',
       annotations: READ_ONLY_TOOL,
@@ -96,15 +96,15 @@ export function registerEventPatterns({
         'where:"LogAttributes[\'exception.type\'] != \'\'", whereLanguage:"sql"\n' +
         '  - A field inside JSON bodies → bodyExpression:"JSONExtractString(Body, \'message\')", ' +
         'where:"JSONExtractString(Body, \'message\') != \'\'", whereLanguage:"sql"\n\n' +
-        'Use instead: exact counts or breakdowns by a known field → clickstack_table / ' +
-        'clickstack_timeseries; raw rows → clickstack_search; patterns new or gone vs an ' +
-        'earlier window → clickstack_emerging_signals.\n\n' +
+        'Use instead: exact counts or breakdowns by a known field → cbt_table / ' +
+        'cbt_timeseries; raw rows → cbt_search; patterns new or gone vs an ' +
+        'earlier window → cbt_emerging_signals.\n\n' +
         'Counts come from a sample: estimatedCount is an extrapolation, and a pattern with ' +
         '0 sampled events may still exist.\n\n' +
-        'Drill down: call clickstack_search with the same sourceId and time range, ' +
+        'Drill down: call cbt_search with the same sourceId and time range, ' +
         'where = a pattern\'s whereSnippet, whereLanguage = "sql". whereSnippet already ' +
         'includes your where filter unless summary.drilldown.includesFilters is false.\n\n' +
-        'Requires sourceId — call clickstack_list_sources then clickstack_describe_source first.\n\n' +
+        'Requires sourceId — call cbt_list_sources then cbt_describe_source first.\n\n' +
         PREFER_BUILDER_OVER_SQL_NUDGE,
       inputSchema: eventPatternsSchema,
     },

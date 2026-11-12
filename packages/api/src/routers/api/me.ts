@@ -11,7 +11,7 @@ import {
 import express from 'express';
 import { validateRequest } from 'zod-express-middleware';
 
-import { AI_API_KEY, ANTHROPIC_API_KEY, USAGE_STATS_ENABLED } from '@/config';
+import { AI_API_KEY, ANTHROPIC_API_KEY } from '@/config';
 import { getTeam } from '@/controllers/team';
 import {
   completeOnboardingTask,
@@ -53,7 +53,6 @@ router.get('/', async (req, res: express.Response<MeApiResponse>, next) => {
       // Defaults for users predating the field.
       onboardingData: OnboardingDataSchema.parse(onboardingData ?? {}),
       team,
-      usageStatsEnabled: USAGE_STATS_ENABLED,
       aiAssistantEnabled: !!(AI_API_KEY || ANTHROPIC_API_KEY),
     });
   } catch (e) {

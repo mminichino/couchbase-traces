@@ -68,7 +68,7 @@ describe('External API v2 Team', () => {
   describe('Invitations', () => {
     it('creates a pending invitation and lists then deletes it', async () => {
       const inviteRes = await authRequest('post', `${TEAM_BASE_URL}/invitation`)
-        .send({ email: 'oss-invitee@deploysentinel.com' })
+        .send({ email: 'oss-invitee@example.com' })
         .expect(200);
       expect(inviteRes.body.data.status).toBe('pending');
       expect(inviteRes.body.data.url).toContain('/join-team?token=');
@@ -80,8 +80,7 @@ describe('External API v2 Team', () => {
       ).expect(200);
       expect(
         listRes.body.data.some(
-          (i: { email: string }) =>
-            i.email === 'oss-invitee@deploysentinel.com',
+          (i: { email: string }) => i.email === 'oss-invitee@example.com',
         ),
       ).toBe(true);
 
@@ -98,7 +97,7 @@ describe('External API v2 Team', () => {
     });
 
     it('handles concurrent invites for the same email idempotently', async () => {
-      const email = 'race@deploysentinel.com';
+      const email = 'race@example.com';
       const responses = await Promise.all(
         Array.from({ length: 5 }, () =>
           authRequest('post', `${TEAM_BASE_URL}/invitation`).send({ email }),
@@ -138,7 +137,7 @@ describe('External API v2 Team', () => {
       req.set('Authorization', `Bearer ${key}`);
 
     const createMember = () =>
-      User.create({ email: 'member@deploysentinel.com', team: team._id });
+      User.create({ email: 'member@example.com', team: team._id });
 
     it('lists members without the key or anyone marked as the caller', async () => {
       const key = await createKey();
@@ -155,11 +154,11 @@ describe('External API v2 Team', () => {
     it("can't reach an invite link", async () => {
       const key = await createKey();
       await withKey(key, agent.post(`${TEAM_BASE_URL}/invitation`))
-        .send({ email: 'new@deploysentinel.com' })
+        .send({ email: 'new@example.com' })
         .expect(403);
 
       await authRequest('post', `${TEAM_BASE_URL}/invitation`)
-        .send({ email: 'new@deploysentinel.com' })
+        .send({ email: 'new@example.com' })
         .expect(200);
       const list = await withKey(
         key,

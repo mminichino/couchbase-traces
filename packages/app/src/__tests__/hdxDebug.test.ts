@@ -141,9 +141,9 @@ describe('report mode line', () => {
     );
   });
 
-  it('appends the clickstack suffix for ClickHouse builds', () => {
+  it('appends the couchbase-traces suffix for ClickHouse builds', () => {
     expect(reportFor(loadHdxDebug({ IS_CLICKHOUSE_BUILD: true }))).toContain(
-      'mode:     oss (clickstack)',
+      'mode:     oss (couchbase-traces)',
     );
   });
 });

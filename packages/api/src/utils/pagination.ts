@@ -6,13 +6,10 @@ import logger from '@/utils/logger';
 // Countable log event (see agent_docs/observability.md): every truncated page
 // also increments a metric so operators can alert on / graph truncation without
 // scraping logs. `resource` is low-cardinality (a fixed set of list endpoints).
-const paginationTruncationCounter = getCounter(
-  'hyperdx.api.pagination.truncated',
-  {
-    description:
-      'Count of external API list responses truncated at the default max page limit, labeled by resource.',
-  },
-);
+const paginationTruncationCounter = getCounter('cbt.api.pagination.truncated', {
+  description:
+    'Count of external API list responses truncated at the default max page limit, labeled by resource.',
+});
 
 // ponytail: offset pagination is fine for team-scoped metadata collections
 // (saved searches, webhooks, alerts) — these top out in the thousands. Switch

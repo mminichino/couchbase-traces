@@ -1,8 +1,5 @@
 # Security policy
 
-Please do not report security vulnerabilities through public GitHub issues,
-discussions, or pull requests.
+Report vulnerabilities through GitHub private vulnerability reporting on [https://github.com/mminichino/couchbase-traces](https://github.com/mminichino/couchbase-traces/security/advisories/new).
 
-HyperDX is part of ClickStack and follows the
-[ClickHouse security policy](https://github.com/ClickHouse/ClickHouse/security/policy).
-Report vulnerabilities through the process described there.
+Do not use public issues, discussions, or pull requests for security vulnerabilities.

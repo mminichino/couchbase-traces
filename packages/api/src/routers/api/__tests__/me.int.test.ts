@@ -38,7 +38,7 @@ describe('me router', () => {
       const resp = await agent.get('/me').expect(200);
 
       expect(resp.body.id).toEqual(user._id.toString());
-      expect(resp.body.email).toEqual('fake@deploysentinel.com');
+      expect(resp.body.email).toEqual('fake@example.com');
       expect(resp.body.accessKey).toEqual(user.accessKey);
       expect(resp.body.team.id).toEqual(team._id.toString());
     });
@@ -353,7 +353,7 @@ describe('me router', () => {
       // Created directly rather than via /register/password, which is gated to
       // the first user. We only read the schema-defaulted accessKey off it.
       const other = await User.create({
-        email: 'other@deploysentinel.com',
+        email: 'other@example.com',
         team: user.team,
       });
 

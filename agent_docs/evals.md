@@ -41,7 +41,7 @@ This is the standard workflow for comparing a feature branch against main.
 ### Architecture
 
 Evals run from **one worktree** (the branch being tested). The eval harness
-talks to **two separate ClickStack API instances** running on different slots:
+talks to **two separate Couchbase Traces API instances** running on different slots:
 
 ```
                         ┌──────────────────────┐
@@ -68,7 +68,7 @@ talks to **two separate ClickStack API instances** running on different slots:
 ```
 
 Each slot runs its own ClickHouse instance. `setup-hyperdx` (step 2) creates
-the ClickStack account, Connection, and Sources on each instance, but does **not**
+the Couchbase Traces account, Connection, and Sources on each instance, but does **not**
 seed telemetry data. The `run` command auto-seeds on first run, but only into
 the single ClickHouse specified in the top-level `clickhouse` config — so for
 dual-slot comparisons you must seed each instance explicitly (step 4b).
@@ -106,7 +106,7 @@ curl -s -o /dev/null -w "Slot 99 CH: %{http_code}\n" http://localhost:30599/
 > branch under test).
 
 This registers an eval account, creates a ClickHouse Connection, and creates
-per-scenario Sources on each ClickStack instance. The command is **idempotent** —
+per-scenario Sources on each Couchbase Traces instance. The command is **idempotent** —
 it skips anything that already exists, so it's safe to run every time.
 
 **Skip this step** if `eval.config.branch.json` and `eval.config.main.json`
@@ -155,8 +155,8 @@ cat packages/hdx-eval/eval.config.branch.json | jq \
 
   . as $branch |
   .mcps = {
-    "hyperdx-branch": ($branch.mcps.hyperdx + {"label": "HyperDX Branch", "enabled": true} | reprefix("hyperdx-branch")),
-    "hyperdx-main": ($main[0].mcps.hyperdx + {"label": "HyperDX Main", "enabled": true} | reprefix("hyperdx-main"))
+    "hyperdx-branch": ($branch.mcps.hyperdx + {"label": "Couchbase Traces Branch", "enabled": true} | reprefix("hyperdx-branch")),
+    "hyperdx-main": ($main[0].mcps.hyperdx + {"label": "Couchbase Traces Main", "enabled": true} | reprefix("hyperdx-main"))
   } |
   .hyperdxApi = $branch.hyperdxApi
 ' > packages/hdx-eval/eval.config.json
@@ -189,7 +189,7 @@ curl -s -o /dev/null -w "Main MCP: %{http_code}\n" \
 
 ### 5. Seed both ClickHouse instances
 
-`setup-hyperdx` creates the ClickStack account and Sources but does **not** seed
+`setup-hyperdx` creates the Couchbase Traces account and Sources but does **not** seed
 telemetry data. The `run` command's auto-seed only writes to the single
 ClickHouse in the top-level `clickhouse` config, so you must seed each
 instance explicitly:
@@ -267,10 +267,10 @@ yarn workspace @couchbase-traces/hdx-eval dev run error-root-cause \
   --mcp hyperdx --model claude-opus-4-6 --runs 3
 ```
 
-### Non-ClickStack MCP (e.g. raw ClickHouse)
+### Non-Couchbase Traces MCP (e.g. raw ClickHouse)
 
 The framework works with any MCP. The `clickhouse` stdio MCP is included by
-default in `eval.config.json` after setup. Use it to compare ClickStack's MCP
+default in `eval.config.json` after setup. Use it to compare Couchbase Traces's MCP
 against querying ClickHouse directly.
 
 ```bash

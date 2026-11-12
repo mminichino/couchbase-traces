@@ -259,29 +259,29 @@ export function registerTable({ context, registerTool }: ToolRegistrar) {
   const { teamId } = context;
 
   registerTool(
-    'clickstack_table',
+    'cbt_table',
     {
       title: 'Aggregation Table',
       annotations: READ_ONLY_TOOL,
       description:
         'Compute aggregated metrics as a table, single number, pie chart, or bar chart. ' +
         'Use this for grouped aggregations, top-N queries, single-value KPIs, ' +
-        'or proportional breakdowns. For trends over time use clickstack_timeseries.\n\n' +
+        'or proportional breakdowns. For trends over time use cbt_timeseries.\n\n' +
         PREFER_BUILDER_OVER_SQL_NUDGE +
         '\n\n' +
-        'Requires sourceId — call clickstack_list_sources then clickstack_describe_source first.\n\n' +
+        'Requires sourceId — call cbt_list_sources then cbt_describe_source first.\n\n' +
         'The top-level "where" scopes the whole query. Each select item can add its own ' +
         '"where" (compiles to <aggFn>If(...)) for per-metric cohort comparisons; both are ANDed.\n\n' +
         'Columns: top-level columns are PascalCase (Duration, StatusCode). ' +
         "Map attributes use brackets, SpanAttributes['http.method'], and work in groupBy " +
         "and valueExpression, e.g. toFloat64OrZero(SpanAttributes['key']).\n\n" +
         'METRIC SOURCES: every select item MUST set metricType and metricName; ' +
-        'valueExpression defaults to "Value". Discover metrics with clickstack_describe_source ' +
-        '(sample), clickstack_list_metrics (full catalog), and clickstack_describe_metric ' +
+        'valueExpression defaults to "Value". Discover metrics with cbt_describe_source ' +
+        '(sample), cbt_list_metrics (full catalog), and cbt_describe_metric ' +
         '(attributes of one metric). Per kind: gauge uses last_value/avg/min/max; sum uses ' +
         'aggFn:"increase" (capped at the top 20 groups with groupBy) or sum/avg on the rate; ' +
         'histogram and exponential histogram use aggFn:"quantile" + level, or aggFn:"count". ' +
-        "summary metrics are unsupported — use clickstack_sql on the source's metricTables.summary table.",
+        "summary metrics are unsupported — use cbt_sql on the source's metricTables.summary table.",
       inputSchema: tableSchema,
     },
     async input => {

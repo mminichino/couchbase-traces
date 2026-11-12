@@ -64,9 +64,9 @@ jest.mock('@/layout', () => ({
   withAppNav: (component: unknown) => component,
 }));
 jest.mock('@/brand', () => ({
-  useBrandDisplayName: () => 'ClickStack',
+  useBrandDisplayName: () => 'Couchbase Traces',
   usePageTitle: (page?: string) =>
-    page ? `${page} - ClickStack` : 'ClickStack',
+    page ? `${page} - Couchbase Traces` : 'Couchbase Traces',
 }));
 jest.mock('@/useConfirm', () => ({
   useConfirm: () => jest.fn(),
@@ -97,7 +97,7 @@ describe('DashboardsListPage', () => {
     mockSetQueryState.clear();
     mockDashboards = [];
     mockFavorites = [];
-    mockMe = { email: 'me@hyperdx.io' };
+    mockMe = { email: 'me@example.com' };
     mockMePending = false;
     mockFavoritesPending = false;
     mockFavoritesError = false;
@@ -258,7 +258,7 @@ describe('DashboardsListPage', () => {
       makeDashboard({
         id: 'a',
         name: 'Checkout',
-        createdBy: { email: 'someone@hyperdx.io' },
+        createdBy: { email: 'someone@example.com' },
       }),
     ];
 
@@ -356,7 +356,7 @@ describe('DashboardsListPage', () => {
       makeDashboard({
         id: 'a',
         name: 'Checkout',
-        createdBy: { email: 'me@hyperdx.io' },
+        createdBy: { email: 'me@example.com' },
       }),
     ];
 

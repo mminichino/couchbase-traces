@@ -142,7 +142,7 @@ export function registerEmergingSignals({
   const { teamId } = context;
 
   registerTool(
-    'clickstack_emerging_signals',
+    'cbt_emerging_signals',
     {
       title: 'Emerging & Disappeared Signals',
       annotations: READ_ONLY_TOOL,
@@ -159,15 +159,15 @@ export function registerEmergingSignals({
         'baseline)\n' +
         '  - disappeared: patterns that were common in baseline but >= ' +
         'minShareRatio× rarer (or absent) now\n\n' +
-        'WHY NOT clickstack_event_deltas: event_deltas compares ATTRIBUTE VALUE ' +
+        'WHY NOT cbt_event_deltas: event_deltas compares ATTRIBUTE VALUE ' +
         'DISTRIBUTIONS between two row groups (e.g. "region shifted toward ' +
         'eu-west"). It CANNOT surface a brand-new log template or a new endpoint ' +
         'that simply did not exist before — a novel signal has no baseline ' +
         'distribution to shift. Use emerging_signals for novelty/emergence ' +
         '(set membership over time); use event_deltas for "what is different ' +
         'about these rows" (distribution shift within a shared population).\n\n' +
-        'Requires sourceId — call clickstack_list_sources / ' +
-        'clickstack_describe_source first. Provide two non-overlapping windows: ' +
+        'Requires sourceId — call cbt_list_sources / ' +
+        'cbt_describe_source first. Provide two non-overlapping windows: ' +
         'the current window to characterize and an earlier baseline. Typically ' +
         'baselineEndTime == currentStartTime.\n\n' +
         'CALIBRATION: routine variance is not novelty. A pattern that merely ' +
@@ -332,7 +332,7 @@ export function registerEmergingSignals({
                 warning:
                   'One or both windows sampled 0 rows — an empty emerging/' +
                   'disappeared result here means NO DATA, not "nothing novel". ' +
-                  'Verify the time windows and where filter via clickstack_search.',
+                  'Verify the time windows and where filter via cbt_search.',
               }
             : {}),
         },

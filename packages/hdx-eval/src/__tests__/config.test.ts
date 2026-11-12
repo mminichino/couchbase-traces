@@ -12,7 +12,7 @@ const VALID_MCP = {
   type: 'http',
   url: 'http://localhost:30196/mcp',
   toolPattern: 'mcp__hyperdx__*',
-  label: 'HyperDX',
+  label: 'Couchbase Traces',
 };
 
 const baseConfig: EvalConfig = {

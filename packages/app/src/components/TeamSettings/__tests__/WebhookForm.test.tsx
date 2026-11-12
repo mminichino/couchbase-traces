@@ -87,7 +87,7 @@ describe('WebhookForm', () => {
       await user.click(screen.getByRole('radio', { name: service }));
 
       const variables = screen.getByTestId('webhook-template-variables');
-      for (const { name } of getWebhookTemplateVariables('HyperDX')) {
+      for (const { name } of getWebhookTemplateVariables('Couchbase Traces')) {
         expect(variables).toHaveTextContent(name);
       }
     },

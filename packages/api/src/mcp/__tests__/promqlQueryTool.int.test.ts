@@ -24,7 +24,7 @@ const endTime = new Date((START + 60) * 1000).toISOString();
 const prometheusResponse = (data: unknown, init?: ResponseInit) =>
   new Response(JSON.stringify({ status: 'success', data }), init);
 
-describe('MCP clickstack_promql', () => {
+describe('MCP cbt_promql', () => {
   const ctx = setupDashboardTests();
 
   beforeAll(async () => {
@@ -81,7 +81,7 @@ describe('MCP clickstack_promql', () => {
   };
 
   const promql = (args: Record<string, unknown>) =>
-    callTool(ctx.client!, 'clickstack_promql', {
+    callTool(ctx.client!, 'cbt_promql', {
       expression: 'sum by (instance) (mcp_up)',
       startTime,
       endTime,
@@ -269,7 +269,7 @@ describe('MCP clickstack_promql', () => {
     const unknown = await promql({ sourceId: '000000000000000000000001' });
     expect(unknown.isError).toBe(true);
     expect(getFirstText(unknown)).toContain('Source not found');
-    expect(getFirstText(unknown)).toContain('clickstack_list_sources');
+    expect(getFirstText(unknown)).toContain('cbt_list_sources');
 
     const trace = await promql({ sourceId: ctx.traceSource._id.toString() });
     expect(trace.isError).toBe(true);
@@ -363,9 +363,9 @@ describe('MCP clickstack_promql', () => {
     const source = await createClickhouseSource();
 
     const { tools } = await ctx.client!.listTools();
-    expect(tools.map(tool => tool.name)).not.toContain('clickstack_promql');
+    expect(tools.map(tool => tool.name)).not.toContain('cbt_promql');
     const result = await promql({ sourceId: source._id.toString() });
     expect(result.isError).toBe(true);
-    expect(getFirstText(result)).toContain('Tool clickstack_promql not found');
+    expect(getFirstText(result)).toContain('Tool cbt_promql not found');
   });
 });

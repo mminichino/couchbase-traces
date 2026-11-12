@@ -99,7 +99,7 @@ export default function McpInstallPrompt({
   return (
     <Box flexDirection="column" paddingX={1}>
       <Text bold color="cyan">
-        ClickStack MCP server install
+        Couchbase Traces MCP server install
       </Text>
       {step !== 'appUrl' && <Text dimColor>Server: {appUrl}</Text>}
       <Text> </Text>
@@ -107,7 +107,7 @@ export default function McpInstallPrompt({
 
       {step === 'appUrl' && (
         <Box>
-          <Text>ClickStack URL: </Text>
+          <Text>Couchbase Traces URL: </Text>
           <TextInput
             value={appUrl}
             onChange={setAppUrl}
@@ -151,7 +151,7 @@ export default function McpInstallPrompt({
             .
           </Text>
           <Text> </Text>
-          <Text>Add the ClickStack MCP server to:</Text>
+          <Text>Add the Couchbase Traces MCP server to:</Text>
           {clients.map(c => (
             <Text key={c.id}> - {c.label}</Text>
           ))}

@@ -18,11 +18,11 @@ import { Source } from '@/models/source';
 
 import { setupDashboardTests } from './setup';
 
-describe('MCP Dashboard Tools - clickstack_query_tile', () => {
+describe('MCP Dashboard Tools - cbt_query_tile', () => {
   const ctx = setupDashboardTests();
 
   it('should return error for non-existent dashboard', async () => {
-    const result = await callTool(ctx.client!, 'clickstack_query_tile', {
+    const result = await callTool(ctx.client!, 'cbt_query_tile', {
       dashboardId: '000000000000000000000000',
       tileId: 'some-tile-id',
     });
@@ -33,26 +33,22 @@ describe('MCP Dashboard Tools - clickstack_query_tile', () => {
 
   it('should return error for non-existent tile', async () => {
     const sourceId = ctx.traceSource._id.toString();
-    const createResult = await callTool(
-      ctx.client!,
-      'clickstack_save_dashboard',
-      {
-        name: 'Tile Query Test',
-        tiles: [
-          {
-            name: 'My Tile',
-            config: {
-              displayType: 'number',
-              sourceId,
-              select: [{ aggFn: 'count' }],
-            },
+    const createResult = await callTool(ctx.client!, 'cbt_save_dashboard', {
+      name: 'Tile Query Test',
+      tiles: [
+        {
+          name: 'My Tile',
+          config: {
+            displayType: 'number',
+            sourceId,
+            select: [{ aggFn: 'count' }],
           },
-        ],
-      },
-    );
+        },
+      ],
+    });
     const dashboard = JSON.parse(getFirstText(createResult));
 
-    const result = await callTool(ctx.client!, 'clickstack_query_tile', {
+    const result = await callTool(ctx.client!, 'cbt_query_tile', {
       dashboardId: dashboard.id,
       tileId: 'non-existent-tile-id',
     });
@@ -63,26 +59,22 @@ describe('MCP Dashboard Tools - clickstack_query_tile', () => {
 
   it('should return error for invalid time range', async () => {
     const sourceId = ctx.traceSource._id.toString();
-    const createResult = await callTool(
-      ctx.client!,
-      'clickstack_save_dashboard',
-      {
-        name: 'Time Range Test',
-        tiles: [
-          {
-            name: 'Tile',
-            config: {
-              displayType: 'number',
-              sourceId,
-              select: [{ aggFn: 'count' }],
-            },
+    const createResult = await callTool(ctx.client!, 'cbt_save_dashboard', {
+      name: 'Time Range Test',
+      tiles: [
+        {
+          name: 'Tile',
+          config: {
+            displayType: 'number',
+            sourceId,
+            select: [{ aggFn: 'count' }],
           },
-        ],
-      },
-    );
+        },
+      ],
+    });
     const dashboard = JSON.parse(getFirstText(createResult));
 
-    const result = await callTool(ctx.client!, 'clickstack_query_tile', {
+    const result = await callTool(ctx.client!, 'cbt_query_tile', {
       dashboardId: dashboard.id,
       tileId: dashboard.tiles[0].id,
       startTime: 'not-a-date',
@@ -94,26 +86,22 @@ describe('MCP Dashboard Tools - clickstack_query_tile', () => {
 
   it('should execute query for a valid tile', async () => {
     const sourceId = ctx.traceSource._id.toString();
-    const createResult = await callTool(
-      ctx.client!,
-      'clickstack_save_dashboard',
-      {
-        name: 'Query Tile Test',
-        tiles: [
-          {
-            name: 'Count Tile',
-            config: {
-              displayType: 'number',
-              sourceId,
-              select: [{ aggFn: 'count' }],
-            },
+    const createResult = await callTool(ctx.client!, 'cbt_save_dashboard', {
+      name: 'Query Tile Test',
+      tiles: [
+        {
+          name: 'Count Tile',
+          config: {
+            displayType: 'number',
+            sourceId,
+            select: [{ aggFn: 'count' }],
           },
-        ],
-      },
-    );
+        },
+      ],
+    });
     const dashboard = JSON.parse(getFirstText(createResult));
 
-    const result = await callTool(ctx.client!, 'clickstack_query_tile', {
+    const result = await callTool(ctx.client!, 'cbt_query_tile', {
       dashboardId: dashboard.id,
       tileId: dashboard.tiles[0].id,
       startTime: new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString(),
@@ -156,38 +144,34 @@ describe('MCP Dashboard Tools - clickstack_query_tile', () => {
     ]);
 
     const formulas = [{ expression: 'A / B * 100', alias: 'Error rate %' }];
-    const createResult = await callTool(
-      ctx.client!,
-      'clickstack_save_dashboard',
-      {
-        name: 'Formula Dashboard',
-        tiles: [
-          {
-            name: 'Error rate',
-            config: {
-              displayType: 'line',
-              sourceId: metricSource._id.toString(),
-              select: [
-                {
-                  aggFn: 'max',
-                  metricType: 'gauge',
-                  metricName: 'formula.errors',
-                  alias: 'Errors',
-                },
-                {
-                  aggFn: 'max',
-                  metricType: 'gauge',
-                  metricName: 'formula.requests',
-                  alias: 'Requests',
-                },
-              ],
-              formulas,
-              showOperandSeries: false,
-            },
+    const createResult = await callTool(ctx.client!, 'cbt_save_dashboard', {
+      name: 'Formula Dashboard',
+      tiles: [
+        {
+          name: 'Error rate',
+          config: {
+            displayType: 'line',
+            sourceId: metricSource._id.toString(),
+            select: [
+              {
+                aggFn: 'max',
+                metricType: 'gauge',
+                metricName: 'formula.errors',
+                alias: 'Errors',
+              },
+              {
+                aggFn: 'max',
+                metricType: 'gauge',
+                metricName: 'formula.requests',
+                alias: 'Requests',
+              },
+            ],
+            formulas,
+            showOperandSeries: false,
           },
-        ],
-      },
-    );
+        },
+      ],
+    });
     if (createResult.isError) {
       throw new Error(getFirstText(createResult));
     }
@@ -196,7 +180,7 @@ describe('MCP Dashboard Tools - clickstack_query_tile', () => {
     expect(dashboard.tiles[0].config.formulas).toEqual(formulas);
     expect(dashboard.tiles[0].config.showOperandSeries).toBe(false);
 
-    const result = await callTool(ctx.client!, 'clickstack_query_tile', {
+    const result = await callTool(ctx.client!, 'cbt_query_tile', {
       dashboardId: dashboard.id,
       tileId: dashboard.tiles[0].id,
       startTime: new Date(now.getTime() - 60_000).toISOString(),
@@ -250,38 +234,34 @@ describe('MCP Dashboard Tools - clickstack_query_tile', () => {
     ]);
 
     const formulas = [{ expression: 'A / B * 100', alias: 'Error rate %' }];
-    const createResult = await callTool(
-      ctx.client!,
-      'clickstack_save_dashboard',
-      {
-        name: 'Log Formula Dashboard',
-        tiles: [
-          {
-            name: 'Log error rate',
-            config: {
-              displayType: 'number',
-              sourceId: logSource._id.toString(),
-              select: [
-                {
-                  aggFn: 'count',
-                  where: 'SeverityText:error',
-                  alias: 'Errors',
-                },
-                { aggFn: 'count', alias: 'Total' },
-              ],
-              formulas,
-            },
+    const createResult = await callTool(ctx.client!, 'cbt_save_dashboard', {
+      name: 'Log Formula Dashboard',
+      tiles: [
+        {
+          name: 'Log error rate',
+          config: {
+            displayType: 'number',
+            sourceId: logSource._id.toString(),
+            select: [
+              {
+                aggFn: 'count',
+                where: 'SeverityText:error',
+                alias: 'Errors',
+              },
+              { aggFn: 'count', alias: 'Total' },
+            ],
+            formulas,
           },
-        ],
-      },
-    );
+        },
+      ],
+    });
     if (createResult.isError) {
       throw new Error(getFirstText(createResult));
     }
     const dashboard = JSON.parse(getFirstText(createResult));
     expect(dashboard.tiles[0].config.formulas).toEqual(formulas);
 
-    const result = await callTool(ctx.client!, 'clickstack_query_tile', {
+    const result = await callTool(ctx.client!, 'cbt_query_tile', {
       dashboardId: dashboard.id,
       tileId: dashboard.tiles[0].id,
       startTime: new Date(now.getTime() - 60_000).toISOString(),
@@ -314,7 +294,7 @@ describe('MCP Dashboard Tools - clickstack_query_tile', () => {
       name: 'Sessions',
     });
 
-    const result = await callTool(ctx.client!, 'clickstack_save_dashboard', {
+    const result = await callTool(ctx.client!, 'cbt_save_dashboard', {
       name: 'Bad Formula Dashboard',
       tiles: [
         {
@@ -351,7 +331,7 @@ describe('MCP Dashboard Tools - clickstack_query_tile', () => {
       name: 'Gauge Metrics Invalid Formula',
     });
 
-    const result = await callTool(ctx.client!, 'clickstack_save_dashboard', {
+    const result = await callTool(ctx.client!, 'cbt_save_dashboard', {
       name: 'Invalid Formula Dashboard',
       tiles: [
         {
@@ -401,37 +381,33 @@ describe('MCP Dashboard Tools - clickstack_query_tile', () => {
       ],
     });
 
-    const createResult = await callTool(
-      ctx.client!,
-      'clickstack_save_dashboard',
-      {
-        name: 'Exponential Histogram Dashboard',
-        tiles: [
-          {
-            name: 'P95 Duration',
-            config: {
-              displayType: 'line',
-              sourceId: metricSource._id.toString(),
-              select: [
-                {
-                  aggFn: 'quantile',
-                  level: 0.95,
-                  metricType: 'exponential histogram',
-                  metricName: 'http.server.request.duration.exponential',
-                  alias: 'P95 Duration',
-                },
-              ],
-            },
+    const createResult = await callTool(ctx.client!, 'cbt_save_dashboard', {
+      name: 'Exponential Histogram Dashboard',
+      tiles: [
+        {
+          name: 'P95 Duration',
+          config: {
+            displayType: 'line',
+            sourceId: metricSource._id.toString(),
+            select: [
+              {
+                aggFn: 'quantile',
+                level: 0.95,
+                metricType: 'exponential histogram',
+                metricName: 'http.server.request.duration.exponential',
+                alias: 'P95 Duration',
+              },
+            ],
           },
-        ],
-      },
-    );
+        },
+      ],
+    });
     if (createResult.isError) {
       throw new Error(getFirstText(createResult));
     }
     const dashboard = JSON.parse(getFirstText(createResult));
 
-    const result = await callTool(ctx.client!, 'clickstack_query_tile', {
+    const result = await callTool(ctx.client!, 'cbt_query_tile', {
       dashboardId: dashboard.id,
       tileId: dashboard.tiles[0].id,
       startTime: new Date(now.getTime() - 60_000).toISOString(),
@@ -466,31 +442,27 @@ describe('MCP Dashboard Tools - clickstack_query_tile', () => {
     }
     await bulkInsertLogs(logs);
 
-    const createResult = await callTool(
-      ctx.client!,
-      'clickstack_save_dashboard',
-      {
-        name: 'Series Heatmap Dashboard',
-        tiles: [
-          {
-            name: 'Count by service',
-            config: {
-              displayType: 'heatmap',
-              heatmapMode: 'series',
-              sourceId: logSource._id.toString(),
-              select: [{ aggFn: 'count' }],
-              groupBy: 'ServiceName',
-            },
+    const createResult = await callTool(ctx.client!, 'cbt_save_dashboard', {
+      name: 'Series Heatmap Dashboard',
+      tiles: [
+        {
+          name: 'Count by service',
+          config: {
+            displayType: 'heatmap',
+            heatmapMode: 'series',
+            sourceId: logSource._id.toString(),
+            select: [{ aggFn: 'count' }],
+            groupBy: 'ServiceName',
           },
-        ],
-      },
-    );
+        },
+      ],
+    });
     if (createResult.isError) {
       throw new Error(getFirstText(createResult));
     }
     const dashboard = JSON.parse(getFirstText(createResult));
 
-    const result = await callTool(ctx.client!, 'clickstack_query_tile', {
+    const result = await callTool(ctx.client!, 'cbt_query_tile', {
       dashboardId: dashboard.id,
       tileId: dashboard.tiles[0].id,
       startTime: new Date(now.getTime() - 15 * 60 * 1000).toISOString(),
@@ -545,38 +517,34 @@ describe('MCP Dashboard Tools - clickstack_query_tile', () => {
         ],
       });
 
-      const createResult = await callTool(
-        ctx.client!,
-        'clickstack_save_dashboard',
-        {
-          name: 'Exp Histogram Bar Dashboard',
-          tiles: [
-            {
-              name: 'P95 by route',
-              config: {
-                displayType: 'bar',
-                sourceId: metricSource._id.toString(),
-                groupBy: "Attributes['route']",
-                select: [
-                  {
-                    aggFn: 'quantile',
-                    level: 0.95,
-                    metricType: 'exponential histogram',
-                    metricName: 'exp.histogram.by.route',
-                    alias: 'P95 Duration',
-                  },
-                ],
-              },
+      const createResult = await callTool(ctx.client!, 'cbt_save_dashboard', {
+        name: 'Exp Histogram Bar Dashboard',
+        tiles: [
+          {
+            name: 'P95 by route',
+            config: {
+              displayType: 'bar',
+              sourceId: metricSource._id.toString(),
+              groupBy: "Attributes['route']",
+              select: [
+                {
+                  aggFn: 'quantile',
+                  level: 0.95,
+                  metricType: 'exponential histogram',
+                  metricName: 'exp.histogram.by.route',
+                  alias: 'P95 Duration',
+                },
+              ],
             },
-          ],
-        },
-      );
+          },
+        ],
+      });
       if (createResult.isError) {
         throw new Error(getFirstText(createResult));
       }
       const dashboard = JSON.parse(getFirstText(createResult));
 
-      const result = await callTool(ctx.client!, 'clickstack_query_tile', {
+      const result = await callTool(ctx.client!, 'cbt_query_tile', {
         dashboardId: dashboard.id,
         tileId: dashboard.tiles[0].id,
         startTime: new Date(now.getTime() - 60_000).toISOString(),
@@ -633,38 +601,34 @@ describe('MCP Dashboard Tools - clickstack_query_tile', () => {
         },
       ]);
 
-      const createResult = await callTool(
-        ctx.client!,
-        'clickstack_save_dashboard',
-        {
-          name: 'Histogram Bar Dashboard',
-          tiles: [
-            {
-              name: 'P95 by route',
-              config: {
-                displayType: 'bar',
-                sourceId: metricSource._id.toString(),
-                groupBy: "Attributes['route']",
-                select: [
-                  {
-                    aggFn: 'quantile',
-                    level: 0.95,
-                    metricType: 'histogram',
-                    metricName: 'histogram.by.route',
-                    alias: 'P95 Duration',
-                  },
-                ],
-              },
+      const createResult = await callTool(ctx.client!, 'cbt_save_dashboard', {
+        name: 'Histogram Bar Dashboard',
+        tiles: [
+          {
+            name: 'P95 by route',
+            config: {
+              displayType: 'bar',
+              sourceId: metricSource._id.toString(),
+              groupBy: "Attributes['route']",
+              select: [
+                {
+                  aggFn: 'quantile',
+                  level: 0.95,
+                  metricType: 'histogram',
+                  metricName: 'histogram.by.route',
+                  alias: 'P95 Duration',
+                },
+              ],
             },
-          ],
-        },
-      );
+          },
+        ],
+      });
       if (createResult.isError) {
         throw new Error(getFirstText(createResult));
       }
       const dashboard = JSON.parse(getFirstText(createResult));
 
-      const result = await callTool(ctx.client!, 'clickstack_query_tile', {
+      const result = await callTool(ctx.client!, 'cbt_query_tile', {
         dashboardId: dashboard.id,
         tileId: dashboard.tiles[0].id,
         startTime: new Date(now.getTime() - 60_000).toISOString(),
@@ -683,29 +647,25 @@ describe('MCP Dashboard Tools - clickstack_query_tile', () => {
   describe('raw SQL macro warnings', () => {
     it('attaches a non-blocking warning when a raw SQL tile omits macros', async () => {
       const connectionId = ctx.connection._id.toString();
-      const createResult = await callTool(
-        ctx.client!,
-        'clickstack_save_dashboard',
-        {
-          name: 'Query macro-less SQL tile',
-          tiles: [
-            {
-              name: 'Static SQL',
-              config: {
-                configType: 'sql',
-                displayType: 'table',
-                connectionId,
-                // Runs fine against ClickHouse but uses no time-range /
-                // filter / source macros.
-                sqlTemplate: 'SELECT 1 AS value LIMIT 1',
-              },
+      const createResult = await callTool(ctx.client!, 'cbt_save_dashboard', {
+        name: 'Query macro-less SQL tile',
+        tiles: [
+          {
+            name: 'Static SQL',
+            config: {
+              configType: 'sql',
+              displayType: 'table',
+              connectionId,
+              // Runs fine against ClickHouse but uses no time-range /
+              // filter / source macros.
+              sqlTemplate: 'SELECT 1 AS value LIMIT 1',
             },
-          ],
-        },
-      );
+          },
+        ],
+      });
       const dashboard = JSON.parse(getFirstText(createResult));
 
-      const result = await callTool(ctx.client!, 'clickstack_query_tile', {
+      const result = await callTool(ctx.client!, 'cbt_query_tile', {
         dashboardId: dashboard.id,
         tileId: dashboard.tiles[0].id,
         startTime: new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString(),
@@ -728,30 +688,26 @@ describe('MCP Dashboard Tools - clickstack_query_tile', () => {
     it('does not attach warnings when a raw SQL tile uses all recommended macros', async () => {
       const connectionId = ctx.connection._id.toString();
       const sourceId = ctx.traceSource._id.toString();
-      const createResult = await callTool(
-        ctx.client!,
-        'clickstack_save_dashboard',
-        {
-          name: 'Query macro SQL tile',
-          tiles: [
-            {
-              name: 'Macro SQL',
-              config: {
-                configType: 'sql',
-                displayType: 'table',
-                connectionId,
-                sourceId,
-                sqlTemplate:
-                  'SELECT ServiceName, count() AS c FROM $__sourceTable ' +
-                  'WHERE $__timeFilter(Timestamp) AND $__filters GROUP BY ServiceName LIMIT 10',
-              },
+      const createResult = await callTool(ctx.client!, 'cbt_save_dashboard', {
+        name: 'Query macro SQL tile',
+        tiles: [
+          {
+            name: 'Macro SQL',
+            config: {
+              configType: 'sql',
+              displayType: 'table',
+              connectionId,
+              sourceId,
+              sqlTemplate:
+                'SELECT ServiceName, count() AS c FROM $__sourceTable ' +
+                'WHERE $__timeFilter(Timestamp) AND $__filters GROUP BY ServiceName LIMIT 10',
             },
-          ],
-        },
-      );
+          },
+        ],
+      });
       const dashboard = JSON.parse(getFirstText(createResult));
 
-      const result = await callTool(ctx.client!, 'clickstack_query_tile', {
+      const result = await callTool(ctx.client!, 'cbt_query_tile', {
         dashboardId: dashboard.id,
         tileId: dashboard.tiles[0].id,
         startTime: new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString(),
@@ -822,7 +778,7 @@ describe('MCP Dashboard Tools - clickstack_query_tile', () => {
     });
 
     const saveDashboard = async (tiles: unknown[]) => {
-      const result = await callTool(ctx.client!, 'clickstack_save_dashboard', {
+      const result = await callTool(ctx.client!, 'cbt_save_dashboard', {
         name: 'Variable tiles',
         tiles,
         filters: [variableFilter()],
@@ -902,7 +858,7 @@ describe('MCP Dashboard Tools - clickstack_query_tile', () => {
       for (const p of patterns) {
         expect(p.whereSnippet).not.toContain('$__filter');
         expect(p.whereSnippet).not.toContain('$service');
-        const search = await callTool(ctx.client!, 'clickstack_search', {
+        const search = await callTool(ctx.client!, 'cbt_search', {
           sourceId: logSourceId,
           startTime,
           endTime,
@@ -921,7 +877,7 @@ describe('MCP Dashboard Tools - clickstack_query_tile', () => {
     it('expands $__filter to a no-op on an event_patterns tile with nothing selected', async () => {
       const dashboard = await saveDashboard([eventPatternsTile()]);
 
-      const result = await callTool(ctx.client!, 'clickstack_query_tile', {
+      const result = await callTool(ctx.client!, 'cbt_query_tile', {
         dashboardId: dashboard.id,
         tileId: dashboard.tiles[0].id,
         startTime,
@@ -940,7 +896,7 @@ describe('MCP Dashboard Tools - clickstack_query_tile', () => {
     it('narrows an event_patterns tile when variableValues supplies a selection', async () => {
       const dashboard = await saveDashboard([eventPatternsTile()]);
 
-      const result = await callTool(ctx.client!, 'clickstack_query_tile', {
+      const result = await callTool(ctx.client!, 'cbt_query_tile', {
         dashboardId: dashboard.id,
         tileId: dashboard.tiles[0].id,
         startTime,
@@ -968,7 +924,7 @@ describe('MCP Dashboard Tools - clickstack_query_tile', () => {
         eventPatternsTile('ServiceName:$service', 'lucene'),
       ]);
 
-      const result = await callTool(ctx.client!, 'clickstack_query_tile', {
+      const result = await callTool(ctx.client!, 'cbt_query_tile', {
         dashboardId: dashboard.id,
         tileId: dashboard.tiles[0].id,
         startTime,
@@ -989,7 +945,7 @@ describe('MCP Dashboard Tools - clickstack_query_tile', () => {
         eventPatternsTile('$__filter(ServiceName, $tenant)'),
       ]);
 
-      const result = await callTool(ctx.client!, 'clickstack_query_tile', {
+      const result = await callTool(ctx.client!, 'cbt_query_tile', {
         dashboardId: dashboard.id,
         tileId: dashboard.tiles[0].id,
         startTime,
@@ -1009,7 +965,7 @@ describe('MCP Dashboard Tools - clickstack_query_tile', () => {
       // ClickHouse verbatim and the tile died with a syntax error.
       const dashboard = await saveDashboard([sqlTile()]);
 
-      const result = await callTool(ctx.client!, 'clickstack_query_tile', {
+      const result = await callTool(ctx.client!, 'cbt_query_tile', {
         dashboardId: dashboard.id,
         tileId: dashboard.tiles[0].id,
         startTime,
@@ -1025,7 +981,7 @@ describe('MCP Dashboard Tools - clickstack_query_tile', () => {
     it('narrows a raw SQL tile when variableValues supplies a selection', async () => {
       const dashboard = await saveDashboard([sqlTile()]);
 
-      const result = await callTool(ctx.client!, 'clickstack_query_tile', {
+      const result = await callTool(ctx.client!, 'cbt_query_tile', {
         dashboardId: dashboard.id,
         tileId: dashboard.tiles[0].id,
         startTime,
@@ -1042,7 +998,7 @@ describe('MCP Dashboard Tools - clickstack_query_tile', () => {
     it('expands $__filter in a builder tile per-series where', async () => {
       const dashboard = await saveDashboard([builderTile()]);
 
-      const unselected = await callTool(ctx.client!, 'clickstack_query_tile', {
+      const unselected = await callTool(ctx.client!, 'cbt_query_tile', {
         dashboardId: dashboard.id,
         tileId: dashboard.tiles[0].id,
         startTime,
@@ -1051,7 +1007,7 @@ describe('MCP Dashboard Tools - clickstack_query_tile', () => {
       expect(unselected.isError).toBeFalsy();
       expect(rowsOf(getFirstText(unselected))).toHaveLength(2);
 
-      const selected = await callTool(ctx.client!, 'clickstack_query_tile', {
+      const selected = await callTool(ctx.client!, 'cbt_query_tile', {
         dashboardId: dashboard.id,
         tileId: dashboard.tiles[0].id,
         startTime,
@@ -1087,7 +1043,7 @@ describe('MCP Dashboard Tools - clickstack_query_tile', () => {
         },
       ]);
 
-      const result = await callTool(ctx.client!, 'clickstack_query_tile', {
+      const result = await callTool(ctx.client!, 'cbt_query_tile', {
         dashboardId: dashboard.id,
         tileId: dashboard.tiles[0].id,
         startTime,
@@ -1106,7 +1062,7 @@ describe('MCP Dashboard Tools - clickstack_query_tile', () => {
     it('rejects a variableValues entry the dashboard does not declare', async () => {
       const dashboard = await saveDashboard([sqlTile()]);
 
-      const result = await callTool(ctx.client!, 'clickstack_query_tile', {
+      const result = await callTool(ctx.client!, 'cbt_query_tile', {
         dashboardId: dashboard.id,
         tileId: dashboard.tiles[0].id,
         startTime,
@@ -1134,22 +1090,18 @@ describe('MCP Dashboard Tools - clickstack_query_tile', () => {
       });
 
       const saveStaticDashboard = async () => {
-        const result = await callTool(
-          ctx.client!,
-          'clickstack_save_dashboard',
-          {
-            name: 'Static variable tiles',
-            tiles: [staticSqlTile()],
-            filters: [
-              {
-                type: 'STATIC_LIST',
-                name: 'Service',
-                options: ['checkout', 'payments', 'ghost'],
-                variableName: 'svc',
-              },
-            ],
-          },
-        );
+        const result = await callTool(ctx.client!, 'cbt_save_dashboard', {
+          name: 'Static variable tiles',
+          tiles: [staticSqlTile()],
+          filters: [
+            {
+              type: 'STATIC_LIST',
+              name: 'Service',
+              options: ['checkout', 'payments', 'ghost'],
+              variableName: 'svc',
+            },
+          ],
+        });
         expect(result.isError).toBeFalsy();
         return JSON.parse(getFirstText(result));
       };
@@ -1157,20 +1109,16 @@ describe('MCP Dashboard Tools - clickstack_query_tile', () => {
       it('narrows a tile when variableValues selects a static option', async () => {
         const dashboard = await saveStaticDashboard();
 
-        const unselected = await callTool(
-          ctx.client!,
-          'clickstack_query_tile',
-          {
-            dashboardId: dashboard.id,
-            tileId: dashboard.tiles[0].id,
-            startTime,
-            endTime,
-          },
-        );
+        const unselected = await callTool(ctx.client!, 'cbt_query_tile', {
+          dashboardId: dashboard.id,
+          tileId: dashboard.tiles[0].id,
+          startTime,
+          endTime,
+        });
         expect(unselected.isError).toBeFalsy();
         expect(rowsOf(getFirstText(unselected))).toHaveLength(2);
 
-        const selected = await callTool(ctx.client!, 'clickstack_query_tile', {
+        const selected = await callTool(ctx.client!, 'cbt_query_tile', {
           dashboardId: dashboard.id,
           tileId: dashboard.tiles[0].id,
           startTime,
@@ -1186,7 +1134,7 @@ describe('MCP Dashboard Tools - clickstack_query_tile', () => {
       it('treats an empty selection as nothing selected', async () => {
         const dashboard = await saveStaticDashboard();
 
-        const result = await callTool(ctx.client!, 'clickstack_query_tile', {
+        const result = await callTool(ctx.client!, 'cbt_query_tile', {
           dashboardId: dashboard.id,
           tileId: dashboard.tiles[0].id,
           startTime,
@@ -1201,7 +1149,7 @@ describe('MCP Dashboard Tools - clickstack_query_tile', () => {
       it('rejects a value outside the declared options', async () => {
         const dashboard = await saveStaticDashboard();
 
-        const result = await callTool(ctx.client!, 'clickstack_query_tile', {
+        const result = await callTool(ctx.client!, 'cbt_query_tile', {
           dashboardId: dashboard.id,
           tileId: dashboard.tiles[0].id,
           startTime,
@@ -1273,34 +1221,30 @@ describe('MCP Dashboard Tools - clickstack_query_tile', () => {
       limit?: number;
       orderBy?: string;
     } = {}) => {
-      const createResult = await callTool(
-        ctx.client!,
-        'clickstack_save_dashboard',
-        {
-          name: `Categorical ${displayType} Dashboard ${limit ?? 'none'} ${
-            orderBy ?? 'default-order'
-          }`,
-          tiles: [
-            {
-              name: 'Groups by service',
-              config: {
-                displayType,
-                sourceId: logSourceId,
-                select: [{ aggFn: 'count' }],
-                groupBy: 'ServiceName',
-                ...(limit != null ? { limit } : {}),
-                ...(orderBy != null ? { orderBy } : {}),
-              },
+      const createResult = await callTool(ctx.client!, 'cbt_save_dashboard', {
+        name: `Categorical ${displayType} Dashboard ${limit ?? 'none'} ${
+          orderBy ?? 'default-order'
+        }`,
+        tiles: [
+          {
+            name: 'Groups by service',
+            config: {
+              displayType,
+              sourceId: logSourceId,
+              select: [{ aggFn: 'count' }],
+              groupBy: 'ServiceName',
+              ...(limit != null ? { limit } : {}),
+              ...(orderBy != null ? { orderBy } : {}),
             },
-          ],
-        },
-      );
+          },
+        ],
+      });
       expect(createResult.isError).toBeFalsy();
       return JSON.parse(getFirstText(createResult));
     };
 
     const queryTileRows = async (dashboard: any) => {
-      const result = await callTool(ctx.client!, 'clickstack_query_tile', {
+      const result = await callTool(ctx.client!, 'cbt_query_tile', {
         dashboardId: dashboard.id,
         tileId: dashboard.tiles[0].id,
         startTime: new Date(now.getTime() - 15 * 60 * 1000).toISOString(),

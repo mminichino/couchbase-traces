@@ -127,7 +127,7 @@ export async function runPromqlTile({
   });
   if ('error' in target) {
     throw new PromQLQueryError(
-      `${target.error}: ${config.source}. Call clickstack_list_sources to discover available source IDs.`,
+      `${target.error}: ${config.source}. Call cbt_list_sources to discover available source IDs.`,
       'user',
     );
   }

@@ -101,7 +101,7 @@ async function describeSourceSchema(
   const source = await getSource(teamId, sourceId);
   if (!source || isHiddenSource(context, source)) {
     return mcpUserError(
-      `Source "${sourceId}" not found. Call clickstack_list_sources to see available source IDs.`,
+      `Source "${sourceId}" not found. Call cbt_list_sources to see available source IDs.`,
     );
   }
 
@@ -192,7 +192,7 @@ async function describeSourceSchema(
             {
               source: meta,
               nextSteps: {
-                query: `Use clickstack_timeseries, clickstack_table, or clickstack_search with sourceId "${sourceId}".`,
+                query: `Use cbt_timeseries, cbt_table, or cbt_search with sourceId "${sourceId}".`,
               },
             },
             null,
@@ -504,17 +504,17 @@ function formatDescribeResult({
   const lcValuesHint =
     skippedStages.length > 0
       ? 'Value sampling was partially skipped due to timeout. ' +
-        'The values shown may be incomplete — verify with a clickstack_search query if needed.'
+        'The values shown may be incomplete — verify with a cbt_search query if needed.'
       : 'These are the REAL values in your data — use them in filters instead of guessing. ' +
         'Example: where: "SeverityText:error" (if \'error\' appears in the sampled values above).';
 
   const queryNextStep = isMetricSource
-    ? `Use clickstack_timeseries or clickstack_table with sourceId "${sourceId}" and metricType/metricName from above. ` +
+    ? `Use cbt_timeseries or cbt_table with sourceId "${sourceId}" and metricType/metricName from above. ` +
       'Summary metrics (metricTables.summary) are not supported by those tools — ' +
-      "query the summary table with clickstack_sql using this source's connectionId."
-    : `Use clickstack_timeseries, clickstack_table, or clickstack_search with sourceId "${sourceId}" and the columns/attributes above.`;
+      "query the summary table with cbt_sql using this source's connectionId."
+    : `Use cbt_timeseries, cbt_table, or cbt_search with sourceId "${sourceId}" and the columns/attributes above.`;
   const discoveryNextStep = isMetricSource
-    ? `For more metric names than the sample above, call clickstack_list_metrics with sourceId "${sourceId}". For per-metric attribute keys + sampled values, call clickstack_describe_metric with sourceId and metricName.`
+    ? `For more metric names than the sample above, call cbt_list_metrics with sourceId "${sourceId}". For per-metric attribute keys + sampled values, call cbt_describe_metric with sourceId and metricName.`
     : undefined;
 
   const {
@@ -533,7 +533,7 @@ function formatDescribeResult({
         metricNames:
           'Each entry maps a metric kind (gauge/sum/histogram/exponential histogram/summary) to a sample of metric names ' +
           'available on that table. Pass metricType + metricName on each select item. ' +
-          'EXCEPTION: summary metrics cannot be charted — query them with clickstack_sql ' +
+          'EXCEPTION: summary metrics cannot be charted — query them with cbt_sql ' +
           "against the table in metricTables.summary using this source's connectionId.",
       }),
     },
@@ -570,7 +570,7 @@ export function registerDescribeSource({
   const { teamId } = context;
 
   registerTool(
-    'clickstack_describe_source',
+    'cbt_describe_source',
     {
       title: 'Describe Source Schema',
       annotations: READ_ONLY_TOOL,
@@ -578,7 +578,7 @@ export function registerDescribeSource({
         'CALL THIS BEFORE WRITING QUERIES — prevents unknown-column errors.\n\n' +
         'Returns the full column schema, map-attribute keys, and sampled low-cardinality ' +
         'values (e.g. SeverityText, StatusCode, ServiceName) for a single data source.\n\n' +
-        'Workflow: call clickstack_list_sources first to get source IDs, then call this tool ' +
+        'Workflow: call cbt_list_sources first to get source IDs, then call this tool ' +
         'for each source you plan to query.\n\n' +
         'Returns:\n' +
         '- columns[]: column name, ClickHouse type, and JS type\n' +
@@ -594,7 +594,7 @@ export function registerDescribeSource({
         sourceId: z
           .string()
           .describe(
-            'The source ID to describe. Get this from clickstack_list_sources.',
+            'The source ID to describe. Get this from cbt_list_sources.',
           ),
       }),
     },
@@ -609,7 +609,7 @@ export function registerDescribeSource({
         if (outcome === 'partial' || outcome === 'timeout') {
           logger.warn(
             { teamId, sourceId, outcome },
-            'clickstack_describe_source hit its deadline',
+            'cbt_describe_source hit its deadline',
           );
         }
       };
@@ -622,7 +622,7 @@ export function registerDescribeSource({
         return mcpServerError(
           'Schema discovery timed out before the column schema loaded. ' +
             'The ClickHouse server may be under load. Try again, or use ' +
-            'clickstack_list_sources for basic source info without schema details.',
+            'cbt_list_sources for basic source info without schema details.',
         );
       };
 

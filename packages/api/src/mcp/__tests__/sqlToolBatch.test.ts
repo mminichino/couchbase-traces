@@ -81,7 +81,7 @@ beforeEach(() => {
   mockGetSource.mockResolvedValue({ connection: connectionId });
 });
 
-describe('clickstack_sql batch mode', () => {
+describe('cbt_sql batch mode', () => {
   it('rejects a call that passes both sql and queries', async () => {
     const result = await buildHandler()({
       connectionId,

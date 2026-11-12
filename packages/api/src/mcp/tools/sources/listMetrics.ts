@@ -49,23 +49,23 @@ export function registerListMetrics({
   const { teamId } = context;
 
   registerTool(
-    'clickstack_list_metrics',
+    'cbt_list_metrics',
     {
       title: 'List Metric Names',
       annotations: READ_ONLY_TOOL,
       description:
-        'DISCOVERY: Use this after clickstack_describe_source when you need more metric ' +
+        'DISCOVERY: Use this after cbt_describe_source when you need more metric ' +
         'names than the per-kind sample shows, or when you want to narrow by ' +
         'kind / name pattern / time window. ' +
         'Returns paginated metric names per kind (gauge/sum/histogram/exponential histogram/summary) ' +
         'with optional unit and description (when the OTel-default columns are present). ' +
         'Pass the returned `nextCursor` back unchanged to fetch the next page.\n\n' +
         'Summary metrics are listed for discovery only — they cannot be passed to ' +
-        'clickstack_timeseries / clickstack_table; query them with clickstack_sql ' +
+        'cbt_timeseries / cbt_table; query them with cbt_sql ' +
         "against the table in the source's metricTables.summary.\n\n" +
-        'Workflow: clickstack_list_sources → clickstack_describe_source → ' +
-        'clickstack_list_metrics → clickstack_describe_metric → ' +
-        'clickstack_timeseries|clickstack_table.',
+        'Workflow: cbt_list_sources → cbt_describe_source → ' +
+        'cbt_list_metrics → cbt_describe_metric → ' +
+        'cbt_timeseries|cbt_table.',
       inputSchema: listMetricsSchema,
     },
     async rawInput => {
@@ -85,10 +85,10 @@ export function registerListMetrics({
       }
       logger.warn(
         { teamId, sourceId: input.sourceId },
-        'clickstack_list_metrics timed out',
+        'cbt_list_metrics timed out',
       );
       return mcpServerError(
-        'clickstack_list_metrics timed out. Try narrowing the time window ' +
+        'cbt_list_metrics timed out. Try narrowing the time window ' +
           '(startTime/endTime), pinning a single `kind`, or adding a namePattern filter.',
       );
     },
@@ -104,12 +104,12 @@ async function listMetricsImpl(
   const source = await getSource(teamId, input.sourceId);
   if (!source) {
     return mcpUserError(
-      `Source "${input.sourceId}" not found. Call clickstack_list_sources to see available source IDs.`,
+      `Source "${input.sourceId}" not found. Call cbt_list_sources to see available source IDs.`,
     );
   }
   if (source.kind !== SourceKind.Metric) {
     return mcpUserError(
-      `Source "${input.sourceId}" is a "${source.kind}" source, not a metric source. clickstack_list_metrics only works on metric sources — call clickstack_list_sources to find one whose kind is "metric".`,
+      `Source "${input.sourceId}" is a "${source.kind}" source, not a metric source. cbt_list_metrics only works on metric sources — call cbt_list_sources to find one whose kind is "metric".`,
     );
   }
 
@@ -236,8 +236,8 @@ async function listMetricsImpl(
     ...(nextCursor && { nextCursor }),
     ...(metrics.some(m => m.kind === 'summary') && {
       summaryNote:
-        'summary metrics cannot be queried with clickstack_timeseries / clickstack_table — ' +
-        "use clickstack_sql against the table in the source's metricTables.summary.",
+        'summary metrics cannot be queried with cbt_timeseries / cbt_table — ' +
+        "use cbt_sql against the table in the source's metricTables.summary.",
     }),
     ...(partialFailure.length > 0 && {
       partialFailure,
@@ -252,9 +252,9 @@ async function listMetricsImpl(
           'removing the namePattern filter, or omitting `kind` to scan every populated metric table.',
       }),
     usage:
-      'Pass `metricType` + `metricName` from each entry to clickstack_timeseries / clickstack_table ' +
-      '(summary metrics excepted — query those with clickstack_sql). ' +
-      'For per-metric attribute keys and sampled values, call clickstack_describe_metric.',
+      'Pass `metricType` + `metricName` from each entry to cbt_timeseries / cbt_table ' +
+      '(summary metrics excepted — query those with cbt_sql). ' +
+      'For per-metric attribute keys and sampled values, call cbt_describe_metric.',
   };
 
   return {

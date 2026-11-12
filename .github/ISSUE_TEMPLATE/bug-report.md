@@ -1,6 +1,6 @@
 ---
 name: Bug report
-about: Something in HyperDX is broken or behaving unexpectedly
+about: Something in Couchbase Traces is broken or behaving unexpectedly
 title: ''
 labels: bug, Needs Feedback
 ---
@@ -12,24 +12,20 @@ labels: bug, Needs Feedback
 **Steps to reproduce**
 
 <!--
-Please check whether this reproduces on https://play.hyperdx.io (demo data) and
-paste the URL if it does. If you're working from the repo, `yarn app:dev:local`
-plus onboarding → "Connect to Demo Server" gives you the same data locally. If
-it only happens with your own data, include the table schema
+If you're working from the repo, check whether this reproduces with
+`yarn app:dev:local`. If it only happens with your own data, include the table schema
 (`SHOW CREATE TABLE ...`) and source settings.
-See https://github.com/ClickHouse/ClickStack/blob/main/CONTRIBUTING.md#reproducing-issues-and-prs
+See https://github.com/mminichino/couchbase-traces/blob/main/CONTRIBUTING.md#reproducing-issues-and-prs
 -->
-
-**Reproduces on play.hyperdx.io?** <!-- yes (link) / no / didn't try -->
 
 1.
 2.
 3.
 
-**How are you running HyperDX?**
+**How are you running Couchbase Traces?**
 
 <!--
-The all-in-one Docker image, Docker Compose, Helm, ClickHouse Cloud, or a local
+The all-in-one Docker image, Docker Compose, Helm, or a local
 dev stack — and which version or image tag. If you brought your own ClickHouse,
 say which version.
 -->

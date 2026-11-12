@@ -5,8 +5,8 @@ Generates deterministic synthetic telemetry (traces + logs) with planted
 anomalies, spawns Claude Code as an SRE agent with access to any configured
 MCP, records full trajectories, and grades answers using programmatic checks and
 an LLM-as-judge. The framework is **MCP-agnostic** — compare any combination of
-MCPs: HyperDX vs ClickHouse, feature-branch vs main, two different HyperDX
-instances, or any N-way comparison. MCPs are defined in a config registry and
+MCPs: Couchbase Traces vs ClickHouse, feature-branch vs main, two different
+Couchbase Traces instances, or any N-way comparison. MCPs are defined in a config registry and
 selected at run time.
 
 ## Prerequisites
@@ -55,9 +55,9 @@ yarn workspace @couchbase-traces/hdx-eval viewer
 
 ## Recommended: Dual-Slot Eval Setup
 
-For reliable A/B comparison of two HyperDX branches (e.g. feature vs main),
+For reliable A/B comparison of two Couchbase Traces branches (e.g. feature vs main),
 we recommend reserving two fixed dev slots. This gives you two fully isolated
-HyperDX stacks (separate ClickHouse, MongoDB, API) that can run
+Couchbase Traces stacks (separate ClickHouse, MongoDB, API) that can run
 simultaneously.
 
 ### 1. Start two dev stacks with fixed slots
@@ -164,8 +164,8 @@ anonymize the MCP identity for fair LLM judging.
 |---|---|---|
 | `mcps` | yes | MCP registry (see above) |
 | `plugins` | no | Claude Code plugin registry (see [Plugins](#plugins)) |
-| `scenarios` | no | Per-scenario HyperDX Source IDs (populated by `setup-hyperdx`) |
-| `hyperdxApi` | no | HyperDX API URL + access key (used only by `setup-hyperdx`) |
+| `scenarios` | no | Per-scenario Couchbase Traces Source IDs (populated by `setup-hyperdx`) |
+| `hyperdxApi` | no | Couchbase Traces API URL + access key (used only by `setup-hyperdx`) |
 | `clickhouse` | no | ClickHouse connection for `seed`, `drop`, `runs-instrument` commands |
 | `anchorTime` | no | Fixed "now" anchor (ISO 8601). Auto-generated and saved on first `run`. See [Anchor Time](#anchor-time). |
 
@@ -215,7 +215,7 @@ unchanged.
 Each named plugin is loaded into the isolated agent session via `--plugin-url`
 (for `url`) or `--plugin-dir` (for `dir`).
 
-### Example: HTTP MCP (HyperDX)
+### Example: HTTP MCP (Couchbase Traces)
 
 ```json
 {
@@ -223,8 +223,8 @@ Each named plugin is loaded into the isolated agent session via `--plugin-url`
   "url": "http://localhost:30198/mcp",
   "headers": { "Authorization": "Bearer <access-key>" },
   "toolPattern": "mcp__hyperdx__*",
-  "label": "HyperDX",
-  "brandTerms": ["HyperDX", "hyperdx"],
+  "label": "Couchbase Traces",
+  "brandTerms": ["Couchbase Traces", "hyperdx"],
   "deniedTools": [
     "mcp__hyperdx__hyperdx_delete_dashboard",
     "mcp__hyperdx__hyperdx_get_dashboard"
@@ -255,7 +255,7 @@ Each named plugin is loaded into the isolated agent session via `--plugin-url`
 
 Each scenario writes into its own ClickHouse tables
 (`eval_<scenario>_otel_traces` / `eval_<scenario>_otel_logs`) whose schema
-mirrors HyperDX's `otel_traces` / `otel_logs` exactly.
+mirrors Couchbase Traces's `otel_traces` / `otel_logs` exactly.
 
 | Scenario | Agent Prompt | What's Planted |
 |---|---|---|
@@ -424,7 +424,7 @@ whether the agent reaches for metrics it doesn't strictly need.
 
 `metric-saturation` includes two opportunistic checks (`discovered_summary_metric`,
 `queried_summary_via_sql`) on the `db.client.operation.duration` Summary distractor,
-which is discoverable via MCP but only queryable through raw `clickstack_sql`.
+which is discoverable via MCP but only queryable through raw `cbt_sql`.
 They measure whether the agent follows that discovery → SQL path; since a strong
 run may justifiably skip the distractor after finding the JVM leak, sub-100% scores are expected.
 
@@ -472,7 +472,7 @@ wall-clock time advances, and stale data does **not** trigger an automatic
 reseed. This keeps seeded data stable across runs (important for CI, where a
 fresh reseed is much slower than reusing cached seed data).
 
-> **Note on `clickstack_describe_source`:** that tool samples its value-related
+> **Note on `cbt_describe_source`:** that tool samples its value-related
 > fields (`lowCardinalityValues`, `mapAttributeValues`, `mapAttributeKeys`)
 > over a fixed **last-24h-of-wall-clock** window, independent of the anchor.
 > Once seeded data ages past that window those fields come back empty/partial.

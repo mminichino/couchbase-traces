@@ -9,21 +9,21 @@ import { pathToFileURL } from 'node:url';
 // Kept byte-for-byte in sync with the committed root CHANGELOG.md (which
 // prettier owns the wrapping of) so the scaffold-when-missing path can never
 // produce a file that differs from the seed.
-const HEADER = `# HyperDX Changelog
+const HEADER = `# Couchbase Traces Changelog
 
-Release-level highlights across all HyperDX packages. Each entry is AI-generated
-during the release and reviewed (and freely editable) in the "Release HyperDX"
-PR — keep the \`hyperdx-release-notes\` comment marker intact when editing so your
+Release-level highlights across all Couchbase Traces packages. Each entry is AI-generated
+during the release and reviewed (and freely editable) in the "Release Couchbase Traces"
+PR — keep the \`cbt-release-notes\` comment marker intact when editing so your
 edits survive regeneration. Per-package detail lives in each
 \`packages/*/CHANGELOG.md\`.
 `;
 
 const MARKER_RE =
-  /^<!-- hyperdx-release-notes version=(\S+) inputs=(\S+) -->$/m;
+  /^<!-- cbt-release-notes version=(\S+) inputs=(\S+) -->$/m;
 
 // Same marker, matched a line at a time so the body can be extracted without
 // depending on how many blank lines prettier put around it.
-const MARKER_LINE_RE = /^<!-- hyperdx-release-notes .* -->$/;
+const MARKER_LINE_RE = /^<!-- cbt-release-notes .* -->$/;
 
 // A release heading, used to confirm a section runs to the next release rather
 // than to some other H2.
@@ -64,7 +64,7 @@ export function insertSection(content, { version, inputs, date, body }) {
   const section = [
     `## v${version} — ${date}`,
     '',
-    `<!-- hyperdx-release-notes version=${version} inputs=${inputs} -->`,
+    `<!-- cbt-release-notes version=${version} inputs=${inputs} -->`,
     '',
     body.trim(),
   ].join('\n');
@@ -149,7 +149,7 @@ const MAX_BODY_BYTES = 65536;
 // Kept in sync with ALLOWED_LINK_HOSTS in
 // packages/app/src/components/AppNav/WhatsNewDrawer.tsx, and pinned there by a
 // test. Exported for that test.
-export const ALLOWED_LINK_HOSTS = new Set(['github.com', 'docs.hyperdx.io']);
+export const ALLOWED_LINK_HOSTS = new Set(['github.com']);
 
 // Deliberately the same algorithm as allowChangelogUrl in WhatsNewDrawer.tsx:
 // parse, then compare the whole hostname. A prefix regex disagrees with the
@@ -241,7 +241,7 @@ export function validateBody(body) {
   if (/sk-ant-|gh[psoru]_[A-Za-z0-9]{16,}|github_pat_/.test(body)) {
     fail('Body contains something shaped like a credential.');
   }
-  if (/hyperdx-release-notes/.test(body)) {
+  if (/cbt-release-notes/.test(body)) {
     fail('Body contains a release-notes marker; the splice owns those.');
   }
   if (body.includes(PACKAGE_LIST_START) || body.includes(PACKAGE_LIST_END)) {
@@ -310,8 +310,8 @@ export function validateBody(body) {
 // a fresh list is appended, because the reuse path hands back a previously
 // published body that already carries one.
 export const PACKAGE_LIST_HEADING = '### 📦 Package changelogs';
-export const PACKAGE_LIST_START = '<!-- hyperdx-package-list -->';
-export const PACKAGE_LIST_END = '<!-- /hyperdx-package-list -->';
+export const PACKAGE_LIST_START = '<!-- couchbase-traces-package-list -->';
+export const PACKAGE_LIST_END = '<!-- /couchbase-traces-package-list -->';
 
 // Strip only between the markers. Slicing from the heading to end-of-body would
 // silently delete anything a maintainer wrote below the generated list.

@@ -25,8 +25,8 @@ jest.mock('@/utils/logger', () => ({
 
 import { agentService } from '@/opamp/services/agentService';
 
-const APPLICATIONS = 'hyperdx.opamp.remote_config_applications';
-const STATUS_REPORTS = 'hyperdx.opamp.agent_status_reports';
+const APPLICATIONS = 'cbt.opamp.remote_config_applications';
+const STATUS_REPORTS = 'cbt.opamp.agent_status_reports';
 
 // Unique instanceUid per test avoids cross-test bleed in the shared agentStore.
 const uid = (name: string) => Buffer.from(`test-${name}`);

@@ -9,7 +9,7 @@ describe('downloadTextFile', () => {
       .spyOn(HTMLAnchorElement.prototype, 'click')
       .mockImplementation(() => undefined);
 
-    downloadTextFile('import {}', 'hyperdx-import.tf');
+    downloadTextFile('import {}', 'couchbase-traces-import.tf');
 
     expect(createObjectURL).toHaveBeenCalledTimes(1);
     expect(createObjectURL.mock.calls[0][0].type).toBe('text/plain');
@@ -28,7 +28,7 @@ describe('downloadTextFile', () => {
       .spyOn(HTMLAnchorElement.prototype, 'click')
       .mockImplementation(() => undefined);
 
-    downloadTextFile('import {}', 'hyperdx-import.tf');
+    downloadTextFile('import {}', 'couchbase-traces-import.tf');
 
     expect(document.querySelectorAll('a')).toHaveLength(0);
   });

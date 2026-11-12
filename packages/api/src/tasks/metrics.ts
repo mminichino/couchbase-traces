@@ -9,7 +9,7 @@ import { performance } from 'perf_hooks';
 
 import { TaskName } from '@/tasks/types';
 
-const meter = metrics.getMeter('hyperdx-tasks');
+const meter = metrics.getMeter('couchbase-traces-tasks');
 
 export const taskExecutionSuccessCounter: Map<
   TaskName,
@@ -29,7 +29,7 @@ export const taskExecutionDurationGauge: Map<
 for (const name of Object.values(TaskName)) {
   taskExecutionSuccessCounter.set(
     name,
-    meter.createCounter(`hyperdx.tasks.${name}.success`, {
+    meter.createCounter(`cbt.tasks.${name}.success`, {
       description:
         'Count of the number of times the task finished without exceptions.',
     }),
@@ -37,7 +37,7 @@ for (const name of Object.values(TaskName)) {
 
   taskExecutionFailureCounter.set(
     name,
-    meter.createCounter(`hyperdx.tasks.${name}.failure`, {
+    meter.createCounter(`cbt.tasks.${name}.failure`, {
       description:
         'Count of the number of times the task failed to finish because of an exception',
     }),
@@ -45,7 +45,7 @@ for (const name of Object.values(TaskName)) {
 
   taskExecutionDurationGauge.set(
     name,
-    meter.createGauge(`hyperdx.tasks.${name}.duration`, {
+    meter.createGauge(`cbt.tasks.${name}.duration`, {
       description: `The wall time required for the ${name} task to complete execution.`,
       unit: 'ms',
       valueType: ValueType.DOUBLE,

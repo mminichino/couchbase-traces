@@ -23,7 +23,7 @@ export function registerGetAlert({
   const frontendUrl = config.FRONTEND_URL;
 
   registerTool(
-    'clickstack_get_alert',
+    'cbt_get_alert',
     {
       title: 'Get Alert(s)',
       annotations: READ_ONLY_TOOL,
@@ -39,7 +39,7 @@ export function registerGetAlert({
           .string()
           .optional()
           .describe(
-            'Alert ID from a previous list call or clickstack_save_alert. ' +
+            'Alert ID from a previous list call or cbt_save_alert. ' +
               'Omit to list all alerts, provide to get full detail.',
           ),
         state: z

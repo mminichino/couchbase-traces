@@ -164,9 +164,9 @@ jest.mock('@/layout', () => ({
 
 jest.mock('@/brand', () => ({
   __esModule: true,
-  useBrandDisplayName: () => 'ClickStack',
+  useBrandDisplayName: () => 'Couchbase Traces',
   usePageTitle: (page?: string) =>
-    page ? `${page} - ClickStack` : 'ClickStack',
+    page ? `${page} - Couchbase Traces` : 'Couchbase Traces',
 }));
 
 import ServicesDashboardPage from '@/ServicesDashboardPage';

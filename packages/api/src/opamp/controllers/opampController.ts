@@ -37,11 +37,11 @@ const AGENT_DESCRIPTION_SPAN_ATTRS: ReadonlyArray<readonly [string, string]> = [
 // OpAMP messages come from collector agents, not authenticated users, so there
 // is no team/user context to attach. We instead track delivery outcomes with a
 // low-cardinality `outcome` enum (see agent_docs/observability.md).
-const opampMessagesCounter = getCounter('hyperdx.opamp.messages', {
+const opampMessagesCounter = getCounter('cbt.opamp.messages', {
   description:
     'Count of OpAMP AgentToServer messages handled, labeled by outcome (processed, unsupported_media_type, error).',
 });
-const opampRemoteConfigsCounter = getCounter('hyperdx.opamp.remote_configs', {
+const opampRemoteConfigsCounter = getCounter('cbt.opamp.remote_configs', {
   description:
     'Count of OpAMP remote collector configs sent back to agents in a ServerToAgent response.',
 });
@@ -306,7 +306,7 @@ export const buildOtelCollectorConfig = (
       // The pipeline `processors:` lists are intentionally declared in the
       // bootstrap config (docker/otel-collector/config.yaml) instead of here,
       // so that users can swap them via CUSTOM_OTELCOL_CONFIG_FILE. See
-      // https://github.com/ClickHouse/ClickStack/pull/2351: when the OpAMP
+      // https://github.com/mminichino/couchbase-traces/pull/2351: when the OpAMP
       // remote config sets `processors:` on a pipeline, it overwrites the
       // bootstrap+custom merge, which prevents users from substituting
       // their own processor (e.g. a memory_limiter with limit_percentage

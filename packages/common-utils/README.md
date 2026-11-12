@@ -1,4 +1,4 @@
-## How to test the package with HyperDX app/api 
+## How to test the package with Couchbase Traces app/api 
 
 1. Run `yarn build` in the root directory of this project (packages/common-utils)
 2. Run `yarn dev` in the root directory of app/api project (packages/app,api)

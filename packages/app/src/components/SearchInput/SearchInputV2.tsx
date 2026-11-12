@@ -271,7 +271,7 @@ export default function SearchInputV2({
           <a
             className={styles.docsLink}
             target="_blank"
-            href="https://clickhouse.com/docs/use-cases/observability/clickstack/search"
+            href="https://github.com/mminichino/couchbase-traces/tree/main/docs"
             rel="noreferrer"
           >
             <Group gap={5}>

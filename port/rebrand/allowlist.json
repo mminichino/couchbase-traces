@@ -1,4 +1,3379 @@
 {
   "schemaVersion": 1,
-  "entries": []
+  "entries": [
+    {
+      "path": ".github/actions/e2e-setup/action.yml",
+      "term": "hyperdx",
+      "snippet": "echo \"MONGO_URI=mongodb://localhost:$MONGO_PORT/hyperdx-e2e\" >> $GITHUB_ENV",
+      "reason": "internal_identifier",
+      "note": "Token \"hyperdx-e2e\" allowed in the token map"
+    },
+    {
+      "path": ".github/scripts/__tests__/pr-triage-classify.test.js",
+      "term": "hyperdx",
+      "snippet": "'docker/hyperdx/Dockerfile',",
+      "reason": "internal_identifier",
+      "note": "Token \"hyperdx\" allowed in the token map"
+    },
+    {
+      "path": ".github/scripts/__tests__/pr-triage-classify.test.js",
+      "term": "hyperdx",
+      "snippet": "assert.ok(isCriticalFile('docker/hyperdx/Dockerfile'));",
+      "reason": "internal_identifier",
+      "note": "Token \"hyperdx\" allowed in the token map"
+    },
+    {
+      "path": ".github/scripts/__tests__/pr-triage-classify.test.js",
+      "term": "hyperdx",
+      "snippet": "it('matches docker/hyperdx/', () => {",
+      "reason": "internal_identifier",
+      "note": "Token \"hyperdx\" allowed in the token map"
+    },
+    {
+      "path": ".github/scripts/__tests__/release-notes.test.mjs",
+      "term": "hyperdx",
+      "snippet": "hyperdxio",
+      "reason": "test_fixture",
+      "note": "Link-filter fixtures that use the upstream GitHub org; never requested."
+    },
+    {
+      "path": ".github/scripts/pr-triage-classify.js",
+      "term": "hyperdx",
+      "snippet": "/^docker\\/hyperdx\\//,",
+      "reason": "internal_identifier",
+      "note": "Token \"hyperdx\" allowed in the token map"
+    },
+    {
+      "path": ".github/workflows/docker-build.yml",
+      "term": "hyperdx",
+      "snippet": "# App/prod image (API + App + common-utils Node build) — docker/hyperdx target prod.",
+      "reason": "internal_identifier",
+      "note": "Token \"hyperdx\" allowed in the token map"
+    },
+    {
+      "path": ".github/workflows/docker-build.yml",
+      "term": "hyperdx",
+      "snippet": "# — docker/hyperdx targets all-in-one-auth AND all-in-one-noauth (the Local",
+      "reason": "internal_identifier",
+      "note": "Token \"hyperdx\" allowed in the token map"
+    },
+    {
+      "path": ".github/workflows/docker-build.yml",
+      "term": "hyperdx",
+      "snippet": "docker/hyperdx/**",
+      "reason": "internal_identifier",
+      "note": "Token \"hyperdx\" allowed in the token map"
+    },
+    {
+      "path": ".github/workflows/docker-build.yml",
+      "term": "hyperdx",
+      "snippet": "file: ./docker/hyperdx/Dockerfile",
+      "reason": "internal_identifier",
+      "note": "Token \"hyperdx\" allowed in the token map"
+    },
+    {
+      "path": ".github/workflows/docker-build.yml",
+      "term": "hyperdx",
+      "snippet": "hyperdx=./docker/hyperdx",
+      "reason": "internal_identifier",
+      "note": "Token \"hyperdx\" allowed in the token map"
+    },
+    {
+      "path": ".github/workflows/main.yml",
+      "term": "url",
+      "snippet": "packages.clickhouse.com",
+      "reason": "engine_reference",
+      "note": "ClickHouse package repository used to install the engine in CI."
+    },
+    {
+      "path": ".opencode/commands/eval-summary.md",
+      "term": "hyperdx",
+      "snippet": "Use **parallel Task subagents** — one per MCP (hyperdx, clickhouse). Each",
+      "reason": "internal_identifier",
+      "note": "Token \"hyperdx\" allowed in the token map"
+    },
+    {
+      "path": ".vscode/settings.json",
+      "term": "hyperdx",
+      "snippet": "\"hyperdx\",",
+      "reason": "internal_identifier",
+      "note": "Token \"hyperdx\" allowed in the token map"
+    },
+    {
+      "path": ".yarnrc.yml",
+      "term": "hyperdx",
+      "snippet": "- '@hyperdx/*'",
+      "reason": "external_dependency",
+      "note": "Token \"@hyperdx\" allowed in the token map"
+    },
+    {
+      "path": "LOCAL.md",
+      "term": "hyperdx",
+      "snippet": "`@hyperdx/*`",
+      "reason": "external_dependency",
+      "note": "Older upstream SDK packages on npm."
+    },
+    {
+      "path": "Makefile",
+      "term": "hyperdx",
+      "snippet": "--build-context hyperdx=./docker/hyperdx \\",
+      "reason": "internal_identifier",
+      "note": "Token \"hyperdx\" allowed in the token map"
+    },
+    {
+      "path": "Makefile",
+      "term": "hyperdx",
+      "snippet": "@rm -rf $(HOME)/.config/hyperdx/dev-slots",
+      "reason": "internal_identifier",
+      "note": "Token \"hyperdx\" allowed in the token map"
+    },
+    {
+      "path": "Makefile",
+      "term": "hyperdx",
+      "snippet": "CBT_CI_HISTORY_DIR := $(HOME)/.config/hyperdx/dev-slots/$(CBT_CI_SLOT)/history",
+      "reason": "internal_identifier",
+      "note": "Token \"hyperdx\" allowed in the token map"
+    },
+    {
+      "path": "Makefile",
+      "term": "hyperdx",
+      "snippet": "CBT_CI_LOGS_DIR := $(HOME)/.config/hyperdx/dev-slots/$(CBT_CI_SLOT)/logs-int",
+      "reason": "internal_identifier",
+      "note": "Token \"hyperdx\" allowed in the token map"
+    },
+    {
+      "path": "Makefile",
+      "term": "hyperdx",
+      "snippet": "docker build . -f ./docker/hyperdx/Dockerfile \\",
+      "reason": "internal_identifier",
+      "note": "Token \"hyperdx\" allowed in the token map"
+    },
+    {
+      "path": "README.md",
+      "term": "hyperdx",
+      "snippet": "derived from HyperDX",
+      "reason": "upstream_attribution",
+      "note": "Required attribution to the upstream project."
+    },
+    {
+      "path": "agent_docs/code_style.md",
+      "term": "clickstack",
+      "snippet": "| **Fenced / multi-line / copyable** | `CopySnippet` (`@/components/ClickStackOnboarding/CopySnippet`) | Install commands, HCL, JSX examples, any block the user",
+      "reason": "internal_identifier",
+      "note": "Token \"ClickStackOnboarding\" allowed in the token map"
+    },
+    {
+      "path": "agent_docs/development.md",
+      "term": "hyperdx",
+      "snippet": "If your worktrees share a folder name (`a/hyperdx`, `b/hyperdx`), they get the",
+      "reason": "internal_identifier",
+      "note": "Token \"hyperdx\" allowed in the token map"
+    },
+    {
+      "path": "agent_docs/development.md",
+      "term": "hyperdx",
+      "snippet": "The `hyperdx-private` Vercel project deploys the `@couchbase-traces/app` Next.js app for",
+      "reason": "internal_identifier",
+      "note": "Token \"hyperdx-private\" allowed in the token map"
+    },
+    {
+      "path": "agent_docs/evals.md",
+      "term": "hyperdx",
+      "snippet": "\"hyperdx-branch\": ($branch.mcps.hyperdx + {\"label\": \"Couchbase Traces Branch\", \"enabled\": true} | reprefix(\"hyperdx-branch\")),",
+      "reason": "internal_identifier",
+      "note": "Token \"hyperdx-branch\" allowed in the token map"
+    },
+    {
+      "path": "agent_docs/evals.md",
+      "term": "hyperdx",
+      "snippet": "\"hyperdx-main\": ($main[0].mcps.hyperdx + {\"label\": \"Couchbase Traces Main\", \"enabled\": true} | reprefix(\"hyperdx-main\"))",
+      "reason": "internal_identifier",
+      "note": "Token \"hyperdx-main\" allowed in the token map"
+    },
+    {
+      "path": "agent_docs/evals.md",
+      "term": "hyperdx",
+      "snippet": "# Expected: [\"hyperdx-branch\", \"hyperdx-main\"]",
+      "reason": "internal_identifier",
+      "note": "Token \"hyperdx-branch\" allowed in the token map"
+    },
+    {
+      "path": "agent_docs/evals.md",
+      "term": "hyperdx",
+      "snippet": "# Helper: rewrite mcp__hyperdx__ prefixes in toolPattern and deniedTools",
+      "reason": "internal_identifier",
+      "note": "Token \"mcp__hyperdx__\" allowed in the token map"
+    },
+    {
+      "path": "agent_docs/evals.md",
+      "term": "hyperdx",
+      "snippet": "### 2. Run `setup-hyperdx` against each instance (if needed)",
+      "reason": "internal_identifier",
+      "note": "Token \"setup-hyperdx\" allowed in the token map"
+    },
+    {
+      "path": "agent_docs/evals.md",
+      "term": "hyperdx",
+      "snippet": "--baseline hyperdx-main \\",
+      "reason": "internal_identifier",
+      "note": "Token \"hyperdx-main\" allowed in the token map"
+    },
+    {
+      "path": "agent_docs/evals.md",
+      "term": "hyperdx",
+      "snippet": "--mcp hyperdx --model claude-opus-4-6 --runs 3",
+      "reason": "internal_identifier",
+      "note": "Token \"hyperdx\" allowed in the token map"
+    },
+    {
+      "path": "agent_docs/evals.md",
+      "term": "hyperdx",
+      "snippet": "--mcp hyperdx --model claude-sonnet-4-20250514 --runs 3",
+      "reason": "internal_identifier",
+      "note": "Token \"hyperdx\" allowed in the token map"
+    },
+    {
+      "path": "agent_docs/evals.md",
+      "term": "hyperdx",
+      "snippet": "--mcp hyperdx,clickhouse --baseline clickhouse --runs 3",
+      "reason": "internal_identifier",
+      "note": "Token \"hyperdx\" allowed in the token map"
+    },
+    {
+      "path": "agent_docs/evals.md",
+      "term": "hyperdx",
+      "snippet": "--mcp hyperdx-branch,hyperdx-main \\",
+      "reason": "internal_identifier",
+      "note": "Token \"hyperdx-branch\" allowed in the token map"
+    },
+    {
+      "path": "agent_docs/evals.md",
+      "term": "hyperdx",
+      "snippet": ".deniedTools = [.deniedTools[] | gsub(\"^mcp__hyperdx__\"; \"mcp__\" + $new + \"__\")]",
+      "reason": "internal_identifier",
+      "note": "Token \"mcp__hyperdx__\" allowed in the token map"
+    },
+    {
+      "path": "agent_docs/evals.md",
+      "term": "hyperdx",
+      "snippet": ".hyperdxApi = $branch.hyperdxApi",
+      "reason": "internal_identifier",
+      "note": "Token \"hyperdxApi\" allowed in the token map"
+    },
+    {
+      "path": "agent_docs/evals.md",
+      "term": "hyperdx",
+      "snippet": "> `hyperdx-branch`) as the MCP server name, so Claude Code registers tools as",
+      "reason": "internal_identifier",
+      "note": "Token \"hyperdx-branch\" allowed in the token map"
+    },
+    {
+      "path": "agent_docs/evals.md",
+      "term": "hyperdx",
+      "snippet": "> `mcp__hyperdx-branch__*`. The `toolPattern` and `deniedTools` from the",
+      "reason": "internal_identifier",
+      "note": "Token \"mcp__hyperdx-branch__\" allowed in the token map"
+    },
+    {
+      "path": "agent_docs/evals.md",
+      "term": "hyperdx",
+      "snippet": "> original single-MCP config still say `mcp__hyperdx__*`, which won't match.",
+      "reason": "internal_identifier",
+      "note": "Token \"mcp__hyperdx__\" allowed in the token map"
+    },
+    {
+      "path": "agent_docs/evals.md",
+      "term": "hyperdx",
+      "snippet": "BRANCH_KEY=$(jq -r '.hyperdxApi.accessKey' packages/hdx-eval/eval.config.branch.json)",
+      "reason": "internal_identifier",
+      "note": "Token \"hyperdxApi.accessKey\" allowed in the token map"
+    },
+    {
+      "path": "agent_docs/evals.md",
+      "term": "hyperdx",
+      "snippet": "Each slot runs its own ClickHouse instance. `setup-hyperdx` (step 2) creates",
+      "reason": "internal_identifier",
+      "note": "Token \"setup-hyperdx\" allowed in the token map"
+    },
+    {
+      "path": "agent_docs/evals.md",
+      "term": "hyperdx",
+      "snippet": "MAIN_KEY=$(jq -r '.mcps[\"hyperdx-main\"].headers.Authorization' packages/hdx-eval/eval.config.json | sed 's/Bearer //')",
+      "reason": "internal_identifier",
+      "note": "Token \"hyperdx-main\" allowed in the token map"
+    },
+    {
+      "path": "agent_docs/evals.md",
+      "term": "hyperdx",
+      "snippet": "They must be regenerated per environment using `setup-hyperdx`.",
+      "reason": "internal_identifier",
+      "note": "Token \"setup-hyperdx\" allowed in the token map"
+    },
+    {
+      "path": "agent_docs/evals.md",
+      "term": "hyperdx",
+      "snippet": "`setup-hyperdx` against the affected instance and rebuild the combined config.",
+      "reason": "internal_identifier",
+      "note": "Token \"setup-hyperdx\" allowed in the token map"
+    },
+    {
+      "path": "agent_docs/evals.md",
+      "term": "hyperdx",
+      "snippet": "`setup-hyperdx` creates the Couchbase Traces account and Sources but does **not** seed",
+      "reason": "internal_identifier",
+      "note": "Token \"setup-hyperdx\" allowed in the token map"
+    },
+    {
+      "path": "agent_docs/evals.md",
+      "term": "hyperdx",
+      "snippet": "files in other worktrees or `~/sites/hyperdx/.env.local` for existing keys.",
+      "reason": "internal_identifier",
+      "note": "Token \"hyperdx\" allowed in the token map"
+    },
+    {
+      "path": "agent_docs/evals.md",
+      "term": "hyperdx",
+      "snippet": "yarn workspace @couchbase-traces/hdx-eval dev report <batch> --baseline hyperdx-main",
+      "reason": "internal_identifier",
+      "note": "Token \"hyperdx-main\" allowed in the token map"
+    },
+    {
+      "path": "agent_docs/evals.md",
+      "term": "hyperdx",
+      "snippet": "yarn workspace @couchbase-traces/hdx-eval dev run error-root-cause --mcp hyperdx --runs 1 --no-judge",
+      "reason": "internal_identifier",
+      "note": "Token \"hyperdx\" allowed in the token map"
+    },
+    {
+      "path": "agent_docs/evals.md",
+      "term": "hyperdx",
+      "snippet": "yarn workspace @couchbase-traces/hdx-eval dev setup-hyperdx",
+      "reason": "internal_identifier",
+      "note": "Token \"setup-hyperdx\" allowed in the token map"
+    },
+    {
+      "path": "agent_docs/evals.md",
+      "term": "hyperdx",
+      "snippet": "| `--baseline` | `hyperdx-main` | Sets main as the reference for delta computation in reports. |",
+      "reason": "internal_identifier",
+      "note": "Token \"hyperdx-main\" allowed in the token map"
+    },
+    {
+      "path": "agent_docs/observability.md",
+      "term": "hyperdx",
+      "snippet": "- **Naming**: `hyperdx.<domain>.<event>` (snake_case event), e.g.",
+      "reason": "internal_identifier",
+      "note": "Token \"hyperdx\" allowed in the token map"
+    },
+    {
+      "path": "agent_docs/observability.md",
+      "term": "hyperdx",
+      "snippet": "`buildLogComment(attribution)` in the `x-hyperdx-query-attribution` header",
+      "reason": "internal_identifier",
+      "note": "Token \"x-hyperdx-query-attribution\" allowed in the token map"
+    },
+    {
+      "path": "agent_docs/observability.md",
+      "term": "hyperdx",
+      "snippet": "| `hyperdx.<domain>.<field>` | Domain IDs, e.g. `cbt.alert.id`, `cbt.source.id`.  |",
+      "reason": "internal_identifier",
+      "note": "Token \"hyperdx\" allowed in the token map"
+    },
+    {
+      "path": "agent_docs/themes.md",
+      "term": "clickhouse cloud",
+      "snippet": "features (embedded mode, ClickHouse Cloud onboarding).",
+      "reason": "pending_decision",
+      "note": "Token \"ClickHouse Cloud\" allowed in the token map"
+    },
+    {
+      "path": "docker-compose.yml",
+      "term": "hyperdx",
+      "snippet": "MONGO_URI: 'mongodb://db:27017/hyperdx'",
+      "reason": "internal_identifier",
+      "note": "Token \"hyperdx\" allowed in the token map"
+    },
+    {
+      "path": "docker/clickhouse/local/config.xml",
+      "term": "hyperdx",
+      "snippet": "<custom_settings_prefixes>hyperdx</custom_settings_prefixes>",
+      "reason": "internal_identifier",
+      "note": "Token \"hyperdx\" allowed in the token map"
+    },
+    {
+      "path": "docker/clickhouse/local/init-db-e2e.sh",
+      "term": "hyperdx",
+      "snippet": "CREATE TABLE ${DATABASE}.e2e_hyperdx_sessions",
+      "reason": "engine_reference",
+      "note": "Token \"e2e_hyperdx_sessions\" allowed in the token map"
+    },
+    {
+      "path": "docker/hyperdx/Dockerfile",
+      "term": "hyperdx",
+      "snippet": "COPY --chown=node:node --from=hyperdx ./entry.prod.sh /etc/local/entry.sh",
+      "reason": "internal_identifier",
+      "note": "Token \"hyperdx\" allowed in the token map"
+    },
+    {
+      "path": "docker/hyperdx/Dockerfile",
+      "term": "hyperdx",
+      "snippet": "COPY --chown=node:node --from=hyperdx ./refresh-env.js /etc/local/refresh-env.js",
+      "reason": "internal_identifier",
+      "note": "Token \"hyperdx\" allowed in the token map"
+    },
+    {
+      "path": "docker/hyperdx/Dockerfile",
+      "term": "hyperdx",
+      "snippet": "COPY --from=hyperdx ./clickhouseConfig.xml /etc/clickhouse-server/config.xml",
+      "reason": "internal_identifier",
+      "note": "Token \"hyperdx\" allowed in the token map"
+    },
+    {
+      "path": "docker/hyperdx/Dockerfile",
+      "term": "hyperdx",
+      "snippet": "COPY --from=hyperdx ./entry.local.auth.sh /etc/local/entry.sh",
+      "reason": "internal_identifier",
+      "note": "Token \"hyperdx\" allowed in the token map"
+    },
+    {
+      "path": "docker/hyperdx/Dockerfile",
+      "term": "hyperdx",
+      "snippet": "COPY --from=hyperdx ./entry.local.base.sh /etc/local/entry.base.sh",
+      "reason": "internal_identifier",
+      "note": "Token \"hyperdx\" allowed in the token map"
+    },
+    {
+      "path": "docker/hyperdx/Dockerfile",
+      "term": "hyperdx",
+      "snippet": "COPY --from=hyperdx ./entry.local.noauth.sh /etc/local/entry.sh",
+      "reason": "internal_identifier",
+      "note": "Token \"hyperdx\" allowed in the token map"
+    },
+    {
+      "path": "docker/hyperdx/Dockerfile",
+      "term": "hyperdx",
+      "snippet": "COPY --from=hyperdx ./refresh-env.js /etc/local/refresh-env.js",
+      "reason": "internal_identifier",
+      "note": "Token \"hyperdx\" allowed in the token map"
+    },
+    {
+      "path": "docker/hyperdx/build.sh",
+      "term": "hyperdx",
+      "snippet": "--build-context hyperdx=./docker/hyperdx \\",
+      "reason": "internal_identifier",
+      "note": "Token \"hyperdx\" allowed in the token map"
+    },
+    {
+      "path": "docker/hyperdx/build.sh",
+      "term": "hyperdx",
+      "snippet": "--target all-in-one-noauth -t hyperdx/dev-all-in-one-noauth",
+      "reason": "internal_identifier",
+      "note": "Token \"hyperdx\" allowed in the token map"
+    },
+    {
+      "path": "docker/hyperdx/build.sh",
+      "term": "hyperdx",
+      "snippet": "docker build --squash . -f ./docker/hyperdx/Dockerfile \\",
+      "reason": "internal_identifier",
+      "note": "Token \"hyperdx\" allowed in the token map"
+    },
+    {
+      "path": "docker/hyperdx/entry.local.base.sh",
+      "term": "hyperdx",
+      "snippet": "\"./packages/api/bin/hyperdx task check-alerts\" \\",
+      "reason": "internal_identifier",
+      "note": "Token \"hyperdx\" allowed in the token map"
+    },
+    {
+      "path": "docker/hyperdx/entry.local.base.sh",
+      "term": "hyperdx",
+      "snippet": "\"PORT=${CBT_API_PORT:-8000} CBT_APP_PORT=${CBT_APP_PORT:-8080} ./packages/api/bin/hyperdx api\" \\",
+      "reason": "internal_identifier",
+      "note": "Token \"hyperdx\" allowed in the token map"
+    },
+    {
+      "path": "docker/hyperdx/entry.local.base.sh",
+      "term": "hyperdx",
+      "snippet": "export EXPRESS_SESSION_SECRET=\"${EXPRESS_SESSION_SECRET:-hyperdx is cool 👋}\"",
+      "reason": "internal_identifier",
+      "note": "Token \"hyperdx\" allowed in the token map"
+    },
+    {
+      "path": "docker/hyperdx/entry.local.base.sh",
+      "term": "hyperdx",
+      "snippet": "export MONGO_URI=\"mongodb://db:27017/hyperdx\"",
+      "reason": "internal_identifier",
+      "note": "Token \"hyperdx\" allowed in the token map"
+    },
+    {
+      "path": "docker/hyperdx/entry.prod.sh",
+      "term": "hyperdx",
+      "snippet": "\"./packages/api/bin/hyperdx task check-alerts\" \\",
+      "reason": "internal_identifier",
+      "note": "Token \"hyperdx\" allowed in the token map"
+    },
+    {
+      "path": "docker/hyperdx/entry.prod.sh",
+      "term": "hyperdx",
+      "snippet": "\"PORT=${CBT_API_PORT:-8000} CBT_APP_PORT=${CBT_APP_PORT:-8080} ./packages/api/bin/hyperdx api\" \\",
+      "reason": "internal_identifier",
+      "note": "Token \"hyperdx\" allowed in the token map"
+    },
+    {
+      "path": "docker/hyperdx/entry.prod.sh",
+      "term": "hyperdx",
+      "snippet": "EXTRA_CMDS=\"./packages/api/bin/hyperdx task provision-dashboards\"",
+      "reason": "internal_identifier",
+      "note": "Token \"hyperdx\" allowed in the token map"
+    },
+    {
+      "path": "docker/hyperdx/entry.prod.sh",
+      "term": "hyperdx",
+      "snippet": "export CBT_IMAGE=\"hyperdx\"",
+      "reason": "internal_identifier",
+      "note": "Token \"hyperdx\" allowed in the token map"
+    },
+    {
+      "path": "docker/otel-collector/config.standalone.auth.yaml",
+      "term": "hyperdx",
+      "snippet": "authenticator: bearertokenauth/hyperdx",
+      "reason": "internal_identifier",
+      "note": "Token \"hyperdx\" allowed in the token map"
+    },
+    {
+      "path": "docker/otel-collector/config.standalone.auth.yaml",
+      "term": "hyperdx",
+      "snippet": "bearertokenauth/hyperdx:",
+      "reason": "internal_identifier",
+      "note": "Token \"hyperdx\" allowed in the token map"
+    },
+    {
+      "path": "docker/otel-collector/config.standalone.auth.yaml",
+      "term": "hyperdx",
+      "snippet": "extensions: [health_check, bearertokenauth/hyperdx]",
+      "reason": "internal_identifier",
+      "note": "Token \"hyperdx\" allowed in the token map"
+    },
+    {
+      "path": "docker/otel-collector/config.standalone.auth.yaml",
+      "term": "hyperdx",
+      "snippet": "otlp/hyperdx:",
+      "reason": "internal_identifier",
+      "note": "Token \"hyperdx\" allowed in the token map"
+    },
+    {
+      "path": "docker/otel-collector/config.standalone.oidc.yaml",
+      "term": "hyperdx",
+      "snippet": "authenticator: oidc/hyperdx",
+      "reason": "internal_identifier",
+      "note": "Token \"hyperdx\" allowed in the token map"
+    },
+    {
+      "path": "docker/otel-collector/config.standalone.oidc.yaml",
+      "term": "hyperdx",
+      "snippet": "extensions: [health_check, oidc/hyperdx]",
+      "reason": "internal_identifier",
+      "note": "Token \"hyperdx\" allowed in the token map"
+    },
+    {
+      "path": "docker/otel-collector/config.standalone.oidc.yaml",
+      "term": "hyperdx",
+      "snippet": "oidc/hyperdx:",
+      "reason": "internal_identifier",
+      "note": "Token \"hyperdx\" allowed in the token map"
+    },
+    {
+      "path": "docker/otel-collector/config.standalone.oidc.yaml",
+      "term": "hyperdx",
+      "snippet": "otlp/hyperdx:",
+      "reason": "internal_identifier",
+      "note": "Token \"hyperdx\" allowed in the token map"
+    },
+    {
+      "path": "docker/otel-collector/config.standalone.promql.yaml",
+      "term": "hyperdx",
+      "snippet": "receivers: [otlp/hyperdx]",
+      "reason": "internal_identifier",
+      "note": "Token \"hyperdx\" allowed in the token map"
+    },
+    {
+      "path": "docker/otel-collector/config.standalone.yaml",
+      "term": "hyperdx",
+      "snippet": "otlp/hyperdx:",
+      "reason": "internal_identifier",
+      "note": "Token \"hyperdx\" allowed in the token map"
+    },
+    {
+      "path": "docker/otel-collector/config.standalone.yaml",
+      "term": "hyperdx",
+      "snippet": "receivers: [otlp/hyperdx]",
+      "reason": "internal_identifier",
+      "note": "Token \"hyperdx\" allowed in the token map"
+    },
+    {
+      "path": "docker/otel-collector/custom.config.yaml",
+      "term": "hyperdx",
+      "snippet": "#     - otlp/hyperdx",
+      "reason": "internal_identifier",
+      "note": "Token \"hyperdx\" allowed in the token map"
+    },
+    {
+      "path": "docker/otel-collector/custom.config.yaml",
+      "term": "hyperdx",
+      "snippet": "- otlp/hyperdx",
+      "reason": "internal_identifier",
+      "note": "Token \"hyperdx\" allowed in the token map"
+    },
+    {
+      "path": "docs/upstream-AGENTS.md",
+      "term": "hyperdx",
+      "snippet": "[play.hyperdx.io](https://play.hyperdx.io) when the bug shows there, or from",
+      "reason": "pending_decision",
+      "note": "Token \"play.hyperdx.io\" allowed in the token map"
+    },
+    {
+      "path": "knip.json",
+      "term": "hyperdx",
+      "snippet": "\"docker/hyperdx/**\",",
+      "reason": "internal_identifier",
+      "note": "Token \"hyperdx\" allowed in the token map"
+    },
+    {
+      "path": "package.json",
+      "term": "hyperdx",
+      "snippet": "\"name\": \"hyperdx\",",
+      "reason": "internal_identifier",
+      "note": "Token \"hyperdx\" allowed in the token map"
+    },
+    {
+      "path": "packages/api/.env.development",
+      "term": "clickstack",
+      "snippet": "CLICKSTACK_CAPTURE_HTTP_BODY=true",
+      "reason": "external_dependency",
+      "note": "Token \"CLICKSTACK_CAPTURE_HTTP_BODY\" allowed in the token map"
+    },
+    {
+      "path": "packages/api/.env.development",
+      "term": "hyperdx",
+      "snippet": "MONGO_URI=\"mongodb://localhost:${CBT_DEV_MONGO_PORT}/hyperdx\"",
+      "reason": "internal_identifier",
+      "note": "Token \"hyperdx\" allowed in the token map"
+    },
+    {
+      "path": "packages/api/.env.e2e",
+      "term": "hyperdx",
+      "snippet": "MONGO_URI=mongodb://localhost:${CBT_E2E_MONGO_PORT:-21100}/hyperdx-e2e",
+      "reason": "internal_identifier",
+      "note": "Token \"hyperdx-e2e\" allowed in the token map"
+    },
+    {
+      "path": "packages/api/.env.test",
+      "term": "hyperdx",
+      "snippet": "MONGO_URI=mongodb://localhost:${CBT_CI_MONGO_PORT:-39999}/hyperdx-test",
+      "reason": "internal_identifier",
+      "note": "Token \"hyperdx-test\" allowed in the token map"
+    },
+    {
+      "path": "packages/api/Dockerfile",
+      "term": "hyperdx",
+      "snippet": "ENTRYPOINT [\"./packages/api/bin/hyperdx\", \"api\"]",
+      "reason": "internal_identifier",
+      "note": "Token \"hyperdx\" allowed in the token map"
+    },
+    {
+      "path": "packages/api/bin/hyperdx",
+      "term": "hyperdx",
+      "snippet": "echo \"Usage: hyperdx <command> [args...]\"",
+      "reason": "internal_identifier",
+      "note": "Token \"hyperdx\" allowed in the token map"
+    },
+    {
+      "path": "packages/api/migrate-mongo-config.ts",
+      "term": "hyperdx",
+      "snippet": "databaseName: 'hyperdx',",
+      "reason": "internal_identifier",
+      "note": "Token \"hyperdx\" allowed in the token map"
+    },
+    {
+      "path": "packages/api/openapi.json",
+      "term": "hyperdx",
+      "snippet": "\"description\": \"Updates an existing ClickHouse connection.\\n\\nField semantics: if `password` is omitted or empty the existing\\npassword is kept. `hyperdxSetting",
+      "reason": "internal_identifier",
+      "note": "Token \"hyperdxSettingPrefix\" allowed in the token map"
+    },
+    {
+      "path": "packages/api/openapi.json",
+      "term": "hyperdx",
+      "snippet": "\"example\": \"hyperdx_\"",
+      "reason": "internal_identifier",
+      "note": "Token \"hyperdx_\" allowed in the token map"
+    },
+    {
+      "path": "packages/api/openapi.json",
+      "term": "hyperdx",
+      "snippet": "\"hyperdxSettingPrefix\": {",
+      "reason": "internal_identifier",
+      "note": "Token \"hyperdxSettingPrefix\" allowed in the token map"
+    },
+    {
+      "path": "packages/api/scripts/seed-alerts.ts",
+      "term": "hyperdx",
+      "snippet": "return `mongodb://localhost:${port}/hyperdx`;",
+      "reason": "internal_identifier",
+      "note": "Token \"hyperdx\" allowed in the token map"
+    },
+    {
+      "path": "packages/api/src/__tests__/config.test.ts",
+      "term": "hyperdx",
+      "snippet": "expect(config.EXPRESS_SESSION_SECRET).toBe('hyperdx is cool 👋');",
+      "reason": "internal_identifier",
+      "note": "Token \"hyperdx\" allowed in the token map"
+    },
+    {
+      "path": "packages/api/src/__tests__/config.test.ts",
+      "term": "hyperdx",
+      "snippet": "for (const value of [undefined, '', 'hyperdx is cool 👋']) {",
+      "reason": "internal_identifier",
+      "note": "Token \"hyperdx\" allowed in the token map"
+    },
+    {
+      "path": "packages/api/src/__tests__/config.test.ts",
+      "term": "hyperdx",
+      "snippet": "hyperdx.io",
+      "reason": "test_fixture",
+      "note": "Arbitrary FRONTEND_URL values for config parsing; never requested."
+    },
+    {
+      "path": "packages/api/src/__tests__/config.test.ts",
+      "term": "hyperdx",
+      "snippet": "process.env.EXPRESS_SESSION_SECRET = 'hyperdx is cool 👋';",
+      "reason": "internal_identifier",
+      "note": "Token \"hyperdx\" allowed in the token map"
+    },
+    {
+      "path": "packages/api/src/__tests__/sessionSecretStartup.test.ts",
+      "term": "hyperdx",
+      "snippet": "[false, 'hyperdx is cool 👋', 1],",
+      "reason": "internal_identifier",
+      "note": "Token \"hyperdx\" allowed in the token map"
+    },
+    {
+      "path": "packages/api/src/__tests__/sessionSecretStartup.test.ts",
+      "term": "hyperdx",
+      "snippet": "[true, 'hyperdx is cool 👋', 0],",
+      "reason": "internal_identifier",
+      "note": "Token \"hyperdx\" allowed in the token map"
+    },
+    {
+      "path": "packages/api/src/config.ts",
+      "term": "hyperdx",
+      "snippet": "const LEGACY_PUBLIC_SESSION_SECRET = 'hyperdx is cool 👋';",
+      "reason": "internal_identifier",
+      "note": "Token \"hyperdx\" allowed in the token map"
+    },
+    {
+      "path": "packages/api/src/config.ts",
+      "term": "hyperdx",
+      "snippet": "export const IS_APP_IMAGE = CBT_IMAGE === 'hyperdx';",
+      "reason": "internal_identifier",
+      "note": "Token \"hyperdx\" allowed in the token map"
+    },
+    {
+      "path": "packages/api/src/controllers/__tests__/orgApiKey.int.test.ts",
+      "term": "hyperdx",
+      "snippet": "/^sa-[0-9a-f]{24}@service-accounts\\.hyperdx\\.invalid$/,",
+      "reason": "internal_identifier",
+      "note": "Token \"hyperdx\" allowed in the token map"
+    },
+    {
+      "path": "packages/api/src/controllers/orgApiKey.ts",
+      "term": "hyperdx",
+      "snippet": "email: `sa-${crypto.randomBytes(12).toString('hex')}@service-accounts.hyperdx.invalid`,",
+      "reason": "internal_identifier",
+      "note": "Token \"@service-accounts.hyperdx.invalid\" allowed in the token map"
+    },
+    {
+      "path": "packages/api/src/mcp/__tests__/serverMetadata.test.ts",
+      "term": "hyperdx",
+      "snippet": "/hyperdx",
+      "reason": "test_fixture",
+      "note": "Base-path and MCP icon path fixtures; the icon path matches the source, which keeps the upstream favicons/hyperdx path."
+    },
+    {
+      "path": "packages/api/src/mcp/mcpServer.ts",
+      "term": "hyperdx",
+      "snippet": "? `${FRONTEND_URL.replace(/\\/+$/, '')}/favicons/hyperdx/favicon.svg`",
+      "reason": "internal_identifier",
+      "note": "Token \"hyperdx\" allowed in the token map"
+    },
+    {
+      "path": "packages/api/src/middleware/__tests__/queryAttribution.int.test.ts",
+      "term": "hyperdx",
+      "snippet": "'x-hyperdx-query-attribution',",
+      "reason": "internal_identifier",
+      "note": "Token \"x-hyperdx-query-attribution\" allowed in the token map"
+    },
+    {
+      "path": "packages/api/src/middleware/auth.ts",
+      "term": "hyperdx",
+      "snippet": "email: 'local-user@hyperdx.io',",
+      "reason": "internal_identifier",
+      "note": "Token \"local-user@hyperdx.io\" allowed in the token map"
+    },
+    {
+      "path": "packages/api/src/models/__tests__/connectRetry.test.ts",
+      "term": "hyperdx",
+      "snippet": "MONGO_URI: 'mongodb://localhost:27017/hyperdx-test',",
+      "reason": "internal_identifier",
+      "note": "Token \"hyperdx-test\" allowed in the token map"
+    },
+    {
+      "path": "packages/api/src/models/__tests__/connectRetry.test.ts",
+      "term": "hyperdx",
+      "snippet": "mockConfig.MONGO_URI = 'mongodb://localhost:27017/hyperdx-test';",
+      "reason": "internal_identifier",
+      "note": "Token \"hyperdx-test\" allowed in the token map"
+    },
+    {
+      "path": "packages/api/src/opamp/controllers/__tests__/opampController.test.ts",
+      "term": "hyperdx",
+      "snippet": "authenticator: 'bearertokenauth/hyperdx',",
+      "reason": "internal_identifier",
+      "note": "Token \"hyperdx\" allowed in the token map"
+    },
+    {
+      "path": "packages/api/src/opamp/controllers/__tests__/opampController.test.ts",
+      "term": "hyperdx",
+      "snippet": "const tokens = cfg.extensions['bearertokenauth/hyperdx'].tokens;",
+      "reason": "internal_identifier",
+      "note": "Token \"hyperdx\" allowed in the token map"
+    },
+    {
+      "path": "packages/api/src/opamp/controllers/__tests__/opampController.test.ts",
+      "term": "hyperdx",
+      "snippet": "describe('buildOtelCollectorConfig otlp/hyperdx CORS', () => {",
+      "reason": "internal_identifier",
+      "note": "Token \"hyperdx\" allowed in the token map"
+    },
+    {
+      "path": "packages/api/src/opamp/controllers/__tests__/opampController.test.ts",
+      "term": "hyperdx",
+      "snippet": "describe('buildOtelCollectorConfig otlp/hyperdx authentication', () => {",
+      "reason": "internal_identifier",
+      "note": "Token \"hyperdx\" allowed in the token map"
+    },
+    {
+      "path": "packages/api/src/opamp/controllers/__tests__/opampController.test.ts",
+      "term": "hyperdx",
+      "snippet": "expect(cfg.extensions['bearertokenauth/hyperdx']).toEqual({",
+      "reason": "internal_identifier",
+      "note": "Token \"hyperdx\" allowed in the token map"
+    },
+    {
+      "path": "packages/api/src/opamp/controllers/__tests__/opampController.test.ts",
+      "term": "hyperdx",
+      "snippet": "expect(cfg.receivers['otlp/hyperdx']?.protocols.grpc.auth).toEqual({",
+      "reason": "internal_identifier",
+      "note": "Token \"hyperdx\" allowed in the token map"
+    },
+    {
+      "path": "packages/api/src/opamp/controllers/__tests__/opampController.test.ts",
+      "term": "hyperdx",
+      "snippet": "expect(cfg.receivers['otlp/hyperdx']?.protocols.http.auth).toEqual({",
+      "reason": "internal_identifier",
+      "note": "Token \"hyperdx\" allowed in the token map"
+    },
+    {
+      "path": "packages/api/src/opamp/controllers/__tests__/opampController.test.ts",
+      "term": "hyperdx",
+      "snippet": "expect(cfg.receivers['otlp/hyperdx']?.protocols.http.cors).toEqual({",
+      "reason": "internal_identifier",
+      "note": "Token \"hyperdx\" allowed in the token map"
+    },
+    {
+      "path": "packages/api/src/opamp/controllers/__tests__/opampController.test.ts",
+      "term": "hyperdx",
+      "snippet": "expect(cfg.service.extensions).toContain('bearertokenauth/hyperdx');",
+      "reason": "internal_identifier",
+      "note": "Token \"hyperdx\" allowed in the token map"
+    },
+    {
+      "path": "packages/api/src/opamp/controllers/opampController.ts",
+      "term": "hyperdx",
+      "snippet": "'otlp/hyperdx',",
+      "reason": "internal_identifier",
+      "note": "Token \"hyperdx\" allowed in the token map"
+    },
+    {
+      "path": "packages/api/src/opamp/controllers/opampController.ts",
+      "term": "hyperdx",
+      "snippet": "'otlp/hyperdx': {",
+      "reason": "internal_identifier",
+      "note": "Token \"hyperdx\" allowed in the token map"
+    },
+    {
+      "path": "packages/api/src/opamp/controllers/opampController.ts",
+      "term": "hyperdx",
+      "snippet": "'otlp/hyperdx'?: {",
+      "reason": "internal_identifier",
+      "note": "Token \"hyperdx\" allowed in the token map"
+    },
+    {
+      "path": "packages/api/src/opamp/controllers/opampController.ts",
+      "term": "hyperdx",
+      "snippet": "authenticator: 'bearertokenauth/hyperdx',",
+      "reason": "internal_identifier",
+      "note": "Token \"hyperdx\" allowed in the token map"
+    },
+    {
+      "path": "packages/api/src/opamp/controllers/opampController.ts",
+      "term": "hyperdx",
+      "snippet": "if (otelCollectorConfig.receivers['otlp/hyperdx'] == null) {",
+      "reason": "internal_identifier",
+      "note": "Token \"hyperdx\" allowed in the token map"
+    },
+    {
+      "path": "packages/api/src/opamp/controllers/opampController.ts",
+      "term": "hyperdx",
+      "snippet": "otelCollectorConfig.extensions['bearertokenauth/hyperdx'] = {",
+      "reason": "internal_identifier",
+      "note": "Token \"hyperdx\" allowed in the token map"
+    },
+    {
+      "path": "packages/api/src/opamp/controllers/opampController.ts",
+      "term": "hyperdx",
+      "snippet": "otelCollectorConfig.receivers['otlp/hyperdx'].protocols.grpc.auth = {",
+      "reason": "internal_identifier",
+      "note": "Token \"hyperdx\" allowed in the token map"
+    },
+    {
+      "path": "packages/api/src/opamp/controllers/opampController.ts",
+      "term": "hyperdx",
+      "snippet": "otelCollectorConfig.receivers['otlp/hyperdx'].protocols.http.auth = {",
+      "reason": "internal_identifier",
+      "note": "Token \"hyperdx\" allowed in the token map"
+    },
+    {
+      "path": "packages/api/src/opamp/controllers/opampController.ts",
+      "term": "hyperdx",
+      "snippet": "otelCollectorConfig.service.extensions = ['bearertokenauth/hyperdx'];",
+      "reason": "internal_identifier",
+      "note": "Token \"hyperdx\" allowed in the token map"
+    },
+    {
+      "path": "packages/api/src/opamp/controllers/opampController.ts",
+      "term": "hyperdx",
+      "snippet": "otelCollectorConfig.service.pipelines.traces.receivers.push('otlp/hyperdx');",
+      "reason": "internal_identifier",
+      "note": "Token \"hyperdx\" allowed in the token map"
+    },
+    {
+      "path": "packages/api/src/opamp/controllers/opampController.ts",
+      "term": "hyperdx",
+      "snippet": "receivers: ['otlp/hyperdx'],",
+      "reason": "internal_identifier",
+      "note": "Token \"hyperdx\" allowed in the token map"
+    },
+    {
+      "path": "packages/api/src/opamp/controllers/opampController.ts",
+      "term": "hyperdx",
+      "snippet": "throw new Error('otlp/hyperdx receiver not found');",
+      "reason": "internal_identifier",
+      "note": "Token \"hyperdx\" allowed in the token map"
+    },
+    {
+      "path": "packages/api/src/routers/api/__tests__/clickhouseProxy.int.test.ts",
+      "term": "hyperdx",
+      "snippet": ".set('x-hyperdx-connection-id', connectionId)",
+      "reason": "internal_identifier",
+      "note": "Token \"x-hyperdx-connection-id\" allowed in the token map"
+    },
+    {
+      "path": "packages/api/src/routers/api/__tests__/iac.int.test.ts",
+      "term": "url",
+      "snippet": "abc.clickhouse.cloud",
+      "reason": "test_fixture",
+      "note": "Example ClickHouse endpoint value; never requested."
+    },
+    {
+      "path": "packages/api/src/routers/api/__tests__/sources.int.test.ts",
+      "term": "hyperdx",
+      "snippet": "email: 'local-user@hyperdx.io',",
+      "reason": "internal_identifier",
+      "note": "Token \"local-user@hyperdx.io\" allowed in the token map"
+    },
+    {
+      "path": "packages/api/src/routers/api/__tests__/team.int.test.ts",
+      "term": "hyperdx",
+      "snippet": "email: 'sa@service-accounts.hyperdx.invalid',",
+      "reason": "internal_identifier",
+      "note": "Token \"sa@service-accounts.hyperdx.invalid\" allowed in the token map"
+    },
+    {
+      "path": "packages/api/src/routers/api/clickhouseProxy.ts",
+      "term": "hyperdx",
+      "snippet": "'x-hyperdx-connection-id': objectIdSchema,",
+      "reason": "internal_identifier",
+      "note": "Token \"x-hyperdx-connection-id\" allowed in the token map"
+    },
+    {
+      "path": "packages/api/src/routers/api/clickhouseProxy.ts",
+      "term": "hyperdx",
+      "snippet": "const connection_id = req.headers['x-hyperdx-connection-id']!; // ! because zod already validated",
+      "reason": "internal_identifier",
+      "note": "Token \"x-hyperdx-connection-id\" allowed in the token map"
+    },
+    {
+      "path": "packages/api/src/routers/api/clickhouseProxy.ts",
+      "term": "hyperdx",
+      "snippet": "delete req.headers['x-hyperdx-connection-id'];",
+      "reason": "internal_identifier",
+      "note": "Token \"x-hyperdx-connection-id\" allowed in the token map"
+    },
+    {
+      "path": "packages/api/src/routers/api/clickhouseProxy.ts",
+      "term": "hyperdx",
+      "snippet": "logger.debug('hyperdxSettingPrefix set, no session user found');",
+      "reason": "internal_identifier",
+      "note": "Token \"hyperdxSettingPrefix\" allowed in the token map"
+    },
+    {
+      "path": "packages/api/src/routers/api/clickhouseProxy.ts",
+      "term": "hyperdx",
+      "snippet": "proxyReq.setHeader('user-agent', `hyperdx ${CODE_VERSION}`);",
+      "reason": "internal_identifier",
+      "note": "Token \"hyperdx\" allowed in the token map"
+    },
+    {
+      "path": "packages/api/src/routers/api/connections.ts",
+      "term": "hyperdx",
+      "snippet": "shouldUnsetPrefix ? ['hyperdxSettingPrefix'] : [],",
+      "reason": "internal_identifier",
+      "note": "Token \"hyperdxSettingPrefix\" allowed in the token map"
+    },
+    {
+      "path": "packages/api/src/routers/external-api/__tests__/connections.int.test.ts",
+      "term": "hyperdx",
+      "snippet": "expect(stored?.hyperdxSettingPrefix).toBe('hyperdx_');",
+      "reason": "internal_identifier",
+      "note": "Token \"hyperdx_\" allowed in the token map"
+    },
+    {
+      "path": "packages/api/src/routers/external-api/__tests__/connections.int.test.ts",
+      "term": "hyperdx",
+      "snippet": "hyperdxSettingPrefix: 'hyperdx_',",
+      "reason": "internal_identifier",
+      "note": "Token \"hyperdx_\" allowed in the token map"
+    },
+    {
+      "path": "packages/api/src/routers/external-api/__tests__/connections.int.test.ts",
+      "term": "hyperdx",
+      "snippet": "it('should clear hyperdxSettingPrefix when set to an empty string', async () => {",
+      "reason": "internal_identifier",
+      "note": "Token \"hyperdxSettingPrefix\" allowed in the token map"
+    },
+    {
+      "path": "packages/api/src/routers/external-api/__tests__/connections.int.test.ts",
+      "term": "hyperdx",
+      "snippet": "it('should clear hyperdxSettingPrefix when set to null', async () => {",
+      "reason": "internal_identifier",
+      "note": "Token \"hyperdxSettingPrefix\" allowed in the token map"
+    },
+    {
+      "path": "packages/api/src/routers/external-api/__tests__/connections.int.test.ts",
+      "term": "hyperdx",
+      "snippet": "it('should keep hyperdxSettingPrefix unchanged when omitted', async () => {",
+      "reason": "internal_identifier",
+      "note": "Token \"hyperdxSettingPrefix\" allowed in the token map"
+    },
+    {
+      "path": "packages/api/src/routers/external-api/v2/connections.ts",
+      "term": "hyperdx",
+      "snippet": "unsetFields.push('hyperdxSettingPrefix');",
+      "reason": "internal_identifier",
+      "note": "Token \"hyperdxSettingPrefix\" allowed in the token map"
+    },
+    {
+      "path": "packages/api/src/utils/__tests__/proxyBody.test.ts",
+      "term": "url",
+      "snippet": "localhost/clickhouse-proxy",
+      "reason": "internal_identifier",
+      "note": "Local proxy route in a request fixture."
+    },
+    {
+      "path": "packages/api/src/utils/logParser.ts",
+      "term": "hyperdx",
+      "snippet": "HyperDX = 'hyperdx',",
+      "reason": "internal_identifier",
+      "note": "Token \"hyperdx\" allowed in the token map"
+    },
+    {
+      "path": "packages/api/src/utils/tokenEncryption.ts",
+      "term": "hyperdx",
+      "snippet": "const VERIFY_SENTINEL = 'hyperdx-token-encryption-check';",
+      "reason": "internal_identifier",
+      "note": "Token \"hyperdx-token-encryption-check\" allowed in the token map"
+    },
+    {
+      "path": "packages/app/jest.config.js",
+      "term": "clickstack",
+      "snippet": "'<rootDir>/src/__mocks__/clickstack-browser.ts',",
+      "reason": "internal_identifier",
+      "note": "Token \"clickstack-browser.ts\" allowed in the token map"
+    },
+    {
+      "path": "packages/app/src/CareersPage.tsx",
+      "term": "clickstack",
+      "snippet": "/hyperdx|clickstack/i",
+      "reason": "pending_decision",
+      "note": "Careers page (app-careers, needs_decision) filters upstream commits."
+    },
+    {
+      "path": "packages/app/src/CareersPage.tsx",
+      "term": "clickstack",
+      "snippet": "ClickStack/commits",
+      "reason": "pending_decision",
+      "note": "Careers page (app-careers, needs_decision) lists ClickStack commits."
+    },
+    {
+      "path": "packages/app/src/CareersPage.tsx",
+      "term": "hyperdx",
+      "snippet": "const FILTER_PATTERN = /hyperdx|clickstack/i;",
+      "reason": "internal_identifier",
+      "note": "Token \"hyperdx\" allowed in the token map"
+    },
+    {
+      "path": "packages/app/src/CareersPage.tsx",
+      "term": "url",
+      "snippet": "boards-api.greenhouse.io",
+      "reason": "pending_decision",
+      "note": "Careers page (app-careers, needs_decision) loads ClickHouse job listings."
+    },
+    {
+      "path": "packages/app/src/ChartUtils.tsx",
+      "term": "url",
+      "snippet": "github.com/ClickHouse/ClickHouse",
+      "reason": "engine_reference",
+      "note": "Source reference for engine behavior."
+    },
+    {
+      "path": "packages/app/src/__tests__/hdxDebug.test.ts",
+      "term": "hdx",
+      "snippet": "if (!window.hdx) throw new Error('window.hdx was not installed');",
+      "reason": "internal_identifier",
+      "note": "Token \"window.hdx\" allowed in the token map"
+    },
+    {
+      "path": "packages/app/src/__tests__/prometheusApi.test.ts",
+      "term": "hyperdx",
+      "snippet": "expect(JSON.parse(headers['x-hyperdx-query-attribution'])).toEqual({",
+      "reason": "internal_identifier",
+      "note": "Token \"x-hyperdx-query-attribution\" allowed in the token map"
+    },
+    {
+      "path": "packages/app/src/__tests__/searchFilters.test.ts",
+      "term": "hyperdx",
+      "snippet": "{ type: 'sql', condition: `hyperdx_event_type IN ('span')` },",
+      "reason": "engine_reference",
+      "note": "Token \"hyperdx_event_type\" allowed in the token map"
+    },
+    {
+      "path": "packages/app/src/components/ConnectionForm.tsx",
+      "term": "hyperdx",
+      "snippet": "name=\"hyperdxSettingPrefix\"",
+      "reason": "internal_identifier",
+      "note": "Token \"hyperdxSettingPrefix\" allowed in the token map"
+    },
+    {
+      "path": "packages/app/src/components/ConnectionForm.tsx",
+      "term": "hyperdx",
+      "snippet": "placeholder=\"hyperdx\"",
+      "reason": "internal_identifier",
+      "note": "Token \"hyperdx\" allowed in the token map"
+    },
+    {
+      "path": "packages/app/src/components/Iac/__tests__/ResourceTerraformPopover.test.tsx",
+      "term": "clickstack",
+      "snippet": "'clickhouse_clickstack_saved_search.saved_search_655b1b7d9143aa1b1b73f4f6',",
+      "reason": "external_dependency",
+      "note": "Token \"clickhouse_clickstack_saved_search.saved_search_655b1b7d9143aa1b1b73f4f6\" allowed in the token map"
+    },
+    {
+      "path": "packages/app/src/components/Iac/__tests__/ResourceTerraformPopover.test.tsx",
+      "term": "clickstack",
+      "snippet": "/to = clickhouse_clickstack_dashboard\\.dashboard_655b1b7d9143aa1b1b73f4f4/,",
+      "reason": "external_dependency",
+      "note": "Token \"clickhouse_clickstack_dashboard\" allowed in the token map"
+    },
+    {
+      "path": "packages/app/src/components/Iac/__tests__/ResourceTerraformPopover.test.tsx",
+      "term": "clickstack",
+      "snippet": "['alert', 'clickhouse_clickstack_alert.alert_655b1b7d9143aa1b1b73f4f6'],",
+      "reason": "external_dependency",
+      "note": "Token \"clickhouse_clickstack_alert.alert_655b1b7d9143aa1b1b73f4f6\" allowed in the token map"
+    },
+    {
+      "path": "packages/app/src/components/Iac/__tests__/ResourceTerraformPopover.test.tsx",
+      "term": "clickstack",
+      "snippet": "expect(screen.getByText(/clickstack_endpoint/)).toHaveTextContent(",
+      "reason": "external_dependency",
+      "note": "Token \"clickstack_endpoint\" allowed in the token map"
+    },
+    {
+      "path": "packages/app/src/components/Iac/__tests__/ResourceTerraformPopover.test.tsx",
+      "term": "hyperdx",
+      "snippet": "'/hyperdx/api',",
+      "reason": "internal_identifier",
+      "note": "Token \"hyperdx\" allowed in the token map"
+    },
+    {
+      "path": "packages/app/src/components/Iac/__tests__/ResourceTerraformPopover.test.tsx",
+      "term": "hyperdx",
+      "snippet": "basePath = '/hyperdx';",
+      "reason": "internal_identifier",
+      "note": "Token \"hyperdx\" allowed in the token map"
+    },
+    {
+      "path": "packages/app/src/components/Iac/useTerraformSnippets.ts",
+      "term": "clickstack",
+      "snippet": "? ' The generated config pins dashboard_id and tile_id as literals — replace them with clickhouse_clickstack_dashboard references before you apply, or a later d",
+      "reason": "external_dependency",
+      "note": "Token \"clickhouse_clickstack_dashboard\" allowed in the token map"
+    },
+    {
+      "path": "packages/app/src/components/RevealSnippet/RevealSnippet.stories.tsx",
+      "term": "hyperdx",
+      "snippet": "'    \"hyperdx\": {',",
+      "reason": "internal_identifier",
+      "note": "Token \"hyperdx\" allowed in the token map"
+    },
+    {
+      "path": "packages/app/src/components/RevealSnippet/RevealSnippet.stories.tsx",
+      "term": "hyperdx",
+      "snippet": "const CLAUDE_CLI_ONELINER = `claude mcp add hyperdx -- npx -y @hyperdx/mcp-server --api-key ${SAMPLE_ACCESS_KEY}`;",
+      "reason": "internal_identifier",
+      "note": "Token \"hyperdx\" allowed in the token map"
+    },
+    {
+      "path": "packages/app/src/components/RevealSnippet/RevealSnippet.stories.tsx",
+      "term": "url",
+      "snippet": "otel.clickhouse.cloud",
+      "reason": "test_fixture",
+      "note": "Storybook placeholder value; never requested."
+    },
+    {
+      "path": "packages/app/src/components/TeamSettings/IacMigrationSection.tsx",
+      "term": "clickhouse cloud",
+      "snippet": "? 'Exported as reference-only locals — connections are platform-managed on ClickHouse Cloud'",
+      "reason": "pending_decision",
+      "note": "Token \"ClickHouse Cloud\" allowed in the token map"
+    },
+    {
+      "path": "packages/app/src/components/TeamSettings/__tests__/IacMigrationSection.test.tsx",
+      "term": "clickstack",
+      "snippet": "`to = clickhouse_clickstack_alert.alert_${'3'.repeat(24)}`,",
+      "reason": "external_dependency",
+      "note": "Token \"clickhouse_clickstack_alert.alert_\" allowed in the token map"
+    },
+    {
+      "path": "packages/app/src/components/TeamSettings/__tests__/IacMigrationSection.test.tsx",
+      "term": "clickstack",
+      "snippet": "`to = clickhouse_clickstack_alert.alert_${'5'.repeat(24)}`,",
+      "reason": "external_dependency",
+      "note": "Token \"clickhouse_clickstack_alert.alert_\" allowed in the token map"
+    },
+    {
+      "path": "packages/app/src/components/TeamSettings/__tests__/IacMigrationSection.test.tsx",
+      "term": "clickstack",
+      "snippet": "`to = clickhouse_clickstack_dashboard.dashboard_${'1'.repeat(24)}`,",
+      "reason": "external_dependency",
+      "note": "Token \"clickhouse_clickstack_dashboard.dashboard_\" allowed in the token map"
+    },
+    {
+      "path": "packages/app/src/components/TeamSettings/__tests__/IacMigrationSection.test.tsx",
+      "term": "clickstack",
+      "snippet": "`to = clickhouse_clickstack_dashboard.dashboard_${'2'.repeat(24)}`,",
+      "reason": "external_dependency",
+      "note": "Token \"clickhouse_clickstack_dashboard.dashboard_\" allowed in the token map"
+    },
+    {
+      "path": "packages/app/src/components/TeamSettings/__tests__/IacMigrationSection.test.tsx",
+      "term": "clickstack",
+      "snippet": "`to = clickhouse_clickstack_saved_search.saved_search_${'4'.repeat(24)}`,",
+      "reason": "external_dependency",
+      "note": "Token \"clickhouse_clickstack_saved_search.saved_search_\" allowed in the token map"
+    },
+    {
+      "path": "packages/app/src/components/TeamSettings/__tests__/IacMigrationSection.test.tsx",
+      "term": "clickstack",
+      "snippet": "expect(content).not.toContain('clickhouse_clickstack_connection');",
+      "reason": "external_dependency",
+      "note": "Token \"clickhouse_clickstack_connection\" allowed in the token map"
+    },
+    {
+      "path": "packages/app/src/components/__tests__/ConnectionForm.test.tsx",
+      "term": "hyperdx",
+      "snippet": "const settingPrefixInput = screen.getByPlaceholderText('hyperdx');",
+      "reason": "internal_identifier",
+      "note": "Token \"hyperdx\" allowed in the token map"
+    },
+    {
+      "path": "packages/app/src/components/__tests__/ConnectionForm.test.tsx",
+      "term": "hyperdx",
+      "snippet": "it('should convert empty hyperdxSettingPrefix to null when updating', async () => {",
+      "reason": "internal_identifier",
+      "note": "Token \"hyperdxSettingPrefix\" allowed in the token map"
+    },
+    {
+      "path": "packages/app/src/components/__tests__/ConnectionForm.test.tsx",
+      "term": "hyperdx",
+      "snippet": "it('should include hyperdxSettingPrefix when creating connection', async () => {",
+      "reason": "internal_identifier",
+      "note": "Token \"hyperdxSettingPrefix\" allowed in the token map"
+    },
+    {
+      "path": "packages/app/src/components/__tests__/DBRowOverviewPanel.exception.test.tsx",
+      "term": "url",
+      "snippet": ".clickhouse.com/",
+      "reason": "test_fixture",
+      "note": "Sample span and stack-frame URLs; never requested."
+    },
+    {
+      "path": "packages/app/src/components/__tests__/DBTraceWaterfallChart.test.tsx",
+      "term": "url",
+      "snippet": ".clickhouse.com/",
+      "reason": "test_fixture",
+      "note": "Sample span and stack-frame URLs; never requested."
+    },
+    {
+      "path": "packages/app/src/components/__tests__/ExceptionSubpanel.test.tsx",
+      "term": "url",
+      "snippet": ".clickhouse.com/",
+      "reason": "test_fixture",
+      "note": "Sample span and stack-frame URLs; never requested."
+    },
+    {
+      "path": "packages/app/src/components/__tests__/NetworkPropertyPanel.test.tsx",
+      "term": "url",
+      "snippet": ".clickhouse.com/",
+      "reason": "test_fixture",
+      "note": "Sample span and stack-frame URLs; never requested."
+    },
+    {
+      "path": "packages/app/src/hdxMTViews.ts",
+      "term": "hyperdx",
+      "snippet": "const HDX_DATABASE = 'hyperdx'; // all materialized views should sit in this database",
+      "reason": "internal_identifier",
+      "note": "Token \"hyperdx\" allowed in the token map"
+    },
+    {
+      "path": "packages/app/src/hooks/useRowWhere.tsx",
+      "term": "hyperdx",
+      "snippet": "ALIAS_WITH: '__hyperdx_alias_with',",
+      "reason": "internal_identifier",
+      "note": "Token \"__hyperdx_alias_with\" allowed in the token map"
+    },
+    {
+      "path": "packages/app/src/hooks/useRowWhere.tsx",
+      "term": "hyperdx",
+      "snippet": "ID: '__hyperdx_id',",
+      "reason": "internal_identifier",
+      "note": "Token \"__hyperdx_id\" allowed in the token map"
+    },
+    {
+      "path": "packages/app/src/layout.tsx",
+      "term": "clickstack",
+      "snippet": "'clickstack-banner-state',",
+      "reason": "internal_identifier",
+      "note": "Token \"clickstack-banner-state\" allowed in the token map"
+    },
+    {
+      "path": "packages/app/src/stories/Brand.stories.tsx",
+      "term": "clickstack",
+      "snippet": "filename=\"clickstack-logomark.svg\"",
+      "reason": "internal_identifier",
+      "note": "Storybook download filename for the brand asset card; the story is a test file kept at its substituted base."
+    },
+    {
+      "path": "packages/app/src/stories/Brand.stories.tsx",
+      "term": "clickstack",
+      "snippet": "filename=\"clickstack-wordmark.svg\"",
+      "reason": "internal_identifier",
+      "note": "Storybook download filename for the brand asset card; the story is a test file kept at its substituted base."
+    },
+    {
+      "path": "packages/app/src/stories/ClickUI.stories.tsx",
+      "term": "url",
+      "snippet": "https://clickhouse.com",
+      "reason": "test_fixture",
+      "note": "Storybook sample link for the Click UI component library."
+    },
+    {
+      "path": "packages/app/src/stories/Code.stories.tsx",
+      "term": "clickstack",
+      "snippet": "'import {\\n  clickhouse_clickstack_dashboard.example\\n} from \"clickhouse/couchbase-traces\"',",
+      "reason": "external_dependency",
+      "note": "Token \"clickhouse_clickstack_dashboard.example\" allowed in the token map"
+    },
+    {
+      "path": "packages/app/src/stories/Code.stories.tsx",
+      "term": "clickstack",
+      "snippet": "<Code>@/components/ClickStackOnboarding/CopySnippet</Code>. It renders",
+      "reason": "internal_identifier",
+      "note": "Token \"ClickStackOnboarding\" allowed in the token map"
+    },
+    {
+      "path": "packages/app/src/stories/Code.stories.tsx",
+      "term": "clickstack",
+      "snippet": "clickhouse_clickstack_dashboard.example",
+      "reason": "external_dependency",
+      "note": "Token \"clickhouse_clickstack_dashboard.example\" allowed in the token map"
+    },
+    {
+      "path": "packages/app/src/stories/Code.stories.tsx",
+      "term": "clickstack",
+      "snippet": "snippet={\\`import { clickstack_dashboard } from \"clickhouse/couchbase-traces\"\\`}",
+      "reason": "external_dependency",
+      "note": "Token \"clickstack_dashboard\" allowed in the token map"
+    },
+    {
+      "path": "packages/app/tests/e2e/features/dashboard.spec.ts",
+      "term": "hyperdx",
+      "snippet": "\"use('hyperdx-e2e');\",",
+      "reason": "internal_identifier",
+      "note": "Token \"hyperdx-e2e\" allowed in the token map"
+    },
+    {
+      "path": "packages/app/tests/e2e/features/search/row-multi-select.spec.ts",
+      "term": "hyperdx",
+      "snippet": "expect(clipboard).not.toContain('__hyperdx_');",
+      "reason": "internal_identifier",
+      "note": "Token \"__hyperdx_\" allowed in the token map"
+    },
+    {
+      "path": "packages/app/tests/e2e/fixtures/e2e-fixtures.json",
+      "term": "hyperdx",
+      "snippet": "\"tableName\": \"e2e_hyperdx_sessions\"",
+      "reason": "engine_reference",
+      "note": "Token \"e2e_hyperdx_sessions\" allowed in the token map"
+    },
+    {
+      "path": "packages/app/tests/e2e/global-setup-fullstack.ts",
+      "term": "hyperdx",
+      "snippet": "runMongoshScript(\"use('hyperdx-e2e'); db.dropDatabase();\");",
+      "reason": "internal_identifier",
+      "note": "Token \"hyperdx-e2e\" allowed in the token map"
+    },
+    {
+      "path": "packages/app/tests/e2e/global-setup-fullstack.ts",
+      "term": "hyperdx",
+      "snippet": "use('hyperdx-e2e');",
+      "reason": "internal_identifier",
+      "note": "Token \"hyperdx-e2e\" allowed in the token map"
+    },
+    {
+      "path": "packages/app/tests/e2e/utils/constants.ts",
+      "term": "hyperdx",
+      "snippet": "export const E2E_SESSIONS_TABLE = 'e2e_hyperdx_sessions';",
+      "reason": "engine_reference",
+      "note": "Token \"e2e_hyperdx_sessions\" allowed in the token map"
+    },
+    {
+      "path": "packages/app/tests/e2e/utils/db-helpers.ts",
+      "term": "hyperdx",
+      "snippet": "use('hyperdx-e2e');",
+      "reason": "internal_identifier",
+      "note": "Token \"hyperdx-e2e\" allowed in the token map"
+    },
+    {
+      "path": "packages/cli/AGENTS.md",
+      "term": "hyperdx",
+      "snippet": "- Passes `x-hyperdx-connection-id` header",
+      "reason": "internal_identifier",
+      "note": "Token \"x-hyperdx-connection-id\" allowed in the token map"
+    },
+    {
+      "path": "packages/cli/AGENTS.md",
+      "term": "hyperdx",
+      "snippet": "Session is stored at `~/.config/hyperdx/cli/session.json` with mode `0o600`.",
+      "reason": "internal_identifier",
+      "note": "Token \"hyperdx\" allowed in the token map"
+    },
+    {
+      "path": "packages/cli/AGENTS.md",
+      "term": "hyperdx",
+      "snippet": "├── config.ts        # Session persistence (~/.config/hyperdx/cli/session.json)",
+      "reason": "internal_identifier",
+      "note": "Token \"hyperdx\" allowed in the token map"
+    },
+    {
+      "path": "packages/cli/CONTRIBUTING.md",
+      "term": "hyperdx",
+      "snippet": "# Session is saved to ~/.config/hyperdx/cli/session.json",
+      "reason": "internal_identifier",
+      "note": "Token \"hyperdx\" allowed in the token map"
+    },
+    {
+      "path": "packages/cli/CONTRIBUTING.md",
+      "term": "hyperdx",
+      "snippet": "- Injects session cookies + `x-hyperdx-connection-id` header",
+      "reason": "internal_identifier",
+      "note": "Token \"x-hyperdx-connection-id\" allowed in the token map"
+    },
+    {
+      "path": "packages/cli/CONTRIBUTING.md",
+      "term": "hyperdx",
+      "snippet": "2. Saved session's `appUrl` from `~/.config/hyperdx/cli/session.json`",
+      "reason": "internal_identifier",
+      "note": "Token \"hyperdx\" allowed in the token map"
+    },
+    {
+      "path": "packages/cli/CONTRIBUTING.md",
+      "term": "hyperdx",
+      "snippet": "├── config.ts          # Session persistence (~/.config/hyperdx/cli/session.json)",
+      "reason": "internal_identifier",
+      "note": "Token \"hyperdx\" allowed in the token map"
+    },
+    {
+      "path": "packages/cli/README.md",
+      "term": "hyperdx",
+      "snippet": "The session is saved to `~/.config/hyperdx/cli/session.json` (mode `0600`) and",
+      "reason": "internal_identifier",
+      "note": "Token \"hyperdx\" allowed in the token map"
+    },
+    {
+      "path": "packages/cli/src/api/client.ts",
+      "term": "hyperdx",
+      "snippet": "httpHeaders['x-hyperdx-connection-id'] = connectionId;",
+      "reason": "internal_identifier",
+      "note": "Token \"x-hyperdx-connection-id\" allowed in the token map"
+    },
+    {
+      "path": "packages/cli/src/cli.tsx",
+      "term": "hyperdx",
+      "snippet": "persisted in ${chalk.bold('~/.config/hyperdx/cli/session.json')} so it",
+      "reason": "internal_identifier",
+      "note": "Token \"hyperdx\" allowed in the token map"
+    },
+    {
+      "path": "packages/cli/src/shared/useRowWhere.ts",
+      "term": "hyperdx",
+      "snippet": "ALIAS_WITH: '__hyperdx_alias_with',",
+      "reason": "internal_identifier",
+      "note": "Token \"__hyperdx_alias_with\" allowed in the token map"
+    },
+    {
+      "path": "packages/cli/src/shared/useRowWhere.ts",
+      "term": "hyperdx",
+      "snippet": "ID: '__hyperdx_id',",
+      "reason": "internal_identifier",
+      "note": "Token \"__hyperdx_id\" allowed in the token map"
+    },
+    {
+      "path": "packages/cli/src/utils/config.ts",
+      "term": "hyperdx",
+      "snippet": "const CONFIG_DIR = path.join(os.homedir(), '.config', 'hyperdx', 'cli');",
+      "reason": "internal_identifier",
+      "note": "Token \"hyperdx\" allowed in the token map"
+    },
+    {
+      "path": "packages/common-utils/package.json",
+      "term": "hyperdx",
+      "snippet": "\"@types/hyperdx__lucene\": \"npm:@types/lucene@*\",",
+      "reason": "external_dependency",
+      "note": "Token \"hyperdx__lucene\" allowed in the token map"
+    },
+    {
+      "path": "packages/common-utils/src/__tests__/builderToRawSql.test.ts",
+      "term": "hyperdx",
+      "snippet": "HYPERDX_PARAM_",
+      "reason": "internal_identifier",
+      "note": "Query parameter placeholder name inside generated SQL; never shown to users."
+    },
+    {
+      "path": "packages/common-utils/src/__tests__/clickhouse.test.ts",
+      "term": "hyperdx",
+      "snippet": "HYPERDX_PARAM_",
+      "reason": "internal_identifier",
+      "note": "Query parameter placeholder name inside generated SQL; never shown to users."
+    },
+    {
+      "path": "packages/common-utils/src/__tests__/clickhouseVersion.test.ts",
+      "term": "clickhouse cloud",
+      "snippet": "describe('ClickHouse Cloud (isCloud=true)', () => {",
+      "reason": "pending_decision",
+      "note": "Token \"ClickHouse Cloud\" allowed in the token map"
+    },
+    {
+      "path": "packages/common-utils/src/__tests__/iac.test.ts",
+      "term": "clickstack",
+      "snippet": "`# Couchbase Traces Usage\\nimport {\\n  to = clickhouse_clickstack_dashboard.dashboard_${ID}\\n  id = \"${TEAM_ID}/${ID}\"\\n}`,",
+      "reason": "external_dependency",
+      "note": "Token \"clickhouse_clickstack_dashboard.dashboard_\" allowed in the token map"
+    },
+    {
+      "path": "packages/common-utils/src/__tests__/iac.test.ts",
+      "term": "clickstack",
+      "snippet": "`import {\\n  to = clickhouse_clickstack_alert.alert_${ID}\\n  id = \"${TEAM_ID}/${ID}\"\\n}`,",
+      "reason": "external_dependency",
+      "note": "Token \"clickhouse_clickstack_alert.alert_\" allowed in the token map"
+    },
+    {
+      "path": "packages/common-utils/src/__tests__/iac.test.ts",
+      "term": "clickstack",
+      "snippet": "`to = clickhouse_clickstack_connection.connection_${ID}`,",
+      "reason": "external_dependency",
+      "note": "Token \"clickhouse_clickstack_connection.connection_\" allowed in the token map"
+    },
+    {
+      "path": "packages/common-utils/src/__tests__/iac.test.ts",
+      "term": "clickstack",
+      "snippet": "`to = clickhouse_clickstack_dashboard.dashboard_${ID}`,",
+      "reason": "external_dependency",
+      "note": "Token \"clickhouse_clickstack_dashboard.dashboard_\" allowed in the token map"
+    },
+    {
+      "path": "packages/common-utils/src/__tests__/iac.test.ts",
+      "term": "clickstack",
+      "snippet": "`to = clickhouse_clickstack_saved_search.saved_search_${otherId}`,",
+      "reason": "external_dependency",
+      "note": "Token \"clickhouse_clickstack_saved_search.saved_search_\" allowed in the token map"
+    },
+    {
+      "path": "packages/common-utils/src/__tests__/iac.test.ts",
+      "term": "clickstack",
+      "snippet": "alert: 'clickhouse_clickstack_alert',",
+      "reason": "external_dependency",
+      "note": "Token \"clickhouse_clickstack_alert\" allowed in the token map"
+    },
+    {
+      "path": "packages/common-utils/src/__tests__/iac.test.ts",
+      "term": "clickstack",
+      "snippet": "connection: 'clickhouse_clickstack_connection',",
+      "reason": "external_dependency",
+      "note": "Token \"clickhouse_clickstack_connection\" allowed in the token map"
+    },
+    {
+      "path": "packages/common-utils/src/__tests__/iac.test.ts",
+      "term": "clickstack",
+      "snippet": "dashboard: 'clickhouse_clickstack_dashboard',",
+      "reason": "external_dependency",
+      "note": "Token \"clickhouse_clickstack_dashboard\" allowed in the token map"
+    },
+    {
+      "path": "packages/common-utils/src/__tests__/iac.test.ts",
+      "term": "clickstack",
+      "snippet": "expect(file).not.toContain('clickhouse_clickstack_connection');",
+      "reason": "external_dependency",
+      "note": "Token \"clickhouse_clickstack_connection\" allowed in the token map"
+    },
+    {
+      "path": "packages/common-utils/src/__tests__/iac.test.ts",
+      "term": "clickstack",
+      "snippet": "expect(file).toContain('CLICKSTACK_API_KEY');",
+      "reason": "external_dependency",
+      "note": "Token \"CLICKSTACK_API_KEY\" allowed in the token map"
+    },
+    {
+      "path": "packages/common-utils/src/__tests__/iac.test.ts",
+      "term": "clickstack",
+      "snippet": "expect(file).toContain('clickstack_endpoint = var.clickstack_endpoint');",
+      "reason": "external_dependency",
+      "note": "Token \"clickstack_endpoint\" allowed in the token map"
+    },
+    {
+      "path": "packages/common-utils/src/__tests__/iac.test.ts",
+      "term": "clickstack",
+      "snippet": "expect(file).toContain('clickstack_service_id');",
+      "reason": "external_dependency",
+      "note": "Token \"clickstack_service_id\" allowed in the token map"
+    },
+    {
+      "path": "packages/common-utils/src/__tests__/iac.test.ts",
+      "term": "clickstack",
+      "snippet": "expect(file).toContain('variable \"clickstack_endpoint\"');",
+      "reason": "external_dependency",
+      "note": "Token \"clickstack_endpoint\" allowed in the token map"
+    },
+    {
+      "path": "packages/common-utils/src/__tests__/iac.test.ts",
+      "term": "clickstack",
+      "snippet": "it('uses the documented clickhouse_clickstack_* resource names', () => {",
+      "reason": "external_dependency",
+      "note": "Token \"clickhouse_clickstack_\" allowed in the token map"
+    },
+    {
+      "path": "packages/common-utils/src/__tests__/iac.test.ts",
+      "term": "clickstack",
+      "snippet": "saved_search: 'clickhouse_clickstack_saved_search',",
+      "reason": "external_dependency",
+      "note": "Token \"clickhouse_clickstack_saved_search\" allowed in the token map"
+    },
+    {
+      "path": "packages/common-utils/src/__tests__/iac.test.ts",
+      "term": "clickstack",
+      "snippet": "source: 'clickhouse_clickstack_source',",
+      "reason": "external_dependency",
+      "note": "Token \"clickhouse_clickstack_source\" allowed in the token map"
+    },
+    {
+      "path": "packages/common-utils/src/__tests__/iac.test.ts",
+      "term": "clickstack",
+      "snippet": "webhook: 'clickhouse_clickstack_webhook',",
+      "reason": "external_dependency",
+      "note": "Token \"clickhouse_clickstack_webhook\" allowed in the token map"
+    },
+    {
+      "path": "packages/common-utils/src/__tests__/iac.test.ts",
+      "term": "hdx",
+      "snippet": "hdx.example.com",
+      "reason": "test_fixture",
+      "note": "Reserved example.com host; never requested."
+    },
+    {
+      "path": "packages/common-utils/src/__tests__/iac.test.ts",
+      "term": "hyperdx",
+      "snippet": "expect(providerEndpoint('https://host.example.com', '/hyperdx')).toBe(",
+      "reason": "internal_identifier",
+      "note": "Token \"hyperdx\" allowed in the token map"
+    },
+    {
+      "path": "packages/common-utils/src/__tests__/iac.test.ts",
+      "term": "hyperdx",
+      "snippet": "host.example.com/hyperdx",
+      "reason": "test_fixture",
+      "note": "Base-path fixture on a reserved example.com host."
+    },
+    {
+      "path": "packages/common-utils/src/__tests__/utils.test.ts",
+      "term": "hyperdx",
+      "snippet": "'SELECT Timestamp,ServiceName,SeverityText,Body,ResourceAttributes.hyperdx.distro.\"`version`\"';",
+      "reason": "external_dependency",
+      "note": "Token \"ResourceAttributes.hyperdx.distro\" allowed in the token map"
+    },
+    {
+      "path": "packages/common-utils/src/__tests__/utils.test.ts",
+      "term": "hyperdx",
+      "snippet": "'SELECT Timestamp,ServiceName,SeverityText,Body,ResourceAttributes.hyperdx.distro.`\"version\"`';",
+      "reason": "external_dependency",
+      "note": "Token \"ResourceAttributes.hyperdx.distro\" allowed in the token map"
+    },
+    {
+      "path": "packages/common-utils/src/__tests__/utils.test.ts",
+      "term": "hyperdx",
+      "snippet": "const sql = `SELECT Timestamp,ServiceName,SeverityText,Body,ResourceAttributes.hyperdx.distro.\"version'\" FROM default.otel_logs WHERE (Timestamp >= fromUnixTime",
+      "reason": "external_dependency",
+      "note": "Token \"ResourceAttributes.hyperdx.distro\" allowed in the token map"
+    },
+    {
+      "path": "packages/common-utils/src/__tests__/utils.test.ts",
+      "term": "hyperdx",
+      "snippet": "{ index: 47, expr: 'ResourceAttributes.hyperdx.distro.\"`version`\"' },",
+      "reason": "external_dependency",
+      "note": "Token \"ResourceAttributes.hyperdx.distro\" allowed in the token map"
+    },
+    {
+      "path": "packages/common-utils/src/__tests__/utils.test.ts",
+      "term": "hyperdx",
+      "snippet": "{ index: 47, expr: 'ResourceAttributes.hyperdx.distro.`\"version\"`' },",
+      "reason": "external_dependency",
+      "note": "Token \"ResourceAttributes.hyperdx.distro\" allowed in the token map"
+    },
+    {
+      "path": "packages/common-utils/src/__tests__/utils.test.ts",
+      "term": "hyperdx",
+      "snippet": "{ index: 47, expr: `ResourceAttributes.hyperdx.distro.\"version'\"` },",
+      "reason": "external_dependency",
+      "note": "Token \"ResourceAttributes.hyperdx.distro\" allowed in the token map"
+    },
+    {
+      "path": "packages/common-utils/src/clickhouse/attribution.ts",
+      "term": "hyperdx",
+      "snippet": "export const QUERY_ATTRIBUTION_HEADER = 'x-hyperdx-query-attribution';",
+      "reason": "internal_identifier",
+      "note": "Token \"x-hyperdx-query-attribution\" allowed in the token map"
+    },
+    {
+      "path": "packages/common-utils/src/clickhouse/browser.ts",
+      "term": "hyperdx",
+      "snippet": "? { 'x-hyperdx-connection-id': connectionId }",
+      "reason": "internal_identifier",
+      "note": "Token \"x-hyperdx-connection-id\" allowed in the token map"
+    },
+    {
+      "path": "packages/common-utils/src/clickhouse/index.ts",
+      "term": "hyperdx",
+      "snippet": "HYPERDX_PARAM_",
+      "reason": "internal_identifier",
+      "note": "Query parameter placeholder name inside generated SQL; never shown to users."
+    },
+    {
+      "path": "packages/common-utils/src/clickhouse/index.ts",
+      "term": "url",
+      "snippet": "github.com/ClickHouse/",
+      "reason": "engine_reference",
+      "note": "Source references for engine and client behavior."
+    },
+    {
+      "path": "packages/common-utils/src/core/builderToRawSql.ts",
+      "term": "hyperdx",
+      "snippet": "HYPERDX_PARAM_",
+      "reason": "internal_identifier",
+      "note": "Query parameter placeholder name inside generated SQL; never shown to users."
+    },
+    {
+      "path": "packages/common-utils/src/core/metadata.ts",
+      "term": "clickhouse cloud",
+      "snippet": "console.warn('Error detecting ClickHouse Cloud:', e);",
+      "reason": "pending_decision",
+      "note": "Token \"ClickHouse Cloud\" allowed in the token map"
+    },
+    {
+      "path": "packages/common-utils/src/core/utils.ts",
+      "term": "url",
+      "snippet": "github.com/ClickHouse/ClickHouse",
+      "reason": "engine_reference",
+      "note": "Source reference for engine behavior."
+    },
+    {
+      "path": "packages/common-utils/src/iac.ts",
+      "term": "clickstack",
+      "snippet": "#   (clickstack_service_id) rejects any team-scoped call — on that path a",
+      "reason": "external_dependency",
+      "note": "Token \"clickstack_service_id\" allowed in the token map"
+    },
+    {
+      "path": "packages/common-utils/src/iac.ts",
+      "term": "clickstack",
+      "snippet": "#   clickhouse_clickstack_dashboard.<name>.id and",
+      "reason": "external_dependency",
+      "note": "Token \"clickhouse_clickstack_dashboard\" allowed in the token map"
+    },
+    {
+      "path": "packages/common-utils/src/iac.ts",
+      "term": "clickstack",
+      "snippet": "#   where clickhouse_clickstack_alert gained source = \"tile\". The generated",
+      "reason": "external_dependency",
+      "note": "Token \"clickhouse_clickstack_alert\" allowed in the token map"
+    },
+    {
+      "path": "packages/common-utils/src/iac.ts",
+      "term": "clickstack",
+      "snippet": "# * Check the clickstack_endpoint default above. It comes from the browser that",
+      "reason": "external_dependency",
+      "note": "Token \"clickstack_endpoint\" allowed in the token map"
+    },
+    {
+      "path": "packages/common-utils/src/iac.ts",
+      "term": "clickstack",
+      "snippet": "# * Team-scoped ids need the provider configured with clickstack_endpoint, as",
+      "reason": "external_dependency",
+      "note": "Token \"clickstack_endpoint\" allowed in the token map"
+    },
+    {
+      "path": "packages/common-utils/src/iac.ts",
+      "term": "clickstack",
+      "snippet": "# 2. export CLICKSTACK_API_KEY=<your Personal API Access Key>",
+      "reason": "external_dependency",
+      "note": "Token \"CLICKSTACK_API_KEY\" allowed in the token map"
+    },
+    {
+      "path": "packages/common-utils/src/iac.ts",
+      "term": "clickstack",
+      "snippet": "# Set the CLICKSTACK_API_KEY environment variable to your Personal API",
+      "reason": "external_dependency",
+      "note": "Token \"CLICKSTACK_API_KEY\" allowed in the token map"
+    },
+    {
+      "path": "packages/common-utils/src/iac.ts",
+      "term": "clickstack",
+      "snippet": "alert: 'clickhouse_clickstack_alert',",
+      "reason": "external_dependency",
+      "note": "Token \"clickhouse_clickstack_alert\" allowed in the token map"
+    },
+    {
+      "path": "packages/common-utils/src/iac.ts",
+      "term": "clickstack",
+      "snippet": "clickstack_endpoint = var.clickstack_endpoint",
+      "reason": "external_dependency",
+      "note": "Token \"clickstack_endpoint\" allowed in the token map"
+    },
+    {
+      "path": "packages/common-utils/src/iac.ts",
+      "term": "clickstack",
+      "snippet": "connection: 'clickhouse_clickstack_connection',",
+      "reason": "external_dependency",
+      "note": "Token \"clickhouse_clickstack_connection\" allowed in the token map"
+    },
+    {
+      "path": "packages/common-utils/src/iac.ts",
+      "term": "clickstack",
+      "snippet": "dashboard: 'clickhouse_clickstack_dashboard',",
+      "reason": "external_dependency",
+      "note": "Token \"clickhouse_clickstack_dashboard\" allowed in the token map"
+    },
+    {
+      "path": "packages/common-utils/src/iac.ts",
+      "term": "clickstack",
+      "snippet": "saved_search: 'clickhouse_clickstack_saved_search',",
+      "reason": "external_dependency",
+      "note": "Token \"clickhouse_clickstack_saved_search\" allowed in the token map"
+    },
+    {
+      "path": "packages/common-utils/src/iac.ts",
+      "term": "clickstack",
+      "snippet": "source: 'clickhouse_clickstack_source',",
+      "reason": "external_dependency",
+      "note": "Token \"clickhouse_clickstack_source\" allowed in the token map"
+    },
+    {
+      "path": "packages/common-utils/src/iac.ts",
+      "term": "clickstack",
+      "snippet": "variable \"clickstack_endpoint\" {",
+      "reason": "external_dependency",
+      "note": "Token \"clickstack_endpoint\" allowed in the token map"
+    },
+    {
+      "path": "packages/common-utils/src/iac.ts",
+      "term": "clickstack",
+      "snippet": "webhook: 'clickhouse_clickstack_webhook',",
+      "reason": "external_dependency",
+      "note": "Token \"clickhouse_clickstack_webhook\" allowed in the token map"
+    },
+    {
+      "path": "packages/hdx-eval/README.md",
+      "term": "hyperdx",
+      "snippet": "\"brandTerms\": [\"Couchbase Traces\", \"hyperdx\"],",
+      "reason": "internal_identifier",
+      "note": "Token \"hyperdx\" allowed in the token map"
+    },
+    {
+      "path": "packages/hdx-eval/README.md",
+      "term": "hyperdx",
+      "snippet": "\"hyperdxApi\": { ... },",
+      "reason": "internal_identifier",
+      "note": "Token \"hyperdxApi\" allowed in the token map"
+    },
+    {
+      "path": "packages/hdx-eval/README.md",
+      "term": "hyperdx",
+      "snippet": "\"mcp__hyperdx__hyperdx_delete_dashboard\",",
+      "reason": "internal_identifier",
+      "note": "Token \"mcp__hyperdx__hyperdx_delete_dashboard\" allowed in the token map"
+    },
+    {
+      "path": "packages/hdx-eval/README.md",
+      "term": "hyperdx",
+      "snippet": "\"mcp__hyperdx__hyperdx_get_dashboard\"",
+      "reason": "internal_identifier",
+      "note": "Token \"mcp__hyperdx__hyperdx_get_dashboard\" allowed in the token map"
+    },
+    {
+      "path": "packages/hdx-eval/README.md",
+      "term": "hyperdx",
+      "snippet": "\"toolPattern\": \"mcp__hyperdx__*\",",
+      "reason": "internal_identifier",
+      "note": "Token \"mcp__hyperdx__\" allowed in the token map"
+    },
+    {
+      "path": "packages/hdx-eval/README.md",
+      "term": "hyperdx",
+      "snippet": "### 2. Run `setup-hyperdx` against each instance",
+      "reason": "internal_identifier",
+      "note": "Token \"setup-hyperdx\" allowed in the token map"
+    },
+    {
+      "path": "packages/hdx-eval/README.md",
+      "term": "hyperdx",
+      "snippet": "--baseline hyperdx-main \\",
+      "reason": "internal_identifier",
+      "note": "Token \"hyperdx-main\" allowed in the token map"
+    },
+    {
+      "path": "packages/hdx-eval/README.md",
+      "term": "hyperdx",
+      "snippet": "--mcp hyperdx-main,hyperdx-feature \\",
+      "reason": "internal_identifier",
+      "note": "Token \"hyperdx-main\" allowed in the token map"
+    },
+    {
+      "path": "packages/hdx-eval/README.md",
+      "term": "hyperdx",
+      "snippet": "After setup, `eval.config.json` will have the `hyperdx` MCP pointing at the",
+      "reason": "internal_identifier",
+      "note": "Token \"hyperdx\" allowed in the token map"
+    },
+    {
+      "path": "packages/hdx-eval/README.md",
+      "term": "hyperdx",
+      "snippet": "dev report <batch> --baseline hyperdx-main   # override baseline for deltas",
+      "reason": "internal_identifier",
+      "note": "Token \"hyperdx-main\" allowed in the token map"
+    },
+    {
+      "path": "packages/hdx-eval/README.md",
+      "term": "hyperdx",
+      "snippet": "dev run <scenario> --baseline hyperdx-main  # set baseline for delta reports",
+      "reason": "internal_identifier",
+      "note": "Token \"hyperdx-main\" allowed in the token map"
+    },
+    {
+      "path": "packages/hdx-eval/README.md",
+      "term": "hyperdx",
+      "snippet": "dev run <scenario> --mcp hyperdx            # single MCP",
+      "reason": "internal_identifier",
+      "note": "Token \"hyperdx\" allowed in the token map"
+    },
+    {
+      "path": "packages/hdx-eval/README.md",
+      "term": "hyperdx",
+      "snippet": "dev run <scenario> --mcp hyperdx-main,hyperdx-feature  # compare two",
+      "reason": "internal_identifier",
+      "note": "Token \"hyperdx-main\" allowed in the token map"
+    },
+    {
+      "path": "packages/hdx-eval/README.md",
+      "term": "hyperdx",
+      "snippet": "dev setup-hyperdx                           # one-time: register + create Sources",
+      "reason": "internal_identifier",
+      "note": "Token \"setup-hyperdx\" allowed in the token map"
+    },
+    {
+      "path": "packages/hdx-eval/README.md",
+      "term": "hyperdx",
+      "snippet": "dev setup-hyperdx --api-url http://...      # explicit API URL",
+      "reason": "internal_identifier",
+      "note": "Token \"setup-hyperdx\" allowed in the token map"
+    },
+    {
+      "path": "packages/hdx-eval/README.md",
+      "term": "hyperdx",
+      "snippet": "dev setup-hyperdx --check                   # validate existing config",
+      "reason": "internal_identifier",
+      "note": "Token \"setup-hyperdx\" allowed in the token map"
+    },
+    {
+      "path": "packages/hdx-eval/README.md",
+      "term": "hyperdx",
+      "snippet": "dev setup-hyperdx --reset-sources           # recreate all Sources",
+      "reason": "internal_identifier",
+      "note": "Token \"setup-hyperdx\" allowed in the token map"
+    },
+    {
+      "path": "packages/hdx-eval/README.md",
+      "term": "hyperdx",
+      "snippet": "yarn workspace @couchbase-traces/hdx-eval dev setup-hyperdx",
+      "reason": "internal_identifier",
+      "note": "Token \"setup-hyperdx\" allowed in the token map"
+    },
+    {
+      "path": "packages/hdx-eval/README.md",
+      "term": "hyperdx",
+      "snippet": "| Metric         | hyperdx-main | hyperdx-feature | Δ (hyperdx-feature) |",
+      "reason": "internal_identifier",
+      "note": "Token \"hyperdx-main\" allowed in the token map"
+    },
+    {
+      "path": "packages/hdx-eval/README.md",
+      "term": "hyperdx",
+      "snippet": "| `hyperdxApi` | no | Couchbase Traces API URL + access key (used only by `setup-hyperdx`) |",
+      "reason": "internal_identifier",
+      "note": "Token \"hyperdxApi\" allowed in the token map"
+    },
+    {
+      "path": "packages/hdx-eval/README.md",
+      "term": "hyperdx",
+      "snippet": "| `scenarios` | no | Per-scenario Couchbase Traces Source IDs (populated by `setup-hyperdx`) |",
+      "reason": "internal_identifier",
+      "note": "Token \"setup-hyperdx\" allowed in the token map"
+    },
+    {
+      "path": "packages/hdx-eval/eval.config.example.json",
+      "term": "hyperdx",
+      "snippet": "\"_comment\": \"This file is generated by `hdx-eval setup-hyperdx`. You can also edit it by hand to add/modify MCPs.\",",
+      "reason": "internal_identifier",
+      "note": "Token \"setup-hyperdx\" allowed in the token map"
+    },
+    {
+      "path": "packages/hdx-eval/eval.config.example.json",
+      "term": "hyperdx",
+      "snippet": "\"brandTerms\": [\"Couchbase Traces\", \"hyperdx\"],",
+      "reason": "internal_identifier",
+      "note": "Token \"hyperdx\" allowed in the token map"
+    },
+    {
+      "path": "packages/hdx-eval/eval.config.example.json",
+      "term": "hyperdx",
+      "snippet": "\"hyperdx\": {",
+      "reason": "internal_identifier",
+      "note": "Token \"hyperdx\" allowed in the token map"
+    },
+    {
+      "path": "packages/hdx-eval/eval.config.example.json",
+      "term": "hyperdx",
+      "snippet": "\"hyperdxApi\": {",
+      "reason": "internal_identifier",
+      "note": "Token \"hyperdxApi\" allowed in the token map"
+    },
+    {
+      "path": "packages/hdx-eval/eval.config.example.json",
+      "term": "hyperdx",
+      "snippet": "\"mcp__hyperdx__hyperdx_delete_dashboard\",",
+      "reason": "internal_identifier",
+      "note": "Token \"mcp__hyperdx__hyperdx_delete_dashboard\" allowed in the token map"
+    },
+    {
+      "path": "packages/hdx-eval/eval.config.example.json",
+      "term": "hyperdx",
+      "snippet": "\"mcp__hyperdx__hyperdx_get_alert\",",
+      "reason": "internal_identifier",
+      "note": "Token \"mcp__hyperdx__hyperdx_get_alert\" allowed in the token map"
+    },
+    {
+      "path": "packages/hdx-eval/eval.config.example.json",
+      "term": "hyperdx",
+      "snippet": "\"mcp__hyperdx__hyperdx_get_dashboard\",",
+      "reason": "internal_identifier",
+      "note": "Token \"mcp__hyperdx__hyperdx_get_dashboard\" allowed in the token map"
+    },
+    {
+      "path": "packages/hdx-eval/eval.config.example.json",
+      "term": "hyperdx",
+      "snippet": "\"mcp__hyperdx__hyperdx_get_saved_search\",",
+      "reason": "internal_identifier",
+      "note": "Token \"mcp__hyperdx__hyperdx_get_saved_search\" allowed in the token map"
+    },
+    {
+      "path": "packages/hdx-eval/eval.config.example.json",
+      "term": "hyperdx",
+      "snippet": "\"mcp__hyperdx__hyperdx_get_webhook\",",
+      "reason": "internal_identifier",
+      "note": "Token \"mcp__hyperdx__hyperdx_get_webhook\" allowed in the token map"
+    },
+    {
+      "path": "packages/hdx-eval/eval.config.example.json",
+      "term": "hyperdx",
+      "snippet": "\"mcp__hyperdx__hyperdx_query_tile\",",
+      "reason": "internal_identifier",
+      "note": "Token \"mcp__hyperdx__hyperdx_query_tile\" allowed in the token map"
+    },
+    {
+      "path": "packages/hdx-eval/eval.config.example.json",
+      "term": "hyperdx",
+      "snippet": "\"mcp__hyperdx__hyperdx_save_alert\"",
+      "reason": "internal_identifier",
+      "note": "Token \"mcp__hyperdx__hyperdx_save_alert\" allowed in the token map"
+    },
+    {
+      "path": "packages/hdx-eval/eval.config.example.json",
+      "term": "hyperdx",
+      "snippet": "\"mcp__hyperdx__hyperdx_save_dashboard\",",
+      "reason": "internal_identifier",
+      "note": "Token \"mcp__hyperdx__hyperdx_save_dashboard\" allowed in the token map"
+    },
+    {
+      "path": "packages/hdx-eval/eval.config.example.json",
+      "term": "hyperdx",
+      "snippet": "\"mcp__hyperdx__hyperdx_save_saved_search\",",
+      "reason": "internal_identifier",
+      "note": "Token \"mcp__hyperdx__hyperdx_save_saved_search\" allowed in the token map"
+    },
+    {
+      "path": "packages/hdx-eval/eval.config.example.json",
+      "term": "hyperdx",
+      "snippet": "\"toolPattern\": \"mcp__hyperdx__*\",",
+      "reason": "internal_identifier",
+      "note": "Token \"mcp__hyperdx__\" allowed in the token map"
+    },
+    {
+      "path": "packages/hdx-eval/src/__tests__/aggregate.test.ts",
+      "term": "hyperdx",
+      "snippet": "'hyperdx/claude-haiku-4-5',",
+      "reason": "internal_identifier",
+      "note": "Token \"hyperdx\" allowed in the token map"
+    },
+    {
+      "path": "packages/hdx-eval/src/__tests__/aggregate.test.ts",
+      "term": "hyperdx",
+      "snippet": "'hyperdx/claude-haiku-4-5+myplugin',",
+      "reason": "internal_identifier",
+      "note": "Token \"hyperdx\" allowed in the token map"
+    },
+    {
+      "path": "packages/hdx-eval/src/__tests__/aggregate.test.ts",
+      "term": "hyperdx",
+      "snippet": "'hyperdx/claude-sonnet-4-6',",
+      "reason": "internal_identifier",
+      "note": "Token \"hyperdx\" allowed in the token map"
+    },
+    {
+      "path": "packages/hdx-eval/src/__tests__/aggregate.test.ts",
+      "term": "hyperdx",
+      "snippet": "'hyperdx/claude-sonnet-4-6+none',",
+      "reason": "internal_identifier",
+      "note": "Token \"hyperdx\" allowed in the token map"
+    },
+    {
+      "path": "packages/hdx-eval/src/__tests__/aggregate.test.ts",
+      "term": "hyperdx",
+      "snippet": ").toBe('hyperdx');",
+      "reason": "internal_identifier",
+      "note": "Token \"hyperdx\" allowed in the token map"
+    },
+    {
+      "path": "packages/hdx-eval/src/__tests__/aggregate.test.ts",
+      "term": "hyperdx",
+      "snippet": ").toBe('hyperdx/claude-sonnet-4-5+my-plugin');",
+      "reason": "internal_identifier",
+      "note": "Token \"hyperdx\" allowed in the token map"
+    },
+    {
+      "path": "packages/hdx-eval/src/__tests__/aggregate.test.ts",
+      "term": "hyperdx",
+      "snippet": ").toBe('hyperdx/myplugin');",
+      "reason": "internal_identifier",
+      "note": "Token \"hyperdx\" allowed in the token map"
+    },
+    {
+      "path": "packages/hdx-eval/src/__tests__/aggregate.test.ts",
+      "term": "hyperdx",
+      "snippet": ").toBe('hyperdx/none');",
+      "reason": "internal_identifier",
+      "note": "Token \"hyperdx\" allowed in the token map"
+    },
+    {
+      "path": "packages/hdx-eval/src/__tests__/aggregate.test.ts",
+      "term": "hyperdx",
+      "snippet": ").toBe('hyperdx/opus');",
+      "reason": "internal_identifier",
+      "note": "Token \"hyperdx\" allowed in the token map"
+    },
+    {
+      "path": "packages/hdx-eval/src/__tests__/aggregate.test.ts",
+      "term": "hyperdx",
+      "snippet": ").toBe('hyperdx/opus+myplugin');",
+      "reason": "internal_identifier",
+      "note": "Token \"hyperdx\" allowed in the token map"
+    },
+    {
+      "path": "packages/hdx-eval/src/__tests__/aggregate.test.ts",
+      "term": "hyperdx",
+      "snippet": "baseline: 'hyperdx',",
+      "reason": "internal_identifier",
+      "note": "Token \"hyperdx\" allowed in the token map"
+    },
+    {
+      "path": "packages/hdx-eval/src/__tests__/aggregate.test.ts",
+      "term": "hyperdx",
+      "snippet": "columnKeyFor('hyperdx', 'claude-sonnet-4.5', 'my.plugin', {",
+      "reason": "internal_identifier",
+      "note": "Token \"hyperdx\" allowed in the token map"
+    },
+    {
+      "path": "packages/hdx-eval/src/__tests__/aggregate.test.ts",
+      "term": "hyperdx",
+      "snippet": "columnKeyFor('hyperdx', 'opus', 'myplugin', {",
+      "reason": "internal_identifier",
+      "note": "Token \"hyperdx\" allowed in the token map"
+    },
+    {
+      "path": "packages/hdx-eval/src/__tests__/aggregate.test.ts",
+      "term": "hyperdx",
+      "snippet": "columnKeyFor('hyperdx', 'opus', 'none', {",
+      "reason": "internal_identifier",
+      "note": "Token \"hyperdx\" allowed in the token map"
+    },
+    {
+      "path": "packages/hdx-eval/src/__tests__/aggregate.test.ts",
+      "term": "hyperdx",
+      "snippet": "const h = sc.cells['hyperdx']!;",
+      "reason": "internal_identifier",
+      "note": "Token \"hyperdx\" allowed in the token map"
+    },
+    {
+      "path": "packages/hdx-eval/src/__tests__/aggregate.test.ts",
+      "term": "hyperdx",
+      "snippet": "expect('adoptionScore' in sc.deltas['hyperdx']).toBe(false);",
+      "reason": "internal_identifier",
+      "note": "Token \"hyperdx\" allowed in the token map"
+    },
+    {
+      "path": "packages/hdx-eval/src/__tests__/aggregate.test.ts",
+      "term": "hyperdx",
+      "snippet": "expect(sc.cells['hyperdx'].adoption).toBeUndefined();",
+      "reason": "internal_identifier",
+      "note": "Token \"hyperdx\" allowed in the token map"
+    },
+    {
+      "path": "packages/hdx-eval/src/__tests__/aggregate.test.ts",
+      "term": "hyperdx",
+      "snippet": "expect(sc.cells['hyperdx/claude-haiku-4-5']).toBeDefined();",
+      "reason": "internal_identifier",
+      "note": "Token \"hyperdx\" allowed in the token map"
+    },
+    {
+      "path": "packages/hdx-eval/src/__tests__/aggregate.test.ts",
+      "term": "hyperdx",
+      "snippet": "expect(sc.cells['hyperdx/claude-haiku-4-5'].n).toBe(1);",
+      "reason": "internal_identifier",
+      "note": "Token \"hyperdx\" allowed in the token map"
+    },
+    {
+      "path": "packages/hdx-eval/src/__tests__/aggregate.test.ts",
+      "term": "hyperdx",
+      "snippet": "expect(sc.cells['hyperdx/claude-sonnet-4-6']).toBeDefined();",
+      "reason": "internal_identifier",
+      "note": "Token \"hyperdx\" allowed in the token map"
+    },
+    {
+      "path": "packages/hdx-eval/src/__tests__/aggregate.test.ts",
+      "term": "hyperdx",
+      "snippet": "expect(sc.cells['hyperdx/claude-sonnet-4-6'].n).toBe(1);",
+      "reason": "internal_identifier",
+      "note": "Token \"hyperdx\" allowed in the token map"
+    },
+    {
+      "path": "packages/hdx-eval/src/__tests__/aggregate.test.ts",
+      "term": "hyperdx",
+      "snippet": "expect(sc.cells['hyperdx/myplugin']).toBeDefined();",
+      "reason": "internal_identifier",
+      "note": "Token \"hyperdx\" allowed in the token map"
+    },
+    {
+      "path": "packages/hdx-eval/src/__tests__/aggregate.test.ts",
+      "term": "hyperdx",
+      "snippet": "expect(sc.cells['hyperdx/none']).toBeDefined();",
+      "reason": "internal_identifier",
+      "note": "Token \"hyperdx\" allowed in the token map"
+    },
+    {
+      "path": "packages/hdx-eval/src/__tests__/aggregate.test.ts",
+      "term": "hyperdx",
+      "snippet": "expect(sc.deltas['hyperdx']).toBeUndefined();",
+      "reason": "internal_identifier",
+      "note": "Token \"hyperdx\" allowed in the token map"
+    },
+    {
+      "path": "packages/hdx-eval/src/__tests__/aggregate.test.ts",
+      "term": "hyperdx",
+      "snippet": "expect(sc.deltas['hyperdx'].adoptionScore).toBeCloseTo(0.75, 5);",
+      "reason": "internal_identifier",
+      "note": "Token \"hyperdx\" allowed in the token map"
+    },
+    {
+      "path": "packages/hdx-eval/src/__tests__/aggregate.test.ts",
+      "term": "hyperdx",
+      "snippet": "expect(sc.deltas['hyperdx'].combinedScore!).toBeCloseTo(-0.13, 5);",
+      "reason": "internal_identifier",
+      "note": "Token \"hyperdx\" allowed in the token map"
+    },
+    {
+      "path": "packages/hdx-eval/src/__tests__/aggregate.test.ts",
+      "term": "hyperdx",
+      "snippet": "expect(sc.deltas['hyperdx'].toolCalls).toBeCloseTo(5, 5);",
+      "reason": "internal_identifier",
+      "note": "Token \"hyperdx\" allowed in the token map"
+    },
+    {
+      "path": "packages/hdx-eval/src/__tests__/aggregate.test.ts",
+      "term": "hyperdx",
+      "snippet": "expect(sc.deltas['hyperdx/claude-sonnet-4-6']?.combinedScore).toBeDefined();",
+      "reason": "internal_identifier",
+      "note": "Token \"hyperdx\" allowed in the token map"
+    },
+    {
+      "path": "packages/hdx-eval/src/__tests__/aggregate.test.ts",
+      "term": "hyperdx",
+      "snippet": "expect(summary.columnOrder).toEqual(['clickhouse', 'hyperdx']);",
+      "reason": "internal_identifier",
+      "note": "Token \"hyperdx\" allowed in the token map"
+    },
+    {
+      "path": "packages/hdx-eval/src/__tests__/aggregate.test.ts",
+      "term": "hyperdx",
+      "snippet": "expect(summary.columnOrder).toEqual(['hyperdx/myplugin', 'hyperdx/none']);",
+      "reason": "internal_identifier",
+      "note": "Token \"hyperdx\" allowed in the token map"
+    },
+    {
+      "path": "packages/hdx-eval/src/__tests__/aggregate.test.ts",
+      "term": "hyperdx",
+      "snippet": "expect(summary.mcpOrder).toEqual(['clickhouse', 'hyperdx']);",
+      "reason": "internal_identifier",
+      "note": "Token \"hyperdx\" allowed in the token map"
+    },
+    {
+      "path": "packages/hdx-eval/src/__tests__/aggregate.test.ts",
+      "term": "hyperdx",
+      "snippet": "mcp: 'hyperdx',",
+      "reason": "internal_identifier",
+      "note": "Token \"hyperdx\" allowed in the token map"
+    },
+    {
+      "path": "packages/hdx-eval/src/__tests__/api.test.ts",
+      "term": "hyperdx",
+      "snippet": "describe('HyperdxApiClient', () => {",
+      "reason": "internal_identifier",
+      "note": "Token \"HyperdxApiClient\" allowed in the token map"
+    },
+    {
+      "path": "packages/hdx-eval/src/__tests__/blind.test.ts",
+      "term": "hyperdx",
+      "snippet": "'I called mcp__hyperdx__hyperdx_query to find...',",
+      "reason": "internal_identifier",
+      "note": "Token \"mcp__hyperdx__hyperdx_query\" allowed in the token map"
+    },
+    {
+      "path": "packages/hdx-eval/src/__tests__/blind.test.ts",
+      "term": "hyperdx",
+      "snippet": "brandTerms: ['Couchbase Traces', 'hyperdx'],",
+      "reason": "internal_identifier",
+      "note": "Token \"hyperdx\" allowed in the token map"
+    },
+    {
+      "path": "packages/hdx-eval/src/__tests__/blind.test.ts",
+      "term": "hyperdx",
+      "snippet": "const text = 'I called mcp__hyperdx__hyperdx_query to find...';",
+      "reason": "internal_identifier",
+      "note": "Token \"mcp__hyperdx__hyperdx_query\" allowed in the token map"
+    },
+    {
+      "path": "packages/hdx-eval/src/__tests__/blind.test.ts",
+      "term": "hyperdx",
+      "snippet": "expect(out).not.toContain('mcp__hyperdx__');",
+      "reason": "internal_identifier",
+      "note": "Token \"mcp__hyperdx__\" allowed in the token map"
+    },
+    {
+      "path": "packages/hdx-eval/src/__tests__/blind.test.ts",
+      "term": "hyperdx",
+      "snippet": "it('redacts mcp__hyperdx__ tool prefix', () => {",
+      "reason": "internal_identifier",
+      "note": "Token \"mcp__hyperdx__\" allowed in the token map"
+    },
+    {
+      "path": "packages/hdx-eval/src/__tests__/blind.test.ts",
+      "term": "hyperdx",
+      "snippet": "toolPattern: 'mcp__hyperdx__*',",
+      "reason": "internal_identifier",
+      "note": "Token \"mcp__hyperdx__\" allowed in the token map"
+    },
+    {
+      "path": "packages/hdx-eval/src/__tests__/blind.test.ts",
+      "term": "hyperdx",
+      "snippet": "{ kind: 'hyperdx', def: hyperdxDef },",
+      "reason": "internal_identifier",
+      "note": "Token \"hyperdx\" allowed in the token map"
+    },
+    {
+      "path": "packages/hdx-eval/src/__tests__/config.test.ts",
+      "term": "hyperdx",
+      "snippet": "toolPattern: 'mcp__hyperdx__*',",
+      "reason": "internal_identifier",
+      "note": "Token \"mcp__hyperdx__\" allowed in the token map"
+    },
+    {
+      "path": "packages/hdx-eval/src/__tests__/grade.judgeModel.test.ts",
+      "term": "hyperdx",
+      "snippet": "const dir = join(batchDir, 'error-root-cause', 'hyperdx');",
+      "reason": "internal_identifier",
+      "note": "Token \"hyperdx\" allowed in the token map"
+    },
+    {
+      "path": "packages/hdx-eval/src/__tests__/grade.judgeModel.test.ts",
+      "term": "hyperdx",
+      "snippet": "join(batchDir, 'error-root-cause', 'hyperdx', '0.grade.json'),",
+      "reason": "internal_identifier",
+      "note": "Token \"hyperdx\" allowed in the token map"
+    },
+    {
+      "path": "packages/hdx-eval/src/__tests__/grade.judgeModel.test.ts",
+      "term": "hyperdx",
+      "snippet": "mcp: 'hyperdx',",
+      "reason": "internal_identifier",
+      "note": "Token \"hyperdx\" allowed in the token map"
+    },
+    {
+      "path": "packages/hdx-eval/src/__tests__/grade.judgeModel.test.ts",
+      "term": "hyperdx",
+      "snippet": "name: 'mcp__hyperdx__hyperdx_query',",
+      "reason": "internal_identifier",
+      "note": "Token \"mcp__hyperdx__hyperdx_query\" allowed in the token map"
+    },
+    {
+      "path": "packages/hdx-eval/src/__tests__/grade.test.ts",
+      "term": "hyperdx",
+      "snippet": "'hyperdx',",
+      "reason": "internal_identifier",
+      "note": "Token \"hyperdx\" allowed in the token map"
+    },
+    {
+      "path": "packages/hdx-eval/src/__tests__/grade.test.ts",
+      "term": "hyperdx",
+      "snippet": "expect(lines.some(l => l.includes('error-root-cause/hyperdx/none/0'))).toBe(",
+      "reason": "internal_identifier",
+      "note": "Token \"hyperdx\" allowed in the token map"
+    },
+    {
+      "path": "packages/hdx-eval/src/__tests__/grade.test.ts",
+      "term": "hyperdx",
+      "snippet": "lines.some(l => l.includes('error-root-cause/hyperdx/myplugin/0')),",
+      "reason": "internal_identifier",
+      "note": "Token \"hyperdx\" allowed in the token map"
+    },
+    {
+      "path": "packages/hdx-eval/src/__tests__/grade.test.ts",
+      "term": "hyperdx",
+      "snippet": "name: 'mcp__hyperdx__cbt_describe_metric',",
+      "reason": "internal_identifier",
+      "note": "Token \"mcp__hyperdx__cbt_describe_metric\" allowed in the token map"
+    },
+    {
+      "path": "packages/hdx-eval/src/__tests__/grade.test.ts",
+      "term": "hyperdx",
+      "snippet": "name: 'mcp__hyperdx__cbt_list_metrics',",
+      "reason": "internal_identifier",
+      "note": "Token \"mcp__hyperdx__cbt_list_metrics\" allowed in the token map"
+    },
+    {
+      "path": "packages/hdx-eval/src/__tests__/grade.test.ts",
+      "term": "hyperdx",
+      "snippet": "name: 'mcp__hyperdx__cbt_sql',",
+      "reason": "internal_identifier",
+      "note": "Token \"mcp__hyperdx__cbt_sql\" allowed in the token map"
+    },
+    {
+      "path": "packages/hdx-eval/src/__tests__/grade.test.ts",
+      "term": "hyperdx",
+      "snippet": "name: 'mcp__hyperdx__cbt_timeseries',",
+      "reason": "internal_identifier",
+      "note": "Token \"mcp__hyperdx__cbt_timeseries\" allowed in the token map"
+    },
+    {
+      "path": "packages/hdx-eval/src/__tests__/grade.test.ts",
+      "term": "hyperdx",
+      "snippet": "name: 'mcp__hyperdx__hyperdx_list_sources',",
+      "reason": "internal_identifier",
+      "note": "Token \"mcp__hyperdx__hyperdx_list_sources\" allowed in the token map"
+    },
+    {
+      "path": "packages/hdx-eval/src/__tests__/grade.test.ts",
+      "term": "hyperdx",
+      "snippet": "name: 'mcp__hyperdx__hyperdx_query',",
+      "reason": "internal_identifier",
+      "note": "Token \"mcp__hyperdx__hyperdx_query\" allowed in the token map"
+    },
+    {
+      "path": "packages/hdx-eval/src/__tests__/markdown.test.ts",
+      "term": "hyperdx",
+      "snippet": "'Columns: hyperdx/myplugin, hyperdx/none  _(mcp/plugin)_',",
+      "reason": "internal_identifier",
+      "note": "Token \"hyperdx\" allowed in the token map"
+    },
+    {
+      "path": "packages/hdx-eval/src/__tests__/markdown.test.ts",
+      "term": "hyperdx",
+      "snippet": "const modelPair = pair('error-root-cause', 'hyperdx', 0);",
+      "reason": "internal_identifier",
+      "note": "Token \"hyperdx\" allowed in the token map"
+    },
+    {
+      "path": "packages/hdx-eval/src/__tests__/markdown.test.ts",
+      "term": "hyperdx",
+      "snippet": "expect(md).toContain('Baseline: hyperdx/myplugin');",
+      "reason": "internal_identifier",
+      "note": "Token \"hyperdx\" allowed in the token map"
+    },
+    {
+      "path": "packages/hdx-eval/src/__tests__/markdown.test.ts",
+      "term": "hyperdx",
+      "snippet": "expect(md).toContain('MCPs: clickhouse, hyperdx');",
+      "reason": "internal_identifier",
+      "note": "Token \"hyperdx\" allowed in the token map"
+    },
+    {
+      "path": "packages/hdx-eval/src/__tests__/markdown.test.ts",
+      "term": "hyperdx",
+      "snippet": "expect(md).toContain('hyperdx');",
+      "reason": "internal_identifier",
+      "note": "Token \"hyperdx\" allowed in the token map"
+    },
+    {
+      "path": "packages/hdx-eval/src/__tests__/markdown.test.ts",
+      "term": "hyperdx",
+      "snippet": "expect(md).toContain('hyperdx/claude-haiku-4-5+none');",
+      "reason": "internal_identifier",
+      "note": "Token \"hyperdx\" allowed in the token map"
+    },
+    {
+      "path": "packages/hdx-eval/src/__tests__/markdown.test.ts",
+      "term": "hyperdx",
+      "snippet": "expect(md).toContain('hyperdx/claude-sonnet-4-6+myplugin');",
+      "reason": "internal_identifier",
+      "note": "Token \"hyperdx\" allowed in the token map"
+    },
+    {
+      "path": "packages/hdx-eval/src/__tests__/markdown.test.ts",
+      "term": "hyperdx",
+      "snippet": "expect(md).toContain('Δ (hyperdx/none)');",
+      "reason": "internal_identifier",
+      "note": "Token \"hyperdx\" allowed in the token map"
+    },
+    {
+      "path": "packages/hdx-eval/src/__tests__/markdown.test.ts",
+      "term": "hyperdx",
+      "snippet": "pair('error-root-cause', 'hyperdx', 0),",
+      "reason": "internal_identifier",
+      "note": "Token \"hyperdx\" allowed in the token map"
+    },
+    {
+      "path": "packages/hdx-eval/src/__tests__/markdown.test.ts",
+      "term": "hyperdx",
+      "snippet": "pair('error-root-cause', 'hyperdx', 0, 'myplugin'),",
+      "reason": "internal_identifier",
+      "note": "Token \"hyperdx\" allowed in the token map"
+    },
+    {
+      "path": "packages/hdx-eval/src/__tests__/markdown.test.ts",
+      "term": "hyperdx",
+      "snippet": "pair('latency-spike', 'hyperdx', 0),",
+      "reason": "internal_identifier",
+      "note": "Token \"hyperdx\" allowed in the token map"
+    },
+    {
+      "path": "packages/hdx-eval/src/__tests__/markdown.test.ts",
+      "term": "hyperdx",
+      "snippet": "pair('metric-saturation', 'hyperdx', 0, 'none', adopt(1, true, true)),",
+      "reason": "internal_identifier",
+      "note": "Token \"hyperdx\" allowed in the token map"
+    },
+    {
+      "path": "packages/hdx-eval/src/__tests__/markdown.test.ts",
+      "term": "hyperdx",
+      "snippet": "pairs: [modelPair, pair('error-root-cause', 'hyperdx', 0, 'myplugin')],",
+      "reason": "internal_identifier",
+      "note": "Token \"hyperdx\" allowed in the token map"
+    },
+    {
+      "path": "packages/hdx-eval/src/__tests__/mcpConfig.test.ts",
+      "term": "hyperdx",
+      "snippet": "'mcp__hyperdx__*',",
+      "reason": "internal_identifier",
+      "note": "Token \"mcp__hyperdx__\" allowed in the token map"
+    },
+    {
+      "path": "packages/hdx-eval/src/__tests__/mcpConfig.test.ts",
+      "term": "hyperdx",
+      "snippet": "'mcp__hyperdx__hyperdx_delete_dashboard',",
+      "reason": "internal_identifier",
+      "note": "Token \"mcp__hyperdx__hyperdx_delete_dashboard\" allowed in the token map"
+    },
+    {
+      "path": "packages/hdx-eval/src/__tests__/mcpConfig.test.ts",
+      "term": "hyperdx",
+      "snippet": "'mcp__hyperdx__hyperdx_get_alert',",
+      "reason": "internal_identifier",
+      "note": "Token \"mcp__hyperdx__hyperdx_get_alert\" allowed in the token map"
+    },
+    {
+      "path": "packages/hdx-eval/src/__tests__/mcpConfig.test.ts",
+      "term": "hyperdx",
+      "snippet": "'mcp__hyperdx__hyperdx_get_dashboard',",
+      "reason": "internal_identifier",
+      "note": "Token \"mcp__hyperdx__hyperdx_get_dashboard\" allowed in the token map"
+    },
+    {
+      "path": "packages/hdx-eval/src/__tests__/mcpConfig.test.ts",
+      "term": "hyperdx",
+      "snippet": "'mcp__hyperdx__hyperdx_get_saved_search',",
+      "reason": "internal_identifier",
+      "note": "Token \"mcp__hyperdx__hyperdx_get_saved_search\" allowed in the token map"
+    },
+    {
+      "path": "packages/hdx-eval/src/__tests__/mcpConfig.test.ts",
+      "term": "hyperdx",
+      "snippet": "'mcp__hyperdx__hyperdx_get_webhook',",
+      "reason": "internal_identifier",
+      "note": "Token \"mcp__hyperdx__hyperdx_get_webhook\" allowed in the token map"
+    },
+    {
+      "path": "packages/hdx-eval/src/__tests__/mcpConfig.test.ts",
+      "term": "hyperdx",
+      "snippet": "'mcp__hyperdx__hyperdx_query_tile',",
+      "reason": "internal_identifier",
+      "note": "Token \"mcp__hyperdx__hyperdx_query_tile\" allowed in the token map"
+    },
+    {
+      "path": "packages/hdx-eval/src/__tests__/mcpConfig.test.ts",
+      "term": "hyperdx",
+      "snippet": "'mcp__hyperdx__hyperdx_save_alert',",
+      "reason": "internal_identifier",
+      "note": "Token \"mcp__hyperdx__hyperdx_save_alert\" allowed in the token map"
+    },
+    {
+      "path": "packages/hdx-eval/src/__tests__/mcpConfig.test.ts",
+      "term": "hyperdx",
+      "snippet": "'mcp__hyperdx__hyperdx_save_dashboard',",
+      "reason": "internal_identifier",
+      "note": "Token \"mcp__hyperdx__hyperdx_save_dashboard\" allowed in the token map"
+    },
+    {
+      "path": "packages/hdx-eval/src/__tests__/mcpConfig.test.ts",
+      "term": "hyperdx",
+      "snippet": "'mcp__hyperdx__hyperdx_save_saved_search',",
+      "reason": "internal_identifier",
+      "note": "Token \"mcp__hyperdx__hyperdx_save_saved_search\" allowed in the token map"
+    },
+    {
+      "path": "packages/hdx-eval/src/__tests__/mcpConfig.test.ts",
+      "term": "hyperdx",
+      "snippet": "allow: ['mcp__hyperdx__*'],",
+      "reason": "internal_identifier",
+      "note": "Token \"mcp__hyperdx__\" allowed in the token map"
+    },
+    {
+      "path": "packages/hdx-eval/src/__tests__/mcpConfig.test.ts",
+      "term": "hyperdx",
+      "snippet": "brandTerms: ['Couchbase Traces', 'hyperdx'],",
+      "reason": "internal_identifier",
+      "note": "Token \"hyperdx\" allowed in the token map"
+    },
+    {
+      "path": "packages/hdx-eval/src/__tests__/mcpConfig.test.ts",
+      "term": "hyperdx",
+      "snippet": "const json = buildMcpConfig(hyperdxDef, 'hyperdx');",
+      "reason": "internal_identifier",
+      "note": "Token \"hyperdx\" allowed in the token map"
+    },
+    {
+      "path": "packages/hdx-eval/src/__tests__/mcpConfig.test.ts",
+      "term": "hyperdx",
+      "snippet": "expect(allowedToolsPattern(hyperdxDef)).toBe('mcp__hyperdx__*');",
+      "reason": "internal_identifier",
+      "note": "Token \"mcp__hyperdx__\" allowed in the token map"
+    },
+    {
+      "path": "packages/hdx-eval/src/__tests__/preflight.test.ts",
+      "term": "hyperdx",
+      "snippet": "const res = await probeMcp('hyperdx', httpDef);",
+      "reason": "internal_identifier",
+      "note": "Token \"hyperdx\" allowed in the token map"
+    },
+    {
+      "path": "packages/hdx-eval/src/__tests__/preflight.test.ts",
+      "term": "hyperdx",
+      "snippet": "expect(await probeMcp('hyperdx', httpDef)).toEqual({",
+      "reason": "internal_identifier",
+      "note": "Token \"hyperdx\" allowed in the token map"
+    },
+    {
+      "path": "packages/hdx-eval/src/__tests__/preflight.test.ts",
+      "term": "hyperdx",
+      "snippet": "mcp: 'hyperdx',",
+      "reason": "internal_identifier",
+      "note": "Token \"hyperdx\" allowed in the token map"
+    },
+    {
+      "path": "packages/hdx-eval/src/__tests__/preflight.test.ts",
+      "term": "hyperdx",
+      "snippet": "toolPattern: 'mcp__hyperdx__*',",
+      "reason": "internal_identifier",
+      "note": "Token \"mcp__hyperdx__\" allowed in the token map"
+    },
+    {
+      "path": "packages/hdx-eval/src/__tests__/programmatic.test.ts",
+      "term": "hyperdx",
+      "snippet": "...toolCall('mcp__hyperdx__cbt_list_metrics', { sourceId: 's1' }),",
+      "reason": "internal_identifier",
+      "note": "Token \"mcp__hyperdx__cbt_list_metrics\" allowed in the token map"
+    },
+    {
+      "path": "packages/hdx-eval/src/__tests__/programmatic.test.ts",
+      "term": "hyperdx",
+      "snippet": "it('metric-tool calls naming the metrics satisfy the same checks (hyperdx arm)', () => {",
+      "reason": "internal_identifier",
+      "note": "Token \"hyperdx\" allowed in the token map"
+    },
+    {
+      "path": "packages/hdx-eval/src/__tests__/programmatic.test.ts",
+      "term": "hyperdx",
+      "snippet": "toolCall('mcp__hyperdx__cbt_describe_metric', {",
+      "reason": "internal_identifier",
+      "note": "Token \"mcp__hyperdx__cbt_describe_metric\" allowed in the token map"
+    },
+    {
+      "path": "packages/hdx-eval/src/__tests__/programmatic.test.ts",
+      "term": "hyperdx",
+      "snippet": "toolCall('mcp__hyperdx__cbt_list_metrics', { sourceId: 's1' }),",
+      "reason": "internal_identifier",
+      "note": "Token \"mcp__hyperdx__cbt_list_metrics\" allowed in the token map"
+    },
+    {
+      "path": "packages/hdx-eval/src/__tests__/programmatic.test.ts",
+      "term": "hyperdx",
+      "snippet": "toolCall('mcp__hyperdx__cbt_search', {",
+      "reason": "internal_identifier",
+      "note": "Token \"mcp__hyperdx__cbt_search\" allowed in the token map"
+    },
+    {
+      "path": "packages/hdx-eval/src/__tests__/programmatic.test.ts",
+      "term": "hyperdx",
+      "snippet": "toolCall('mcp__hyperdx__cbt_timeseries', {",
+      "reason": "internal_identifier",
+      "note": "Token \"mcp__hyperdx__cbt_timeseries\" allowed in the token map"
+    },
+    {
+      "path": "packages/hdx-eval/src/__tests__/reportsStore.test.ts",
+      "term": "hyperdx",
+      "snippet": "'hyperdx',",
+      "reason": "internal_identifier",
+      "note": "Token \"hyperdx\" allowed in the token map"
+    },
+    {
+      "path": "packages/hdx-eval/src/__tests__/reportsStore.test.ts",
+      "term": "hyperdx",
+      "snippet": "JSON.stringify({ baseline: 'hyperdx+oldformat' }),",
+      "reason": "internal_identifier",
+      "note": "Token \"hyperdx\" allowed in the token map"
+    },
+    {
+      "path": "packages/hdx-eval/src/__tests__/reportsStore.test.ts",
+      "term": "hyperdx",
+      "snippet": "const result = writeBatchSummary(batchDir, outPath, 'hyperdx/none');",
+      "reason": "internal_identifier",
+      "note": "Token \"hyperdx\" allowed in the token map"
+    },
+    {
+      "path": "packages/hdx-eval/src/__tests__/reportsStore.test.ts",
+      "term": "hyperdx",
+      "snippet": "expect(md).toContain('hyperdx/myplugin');",
+      "reason": "internal_identifier",
+      "note": "Token \"hyperdx\" allowed in the token map"
+    },
+    {
+      "path": "packages/hdx-eval/src/__tests__/reportsStore.test.ts",
+      "term": "hyperdx",
+      "snippet": "expect(md).toContain('Δ (hyperdx/none)');",
+      "reason": "internal_identifier",
+      "note": "Token \"hyperdx\" allowed in the token map"
+    },
+    {
+      "path": "packages/hdx-eval/src/__tests__/reportsStore.test.ts",
+      "term": "hyperdx",
+      "snippet": "expect(scenario.cells['hyperdx/myplugin'].plugin).toBe('myplugin');",
+      "reason": "internal_identifier",
+      "note": "Token \"hyperdx\" allowed in the token map"
+    },
+    {
+      "path": "packages/hdx-eval/src/__tests__/reportsStore.test.ts",
+      "term": "hyperdx",
+      "snippet": "expect(scenario.cells['hyperdx/none'].plugin).toBe('none');",
+      "reason": "internal_identifier",
+      "note": "Token \"hyperdx\" allowed in the token map"
+    },
+    {
+      "path": "packages/hdx-eval/src/__tests__/reportsStore.test.ts",
+      "term": "hyperdx",
+      "snippet": "expect(scenario.deltas['hyperdx/none'].combinedScore).toBeCloseTo(-0.1, 5);",
+      "reason": "internal_identifier",
+      "note": "Token \"hyperdx\" allowed in the token map"
+    },
+    {
+      "path": "packages/hdx-eval/src/__tests__/reportsStore.test.ts",
+      "term": "hyperdx",
+      "snippet": "expect(summary.baseline).toBe('hyperdx/myplugin');",
+      "reason": "internal_identifier",
+      "note": "Token \"hyperdx\" allowed in the token map"
+    },
+    {
+      "path": "packages/hdx-eval/src/__tests__/reportsStore.test.ts",
+      "term": "hyperdx",
+      "snippet": "expect(summary.baseline).toBe('hyperdx/none');",
+      "reason": "internal_identifier",
+      "note": "Token \"hyperdx\" allowed in the token map"
+    },
+    {
+      "path": "packages/hdx-eval/src/__tests__/reportsStore.test.ts",
+      "term": "hyperdx",
+      "snippet": "expect(summary.columnOrder).toEqual(['hyperdx/myplugin', 'hyperdx/none']);",
+      "reason": "internal_identifier",
+      "note": "Token \"hyperdx\" allowed in the token map"
+    },
+    {
+      "path": "packages/hdx-eval/src/__tests__/reportsStore.test.ts",
+      "term": "hyperdx",
+      "snippet": "summary.scenarios[0].deltas['hyperdx/myplugin'].combinedScore,",
+      "reason": "internal_identifier",
+      "note": "Token \"hyperdx\" allowed in the token map"
+    },
+    {
+      "path": "packages/hdx-eval/src/__tests__/reportsStore.test.ts",
+      "term": "hyperdx",
+      "snippet": "writeBatchSummary(batchDir, join(batchDir, '_summary.md'), 'hyperdx/none');",
+      "reason": "internal_identifier",
+      "note": "Token \"hyperdx\" allowed in the token map"
+    },
+    {
+      "path": "packages/hdx-eval/src/__tests__/runPath.test.ts",
+      "term": "hyperdx",
+      "snippet": "'hyperdx',",
+      "reason": "internal_identifier",
+      "note": "Token \"hyperdx\" allowed in the token map"
+    },
+    {
+      "path": "packages/hdx-eval/src/__tests__/runPath.test.ts",
+      "term": "hyperdx",
+      "snippet": "const mcpDir = join(batchDir, 'error-root-cause', 'hyperdx');",
+      "reason": "internal_identifier",
+      "note": "Token \"hyperdx\" allowed in the token map"
+    },
+    {
+      "path": "packages/hdx-eval/src/__tests__/runRun.test.ts",
+      "term": "hyperdx",
+      "snippet": "'mcp__hyperdx__hyperdx_query',",
+      "reason": "internal_identifier",
+      "note": "Token \"mcp__hyperdx__hyperdx_query\" allowed in the token map"
+    },
+    {
+      "path": "packages/hdx-eval/src/__tests__/runRun.test.ts",
+      "term": "hyperdx",
+      "snippet": "expect(record.toolCalls[0].name).toBe('mcp__hyperdx__hyperdx_query');",
+      "reason": "internal_identifier",
+      "note": "Token \"mcp__hyperdx__hyperdx_query\" allowed in the token map"
+    },
+    {
+      "path": "packages/hdx-eval/src/__tests__/runRun.test.ts",
+      "term": "hyperdx",
+      "snippet": "mcp: 'hyperdx' as const,",
+      "reason": "internal_identifier",
+      "note": "Token \"hyperdx\" allowed in the token map"
+    },
+    {
+      "path": "packages/hdx-eval/src/__tests__/runRun.test.ts",
+      "term": "hyperdx",
+      "snippet": "tools: [{ name: 'mcp__hyperdx__hyperdx_query' }],",
+      "reason": "internal_identifier",
+      "note": "Token \"mcp__hyperdx__hyperdx_query\" allowed in the token map"
+    },
+    {
+      "path": "packages/hdx-eval/src/__tests__/runsStore.test.ts",
+      "term": "hyperdx",
+      "snippet": "mcp: 'hyperdx',",
+      "reason": "internal_identifier",
+      "note": "Token \"hyperdx\" allowed in the token map"
+    },
+    {
+      "path": "packages/hdx-eval/src/__tests__/streamParser.test.ts",
+      "term": "hyperdx",
+      "snippet": "expect(ev.tools?.[0]?.name).toBe('mcp__hyperdx__hyperdx_query');",
+      "reason": "internal_identifier",
+      "note": "Token \"mcp__hyperdx__hyperdx_query\" allowed in the token map"
+    },
+    {
+      "path": "packages/hdx-eval/src/__tests__/streamParser.test.ts",
+      "term": "hyperdx",
+      "snippet": "name: 'mcp__hyperdx__hyperdx_list_sources',",
+      "reason": "internal_identifier",
+      "note": "Token \"mcp__hyperdx__hyperdx_list_sources\" allowed in the token map"
+    },
+    {
+      "path": "packages/hdx-eval/src/__tests__/streamParser.test.ts",
+      "term": "hyperdx",
+      "snippet": "{ name: 'mcp__hyperdx__hyperdx_query', description: 'Query' },",
+      "reason": "internal_identifier",
+      "note": "Token \"mcp__hyperdx__hyperdx_query\" allowed in the token map"
+    },
+    {
+      "path": "packages/hdx-eval/src/cli.ts",
+      "term": "hyperdx",
+      "snippet": ".command('setup-hyperdx')",
+      "reason": "internal_identifier",
+      "note": "Token \"setup-hyperdx\" allowed in the token map"
+    },
+    {
+      "path": "packages/hdx-eval/src/cli.ts",
+      "term": "hyperdx",
+      "snippet": "`Eval config missing. Run \\`hdx-eval setup-hyperdx\\` first. Expected: ${configPath()}`,",
+      "reason": "internal_identifier",
+      "note": "Token \"setup-hyperdx\" allowed in the token map"
+    },
+    {
+      "path": "packages/hdx-eval/src/cli.ts",
+      "term": "hyperdx",
+      "snippet": "cfg: import('./hyperdx/config').EvalConfig,",
+      "reason": "internal_identifier",
+      "note": "Token \"hyperdx\" allowed in the token map"
+    },
+    {
+      "path": "packages/hdx-eval/src/cli.ts",
+      "term": "hyperdx",
+      "snippet": "config: import('./hyperdx/config').EvalConfig,",
+      "reason": "internal_identifier",
+      "note": "Token \"hyperdx\" allowed in the token map"
+    },
+    {
+      "path": "packages/hdx-eval/src/cli.ts",
+      "term": "hyperdx",
+      "snippet": "from './hyperdx/",
+      "reason": "internal_identifier",
+      "note": "Module directory of the eval harness."
+    },
+    {
+      "path": "packages/hdx-eval/src/hyperdx/config.ts",
+      "term": "hyperdx",
+      "snippet": "`Eval config not found at ${path}. Run \\`hdx-eval setup-hyperdx\\` first.`,",
+      "reason": "internal_identifier",
+      "note": "Token \"setup-hyperdx\" allowed in the token map"
+    },
+    {
+      "path": "packages/hdx-eval/src/hyperdx/config.ts",
+      "term": "hyperdx",
+      "snippet": "`Re-run \\`hdx-eval setup-hyperdx\\` to generate a new config.`,",
+      "reason": "internal_identifier",
+      "note": "Token \"setup-hyperdx\" allowed in the token map"
+    },
+    {
+      "path": "packages/hdx-eval/src/hyperdx/setup.ts",
+      "term": "hyperdx",
+      "snippet": "'mcp__hyperdx__cbt_delete_dashboard',",
+      "reason": "internal_identifier",
+      "note": "Token \"mcp__hyperdx__cbt_delete_dashboard\" allowed in the token map"
+    },
+    {
+      "path": "packages/hdx-eval/src/hyperdx/setup.ts",
+      "term": "hyperdx",
+      "snippet": "'mcp__hyperdx__cbt_delete_source',",
+      "reason": "internal_identifier",
+      "note": "Token \"mcp__hyperdx__cbt_delete_source\" allowed in the token map"
+    },
+    {
+      "path": "packages/hdx-eval/src/hyperdx/setup.ts",
+      "term": "hyperdx",
+      "snippet": "'mcp__hyperdx__cbt_delete_webhook',",
+      "reason": "internal_identifier",
+      "note": "Token \"mcp__hyperdx__cbt_delete_webhook\" allowed in the token map"
+    },
+    {
+      "path": "packages/hdx-eval/src/hyperdx/setup.ts",
+      "term": "hyperdx",
+      "snippet": "'mcp__hyperdx__cbt_get_alert',",
+      "reason": "internal_identifier",
+      "note": "Token \"mcp__hyperdx__cbt_get_alert\" allowed in the token map"
+    },
+    {
+      "path": "packages/hdx-eval/src/hyperdx/setup.ts",
+      "term": "hyperdx",
+      "snippet": "'mcp__hyperdx__cbt_get_dashboard',",
+      "reason": "internal_identifier",
+      "note": "Token \"mcp__hyperdx__cbt_get_dashboard\" allowed in the token map"
+    },
+    {
+      "path": "packages/hdx-eval/src/hyperdx/setup.ts",
+      "term": "hyperdx",
+      "snippet": "'mcp__hyperdx__cbt_get_dashboard_tile',",
+      "reason": "internal_identifier",
+      "note": "Token \"mcp__hyperdx__cbt_get_dashboard_tile\" allowed in the token map"
+    },
+    {
+      "path": "packages/hdx-eval/src/hyperdx/setup.ts",
+      "term": "hyperdx",
+      "snippet": "'mcp__hyperdx__cbt_get_saved_search',",
+      "reason": "internal_identifier",
+      "note": "Token \"mcp__hyperdx__cbt_get_saved_search\" allowed in the token map"
+    },
+    {
+      "path": "packages/hdx-eval/src/hyperdx/setup.ts",
+      "term": "hyperdx",
+      "snippet": "'mcp__hyperdx__cbt_get_webhook',",
+      "reason": "internal_identifier",
+      "note": "Token \"mcp__hyperdx__cbt_get_webhook\" allowed in the token map"
+    },
+    {
+      "path": "packages/hdx-eval/src/hyperdx/setup.ts",
+      "term": "hyperdx",
+      "snippet": "'mcp__hyperdx__cbt_patch_dashboard',",
+      "reason": "internal_identifier",
+      "note": "Token \"mcp__hyperdx__cbt_patch_dashboard\" allowed in the token map"
+    },
+    {
+      "path": "packages/hdx-eval/src/hyperdx/setup.ts",
+      "term": "hyperdx",
+      "snippet": "'mcp__hyperdx__cbt_query_tile',",
+      "reason": "internal_identifier",
+      "note": "Token \"mcp__hyperdx__cbt_query_tile\" allowed in the token map"
+    },
+    {
+      "path": "packages/hdx-eval/src/hyperdx/setup.ts",
+      "term": "hyperdx",
+      "snippet": "'mcp__hyperdx__cbt_save_alert',",
+      "reason": "internal_identifier",
+      "note": "Token \"mcp__hyperdx__cbt_save_alert\" allowed in the token map"
+    },
+    {
+      "path": "packages/hdx-eval/src/hyperdx/setup.ts",
+      "term": "hyperdx",
+      "snippet": "'mcp__hyperdx__cbt_save_dashboard',",
+      "reason": "internal_identifier",
+      "note": "Token \"mcp__hyperdx__cbt_save_dashboard\" allowed in the token map"
+    },
+    {
+      "path": "packages/hdx-eval/src/hyperdx/setup.ts",
+      "term": "hyperdx",
+      "snippet": "'mcp__hyperdx__cbt_save_saved_search',",
+      "reason": "internal_identifier",
+      "note": "Token \"mcp__hyperdx__cbt_save_saved_search\" allowed in the token map"
+    },
+    {
+      "path": "packages/hdx-eval/src/hyperdx/setup.ts",
+      "term": "hyperdx",
+      "snippet": "'mcp__hyperdx__cbt_save_source',",
+      "reason": "internal_identifier",
+      "note": "Token \"mcp__hyperdx__cbt_save_source\" allowed in the token map"
+    },
+    {
+      "path": "packages/hdx-eval/src/hyperdx/setup.ts",
+      "term": "hyperdx",
+      "snippet": "'mcp__hyperdx__cbt_save_webhook',",
+      "reason": "internal_identifier",
+      "note": "Token \"mcp__hyperdx__cbt_save_webhook\" allowed in the token map"
+    },
+    {
+      "path": "packages/hdx-eval/src/hyperdx/setup.ts",
+      "term": "hyperdx",
+      "snippet": "'mcp__hyperdx__cbt_search_dashboards',",
+      "reason": "internal_identifier",
+      "note": "Token \"mcp__hyperdx__cbt_search_dashboards\" allowed in the token map"
+    },
+    {
+      "path": "packages/hdx-eval/src/hyperdx/setup.ts",
+      "term": "hyperdx",
+      "snippet": "brandTerms: ['Couchbase Traces', 'hyperdx'],",
+      "reason": "internal_identifier",
+      "note": "Token \"hyperdx\" allowed in the token map"
+    },
+    {
+      "path": "packages/hdx-eval/src/hyperdx/setup.ts",
+      "term": "hyperdx",
+      "snippet": "toolPattern: 'mcp__hyperdx__*',",
+      "reason": "internal_identifier",
+      "note": "Token \"mcp__hyperdx__\" allowed in the token map"
+    },
+    {
+      "path": "packages/otel-collector/README.md",
+      "term": "hyperdx",
+      "snippet": "**`docker/hyperdx/Dockerfile`** — ARG defaults:",
+      "reason": "internal_identifier",
+      "note": "Token \"hyperdx\" allowed in the token map"
+    },
+    {
+      "path": "packages/otel-collector/README.md",
+      "term": "hyperdx",
+      "snippet": "`docker/otel-collector/Dockerfile` and `docker/hyperdx/Dockerfile`, expand",
+      "reason": "internal_identifier",
+      "note": "Token \"hyperdx\" allowed in the token map"
+    },
+    {
+      "path": "packages/otel-collector/README.md",
+      "term": "hyperdx",
+      "snippet": "ingests — works with `otlp/hyperdx` directly, and is most useful alongside",
+      "reason": "internal_identifier",
+      "note": "Token \"hyperdx\" allowed in the token map"
+    },
+    {
+      "path": "packages/otel-collector/README.md",
+      "term": "hyperdx",
+      "snippet": "receiver authenticates against the team API keys (same as `otlp/hyperdx`) via",
+      "reason": "internal_identifier",
+      "note": "Token \"hyperdx\" allowed in the token map"
+    },
+    {
+      "path": "packages/otel-collector/README.md",
+      "term": "hyperdx",
+      "snippet": "receivers: [otlp/hyperdx, span_metrics]",
+      "reason": "internal_identifier",
+      "note": "Token \"hyperdx\" allowed in the token map"
+    },
+    {
+      "path": "packages/otel-collector/README.md",
+      "term": "hyperdx",
+      "snippet": "receivers: [otlp/hyperdx, statsd]",
+      "reason": "internal_identifier",
+      "note": "Token \"hyperdx\" allowed in the token map"
+    },
+    {
+      "path": "packages/otel-collector/README.md",
+      "term": "hyperdx",
+      "snippet": "receivers: [otlp/hyperdx]",
+      "reason": "internal_identifier",
+      "note": "Token \"hyperdx\" allowed in the token map"
+    },
+    {
+      "path": "packages/otel-collector/README.md",
+      "term": "hyperdx",
+      "snippet": "| `docker/hyperdx/Dockerfile`        | All-in-one image (includes collector, ClickHouse, MongoDB, API, App) |",
+      "reason": "internal_identifier",
+      "note": "Token \"hyperdx\" allowed in the token map"
+    },
+    {
+      "path": "packages/otel-collector/cmd/migrate/main.go",
+      "term": "hyperdx",
+      "snippet": "// 00004_hyperdx_sessions_compat.sql to take its place, so goose runs the",
+      "reason": "engine_reference",
+      "note": "Token \"00004_hyperdx_sessions_compat.sql\" allowed in the token map"
+    },
+    {
+      "path": "packages/otel-collector/cmd/migrate/main.go",
+      "term": "hyperdx",
+      "snippet": "// processed temp directory. It removes 00004_hyperdx_sessions.sql and renames",
+      "reason": "engine_reference",
+      "note": "Token \"00004_hyperdx_sessions.sql\" allowed in the token map"
+    },
+    {
+      "path": "packages/otel-collector/cmd/migrate/main.go",
+      "term": "hyperdx",
+      "snippet": "compatPath := filepath.Join(tempDir, \"00004_hyperdx_sessions_compat.sql\")",
+      "reason": "engine_reference",
+      "note": "Token \"00004_hyperdx_sessions_compat.sql\" allowed in the token map"
+    },
+    {
+      "path": "packages/otel-collector/cmd/migrate/main.go",
+      "term": "hyperdx",
+      "snippet": "fullTextPath := filepath.Join(tempDir, \"00004_hyperdx_sessions.sql\")",
+      "reason": "engine_reference",
+      "note": "Token \"00004_hyperdx_sessions.sql\" allowed in the token map"
+    },
+    {
+      "path": "packages/otel-collector/cmd/migrate/main_test.go",
+      "term": "hyperdx",
+      "snippet": "compatPath := filepath.Join(dir, \"00004_hyperdx_sessions_compat.sql\")",
+      "reason": "engine_reference",
+      "note": "Token \"00004_hyperdx_sessions_compat.sql\" allowed in the token map"
+    },
+    {
+      "path": "packages/otel-collector/cmd/migrate/main_test.go",
+      "term": "hyperdx",
+      "snippet": "fullTextPath := filepath.Join(dir, \"00004_hyperdx_sessions.sql\")",
+      "reason": "engine_reference",
+      "note": "Token \"00004_hyperdx_sessions.sql\" allowed in the token map"
+    },
+    {
+      "path": "packages/otel-collector/cmd/migrate/main_test.go",
+      "term": "url",
+      "snippet": "//clickhouse",
+      "reason": "engine_reference",
+      "note": "Docker service hostname of the ClickHouse container."
+    },
+    {
+      "path": "scripts/__tests__/slots.test.mjs",
+      "term": "hyperdx",
+      "snippet": "const hyperdx = worktree('hyperdx');",
+      "reason": "internal_identifier",
+      "note": "Token \"hyperdx\" allowed in the token map"
+    },
+    {
+      "path": "scripts/__tests__/slots.test.mjs",
+      "term": "hyperdx",
+      "snippet": "const hyperdxEe = worktree('hyperdx-ee');",
+      "reason": "internal_identifier",
+      "note": "Token \"hyperdx-ee\" allowed in the token map"
+    },
+    {
+      "path": "scripts/__tests__/slots.test.mjs",
+      "term": "hyperdx",
+      "snippet": "for (const name of ['a/hyperdx', 'b/hyperdx']) {",
+      "reason": "internal_identifier",
+      "note": "Token \"hyperdx\" allowed in the token map"
+    },
+    {
+      "path": "scripts/ci/smoke-all-in-one.sh",
+      "term": "hyperdx",
+      "snippet": "# OTLP receiver (see docker/hyperdx/entry.local.base.sh). A keyless OTLP canary",
+      "reason": "internal_identifier",
+      "note": "Token \"hyperdx\" allowed in the token map"
+    },
+    {
+      "path": "scripts/dev-env.sh",
+      "term": "hyperdx",
+      "snippet": "CBT_DEV_SLOTS_DIR=\"${HOME}/.config/hyperdx/dev-slots\"",
+      "reason": "internal_identifier",
+      "note": "Token \"hyperdx\" allowed in the token map"
+    },
+    {
+      "path": "scripts/dev-env.sh",
+      "term": "hyperdx",
+      "snippet": "NX_CACHE_DIRECTORY=\"${HOME}/.config/hyperdx/nx-cache\"",
+      "reason": "internal_identifier",
+      "note": "Token \"hyperdx\" allowed in the token map"
+    },
+    {
+      "path": "scripts/dev-portal/index.html",
+      "term": "hyperdx",
+      "snippet": "// Group by full path so checkouts that share a folder name (a/hyperdx,",
+      "reason": "internal_identifier",
+      "note": "Token \"hyperdx\" allowed in the token map"
+    },
+    {
+      "path": "scripts/dev-portal/index.html",
+      "term": "hyperdx",
+      "snippet": "// b/hyperdx) get separate cards. Items with no known path fall back to",
+      "reason": "internal_identifier",
+      "note": "Token \"hyperdx\" allowed in the token map"
+    },
+    {
+      "path": "scripts/dev-portal/server.js",
+      "term": "hyperdx",
+      "snippet": "'  Discovering dev stacks via Docker labels + ~/.config/hyperdx/dev-slots/',",
+      "reason": "internal_identifier",
+      "note": "Token \"hyperdx\" allowed in the token map"
+    },
+    {
+      "path": "scripts/dev-portal/server.js",
+      "term": "hyperdx",
+      "snippet": "'hyperdx',",
+      "reason": "internal_identifier",
+      "note": "Token \"hyperdx\" allowed in the token map"
+    },
+    {
+      "path": "scripts/slots.sh",
+      "term": "hyperdx",
+      "snippet": "# If your worktrees share a folder name (a/hyperdx, b/hyperdx), set",
+      "reason": "internal_identifier",
+      "note": "Token \"hyperdx\" allowed in the token map"
+    },
+    {
+      "path": "scripts/test-e2e.sh",
+      "term": "hyperdx",
+      "snippet": "CBT_E2E_SLOTS_DIR=\"${HOME}/.config/hyperdx/dev-slots\"",
+      "reason": "internal_identifier",
+      "note": "Token \"hyperdx\" allowed in the token map"
+    },
+    {
+      "path": "smoke-tests/otel-collector/metrics.bats",
+      "term": "hyperdx",
+      "snippet": "# Exercises the `metrics` pipeline (otlp/hyperdx -> clickhouse exporter ->",
+      "reason": "internal_identifier",
+      "note": "Token \"hyperdx\" allowed in the token map"
+    },
+    {
+      "path": "smoke-tests/otel-collector/receiver-config.yaml",
+      "term": "hyperdx",
+      "snippet": "- otlp/hyperdx",
+      "reason": "internal_identifier",
+      "note": "Token \"hyperdx\" allowed in the token map"
+    },
+    {
+      "path": "smoke-tests/otel-collector/receiver-config.yaml",
+      "term": "hyperdx",
+      "snippet": "otlp/hyperdx:",
+      "reason": "internal_identifier",
+      "note": "Token \"hyperdx\" allowed in the token map"
+    },
+    {
+      "path": "smoke-tests/otel-collector/traces.bats",
+      "term": "hyperdx",
+      "snippet": "# Exercises the `traces` pipeline (otlp/hyperdx -> clickhouse exporter ->",
+      "reason": "internal_identifier",
+      "note": "Token \"hyperdx\" allowed in the token map"
+    }
+  ]
 }

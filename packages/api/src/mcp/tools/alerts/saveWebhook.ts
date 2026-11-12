@@ -30,7 +30,7 @@ const mcpSaveWebhookSchema = z.object({
     .string()
     .optional()
     .describe(
-      'Webhook ID from clickstack_get_webhook. Omit to create a new ' +
+      'Webhook ID from cbt_get_webhook. Omit to create a new ' +
         'webhook, provide to update an existing one.',
     ),
   name: z
@@ -103,14 +103,14 @@ export function registerSaveWebhook({
   const { teamId } = context;
 
   registerTool(
-    'clickstack_save_webhook',
+    'cbt_save_webhook',
     {
       title: 'Create or Update Webhook',
       annotations: UPSERT_TOOL,
       description:
         'Create a new webhook (omit id) or update an existing one (provide ' +
         'id). Use the returned id as the webhookId when creating alerts with ' +
-        'clickstack_save_alert. For the slack service the url host must end ' +
+        'cbt_save_alert. For the slack service the url host must end ' +
         'in slack.com and headers/queryParams/body are not supported. On ' +
         'update, every alert using this webhook sends its next notifications ' +
         'with the new settings, including a changed url. description, titleEmoji and ' +

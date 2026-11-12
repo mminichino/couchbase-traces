@@ -125,7 +125,7 @@ describe('IacMigrationSection', () => {
 
     await waitFor(() => expect(downloadTextFile).toHaveBeenCalledTimes(1));
     const [content, filename] = downloadTextFile.mock.calls[0];
-    expect(filename).toBe('hyperdx-import.tf');
+    expect(filename).toBe('couchbase-traces-import.tf');
     expect(content).toContain('source  = "ClickHouse/clickhouse"');
     // All three default-selected types must appear together — asserting only
     // the dashboard would let a regression silently drop the other two.

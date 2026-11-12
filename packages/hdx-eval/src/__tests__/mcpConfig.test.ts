@@ -17,8 +17,8 @@ const hyperdxDef: McpDefinition = {
   url: 'http://localhost:30196/mcp',
   headers: { Authorization: 'Bearer test-access-key' },
   toolPattern: 'mcp__hyperdx__*',
-  label: 'HyperDX',
-  brandTerms: ['HyperDX', 'hyperdx'],
+  label: 'Couchbase Traces',
+  brandTerms: ['Couchbase Traces', 'hyperdx'],
   deniedTools: [
     'mcp__hyperdx__hyperdx_delete_dashboard',
     'mcp__hyperdx__hyperdx_get_dashboard',
@@ -58,7 +58,7 @@ const clickhouseDef: McpDefinition = {
 };
 
 describe('buildMcpConfig', () => {
-  it('emits HyperDX HTTP transport with bearer token header', () => {
+  it('emits Couchbase Traces HTTP transport with bearer token header', () => {
     const json = buildMcpConfig(hyperdxDef, 'hyperdx');
     expect(json).toEqual({
       mcpServers: {

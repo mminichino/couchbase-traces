@@ -81,7 +81,7 @@ export function RawSqlChartInstructions({
               dashboard context. Use editor autocomplete to see available
               options, or see the{' '}
               <Anchor
-                href="https://clickhouse.com/docs/use-cases/observability/clickstack/dashboards/sql-visualizations"
+                href="https://github.com/mminichino/couchbase-traces/tree/main/docs"
                 target="_blank"
               >
                 {brandName} documentation

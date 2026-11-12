@@ -2529,6 +2529,128 @@
     },
     {
       "category": "function",
+      "name": "cbt_describe_metric",
+      "classification": "unmapped",
+      "sqlppApproach": null,
+      "occurrences": 1,
+      "files": [
+        {
+          "path": "packages/api/src/mcp/prompts/dashboards/content.ts",
+          "workspace": "@couchbase-traces/api",
+          "lines": [
+            825
+          ]
+        }
+      ]
+    },
+    {
+      "category": "function",
+      "name": "cbt_describe_source",
+      "classification": "unmapped",
+      "sqlppApproach": null,
+      "occurrences": 3,
+      "files": [
+        {
+          "path": "packages/api/src/mcp/prompts/dashboards/content.ts",
+          "workspace": "@couchbase-traces/api",
+          "lines": [
+            29,
+            825
+          ]
+        },
+        {
+          "path": "packages/api/src/mcp/prompts/dashboards/promqlContent.ts",
+          "workspace": "@couchbase-traces/api",
+          "lines": [
+            6
+          ]
+        }
+      ]
+    },
+    {
+      "category": "function",
+      "name": "cbt_get_dashboard",
+      "classification": "unmapped",
+      "sqlppApproach": null,
+      "occurrences": 3,
+      "files": [
+        {
+          "path": "packages/api/src/mcp/prompts/dashboards/content.ts",
+          "workspace": "@couchbase-traces/api",
+          "lines": [
+            29,
+            825
+          ]
+        }
+      ]
+    },
+    {
+      "category": "function",
+      "name": "cbt_list_metrics",
+      "classification": "unmapped",
+      "sqlppApproach": null,
+      "occurrences": 1,
+      "files": [
+        {
+          "path": "packages/api/src/mcp/prompts/dashboards/content.ts",
+          "workspace": "@couchbase-traces/api",
+          "lines": [
+            825
+          ]
+        }
+      ]
+    },
+    {
+      "category": "function",
+      "name": "cbt_promql",
+      "classification": "unmapped",
+      "sqlppApproach": null,
+      "occurrences": 1,
+      "files": [
+        {
+          "path": "packages/api/src/mcp/prompts/dashboards/promqlContent.ts",
+          "workspace": "@couchbase-traces/api",
+          "lines": [
+            6
+          ]
+        }
+      ]
+    },
+    {
+      "category": "function",
+      "name": "cbt_save_dashboard",
+      "classification": "unmapped",
+      "sqlppApproach": null,
+      "occurrences": 2,
+      "files": [
+        {
+          "path": "packages/api/src/mcp/prompts/dashboards/content.ts",
+          "workspace": "@couchbase-traces/api",
+          "lines": [
+            29,
+            825
+          ]
+        }
+      ]
+    },
+    {
+      "category": "function",
+      "name": "cbt_table",
+      "classification": "unmapped",
+      "sqlppApproach": null,
+      "occurrences": 1,
+      "files": [
+        {
+          "path": "packages/api/src/mcp/prompts/dashboards/content.ts",
+          "workspace": "@couchbase-traces/api",
+          "lines": [
+            825
+          ]
+        }
+      ]
+    },
+    {
+      "category": "function",
       "name": "checkout",
       "classification": "unmapped",
       "sqlppApproach": null,
@@ -2639,128 +2761,6 @@
           "lines": [
             1621,
             1699
-          ]
-        }
-      ]
-    },
-    {
-      "category": "function",
-      "name": "clickstack_describe_metric",
-      "classification": "unmapped",
-      "sqlppApproach": null,
-      "occurrences": 1,
-      "files": [
-        {
-          "path": "packages/api/src/mcp/prompts/dashboards/content.ts",
-          "workspace": "@couchbase-traces/api",
-          "lines": [
-            825
-          ]
-        }
-      ]
-    },
-    {
-      "category": "function",
-      "name": "clickstack_describe_source",
-      "classification": "unmapped",
-      "sqlppApproach": null,
-      "occurrences": 3,
-      "files": [
-        {
-          "path": "packages/api/src/mcp/prompts/dashboards/content.ts",
-          "workspace": "@couchbase-traces/api",
-          "lines": [
-            29,
-            825
-          ]
-        },
-        {
-          "path": "packages/api/src/mcp/prompts/dashboards/promqlContent.ts",
-          "workspace": "@couchbase-traces/api",
-          "lines": [
-            6
-          ]
-        }
-      ]
-    },
-    {
-      "category": "function",
-      "name": "clickstack_get_dashboard",
-      "classification": "unmapped",
-      "sqlppApproach": null,
-      "occurrences": 3,
-      "files": [
-        {
-          "path": "packages/api/src/mcp/prompts/dashboards/content.ts",
-          "workspace": "@couchbase-traces/api",
-          "lines": [
-            29,
-            825
-          ]
-        }
-      ]
-    },
-    {
-      "category": "function",
-      "name": "clickstack_list_metrics",
-      "classification": "unmapped",
-      "sqlppApproach": null,
-      "occurrences": 1,
-      "files": [
-        {
-          "path": "packages/api/src/mcp/prompts/dashboards/content.ts",
-          "workspace": "@couchbase-traces/api",
-          "lines": [
-            825
-          ]
-        }
-      ]
-    },
-    {
-      "category": "function",
-      "name": "clickstack_promql",
-      "classification": "unmapped",
-      "sqlppApproach": null,
-      "occurrences": 1,
-      "files": [
-        {
-          "path": "packages/api/src/mcp/prompts/dashboards/promqlContent.ts",
-          "workspace": "@couchbase-traces/api",
-          "lines": [
-            6
-          ]
-        }
-      ]
-    },
-    {
-      "category": "function",
-      "name": "clickstack_save_dashboard",
-      "classification": "unmapped",
-      "sqlppApproach": null,
-      "occurrences": 2,
-      "files": [
-        {
-          "path": "packages/api/src/mcp/prompts/dashboards/content.ts",
-          "workspace": "@couchbase-traces/api",
-          "lines": [
-            29,
-            825
-          ]
-        }
-      ]
-    },
-    {
-      "category": "function",
-      "name": "clickstack_table",
-      "classification": "unmapped",
-      "sqlppApproach": null,
-      "occurrences": 1,
-      "files": [
-        {
-          "path": "packages/api/src/mcp/prompts/dashboards/content.ts",
-          "workspace": "@couchbase-traces/api",
-          "lines": [
-            825
           ]
         }
       ]
@@ -2904,15 +2904,8 @@
       "name": "concat",
       "classification": "portable",
       "sqlppApproach": null,
-      "occurrences": 7,
+      "occurrences": 6,
       "files": [
-        {
-          "path": "packages/app/src/components/OnboardingModal.tsx",
-          "workspace": "@couchbase-traces/app",
-          "lines": [
-            784
-          ]
-        },
         {
           "path": "packages/app/src/components/ServiceDashboardEndpointPerformanceChart.tsx",
           "workspace": "@couchbase-traces/app",
@@ -4514,7 +4507,7 @@
       "name": "if",
       "classification": "unmapped",
       "sqlppApproach": null,
-      "occurrences": 34,
+      "occurrences": 33,
       "files": [
         {
           "path": "packages/api/src/mcp/tools/alerts/saveWebhook.ts",
@@ -4543,13 +4536,6 @@
           "workspace": "@couchbase-traces/app",
           "lines": [
             92
-          ]
-        },
-        {
-          "path": "packages/app/src/components/OnboardingModal.tsx",
-          "workspace": "@couchbase-traces/app",
-          "lines": [
-            784
           ]
         },
         {
@@ -5404,7 +5390,7 @@
       "name": "max",
       "classification": "portable",
       "sqlppApproach": null,
-      "occurrences": 14,
+      "occurrences": 12,
       "files": [
         {
           "path": "packages/api/src/controllers/timeseriesEngine.ts",
@@ -5425,13 +5411,6 @@
           "workspace": "@couchbase-traces/api",
           "lines": [
             256
-          ]
-        },
-        {
-          "path": "packages/api/src/tasks/usageStats.ts",
-          "workspace": "@couchbase-traces/api",
-          "lines": [
-            201
           ]
         },
         {
@@ -5587,7 +5566,7 @@
       "name": "min",
       "classification": "portable",
       "sqlppApproach": null,
-      "occurrences": 7,
+      "occurrences": 6,
       "files": [
         {
           "path": "packages/api/src/controllers/timeseriesEngine.ts",
@@ -5608,13 +5587,6 @@
           "workspace": "@couchbase-traces/api",
           "lines": [
             256
-          ]
-        },
-        {
-          "path": "packages/api/src/tasks/usageStats.ts",
-          "workspace": "@couchbase-traces/api",
-          "lines": [
-            201
           ]
         },
         {
@@ -5899,20 +5871,13 @@
       "name": "path",
       "classification": "unmapped",
       "sqlppApproach": null,
-      "occurrences": 3,
+      "occurrences": 2,
       "files": [
         {
           "path": "packages/api/src/mcp/prompts/dashboards/content.ts",
           "workspace": "@couchbase-traces/api",
           "lines": [
             825
-          ]
-        },
-        {
-          "path": "packages/app/src/components/OnboardingModal.tsx",
-          "workspace": "@couchbase-traces/app",
-          "lines": [
-            784
           ]
         }
       ]
@@ -6458,7 +6423,7 @@
       "name": "round",
       "classification": "portable",
       "sqlppApproach": null,
-      "occurrences": 9,
+      "occurrences": 8,
       "files": [
         {
           "path": "packages/api/src/mcp/tools/query/runEventPatterns.ts",
@@ -6476,13 +6441,6 @@
             649,
             659,
             671
-          ]
-        },
-        {
-          "path": "packages/app/src/components/OnboardingModal.tsx",
-          "workspace": "@couchbase-traces/app",
-          "lines": [
-            143
           ]
         },
         {
@@ -6964,20 +6922,13 @@
       "name": "sum",
       "classification": "portable",
       "sqlppApproach": null,
-      "occurrences": 29,
+      "occurrences": 27,
       "files": [
         {
           "path": "packages/api/src/mcp/tools/trace/breakdown.ts",
           "workspace": "@couchbase-traces/api",
           "lines": [
             152
-          ]
-        },
-        {
-          "path": "packages/api/src/tasks/usageStats.ts",
-          "workspace": "@couchbase-traces/api",
-          "lines": [
-            201
           ]
         },
         {
@@ -8059,15 +8010,8 @@
       "name": "toUInt32",
       "classification": "unmapped",
       "sqlppApproach": null,
-      "occurrences": 2,
+      "occurrences": 1,
       "files": [
-        {
-          "path": "packages/api/src/tasks/usageStats.ts",
-          "workspace": "@couchbase-traces/api",
-          "lines": [
-            201
-          ]
-        },
         {
           "path": "packages/common-utils/src/core/renderChartConfig.ts",
           "workspace": "@couchbase-traces/common-utils",
@@ -8838,7 +8782,7 @@
       "name": "String",
       "classification": "unmapped",
       "sqlppApproach": null,
-      "occurrences": 12,
+      "occurrences": 11,
       "files": [
         {
           "path": "packages/api/src/controllers/timeseriesEngine.ts",
@@ -8855,13 +8799,6 @@
             256,
             554,
             714
-          ]
-        },
-        {
-          "path": "packages/api/src/tasks/usageStats.ts",
-          "workspace": "@couchbase-traces/api",
-          "lines": [
-            201
           ]
         },
         {
@@ -10057,7 +9994,7 @@
       "name": "JSON",
       "classification": "unmapped",
       "sqlppApproach": null,
-      "occurrences": 99,
+      "occurrences": 98,
       "files": [
         {
           "path": "packages/api/src/controllers/timeseriesEngine.ts",
@@ -10146,13 +10083,6 @@
           "workspace": "@couchbase-traces/api",
           "lines": [
             98
-          ]
-        },
-        {
-          "path": "packages/api/src/tasks/usageStats.ts",
-          "workspace": "@couchbase-traces/api",
-          "lines": [
-            218
           ]
         },
         {
@@ -10611,7 +10541,7 @@
       "name": "String",
       "classification": "unmapped",
       "sqlppApproach": null,
-      "occurrences": 72,
+      "occurrences": 71,
       "files": [
         {
           "path": "packages/api/src/controllers/timeseriesEngine.ts",
@@ -10635,13 +10565,6 @@
             256,
             554,
             714
-          ]
-        },
-        {
-          "path": "packages/api/src/tasks/usageStats.ts",
-          "workspace": "@couchbase-traces/api",
-          "lines": [
-            201
           ]
         },
         {
@@ -11068,10 +10991,6 @@
       "count": 2
     },
     {
-      "path": "packages/api/src/tasks/usageStats.ts",
-      "count": 1
-    },
-    {
       "path": "packages/app/src/BenchmarkPage.tsx",
       "count": 1
     },
@@ -11241,7 +11160,7 @@
     },
     {
       "path": "packages/app/src/components/OnboardingModal.tsx",
-      "count": 3
+      "count": 1
     },
     {
       "path": "packages/app/src/components/Patterns/PatternColumnSelector.tsx",
@@ -11789,7 +11708,7 @@
     },
     {
       "path": "packages/app/src/components/OnboardingModal.tsx",
-      "rawSql": 3,
+      "rawSql": 1,
       "typeNames": 0
     },
     {

@@ -1,5 +1,7 @@
 // Substitution-only test diff check.
-import { dirname, posix } from 'node:path';
+import { execFileSync } from 'node:child_process';
+import { existsSync } from 'node:fs';
+import { dirname, join, posix } from 'node:path';
 
 import { applyEnvRenamesToText } from './envvars.mjs';
 import { git, isSourceFile, isTestFile } from './textfiles.mjs';
@@ -75,11 +77,49 @@ function resolveBase(baseFiles, from, spec) {
 }
 
 /**
+ * Formatter of the repository: Prettier from its node_modules, or null when absent.
+ * @param {string} root
+ * @returns {((path: string, text: string) => string) | null}
+ */
+function repoFormatter(root) {
+  const bin = join(root, 'node_modules/prettier/bin/prettier.cjs');
+  if (!existsSync(bin)) return null;
+  return (path, text) => {
+    try {
+      return execFileSync(process.execPath, [bin, '--stdin-filepath', path], { cwd: root, input: text, encoding: 'utf8', stdio: ['pipe', 'pipe', 'ignore'] });
+    } catch {
+      return text;
+    }
+  };
+}
+
+/**
+ * Approved tokens replaced in every context, including identifiers such as object keys that
+ * hold a renamed value. A key whose replacement is not a valid identifier is quoted.
+ * @param {string} text
+ * @param {Map<string, string>} approved
+ */
+function applyApprovedEverywhere(text, approved) {
+  if (approved.size === 0) return text;
+  const esc = (/** @type {string} */ s) => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  const tokens = [...approved.keys()].sort((a, b) => b.length - a.length).map(esc);
+  const re = new RegExp(`(?<![A-Za-z0-9_$-])(${tokens.join('|')})(?![A-Za-z0-9_$-])`, 'g');
+  return text.replace(re, (m, _t, offset) => {
+    const repl = /** @type {string} */ (approved.get(m));
+    const isKey = /^\s*:/.test(text.slice(offset + m.length)) && /[{,]\s*$/.test(text.slice(0, offset));
+    return isKey && !/^[A-Za-z_$][A-Za-z0-9_$]*$/.test(repl) ? `'${repl}'` : repl;
+  });
+}
+
+/**
  * @param {import('./textfiles.mjs').RCtx} ctx
  * @param {string} baseCommit
+ * @param {{ format?: ((path: string, text: string) => string) | null }} [opts]
  * @returns {{ ok: boolean, problems: string[] }}
  */
-export function testDiff(ctx, baseCommit) {
+export function testDiff(ctx, baseCommit, opts = {}) {
+  // Longer names can make the formatter re-wrap lines, so the substituted base is formatted too.
+  const format = opts.format === undefined ? repoFormatter(ctx.root) : opts.format;
   /** @type {string[]} */
   const problems = [];
   const plan = readPlan(ctx);
@@ -87,6 +127,7 @@ export function testDiff(ctx, baseCommit) {
   const envRenames = plan?.env?.renames ?? [];
   const map = readTokenMap(ctx) ?? { schemaVersion: 1, entries: [] };
   const data = loadInventoryData(ctx);
+  const approved = new Map(map.entries.filter(e => e.status === 'approved').map(e => [e.token, /** @type {string} */ (e.replacement)]));
 
   const out = git(ctx.root, ['diff', '--name-status', '--no-renames', '-z', baseCommit]).split('\0');
   /** @type {{ status: string, path: string }[]} */
@@ -100,6 +141,8 @@ export function testDiff(ctx, baseCommit) {
   for (const { status, path } of changes) {
     const testLike = isTestFile(path) || (isSnapshot(path) && /(^|\/)__snapshots__\//.test(path));
     if (!testLike) continue;
+    // The port tooling is outside the rewrite; its tests change with the tool.
+    if (path.startsWith('port/')) continue;
     if (status === 'D' || (status !== 'M' && !ctx.exists(path) && baseFiles.has(path))) {
       const baseText = showBase(ctx, baseCommit, path) ?? '';
       if (removedSection.includes(path)) continue;
@@ -119,6 +162,8 @@ export function testDiff(ctx, baseCommit) {
     }
     if (status !== 'M') continue;
     if (path.startsWith(BRAND_TEST_DIR)) continue;
+    // Tests of a removed integration lose the assertions on it.
+    if (removedSection.includes(path)) continue;
     const baseText = showBase(ctx, baseCommit, path);
     if (baseText === null) continue;
     let expected = renameText(baseText, pkgRenames);
@@ -126,6 +171,11 @@ export function testDiff(ctx, baseCommit) {
     expected = applyTokensToText(ctx, path, expected, map, data);
     expected = replaceUrlsInText(ctx.names, expected);
     const current = ctx.read(path);
+    if (expected !== current && format) expected = format(path, expected);
+    if (expected !== current) {
+      const loose = applyApprovedEverywhere(expected, approved);
+      if (loose === current || (format && format(path, loose) === current)) continue;
+    }
     if (expected !== current) {
       const el = expected.split('\n');
       const cl = current.split('\n');

@@ -31,7 +31,7 @@ const PAGE_LOAD_TIMEOUT_MS = 30000;
 
 // Password must be at least 8 characters with uppercase, lowercase, number, and special char
 const DEFAULT_TEST_USER = {
-  email: process.env.E2E_TEST_USER_EMAIL || 'e2e-test@hyperdx.io',
+  email: process.env.E2E_TEST_USER_EMAIL || 'e2e-test@example.com',
   password: process.env.E2E_TEST_USER_PASSWORD || 'TestPassword123!',
 } as const;
 
@@ -104,7 +104,7 @@ async function globalSetup(_config: FullConfig) {
   const MOCK_USER =
     process.env.E2E_UNIQUE_USER === 'true'
       ? {
-          email: `e2e-test-${Date.now()}-${Math.random().toString(36).slice(2, 9)}@hyperdx.io`,
+          email: `e2e-test-${Date.now()}-${Math.random().toString(36).slice(2, 9)}@example.com`,
           password: DEFAULT_TEST_USER.password,
         }
       : { ...DEFAULT_TEST_USER };

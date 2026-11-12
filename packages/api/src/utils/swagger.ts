@@ -8,14 +8,14 @@ export const swaggerOptions = {
   definition: {
     openapi: '3.0.0',
     info: {
-      title: 'HyperDX External API',
-      description: 'API for managing HyperDX alerts and dashboards',
+      title: 'Couchbase Traces External API',
+      description: 'API for managing Couchbase Traces alerts and dashboards',
       version: '2.0.0',
     },
     servers: [
       {
         url: '/',
-        description: 'Your HyperDX instance (http://<host>:<port>)',
+        description: 'Your Couchbase Traces instance (http://<host>:<port>)',
       },
     ],
     tags: [

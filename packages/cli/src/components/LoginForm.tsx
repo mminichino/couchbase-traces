@@ -75,7 +75,7 @@ export default function LoginForm({
   return (
     <Box flexDirection="column" paddingX={1}>
       <Text bold color="cyan">
-        HyperDX TUI — Login
+        Couchbase Traces TUI — Login
       </Text>
       {message && <Text color="yellow">{message}</Text>}
       {field !== 'appUrl' && <Text dimColor>Server: {appUrl}</Text>}
@@ -89,7 +89,7 @@ export default function LoginForm({
         </Text>
       ) : field === 'appUrl' ? (
         <Box>
-          <Text>HyperDX URL: </Text>
+          <Text>Couchbase Traces URL: </Text>
           <TextInput
             value={appUrl}
             onChange={setAppUrl}

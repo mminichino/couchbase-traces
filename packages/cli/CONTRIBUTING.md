@@ -5,7 +5,7 @@
 - **Node.js** >= 22.16.0
 - **Yarn** 4 (workspace managed from monorepo root)
 - **Bun** (optional, for standalone binary compilation)
-- A running HyperDX instance (API server or Next.js frontend with proxy)
+- A running Couchbase Traces instance (API server or Next.js frontend with proxy)
 
 ## Getting Started
 
@@ -19,7 +19,7 @@ cd packages/cli
 
 ### Authentication
 
-Before using the TUI, authenticate with your HyperDX instance:
+Before using the TUI, authenticate with your Couchbase Traces instance:
 
 ```bash
 # Interactive login (opens email/password prompts)
@@ -79,7 +79,7 @@ yarn compile:macos-x64    # macOS x64
 yarn compile:linux         # Linux x64
 ```
 
-The compiled binary is a single file at `dist/hdx` (or `dist/hdx-<platform>`).
+The compiled binary is a single file at `dist/cbt` (or `dist/hdx-<platform>`).
 
 ## Project Structure
 

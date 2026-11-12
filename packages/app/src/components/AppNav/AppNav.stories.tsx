@@ -22,7 +22,7 @@ export const AppNavUserMenuCmp: StoryObj = {
   render: props => (
     <AppNavUserMenu
       userName="Ernest Iliiasov"
-      teamName="HyperDX.io"
+      teamName="Couchbase Traces"
       {...props}
     />
   ),

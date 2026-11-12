@@ -26,7 +26,7 @@ application behavior.
     multiple actions.
   - Always use best practices from the log when generating tests.
 
-## HyperDX Project Conventions
+## Couchbase Traces Project Conventions
 
 Apply these rules to ALL tests you generate for this project.
 

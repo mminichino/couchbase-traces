@@ -1,6 +1,6 @@
 # End-to-End Testing
 
-This directory contains Playwright-based end-to-end tests for the HyperDX
+This directory contains Playwright-based end-to-end tests for the Couchbase Traces
 application. The tests are organized into core functionality and
 feature-specific test suites.
 
@@ -213,7 +213,7 @@ The project ships with AI tooling for generating, fixing, and planning E2E tests
 
 Use the `/playwright <description>` skill. It orchestrates three agents:
 
-- **`playwright-test-generator`** — drives a real browser, executes steps live, writes spec code following HyperDX conventions
+- **`playwright-test-generator`** — drives a real browser, executes steps live, writes spec code following Couchbase Traces conventions
 - **`playwright-test-healer`** — debugs failing tests interactively using the MCP browser tools
 - **`playwright-test-planner`** — explores the UI and produces a structured test plan before writing code
 
@@ -227,7 +227,7 @@ The skill automatically runs the test after generation and invokes the healer if
 
 The Playwright MCP server is pre-configured in `.cursor/mcp.json`. Enable it under **Settings → Tools & MCP**.
 
-To write a test, reference the `@playwright` rule in your prompt — it loads all HyperDX conventions automatically:
+To write a test, reference the `@playwright` rule in your prompt — it loads all Couchbase Traces conventions automatically:
 
 ```
 @playwright write a new E2E test at packages/app/tests/e2e/features/search.spec.ts

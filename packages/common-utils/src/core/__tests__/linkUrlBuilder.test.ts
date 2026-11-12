@@ -1146,7 +1146,9 @@ describe('validateOnClickTemplate', () => {
 });
 
 describe('describeOnClick', () => {
-  const sourceNamesById = new Map<string, string>([['src_1', 'HyperDX Logs']]);
+  const sourceNamesById = new Map<string, string>([
+    ['src_1', 'Couchbase Traces Logs'],
+  ]);
   const dashboardNamesById = new Map<string, string>([
     ['dash_1', 'API Latency Drilldown'],
   ]);
@@ -1159,7 +1161,7 @@ describe('describeOnClick', () => {
     };
     expect(
       describeOnClick({ onClick, sourceNamesById, dashboardNamesById }),
-    ).toBe('Search HyperDX Logs');
+    ).toBe('Search Couchbase Traces Logs');
   });
 
   it('falls back to a generic verb form when the search source ID is not in the lookup', () => {

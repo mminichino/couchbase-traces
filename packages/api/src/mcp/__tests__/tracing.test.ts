@@ -28,7 +28,7 @@ const mockResponseSizeHistogram = { record: jest.fn() };
 const mockMeter = {
   createCounter: jest.fn(() => mockCounter),
   createHistogram: jest.fn((name: string) =>
-    name === 'hyperdx.mcp.tool.response.size_bytes'
+    name === 'cbt.mcp.tool.response.size_bytes'
       ? mockResponseSizeHistogram
       : mockDurationHistogram,
   ),

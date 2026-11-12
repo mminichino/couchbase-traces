@@ -9,8 +9,8 @@ const hyperdxDef: McpDefinition = {
   type: 'http',
   url: 'http://localhost/mcp',
   toolPattern: 'mcp__hyperdx__*',
-  label: 'HyperDX',
-  brandTerms: ['HyperDX', 'hyperdx'],
+  label: 'Couchbase Traces',
+  brandTerms: ['Couchbase Traces', 'hyperdx'],
 };
 
 const clickhouseDef: McpDefinition = {
@@ -51,10 +51,13 @@ describe('blindAnswer', () => {
     expect(out).toContain('mcp__redacted__');
   });
 
-  it('replaces HyperDX brand mentions with anonymous label', () => {
-    const out = blindAnswer('Using HyperDX I confirmed the issue...', entries);
+  it('replaces Couchbase Traces brand mentions with anonymous label', () => {
+    const out = blindAnswer(
+      'Using Couchbase Traces I confirmed the issue...',
+      entries,
+    );
     expect(out).toContain('MCP A');
-    expect(out).not.toContain('HyperDX');
+    expect(out).not.toContain('Couchbase Traces');
   });
 
   it('replaces ClickHouse MCP brand mentions with anonymous label', () => {

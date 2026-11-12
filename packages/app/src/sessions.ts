@@ -540,7 +540,7 @@ export async function getRRWebTimestampExpression(
  * record, and `rr-web.chunk` is the 1-based chunk index within an event —
  * ordering by both (numerically — the attributes are stored as strings) makes
  * the stream order deterministic.
- * https://github.com/ClickHouse/ClickStack/issues/2569
+ * https://github.com/mminichino/couchbase-traces/issues/2569
  *
  * SDKs up to clickstack-browser 1.2.0 restart `rr-web.offset` on every page
  * load, so the full-precision timestamp (see getRRWebTimestampExpression)

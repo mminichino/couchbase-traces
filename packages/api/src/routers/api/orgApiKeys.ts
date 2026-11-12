@@ -22,7 +22,7 @@ import { getNonNullUserWithTeam } from '@/middleware/auth';
 import { getCounter } from '@/utils/instrumentation';
 import { objectIdSchema } from '@/utils/zod';
 
-const orgApiKeyOperations = getCounter('hyperdx.org_api_key.operations', {
+const orgApiKeyOperations = getCounter('cbt.org_api_key.operations', {
   description: 'Org API key changes made in Team Settings, by operation.',
 });
 

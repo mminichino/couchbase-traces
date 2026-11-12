@@ -15,7 +15,7 @@ export function registerGetSavedSearch({
   const frontendUrl = config.FRONTEND_URL;
 
   registerTool(
-    'clickstack_get_saved_search',
+    'cbt_get_saved_search',
     {
       title: 'Get Saved Search(es)',
       annotations: READ_ONLY_TOOL,

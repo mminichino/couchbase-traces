@@ -293,10 +293,10 @@ describe('errorHint', () => {
   ];
 
   it.each(unknownTableErrors)(
-    'points unknown-table errors in raw SQL at clickstack_list_sources: %s',
+    'points unknown-table errors in raw SQL at cbt_list_sources: %s',
     msg => {
       expect(errorHint(msg, undefined, { rawSql: true })).toContain(
-        'clickstack_list_sources',
+        'cbt_list_sources',
       );
     },
   );
@@ -304,18 +304,18 @@ describe('errorHint', () => {
   // Source-based tools take a sourceId, so the failing table is the source's
   // own and listing sources would only hand it back.
   it.each(unknownTableErrors)(
-    'does not point source-based tools at clickstack_list_sources: %s',
+    'does not point source-based tools at cbt_list_sources: %s',
     msg => {
-      expect(errorHint(msg) ?? '').not.toContain('clickstack_list_sources');
+      expect(errorHint(msg) ?? '').not.toContain('cbt_list_sources');
     },
   );
 
-  it('keeps pointing unknown-column errors at clickstack_describe_source', () => {
+  it('keeps pointing unknown-column errors at cbt_describe_source', () => {
     const hint = errorHint(
       'Unknown expression or function identifier `TimestampTime` in scope SELECT TimestampTime FROM t',
     );
-    expect(hint).toContain('clickstack_describe_source');
-    expect(hint).not.toContain('clickstack_list_sources');
+    expect(hint).toContain('cbt_describe_source');
+    expect(hint).not.toContain('cbt_list_sources');
   });
 
   it('should NOT match lowercase "as" in cast expressions', () => {
@@ -335,7 +335,7 @@ describe('errorHint', () => {
       );
 
       expect(hint).toContain('isVariableEnabled');
-      expect(hint).toContain('clickstack_get_dashboard');
+      expect(hint).toContain('cbt_get_dashboard');
     });
 
     it('finds the error through a wrapper that keeps it as a cause', () => {
@@ -1396,7 +1396,7 @@ describe('assertSourceKindMatchesSelect', () => {
     const result = assertSourceKindMatchesSelect(source, select);
     expect(result?.isError).toBe(true);
     expect(result?.content[0].text).toMatch(/not metric/);
-    expect(result?.content[0].text).toMatch(/clickstack_list_sources/);
+    expect(result?.content[0].text).toMatch(/cbt_list_sources/);
   });
 
   it('errors when a metric source receives select items without metricType', () => {
@@ -1405,7 +1405,7 @@ describe('assertSourceKindMatchesSelect', () => {
     const result = assertSourceKindMatchesSelect(source, select);
     expect(result?.isError).toBe(true);
     expect(result?.content[0].text).toMatch(/metricType \+ metricName/);
-    expect(result?.content[0].text).toMatch(/clickstack_describe_source/);
+    expect(result?.content[0].text).toMatch(/cbt_describe_source/);
   });
 
   it('counts only items whose metricType is a non-empty string', () => {

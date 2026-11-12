@@ -45,7 +45,7 @@ export const mcpSaveSavedSearchSchema = z.object({
     .string()
     .optional()
     .describe(
-      'Saved search ID, from clickstack_get_saved_search. Omit to create a new ' +
+      'Saved search ID, from cbt_get_saved_search. Omit to create a new ' +
         'saved search, provide to update an existing one.',
     ),
   name: z
@@ -79,7 +79,7 @@ export const mcpSaveSavedSearchSchema = z.object({
     .optional()
     .describe('Sort expression. Example: "Timestamp DESC"'),
   sourceId: objectIdSchema.describe(
-    'Source ID — call clickstack_list_sources to find available sources.',
+    'Source ID — call cbt_list_sources to find available sources.',
   ),
   tags: tagsSchema.describe(
     'Tags for organizing saved searches. On update, omitting tags clears them.',

@@ -1350,7 +1350,7 @@ const EXTERNAL_DASHBOARD_PROJECTION = {
  *         sqlTemplate:
  *           type: string
  *           maxLength: 100000
- *           description: SQL query template to execute. Supports HyperDX template variables.
+ *           description: SQL query template to execute. Supports Couchbase Traces template variables.
  *           example: "SELECT count() FROM otel_logs WHERE timestamp > now() - INTERVAL 1 HOUR"
  *         sourceId:
  *           type: string
@@ -2006,7 +2006,7 @@ const EXTERNAL_DASHBOARD_PROJECTION = {
  *     OnClickSearch:
  *       type: object
  *       required: [type, target]
- *       description: Link-out that navigates to the HyperDX search view.
+ *       description: Link-out that navigates to the Couchbase Traces search view.
  *       properties:
  *         type:
  *           type: string
@@ -2032,7 +2032,7 @@ const EXTERNAL_DASHBOARD_PROJECTION = {
  *     OnClickDashboard:
  *       type: object
  *       required: [type, target]
- *       description: Link-out that navigates to a HyperDX dashboard.
+ *       description: Link-out that navigates to a Couchbase Traces dashboard.
  *       properties:
  *         type:
  *           type: string

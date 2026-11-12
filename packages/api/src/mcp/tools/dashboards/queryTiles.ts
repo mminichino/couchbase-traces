@@ -122,15 +122,15 @@ export function registerQueryTiles({
   const { teamId } = context;
 
   registerTool(
-    'clickstack_query_tiles',
+    'cbt_query_tiles',
     {
       title: 'Query Multiple Dashboard Tiles',
       annotations: READ_ONLY_TOOL,
       description:
         'Run the queries for many tiles of a dashboard in ONE call and return a ' +
         'compact per-tile success/failure summary. This is the efficient way to ' +
-        'validate an entire dashboard after clickstack_save_dashboard — prefer it ' +
-        'over calling clickstack_query_tile once per tile. ' +
+        'validate an entire dashboard after cbt_save_dashboard — prefer it ' +
+        'over calling cbt_query_tile once per tile. ' +
         'Accepts a dashboard ID and an optional list of tile IDs. ' +
         'Markdown tiles are excluded by default; a markdown tile passed ' +
         'explicitly in tileIds is returned with status "skipped". ' +
@@ -139,18 +139,18 @@ export function registerQueryTiles({
         'unrecognized tile IDs come back as unknownTileIds rather than failing. ' +
         'At most 50 tiles run per call; any beyond that are returned as ' +
         'unrunTileIds — call again with those as tileIds to run the remainder. ' +
-        'Drill into a specific failing tile with clickstack_query_tile.',
+        'Drill into a specific failing tile with cbt_query_tile.',
       inputSchema: z.object({
         dashboardId: objectIdSchema.describe(
-          'Dashboard ID, from clickstack_get_dashboard (no id lists dashboards) ' +
-            'or clickstack_search_dashboards.',
+          'Dashboard ID, from cbt_get_dashboard (no id lists dashboards) ' +
+            'or cbt_search_dashboards.',
         ),
         tileIds: z
           .array(z.string())
           .max(MAX_TILE_IDS_INPUT)
           .optional()
           .describe(
-            'Tile IDs to run, from clickstack_get_dashboard. When omitted, every ' +
+            'Tile IDs to run, from cbt_get_dashboard. When omitted, every ' +
               'non-markdown tile on the dashboard runs; an empty array runs none.',
           ),
         startTime: z

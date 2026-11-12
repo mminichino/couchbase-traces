@@ -22,7 +22,7 @@ const DAY_MS = 24 * 60 * 60 * 1000;
 const LAST_USED_WRITE_INTERVAL_MS = 5 * 60 * 1000;
 
 const lastUsedWriteFailures = getCounter(
-  'hyperdx.org_api_key.last_used_write_failures',
+  'cbt.org_api_key.last_used_write_failures',
   { description: 'Failed writes of an org API key last-used time.' },
 );
 

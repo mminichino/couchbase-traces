@@ -5,7 +5,7 @@ import { BaseError, isOperationalError, StatusCode } from '@/utils/errors';
 import { getCounter } from '@/utils/instrumentation';
 import logger from '@/utils/logger';
 
-const apiErrorCounter = getCounter('hyperdx.api.errors', {
+const apiErrorCounter = getCounter('cbt.api.errors', {
   description:
     'Count of errors handled by the API error middleware, labeled by operational flag, HTTP status code, and error type.',
 });

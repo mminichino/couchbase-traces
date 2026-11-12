@@ -698,7 +698,7 @@ describe('deploy-regression scenario', () => {
 describe('deploy-regression system prompt', () => {
   it('advertises the metric source with the exact metric-saturation note (parity)', () => {
     const noteRe =
-      /- Metrics: a HyperDX metric source is available[\s\S]*?alongside traces and logs\./;
+      /- Metrics: a Couchbase Traces metric source is available[\s\S]*?alongside traces and logs\./;
     const ours = buildSystemPrompt(
       deployRegressionScenario,
       '2026-05-10T20:00:00.000Z',

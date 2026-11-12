@@ -24,7 +24,7 @@ export function registerSaveSource({
   const frontendUrl = config.FRONTEND_URL;
 
   registerTool(
-    'clickstack_save_source',
+    'cbt_save_source',
     {
       title: 'Create or Update Source',
       annotations: UPSERT_TOOL,
@@ -32,7 +32,7 @@ export function registerSaveSource({
         'Create a new data source (omit id) or update an existing one ' +
         '(provide id) so shipped telemetry becomes queryable. Update is a ' +
         'full replace of the source definition: start from the `config` ' +
-        'returned by clickstack_describe_source and change only what you need. ' +
+        'returned by cbt_describe_source and change only what you need. ' +
         'Required for all kinds: kind, ' +
         'name, connection, databaseName, tableName, timestampValueExpression. ' +
         'Kind-specific requirements: log & trace need ' +
@@ -40,7 +40,7 @@ export function registerSaveSource({
         'traceIdExpression, spanIdExpression, parentSpanIdExpression, ' +
         'spanNameExpression, spanKindExpression; session needs traceSourceId; ' +
         'metric needs metricTables and resourceAttributesExpression. Get ' +
-        'connection and source IDs from clickstack_list_sources.',
+        'connection and source IDs from cbt_list_sources.',
       inputSchema: buildMcpSaveSourceSchema(isPromqlEnabled(context)),
     },
     async input => {

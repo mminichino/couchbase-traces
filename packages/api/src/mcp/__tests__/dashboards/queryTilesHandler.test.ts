@@ -84,7 +84,7 @@ beforeEach(() => {
   mockFindOne.mockResolvedValue({ _id: 'dash-1' });
 });
 
-describe('clickstack_query_tiles handler — per-tile failure isolation', () => {
+describe('cbt_query_tiles handler — per-tile failure isolation', () => {
   it('folds a thrown runConfigTile into a status:error entry while other tiles resolve', async () => {
     mockConvertToExternalDashboard.mockReturnValue({
       id: 'dash-1',
@@ -178,7 +178,7 @@ describe('clickstack_query_tiles handler — per-tile failure isolation', () => 
   });
 });
 
-describe('clickstack_query_tiles handler — dashboard variables', () => {
+describe('cbt_query_tiles handler — dashboard variables', () => {
   const variableFilter = {
     id: 'f1',
     type: 'QUERY_EXPRESSION',

@@ -105,7 +105,7 @@ describe('AI SDK OpenTelemetry integration', () => {
     for (const span of spans) {
       expect(span.attributes).toMatchObject({
         'gen_ai.conversation.id': 'session-1',
-        'hyperdx.team.id': 'team-1',
+        'cbt.team.id': 'team-1',
         'user.id': 'user-1',
       });
     }
@@ -118,7 +118,7 @@ describe('AI SDK OpenTelemetry integration', () => {
     expect(spans.length).toBeGreaterThan(0);
     for (const span of spans) {
       expect(span.attributes).toMatchObject({
-        'hyperdx.team.id': 'team-1',
+        'cbt.team.id': 'team-1',
         'user.id': 'user-1',
       });
       expect(span.attributes).not.toHaveProperty('gen_ai.conversation.id');

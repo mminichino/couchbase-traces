@@ -82,7 +82,7 @@ export default function InstallInstructionModal({
         <div className="fs-6 mb-2">Backend</div>
         <div className="mb-2">
           <a
-            href="https://clickhouse.com/docs/use-cases/observability/clickstack/sdks/nodejs"
+            href="https://opentelemetry.io/docs/languages/js/"
             target="_blank"
             rel="noreferrer"
             className="text-link"
@@ -93,7 +93,7 @@ export default function InstallInstructionModal({
         </div>
         <div className="mb-2">
           <a
-            href="https://clickhouse.com/docs/use-cases/observability/clickstack/sdks/golang"
+            href="https://opentelemetry.io/docs/languages/go/"
             target="_blank"
             rel="noreferrer"
             className="text-link"
@@ -104,7 +104,7 @@ export default function InstallInstructionModal({
         </div>
         <div className="mb-2">
           <a
-            href="https://clickhouse.com/docs/use-cases/observability/clickstack/sdks/python"
+            href="https://opentelemetry.io/docs/languages/python/"
             target="_blank"
             rel="noreferrer"
             className="text-link"
@@ -115,7 +115,7 @@ export default function InstallInstructionModal({
         </div>
         <div className="mb-2">
           <a
-            href="https://clickhouse.com/docs/use-cases/observability/clickstack/sdks/java"
+            href="https://opentelemetry.io/docs/languages/java/"
             target="_blank"
             rel="noreferrer"
             className="text-link"
@@ -126,7 +126,7 @@ export default function InstallInstructionModal({
         </div>
         <div className="mb-2">
           <a
-            href="https://clickhouse.com/docs/use-cases/observability/clickstack/sdks/elixir"
+            href="https://opentelemetry.io/docs/languages/erlang/"
             target="_blank"
             rel="noreferrer"
             className="text-link"
@@ -137,7 +137,7 @@ export default function InstallInstructionModal({
         </div>
         <div className="mb-2">
           <a
-            href="https://clickhouse.com/docs/use-cases/observability/clickstack/sdks/ruby-on-rails"
+            href="https://opentelemetry.io/docs/languages/ruby/"
             target="_blank"
             rel="noreferrer"
             className="text-link"
@@ -149,7 +149,7 @@ export default function InstallInstructionModal({
         <div className="fs-6 mb-2 mt-4">Platform</div>
         <div className="mb-2">
           <a
-            href="https://clickhouse.com/docs/use-cases/observability/clickstack/ingesting-data/kubernetes"
+            href="https://github.com/mminichino/couchbase-traces/tree/main/docs"
             target="_blank"
             rel="noreferrer"
             className="text-link"
@@ -161,7 +161,7 @@ export default function InstallInstructionModal({
         <div className="fs-6 mb-2 mt-4">Browser</div>
         <div className="mb-2">
           <a
-            href="https://clickhouse.com/docs/use-cases/observability/clickstack/sdks/browser"
+            href="https://opentelemetry.io/docs/languages/js/"
             target="_blank"
             rel="noreferrer"
             className="text-link"
@@ -173,7 +173,7 @@ export default function InstallInstructionModal({
         <div className="fs-6 mb-2 mt-4">Data Collector</div>
         <div className="mb-2">
           <a
-            href="https://clickhouse.com/docs/use-cases/observability/clickstack/ingesting-data/opentelemetry#sending-otel-data"
+            href="https://github.com/mminichino/couchbase-traces/tree/main/docs"
             target="_blank"
             rel="noreferrer"
             className="text-link"

@@ -65,7 +65,7 @@ function PageWrapper({ children }: { children: React.ReactNode }) {
               proper experience, visit the{' '}
               <strong>
                 <Link
-                  href="https://clickhouse.com/docs/use-cases/observability/clickstack/getting-started"
+                  href="https://github.com/mminichino/couchbase-traces/tree/main/docs"
                   target="_blank"
                   rel="noopener noreferrer"
                 >

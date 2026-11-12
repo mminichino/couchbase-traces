@@ -67,7 +67,7 @@ const KIND_USAGE: Record<DiscoverableMetricKind, string> = {
     'Exponential histogram: use aggFn:"quantile" with level ∈ {0.5, 0.9, 0.95, 0.99} for percentiles, or aggFn:"count" for the total bucket count.',
   summary:
     'Summary: client-precomputed quantiles (e.g. Prometheus summaries). Not supported by ' +
-    'clickstack_timeseries / clickstack_table — query this table with clickstack_sql ' +
+    'cbt_timeseries / cbt_table — query this table with cbt_sql ' +
     "using the source's connectionId.",
 };
 
@@ -77,21 +77,21 @@ const describeMetricSchema = z.object({
   sourceId: z
     .string()
     .describe(
-      'Source ID. Must reference a metric source — get IDs from clickstack_list_sources.',
+      'Source ID. Must reference a metric source — get IDs from cbt_list_sources.',
     ),
   metricName: z
     .string()
     .min(1)
     .describe(
       'OTel metric name to describe (e.g. "system.cpu.utilization", "http.server.request.duration"). ' +
-        'Discover via clickstack_list_metrics or clickstack_describe_source.',
+        'Discover via cbt_list_metrics or cbt_describe_source.',
     ),
   kind: z
     .enum(DISCOVERABLE_METRIC_KINDS)
     .describe(
       'OTel metric kind of metricName, which selects the metric table to read. ' +
-        'Discover via clickstack_list_metrics (which returns name + kind per entry) ' +
-        'or clickstack_describe_source (which groups metric-name samples by kind). ' +
+        'Discover via cbt_list_metrics (which returns name + kind per entry) ' +
+        'or cbt_describe_source (which groups metric-name samples by kind). ' +
         'A metric name can legitimately live in more than one kind (e.g. ' +
         '"container.cpu.usage" appears in both gauge and sum) — pick the kind ' +
         'matching the value you want to query.',
@@ -475,12 +475,12 @@ async function describeMetricImpl(
   const source = await getSource(teamId, input.sourceId);
   if (!source) {
     return mcpUserError(
-      `Source "${input.sourceId}" not found. Call clickstack_list_sources to see available source IDs.`,
+      `Source "${input.sourceId}" not found. Call cbt_list_sources to see available source IDs.`,
     );
   }
   if (source.kind !== SourceKind.Metric) {
     return mcpUserError(
-      `Source "${input.sourceId}" is a "${source.kind}" source, not a metric source. clickstack_describe_metric only works on metric sources.`,
+      `Source "${input.sourceId}" is a "${source.kind}" source, not a metric source. cbt_describe_metric only works on metric sources.`,
     );
   }
 
@@ -644,9 +644,9 @@ async function describeMetricImpl(
         ? `${databaseName}.${tableName}`
         : tableName;
       return (
-        'summary metrics cannot be queried with clickstack_timeseries / clickstack_table — ' +
-        `use clickstack_sql against the "${qualifiedTable}" table with this source's connectionId ` +
-        '(see clickstack_list_sources).'
+        'summary metrics cannot be queried with cbt_timeseries / cbt_table — ' +
+        `use cbt_sql against the "${qualifiedTable}" table with this source's connectionId ` +
+        '(see cbt_list_sources).'
       );
     }
 
@@ -658,7 +658,7 @@ async function describeMetricImpl(
       aggFn = '"quantile", level: 0.95';
     }
 
-    return `Example: clickstack_timeseries({ sourceId: "${input.sourceId}", select: [{ aggFn: ${aggFn}, metricType: "${kind}", metricName: "${input.metricName}" }] })`;
+    return `Example: cbt_timeseries({ sourceId: "${input.sourceId}", select: [{ aggFn: ${aggFn}, metricType: "${kind}", metricName: "${input.metricName}" }] })`;
   };
 
   const responseObj: Record<string, unknown> = {
@@ -674,7 +674,7 @@ async function describeMetricImpl(
       hint:
         `No data found for MetricName "${input.metricName}" with kind "${kind}" ` +
         `between ${startDate.toISOString()} and ${endDate.toISOString()}. ` +
-        'Try widening startTime/endTime, or call clickstack_list_metrics to ' +
+        'Try widening startTime/endTime, or call cbt_list_metrics to ' +
         'confirm the metric name + kind combination exists.',
     }),
     nextSteps: {
@@ -716,28 +716,28 @@ export function registerDescribeMetric({
   const { teamId } = context;
 
   registerTool(
-    'clickstack_describe_metric',
+    'cbt_describe_metric',
     {
       title: 'Describe Metric',
       annotations: READ_ONLY_TOOL,
       description:
-        'DRILL-DOWN: Use after clickstack_list_metrics (or after a clickstack_describe_source ' +
+        'DRILL-DOWN: Use after cbt_list_metrics (or after a cbt_describe_source ' +
         'sample) to get attribute keys, sampled values, unit, and description for a ' +
         'specific (metricName, kind) pair. Attribute keys vary per metric — not per source — ' +
-        "so always call this before clickstack_timeseries / clickstack_table for any metric you've never queried.\n\n" +
+        "so always call this before cbt_timeseries / cbt_table for any metric you've never queried.\n\n" +
         'REQUIRES `kind` — pass the gauge/sum/histogram/exponential histogram/summary value emitted alongside the metric name by ' +
-        'clickstack_list_metrics or clickstack_describe_source. A metric name can legitimately ' +
+        'cbt_list_metrics or cbt_describe_source. A metric name can legitimately ' +
         'live in more than one kind (e.g. "container.cpu.usage" appears in both gauge and sum); ' +
         'call this tool once per kind you care about.\n\n' +
         'kind:"summary" is accepted for discovery (attribute keys, sampled values, unit, ' +
-        'description), but summary metrics cannot be queried with clickstack_timeseries / ' +
-        "clickstack_table — use clickstack_sql against the table in the source's " +
+        'description), but summary metrics cannot be queried with cbt_timeseries / ' +
+        "cbt_table — use cbt_sql against the table in the source's " +
         'metricTables.summary.\n\n' +
         'attributeValuesMeta on each kind reports sampledKeys (queried for values) and ' +
         'truncatedKeys (skipped by the per-call sampling cap) — a key in truncatedKeys was ' +
         'never queried, so query it directly if you need its values.\n\n' +
-        'Workflow: clickstack_list_sources → clickstack_list_metrics → ' +
-        'clickstack_describe_metric → clickstack_timeseries|clickstack_table.',
+        'Workflow: cbt_list_sources → cbt_list_metrics → ' +
+        'cbt_describe_metric → cbt_timeseries|cbt_table.',
       inputSchema: describeMetricSchema,
     },
     async rawInput => {
@@ -754,7 +754,7 @@ export function registerDescribeMetric({
       }
       logger.warn(
         { teamId, sourceId: input.sourceId, metricName: input.metricName },
-        'clickstack_describe_metric timed out',
+        'cbt_describe_metric timed out',
       );
       return mcpServerError(
         'Discovery timed out. The metric table may be under load or the ' +

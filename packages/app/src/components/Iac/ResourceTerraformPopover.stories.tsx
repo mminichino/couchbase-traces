@@ -17,7 +17,7 @@ export const Dashboard: Story = {
     resource: {
       type: 'dashboard',
       id: '655b1b7d9143aa1b1b73f4f4',
-      name: 'HyperDX Usage',
+      name: 'Couchbase Traces Usage',
     },
   },
 };

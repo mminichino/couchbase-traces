@@ -26,8 +26,8 @@ describe('MCP server metadata', () => {
     const info = await getServerInfo('https://app.example.com/');
 
     expect(info).toMatchObject({
-      name: 'clickstack',
-      title: 'ClickStack',
+      name: 'couchbase-traces',
+      title: 'Couchbase Traces',
       websiteUrl: expect.stringMatching(/^https:\/\//),
       description: expect.any(String),
     });
@@ -51,7 +51,7 @@ describe('MCP server metadata', () => {
   it('omits the icon when FRONTEND_URL is unset', async () => {
     const info = await getServerInfo('');
 
-    expect(info?.title).toBe('ClickStack');
+    expect(info?.title).toBe('Couchbase Traces');
     expect(info?.icons).toBeUndefined();
   });
 });

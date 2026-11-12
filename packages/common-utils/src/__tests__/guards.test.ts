@@ -284,7 +284,7 @@ describe('resolveChartPaletteToken', () => {
     expect(resolveChartPaletteToken('chart-error')).toBe('chart-error');
   });
 
-  it('migrates legacy chart-1..10 to their HyperDX-slot-order hue equivalents', () => {
+  it('migrates legacy chart-1..10 to their CouchbaseTraces-slot-order hue equivalents', () => {
     expect(resolveChartPaletteToken('chart-1')).toBe('chart-green');
     expect(resolveChartPaletteToken('chart-2')).toBe('chart-blue');
     expect(resolveChartPaletteToken('chart-3')).toBe('chart-orange');

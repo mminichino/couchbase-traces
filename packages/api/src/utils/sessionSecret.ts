@@ -5,7 +5,7 @@ import {
 import { getCounter } from '@/utils/instrumentation';
 import logger from '@/utils/logger';
 
-const generatedSecretCounter = getCounter('hyperdx.session_secret.generated', {
+const generatedSecretCounter = getCounter('cbt.session_secret.generated', {
   description:
     'API processes using a generated session secret with authentication enabled.',
 });

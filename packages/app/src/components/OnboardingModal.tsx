@@ -1,16 +1,12 @@
 import { memo, useCallback, useEffect, useState } from 'react';
 import { ClickhouseClient } from '@couchbase-traces/common-utils/dist/clickhouse/browser';
 import {
-  isLogSource,
-  isTraceSource,
   MetricsDataType,
   MetricTable,
   SourceKind,
-  TLogSource,
   TSource,
-  TTraceSource,
 } from '@couchbase-traces/common-utils/dist/types';
-import { Button, Divider, Flex, Loader, Modal, Text } from '@mantine/core';
+import { Button, Flex, Loader, Modal, Text } from '@mantine/core';
 import { notifications } from '@mantine/notifications';
 import { IconArrowLeft } from '@tabler/icons-react';
 
@@ -21,217 +17,19 @@ import {
   IS_LOCAL_MODE,
   IS_PROMQL_ENABLED,
 } from '@/config';
-import {
-  useConnections,
-  useCreateConnection,
-  useUpdateConnection,
-} from '@/connection';
+import { useConnections, useCreateConnection } from '@/connection';
 import { useMetadataWithSettings } from '@/hooks/useMetadata';
 import {
   inferTableSourceConfig,
   pickTimeSeriesTable,
   PROMQL_TIMESTAMP_EXPRESSION,
   useCreateSource,
-  useDeleteSource,
   useSources,
   useUpdateSource,
 } from '@/source';
 
 import { TableSourceForm } from './Sources/SourceForm';
 import { SourcesList } from './Sources/SourcesList';
-
-const DEMO_CONNECTION = {
-  name: 'Demo',
-  host: 'https://b1g1gnrrz3.us-central1.gcp.clickhouse-staging.com:8443',
-  username: 'otel_demo',
-  password: '',
-};
-const LEGACY_DEMO_CONNECTION = {
-  host: 'https://sql-clickhouse.clickhouse.com',
-  username: 'otel_demo',
-};
-
-async function addOtelDemoSources({
-  connectionId,
-  createSourceMutation,
-  updateSourceMutation,
-
-  logSourceDatabaseName,
-  logSourceName,
-  logSourceTableName,
-
-  metricsSourceDatabaseName,
-  metricsSourceName,
-
-  sessionSourceDatabaseName,
-  sessionSourceName,
-  sessionSourceTableName,
-
-  traceSourceDatabaseName,
-  traceSourceName,
-  traceSourceTableName,
-  traceSourceHighlightedTraceAttributes,
-  traceSourceMaterializedViews,
-}: {
-  connectionId: string;
-  createSourceMutation: ReturnType<typeof useCreateSource>;
-  createConnectionMutation: ReturnType<typeof useCreateConnection>;
-  updateSourceMutation: ReturnType<typeof useUpdateSource>;
-  deleteSourceMutation: ReturnType<typeof useDeleteSource>;
-
-  logSourceDatabaseName?: string;
-  logSourceName?: string;
-  logSourceTableName?: string;
-
-  metricsSourceDatabaseName?: string;
-  metricsSourceName?: string;
-
-  sessionSourceDatabaseName: string;
-  sessionSourceName: string;
-  sessionSourceTableName: string;
-
-  traceSourceDatabaseName: string;
-  traceSourceName: string;
-  traceSourceTableName: string;
-  traceSourceHighlightedTraceAttributes?: TTraceSource['highlightedTraceAttributeExpressions'];
-  traceSourceMaterializedViews?: TTraceSource['materializedViews'];
-}) {
-  const hasLogSource =
-    logSourceDatabaseName && logSourceName && logSourceTableName;
-  const hasMetricsSource = metricsSourceDatabaseName && metricsSourceName;
-
-  let logSource: TLogSource | undefined;
-  if (hasLogSource) {
-    const newSource = await createSourceMutation.mutateAsync({
-      source: {
-        kind: SourceKind.Log,
-        name: logSourceName,
-        connection: connectionId,
-        from: {
-          databaseName: logSourceDatabaseName,
-          tableName: logSourceTableName,
-        },
-        timestampValueExpression: 'TimestampTime',
-        defaultTableSelectExpression:
-          'Timestamp, ServiceName, SeverityText, Body',
-        serviceNameExpression: 'ServiceName',
-        severityTextExpression: 'SeverityText',
-        severityNumberExpression: 'SeverityNumber',
-        eventAttributesExpression: 'LogAttributes',
-        resourceAttributesExpression: 'ResourceAttributes',
-        traceIdExpression: 'TraceId',
-        spanIdExpression: 'SpanId',
-        implicitColumnExpression: 'Body',
-        displayedTimestampValueExpression: 'Timestamp',
-      },
-    });
-    if (isLogSource(newSource)) {
-      logSource = newSource;
-    }
-  }
-  const traceSource = await createSourceMutation.mutateAsync({
-    source: {
-      kind: SourceKind.Trace,
-      name: traceSourceName,
-      connection: connectionId,
-      from: {
-        databaseName: traceSourceDatabaseName,
-        tableName: traceSourceTableName,
-      },
-      timestampValueExpression: 'Timestamp',
-      defaultTableSelectExpression:
-        'Timestamp, ServiceName, StatusCode, round(Duration / 1e6), SpanName',
-      serviceNameExpression: 'ServiceName',
-      eventAttributesExpression: 'SpanAttributes',
-      resourceAttributesExpression: 'ResourceAttributes',
-      traceIdExpression: 'TraceId',
-      spanIdExpression: 'SpanId',
-      implicitColumnExpression: 'SpanName',
-      durationExpression: 'Duration',
-      durationPrecision: 9,
-      parentSpanIdExpression: 'ParentSpanId',
-      spanKindExpression: 'SpanKind',
-      spanNameExpression: 'SpanName',
-      ...(hasLogSource ? { logSourceId: 'l-758211293' } : {}),
-      statusCodeExpression: 'StatusCode',
-      statusMessageExpression: 'StatusMessage',
-      spanEventsValueExpression: 'Events',
-      spanLinksValueExpression: 'Links',
-      highlightedTraceAttributeExpressions:
-        traceSourceHighlightedTraceAttributes,
-      materializedViews: traceSourceMaterializedViews,
-    },
-  });
-  if (!isTraceSource(traceSource)) {
-    // Should be impossible
-    throw new Error('Source that is not trace was somehow created');
-  }
-  let metricsSource: TSource | undefined;
-  if (hasMetricsSource) {
-    metricsSource = await createSourceMutation.mutateAsync({
-      source: {
-        kind: SourceKind.Metric,
-        name: metricsSourceName,
-        connection: connectionId,
-        from: {
-          databaseName: metricsSourceDatabaseName,
-          tableName: '',
-        },
-        timestampValueExpression: 'TimeUnix',
-        serviceNameExpression: 'ServiceName',
-        metricTables: {
-          [MetricsDataType.Gauge]: 'otel_metrics_gauge',
-          [MetricsDataType.Histogram]: 'otel_metrics_histogram',
-          [MetricsDataType.Sum]: 'otel_metrics_sum',
-          [MetricsDataType.Summary]: 'otel_metrics_summary',
-          [MetricsDataType.ExponentialHistogram]:
-            'otel_metrics_exponential_histogram',
-        },
-        resourceAttributesExpression: 'ResourceAttributes',
-        ...(hasLogSource && logSource ? { logSourceId: logSource.id } : {}),
-      },
-    });
-  }
-  const sessionSource = await createSourceMutation.mutateAsync({
-    source: {
-      kind: SourceKind.Session,
-      name: sessionSourceName,
-      connection: connectionId,
-      from: {
-        databaseName: sessionSourceDatabaseName,
-        tableName: sessionSourceTableName,
-      },
-      timestampValueExpression: 'TimestampTime',
-      resourceAttributesExpression: 'ResourceAttributes',
-      traceSourceId: traceSource.id,
-    },
-  });
-  await Promise.all([
-    ...(hasLogSource && logSource
-      ? [
-          updateSourceMutation.mutateAsync({
-            source: {
-              ...logSource,
-              traceSourceId: traceSource.id,
-              ...(hasMetricsSource && metricsSource
-                ? { metricSourceId: metricsSource.id }
-                : {}),
-            },
-          }),
-        ]
-      : []),
-    updateSourceMutation.mutateAsync({
-      source: {
-        ...traceSource,
-        ...(hasLogSource && logSource ? { logSourceId: logSource.id } : {}),
-        ...(hasMetricsSource && metricsSource
-          ? { metricSourceId: metricsSource.id }
-          : {}),
-        sessionSourceId: sessionSource.id,
-      },
-    }),
-  ]);
-}
 
 function OnboardingModalComponent({
   requireSource = true,
@@ -275,9 +73,7 @@ function OnboardingModalComponent({
 
   const createSourceMutation = useCreateSource();
   const createConnectionMutation = useCreateConnection();
-  const updateConnectionMutation = useUpdateConnection();
   const updateSourceMutation = useUpdateSource();
-  const deleteSourceMutation = useDeleteSource();
   const metadata = useMetadataWithSettings();
 
   const [isAutoDetecting, setIsAutoDetecting] = useState(false);
@@ -649,170 +445,6 @@ function OnboardingModalComponent({
     hasAutodetected,
   ]);
 
-  const handleDemoServerClick = useCallback(async () => {
-    if (IS_CLICKHOUSE_BUILD) return;
-    try {
-      if (sources) {
-        for (const source of sources) {
-          // Clean out ALL existing demo and ClickPy sources to avoid duplicates
-          if (
-            source.name.startsWith('Demo') ||
-            source.name.startsWith('ClickPy')
-          ) {
-            await deleteSourceMutation.mutateAsync({
-              id: source.id,
-            });
-          }
-        }
-      }
-      // Reuse existing demo connection if available, otherwise create one
-      const existingDemoConnection = connections?.find(c => c.name === 'Demo');
-      let createdConnectionId = existingDemoConnection?.id ?? '';
-      if (
-        existingDemoConnection?.host === LEGACY_DEMO_CONNECTION.host &&
-        existingDemoConnection.username === LEGACY_DEMO_CONNECTION.username
-      ) {
-        // Demo connections created before the demo server moved still point
-        // at the old host
-        await updateConnectionMutation.mutateAsync({
-          id: existingDemoConnection.id,
-          connection: { ...existingDemoConnection, ...DEMO_CONNECTION },
-        });
-      } else if (!existingDemoConnection) {
-        await createConnectionMutation.mutateAsync(
-          { connection: DEMO_CONNECTION },
-          {
-            onSuccess(data) {
-              createdConnectionId = data.id;
-            },
-            onError(error) {
-              console.error('Failed to create demo connection: ', error);
-              return;
-            },
-          },
-        );
-      }
-
-      await addOtelDemoSources({
-        connectionId: createdConnectionId,
-        createConnectionMutation,
-        createSourceMutation,
-        deleteSourceMutation,
-
-        logSourceDatabaseName: 'otel',
-        logSourceName: 'Demo Logs',
-        logSourceTableName: 'otel_logs',
-
-        metricsSourceDatabaseName: 'otel',
-        metricsSourceName: 'Demo Metrics',
-
-        sessionSourceDatabaseName: 'otel',
-        sessionSourceName: 'Demo Sessions',
-        sessionSourceTableName: 'hyperdx_sessions',
-
-        traceSourceDatabaseName: 'otel',
-        traceSourceName: 'Demo Traces',
-        traceSourceTableName: 'otel_traces',
-        traceSourceMaterializedViews: [
-          {
-            databaseName: 'otel',
-            tableName: 'otel_traces_1m',
-            dimensionColumns: 'ServiceName, StatusCode',
-            minGranularity: '1 minute',
-            timestampColumn: 'Timestamp',
-            aggregatedColumns: [
-              { mvColumn: 'count', aggFn: 'count', sourceColumn: '' },
-              {
-                mvColumn: 'max__Duration',
-                aggFn: 'max',
-                sourceColumn: 'Duration',
-              },
-              {
-                mvColumn: 'avg__Duration',
-                aggFn: 'avg',
-                sourceColumn: 'Duration',
-              },
-            ],
-          },
-          {
-            databaseName: 'otel',
-            tableName: 'otel_traces_1m_v2',
-            dimensionColumns: 'ServiceName, SpanName, SpanKind',
-            minGranularity: '1 minute',
-            timestampColumn: 'Timestamp',
-            aggregatedColumns: [
-              { mvColumn: 'count', aggFn: 'count', sourceColumn: '' },
-              {
-                mvColumn: 'max__Duration',
-                aggFn: 'max',
-                sourceColumn: 'Duration',
-              },
-              {
-                mvColumn: 'avg__Duration',
-                aggFn: 'avg',
-                sourceColumn: 'Duration',
-              },
-              {
-                mvColumn: 'quantile__Duration',
-                aggFn: 'quantile',
-                sourceColumn: 'Duration',
-              },
-            ],
-          },
-        ],
-
-        updateSourceMutation,
-      });
-
-      // ClickPy demo sources
-      await addOtelDemoSources({
-        connectionId: createdConnectionId,
-        createConnectionMutation,
-        createSourceMutation,
-        deleteSourceMutation,
-
-        sessionSourceDatabaseName: 'otel_clickpy',
-        sessionSourceName: 'ClickPy Sessions',
-        sessionSourceTableName: 'hyperdx_sessions',
-
-        traceSourceDatabaseName: 'otel_clickpy',
-        traceSourceName: 'ClickPy Traces',
-        traceSourceTableName: 'otel_traces',
-        traceSourceHighlightedTraceAttributes: [
-          {
-            sqlExpression:
-              "if((SpanAttributes['http.route']) LIKE '%dashboard%', concat('https://clickpy.clickhouse.com', path(SpanAttributes['http.target'])), '')",
-            alias: 'clickpy_link',
-          },
-        ],
-
-        updateSourceMutation,
-      });
-
-      notifications.show({
-        title: 'Success',
-        message: `Connected to ${brandName} demo server.`,
-      });
-      setStep('closed');
-    } catch (err) {
-      console.error(err);
-      notifications.show({
-        color: 'red',
-        title: 'Error',
-        message: `Could not connect to the ${brandName} demo server, please try again later.`,
-      });
-    }
-  }, [
-    brandName,
-    connections,
-    createSourceMutation,
-    createConnectionMutation,
-    updateConnectionMutation,
-    updateSourceMutation,
-    deleteSourceMutation,
-    sources,
-  ]);
-
   return (
     <Modal
       data-testid="onboarding-modal"
@@ -867,19 +499,6 @@ function OnboardingModalComponent({
             <Text size="xs" mt="md">
               You can always add and edit connections later.
             </Text>
-          )}
-          {!IS_CLICKHOUSE_BUILD && (
-            <>
-              <Divider label="OR" my="md" />
-              <Button
-                data-testid="demo-server-button"
-                variant="secondary"
-                w="100%"
-                onClick={handleDemoServerClick}
-              >
-                Connect to Demo Server
-              </Button>
-            </>
           )}
         </>
       )}

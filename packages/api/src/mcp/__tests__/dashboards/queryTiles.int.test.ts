@@ -10,7 +10,7 @@ import { Source } from '@/models/source';
 
 import { setupDashboardTests } from './setup';
 
-describe('MCP Dashboard Tools - clickstack_query_tiles', () => {
+describe('MCP Dashboard Tools - cbt_query_tiles', () => {
   const ctx = setupDashboardTests();
 
   const wideRange = () => ({
@@ -19,11 +19,10 @@ describe('MCP Dashboard Tools - clickstack_query_tiles', () => {
   });
 
   const saveDashboard = async (tiles: unknown[]) => {
-    const createResult = await callTool(
-      ctx.client!,
-      'clickstack_save_dashboard',
-      { name: 'Batch Query Test', tiles },
-    );
+    const createResult = await callTool(ctx.client!, 'cbt_save_dashboard', {
+      name: 'Batch Query Test',
+      tiles,
+    });
     if (createResult.isError) {
       throw new Error(getFirstText(createResult));
     }
@@ -31,7 +30,7 @@ describe('MCP Dashboard Tools - clickstack_query_tiles', () => {
   };
 
   it('should return error for non-existent dashboard', async () => {
-    const result = await callTool(ctx.client!, 'clickstack_query_tiles', {
+    const result = await callTool(ctx.client!, 'cbt_query_tiles', {
       dashboardId: '000000000000000000000000',
     });
 
@@ -51,7 +50,7 @@ describe('MCP Dashboard Tools - clickstack_query_tiles', () => {
       },
     ]);
 
-    const result = await callTool(ctx.client!, 'clickstack_query_tiles', {
+    const result = await callTool(ctx.client!, 'cbt_query_tiles', {
       dashboardId: dashboard.id,
       startTime: 'not-a-date',
     });
@@ -85,7 +84,7 @@ describe('MCP Dashboard Tools - clickstack_query_tiles', () => {
       },
     ]);
 
-    const result = await callTool(ctx.client!, 'clickstack_query_tiles', {
+    const result = await callTool(ctx.client!, 'cbt_query_tiles', {
       dashboardId: dashboard.id,
       ...wideRange(),
     });
@@ -115,7 +114,7 @@ describe('MCP Dashboard Tools - clickstack_query_tiles', () => {
     ]);
 
     const realId = dashboard.tiles[0].id;
-    const result = await callTool(ctx.client!, 'clickstack_query_tiles', {
+    const result = await callTool(ctx.client!, 'cbt_query_tiles', {
       dashboardId: dashboard.id,
       tileIds: [realId, 'bogus-tile-id'],
       ...wideRange(),
@@ -155,7 +154,7 @@ describe('MCP Dashboard Tools - clickstack_query_tiles', () => {
       },
     ]);
 
-    const result = await callTool(ctx.client!, 'clickstack_query_tiles', {
+    const result = await callTool(ctx.client!, 'cbt_query_tiles', {
       dashboardId: dashboard.id,
       ...wideRange(),
     });
@@ -189,7 +188,7 @@ describe('MCP Dashboard Tools - clickstack_query_tiles', () => {
       },
     ]);
 
-    const result = await callTool(ctx.client!, 'clickstack_query_tiles', {
+    const result = await callTool(ctx.client!, 'cbt_query_tiles', {
       dashboardId: dashboard.id,
       ...wideRange(),
     });
@@ -231,7 +230,7 @@ describe('MCP Dashboard Tools - clickstack_query_tiles', () => {
       },
     ]);
 
-    const result = await callTool(ctx.client!, 'clickstack_query_tiles', {
+    const result = await callTool(ctx.client!, 'cbt_query_tiles', {
       dashboardId: dashboard.id,
       startTime: new Date(now.getTime() - 60_000).toISOString(),
       endTime: new Date(now.getTime() + 60_000).toISOString(),
@@ -266,7 +265,7 @@ describe('MCP Dashboard Tools - clickstack_query_tiles', () => {
       (t: any) => t.config?.displayType === 'markdown',
     ).id;
 
-    const result = await callTool(ctx.client!, 'clickstack_query_tiles', {
+    const result = await callTool(ctx.client!, 'cbt_query_tiles', {
       dashboardId: dashboard.id,
       tileIds: [markdownTileId],
       ...wideRange(),
@@ -295,7 +294,7 @@ describe('MCP Dashboard Tools - clickstack_query_tiles', () => {
     ]);
 
     const id = dashboard.tiles[0].id;
-    const result = await callTool(ctx.client!, 'clickstack_query_tiles', {
+    const result = await callTool(ctx.client!, 'cbt_query_tiles', {
       dashboardId: dashboard.id,
       tileIds: [id, id, id],
       ...wideRange(),
@@ -322,7 +321,7 @@ describe('MCP Dashboard Tools - clickstack_query_tiles', () => {
     const dashboard = await saveDashboard(tiles);
     const allIds = dashboard.tiles.map((t: any) => t.id);
 
-    const result = await callTool(ctx.client!, 'clickstack_query_tiles', {
+    const result = await callTool(ctx.client!, 'cbt_query_tiles', {
       dashboardId: dashboard.id,
       ...wideRange(),
     });
@@ -361,7 +360,7 @@ describe('MCP Dashboard Tools - clickstack_query_tiles', () => {
       },
     ]);
 
-    const result = await callTool(ctx.client!, 'clickstack_query_tiles', {
+    const result = await callTool(ctx.client!, 'cbt_query_tiles', {
       dashboardId: dashboard.id,
       tileIds: [],
       ...wideRange(),
@@ -390,7 +389,7 @@ describe('MCP Dashboard Tools - clickstack_query_tiles', () => {
 
     // 501 ids exceeds the MAX_TILE_IDS_INPUT schema cap of 500.
     const tooMany = Array.from({ length: 501 }, (_, i) => `id-${i}`);
-    const result = await callTool(ctx.client!, 'clickstack_query_tiles', {
+    const result = await callTool(ctx.client!, 'cbt_query_tiles', {
       dashboardId: dashboard.id,
       tileIds: tooMany,
       ...wideRange(),
@@ -402,44 +401,40 @@ describe('MCP Dashboard Tools - clickstack_query_tiles', () => {
   describe('dashboard variables', () => {
     it('runs a $__filter tile in the batch', async () => {
       const sourceId = ctx.traceSource._id.toString();
-      const createResult = await callTool(
-        ctx.client!,
-        'clickstack_save_dashboard',
-        {
-          name: 'Batch variable test',
-          tiles: [
-            {
-              name: 'Rows',
-              config: {
-                configType: 'sql',
-                displayType: 'table',
-                connectionId: ctx.connection._id.toString(),
-                sourceId,
-                sqlTemplate:
-                  'SELECT count() AS c FROM $__sourceTable ' +
-                  'WHERE $__timeFilter(Timestamp) AND $__filters ' +
-                  'AND $__filter(ServiceName, $service) LIMIT 1',
-              },
-            },
-          ],
-          filters: [
-            {
-              type: 'QUERY_EXPRESSION',
-              name: 'Service',
-              expression: 'ServiceName',
+      const createResult = await callTool(ctx.client!, 'cbt_save_dashboard', {
+        name: 'Batch variable test',
+        tiles: [
+          {
+            name: 'Rows',
+            config: {
+              configType: 'sql',
+              displayType: 'table',
+              connectionId: ctx.connection._id.toString(),
               sourceId,
-              whereLanguage: 'sql',
-              isBroadcastEnabled: false,
-              isVariableEnabled: true,
-              variableName: 'service',
+              sqlTemplate:
+                'SELECT count() AS c FROM $__sourceTable ' +
+                'WHERE $__timeFilter(Timestamp) AND $__filters ' +
+                'AND $__filter(ServiceName, $service) LIMIT 1',
             },
-          ],
-        },
-      );
+          },
+        ],
+        filters: [
+          {
+            type: 'QUERY_EXPRESSION',
+            name: 'Service',
+            expression: 'ServiceName',
+            sourceId,
+            whereLanguage: 'sql',
+            isBroadcastEnabled: false,
+            isVariableEnabled: true,
+            variableName: 'service',
+          },
+        ],
+      });
       expect(createResult.isError).toBeFalsy();
       const dashboard = JSON.parse(getFirstText(createResult));
 
-      const result = await callTool(ctx.client!, 'clickstack_query_tiles', {
+      const result = await callTool(ctx.client!, 'cbt_query_tiles', {
         dashboardId: dashboard.id,
         ...wideRange(),
       });
@@ -481,41 +476,37 @@ describe('MCP Dashboard Tools - clickstack_query_tiles', () => {
         },
       ]);
 
-      const createResult = await callTool(
-        ctx.client!,
-        'clickstack_save_dashboard',
-        {
-          name: 'Batch pattern variable test',
-          tiles: [
-            {
-              name: 'Log patterns',
-              config: {
-                displayType: 'event_patterns',
-                sourceId,
-                select: 'Body',
-                where: '$__filter(ServiceName, $service)',
-                whereLanguage: 'sql',
-              },
-            },
-          ],
-          filters: [
-            {
-              type: 'QUERY_EXPRESSION',
-              name: 'Service',
-              expression: 'ServiceName',
+      const createResult = await callTool(ctx.client!, 'cbt_save_dashboard', {
+        name: 'Batch pattern variable test',
+        tiles: [
+          {
+            name: 'Log patterns',
+            config: {
+              displayType: 'event_patterns',
               sourceId,
+              select: 'Body',
+              where: '$__filter(ServiceName, $service)',
               whereLanguage: 'sql',
-              isBroadcastEnabled: false,
-              isVariableEnabled: true,
-              variableName: 'service',
             },
-          ],
-        },
-      );
+          },
+        ],
+        filters: [
+          {
+            type: 'QUERY_EXPRESSION',
+            name: 'Service',
+            expression: 'ServiceName',
+            sourceId,
+            whereLanguage: 'sql',
+            isBroadcastEnabled: false,
+            isVariableEnabled: true,
+            variableName: 'service',
+          },
+        ],
+      });
       expect(createResult.isError).toBeFalsy();
       const dashboard = JSON.parse(getFirstText(createResult));
 
-      const result = await callTool(ctx.client!, 'clickstack_query_tiles', {
+      const result = await callTool(ctx.client!, 'cbt_query_tiles', {
         dashboardId: dashboard.id,
         ...wideRange(),
         variableValues: [{ name: 'service', values: ['checkout'] }],
@@ -541,7 +532,7 @@ describe('MCP Dashboard Tools - clickstack_query_tiles', () => {
         },
       ]);
 
-      const result = await callTool(ctx.client!, 'clickstack_query_tiles', {
+      const result = await callTool(ctx.client!, 'cbt_query_tiles', {
         dashboardId: dashboard.id,
         ...wideRange(),
         variableValues: [{ name: 'service', values: ['checkout'] }],
@@ -553,35 +544,31 @@ describe('MCP Dashboard Tools - clickstack_query_tiles', () => {
 
     it('rejects a value outside a static filter options', async () => {
       const sourceId = ctx.traceSource._id.toString();
-      const createResult = await callTool(
-        ctx.client!,
-        'clickstack_save_dashboard',
-        {
-          name: 'Batch static filter test',
-          tiles: [
-            {
-              name: 'Count',
-              config: {
-                displayType: 'number',
-                sourceId,
-                select: [{ aggFn: 'count' }],
-              },
+      const createResult = await callTool(ctx.client!, 'cbt_save_dashboard', {
+        name: 'Batch static filter test',
+        tiles: [
+          {
+            name: 'Count',
+            config: {
+              displayType: 'number',
+              sourceId,
+              select: [{ aggFn: 'count' }],
             },
-          ],
-          filters: [
-            {
-              type: 'STATIC_LIST',
-              name: 'Environment',
-              options: ['prod', 'staging'],
-              variableName: 'env',
-            },
-          ],
-        },
-      );
+          },
+        ],
+        filters: [
+          {
+            type: 'STATIC_LIST',
+            name: 'Environment',
+            options: ['prod', 'staging'],
+            variableName: 'env',
+          },
+        ],
+      });
       expect(createResult.isError).toBeFalsy();
       const dashboard = JSON.parse(getFirstText(createResult));
 
-      const result = await callTool(ctx.client!, 'clickstack_query_tiles', {
+      const result = await callTool(ctx.client!, 'cbt_query_tiles', {
         dashboardId: dashboard.id,
         ...wideRange(),
         variableValues: [{ name: 'env', values: ['dev'] }],

@@ -1,6 +1,6 @@
 ---
 name: data-source-icons
-description: Use the correct Tabler icon for each HyperDX data source kind (Log, Trace, Session, Metric, PromQL). Use whenever adding or changing an icon that represents a source kind or a signal type — source selectors, side panels, cross-source actions like "View Trace", tabs, badges, breadcrumbs, or anywhere a log/trace/session/metric is depicted.
+description: Use the correct Tabler icon for each Couchbase Traces data source kind (Log, Trace, Session, Metric, PromQL). Use whenever adding or changing an icon that represents a source kind or a signal type — source selectors, side panels, cross-source actions like "View Trace", tabs, badges, breadcrumbs, or anywhere a log/trace/session/metric is depicted.
 ---
 
 # Data source icons

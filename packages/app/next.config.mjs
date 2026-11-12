@@ -176,8 +176,8 @@ const nextConfig = {
     : {}),
   ...(process.env.NEXT_PUBLIC_CLICKHOUSE_BUILD
     ? {
-        assetPrefix: '/clickstack',
-        basePath: '/clickstack',
+        assetPrefix: '/couchbase-traces',
+        basePath: '/couchbase-traces',
         images: { unoptimized: true },
         output: 'export',
       }

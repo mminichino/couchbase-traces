@@ -143,25 +143,25 @@ export async function runSetup(opts: SetupOptions): Promise<SetupResult> {
     url: mcpUrl,
     headers: { Authorization: `Bearer ${me.accessKey}` },
     toolPattern: 'mcp__hyperdx__*',
-    label: 'HyperDX',
-    brandTerms: ['HyperDX', 'hyperdx'],
+    label: 'Couchbase Traces',
+    brandTerms: ['Couchbase Traces', 'hyperdx'],
     deniedTools: [
-      'mcp__hyperdx__clickstack_delete_dashboard',
-      'mcp__hyperdx__clickstack_get_dashboard',
-      'mcp__hyperdx__clickstack_get_dashboard_tile',
-      'mcp__hyperdx__clickstack_save_dashboard',
-      'mcp__hyperdx__clickstack_patch_dashboard',
-      'mcp__hyperdx__clickstack_search_dashboards',
-      'mcp__hyperdx__clickstack_query_tile',
-      'mcp__hyperdx__clickstack_get_saved_search',
-      'mcp__hyperdx__clickstack_save_saved_search',
-      'mcp__hyperdx__clickstack_get_alert',
-      'mcp__hyperdx__clickstack_get_webhook',
-      'mcp__hyperdx__clickstack_save_alert',
-      'mcp__hyperdx__clickstack_save_webhook',
-      'mcp__hyperdx__clickstack_delete_webhook',
-      'mcp__hyperdx__clickstack_save_source',
-      'mcp__hyperdx__clickstack_delete_source',
+      'mcp__hyperdx__cbt_delete_dashboard',
+      'mcp__hyperdx__cbt_get_dashboard',
+      'mcp__hyperdx__cbt_get_dashboard_tile',
+      'mcp__hyperdx__cbt_save_dashboard',
+      'mcp__hyperdx__cbt_patch_dashboard',
+      'mcp__hyperdx__cbt_search_dashboards',
+      'mcp__hyperdx__cbt_query_tile',
+      'mcp__hyperdx__cbt_get_saved_search',
+      'mcp__hyperdx__cbt_save_saved_search',
+      'mcp__hyperdx__cbt_get_alert',
+      'mcp__hyperdx__cbt_get_webhook',
+      'mcp__hyperdx__cbt_save_alert',
+      'mcp__hyperdx__cbt_save_webhook',
+      'mcp__hyperdx__cbt_delete_webhook',
+      'mcp__hyperdx__cbt_save_source',
+      'mcp__hyperdx__cbt_delete_source',
     ],
   };
 
@@ -356,7 +356,7 @@ export async function runCheck(
       mcpReachable = await apiBearerCheck(httpMcp.url, accessKey);
       if (!mcpReachable) {
         errors.push(
-          `HyperDX MCP at ${httpMcp.url} did not respond as expected`,
+          `Couchbase Traces MCP at ${httpMcp.url} did not respond as expected`,
         );
       }
     }

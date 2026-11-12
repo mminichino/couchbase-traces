@@ -4,7 +4,7 @@ import { registerTelemetry, type TelemetryOptions } from 'ai';
 // GenAI/OTel semconv keys where one exists; team matches setBusinessContext.
 const ATTRIBUTION_SPAN_ATTRIBUTES = {
   sessionId: 'gen_ai.conversation.id',
-  teamId: 'hyperdx.team.id',
+  teamId: 'cbt.team.id',
   userId: 'user.id',
 } as const;
 

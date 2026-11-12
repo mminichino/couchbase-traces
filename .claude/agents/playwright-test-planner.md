@@ -51,10 +51,10 @@ You will:
 **Output Format**: Always save the complete test plan as a markdown file with clear headings, numbered steps, and
 professional formatting suitable for sharing with development and QA teams.
 
-## HyperDX Project Context
+## Couchbase Traces Project Context
 
 ### Application
-HyperDX is an observability platform. Key pages: `/search` (logs/traces), `/dashboards`, `/alerts`, `/metrics`, `/sessions`.
+Couchbase Traces is an observability platform. Key pages: `/search` (logs/traces), `/dashboards`, `/alerts`, `/metrics`, `/sessions`.
 
 ### Test File Locations
 - Plans: `specs/`
@@ -62,7 +62,7 @@ HyperDX is an observability platform. Key pages: `/search` (logs/traces), `/dash
 - Page objects: `packages/app/tests/e2e/page-objects/`
 - Components: `packages/app/tests/e2e/components/`
 
-### Plan Requirements for HyperDX
+### Plan Requirements for Couchbase Traces
 - Scenarios must be independent and assume a fresh DB state (the test runner clears MongoDB before each run)
 - Note when a scenario creates shared resources (e.g. webhooks, saved searches) that could conflict with parallel runs — flag these for data isolation
 - Reference existing page objects when describing steps so the generator agent knows what abstractions are available

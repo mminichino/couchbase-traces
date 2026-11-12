@@ -5,7 +5,7 @@ import {
 } from '@/components/ClickStackOnboarding/installSnippets';
 
 const DEPLOYMENT: DeploymentShape = {
-  apiUrl: 'https://hyperdx.example.com/api',
+  apiUrl: 'https://couchbase-traces.example.com/api',
   accessKey: 'k_abcdef123456',
 };
 
@@ -28,7 +28,7 @@ describe('buildAllSnippets > Cursor', () => {
     );
     expect(decoded).toMatchObject({
       type: 'http',
-      url: 'https://hyperdx.example.com/api/mcp',
+      url: 'https://couchbase-traces.example.com/api/mcp',
       headers: { Authorization: 'Bearer k_abcdef123456' },
     });
   });
@@ -45,11 +45,11 @@ describe('buildAllSnippets > Cursor', () => {
       // base64 alphabet would emit `+` or `/`. Every byte > 0x3E or
       // > 0x3F flips a `+` or `/` somewhere in the encoded output.
       {
-        apiUrl: 'https://hyperdx.example.com/api',
+        apiUrl: 'https://couchbase-traces.example.com/api',
         accessKey: '????>>>>????>>>>',
       },
       {
-        apiUrl: 'https://hyperdx.example.com/api',
+        apiUrl: 'https://couchbase-traces.example.com/api',
         accessKey: 'ÿÿÿÿÿÿ',
       },
     ];
@@ -72,7 +72,7 @@ describe('buildAllSnippets > VS Code', () => {
     expect(decoded).toMatchObject({
       name: SERVER_NAME,
       type: 'http',
-      url: 'https://hyperdx.example.com/api/mcp',
+      url: 'https://couchbase-traces.example.com/api/mcp',
       headers: { Authorization: 'Bearer k_abcdef123456' },
     });
   });
@@ -91,7 +91,7 @@ describe('buildAllSnippets > OpenCode', () => {
       mcp: {
         [SERVER_NAME]: {
           type: 'remote',
-          url: 'https://hyperdx.example.com/api/mcp',
+          url: 'https://couchbase-traces.example.com/api/mcp',
           headers: { Authorization: 'Bearer k_abcdef123456' },
         },
       },
@@ -114,7 +114,7 @@ describe('buildAllSnippets > JSON block', () => {
     expect(parsed).toMatchObject({
       mcpServers: {
         [SERVER_NAME]: {
-          url: 'https://hyperdx.example.com/api/mcp',
+          url: 'https://couchbase-traces.example.com/api/mcp',
           type: 'http',
           headers: { Authorization: 'Bearer k_abcdef123456' },
         },

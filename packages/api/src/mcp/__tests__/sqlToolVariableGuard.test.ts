@@ -56,7 +56,7 @@ beforeEach(() => {
   mockRunConfigTile.mockResolvedValue(okResult);
 });
 
-describe('clickstack_sql variable macro guard', () => {
+describe('cbt_sql variable macro guard', () => {
   it.each([
     ['$__filter with an expression', '$__filter(ServiceName, $service)'],
     ['$__filter with one argument', '$__filter($service)'],

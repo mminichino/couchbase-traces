@@ -127,7 +127,7 @@ function LoginPrompt({
   return (
     <Box flexDirection="column" paddingX={1}>
       <Text bold color="cyan">
-        HyperDX — Login
+        Couchbase Traces — Login
       </Text>
       {field !== 'method' && field !== 'appUrl' && (
         <Text dimColor>Server: {appUrl}</Text>
@@ -155,7 +155,7 @@ function LoginPrompt({
         </Box>
       ) : field === 'appUrl' ? (
         <Box>
-          <Text>HyperDX URL: </Text>
+          <Text>Couchbase Traces URL: </Text>
           <TextInput
             value={appUrl}
             onChange={setAppUrl}
@@ -320,7 +320,7 @@ function ReLoginPrompt({
   return (
     <Box flexDirection="column" paddingX={1}>
       <Text bold color="cyan">
-        HyperDX — Login
+        Couchbase Traces — Login
       </Text>
       {field !== 'method' && field !== 'appUrl' && (
         <Text dimColor>Server: {appUrl}</Text>
@@ -348,7 +348,7 @@ function ReLoginPrompt({
         </Box>
       ) : field === 'appUrl' ? (
         <Box>
-          <Text>HyperDX URL: </Text>
+          <Text>Couchbase Traces URL: </Text>
           <TextInput
             value={appUrl}
             onChange={setAppUrl}
@@ -383,8 +383,10 @@ function ReLoginPrompt({
 const program = new Command();
 
 program
-  .name('hdx')
-  .description('HyperDX CLI — search and tail events from the terminal')
+  .name('cbt')
+  .description(
+    'Couchbase Traces CLI — search and tail events from the terminal',
+  )
   .version(process.env.npm_package_version ?? '0.0.0')
   .enablePositionalOptions();
 
@@ -393,7 +395,7 @@ program
 program
   .command('tui')
   .description('Interactive TUI for event search and tail')
-  .option('-a, --app-url <url>', 'HyperDX app URL')
+  .option('-a, --app-url <url>', 'Couchbase Traces app URL')
   .option('-q, --query <query>', 'Initial Lucene search query')
   .option('--source <name>', 'Source name (skips picker)')
   .option('-f, --follow', 'Start in follow/live tail mode')
@@ -432,8 +434,8 @@ const auth = program
 
 auth
   .command('login')
-  .description('Sign in to your HyperDX account')
-  .option('-a, --app-url <url>', 'HyperDX app URL')
+  .description('Sign in to your Couchbase Traces account')
+  .option('-a, --app-url <url>', 'Couchbase Traces app URL')
   .option('-e, --email <email>', 'Email address')
   .option('-p, --password <password>', 'Password')
   .action(async opts => {
@@ -471,7 +473,7 @@ auth
 
 auth
   .command('logout')
-  .description('Log out from your HyperDX account')
+  .description('Log out from your Couchbase Traces account')
   .action(() => {
     clearSession();
     process.stdout.write('Session cleared.\n');
@@ -485,7 +487,7 @@ auth
     if (!session) {
       process.stdout.write(
         chalk.yellow(
-          `Not logged in. Run ${chalk.bold('hdx auth login')} to sign in.\n`,
+          `Not logged in. Run ${chalk.bold('cbt auth login')} to sign in.\n`,
         ),
       );
       process.exit(1);
@@ -497,7 +499,7 @@ auth
     if (!ok) {
       process.stdout.write(
         chalk.yellow(
-          `Session expired. Run ${chalk.bold('hdx auth login')} to sign in again.\n`,
+          `Session expired. Run ${chalk.bold('cbt auth login')} to sign in again.\n`,
         ),
       );
       process.exit(1);
@@ -544,21 +546,21 @@ function resolveActiveTeam(
 
 const mcp = program
   .command('mcp')
-  .description('Connect AI agents to ClickStack over MCP')
+  .description('Connect AI agents to Couchbase Traces over MCP')
   .enablePositionalOptions()
   .passThroughOptions();
 
 mcp
   .command('install')
   .description(
-    'Add the ClickStack MCP server to Claude Code, Codex, Cursor, and VS Code',
+    'Add the Couchbase Traces MCP server to Claude Code, Codex, Cursor, and VS Code',
   )
-  .option('-a, --app-url <url>', 'ClickStack app URL')
+  .option('-a, --app-url <url>', 'Couchbase Traces app URL')
   .action(async opts => {
     if (!process.stdin.isTTY) {
       _origError(
         chalk.red(
-          'hdx mcp install needs an interactive terminal so the key stays out of logs and agent chats. Run it yourself in a terminal.\n',
+          'cbt mcp install needs an interactive terminal so the key stays out of logs and agent chats. Run it yourself in a terminal.\n',
         ),
       );
       process.exit(1);
@@ -615,7 +617,7 @@ const team = program
 team
   .command('list')
   .description('List all teams the authenticated user belongs to')
-  .option('-a, --app-url <url>', 'HyperDX app URL')
+  .option('-a, --app-url <url>', 'Couchbase Traces app URL')
   .option('--json', 'Output as JSON (for programmatic consumption)')
   .addHelpText(
     'after',
@@ -625,7 +627,7 @@ About:
   with an arrow ('▸ ') is the currently active team — all subsequent
   CLI commands query that team's data.
 
-  Use ${chalk.bold('hdx team use <name|id>')} to switch the active team.
+  Use ${chalk.bold('cbt team use <name|id>')} to switch the active team.
 
 JSON output schema (--json):
   {
@@ -636,8 +638,8 @@ JSON output schema (--json):
   }
 
 Examples:
-  $ hdx team list
-  $ hdx team list --json | jq '.teams[] | select(.isCurrent)'
+  $ cbt team list
+  $ cbt team list --json | jq '.teams[] | select(.isCurrent)'
 `,
   )
   .action(async opts => {
@@ -686,7 +688,7 @@ Examples:
     if (teams.length === 1) {
       process.stdout.write(
         chalk.dim(
-          `\nYou belong to a single team. ${chalk.bold('hdx team use')} is a no-op here.\n`,
+          `\nYou belong to a single team. ${chalk.bold('cbt team use')} is a no-op here.\n`,
         ),
       );
     }
@@ -695,7 +697,7 @@ Examples:
 team
   .command('current')
   .description('Show the currently active team')
-  .option('-a, --app-url <url>', 'HyperDX app URL')
+  .option('-a, --app-url <url>', 'Couchbase Traces app URL')
   .option('--json', 'Output as JSON (for programmatic consumption)')
   .action(async opts => {
     const client = await ensureSession(opts.appUrl);
@@ -736,7 +738,7 @@ team
   .description(
     'Switch the active team. <name-or-id> matches either the team ID or its display name (case-insensitive).',
   )
-  .option('-a, --app-url <url>', 'HyperDX app URL')
+  .option('-a, --app-url <url>', 'Couchbase Traces app URL')
   .addHelpText(
     'after',
     `
@@ -755,8 +757,8 @@ About:
   any data scoping).
 
 Examples:
-  $ hdx team use my-team
-  $ hdx team use 6537a1d2c8b7f4e2a1d2c8b7
+  $ cbt team use my-team
+  $ cbt team use 6537a1d2c8b7f4e2a1d2c8b7
 `,
   )
   .action(async (nameOrId: string, opts) => {
@@ -797,15 +799,15 @@ program
   .description(
     'List data sources (log, trace, session, metric) with ClickHouse table schemas',
   )
-  .option('-a, --app-url <url>', 'HyperDX app URL')
+  .option('-a, --app-url <url>', 'Couchbase Traces app URL')
   .option('--json', 'Output as JSON (for programmatic consumption)')
   .addHelpText(
     'after',
     `
 About:
-  A "source" in HyperDX is a named data source backed by a ClickHouse table.
+  A "source" in Couchbase Traces is a named data source backed by a ClickHouse table.
   Each source has a kind (log, trace, session, or metric) and a set of
-  expression mappings that tell HyperDX which columns hold timestamps, trace
+  expression mappings that tell Couchbase Traces which columns hold timestamps, trace
   IDs, span names, severity levels, etc.
 
   This command lists all sources and fetches the ClickHouse CREATE TABLE
@@ -816,7 +818,7 @@ About:
 
 JSON output schema (--json):
   Array of objects, each with:
-    id                  - Source ID (use with other hdx commands)
+    id                  - Source ID (use with other cbt commands)
     name                - Human-readable source name
     kind                - "log" | "trace" | "session" | "metric"
     database            - ClickHouse database name
@@ -848,9 +850,9 @@ JSON output schema (--json):
         session               - Correlated session source ID
 
 Examples:
-  $ hdx sources                     # Human-readable table with schemas
-  $ hdx sources --json              # JSON for agents / scripts
-  $ hdx sources --json | jq '.[0]'  # Inspect first source
+  $ cbt sources                     # Human-readable table with schemas
+  $ cbt sources --json              # JSON for agents / scripts
+  $ cbt sources --json | jq '.[0]'  # Inspect first source
 `,
   )
   .action(async opts => {
@@ -954,7 +956,7 @@ Examples:
 program
   .command('connections')
   .description('List ClickHouse connections (id, name, host)')
-  .option('-a, --app-url <url>', 'HyperDX app URL')
+  .option('-a, --app-url <url>', 'Couchbase Traces app URL')
   .option('--json', 'Output as JSON (for programmatic consumption)')
   .addHelpText(
     'after',
@@ -964,7 +966,7 @@ About:
   Each connection is a named set of credentials that one or more
   sources point at (via the 'connection' field on a source).
 
-  Use 'hdx sources --json' to see which connection each source uses.
+  Use 'cbt sources --json' to see which connection each source uses.
 
 JSON output schema (--json):
   Array of objects, each with:
@@ -973,9 +975,9 @@ JSON output schema (--json):
     host  - ClickHouse host URL
 
 Examples:
-  $ hdx connections
-  $ hdx connections --json
-  $ hdx connections --json | jq '.[] | select(.name=="Default")'
+  $ cbt connections
+  $ cbt connections --json
+  $ cbt connections --json | jq '.[] | select(.name=="Default")'
 `,
   )
   .action(async opts => {
@@ -1251,7 +1253,7 @@ const dashboardsCmd = program
   .command('dashboards')
   .alias('dashboard')
   .description('List, export, create, or import dashboards')
-  .option('-a, --app-url <url>', 'HyperDX app URL')
+  .option('-a, --app-url <url>', 'Couchbase Traces app URL')
   .option('--json', 'Output as JSON (shorthand for --format json)')
   .option('--format <fmt>', 'Output format: table, json, or csv', 'table')
   .option('--query <substr>', 'Filter dashboards by name (substring match)')
@@ -1263,7 +1265,7 @@ About:
   contains tiles (charts/visualizations) that query ClickHouse sources.
 
   Subcommands:
-    list     List dashboards (default; same as bare 'hdx dashboards')
+    list     List dashboards (default; same as bare 'cbt dashboards')
     export   Print a dashboard definition as JSON (round-trips via import)
     create   Create a dashboard from a JSON file or inline chart JSON
     import   Create a dashboard from an exported definition
@@ -1288,13 +1290,13 @@ CSV output columns (--format csv):
   id,name,tags,createdAt,updatedAt,tileCount (tags joined with ';')
 
 Examples:
-  $ hdx dashboards                          # Human-readable list with tiles
-  $ hdx dashboards --json                   # JSON for agents / scripts
-  $ hdx dashboards list --query health      # Filter by name
-  $ hdx dashboards list --format csv        # CSV summary
-  $ hdx dashboards export --id "API Health" > dashboard.json
-  $ hdx dashboards import --file dashboard.json --if-not-exists
-  $ hdx dashboards create --file my-dashboard.json
+  $ cbt dashboards                          # Human-readable list with tiles
+  $ cbt dashboards --json                   # JSON for agents / scripts
+  $ cbt dashboards list --query health      # Filter by name
+  $ cbt dashboards list --format csv        # CSV summary
+  $ cbt dashboards export --id "API Health" > dashboard.json
+  $ cbt dashboards import --file dashboard.json --if-not-exists
+  $ cbt dashboards create --file my-dashboard.json
 `,
   )
   .action(async opts => {
@@ -1304,7 +1306,7 @@ Examples:
 dashboardsCmd
   .command('list')
   .description('List dashboards with tile summaries')
-  .option('-a, --app-url <url>', 'HyperDX app URL')
+  .option('-a, --app-url <url>', 'Couchbase Traces app URL')
   .option('--json', 'Output as JSON (shorthand for --format json)')
   .option('--format <fmt>', 'Output format: table, json, or csv', 'table')
   .option('--query <substr>', 'Filter dashboards by name (substring match)')
@@ -1316,7 +1318,7 @@ dashboardsCmd
   .command('export')
   .description('Export a dashboard definition as JSON (importable)')
   .requiredOption('--id <id-or-name>', 'Dashboard ID or name')
-  .option('-a, --app-url <url>', 'HyperDX app URL')
+  .option('-a, --app-url <url>', 'Couchbase Traces app URL')
   .addHelpText(
     'after',
     `
@@ -1324,11 +1326,11 @@ About:
   Prints the full dashboard definition (name, tags, tiles with chart
   configs and layout, filters) as JSON on stdout. Server-managed fields
   (id, timestamps) are stripped so the output is a valid input for
-  'hdx dashboards import' / 'hdx dashboards create --file'.
+  'cbt dashboards import' / 'cbt dashboards create --file'.
 
 Examples:
-  $ hdx dashboards export --id "API Health" > dashboard-backup.json
-  $ hdx dashboards export --id 6537a1d2c8b7f4e2a1d2c8b7 | jq '.tiles | length'
+  $ cbt dashboards export --id "API Health" > dashboard-backup.json
+  $ cbt dashboards export --id 6537a1d2c8b7f4e2a1d2c8b7 | jq '.tiles | length'
 `,
   )
   .action(async opts => {
@@ -1409,7 +1411,7 @@ dashboardsCmd
     '--if-not-exists',
     'Skip creation if a dashboard with the same name exists',
   )
-  .option('-a, --app-url <url>', 'HyperDX app URL')
+  .option('-a, --app-url <url>', 'Couchbase Traces app URL')
   .option('--json', 'Output the created dashboard as JSON')
   .addHelpText(
     'after',
@@ -1419,7 +1421,7 @@ About:
 
   1. Full definition:  --file <json>
      The file must match the DashboardWithoutId schema from
-     @couchbase-traces/common-utils (the shape 'hdx dashboards export' emits):
+     @couchbase-traces/common-utils (the shape 'cbt dashboards export' emits):
 
        {
          "name": "My Dashboard",
@@ -1448,11 +1450,11 @@ About:
   The definition is validated locally before being sent to the server.
 
 Examples:
-  $ hdx dashboards create --file my-dashboard.json
-  $ cat my-dashboard.json | hdx dashboards create --file -
-  $ hdx dashboards create --name "API Health" \\
+  $ cbt dashboards create --file my-dashboard.json
+  $ cat my-dashboard.json | cbt dashboards create --file -
+  $ cbt dashboards create --name "API Health" \\
       --chart '{"name":"Requests","displayType":"line","source":"<id>","select":[{"aggFn":"count","valueExpression":"","alias":"Requests"}],"where":"","whereLanguage":"lucene","granularity":"auto"}'
-  $ hdx dashboards create --name "API Health" --chart-file charts.json --if-not-exists
+  $ cbt dashboards create --name "API Health" --chart-file charts.json --if-not-exists
 `,
   )
   .action(async opts => {
@@ -1559,28 +1561,28 @@ dashboardsCmd
   .description('Create a dashboard from an exported JSON definition')
   .requiredOption(
     '-f, --file <path>',
-    'Path to a dashboard JSON file (output of \'hdx dashboards export\'; use "-" for stdin)',
+    'Path to a dashboard JSON file (output of \'cbt dashboards export\'; use "-" for stdin)',
   )
   .option('--name-override <name>', 'Rename the dashboard on import')
   .option(
     '--if-not-exists',
     'Skip import if a dashboard with the same name exists',
   )
-  .option('-a, --app-url <url>', 'HyperDX app URL')
+  .option('-a, --app-url <url>', 'Couchbase Traces app URL')
   .option('--json', 'Output the created dashboard as JSON')
   .addHelpText(
     'after',
     `
 About:
   Recreates a full dashboard (all charts, layout, and settings) from a
-  JSON definition, typically the output of 'hdx dashboards export'.
+  JSON definition, typically the output of 'cbt dashboards export'.
   Round-trip compatible: export | import recreates the dashboard.
 
 Examples:
-  $ hdx dashboards import --file dashboard.json
-  $ hdx dashboards export --id "API Health" | hdx dashboards import --file - \\
+  $ cbt dashboards import --file dashboard.json
+  $ cbt dashboards export --id "API Health" | cbt dashboards import --file - \\
       --name-override "API Health (copy)"
-  $ hdx dashboards import --file dashboard.json --if-not-exists
+  $ cbt dashboards import --file dashboard.json --if-not-exists
 `,
   )
   .action(async opts => {
@@ -1614,7 +1616,7 @@ const savedSearchesCmd = program
 savedSearchesCmd
   .command('list', { isDefault: true })
   .description('List saved searches')
-  .option('-a, --app-url <url>', 'HyperDX app URL')
+  .option('-a, --app-url <url>', 'Couchbase Traces app URL')
   .option('--json', 'Output as JSON (for programmatic consumption)')
   .addHelpText(
     'after',
@@ -1630,8 +1632,8 @@ JSON output schema (--json):
     tags          - Array of tag strings
 
 Examples:
-  $ hdx saved-searches
-  $ hdx saved-searches list --json | jq '.[].name'
+  $ cbt saved-searches
+  $ cbt saved-searches list --json | jq '.[].name'
 `,
   )
   .action(async opts => {
@@ -1690,7 +1692,7 @@ savedSearchesCmd
   .requiredOption('--name <name>', 'Saved search name')
   .requiredOption(
     '--source <name-or-id>',
-    "Source name or ID (from 'hdx sources --json')",
+    "Source name or ID (from 'cbt sources --json')",
   )
   .option('--where <condition>', 'Filter condition', '')
   .option('--where-language <lang>', 'Filter language: lucene or sql', 'lucene')
@@ -1701,15 +1703,15 @@ savedSearchesCmd
   )
   .option('--order-by <clause>', 'ORDER BY clause')
   .option('--tags <tags>', 'Comma-separated tags')
-  .option('-a, --app-url <url>', 'HyperDX app URL')
+  .option('-a, --app-url <url>', 'Couchbase Traces app URL')
   .option('--json', 'Output the created saved search as JSON')
   .addHelpText(
     'after',
     `
 Examples:
-  $ hdx saved-searches create --name "Error Logs" --source Logs \\
+  $ cbt saved-searches create --name "Error Logs" --source Logs \\
       --where 'SeverityText:error'
-  $ hdx saved-searches create --name "Slow Spans" --source Traces \\
+  $ cbt saved-searches create --name "Slow Spans" --source Traces \\
       --where "Duration > 1e9" --where-language sql --tags perf,traces
 `,
   )
@@ -1864,24 +1866,24 @@ program
     'auto',
   )
   .option('--json', 'Output the queried rows + metadata as JSON instead')
-  .option('-a, --app-url <url>', 'HyperDX app URL')
+  .option('-a, --app-url <url>', 'Couchbase Traces app URL')
   .addHelpText(
     'after',
     `
 About:
   Renders charts as terminal output. Designed for troubleshooting from
   the CLI (including by AI agents): visualize a metric, spot the spike,
-  then narrow down with --where or 'hdx query'.
+  then narrow down with --where or 'cbt query'.
 
   All modes query through the exact same renderChartConfig pipeline the
   web dashboards use, so SQL and results match the web UI.
 
 Modes (pick one):
   1. Dashboard tiles:  -d <dashboard> [-t <tile>]
-     Renders saved dashboard tiles. Use 'hdx dashboards' to discover
+     Renders saved dashboard tiles. Use 'cbt dashboards' to discover
      dashboards and tile names/IDs.
   2. Ad-hoc builder:   -s <source> [--agg ... --value ... --where ...]
-     Charts an aggregation over a source. Use 'hdx sources --json' to
+     Charts an aggregation over a source. Use 'cbt sources --json' to
      discover sources (log, trace, and metric kinds all work).
   3. Ad-hoc raw SQL:   --sql <query> with -s <source> or --connection-id
      Charts arbitrary SQL. Time-series SQL should produce a time bucket
@@ -1912,28 +1914,28 @@ Exit codes:
 
 Examples:
   # Dashboard tiles
-  $ hdx chart -d "Service Health"                # All tiles, past 1h
-  $ hdx chart -d "Service Health" -t "P95 Latency" --since 24h
+  $ cbt chart -d "Service Health"                # All tiles, past 1h
+  $ cbt chart -d "Service Health" -t "P95 Latency" --since 24h
 
   # Ad-hoc: error log volume by service, past 3h
-  $ hdx chart -s Logs --where 'SeverityText:error' --group-by ServiceName --since 3h
+  $ cbt chart -s Logs --where 'SeverityText:error' --group-by ServiceName --since 3h
 
   # Ad-hoc: p95 span duration for one service
-  $ hdx chart -s Traces --agg quantile --level 0.95 --value Duration \\
+  $ cbt chart -s Traces --agg quantile --level 0.95 --value Duration \\
       --where 'ServiceName:api' --since 6h
 
   # Ad-hoc: top services by error count (bar chart)
-  $ hdx chart -s Logs --display bar --where 'SeverityText:error' --group-by ServiceName
+  $ cbt chart -s Logs --display bar --where 'SeverityText:error' --group-by ServiceName
 
   # Ad-hoc: metric source
-  $ hdx chart -s Metrics --metric-type sum --metric-name otelcol_exporter_sent_spans
+  $ cbt chart -s Metrics --metric-type sum --metric-name otelcol_exporter_sent_spans
 
   # Ad-hoc: raw SQL over a time range
-  $ hdx chart -s Logs --sql "SELECT \\$__timeInterval(TimestampTime) AS ts, count()
+  $ cbt chart -s Logs --sql "SELECT \\$__timeInterval(TimestampTime) AS ts, count()
       FROM default.otel_logs WHERE \\$__timeFilter(TimestampTime) GROUP BY ts ORDER BY ts"
 
   # Agent-friendly structured output
-  $ hdx chart -s Logs --group-by ServiceName --json | jq '.[0].data'
+  $ cbt chart -s Logs --group-by ServiceName --json | jq '.[0].data'
 `,
   )
   .action(async opts => {
@@ -2003,7 +2005,7 @@ Examples:
     if (!opts.dashboard && !isAdhoc) {
       _origError(
         chalk.red(
-          'Nothing to chart. Use -d <dashboard> for saved tiles, or -s <source> / --sql for ad-hoc charts. See: hdx chart --help\n',
+          'Nothing to chart. Use -d <dashboard> for saved tiles, or -s <source> / --sql for ad-hoc charts. See: cbt chart --help\n',
         ),
       );
       process.exit(1);
@@ -2224,10 +2226,10 @@ program
   )
   .requiredOption(
     '--connection-id <id>',
-    "Connection ID (from 'hdx connections --json')",
+    "Connection ID (from 'cbt connections --json')",
   )
   .requiredOption('--sql <query>', 'SQL query to execute')
-  .option('-a, --app-url <url>', 'HyperDX app URL')
+  .option('-a, --app-url <url>', 'Couchbase Traces app URL')
   .option('--format <format>', 'ClickHouse output format', 'JSONEachRow')
   .option(
     '--patterns',
@@ -2241,12 +2243,12 @@ program
     'after',
     `
 About:
-  Execute a raw ClickHouse SQL query through the HyperDX proxy, using
+  Execute a raw ClickHouse SQL query through the Couchbase Traces proxy, using
   a configured ClickHouse connection. Designed for ad-hoc exploration,
   debugging, and agent-driven queries.
 
-  The --connection-id flag takes a connection ID. Use 'hdx connections
-  --json' to discover available connection IDs. Use 'hdx sources --json'
+  The --connection-id flag takes a connection ID. Use 'cbt connections
+  --json' to discover available connection IDs. Use 'cbt sources --json'
   to see which connection each source uses (the 'connection' field).
 
   The query is sent as-is to ClickHouse — you are responsible for
@@ -2298,10 +2300,10 @@ Exit codes:
   1  Failure. Stderr contains the error.
 
 Examples:
-  $ CONN=$(hdx connections --json | jq -r '.[0].id')
-  $ hdx query --connection-id "$CONN" --sql "SELECT count() FROM default.otel_logs"
-  $ hdx query --connection-id "$CONN" --sql "SELECT * FROM default.otel_traces LIMIT 5"
-  $ hdx query --connection-id "$CONN" --patterns \\
+  $ CONN=$(cbt connections --json | jq -r '.[0].id')
+  $ cbt query --connection-id "$CONN" --sql "SELECT count() FROM default.otel_logs"
+  $ cbt query --connection-id "$CONN" --sql "SELECT * FROM default.otel_traces LIMIT 5"
+  $ cbt query --connection-id "$CONN" --patterns \\
       --sql "SELECT Body FROM default.otel_logs LIMIT 10000" --body-column Body
 `,
   )
@@ -2431,12 +2433,15 @@ Examples:
 program
   .command('upload-sourcemaps')
   .description(
-    'Upload JavaScript source maps to HyperDX for stack trace de-obfuscation',
+    'Upload JavaScript source maps to Couchbase Traces for stack trace de-obfuscation',
   )
-  .option('-k, --serviceKey <string>', 'The HyperDX service account API key')
+  .option(
+    '-k, --serviceKey <string>',
+    'The Couchbase Traces service account API key',
+  )
   .option(
     '-u, --apiUrl [string]',
-    'An optional api url for self-hosted deployments',
+    'The API URL of your deployment (default: http://localhost:8000)',
   )
   .option(
     '-rid, --releaseId [string]',
@@ -2451,11 +2456,7 @@ program
     '-bp, --basePath [string]',
     'An optional base path for the uploaded sourcemaps',
   )
-  .option(
-    '--apiVersion [string]',
-    'The API version to use (v1 for HyperDX V1 Cloud, v2 for latest)',
-    'v1',
-  )
+  .option('--apiVersion [string]', 'The API version to use', 'v1')
   .action(async opts => {
     try {
       await uploadSourcemaps(opts);

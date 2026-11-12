@@ -1,7 +1,7 @@
 # OpenTelemetry Collector Smoke Tests
 
 This directory contains smoke tests for validating the OpenTelemetry Collector
-functionality in HyperDX.
+functionality in Couchbase Traces.
 
 ## Prerequisites
 

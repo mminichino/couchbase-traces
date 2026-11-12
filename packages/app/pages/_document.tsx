@@ -17,28 +17,32 @@ export default function Document() {
         {IS_NOINDEX && <meta name="robots" content="noindex, nofollow" />}
         {/* eslint-disable-next-line @next/next/no-sync-scripts */}
         <script src="/__ENV.js" />
-        <link rel="icon" href="/favicons/clickstack/favicon.ico" sizes="any" />
+        <link
+          rel="icon"
+          href="/favicons/couchbase-traces/favicon.ico"
+          sizes="any"
+        />
         <link
           rel="icon"
           type="image/svg+xml"
-          href="/favicons/clickstack/favicon.svg"
+          href="/favicons/couchbase-traces/favicon.svg"
         />
         <link
           rel="icon"
           type="image/png"
           sizes="32x32"
-          href="/favicons/clickstack/favicon-32x32.png"
+          href="/favicons/couchbase-traces/favicon-32x32.png"
         />
         <link
           rel="icon"
           type="image/png"
           sizes="16x16"
-          href="/favicons/clickstack/favicon-16x16.png"
+          href="/favicons/couchbase-traces/favicon-16x16.png"
         />
         <link
           rel="apple-touch-icon"
           sizes="180x180"
-          href="/favicons/clickstack/apple-touch-icon.png"
+          href="/favicons/couchbase-traces/apple-touch-icon.png"
         />
         <meta name="theme-color" content="#1a1a1a" />
         {!IS_CLICKHOUSE_BUILD && (

@@ -97,7 +97,7 @@ async function runWithClock(advanceMs: number) {
 
 const parse = (result: ToolResult) => JSON.parse(result.content[0].text);
 
-describe('clickstack_describe_source deadline', () => {
+describe('cbt_describe_source deadline', () => {
   beforeEach(() => {
     jest.useFakeTimers();
     jest

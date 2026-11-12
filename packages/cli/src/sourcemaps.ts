@@ -62,7 +62,7 @@ export async function uploadSourcemaps({
     }
   }
 
-  const backend = apiUrl || 'https://api.hyperdx.io';
+  const backend = apiUrl || 'http://localhost:8000';
   const version = apiVersion || 'v1';
 
   const res = await fetch(urlJoin(backend, 'api', version), {
@@ -158,10 +158,12 @@ export async function uploadSourcemaps({
   const succeeded = results.filter(Boolean).length;
   const failed = results.length - succeeded;
   log(
-    `\n[HyperDX] Upload complete: ${succeeded} succeeded, ${failed} failed out of ${results.length} files.`,
+    `\n[Couchbase Traces] Upload complete: ${succeeded} succeeded, ${failed} failed out of ${results.length} files.`,
   );
   if (failed > 0) {
-    logError('[HyperDX] Some files failed to upload. See errors above.');
+    logError(
+      '[Couchbase Traces] Some files failed to upload. See errors above.',
+    );
     throw new Error(`${failed} source map upload(s) failed`);
   }
 }
@@ -232,7 +234,7 @@ async function uploadFile(
   total: number,
 ): Promise<boolean> {
   const fileContent = readFileSync(filePath);
-  const prefix = `[HyperDX] [${index + 1}/${total}]`;
+  const prefix = `[Couchbase Traces] [${index + 1}/${total}]`;
 
   for (let attempt = 1; attempt <= MAX_RETRIES; attempt++) {
     try {

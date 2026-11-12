@@ -14,18 +14,18 @@ import {
 } from '@/utils/instrumentation';
 import logger from '@/utils/logger';
 
-const toolDurationHistogram = getHistogram('hyperdx.mcp.tool.duration_ms', {
+const toolDurationHistogram = getHistogram('cbt.mcp.tool.duration_ms', {
   description: 'Wall-clock duration of an MCP tool invocation.',
   unit: 'ms',
 });
 
-const toolErrorCounter = getCounter('hyperdx.mcp.tool.errors', {
+const toolErrorCounter = getCounter('cbt.mcp.tool.errors', {
   description:
     'Count of MCP tool invocations that returned an error or threw an exception.',
 });
 
 const toolResponseSizeHistogram = getHistogram(
-  'hyperdx.mcp.tool.response.size_bytes',
+  'cbt.mcp.tool.response.size_bytes',
   {
     description:
       'UTF-8 size of the text an MCP tool returns to the model, a proxy for the tokens it costs.',

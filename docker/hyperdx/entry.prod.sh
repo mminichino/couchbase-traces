@@ -9,7 +9,7 @@ export CBT_IMAGE="hyperdx"
 export IS_LOCAL_APP_MODE="REQUIRED_AUTH"
 
 echo ""
-echo "Visit the HyperDX UI at $FRONTEND_URL"
+echo "Visit the Couchbase Traces UI at $FRONTEND_URL"
 echo ""
 
 node /etc/local/refresh-env.js

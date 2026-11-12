@@ -196,13 +196,10 @@ export async function deleteTeamMember(
   return 'deleted';
 }
 
-const memberRestoreFailures = getCounter(
-  'hyperdx.team.member_restore_failures',
-  {
-    description:
-      'Removed team members that could not be put back after the team emptied.',
-  },
-);
+const memberRestoreFailures = getCounter('cbt.team.member_restore_failures', {
+  description:
+    'Removed team members that could not be put back after the team emptied.',
+});
 
 const RESTORE_ATTEMPTS = 3;
 const RESTORE_RETRY_DELAY_MS = 100;

@@ -514,7 +514,7 @@ export const quietSaturationScenario: Scenario = {
           // discoverability is held constant across scenarios so adoption
           // deltas measure inclination, not awareness.
           signalsNote:
-            '- Metrics: a HyperDX metric source is available (gauge, sum, ' +
+            '- Metrics: a Couchbase Traces metric source is available (gauge, sum, ' +
             'histogram, exponential histogram, and summary). Use the metric ' +
             'tools to explore it alongside traces and logs.',
         },

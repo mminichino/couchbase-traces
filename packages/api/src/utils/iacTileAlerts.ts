@@ -7,13 +7,10 @@ import Dashboard from '@/models/dashboard';
 import { getCounter } from '@/utils/instrumentation';
 import logger from '@/utils/logger';
 
-const tileAlertLookupFailures = getCounter(
-  'hyperdx.iac.tile_alert_lookup_failed',
-  {
-    description:
-      "Failures to read the dashboards a team's tile alerts point at, each of which withholds every tile alert from Terraform export.",
-  },
-);
+const tileAlertLookupFailures = getCounter('cbt.iac.tile_alert_lookup_failed', {
+  description:
+    "Failures to read the dashboards a team's tile alerts point at, each of which withholds every tile alert from Terraform export.",
+});
 
 type TileAlertRow = {
   _id: ObjectId;

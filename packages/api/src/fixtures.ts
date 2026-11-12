@@ -26,7 +26,7 @@ import { MetricModel } from '@/utils/logParser';
 import { ExternalDashboardTile } from './utils/zod';
 
 const MOCK_USER = {
-  email: 'fake@deploysentinel.com',
+  email: 'fake@example.com',
   password: 'TacoCat!2#4X',
 };
 

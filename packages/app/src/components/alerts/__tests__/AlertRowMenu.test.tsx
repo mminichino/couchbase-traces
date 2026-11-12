@@ -46,7 +46,7 @@ jest.mock('@/components/alerts/EditInlineAlertModal', () => ({
 const confirm = jest.fn().mockResolvedValue(true);
 jest.mock('@/useConfirm', () => ({ useConfirm: () => confirm }));
 jest.mock('@/brand', () => ({
-  useBrandDisplayName: () => 'ClickStack',
+  useBrandDisplayName: () => 'Couchbase Traces',
 }));
 
 // ObjectId hex: buildImportBlock refuses to emit Terraform for anything else,

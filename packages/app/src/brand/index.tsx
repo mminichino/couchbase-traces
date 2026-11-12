@@ -1,11 +1,11 @@
-import { useMemo } from 'react';
+import { type JSX, useMemo } from 'react';
 
 import { INSTANCE_TITLE_SUFFIX } from '@/config';
 
 import Logomark from './Logomark';
 import Wordmark from './Wordmark';
 
-export const BRAND_DISPLAY_NAME = 'ClickStack';
+export const BRAND_DISPLAY_NAME: string = 'Couchbase Traces';
 
 // Named as a hook so a downstream build can read state here without
 // renaming every call site. This build returns a constant.
@@ -17,7 +17,7 @@ export function useBrandDisplayName(): string {
 /**
  * Page title: brand name plus the configured instance label, with an
  * optional page name prepended.
- * e.g. usePageTitle('Search') => "Search - ClickStack"
+ * e.g. usePageTitle('Search') => "Search - Couchbase Traces"
  */
 // eslint-disable-next-line @eslint-react/no-unnecessary-use-prefix -- see useBrandDisplayName
 export function usePageTitle(page?: string): string {
@@ -28,11 +28,11 @@ export function usePageTitle(page?: string): string {
 // The hooks return elements so callers do not render a component created
 // during render. A downstream build replaces this module to change the
 // name and the marks without editing each call site.
-export function useWordmark() {
+export function useWordmark(): JSX.Element {
   return useMemo(() => <Wordmark name={BRAND_DISPLAY_NAME} />, []);
 }
 
-export function useLogomark(props?: { size?: number }) {
+export function useLogomark(props?: { size?: number }): JSX.Element {
   const size = props?.size;
   return useMemo(() => <Logomark size={size} />, [size]);
 }

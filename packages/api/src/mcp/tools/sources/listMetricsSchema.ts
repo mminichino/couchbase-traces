@@ -32,7 +32,7 @@ export const listMetricsSchema = z.object({
   sourceId: z
     .string()
     .describe(
-      'Source ID. Must reference a metric source — get IDs from clickstack_list_sources.',
+      'Source ID. Must reference a metric source — get IDs from cbt_list_sources.',
     ),
   kind: z
     .enum(DISCOVERABLE_METRIC_KINDS)
@@ -41,7 +41,7 @@ export const listMetricsSchema = z.object({
       'Restrict results to one metric kind. Omit to scan every kind that has ' +
         'a table on the source. ' +
         'NOTE: summary metrics are discovery-only — they cannot be passed to ' +
-        'clickstack_timeseries / clickstack_table; query them with clickstack_sql.',
+        'cbt_timeseries / cbt_table; query them with cbt_sql.',
     ),
   namePattern: z
     .string()

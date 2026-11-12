@@ -205,7 +205,7 @@ export function registerListSources({
   const { teamId } = context;
 
   registerTool(
-    'clickstack_list_sources',
+    'cbt_list_sources',
     {
       title: 'List Sources & Connections',
       annotations: READ_ONLY_TOOL,
@@ -214,14 +214,14 @@ export function registerListSources({
         'Returns source IDs, names, kinds, and connection IDs as a lightweight catalog. ' +
         'Metric sources additionally include metricNamesPreview — a sample of recently-reported ' +
         'metric names per kind — so metrics can be queried immediately.\n\n' +
-        'NEXT STEP: After identifying the source(s) you need, call clickstack_describe_source with the ' +
+        'NEXT STEP: After identifying the source(s) you need, call cbt_describe_source with the ' +
         'sourceId to get the full column schema, attribute keys, and sampled values. ' +
         'This two-step approach avoids fetching expensive schema details for sources you do not need.\n\n' +
-        'NOTE: For most queries, use source IDs with clickstack_timeseries, clickstack_table, ' +
-        'clickstack_search, or clickstack_event_patterns. ' +
-        'Connection IDs are only needed for clickstack_sql (raw ClickHouse SQL).\n\n' +
+        'NOTE: For most queries, use source IDs with cbt_timeseries, cbt_table, ' +
+        'cbt_search, or cbt_event_patterns. ' +
+        'Connection IDs are only needed for cbt_sql (raw ClickHouse SQL).\n\n' +
         'Metric sources may list a "summary" table in metricTables. Summary metrics are ' +
-        'not supported by the builder tools — use clickstack_sql to look at them.',
+        'not supported by the builder tools — use cbt_sql to look at them.',
       inputSchema: z.object({}),
     },
     async () => {
@@ -351,10 +351,10 @@ export function registerListSources({
         ...(metricPreviewEntries.length > 0
           ? {
               metricsUsage:
-                'Metric sources are queried with the same clickstack_timeseries / clickstack_table ' +
+                'Metric sources are queried with the same cbt_timeseries / cbt_table ' +
                 'tools — set metricType + metricName on each select item (no describe call needed ' +
                 `first). metricNamesPreview shows up to ${MAX_PREVIEW_NAMES_PER_KIND} recently-reported ` +
-                'metric names per kind; clickstack_describe_source or clickstack_list_metrics list the ' +
+                'metric names per kind; cbt_describe_source or cbt_list_metrics list the ' +
                 'full catalog. During investigations, metrics corroborate incident onset timing, ' +
                 'quantify impact (request/error counters), and rule resource saturation in or out ' +
                 '(cpu/memory gauges).',
@@ -364,9 +364,9 @@ export function registerListSources({
           ? { promqlUsage: PROMQL_SOURCE_USAGE }
           : {}),
         nextStep:
-          'Call clickstack_describe_source with a sourceId above to get the full column schema, ' +
+          'Call cbt_describe_source with a sourceId above to get the full column schema, ' +
           'attribute keys, and sampled low-cardinality values before writing queries. ' +
-          'connectionId is only needed for clickstack_sql.',
+          'connectionId is only needed for cbt_sql.',
       };
       return {
         content: [

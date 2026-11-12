@@ -130,9 +130,9 @@ jest.mock('@/hooks/useExplainQuery', () => ({
 }));
 
 jest.mock('@/brand', () => ({
-  useBrandDisplayName: () => 'ClickStack',
+  useBrandDisplayName: () => 'Couchbase Traces',
   usePageTitle: (page?: string) =>
-    page ? `${page} - ClickStack` : 'ClickStack',
+    page ? `${page} - Couchbase Traces` : 'Couchbase Traces',
 }));
 
 jest.mock('../hooks/useMetadata', () => ({

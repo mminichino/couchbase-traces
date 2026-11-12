@@ -63,7 +63,7 @@ function tableQueryErrorResult(e: unknown, prefix: string) {
       "The ClickHouse user on this connection lacks the privileges needed. Ask the connection's administrator to grant them, or use another connection.";
   } else if (/UNKNOWN_(TABLE|DATABASE)|does not exist/i.test(message)) {
     suffix =
-      'Call clickstack_describe_table with only database to list the tables it contains.';
+      'Call cbt_describe_table with only database to list the tables it contains.';
   }
   return clickHouseErrorResult(e, { prefix, suffix });
 }
@@ -119,7 +119,7 @@ async function listTables(
     ...(nextCursor && { nextCursor }),
     nextSteps: {
       describe:
-        'Call clickstack_describe_table again with table set to get its columns, keys, and indices.',
+        'Call cbt_describe_table again with table set to get its columns, keys, and indices.',
     },
   });
 }
@@ -186,7 +186,7 @@ async function findSourcesForTable(args: {
     // The schema is still worth returning without the source hint.
     logger.warn(
       { err: e, teamId: args.teamId, connectionId: args.connectionId },
-      'clickstack_describe_table source lookup failed',
+      'cbt_describe_table source lookup failed',
     );
     return [];
   }
@@ -216,7 +216,7 @@ async function describeTable(
   if (!details) {
     return mcpUserError(
       `Table "${database}.${table}" not found or not visible to this connection's ClickHouse user. ` +
-        'Call clickstack_describe_table with only database to list its tables.',
+        'Call cbt_describe_table with only database to list its tables.',
     );
   }
 
@@ -255,14 +255,14 @@ async function describeTable(
       ? {
           describeSource:
             `This table backs ${sources.length === 1 ? 'a source' : 'sources'}. ` +
-            `Call clickstack_describe_source with sourceId "${sources[0].id}" for attribute keys and sampled values, ` +
-            'then query it with the builder tools (clickstack_table, clickstack_timeseries, clickstack_search) rather than clickstack_sql.',
+            `Call cbt_describe_source with sourceId "${sources[0].id}" for attribute keys and sampled values, ` +
+            'then query it with the builder tools (cbt_table, cbt_timeseries, cbt_search) rather than cbt_sql.',
         }
       : {
           query:
-            `Query it with clickstack_sql using connectionId "${ctx.connectionId}" and ` +
+            `Query it with cbt_sql using connectionId "${ctx.connectionId}" and ` +
             `FROM ${qualifiedName}. ` +
-            'To query it with the builder tools, register it as a source with clickstack_save_source.',
+            'To query it with the builder tools, register it as a source with cbt_save_source.',
         };
 
   const rest = {
@@ -302,14 +302,14 @@ export function registerDescribeTable({
   const teamId = context.teamId.toString();
 
   registerTool(
-    'clickstack_describe_table',
+    'cbt_describe_table',
     {
       title: 'Describe ClickHouse Table',
       annotations: READ_ONLY_TOOL,
       description:
         'Inspect ClickHouse tables that are NOT registered as sources. For a source, ' +
-        'call clickstack_describe_source instead.\n\n' +
-        'Use this instead of querying system.tables / system.columns with clickstack_sql.\n\n' +
+        'call cbt_describe_source instead.\n\n' +
+        'Use this instead of querying system.tables / system.columns with cbt_sql.\n\n' +
         'With table set, returns:\n' +
         '- table: engine, sorting key, primary key, partition key, approximate total rows and bytes\n' +
         '- columns[]: name, type, default kind/expression, comment, and whether it is in the sorting/primary key\n' +
@@ -342,7 +342,7 @@ export function registerDescribeTable({
       );
       if (!connection) {
         return mcpUserError(
-          `Connection "${input.connectionId}" not found. Call clickstack_list_sources to see available connections.`,
+          `Connection "${input.connectionId}" not found. Call cbt_list_sources to see available connections.`,
         );
       }
 
@@ -370,10 +370,10 @@ export function registerDescribeTable({
 
       logger.warn(
         { teamId, connectionId: input.connectionId, database: input.database },
-        'clickstack_describe_table timed out',
+        'cbt_describe_table timed out',
       );
       return mcpServerError(
-        'clickstack_describe_table timed out. The ClickHouse server may be under load; try again.',
+        'cbt_describe_table timed out. The ClickHouse server may be under load; try again.',
       );
     },
   );

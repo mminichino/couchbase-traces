@@ -22,7 +22,7 @@ export const mcpVariableValuesParam = z
         .string()
         .describe(
           "Variable name, as declared by a filter's variableName. Get the " +
-            'list from clickstack_get_dashboard.',
+            'list from cbt_get_dashboard.',
         ),
       values: z
         .array(z.string())
@@ -78,7 +78,7 @@ export function resolveDashboardVariables(
         `This dashboard declares no variable(s) named ${unknownVariableValues.join(', ')}. ` +
         `Available variables: ${available}. A variable exists only when a ` +
         'dashboard filter sets isVariableEnabled; check the filters returned ' +
-        'by clickstack_get_dashboard.',
+        'by cbt_get_dashboard.',
     };
   }
 
@@ -95,7 +95,7 @@ export function resolveDashboardVariables(
       `Variable "${name}" belongs to a STATIC_LIST filter and only accepts its declared ` +
         `options; value(s) ${invalid.map(value => `"${value}"`).join(', ')} are not among them. ` +
         `Declared options: ${formatOptionsPreview(options)}. See the filter's options via ` +
-        'clickstack_get_dashboard, or change them with clickstack_save_dashboard.',
+        'cbt_get_dashboard, or change them with cbt_save_dashboard.',
     ];
   });
   if (optionErrors.length > 0) {

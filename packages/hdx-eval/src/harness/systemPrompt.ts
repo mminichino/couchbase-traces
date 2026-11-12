@@ -17,14 +17,14 @@ import type { PromptVariant } from './types';
  * describe_source is unaffected (no time filter) and remains reliable.
  */
 export const SAMPLING_CAVEAT_BLOCK = `
-DATA DISCOVERY CAVEAT: clickstack_describe_source's sampled value fields
+DATA DISCOVERY CAVEAT: cbt_describe_source's sampled value fields
 (lowCardinalityValues, mapAttributeValues, mapAttributeKeys) are sampled
 over the last 24h of WALL-CLOCK time, NOT the FIXED CURRENT TIME above, so
 they may be EMPTY or incomplete for this data. Do NOT treat an empty or
 missing sample as proof that a value/service/attribute does not exist.
 The columns/schema from describe_source ARE reliable. To discover the
 actual values, services, and attribute keys present, run an anchored
-clickstack_table (e.g. group by ServiceName) or clickstack_search over the
+cbt_table (e.g. group by ServiceName) or cbt_search over the
 FIXED CURRENT TIME window rather than relying on describe_source samples.
 `;
 

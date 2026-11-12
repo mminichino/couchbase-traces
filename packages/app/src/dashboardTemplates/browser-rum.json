@@ -1,7 +1,7 @@
 {
   "version": "0.1.0",
   "name": "Browser RUM",
-  "description": "Core Web Vitals, page-load percentiles, traffic breakdowns, and error tracking for browser sessions instrumented with the HyperDX Browser SDK (or any OpenTelemetry RUM instrumentation emitting rum.sessionId).",
+  "description": "Core Web Vitals, page-load percentiles, traffic breakdowns, and error tracking for browser sessions instrumented with the Couchbase Traces Browser SDK (or any OpenTelemetry RUM instrumentation emitting rum.sessionId).",
   "tags": ["Browser / RUM"],
   "filters": [
     {
@@ -1216,7 +1216,7 @@
         "select": [],
         "where": "",
         "whereLanguage": "lucene",
-        "markdown": "🧠 Per-page **JS heap** usage from the browser's `performance.memory` API (bytes). **Chromium-only** — Firefox and Safari don't expose per-page memory, so these tiles reflect Chromium visitors and require a HyperDX Browser SDK build that emits `performance.memory.*` on `documentLoad` spans."
+        "markdown": "🧠 Per-page **JS heap** usage from the browser's `performance.memory` API (bytes). **Chromium-only** — Firefox and Safari don't expose per-page memory, so these tiles reflect Chromium visitors and require a Couchbase Traces Browser SDK build that emits `performance.memory.*` on `documentLoad` spans."
       }
     },
     {

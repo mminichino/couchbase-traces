@@ -474,8 +474,12 @@
       "entryPoints": [
         "app_page:/careers"
       ],
-      "status": "not_started",
-      "decision": null
+      "status": "needs_decision",
+      "decision": {
+        "note": "ClickHouse recruiting page: lists ClickHouse jobs from boards-api.greenhouse.io and ClickStack commits from api.github.com. Kept unchanged until the user decides whether to remove it.",
+        "signedOffBy": null,
+        "date": null
+      }
     },
     {
       "id": "external-alerts",
@@ -634,11 +638,11 @@
       "visibility": "api",
       "description": "Let an AI client list, create and delete alerts and webhooks.",
       "entryPoints": [
-        "mcp_tool:clickstack_delete_webhook",
-        "mcp_tool:clickstack_get_alert",
-        "mcp_tool:clickstack_get_webhook",
-        "mcp_tool:clickstack_save_alert",
-        "mcp_tool:clickstack_save_webhook"
+        "mcp_tool:cbt_delete_webhook",
+        "mcp_tool:cbt_get_alert",
+        "mcp_tool:cbt_get_webhook",
+        "mcp_tool:cbt_save_alert",
+        "mcp_tool:cbt_save_webhook"
       ],
       "status": "not_started",
       "decision": null
@@ -650,14 +654,14 @@
       "visibility": "api",
       "description": "Let an AI client list, create, update and delete dashboards.",
       "entryPoints": [
-        "mcp_tool:clickstack_delete_dashboard",
-        "mcp_tool:clickstack_get_dashboard",
-        "mcp_tool:clickstack_get_dashboard_tile",
-        "mcp_tool:clickstack_patch_dashboard",
-        "mcp_tool:clickstack_query_tile",
-        "mcp_tool:clickstack_query_tiles",
-        "mcp_tool:clickstack_save_dashboard",
-        "mcp_tool:clickstack_search_dashboards"
+        "mcp_tool:cbt_delete_dashboard",
+        "mcp_tool:cbt_get_dashboard",
+        "mcp_tool:cbt_get_dashboard_tile",
+        "mcp_tool:cbt_patch_dashboard",
+        "mcp_tool:cbt_query_tile",
+        "mcp_tool:cbt_query_tiles",
+        "mcp_tool:cbt_save_dashboard",
+        "mcp_tool:cbt_search_dashboards"
       ],
       "status": "not_started",
       "decision": null
@@ -669,14 +673,14 @@
       "visibility": "api",
       "description": "Let an AI client run searches and chart queries and find emerging signals.",
       "entryPoints": [
-        "mcp_tool:clickstack_emerging_signals",
-        "mcp_tool:clickstack_event_deltas",
-        "mcp_tool:clickstack_event_patterns",
-        "mcp_tool:clickstack_promql",
-        "mcp_tool:clickstack_search",
-        "mcp_tool:clickstack_sql",
-        "mcp_tool:clickstack_table",
-        "mcp_tool:clickstack_timeseries"
+        "mcp_tool:cbt_emerging_signals",
+        "mcp_tool:cbt_event_deltas",
+        "mcp_tool:cbt_event_patterns",
+        "mcp_tool:cbt_promql",
+        "mcp_tool:cbt_search",
+        "mcp_tool:cbt_sql",
+        "mcp_tool:cbt_table",
+        "mcp_tool:cbt_timeseries"
       ],
       "status": "not_started",
       "decision": null
@@ -688,8 +692,8 @@
       "visibility": "api",
       "description": "Let an AI client read saved searches.",
       "entryPoints": [
-        "mcp_tool:clickstack_get_saved_search",
-        "mcp_tool:clickstack_save_saved_search"
+        "mcp_tool:cbt_get_saved_search",
+        "mcp_tool:cbt_save_saved_search"
       ],
       "status": "not_started",
       "decision": null
@@ -701,13 +705,13 @@
       "visibility": "api",
       "description": "Let an AI client list, create and delete data sources.",
       "entryPoints": [
-        "mcp_tool:clickstack_delete_source",
-        "mcp_tool:clickstack_describe_metric",
-        "mcp_tool:clickstack_describe_source",
-        "mcp_tool:clickstack_describe_table",
-        "mcp_tool:clickstack_list_metrics",
-        "mcp_tool:clickstack_list_sources",
-        "mcp_tool:clickstack_save_source"
+        "mcp_tool:cbt_delete_source",
+        "mcp_tool:cbt_describe_metric",
+        "mcp_tool:cbt_describe_source",
+        "mcp_tool:cbt_describe_table",
+        "mcp_tool:cbt_list_metrics",
+        "mcp_tool:cbt_list_sources",
+        "mcp_tool:cbt_save_source"
       ],
       "status": "not_started",
       "decision": null
@@ -719,8 +723,8 @@
       "visibility": "api",
       "description": "Let an AI client find the most time-consuming trace operations.",
       "entryPoints": [
-        "mcp_tool:clickstack_trace_top_time_consuming_operations",
-        "mcp_tool:clickstack_trace_waterfall"
+        "mcp_tool:cbt_trace_top_time_consuming_operations",
+        "mcp_tool:cbt_trace_waterfall"
       ],
       "status": "not_started",
       "decision": null

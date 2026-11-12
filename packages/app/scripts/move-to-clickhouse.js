@@ -6,7 +6,7 @@ function moveToClickHouse() {
   const outGzippedDir = path.join(__dirname, '../out-gzipped');
   const clickStackDir = path.join(
     __dirname,
-    '../../../../ClickHouse/programs/server/clickstack',
+    '../../../../ClickHouse/programs/server/couchbase-traces',
   );
 
   if (!fs.existsSync(outGzippedDir)) {
@@ -28,14 +28,14 @@ function moveToClickHouse() {
 
   // Remove existing clickstack directory if it exists
   if (fs.existsSync(clickStackDir)) {
-    console.log('Removing existing clickstack directory...');
+    console.log('Removing existing couchbase-traces directory...');
     fs.rmSync(clickStackDir, { recursive: true, force: true });
   }
 
   // Copy out-gzipped to clickstack
   console.log(`Moving out-gzipped to ${clickStackDir}...`);
   fs.cpSync(outGzippedDir, clickStackDir, { recursive: true });
-  console.log('✓ Successfully moved build to ClickHouse clickstack directory');
+  console.log('✓ Successfully moved build to ClickHouse couchbase-traces directory');
 }
 
 moveToClickHouse();

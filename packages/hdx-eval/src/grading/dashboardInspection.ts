@@ -72,11 +72,9 @@ export type DashboardInspectionResult = {
 /** Matches ObjectIds (24 hex), UUIDs, and other alphanumeric IDs. */
 const ID_REGEX = /"id"\s*:\s*"([a-f0-9-]{24,36})"/;
 
-const SAVE_DASHBOARD_PATTERN =
-  /clickstack_save_dashboard|hyperdx_save_dashboard/;
-const PATCH_DASHBOARD_PATTERN =
-  /clickstack_patch_dashboard|hyperdx_patch_dashboard/;
-const QUERY_TILE_PATTERN = /clickstack_query_tile|hyperdx_query_tile/;
+const SAVE_DASHBOARD_PATTERN = /cbt_save_dashboard|cbt_save_dashboard/;
+const PATCH_DASHBOARD_PATTERN = /cbt_patch_dashboard|cbt_patch_dashboard/;
+const QUERY_TILE_PATTERN = /cbt_query_tile|cbt_query_tile/;
 
 function extractDashboardIds(toolCalls: ToolCallRecord[]): string[] {
   const ids = new Set<string>();

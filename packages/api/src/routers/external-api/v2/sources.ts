@@ -189,11 +189,11 @@ function formatExternalSource(source: SourceDocument) {
  *           example: otel_metrics_sum
  *         summary:
  *           type: string
- *           description: Table containing summary metrics data. Note - not yet fully supported by HyperDX
+ *           description: Table containing summary metrics data. Note - not yet fully supported by Couchbase Traces
  *           example: otel_metrics_summary
  *         exponential histogram:
  *           type: string
- *           description: Table containing exponential histogram metrics data. Note - not yet fully supported by HyperDX
+ *           description: Table containing exponential histogram metrics data. Note - not yet fully supported by Couchbase Traces
  *           example: otel_metrics_exponential_histogram
  *     HighlightedAttributeExpression:
  *       type: object
@@ -263,7 +263,7 @@ function formatExternalSource(source: SourceDocument) {
  *         minDate:
  *           type: string
  *           format: date-time
- *           description: (Optional) The earliest date and time for which the materialized view contains data. If not provided, then HyperDX will assume that the materialized view contains data for all dates for which the source table contains data.
+ *           description: (Optional) The earliest date and time for which the materialized view contains data. If not provided, then Couchbase Traces will assume that the materialized view contains data for all dates for which the source table contains data.
  *           nullable: true
  *           example: "2025-01-01T00:00:00Z"
  *         timestampColumn:
@@ -381,12 +381,12 @@ function formatExternalSource(source: SourceDocument) {
  *           example: Timestamp DESC
  *         metricSourceId:
  *           type: string
- *           description: HyperDX Source for metrics associated with logs. Optional
+ *           description: Couchbase Traces Source for metrics associated with logs. Optional
  *           nullable: true
  *           example: 507f1f77bcf86cd799439013
  *         traceSourceId:
  *           type: string
- *           description: HyperDX Source for traces associated with logs. Optional
+ *           description: Couchbase Traces Source for traces associated with logs. Optional
  *           nullable: true
  *           example: 507f1f77bcf86cd799439014
  *         traceIdExpression:
@@ -544,17 +544,17 @@ function formatExternalSource(source: SourceDocument) {
  *           example: SpanKind
  *         logSourceId:
  *           type: string
- *           description: HyperDX Source for logs associated with traces. Optional
+ *           description: Couchbase Traces Source for logs associated with traces. Optional
  *           nullable: true
  *           example: 507f1f77bcf86cd799439011
  *         sessionSourceId:
  *           type: string
- *           description: HyperDX Source for sessions associated with traces. Optional
+ *           description: Couchbase Traces Source for sessions associated with traces. Optional
  *           nullable: true
  *           example: 507f1f77bcf86cd799439031
  *         metricSourceId:
  *           type: string
- *           description: HyperDX Source for metrics associated with traces. Optional
+ *           description: Couchbase Traces Source for metrics associated with traces. Optional
  *           nullable: true
  *           example: 507f1f77bcf86cd799439041
  *         statusCodeExpression:
@@ -720,7 +720,7 @@ function formatExternalSource(source: SourceDocument) {
  *           example: ResourceAttributes
  *         logSourceId:
  *           type: string
- *           description: HyperDX Source for logs associated with metrics. Optional
+ *           description: Couchbase Traces Source for logs associated with metrics. Optional
  *           nullable: true
  *           example: 507f1f77bcf86cd799439011
  *         minAutoGranularity:
@@ -781,7 +781,7 @@ function formatExternalSource(source: SourceDocument) {
  *           example: TimestampTime
  *         traceSourceId:
  *           type: string
- *           description: HyperDX Source for traces associated with sessions.
+ *           description: Couchbase Traces Source for traces associated with sessions.
  *           example: 507f1f77bcf86cd799439021
  *         resourceAttributesExpression:
  *           type: string

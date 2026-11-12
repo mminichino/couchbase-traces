@@ -20,7 +20,7 @@ import { WhatsNewHighlightRow } from './WhatsNewHighlightRow';
 //
 // Kept in sync with ALLOWED_LINK_HOSTS in .github/scripts/release-notes.mjs, and
 // pinned there by a test.
-const ALLOWED_LINK_HOSTS = new Set(['github.com', 'docs.hyperdx.io']);
+const ALLOWED_LINK_HOSTS = new Set(['github.com']);
 
 /**
  * Allowlist link targets in the release summary.

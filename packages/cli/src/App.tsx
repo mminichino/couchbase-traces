@@ -86,7 +86,7 @@ export default function App({ appUrl, query, sourceName, follow }: AppProps) {
 
       if (queryableSources.length === 0) {
         setError(
-          'No log or trace sources found. Configure a source in HyperDX first.',
+          'No log or trace sources found. Configure a source in Couchbase Traces first.',
         );
         return;
       }
@@ -223,7 +223,7 @@ export default function App({ appUrl, query, sourceName, follow }: AppProps) {
         <Box flexDirection="column">
           <Box flexDirection="column" marginBottom={1}>
             <Text color="#00c28a" bold>
-              HyperDX TUI
+              Couchbase Traces TUI
             </Text>
             <Text dimColor>Search and tail events from the terminal</Text>
           </Box>

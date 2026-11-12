@@ -19,7 +19,7 @@ export const DEFAULT_WINDOW_MS = ms('1h');
 
 export const serviceHealthSchema = z.object({
   sourceId: sourceIdSchema.describe(
-    'The "id" of a kind="trace" source from clickstack_list_sources (24-char ' +
+    'The "id" of a kind="trace" source from cbt_list_sources (24-char ' +
       'hex, e.g. "6a4c18f1d64c5f47bb275fbe"). Not the source name or table.',
   ),
   startTime: z

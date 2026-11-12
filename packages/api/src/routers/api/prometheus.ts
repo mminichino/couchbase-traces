@@ -40,14 +40,14 @@ const router = express.Router();
 type PrometheusBackend = 'prometheus' | 'clickhouse' | 'unknown';
 
 const prometheusQueryDuration = getHistogram(
-  'hyperdx.prometheus.query.duration_ms',
+  'cbt.prometheus.query.duration_ms',
   {
     description:
       'Duration of a Prometheus-compatible proxy request, labeled by endpoint and backend.',
     unit: 'ms',
   },
 );
-const prometheusQueryErrors = getCounter('hyperdx.prometheus.query_errors', {
+const prometheusQueryErrors = getCounter('cbt.prometheus.query_errors', {
   description:
     'Count of Prometheus-compatible proxy requests that failed, labeled by endpoint and backend.',
 });

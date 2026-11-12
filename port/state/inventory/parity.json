@@ -3948,7 +3948,6 @@
         {
           "path": "packages/app/src/components/AppNav/AppNav.components.tsx",
           "symbols": [
-            "AppNavCloudBanner",
             "AppNavContext",
             "AppNavHelpMenu",
             "AppNavLink",
@@ -5273,7 +5272,7 @@
       "name": "Careers page",
       "area": "internal",
       "visibility": "internal",
-      "status": "not_started",
+      "status": "needs_decision",
       "entryPoints": [
         {
           "id": "app_page:/careers",
@@ -5281,12 +5280,212 @@
           "file": "packages/app/pages/careers.tsx"
         }
       ],
-      "closureSize": 7,
+      "closureSize": 30,
       "exclusiveFiles": [
         "packages/app/pages/careers.tsx",
         "packages/app/src/CareersPage.tsx"
       ],
-      "dataLayer": [],
+      "dataLayer": [
+        {
+          "path": "packages/common-utils/src/clickhouse/attribution.ts",
+          "symbols": [
+            "QUERY_ATTRIBUTION_HEADER",
+            "QUERY_ATTRIBUTION_VERSION",
+            "QUERY_SURFACES",
+            "QueryAttribution",
+            "QuerySurface",
+            "buildLogComment",
+            "buildQueryId",
+            "mergeQueryAttribution",
+            "parseLogComment"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/clickhouse/index.ts",
+          "symbols": [
+            "BaseClickhouseClient",
+            "ChSql",
+            "ColumnMeta",
+            "JSDataType",
+            "Row",
+            "chSql",
+            "concatChSql",
+            "convertCHDataTypeToJSType",
+            "convertCHTypeToLuceneSearchType",
+            "extractColumnReferencesFromKey",
+            "extractInnerCHArrayJSType",
+            "filterColumnMetaByType",
+            "isAccessDeniedError",
+            "isCHFixedStringType",
+            "isCHIntegerType",
+            "streamToAsyncIterator",
+            "tableExpr",
+            "wrapChSqlIfNotEmpty"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/core/clickhouseVersion.ts",
+          "symbols": [
+            "ClickHouseVersion",
+            "isClickHouseVersionAtLeast",
+            "parseClickHouseVersion",
+            "supportsDirectReadMap",
+            "supportsMergeTreeIndex",
+            "supportsMergeTreeTextIndex"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/core/histogram.ts",
+          "symbols": [
+            "GROUP_ALIAS",
+            "translateExponentialHistogram",
+            "translateHistogram"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/core/materializedViews.ts",
+          "symbols": [
+            "optimizeFacetedKeyValuesConfig",
+            "optimizeGetKeyValuesCalls",
+            "renderStartOfBucketExpr"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/core/metadata.ts",
+          "symbols": [
+            "Metadata",
+            "SkipIndexMetadata",
+            "TableConnection",
+            "TableMetadata",
+            "getMetadata",
+            "parseKeyPath",
+            "quoteIdentifierIfNeeded",
+            "unquoteIdentifier"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/core/renderChartConfig.ts",
+          "symbols": [
+            "FIXED_TIME_BUCKET_EXPR_ALIAS",
+            "renderChartConfig",
+            "renderWhereExpressionStr",
+            "setChartSelectsAlias",
+            "timeFilterExpr"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/filters.ts",
+          "symbols": [
+            "FilterState",
+            "filterStateToPredicate",
+            "isAdhocFilter",
+            "isQueryExpressionFilter",
+            "isStaticListFilter",
+            "serializeFilterState"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/macros.ts",
+          "symbols": [
+            "MacroName",
+            "MacroSuggestion",
+            "getSourceDependentMacrosUsed",
+            "getSourceTableMacroArgCounts",
+            "hasMacro",
+            "isMissingFiltersMacro",
+            "replaceMacros"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/queryParser.ts",
+          "symbols": [
+            "CustomSchemaSQLSerializerV2",
+            "IMPLICIT_FIELD",
+            "SearchQueryBuilder",
+            "TextIndexInfo",
+            "TextIndexInfoLookup",
+            "buildTextIndexInfoLookup",
+            "decodeSpecialTokensToSource",
+            "encodeSpecialTokens",
+            "parse",
+            "skipIndexMatches"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/types.ts",
+          "symbols": [
+            "AdhocDashboardFilter",
+            "AdhocFilterCondition",
+            "AdhocFilterOperator",
+            "AdhocFilterSourceType",
+            "AdhocFilterValue",
+            "AggregateFunction",
+            "AggregateFunctionWithCombinators",
+            "BroadcastFilter",
+            "BuilderChartConfig",
+            "BuilderChartConfigWithDateRange",
+            "BuilderChartConfigWithOptDateRange",
+            "BuilderChartConfigWithOptTimestamp",
+            "BuilderSavedChartConfig",
+            "ChSqlSchema",
+            "ChartConfig",
+            "ChartConfigSchema",
+            "ChartConfigWithOptDateRange",
+            "ChartVariable",
+            "ConditionFilter",
+            "Connection",
+            "CteChartConfig",
+            "DASHBOARD_VARIABLE_NAME_MAX_LENGTH",
+            "DASHBOARD_VARIABLE_NAME_PATTERN",
+            "DASHBOARD_VARIABLE_NAME_PATTERN_ANCHORED",
+            "DashboardFilter",
+            "DashboardFilterSchema",
+            "DashboardFilterValue",
+            "DashboardSchema",
+            "DashboardTemplateSchema",
+            "DashboardWithoutId",
+            "DateRange",
+            "DisplayType",
+            "Filter",
+            "HeatmapMode",
+            "InternalAggregateFunction",
+            "InternalAggregateFunctionSchema",
+            "MaterializedViewConfiguration",
+            "MetadataMaterializedViews",
+            "MetricsDataType",
+            "MetricsDataTypeSchema",
+            "PERCENTILE_AGG_FN_LEVELS",
+            "PROMQL_ADHOC_FILTER_OPERATORS",
+            "PercentileAggregateFunctionSchema",
+            "PromqlChartConfig",
+            "PromqlConditionFilter",
+            "PromqlExpressionList",
+            "PromqlQueryType",
+            "PromqlReducer",
+            "PromqlSavedChartConfig",
+            "PromqlSeries",
+            "QuerySettings",
+            "RawSqlChartConfig",
+            "RawSqlSavedChartConfig",
+            "SQLInterval",
+            "SQL_ADHOC_FILTER_OPERATORS",
+            "SavedChartConfig",
+            "SearchCondition",
+            "SearchConditionLanguage",
+            "SelectList",
+            "SortSpecificationList",
+            "SourceKind",
+            "SqlAstFilter",
+            "TLogSource",
+            "TSource",
+            "TTraceSource",
+            "TileTemplateSchema",
+            "UseTextIndex",
+            "isLogSource",
+            "isTraceSource"
+          ]
+        }
+      ],
       "tests": {
         "unit": [],
         "int": [],
@@ -5338,7 +5537,6 @@
         {
           "path": "packages/app/src/components/AppNav/AppNav.components.tsx",
           "symbols": [
-            "AppNavCloudBanner",
             "AppNavContext",
             "AppNavHelpMenu",
             "AppNavLink",
@@ -5505,12 +5703,6 @@
           "path": "packages/app/src/components/NetworkPropertyPanel.tsx",
           "symbols": [
             "NetworkPropertySubpanel"
-          ]
-        },
-        {
-          "path": "packages/app/src/components/OnboardingModal.tsx",
-          "symbols": [
-            "default"
           ]
         },
         {
@@ -6088,7 +6280,6 @@
         {
           "path": "packages/app/src/components/AppNav/AppNav.components.tsx",
           "symbols": [
-            "AppNavCloudBanner",
             "AppNavContext",
             "AppNavHelpMenu",
             "AppNavLink",
@@ -6194,12 +6385,6 @@
           "path": "packages/app/src/components/NetworkPropertyPanel.tsx",
           "symbols": [
             "NetworkPropertySubpanel"
-          ]
-        },
-        {
-          "path": "packages/app/src/components/OnboardingModal.tsx",
-          "symbols": [
-            "default"
           ]
         },
         {
@@ -6792,7 +6977,6 @@
         {
           "path": "packages/app/src/components/AppNav/AppNav.components.tsx",
           "symbols": [
-            "AppNavCloudBanner",
             "AppNavContext",
             "AppNavHelpMenu",
             "AppNavLink",
@@ -6990,12 +7174,6 @@
           "path": "packages/app/src/components/NetworkPropertyPanel.tsx",
           "symbols": [
             "NetworkPropertySubpanel"
-          ]
-        },
-        {
-          "path": "packages/app/src/components/OnboardingModal.tsx",
-          "symbols": [
-            "default"
           ]
         },
         {
@@ -7646,7 +7824,7 @@
           "file": "packages/app/pages/index.tsx"
         }
       ],
-      "closureSize": 34,
+      "closureSize": 37,
       "exclusiveFiles": [
         "packages/app/pages/index.tsx",
         "packages/app/src/AuthLoadingBlocker.tsx",
@@ -7935,7 +8113,7 @@
           "file": "packages/app/pages/join-team.tsx"
         }
       ],
-      "closureSize": 58,
+      "closureSize": 61,
       "exclusiveFiles": [
         "packages/app/pages/join-team.tsx",
         "packages/app/src/JoinTeamPage.tsx"
@@ -8281,7 +8459,6 @@
         {
           "path": "packages/app/src/components/AppNav/AppNav.components.tsx",
           "symbols": [
-            "AppNavCloudBanner",
             "AppNavContext",
             "AppNavHelpMenu",
             "AppNavLink",
@@ -8377,12 +8554,6 @@
           "path": "packages/app/src/components/NetworkPropertyPanel.tsx",
           "symbols": [
             "NetworkPropertySubpanel"
-          ]
-        },
-        {
-          "path": "packages/app/src/components/OnboardingModal.tsx",
-          "symbols": [
-            "default"
           ]
         },
         {
@@ -8922,7 +9093,6 @@
         {
           "path": "packages/app/src/components/AppNav/AppNav.components.tsx",
           "symbols": [
-            "AppNavCloudBanner",
             "AppNavContext",
             "AppNavHelpMenu",
             "AppNavLink",
@@ -9048,12 +9218,6 @@
           "path": "packages/app/src/components/NetworkPropertyPanel.tsx",
           "symbols": [
             "NetworkPropertySubpanel"
-          ]
-        },
-        {
-          "path": "packages/app/src/components/OnboardingModal.tsx",
-          "symbols": [
-            "default"
           ]
         },
         {
@@ -9642,7 +9806,7 @@
           "file": "packages/app/pages/login/index.tsx"
         }
       ],
-      "closureSize": 65,
+      "closureSize": 68,
       "exclusiveFiles": [
         "packages/app/pages/login/index.tsx"
       ],
@@ -9992,7 +10156,7 @@
           "file": "packages/app/pages/register.tsx"
         }
       ],
-      "closureSize": 65,
+      "closureSize": 68,
       "exclusiveFiles": [
         "packages/app/pages/register.tsx"
       ],
@@ -10400,7 +10564,6 @@
         {
           "path": "packages/app/src/components/AppNav/AppNav.components.tsx",
           "symbols": [
-            "AppNavCloudBanner",
             "AppNavContext",
             "AppNavHelpMenu",
             "AppNavLink",
@@ -10539,12 +10702,6 @@
           "path": "packages/app/src/components/NetworkPropertyPanel.tsx",
           "symbols": [
             "NetworkPropertySubpanel"
-          ]
-        },
-        {
-          "path": "packages/app/src/components/OnboardingModal.tsx",
-          "symbols": [
-            "default"
           ]
         },
         {
@@ -11095,7 +11252,6 @@
         {
           "path": "packages/app/src/components/AppNav/AppNav.components.tsx",
           "symbols": [
-            "AppNavCloudBanner",
             "AppNavContext",
             "AppNavHelpMenu",
             "AppNavLink",
@@ -11130,12 +11286,6 @@
           "path": "packages/app/src/components/AppNav/WhatsNewHighlightRow.tsx",
           "symbols": [
             "WhatsNewHighlightRow"
-          ]
-        },
-        {
-          "path": "packages/app/src/components/OnboardingModal.tsx",
-          "symbols": [
-            "default"
           ]
         },
         {
@@ -11571,7 +11721,6 @@
         {
           "path": "packages/app/src/components/AppNav/AppNav.components.tsx",
           "symbols": [
-            "AppNavCloudBanner",
             "AppNavContext",
             "AppNavHelpMenu",
             "AppNavLink",
@@ -11677,12 +11826,6 @@
           "path": "packages/app/src/components/NetworkPropertyPanel.tsx",
           "symbols": [
             "NetworkPropertySubpanel"
-          ]
-        },
-        {
-          "path": "packages/app/src/components/OnboardingModal.tsx",
-          "symbols": [
-            "default"
           ]
         },
         {
@@ -12227,7 +12370,6 @@
         {
           "path": "packages/app/src/components/AppNav/AppNav.components.tsx",
           "symbols": [
-            "AppNavCloudBanner",
             "AppNavContext",
             "AppNavHelpMenu",
             "AppNavLink",
@@ -12321,12 +12463,6 @@
           "path": "packages/app/src/components/NetworkPropertyPanel.tsx",
           "symbols": [
             "NetworkPropertySubpanel"
-          ]
-        },
-        {
-          "path": "packages/app/src/components/OnboardingModal.tsx",
-          "symbols": [
-            "default"
           ]
         },
         {
@@ -12904,7 +13040,6 @@
         {
           "path": "packages/app/src/components/AppNav/AppNav.components.tsx",
           "symbols": [
-            "AppNavCloudBanner",
             "AppNavContext",
             "AppNavHelpMenu",
             "AppNavLink",
@@ -13470,7 +13605,6 @@
         {
           "path": "packages/app/src/components/AppNav/AppNav.components.tsx",
           "symbols": [
-            "AppNavCloudBanner",
             "AppNavContext",
             "AppNavHelpMenu",
             "AppNavLink",
@@ -17448,7 +17582,7 @@
           "file": "packages/otel-collector/builder-config.yaml"
         }
       ],
-      "closureSize": 29,
+      "closureSize": 28,
       "exclusiveFiles": [
         "docker/otel-collector/Dockerfile",
         "docker/otel-collector/config.standalone.auth.yaml",
@@ -17471,7 +17605,6 @@
         "docker/otel-collector/schema/seed/00007_otel_traces_rollups.sql",
         "docker/otel-collector/schema/seed/00008_otel_metrics_timeseries.sql",
         "docker/otel-collector/supervisor_docker.yaml.tmpl",
-        "packages/otel-collector/CHANGELOG.md",
         "packages/otel-collector/README.md",
         "packages/otel-collector/builder-config.yaml",
         "packages/otel-collector/cmd/migrate/main.go",
@@ -17495,27 +17628,27 @@
       "status": "not_started",
       "entryPoints": [
         {
-          "id": "mcp_tool:clickstack_delete_webhook",
+          "id": "mcp_tool:cbt_delete_webhook",
           "kind": "mcp_tool",
           "file": "packages/api/src/mcp/tools/alerts/deleteWebhook.ts"
         },
         {
-          "id": "mcp_tool:clickstack_get_alert",
+          "id": "mcp_tool:cbt_get_alert",
           "kind": "mcp_tool",
           "file": "packages/api/src/mcp/tools/alerts/getAlert.ts"
         },
         {
-          "id": "mcp_tool:clickstack_get_webhook",
+          "id": "mcp_tool:cbt_get_webhook",
           "kind": "mcp_tool",
           "file": "packages/api/src/mcp/tools/alerts/getWebhook.ts"
         },
         {
-          "id": "mcp_tool:clickstack_save_alert",
+          "id": "mcp_tool:cbt_save_alert",
           "kind": "mcp_tool",
           "file": "packages/api/src/mcp/tools/alerts/saveAlert.ts"
         },
         {
-          "id": "mcp_tool:clickstack_save_webhook",
+          "id": "mcp_tool:cbt_save_webhook",
           "kind": "mcp_tool",
           "file": "packages/api/src/mcp/tools/alerts/saveWebhook.ts"
         }
@@ -17847,42 +17980,42 @@
       "status": "not_started",
       "entryPoints": [
         {
-          "id": "mcp_tool:clickstack_delete_dashboard",
+          "id": "mcp_tool:cbt_delete_dashboard",
           "kind": "mcp_tool",
           "file": "packages/api/src/mcp/tools/dashboards/deleteDashboard.ts"
         },
         {
-          "id": "mcp_tool:clickstack_get_dashboard",
+          "id": "mcp_tool:cbt_get_dashboard",
           "kind": "mcp_tool",
           "file": "packages/api/src/mcp/tools/dashboards/getDashboard.ts"
         },
         {
-          "id": "mcp_tool:clickstack_get_dashboard_tile",
+          "id": "mcp_tool:cbt_get_dashboard_tile",
           "kind": "mcp_tool",
           "file": "packages/api/src/mcp/tools/dashboards/getDashboardTile.ts"
         },
         {
-          "id": "mcp_tool:clickstack_patch_dashboard",
+          "id": "mcp_tool:cbt_patch_dashboard",
           "kind": "mcp_tool",
           "file": "packages/api/src/mcp/tools/dashboards/patchDashboard.ts"
         },
         {
-          "id": "mcp_tool:clickstack_query_tile",
+          "id": "mcp_tool:cbt_query_tile",
           "kind": "mcp_tool",
           "file": "packages/api/src/mcp/tools/dashboards/queryTile.ts"
         },
         {
-          "id": "mcp_tool:clickstack_query_tiles",
+          "id": "mcp_tool:cbt_query_tiles",
           "kind": "mcp_tool",
           "file": "packages/api/src/mcp/tools/dashboards/queryTiles.ts"
         },
         {
-          "id": "mcp_tool:clickstack_save_dashboard",
+          "id": "mcp_tool:cbt_save_dashboard",
           "kind": "mcp_tool",
           "file": "packages/api/src/mcp/tools/dashboards/saveDashboard.ts"
         },
         {
-          "id": "mcp_tool:clickstack_search_dashboards",
+          "id": "mcp_tool:cbt_search_dashboards",
           "kind": "mcp_tool",
           "file": "packages/api/src/mcp/tools/dashboards/searchDashboards.ts"
         }
@@ -18287,42 +18420,42 @@
       "status": "not_started",
       "entryPoints": [
         {
-          "id": "mcp_tool:clickstack_emerging_signals",
+          "id": "mcp_tool:cbt_emerging_signals",
           "kind": "mcp_tool",
           "file": "packages/api/src/mcp/tools/query/emergingSignals.ts"
         },
         {
-          "id": "mcp_tool:clickstack_event_deltas",
+          "id": "mcp_tool:cbt_event_deltas",
           "kind": "mcp_tool",
           "file": "packages/api/src/mcp/tools/query/eventDeltas.ts"
         },
         {
-          "id": "mcp_tool:clickstack_event_patterns",
+          "id": "mcp_tool:cbt_event_patterns",
           "kind": "mcp_tool",
           "file": "packages/api/src/mcp/tools/query/eventPatterns.ts"
         },
         {
-          "id": "mcp_tool:clickstack_promql",
+          "id": "mcp_tool:cbt_promql",
           "kind": "mcp_tool",
           "file": "packages/api/src/mcp/tools/query/promql.ts"
         },
         {
-          "id": "mcp_tool:clickstack_search",
+          "id": "mcp_tool:cbt_search",
           "kind": "mcp_tool",
           "file": "packages/api/src/mcp/tools/query/search.ts"
         },
         {
-          "id": "mcp_tool:clickstack_sql",
+          "id": "mcp_tool:cbt_sql",
           "kind": "mcp_tool",
           "file": "packages/api/src/mcp/tools/query/sql.ts"
         },
         {
-          "id": "mcp_tool:clickstack_table",
+          "id": "mcp_tool:cbt_table",
           "kind": "mcp_tool",
           "file": "packages/api/src/mcp/tools/query/table.ts"
         },
         {
-          "id": "mcp_tool:clickstack_timeseries",
+          "id": "mcp_tool:cbt_timeseries",
           "kind": "mcp_tool",
           "file": "packages/api/src/mcp/tools/query/timeseries.ts"
         }
@@ -18738,12 +18871,12 @@
       "status": "not_started",
       "entryPoints": [
         {
-          "id": "mcp_tool:clickstack_get_saved_search",
+          "id": "mcp_tool:cbt_get_saved_search",
           "kind": "mcp_tool",
           "file": "packages/api/src/mcp/tools/savedSearches/getSavedSearch.ts"
         },
         {
-          "id": "mcp_tool:clickstack_save_saved_search",
+          "id": "mcp_tool:cbt_save_saved_search",
           "kind": "mcp_tool",
           "file": "packages/api/src/mcp/tools/savedSearches/saveSavedSearch.ts"
         }
@@ -19034,37 +19167,37 @@
       "status": "not_started",
       "entryPoints": [
         {
-          "id": "mcp_tool:clickstack_delete_source",
+          "id": "mcp_tool:cbt_delete_source",
           "kind": "mcp_tool",
           "file": "packages/api/src/mcp/tools/sources/deleteSource.ts"
         },
         {
-          "id": "mcp_tool:clickstack_describe_metric",
+          "id": "mcp_tool:cbt_describe_metric",
           "kind": "mcp_tool",
           "file": "packages/api/src/mcp/tools/sources/describeMetric.ts"
         },
         {
-          "id": "mcp_tool:clickstack_describe_source",
+          "id": "mcp_tool:cbt_describe_source",
           "kind": "mcp_tool",
           "file": "packages/api/src/mcp/tools/sources/describeSource.ts"
         },
         {
-          "id": "mcp_tool:clickstack_describe_table",
+          "id": "mcp_tool:cbt_describe_table",
           "kind": "mcp_tool",
           "file": "packages/api/src/mcp/tools/sources/describeTable.ts"
         },
         {
-          "id": "mcp_tool:clickstack_list_metrics",
+          "id": "mcp_tool:cbt_list_metrics",
           "kind": "mcp_tool",
           "file": "packages/api/src/mcp/tools/sources/listMetrics.ts"
         },
         {
-          "id": "mcp_tool:clickstack_list_sources",
+          "id": "mcp_tool:cbt_list_sources",
           "kind": "mcp_tool",
           "file": "packages/api/src/mcp/tools/sources/listSources.ts"
         },
         {
-          "id": "mcp_tool:clickstack_save_source",
+          "id": "mcp_tool:cbt_save_source",
           "kind": "mcp_tool",
           "file": "packages/api/src/mcp/tools/sources/saveSource.ts"
         }
@@ -19487,12 +19620,12 @@
       "status": "not_started",
       "entryPoints": [
         {
-          "id": "mcp_tool:clickstack_trace_top_time_consuming_operations",
+          "id": "mcp_tool:cbt_trace_top_time_consuming_operations",
           "kind": "mcp_tool",
           "file": "packages/api/src/mcp/tools/trace/breakdown.ts"
         },
         {
-          "id": "mcp_tool:clickstack_trace_waterfall",
+          "id": "mcp_tool:cbt_trace_waterfall",
           "kind": "mcp_tool",
           "file": "packages/api/src/mcp/tools/trace/waterfall.ts"
         }
@@ -20460,7 +20593,7 @@
     "byStatus": [
       {
         "status": "not_started",
-        "count": 51
+        "count": 50
       },
       {
         "status": "in_progress",
@@ -20472,7 +20605,7 @@
       },
       {
         "status": "needs_decision",
-        "count": 2
+        "count": 3
       },
       {
         "status": "dropped",

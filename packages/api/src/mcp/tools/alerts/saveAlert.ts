@@ -40,7 +40,7 @@ export function registerSaveAlert({
   const frontendUrl = config.FRONTEND_URL;
 
   registerTool(
-    'clickstack_save_alert',
+    'cbt_save_alert',
     {
       title: 'Create or Update Alert',
       annotations: UPSERT_TOOL,
@@ -52,14 +52,14 @@ export function registerSaveAlert({
         'alert is evaluated every interval and notifies its webhook channels ' +
         'when it fires and when it resolves. At least one webhook channel is ' +
         'required: pass "channels", or the legacy singular "channel" for one ' +
-        '(webhook IDs come from clickstack_get_webhook). Updates replace the ' +
+        '(webhook IDs come from cbt_get_webhook). Updates replace the ' +
         'alert configuration rather than merging it: channels you do not resend are ' +
         'removed, omitted name and message are cleared, omitted displayName and tags ' +
         'are re-derived from the source, and settings this tool cannot set ' +
         '(note, consecutive-window count) are cleared. Omitting both ' +
         'scheduleStartAt and scheduleOffsetMinutes keeps the stored schedule; ' +
         'clearing scheduleStartAt without an offset resets the offset to 0. Read the alert with ' +
-        'clickstack_get_alert first and resend every field you want to keep.',
+        'cbt_get_alert first and resend every field you want to keep.',
       inputSchema: mcpSaveAlertSchema,
     },
     async input => {

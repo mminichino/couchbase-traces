@@ -156,7 +156,7 @@ async function mcp(sourceId: string, accessKey = user.accessKey) {
       jsonrpc: '2.0',
       id: 1,
       method: 'tools/call',
-      params: { name: 'clickstack_describe_source', arguments: { sourceId } },
+      params: { name: 'cbt_describe_source', arguments: { sourceId } },
     });
   if (response.status !== 200)
     return { status: response.status, count: -1, isError: true };

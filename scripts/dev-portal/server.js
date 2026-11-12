@@ -188,7 +188,7 @@ const COMPOSE_SERVICE_ALIASES = {
 };
 
 function canonicalServiceName(labels) {
-  if (labels['hdx.dev.service']) return labels['hdx.dev.service'];
+  if (labels['cbt.dev.service']) return labels['cbt.dev.service'];
   const composeName = labels['com.docker.compose.service'] || '';
   return COMPOSE_SERVICE_ALIASES[composeName] || composeName;
 }
@@ -288,9 +288,9 @@ async function buildDashboardData() {
     // E2E and CI containers only have standard compose labels, so we
     // derive worktree from the working_dir and resolve the git branch.
     if (envType === 'dev') {
-      if (labels['hdx.dev.branch']) stack.branch = labels['hdx.dev.branch'];
-      if (labels['hdx.dev.worktree'])
-        stack.worktree = labels['hdx.dev.worktree'];
+      if (labels['cbt.dev.branch']) stack.branch = labels['cbt.dev.branch'];
+      if (labels['cbt.dev.worktree'])
+        stack.worktree = labels['cbt.dev.worktree'];
     }
 
     // For all envTypes: fall back to compose working_dir when missing.
@@ -306,8 +306,8 @@ async function buildDashboardData() {
     }
 
     const ports = parsePortMappings(container.Ports);
-    const mainPort = labels['hdx.dev.port']
-      ? parseInt(labels['hdx.dev.port'], 10)
+    const mainPort = labels['cbt.dev.port']
+      ? parseInt(labels['cbt.dev.port'], 10)
       : ports.length > 0
         ? ports[0].hostPort
         : null;
@@ -317,7 +317,7 @@ async function buildDashboardData() {
       type: 'docker',
       status: container.State === 'running' ? 'up' : 'down',
       port: mainPort,
-      url: labels['hdx.dev.url'] || null,
+      url: labels['cbt.dev.url'] || null,
       ports,
       containerId: container.ID,
       uptime: container.RunningFor || '',
@@ -997,7 +997,7 @@ const server = http.createServer(async (req, res) => {
 });
 
 server.listen(PORT, () => {
-  console.log(`\n  HyperDX Dev Portal running at http://localhost:${PORT}\n`);
+  console.log(`\n  Couchbase Traces Dev Portal running at http://localhost:${PORT}\n`);
   console.log(
     '  Discovering dev stacks via Docker labels + ~/.config/hyperdx/dev-slots/',
   );

@@ -26,7 +26,7 @@ import {
 } from './schema';
 import { loadHealthSource } from './source';
 
-const TOOL_NAME = 'clickstack_service_health';
+const TOOL_NAME = 'cbt_service_health';
 const MAX_ERROR_SERVICES = 100;
 
 const TIMEOUT_SUFFIX =
@@ -45,13 +45,13 @@ const DESCRIPTION =
   'USE THIS FIRST for status checks, "is X healthy", post-deploy checks, and ' +
   'as the entry point for triage.\n\n' +
   'It is per service and per window. To follow up:\n' +
-  '  - clickstack_timeseries by minute to see when a change happened\n' +
-  '  - clickstack_table grouped by span name for per-endpoint shifts\n' +
-  '  - clickstack_emerging_signals on the log source for new log patterns\n' +
+  '  - cbt_timeseries by minute to see when a change happened\n' +
+  '  - cbt_table grouped by span name for per-endpoint shifts\n' +
+  '  - cbt_emerging_signals on the log source for new log patterns\n' +
   'For a flagged service, check its own runtime metrics (memory, GC, CPU, ' +
   'restarts by pod) on the metric source before blaming dependencies, then ' +
-  'use clickstack_event_deltas and ' +
-  'clickstack_trace_top_time_consuming_operations.\n\n' +
+  'use cbt_event_deltas and ' +
+  'cbt_trace_top_time_consuming_operations.\n\n' +
   'CALIBRATION: flags fire only past fixed thresholds (see `usage` in the ' +
   'response). Small swings on a healthy service are normal variance. An ' +
   'all-healthy report is a valid answer.\n\n' +
@@ -165,7 +165,7 @@ export function registerServiceHealth({
         });
 
         trace.getActiveSpan()?.setAttributes({
-          'hyperdx.source.id': source.id,
+          'cbt.source.id': source.id,
           'mcp.service_health.comparison': input.comparison,
           'mcp.service_health.comparison_used': comparisonMode,
           'mcp.service_health.span_kind': input.spanKind,

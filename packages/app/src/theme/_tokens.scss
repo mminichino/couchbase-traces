@@ -24,17 +24,17 @@
 /* Dark Mode */
 [data-mantine-color-scheme='dark'] {
   /* Brand Palette - Yellow/Gold */
-  --palette-brand-50: #ffffe8;
-  --palette-brand-100: #feffba;
-  --palette-brand-200: #fdffa3;
-  --palette-brand-300: #faff69;
-  --palette-brand-400: #eef400;
-  --palette-brand-500: #c7cc00;
-  --palette-brand-600: #959900;
-  --palette-brand-700: #686b00;
-  --palette-brand-800: #3c4601;
-  --palette-brand-900: #330;
-  --palette-brand-base: #fbff46;
+  --palette-brand-50: #feeced;
+  --palette-brand-100: #fcd4d5;
+  --palette-brand-200: #f8aaac;
+  --palette-brand-300: #f57a7e;
+  --palette-brand-400: #f1464b;
+  --palette-brand-500: #ec1218;
+  --palette-brand-600: #c70f14;
+  --palette-brand-700: #a10c10;
+  --palette-brand-800: #7b090d;
+  --palette-brand-900: #550709;
+  --palette-brand-base: #ec1218;
 
   /* Neutral Palette - Dark Mode */
   --palette-neutral-0: #fff;
@@ -179,7 +179,7 @@
   --color-text-success-hover: var(--mantine-color-green-1);
   --color-text-danger: var(--click-global-color-text-danger);
 
-  /* Orange-based warning: ClickStack remaps `yellow` to the brand gold, so we
+  /* Orange-based warning: Couchbase Traces remaps `yellow` to the brand gold, so we
      use Mantine's `orange` (unremapped) for a true orange warning. */
   --color-text-warning: var(--mantine-color-orange-2);
   --color-text-info: var(--mantine-color-blue-2);
@@ -251,17 +251,17 @@
 /* Light Mode */
 [data-mantine-color-scheme='light'] {
   /* Brand Palette - Yellow/Gold */
-  --palette-brand-50: #ffffe8;
-  --palette-brand-100: #feffc2;
-  --palette-brand-200: #fdffa3;
-  --palette-brand-300: #faff69;
-  --palette-brand-400: #eef400;
-  --palette-brand-500: #c7cc00;
-  --palette-brand-600: #959900;
-  --palette-brand-700: #686b00;
-  --palette-brand-800: #3c4601;
-  --palette-brand-900: #330;
-  --palette-brand-base: #fbff46;
+  --palette-brand-50: #feeced;
+  --palette-brand-100: #fcd4d5;
+  --palette-brand-200: #f8aaac;
+  --palette-brand-300: #f57a7e;
+  --palette-brand-400: #f1464b;
+  --palette-brand-500: #ec1218;
+  --palette-brand-600: #c70f14;
+  --palette-brand-700: #a10c10;
+  --palette-brand-800: #7b090d;
+  --palette-brand-900: #550709;
+  --palette-brand-base: #ec1218;
 
   /* Slate Palette - Light Mode */
   --palette-slate-25: #fbfcff;
@@ -368,7 +368,7 @@
 
   /* Subtle tinted backgrounds (+ hover) for semantic callouts (Alert, soft
      Button/ActionIcon). Light mode uses Mantine's `-0` (bg) / `-1` (hover)
-     shades. Note: `warning` uses Mantine `orange` because ClickStack remaps
+     shades. Note: `warning` uses Mantine `orange` because Couchbase Traces remaps
      `yellow` to the brand gold. */
   --color-bg-danger-subtle: var(--mantine-color-red-0);
   --color-bg-danger-subtle-hover: var(--mantine-color-red-1);
@@ -412,7 +412,7 @@
   --color-text-success-hover: #15803d;
   --color-text-danger: var(--click-global-color-text-danger);
 
-  /* Orange-based warning (ClickStack remaps `yellow` to the brand gold), using
+  /* Orange-based warning (Couchbase Traces remaps `yellow` to the brand gold), using
      Mantine `orange-9` darkened via color-mix to meet WCAG AA (~5.2:1) on the
      light `-subtle` tint; plain orange-9 is only ~4:1. */
   --color-text-warning: color-mix(
@@ -491,7 +491,7 @@
  *   --switch-text-color: var(--mantine-color-white)
  * That hard-codes white for the on-label text, and the thumb stays at
  * its default `var(--mantine-color-white)` background. Both fail
- * contrast on the yellow ClickStack accent in dark mode.
+ * contrast on the yellow Couchbase Traces accent in dark mode.
  *
  * Override the cascade on the track sibling so the on-label text and
  * the thumb take the inverse of the accent color. Targeting the input

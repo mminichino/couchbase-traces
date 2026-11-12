@@ -9,7 +9,6 @@ import {
 } from '@clickhouse/clickstack-browser';
 import {
   Avatar,
-  Button,
   Group,
   Menu,
   Paper,
@@ -20,7 +19,6 @@ import {
 import { useDisclosure } from '@mantine/hooks';
 import {
   IconBook,
-  IconBrandDiscord,
   IconBug,
   IconBulb,
   IconCheck,
@@ -51,26 +49,6 @@ export const AppNavContext = React.createContext<{
   isCollapsed: false,
   pathname: '/',
 });
-
-export const AppNavCloudBanner = () => {
-  return (
-    <div className="mt-3 mb-1 bg-muted rounded p-2 text-center">
-      <span className="fs-8">Ready to deploy on ClickHouse Cloud?</span>
-      <div className="mt-2 mb-2">
-        <Button
-          variant="primary"
-          size="xs"
-          component="a"
-          href="https://clickhouse.com/docs/use-cases/observability/clickstack/getting-started#deploy-with-clickhouse-cloud"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Get started for free
-        </Button>
-      </div>
-    </div>
-  );
-};
 
 type AppNavUserMenuProps = {
   userName?: string;
@@ -282,7 +260,7 @@ export const AppNavHelpMenu = ({
 
           <Menu.Item
             data-testid="documentation-menu-item"
-            href="https://clickhouse.com/docs/use-cases/observability/clickstack"
+            href="https://github.com/mminichino/couchbase-traces/tree/main/docs"
             component="a"
             target="_blank"
             rel="noopener noreferrer"
@@ -293,7 +271,7 @@ export const AppNavHelpMenu = ({
           <Menu.Item
             data-testid="setup-instructions-menu-item"
             leftSection={<IconBulb size={16} />}
-            href="https://clickhouse.com/docs/use-cases/observability/clickstack/getting-started"
+            href="https://github.com/mminichino/couchbase-traces/tree/main/docs"
             component="a"
             target="_blank"
             rel="noopener noreferrer"
@@ -306,16 +284,6 @@ export const AppNavHelpMenu = ({
             onClick={openShortcutsModal}
           >
             Keyboard shortcuts
-          </Menu.Item>
-          <Menu.Item
-            data-testid="discord-menu-item"
-            leftSection={<IconBrandDiscord size={16} />}
-            component="a"
-            href="https://hyperdx.io/discord"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Discord community
           </Menu.Item>
 
           <Menu.Divider />

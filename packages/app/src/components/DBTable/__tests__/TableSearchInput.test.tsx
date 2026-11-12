@@ -117,7 +117,7 @@ describe('highlightText', () => {
     });
   });
 
-  describe('realistic HyperDX values', () => {
+  describe('realistic Couchbase Traces values', () => {
     it('should highlight service names', () => {
       const result = highlightText('hdx-oss-dev-api', 'dev');
       expect(result).toBeDefined();

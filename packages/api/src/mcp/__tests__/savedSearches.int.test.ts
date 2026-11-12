@@ -89,17 +89,13 @@ describe('MCP Saved Search Tools', () => {
 
   // ─── clickstack_get_saved_search ─────────────────────────────────────────────
 
-  describe('clickstack_get_saved_search', () => {
+  describe('cbt_get_saved_search', () => {
     describe('list (no id)', () => {
       it('should list all saved searches with slim summary fields', async () => {
         await createTestSavedSearch({ name: 'Search 1' });
         await createTestSavedSearch({ name: 'Search 2' });
 
-        const result = await callTool(
-          client,
-          'clickstack_get_saved_search',
-          {},
-        );
+        const result = await callTool(client, 'cbt_get_saved_search', {});
 
         expect(result.isError).toBeFalsy();
         const output = JSON.parse(getFirstText(result));
@@ -119,11 +115,7 @@ describe('MCP Saved Search Tools', () => {
       });
 
       it('should return empty array when no saved searches exist', async () => {
-        const result = await callTool(
-          client,
-          'clickstack_get_saved_search',
-          {},
-        );
+        const result = await callTool(client, 'cbt_get_saved_search', {});
 
         expect(result.isError).toBeFalsy();
         const output = JSON.parse(getFirstText(result));
@@ -139,11 +131,7 @@ describe('MCP Saved Search Tools', () => {
         };
         const client2 = await createTestClient(otherTeamContext);
 
-        const listResult = await callTool(
-          client2,
-          'clickstack_get_saved_search',
-          {},
-        );
+        const listResult = await callTool(client2, 'cbt_get_saved_search', {});
         const output = JSON.parse(getFirstText(listResult));
         expect(output).toHaveLength(0);
 
@@ -158,7 +146,7 @@ describe('MCP Saved Search Tools', () => {
           where: 'level:error',
         });
 
-        const result = await callTool(client, 'clickstack_get_saved_search', {
+        const result = await callTool(client, 'cbt_get_saved_search', {
           id: savedSearch._id.toString(),
         });
 
@@ -178,7 +166,7 @@ describe('MCP Saved Search Tools', () => {
       });
 
       it('should return error for invalid ObjectId format', async () => {
-        const result = await callTool(client, 'clickstack_get_saved_search', {
+        const result = await callTool(client, 'cbt_get_saved_search', {
           id: 'not-a-valid-id',
         });
 
@@ -188,7 +176,7 @@ describe('MCP Saved Search Tools', () => {
 
       it('should return error for non-existent saved search id', async () => {
         const fakeId = '000000000000000000000000';
-        const result = await callTool(client, 'clickstack_get_saved_search', {
+        const result = await callTool(client, 'cbt_get_saved_search', {
           id: fakeId,
         });
 
@@ -200,10 +188,10 @@ describe('MCP Saved Search Tools', () => {
 
   // ─── clickstack_save_saved_search ────────────────────────────────────────────
 
-  describe('clickstack_save_saved_search', () => {
+  describe('cbt_save_saved_search', () => {
     describe('create', () => {
       it('should create a new saved search', async () => {
-        const result = await callTool(client, 'clickstack_save_saved_search', {
+        const result = await callTool(client, 'cbt_save_saved_search', {
           name: 'Error Traces',
           sourceId: traceSource._id.toString(),
           where: 'StatusCode:Error',
@@ -228,7 +216,7 @@ describe('MCP Saved Search Tools', () => {
       });
 
       it('should create a saved search with minimal fields', async () => {
-        const result = await callTool(client, 'clickstack_save_saved_search', {
+        const result = await callTool(client, 'cbt_save_saved_search', {
           name: 'Minimal Search',
           sourceId: traceSource._id.toString(),
         });
@@ -243,7 +231,7 @@ describe('MCP Saved Search Tools', () => {
       });
 
       it('should create a saved search with SQL where language', async () => {
-        const result = await callTool(client, 'clickstack_save_saved_search', {
+        const result = await callTool(client, 'cbt_save_saved_search', {
           name: 'SQL Search',
           sourceId: traceSource._id.toString(),
           where: "StatusCode = 'Error'",
@@ -257,7 +245,7 @@ describe('MCP Saved Search Tools', () => {
       });
 
       it('should create a saved search with select and orderBy', async () => {
-        const result = await callTool(client, 'clickstack_save_saved_search', {
+        const result = await callTool(client, 'cbt_save_saved_search', {
           name: 'Full Search',
           sourceId: traceSource._id.toString(),
           select: 'body,service.name,duration',
@@ -272,7 +260,7 @@ describe('MCP Saved Search Tools', () => {
       });
 
       it('should accept tags at the shared caps (50 tags, 32 chars)', async () => {
-        const result = await callTool(client, 'clickstack_save_saved_search', {
+        const result = await callTool(client, 'cbt_save_saved_search', {
           name: 'Max Tags',
           sourceId: traceSource._id.toString(),
           tags: Array.from({ length: 50 }, (_, i) => `t${i}`.padEnd(32, 'x')),
@@ -284,7 +272,7 @@ describe('MCP Saved Search Tools', () => {
       });
 
       it('should reject more than 50 tags (shared cap)', async () => {
-        const result = await callTool(client, 'clickstack_save_saved_search', {
+        const result = await callTool(client, 'cbt_save_saved_search', {
           name: 'Too Many Tags',
           sourceId: traceSource._id.toString(),
           tags: Array.from({ length: 51 }, (_, i) => `tag-${i}`),
@@ -294,7 +282,7 @@ describe('MCP Saved Search Tools', () => {
       });
 
       it('should reject a tag longer than 32 characters (shared cap)', async () => {
-        const result = await callTool(client, 'clickstack_save_saved_search', {
+        const result = await callTool(client, 'cbt_save_saved_search', {
           name: 'Long Tag',
           sourceId: traceSource._id.toString(),
           tags: ['x'.repeat(33)],
@@ -304,7 +292,7 @@ describe('MCP Saved Search Tools', () => {
       });
 
       it('should create a saved search with filters', async () => {
-        const result = await callTool(client, 'clickstack_save_saved_search', {
+        const result = await callTool(client, 'cbt_save_saved_search', {
           name: 'Filtered Search',
           sourceId: traceSource._id.toString(),
           filters: [
@@ -326,7 +314,7 @@ describe('MCP Saved Search Tools', () => {
       });
 
       it('should reject invalid sourceId', async () => {
-        const result = await callTool(client, 'clickstack_save_saved_search', {
+        const result = await callTool(client, 'cbt_save_saved_search', {
           name: 'Bad Source',
           sourceId: 'not-a-valid-id',
         });
@@ -338,7 +326,7 @@ describe('MCP Saved Search Tools', () => {
       });
 
       it('should include url in response when FRONTEND_URL is set', async () => {
-        const result = await callTool(client, 'clickstack_save_saved_search', {
+        const result = await callTool(client, 'cbt_save_saved_search', {
           name: 'URL Test',
           sourceId: traceSource._id.toString(),
         });
@@ -357,7 +345,7 @@ describe('MCP Saved Search Tools', () => {
           name: 'Original Name',
         });
 
-        const result = await callTool(client, 'clickstack_save_saved_search', {
+        const result = await callTool(client, 'cbt_save_saved_search', {
           id: savedSearch._id.toString(),
           name: 'Updated Name',
           sourceId: traceSource._id.toString(),
@@ -385,7 +373,7 @@ describe('MCP Saved Search Tools', () => {
           whereLanguage: 'sql',
         });
 
-        const result = await callTool(client, 'clickstack_save_saved_search', {
+        const result = await callTool(client, 'cbt_save_saved_search', {
           id: savedSearch._id.toString(),
           name: 'Renamed',
           sourceId: traceSource._id.toString(),
@@ -399,7 +387,7 @@ describe('MCP Saved Search Tools', () => {
 
       it('should return error for non-existent saved search on update', async () => {
         const fakeId = '000000000000000000000000';
-        const result = await callTool(client, 'clickstack_save_saved_search', {
+        const result = await callTool(client, 'cbt_save_saved_search', {
           id: fakeId,
           name: 'Ghost Search',
           sourceId: traceSource._id.toString(),
@@ -410,7 +398,7 @@ describe('MCP Saved Search Tools', () => {
       });
 
       it('should return error for invalid ObjectId format on update', async () => {
-        const result = await callTool(client, 'clickstack_save_saved_search', {
+        const result = await callTool(client, 'cbt_save_saved_search', {
           id: '!!!',
           name: 'Bad ID',
           sourceId: traceSource._id.toString(),

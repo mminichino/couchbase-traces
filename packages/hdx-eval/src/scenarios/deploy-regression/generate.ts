@@ -521,7 +521,7 @@ export const deployRegressionScenario: Scenario = {
           // held constant between the two scenarios, so the adoption delta
           // measures inclination, not awareness.
           signalsNote:
-            '- Metrics: a HyperDX metric source is available (gauge, sum, ' +
+            '- Metrics: a Couchbase Traces metric source is available (gauge, sum, ' +
             'histogram, exponential histogram, and summary). Use the metric ' +
             'tools to explore it alongside traces and logs.',
         },

@@ -37,7 +37,7 @@ server {
 
     # Proxy requests that are already prefixed with the base path to the app
     location ${CBT_BASE_PATH} {
-        # The full request URI (e.g., /hyperdx/settings) is passed to the upstream
+        # The full request URI (e.g., /traces/settings) is passed to the upstream
         proxy_pass http://app;
     }
 }

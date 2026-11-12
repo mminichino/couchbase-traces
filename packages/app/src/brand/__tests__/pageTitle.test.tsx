@@ -10,11 +10,11 @@ import { usePageTitle } from '@/brand';
 describe('usePageTitle', () => {
   it('is the brand name plus the instance label when no page is given', () => {
     const { result } = renderHook(() => usePageTitle());
-    expect(result.current).toBe('ClickStack UK');
+    expect(result.current).toBe('Couchbase Traces UK');
   });
 
   it('prepends the page name', () => {
     const { result } = renderHook(() => usePageTitle('Search'));
-    expect(result.current).toBe('Search - ClickStack UK');
+    expect(result.current).toBe('Search - Couchbase Traces UK');
   });
 });

@@ -26,7 +26,7 @@ type Story = StoryObj<typeof meta>;
 const ref = {
   type: 'dashboard' as const,
   id: '655b1b7d9143aa1b1b73f4f4',
-  name: 'HyperDX Usage',
+  name: 'Couchbase Traces Usage',
 };
 
 export const Default: Story = {
@@ -40,7 +40,7 @@ export const Default: Story = {
         label: 'Provider setup',
         collapsible: true,
         hint: 'Add once per Terraform module. Skip if your project already declares the ClickHouse provider.',
-        snippet: buildProviderBlock('https://hyperdx.example.com/api'),
+        snippet: buildProviderBlock('https://couchbase-traces.example.com/api'),
       },
     ],
   },

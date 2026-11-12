@@ -41,7 +41,7 @@ describe('useOnClickLinkBuilder', () => {
       data: [
         {
           id: 'src_1',
-          name: 'HyperDX Logs',
+          name: 'Couchbase Traces Logs',
           kind: 'log',
           connection: 'c',
           from: { databaseName: 'd', tableName: 't' },
@@ -72,7 +72,7 @@ describe('useOnClickLinkBuilder', () => {
     );
     expect(result.current).not.toBeNull();
     const action = result.current!({});
-    expect(action.description).toBe('Search HyperDX Logs');
+    expect(action.description).toBe('Search Couchbase Traces Logs');
     const params = new URLSearchParams(action.url!.split('?')[1]);
     expect(action.url!.startsWith('/search?')).toBe(true);
     expect(params.get('source')).toBe('src_1');

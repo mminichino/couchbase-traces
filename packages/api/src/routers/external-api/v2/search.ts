@@ -20,11 +20,11 @@ import { externalDashboardSearchRequestSchema } from '@/utils/zod';
 
 import { runSearchConfig, type SearchErrorCode } from './utils/search';
 
-const searchQueryDuration = getHistogram('hyperdx.search.query.duration_ms', {
+const searchQueryDuration = getHistogram('cbt.search.query.duration_ms', {
   description: 'Duration of external API v2 search queries against ClickHouse.',
   unit: 'ms',
 });
-const searchQueryErrors = getCounter('hyperdx.search.query_errors', {
+const searchQueryErrors = getCounter('cbt.search.query_errors', {
   description:
     'Count of external API v2 search query failures, labeled by error type ' +
     '(semantic error codes like SOURCE_NOT_FOUND, or ClickHouse error types).',
@@ -108,7 +108,7 @@ const CH_USER_INPUT_ERRORS = new Set([
  *             database user. Semicolons and subqueries (SELECT keyword) are
  *             rejected; use column references, map lookups, or function calls only.
  *
- *             HyperDX rewrites known attribute column names to their materialized
+ *             Couchbase Traces rewrites known attribute column names to their materialized
  *             equivalents automatically; you can still pass the logical name.
  *           example: "Timestamp,SeverityText,Body,pipedream.pipeline_name"
  *         orderBy:
@@ -252,10 +252,10 @@ const searchRequestSchema = z.object({
  *   post:
  *     summary: Search Raw Logs and Traces
  *     description: |
- *       Fetch individual log or trace rows from a HyperDX source.
+ *       Fetch individual log or trace rows from a Couchbase Traces source.
  *
- *       This endpoint mirrors the "search" panel mode in the HyperDX UI.
- *       HyperDX applies the same query optimizations used in the UI:
+ *       This endpoint mirrors the "search" panel mode in the Couchbase Traces UI.
+ *       It applies the same query optimizations used in the UI:
  *         - Named attribute columns (e.g. "pipedream.pipeline_name") are
  *           rewritten to their indexed materialized equivalents when the
  *           source schema exposes them, avoiding slow Map lookups.

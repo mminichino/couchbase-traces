@@ -26,8 +26,8 @@ column headers, empty states, and toast copy.
 ```
 
 **Preserve proper nouns, product names, and acronyms** wherever they appear —
-sentence case only touches the surrounding words: HyperDX, ClickHouse,
-ClickStack, OpenTelemetry/OTel, Lucene, SQL, PromQL, MongoDB, Kubernetes, JSON,
+sentence case only touches the surrounding words: Couchbase Traces, ClickHouse,
+Couchbase Traces, OpenTelemetry/OTel, Lucene, SQL, PromQL, MongoDB, Kubernetes, JSON,
 CSV, URL, ID, API, MCP, CPU, P95. E.g. `Search your events w/ Lucene`,
 `Edit SQL`, `View in ClickHouse`.
 

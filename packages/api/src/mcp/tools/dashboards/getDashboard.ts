@@ -20,7 +20,7 @@ export function registerGetDashboard({
   const frontendUrl = config.FRONTEND_URL;
 
   registerTool(
-    'clickstack_get_dashboard',
+    'cbt_get_dashboard',
     {
       title: 'Get Dashboard(s)',
       annotations: READ_ONLY_TOOL,

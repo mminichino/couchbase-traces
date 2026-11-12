@@ -159,7 +159,7 @@ describe('ResourceTerraformPopover', () => {
     openPopover();
 
     expect(
-      await screen.findByText(/survives a rename in ClickStack/),
+      await screen.findByText(/survives a rename in Couchbase Traces/),
     ).toBeInTheDocument();
   });
 

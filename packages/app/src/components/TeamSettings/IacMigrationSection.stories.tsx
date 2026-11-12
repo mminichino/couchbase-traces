@@ -15,7 +15,10 @@ const meta = {
         http.get('*/api/iac/import-manifest', () =>
           HttpResponse.json({
             dashboards: [
-              { id: '655b1b7d9143aa1b1b73f4f4', name: 'HyperDX Usage' },
+              {
+                id: '655b1b7d9143aa1b1b73f4f4',
+                name: 'Couchbase Traces Usage',
+              },
               { id: '655b1b7d9143aa1b1b73f4f5', name: 'OTel Collectors' },
             ],
             alerts: [

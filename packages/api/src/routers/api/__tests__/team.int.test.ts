@@ -35,7 +35,7 @@ describe('team router', () => {
       {
         "allowedAuthMethods": [],
         "isMetricsSeriesTableEnabled": false,
-        "name": "fake@deploysentinel.com's Team",
+        "name": "fake@example.com's Team",
       }
     `);
   });
@@ -172,10 +172,10 @@ describe('team router', () => {
       .toMatchInlineSnapshot(`
       [
         {
-          "email": "fake@deploysentinel.com",
+          "email": "fake@example.com",
           "hasPasswordAuth": true,
           "isCurrentUser": true,
-          "name": "fake@deploysentinel.com",
+          "name": "fake@example.com",
         },
         {
           "email": "user1@example.com",

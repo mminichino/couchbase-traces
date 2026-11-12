@@ -57,7 +57,7 @@ describe('HDXMultiSeriesTableChart <Table>', () => {
     it('renders the row click cell as a real <a href> with the resolved URL', () => {
       const getRowAction = jest.fn().mockReturnValue({
         url: '/search?source=src_1&where=',
-        description: 'Search HyperDX Logs',
+        description: 'Search Couchbase Traces Logs',
       });
 
       renderWithMantine(
@@ -87,7 +87,7 @@ describe('HDXMultiSeriesTableChart <Table>', () => {
       // `bg-muted-hover` utility (a lighter muted hover).
       const getRowAction = jest.fn().mockReturnValue({
         url: '/search?source=src_1&where=',
-        description: 'Search HyperDX Logs',
+        description: 'Search Couchbase Traces Logs',
       });
 
       const { container } = renderWithMantine(
@@ -111,7 +111,7 @@ describe('HDXMultiSeriesTableChart <Table>', () => {
     it('renders a trailing arrow hint in the last cell of a success row', () => {
       const getRowAction = jest.fn().mockReturnValue({
         url: '/search?source=src_1&where=',
-        description: 'Search HyperDX Logs',
+        description: 'Search Couchbase Traces Logs',
       });
 
       renderWithMantine(
@@ -134,7 +134,7 @@ describe('HDXMultiSeriesTableChart <Table>', () => {
       const user = userEvent.setup();
       const getRowAction = jest.fn().mockReturnValue({
         url: '/search?source=src_1&where=',
-        description: 'Search HyperDX Logs',
+        description: 'Search Couchbase Traces Logs',
       });
 
       renderWithMantine(
@@ -155,7 +155,9 @@ describe('HDXMultiSeriesTableChart <Table>', () => {
       await waitFor(
         () => {
           expect(
-            screen.getByRole('tooltip', { name: 'Search HyperDX Logs' }),
+            screen.getByRole('tooltip', {
+              name: 'Search Couchbase Traces Logs',
+            }),
           ).toBeInTheDocument();
         },
         { timeout: 2000 },
@@ -259,7 +261,7 @@ describe('HDXMultiSeriesTableChart <Table>', () => {
       const onClickError = jest.fn();
       const getRowAction = jest.fn().mockReturnValue({
         url: null,
-        description: 'Search HyperDX Logs',
+        description: 'Search Couchbase Traces Logs',
         onClickError,
       });
 
@@ -293,7 +295,7 @@ describe('HDXMultiSeriesTableChart <Table>', () => {
       // utility and never gain the stronger `actionableRow` class.
       const getRowAction = jest.fn().mockReturnValue({
         url: null,
-        description: 'Search HyperDX Logs',
+        description: 'Search Couchbase Traces Logs',
         onClickError: jest.fn(),
       });
 
@@ -318,7 +320,7 @@ describe('HDXMultiSeriesTableChart <Table>', () => {
     it('does not render a trailing arrow hint when rowAction.url is null', () => {
       const getRowAction = jest.fn().mockReturnValue({
         url: null,
-        description: 'Search HyperDX Logs',
+        description: 'Search Couchbase Traces Logs',
         onClickError: jest.fn(),
       });
 
@@ -614,7 +616,7 @@ describe('HDXMultiSeriesTableChart <Table>', () => {
           onCellFilter={jest.fn()}
           getRowAction={() => ({
             url: '/search?q=web',
-            description: 'Search HyperDX Logs',
+            description: 'Search Couchbase Traces Logs',
           })}
           sorting={[]}
           onSortingChange={() => {}}

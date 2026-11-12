@@ -57,7 +57,6 @@ jest.mock('@/config', () => ({
   CODE_VERSION: 'test-version',
   IS_LOCAL_APP_MODE: false,
   IS_PROMQL_ENABLED: true,
-  USAGE_STATS_ENABLED: false,
   RUN_SCHEDULED_TASKS_EXTERNALLY: false,
   AI_API_KEY: '',
   ANTHROPIC_API_KEY: 'present',
@@ -118,7 +117,7 @@ describe('instrumentation', () => {
 
   describe('setBusinessContext', () => {
     const expected = {
-      'hyperdx.team.id': 'team-1',
+      'cbt.team.id': 'team-1',
       'user.id': 'user-1',
       'user.email': 'a@b.com',
     };
@@ -151,7 +150,7 @@ describe('instrumentation', () => {
       setBusinessContext({ teamId: 'team-1' });
 
       expect(mockSpan.setAttributes).toHaveBeenCalledWith({
-        'hyperdx.team.id': 'team-1',
+        'cbt.team.id': 'team-1',
       });
       expect(mockServerSpan.setAttributes).not.toHaveBeenCalled();
     });
@@ -175,7 +174,7 @@ describe('instrumentation', () => {
       });
 
       expect(mockServerSpan.setAttributes).toHaveBeenCalledWith({
-        'hyperdx.team.id': 'team-1',
+        'cbt.team.id': 'team-1',
         'feature_flag.local_app_mode': true,
       });
     });
@@ -195,7 +194,6 @@ describe('instrumentation', () => {
       expect(getStaticFeatureFlags()).toEqual({
         'feature_flag.local_app_mode': false,
         'feature_flag.promql_enabled': true,
-        'feature_flag.usage_stats_enabled': false,
         'feature_flag.ai_assistant_enabled': true,
         'feature_flag.scheduled_tasks_external': false,
       });
@@ -204,16 +202,16 @@ describe('instrumentation', () => {
 
   describe('metric accessors', () => {
     it('memoizes counters by name', () => {
-      const a = getCounter('hyperdx.test.counter');
-      const b = getCounter('hyperdx.test.counter');
+      const a = getCounter('cbt.test.counter');
+      const b = getCounter('cbt.test.counter');
 
       expect(a).toBe(b);
       expect(mockMeter.createCounter).toHaveBeenCalledTimes(1);
     });
 
     it('memoizes histograms by name', () => {
-      const a = getHistogram('hyperdx.test.histogram');
-      const b = getHistogram('hyperdx.test.histogram');
+      const a = getHistogram('cbt.test.histogram');
+      const b = getHistogram('cbt.test.histogram');
 
       expect(a).toBe(b);
       expect(mockMeter.createHistogram).toHaveBeenCalledTimes(1);
@@ -222,7 +220,7 @@ describe('instrumentation', () => {
 
   describe('recordDuration', () => {
     it('records duration and returns the result on success', async () => {
-      const histogram = getHistogram('hyperdx.test.duration');
+      const histogram = getHistogram('cbt.test.duration');
       const result = await recordDuration(histogram, async () => 42, {
         op: 'x',
       });
@@ -234,7 +232,7 @@ describe('instrumentation', () => {
     });
 
     it('records duration even when the function throws', async () => {
-      const histogram = getHistogram('hyperdx.test.duration');
+      const histogram = getHistogram('cbt.test.duration');
 
       await expect(
         recordDuration(histogram, async () => {

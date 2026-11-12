@@ -47,7 +47,7 @@ router.post(
 
       const { allFieldsWithKeys, keyValues } = await getAIMetadata(source);
 
-      const prompt = `You are an AI assistant that helps users create chart configurations for an observability platform called HyperDX.
+      const prompt = `You are an AI assistant that helps users create chart configurations for an observability platform called Couchbase Traces.
 
 The user wants to create a chart based on the following description:
 ${text}

@@ -33,7 +33,7 @@ export const Header = React.memo(function Header({
   return (
     <Box>
       <Text bold color="cyan">
-        HyperDX
+        Couchbase Traces
       </Text>
       <Text> — </Text>
       <Text color="green">{sourceName}</Text>

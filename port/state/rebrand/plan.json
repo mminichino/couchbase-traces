@@ -348,312 +348,47 @@
   "tokens": {
     "path": "port/rebrand/token-map.json",
     "counts": {
-      "proposed": 256,
-      "review": 30
+      "allowed": 78,
+      "approved": 208,
+      "proposed": 24
     },
     "open": [
-      "00004_hyperdx_sessions.sql",
-      "00004_hyperdx_sessions_compat.sql",
-      "2FClickStack",
-      "@email-mike@hyperdx.io",
-      "@hyperdx",
-      "@hyperdx.io",
-      "@service-accounts.hyperdx.invalid",
-      "CLICKSTACK_ACCESS_KEY",
-      "CLICKSTACK_API_KEY",
-      "CLICKSTACK_CAPTURE_HTTP_BODY",
-      "ClickHouse Cloud",
-      "ClickStack",
-      "ClickStack-helm-charts",
-      "ClickStackOnboarding",
-      "HDX",
-      "HyperDX",
-      "HyperDX-slot-order",
-      "HyperDX-specific",
-      "HyperDX.io",
-      "Hyperdx",
-      "HyperdxApiClient",
-      "Non-ClickStack",
-      "ResourceAttributes.hdx.sdk",
-      "ResourceAttributes.hdx.sdk.version",
-      "ResourceAttributes.hyperdx.distro",
-      "__hyperdx_",
-      "__hyperdx_alias_with",
-      "__hyperdx_id",
-      "branch.hyperdxApi",
-      "branch.mcps.hyperdx",
-      "clickhouse-clickstack",
-      "clickhouse_clickstack_",
-      "clickhouse_clickstack_alert",
-      "clickhouse_clickstack_alert.alert_",
-      "clickhouse_clickstack_alert.alert_655b1b7d9143aa1b1b73f4f6",
-      "clickhouse_clickstack_connection",
-      "clickhouse_clickstack_connection.connection_",
-      "clickhouse_clickstack_dashboard",
-      "clickhouse_clickstack_dashboard.dashboard_",
-      "clickhouse_clickstack_dashboard.example",
-      "clickhouse_clickstack_saved_search",
-      "clickhouse_clickstack_saved_search.saved_search_",
-      "clickhouse_clickstack_saved_search.saved_search_655b1b7d9143aa1b1b73f4f6",
-      "clickhouse_clickstack_source",
-      "clickhouse_clickstack_webhook",
-      "clickstack",
-      "clickstack-all-in-one",
-      "clickstack-banner-state",
-      "clickstack-browser.ts",
-      "clickstack-local",
-      "clickstack-logomark.svg",
-      "clickstack-otel-collector",
-      "clickstack-wordmark.svg",
-      "clickstack_",
-      "clickstack_dashboard",
-      "clickstack_delete_dashboard",
-      "clickstack_delete_source",
-      "clickstack_delete_webhook",
-      "clickstack_describe_metric",
-      "clickstack_describe_source",
-      "clickstack_describe_table",
-      "clickstack_emerging_signals",
-      "clickstack_endpoint",
-      "clickstack_event_deltas",
-      "clickstack_event_patterns",
-      "clickstack_get_alert",
-      "clickstack_get_dashboard",
-      "clickstack_get_dashboard_tile",
-      "clickstack_get_saved_search",
-      "clickstack_get_webhook",
-      "clickstack_list_metrics",
-      "clickstack_list_sources",
-      "clickstack_patch_dashboard",
-      "clickstack_promql",
-      "clickstack_query_tile",
-      "clickstack_query_tiles",
-      "clickstack_save_alert",
-      "clickstack_save_dashboard",
-      "clickstack_save_saved_search",
-      "clickstack_save_source",
-      "clickstack_save_webhook",
-      "clickstack_search",
-      "clickstack_search_dashboards",
-      "clickstack_service_health",
-      "clickstack_service_id",
-      "clickstack_sql",
-      "clickstack_table",
-      "clickstack_timeseries",
-      "clickstack_trace_top_time_consuming_operations",
-      "clickstack_trace_waterfall",
-      "docker.hyperdx.io",
-      "docs.hyperdx.io",
-      "e2e-test@hyperdx.io",
-      "e2e_hyperdx_sessions",
-      "fake@deploysentinel.com",
-      "hdx",
-      "hdx.dev.branch",
-      "hdx.dev.port",
-      "hdx.dev.service",
-      "hdx.dev.slot",
-      "hdx.dev.url",
-      "hdx.dev.worktree",
-      "hyperdx",
-      "hyperdx-aio-smoke",
-      "hyperdx-alerts",
-      "hyperdx-all-in-one",
-      "hyperdx-api",
-      "hyperdx-branch",
-      "hyperdx-e2e",
-      "hyperdx-ee",
-      "hyperdx-feature",
-      "hyperdx-import.tf",
-      "hyperdx-local",
-      "hyperdx-main",
-      "hyperdx-next",
-      "hyperdx-next-next",
-      "hyperdx-oss-usage-stats",
-      "hyperdx-otel-collector",
-      "hyperdx-package-list",
-      "hyperdx-private",
-      "hyperdx-release-notes",
-      "hyperdx-tasks",
-      "hyperdx-test",
-      "hyperdx-token-encryption-check",
-      "hyperdx-tui",
-      "hyperdx.alert.id",
-      "hyperdx.alert.source",
-      "hyperdx.alerts.batch.size",
-      "hyperdx.alerts.batch_failures",
-      "hyperdx.alerts.connection.id",
-      "hyperdx.alerts.evaluations",
-      "hyperdx.alerts.list.limit",
-      "hyperdx.alerts.list.page_size",
-      "hyperdx.alerts.notification_cap_exceeded",
-      "hyperdx.alerts.process_failures",
-      "hyperdx.alerts.query_failures",
-      "hyperdx.alerts.shard.index",
-      "hyperdx.alerts.team.id",
-      "hyperdx.alerts.webhook_deliveries",
-      "hyperdx.alerts.webhook_delivery.duration_ms",
-      "hyperdx.api.errors",
-      "hyperdx.api.pagination.truncated",
-      "hyperdx.api.webhook.serialization_errors",
-      "hyperdx.charts.series.duration_ms",
-      "hyperdx.charts.series.errors",
-      "hyperdx.iac.import_manifest.truncated_types",
-      "hyperdx.iac.import_manifest.unaddressable_tile_alerts",
-      "hyperdx.iac.import_manifest.unexportable_dashboards",
-      "hyperdx.iac.import_manifest.unexportable_sources",
-      "hyperdx.iac.import_manifest_truncated",
-      "hyperdx.iac.import_manifest_unaddressable_tile_alerts",
-      "hyperdx.iac.import_manifest_unexportable_dashboards",
-      "hyperdx.iac.import_manifest_unexportable_sources",
-      "hyperdx.iac.tile_alert_lookup_failed",
-      "hyperdx.io",
-      "hyperdx.local_mode",
-      "hyperdx.mcp.event_patterns.drilldown_where_failed",
-      "hyperdx.mcp.sql.batch.queries",
-      "hyperdx.mcp.tool.duration_ms",
-      "hyperdx.mcp.tool.errors",
-      "hyperdx.mcp.tool.response.size_bytes",
-      "hyperdx.mongodb.connection_events",
-      "hyperdx.opamp.agent_status_reports",
-      "hyperdx.opamp.messages",
-      "hyperdx.opamp.remote_config_applications",
-      "hyperdx.opamp.remote_configs",
-      "hyperdx.operation.duration_ms",
-      "hyperdx.operation.requests",
-      "hyperdx.org_api_key.auth_failures",
-      "hyperdx.org_api_key.last_used_write_failures",
-      "hyperdx.org_api_key.operations",
-      "hyperdx.prometheus.query.duration_ms",
-      "hyperdx.prometheus.query_errors",
-      "hyperdx.promql.backend",
-      "hyperdx.promql.query_kind",
-      "hyperdx.search.query.duration_ms",
-      "hyperdx.search.query_errors",
-      "hyperdx.session_secret.generated",
-      "hyperdx.source.id",
-      "hyperdx.tasks",
-      "hyperdx.team.id",
-      "hyperdx.team.member_restore_failures",
-      "hyperdx.test.counter",
-      "hyperdx.test.duration",
-      "hyperdx.test.histogram",
-      "hyperdx.token_encryption.disabled",
-      "hyperdx.token_encryption.plaintext_reads",
-      "hyperdx.user.is_virtual",
-      "hyperdxApi",
-      "hyperdxApi.accessKey",
-      "hyperdxSettingPrefix",
-      "hyperdx_",
-      "hyperdx__lucene",
-      "hyperdx_describe_source",
-      "hyperdx_event_deltas",
-      "hyperdx_event_patterns",
-      "hyperdx_event_type",
-      "hyperdx_get_alert",
-      "hyperdx_get_dashboard_tile",
-      "hyperdx_get_saved_search",
-      "hyperdx_get_webhook",
-      "hyperdx_list_sources",
-      "hyperdx_patch_dashboard",
-      "hyperdx_query",
-      "hyperdx_save_alert",
-      "hyperdx_save_dashboard",
-      "hyperdx_save_saved_search",
-      "hyperdx_search",
-      "hyperdx_search_dashboards",
-      "hyperdx_search_results",
-      "hyperdx_selected_rows",
-      "hyperdx_sql",
-      "hyperdx_status",
-      "hyperdx_table",
-      "hyperdx_timeseries",
-      "hyperdx_trace_top_time_consuming_operations",
-      "hyperdx_trace_waterfall",
-      "hyperdxio",
-      "local-user@hyperdx.io",
-      "mcp__hyperdx-branch__",
-      "mcp__hyperdx__",
-      "mcp__hyperdx__clickstack_delete_dashboard",
-      "mcp__hyperdx__clickstack_delete_source",
-      "mcp__hyperdx__clickstack_delete_webhook",
-      "mcp__hyperdx__clickstack_describe_metric",
-      "mcp__hyperdx__clickstack_get_alert",
-      "mcp__hyperdx__clickstack_get_dashboard",
-      "mcp__hyperdx__clickstack_get_dashboard_tile",
-      "mcp__hyperdx__clickstack_get_saved_search",
-      "mcp__hyperdx__clickstack_get_webhook",
-      "mcp__hyperdx__clickstack_list_metrics",
-      "mcp__hyperdx__clickstack_patch_dashboard",
-      "mcp__hyperdx__clickstack_query_tile",
-      "mcp__hyperdx__clickstack_save_alert",
-      "mcp__hyperdx__clickstack_save_dashboard",
-      "mcp__hyperdx__clickstack_save_saved_search",
-      "mcp__hyperdx__clickstack_save_source",
-      "mcp__hyperdx__clickstack_save_webhook",
-      "mcp__hyperdx__clickstack_search",
-      "mcp__hyperdx__clickstack_search_dashboards",
-      "mcp__hyperdx__clickstack_sql",
-      "mcp__hyperdx__clickstack_timeseries",
-      "mcp__hyperdx__hyperdx_delete_dashboard",
-      "mcp__hyperdx__hyperdx_get_alert",
-      "mcp__hyperdx__hyperdx_get_dashboard",
-      "mcp__hyperdx__hyperdx_get_saved_search",
-      "mcp__hyperdx__hyperdx_get_webhook",
-      "mcp__hyperdx__hyperdx_list_sources",
-      "mcp__hyperdx__hyperdx_query",
-      "mcp__hyperdx__hyperdx_query_tile",
-      "mcp__hyperdx__hyperdx_save_alert",
-      "mcp__hyperdx__hyperdx_save_dashboard",
-      "mcp__hyperdx__hyperdx_save_saved_search",
-      "mcp_servers.clickstack",
-      "mcp_servers.clickstack.env",
-      "mcps.hyperdx",
-      "me@hyperdx.io",
-      "member@deploysentinel.com",
-      "metadata.hyperdx_status",
-      "mike@hyperdx.io",
-      "nHyperDX",
-      "new@deploysentinel.com",
-      "notify_clickhouse_clickstack",
-      "oss-invitee@deploysentinel.com",
-      "otelcol-hyperdx",
-      "other@deploysentinel.com",
-      "param_HYPERDX_PARAM_",
-      "play-clickstack",
-      "play.hyperdx.io",
-      "race@deploysentinel.com",
-      "release-hyperdx-oss-workflow",
-      "release-nightly-hyperdx-oss-workflow",
-      "sa@service-accounts.hyperdx.invalid",
-      "setup-hyperdx",
-      "someone@hyperdx.io",
-      "support@hyperdx.io",
-      "sync-hyperdx.yml",
-      "theme-hyperdx",
-      "track-hyperdx-oss-usage-stats",
-      "var.clickstack_endpoint",
-      "window.hdx",
-      "window.hdx.report",
-      "x-hyperdx-connection-id",
-      "x-hyperdx-query-attribution",
-      "your-hyperdx-api-url",
-      "your-hyperdx-url"
+      "HYPERDX_",
+      "hyperdx_query_tile",
+      "hyperdx_selected_rows_",
+      "mcp__hyperdx__cbt_delete_dashboard",
+      "mcp__hyperdx__cbt_delete_source",
+      "mcp__hyperdx__cbt_delete_webhook",
+      "mcp__hyperdx__cbt_describe_metric",
+      "mcp__hyperdx__cbt_get_alert",
+      "mcp__hyperdx__cbt_get_dashboard",
+      "mcp__hyperdx__cbt_get_dashboard_tile",
+      "mcp__hyperdx__cbt_get_saved_search",
+      "mcp__hyperdx__cbt_get_webhook",
+      "mcp__hyperdx__cbt_list_metrics",
+      "mcp__hyperdx__cbt_patch_dashboard",
+      "mcp__hyperdx__cbt_query_tile",
+      "mcp__hyperdx__cbt_save_alert",
+      "mcp__hyperdx__cbt_save_dashboard",
+      "mcp__hyperdx__cbt_save_saved_search",
+      "mcp__hyperdx__cbt_save_source",
+      "mcp__hyperdx__cbt_save_webhook",
+      "mcp__hyperdx__cbt_search",
+      "mcp__hyperdx__cbt_search_dashboards",
+      "mcp__hyperdx__cbt_sql",
+      "mcp__hyperdx__cbt_timeseries"
     ]
   },
   "allowlist": {
     "path": "port/rebrand/allowlist.json",
-    "entries": 0
+    "entries": 502
   },
   "urls": {
     "counts": {
-      "rule 6 review": 55,
-      "rule 2 replace": 115,
-      "rule 4 replace": 34,
-      "rule 7 review": 20,
+      "rule 6 review": 31,
+      "rule 7 review": 16,
       "rule 5 keep": 11,
-      "rule 3 replace": 11,
-      "rule 1 keep": 15,
-      "rule 1 replace": 23
+      "rule 1 keep": 15
     },
     "review": [
       {
@@ -693,30 +428,6 @@
         "rule": 6
       },
       {
-        "path": ".github/workflows/vouch.yml",
-        "line": 154,
-        "url": "https://play.hyperdx.io",
-        "rule": 6
-      },
-      {
-        "path": "CHANGELOG.md",
-        "line": 62,
-        "url": "https://in-otel.hyperdx.io",
-        "rule": 6
-      },
-      {
-        "path": "CONTRIBUTING.md",
-        "line": 98,
-        "url": "https://play.hyperdx.io",
-        "rule": 6
-      },
-      {
-        "path": "CONTRIBUTING.md",
-        "line": 125,
-        "url": "https://sql-clickhouse.clickhouse.com",
-        "rule": 6
-      },
-      {
         "path": "DEPLOY.md",
         "line": 3,
         "url": "https://hyperdx.io",
@@ -741,75 +452,9 @@
         "rule": 6
       },
       {
-        "path": "README.md",
-        "line": 2,
-        "url": "https://hyperdx.io",
-        "rule": 6
-      },
-      {
-        "path": "README.md",
-        "line": 10,
-        "url": "https://badgen.net/github/stars/ClickHouse/ClickStack?label=%E2%98%85",
-        "rule": 7
-      },
-      {
-        "path": "README.md",
-        "line": 11,
-        "url": "https://badgen.net/github/license/ClickHouse/ClickStack",
-        "rule": 7
-      },
-      {
-        "path": "README.md",
-        "line": 13,
-        "url": "https://hyperdx.io/discord",
-        "rule": 6
-      },
-      {
-        "path": "README.md",
-        "line": 20,
-        "url": "https://clickhouse.com/use-cases/observability",
-        "rule": 6
-      },
-      {
-        "path": "README.md",
-        "line": 26,
-        "url": "https://clickhouse.com/use-cases/observability",
-        "rule": 6
-      },
-      {
-        "path": "README.md",
-        "line": 26,
-        "url": "https://hyperdx.io/discord",
-        "rule": 6
-      },
-      {
-        "path": "README.md",
-        "line": 26,
-        "url": "https://play.hyperdx.io/search",
-        "rule": 6
-      },
-      {
-        "path": "README.md",
-        "line": 70,
-        "url": "https://console.clickhouse.cloud/signUp",
-        "rule": 6
-      },
-      {
-        "path": "SECURITY.md",
-        "line": 7,
-        "url": "https://github.com/ClickHouse/ClickHouse/security/policy",
-        "rule": 7
-      },
-      {
         "path": "docs/upstream-AGENTS.md",
         "line": 262,
         "url": "https://play.hyperdx.io",
-        "rule": 6
-      },
-      {
-        "path": "packages/api/CHANGELOG.md",
-        "line": 44,
-        "url": "https://in-otel.hyperdx.io",
         "rule": 6
       },
       {
@@ -867,34 +512,10 @@
         "rule": 6
       },
       {
-        "path": "packages/api/src/routers/api/webhooks.ts",
-        "line": 499,
-        "url": "https://hyperdx.io",
-        "rule": 6
-      },
-      {
-        "path": "packages/api/src/tasks/__tests__/usageStats.test.ts",
-        "line": 7,
-        "url": "https://in-otel.hyperdx.io/v1/logs",
-        "rule": 6
-      },
-      {
-        "path": "packages/api/src/tasks/usageStats.ts",
-        "line": 36,
-        "url": "https://in-otel.hyperdx.io/v1/logs",
-        "rule": 6
-      },
-      {
         "path": "packages/api/src/utils/__tests__/proxyBody.test.ts",
         "line": 42,
         "url": "http://localhost/clickhouse-proxy?query=SELECT%201",
         "rule": 7
-      },
-      {
-        "path": "packages/app/CHANGELOG.md",
-        "line": 53,
-        "url": "https://in-otel.hyperdx.io",
-        "rule": 6
       },
       {
         "path": "packages/app/package.json",
@@ -919,48 +540,6 @@
         "line": 324,
         "url": "https://github.com/ClickHouse/ClickHouse/blob/master/src/Common/DateLUTImpl.h#L1059",
         "rule": 7
-      },
-      {
-        "path": "packages/app/src/LandingHeader.tsx",
-        "line": 52,
-        "url": "https://hyperdx.io",
-        "rule": 6
-      },
-      {
-        "path": "packages/app/src/LandingHeader.tsx",
-        "line": 107,
-        "url": "https://hyperdx.io",
-        "rule": 6
-      },
-      {
-        "path": "packages/app/src/components/AppNav/AppNav.components.tsx",
-        "line": 314,
-        "url": "https://hyperdx.io/discord",
-        "rule": 6
-      },
-      {
-        "path": "packages/app/src/components/AppNav/AppNav.tsx",
-        "line": 593,
-        "url": "https://static.reo.dev/$",
-        "rule": 6
-      },
-      {
-        "path": "packages/app/src/components/OnboardingModal.tsx",
-        "line": 45,
-        "url": "https://b1g1gnrrz3.us-central1.gcp.clickhouse-staging.com:8443",
-        "rule": 7
-      },
-      {
-        "path": "packages/app/src/components/OnboardingModal.tsx",
-        "line": 50,
-        "url": "https://sql-clickhouse.clickhouse.com",
-        "rule": 6
-      },
-      {
-        "path": "packages/app/src/components/OnboardingModal.tsx",
-        "line": 784,
-        "url": "https://clickpy.clickhouse.com",
-        "rule": 6
       },
       {
         "path": "packages/app/src/components/RevealSnippet/RevealSnippet.stories.tsx",
@@ -1035,12 +614,6 @@
         "rule": 6
       },
       {
-        "path": "packages/app/src/config.ts",
-        "line": 7,
-        "url": "https://demo-ch.hyperdx.io",
-        "rule": 6
-      },
-      {
         "path": "packages/app/src/stories/ClickUI.stories.tsx",
         "line": 44,
         "url": "https://clickhouse.com",
@@ -1057,12 +630,6 @@
         "line": 226,
         "url": "https://your-hyperdx.example",
         "rule": 7
-      },
-      {
-        "path": "packages/cli/src/sourcemaps.ts",
-        "line": 65,
-        "url": "https://api.hyperdx.io",
-        "rule": 6
       },
       {
         "path": "packages/common-utils/src/clickhouse/index.ts",
@@ -1110,38 +677,6 @@
   },
   "outbound": [
     {
-      "path": "packages/api/src/mcp/mcpServer.ts",
-      "line": 67,
-      "url": "https://clickhouse.com/docs/use-cases/observability/clickstack",
-      "host": "clickhouse.com",
-      "context": "unknown",
-      "feature": null
-    },
-    {
-      "path": "packages/api/src/routers/api/webhooks.ts",
-      "line": 499,
-      "url": "https://hyperdx.io",
-      "host": "hyperdx.io",
-      "context": "unknown",
-      "feature": "api-webhooks"
-    },
-    {
-      "path": "packages/api/src/tasks/usageStats.ts",
-      "line": 36,
-      "url": "https://in-otel.hyperdx.io/v1/logs",
-      "host": "in-otel.hyperdx.io",
-      "context": "request",
-      "feature": null
-    },
-    {
-      "path": "packages/app/src/AlertsPage.tsx",
-      "line": 163,
-      "url": "https://clickhouse.com/docs/use-cases/observability/clickstack/alerts",
-      "host": "clickhouse.com",
-      "context": "link",
-      "feature": "app-alerts"
-    },
-    {
       "path": "packages/app/src/CareersPage.tsx",
       "line": 52,
       "url": "https://boards-api.greenhouse.io/v1/boards/clickhouse/jobs",
@@ -1150,259 +685,15 @@
       "feature": "app-careers"
     },
     {
-      "path": "packages/app/src/InstallInstructionsModal.tsx",
-      "line": 85,
-      "url": "https://clickhouse.com/docs/use-cases/observability/clickstack/sdks/nodejs",
-      "host": "clickhouse.com",
-      "context": "link",
-      "feature": null
-    },
-    {
-      "path": "packages/app/src/InstallInstructionsModal.tsx",
-      "line": 96,
-      "url": "https://clickhouse.com/docs/use-cases/observability/clickstack/sdks/golang",
-      "host": "clickhouse.com",
-      "context": "link",
-      "feature": null
-    },
-    {
-      "path": "packages/app/src/InstallInstructionsModal.tsx",
-      "line": 107,
-      "url": "https://clickhouse.com/docs/use-cases/observability/clickstack/sdks/python",
-      "host": "clickhouse.com",
-      "context": "link",
-      "feature": null
-    },
-    {
-      "path": "packages/app/src/InstallInstructionsModal.tsx",
-      "line": 118,
-      "url": "https://clickhouse.com/docs/use-cases/observability/clickstack/sdks/java",
-      "host": "clickhouse.com",
-      "context": "link",
-      "feature": null
-    },
-    {
-      "path": "packages/app/src/InstallInstructionsModal.tsx",
-      "line": 129,
-      "url": "https://clickhouse.com/docs/use-cases/observability/clickstack/sdks/elixir",
-      "host": "clickhouse.com",
-      "context": "link",
-      "feature": null
-    },
-    {
-      "path": "packages/app/src/InstallInstructionsModal.tsx",
-      "line": 140,
-      "url": "https://clickhouse.com/docs/use-cases/observability/clickstack/sdks/ruby-on-rails",
-      "host": "clickhouse.com",
-      "context": "link",
-      "feature": null
-    },
-    {
-      "path": "packages/app/src/InstallInstructionsModal.tsx",
-      "line": 152,
-      "url": "https://clickhouse.com/docs/use-cases/observability/clickstack/ingesting-data/kubernetes",
-      "host": "clickhouse.com",
-      "context": "link",
-      "feature": null
-    },
-    {
-      "path": "packages/app/src/InstallInstructionsModal.tsx",
-      "line": 164,
-      "url": "https://clickhouse.com/docs/use-cases/observability/clickstack/sdks/browser",
-      "host": "clickhouse.com",
-      "context": "link",
-      "feature": null
-    },
-    {
-      "path": "packages/app/src/InstallInstructionsModal.tsx",
-      "line": 176,
-      "url": "https://clickhouse.com/docs/use-cases/observability/clickstack/ingesting-data/opentelemetry#sending-otel-data",
-      "host": "clickhouse.com",
-      "context": "link",
-      "feature": null
-    },
-    {
-      "path": "packages/app/src/LandingHeader.tsx",
-      "line": 52,
-      "url": "https://hyperdx.io",
-      "host": "hyperdx.io",
-      "context": "link",
-      "feature": null
-    },
-    {
-      "path": "packages/app/src/LandingHeader.tsx",
-      "line": 61,
-      "url": "https://clickhouse.com/docs/use-cases/observability/clickstack",
-      "host": "clickhouse.com",
-      "context": "link",
-      "feature": null
-    },
-    {
-      "path": "packages/app/src/LandingHeader.tsx",
-      "line": 107,
-      "url": "https://hyperdx.io",
-      "host": "hyperdx.io",
-      "context": "link",
-      "feature": null
-    },
-    {
-      "path": "packages/app/src/LandingHeader.tsx",
-      "line": 114,
-      "url": "https://clickhouse.com/docs/use-cases/observability/clickstack",
-      "host": "clickhouse.com",
-      "context": "link",
-      "feature": null
-    },
-    {
-      "path": "packages/app/src/SessionsPage.tsx",
-      "line": 594,
-      "url": "https://clickhouse.com/docs/use-cases/observability/clickstack/sdks/browser",
-      "host": "clickhouse.com",
-      "context": "link",
-      "feature": "app-sessions"
-    },
-    {
-      "path": "packages/app/src/Spotlights.tsx",
-      "line": 192,
-      "url": "https://clickhouse.com/docs/use-cases/observability/clickstack",
-      "host": "clickhouse.com",
-      "context": "unknown",
-      "feature": null
-    },
-    {
-      "path": "packages/app/src/Spotlights.tsx",
-      "line": 205,
-      "url": "https://clickhouse.com/docs/use-cases/observability/clickstack/getting-started#deploy-with-clickhouse-cloud",
-      "host": "clickhouse.com",
-      "context": "unknown",
-      "feature": null
-    },
-    {
-      "path": "packages/app/src/components/AppNav/AppNav.components.tsx",
-      "line": 64,
-      "url": "https://clickhouse.com/docs/use-cases/observability/clickstack/getting-started#deploy-with-clickhouse-cloud",
-      "host": "clickhouse.com",
-      "context": "link",
-      "feature": null
-    },
-    {
-      "path": "packages/app/src/components/AppNav/AppNav.components.tsx",
-      "line": 285,
-      "url": "https://clickhouse.com/docs/use-cases/observability/clickstack",
-      "host": "clickhouse.com",
-      "context": "link",
-      "feature": null
-    },
-    {
-      "path": "packages/app/src/components/AppNav/AppNav.components.tsx",
-      "line": 296,
-      "url": "https://clickhouse.com/docs/use-cases/observability/clickstack/getting-started",
-      "host": "clickhouse.com",
-      "context": "link",
-      "feature": null
-    },
-    {
-      "path": "packages/app/src/components/AppNav/AppNav.components.tsx",
-      "line": 314,
-      "url": "https://hyperdx.io/discord",
-      "host": "hyperdx.io",
-      "context": "link",
-      "feature": null
-    },
-    {
-      "path": "packages/app/src/components/AppNav/AppNav.tsx",
-      "line": 593,
-      "url": "https://static.reo.dev/",
-      "host": "static.reo.dev",
-      "context": "request",
-      "feature": null
-    },
-    {
-      "path": "packages/app/src/components/ChartEditor/RawSqlChartInstructions.tsx",
-      "line": 84,
-      "url": "https://clickhouse.com/docs/use-cases/observability/clickstack/dashboards/sql-visualizations",
-      "host": "clickhouse.com",
-      "context": "link",
-      "feature": null
-    },
-    {
-      "path": "packages/app/src/components/OnboardingModal.tsx",
-      "line": 50,
-      "url": "https://sql-clickhouse.clickhouse.com",
-      "host": "sql-clickhouse.clickhouse.com",
-      "context": "request",
-      "feature": null
-    },
-    {
-      "path": "packages/app/src/components/SearchInput/SearchInputV2.tsx",
-      "line": 274,
-      "url": "https://clickhouse.com/docs/use-cases/observability/clickstack/search",
-      "host": "clickhouse.com",
-      "context": "link",
-      "feature": null
-    },
-    {
-      "path": "packages/app/src/components/SearchInput/SyntaxReferenceModal.tsx",
-      "line": 347,
-      "url": "https://clickhouse.com/docs/use-cases/observability/clickstack/search",
-      "host": "clickhouse.com",
-      "context": "link",
-      "feature": null
-    },
-    {
       "path": "packages/app/src/components/Sources/SourceForm/SourceForm.tsx",
       "line": 692,
       "url": "https://clickhouse.com/docs/operations/settings/settings",
       "host": "clickhouse.com",
       "context": "link",
       "feature": null
-    },
-    {
-      "path": "packages/app/src/layout.tsx",
-      "line": 68,
-      "url": "https://clickhouse.com/docs/use-cases/observability/clickstack/getting-started",
-      "host": "clickhouse.com",
-      "context": "link",
-      "feature": null
-    },
-    {
-      "path": "packages/cli/src/sourcemaps.ts",
-      "line": 65,
-      "url": "https://api.hyperdx.io",
-      "host": "api.hyperdx.io",
-      "context": "unknown",
-      "feature": "cli"
     }
   ],
   "workflows": [
-    {
-      "path": ".github/workflows/claude-code-review.yml",
-      "class": "bot",
-      "reasons": [
-        "anthropics/claude-code-action"
-      ]
-    },
-    {
-      "path": ".github/workflows/claude.yml",
-      "class": "bot",
-      "reasons": [
-        "anthropics/claude-code-action"
-      ]
-    },
-    {
-      "path": ".github/workflows/deep-resolve.yml",
-      "class": "bot",
-      "reasons": [
-        "anthropics/claude-code-action"
-      ]
-    },
-    {
-      "path": ".github/workflows/deep-review.yml",
-      "class": "bot",
-      "reasons": [
-        "anthropics/claude-code-action"
-      ]
-    },
     {
       "path": ".github/workflows/docker-build.yml",
       "class": "ci",
@@ -1410,11 +701,6 @@
     },
     {
       "path": ".github/workflows/e2e-tests.yml",
-      "class": "ci",
-      "reasons": []
-    },
-    {
-      "path": ".github/workflows/external-contributor-alerts.yml",
       "class": "ci",
       "reasons": []
     },
@@ -1437,53 +723,6 @@
       "path": ".github/workflows/pr-triage.yml",
       "class": "ci",
       "reasons": []
-    },
-    {
-      "path": ".github/workflows/push.yml",
-      "class": "ci",
-      "reasons": []
-    },
-    {
-      "path": ".github/workflows/pushv1.yml",
-      "class": "ci",
-      "reasons": []
-    },
-    {
-      "path": ".github/workflows/release-nightly.yml",
-      "class": "publish",
-      "reasons": [
-        "docker/login-action",
-        "docker/build-push-action with push: true"
-      ]
-    },
-    {
-      "path": ".github/workflows/release-reminder.yml",
-      "class": "ci",
-      "reasons": []
-    },
-    {
-      "path": ".github/workflows/release.yml",
-      "class": "publish",
-      "reasons": [
-        "docker/login-action",
-        "npm publish",
-        "changesets/action",
-        "gh release",
-        "docker/build-push-action with push: true"
-      ]
-    },
-    {
-      "path": ".github/workflows/security-audit.yml",
-      "class": "ci",
-      "reasons": []
-    },
-    {
-      "path": ".github/workflows/vouch.yml",
-      "class": "bot",
-      "reasons": [
-        "mitchellh/vouch/action/check-pr",
-        "mitchellh/vouch/action/manage-by-issue"
-      ]
     }
   ],
   "assets": {

@@ -11,7 +11,7 @@ export type ObjectId = mongoose.Types.ObjectId;
 // event name makes flapping/reconnect storms visible on a dashboard and
 // alertable (see agent_docs/observability.md).
 const mongoConnectionEventsCounter = getCounter(
-  'hyperdx.mongodb.connection_events',
+  'cbt.mongodb.connection_events',
   {
     description:
       'Count of MongoDB connection lifecycle events, labeled by event (connected, disconnected, error, reconnected, reconnect_failed, initial_connect_retry).',
@@ -83,7 +83,7 @@ export type ConnectRetryOptions = {
  * first `mongoose.connect()` is terminal. Long-lived servers must keep
  * retrying, otherwise a Mongo that comes up moments after the API leaves the
  * process permanently unable to serve while still listening (see
- * https://github.com/ClickHouse/ClickStack/issues/2966).
+ * https://github.com/mminichino/couchbase-traces/issues/2966).
  *
  * Configuration errors (missing or malformed MONGO_URI) are not retryable
  * and are rethrown immediately so startup fails fast.

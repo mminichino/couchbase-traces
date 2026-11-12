@@ -772,7 +772,7 @@ export const DEFAULT_INCIDENT_IO_WEBHOOK_BODY = `{
   "source_url": "{{link}}",
   "metadata": {
     "alert_id": "{{alertId}}",
-    "hyperdx_status": "{{status}}",
+    "couchbase_traces_status": "{{status}}",
     "alert_type": "{{alertType}}",
     "comparator": "{{comparator}}",
     "threshold": "{{threshold}}",
@@ -3351,7 +3351,6 @@ export const MeApiResponseSchema = z.object({
     allowedAuthMethods: true,
     apiKey: true,
   }).merge(TeamClickHouseSettingsSchema),
-  usageStatsEnabled: z.boolean(),
   aiAssistantEnabled: z.boolean(),
 });
 

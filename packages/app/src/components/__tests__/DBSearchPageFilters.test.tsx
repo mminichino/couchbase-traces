@@ -110,8 +110,8 @@ describe('cleanedFacetName', () => {
       ).toBe('ResourceAttributes.service.name');
 
       expect(
-        cleanedFacetName('toString(ResourceAttributes.`hdx`.`sdk`.`version`)'),
-      ).toBe('ResourceAttributes.hdx.sdk.version');
+        cleanedFacetName('toString(ResourceAttributes.`cbt`.`sdk`.`version`)'),
+      ).toBe('ResourceAttributes.cbt.sdk.version');
     });
 
     it('should handle mixed quoted and unquoted ResourceAttributes', () => {
@@ -846,7 +846,7 @@ describe('FilterGroup', () => {
     expect(screen.getAllByTestId(/filter-checkbox-.+-input/)).toHaveLength(3);
   });
 
-  // https://github.com/ClickHouse/ClickStack/issues/2576 — an empty map attribute
+  // https://github.com/mminichino/couchbase-traces/issues/2576 — an empty map attribute
   // key (e.g. LogAttributes['']) yields an empty name, which Mantine rejects
   // as an Accordion.Item value and crashes the filter panel.
   it('should render a placeholder instead of crashing when name is empty', () => {

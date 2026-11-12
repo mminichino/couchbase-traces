@@ -79,9 +79,9 @@ describe('MCP Emerging Signals Tool', () => {
   });
 
   describe('schema serialization', () => {
-    it('exposes clickstack_emerging_signals via tools/list with current + baseline windows', async () => {
+    it('exposes cbt_emerging_signals via tools/list with current + baseline windows', async () => {
       const { tools } = await client.listTools();
-      const t = tools.find(t => t.name === 'clickstack_emerging_signals');
+      const t = tools.find(t => t.name === 'cbt_emerging_signals');
       expect(t).toBeDefined();
       const schema = t!.inputSchema;
       const props = Object.keys(schema.properties ?? {});
@@ -100,7 +100,7 @@ describe('MCP Emerging Signals Tool', () => {
 
   describe('validation', () => {
     it('rejects overlapping baseline and current windows', async () => {
-      const result = await callTool(client, 'clickstack_emerging_signals', {
+      const result = await callTool(client, 'cbt_emerging_signals', {
         sourceId: logSource._id.toString(),
         // Baseline [00:00, 00:40) overlaps current [00:30, 01:00).
         baselineStartTime: '2026-05-10T00:00:00Z',
@@ -113,7 +113,7 @@ describe('MCP Emerging Signals Tool', () => {
     });
 
     it('rejects a current window where endTime <= startTime', async () => {
-      const result = await callTool(client, 'clickstack_emerging_signals', {
+      const result = await callTool(client, 'cbt_emerging_signals', {
         sourceId: logSource._id.toString(),
         baselineStartTime: '2026-05-10T00:00:00Z',
         baselineEndTime: '2026-05-10T00:30:00Z',
@@ -179,7 +179,7 @@ describe('MCP Emerging Signals Tool', () => {
     });
 
     it('surfaces a brand-new log template as an emerging "new" signal', async () => {
-      const result = await callTool(client, 'clickstack_emerging_signals', {
+      const result = await callTool(client, 'cbt_emerging_signals', {
         sourceId: logSource._id.toString(),
         currentStartTime: new Date(now - 5 * 60_000).toISOString(),
         currentEndTime: new Date(now).toISOString(),
@@ -222,7 +222,7 @@ describe('MCP Emerging Signals Tool', () => {
       // Two non-overlapping halves of the baseline-only region (now-10min ..
       // now-5min). Both contain only the steady-state checkout template and
       // neither contains the shadow-eval template, so nothing should emerge.
-      const result = await callTool(client, 'clickstack_emerging_signals', {
+      const result = await callTool(client, 'cbt_emerging_signals', {
         sourceId: logSource._id.toString(),
         currentStartTime: new Date(now - 7.5 * 60_000).toISOString(),
         currentEndTime: new Date(now - 5 * 60_000).toISOString(),

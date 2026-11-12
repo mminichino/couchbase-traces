@@ -48,7 +48,7 @@ const deltasSchema = z.object({
     .string()
     .describe(
       'Trace or log source to sample. ' +
-        'Call clickstack_list_sources for available sources.',
+        'Call cbt_list_sources for available sources.',
     ),
   target: makeGroupSchema({
     startTime: 'Start of the target window as ISO 8601.',
@@ -161,7 +161,7 @@ export function registerEventDeltas({ context, registerTool }: ToolRegistrar) {
   const { teamId } = context;
 
   registerTool(
-    'clickstack_event_deltas',
+    'cbt_event_deltas',
     {
       title: 'Compare Events: Target vs Baseline',
       annotations: READ_ONLY_TOOL,
@@ -180,10 +180,10 @@ export function registerEventDeltas({ context, registerTool }: ToolRegistrar) {
         'instead of why it is slow.\n' +
         '  - After vs before an incident or deploy: same where, different windows.\n' +
         '  - Failing vs succeeding rows, or one service vs the rest.\n\n' +
-        'WHEN NOT TO USE: the attribute is already known (clickstack_table ' +
-        'groupBy), you want raw rows (clickstack_search) or a trend ' +
-        '(clickstack_timeseries), or you want patterns that are new or gone ' +
-        '(clickstack_emerging_signals).\n\n' +
+        'WHEN NOT TO USE: the attribute is already known (cbt_table ' +
+        'groupBy), you want raw rows (cbt_search) or a trend ' +
+        '(cbt_timeseries), or you want patterns that are new or gone ' +
+        '(cbt_emerging_signals).\n\n' +
         PREFER_BUILDER_OVER_SQL_NUDGE +
         '\n\n' +
         'OUTPUT: properties ranked by score, the largest %-share difference of ' +
@@ -242,12 +242,12 @@ export function registerEventDeltas({ context, registerTool }: ToolRegistrar) {
       const source = await getSource(teamId.toString(), input.sourceId);
       if (!source) {
         return mcpUserError(
-          `Source not found: ${input.sourceId}. Call clickstack_list_sources to find available source IDs.`,
+          `Source not found: ${input.sourceId}. Call cbt_list_sources to find available source IDs.`,
         );
       }
       if (source.kind !== SourceKind.Trace && source.kind !== SourceKind.Log) {
         return mcpUserError(
-          `Source ${input.sourceId} is kind="${source.kind}". clickstack_event_deltas requires a trace or log source.`,
+          `Source ${input.sourceId} is kind="${source.kind}". cbt_event_deltas requires a trace or log source.`,
         );
       }
 
@@ -448,7 +448,7 @@ export function registerEventDeltas({ context, registerTool }: ToolRegistrar) {
             ? {
                 warning:
                   'One or both groups returned 0 rows — verify the time ' +
-                  'window and where filter via clickstack_search.',
+                  'window and where filter via cbt_search.',
               }
             : {}),
         },

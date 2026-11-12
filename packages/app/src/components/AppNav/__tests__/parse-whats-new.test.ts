@@ -13,18 +13,18 @@ const REPO_ROOT = join(__dirname, '..', '..', '..', '..', '..', '..');
 // Mirrors the shape .github/scripts/release-notes.mjs writes into the root
 // CHANGELOG.md during a release, including the soft-wrapped bold lead-ins and
 // the appended package list.
-const CHANGELOG = `# HyperDX Changelog
+const CHANGELOG = `# Couchbase Traces Changelog
 
 Release-level highlights across all packages. Maintainer preamble that must
 never reach users.
 
 ## v2.36.0 — 2026-08-21
 
-<!-- hyperdx-release-notes version=2.36.0 inputs=abc123 -->
+<!-- cbt-release-notes version=2.36.0 inputs=abc123 -->
 
 **Formulas land on every chart**
 
-Formulas are the headline of this release. Read [the docs](https://docs.hyperdx.io/formulas).
+Formulas are the headline of this release. Read [the docs](https://github.com/mminichino/couchbase-traces/tree/main/docs).
 
 ### 💥 Breaking Changes
 
@@ -36,7 +36,7 @@ Formulas are the headline of this release. Read [the docs](https://docs.hyperdx.
 
 - **Formulas on metric, log and trace charts**: time series, table and number
   charts gain an "Add Formula" row (#2909, #2908).
-- **\`clickstack_emerging_signals\` MCP tool**: surfaces newly-appearing errors
+- **\`cbt_emerging_signals\` MCP tool**: surfaces newly-appearing errors
   (#2810).
 - A bullet written without a bold lead-in. It still names the change.
 
@@ -55,7 +55,7 @@ Formulas are the headline of this release. Read [the docs](https://docs.hyperdx.
 
 ## v2.35.0 — 2026-08-14
 
-<!-- hyperdx-release-notes version=2.35.0 inputs=def456 -->
+<!-- cbt-release-notes version=2.35.0 inputs=def456 -->
 
 ### ✨ New Features
 
@@ -98,7 +98,7 @@ describe('parseWhatsNew', () => {
   it('never reads the release-notes marker as the summary', () => {
     const { releases } = parseWhatsNew(CHANGELOG);
 
-    expect(releases[0].summary).not.toContain('hyperdx-release-notes');
+    expect(releases[0].summary).not.toContain('cbt-release-notes');
   });
 
   it('still shows a summary when the notes carry no headline', () => {
@@ -160,7 +160,7 @@ Dashboards got faster this release. And some other sentence.
         text: "The API's log level now defaults to info, and query SQL is no longer dumped to the console",
       },
       { kind: 'feature', text: 'Formulas on metric, log and trace charts' },
-      { kind: 'feature', text: 'clickstack_emerging_signals MCP tool' },
+      { kind: 'feature', text: 'cbt_emerging_signals MCP tool' },
       {
         kind: 'feature',
         text: 'A bullet written without a bold lead-in',
@@ -173,7 +173,7 @@ Dashboards got faster this release. And some other sentence.
 
     // Capitalising would rename it to something that does not exist.
     expect(releases[0].highlights[2].text).toBe(
-      'clickstack_emerging_signals MCP tool',
+      'cbt_emerging_signals MCP tool',
     );
   });
 
@@ -197,7 +197,9 @@ Dashboards got faster this release. And some other sentence.
   it('never reads the file title or maintainer preamble as a release', () => {
     const { releases } = parseWhatsNew(CHANGELOG);
 
-    expect(releases.map(r => r.version)).not.toContain('HyperDX Changelog');
+    expect(releases.map(r => r.version)).not.toContain(
+      'Couchbase Traces Changelog',
+    );
     const text = JSON.stringify(releases);
     expect(text).not.toContain('Maintainer preamble');
   });
@@ -221,7 +223,8 @@ Dashboards got faster this release. And some other sentence.
 
   it('returns no releases for a changelog that has none yet', () => {
     expect(
-      parseWhatsNew('# HyperDX Changelog\n\nNothing released yet.\n').releases,
+      parseWhatsNew('# Couchbase Traces Changelog\n\nNothing released yet.\n')
+        .releases,
     ).toEqual([]);
   });
 
@@ -250,7 +253,10 @@ describe('whats-new.json contract', () => {
     // next.config.mjs writes this payload at build time and the drawer validates
     // it at runtime. Nothing else pins the two together, and a mismatch shows
     // every user "Unable to load recent releases".
-    const changelog = readFileSync(join(REPO_ROOT, 'CHANGELOG.md'), 'utf-8');
+    const changelog = readFileSync(
+      join(REPO_ROOT, 'docs/upstream/CHANGELOG.md'),
+      'utf-8',
+    );
     const payload = parseWhatsNew(changelog, { maxReleases: 5 });
 
     expect(() => whatsNewSchema.parse(payload)).not.toThrow();
@@ -277,7 +283,10 @@ describe('whats-new.json release ordering', () => {
   };
 
   it('leads with the newest release in the real changelog', () => {
-    const changelog = readFileSync(join(REPO_ROOT, 'CHANGELOG.md'), 'utf-8');
+    const changelog = readFileSync(
+      join(REPO_ROOT, 'docs/upstream/CHANGELOG.md'),
+      'utf-8',
+    );
     const { releases } = parseWhatsNew(changelog, { maxReleases: 5 });
 
     expect(releases.length).toBeGreaterThan(1);
@@ -287,7 +296,10 @@ describe('whats-new.json release ordering', () => {
   });
 
   it('keeps every version in descending order', () => {
-    const changelog = readFileSync(join(REPO_ROOT, 'CHANGELOG.md'), 'utf-8');
+    const changelog = readFileSync(
+      join(REPO_ROOT, 'docs/upstream/CHANGELOG.md'),
+      'utf-8',
+    );
     const { releases } = parseWhatsNew(changelog, { maxReleases: 5 });
 
     releases.slice(1).forEach((release, i) => {

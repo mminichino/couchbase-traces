@@ -16,12 +16,12 @@ describe('MCP PromQL gating', () => {
     return content.type === 'text' ? content.text : '';
   };
 
-  it('registers clickstack_promql and documents it while PromQL is enabled', async () => {
+  it('registers cbt_promql and documents it while PromQL is enabled', async () => {
     const client = await connect(true);
 
     const { tools } = await client.listTools();
-    expect(tools.map(tool => tool.name)).toContain('clickstack_promql');
-    expect(client.getInstructions()).toContain('clickstack_promql');
+    expect(tools.map(tool => tool.name)).toContain('cbt_promql');
+    expect(client.getInstructions()).toContain('cbt_promql');
     expect(await queryGuide(client)).toContain('== PROMQL SOURCES ==');
 
     const { prompts } = await client.listPrompts();
@@ -30,15 +30,15 @@ describe('MCP PromQL gating', () => {
     ).toContain('PromQL');
   });
 
-  it('hides clickstack_promql and every mention of it while PromQL is disabled', async () => {
+  it('hides cbt_promql and every mention of it while PromQL is disabled', async () => {
     const client = await connect(false);
 
     const { tools } = await client.listTools();
-    expect(tools.map(tool => tool.name)).not.toContain('clickstack_promql');
+    expect(tools.map(tool => tool.name)).not.toContain('cbt_promql');
     expect(client.getInstructions()).not.toContain('PromQL');
     const guide = await queryGuide(client);
     expect(guide).not.toContain('== PROMQL SOURCES ==');
-    expect(guide).not.toContain('clickstack_promql');
+    expect(guide).not.toContain('cbt_promql');
 
     const { prompts } = await client.listPrompts();
     expect(

@@ -89,7 +89,7 @@ export function getRawSqlMissingSourceError(
     'Raw SQL tiles that use the $__filters or $__sourceTable macro must set a sourceId. ' +
     "Without a source, $__filters cannot resolve dashboard filters against the source's " +
     'columns and $__sourceTable fails at query time. Add a sourceId to the following tiles ' +
-    '(call clickstack_list_sources to find it), or remove the macro if the query reads ' +
+    '(call cbt_list_sources to find it), or remove the macro if the query reads ' +
     `from multiple tables: ${list}`
   );
 }

@@ -120,8 +120,8 @@ describe('filterAndSortDashboards', () => {
 
   it('narrows the mine tab to dashboards created by the current user', () => {
     const dashboards = [
-      makeDashboard({ id: 'a', createdBy: { email: 'me@hyperdx.io' } }),
-      makeDashboard({ id: 'b', createdBy: { email: 'someone@hyperdx.io' } }),
+      makeDashboard({ id: 'a', createdBy: { email: 'me@example.com' } }),
+      makeDashboard({ id: 'b', createdBy: { email: 'someone@example.com' } }),
       makeDashboard({ id: 'c' }),
     ];
 
@@ -129,7 +129,7 @@ describe('filterAndSortDashboards', () => {
       ...defaults,
       dashboards,
       tab: 'mine',
-      currentUserEmail: 'me@hyperdx.io',
+      currentUserEmail: 'me@example.com',
     });
 
     expect(result.map(d => d.id)).toEqual(['a']);
@@ -137,7 +137,7 @@ describe('filterAndSortDashboards', () => {
 
   it('shows nothing on the mine tab when the current user is unknown', () => {
     const dashboards = [
-      makeDashboard({ id: 'a', createdBy: { email: 'me@hyperdx.io' } }),
+      makeDashboard({ id: 'a', createdBy: { email: 'me@example.com' } }),
     ];
 
     const result = filterAndSortDashboards({

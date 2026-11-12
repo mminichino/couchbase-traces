@@ -3,7 +3,7 @@ import { Anchor, Burger, Button, Container, Group } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
 
 import api from './api';
-import { useBrandDisplayName, useWordmark } from './brand';
+import { useWordmark } from './brand';
 
 export default function LandingHeader({
   activeKey,
@@ -12,7 +12,6 @@ export default function LandingHeader({
   activeKey: string;
   fixed?: boolean;
 }) {
-  const brandName = useBrandDisplayName();
   const wordmark = useWordmark();
   const { data: me } = api.useMe();
   const isLoggedIn = Boolean(me);
@@ -49,16 +48,7 @@ export default function LandingHeader({
 
             <Group gap="lg" visibleFrom="lg">
               <Anchor
-                href="https://hyperdx.io"
-                c={activeKey === 'cloud' ? 'var(--color-text-primary)' : 'gray'}
-                underline="never"
-                style={{ fontWeight: activeKey === 'cloud' ? 600 : 400 }}
-                size="sm"
-              >
-                {brandName} Cloud
-              </Anchor>
-              <Anchor
-                href="https://clickhouse.com/docs/use-cases/observability/clickstack"
+                href="https://github.com/mminichino/couchbase-traces/tree/main/docs"
                 c={activeKey === 'docs' ? 'var(--color-text-primary)' : 'gray'}
                 underline="never"
                 style={{ fontWeight: activeKey === 'docs' ? 600 : 400 }}
@@ -104,14 +94,7 @@ export default function LandingHeader({
           {opened && (
             <Group gap="sm" mt="md" hiddenFrom="lg" style={{ fontSize: 14 }}>
               <Anchor
-                href="https://hyperdx.io"
-                underline="never"
-                style={{ fontWeight: activeKey === 'cloud' ? 600 : 400 }}
-              >
-                {brandName} Cloud
-              </Anchor>
-              <Anchor
-                href="https://clickhouse.com/docs/use-cases/observability/clickstack"
+                href="https://github.com/mminichino/couchbase-traces/tree/main/docs"
                 underline="never"
                 style={{ fontWeight: activeKey === 'docs' ? 600 : 400 }}
               >

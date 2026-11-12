@@ -112,7 +112,7 @@ describe('MCP PromQL sources', () => {
     beforeEach(() => connect(true));
 
     it('lists a TimeSeries source with its table, with usage guidance', async () => {
-      const result = await callTool(client, 'clickstack_list_sources');
+      const result = await callTool(client, 'cbt_list_sources');
 
       const output = JSON.parse(getFirstText(result));
       expect(output.sources).toHaveLength(1);
@@ -128,7 +128,7 @@ describe('MCP PromQL sources', () => {
     it('lists a Prometheus endpoint source without its placeholder table', async () => {
       const source = await createPrometheusSource();
 
-      const result = await callTool(client, 'clickstack_list_sources');
+      const result = await callTool(client, 'cbt_list_sources');
 
       const output = JSON.parse(getFirstText(result));
       const listed = output.sources.find(
@@ -139,9 +139,9 @@ describe('MCP PromQL sources', () => {
       expect(listed.database).toBeUndefined();
     });
 
-    it('reads a TimeSeries table through clickstack_sql as the hint describes', async () => {
+    it('reads a TimeSeries table through cbt_sql as the hint describes', async () => {
       const table = `${DEFAULT_DATABASE}.${TABLE}`;
-      const result = await callTool(client, 'clickstack_sql', {
+      const result = await callTool(client, 'cbt_sql', {
         connectionId: promqlSource.connection.toString(),
         sql:
           `SELECT t.metric_name AS metric, count() AS samples ` +
@@ -157,7 +157,7 @@ describe('MCP PromQL sources', () => {
     });
 
     it('describes a TimeSeries table by its label names and metric names', async () => {
-      const result = await callTool(client, 'clickstack_describe_source', {
+      const result = await callTool(client, 'cbt_describe_source', {
         sourceId: promqlSource._id.toString(),
       });
 
@@ -187,7 +187,7 @@ describe('MCP PromQL sources', () => {
         ),
       );
 
-      const result = await callTool(client, 'clickstack_describe_source', {
+      const result = await callTool(client, 'cbt_describe_source', {
         sourceId: source._id.toString(),
       });
 
@@ -218,7 +218,7 @@ describe('MCP PromQL sources', () => {
       const source = await createPrometheusSource();
       mockFetch.mockRejectedValue(new Error('fetch failed'));
 
-      const result = await callTool(client, 'clickstack_describe_source', {
+      const result = await callTool(client, 'cbt_describe_source', {
         sourceId: source._id.toString(),
       });
 
@@ -240,7 +240,7 @@ describe('MCP PromQL sources', () => {
         }),
       );
 
-      const result = await callTool(client, 'clickstack_describe_source', {
+      const result = await callTool(client, 'cbt_describe_source', {
         sourceId: source._id.toString(),
       });
 
@@ -254,16 +254,16 @@ describe('MCP PromQL sources', () => {
   describe('with PromQL disabled', () => {
     beforeEach(() => connect(false));
 
-    it('hides PromQL sources from clickstack_list_sources', async () => {
-      const result = await callTool(client, 'clickstack_list_sources');
+    it('hides PromQL sources from cbt_list_sources', async () => {
+      const result = await callTool(client, 'cbt_list_sources');
 
       const output = JSON.parse(getFirstText(result));
       expect(output.sources).toEqual([]);
       expect(output.promqlUsage).toBeUndefined();
     });
 
-    it('treats a PromQL source as not found in clickstack_describe_source', async () => {
-      const result = await callTool(client, 'clickstack_describe_source', {
+    it('treats a PromQL source as not found in cbt_describe_source', async () => {
+      const result = await callTool(client, 'cbt_describe_source', {
         sourceId: promqlSource._id.toString(),
       });
 
@@ -271,8 +271,8 @@ describe('MCP PromQL sources', () => {
       expect(getFirstText(result)).toContain('not found');
     });
 
-    it('treats a PromQL source as not found in clickstack_delete_source', async () => {
-      const result = await callTool(client, 'clickstack_delete_source', {
+    it('treats a PromQL source as not found in cbt_delete_source', async () => {
+      const result = await callTool(client, 'cbt_delete_source', {
         id: promqlSource._id.toString(),
       });
 
@@ -280,8 +280,8 @@ describe('MCP PromQL sources', () => {
       expect(await Source.findById(promqlSource._id)).not.toBeNull();
     });
 
-    it('rejects kind promql in clickstack_save_source', async () => {
-      const result = await callTool(client, 'clickstack_save_source', {
+    it('rejects kind promql in cbt_save_source', async () => {
+      const result = await callTool(client, 'cbt_save_source', {
         kind: 'promql',
         name: 'New PromQL',
         connection: promqlSource.connection.toString(),

@@ -695,7 +695,7 @@ export default class DefaultAlertProvider implements AlertProvider {
       host,
       username,
       password,
-      application: `hyperdx-alerts ${config.CODE_VERSION}`,
+      application: `couchbase-traces-alerts ${config.CODE_VERSION}`,
       requestTimeout: requestTimeout ?? 30_000,
       // Fallback for anything outside a per-alert scope.
       attribution: { surface: 'alert' },

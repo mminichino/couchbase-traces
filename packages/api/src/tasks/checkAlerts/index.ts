@@ -123,22 +123,19 @@ import logger from '@/utils/logger';
 
 // Outcome of a single alert evaluation. Kept low-cardinality (a fixed enum) so
 // it is safe to use as a metric attribute (see agent_docs/observability.md).
-const alertEvaluationsCounter = getCounter('hyperdx.alerts.evaluations', {
+const alertEvaluationsCounter = getCounter('cbt.alerts.evaluations', {
   description:
     'Count of alert evaluations, labeled by outcome (fired, resolved, or the reason it was skipped).',
 });
-const alertQueryFailuresCounter = getCounter('hyperdx.alerts.query_failures', {
+const alertQueryFailuresCounter = getCounter('cbt.alerts.query_failures', {
   description:
     'Count of alert evaluations where the ClickHouse query failed, skipping the state/history update.',
 });
-const alertProcessFailuresCounter = getCounter(
-  'hyperdx.alerts.process_failures',
-  {
-    description:
-      'Count of alert evaluations that threw an unexpected error during processing.',
-  },
-);
-const alertBatchFailuresCounter = getCounter('hyperdx.alerts.batch_failures', {
+const alertProcessFailuresCounter = getCounter('cbt.alerts.process_failures', {
+  description:
+    'Count of alert evaluations that threw an unexpected error during processing.',
+});
+const alertBatchFailuresCounter = getCounter('cbt.alerts.batch_failures', {
   description:
     'Count of alert batches (one per connection) that failed before their alerts could be evaluated, e.g. a ClickHouse connection failure.',
 });
@@ -2126,12 +2123,9 @@ export default class CheckAlertTask implements HdxTask {
     return tasksTracer.startActiveSpan('processAlertTask', async span => {
       setBusinessContext({ teamId: alertTask.conn.team.toString() });
       try {
-        span.setAttribute(
-          'hyperdx.alerts.team.id',
-          alertTask.conn.team.toString(),
-        );
-        span.setAttribute('hyperdx.alerts.connection.id', alertTask.conn.id);
-        span.setAttribute('hyperdx.alerts.batch.size', alertTask.alerts.length);
+        span.setAttribute('cbt.alerts.team.id', alertTask.conn.team.toString());
+        span.setAttribute('cbt.alerts.connection.id', alertTask.conn.id);
+        span.setAttribute('cbt.alerts.batch.size', alertTask.alerts.length);
 
         const { alerts, conn } = alertTask;
         logger.info(
@@ -2171,9 +2165,9 @@ export default class CheckAlertTask implements HdxTask {
               },
               {
                 attributes: {
-                  'hyperdx.alert.id': alert.alert.id,
-                  'hyperdx.team.id': conn.team.toString(),
-                  'hyperdx.alert.source': alert.alert.source ?? 'unknown',
+                  'cbt.alert.id': alert.alert.id,
+                  'cbt.team.id': conn.team.toString(),
+                  'cbt.alert.source': alert.alert.source ?? 'unknown',
                 },
               },
             ),

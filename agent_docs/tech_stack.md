@@ -1,4 +1,4 @@
-# ClickStack Technology Stack
+# Couchbase Traces Technology Stack
 
 ## Frontend (`packages/app`)
 

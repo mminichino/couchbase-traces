@@ -6,15 +6,15 @@
 
 /** Bulleted list of the builder (non-SQL) query tools and what they're for. */
 export const BUILDER_TOOLS_LIST = [
-  '  • clickstack_service_health — per-service throughput, errors, latency vs yesterday, ranked',
-  '  • clickstack_table — aggregations, top-N, single-value KPIs, breakdowns',
-  '  • clickstack_timeseries — trends / metrics over time',
-  '  • clickstack_search — browsing individual log/trace rows',
-  '  • clickstack_event_patterns — recurring log/event pattern discovery',
-  '  • clickstack_event_deltas — attributes that differ between two row groups',
-  '  • clickstack_emerging_signals — patterns new or gone vs a baseline window',
-  '  • clickstack_trace_waterfall — one trace as a parent/child span tree',
-  '  • clickstack_trace_top_time_consuming_operations — slowest child operations in a trace',
+  '  • cbt_service_health — per-service throughput, errors, latency vs yesterday, ranked',
+  '  • cbt_table — aggregations, top-N, single-value KPIs, breakdowns',
+  '  • cbt_timeseries — trends / metrics over time',
+  '  • cbt_search — browsing individual log/trace rows',
+  '  • cbt_event_patterns — recurring log/event pattern discovery',
+  '  • cbt_event_deltas — attributes that differ between two row groups',
+  '  • cbt_emerging_signals — patterns new or gone vs a baseline window',
+  '  • cbt_trace_waterfall — one trace as a parent/child span tree',
+  '  • cbt_trace_top_time_consuming_operations — slowest child operations in a trace',
 ].join('\n');
 
 /** When raw SQL is actually warranted. */
@@ -28,5 +28,5 @@ export const SQL_FALLBACK_CRITERIA =
  * generic so a single string works for every builder tool.
  */
 export const PREFER_BUILDER_OVER_SQL_NUDGE =
-  'PREFER THIS over clickstack_sql. Only drop to raw SQL for things the ' +
+  'PREFER THIS over cbt_sql. Only drop to raw SQL for things the ' +
   `builder tools cannot express — ${SQL_FALLBACK_CRITERIA}.`;

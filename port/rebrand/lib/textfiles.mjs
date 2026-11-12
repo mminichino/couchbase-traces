@@ -295,7 +295,9 @@ export function sourceRanges(ctx, path, text) {
       k === SK.TemplateHead ||
       k === SK.TemplateMiddle ||
       k === SK.TemplateTail ||
-      k === SK.JsxText
+      k === SK.JsxText ||
+      // Regex literals match user-visible text, so they follow the string rules.
+      k === SK.RegularExpressionLiteral
     ) {
       out.push({ start, end: node.end, kind: 'string' });
     } else if (k === SK.Identifier || k === SK.PrivateIdentifier) {

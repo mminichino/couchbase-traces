@@ -1,6 +1,6 @@
 {
   "name": "@couchbase-traces/common-utils",
-  "description": "Common utilities for HyperDX application",
+  "description": "Common utilities for Couchbase Traces application",
   "version": "0.34.0",
   "license": "MIT",
   "private": true,

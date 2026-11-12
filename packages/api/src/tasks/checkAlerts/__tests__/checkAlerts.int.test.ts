@@ -1612,9 +1612,9 @@ describe('checkAlerts', () => {
 
       // id with special characters
       expect(
-        translateExternalActionsToInternal('send @email-mike@hyperdx.io'),
+        translateExternalActionsToInternal('send @email-mike@example.com'),
       ).toMatchInlineSnapshot(
-        `"send {{__hdx_notify_channel__ channel="email" id="mike@hyperdx.io"}}"`,
+        `"send {{__hdx_notify_channel__ channel="email" id="mike@example.com"}}"`,
       );
 
       // id with multiple dashes

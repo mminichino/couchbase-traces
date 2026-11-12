@@ -110,7 +110,7 @@ describe('MCP query_tile - PromQL tiles', () => {
     }).save();
 
   const queryTile = (dashboardId: string, args: Record<string, unknown> = {}) =>
-    callTool(ctx.client!, 'clickstack_query_tile', {
+    callTool(ctx.client!, 'cbt_query_tile', {
       dashboardId,
       tileId: 'promql-tile',
       startTime,
@@ -321,7 +321,7 @@ describe('MCP query_tile - PromQL tiles', () => {
     const source = await createClickhouseSource();
     const dashboard = await createDashboard(source._id.toString(), lineTile);
 
-    const result = await callTool(ctx.client!, 'clickstack_query_tiles', {
+    const result = await callTool(ctx.client!, 'cbt_query_tiles', {
       dashboardId: dashboard._id.toString(),
       startTime,
       endTime,

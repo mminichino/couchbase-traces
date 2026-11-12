@@ -89,14 +89,14 @@ const mcpMetricTypeSchema = z
   .enum(QUERYABLE_METRIC_KINDS)
   .describe(
     'METRIC SOURCES ONLY. OTel metric kind. Required (along with metricName) ' +
-      'when querying a metric source — discover via clickstack_describe_source ' +
-      'or clickstack_describe_metric.\n' +
+      'when querying a metric source — discover via cbt_describe_source ' +
+      'or cbt_describe_metric.\n' +
       '  gauge – instantaneous values (CPU, memory, queue depth). Use last_value/avg/min/max; set isDelta:true for Prometheus-style delta over the bucket.\n' +
       '  sum – cumulative or delta counters (request counts, bytes processed). Use aggFn:"increase" for counter increase, or sum/avg on the computed rate.\n' +
       '  histogram – bucketed distributions (request duration). Use aggFn:"quantile" with level for percentiles, or aggFn:"count" for total bucket count.\n' +
       '  exponential histogram – exponential-bucket distributions. Use aggFn:"quantile" with level for percentiles, or aggFn:"count" for total bucket count.\n' +
       'NOTE: summary is not supported by the query renderer — to look at summary ' +
-      "metrics, use clickstack_sql against the table in the source's metricTables.summary.",
+      "metrics, use cbt_sql against the table in the source's metricTables.summary.",
   );
 
 /**
@@ -110,7 +110,7 @@ const mcpMetricTypeSchema = z
  * Clients that forward MCP tool schemas straight to the provider therefore
  * get the ENTIRE tool list rejected because of this one field, and the user
  * sees a generic connectivity error that names neither the tool nor the
- * property. See https://github.com/ClickHouse/ClickStack/issues/2967.
+ * property. See https://github.com/mminichino/couchbase-traces/issues/2967.
  *
  * The wire type is the only thing that changes. Numeric input is still
  * accepted for callers working from a cached schema, the value is coerced
@@ -161,7 +161,7 @@ export function getMetricSelectIssues(data: {
       path: ['metricName'],
       message:
         'metricName is required when metricType is set. Discover metric names ' +
-        'via clickstack_list_metrics or clickstack_describe_source.',
+        'via cbt_list_metrics or cbt_describe_source.',
     });
   }
   if (data.metricName && !data.metricType) {
@@ -306,7 +306,7 @@ export const mcpSelectItemSchema = z.object({
     .describe(
       'METRIC SOURCES ONLY. OTel metric kind of metricName. ' +
         'Set together with metricName on every item when sourceId is a metric source. ' +
-        'Discover via clickstack_describe_source (sample) or clickstack_describe_metric.',
+        'Discover via cbt_describe_source (sample) or cbt_describe_metric.',
     ),
   metricName: z
     .string()
@@ -314,7 +314,7 @@ export const mcpSelectItemSchema = z.object({
     .describe(
       'METRIC SOURCES ONLY. OTel metric name (e.g. "system.cpu.utilization", ' +
         '"http.server.request.duration"). Set together with metricType. ' +
-        'Discover via clickstack_list_metrics or clickstack_describe_source.',
+        'Discover via cbt_list_metrics or cbt_describe_source.',
     ),
   isDelta: z
     .boolean()
@@ -404,9 +404,7 @@ export const endTimeSchema = z
 
 export const sourceIdSchema = z
   .string()
-  .describe(
-    'Source to query. Call clickstack_list_sources to find source IDs.',
-  );
+  .describe('Source to query. Call cbt_list_sources to find source IDs.');
 
 export const whereSchema = z
   .string()

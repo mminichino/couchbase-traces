@@ -43,7 +43,10 @@ describe('upsertJsonServer', () => {
     upsertJsonServer(file, 'mcpServers', { url: server.url });
     expect(JSON.parse(fs.readFileSync(file, 'utf-8'))).toEqual({
       theme: 'dark',
-      mcpServers: { other: { url: 'x' }, clickstack: { url: server.url } },
+      mcpServers: {
+        other: { url: 'x' },
+        'couchbase-traces': { url: server.url },
+      },
     });
   });
 
@@ -79,17 +82,17 @@ describe('upsertJsonServer', () => {
 });
 
 describe('upsertCodexServer', () => {
-  it('replaces an existing clickstack table and keeps the rest', () => {
+  it('replaces an existing couchbase-traces table and keeps the rest', () => {
     const file = path.join(dir, 'config.toml');
     fs.writeFileSync(
       file,
       [
         'model = "gpt-5"',
         '',
-        '[mcp_servers.clickstack]',
+        '[mcp_servers.couchbase-traces]',
         'url = "https://old/api/mcp"',
         '',
-        '[mcp_servers.clickstack.env]',
+        '[mcp_servers.couchbase-traces.env]',
         'A = "1"',
         '',
         '[mcp_servers.other]',
@@ -102,13 +105,13 @@ describe('upsertCodexServer', () => {
     expect(out).toContain('model = "gpt-5"');
     expect(out).toContain('[mcp_servers.other]\ncommand = "other"');
     expect(out).not.toContain('https://old');
-    expect(out).not.toContain('[mcp_servers.clickstack.env]');
+    expect(out).not.toContain('[mcp_servers.couchbase-traces.env]');
     expect(
       out
         .trimEnd()
         .endsWith(
           [
-            '[mcp_servers.clickstack]',
+            '[mcp_servers.couchbase-traces]',
             'url = "https://example.com/api/mcp"',
             'http_headers = { Authorization = "Bearer hdx_org_abc" }',
           ].join('\n'),
@@ -120,7 +123,7 @@ describe('upsertCodexServer', () => {
     const file = path.join(dir, '.codex', 'config.toml');
     upsertCodexServer(file, server);
     expect(fs.readFileSync(file, 'utf-8')).toBe(
-      '[mcp_servers.clickstack]\nurl = "https://example.com/api/mcp"\nhttp_headers = { Authorization = "Bearer hdx_org_abc" }\n',
+      '[mcp_servers.couchbase-traces]\nurl = "https://example.com/api/mcp"\nhttp_headers = { Authorization = "Bearer hdx_org_abc" }\n',
     );
   });
 });

@@ -1,9 +1,9 @@
 # Proxy Configuration
 
-This directory contains configurations for running the HyperDX frontend behind a
+This directory contains configurations for running the Couchbase Traces frontend behind a
 reverse proxy that serves the application under a specific subpath. This is
-useful for deployments where HyperDX is not at the root of a domain (e.g.,
-`http://example.com/hyperdx`).
+useful for deployments where Couchbase Traces is not at the root of a domain (e.g.,
+`http://example.com/traces`).
 
 We provide configurations for two popular reverse proxies:
 
@@ -26,7 +26,7 @@ to the **same value**:
     generate correct asset links and API routes.
 
 - The value **must** start with a `/` if it's not an empty string (ex:
-  `/hyperdx`).
+  `/traces`).
 - If you want to serve from the root, you can omit these variables or set them
   to `/`.
 
@@ -41,13 +41,13 @@ generating absolute URLs for redirects, links in emails, or alerts.
 
 **Example `.env` Configuration:**
 
-For local development with the subpath `/hyperdx`, your configuration would look
+For local development with the subpath `/traces`, your configuration would look
 like this:
 
 ```
-CBT_BASE_PATH=/hyperdx
-NEXT_PUBLIC_CBT_BASE_PATH=/hyperdx
-FRONTEND_URL=http://localhost:4040/hyperdx
+CBT_BASE_PATH=/traces
+NEXT_PUBLIC_CBT_BASE_PATH=/traces
+FRONTEND_URL=http://localhost:4040/traces
 ```
 
 ## How It Works
@@ -55,7 +55,7 @@ FRONTEND_URL=http://localhost:4040/hyperdx
 The proxy configurations are designed to handle subpath routing with minimal
 changes to the application code. Here's a high-level overview of the logic:
 
-1.  **Root Redirect**: If a subpath is configured (e.g., `/hyperdx`), any
+1.  **Root Redirect**: If a subpath is configured (e.g., `/traces`), any
     requests to the root (`/`) are automatically redirected to that subpath.
     This ensures users always land on the correct URL.
 
@@ -63,7 +63,7 @@ changes to the application code. Here's a high-level overview of the logic:
     to root-level paths (e.g., `/api/...` or `/_next/...`). The proxy intercepts
     these requests, prepends the configured subpath, and forwards them to the
     Next.js server. For example, a request for `/_next/static/chunk.js` becomes
-    a request for `/hyperdx/_next/static/chunk.js` before being sent to the
+    a request for `/traces/_next/static/chunk.js` before being sent to the
     application.
 
 3.  **Direct Proxy**: Any requests that already include the correct subpath are

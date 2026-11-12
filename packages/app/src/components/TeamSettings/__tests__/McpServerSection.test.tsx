@@ -120,7 +120,7 @@ describe('McpServerSection', () => {
     const button = screen.getByRole('link', { name: /Add to Cursor/i });
     const href = button.getAttribute('href') ?? '';
     expect(href).toMatch(
-      /^cursor:\/\/anysphere\.cursor-deeplink\/mcp\/install\?name=clickstack&config=[-A-Za-z0-9_]+$/,
+      /^cursor:\/\/anysphere\.cursor-deeplink\/mcp\/install\?name=couchbase-traces&config=[-A-Za-z0-9_]+$/,
     );
   });
 

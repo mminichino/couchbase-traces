@@ -19,7 +19,7 @@ import { isPromqlEnabled } from './utils/promql';
 import { createRegisterTool } from './utils/registerTool';
 
 const SERVER_INSTRUCTIONS = [
-  'ClickStack observability MCP server for querying logs, metrics, traces, and',
+  'Couchbase Traces observability MCP server for querying logs, metrics, traces, and',
   'sessions, and for managing dashboards, alerts, sources, and saved searches.',
   '',
   'TOOL SELECTION POLICY — read before querying:',
@@ -27,19 +27,19 @@ const SERVER_INSTRUCTIONS = [
   'structured, chart-ready results:',
   BUILDER_TOOLS_LIST,
   '',
-  'Do NOT reach for clickstack_sql first. Raw SQL is a last resort, reserved for',
+  'Do NOT reach for cbt_sql first. Raw SQL is a last resort, reserved for',
   `queries the builder tools genuinely cannot express — ${SQL_FALLBACK_CRITERIA}.`,
   'A single-source aggregation, top-N, time-series, or row browse must always',
   'use a builder tool.',
   '',
-  'Discovery flow: clickstack_list_sources → clickstack_describe_source → query.',
+  'Discovery flow: cbt_list_sources → cbt_describe_source → query.',
   'Fetch the query_guide prompt for detailed syntax, and create_dashboard for',
   'dashboard authoring.',
 ].join('\n');
 
 const PROMQL_INSTRUCTIONS =
   'PromQL sources (kind "promql") hold Prometheus metrics: query them with\n' +
-  'clickstack_promql. The builder tools do not read them; clickstack_sql only\n' +
+  'cbt_promql. The builder tools do not read them; cbt_sql only\n' +
   'inspects the raw tags and samples of a ClickHouse TimeSeries table.';
 
 /** The instructions a client sees. PromQL is mentioned only while it is enabled. */
@@ -57,14 +57,14 @@ const SERVER_ICON_URL = FRONTEND_URL
   : undefined;
 
 const SERVER_INFO: Implementation = {
-  name: 'clickstack',
-  title: 'ClickStack',
+  name: 'couchbase-traces',
+  title: 'Couchbase Traces',
   version: `${CODE_VERSION}-beta`,
   description:
     'Query and investigate logs, metrics, traces, and sessions stored in ' +
-    'ClickHouse, and manage ClickStack dashboards, alerts, data sources, ' +
+    'ClickHouse, and manage Couchbase Traces dashboards, alerts, data sources, ' +
     'and saved searches.',
-  websiteUrl: 'https://clickhouse.com/docs/use-cases/observability/clickstack',
+  websiteUrl: 'https://github.com/mminichino/couchbase-traces/tree/main/docs',
   ...(SERVER_ICON_URL && {
     icons: [
       { src: SERVER_ICON_URL, mimeType: 'image/svg+xml', sizes: ['any'] },

@@ -5,7 +5,7 @@ import * as path from 'node:path';
 
 // Same server name the Team Settings snippets use, so a reinstall replaces
 // an entry added by hand instead of adding a second one.
-const MCP_SERVER_NAME = 'clickstack';
+const MCP_SERVER_NAME = 'couchbase-traces';
 
 export interface McpServer {
   url: string;

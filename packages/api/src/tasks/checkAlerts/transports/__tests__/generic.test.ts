@@ -280,7 +280,7 @@ describe('the default incident.io body', () => {
     expect(firing.deduplication_key).toBe('evt-1');
     expect(firing.metadata).toMatchObject({
       alert_id: 'alert-1',
-      hyperdx_status: 'firing',
+      couchbase_traces_status: 'firing',
       comparator: '>=',
       threshold: '5',
       value: '42',
@@ -303,7 +303,7 @@ describe('the default incident.io body', () => {
 
     expect(rendered.status).toBe('firing');
     expect(rendered.metadata).toMatchObject({
-      hyperdx_status: 'no_data',
+      couchbase_traces_status: 'no_data',
       threshold_max: '',
       value: '',
       tags: '',

@@ -327,7 +327,7 @@ describe('clickhouse-proxy forwarding', () => {
     for (let i = 0; i < 120; i++) {
       parts.push(
         `--${boundary}\r\n` +
-          `Content-Disposition: form-data; name="param_HYPERDX_PARAM_${i}"\r\n\r\n` +
+          `Content-Disposition: form-data; name="param_COUCHBASE_TRACES_PARAM_${i}"\r\n\r\n` +
           `some.rather.long.map.attribute.key.number.${i}\r\n`,
       );
     }

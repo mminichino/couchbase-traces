@@ -63,7 +63,7 @@ export const CLICKHOUSE_PROMETHEUS_API_PREFIX = '/prometheus/api/v1';
  * `path` must be an absolute path (every call site passes a literal starting
  * with `/`) -- this is not a general-purpose URL joiner.
  *
- * @see https://github.com/ClickHouse/ClickStack/issues/3046
+ * @see https://github.com/mminichino/couchbase-traces/issues/3046
  */
 export function joinPrometheusUpstreamUrl(
   upstreamHost: string,
@@ -676,8 +676,8 @@ export async function runPromqlQuery(
     () => evaluatePromqlQuery(backend, query, signal),
     {
       attributes: {
-        'hyperdx.promql.backend': backend.kind,
-        'hyperdx.promql.query_kind': query.kind,
+        'cbt.promql.backend': backend.kind,
+        'cbt.promql.query_kind': query.kind,
       },
     },
   );

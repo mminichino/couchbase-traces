@@ -5,7 +5,7 @@ import Dashboard from '@/models/dashboard';
 
 import { setupDashboardTests } from './setup';
 
-describe('MCP Dashboard Tools - clickstack_search_dashboards', () => {
+describe('MCP Dashboard Tools - cbt_search_dashboards', () => {
   const ctx = setupDashboardTests();
 
   it('should find dashboards by name (case-insensitive)', async () => {
@@ -28,7 +28,7 @@ describe('MCP Dashboard Tools - clickstack_search_dashboards', () => {
       tags: [],
     }).save();
 
-    const result = await callTool(ctx.client!, 'clickstack_search_dashboards', {
+    const result = await callTool(ctx.client!, 'cbt_search_dashboards', {
       query: 'service',
     });
 
@@ -61,7 +61,7 @@ describe('MCP Dashboard Tools - clickstack_search_dashboards', () => {
       tags: ['staging'],
     }).save();
 
-    const result = await callTool(ctx.client!, 'clickstack_search_dashboards', {
+    const result = await callTool(ctx.client!, 'cbt_search_dashboards', {
       tags: ['production'],
     });
 
@@ -70,13 +70,9 @@ describe('MCP Dashboard Tools - clickstack_search_dashboards', () => {
     expect(output).toHaveLength(2);
 
     // Search with multiple tags (AND)
-    const result2 = await callTool(
-      ctx.client!,
-      'clickstack_search_dashboards',
-      {
-        tags: ['production', 'backend'],
-      },
-    );
+    const result2 = await callTool(ctx.client!, 'cbt_search_dashboards', {
+      tags: ['production', 'backend'],
+    });
 
     const output2 = JSON.parse(getFirstText(result2));
     expect(output2).toHaveLength(1);
@@ -103,7 +99,7 @@ describe('MCP Dashboard Tools - clickstack_search_dashboards', () => {
       tags: ['production'],
     }).save();
 
-    const result = await callTool(ctx.client!, 'clickstack_search_dashboards', {
+    const result = await callTool(ctx.client!, 'cbt_search_dashboards', {
       query: 'API',
       tags: ['production'],
     });
@@ -121,7 +117,7 @@ describe('MCP Dashboard Tools - clickstack_search_dashboards', () => {
       team: ctx.team._id,
     }).save();
 
-    const result = await callTool(ctx.client!, 'clickstack_search_dashboards', {
+    const result = await callTool(ctx.client!, 'cbt_search_dashboards', {
       query: 'nonexistent-dashboard-name',
     });
 
@@ -144,7 +140,7 @@ describe('MCP Dashboard Tools - clickstack_search_dashboards', () => {
 
     // Parentheses are regex metacharacters — without escaping, "(v2)"
     // would be treated as a capture group and match "v2" anywhere.
-    const result = await callTool(ctx.client!, 'clickstack_search_dashboards', {
+    const result = await callTool(ctx.client!, 'cbt_search_dashboards', {
       query: '(v2)',
     });
 
@@ -163,7 +159,7 @@ describe('MCP Dashboard Tools - clickstack_search_dashboards', () => {
     }).save();
 
     // An unescaped "[" would throw a MongoDB BadValue error
-    const result = await callTool(ctx.client!, 'clickstack_search_dashboards', {
+    const result = await callTool(ctx.client!, 'cbt_search_dashboards', {
       query: '[invalid',
     });
 
@@ -186,7 +182,7 @@ describe('MCP Dashboard Tools - clickstack_search_dashboards', () => {
 
     // Unescaped "." in regex matches any character, so ".v2." would
     // match "Xv2X". With escaping, only the literal dot matches.
-    const result = await callTool(ctx.client!, 'clickstack_search_dashboards', {
+    const result = await callTool(ctx.client!, 'cbt_search_dashboards', {
       query: '.v2.',
     });
 
@@ -203,7 +199,7 @@ describe('MCP Dashboard Tools - clickstack_search_dashboards', () => {
       team: ctx.team._id,
     }).save();
 
-    const result = await callTool(ctx.client!, 'clickstack_search_dashboards', {
+    const result = await callTool(ctx.client!, 'cbt_search_dashboards', {
       query: '',
     });
 
@@ -218,7 +214,7 @@ describe('MCP Dashboard Tools - clickstack_search_dashboards', () => {
       team: ctx.team._id,
     }).save();
 
-    const result = await callTool(ctx.client!, 'clickstack_search_dashboards', {
+    const result = await callTool(ctx.client!, 'cbt_search_dashboards', {
       tags: [],
     });
 
@@ -227,7 +223,7 @@ describe('MCP Dashboard Tools - clickstack_search_dashboards', () => {
   });
 
   it('should reject empty query with empty tags', async () => {
-    const result = await callTool(ctx.client!, 'clickstack_search_dashboards', {
+    const result = await callTool(ctx.client!, 'cbt_search_dashboards', {
       query: '',
       tags: [],
     });
@@ -250,7 +246,7 @@ describe('MCP Dashboard Tools - clickstack_search_dashboards', () => {
       team: otherTeamId,
     }).save();
 
-    const result = await callTool(ctx.client!, 'clickstack_search_dashboards', {
+    const result = await callTool(ctx.client!, 'cbt_search_dashboards', {
       query: 'My Dashboard',
     });
 

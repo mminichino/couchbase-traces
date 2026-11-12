@@ -19,13 +19,13 @@ export function registerSearchDashboards({
   const frontendUrl = config.FRONTEND_URL;
 
   registerTool(
-    'clickstack_search_dashboards',
+    'cbt_search_dashboards',
     {
       title: 'Search Dashboards',
       annotations: READ_ONLY_TOOL,
       description:
         'Search dashboards by name and/or tags. Returns matching dashboards with ' +
-        'their IDs, names, and tags. More targeted than clickstack_get_dashboard (which ' +
+        'their IDs, names, and tags. More targeted than cbt_get_dashboard (which ' +
         'lists all dashboards). At least one of query or tags must be provided.',
       inputSchema: mcpSearchDashboardsSchema,
     },
@@ -87,7 +87,7 @@ export function registerSearchDashboards({
       } catch (err) {
         logger.error(
           { err, teamId, query, tags },
-          'clickstack_search_dashboards: query failed',
+          'cbt_search_dashboards: query failed',
         );
         return mcpServerError(
           `Search failed: ${err instanceof Error ? err.message : String(err)}`,

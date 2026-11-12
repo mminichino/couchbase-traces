@@ -25,7 +25,7 @@ export const describeTableSchema = z.object({
   connectionId: z
     .string()
     .describe(
-      'Connection to inspect. Call clickstack_list_sources to find connection IDs.',
+      'Connection to inspect. Call cbt_list_sources to find connection IDs.',
     ),
   database: z.string().min(1).describe('ClickHouse database name.'),
   table: z

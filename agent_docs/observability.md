@@ -1,6 +1,6 @@
 # Observability & Instrumentation
 
-ClickStack is an observability product, so our own code should be a shining example
+Couchbase Traces is an observability product, so our own code should be a shining example
 of well-instrumented software. When you add or change a feature, instrument it
 as part of the change - not as an afterthought.
 
@@ -11,7 +11,7 @@ aligned with the
 ## TL;DR (the non-negotiables)
 
 1. **Every team-scoped operation carries team + user context.** Use
-   `setBusinessContext(...)` so `hyperdx.team.id` / `user.id` end up on
+   `setBusinessContext(...)` so `cbt.team.id` / `user.id` end up on
    the trace. Auth middleware already does this for HTTP requests; background
    jobs and other entry points must do it themselves.
 2. **If something is worth a log, put it on the span first.** The active span is
@@ -30,7 +30,7 @@ aligned with the
    already in flight, and put point-in-time / gauge-style values (sizes, counts,
    depths, current state) there rather than in a gauge. This is an internal
    engineering preference, not a rule against metrics — counters and histograms
-   remain first-class, feed alerts and SLOs, and many ClickStack deployments depend
+   remain first-class, feed alerts and SLOs, and many Couchbase Traces deployments depend
    heavily on them. See [Wide events over gauges](#wide-events-over-gauges).
 5. **Use the shared helpers** in
    [`packages/api/src/utils/instrumentation.ts`](../packages/api/src/utils/instrumentation.ts).
@@ -57,7 +57,7 @@ types, so a single import is usually enough.
 
 ### Tracing
 
-Rely on the ClickStack SDK (`@clickhouse/clickstack-node`) auto-instrumentation
+Rely on the Couchbase Traces SDK (`@clickhouse/clickstack-node`) auto-instrumentation
 (HTTP, Express, Mongo, etc.) for the common path. Add a **manual span only for a
 meaningful unit of work** that auto-instrumentation can't see - a background job
 step, a fan-out, an expensive computation, an external tool invocation.
@@ -68,10 +68,10 @@ import { withSpan } from '@/utils/instrumentation';
 await withSpan(
   'alerts.process_batch',
   async span => {
-    span.setAttribute('hyperdx.alerts.batch.size', alerts.length);
+    span.setAttribute('cbt.alerts.batch.size', alerts.length);
     return processBatch(alerts);
   },
-  { attributes: { 'hyperdx.team.id': teamId } },
+  { attributes: { 'cbt.team.id': teamId } },
 );
 ```
 
@@ -114,17 +114,17 @@ Standard attribute keys:
 
 | Key                        | Meaning                                                    |
 | -------------------------- | ---------------------------------------------------------- |
-| `hyperdx.team.id`          | Owning team (multi-tenancy boundary). Set this everywhere. |
+| `cbt.team.id`          | Owning team (multi-tenancy boundary). Set this everywhere. |
 | `user.id`                  | Acting user (OTel `user.*` semconv).                       |
 | `user.email`              | Acting user's email (OTel `user.*` semconv).               |
-| `hyperdx.<domain>.<field>` | Domain IDs, e.g. `hyperdx.alert.id`, `hyperdx.source.id`.  |
+| `hyperdx.<domain>.<field>` | Domain IDs, e.g. `cbt.alert.id`, `cbt.source.id`.  |
 | `feature_flag.<name>`      | Evaluated feature/config flag state.                       |
 
 ### Wide events over gauges
 
-> **Scope:** this is ClickStack's _internal_ instrumentation philosophy for the
+> **Scope:** this is Couchbase Traces's _internal_ instrumentation philosophy for the
 > code in this repo — not a recommendation that users pick wide events over
-> metrics. Metrics are a first-class ClickStack signal that many operators rely on;
+> metrics. Metrics are a first-class Couchbase Traces signal that many operators rely on;
 > nothing here discourages them. What follows is simply how _we_ prefer to
 > instrument our own services.
 
@@ -182,10 +182,10 @@ import {
   recordDuration,
 } from '@/utils/instrumentation';
 
-const queryErrors = getCounter('hyperdx.search.query_errors', {
+const queryErrors = getCounter('cbt.search.query_errors', {
   description: 'Search query failures, labeled by error type.',
 });
-const queryDuration = getHistogram('hyperdx.search.query.duration_ms', {
+const queryDuration = getHistogram('cbt.search.query.duration_ms', {
   description: 'Search query duration.',
   unit: 'ms',
 });
@@ -198,7 +198,7 @@ queryErrors.add(1, { error_type: chType });
 Metric conventions:
 
 - **Naming**: `hyperdx.<domain>.<event>` (snake_case event), e.g.
-  `hyperdx.alerts.evaluations`, `hyperdx.api.errors`.
+  `cbt.alerts.evaluations`, `cbt.api.errors`.
 - **Attributes are low-cardinality** (MET-001): use fixed enums
   (`{ outcome: 'fired' | 'resolved' | 'skipped_silenced' }`), status codes, or
   bounded error-type strings. Never user IDs, team IDs, raw messages, or query
@@ -216,8 +216,8 @@ stable, low-cardinality `operation` name and `outcome` (`success` | `error`):
 
 | Metric                          | Type      | Use as          |
 | ------------------------------- | --------- | --------------- |
-| `hyperdx.operation.requests`    | counter   | availability SLI |
-| `hyperdx.operation.duration_ms` | histogram | latency SLI     |
+| `cbt.operation.requests`    | counter   | availability SLI |
+| `cbt.operation.duration_ms` | histogram | latency SLI     |
 
 ```ts
 import { withOperationMetrics } from '@/utils/instrumentation';
@@ -239,7 +239,7 @@ auto-instrumentation and error middleware already cover.
 
 ## Query attribution
 
-Every ClickHouse query ClickStack runs is tagged with what asked for it, so a row
+Every ClickHouse query Couchbase Traces runs is tagged with what asked for it, so a row
 in the customer's `system.query_log` points back to a dashboard tile, a saved
 search, an alert, or an MCP tool. This is the one piece of our instrumentation
 that lands in *their* data rather than ours, so it stays small, carries no

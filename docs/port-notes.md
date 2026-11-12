@@ -64,7 +64,7 @@ Inventory of commit adcb75c16715. Full detail is in `port/state/inventory/`.
 
 | Package | Directory | Role | Languages | Source files | Test files | CI targets |
 |---|---|---|---|---|---|---|
-| @couchbase-traces/api | packages/api | API server and tasks | javascript, typescript | 225 | 148 | ci:int, ci:lint, ci:unit |
+| @couchbase-traces/api | packages/api | API server and tasks | javascript, typescript | 224 | 147 | ci:int, ci:lint, ci:unit |
 | @couchbase-traces/app | packages/app | web UI | javascript, typescript | 682 | 515 | ci:lint, ci:unit |
 | @couchbase-traces/cli | packages/cli | command-line client | javascript, typescript | 61 | 9 | ci:build, ci:lint, ci:unit |
 | @couchbase-traces/common-utils | packages/common-utils | shared query and data layer | javascript, typescript | 57 | 52 | ci:build, ci:int, ci:lint, ci:unit |
@@ -87,9 +87,9 @@ Inventory of commit adcb75c16715. Full detail is in `port/state/inventory/`.
 
 | Module | Reasons | Exports | Importers | Server-side |
 |---|---|---|---|---|
-| `packages/common-utils/src/types.ts` | seed, sql_builder | 364 | 689 | yes |
+| `packages/common-utils/src/types.ts` | seed, sql_builder | 364 | 688 | yes |
 | `packages/common-utils/src/core/metadata.ts` | seed, clickhouse_client, sql_builder | 24 | 132 | yes |
-| `packages/common-utils/src/clickhouse/index.ts` | seed, clickhouse_client, clickhouse_path, sql_builder | 46 | 121 | yes |
+| `packages/common-utils/src/clickhouse/index.ts` | seed, clickhouse_client, clickhouse_path, sql_builder | 46 | 120 | yes |
 | `packages/api/src/fixtures.ts` | sql_builder | 44 | 63 | yes |
 | `packages/common-utils/src/filters.ts` | sql_builder | 51 | 58 | yes |
 | `packages/common-utils/src/core/renderChartConfig.ts` | seed, sql_builder | 16 | 35 | yes |
@@ -98,7 +98,7 @@ Inventory of commit adcb75c16715. Full detail is in `port/state/inventory/`.
 | `packages/cli/src/api/client.ts` | clickhouse_client | 9 | 28 | no |
 | `packages/app/src/hooks/useRowWhere.tsx` | sql_builder | 6 | 26 | no |
 | `packages/api/src/mcp/tools/query/helpers.ts` | clickhouse_client, sql_builder | 19 | 25 | yes |
-| `packages/api/src/clickhouse.ts` | clickhouse_path | 1 | 24 | yes |
+| `packages/api/src/clickhouse.ts` | clickhouse_path | 1 | 23 | yes |
 | `packages/app/src/clickhouse.ts` | clickhouse_path | 4 | 20 | no |
 | `packages/app/src/llm/lib/expressions.ts` | sql_builder | 8 | 19 | no |
 | `packages/common-utils/src/clickhouse/attribution.ts` | seed, clickhouse_path | 9 | 17 | yes |
@@ -108,7 +108,6 @@ Inventory of commit adcb75c16715. Full detail is in `port/state/inventory/`.
 | `packages/app/src/components/DBHeatmapChart/heatmapQueries.ts` | sql_builder | 9 | 13 | no |
 | `packages/app/src/serviceDashboard.ts` | sql_builder | 5 | 11 | no |
 | `packages/api/src/mcp/tools/query/schemas.ts` | sql_builder | 14 | 10 | yes |
-| `packages/app/src/components/OnboardingModal.tsx` | sql_builder | 1 | 10 | no |
 | `packages/common-utils/src/clickhouse/browser.ts` | seed, clickhouse_client, clickhouse_path | 3 | 10 | no |
 | `packages/common-utils/src/core/materializedViews.ts` | sql_builder | 11 | 9 | yes |
 | `packages/common-utils/src/queryParser.ts` | seed, sql_builder | 18 | 9 | no |
@@ -126,7 +125,7 @@ Inventory of commit adcb75c16715. Full detail is in `port/state/inventory/`.
 | `packages/api/src/controllers/timeseriesEngine.ts` | sql_builder | 10 | 4 | yes |
 | `packages/api/src/mcp/tools/query/runEventPatterns.ts` | sql_builder | 4 | 4 | yes |
 | `packages/app/src/KubernetesDashboardPage.tsx` | clickhouse_client, sql_builder | 3 | 4 | no |
-| `packages/app/src/components/AppNav/AppNav.components.tsx` | clickhouse_client | 5 | 4 | no |
+| `packages/app/src/components/AppNav/AppNav.components.tsx` | clickhouse_client | 4 | 4 | no |
 | `packages/app/src/components/ContactSupportText.tsx` | clickhouse_client | 1 | 4 | no |
 | `packages/app/src/components/KubeComponents.tsx` | clickhouse_client, sql_builder | 3 | 4 | no |
 | `packages/app/src/components/Sources/SourcesList.tsx` | clickhouse_client, sql_builder | 2 | 4 | no |
@@ -187,8 +186,9 @@ Inventory of commit adcb75c16715. Full detail is in `port/state/inventory/`.
 | `packages/api/src/routers/api/clickhouseProxy.ts` | seed, clickhouse_path | 1 | 1 | yes |
 | `packages/app/src/ClickhousePage.tsx` | clickhouse_path | 1 | 1 | no |
 | `packages/app/src/DBChartPage.tsx` | clickhouse_client | 1 | 1 | no |
+| `packages/app/src/NamespaceDetailsSidePanel.tsx` | clickhouse_client | 1 | 1 | no |
 
-Plus 40 more in datalayer.json.
+Plus 39 more in datalayer.json.
 
 ### Server-side data-store callers
 
@@ -293,7 +293,7 @@ Plus 40 more in datalayer.json.
 - `packages/api/src/routers/api/savedSearch.ts`: `packages/common-utils/src/types.ts`
 - `packages/api/src/routers/api/sources.ts`: `packages/common-utils/src/types.ts`
 
-Plus 26 more in datalayer.json.
+Plus 25 more in datalayer.json.
 
 ### UI code with raw SQL or ClickHouse type names
 
@@ -335,7 +335,6 @@ Plus 26 more in datalayer.json.
 | `packages/app/src/components/DBRowJsonViewer.tsx` | 3 | 0 |
 | `packages/app/src/components/Iac/TerraformHelperPanel.tsx` | 3 | 0 |
 | `packages/app/src/components/MaterializedViews/MVOptimizationModal.tsx` | 3 | 0 |
-| `packages/app/src/components/OnboardingModal.tsx` | 3 | 0 |
 | `packages/app/src/components/Sources/SourcesList.tsx` | 3 | 0 |
 | `packages/app/src/components/TeamSettings/IacMigrationSection.tsx` | 3 | 0 |
 | `packages/app/src/components/TeamSettings/TeamQueryConfigSection.tsx` | 3 | 0 |
@@ -383,6 +382,7 @@ Plus 26 more in datalayer.json.
 | `packages/app/src/components/DBSessionPanel.tsx` | 1 | 0 |
 | `packages/app/src/components/ExceptionSubpanel.tsx` | 1 | 0 |
 | `packages/app/src/components/HeatmapSettingsDrawer.tsx` | 1 | 0 |
+| `packages/app/src/components/OnboardingModal.tsx` | 1 | 0 |
 | `packages/app/src/components/Patterns/PatternColumnSelector.tsx` | 1 | 0 |
 | `packages/app/src/components/SearchInput/SearchWhereInput.tsx` | 1 | 0 |
 | `packages/app/src/components/ServiceMap/ServiceMapSidePanel.tsx` | 1 | 0 |
@@ -406,14 +406,14 @@ Plus 4 more in sql-catalog.json.
 
 | Category | Name | Occurrences | Files |
 |---|---|---|---|
-| type | `JSON` | 99 | 31 |
-| type | `String` | 72 | 15 |
+| type | `JSON` | 98 | 30 |
+| type | `String` | 71 | 14 |
 | function | `fromUnixTimestamp64Milli` | 56 | 14 |
 | type | `Int64` | 53 | 10 |
 | function | `var` | 43 | 15 |
 | function | `toString` | 40 | 23 |
 | parameter_type | `Int64` | 39 | 7 |
-| function | `if` | 34 | 16 |
+| function | `if` | 33 | 15 |
 | type | `Map` | 29 | 12 |
 | clause | `INTERVAL` | 28 | 12 |
 | function | `toDateTime` | 24 | 8 |
@@ -429,9 +429,9 @@ Plus 4 more in sql-catalog.json.
 | type | `Float64` | 14 | 5 |
 | function | `__timeFilter` | 13 | 5 |
 | function | `__timeInterval` | 13 | 5 |
-| parameter_type | `String` | 12 | 4 |
 | setting | `timeout_overflow_mode` | 12 | 6 |
 | function | `rate` | 11 | 2 |
+| parameter_type | `String` | 11 | 3 |
 | type | `Nullable` | 11 | 5 |
 | function | `column` | 10 | 3 |
 | function | `tiles` | 10 | 1 |
@@ -500,8 +500,8 @@ Plus 4 more in sql-catalog.json.
 | function | `__timeFilter_ms` | 3 | 2 |
 | function | `arrayWithConstant` | 3 | 1 |
 | function | `attributes` | 3 | 2 |
-| function | `clickstack_describe_source` | 3 | 2 |
-| function | `clickstack_get_dashboard` | 3 | 1 |
+| function | `cbt_describe_source` | 3 | 2 |
+| function | `cbt_get_dashboard` | 3 | 1 |
 | function | `cluster` | 3 | 2 |
 | function | `expression` | 3 | 2 |
 | function | `ifNull` | 3 | 2 |
@@ -596,25 +596,25 @@ Collector components, pipelines, ClickHouse exporters, and management code.
 
 | Category | hyperdx | clickstack | clickhouse | deploysentinel | hdx |
 |---|---|---|---|---|---|
-| package_names | 0 | 0 | 138 | 0 | 1 |
+| package_names | 0 | 0 | 137 | 0 | 1 |
 | external_dependencies | 6 | 18 | 135 | 0 | 0 |
-| env_vars | 77 | 12 | 547 | 0 | 51 |
-| telemetry_endpoints | 63 | 66 | 133 | 0 | 2 |
-| assets | 0 | 10 | 0 | 0 | 4 |
-| docker | 86 | 3 | 117 | 0 | 110 |
-| docs | 660 | 459 | 665 | 0 | 258 |
-| ui_strings | 15 | 23 | 71 | 0 | 128 |
-| code_identifiers | 125 | 22 | 2209 | 0 | 641 |
-| other | 1017 | 1542 | 1709 | 14 | 1715 |
+| env_vars | 73 | 7 | 545 | 0 | 51 |
+| telemetry_endpoints | 18 | 1 | 63 | 0 | 2 |
+| assets | 0 | 0 | 0 | 0 | 3 |
+| docker | 48 | 0 | 116 | 0 | 93 |
+| docs | 468 | 269 | 606 | 0 | 154 |
+| ui_strings | 7 | 9 | 70 | 0 | 127 |
+| code_identifiers | 125 | 22 | 2203 | 0 | 641 |
+| other | 626 | 188 | 1680 | 2 | 1593 |
 
 ### Feature status
 
 | Status | Features |
 |---|---|
-| not_started | 51 |
+| not_started | 50 |
 | in_progress | 0 |
 | ported | 0 |
-| needs_decision | 2 |
+| needs_decision | 3 |
 | dropped | 0 |
 
 ### Plan corrections
@@ -625,6 +625,7 @@ Collector components, pipelines, ClickHouse exporters, and management code.
 
 - W_DYNAMIC_IMPORT: 6 occurrences. First: Non-literal dynamic import at line 10 (packages/app/public/pyodide/pyodide.asm.js)
 - W_FILE_TOO_LARGE: 1 occurrences. First: File is 3004059 bytes, over the 2 MB limit; skipped (.yarn/releases/yarn-4.13.0.cjs)
+- W_FILE_UNREADABLE: 5 occurrences. First: File could not be read (packages/app/public/favicons/clickstack/apple-touch-icon.png)
 - W_PLAN_MISSING: 1 occurrences. First: COUCHBASE_PORT_PLAN.md not found at the project root; plan check skipped (COUCHBASE_PORT_PLAN.md)
 - W_SCHEMA_UNPARSED: 1 occurrences. First: Unparsed statement: CREATE DATABASE IF NOT EXISTS DATABASE (docker/otel-collector/schema/seed/00001_create_database.sql)
 - W_TABLE_REDEFINED: 3 occurrences. First: Table otel_logs is defined in docker/otel-collector/schema/seed/00002_otel_logs.sql and docker/otel-collector/schema/seed/00002_otel_logs_compat.sql (docker/otel-collector/schema/seed/00002_otel_logs_compat.sql)
@@ -728,47 +729,68 @@ Collector components, pipelines, ClickHouse exporters, and management code.
 
 | Key | Count |
 |---|---|
-| proposed | 256 |
-| review | 30 |
+| allowed | 99 |
+| approved | 211 |
 
 ### Allowlist by reason
 
-None.
+| Key | Count |
+|---|---|
+| engine_reference | 15 |
+| external_dependency | 56 |
+| internal_identifier | 390 |
+| pending_decision | 8 |
+| test_fixture | 12 |
+| upstream_attribution | 1 |
 
 ### URL actions by rule
 
 | Key | Count |
 |---|---|
-| rule 1 keep | 15 |
-| rule 1 replace | 23 |
-| rule 2 replace | 115 |
-| rule 3 replace | 11 |
-| rule 4 replace | 34 |
+| rule 1 keep | 14 |
 | rule 5 keep | 11 |
-| rule 6 review | 55 |
-| rule 7 review | 20 |
+| rule 6 review | 26 |
+| rule 7 review | 12 |
 
 ### Outbound hits by context
 
 | Key | Count |
 |---|---|
-| link | 24 |
-| request | 4 |
-| unknown | 5 |
+| link | 1 |
+| request | 1 |
 
 ### Workflow classes
 
 | Key | Count |
 |---|---|
-| bot | 5 |
-| ci | 11 |
-| publish | 2 |
+| ci | 6 |
 
 ### Features pending a decision
 
 - `api-team-clickhouse-settings`: Edits ClickHouse-specific query settings (such as limits and timeouts) for a team. Couchbase has no equivalent per-query engine settings, so the feature may be reduced to SDK query options or dropped.
 - `app-clickhouse`: Shows ClickHouse server health from system tables such as query_log and parts. Couchbase has no direct equivalent of these tables, so the dashboard needs a different data source or a sign-off to drop.
+- `app-careers`: ClickHouse recruiting page: lists ClickHouse jobs from boards-api.greenhouse.io and ClickStack commits from api.github.com. Kept unchanged until the user decides whether to remove it.
 <!-- phase3:end -->
+
+### Removed integrations
+
+- Usage stats: the daily usage report posted to a HyperDX-hosted endpoint, the `USAGE_STATS_ENABLED` setting, `usageStatsEnabled` in `/me`, and its feature-flag span attribute. Files: `packages/api/src/tasks/usageStats.ts`, `packages/api/src/tasks/__tests__/usageStats.test.ts`, `packages/api/src/api-app.ts`, `packages/api/src/config.ts`, `packages/api/src/routers/api/me.ts`, `packages/api/src/utils/instrumentation.ts`, `packages/api/src/utils/__tests__/instrumentation.test.ts`, `packages/common-utils/src/types.ts`, `packages/app/src/components/AppNav/AppNav.tsx`, `docker-compose.yml`, `agent_docs/architecture.md`. Reason: vendor telemetry.
+- Reo.dev: the tracking script and its client id. Files: `packages/app/src/components/AppNav/AppNav.tsx`. Reason: third-party tracking.
+- Hosted demo connection: the "Connect to Demo Server" onboarding option and the demo ClickHouse host. Files: `packages/app/src/components/OnboardingModal.tsx`, `packages/app/src/config.ts`, `CONTRIBUTING.md`, `.github/ISSUE_TEMPLATE/bug-report.md`, `.github/pull_request_template.md`. Reason: HyperDX-hosted endpoint.
+- Discord: the help-menu item and the issue-template link. Files: `packages/app/src/components/AppNav/AppNav.components.tsx`, `packages/app/tests/e2e/core/navigation.spec.ts`, `.github/ISSUE_TEMPLATE/config.yml`. Reason: upstream community channel.
+- ClickHouse Cloud prompts: the nav cloud banner, the "cloud" spotlight action, and the landing-header Cloud links. Files: `packages/app/src/components/AppNav/AppNav.components.tsx`, `packages/app/src/components/AppNav/AppNav.tsx`, `packages/app/src/Spotlights.tsx`, `packages/app/src/LandingHeader.tsx`. Reason: vendor sign-up.
+- What's New allowed hosts: `docs.hyperdx.io` removed from `ALLOWED_LINK_HOSTS`. Files: `packages/app/src/components/AppNav/WhatsNewDrawer.tsx`, `.github/scripts/release-notes.mjs`, `.github/prompts/release-changelog.md`. Reason: HyperDX-hosted docs.
+- CLI source-map default: the default API URL is `http://localhost:8000` instead of the HyperDX-hosted API. Files: `packages/cli/src/sourcemaps.ts`, `packages/cli/src/cli.tsx`. Reason: HyperDX-hosted endpoint.
+- Webhook test link: test notifications link to `FRONTEND_URL` instead of the HyperDX site. Files: `packages/api/src/routers/api/webhooks.ts`. Reason: HyperDX-hosted endpoint.
+- Upstream release notes in What's New: the root `CHANGELOG.md` is fresh, so the drawer has no releases; upstream history moved to `docs/upstream/`, and the parser contract tests read it from there. Files: `CHANGELOG.md`, `docs/upstream/CHANGELOG.md`, `packages/app/src/components/AppNav/__tests__/parse-whats-new.test.ts`. Reason: upstream release history.
+- Release, bot, and secret-only workflows: `claude-code-review.yml`, `claude.yml`, `deep-resolve.yml`, `deep-review.yml`, `release-nightly.yml`, `release.yml`, `vouch.yml`, `external-contributor-alerts.yml`, `push.yml`, `pushv1.yml`, `release-reminder.yml`, `security-audit.yml` under `.github/workflows/`, plus `.github/CODEOWNERS` and `.github/VOUCHED.td`. Reason: they publish to upstream registries or need secrets this repo does not have.
+
+### Phase 3 tool changes
+
+- `port/rebrand/lib/textfiles.mjs`: regular-expression literals are classified as strings, so tokens in them are rewritten and checked like other user-visible text.
+- `port/rebrand/lib/testdiff.mjs`: a modified test listed under "Removed integrations" is allowed (it loses the assertions on the removed integration), and tests under `port/` are not checked because the rewrite never touches them. The substituted base is formatted with the repository's Prettier before comparing, because longer names re-wrap lines. As a fallback, approved tokens are also applied in identifier positions, so an object key that holds a renamed value (the MCP server key in `packages/cli/src/__tests__/mcpInstall.test.ts`, the webhook payload key in `packages/api/src/tasks/checkAlerts/transports/__tests__/generic.test.ts`) can follow the rename, quoted when the new name is not a valid identifier.
+- `port/rebrand/lib/verify.mjs`: a URL `review` hit is resolved by an allowlist entry on the same path whose snippet (at least 8 characters) contains the URL or is contained in it; such entries count as used.
+- The upstream `CHANGELOG.md` files moved to `docs/upstream/` keep their original text (restored from `fb9d9ec`) rather than the token-rewritten text.
 
 ### Plan corrections, resolved
 

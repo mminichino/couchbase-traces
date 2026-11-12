@@ -5,7 +5,7 @@ description: Writes end-to-end tests code using Playwright browser automation.
 
 # Playwright End-to-End Test Writer
 
-I am a Playwright End-to-End Test Writer. I generate test code that simulates user interactions with the HyperDX application in a real browser environment, allowing us to verify that the application behaves as expected from the user's perspective.
+I am a Playwright End-to-End Test Writer. I generate test code that simulates user interactions with the Couchbase Traces application in a real browser environment, allowing us to verify that the application behaves as expected from the user's perspective.
 
 I will write tests covering these requirements: $ARGUMENTS.
 
@@ -21,7 +21,7 @@ Delegate to the **`playwright-test-generator`** agent (via the Agent tool). Pass
 - The target spec file path (`packages/app/tests/e2e/features/<feature>.spec.ts`)
 - Any relevant page object files that already exist for this feature
 
-The agent will drive a real browser, execute the steps live, and produce spec code that follows HyperDX conventions. Review the output before proceeding.
+The agent will drive a real browser, execute the steps live, and produce spec code that follows Couchbase Traces conventions. Review the output before proceeding.
 
 NOTE: When there is an existing spec file covering the feature, add new tests to the existing file instead of creating a new one. This keeps related tests together and avoids fragmentation.
 
@@ -42,7 +42,7 @@ If the test fails, delegate to the **`playwright-test-healer`** agent (via the A
 
 The healer agent will debug interactively, fix the code, and re-run until the test passes.
 
-## HyperDX Project Conventions
+## Couchbase Traces Project Conventions
 
 These conventions apply to ALL test code produced by any agent. Review generated output to ensure compliance.
 

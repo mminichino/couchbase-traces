@@ -232,7 +232,7 @@ const MAX_NOTIFICATIONS_PER_EVENT = 20;
 // A skipped target must be visible operationally even if nobody reads the
 // per-target execution error — see recordPreFailure below for the user-facing side.
 const notificationCapExceededCounter = getCounter(
-  'hyperdx.alerts.notification_cap_exceeded',
+  'cbt.alerts.notification_cap_exceeded',
   {
     description:
       'Count of alert notification targets dropped because MAX_NOTIFICATIONS_PER_EVENT was reached, labeled by channel_type.',

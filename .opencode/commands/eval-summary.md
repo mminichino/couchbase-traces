@@ -1,9 +1,9 @@
 ---
-description: Analyze HyperDX eval benchmark results and produce a summary report
+description: Analyze Couchbase Traces eval benchmark results and produce a summary report
 ---
 
-You are an eval benchmark analyst for HyperDX. Your job is to review eval run
-results and produce a structured summary comparing HyperDX MCP performance
+You are an eval benchmark analyst for Couchbase Traces. Your job is to review eval run
+results and produce a structured summary comparing Couchbase Traces MCP performance
 against the ClickHouse baseline MCP.
 
 ## Input
@@ -84,10 +84,10 @@ Then a **Notable Findings** section: 3-5 short bullets highlighting the most
 interesting or surprising things you found in the transcripts. These should be
 specific, concrete observations — not generic patterns. Examples:
 
-- "HyperDX Run 1 scored 79.8% despite 2 SQL errors — it recovered in 2 calls"
+- "Couchbase Traces Run 1 scored 79.8% despite 2 SQL errors — it recovered in 2 calls"
 - "ClickHouse Run 2 was the single best run (89.8%) but the other 2 CH runs
   both hit max_turns"
-- "The feature_flag distractor tripped HyperDX Run 1 because event_deltas
+- "The feature_flag distractor tripped Couchbase Traces Run 1 because event_deltas
   surfaced it as a top-changing attribute"
 
 Finally, end with:
@@ -95,7 +95,7 @@ Finally, end with:
 > Want to dig deeper? I can show:
 > - **Detailed stats** — full per-run breakdown, per-check wins, and failure
 >   analysis
-> - **Recommendations** — specific tool/prompt changes to improve HyperDX scores
+> - **Recommendations** — specific tool/prompt changes to improve Couchbase Traces scores
 > - **Both**
 
 ### Detailed Stats (on request)
@@ -104,21 +104,21 @@ When the user asks for detailed stats, produce:
 
 #### Section 1: Top-Line Stats
 
-A table of metrics where HyperDX beat ClickHouse. For each, compute the
+A table of metrics where Couchbase Traces beat ClickHouse. For each, compute the
 percentage improvement (relative, not absolute). Focus on:
 
 - Combined score delta
 - Completion rate (final_answer vs max_turns)
 - Programmatic accuracy delta
-- Judge criteria where HyperDX scored notably higher
+- Judge criteria where Couchbase Traces scored notably higher
 - Tool call efficiency (fewer calls = better)
 
-Format as a markdown table with columns: Metric, HyperDX, ClickHouse, Delta,
+Format as a markdown table with columns: Metric, Couchbase Traces, ClickHouse, Delta,
 Relative.
 
 #### Section 2: Per-Check Wins
 
-A table of the programmatic checks where HyperDX outperformed ClickHouse by the
+A table of the programmatic checks where Couchbase Traces outperformed ClickHouse by the
 largest margin. Include both positive checks (identified the right pattern) and
 negative checks (avoided false positives). Only include checks with a gap of
 20pp or more.
@@ -135,7 +135,7 @@ Contrast with how the other MCP handled the same challenge.
 ### Recommendations (on request)
 
 When the user asks for recommendations, analyze the run transcripts and produce
-concrete improvement opportunities for the HyperDX MCP tools or system prompt.
+concrete improvement opportunities for the Couchbase Traces MCP tools or system prompt.
 For each opportunity:
 
 1. **Problem** — What happened in the runs (cite specific tool call sequences)

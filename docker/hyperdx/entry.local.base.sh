@@ -4,8 +4,8 @@ export CBT_LOG_LEVEL="error"
 # https://clickhouse.com/docs/en/operations/server-configuration-parameters/settings#logger
 export CLICKHOUSE_LOG_LEVEL="error"
 
-# User can specify either an entire SERVER_URL, or override slectively the 
-# HYPERDX_API_URL or CBT_API_PORT from the defaults
+# User can specify either an entire SERVER_URL, or override selectively the
+# CBT_API_PORT from the defaults
 # Same applies to the frontend/app
 export SERVER_URL="http://127.0.0.1:${CBT_API_PORT:-8000}"
 export FRONTEND_URL="${FRONTEND_URL:-${CBT_APP_URL:-http://localhost}:${CBT_APP_PORT:-8080}}"
@@ -74,7 +74,7 @@ echo "ClickHouse is ready!"
 
 node /etc/local/refresh-env.js
 
-# Start HyperDX app
+# Start Couchbase Traces app
 ./node_modules/.bin/concurrently \
   "--kill-others-on-fail" \
   "--names=API,APP,ALERT-TASK" \
@@ -84,7 +84,7 @@ node /etc/local/refresh-env.js
   > /var/log/app.log 2>&1 &
 
 echo ""
-echo "Visit the HyperDX UI at $FRONTEND_URL"
+echo "Visit the Couchbase Traces UI at $FRONTEND_URL"
 echo ""
 
 # Wait for any process to exit

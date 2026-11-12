@@ -14,17 +14,17 @@ export function registerDeleteWebhook({
   const { teamId } = context;
 
   registerTool(
-    'clickstack_delete_webhook',
+    'cbt_delete_webhook',
     {
       title: 'Delete Webhook',
       annotations: IDEMPOTENT_DESTRUCTIVE_TOOL,
       description:
         'Permanently delete a webhook by ID. Blocked while any alert still ' +
         'references it — reassign or delete those alerts first. Use ' +
-        'clickstack_get_webhook to list available webhook IDs.',
+        'cbt_get_webhook to list available webhook IDs.',
       inputSchema: z.object({
         id: objectIdSchema.describe(
-          'ID of the webhook to delete, from clickstack_get_webhook.',
+          'ID of the webhook to delete, from cbt_get_webhook.',
         ),
       }),
     },

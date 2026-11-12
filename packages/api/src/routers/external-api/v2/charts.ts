@@ -25,12 +25,12 @@ import {
 } from '@/utils/instrumentation';
 import { externalQueryChartSeriesSchema } from '@/utils/zod';
 
-const chartsSeriesDuration = getHistogram('hyperdx.charts.series.duration_ms', {
+const chartsSeriesDuration = getHistogram('cbt.charts.series.duration_ms', {
   description:
     'Duration of external API v2 chart /series requests (across all series).',
   unit: 'ms',
 });
-const chartsSeriesErrors = getCounter('hyperdx.charts.series.errors', {
+const chartsSeriesErrors = getCounter('cbt.charts.series.errors', {
   description:
     'Count of external API v2 chart /series request failures, labeled by ' +
     'error type (e.g. TEAM_MISSING, TEAM_NOT_FOUND, SOURCE_NOT_FOUND, ' +

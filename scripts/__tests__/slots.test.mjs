@@ -32,7 +32,7 @@ const pick = output =>
     output
       .trim()
       .split('\n')
-      .filter(line => /^(HDX_|HYPERDX_|E2E_PROJECT=)/.test(line))
+      .filter(line => /^(HDX_|CBT_|E2E_PROJECT=)/.test(line))
       .map(line => line.split('=')),
   );
 

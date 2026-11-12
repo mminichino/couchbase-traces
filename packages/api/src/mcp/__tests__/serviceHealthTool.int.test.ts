@@ -16,7 +16,7 @@ import { Source, type SourceDocument } from '@/models/source';
 
 import { callTool, createTestClient, getFirstText } from './mcpTestUtils';
 
-const TOOL = 'clickstack_service_health';
+const TOOL = 'cbt_service_health';
 const HOUR = 60 * 60 * 1000;
 // ClickHouse is shared across tests and files, so scope every query to this
 // run's services.

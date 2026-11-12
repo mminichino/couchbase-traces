@@ -3,7 +3,7 @@ import Dashboard from '@/models/dashboard';
 
 import { setupDashboardTests } from './setup';
 
-describe('MCP Dashboard Tools - clickstack_get_dashboard', () => {
+describe('MCP Dashboard Tools - cbt_get_dashboard', () => {
   const ctx = setupDashboardTests();
 
   // Inside each test, use ctx.team, ctx.traceSource, ctx.connection, ctx.client
@@ -23,7 +23,7 @@ describe('MCP Dashboard Tools - clickstack_get_dashboard', () => {
       tags: ['tag2'],
     }).save();
 
-    const result = await callTool(ctx.client!, 'clickstack_get_dashboard', {});
+    const result = await callTool(ctx.client!, 'cbt_get_dashboard', {});
 
     expect(result.isError).toBeFalsy();
     const output = JSON.parse(getFirstText(result));
@@ -41,7 +41,7 @@ describe('MCP Dashboard Tools - clickstack_get_dashboard', () => {
       tags: ['test'],
     }).save();
 
-    const result = await callTool(ctx.client!, 'clickstack_get_dashboard', {
+    const result = await callTool(ctx.client!, 'cbt_get_dashboard', {
       id: dashboard._id.toString(),
     });
 
@@ -72,7 +72,7 @@ describe('MCP Dashboard Tools - clickstack_get_dashboard', () => {
       ],
     }).save();
 
-    const result = await callTool(ctx.client!, 'clickstack_get_dashboard', {
+    const result = await callTool(ctx.client!, 'cbt_get_dashboard', {
       id: dashboard._id.toString(),
     });
 
@@ -88,7 +88,7 @@ describe('MCP Dashboard Tools - clickstack_get_dashboard', () => {
 
   it('should return error for non-existent dashboard id', async () => {
     const fakeId = '000000000000000000000000';
-    const result = await callTool(ctx.client!, 'clickstack_get_dashboard', {
+    const result = await callTool(ctx.client!, 'cbt_get_dashboard', {
       id: fakeId,
     });
 

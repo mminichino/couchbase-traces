@@ -1,6 +1,6 @@
 # Auto-Provisioning Connections and Sources
 
-HyperDX supports automatic provisioning of connections and sources for new
+Couchbase Traces supports automatic provisioning of connections and sources for new
 instances. This is useful for:
 
 - Local development environments
@@ -10,14 +10,14 @@ instances. This is useful for:
 
 ## How It Works
 
-When a new team is created in HyperDX, it checks for the presence of the
+When a new team is created in Couchbase Traces, it checks for the presence of the
 following environment variables:
 
 - `DEFAULT_CONNECTIONS`: A JSON array of connection configurations
 - `DEFAULT_SOURCES`: A JSON array of source configurations
 
 If these environment variables are set and the team has no existing connections
-or sources, HyperDX will automatically create them for the new team.
+or sources, Couchbase Traces will automatically create them for the new team.
 
 ## Usage
 
@@ -64,7 +64,7 @@ Example for logs:
 ```json
 [
   {
-    "name": "HyperDX Logs",
+    "name": "Couchbase Traces Logs",
     "kind": "log",
     "connection": "Local ClickHouse",
     "from": {
@@ -85,7 +85,7 @@ Example for logs:
 
 ### Correlating Sources
 
-HyperDX allows sources to be correlated with each other. This enables features
+Couchbase Traces allows sources to be correlated with each other. This enables features
 like navigating from a log to related traces, or from a trace to related logs.
 To set up these correlations in your default sources, use the following fields:
 
@@ -99,7 +99,7 @@ Example with correlated sources:
 ```json
 [
   {
-    "name": "HyperDX Logs",
+    "name": "Couchbase Traces Logs",
     "kind": "log",
     "connection": "Local ClickHouse",
     "from": {
@@ -110,10 +110,10 @@ Example with correlated sources:
     "bodyExpression": "body",
     "traceIdExpression": "trace_id",
     "spanIdExpression": "span_id",
-    "traceSourceId": "HyperDX Traces"
+    "traceSourceId": "Couchbase Traces Traces"
   },
   {
-    "name": "HyperDX Traces",
+    "name": "Couchbase Traces Traces",
     "kind": "trace",
     "connection": "Local ClickHouse",
     "from": {
@@ -125,20 +125,20 @@ Example with correlated sources:
     "spanNameExpression": "name",
     "traceIdExpression": "traceId",
     "spanIdExpression": "spanId",
-    "logSourceId": "HyperDX Logs"
+    "logSourceId": "Couchbase Traces Logs"
   }
 ]
 ```
 
 In this example:
 
-- The log source "HyperDX Logs" references the trace source by name with
-  `traceSourceId: "HyperDX Traces"`
-- The trace source "HyperDX Traces" references the log source by name with
-  `logSourceId: "HyperDX Logs"`
+- The log source "Couchbase Traces Logs" references the trace source by name with
+  `traceSourceId: "Couchbase Traces Traces"`
+- The trace source "Couchbase Traces Traces" references the log source by name with
+  `logSourceId: "Couchbase Traces Logs"`
 
 These references are resolved automatically during source creation, allowing
-seamless navigation between correlated sources in the HyperDX UI.
+seamless navigation between correlated sources in the Couchbase Traces UI.
 
 ## Docker Compose Example
 
@@ -147,16 +147,16 @@ Here's an example of how to set these variables in a Docker Compose file:
 ```yaml
 version: '3'
 services:
-  hyperdx-api:
-    image: docker.clickhouse.com/clickhouse/clickstack:2
+  couchbase-traces-api:
+    image: ghcr.io/mminichino/couchbase-traces:2
     environment:
       - DEFAULT_CONNECTIONS=[{"name":"Local
         ClickHouse","host":"clickhouse:8123","username":"default","password":""}]
-      - DEFAULT_SOURCES=[{"name":"HyperDX Logs","kind":"log","connection":"Local
-        ClickHouse","from":{"databaseName":"default","tableName":"logs"},"timestampValueExpression":"timestamp","bodyExpression":"body","traceSourceId":"HyperDX
-        Traces"},{"name":"HyperDX Traces","kind":"trace","connection":"Local
+      - DEFAULT_SOURCES=[{"name":"Couchbase Traces Logs","kind":"log","connection":"Local
+        ClickHouse","from":{"databaseName":"default","tableName":"logs"},"timestampValueExpression":"timestamp","bodyExpression":"body","traceSourceId":"Couchbase Traces
+        Traces"},{"name":"Couchbase Traces Traces","kind":"trace","connection":"Local
         ClickHouse","from":{"databaseName":"default","tableName":"traces"},"timestampValueExpression":"startTimeUnixNano
-        / 1000000000","traceIdExpression":"traceId","logSourceId":"HyperDX
+        / 1000000000","traceIdExpression":"traceId","logSourceId":"Couchbase Traces
         Logs"}]
 ```
 
@@ -165,10 +165,10 @@ to manage these values.
 
 ## Dashboard Provisioning
 
-HyperDX supports file-based dashboard provisioning, similar to Grafana's
+Couchbase Traces supports file-based dashboard provisioning, similar to Grafana's
 provisioning system. A scheduled task reads `.json` files from a directory
 and upserts dashboards into MongoDB, matched by name for idempotency.
-The task runs on the same schedule as other HyperDX tasks (every minute
+The task runs on the same schedule as other Couchbase Traces tasks (every minute
 when using the built-in scheduler, or on your own schedule when running
 tasks externally).
 

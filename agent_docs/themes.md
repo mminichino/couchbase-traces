@@ -1,4 +1,4 @@
-# Appearance (ClickStack + color mode)
+# Appearance (brand + color mode)
 
 > How colors, logos, and light/dark mode work. Read this before changing
 > anything in `packages/app/src/theme/`, adding a semantic CSS variable, or
@@ -8,7 +8,7 @@
 
 ## TL;DR
 
-The product is ClickStack. There is no brand switch, no `NEXT_PUBLIC_THEME`,
+The product is Couchbase Traces. There is no brand switch, no `NEXT_PUBLIC_THEME`,
 and no second palette.
 
 | Concept        | Values                        | Who controls it           | Stored in                            | What it affects                                   |
@@ -54,11 +54,10 @@ Mantine component overrides are in `packages/app/src/theme/mantineTheme.ts`.
 ## Brand
 
 Product name, page titles, and logos come from `packages/app/src/brand/`.
-`useBrandDisplayName()` and `usePageTitle()` return ClickStack (plus
+`useBrandDisplayName()` and `usePageTitle()` return `Couchbase Traces` (plus
 `INSTANCE_TITLE_SUFFIX` on titles). `useWordmark()` and `useLogomark()`
-return the marks in that folder. Call sites use those hooks. A downstream
-build replaces `brand/` and keeps the same call sites. The color tokens
-stay shared.
+return the marks. Call sites use those hooks; nothing else hard-codes the
+name or an asset path.
 
 ```tsx
 import { useLogomark, useWordmark } from '@/brand';
@@ -75,16 +74,31 @@ function TopBar() {
 }
 ```
 
+The marks are static SVGs in `packages/app/public/brand/`, copied from the
+`branding/` folder at the repo root by `port/rebrand.sh apply assets`:
+
+- `logomark.svg`: the Couchbase symbol. `Logomark` renders it as a
+  decorative `<img>` (empty `alt`, `aria-hidden`) for the collapsed rail and
+  other compact chrome. The box is square by default; `fit="symbol"` follows
+  the symbol's `viewBox` ratio.
+- `wordmark-light.svg` and `wordmark-dark.svg`: the full logo. `Wordmark`
+  picks one with `useResolvedColorScheme()` and uses the product name as
+  `alt`. Never split the lockup or set the mark beside text to recreate it.
+
 Favicons are static links in `packages/app/pages/_document.tsx`, under
-`packages/app/public/favicons/clickstack/`.
+`packages/app/public/favicons/couchbase-traces/`. `favicon.svg` is the
+logomark.
 
-ClickStack specifics:
+Couchbase Traces specifics:
 
-- Mantine `primaryColor: 'yellow'`. The yellow ramp is the Click UI brand
-  palette (`--palette-brand-*`) from `theme/_tokens.scss`.
-- Accent `#faff69` (`--palette-brand-300`) is for links and outlines, not
-  chart series.
-- Warning tokens use Mantine `orange`, because yellow is the brand gold.
+- Mantine `primaryColor: 'yellow'`. The yellow slot holds the Couchbase red
+  brand ramp (`--palette-brand-50` to `--palette-brand-900`, plus
+  `--palette-brand-base`) from `theme/_tokens.scss`. The values come from
+  `branding/tokens.json`; base is `#ec1218`.
+- Accent `--palette-brand-300` is for links, outlines, and primary buttons,
+  not chart series.
+- Warning tokens use Mantine `orange`, so they stay distinct from the brand
+  ramp.
 - Most semantic vars reference Click UI globals (`--click-global-color-*`).
 - Tabler icons use `stroke-width: 1.5`.
 
@@ -148,5 +162,6 @@ packages/app/src/theme/_base-tokens.scss
 packages/app/src/theme/mantineTheme.ts
 packages/app/src/theme/semanticVariants.ts
 packages/app/src/theme/semanticColorsGrouped.ts
-packages/app/public/favicons/clickstack/
+packages/app/public/brand/
+packages/app/public/favicons/couchbase-traces/
 ```

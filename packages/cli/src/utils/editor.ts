@@ -31,7 +31,7 @@ function formatDate(d: Date): string {
 
 function buildFileContent(range: TimeRange): string {
   return [
-    '# HyperDX Time Range',
+    '# Couchbase Traces Time Range',
     '# Edit the start and end times below. Supports:',
     '#   - ISO 8601:  2026-03-18T05:00:00Z',
     '#   - Relative:  now-1h, now-30m, now-24h, now-7d',
@@ -120,7 +120,7 @@ function parseFileContent(content: string): TimeRange | null {
 
 function buildSelectFileContent(currentSelect: string): string {
   return [
-    '# HyperDX Select Clause',
+    '# Couchbase Traces Select Clause',
     '# Edit the SELECT columns below.',
     '# One expression per line, or comma-separated on a single line.',
     '# Examples:',

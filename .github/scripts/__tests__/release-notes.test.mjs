@@ -36,11 +36,11 @@ const OPTS = {
 
 test('insertSection creates the file scaffold when content is null', () => {
   const out = insertSection(null, OPTS);
-  assert.match(out, /^# HyperDX Changelog/);
+  assert.match(out, /^# Couchbase Traces Changelog/);
   assert.match(out, /## v2\.33\.0 — 2026-07-28/);
   assert.match(
     out,
-    /<!-- hyperdx-release-notes version=2\.33\.0 inputs=abc123def456 -->/,
+    /<!-- cbt-release-notes version=2\.33\.0 inputs=abc123def456 -->/,
   );
   assert.match(out, /Something shiny/);
   assert.ok(out.endsWith('\n'));
@@ -49,7 +49,7 @@ test('insertSection creates the file scaffold when content is null', () => {
 test('insertSection scaffolds the header for a blank file too', () => {
   // release.yml's capture step can leave a zero-byte CHANGELOG.md behind.
   for (const blank of ['', '\n', '   \n']) {
-    assert.match(insertSection(blank, OPTS), /^# HyperDX Changelog/);
+    assert.match(insertSection(blank, OPTS), /^# Couchbase Traces Changelog/);
   }
 });
 
@@ -111,16 +111,16 @@ test('extractSection returns null on inputs-hash mismatch, missing version, or n
 test('extractSection tolerates prettier reflowing the blank lines around the marker', () => {
   // prettier reformats CHANGELOG.md whenever a maintainer edits it locally
   // (lint-staged), so the marker's position within the section is not fixed.
-  const reflowed = `# HyperDX Changelog
+  const reflowed = `# Couchbase Traces Changelog
 
 ## v2.33.0 — 2026-07-28
 
-<!-- hyperdx-release-notes version=2.33.0 inputs=abc123def456 -->
+<!-- cbt-release-notes version=2.33.0 inputs=abc123def456 -->
 
 ${BODY}
 `;
   assert.equal(extractSection(reflowed, OPTS).trim(), BODY.trim());
-  assert.doesNotMatch(extractSection(reflowed, OPTS), /hyperdx-release-notes/);
+  assert.doesNotMatch(extractSection(reflowed, OPTS), /cbt-release-notes/);
 });
 
 test('round-trip: extract then insert preserves a human-edited body verbatim', () => {
@@ -142,7 +142,7 @@ test('insertSection replaces a section whose marker a maintainer deleted', () =>
   // version:null, survives the filter, and the file grows a permanent duplicate.
   const withMarker = insertSection(null, OPTS);
   const markerless = withMarker.replace(
-    /<!-- hyperdx-release-notes[^>]*-->\n/,
+    /<!-- cbt-release-notes[^>]*-->\n/,
     '',
   );
   const out = insertSection(markerless, { ...OPTS, body: 'Regenerated.' });
@@ -391,7 +391,7 @@ test('the app-side marker regex matches the marker this script emits', () => {
   const emitted = insertSection(null, OPTS);
   const markerLine = emitted
     .split('\n')
-    .find(l => l.startsWith('<!-- hyperdx-release-notes'));
+    .find(l => l.startsWith('<!-- cbt-release-notes'));
 
   assert.ok(markerLine, 'insertSection emitted no marker');
   assert.equal(markerLine.replace(appRe, '').trim(), '');
@@ -434,8 +434,8 @@ test('CLI strip-package-list rewrites the body in place', () => {
 test('validateBody accepts realistic release bodies', () => {
   const good = [
     'Summary line.\n\n### 🐛 Bug Fixes\n\n- **fix**: it works now (#1).\n',
-    'Summary with an allowed link: [PR](https://github.com/hyperdxio/hyperdx/pull/1).\n',
-    'Docs link: [guide](https://docs.hyperdx.io/getting-started).\n',
+    'Summary with an allowed link: [PR](https://github.com/mminichino/couchbase-traces/pull/1).\n',
+    'Docs link: [guide](https://github.com/mminichino/couchbase-traces/tree/main/docs).\n',
     'Mixed host casing: [PR](https://GitHub.com/hyperdxio/x).\n',
     // Prose that brushes against the patterns without matching them.
     'Latency dropped to <2ms and the `Map(String, String)` path is fixed.\n',
@@ -461,7 +461,7 @@ test('validateBody rejects every construct that reached the changelog in review'
       /shaped like a credential/,
     ],
     'release marker': [
-      '<!-- hyperdx-release-notes version=1.0.0 inputs=x -->\n',
+      '<!-- cbt-release-notes version=1.0.0 inputs=x -->\n',
       /release-notes marker/,
     ],
     'package-list marker': [
@@ -536,7 +536,7 @@ test('validateBody agrees with the render-time allowlist on parsed-URL forms', (
   for (const url of [
     'https://github.com:443/hyperdxio/hyperdx',
     'https://user@github.com/hyperdxio/hyperdx',
-    'https://docs.hyperdx.io',
+    'https://github.com/mminichino/couchbase-traces/tree/main/docs',
     'https://GitHub.com/x',
   ]) {
     assert.deepEqual(validateBody(`See [x](${url}).\n`), [], `accept: ${url}`);
@@ -621,9 +621,9 @@ test('CLI extract requires --changelog rather than reporting a cache miss', () =
 test('validateBody accepts a bare-host link, matching the render-time allowlist', () => {
   // allowChangelogUrl accepts these, so the CI gate must not be stricter or the
   // publish job reddens for content that would have rendered fine.
-  assert.deepEqual(validateBody('See [docs](https://docs.hyperdx.io).\n'), []);
+  assert.deepEqual(validateBody('See [docs](https://github.com/mminichino/couchbase-traces/tree/main/docs).\n'), []);
   assert.deepEqual(validateBody('See [gh](https://github.com).\n'), []);
-  assert.deepEqual(validateBody('See [q](https://docs.hyperdx.io?a=1).\n'), []);
+  assert.deepEqual(validateBody('See [q](https://github.com/mminichino/couchbase-traces/tree/main/docs).\n'), []);
   // The host must still be the whole host, not a prefix of a longer one.
   assert.ok(validateBody('See [x](https://github.com.evil.tld).\n').length > 0);
 });
@@ -766,7 +766,7 @@ test('CLI latest-version falls back to the heading when the marker is gone', () 
   writeFileSync(
     changelog,
     insertSection(null, OPTS).replace(
-      /<!-- hyperdx-release-notes[^>]*-->\n/,
+      /<!-- cbt-release-notes[^>]*-->\n/,
       '',
     ),
   );
@@ -800,7 +800,7 @@ test('any body validateBody accepts survives a splice round-trip byte-for-byte',
   const accepted = [
     'Summary line.\n\n### 🐛 Bug Fixes\n\n- **fix**: yes (#1).\n',
     'Summary.\n\n```yaml\n---\nkey: value\n```\n\n### ✨ New Features\n\n- **x**: y\n',
-    'Summary with [a link](https://github.com/hyperdxio/hyperdx/pull/1).\n',
+    'Summary with [a link](https://github.com/mminichino/couchbase-traces/pull/1).\n',
     'Summary.\n\n### 🔧 Improvements\n\n- **a**: one\n- **b**: two\n',
   ];
   for (const body of accepted) {

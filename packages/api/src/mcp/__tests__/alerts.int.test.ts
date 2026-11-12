@@ -131,13 +131,13 @@ describe('MCP Alert Tools', () => {
 
   // ─── clickstack_get_alert ────────────────────────────────────────────────────
 
-  describe('clickstack_get_alert', () => {
+  describe('cbt_get_alert', () => {
     describe('list (no id)', () => {
       it('should list all alerts with slim summary fields', async () => {
         await createTestAlert({ name: 'Alert 1' });
         await createTestAlert({ name: 'Alert 2' });
 
-        const result = await callTool(client, 'clickstack_get_alert', {});
+        const result = await callTool(client, 'cbt_get_alert', {});
 
         expect(result.isError).toBeFalsy();
         const output = JSON.parse(getFirstText(result));
@@ -160,7 +160,7 @@ describe('MCP Alert Tools', () => {
       });
 
       it('should return empty array when no alerts exist', async () => {
-        const result = await callTool(client, 'clickstack_get_alert', {});
+        const result = await callTool(client, 'cbt_get_alert', {});
 
         expect(result.isError).toBeFalsy();
         const output = JSON.parse(getFirstText(result));
@@ -172,7 +172,7 @@ describe('MCP Alert Tools', () => {
         await createTestAlert({ name: 'OK', state: AlertState.OK });
         await createTestAlert({ name: 'Disabled', state: AlertState.DISABLED });
 
-        const result = await callTool(client, 'clickstack_get_alert', {
+        const result = await callTool(client, 'cbt_get_alert', {
           state: 'ALERT',
         });
 
@@ -186,7 +186,7 @@ describe('MCP Alert Tools', () => {
       it('should return empty array when no alerts match state filter', async () => {
         await createTestAlert({ name: 'All Good', state: AlertState.OK });
 
-        const result = await callTool(client, 'clickstack_get_alert', {
+        const result = await callTool(client, 'cbt_get_alert', {
           state: 'ALERT',
         });
 
@@ -205,7 +205,7 @@ describe('MCP Alert Tools', () => {
         const client2 = await createTestClient(otherTeamContext);
 
         // List should be empty for the other team
-        const listResult = await callTool(client2, 'clickstack_get_alert', {});
+        const listResult = await callTool(client2, 'cbt_get_alert', {});
         const output = JSON.parse(getFirstText(listResult));
         expect(output).toHaveLength(0);
 
@@ -227,7 +227,7 @@ describe('MCP Alert Tools', () => {
           // no name set
         }).save();
 
-        const result = await callTool(client, 'clickstack_get_alert', {});
+        const result = await callTool(client, 'cbt_get_alert', {});
 
         expect(result.isError).toBeFalsy();
         const output = JSON.parse(getFirstText(result));
@@ -254,7 +254,7 @@ describe('MCP Alert Tools', () => {
           // no name set
         }).save();
 
-        const result = await callTool(client, 'clickstack_get_alert', {});
+        const result = await callTool(client, 'cbt_get_alert', {});
 
         expect(result.isError).toBeFalsy();
         const output = JSON.parse(getFirstText(result));
@@ -268,7 +268,7 @@ describe('MCP Alert Tools', () => {
       it('should get full alert detail with history when valid id is provided', async () => {
         const alert = await createTestAlert({ name: 'Detail Test' });
 
-        const result = await callTool(client, 'clickstack_get_alert', {
+        const result = await callTool(client, 'cbt_get_alert', {
           id: alert._id.toString(),
         });
 
@@ -285,7 +285,7 @@ describe('MCP Alert Tools', () => {
       });
 
       it('should return error for invalid ObjectId format', async () => {
-        const result = await callTool(client, 'clickstack_get_alert', {
+        const result = await callTool(client, 'cbt_get_alert', {
           id: 'not-a-valid-id',
         });
 
@@ -295,7 +295,7 @@ describe('MCP Alert Tools', () => {
 
       it('should return error for non-existent alert id', async () => {
         const fakeId = '000000000000000000000000';
-        const result = await callTool(client, 'clickstack_get_alert', {
+        const result = await callTool(client, 'cbt_get_alert', {
           id: fakeId,
         });
 
@@ -312,7 +312,7 @@ describe('MCP Alert Tools', () => {
         };
         const client2 = await createTestClient(otherTeamContext);
 
-        const getResult = await callTool(client2, 'clickstack_get_alert', {
+        const getResult = await callTool(client2, 'cbt_get_alert', {
           id: alert._id.toString(),
         });
         expect(getResult.isError).toBe(true);
@@ -325,13 +325,13 @@ describe('MCP Alert Tools', () => {
 
   // ─── clickstack_save_alert ───────────────────────────────────────────────────
 
-  describe('clickstack_save_alert', () => {
+  describe('cbt_save_alert', () => {
     describe('create', () => {
       it('should create a saved-search alert', async () => {
         const savedSearch = await createTestSavedSearch();
         const webhook = await createTestWebhook();
 
-        const result = await callTool(client, 'clickstack_save_alert', {
+        const result = await callTool(client, 'cbt_save_alert', {
           source: 'saved_search',
           savedSearchId: savedSearch._id.toString(),
           threshold: 50,
@@ -357,7 +357,7 @@ describe('MCP Alert Tools', () => {
         const savedSearch = await createTestSavedSearch();
         const webhook = await createTestWebhook();
 
-        const result = await callTool(client, 'clickstack_save_alert', {
+        const result = await callTool(client, 'cbt_save_alert', {
           source: 'saved_search',
           savedSearchId: savedSearch._id.toString(),
           threshold: 50,
@@ -383,7 +383,7 @@ describe('MCP Alert Tools', () => {
         });
         const webhook = await createTestWebhook();
 
-        const result = await callTool(client, 'clickstack_save_alert', {
+        const result = await callTool(client, 'cbt_save_alert', {
           source: 'saved_search',
           savedSearchId: savedSearch._id.toString(),
           threshold: 50,
@@ -402,7 +402,7 @@ describe('MCP Alert Tools', () => {
         const dashboard = await createTestDashboardWithTile();
         const webhook = await createTestWebhook();
 
-        const result = await callTool(client, 'clickstack_save_alert', {
+        const result = await callTool(client, 'cbt_save_alert', {
           source: 'tile',
           dashboardId: dashboard._id.toString(),
           tileId: 'tile-1',
@@ -427,7 +427,7 @@ describe('MCP Alert Tools', () => {
       it('should reject tile source without dashboardId', async () => {
         const webhook = await createTestWebhook();
 
-        const result = await callTool(client, 'clickstack_save_alert', {
+        const result = await callTool(client, 'cbt_save_alert', {
           source: 'tile',
           tileId: 'tile-1',
           threshold: 100,
@@ -447,7 +447,7 @@ describe('MCP Alert Tools', () => {
         const dashboard = await createTestDashboardWithTile();
         const webhook = await createTestWebhook();
 
-        const result = await callTool(client, 'clickstack_save_alert', {
+        const result = await callTool(client, 'cbt_save_alert', {
           source: 'tile',
           dashboardId: dashboard._id.toString(),
           threshold: 100,
@@ -466,7 +466,7 @@ describe('MCP Alert Tools', () => {
       it('should reject saved_search source without savedSearchId', async () => {
         const webhook = await createTestWebhook();
 
-        const result = await callTool(client, 'clickstack_save_alert', {
+        const result = await callTool(client, 'cbt_save_alert', {
           source: 'saved_search',
           threshold: 100,
           thresholdType: 'above',
@@ -485,7 +485,7 @@ describe('MCP Alert Tools', () => {
         const webhook = await createTestWebhook();
         const fakeId = '000000000000000000000000';
 
-        const result = await callTool(client, 'clickstack_save_alert', {
+        const result = await callTool(client, 'cbt_save_alert', {
           source: 'saved_search',
           savedSearchId: fakeId,
           threshold: 100,
@@ -504,7 +504,7 @@ describe('MCP Alert Tools', () => {
       it('should reject webhook channel without webhookId', async () => {
         const savedSearch = await createTestSavedSearch();
 
-        const result = await callTool(client, 'clickstack_save_alert', {
+        const result = await callTool(client, 'cbt_save_alert', {
           source: 'saved_search',
           savedSearchId: savedSearch._id.toString(),
           threshold: 100,
@@ -523,7 +523,7 @@ describe('MCP Alert Tools', () => {
         const savedSearch = await createTestSavedSearch();
         const webhook = await createTestWebhook();
 
-        const result = await callTool(client, 'clickstack_save_alert', {
+        const result = await callTool(client, 'cbt_save_alert', {
           source: 'saved_search',
           savedSearchId: savedSearch._id.toString(),
           threshold: 100,
@@ -543,7 +543,7 @@ describe('MCP Alert Tools', () => {
         const savedSearch = await createTestSavedSearch();
         const webhook = await createTestWebhook();
 
-        const result = await callTool(client, 'clickstack_save_alert', {
+        const result = await callTool(client, 'cbt_save_alert', {
           source: 'saved_search',
           savedSearchId: savedSearch._id.toString(),
           threshold: 75,
@@ -600,7 +600,7 @@ describe('MCP Alert Tools', () => {
 
         const result = await callTool(
           client,
-          'clickstack_save_alert',
+          'cbt_save_alert',
           makeInlineInput(webhook._id.toString()),
         );
 
@@ -641,12 +641,12 @@ describe('MCP Alert Tools', () => {
 
         const createResult = await callTool(
           client,
-          'clickstack_save_alert',
+          'cbt_save_alert',
           makeInlineInput(webhook._id.toString()),
         );
         const created = JSON.parse(getFirstText(createResult));
 
-        const updateResult = await callTool(client, 'clickstack_save_alert', {
+        const updateResult = await callTool(client, 'cbt_save_alert', {
           ...makeInlineInput(webhook._id.toString(), {
             chartConfig: makeChartConfig({ groupBy: 'ServiceName' }),
             threshold: 42,
@@ -669,7 +669,7 @@ describe('MCP Alert Tools', () => {
 
         const result = await callTool(
           client,
-          'clickstack_save_alert',
+          'cbt_save_alert',
           makeInlineInput(webhook._id.toString(), { chartConfig: undefined }),
         );
 
@@ -681,7 +681,7 @@ describe('MCP Alert Tools', () => {
         const savedSearch = await createTestSavedSearch();
         const webhook = await createTestWebhook();
 
-        const result = await callTool(client, 'clickstack_save_alert', {
+        const result = await callTool(client, 'cbt_save_alert', {
           source: 'saved_search',
           savedSearchId: savedSearch._id.toString(),
           chartConfig: makeChartConfig(),
@@ -702,7 +702,7 @@ describe('MCP Alert Tools', () => {
 
         const result = await callTool(
           client,
-          'clickstack_save_alert',
+          'cbt_save_alert',
           makeInlineInput(webhook._id.toString(), {
             chartConfig: makeChartConfig({
               formulas: [{ expression: 'B * 2' }],
@@ -719,7 +719,7 @@ describe('MCP Alert Tools', () => {
 
         const result = await callTool(
           client,
-          'clickstack_save_alert',
+          'cbt_save_alert',
           makeInlineInput(webhook._id.toString(), {
             chartConfig: makeChartConfig({
               sourceId: new mongoose.Types.ObjectId().toString(),
@@ -739,7 +739,7 @@ describe('MCP Alert Tools', () => {
         // argument validation before the handler runs.
         const rejected = await callTool(
           client,
-          'clickstack_save_alert',
+          'cbt_save_alert',
           makeInlineInput(webhook._id.toString(), {
             chartConfig: {
               configType: 'sql',
@@ -754,7 +754,7 @@ describe('MCP Alert Tools', () => {
 
         const result = await callTool(
           client,
-          'clickstack_save_alert',
+          'cbt_save_alert',
           makeInlineInput(webhook._id.toString(), {
             chartConfig: {
               configType: 'sql',
@@ -790,7 +790,7 @@ describe('MCP Alert Tools', () => {
         // makes the alert evaluate raw gauge values instead of deltas.
         const createResult = await callTool(
           client,
-          'clickstack_save_alert',
+          'cbt_save_alert',
           makeInlineInput(webhook._id.toString(), {
             chartConfig: makeChartConfig({
               select: [
@@ -817,7 +817,7 @@ describe('MCP Alert Tools', () => {
 
         // Read-then-resend: the detail response spells the flag
         // periodAggFn: 'delta'; resending that config verbatim must keep it.
-        const detail = await callTool(client, 'clickstack_get_alert', {
+        const detail = await callTool(client, 'cbt_get_alert', {
           id: created.id,
         });
         const detailOutput = JSON.parse(getFirstText(detail));
@@ -825,7 +825,7 @@ describe('MCP Alert Tools', () => {
           periodAggFn: 'delta',
         });
 
-        const resent = await callTool(client, 'clickstack_save_alert', {
+        const resent = await callTool(client, 'cbt_save_alert', {
           ...makeInlineInput(webhook._id.toString(), {
             chartConfig: detailOutput.chartConfig,
           }),
@@ -843,7 +843,7 @@ describe('MCP Alert Tools', () => {
 
         const result = await callTool(
           client,
-          'clickstack_save_alert',
+          'cbt_save_alert',
           makeInlineInput(webhook._id.toString(), {
             chartConfig: makeChartConfig({
               name: 'Error Rate Query',
@@ -868,15 +868,15 @@ describe('MCP Alert Tools', () => {
         });
       });
 
-      it('clickstack_get_alert list entries stay slim for inline alerts', async () => {
+      it('cbt_get_alert list entries stay slim for inline alerts', async () => {
         const webhook = await createTestWebhook();
         await callTool(
           client,
-          'clickstack_save_alert',
+          'cbt_save_alert',
           makeInlineInput(webhook._id.toString()),
         );
 
-        const list = await callTool(client, 'clickstack_get_alert', {});
+        const list = await callTool(client, 'cbt_get_alert', {});
         expect(list.isError).toBeFalsy();
         const output = JSON.parse(getFirstText(list));
         expect(output).toHaveLength(1);
@@ -887,12 +887,12 @@ describe('MCP Alert Tools', () => {
         expect(output[0].chartConfig).toBeUndefined();
       });
 
-      it('clickstack_get_alert detail includes chartConfig and falls back to its name', async () => {
+      it('cbt_get_alert detail includes chartConfig and falls back to its name', async () => {
         const webhook = await createTestWebhook();
 
         const createResult = await callTool(
           client,
-          'clickstack_save_alert',
+          'cbt_save_alert',
           makeInlineInput(webhook._id.toString(), { name: undefined }),
         );
         const created = JSON.parse(getFirstText(createResult));
@@ -903,7 +903,7 @@ describe('MCP Alert Tools', () => {
           $set: { 'chartConfig.name': 'Error Rate Query' },
         });
 
-        const detail = await callTool(client, 'clickstack_get_alert', {
+        const detail = await callTool(client, 'cbt_get_alert', {
           id: created.id,
         });
         expect(detail.isError).toBeFalsy();
@@ -923,7 +923,7 @@ describe('MCP Alert Tools', () => {
 
         const result = await callTool(
           client,
-          'clickstack_save_alert',
+          'cbt_save_alert',
           makeInlineInput(webhook._id.toString(), {
             chartConfig: makeChartConfig({ name: 'Trace error rate' }),
           }),
@@ -945,7 +945,7 @@ describe('MCP Alert Tools', () => {
 
         const result = await callTool(
           client,
-          'clickstack_save_alert',
+          'cbt_save_alert',
           makeInlineInput(webhook._id.toString(), {
             chartConfig: makeChartConfig({ name: 'Trace error rate' }),
             displayName: 'Checkout error spike',
@@ -958,7 +958,7 @@ describe('MCP Alert Tools', () => {
         expect(output.displayName).toBe('Checkout error spike');
         expect(output.tags).toEqual(['checkout', 'p1']);
 
-        const detail = await callTool(client, 'clickstack_get_alert', {
+        const detail = await callTool(client, 'cbt_get_alert', {
           id: output.id,
         });
         expect(JSON.parse(getFirstText(detail))).toMatchObject({
@@ -971,7 +971,7 @@ describe('MCP Alert Tools', () => {
         const webhook = await createTestWebhook();
         const createResult = await callTool(
           client,
-          'clickstack_save_alert',
+          'cbt_save_alert',
           makeInlineInput(webhook._id.toString(), {
             chartConfig: makeChartConfig({ name: 'Trace error rate' }),
             displayName: 'Checkout error spike',
@@ -979,7 +979,7 @@ describe('MCP Alert Tools', () => {
         );
         const created = JSON.parse(getFirstText(createResult));
 
-        const updateResult = await callTool(client, 'clickstack_save_alert', {
+        const updateResult = await callTool(client, 'cbt_save_alert', {
           ...makeInlineInput(webhook._id.toString(), {
             chartConfig: makeChartConfig({ name: 'Trace error rate' }),
           }),
@@ -1009,7 +1009,7 @@ describe('MCP Alert Tools', () => {
           namedWebhook('mcp-multi-2'),
         ]);
 
-        const result = await callTool(client, 'clickstack_save_alert', {
+        const result = await callTool(client, 'cbt_save_alert', {
           source: 'saved_search',
           savedSearchId: savedSearch._id.toString(),
           threshold: 50,
@@ -1041,7 +1041,7 @@ describe('MCP Alert Tools', () => {
           namedWebhook('mcp-mismatch-2'),
         ]);
 
-        const result = await callTool(client, 'clickstack_save_alert', {
+        const result = await callTool(client, 'cbt_save_alert', {
           source: 'saved_search',
           savedSearchId: savedSearch._id.toString(),
           threshold: 50,
@@ -1060,7 +1060,7 @@ describe('MCP Alert Tools', () => {
         const webhook = await namedWebhook('mcp-dupe');
         const ch = { type: 'webhook', webhookId: webhook._id.toString() };
 
-        const result = await callTool(client, 'clickstack_save_alert', {
+        const result = await callTool(client, 'cbt_save_alert', {
           source: 'saved_search',
           savedSearchId: savedSearch._id.toString(),
           threshold: 50,
@@ -1076,7 +1076,7 @@ describe('MCP Alert Tools', () => {
       it('should reject a payload with neither channel nor channels', async () => {
         const savedSearch = await createTestSavedSearch();
 
-        const result = await callTool(client, 'clickstack_save_alert', {
+        const result = await callTool(client, 'cbt_save_alert', {
           source: 'saved_search',
           savedSearchId: savedSearch._id.toString(),
           threshold: 50,
@@ -1100,7 +1100,7 @@ describe('MCP Alert Tools', () => {
           webhookId: `fake-webhook-id-${i}`,
         }));
 
-        const result = await callTool(client, 'clickstack_save_alert', {
+        const result = await callTool(client, 'cbt_save_alert', {
           source: 'saved_search',
           savedSearchId: savedSearch._id.toString(),
           threshold: 50,
@@ -1138,7 +1138,7 @@ describe('MCP Alert Tools', () => {
           name: 'Original Name',
         }).save();
 
-        const result = await callTool(client, 'clickstack_save_alert', {
+        const result = await callTool(client, 'cbt_save_alert', {
           id: alert._id.toString(),
           source: 'saved_search',
           savedSearchId: savedSearch._id.toString(),
@@ -1191,7 +1191,7 @@ describe('MCP Alert Tools', () => {
           }),
         ]);
 
-        const created = await callTool(client, 'clickstack_save_alert', {
+        const created = await callTool(client, 'cbt_save_alert', {
           source: 'saved_search',
           savedSearchId: savedSearch._id.toString(),
           threshold: 50,
@@ -1210,7 +1210,7 @@ describe('MCP Alert Tools', () => {
           { type: 'webhook', webhookId: w3._id.toString() },
           { type: 'webhook', webhookId: w4._id.toString() },
         ];
-        const updated = await callTool(client, 'clickstack_save_alert', {
+        const updated = await callTool(client, 'cbt_save_alert', {
           id: createdOutput.id,
           source: 'saved_search',
           savedSearchId: savedSearch._id.toString(),
@@ -1240,7 +1240,7 @@ describe('MCP Alert Tools', () => {
           source: AlertSource.SAVED_SEARCH,
         });
 
-        const tileResult = await callTool(client, 'clickstack_save_alert', {
+        const tileResult = await callTool(client, 'cbt_save_alert', {
           id: alert._id.toString(),
           source: 'tile',
           dashboardId: dashboard._id.toString(),
@@ -1266,25 +1266,21 @@ describe('MCP Alert Tools', () => {
         expect(updatedAlert?.savedSearch).toBeNull();
         expect(updatedAlert?.groupBy).toBeNull();
 
-        const savedSearchResult = await callTool(
-          client,
-          'clickstack_save_alert',
-          {
-            id: alert._id.toString(),
-            source: 'saved_search',
-            savedSearchId: savedSearch._id.toString(),
-            groupBy: 'http.route',
-            dashboardId: dashboard._id.toString(),
-            tileId: 'tile-1',
-            threshold: 300,
-            thresholdType: 'above',
-            interval: '30m',
-            channel: {
-              type: 'webhook',
-              webhookId: webhook._id.toString(),
-            },
+        const savedSearchResult = await callTool(client, 'cbt_save_alert', {
+          id: alert._id.toString(),
+          source: 'saved_search',
+          savedSearchId: savedSearch._id.toString(),
+          groupBy: 'http.route',
+          dashboardId: dashboard._id.toString(),
+          tileId: 'tile-1',
+          threshold: 300,
+          thresholdType: 'above',
+          interval: '30m',
+          channel: {
+            type: 'webhook',
+            webhookId: webhook._id.toString(),
           },
-        );
+        });
         expect(savedSearchResult.isError).toBeFalsy();
 
         updatedAlert = await Alert.findById(alert._id);
@@ -1302,7 +1298,7 @@ describe('MCP Alert Tools', () => {
         const webhook = await createTestWebhook();
         const fakeId = '000000000000000000000000';
 
-        const result = await callTool(client, 'clickstack_save_alert', {
+        const result = await callTool(client, 'cbt_save_alert', {
           id: fakeId,
           source: 'saved_search',
           savedSearchId: savedSearch._id.toString(),
@@ -1323,7 +1319,7 @@ describe('MCP Alert Tools', () => {
         const savedSearch = await createTestSavedSearch();
         const webhook = await createTestWebhook();
 
-        const result = await callTool(client, 'clickstack_save_alert', {
+        const result = await callTool(client, 'cbt_save_alert', {
           id: '!!!',
           source: 'saved_search',
           savedSearchId: savedSearch._id.toString(),
@@ -1344,7 +1340,7 @@ describe('MCP Alert Tools', () => {
 
   // ─── clickstack_get_webhook ──────────────────────────────────────────────────
 
-  describe('clickstack_get_webhook', () => {
+  describe('cbt_get_webhook', () => {
     it('should list all webhooks with slim fields', async () => {
       await Webhook.create({
         team: team._id,
@@ -1359,7 +1355,7 @@ describe('MCP Alert Tools', () => {
         url: 'https://example.com/hook2',
       });
 
-      const result = await callTool(client, 'clickstack_get_webhook', {});
+      const result = await callTool(client, 'cbt_get_webhook', {});
 
       expect(result.isError).toBeFalsy();
       const output = JSON.parse(getFirstText(result));
@@ -1378,7 +1374,7 @@ describe('MCP Alert Tools', () => {
     });
 
     it('should return empty array when no webhooks exist', async () => {
-      const result = await callTool(client, 'clickstack_get_webhook', {});
+      const result = await callTool(client, 'cbt_get_webhook', {});
 
       expect(result.isError).toBeFalsy();
       const output = JSON.parse(getFirstText(result));
@@ -1399,7 +1395,7 @@ describe('MCP Alert Tools', () => {
       };
       const client2 = await createTestClient(otherTeamContext);
 
-      const listResult = await callTool(client2, 'clickstack_get_webhook', {});
+      const listResult = await callTool(client2, 'cbt_get_webhook', {});
       const output = JSON.parse(getFirstText(listResult));
       expect(output).toHaveLength(0);
 

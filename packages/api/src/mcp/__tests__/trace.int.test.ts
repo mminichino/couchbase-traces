@@ -159,9 +159,9 @@ describe('MCP Trace Tools', () => {
   // ─── Schema serialization ──────────────────────────────────────────────────
 
   describe('schema serialization', () => {
-    it('should expose clickstack_trace_waterfall with expected properties', async () => {
+    it('should expose cbt_trace_waterfall with expected properties', async () => {
       const { tools } = await client.listTools();
-      const tool = tools.find(t => t.name === 'clickstack_trace_waterfall');
+      const tool = tools.find(t => t.name === 'cbt_trace_waterfall');
       expect(tool).toBeDefined();
 
       const props = Object.keys(tool!.inputSchema.properties ?? {});
@@ -174,10 +174,10 @@ describe('MCP Trace Tools', () => {
       expect(tool!.inputSchema.required).toContain('sourceId');
     });
 
-    it('should expose clickstack_trace_top_time_consuming_operations with expected properties', async () => {
+    it('should expose cbt_trace_top_time_consuming_operations with expected properties', async () => {
       const { tools } = await client.listTools();
       const tool = tools.find(
-        t => t.name === 'clickstack_trace_top_time_consuming_operations',
+        t => t.name === 'cbt_trace_top_time_consuming_operations',
       );
       expect(tool).toBeDefined();
 
@@ -197,9 +197,9 @@ describe('MCP Trace Tools', () => {
 
   // ─── clickstack_trace_waterfall ───────────────────────────────────────────────
 
-  describe('clickstack_trace_waterfall', () => {
+  describe('cbt_trace_waterfall', () => {
     it('should return error for non-existent source', async () => {
-      const result = await callTool(client, 'clickstack_trace_waterfall', {
+      const result = await callTool(client, 'cbt_trace_waterfall', {
         sourceId: '000000000000000000000000',
       });
       expect(result.isError).toBe(true);
@@ -207,7 +207,7 @@ describe('MCP Trace Tools', () => {
     });
 
     it('should return error for non-trace source', async () => {
-      const result = await callTool(client, 'clickstack_trace_waterfall', {
+      const result = await callTool(client, 'cbt_trace_waterfall', {
         sourceId: logSource._id.toString(),
       });
       expect(result.isError).toBe(true);
@@ -215,7 +215,7 @@ describe('MCP Trace Tools', () => {
     });
 
     it('should return error for invalid time range', async () => {
-      const result = await callTool(client, 'clickstack_trace_waterfall', {
+      const result = await callTool(client, 'cbt_trace_waterfall', {
         sourceId: traceSource._id.toString(),
         startTime: 'not-a-date',
       });
@@ -224,7 +224,7 @@ describe('MCP Trace Tools', () => {
     });
 
     it('should return no-match hint when no traces exist', async () => {
-      const result = await callTool(client, 'clickstack_trace_waterfall', {
+      const result = await callTool(client, 'cbt_trace_waterfall', {
         sourceId: traceSource._id.toString(),
         startTime: new Date(Date.now() - 60 * 60 * 1000).toISOString(),
         endTime: new Date().toISOString(),
@@ -288,7 +288,7 @@ describe('MCP Trace Tools', () => {
       });
 
       it('should fetch a trace by traceId and return a waterfall tree', async () => {
-        const result = await callTool(client, 'clickstack_trace_waterfall', {
+        const result = await callTool(client, 'cbt_trace_waterfall', {
           sourceId: traceSource._id.toString(),
           traceId: TRACE_ID,
           startTime: new Date(now.getTime() - 10 * 60 * 1000).toISOString(),
@@ -318,7 +318,7 @@ describe('MCP Trace Tools', () => {
       });
 
       it('should auto-pick the slowest trace when traceId is omitted', async () => {
-        const result = await callTool(client, 'clickstack_trace_waterfall', {
+        const result = await callTool(client, 'cbt_trace_waterfall', {
           sourceId: traceSource._id.toString(),
           pickFilter: `ServiceName:${WF_SVC}`,
           pickBy: 'slowest',
@@ -333,7 +333,7 @@ describe('MCP Trace Tools', () => {
       });
 
       it('should auto-pick the most recent trace', async () => {
-        const result = await callTool(client, 'clickstack_trace_waterfall', {
+        const result = await callTool(client, 'cbt_trace_waterfall', {
           sourceId: traceSource._id.toString(),
           pickFilter: `ServiceName:${WF_SVC}`,
           pickBy: 'most_recent',
@@ -347,7 +347,7 @@ describe('MCP Trace Tools', () => {
       });
 
       it('should respect maxSpans and note truncation', async () => {
-        const result = await callTool(client, 'clickstack_trace_waterfall', {
+        const result = await callTool(client, 'cbt_trace_waterfall', {
           sourceId: traceSource._id.toString(),
           traceId: TRACE_ID,
           maxSpans: 2,
@@ -383,7 +383,7 @@ describe('MCP Trace Tools', () => {
           },
         ]);
 
-        const result = await callTool(client, 'clickstack_trace_waterfall', {
+        const result = await callTool(client, 'cbt_trace_waterfall', {
           sourceId: traceSource._id.toString(),
           traceId: TRACE_ID,
           includeLogs: true,
@@ -400,7 +400,7 @@ describe('MCP Trace Tools', () => {
       });
 
       it('should omit logs when includeLogs is false', async () => {
-        const result = await callTool(client, 'clickstack_trace_waterfall', {
+        const result = await callTool(client, 'cbt_trace_waterfall', {
           sourceId: traceSource._id.toString(),
           traceId: TRACE_ID,
           includeLogs: false,
@@ -414,7 +414,7 @@ describe('MCP Trace Tools', () => {
       });
 
       it('should apply pickFilter to narrow which trace is picked', async () => {
-        const result = await callTool(client, 'clickstack_trace_waterfall', {
+        const result = await callTool(client, 'cbt_trace_waterfall', {
           sourceId: traceSource._id.toString(),
           pickFilter: `ServiceName:${WF_SVC}`,
           pickBy: 'slowest',
@@ -428,7 +428,7 @@ describe('MCP Trace Tools', () => {
       });
 
       it('should apply pickFilter with sql language', async () => {
-        const result = await callTool(client, 'clickstack_trace_waterfall', {
+        const result = await callTool(client, 'cbt_trace_waterfall', {
           sourceId: traceSource._id.toString(),
           pickFilter: `ServiceName = '${WF_SVC}'`,
           pickFilterLanguage: 'sql',
@@ -485,7 +485,7 @@ describe('MCP Trace Tools', () => {
       it('resolves an explicit traceId older than the default window via the first-seen probe', async () => {
         // No startTime/endTime: the 15-min default excludes this 2-day-old
         // trace, so only the probe can rescue it.
-        const result = await callTool(client, 'clickstack_trace_waterfall', {
+        const result = await callTool(client, 'cbt_trace_waterfall', {
           sourceId: traceSource._id.toString(),
           traceId: OLD_TRACE_ID,
           includeLogs: false,
@@ -500,7 +500,7 @@ describe('MCP Trace Tools', () => {
       it('honors an explicit window that excludes the trace (returns no-spans hint)', async () => {
         // Explicit window the old trace falls outside of: no spans come back,
         // proving the time predicate is applied rather than ignored.
-        const result = await callTool(client, 'clickstack_trace_waterfall', {
+        const result = await callTool(client, 'cbt_trace_waterfall', {
           sourceId: traceSource._id.toString(),
           traceId: OLD_TRACE_ID,
           includeLogs: false,
@@ -518,7 +518,7 @@ describe('MCP Trace Tools', () => {
         // A traceId that does not exist: the default window is probed back 90
         // days, finds nothing, and the hint must name the recoverable action
         // (pass an explicit startTime) rather than the auto-pick advice.
-        const result = await callTool(client, 'clickstack_trace_waterfall', {
+        const result = await callTool(client, 'cbt_trace_waterfall', {
           sourceId: traceSource._id.toString(),
           traceId: 'ffffffffffffffffffffffffffffffff',
           includeLogs: false,
@@ -585,7 +585,7 @@ describe('MCP Trace Tools', () => {
       });
 
       it('clamps the fetch window to the recent tail, excluding the far-past occurrence', async () => {
-        const result = await callTool(client, 'clickstack_trace_waterfall', {
+        const result = await callTool(client, 'cbt_trace_waterfall', {
           sourceId: traceSource._id.toString(),
           traceId: SENTINEL_TRACE_ID,
           includeLogs: false,
@@ -656,7 +656,7 @@ describe('MCP Trace Tools', () => {
       });
 
       it('returns the full tree and a late log for a trace spanning > 1h', async () => {
-        const result = await callTool(client, 'clickstack_trace_waterfall', {
+        const result = await callTool(client, 'cbt_trace_waterfall', {
           sourceId: traceSource._id.toString(),
           traceId: LONG_TRACE_ID,
         });
@@ -713,7 +713,7 @@ describe('MCP Trace Tools', () => {
       });
 
       it('returns the whole tree when the picked trace root predates the window', async () => {
-        const result = await callTool(client, 'clickstack_trace_waterfall', {
+        const result = await callTool(client, 'cbt_trace_waterfall', {
           sourceId: traceSource._id.toString(),
           pickFilter: `ServiceName:${PICK_SVC}`,
           pickBy: 'slowest',
@@ -762,7 +762,7 @@ describe('MCP Trace Tools', () => {
           },
         ]);
 
-        const result = await callTool(client, 'clickstack_trace_waterfall', {
+        const result = await callTool(client, 'cbt_trace_waterfall', {
           sourceId: traceSource._id.toString(),
           pickFilter: `ServiceName:${PICK2_SVC}`,
           pickBy: 'slowest',
@@ -815,7 +815,7 @@ describe('MCP Trace Tools', () => {
             return original.call(this, args);
           });
         try {
-          const result = await callTool(client, 'clickstack_trace_waterfall', {
+          const result = await callTool(client, 'cbt_trace_waterfall', {
             sourceId: traceSource._id.toString(),
             pickFilter: `ServiceName:${FAIL_SVC}`,
             pickBy: 'slowest',
@@ -864,7 +864,7 @@ describe('MCP Trace Tools', () => {
           },
         ]);
 
-        const result = await callTool(client, 'clickstack_trace_waterfall', {
+        const result = await callTool(client, 'cbt_trace_waterfall', {
           sourceId: traceSource._id.toString(),
           pickFilter: `ServiceName:${PICK3_SVC}`,
           pickBy: 'slowest',
@@ -910,7 +910,7 @@ describe('MCP Trace Tools', () => {
       });
 
       it('should auto-pick trace with an error span', async () => {
-        const result = await callTool(client, 'clickstack_trace_waterfall', {
+        const result = await callTool(client, 'cbt_trace_waterfall', {
           sourceId: traceSource._id.toString(),
           pickFilter: 'ServiceName:wf-test-err-svc',
           pickBy: 'first_error',
@@ -953,7 +953,7 @@ describe('MCP Trace Tools', () => {
         });
 
         const TRACE_ID = 'aaaabbbbccccddddeeeeffffgggghhhh';
-        const result = await callTool(client, 'clickstack_trace_waterfall', {
+        const result = await callTool(client, 'cbt_trace_waterfall', {
           sourceId: noLogTraceSource._id.toString(),
           traceId: TRACE_ID,
           includeLogs: true,
@@ -993,7 +993,7 @@ describe('MCP Trace Tools', () => {
         });
 
         const TRACE_ID = 'aaaabbbbccccddddeeeeffffgggghhhh';
-        const result = await callTool(client, 'clickstack_trace_waterfall', {
+        const result = await callTool(client, 'cbt_trace_waterfall', {
           sourceId: badLogTraceSource._id.toString(),
           traceId: TRACE_ID,
           includeLogs: true,
@@ -1034,7 +1034,7 @@ describe('MCP Trace Tools', () => {
         });
 
         const TRACE_ID = 'aaaabbbbccccddddeeeeffffgggghhhh';
-        const result = await callTool(client, 'clickstack_trace_waterfall', {
+        const result = await callTool(client, 'cbt_trace_waterfall', {
           sourceId: wrongKindTraceSource._id.toString(),
           traceId: TRACE_ID,
           includeLogs: true,
@@ -1052,11 +1052,11 @@ describe('MCP Trace Tools', () => {
 
   // ─── clickstack_trace_top_time_consuming_operations ───────────────────────────
 
-  describe('clickstack_trace_top_time_consuming_operations', () => {
+  describe('cbt_trace_top_time_consuming_operations', () => {
     it('should return error for non-existent source', async () => {
       const result = await callTool(
         client,
-        'clickstack_trace_top_time_consuming_operations',
+        'cbt_trace_top_time_consuming_operations',
         {
           sourceId: '000000000000000000000000',
           parentFilter: "ServiceName = 'api-gateway'",
@@ -1071,7 +1071,7 @@ describe('MCP Trace Tools', () => {
     it('should return error for non-trace source', async () => {
       const result = await callTool(
         client,
-        'clickstack_trace_top_time_consuming_operations',
+        'cbt_trace_top_time_consuming_operations',
         {
           sourceId: logSource._id.toString(),
           parentFilter: "ServiceName = 'api-gateway'",
@@ -1086,7 +1086,7 @@ describe('MCP Trace Tools', () => {
     it('should return error for invalid time range', async () => {
       const result = await callTool(
         client,
-        'clickstack_trace_top_time_consuming_operations',
+        'cbt_trace_top_time_consuming_operations',
         {
           sourceId: traceSource._id.toString(),
           parentFilter: "ServiceName = 'api-gateway'",
@@ -1101,7 +1101,7 @@ describe('MCP Trace Tools', () => {
     it('should return empty operations when no traces match', async () => {
       const result = await callTool(
         client,
-        'clickstack_trace_top_time_consuming_operations',
+        'cbt_trace_top_time_consuming_operations',
         {
           sourceId: traceSource._id.toString(),
           parentFilter: "ServiceName = 'nonexistent-service'",
@@ -1208,7 +1208,7 @@ describe('MCP Trace Tools', () => {
       it('should break down child operations ranked by total time', async () => {
         const result = await callTool(
           client,
-          'clickstack_trace_top_time_consuming_operations',
+          'cbt_trace_top_time_consuming_operations',
           {
             sourceId: traceSource._id.toString(),
             parentFilter: `ServiceName = '${PARENT_SVC}' AND SpanName = '${PARENT_OP}'`,
@@ -1245,7 +1245,7 @@ describe('MCP Trace Tools', () => {
         // Only trace 2 has a parent >= 850ms (900ms)
         const result = await callTool(
           client,
-          'clickstack_trace_top_time_consuming_operations',
+          'cbt_trace_top_time_consuming_operations',
           {
             sourceId: traceSource._id.toString(),
             parentFilter: `ServiceName = '${PARENT_SVC}' AND SpanName = '${PARENT_OP}'`,
@@ -1270,7 +1270,7 @@ describe('MCP Trace Tools', () => {
       it('should respect topN parameter', async () => {
         const result = await callTool(
           client,
-          'clickstack_trace_top_time_consuming_operations',
+          'cbt_trace_top_time_consuming_operations',
           {
             sourceId: traceSource._id.toString(),
             parentFilter: `ServiceName = '${PARENT_SVC}' AND SpanName = '${PARENT_OP}'`,
@@ -1295,7 +1295,7 @@ describe('MCP Trace Tools', () => {
 
         const result = await callTool(
           client,
-          'clickstack_trace_top_time_consuming_operations',
+          'cbt_trace_top_time_consuming_operations',
           {
             sourceId: traceSource._id.toString(),
             parentFilter: `ServiceName = '${PARENT_SVC}' AND SpanName = '${PARENT_OP}'`,
@@ -1320,7 +1320,7 @@ describe('MCP Trace Tools', () => {
 
         const result = await callTool(
           client,
-          'clickstack_trace_top_time_consuming_operations',
+          'cbt_trace_top_time_consuming_operations',
           {
             sourceId: traceSource._id.toString(),
             parentFilter: `ServiceName = '${PARENT_SVC}' AND SpanName = '${PARENT_OP}'`,
@@ -1340,7 +1340,7 @@ describe('MCP Trace Tools', () => {
       it('should return error for invalid parentFilter SQL', async () => {
         const result = await callTool(
           client,
-          'clickstack_trace_top_time_consuming_operations',
+          'cbt_trace_top_time_consuming_operations',
           {
             sourceId: traceSource._id.toString(),
             parentFilter: 'INVALID SQL @@@ SYNTAX',
@@ -1370,7 +1370,7 @@ describe('MCP Trace Tools', () => {
         try {
           const result = await callTool(
             client,
-            'clickstack_trace_top_time_consuming_operations',
+            'cbt_trace_top_time_consuming_operations',
             {
               sourceId: traceSource._id.toString(),
               parentFilter: `ServiceName = '${PARENT_SVC}' AND SpanName = '${PARENT_OP}'`,
@@ -1438,7 +1438,7 @@ describe('MCP Trace Tools', () => {
         try {
           const result = await callTool(
             client,
-            'clickstack_trace_top_time_consuming_operations',
+            'cbt_trace_top_time_consuming_operations',
             {
               sourceId: traceSource._id.toString(),
               parentFilter: `ServiceName = '${PARENT_SVC}' AND SpanName = '${PARENT_OP}'`,

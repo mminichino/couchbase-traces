@@ -25,16 +25,13 @@ const router = express.Router();
 // `timeout: false`, so without a bound a large team can hang the page.
 const IAC_MANIFEST_MAX_TIME_MS = 10_000;
 
-const manifestTruncations = getCounter(
-  'hyperdx.iac.import_manifest_truncated',
-  {
-    description:
-      'Count of import-manifest requests where at least one listing hit IAC_MANIFEST_LIMIT.',
-  },
-);
+const manifestTruncations = getCounter('cbt.iac.import_manifest_truncated', {
+  description:
+    'Count of import-manifest requests where at least one listing hit IAC_MANIFEST_LIMIT.',
+});
 
 const manifestUnexportableDashboards = getCounter(
-  'hyperdx.iac.import_manifest_unexportable_dashboards',
+  'cbt.iac.import_manifest_unexportable_dashboards',
   {
     description:
       'Dashboards withheld from Terraform export because a tile would not survive the import round trip.',
@@ -42,7 +39,7 @@ const manifestUnexportableDashboards = getCounter(
 );
 
 const manifestUnaddressableTileAlerts = getCounter(
-  'hyperdx.iac.import_manifest_unaddressable_tile_alerts',
+  'cbt.iac.import_manifest_unaddressable_tile_alerts',
   {
     description:
       'Tile alerts withheld from Terraform export because Terraform cannot address their tile: the dashboard is gone or provisioned, or the tile has no unique, non-blank name.',
@@ -50,7 +47,7 @@ const manifestUnaddressableTileAlerts = getCounter(
 );
 
 const manifestUnexportableSources = getCounter(
-  'hyperdx.iac.import_manifest_unexportable_sources',
+  'cbt.iac.import_manifest_unexportable_sources',
   {
     description:
       'Sources withheld from Terraform export because the provider cannot model their kind.',
@@ -193,19 +190,19 @@ router.get('/import-manifest', async (req, res, next) => {
       ).length;
 
       span.setAttribute(
-        'hyperdx.iac.import_manifest.truncated_types',
+        'cbt.iac.import_manifest.truncated_types',
         truncatedTypes.join(','),
       );
       span.setAttribute(
-        'hyperdx.iac.import_manifest.unexportable_dashboards',
+        'cbt.iac.import_manifest.unexportable_dashboards',
         unexportableDashboards,
       );
       span.setAttribute(
-        'hyperdx.iac.import_manifest.unexportable_sources',
+        'cbt.iac.import_manifest.unexportable_sources',
         unexportableSources,
       );
       span.setAttribute(
-        'hyperdx.iac.import_manifest.unaddressable_tile_alerts',
+        'cbt.iac.import_manifest.unaddressable_tile_alerts',
         unaddressableTileAlerts.size,
       );
       if (truncatedTypes.length > 0) {

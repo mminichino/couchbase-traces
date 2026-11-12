@@ -121,8 +121,8 @@ const mcpAlertChannelSchema = z
     webhookId: z
       .string()
       .describe(
-        'ID of the webhook to notify. Get it from clickstack_get_webhook, or ' +
-          'create one with clickstack_save_webhook.',
+        'ID of the webhook to notify. Get it from cbt_get_webhook, or ' +
+          'create one with cbt_save_webhook.',
       ),
   })
   .describe("A webhook that receives this alert's notifications.");
@@ -132,7 +132,7 @@ export const mcpSaveAlertSchema = z.object({
     .string()
     .optional()
     .describe(
-      'Alert ID from clickstack_get_alert. Omit to create a new alert, ' +
+      'Alert ID from cbt_get_alert. Omit to create a new alert, ' +
         'provide to update an existing one.',
     ),
 
@@ -149,21 +149,21 @@ export const mcpSaveAlertSchema = z.object({
     .optional()
     .describe(
       'Saved search to monitor (required when source is saved_search). Get ' +
-        'the ID from clickstack_get_saved_search.',
+        'the ID from cbt_get_saved_search.',
     ),
   dashboardId: z
     .string()
     .optional()
     .describe(
       'Dashboard containing the tile to monitor (required when source is ' +
-        'tile). Get the ID from clickstack_get_dashboard.',
+        'tile). Get the ID from cbt_get_dashboard.',
     ),
   tileId: z
     .string()
     .optional()
     .describe(
       'Tile to monitor within the dashboard (required when source is tile). ' +
-        'Get the ID from clickstack_get_dashboard with the dashboard ID. Must ' +
+        'Get the ID from cbt_get_dashboard with the dashboard ID. Must ' +
         'be a line, stacked line, stacked bar, or number tile.',
     ),
   groupBy: z

@@ -90,7 +90,7 @@ function formatExternalConnection(connection: ConnectionDocument) {
  *           example: default
  *         hyperdxSettingPrefix:
  *           type: string
- *           description: Optional prefix for HyperDX-specific ClickHouse settings. Must only contain alphanumeric characters and underscores.
+ *           description: Optional prefix for Couchbase Traces-specific ClickHouse settings. Must only contain alphanumeric characters and underscores.
  *           nullable: true
  *           example: hyperdx_
  *         isPrometheusEndpoint:
@@ -133,7 +133,7 @@ function formatExternalConnection(connection: ConnectionDocument) {
  *           example: my-secret-password
  *         hyperdxSettingPrefix:
  *           type: string
- *           description: Optional prefix for HyperDX-specific ClickHouse settings. Must only contain alphanumeric characters and underscores.
+ *           description: Optional prefix for Couchbase Traces-specific ClickHouse settings. Must only contain alphanumeric characters and underscores.
  *           nullable: true
  *           example: hyperdx_
  *         isPrometheusEndpoint:
@@ -166,7 +166,7 @@ function formatExternalConnection(connection: ConnectionDocument) {
  *           example: my-new-secret-password
  *         hyperdxSettingPrefix:
  *           type: string
- *           description: Optional prefix for HyperDX-specific ClickHouse settings. Set to null or an empty string to clear the existing value. If omitted, the existing value is kept.
+ *           description: Optional prefix for Couchbase Traces-specific ClickHouse settings. Set to null or an empty string to clear the existing value. If omitted, the existing value is kept.
  *           nullable: true
  *           example: hyperdx_
  *         isPrometheusEndpoint:

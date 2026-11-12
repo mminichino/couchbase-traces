@@ -6,7 +6,7 @@ const httpDef: McpDefinition = {
   url: 'http://localhost:30199/mcp',
   headers: { Authorization: 'Bearer test' },
   toolPattern: 'mcp__hyperdx__*',
-  label: 'HyperDX',
+  label: 'Couchbase Traces',
 };
 
 /** Mock fetch so each queued value is returned as an SSE JSON-RPC response. */

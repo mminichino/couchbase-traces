@@ -207,7 +207,7 @@ export default function AlertsPage({ client, onClose }: AlertsPageProps) {
       <Box flexDirection="column" paddingX={1} height={termHeight}>
         <Box>
           <Text bold color="cyan">
-            HyperDX
+            Couchbase Traces
           </Text>
           <Text> — </Text>
           <Text bold>Alert Detail</Text>
@@ -335,7 +335,7 @@ export default function AlertsPage({ client, onClose }: AlertsPageProps) {
     <Box flexDirection="column" paddingX={1} height={termHeight}>
       <Box>
         <Text bold color="cyan">
-          HyperDX
+          Couchbase Traces
         </Text>
         <Text> — </Text>
         <Text bold>Alerts</Text>

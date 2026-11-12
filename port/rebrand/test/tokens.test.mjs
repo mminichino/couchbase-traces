@@ -17,6 +17,7 @@ const FILES = {
     "export const g = 'Welcome to HyperDX.';",
     "export const hdxDebug = 1; // HyperDX debug",
     "export const h = 'https://hyperdx.io/discord';",
+    'export const i = /clickstack_trace_waterfall/;',
     '',
   ].join('\n'),
   'packages/cli/src/help.ts': "export const usage = 'hdx login';\n",
@@ -92,6 +93,7 @@ describe('tokens', () => {
     assert.match(strings, /g = 'Welcome to Example Traces\.'/);
     assert.match(strings, /hdxDebug = 1; \/\/ HyperDX debug/);
     assert.match(strings, /https:\/\/hyperdx\.io\/discord/);
+    assert.match(strings, /i = \/ext_trace_waterfall\/;/);
     assert.match(read(root, 'packages/cli/src/help.ts'), /'ext login'/);
     assert.match(read(root, 'packages/app/src/Widget.tsx'), /<div>Example Traces is great<\/div>/);
     assert.equal(read(root, 'README.md'), 'Use ext login with Example Traces.\n');

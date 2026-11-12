@@ -464,8 +464,8 @@ const mcpOnClickTargetSchema = z
           .min(1)
           .describe(
             'Concrete source ID (for type=search) or dashboard ID (for type=dashboard). ' +
-              'Get source IDs from clickstack_list_sources; get dashboard IDs from ' +
-              'clickstack_get_dashboard (no id arg returns the list) or clickstack_search_dashboards. ' +
+              'Get source IDs from cbt_list_sources; get dashboard IDs from ' +
+              'cbt_get_dashboard (no id arg returns the list) or cbt_search_dashboards. ' +
               'For type=search the source kind must be "log" or "trace"; the /search ' +
               'page does not render metric/session sources.',
           ),
@@ -540,7 +540,7 @@ const mcpOnClickDashboardSchema = z
   .object({
     type: z
       .literal('dashboard')
-      .describe('Link to another ClickStack dashboard.'),
+      .describe('Link to another Couchbase Traces dashboard.'),
     target: mcpOnClickTargetSchema,
     whereTemplate: z
       .string()
@@ -588,7 +588,7 @@ const mcpOnClickExternalSchema = z
           '"https://example.com/d/abc?var-service={{ServiceName}}". ' +
           'The rendered value MUST be an absolute http(s) URL; relative URLs and ' +
           'non-http(s) schemes (javascript:, data:, etc.) are rejected at click time. ' +
-          'This variant references no HyperDX source or dashboard.',
+          'This variant references no Couchbase Traces source or dashboard.',
       ),
   })
   .describe(
@@ -646,7 +646,7 @@ const mcpTimeChartDisplayFields = {
 };
 
 const mcpRowListSourceFields = {
-  sourceId: z.string().describe('Source ID – call clickstack_list_sources'),
+  sourceId: z.string().describe('Source ID – call cbt_list_sources'),
   where: z
     .string()
     .optional()
@@ -704,7 +704,7 @@ const mcpTileLayoutSchema = z.object({
     .optional()
     .describe(
       'Tile ID, generated when omitted. When updating a dashboard, keep each ' +
-        "existing tile's ID from clickstack_get_dashboard: a tile whose ID " +
+        "existing tile's ID from cbt_get_dashboard: a tile whose ID " +
         'disappears is treated as removed and its alerts are deleted.',
     ),
   containerId: z
@@ -734,7 +734,7 @@ export const mcpLineTileSchema = mcpTileLayoutSchema.extend({
     .object({
       ...rejectedTileWhereFields,
       displayType: z.literal('line').describe('Line chart over time'),
-      sourceId: z.string().describe('Source ID – call clickstack_list_sources'),
+      sourceId: z.string().describe('Source ID – call cbt_list_sources'),
       select: z
         .array(mcpTileSelectItemSchema)
         .min(1)
@@ -771,7 +771,7 @@ export const mcpLineTileSchema = mcpTileLayoutSchema.extend({
 });
 
 const mcpStackedTimeChartConfigFields = {
-  sourceId: z.string().describe('Source ID – call clickstack_list_sources'),
+  sourceId: z.string().describe('Source ID – call cbt_list_sources'),
   select: z
     .array(mcpTileSelectItemSchema)
     .min(1)
@@ -823,7 +823,7 @@ const mcpTableTileSchema = mcpTileLayoutSchema.extend({
     .object({
       ...rejectedTileWhereFields,
       displayType: z.literal('table').describe('Tabular aggregated data'),
-      sourceId: z.string().describe('Source ID – call clickstack_list_sources'),
+      sourceId: z.string().describe('Source ID – call cbt_list_sources'),
       select: z
         .array(mcpTileSelectItemSchema)
         .min(1)
@@ -879,7 +879,7 @@ export const mcpNumberTileSchema = mcpTileLayoutSchema.extend({
       displayType: z
         .literal('number')
         .describe('Single aggregate scalar value'),
-      sourceId: z.string().describe('Source ID – call clickstack_list_sources'),
+      sourceId: z.string().describe('Source ID – call cbt_list_sources'),
       select: z
         .array(mcpTileSelectItemSchema)
         .min(1)
@@ -920,7 +920,7 @@ const mcpPieTileSchema = mcpTileLayoutSchema.extend({
     .object({
       ...rejectedTileWhereFields,
       displayType: z.literal('pie').describe('Pie chart'),
-      sourceId: z.string().describe('Source ID – call clickstack_list_sources'),
+      sourceId: z.string().describe('Source ID – call cbt_list_sources'),
       select: z
         .array(mcpTileSelectItemSchema)
         .length(1)
@@ -968,7 +968,7 @@ const mcpCategoricalBarTileSchema = mcpTileLayoutSchema.extend({
       displayType: z
         .literal('bar')
         .describe('Bar chart — one bar per group value (not a time series)'),
-      sourceId: z.string().describe('Source ID – call clickstack_list_sources'),
+      sourceId: z.string().describe('Source ID – call cbt_list_sources'),
       select: z
         .array(mcpTileSelectItemSchema)
         .length(1)
@@ -1055,7 +1055,7 @@ const mcpHeatmapTileSchema = mcpTileLayoutSchema.extend({
       sourceId: z
         .string()
         .describe(
-          'Source ID. Must be a Trace source today; use clickstack_list_sources and ' +
+          'Source ID. Must be a Trace source today; use cbt_list_sources and ' +
             'pick one whose kind is "trace".',
         ),
       select: z
@@ -1101,7 +1101,7 @@ const mcpHeatmapSeriesTileSchema = mcpTileLayoutSchema.extend({
       sourceId: z
         .string()
         .describe(
-          'Source ID of a Trace, Log, or Metric source - call clickstack_list_sources',
+          'Source ID of a Trace, Log, or Metric source - call cbt_list_sources',
         ),
       select: z
         .array(mcpTileSelectItemSchema)
@@ -1198,13 +1198,13 @@ export const mcpSqlTileSchema = mcpTileLayoutSchema.extend({
       connectionId: z
         .string()
         .describe(
-          'Connection ID (not sourceId) – call clickstack_list_sources to find available connections',
+          'Connection ID (not sourceId) – call cbt_list_sources to find available connections',
         ),
       sourceId: z
         .string()
         .optional()
         .describe(
-          'Source ID for the table this query reads from (call clickstack_list_sources). ' +
+          'Source ID for the table this query reads from (call cbt_list_sources). ' +
             'ALWAYS set this for raw SQL tiles UNLESS the query reads from multiple tables ' +
             '(e.g. JOINs or sub-queries spanning several sources), in which case omit it. ' +
             'sourceId is REQUIRED by two macros: $__filters and $__sourceTable. ' +
@@ -1336,7 +1336,7 @@ const mcpPromqlTileSchema = mcpTileLayoutSchema.extend({
       sourceId: z
         .string()
         .describe(
-          'ID of a source whose kind is "promql" – call clickstack_list_sources',
+          'ID of a source whose kind is "promql" – call cbt_list_sources',
         ),
       expressions: z
         .array(mcpPromqlExpressionSchema)
@@ -1545,7 +1545,7 @@ const mcpTilesParam = z
   .array(mcpTileSchema)
   .describe(
     'Array of dashboard tiles. Each tile needs a name, optional layout (x/y/w/h), and a config block. ' +
-      'The config block varies by displayType – use clickstack_list_sources for sourceId and connectionId values.\n\n' +
+      'The config block varies by displayType – use cbt_list_sources for sourceId and connectionId values.\n\n' +
       'Example tiles:\n' +
       '1. Line chart: { "name": "Error Rate", "config": { "displayType": "line", "sourceId": "<from list_sources>", ' +
       '"groupBy": "ResourceAttributes[\'service.name\']", "select": [{ "aggFn": "count", "where": "StatusCode:STATUS_CODE_ERROR", "alias": "Errors" }] } }\n' +
@@ -1594,7 +1594,7 @@ const mcpDashboardFilterBaseShape = {
     .describe(
       'Filter identity. ' +
         'On UPDATE of an existing dashboard, every filter in the array MUST carry ' +
-        'an id: pass the exact id returned by clickstack_get_dashboard for any filter ' +
+        'an id: pass the exact id returned by cbt_get_dashboard for any filter ' +
         'you are keeping (so saved values bound to it stay attached), and generate ' +
         'a fresh random hex/ObjectId string for any filter you are adding in this ' +
         'update. Omitting `id` on an existing filter would orphan its saved values; ' +
@@ -1667,7 +1667,7 @@ const mcpQueryExpressionFilterSchema = z
       ),
     sourceId: objectIdSchema.describe(
       'Source the filter values are pulled from (for the dropdown). ' +
-        'Get IDs from clickstack_list_sources.',
+        'Get IDs from cbt_list_sources.',
     ),
     sourceMetricType: z
       .nativeEnum(MetricsDataType)
@@ -1699,7 +1699,7 @@ const mcpQueryExpressionFilterSchema = z
       .array(objectIdSchema)
       .optional()
       .describe(
-        'Source IDs (from clickstack_list_sources) that this filter is applied to. ' +
+        'Source IDs (from cbt_list_sources) that this filter is applied to. ' +
           'Omit to apply the filter to ALL tiles regardless of source ' +
           '— this is the recommended default. ' +
           'A non-empty array restricts the filter to only tiles whose source ID is in the list; ' +
@@ -1774,11 +1774,11 @@ const mcpPromqlLabelFilterSchema = z
         "Filter type discriminator for a filter whose dropdown lists a Prometheus label's values.",
       ),
     sourceId: objectIdSchema.describe(
-      'ID of a source whose kind is "promql". Get IDs from clickstack_list_sources.',
+      'ID of a source whose kind is "promql". Get IDs from cbt_list_sources.',
     ),
     label: PromqlLabelDashboardFilterSchema.shape.label.describe(
       'Label whose values fill the dropdown, e.g. "job". ' +
-        'clickstack_describe_source lists the label names of a promql source.',
+        'cbt_describe_source lists the label names of a promql source.',
     ),
     match: PromqlLabelDashboardFilterSchema.shape.match.describe(
       'Optional series selector narrowing which series the values come from, ' +
@@ -1922,7 +1922,7 @@ const mcpVariableSavedFilterValueSchema =
     name: variableValueShape.name.describe(
       'The variableName of the variable-enabled filter this selection belongs ' +
         "to. Must match a filter's variableName declared in `filters` (see " +
-        'clickstack_get_dashboard for the resolved names); an unknown name is ' +
+        'cbt_get_dashboard for the resolved names); an unknown name is ' +
         'ignored when the dashboard loads.',
     ),
     values: variableValueShape.values.describe(
@@ -1944,8 +1944,8 @@ export type McpSavedFilterValues = z.infer<typeof mcpSavedFilterValuesParam>;
 
 const mcpPatchDashboardSchema = z.object({
   dashboardId: objectIdSchema.describe(
-    'ID of the dashboard to patch, from clickstack_get_dashboard (no id lists ' +
-      'dashboards) or clickstack_search_dashboards.',
+    'ID of the dashboard to patch, from cbt_get_dashboard (no id lists ' +
+      'dashboards) or cbt_search_dashboards.',
   ),
   name: z
     .string()
@@ -1961,7 +1961,7 @@ const mcpPatchDashboardSchema = z.object({
     .optional()
     .describe(
       'ID of the tile to replace. Must be paired with `tile`. ' +
-        'Obtain tile IDs from clickstack_get_dashboard.',
+        'Obtain tile IDs from cbt_get_dashboard.',
     ),
   tile: mcpPatchTileSchema
     .optional()

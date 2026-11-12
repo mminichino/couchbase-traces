@@ -155,7 +155,7 @@ describe('unaddressableTileAlertIds', () => {
     // getCounter memoizes by name, so this is the instrument the module under
     // test captured at import — no options, or it would warn about a mismatch.
     const add = jest.spyOn(
-      getCounter('hyperdx.iac.tile_alert_lookup_failed'),
+      getCounter('cbt.iac.tile_alert_lookup_failed'),
       'add',
     );
     const warn = jest.spyOn(logger, 'warn');

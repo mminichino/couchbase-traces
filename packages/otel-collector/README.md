@@ -1,9 +1,9 @@
-# HyperDX OTel Collector
+# Couchbase Traces OTel Collector
 
-Custom-built OpenTelemetry Collector for HyperDX, compiled via
+Custom-built OpenTelemetry Collector for Couchbase Traces, compiled via
 [OCB (OpenTelemetry Collector Builder)](https://github.com/open-telemetry/opentelemetry-collector/tree/main/cmd/builder).
 This replaces the pre-built `otel/opentelemetry-collector-contrib` image with a
-binary that includes the components HyperDX needs plus commonly-used core and
+binary that includes the components Couchbase Traces needs plus commonly-used core and
 contrib components, and any custom receivers/processors added in this package.
 
 ## Architecture
@@ -50,7 +50,7 @@ builds.
 
 ## Included components
 
-Components used by HyperDX internally are marked with their config references.
+Components used by Couchbase Traces internally are marked with their config references.
 Components marked "user configs" are included so users can reference them in
 custom OTel configurations without rebuilding the collector.
 
@@ -134,7 +134,7 @@ custom OTel configurations without rebuilding the collector.
 ## Ingesting Datadog traces, metrics, and logs
 
 The `datadogreceiver` contrib component is compiled into the binary so a
-Datadog Agent can ship **traces, metrics, and logs** to HyperDX. The receiver
+Datadog Agent can ship **traces, metrics, and logs** to Couchbase Traces. The receiver
 runs a single HTTP server on `:8126` that serves the Datadog intake API for
 all three signals and translates them into OTLP, which flows through the
 existing `traces`, `metrics`, and `logs` pipelines into ClickHouse. It is
@@ -156,7 +156,7 @@ config for logs).
 
 In OpAMP supervisor mode, when collector authentication is enforced the
 receiver authenticates against the team API keys (same as `otlp/hyperdx`) via
-the `DD-API-KEY` header. Set the Datadog Agent's `DD_API_KEY` to a HyperDX
+the `DD-API-KEY` header. Set the Datadog Agent's `DD_API_KEY` to a Couchbase Traces
 team ingestion API key.
 
 ## Computing span metrics from ingested traces
@@ -169,7 +169,7 @@ Datadog Agent traces otherwise only get RED metrics the same way any other
 trace source does today: computed at query time from the traces table
 (`packages/app/src/serviceDashboard.ts`'s `getExpressions`). This connector
 precomputes them once at the collector instead of per query, and adds an
-exponential-histogram latency series HyperDX's ClickHouse schema already
+exponential-histogram latency series Couchbase Traces's ClickHouse schema already
 has a dedicated table for (below). The component's config key is
 `span_metrics` (the module is still named
 `spanmetricsconnector`, and `spanmetrics` still works as a deprecated
@@ -189,7 +189,7 @@ bare minimum:
   `series_expiration`/`aggregation_cardinality_limit` pair below: expiring
   a series deletes its accumulator, so the *next* span for that same
   service+operation restarts its `calls` counter from 1 rather than
-  continuing it — an ordinary counter reset, except HyperDX's own
+  continuing it — an ordinary counter reset, except Couchbase Traces's own
   cumulative-rate SQL (`packages/common-utils/src/core/renderChartConfig.ts`,
   `greatest(Value - lagInFrame(Value), 0)`) doesn't special-case resets;
   it clamps the negative/zero delta and moves on. For a series that's
@@ -208,7 +208,7 @@ bare minimum:
 - `histogram.exponential.max_size: 160` — without it, the connector
   defaults to an *explicit*-bucket duration histogram
   (`otel_metrics_histogram`), not the exponential one
-  (`otel_metrics_exponential_histogram`) HyperDX's ClickHouse schema
+  (`otel_metrics_exponential_histogram`) Couchbase Traces's ClickHouse schema
   already has a dedicated table for; this is what actually gets you
   that table instead of the default bucket set.
 - `aggregation_cardinality_limit` — `spanmetrics` aggregates unbounded by
@@ -333,12 +333,12 @@ config, but bare tags (`#mytag`, no value) need `enable_simple_tags: true`
 (set below) or they're silently dropped.
 
 **This component does not support horizontally-scaled deployments** — not
-a HyperDX-specific limitation, it's stated directly in the upstream
+a Couchbase Traces-specific limitation, it's stated directly in the upstream
 component's own docs. Aggregation state lives independently in each
 collector instance's memory with no cross-replica coordination, so the
 same metric landing on two different replicas (e.g. behind a
 load-balanced Service) gets aggregated separately by each one instead of
-together, silently splitting/undercounting it. HyperDX's default
+together, silently splitting/undercounting it. Couchbase Traces's default
 deployments (`docker-compose.yml`, the all-in-one image) run the
 OpAMP-managed collector as a single instance, so this doesn't bite out of
 the box — it only matters once *some* collector instance ingesting
@@ -373,7 +373,7 @@ service:
       receivers: [otlp/hyperdx, statsd]
 ```
 
-**In OpAMP supervisor mode** (HyperDX's default), editing the `metrics`
+**In OpAMP supervisor mode** (Couchbase Traces's default), editing the `metrics`
 pipeline this way will not work: `receivers:`/`exporters:` on it are set
 dynamically by `opampController.ts`, and the remote config overwrites
 (not merges) those keys — see the [span metrics section
@@ -606,7 +606,7 @@ codebase without needing to publish a Go module tag on every change.
    ```yaml
    receivers:
      - gomod:
-         github.com/ClickHouse/ClickStack/packages/otel-collector/receiver/myreceiver
+         github.com/ClickHouse/Couchbase Traces/packages/otel-collector/receiver/myreceiver
          v0.0.0
        path: ./receiver/myreceiver
    ```
@@ -643,7 +643,7 @@ across repos or distributed to external users. No Dockerfile `COPY` changes
 needed.
 
 1. Publish the component as a Go module with a tagged version (e.g.
-   `github.com/hyperdxio/my-otel-receiver v0.1.0`). For modules in a monorepo
+   `github.com/example-org/my-otel-receiver v0.1.0`). For modules in a monorepo
    subdirectory, the Git tag must include the module path prefix (e.g.
    `packages/otel-collector/receiver/myreceiver/v0.1.0`).
 
@@ -652,7 +652,7 @@ needed.
 
    ```yaml
    receivers:
-     - gomod: github.com/hyperdxio/my-otel-receiver v0.1.0
+     - gomod: github.com/example-org/my-otel-receiver v0.1.0
    ```
 
    No Dockerfile changes needed — OCB downloads it during `go mod download`.
@@ -670,5 +670,5 @@ needed.
 | Monorepo friendly           | Yes                  | Requires proper Go module tagging |
 | Best for                    | Active development   | Stable/shared components          |
 
-For most HyperDX development, **Approach A (local source)** is recommended. Use
+For most Couchbase Traces development, **Approach A (local source)** is recommended. Use
 Approach B when the component is mature and independently versioned.

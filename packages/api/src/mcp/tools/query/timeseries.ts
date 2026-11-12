@@ -63,7 +63,7 @@ const timeseriesSchema = z.object({
         'Format: "<number> <unit>" where unit is second, minute, hour, or day.\n' +
         'CORRECT: "1 minute", "5 minute", "1 hour", "1 day"\n' +
         'WRONG:   "1m", "5min", "1h" (abbreviations are not supported)\n\n' +
-        'Omit to let HyperDX pick automatically based on the time range.',
+        'Omit to let Couchbase Traces pick automatically based on the time range.',
     ),
   startTime: startTimeSchema,
   endTime: endTimeSchema,
@@ -75,7 +75,7 @@ export function registerTimeseries({ context, registerTool }: ToolRegistrar) {
   const { teamId } = context;
 
   registerTool(
-    'clickstack_timeseries',
+    'cbt_timeseries',
     {
       title: 'Time-Series Chart',
       annotations: READ_ONLY_TOOL,
@@ -85,7 +85,7 @@ export function registerTimeseries({ context, registerTool }: ToolRegistrar) {
         'or monitor metric changes over a time window.\n\n' +
         PREFER_BUILDER_OVER_SQL_NUDGE +
         '\n\n' +
-        'Requires sourceId — call clickstack_list_sources then clickstack_describe_source first. ' +
+        'Requires sourceId — call cbt_list_sources then cbt_describe_source first. ' +
         'Each select item defines one plotted series.\n\n' +
         'Column naming: top-level columns are PascalCase (Duration, StatusCode). ' +
         "Map attributes use bracket syntax: SpanAttributes['http.method'].\n\n" +
@@ -93,8 +93,8 @@ export function registerTimeseries({ context, registerTool }: ToolRegistrar) {
         'When sourceId is a metric source, each select item MUST set ' +
         'metricType ("gauge"|"sum"|"histogram"|"exponential histogram") and metricName (the OTel metric name). ' +
         'valueExpression defaults to "Value" — set it explicitly only to transform the value.\n' +
-        'Discovery: clickstack_describe_source returns a per-kind metric-name sample; ' +
-        'clickstack_list_metrics paginates the full catalog; clickstack_describe_metric ' +
+        'Discovery: cbt_describe_source returns a per-kind metric-name sample; ' +
+        'cbt_list_metrics paginates the full catalog; cbt_describe_metric ' +
         'returns attribute keys + sampled values for a single metric.\n' +
         'Per kind: gauge uses last_value/avg/min/max (or aggFn:any + isDelta:true for Prometheus-style delta); ' +
         'sum uses aggFn:"increase" for the counter increase, or sum/avg on the computed rate; ' +
@@ -102,7 +102,7 @@ export function registerTimeseries({ context, registerTool }: ToolRegistrar) {
         'TOP-N CAP: aggFn:"increase" + groupBy is capped at 20 groups by the renderer ' +
         '(top by max bucket sum). Narrow with where/groupBy to see other groups.\n' +
         'summary metrics are not supported by the query renderer — query them with ' +
-        "clickstack_sql against the table in the source's metricTables.summary.",
+        "cbt_sql against the table in the source's metricTables.summary.",
       inputSchema: timeseriesSchema,
     },
     async input => {

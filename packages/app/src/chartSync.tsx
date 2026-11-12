@@ -4,7 +4,7 @@ import { createContext, use, useId } from 'react';
  * The default recharts `syncId` group. Charts sharing a syncId cross-highlight
  * (a hover on one shows a shadow tooltip/cursor on the others at the same x).
  */
-const DEFAULT_CHART_SYNC_ID = 'hdx';
+const DEFAULT_CHART_SYNC_ID = 'cbt';
 
 /**
  * The recharts `syncId` for charts beneath it (read via `useChartSyncId()`).

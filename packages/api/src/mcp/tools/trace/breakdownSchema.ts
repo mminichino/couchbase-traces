@@ -5,7 +5,7 @@ export const traceBreakdownSchema = z.object({
     .string()
     .describe(
       'Trace source ID. Must be a source of kind="trace". ' +
-        'Call clickstack_list_sources to find available sources.',
+        'Call cbt_list_sources to find available sources.',
     ),
   parentFilter: z
     .string()
@@ -81,8 +81,8 @@ export const TRACE_BREAKDOWN_DESCRIPTION =
   'inParents (parent traces containing that operation), p50Ms, p99Ms, and ' +
   'shareOfTotalTime, plus a summary with operationsReturned, topN, and ' +
   'grandTotalTimeMs.\n\n' +
-  'NEXT STEP: once a dominant slow child is found, run clickstack_event_deltas ' +
+  'NEXT STEP: once a dominant slow child is found, run cbt_event_deltas ' +
   "on that child: target = {where: SpanName='<child>' AND Duration > X}, " +
   "baseline = {where: SpanName='<child>' AND Duration <= X}.\n\n" +
-  'PAIR TOOL: clickstack_trace_waterfall shows ONE concrete trace as a ' +
+  'PAIR TOOL: cbt_trace_waterfall shows ONE concrete trace as a ' +
   'parent/child tree, for an example after this breakdown.';

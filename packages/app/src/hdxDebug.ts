@@ -181,7 +181,7 @@ function buildReport(): string {
     `frontend: ${APP_VERSION}`,
     `backend:  ${cachedServerVersion || 'unknown'}`,
     `mode:     ${IS_LOCAL_MODE ? 'local' : isOss ? 'oss' : 'cloud'}${
-      IS_CLICKHOUSE_BUILD ? ' (clickstack)' : ''
+      IS_CLICKHOUSE_BUILD ? ' (couchbase-traces)' : ''
     }`,
     ...(userId ? [`user:     ${userId}`] : []),
     ...(teamId ? [`team:     ${teamId}`] : []),

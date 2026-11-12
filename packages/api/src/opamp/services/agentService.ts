@@ -11,7 +11,7 @@ import logger from '@/utils/logger';
 // Tracks whether a status report came from an agent we had not seen before
 // (`new`) or an existing one (`updated`). Low-cardinality enum, safe as a
 // metric attribute (see agent_docs/observability.md).
-const agentStatusCounter = getCounter('hyperdx.opamp.agent_status_reports', {
+const agentStatusCounter = getCounter('cbt.opamp.agent_status_reports', {
   description:
     'Count of processed OpAMP agent status reports, labeled by status (new, updated).',
 });
@@ -21,7 +21,7 @@ const agentStatusCounter = getCounter('hyperdx.opamp.agent_status_reports', {
 // through a fixed allowlist (see remoteConfigStatusName), keeping it bounded
 // even though the value is agent-supplied on an unauthenticated endpoint.
 const opampConfigApplicationsCounter = getCounter(
-  'hyperdx.opamp.remote_config_applications',
+  'cbt.opamp.remote_config_applications',
   {
     description:
       'Count of OpAMP remote config apply status transitions reported by agents, labeled by the new status (UNSET, APPLIED, APPLYING, FAILED, unknown).',

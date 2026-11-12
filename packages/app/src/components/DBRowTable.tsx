@@ -1030,7 +1030,7 @@ export const RawLogTable = memo(
     });
 
     const getCsvFilename = useCallback(
-      () => csvExportFilename('hyperdx_search_results'),
+      () => csvExportFilename('couchbase_traces_search_results'),
       [],
     );
 

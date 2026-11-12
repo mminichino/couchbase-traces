@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # ---------------------------------------------------------------------------
-# Ensure the HyperDX Dev Portal is running on port 9900 (or CBT_PORTAL_PORT).
+# Ensure the Couchbase Traces Dev Portal is running on port 9900 (or CBT_PORTAL_PORT).
 #
 # Works when sourced OR executed directly:
 #   source scripts/ensure-dev-portal.sh   # sourced from another bash script

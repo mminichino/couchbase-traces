@@ -78,9 +78,9 @@ describe('MCP Dashboard Prompts', () => {
       // The 20-group cap on increase + groupBy is documented.
       expect(metricsBody).toMatch(/top 20 groups/);
       // The four-tool discovery chain is documented in order.
-      expect(metricsBody).toContain('clickstack_describe_source');
-      expect(metricsBody).toContain('clickstack_list_metrics');
-      expect(metricsBody).toContain('clickstack_describe_metric');
+      expect(metricsBody).toContain('cbt_describe_source');
+      expect(metricsBody).toContain('cbt_list_metrics');
+      expect(metricsBody).toContain('cbt_describe_metric');
       // The old "use raw SQL for metric tiles" workaround language is gone.
       expect(prompt).not.toMatch(
         /Authoring builder tiles on a metric source is not reliable/,
@@ -222,7 +222,7 @@ describe('MCP Dashboard Prompts', () => {
       expect(section).toMatch(/AS Route/);
     });
 
-    it('points at ClickStack and ClickHouse docs in REFERENCES', () => {
+    it('points at Couchbase Traces and ClickHouse docs in REFERENCES', () => {
       // Without external doc links, the LLM has to guess at Lucene
       // operators and ClickHouse function names. Anchor the canonical
       // URLs in the prompt so it can cite them and so a future doc
@@ -232,11 +232,11 @@ describe('MCP Dashboard Prompts', () => {
       expect(idx).toBeGreaterThan(-1);
       const section = prompt.slice(idx);
       expect(section).toContain(
-        'https://clickhouse.com/docs/use-cases/observability/clickstack/search',
+        'https://github.com/mminichino/couchbase-traces/tree/main/docs',
       );
       expect(section).toContain('https://clickhouse.com/docs/sql-reference');
       expect(section).toContain(
-        'https://clickhouse.com/docs/use-cases/observability/clickstack/dashboards/sql-visualizations',
+        'https://github.com/mminichino/couchbase-traces/tree/main/docs',
       );
     });
 
@@ -247,7 +247,7 @@ describe('MCP Dashboard Prompts', () => {
       const mistakesIdx = prompt.indexOf('== COMMON MISTAKES ==');
       const section = prompt.slice(mistakesIdx);
       expect(section).toMatch(
-        /on EVERY tile after clickstack_save_dashboard, not just one/,
+        /on EVERY tile after cbt_save_dashboard, not just one/,
       );
     });
 
@@ -263,11 +263,11 @@ describe('MCP Dashboard Prompts', () => {
         prompt.indexOf('\n== ', metricsIdx + 1),
       );
       // The five-step discovery workflow is enumerated.
-      expect(metricsBody).toMatch(/clickstack_list_sources/);
-      expect(metricsBody).toMatch(/clickstack_describe_source/);
-      expect(metricsBody).toMatch(/clickstack_list_metrics/);
-      expect(metricsBody).toMatch(/clickstack_describe_metric/);
-      expect(metricsBody).toMatch(/clickstack_timeseries/);
+      expect(metricsBody).toMatch(/cbt_list_sources/);
+      expect(metricsBody).toMatch(/cbt_describe_source/);
+      expect(metricsBody).toMatch(/cbt_list_metrics/);
+      expect(metricsBody).toMatch(/cbt_describe_metric/);
+      expect(metricsBody).toMatch(/cbt_timeseries/);
       // One worked example per supported kind, each using a real OTel
       // metric name so the agent has a concrete template.
       expect(metricsBody).toContain('system.cpu.utilization');
@@ -286,10 +286,10 @@ describe('MCP Dashboard Prompts', () => {
     it('documents PromQL sources only while PromQL is enabled', () => {
       const withPromql = buildQueryGuidePrompt({ promql: true });
       expect(withPromql).toContain('== PROMQL SOURCES ==');
-      expect(withPromql).toMatch(/^Reference guide.*clickstack_promql/);
+      expect(withPromql).toMatch(/^Reference guide.*cbt_promql/);
       const idx = withPromql.indexOf('== PROMQL SOURCES ==');
       const body = withPromql.slice(idx, withPromql.indexOf('\n== ', idx + 1));
-      expect(body).toContain('clickstack_promql(sourceId, expression');
+      expect(body).toContain('cbt_promql(sourceId, expression');
       expect(body).toContain('rate(http_requests_total[$__rate_interval])');
       expect(body).toContain('histogram_quantile(0.95, sum by (le)');
       expect(body).toContain('$__range');
@@ -297,7 +297,7 @@ describe('MCP Dashboard Prompts', () => {
 
       const withoutPromql = buildQueryGuidePrompt();
       expect(withoutPromql).not.toContain('PROMQL');
-      expect(withoutPromql).not.toContain('clickstack_promql');
+      expect(withoutPromql).not.toContain('cbt_promql');
     });
   });
 
@@ -348,8 +348,8 @@ describe('MCP Dashboard Prompts', () => {
       const body = withPromql.slice(idx, withPromql.indexOf('\n== ', idx + 1));
       expect(body).toContain('"configType": "promql"');
       expect(body).toContain('"type": "PROMETHEUS_LABEL"');
-      expect(body).toContain('clickstack_promql');
-      expect(body).toContain('clickstack_query_tile');
+      expect(body).toContain('cbt_promql');
+      expect(body).toContain('cbt_query_tile');
 
       expect(buildCreateDashboardPrompt(...args)).not.toContain('PROMQL');
     });
@@ -447,7 +447,7 @@ describe('MCP Dashboard Prompts', () => {
         expect(wf).toMatch(new RegExp(`^${i}\\. `, 'm'));
       }
       // Step 2 must point at clickstack_get_dashboard with no id.
-      expect(wf).toMatch(/clickstack_get_dashboard \(no id\)/);
+      expect(wf).toMatch(/cbt_get_dashboard \(no id\)/);
       // Step 4 must call out grouping tiles into containers before save.
       expect(wf).toMatch(/group them into 2-4 containers/);
       // Step 6 must call out EVERY tile, not just one.

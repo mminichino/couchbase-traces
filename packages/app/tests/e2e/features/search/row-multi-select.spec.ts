@@ -111,7 +111,7 @@ test.describe('Search row multi-select', { tag: '@search' }, () => {
 
       const { filename, content } = await searchPage.downloadSelectedRowsCsv();
 
-      expect(filename).toMatch(/^hyperdx_selected_rows_.*\.csv$/);
+      expect(filename).toMatch(/^couchbase_traces_selected_rows_.*\.csv$/);
       expect(filename).not.toMatch(/\.csv\.csv$/);
 
       const lines = content

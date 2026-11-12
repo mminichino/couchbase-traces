@@ -309,7 +309,7 @@ Create a source with <Code>Session</Code> type.
 // ✅ fenced / copyable — CopySnippet (Code + Copy)
 <CopySnippet
   label="Import block"
-  snippet={`import { clickstack_dashboard } from "clickhouse/clickstack"`}
+  snippet={`import { useBrandDisplayName } from "@/brand"`}
 />
 
 // Label is optional when the surrounding heading already names the snippet
@@ -388,7 +388,7 @@ column headers, empty states, and toast/notification copy.
 
 **Keep the original casing of proper nouns, product names, and acronyms**
 anywhere in the string — sentence case only changes the words around them:
-HyperDX, ClickHouse, ClickStack, OpenTelemetry/OTel, Lucene, SQL, PromQL,
+Couchbase Traces, ClickHouse, OpenTelemetry/OTel, Lucene, SQL, PromQL,
 MongoDB, Kubernetes, JSON, CSV, URL, ID, API, MCP, CPU, P95. For example:
 `Search your events w/ Lucene`, `Edit SQL`, `Copy as cURL`, `View in ClickHouse`.
 

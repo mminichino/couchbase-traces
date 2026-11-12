@@ -24,9 +24,7 @@ Omit this section if the PR does not contain any UI changes.
 
 <!--
 Steps a reviewer can follow to see the problem on main and the fix on this
-branch. Start from play.hyperdx.io where possible, or `yarn app:dev:local`
-connected to the demo server (onboarding → "Connect to Demo Server"); the
-Vercel preview on this PR runs the same local mode. Use `yarn dev` only when
+branch. Start from `yarn app:dev:local` where possible. Use `yarn dev` only when
 the change needs the API (alerts, webhooks, auth, teams). Name UI
 elements by their visible text. List any env vars, feature flags, schema, or
 seed data needed. Linking an issue that already has repro steps is fine.
@@ -35,7 +33,7 @@ See CONTRIBUTING.md#reproducing-issues-and-prs.
 
 **Starting point:**
 
-<!-- play.hyperdx.io URL, or local dev + demo server, or your own setup (describe it) -->
+<!-- local dev, or your own setup (describe it) -->
 
 **On `main`:**
 

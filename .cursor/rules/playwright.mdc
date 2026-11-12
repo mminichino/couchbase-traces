@@ -1,5 +1,5 @@
 ---
-description: HyperDX Playwright E2E test conventions for writing, reviewing, and fixing tests. Use when creating, editing, or debugging any E2E test in this project.
+description: Couchbase Traces Playwright E2E test conventions for writing, reviewing, and fixing tests. Use when creating, editing, or debugging any E2E test in this project.
 globs:
 alwaysApply: false
 ---

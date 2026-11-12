@@ -66,7 +66,7 @@ describe('parsed-JSON "Add to Filters" -> valid SQL pipeline (HDX-4427)', () => 
     values: { included?: string[]; excluded?: string[] };
   }[] = [
     {
-      desc: 'flat dotted key in a String column (the reported play-clickstack case)',
+      desc: 'flat dotted key in a String column (the reported play-couchbase-traces case)',
       key: jsonKey(['Body', 'app.user.currency'], ['Body']),
       values: { included: ['USD'] },
     },

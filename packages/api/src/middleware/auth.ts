@@ -119,7 +119,7 @@ export async function validateUserAccessKey(
       teamId: user.team?.toString(),
       userId: user._id?.toString(),
       email: user.email,
-      'hyperdx.user.is_virtual': user.isVirtual || undefined,
+      'cbt.user.is_virtual': user.isVirtual || undefined,
       ...getStaticFeatureFlags(),
     });
   } catch (err) {
@@ -129,7 +129,7 @@ export async function validateUserAccessKey(
   nextWithQueryAttribution(req, next);
 }
 
-const orgApiKeyAuthFailures = getCounter('hyperdx.org_api_key.auth_failures', {
+const orgApiKeyAuthFailures = getCounter('cbt.org_api_key.auth_failures', {
   description:
     'Bearer requests with an org API key that is unknown, revoked, or expired.',
 });
@@ -168,7 +168,7 @@ export function isUserAuthenticated(
     setBusinessContext({
       teamId: '_local_team_',
       userId: '_local_user_',
-      'hyperdx.local_mode': true,
+      'cbt.local_mode': true,
       ...getStaticFeatureFlags(),
     });
     return nextWithQueryAttribution(req, next);
