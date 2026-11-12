@@ -1,0 +1,46 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-11-12T17:25:00Z",
+  "status": "pass",
+  "exitCode": 0,
+  "error": null,
+  "project": {
+    "root": "/Users/michael/IdeaProjects/couchbase-traces",
+    "repoInitialized": false,
+    "originUrl": "ssh://git@github.com/mminichino/couchbase-traces.git",
+    "originAction": "kept_equivalent",
+    "previousOriginUrl": "ssh://git@github.com/mminichino/couchbase-traces.git",
+    "remoteEmpty": true,
+    "remoteDefaultBranch": null,
+    "branch": "main",
+    "branchAction": "created_main",
+    "headSha": null
+  },
+  "upstream": {
+    "path": "/Users/michael/IdeaProjects/hyperdx",
+    "originUrl": "ssh://git@github.com/hyperdxio/hyperdx.git",
+    "sha": "f172a489c81888099d70c799478c9a9cfbed25b6",
+    "branch": "main",
+    "commitDate": "2026-11-12T10:28:36+11:00",
+    "describe": "@hyperdx/api@2.43.1-80-gf172a489c",
+    "appReleaseTag": "@hyperdx/app@2.43.1",
+    "trackedFileCount": 2287,
+    "hasAgentsMd": true
+  },
+  "toolchain": {
+    "nodeRequired": "22.23.4",
+    "nodeLocal": "26.9.0",
+    "nodeOk": false,
+    "yarnRequired": "4.13.0",
+    "yarnLocal": null,
+    "yarnOk": null
+  },
+  "conflicts": [],
+  "identicalCount": 0,
+  "warnings": [
+    { "code": "W_YARN_MISSING", "message": "yarn is not on PATH" },
+    { "code": "W_NODE_MISMATCH", "message": "Node required 22.23.4 but local is 26.9.0" },
+    { "code": "W_ORIGIN_EQUIVALENT_KEPT", "message": "Keeping equivalent origin URL: ssh://git@github.com/mminichino/couchbase-traces.git" },
+    { "code": "W_GITIGNORE_MERGED", "message": "User accepted merged .gitignore (upstream plus local /tmp, /out-tsc, /.pnp, .pnp.js, .vscode/*); treated as Phase 0 pass" }
+  ]
+}
