@@ -81,6 +81,19 @@ const DATE_SYNTAX_RESTRICTIONS = [
   },
 ];
 
+// The Couchbase SDK is a native addon; only the API process may load it.
+const SERVER_ONLY_MESSAGE =
+  'Server-only: the Couchbase SDK cannot run in the browser.';
+const SERVER_ONLY_IMPORTS = [
+  'couchbase',
+  '@couchbase-traces/common-utils/dist/couchbase/node',
+];
+// Subpaths of the SDK and the node-only modules node.ts re-exports from.
+const SERVER_ONLY_IMPORT_PATTERNS = [
+  '^couchbase/',
+  '^@couchbase-traces/common-utils/dist/couchbase/node',
+];
+
 export default [
   js.configs.recommended,
   ...tseslint.configs.recommended,
@@ -124,12 +137,12 @@ export default [
       ...nextPlugin.configs['core-web-vitals'].rules,
       ...reactHooksPlugin.configs.recommended.rules,
       ...eslintReactPlugin.configs['recommended-type-checked'].rules,
-      
+
       // Non-default react-hooks rules
       'react-hooks/set-state-in-render': 'error',
       'react-hooks/set-state-in-effect': 'warn',
       'react-hooks/exhaustive-deps': 'error',
-      
+
       // Disable rules from @eslint-react that have equivalent rules enabled in eslint-plugin-react-hooks
       '@eslint-react/rules-of-hooks': 'off',
       '@eslint-react/component-hook-factories': 'off',
@@ -144,7 +157,7 @@ export default [
       '@eslint-react/no-nested-lazy-component-declarations': 'off',
       '@eslint-react/unsupported-syntax': 'off',
       '@eslint-react/use-memo': 'off',
-      
+
       'react-hook-form/no-use-watch': 'error',
       '@eslint-react/no-unstable-default-props': 'error',
       // React 19 API adoption (all migrated): render <Context> instead of
@@ -194,12 +207,20 @@ export default [
       'no-restricted-imports': [
         'error',
         {
+          paths: SERVER_ONLY_IMPORTS.map(name => ({
+            name,
+            message: SERVER_ONLY_MESSAGE,
+          })),
           patterns: [
             {
               regex: '^\\.\\.(/|$)',
               message:
                 'Use the @/ path alias instead of parent-relative imports (../).',
             },
+            ...SERVER_ONLY_IMPORT_PATTERNS.map(regex => ({
+              regex,
+              message: SERVER_ONLY_MESSAGE,
+            })),
           ],
         },
       ],

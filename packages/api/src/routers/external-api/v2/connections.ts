@@ -1,4 +1,10 @@
-import { ConnectionSchema } from '@couchbase-traces/common-utils/dist/types';
+import { clusterCache } from '@couchbase-traces/common-utils/dist/couchbase/node';
+import {
+  ClickHouseConnectionSchema,
+  ConnectionSchemaNoId,
+  CouchbaseConnectionSchema,
+  withDefaultConnectionKind,
+} from '@couchbase-traces/common-utils/dist/types';
 import express from 'express';
 import { z } from 'zod';
 
@@ -14,28 +20,43 @@ import { processRequestWithEnhancedErrors as validateRequest } from '@/utils/enh
 import logger from '@/utils/logger';
 import { objectIdSchema } from '@/utils/zod';
 
-// External representation of a connection. The password is intentionally
-// excluded so that it is never returned by the API.
-const externalConnectionSchema = ConnectionSchema.omit({
-  password: true,
-}).extend({
+const timestampFields = {
   createdAt: z.string().optional(),
   updatedAt: z.string().optional(),
-});
+};
 
-const createConnectionBodySchema = ConnectionSchema.omit({ id: true });
+// External representation of a connection. Secrets (password and CA
+// certificate) are intentionally excluded so they are never returned.
+const externalConnectionSchema = z.preprocess(
+  withDefaultConnectionKind,
+  z.discriminatedUnion('kind', [
+    ClickHouseConnectionSchema.omit({ password: true }).extend(timestampFields),
+    CouchbaseConnectionSchema.omit({
+      password: true,
+      tlsCaCertificate: true,
+    }).extend(timestampFields),
+  ]),
+);
+
+const createConnectionBodySchema = ConnectionSchemaNoId;
 
 // On update, hyperdxSettingPrefix additionally accepts '' meaning "clear the
 // existing value". The base ConnectionSchema rejects '' because the prefix
 // regex requires 1+ chars.
-const updateConnectionBodySchema = ConnectionSchema.omit({ id: true }).extend({
-  hyperdxSettingPrefix: z
-    .string()
-    .regex(/^[a-z0-9_]+$/i)
-    .or(z.literal(''))
-    .optional()
-    .nullable(),
-});
+const updateConnectionBodySchema = z.preprocess(
+  withDefaultConnectionKind,
+  z.discriminatedUnion('kind', [
+    ClickHouseConnectionSchema.omit({ id: true }).extend({
+      hyperdxSettingPrefix: z
+        .string()
+        .regex(/^[a-z0-9_]+$/i)
+        .or(z.literal(''))
+        .optional()
+        .nullable(),
+    }),
+    CouchbaseConnectionSchema.omit({ id: true }),
+  ]),
+);
 
 function formatExternalConnection(connection: ConnectionDocument) {
   // Convert to JSON so that any ObjectIds and Dates are converted to strings
@@ -80,9 +101,15 @@ function formatExternalConnection(connection: ConnectionDocument) {
  *           type: string
  *           description: Display name for the connection.
  *           example: Production ClickHouse
+ *         kind:
+ *           type: string
+ *           enum: [clickhouse, couchbase]
+ *           default: clickhouse
+ *           description: Data store type. Defaults to `clickhouse` when omitted.
+ *           example: clickhouse
  *         host:
  *           type: string
- *           description: ClickHouse HTTP endpoint URL.
+ *           description: ClickHouse HTTP endpoint URL, or a `couchbase://` / `couchbases://` connection string for Couchbase connections.
  *           example: https://clickhouse.example.com:8443
  *         username:
  *           type: string
@@ -97,6 +124,10 @@ function formatExternalConnection(connection: ConnectionDocument) {
  *           type: boolean
  *           description: Optional. When true, `host` is treated as a Prometheus-compatible API endpoint (e.g. Prometheus or Thanos) and PromQL queries are proxied to it. When false or omitted, `host` is a ClickHouse HTTP endpoint.
  *           example: false
+ *         wanProfile:
+ *           type: boolean
+ *           description: Couchbase only. Use the SDK's WAN development profile (longer timeouts). Defaults to true for `couchbases://` connection strings.
+ *           example: true
  *         createdAt:
  *           type: string
  *           format: date-time
@@ -118,9 +149,15 @@ function formatExternalConnection(connection: ConnectionDocument) {
  *           type: string
  *           description: Display name for the connection.
  *           example: Production ClickHouse
+ *         kind:
+ *           type: string
+ *           enum: [clickhouse, couchbase]
+ *           default: clickhouse
+ *           description: Data store type. Defaults to `clickhouse` when omitted.
+ *           example: clickhouse
  *         host:
  *           type: string
- *           description: ClickHouse HTTP endpoint URL.
+ *           description: ClickHouse HTTP endpoint URL, or a `couchbase://` / `couchbases://` connection string for Couchbase connections.
  *           example: https://clickhouse.example.com:8443
  *         username:
  *           type: string
@@ -140,6 +177,15 @@ function formatExternalConnection(connection: ConnectionDocument) {
  *           type: boolean
  *           description: Optional. When true, `host` is treated as a Prometheus-compatible API endpoint (e.g. Prometheus or Thanos) and PromQL queries are proxied to it. When false or omitted, `host` is a ClickHouse HTTP endpoint.
  *           example: false
+ *         wanProfile:
+ *           type: boolean
+ *           description: Couchbase only. Use the SDK's WAN development profile (longer timeouts). Defaults to true for `couchbases://` connection strings.
+ *           example: true
+ *         tlsCaCertificate:
+ *           type: string
+ *           writeOnly: true
+ *           example: "-----BEGIN CERTIFICATE-----\nMIIB...\n-----END CERTIFICATE-----"
+ *           description: Couchbase only. PEM CA certificate for self-managed `couchbases://` clusters with a private CA. Never returned by the API.
  *     UpdateConnectionRequest:
  *       type: object
  *       required:
@@ -151,9 +197,15 @@ function formatExternalConnection(connection: ConnectionDocument) {
  *           type: string
  *           description: Display name for the connection.
  *           example: Production ClickHouse
+ *         kind:
+ *           type: string
+ *           enum: [clickhouse, couchbase]
+ *           default: clickhouse
+ *           description: Data store type. Defaults to `clickhouse` when omitted. Cannot change after creation.
+ *           example: clickhouse
  *         host:
  *           type: string
- *           description: ClickHouse HTTP endpoint URL.
+ *           description: ClickHouse HTTP endpoint URL, or a `couchbase://` / `couchbases://` connection string for Couchbase connections.
  *           example: https://clickhouse.example.com:8443
  *         username:
  *           type: string
@@ -173,6 +225,15 @@ function formatExternalConnection(connection: ConnectionDocument) {
  *           type: boolean
  *           description: Optional. When true, `host` is treated as a Prometheus-compatible API endpoint. When false or omitted, `host` is a ClickHouse HTTP endpoint. Omit to keep the existing value unchanged.
  *           example: false
+ *         wanProfile:
+ *           type: boolean
+ *           description: Couchbase only. Use the SDK's WAN development profile (longer timeouts). Defaults to true for `couchbases://` connection strings.
+ *           example: true
+ *         tlsCaCertificate:
+ *           type: string
+ *           writeOnly: true
+ *           example: "-----BEGIN CERTIFICATE-----\nMIIB...\n-----END CERTIFICATE-----"
+ *           description: Couchbase only. PEM CA certificate for self-managed `couchbases://` clusters with a private CA. Never returned by the API. If omitted or empty, the existing certificate is kept.
  *     ConnectionResponseEnvelope:
  *       type: object
  *       properties:
@@ -210,7 +271,7 @@ const router = express.Router();
  * /api/v2/connections:
  *   get:
  *     summary: List Connections
- *     description: Retrieves a list of all ClickHouse connections for the authenticated team. Passwords are never returned.
+ *     description: Retrieves a list of all connections for the authenticated team. Passwords and CA certificates are never returned.
  *     operationId: listConnections
  *     tags: [Connections]
  *     responses:
@@ -283,7 +344,7 @@ router.get('/', async (req, res, next) => {
  * /api/v2/connections/{id}:
  *   get:
  *     summary: Get Connection
- *     description: Retrieves a specific ClickHouse connection by ID. Passwords are never returned.
+ *     description: Retrieves a specific connection by ID. Passwords and CA certificates are never returned.
  *     operationId: getConnection
  *     tags: [Connections]
  *     parameters:
@@ -355,7 +416,7 @@ router.get(
  * /api/v2/connections:
  *   post:
  *     summary: Create Connection
- *     description: Creates a new ClickHouse connection
+ *     description: Creates a new ClickHouse or Couchbase connection
  *     operationId: createConnection
  *     tags: [Connections]
  *     requestBody:
@@ -400,12 +461,18 @@ router.post(
         return res.sendStatus(403);
       }
 
-      const connection = await createConnection(teamId.toString(), {
-        ...req.body,
-        password: req.body.password ?? '',
-        team: teamId,
-        hyperdxSettingPrefix: req.body.hyperdxSettingPrefix ?? undefined,
-      });
+      const body: z.infer<typeof createConnectionBodySchema> = req.body;
+      const connection = await createConnection(
+        teamId.toString(),
+        body.kind === 'couchbase'
+          ? { ...body, password: body.password ?? '', team: teamId }
+          : {
+              ...body,
+              password: body.password ?? '',
+              team: teamId,
+              hyperdxSettingPrefix: body.hyperdxSettingPrefix ?? undefined,
+            },
+      );
 
       res.json({
         data: formatExternalConnection(connection),
@@ -422,7 +489,7 @@ router.post(
  *   put:
  *     summary: Update Connection
  *     description: |
- *       Updates an existing ClickHouse connection.
+ *       Updates an existing connection. `kind` cannot change.
  *
  *       Field semantics: if `password` is omitted or empty the existing
  *       password is kept. `hyperdxSettingPrefix` is cleared when set to null
@@ -501,27 +568,49 @@ router.put(
         return res.sendStatus(404);
       }
 
-      const { hyperdxSettingPrefix, ...restBody } = req.body;
+      const body: z.infer<typeof updateConnectionBodySchema> = req.body;
+      const storedKind = existingConnection.kind ?? 'clickhouse';
+      if (body.kind !== storedKind) {
+        return res.status(400).json({
+          message: `Connection kind cannot change from ${storedKind} to ${body.kind}`,
+        });
+      }
 
+      // Secrets are write-only: omitted or empty keeps the stored value.
+      const password = body.password || existingConnection.password;
       const unsetFields: string[] = [];
-      if (hyperdxSettingPrefix === null || hyperdxSettingPrefix === '') {
-        unsetFields.push('hyperdxSettingPrefix');
+      let update;
+      if (body.kind === 'couchbase') {
+        const { tlsCaCertificate, ...restBody } = body;
+        update = {
+          ...restBody,
+          team: teamId,
+          password,
+          ...(tlsCaCertificate ? { tlsCaCertificate } : {}),
+        };
+      } else {
+        const { hyperdxSettingPrefix, ...restBody } = body;
+        if (hyperdxSettingPrefix === null || hyperdxSettingPrefix === '') {
+          unsetFields.push('hyperdxSettingPrefix');
+        }
+        update = {
+          ...restBody,
+          team: teamId,
+          password,
+          ...(hyperdxSettingPrefix ? { hyperdxSettingPrefix } : {}),
+        };
       }
 
       const updatedConnection = await updateConnection(
         teamId.toString(),
         req.params.id,
-        {
-          ...restBody,
-          team: teamId,
-          // Keep the existing password when none is provided
-          password: req.body.password
-            ? req.body.password
-            : existingConnection.password,
-          ...(hyperdxSettingPrefix ? { hyperdxSettingPrefix } : {}),
-        },
+        update,
         unsetFields,
       );
+
+      if (storedKind === 'couchbase') {
+        await clusterCache.invalidate(req.params.id).catch(() => {});
+      }
 
       if (updatedConnection == null) {
         return res.sendStatus(404);
@@ -541,7 +630,7 @@ router.put(
  * /api/v2/connections/{id}:
  *   delete:
  *     summary: Delete Connection
- *     description: Deletes a ClickHouse connection
+ *     description: Deletes a connection
  *     operationId: deleteConnection
  *     tags: [Connections]
  *     parameters:
@@ -598,6 +687,10 @@ router.delete(
 
       if (deletedConnection == null) {
         return res.sendStatus(404);
+      }
+
+      if (deletedConnection.kind === 'couchbase') {
+        await clusterCache.invalidate(req.params.id).catch(() => {});
       }
 
       res.json({});

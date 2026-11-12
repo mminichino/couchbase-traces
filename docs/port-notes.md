@@ -64,10 +64,10 @@ Inventory of commit adcb75c16715. Full detail is in `port/state/inventory/`.
 
 | Package | Directory | Role | Languages | Source files | Test files | CI targets |
 |---|---|---|---|---|---|---|
-| @couchbase-traces/api | packages/api | API server and tasks | javascript, typescript | 224 | 147 | ci:int, ci:lint, ci:unit |
-| @couchbase-traces/app | packages/app | web UI | javascript, typescript | 682 | 515 | ci:lint, ci:unit |
+| @couchbase-traces/api | packages/api | API server and tasks | javascript, typescript | 226 | 151 | ci:int, ci:lint, ci:unit |
+| @couchbase-traces/app | packages/app | web UI | javascript, typescript | 684 | 516 | ci:lint, ci:unit |
 | @couchbase-traces/cli | packages/cli | command-line client | javascript, typescript | 61 | 9 | ci:build, ci:lint, ci:unit |
-| @couchbase-traces/common-utils | packages/common-utils | shared query and data layer | javascript, typescript | 57 | 52 | ci:build, ci:int, ci:lint, ci:unit |
+| @couchbase-traces/common-utils | packages/common-utils | shared query and data layer | javascript, typescript | 72 | 63 | ci:build, ci:int, ci:lint, ci:unit |
 | @couchbase-traces/hdx-eval | packages/hdx-eval | evaluation harness | javascript, typescript | 53 | 31 | ci:lint, ci:unit |
 | @couchbase-traces/otel-collector | packages/otel-collector | ingestion collector | go | 0 | 0 |  |
 
@@ -77,7 +77,7 @@ Inventory of commit adcb75c16715. Full detail is in `port/state/inventory/`.
 |---|---|
 | app_page | 25 |
 | app_api_route | 2 |
-| api_route | 117 |
+| api_route | 120 |
 | mcp_tool | 32 |
 | task | 3 |
 | cli_command | 24 |
@@ -87,9 +87,9 @@ Inventory of commit adcb75c16715. Full detail is in `port/state/inventory/`.
 
 | Module | Reasons | Exports | Importers | Server-side |
 |---|---|---|---|---|
-| `packages/common-utils/src/types.ts` | seed, sql_builder | 364 | 688 | yes |
+| `packages/common-utils/src/types.ts` | seed, sql_builder | 375 | 696 | yes |
 | `packages/common-utils/src/core/metadata.ts` | seed, clickhouse_client, sql_builder | 24 | 132 | yes |
-| `packages/common-utils/src/clickhouse/index.ts` | seed, clickhouse_client, clickhouse_path, sql_builder | 46 | 120 | yes |
+| `packages/common-utils/src/clickhouse/index.ts` | seed, clickhouse_client, clickhouse_path, sql_builder | 46 | 124 | yes |
 | `packages/api/src/fixtures.ts` | sql_builder | 44 | 63 | yes |
 | `packages/common-utils/src/filters.ts` | sql_builder | 51 | 58 | yes |
 | `packages/common-utils/src/core/renderChartConfig.ts` | seed, sql_builder | 16 | 35 | yes |
@@ -99,9 +99,9 @@ Inventory of commit adcb75c16715. Full detail is in `port/state/inventory/`.
 | `packages/app/src/hooks/useRowWhere.tsx` | sql_builder | 6 | 26 | no |
 | `packages/api/src/mcp/tools/query/helpers.ts` | clickhouse_client, sql_builder | 19 | 25 | yes |
 | `packages/api/src/clickhouse.ts` | clickhouse_path | 1 | 23 | yes |
+| `packages/common-utils/src/clickhouse/attribution.ts` | seed, clickhouse_path | 9 | 21 | yes |
 | `packages/app/src/clickhouse.ts` | clickhouse_path | 4 | 20 | no |
 | `packages/app/src/llm/lib/expressions.ts` | sql_builder | 8 | 19 | no |
-| `packages/common-utils/src/clickhouse/attribution.ts` | seed, clickhouse_path | 9 | 17 | yes |
 | `packages/common-utils/src/macros.ts` | sql_builder | 13 | 15 | yes |
 | `packages/app/src/components/MaterializedViews/MVOptimizationIndicator.tsx` | clickhouse_client | 1 | 14 | no |
 | `packages/app/src/components/TimePicker/TimePicker.tsx` | clickhouse_client, sql_builder | 1 | 14 | no |
@@ -151,6 +151,7 @@ Inventory of commit adcb75c16715. Full detail is in `port/state/inventory/`.
 | `packages/api/src/mcp/tools/sources/describeTableQueries.ts` | clickhouse_client, sql_builder | 10 | 2 | yes |
 | `packages/api/src/mcp/tools/sources/listMetricsQueries.ts` | sql_builder | 2 | 2 | yes |
 | `packages/api/src/mcp/tools/sources/schemas.ts` | sql_builder | 4 | 2 | yes |
+| `packages/api/src/routers/api/clickhouseProxy.ts` | seed, clickhouse_path | 2 | 2 | yes |
 | `packages/api/src/server.ts` | clickhouse_client | 1 | 2 | yes |
 | `packages/app/src/ThemeWrapper.tsx` | clickhouse_client | 1 | 2 | no |
 | `packages/app/src/UserPreferencesModal.tsx` | clickhouse_client | 1 | 2 | no |
@@ -183,7 +184,6 @@ Inventory of commit adcb75c16715. Full detail is in `port/state/inventory/`.
 | `packages/api/src/mcp/tools/query/eventPatterns.ts` | sql_builder | 1 | 1 | yes |
 | `packages/api/src/mcp/tools/sources/describeMetric.ts` | sql_builder | 1 | 1 | yes |
 | `packages/api/src/mcp/tools/trace/waterfall.ts` | sql_builder | 1 | 1 | yes |
-| `packages/api/src/routers/api/clickhouseProxy.ts` | seed, clickhouse_path | 1 | 1 | yes |
 | `packages/app/src/ClickhousePage.tsx` | clickhouse_path | 1 | 1 | no |
 | `packages/app/src/DBChartPage.tsx` | clickhouse_client | 1 | 1 | no |
 | `packages/app/src/NamespaceDetailsSidePanel.tsx` | clickhouse_client | 1 | 1 | no |
@@ -283,6 +283,7 @@ Plus 39 more in datalayer.json.
 - `packages/api/src/routers/api/ai.ts`: `packages/common-utils/src/types.ts`
 - `packages/api/src/routers/api/alerts.ts`: `packages/common-utils/src/types.ts`
 - `packages/api/src/routers/api/connections.ts`: `packages/common-utils/src/types.ts`
+- `packages/api/src/routers/api/couchbase.ts`: `packages/common-utils/src/types.ts`
 - `packages/api/src/routers/api/dashboards.ts`: `packages/common-utils/src/filters.ts`, `packages/common-utils/src/types.ts`
 - `packages/api/src/routers/api/iac.ts`: `packages/common-utils/src/types.ts`
 - `packages/api/src/routers/api/me.ts`: `packages/common-utils/src/types.ts`
@@ -291,9 +292,8 @@ Plus 39 more in datalayer.json.
 - `packages/api/src/routers/api/prometheus.ts`: `packages/api/src/controllers/timeseriesEngine.ts`, `packages/common-utils/src/clickhouse/attribution.ts`, `packages/common-utils/src/clickhouse/index.ts`, `packages/common-utils/src/clickhouse/node.ts`
 - `packages/api/src/routers/api/root.ts`: `packages/common-utils/src/types.ts`
 - `packages/api/src/routers/api/savedSearch.ts`: `packages/common-utils/src/types.ts`
-- `packages/api/src/routers/api/sources.ts`: `packages/common-utils/src/types.ts`
 
-Plus 25 more in datalayer.json.
+Plus 26 more in datalayer.json.
 
 ### UI code with raw SQL or ClickHouse type names
 
@@ -406,33 +406,33 @@ Plus 4 more in sql-catalog.json.
 
 | Category | Name | Occurrences | Files |
 |---|---|---|---|
-| type | `JSON` | 98 | 30 |
-| type | `String` | 71 | 14 |
+| type | `JSON` | 112 | 35 |
+| type | `String` | 77 | 15 |
+| type | `Int64` | 57 | 11 |
 | function | `fromUnixTimestamp64Milli` | 56 | 14 |
-| type | `Int64` | 53 | 10 |
 | function | `var` | 43 | 15 |
 | function | `toString` | 40 | 23 |
 | parameter_type | `Int64` | 39 | 7 |
 | function | `if` | 33 | 15 |
-| type | `Map` | 29 | 12 |
+| type | `Map` | 30 | 13 |
 | clause | `INTERVAL` | 28 | 12 |
 | function | `toDateTime` | 24 | 8 |
 | function | `CAST` | 23 | 4 |
 | setting | `max_execution_time` | 22 | 14 |
 | type | `Array` | 22 | 7 |
 | function | `__filter` | 20 | 1 |
+| type | `Float64` | 18 | 6 |
 | type | `LowCardinality` | 18 | 11 |
 | clause | `->` | 17 | 5 |
 | function | `match` | 17 | 8 |
 | function | `toStartOfFifteenMinutes` | 17 | 1 |
-| type | `DateTime64` | 14 | 8 |
-| type | `Float64` | 14 | 5 |
+| type | `DateTime64` | 15 | 9 |
 | function | `__timeFilter` | 13 | 5 |
 | function | `__timeInterval` | 13 | 5 |
+| type | `Nullable` | 13 | 6 |
 | setting | `timeout_overflow_mode` | 12 | 6 |
 | function | `rate` | 11 | 2 |
 | parameter_type | `String` | 11 | 3 |
-| type | `Nullable` | 11 | 5 |
 | function | `column` | 10 | 3 |
 | function | `tiles` | 10 | 1 |
 | function | `toDateTime64` | 10 | 6 |
@@ -507,7 +507,7 @@ Plus 4 more in sql-catalog.json.
 | function | `ifNull` | 3 | 2 |
 | function | `name` | 3 | 1 |
 
-Plus 308 more in sql-catalog.json.
+Plus 309 more in sql-catalog.json.
 
 ### Mapped constructs in use
 
@@ -602,17 +602,17 @@ Collector components, pipelines, ClickHouse exporters, and management code.
 | telemetry_endpoints | 18 | 1 | 63 | 0 | 2 |
 | assets | 0 | 0 | 0 | 0 | 3 |
 | docker | 48 | 0 | 116 | 0 | 93 |
-| docs | 468 | 269 | 606 | 0 | 154 |
-| ui_strings | 7 | 9 | 70 | 0 | 127 |
-| code_identifiers | 125 | 22 | 2203 | 0 | 641 |
-| other | 626 | 188 | 1680 | 2 | 1593 |
+| docs | 468 | 269 | 607 | 0 | 155 |
+| ui_strings | 7 | 9 | 78 | 0 | 127 |
+| code_identifiers | 125 | 21 | 2247 | 0 | 644 |
+| other | 631 | 188 | 1757 | 2 | 1593 |
 
 ### Feature status
 
 | Status | Features |
 |---|---|
 | not_started | 50 |
-| in_progress | 0 |
+| in_progress | 1 |
 | ported | 0 |
 | needs_decision | 3 |
 | dropped | 0 |
@@ -625,7 +625,6 @@ Collector components, pipelines, ClickHouse exporters, and management code.
 
 - W_DYNAMIC_IMPORT: 6 occurrences. First: Non-literal dynamic import at line 10 (packages/app/public/pyodide/pyodide.asm.js)
 - W_FILE_TOO_LARGE: 1 occurrences. First: File is 3004059 bytes, over the 2 MB limit; skipped (.yarn/releases/yarn-4.13.0.cjs)
-- W_FILE_UNREADABLE: 5 occurrences. First: File could not be read (packages/app/public/favicons/clickstack/apple-touch-icon.png)
 - W_PLAN_MISSING: 1 occurrences. First: COUCHBASE_PORT_PLAN.md not found at the project root; plan check skipped (COUCHBASE_PORT_PLAN.md)
 - W_SCHEMA_UNPARSED: 1 occurrences. First: Unparsed statement: CREATE DATABASE IF NOT EXISTS DATABASE (docker/otel-collector/schema/seed/00001_create_database.sql)
 - W_TABLE_REDEFINED: 3 occurrences. First: Table otel_logs is defined in docker/otel-collector/schema/seed/00002_otel_logs.sql and docker/otel-collector/schema/seed/00002_otel_logs_compat.sql (docker/otel-collector/schema/seed/00002_otel_logs_compat.sql)
@@ -738,7 +737,7 @@ Collector components, pipelines, ClickHouse exporters, and management code.
 |---|---|
 | engine_reference | 15 |
 | external_dependency | 56 |
-| internal_identifier | 390 |
+| internal_identifier | 395 |
 | pending_decision | 8 |
 | test_fixture | 12 |
 | upstream_attribution | 1 |
@@ -795,3 +794,33 @@ Collector components, pipelines, ClickHouse exporters, and management code.
 ### Plan corrections, resolved
 
 - `COUCHBASE_PORT_PLAN.md` is not present in this repository (Phase 0 waiver). Plan-check found no missing paths or symbols to resolve; re-run `port/inventory.sh scan` after the plan file is added.
+
+## Phase 4: Couchbase connectivity
+
+### Versions
+
+| Item | Value |
+|---|---|
+| Couchbase Node SDK | `couchbase` 4.7.2, pinned in `packages/common-utils` and `packages/api` |
+| SDK compatibility | https://docs.couchbase.com/nodejs-sdk/current/project-docs/compatibility.html lists SDK 4.7 as supported for Server 8.0 |
+| Couchbase image | `couchbase/server:enterprise-8.0.3`, used by `port/couchbase-test/docker-compose.yml` |
+
+### Pending user decisions
+
+- Local mode supports ClickHouse connections only.
+
+### Test environment
+
+- `port/couchbase-test/run.sh` shifts every Couchbase host port by 20,000 (or 21,000 or 22,000) when the standard ports are taken, for example by another local Couchbase. `init.sh` then sets the node's external alternate address to `localhost` with the shifted ports, and the tests connect with `?network=external`, so they cannot reach the other server. Set `CBT_TEST_COUCHBASE_PORT_OFFSET` to choose the offset.
+- `run.sh` also starts a throwaway `mongo:5.0.32-focal` container (the image in `docker-compose.ci.yml`) for the API integration test, which needs users, sessions, and connections but not ClickHouse.
+- `cbt_query` also gets `query_use_sequential_scans[test]`. Without it, Server 8.0 rejects the collection test query on a collection with no usable index, such as `metrics_gauge`, with error 13014.
+- `init.sh` also creates a bucket `restricted` that `cbt_query` has no role on, for the permission-denied test.
+- The migration unit test runs against an in-memory stand-in for the Mongo collection API, because `mongodb-memory-server` is not a dependency.
+- The integration path patterns are `couchbase\.int\.test`: a bare `couchbase` matches every test because the repository directory is `couchbase-traces`.
+
+### Notes
+
+- SDK 4.7.2 raises `AuthenticationFailureError` for query error 13014 (missing role), so `fromSdkError` checks 13014 before the error class and reports `PERMISSION_DENIED`.
+- The CA certificate for self-managed `couchbases://` clusters is written to a 0600 temp file because SDK 4.7.2 only accepts a trust store path. That block carries one `security/detect-non-literal-fs-filename` suppression, so the common-utils `eslint-disable` ratchet baseline rises from 39 to 40. The same update records the API count falling from 36 to 32.
+- The Couchbase query settings are documented in `DEPLOY.md`.
+- The IaC manifest is unchanged: connections and sources reach it through the v2 external API, which now accepts Couchbase connections.

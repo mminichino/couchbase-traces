@@ -13,7 +13,7 @@
           "file": "packages/api/src/routers/api/ai.ts"
         }
       ],
-      "closureSize": 42,
+      "closureSize": 43,
       "exclusiveFiles": [
         "packages/api/src/controllers/ai.ts",
         "packages/api/src/routers/api/ai.ts",
@@ -199,6 +199,7 @@
             "ChartConfigWithOptDateRange",
             "ChartPaletteTokenSchema",
             "ChartVariable",
+            "ClickHouseConnection",
             "ConditionFilter",
             "Connection",
             "CreateOrgApiKeyRequest",
@@ -337,7 +338,7 @@
           "file": "packages/api/src/routers/api/clickhouseProxy.ts"
         }
       ],
-      "closureSize": 42,
+      "closureSize": 43,
       "exclusiveFiles": [
         "packages/api/src/middleware/validation.ts",
         "packages/api/src/routers/api/clickhouseProxy.ts",
@@ -514,6 +515,7 @@
             "ChartConfigWithOptDateRange",
             "ChartPaletteTokenSchema",
             "ChartVariable",
+            "ClickHouseConnection",
             "ConditionFilter",
             "Connection",
             "CreateOrgApiKeyRequest",
@@ -613,6 +615,7 @@
       ],
       "tests": {
         "unit": [
+          "packages/api/src/routers/api/__tests__/couchbaseConnections.test.ts",
           "packages/api/src/utils/__tests__/proxyBody.test.ts"
         ],
         "int": [],
@@ -647,7 +650,7 @@
           "file": "packages/api/src/routers/api/connections.ts"
         }
       ],
-      "closureSize": 36,
+      "closureSize": 49,
       "exclusiveFiles": [
         "packages/api/src/routers/api/connections.ts"
       ],
@@ -671,10 +674,12 @@
           "symbols": [
             "BaseClickhouseClient",
             "ChSql",
+            "ClickHouseQueryError",
             "ClickhouseClientOptions",
             "ColumnMeta",
             "JSDataType",
             "QueryInputs",
+            "ResponseJSON",
             "Row",
             "chSql",
             "concatChSql",
@@ -818,9 +823,11 @@
             "ChartConfigWithOptDateRange",
             "ChartPaletteTokenSchema",
             "ChartVariable",
+            "ClickHouseConnection",
             "ConditionFilter",
             "Connection",
             "ConnectionSchema",
+            "ConnectionSchemaNoId",
             "CreateOrgApiKeyRequest",
             "CteChartConfig",
             "DASHBOARD_CONTAINER_ID_MAX",
@@ -895,6 +902,7 @@
             "TSource",
             "TTraceSource",
             "Team",
+            "TeamClickHouseSettings",
             "TileTemplateSchema",
             "UseTextIndex",
             "VariableFilterValueSchema",
@@ -917,7 +925,9 @@
         }
       ],
       "tests": {
-        "unit": [],
+        "unit": [
+          "packages/api/src/routers/api/__tests__/couchbaseConnections.test.ts"
+        ],
         "int": [],
         "e2e": []
       }
@@ -945,7 +955,7 @@
           "file": "packages/api/src/routers/api/favorites.ts"
         }
       ],
-      "closureSize": 36,
+      "closureSize": 37,
       "exclusiveFiles": [
         "packages/api/src/controllers/favorite.ts",
         "packages/api/src/models/favorite.ts",
@@ -1118,6 +1128,7 @@
             "ChartConfigWithOptDateRange",
             "ChartPaletteTokenSchema",
             "ChartVariable",
+            "ClickHouseConnection",
             "ConditionFilter",
             "Connection",
             "CreateOrgApiKeyRequest",
@@ -1244,7 +1255,7 @@
           "file": "packages/api/src/routers/api/root.ts"
         }
       ],
-      "closureSize": 50,
+      "closureSize": 51,
       "exclusiveFiles": [],
       "dataLayer": [
         {
@@ -1414,6 +1425,7 @@
             "ChartConfigWithOptDateRange",
             "ChartPaletteTokenSchema",
             "ChartVariable",
+            "ClickHouseConnection",
             "ConditionFilter",
             "Connection",
             "CreateOrgApiKeyRequest",
@@ -1540,7 +1552,7 @@
           "file": "packages/api/src/routers/api/iac.ts"
         }
       ],
-      "closureSize": 42,
+      "closureSize": 43,
       "exclusiveFiles": [
         "packages/api/src/routers/api/iac.ts",
         "packages/api/src/utils/iacTileAlerts.ts"
@@ -1714,6 +1726,7 @@
             "ChartConfigWithOptDateRange",
             "ChartPaletteTokenSchema",
             "ChartVariable",
+            "ClickHouseConnection",
             "ConditionFilter",
             "Connection",
             "CreateOrgApiKeyRequest",
@@ -1856,7 +1869,7 @@
           "file": "packages/api/src/routers/api/me.ts"
         }
       ],
-      "closureSize": 14,
+      "closureSize": 15,
       "exclusiveFiles": [
         "packages/api/src/routers/api/me.ts"
       ],
@@ -1910,7 +1923,7 @@
           "file": "packages/api/src/routers/api/pinnedFilters.ts"
         }
       ],
-      "closureSize": 38,
+      "closureSize": 39,
       "exclusiveFiles": [
         "packages/api/src/controllers/pinnedFilter.ts",
         "packages/api/src/models/pinnedFilter.ts",
@@ -2084,6 +2097,7 @@
             "ChartConfigWithOptDateRange",
             "ChartPaletteTokenSchema",
             "ChartVariable",
+            "ClickHouseConnection",
             "ConditionFilter",
             "Connection",
             "CreateOrgApiKeyRequest",
@@ -2223,7 +2237,7 @@
           "file": "packages/api/src/routers/api/savedSearch.ts"
         }
       ],
-      "closureSize": 43,
+      "closureSize": 44,
       "exclusiveFiles": [
         "packages/api/src/routers/api/savedSearch.ts"
       ],
@@ -2395,6 +2409,7 @@
             "ChartConfigWithOptDateRange",
             "ChartPaletteTokenSchema",
             "ChartVariable",
+            "ClickHouseConnection",
             "ConditionFilter",
             "Connection",
             "CreateOrgApiKeyRequest",
@@ -2537,7 +2552,7 @@
           "file": "packages/api/src/routers/api/sources.ts"
         }
       ],
-      "closureSize": 38,
+      "closureSize": 44,
       "exclusiveFiles": [
         "packages/api/src/routers/api/sources.ts"
       ],
@@ -2561,6 +2576,7 @@
           "symbols": [
             "BaseClickhouseClient",
             "ChSql",
+            "ClickHouseQueryError",
             "ClickhouseClientOptions",
             "ColumnMeta",
             "JSDataType",
@@ -2709,8 +2725,10 @@
             "ChartConfigWithOptDateRange",
             "ChartPaletteTokenSchema",
             "ChartVariable",
+            "ClickHouseConnection",
             "ConditionFilter",
             "Connection",
+            "ConnectionKind",
             "CreateOrgApiKeyRequest",
             "CteChartConfig",
             "DASHBOARD_CONTAINER_ID_MAX",
@@ -2791,6 +2809,7 @@
             "TSource",
             "TTraceSource",
             "Team",
+            "TeamClickHouseSettings",
             "TileTemplateSchema",
             "TraceSourceSchema",
             "UseTextIndex",
@@ -2814,7 +2833,9 @@
         }
       ],
       "tests": {
-        "unit": [],
+        "unit": [
+          "packages/api/src/routers/api/__tests__/couchbaseConnections.test.ts"
+        ],
         "int": [
           "packages/api/src/routers/api/__tests__/sources.int.test.ts"
         ],
@@ -2834,7 +2855,7 @@
           "file": "packages/api/src/routers/api/team.ts"
         }
       ],
-      "closureSize": 40,
+      "closureSize": 41,
       "exclusiveFiles": [],
       "dataLayer": [
         {
@@ -3003,6 +3024,7 @@
             "ChartConfigWithOptDateRange",
             "ChartPaletteTokenSchema",
             "ChartVariable",
+            "ClickHouseConnection",
             "ConditionFilter",
             "Connection",
             "CreateOrgApiKeyApiResponse",
@@ -3169,7 +3191,7 @@
           "file": "packages/api/src/routers/api/prometheus.ts"
         }
       ],
-      "closureSize": 43,
+      "closureSize": 44,
       "exclusiveFiles": [
         "packages/api/src/routers/api/prometheus.ts"
       ],
@@ -3369,6 +3391,7 @@
             "ChartConfigWithOptDateRange",
             "ChartPaletteTokenSchema",
             "ChartVariable",
+            "ClickHouseConnection",
             "ConditionFilter",
             "Connection",
             "CreateOrgApiKeyRequest",
@@ -3517,7 +3540,7 @@
           "file": "packages/api/src/routers/api/webhooks.ts"
         }
       ],
-      "closureSize": 69,
+      "closureSize": 70,
       "exclusiveFiles": [
         "packages/api/src/routers/api/webhooks.ts"
       ],
@@ -3907,7 +3930,7 @@
           "file": "packages/app/pages/alerts/[alertId].tsx"
         }
       ],
-      "closureSize": 534,
+      "closureSize": 541,
       "exclusiveFiles": [
         "packages/api/src/routers/api/alerts.ts",
         "packages/app/pages/alerts/[alertId].tsx",
@@ -4535,6 +4558,7 @@
             "ColorCondition",
             "ConditionFilter",
             "Connection",
+            "ConnectionKind",
             "CreateOrgApiKeyApiResponse",
             "CreateOrgApiKeyRequest",
             "CteChartConfig",
@@ -4657,6 +4681,7 @@
             "TagResourceType",
             "Team",
             "TeamApiResponse",
+            "TeamClickHouseSettings",
             "TeamClickHouseSettingsUpdate",
             "TeamInvitationsApiResponse",
             "TeamMembersApiResponse",
@@ -4767,7 +4792,7 @@
           "file": "packages/app/pages/benchmark.tsx"
         }
       ],
-      "closureSize": 318,
+      "closureSize": 325,
       "exclusiveFiles": [
         "packages/app/pages/benchmark.tsx",
         "packages/app/src/BenchmarkPage.tsx"
@@ -5152,6 +5177,7 @@
             "ColorCondition",
             "ConditionFilter",
             "Connection",
+            "ConnectionKind",
             "CreateOrgApiKeyApiResponse",
             "CreateOrgApiKeyRequest",
             "CteChartConfig",
@@ -5235,6 +5261,7 @@
             "TTraceSource",
             "TagResourceType",
             "TeamApiResponse",
+            "TeamClickHouseSettings",
             "TeamClickHouseSettingsUpdate",
             "TeamInvitationsApiResponse",
             "TeamMembersApiResponse",
@@ -5280,7 +5307,7 @@
           "file": "packages/app/pages/careers.tsx"
         }
       ],
-      "closureSize": 30,
+      "closureSize": 31,
       "exclusiveFiles": [
         "packages/app/pages/careers.tsx",
         "packages/app/src/CareersPage.tsx"
@@ -5505,7 +5532,7 @@
           "file": "packages/app/pages/chart.tsx"
         }
       ],
-      "closureSize": 495,
+      "closureSize": 503,
       "exclusiveFiles": [
         "packages/app/pages/chart.tsx",
         "packages/app/src/DBChartPage.tsx",
@@ -6090,6 +6117,7 @@
             "ColorCondition",
             "ConditionFilter",
             "Connection",
+            "ConnectionKind",
             "CreateOrgApiKeyApiResponse",
             "CreateOrgApiKeyRequest",
             "CteChartConfig",
@@ -6187,6 +6215,7 @@
             "TTraceSource",
             "TagResourceType",
             "TeamApiResponse",
+            "TeamClickHouseSettings",
             "TeamClickHouseSettingsUpdate",
             "TeamInvitationsApiResponse",
             "TeamMembersApiResponse",
@@ -6246,7 +6275,7 @@
           "file": "packages/app/pages/clickhouse.tsx"
         }
       ],
-      "closureSize": 389,
+      "closureSize": 397,
       "exclusiveFiles": [
         "packages/app/pages/clickhouse.tsx",
         "packages/app/src/ClickhousePage.tsx"
@@ -6724,6 +6753,7 @@
             "ColorCondition",
             "ConditionFilter",
             "Connection",
+            "ConnectionKind",
             "CreateOrgApiKeyApiResponse",
             "CreateOrgApiKeyRequest",
             "CteChartConfig",
@@ -6811,6 +6841,7 @@
             "TTraceSource",
             "TagResourceType",
             "TeamApiResponse",
+            "TeamClickHouseSettings",
             "TeamClickHouseSettingsUpdate",
             "TeamInvitationsApiResponse",
             "TeamMembersApiResponse",
@@ -6918,7 +6949,7 @@
           "file": "packages/app/pages/dashboards/templates.tsx"
         }
       ],
-      "closureSize": 600,
+      "closureSize": 608,
       "exclusiveFiles": [
         "packages/api/src/controllers/presetDashboardFilters.ts",
         "packages/api/src/models/presetDashboardFilter.ts",
@@ -7597,9 +7628,11 @@
             "ChartPaletteToken",
             "ChartPaletteTokenSchema",
             "ChartVariable",
+            "ClickHouseConnection",
             "ColorCondition",
             "ConditionFilter",
             "Connection",
+            "ConnectionKind",
             "CreateOrgApiKeyApiResponse",
             "CreateOrgApiKeyRequest",
             "CteChartConfig",
@@ -7731,6 +7764,7 @@
             "TagResourceType",
             "Team",
             "TeamApiResponse",
+            "TeamClickHouseSettings",
             "TeamClickHouseSettingsUpdate",
             "TeamInvitationsApiResponse",
             "TeamMembersApiResponse",
@@ -7824,7 +7858,7 @@
           "file": "packages/app/pages/index.tsx"
         }
       ],
-      "closureSize": 37,
+      "closureSize": 38,
       "exclusiveFiles": [
         "packages/app/pages/index.tsx",
         "packages/app/src/AuthLoadingBlocker.tsx",
@@ -8113,7 +8147,7 @@
           "file": "packages/app/pages/join-team.tsx"
         }
       ],
-      "closureSize": 61,
+      "closureSize": 62,
       "exclusiveFiles": [
         "packages/app/pages/join-team.tsx",
         "packages/app/src/JoinTeamPage.tsx"
@@ -8286,6 +8320,7 @@
             "ChartConfigWithOptDateRange",
             "ChartPaletteTokenSchema",
             "ChartVariable",
+            "ClickHouseConnection",
             "ConditionFilter",
             "Connection",
             "CreateOrgApiKeyRequest",
@@ -8412,7 +8447,7 @@
           "file": "packages/app/pages/kubernetes.tsx"
         }
       ],
-      "closureSize": 364,
+      "closureSize": 372,
       "exclusiveFiles": [
         "packages/app/pages/kubernetes.tsx",
         "packages/app/src/KubernetesDashboardPage.tsx",
@@ -8893,6 +8928,7 @@
             "ColorCondition",
             "ConditionFilter",
             "Connection",
+            "ConnectionKind",
             "CreateOrgApiKeyApiResponse",
             "CreateOrgApiKeyRequest",
             "CteChartConfig",
@@ -8973,6 +9009,7 @@
             "TTraceSource",
             "TagResourceType",
             "TeamApiResponse",
+            "TeamClickHouseSettings",
             "TeamClickHouseSettingsUpdate",
             "TeamInvitationsApiResponse",
             "TeamMembersApiResponse",
@@ -9022,7 +9059,7 @@
           "file": "packages/app/pages/llm.tsx"
         }
       ],
-      "closureSize": 487,
+      "closureSize": 495,
       "exclusiveFiles": [
         "packages/app/pages/llm.tsx",
         "packages/app/src/llm/components/ChatMessageItem.tsx",
@@ -9644,6 +9681,7 @@
             "ColorCondition",
             "ConditionFilter",
             "Connection",
+            "ConnectionKind",
             "CreateOrgApiKeyApiResponse",
             "CreateOrgApiKeyRequest",
             "CteChartConfig",
@@ -9735,6 +9773,7 @@
             "TTraceSource",
             "TagResourceType",
             "TeamApiResponse",
+            "TeamClickHouseSettings",
             "TeamClickHouseSettingsUpdate",
             "TeamInvitationsApiResponse",
             "TeamMembersApiResponse",
@@ -9806,7 +9845,7 @@
           "file": "packages/app/pages/login/index.tsx"
         }
       ],
-      "closureSize": 68,
+      "closureSize": 69,
       "exclusiveFiles": [
         "packages/app/pages/login/index.tsx"
       ],
@@ -9995,6 +10034,7 @@
             "ChartPaletteToken",
             "ChartPaletteTokenSchema",
             "ChartVariable",
+            "ClickHouseConnection",
             "ColorCondition",
             "ConditionFilter",
             "Connection",
@@ -10156,7 +10196,7 @@
           "file": "packages/app/pages/register.tsx"
         }
       ],
-      "closureSize": 68,
+      "closureSize": 69,
       "exclusiveFiles": [
         "packages/app/pages/register.tsx"
       ],
@@ -10345,6 +10385,7 @@
             "ChartPaletteToken",
             "ChartPaletteTokenSchema",
             "ChartVariable",
+            "ClickHouseConnection",
             "ColorCondition",
             "ConditionFilter",
             "Connection",
@@ -10511,7 +10552,7 @@
           "file": "packages/app/pages/search/list.tsx"
         }
       ],
-      "closureSize": 450,
+      "closureSize": 458,
       "exclusiveFiles": [
         "packages/app/pages/search/[savedSearchId].tsx",
         "packages/app/pages/search/index.tsx",
@@ -11059,6 +11100,7 @@
             "ColorCondition",
             "ConditionFilter",
             "Connection",
+            "ConnectionKind",
             "CreateOrgApiKeyApiResponse",
             "CreateOrgApiKeyRequest",
             "CteChartConfig",
@@ -11146,6 +11188,7 @@
             "TTraceSource",
             "TagResourceType",
             "TeamApiResponse",
+            "TeamClickHouseSettings",
             "TeamClickHouseSettingsUpdate",
             "TeamInvitationsApiResponse",
             "TeamMembersApiResponse",
@@ -11228,7 +11271,7 @@
           "file": "packages/app/pages/service-map.tsx"
         }
       ],
-      "closureSize": 185,
+      "closureSize": 193,
       "exclusiveFiles": [
         "packages/app/pages/service-map.tsx",
         "packages/app/src/DBServiceMapPage.tsx"
@@ -11561,6 +11604,7 @@
             "ColorCondition",
             "ConditionFilter",
             "Connection",
+            "ConnectionKind",
             "CreateOrgApiKeyApiResponse",
             "CreateOrgApiKeyRequest",
             "CteChartConfig",
@@ -11640,6 +11684,7 @@
             "TTraceSource",
             "TagResourceType",
             "TeamApiResponse",
+            "TeamClickHouseSettings",
             "TeamClickHouseSettingsUpdate",
             "TeamInvitationsApiResponse",
             "TeamMembersApiResponse",
@@ -11685,7 +11730,7 @@
           "file": "packages/app/pages/services.tsx"
         }
       ],
-      "closureSize": 417,
+      "closureSize": 425,
       "exclusiveFiles": [
         "packages/app/pages/services.tsx"
       ],
@@ -12205,6 +12250,7 @@
             "ColorCondition",
             "ConditionFilter",
             "Connection",
+            "ConnectionKind",
             "CreateOrgApiKeyApiResponse",
             "CreateOrgApiKeyRequest",
             "CteChartConfig",
@@ -12294,6 +12340,7 @@
             "TTraceSource",
             "TagResourceType",
             "TeamApiResponse",
+            "TeamClickHouseSettings",
             "TeamClickHouseSettingsUpdate",
             "TeamInvitationsApiResponse",
             "TeamMembersApiResponse",
@@ -12343,7 +12390,7 @@
           "file": "packages/app/pages/sessions.tsx"
         }
       ],
-      "closureSize": 360,
+      "closureSize": 368,
       "exclusiveFiles": [
         "packages/app/pages/sessions.tsx",
         "packages/app/src/SessionEventSourcePanel.tsx",
@@ -12804,6 +12851,7 @@
             "ColorCondition",
             "ConditionFilter",
             "Connection",
+            "ConnectionKind",
             "CreateOrgApiKeyApiResponse",
             "CreateOrgApiKeyRequest",
             "CteChartConfig",
@@ -12884,6 +12932,7 @@
             "TTraceSource",
             "TagResourceType",
             "TeamApiResponse",
+            "TeamClickHouseSettings",
             "TeamClickHouseSettingsUpdate",
             "TeamInvitationsApiResponse",
             "TeamMembersApiResponse",
@@ -13000,7 +13049,7 @@
           "file": "packages/app/pages/team/index.tsx"
         }
       ],
-      "closureSize": 199,
+      "closureSize": 207,
       "exclusiveFiles": [
         "packages/app/pages/team/index.tsx",
         "packages/app/src/TeamPage.tsx",
@@ -13402,9 +13451,11 @@
             "ChartPaletteToken",
             "ChartPaletteTokenSchema",
             "ChartVariable",
+            "ClickHouseConnection",
             "ColorCondition",
             "ConditionFilter",
             "Connection",
+            "ConnectionKind",
             "CreateOrgApiKeyApiResponse",
             "CreateOrgApiKeyRequest",
             "CreateOrgApiKeyRequestSchema",
@@ -13584,7 +13635,7 @@
           "file": "packages/app/pages/trace/[traceId].tsx"
         }
       ],
-      "closureSize": 93,
+      "closureSize": 94,
       "exclusiveFiles": [
         "packages/app/pages/trace/[traceId].tsx"
       ],
@@ -14083,7 +14134,7 @@
           "file": "packages/cli/src/cli.tsx"
         }
       ],
-      "closureSize": 87,
+      "closureSize": 88,
       "exclusiveFiles": [
         "packages/cli/package.json",
         "packages/cli/src/App.tsx",
@@ -14403,6 +14454,317 @@
       }
     },
     {
+      "id": "couchbase-connectivity",
+      "name": "Couchbase connectivity",
+      "area": "query_proxy",
+      "visibility": "internal",
+      "status": "in_progress",
+      "entryPoints": [
+        {
+          "id": "api_route:POST /couchbase/test",
+          "kind": "api_route",
+          "file": "packages/api/src/routers/api/couchbase.ts"
+        },
+        {
+          "id": "api_route:POST /couchbase/test-source",
+          "kind": "api_route",
+          "file": "packages/api/src/routers/api/couchbase.ts"
+        },
+        {
+          "id": "api_route:POST /couchbase/query",
+          "kind": "api_route",
+          "file": "packages/api/src/routers/api/couchbase.ts"
+        }
+      ],
+      "closureSize": 57,
+      "exclusiveFiles": [
+        "packages/api/src/routers/api/couchbase.ts",
+        "packages/common-utils/src/couchbase/types.ts"
+      ],
+      "dataLayer": [
+        {
+          "path": "packages/common-utils/src/clickhouse/attribution.ts",
+          "symbols": [
+            "QUERY_ATTRIBUTION_HEADER",
+            "QUERY_ATTRIBUTION_VERSION",
+            "QUERY_SURFACES",
+            "QueryAttribution",
+            "QuerySurface",
+            "buildLogComment",
+            "buildQueryId",
+            "mergeQueryAttribution",
+            "parseLogComment"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/clickhouse/index.ts",
+          "symbols": [
+            "BaseClickhouseClient",
+            "ChSql",
+            "ClickHouseQueryError",
+            "ClickhouseClientOptions",
+            "ColumnMeta",
+            "JSDataType",
+            "QueryInputs",
+            "ResponseJSON",
+            "Row",
+            "chSql",
+            "concatChSql",
+            "convertCHDataTypeToJSType",
+            "convertCHTypeToLuceneSearchType",
+            "extractColumnReferencesFromKey",
+            "extractInnerCHArrayJSType",
+            "filterColumnMetaByType",
+            "isAccessDeniedError",
+            "isCHFixedStringType",
+            "isCHIntegerType",
+            "streamToAsyncIterator",
+            "tableExpr",
+            "wrapChSqlIfNotEmpty"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/clickhouse/node.ts",
+          "symbols": [
+            "withQueryAttribution"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/core/clickhouseVersion.ts",
+          "symbols": [
+            "ClickHouseVersion",
+            "isClickHouseVersionAtLeast",
+            "parseClickHouseVersion",
+            "supportsDirectReadMap",
+            "supportsMergeTreeIndex",
+            "supportsMergeTreeTextIndex"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/core/histogram.ts",
+          "symbols": [
+            "GROUP_ALIAS",
+            "translateExponentialHistogram",
+            "translateHistogram"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/core/materializedViews.ts",
+          "symbols": [
+            "optimizeFacetedKeyValuesConfig",
+            "optimizeGetKeyValuesCalls",
+            "renderStartOfBucketExpr"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/core/metadata.ts",
+          "symbols": [
+            "Metadata",
+            "SkipIndexMetadata",
+            "TableConnection",
+            "TableMetadata",
+            "getMetadata",
+            "parseKeyPath",
+            "quoteIdentifierIfNeeded",
+            "unquoteIdentifier"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/core/renderChartConfig.ts",
+          "symbols": [
+            "FIXED_TIME_BUCKET_EXPR_ALIAS",
+            "renderChartConfig",
+            "renderWhereExpressionStr",
+            "setChartSelectsAlias",
+            "timeFilterExpr"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/filters.ts",
+          "symbols": [
+            "FilterState",
+            "filterStateToPredicate",
+            "getFilterVariableName",
+            "hasFilterEffect",
+            "isAdhocFilter",
+            "isFilterBroadcastEnabled",
+            "isFilterVariableEnabled",
+            "isQueryExpressionFilter",
+            "isStaticListFilter",
+            "serializeFilterState"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/macros.ts",
+          "symbols": [
+            "MacroName",
+            "MacroSuggestion",
+            "getSourceDependentMacrosUsed",
+            "getSourceTableMacroArgCounts",
+            "hasMacro",
+            "isMissingFiltersMacro",
+            "replaceMacros"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/queryParser.ts",
+          "symbols": [
+            "CustomSchemaSQLSerializerV2",
+            "IMPLICIT_FIELD",
+            "SearchQueryBuilder",
+            "TextIndexInfo",
+            "TextIndexInfoLookup",
+            "buildTextIndexInfoLookup",
+            "decodeSpecialTokensToSource",
+            "encodeSpecialTokens",
+            "parse",
+            "skipIndexMatches"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/types.ts",
+          "symbols": [
+            "ALERT_INTERVAL_TO_MINUTES",
+            "AdhocDashboardFilter",
+            "AdhocFilterCondition",
+            "AdhocFilterOperator",
+            "AdhocFilterSourceType",
+            "AdhocFilterValue",
+            "AggregateFunction",
+            "AggregateFunctionSchema",
+            "AggregateFunctionWithCombinators",
+            "AlertChartConfig",
+            "AlertChartConfigSchema",
+            "AlertErrorType",
+            "AlertThresholdType",
+            "BackgroundChartSchema",
+            "BroadcastFilter",
+            "BuilderChartConfig",
+            "BuilderChartConfigWithDateRange",
+            "BuilderChartConfigWithOptDateRange",
+            "BuilderChartConfigWithOptTimestamp",
+            "BuilderSavedChartConfig",
+            "ChSqlSchema",
+            "ChartConfig",
+            "ChartConfigSchema",
+            "ChartConfigWithOptDateRange",
+            "ChartPaletteTokenSchema",
+            "ChartVariable",
+            "ClickHouseConnection",
+            "ConditionFilter",
+            "Connection",
+            "CreateOrgApiKeyRequest",
+            "CteChartConfig",
+            "DASHBOARD_CONTAINER_ID_MAX",
+            "DASHBOARD_MAX_TILES",
+            "DASHBOARD_VARIABLE_NAME_MAX_LENGTH",
+            "DASHBOARD_VARIABLE_NAME_PATTERN",
+            "DASHBOARD_VARIABLE_NAME_PATTERN_ANCHORED",
+            "DashboardContainerSchema",
+            "DashboardFilter",
+            "DashboardFilterSchema",
+            "DashboardFilterValue",
+            "DashboardSchema",
+            "DashboardTemplateSchema",
+            "DashboardWithoutId",
+            "DateRange",
+            "DisplayType",
+            "Filter",
+            "HeatmapMode",
+            "HeatmapScaleTypeSchema",
+            "InternalAggregateFunction",
+            "InternalAggregateFunctionSchema",
+            "LineInterpolationSchema",
+            "MAX_LEGEND_TEMPLATE_LENGTH",
+            "MAX_PROMQL_EXPRESSIONS",
+            "MaterializedViewConfiguration",
+            "MetadataMaterializedViews",
+            "MetricFormulaSchema",
+            "MetricsDataType",
+            "MetricsDataTypeSchema",
+            "NumberFormatSchema",
+            "NumberTileColorConditionSchema",
+            "ONBOARDING_TASK_IDS",
+            "OnClickDashboardSchema",
+            "OnClickExternalSchema",
+            "OnClickSearchSchema",
+            "OnboardingData",
+            "OnboardingTaskId",
+            "OrgApiKeyApiResponse",
+            "OrgApiKeyExpiry",
+            "PERCENTILE_AGG_FN_LEVELS",
+            "PROMQL_ADHOC_FILTER_OPERATORS",
+            "PercentileAggregateFunctionSchema",
+            "PromqlChartConfig",
+            "PromqlConditionFilter",
+            "PromqlExpressionList",
+            "PromqlHeatmapModeSchema",
+            "PromqlLabelDashboardFilterSchema",
+            "PromqlQueryType",
+            "PromqlQueryTypeSchema",
+            "PromqlReducer",
+            "PromqlReducerSchema",
+            "PromqlSavedChartConfig",
+            "PromqlSeries",
+            "QueryExpressionDashboardFilterSchema",
+            "QuerySettings",
+            "RawSqlChartConfig",
+            "RawSqlSavedChartConfig",
+            "SQLInterval",
+            "SQLIntervalSchema",
+            "SQL_ADHOC_FILTER_OPERATORS",
+            "SavedChartConfig",
+            "SavedSearchSchema",
+            "SearchCondition",
+            "SearchConditionLanguage",
+            "SearchConditionLanguageSchema",
+            "SelectList",
+            "SortSpecificationList",
+            "SourceKind",
+            "SqlAstFilter",
+            "StaticListDashboardFilterSchema",
+            "TILE_DESCRIPTION_MAX_LENGTH",
+            "TLogSource",
+            "TSource",
+            "TTraceSource",
+            "TagResourceType",
+            "Team",
+            "TeamClickHouseSettings",
+            "TeamClickHouseSettingsUpdate",
+            "TileTemplateSchema",
+            "UseTextIndex",
+            "VariableFilterValueSchema",
+            "WebhookService",
+            "addDuplicateTileIdIssues",
+            "alertDisplayNameSchema",
+            "alertNoteSchema",
+            "alertTagsSchema",
+            "isLogSource",
+            "isPersistableUserId",
+            "isTraceSource",
+            "scheduleStartAtSchema",
+            "tagsSchema",
+            "validateAlertChannelSelection",
+            "validateAlertScheduleOffsetMinutes",
+            "validateAlertThresholdMax",
+            "zAlertChannel",
+            "zAlertChannels"
+          ]
+        }
+      ],
+      "tests": {
+        "unit": [
+          "packages/api/src/routers/api/__tests__/couchbase.test.ts",
+          "packages/common-utils/src/couchbase/__tests__/browser.test.ts",
+          "packages/common-utils/src/couchbase/__tests__/resultset.test.ts"
+        ],
+        "int": [
+          "packages/common-utils/src/couchbase/__tests__/couchbase.int.test.ts"
+        ],
+        "e2e": []
+      }
+    },
+    {
       "id": "external-alerts",
       "name": "External API: alerts",
       "area": "external_api",
@@ -14435,7 +14797,7 @@
           "file": "packages/api/src/routers/external-api/v2/alerts.ts"
         }
       ],
-      "closureSize": 48,
+      "closureSize": 49,
       "exclusiveFiles": [],
       "dataLayer": [
         {
@@ -14733,7 +15095,7 @@
           "file": "packages/api/src/routers/external-api/v2/charts.ts"
         }
       ],
-      "closureSize": 38,
+      "closureSize": 39,
       "exclusiveFiles": [],
       "dataLayer": [
         {
@@ -15049,7 +15411,7 @@
           "file": "packages/api/src/routers/external-api/v2/connections.ts"
         }
       ],
-      "closureSize": 30,
+      "closureSize": 43,
       "exclusiveFiles": [],
       "dataLayer": [
         {
@@ -15071,8 +15433,10 @@
           "symbols": [
             "BaseClickhouseClient",
             "ChSql",
+            "ClickHouseQueryError",
             "ColumnMeta",
             "JSDataType",
+            "ResponseJSON",
             "Row",
             "chSql",
             "concatChSql",
@@ -15210,9 +15574,11 @@
             "ChartConfigWithOptDateRange",
             "ChartPaletteTokenSchema",
             "ChartVariable",
+            "ClickHouseConnectionSchema",
             "ConditionFilter",
             "Connection",
-            "ConnectionSchema",
+            "ConnectionSchemaNoId",
+            "CouchbaseConnectionSchema",
             "CteChartConfig",
             "DASHBOARD_CONTAINER_ID_MAX",
             "DASHBOARD_MAX_TILES",
@@ -15281,6 +15647,7 @@
             "TSource",
             "TTraceSource",
             "Team",
+            "TeamClickHouseSettings",
             "TileTemplateSchema",
             "UseTextIndex",
             "VariableFilterValueSchema",
@@ -15296,6 +15663,7 @@
             "validateAlertChannelSelection",
             "validateAlertScheduleOffsetMinutes",
             "validateAlertThresholdMax",
+            "withDefaultConnectionKind",
             "zAlertChannel",
             "zAlertChannels"
           ]
@@ -15345,7 +15713,7 @@
           "file": "packages/api/src/routers/external-api/v2/dashboards.ts"
         }
       ],
-      "closureSize": 46,
+      "closureSize": 47,
       "exclusiveFiles": [],
       "dataLayer": [
         {
@@ -15646,7 +16014,7 @@
           "file": "packages/api/src/routers/external-api/v2/index.ts"
         }
       ],
-      "closureSize": 98,
+      "closureSize": 112,
       "exclusiveFiles": [
         "packages/api/src/routers/external-api/v2/index.ts",
         "packages/api/src/utils/rateLimiter.ts"
@@ -15716,6 +16084,7 @@
             "JSDataType",
             "Logger",
             "QueryInputs",
+            "ResponseJSON",
             "Row",
             "buildLogComment",
             "buildQueryId",
@@ -15872,10 +16241,14 @@
             "ChartConfigWithOptDateRange",
             "ChartPaletteTokenSchema",
             "ChartVariable",
+            "ClickHouseConnection",
+            "ClickHouseConnectionSchema",
             "ColorCondition",
             "ConditionFilter",
             "Connection",
-            "ConnectionSchema",
+            "ConnectionKind",
+            "ConnectionSchemaNoId",
+            "CouchbaseConnectionSchema",
             "CreateOrgApiKeyRequest",
             "CteChartConfig",
             "DASHBOARD_CONTAINER_ID_MAX",
@@ -15970,6 +16343,7 @@
             "TTraceSource",
             "TagResourceType",
             "Team",
+            "TeamClickHouseSettings",
             "TeamClickHouseSettingsUpdate",
             "Tile",
             "TileTemplateSchema",
@@ -15996,6 +16370,7 @@
             "validateAlertScheduleOffsetMinutes",
             "validateAlertThresholdMax",
             "walkRawDashboardTileColors",
+            "withDefaultConnectionKind",
             "zAlertChannel",
             "zAlertChannels"
           ]
@@ -16042,7 +16417,7 @@
           "file": "packages/api/src/routers/external-api/v2/savedSearches.ts"
         }
       ],
-      "closureSize": 43,
+      "closureSize": 44,
       "exclusiveFiles": [],
       "dataLayer": [
         {
@@ -16330,7 +16705,7 @@
           "file": "packages/api/src/routers/external-api/v2/search.ts"
         }
       ],
-      "closureSize": 76,
+      "closureSize": 77,
       "exclusiveFiles": [],
       "dataLayer": [
         {
@@ -16552,6 +16927,7 @@
             "ChartConfigWithOptDateRange",
             "ChartPaletteTokenSchema",
             "ChartVariable",
+            "ClickHouseConnection",
             "ColorCondition",
             "ConditionFilter",
             "Connection",
@@ -16712,7 +17088,7 @@
           "file": "packages/api/src/routers/external-api/v2/sources.ts"
         }
       ],
-      "closureSize": 33,
+      "closureSize": 39,
       "exclusiveFiles": [],
       "dataLayer": [
         {
@@ -16734,6 +17110,7 @@
           "symbols": [
             "BaseClickhouseClient",
             "ChSql",
+            "ClickHouseQueryError",
             "ColumnMeta",
             "JSDataType",
             "Row",
@@ -16876,6 +17253,7 @@
             "ChartVariable",
             "ConditionFilter",
             "Connection",
+            "ConnectionKind",
             "CteChartConfig",
             "DASHBOARD_CONTAINER_ID_MAX",
             "DASHBOARD_MAX_TILES",
@@ -16950,6 +17328,7 @@
             "TSource",
             "TTraceSource",
             "Team",
+            "TeamClickHouseSettings",
             "TileTemplateSchema",
             "TraceSourceSchema",
             "UseTextIndex",
@@ -17015,7 +17394,7 @@
           "file": "packages/api/src/routers/external-api/v2/team.ts"
         }
       ],
-      "closureSize": 35,
+      "closureSize": 36,
       "exclusiveFiles": [],
       "dataLayer": [
         {
@@ -17312,7 +17691,7 @@
           "file": "packages/api/src/routers/external-api/v2/webhooks.ts"
         }
       ],
-      "closureSize": 37,
+      "closureSize": 38,
       "exclusiveFiles": [],
       "dataLayer": [
         {
@@ -17582,7 +17961,7 @@
           "file": "packages/otel-collector/builder-config.yaml"
         }
       ],
-      "closureSize": 28,
+      "closureSize": 29,
       "exclusiveFiles": [
         "docker/otel-collector/Dockerfile",
         "docker/otel-collector/config.standalone.auth.yaml",
@@ -17605,6 +17984,7 @@
         "docker/otel-collector/schema/seed/00007_otel_traces_rollups.sql",
         "docker/otel-collector/schema/seed/00008_otel_metrics_timeseries.sql",
         "docker/otel-collector/supervisor_docker.yaml.tmpl",
+        "packages/otel-collector/CHANGELOG.md",
         "packages/otel-collector/README.md",
         "packages/otel-collector/builder-config.yaml",
         "packages/otel-collector/cmd/migrate/main.go",
@@ -17653,7 +18033,7 @@
           "file": "packages/api/src/mcp/tools/alerts/saveWebhook.ts"
         }
       ],
-      "closureSize": 62,
+      "closureSize": 63,
       "exclusiveFiles": [
         "packages/api/src/mcp/tools/alerts/deleteWebhook.ts",
         "packages/api/src/mcp/tools/alerts/getAlert.ts",
@@ -18020,7 +18400,7 @@
           "file": "packages/api/src/mcp/tools/dashboards/searchDashboards.ts"
         }
       ],
-      "closureSize": 87,
+      "closureSize": 88,
       "exclusiveFiles": [
         "packages/api/src/mcp/tools/dashboards/deleteDashboard.ts",
         "packages/api/src/mcp/tools/dashboards/getDashboard.ts",
@@ -18460,7 +18840,7 @@
           "file": "packages/api/src/mcp/tools/query/timeseries.ts"
         }
       ],
-      "closureSize": 86,
+      "closureSize": 87,
       "exclusiveFiles": [
         "packages/api/src/mcp/tools/query/builderCatalog.ts",
         "packages/api/src/mcp/tools/query/denoise.ts",
@@ -18881,7 +19261,7 @@
           "file": "packages/api/src/mcp/tools/savedSearches/saveSavedSearch.ts"
         }
       ],
-      "closureSize": 45,
+      "closureSize": 46,
       "exclusiveFiles": [
         "packages/api/src/mcp/tools/savedSearches/getSavedSearch.ts",
         "packages/api/src/mcp/tools/savedSearches/saveSavedSearch.ts",
@@ -19202,7 +19582,7 @@
           "file": "packages/api/src/mcp/tools/sources/saveSource.ts"
         }
       ],
-      "closureSize": 90,
+      "closureSize": 91,
       "exclusiveFiles": [
         "packages/api/src/mcp/tools/sources/deleteSource.ts",
         "packages/api/src/mcp/tools/sources/describeMetric.ts",
@@ -19630,7 +20010,7 @@
           "file": "packages/api/src/mcp/tools/trace/waterfall.ts"
         }
       ],
-      "closureSize": 76,
+      "closureSize": 77,
       "exclusiveFiles": [
         "packages/api/src/mcp/tools/trace/breakdown.ts",
         "packages/api/src/mcp/tools/trace/breakdownSchema.ts",
@@ -20000,7 +20380,7 @@
           "file": "packages/api/src/tasks/checkAlerts/index.ts"
         }
       ],
-      "closureSize": 67,
+      "closureSize": 68,
       "exclusiveFiles": [],
       "dataLayer": [
         {
@@ -20364,7 +20744,7 @@
           "file": "packages/api/src/tasks/provisionDashboards/index.ts"
         }
       ],
-      "closureSize": 29,
+      "closureSize": 30,
       "exclusiveFiles": [
         "packages/api/src/tasks/provisionDashboards/index.ts"
       ],
@@ -20588,8 +20968,8 @@
     }
   ],
   "totals": {
-    "features": 53,
-    "entryPoints": 204,
+    "features": 54,
+    "entryPoints": 207,
     "byStatus": [
       {
         "status": "not_started",
@@ -20597,7 +20977,7 @@
       },
       {
         "status": "in_progress",
-        "count": 0
+        "count": 1
       },
       {
         "status": "ported",

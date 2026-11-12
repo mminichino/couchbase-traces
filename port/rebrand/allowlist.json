@@ -697,7 +697,7 @@
     {
       "path": "packages/api/openapi.json",
       "term": "hyperdx",
-      "snippet": "\"description\": \"Updates an existing ClickHouse connection.\\n\\nField semantics: if `password` is omitted or empty the existing\\npassword is kept. `hyperdxSetting",
+      "snippet": "\"description\": \"Updates an existing connection. `kind` cannot change.\\n\\nField semantics: if `password` is omitted or empty the existing\\npassword is kept. `hyperdxSetting",
       "reason": "internal_identifier",
       "note": "Token \"hyperdxSettingPrefix\" allowed in the token map"
     },
@@ -1047,7 +1047,14 @@
     {
       "path": "packages/api/src/routers/api/connections.ts",
       "term": "hyperdx",
-      "snippet": "shouldUnsetPrefix ? ['hyperdxSettingPrefix'] : [],",
+      "snippet": "'hyperdxSettingPrefix',",
+      "reason": "internal_identifier",
+      "note": "Token \"hyperdxSettingPrefix\" allowed in the token map"
+    },
+    {
+      "path": "packages/api/src/routers/api/connections.ts",
+      "term": "hyperdx",
+      "snippet": "if (shouldUnsetPrefix) unsetFields.push('hyperdxSettingPrefix');",
       "reason": "internal_identifier",
       "note": "Token \"hyperdxSettingPrefix\" allowed in the token map"
     },
@@ -3374,6 +3381,34 @@
       "snippet": "# Exercises the `traces` pipeline (otlp/hyperdx -> clickhouse exporter ->",
       "reason": "internal_identifier",
       "note": "Token \"hyperdx\" allowed in the token map"
+    },
+    {
+      "path": "packages/api/src/routers/api/__tests__/couchbaseConnections.test.ts",
+      "term": "hyperdx",
+      "snippet": ".set('x-hyperdx-connection-id', CONNECTION_ID)",
+      "reason": "internal_identifier",
+      "note": "Token \"x-hyperdx-connection-id\" allowed in the token map"
+    },
+    {
+      "path": "packages/api/src/routers/api/__tests__/couchbaseConnections.test.ts",
+      "term": "hyperdx",
+      "snippet": "expect(update).not.toHaveProperty('hyperdxSettingPrefix');",
+      "reason": "internal_identifier",
+      "note": "Token \"hyperdxSettingPrefix\" allowed in the token map"
+    },
+    {
+      "path": "packages/api/src/routers/api/__tests__/couchbaseConnections.test.ts",
+      "term": "hyperdx",
+      "snippet": "expect(created).not.toHaveProperty('hyperdxSettingPrefix');",
+      "reason": "internal_identifier",
+      "note": "Token \"hyperdxSettingPrefix\" allowed in the token map"
+    },
+    {
+      "path": "packages/common-utils/src/couchbase/__tests__/types.test.ts",
+      "term": "hyperdx",
+      "snippet": "expect(parsed).not.toHaveProperty('hyperdxSettingPrefix');",
+      "reason": "internal_identifier",
+      "note": "Token \"hyperdxSettingPrefix\" allowed in the token map"
     }
   ]
 }

@@ -1,6 +1,8 @@
 import objectHash from 'object-hash';
 import { z } from 'zod';
 
+import { isValidCouchbaseConnStr } from './couchbase/connstr';
+
 // Basic Enums
 export enum MetricsDataType {
   Gauge = 'gauge',
@@ -2554,12 +2556,16 @@ export const DashboardTemplateSchema = DashboardWithoutIdSchema.omit({
 });
 export type DashboardTemplate = z.infer<typeof DashboardTemplateSchema>;
 
-export const ConnectionSchema = z.object({
+export const ConnectionBaseSchema = z.object({
   id: z.string(),
   name: z.string(),
-  host: z.string(),
   username: z.string(),
   password: z.string().optional(),
+});
+
+export const ClickHouseConnectionSchema = ConnectionBaseSchema.extend({
+  kind: z.literal('clickhouse').default('clickhouse'),
+  host: z.string(),
   hyperdxSettingPrefix: z
     .string()
     .regex(/^[a-z0-9_]+$/i)
@@ -2568,7 +2574,62 @@ export const ConnectionSchema = z.object({
   isPrometheusEndpoint: z.boolean().optional(),
 });
 
-export type Connection = z.infer<typeof ConnectionSchema>;
+export const CouchbaseConnectionSchema = ConnectionBaseSchema.extend({
+  kind: z.literal('couchbase'),
+  host: z
+    .string()
+    .refine(
+      isValidCouchbaseConnStr,
+      'Must be a couchbase:// or couchbases:// connection string',
+    ),
+  wanProfile: z.boolean().optional(),
+  // PEM; write-only like password
+  tlsCaCertificate: z.string().optional(),
+});
+
+/** Connections stored before `kind` existed are ClickHouse connections. */
+export function withDefaultConnectionKind(v: unknown): unknown {
+  return v != null &&
+    typeof v === 'object' &&
+    (!('kind' in v) || v.kind == null)
+    ? { ...v, kind: 'clickhouse' }
+    : v;
+}
+
+export const ConnectionSchema = z.preprocess(
+  withDefaultConnectionKind,
+  z.discriminatedUnion('kind', [
+    ClickHouseConnectionSchema,
+    CouchbaseConnectionSchema,
+  ]),
+);
+
+export const ConnectionSchemaNoId = z.preprocess(
+  withDefaultConnectionKind,
+  z.discriminatedUnion('kind', [
+    ClickHouseConnectionSchema.omit({ id: true }),
+    CouchbaseConnectionSchema.omit({ id: true }),
+  ]),
+);
+
+// `kind` stays optional on the ClickHouse variant: values stored before it
+// existed, and objects built by ClickHouse-only code, omit it.
+export type ClickHouseConnection = Omit<
+  z.infer<typeof ClickHouseConnectionSchema>,
+  'kind'
+> & { kind?: 'clickhouse' };
+export type CouchbaseConnection = z.infer<typeof CouchbaseConnectionSchema>;
+export type Connection = ClickHouseConnection | CouchbaseConnection;
+export type ConnectionKind = NonNullable<Connection['kind']>;
+export type ConnectionNoId =
+  | Omit<ClickHouseConnection, 'id'>
+  | Omit<CouchbaseConnection, 'id'>;
+
+export function isCouchbaseConnection(
+  c: Pick<Connection, 'kind'> | null | undefined,
+): c is CouchbaseConnection {
+  return c?.kind === 'couchbase';
+}
 
 export const TeamClickHouseSettingsSchema = z.object({
   fieldMetadataDisabled: z.boolean().optional(),
@@ -2642,13 +2703,23 @@ export const BaseSourceSchema = z.object({
   kind: z.nativeEnum(SourceKind),
   connection: z.string().min(1, 'Server Connection is required'),
   from: z.object({
+    // bucket for Couchbase
     databaseName: z.string().min(1, 'Database is required'),
+    // required for Couchbase sources; enforced where the connection is known
+    scopeName: z.string().optional(),
+    // collection for Couchbase
     tableName: z.string().min(1, 'Table is required'),
   }),
   disabled: z.boolean().optional(),
   querySettings: QuerySettingsSchema.optional(),
   timestampValueExpression: RequiredTimestampColumnSchema,
+  timestampFormat: z.enum(['iso8601', 'epoch_millis']).optional(),
+  searchIndexName: z.string().max(255).optional(),
 });
+
+export type TimestampFormat = NonNullable<
+  z.infer<typeof BaseSourceSchema>['timestampFormat']
+>;
 
 const HighlightedAttributeExpressionsSchema = z.array(
   z.object({
@@ -2839,6 +2910,7 @@ export const MetricSourceSchema = BaseSourceSchema.extend({
   // override from BaseSourceSchema
   from: z.object({
     databaseName: z.string().min(1, 'Database is required'),
+    scopeName: z.string().optional(),
     tableName: z.string(),
   }),
 

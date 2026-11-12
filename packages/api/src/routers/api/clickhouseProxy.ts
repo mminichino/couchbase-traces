@@ -83,8 +83,22 @@ const router = express.Router();
 const CUSTOM_SETTING_KEY_SEP = '_';
 const CUSTOM_SETTING_KEY_USER_SUFFIX = 'user';
 
+export const COUCHBASE_NOT_SUPPORTED_MESSAGE =
+  'This feature does not support Couchbase connections yet.';
+
+const rejectCouchbaseTest: RequestHandler = (req, res, next) => {
+  if (req.body?.kind === 'couchbase') {
+    res
+      .status(409)
+      .json({ success: false, error: COUCHBASE_NOT_SUPPORTED_MESSAGE });
+    return;
+  }
+  next();
+};
+
 router.post(
   '/test',
+  rejectCouchbaseTest,
   validateRequest({
     body: z.object({
       host: z.string().url(),
@@ -190,7 +204,15 @@ const getConnection: RequestHandler =
         return;
       }
 
+      if (connection.kind === 'couchbase') {
+        res
+          .status(409)
+          .json({ success: false, error: COUCHBASE_NOT_SUPPORTED_MESSAGE });
+        return;
+      }
+
       req._hdx_connection = {
+        kind: 'clickhouse',
         host: connection.host,
         id: connection.id,
         name: connection.name,

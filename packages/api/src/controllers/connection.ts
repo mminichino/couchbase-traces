@@ -1,3 +1,5 @@
+import type { CouchbaseConnectionConfig } from '@couchbase-traces/common-utils/dist/couchbase/node';
+
 import type { ObjectId } from '@/models';
 import Connection, { IConnection } from '@/models/connection';
 import { objectIdSchema } from '@/utils/zod';
@@ -53,8 +55,34 @@ export function getConnectionById(
   selectPassword = false,
 ) {
   return Connection.findOne({ _id: connectionId, team }).select(
-    selectPassword ? '+password' : '',
+    selectPassword ? '+password +tlsCaCertificate' : '',
   );
+}
+
+/** Builds the config the Couchbase cluster cache keys on; `updatedAt` versions it. */
+export function toCouchbaseConnectionConfig(
+  connection: Pick<
+    IConnection,
+    | 'id'
+    | 'host'
+    | 'username'
+    | 'password'
+    | 'wanProfile'
+    | 'tlsCaCertificate'
+    | 'updatedAt'
+  >,
+): CouchbaseConnectionConfig {
+  return {
+    id: connection.id,
+    host: connection.host,
+    username: connection.username ?? '',
+    password: connection.password || undefined,
+    wanProfile: connection.wanProfile ?? undefined,
+    tlsCaCertificate: connection.tlsCaCertificate || undefined,
+    updatedAt: connection.updatedAt
+      ? new Date(connection.updatedAt).toISOString()
+      : '',
+  };
 }
 
 export function createConnection(

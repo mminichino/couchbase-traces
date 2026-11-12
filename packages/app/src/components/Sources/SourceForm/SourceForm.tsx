@@ -8,6 +8,8 @@ import {
 } from 'react';
 import { Controller, useFieldArray, useForm, useWatch } from 'react-hook-form';
 import { z } from 'zod';
+import { SOURCE_SETTING_NAMES } from '@couchbase-traces/common-utils/dist/couchbase/settings';
+import { validateSourceForConnectionKind } from '@couchbase-traces/common-utils/dist/couchbase/source';
 import {
   SourceKind,
   SourceSchema,
@@ -71,6 +73,7 @@ import {
   getCorrelationFieldValue,
   setCorrelationFieldValue,
 } from './correlationFields';
+import { CouchbaseSourceFields } from './CouchbaseSourceFields';
 import { FormRow } from './FormRow';
 import { distinctSections } from './sourceFormUtils';
 import { TableModelForm } from './TableModelForm';
@@ -138,9 +141,25 @@ export function TableSourceForm({
     () => connections?.find(c => c.id === watchedConnection),
     [connections, watchedConnection],
   );
+  const isCouchbaseSource = selectedConnection?.kind === 'couchbase';
   const isPrometheusOnlyConnection = Boolean(
-    selectedConnection?.isPrometheusEndpoint,
+    selectedConnection &&
+      selectedConnection.kind !== 'couchbase' &&
+      selectedConnection.isPrometheusEndpoint,
   );
+
+  // Couchbase-only fields do not carry over when the connection kind changes.
+  const connectionKind = selectedConnection?.kind ?? 'clickhouse';
+  const prevConnectionKindRef = useRef<string | null>(null);
+  useEffect(() => {
+    if (selectedConnection == null) return;
+    const prev = prevConnectionKindRef.current;
+    prevConnectionKindRef.current = connectionKind;
+    if (prev == null || prev === connectionKind) return;
+    setValue('from.scopeName', undefined, { shouldDirty: true });
+    setValue('timestampFormat', undefined, { shouldDirty: true });
+    setValue('searchIndexName', undefined, { shouldDirty: true });
+  }, [connectionKind, selectedConnection, setValue]);
 
   useEffect(() => {
     if (!isPrometheusOnlyConnection) return;
@@ -169,7 +188,8 @@ export function TableSourceForm({
         if (watchedTableName !== prevTableNameRef.current) {
           prevTableNameRef.current = watchedTableName;
 
-          if (isPrometheusOnlyConnection) {
+          // Schema inference reads ClickHouse system tables.
+          if (isPrometheusOnlyConnection || isCouchbaseSource) {
             return;
           }
 
@@ -218,6 +238,7 @@ export function TableSourceForm({
     metadata,
     setValue,
     isPrometheusOnlyConnection,
+    isCouchbaseSource,
   ]);
 
   // Sets the default connection field to the first connection after the
@@ -438,9 +459,21 @@ export function TableSourceForm({
     [pendingSave, setValue],
   );
 
+  /** Applies the connection-kind rules the API enforces; false when invalid. */
+  const checkConnectionKindRules = useCallback(
+    (data: TSource) => {
+      const message = validateSourceForConnectionKind(data, connectionKind);
+      if (message == null) return true;
+      notifications.show({ color: 'red', message });
+      return false;
+    },
+    [connectionKind],
+  );
+
   const _onCreate = useCallback(() => {
     clearErrors();
     handleSubmit(async data => {
+      if (!checkConnectionKindRules(data)) return;
       const parseResult = SourceSchemaNoId.safeParse(data);
       if (parseResult.error) {
         handleError(parseResult.error, 'create');
@@ -518,11 +551,13 @@ export function TableSourceForm({
     onCreate,
     sources,
     updateSource,
+    checkConnectionKindRules,
   ]);
 
   const _onSave = useCallback(() => {
     clearErrors();
     handleSubmit(data => {
+      if (!checkConnectionKindRules(data)) return;
       const parseResult = SourceSchema.safeParse(data);
       if (parseResult.error) {
         handleError(parseResult.error, 'save');
@@ -558,7 +593,14 @@ export function TableSourceForm({
 
       persist(parseResult.data);
     })();
-  }, [handleSubmit, updateSource, onSave, clearErrors, handleError]);
+  }, [
+    handleSubmit,
+    updateSource,
+    onSave,
+    clearErrors,
+    handleError,
+    checkConnectionKindRules,
+  ]);
 
   const databaseName = useWatch({
     control,
@@ -664,7 +706,14 @@ export function TableSourceForm({
         <FormRow label={'Server Connection'}>
           <ConnectionSelectControlled control={control} name={`connection`} />
         </FormRow>
-        {!isPrometheusOnlyConnection && (
+        {isCouchbaseSource && (
+          <CouchbaseSourceFields
+            control={control}
+            kind={kind}
+            connectionId={connectionId}
+          />
+        )}
+        {!isPrometheusOnlyConnection && !isCouchbaseSource && (
           <>
             <FormRow label={'Database'}>
               <DatabaseSelectControlled
@@ -696,7 +745,11 @@ export function TableSourceForm({
               Query Settings
             </Anchor>
           }
-          helpText="Query-level Session Settings that will be added to each query for this source."
+          helpText={
+            isCouchbaseSource
+              ? `SQL++ query options for this source. Allowed: ${SOURCE_SETTING_NAMES.join(', ')}.`
+              : 'Query-level Session Settings that will be added to each query for this source.'
+          }
         >
           <Grid columns={11}>
             {querySettingFields.map((field, index) => (

@@ -1,3 +1,4 @@
+import { validateSourceForConnectionKind } from '@couchbase-traces/common-utils/dist/couchbase/source';
 import {
   SourceSchema,
   SourceSchemaNoId,
@@ -6,7 +7,10 @@ import express from 'express';
 import { z } from 'zod';
 import { validateRequest } from 'zod-express-middleware';
 
-import { validateConnectionId } from '@/controllers/connection';
+import {
+  getConnectionById,
+  validateConnectionId,
+} from '@/controllers/connection';
 import {
   createSource,
   deleteSource,
@@ -17,6 +21,20 @@ import { getNonNullUserWithTeam } from '@/middleware/auth';
 import { objectIdSchema } from '@/utils/zod';
 
 const router = express.Router();
+
+/** Applies the per-connection-kind source rules; null when the source is valid. */
+async function checkSourceForConnection(
+  teamId: string,
+  source: Parameters<typeof validateSourceForConnectionKind>[0] & {
+    connection: string;
+  },
+): Promise<string | null> {
+  const connection = await getConnectionById(teamId, source.connection);
+  return validateSourceForConnectionKind(
+    source,
+    connection?.kind ?? 'clickhouse',
+  );
+}
 
 router.get('/', async (req, res, next) => {
   try {
@@ -54,6 +72,14 @@ router.post(
           .json({ message: connectionCheck.message });
       }
 
+      const sourceError = await checkSourceForConnection(
+        teamId.toString(),
+        req.body,
+      );
+      if (sourceError) {
+        return res.status(400).json({ message: sourceError });
+      }
+
       const source = await createSource(teamId.toString(), {
         ...req.body,
         team: teamId.toString(),
@@ -86,6 +112,14 @@ router.put(
         return res
           .status(connectionCheck.status)
           .json({ message: connectionCheck.message });
+      }
+
+      const sourceError = await checkSourceForConnection(
+        teamId.toString(),
+        req.body,
+      );
+      if (sourceError) {
+        return res.status(400).json({ message: sourceError });
       }
 
       const source = await updateSource(teamId.toString(), req.params.id, {

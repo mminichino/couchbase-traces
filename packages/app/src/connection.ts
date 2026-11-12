@@ -1,5 +1,6 @@
 import store from 'store2';
 import { testLocalConnection } from '@couchbase-traces/common-utils/dist/clickhouse/browser';
+import type { SerializedQueryError } from '@couchbase-traces/common-utils/dist/couchbase/errors';
 import { Connection } from '@couchbase-traces/common-utils/dist/types';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
@@ -134,6 +135,79 @@ export function useUpdateConnection() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['connections'] });
+    },
+  });
+}
+
+export type ConnectionTestResult = { success: boolean; error?: string };
+
+export type ConnectionTestRequest =
+  | { kind: 'clickhouse'; host: string; username: string; password: string }
+  | {
+      kind: 'couchbase';
+      host: string;
+      username: string;
+      // Omitted secrets fall back to the stored ones when connectionId is set.
+      password?: string;
+      wanProfile?: boolean;
+      tlsCaCertificate?: string;
+      connectionId?: string;
+    };
+
+/** Tests a connection through the API route for its kind. */
+export async function testConnectionByKind(
+  request: ConnectionTestRequest,
+): Promise<ConnectionTestResult> {
+  if (request.kind === 'couchbase') {
+    const { kind: _kind, ...body } = request;
+    const res = await hdxServer('couchbase/test', {
+      method: 'POST',
+      json: body,
+      throwHttpErrors: false,
+    }).json<{ success: boolean; error?: SerializedQueryError }>();
+    return {
+      success: res.success === true,
+      error: res.error?.message,
+    };
+  }
+  const { host, username, password } = request;
+  return hdxServer('clickhouse-proxy/test', {
+    method: 'POST',
+    json: { host, username, password },
+  }).json<ConnectionTestResult>();
+}
+
+export function useTestConnectionByKind() {
+  return useMutation<ConnectionTestResult, Error, ConnectionTestRequest>({
+    mutationFn: testConnectionByKind,
+  });
+}
+
+export type CollectionTestResult =
+  | { success: true; sampleKeys: string[] }
+  | { success: false; error: string };
+
+export function useTestCouchbaseCollection() {
+  return useMutation<
+    CollectionTestResult,
+    Error,
+    { connectionId: string; bucket: string; scope: string; collection: string }
+  >({
+    mutationFn: async body => {
+      const res = await hdxServer('couchbase/test-source', {
+        method: 'POST',
+        json: body,
+        throwHttpErrors: false,
+      }).json<
+        | { success: true; sampleKeys: string[] }
+        | { success: false; error?: SerializedQueryError }
+      >();
+      return res.success
+        ? res
+        : {
+            success: false,
+            error: res.error?.message ?? 'Collection test failed',
+          };
     },
   });
 }

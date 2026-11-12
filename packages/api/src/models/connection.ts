@@ -33,6 +33,14 @@ export interface IConnection {
    *  treats every connection as reference-only (see collectImportableResources
    *  in packages/common-utils/src/iac.ts). */
   platformProvisioned?: boolean;
+  /** Absent on documents written before the add_kind migration. */
+  kind?: 'clickhouse' | 'couchbase';
+  /** Couchbase only; unset means the default for the connection string scheme. */
+  wanProfile?: boolean;
+  /** Couchbase only. PEM; write-only like `password`. */
+  tlsCaCertificate?: string;
+  createdAt?: Date;
+  updatedAt?: Date;
 }
 
 export type ConnectionDocument = mongoose.HydratedDocument<IConnection>;
@@ -58,6 +66,16 @@ export default mongoose.model<IConnection>(
       // No `default` on purpose — see IConnection.platformProvisioned. A default of
       // false would erase the "unknown" state the export relies on.
       platformProvisioned: Boolean,
+      kind: {
+        type: String,
+        enum: ['clickhouse', 'couchbase'],
+        default: 'clickhouse',
+      },
+      wanProfile: Boolean,
+      tlsCaCertificate: {
+        type: String,
+        select: false,
+      },
     },
     {
       timestamps: true,

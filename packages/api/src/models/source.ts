@@ -101,9 +101,12 @@ const sourceBaseSchema = new Schema<MongooseSourceBase>(
     },
     from: {
       databaseName: String,
+      scopeName: String,
       tableName: String,
     },
     timestampValueExpression: String,
+    timestampFormat: String,
+    searchIndexName: String,
     querySettings: {
       type: [QuerySetting],
       validate: {

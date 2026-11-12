@@ -156,6 +156,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@assemblyscript/loader@npm:^0.19.21":
+  version: 0.19.23
+  resolution: "@assemblyscript/loader@npm:0.19.23"
+  checksum: 10c0/ddd1d86f1453bd7f112471ffbb4fe2b8145342dc10d2062a1aab05265bc1ffdea497d7d61789dbe58c8751b5fdd23aba15a28301c0e30df0434f57ec021844fb
+  languageName: node
+  linkType: hard
+
 "@asyncapi/specs@npm:6.11.1":
   version: 6.11.1
   resolution: "@asyncapi/specs@npm:6.11.1"
@@ -3519,6 +3526,7 @@ __metadata:
     concurrently: "npm:^9.1.2"
     connect-mongo: "npm:^4.6.0"
     cors: "npm:^2.8.5"
+    couchbase: "npm:4.7.2"
     cron: "npm:^4.3.1"
     date-fns: "npm:^2.28.0"
     express: "npm:^4.19.2"
@@ -3724,7 +3732,7 @@ __metadata:
     tsx: "npm:^4.19.0"
     typescript: "npm:^6.0.3"
   bin:
-    hdx: dist/cli.js
+    cbt: dist/cli.js
   languageName: unknown
   linkType: soft
 
@@ -3747,6 +3755,7 @@ __metadata:
     "@types/lodash": "npm:^4.14.198"
     "@types/object-hash": "npm:^2.2.1"
     "@types/sqlstring": "npm:^2.3.0"
+    couchbase: "npm:4.7.2"
     date-fns: "npm:^2.28.0"
     date-fns-tz: "npm:^2.0.0"
     dotenv: "npm:^17.2.3"
@@ -3797,6 +3806,55 @@ __metadata:
   resolution: "@couchbase-traces/otel-collector@workspace:packages/otel-collector"
   languageName: unknown
   linkType: soft
+
+"@couchbase/couchbase-darwin-arm64-napi@npm:4.7.2":
+  version: 4.7.2
+  resolution: "@couchbase/couchbase-darwin-arm64-napi@npm:4.7.2"
+  conditions: os=darwin & cpu=arm64
+  languageName: node
+  linkType: hard
+
+"@couchbase/couchbase-darwin-x64-napi@npm:4.7.2":
+  version: 4.7.2
+  resolution: "@couchbase/couchbase-darwin-x64-napi@npm:4.7.2"
+  conditions: os=darwin & cpu=x64
+  languageName: node
+  linkType: hard
+
+"@couchbase/couchbase-linux-arm64-napi@npm:4.7.2":
+  version: 4.7.2
+  resolution: "@couchbase/couchbase-linux-arm64-napi@npm:4.7.2"
+  conditions: os=linux & cpu=arm64
+  languageName: node
+  linkType: hard
+
+"@couchbase/couchbase-linux-x64-napi@npm:4.7.2":
+  version: 4.7.2
+  resolution: "@couchbase/couchbase-linux-x64-napi@npm:4.7.2"
+  conditions: os=linux & cpu=x64
+  languageName: node
+  linkType: hard
+
+"@couchbase/couchbase-linuxmusl-arm64-napi@npm:4.7.2":
+  version: 4.7.2
+  resolution: "@couchbase/couchbase-linuxmusl-arm64-napi@npm:4.7.2"
+  conditions: os=linux & cpu=arm64
+  languageName: node
+  linkType: hard
+
+"@couchbase/couchbase-linuxmusl-x64-napi@npm:4.7.2":
+  version: 4.7.2
+  resolution: "@couchbase/couchbase-linuxmusl-x64-napi@npm:4.7.2"
+  conditions: os=linux & cpu=x64
+  languageName: node
+  linkType: hard
+
+"@couchbase/couchbase-win32-x64-napi@npm:4.7.2":
+  version: 4.7.2
+  resolution: "@couchbase/couchbase-win32-x64-napi@npm:4.7.2"
+  conditions: os=win32 & cpu=x64
+  languageName: node
+  linkType: hard
 
 "@cspotcode/source-map-support@npm:^0.8.0":
   version: 0.8.1
@@ -5644,6 +5702,15 @@ __metadata:
     wrap-ansi: "npm:^8.1.0"
     wrap-ansi-cjs: "npm:wrap-ansi@^7.0.0"
   checksum: 10c0/b1bf42535d49f11dc137f18d5e4e63a28c5569de438a221c369483731e9dac9fb797af554e8bf02b6192d1e5eba6e6402cf93900c3d0ac86391d00d04876789e
+  languageName: node
+  linkType: hard
+
+"@isaacs/fs-minipass@npm:^4.0.0":
+  version: 4.0.1
+  resolution: "@isaacs/fs-minipass@npm:4.0.1"
+  dependencies:
+    minipass: "npm:^7.0.4"
+  checksum: 10c0/c25b6dc1598790d5b55c0947a9b7d111cfa92594db5296c3b907e2f533c033666f692a3939eadac17b1c7c40d362d0b0635dc874cbfe3e70db7c2b07cc97a5d2
   languageName: node
   linkType: hard
 
@@ -13595,7 +13662,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"base64-js@npm:1.5.1, base64-js@npm:^1.3.1":
+"base64-js@npm:1.5.1, base64-js@npm:^1.2.0, base64-js@npm:^1.3.1":
   version: 1.5.1
   resolution: "base64-js@npm:1.5.1"
   checksum: 10c0/f23823513b63173a001030fae4f2dabe283b99a9d324ade3ad3d148e218134676f1ee8568c877cd79ec1c53158dcf2d2ba527a97c606618928ba99dd930102bf
@@ -14386,6 +14453,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"chownr@npm:^3.0.0":
+  version: 3.0.0
+  resolution: "chownr@npm:3.0.0"
+  checksum: 10c0/43925b87700f7e3893296c8e9c56cc58f926411cce3a6e5898136daaf08f08b9a8eb76d37d3267e707d0dcc17aed2e2ebdf5848c0c3ce95cf910a919935c1b10
+  languageName: node
+  linkType: hard
+
 "chromatic@npm:^13.3.3":
   version: 13.3.4
   resolution: "chromatic@npm:13.3.4"
@@ -14668,6 +14742,25 @@ __metadata:
   version: 2.1.1
   resolution: "clsx@npm:2.1.1"
   checksum: 10c0/c4c8eb865f8c82baab07e71bfa8897c73454881c4f99d6bc81585aecd7c441746c1399d08363dc096c550cceaf97bd4ce1e8854e1771e9998d9f94c4fe075839
+  languageName: node
+  linkType: hard
+
+"cmake-js@npm:^8.0.0":
+  version: 8.0.0
+  resolution: "cmake-js@npm:8.0.0"
+  dependencies:
+    debug: "npm:^4.4.3"
+    fs-extra: "npm:^11.3.3"
+    node-api-headers: "npm:^1.8.0"
+    rc: "npm:1.2.8"
+    semver: "npm:^7.7.3"
+    tar: "npm:^7.5.6"
+    url-join: "npm:^4.0.1"
+    which: "npm:^6.0.0"
+    yargs: "npm:^17.7.2"
+  bin:
+    cmake-js: bin/cmake-js
+  checksum: 10c0/ec56a2436a66619a4e0731e2738da36716f28b89ae20a72bd37708a7e54d36746b2cf6d33954e4b776dbf541fb71d18ba20439df3006fc52a071bf2ced62dd3c
   languageName: node
   linkType: hard
 
@@ -15125,6 +15218,45 @@ __metadata:
     typescript:
       optional: true
   checksum: 10c0/1c1703be4f02a250b1d6ca3267e408ce16abfe8364193891afc94c2d5c060b69611fdc8d97af74b7e6d5d1aac0ab2fb94d6b079573146bc2d756c2484ce5f0ee
+  languageName: node
+  linkType: hard
+
+"couchbase@npm:4.7.2":
+  version: 4.7.2
+  resolution: "couchbase@npm:4.7.2"
+  dependencies:
+    "@couchbase/couchbase-darwin-arm64-napi": "npm:4.7.2"
+    "@couchbase/couchbase-darwin-x64-napi": "npm:4.7.2"
+    "@couchbase/couchbase-linux-arm64-napi": "npm:4.7.2"
+    "@couchbase/couchbase-linux-x64-napi": "npm:4.7.2"
+    "@couchbase/couchbase-linuxmusl-arm64-napi": "npm:4.7.2"
+    "@couchbase/couchbase-linuxmusl-x64-napi": "npm:4.7.2"
+    "@couchbase/couchbase-win32-x64-napi": "npm:4.7.2"
+    cmake-js: "npm:^8.0.0"
+    detect-libc: "npm:^2.1.2"
+    hdr-histogram-js: "npm:^3.0.1"
+    node-addon-api: "npm:^8.3.1"
+  peerDependencies:
+    "@opentelemetry/api": ^1.0.0
+  dependenciesMeta:
+    "@couchbase/couchbase-darwin-arm64-napi":
+      optional: true
+    "@couchbase/couchbase-darwin-x64-napi":
+      optional: true
+    "@couchbase/couchbase-linux-arm64-napi":
+      optional: true
+    "@couchbase/couchbase-linux-x64-napi":
+      optional: true
+    "@couchbase/couchbase-linuxmusl-arm64-napi":
+      optional: true
+    "@couchbase/couchbase-linuxmusl-x64-napi":
+      optional: true
+    "@couchbase/couchbase-win32-x64-napi":
+      optional: true
+  peerDependenciesMeta:
+    "@opentelemetry/api":
+      optional: true
+  checksum: 10c0/245e70ac0311f78acd537d2e1b9ff7a1a597f2c6cf9eaca236dd671a5c593fc7b642705739d41033a8090849f8f18c5ce39f836ea5ae08a530e11c4479c42a34
   languageName: node
   linkType: hard
 
@@ -18407,6 +18539,17 @@ __metadata:
   languageName: node
   linkType: hard
 
+"fs-extra@npm:^11.3.3":
+  version: 11.4.1
+  resolution: "fs-extra@npm:11.4.1"
+  dependencies:
+    graceful-fs: "npm:^4.2.0"
+    jsonfile: "npm:^6.0.1"
+    universalify: "npm:^2.0.0"
+  checksum: 10c0/15fafc34e0b6c1b59f0f92aae90b5fab44129ad7ebc1362cc593f2dec1d8a765b7b70b40e2bc779ee146f6ff13a736a065ddb991e5b597e294919ccb0c8ff834
+  languageName: node
+  linkType: hard
+
 "fs-extra@npm:^7.0.1":
   version: 7.0.1
   resolution: "fs-extra@npm:7.0.1"
@@ -19222,6 +19365,17 @@ __metadata:
     property-information: "npm:^7.0.0"
     space-separated-tokens: "npm:^2.0.0"
   checksum: 10c0/18dc8064e5c3a7a2ae862978e626b97a254e1c8a67ee9d0c9f06d373bba155ed805fc5b5ce21b990fb7bc174624889e5e1ce1cade264f1b1d58b48f994bc85ce
+  languageName: node
+  linkType: hard
+
+"hdr-histogram-js@npm:^3.0.1":
+  version: 3.0.1
+  resolution: "hdr-histogram-js@npm:3.0.1"
+  dependencies:
+    "@assemblyscript/loader": "npm:^0.19.21"
+    base64-js: "npm:^1.2.0"
+    pako: "npm:^1.0.3"
+  checksum: 10c0/1ee035f3ef5f3d43ea7916957da52a0f6e3fe899a745723086c769293d0e6ea2aaa0dffe8ee9fa4a2ccba8d28c76a404fc99681edb47ee76eef0627b1a779d19
   languageName: node
   linkType: hard
 
@@ -20574,6 +20728,13 @@ __metadata:
   version: 3.1.1
   resolution: "isexe@npm:3.1.1"
   checksum: 10c0/9ec257654093443eb0a528a9c8cbba9c0ca7616ccb40abd6dde7202734d96bb86e4ac0d764f0f8cd965856aacbff2f4ce23e730dc19dfb41e3b0d865ca6fdcc7
+  languageName: node
+  linkType: hard
+
+"isexe@npm:^4.0.0":
+  version: 4.0.0
+  resolution: "isexe@npm:4.0.0"
+  checksum: 10c0/5884815115bceac452877659a9c7726382531592f43dc29e5d48b7c4100661aed54018cb90bd36cb2eaeba521092570769167acbb95c18d39afdccbcca06c5ce
   languageName: node
   linkType: hard
 
@@ -23329,7 +23490,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"minipass@npm:^7.1.3":
+"minipass@npm:^7.0.4, minipass@npm:^7.1.3":
   version: 7.1.3
   resolution: "minipass@npm:7.1.3"
   checksum: 10c0/539da88daca16533211ea5a9ee98dc62ff5742f531f54640dd34429e621955e91cc280a91a776026264b7f9f6735947629f920944e9c1558369e8bf22eb33fbb
@@ -23343,6 +23504,15 @@ __metadata:
     minipass: "npm:^3.0.0"
     yallist: "npm:^4.0.0"
   checksum: 10c0/64fae024e1a7d0346a1102bb670085b17b7f95bf6cfdf5b128772ec8faf9ea211464ea4add406a3a6384a7d87a0cd1a96263692134323477b4fb43659a6cab78
+  languageName: node
+  linkType: hard
+
+"minizlib@npm:^3.1.0":
+  version: 3.1.0
+  resolution: "minizlib@npm:3.1.0"
+  dependencies:
+    minipass: "npm:^7.1.2"
+  checksum: 10c0/5aad75ab0090b8266069c9aabe582c021ae53eb33c6c691054a13a45db3b4f91a7fb1bd79151e6b4e9e9a86727b522527c0a06ec7d45206b745d54cd3097bcec
   languageName: node
   linkType: hard
 
@@ -23790,6 +23960,22 @@ __metadata:
   version: 3.1.1
   resolution: "node-abort-controller@npm:3.1.1"
   checksum: 10c0/f7ad0e7a8e33809d4f3a0d1d65036a711c39e9d23e0319d80ebe076b9a3b4432b4d6b86a7fab65521de3f6872ffed36fc35d1327487c48eb88c517803403eda3
+  languageName: node
+  linkType: hard
+
+"node-addon-api@npm:^8.3.1":
+  version: 8.9.2
+  resolution: "node-addon-api@npm:8.9.2"
+  dependencies:
+    node-gyp: "npm:latest"
+  checksum: 10c0/5cf5231e0da22b22862e6b593982a0e390ca89d022a9ac666c83deceecf20378cb8afe47c456ac1a58a9f62ef60099c950aec05814a287fdfd751d9d154fb12d
+  languageName: node
+  linkType: hard
+
+"node-api-headers@npm:^1.8.0":
+  version: 1.9.0
+  resolution: "node-api-headers@npm:1.9.0"
+  checksum: 10c0/7702eb5218c25ff7cc96b4e342815b3bfe940cbd81f233015799e37dad4f34d34db68aa10945a5243b0c8d074f70fb88d90a553a088a52434c2343e532d50dc2
   languageName: node
   linkType: hard
 
@@ -24858,7 +25044,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"pako@npm:~1.0.5":
+"pako@npm:^1.0.3, pako@npm:~1.0.5":
   version: 1.0.11
   resolution: "pako@npm:1.0.11"
   checksum: 10c0/86dd99d8b34c3930345b8bbeb5e1cd8a05f608eeb40967b293f72fe469d0e9c88b783a8777e4cc7dc7c91ce54c5e93d88ff4b4f060e6ff18408fd21030d9ffbe
@@ -26109,7 +26295,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"rc@npm:^1.0.1, rc@npm:^1.1.6":
+"rc@npm:1.2.8, rc@npm:^1.0.1, rc@npm:^1.1.6":
   version: 1.2.8
   resolution: "rc@npm:1.2.8"
   dependencies:
@@ -29361,6 +29547,19 @@ __metadata:
   languageName: node
   linkType: hard
 
+"tar@npm:^7.5.6":
+  version: 7.5.22
+  resolution: "tar@npm:7.5.22"
+  dependencies:
+    "@isaacs/fs-minipass": "npm:^4.0.0"
+    chownr: "npm:^3.0.0"
+    minipass: "npm:^7.1.2"
+    minizlib: "npm:^3.1.0"
+    yallist: "npm:^5.0.0"
+  checksum: 10c0/1311f6be85a8157ac4c9147bae43e13923d2a1aae15e4aa1bd5239e4e03d2cf53cfe103dde7f35832fbb4c938b042856bc8e9a0afd29abd05e2d1608788c4fea
+  languageName: node
+  linkType: hard
+
 "term-size@npm:^2.1.0":
   version: 2.2.1
   resolution: "term-size@npm:2.2.1"
@@ -30634,6 +30833,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"url-join@npm:^4.0.1":
+  version: 4.0.1
+  resolution: "url-join@npm:4.0.1"
+  checksum: 10c0/ac65e2c7c562d7b49b68edddcf55385d3e922bc1dd5d90419ea40b53b6de1607d1e45ceb71efb9d60da02c681d13c6cb3a1aa8b13fc0c989dfc219df97ee992d
+  languageName: node
+  linkType: hard
+
 "url@npm:^0.11.0":
   version: 0.11.3
   resolution: "url@npm:0.11.3"
@@ -31237,6 +31443,17 @@ __metadata:
   languageName: node
   linkType: hard
 
+"which@npm:^6.0.0":
+  version: 6.0.1
+  resolution: "which@npm:6.0.1"
+  dependencies:
+    isexe: "npm:^4.0.0"
+  bin:
+    node-which: bin/which.js
+  checksum: 10c0/7e710e54ea36d2d6183bee2f9caa27a3b47b9baf8dee55a199b736fcf85eab3b9df7556fca3d02b50af7f3dfba5ea3a45644189836df06267df457e354da66d5
+  languageName: node
+  linkType: hard
+
 "widest-line@npm:^4.0.1":
   version: 4.0.1
   resolution: "widest-line@npm:4.0.1"
@@ -31430,6 +31647,13 @@ __metadata:
   version: 4.0.0
   resolution: "yallist@npm:4.0.0"
   checksum: 10c0/2286b5e8dbfe22204ab66e2ef5cc9bbb1e55dfc873bbe0d568aa943eb255d131890dfd5bf243637273d31119b870f49c18fcde2c6ffbb7a7a092b870dc90625a
+  languageName: node
+  linkType: hard
+
+"yallist@npm:^5.0.0":
+  version: 5.0.0
+  resolution: "yallist@npm:5.0.0"
+  checksum: 10c0/a499c81ce6d4a1d260d4ea0f6d49ab4da09681e32c3f0472dee16667ed69d01dae63a3b81745a24bd78476ec4fcf856114cb4896ace738e01da34b2c42235416
   languageName: node
   linkType: hard
 

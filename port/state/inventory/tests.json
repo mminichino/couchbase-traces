@@ -35,6 +35,15 @@
       "routes": []
     },
     {
+      "path": "packages/api/src/__tests__/addKindMigration.test.ts",
+      "workspace": "@couchbase-traces/api",
+      "kind": "unit",
+      "directImports": [
+        "packages/api/migrations/mongo/20261112220000-add_kind_to_connections.ts"
+      ],
+      "routes": []
+    },
+    {
       "path": "packages/api/src/__tests__/config.test.ts",
       "workspace": "@couchbase-traces/api",
       "kind": "unit",
@@ -1012,6 +1021,40 @@
         "packages/api/src/config.ts",
         "packages/api/src/fixtures.ts",
         "packages/api/src/models/connection.ts"
+      ],
+      "routes": []
+    },
+    {
+      "path": "packages/api/src/routers/api/__tests__/couchbase.int.test.ts",
+      "workspace": "@couchbase-traces/api",
+      "kind": "int",
+      "directImports": [
+        "packages/api/src/api-app.ts",
+        "packages/api/src/config.ts",
+        "packages/common-utils/src/couchbase/browser.ts",
+        "packages/common-utils/src/couchbase/node.ts"
+      ],
+      "routes": []
+    },
+    {
+      "path": "packages/api/src/routers/api/__tests__/couchbase.test.ts",
+      "workspace": "@couchbase-traces/api",
+      "kind": "unit",
+      "directImports": [
+        "packages/api/src/middleware/auth.ts",
+        "packages/api/src/routers/api/couchbase.ts",
+        "packages/common-utils/src/couchbase/types.ts"
+      ],
+      "routes": []
+    },
+    {
+      "path": "packages/api/src/routers/api/__tests__/couchbaseConnections.test.ts",
+      "workspace": "@couchbase-traces/api",
+      "kind": "unit",
+      "directImports": [
+        "packages/api/src/routers/api/clickhouseProxy.ts",
+        "packages/api/src/routers/api/connections.ts",
+        "packages/api/src/routers/api/sources.ts"
       ],
       "routes": []
     },
@@ -2179,6 +2222,13 @@
       "directImports": [
         "packages/app/src/config.ts"
       ],
+      "routes": []
+    },
+    {
+      "path": "packages/app/src/__tests__/couchbaseImportRestriction.test.ts",
+      "workspace": "@couchbase-traces/app",
+      "kind": "unit",
+      "directImports": [],
       "routes": []
     },
     {
@@ -7797,6 +7847,113 @@
       "directImports": [
         "packages/common-utils/src/core/handlebarsEnv.ts",
         "packages/common-utils/src/core/seriesNameTemplate.ts"
+      ],
+      "routes": []
+    },
+    {
+      "path": "packages/common-utils/src/couchbase/__tests__/browser.test.ts",
+      "workspace": "@couchbase-traces/common-utils",
+      "kind": "unit",
+      "directImports": [
+        "packages/common-utils/src/couchbase/browser.ts",
+        "packages/common-utils/src/couchbase/errors.ts",
+        "packages/common-utils/src/couchbase/types.ts"
+      ],
+      "routes": []
+    },
+    {
+      "path": "packages/common-utils/src/couchbase/__tests__/connstr.test.ts",
+      "workspace": "@couchbase-traces/common-utils",
+      "kind": "unit",
+      "directImports": [
+        "packages/common-utils/src/couchbase/connstr.ts"
+      ],
+      "routes": []
+    },
+    {
+      "path": "packages/common-utils/src/couchbase/__tests__/couchbase.int.test.ts",
+      "workspace": "@couchbase-traces/common-utils",
+      "kind": "int",
+      "directImports": [
+        "packages/common-utils/src/couchbase/node.ts",
+        "packages/common-utils/src/couchbase/types.ts"
+      ],
+      "routes": []
+    },
+    {
+      "path": "packages/common-utils/src/couchbase/__tests__/errors.test.ts",
+      "workspace": "@couchbase-traces/common-utils",
+      "kind": "unit",
+      "directImports": [
+        "packages/common-utils/src/clickhouse/index.ts",
+        "packages/common-utils/src/couchbase/errors.ts"
+      ],
+      "routes": []
+    },
+    {
+      "path": "packages/common-utils/src/couchbase/__tests__/inferMeta.test.ts",
+      "workspace": "@couchbase-traces/common-utils",
+      "kind": "unit",
+      "directImports": [
+        "packages/common-utils/src/couchbase/inferMeta.ts"
+      ],
+      "routes": []
+    },
+    {
+      "path": "packages/common-utils/src/couchbase/__tests__/resultset.test.ts",
+      "workspace": "@couchbase-traces/common-utils",
+      "kind": "unit",
+      "directImports": [
+        "packages/common-utils/src/couchbase/errors.ts",
+        "packages/common-utils/src/couchbase/resultset.ts",
+        "packages/common-utils/src/couchbase/types.ts"
+      ],
+      "routes": []
+    },
+    {
+      "path": "packages/common-utils/src/couchbase/__tests__/settings.test.ts",
+      "workspace": "@couchbase-traces/common-utils",
+      "kind": "unit",
+      "directImports": [
+        "packages/common-utils/src/couchbase/errors.ts",
+        "packages/common-utils/src/couchbase/settings.ts"
+      ],
+      "routes": []
+    },
+    {
+      "path": "packages/common-utils/src/couchbase/__tests__/source.test.ts",
+      "workspace": "@couchbase-traces/common-utils",
+      "kind": "unit",
+      "directImports": [
+        "packages/common-utils/src/couchbase/source.ts"
+      ],
+      "routes": []
+    },
+    {
+      "path": "packages/common-utils/src/couchbase/__tests__/sqlpp.test.ts",
+      "workspace": "@couchbase-traces/common-utils",
+      "kind": "unit",
+      "directImports": [
+        "packages/common-utils/src/couchbase/sqlpp.ts"
+      ],
+      "routes": []
+    },
+    {
+      "path": "packages/common-utils/src/couchbase/__tests__/statement.test.ts",
+      "workspace": "@couchbase-traces/common-utils",
+      "kind": "unit",
+      "directImports": [
+        "packages/common-utils/src/couchbase/errors.ts",
+        "packages/common-utils/src/couchbase/statement.ts"
+      ],
+      "routes": []
+    },
+    {
+      "path": "packages/common-utils/src/couchbase/__tests__/types.test.ts",
+      "workspace": "@couchbase-traces/common-utils",
+      "kind": "unit",
+      "directImports": [
+        "packages/common-utils/src/types.ts"
       ],
       "routes": []
     },

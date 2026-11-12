@@ -47,7 +47,7 @@
       "kind": "api_route",
       "key": "DELETE /api/v2/connections/:id",
       "file": "packages/api/src/routers/external-api/v2/connections.ts",
-      "line": 580,
+      "line": 669,
       "detail": {
         "method": "DELETE",
         "path": "/api/v2/connections/:id",
@@ -89,7 +89,7 @@
       "kind": "api_route",
       "key": "DELETE /api/v2/sources/:id",
       "file": "packages/api/src/routers/external-api/v2/sources.ts",
-      "line": 1250,
+      "line": 1337,
       "detail": {
         "method": "DELETE",
         "path": "/api/v2/sources/:id",
@@ -145,7 +145,7 @@
       "kind": "api_route",
       "key": "DELETE /connections/:id",
       "file": "packages/api/src/routers/api/connections.ts",
-      "line": 121,
+      "line": 163,
       "detail": {
         "method": "DELETE",
         "path": "/connections/:id",
@@ -215,7 +215,7 @@
       "kind": "api_route",
       "key": "DELETE /sources/:id",
       "file": "packages/api/src/routers/api/sources.ts",
-      "line": 108,
+      "line": 142,
       "detail": {
         "method": "DELETE",
         "path": "/sources/:id",
@@ -383,7 +383,7 @@
       "kind": "api_route",
       "key": "GET /api/v2/connections",
       "file": "packages/api/src/routers/external-api/v2/connections.ts",
-      "line": 238,
+      "line": 299,
       "detail": {
         "method": "GET",
         "path": "/api/v2/connections",
@@ -397,7 +397,7 @@
       "kind": "api_route",
       "key": "GET /api/v2/connections/:id",
       "file": "packages/api/src/routers/external-api/v2/connections.ts",
-      "line": 321,
+      "line": 382,
       "detail": {
         "method": "GET",
         "path": "/api/v2/connections/:id",
@@ -467,7 +467,7 @@
       "kind": "api_route",
       "key": "GET /api/v2/sources",
       "file": "packages/api/src/routers/external-api/v2/sources.ts",
-      "line": 909,
+      "line": 994,
       "detail": {
         "method": "GET",
         "path": "/api/v2/sources",
@@ -481,7 +481,7 @@
       "kind": "api_route",
       "key": "GET /api/v2/sources/:id",
       "file": "packages/api/src/routers/external-api/v2/sources.ts",
-      "line": 972,
+      "line": 1057,
       "detail": {
         "method": "GET",
         "path": "/api/v2/sources/:id",
@@ -551,7 +551,7 @@
       "kind": "api_route",
       "key": "GET /clickhouse-proxy/*",
       "file": "packages/api/src/routers/api/clickhouseProxy.ts",
-      "line": 329,
+      "line": 351,
       "detail": {
         "method": "GET",
         "path": "/clickhouse-proxy/*",
@@ -565,7 +565,7 @@
       "kind": "api_route",
       "key": "GET /connections",
       "file": "packages/api/src/routers/api/connections.ts",
-      "line": 16,
+      "line": 29,
       "detail": {
         "method": "GET",
         "path": "/connections",
@@ -635,7 +635,7 @@
       "kind": "api_route",
       "key": "GET /iac/import-manifest",
       "file": "packages/api/src/routers/api/iac.ts",
-      "line": 102,
+      "line": 99,
       "detail": {
         "method": "GET",
         "path": "/iac/import-manifest",
@@ -733,7 +733,7 @@
       "kind": "api_route",
       "key": "GET /sources",
       "file": "packages/api/src/routers/api/sources.ts",
-      "line": 21,
+      "line": 39,
       "detail": {
         "method": "GET",
         "path": "/sources",
@@ -1083,7 +1083,7 @@
       "kind": "api_route",
       "key": "POST /api/v2/connections",
       "file": "packages/api/src/routers/external-api/v2/connections.ts",
-      "line": 391,
+      "line": 452,
       "detail": {
         "method": "POST",
         "path": "/api/v2/connections",
@@ -1153,7 +1153,7 @@
       "kind": "api_route",
       "key": "POST /api/v2/sources",
       "file": "packages/api/src/routers/external-api/v2/sources.ts",
-      "line": 1059,
+      "line": 1144,
       "detail": {
         "method": "POST",
         "path": "/api/v2/sources",
@@ -1209,7 +1209,7 @@
       "kind": "api_route",
       "key": "POST /clickhouse-proxy/*",
       "file": "packages/api/src/routers/api/clickhouseProxy.ts",
-      "line": 336,
+      "line": 358,
       "detail": {
         "method": "POST",
         "path": "/clickhouse-proxy/*",
@@ -1223,7 +1223,7 @@
       "kind": "api_route",
       "key": "POST /clickhouse-proxy/test",
       "file": "packages/api/src/routers/api/clickhouseProxy.ts",
-      "line": 86,
+      "line": 99,
       "detail": {
         "method": "POST",
         "path": "/clickhouse-proxy/test",
@@ -1237,12 +1237,54 @@
       "kind": "api_route",
       "key": "POST /connections",
       "file": "packages/api/src/routers/api/connections.ts",
-      "line": 28,
+      "line": 41,
       "detail": {
         "method": "POST",
         "path": "/connections",
         "localPath": "/",
         "routerFile": "packages/api/src/routers/api/connections.ts",
+        "mounted": true
+      }
+    },
+    {
+      "id": "api_route:POST /couchbase/query",
+      "kind": "api_route",
+      "key": "POST /couchbase/query",
+      "file": "packages/api/src/routers/api/couchbase.ts",
+      "line": 272,
+      "detail": {
+        "method": "POST",
+        "path": "/couchbase/query",
+        "localPath": "/query",
+        "routerFile": "packages/api/src/routers/api/couchbase.ts",
+        "mounted": true
+      }
+    },
+    {
+      "id": "api_route:POST /couchbase/test",
+      "kind": "api_route",
+      "key": "POST /couchbase/test",
+      "file": "packages/api/src/routers/api/couchbase.ts",
+      "line": 124,
+      "detail": {
+        "method": "POST",
+        "path": "/couchbase/test",
+        "localPath": "/test",
+        "routerFile": "packages/api/src/routers/api/couchbase.ts",
+        "mounted": true
+      }
+    },
+    {
+      "id": "api_route:POST /couchbase/test-source",
+      "kind": "api_route",
+      "key": "POST /couchbase/test-source",
+      "file": "packages/api/src/routers/api/couchbase.ts",
+      "line": 210,
+      "detail": {
+        "method": "POST",
+        "path": "/couchbase/test-source",
+        "localPath": "/test-source",
+        "routerFile": "packages/api/src/routers/api/couchbase.ts",
         "mounted": true
       }
     },
@@ -1335,7 +1377,7 @@
       "kind": "api_route",
       "key": "POST /sources",
       "file": "packages/api/src/routers/api/sources.ts",
-      "line": 38,
+      "line": 56,
       "detail": {
         "method": "POST",
         "path": "/sources",
@@ -1489,7 +1531,7 @@
       "kind": "api_route",
       "key": "PUT /api/v2/connections/:id",
       "file": "packages/api/src/routers/external-api/v2/connections.ts",
-      "line": 479,
+      "line": 546,
       "detail": {
         "method": "PUT",
         "path": "/api/v2/connections/:id",
@@ -1531,7 +1573,7 @@
       "kind": "api_route",
       "key": "PUT /api/v2/sources/:id",
       "file": "packages/api/src/routers/external-api/v2/sources.ts",
-      "line": 1162,
+      "line": 1248,
       "detail": {
         "method": "PUT",
         "path": "/api/v2/sources/:id",
@@ -1559,7 +1601,7 @@
       "kind": "api_route",
       "key": "PUT /connections/:id",
       "file": "packages/api/src/routers/api/connections.ts",
-      "line": 61,
+      "line": 79,
       "detail": {
         "method": "PUT",
         "path": "/connections/:id",
@@ -1615,7 +1657,7 @@
       "kind": "api_route",
       "key": "PUT /sources/:id",
       "file": "packages/api/src/routers/api/sources.ts",
-      "line": 69,
+      "line": 95,
       "detail": {
         "method": "PUT",
         "path": "/sources/:id",
@@ -1913,7 +1955,7 @@
       "kind": "cli_command",
       "key": "auth",
       "file": "packages/cli/src/cli.tsx",
-      "line": 428,
+      "line": 430,
       "detail": {
         "name": "auth"
       }
@@ -1923,7 +1965,7 @@
       "kind": "cli_command",
       "key": "auth login",
       "file": "packages/cli/src/cli.tsx",
-      "line": 434,
+      "line": 436,
       "detail": {
         "name": "login"
       }
@@ -1933,7 +1975,7 @@
       "kind": "cli_command",
       "key": "auth logout",
       "file": "packages/cli/src/cli.tsx",
-      "line": 473,
+      "line": 475,
       "detail": {
         "name": "logout"
       }
@@ -1943,7 +1985,7 @@
       "kind": "cli_command",
       "key": "auth status",
       "file": "packages/cli/src/cli.tsx",
-      "line": 481,
+      "line": 483,
       "detail": {
         "name": "status"
       }
@@ -1953,7 +1995,7 @@
       "kind": "cli_command",
       "key": "chart",
       "file": "packages/cli/src/cli.tsx",
-      "line": 1804,
+      "line": 1806,
       "detail": {
         "name": "chart"
       }
@@ -1963,7 +2005,7 @@
       "kind": "cli_command",
       "key": "connections",
       "file": "packages/cli/src/cli.tsx",
-      "line": 955,
+      "line": 957,
       "detail": {
         "name": "connections"
       }
@@ -1973,7 +2015,7 @@
       "kind": "cli_command",
       "key": "dashboards",
       "file": "packages/cli/src/cli.tsx",
-      "line": 1251,
+      "line": 1253,
       "detail": {
         "name": "dashboards"
       }
@@ -1983,7 +2025,7 @@
       "kind": "cli_command",
       "key": "dashboards create",
       "file": "packages/cli/src/cli.tsx",
-      "line": 1390,
+      "line": 1392,
       "detail": {
         "name": "create"
       }
@@ -1993,7 +2035,7 @@
       "kind": "cli_command",
       "key": "dashboards export",
       "file": "packages/cli/src/cli.tsx",
-      "line": 1316,
+      "line": 1318,
       "detail": {
         "name": "export"
       }
@@ -2003,7 +2045,7 @@
       "kind": "cli_command",
       "key": "dashboards import",
       "file": "packages/cli/src/cli.tsx",
-      "line": 1558,
+      "line": 1560,
       "detail": {
         "name": "import"
       }
@@ -2013,7 +2055,7 @@
       "kind": "cli_command",
       "key": "dashboards list",
       "file": "packages/cli/src/cli.tsx",
-      "line": 1305,
+      "line": 1307,
       "detail": {
         "name": "list"
       }
@@ -2023,7 +2065,7 @@
       "kind": "cli_command",
       "key": "mcp",
       "file": "packages/cli/src/cli.tsx",
-      "line": 546,
+      "line": 548,
       "detail": {
         "name": "mcp"
       }
@@ -2033,7 +2075,7 @@
       "kind": "cli_command",
       "key": "mcp install",
       "file": "packages/cli/src/cli.tsx",
-      "line": 552,
+      "line": 554,
       "detail": {
         "name": "install"
       }
@@ -2043,7 +2085,7 @@
       "kind": "cli_command",
       "key": "query",
       "file": "packages/cli/src/cli.tsx",
-      "line": 2221,
+      "line": 2223,
       "detail": {
         "name": "query"
       }
@@ -2053,7 +2095,7 @@
       "kind": "cli_command",
       "key": "saved-searches",
       "file": "packages/cli/src/cli.tsx",
-      "line": 1611,
+      "line": 1613,
       "detail": {
         "name": "saved-searches"
       }
@@ -2063,7 +2105,7 @@
       "kind": "cli_command",
       "key": "saved-searches create",
       "file": "packages/cli/src/cli.tsx",
-      "line": 1688,
+      "line": 1690,
       "detail": {
         "name": "create"
       }
@@ -2073,7 +2115,7 @@
       "kind": "cli_command",
       "key": "saved-searches list",
       "file": "packages/cli/src/cli.tsx",
-      "line": 1615,
+      "line": 1617,
       "detail": {
         "name": "list"
       }
@@ -2083,7 +2125,7 @@
       "kind": "cli_command",
       "key": "sources",
       "file": "packages/cli/src/cli.tsx",
-      "line": 796,
+      "line": 798,
       "detail": {
         "name": "sources"
       }
@@ -2093,7 +2135,7 @@
       "kind": "cli_command",
       "key": "team",
       "file": "packages/cli/src/cli.tsx",
-      "line": 608,
+      "line": 610,
       "detail": {
         "name": "team"
       }
@@ -2103,7 +2145,7 @@
       "kind": "cli_command",
       "key": "team current",
       "file": "packages/cli/src/cli.tsx",
-      "line": 696,
+      "line": 698,
       "detail": {
         "name": "current"
       }
@@ -2113,7 +2155,7 @@
       "kind": "cli_command",
       "key": "team list",
       "file": "packages/cli/src/cli.tsx",
-      "line": 616,
+      "line": 618,
       "detail": {
         "name": "list"
       }
@@ -2123,7 +2165,7 @@
       "kind": "cli_command",
       "key": "team use",
       "file": "packages/cli/src/cli.tsx",
-      "line": 735,
+      "line": 737,
       "detail": {
         "name": "use"
       }
@@ -2133,7 +2175,7 @@
       "kind": "cli_command",
       "key": "tui",
       "file": "packages/cli/src/cli.tsx",
-      "line": 394,
+      "line": 396,
       "detail": {
         "name": "tui"
       }
@@ -2143,7 +2185,7 @@
       "kind": "cli_command",
       "key": "upload-sourcemaps",
       "file": "packages/cli/src/cli.tsx",
-      "line": 2432,
+      "line": 2434,
       "detail": {
         "name": "upload-sourcemaps"
       }

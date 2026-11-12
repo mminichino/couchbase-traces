@@ -1,3 +1,4 @@
+import { validateSourceForConnectionKind } from '@couchbase-traces/common-utils/dist/couchbase/source';
 import {
   mapGranularityToInternalFormat,
   toExternalSource,
@@ -10,7 +11,10 @@ import express from 'express';
 import { z } from 'zod';
 
 import * as config from '@/config';
-import { validateConnectionId } from '@/controllers/connection';
+import {
+  getConnectionById,
+  validateConnectionId,
+} from '@/controllers/connection';
 import {
   createSource,
   deleteSource,
@@ -70,6 +74,29 @@ async function requireValidConnectionId(
     if (!result.ok) {
       return res.status(result.status).json({ message: result.message });
     }
+    next();
+  } catch (e) {
+    next(e);
+  }
+}
+
+// Applies the per-connection-kind source rules (Couchbase fields).
+async function requireValidSourceForConnection(
+  req: express.Request,
+  res: express.Response,
+  next: express.NextFunction,
+) {
+  try {
+    const teamId = req.user?.team;
+    const connection =
+      teamId != null
+        ? await getConnectionById(teamId.toString(), req.body.connection)
+        : null;
+    const message = validateSourceForConnectionKind(
+      req.body,
+      connection?.kind ?? 'clickhouse',
+    );
+    if (message) return res.status(400).json({ message });
     next();
   } catch (e) {
     next(e);
@@ -153,6 +180,10 @@ function formatExternalSource(source: SourceDocument) {
  *           type: string
  *           description: ClickHouse database name
  *           example: otel
+ *         scopeName:
+ *           type: string
+ *           description: Couchbase scope name. Required for sources on a Couchbase connection; must be absent otherwise. `databaseName` is the bucket and `tableName` the collection.
+ *           example: _default
  *         tableName:
  *           type: string
  *           description: ClickHouse table name
@@ -166,6 +197,10 @@ function formatExternalSource(source: SourceDocument) {
  *           type: string
  *           description: ClickHouse database name
  *           example: otel
+ *         scopeName:
+ *           type: string
+ *           description: Couchbase scope name. Required for sources on a Couchbase connection; must be absent otherwise. `databaseName` is the bucket and `tableName` the collection.
+ *           example: _default
  *         tableName:
  *           type: string
  *           description: ClickHouse table name
@@ -322,6 +357,16 @@ function formatExternalSource(source: SourceDocument) {
  *           items:
  *             $ref: '#/components/schemas/QuerySetting'
  *           nullable: true
+ *         timestampFormat:
+ *           type: string
+ *           enum: [iso8601, epoch_millis]
+ *           description: Couchbase only, and required there. How the timestamp field is stored.
+ *           example: iso8601
+ *         searchIndexName:
+ *           type: string
+ *           maxLength: 255
+ *           description: Couchbase only. Optional Search index used for full-text queries.
+ *           example: logs_fts
  *         defaultTableSelectExpression:
  *           type: string
  *           description: Default columns selected in search results (this can be customized per search later)
@@ -504,6 +549,16 @@ function formatExternalSource(source: SourceDocument) {
  *           items:
  *             $ref: '#/components/schemas/QuerySetting'
  *           nullable: true
+ *         timestampFormat:
+ *           type: string
+ *           enum: [iso8601, epoch_millis]
+ *           description: Couchbase only, and required there. How the timestamp field is stored.
+ *           example: iso8601
+ *         searchIndexName:
+ *           type: string
+ *           maxLength: 255
+ *           description: Couchbase only. Optional Search index used for full-text queries.
+ *           example: logs_fts
  *         defaultTableSelectExpression:
  *           type: string
  *           description: Default columns selected in search results (this can be customized per search later)
@@ -707,6 +762,16 @@ function formatExternalSource(source: SourceDocument) {
  *           items:
  *             $ref: '#/components/schemas/QuerySetting'
  *           nullable: true
+ *         timestampFormat:
+ *           type: string
+ *           enum: [iso8601, epoch_millis]
+ *           description: Couchbase only, and required there. How the timestamp field is stored.
+ *           example: iso8601
+ *         searchIndexName:
+ *           type: string
+ *           maxLength: 255
+ *           description: Couchbase only. Optional Search index used for full-text queries.
+ *           example: logs_fts
  *         metricTables:
  *           $ref: '#/components/schemas/MetricTables'
  *           description: Mapping of metric data types to their respective table names.
@@ -774,6 +839,16 @@ function formatExternalSource(source: SourceDocument) {
  *           items:
  *             $ref: '#/components/schemas/QuerySetting'
  *           nullable: true
+ *         timestampFormat:
+ *           type: string
+ *           enum: [iso8601, epoch_millis]
+ *           description: Couchbase only, and required there. How the timestamp field is stored.
+ *           example: iso8601
+ *         searchIndexName:
+ *           type: string
+ *           maxLength: 255
+ *           description: Couchbase only. Optional Search index used for full-text queries.
+ *           example: logs_fts
  *         timestampValueExpression:
  *           type: string
  *           description: DateTime column or expression that is part of your table's primary key.
@@ -834,6 +909,16 @@ function formatExternalSource(source: SourceDocument) {
  *           items:
  *             $ref: '#/components/schemas/QuerySetting'
  *           nullable: true
+ *         timestampFormat:
+ *           type: string
+ *           enum: [iso8601, epoch_millis]
+ *           description: Couchbase only, and required there. How the timestamp field is stored.
+ *           example: iso8601
+ *         searchIndexName:
+ *           type: string
+ *           maxLength: 255
+ *           description: Couchbase only. Optional Search index used for full-text queries.
+ *           example: logs_fts
  *         timestampValueExpression:
  *           type: string
  *           description: Required by the API for all source kinds; not used by PromQL queries.
@@ -1064,6 +1149,7 @@ router.post(
   }),
   rejectPromqlSourceWhenDisabled,
   requireValidConnectionId,
+  requireValidSourceForConnection,
   async (req, res, next) => {
     try {
       const teamId = req.user?.team;
@@ -1170,6 +1256,7 @@ router.put(
   }),
   rejectPromqlSourceWhenDisabled,
   requireValidConnectionId,
+  requireValidSourceForConnection,
   async (req, res, next) => {
     try {
       const teamId = req.user?.team;

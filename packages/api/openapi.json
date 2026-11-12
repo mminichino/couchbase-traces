@@ -759,9 +759,19 @@
             "description": "Display name for the connection.",
             "example": "Production ClickHouse"
           },
+          "kind": {
+            "type": "string",
+            "enum": [
+              "clickhouse",
+              "couchbase"
+            ],
+            "default": "clickhouse",
+            "description": "Data store type. Defaults to `clickhouse` when omitted.",
+            "example": "clickhouse"
+          },
           "host": {
             "type": "string",
-            "description": "ClickHouse HTTP endpoint URL.",
+            "description": "ClickHouse HTTP endpoint URL, or a `couchbase://` / `couchbases://` connection string for Couchbase connections.",
             "example": "https://clickhouse.example.com:8443"
           },
           "username": {
@@ -779,6 +789,11 @@
             "type": "boolean",
             "description": "Optional. When true, `host` is treated as a Prometheus-compatible API endpoint (e.g. Prometheus or Thanos) and PromQL queries are proxied to it. When false or omitted, `host` is a ClickHouse HTTP endpoint.",
             "example": false
+          },
+          "wanProfile": {
+            "type": "boolean",
+            "description": "Couchbase only. Use the SDK's WAN development profile (longer timeouts). Defaults to true for `couchbases://` connection strings.",
+            "example": true
           },
           "createdAt": {
             "type": "string",
@@ -807,9 +822,19 @@
             "description": "Display name for the connection.",
             "example": "Production ClickHouse"
           },
+          "kind": {
+            "type": "string",
+            "enum": [
+              "clickhouse",
+              "couchbase"
+            ],
+            "default": "clickhouse",
+            "description": "Data store type. Defaults to `clickhouse` when omitted.",
+            "example": "clickhouse"
+          },
           "host": {
             "type": "string",
-            "description": "ClickHouse HTTP endpoint URL.",
+            "description": "ClickHouse HTTP endpoint URL, or a `couchbase://` / `couchbases://` connection string for Couchbase connections.",
             "example": "https://clickhouse.example.com:8443"
           },
           "username": {
@@ -833,6 +858,17 @@
             "type": "boolean",
             "description": "Optional. When true, `host` is treated as a Prometheus-compatible API endpoint (e.g. Prometheus or Thanos) and PromQL queries are proxied to it. When false or omitted, `host` is a ClickHouse HTTP endpoint.",
             "example": false
+          },
+          "wanProfile": {
+            "type": "boolean",
+            "description": "Couchbase only. Use the SDK's WAN development profile (longer timeouts). Defaults to true for `couchbases://` connection strings.",
+            "example": true
+          },
+          "tlsCaCertificate": {
+            "type": "string",
+            "writeOnly": true,
+            "example": "-----BEGIN CERTIFICATE-----\nMIIB...\n-----END CERTIFICATE-----",
+            "description": "Couchbase only. PEM CA certificate for self-managed `couchbases://` clusters with a private CA. Never returned by the API."
           }
         }
       },
@@ -849,9 +885,19 @@
             "description": "Display name for the connection.",
             "example": "Production ClickHouse"
           },
+          "kind": {
+            "type": "string",
+            "enum": [
+              "clickhouse",
+              "couchbase"
+            ],
+            "default": "clickhouse",
+            "description": "Data store type. Defaults to `clickhouse` when omitted. Cannot change after creation.",
+            "example": "clickhouse"
+          },
           "host": {
             "type": "string",
-            "description": "ClickHouse HTTP endpoint URL.",
+            "description": "ClickHouse HTTP endpoint URL, or a `couchbase://` / `couchbases://` connection string for Couchbase connections.",
             "example": "https://clickhouse.example.com:8443"
           },
           "username": {
@@ -875,6 +921,17 @@
             "type": "boolean",
             "description": "Optional. When true, `host` is treated as a Prometheus-compatible API endpoint. When false or omitted, `host` is a ClickHouse HTTP endpoint. Omit to keep the existing value unchanged.",
             "example": false
+          },
+          "wanProfile": {
+            "type": "boolean",
+            "description": "Couchbase only. Use the SDK's WAN development profile (longer timeouts). Defaults to true for `couchbases://` connection strings.",
+            "example": true
+          },
+          "tlsCaCertificate": {
+            "type": "string",
+            "writeOnly": true,
+            "example": "-----BEGIN CERTIFICATE-----\nMIIB...\n-----END CERTIFICATE-----",
+            "description": "Couchbase only. PEM CA certificate for self-managed `couchbases://` clusters with a private CA. Never returned by the API. If omitted or empty, the existing certificate is kept."
           }
         }
       },
@@ -4868,6 +4925,11 @@
             "description": "ClickHouse database name",
             "example": "otel"
           },
+          "scopeName": {
+            "type": "string",
+            "description": "Couchbase scope name. Required for sources on a Couchbase connection; must be absent otherwise. `databaseName` is the bucket and `tableName` the collection.",
+            "example": "_default"
+          },
           "tableName": {
             "type": "string",
             "description": "ClickHouse table name",
@@ -4885,6 +4947,11 @@
             "type": "string",
             "description": "ClickHouse database name",
             "example": "otel"
+          },
+          "scopeName": {
+            "type": "string",
+            "description": "Couchbase scope name. Required for sources on a Couchbase connection; must be absent otherwise. `databaseName` is the bucket and `tableName` the collection.",
+            "example": "_default"
           },
           "tableName": {
             "type": "string",
@@ -5086,6 +5153,21 @@
               "$ref": "#/components/schemas/QuerySetting"
             },
             "nullable": true
+          },
+          "timestampFormat": {
+            "type": "string",
+            "enum": [
+              "iso8601",
+              "epoch_millis"
+            ],
+            "description": "Couchbase only, and required there. How the timestamp field is stored.",
+            "example": "iso8601"
+          },
+          "searchIndexName": {
+            "type": "string",
+            "maxLength": 255,
+            "description": "Couchbase only. Optional Search index used for full-text queries.",
+            "example": "logs_fts"
           },
           "defaultTableSelectExpression": {
             "type": "string",
@@ -5316,6 +5398,21 @@
               "$ref": "#/components/schemas/QuerySetting"
             },
             "nullable": true
+          },
+          "timestampFormat": {
+            "type": "string",
+            "enum": [
+              "iso8601",
+              "epoch_millis"
+            ],
+            "description": "Couchbase only, and required there. How the timestamp field is stored.",
+            "example": "iso8601"
+          },
+          "searchIndexName": {
+            "type": "string",
+            "maxLength": 255,
+            "description": "Couchbase only. Optional Search index used for full-text queries.",
+            "example": "logs_fts"
           },
           "defaultTableSelectExpression": {
             "type": "string",
@@ -5575,6 +5672,21 @@
             },
             "nullable": true
           },
+          "timestampFormat": {
+            "type": "string",
+            "enum": [
+              "iso8601",
+              "epoch_millis"
+            ],
+            "description": "Couchbase only, and required there. How the timestamp field is stored.",
+            "example": "iso8601"
+          },
+          "searchIndexName": {
+            "type": "string",
+            "maxLength": 255,
+            "description": "Couchbase only. Optional Search index used for full-text queries.",
+            "example": "logs_fts"
+          },
           "metricTables": {
             "$ref": "#/components/schemas/MetricTables",
             "description": "Mapping of metric data types to their respective table names."
@@ -5661,6 +5773,21 @@
             },
             "nullable": true
           },
+          "timestampFormat": {
+            "type": "string",
+            "enum": [
+              "iso8601",
+              "epoch_millis"
+            ],
+            "description": "Couchbase only, and required there. How the timestamp field is stored.",
+            "example": "iso8601"
+          },
+          "searchIndexName": {
+            "type": "string",
+            "maxLength": 255,
+            "description": "Couchbase only. Optional Search index used for full-text queries.",
+            "example": "logs_fts"
+          },
           "timestampValueExpression": {
             "type": "string",
             "description": "DateTime column or expression that is part of your table's primary key.",
@@ -5737,6 +5864,21 @@
               "$ref": "#/components/schemas/QuerySetting"
             },
             "nullable": true
+          },
+          "timestampFormat": {
+            "type": "string",
+            "enum": [
+              "iso8601",
+              "epoch_millis"
+            ],
+            "description": "Couchbase only, and required there. How the timestamp field is stored.",
+            "example": "iso8601"
+          },
+          "searchIndexName": {
+            "type": "string",
+            "maxLength": 255,
+            "description": "Couchbase only. Optional Search index used for full-text queries.",
+            "example": "logs_fts"
           },
           "timestampValueExpression": {
             "type": "string",
@@ -6942,7 +7084,7 @@
     "/api/v2/connections": {
       "get": {
         "summary": "List Connections",
-        "description": "Retrieves a list of all ClickHouse connections for the authenticated team. Passwords are never returned.",
+        "description": "Retrieves a list of all connections for the authenticated team. Passwords and CA certificates are never returned.",
         "operationId": "listConnections",
         "tags": [
           "Connections"
@@ -6985,7 +7127,7 @@
       },
       "post": {
         "summary": "Create Connection",
-        "description": "Creates a new ClickHouse connection",
+        "description": "Creates a new ClickHouse or Couchbase connection",
         "operationId": "createConnection",
         "tags": [
           "Connections"
@@ -7043,7 +7185,7 @@
     "/api/v2/connections/{id}": {
       "get": {
         "summary": "Get Connection",
-        "description": "Retrieves a specific ClickHouse connection by ID. Passwords are never returned.",
+        "description": "Retrieves a specific connection by ID. Passwords and CA certificates are never returned.",
         "operationId": "getConnection",
         "tags": [
           "Connections"
@@ -7101,7 +7243,7 @@
       },
       "put": {
         "summary": "Update Connection",
-        "description": "Updates an existing ClickHouse connection.\n\nField semantics: if `password` is omitted or empty the existing\npassword is kept. `hyperdxSettingPrefix` is cleared when set to null\nor an empty string, and `prometheusEndpoint` is cleared when set to\nnull; both are kept unchanged when omitted.\n",
+        "description": "Updates an existing connection. `kind` cannot change.\n\nField semantics: if `password` is omitted or empty the existing\npassword is kept. `hyperdxSettingPrefix` is cleared when set to null\nor an empty string, and `prometheusEndpoint` is cleared when set to\nnull; both are kept unchanged when omitted.\n",
         "operationId": "updateConnection",
         "tags": [
           "Connections"
@@ -7182,7 +7324,7 @@
       },
       "delete": {
         "summary": "Delete Connection",
-        "description": "Deletes a ClickHouse connection",
+        "description": "Deletes a connection",
         "operationId": "deleteConnection",
         "tags": [
           "Connections"

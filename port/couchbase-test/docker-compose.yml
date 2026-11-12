@@ -1,0 +1,28 @@
+# Couchbase Server for the Couchbase integration tests; run.sh drives it.
+# Host ports default to the standard ones. run.sh shifts them all by
+# CBT_TEST_COUCHBASE_PORT_OFFSET when the standard ports are taken, and
+# init.sh then publishes the shifted ports as the node's external
+# alternate addresses so the SDK reaches this container, not another server.
+name: cbt-couchbase-test
+
+services:
+  couchbase:
+    image: couchbase/server:enterprise-8.0.3
+    container_name: cbt-couchbase-test
+    mem_limit: 4g
+    ports:
+      - '127.0.0.1:${CBT_TEST_CB_PORT_8091:-8091}:8091'
+      - '127.0.0.1:${CBT_TEST_CB_PORT_8092:-8092}:8092'
+      - '127.0.0.1:${CBT_TEST_CB_PORT_8093:-8093}:8093'
+      - '127.0.0.1:${CBT_TEST_CB_PORT_8094:-8094}:8094'
+      - '127.0.0.1:${CBT_TEST_CB_PORT_8095:-8095}:8095'
+      - '127.0.0.1:${CBT_TEST_CB_PORT_8096:-8096}:8096'
+      - '127.0.0.1:${CBT_TEST_CB_PORT_8097:-8097}:8097'
+      - '127.0.0.1:${CBT_TEST_CB_PORT_11210:-11210}:11210'
+      - '127.0.0.1:${CBT_TEST_CB_PORT_18091:-18091}:18091'
+      - '127.0.0.1:${CBT_TEST_CB_PORT_18092:-18092}:18092'
+      - '127.0.0.1:${CBT_TEST_CB_PORT_18093:-18093}:18093'
+      - '127.0.0.1:${CBT_TEST_CB_PORT_18094:-18094}:18094'
+      - '127.0.0.1:${CBT_TEST_CB_PORT_18095:-18095}:18095'
+      - '127.0.0.1:${CBT_TEST_CB_PORT_18096:-18096}:18096'
+      - '127.0.0.1:${CBT_TEST_CB_PORT_18097:-18097}:18097'

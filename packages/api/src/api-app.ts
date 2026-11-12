@@ -12,6 +12,7 @@ import { appErrorHandler } from './middleware/error';
 import routers from './routers/api';
 import clickhouseProxyRouter from './routers/api/clickhouseProxy';
 import connectionsRouter from './routers/api/connections';
+import couchbaseRouter from './routers/api/couchbase';
 import favoritesRouter from './routers/api/favorites';
 import iacRouter from './routers/api/iac';
 import pinnedFiltersRouter from './routers/api/pinnedFilters';
@@ -110,6 +111,7 @@ app.use('/saved-search', isUserAuthenticated, savedSearchRouter);
 app.use('/favorites', isUserAuthenticated, favoritesRouter);
 app.use('/pinned-filters', isUserAuthenticated, pinnedFiltersRouter);
 app.use('/clickhouse-proxy', isUserAuthenticated, clickhouseProxyRouter);
+app.use('/couchbase', isUserAuthenticated, couchbaseRouter);
 app.use('/iac', isUserAuthenticated, iacRouter);
 if (config.IS_PROMQL_ENABLED) {
   app.use('/v1/prometheus', isUserAuthenticated, routers.prometheusRouter);

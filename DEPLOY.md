@@ -26,8 +26,9 @@ locally with the `make` targets until they are.
 ## Bring Your Own ClickHouse
 
 If you already have an existing ClickHouse cluster, you can simply deploy the
-Couchbase Traces container that connects to your ClickHouse cluster. You'll need a
-separate MongoDB instance to persist your users, dashboards, searches and more.
+Couchbase Traces container that connects to your ClickHouse cluster. You'll need
+a separate MongoDB instance to persist your users, dashboards, searches and
+more.
 
 To get started, you can run the following image:
 
@@ -48,6 +49,24 @@ with a per-process secret when authentication is enabled.
 To customize the frontend URL, set the `FRONTEND_URL` environment variable to
 the URL your Couchbase Traces instance is hosted on.
 
+### Couchbase connection settings
+
+The API runs Couchbase queries with the Couchbase Node.js SDK. These optional
+environment variables tune it; each takes a positive integer.
+
+| Variable                           | Default     | Purpose                                                    |
+| ---------------------------------- | ----------- | ---------------------------------------------------------- |
+| `CBT_COUCHBASE_DEFAULT_TIMEOUT_MS` | `60000`     | Query timeout when the request and source set none         |
+| `CBT_COUCHBASE_MAX_TIMEOUT_MS`     | `600000`    | Upper bound for any query timeout                          |
+| `CBT_COUCHBASE_CONNECT_TIMEOUT_MS` | `10000`     | Timeout for opening a cluster connection                   |
+| `CBT_COUCHBASE_CLUSTER_IDLE_MS`    | `600000`    | Idle time before a cached cluster connection is closed     |
+| `CBT_COUCHBASE_MAX_CLUSTERS`       | `50`        | Cluster connections kept open per API process              |
+| `CBT_COUCHBASE_MAX_BUFFERED_BYTES` | `268435456` | Result size limit for formats that buffer the whole result |
+| `CBT_COUCHBASE_FRAME_ROWS`         | `500`       | Rows per streamed result frame                             |
+
+Couchbase connections need the API process, so local mode supports ClickHouse
+connections only.
+
 ## All-in-one Docker Compose Stack
 
 The easiest way to get started with Couchbase Traces from scratch is to use our
@@ -60,8 +79,8 @@ To get started, clone this repository and run the following command:
 docker compose up -d
 ```
 
-This will start the Couchbase Traces stack and open a port for the UI, API, and OTel
-collector.
+This will start the Couchbase Traces stack and open a port for the UI, API, and
+OTel collector.
 
 When deploying into production, you'll want to disable any extra ports outside
 of the otel collector and api container. Beware that exposing any port in Docker
@@ -85,10 +104,10 @@ replicas from sharing sessions. The old public value is not a production secret.
 
 ## Local Development Mode
 
-Couchbase Traces can also be deployed alongside your existing local development stack to
-help you debug issues locally. This mode will start an OpenTelemetry collector,
-ClickHouse, the Couchbase Traces UI and API, and MongoDB in a single container, without any
-authentication or configuration persistence.
+Couchbase Traces can also be deployed alongside your existing local development
+stack to help you debug issues locally. This mode will start an OpenTelemetry
+collector, ClickHouse, the Couchbase Traces UI and API, and MongoDB in a single
+container, without any authentication or configuration persistence.
 
 To get started, spin up the local mode container:
 

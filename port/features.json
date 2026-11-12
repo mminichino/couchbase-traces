@@ -415,6 +415,20 @@
       "decision": null
     },
     {
+      "id": "couchbase-connectivity",
+      "name": "Couchbase connectivity",
+      "area": "query_proxy",
+      "visibility": "internal",
+      "description": "Executes read-only SQL++ against Couchbase connections and tests connections and collections.",
+      "entryPoints": [
+        "api_route:POST /couchbase/test",
+        "api_route:POST /couchbase/test-source",
+        "api_route:POST /couchbase/query"
+      ],
+      "status": "in_progress",
+      "decision": null
+    },
+    {
       "id": "api-iac",
       "name": "Infrastructure-as-code import manifest",
       "area": "iac",

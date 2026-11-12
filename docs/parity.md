@@ -5,7 +5,7 @@ Generated from `port/features.json` and `port/state/inventory/`. Edit `port/feat
 | Status | Features |
 |---|---|
 | not_started | 50 |
-| in_progress | 0 |
+| in_progress | 1 |
 | ported | 0 |
 | needs_decision | 3 |
 | dropped | 0 |
@@ -333,9 +333,9 @@ Entry points:
 
 | Feature | Visibility | Status | Entry points | Data layer | Tests (unit / int / e2e) |
 |---|---|---|---|---|---|
-| Connections (`api-connections`) | admin | not_started | 4 | attribution.ts, index.ts, node.ts, clickhouseVersion.ts, histogram.ts, +7 | 0 / 0 / 0 |
+| Connections (`api-connections`) | admin | not_started | 4 | attribution.ts, index.ts, node.ts, clickhouseVersion.ts, histogram.ts, +7 | 1 / 0 / 0 |
 | Favorites (`api-favorites`) | user | not_started | 3 | attribution.ts, index.ts, node.ts, clickhouseVersion.ts, histogram.ts, +7 | 0 / 0 / 0 |
-| Data sources (`api-sources`) | admin | not_started | 4 | attribution.ts, index.ts, node.ts, clickhouseVersion.ts, histogram.ts, +7 | 0 / 1 / 0 |
+| Data sources (`api-sources`) | admin | not_started | 4 | attribution.ts, index.ts, node.ts, clickhouseVersion.ts, histogram.ts, +7 | 1 / 1 / 0 |
 | ClickHouse query settings (`api-team-clickhouse-settings`) | admin | needs_decision | 1 | attribution.ts, index.ts, node.ts, clickhouseVersion.ts, histogram.ts, +7 | 0 / 0 / 0 |
 | Webhooks (`api-webhooks`) | admin | not_started | 5 | clickhouse.ts, errors.ts, attribution.ts, index.ts, node.ts, +9 | 0 / 0 / 0 |
 | ClickHouse server dashboard (`app-clickhouse`) | admin | needs_decision | 1 | clickhouse.tsx, ClickhousePage.tsx, UserPreferencesModal.tsx, clickhouse.ts, AppNav.components.tsx, +45 | 0 / 0 / 1 |
@@ -603,7 +603,8 @@ Entry points:
 
 | Feature | Visibility | Status | Entry points | Data layer | Tests (unit / int / e2e) |
 |---|---|---|---|---|---|
-| Query proxy (`api-clickhouse-proxy`) | internal | not_started | 3 | clickhouseProxy.ts, attribution.ts, index.ts, node.ts, clickhouseVersion.ts, +8 | 1 / 0 / 0 |
+| Query proxy (`api-clickhouse-proxy`) | internal | not_started | 3 | clickhouseProxy.ts, attribution.ts, index.ts, node.ts, clickhouseVersion.ts, +8 | 2 / 0 / 0 |
+| Couchbase connectivity (`couchbase-connectivity`) | internal | in_progress | 3 | attribution.ts, index.ts, node.ts, clickhouseVersion.ts, histogram.ts, +7 | 3 / 1 / 0 |
 
 ### Query proxy (`api-clickhouse-proxy`)
 
@@ -614,6 +615,16 @@ Entry points:
 - `api_route:GET /clickhouse-proxy/*`, `packages/api/src/routers/api/clickhouseProxy.ts`
 - `api_route:POST /clickhouse-proxy/*`, `packages/api/src/routers/api/clickhouseProxy.ts`
 - `api_route:POST /clickhouse-proxy/test`, `packages/api/src/routers/api/clickhouseProxy.ts`
+
+### Couchbase connectivity (`couchbase-connectivity`)
+
+Executes read-only SQL++ against Couchbase connections and tests connections and collections.
+
+Entry points:
+
+- `api_route:POST /couchbase/test`, `packages/api/src/routers/api/couchbase.ts`
+- `api_route:POST /couchbase/test-source`, `packages/api/src/routers/api/couchbase.ts`
+- `api_route:POST /couchbase/query`, `packages/api/src/routers/api/couchbase.ts`
 
 ## ingestion
 

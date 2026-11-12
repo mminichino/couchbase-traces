@@ -1,8 +1,8 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-11-12T21:51:21Z",
+  "generatedAt": "2026-11-12T23:21:20Z",
   "importCommit": "adcb75c16715a667ef5094b6850070d58bf29097",
-  "headCommit": "fb9d9ecd8152424a8d86752a98f29a05b93fda22",
+  "headCommit": "568f1b23d543f814d852090f0778277570a9b882",
   "files": [
     "branding.json",
     "datalayer.json",
@@ -16,14 +16,14 @@
     "workspaces.json"
   ],
   "counts": {
-    "trackedFiles": 2299,
-    "sourceFiles": 1086,
-    "testFiles": 760,
-    "entryPoints": 204,
+    "trackedFiles": 2346,
+    "sourceFiles": 1105,
+    "testFiles": 776,
+    "entryPoints": 207,
     "dataLayerModules": 139,
-    "unmappedConstructs": 408,
+    "unmappedConstructs": 409,
     "tables": 11,
-    "brandingHits": 10107
+    "brandingHits": 10245
   },
   "warnings": [
     {
@@ -35,11 +35,6 @@
       "code": "W_FILE_TOO_LARGE",
       "count": 1,
       "first": "File is 3004059 bytes, over the 2 MB limit; skipped (.yarn/releases/yarn-4.13.0.cjs)"
-    },
-    {
-      "code": "W_FILE_UNREADABLE",
-      "count": 5,
-      "first": "File could not be read (packages/app/public/favicons/clickstack/apple-touch-icon.png)"
     },
     {
       "code": "W_PLAN_MISSING",

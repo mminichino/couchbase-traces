@@ -1,4 +1,5 @@
 import { shutdown as shutdownTelemetry } from '@clickhouse/clickstack-node';
+import { clusterCache } from '@couchbase-traces/common-utils/dist/couchbase/node';
 import http from 'http';
 import gracefulShutdown from 'http-graceful-shutdown';
 import { serializeError } from 'serialize-error';
@@ -32,9 +33,18 @@ export default class Server {
   protected async shutdown(_signal?: string) {
     let hasError = false;
     logger.info('Closing all db clients...');
-    const [mongoCloseResult] = await Promise.allSettled([
+    const [mongoCloseResult, couchbaseCloseResult] = await Promise.allSettled([
       mongooseConnection.close(false),
+      clusterCache.closeAll(),
     ]);
+
+    if (couchbaseCloseResult.status === 'rejected') {
+      hasError = true;
+      logger.error(
+        { err: serializeError(couchbaseCloseResult.reason) },
+        'Couchbase cluster close failed',
+      );
+    }
 
     if (mongoCloseResult.status === 'rejected') {
       hasError = true;

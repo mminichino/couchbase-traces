@@ -86,6 +86,41 @@ export const EXTERNAL_API_SEARCH_MAX_RESULTS = (() => {
     : 2000;
 })();
 
+const positiveIntEnv = (name: string, fallback: number) => {
+  const parsed = Number(Reflect.get(env, name));
+  return Number.isSafeInteger(parsed) && parsed > 0 ? parsed : fallback;
+};
+
+// Couchbase SDK limits. common-utils reads the same variables at call time.
+export const COUCHBASE_DEFAULT_TIMEOUT_MS = positiveIntEnv(
+  'CBT_COUCHBASE_DEFAULT_TIMEOUT_MS',
+  60000,
+);
+export const COUCHBASE_MAX_TIMEOUT_MS = positiveIntEnv(
+  'CBT_COUCHBASE_MAX_TIMEOUT_MS',
+  600000,
+);
+export const COUCHBASE_CONNECT_TIMEOUT_MS = positiveIntEnv(
+  'CBT_COUCHBASE_CONNECT_TIMEOUT_MS',
+  10000,
+);
+export const COUCHBASE_CLUSTER_IDLE_MS = positiveIntEnv(
+  'CBT_COUCHBASE_CLUSTER_IDLE_MS',
+  600000,
+);
+export const COUCHBASE_MAX_CLUSTERS = positiveIntEnv(
+  'CBT_COUCHBASE_MAX_CLUSTERS',
+  50,
+);
+export const COUCHBASE_MAX_BUFFERED_BYTES = positiveIntEnv(
+  'CBT_COUCHBASE_MAX_BUFFERED_BYTES',
+  268435456,
+);
+export const COUCHBASE_FRAME_ROWS = positiveIntEnv(
+  'CBT_COUCHBASE_FRAME_ROWS',
+  500,
+);
+
 // FOR CI ONLY
 export const CLICKHOUSE_HOST = env.CLICKHOUSE_HOST as string;
 export const CLICKHOUSE_USER = env.CLICKHOUSE_USER as string;

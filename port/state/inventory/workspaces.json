@@ -79,6 +79,7 @@
         "concurrently",
         "connect-mongo",
         "cors",
+        "couchbase",
         "cron",
         "date-fns",
         "express",
@@ -120,8 +121,8 @@
         "zod",
         "zod-express-middleware"
       ],
-      "sourceFiles": 224,
-      "testFiles": 147,
+      "sourceFiles": 226,
+      "testFiles": 151,
       "hasTsconfig": true,
       "role": "API server and tasks"
     },
@@ -286,8 +287,8 @@
         "uplot-react",
         "zod"
       ],
-      "sourceFiles": 682,
-      "testFiles": 515,
+      "sourceFiles": 684,
+      "testFiles": 516,
       "hasTsconfig": true,
       "role": "web UI"
     },
@@ -396,6 +397,7 @@
         "@types/lodash",
         "@types/object-hash",
         "@types/sqlstring",
+        "couchbase",
         "date-fns",
         "date-fns-tz",
         "dotenv",
@@ -413,8 +415,8 @@
         "typescript",
         "zod"
       ],
-      "sourceFiles": 57,
-      "testFiles": 52,
+      "sourceFiles": 72,
+      "testFiles": 63,
       "hasTsconfig": true,
       "role": "shared query and data layer"
     },
