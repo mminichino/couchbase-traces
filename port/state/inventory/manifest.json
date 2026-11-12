@@ -1,0 +1,65 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-11-12T20:04:41Z",
+  "importCommit": "adcb75c16715a667ef5094b6850070d58bf29097",
+  "headCommit": "adcb75c16715a667ef5094b6850070d58bf29097",
+  "files": [
+    "branding.json",
+    "datalayer.json",
+    "entrypoints.json",
+    "imports.json",
+    "ingestion.json",
+    "plan-check.json",
+    "schema.json",
+    "sql-catalog.json",
+    "tests.json",
+    "workspaces.json"
+  ],
+  "counts": {
+    "trackedFiles": 2291,
+    "sourceFiles": 1087,
+    "testFiles": 761,
+    "entryPoints": 204,
+    "dataLayerModules": 140,
+    "unmappedConstructs": 408,
+    "tables": 11,
+    "brandingHits": 15400
+  },
+  "warnings": [
+    {
+      "code": "W_DYNAMIC_IMPORT",
+      "count": 6,
+      "first": "Non-literal dynamic import at line 10 (packages/app/public/pyodide/pyodide.asm.js)"
+    },
+    {
+      "code": "W_FILE_TOO_LARGE",
+      "count": 1,
+      "first": "File is 3004059 bytes, over the 2 MB limit; skipped (.yarn/releases/yarn-4.13.0.cjs)"
+    },
+    {
+      "code": "W_PLAN_MISSING",
+      "count": 1,
+      "first": "COUCHBASE_PORT_PLAN.md not found at the project root; plan check skipped (COUCHBASE_PORT_PLAN.md)"
+    },
+    {
+      "code": "W_SCHEMA_UNPARSED",
+      "count": 1,
+      "first": "Unparsed statement: CREATE DATABASE IF NOT EXISTS DATABASE (docker/otel-collector/schema/seed/00001_create_database.sql)"
+    },
+    {
+      "code": "W_TABLE_REDEFINED",
+      "count": 3,
+      "first": "Table otel_logs is defined in docker/otel-collector/schema/seed/00002_otel_logs.sql and docker/otel-collector/schema/seed/00002_otel_logs_compat.sql (docker/otel-collector/schema/seed/00002_otel_logs_compat.sql)"
+    },
+    {
+      "code": "W_UNRESOLVED_IMPORT",
+      "count": 1,
+      "first": "Cannot resolve \"@hyperdx/api/build/serverless\" (packages/app/pages/api/[...all].ts)"
+    },
+    {
+      "code": "W_UNRESOLVED_MOUNT",
+      "count": 1,
+      "first": "Cannot resolve router for mount \"/v1/opamp\" at line 13 (packages/api/src/opamp/app.ts)"
+    }
+  ]
+}

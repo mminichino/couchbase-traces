@@ -1,0 +1,354 @@
+{
+  "builderManifests": [
+    {
+      "file": "packages/otel-collector/builder-config.yaml",
+      "components": []
+    }
+  ],
+  "collectorConfigs": [
+    {
+      "file": "docker/otel-collector/config.standalone.auth.yaml",
+      "receivers": [
+        "otlp/hyperdx"
+      ],
+      "processors": [],
+      "exporters": [],
+      "extensions": [
+        "bearertokenauth/hyperdx"
+      ],
+      "connectors": [],
+      "pipelines": []
+    },
+    {
+      "file": "docker/otel-collector/config.standalone.oidc.yaml",
+      "receivers": [
+        "otlp/hyperdx"
+      ],
+      "processors": [],
+      "exporters": [],
+      "extensions": [
+        "oidc/hyperdx"
+      ],
+      "connectors": [],
+      "pipelines": []
+    },
+    {
+      "file": "docker/otel-collector/config.standalone.promql.yaml",
+      "receivers": [],
+      "processors": [],
+      "exporters": [
+        "prometheusremotewrite"
+      ],
+      "extensions": [],
+      "connectors": [],
+      "pipelines": [
+        {
+          "name": "metrics/promql",
+          "receivers": [
+            "otlp/hyperdx"
+          ],
+          "processors": [
+            "memory_limiter",
+            "batch"
+          ],
+          "exporters": [
+            "prometheusremotewrite"
+          ]
+        }
+      ]
+    },
+    {
+      "file": "docker/otel-collector/config.standalone.yaml",
+      "receivers": [
+        "otlp/hyperdx"
+      ],
+      "processors": [],
+      "exporters": [
+        "clickhouse",
+        "clickhouse/rrweb"
+      ],
+      "extensions": [],
+      "connectors": [
+        "routing/logs"
+      ],
+      "pipelines": [
+        {
+          "name": "logs/in",
+          "receivers": [
+            "otlp/hyperdx"
+          ],
+          "processors": [],
+          "exporters": [
+            "routing/logs"
+          ]
+        },
+        {
+          "name": "logs/out-default",
+          "receivers": [
+            "routing/logs"
+          ],
+          "processors": [],
+          "exporters": [
+            "clickhouse"
+          ]
+        },
+        {
+          "name": "logs/out-rrweb",
+          "receivers": [
+            "routing/logs"
+          ],
+          "processors": [],
+          "exporters": [
+            "clickhouse/rrweb"
+          ]
+        },
+        {
+          "name": "metrics",
+          "receivers": [
+            "otlp/hyperdx"
+          ],
+          "processors": [],
+          "exporters": [
+            "clickhouse"
+          ]
+        },
+        {
+          "name": "traces",
+          "receivers": [
+            "otlp/hyperdx"
+          ],
+          "processors": [],
+          "exporters": [
+            "clickhouse"
+          ]
+        }
+      ]
+    },
+    {
+      "file": "docker/otel-collector/config.yaml",
+      "receivers": [],
+      "processors": [
+        "batch",
+        "memory_limiter",
+        "resourcedetection",
+        "transform",
+        "transform/session_id"
+      ],
+      "exporters": [],
+      "extensions": [
+        "health_check"
+      ],
+      "connectors": [],
+      "pipelines": [
+        {
+          "name": "logs/out-default",
+          "receivers": [],
+          "processors": [
+            "memory_limiter",
+            "transform",
+            "transform/session_id",
+            "batch"
+          ],
+          "exporters": []
+        },
+        {
+          "name": "logs/out-rrweb",
+          "receivers": [],
+          "processors": [
+            "memory_limiter",
+            "transform/session_id",
+            "batch"
+          ],
+          "exporters": []
+        },
+        {
+          "name": "metrics",
+          "receivers": [],
+          "processors": [
+            "memory_limiter",
+            "batch"
+          ],
+          "exporters": []
+        },
+        {
+          "name": "traces",
+          "receivers": [],
+          "processors": [
+            "memory_limiter",
+            "transform/session_id",
+            "batch"
+          ],
+          "exporters": []
+        }
+      ]
+    },
+    {
+      "file": "docker/otel-collector/custom.config.yaml",
+      "receivers": [
+        "hostmetrics"
+      ],
+      "processors": [],
+      "exporters": [
+        "otlphttp/json"
+      ],
+      "extensions": [],
+      "connectors": [],
+      "pipelines": [
+        {
+          "name": "logs/json",
+          "receivers": [
+            "otlp/hyperdx"
+          ],
+          "processors": [
+            "memory_limiter",
+            "batch"
+          ],
+          "exporters": [
+            "otlphttp/json"
+          ]
+        },
+        {
+          "name": "metrics/hostmetrics",
+          "receivers": [
+            "hostmetrics"
+          ],
+          "processors": [
+            "memory_limiter",
+            "batch"
+          ],
+          "exporters": [
+            "clickhouse"
+          ]
+        },
+        {
+          "name": "traces/json",
+          "receivers": [
+            "otlp/hyperdx"
+          ],
+          "processors": [
+            "memory_limiter",
+            "batch"
+          ],
+          "exporters": [
+            "otlphttp/json"
+          ]
+        }
+      ]
+    },
+    {
+      "file": "smoke-tests/otel-collector/custom-pipeline-config.yaml",
+      "receivers": [],
+      "processors": [
+        "batch/lowlatency",
+        "memory_limiter/custom"
+      ],
+      "exporters": [],
+      "extensions": [],
+      "connectors": [],
+      "pipelines": [
+        {
+          "name": "logs/out-default",
+          "receivers": [],
+          "processors": [],
+          "exporters": []
+        },
+        {
+          "name": "logs/out-rrweb",
+          "receivers": [],
+          "processors": [],
+          "exporters": []
+        },
+        {
+          "name": "metrics",
+          "receivers": [],
+          "processors": [
+            "memory_limiter/custom",
+            "batch/lowlatency"
+          ],
+          "exporters": []
+        },
+        {
+          "name": "traces",
+          "receivers": [],
+          "processors": [],
+          "exporters": []
+        }
+      ]
+    },
+    {
+      "file": "smoke-tests/otel-collector/receiver-config.yaml",
+      "receivers": [
+        "fluentforward",
+        "otlp/hyperdx",
+        "prometheus"
+      ],
+      "processors": [],
+      "exporters": [],
+      "extensions": [],
+      "connectors": [],
+      "pipelines": [
+        {
+          "name": "logs/in",
+          "receivers": [
+            "otlp/hyperdx",
+            "fluentforward"
+          ],
+          "processors": [],
+          "exporters": []
+        },
+        {
+          "name": "metrics",
+          "receivers": [
+            "otlp/hyperdx",
+            "prometheus"
+          ],
+          "processors": [],
+          "exporters": []
+        },
+        {
+          "name": "traces",
+          "receivers": [
+            "otlp/hyperdx"
+          ],
+          "processors": [],
+          "exporters": []
+        }
+      ]
+    }
+  ],
+  "clickhouseExporters": [
+    {
+      "file": "docker/otel-collector/config.standalone.yaml",
+      "name": "clickhouse"
+    },
+    {
+      "file": "docker/otel-collector/config.standalone.yaml",
+      "name": "clickhouse/rrweb"
+    }
+  ],
+  "managementCode": [
+    "packages/api/src/config.ts",
+    "packages/api/src/opamp/app.ts",
+    "packages/api/src/opamp/controllers/opampController.ts",
+    "packages/api/src/opamp/models/agent.ts",
+    "packages/api/src/opamp/services/agentService.ts",
+    "packages/api/src/opamp/utils/agentTelemetry.ts",
+    "packages/api/src/opamp/utils/protobuf.ts",
+    "packages/api/src/server.ts",
+    "packages/app/src/config.ts"
+  ],
+  "goSources": [
+    {
+      "file": "packages/otel-collector/cmd/migrate/main.go",
+      "package": "main",
+      "clickhouseImports": [
+        "github.com/ClickHouse/clickhouse-go/v2"
+      ]
+    },
+    {
+      "file": "packages/otel-collector/cmd/migrate/main_test.go",
+      "package": "main",
+      "clickhouseImports": []
+    }
+  ]
+}

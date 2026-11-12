@@ -1,0 +1,11 @@
+{
+  "name": "@hyperdx/api",
+  "private": true,
+  "scripts": {
+    "ci:unit": "jest --runInBand",
+    "ci:int": "jest --config jest.int.config.js",
+    "ci:lint": "eslint src",
+    "dev:int": "jest --config jest.int.config.js --watch"
+  },
+  "dependencies": { "@hyperdx/common-utils": "workspace:*", "@clickhouse/client": "^1.0.0", "express": "^4.0.0" }
+}

@@ -1,0 +1,2550 @@
+{
+  "entryPoints": [
+    {
+      "id": "api_route:DELETE /alerts/:id",
+      "kind": "api_route",
+      "key": "DELETE /alerts/:id",
+      "file": "packages/api/src/routers/api/alerts.ts",
+      "line": 465,
+      "detail": {
+        "method": "DELETE",
+        "path": "/alerts/:id",
+        "localPath": "/:id",
+        "routerFile": "packages/api/src/routers/api/alerts.ts",
+        "mounted": true
+      }
+    },
+    {
+      "id": "api_route:DELETE /alerts/:id/silenced",
+      "kind": "api_route",
+      "key": "DELETE /alerts/:id/silenced",
+      "file": "packages/api/src/routers/api/alerts.ts",
+      "line": 437,
+      "detail": {
+        "method": "DELETE",
+        "path": "/alerts/:id/silenced",
+        "localPath": "/:id/silenced",
+        "routerFile": "packages/api/src/routers/api/alerts.ts",
+        "mounted": true
+      }
+    },
+    {
+      "id": "api_route:DELETE /api/v2/alerts/:id",
+      "kind": "api_route",
+      "key": "DELETE /api/v2/alerts/:id",
+      "file": "packages/api/src/routers/external-api/v2/alerts.ts",
+      "line": 976,
+      "detail": {
+        "method": "DELETE",
+        "path": "/api/v2/alerts/:id",
+        "localPath": "/:id",
+        "routerFile": "packages/api/src/routers/external-api/v2/alerts.ts",
+        "mounted": true
+      }
+    },
+    {
+      "id": "api_route:DELETE /api/v2/connections/:id",
+      "kind": "api_route",
+      "key": "DELETE /api/v2/connections/:id",
+      "file": "packages/api/src/routers/external-api/v2/connections.ts",
+      "line": 580,
+      "detail": {
+        "method": "DELETE",
+        "path": "/api/v2/connections/:id",
+        "localPath": "/:id",
+        "routerFile": "packages/api/src/routers/external-api/v2/connections.ts",
+        "mounted": true
+      }
+    },
+    {
+      "id": "api_route:DELETE /api/v2/dashboards/:id",
+      "kind": "api_route",
+      "key": "DELETE /api/v2/dashboards/:id",
+      "file": "packages/api/src/routers/external-api/v2/dashboards.ts",
+      "line": 3727,
+      "detail": {
+        "method": "DELETE",
+        "path": "/api/v2/dashboards/:id",
+        "localPath": "/:id",
+        "routerFile": "packages/api/src/routers/external-api/v2/dashboards.ts",
+        "mounted": true
+      }
+    },
+    {
+      "id": "api_route:DELETE /api/v2/saved-searches/:id",
+      "kind": "api_route",
+      "key": "DELETE /api/v2/saved-searches/:id",
+      "file": "packages/api/src/routers/external-api/v2/savedSearches.ts",
+      "line": 701,
+      "detail": {
+        "method": "DELETE",
+        "path": "/api/v2/saved-searches/:id",
+        "localPath": "/:id",
+        "routerFile": "packages/api/src/routers/external-api/v2/savedSearches.ts",
+        "mounted": true
+      }
+    },
+    {
+      "id": "api_route:DELETE /api/v2/sources/:id",
+      "kind": "api_route",
+      "key": "DELETE /api/v2/sources/:id",
+      "file": "packages/api/src/routers/external-api/v2/sources.ts",
+      "line": 1247,
+      "detail": {
+        "method": "DELETE",
+        "path": "/api/v2/sources/:id",
+        "localPath": "/:id",
+        "routerFile": "packages/api/src/routers/external-api/v2/sources.ts",
+        "mounted": true
+      }
+    },
+    {
+      "id": "api_route:DELETE /api/v2/team/invitation/:id",
+      "kind": "api_route",
+      "key": "DELETE /api/v2/team/invitation/:id",
+      "file": "packages/api/src/routers/external-api/v2/team.ts",
+      "line": 236,
+      "detail": {
+        "method": "DELETE",
+        "path": "/api/v2/team/invitation/:id",
+        "localPath": "/invitation/:id",
+        "routerFile": "packages/api/src/routers/external-api/v2/team.ts",
+        "mounted": true
+      }
+    },
+    {
+      "id": "api_route:DELETE /api/v2/team/member/:id",
+      "kind": "api_route",
+      "key": "DELETE /api/v2/team/member/:id",
+      "file": "packages/api/src/routers/external-api/v2/team.ts",
+      "line": 284,
+      "detail": {
+        "method": "DELETE",
+        "path": "/api/v2/team/member/:id",
+        "localPath": "/member/:id",
+        "routerFile": "packages/api/src/routers/external-api/v2/team.ts",
+        "mounted": true
+      }
+    },
+    {
+      "id": "api_route:DELETE /api/v2/webhooks/:id",
+      "kind": "api_route",
+      "key": "DELETE /api/v2/webhooks/:id",
+      "file": "packages/api/src/routers/external-api/v2/webhooks.ts",
+      "line": 850,
+      "detail": {
+        "method": "DELETE",
+        "path": "/api/v2/webhooks/:id",
+        "localPath": "/:id",
+        "routerFile": "packages/api/src/routers/external-api/v2/webhooks.ts",
+        "mounted": true
+      }
+    },
+    {
+      "id": "api_route:DELETE /connections/:id",
+      "kind": "api_route",
+      "key": "DELETE /connections/:id",
+      "file": "packages/api/src/routers/api/connections.ts",
+      "line": 121,
+      "detail": {
+        "method": "DELETE",
+        "path": "/connections/:id",
+        "localPath": "/:id",
+        "routerFile": "packages/api/src/routers/api/connections.ts",
+        "mounted": true
+      }
+    },
+    {
+      "id": "api_route:DELETE /dashboards/:id",
+      "kind": "api_route",
+      "key": "DELETE /dashboards/:id",
+      "file": "packages/api/src/routers/api/dashboards.ts",
+      "line": 249,
+      "detail": {
+        "method": "DELETE",
+        "path": "/dashboards/:id",
+        "localPath": "/:id",
+        "routerFile": "packages/api/src/routers/api/dashboards.ts",
+        "mounted": true
+      }
+    },
+    {
+      "id": "api_route:DELETE /dashboards/preset/:presetDashboard/filter/:id",
+      "kind": "api_route",
+      "key": "DELETE /dashboards/preset/:presetDashboard/filter/:id",
+      "file": "packages/api/src/routers/api/dashboards.ts",
+      "line": 367,
+      "detail": {
+        "method": "DELETE",
+        "path": "/dashboards/preset/:presetDashboard/filter/:id",
+        "localPath": "/preset/:presetDashboard/filter/:id",
+        "routerFile": "packages/api/src/routers/api/dashboards.ts",
+        "mounted": true
+      }
+    },
+    {
+      "id": "api_route:DELETE /favorites/:resourceType/:resourceId",
+      "kind": "api_route",
+      "key": "DELETE /favorites/:resourceType/:resourceId",
+      "file": "packages/api/src/routers/api/favorites.ts",
+      "line": 55,
+      "detail": {
+        "method": "DELETE",
+        "path": "/favorites/:resourceType/:resourceId",
+        "localPath": "/:resourceType/:resourceId",
+        "routerFile": "packages/api/src/routers/api/favorites.ts",
+        "mounted": true
+      }
+    },
+    {
+      "id": "api_route:DELETE /saved-search/:id",
+      "kind": "api_route",
+      "key": "DELETE /saved-search/:id",
+      "file": "packages/api/src/routers/api/savedSearch.ts",
+      "line": 117,
+      "detail": {
+        "method": "DELETE",
+        "path": "/saved-search/:id",
+        "localPath": "/:id",
+        "routerFile": "packages/api/src/routers/api/savedSearch.ts",
+        "mounted": true
+      }
+    },
+    {
+      "id": "api_route:DELETE /sources/:id",
+      "kind": "api_route",
+      "key": "DELETE /sources/:id",
+      "file": "packages/api/src/routers/api/sources.ts",
+      "line": 108,
+      "detail": {
+        "method": "DELETE",
+        "path": "/sources/:id",
+        "localPath": "/:id",
+        "routerFile": "packages/api/src/routers/api/sources.ts",
+        "mounted": true
+      }
+    },
+    {
+      "id": "api_route:DELETE /team/api-keys/:id",
+      "kind": "api_route",
+      "key": "DELETE /team/api-keys/:id",
+      "file": "packages/api/src/routers/api/orgApiKeys.ts",
+      "line": 93,
+      "detail": {
+        "method": "DELETE",
+        "path": "/team/api-keys/:id",
+        "localPath": "/:id",
+        "routerFile": "packages/api/src/routers/api/orgApiKeys.ts",
+        "mounted": true
+      }
+    },
+    {
+      "id": "api_route:DELETE /team/invitation/:id",
+      "kind": "api_route",
+      "key": "DELETE /team/invitation/:id",
+      "file": "packages/api/src/routers/api/team.ts",
+      "line": 227,
+      "detail": {
+        "method": "DELETE",
+        "path": "/team/invitation/:id",
+        "localPath": "/invitation/:id",
+        "routerFile": "packages/api/src/routers/api/team.ts",
+        "mounted": true
+      }
+    },
+    {
+      "id": "api_route:DELETE /team/member/:id",
+      "kind": "api_route",
+      "key": "DELETE /team/member/:id",
+      "file": "packages/api/src/routers/api/team.ts",
+      "line": 284,
+      "detail": {
+        "method": "DELETE",
+        "path": "/team/member/:id",
+        "localPath": "/member/:id",
+        "routerFile": "packages/api/src/routers/api/team.ts",
+        "mounted": true
+      }
+    },
+    {
+      "id": "api_route:DELETE /webhooks/:id",
+      "kind": "api_route",
+      "key": "DELETE /webhooks/:id",
+      "file": "packages/api/src/routers/api/webhooks.ts",
+      "line": 397,
+      "detail": {
+        "method": "DELETE",
+        "path": "/webhooks/:id",
+        "localPath": "/:id",
+        "routerFile": "packages/api/src/routers/api/webhooks.ts",
+        "mounted": true
+      }
+    },
+    {
+      "id": "api_route:GET /alerts",
+      "kind": "api_route",
+      "key": "GET /alerts",
+      "file": "packages/api/src/routers/api/alerts.ts",
+      "line": 127,
+      "detail": {
+        "method": "GET",
+        "path": "/alerts",
+        "localPath": "/",
+        "routerFile": "packages/api/src/routers/api/alerts.ts",
+        "mounted": true
+      }
+    },
+    {
+      "id": "api_route:GET /alerts/:id",
+      "kind": "api_route",
+      "key": "GET /alerts/:id",
+      "file": "packages/api/src/routers/api/alerts.ts",
+      "line": 170,
+      "detail": {
+        "method": "GET",
+        "path": "/alerts/:id",
+        "localPath": "/:id",
+        "routerFile": "packages/api/src/routers/api/alerts.ts",
+        "mounted": true
+      }
+    },
+    {
+      "id": "api_route:GET /alerts/:id/evaluations",
+      "kind": "api_route",
+      "key": "GET /alerts/:id/evaluations",
+      "file": "packages/api/src/routers/api/alerts.ts",
+      "line": 219,
+      "detail": {
+        "method": "GET",
+        "path": "/alerts/:id/evaluations",
+        "localPath": "/:id/evaluations",
+        "routerFile": "packages/api/src/routers/api/alerts.ts",
+        "mounted": true
+      }
+    },
+    {
+      "id": "api_route:GET /alerts/:id/history",
+      "kind": "api_route",
+      "key": "GET /alerts/:id/history",
+      "file": "packages/api/src/routers/api/alerts.ts",
+      "line": 294,
+      "detail": {
+        "method": "GET",
+        "path": "/alerts/:id/history",
+        "localPath": "/:id/history",
+        "routerFile": "packages/api/src/routers/api/alerts.ts",
+        "mounted": true
+      }
+    },
+    {
+      "id": "api_route:GET /api/v2",
+      "kind": "api_route",
+      "key": "GET /api/v2",
+      "file": "packages/api/src/routers/external-api/v2/index.ts",
+      "line": 27,
+      "detail": {
+        "method": "GET",
+        "path": "/api/v2",
+        "localPath": "/",
+        "routerFile": "packages/api/src/routers/external-api/v2/index.ts",
+        "mounted": true
+      }
+    },
+    {
+      "id": "api_route:GET /api/v2/alerts",
+      "kind": "api_route",
+      "key": "GET /api/v2/alerts",
+      "file": "packages/api/src/routers/external-api/v2/alerts.ts",
+      "line": 671,
+      "detail": {
+        "method": "GET",
+        "path": "/api/v2/alerts",
+        "localPath": "/",
+        "routerFile": "packages/api/src/routers/external-api/v2/alerts.ts",
+        "mounted": true
+      }
+    },
+    {
+      "id": "api_route:GET /api/v2/alerts/:id",
+      "kind": "api_route",
+      "key": "GET /api/v2/alerts/:id",
+      "file": "packages/api/src/routers/external-api/v2/alerts.ts",
+      "line": 511,
+      "detail": {
+        "method": "GET",
+        "path": "/api/v2/alerts/:id",
+        "localPath": "/:id",
+        "routerFile": "packages/api/src/routers/external-api/v2/alerts.ts",
+        "mounted": true
+      }
+    },
+    {
+      "id": "api_route:GET /api/v2/connections",
+      "kind": "api_route",
+      "key": "GET /api/v2/connections",
+      "file": "packages/api/src/routers/external-api/v2/connections.ts",
+      "line": 238,
+      "detail": {
+        "method": "GET",
+        "path": "/api/v2/connections",
+        "localPath": "/",
+        "routerFile": "packages/api/src/routers/external-api/v2/connections.ts",
+        "mounted": true
+      }
+    },
+    {
+      "id": "api_route:GET /api/v2/connections/:id",
+      "kind": "api_route",
+      "key": "GET /api/v2/connections/:id",
+      "file": "packages/api/src/routers/external-api/v2/connections.ts",
+      "line": 321,
+      "detail": {
+        "method": "GET",
+        "path": "/api/v2/connections/:id",
+        "localPath": "/:id",
+        "routerFile": "packages/api/src/routers/external-api/v2/connections.ts",
+        "mounted": true
+      }
+    },
+    {
+      "id": "api_route:GET /api/v2/dashboards",
+      "kind": "api_route",
+      "key": "GET /api/v2/dashboards",
+      "file": "packages/api/src/routers/external-api/v2/dashboards.ts",
+      "line": 2960,
+      "detail": {
+        "method": "GET",
+        "path": "/api/v2/dashboards",
+        "localPath": "/",
+        "routerFile": "packages/api/src/routers/external-api/v2/dashboards.ts",
+        "mounted": true
+      }
+    },
+    {
+      "id": "api_route:GET /api/v2/dashboards/:id",
+      "kind": "api_route",
+      "key": "GET /api/v2/dashboards/:id",
+      "file": "packages/api/src/routers/external-api/v2/dashboards.ts",
+      "line": 3061,
+      "detail": {
+        "method": "GET",
+        "path": "/api/v2/dashboards/:id",
+        "localPath": "/:id",
+        "routerFile": "packages/api/src/routers/external-api/v2/dashboards.ts",
+        "mounted": true
+      }
+    },
+    {
+      "id": "api_route:GET /api/v2/saved-searches",
+      "kind": "api_route",
+      "key": "GET /api/v2/saved-searches",
+      "file": "packages/api/src/routers/external-api/v2/savedSearches.ts",
+      "line": 371,
+      "detail": {
+        "method": "GET",
+        "path": "/api/v2/saved-searches",
+        "localPath": "/",
+        "routerFile": "packages/api/src/routers/external-api/v2/savedSearches.ts",
+        "mounted": true
+      }
+    },
+    {
+      "id": "api_route:GET /api/v2/saved-searches/:id",
+      "kind": "api_route",
+      "key": "GET /api/v2/saved-searches/:id",
+      "file": "packages/api/src/routers/external-api/v2/savedSearches.ts",
+      "line": 444,
+      "detail": {
+        "method": "GET",
+        "path": "/api/v2/saved-searches/:id",
+        "localPath": "/:id",
+        "routerFile": "packages/api/src/routers/external-api/v2/savedSearches.ts",
+        "mounted": true
+      }
+    },
+    {
+      "id": "api_route:GET /api/v2/sources",
+      "kind": "api_route",
+      "key": "GET /api/v2/sources",
+      "file": "packages/api/src/routers/external-api/v2/sources.ts",
+      "line": 906,
+      "detail": {
+        "method": "GET",
+        "path": "/api/v2/sources",
+        "localPath": "/",
+        "routerFile": "packages/api/src/routers/external-api/v2/sources.ts",
+        "mounted": true
+      }
+    },
+    {
+      "id": "api_route:GET /api/v2/sources/:id",
+      "kind": "api_route",
+      "key": "GET /api/v2/sources/:id",
+      "file": "packages/api/src/routers/external-api/v2/sources.ts",
+      "line": 969,
+      "detail": {
+        "method": "GET",
+        "path": "/api/v2/sources/:id",
+        "localPath": "/:id",
+        "routerFile": "packages/api/src/routers/external-api/v2/sources.ts",
+        "mounted": true
+      }
+    },
+    {
+      "id": "api_route:GET /api/v2/team",
+      "kind": "api_route",
+      "key": "GET /api/v2/team",
+      "file": "packages/api/src/routers/external-api/v2/team.ts",
+      "line": 31,
+      "detail": {
+        "method": "GET",
+        "path": "/api/v2/team",
+        "localPath": "/",
+        "routerFile": "packages/api/src/routers/external-api/v2/team.ts",
+        "mounted": true
+      }
+    },
+    {
+      "id": "api_route:GET /api/v2/team/invitations",
+      "kind": "api_route",
+      "key": "GET /api/v2/team/invitations",
+      "file": "packages/api/src/routers/external-api/v2/team.ts",
+      "line": 190,
+      "detail": {
+        "method": "GET",
+        "path": "/api/v2/team/invitations",
+        "localPath": "/invitations",
+        "routerFile": "packages/api/src/routers/external-api/v2/team.ts",
+        "mounted": true
+      }
+    },
+    {
+      "id": "api_route:GET /api/v2/team/members",
+      "kind": "api_route",
+      "key": "GET /api/v2/team/members",
+      "file": "packages/api/src/routers/external-api/v2/team.ts",
+      "line": 66,
+      "detail": {
+        "method": "GET",
+        "path": "/api/v2/team/members",
+        "localPath": "/members",
+        "routerFile": "packages/api/src/routers/external-api/v2/team.ts",
+        "mounted": true
+      }
+    },
+    {
+      "id": "api_route:GET /api/v2/webhooks",
+      "kind": "api_route",
+      "key": "GET /api/v2/webhooks",
+      "file": "packages/api/src/routers/external-api/v2/webhooks.ts",
+      "line": 344,
+      "detail": {
+        "method": "GET",
+        "path": "/api/v2/webhooks",
+        "localPath": "/",
+        "routerFile": "packages/api/src/routers/external-api/v2/webhooks.ts",
+        "mounted": true
+      }
+    },
+    {
+      "id": "api_route:GET /clickhouse-proxy/*",
+      "kind": "api_route",
+      "key": "GET /clickhouse-proxy/*",
+      "file": "packages/api/src/routers/api/clickhouseProxy.ts",
+      "line": 329,
+      "detail": {
+        "method": "GET",
+        "path": "/clickhouse-proxy/*",
+        "localPath": "/*",
+        "routerFile": "packages/api/src/routers/api/clickhouseProxy.ts",
+        "mounted": true
+      }
+    },
+    {
+      "id": "api_route:GET /connections",
+      "kind": "api_route",
+      "key": "GET /connections",
+      "file": "packages/api/src/routers/api/connections.ts",
+      "line": 16,
+      "detail": {
+        "method": "GET",
+        "path": "/connections",
+        "localPath": "/",
+        "routerFile": "packages/api/src/routers/api/connections.ts",
+        "mounted": true
+      }
+    },
+    {
+      "id": "api_route:GET /dashboards",
+      "kind": "api_route",
+      "key": "GET /dashboards",
+      "file": "packages/api/src/routers/api/dashboards.ts",
+      "line": 151,
+      "detail": {
+        "method": "GET",
+        "path": "/dashboards",
+        "localPath": "/",
+        "routerFile": "packages/api/src/routers/api/dashboards.ts",
+        "mounted": true
+      }
+    },
+    {
+      "id": "api_route:GET /dashboards/preset/:presetDashboard/filters",
+      "kind": "api_route",
+      "key": "GET /dashboards/preset/:presetDashboard/filters",
+      "file": "packages/api/src/routers/api/dashboards.ts",
+      "line": 268,
+      "detail": {
+        "method": "GET",
+        "path": "/dashboards/preset/:presetDashboard/filters",
+        "localPath": "/preset/:presetDashboard/filters",
+        "routerFile": "packages/api/src/routers/api/dashboards.ts",
+        "mounted": true
+      }
+    },
+    {
+      "id": "api_route:GET /favorites",
+      "kind": "api_route",
+      "key": "GET /favorites",
+      "file": "packages/api/src/routers/api/favorites.ts",
+      "line": 17,
+      "detail": {
+        "method": "GET",
+        "path": "/favorites",
+        "localPath": "/",
+        "routerFile": "packages/api/src/routers/api/favorites.ts",
+        "mounted": true
+      }
+    },
+    {
+      "id": "api_route:GET /health",
+      "kind": "api_route",
+      "key": "GET /health",
+      "file": "packages/api/src/routers/api/root.ts",
+      "line": 33,
+      "detail": {
+        "method": "GET",
+        "path": "/health",
+        "localPath": "/health",
+        "routerFile": "packages/api/src/routers/api/root.ts",
+        "mounted": true
+      }
+    },
+    {
+      "id": "api_route:GET /iac/import-manifest",
+      "kind": "api_route",
+      "key": "GET /iac/import-manifest",
+      "file": "packages/api/src/routers/api/iac.ts",
+      "line": 102,
+      "detail": {
+        "method": "GET",
+        "path": "/iac/import-manifest",
+        "localPath": "/import-manifest",
+        "routerFile": "packages/api/src/routers/api/iac.ts",
+        "mounted": true
+      }
+    },
+    {
+      "id": "api_route:GET /installation",
+      "kind": "api_route",
+      "key": "GET /installation",
+      "file": "packages/api/src/routers/api/root.ts",
+      "line": 60,
+      "detail": {
+        "method": "GET",
+        "path": "/installation",
+        "localPath": "/installation",
+        "routerFile": "packages/api/src/routers/api/root.ts",
+        "mounted": true
+      }
+    },
+    {
+      "id": "api_route:GET /logout",
+      "kind": "api_route",
+      "key": "GET /logout",
+      "file": "packages/api/src/routers/api/root.ts",
+      "line": 142,
+      "detail": {
+        "method": "GET",
+        "path": "/logout",
+        "localPath": "/logout",
+        "routerFile": "packages/api/src/routers/api/root.ts",
+        "mounted": true
+      }
+    },
+    {
+      "id": "api_route:GET /me",
+      "kind": "api_route",
+      "key": "GET /me",
+      "file": "packages/api/src/routers/api/me.ts",
+      "line": 26,
+      "detail": {
+        "method": "GET",
+        "path": "/me",
+        "localPath": "/",
+        "routerFile": "packages/api/src/routers/api/me.ts",
+        "mounted": true
+      }
+    },
+    {
+      "id": "api_route:GET /pinned-filters",
+      "kind": "api_route",
+      "key": "GET /pinned-filters",
+      "file": "packages/api/src/routers/api/pinnedFilters.ts",
+      "line": 20,
+      "detail": {
+        "method": "GET",
+        "path": "/pinned-filters",
+        "localPath": "/",
+        "routerFile": "packages/api/src/routers/api/pinnedFilters.ts",
+        "mounted": true
+      }
+    },
+    {
+      "id": "api_route:GET /ready",
+      "kind": "api_route",
+      "key": "GET /ready",
+      "file": "packages/api/src/routers/api/root.ts",
+      "line": 45,
+      "detail": {
+        "method": "GET",
+        "path": "/ready",
+        "localPath": "/ready",
+        "routerFile": "packages/api/src/routers/api/root.ts",
+        "mounted": true
+      }
+    },
+    {
+      "id": "api_route:GET /saved-search",
+      "kind": "api_route",
+      "key": "GET /saved-search",
+      "file": "packages/api/src/routers/api/savedSearch.ts",
+      "line": 28,
+      "detail": {
+        "method": "GET",
+        "path": "/saved-search",
+        "localPath": "/",
+        "routerFile": "packages/api/src/routers/api/savedSearch.ts",
+        "mounted": true
+      }
+    },
+    {
+      "id": "api_route:GET /sources",
+      "kind": "api_route",
+      "key": "GET /sources",
+      "file": "packages/api/src/routers/api/sources.ts",
+      "line": 21,
+      "detail": {
+        "method": "GET",
+        "path": "/sources",
+        "localPath": "/",
+        "routerFile": "packages/api/src/routers/api/sources.ts",
+        "mounted": true
+      }
+    },
+    {
+      "id": "api_route:GET /team",
+      "kind": "api_route",
+      "key": "GET /team",
+      "file": "packages/api/src/routers/api/team.ts",
+      "line": 41,
+      "detail": {
+        "method": "GET",
+        "path": "/team",
+        "localPath": "/",
+        "routerFile": "packages/api/src/routers/api/team.ts",
+        "mounted": true
+      }
+    },
+    {
+      "id": "api_route:GET /team/api-keys",
+      "kind": "api_route",
+      "key": "GET /team/api-keys",
+      "file": "packages/api/src/routers/api/orgApiKeys.ts",
+      "line": 41,
+      "detail": {
+        "method": "GET",
+        "path": "/team/api-keys",
+        "localPath": "/",
+        "routerFile": "packages/api/src/routers/api/orgApiKeys.ts",
+        "mounted": true
+      }
+    },
+    {
+      "id": "api_route:GET /team/invitations",
+      "kind": "api_route",
+      "key": "GET /team/invitations",
+      "file": "packages/api/src/routers/api/team.ts",
+      "line": 198,
+      "detail": {
+        "method": "GET",
+        "path": "/team/invitations",
+        "localPath": "/invitations",
+        "routerFile": "packages/api/src/routers/api/team.ts",
+        "mounted": true
+      }
+    },
+    {
+      "id": "api_route:GET /team/members",
+      "kind": "api_route",
+      "key": "GET /team/members",
+      "file": "packages/api/src/routers/api/team.ts",
+      "line": 257,
+      "detail": {
+        "method": "GET",
+        "path": "/team/members",
+        "localPath": "/members",
+        "routerFile": "packages/api/src/routers/api/team.ts",
+        "mounted": true
+      }
+    },
+    {
+      "id": "api_route:GET /team/tags",
+      "kind": "api_route",
+      "key": "GET /team/tags",
+      "file": "packages/api/src/routers/api/team.ts",
+      "line": 323,
+      "detail": {
+        "method": "GET",
+        "path": "/team/tags",
+        "localPath": "/tags",
+        "routerFile": "packages/api/src/routers/api/team.ts",
+        "mounted": true
+      }
+    },
+    {
+      "id": "api_route:GET /v1/prometheus/label/:name/values",
+      "kind": "api_route",
+      "key": "GET /v1/prometheus/label/:name/values",
+      "file": "packages/api/src/routers/api/prometheus.ts",
+      "line": 879,
+      "detail": {
+        "method": "GET",
+        "path": "/v1/prometheus/label/:name/values",
+        "localPath": "/label/:name/values",
+        "routerFile": "packages/api/src/routers/api/prometheus.ts",
+        "mounted": true
+      }
+    },
+    {
+      "id": "api_route:GET /v1/prometheus/labels",
+      "kind": "api_route",
+      "key": "GET /v1/prometheus/labels",
+      "file": "packages/api/src/routers/api/prometheus.ts",
+      "line": 871,
+      "detail": {
+        "method": "GET",
+        "path": "/v1/prometheus/labels",
+        "localPath": "/labels",
+        "routerFile": "packages/api/src/routers/api/prometheus.ts",
+        "mounted": true
+      }
+    },
+    {
+      "id": "api_route:GET /v1/prometheus/query",
+      "kind": "api_route",
+      "key": "GET /v1/prometheus/query",
+      "file": "packages/api/src/routers/api/prometheus.ts",
+      "line": 552,
+      "detail": {
+        "method": "GET",
+        "path": "/v1/prometheus/query",
+        "localPath": "/query",
+        "routerFile": "packages/api/src/routers/api/prometheus.ts",
+        "mounted": true
+      }
+    },
+    {
+      "id": "api_route:GET /v1/prometheus/query_exemplars",
+      "kind": "api_route",
+      "key": "GET /v1/prometheus/query_exemplars",
+      "file": "packages/api/src/routers/api/prometheus.ts",
+      "line": 687,
+      "detail": {
+        "method": "GET",
+        "path": "/v1/prometheus/query_exemplars",
+        "localPath": "/query_exemplars",
+        "routerFile": "packages/api/src/routers/api/prometheus.ts",
+        "mounted": true
+      }
+    },
+    {
+      "id": "api_route:GET /v1/prometheus/query_range",
+      "kind": "api_route",
+      "key": "GET /v1/prometheus/query_range",
+      "file": "packages/api/src/routers/api/prometheus.ts",
+      "line": 458,
+      "detail": {
+        "method": "GET",
+        "path": "/v1/prometheus/query_range",
+        "localPath": "/query_range",
+        "routerFile": "packages/api/src/routers/api/prometheus.ts",
+        "mounted": true
+      }
+    },
+    {
+      "id": "api_route:GET /webhooks",
+      "kind": "api_route",
+      "key": "GET /webhooks",
+      "file": "packages/api/src/routers/api/webhooks.ts",
+      "line": 134,
+      "detail": {
+        "method": "GET",
+        "path": "/webhooks",
+        "localPath": "/",
+        "routerFile": "packages/api/src/routers/api/webhooks.ts",
+        "mounted": true
+      }
+    },
+    {
+      "id": "api_route:PATCH /dashboards/:id",
+      "kind": "api_route",
+      "key": "PATCH /dashboards/:id",
+      "file": "packages/api/src/routers/api/dashboards.ts",
+      "line": 195,
+      "detail": {
+        "method": "PATCH",
+        "path": "/dashboards/:id",
+        "localPath": "/:id",
+        "routerFile": "packages/api/src/routers/api/dashboards.ts",
+        "mounted": true
+      }
+    },
+    {
+      "id": "api_route:PATCH /me/accessKey",
+      "kind": "api_route",
+      "key": "PATCH /me/accessKey",
+      "file": "packages/api/src/routers/api/me.ts",
+      "line": 73,
+      "detail": {
+        "method": "PATCH",
+        "path": "/me/accessKey",
+        "localPath": "/accessKey",
+        "routerFile": "packages/api/src/routers/api/me.ts",
+        "mounted": true
+      }
+    },
+    {
+      "id": "api_route:PATCH /me/onboarding/dismiss",
+      "kind": "api_route",
+      "key": "PATCH /me/onboarding/dismiss",
+      "file": "packages/api/src/routers/api/me.ts",
+      "line": 115,
+      "detail": {
+        "method": "PATCH",
+        "path": "/me/onboarding/dismiss",
+        "localPath": "/onboarding/dismiss",
+        "routerFile": "packages/api/src/routers/api/me.ts",
+        "mounted": true
+      }
+    },
+    {
+      "id": "api_route:PATCH /saved-search/:id",
+      "kind": "api_route",
+      "key": "PATCH /saved-search/:id",
+      "file": "packages/api/src/routers/api/savedSearch.ts",
+      "line": 64,
+      "detail": {
+        "method": "PATCH",
+        "path": "/saved-search/:id",
+        "localPath": "/:id",
+        "routerFile": "packages/api/src/routers/api/savedSearch.ts",
+        "mounted": true
+      }
+    },
+    {
+      "id": "api_route:PATCH /team/api-keys/:id",
+      "kind": "api_route",
+      "key": "PATCH /team/api-keys/:id",
+      "file": "packages/api/src/routers/api/orgApiKeys.ts",
+      "line": 69,
+      "detail": {
+        "method": "PATCH",
+        "path": "/team/api-keys/:id",
+        "localPath": "/:id",
+        "routerFile": "packages/api/src/routers/api/orgApiKeys.ts",
+        "mounted": true
+      }
+    },
+    {
+      "id": "api_route:PATCH /team/apiKey",
+      "kind": "api_route",
+      "key": "PATCH /team/apiKey",
+      "file": "packages/api/src/routers/api/team.ts",
+      "line": 73,
+      "detail": {
+        "method": "PATCH",
+        "path": "/team/apiKey",
+        "localPath": "/apiKey",
+        "routerFile": "packages/api/src/routers/api/team.ts",
+        "mounted": true
+      }
+    },
+    {
+      "id": "api_route:PATCH /team/clickhouse-settings",
+      "kind": "api_route",
+      "key": "PATCH /team/clickhouse-settings",
+      "file": "packages/api/src/routers/api/team.ts",
+      "line": 111,
+      "detail": {
+        "method": "PATCH",
+        "path": "/team/clickhouse-settings",
+        "localPath": "/clickhouse-settings",
+        "routerFile": "packages/api/src/routers/api/team.ts",
+        "mounted": true
+      }
+    },
+    {
+      "id": "api_route:PATCH /team/name",
+      "kind": "api_route",
+      "key": "PATCH /team/name",
+      "file": "packages/api/src/routers/api/team.ts",
+      "line": 89,
+      "detail": {
+        "method": "PATCH",
+        "path": "/team/name",
+        "localPath": "/name",
+        "routerFile": "packages/api/src/routers/api/team.ts",
+        "mounted": true
+      }
+    },
+    {
+      "id": "api_route:POST /ai/assistant",
+      "kind": "api_route",
+      "key": "POST /ai/assistant",
+      "file": "packages/api/src/routers/api/ai.ts",
+      "line": 25,
+      "detail": {
+        "method": "POST",
+        "path": "/ai/assistant",
+        "localPath": "/assistant",
+        "routerFile": "packages/api/src/routers/api/ai.ts",
+        "mounted": true
+      }
+    },
+    {
+      "id": "api_route:POST /alerts",
+      "kind": "api_route",
+      "key": "POST /alerts",
+      "file": "packages/api/src/routers/api/alerts.ts",
+      "line": 342,
+      "detail": {
+        "method": "POST",
+        "path": "/alerts",
+        "localPath": "/",
+        "routerFile": "packages/api/src/routers/api/alerts.ts",
+        "mounted": true
+      }
+    },
+    {
+      "id": "api_route:POST /alerts/:id/silenced",
+      "kind": "api_route",
+      "key": "POST /alerts/:id/silenced",
+      "file": "packages/api/src/routers/api/alerts.ts",
+      "line": 397,
+      "detail": {
+        "method": "POST",
+        "path": "/alerts/:id/silenced",
+        "localPath": "/:id/silenced",
+        "routerFile": "packages/api/src/routers/api/alerts.ts",
+        "mounted": true
+      }
+    },
+    {
+      "id": "api_route:POST /api/v2/alerts",
+      "kind": "api_route",
+      "key": "POST /api/v2/alerts",
+      "file": "packages/api/src/routers/external-api/v2/alerts.ts",
+      "line": 793,
+      "detail": {
+        "method": "POST",
+        "path": "/api/v2/alerts",
+        "localPath": "/",
+        "routerFile": "packages/api/src/routers/external-api/v2/alerts.ts",
+        "mounted": true
+      }
+    },
+    {
+      "id": "api_route:POST /api/v2/charts/series",
+      "kind": "api_route",
+      "key": "POST /api/v2/charts/series",
+      "file": "packages/api/src/routers/external-api/v2/charts.ts",
+      "line": 528,
+      "detail": {
+        "method": "POST",
+        "path": "/api/v2/charts/series",
+        "localPath": "/series",
+        "routerFile": "packages/api/src/routers/external-api/v2/charts.ts",
+        "mounted": true
+      }
+    },
+    {
+      "id": "api_route:POST /api/v2/connections",
+      "kind": "api_route",
+      "key": "POST /api/v2/connections",
+      "file": "packages/api/src/routers/external-api/v2/connections.ts",
+      "line": 391,
+      "detail": {
+        "method": "POST",
+        "path": "/api/v2/connections",
+        "localPath": "/",
+        "routerFile": "packages/api/src/routers/external-api/v2/connections.ts",
+        "mounted": true
+      }
+    },
+    {
+      "id": "api_route:POST /api/v2/dashboards",
+      "kind": "api_route",
+      "key": "POST /api/v2/dashboards",
+      "file": "packages/api/src/routers/external-api/v2/dashboards.ts",
+      "line": 3351,
+      "detail": {
+        "method": "POST",
+        "path": "/api/v2/dashboards",
+        "localPath": "/",
+        "routerFile": "packages/api/src/routers/external-api/v2/dashboards.ts",
+        "mounted": true
+      }
+    },
+    {
+      "id": "api_route:POST /api/v2/dashboards/validate",
+      "kind": "api_route",
+      "key": "POST /api/v2/dashboards/validate",
+      "file": "packages/api/src/routers/external-api/v2/dashboards.ts",
+      "line": 3172,
+      "detail": {
+        "method": "POST",
+        "path": "/api/v2/dashboards/validate",
+        "localPath": "/validate",
+        "routerFile": "packages/api/src/routers/external-api/v2/dashboards.ts",
+        "mounted": true
+      }
+    },
+    {
+      "id": "api_route:POST /api/v2/saved-searches",
+      "kind": "api_route",
+      "key": "POST /api/v2/saved-searches",
+      "file": "packages/api/src/routers/external-api/v2/savedSearches.ts",
+      "line": 510,
+      "detail": {
+        "method": "POST",
+        "path": "/api/v2/saved-searches",
+        "localPath": "/",
+        "routerFile": "packages/api/src/routers/external-api/v2/savedSearches.ts",
+        "mounted": true
+      }
+    },
+    {
+      "id": "api_route:POST /api/v2/search",
+      "kind": "api_route",
+      "key": "POST /api/v2/search",
+      "file": "packages/api/src/routers/external-api/v2/search.ts",
+      "line": 370,
+      "detail": {
+        "method": "POST",
+        "path": "/api/v2/search",
+        "localPath": "/",
+        "routerFile": "packages/api/src/routers/external-api/v2/search.ts",
+        "mounted": true
+      }
+    },
+    {
+      "id": "api_route:POST /api/v2/sources",
+      "kind": "api_route",
+      "key": "POST /api/v2/sources",
+      "file": "packages/api/src/routers/external-api/v2/sources.ts",
+      "line": 1056,
+      "detail": {
+        "method": "POST",
+        "path": "/api/v2/sources",
+        "localPath": "/",
+        "routerFile": "packages/api/src/routers/external-api/v2/sources.ts",
+        "mounted": true
+      }
+    },
+    {
+      "id": "api_route:POST /api/v2/team/invitation",
+      "kind": "api_route",
+      "key": "POST /api/v2/team/invitation",
+      "file": "packages/api/src/routers/external-api/v2/team.ts",
+      "line": 104,
+      "detail": {
+        "method": "POST",
+        "path": "/api/v2/team/invitation",
+        "localPath": "/invitation",
+        "routerFile": "packages/api/src/routers/external-api/v2/team.ts",
+        "mounted": true
+      }
+    },
+    {
+      "id": "api_route:POST /api/v2/webhooks",
+      "kind": "api_route",
+      "key": "POST /api/v2/webhooks",
+      "file": "packages/api/src/routers/external-api/v2/webhooks.ts",
+      "line": 620,
+      "detail": {
+        "method": "POST",
+        "path": "/api/v2/webhooks",
+        "localPath": "/",
+        "routerFile": "packages/api/src/routers/external-api/v2/webhooks.ts",
+        "mounted": true
+      }
+    },
+    {
+      "id": "api_route:POST /api/v2/webhooks/validate",
+      "kind": "api_route",
+      "key": "POST /api/v2/webhooks/validate",
+      "file": "packages/api/src/routers/external-api/v2/webhooks.ts",
+      "line": 543,
+      "detail": {
+        "method": "POST",
+        "path": "/api/v2/webhooks/validate",
+        "localPath": "/validate",
+        "routerFile": "packages/api/src/routers/external-api/v2/webhooks.ts",
+        "mounted": true
+      }
+    },
+    {
+      "id": "api_route:POST /clickhouse-proxy/*",
+      "kind": "api_route",
+      "key": "POST /clickhouse-proxy/*",
+      "file": "packages/api/src/routers/api/clickhouseProxy.ts",
+      "line": 336,
+      "detail": {
+        "method": "POST",
+        "path": "/clickhouse-proxy/*",
+        "localPath": "/*",
+        "routerFile": "packages/api/src/routers/api/clickhouseProxy.ts",
+        "mounted": true
+      }
+    },
+    {
+      "id": "api_route:POST /clickhouse-proxy/test",
+      "kind": "api_route",
+      "key": "POST /clickhouse-proxy/test",
+      "file": "packages/api/src/routers/api/clickhouseProxy.ts",
+      "line": 86,
+      "detail": {
+        "method": "POST",
+        "path": "/clickhouse-proxy/test",
+        "localPath": "/test",
+        "routerFile": "packages/api/src/routers/api/clickhouseProxy.ts",
+        "mounted": true
+      }
+    },
+    {
+      "id": "api_route:POST /connections",
+      "kind": "api_route",
+      "key": "POST /connections",
+      "file": "packages/api/src/routers/api/connections.ts",
+      "line": 28,
+      "detail": {
+        "method": "POST",
+        "path": "/connections",
+        "localPath": "/",
+        "routerFile": "packages/api/src/routers/api/connections.ts",
+        "mounted": true
+      }
+    },
+    {
+      "id": "api_route:POST /dashboards",
+      "kind": "api_route",
+      "key": "POST /dashboards",
+      "file": "packages/api/src/routers/api/dashboards.ts",
+      "line": 163,
+      "detail": {
+        "method": "POST",
+        "path": "/dashboards",
+        "localPath": "/",
+        "routerFile": "packages/api/src/routers/api/dashboards.ts",
+        "mounted": true
+      }
+    },
+    {
+      "id": "api_route:POST /dashboards/preset/:presetDashboard/filter",
+      "kind": "api_route",
+      "key": "POST /dashboards/preset/:presetDashboard/filter",
+      "file": "packages/api/src/routers/api/dashboards.ts",
+      "line": 334,
+      "detail": {
+        "method": "POST",
+        "path": "/dashboards/preset/:presetDashboard/filter",
+        "localPath": "/preset/:presetDashboard/filter",
+        "routerFile": "packages/api/src/routers/api/dashboards.ts",
+        "mounted": true
+      }
+    },
+    {
+      "id": "api_route:POST /login/password",
+      "kind": "api_route",
+      "key": "POST /login/password",
+      "file": "packages/api/src/routers/api/root.ts",
+      "line": 71,
+      "detail": {
+        "method": "POST",
+        "path": "/login/password",
+        "localPath": "/login/password",
+        "routerFile": "packages/api/src/routers/api/root.ts",
+        "mounted": true
+      }
+    },
+    {
+      "id": "api_route:POST /me/onboarding/task",
+      "kind": "api_route",
+      "key": "POST /me/onboarding/task",
+      "file": "packages/api/src/routers/api/me.ts",
+      "line": 95,
+      "detail": {
+        "method": "POST",
+        "path": "/me/onboarding/task",
+        "localPath": "/onboarding/task",
+        "routerFile": "packages/api/src/routers/api/me.ts",
+        "mounted": true
+      }
+    },
+    {
+      "id": "api_route:POST /register/password",
+      "kind": "api_route",
+      "key": "POST /register/password",
+      "file": "packages/api/src/routers/api/root.ts",
+      "line": 81,
+      "detail": {
+        "method": "POST",
+        "path": "/register/password",
+        "localPath": "/register/password",
+        "routerFile": "packages/api/src/routers/api/root.ts",
+        "mounted": true
+      }
+    },
+    {
+      "id": "api_route:POST /saved-search",
+      "kind": "api_route",
+      "key": "POST /saved-search",
+      "file": "packages/api/src/routers/api/savedSearch.ts",
+      "line": 40,
+      "detail": {
+        "method": "POST",
+        "path": "/saved-search",
+        "localPath": "/",
+        "routerFile": "packages/api/src/routers/api/savedSearch.ts",
+        "mounted": true
+      }
+    },
+    {
+      "id": "api_route:POST /sources",
+      "kind": "api_route",
+      "key": "POST /sources",
+      "file": "packages/api/src/routers/api/sources.ts",
+      "line": 38,
+      "detail": {
+        "method": "POST",
+        "path": "/sources",
+        "localPath": "/",
+        "routerFile": "packages/api/src/routers/api/sources.ts",
+        "mounted": true
+      }
+    },
+    {
+      "id": "api_route:POST /team/api-keys",
+      "kind": "api_route",
+      "key": "POST /team/api-keys",
+      "file": "packages/api/src/routers/api/orgApiKeys.ts",
+      "line": 53,
+      "detail": {
+        "method": "POST",
+        "path": "/team/api-keys",
+        "localPath": "/",
+        "routerFile": "packages/api/src/routers/api/orgApiKeys.ts",
+        "mounted": true
+      }
+    },
+    {
+      "id": "api_route:POST /team/invitation",
+      "kind": "api_route",
+      "key": "POST /team/invitation",
+      "file": "packages/api/src/routers/api/team.ts",
+      "line": 140,
+      "detail": {
+        "method": "POST",
+        "path": "/team/invitation",
+        "localPath": "/invitation",
+        "routerFile": "packages/api/src/routers/api/team.ts",
+        "mounted": true
+      }
+    },
+    {
+      "id": "api_route:POST /team/setup/:token",
+      "kind": "api_route",
+      "key": "POST /team/setup/:token",
+      "file": "packages/api/src/routers/api/root.ts",
+      "line": 152,
+      "detail": {
+        "method": "POST",
+        "path": "/team/setup/:token",
+        "localPath": "/team/setup/:token",
+        "routerFile": "packages/api/src/routers/api/root.ts",
+        "mounted": true
+      }
+    },
+    {
+      "id": "api_route:POST /v1/prometheus/query",
+      "kind": "api_route",
+      "key": "POST /v1/prometheus/query",
+      "file": "packages/api/src/routers/api/prometheus.ts",
+      "line": 553,
+      "detail": {
+        "method": "POST",
+        "path": "/v1/prometheus/query",
+        "localPath": "/query",
+        "routerFile": "packages/api/src/routers/api/prometheus.ts",
+        "mounted": true
+      }
+    },
+    {
+      "id": "api_route:POST /v1/prometheus/query_exemplars",
+      "kind": "api_route",
+      "key": "POST /v1/prometheus/query_exemplars",
+      "file": "packages/api/src/routers/api/prometheus.ts",
+      "line": 688,
+      "detail": {
+        "method": "POST",
+        "path": "/v1/prometheus/query_exemplars",
+        "localPath": "/query_exemplars",
+        "routerFile": "packages/api/src/routers/api/prometheus.ts",
+        "mounted": true
+      }
+    },
+    {
+      "id": "api_route:POST /v1/prometheus/query_range",
+      "kind": "api_route",
+      "key": "POST /v1/prometheus/query_range",
+      "file": "packages/api/src/routers/api/prometheus.ts",
+      "line": 459,
+      "detail": {
+        "method": "POST",
+        "path": "/v1/prometheus/query_range",
+        "localPath": "/query_range",
+        "routerFile": "packages/api/src/routers/api/prometheus.ts",
+        "mounted": true
+      }
+    },
+    {
+      "id": "api_route:POST /webhooks",
+      "kind": "api_route",
+      "key": "POST /webhooks",
+      "file": "packages/api/src/routers/api/webhooks.ts",
+      "line": 164,
+      "detail": {
+        "method": "POST",
+        "path": "/webhooks",
+        "localPath": "/",
+        "routerFile": "packages/api/src/routers/api/webhooks.ts",
+        "mounted": true
+      }
+    },
+    {
+      "id": "api_route:POST /webhooks/test",
+      "kind": "api_route",
+      "key": "POST /webhooks/test",
+      "file": "packages/api/src/routers/api/webhooks.ts",
+      "line": 427,
+      "detail": {
+        "method": "POST",
+        "path": "/webhooks/test",
+        "localPath": "/test",
+        "routerFile": "packages/api/src/routers/api/webhooks.ts",
+        "mounted": true
+      }
+    },
+    {
+      "id": "api_route:PUT /alerts/:id",
+      "kind": "api_route",
+      "key": "PUT /alerts/:id",
+      "file": "packages/api/src/routers/api/alerts.ts",
+      "line": 363,
+      "detail": {
+        "method": "PUT",
+        "path": "/alerts/:id",
+        "localPath": "/:id",
+        "routerFile": "packages/api/src/routers/api/alerts.ts",
+        "mounted": true
+      }
+    },
+    {
+      "id": "api_route:PUT /api/v2/alerts/:id",
+      "kind": "api_route",
+      "key": "PUT /api/v2/alerts/:id",
+      "file": "packages/api/src/routers/external-api/v2/alerts.ts",
+      "line": 892,
+      "detail": {
+        "method": "PUT",
+        "path": "/api/v2/alerts/:id",
+        "localPath": "/:id",
+        "routerFile": "packages/api/src/routers/external-api/v2/alerts.ts",
+        "mounted": true
+      }
+    },
+    {
+      "id": "api_route:PUT /api/v2/connections/:id",
+      "kind": "api_route",
+      "key": "PUT /api/v2/connections/:id",
+      "file": "packages/api/src/routers/external-api/v2/connections.ts",
+      "line": 479,
+      "detail": {
+        "method": "PUT",
+        "path": "/api/v2/connections/:id",
+        "localPath": "/:id",
+        "routerFile": "packages/api/src/routers/external-api/v2/connections.ts",
+        "mounted": true
+      }
+    },
+    {
+      "id": "api_route:PUT /api/v2/dashboards/:id",
+      "kind": "api_route",
+      "key": "PUT /api/v2/dashboards/:id",
+      "file": "packages/api/src/routers/external-api/v2/dashboards.ts",
+      "line": 3560,
+      "detail": {
+        "method": "PUT",
+        "path": "/api/v2/dashboards/:id",
+        "localPath": "/:id",
+        "routerFile": "packages/api/src/routers/external-api/v2/dashboards.ts",
+        "mounted": true
+      }
+    },
+    {
+      "id": "api_route:PUT /api/v2/saved-searches/:id",
+      "kind": "api_route",
+      "key": "PUT /api/v2/saved-searches/:id",
+      "file": "packages/api/src/routers/external-api/v2/savedSearches.ts",
+      "line": 602,
+      "detail": {
+        "method": "PUT",
+        "path": "/api/v2/saved-searches/:id",
+        "localPath": "/:id",
+        "routerFile": "packages/api/src/routers/external-api/v2/savedSearches.ts",
+        "mounted": true
+      }
+    },
+    {
+      "id": "api_route:PUT /api/v2/sources/:id",
+      "kind": "api_route",
+      "key": "PUT /api/v2/sources/:id",
+      "file": "packages/api/src/routers/external-api/v2/sources.ts",
+      "line": 1159,
+      "detail": {
+        "method": "PUT",
+        "path": "/api/v2/sources/:id",
+        "localPath": "/:id",
+        "routerFile": "packages/api/src/routers/external-api/v2/sources.ts",
+        "mounted": true
+      }
+    },
+    {
+      "id": "api_route:PUT /api/v2/webhooks/:id",
+      "kind": "api_route",
+      "key": "PUT /api/v2/webhooks/:id",
+      "file": "packages/api/src/routers/external-api/v2/webhooks.ts",
+      "line": 736,
+      "detail": {
+        "method": "PUT",
+        "path": "/api/v2/webhooks/:id",
+        "localPath": "/:id",
+        "routerFile": "packages/api/src/routers/external-api/v2/webhooks.ts",
+        "mounted": true
+      }
+    },
+    {
+      "id": "api_route:PUT /connections/:id",
+      "kind": "api_route",
+      "key": "PUT /connections/:id",
+      "file": "packages/api/src/routers/api/connections.ts",
+      "line": 61,
+      "detail": {
+        "method": "PUT",
+        "path": "/connections/:id",
+        "localPath": "/:id",
+        "routerFile": "packages/api/src/routers/api/connections.ts",
+        "mounted": true
+      }
+    },
+    {
+      "id": "api_route:PUT /dashboards/preset/:presetDashboard/filter",
+      "kind": "api_route",
+      "key": "PUT /dashboards/preset/:presetDashboard/filter",
+      "file": "packages/api/src/routers/api/dashboards.ts",
+      "line": 297,
+      "detail": {
+        "method": "PUT",
+        "path": "/dashboards/preset/:presetDashboard/filter",
+        "localPath": "/preset/:presetDashboard/filter",
+        "routerFile": "packages/api/src/routers/api/dashboards.ts",
+        "mounted": true
+      }
+    },
+    {
+      "id": "api_route:PUT /favorites",
+      "kind": "api_route",
+      "key": "PUT /favorites",
+      "file": "packages/api/src/routers/api/favorites.ts",
+      "line": 29,
+      "detail": {
+        "method": "PUT",
+        "path": "/favorites",
+        "localPath": "/",
+        "routerFile": "packages/api/src/routers/api/favorites.ts",
+        "mounted": true
+      }
+    },
+    {
+      "id": "api_route:PUT /pinned-filters",
+      "kind": "api_route",
+      "key": "PUT /pinned-filters",
+      "file": "packages/api/src/routers/api/pinnedFilters.ts",
+      "line": 65,
+      "detail": {
+        "method": "PUT",
+        "path": "/pinned-filters",
+        "localPath": "/",
+        "routerFile": "packages/api/src/routers/api/pinnedFilters.ts",
+        "mounted": true
+      }
+    },
+    {
+      "id": "api_route:PUT /sources/:id",
+      "kind": "api_route",
+      "key": "PUT /sources/:id",
+      "file": "packages/api/src/routers/api/sources.ts",
+      "line": 69,
+      "detail": {
+        "method": "PUT",
+        "path": "/sources/:id",
+        "localPath": "/:id",
+        "routerFile": "packages/api/src/routers/api/sources.ts",
+        "mounted": true
+      }
+    },
+    {
+      "id": "api_route:PUT /webhooks/:id",
+      "kind": "api_route",
+      "key": "PUT /webhooks/:id",
+      "file": "packages/api/src/routers/api/webhooks.ts",
+      "line": 235,
+      "detail": {
+        "method": "PUT",
+        "path": "/webhooks/:id",
+        "localPath": "/:id",
+        "routerFile": "packages/api/src/routers/api/webhooks.ts",
+        "mounted": true
+      }
+    },
+    {
+      "id": "app_api_route:/api/[...all]",
+      "kind": "app_api_route",
+      "key": "/api/[...all]",
+      "file": "packages/app/pages/api/[...all].ts",
+      "line": null,
+      "detail": {
+        "route": "/api/[...all]"
+      }
+    },
+    {
+      "id": "app_api_route:/api/config",
+      "kind": "app_api_route",
+      "key": "/api/config",
+      "file": "packages/app/pages/api/config.ts",
+      "line": null,
+      "detail": {
+        "route": "/api/config"
+      }
+    },
+    {
+      "id": "app_page:/",
+      "kind": "app_page",
+      "key": "/",
+      "file": "packages/app/pages/index.tsx",
+      "line": null,
+      "detail": {
+        "route": "/"
+      }
+    },
+    {
+      "id": "app_page:/alerts",
+      "kind": "app_page",
+      "key": "/alerts",
+      "file": "packages/app/pages/alerts/index.tsx",
+      "line": null,
+      "detail": {
+        "route": "/alerts"
+      }
+    },
+    {
+      "id": "app_page:/alerts/[alertId]",
+      "kind": "app_page",
+      "key": "/alerts/[alertId]",
+      "file": "packages/app/pages/alerts/[alertId].tsx",
+      "line": null,
+      "detail": {
+        "route": "/alerts/[alertId]"
+      }
+    },
+    {
+      "id": "app_page:/benchmark",
+      "kind": "app_page",
+      "key": "/benchmark",
+      "file": "packages/app/pages/benchmark.tsx",
+      "line": null,
+      "detail": {
+        "route": "/benchmark"
+      }
+    },
+    {
+      "id": "app_page:/careers",
+      "kind": "app_page",
+      "key": "/careers",
+      "file": "packages/app/pages/careers.tsx",
+      "line": null,
+      "detail": {
+        "route": "/careers"
+      }
+    },
+    {
+      "id": "app_page:/chart",
+      "kind": "app_page",
+      "key": "/chart",
+      "file": "packages/app/pages/chart.tsx",
+      "line": null,
+      "detail": {
+        "route": "/chart"
+      }
+    },
+    {
+      "id": "app_page:/clickhouse",
+      "kind": "app_page",
+      "key": "/clickhouse",
+      "file": "packages/app/pages/clickhouse.tsx",
+      "line": null,
+      "detail": {
+        "route": "/clickhouse"
+      }
+    },
+    {
+      "id": "app_page:/dashboards",
+      "kind": "app_page",
+      "key": "/dashboards",
+      "file": "packages/app/pages/dashboards/index.tsx",
+      "line": null,
+      "detail": {
+        "route": "/dashboards"
+      }
+    },
+    {
+      "id": "app_page:/dashboards/[dashboardId]",
+      "kind": "app_page",
+      "key": "/dashboards/[dashboardId]",
+      "file": "packages/app/pages/dashboards/[dashboardId].tsx",
+      "line": null,
+      "detail": {
+        "route": "/dashboards/[dashboardId]"
+      }
+    },
+    {
+      "id": "app_page:/dashboards/import",
+      "kind": "app_page",
+      "key": "/dashboards/import",
+      "file": "packages/app/pages/dashboards/import.tsx",
+      "line": null,
+      "detail": {
+        "route": "/dashboards/import"
+      }
+    },
+    {
+      "id": "app_page:/dashboards/list",
+      "kind": "app_page",
+      "key": "/dashboards/list",
+      "file": "packages/app/pages/dashboards/list.tsx",
+      "line": null,
+      "detail": {
+        "route": "/dashboards/list"
+      }
+    },
+    {
+      "id": "app_page:/dashboards/templates",
+      "kind": "app_page",
+      "key": "/dashboards/templates",
+      "file": "packages/app/pages/dashboards/templates.tsx",
+      "line": null,
+      "detail": {
+        "route": "/dashboards/templates"
+      }
+    },
+    {
+      "id": "app_page:/join-team",
+      "kind": "app_page",
+      "key": "/join-team",
+      "file": "packages/app/pages/join-team.tsx",
+      "line": null,
+      "detail": {
+        "route": "/join-team"
+      }
+    },
+    {
+      "id": "app_page:/kubernetes",
+      "kind": "app_page",
+      "key": "/kubernetes",
+      "file": "packages/app/pages/kubernetes.tsx",
+      "line": null,
+      "detail": {
+        "route": "/kubernetes"
+      }
+    },
+    {
+      "id": "app_page:/llm",
+      "kind": "app_page",
+      "key": "/llm",
+      "file": "packages/app/pages/llm.tsx",
+      "line": null,
+      "detail": {
+        "route": "/llm"
+      }
+    },
+    {
+      "id": "app_page:/login",
+      "kind": "app_page",
+      "key": "/login",
+      "file": "packages/app/pages/login/index.tsx",
+      "line": null,
+      "detail": {
+        "route": "/login"
+      }
+    },
+    {
+      "id": "app_page:/register",
+      "kind": "app_page",
+      "key": "/register",
+      "file": "packages/app/pages/register.tsx",
+      "line": null,
+      "detail": {
+        "route": "/register"
+      }
+    },
+    {
+      "id": "app_page:/search",
+      "kind": "app_page",
+      "key": "/search",
+      "file": "packages/app/pages/search/index.tsx",
+      "line": null,
+      "detail": {
+        "route": "/search"
+      }
+    },
+    {
+      "id": "app_page:/search/[savedSearchId]",
+      "kind": "app_page",
+      "key": "/search/[savedSearchId]",
+      "file": "packages/app/pages/search/[savedSearchId].tsx",
+      "line": null,
+      "detail": {
+        "route": "/search/[savedSearchId]"
+      }
+    },
+    {
+      "id": "app_page:/search/list",
+      "kind": "app_page",
+      "key": "/search/list",
+      "file": "packages/app/pages/search/list.tsx",
+      "line": null,
+      "detail": {
+        "route": "/search/list"
+      }
+    },
+    {
+      "id": "app_page:/service-map",
+      "kind": "app_page",
+      "key": "/service-map",
+      "file": "packages/app/pages/service-map.tsx",
+      "line": null,
+      "detail": {
+        "route": "/service-map"
+      }
+    },
+    {
+      "id": "app_page:/services",
+      "kind": "app_page",
+      "key": "/services",
+      "file": "packages/app/pages/services.tsx",
+      "line": null,
+      "detail": {
+        "route": "/services"
+      }
+    },
+    {
+      "id": "app_page:/sessions",
+      "kind": "app_page",
+      "key": "/sessions",
+      "file": "packages/app/pages/sessions.tsx",
+      "line": null,
+      "detail": {
+        "route": "/sessions"
+      }
+    },
+    {
+      "id": "app_page:/team",
+      "kind": "app_page",
+      "key": "/team",
+      "file": "packages/app/pages/team/index.tsx",
+      "line": null,
+      "detail": {
+        "route": "/team"
+      }
+    },
+    {
+      "id": "app_page:/trace/[traceId]",
+      "kind": "app_page",
+      "key": "/trace/[traceId]",
+      "file": "packages/app/pages/trace/[traceId].tsx",
+      "line": null,
+      "detail": {
+        "route": "/trace/[traceId]"
+      }
+    },
+    {
+      "id": "cli_command:auth",
+      "kind": "cli_command",
+      "key": "auth",
+      "file": "packages/cli/src/cli.tsx",
+      "line": 428,
+      "detail": {
+        "name": "auth"
+      }
+    },
+    {
+      "id": "cli_command:auth login",
+      "kind": "cli_command",
+      "key": "auth login",
+      "file": "packages/cli/src/cli.tsx",
+      "line": 434,
+      "detail": {
+        "name": "login"
+      }
+    },
+    {
+      "id": "cli_command:auth logout",
+      "kind": "cli_command",
+      "key": "auth logout",
+      "file": "packages/cli/src/cli.tsx",
+      "line": 473,
+      "detail": {
+        "name": "logout"
+      }
+    },
+    {
+      "id": "cli_command:auth status",
+      "kind": "cli_command",
+      "key": "auth status",
+      "file": "packages/cli/src/cli.tsx",
+      "line": 481,
+      "detail": {
+        "name": "status"
+      }
+    },
+    {
+      "id": "cli_command:chart",
+      "kind": "cli_command",
+      "key": "chart",
+      "file": "packages/cli/src/cli.tsx",
+      "line": 1804,
+      "detail": {
+        "name": "chart"
+      }
+    },
+    {
+      "id": "cli_command:connections",
+      "kind": "cli_command",
+      "key": "connections",
+      "file": "packages/cli/src/cli.tsx",
+      "line": 955,
+      "detail": {
+        "name": "connections"
+      }
+    },
+    {
+      "id": "cli_command:dashboards",
+      "kind": "cli_command",
+      "key": "dashboards",
+      "file": "packages/cli/src/cli.tsx",
+      "line": 1251,
+      "detail": {
+        "name": "dashboards"
+      }
+    },
+    {
+      "id": "cli_command:dashboards create",
+      "kind": "cli_command",
+      "key": "dashboards create",
+      "file": "packages/cli/src/cli.tsx",
+      "line": 1390,
+      "detail": {
+        "name": "create"
+      }
+    },
+    {
+      "id": "cli_command:dashboards export",
+      "kind": "cli_command",
+      "key": "dashboards export",
+      "file": "packages/cli/src/cli.tsx",
+      "line": 1316,
+      "detail": {
+        "name": "export"
+      }
+    },
+    {
+      "id": "cli_command:dashboards import",
+      "kind": "cli_command",
+      "key": "dashboards import",
+      "file": "packages/cli/src/cli.tsx",
+      "line": 1558,
+      "detail": {
+        "name": "import"
+      }
+    },
+    {
+      "id": "cli_command:dashboards list",
+      "kind": "cli_command",
+      "key": "dashboards list",
+      "file": "packages/cli/src/cli.tsx",
+      "line": 1305,
+      "detail": {
+        "name": "list"
+      }
+    },
+    {
+      "id": "cli_command:mcp",
+      "kind": "cli_command",
+      "key": "mcp",
+      "file": "packages/cli/src/cli.tsx",
+      "line": 546,
+      "detail": {
+        "name": "mcp"
+      }
+    },
+    {
+      "id": "cli_command:mcp install",
+      "kind": "cli_command",
+      "key": "mcp install",
+      "file": "packages/cli/src/cli.tsx",
+      "line": 552,
+      "detail": {
+        "name": "install"
+      }
+    },
+    {
+      "id": "cli_command:query",
+      "kind": "cli_command",
+      "key": "query",
+      "file": "packages/cli/src/cli.tsx",
+      "line": 2221,
+      "detail": {
+        "name": "query"
+      }
+    },
+    {
+      "id": "cli_command:saved-searches",
+      "kind": "cli_command",
+      "key": "saved-searches",
+      "file": "packages/cli/src/cli.tsx",
+      "line": 1611,
+      "detail": {
+        "name": "saved-searches"
+      }
+    },
+    {
+      "id": "cli_command:saved-searches create",
+      "kind": "cli_command",
+      "key": "saved-searches create",
+      "file": "packages/cli/src/cli.tsx",
+      "line": 1688,
+      "detail": {
+        "name": "create"
+      }
+    },
+    {
+      "id": "cli_command:saved-searches list",
+      "kind": "cli_command",
+      "key": "saved-searches list",
+      "file": "packages/cli/src/cli.tsx",
+      "line": 1615,
+      "detail": {
+        "name": "list"
+      }
+    },
+    {
+      "id": "cli_command:sources",
+      "kind": "cli_command",
+      "key": "sources",
+      "file": "packages/cli/src/cli.tsx",
+      "line": 796,
+      "detail": {
+        "name": "sources"
+      }
+    },
+    {
+      "id": "cli_command:team",
+      "kind": "cli_command",
+      "key": "team",
+      "file": "packages/cli/src/cli.tsx",
+      "line": 608,
+      "detail": {
+        "name": "team"
+      }
+    },
+    {
+      "id": "cli_command:team current",
+      "kind": "cli_command",
+      "key": "team current",
+      "file": "packages/cli/src/cli.tsx",
+      "line": 696,
+      "detail": {
+        "name": "current"
+      }
+    },
+    {
+      "id": "cli_command:team list",
+      "kind": "cli_command",
+      "key": "team list",
+      "file": "packages/cli/src/cli.tsx",
+      "line": 616,
+      "detail": {
+        "name": "list"
+      }
+    },
+    {
+      "id": "cli_command:team use",
+      "kind": "cli_command",
+      "key": "team use",
+      "file": "packages/cli/src/cli.tsx",
+      "line": 735,
+      "detail": {
+        "name": "use"
+      }
+    },
+    {
+      "id": "cli_command:tui",
+      "kind": "cli_command",
+      "key": "tui",
+      "file": "packages/cli/src/cli.tsx",
+      "line": 394,
+      "detail": {
+        "name": "tui"
+      }
+    },
+    {
+      "id": "cli_command:upload-sourcemaps",
+      "kind": "cli_command",
+      "key": "upload-sourcemaps",
+      "file": "packages/cli/src/cli.tsx",
+      "line": 2432,
+      "detail": {
+        "name": "upload-sourcemaps"
+      }
+    },
+    {
+      "id": "ingestion:otel-collector",
+      "kind": "ingestion",
+      "key": "otel-collector",
+      "file": "packages/otel-collector/builder-config.yaml",
+      "line": null,
+      "detail": {
+        "dirs": [
+          "packages/otel-collector",
+          "docker/otel-collector"
+        ]
+      }
+    },
+    {
+      "id": "mcp_tool:clickstack_delete_dashboard",
+      "kind": "mcp_tool",
+      "key": "clickstack_delete_dashboard",
+      "file": "packages/api/src/mcp/tools/dashboards/deleteDashboard.ts",
+      "line": 17,
+      "detail": {
+        "toolName": "clickstack_delete_dashboard",
+        "dir": "dashboards"
+      }
+    },
+    {
+      "id": "mcp_tool:clickstack_delete_source",
+      "kind": "mcp_tool",
+      "key": "clickstack_delete_source",
+      "file": "packages/api/src/mcp/tools/sources/deleteSource.ts",
+      "line": 16,
+      "detail": {
+        "toolName": "clickstack_delete_source",
+        "dir": "sources"
+      }
+    },
+    {
+      "id": "mcp_tool:clickstack_delete_webhook",
+      "kind": "mcp_tool",
+      "key": "clickstack_delete_webhook",
+      "file": "packages/api/src/mcp/tools/alerts/deleteWebhook.ts",
+      "line": 16,
+      "detail": {
+        "toolName": "clickstack_delete_webhook",
+        "dir": "alerts"
+      }
+    },
+    {
+      "id": "mcp_tool:clickstack_describe_metric",
+      "kind": "mcp_tool",
+      "key": "clickstack_describe_metric",
+      "file": "packages/api/src/mcp/tools/sources/describeMetric.ts",
+      "line": 718,
+      "detail": {
+        "toolName": "clickstack_describe_metric",
+        "dir": "sources"
+      }
+    },
+    {
+      "id": "mcp_tool:clickstack_describe_source",
+      "kind": "mcp_tool",
+      "key": "clickstack_describe_source",
+      "file": "packages/api/src/mcp/tools/sources/describeSource.ts",
+      "line": 569,
+      "detail": {
+        "toolName": "clickstack_describe_source",
+        "dir": "sources"
+      }
+    },
+    {
+      "id": "mcp_tool:clickstack_describe_table",
+      "kind": "mcp_tool",
+      "key": "clickstack_describe_table",
+      "file": "packages/api/src/mcp/tools/sources/describeTable.ts",
+      "line": 304,
+      "detail": {
+        "toolName": "clickstack_describe_table",
+        "dir": "sources"
+      }
+    },
+    {
+      "id": "mcp_tool:clickstack_emerging_signals",
+      "kind": "mcp_tool",
+      "key": "clickstack_emerging_signals",
+      "file": "packages/api/src/mcp/tools/query/emergingSignals.ts",
+      "line": 144,
+      "detail": {
+        "toolName": "clickstack_emerging_signals",
+        "dir": "query"
+      }
+    },
+    {
+      "id": "mcp_tool:clickstack_event_deltas",
+      "kind": "mcp_tool",
+      "key": "clickstack_event_deltas",
+      "file": "packages/api/src/mcp/tools/query/eventDeltas.ts",
+      "line": 163,
+      "detail": {
+        "toolName": "clickstack_event_deltas",
+        "dir": "query"
+      }
+    },
+    {
+      "id": "mcp_tool:clickstack_event_patterns",
+      "kind": "mcp_tool",
+      "key": "clickstack_event_patterns",
+      "file": "packages/api/src/mcp/tools/query/eventPatterns.ts",
+      "line": 81,
+      "detail": {
+        "toolName": "clickstack_event_patterns",
+        "dir": "query"
+      }
+    },
+    {
+      "id": "mcp_tool:clickstack_get_alert",
+      "kind": "mcp_tool",
+      "key": "clickstack_get_alert",
+      "file": "packages/api/src/mcp/tools/alerts/getAlert.ts",
+      "line": 25,
+      "detail": {
+        "toolName": "clickstack_get_alert",
+        "dir": "alerts"
+      }
+    },
+    {
+      "id": "mcp_tool:clickstack_get_dashboard",
+      "kind": "mcp_tool",
+      "key": "clickstack_get_dashboard",
+      "file": "packages/api/src/mcp/tools/dashboards/getDashboard.ts",
+      "line": 22,
+      "detail": {
+        "toolName": "clickstack_get_dashboard",
+        "dir": "dashboards"
+      }
+    },
+    {
+      "id": "mcp_tool:clickstack_get_dashboard_tile",
+      "kind": "mcp_tool",
+      "key": "clickstack_get_dashboard_tile",
+      "file": "packages/api/src/mcp/tools/dashboards/getDashboardTile.ts",
+      "line": 17,
+      "detail": {
+        "toolName": "clickstack_get_dashboard_tile",
+        "dir": "dashboards"
+      }
+    },
+    {
+      "id": "mcp_tool:clickstack_get_saved_search",
+      "kind": "mcp_tool",
+      "key": "clickstack_get_saved_search",
+      "file": "packages/api/src/mcp/tools/savedSearches/getSavedSearch.ts",
+      "line": 17,
+      "detail": {
+        "toolName": "clickstack_get_saved_search",
+        "dir": "savedSearches"
+      }
+    },
+    {
+      "id": "mcp_tool:clickstack_get_webhook",
+      "kind": "mcp_tool",
+      "key": "clickstack_get_webhook",
+      "file": "packages/api/src/mcp/tools/alerts/getWebhook.ts",
+      "line": 13,
+      "detail": {
+        "toolName": "clickstack_get_webhook",
+        "dir": "alerts"
+      }
+    },
+    {
+      "id": "mcp_tool:clickstack_list_metrics",
+      "kind": "mcp_tool",
+      "key": "clickstack_list_metrics",
+      "file": "packages/api/src/mcp/tools/sources/listMetrics.ts",
+      "line": 51,
+      "detail": {
+        "toolName": "clickstack_list_metrics",
+        "dir": "sources"
+      }
+    },
+    {
+      "id": "mcp_tool:clickstack_list_sources",
+      "kind": "mcp_tool",
+      "key": "clickstack_list_sources",
+      "file": "packages/api/src/mcp/tools/sources/listSources.ts",
+      "line": 207,
+      "detail": {
+        "toolName": "clickstack_list_sources",
+        "dir": "sources"
+      }
+    },
+    {
+      "id": "mcp_tool:clickstack_patch_dashboard",
+      "kind": "mcp_tool",
+      "key": "clickstack_patch_dashboard",
+      "file": "packages/api/src/mcp/tools/dashboards/patchDashboard.ts",
+      "line": 38,
+      "detail": {
+        "toolName": "clickstack_patch_dashboard",
+        "dir": "dashboards"
+      }
+    },
+    {
+      "id": "mcp_tool:clickstack_promql",
+      "kind": "mcp_tool",
+      "key": "clickstack_promql",
+      "file": "packages/api/src/mcp/tools/query/promql.ts",
+      "line": 55,
+      "detail": {
+        "toolName": "clickstack_promql",
+        "dir": "query"
+      }
+    },
+    {
+      "id": "mcp_tool:clickstack_query_tile",
+      "kind": "mcp_tool",
+      "key": "clickstack_query_tile",
+      "file": "packages/api/src/mcp/tools/dashboards/queryTile.ts",
+      "line": 24,
+      "detail": {
+        "toolName": "clickstack_query_tile",
+        "dir": "dashboards"
+      }
+    },
+    {
+      "id": "mcp_tool:clickstack_query_tiles",
+      "kind": "mcp_tool",
+      "key": "clickstack_query_tiles",
+      "file": "packages/api/src/mcp/tools/dashboards/queryTiles.ts",
+      "line": 124,
+      "detail": {
+        "toolName": "clickstack_query_tiles",
+        "dir": "dashboards"
+      }
+    },
+    {
+      "id": "mcp_tool:clickstack_save_alert",
+      "kind": "mcp_tool",
+      "key": "clickstack_save_alert",
+      "file": "packages/api/src/mcp/tools/alerts/saveAlert.ts",
+      "line": 42,
+      "detail": {
+        "toolName": "clickstack_save_alert",
+        "dir": "alerts"
+      }
+    },
+    {
+      "id": "mcp_tool:clickstack_save_dashboard",
+      "kind": "mcp_tool",
+      "key": "clickstack_save_dashboard",
+      "file": "packages/api/src/mcp/tools/dashboards/saveDashboard.ts",
+      "line": 56,
+      "detail": {
+        "toolName": "clickstack_save_dashboard",
+        "dir": "dashboards"
+      }
+    },
+    {
+      "id": "mcp_tool:clickstack_save_saved_search",
+      "kind": "mcp_tool",
+      "key": "clickstack_save_saved_search",
+      "file": "packages/api/src/mcp/tools/savedSearches/saveSavedSearch.ts",
+      "line": 25,
+      "detail": {
+        "toolName": "clickstack_save_saved_search",
+        "dir": "savedSearches"
+      }
+    },
+    {
+      "id": "mcp_tool:clickstack_save_source",
+      "kind": "mcp_tool",
+      "key": "clickstack_save_source",
+      "file": "packages/api/src/mcp/tools/sources/saveSource.ts",
+      "line": 26,
+      "detail": {
+        "toolName": "clickstack_save_source",
+        "dir": "sources"
+      }
+    },
+    {
+      "id": "mcp_tool:clickstack_save_webhook",
+      "kind": "mcp_tool",
+      "key": "clickstack_save_webhook",
+      "file": "packages/api/src/mcp/tools/alerts/saveWebhook.ts",
+      "line": 105,
+      "detail": {
+        "toolName": "clickstack_save_webhook",
+        "dir": "alerts"
+      }
+    },
+    {
+      "id": "mcp_tool:clickstack_search",
+      "kind": "mcp_tool",
+      "key": "clickstack_search",
+      "file": "packages/api/src/mcp/tools/query/search.ts",
+      "line": 62,
+      "detail": {
+        "toolName": "clickstack_search",
+        "dir": "query"
+      }
+    },
+    {
+      "id": "mcp_tool:clickstack_search_dashboards",
+      "kind": "mcp_tool",
+      "key": "clickstack_search_dashboards",
+      "file": "packages/api/src/mcp/tools/dashboards/searchDashboards.ts",
+      "line": 21,
+      "detail": {
+        "toolName": "clickstack_search_dashboards",
+        "dir": "dashboards"
+      }
+    },
+    {
+      "id": "mcp_tool:clickstack_sql",
+      "kind": "mcp_tool",
+      "key": "clickstack_sql",
+      "file": "packages/api/src/mcp/tools/query/sql.ts",
+      "line": 97,
+      "detail": {
+        "toolName": "clickstack_sql",
+        "dir": "query"
+      }
+    },
+    {
+      "id": "mcp_tool:clickstack_table",
+      "kind": "mcp_tool",
+      "key": "clickstack_table",
+      "file": "packages/api/src/mcp/tools/query/table.ts",
+      "line": 261,
+      "detail": {
+        "toolName": "clickstack_table",
+        "dir": "query"
+      }
+    },
+    {
+      "id": "mcp_tool:clickstack_timeseries",
+      "kind": "mcp_tool",
+      "key": "clickstack_timeseries",
+      "file": "packages/api/src/mcp/tools/query/timeseries.ts",
+      "line": 77,
+      "detail": {
+        "toolName": "clickstack_timeseries",
+        "dir": "query"
+      }
+    },
+    {
+      "id": "mcp_tool:clickstack_trace_top_time_consuming_operations",
+      "kind": "mcp_tool",
+      "key": "clickstack_trace_top_time_consuming_operations",
+      "file": "packages/api/src/mcp/tools/trace/breakdown.ts",
+      "line": 64,
+      "detail": {
+        "toolName": "clickstack_trace_top_time_consuming_operations",
+        "dir": "trace"
+      }
+    },
+    {
+      "id": "mcp_tool:clickstack_trace_waterfall",
+      "kind": "mcp_tool",
+      "key": "clickstack_trace_waterfall",
+      "file": "packages/api/src/mcp/tools/trace/waterfall.ts",
+      "line": 310,
+      "detail": {
+        "toolName": "clickstack_trace_waterfall",
+        "dir": "trace"
+      }
+    },
+    {
+      "id": "task:check-alerts",
+      "kind": "task",
+      "key": "check-alerts",
+      "file": "packages/api/src/tasks/checkAlerts/index.ts",
+      "line": 24,
+      "detail": {
+        "enumMember": "CHECK_ALERTS",
+        "className": "CheckAlertTask"
+      }
+    },
+    {
+      "id": "task:ping-pong",
+      "kind": "task",
+      "key": "ping-pong",
+      "file": "packages/api/src/tasks/pingPongTask.ts",
+      "line": 26,
+      "detail": {
+        "enumMember": "PING_PONG",
+        "className": "PingPongTask"
+      }
+    },
+    {
+      "id": "task:provision-dashboards",
+      "kind": "task",
+      "key": "provision-dashboards",
+      "file": "packages/api/src/tasks/provisionDashboards/index.ts",
+      "line": 28,
+      "detail": {
+        "enumMember": "PROVISION_DASHBOARDS",
+        "className": "ProvisionDashboardsTask"
+      }
+    }
+  ]
+}

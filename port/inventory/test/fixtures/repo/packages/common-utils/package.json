@@ -1,0 +1,5 @@
+{
+  "name": "@hyperdx/common-utils",
+  "scripts": { "ci:unit": "jest", "ci:int": "jest --config jest.int.config.js" },
+  "dependencies": { "lodash": "^4.0.0" }
+}

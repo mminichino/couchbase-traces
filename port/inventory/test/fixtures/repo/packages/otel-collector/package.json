@@ -1,0 +1,5 @@
+{
+  "name": "@hyperdx/otel-collector",
+  "private": true,
+  "scripts": { "ci:unit": "go test ./..." }
+}

@@ -54,3 +54,584 @@ Generated: 2026-11-12T19:09:07Z. Status: pass.
 
 - W_GITIGNORE_MERGED: Merged local .gitignore patterns into upstream .gitignore
 <!-- phase1:end -->
+
+<!-- phase2:start -->
+## Phase 2: Inventory
+
+Inventory of commit adcb75c16715. Full detail is in `port/state/inventory/`.
+
+### Workspace map
+
+| Package | Directory | Role | Languages | Source files | Test files | CI targets |
+|---|---|---|---|---|---|---|
+| @hyperdx/api | packages/api | API server and tasks | javascript, typescript | 225 | 148 | ci:int, ci:lint, ci:unit |
+| @hyperdx/app | packages/app | web UI | javascript, typescript | 682 | 515 | ci:lint, ci:unit |
+| @hyperdx/cli | packages/cli | command-line client | javascript, typescript | 61 | 9 | ci:build, ci:lint, ci:unit |
+| @hyperdx/common-utils | packages/common-utils | shared query and data layer | javascript, typescript | 57 | 52 | ci:build, ci:int, ci:lint, ci:unit |
+| @hyperdx/hdx-eval | packages/hdx-eval | evaluation harness | javascript, typescript | 53 | 31 | ci:lint, ci:unit |
+| @hyperdx/otel-collector | packages/otel-collector | ingestion collector | go | 0 | 0 |  |
+
+### Entry points
+
+| Kind | Count |
+|---|---|
+| app_page | 25 |
+| app_api_route | 2 |
+| api_route | 117 |
+| mcp_tool | 32 |
+| task | 3 |
+| cli_command | 24 |
+| ingestion | 1 |
+
+### Data layer
+
+| Module | Reasons | Exports | Importers | Server-side |
+|---|---|---|---|---|
+| `packages/common-utils/src/types.ts` | seed, sql_builder | 364 | 689 | yes |
+| `packages/common-utils/src/core/metadata.ts` | seed, clickhouse_client, sql_builder | 24 | 132 | yes |
+| `packages/common-utils/src/clickhouse/index.ts` | seed, clickhouse_client, clickhouse_path, sql_builder | 46 | 121 | yes |
+| `packages/api/src/fixtures.ts` | sql_builder | 44 | 63 | yes |
+| `packages/common-utils/src/filters.ts` | sql_builder | 51 | 58 | yes |
+| `packages/common-utils/src/core/renderChartConfig.ts` | seed, sql_builder | 16 | 35 | yes |
+| `packages/common-utils/src/clickhouse/node.ts` | seed, clickhouse_client, clickhouse_path | 4 | 31 | yes |
+| `packages/app/src/components/DBRowSidePanel.tsx` | clickhouse_client | 8 | 28 | no |
+| `packages/cli/src/api/client.ts` | clickhouse_client | 9 | 28 | no |
+| `packages/app/src/hooks/useRowWhere.tsx` | sql_builder | 6 | 26 | no |
+| `packages/api/src/mcp/tools/query/helpers.ts` | clickhouse_client, sql_builder | 19 | 25 | yes |
+| `packages/api/src/clickhouse.ts` | clickhouse_path | 1 | 24 | yes |
+| `packages/app/src/clickhouse.ts` | clickhouse_path | 4 | 20 | no |
+| `packages/app/src/llm/lib/expressions.ts` | sql_builder | 8 | 19 | no |
+| `packages/common-utils/src/clickhouse/attribution.ts` | seed, clickhouse_path | 9 | 17 | yes |
+| `packages/common-utils/src/macros.ts` | sql_builder | 13 | 15 | yes |
+| `packages/app/src/components/MaterializedViews/MVOptimizationIndicator.tsx` | clickhouse_client | 1 | 14 | no |
+| `packages/app/src/components/TimePicker/TimePicker.tsx` | clickhouse_client, sql_builder | 1 | 14 | no |
+| `packages/app/src/components/DBHeatmapChart/heatmapQueries.ts` | sql_builder | 9 | 13 | no |
+| `packages/app/src/serviceDashboard.ts` | sql_builder | 5 | 11 | no |
+| `packages/api/src/mcp/tools/query/schemas.ts` | sql_builder | 14 | 10 | yes |
+| `packages/app/src/components/OnboardingModal.tsx` | sql_builder | 1 | 10 | no |
+| `packages/common-utils/src/clickhouse/browser.ts` | seed, clickhouse_client, clickhouse_path | 3 | 10 | no |
+| `packages/common-utils/src/core/materializedViews.ts` | sql_builder | 11 | 9 | yes |
+| `packages/common-utils/src/queryParser.ts` | seed, sql_builder | 18 | 9 | no |
+| `packages/hdx-eval/src/clickhouse/schema.ts` | clickhouse_client, clickhouse_path, sql_builder | 8 | 8 | no |
+| `packages/api/src/mcp/tools/dashboards/schemas.ts` | sql_builder | 13 | 7 | yes |
+| `packages/app/src/components/DBRowJsonViewer.tsx` | sql_builder | 3 | 7 | no |
+| `packages/app/src/DBSearchPage.tsx` | sql_builder | 7 | 6 | no |
+| `packages/app/src/components/ExceptionSubpanel.tsx` | clickhouse_client | 3 | 6 | no |
+| `packages/api/src/mcp/tools/query/serviceHealth/errorGroups.ts` | sql_builder | 6 | 5 | yes |
+| `packages/api/src/tasks/checkAlerts/errors.ts` | clickhouse_client | 8 | 5 | yes |
+| `packages/app/src/components/Iac/TerraformHelperPanel.tsx` | clickhouse_client, sql_builder | 2 | 5 | no |
+| `packages/app/src/hooks/useServiceMap.tsx` | sql_builder | 6 | 5 | no |
+| `packages/app/src/sessions.ts` | sql_builder | 7 | 5 | no |
+| `packages/common-utils/src/core/clickhouseVersion.ts` | clickhouse_path | 8 | 5 | yes |
+| `packages/api/src/controllers/timeseriesEngine.ts` | sql_builder | 10 | 4 | yes |
+| `packages/api/src/mcp/tools/query/runEventPatterns.ts` | sql_builder | 4 | 4 | yes |
+| `packages/app/src/KubernetesDashboardPage.tsx` | clickhouse_client, sql_builder | 3 | 4 | no |
+| `packages/app/src/components/AppNav/AppNav.components.tsx` | clickhouse_client | 5 | 4 | no |
+| `packages/app/src/components/ContactSupportText.tsx` | clickhouse_client | 1 | 4 | no |
+| `packages/app/src/components/KubeComponents.tsx` | clickhouse_client, sql_builder | 3 | 4 | no |
+| `packages/app/src/components/Sources/SourcesList.tsx` | clickhouse_client, sql_builder | 2 | 4 | no |
+| `packages/app/src/components/alerts/AlertStateBadge.tsx` | clickhouse_client | 1 | 4 | no |
+| `packages/app/src/components/infraCorrelations.ts` | sql_builder | 4 | 4 | no |
+| `packages/app/src/llm/lib/cost.ts` | sql_builder | 4 | 4 | no |
+| `packages/app/src/utils/browserTelemetry.ts` | clickhouse_client | 2 | 4 | no |
+| `packages/api/src/mcp/tools/query/sql.ts` | sql_builder | 1 | 3 | yes |
+| `packages/api/src/mcp/tools/query/table.ts` | sql_builder | 3 | 3 | yes |
+| `packages/api/src/mcp/tools/sources/metricNames.ts` | sql_builder | 3 | 3 | yes |
+| `packages/app/src/ServicesDashboardPage/HttpTab.tsx` | sql_builder | 2 | 3 | no |
+| `packages/app/src/components/AppNav/AppNav.tsx` | clickhouse_client | 1 | 3 | no |
+| `packages/app/src/components/AppNav/InstanceLabel.tsx` | clickhouse_client | 1 | 3 | no |
+| `packages/app/src/components/AppNav/WhatsNewHighlightRow.tsx` | clickhouse_client | 1 | 3 | no |
+| `packages/app/src/components/ChartDisplaySettingsDrawer.tsx` | clickhouse_client, sql_builder | 2 | 3 | no |
+| `packages/app/src/components/DBEditTimeChartForm/TileAlertEditor.tsx` | clickhouse_client | 1 | 3 | no |
+| `packages/app/src/components/SearchTotalCountChart.tsx` | sql_builder | 2 | 3 | no |
+| `packages/app/src/components/TeamSettings/IacMigrationSection.tsx` | clickhouse_client, sql_builder | 3 | 3 | no |
+| `packages/app/src/hooks/useMetricCatalog.ts` | sql_builder | 2 | 3 | no |
+| `packages/app/src/llm/dashboard/LLMSessionPanel.tsx` | clickhouse_client | 2 | 3 | no |
+| `packages/hdx-eval/src/scenarios/metric-saturation/generate.ts` | sql_builder | 1 | 3 | no |
+| `packages/api/src/mcp/prompts/dashboards/content.ts` | sql_builder | 4 | 2 | yes |
+| `packages/api/src/mcp/tools/sources/describeTableQueries.ts` | clickhouse_client, sql_builder | 10 | 2 | yes |
+| `packages/api/src/mcp/tools/sources/listMetricsQueries.ts` | sql_builder | 2 | 2 | yes |
+| `packages/api/src/mcp/tools/sources/schemas.ts` | sql_builder | 4 | 2 | yes |
+| `packages/api/src/server.ts` | clickhouse_client | 1 | 2 | yes |
+| `packages/app/src/ThemeWrapper.tsx` | clickhouse_client | 1 | 2 | no |
+| `packages/app/src/UserPreferencesModal.tsx` | clickhouse_client | 1 | 2 | no |
+| `packages/app/src/components/AppNav/WhatsNewDrawer.tsx` | clickhouse_client | 2 | 2 | no |
+| `packages/app/src/components/ChartEditor/constants.tsx` | sql_builder | 2 | 2 | no |
+| `packages/app/src/components/DBEditTimeChartForm/ChartSeriesEditor.tsx` | clickhouse_client | 1 | 2 | no |
+| `packages/app/src/components/ListingCard.tsx` | clickhouse_client | 1 | 2 | no |
+| `packages/app/src/components/ListingListRow.tsx` | clickhouse_client | 1 | 2 | no |
+| `packages/app/src/components/MetricAttributeHelperPanel.tsx` | clickhouse_client | 6 | 2 | no |
+| `packages/app/src/components/NetworkPropertyPanel.tsx` | clickhouse_client | 1 | 2 | no |
+| `packages/app/src/components/RequestLine.tsx` | clickhouse_client | 4 | 2 | no |
+| `packages/app/src/components/SQLEditor/constants.ts` | sql_builder | 4 | 2 | no |
+| `packages/app/src/components/SeriesNumberFormatDrawer.tsx` | clickhouse_client | 1 | 2 | no |
+| `packages/app/src/components/ServiceMap/ServiceMapTooltip.tsx` | clickhouse_client, sql_builder | 1 | 2 | no |
+| `packages/app/src/components/Sources/SourceForm/MaterializedViews.tsx` | clickhouse_client | 2 | 2 | no |
+| `packages/app/src/components/TeamSettings/ApiKeysSection.tsx` | clickhouse_client | 1 | 2 | no |
+| `packages/app/src/components/TeamSettings/McpServerSection.tsx` | clickhouse_client | 1 | 2 | no |
+| `packages/app/src/components/TeamSettings/OrgApiKeysSection.tsx` | clickhouse_client | 1 | 2 | no |
+| `packages/app/src/components/alerts/AlertDetailProperties.tsx` | clickhouse_client | 1 | 2 | no |
+| `packages/app/src/components/alerts/AlertDetails.tsx` | clickhouse_client | 2 | 2 | no |
+| `packages/app/src/hdxDebug.ts` | clickhouse_client | 3 | 2 | no |
+| `packages/app/src/hooks/useFetchMetricAttributeValues.tsx` | sql_builder | 1 | 2 | no |
+| `packages/app/src/llm/components/ChatMessageItem.tsx` | clickhouse_client | 1 | 2 | no |
+| `packages/app/src/llm/components/LLMSpanSubpanel.tsx` | clickhouse_client | 1 | 2 | no |
+| `packages/app/src/utils/nextServerTelemetry.ts` | clickhouse_client | 3 | 2 | no |
+| `packages/cli/src/shared/useRowWhere.ts` | sql_builder | 3 | 2 | no |
+| `packages/hdx-eval/src/clickhouse/client.ts` | clickhouse_client, clickhouse_path | 3 | 2 | no |
+| `packages/hdx-eval/src/clickhouse/insert.ts` | clickhouse_client, clickhouse_path | 8 | 2 | no |
+| `packages/hdx-eval/src/scenarios/latency-spike/generate.ts` | sql_builder | 1 | 2 | no |
+| `packages/api/src/mcp/tools/query/eventPatterns.ts` | sql_builder | 1 | 1 | yes |
+| `packages/api/src/mcp/tools/sources/describeMetric.ts` | sql_builder | 1 | 1 | yes |
+| `packages/api/src/mcp/tools/trace/waterfall.ts` | sql_builder | 1 | 1 | yes |
+| `packages/api/src/routers/api/clickhouseProxy.ts` | seed, clickhouse_path | 1 | 1 | yes |
+| `packages/app/src/ClickhousePage.tsx` | clickhouse_path | 1 | 1 | no |
+| `packages/app/src/DBChartPage.tsx` | clickhouse_client | 1 | 1 | no |
+
+Plus 40 more in datalayer.json.
+
+### Server-side data-store callers
+
+- `packages/api/scripts/seed-alerts.ts`: `packages/common-utils/src/types.ts`
+- `packages/api/src/api-app.ts`: `packages/api/src/routers/api/clickhouseProxy.ts`
+- `packages/api/src/clickhouse.ts`: `packages/common-utils/src/clickhouse/index.ts`, `packages/common-utils/src/clickhouse/node.ts`
+- `packages/api/src/controllers/ai.ts`: `packages/api/src/clickhouse.ts`, `packages/common-utils/src/core/metadata.ts`, `packages/common-utils/src/types.ts`
+- `packages/api/src/controllers/alertHistory.ts`: `packages/common-utils/src/types.ts`
+- `packages/api/src/controllers/alerts.ts`: `packages/common-utils/src/types.ts`
+- `packages/api/src/controllers/alertsPage.ts`: `packages/common-utils/src/types.ts`
+- `packages/api/src/controllers/dashboard.ts`: `packages/common-utils/src/types.ts`
+- `packages/api/src/controllers/orgApiKey.ts`: `packages/common-utils/src/types.ts`
+- `packages/api/src/controllers/pinnedFilter.ts`: `packages/common-utils/src/types.ts`
+- `packages/api/src/controllers/presetDashboardFilters.ts`: `packages/common-utils/src/types.ts`
+- `packages/api/src/controllers/promql.ts`: `packages/api/src/clickhouse.ts`, `packages/api/src/controllers/timeseriesEngine.ts`, `packages/common-utils/src/clickhouse/attribution.ts`, `packages/common-utils/src/clickhouse/index.ts`, `packages/common-utils/src/clickhouse/node.ts`, `packages/common-utils/src/types.ts`
+- `packages/api/src/controllers/savedSearch.ts`: `packages/common-utils/src/types.ts`
+- `packages/api/src/controllers/sources.ts`: `packages/common-utils/src/types.ts`
+- `packages/api/src/controllers/team.ts`: `packages/common-utils/src/types.ts`
+- `packages/api/src/controllers/timeseriesEngine.ts`: `packages/api/src/clickhouse.ts`, `packages/common-utils/src/clickhouse/index.ts`, `packages/common-utils/src/core/clickhouseVersion.ts`, `packages/common-utils/src/core/metadata.ts`, `packages/common-utils/src/types.ts`
+- `packages/api/src/controllers/user.ts`: `packages/common-utils/src/types.ts`
+- `packages/api/src/controllers/webhook.ts`: `packages/common-utils/src/types.ts`
+- `packages/api/src/fixtures.ts`: `packages/api/src/server.ts`, `packages/common-utils/src/clickhouse/node.ts`, `packages/common-utils/src/types.ts`
+- `packages/api/src/index.ts`: `packages/api/src/server.ts`
+- `packages/api/src/mcp/prompts/dashboards/index.ts`: `packages/api/src/mcp/prompts/dashboards/content.ts`
+- `packages/api/src/mcp/tools/alerts/getAlert.ts`: `packages/common-utils/src/types.ts`
+- `packages/api/src/mcp/tools/alerts/saveAlert.ts`: `packages/common-utils/src/types.ts`
+- `packages/api/src/mcp/tools/alerts/saveWebhook.ts`: `packages/common-utils/src/types.ts`
+- `packages/api/src/mcp/tools/alerts/schemas.ts`: `packages/api/src/mcp/tools/dashboards/schemas.ts`, `packages/common-utils/src/types.ts`
+- `packages/api/src/mcp/tools/dashboards/index.ts`: `packages/api/src/mcp/tools/dashboards/schemas.ts`
+- `packages/api/src/mcp/tools/dashboards/patchDashboard.ts`: `packages/api/src/mcp/tools/dashboards/schemas.ts`
+- `packages/api/src/mcp/tools/dashboards/queryTile.ts`: `packages/api/src/mcp/tools/query/helpers.ts`
+- `packages/api/src/mcp/tools/dashboards/queryTiles.ts`: `packages/api/src/mcp/tools/query/helpers.ts`
+- `packages/api/src/mcp/tools/dashboards/saveDashboard.ts`: `packages/api/src/mcp/tools/dashboards/schemas.ts`, `packages/common-utils/src/filters.ts`, `packages/common-utils/src/types.ts`
+- `packages/api/src/mcp/tools/dashboards/schemas.ts`: `packages/api/src/mcp/tools/query/schemas.ts`, `packages/common-utils/src/types.ts`
+- `packages/api/src/mcp/tools/dashboards/searchDashboards.ts`: `packages/api/src/mcp/tools/dashboards/schemas.ts`
+- `packages/api/src/mcp/tools/dashboards/validation.ts`: `packages/api/src/mcp/tools/dashboards/schemas.ts`, `packages/common-utils/src/filters.ts`, `packages/common-utils/src/macros.ts`, `packages/common-utils/src/types.ts`
+- `packages/api/src/mcp/tools/dashboards/variables.ts`: `packages/common-utils/src/filters.ts`, `packages/common-utils/src/types.ts`
+- `packages/api/src/mcp/tools/query/denoise.ts`: `packages/api/src/clickhouse.ts`, `packages/api/src/mcp/tools/query/helpers.ts`, `packages/common-utils/src/core/metadata.ts`, `packages/common-utils/src/types.ts`
+- `packages/api/src/mcp/tools/query/emergingSignals.ts`: `packages/api/src/mcp/tools/query/helpers.ts`, `packages/api/src/mcp/tools/query/runEventPatterns.ts`, `packages/api/src/mcp/tools/query/schemas.ts`
+- `packages/api/src/mcp/tools/query/eventDeltas.ts`: `packages/api/src/clickhouse.ts`, `packages/api/src/mcp/tools/query/helpers.ts`, `packages/common-utils/src/core/metadata.ts`, `packages/common-utils/src/core/renderChartConfig.ts`, `packages/common-utils/src/types.ts`
+- `packages/api/src/mcp/tools/query/eventPatterns.ts`: `packages/api/src/mcp/tools/query/helpers.ts`, `packages/api/src/mcp/tools/query/runEventPatterns.ts`, `packages/api/src/mcp/tools/query/schemas.ts`
+- `packages/api/src/mcp/tools/query/helpers.ts`: `packages/api/src/clickhouse.ts`, `packages/api/src/mcp/tools/query/runEventPatterns.ts`, `packages/api/src/tasks/checkAlerts/errors.ts`, `packages/common-utils/src/core/metadata.ts`, `packages/common-utils/src/types.ts`
+- `packages/api/src/mcp/tools/query/index.ts`: `packages/api/src/mcp/tools/query/eventPatterns.ts`, `packages/api/src/mcp/tools/query/sql.ts`, `packages/api/src/mcp/tools/query/table.ts`
+- `packages/api/src/mcp/tools/query/patternDrilldown.ts`: `packages/common-utils/src/core/metadata.ts`, `packages/common-utils/src/core/renderChartConfig.ts`, `packages/common-utils/src/types.ts`
+- `packages/api/src/mcp/tools/query/prepareSql.ts`: `packages/api/src/mcp/tools/query/helpers.ts`, `packages/common-utils/src/macros.ts`
+- `packages/api/src/mcp/tools/query/promql.ts`: `packages/api/src/mcp/tools/query/helpers.ts`, `packages/api/src/mcp/tools/query/schemas.ts`, `packages/common-utils/src/types.ts`
+- `packages/api/src/mcp/tools/query/promqlTile.ts`: `packages/common-utils/src/types.ts`
+- `packages/api/src/mcp/tools/query/runEventPatterns.ts`: `packages/api/src/clickhouse.ts`, `packages/api/src/mcp/tools/query/helpers.ts`, `packages/common-utils/src/core/metadata.ts`, `packages/common-utils/src/types.ts`
+- `packages/api/src/mcp/tools/query/search.ts`: `packages/api/src/mcp/tools/query/helpers.ts`, `packages/api/src/mcp/tools/query/schemas.ts`
+- `packages/api/src/mcp/tools/query/serviceHealth/collect.ts`: `packages/api/src/mcp/tools/query/serviceHealth/errorGroups.ts`
+- `packages/api/src/mcp/tools/query/serviceHealth/index.ts`: `packages/api/src/mcp/tools/query/helpers.ts`, `packages/api/src/mcp/tools/query/serviceHealth/errorGroups.ts`, `packages/common-utils/src/core/metadata.ts`
+- `packages/api/src/mcp/tools/query/serviceHealth/queries.ts`: `packages/api/src/clickhouse.ts`, `packages/common-utils/src/core/metadata.ts`, `packages/common-utils/src/types.ts`
+- `packages/api/src/mcp/tools/query/serviceHealth/report.ts`: `packages/api/src/mcp/tools/query/serviceHealth/errorGroups.ts`
+- `packages/api/src/mcp/tools/query/serviceHealth/schema.ts`: `packages/api/src/mcp/tools/query/schemas.ts`
+- `packages/api/src/mcp/tools/query/serviceHealth/source.ts`: `packages/common-utils/src/types.ts`
+- `packages/api/src/mcp/tools/query/serviceHealth/summary.ts`: `packages/api/src/mcp/tools/query/serviceHealth/errorGroups.ts`
+- `packages/api/src/mcp/tools/query/sql.ts`: `packages/api/src/mcp/tools/query/helpers.ts`, `packages/api/src/mcp/tools/query/schemas.ts`
+- `packages/api/src/mcp/tools/query/sqlBatch.ts`: `packages/api/src/mcp/tools/query/helpers.ts`
+- `packages/api/src/mcp/tools/query/table.ts`: `packages/api/src/mcp/tools/query/helpers.ts`, `packages/api/src/mcp/tools/query/schemas.ts`
+- `packages/api/src/mcp/tools/query/timeseries.ts`: `packages/api/src/mcp/tools/query/helpers.ts`, `packages/api/src/mcp/tools/query/schemas.ts`, `packages/api/src/mcp/tools/query/table.ts`, `packages/common-utils/src/core/renderChartConfig.ts`
+- `packages/api/src/mcp/tools/savedSearches/schemas.ts`: `packages/common-utils/src/types.ts`
+- `packages/api/src/mcp/tools/sources/describeMetric.ts`: `packages/api/src/clickhouse.ts`, `packages/api/src/mcp/tools/query/helpers.ts`, `packages/common-utils/src/clickhouse/index.ts`, `packages/common-utils/src/core/metadata.ts`, `packages/common-utils/src/types.ts`
+- `packages/api/src/mcp/tools/sources/describePromqlSource.ts`: `packages/common-utils/src/core/metadata.ts`
+- `packages/api/src/mcp/tools/sources/describeSource.ts`: `packages/api/src/clickhouse.ts`, `packages/api/src/mcp/tools/sources/metricNames.ts`, `packages/api/src/mcp/tools/sources/schemas.ts`, `packages/common-utils/src/clickhouse/index.ts`, `packages/common-utils/src/core/metadata.ts`, `packages/common-utils/src/types.ts`
+- `packages/api/src/mcp/tools/sources/describeTable.ts`: `packages/api/src/clickhouse.ts`, `packages/api/src/mcp/tools/query/helpers.ts`, `packages/api/src/mcp/tools/sources/describeTableQueries.ts`, `packages/common-utils/src/core/metadata.ts`, `packages/common-utils/src/types.ts`
+- `packages/api/src/mcp/tools/sources/describeTableQueries.ts`: `packages/api/src/clickhouse.ts`, `packages/api/src/mcp/tools/query/helpers.ts`, `packages/common-utils/src/clickhouse/index.ts`, `packages/common-utils/src/core/metadata.ts`
+- `packages/api/src/mcp/tools/sources/index.ts`: `packages/api/src/mcp/tools/sources/describeMetric.ts`
+- `packages/api/src/mcp/tools/sources/listMetrics.ts`: `packages/api/src/clickhouse.ts`, `packages/api/src/mcp/tools/query/helpers.ts`, `packages/api/src/mcp/tools/sources/listMetricsQueries.ts`, `packages/common-utils/src/core/metadata.ts`, `packages/common-utils/src/types.ts`
+- `packages/api/src/mcp/tools/sources/listMetricsQueries.ts`: `packages/api/src/clickhouse.ts`, `packages/common-utils/src/clickhouse/index.ts`, `packages/common-utils/src/core/metadata.ts`
+- `packages/api/src/mcp/tools/sources/listSources.ts`: `packages/api/src/mcp/tools/sources/metricNames.ts`, `packages/common-utils/src/clickhouse/index.ts`, `packages/common-utils/src/clickhouse/node.ts`, `packages/common-utils/src/core/metadata.ts`, `packages/common-utils/src/types.ts`
+- `packages/api/src/mcp/tools/sources/metricKinds.ts`: `packages/common-utils/src/types.ts`
+- `packages/api/src/mcp/tools/sources/metricNames.ts`: `packages/common-utils/src/clickhouse/index.ts`, `packages/common-utils/src/clickhouse/node.ts`, `packages/common-utils/src/core/metadata.ts`
+- `packages/api/src/mcp/tools/sources/saveSource.ts`: `packages/api/src/mcp/tools/sources/schemas.ts`, `packages/common-utils/src/types.ts`
+- `packages/api/src/mcp/tools/sources/schemas.ts`: `packages/common-utils/src/types.ts`
+- `packages/api/src/mcp/tools/trace/breakdown.ts`: `packages/api/src/mcp/tools/query/helpers.ts`, `packages/common-utils/src/clickhouse/index.ts`, `packages/common-utils/src/core/metadata.ts`, `packages/common-utils/src/types.ts`
+- `packages/api/src/mcp/tools/trace/index.ts`: `packages/api/src/mcp/tools/trace/waterfall.ts`
+- `packages/api/src/mcp/tools/trace/shared.ts`: `packages/api/src/clickhouse.ts`, `packages/api/src/mcp/tools/query/helpers.ts`, `packages/common-utils/src/clickhouse/index.ts`, `packages/common-utils/src/core/metadata.ts`, `packages/common-utils/src/core/renderChartConfig.ts`, `packages/common-utils/src/types.ts`
+- `packages/api/src/mcp/tools/trace/waterfall.ts`: `packages/api/src/clickhouse.ts`, `packages/api/src/mcp/tools/query/helpers.ts`, `packages/common-utils/src/clickhouse/index.ts`, `packages/common-utils/src/core/metadata.ts`, `packages/common-utils/src/types.ts`
+- `packages/api/src/mcp/utils/promql.ts`: `packages/common-utils/src/types.ts`
+- `packages/api/src/mcp/utils/tracing.ts`: `packages/common-utils/src/clickhouse/node.ts`
+- `packages/api/src/middleware/auth.ts`: `packages/common-utils/src/clickhouse/node.ts`, `packages/common-utils/src/types.ts`
+- `packages/api/src/models/alert.ts`: `packages/common-utils/src/types.ts`
+- `packages/api/src/models/alertHistory.ts`: `packages/common-utils/src/types.ts`
+- `packages/api/src/models/dashboard.ts`: `packages/common-utils/src/types.ts`
+- `packages/api/src/models/pinnedFilter.ts`: `packages/common-utils/src/types.ts`
+- `packages/api/src/models/presetDashboardFilter.ts`: `packages/common-utils/src/types.ts`
+- `packages/api/src/models/savedSearch.ts`: `packages/common-utils/src/types.ts`
+- `packages/api/src/models/source.ts`: `packages/common-utils/src/types.ts`
+- `packages/api/src/models/team.ts`: `packages/common-utils/src/types.ts`
+- `packages/api/src/models/user.ts`: `packages/common-utils/src/types.ts`
+- `packages/api/src/models/webhook.ts`: `packages/common-utils/src/types.ts`
+- `packages/api/src/routers/api/ai.ts`: `packages/common-utils/src/types.ts`
+- `packages/api/src/routers/api/alerts.ts`: `packages/common-utils/src/types.ts`
+- `packages/api/src/routers/api/connections.ts`: `packages/common-utils/src/types.ts`
+- `packages/api/src/routers/api/dashboards.ts`: `packages/common-utils/src/filters.ts`, `packages/common-utils/src/types.ts`
+- `packages/api/src/routers/api/iac.ts`: `packages/common-utils/src/types.ts`
+- `packages/api/src/routers/api/me.ts`: `packages/common-utils/src/types.ts`
+- `packages/api/src/routers/api/orgApiKeys.ts`: `packages/common-utils/src/types.ts`
+- `packages/api/src/routers/api/pinnedFilters.ts`: `packages/common-utils/src/types.ts`
+- `packages/api/src/routers/api/prometheus.ts`: `packages/api/src/controllers/timeseriesEngine.ts`, `packages/common-utils/src/clickhouse/attribution.ts`, `packages/common-utils/src/clickhouse/index.ts`, `packages/common-utils/src/clickhouse/node.ts`
+- `packages/api/src/routers/api/root.ts`: `packages/common-utils/src/types.ts`
+- `packages/api/src/routers/api/savedSearch.ts`: `packages/common-utils/src/types.ts`
+- `packages/api/src/routers/api/sources.ts`: `packages/common-utils/src/types.ts`
+
+Plus 26 more in datalayer.json.
+
+### UI code with raw SQL or ClickHouse type names
+
+| File | SQL literals | Type names |
+|---|---|---|
+| `packages/app/src/components/Sources/SourceForm/TraceTableModelForm.tsx` | 12 | 16 |
+| `packages/app/src/KubernetesDashboardPage.tsx` | 26 | 0 |
+| `packages/app/src/components/ChartEditor/constants.tsx` | 4 | 9 |
+| `packages/app/src/ServicesDashboardPage/HttpTab.tsx` | 11 | 0 |
+| `packages/app/src/components/KubeComponents.tsx` | 11 | 0 |
+| `packages/app/src/components/AppNav/KeyboardShortcutsModal.tsx` | 9 | 0 |
+| `packages/app/src/llm/lib/expressions.ts` | 9 | 0 |
+| `packages/app/src/utils/sourceFieldSuggestions.tsx` | 0 | 9 |
+| `packages/app/src/ServicesDashboardPage/DatabaseTab.tsx` | 8 | 0 |
+| `packages/app/src/components/SearchInput/SyntaxReferenceModal.tsx` | 5 | 2 |
+| `packages/app/src/hooks/useRowWhere.tsx` | 6 | 1 |
+| `packages/app/src/hooks/useServiceMap.tsx` | 6 | 1 |
+| `packages/app/src/sessions.ts` | 6 | 1 |
+| `packages/app/src/components/SQLEditor/constants.ts` | 6 | 0 |
+| `packages/app/src/components/ServiceMap/ServiceMapTooltip.tsx` | 6 | 0 |
+| `packages/app/src/hdxMTViews.ts` | 2 | 4 |
+| `packages/app/src/hooks/__fixtures__/browserTraceEvents.ts` | 0 | 6 |
+| `packages/app/src/hooks/useMetricCatalog.ts` | 4 | 2 |
+| `packages/app/src/components/ChartDisplaySettingsDrawer.tsx` | 5 | 0 |
+| `packages/app/src/components/TimePicker/TimePicker.tsx` | 5 | 0 |
+| `packages/app/src/hooks/useFetchMetricAttributeValues.tsx` | 3 | 2 |
+| `packages/app/src/sessionsListQuery.ts` | 5 | 0 |
+| `packages/app/src/DBSearchPage.tsx` | 4 | 0 |
+| `packages/app/src/components/DBEditTimeChartForm/OnClickForm/OnClickDrawer.tsx` | 4 | 0 |
+| `packages/app/src/components/DBRowDataPanel.tsx` | 0 | 4 |
+| `packages/app/src/components/MetricExplorer/MetricDetailPanel.tsx` | 4 | 0 |
+| `packages/app/src/components/SearchTotalCountChart.tsx` | 4 | 0 |
+| `packages/app/src/components/ServiceDashboardEndpointPerformanceChart.tsx` | 4 | 0 |
+| `packages/app/src/components/deltaChartUtils.ts` | 0 | 4 |
+| `packages/app/src/NodeDetailsSidePanel.tsx` | 3 | 0 |
+| `packages/app/src/components/DBEditTimeChartForm/ChartEditorControls.tsx` | 3 | 0 |
+| `packages/app/src/components/DBEditTimeChartForm/ChartFormulaEditor.tsx` | 3 | 0 |
+| `packages/app/src/components/DBHeatmapChart/heatmapQueries.ts` | 3 | 0 |
+| `packages/app/src/components/DBRowJsonViewer.tsx` | 3 | 0 |
+| `packages/app/src/components/Iac/TerraformHelperPanel.tsx` | 3 | 0 |
+| `packages/app/src/components/MaterializedViews/MVOptimizationModal.tsx` | 3 | 0 |
+| `packages/app/src/components/OnboardingModal.tsx` | 3 | 0 |
+| `packages/app/src/components/Sources/SourcesList.tsx` | 3 | 0 |
+| `packages/app/src/components/TeamSettings/IacMigrationSection.tsx` | 3 | 0 |
+| `packages/app/src/components/TeamSettings/TeamQueryConfigSection.tsx` | 3 | 0 |
+| `packages/app/src/components/infraCorrelations.ts` | 3 | 0 |
+| `packages/app/src/hooks/useFetchMetricMetadata.tsx` | 1 | 2 |
+| `packages/app/src/hooks/useFetchMetricResourceAttrs.tsx` | 1 | 2 |
+| `packages/app/src/llm/lib/cost.ts` | 3 | 0 |
+| `packages/app/src/serviceDashboard.ts` | 3 | 0 |
+| `packages/app/src/source.ts` | 1 | 2 |
+| `packages/app/src/utils/materializedViews.ts` | 1 | 2 |
+| `packages/app/src/BenchmarkPage.tsx` | 1 | 1 |
+| `packages/app/src/NamespaceDetailsSidePanel.tsx` | 2 | 0 |
+| `packages/app/src/SessionSubpanel.tsx` | 2 | 0 |
+| `packages/app/src/components/DBEditTimeChartForm/TileAlertEditor.tsx` | 2 | 0 |
+| `packages/app/src/components/DBRowSidePanel.tsx` | 2 | 0 |
+| `packages/app/src/components/DBSearchPageFilters.tsx` | 2 | 0 |
+| `packages/app/src/components/DBTable/TableSearchInput.tsx` | 2 | 0 |
+| `packages/app/src/components/MaterializedViews/MVOptimizationIndicator.tsx` | 2 | 0 |
+| `packages/app/src/components/MetricAttributeHelperPanel.tsx` | 2 | 0 |
+| `packages/app/src/components/PatternSidePanel.tsx` | 0 | 2 |
+| `packages/app/src/components/Search/DBSearchHeatmapChart.tsx` | 2 | 0 |
+| `packages/app/src/components/SearchResultsToolbar/ColumnsPopover.tsx` | 2 | 0 |
+| `packages/app/src/components/SearchResultsToolbar/SortPopover.tsx` | 2 | 0 |
+| `packages/app/src/components/alerts/AlertDetails.tsx` | 2 | 0 |
+| `packages/app/src/hdxDebug.ts` | 2 | 0 |
+| `packages/app/src/llm/dashboard/SessionsTab.tsx` | 2 | 0 |
+| `packages/app/src/useUserPreferences.tsx` | 1 | 1 |
+| `packages/app/src/utils/resourceTimingMarkers.ts` | 2 | 0 |
+| `packages/app/public/pyodide/pyodide.asm.js` | 0 | 1 |
+| `packages/app/src/ClickhousePage.tsx` | 1 | 0 |
+| `packages/app/src/DBDashboardPage.tsx` | 1 | 0 |
+| `packages/app/src/DBServiceMapPage.tsx` | 1 | 0 |
+| `packages/app/src/UserPreferencesModal.tsx` | 1 | 0 |
+| `packages/app/src/clickhouse.ts` | 1 | 0 |
+| `packages/app/src/components/DBDeltaChart.tsx` | 1 | 0 |
+| `packages/app/src/components/DBEditTimeChartForm/ChartActionBar.tsx` | 1 | 0 |
+| `packages/app/src/components/DBEditTimeChartForm/ChartPreviewPanel.tsx` | 1 | 0 |
+| `packages/app/src/components/DBEditTimeChartForm/ChartSeriesEditor.tsx` | 1 | 0 |
+| `packages/app/src/components/DBEditTimeChartForm/EditTimeChartForm.tsx` | 1 | 0 |
+| `packages/app/src/components/DBEditTimeChartForm/HeatmapSeriesEditor.tsx` | 1 | 0 |
+| `packages/app/src/components/DBRowOverviewPanel.tsx` | 1 | 0 |
+| `packages/app/src/components/DBRowTable.tsx` | 1 | 0 |
+| `packages/app/src/components/DBSearchPageFilters/hooks.ts` | 0 | 1 |
+| `packages/app/src/components/DBSearchPageFilters/utils.ts` | 0 | 1 |
+| `packages/app/src/components/DBSessionPanel.tsx` | 1 | 0 |
+| `packages/app/src/components/ExceptionSubpanel.tsx` | 1 | 0 |
+| `packages/app/src/components/HeatmapSettingsDrawer.tsx` | 1 | 0 |
+| `packages/app/src/components/Patterns/PatternColumnSelector.tsx` | 1 | 0 |
+| `packages/app/src/components/SearchInput/SearchWhereInput.tsx` | 1 | 0 |
+| `packages/app/src/components/ServiceMap/ServiceMapSidePanel.tsx` | 1 | 0 |
+| `packages/app/src/components/Sources/SourceForm/LogTableModelForm.tsx` | 1 | 0 |
+| `packages/app/src/components/Sources/SourceForm/MaterializedViews.tsx` | 1 | 0 |
+| `packages/app/src/components/Sources/SourceForm/OrderByFormRow.tsx` | 1 | 0 |
+| `packages/app/src/components/Sources/SourceForm/UseTextIndexFormRow.tsx` | 1 | 0 |
+| `packages/app/src/components/Sources/SourceForm/constants.ts` | 1 | 0 |
+| `packages/app/src/components/TeamSettings/TeamMembersSection.tsx` | 1 | 0 |
+| `packages/app/src/components/charts/HiddenSeriesIndicator.tsx` | 1 | 0 |
+| `packages/app/src/components/linkedSpans.tsx` | 1 | 0 |
+| `packages/app/src/hooks/useAutoCompleteOptions.tsx` | 0 | 1 |
+| `packages/app/src/hooks/useResultColumnFilterKeys.ts` | 1 | 0 |
+| `packages/app/src/llm/__fixtures__/sources.ts` | 1 | 0 |
+| `packages/app/src/llm/dashboard/AttributionCharts.tsx` | 1 | 0 |
+| `packages/app/src/llm/dashboard/LLMSessionPanel.tsx` | 1 | 0 |
+
+Plus 4 more in sql-catalog.json.
+
+### ClickHouse constructs without a SQL++ mapping
+
+| Category | Name | Occurrences | Files |
+|---|---|---|---|
+| type | `JSON` | 99 | 31 |
+| type | `String` | 72 | 15 |
+| function | `fromUnixTimestamp64Milli` | 56 | 14 |
+| type | `Int64` | 53 | 10 |
+| function | `var` | 43 | 15 |
+| function | `toString` | 40 | 23 |
+| parameter_type | `Int64` | 39 | 7 |
+| function | `if` | 34 | 16 |
+| type | `Map` | 29 | 12 |
+| clause | `INTERVAL` | 28 | 12 |
+| function | `toDateTime` | 24 | 8 |
+| function | `CAST` | 23 | 4 |
+| setting | `max_execution_time` | 22 | 14 |
+| type | `Array` | 22 | 7 |
+| function | `__filter` | 20 | 1 |
+| type | `LowCardinality` | 18 | 11 |
+| clause | `->` | 17 | 5 |
+| function | `match` | 17 | 8 |
+| function | `toStartOfFifteenMinutes` | 17 | 1 |
+| type | `DateTime64` | 14 | 8 |
+| type | `Float64` | 14 | 5 |
+| function | `__timeFilter` | 13 | 5 |
+| function | `__timeInterval` | 13 | 5 |
+| parameter_type | `String` | 12 | 4 |
+| setting | `timeout_overflow_mode` | 12 | 6 |
+| function | `rate` | 11 | 2 |
+| type | `Nullable` | 11 | 5 |
+| function | `column` | 10 | 3 |
+| function | `tiles` | 10 | 1 |
+| function | `toDateTime64` | 10 | 6 |
+| function | `last_value` | 9 | 4 |
+| function | `tile` | 9 | 3 |
+| setting | `max_rows_to_read` | 9 | 1 |
+| function | `groupUniqArray` | 8 | 3 |
+| function | `range` | 8 | 3 |
+| function | `toInt64` | 8 | 1 |
+| function | `toJSONString` | 8 | 2 |
+| type | `Date` | 8 | 5 |
+| type | `DateTime` | 8 | 4 |
+| dynamic_suffix | `arrayExists` | 7 | 1 |
+| function | `arrayElement` | 7 | 2 |
+| function | `arraySum` | 7 | 2 |
+| function | `groupArray` | 7 | 3 |
+| function | `has` | 7 | 5 |
+| function | `map` | 7 | 4 |
+| function | `multiIf` | 7 | 2 |
+| type | `UInt32` | 7 | 5 |
+| clause | `::` | 6 | 1 |
+| function | `__conditionalAll` | 6 | 1 |
+| function | `age` | 6 | 2 |
+| function | `arrayConcat` | 6 | 3 |
+| function | `cityHash64` | 6 | 4 |
+| function | `clause` | 6 | 5 |
+| function | `increase` | 6 | 3 |
+| function | `log` | 6 | 1 |
+| function | `sumMap` | 6 | 2 |
+| function | `toDate` | 6 | 4 |
+| parameter_type | `Identifier` | 6 | 1 |
+| function | `anyLast` | 5 | 3 |
+| function | `calc` | 5 | 2 |
+| function | `columns` | 5 | 1 |
+| function | `mapKeys` | 5 | 4 |
+| function | `notEmpty` | 5 | 3 |
+| function | `only` | 5 | 1 |
+| function | `replaceRegexpAll` | 5 | 1 |
+| function | `series` | 5 | 2 |
+| function | `toFloat64` | 5 | 3 |
+| parameter_type | `UInt32` | 5 | 3 |
+| setting | `allow_experimental_time_series_table` | 5 | 3 |
+| setting | `wait_end_of_query` | 5 | 2 |
+| function | `arrayMap` | 4 | 3 |
+| function | `arrayZip` | 4 | 3 |
+| function | `emptyArrayInt64` | 4 | 1 |
+| function | `exp2` | 4 | 1 |
+| function | `hasAllTokens` | 4 | 2 |
+| function | `isNull` | 4 | 2 |
+| function | `mapContains` | 4 | 2 |
+| function | `mergeTreeTextIndex` | 4 | 1 |
+| function | `rand` | 4 | 2 |
+| function | `rotate` | 4 | 2 |
+| function | `time` | 4 | 2 |
+| function | `toFloat64OrZero` | 4 | 4 |
+| function | `tuple` | 4 | 1 |
+| parameter_type | `Float64` | 4 | 2 |
+| setting | `read_overflow_mode` | 4 | 1 |
+| type | `FixedString` | 4 | 2 |
+| type | `UInt64` | 4 | 3 |
+| dynamic_suffix | `has` | 3 | 1 |
+| function | `Example` | 3 | 1 |
+| function | `IF` | 3 | 1 |
+| function | `__dateFilter` | 3 | 2 |
+| function | `__timeFilter_ms` | 3 | 2 |
+| function | `arrayWithConstant` | 3 | 1 |
+| function | `attributes` | 3 | 2 |
+| function | `clickstack_describe_source` | 3 | 2 |
+| function | `clickstack_get_dashboard` | 3 | 1 |
+| function | `cluster` | 3 | 2 |
+| function | `expression` | 3 | 2 |
+| function | `ifNull` | 3 | 2 |
+| function | `name` | 3 | 1 |
+
+Plus 308 more in sql-catalog.json.
+
+### Mapped constructs in use
+
+| Name | Occurrences | SQL++ approach |
+|---|---|---|
+| `ARRAY JOIN` | 6 | UNNEST over the array field |
+| `FORMAT` | 16 | Omit; the SDK returns JSON rows |
+| `PREWHERE` | 1 | WHERE; the query planner chooses the access path |
+| `SAMPLE` | 3 | WHERE RANDOM() < rate, or omit |
+| `SETTINGS` | 14 | Query options passed through the SDK (timeout, scan consistency, named parameters); drop engine-specific settings |
+| `If` | 1 | COUNT(*) FILTER (WHERE cond) |
+| `JSONExtract` | 4 | Field path access on the JSON document, with TONUMBER, TOSTRING, or TOBOOLEAN for typing |
+| `JSONExtractString` | 21 | Field path access on the JSON document, with TONUMBER, TOSTRING, or TOBOOLEAN for typing |
+| `any` | 16 | ARRAY_AGG(expr)[0], or MIN(expr) when any value is acceptable |
+| `argMax` | 5 | FIRST_VALUE(value) OVER (PARTITION BY group ORDER BY key DESC), or a subquery ordered by key DESC LIMIT 1 |
+| `arrayJoin` | 5 | UNNEST over the array field |
+| `count()` | 52 | COUNT(*) |
+| `countIf` | 3 | COUNT(*) FILTER (WHERE cond) |
+| `hasToken` | 3 | SEARCH(field, token) over a Search index, or REGEXP_CONTAINS(field, word-boundary pattern) |
+| `quantile` | 10 | PERCENTILE_CONT(expr, p) aggregate; MEDIAN for p = 0.5 |
+| `quantileIf` | 1 | PERCENTILE_CONT(expr, p) aggregate; MEDIAN for p = 0.5 |
+| `quantileTDigestWeighted` | 1 | PERCENTILE_CONT(expr, p) aggregate; MEDIAN for p = 0.5 |
+| `quantileTDigestWeightedIf` | 1 | PERCENTILE_CONT(expr, p) aggregate; MEDIAN for p = 0.5 |
+| `quantiles` | 2 | PERCENTILE_CONT(expr, p) aggregate; MEDIAN for p = 0.5 |
+| `sumIf` | 6 | SUM(expr) FILTER (WHERE cond) |
+| `toStartOfInterval` | 16 | Bucket epoch milliseconds: FLOOR(MILLIS(ts) / interval_ms) * interval_ms, converted back with MILLIS_TO_UTC; DATE_TRUNC_STR for calendar units |
+| `uniqExact` | 1 | COUNT(DISTINCT expr) |
+
+### Schema
+
+| Table | Columns | Engine | Order by | TTL |
+|---|---|---|---|---|
+| `hyperdx_sessions` | 18 | MergeTree | (ServiceName, TimestampTime, Timestamp) | TimestampTime + SESSIONS_TTL |
+| `metrics_ts` | 0 | TimeSeries |  |  |
+| `otel_logs` | 25 | MergeTree | (toStartOfFiveMinutes(Timestamp), ServiceName, Timestamp) | toDateTime(Timestamp) + LOGS_TTL |
+| `otel_logs_kv_rollup_15m` | 5 | SummingMergeTree | (ColumnIdentifier, Key, Timestamp, Value) | Timestamp + LOGS_TTL |
+| `otel_metrics_exponential_histogram` | 31 | MergeTree | (ServiceName, MetricName, toStartOfHour(TimeUnix), cityHash64(Attributes), TimeUnix) | toDateTime(TimeUnix) + METRICS_TTL |
+| `otel_metrics_gauge` | 21 | MergeTree | (ServiceName, MetricName, toStartOfHour(TimeUnix), cityHash64(Attributes), TimeUnix) | toDateTime(TimeUnix) + METRICS_TTL |
+| `otel_metrics_histogram` | 27 | MergeTree | (ServiceName, MetricName, toStartOfHour(TimeUnix), cityHash64(Attributes), TimeUnix) | toDateTime(TimeUnix) + METRICS_TTL |
+| `otel_metrics_sum` | 23 | MergeTree | (ServiceName, MetricName, toStartOfHour(TimeUnix), cityHash64(Attributes), TimeUnix) | toDateTime(TimeUnix) + METRICS_TTL |
+| `otel_metrics_summary` | 19 | MergeTree | (ServiceName, MetricName, toStartOfHour(TimeUnix), cityHash64(Attributes), TimeUnix) | toDateTime(TimeUnix) + METRICS_TTL |
+| `otel_traces` | 24 | MergeTree | (ServiceName, SpanName, toDateTime(Timestamp)) | toDate(Timestamp) + TRACES_TTL |
+| `otel_traces_kv_rollup_15m` | 5 | SummingMergeTree | (ColumnIdentifier, Key, Timestamp, Value) | Timestamp + TRACES_TTL |
+
+Materialized views:
+
+- `otel_logs_attr_kv_rollup_15m_mv` → `otel_logs_kv_rollup_15m`, from `elements`, `otel_logs`.
+- `otel_traces_kv_rollup_15m_mv` → `otel_traces_kv_rollup_15m`, from `elements`, `otel_traces`.
+
+### Ingestion
+
+Collector components, pipelines, ClickHouse exporters, and management code.
+
+- Builder manifest `packages/otel-collector/builder-config.yaml`: no components.
+- Collector config `docker/otel-collector/config.standalone.auth.yaml`: 1 receivers, 0 processors, 0 exporters; pipelines: none.
+- Collector config `docker/otel-collector/config.standalone.oidc.yaml`: 1 receivers, 0 processors, 0 exporters; pipelines: none.
+- Collector config `docker/otel-collector/config.standalone.promql.yaml`: 0 receivers, 0 processors, 1 exporters; pipelines: metrics/promql.
+- Collector config `docker/otel-collector/config.standalone.yaml`: 1 receivers, 0 processors, 2 exporters; pipelines: logs/in, logs/out-default, logs/out-rrweb, metrics, traces.
+- Collector config `docker/otel-collector/config.yaml`: 0 receivers, 5 processors, 0 exporters; pipelines: logs/out-default, logs/out-rrweb, metrics, traces.
+- Collector config `docker/otel-collector/custom.config.yaml`: 1 receivers, 0 processors, 1 exporters; pipelines: logs/json, metrics/hostmetrics, traces/json.
+- Collector config `smoke-tests/otel-collector/custom-pipeline-config.yaml`: 0 receivers, 2 processors, 0 exporters; pipelines: logs/out-default, logs/out-rrweb, metrics, traces.
+- Collector config `smoke-tests/otel-collector/receiver-config.yaml`: 3 receivers, 0 processors, 0 exporters; pipelines: logs/in, metrics, traces.
+- ClickHouse component `clickhouse` in `docker/otel-collector/config.standalone.yaml`.
+- ClickHouse component `clickhouse/rrweb` in `docker/otel-collector/config.standalone.yaml`.
+- Go source `packages/otel-collector/cmd/migrate/main.go` imports `github.com/ClickHouse/clickhouse-go/v2`.
+- Management code `packages/api/src/config.ts`.
+- Management code `packages/api/src/opamp/app.ts`.
+- Management code `packages/api/src/opamp/controllers/opampController.ts`.
+- Management code `packages/api/src/opamp/models/agent.ts`.
+- Management code `packages/api/src/opamp/services/agentService.ts`.
+- Management code `packages/api/src/opamp/utils/agentTelemetry.ts`.
+- Management code `packages/api/src/opamp/utils/protobuf.ts`.
+- Management code `packages/api/src/server.ts`.
+- Management code `packages/app/src/config.ts`.
+
+### Integration test dependencies
+
+| Workspace | Script | Command |
+|---|---|---|
+| @hyperdx/api | `ci:int` | `DOTENV_CONFIG_PATH=.env.test DOTENV_CONFIG_OVERRIDE=true jest --config jest.int.config.js --runInBand --ci --forceExit --passWithNoTests` |
+| @hyperdx/api | `dev:int` | `DOTENV_CONFIG_PATH=.env.test DOTENV_CONFIG_OVERRIDE=true jest --config jest.int.config.js --runInBand --coverage --forceExit` |
+| @hyperdx/common-utils | `ci:int` | `DOTENV_CONFIG_PATH=.env.test jest --config jest.int.config.js --runInBand --ci --coverage --passWithNoTests` |
+| @hyperdx/common-utils | `dev:int` | `DOTENV_CONFIG_PATH=.env.test jest --config jest.int.config.js --watchAll --runInBand` |
+
+### Branding
+
+| Category | hyperdx | clickstack | clickhouse | deploysentinel | hdx |
+|---|---|---|---|---|---|
+| package_names | 1276 | 0 | 138 | 0 | 1 |
+| external_dependencies | 6 | 19 | 136 | 0 | 0 |
+| env_vars | 442 | 12 | 547 | 0 | 555 |
+| telemetry_endpoints | 64 | 66 | 133 | 0 | 2 |
+| assets | 0 | 10 | 0 | 0 | 4 |
+| docker | 98 | 3 | 117 | 0 | 110 |
+| docs | 977 | 459 | 665 | 0 | 258 |
+| ui_strings | 20 | 23 | 71 | 0 | 128 |
+| code_identifiers | 125 | 22 | 2209 | 0 | 641 |
+| other | 1083 | 1542 | 1709 | 14 | 1715 |
+
+### Feature status
+
+| Status | Features |
+|---|---|
+| not_started | 51 |
+| in_progress | 0 |
+| ported | 0 |
+| needs_decision | 2 |
+| dropped | 0 |
+
+### Plan corrections
+
+- none
+
+### Warnings
+
+- W_DYNAMIC_IMPORT: 6 occurrences. First: Non-literal dynamic import at line 10 (packages/app/public/pyodide/pyodide.asm.js)
+- W_FILE_TOO_LARGE: 1 occurrences. First: File is 3004059 bytes, over the 2 MB limit; skipped (.yarn/releases/yarn-4.13.0.cjs)
+- W_PLAN_MISSING: 1 occurrences. First: COUCHBASE_PORT_PLAN.md not found at the project root; plan check skipped (COUCHBASE_PORT_PLAN.md)
+- W_SCHEMA_UNPARSED: 1 occurrences. First: Unparsed statement: CREATE DATABASE IF NOT EXISTS DATABASE (docker/otel-collector/schema/seed/00001_create_database.sql)
+- W_TABLE_REDEFINED: 3 occurrences. First: Table otel_logs is defined in docker/otel-collector/schema/seed/00002_otel_logs.sql and docker/otel-collector/schema/seed/00002_otel_logs_compat.sql (docker/otel-collector/schema/seed/00002_otel_logs_compat.sql)
+- W_UNRESOLVED_IMPORT: 1 occurrences. First: Cannot resolve "@hyperdx/api/build/serverless" (packages/app/pages/api/[...all].ts)
+- W_UNRESOLVED_MOUNT: 1 occurrences. First: Cannot resolve router for mount "/v1/opamp" at line 13 (packages/api/src/opamp/app.ts)
+<!-- phase2:end -->
+
+### Plan corrections, resolved
+
+- `COUCHBASE_PORT_PLAN.md` is not present in this repository (Phase 0 waiver). Plan-check found no missing paths or symbols to resolve; re-run `port/inventory.sh scan` after the plan file is added.

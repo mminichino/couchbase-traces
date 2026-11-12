@@ -1,0 +1,25 @@
+receivers:
+  otlp/hyperdx:
+    protocols:
+      grpc:
+processors:
+  memory_limiter:
+    limit_mib: 100
+exporters:
+  clickhouse:
+    endpoint: ${env:CLICKHOUSE_ENDPOINT}
+  debug:
+service:
+  pipelines:
+    traces:
+      receivers: [otlp/hyperdx]
+      processors: [memory_limiter]
+      exporters: [clickhouse]
+    logs:
+      receivers:
+        - otlp/hyperdx
+      processors:
+        - memory_limiter
+      exporters:
+        - clickhouse
+        - debug

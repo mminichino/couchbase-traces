@@ -1,0 +1,2027 @@
+{
+  "placeholders": [
+    "DATABASE",
+    "LOGS_TTL",
+    "METRICS_TTL",
+    "SESSIONS_TTL",
+    "TRACES_TTL"
+  ],
+  "tables": [
+    {
+      "name": "hyperdx_sessions",
+      "file": "docker/otel-collector/schema/seed/00004_hyperdx_sessions_compat.sql",
+      "columns": [
+        {
+          "name": "Timestamp",
+          "type": "DateTime64(9)",
+          "kind": "physical",
+          "expression": null,
+          "codec": "Delta, ZSTD(3)"
+        },
+        {
+          "name": "TimestampTime",
+          "type": "DateTime",
+          "kind": "default",
+          "expression": "toDateTime(Timestamp)",
+          "codec": null
+        },
+        {
+          "name": "TraceId",
+          "type": "String",
+          "kind": "physical",
+          "expression": null,
+          "codec": "ZSTD(3)"
+        },
+        {
+          "name": "SpanId",
+          "type": "String",
+          "kind": "physical",
+          "expression": null,
+          "codec": "ZSTD(3)"
+        },
+        {
+          "name": "TraceFlags",
+          "type": "UInt8",
+          "kind": "physical",
+          "expression": null,
+          "codec": null
+        },
+        {
+          "name": "SeverityText",
+          "type": "LowCardinality(String)",
+          "kind": "physical",
+          "expression": null,
+          "codec": "ZSTD(3)"
+        },
+        {
+          "name": "SeverityNumber",
+          "type": "UInt8",
+          "kind": "physical",
+          "expression": null,
+          "codec": null
+        },
+        {
+          "name": "ServiceName",
+          "type": "LowCardinality(String)",
+          "kind": "physical",
+          "expression": null,
+          "codec": "ZSTD(3)"
+        },
+        {
+          "name": "Body",
+          "type": "String",
+          "kind": "physical",
+          "expression": null,
+          "codec": "ZSTD(3)"
+        },
+        {
+          "name": "ResourceSchemaUrl",
+          "type": "LowCardinality(String)",
+          "kind": "physical",
+          "expression": null,
+          "codec": "ZSTD(3)"
+        },
+        {
+          "name": "ResourceAttributes",
+          "type": "Map(LowCardinality(String), String)",
+          "kind": "physical",
+          "expression": null,
+          "codec": "ZSTD(3)"
+        },
+        {
+          "name": "ScopeSchemaUrl",
+          "type": "LowCardinality(String)",
+          "kind": "physical",
+          "expression": null,
+          "codec": "ZSTD(3)"
+        },
+        {
+          "name": "ScopeName",
+          "type": "String",
+          "kind": "physical",
+          "expression": null,
+          "codec": "ZSTD(3)"
+        },
+        {
+          "name": "ScopeVersion",
+          "type": "LowCardinality(String)",
+          "kind": "physical",
+          "expression": null,
+          "codec": "ZSTD(3)"
+        },
+        {
+          "name": "ScopeAttributes",
+          "type": "Map(LowCardinality(String), String)",
+          "kind": "physical",
+          "expression": null,
+          "codec": "ZSTD(3)"
+        },
+        {
+          "name": "LogAttributes",
+          "type": "Map(LowCardinality(String), String)",
+          "kind": "physical",
+          "expression": null,
+          "codec": "ZSTD(3)"
+        },
+        {
+          "name": "__hdx_materialized_session.id",
+          "type": "String",
+          "kind": "materialized",
+          "expression": "LogAttributes['session.id']",
+          "codec": "ZSTD(3)"
+        },
+        {
+          "name": "__hdx_materialized_rum.sessionId",
+          "type": "String",
+          "kind": "materialized",
+          "expression": "ResourceAttributes['rum.sessionId']",
+          "codec": "ZSTD(3)"
+        }
+      ],
+      "indexes": [
+        {
+          "name": "idx_trace_id",
+          "expression": "TraceId",
+          "type": "bloom_filter(0.001)",
+          "granularity": "1"
+        },
+        {
+          "name": "idx_session_id",
+          "expression": "__hdx_materialized_session.id",
+          "type": "bloom_filter(0.001)",
+          "granularity": "1"
+        },
+        {
+          "name": "idx_rum_session_id",
+          "expression": "__hdx_materialized_rum.sessionId",
+          "type": "bloom_filter(0.001)",
+          "granularity": "1"
+        },
+        {
+          "name": "idx_res_attr_key",
+          "expression": "mapKeys(ResourceAttributes)",
+          "type": "bloom_filter(0.01)",
+          "granularity": "1"
+        },
+        {
+          "name": "idx_res_attr_value",
+          "expression": "mapValues(ResourceAttributes)",
+          "type": "bloom_filter(0.01)",
+          "granularity": "1"
+        },
+        {
+          "name": "idx_scope_attr_key",
+          "expression": "mapKeys(ScopeAttributes)",
+          "type": "bloom_filter(0.01)",
+          "granularity": "1"
+        },
+        {
+          "name": "idx_scope_attr_value",
+          "expression": "mapValues(ScopeAttributes)",
+          "type": "bloom_filter(0.01)",
+          "granularity": "1"
+        },
+        {
+          "name": "idx_log_attr_key",
+          "expression": "mapKeys(LogAttributes)",
+          "type": "bloom_filter(0.01)",
+          "granularity": "1"
+        },
+        {
+          "name": "idx_log_attr_value",
+          "expression": "mapValues(LogAttributes)",
+          "type": "bloom_filter(0.01)",
+          "granularity": "1"
+        },
+        {
+          "name": "idx_lower_body",
+          "expression": "lower(Body)",
+          "type": "tokenbf_v1(32768, 3, 0)",
+          "granularity": "8"
+        }
+      ],
+      "projections": [],
+      "constraints": [],
+      "engine": "MergeTree",
+      "partitionBy": "toDate(TimestampTime)",
+      "primaryKey": "(ServiceName, TimestampTime)",
+      "orderBy": "(ServiceName, TimestampTime, Timestamp)",
+      "sampleBy": null,
+      "ttl": "TimestampTime + SESSIONS_TTL",
+      "settings": "index_granularity = 8192, ttl_only_drop_parts = 1"
+    },
+    {
+      "name": "metrics_ts",
+      "file": "docker/otel-collector/schema/seed/00008_otel_metrics_timeseries.sql",
+      "columns": [],
+      "indexes": [],
+      "projections": [],
+      "constraints": [],
+      "engine": "TimeSeries",
+      "partitionBy": null,
+      "primaryKey": null,
+      "orderBy": null,
+      "sampleBy": null,
+      "ttl": null,
+      "settings": "allow_experimental_time_series_table = 1"
+    },
+    {
+      "name": "otel_logs",
+      "file": "docker/otel-collector/schema/seed/00002_otel_logs_compat.sql",
+      "columns": [
+        {
+          "name": "Timestamp",
+          "type": "DateTime64(9)",
+          "kind": "physical",
+          "expression": null,
+          "codec": "Delta, ZSTD(3)"
+        },
+        {
+          "name": "TraceId",
+          "type": "String",
+          "kind": "physical",
+          "expression": null,
+          "codec": "ZSTD(3)"
+        },
+        {
+          "name": "SpanId",
+          "type": "String",
+          "kind": "physical",
+          "expression": null,
+          "codec": "ZSTD(3)"
+        },
+        {
+          "name": "TraceFlags",
+          "type": "UInt8",
+          "kind": "physical",
+          "expression": null,
+          "codec": null
+        },
+        {
+          "name": "SeverityText",
+          "type": "LowCardinality(String)",
+          "kind": "physical",
+          "expression": null,
+          "codec": "ZSTD(3)"
+        },
+        {
+          "name": "SeverityNumber",
+          "type": "UInt8",
+          "kind": "physical",
+          "expression": null,
+          "codec": null
+        },
+        {
+          "name": "ServiceName",
+          "type": "LowCardinality(String)",
+          "kind": "physical",
+          "expression": null,
+          "codec": "ZSTD(3)"
+        },
+        {
+          "name": "Body",
+          "type": "String",
+          "kind": "physical",
+          "expression": null,
+          "codec": "ZSTD(3)"
+        },
+        {
+          "name": "ResourceSchemaUrl",
+          "type": "LowCardinality(String)",
+          "kind": "physical",
+          "expression": null,
+          "codec": "ZSTD(3)"
+        },
+        {
+          "name": "ResourceAttributes",
+          "type": "Map(LowCardinality(String), String)",
+          "kind": "physical",
+          "expression": null,
+          "codec": "ZSTD(3)"
+        },
+        {
+          "name": "ScopeSchemaUrl",
+          "type": "LowCardinality(String)",
+          "kind": "physical",
+          "expression": null,
+          "codec": "ZSTD(3)"
+        },
+        {
+          "name": "ScopeName",
+          "type": "String",
+          "kind": "physical",
+          "expression": null,
+          "codec": "ZSTD(3)"
+        },
+        {
+          "name": "ScopeVersion",
+          "type": "LowCardinality(String)",
+          "kind": "physical",
+          "expression": null,
+          "codec": "ZSTD(3)"
+        },
+        {
+          "name": "ScopeAttributes",
+          "type": "Map(LowCardinality(String), String)",
+          "kind": "physical",
+          "expression": null,
+          "codec": "ZSTD(3)"
+        },
+        {
+          "name": "LogAttributes",
+          "type": "Map(LowCardinality(String), String)",
+          "kind": "physical",
+          "expression": null,
+          "codec": "ZSTD(3)"
+        },
+        {
+          "name": "EventName",
+          "type": "String",
+          "kind": "physical",
+          "expression": null,
+          "codec": "ZSTD(3)"
+        },
+        {
+          "name": "__hdx_materialized_k8s.cluster.name",
+          "type": "LowCardinality(String)",
+          "kind": "materialized",
+          "expression": "ResourceAttributes['k8s.cluster.name']",
+          "codec": "ZSTD(3)"
+        },
+        {
+          "name": "__hdx_materialized_k8s.container.name",
+          "type": "LowCardinality(String)",
+          "kind": "materialized",
+          "expression": "ResourceAttributes['k8s.container.name']",
+          "codec": "ZSTD(3)"
+        },
+        {
+          "name": "__hdx_materialized_k8s.deployment.name",
+          "type": "LowCardinality(String)",
+          "kind": "materialized",
+          "expression": "ResourceAttributes['k8s.deployment.name']",
+          "codec": "ZSTD(3)"
+        },
+        {
+          "name": "__hdx_materialized_k8s.namespace.name",
+          "type": "LowCardinality(String)",
+          "kind": "materialized",
+          "expression": "ResourceAttributes['k8s.namespace.name']",
+          "codec": "ZSTD(3)"
+        },
+        {
+          "name": "__hdx_materialized_k8s.node.name",
+          "type": "LowCardinality(String)",
+          "kind": "materialized",
+          "expression": "ResourceAttributes['k8s.node.name']",
+          "codec": "ZSTD(3)"
+        },
+        {
+          "name": "__hdx_materialized_k8s.pod.name",
+          "type": "LowCardinality(String)",
+          "kind": "materialized",
+          "expression": "ResourceAttributes['k8s.pod.name']",
+          "codec": "ZSTD(3)"
+        },
+        {
+          "name": "__hdx_materialized_k8s.pod.uid",
+          "type": "LowCardinality(String)",
+          "kind": "materialized",
+          "expression": "ResourceAttributes['k8s.pod.uid']",
+          "codec": "ZSTD(3)"
+        },
+        {
+          "name": "__hdx_materialized_deployment.environment.name",
+          "type": "LowCardinality(String)",
+          "kind": "materialized",
+          "expression": "ResourceAttributes['deployment.environment.name']",
+          "codec": "ZSTD(3)"
+        },
+        {
+          "name": "__hdx_materialized_session.id",
+          "type": "String",
+          "kind": "materialized",
+          "expression": "LogAttributes['session.id']",
+          "codec": "ZSTD(3)"
+        }
+      ],
+      "indexes": [
+        {
+          "name": "idx_trace_id",
+          "expression": "TraceId",
+          "type": "bloom_filter(0.001)",
+          "granularity": "1"
+        },
+        {
+          "name": "idx_session_id",
+          "expression": "__hdx_materialized_session.id",
+          "type": "bloom_filter(0.001)",
+          "granularity": "1"
+        },
+        {
+          "name": "idx_res_attr_key",
+          "expression": "mapKeys(ResourceAttributes)",
+          "type": "bloom_filter(0.01)",
+          "granularity": "1"
+        },
+        {
+          "name": "idx_res_attr_value",
+          "expression": "mapValues(ResourceAttributes)",
+          "type": "bloom_filter(0.01)",
+          "granularity": "1"
+        },
+        {
+          "name": "idx_scope_attr_key",
+          "expression": "mapKeys(ScopeAttributes)",
+          "type": "bloom_filter(0.01)",
+          "granularity": "1"
+        },
+        {
+          "name": "idx_scope_attr_value",
+          "expression": "mapValues(ScopeAttributes)",
+          "type": "bloom_filter(0.01)",
+          "granularity": "1"
+        },
+        {
+          "name": "idx_log_attr_key",
+          "expression": "mapKeys(LogAttributes)",
+          "type": "bloom_filter(0.01)",
+          "granularity": "1"
+        },
+        {
+          "name": "idx_log_attr_value",
+          "expression": "mapValues(LogAttributes)",
+          "type": "bloom_filter(0.01)",
+          "granularity": "1"
+        },
+        {
+          "name": "idx_lower_body",
+          "expression": "lower(Body)",
+          "type": "tokenbf_v1(32768, 3, 0)",
+          "granularity": "8"
+        }
+      ],
+      "projections": [],
+      "constraints": [],
+      "engine": "MergeTree",
+      "partitionBy": "toDate(Timestamp)",
+      "primaryKey": null,
+      "orderBy": "(toStartOfFiveMinutes(Timestamp), ServiceName, Timestamp)",
+      "sampleBy": null,
+      "ttl": "toDateTime(Timestamp) + LOGS_TTL",
+      "settings": "index_granularity = 8192, ttl_only_drop_parts = 1, enable_block_number_column = 1, enable_block_offset_column = 1"
+    },
+    {
+      "name": "otel_logs_kv_rollup_15m",
+      "file": "docker/otel-collector/schema/seed/00006_otel_logs_rollups.sql",
+      "columns": [
+        {
+          "name": "Timestamp",
+          "type": "DateTime",
+          "kind": "physical",
+          "expression": null,
+          "codec": null
+        },
+        {
+          "name": "ColumnIdentifier",
+          "type": "LowCardinality(String)",
+          "kind": "physical",
+          "expression": null,
+          "codec": null
+        },
+        {
+          "name": "Key",
+          "type": "LowCardinality(String)",
+          "kind": "physical",
+          "expression": null,
+          "codec": null
+        },
+        {
+          "name": "Value",
+          "type": "String",
+          "kind": "physical",
+          "expression": null,
+          "codec": null
+        },
+        {
+          "name": "count",
+          "type": "UInt64",
+          "kind": "physical",
+          "expression": null,
+          "codec": null
+        }
+      ],
+      "indexes": [
+        {
+          "name": "idx_count_minmax",
+          "expression": "count",
+          "type": "minmax",
+          "granularity": "1"
+        },
+        {
+          "name": "idx_timestamp_minmax",
+          "expression": "Timestamp",
+          "type": "minmax",
+          "granularity": "1"
+        }
+      ],
+      "projections": [],
+      "constraints": [],
+      "engine": "SummingMergeTree",
+      "partitionBy": "toDate(Timestamp)",
+      "primaryKey": null,
+      "orderBy": "(ColumnIdentifier, Key, Timestamp, Value)",
+      "sampleBy": null,
+      "ttl": "Timestamp + LOGS_TTL",
+      "settings": "index_granularity = 8192, ttl_only_drop_parts = 1"
+    },
+    {
+      "name": "otel_metrics_exponential_histogram",
+      "file": "docker/otel-collector/schema/seed/00003_otel_metrics.sql",
+      "columns": [
+        {
+          "name": "ResourceAttributes",
+          "type": "Map(LowCardinality(String), String)",
+          "kind": "physical",
+          "expression": null,
+          "codec": "ZSTD(3)"
+        },
+        {
+          "name": "ResourceSchemaUrl",
+          "type": "String",
+          "kind": "physical",
+          "expression": null,
+          "codec": "ZSTD(3)"
+        },
+        {
+          "name": "ScopeName",
+          "type": "String",
+          "kind": "physical",
+          "expression": null,
+          "codec": "ZSTD(3)"
+        },
+        {
+          "name": "ScopeVersion",
+          "type": "String",
+          "kind": "physical",
+          "expression": null,
+          "codec": "ZSTD(3)"
+        },
+        {
+          "name": "ScopeAttributes",
+          "type": "Map(LowCardinality(String), String)",
+          "kind": "physical",
+          "expression": null,
+          "codec": "ZSTD(3)"
+        },
+        {
+          "name": "ScopeDroppedAttrCount",
+          "type": "UInt32",
+          "kind": "physical",
+          "expression": null,
+          "codec": "ZSTD(3)"
+        },
+        {
+          "name": "ScopeSchemaUrl",
+          "type": "String",
+          "kind": "physical",
+          "expression": null,
+          "codec": "ZSTD(3)"
+        },
+        {
+          "name": "ServiceName",
+          "type": "LowCardinality(String)",
+          "kind": "physical",
+          "expression": null,
+          "codec": "ZSTD(3)"
+        },
+        {
+          "name": "MetricName",
+          "type": "LowCardinality(String)",
+          "kind": "physical",
+          "expression": null,
+          "codec": "ZSTD(3)"
+        },
+        {
+          "name": "MetricDescription",
+          "type": "String",
+          "kind": "physical",
+          "expression": null,
+          "codec": "ZSTD(3)"
+        },
+        {
+          "name": "MetricUnit",
+          "type": "String",
+          "kind": "physical",
+          "expression": null,
+          "codec": "ZSTD(3)"
+        },
+        {
+          "name": "Attributes",
+          "type": "Map(LowCardinality(String), String)",
+          "kind": "physical",
+          "expression": null,
+          "codec": "ZSTD(3)"
+        },
+        {
+          "name": "StartTimeUnix",
+          "type": "DateTime",
+          "kind": "physical",
+          "expression": null,
+          "codec": "Delta, ZSTD(3)"
+        },
+        {
+          "name": "TimeUnix",
+          "type": "DateTime",
+          "kind": "physical",
+          "expression": null,
+          "codec": "Delta, ZSTD(3)"
+        },
+        {
+          "name": "Count",
+          "type": "UInt64",
+          "kind": "physical",
+          "expression": null,
+          "codec": "Delta, ZSTD(3)"
+        },
+        {
+          "name": "Sum",
+          "type": "Float64",
+          "kind": "physical",
+          "expression": null,
+          "codec": "ZSTD(3)"
+        },
+        {
+          "name": "Scale",
+          "type": "Int32",
+          "kind": "physical",
+          "expression": null,
+          "codec": "ZSTD(3)"
+        },
+        {
+          "name": "ZeroCount",
+          "type": "UInt64",
+          "kind": "physical",
+          "expression": null,
+          "codec": "ZSTD(3)"
+        },
+        {
+          "name": "PositiveOffset",
+          "type": "Int32",
+          "kind": "physical",
+          "expression": null,
+          "codec": "ZSTD(3)"
+        },
+        {
+          "name": "PositiveBucketCounts",
+          "type": "Array(UInt64)",
+          "kind": "physical",
+          "expression": null,
+          "codec": "ZSTD(3)"
+        },
+        {
+          "name": "NegativeOffset",
+          "type": "Int32",
+          "kind": "physical",
+          "expression": null,
+          "codec": "ZSTD(3)"
+        },
+        {
+          "name": "NegativeBucketCounts",
+          "type": "Array(UInt64)",
+          "kind": "physical",
+          "expression": null,
+          "codec": "ZSTD(3)"
+        },
+        {
+          "name": "Exemplars.FilteredAttributes",
+          "type": "Array(Map(LowCardinality(String), String))",
+          "kind": "physical",
+          "expression": null,
+          "codec": "ZSTD(3)"
+        },
+        {
+          "name": "Exemplars.TimeUnix",
+          "type": "Array(DateTime)",
+          "kind": "physical",
+          "expression": null,
+          "codec": "ZSTD(3)"
+        },
+        {
+          "name": "Exemplars.Value",
+          "type": "Array(Float64)",
+          "kind": "physical",
+          "expression": null,
+          "codec": "ZSTD(3)"
+        },
+        {
+          "name": "Exemplars.SpanId",
+          "type": "Array(String)",
+          "kind": "physical",
+          "expression": null,
+          "codec": "ZSTD(3)"
+        },
+        {
+          "name": "Exemplars.TraceId",
+          "type": "Array(String)",
+          "kind": "physical",
+          "expression": null,
+          "codec": "ZSTD(3)"
+        },
+        {
+          "name": "Flags",
+          "type": "UInt32",
+          "kind": "physical",
+          "expression": null,
+          "codec": "ZSTD(3)"
+        },
+        {
+          "name": "Min",
+          "type": "Float64",
+          "kind": "physical",
+          "expression": null,
+          "codec": "ZSTD(3)"
+        },
+        {
+          "name": "Max",
+          "type": "Float64",
+          "kind": "physical",
+          "expression": null,
+          "codec": "ZSTD(3)"
+        },
+        {
+          "name": "AggregationTemporality",
+          "type": "Int32",
+          "kind": "physical",
+          "expression": null,
+          "codec": "ZSTD(3)"
+        }
+      ],
+      "indexes": [
+        {
+          "name": "idx_res_attr_key",
+          "expression": "mapKeys(ResourceAttributes)",
+          "type": "bloom_filter(0.01)",
+          "granularity": "1"
+        },
+        {
+          "name": "idx_res_attr_value",
+          "expression": "mapValues(ResourceAttributes)",
+          "type": "bloom_filter(0.01)",
+          "granularity": "1"
+        },
+        {
+          "name": "idx_scope_attr_key",
+          "expression": "mapKeys(ScopeAttributes)",
+          "type": "bloom_filter(0.01)",
+          "granularity": "1"
+        },
+        {
+          "name": "idx_scope_attr_value",
+          "expression": "mapValues(ScopeAttributes)",
+          "type": "bloom_filter(0.01)",
+          "granularity": "1"
+        },
+        {
+          "name": "idx_attr_key",
+          "expression": "mapKeys(Attributes)",
+          "type": "bloom_filter(0.01)",
+          "granularity": "1"
+        },
+        {
+          "name": "idx_attr_value",
+          "expression": "mapValues(Attributes)",
+          "type": "bloom_filter(0.01)",
+          "granularity": "1"
+        },
+        {
+          "name": "idx_time_minmax",
+          "expression": "TimeUnix",
+          "type": "minmax",
+          "granularity": "1"
+        }
+      ],
+      "projections": [],
+      "constraints": [],
+      "engine": "MergeTree",
+      "partitionBy": "toDate(TimeUnix)",
+      "primaryKey": null,
+      "orderBy": "(ServiceName, MetricName, toStartOfHour(TimeUnix), cityHash64(Attributes), TimeUnix)",
+      "sampleBy": null,
+      "ttl": "toDateTime(TimeUnix) + METRICS_TTL",
+      "settings": "ttl_only_drop_parts = 1"
+    },
+    {
+      "name": "otel_metrics_gauge",
+      "file": "docker/otel-collector/schema/seed/00003_otel_metrics.sql",
+      "columns": [
+        {
+          "name": "ResourceAttributes",
+          "type": "Map(LowCardinality(String), String)",
+          "kind": "physical",
+          "expression": null,
+          "codec": "ZSTD(3)"
+        },
+        {
+          "name": "ResourceSchemaUrl",
+          "type": "String",
+          "kind": "physical",
+          "expression": null,
+          "codec": "ZSTD(3)"
+        },
+        {
+          "name": "ScopeName",
+          "type": "String",
+          "kind": "physical",
+          "expression": null,
+          "codec": "ZSTD(3)"
+        },
+        {
+          "name": "ScopeVersion",
+          "type": "String",
+          "kind": "physical",
+          "expression": null,
+          "codec": "ZSTD(3)"
+        },
+        {
+          "name": "ScopeAttributes",
+          "type": "Map(LowCardinality(String), String)",
+          "kind": "physical",
+          "expression": null,
+          "codec": "ZSTD(3)"
+        },
+        {
+          "name": "ScopeDroppedAttrCount",
+          "type": "UInt32",
+          "kind": "physical",
+          "expression": null,
+          "codec": "ZSTD(3)"
+        },
+        {
+          "name": "ScopeSchemaUrl",
+          "type": "String",
+          "kind": "physical",
+          "expression": null,
+          "codec": "ZSTD(3)"
+        },
+        {
+          "name": "ServiceName",
+          "type": "LowCardinality(String)",
+          "kind": "physical",
+          "expression": null,
+          "codec": "ZSTD(3)"
+        },
+        {
+          "name": "MetricName",
+          "type": "LowCardinality(String)",
+          "kind": "physical",
+          "expression": null,
+          "codec": "ZSTD(3)"
+        },
+        {
+          "name": "MetricDescription",
+          "type": "String",
+          "kind": "physical",
+          "expression": null,
+          "codec": "ZSTD(3)"
+        },
+        {
+          "name": "MetricUnit",
+          "type": "String",
+          "kind": "physical",
+          "expression": null,
+          "codec": "ZSTD(3)"
+        },
+        {
+          "name": "Attributes",
+          "type": "Map(LowCardinality(String), String)",
+          "kind": "physical",
+          "expression": null,
+          "codec": "ZSTD(3)"
+        },
+        {
+          "name": "StartTimeUnix",
+          "type": "DateTime",
+          "kind": "physical",
+          "expression": null,
+          "codec": "Delta, ZSTD(3)"
+        },
+        {
+          "name": "TimeUnix",
+          "type": "DateTime",
+          "kind": "physical",
+          "expression": null,
+          "codec": "Delta, ZSTD(3)"
+        },
+        {
+          "name": "Value",
+          "type": "Float64",
+          "kind": "physical",
+          "expression": null,
+          "codec": "ZSTD(3)"
+        },
+        {
+          "name": "Flags",
+          "type": "UInt32",
+          "kind": "physical",
+          "expression": null,
+          "codec": "ZSTD(3)"
+        },
+        {
+          "name": "Exemplars.FilteredAttributes",
+          "type": "Array(Map(LowCardinality(String), String))",
+          "kind": "physical",
+          "expression": null,
+          "codec": "ZSTD(3)"
+        },
+        {
+          "name": "Exemplars.TimeUnix",
+          "type": "Array(DateTime)",
+          "kind": "physical",
+          "expression": null,
+          "codec": "ZSTD(3)"
+        },
+        {
+          "name": "Exemplars.Value",
+          "type": "Array(Float64)",
+          "kind": "physical",
+          "expression": null,
+          "codec": "ZSTD(3)"
+        },
+        {
+          "name": "Exemplars.SpanId",
+          "type": "Array(String)",
+          "kind": "physical",
+          "expression": null,
+          "codec": "ZSTD(3)"
+        },
+        {
+          "name": "Exemplars.TraceId",
+          "type": "Array(String)",
+          "kind": "physical",
+          "expression": null,
+          "codec": "ZSTD(3)"
+        }
+      ],
+      "indexes": [
+        {
+          "name": "idx_res_attr_key",
+          "expression": "mapKeys(ResourceAttributes)",
+          "type": "bloom_filter(0.01)",
+          "granularity": "1"
+        },
+        {
+          "name": "idx_res_attr_value",
+          "expression": "mapValues(ResourceAttributes)",
+          "type": "bloom_filter(0.01)",
+          "granularity": "1"
+        },
+        {
+          "name": "idx_scope_attr_key",
+          "expression": "mapKeys(ScopeAttributes)",
+          "type": "bloom_filter(0.01)",
+          "granularity": "1"
+        },
+        {
+          "name": "idx_scope_attr_value",
+          "expression": "mapValues(ScopeAttributes)",
+          "type": "bloom_filter(0.01)",
+          "granularity": "1"
+        },
+        {
+          "name": "idx_attr_key",
+          "expression": "mapKeys(Attributes)",
+          "type": "bloom_filter(0.01)",
+          "granularity": "1"
+        },
+        {
+          "name": "idx_attr_value",
+          "expression": "mapValues(Attributes)",
+          "type": "bloom_filter(0.01)",
+          "granularity": "1"
+        },
+        {
+          "name": "idx_time_minmax",
+          "expression": "TimeUnix",
+          "type": "minmax",
+          "granularity": "1"
+        }
+      ],
+      "projections": [],
+      "constraints": [],
+      "engine": "MergeTree",
+      "partitionBy": "toDate(TimeUnix)",
+      "primaryKey": null,
+      "orderBy": "(ServiceName, MetricName, toStartOfHour(TimeUnix), cityHash64(Attributes), TimeUnix)",
+      "sampleBy": null,
+      "ttl": "toDateTime(TimeUnix) + METRICS_TTL",
+      "settings": "ttl_only_drop_parts = 1"
+    },
+    {
+      "name": "otel_metrics_histogram",
+      "file": "docker/otel-collector/schema/seed/00003_otel_metrics.sql",
+      "columns": [
+        {
+          "name": "ResourceAttributes",
+          "type": "Map(LowCardinality(String), String)",
+          "kind": "physical",
+          "expression": null,
+          "codec": "ZSTD(3)"
+        },
+        {
+          "name": "ResourceSchemaUrl",
+          "type": "String",
+          "kind": "physical",
+          "expression": null,
+          "codec": "ZSTD(3)"
+        },
+        {
+          "name": "ScopeName",
+          "type": "String",
+          "kind": "physical",
+          "expression": null,
+          "codec": "ZSTD(3)"
+        },
+        {
+          "name": "ScopeVersion",
+          "type": "String",
+          "kind": "physical",
+          "expression": null,
+          "codec": "ZSTD(3)"
+        },
+        {
+          "name": "ScopeAttributes",
+          "type": "Map(LowCardinality(String), String)",
+          "kind": "physical",
+          "expression": null,
+          "codec": "ZSTD(3)"
+        },
+        {
+          "name": "ScopeDroppedAttrCount",
+          "type": "UInt32",
+          "kind": "physical",
+          "expression": null,
+          "codec": "ZSTD(3)"
+        },
+        {
+          "name": "ScopeSchemaUrl",
+          "type": "String",
+          "kind": "physical",
+          "expression": null,
+          "codec": "ZSTD(3)"
+        },
+        {
+          "name": "ServiceName",
+          "type": "LowCardinality(String)",
+          "kind": "physical",
+          "expression": null,
+          "codec": "ZSTD(3)"
+        },
+        {
+          "name": "MetricName",
+          "type": "LowCardinality(String)",
+          "kind": "physical",
+          "expression": null,
+          "codec": "ZSTD(3)"
+        },
+        {
+          "name": "MetricDescription",
+          "type": "String",
+          "kind": "physical",
+          "expression": null,
+          "codec": "ZSTD(3)"
+        },
+        {
+          "name": "MetricUnit",
+          "type": "String",
+          "kind": "physical",
+          "expression": null,
+          "codec": "ZSTD(3)"
+        },
+        {
+          "name": "Attributes",
+          "type": "Map(LowCardinality(String), String)",
+          "kind": "physical",
+          "expression": null,
+          "codec": "ZSTD(3)"
+        },
+        {
+          "name": "StartTimeUnix",
+          "type": "DateTime",
+          "kind": "physical",
+          "expression": null,
+          "codec": "Delta, ZSTD(3)"
+        },
+        {
+          "name": "TimeUnix",
+          "type": "DateTime",
+          "kind": "physical",
+          "expression": null,
+          "codec": "Delta, ZSTD(3)"
+        },
+        {
+          "name": "Count",
+          "type": "UInt64",
+          "kind": "physical",
+          "expression": null,
+          "codec": "Delta, ZSTD(3)"
+        },
+        {
+          "name": "Sum",
+          "type": "Float64",
+          "kind": "physical",
+          "expression": null,
+          "codec": "ZSTD(3)"
+        },
+        {
+          "name": "BucketCounts",
+          "type": "Array(UInt64)",
+          "kind": "physical",
+          "expression": null,
+          "codec": "ZSTD(3)"
+        },
+        {
+          "name": "ExplicitBounds",
+          "type": "Array(Float64)",
+          "kind": "physical",
+          "expression": null,
+          "codec": "ZSTD(3)"
+        },
+        {
+          "name": "Exemplars.FilteredAttributes",
+          "type": "Array(Map(LowCardinality(String), String))",
+          "kind": "physical",
+          "expression": null,
+          "codec": "ZSTD(3)"
+        },
+        {
+          "name": "Exemplars.TimeUnix",
+          "type": "Array(DateTime)",
+          "kind": "physical",
+          "expression": null,
+          "codec": "ZSTD(3)"
+        },
+        {
+          "name": "Exemplars.Value",
+          "type": "Array(Float64)",
+          "kind": "physical",
+          "expression": null,
+          "codec": "ZSTD(3)"
+        },
+        {
+          "name": "Exemplars.SpanId",
+          "type": "Array(String)",
+          "kind": "physical",
+          "expression": null,
+          "codec": "ZSTD(3)"
+        },
+        {
+          "name": "Exemplars.TraceId",
+          "type": "Array(String)",
+          "kind": "physical",
+          "expression": null,
+          "codec": "ZSTD(3)"
+        },
+        {
+          "name": "Flags",
+          "type": "UInt32",
+          "kind": "physical",
+          "expression": null,
+          "codec": "ZSTD(3)"
+        },
+        {
+          "name": "Min",
+          "type": "Float64",
+          "kind": "physical",
+          "expression": null,
+          "codec": "ZSTD(3)"
+        },
+        {
+          "name": "Max",
+          "type": "Float64",
+          "kind": "physical",
+          "expression": null,
+          "codec": "ZSTD(3)"
+        },
+        {
+          "name": "AggregationTemporality",
+          "type": "Int32",
+          "kind": "physical",
+          "expression": null,
+          "codec": "ZSTD(3)"
+        }
+      ],
+      "indexes": [
+        {
+          "name": "idx_res_attr_key",
+          "expression": "mapKeys(ResourceAttributes)",
+          "type": "bloom_filter(0.01)",
+          "granularity": "1"
+        },
+        {
+          "name": "idx_res_attr_value",
+          "expression": "mapValues(ResourceAttributes)",
+          "type": "bloom_filter(0.01)",
+          "granularity": "1"
+        },
+        {
+          "name": "idx_scope_attr_key",
+          "expression": "mapKeys(ScopeAttributes)",
+          "type": "bloom_filter(0.01)",
+          "granularity": "1"
+        },
+        {
+          "name": "idx_scope_attr_value",
+          "expression": "mapValues(ScopeAttributes)",
+          "type": "bloom_filter(0.01)",
+          "granularity": "1"
+        },
+        {
+          "name": "idx_attr_key",
+          "expression": "mapKeys(Attributes)",
+          "type": "bloom_filter(0.01)",
+          "granularity": "1"
+        },
+        {
+          "name": "idx_attr_value",
+          "expression": "mapValues(Attributes)",
+          "type": "bloom_filter(0.01)",
+          "granularity": "1"
+        },
+        {
+          "name": "idx_time_minmax",
+          "expression": "TimeUnix",
+          "type": "minmax",
+          "granularity": "1"
+        }
+      ],
+      "projections": [],
+      "constraints": [],
+      "engine": "MergeTree",
+      "partitionBy": "toDate(TimeUnix)",
+      "primaryKey": null,
+      "orderBy": "(ServiceName, MetricName, toStartOfHour(TimeUnix), cityHash64(Attributes), TimeUnix)",
+      "sampleBy": null,
+      "ttl": "toDateTime(TimeUnix) + METRICS_TTL",
+      "settings": "ttl_only_drop_parts = 1"
+    },
+    {
+      "name": "otel_metrics_sum",
+      "file": "docker/otel-collector/schema/seed/00003_otel_metrics.sql",
+      "columns": [
+        {
+          "name": "ResourceAttributes",
+          "type": "Map(LowCardinality(String), String)",
+          "kind": "physical",
+          "expression": null,
+          "codec": "ZSTD(3)"
+        },
+        {
+          "name": "ResourceSchemaUrl",
+          "type": "String",
+          "kind": "physical",
+          "expression": null,
+          "codec": "ZSTD(3)"
+        },
+        {
+          "name": "ScopeName",
+          "type": "String",
+          "kind": "physical",
+          "expression": null,
+          "codec": "ZSTD(3)"
+        },
+        {
+          "name": "ScopeVersion",
+          "type": "String",
+          "kind": "physical",
+          "expression": null,
+          "codec": "ZSTD(3)"
+        },
+        {
+          "name": "ScopeAttributes",
+          "type": "Map(LowCardinality(String), String)",
+          "kind": "physical",
+          "expression": null,
+          "codec": "ZSTD(3)"
+        },
+        {
+          "name": "ScopeDroppedAttrCount",
+          "type": "UInt32",
+          "kind": "physical",
+          "expression": null,
+          "codec": "ZSTD(3)"
+        },
+        {
+          "name": "ScopeSchemaUrl",
+          "type": "String",
+          "kind": "physical",
+          "expression": null,
+          "codec": "ZSTD(3)"
+        },
+        {
+          "name": "ServiceName",
+          "type": "LowCardinality(String)",
+          "kind": "physical",
+          "expression": null,
+          "codec": "ZSTD(3)"
+        },
+        {
+          "name": "MetricName",
+          "type": "LowCardinality(String)",
+          "kind": "physical",
+          "expression": null,
+          "codec": "ZSTD(3)"
+        },
+        {
+          "name": "MetricDescription",
+          "type": "String",
+          "kind": "physical",
+          "expression": null,
+          "codec": "ZSTD(3)"
+        },
+        {
+          "name": "MetricUnit",
+          "type": "String",
+          "kind": "physical",
+          "expression": null,
+          "codec": "ZSTD(3)"
+        },
+        {
+          "name": "Attributes",
+          "type": "Map(LowCardinality(String), String)",
+          "kind": "physical",
+          "expression": null,
+          "codec": "ZSTD(3)"
+        },
+        {
+          "name": "StartTimeUnix",
+          "type": "DateTime",
+          "kind": "physical",
+          "expression": null,
+          "codec": "Delta, ZSTD(3)"
+        },
+        {
+          "name": "TimeUnix",
+          "type": "DateTime",
+          "kind": "physical",
+          "expression": null,
+          "codec": "Delta, ZSTD(3)"
+        },
+        {
+          "name": "Value",
+          "type": "Float64",
+          "kind": "physical",
+          "expression": null,
+          "codec": "ZSTD(3)"
+        },
+        {
+          "name": "Flags",
+          "type": "UInt32",
+          "kind": "physical",
+          "expression": null,
+          "codec": "ZSTD(3)"
+        },
+        {
+          "name": "Exemplars.FilteredAttributes",
+          "type": "Array(Map(LowCardinality(String), String))",
+          "kind": "physical",
+          "expression": null,
+          "codec": "ZSTD(3)"
+        },
+        {
+          "name": "Exemplars.TimeUnix",
+          "type": "Array(DateTime)",
+          "kind": "physical",
+          "expression": null,
+          "codec": "ZSTD(3)"
+        },
+        {
+          "name": "Exemplars.Value",
+          "type": "Array(Float64)",
+          "kind": "physical",
+          "expression": null,
+          "codec": "ZSTD(3)"
+        },
+        {
+          "name": "Exemplars.SpanId",
+          "type": "Array(String)",
+          "kind": "physical",
+          "expression": null,
+          "codec": "ZSTD(3)"
+        },
+        {
+          "name": "Exemplars.TraceId",
+          "type": "Array(String)",
+          "kind": "physical",
+          "expression": null,
+          "codec": "ZSTD(3)"
+        },
+        {
+          "name": "AggregationTemporality",
+          "type": "Int32",
+          "kind": "physical",
+          "expression": null,
+          "codec": "ZSTD(3)"
+        },
+        {
+          "name": "IsMonotonic",
+          "type": "Bool",
+          "kind": "physical",
+          "expression": null,
+          "codec": "ZSTD(3)"
+        }
+      ],
+      "indexes": [
+        {
+          "name": "idx_res_attr_key",
+          "expression": "mapKeys(ResourceAttributes)",
+          "type": "bloom_filter(0.01)",
+          "granularity": "1"
+        },
+        {
+          "name": "idx_res_attr_value",
+          "expression": "mapValues(ResourceAttributes)",
+          "type": "bloom_filter(0.01)",
+          "granularity": "1"
+        },
+        {
+          "name": "idx_scope_attr_key",
+          "expression": "mapKeys(ScopeAttributes)",
+          "type": "bloom_filter(0.01)",
+          "granularity": "1"
+        },
+        {
+          "name": "idx_scope_attr_value",
+          "expression": "mapValues(ScopeAttributes)",
+          "type": "bloom_filter(0.01)",
+          "granularity": "1"
+        },
+        {
+          "name": "idx_attr_key",
+          "expression": "mapKeys(Attributes)",
+          "type": "bloom_filter(0.01)",
+          "granularity": "1"
+        },
+        {
+          "name": "idx_attr_value",
+          "expression": "mapValues(Attributes)",
+          "type": "bloom_filter(0.01)",
+          "granularity": "1"
+        },
+        {
+          "name": "idx_time_minmax",
+          "expression": "TimeUnix",
+          "type": "minmax",
+          "granularity": "1"
+        }
+      ],
+      "projections": [],
+      "constraints": [],
+      "engine": "MergeTree",
+      "partitionBy": "toDate(TimeUnix)",
+      "primaryKey": null,
+      "orderBy": "(ServiceName, MetricName, toStartOfHour(TimeUnix), cityHash64(Attributes), TimeUnix)",
+      "sampleBy": null,
+      "ttl": "toDateTime(TimeUnix) + METRICS_TTL",
+      "settings": "ttl_only_drop_parts = 1"
+    },
+    {
+      "name": "otel_metrics_summary",
+      "file": "docker/otel-collector/schema/seed/00003_otel_metrics.sql",
+      "columns": [
+        {
+          "name": "ResourceAttributes",
+          "type": "Map(LowCardinality(String), String)",
+          "kind": "physical",
+          "expression": null,
+          "codec": "ZSTD(3)"
+        },
+        {
+          "name": "ResourceSchemaUrl",
+          "type": "String",
+          "kind": "physical",
+          "expression": null,
+          "codec": "ZSTD(3)"
+        },
+        {
+          "name": "ScopeName",
+          "type": "String",
+          "kind": "physical",
+          "expression": null,
+          "codec": "ZSTD(3)"
+        },
+        {
+          "name": "ScopeVersion",
+          "type": "String",
+          "kind": "physical",
+          "expression": null,
+          "codec": "ZSTD(3)"
+        },
+        {
+          "name": "ScopeAttributes",
+          "type": "Map(LowCardinality(String), String)",
+          "kind": "physical",
+          "expression": null,
+          "codec": "ZSTD(3)"
+        },
+        {
+          "name": "ScopeDroppedAttrCount",
+          "type": "UInt32",
+          "kind": "physical",
+          "expression": null,
+          "codec": "ZSTD(3)"
+        },
+        {
+          "name": "ScopeSchemaUrl",
+          "type": "String",
+          "kind": "physical",
+          "expression": null,
+          "codec": "ZSTD(3)"
+        },
+        {
+          "name": "ServiceName",
+          "type": "LowCardinality(String)",
+          "kind": "physical",
+          "expression": null,
+          "codec": "ZSTD(3)"
+        },
+        {
+          "name": "MetricName",
+          "type": "LowCardinality(String)",
+          "kind": "physical",
+          "expression": null,
+          "codec": "ZSTD(3)"
+        },
+        {
+          "name": "MetricDescription",
+          "type": "String",
+          "kind": "physical",
+          "expression": null,
+          "codec": "ZSTD(3)"
+        },
+        {
+          "name": "MetricUnit",
+          "type": "String",
+          "kind": "physical",
+          "expression": null,
+          "codec": "ZSTD(3)"
+        },
+        {
+          "name": "Attributes",
+          "type": "Map(LowCardinality(String), String)",
+          "kind": "physical",
+          "expression": null,
+          "codec": "ZSTD(3)"
+        },
+        {
+          "name": "StartTimeUnix",
+          "type": "DateTime",
+          "kind": "physical",
+          "expression": null,
+          "codec": "Delta, ZSTD(3)"
+        },
+        {
+          "name": "TimeUnix",
+          "type": "DateTime",
+          "kind": "physical",
+          "expression": null,
+          "codec": "Delta, ZSTD(3)"
+        },
+        {
+          "name": "Count",
+          "type": "UInt64",
+          "kind": "physical",
+          "expression": null,
+          "codec": "Delta, ZSTD(3)"
+        },
+        {
+          "name": "Sum",
+          "type": "Float64",
+          "kind": "physical",
+          "expression": null,
+          "codec": "ZSTD(3)"
+        },
+        {
+          "name": "ValueAtQuantiles.Quantile",
+          "type": "Array(Float64)",
+          "kind": "physical",
+          "expression": null,
+          "codec": "ZSTD(3)"
+        },
+        {
+          "name": "ValueAtQuantiles.Value",
+          "type": "Array(Float64)",
+          "kind": "physical",
+          "expression": null,
+          "codec": "ZSTD(3)"
+        },
+        {
+          "name": "Flags",
+          "type": "UInt32",
+          "kind": "physical",
+          "expression": null,
+          "codec": "ZSTD(3)"
+        }
+      ],
+      "indexes": [
+        {
+          "name": "idx_res_attr_key",
+          "expression": "mapKeys(ResourceAttributes)",
+          "type": "bloom_filter(0.01)",
+          "granularity": "1"
+        },
+        {
+          "name": "idx_res_attr_value",
+          "expression": "mapValues(ResourceAttributes)",
+          "type": "bloom_filter(0.01)",
+          "granularity": "1"
+        },
+        {
+          "name": "idx_scope_attr_key",
+          "expression": "mapKeys(ScopeAttributes)",
+          "type": "bloom_filter(0.01)",
+          "granularity": "1"
+        },
+        {
+          "name": "idx_scope_attr_value",
+          "expression": "mapValues(ScopeAttributes)",
+          "type": "bloom_filter(0.01)",
+          "granularity": "1"
+        },
+        {
+          "name": "idx_attr_key",
+          "expression": "mapKeys(Attributes)",
+          "type": "bloom_filter(0.01)",
+          "granularity": "1"
+        },
+        {
+          "name": "idx_attr_value",
+          "expression": "mapValues(Attributes)",
+          "type": "bloom_filter(0.01)",
+          "granularity": "1"
+        },
+        {
+          "name": "idx_time_minmax",
+          "expression": "TimeUnix",
+          "type": "minmax",
+          "granularity": "1"
+        }
+      ],
+      "projections": [],
+      "constraints": [],
+      "engine": "MergeTree",
+      "partitionBy": "toDate(TimeUnix)",
+      "primaryKey": null,
+      "orderBy": "(ServiceName, MetricName, toStartOfHour(TimeUnix), cityHash64(Attributes), TimeUnix)",
+      "sampleBy": null,
+      "ttl": "toDateTime(TimeUnix) + METRICS_TTL",
+      "settings": "ttl_only_drop_parts = 1"
+    },
+    {
+      "name": "otel_traces",
+      "file": "docker/otel-collector/schema/seed/00005_otel_traces_compat.sql",
+      "columns": [
+        {
+          "name": "Timestamp",
+          "type": "DateTime64(9)",
+          "kind": "physical",
+          "expression": null,
+          "codec": "Delta, ZSTD(3)"
+        },
+        {
+          "name": "TraceId",
+          "type": "String",
+          "kind": "physical",
+          "expression": null,
+          "codec": "ZSTD(3)"
+        },
+        {
+          "name": "SpanId",
+          "type": "String",
+          "kind": "physical",
+          "expression": null,
+          "codec": "ZSTD(3)"
+        },
+        {
+          "name": "ParentSpanId",
+          "type": "String",
+          "kind": "physical",
+          "expression": null,
+          "codec": "ZSTD(3)"
+        },
+        {
+          "name": "TraceState",
+          "type": "String",
+          "kind": "physical",
+          "expression": null,
+          "codec": "ZSTD(3)"
+        },
+        {
+          "name": "SpanName",
+          "type": "LowCardinality(String)",
+          "kind": "physical",
+          "expression": null,
+          "codec": "ZSTD(3)"
+        },
+        {
+          "name": "SpanKind",
+          "type": "LowCardinality(String)",
+          "kind": "physical",
+          "expression": null,
+          "codec": "ZSTD(3)"
+        },
+        {
+          "name": "ServiceName",
+          "type": "LowCardinality(String)",
+          "kind": "physical",
+          "expression": null,
+          "codec": "ZSTD(3)"
+        },
+        {
+          "name": "ResourceAttributes",
+          "type": "Map(LowCardinality(String), String)",
+          "kind": "physical",
+          "expression": null,
+          "codec": "ZSTD(3)"
+        },
+        {
+          "name": "ScopeName",
+          "type": "String",
+          "kind": "physical",
+          "expression": null,
+          "codec": "ZSTD(3)"
+        },
+        {
+          "name": "ScopeVersion",
+          "type": "String",
+          "kind": "physical",
+          "expression": null,
+          "codec": "ZSTD(3)"
+        },
+        {
+          "name": "SpanAttributes",
+          "type": "Map(LowCardinality(String), String)",
+          "kind": "physical",
+          "expression": null,
+          "codec": "ZSTD(3)"
+        },
+        {
+          "name": "Duration",
+          "type": "UInt64",
+          "kind": "physical",
+          "expression": null,
+          "codec": "ZSTD(3)"
+        },
+        {
+          "name": "StatusCode",
+          "type": "LowCardinality(String)",
+          "kind": "physical",
+          "expression": null,
+          "codec": "ZSTD(3)"
+        },
+        {
+          "name": "StatusMessage",
+          "type": "String",
+          "kind": "physical",
+          "expression": null,
+          "codec": "ZSTD(3)"
+        },
+        {
+          "name": "Events.Timestamp",
+          "type": "Array(DateTime64(9))",
+          "kind": "physical",
+          "expression": null,
+          "codec": "ZSTD(3)"
+        },
+        {
+          "name": "Events.Name",
+          "type": "Array(LowCardinality(String))",
+          "kind": "physical",
+          "expression": null,
+          "codec": "ZSTD(3)"
+        },
+        {
+          "name": "Events.Attributes",
+          "type": "Array(Map(LowCardinality(String), String))",
+          "kind": "physical",
+          "expression": null,
+          "codec": "ZSTD(3)"
+        },
+        {
+          "name": "Links.TraceId",
+          "type": "Array(String)",
+          "kind": "physical",
+          "expression": null,
+          "codec": "ZSTD(3)"
+        },
+        {
+          "name": "Links.SpanId",
+          "type": "Array(String)",
+          "kind": "physical",
+          "expression": null,
+          "codec": "ZSTD(3)"
+        },
+        {
+          "name": "Links.TraceState",
+          "type": "Array(String)",
+          "kind": "physical",
+          "expression": null,
+          "codec": "ZSTD(3)"
+        },
+        {
+          "name": "Links.Attributes",
+          "type": "Array(Map(LowCardinality(String), String))",
+          "kind": "physical",
+          "expression": null,
+          "codec": "ZSTD(3)"
+        },
+        {
+          "name": "__hdx_materialized_rum.sessionId",
+          "type": "String",
+          "kind": "materialized",
+          "expression": "ResourceAttributes['rum.sessionId']",
+          "codec": "ZSTD(3)"
+        },
+        {
+          "name": "SampleRate",
+          "type": "UInt64",
+          "kind": "materialized",
+          "expression": "greatest(toUInt64OrZero(SpanAttributes['SampleRate']), 1)",
+          "codec": "T64, ZSTD(3)"
+        }
+      ],
+      "indexes": [
+        {
+          "name": "idx_trace_id",
+          "expression": "TraceId",
+          "type": "bloom_filter(0.001)",
+          "granularity": "1"
+        },
+        {
+          "name": "idx_rum_session_id",
+          "expression": "__hdx_materialized_rum.sessionId",
+          "type": "bloom_filter(0.001)",
+          "granularity": "1"
+        },
+        {
+          "name": "idx_res_attr_key",
+          "expression": "mapKeys(ResourceAttributes)",
+          "type": "bloom_filter(0.01)",
+          "granularity": "1"
+        },
+        {
+          "name": "idx_res_attr_value",
+          "expression": "mapValues(ResourceAttributes)",
+          "type": "bloom_filter(0.01)",
+          "granularity": "1"
+        },
+        {
+          "name": "idx_span_attr_key",
+          "expression": "mapKeys(SpanAttributes)",
+          "type": "bloom_filter(0.01)",
+          "granularity": "1"
+        },
+        {
+          "name": "idx_span_attr_value",
+          "expression": "mapValues(SpanAttributes)",
+          "type": "bloom_filter(0.01)",
+          "granularity": "1"
+        },
+        {
+          "name": "idx_duration",
+          "expression": "Duration",
+          "type": "minmax",
+          "granularity": "1"
+        },
+        {
+          "name": "idx_lower_span_name",
+          "expression": "lower(SpanName)",
+          "type": "tokenbf_v1(32768, 3, 0)",
+          "granularity": "8"
+        }
+      ],
+      "projections": [],
+      "constraints": [],
+      "engine": "MergeTree",
+      "partitionBy": "toDate(Timestamp)",
+      "primaryKey": null,
+      "orderBy": "(ServiceName, SpanName, toDateTime(Timestamp))",
+      "sampleBy": null,
+      "ttl": "toDate(Timestamp) + TRACES_TTL",
+      "settings": "index_granularity = 8192, ttl_only_drop_parts = 1"
+    },
+    {
+      "name": "otel_traces_kv_rollup_15m",
+      "file": "docker/otel-collector/schema/seed/00007_otel_traces_rollups.sql",
+      "columns": [
+        {
+          "name": "Timestamp",
+          "type": "DateTime",
+          "kind": "physical",
+          "expression": null,
+          "codec": null
+        },
+        {
+          "name": "ColumnIdentifier",
+          "type": "LowCardinality(String)",
+          "kind": "physical",
+          "expression": null,
+          "codec": null
+        },
+        {
+          "name": "Key",
+          "type": "LowCardinality(String)",
+          "kind": "physical",
+          "expression": null,
+          "codec": null
+        },
+        {
+          "name": "Value",
+          "type": "String",
+          "kind": "physical",
+          "expression": null,
+          "codec": null
+        },
+        {
+          "name": "count",
+          "type": "UInt64",
+          "kind": "physical",
+          "expression": null,
+          "codec": null
+        }
+      ],
+      "indexes": [
+        {
+          "name": "idx_count_minmax",
+          "expression": "count",
+          "type": "minmax",
+          "granularity": "1"
+        },
+        {
+          "name": "idx_timestamp_minmax",
+          "expression": "Timestamp",
+          "type": "minmax",
+          "granularity": "1"
+        }
+      ],
+      "projections": [],
+      "constraints": [],
+      "engine": "SummingMergeTree",
+      "partitionBy": "toDate(Timestamp)",
+      "primaryKey": null,
+      "orderBy": "(ColumnIdentifier, Key, Timestamp, Value)",
+      "sampleBy": null,
+      "ttl": "Timestamp + TRACES_TTL",
+      "settings": "index_granularity = 8192, ttl_only_drop_parts = 1"
+    }
+  ],
+  "materializedViews": [
+    {
+      "name": "otel_logs_attr_kv_rollup_15m_mv",
+      "file": "docker/otel-collector/schema/seed/00006_otel_logs_rollups.sql",
+      "target": "otel_logs_kv_rollup_15m",
+      "sources": [
+        "elements",
+        "otel_logs"
+      ],
+      "select": "WITH elements AS ( SELECT 'NativeColumn' AS ColumnIdentifier, toStartOfFifteenMinutes(Timestamp) AS Timestamp, 'SeverityText' as Key, CAST(SeverityText AS String) as Value FROM DATABASE.otel_logs UNION ALL SELECT 'NativeColumn' AS ColumnIdentifier, toStartOfFifteenMinutes(Timestamp) AS Timestamp, 'ServiceName' as Key, CAST(ServiceName AS String) as Value FROM DATABASE.otel_logs UNION ALL SELECT 'NativeColumn' AS ColumnIdentifier, toStartOfFifteenMinutes(Timestamp) AS Timestamp, 'ScopeName' as Key, CAST(ScopeName AS String) as Value FROM DATABASE.otel_logs UNION ALL SELECT 'NativeColumn' AS ColumnIdentifier, toStartOfFifteenMinutes(Timestamp) AS Timestamp, 'ScopeVersion' as Key, CAST(ScopeVersion AS String) as Value FROM DATABASE.otel_logs UNION ALL SELECT 'NativeColumn' AS ColumnIdentifier, toStartOfFifteenMinutes(Timestamp) AS Timestamp, 'ResourceSchemaUrl' as Key, CAST(ResourceSchemaUrl AS String) as Value FROM DATABASE.otel_logs UNION ALL SELECT 'NativeColumn' AS ColumnIdentifier, toStartOfFifteenMinutes(Timestamp) AS Timestamp, 'ScopeSchemaUrl' as Key, CAST(ScopeSchemaUrl AS String) as Value FROM DATABASE.otel_logs UNION ALL SELECT 'NativeColumn' AS ColumnIdentifier, toStartOfFifteenMinutes(Timestamp) AS Timestamp, '__hdx_materialized_k8s.cluster.name' as Key, CAST(`__hdx_materialized_k8s.cluster.name` AS String) as Value FROM DATABASE.otel_logs UNION ALL SELECT 'NativeColumn' AS ColumnIdentifier, toStartOfFifteenMinutes(Timestamp) AS Timestamp, '__hdx_materialized_k8s.container.name' as Key, CAST(`__hdx_materialized_k8s.container.name` AS String) as Value FROM DATABASE.otel_logs UNION ALL SELECT 'NativeColumn' AS ColumnIdentifier, toStartOfFifteenMinutes(Timestamp) AS Timestamp, '__hdx_materialized_k8s.deployment.name' as Key, CAST(`__hdx_materialized_k8s.deployment.name` AS String) as Value FROM DATABASE.otel_logs UNION ALL SELECT 'NativeColumn' AS ColumnIdentifier, toStartOfFifteenMinutes(Timestamp) AS Timestamp, '__hdx_materialized_k8s.namespace.name' as Key, CAST(`__hdx_materialized_k8s.namespace.name` AS String) as Value FROM DATABASE.otel_logs UNION ALL SELECT 'NativeColumn' AS ColumnIdentifier, toStartOfFifteenMinutes(Timestamp) AS Timestamp, '__hdx_materialized_k8s.node.name' as Key, CAST(`__hdx_materialized_k8s.node.name` AS String) as Value FROM DATABASE.otel_logs UNION ALL SELECT 'NativeColumn' AS ColumnIdentifier, toStartOfFifteenMinutes(Timestamp) AS Timestamp, '__hdx_materialized_k8s.pod.name' as Key, CAST(`__hdx_materialized_k8s.pod.name` AS String) as Value FROM DATABASE.otel_logs UNION ALL SELECT 'NativeColumn' AS ColumnIdentifier, toStartOfFifteenMinutes(Timestamp) AS Timestamp, '__hdx_materialized_k8s.pod.uid' as Key, CAST(`__hdx_materialized_k8s.pod.uid` AS String) as Value FROM DATABASE.otel_logs UNION ALL SELECT 'NativeColumn' AS ColumnIdentifier, toStartOfFifteenMinutes(Timestamp) AS Timestamp, '__hdx_materialized_deployment.environment.name' as Key, CAST(`__hdx_materialized_deployment.environment.name` AS String) as Value FROM DATABASE.otel_logs ) SELECT Timestamp, ColumnIdentifier, Key, Value, count() AS count FROM elements GROUP BY Timestamp, ColumnIdentifier, Key, Value"
+    },
+    {
+      "name": "otel_traces_kv_rollup_15m_mv",
+      "file": "docker/otel-collector/schema/seed/00007_otel_traces_rollups.sql",
+      "target": "otel_traces_kv_rollup_15m",
+      "sources": [
+        "elements",
+        "otel_traces"
+      ],
+      "select": "WITH elements AS ( SELECT 'NativeColumn' AS ColumnIdentifier, toStartOfFifteenMinutes(Timestamp) AS Timestamp, 'ServiceName' AS Key, CAST(ServiceName AS String) AS Value FROM DATABASE.otel_traces UNION ALL SELECT 'NativeColumn' AS ColumnIdentifier, toStartOfFifteenMinutes(Timestamp) AS Timestamp, 'SpanName' AS Key, CAST(SpanName AS String) AS Value FROM DATABASE.otel_traces UNION ALL SELECT 'NativeColumn' AS ColumnIdentifier, toStartOfFifteenMinutes(Timestamp) AS Timestamp, 'SpanKind' AS Key, CAST(SpanKind AS String) AS Value FROM DATABASE.otel_traces UNION ALL SELECT 'NativeColumn' AS ColumnIdentifier, toStartOfFifteenMinutes(Timestamp) AS Timestamp, 'StatusCode' AS Key, CAST(StatusCode AS String) AS Value FROM DATABASE.otel_traces UNION ALL SELECT 'NativeColumn' AS ColumnIdentifier, toStartOfFifteenMinutes(Timestamp) AS Timestamp, 'ScopeName' AS Key, CAST(ScopeName AS String) AS Value FROM DATABASE.otel_traces UNION ALL SELECT 'NativeColumn' AS ColumnIdentifier, toStartOfFifteenMinutes(Timestamp) AS Timestamp, 'ScopeVersion' AS Key, CAST(ScopeVersion AS String) AS Value FROM DATABASE.otel_traces ) SELECT Timestamp, ColumnIdentifier, Key, Value, count() AS count FROM elements GROUP BY Timestamp, ColumnIdentifier, Key, Value"
+    }
+  ],
+  "views": [],
+  "other": [
+    {
+      "kind": "other",
+      "file": "docker/otel-collector/schema/seed/00001_create_database.sql",
+      "table": null,
+      "text": "CREATE DATABASE IF NOT EXISTS DATABASE"
+    },
+    {
+      "kind": "alter",
+      "file": "packages/api/migrations/ch/000001_add_is_delta_n_is_monotonic_fields_to_metric_stream_table.up.sql",
+      "table": "metric_stream",
+      "text": "ALTER TABLE default.metric_stream ADD COLUMN is_delta Boolean CODEC(Delta, ZSTD(1))"
+    },
+    {
+      "kind": "alter",
+      "file": "packages/api/migrations/ch/000001_add_is_delta_n_is_monotonic_fields_to_metric_stream_table.up.sql",
+      "table": "metric_stream",
+      "text": "ALTER TABLE default.metric_stream ADD COLUMN is_monotonic Boolean CODEC(Delta, ZSTD(1))"
+    },
+    {
+      "kind": "alter",
+      "file": "packages/api/migrations/ch/000002_add_sample_rate_column_to_otel_traces.up.sql",
+      "table": "otel_traces",
+      "text": "ALTER TABLE DATABASE.otel_traces ADD COLUMN IF NOT EXISTS `SampleRate` UInt64 MATERIALIZED greatest(toUInt64OrZero(SpanAttributes['SampleRate']), 1) CODEC(T64, ZSTD(1))"
+    }
+  ]
+}

@@ -1,0 +1,7 @@
+{
+  "name": "@hyperdx/app",
+  "private": true,
+  "scripts": { "ci:unit": "jest", "ci:lint": "eslint ." },
+  "dependencies": { "@hyperdx/common-utils": "workspace:*", "react": "^19.0.0" },
+  "devDependencies": { "typescript": "^6.0.3" }
+}

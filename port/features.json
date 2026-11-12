@@ -1,0 +1,800 @@
+{
+  "schemaVersion": 1,
+  "features": [
+    {
+      "id": "app-home",
+      "name": "Home page",
+      "area": "internal",
+      "visibility": "user",
+      "description": "Open the root URL and be sent to search, login or registration depending on installation and sign-in state.",
+      "entryPoints": [
+        "app_page:/"
+      ],
+      "status": "not_started",
+      "decision": null
+    },
+    {
+      "id": "app-search",
+      "name": "Log and trace search",
+      "area": "search",
+      "visibility": "user",
+      "description": "Search, filter and explore logs and traces over a time range, optionally from a saved search.",
+      "entryPoints": [
+        "app_page:/search",
+        "app_page:/search/[savedSearchId]",
+        "app_page:/search/list"
+      ],
+      "status": "not_started",
+      "decision": null
+    },
+    {
+      "id": "api-saved-search",
+      "name": "Saved searches",
+      "area": "search",
+      "visibility": "user",
+      "description": "Save, list, rename and delete named searches with their filters and alerts.",
+      "entryPoints": [
+        "api_route:DELETE /saved-search/:id",
+        "api_route:GET /saved-search",
+        "api_route:PATCH /saved-search/:id",
+        "api_route:POST /saved-search"
+      ],
+      "status": "not_started",
+      "decision": null
+    },
+    {
+      "id": "api-pinned-filters",
+      "name": "Pinned filters",
+      "area": "search",
+      "visibility": "user",
+      "description": "Pin filter values so they stay available in the search sidebar.",
+      "entryPoints": [
+        "api_route:GET /pinned-filters",
+        "api_route:PUT /pinned-filters"
+      ],
+      "status": "not_started",
+      "decision": null
+    },
+    {
+      "id": "api-favorites",
+      "name": "Favorites",
+      "area": "admin",
+      "visibility": "user",
+      "description": "Mark dashboards and saved searches as favorites for quick access.",
+      "entryPoints": [
+        "api_route:DELETE /favorites/:resourceType/:resourceId",
+        "api_route:GET /favorites",
+        "api_route:PUT /favorites"
+      ],
+      "status": "not_started",
+      "decision": null
+    },
+    {
+      "id": "app-chart",
+      "name": "Chart explorer",
+      "area": "charts",
+      "visibility": "user",
+      "description": "Build an ad hoc chart from any source and view it over a time range.",
+      "entryPoints": [
+        "app_page:/chart"
+      ],
+      "status": "not_started",
+      "decision": null
+    },
+    {
+      "id": "app-dashboards",
+      "name": "Dashboards",
+      "area": "dashboards",
+      "visibility": "user",
+      "description": "Create, edit, import, template and delete dashboards of charts, including preset dashboard filters.",
+      "entryPoints": [
+        "api_route:DELETE /dashboards/:id",
+        "api_route:DELETE /dashboards/preset/:presetDashboard/filter/:id",
+        "api_route:GET /dashboards",
+        "api_route:GET /dashboards/preset/:presetDashboard/filters",
+        "api_route:PATCH /dashboards/:id",
+        "api_route:POST /dashboards",
+        "api_route:POST /dashboards/preset/:presetDashboard/filter",
+        "api_route:PUT /dashboards/preset/:presetDashboard/filter",
+        "app_page:/dashboards",
+        "app_page:/dashboards/[dashboardId]",
+        "app_page:/dashboards/import",
+        "app_page:/dashboards/list",
+        "app_page:/dashboards/templates"
+      ],
+      "status": "not_started",
+      "decision": null
+    },
+    {
+      "id": "app-alerts",
+      "name": "Alerts",
+      "area": "alerts",
+      "visibility": "user",
+      "description": "Create, edit, silence, delete and review the history of alerts on searches and dashboard tiles.",
+      "entryPoints": [
+        "api_route:DELETE /alerts/:id",
+        "api_route:DELETE /alerts/:id/silenced",
+        "api_route:GET /alerts",
+        "api_route:GET /alerts/:id",
+        "api_route:GET /alerts/:id/evaluations",
+        "api_route:GET /alerts/:id/history",
+        "api_route:POST /alerts",
+        "api_route:POST /alerts/:id/silenced",
+        "api_route:PUT /alerts/:id",
+        "app_page:/alerts",
+        "app_page:/alerts/[alertId]"
+      ],
+      "status": "not_started",
+      "decision": null
+    },
+    {
+      "id": "task-check-alerts",
+      "name": "Alert evaluation",
+      "area": "alerts",
+      "visibility": "internal",
+      "description": "Periodically evaluate every alert and send notifications to its webhook.",
+      "entryPoints": [
+        "task:check-alerts"
+      ],
+      "status": "not_started",
+      "decision": null
+    },
+    {
+      "id": "api-webhooks",
+      "name": "Webhooks",
+      "area": "admin",
+      "visibility": "admin",
+      "description": "Configure and test the webhook destinations that alerts notify.",
+      "entryPoints": [
+        "api_route:DELETE /webhooks/:id",
+        "api_route:GET /webhooks",
+        "api_route:POST /webhooks",
+        "api_route:POST /webhooks/test",
+        "api_route:PUT /webhooks/:id"
+      ],
+      "status": "not_started",
+      "decision": null
+    },
+    {
+      "id": "app-trace",
+      "name": "Trace waterfall",
+      "area": "traces",
+      "visibility": "user",
+      "description": "Open one trace and inspect its spans, timing and related logs.",
+      "entryPoints": [
+        "app_page:/trace/[traceId]"
+      ],
+      "status": "not_started",
+      "decision": null
+    },
+    {
+      "id": "app-service-map",
+      "name": "Service map",
+      "area": "service_map",
+      "visibility": "user",
+      "description": "See services and the calls between them as a dependency graph.",
+      "entryPoints": [
+        "app_page:/service-map"
+      ],
+      "status": "not_started",
+      "decision": null
+    },
+    {
+      "id": "app-sessions",
+      "name": "Session replay",
+      "area": "sessions",
+      "visibility": "user",
+      "description": "Replay recorded browser sessions alongside their logs and traces.",
+      "entryPoints": [
+        "app_page:/sessions"
+      ],
+      "status": "not_started",
+      "decision": null
+    },
+    {
+      "id": "app-kubernetes",
+      "name": "Kubernetes dashboard",
+      "area": "presets",
+      "visibility": "user",
+      "description": "View a preset dashboard of pod, node and namespace health.",
+      "entryPoints": [
+        "app_page:/kubernetes"
+      ],
+      "status": "not_started",
+      "decision": null
+    },
+    {
+      "id": "app-services",
+      "name": "Services dashboard",
+      "area": "presets",
+      "visibility": "user",
+      "description": "View a preset dashboard of request rate, errors and latency per service.",
+      "entryPoints": [
+        "app_page:/services"
+      ],
+      "status": "not_started",
+      "decision": null
+    },
+    {
+      "id": "app-llm",
+      "name": "LLM dashboard",
+      "area": "ai",
+      "visibility": "user",
+      "description": "View a preset dashboard of LLM call volume, latency and token usage.",
+      "entryPoints": [
+        "app_page:/llm"
+      ],
+      "status": "not_started",
+      "decision": null
+    },
+    {
+      "id": "api-ai",
+      "name": "AI assistant",
+      "area": "ai",
+      "visibility": "user",
+      "description": "Ask the AI assistant to build or explain a chart from a natural-language prompt.",
+      "entryPoints": [
+        "api_route:POST /ai/assistant"
+      ],
+      "status": "not_started",
+      "decision": null
+    },
+    {
+      "id": "api-v1",
+      "name": "Prometheus-compatible query API",
+      "area": "metrics",
+      "visibility": "api",
+      "description": "Query metrics through Prometheus-style endpoints for use by Grafana and similar tools.",
+      "entryPoints": [
+        "api_route:GET /v1/prometheus/label/:name/values",
+        "api_route:GET /v1/prometheus/labels",
+        "api_route:GET /v1/prometheus/query",
+        "api_route:GET /v1/prometheus/query_exemplars",
+        "api_route:GET /v1/prometheus/query_range",
+        "api_route:POST /v1/prometheus/query",
+        "api_route:POST /v1/prometheus/query_exemplars",
+        "api_route:POST /v1/prometheus/query_range"
+      ],
+      "status": "not_started",
+      "decision": null
+    },
+    {
+      "id": "app-login",
+      "name": "Sign in and sign out",
+      "area": "auth",
+      "visibility": "user",
+      "description": "Sign in with email and password and sign out.",
+      "entryPoints": [
+        "api_route:GET /logout",
+        "api_route:POST /login/password",
+        "app_page:/login"
+      ],
+      "status": "not_started",
+      "decision": null
+    },
+    {
+      "id": "app-register",
+      "name": "Registration",
+      "area": "auth",
+      "visibility": "user",
+      "description": "Create the first account and team for a new installation.",
+      "entryPoints": [
+        "api_route:POST /register/password",
+        "app_page:/register"
+      ],
+      "status": "not_started",
+      "decision": null
+    },
+    {
+      "id": "app-join-team",
+      "name": "Join a team",
+      "area": "auth",
+      "visibility": "user",
+      "description": "Accept a team invitation and set a password.",
+      "entryPoints": [
+        "api_route:POST /team/setup/:token",
+        "app_page:/join-team"
+      ],
+      "status": "not_started",
+      "decision": null
+    },
+    {
+      "id": "api-me",
+      "name": "Current user and onboarding",
+      "area": "auth",
+      "visibility": "user",
+      "description": "Read the signed-in user, rotate their access key and track onboarding progress.",
+      "entryPoints": [
+        "api_route:GET /me",
+        "api_route:PATCH /me/accessKey",
+        "api_route:PATCH /me/onboarding/dismiss",
+        "api_route:POST /me/onboarding/task"
+      ],
+      "status": "not_started",
+      "decision": null
+    },
+    {
+      "id": "app-team",
+      "name": "Team settings and members",
+      "area": "admin",
+      "visibility": "admin",
+      "description": "Manage the team name, members, invitations, tags and API keys.",
+      "entryPoints": [
+        "api_route:DELETE /team/api-keys/:id",
+        "api_route:DELETE /team/invitation/:id",
+        "api_route:DELETE /team/member/:id",
+        "api_route:GET /team",
+        "api_route:GET /team/api-keys",
+        "api_route:GET /team/invitations",
+        "api_route:GET /team/members",
+        "api_route:GET /team/tags",
+        "api_route:PATCH /team/api-keys/:id",
+        "api_route:PATCH /team/apiKey",
+        "api_route:PATCH /team/name",
+        "api_route:POST /team/api-keys",
+        "api_route:POST /team/invitation",
+        "app_page:/team"
+      ],
+      "status": "not_started",
+      "decision": null
+    },
+    {
+      "id": "api-team-clickhouse-settings",
+      "name": "ClickHouse query settings",
+      "area": "admin",
+      "visibility": "admin",
+      "description": "Edit the ClickHouse query settings applied to every team query.",
+      "entryPoints": [
+        "api_route:PATCH /team/clickhouse-settings"
+      ],
+      "status": "needs_decision",
+      "decision": {
+        "note": "Edits ClickHouse-specific query settings (such as limits and timeouts) for a team. Couchbase has no equivalent per-query engine settings, so the feature may be reduced to SDK query options or dropped.",
+        "signedOffBy": null,
+        "date": null
+      }
+    },
+    {
+      "id": "app-clickhouse",
+      "name": "ClickHouse server dashboard",
+      "area": "admin",
+      "visibility": "admin",
+      "description": "Monitor ClickHouse CPU, memory, disk, parts and query log from system tables.",
+      "entryPoints": [
+        "app_page:/clickhouse"
+      ],
+      "status": "needs_decision",
+      "decision": {
+        "note": "Shows ClickHouse server health from system tables such as query_log and parts. Couchbase has no direct equivalent of these tables, so the dashboard needs a different data source or a sign-off to drop.",
+        "signedOffBy": null,
+        "date": null
+      }
+    },
+    {
+      "id": "api-connections",
+      "name": "Connections",
+      "area": "admin",
+      "visibility": "admin",
+      "description": "Add, edit and delete the data store connections that sources use.",
+      "entryPoints": [
+        "api_route:DELETE /connections/:id",
+        "api_route:GET /connections",
+        "api_route:POST /connections",
+        "api_route:PUT /connections/:id"
+      ],
+      "status": "not_started",
+      "decision": null
+    },
+    {
+      "id": "api-sources",
+      "name": "Data sources",
+      "area": "admin",
+      "visibility": "admin",
+      "description": "Define which tables or collections hold logs, traces, metrics and sessions, with their column mappings.",
+      "entryPoints": [
+        "api_route:DELETE /sources/:id",
+        "api_route:GET /sources",
+        "api_route:POST /sources",
+        "api_route:PUT /sources/:id"
+      ],
+      "status": "not_started",
+      "decision": null
+    },
+    {
+      "id": "api-clickhouse-proxy",
+      "name": "Query proxy",
+      "area": "query_proxy",
+      "visibility": "internal",
+      "description": "Forward browser queries to the data store through the API using the saved connection.",
+      "entryPoints": [
+        "api_route:GET /clickhouse-proxy/*",
+        "api_route:POST /clickhouse-proxy/*",
+        "api_route:POST /clickhouse-proxy/test"
+      ],
+      "status": "not_started",
+      "decision": null
+    },
+    {
+      "id": "api-iac",
+      "name": "Infrastructure-as-code import manifest",
+      "area": "iac",
+      "visibility": "api",
+      "description": "Export an import manifest so infrastructure tooling can load existing resources.",
+      "entryPoints": [
+        "api_route:GET /iac/import-manifest"
+      ],
+      "status": "not_started",
+      "decision": null
+    },
+    {
+      "id": "api-health",
+      "name": "Health and installation status",
+      "area": "internal",
+      "visibility": "internal",
+      "description": "Report liveness, readiness and whether the instance has been set up.",
+      "entryPoints": [
+        "api_route:GET /health",
+        "api_route:GET /installation",
+        "api_route:GET /ready"
+      ],
+      "status": "not_started",
+      "decision": null
+    },
+    {
+      "id": "app-api",
+      "name": "App server API and config",
+      "area": "internal",
+      "visibility": "internal",
+      "description": "Serve the web app configuration and proxy API calls through the Next.js server.",
+      "entryPoints": [
+        "app_api_route:/api/[...all]",
+        "app_api_route:/api/config"
+      ],
+      "status": "not_started",
+      "decision": null
+    },
+    {
+      "id": "app-benchmark",
+      "name": "Benchmark page",
+      "area": "internal",
+      "visibility": "internal",
+      "description": "Developer-only page for comparing query timings by query id.",
+      "entryPoints": [
+        "app_page:/benchmark"
+      ],
+      "status": "not_started",
+      "decision": null
+    },
+    {
+      "id": "app-careers",
+      "name": "Careers page",
+      "area": "internal",
+      "visibility": "internal",
+      "description": "Marketing page listing open roles at the company.",
+      "entryPoints": [
+        "app_page:/careers"
+      ],
+      "status": "not_started",
+      "decision": null
+    },
+    {
+      "id": "external-alerts",
+      "name": "External API: alerts",
+      "area": "external_api",
+      "visibility": "api",
+      "description": "Manage alerts over the public v2 API.",
+      "entryPoints": [
+        "api_route:DELETE /api/v2/alerts/:id",
+        "api_route:GET /api/v2/alerts",
+        "api_route:GET /api/v2/alerts/:id",
+        "api_route:POST /api/v2/alerts",
+        "api_route:PUT /api/v2/alerts/:id"
+      ],
+      "status": "not_started",
+      "decision": null
+    },
+    {
+      "id": "external-charts",
+      "name": "External API: charts",
+      "area": "external_api",
+      "visibility": "api",
+      "description": "Run chart series queries over the public v2 API.",
+      "entryPoints": [
+        "api_route:POST /api/v2/charts/series"
+      ],
+      "status": "not_started",
+      "decision": null
+    },
+    {
+      "id": "external-connections",
+      "name": "External API: connections",
+      "area": "external_api",
+      "visibility": "api",
+      "description": "Manage connections over the public v2 API.",
+      "entryPoints": [
+        "api_route:DELETE /api/v2/connections/:id",
+        "api_route:GET /api/v2/connections",
+        "api_route:GET /api/v2/connections/:id",
+        "api_route:POST /api/v2/connections",
+        "api_route:PUT /api/v2/connections/:id"
+      ],
+      "status": "not_started",
+      "decision": null
+    },
+    {
+      "id": "external-dashboards",
+      "name": "External API: dashboards",
+      "area": "external_api",
+      "visibility": "api",
+      "description": "Manage dashboards over the public v2 API.",
+      "entryPoints": [
+        "api_route:DELETE /api/v2/dashboards/:id",
+        "api_route:GET /api/v2/dashboards",
+        "api_route:GET /api/v2/dashboards/:id",
+        "api_route:POST /api/v2/dashboards",
+        "api_route:POST /api/v2/dashboards/validate",
+        "api_route:PUT /api/v2/dashboards/:id"
+      ],
+      "status": "not_started",
+      "decision": null
+    },
+    {
+      "id": "external-root",
+      "name": "External API: root",
+      "area": "external_api",
+      "visibility": "api",
+      "description": "Describe the public v2 API at its root endpoint.",
+      "entryPoints": [
+        "api_route:GET /api/v2"
+      ],
+      "status": "not_started",
+      "decision": null
+    },
+    {
+      "id": "external-saved-searches",
+      "name": "External API: saved searches",
+      "area": "external_api",
+      "visibility": "api",
+      "description": "Manage saved searches over the public v2 API.",
+      "entryPoints": [
+        "api_route:DELETE /api/v2/saved-searches/:id",
+        "api_route:GET /api/v2/saved-searches",
+        "api_route:GET /api/v2/saved-searches/:id",
+        "api_route:POST /api/v2/saved-searches",
+        "api_route:PUT /api/v2/saved-searches/:id"
+      ],
+      "status": "not_started",
+      "decision": null
+    },
+    {
+      "id": "external-search",
+      "name": "External API: search",
+      "area": "external_api",
+      "visibility": "api",
+      "description": "Search logs and traces over the public v2 API.",
+      "entryPoints": [
+        "api_route:POST /api/v2/search"
+      ],
+      "status": "not_started",
+      "decision": null
+    },
+    {
+      "id": "external-sources",
+      "name": "External API: sources",
+      "area": "external_api",
+      "visibility": "api",
+      "description": "Manage data sources over the public v2 API.",
+      "entryPoints": [
+        "api_route:DELETE /api/v2/sources/:id",
+        "api_route:GET /api/v2/sources",
+        "api_route:GET /api/v2/sources/:id",
+        "api_route:POST /api/v2/sources",
+        "api_route:PUT /api/v2/sources/:id"
+      ],
+      "status": "not_started",
+      "decision": null
+    },
+    {
+      "id": "external-team",
+      "name": "External API: team",
+      "area": "external_api",
+      "visibility": "api",
+      "description": "Manage team members and invitations over the public v2 API.",
+      "entryPoints": [
+        "api_route:DELETE /api/v2/team/invitation/:id",
+        "api_route:DELETE /api/v2/team/member/:id",
+        "api_route:GET /api/v2/team",
+        "api_route:GET /api/v2/team/invitations",
+        "api_route:GET /api/v2/team/members",
+        "api_route:POST /api/v2/team/invitation"
+      ],
+      "status": "not_started",
+      "decision": null
+    },
+    {
+      "id": "external-webhooks",
+      "name": "External API: webhooks",
+      "area": "external_api",
+      "visibility": "api",
+      "description": "Manage webhooks over the public v2 API.",
+      "entryPoints": [
+        "api_route:DELETE /api/v2/webhooks/:id",
+        "api_route:GET /api/v2/webhooks",
+        "api_route:POST /api/v2/webhooks",
+        "api_route:POST /api/v2/webhooks/validate",
+        "api_route:PUT /api/v2/webhooks/:id"
+      ],
+      "status": "not_started",
+      "decision": null
+    },
+    {
+      "id": "mcp-alerts",
+      "name": "MCP tools: alerts and webhooks",
+      "area": "mcp",
+      "visibility": "api",
+      "description": "Let an AI client list, create and delete alerts and webhooks.",
+      "entryPoints": [
+        "mcp_tool:clickstack_delete_webhook",
+        "mcp_tool:clickstack_get_alert",
+        "mcp_tool:clickstack_get_webhook",
+        "mcp_tool:clickstack_save_alert",
+        "mcp_tool:clickstack_save_webhook"
+      ],
+      "status": "not_started",
+      "decision": null
+    },
+    {
+      "id": "mcp-dashboards",
+      "name": "MCP tools: dashboards",
+      "area": "mcp",
+      "visibility": "api",
+      "description": "Let an AI client list, create, update and delete dashboards.",
+      "entryPoints": [
+        "mcp_tool:clickstack_delete_dashboard",
+        "mcp_tool:clickstack_get_dashboard",
+        "mcp_tool:clickstack_get_dashboard_tile",
+        "mcp_tool:clickstack_patch_dashboard",
+        "mcp_tool:clickstack_query_tile",
+        "mcp_tool:clickstack_query_tiles",
+        "mcp_tool:clickstack_save_dashboard",
+        "mcp_tool:clickstack_search_dashboards"
+      ],
+      "status": "not_started",
+      "decision": null
+    },
+    {
+      "id": "mcp-query",
+      "name": "MCP tools: query",
+      "area": "mcp",
+      "visibility": "api",
+      "description": "Let an AI client run searches and chart queries and find emerging signals.",
+      "entryPoints": [
+        "mcp_tool:clickstack_emerging_signals",
+        "mcp_tool:clickstack_event_deltas",
+        "mcp_tool:clickstack_event_patterns",
+        "mcp_tool:clickstack_promql",
+        "mcp_tool:clickstack_search",
+        "mcp_tool:clickstack_sql",
+        "mcp_tool:clickstack_table",
+        "mcp_tool:clickstack_timeseries"
+      ],
+      "status": "not_started",
+      "decision": null
+    },
+    {
+      "id": "mcp-saved-searches",
+      "name": "MCP tools: saved searches",
+      "area": "mcp",
+      "visibility": "api",
+      "description": "Let an AI client read saved searches.",
+      "entryPoints": [
+        "mcp_tool:clickstack_get_saved_search",
+        "mcp_tool:clickstack_save_saved_search"
+      ],
+      "status": "not_started",
+      "decision": null
+    },
+    {
+      "id": "mcp-sources",
+      "name": "MCP tools: sources",
+      "area": "mcp",
+      "visibility": "api",
+      "description": "Let an AI client list, create and delete data sources.",
+      "entryPoints": [
+        "mcp_tool:clickstack_delete_source",
+        "mcp_tool:clickstack_describe_metric",
+        "mcp_tool:clickstack_describe_source",
+        "mcp_tool:clickstack_describe_table",
+        "mcp_tool:clickstack_list_metrics",
+        "mcp_tool:clickstack_list_sources",
+        "mcp_tool:clickstack_save_source"
+      ],
+      "status": "not_started",
+      "decision": null
+    },
+    {
+      "id": "mcp-trace",
+      "name": "MCP tools: trace analysis",
+      "area": "mcp",
+      "visibility": "api",
+      "description": "Let an AI client find the most time-consuming trace operations.",
+      "entryPoints": [
+        "mcp_tool:clickstack_trace_top_time_consuming_operations",
+        "mcp_tool:clickstack_trace_waterfall"
+      ],
+      "status": "not_started",
+      "decision": null
+    },
+    {
+      "id": "cli",
+      "name": "Command-line interface",
+      "area": "cli",
+      "visibility": "admin",
+      "description": "Use the command line to sign in, query data, manage dashboards, sources and saved searches, install the MCP server, open the terminal UI and upload sourcemaps.",
+      "entryPoints": [
+        "cli_command:auth",
+        "cli_command:auth login",
+        "cli_command:auth logout",
+        "cli_command:auth status",
+        "cli_command:chart",
+        "cli_command:connections",
+        "cli_command:dashboards",
+        "cli_command:dashboards create",
+        "cli_command:dashboards export",
+        "cli_command:dashboards import",
+        "cli_command:dashboards list",
+        "cli_command:mcp",
+        "cli_command:mcp install",
+        "cli_command:query",
+        "cli_command:saved-searches",
+        "cli_command:saved-searches create",
+        "cli_command:saved-searches list",
+        "cli_command:sources",
+        "cli_command:team",
+        "cli_command:team current",
+        "cli_command:team list",
+        "cli_command:team use",
+        "cli_command:tui",
+        "cli_command:upload-sourcemaps"
+      ],
+      "status": "not_started",
+      "decision": null
+    },
+    {
+      "id": "ingestion",
+      "name": "Telemetry ingestion",
+      "area": "ingestion",
+      "visibility": "api",
+      "description": "Receive OTLP logs, traces and metrics through the collector and write them to the data store.",
+      "entryPoints": [
+        "ingestion:otel-collector"
+      ],
+      "status": "not_started",
+      "decision": null
+    },
+    {
+      "id": "task-ping-pong",
+      "name": "Ping-pong task",
+      "area": "internal",
+      "visibility": "internal",
+      "description": "Smoke-test task that checks the background task runner is working.",
+      "entryPoints": [
+        "task:ping-pong"
+      ],
+      "status": "not_started",
+      "decision": null
+    },
+    {
+      "id": "task-provision-dashboards",
+      "name": "Dashboard provisioning task",
+      "area": "internal",
+      "visibility": "internal",
+      "description": "Create or update team dashboards from JSON files in a provisioning directory.",
+      "entryPoints": [
+        "task:provision-dashboards"
+      ],
+      "status": "not_started",
+      "decision": null
+    }
+  ]
+}
