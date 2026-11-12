@@ -177,12 +177,12 @@ processors:
     # excess parts in MergeTree tables.
     #
     # Each setting can be overridden via env vars (mirroring the upstream
-    # batch processor options). Set HYPERDX_OTEL_BATCH_SEND_BATCH_MAX_SIZE
+    # batch processor options). Set CBT_OTEL_BATCH_SEND_BATCH_MAX_SIZE
     # to a positive value if you need to enforce an upper bound; the default
     # of 0 means "no upper limit".
-    send_batch_size: ${env:HYPERDX_OTEL_BATCH_SEND_BATCH_SIZE:-10000}
-    send_batch_max_size: ${env:HYPERDX_OTEL_BATCH_SEND_BATCH_MAX_SIZE:-0}
-    timeout: ${env:HYPERDX_OTEL_BATCH_TIMEOUT:-5s}
+    send_batch_size: ${env:CBT_OTEL_BATCH_SEND_BATCH_SIZE:-10000}
+    send_batch_max_size: ${env:CBT_OTEL_BATCH_SEND_BATCH_MAX_SIZE:-0}
+    timeout: ${env:CBT_OTEL_BATCH_TIMEOUT:-5s}
   memory_limiter:
     # 80% of maximum memory up to 2G
     limit_mib: 1500
@@ -203,7 +203,7 @@ service:
                 host: '0.0.0.0'
                 port: 8888
     logs:
-      level: ${HYPERDX_LOG_LEVEL}
+      level: ${CBT_LOG_LEVEL}
       # The collector's zap logger defaults to stderr. Under the supervisor's
       # `passthrough_logs`, stdout is re-emitted at Info and stderr at Error,
       # so leaving the default would surface every collector log line as an

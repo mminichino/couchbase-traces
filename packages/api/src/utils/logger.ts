@@ -4,7 +4,7 @@ import pinoHttp from 'pino-http';
 
 import * as config from '@/config';
 
-const MAX_LEVEL = config.HYPERDX_LOG_LEVEL || 'info';
+const MAX_LEVEL = config.CBT_LOG_LEVEL || 'info';
 
 // Only the local output. When the SDK is running, its pino instrumentation
 // exports every record and adds trace_id, span_id and trace_flags to it.

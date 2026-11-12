@@ -29,7 +29,7 @@ Formulas are the headline of this release. Read [the docs](https://docs.hyperdx.
 ### 💥 Breaking Changes
 
 - **The API's log level now defaults to \`info\`, and query SQL is no longer
-  dumped to the console**: set \`HYPERDX_LOG_LEVEL=debug\` if you relied on it
+  dumped to the console**: set \`CBT_LOG_LEVEL=debug\` if you relied on it
   (#2679).
 
 ### ✨ New Features

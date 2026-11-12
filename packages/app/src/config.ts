@@ -4,19 +4,19 @@ import { env } from 'next-runtime-env';
 import packageJson from '../package.json';
 
 // ONLY USED IN LOCAL MODE
-// ex: NEXT_PUBLIC_HDX_LOCAL_DEFAULT_CONNECTIONS='[{"id":"local","name":"Demo","host":"https://demo-ch.hyperdx.io","username":"demo","password":"demo"}]' NEXT_PUBLIC_HDX_LOCAL_DEFAULT_SOURCES='[{"id":"l701179602","kind":"trace","name":"Demo Traces","connection":"local","from":{"databaseName":"default","tableName":"otel_traces"},"timestampValueExpression":"Timestamp","defaultTableSelectExpression":"Timestamp, ServiceName, StatusCode, round(Duration / 1e6), SpanName","serviceNameExpression":"ServiceName","eventAttributesExpression":"SpanAttributes","resourceAttributesExpression":"ResourceAttributes","traceIdExpression":"TraceId","spanIdExpression":"SpanId","implicitColumnExpression":"SpanName","durationExpression":"Duration","durationPrecision":9,"parentSpanIdExpression":"ParentSpanId","spanKindExpression":"SpanKind","spanNameExpression":"SpanName","logSourceId":"l-758211293","statusCodeExpression":"StatusCode","statusMessageExpression":"StatusMessage"},{"id":"l-758211293","kind":"log","name":"Demo Logs","connection":"local","from":{"databaseName":"default","tableName":"otel_logs"},"timestampValueExpression":"Timestamp","defaultTableSelectExpression":"Timestamp, ServiceName, SeverityText, Body","serviceNameExpression":"ServiceName","severityTextExpression":"SeverityText","eventAttributesExpression":"LogAttributes","resourceAttributesExpression":"ResourceAttributes","traceIdExpression":"TraceId","spanIdExpression":"SpanId","implicitColumnExpression":"Body","traceSourceId":"l701179602"}]' yarn dev:local
+// ex: NEXT_PUBLIC_CBT_LOCAL_DEFAULT_CONNECTIONS='[{"id":"local","name":"Demo","host":"https://demo-ch.hyperdx.io","username":"demo","password":"demo"}]' NEXT_PUBLIC_CBT_LOCAL_DEFAULT_SOURCES='[{"id":"l701179602","kind":"trace","name":"Demo Traces","connection":"local","from":{"databaseName":"default","tableName":"otel_traces"},"timestampValueExpression":"Timestamp","defaultTableSelectExpression":"Timestamp, ServiceName, StatusCode, round(Duration / 1e6), SpanName","serviceNameExpression":"ServiceName","eventAttributesExpression":"SpanAttributes","resourceAttributesExpression":"ResourceAttributes","traceIdExpression":"TraceId","spanIdExpression":"SpanId","implicitColumnExpression":"SpanName","durationExpression":"Duration","durationPrecision":9,"parentSpanIdExpression":"ParentSpanId","spanKindExpression":"SpanKind","spanNameExpression":"SpanName","logSourceId":"l-758211293","statusCodeExpression":"StatusCode","statusMessageExpression":"StatusMessage"},{"id":"l-758211293","kind":"log","name":"Demo Logs","connection":"local","from":{"databaseName":"default","tableName":"otel_logs"},"timestampValueExpression":"Timestamp","defaultTableSelectExpression":"Timestamp, ServiceName, SeverityText, Body","serviceNameExpression":"ServiceName","severityTextExpression":"SeverityText","eventAttributesExpression":"LogAttributes","resourceAttributesExpression":"ResourceAttributes","traceIdExpression":"TraceId","spanIdExpression":"SpanId","implicitColumnExpression":"Body","traceSourceId":"l701179602"}]' yarn dev:local
 export const HDX_LOCAL_DEFAULT_CONNECTIONS = env(
-  'NEXT_PUBLIC_HDX_LOCAL_DEFAULT_CONNECTIONS',
+  'NEXT_PUBLIC_CBT_LOCAL_DEFAULT_CONNECTIONS',
 );
 export const HDX_LOCAL_DEFAULT_SOURCES = env(
-  'NEXT_PUBLIC_HDX_LOCAL_DEFAULT_SOURCES',
+  'NEXT_PUBLIC_CBT_LOCAL_DEFAULT_SOURCES',
 );
 const NODE_ENV = process.env.NODE_ENV as string;
-export const HDX_API_KEY = process.env.HYPERDX_API_KEY as string; // for nextjs server
+export const HDX_API_KEY = process.env.CBT_API_KEY as string; // for nextjs server
 export const HDX_SERVICE_NAME =
   process.env.NEXT_PUBLIC_OTEL_SERVICE_NAME ?? 'hdx-oss-dev-app';
-export const HDX_EXPORTER_ENABLED =
-  (process.env.HDX_EXPORTER_ENABLED ?? 'true') === 'true';
+export const CBT_EXPORTER_ENABLED =
+  (process.env.CBT_EXPORTER_ENABLED ?? 'true') === 'true';
 
 export function parseResourceAttributes(raw: string): Record<string, string> {
   return raw
@@ -63,7 +63,7 @@ export const IS_CLICKHOUSE_BUILD =
 // anywhere an absolute URL is built for something outside the browser to call:
 // `window.location.origin` alone drops the prefix, and the API is served under
 // the same one as the UI.
-export const BASE_PATH = process.env.NEXT_PUBLIC_HYPERDX_BASE_PATH ?? '';
+export const BASE_PATH = process.env.NEXT_PUBLIC_CBT_BASE_PATH ?? '';
 export const IS_NOINDEX = process.env.NEXT_PUBLIC_NOINDEX === 'true';
 
 /** Time captured at module load, use this a stable fallback/default time value instead of Date.now() defined in each React component file */

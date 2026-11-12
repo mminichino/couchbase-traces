@@ -8,14 +8,14 @@ describe('decideSelfTelemetry', () => {
   it('treats blank values as unset', () => {
     expect(
       decideSelfTelemetry({
-        HYPERDX_API_KEY: ' ',
+        CBT_API_KEY: ' ',
         OTEL_EXPORTER_OTLP_HEADERS: '',
       }),
     ).toEqual({ start: false });
   });
 
-  it('passes a trimmed HYPERDX_API_KEY as the apiKey', () => {
-    expect(decideSelfTelemetry({ HYPERDX_API_KEY: ' ingest-key ' })).toEqual({
+  it('passes a trimmed CBT_API_KEY as the apiKey', () => {
+    expect(decideSelfTelemetry({ CBT_API_KEY: ' ingest-key ' })).toEqual({
       start: true,
       apiKey: 'ingest-key',
       otlpHeaders: undefined,
@@ -33,7 +33,7 @@ describe('decideSelfTelemetry', () => {
   it('appends the encoded key to OTLP headers without an authorization entry', () => {
     expect(
       decideSelfTelemetry({
-        HYPERDX_API_KEY: 'ingest,key',
+        CBT_API_KEY: 'ingest,key',
         OTEL_EXPORTER_OTLP_HEADERS: ' x-scope-orgid=acme ',
       }),
     ).toEqual({
@@ -46,7 +46,7 @@ describe('decideSelfTelemetry', () => {
   it('keeps an authorization entry already in the OTLP headers', () => {
     expect(
       decideSelfTelemetry({
-        HYPERDX_API_KEY: 'ingest-key',
+        CBT_API_KEY: 'ingest-key',
         OTEL_EXPORTER_OTLP_HEADERS: 'x-scope-orgid=acme, Authorization =other',
       }),
     ).toEqual({ start: true, apiKey: 'ingest-key', otlpHeaders: undefined });

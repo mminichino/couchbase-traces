@@ -39,8 +39,8 @@
   in front of it must forward `Content-Encoding` unchanged.
 
   The Next.js server now sends its own telemetry in production builds too, not
-  only under `next dev`, when `HYPERDX_API_KEY` or `OTEL_EXPORTER_OTLP_HEADERS` is
-  set. `HDX_EXPORTER_ENABLED=false` turns it off along with browser telemetry. It
+  only under `next dev`, when `CBT_API_KEY` or `OTEL_EXPORTER_OTLP_HEADERS` is
+  set. `CBT_EXPORTER_ENABLED=false` turns it off along with browser telemetry. It
   reports under its own service name, the configured one plus `-next`
   (`hdx-oss-app-next` in the docker-compose `app` service and when no name is
   set), so its spans stay apart from the API's and the browser's. The HyperDX
@@ -48,7 +48,7 @@
   adds Next.js server spans for the proxy hop. Requests for build and `public/`
   assets, such as `/_next/static/*`, `/__ENV.js` and `/pyodide/*`, are not traced.
 
-  `HYPERDX_API_KEY` still enables self-instrumentation. Without
+  `CBT_API_KEY` still enables self-instrumentation. Without
   `OTEL_EXPORTER_OTLP_ENDPOINT`, server-side self-telemetry now goes to
   `http://localhost:4318` instead of `https://in-otel.hyperdx.io`, so set the
   endpoint explicitly. `HDX_NODE_*` variables are no longer read. For request
@@ -1149,15 +1149,15 @@ panel` (the default) for the existing behavior, or set it to `Expand inline` to
   Query logging now goes through an optional per-client `customLogger` on
   `ClickhouseClientOptions`, logged at `debug`, and is silent when no logger is
   passed. The API injects a pino-backed logger, so query logging follows the
-  existing `HYPERDX_LOG_LEVEL` setting instead of writing to `console.debug`. The
+  existing `CBT_LOG_LEVEL` setting instead of writing to `console.debug`. The
   browser client defaults to a console logger that pretty-prints the SQL as a
   single multi-line block, so query SQL stays visible and readable in devtools in
   all builds instead of wrapping into one long line.
 
   The API's log level now defaults to `info` (was `debug`), so SQL logging is
-  silent in production unless `HYPERDX_LOG_LEVEL=debug` is set. Dev and CI env
+  silent in production unless `CBT_LOG_LEVEL=debug` is set. Dev and CI env
   files already pin their levels explicitly and are unaffected. The default also
-  now applies when `HYPERDX_LOG_LEVEL` is set but empty — which is what Compose
+  now applies when `CBT_LOG_LEVEL` is set but empty — which is what Compose
   passes when the variable is unset in the environment, and which previously made
   pino throw at startup.
 
@@ -2163,8 +2163,8 @@ Map(String, String), UInt8 for function arrayElement`. The grid row
 
   Lighter-weight env-var tuning is also available for the default `batch`
   processor without writing a custom config file:
-  `HYPERDX_OTEL_BATCH_SEND_BATCH_SIZE`,
-  `HYPERDX_OTEL_BATCH_SEND_BATCH_MAX_SIZE`, and `HYPERDX_OTEL_BATCH_TIMEOUT`.
+  `CBT_OTEL_BATCH_SEND_BATCH_SIZE`,
+  `CBT_OTEL_BATCH_SEND_BATCH_MAX_SIZE`, and `CBT_OTEL_BATCH_TIMEOUT`.
   See the README for details.
 
 - b8f51ed9: feat: upgrade to clickhouse-server 26.5
@@ -2419,7 +2419,7 @@ implicit column set.` on every bare-token search, even though the row panel
 - 24699cde: fix: Infer singular quantileXXX() from MV quantilesXXXState()
 - 4e9caeca: Support per-signal OTLP exporter endpoints for Hyperdx internal telemetry
 - 32b38c33: fix: ClickStack switch checked-state color not applying theme tokens
-- 29586e7b: Enable end-to-end PR testing on Vercel previews by inlining the Express API into the Next.js `/api/[...all]` serverless function (opt-in via `HDX_PREVIEW_INLINE_API=true`). Production deploys (Docker fullstack image, standalone Next output) are unchanged — they keep proxying `/api/*` to the separately-deployed API service.
+- 29586e7b: Enable end-to-end PR testing on Vercel previews by inlining the Express API into the Next.js `/api/[...all]` serverless function (opt-in via `CBT_PREVIEW_INLINE_API=true`). Production deploys (Docker fullstack image, standalone Next output) are unchanged — they keep proxying `/api/*` to the separately-deployed API service.
 
   Also realigns `clickhouseProxy.ts` with the upstream EE implementation (modulo CHC and RBAC code paths): query params are now parsed from the request URL via `validateAndSanitizePath()` + `URL.searchParams` instead of `req.query`, which fixes a `Setting all is neither a builtin setting nor started with the prefix 'custom_'` regression on Vercel previews where Next.js's `[...all]` catch-all route polluted `req.query`. Adds path-injection hardening, POST-only enforcement, and exposes `X-ClickHouse-Mixed-Response` / `X-ClickHouse-Service-Unavailable` response headers for the browser ClickHouse client.
 
@@ -3107,7 +3107,7 @@ implicit column set.` on every bare-token search, even though the row panel
 - f868c3ca: Add back selection ui on histogram
 - 21146027: chore: remove deprecated SpanAttribute.http.scheme reference from serviceDashboard
 - 70fe682b: Add clickable alert timeline chips
-- 7cf4ba4d: Allow HyperDX's listen address to be overriden at runtime with the env var HYPERDX_APP_LISTEN_HOSTNAME. The default remains 0.0.0.0 .
+- 7cf4ba4d: Allow HyperDX's listen address to be overriden at runtime with the env var CBT_APP_LISTEN_HOSTNAME. The default remains 0.0.0.0 .
 - 3b2a8633: fix: sort on the client side in KubernetedDashboardPage
 - 9da2d32f: feat: Improve filter search
 - 770276a1: feat: Add waterfall span/error count summary, span tooltip status
@@ -3983,13 +3983,13 @@ implicit column set.` on every bare-token search, even though the row panel
 - 8cb0eac: Add rate function for sum metrics
 - 4d24bfa: Add new version of the useTimeQuery hook along with a testing suite
 - 8591aee: fix: control otel related services logs telemetry using
-  HYPERDX_LOG_LEVEL
+  CBT_LOG_LEVEL
 
 ## 1.1.3
 
 ### Patch Changes
 
-- 389bb3a: feat: support HYPERDX_LOG_LEVEL env var
+- 389bb3a: feat: support CBT_LOG_LEVEL env var
 - e106b75: style(ui): improve duration column representation
 - 1ec122c: fix: aggregator errors handler status code
 - 40ba7bb: enhancement - Persist log table column sizes to local storage

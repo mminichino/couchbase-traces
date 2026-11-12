@@ -34,8 +34,8 @@ describe('uploadSourcemaps', () => {
     originalStderrWrite = process.stderr.write.bind(process.stderr);
     process.stdout.write = (() => true) as typeof process.stdout.write;
     process.stderr.write = (() => true) as typeof process.stderr.write;
-    originalEnvServiceKey = process.env.HYPERDX_SERVICE_KEY;
-    delete process.env.HYPERDX_SERVICE_KEY;
+    originalEnvServiceKey = process.env.CBT_SERVICE_KEY;
+    delete process.env.CBT_SERVICE_KEY;
   });
 
   afterEach(() => {
@@ -44,9 +44,9 @@ describe('uploadSourcemaps', () => {
     process.stdout.write = originalStdoutWrite;
     process.stderr.write = originalStderrWrite;
     if (originalEnvServiceKey != null) {
-      process.env.HYPERDX_SERVICE_KEY = originalEnvServiceKey;
+      process.env.CBT_SERVICE_KEY = originalEnvServiceKey;
     } else {
-      delete process.env.HYPERDX_SERVICE_KEY;
+      delete process.env.CBT_SERVICE_KEY;
     }
   });
 
@@ -68,15 +68,15 @@ describe('uploadSourcemaps', () => {
     writeFileSync(join(tempDir, name), content);
   };
 
-  it('throws when serviceKey is empty and HYPERDX_SERVICE_KEY is unset', async () => {
+  it('throws when serviceKey is empty and CBT_SERVICE_KEY is unset', async () => {
     await expect(
       uploadSourcemaps({ serviceKey: '', path: tempDir }),
     ).rejects.toThrow('service key cannot be empty');
     expect(mockFetch).not.toHaveBeenCalled();
   });
 
-  it('falls back to HYPERDX_SERVICE_KEY env var when serviceKey arg is empty', async () => {
-    process.env.HYPERDX_SERVICE_KEY = 'env-key';
+  it('falls back to CBT_SERVICE_KEY env var when serviceKey arg is empty', async () => {
+    process.env.CBT_SERVICE_KEY = 'env-key';
     mockFetch.mockResolvedValueOnce(okJson({ user: { team: 'team-1' } }));
 
     // No files in tempDir + allowNoop=true → expected throw for "No source maps found".

@@ -8,14 +8,14 @@ const USE_DEV = process.env.E2E_USE_DEV === 'true';
 const AUTH_FILE = path.join(__dirname, 'tests/e2e/.auth/user.json');
 
 // Port configuration (set by scripts/test-e2e.sh via HDX_E2E_* env vars)
-const API_PORT = process.env.HDX_E2E_API_PORT || '21000';
-const APP_PORT = process.env.HDX_E2E_APP_PORT || '21300';
-const APP_LOCAL_PORT = process.env.HDX_E2E_APP_LOCAL_PORT || '21200';
+const API_PORT = process.env.CBT_E2E_API_PORT || '21000';
+const APP_PORT = process.env.CBT_E2E_APP_PORT || '21300';
+const APP_LOCAL_PORT = process.env.CBT_E2E_APP_LOCAL_PORT || '21200';
 
-// next dev loads .env.development, which sets HYPERDX_API_KEY, so without this the
+// next dev loads .env.development, which sets CBT_API_KEY, so without this the
 // e2e Next server and browser export HyperDX's own telemetry to collector ports that
 // do not exist in e2e. The failed exports add retries and load to parallel runs.
-const NO_SELF_TELEMETRY = 'HDX_EXPORTER_ENABLED=false';
+const NO_SELF_TELEMETRY = 'CBT_EXPORTER_ENABLED=false';
 
 // Timeout configuration constants (in milliseconds)
 const TEST_TIMEOUT_MS = 60 * 1000; // 60 seconds per test

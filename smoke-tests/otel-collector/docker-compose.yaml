@@ -31,14 +31,14 @@ services:
       - CLICKHOUSE_PROMETHEUS_METRICS_ENDPOINT=ch-server:9363
       - CLICKHOUSE_USER=default
       - CLICKHOUSE_PASSWORD=
-      - HYPERDX_OTEL_EXPORTER_CLICKHOUSE_DATABASE=default
-      - HYPERDX_LOG_LEVEL=info
+      - CBT_OTEL_EXPORTER_CLICKHOUSE_DATABASE=default
+      - CBT_LOG_LEVEL=info
       # Flush batches quickly so the smoke tests' short sleep (~1s) after
       # emitting data is enough for records to arrive in ClickHouse. The
       # production default (5s) is ClickHouse-friendly but too slow for
       # these tests, which emit a handful of records per case and assert
       # shortly afterwards.
-      - HYPERDX_OTEL_BATCH_TIMEOUT=100ms
+      - CBT_OTEL_BATCH_TIMEOUT=100ms
       # OPAMP_SERVER_URL is intentionally not set to run in standalone mode
     ports:
       - 4318:4318 # OTLP http receiver
@@ -62,11 +62,11 @@ services:
       - CLICKHOUSE_PROMETHEUS_METRICS_ENDPOINT=ch-server:9363
       - CLICKHOUSE_USER=default
       - CLICKHOUSE_PASSWORD=
-      - HYPERDX_OTEL_EXPORTER_CLICKHOUSE_DATABASE=otel_json
-      - HYPERDX_OTEL_EXPORTER_CLICKHOUSE_JSON_ENABLE=true
-      - HYPERDX_LOG_LEVEL=info
+      - CBT_OTEL_EXPORTER_CLICKHOUSE_DATABASE=otel_json
+      - CBT_OTEL_EXPORTER_CLICKHOUSE_JSON_ENABLE=true
+      - CBT_LOG_LEVEL=info
       # See the note on the otel-collector service above for rationale.
-      - HYPERDX_OTEL_BATCH_TIMEOUT=100ms
+      - CBT_OTEL_BATCH_TIMEOUT=100ms
       # OPAMP_SERVER_URL is intentionally not set to run in standalone mode
     ports:
       - 14318:4318 # OTLP http receiver
@@ -93,8 +93,8 @@ services:
       - CLICKHOUSE_PROMETHEUS_METRICS_ENDPOINT=ch-server:9363
       - CLICKHOUSE_USER=default
       - CLICKHOUSE_PASSWORD=
-      - HYPERDX_OTEL_EXPORTER_CLICKHOUSE_DATABASE=custom_pipeline
-      - HYPERDX_LOG_LEVEL=info
+      - CBT_OTEL_EXPORTER_CLICKHOUSE_DATABASE=custom_pipeline
+      - CBT_LOG_LEVEL=info
       - CUSTOM_OTELCOL_CONFIG_FILE=/etc/otelcol-contrib/custom.config.yaml
       # OPAMP_SERVER_URL is intentionally not set to run in standalone mode
     volumes:
@@ -124,9 +124,9 @@ services:
       - CLICKHOUSE_PROMETHEUS_METRICS_ENDPOINT=http://ch-server:9363/
       - CLICKHOUSE_USER=default
       - CLICKHOUSE_PASSWORD=
-      - HYPERDX_OTEL_EXPORTER_CLICKHOUSE_DATABASE=promql_url
-      - HYPERDX_LOG_LEVEL=info
-      - HYPERDX_OTEL_BATCH_TIMEOUT=100ms
+      - CBT_OTEL_EXPORTER_CLICKHOUSE_DATABASE=promql_url
+      - CBT_LOG_LEVEL=info
+      - CBT_OTEL_BATCH_TIMEOUT=100ms
       # OPAMP_SERVER_URL is intentionally not set to run in standalone mode
     ports:
       - 64318:4318 # OTLP http receiver
@@ -153,8 +153,8 @@ services:
       - CLICKHOUSE_PROMETHEUS_METRICS_ENDPOINT=https://ch-server:9363/write
       - CLICKHOUSE_USER=default
       - CLICKHOUSE_PASSWORD=
-      - HYPERDX_OTEL_EXPORTER_CLICKHOUSE_DATABASE=promql_bad_endpoint
-      - HYPERDX_LOG_LEVEL=info
+      - CBT_OTEL_EXPORTER_CLICKHOUSE_DATABASE=promql_bad_endpoint
+      - CBT_LOG_LEVEL=info
     networks:
       - internal
 
@@ -174,10 +174,10 @@ services:
       - CLICKHOUSE_PROMETHEUS_METRICS_ENDPOINT=ch-server:9363
       - CLICKHOUSE_USER=default
       - CLICKHOUSE_PASSWORD=
-      - HYPERDX_OTEL_EXPORTER_CLICKHOUSE_DATABASE=bearer_auth
-      - HYPERDX_LOG_LEVEL=info
+      - CBT_OTEL_EXPORTER_CLICKHOUSE_DATABASE=bearer_auth
+      - CBT_LOG_LEVEL=info
       # See the note on the otel-collector service above for rationale.
-      - HYPERDX_OTEL_BATCH_TIMEOUT=100ms
+      - CBT_OTEL_BATCH_TIMEOUT=100ms
       # Must match OTLP_TEST_TOKEN in bearer-auth.bats.
       - OTLP_AUTH_TOKEN=smoke-test-bearer-token
       # OPAMP_SERVER_URL is intentionally not set to run in standalone mode
@@ -225,9 +225,9 @@ services:
       - CLICKHOUSE_PROMETHEUS_METRICS_ENDPOINT=ch-server:9363
       - CLICKHOUSE_USER=default
       - CLICKHOUSE_PASSWORD=
-      - HYPERDX_OTEL_EXPORTER_CLICKHOUSE_DATABASE=oidc_auth
-      - HYPERDX_LOG_LEVEL=info
-      - HYPERDX_OTEL_BATCH_TIMEOUT=100ms
+      - CBT_OTEL_EXPORTER_CLICKHOUSE_DATABASE=oidc_auth
+      - CBT_LOG_LEVEL=info
+      - CBT_OTEL_BATCH_TIMEOUT=100ms
       - OIDC_ISSUER_URL=http://otel-collector-oidc-mock:8080
       - OIDC_AUDIENCE=smoke-test-audience
       # OPAMP_SERVER_URL is intentionally not set to run in standalone mode
@@ -248,7 +248,7 @@ services:
   # instead. This container is expected to exit immediately, not become
   # ready -- see oidc-auth.bats.
   #
-  # HYPERDX_OTEL_EXPORTER_CREATE_LEGACY_SCHEMA=true is required here, not
+  # CBT_OTEL_EXPORTER_CREATE_LEGACY_SCHEMA=true is required here, not
   # just copied from the other services: without it, entrypoint.sh runs a
   # ClickHouse schema migration *before* reaching the OIDC_AUDIENCE check
   # (this service has no depends_on: ch-server, unlike every other collector
@@ -269,9 +269,9 @@ services:
       - CLICKHOUSE_ENDPOINT=tcp://127.0.0.1:1/?dial_timeout=1s
       - CLICKHOUSE_USER=default
       - CLICKHOUSE_PASSWORD=
-      - HYPERDX_OTEL_EXPORTER_CLICKHOUSE_DATABASE=oidc_auth_missing_audience
-      - HYPERDX_OTEL_EXPORTER_CREATE_LEGACY_SCHEMA=true
-      - HYPERDX_LOG_LEVEL=info
+      - CBT_OTEL_EXPORTER_CLICKHOUSE_DATABASE=oidc_auth_missing_audience
+      - CBT_OTEL_EXPORTER_CREATE_LEGACY_SCHEMA=true
+      - CBT_LOG_LEVEL=info
       - OIDC_ISSUER_URL=http://otel-collector-oidc-mock:8080
       # OIDC_AUDIENCE intentionally left unset
     networks:

@@ -3,7 +3,7 @@
  * runner (bin/hyperdx, the dev scripts, the e2e web server).
  *
  * This wraps the ClickStack SDK instead of preloading its `register` entry
- * because the SDK never reads HYPERDX_API_KEY, and it would start without a
+ * because the SDK never reads CBT_API_KEY, and it would start without a
  * key and send to localhost:4318. decideSelfTelemetry keeps the old HyperDX
  * SDK's key handling and start condition, shared with the Next.js server.
  *

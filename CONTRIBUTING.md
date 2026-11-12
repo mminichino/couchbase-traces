@@ -125,7 +125,7 @@ point it at the demo data instead, add a connection in **Team Settings** with
 host `https://sql-clickhouse.clickhouse.com`, user `otel_demo`, and an empty
 password, then add sources on it from database `otel_v2` (tables `otel_logs`,
 `otel_traces`, `hyperdx_sessions`, and the `otel_metrics_*` tables). Otherwise
-it only has the data your local stack sends to itself (see `HYPERDX_API_KEY`
+it only has the data your local stack sends to itself (see `CBT_API_KEY`
 under [Development](#development)).
 
 If the bug depends on your own schema or data, say so, and include the table
@@ -212,7 +212,7 @@ To stop the stack:
 yarn dev:down
 ```
 
-To enable self-instrumentation and demo logs, you can set the `HYPERDX_API_KEY`
+To enable self-instrumentation and demo logs, you can set the `CBT_API_KEY`
 to your ingestion key (visit the Team settings page after creating your account).
 The API and the Next.js server pass it to the ClickStack SDK
 (`@clickhouse/clickstack-node`) as `apiKey`, and the browser SDK
@@ -224,7 +224,7 @@ To do this, create a `.env.local` file in the root of the project and add the
 following:
 
 ```sh
-HYPERDX_API_KEY=<YOUR_INGESTION_API_KEY_HERE>
+CBT_API_KEY=<YOUR_INGESTION_API_KEY_HERE>
 ```
 
 Then restart the stack using `yarn dev`.

@@ -57,7 +57,7 @@ blocked unless you allowlist their hostnames.
   sessions restart once after the upgrade. Update anything — a saved search,
   alert or dashboard — keyed on the old attribute names before you upgrade.
 - **Self-telemetry is configured with the OpenTelemetry variables**:
-  `HYPERDX_API_KEY` still enables self-instrumentation, but without
+  `CBT_API_KEY` still enables self-instrumentation, but without
   `OTEL_EXPORTER_OTLP_ENDPOINT` server-side self-telemetry now goes to
   `http://localhost:4318` instead of `https://in-otel.hyperdx.io`, so set the
   endpoint explicitly. `HDX_NODE_*` variables are no longer read; capture
@@ -69,7 +69,7 @@ blocked unless you allowlist their hostnames.
   proxy in front of it must forward `Content-Encoding` unchanged. The per-signal
   browser endpoints and `NEXT_PUBLIC_OTEL_RESOURCE_ATTRIBUTES` work as before.
 - **The Next.js server reports telemetry from production builds too**: with
-  `HYPERDX_API_KEY` or `OTEL_EXPORTER_OTLP_HEADERS` set, the Next.js server now
+  `CBT_API_KEY` or `OTEL_EXPORTER_OTLP_HEADERS` set, the Next.js server now
   sends its own telemetry in production builds, not only under `next dev`. It
   reports under its own service name — the configured one plus `-next`
   (`hdx-oss-app-next` in the docker-compose `app` service and when no name is
@@ -77,7 +77,7 @@ blocked unless you allowlist their hostnames.
   HyperDX images now default `OTEL_SERVICE_NAME` to `hdx-oss-app`. Each `/api`
   request gains Next.js server spans for the proxy hop, while requests for build
   and `public/` assets such as `/_next/static/*`, `/__ENV.js` and `/pyodide/*`
-  are not traced. `HDX_EXPORTER_ENABLED=false` turns it off along with browser
+  are not traced. `CBT_EXPORTER_ENABLED=false` turns it off along with browser
   telemetry.
 
 ### ✨ New Features
@@ -2033,9 +2033,9 @@ logs.
   ClickHouse query, unconditionally and outside the pino logger, flooding API
   logs with query spam. Query logging now goes through the pino logger at
   `debug`, and the API's default log level moves from `debug` to `info` — so
-  set `HYPERDX_LOG_LEVEL=debug` if you relied on seeing query SQL or other
+  set `CBT_LOG_LEVEL=debug` if you relied on seeing query SQL or other
   debug output in production. Dev and CI env files pin their levels explicitly
-  and are unaffected. An empty `HYPERDX_LOG_LEVEL` — what Compose passes when
+  and are unaffected. An empty `CBT_LOG_LEVEL` — what Compose passes when
   the variable is unset — now falls back to the default instead of making pino
   throw at startup. In the browser, query SQL still goes to devtools,
   pretty-printed as a readable multi-line block (#2679).
@@ -2087,11 +2087,11 @@ logs.
   previous key immediately, so update your MCP and AI agent configs, API
   clients, Terraform providers and CI scripts with the new one. Browser
   sessions are unaffected (#2926).
-- **Per-signal ClickHouse table TTLs**: `HYPERDX_OTEL_EXPORTER_LOGS_TTL`,
+- **Per-signal ClickHouse table TTLs**: `CBT_OTEL_EXPORTER_LOGS_TTL`,
   `..._TRACES_TTL`, `..._METRICS_TTL` and `..._SESSIONS_TTL` each fall back to
-  the existing `HYPERDX_OTEL_EXPORTER_TABLES_TTL`, so you can keep logs and
+  the existing `CBT_OTEL_EXPORTER_TABLES_TTL`, so you can keep logs and
   traces for six months while metrics age out at 30 days. Set
-  `HYPERDX_OTEL_EXPORTER_RECONCILE_TABLE_TTL=true` and the migrate tool also
+  `CBT_OTEL_EXPORTER_RECONCILE_TABLE_TTL=true` and the migrate tool also
   applies the configured retention to tables that already exist, where
   previously a TTL change only reached newly-created tables. Reconciliation is
   off by default and deliberately conservative: extending a retention keeps
@@ -2123,7 +2123,7 @@ logs.
   instead of answering "cannot be auto-converted". Non-time-series metric
   charts remain unsupported, as before (#2908).
 - **The ClickHouse exporter timeout is configurable**: set
-  `HYPERDX_OTEL_EXPORTER_TIMEOUT` in either OpAMP-managed or standalone
+  `CBT_OTEL_EXPORTER_TIMEOUT` in either OpAMP-managed or standalone
   collector mode. The default is still 5 seconds (#2899).
 - **Map attribute searches use ClickHouse's direct-read path more often**: the
   Map KV text-index rewrite now also applies to SQL predicates in the top-level

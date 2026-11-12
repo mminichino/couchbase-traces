@@ -504,10 +504,10 @@ If you only need to tune `send_batch_size`, `send_batch_max_size`, or
 second processor, the existing env vars also work without a custom config
 file:
 
-- `HYPERDX_OTEL_BATCH_SEND_BATCH_SIZE` (default `10000`)
-- `HYPERDX_OTEL_BATCH_SEND_BATCH_MAX_SIZE` (default `0`, meaning no upper
+- `CBT_OTEL_BATCH_SEND_BATCH_SIZE` (default `10000`)
+- `CBT_OTEL_BATCH_SEND_BATCH_MAX_SIZE` (default `0`, meaning no upper
   bound)
-- `HYPERDX_OTEL_BATCH_TIMEOUT` (default `5s`)
+- `CBT_OTEL_BATCH_TIMEOUT` (default `5s`)
 
 These are read directly from the base `config.yaml`, so they apply
 everywhere the default `batch` is referenced. Use the swap pattern when

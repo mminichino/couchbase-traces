@@ -4,8 +4,8 @@ const env = process.env;
 
 // DEFAULTS
 const DEFAULT_APP_TYPE = 'api';
-const DEFAULT_FRONTEND_URL = env.HYPERDX_APP_PORT
-  ? `http://localhost:${env.HYPERDX_APP_PORT}`
+const DEFAULT_FRONTEND_URL = env.CBT_APP_PORT
+  ? `http://localhost:${env.CBT_APP_PORT}`
   : '';
 
 export const NODE_ENV = env.NODE_ENV as string;
@@ -30,15 +30,15 @@ export const EXPRESS_SESSION_SECRET =
     : crypto.randomBytes(32).toString('hex');
 export const FRONTEND_URL = (env.FRONTEND_URL ||
   DEFAULT_FRONTEND_URL) as string;
-const HYPERDX_IMAGE = env.HYPERDX_IMAGE;
-export const IS_APP_IMAGE = HYPERDX_IMAGE === 'hyperdx';
-export const IS_ALL_IN_ONE_IMAGE = HYPERDX_IMAGE === 'all-in-one-auth';
-export const IS_LOCAL_IMAGE = HYPERDX_IMAGE === 'all-in-one-noauth';
+const CBT_IMAGE = env.CBT_IMAGE;
+export const IS_APP_IMAGE = CBT_IMAGE === 'hyperdx';
+export const IS_ALL_IN_ONE_IMAGE = CBT_IMAGE === 'all-in-one-auth';
+export const IS_LOCAL_IMAGE = CBT_IMAGE === 'all-in-one-noauth';
 // On Vercel preview deployments the API is inlined into the Next.js app and
 // shares its origin, so we emit relative redirects (FRONTEND_URL there points
 // at the production host). Everywhere else the API and app run on separate
 // hosts, so absolute URLs anchored at FRONTEND_URL are required.
-export const IS_INLINE_API = env.HDX_PREVIEW_INLINE_API === 'true';
+export const IS_INLINE_API = env.CBT_PREVIEW_INLINE_API === 'true';
 export const FRONTEND_REDIRECT_BASE = IS_INLINE_API ? '' : FRONTEND_URL;
 export const INGESTION_API_KEY = env.INGESTION_API_KEY ?? '';
 // Opt-in: emit the contrib `datadogreceiver` on the collector so a
@@ -46,8 +46,8 @@ export const INGESTION_API_KEY = env.INGESTION_API_KEY ?? '';
 // Off by default because the receiver has no per-team bearer-token auth like
 // `otlp/hyperdx`, so enabling it opens an unauthenticated ingest port (:8126).
 export const ENABLE_DATADOG_RECEIVER = env.ENABLE_DATADOG_RECEIVER === 'true';
-export const HYPERDX_API_KEY = env.HYPERDX_API_KEY as string;
-export const HYPERDX_LOG_LEVEL = env.HYPERDX_LOG_LEVEL as string;
+export const CBT_API_KEY = env.CBT_API_KEY as string;
+export const CBT_LOG_LEVEL = env.CBT_LOG_LEVEL as string;
 export const IS_CI = NODE_ENV === 'test';
 export const IS_DEV = NODE_ENV === 'development';
 export const IS_PROD = NODE_ENV === 'production';

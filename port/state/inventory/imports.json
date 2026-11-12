@@ -2399,6 +2399,20 @@
           "line": 13
         },
         {
+          "name": "CBT_API_KEY",
+          "kind": "const",
+          "from": null,
+          "original": null,
+          "line": 49
+        },
+        {
+          "name": "CBT_LOG_LEVEL",
+          "kind": "const",
+          "from": null,
+          "original": null,
+          "line": 50
+        },
+        {
           "name": "CLICKHOUSE_HOST",
           "kind": "const",
           "from": null,
@@ -2488,20 +2502,6 @@
           "from": null,
           "original": null,
           "line": 31
-        },
-        {
-          "name": "HYPERDX_API_KEY",
-          "kind": "const",
-          "from": null,
-          "original": null,
-          "line": 49
-        },
-        {
-          "name": "HYPERDX_LOG_LEVEL",
-          "kind": "const",
-          "from": null,
-          "original": null,
-          "line": 50
         },
         {
           "name": "INGESTION_API_KEY",
@@ -28950,7 +28950,7 @@
           "kind": "class",
           "from": null,
           "original": null,
-          "line": 431
+          "line": 429
         },
         {
           "name": "bearerTokenVariants",
@@ -28971,7 +28971,7 @@
           "kind": "const",
           "from": null,
           "original": null,
-          "line": 665
+          "line": 663
         }
       ],
       "starReexports": []
@@ -53080,16 +53080,16 @@
           "typeOnly": false,
           "bindings": [
             {
+              "imported": "CBT_EXPORTER_ENABLED",
+              "local": "CBT_EXPORTER_ENABLED"
+            },
+            {
               "imported": "HDX_API_KEY",
               "local": "HDX_API_KEY"
             },
             {
               "imported": "HDX_COLLECTOR_URL",
               "local": "HDX_COLLECTOR_URL"
-            },
-            {
-              "imported": "HDX_EXPORTER_ENABLED",
-              "local": "HDX_EXPORTER_ENABLED"
             },
             {
               "imported": "HDX_LOGS_COLLECTOR_URL",
@@ -164738,6 +164738,13 @@
           "line": 66
         },
         {
+          "name": "CBT_EXPORTER_ENABLED",
+          "kind": "const",
+          "from": null,
+          "original": null,
+          "line": 18
+        },
+        {
           "name": "HDX_API_KEY",
           "kind": "const",
           "from": null,
@@ -164750,13 +164757,6 @@
           "from": null,
           "original": null,
           "line": 39
-        },
-        {
-          "name": "HDX_EXPORTER_ENABLED",
-          "kind": "const",
-          "from": null,
-          "original": null,
-          "line": 18
         },
         {
           "name": "HDX_LOCAL_DEFAULT_CONNECTIONS",
@@ -192232,8 +192232,8 @@
               "local": "BASE_PATH"
             },
             {
-              "imported": "HDX_EXPORTER_ENABLED",
-              "local": "HDX_EXPORTER_ENABLED"
+              "imported": "CBT_EXPORTER_ENABLED",
+              "local": "CBT_EXPORTER_ENABLED"
             }
           ],
           "line": 3

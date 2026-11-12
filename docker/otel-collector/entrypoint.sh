@@ -11,12 +11,12 @@ esac
 
 # DEPRECATED: The clickhouse.json feature gate has been removed upstream.
 # When OTEL_AGENT_FEATURE_GATE_ARG contains clickhouse.json, strip it and
-# map it to HYPERDX_OTEL_EXPORTER_CLICKHOUSE_JSON_ENABLE instead. Other feature gates
+# map it to CBT_OTEL_EXPORTER_CLICKHOUSE_JSON_ENABLE instead. Other feature gates
 # are preserved and passed through to the collector.
 if echo "$OTEL_AGENT_FEATURE_GATE_ARG" | grep -q "clickhouse.json"; then
   echo "WARNING: '--feature-gates=clickhouse.json' is deprecated and no longer supported by the collector."
-  echo "WARNING: Use HYPERDX_OTEL_EXPORTER_CLICKHOUSE_JSON_ENABLE=true instead. This flag will be removed in a future release."
-  export HYPERDX_OTEL_EXPORTER_CLICKHOUSE_JSON_ENABLE=true
+  echo "WARNING: Use CBT_OTEL_EXPORTER_CLICKHOUSE_JSON_ENABLE=true instead. This flag will be removed in a future release."
+  export CBT_OTEL_EXPORTER_CLICKHOUSE_JSON_ENABLE=true
 
   # Strip clickhouse.json from the feature gates, keeping any other gates
   REMAINING_GATES=$(echo "$OTEL_AGENT_FEATURE_GATE_ARG" | sed 's/--feature-gates=//' | tr ',' '\n' | grep -v 'clickhouse.json' | tr '\n' ',' | sed 's/,$//')
@@ -28,8 +28,8 @@ if echo "$OTEL_AGENT_FEATURE_GATE_ARG" | grep -q "clickhouse.json"; then
 fi
 
 # Fall back to legacy schema when ClickHouse JSON exporter mode is enabled
-if [ "$HYPERDX_OTEL_EXPORTER_CLICKHOUSE_JSON_ENABLE" = "true" ]; then
-  export HYPERDX_OTEL_EXPORTER_CREATE_LEGACY_SCHEMA=true
+if [ "$CBT_OTEL_EXPORTER_CLICKHOUSE_JSON_ENABLE" = "true" ]; then
+  export CBT_OTEL_EXPORTER_CREATE_LEGACY_SCHEMA=true
 fi
 
 # CLICKHOUSE_PROMETHEUS_METRICS_ENDPOINT accepts a bare host:port (plain HTTP,
@@ -37,7 +37,7 @@ fi
 # config and the OpAMP-managed config (opampController.ts) need it as
 # host:port, because it is also a Prometheus scrape target, so the scheme is
 # split off here and handed to the prometheusremotewrite exporter through
-# HYPERDX_PROMETHEUS_SCHEME and HYPERDX_PROMETHEUS_TLS_INSECURE. Runs before
+# CBT_PROMETHEUS_SCHEME and CBT_PROMETHEUS_TLS_INSECURE. Runs before
 # migrations so a bad value fails fast without touching ClickHouse.
 prometheus_endpoint_error() {
   echo "ERROR: CLICKHOUSE_PROMETHEUS_METRICS_ENDPOINT $1. Use host:port, http://host:port or https://host:port." >&2
@@ -45,12 +45,12 @@ prometheus_endpoint_error() {
 }
 
 if [ -n "$CLICKHOUSE_PROMETHEUS_METRICS_ENDPOINT" ]; then
-  HYPERDX_PROMETHEUS_SCHEME=http
-  HYPERDX_PROMETHEUS_TLS_INSECURE=true
+  CBT_PROMETHEUS_SCHEME=http
+  CBT_PROMETHEUS_TLS_INSECURE=true
   case "$CLICKHOUSE_PROMETHEUS_METRICS_ENDPOINT" in
     https://*)
-      HYPERDX_PROMETHEUS_SCHEME=https
-      HYPERDX_PROMETHEUS_TLS_INSECURE=false
+      CBT_PROMETHEUS_SCHEME=https
+      CBT_PROMETHEUS_TLS_INSECURE=false
       ;;
     http://*) ;;
     # Only the scheme is echoed back: the rest of the URL may carry credentials.
@@ -65,12 +65,12 @@ if [ -n "$CLICKHOUSE_PROMETHEUS_METRICS_ENDPOINT" ]; then
   esac
 
   export CLICKHOUSE_PROMETHEUS_METRICS_ENDPOINT="$PROMETHEUS_HOST_PORT"
-  export HYPERDX_PROMETHEUS_SCHEME HYPERDX_PROMETHEUS_TLS_INSECURE
-  echo "CLICKHOUSE_PROMETHEUS_METRICS_ENDPOINT scheme: $HYPERDX_PROMETHEUS_SCHEME"
+  export CBT_PROMETHEUS_SCHEME CBT_PROMETHEUS_TLS_INSECURE
+  echo "CLICKHOUSE_PROMETHEUS_METRICS_ENDPOINT scheme: $CBT_PROMETHEUS_SCHEME"
 fi
 
 # Run ClickHouse schema migrations if not using legacy schema creation
-if [ "$HYPERDX_OTEL_EXPORTER_CREATE_LEGACY_SCHEMA" != "true" ]; then
+if [ "$CBT_OTEL_EXPORTER_CREATE_LEGACY_SCHEMA" != "true" ]; then
   # Run Go-based migrate tool with TLS support
   # TLS configuration:
   # - CLICKHOUSE_TLS_CA_FILE: CA certificate file

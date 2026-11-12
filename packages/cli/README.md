@@ -251,7 +251,7 @@ npx @couchbase-traces/cli upload-sourcemaps \
 | `-bp, --basePath <path>` | Base path for the uploaded sourcemaps                  |         |
 | `--apiVersion <version>` | API version: `v1` (HyperDX V1 Cloud) or `v2` (latest)  | `v1`    |
 
-Optionally, set the `HYPERDX_SERVICE_KEY` environment variable to avoid passing
+Optionally, set the `CBT_SERVICE_KEY` environment variable to avoid passing
 the `--serviceKey` flag.
 
 ## For AI agents & scripting

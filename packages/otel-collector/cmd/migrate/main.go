@@ -56,18 +56,18 @@ type Config struct {
 
 // loadConfig reads configuration from environment variables and CLI arguments
 func loadConfig() (*Config, error) {
-	tablesTTL := getEnv("HYPERDX_OTEL_EXPORTER_TABLES_TTL", "720h")
+	tablesTTL := getEnv("CBT_OTEL_EXPORTER_TABLES_TTL", "720h")
 	cfg := &Config{
 		Endpoint:              getEnv("CLICKHOUSE_ENDPOINT", "tcp://localhost:9000"),
 		User:                  getEnv("CLICKHOUSE_USER", "default"),
 		Password:              getEnv("CLICKHOUSE_PASSWORD", ""),
-		Database:              getEnv("HYPERDX_OTEL_EXPORTER_CLICKHOUSE_DATABASE", "default"),
+		Database:              getEnv("CBT_OTEL_EXPORTER_CLICKHOUSE_DATABASE", "default"),
 		TablesTTL:             tablesTTL,
-		LogsTTL:               getEnv("HYPERDX_OTEL_EXPORTER_LOGS_TTL", tablesTTL),
-		TracesTTL:             getEnv("HYPERDX_OTEL_EXPORTER_TRACES_TTL", tablesTTL),
-		MetricsTTL:            getEnv("HYPERDX_OTEL_EXPORTER_METRICS_TTL", tablesTTL),
-		SessionsTTL:           getEnv("HYPERDX_OTEL_EXPORTER_SESSIONS_TTL", tablesTTL),
-		ReconcileTableTTL:     getEnv("HYPERDX_OTEL_EXPORTER_RECONCILE_TABLE_TTL", "false") == "true",
+		LogsTTL:               getEnv("CBT_OTEL_EXPORTER_LOGS_TTL", tablesTTL),
+		TracesTTL:             getEnv("CBT_OTEL_EXPORTER_TRACES_TTL", tablesTTL),
+		MetricsTTL:            getEnv("CBT_OTEL_EXPORTER_METRICS_TTL", tablesTTL),
+		SessionsTTL:           getEnv("CBT_OTEL_EXPORTER_SESSIONS_TTL", tablesTTL),
+		ReconcileTableTTL:     getEnv("CBT_OTEL_EXPORTER_RECONCILE_TABLE_TTL", "false") == "true",
 		TLSCAFile:             getEnv("CLICKHOUSE_TLS_CA_FILE", ""),
 		TLSCertFile:           getEnv("CLICKHOUSE_TLS_CERT_FILE", ""),
 		TLSKeyFile:            getEnv("CLICKHOUSE_TLS_KEY_FILE", ""),
@@ -804,11 +804,11 @@ func main() {
 
 	ttlExprs := make(map[string]string)
 	for _, s := range []struct{ macro, env, value string }{
-		{"TABLES_TTL", "HYPERDX_OTEL_EXPORTER_TABLES_TTL", cfg.TablesTTL},
-		{"LOGS_TTL", "HYPERDX_OTEL_EXPORTER_LOGS_TTL", cfg.LogsTTL},
-		{"TRACES_TTL", "HYPERDX_OTEL_EXPORTER_TRACES_TTL", cfg.TracesTTL},
-		{"METRICS_TTL", "HYPERDX_OTEL_EXPORTER_METRICS_TTL", cfg.MetricsTTL},
-		{"SESSIONS_TTL", "HYPERDX_OTEL_EXPORTER_SESSIONS_TTL", cfg.SessionsTTL},
+		{"TABLES_TTL", "CBT_OTEL_EXPORTER_TABLES_TTL", cfg.TablesTTL},
+		{"LOGS_TTL", "CBT_OTEL_EXPORTER_LOGS_TTL", cfg.LogsTTL},
+		{"TRACES_TTL", "CBT_OTEL_EXPORTER_TRACES_TTL", cfg.TracesTTL},
+		{"METRICS_TTL", "CBT_OTEL_EXPORTER_METRICS_TTL", cfg.MetricsTTL},
+		{"SESSIONS_TTL", "CBT_OTEL_EXPORTER_SESSIONS_TTL", cfg.SessionsTTL},
 	} {
 		expr, err := ttlToClickHouseInterval(s.value)
 		if err != nil {

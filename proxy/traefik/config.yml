@@ -4,7 +4,7 @@ http:
     app-router:
       entryPoints:
         - web
-      rule: 'PathPrefix(`{{ env "HYPERDX_BASE_PATH" }}`)'
+      rule: 'PathPrefix(`{{ env "CBT_BASE_PATH" }}`)'
       service: app-service
 
     # This handles assets and api calls at the root and rewrites them
@@ -30,12 +30,12 @@ http:
   middlewares:
     add-basepath:
       addPrefix:
-        prefix: '{{ env "HYPERDX_BASE_PATH" }}'
+        prefix: '{{ env "CBT_BASE_PATH" }}'
 
     redirect-to-basepath:
       redirectRegex:
         regex: '^/$'
-        replacement: '{{ env "HYPERDX_BASE_PATH" }}'
+        replacement: '{{ env "CBT_BASE_PATH" }}'
         permanent: true
 
   services:

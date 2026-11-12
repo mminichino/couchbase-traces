@@ -38,7 +38,7 @@ Configuring instrumentation for ClickStack Local is similar to configuring it fo
 
 Most instrumentations can be configured using the `OTEL_EXPORTER_OTLP_ENDPOINT` environment variable. Ex: `OTEL_EXPORTER_OTLP_ENDPOINT=http://localhost:4318`.
 
-If you're using a ClickStack SDK, pass the key as the `apiKey` init option. `@clickhouse/clickstack-node` also accepts `OTEL_EXPORTER_OTLP_HEADERS=authorization=<key>`, and `@clickhouse/clickstack-browser` only takes `apiKey`. Older HyperDX SDKs (`@hyperdx/*`) may need a non-empty `HYPERDX_API_KEY` instead. API keys are not validated in ClickStack Local and therefore can be any non-empty value.
+If you're using a ClickStack SDK, pass the key as the `apiKey` init option. `@clickhouse/clickstack-node` also accepts `OTEL_EXPORTER_OTLP_HEADERS=authorization=<key>`, and `@clickhouse/clickstack-browser` only takes `apiKey`. Older HyperDX SDKs (`@hyperdx/*`) may need a non-empty `CBT_API_KEY` instead. API keys are not validated in ClickStack Local and therefore can be any non-empty value.
 
 ## Customizing Ports
 
@@ -47,14 +47,14 @@ If you need to customize the app (8080) or api (8000) ports that ClickStack Loca
 Customizing the OpenTelemetry ports can simply be changed by modifying the port forwarding flags. Ex. Replacing `-p 4318:4318` with `-p 4999:4318` to change the OpenTelemetry HTTP port to 4999.
 
 ```bash
-HYPERDX_APP_PORT=YOUR_CUSTOM_APP_PORT \
-HYPERDX_API_PORT=YOUR_CUSTOM_API_PORT; \
+CBT_APP_PORT=YOUR_CUSTOM_APP_PORT \
+CBT_API_PORT=YOUR_CUSTOM_API_PORT; \
 docker run \
--e HYPERDX_APP_PORT=$HYPERDX_APP_PORT \
--e HYPERDX_API_PORT=$HYPERDX_API_PORT \
--p $HYPERDX_API_PORT:8000 \
+-e CBT_APP_PORT=$CBT_APP_PORT \
+-e CBT_API_PORT=$CBT_API_PORT \
+-p $CBT_API_PORT:8000 \
 -p 4318:4318 -p 4317:4317 \
--p $HYPERDX_APP_PORT:8080 \
+-p $CBT_APP_PORT:8080 \
 -p 8002:8002 \
 docker.clickhouse.com/clickhouse/clickstack-local
 ```

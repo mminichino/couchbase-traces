@@ -1,6 +1,6 @@
 import { decideSelfTelemetry } from '@couchbase-traces/common-utils/dist/selfTelemetry';
 
-import { BASE_PATH, HDX_EXPORTER_ENABLED } from '@/config';
+import { BASE_PATH, CBT_EXPORTER_ENABLED } from '@/config';
 
 // Used only when no name is configured, in which case the API reports
 // unknown_service:node. It is the name docker-compose gives the API.
@@ -98,11 +98,11 @@ export function isStaticAssetRequest(
 
 /** Called from register() in instrumentation.ts in the Node.js runtime. */
 export async function startNextServerTelemetry(): Promise<void> {
-  // Operators who set HDX_EXPORTER_ENABLED=false to turn off the app's own
+  // Operators who set CBT_EXPORTER_ENABLED=false to turn off the app's own
   // telemetry (it hides the browser key in /api/config) never got Next server
   // telemetry either, because production builds did not load
   // instrumentation.ts before.
-  if (!HDX_EXPORTER_ENABLED) {
+  if (!CBT_EXPORTER_ENABLED) {
     return;
   }
   const telemetry = decideSelfTelemetry(process.env);

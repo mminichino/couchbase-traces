@@ -14,7 +14,7 @@
 #   . scripts/dev-env.sh             # same thing, POSIX style
 #
 # Override the slot manually:
-#   HDX_DEV_SLOT=5 . scripts/dev-env.sh
+#   CBT_DEV_SLOT=5 . scripts/dev-env.sh
 # ---------------------------------------------------------------------------
 
 # shellcheck source=./slots.sh
@@ -22,8 +22,8 @@
 hdx_dev_ports
 
 # Git metadata for portal labels
-HDX_DEV_BRANCH="$(git rev-parse --abbrev-ref HEAD 2>/dev/null || echo 'unknown')"
-HDX_DEV_WORKTREE="$(basename "$PWD")"
+CBT_DEV_BRANCH="$(git rev-parse --abbrev-ref HEAD 2>/dev/null || echo 'unknown')"
+CBT_DEV_WORKTREE="$(basename "$PWD")"
 
 # --- Shared NX build cache across all worktrees ---
 # NX cache is content-hash based so changed files get cache misses (correct
@@ -31,8 +31,8 @@ HDX_DEV_WORKTREE="$(basename "$PWD")"
 NX_CACHE_DIRECTORY="${HOME}/.config/hyperdx/nx-cache"
 mkdir -p "$NX_CACHE_DIRECTORY"
 
-export HDX_DEV_BRANCH
-export HDX_DEV_WORKTREE
+export CBT_DEV_BRANCH
+export CBT_DEV_WORKTREE
 export NX_CACHE_DIRECTORY
 
 # --- Clean up stale Next.js state from previous sessions ---
@@ -41,29 +41,29 @@ export NX_CACHE_DIRECTORY
 rm -rf "${PWD}/packages/app/.next" 2>/dev/null || true
 
 # --- Set up directories for portal discovery + logs ---
-HDX_DEV_SLOTS_DIR="${HOME}/.config/hyperdx/dev-slots"
-HDX_DEV_LOGS_DIR="${HDX_DEV_SLOTS_DIR}/${HDX_DEV_SLOT}/logs"
-mkdir -p "$HDX_DEV_LOGS_DIR"
+CBT_DEV_SLOTS_DIR="${HOME}/.config/hyperdx/dev-slots"
+CBT_DEV_LOGS_DIR="${CBT_DEV_SLOTS_DIR}/${CBT_DEV_SLOT}/logs"
+mkdir -p "$CBT_DEV_LOGS_DIR"
 
-export HDX_DEV_SLOTS_DIR
-export HDX_DEV_LOGS_DIR
+export CBT_DEV_SLOTS_DIR
+export CBT_DEV_LOGS_DIR
 
-cat > "${HDX_DEV_SLOTS_DIR}/${HDX_DEV_SLOT}.json" <<EOF
+cat > "${CBT_DEV_SLOTS_DIR}/${CBT_DEV_SLOT}.json" <<EOF
 {
-  "slot": ${HDX_DEV_SLOT},
-  "branch": "${HDX_DEV_BRANCH}",
-  "worktree": "${HDX_DEV_WORKTREE}",
+  "slot": ${CBT_DEV_SLOT},
+  "branch": "${CBT_DEV_BRANCH}",
+  "worktree": "${CBT_DEV_WORKTREE}",
   "worktreePath": "${PWD}",
-  "apiPort": ${HYPERDX_API_PORT},
-  "appPort": ${HYPERDX_APP_PORT},
-  "opampPort": ${HYPERDX_OPAMP_PORT},
-  "mongoPort": ${HDX_DEV_MONGO_PORT},
-  "chHttpPort": ${HDX_DEV_CH_HTTP_PORT},
-  "chNativePort": ${HDX_DEV_CH_NATIVE_PORT},
-  "otelHttpPort": ${HDX_DEV_OTEL_HTTP_PORT},
-  "otelGrpcPort": ${HDX_DEV_OTEL_GRPC_PORT},
-  "otelJsonHttpPort": ${HDX_DEV_OTEL_JSON_HTTP_PORT},
-  "logsDir": "${HDX_DEV_LOGS_DIR}",
+  "apiPort": ${CBT_API_PORT},
+  "appPort": ${CBT_APP_PORT},
+  "opampPort": ${CBT_OPAMP_PORT},
+  "mongoPort": ${CBT_DEV_MONGO_PORT},
+  "chHttpPort": ${CBT_DEV_CH_HTTP_PORT},
+  "chNativePort": ${CBT_DEV_CH_NATIVE_PORT},
+  "otelHttpPort": ${CBT_DEV_OTEL_HTTP_PORT},
+  "otelGrpcPort": ${CBT_DEV_OTEL_GRPC_PORT},
+  "otelJsonHttpPort": ${CBT_DEV_OTEL_JSON_HTTP_PORT},
+  "logsDir": "${CBT_DEV_LOGS_DIR}",
   "pid": $$,
   "startedAt": "$(date -u +%Y-%m-%dT%H:%M:%SZ)"
 }
@@ -75,38 +75,38 @@ source "${BASH_SOURCE[0]%/*}/ensure-dev-portal.sh"
 
 # Clean up slot file and archive logs on exit
 _hdx_cleanup_slot() {
-  if [ -n "$HDX_PORTAL_PID" ] && kill -0 "$HDX_PORTAL_PID" 2>/dev/null; then
-    kill "$HDX_PORTAL_PID" 2>/dev/null || true
+  if [ -n "$CBT_PORTAL_PID" ] && kill -0 "$CBT_PORTAL_PID" 2>/dev/null; then
+    kill "$CBT_PORTAL_PID" 2>/dev/null || true
   fi
-  rm -f "${HDX_DEV_SLOTS_DIR}/${HDX_DEV_SLOT}.json" 2>/dev/null || true
+  rm -f "${CBT_DEV_SLOTS_DIR}/${CBT_DEV_SLOT}.json" 2>/dev/null || true
   # Archive logs to history instead of deleting
-  if [ -d "$HDX_DEV_LOGS_DIR" ] && [ -n "$(ls -A "$HDX_DEV_LOGS_DIR" 2>/dev/null)" ]; then
+  if [ -d "$CBT_DEV_LOGS_DIR" ] && [ -n "$(ls -A "$CBT_DEV_LOGS_DIR" 2>/dev/null)" ]; then
     _ts=$(date -u +%Y-%m-%dT%H:%M:%SZ)
-    _hist="${HDX_DEV_SLOTS_DIR}/${HDX_DEV_SLOT}/history/dev-${_ts}"
+    _hist="${CBT_DEV_SLOTS_DIR}/${CBT_DEV_SLOT}/history/dev-${_ts}"
     mkdir -p "$_hist"
-    mv "$HDX_DEV_LOGS_DIR"/* "$_hist/" 2>/dev/null || true
+    mv "$CBT_DEV_LOGS_DIR"/* "$_hist/" 2>/dev/null || true
     cat > "$_hist/meta.json" <<METAEOF
-{"worktree":"${HDX_DEV_WORKTREE}","branch":"${HDX_DEV_BRANCH}","worktreePath":"${PWD}"}
+{"worktree":"${CBT_DEV_WORKTREE}","branch":"${CBT_DEV_BRANCH}","worktreePath":"${PWD}"}
 METAEOF
   fi
-  rm -rf "$HDX_DEV_LOGS_DIR" 2>/dev/null || true
+  rm -rf "$CBT_DEV_LOGS_DIR" 2>/dev/null || true
 }
 trap _hdx_cleanup_slot EXIT
 
 # Print summary
 echo "╔══════════════════════════════════════════════════════════════╗"
-echo "║  HyperDX Dev Environment — Slot ${HDX_DEV_SLOT}$(printf '%*s' $((27 - ${#HDX_DEV_SLOT})) '')║"
+echo "║  HyperDX Dev Environment — Slot ${CBT_DEV_SLOT}$(printf '%*s' $((27 - ${#CBT_DEV_SLOT})) '')║"
 echo "╠══════════════════════════════════════════════════════════════╣"
-echo "║  Branch:     ${HDX_DEV_BRANCH}$(printf '%*s' $((45 - ${#HDX_DEV_BRANCH})) '')║"
-echo "║  Worktree:   ${HDX_DEV_WORKTREE}$(printf '%*s' $((45 - ${#HDX_DEV_WORKTREE})) '')║"
+echo "║  Branch:     ${CBT_DEV_BRANCH}$(printf '%*s' $((45 - ${#CBT_DEV_BRANCH})) '')║"
+echo "║  Worktree:   ${CBT_DEV_WORKTREE}$(printf '%*s' $((45 - ${#CBT_DEV_WORKTREE})) '')║"
 echo "╠══════════════════════════════════════════════════════════════╣"
-echo "║  App (Next.js)     http://localhost:${HYPERDX_APP_PORT}$(printf '%*s' $((22 - ${#HYPERDX_APP_PORT})) '')║"
-echo "║  API               http://localhost:${HYPERDX_API_PORT}$(printf '%*s' $((22 - ${#HYPERDX_API_PORT})) '')║"
-echo "║  ClickHouse        http://localhost:${HDX_DEV_CH_HTTP_PORT}$(printf '%*s' $((22 - ${#HDX_DEV_CH_HTTP_PORT})) '')║"
-echo "║  MongoDB           localhost:${HDX_DEV_MONGO_PORT}$(printf '%*s' $((29 - ${#HDX_DEV_MONGO_PORT})) '')║"
-echo "║  OTel HTTP         http://localhost:${HDX_DEV_OTEL_HTTP_PORT}$(printf '%*s' $((22 - ${#HDX_DEV_OTEL_HTTP_PORT})) '')║"
-echo "║  OTel gRPC         localhost:${HDX_DEV_OTEL_GRPC_PORT}$(printf '%*s' $((29 - ${#HDX_DEV_OTEL_GRPC_PORT})) '')║"
-echo "║  OpAMP             localhost:${HYPERDX_OPAMP_PORT}$(printf '%*s' $((29 - ${#HYPERDX_OPAMP_PORT})) '')║"
+echo "║  App (Next.js)     http://localhost:${CBT_APP_PORT}$(printf '%*s' $((22 - ${#CBT_APP_PORT})) '')║"
+echo "║  API               http://localhost:${CBT_API_PORT}$(printf '%*s' $((22 - ${#CBT_API_PORT})) '')║"
+echo "║  ClickHouse        http://localhost:${CBT_DEV_CH_HTTP_PORT}$(printf '%*s' $((22 - ${#CBT_DEV_CH_HTTP_PORT})) '')║"
+echo "║  MongoDB           localhost:${CBT_DEV_MONGO_PORT}$(printf '%*s' $((29 - ${#CBT_DEV_MONGO_PORT})) '')║"
+echo "║  OTel HTTP         http://localhost:${CBT_DEV_OTEL_HTTP_PORT}$(printf '%*s' $((22 - ${#CBT_DEV_OTEL_HTTP_PORT})) '')║"
+echo "║  OTel gRPC         localhost:${CBT_DEV_OTEL_GRPC_PORT}$(printf '%*s' $((29 - ${#CBT_DEV_OTEL_GRPC_PORT})) '')║"
+echo "║  OpAMP             localhost:${CBT_OPAMP_PORT}$(printf '%*s' $((29 - ${#CBT_OPAMP_PORT})) '')║"
 echo "╠══════════════════════════════════════════════════════════════╣"
-echo "║  Portal:  http://localhost:${HDX_PORTAL_PORT}$(printf '%*s' $((28 - ${#HDX_PORTAL_PORT})) '')║"
+echo "║  Portal:  http://localhost:${CBT_PORTAL_PORT}$(printf '%*s' $((28 - ${#CBT_PORTAL_PORT})) '')║"
 echo "╚══════════════════════════════════════════════════════════════╝"

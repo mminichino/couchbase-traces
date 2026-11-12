@@ -118,7 +118,7 @@ ARG CODE_VERSION
 
 ENV CODE_VERSION=$CODE_VERSION
 ENV OTEL_RESOURCE_ATTRIBUTES="service.version=$CODE_VERSION"
-# Service name for HyperDX's own telemetry, sent only when HYPERDX_API_KEY or
+# Service name for HyperDX's own telemetry, sent only when CBT_API_KEY or
 # OTEL_EXPORTER_OTLP_HEADERS is set. The API and alert task use it as is, the
 # Next.js server adds "-next". Override it with -e OTEL_SERVICE_NAME=<name>.
 ENV OTEL_SERVICE_NAME=hdx-oss-app
@@ -161,7 +161,7 @@ ARG USER_GID=10001
 
 ENV CODE_VERSION=$CODE_VERSION
 ENV OTEL_RESOURCE_ATTRIBUTES="service.version=$CODE_VERSION"
-# Service name for HyperDX's own telemetry, sent only when HYPERDX_API_KEY or
+# Service name for HyperDX's own telemetry, sent only when CBT_API_KEY or
 # OTEL_EXPORTER_OTLP_HEADERS is set. The API and alert task use it as is, the
 # Next.js server adds "-next". Override it with -e OTEL_SERVICE_NAME=<name>.
 ENV OTEL_SERVICE_NAME=hdx-oss-app

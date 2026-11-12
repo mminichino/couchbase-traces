@@ -12,7 +12,7 @@
 //
 // Usage:
 //   node scripts/dev-portal/server.js          # default port 9900
-//   HDX_PORTAL_PORT=9901 node scripts/dev-portal/server.js
+//   CBT_PORTAL_PORT=9901 node scripts/dev-portal/server.js
 //
 // Zero external dependencies — uses only Node.js built-ins.
 // ---------------------------------------------------------------------------
@@ -24,7 +24,7 @@ const path = require('node:path');
 const net = require('node:net');
 const url = require('node:url');
 
-const PORT = parseInt(process.env.HDX_PORTAL_PORT || '9900', 10);
+const PORT = parseInt(process.env.CBT_PORTAL_PORT || '9900', 10);
 const SLOTS_DIR = path.join(
   process.env.HOME || process.env.USERPROFILE || '/tmp',
   '.config',
@@ -716,7 +716,7 @@ function discoverHistory() {
           'sh',
           [
             '-c',
-            '. "$0" && hdx_dev_ports "$1" && printf %s "$HDX_DEV_SLOT"',
+            '. "$0" && hdx_dev_ports "$1" && printf %s "$CBT_DEV_SLOT"',
             path.join(__dirname, '..', 'slots.sh'),
             process.cwd(),
           ],

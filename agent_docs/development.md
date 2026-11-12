@@ -42,7 +42,7 @@ multiple agents or developers working in parallel), use `make dev` instead of
 ### How It Works
 
 1. `scripts/slots.sh` computes a deterministic slot (0-99) from the worktree
-   directory name (via `cksum`), or from its full path with `HDX_SLOT_FROM=path`
+   directory name (via `cksum`), or from its full path with `CBT_SLOT_FROM=path`
    (see below). It is the only place slots and ports are computed: `yarn dev`,
    `make dev-int`, `make dev-e2e`, and tools all use it.
 2. Each service gets a unique port: `base + slot` (see table below)
@@ -56,17 +56,17 @@ integration tests (14320-40098) and E2E tests (20320-21399).
 
 | Service           | Base Port | Range         | Env Variable                  |
 | ----------------- | --------- | ------------- | ----------------------------- |
-| API server        | 30100     | 30100 - 30199 | `HYPERDX_API_PORT`            |
-| App (Next.js)     | 30200     | 30200 - 30299 | `HYPERDX_APP_PORT`            |
-| OpAMP             | 30300     | 30300 - 30399 | `HYPERDX_OPAMP_PORT`          |
-| MongoDB           | 30400     | 30400 - 30499 | `HDX_DEV_MONGO_PORT`          |
-| ClickHouse HTTP   | 30500     | 30500 - 30599 | `HDX_DEV_CH_HTTP_PORT`        |
-| ClickHouse Native | 30600     | 30600 - 30699 | `HDX_DEV_CH_NATIVE_PORT`      |
-| OTel health       | 30700     | 30700 - 30799 | `HDX_DEV_OTEL_HEALTH_PORT`    |
-| OTel gRPC         | 30800     | 30800 - 30899 | `HDX_DEV_OTEL_GRPC_PORT`      |
-| OTel HTTP         | 30900     | 30900 - 30999 | `HDX_DEV_OTEL_HTTP_PORT`      |
-| OTel metrics      | 31000     | 31000 - 31099 | `HDX_DEV_OTEL_METRICS_PORT`   |
-| OTel JSON HTTP    | 31100     | 31100 - 31199 | `HDX_DEV_OTEL_JSON_HTTP_PORT` |
+| API server        | 30100     | 30100 - 30199 | `CBT_API_PORT`            |
+| App (Next.js)     | 30200     | 30200 - 30299 | `CBT_APP_PORT`            |
+| OpAMP             | 30300     | 30300 - 30399 | `CBT_OPAMP_PORT`          |
+| MongoDB           | 30400     | 30400 - 30499 | `CBT_DEV_MONGO_PORT`          |
+| ClickHouse HTTP   | 30500     | 30500 - 30599 | `CBT_DEV_CH_HTTP_PORT`        |
+| ClickHouse Native | 30600     | 30600 - 30699 | `CBT_DEV_CH_NATIVE_PORT`      |
+| OTel health       | 30700     | 30700 - 30799 | `CBT_DEV_OTEL_HEALTH_PORT`    |
+| OTel gRPC         | 30800     | 30800 - 30899 | `CBT_DEV_OTEL_GRPC_PORT`      |
+| OTel HTTP         | 30900     | 30900 - 30999 | `CBT_DEV_OTEL_HTTP_PORT`      |
+| OTel metrics      | 31000     | 31000 - 31099 | `CBT_DEV_OTEL_METRICS_PORT`   |
+| OTel JSON HTTP    | 31100     | 31100 - 31199 | `CBT_DEV_OTEL_JSON_HTTP_PORT` |
 
 ### Dev Portal
 
@@ -91,28 +91,28 @@ The portal auto-refreshes every 3 seconds and shows each worktree's:
 
 ```bash
 # Use a specific slot instead of the auto-computed one
-HDX_DEV_SLOT=5 make dev
+CBT_DEV_SLOT=5 make dev
 ```
 
 ### Worktrees With the Same Folder Name
 
 If your worktrees share a folder name (`a/hyperdx`, `b/hyperdx`), they get the
-same slot and clash. Set `HDX_SLOT_FROM=path` in your shell profile to hash each
+same slot and clash. Set `CBT_SLOT_FROM=path` in your shell profile to hash each
 worktree's full path instead. It applies to the dev stack, integration tests,
 E2E tests, and the dev portal.
 
 ```bash
-export HDX_SLOT_FROM=path
+export CBT_SLOT_FROM=path
 ```
 
 Your existing stacks move to new slots once, so their dev data (in
-`.volumes/*_<slot>`) starts empty. The default, `HDX_SLOT_FROM=name`, keeps
+`.volumes/*_<slot>`) starts empty. The default, `CBT_SLOT_FROM=name`, keeps
 today's slots.
 
 ### Tools That Talk to the Dev Stack
 
 Run them through `scripts/with-slots.sh`. It sets this worktree's dev ports
-(`HDX_DEV_CH_HTTP_PORT`, `HYPERDX_API_PORT`, ...) and nothing else. Don't source
+(`CBT_DEV_CH_HTTP_PORT`, `CBT_API_PORT`, ...) and nothing else. Don't source
 `scripts/dev-env.sh` for this: it also clears `packages/app/.next` and registers
 the stack with the dev portal, which disrupts a running `yarn dev`.
 
@@ -121,7 +121,7 @@ the stack with the dev portal, which disrupts a running `yarn dev`.
 ../../scripts/with-slots.sh ts-node scripts/seed-alerts.ts
 
 # Against another slot
-HDX_DEV_SLOT=5 scripts/with-slots.sh <command>
+CBT_DEV_SLOT=5 scripts/with-slots.sh <command>
 ```
 
 ## Testing Strategy
@@ -165,17 +165,17 @@ without port conflicts.
 
 - A deterministic slot (0-99) is computed from the worktree directory name
 - Each slot gets its own Docker Compose project name and port range
-- Override the slot manually: `make dev-int HDX_CI_SLOT=5 FILE=alerts`
+- Override the slot manually: `make dev-int CBT_CI_SLOT=5 FILE=alerts`
 - The slot and assigned ports are printed when `dev-int` starts
 
 Port mapping (base + slot):
 
 | Service         | Default port (slot 0) | Variable          |
 | --------------- | --------------------- | ----------------- |
-| ClickHouse HTTP | 18123                 | HDX_CI_CH_PORT    |
-| MongoDB         | 39999                 | HDX_CI_MONGO_PORT |
-| API test server | 19000                 | HDX_CI_API_PORT   |
-| OpAMP           | 14320                 | HDX_CI_OPAMP_PORT |
+| ClickHouse HTTP | 18123                 | CBT_CI_CH_PORT    |
+| MongoDB         | 39999                 | CBT_CI_MONGO_PORT |
+| API test server | 19000                 | CBT_CI_API_PORT   |
+| OpAMP           | 14320                 | CBT_CI_OPAMP_PORT |
 
 **CI Testing Notes:**
 
@@ -194,13 +194,13 @@ E2E port mapping (base + slot):
 
 | Service           | Base Port | Range         | Env Variable             |
 | ----------------- | --------- | ------------- | ------------------------ |
-| OpAMP             | 20320     | 20320 - 20419 | `HDX_E2E_OPAMP_PORT`     |
-| ClickHouse HTTP   | 20500     | 20500 - 20599 | `HDX_E2E_CH_PORT`        |
-| ClickHouse Native | 20600     | 20600 - 20699 | `HDX_E2E_CH_NATIVE_PORT` |
-| API server        | 21000     | 21000 - 21099 | `HDX_E2E_API_PORT`       |
-| MongoDB           | 21100     | 21100 - 21199 | `HDX_E2E_MONGO_PORT`     |
-| App (local)       | 21200     | 21200 - 21299 | `HDX_E2E_APP_LOCAL_PORT` |
-| App (fullstack)   | 21300     | 21300 - 21399 | `HDX_E2E_APP_PORT`       |
+| OpAMP             | 20320     | 20320 - 20419 | `CBT_E2E_OPAMP_PORT`     |
+| ClickHouse HTTP   | 20500     | 20500 - 20599 | `CBT_E2E_CH_PORT`        |
+| ClickHouse Native | 20600     | 20600 - 20699 | `CBT_E2E_CH_NATIVE_PORT` |
+| API server        | 21000     | 21000 - 21099 | `CBT_E2E_API_PORT`       |
+| MongoDB           | 21100     | 21100 - 21199 | `CBT_E2E_MONGO_PORT`     |
+| App (local)       | 21200     | 21200 - 21299 | `CBT_E2E_APP_LOCAL_PORT` |
+| App (fullstack)   | 21300     | 21300 - 21399 | `CBT_E2E_APP_PORT`       |
 
 ```bash
 # Run all E2E tests
@@ -222,7 +222,7 @@ make dev-e2e FILE=navigation REPORT=1
 ./scripts/test-e2e.sh --ui --last-failed
 
 # Override the slot manually
-HDX_E2E_SLOT=5 ./scripts/test-e2e.sh
+CBT_E2E_SLOT=5 ./scripts/test-e2e.sh
 ```
 
 - A deterministic slot (0-99) is computed from the worktree directory name
@@ -305,12 +305,12 @@ serves both the app and the API.
    a stateless `(req, res) => Promise<void>` handler. It lazily connects to
    MongoDB on the first invocation and caches the connection across warm
    invocations.
-2. `packages/app/pages/api/[...all].ts` branches on the `HDX_PREVIEW_INLINE_API`
+2. `packages/app/pages/api/[...all].ts` branches on the `CBT_PREVIEW_INLINE_API`
    env var. When `true`, it `require()`s the compiled serverless handler and
    dispatches directly. Otherwise it falls back to the existing
    http-proxy-middleware path used by Docker/standalone builds.
 3. `packages/app/next.config.mjs` adds a webpack `externals` rule that marks
-   `@couchbase-traces/api` as a CommonJS external **unless** `HDX_PREVIEW_INLINE_API` is
+   `@couchbase-traces/api` as a CommonJS external **unless** `CBT_PREVIEW_INLINE_API` is
    `true`. This keeps production app builds (Docker fullstack image, standalone
    Next output) byte-for-byte equivalent to before — they never bundle
    passport-saml, mongoose, AWS SDK, etc.
@@ -321,14 +321,14 @@ serves both the app and the API.
 
 | Key                                          | Notes                                                             |
 | -------------------------------------------- | ----------------------------------------------------------------- |
-| `HDX_PREVIEW_INLINE_API`                     | `true` — turns on the inline path                                 |
+| `CBT_PREVIEW_INLINE_API`                     | `true` — turns on the inline path                                 |
 | `MONGO_URI`                                  | Preview MongoDB connection string                                 |
 | `EXPRESS_SESSION_SECRET`                     | Random 32+ char string shared by all instances; unset generates one per process, invalidating sessions on restart and between instances |
 | `DISABLED_AUTH_METHODS`                      | `google,saml` (avoids per-preview OAuth callback URL config)      |
 | `AI_PROVIDER`, `AI_API_KEY`, `AI_MODEL_NAME` | Optional, only if AI features should work                         |
 | `FRONTEND_URL`                               | Optional. Leave unset to use host-only cookies on the preview URL |
 
-Production env vars on the same project must leave `HDX_PREVIEW_INLINE_API`
+Production env vars on the same project must leave `CBT_PREVIEW_INLINE_API`
 unset (or `false`) so production deployments keep using the proxy path.
 
 ### Limitations

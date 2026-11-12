@@ -18,16 +18,16 @@ receivers:
       network:
 exporters:
   logging:
-    loglevel: ${env:HYPERDX_LOG_LEVEL}
+    loglevel: ${env:CBT_LOG_LEVEL}
   otlphttp:
     endpoint: 'http://otel-collector:4318'
     headers:
-      authorization: ${HYPERDX_API_KEY}
+      authorization: ${CBT_API_KEY}
     compression: gzip
 service:
   telemetry:
     logs:
-      level: ${env:HYPERDX_LOG_LEVEL}
+      level: ${env:CBT_LOG_LEVEL}
   pipelines:
     metrics:
       receivers: [mongodb, hostmetrics]

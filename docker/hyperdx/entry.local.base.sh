@@ -1,18 +1,18 @@
 #!/bin/bash
 
-export HYPERDX_LOG_LEVEL="error"
+export CBT_LOG_LEVEL="error"
 # https://clickhouse.com/docs/en/operations/server-configuration-parameters/settings#logger
 export CLICKHOUSE_LOG_LEVEL="error"
 
 # User can specify either an entire SERVER_URL, or override slectively the 
-# HYPERDX_API_URL or HYPERDX_API_PORT from the defaults
+# HYPERDX_API_URL or CBT_API_PORT from the defaults
 # Same applies to the frontend/app
-export SERVER_URL="http://127.0.0.1:${HYPERDX_API_PORT:-8000}"
-export FRONTEND_URL="${FRONTEND_URL:-${HYPERDX_APP_URL:-http://localhost}:${HYPERDX_APP_PORT:-8080}}"
-export OPAMP_PORT=${HYPERDX_OPAMP_PORT:-4320}
+export SERVER_URL="http://127.0.0.1:${CBT_API_PORT:-8000}"
+export FRONTEND_URL="${FRONTEND_URL:-${CBT_APP_URL:-http://localhost}:${CBT_APP_PORT:-8080}}"
+export OPAMP_PORT=${CBT_OPAMP_PORT:-4320}
 
 # Internal Services
-export HYPERDX_OTEL_EXPORTER_CLICKHOUSE_DATABASE="${HYPERDX_OTEL_EXPORTER_CLICKHOUSE_DATABASE:-default}"
+export CBT_OTEL_EXPORTER_CLICKHOUSE_DATABASE="${CBT_OTEL_EXPORTER_CLICKHOUSE_DATABASE:-default}"
 export CLICKHOUSE_ENDPOINT="${CLICKHOUSE_ENDPOINT:-tcp://ch-server:9000?dial_timeout=10s}"
 export MONGO_URI="mongodb://db:27017/hyperdx"
 export OPAMP_SERVER_URL="http://127.0.0.1:${OPAMP_PORT}"
@@ -21,7 +21,7 @@ export CLICKHOUSE_PROMETHEUS_METRICS_ENDPOINT="${CLICKHOUSE_PROMETHEUS_METRICS_E
 # These values must match the strings compared against in packages/api/src/config.ts
 # (IS_LOCAL_IMAGE / IS_ALL_IN_ONE_IMAGE). The auth variant must report
 # "all-in-one-auth" so that the INGESTION_API_KEY bootstrap path is enabled.
-export HYPERDX_IMAGE=$([[ "${IS_LOCAL_APP_MODE}" == "DANGEROUSLY_is_local_app_mode💀" ]] && echo "all-in-one-noauth" || echo "all-in-one-auth")
+export CBT_IMAGE=$([[ "${IS_LOCAL_APP_MODE}" == "DANGEROUSLY_is_local_app_mode💀" ]] && echo "all-in-one-noauth" || echo "all-in-one-auth")
 # Keep the public demo default only when authentication is disabled.
 if [[ "${IS_LOCAL_APP_MODE}" == "DANGEROUSLY_is_local_app_mode💀" ]]; then
   export EXPRESS_SESSION_SECRET="${EXPRESS_SESSION_SECRET:-hyperdx is cool 👋}"
@@ -53,7 +53,7 @@ echo "Send OpenTelemetry data via:
 "
 echo "Exporting data to ClickHouse:
   Endpoint: $CLICKHOUSE_ENDPOINT
-  Database: $HYPERDX_OTEL_EXPORTER_CLICKHOUSE_DATABASE
+  Database: $CBT_OTEL_EXPORTER_CLICKHOUSE_DATABASE
 "
 
 # Start Clickhouse Server
@@ -78,8 +78,8 @@ node /etc/local/refresh-env.js
 ./node_modules/.bin/concurrently \
   "--kill-others-on-fail" \
   "--names=API,APP,ALERT-TASK" \
-  "PORT=${HYPERDX_API_PORT:-8000} HYPERDX_APP_PORT=${HYPERDX_APP_PORT:-8080} ./packages/api/bin/hyperdx api" \
-  "cd ./packages/app/packages/app && HOSTNAME='${HYPERDX_APP_LISTEN_HOSTNAME:-0.0.0.0}' HYPERDX_API_PORT=${HYPERDX_API_PORT:-8000} PORT=${HYPERDX_APP_PORT:-8080} node server.js" \
+  "PORT=${CBT_API_PORT:-8000} CBT_APP_PORT=${CBT_APP_PORT:-8080} ./packages/api/bin/hyperdx api" \
+  "cd ./packages/app/packages/app && HOSTNAME='${CBT_APP_LISTEN_HOSTNAME:-0.0.0.0}' CBT_API_PORT=${CBT_API_PORT:-8000} PORT=${CBT_APP_PORT:-8080} node server.js" \
   "./packages/api/bin/hyperdx task check-alerts" \
   > /var/log/app.log 2>&1 &
 

@@ -13,7 +13,7 @@ jest.mock('@clickhouse/clickstack-node', () => ({
 }));
 jest.mock('@/config', () => ({
   ...jest.requireActual('@/config'),
-  get HDX_EXPORTER_ENABLED() {
+  get CBT_EXPORTER_ENABLED() {
     return mockExporterEnabled;
   },
   get BASE_PATH() {
@@ -107,7 +107,7 @@ describe('startNextServerTelemetry', () => {
 
   const start = async (env: Record<string, string>) => {
     for (const key of [
-      'HYPERDX_API_KEY',
+      'CBT_API_KEY',
       'OTEL_EXPORTER_OTLP_HEADERS',
       'OTEL_SERVICE_NAME',
       'OTEL_RESOURCE_ATTRIBUTES',
@@ -142,17 +142,17 @@ describe('startNextServerTelemetry', () => {
     expect(process.env.OTEL_SERVICE_NAME).toBe('hdx-app');
   });
 
-  it('does not start when HDX_EXPORTER_ENABLED is false', async () => {
+  it('does not start when CBT_EXPORTER_ENABLED is false', async () => {
     mockExporterEnabled = false;
 
-    await start({ HYPERDX_API_KEY: 'ingest-key' });
+    await start({ CBT_API_KEY: 'ingest-key' });
 
     expect(mockInit).not.toHaveBeenCalled();
   });
 
   it('starts with its own service name and a quieter diag level', async () => {
     await start({
-      HYPERDX_API_KEY: 'ingest-key',
+      CBT_API_KEY: 'ingest-key',
       OTEL_SERVICE_NAME: 'hdx-app',
     });
 
@@ -169,14 +169,14 @@ describe('startNextServerTelemetry', () => {
   });
 
   it("keeps the operator's OTEL_LOG_LEVEL", async () => {
-    await start({ HYPERDX_API_KEY: 'ingest-key', OTEL_LOG_LEVEL: 'debug' });
+    await start({ CBT_API_KEY: 'ingest-key', OTEL_LOG_LEVEL: 'debug' });
 
     expect(process.env.OTEL_LOG_LEVEL).toBe('debug');
   });
 
   it('appends the key to OTLP headers that have no authorization entry', async () => {
     await start({
-      HYPERDX_API_KEY: 'ingest-key',
+      CBT_API_KEY: 'ingest-key',
       OTEL_EXPORTER_OTLP_HEADERS: 'x-scope-orgid=acme',
     });
 
@@ -191,7 +191,7 @@ describe('startNextServerTelemetry', () => {
   it('skips static asset requests below the base path', async () => {
     mockBasePath = '/hdx';
 
-    await start({ HYPERDX_API_KEY: 'ingest-key' });
+    await start({ CBT_API_KEY: 'ingest-key' });
 
     const hook = ignoreHook();
     expect(hook({ url: '/hdx/_next/static/a.js' })).toBe(true);

@@ -18,7 +18,7 @@ import {
 
 const CLICKHOUSE_HOST =
   process.env.CLICKHOUSE_HOST ||
-  `http://localhost:${process.env.HDX_E2E_CH_PORT || '20500'}`;
+  `http://localhost:${process.env.CBT_E2E_CH_PORT || '20500'}`;
 const CLICKHOUSE_USER = process.env.CLICKHOUSE_USER || 'default';
 const CLICKHOUSE_PASSWORD = process.env.CLICKHOUSE_PASSWORD || '';
 

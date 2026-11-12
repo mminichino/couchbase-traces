@@ -3,8 +3,8 @@
 1. Install mkcert [mkcert](https://github.com/FiloSottile/mkcert)
 2. Exec `mkcert mydomain.local` and `mkcert -install`
 3. Make sure the pem files are used in the nginx.conf file
-4. Update HYPERDX_APP_URL to https://mydomain.local in the .env file
-5. Update HYPERDX_APP_PORT to 443 (same as the nginx server port) in the .env file
+4. Update CBT_APP_URL to https://mydomain.local in the .env file
+5. Update CBT_APP_PORT to 443 (same as the nginx server port) in the .env file
 6. Add the following to the /etc/hosts file
 ```
 127.0.0.1 mydomain.local

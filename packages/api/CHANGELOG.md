@@ -30,8 +30,8 @@
   in front of it must forward `Content-Encoding` unchanged.
 
   The Next.js server now sends its own telemetry in production builds too, not
-  only under `next dev`, when `HYPERDX_API_KEY` or `OTEL_EXPORTER_OTLP_HEADERS` is
-  set. `HDX_EXPORTER_ENABLED=false` turns it off along with browser telemetry. It
+  only under `next dev`, when `CBT_API_KEY` or `OTEL_EXPORTER_OTLP_HEADERS` is
+  set. `CBT_EXPORTER_ENABLED=false` turns it off along with browser telemetry. It
   reports under its own service name, the configured one plus `-next`
   (`hdx-oss-app-next` in the docker-compose `app` service and when no name is
   set), so its spans stay apart from the API's and the browser's. The HyperDX
@@ -39,7 +39,7 @@
   adds Next.js server spans for the proxy hop. Requests for build and `public/`
   assets, such as `/_next/static/*`, `/__ENV.js` and `/pyodide/*`, are not traced.
 
-  `HYPERDX_API_KEY` still enables self-instrumentation. Without
+  `CBT_API_KEY` still enables self-instrumentation. Without
   `OTEL_EXPORTER_OTLP_ENDPOINT`, server-side self-telemetry now goes to
   `http://localhost:4318` instead of `https://in-otel.hyperdx.io`, so set the
   endpoint explicitly. `HDX_NODE_*` variables are no longer read. For request
@@ -720,7 +720,7 @@
 ### Patch Changes
 
 - d205a776: Allow the ClickHouse exporter request timeout to be configured with
-  `HYPERDX_OTEL_EXPORTER_TIMEOUT` in both OpAMP-managed and standalone collector
+  `CBT_OTEL_EXPORTER_TIMEOUT` in both OpAMP-managed and standalone collector
   modes. The default remains 5 seconds.
 - 90da4097: Disable mongoose autoIndex in check-alerts worker to prevent MongoExpiredSessionError
 - 43f68566: Allow editing and deleting alerts directly from the alert details page. An
@@ -742,15 +742,15 @@
   Query logging now goes through an optional per-client `customLogger` on
   `ClickhouseClientOptions`, logged at `debug`, and is silent when no logger is
   passed. The API injects a pino-backed logger, so query logging follows the
-  existing `HYPERDX_LOG_LEVEL` setting instead of writing to `console.debug`. The
+  existing `CBT_LOG_LEVEL` setting instead of writing to `console.debug`. The
   browser client defaults to a console logger that pretty-prints the SQL as a
   single multi-line block, so query SQL stays visible and readable in devtools in
   all builds instead of wrapping into one long line.
 
   The API's log level now defaults to `info` (was `debug`), so SQL logging is
-  silent in production unless `HYPERDX_LOG_LEVEL=debug` is set. Dev and CI env
+  silent in production unless `CBT_LOG_LEVEL=debug` is set. Dev and CI env
   files already pin their levels explicitly and are unaffected. The default also
-  now applies when `HYPERDX_LOG_LEVEL` is set but empty — which is what Compose
+  now applies when `CBT_LOG_LEVEL` is set but empty — which is what Compose
   passes when the variable is unset in the environment, and which previously made
   pino throw at startup.
 
@@ -1100,7 +1100,7 @@ offset }` block alongside `data`. Results are sorted by `_id` so paging is
 - 73e6e876e: Expose consecutive-window alerting on the external API.
 - 1aaa9388a: fix: honor INGESTION_API_KEY in the all-in-one auth image
 
-  The all-in-one entrypoint set `HYPERDX_IMAGE` to values (`all-in-one` /
+  The all-in-one entrypoint set `CBT_IMAGE` to values (`all-in-one` /
   `all-in-one-noauth`) that did not match the strings `config.ts` compares against
   (`all-in-one-auth` / `all-in-one-noauth`). As a result `IS_ALL_IN_ONE_IMAGE` was
   never true in the auth image, so the `INGESTION_API_KEY` env var was silently
@@ -1522,8 +1522,8 @@ offset }` block alongside `data`. Results are sorted by `_id` so paging is
 
   Lighter-weight env-var tuning is also available for the default `batch`
   processor without writing a custom config file:
-  `HYPERDX_OTEL_BATCH_SEND_BATCH_SIZE`,
-  `HYPERDX_OTEL_BATCH_SEND_BATCH_MAX_SIZE`, and `HYPERDX_OTEL_BATCH_TIMEOUT`.
+  `CBT_OTEL_BATCH_SEND_BATCH_SIZE`,
+  `CBT_OTEL_BATCH_SEND_BATCH_MAX_SIZE`, and `CBT_OTEL_BATCH_TIMEOUT`.
   See the README for details.
 
 ### Patch Changes
@@ -1809,7 +1809,7 @@ implicit column set.` on every bare-token search, even though the row panel
   composite was only used by its own unit test and is dropped; production
   code in the v2 dashboards router uses the two underlying helpers
   directly. No behaviour change for callers of the external API.
-- 29586e7b: Enable end-to-end PR testing on Vercel previews by inlining the Express API into the Next.js `/api/[...all]` serverless function (opt-in via `HDX_PREVIEW_INLINE_API=true`). Production deploys (Docker fullstack image, standalone Next output) are unchanged — they keep proxying `/api/*` to the separately-deployed API service.
+- 29586e7b: Enable end-to-end PR testing on Vercel previews by inlining the Express API into the Next.js `/api/[...all]` serverless function (opt-in via `CBT_PREVIEW_INLINE_API=true`). Production deploys (Docker fullstack image, standalone Next output) are unchanged — they keep proxying `/api/*` to the separately-deployed API service.
 
   Also realigns `clickhouseProxy.ts` with the upstream EE implementation (modulo CHC and RBAC code paths): query params are now parsed from the request URL via `validateAndSanitizePath()` + `URL.searchParams` instead of `req.query`, which fixes a `Setting all is neither a builtin setting nor started with the prefix 'custom_'` regression on Vercel previews where Next.js's `[...all]` catch-all route polluted `req.query`. Adds path-injection hardening, POST-only enforcement, and exposes `X-ClickHouse-Mixed-Response` / `X-ClickHouse-Service-Unavailable` response headers for the browser ClickHouse client.
 
@@ -2841,13 +2841,13 @@ implicit column set.` on every bare-token search, even though the row panel
 
 - 8cb0eac: Add rate function for sum metrics
 - 8591aee: fix: control otel related services logs telemetry using
-  HYPERDX_LOG_LEVEL
+  CBT_LOG_LEVEL
 
 ## 1.1.3
 
 ### Patch Changes
 
-- 389bb3a: feat: support HYPERDX_LOG_LEVEL env var
+- 389bb3a: feat: support CBT_LOG_LEVEL env var
 - 1ec122c: fix: aggregator errors handler status code
 
 ## 1.1.2

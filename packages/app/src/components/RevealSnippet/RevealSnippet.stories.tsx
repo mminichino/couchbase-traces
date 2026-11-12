@@ -30,7 +30,7 @@ const MCP_JSON = [
   '      "command": "npx",',
   '      "args": ["-y", "@hyperdx/mcp-server"],',
   '      "env": {',
-  `        "HYPERDX_API_KEY": "${SAMPLE_ACCESS_KEY}"`,
+  `        "CBT_API_KEY": "${SAMPLE_ACCESS_KEY}"`,
   '      }',
   '    }',
   '  }',

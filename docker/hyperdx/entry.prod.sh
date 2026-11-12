@@ -1,8 +1,8 @@
 #!/bin/bash
 
-export FRONTEND_URL="${FRONTEND_URL:-${HYPERDX_APP_URL:-http://localhost}:${HYPERDX_APP_PORT:-8080}}"
-export OPAMP_PORT=${HYPERDX_OPAMP_PORT:-4320}
-export HYPERDX_IMAGE="hyperdx"
+export FRONTEND_URL="${FRONTEND_URL:-${CBT_APP_URL:-http://localhost}:${CBT_APP_PORT:-8080}}"
+export OPAMP_PORT=${CBT_OPAMP_PORT:-4320}
+export CBT_IMAGE="hyperdx"
 
 # Set to "REQUIRED_AUTH" to enforce API authentication.
 # ⚠️ Do not change this value !!!!
@@ -26,7 +26,7 @@ fi
 ./node_modules/.bin/concurrently \
   "--kill-others-on-fail" \
   "--names=API,APP,ALERT-TASK${EXTRA_NAMES}" \
-  "PORT=${HYPERDX_API_PORT:-8000} HYPERDX_APP_PORT=${HYPERDX_APP_PORT:-8080} ./packages/api/bin/hyperdx api" \
-  "cd ./packages/app/packages/app && HOSTNAME='${HYPERDX_APP_LISTEN_HOSTNAME:-0.0.0.0}' HYPERDX_API_PORT=${HYPERDX_API_PORT:-8000} PORT=${HYPERDX_APP_PORT:-8080} node server.js" \
+  "PORT=${CBT_API_PORT:-8000} CBT_APP_PORT=${CBT_APP_PORT:-8080} ./packages/api/bin/hyperdx api" \
+  "cd ./packages/app/packages/app && HOSTNAME='${CBT_APP_LISTEN_HOSTNAME:-0.0.0.0}' CBT_API_PORT=${CBT_API_PORT:-8000} PORT=${CBT_APP_PORT:-8080} node server.js" \
   "./packages/api/bin/hyperdx task check-alerts" \
   ${EXTRA_CMDS:+"$EXTRA_CMDS"}

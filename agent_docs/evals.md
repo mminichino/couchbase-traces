@@ -81,10 +81,10 @@ slot:
 
 ```bash
 # From the main worktree (slot 98)
-HDX_DEV_SLOT=98 yarn dev
+CBT_DEV_SLOT=98 yarn dev
 
 # From the branch worktree (slot 99)
-HDX_DEV_SLOT=99 yarn dev
+CBT_DEV_SLOT=99 yarn dev
 ```
 
 Each command prints a banner with its port assignments. Wait for both to
@@ -196,10 +196,10 @@ instance explicitly:
 
 ```bash
 # Seed the main instance (slot 98, CH on port 30598)
-HDX_DEV_SLOT=98 yarn workspace @couchbase-traces/hdx-eval dev seed <scenario>
+CBT_DEV_SLOT=98 yarn workspace @couchbase-traces/hdx-eval dev seed <scenario>
 
 # Seed the branch instance (slot 99, CH on port 30599)
-HDX_DEV_SLOT=99 yarn workspace @couchbase-traces/hdx-eval dev seed <scenario>
+CBT_DEV_SLOT=99 yarn workspace @couchbase-traces/hdx-eval dev seed <scenario>
 ```
 
 The seed command is idempotent — it skips if data already exists. Replace
@@ -250,7 +250,7 @@ Useful for validating that a scenario works or checking score after a change.
 
 ```bash
 # Single slot — just one `yarn dev` needed
-export HDX_DEV_SLOT=98
+export CBT_DEV_SLOT=98
 yarn workspace @couchbase-traces/hdx-eval dev setup-hyperdx
 yarn workspace @couchbase-traces/hdx-eval dev run error-root-cause --mcp hyperdx --runs 1 --no-judge
 ```
@@ -321,7 +321,7 @@ yarn workspace @couchbase-traces/hdx-eval viewer
 
 If you run `docker compose up` without sourcing `scripts/dev-env.sh` first,
 containers bind to default ports (8123, 27017) instead of slot-specific ones.
-Always use the `bash -c 'export HDX_DEV_SLOT=... && source scripts/dev-env.sh
+Always use the `bash -c 'export CBT_DEV_SLOT=... && source scripts/dev-env.sh
 && docker compose ...'` pattern (see [Cleanup](#cleanup) below).
 
 ### Access keys go stale after container restarts
@@ -362,9 +362,9 @@ If `yarn dev` fails:
 ```bash
 # If you started with `yarn dev`, Ctrl-C in each terminal stops everything.
 # If you started Docker separately:
-bash -c 'export HDX_DEV_SLOT=98 && source scripts/dev-env.sh 2>/dev/null && \
+bash -c 'export CBT_DEV_SLOT=98 && source scripts/dev-env.sh 2>/dev/null && \
   docker compose -p hdx-dev-98 -f docker-compose.dev.yml down'
-bash -c 'export HDX_DEV_SLOT=99 && source scripts/dev-env.sh 2>/dev/null && \
+bash -c 'export CBT_DEV_SLOT=99 && source scripts/dev-env.sh 2>/dev/null && \
   docker compose -p hdx-dev-99 -f docker-compose.dev.yml down'
 
 # Drop eval data from ClickHouse (optional)

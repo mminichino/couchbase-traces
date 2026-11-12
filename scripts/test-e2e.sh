@@ -32,7 +32,7 @@ DOCKER_COMPOSE_FILE="$REPO_ROOT/packages/app/tests/e2e/docker-compose.yml"
 # ---------------------------------------------------------------------------
 # E2E gets its own slot and port range so worktrees can run E2E tests in
 # parallel with each other, the dev stack, and integration tests. See
-# scripts/slots.sh for the ports. Override with HDX_E2E_SLOT.
+# scripts/slots.sh for the ports. Override with CBT_E2E_SLOT.
 # ---------------------------------------------------------------------------
 # shellcheck source=./slots.sh
 . "$SCRIPT_DIR/slots.sh"
@@ -48,16 +48,16 @@ hdx_e2e_ports "$REPO_ROOT"
 export PLAYWRIGHT_HTML_OPEN=never
 
 # --- Log capture for dev-portal visibility ---
-HDX_E2E_SLOTS_DIR="${HOME}/.config/hyperdx/dev-slots"
-HDX_E2E_LOGS_DIR="${HDX_E2E_SLOTS_DIR}/${HDX_E2E_SLOT}/logs-e2e"
-mkdir -p "$HDX_E2E_LOGS_DIR"
-exec > >(tee "$HDX_E2E_LOGS_DIR/e2e.log") 2>&1
+CBT_E2E_SLOTS_DIR="${HOME}/.config/hyperdx/dev-slots"
+CBT_E2E_LOGS_DIR="${CBT_E2E_SLOTS_DIR}/${CBT_E2E_SLOT}/logs-e2e"
+mkdir -p "$CBT_E2E_LOGS_DIR"
+exec > >(tee "$CBT_E2E_LOGS_DIR/e2e.log") 2>&1
 
 # --- Start dev portal in background if not already running ---
 # shellcheck source=./ensure-dev-portal.sh
 source "${REPO_ROOT}/scripts/ensure-dev-portal.sh"
 
-echo "Using E2E slot ${HDX_E2E_SLOT} (project=${E2E_PROJECT} ch=${HDX_E2E_CH_PORT} ch-native=${HDX_E2E_CH_NATIVE_PORT} mongo=${HDX_E2E_MONGO_PORT} api=${HDX_E2E_API_PORT} app=${HDX_E2E_APP_PORT} app-local=${HDX_E2E_APP_LOCAL_PORT} opamp=${HDX_E2E_OPAMP_PORT})"
+echo "Using E2E slot ${CBT_E2E_SLOT} (project=${E2E_PROJECT} ch=${CBT_E2E_CH_PORT} ch-native=${CBT_E2E_CH_NATIVE_PORT} mongo=${CBT_E2E_MONGO_PORT} api=${CBT_E2E_API_PORT} app=${CBT_E2E_APP_PORT} app-local=${CBT_E2E_APP_LOCAL_PORT} opamp=${CBT_E2E_OPAMP_PORT})"
 
 # Configuration constants
 readonly MAX_MONGODB_WAIT_ATTEMPTS=15
@@ -93,18 +93,18 @@ cleanup_services() {
   echo "Stopping E2E services and removing volumes..."
   docker compose -p "$E2E_PROJECT" -f "$DOCKER_COMPOSE_FILE" down -v
   # Archive logs to history instead of deleting
-  if [ -d "$HDX_E2E_LOGS_DIR" ] && [ -n "$(ls -A "$HDX_E2E_LOGS_DIR" 2>/dev/null)" ]; then
+  if [ -d "$CBT_E2E_LOGS_DIR" ] && [ -n "$(ls -A "$CBT_E2E_LOGS_DIR" 2>/dev/null)" ]; then
     _ts=$(date -u +%Y-%m-%dT%H:%M:%SZ)
-    _hist="${HDX_E2E_SLOTS_DIR}/${HDX_E2E_SLOT}/history/e2e-${_ts}"
+    _hist="${CBT_E2E_SLOTS_DIR}/${CBT_E2E_SLOT}/history/e2e-${_ts}"
     mkdir -p "$_hist"
-    mv "$HDX_E2E_LOGS_DIR"/* "$_hist/" 2>/dev/null || true
+    mv "$CBT_E2E_LOGS_DIR"/* "$_hist/" 2>/dev/null || true
     _wt=$(basename "$(git -C "$REPO_ROOT" rev-parse --show-toplevel 2>/dev/null || echo "$REPO_ROOT")")
     _br=$(git -C "$REPO_ROOT" rev-parse --abbrev-ref HEAD 2>/dev/null || echo "unknown")
     cat > "$_hist/meta.json" <<METAEOF
 {"worktree":"${_wt}","branch":"${_br}","worktreePath":"${REPO_ROOT}"}
 METAEOF
   fi
-  rm -rf "$HDX_E2E_LOGS_DIR" 2>/dev/null || true
+  rm -rf "$CBT_E2E_LOGS_DIR" 2>/dev/null || true
 }
 
 check_mongodb_health() {
@@ -126,7 +126,7 @@ check_mongodb_health() {
 check_clickhouse_health() {
   # Health check from HOST perspective (not inside container)
   # This ensures the port is actually accessible to Playwright
-  curl -sf "http://localhost:${HDX_E2E_CH_PORT}/ping" >/dev/null 2>&1 || wget --spider -q "http://localhost:${HDX_E2E_CH_PORT}/ping" 2>&1
+  curl -sf "http://localhost:${CBT_E2E_CH_PORT}/ping" >/dev/null 2>&1 || wget --spider -q "http://localhost:${CBT_E2E_CH_PORT}/ping" 2>&1
 }
 
 wait_for_clickhouse() {

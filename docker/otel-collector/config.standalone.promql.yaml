@@ -3,7 +3,7 @@
 #
 # entrypoint.sh strips any http:// or https:// scheme from
 # CLICKHOUSE_PROMETHEUS_METRICS_ENDPOINT and exports it as
-# HYPERDX_PROMETHEUS_SCHEME / HYPERDX_PROMETHEUS_TLS_INSECURE. The defaults
+# CBT_PROMETHEUS_SCHEME / CBT_PROMETHEUS_TLS_INSECURE. The defaults
 # keep plain HTTP if those are unset.
 #
 # Mirrors the OpAMP-managed behavior in
@@ -13,9 +13,9 @@
 
 exporters:
   prometheusremotewrite:
-    endpoint: ${env:HYPERDX_PROMETHEUS_SCHEME:-http}://${env:CLICKHOUSE_PROMETHEUS_METRICS_ENDPOINT}/write
+    endpoint: ${env:CBT_PROMETHEUS_SCHEME:-http}://${env:CLICKHOUSE_PROMETHEUS_METRICS_ENDPOINT}/write
     tls:
-      insecure: ${env:HYPERDX_PROMETHEUS_TLS_INSECURE:-true}
+      insecure: ${env:CBT_PROMETHEUS_TLS_INSECURE:-true}
     resource_to_telemetry_conversion:
       enabled: true
 

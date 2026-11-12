@@ -452,7 +452,7 @@ bash-specific syntax (`BASH_SOURCE`). On systems where `/bin/sh` is `dash`
 with bash directly:
 
 ```bash
-bash -c 'export PATH="/workspace/node_modules/.bin:$PATH" && source ./scripts/dev-env.sh && yarn build:common-utils && dotenvx run --convention=nextjs -- docker compose -p "$HDX_DEV_PROJECT" -f docker-compose.dev.yml up -d && yarn app:dev'
+bash -c 'export PATH="/workspace/node_modules/.bin:$PATH" && source ./scripts/dev-env.sh && yarn build:common-utils && dotenvx run --convention=nextjs -- docker compose -p "$CBT_DEV_PROJECT" -f docker-compose.dev.yml up -d && yarn app:dev'
 ```
 
 Port isolation assigns a slot based on the worktree directory name. In the

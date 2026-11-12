@@ -122,12 +122,12 @@ function buildInspectionConfig(
 }
 
 function defaultApiUrl(): string {
-  if (process.env.HDX_EVAL_API_URL) return process.env.HDX_EVAL_API_URL;
-  if (process.env.HYPERDX_API_PORT) {
-    return `http://localhost:${process.env.HYPERDX_API_PORT}`;
+  if (process.env.CBT_EVAL_API_URL) return process.env.CBT_EVAL_API_URL;
+  if (process.env.CBT_API_PORT) {
+    return `http://localhost:${process.env.CBT_API_PORT}`;
   }
-  if (process.env.HDX_DEV_API_PORT) {
-    return `http://localhost:${process.env.HDX_DEV_API_PORT}`;
+  if (process.env.CBT_DEV_API_PORT) {
+    return `http://localhost:${process.env.CBT_DEV_API_PORT}`;
   }
   return 'http://localhost:8000';
 }

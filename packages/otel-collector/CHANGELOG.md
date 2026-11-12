@@ -109,14 +109,14 @@
 
 - 395ae8d6: feat: support per-signal ClickHouse table TTLs and reconcile TTL on existing tables
 
-  Adds `HYPERDX_OTEL_EXPORTER_LOGS_TTL`, `HYPERDX_OTEL_EXPORTER_TRACES_TTL`, `HYPERDX_OTEL_EXPORTER_METRICS_TTL` and `HYPERDX_OTEL_EXPORTER_SESSIONS_TTL`, each falling back to the existing `HYPERDX_OTEL_EXPORTER_TABLES_TTL`, so retention can be configured independently per signal (e.g. keep logs and traces for 6 months while metrics stay at 30 days).
+  Adds `CBT_OTEL_EXPORTER_LOGS_TTL`, `CBT_OTEL_EXPORTER_TRACES_TTL`, `CBT_OTEL_EXPORTER_METRICS_TTL` and `CBT_OTEL_EXPORTER_SESSIONS_TTL`, each falling back to the existing `CBT_OTEL_EXPORTER_TABLES_TTL`, so retention can be configured independently per signal (e.g. keep logs and traces for 6 months while metrics stay at 30 days).
 
-  When `HYPERDX_OTEL_EXPORTER_RECONCILE_TABLE_TTL=true`, the migrate tool also applies the configured TTL to tables that already exist (`ALTER TABLE ... MODIFY TTL`), diff-guarded so only tables whose retention actually differs are changed. Previously a changed TTL only affected newly-created tables. Extending a retention uses `materialize_ttl_after_modify=1` so data already on disk is kept for the new (longer) period; shrinking uses `=0` so a startup reconcile never triggers a bulk delete (existing parts age out under their old TTL). Only a plain `<anchor> + <one fixed-length interval>` retention is rewritten: compound policies (`TO VOLUME`/`TO DISK` tiering, `RECOMPRESS`, `GROUP BY` rollups, several rules) and calendar-unit retentions (month/quarter/year) are reported and left untouched. Off by default. Implements hyperdxio/hyperdx#1311.
+  When `CBT_OTEL_EXPORTER_RECONCILE_TABLE_TTL=true`, the migrate tool also applies the configured TTL to tables that already exist (`ALTER TABLE ... MODIFY TTL`), diff-guarded so only tables whose retention actually differs are changed. Previously a changed TTL only affected newly-created tables. Extending a retention uses `materialize_ttl_after_modify=1` so data already on disk is kept for the new (longer) period; shrinking uses `=0` so a startup reconcile never triggers a bulk delete (existing parts age out under their old TTL). Only a plain `<anchor> + <one fixed-length interval>` retention is rewritten: compound policies (`TO VOLUME`/`TO DISK` tiering, `RECOMPRESS`, `GROUP BY` rollups, several rules) and calendar-unit retentions (month/quarter/year) are reported and left untouched. Off by default. Implements hyperdxio/hyperdx#1311.
 
 ### Patch Changes
 
 - d205a776: Allow the ClickHouse exporter request timeout to be configured with
-  `HYPERDX_OTEL_EXPORTER_TIMEOUT` in both OpAMP-managed and standalone collector
+  `CBT_OTEL_EXPORTER_TIMEOUT` in both OpAMP-managed and standalone collector
   modes. The default remains 5 seconds.
 
 ## 2.35.0
@@ -282,8 +282,8 @@
 
   Lighter-weight env-var tuning is also available for the default `batch`
   processor without writing a custom config file:
-  `HYPERDX_OTEL_BATCH_SEND_BATCH_SIZE`,
-  `HYPERDX_OTEL_BATCH_SEND_BATCH_MAX_SIZE`, and `HYPERDX_OTEL_BATCH_TIMEOUT`.
+  `CBT_OTEL_BATCH_SEND_BATCH_SIZE`,
+  `CBT_OTEL_BATCH_SEND_BATCH_MAX_SIZE`, and `CBT_OTEL_BATCH_TIMEOUT`.
   See the README for details.
 
 ### Patch Changes
@@ -361,10 +361,10 @@
 
   Each setting can also be overridden via environment variables:
 
-  - `HYPERDX_OTEL_BATCH_SEND_BATCH_SIZE` (default: `10000`)
-  - `HYPERDX_OTEL_BATCH_SEND_BATCH_MAX_SIZE` (default: `0`, meaning no upper
+  - `CBT_OTEL_BATCH_SEND_BATCH_SIZE` (default: `10000`)
+  - `CBT_OTEL_BATCH_SEND_BATCH_MAX_SIZE` (default: `0`, meaning no upper
     bound)
-  - `HYPERDX_OTEL_BATCH_TIMEOUT` (default: `5s`)
+  - `CBT_OTEL_BATCH_TIMEOUT` (default: `5s`)
 
 ## 2.24.0
 
@@ -400,7 +400,7 @@
 
   Replace the upstream-deprecated `--feature-gates=clickhouse.json` CLI flag with
   the per-exporter `json: true` config option controlled by
-  `HYPERDX_OTEL_EXPORTER_CLICKHOUSE_JSON_ENABLE`. The old
+  `CBT_OTEL_EXPORTER_CLICKHOUSE_JSON_ENABLE`. The old
   `OTEL_AGENT_FEATURE_GATE_ARG` is still supported for backward compatibility but
   prints a deprecation warning when `clickhouse.json` is detected.
 
@@ -449,7 +449,7 @@
 ### Patch Changes
 
 - 18c2b375: fix: Fallback to legacy schema when CH JSON feature gate is on
-- 629fb52e: feat: introduce HYPERDX_OTEL_EXPORTER_TABLES_TTL to support custom TTL configuration
+- 629fb52e: feat: introduce CBT_OTEL_EXPORTER_TABLES_TTL to support custom TTL configuration
 - baf18da4: feat: add TLS support for OTel collector migration script
 - baf18da4: chore: bump otel collector version to v0.136.0
 - 18c2b375: fix: support OTEL_AGENT_FEATURE_GATE_ARG in opamp-less mode

@@ -5,7 +5,7 @@ upstream app {
 server {
     listen 4040;
 
-    set $base_path "${HYPERDX_BASE_PATH}";
+    set $base_path "${CBT_BASE_PATH}";
     if ($base_path = "/") {
         set $base_path "";
     }
@@ -36,7 +36,7 @@ server {
     }
 
     # Proxy requests that are already prefixed with the base path to the app
-    location ${HYPERDX_BASE_PATH} {
+    location ${CBT_BASE_PATH} {
         # The full request URI (e.g., /hyperdx/settings) is passed to the upstream
         proxy_pass http://app;
     }

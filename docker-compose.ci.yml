@@ -10,10 +10,10 @@ services:
         OTEL_COLLECTOR_CORE_VERSION: ${OTEL_COLLECTOR_CORE_VERSION}
     environment:
       CLICKHOUSE_ENDPOINT: 'tcp://ch-server:9000?dial_timeout=10s'
-      HYPERDX_OTEL_EXPORTER_CLICKHOUSE_DATABASE: ${HYPERDX_OTEL_EXPORTER_CLICKHOUSE_DATABASE}
-      HYPERDX_OTEL_EXPORTER_TABLES_TTL: '87600h'
-      HYPERDX_API_KEY: ${HYPERDX_API_KEY}
-      HYPERDX_LOG_LEVEL: ${HYPERDX_LOG_LEVEL}
+      CBT_OTEL_EXPORTER_CLICKHOUSE_DATABASE: ${CBT_OTEL_EXPORTER_CLICKHOUSE_DATABASE}
+      CBT_OTEL_EXPORTER_TABLES_TTL: '87600h'
+      CBT_API_KEY: ${CBT_API_KEY}
+      CBT_LOG_LEVEL: ${CBT_LOG_LEVEL}
     volumes:
       - ./docker/otel-collector/config.yaml:/etc/otelcol-contrib/config.yaml
     restart: on-failure
@@ -31,14 +31,14 @@ services:
       - ./docker/clickhouse/local/users.xml:/etc/clickhouse-server/users.xml
     restart: on-failure
     ports:
-      - '${HDX_CI_CH_PORT:-18123}:8123' # http api
+      - '${CBT_CI_CH_PORT:-18123}:8123' # http api
     networks:
       - internal
   db:
     image: mongo:5.0.32-focal
     command: --port 29999
     ports:
-      - '${HDX_CI_MONGO_PORT:-39999}:29999'
+      - '${CBT_CI_MONGO_PORT:-39999}:29999'
     networks:
       - internal
 networks:

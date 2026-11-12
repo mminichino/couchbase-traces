@@ -27,9 +27,9 @@ export function createEvalClient(
 }
 
 export function defaultClickHouseUrl(): string {
-  if (process.env.HDX_EVAL_CH_URL) return process.env.HDX_EVAL_CH_URL;
-  if (process.env.HDX_DEV_CH_HTTP_PORT) {
-    return `http://localhost:${process.env.HDX_DEV_CH_HTTP_PORT}`;
+  if (process.env.CBT_EVAL_CH_URL) return process.env.CBT_EVAL_CH_URL;
+  if (process.env.CBT_DEV_CH_HTTP_PORT) {
+    return `http://localhost:${process.env.CBT_DEV_CH_HTTP_PORT}`;
   }
   return 'http://localhost:8123';
 }

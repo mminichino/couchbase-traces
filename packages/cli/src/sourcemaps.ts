@@ -55,8 +55,8 @@ export async function uploadSourcemaps({
   releaseId,
 }: UploadSourcemapsOptions): Promise<void> {
   if (!serviceKey || serviceKey === '') {
-    if (process.env.HYPERDX_SERVICE_KEY) {
-      serviceKey = process.env.HYPERDX_SERVICE_KEY;
+    if (process.env.CBT_SERVICE_KEY) {
+      serviceKey = process.env.CBT_SERVICE_KEY;
     } else {
       throw new Error('service key cannot be empty');
     }

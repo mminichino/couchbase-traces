@@ -23,14 +23,14 @@ selected at run time.
 
 ## Quick Start
 
-All eval commands derive ClickHouse and API ports from the `HDX_DEV_SLOT`
+All eval commands derive ClickHouse and API ports from the `CBT_DEV_SLOT`
 environment variable. If your dev stack is running in a different worktree,
-the auto-detected slot won't match. Set `HDX_DEV_SLOT` to the slot your dev
+the auto-detected slot won't match. Set `CBT_DEV_SLOT` to the slot your dev
 stack is using — you can find this in the banner printed by `yarn dev`.
 
 ```bash
 # Set the slot for your session (must match the running dev stack)
-export HDX_DEV_SLOT=98
+export CBT_DEV_SLOT=98
 
 # 1. One-time setup: register eval account + create Sources + write config
 yarn workspace @couchbase-traces/hdx-eval dev setup-hyperdx
@@ -64,10 +64,10 @@ simultaneously.
 
 ```bash
 # Slot 98: "baseline" — run from your main branch checkout
-HDX_DEV_SLOT=98 yarn dev
+CBT_DEV_SLOT=98 yarn dev
 
 # Slot 99: "candidate" — run from your feature branch checkout
-HDX_DEV_SLOT=99 yarn dev
+CBT_DEV_SLOT=99 yarn dev
 ```
 
 This gives you:
@@ -95,11 +95,11 @@ slot it was set up against. You can then manually add the second MCP entry
 
 ### 3. Seed both ClickHouse instances
 
-Both instances need the eval data. Use `HDX_DEV_SLOT` to target each:
+Both instances need the eval data. Use `CBT_DEV_SLOT` to target each:
 
 ```bash
-HDX_DEV_SLOT=98 yarn workspace @couchbase-traces/hdx-eval dev seed error-root-cause
-HDX_DEV_SLOT=99 yarn workspace @couchbase-traces/hdx-eval dev seed error-root-cause
+CBT_DEV_SLOT=98 yarn workspace @couchbase-traces/hdx-eval dev seed error-root-cause
+CBT_DEV_SLOT=99 yarn workspace @couchbase-traces/hdx-eval dev seed error-root-cause
 ```
 
 ### 4. Run the comparison

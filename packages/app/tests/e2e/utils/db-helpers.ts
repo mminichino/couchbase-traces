@@ -28,7 +28,7 @@ export function runMongoshScript(script: string): string {
     );
   }
 
-  const e2eSlot = process.env.HDX_E2E_SLOT || '0';
+  const e2eSlot = process.env.CBT_E2E_SLOT || '0';
 
   return execFileSync(
     'docker',
@@ -73,7 +73,7 @@ db.teams.updateOne({}, { $set: { [${JSON.stringify(flagName)}]: ${JSON.stringify
 
 const CLICKHOUSE_HOST =
   process.env.CLICKHOUSE_HOST ||
-  `http://localhost:${process.env.HDX_E2E_CH_PORT || '20500'}`;
+  `http://localhost:${process.env.CBT_E2E_CH_PORT || '20500'}`;
 
 /** ClickHouse HTTP endpoint with credentials, as the E2E stack exposes it. */
 function clickhouseUrl(): string {

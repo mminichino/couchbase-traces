@@ -87,7 +87,7 @@ process.env.NEXT_PUBLIC_APP_VERSION = version;
 
 configureRuntimeEnv();
 
-const basePath = process.env.NEXT_PUBLIC_HYPERDX_BASE_PATH;
+const basePath = process.env.NEXT_PUBLIC_CBT_BASE_PATH;
 
 const nextConfig = {
   // Allow overriding the build/dev output directory to avoid lock conflicts
@@ -118,7 +118,7 @@ const nextConfig = {
     // CommonJS external so production app builds (Docker fullstack image,
     // standalone Next output) stay byte-for-byte equivalent to today and
     // do not pull in passport-saml, mongoose, AWS SDK, etc.
-    ...(process.env.HDX_PREVIEW_INLINE_API !== 'true' ? ['@couchbase-traces/api'] : []),
+    ...(process.env.CBT_PREVIEW_INLINE_API !== 'true' ? ['@couchbase-traces/api'] : []),
   ],
   typescript: {
     tsconfigPath: 'tsconfig.build.json',
@@ -135,7 +135,7 @@ const nextConfig = {
     if (isServer) {
       config.ignoreWarnings = [{ module: /opentelemetry/ }];
 
-      if (process.env.HDX_PREVIEW_INLINE_API !== 'true') {
+      if (process.env.CBT_PREVIEW_INLINE_API !== 'true') {
         config.externals = [
           ...(config.externals ?? []),
           ({ request }, callback) => {

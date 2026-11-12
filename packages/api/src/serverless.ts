@@ -42,7 +42,7 @@ if (config.APP_TYPE !== 'api') {
 const DEFAULT_STRIP_PREFIX = '/api';
 
 const stripPrefix =
-  process.env.HDX_INLINE_API_STRIP_PREFIX ?? DEFAULT_STRIP_PREFIX;
+  process.env.CBT_INLINE_API_STRIP_PREFIX ?? DEFAULT_STRIP_PREFIX;
 
 let dbReady: Promise<void> | null = null;
 

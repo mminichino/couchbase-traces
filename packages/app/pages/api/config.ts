@@ -1,9 +1,9 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 
 import {
+  CBT_EXPORTER_ENABLED,
   HDX_API_KEY,
   HDX_COLLECTOR_URL,
-  HDX_EXPORTER_ENABLED,
   HDX_LOGS_COLLECTOR_URL,
   HDX_METRICS_COLLECTOR_URL,
   HDX_SERVICE_NAME,
@@ -16,7 +16,7 @@ export default function handler(
   res: NextApiResponse<NextApiConfigResponseData>,
 ) {
   res.status(200).json({
-    apiKey: HDX_EXPORTER_ENABLED ? HDX_API_KEY : undefined,
+    apiKey: CBT_EXPORTER_ENABLED ? HDX_API_KEY : undefined,
     collectorUrl: HDX_COLLECTOR_URL,
     collectorTracesUrl: HDX_TRACES_COLLECTOR_URL,
     collectorMetricsUrl: HDX_METRICS_COLLECTOR_URL,

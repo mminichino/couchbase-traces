@@ -11,7 +11,7 @@
  *   yarn seed:alerts --purge
  *
  * The Mongo URI defaults to the dev slot of the current git worktree, from
- * scripts/slots.sh. Override with --mongo-uri, MONGO_URI, or HDX_DEV_SLOT.
+ * scripts/slots.sh. Override with --mongo-uri, MONGO_URI, or CBT_DEV_SLOT.
  * The dev stack must be up (`yarn dev`) and registered once, since
  * the script attaches everything to the existing team and log source.
  */
@@ -121,13 +121,13 @@ function parseArgs(argv: string[]): Args {
 
 /**
  * Mongo URI of this worktree's dev stack. `yarn seed:alerts` runs through
- * scripts/with-slots.sh, which sets HDX_DEV_MONGO_PORT.
+ * scripts/with-slots.sh, which sets CBT_DEV_MONGO_PORT.
  */
 function devSlotMongoUri(): string {
-  const port = process.env.HDX_DEV_MONGO_PORT;
+  const port = process.env.CBT_DEV_MONGO_PORT;
   if (!port) {
     throw new Error(
-      'HDX_DEV_MONGO_PORT is not set. Run this with `yarn seed:alerts`, or pass --mongo-uri.',
+      'CBT_DEV_MONGO_PORT is not set. Run this with `yarn seed:alerts`, or pass --mongo-uri.',
     );
   }
   return `mongodb://localhost:${port}/hyperdx`;

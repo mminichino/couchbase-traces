@@ -1,20 +1,10 @@
 {
   "schemaVersion": 1,
-  "step": "packages",
+  "step": "env",
   "status": "pass",
   "checks": [
     {
-      "name": "no old workspace names",
-      "status": "pass",
-      "problems": []
-    },
-    {
-      "name": "lockfile-check --base e926991a667fc6ab7548cf1b1fa0565e1d329d18",
-      "status": "pass",
-      "problems": []
-    },
-    {
-      "name": "go.mod module path",
+      "name": "no HYPERDX or HDX env vars",
       "status": "pass",
       "problems": []
     }

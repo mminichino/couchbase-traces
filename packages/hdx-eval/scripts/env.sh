@@ -8,7 +8,7 @@
 #   scripts/env.sh tsx src/cli.ts seed error-root-cause
 REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../../.." && pwd)"
 
-# Slot-based port env vars (HYPERDX_API_PORT, HDX_DEV_CH_HTTP_PORT, etc.)
+# Slot-based port env vars (CBT_API_PORT, CBT_DEV_CH_HTTP_PORT, etc.)
 # shellcheck source=../../../scripts/slots.sh
 . "$REPO_ROOT/scripts/slots.sh"
 hdx_dev_ports "$REPO_ROOT"

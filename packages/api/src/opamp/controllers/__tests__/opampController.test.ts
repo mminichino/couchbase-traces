@@ -55,10 +55,10 @@ describe('opampController', () => {
 
       expect(cfg.exporters).toMatchObject({
         clickhouse: {
-          timeout: '${env:HYPERDX_OTEL_EXPORTER_TIMEOUT:-5s}',
+          timeout: '${env:CBT_OTEL_EXPORTER_TIMEOUT:-5s}',
         },
         'clickhouse/rrweb': {
-          timeout: '${env:HYPERDX_OTEL_EXPORTER_TIMEOUT:-5s}',
+          timeout: '${env:CBT_OTEL_EXPORTER_TIMEOUT:-5s}',
         },
       });
     });
@@ -76,8 +76,8 @@ describe('opampController', () => {
       // export HYPERDX_PROMETHEUS_*, and must keep today's plain-HTTP config.
       expect(cfg.exporters?.prometheusremotewrite).toMatchObject({
         endpoint:
-          '${env:HYPERDX_PROMETHEUS_SCHEME:-http}://${env:CLICKHOUSE_PROMETHEUS_METRICS_ENDPOINT}/write',
-        tls: { insecure: '${env:HYPERDX_PROMETHEUS_TLS_INSECURE:-true}' },
+          '${env:CBT_PROMETHEUS_SCHEME:-http}://${env:CLICKHOUSE_PROMETHEUS_METRICS_ENDPOINT}/write',
+        tls: { insecure: '${env:CBT_PROMETHEUS_TLS_INSECURE:-true}' },
       });
     });
   });
@@ -98,11 +98,11 @@ describe('opampController', () => {
         static_configs: [{ targets: ['0.0.0.0:8888'] }],
       });
       // The default keeps collector images that predate
-      // HYPERDX_PROMETHEUS_SCHEME on plain HTTP.
+      // CBT_PROMETHEUS_SCHEME on plain HTTP.
       expect(scrapeConfigs?.[1]).toEqual({
         job_name: 'clickhouse',
         scrape_interval: '30s',
-        scheme: '${env:HYPERDX_PROMETHEUS_SCHEME:-http}',
+        scheme: '${env:CBT_PROMETHEUS_SCHEME:-http}',
         static_configs: [
           { targets: ['${env:CLICKHOUSE_PROMETHEUS_METRICS_ENDPOINT}'] },
         ],

@@ -8,38 +8,38 @@ include .env
 # ---------------------------------------------------------------------------
 # Integration tests get a slot and ports per worktree so they can run in
 # parallel. scripts/slots.sh computes them; override the slot with
-# `make dev-int HDX_CI_SLOT=5`.
+# `make dev-int CBT_CI_SLOT=5`.
 # ---------------------------------------------------------------------------
 # One shell for all six values: this runs on every make invocation, and each
 # shell costs ~20ms.
-_hdx_ci := $(shell HDX_CI_SLOT='$(HDX_CI_SLOT)' sh -c '. ./scripts/slots.sh && hdx_ci_ports && echo "$$HDX_CI_SLOT $$HDX_CI_PROJECT $$HDX_CI_CH_PORT $$HDX_CI_MONGO_PORT $$HDX_CI_API_PORT $$HDX_CI_OPAMP_PORT"')
+_hdx_ci := $(shell CBT_CI_SLOT='$(CBT_CI_SLOT)' sh -c '. ./scripts/slots.sh && hdx_ci_ports && echo "$$CBT_CI_SLOT $$CBT_CI_PROJECT $$CBT_CI_CH_PORT $$CBT_CI_MONGO_PORT $$CBT_CI_API_PORT $$CBT_CI_OPAMP_PORT"')
 
-HDX_CI_SLOT      := $(word 1,$(_hdx_ci))
-HDX_CI_PROJECT   := $(word 2,$(_hdx_ci))
-HDX_CI_CH_PORT   := $(word 3,$(_hdx_ci))
-HDX_CI_MONGO_PORT:= $(word 4,$(_hdx_ci))
-HDX_CI_API_PORT  := $(word 5,$(_hdx_ci))
-HDX_CI_OPAMP_PORT:= $(word 6,$(_hdx_ci))
+CBT_CI_SLOT      := $(word 1,$(_hdx_ci))
+CBT_CI_PROJECT   := $(word 2,$(_hdx_ci))
+CBT_CI_CH_PORT   := $(word 3,$(_hdx_ci))
+CBT_CI_MONGO_PORT:= $(word 4,$(_hdx_ci))
+CBT_CI_API_PORT  := $(word 5,$(_hdx_ci))
+CBT_CI_OPAMP_PORT:= $(word 6,$(_hdx_ci))
 
-export HDX_CI_CH_PORT HDX_CI_MONGO_PORT HDX_CI_API_PORT HDX_CI_OPAMP_PORT
+export CBT_CI_CH_PORT CBT_CI_MONGO_PORT CBT_CI_API_PORT CBT_CI_OPAMP_PORT
 
 # Log directory for dev-portal visibility (integration tests)
-HDX_CI_LOGS_DIR := $(HOME)/.config/hyperdx/dev-slots/$(HDX_CI_SLOT)/logs-int
-HDX_CI_HISTORY_DIR := $(HOME)/.config/hyperdx/dev-slots/$(HDX_CI_SLOT)/history
+CBT_CI_LOGS_DIR := $(HOME)/.config/hyperdx/dev-slots/$(CBT_CI_SLOT)/logs-int
+CBT_CI_HISTORY_DIR := $(HOME)/.config/hyperdx/dev-slots/$(CBT_CI_SLOT)/history
 
 # Archive integration logs to history (call at end of each test target)
 # Usage: $(call archive-int-logs)
 define archive-int-logs
-	if [ -d "$(HDX_CI_LOGS_DIR)" ] && [ -n "$$(ls -A $(HDX_CI_LOGS_DIR) 2>/dev/null)" ]; then \
+	if [ -d "$(CBT_CI_LOGS_DIR)" ] && [ -n "$$(ls -A $(CBT_CI_LOGS_DIR) 2>/dev/null)" ]; then \
 		_ts=$$(date -u +%Y-%m-%dT%H:%M:%SZ); \
-		_hist="$(HDX_CI_HISTORY_DIR)/int-$$_ts"; \
+		_hist="$(CBT_CI_HISTORY_DIR)/int-$$_ts"; \
 		mkdir -p "$$_hist"; \
-		mv $(HDX_CI_LOGS_DIR)/* "$$_hist/" 2>/dev/null; \
+		mv $(CBT_CI_LOGS_DIR)/* "$$_hist/" 2>/dev/null; \
 		_wt=$$(basename "$$(git rev-parse --show-toplevel 2>/dev/null || pwd)"); \
 		_br=$$(git rev-parse --abbrev-ref HEAD 2>/dev/null || echo "unknown"); \
 		printf '{"worktree":"%s","branch":"%s","worktreePath":"%s"}\n' "$$_wt" "$$_br" "$(CURDIR)" > "$$_hist/meta.json"; \
 	fi; \
-	rm -rf $(HDX_CI_LOGS_DIR) 2>/dev/null
+	rm -rf $(CBT_CI_LOGS_DIR) 2>/dev/null
 endef
 
 .PHONY: all
@@ -76,7 +76,7 @@ dev:
 
 .PHONY: dev-build
 dev-build:
-	bash -c '. ./scripts/dev-env.sh && docker compose -p "$$HDX_DEV_PROJECT" -f docker-compose.dev.yml build'
+	bash -c '. ./scripts/dev-env.sh && docker compose -p "$$CBT_DEV_PROJECT" -f docker-compose.dev.yml build'
 
 .PHONY: dev-up
 dev-up:
@@ -92,7 +92,7 @@ dev-portal:
 
 .PHONY: dev-portal-stop
 dev-portal-stop:
-	@pid=$$(lsof -ti :$${HDX_PORTAL_PORT:-9900} 2>/dev/null); \
+	@pid=$$(lsof -ti :$${CBT_PORTAL_PORT:-9900} 2>/dev/null); \
 	if [ -n "$$pid" ]; then \
 		echo "Stopping dev portal (PID $$pid)"; \
 		kill $$pid 2>/dev/null || true; \
@@ -121,8 +121,8 @@ ci-openapi:
 
 .PHONY: dev-int-down
 dev-int-down:
-	docker compose -p $(HDX_CI_PROJECT) -f ./docker-compose.ci.yml down -v
-	@for port in $(HDX_CI_API_PORT) $(HDX_CI_OPAMP_PORT); do \
+	docker compose -p $(CBT_CI_PROJECT) -f ./docker-compose.ci.yml down -v
+	@for port in $(CBT_CI_API_PORT) $(CBT_CI_OPAMP_PORT); do \
 		pids=$$(lsof -ti :$$port 2>/dev/null); \
 		for pid in $$pids; do \
 			echo "Killing process $$pid on port $$port"; \
@@ -135,7 +135,7 @@ dev-int-down:
 dev-e2e-down:
 	@. ./scripts/slots.sh && hdx_e2e_ports && \
 	docker compose -p "$$E2E_PROJECT" -f packages/app/tests/e2e/docker-compose.yml down -v && \
-	for port in $$HDX_E2E_API_PORT $$HDX_E2E_OPAMP_PORT $$HDX_E2E_APP_PORT $$HDX_E2E_APP_LOCAL_PORT; do \
+	for port in $$CBT_E2E_API_PORT $$CBT_E2E_OPAMP_PORT $$CBT_E2E_APP_PORT $$CBT_E2E_APP_LOCAL_PORT; do \
 		pids=$$(lsof -ti :$$port 2>/dev/null); \
 		for pid in $$pids; do \
 			echo "Killing process $$pid on port $$port"; \
@@ -151,36 +151,36 @@ dev-clean: dev-down dev-int-down dev-e2e-down dev-portal-stop
 .PHONY: dev-int-build
 dev-int-build:
 	npx nx run-many -t ci:build
-	docker compose -p $(HDX_CI_PROJECT) -f ./docker-compose.ci.yml build
+	docker compose -p $(CBT_CI_PROJECT) -f ./docker-compose.ci.yml build
 
 .PHONY: dev-int
 dev-int:
-	@echo "Using CI slot $(HDX_CI_SLOT) (project=$(HDX_CI_PROJECT) ch=$(HDX_CI_CH_PORT) mongo=$(HDX_CI_MONGO_PORT) api=$(HDX_CI_API_PORT))"
-	@mkdir -p $(HDX_CI_LOGS_DIR)
+	@echo "Using CI slot $(CBT_CI_SLOT) (project=$(CBT_CI_PROJECT) ch=$(CBT_CI_CH_PORT) mongo=$(CBT_CI_MONGO_PORT) api=$(CBT_CI_API_PORT))"
+	@mkdir -p $(CBT_CI_LOGS_DIR)
 	@bash scripts/ensure-dev-portal.sh
-	docker compose -p $(HDX_CI_PROJECT) -f ./docker-compose.ci.yml up -d
-	bash -c 'set -o pipefail; npx nx run @couchbase-traces/api:dev:int $(FILE) 2>&1 | tee $(HDX_CI_LOGS_DIR)/api-int.log'; ret=$$?; \
-	docker compose -p $(HDX_CI_PROJECT) -f ./docker-compose.ci.yml down -v; \
+	docker compose -p $(CBT_CI_PROJECT) -f ./docker-compose.ci.yml up -d
+	bash -c 'set -o pipefail; npx nx run @couchbase-traces/api:dev:int $(FILE) 2>&1 | tee $(CBT_CI_LOGS_DIR)/api-int.log'; ret=$$?; \
+	docker compose -p $(CBT_CI_PROJECT) -f ./docker-compose.ci.yml down -v; \
 	$(call archive-int-logs); \
 	exit $$ret
 
 .PHONY: dev-int-common-utils
 dev-int-common-utils:
-	@echo "Using CI slot $(HDX_CI_SLOT) (project=$(HDX_CI_PROJECT) ch=$(HDX_CI_CH_PORT) mongo=$(HDX_CI_MONGO_PORT))"
-	@mkdir -p $(HDX_CI_LOGS_DIR)
+	@echo "Using CI slot $(CBT_CI_SLOT) (project=$(CBT_CI_PROJECT) ch=$(CBT_CI_CH_PORT) mongo=$(CBT_CI_MONGO_PORT))"
+	@mkdir -p $(CBT_CI_LOGS_DIR)
 	@bash scripts/ensure-dev-portal.sh
-	docker compose -p $(HDX_CI_PROJECT) -f ./docker-compose.ci.yml up -d
-	bash -c 'set -o pipefail; npx nx run @couchbase-traces/common-utils:dev:int $(FILE) 2>&1 | tee $(HDX_CI_LOGS_DIR)/common-utils-int.log'; ret=$$?; \
-	docker compose -p $(HDX_CI_PROJECT) -f ./docker-compose.ci.yml down -v; \
+	docker compose -p $(CBT_CI_PROJECT) -f ./docker-compose.ci.yml up -d
+	bash -c 'set -o pipefail; npx nx run @couchbase-traces/common-utils:dev:int $(FILE) 2>&1 | tee $(CBT_CI_LOGS_DIR)/common-utils-int.log'; ret=$$?; \
+	docker compose -p $(CBT_CI_PROJECT) -f ./docker-compose.ci.yml down -v; \
 	$(call archive-int-logs); \
 	exit $$ret
 
 .PHONY: ci-int
 ci-int:
-	@mkdir -p $(HDX_CI_LOGS_DIR)
-	docker compose -p $(HDX_CI_PROJECT) -f ./docker-compose.ci.yml up -d --quiet-pull
-	bash -c 'set -o pipefail; npx nx run-many -t ci:int --parallel=false --output-style=stream 2>&1 | tee $(HDX_CI_LOGS_DIR)/ci-int.log'; ret=$$?; \
-	docker compose -p $(HDX_CI_PROJECT) -f ./docker-compose.ci.yml down -v; \
+	@mkdir -p $(CBT_CI_LOGS_DIR)
+	docker compose -p $(CBT_CI_PROJECT) -f ./docker-compose.ci.yml up -d --quiet-pull
+	bash -c 'set -o pipefail; npx nx run-many -t ci:int --parallel=false --output-style=stream 2>&1 | tee $(CBT_CI_LOGS_DIR)/ci-int.log'; ret=$$?; \
+	docker compose -p $(CBT_CI_PROJECT) -f ./docker-compose.ci.yml down -v; \
 	$(call archive-int-logs); \
 	exit $$ret
 
@@ -223,7 +223,7 @@ dev-e2e-clean:
 dev-e2e:
 	./scripts/test-e2e.sh --dev $(if $(FILE),$(FILE)) $(if $(GREP),--grep "$(GREP)") $(ARGS); \
 	ret=$$?; \
-	$(if $(REPORT),. ./scripts/slots.sh && hdx_e2e_ports && cd packages/app && npx playwright show-report --port $$HDX_E2E_REPORT_PORT;) \
+	$(if $(REPORT),. ./scripts/slots.sh && hdx_e2e_ports && cd packages/app && npx playwright show-report --port $$CBT_E2E_REPORT_PORT;) \
 	exit $$ret
 
 

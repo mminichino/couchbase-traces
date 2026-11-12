@@ -11,7 +11,7 @@
  * through TypeScript's check for objects that share no named property.
  */
 export type SelfTelemetryEnv = {
-  HYPERDX_API_KEY?: string;
+  CBT_API_KEY?: string;
   OTEL_EXPORTER_OTLP_HEADERS?: string;
   [name: string]: string | undefined;
 };
@@ -39,7 +39,7 @@ const hasAuthorization = (headers: string) =>
 export function decideSelfTelemetry(
   env: SelfTelemetryEnv,
 ): SelfTelemetryDecision {
-  const apiKey = env.HYPERDX_API_KEY?.trim() || undefined;
+  const apiKey = env.CBT_API_KEY?.trim() || undefined;
   const otlpHeaders = env.OTEL_EXPORTER_OTLP_HEADERS?.trim() || undefined;
 
   // The old HyperDX SDK skipped init without a key or OTLP headers, and the

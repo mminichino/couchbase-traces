@@ -125,8 +125,8 @@ func TestLoadConfig(t *testing.T) {
 		t.Setenv("CLICKHOUSE_ENDPOINT", "https://ch.example.com:8443")
 		t.Setenv("CLICKHOUSE_USER", "admin")
 		t.Setenv("CLICKHOUSE_PASSWORD", "secret")
-		t.Setenv("HYPERDX_OTEL_EXPORTER_CLICKHOUSE_DATABASE", "mydb")
-		t.Setenv("HYPERDX_OTEL_EXPORTER_TABLES_TTL", "7d")
+		t.Setenv("CBT_OTEL_EXPORTER_CLICKHOUSE_DATABASE", "mydb")
+		t.Setenv("CBT_OTEL_EXPORTER_TABLES_TTL", "7d")
 		t.Setenv("CLICKHOUSE_TLS_INSECURE_SKIP_VERIFY", "true")
 
 		cfg, err := loadConfig()
@@ -632,10 +632,10 @@ func TestProcessSchemaDir_NonexistentDir(t *testing.T) {
 func TestLoadConfig_PerSignalTTL(t *testing.T) {
 	dir := t.TempDir()
 	os.Args = []string{"migrate", dir}
-	t.Setenv("HYPERDX_OTEL_EXPORTER_TABLES_TTL", "30d")
-	t.Setenv("HYPERDX_OTEL_EXPORTER_LOGS_TTL", "180d")
-	t.Setenv("HYPERDX_OTEL_EXPORTER_TRACES_TTL", "180d")
-	t.Setenv("HYPERDX_OTEL_EXPORTER_RECONCILE_TABLE_TTL", "true")
+	t.Setenv("CBT_OTEL_EXPORTER_TABLES_TTL", "30d")
+	t.Setenv("CBT_OTEL_EXPORTER_LOGS_TTL", "180d")
+	t.Setenv("CBT_OTEL_EXPORTER_TRACES_TTL", "180d")
+	t.Setenv("CBT_OTEL_EXPORTER_RECONCILE_TABLE_TTL", "true")
 
 	cfg, err := loadConfig()
 	if err != nil {

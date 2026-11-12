@@ -228,11 +228,11 @@ export const buildOtelCollectorConfig = (
             // Separate job because the collector's own endpoint is always
             // plain HTTP, while ClickHouse may be served over https. The
             // default keeps collector images that predate
-            // HYPERDX_PROMETHEUS_SCHEME on http.
+            // CBT_PROMETHEUS_SCHEME on http.
             {
               job_name: 'clickhouse',
               scrape_interval: '30s',
-              scheme: '${env:HYPERDX_PROMETHEUS_SCHEME:-http}',
+              scheme: '${env:CBT_PROMETHEUS_SCHEME:-http}',
               static_configs: [
                 {
                   targets: ['${env:CLICKHOUSE_PROMETHEUS_METRICS_ENDPOINT}'],
@@ -269,15 +269,14 @@ export const buildOtelCollectorConfig = (
       },
       'clickhouse/rrweb': {
         endpoint: '${env:CLICKHOUSE_ENDPOINT}',
-        database: '${env:HYPERDX_OTEL_EXPORTER_CLICKHOUSE_DATABASE}',
+        database: '${env:CBT_OTEL_EXPORTER_CLICKHOUSE_DATABASE}',
         username: '${env:CLICKHOUSE_USER}',
         password: '${env:CLICKHOUSE_PASSWORD}',
-        ttl: '${env:HYPERDX_OTEL_EXPORTER_TABLES_TTL:-720h}',
+        ttl: '${env:CBT_OTEL_EXPORTER_TABLES_TTL:-720h}',
         logs_table_name: 'hyperdx_sessions',
-        timeout: '${env:HYPERDX_OTEL_EXPORTER_TIMEOUT:-5s}',
-        create_schema:
-          '${env:HYPERDX_OTEL_EXPORTER_CREATE_LEGACY_SCHEMA:-false}',
-        json: '${env:HYPERDX_OTEL_EXPORTER_CLICKHOUSE_JSON_ENABLE:-false}',
+        timeout: '${env:CBT_OTEL_EXPORTER_TIMEOUT:-5s}',
+        create_schema: '${env:CBT_OTEL_EXPORTER_CREATE_LEGACY_SCHEMA:-false}',
+        json: '${env:CBT_OTEL_EXPORTER_CLICKHOUSE_JSON_ENABLE:-false}',
         retry_on_failure: {
           enabled: true,
           initial_interval: '5s',
@@ -287,14 +286,13 @@ export const buildOtelCollectorConfig = (
       },
       clickhouse: {
         endpoint: '${env:CLICKHOUSE_ENDPOINT}',
-        database: '${env:HYPERDX_OTEL_EXPORTER_CLICKHOUSE_DATABASE}',
+        database: '${env:CBT_OTEL_EXPORTER_CLICKHOUSE_DATABASE}',
         username: '${env:CLICKHOUSE_USER}',
         password: '${env:CLICKHOUSE_PASSWORD}',
-        ttl: '${env:HYPERDX_OTEL_EXPORTER_TABLES_TTL:-720h}',
-        timeout: '${env:HYPERDX_OTEL_EXPORTER_TIMEOUT:-5s}',
-        create_schema:
-          '${env:HYPERDX_OTEL_EXPORTER_CREATE_LEGACY_SCHEMA:-false}',
-        json: '${env:HYPERDX_OTEL_EXPORTER_CLICKHOUSE_JSON_ENABLE:-false}',
+        ttl: '${env:CBT_OTEL_EXPORTER_TABLES_TTL:-720h}',
+        timeout: '${env:CBT_OTEL_EXPORTER_TIMEOUT:-5s}',
+        create_schema: '${env:CBT_OTEL_EXPORTER_CREATE_LEGACY_SCHEMA:-false}',
+        json: '${env:CBT_OTEL_EXPORTER_CLICKHOUSE_JSON_ENABLE:-false}',
         retry_on_failure: {
           enabled: true,
           initial_interval: '5s',
@@ -355,9 +353,9 @@ export const buildOtelCollectorConfig = (
       // for collector images that predate it.
       otelCollectorConfig.exporters.prometheusremotewrite = {
         endpoint:
-          '${env:HYPERDX_PROMETHEUS_SCHEME:-http}://${env:CLICKHOUSE_PROMETHEUS_METRICS_ENDPOINT}/write',
+          '${env:CBT_PROMETHEUS_SCHEME:-http}://${env:CLICKHOUSE_PROMETHEUS_METRICS_ENDPOINT}/write',
         tls: {
-          insecure: '${env:HYPERDX_PROMETHEUS_TLS_INSECURE:-true}',
+          insecure: '${env:CBT_PROMETHEUS_TLS_INSECURE:-true}',
         },
         resource_to_telemetry_conversion: {
           enabled: true,
