@@ -25,7 +25,7 @@ import {
   SearchConditionTrimmedLanguageSchema,
   SQLIntervalSchema,
   StaticListDashboardFilterSchema,
-} from '@hyperdx/common-utils/dist/types';
+} from '@couchbase-traces/common-utils/dist/types';
 import { z } from 'zod';
 
 import {

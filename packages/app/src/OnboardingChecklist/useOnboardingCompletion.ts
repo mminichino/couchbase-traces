@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { escapeSqlString } from '@hyperdx/common-utils/dist/core/utils';
-import { isPersistableUserId } from '@hyperdx/common-utils/dist/types';
+import { escapeSqlString } from '@couchbase-traces/common-utils/dist/core/utils';
+import { isPersistableUserId } from '@couchbase-traces/common-utils/dist/types';
 
 import api from '@/api';
 import { useBrandDisplayName } from '@/brand';

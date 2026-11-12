@@ -9,7 +9,7 @@ import {
   XAxis,
   YAxis,
 } from 'recharts';
-import { BuilderChartConfigWithDateRange } from '@hyperdx/common-utils/dist/types';
+import { BuilderChartConfigWithDateRange } from '@couchbase-traces/common-utils/dist/types';
 import { Text } from '@mantine/core';
 
 import { buildMVDateRangeIndicator, INTEGER_NUMBER_FORMAT } from '@/ChartUtils';

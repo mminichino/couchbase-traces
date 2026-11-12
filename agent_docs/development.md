@@ -287,13 +287,13 @@ yarn run lint
 - **Pages**: `packages/app/pages/`
 - **Components**: `packages/app/src/`
 - **Shared Utils**: `packages/common-utils/src/` — no root barrel, so imports
-  are deep `@hyperdx/common-utils/dist/...` paths. See
+  are deep `@couchbase-traces/common-utils/dist/...` paths. See
   [`code_style.md`](code_style.md#where-shared-code-already-lives) for the
   module map and the grep-first rule before you add a helper.
 
 ## Vercel Preview Deployments (Inline API)
 
-The `hyperdx-private` Vercel project deploys the `@hyperdx/app` Next.js app for
+The `hyperdx-private` Vercel project deploys the `@couchbase-traces/app` Next.js app for
 preview environments. Normally `/api/*` requests proxy to a separately deployed
 API service (`SERVER_URL`). For PR previews we instead **inline the entire
 Express API** into the Next.js serverless function so a single Vercel deployment
@@ -310,7 +310,7 @@ serves both the app and the API.
    dispatches directly. Otherwise it falls back to the existing
    http-proxy-middleware path used by Docker/standalone builds.
 3. `packages/app/next.config.mjs` adds a webpack `externals` rule that marks
-   `@hyperdx/api` as a CommonJS external **unless** `HDX_PREVIEW_INLINE_API` is
+   `@couchbase-traces/api` as a CommonJS external **unless** `HDX_PREVIEW_INLINE_API` is
    `true`. This keeps production app builds (Docker fullstack image, standalone
    Next output) byte-for-byte equivalent to before — they never bundle
    passport-saml, mongoose, AWS SDK, etc.

@@ -1,5 +1,5 @@
-import { quoteIdentifierIfNeeded } from '@hyperdx/common-utils/dist/core/metadata';
-import { SourceKind } from '@hyperdx/common-utils/dist/types';
+import { quoteIdentifierIfNeeded } from '@couchbase-traces/common-utils/dist/core/metadata';
+import { SourceKind } from '@couchbase-traces/common-utils/dist/types';
 import { trace } from '@opentelemetry/api';
 
 import { ClickhouseClient } from '@/clickhouse';

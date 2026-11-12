@@ -107,7 +107,7 @@ Rules:
   write nothing about contributions at all — a release with none must not gain an
   empty gesture towards them.
 - HyperDX is a monorepo: one feature often spans several packages
-  (`@hyperdx/app` + `@hyperdx/api` + `@hyperdx/common-utils` frequently move
+  (`@couchbase-traces/app` + `@couchbase-traces/api` + `@couchbase-traces/common-utils` frequently move
   together). Cluster related changesets into a single bullet describing the
   feature — never one bullet per package for the same feature.
 - Skip pure noise: lockstep version bumps, `Updated dependencies` roll-ups,

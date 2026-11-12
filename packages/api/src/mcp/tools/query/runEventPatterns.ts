@@ -1,17 +1,17 @@
-import { getMetadata } from '@hyperdx/common-utils/dist/core/metadata';
-import { getSourceTableFilters } from '@hyperdx/common-utils/dist/core/searchChartConfig';
+import { getMetadata } from '@couchbase-traces/common-utils/dist/core/metadata';
+import { getSourceTableFilters } from '@couchbase-traces/common-utils/dist/core/searchChartConfig';
 import {
   convertGranularityToSeconds,
   getFirstTimestampValueExpression,
   type Granularity,
   splitAndTrimWithBracket,
-} from '@hyperdx/common-utils/dist/core/utils';
-import { minePatterns } from '@hyperdx/common-utils/dist/drain';
+} from '@couchbase-traces/common-utils/dist/core/utils';
+import { minePatterns } from '@couchbase-traces/common-utils/dist/drain';
 import type {
   ChartConfigWithDateRange,
   ChartVariable,
-} from '@hyperdx/common-utils/dist/types';
-import { DisplayType } from '@hyperdx/common-utils/dist/types';
+} from '@couchbase-traces/common-utils/dist/types';
+import { DisplayType } from '@couchbase-traces/common-utils/dist/types';
 import { trace } from '@opentelemetry/api';
 
 import { ClickhouseClient } from '@/clickhouse';

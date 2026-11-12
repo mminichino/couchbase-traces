@@ -1,5 +1,5 @@
 import { ClickHouseError } from '@clickhouse/client-common';
-import { SourceKind } from '@hyperdx/common-utils/dist/types';
+import { SourceKind } from '@couchbase-traces/common-utils/dist/types';
 import { Client } from '@modelcontextprotocol/sdk/client/index.js';
 
 import { ClickhouseClient } from '@/clickhouse';

@@ -1,4 +1,4 @@
-import { PromqlReducer } from '@hyperdx/common-utils/dist/types';
+import { PromqlReducer } from '@couchbase-traces/common-utils/dist/types';
 
 import { stripClientSideConfigFields } from '@/utils/chartConfig';
 

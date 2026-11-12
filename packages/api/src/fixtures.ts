@@ -1,4 +1,4 @@
-import { createNativeClient } from '@hyperdx/common-utils/dist/clickhouse/node';
+import { createNativeClient } from '@couchbase-traces/common-utils/dist/clickhouse/node';
 import {
   AlertChartConfig,
   AlertThresholdType,
@@ -8,7 +8,7 @@ import {
   RawSqlSavedChartConfig,
   SavedChartConfig,
   Tile,
-} from '@hyperdx/common-utils/dist/types';
+} from '@couchbase-traces/common-utils/dist/types';
 import mongoose from 'mongoose';
 import ms from 'ms';
 import request from 'supertest';

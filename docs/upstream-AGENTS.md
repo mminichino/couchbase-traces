@@ -270,7 +270,7 @@ efficient and accurate:
    [CONTRIBUTING.md](CONTRIBUTING.md#reproducing-issues-and-prs).
 
 7. **Ensure a changeset exists before pushing a PR.** Any change to a published
-   package (`@hyperdx/app`, `@hyperdx/api`, `@hyperdx/otel-collector`, etc.) that
+   package (`@couchbase-traces/app`, `@couchbase-traces/api`, `@couchbase-traces/otel-collector`, etc.) that
    is user-facing or affects behavior must include a changeset in `.changeset/`.
    Add one with `yarn changeset` (or create the markdown file by hand following
    the format of existing entries), choosing the appropriate semver bump, before

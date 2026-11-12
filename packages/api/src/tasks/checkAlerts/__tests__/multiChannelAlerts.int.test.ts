@@ -1,4 +1,4 @@
-import { AlertErrorType } from '@hyperdx/common-utils/dist/types';
+import { AlertErrorType } from '@couchbase-traces/common-utils/dist/types';
 import mongoose from 'mongoose';
 
 import { createAlert } from '@/controllers/alerts';

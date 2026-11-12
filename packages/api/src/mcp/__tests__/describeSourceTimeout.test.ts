@@ -10,7 +10,7 @@ jest.mock('@/controllers/connection', () => ({
   getConnectionById: jest.fn(),
 }));
 jest.mock('@/clickhouse', () => ({ ClickhouseClient: jest.fn() }));
-jest.mock('@hyperdx/common-utils/dist/core/metadata', () => ({
+jest.mock('@couchbase-traces/common-utils/dist/core/metadata', () => ({
   getMetadata: () => mockMetadata,
 }));
 jest.mock('@/controllers/promql', () => ({
@@ -23,7 +23,7 @@ jest.mock('@/utils/trimToolResponse', () => ({
   trimToolResponse: (data: unknown) => ({ data, isTrimmed: false }),
 }));
 
-import { SourceKind } from '@hyperdx/common-utils/dist/types';
+import { SourceKind } from '@couchbase-traces/common-utils/dist/types';
 
 import { getConnectionById } from '@/controllers/connection';
 import { getPromqlLabelCatalog } from '@/controllers/promql';

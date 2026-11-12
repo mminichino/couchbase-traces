@@ -1,7 +1,7 @@
 import { describe, expect, it } from '@jest/globals';
 
-import type { ChartConfigWithDateRange } from '@hyperdx/common-utils/dist/types';
-import { DisplayType } from '@hyperdx/common-utils/dist/types';
+import type { ChartConfigWithDateRange } from '@couchbase-traces/common-utils/dist/types';
+import { DisplayType } from '@couchbase-traces/common-utils/dist/types';
 
 import { renderTileContent } from '@/shared/tileRender';
 import type { TileQueryResult } from '@/shared/tileQuery';

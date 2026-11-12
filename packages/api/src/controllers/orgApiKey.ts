@@ -2,7 +2,7 @@ import type {
   CreateOrgApiKeyRequest,
   OrgApiKeyApiResponse,
   OrgApiKeyExpiry,
-} from '@hyperdx/common-utils/dist/types';
+} from '@couchbase-traces/common-utils/dist/types';
 import opentelemetry from '@opentelemetry/api';
 import crypto from 'crypto';
 import mongoose from 'mongoose';

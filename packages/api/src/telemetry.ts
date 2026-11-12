@@ -13,7 +13,7 @@
 import { isMainThread } from 'node:worker_threads';
 
 import { init } from '@clickhouse/clickstack-node';
-import { decideSelfTelemetry } from '@hyperdx/common-utils/dist/selfTelemetry';
+import { decideSelfTelemetry } from '@couchbase-traces/common-utils/dist/selfTelemetry';
 
 const telemetry = decideSelfTelemetry(process.env);
 

@@ -1,4 +1,7 @@
-import { MetricsDataType, SourceKind } from '@hyperdx/common-utils/dist/types';
+import {
+  MetricsDataType,
+  SourceKind,
+} from '@couchbase-traces/common-utils/dist/types';
 import mongoose from 'mongoose';
 
 import { DEFAULT_DATABASE } from '@/fixtures';

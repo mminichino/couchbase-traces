@@ -1,4 +1,7 @@
-import { ChartVariable, DisplayType } from '@hyperdx/common-utils/dist/types';
+import {
+  ChartVariable,
+  DisplayType,
+} from '@couchbase-traces/common-utils/dist/types';
 
 import { buildRawSqlCompletions } from '@/components/ChartEditor/utils';
 

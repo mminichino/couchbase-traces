@@ -1,4 +1,4 @@
-import { isTileAlertUnaddressable } from '@hyperdx/common-utils/dist/iac';
+import { isTileAlertUnaddressable } from '@couchbase-traces/common-utils/dist/iac';
 import { serializeError } from 'serialize-error';
 
 import type { ObjectId } from '@/models';

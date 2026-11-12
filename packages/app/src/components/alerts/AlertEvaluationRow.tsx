@@ -6,7 +6,7 @@ import {
   AlertEvaluationGroup,
   AlertInterval,
   AlertState,
-} from '@hyperdx/common-utils/dist/types';
+} from '@couchbase-traces/common-utils/dist/types';
 import { Group, Stack, Table, Text, Tooltip } from '@mantine/core';
 import { IconChevronDown, IconChevronRight } from '@tabler/icons-react';
 

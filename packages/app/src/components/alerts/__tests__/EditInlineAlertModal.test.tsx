@@ -3,7 +3,7 @@ import {
   AlertThresholdType,
   DisplayType,
   SavedChartConfig,
-} from '@hyperdx/common-utils/dist/types';
+} from '@couchbase-traces/common-utils/dist/types';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';

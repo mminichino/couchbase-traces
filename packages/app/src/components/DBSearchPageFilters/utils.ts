@@ -4,8 +4,8 @@ import SqlString from 'sqlstring';
 import {
   type Field,
   parseKeyPath,
-} from '@hyperdx/common-utils/dist/core/metadata';
-import type { FilterState } from '@hyperdx/common-utils/dist/filters';
+} from '@couchbase-traces/common-utils/dist/core/metadata';
+import type { FilterState } from '@couchbase-traces/common-utils/dist/filters';
 
 import type { Facet } from '@/hooks/useMetadata';
 import { mergePath } from '@/utils';

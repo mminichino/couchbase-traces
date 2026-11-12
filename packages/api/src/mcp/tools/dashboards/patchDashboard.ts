@@ -1,4 +1,4 @@
-import { isPromqlSavedChartConfig } from '@hyperdx/common-utils/dist/guards';
+import { isPromqlSavedChartConfig } from '@couchbase-traces/common-utils/dist/guards';
 import { uniq } from 'lodash';
 
 import * as config from '@/config';

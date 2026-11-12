@@ -1,13 +1,13 @@
-import { getMetadata } from '@hyperdx/common-utils/dist/core/metadata';
-import { getFirstTimestampValueExpression } from '@hyperdx/common-utils/dist/core/utils';
+import { getMetadata } from '@couchbase-traces/common-utils/dist/core/metadata';
+import { getFirstTimestampValueExpression } from '@couchbase-traces/common-utils/dist/core/utils';
 import {
   buildNoisyBodyMatcher,
   DENOISE_SAMPLE_SIZE,
   minePatterns,
   selectNoisyPatterns,
-} from '@hyperdx/common-utils/dist/drain';
-import type { ChartConfigWithDateRange } from '@hyperdx/common-utils/dist/types';
-import { DisplayType } from '@hyperdx/common-utils/dist/types';
+} from '@couchbase-traces/common-utils/dist/drain';
+import type { ChartConfigWithDateRange } from '@couchbase-traces/common-utils/dist/types';
+import { DisplayType } from '@couchbase-traces/common-utils/dist/types';
 
 import { ClickhouseClient } from '@/clickhouse';
 import { getConnectionById } from '@/controllers/connection';

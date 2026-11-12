@@ -4,7 +4,7 @@
  * Pure algorithm functions (flattenData, getPropertyStatistics,
  * computeComparisonScore, semanticBoost, isDenylisted, isHighCardinality,
  * sample-size helpers, rankProperties) live in
- * @hyperdx/common-utils/dist/core/eventDeltas so the MCP server can run the
+ * @couchbase-traces/common-utils/dist/core/eventDeltas so the MCP server can run the
  * same algorithm. This file re-exports them for backwards compatibility plus
  * the bits that are React/UI-specific (constants, AddFilterFn type, the
  * SQL/filter key conversion helpers that depend on UI semantics).
@@ -26,11 +26,11 @@ export {
   SAMPLE_SIZE,
   semanticBoost,
   stripTypeWrappers,
-} from '@hyperdx/common-utils/dist/core/eventDeltas';
+} from '@couchbase-traces/common-utils/dist/core/eventDeltas';
 
 // Local binding for use in filter key helpers below (the re-export above
 // only makes it available to consumers, not to this file's own functions).
-import { stripTypeWrappers } from '@hyperdx/common-utils/dist/core/eventDeltas';
+import { stripTypeWrappers } from '@couchbase-traces/common-utils/dist/core/eventDeltas';
 
 // ---------------------------------------------------------------------------
 // UI-only helpers

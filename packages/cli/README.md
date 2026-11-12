@@ -1,6 +1,6 @@
-# @hyperdx/cli
+# @couchbase-traces/cli
 
-[![npm version](https://img.shields.io/npm/v/@hyperdx/cli.svg)](https://www.npmjs.com/package/@hyperdx/cli)
+[![npm version](https://img.shields.io/npm/v/@couchbase-traces/cli.svg)](https://www.npmjs.com/package/@couchbase-traces/cli)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 
 Terminal UI and CLI for [HyperDX](https://github.com/ClickHouse/ClickStack) —
@@ -14,9 +14,9 @@ browser.
 ## Install
 
 ```bash
-npm install -g @hyperdx/cli    # installs the `hdx` binary
+npm install -g @couchbase-traces/cli    # installs the `hdx` binary
 # or run without installing:
-npx @hyperdx/cli --help
+npx @couchbase-traces/cli --help
 ```
 
 Requires Node.js >= 22.16.
@@ -223,7 +223,7 @@ organization API key with hidden input and checks it before changing any
 config, so the key stays out of shell history and agent chats.
 
 ```bash
-npx @hyperdx/cli mcp install -a https://your-hyperdx.example
+npx @couchbase-traces/cli mcp install -a https://your-hyperdx.example
 ```
 
 The key is stored in plain text in each agent's user config, which the
@@ -235,7 +235,7 @@ Upload JavaScript source maps to HyperDX for stack trace de-obfuscation. Run it
 in your build pipeline:
 
 ```bash
-npx @hyperdx/cli upload-sourcemaps \
+npx @couchbase-traces/cli upload-sourcemaps \
   --serviceKey "$HYPERDX_API_ACCESS_KEY" \
   --apiUrl "$HYPERDX_API_URL" \
   --path .next \

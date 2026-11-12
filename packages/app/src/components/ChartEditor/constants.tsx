@@ -1,5 +1,5 @@
 import { ReactNode } from 'react';
-import { DisplayType } from '@hyperdx/common-utils/dist/types';
+import { DisplayType } from '@couchbase-traces/common-utils/dist/types';
 import { Code, List, Text } from '@mantine/core';
 
 const TIMESERIES_PLACEHOLDER_SQL = `SELECT

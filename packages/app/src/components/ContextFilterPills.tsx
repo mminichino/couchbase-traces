@@ -2,7 +2,7 @@ import {
   isLogSource,
   isTraceSource,
   TSource,
-} from '@hyperdx/common-utils/dist/types';
+} from '@couchbase-traces/common-utils/dist/types';
 import { Flex, Group, Text, Tooltip } from '@mantine/core';
 import { IconCheck, IconPlus } from '@tabler/icons-react';
 

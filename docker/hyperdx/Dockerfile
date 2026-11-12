@@ -68,7 +68,7 @@ RUN --mount=type=cache,target=/root/.yarn/berry/cache,id=yarn-cache \
 FROM node_base AS common-utils-builder
 
 COPY ./packages/common-utils ./packages/common-utils
-RUN yarn workspace @hyperdx/common-utils run build
+RUN yarn workspace @couchbase-traces/common-utils run build
 
 
 ## API/APP Builder Image ##########################################################################
@@ -99,10 +99,10 @@ COPY --from=app ./scripts ./packages/app/scripts
 ENV NEXT_TELEMETRY_DISABLED=1
 ENV NEXT_OUTPUT_STANDALONE=true
 ENV NEXT_PUBLIC_IS_LOCAL_MODE=false
-RUN yarn workspace @hyperdx/api run build && \
-    yarn workspace @hyperdx/app run build
+RUN yarn workspace @couchbase-traces/api run build && \
+    yarn workspace @couchbase-traces/app run build
 RUN --mount=type=cache,target=/root/.yarn/berry/cache,id=yarn-cache \
-    rm -rf node_modules && yarn workspaces focus @hyperdx/api --production
+    rm -rf node_modules && yarn workspaces focus @couchbase-traces/api --production
 
 
 # prod ############################################################################################

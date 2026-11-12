@@ -1,0 +1,5 @@
+{
+  "entryPoints": [
+    { "id": "mcp_tool:clickstack_trace_waterfall", "kind": "mcp_tool", "key": "clickstack_trace_waterfall", "file": "packages/api/src/mcp/tools.ts", "line": 1, "detail": {} }
+  ]
+}

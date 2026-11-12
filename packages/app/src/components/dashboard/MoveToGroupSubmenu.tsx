@@ -1,5 +1,5 @@
 import { Fragment } from 'react';
-import { DashboardContainer } from '@hyperdx/common-utils/dist/types';
+import { DashboardContainer } from '@couchbase-traces/common-utils/dist/types';
 import { Menu } from '@mantine/core';
 import { IconCornerDownRight, IconFolderSymlink } from '@tabler/icons-react';
 

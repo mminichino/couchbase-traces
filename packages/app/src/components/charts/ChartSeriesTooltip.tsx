@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import type { AdhocConditionEntry } from '@hyperdx/common-utils/dist/filters';
+import type { AdhocConditionEntry } from '@couchbase-traces/common-utils/dist/filters';
 import {
   ActionIcon,
   Group,

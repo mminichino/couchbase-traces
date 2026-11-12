@@ -1,25 +1,25 @@
 import { omit, pick } from 'lodash';
 import { Path, UseFormSetError } from 'react-hook-form';
-import { validateFormula } from '@hyperdx/common-utils/dist/core/formula';
-import { getHeatmapMode } from '@hyperdx/common-utils/dist/core/heatmap';
+import { validateFormula } from '@couchbase-traces/common-utils/dist/core/formula';
+import { getHeatmapMode } from '@couchbase-traces/common-utils/dist/core/heatmap';
 import {
   displayTypeSupportsInstantQuery,
   displayTypeSupportsReducer,
   getPromqlSeries,
-} from '@hyperdx/common-utils/dist/core/promql';
+} from '@couchbase-traces/common-utils/dist/core/promql';
 import {
   isFormulaDisplayType,
   isFormulaSourceKind,
   validateRawSqlForAlert,
-} from '@hyperdx/common-utils/dist/core/utils';
+} from '@couchbase-traces/common-utils/dist/core/utils';
 import {
   getHeatmapSourceKinds,
   isBuilderSavedChartConfig,
   isPromqlSavedChartConfig,
   isRawSqlSavedChartConfig,
-} from '@hyperdx/common-utils/dist/guards';
-import { MACRO_SUGGESTIONS } from '@hyperdx/common-utils/dist/macros';
-import { QUERY_PARAMS_BY_DISPLAY_TYPE } from '@hyperdx/common-utils/dist/rawSqlParams';
+} from '@couchbase-traces/common-utils/dist/guards';
+import { MACRO_SUGGESTIONS } from '@couchbase-traces/common-utils/dist/macros';
+import { QUERY_PARAMS_BY_DISPLAY_TYPE } from '@couchbase-traces/common-utils/dist/rawSqlParams';
 import {
   BuilderSavedChartConfig,
   ChartConfigWithDateRange,
@@ -40,7 +40,7 @@ import {
   SavedChartConfig,
   SourceKind,
   TSource,
-} from '@hyperdx/common-utils/dist/types';
+} from '@couchbase-traces/common-utils/dist/types';
 
 import { getStoredLanguage } from '@/components/SearchInput';
 import { type SQLCompletion } from '@/components/SQLEditor/utils';

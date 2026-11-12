@@ -2,12 +2,12 @@ import { useMemo } from 'react';
 import {
   ResolvedPromqlLabelFilterMatch,
   resolvePromqlLabelFilterMatch,
-} from '@hyperdx/common-utils/dist/filters';
+} from '@couchbase-traces/common-utils/dist/filters';
 import {
   ChartVariable,
   isPromqlSource,
   PromqlLabelDashboardFilter,
-} from '@hyperdx/common-utils/dist/types';
+} from '@couchbase-traces/common-utils/dist/types';
 import {
   useQueries,
   useQueryClient,

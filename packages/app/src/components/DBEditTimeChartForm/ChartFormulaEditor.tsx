@@ -6,7 +6,7 @@ import {
   useWatch,
 } from 'react-hook-form';
 import { Badge } from '@clickhouse/click-ui';
-import { validateFormula } from '@hyperdx/common-utils/dist/core/formula';
+import { validateFormula } from '@couchbase-traces/common-utils/dist/core/formula';
 import { TextInput } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
 

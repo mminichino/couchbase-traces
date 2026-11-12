@@ -1,15 +1,15 @@
-import { ResponseJSON } from '@hyperdx/common-utils/dist/clickhouse';
+import { ResponseJSON } from '@couchbase-traces/common-utils/dist/clickhouse';
 import type {
   AdhocConditionAction,
   AdhocConditionEntry,
-} from '@hyperdx/common-utils/dist/filters';
+} from '@couchbase-traces/common-utils/dist/filters';
 import {
   Alert,
   AlertsPageItem as _AlertsPageItem,
   BuilderChartConfig,
   Filter,
   NumberFormat as _NumberFormat,
-} from '@hyperdx/common-utils/dist/types';
+} from '@couchbase-traces/common-utils/dist/types';
 
 export type NumberFormat = _NumberFormat;
 

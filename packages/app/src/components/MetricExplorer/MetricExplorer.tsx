@@ -1,4 +1,7 @@
-import { DateRange, TMetricSource } from '@hyperdx/common-utils/dist/types';
+import {
+  DateRange,
+  TMetricSource,
+} from '@couchbase-traces/common-utils/dist/types';
 import { Box, Flex } from '@mantine/core';
 
 import { useMetricCatalog } from '@/hooks/useMetricCatalog';

@@ -1,8 +1,11 @@
 import {
   mapGranularityToInternalFormat,
   toExternalSource,
-} from '@hyperdx/common-utils/dist/externalSource';
-import { SourceKind, SourceSchemaNoId } from '@hyperdx/common-utils/dist/types';
+} from '@couchbase-traces/common-utils/dist/externalSource';
+import {
+  SourceKind,
+  SourceSchemaNoId,
+} from '@couchbase-traces/common-utils/dist/types';
 import express from 'express';
 import { z } from 'zod';
 

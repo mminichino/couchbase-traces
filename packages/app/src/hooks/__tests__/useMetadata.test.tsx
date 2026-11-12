@@ -1,15 +1,18 @@
 import React from 'react';
-import * as metadataModule from '@hyperdx/app/src/metadata';
-import { ColumnMeta, JSDataType } from '@hyperdx/common-utils/dist/clickhouse';
-import { ClickhouseClient } from '@hyperdx/common-utils/dist/clickhouse/browser';
+import * as metadataModule from '@couchbase-traces/app/src/metadata';
+import {
+  ColumnMeta,
+  JSDataType,
+} from '@couchbase-traces/common-utils/dist/clickhouse';
+import { ClickhouseClient } from '@couchbase-traces/common-utils/dist/clickhouse/browser';
 import {
   Field,
   KeyValues,
   Metadata,
   MetadataCache,
-} from '@hyperdx/common-utils/dist/core/metadata';
-import { FilterState } from '@hyperdx/common-utils/dist/filters';
-import { BuilderChartConfigWithDateRange } from '@hyperdx/common-utils/dist/types';
+} from '@couchbase-traces/common-utils/dist/core/metadata';
+import { FilterState } from '@couchbase-traces/common-utils/dist/filters';
+import { BuilderChartConfigWithDateRange } from '@couchbase-traces/common-utils/dist/types';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { renderHook, waitFor } from '@testing-library/react';
 

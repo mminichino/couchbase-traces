@@ -2,7 +2,7 @@ import SqlString from 'sqlstring';
 import {
   Filter,
   pickSampleWeightExpressionProps,
-} from '@hyperdx/common-utils/dist/types';
+} from '@couchbase-traces/common-utils/dist/types';
 
 import { IS_LLM_COST_ENABLED } from '@/config';
 import { LLM_COST_SQL_ALIAS } from '@/llm/lib/expressions';

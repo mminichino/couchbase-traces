@@ -1,5 +1,8 @@
 import { z } from 'zod';
-import { SourceKind, WithClauseSchema } from '@hyperdx/common-utils/dist/types';
+import {
+  SourceKind,
+  WithClauseSchema,
+} from '@couchbase-traces/common-utils/dist/types';
 
 export enum Tab {
   Overview = 'overview',

@@ -8,16 +8,16 @@ import {
   UseFormSetValue,
   useWatch,
 } from 'react-hook-form';
-import { TableConnection } from '@hyperdx/common-utils/dist/core/metadata';
-import { displayTypeSupportsBuilderAlerts } from '@hyperdx/common-utils/dist/core/utils';
-import { isBuilderChartConfig } from '@hyperdx/common-utils/dist/guards';
+import { TableConnection } from '@couchbase-traces/common-utils/dist/core/metadata';
+import { displayTypeSupportsBuilderAlerts } from '@couchbase-traces/common-utils/dist/core/utils';
+import { isBuilderChartConfig } from '@couchbase-traces/common-utils/dist/guards';
 import {
   ChartConfigWithOptTimestamp,
   DisplayType,
   HeatmapMode,
   SourceKind,
   TSource,
-} from '@hyperdx/common-utils/dist/types';
+} from '@couchbase-traces/common-utils/dist/types';
 import { Button, Divider, Flex, Group, Switch, Text } from '@mantine/core';
 import { IconCirclePlus, IconMathFunction } from '@tabler/icons-react';
 

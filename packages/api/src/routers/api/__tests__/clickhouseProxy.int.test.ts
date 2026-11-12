@@ -1,4 +1,4 @@
-import { buildLogComment } from '@hyperdx/common-utils/dist/clickhouse';
+import { buildLogComment } from '@couchbase-traces/common-utils/dist/clickhouse';
 import http from 'http';
 import { gzipSync } from 'zlib';
 

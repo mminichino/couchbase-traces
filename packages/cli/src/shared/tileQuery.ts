@@ -4,13 +4,13 @@
  * renders SQL via `renderChartConfig` exactly like the web frontend.
  */
 
-import type { ResponseJSON } from '@hyperdx/common-utils/dist/clickhouse';
-import type { Metadata } from '@hyperdx/common-utils/dist/core/metadata';
+import type { ResponseJSON } from '@couchbase-traces/common-utils/dist/clickhouse';
+import type { Metadata } from '@couchbase-traces/common-utils/dist/core/metadata';
 import type {
   ChartConfigWithDateRange,
   SavedChartConfig,
-} from '@hyperdx/common-utils/dist/types';
-import { DisplayType } from '@hyperdx/common-utils/dist/types';
+} from '@couchbase-traces/common-utils/dist/types';
+import { DisplayType } from '@couchbase-traces/common-utils/dist/types';
 
 import type { ProxyClickhouseClient, SourceResponse } from '@/api/client';
 import {

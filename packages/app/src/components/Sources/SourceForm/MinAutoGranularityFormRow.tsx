@@ -1,5 +1,5 @@
 import { Control } from 'react-hook-form';
-import { TSource } from '@hyperdx/common-utils/dist/types';
+import { TSource } from '@couchbase-traces/common-utils/dist/types';
 
 import SelectControlled from '@/components/SelectControlled';
 

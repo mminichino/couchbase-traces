@@ -2,27 +2,27 @@ import z from 'zod';
 import {
   TableConnection,
   TableConnectionChoice,
-} from '@hyperdx/common-utils/dist/core/metadata';
+} from '@couchbase-traces/common-utils/dist/core/metadata';
 import {
   displayTypeSupportsReducer,
   getQueriedPromqlSeries,
-} from '@hyperdx/common-utils/dist/core/promql';
-import { isTimeSeriesDisplayType } from '@hyperdx/common-utils/dist/core/utils';
+} from '@couchbase-traces/common-utils/dist/core/promql';
+import { isTimeSeriesDisplayType } from '@couchbase-traces/common-utils/dist/core/utils';
 import {
   configConsumesBroadcastFilters,
   getBlockingRequiredFilterNames,
-} from '@hyperdx/common-utils/dist/dashboardFilterValues';
+} from '@couchbase-traces/common-utils/dist/dashboardFilterValues';
 import {
   getPromqlFilters,
   getSqlFilters,
-} from '@hyperdx/common-utils/dist/filters';
+} from '@couchbase-traces/common-utils/dist/filters';
 import {
   isBuilderChartConfig,
   isPromqlChartConfig,
   isRawSqlChartConfig,
   isRawSqlSavedChartConfig,
-} from '@hyperdx/common-utils/dist/guards';
-import { substitutePromqlChartConfigTemplates } from '@hyperdx/common-utils/dist/macros';
+} from '@couchbase-traces/common-utils/dist/guards';
+import { substitutePromqlChartConfigTemplates } from '@couchbase-traces/common-utils/dist/macros';
 import {
   BroadcastFilter,
   BuilderChartConfigWithDateRange,
@@ -40,8 +40,8 @@ import {
   SourceKind,
   TSource,
   validateAlertScheduleOffsetMinutes,
-} from '@hyperdx/common-utils/dist/types';
-import { filterReferencedVariables } from '@hyperdx/common-utils/dist/variables';
+} from '@couchbase-traces/common-utils/dist/types';
+import { filterReferencedVariables } from '@couchbase-traces/common-utils/dist/variables';
 
 import {
   convertToCategoricalChartConfig,

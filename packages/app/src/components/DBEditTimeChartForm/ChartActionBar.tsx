@@ -1,6 +1,6 @@
 import { Control, useWatch } from 'react-hook-form';
-import { TableConnection } from '@hyperdx/common-utils/dist/core/metadata';
-import { isRangeQuery } from '@hyperdx/common-utils/dist/core/promql';
+import { TableConnection } from '@couchbase-traces/common-utils/dist/core/metadata';
+import { isRangeQuery } from '@couchbase-traces/common-utils/dist/core/promql';
 import {
   ActionIcon,
   Box,

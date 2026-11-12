@@ -4,15 +4,15 @@ import { Controller, SubmitHandler, useForm, useWatch } from 'react-hook-form';
 import { ZodIssue } from 'zod';
 import { json, jsonParseLinter } from '@codemirror/lang-json';
 import { linter } from '@codemirror/lint';
-import { getWebhookTemplateError } from '@hyperdx/common-utils/dist/core/handlebarsEnv';
+import { getWebhookTemplateError } from '@couchbase-traces/common-utils/dist/core/handlebarsEnv';
 import {
   getDefaultWebhookBody,
   WEBHOOK_TEMPLATE_VARIABLES,
   WebhookApiData,
   WebhookService,
   WebhookTemplateVariable,
-} from '@hyperdx/common-utils/dist/types';
-import { isValidSlackUrl } from '@hyperdx/common-utils/dist/validation';
+} from '@couchbase-traces/common-utils/dist/types';
+import { isValidSlackUrl } from '@couchbase-traces/common-utils/dist/validation';
 import {
   Alert,
   Button,

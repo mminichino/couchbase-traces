@@ -1,4 +1,4 @@
-import { PromqlHeatmapMode } from '@hyperdx/common-utils/dist/types';
+import { PromqlHeatmapMode } from '@couchbase-traces/common-utils/dist/types';
 import { Group, SegmentedControl, Stack, Text, Tooltip } from '@mantine/core';
 import { IconHelpCircle } from '@tabler/icons-react';
 

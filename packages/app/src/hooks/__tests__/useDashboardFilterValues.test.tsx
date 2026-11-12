@@ -5,7 +5,7 @@ import {
   SourceKind,
   StaticListDashboardFilter,
   TSource,
-} from '@hyperdx/common-utils/dist/types';
+} from '@couchbase-traces/common-utils/dist/types';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { renderHook, waitFor } from '@testing-library/react';
 
@@ -32,7 +32,7 @@ jest.mock('@/source', () => ({
 jest.mock('../useMetadata', () => ({
   useMetadataWithSettings: () => ({ getKeyValues: mockGetKeyValues }),
 }));
-jest.mock('@hyperdx/common-utils/dist/core/materializedViews', () => ({
+jest.mock('@couchbase-traces/common-utils/dist/core/materializedViews', () => ({
   optimizeGetKeyValuesCalls: jest
     .fn()
     .mockImplementation(async ({ keys, chartConfig }) => [

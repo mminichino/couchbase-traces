@@ -4,14 +4,14 @@ import {
   getMetadata,
   TableMetadata,
   tcFromSource,
-} from '@hyperdx/common-utils/dist/core/metadata';
-import { resolvePercentileAggFn } from '@hyperdx/common-utils/dist/core/utils';
+} from '@couchbase-traces/common-utils/dist/core/metadata';
+import { resolvePercentileAggFn } from '@couchbase-traces/common-utils/dist/core/utils';
 import {
   AILineTableResponse,
   AssistantLineTableConfigSchema,
   ChartConfigWithDateRange,
   pickSampleWeightExpressionProps,
-} from '@hyperdx/common-utils/dist/types';
+} from '@couchbase-traces/common-utils/dist/types';
 import type { LanguageModel } from 'ai';
 import * as chrono from 'chrono-node';
 import ms from 'ms';

@@ -1,8 +1,8 @@
-import { getFirstTimestampValueExpression } from '@hyperdx/common-utils/dist/core/utils';
+import { getFirstTimestampValueExpression } from '@couchbase-traces/common-utils/dist/core/utils';
 import {
   Filter,
   pickSampleWeightExpressionProps,
-} from '@hyperdx/common-utils/dist/types';
+} from '@couchbase-traces/common-utils/dist/types';
 import { Grid, Text } from '@mantine/core';
 
 import { ChartCard } from '@/components/charts/ChartCard';

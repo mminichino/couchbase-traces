@@ -1,11 +1,11 @@
 import { useEffect, useMemo } from 'react';
-import { JSDataType } from '@hyperdx/common-utils/dist/clickhouse';
+import { JSDataType } from '@couchbase-traces/common-utils/dist/clickhouse';
 import {
   Field,
   parseKeyPath,
   TableConnection,
-} from '@hyperdx/common-utils/dist/core/metadata';
-import { BuilderChartConfigWithDateRange } from '@hyperdx/common-utils/dist/types';
+} from '@couchbase-traces/common-utils/dist/core/metadata';
+import { BuilderChartConfigWithDateRange } from '@couchbase-traces/common-utils/dist/types';
 
 import {
   resolveTableConnection,

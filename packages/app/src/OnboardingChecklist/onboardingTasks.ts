@@ -1,6 +1,6 @@
-import { isNonEmptyWhereExpr } from '@hyperdx/common-utils/dist/core/renderChartConfig';
-import type { OnboardingTaskId } from '@hyperdx/common-utils/dist/types';
-import { ONBOARDING_TASK_IDS } from '@hyperdx/common-utils/dist/types';
+import { isNonEmptyWhereExpr } from '@couchbase-traces/common-utils/dist/core/renderChartConfig';
+import type { OnboardingTaskId } from '@couchbase-traces/common-utils/dist/types';
+import { ONBOARDING_TASK_IDS } from '@couchbase-traces/common-utils/dist/types';
 
 export interface OnboardingStep {
   id: string;

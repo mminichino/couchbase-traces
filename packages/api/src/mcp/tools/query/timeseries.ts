@@ -1,4 +1,4 @@
-import { FIXED_TIME_BUCKET_EXPR_ALIAS } from '@hyperdx/common-utils/dist/core/renderChartConfig';
+import { FIXED_TIME_BUCKET_EXPR_ALIAS } from '@couchbase-traces/common-utils/dist/core/renderChartConfig';
 import { z } from 'zod';
 
 import { READ_ONLY_TOOL } from '@/mcp/tools/annotations';

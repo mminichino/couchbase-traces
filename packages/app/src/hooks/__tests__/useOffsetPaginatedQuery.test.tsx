@@ -1,9 +1,9 @@
 import React, { act } from 'react';
-import { ClickHouseQueryError } from '@hyperdx/common-utils/dist/clickhouse';
+import { ClickHouseQueryError } from '@couchbase-traces/common-utils/dist/clickhouse';
 import {
   ChartConfigWithDateRange,
   PromqlConfigWithDateRange,
-} from '@hyperdx/common-utils/dist/types';
+} from '@couchbase-traces/common-utils/dist/types';
 import {
   QueryClient,
   QueryClientProvider,
@@ -25,12 +25,12 @@ jest.mock('@/api', () => ({
 }));
 
 // Mock the clickhouse client
-jest.mock('@hyperdx/app/src/clickhouse', () => ({
+jest.mock('@couchbase-traces/app/src/clickhouse', () => ({
   getClickhouseClient: jest.fn(),
 }));
 
 // Mock the metadata module
-jest.mock('@hyperdx/app/src/metadata', () => ({
+jest.mock('@couchbase-traces/app/src/metadata', () => ({
   getMetadata: jest.fn(),
 }));
 
@@ -57,7 +57,7 @@ jest.mock('@/hooks/useMVOptimizationExplanation', () => ({
 }));
 
 // Mock the renderChartConfig function
-jest.mock('@hyperdx/common-utils/dist/core/renderChartConfig', () => ({
+jest.mock('@couchbase-traces/common-utils/dist/core/renderChartConfig', () => ({
   renderChartConfig: jest.fn(),
 }));
 
@@ -66,9 +66,9 @@ jest.mock('@/utils/promqlChartQuery', () => ({
 }));
 
 // Import mocked modules after jest.mock calls
-import { getClickhouseClient } from '@hyperdx/app/src/clickhouse';
-import { renderChartConfig } from '@hyperdx/common-utils/dist/core/renderChartConfig';
-import { isBuilderChartConfig } from '@hyperdx/common-utils/dist/guards';
+import { getClickhouseClient } from '@couchbase-traces/app/src/clickhouse';
+import { renderChartConfig } from '@couchbase-traces/common-utils/dist/core/renderChartConfig';
+import { isBuilderChartConfig } from '@couchbase-traces/common-utils/dist/guards';
 
 import { useMetadataWithSettings } from '@/hooks/useMetadata';
 import {

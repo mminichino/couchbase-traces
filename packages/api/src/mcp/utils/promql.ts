@@ -1,4 +1,4 @@
-import { SourceKind } from '@hyperdx/common-utils/dist/types';
+import { SourceKind } from '@couchbase-traces/common-utils/dist/types';
 
 import * as config from '@/config';
 import type { McpContext } from '@/mcp/tools/types';

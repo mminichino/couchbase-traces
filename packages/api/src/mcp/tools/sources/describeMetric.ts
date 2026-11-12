@@ -5,9 +5,9 @@ import {
   filterColumnMetaByType,
   JSDataType,
   tableExpr,
-} from '@hyperdx/common-utils/dist/clickhouse';
-import { getMetadata } from '@hyperdx/common-utils/dist/core/metadata';
-import { SourceKind } from '@hyperdx/common-utils/dist/types';
+} from '@couchbase-traces/common-utils/dist/clickhouse';
+import { getMetadata } from '@couchbase-traces/common-utils/dist/core/metadata';
+import { SourceKind } from '@couchbase-traces/common-utils/dist/types';
 import { z } from 'zod';
 
 import { ClickhouseClient } from '@/clickhouse';

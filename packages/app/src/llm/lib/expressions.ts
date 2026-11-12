@@ -1,5 +1,8 @@
-import { errorStatusPredicateSql } from '@hyperdx/common-utils/dist/core/spanPredicates';
-import { TLogSource, TTraceSource } from '@hyperdx/common-utils/dist/types';
+import { errorStatusPredicateSql } from '@couchbase-traces/common-utils/dist/core/spanPredicates';
+import {
+  TLogSource,
+  TTraceSource,
+} from '@couchbase-traces/common-utils/dist/types';
 
 import { generateCostSqlExpression } from './cost';
 import { buildAnyKeyExistsSql, buildLLMSpanSqlPredicate } from './detect';

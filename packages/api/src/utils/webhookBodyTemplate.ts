@@ -1,8 +1,8 @@
 import {
   getWebhookTemplateError,
   type WebhookTemplateError,
-} from '@hyperdx/common-utils/dist/core/handlebarsEnv';
-import { WebhookService } from '@hyperdx/common-utils/dist/types';
+} from '@couchbase-traces/common-utils/dist/core/handlebarsEnv';
+import { WebhookService } from '@couchbase-traces/common-utils/dist/types';
 import Handlebars from 'handlebars';
 
 export class WebhookBodyValidationError extends Error {

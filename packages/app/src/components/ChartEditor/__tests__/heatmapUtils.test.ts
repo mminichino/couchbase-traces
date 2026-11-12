@@ -1,14 +1,14 @@
-import { isBuilderSavedChartConfig } from '@hyperdx/common-utils/dist/guards';
+import { isBuilderSavedChartConfig } from '@couchbase-traces/common-utils/dist/guards';
 import type {
   BuilderSavedChartConfig,
   TMetricSource,
   TSource,
-} from '@hyperdx/common-utils/dist/types';
+} from '@couchbase-traces/common-utils/dist/types';
 import {
   DisplayType,
   MetricsDataType,
   SourceKind,
-} from '@hyperdx/common-utils/dist/types';
+} from '@couchbase-traces/common-utils/dist/types';
 
 import type { ChartEditorFormState } from '@/components/ChartEditor/types';
 import {

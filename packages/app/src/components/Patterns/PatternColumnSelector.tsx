@@ -1,4 +1,4 @@
-import { tcFromSource } from '@hyperdx/common-utils/dist/core/metadata';
+import { tcFromSource } from '@couchbase-traces/common-utils/dist/core/metadata';
 import { Box } from '@mantine/core';
 
 import SQLInlineEditor from '@/components/SQLEditor/SQLInlineEditor';

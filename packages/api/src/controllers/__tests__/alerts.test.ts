@@ -1,7 +1,7 @@
 import {
   AlertChartConfig,
   DisplayType,
-} from '@hyperdx/common-utils/dist/types';
+} from '@couchbase-traces/common-utils/dist/types';
 
 import { makeAlert } from '@/controllers/alerts';
 import { AlertChannel, AlertSource, AlertThresholdType } from '@/models/alert';

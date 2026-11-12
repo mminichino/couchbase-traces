@@ -1,4 +1,4 @@
-import type { Metadata } from '@hyperdx/common-utils/dist/core/metadata';
+import type { Metadata } from '@couchbase-traces/common-utils/dist/core/metadata';
 
 import type { ProxyClickhouseClient, SourceResponse } from '@/api/client';
 

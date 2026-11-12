@@ -2,7 +2,7 @@ import { useCallback, useMemo, useState } from 'react';
 import {
   isBuilderChartConfig,
   isPromqlChartConfig,
-} from '@hyperdx/common-utils/dist/guards';
+} from '@couchbase-traces/common-utils/dist/guards';
 import {
   BuilderChartConfigWithDateRange,
   BuilderChartConfigWithOptTimestamp,
@@ -11,7 +11,7 @@ import {
   DisplayType,
   SourceKind,
   TSource,
-} from '@hyperdx/common-utils/dist/types';
+} from '@couchbase-traces/common-utils/dist/types';
 import { Accordion, Box, Divider, Stack, Text } from '@mantine/core';
 import { IconList } from '@tabler/icons-react';
 import { SortingState } from '@tanstack/react-table';

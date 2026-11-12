@@ -19,6 +19,10 @@ Change these here and nowhere else. The plan and every phase refer to them by na
 | `NPM_SCOPE` | `@couchbase-traces` |
 | `ENV_PREFIX` | `CBT_` |
 | `BRAND_ASSETS` | `branding/` in this project (logo SVGs, favicon, color tokens) |
+| `SHORT_SLUG` | `cbt` |
+| `DOCS_URL` | `https://github.com/mminichino/couchbase-traces/tree/main/docs` |
+| `IMAGE_REGISTRY` | `ghcr.io` |
+| `IMAGE_NAMESPACE` | `mminichino` |
 | `COUCHBASE_VERSION` | Couchbase Server Enterprise 8.x; minimum 8.0 |
 | `COUCHBASE_DOCS` | `https://docs.couchbase.com/server/8.0/` |
 

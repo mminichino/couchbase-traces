@@ -1,14 +1,14 @@
-import { ClickhouseClient } from '@hyperdx/common-utils/dist/clickhouse/browser';
+import { ClickhouseClient } from '@couchbase-traces/common-utils/dist/clickhouse/browser';
 import {
   Metadata,
   MetadataCache,
-} from '@hyperdx/common-utils/dist/core/metadata';
-import { renderChartConfig } from '@hyperdx/common-utils/dist/core/renderChartConfig';
+} from '@couchbase-traces/common-utils/dist/core/metadata';
+import { renderChartConfig } from '@couchbase-traces/common-utils/dist/core/renderChartConfig';
 import {
   SourceKind,
   TSessionSource,
   TTraceSource,
-} from '@hyperdx/common-utils/dist/types';
+} from '@couchbase-traces/common-utils/dist/types';
 
 import {
   buildRRWebStreamChartConfig,
@@ -17,8 +17,10 @@ import {
   getRRWebTimestampExpression,
 } from '@/sessions';
 
-jest.mock('@hyperdx/common-utils/dist/core/renderChartConfig', () => ({
-  ...jest.requireActual('@hyperdx/common-utils/dist/core/renderChartConfig'),
+jest.mock('@couchbase-traces/common-utils/dist/core/renderChartConfig', () => ({
+  ...jest.requireActual(
+    '@couchbase-traces/common-utils/dist/core/renderChartConfig',
+  ),
   renderChartConfig: jest.fn(async () => ({ sql: 'SQL', params: { p: 1 } })),
 }));
 

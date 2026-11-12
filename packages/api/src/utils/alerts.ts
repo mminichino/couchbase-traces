@@ -2,15 +2,15 @@ import {
   clampAlertDisplayName,
   clampAlertTags,
   formatTileAlertDisplayName,
-} from '@hyperdx/common-utils/dist/alerts';
+} from '@couchbase-traces/common-utils/dist/alerts';
 import {
   isBuilderSavedChartConfig,
   isRawSqlSavedChartConfig,
-} from '@hyperdx/common-utils/dist/guards';
+} from '@couchbase-traces/common-utils/dist/guards';
 import {
   DisplayType,
   SavedChartConfig,
-} from '@hyperdx/common-utils/dist/types';
+} from '@couchbase-traces/common-utils/dist/types';
 import { Types } from 'mongoose';
 
 import type { ObjectId } from '@/models';

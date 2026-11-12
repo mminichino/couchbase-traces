@@ -7,7 +7,7 @@
  * `service`, one sample of 1 a minute, and `e2e_request_duration_seconds` a
  * cumulative `_bucket` series per service and `le` in 0.1, 0.5, 1 and +Inf.
  */
-import { DisplayType } from '@hyperdx/common-utils/dist/types';
+import { DisplayType } from '@couchbase-traces/common-utils/dist/types';
 
 import { HeatmapComponent } from '../components/HeatmapComponent';
 import { DashboardPage } from '../page-objects/DashboardPage';

@@ -1,5 +1,5 @@
-import { format } from '@hyperdx/common-utils/dist/sqlFormatter';
-import { ChartConfigWithOptDateRange } from '@hyperdx/common-utils/dist/types';
+import { format } from '@couchbase-traces/common-utils/dist/sqlFormatter';
+import { ChartConfigWithOptDateRange } from '@couchbase-traces/common-utils/dist/types';
 import { Paper, Text, useMantineColorScheme } from '@mantine/core';
 import { keepPreviousData } from '@tanstack/react-query';
 import CodeMirror, { EditorView } from '@uiw/react-codemirror';

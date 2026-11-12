@@ -1,8 +1,11 @@
 import * as React from 'react';
 import { parseAsString, useQueryState } from 'nuqs';
-import { tcFromSource } from '@hyperdx/common-utils/dist/core/metadata';
-import { convertDateRangeToGranularityString } from '@hyperdx/common-utils/dist/core/utils';
-import { TLogSource, TMetricSource } from '@hyperdx/common-utils/dist/types';
+import { tcFromSource } from '@couchbase-traces/common-utils/dist/core/metadata';
+import { convertDateRangeToGranularityString } from '@couchbase-traces/common-utils/dist/core/utils';
+import {
+  TLogSource,
+  TMetricSource,
+} from '@couchbase-traces/common-utils/dist/types';
 import {
   Box,
   Card,

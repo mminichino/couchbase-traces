@@ -1,5 +1,5 @@
-import { Metadata } from '@hyperdx/common-utils/dist/core/metadata';
-import { SourceKind } from '@hyperdx/common-utils/dist/types';
+import { Metadata } from '@couchbase-traces/common-utils/dist/core/metadata';
+import { SourceKind } from '@couchbase-traces/common-utils/dist/types';
 
 import { PROMETHEUS_MAX_RESPONSE_BYTES } from '@/controllers/promql';
 import {

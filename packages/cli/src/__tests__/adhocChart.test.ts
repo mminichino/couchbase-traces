@@ -1,6 +1,6 @@
 import { describe, expect, it } from '@jest/globals';
 
-import { DisplayType } from '@hyperdx/common-utils/dist/types';
+import { DisplayType } from '@couchbase-traces/common-utils/dist/types';
 
 import type { SourceResponse } from '@/api/client';
 import {

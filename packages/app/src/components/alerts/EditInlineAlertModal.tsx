@@ -2,7 +2,7 @@ import * as React from 'react';
 import {
   AlertSource,
   SavedChartConfig,
-} from '@hyperdx/common-utils/dist/types';
+} from '@couchbase-traces/common-utils/dist/types';
 import { Modal, Skeleton, Stack } from '@mantine/core';
 import { notifications } from '@mantine/notifications';
 import { useQueryClient } from '@tanstack/react-query';

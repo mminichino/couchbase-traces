@@ -1,4 +1,7 @@
-import { TLogSource, TTraceSource } from '@hyperdx/common-utils/dist/types';
+import {
+  TLogSource,
+  TTraceSource,
+} from '@couchbase-traces/common-utils/dist/types';
 
 import { makeLogSource, makeTraceSource } from '@/llm/__fixtures__/sources';
 import {

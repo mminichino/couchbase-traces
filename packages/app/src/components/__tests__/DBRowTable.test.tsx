@@ -1,6 +1,6 @@
 import { Provider } from 'jotai';
 import type { ReactElement } from 'react';
-import type { BuilderChartConfigWithDateRange } from '@hyperdx/common-utils/dist/types';
+import type { BuilderChartConfigWithDateRange } from '@couchbase-traces/common-utils/dist/types';
 import { renderHook, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 

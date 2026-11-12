@@ -86,7 +86,7 @@ export const FencedBlocks = () => (
       <Text size="xs" c="var(--color-text-muted)" mb="sm">
         Omit <Code>label</Code> when a heading above already names the snippet.
       </Text>
-      <CopySnippet snippet={'yarn workspace @hyperdx/app storybook'} />
+      <CopySnippet snippet={'yarn workspace @couchbase-traces/app storybook'} />
     </div>
     <CopySnippet snippet={FENCED_EXAMPLE} />
   </Stack>

@@ -1,13 +1,13 @@
 import { useMemo } from 'react';
 import { flatten } from 'flat';
-import type { ResponseJSON } from '@hyperdx/common-utils/dist/clickhouse';
-import { tcFromSource } from '@hyperdx/common-utils/dist/core/metadata';
+import type { ResponseJSON } from '@couchbase-traces/common-utils/dist/clickhouse';
+import { tcFromSource } from '@couchbase-traces/common-utils/dist/core/metadata';
 import {
   isLogSource,
   isTraceSource,
   SourceKind,
   TSource,
-} from '@hyperdx/common-utils/dist/types';
+} from '@couchbase-traces/common-utils/dist/types';
 import { Box, Center, Loader } from '@mantine/core';
 import type { Query } from '@tanstack/react-query';
 

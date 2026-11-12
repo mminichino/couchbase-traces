@@ -1,9 +1,9 @@
 import { add } from 'date-fns';
-import { ColumnMetaType } from '@hyperdx/common-utils/dist/clickhouse';
+import { ColumnMetaType } from '@couchbase-traces/common-utils/dist/clickhouse';
 import {
   classifyTimestampType,
   splitAndTrimWithBracket,
-} from '@hyperdx/common-utils/dist/core/utils';
+} from '@couchbase-traces/common-utils/dist/core/utils';
 
 /**
  * Alias for the i-th column of a source's (possibly composite)

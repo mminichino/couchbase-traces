@@ -27,13 +27,13 @@ import {
   extractColumnReferencesFromKey,
   isJSDataTypeJSONStringifiable,
   JSDataType,
-} from '@hyperdx/common-utils/dist/clickhouse';
-import { splitAndTrimWithBracket } from '@hyperdx/common-utils/dist/core/utils';
+} from '@couchbase-traces/common-utils/dist/clickhouse';
+import { splitAndTrimWithBracket } from '@couchbase-traces/common-utils/dist/core/utils';
 import {
   BuilderChartConfigWithDateRange,
   SelectList,
   TSource,
-} from '@hyperdx/common-utils/dist/types';
+} from '@couchbase-traces/common-utils/dist/types';
 import {
   Box,
   Flex,

@@ -128,7 +128,7 @@ blocked unless you allowlist their hostnames.
   accepts tag, search, source and state filters, so you can ask for just the
   alerts you care about rather than fetching them all and filtering yourself.
 - **Connect an AI agent without pasting a key**: the new
-  `npx @hyperdx/cli mcp install` asks for a personal access key or an
+  `npx @couchbase-traces/cli mcp install` asks for a personal access key or an
   organisation API key with hidden input, checks it, and adds the ClickStack MCP
   server to Claude Code, Codex, Cursor and VS Code. Team Settings now leads with
   this command, so a key no longer has to go into a copied command or an agent
@@ -393,11 +393,11 @@ once it is on.
 
 ### 📦 Package changelogs
 
-- `@hyperdx/api` 2.43.1 → 2.44.0 — [changelog](https://github.com/ClickHouse/ClickStack/blob/main/packages/api/CHANGELOG.md#2440)
-- `@hyperdx/app` 2.43.1 → 2.44.0 — [changelog](https://github.com/ClickHouse/ClickStack/blob/main/packages/app/CHANGELOG.md#2440)
-- `@hyperdx/cli` 0.8.0 → 0.9.0 — [changelog](https://github.com/ClickHouse/ClickStack/blob/main/packages/cli/CHANGELOG.md#090)
-- `@hyperdx/common-utils` 0.33.0 → 0.34.0 — [changelog](https://github.com/ClickHouse/ClickStack/blob/main/packages/common-utils/CHANGELOG.md#0340)
-- `@hyperdx/otel-collector` 2.43.1 → 2.44.0 — [changelog](https://github.com/ClickHouse/ClickStack/blob/main/packages/otel-collector/CHANGELOG.md#2440)
+- `@couchbase-traces/api` 2.43.1 → 2.44.0 — [changelog](https://github.com/ClickHouse/ClickStack/blob/main/packages/api/CHANGELOG.md#2440)
+- `@couchbase-traces/app` 2.43.1 → 2.44.0 — [changelog](https://github.com/ClickHouse/ClickStack/blob/main/packages/app/CHANGELOG.md#2440)
+- `@couchbase-traces/cli` 0.8.0 → 0.9.0 — [changelog](https://github.com/ClickHouse/ClickStack/blob/main/packages/cli/CHANGELOG.md#090)
+- `@couchbase-traces/common-utils` 0.33.0 → 0.34.0 — [changelog](https://github.com/ClickHouse/ClickStack/blob/main/packages/common-utils/CHANGELOG.md#0340)
+- `@couchbase-traces/otel-collector` 2.43.1 → 2.44.0 — [changelog](https://github.com/ClickHouse/ClickStack/blob/main/packages/otel-collector/CHANGELOG.md#2440)
 
 <!-- /hyperdx-package-list -->
 
@@ -427,9 +427,9 @@ can still opt back in to MPTCP. Patching the host kernel remains the actual fix.
 
 ### 📦 Package changelogs
 
-- `@hyperdx/api` 2.43.0 → 2.43.1 — [changelog](https://github.com/hyperdxio/hyperdx/blob/main/packages/api/CHANGELOG.md#2431)
-- `@hyperdx/app` 2.43.0 → 2.43.1 — [changelog](https://github.com/hyperdxio/hyperdx/blob/main/packages/app/CHANGELOG.md#2431)
-- `@hyperdx/otel-collector` 2.43.0 → 2.43.1 — [changelog](https://github.com/hyperdxio/hyperdx/blob/main/packages/otel-collector/CHANGELOG.md#2431)
+- `@couchbase-traces/api` 2.43.0 → 2.43.1 — [changelog](https://github.com/hyperdxio/hyperdx/blob/main/packages/api/CHANGELOG.md#2431)
+- `@couchbase-traces/app` 2.43.0 → 2.43.1 — [changelog](https://github.com/hyperdxio/hyperdx/blob/main/packages/app/CHANGELOG.md#2431)
+- `@couchbase-traces/otel-collector` 2.43.0 → 2.43.1 — [changelog](https://github.com/hyperdxio/hyperdx/blob/main/packages/otel-collector/CHANGELOG.md#2431)
 
 <!-- /hyperdx-package-list -->
 
@@ -497,10 +497,10 @@ condition the alert actually fires on.
 
 ### 📦 Package changelogs
 
-- `@hyperdx/api` 2.42.0 → 2.43.0 — [changelog](https://github.com/hyperdxio/hyperdx/blob/main/packages/api/CHANGELOG.md#2430)
-- `@hyperdx/app` 2.42.0 → 2.43.0 — [changelog](https://github.com/hyperdxio/hyperdx/blob/main/packages/app/CHANGELOG.md#2430)
-- `@hyperdx/common-utils` 0.32.0 → 0.33.0 — [changelog](https://github.com/hyperdxio/hyperdx/blob/main/packages/common-utils/CHANGELOG.md#0330)
-- `@hyperdx/otel-collector` 2.42.0 → 2.43.0 — [changelog](https://github.com/hyperdxio/hyperdx/blob/main/packages/otel-collector/CHANGELOG.md#2430)
+- `@couchbase-traces/api` 2.42.0 → 2.43.0 — [changelog](https://github.com/hyperdxio/hyperdx/blob/main/packages/api/CHANGELOG.md#2430)
+- `@couchbase-traces/app` 2.42.0 → 2.43.0 — [changelog](https://github.com/hyperdxio/hyperdx/blob/main/packages/app/CHANGELOG.md#2430)
+- `@couchbase-traces/common-utils` 0.32.0 → 0.33.0 — [changelog](https://github.com/hyperdxio/hyperdx/blob/main/packages/common-utils/CHANGELOG.md#0330)
+- `@couchbase-traces/otel-collector` 2.42.0 → 2.43.0 — [changelog](https://github.com/hyperdxio/hyperdx/blob/main/packages/otel-collector/CHANGELOG.md#2430)
 
 <!-- /hyperdx-package-list -->
 
@@ -781,11 +781,11 @@ you upgrade.
 
 ### 📦 Package changelogs
 
-- `@hyperdx/api` 2.41.0 → 2.42.0 — [changelog](https://github.com/hyperdxio/hyperdx/blob/main/packages/api/CHANGELOG.md#2420)
-- `@hyperdx/app` 2.41.0 → 2.42.0 — [changelog](https://github.com/hyperdxio/hyperdx/blob/main/packages/app/CHANGELOG.md#2420)
-- `@hyperdx/cli` 0.7.0 → 0.8.0 — [changelog](https://github.com/hyperdxio/hyperdx/blob/main/packages/cli/CHANGELOG.md#080)
-- `@hyperdx/common-utils` 0.31.0 → 0.32.0 — [changelog](https://github.com/hyperdxio/hyperdx/blob/main/packages/common-utils/CHANGELOG.md#0320)
-- `@hyperdx/otel-collector` 2.41.0 → 2.42.0 — [changelog](https://github.com/hyperdxio/hyperdx/blob/main/packages/otel-collector/CHANGELOG.md#2420)
+- `@couchbase-traces/api` 2.41.0 → 2.42.0 — [changelog](https://github.com/hyperdxio/hyperdx/blob/main/packages/api/CHANGELOG.md#2420)
+- `@couchbase-traces/app` 2.41.0 → 2.42.0 — [changelog](https://github.com/hyperdxio/hyperdx/blob/main/packages/app/CHANGELOG.md#2420)
+- `@couchbase-traces/cli` 0.7.0 → 0.8.0 — [changelog](https://github.com/hyperdxio/hyperdx/blob/main/packages/cli/CHANGELOG.md#080)
+- `@couchbase-traces/common-utils` 0.31.0 → 0.32.0 — [changelog](https://github.com/hyperdxio/hyperdx/blob/main/packages/common-utils/CHANGELOG.md#0320)
+- `@couchbase-traces/otel-collector` 2.41.0 → 2.42.0 — [changelog](https://github.com/hyperdxio/hyperdx/blob/main/packages/otel-collector/CHANGELOG.md#2420)
 
 <!-- /hyperdx-package-list -->
 
@@ -1014,11 +1014,11 @@ public default secret.
 
 ### 📦 Package changelogs
 
-- `@hyperdx/api` 2.40.0 → 2.41.0 — [changelog](https://github.com/hyperdxio/hyperdx/blob/main/packages/api/CHANGELOG.md#2410)
-- `@hyperdx/app` 2.40.0 → 2.41.0 — [changelog](https://github.com/hyperdxio/hyperdx/blob/main/packages/app/CHANGELOG.md#2410)
-- `@hyperdx/cli` 0.6.4 → 0.7.0 — [changelog](https://github.com/hyperdxio/hyperdx/blob/main/packages/cli/CHANGELOG.md#070)
-- `@hyperdx/common-utils` 0.30.0 → 0.31.0 — [changelog](https://github.com/hyperdxio/hyperdx/blob/main/packages/common-utils/CHANGELOG.md#0310)
-- `@hyperdx/otel-collector` 2.40.0 → 2.41.0 — [changelog](https://github.com/hyperdxio/hyperdx/blob/main/packages/otel-collector/CHANGELOG.md#2410)
+- `@couchbase-traces/api` 2.40.0 → 2.41.0 — [changelog](https://github.com/hyperdxio/hyperdx/blob/main/packages/api/CHANGELOG.md#2410)
+- `@couchbase-traces/app` 2.40.0 → 2.41.0 — [changelog](https://github.com/hyperdxio/hyperdx/blob/main/packages/app/CHANGELOG.md#2410)
+- `@couchbase-traces/cli` 0.6.4 → 0.7.0 — [changelog](https://github.com/hyperdxio/hyperdx/blob/main/packages/cli/CHANGELOG.md#070)
+- `@couchbase-traces/common-utils` 0.30.0 → 0.31.0 — [changelog](https://github.com/hyperdxio/hyperdx/blob/main/packages/common-utils/CHANGELOG.md#0310)
+- `@couchbase-traces/otel-collector` 2.40.0 → 2.41.0 — [changelog](https://github.com/hyperdxio/hyperdx/blob/main/packages/otel-collector/CHANGELOG.md#2410)
 
 <!-- /hyperdx-package-list -->
 
@@ -1251,11 +1251,11 @@ DogStatsD metrics directly.
 
 ### 📦 Package changelogs
 
-- `@hyperdx/api` 2.39.1 → 2.40.0 — [changelog](https://github.com/hyperdxio/hyperdx/blob/main/packages/api/CHANGELOG.md#2400)
-- `@hyperdx/app` 2.39.1 → 2.40.0 — [changelog](https://github.com/hyperdxio/hyperdx/blob/main/packages/app/CHANGELOG.md#2400)
-- `@hyperdx/cli` 0.6.3 → 0.6.4 — [changelog](https://github.com/hyperdxio/hyperdx/blob/main/packages/cli/CHANGELOG.md#064)
-- `@hyperdx/common-utils` 0.29.0 → 0.30.0 — [changelog](https://github.com/hyperdxio/hyperdx/blob/main/packages/common-utils/CHANGELOG.md#0300)
-- `@hyperdx/otel-collector` 2.39.1 → 2.40.0 — [changelog](https://github.com/hyperdxio/hyperdx/blob/main/packages/otel-collector/CHANGELOG.md#2400)
+- `@couchbase-traces/api` 2.39.1 → 2.40.0 — [changelog](https://github.com/hyperdxio/hyperdx/blob/main/packages/api/CHANGELOG.md#2400)
+- `@couchbase-traces/app` 2.39.1 → 2.40.0 — [changelog](https://github.com/hyperdxio/hyperdx/blob/main/packages/app/CHANGELOG.md#2400)
+- `@couchbase-traces/cli` 0.6.3 → 0.6.4 — [changelog](https://github.com/hyperdxio/hyperdx/blob/main/packages/cli/CHANGELOG.md#064)
+- `@couchbase-traces/common-utils` 0.29.0 → 0.30.0 — [changelog](https://github.com/hyperdxio/hyperdx/blob/main/packages/common-utils/CHANGELOG.md#0300)
+- `@couchbase-traces/otel-collector` 2.39.1 → 2.40.0 — [changelog](https://github.com/hyperdxio/hyperdx/blob/main/packages/otel-collector/CHANGELOG.md#2400)
 
 <!-- /hyperdx-package-list -->
 
@@ -1293,9 +1293,9 @@ available.
 
 ### 📦 Package changelogs
 
-- `@hyperdx/api` 2.39.0 → 2.39.1 — [changelog](https://github.com/hyperdxio/hyperdx/blob/main/packages/api/CHANGELOG.md#2391)
-- `@hyperdx/app` 2.39.0 → 2.39.1 — [changelog](https://github.com/hyperdxio/hyperdx/blob/main/packages/app/CHANGELOG.md#2391)
-- `@hyperdx/otel-collector` 2.39.0 → 2.39.1 — [changelog](https://github.com/hyperdxio/hyperdx/blob/main/packages/otel-collector/CHANGELOG.md#2391)
+- `@couchbase-traces/api` 2.39.0 → 2.39.1 — [changelog](https://github.com/hyperdxio/hyperdx/blob/main/packages/api/CHANGELOG.md#2391)
+- `@couchbase-traces/app` 2.39.0 → 2.39.1 — [changelog](https://github.com/hyperdxio/hyperdx/blob/main/packages/app/CHANGELOG.md#2391)
+- `@couchbase-traces/otel-collector` 2.39.0 → 2.39.1 — [changelog](https://github.com/hyperdxio/hyperdx/blob/main/packages/otel-collector/CHANGELOG.md#2391)
 
 <!-- /hyperdx-package-list -->
 
@@ -1583,10 +1583,10 @@ below before you upgrade.
 
 ### 📦 Package changelogs
 
-- `@hyperdx/api` 2.38.0 → 2.39.0 — [changelog](https://github.com/hyperdxio/hyperdx/blob/main/packages/api/CHANGELOG.md#2390)
-- `@hyperdx/app` 2.38.0 → 2.39.0 — [changelog](https://github.com/hyperdxio/hyperdx/blob/main/packages/app/CHANGELOG.md#2390)
-- `@hyperdx/common-utils` 0.28.1 → 0.29.0 — [changelog](https://github.com/hyperdxio/hyperdx/blob/main/packages/common-utils/CHANGELOG.md#0290)
-- `@hyperdx/otel-collector` 2.38.0 → 2.39.0 — [changelog](https://github.com/hyperdxio/hyperdx/blob/main/packages/otel-collector/CHANGELOG.md#2390)
+- `@couchbase-traces/api` 2.38.0 → 2.39.0 — [changelog](https://github.com/hyperdxio/hyperdx/blob/main/packages/api/CHANGELOG.md#2390)
+- `@couchbase-traces/app` 2.38.0 → 2.39.0 — [changelog](https://github.com/hyperdxio/hyperdx/blob/main/packages/app/CHANGELOG.md#2390)
+- `@couchbase-traces/common-utils` 0.28.1 → 0.29.0 — [changelog](https://github.com/hyperdxio/hyperdx/blob/main/packages/common-utils/CHANGELOG.md#0290)
+- `@couchbase-traces/otel-collector` 2.38.0 → 2.39.0 — [changelog](https://github.com/hyperdxio/hyperdx/blob/main/packages/otel-collector/CHANGELOG.md#2390)
 
 <!-- /hyperdx-package-list -->
 
@@ -1814,11 +1814,11 @@ string, read the breaking change below before you upgrade.
 
 ### 📦 Package changelogs
 
-- `@hyperdx/api` 2.37.0 → 2.38.0 — [changelog](https://github.com/hyperdxio/hyperdx/blob/main/packages/api/CHANGELOG.md#2380)
-- `@hyperdx/app` 2.37.0 → 2.38.0 — [changelog](https://github.com/hyperdxio/hyperdx/blob/main/packages/app/CHANGELOG.md#2380)
-- `@hyperdx/cli` 0.6.2 → 0.6.3 — [changelog](https://github.com/hyperdxio/hyperdx/blob/main/packages/cli/CHANGELOG.md#063)
-- `@hyperdx/common-utils` 0.28.0 → 0.28.1 — [changelog](https://github.com/hyperdxio/hyperdx/blob/main/packages/common-utils/CHANGELOG.md#0281)
-- `@hyperdx/otel-collector` 2.37.0 → 2.38.0 — [changelog](https://github.com/hyperdxio/hyperdx/blob/main/packages/otel-collector/CHANGELOG.md#2380)
+- `@couchbase-traces/api` 2.37.0 → 2.38.0 — [changelog](https://github.com/hyperdxio/hyperdx/blob/main/packages/api/CHANGELOG.md#2380)
+- `@couchbase-traces/app` 2.37.0 → 2.38.0 — [changelog](https://github.com/hyperdxio/hyperdx/blob/main/packages/app/CHANGELOG.md#2380)
+- `@couchbase-traces/cli` 0.6.2 → 0.6.3 — [changelog](https://github.com/hyperdxio/hyperdx/blob/main/packages/cli/CHANGELOG.md#063)
+- `@couchbase-traces/common-utils` 0.28.0 → 0.28.1 — [changelog](https://github.com/hyperdxio/hyperdx/blob/main/packages/common-utils/CHANGELOG.md#0281)
+- `@couchbase-traces/otel-collector` 2.37.0 → 2.38.0 — [changelog](https://github.com/hyperdxio/hyperdx/blob/main/packages/otel-collector/CHANGELOG.md#2380)
 
 <!-- /hyperdx-package-list -->
 
@@ -1993,7 +1993,7 @@ replays no longer break when a recording contains a very large event.
 
 ### 📦 Build / Packaging
 
-- **`@hyperdx/common-utils` ships usable type declarations**: internal `@/*`
+- **`@couchbase-traces/common-utils` ships usable type declarations**: internal `@/*`
   path aliases no longer leak into the published `.d.ts` files, where they could
   not be resolved by consumers (#2969, thanks @pulpdrew!).
 
@@ -2001,11 +2001,11 @@ replays no longer break when a recording contains a very large event.
 
 ### 📦 Package changelogs
 
-- `@hyperdx/api` 2.36.0 → 2.37.0 — [changelog](https://github.com/hyperdxio/hyperdx/blob/main/packages/api/CHANGELOG.md#2370)
-- `@hyperdx/app` 2.36.0 → 2.37.0 — [changelog](https://github.com/hyperdxio/hyperdx/blob/main/packages/app/CHANGELOG.md#2370)
-- `@hyperdx/common-utils` 0.27.0 → 0.28.0 — [changelog](https://github.com/hyperdxio/hyperdx/blob/main/packages/common-utils/CHANGELOG.md#0280)
-- `@hyperdx/hdx-eval` 0.3.2 → 0.3.3 — [changelog](https://github.com/hyperdxio/hyperdx/blob/main/packages/hdx-eval/CHANGELOG.md#033)
-- `@hyperdx/otel-collector` 2.36.0 → 2.37.0 — [changelog](https://github.com/hyperdxio/hyperdx/blob/main/packages/otel-collector/CHANGELOG.md#2370)
+- `@couchbase-traces/api` 2.36.0 → 2.37.0 — [changelog](https://github.com/hyperdxio/hyperdx/blob/main/packages/api/CHANGELOG.md#2370)
+- `@couchbase-traces/app` 2.36.0 → 2.37.0 — [changelog](https://github.com/hyperdxio/hyperdx/blob/main/packages/app/CHANGELOG.md#2370)
+- `@couchbase-traces/common-utils` 0.27.0 → 0.28.0 — [changelog](https://github.com/hyperdxio/hyperdx/blob/main/packages/common-utils/CHANGELOG.md#0280)
+- `@couchbase-traces/hdx-eval` 0.3.2 → 0.3.3 — [changelog](https://github.com/hyperdxio/hyperdx/blob/main/packages/hdx-eval/CHANGELOG.md#033)
+- `@couchbase-traces/otel-collector` 2.36.0 → 2.37.0 — [changelog](https://github.com/hyperdxio/hyperdx/blob/main/packages/otel-collector/CHANGELOG.md#2370)
 
 <!-- /hyperdx-package-list -->
 
@@ -2215,11 +2215,11 @@ logs.
 
 ### 📦 Package changelogs
 
-- `@hyperdx/api` 2.35.0 → 2.36.0 — [changelog](https://github.com/hyperdxio/hyperdx/blob/main/packages/api/CHANGELOG.md#2360)
-- `@hyperdx/app` 2.35.0 → 2.36.0 — [changelog](https://github.com/hyperdxio/hyperdx/blob/main/packages/app/CHANGELOG.md#2360)
-- `@hyperdx/cli` 0.6.1 → 0.6.2 — [changelog](https://github.com/hyperdxio/hyperdx/blob/main/packages/cli/CHANGELOG.md#062)
-- `@hyperdx/common-utils` 0.26.0 → 0.27.0 — [changelog](https://github.com/hyperdxio/hyperdx/blob/main/packages/common-utils/CHANGELOG.md#0270)
-- `@hyperdx/otel-collector` 2.35.0 → 2.36.0 — [changelog](https://github.com/hyperdxio/hyperdx/blob/main/packages/otel-collector/CHANGELOG.md#2360)
+- `@couchbase-traces/api` 2.35.0 → 2.36.0 — [changelog](https://github.com/hyperdxio/hyperdx/blob/main/packages/api/CHANGELOG.md#2360)
+- `@couchbase-traces/app` 2.35.0 → 2.36.0 — [changelog](https://github.com/hyperdxio/hyperdx/blob/main/packages/app/CHANGELOG.md#2360)
+- `@couchbase-traces/cli` 0.6.1 → 0.6.2 — [changelog](https://github.com/hyperdxio/hyperdx/blob/main/packages/cli/CHANGELOG.md#062)
+- `@couchbase-traces/common-utils` 0.26.0 → 0.27.0 — [changelog](https://github.com/hyperdxio/hyperdx/blob/main/packages/common-utils/CHANGELOG.md#0270)
+- `@couchbase-traces/otel-collector` 2.35.0 → 2.36.0 — [changelog](https://github.com/hyperdxio/hyperdx/blob/main/packages/otel-collector/CHANGELOG.md#2360)
 
 <!-- /hyperdx-package-list -->
 
@@ -2366,7 +2366,7 @@ so read the breaking change below before you re-run an export.
   per-series field, since the editor never renders a tile-level filter for them
   and it would be invisible and uneditable. Search, heatmap and event pattern
   tiles keep their tile-level filter (#2870).
-- **The CLI's README documents every command**: the `@hyperdx/cli` README now
+- **The CLI's README documents every command**: the `@couchbase-traces/cli` README now
   covers the full feature set and command reference — the TUI, `chart`, `query`,
   sources, connections, dashboards, auth, team and `upload-sourcemaps` — so npm
   and GitHub show everything the CLI can do. `hdx chart --help` no longer points
@@ -2409,12 +2409,12 @@ so read the breaking change below before you re-run an export.
 
 ### 📦 Package changelogs
 
-- `@hyperdx/api` 2.34.0 → 2.35.0 — [changelog](https://github.com/hyperdxio/hyperdx/blob/main/packages/api/CHANGELOG.md#2350)
-- `@hyperdx/app` 2.34.0 → 2.35.0 — [changelog](https://github.com/hyperdxio/hyperdx/blob/main/packages/app/CHANGELOG.md#2350)
-- `@hyperdx/cli` 0.6.0 → 0.6.1 — [changelog](https://github.com/hyperdxio/hyperdx/blob/main/packages/cli/CHANGELOG.md#061)
-- `@hyperdx/common-utils` 0.25.0 → 0.26.0 — [changelog](https://github.com/hyperdxio/hyperdx/blob/main/packages/common-utils/CHANGELOG.md#0260)
-- `@hyperdx/hdx-eval` 0.3.1 → 0.3.2 — [changelog](https://github.com/hyperdxio/hyperdx/blob/main/packages/hdx-eval/CHANGELOG.md#032)
-- `@hyperdx/otel-collector` 2.34.0 → 2.35.0 — [changelog](https://github.com/hyperdxio/hyperdx/blob/main/packages/otel-collector/CHANGELOG.md#2350)
+- `@couchbase-traces/api` 2.34.0 → 2.35.0 — [changelog](https://github.com/hyperdxio/hyperdx/blob/main/packages/api/CHANGELOG.md#2350)
+- `@couchbase-traces/app` 2.34.0 → 2.35.0 — [changelog](https://github.com/hyperdxio/hyperdx/blob/main/packages/app/CHANGELOG.md#2350)
+- `@couchbase-traces/cli` 0.6.0 → 0.6.1 — [changelog](https://github.com/hyperdxio/hyperdx/blob/main/packages/cli/CHANGELOG.md#061)
+- `@couchbase-traces/common-utils` 0.25.0 → 0.26.0 — [changelog](https://github.com/hyperdxio/hyperdx/blob/main/packages/common-utils/CHANGELOG.md#0260)
+- `@couchbase-traces/hdx-eval` 0.3.1 → 0.3.2 — [changelog](https://github.com/hyperdxio/hyperdx/blob/main/packages/hdx-eval/CHANGELOG.md#032)
+- `@couchbase-traces/otel-collector` 2.34.0 → 2.35.0 — [changelog](https://github.com/hyperdxio/hyperdx/blob/main/packages/otel-collector/CHANGELOG.md#2350)
 
 <!-- /hyperdx-package-list -->
 
@@ -2606,11 +2606,11 @@ before upgrading a chart or an API client that relies on getting every series.
 
 ### 📦 Package changelogs
 
-- `@hyperdx/api` 2.33.0 → 2.34.0 — [changelog](https://github.com/hyperdxio/hyperdx/blob/main/packages/api/CHANGELOG.md#2340)
-- `@hyperdx/app` 2.33.0 → 2.34.0 — [changelog](https://github.com/hyperdxio/hyperdx/blob/main/packages/app/CHANGELOG.md#2340)
-- `@hyperdx/common-utils` 0.24.1 → 0.25.0 — [changelog](https://github.com/hyperdxio/hyperdx/blob/main/packages/common-utils/CHANGELOG.md#0250)
-- `@hyperdx/hdx-eval` 0.3.0 → 0.3.1 — [changelog](https://github.com/hyperdxio/hyperdx/blob/main/packages/hdx-eval/CHANGELOG.md#031)
-- `@hyperdx/otel-collector` 2.33.0 → 2.34.0 — [changelog](https://github.com/hyperdxio/hyperdx/blob/main/packages/otel-collector/CHANGELOG.md#2340)
+- `@couchbase-traces/api` 2.33.0 → 2.34.0 — [changelog](https://github.com/hyperdxio/hyperdx/blob/main/packages/api/CHANGELOG.md#2340)
+- `@couchbase-traces/app` 2.33.0 → 2.34.0 — [changelog](https://github.com/hyperdxio/hyperdx/blob/main/packages/app/CHANGELOG.md#2340)
+- `@couchbase-traces/common-utils` 0.24.1 → 0.25.0 — [changelog](https://github.com/hyperdxio/hyperdx/blob/main/packages/common-utils/CHANGELOG.md#0250)
+- `@couchbase-traces/hdx-eval` 0.3.0 → 0.3.1 — [changelog](https://github.com/hyperdxio/hyperdx/blob/main/packages/hdx-eval/CHANGELOG.md#031)
+- `@couchbase-traces/otel-collector` 2.33.0 → 2.34.0 — [changelog](https://github.com/hyperdxio/hyperdx/blob/main/packages/otel-collector/CHANGELOG.md#2340)
 
 <!-- /hyperdx-package-list -->
 
@@ -2779,7 +2779,7 @@ could get permanently stuck in the ALERT state.
 
 <!-- hyperdx-release-notes version=2.30.1 inputs=backfill -->
 
-This release is a small patch release for `@hyperdx/app`. The headline fix
+This release is a small patch release for `@couchbase-traces/app`. The headline fix
 resolves a bug where saving changes to an existing saved-search alert silently
 did nothing; multi-select fields also gained support for freeform text entry,
 and a Docker image build issue introduced by the recent TypeScript 6 upgrade has

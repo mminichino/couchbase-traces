@@ -1,6 +1,6 @@
 import { memo, useCallback } from 'react';
 import { useController, UseControllerProps } from 'react-hook-form';
-import { SourceKind } from '@hyperdx/common-utils/dist/types';
+import { SourceKind } from '@couchbase-traces/common-utils/dist/types';
 import {
   ComboboxItem,
   Group,

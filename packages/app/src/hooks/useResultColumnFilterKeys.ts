@@ -5,23 +5,23 @@ import {
   chSqlToSelectColumns,
   ColumnMetaType,
   inferNumericColumn,
-} from '@hyperdx/common-utils/dist/clickhouse';
-import { quoteResultColumnNameIfNeeded } from '@hyperdx/common-utils/dist/core/metadata';
+} from '@couchbase-traces/common-utils/dist/clickhouse';
+import { quoteResultColumnNameIfNeeded } from '@couchbase-traces/common-utils/dist/core/metadata';
 import {
   isHistogramClassSelect,
   renderChartConfig,
-} from '@hyperdx/common-utils/dist/core/renderChartConfig';
-import { splitAndTrimWithBracket } from '@hyperdx/common-utils/dist/core/utils';
-import { isAdhocComparableDataType } from '@hyperdx/common-utils/dist/filters';
+} from '@couchbase-traces/common-utils/dist/core/renderChartConfig';
+import { splitAndTrimWithBracket } from '@couchbase-traces/common-utils/dist/core/utils';
+import { isAdhocComparableDataType } from '@couchbase-traces/common-utils/dist/filters';
 import {
   isBuilderChartConfig,
   isPromqlChartConfig,
   isRawSqlChartConfig,
-} from '@hyperdx/common-utils/dist/guards';
+} from '@couchbase-traces/common-utils/dist/guards';
 import {
   BuilderChartConfig,
   ChartConfigWithOptTimestamp,
-} from '@hyperdx/common-utils/dist/types';
+} from '@couchbase-traces/common-utils/dist/types';
 import { useQuery } from '@tanstack/react-query';
 
 import { inferGroupColumns, tryExpandConfigVariables } from '@/ChartUtils';

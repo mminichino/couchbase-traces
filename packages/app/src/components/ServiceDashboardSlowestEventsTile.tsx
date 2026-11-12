@@ -3,7 +3,7 @@ import {
   type Filter,
   pickSampleWeightExpressionProps,
   type TTraceSource,
-} from '@hyperdx/common-utils/dist/types';
+} from '@couchbase-traces/common-utils/dist/types';
 import { Text } from '@mantine/core';
 
 import { ChartCard } from '@/components/charts/ChartCard';

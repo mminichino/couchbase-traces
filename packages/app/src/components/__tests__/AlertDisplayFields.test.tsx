@@ -1,11 +1,11 @@
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
-import { zodResolver } from '@hookform/resolvers/zod';
 import {
   alertDisplayNameSchema,
   alertTagsSchema,
   MAX_TAG_LENGTH,
-} from '@hyperdx/common-utils/dist/types';
+} from '@couchbase-traces/common-utils/dist/types';
+import { zodResolver } from '@hookform/resolvers/zod';
 import { fireEvent, screen, waitFor } from '@testing-library/react';
 
 import { AlertDisplayFields } from '@/components/AlertDisplayFields';

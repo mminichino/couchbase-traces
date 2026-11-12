@@ -4,7 +4,7 @@ import {
   DisplayType,
   SourceKind,
   TLogSource,
-} from '@hyperdx/common-utils/dist/types';
+} from '@couchbase-traces/common-utils/dist/types';
 
 import { buildEventsSearchUrl, buildTableRowSearchUrl } from '@/ChartUtils';
 

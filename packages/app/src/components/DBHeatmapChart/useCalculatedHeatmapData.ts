@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import { PromqlConfigWithDateRange } from '@hyperdx/common-utils/dist/types';
+import { PromqlConfigWithDateRange } from '@couchbase-traces/common-utils/dist/types';
 
 import { gridFromSamples } from './heatmapCalculate';
 import { HeatmapScaleType } from './heatmapGrid';

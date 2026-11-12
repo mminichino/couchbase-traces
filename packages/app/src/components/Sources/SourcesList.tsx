@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/router';
 import { Badge, Separator } from '@clickhouse/click-ui';
-import { SourceKind } from '@hyperdx/common-utils/dist/types';
+import { SourceKind } from '@couchbase-traces/common-utils/dist/types';
 import {
   ActionIcon,
   Alert,

@@ -2,8 +2,8 @@ import { Control, useController } from 'react-hook-form';
 import {
   DEFAULT_PROMQL_QUERY_TYPE,
   DEFAULT_PROMQL_REDUCER,
-} from '@hyperdx/common-utils/dist/core/promql';
-import { PromqlReducer } from '@hyperdx/common-utils/dist/types';
+} from '@couchbase-traces/common-utils/dist/core/promql';
+import { PromqlReducer } from '@couchbase-traces/common-utils/dist/types';
 import {
   Anchor,
   Collapse,

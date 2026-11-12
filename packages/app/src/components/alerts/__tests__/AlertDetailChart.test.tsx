@@ -1,10 +1,10 @@
-import { Granularity } from '@hyperdx/common-utils/dist/core/utils';
+import { Granularity } from '@couchbase-traces/common-utils/dist/core/utils';
 import {
   DisplayType,
   SavedChartConfig,
   SourceKind,
   TSource,
-} from '@hyperdx/common-utils/dist/types';
+} from '@couchbase-traces/common-utils/dist/types';
 
 import {
   buildAlertChartConfig,

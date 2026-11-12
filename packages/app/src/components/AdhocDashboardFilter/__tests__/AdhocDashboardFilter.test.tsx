@@ -4,7 +4,7 @@ import {
   AdhocDashboardFilter as AdhocDashboardFilterType,
   AdhocFilterCondition,
   DashboardFilter,
-} from '@hyperdx/common-utils/dist/types';
+} from '@couchbase-traces/common-utils/dist/types';
 import { notifications } from '@mantine/notifications';
 import { screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';

@@ -5,7 +5,7 @@ import {
   PresetDashboard,
   SourceKind,
   TSource,
-} from '@hyperdx/common-utils/dist/types';
+} from '@couchbase-traces/common-utils/dist/types';
 import { omit } from 'lodash';
 import mongoose, { Types } from 'mongoose';
 

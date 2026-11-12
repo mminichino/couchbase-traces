@@ -1,5 +1,5 @@
 import React from 'react';
-import type { ChartPaletteToken } from '@hyperdx/common-utils/dist/types';
+import type { ChartPaletteToken } from '@couchbase-traces/common-utils/dist/types';
 import { screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 

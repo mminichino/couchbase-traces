@@ -1,6 +1,6 @@
 import { useCallback, useMemo, useState } from 'react';
 import { Badge, Separator } from '@clickhouse/click-ui';
-import { TMetricSource } from '@hyperdx/common-utils/dist/types';
+import { TMetricSource } from '@couchbase-traces/common-utils/dist/types';
 import { Box, Group, Loader, ScrollArea, Stack, Text } from '@mantine/core';
 import { IconChartLine } from '@tabler/icons-react';
 

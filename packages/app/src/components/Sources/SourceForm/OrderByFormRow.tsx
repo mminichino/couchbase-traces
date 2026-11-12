@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Control, useWatch } from 'react-hook-form';
-import { ClickHouseQueryError } from '@hyperdx/common-utils/dist/clickhouse';
-import { TSource } from '@hyperdx/common-utils/dist/types';
+import { ClickHouseQueryError } from '@couchbase-traces/common-utils/dist/clickhouse';
+import { TSource } from '@couchbase-traces/common-utils/dist/types';
 import { ActionIcon, Box, Flex, Text, Tooltip } from '@mantine/core';
 import { useDebouncedCallback, useDidUpdate } from '@mantine/hooks';
 import { IconCheck } from '@tabler/icons-react';

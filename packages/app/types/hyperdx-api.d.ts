@@ -3,4 +3,4 @@
 // at runtime via webpackIgnore/turbopackIgnore. This ambient declaration
 // keeps TypeScript happy regardless of whether the API package has been
 // built.
-declare module '@hyperdx/api/build/serverless';
+declare module '@couchbase-traces/api/build/serverless';

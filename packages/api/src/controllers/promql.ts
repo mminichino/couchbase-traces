@@ -1,11 +1,14 @@
 import {
   buildLogComment,
   buildQueryId,
-} from '@hyperdx/common-utils/dist/clickhouse';
-import { getCurrentQueryAttribution } from '@hyperdx/common-utils/dist/clickhouse/node';
-import type { PromqlQuery } from '@hyperdx/common-utils/dist/core/promqlChart';
-import { parseJSON } from '@hyperdx/common-utils/dist/core/utils';
-import { SourceKind, type SQLInterval } from '@hyperdx/common-utils/dist/types';
+} from '@couchbase-traces/common-utils/dist/clickhouse';
+import { getCurrentQueryAttribution } from '@couchbase-traces/common-utils/dist/clickhouse/node';
+import type { PromqlQuery } from '@couchbase-traces/common-utils/dist/core/promqlChart';
+import { parseJSON } from '@couchbase-traces/common-utils/dist/core/utils';
+import {
+  SourceKind,
+  type SQLInterval,
+} from '@couchbase-traces/common-utils/dist/types';
 import { z } from 'zod';
 
 import { ClickhouseClient } from '@/clickhouse';

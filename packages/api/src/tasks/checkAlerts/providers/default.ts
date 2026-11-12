@@ -1,11 +1,11 @@
-import PQueue from '@esm2cjs/p-queue';
-import { displayTypeSupportsRawSqlAlerts } from '@hyperdx/common-utils/dist/core/utils';
-import { isRawSqlSavedChartConfig } from '@hyperdx/common-utils/dist/guards';
+import { displayTypeSupportsRawSqlAlerts } from '@couchbase-traces/common-utils/dist/core/utils';
+import { isRawSqlSavedChartConfig } from '@couchbase-traces/common-utils/dist/guards';
 import {
   AlertChartConfig,
   RawSqlSavedChartConfig,
   Tile,
-} from '@hyperdx/common-utils/dist/types';
+} from '@couchbase-traces/common-utils/dist/types';
+import PQueue from '@esm2cjs/p-queue';
 import mongoose from 'mongoose';
 import ms from 'ms';
 import { URLSearchParams } from 'url';

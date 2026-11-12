@@ -1,5 +1,8 @@
-import { Metadata } from '@hyperdx/common-utils/dist/core/metadata';
-import { DisplayType, SourceKind } from '@hyperdx/common-utils/dist/types';
+import { Metadata } from '@couchbase-traces/common-utils/dist/core/metadata';
+import {
+  DisplayType,
+  SourceKind,
+} from '@couchbase-traces/common-utils/dist/types';
 
 import {
   DEFAULT_DATABASE,

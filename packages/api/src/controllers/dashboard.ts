@@ -1,11 +1,11 @@
-import { savedChartConfigSupportsAlerts } from '@hyperdx/common-utils/dist/core/utils';
+import { savedChartConfigSupportsAlerts } from '@couchbase-traces/common-utils/dist/core/utils';
 import {
   DashboardWithoutIdSchema,
   resolveChartPaletteToken,
   SavedChartConfig,
   Tile,
   walkRawDashboardTileColors,
-} from '@hyperdx/common-utils/dist/types';
+} from '@couchbase-traces/common-utils/dist/types';
 import { map, partition, uniq } from 'lodash';
 import { z } from 'zod';
 

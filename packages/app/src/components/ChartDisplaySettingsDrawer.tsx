@@ -4,8 +4,8 @@ import { Separator } from '@clickhouse/click-ui';
 import {
   UnknownTemplateHelperError,
   validateTemplate,
-} from '@hyperdx/common-utils/dist/core/handlebarsEnv';
-import { isTimeSeriesDisplayType } from '@hyperdx/common-utils/dist/core/utils';
+} from '@couchbase-traces/common-utils/dist/core/handlebarsEnv';
+import { isTimeSeriesDisplayType } from '@couchbase-traces/common-utils/dist/core/utils';
 import {
   ChartConfigWithDateRange,
   DisplayType,
@@ -15,7 +15,7 @@ import {
   MAX_LEGEND_TEMPLATE_LENGTH,
   NumberFormat,
   PromqlHeatmapMode,
-} from '@hyperdx/common-utils/dist/types';
+} from '@couchbase-traces/common-utils/dist/types';
 import {
   Alert,
   Box,

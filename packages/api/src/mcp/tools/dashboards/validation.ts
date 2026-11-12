@@ -1,33 +1,33 @@
-import { getPromqlSeries } from '@hyperdx/common-utils/dist/core/promql';
-import { TIME_SERIES_DISPLAY_TYPE_BY_NAME } from '@hyperdx/common-utils/dist/core/utils';
-import type { FilterForVariableDeclaration } from '@hyperdx/common-utils/dist/filters';
+import { getPromqlSeries } from '@couchbase-traces/common-utils/dist/core/promql';
+import { TIME_SERIES_DISPLAY_TYPE_BY_NAME } from '@couchbase-traces/common-utils/dist/core/utils';
+import type { FilterForVariableDeclaration } from '@couchbase-traces/common-utils/dist/filters';
 import {
   getDashboardVariableDeclarations,
   getFilterVariableName,
   isFilterVariableEnabled,
-} from '@hyperdx/common-utils/dist/filters';
+} from '@couchbase-traces/common-utils/dist/filters';
 import {
   isBuilderSavedChartConfig,
   isPromqlSavedChartConfig,
   isRawSqlSavedChartConfig,
-} from '@hyperdx/common-utils/dist/guards';
+} from '@couchbase-traces/common-utils/dist/guards';
 import {
   getSourceDependentMacrosUsed,
   hasMacro,
   INTERVAL_MACROS,
   TIME_RANGE_MACROS,
-} from '@hyperdx/common-utils/dist/macros';
+} from '@couchbase-traces/common-utils/dist/macros';
 import {
   DisplayType,
   QueryExpressionDashboardFilter,
   SavedChartConfig,
-} from '@hyperdx/common-utils/dist/types';
+} from '@couchbase-traces/common-utils/dist/types';
 import {
   getVariableReferences,
   mapBuilderVariableTemplates,
   TemplateLanguage,
   validateVariableReferencesInTemplate,
-} from '@hyperdx/common-utils/dist/variables';
+} from '@couchbase-traces/common-utils/dist/variables';
 
 import {
   convertToInternalTileConfig,

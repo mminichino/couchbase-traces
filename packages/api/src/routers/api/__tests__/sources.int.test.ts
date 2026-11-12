@@ -2,7 +2,7 @@ import {
   SourceKind,
   TSource,
   UseTextIndex,
-} from '@hyperdx/common-utils/dist/types';
+} from '@couchbase-traces/common-utils/dist/types';
 import express from 'express';
 import mongoose, { Types } from 'mongoose';
 import request from 'supertest';

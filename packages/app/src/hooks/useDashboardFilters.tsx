@@ -10,7 +10,7 @@ import {
   resolveFilterSelection,
   serializeDashboardFilterValues,
   VariableEntryValue,
-} from '@hyperdx/common-utils/dist/dashboardFilterValues';
+} from '@couchbase-traces/common-utils/dist/dashboardFilterValues';
 import {
   AdhocConditionAction,
   AdhocConditionEntry,
@@ -27,7 +27,7 @@ import {
   isFilterBroadcastEnabled,
   isQueryExpressionFilter,
   mergeAdhocConditions,
-} from '@hyperdx/common-utils/dist/filters';
+} from '@couchbase-traces/common-utils/dist/filters';
 import {
   ADHOC_FILTER_MAX_CONDITIONS,
   AdhocDashboardFilter,
@@ -37,7 +37,7 @@ import {
   BroadcastFilter,
   ChartVariable,
   DashboardFilter,
-} from '@hyperdx/common-utils/dist/types';
+} from '@couchbase-traces/common-utils/dist/types';
 
 import {
   notifyAdhocConditionTooLong,

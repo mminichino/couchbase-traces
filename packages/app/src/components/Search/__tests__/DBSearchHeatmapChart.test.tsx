@@ -3,7 +3,7 @@ import {
   BuilderChartConfigWithDateRange,
   SourceKind,
   TTraceSource,
-} from '@hyperdx/common-utils/dist/types';
+} from '@couchbase-traces/common-utils/dist/types';
 import { screen } from '@testing-library/react';
 
 import type DBDeltaChartType from '@/components/DBDeltaChart';
@@ -40,7 +40,7 @@ jest.mock('nuqs', () => ({
   useQueryStates: jest.fn(() => [mockFieldsState, jest.fn()]),
 }));
 
-jest.mock('@hyperdx/common-utils/dist/core/metadata', () => ({
+jest.mock('@couchbase-traces/common-utils/dist/core/metadata', () => ({
   tcFromSource: jest.fn(() => ({})),
 }));
 

@@ -6,17 +6,17 @@ import {
   useWatch,
 } from 'react-hook-form';
 import { Separator } from '@clickhouse/click-ui';
-import { TableConnection } from '@hyperdx/common-utils/dist/core/metadata';
+import { TableConnection } from '@couchbase-traces/common-utils/dist/core/metadata';
 import {
   hasFilterEffect,
   QUERY_EXPRESSION_FILTER_SOURCE_KINDS,
-} from '@hyperdx/common-utils/dist/filters';
+} from '@couchbase-traces/common-utils/dist/filters';
 import {
   DashboardFilter,
   MetricsDataType,
   SourceKind,
   TSource,
-} from '@hyperdx/common-utils/dist/types';
+} from '@couchbase-traces/common-utils/dist/types';
 import { Alert, Box, Group, Radio } from '@mantine/core';
 import { IconAlertTriangle } from '@tabler/icons-react';
 

@@ -2,13 +2,13 @@ import Link from 'next/link';
 import {
   ClickHouseQueryError,
   isMissingColumnError,
-} from '@hyperdx/common-utils/dist/clickhouse';
-import { tcFromSource } from '@hyperdx/common-utils/dist/core/metadata';
+} from '@couchbase-traces/common-utils/dist/clickhouse';
+import { tcFromSource } from '@couchbase-traces/common-utils/dist/core/metadata';
 import {
   isLogSource,
   isTraceSource,
   TSource,
-} from '@hyperdx/common-utils/dist/types';
+} from '@couchbase-traces/common-utils/dist/types';
 import { Alert, Anchor, Button, Code, Modal, Stack, Text } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
 import { IconAlertTriangle } from '@tabler/icons-react';

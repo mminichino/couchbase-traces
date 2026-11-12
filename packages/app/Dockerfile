@@ -21,7 +21,7 @@ COPY ./packages/common-utils ./packages/common-utils
 
 EXPOSE 8080
 
-ENTRYPOINT ["npx", "nx", "run", "@hyperdx/app:dev"]
+ENTRYPOINT ["npx", "nx", "run", "@couchbase-traces/app:dev"]
 
 
 ## common-utils-builder ############################################################################
@@ -30,7 +30,7 @@ ENTRYPOINT ["npx", "nx", "run", "@hyperdx/app:dev"]
 FROM base AS common-utils-builder
 
 COPY ./packages/common-utils ./packages/common-utils
-RUN yarn workspace @hyperdx/common-utils run build
+RUN yarn workspace @couchbase-traces/common-utils run build
 
 
 ## builder #########################################################################################
@@ -68,9 +68,9 @@ COPY ./packages/app/instrumentation.ts ./packages/app/instrumentation-client.ts 
 # fails loudly if either is missing (see next.config.mjs).
 COPY ./CHANGELOG.md ./CHANGELOG.md
 COPY ./packages/app/scripts ./packages/app/scripts
-RUN yarn workspace @hyperdx/app run build
+RUN yarn workspace @couchbase-traces/app run build
 RUN --mount=type=cache,target=/root/.yarn/berry/cache,id=yarn-cache \
-    rm -rf node_modules && yarn workspaces focus @hyperdx/app --production
+    rm -rf node_modules && yarn workspaces focus @couchbase-traces/app --production
 
 
 ## prod ############################################################################################

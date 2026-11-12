@@ -3,7 +3,7 @@ import {
   AlertThresholdType,
   DisplayType,
   SourceKind,
-} from '@hyperdx/common-utils/dist/types';
+} from '@couchbase-traces/common-utils/dist/types';
 import mongoose from 'mongoose';
 
 import {

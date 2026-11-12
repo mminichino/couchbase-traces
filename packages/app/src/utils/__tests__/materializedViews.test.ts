@@ -1,9 +1,9 @@
-import { ColumnMeta } from '@hyperdx/common-utils/dist/clickhouse';
+import { ColumnMeta } from '@couchbase-traces/common-utils/dist/clickhouse';
 import {
   Metadata,
   TableConnection,
   TableMetadata,
-} from '@hyperdx/common-utils/dist/core/metadata';
+} from '@couchbase-traces/common-utils/dist/core/metadata';
 
 import {
   getSourceTableColumn,

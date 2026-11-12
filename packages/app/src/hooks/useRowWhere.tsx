@@ -6,14 +6,14 @@ import {
   ColumnMetaType,
   convertCHDataTypeToJSType,
   JSDataType,
-} from '@hyperdx/common-utils/dist/clickhouse';
-import { quoteResultColumnNameIfNeeded } from '@hyperdx/common-utils/dist/core/metadata';
+} from '@couchbase-traces/common-utils/dist/clickhouse';
+import { quoteResultColumnNameIfNeeded } from '@couchbase-traces/common-utils/dist/core/metadata';
 import {
   aliasMapToWithClauses,
   LEFT_UTF8_HASH_CODE_POINTS,
   leftUtf8Prefix,
-} from '@hyperdx/common-utils/dist/core/utils';
-import { WithClauseSchema } from '@hyperdx/common-utils/dist/types';
+} from '@couchbase-traces/common-utils/dist/core/utils';
+import { WithClauseSchema } from '@couchbase-traces/common-utils/dist/types';
 
 const MAX_STRING_LENGTH = 512;
 

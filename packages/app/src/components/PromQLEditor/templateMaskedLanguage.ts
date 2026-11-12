@@ -2,11 +2,11 @@ import { linter } from '@codemirror/lint';
 import {
   isPromqlMacroName,
   PROMQL_MACRO_NAMES,
-} from '@hyperdx/common-utils/dist/core/promql';
+} from '@couchbase-traces/common-utils/dist/core/promql';
 import {
   scanTemplateTokens,
   VARIABLE_MACRO_NAMES,
-} from '@hyperdx/common-utils/dist/variables';
+} from '@couchbase-traces/common-utils/dist/variables';
 import {
   LanguageType,
   PromQLExtension,

@@ -1,5 +1,5 @@
 import { ZodError } from 'zod';
-import { IacImportManifestSchema } from '@hyperdx/common-utils/dist/types';
+import { IacImportManifestSchema } from '@couchbase-traces/common-utils/dist/types';
 import { useQuery } from '@tanstack/react-query';
 
 import { hdxServer } from '@/api';

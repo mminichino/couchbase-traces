@@ -1,10 +1,10 @@
-import { isBuilderSavedChartConfig } from '@hyperdx/common-utils/dist/guards';
+import { isBuilderSavedChartConfig } from '@couchbase-traces/common-utils/dist/guards';
 import {
   DisplayType,
   MetricsDataType,
   OnboardingTaskId,
   SourceKind,
-} from '@hyperdx/common-utils/dist/types';
+} from '@couchbase-traces/common-utils/dist/types';
 import { omit } from 'lodash';
 import { ObjectId } from 'mongodb';
 import request from 'supertest';

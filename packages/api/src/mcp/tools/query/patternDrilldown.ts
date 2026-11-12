@@ -1,11 +1,11 @@
-import type { Metadata } from '@hyperdx/common-utils/dist/core/metadata';
-import { renderWhereExpressionStr } from '@hyperdx/common-utils/dist/core/renderChartConfig';
-import { escapeSqlString } from '@hyperdx/common-utils/dist/core/utils';
+import type { Metadata } from '@couchbase-traces/common-utils/dist/core/metadata';
+import { renderWhereExpressionStr } from '@couchbase-traces/common-utils/dist/core/renderChartConfig';
+import { escapeSqlString } from '@couchbase-traces/common-utils/dist/core/utils';
 import type {
   ChartVariable,
   UseTextIndex,
-} from '@hyperdx/common-utils/dist/types';
-import { substituteVariables } from '@hyperdx/common-utils/dist/variables';
+} from '@couchbase-traces/common-utils/dist/types';
+import { substituteVariables } from '@couchbase-traces/common-utils/dist/variables';
 
 const PATTERN_WILDCARD = '<*>';
 

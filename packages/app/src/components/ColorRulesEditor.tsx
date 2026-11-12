@@ -1,4 +1,8 @@
 import React, { useCallback } from 'react';
+import type {
+  ChartPaletteToken,
+  ColorCondition,
+} from '@couchbase-traces/common-utils/dist/types';
 import {
   DndContext,
   DragEndEvent,
@@ -14,10 +18,6 @@ import {
   verticalListSortingStrategy,
 } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
-import type {
-  ChartPaletteToken,
-  ColorCondition,
-} from '@hyperdx/common-utils/dist/types';
 import {
   ActionIcon,
   Box,

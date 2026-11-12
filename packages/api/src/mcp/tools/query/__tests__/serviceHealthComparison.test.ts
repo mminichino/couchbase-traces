@@ -1,4 +1,4 @@
-import { getMetadata } from '@hyperdx/common-utils/dist/core/metadata';
+import { getMetadata } from '@couchbase-traces/common-utils/dist/core/metadata';
 
 import { ClickhouseClient } from '@/clickhouse';
 import { resolveComparison } from '@/mcp/tools/query/serviceHealth/comparison';

@@ -2,7 +2,7 @@ import * as React from 'react';
 import {
   isRangeThresholdType,
   WebhookService,
-} from '@hyperdx/common-utils/dist/types';
+} from '@couchbase-traces/common-utils/dist/types';
 import { Group, Tooltip, UnstyledButton, VisuallyHidden } from '@mantine/core';
 
 import api from '@/api';

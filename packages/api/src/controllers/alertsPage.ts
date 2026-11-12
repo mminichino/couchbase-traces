@@ -1,4 +1,4 @@
-import { MAX_ALERT_DISPLAY_NAME_LENGTH } from '@hyperdx/common-utils/dist/types';
+import { MAX_ALERT_DISPLAY_NAME_LENGTH } from '@couchbase-traces/common-utils/dist/types';
 import { escapeRegExp } from 'lodash';
 import type { FilterQuery } from 'mongoose';
 import { z } from 'zod';

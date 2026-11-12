@@ -25,7 +25,7 @@ import { useForm, useWatch } from 'react-hook-form';
 import {
   TableConnection,
   tcFromSource,
-} from '@hyperdx/common-utils/dist/core/metadata';
+} from '@couchbase-traces/common-utils/dist/core/metadata';
 import {
   convertToDashboardTemplate,
   displayTypeSupportsBuilderAlerts,
@@ -33,15 +33,15 @@ import {
   displayTypeSupportsRawSqlAlerts,
   Granularity,
   isTimeSeriesDisplayType,
-} from '@hyperdx/common-utils/dist/core/utils';
+} from '@couchbase-traces/common-utils/dist/core/utils';
 import {
   getAdhocFilterTargetsForTile,
   getBlockingRequiredFilterNames,
-} from '@hyperdx/common-utils/dist/dashboardFilterValues';
+} from '@couchbase-traces/common-utils/dist/dashboardFilterValues';
 import {
   getPromqlFilters,
   getSqlFilters,
-} from '@hyperdx/common-utils/dist/filters';
+} from '@couchbase-traces/common-utils/dist/filters';
 import {
   displayTypeRequiresSource,
   isBuilderChartConfig,
@@ -50,12 +50,12 @@ import {
   isPromqlSavedChartConfig,
   isRawSqlChartConfig,
   isRawSqlSavedChartConfig,
-} from '@hyperdx/common-utils/dist/guards';
+} from '@couchbase-traces/common-utils/dist/guards';
 import {
   dashboardHasUnexportableTiles,
   isImportableDashboard,
-} from '@hyperdx/common-utils/dist/iac';
-import { isMissingFiltersMacro } from '@hyperdx/common-utils/dist/macros';
+} from '@couchbase-traces/common-utils/dist/iac';
+import { isMissingFiltersMacro } from '@couchbase-traces/common-utils/dist/macros';
 import {
   AlertState,
   BroadcastFilter,
@@ -72,8 +72,8 @@ import {
   SourceKind,
   SQLInterval,
   TSource,
-} from '@hyperdx/common-utils/dist/types';
-import { filterReferencedVariables } from '@hyperdx/common-utils/dist/variables';
+} from '@couchbase-traces/common-utils/dist/types';
+import { filterReferencedVariables } from '@couchbase-traces/common-utils/dist/variables';
 import {
   ActionIcon,
   Alert,

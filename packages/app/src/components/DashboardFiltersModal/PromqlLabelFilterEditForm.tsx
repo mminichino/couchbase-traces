@@ -3,7 +3,7 @@ import {
   DashboardFilter,
   isPromqlSource,
   SourceKind,
-} from '@hyperdx/common-utils/dist/types';
+} from '@couchbase-traces/common-utils/dist/types';
 
 import { AutocompleteControlled } from '@/components/InputControlled';
 import PromQLEditor from '@/components/PromQLEditor/PromQLEditor';

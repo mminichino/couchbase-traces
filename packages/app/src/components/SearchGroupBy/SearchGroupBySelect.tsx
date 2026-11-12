@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react';
-import { splitAndTrimWithBracket } from '@hyperdx/common-utils/dist/core/utils';
-import { TSource } from '@hyperdx/common-utils/dist/types';
+import { splitAndTrimWithBracket } from '@couchbase-traces/common-utils/dist/core/utils';
+import { TSource } from '@couchbase-traces/common-utils/dist/types';
 import {
   Button,
   Group,

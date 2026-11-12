@@ -1,4 +1,4 @@
-import { MetricsDataType } from '@hyperdx/common-utils/dist/types';
+import { MetricsDataType } from '@couchbase-traces/common-utils/dist/types';
 
 import {
   GPU_UTILIZATION_NUMBER_FORMAT,

@@ -1,5 +1,5 @@
 {
-  "name": "@hyperdx/hdx-eval",
+  "name": "@couchbase-traces/hdx-eval",
   "version": "0.3.3",
   "license": "MIT",
   "private": true,

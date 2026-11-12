@@ -1,6 +1,6 @@
 import React from 'react';
 import { randomUUID } from 'crypto';
-import type { ColorCondition } from '@hyperdx/common-utils/dist/types';
+import type { ColorCondition } from '@couchbase-traces/common-utils/dist/types';
 import { screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 

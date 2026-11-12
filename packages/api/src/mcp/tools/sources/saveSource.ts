@@ -1,4 +1,4 @@
-import { SourceSchemaNoId } from '@hyperdx/common-utils/dist/types';
+import { SourceSchemaNoId } from '@couchbase-traces/common-utils/dist/types';
 import mongoose from 'mongoose';
 
 import * as config from '@/config';

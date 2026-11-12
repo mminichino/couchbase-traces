@@ -1,4 +1,4 @@
-import { DashboardContainer as DashboardContainerSchema } from '@hyperdx/common-utils/dist/types';
+import { DashboardContainer as DashboardContainerSchema } from '@couchbase-traces/common-utils/dist/types';
 import {
   ActionIcon,
   Box,

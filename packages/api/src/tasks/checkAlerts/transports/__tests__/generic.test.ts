@@ -1,7 +1,7 @@
 import {
   DEFAULT_INCIDENT_IO_WEBHOOK_BODY,
   WebhookService,
-} from '@hyperdx/common-utils/dist/types';
+} from '@couchbase-traces/common-utils/dist/types';
 import dns from 'dns';
 import { ObjectId } from 'mongodb';
 

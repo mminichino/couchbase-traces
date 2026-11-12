@@ -4,7 +4,7 @@ import {
   DateRange,
   MetricsDataType,
   TMetricSource,
-} from '@hyperdx/common-utils/dist/types';
+} from '@couchbase-traces/common-utils/dist/types';
 import { Box, Button, Group, Modal, Pill, Stack, Text } from '@mantine/core';
 
 import type { MetricCatalogEntry } from '@/utils/metricNameTree';

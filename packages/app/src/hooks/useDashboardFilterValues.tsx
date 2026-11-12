@@ -1,14 +1,14 @@
 import { useMemo } from 'react';
-import { FilterSelection } from '@hyperdx/common-utils/dist/dashboardFilterValues';
+import { FilterSelection } from '@couchbase-traces/common-utils/dist/dashboardFilterValues';
 import {
   isPrometheusLabelFilter,
   isQueryExpressionFilter,
   isStaticListFilter,
-} from '@hyperdx/common-utils/dist/filters';
+} from '@couchbase-traces/common-utils/dist/filters';
 import {
   ChartVariable,
   DashboardFilter,
-} from '@hyperdx/common-utils/dist/types';
+} from '@couchbase-traces/common-utils/dist/types';
 
 import { usePromqlLabelFilterValues } from './usePromqlLabelFilterValues';
 import { useQueriedDashboardFilterValues } from './useQueriedDashboardFilterValues';

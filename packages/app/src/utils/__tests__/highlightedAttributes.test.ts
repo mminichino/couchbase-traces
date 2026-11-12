@@ -2,7 +2,7 @@ import {
   SourceKind,
   TSource,
   TTraceSource,
-} from '@hyperdx/common-utils/dist/types';
+} from '@couchbase-traces/common-utils/dist/types';
 
 import {
   getHighlightedAttributesFromData,

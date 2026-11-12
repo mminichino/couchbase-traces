@@ -1,8 +1,8 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-11-12T20:04:41Z",
+  "generatedAt": "2026-11-12T21:24:40Z",
   "importCommit": "adcb75c16715a667ef5094b6850070d58bf29097",
-  "headCommit": "adcb75c16715a667ef5094b6850070d58bf29097",
+  "headCommit": "e926991a667fc6ab7548cf1b1fa0565e1d329d18",
   "files": [
     "branding.json",
     "datalayer.json",
@@ -16,14 +16,14 @@
     "workspaces.json"
   ],
   "counts": {
-    "trackedFiles": 2291,
+    "trackedFiles": 2307,
     "sourceFiles": 1087,
     "testFiles": 761,
     "entryPoints": 204,
     "dataLayerModules": 140,
     "unmappedConstructs": 408,
     "tables": 11,
-    "brandingHits": 15400
+    "brandingHits": 13721
   },
   "warnings": [
     {
@@ -54,7 +54,7 @@
     {
       "code": "W_UNRESOLVED_IMPORT",
       "count": 1,
-      "first": "Cannot resolve \"@hyperdx/api/build/serverless\" (packages/app/pages/api/[...all].ts)"
+      "first": "Cannot resolve \"@couchbase-traces/api/build/serverless\" (packages/app/pages/api/[...all].ts)"
     },
     {
       "code": "W_UNRESOLVED_MOUNT",

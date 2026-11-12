@@ -7,10 +7,10 @@
 
 import chalk from 'chalk';
 
-import { isRatioChartConfig } from '@hyperdx/common-utils/dist/core/renderChartConfig';
-import { isBuilderChartConfig } from '@hyperdx/common-utils/dist/guards';
-import type { SQLInterval } from '@hyperdx/common-utils/dist/types';
-import { DisplayType } from '@hyperdx/common-utils/dist/types';
+import { isRatioChartConfig } from '@couchbase-traces/common-utils/dist/core/renderChartConfig';
+import { isBuilderChartConfig } from '@couchbase-traces/common-utils/dist/guards';
+import type { SQLInterval } from '@couchbase-traces/common-utils/dist/types';
+import { DisplayType } from '@couchbase-traces/common-utils/dist/types';
 
 import type { SourceResponse } from '@/api/client';
 import {

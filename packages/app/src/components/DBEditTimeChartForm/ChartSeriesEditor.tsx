@@ -7,14 +7,14 @@ import {
   useWatch,
 } from 'react-hook-form';
 import { Badge } from '@clickhouse/click-ui';
-import { indexToSeriesRef } from '@hyperdx/common-utils/dist/core/formula';
+import { indexToSeriesRef } from '@couchbase-traces/common-utils/dist/core/formula';
 import {
   DateRange,
   isChartPaletteToken,
   MetricsDataType,
   SourceKind,
   TSource,
-} from '@hyperdx/common-utils/dist/types';
+} from '@couchbase-traces/common-utils/dist/types';
 import { ActionIcon, Flex, Group, Text, Tooltip } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
 import { IconListSearch, IconPalette } from '@tabler/icons-react';

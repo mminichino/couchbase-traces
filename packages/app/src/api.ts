@@ -6,7 +6,7 @@ import {
   buildLogComment,
   QUERY_ATTRIBUTION_HEADER,
   type QueryAttribution,
-} from '@hyperdx/common-utils/dist/clickhouse';
+} from '@couchbase-traces/common-utils/dist/clickhouse';
 import type {
   Alert,
   AlertApiResponse,
@@ -38,8 +38,11 @@ import type {
   WebhooksApiResponse,
   WebhookTestApiResponse,
   WebhookUpdateApiResponse,
-} from '@hyperdx/common-utils/dist/types';
-import { AlertSource, AlertState } from '@hyperdx/common-utils/dist/types';
+} from '@couchbase-traces/common-utils/dist/types';
+import {
+  AlertSource,
+  AlertState,
+} from '@couchbase-traces/common-utils/dist/types';
 import {
   keepPreviousData,
   useInfiniteQuery,

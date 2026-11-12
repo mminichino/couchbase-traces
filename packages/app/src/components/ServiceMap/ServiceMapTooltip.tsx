@@ -1,7 +1,7 @@
 import { useCallback } from 'react';
 import SqlString from 'sqlstring';
 import { Separator } from '@clickhouse/click-ui';
-import { TTraceSource } from '@hyperdx/common-utils/dist/types';
+import { TTraceSource } from '@couchbase-traces/common-utils/dist/types';
 import { Button, Group, Stack, Text } from '@mantine/core';
 import {
   IconActivity,

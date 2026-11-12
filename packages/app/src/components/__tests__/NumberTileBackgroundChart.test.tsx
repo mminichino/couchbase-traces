@@ -1,5 +1,8 @@
 import React from 'react';
-import { DisplayType, PromqlReducer } from '@hyperdx/common-utils/dist/types';
+import {
+  DisplayType,
+  PromqlReducer,
+} from '@couchbase-traces/common-utils/dist/types';
 import { screen } from '@testing-library/react';
 
 import { convertToPromqlSparklineChartConfig } from '@/ChartUtils';

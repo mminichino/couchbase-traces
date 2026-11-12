@@ -24,7 +24,7 @@ const REPO_URL = 'https://github.com/ClickHouse/ClickStack';
 export const changelogUrl = (version?: string) =>
   version
     ? `${REPO_URL}/blob/${encodeURIComponent(
-        `@hyperdx/app@${version}`,
+        `@couchbase-traces/app@${version}`,
       )}/CHANGELOG.md`
     : `${REPO_URL}/blob/main/CHANGELOG.md`;
 

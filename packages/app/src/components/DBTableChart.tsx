@@ -1,16 +1,16 @@
 import { useCallback, useMemo, useState } from 'react';
-import { inferNumericColumn } from '@hyperdx/common-utils/dist/clickhouse';
-import { isRatioChartConfig } from '@hyperdx/common-utils/dist/core/renderChartConfig';
+import { inferNumericColumn } from '@couchbase-traces/common-utils/dist/clickhouse';
+import { isRatioChartConfig } from '@couchbase-traces/common-utils/dist/core/renderChartConfig';
 import {
   isBuilderChartConfig,
   isPromqlChartConfig,
   isRawSqlChartConfig,
-} from '@hyperdx/common-utils/dist/guards';
+} from '@couchbase-traces/common-utils/dist/guards';
 import {
   ChartConfigWithOptTimestamp,
   ChartPaletteToken,
   ColorCondition,
-} from '@hyperdx/common-utils/dist/types';
+} from '@couchbase-traces/common-utils/dist/types';
 import { Text } from '@mantine/core';
 import { SortingState } from '@tanstack/react-table';
 

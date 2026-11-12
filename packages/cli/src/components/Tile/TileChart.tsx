@@ -12,8 +12,8 @@ import React from 'react';
 import { Box, Text } from 'ink';
 import Spinner from 'ink-spinner';
 
-import type { Metadata } from '@hyperdx/common-utils/dist/core/metadata';
-import type { Tile } from '@hyperdx/common-utils/dist/types';
+import type { Metadata } from '@couchbase-traces/common-utils/dist/core/metadata';
+import type { Tile } from '@couchbase-traces/common-utils/dist/types';
 
 import type { ProxyClickhouseClient, SourceResponse } from '@/api/client';
 import { renderTileContent } from '@/shared/tileRender';

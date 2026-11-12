@@ -2,15 +2,15 @@ import * as React from 'react';
 import Link from 'next/link';
 import { sub } from 'date-fns';
 import { Badge } from '@clickhouse/click-ui';
-import type { ResponseJSON } from '@hyperdx/common-utils/dist/clickhouse';
-import { renderChartConfig } from '@hyperdx/common-utils/dist/core/renderChartConfig';
+import type { ResponseJSON } from '@couchbase-traces/common-utils/dist/clickhouse';
+import { renderChartConfig } from '@couchbase-traces/common-utils/dist/core/renderChartConfig';
 import {
   BuilderChartConfigWithDateRange,
   DateRange,
   SearchCondition,
   SearchConditionLanguage,
   TLogSource,
-} from '@hyperdx/common-utils/dist/types';
+} from '@couchbase-traces/common-utils/dist/types';
 import { Group, Text, Timeline } from '@mantine/core';
 import { useQuery, UseQueryOptions } from '@tanstack/react-query';
 

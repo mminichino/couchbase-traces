@@ -1,7 +1,7 @@
 import { useMemo } from 'react';
 import Link from 'next/link';
 import { omit } from 'lodash';
-import { BuilderChartConfigWithDateRange } from '@hyperdx/common-utils/dist/types';
+import { BuilderChartConfigWithDateRange } from '@couchbase-traces/common-utils/dist/types';
 import type { FloatingPosition } from '@mantine/core';
 import { Box, Flex, HoverCard, Text } from '@mantine/core';
 

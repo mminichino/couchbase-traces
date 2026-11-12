@@ -2,7 +2,7 @@ import {
   BuilderChartConfigWithDateRange,
   DisplayType,
   PromqlConfigWithDateRange,
-} from '@hyperdx/common-utils/dist/types';
+} from '@couchbase-traces/common-utils/dist/types';
 
 import {
   buildHeatmapSeriesConfig,

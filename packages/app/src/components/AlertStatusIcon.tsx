@@ -1,4 +1,4 @@
-import { AlertState } from '@hyperdx/common-utils/dist/types';
+import { AlertState } from '@couchbase-traces/common-utils/dist/types';
 import { Tooltip } from '@mantine/core';
 import { IconBell, IconBellFilled } from '@tabler/icons-react';
 

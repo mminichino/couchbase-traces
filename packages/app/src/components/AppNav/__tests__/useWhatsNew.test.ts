@@ -5,7 +5,7 @@ describe('changelogUrl', () => {
     // Merging to main does not deploy, so main's changelog describes releases
     // this deployment may not be running.
     expect(changelogUrl('2.36.0')).toBe(
-      'https://github.com/ClickHouse/ClickStack/blob/%40hyperdx%2Fapp%402.36.0/CHANGELOG.md',
+      'https://github.com/ClickHouse/ClickStack/blob/%40couchbase-traces%2Fapp%402.36.0/CHANGELOG.md',
     );
   });
 

@@ -51,7 +51,7 @@ Formulas are the headline of this release. Read [the docs](https://docs.hyperdx.
 
 ### 📦 Package changelogs
 
-- @hyperdx/app@2.36.0
+- @couchbase-traces/app@2.36.0
 
 ## v2.35.0 — 2026-08-14
 

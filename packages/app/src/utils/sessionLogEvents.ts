@@ -6,7 +6,7 @@ import type {
   Filter,
   SelectList,
   TLogSource,
-} from '@hyperdx/common-utils/dist/types';
+} from '@couchbase-traces/common-utils/dist/types';
 
 import type { WithClause } from '@/hooks/useRowWhere';
 import type { PlaybarMarker } from '@/PlaybarSlider';

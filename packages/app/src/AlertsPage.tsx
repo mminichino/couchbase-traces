@@ -2,7 +2,10 @@ import * as React from 'react';
 import Head from 'next/head';
 import Link from 'next/link';
 import { parseAsBoolean, parseAsStringEnum, useQueryState } from 'nuqs';
-import { AlertSource, AlertState } from '@hyperdx/common-utils/dist/types';
+import {
+  AlertSource,
+  AlertState,
+} from '@couchbase-traces/common-utils/dist/types';
 import {
   Alert,
   Anchor,

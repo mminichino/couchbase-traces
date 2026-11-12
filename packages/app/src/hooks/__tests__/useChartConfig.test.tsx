@@ -1,8 +1,8 @@
 import React from 'react';
-import { ResponseJSON } from '@hyperdx/common-utils/dist/clickhouse';
-import { ClickhouseClient } from '@hyperdx/common-utils/dist/clickhouse/browser';
-import { DEFAULT_PROMQL_REDUCER } from '@hyperdx/common-utils/dist/core/promql';
-import { isBuilderChartConfig } from '@hyperdx/common-utils/dist/guards';
+import { ResponseJSON } from '@couchbase-traces/common-utils/dist/clickhouse';
+import { ClickhouseClient } from '@couchbase-traces/common-utils/dist/clickhouse/browser';
+import { DEFAULT_PROMQL_REDUCER } from '@couchbase-traces/common-utils/dist/core/promql';
+import { isBuilderChartConfig } from '@couchbase-traces/common-utils/dist/guards';
 import {
   ChartConfigWithDateRange,
   ChartConfigWithOptDateRange,
@@ -11,7 +11,7 @@ import {
   PromqlReducer,
   SourceKind,
   TSource,
-} from '@hyperdx/common-utils/dist/types';
+} from '@couchbase-traces/common-utils/dist/types';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { renderHook, waitFor } from '@testing-library/react';
 

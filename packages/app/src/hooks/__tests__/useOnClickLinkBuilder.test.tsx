@@ -2,7 +2,7 @@ import type {
   OnClickDashboard,
   OnClickExternal,
   OnClickSearch,
-} from '@hyperdx/common-utils/dist/types';
+} from '@couchbase-traces/common-utils/dist/types';
 import { notifications } from '@mantine/notifications';
 import { renderHook } from '@testing-library/react';
 

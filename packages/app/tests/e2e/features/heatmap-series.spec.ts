@@ -1,4 +1,4 @@
-import { DisplayType } from '@hyperdx/common-utils/dist/types';
+import { DisplayType } from '@couchbase-traces/common-utils/dist/types';
 
 import { HeatmapComponent } from '../components/HeatmapComponent';
 import { DashboardPage } from '../page-objects/DashboardPage';

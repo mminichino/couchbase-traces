@@ -21,8 +21,8 @@ import {
   TLogSource,
   TSource,
   TTraceSource,
-} from '@hyperdx/common-utils/dist/types';
-import { BuilderChartConfigWithDateRange } from '@hyperdx/common-utils/dist/types';
+} from '@couchbase-traces/common-utils/dist/types';
+import { BuilderChartConfigWithDateRange } from '@couchbase-traces/common-utils/dist/types';
 import {
   ActionIcon,
   Box,

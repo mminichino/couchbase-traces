@@ -1,14 +1,14 @@
 import {
   getStableSampleExpression,
   rankProperties,
-} from '@hyperdx/common-utils/dist/core/eventDeltas';
-import { getMetadata } from '@hyperdx/common-utils/dist/core/metadata';
-import { renderChartConfig } from '@hyperdx/common-utils/dist/core/renderChartConfig';
+} from '@couchbase-traces/common-utils/dist/core/eventDeltas';
+import { getMetadata } from '@couchbase-traces/common-utils/dist/core/metadata';
+import { renderChartConfig } from '@couchbase-traces/common-utils/dist/core/renderChartConfig';
 import {
   type BuilderChartConfigWithDateRange,
   DisplayType,
   SourceKind,
-} from '@hyperdx/common-utils/dist/types';
+} from '@couchbase-traces/common-utils/dist/types';
 import { z } from 'zod';
 
 import { ClickhouseClient } from '@/clickhouse';

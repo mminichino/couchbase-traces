@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react';
-import { FilterSelection } from '@hyperdx/common-utils/dist/dashboardFilterValues';
+import { FilterSelection } from '@couchbase-traces/common-utils/dist/dashboardFilterValues';
 import {
   getFilterBroadcastTarget,
   getFilterVariableName,
@@ -10,13 +10,13 @@ import {
   isFilterVariableEnabled,
   isQueryExpressionFilter,
   isStaticListFilter,
-} from '@hyperdx/common-utils/dist/filters';
+} from '@couchbase-traces/common-utils/dist/filters';
 import {
   AdhocFilterCondition,
   ChartVariable,
   DashboardFilter,
-} from '@hyperdx/common-utils/dist/types';
-import { isFilterSingleSelect } from '@hyperdx/common-utils/dist/variables';
+} from '@couchbase-traces/common-utils/dist/types';
+import { isFilterSingleSelect } from '@couchbase-traces/common-utils/dist/variables';
 import { Group, Stack, Text } from '@mantine/core';
 import { IconRefresh } from '@tabler/icons-react';
 

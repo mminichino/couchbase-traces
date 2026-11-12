@@ -3,15 +3,15 @@ import React from 'react';
 import {
   optimizeFacetedKeyValuesConfig,
   optimizeGetKeyValuesCalls,
-} from '@hyperdx/common-utils/dist/core/materializedViews';
-import { Metadata } from '@hyperdx/common-utils/dist/core/metadata';
-import { FilterSelection } from '@hyperdx/common-utils/dist/dashboardFilterValues';
+} from '@couchbase-traces/common-utils/dist/core/materializedViews';
+import { Metadata } from '@couchbase-traces/common-utils/dist/core/metadata';
+import { FilterSelection } from '@couchbase-traces/common-utils/dist/dashboardFilterValues';
 import {
   MetricsDataType,
   QueryExpressionDashboardFilter,
   SourceKind,
   TSource,
-} from '@hyperdx/common-utils/dist/types';
+} from '@couchbase-traces/common-utils/dist/types';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { renderHook, waitFor } from '@testing-library/react';
 
@@ -22,7 +22,7 @@ import * as sourceModule from '@/source';
 // Mock modules
 jest.mock('@/source');
 jest.mock('../useMetadata');
-jest.mock('@hyperdx/common-utils/dist/core/materializedViews', () => ({
+jest.mock('@couchbase-traces/common-utils/dist/core/materializedViews', () => ({
   optimizeGetKeyValuesCalls: jest
     .fn()
     .mockImplementation(async ({ keys, chartConfig }) => [

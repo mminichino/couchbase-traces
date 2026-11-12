@@ -13,7 +13,7 @@
  * @source packages/app/src/components/DBTraceWaterfallChart.tsx (getConfig)
  */
 
-import type { SelectList } from '@hyperdx/common-utils/dist/types';
+import type { SelectList } from '@couchbase-traces/common-utils/dist/types';
 
 import type { SourceResponse } from '@/api/client';
 import { getDisplayedTimestampValueExpression, getEventBody } from './source';

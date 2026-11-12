@@ -3,8 +3,8 @@ import _, { omit } from 'lodash';
 import { useForm } from 'react-hook-form';
 import SqlString from 'sqlstring';
 import TimestampNano from 'timestamp-nano';
-import { tcFromSource } from '@hyperdx/common-utils/dist/core/metadata';
-import { isErrorStatusCode } from '@hyperdx/common-utils/dist/core/spanPredicates';
+import { tcFromSource } from '@couchbase-traces/common-utils/dist/core/metadata';
+import { isErrorStatusCode } from '@couchbase-traces/common-utils/dist/core/spanPredicates';
 import {
   ChartConfig,
   ChartConfigWithDateRange,
@@ -13,7 +13,7 @@ import {
   TLogSource,
   TSource,
   TTraceSource,
-} from '@hyperdx/common-utils/dist/types';
+} from '@couchbase-traces/common-utils/dist/types';
 import {
   ActionIcon,
   Anchor,

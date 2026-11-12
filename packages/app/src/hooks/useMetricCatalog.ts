@@ -5,12 +5,12 @@ import {
   concatChSql,
   ResponseJSON,
   tableExpr,
-} from '@hyperdx/common-utils/dist/clickhouse';
+} from '@couchbase-traces/common-utils/dist/clickhouse';
 import {
   DateRange,
   SourceKind,
   TMetricSource,
-} from '@hyperdx/common-utils/dist/types';
+} from '@couchbase-traces/common-utils/dist/types';
 import { useQuery } from '@tanstack/react-query';
 
 import { getClickhouseClient } from '@/clickhouse';

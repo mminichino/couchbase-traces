@@ -1,7 +1,7 @@
 import {
   DashboardFilter,
   StaticListDashboardFilter,
-} from '@hyperdx/common-utils/dist/types';
+} from '@couchbase-traces/common-utils/dist/types';
 import { screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 

@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react';
-import { ClickHouseQueryError } from '@hyperdx/common-utils/dist/clickhouse';
+import { ClickHouseQueryError } from '@couchbase-traces/common-utils/dist/clickhouse';
 
 import { timeBucketByGranularity } from '@/ChartUtils';
 

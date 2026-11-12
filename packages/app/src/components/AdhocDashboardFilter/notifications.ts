@@ -2,7 +2,7 @@ import {
   ADHOC_FILTER_MAX_CONDITIONS,
   AdhocDashboardFilter,
   AdhocFilterConditionSchema,
-} from '@hyperdx/common-utils/dist/types';
+} from '@couchbase-traces/common-utils/dist/types';
 import { notifications } from '@mantine/notifications';
 
 export function notifyAdhocFilterFull(

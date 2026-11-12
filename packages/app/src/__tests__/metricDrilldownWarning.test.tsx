@@ -3,7 +3,7 @@ import {
   DisplayType,
   SourceKind,
   TMetricSource,
-} from '@hyperdx/common-utils/dist/types';
+} from '@couchbase-traces/common-utils/dist/types';
 import { notifications } from '@mantine/notifications';
 import { act, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';

@@ -3,20 +3,20 @@ import {
   extractColumnReferencesFromKey,
   filterColumnMetaByType,
   JSDataType,
-} from '@hyperdx/common-utils/dist/clickhouse';
+} from '@couchbase-traces/common-utils/dist/clickhouse';
 import {
   Metadata,
   TableConnection,
   TableMetadata,
-} from '@hyperdx/common-utils/dist/core/metadata';
+} from '@couchbase-traces/common-utils/dist/core/metadata';
 import {
   Granularity,
   splitAndTrimWithBracket,
-} from '@hyperdx/common-utils/dist/core/utils';
+} from '@couchbase-traces/common-utils/dist/core/utils';
 import {
   InternalAggregateFunction,
   MaterializedViewConfiguration,
-} from '@hyperdx/common-utils/dist/types';
+} from '@couchbase-traces/common-utils/dist/types';
 
 export const MV_AGGREGATE_FUNCTIONS = [
   'avg',

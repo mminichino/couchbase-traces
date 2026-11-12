@@ -22,7 +22,7 @@ import {
   useQueryState,
   useQueryStates,
 } from 'nuqs';
-import { DateRange } from '@hyperdx/common-utils/dist/types';
+import { DateRange } from '@couchbase-traces/common-utils/dist/types';
 
 import {
   formatTimeRangeText,

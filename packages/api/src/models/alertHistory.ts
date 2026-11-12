@@ -1,7 +1,7 @@
 import {
   AlertErrorType,
   AlertNotificationTargetTiming,
-} from '@hyperdx/common-utils/dist/types';
+} from '@couchbase-traces/common-utils/dist/types';
 import mongoose, { Schema } from 'mongoose';
 import ms from 'ms';
 

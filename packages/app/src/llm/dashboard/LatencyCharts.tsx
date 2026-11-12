@@ -1,4 +1,4 @@
-import { DisplayType } from '@hyperdx/common-utils/dist/types';
+import { DisplayType } from '@couchbase-traces/common-utils/dist/types';
 import { Grid } from '@mantine/core';
 
 import { MS_NUMBER_FORMAT } from '@/ChartUtils';

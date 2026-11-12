@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { type IacResourceRef } from '@hyperdx/common-utils/dist/iac';
+import { type IacResourceRef } from '@couchbase-traces/common-utils/dist/iac';
 import { ActionIcon, Popover, Tooltip } from '@mantine/core';
 import { IconBrandTerraform } from '@tabler/icons-react';
 

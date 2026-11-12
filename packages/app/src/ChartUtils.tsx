@@ -8,14 +8,14 @@ import {
   inferTimestampColumn,
   JSDataType,
   ResponseJSON,
-} from '@hyperdx/common-utils/dist/clickhouse';
+} from '@couchbase-traces/common-utils/dist/clickhouse';
 import {
   DEFAULT_PROMQL_REDUCER,
   getQueriedPromqlSeries,
-} from '@hyperdx/common-utils/dist/core/promql';
-import { getPromqlChartRange } from '@hyperdx/common-utils/dist/core/promqlChart';
-import { isMetricChartConfig } from '@hyperdx/common-utils/dist/core/renderChartConfig';
-import { SERIES_KEY_JOINER } from '@hyperdx/common-utils/dist/core/seriesNameTemplate';
+} from '@couchbase-traces/common-utils/dist/core/promql';
+import { getPromqlChartRange } from '@couchbase-traces/common-utils/dist/core/promqlChart';
+import { isMetricChartConfig } from '@couchbase-traces/common-utils/dist/core/renderChartConfig';
+import { SERIES_KEY_JOINER } from '@couchbase-traces/common-utils/dist/core/seriesNameTemplate';
 import {
   convertGranularityToSeconds,
   convertToCategoricalChartConfig,
@@ -27,8 +27,8 @@ import {
   Granularity,
   hasPositiveSeriesLimit,
   TIME_SERIES_DISPLAY_TYPE_BY_NAME,
-} from '@hyperdx/common-utils/dist/core/utils';
-import { isBuilderChartConfig } from '@hyperdx/common-utils/dist/guards';
+} from '@couchbase-traces/common-utils/dist/core/utils';
+import { isBuilderChartConfig } from '@couchbase-traces/common-utils/dist/guards';
 import {
   AggregateFunction as AggFnV2,
   BuilderChartConfigWithDateRange,
@@ -45,8 +45,8 @@ import {
   SQLInterval,
   TMetricSource,
   TSource,
-} from '@hyperdx/common-utils/dist/types';
-import { substituteChartConfigVariables } from '@hyperdx/common-utils/dist/variables';
+} from '@couchbase-traces/common-utils/dist/types';
+import { substituteChartConfigVariables } from '@couchbase-traces/common-utils/dist/variables';
 import { notifications } from '@mantine/notifications';
 
 import DateRangeIndicator from './components/charts/DateRangeIndicator';

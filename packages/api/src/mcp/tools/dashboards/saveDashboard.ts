@@ -2,9 +2,9 @@ import {
   getFilterVariableName,
   isFilterVariableEnabled,
   isPrometheusLabelFilter,
-} from '@hyperdx/common-utils/dist/filters';
-import { isPromqlSavedChartConfig } from '@hyperdx/common-utils/dist/guards';
-import type { DashboardContainer } from '@hyperdx/common-utils/dist/types';
+} from '@couchbase-traces/common-utils/dist/filters';
+import { isPromqlSavedChartConfig } from '@couchbase-traces/common-utils/dist/guards';
+import type { DashboardContainer } from '@couchbase-traces/common-utils/dist/types';
 import { uniq } from 'lodash';
 import mongoose from 'mongoose';
 import { z } from 'zod';

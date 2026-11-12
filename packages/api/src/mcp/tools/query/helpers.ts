@@ -2,30 +2,30 @@ import {
   ClickHouseError,
   type ClickHouseSettings,
 } from '@clickhouse/client-common';
-import { getHeatmapMode } from '@hyperdx/common-utils/dist/core/heatmap';
-import { getMetadata } from '@hyperdx/common-utils/dist/core/metadata';
-import { PromqlChartError } from '@hyperdx/common-utils/dist/core/promqlChart';
+import { getHeatmapMode } from '@couchbase-traces/common-utils/dist/core/heatmap';
+import { getMetadata } from '@couchbase-traces/common-utils/dist/core/metadata';
+import { PromqlChartError } from '@couchbase-traces/common-utils/dist/core/promqlChart';
 import {
   convertToCategoricalChartConfig,
   getFirstTimestampValueExpression,
   isTimeSeriesDisplayType,
   splitAndTrimWithBracket,
-} from '@hyperdx/common-utils/dist/core/utils';
+} from '@couchbase-traces/common-utils/dist/core/utils';
 import {
   isBuilderSavedChartConfig,
   isPromqlSavedChartConfig,
-} from '@hyperdx/common-utils/dist/guards';
-import { UnknownVariableError } from '@hyperdx/common-utils/dist/macroErrors';
+} from '@couchbase-traces/common-utils/dist/guards';
+import { UnknownVariableError } from '@couchbase-traces/common-utils/dist/macroErrors';
 import type {
   ChartConfigWithDateRange,
   ChartVariable,
   MetricTable,
-} from '@hyperdx/common-utils/dist/types';
+} from '@couchbase-traces/common-utils/dist/types';
 import {
   DisplayType,
   SourceKind,
   UseTextIndex,
-} from '@hyperdx/common-utils/dist/types';
+} from '@couchbase-traces/common-utils/dist/types';
 import { ObjectId } from 'mongodb';
 import ms from 'ms';
 

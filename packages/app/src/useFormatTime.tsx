@@ -1,5 +1,5 @@
 import React from 'react';
-import { formatDate } from '@hyperdx/common-utils/dist/core/utils';
+import { formatDate } from '@couchbase-traces/common-utils/dist/core/utils';
 
 import { useDisplayTimeZone } from './useDisplayTimeZone';
 import { useUserPreferences } from './useUserPreferences';

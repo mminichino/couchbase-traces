@@ -3,7 +3,7 @@ import {
   isTraceSource,
   QuerySettings,
   TSource,
-} from '@hyperdx/common-utils/dist/types';
+} from '@couchbase-traces/common-utils/dist/types';
 
 import { useLocalStorage } from '@/utils';
 

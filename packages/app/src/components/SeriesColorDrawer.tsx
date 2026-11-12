@@ -3,7 +3,7 @@ import { Controller, useForm, useWatch } from 'react-hook-form';
 import type {
   ChartPaletteToken,
   ColorCondition,
-} from '@hyperdx/common-utils/dist/types';
+} from '@couchbase-traces/common-utils/dist/types';
 import { Button, Drawer, Group, Stack, Text } from '@mantine/core';
 
 import {

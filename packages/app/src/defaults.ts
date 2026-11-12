@@ -1,4 +1,4 @@
-import type { BuilderChartConfigWithDateRange } from '@hyperdx/common-utils/dist/types';
+import type { BuilderChartConfigWithDateRange } from '@couchbase-traces/common-utils/dist/types';
 
 // Limit defaults
 export const DEFAULT_SEARCH_ROW_LIMIT = 200;

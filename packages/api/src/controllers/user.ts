@@ -1,5 +1,5 @@
-import type { OnboardingTaskId } from '@hyperdx/common-utils/dist/types';
-import { isPersistableUserId as isPersistableUserIdHex } from '@hyperdx/common-utils/dist/types';
+import type { OnboardingTaskId } from '@couchbase-traces/common-utils/dist/types';
+import { isPersistableUserId as isPersistableUserIdHex } from '@couchbase-traces/common-utils/dist/types';
 import opentelemetry from '@opentelemetry/api';
 import crypto from 'crypto';
 import mongoose from 'mongoose';

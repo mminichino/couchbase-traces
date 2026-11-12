@@ -1,4 +1,7 @@
-import { SourceKind, TLogSource } from '@hyperdx/common-utils/dist/types';
+import {
+  SourceKind,
+  TLogSource,
+} from '@couchbase-traces/common-utils/dist/types';
 import { renderHook } from '@testing-library/react';
 
 import {

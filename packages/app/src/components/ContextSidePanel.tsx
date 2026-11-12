@@ -2,14 +2,14 @@ import { use, useCallback, useEffect, useMemo, useState } from 'react';
 import ms from 'ms';
 import { ErrorBoundary } from 'react-error-boundary';
 import { useForm, useWatch } from 'react-hook-form';
-import { tcFromSource } from '@hyperdx/common-utils/dist/core/metadata';
+import { tcFromSource } from '@couchbase-traces/common-utils/dist/core/metadata';
 import {
   BuilderChartConfigWithDateRange,
   isLogSource,
   isTraceSource,
   SourceKind,
   TSource,
-} from '@hyperdx/common-utils/dist/types';
+} from '@couchbase-traces/common-utils/dist/types';
 import { Flex, Group, ScrollArea, SegmentedControl, Text } from '@mantine/core';
 import { useDebouncedValue } from '@mantine/hooks';
 

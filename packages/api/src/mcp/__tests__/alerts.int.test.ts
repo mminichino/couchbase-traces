@@ -1,7 +1,7 @@
 import {
   MAX_ALERT_CHANNELS,
   SourceKind,
-} from '@hyperdx/common-utils/dist/types';
+} from '@couchbase-traces/common-utils/dist/types';
 import { Client } from '@modelcontextprotocol/sdk/client/index.js';
 import mongoose from 'mongoose';
 

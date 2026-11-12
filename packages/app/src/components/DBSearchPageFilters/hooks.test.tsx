@@ -1,11 +1,11 @@
 /* eslint-disable @typescript-eslint/no-unsafe-type-assertion */
 import React from 'react';
 import { enableMapSet } from 'immer';
-import { FilterState } from '@hyperdx/common-utils/dist/filters';
+import { FilterState } from '@couchbase-traces/common-utils/dist/filters';
 import {
   BuilderChartConfigWithDateRange,
   SourceKind,
-} from '@hyperdx/common-utils/dist/types';
+} from '@couchbase-traces/common-utils/dist/types';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { act, renderHook, waitFor } from '@testing-library/react';
 

@@ -1,7 +1,7 @@
 import {
   convertCHDataTypeToJSType,
   JSDataType,
-} from '@hyperdx/common-utils/dist/clickhouse';
+} from '@couchbase-traces/common-utils/dist/clickhouse';
 
 import { getAdhocCellCondition } from '@/components/DBTable/adhocCellCondition';
 

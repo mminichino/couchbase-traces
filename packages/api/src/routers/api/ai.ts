@@ -1,7 +1,7 @@
 import {
   AssistantLineTableConfigSchema,
   SourceKind,
-} from '@hyperdx/common-utils/dist/types';
+} from '@couchbase-traces/common-utils/dist/types';
 import { APICallError, generateText, Output } from 'ai';
 import express from 'express';
 import { z } from 'zod';

@@ -5,7 +5,7 @@ import {
   ColumnMetaType,
   filterColumnMetaByType,
   JSDataType,
-} from '@hyperdx/common-utils/dist/clickhouse';
+} from '@couchbase-traces/common-utils/dist/clickhouse';
 import {
   Field,
   FieldsCondition,
@@ -13,17 +13,17 @@ import {
   parseKeyPath,
   TableConnection,
   TableMetadata,
-} from '@hyperdx/common-utils/dist/core/metadata';
+} from '@couchbase-traces/common-utils/dist/core/metadata';
 import {
   FilterState,
   serializeFilterState,
-} from '@hyperdx/common-utils/dist/filters';
+} from '@couchbase-traces/common-utils/dist/filters';
 import {
   BuilderChartConfigWithDateRange,
   isLogSource,
   isTraceSource,
   MetadataMaterializedViews,
-} from '@hyperdx/common-utils/dist/types';
+} from '@couchbase-traces/common-utils/dist/types';
 import {
   keepPreviousData,
   useQuery,

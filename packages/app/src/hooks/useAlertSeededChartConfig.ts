@@ -1,5 +1,5 @@
 import { useEffect, useRef } from 'react';
-import { SavedChartConfig } from '@hyperdx/common-utils/dist/types';
+import { SavedChartConfig } from '@couchbase-traces/common-utils/dist/types';
 import { notifications } from '@mantine/notifications';
 
 import api from '@/api';

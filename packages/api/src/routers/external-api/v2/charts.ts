@@ -1,11 +1,11 @@
-import { getMetadata } from '@hyperdx/common-utils/dist/core/metadata';
-import { Granularity } from '@hyperdx/common-utils/dist/core/utils';
+import { getMetadata } from '@couchbase-traces/common-utils/dist/core/metadata';
+import { Granularity } from '@couchbase-traces/common-utils/dist/core/utils';
 import {
   ChartConfigWithOptDateRange,
   DisplayType,
   pickSampleWeightExpressionProps,
   SourceKind,
-} from '@hyperdx/common-utils/dist/types';
+} from '@couchbase-traces/common-utils/dist/types';
 import express from 'express';
 import _ from 'lodash';
 import { z } from 'zod';

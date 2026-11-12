@@ -1,6 +1,9 @@
 import { useEffect, useRef } from 'react';
 import { useWatch } from 'react-hook-form';
-import { MetricsDataType, SourceKind } from '@hyperdx/common-utils/dist/types';
+import {
+  MetricsDataType,
+  SourceKind,
+} from '@couchbase-traces/common-utils/dist/types';
 import { Stack, Text } from '@mantine/core';
 import { notifications } from '@mantine/notifications';
 

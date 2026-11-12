@@ -1,0 +1,8 @@
+{
+  "name": "@hyperdx/cli",
+  "version": "2.0.0",
+  "bin": { "hdx": "./dist/cli.js" },
+  "dependencies": {
+    "@hyperdx/common-utils": "^0.34.0"
+  }
+}

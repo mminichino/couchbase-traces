@@ -1,9 +1,9 @@
-import { objectHash } from '@hyperdx/common-utils/dist/core/utils';
+import { objectHash } from '@couchbase-traces/common-utils/dist/core/utils';
 import {
   getDefaultWebhookBody,
   WebhookService,
   WebhookTemplateVariable,
-} from '@hyperdx/common-utils/dist/types';
+} from '@couchbase-traces/common-utils/dist/types';
 import Handlebars from 'handlebars';
 import _ from 'lodash';
 import { performance } from 'perf_hooks';

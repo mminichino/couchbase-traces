@@ -9,7 +9,7 @@ import {
   SourceKind,
   TraceSourceSchema,
   UseTextIndex,
-} from '@hyperdx/common-utils/dist/types';
+} from '@couchbase-traces/common-utils/dist/types';
 import mongoose, { Schema } from 'mongoose';
 import z from 'zod';
 
@@ -173,7 +173,7 @@ export const LogSource = Source.discriminator<ILogSource>(
       type: String,
       enum: Object.values(UseTextIndex),
     },
-    /** @deprecated See LogSourceSchema in @hyperdx/common-utils/types.ts. */
+    /** @deprecated See LogSourceSchema in @couchbase-traces/common-utils/types.ts. */
     tableFilterExpression: String,
     highlightedTraceAttributeExpressions: {
       type: mongoose.Schema.Types.Array,
@@ -273,7 +273,7 @@ const MetricTablesSchema = new Schema(
   { _id: false },
 );
 
-// See MinAutoGranularitySchema in @hyperdx/common-utils, shared by the metric
+// See MinAutoGranularitySchema in @couchbase-traces/common-utils, shared by the metric
 // and PromQL sources. The setter mirrors that schema's '' -> undefined
 // preprocess, since validateRequest doesn't write the parsed body back to
 // req.body.

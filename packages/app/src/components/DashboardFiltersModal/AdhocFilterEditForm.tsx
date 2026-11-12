@@ -1,13 +1,13 @@
 import { useMemo } from 'react';
 import { Controller, UseFormSetValue, useWatch } from 'react-hook-form';
 import { Separator } from '@clickhouse/click-ui';
-import { tcFromSource } from '@hyperdx/common-utils/dist/core/metadata';
-import { getAdhocFilterSourceKinds } from '@hyperdx/common-utils/dist/filters';
+import { tcFromSource } from '@couchbase-traces/common-utils/dist/core/metadata';
+import { getAdhocFilterSourceKinds } from '@couchbase-traces/common-utils/dist/filters';
 import {
   AdhocFilterSourceType,
   DashboardFilter,
   SourceKind,
-} from '@hyperdx/common-utils/dist/types';
+} from '@couchbase-traces/common-utils/dist/types';
 import { Box, SegmentedControl } from '@mantine/core';
 
 import { CheckBoxControlled } from '@/components/InputControlled';

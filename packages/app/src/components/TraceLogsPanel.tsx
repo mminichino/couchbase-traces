@@ -1,10 +1,10 @@
 import { use, useCallback, useMemo } from 'react';
 import { useRouter } from 'next/router';
-import { buildSearchChartConfig } from '@hyperdx/common-utils/dist/core/searchChartConfig';
+import { buildSearchChartConfig } from '@couchbase-traces/common-utils/dist/core/searchChartConfig';
 import {
   BuilderChartConfigWithDateRange,
   SourceKind,
-} from '@hyperdx/common-utils/dist/types';
+} from '@couchbase-traces/common-utils/dist/types';
 import { Button, Flex, Group } from '@mantine/core';
 import { IconExternalLink, IconLogs } from '@tabler/icons-react';
 

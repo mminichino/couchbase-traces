@@ -114,11 +114,11 @@ const nextConfig = {
     '@clickhouse/clickstack-node',
     // Outside of Vercel preview deployments, the `/api/[...all]` catch-all
     // proxies to a separately-deployed API service and never imports the
-    // `@hyperdx/api` package at runtime. Mark it (and its subpaths) as a
+    // `@couchbase-traces/api` package at runtime. Mark it (and its subpaths) as a
     // CommonJS external so production app builds (Docker fullstack image,
     // standalone Next output) stay byte-for-byte equivalent to today and
     // do not pull in passport-saml, mongoose, AWS SDK, etc.
-    ...(process.env.HDX_PREVIEW_INLINE_API !== 'true' ? ['@hyperdx/api'] : []),
+    ...(process.env.HDX_PREVIEW_INLINE_API !== 'true' ? ['@couchbase-traces/api'] : []),
   ],
   typescript: {
     tsconfigPath: 'tsconfig.build.json',
@@ -140,8 +140,8 @@ const nextConfig = {
           ...(config.externals ?? []),
           ({ request }, callback) => {
             if (
-              request === '@hyperdx/api' ||
-              request?.startsWith?.('@hyperdx/api/')
+              request === '@couchbase-traces/api' ||
+              request?.startsWith?.('@couchbase-traces/api/')
             ) {
               return callback(null, `commonjs ${request}`);
             }

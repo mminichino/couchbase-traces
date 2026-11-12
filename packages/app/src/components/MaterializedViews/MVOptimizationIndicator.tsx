@@ -4,7 +4,7 @@ import {
   BuilderChartConfigWithOptDateRange,
   SourceKind,
   TSource,
-} from '@hyperdx/common-utils/dist/types';
+} from '@couchbase-traces/common-utils/dist/types';
 import { ActionIcon, Tooltip } from '@mantine/core';
 import { IconBolt, IconBoltOff } from '@tabler/icons-react';
 

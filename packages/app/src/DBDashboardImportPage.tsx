@@ -14,8 +14,7 @@ import { uniq } from 'lodash';
 import { parseAsString, useQueryState } from 'nuqs';
 import { Controller, useForm, useWatch } from 'react-hook-form';
 import { z } from 'zod';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { convertToDashboardDocument } from '@hyperdx/common-utils/dist/core/utils';
+import { convertToDashboardDocument } from '@couchbase-traces/common-utils/dist/core/utils';
 import {
   type DashboardFilterQueryIssue,
   getAdhocFilterSourceKinds,
@@ -28,11 +27,11 @@ import {
   validateDashboardFilterQueries,
   validateSavedFilterValues,
   validateSavedQuery,
-} from '@hyperdx/common-utils/dist/filters';
+} from '@couchbase-traces/common-utils/dist/filters';
 import {
   displayTypeRequiresSource,
   isRawSqlSavedChartConfig,
-} from '@hyperdx/common-utils/dist/guards';
+} from '@couchbase-traces/common-utils/dist/guards';
 import {
   type DashboardFilter,
   type DashboardTemplate,
@@ -46,7 +45,8 @@ import {
   SavedChartConfig,
   SourceKind,
   TSource,
-} from '@hyperdx/common-utils/dist/types';
+} from '@couchbase-traces/common-utils/dist/types';
+import { zodResolver } from '@hookform/resolvers/zod';
 import {
   Anchor,
   Breadcrumbs,

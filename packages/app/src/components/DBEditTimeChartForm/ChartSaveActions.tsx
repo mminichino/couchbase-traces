@@ -1,5 +1,5 @@
 import { UseFormHandleSubmit } from 'react-hook-form';
-import { SavedChartConfig } from '@hyperdx/common-utils/dist/types';
+import { SavedChartConfig } from '@couchbase-traces/common-utils/dist/types';
 import { Button, Group } from '@mantine/core';
 
 import { ChartEditorFormState } from '@/components/ChartEditor/types';

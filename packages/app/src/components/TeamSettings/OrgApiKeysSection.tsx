@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Badge, Separator } from '@clickhouse/click-ui';
-import type { OrgApiKeyApiResponse } from '@hyperdx/common-utils/dist/types';
+import type { OrgApiKeyApiResponse } from '@couchbase-traces/common-utils/dist/types';
 import { Box, Button, Card, Group, Table, Text } from '@mantine/core';
 import { notifications } from '@mantine/notifications';
 

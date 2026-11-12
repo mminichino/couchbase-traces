@@ -2,7 +2,7 @@ import * as React from 'react';
 import Link from 'next/link';
 import ReactMarkdown from 'react-markdown';
 import { Badge } from '@clickhouse/click-ui';
-import { AlertSource } from '@hyperdx/common-utils/dist/types';
+import { AlertSource } from '@couchbase-traces/common-utils/dist/types';
 import {
   Collapse,
   Flex,

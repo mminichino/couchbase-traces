@@ -141,6 +141,10 @@ function checkPreconditions(root) {
   }
   const headCommit = git(root, ['rev-parse', 'HEAD']).trim();
 
+  // Phase 3 rewrites source on purpose; once its plan exists, the tree is expected to differ
+  // from the import commit and the scan describes the rebranded source.
+  if (existsSync(join(root, 'port/state/rebrand/plan.json'))) return { importCommit, headCommit };
+
   const changed = git(root, ['diff', '--name-only', '-z', importCommit, 'HEAD']).split('\0');
   const entries = git(root, ['status', '--porcelain', '-z', '--untracked-files=no']).split('\0');
   /** @type {string[]} */

@@ -4,21 +4,21 @@ import {
   GetKeyValueCall,
   optimizeFacetedKeyValuesConfig,
   optimizeGetKeyValuesCalls,
-} from '@hyperdx/common-utils/dist/core/materializedViews';
-import { FilterSelection } from '@hyperdx/common-utils/dist/dashboardFilterValues';
+} from '@couchbase-traces/common-utils/dist/core/materializedViews';
+import { FilterSelection } from '@couchbase-traces/common-utils/dist/dashboardFilterValues';
 import {
   FilterState,
   ResolvedFilterValuesQuery,
   resolveFilterValuesWhere,
   serializeFilterState,
-} from '@hyperdx/common-utils/dist/filters';
+} from '@couchbase-traces/common-utils/dist/filters';
 import {
   BuilderChartConfigWithDateRange,
   ChartVariable,
   isLogSource,
   isTraceSource,
   QueryExpressionDashboardFilter,
-} from '@hyperdx/common-utils/dist/types';
+} from '@couchbase-traces/common-utils/dist/types';
 import {
   useQueries,
   useQueryClient,

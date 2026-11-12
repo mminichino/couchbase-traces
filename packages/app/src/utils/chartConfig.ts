@@ -1,6 +1,6 @@
-import { getPromqlSeries } from '@hyperdx/common-utils/dist/core/promql';
-import { isPromqlChartConfig } from '@hyperdx/common-utils/dist/guards';
-import { ChartConfigWithOptDateRange } from '@hyperdx/common-utils/dist/types';
+import { getPromqlSeries } from '@couchbase-traces/common-utils/dist/core/promql';
+import { isPromqlChartConfig } from '@couchbase-traces/common-utils/dist/guards';
+import { ChartConfigWithOptDateRange } from '@couchbase-traces/common-utils/dist/types';
 
 /**
  * A config without the fields that only shape the cached response on the

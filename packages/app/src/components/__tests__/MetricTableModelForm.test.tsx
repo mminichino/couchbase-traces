@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
-import { SourceKind, TSource } from '@hyperdx/common-utils/dist/types';
+import { SourceKind, TSource } from '@couchbase-traces/common-utils/dist/types';
 import { MantineProvider } from '@mantine/core';
 import { render, waitFor } from '@testing-library/react';
 

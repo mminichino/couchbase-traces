@@ -1,5 +1,5 @@
 import { useCallback, useState } from 'react';
-import { ClickHouseQueryError } from '@hyperdx/common-utils/dist/clickhouse';
+import { ClickHouseQueryError } from '@couchbase-traces/common-utils/dist/clickhouse';
 import { useDebouncedCallback, useDidUpdate } from '@mantine/hooks';
 
 import { useExplainQuery } from '@/hooks/useExplainQuery';

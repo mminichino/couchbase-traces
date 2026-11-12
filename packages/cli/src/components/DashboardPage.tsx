@@ -11,7 +11,7 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { Box, Text, useInput, useStdout } from 'ink';
 import Spinner from 'ink-spinner';
 
-import type { Tile } from '@hyperdx/common-utils/dist/types';
+import type { Tile } from '@couchbase-traces/common-utils/dist/types';
 
 import type {
   ApiClient,

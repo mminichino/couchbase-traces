@@ -5,7 +5,7 @@ import {
   isFilterGlobalRequirement,
   isFilterRequired,
   isFilterVariableEnabled,
-} from '@hyperdx/common-utils/dist/filters';
+} from '@couchbase-traces/common-utils/dist/filters';
 import {
   AdhocDashboardFilter,
   DashboardFilter,
@@ -13,8 +13,8 @@ import {
   PromqlLabelDashboardFilter,
   QueryExpressionDashboardFilter,
   StaticListDashboardFilter,
-} from '@hyperdx/common-utils/dist/types';
-import { isFilterSingleSelect } from '@hyperdx/common-utils/dist/variables';
+} from '@couchbase-traces/common-utils/dist/types';
+import { isFilterSingleSelect } from '@couchbase-traces/common-utils/dist/variables';
 
 import { getStoredLanguage } from '@/components/SearchInput/SearchWhereInput';
 

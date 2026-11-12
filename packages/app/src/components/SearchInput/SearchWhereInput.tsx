@@ -1,5 +1,5 @@
 import { FieldPath, useController, UseControllerProps } from 'react-hook-form';
-import { TableConnectionChoice } from '@hyperdx/common-utils/dist/core/metadata';
+import { TableConnectionChoice } from '@couchbase-traces/common-utils/dist/core/metadata';
 import { ActionIcon, Box, Flex, Tooltip } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
 import { IconHelp } from '@tabler/icons-react';

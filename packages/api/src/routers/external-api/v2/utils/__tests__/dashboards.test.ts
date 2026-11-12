@@ -1,14 +1,14 @@
 import {
   validateDashboardContainersStructure,
   validateDashboardTileContainerRefs,
-} from '@hyperdx/common-utils/dist/dashboardValidation';
-import { isBuilderSavedChartConfig } from '@hyperdx/common-utils/dist/guards';
+} from '@couchbase-traces/common-utils/dist/dashboardValidation';
+import { isBuilderSavedChartConfig } from '@couchbase-traces/common-utils/dist/guards';
 import {
   DisplayType,
   MetricsDataType,
   PromqlReducer,
   PromqlSavedChartConfig,
-} from '@hyperdx/common-utils/dist/types';
+} from '@couchbase-traces/common-utils/dist/types';
 import mongoose from 'mongoose';
 import { z } from 'zod';
 

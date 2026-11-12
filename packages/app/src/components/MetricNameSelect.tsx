@@ -1,10 +1,10 @@
 import { useMemo, useState } from 'react';
-import { DEFAULT_METRIC_NAMES_LIMIT } from '@hyperdx/common-utils/dist/core/metadata';
+import { DEFAULT_METRIC_NAMES_LIMIT } from '@couchbase-traces/common-utils/dist/core/metadata';
 import {
   DateRange,
   MetricsDataType,
   TMetricSource,
-} from '@hyperdx/common-utils/dist/types';
+} from '@couchbase-traces/common-utils/dist/types';
 import { Loader, Select } from '@mantine/core';
 import { useDebouncedValue } from '@mantine/hooks';
 

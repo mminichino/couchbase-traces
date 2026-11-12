@@ -1,4 +1,4 @@
-import type { TTraceSource } from '@hyperdx/common-utils/dist/types';
+import type { TTraceSource } from '@couchbase-traces/common-utils/dist/types';
 
 import type { FieldExpressionGenerator } from '@/hooks/useFieldExpressionGenerator';
 import { SESSION_TABLE_EXPRESSIONS } from '@/source';

@@ -8,7 +8,7 @@
  * @source packages/app/src/components/DBTableChart.tsx (ClickHouseQueryError handling)
  */
 
-import { ClickHouseQueryError } from '@hyperdx/common-utils/dist/clickhouse';
+import { ClickHouseQueryError } from '@couchbase-traces/common-utils/dist/clickhouse';
 
 export type ErrorSeverity = 'error' | 'warning';
 

@@ -4,8 +4,11 @@ import {
   renderOnClickDashboard,
   renderOnClickExternal,
   renderOnClickSearch,
-} from '@hyperdx/common-utils/dist/core/linkUrlBuilder';
-import { isSearchableSource, OnClick } from '@hyperdx/common-utils/dist/types';
+} from '@couchbase-traces/common-utils/dist/core/linkUrlBuilder';
+import {
+  isSearchableSource,
+  OnClick,
+} from '@couchbase-traces/common-utils/dist/types';
 import { notifications } from '@mantine/notifications';
 
 import { useDashboards } from '@/dashboard';

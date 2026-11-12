@@ -2,11 +2,11 @@ import SHA256 from 'crypto-js/sha256';
 import {
   ColumnMetaType,
   JSDataType,
-} from '@hyperdx/common-utils/dist/clickhouse';
+} from '@couchbase-traces/common-utils/dist/clickhouse';
 import {
   LEFT_UTF8_HASH_CODE_POINTS,
   leftUtf8Prefix,
-} from '@hyperdx/common-utils/dist/core/utils';
+} from '@couchbase-traces/common-utils/dist/core/utils';
 import { renderHook } from '@testing-library/react';
 
 import useRowWhere, { processRowToWhereClause } from '@/hooks/useRowWhere';
@@ -100,8 +100,8 @@ function columnMapForSha256TestCase(testCase: Sha256TestCase) {
 }
 
 // Mock convertCHDataTypeToJSType
-jest.mock('@hyperdx/common-utils/dist/clickhouse', () => ({
-  ...jest.requireActual('@hyperdx/common-utils/dist/clickhouse'),
+jest.mock('@couchbase-traces/common-utils/dist/clickhouse', () => ({
+  ...jest.requireActual('@couchbase-traces/common-utils/dist/clickhouse'),
   convertCHDataTypeToJSType: jest.fn((type: string) => {
     const typeMap: Record<string, JSDataType> = {
       String: JSDataType.String,

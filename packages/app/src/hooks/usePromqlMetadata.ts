@@ -1,4 +1,4 @@
-import { QueryAttribution } from '@hyperdx/common-utils/dist/clickhouse';
+import { QueryAttribution } from '@couchbase-traces/common-utils/dist/clickhouse';
 import { useQuery } from '@tanstack/react-query';
 
 import { prometheusApi } from '@/api';

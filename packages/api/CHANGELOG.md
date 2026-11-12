@@ -1,4 +1,4 @@
-# @hyperdx/api
+# @couchbase-traces/api
 
 ## 2.44.0
 
@@ -149,7 +149,7 @@
 - Updated dependencies [0a5237e6c]
 - Updated dependencies [78143c81a]
 - Updated dependencies [b1d4e60f8]
-  - @hyperdx/common-utils@0.34.0
+  - @couchbase-traces/common-utils@0.34.0
 
 ## 2.43.1
 
@@ -170,7 +170,7 @@
 - Updated dependencies [e88f71695]
 - Updated dependencies [e5ba5dfde]
 - Updated dependencies [0212c7bd3]
-  - @hyperdx/common-utils@0.33.0
+  - @couchbase-traces/common-utils@0.33.0
 
 ## 2.42.0
 
@@ -278,7 +278,7 @@
 - Updated dependencies [28168ae6]
 - Updated dependencies [807cd9a5]
 - Updated dependencies [cfa865bd]
-  - @hyperdx/common-utils@0.32.0
+  - @couchbase-traces/common-utils@0.32.0
 
 ## 2.41.0
 
@@ -412,7 +412,7 @@
 - Updated dependencies [0d2425d5]
 - Updated dependencies [68082b67]
 - Updated dependencies [1ce8b88e]
-  - @hyperdx/common-utils@0.31.0
+  - @couchbase-traces/common-utils@0.31.0
 
 ## 2.40.0
 
@@ -474,7 +474,7 @@
 - Updated dependencies [23423c13]
 - Updated dependencies [19182e7e]
 - Updated dependencies [d9e2c58b]
-  - @hyperdx/common-utils@0.30.0
+  - @couchbase-traces/common-utils@0.30.0
 
 ## 2.39.1
 
@@ -565,7 +565,7 @@
 - Updated dependencies [bef61fbc]
 - Updated dependencies [b4840573]
 - Updated dependencies [972634d2]
-  - @hyperdx/common-utils@0.29.0
+  - @couchbase-traces/common-utils@0.29.0
 
 ## 2.38.0
 
@@ -673,7 +673,7 @@
 - Updated dependencies [27360036]
 - Updated dependencies [c7965927]
 - Updated dependencies [cff6388c]
-  - @hyperdx/common-utils@0.28.1
+  - @couchbase-traces/common-utils@0.28.1
 
 ## 2.37.0
 
@@ -704,7 +704,7 @@
 - Updated dependencies [7662fae8]
 - Updated dependencies [93b51b13]
 - Updated dependencies [64326d09]
-  - @hyperdx/common-utils@0.28.0
+  - @couchbase-traces/common-utils@0.28.0
 
 ## 2.36.0
 
@@ -777,7 +777,7 @@
 - Updated dependencies [e153f46d]
 - Updated dependencies [9f640a61]
 - Updated dependencies [ea127077]
-  - @hyperdx/common-utils@0.27.0
+  - @couchbase-traces/common-utils@0.27.0
 
 ## 2.35.0
 
@@ -843,7 +843,7 @@
   the noisy `@typescript-eslint/no-empty-function` rule in app, and lowered each
   package's `--max-warnings` ceiling so the counts can't regress. Behavior is
   unchanged.
-- 582f3940: Show password requirements on the Join Team page and align the checklist with the server policy. When a user accepts a team invite and sets their password, the same live password policy checklist used on the auth/register page is now displayed, so users no longer have to guess the required length, casing, number, and special-character rules. The checklist previously diverged from the server in two ways that could show all-green checks for a password the server rejects: its special-character rule used a broader pattern than the backend (so a password whose only special character was e.g. `~`, a backtick, or a space passed the checklist but failed on submit), and it never surfaced the 72-character maximum (so an over-long password passed the checklist but failed on submit). The length rule now enforces both the minimum and maximum, and the password policy checks (length bounds, casing, number, and the accepted special-character set) live in a single shared module in `@hyperdx/common-utils` used by both the frontend checklist and the backend `passwordSchema`, so they can no longer drift. Finally, when the server rejects a password the Join Team page now shows the specific reason(s) it failed (e.g. "Password must include at least one special character (!@#$%^&\*(),.?\":{}|<>;-+=)") instead of a generic "Password is invalid", so users are told exactly what to change — including which special characters are accepted.
+- 582f3940: Show password requirements on the Join Team page and align the checklist with the server policy. When a user accepts a team invite and sets their password, the same live password policy checklist used on the auth/register page is now displayed, so users no longer have to guess the required length, casing, number, and special-character rules. The checklist previously diverged from the server in two ways that could show all-green checks for a password the server rejects: its special-character rule used a broader pattern than the backend (so a password whose only special character was e.g. `~`, a backtick, or a space passed the checklist but failed on submit), and it never surfaced the 72-character maximum (so an over-long password passed the checklist but failed on submit). The length rule now enforces both the minimum and maximum, and the password policy checks (length bounds, casing, number, and the accepted special-character set) live in a single shared module in `@couchbase-traces/common-utils` used by both the frontend checklist and the backend `passwordSchema`, so they can no longer drift. Finally, when the server rejects a password the Join Team page now shows the specific reason(s) it failed (e.g. "Password must include at least one special character (!@#$%^&\*(),.?\":{}|<>;-+=)") instead of a generic "Password is invalid", so users are told exactly what to change — including which special characters are accepted.
 - f891eb19: fix(mcp): steer agents toward builder query tools instead of raw SQL (HDX-4892). Telemetry showed agents (notebook investigations) using `clickstack_sql` for ~73% of data queries — usually for single-source aggregations, top-N, and time-series that the builder tools express more reliably (raw SQL also had ~2x the error rate). Reworded the `clickstack_sql` description to mark it a last resort, added a reciprocal "prefer me over SQL" nudge to `clickstack_table`, `clickstack_timeseries`, and `clickstack_search`, and added a server-level `instructions` tool-selection policy so the guidance is surfaced on `initialize` rather than only via the opt-in `query_guide` prompt.
 - 4c5ccfc4: Add MCP tool annotations (readOnlyHint, destructiveHint) to every MCP tool so
   clients can distinguish read-only query tools from mutating ones. Read/query
@@ -873,7 +873,7 @@
 - Updated dependencies [2d33b83b]
 - Updated dependencies [0ed72ddf]
 - Updated dependencies [aedb514f]
-  - @hyperdx/common-utils@0.26.0
+  - @couchbase-traces/common-utils@0.26.0
 
 ## 2.34.0
 
@@ -920,7 +920,7 @@ text/html` clears a prefix-anchored JSON test while the browser keeps the last
 
   Import-only by design: resource configuration is generated by `terraform plan -generate-config-out`, which reads through the provider, rather than by HyperDX — the external API's dashboard serialisation is a field allowlist, so generating `dashboard_json` from it could silently drop tile settings on apply. Tile alerts are excluded because the provider models only saved-search alerts.
 
-  Terraform addresses are derived from each resource's id, not its name, so renaming a resource in HyperDX and re-exporting does not produce a destroy-and-recreate plan. The generator lives in `@hyperdx/common-utils` so the API can produce the same artefact the UI does. The manifest endpoint caps each listing at 1000 rows and reports which types were capped, so a very large team is told its export is partial rather than silently receiving one.
+  Terraform addresses are derived from each resource's id, not its name, so renaming a resource in HyperDX and re-exporting does not produce a destroy-and-recreate plan. The generator lives in `@couchbase-traces/common-utils` so the API can produce the same artefact the UI does. The manifest endpoint caps each listing at 1000 rows and reports which types were capped, so a very large team is told its export is partial rather than silently receiving one.
 
   Also redacts `Authorization` and `Cookie` headers from API request logs.
 
@@ -949,7 +949,7 @@ text/html` clears a prefix-anchored JSON test while the browser keeps the last
 - Updated dependencies [1af1998c]
 - Updated dependencies [b082f700]
 - Updated dependencies [347f0a69]
-  - @hyperdx/common-utils@0.25.0
+  - @couchbase-traces/common-utils@0.25.0
 
 ## 2.33.0
 
@@ -967,7 +967,7 @@ text/html` clears a prefix-anchored JSON test while the browser keeps the last
 - 0e280949: fix: MCP endpoint (`/api/mcp`) now returns 405 for GET and DELETE instead of aborting spec-compliant clients. The stateless Streamable HTTP transport doesn't offer a server-initiated SSE stream or client-terminable sessions, so it now responds `405 Method Not Allowed` (with `Allow: POST`) for those methods, which official MCP SDK clients (e.g. Claude Code) treat as "not offered, continue" rather than a failed connection.
 - 1b658f3c: fix: Handle per-connection failures in alerts task without exiting
 - Updated dependencies [fa1a0687]
-  - @hyperdx/common-utils@0.24.1
+  - @couchbase-traces/common-utils@0.24.1
 
 ## 2.32.0
 
@@ -1002,7 +1002,7 @@ text/html` clears a prefix-anchored JSON test while the browser keeps the last
 - Updated dependencies [9cb69915]
 - Updated dependencies [7d806fb8]
 - Updated dependencies [f5f9cd19]
-  - @hyperdx/common-utils@0.24.0
+  - @couchbase-traces/common-utils@0.24.0
 
 ## 2.31.0
 
@@ -1015,7 +1015,7 @@ text/html` clears a prefix-anchored JSON test while the browser keeps the last
 - Updated dependencies [1705b37a]
 - Updated dependencies [73819932]
 - Updated dependencies [7accfd2e]
-  - @hyperdx/common-utils@0.23.0
+  - @couchbase-traces/common-utils@0.23.0
 
 ## 2.30.1
 
@@ -1156,7 +1156,7 @@ offset }` block alongside `data`. Results are sorted by `_id` so paging is
 - Updated dependencies [617355378]
 - Updated dependencies [e2145678d]
 - Updated dependencies [bb7ae21e8]
-  - @hyperdx/common-utils@0.22.0
+  - @couchbase-traces/common-utils@0.22.0
 
 ## 2.29.0
 
@@ -1280,7 +1280,7 @@ offset }` block alongside `data`. Results are sorted by `_id` so paging is
   listing removed patterns with estimated counts.
 
   Extracts shared denoise constants (`DENOISE_SAMPLE_SIZE`,
-  `DENOISE_NOISE_THRESHOLD`) into `@hyperdx/common-utils` so the web app
+  `DENOISE_NOISE_THRESHOLD`) into `@couchbase-traces/common-utils` so the web app
   and MCP server use the same values.
 
 - caba7c255: fix: Nudge agents towards macros in raw SQL tiles
@@ -1451,7 +1451,7 @@ offset }` block alongside `data`. Results are sorted by `_id` so paging is
 - Updated dependencies [81e524c2]
 - Updated dependencies [da3caab43]
 - Updated dependencies [55a255a0a]
-  - @hyperdx/common-utils@0.21.0
+  - @couchbase-traces/common-utils@0.21.0
 
 ## 2.28.0
 
@@ -1549,7 +1549,7 @@ offset }` block alongside `data`. Results are sorted by `_id` so paging is
   differ. Same algorithm as the in-app Event Deltas view.
 
   Extract shared event-deltas algorithm from the UI into
-  `@hyperdx/common-utils/src/core/eventDeltas.ts` so it can be used by
+  `@couchbase-traces/common-utils/src/core/eventDeltas.ts` so it can be used by
   both the frontend and the MCP server.
 
 - e1c4381b: fix: bare-text Lucene search now falls back from Implicit Column Expression to
@@ -1612,7 +1612,7 @@ implicit column set.` on every bare-token search, even though the row panel
 - Updated dependencies [04a5a925]
 - Updated dependencies [8810ff0f]
 - Updated dependencies [a8eb27dc]
-  - @hyperdx/common-utils@0.20.0
+  - @couchbase-traces/common-utils@0.20.0
 
 ## 2.27.0
 
@@ -1659,7 +1659,7 @@ implicit column set.` on every bare-token search, even though the row panel
 - 40336e9e: feat: Add dashboard table onClick to MCP schemas and prompts
 - Updated dependencies [84117a7a]
 - Updated dependencies [51abe987]
-  - @hyperdx/common-utils@0.19.1
+  - @couchbase-traces/common-utils@0.19.1
 
 ## 2.25.0
 
@@ -1722,7 +1722,7 @@ implicit column set.` on every bare-token search, even though the row panel
 
 - 5c6da48c: refactor(alerts/search): consolidate the saved-search → chart-config builder
   into a single shared helper, `buildSearchChartConfig`, in
-  `@hyperdx/common-utils/core/searchChartConfig.ts`. The app search page, the
+  `@couchbase-traces/common-utils/core/searchChartConfig.ts`. The app search page, the
   alert preview chart, and the scheduled alert task's `SAVED_SEARCH` branch now
   all route through it, so `tableFilterExpression`, `implicitColumnExpression`,
   sample-weight expressions, SELECT precedence, and the `count()` default
@@ -1758,7 +1758,7 @@ implicit column set.` on every bare-token search, even though the row panel
 
   - Cap tile `containerId` and `tabId` at 256 characters to mirror the
     internal `DashboardContainer` schema and the `DASHBOARD_CONTAINER_ID_MAX`
-    constant, now exported from `@hyperdx/common-utils`.
+    constant, now exported from `@couchbase-traces/common-utils`.
   - Cap a single dashboard payload at 500 tiles via the new
     `DASHBOARD_MAX_TILES` constant to keep one request from pushing tens of
     MB into Mongo.
@@ -1786,7 +1786,7 @@ implicit column set.` on every bare-token search, even though the row panel
   - Split the shared validation helper into a structure-only pass
     (`validateDashboardContainersStructure`) and a tile-ref pass
     (`validateDashboardTileContainerRefs`) on
-    `@hyperdx/common-utils`. The composite
+    `@couchbase-traces/common-utils`. The composite
     `validateDashboardContainersConsistency` now wraps both, so existing
     callers keep their current behavior.
   - On read, drop `tile.containerId` / `tile.tabId` when the ref does not
@@ -1802,8 +1802,8 @@ implicit column set.` on every bare-token search, even though the row panel
 
 - 41395ca7: Internal refactor: move `validateDashboardContainersStructure` and
   `validateDashboardTileContainerRefs` (and their two helper types) out
-  of `@hyperdx/common-utils/dist/types` into a new
-  `@hyperdx/common-utils/dist/dashboardValidation` module. The `types`
+  of `@couchbase-traces/common-utils/dist/types` into a new
+  `@couchbase-traces/common-utils/dist/dashboardValidation` module. The `types`
   file now only contains types and type guards, matching the rest of the
   codebase. The previously exported `validateDashboardContainersConsistency`
   composite was only used by its own unit test and is dropped; production
@@ -1864,7 +1864,7 @@ implicit column set.` on every bare-token search, even though the row panel
 - Updated dependencies [a36c5b19]
 - Updated dependencies [9d5f14f3]
 - Updated dependencies [401dff5a]
-  - @hyperdx/common-utils@0.19.0
+  - @couchbase-traces/common-utils@0.19.0
 
 ## 2.24.1
 
@@ -1876,7 +1876,7 @@ implicit column set.` on every bare-token search, even though the row panel
 - Updated dependencies [4c23e10a]
 - Updated dependencies [e2fc25da]
 - Updated dependencies [7665fbe1]
-  - @hyperdx/common-utils@0.18.1
+  - @couchbase-traces/common-utils@0.18.1
 
 ## 2.24.0
 
@@ -1902,7 +1902,7 @@ implicit column set.` on every bare-token search, even though the row panel
 - Updated dependencies [085f3074]
 - Updated dependencies [3c057720]
 - Updated dependencies [6ff1ba60]
-  - @hyperdx/common-utils@0.18.0
+  - @couchbase-traces/common-utils@0.18.0
 
 ## 2.23.2
 
@@ -1912,7 +1912,7 @@ implicit column set.` on every bare-token search, even though the row panel
 
 - f8d2edde: feat: Show created/updated metadata for saved searches and dashboards
 - Updated dependencies [24767c58]
-  - @hyperdx/common-utils@0.17.1
+  - @couchbase-traces/common-utils@0.17.1
 
 ## 2.23.0
 
@@ -1936,7 +1936,7 @@ implicit column set.` on every bare-token search, even though the row panel
 - Updated dependencies [308da30b]
 - Updated dependencies [e5c7fdf9]
 - Updated dependencies [941d0450]
-  - @hyperdx/common-utils@0.17.0
+  - @couchbase-traces/common-utils@0.17.0
 
 ## 2.22.1
 
@@ -1950,7 +1950,7 @@ implicit column set.` on every bare-token search, even though the row panel
 - Updated dependencies [4f7dd9ef]
 - Updated dependencies [275dc941]
 - Updated dependencies [6936ef8e]
-  - @hyperdx/common-utils@0.16.2
+  - @couchbase-traces/common-utils@0.16.2
 
 ## 2.22.0
 
@@ -1978,7 +1978,7 @@ implicit column set.` on every bare-token search, even though the row panel
 - Updated dependencies [359b5874]
 - Updated dependencies [243e3baa]
 - Updated dependencies [4cee5d69]
-  - @hyperdx/common-utils@0.16.1
+  - @couchbase-traces/common-utils@0.16.1
 
 ## 2.21.0
 
@@ -2005,7 +2005,7 @@ implicit column set.` on every bare-token search, even though the row panel
 - Updated dependencies [1e6fcf1c]
 - Updated dependencies [902b8ebd]
 - Updated dependencies [a13b60d0]
-  - @hyperdx/common-utils@0.16.0
+  - @couchbase-traces/common-utils@0.16.0
 
 ## 2.20.0
 
@@ -2022,7 +2022,7 @@ implicit column set.` on every bare-token search, even though the row panel
 - Updated dependencies [cd2b7a76]
 - Updated dependencies [d760d2db]
 - Updated dependencies [34c9afeb]
-  - @hyperdx/common-utils@0.15.0
+  - @couchbase-traces/common-utils@0.15.0
 
 ## 2.19.0
 
@@ -2035,7 +2035,7 @@ implicit column set.` on every bare-token search, even though the row panel
 - cbe319c0: fix: use field as metricName in external metrics API when metricName is not provided
 - b5bb69e3: fix: Improve Pie Chart implemententation
 - Updated dependencies [8326fc6e]
-  - @hyperdx/common-utils@0.14.0
+  - @couchbase-traces/common-utils@0.14.0
 
 ## 2.18.0
 
@@ -2049,7 +2049,7 @@ implicit column set.` on every bare-token search, even though the row panel
 - Updated dependencies [051276fc]
 - Updated dependencies [4f1da032]
 - Updated dependencies [b676f268]
-  - @hyperdx/common-utils@0.13.0
+  - @couchbase-traces/common-utils@0.13.0
 
 ## 2.17.0
 
@@ -2063,14 +2063,14 @@ implicit column set.` on every bare-token search, even though the row panel
 - 9ab68432: Minor fixes in the sources external API: 1. avoid inline schemas, 2. use short format timestamps for materializedView.minGranularity
 - Updated dependencies [a8aa94b0]
 - Updated dependencies [c3bc43ad]
-  - @hyperdx/common-utils@0.12.3
+  - @couchbase-traces/common-utils@0.12.3
 
 ## 2.16.0
 
 ### Patch Changes
 
 - Updated dependencies [b6c34b13]
-  - @hyperdx/common-utils@0.12.2
+  - @couchbase-traces/common-utils@0.12.2
 
 ## 2.15.1
 
@@ -2078,14 +2078,14 @@ implicit column set.` on every bare-token search, even though the row panel
 
 - 6cfa40a0: feat: Add support for querying nested/array columns with lucene
 - Updated dependencies [6cfa40a0]
-  - @hyperdx/common-utils@0.12.1
+  - @couchbase-traces/common-utils@0.12.1
 
 ## 2.15.0
 
 ### Patch Changes
 
 - Updated dependencies [f44923ba]
-  - @hyperdx/common-utils@0.12.0
+  - @couchbase-traces/common-utils@0.12.0
 
 ## 2.14.0
 
@@ -2102,7 +2102,7 @@ implicit column set.` on every bare-token search, even though the row panel
 - b8ab312a: chore: improve Team typing
 - Updated dependencies [6aa3ac6f]
 - Updated dependencies [b8ab312a]
-  - @hyperdx/common-utils@0.11.1
+  - @couchbase-traces/common-utils@0.11.1
 
 ## 2.13.0
 
@@ -2125,7 +2125,7 @@ implicit column set.` on every bare-token search, even though the row panel
 - Updated dependencies [f98fc519]
 - Updated dependencies [f20fac30]
 - Updated dependencies [4a856173]
-  - @hyperdx/common-utils@0.11.0
+  - @couchbase-traces/common-utils@0.11.0
 
 ## 2.12.0
 
@@ -2140,7 +2140,7 @@ implicit column set.` on every bare-token search, even though the row panel
 - Updated dependencies [ebaebc14]
 - Updated dependencies [725dbc2f]
 - Updated dependencies [0c16a4b3]
-  - @hyperdx/common-utils@0.10.2
+  - @couchbase-traces/common-utils@0.10.2
 
 ## 2.11.0
 
@@ -2149,7 +2149,7 @@ implicit column set.` on every bare-token search, even though the row panel
 - 103c63cc: chore(eslint): enable @typescript-eslint/no-unsafe-type-assertion rule (warn)
 - Updated dependencies [103c63cc]
 - Updated dependencies [103c63cc]
-  - @hyperdx/common-utils@0.10.1
+  - @couchbase-traces/common-utils@0.10.1
 
 ## 2.10.0
 
@@ -2169,7 +2169,7 @@ implicit column set.` on every bare-token search, even though the row panel
 - Updated dependencies [50ba92ac]
 - Updated dependencies [a5a04aa9]
 - Updated dependencies [b58c52eb]
-  - @hyperdx/common-utils@0.10.0
+  - @couchbase-traces/common-utils@0.10.0
 
 ## 2.9.0
 
@@ -2190,7 +2190,7 @@ implicit column set.` on every bare-token search, even though the row panel
 - Updated dependencies [59422a1a]
 - Updated dependencies [7405d183]
 - Updated dependencies [770276a1]
-  - @hyperdx/common-utils@0.9.0
+  - @couchbase-traces/common-utils@0.9.0
 
 ## 2.8.0
 
@@ -2214,7 +2214,7 @@ implicit column set.` on every bare-token search, even though the row panel
 - Updated dependencies [f612bf3c]
 - Updated dependencies [c4915d45]
 - Updated dependencies [6e628bcd]
-  - @hyperdx/common-utils@0.8.0
+  - @couchbase-traces/common-utils@0.8.0
 
 ## 2.7.1
 
@@ -2225,7 +2225,7 @@ implicit column set.` on every bare-token search, even though the row panel
 - 778092d3: fix: set a max size for alert timeranges
 - Updated dependencies [2162a690]
 - Updated dependencies [8190ee8f]
-  - @hyperdx/common-utils@0.7.2
+  - @couchbase-traces/common-utils@0.7.2
 
 ## 2.7.0
 
@@ -2251,7 +2251,7 @@ implicit column set.` on every bare-token search, even though the row panel
 - Updated dependencies [2f49f9be]
 - Updated dependencies [daffcf35]
 - Updated dependencies [5210bb86]
-  - @hyperdx/common-utils@0.7.1
+  - @couchbase-traces/common-utils@0.7.1
 
 ## 2.6.0
 
@@ -2270,7 +2270,7 @@ implicit column set.` on every bare-token search, even though the row panel
 - Updated dependencies [8f06ce7b]
 - Updated dependencies [e053c490]
 - Updated dependencies [6c8efbcb]
-  - @hyperdx/common-utils@0.7.0
+  - @couchbase-traces/common-utils@0.7.0
 
 ## 2.5.0
 
@@ -2284,7 +2284,7 @@ implicit column set.` on every bare-token search, even though the row panel
 - Updated dependencies [3d82583f]
 - Updated dependencies [5a44953e]
 - Updated dependencies [1d79980e]
-  - @hyperdx/common-utils@0.6.0
+  - @couchbase-traces/common-utils@0.6.0
 
 ## 2.4.0
 
@@ -2300,7 +2300,7 @@ implicit column set.` on every bare-token search, even though the row panel
 - Updated dependencies [d938b4a4]
 - Updated dependencies [92224d65]
 - Updated dependencies [e7b590cc]
-  - @hyperdx/common-utils@0.5.0
+  - @couchbase-traces/common-utils@0.5.0
 
 ## 2.3.0
 
@@ -2330,7 +2330,7 @@ implicit column set.` on every bare-token search, even though the row panel
 - Updated dependencies [aacd24dd]
 - Updated dependencies [3f2d4270]
 - Updated dependencies [ecb20c84]
-  - @hyperdx/common-utils@0.4.0
+  - @couchbase-traces/common-utils@0.4.0
 
 ## 2.2.2
 
@@ -2339,7 +2339,7 @@ implicit column set.` on every bare-token search, even though the row panel
 - 56fd856d: fix: otelcol process in aio build
 - Updated dependencies [56fd856d]
 - Updated dependencies [0f242558]
-  - @hyperdx/common-utils@0.3.2
+  - @couchbase-traces/common-utils@0.3.2
 
 ## 2.2.1
 
@@ -2348,7 +2348,7 @@ implicit column set.` on every bare-token search, even though the row panel
 - d29e2bc: fix: handle the case when `CUSTOM_OTELCOL_CONFIG_FILE` is not specified
 - c216053: Changes the order of alert evaluation to group queries by the connection on the alert.
 - Updated dependencies [d29e2bc]
-  - @hyperdx/common-utils@0.3.1
+  - @couchbase-traces/common-utils@0.3.1
 
 ## 2.2.0
 
@@ -2363,7 +2363,7 @@ implicit column set.` on every bare-token search, even though the row panel
 - 5a59d32: Upgraded NX from version 16.8.1 to 21.3.11
 - Updated dependencies [6dd6165]
 - Updated dependencies [5a59d32]
-  - @hyperdx/common-utils@0.3.0
+  - @couchbase-traces/common-utils@0.3.0
 
 ## 2.1.2
 
@@ -2373,7 +2373,7 @@ implicit column set.` on every bare-token search, even though the row panel
 - b568b00: feat: introduce team 'clickhouse-settings' endpoint + metadataMaxRowsToRead setting
 - Updated dependencies [39cde41]
 - Updated dependencies [b568b00]
-  - @hyperdx/common-utils@0.2.9
+  - @couchbase-traces/common-utils@0.2.9
 
 ## 2.1.1
 
@@ -2382,7 +2382,7 @@ implicit column set.` on every bare-token search, even though the row panel
 - 1dc1c82: feat: add team setting to disable field metadata queries in app
 - eed38e8: bump node version to 22.16.0
 - Updated dependencies [eed38e8]
-  - @hyperdx/common-utils@0.2.8
+  - @couchbase-traces/common-utils@0.2.8
 
 ## 2.1.0
 
@@ -2394,7 +2394,7 @@ implicit column set.` on every bare-token search, even though the row panel
 - 61c79a1: fix: Ensure percentile aggregations on histograms don't create invalid SQL queries due to improperly escaped aliases.
 - Updated dependencies [4ce81d4]
 - Updated dependencies [61c79a1]
-  - @hyperdx/common-utils@0.2.7
+  - @couchbase-traces/common-utils@0.2.7
 
 ## 2.0.6
 
@@ -2402,7 +2402,7 @@ implicit column set.` on every bare-token search, even though the row panel
 
 - 33fc071: feat: Allow users to define custom column aliases for charts
 - Updated dependencies [33fc071]
-  - @hyperdx/common-utils@0.2.6
+  - @couchbase-traces/common-utils@0.2.6
 
 ## 2.0.5
 
@@ -2412,7 +2412,7 @@ implicit column set.` on every bare-token search, even though the row panel
 - 844f74c: fix: validate name for saved searches
 - f7eb1ef: feat: configurable search row limit
 - Updated dependencies [973b9e8]
-  - @hyperdx/common-utils@0.2.5
+  - @couchbase-traces/common-utils@0.2.5
 
 ## 2.0.4
 
@@ -2421,7 +2421,7 @@ implicit column set.` on every bare-token search, even though the row panel
 - 52ca182: feat: Add ClickHouse JSON Type Support
 - 808145b: feat: specify NODE_ENV in api build (prod stage)
 - Updated dependencies [52ca182]
-  - @hyperdx/common-utils@0.2.4
+  - @couchbase-traces/common-utils@0.2.4
 
 ## 2.0.3
 
@@ -2430,7 +2430,7 @@ implicit column set.` on every bare-token search, even though the row panel
 - 93e36b5: fix: remove id from post for connection creation endpoint
 - Updated dependencies [b75d7c0]
 - Updated dependencies [93e36b5]
-  - @hyperdx/common-utils@0.2.3
+  - @couchbase-traces/common-utils@0.2.3
 
 ## 2.0.2
 
@@ -2442,7 +2442,7 @@ implicit column set.` on every bare-token search, even though the row panel
 - 2063774: perf: build next app in standalone mode to cut down images size
 - Updated dependencies [31e22dc]
 - Updated dependencies [2063774]
-  - @hyperdx/common-utils@0.2.2
+  - @couchbase-traces/common-utils@0.2.2
 
 ## 2.0.1
 
@@ -2456,7 +2456,7 @@ implicit column set.` on every bare-token search, even though the row panel
 - Updated dependencies [ab3b5cb]
 - Updated dependencies [ab387e1]
 - Updated dependencies [fce5ee5]
-  - @hyperdx/common-utils@0.2.1
+  - @couchbase-traces/common-utils@0.2.1
 
 ## 2.0.0
 
@@ -2542,7 +2542,7 @@ implicit column set.` on every bare-token search, even though the row panel
 - Updated dependencies [96b8c50]
 - Updated dependencies [e884d85]
 - Updated dependencies [e5a210a]
-  - @hyperdx/common-utils@0.2.0
+  - @couchbase-traces/common-utils@0.2.0
 
 ## 2.0.0-beta.17
 
@@ -2571,7 +2571,7 @@ implicit column set.` on every bare-token search, even though the row panel
 - Updated dependencies [e7262d1]
 - Updated dependencies [321e24f]
 - Updated dependencies [96b8c50]
-  - @hyperdx/common-utils@0.2.0-beta.6
+  - @couchbase-traces/common-utils@0.2.0-beta.6
 
 ## 2.0.0-beta.16
 
@@ -2580,7 +2580,7 @@ implicit column set.` on every bare-token search, even though the row panel
 - 1674ab8: moved swagger to dependencies instead of devDependencies
 - 931d738: fix: bugs with showing non otel spans (ex. clickhouse opentelemetry span logs)
 - Updated dependencies [931d738]
-  - @hyperdx/common-utils@0.2.0-beta.5
+  - @couchbase-traces/common-utils@0.2.0-beta.5
 
 ## 2.0.0-beta.15
 
@@ -2599,7 +2599,7 @@ implicit column set.` on every bare-token search, even though the row panel
 - Updated dependencies [cfdd523]
 - Updated dependencies [92a4800]
 - Updated dependencies [7f0b397]
-  - @hyperdx/common-utils@0.2.0-beta.4
+  - @couchbase-traces/common-utils@0.2.0-beta.4
 
 ## 2.0.0-beta.14
 
@@ -2611,7 +2611,7 @@ implicit column set.` on every bare-token search, even though the row panel
 - Updated dependencies [2f626e1]
 - Updated dependencies [b16c8e1]
 - Updated dependencies [4865ce7]
-  - @hyperdx/common-utils@0.2.0-beta.3
+  - @couchbase-traces/common-utils@0.2.0-beta.3
 
 ## 2.0.0-beta.13
 
@@ -2635,7 +2635,7 @@ implicit column set.` on every bare-token search, even though the row panel
 - Updated dependencies [414ff92]
 - Updated dependencies [e884d85]
 - Updated dependencies [e5a210a]
-  - @hyperdx/common-utils@0.2.0-beta.2
+  - @couchbase-traces/common-utils@0.2.0-beta.2
 
 ## 2.0.0-beta.12
 
@@ -2643,7 +2643,7 @@ implicit column set.` on every bare-token search, even though the row panel
 
 - fix: use quote for aliases for sql compatibility
 - Updated dependencies
-  - @hyperdx/common-utils@0.2.0-beta.1
+  - @couchbase-traces/common-utils@0.2.0-beta.1
 
 ## 2.0.0-beta.11
 
@@ -2664,7 +2664,7 @@ implicit column set.` on every bare-token search, even though the row panel
 - Updated dependencies [99b60d5]
 - Updated dependencies [57a6bc3]
 - Updated dependencies [cd0e4fd]
-  - @hyperdx/common-utils@0.2.0-beta.0
+  - @couchbase-traces/common-utils@0.2.0-beta.0
 
 ## 2.0.0-beta.10
 

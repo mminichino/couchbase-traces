@@ -8,7 +8,7 @@ import {
   TMetricSource,
   TSessionSource,
   TTraceSource,
-} from '@hyperdx/common-utils/dist/types';
+} from '@couchbase-traces/common-utils/dist/types';
 import { renderHook } from '@testing-library/react';
 
 import {

@@ -1,4 +1,4 @@
-import type { MeApiResponse } from '@hyperdx/common-utils/dist/types';
+import type { MeApiResponse } from '@couchbase-traces/common-utils/dist/types';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { act, renderHook } from '@testing-library/react';
 

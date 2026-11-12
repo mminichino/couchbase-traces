@@ -2,9 +2,9 @@ import {
   chSql,
   concatChSql,
   tableExpr,
-} from '@hyperdx/common-utils/dist/clickhouse';
-import { ClickhouseClient } from '@hyperdx/common-utils/dist/clickhouse/node';
-import type { Metadata } from '@hyperdx/common-utils/dist/core/metadata';
+} from '@couchbase-traces/common-utils/dist/clickhouse';
+import { ClickhouseClient } from '@couchbase-traces/common-utils/dist/clickhouse/node';
+import type { Metadata } from '@couchbase-traces/common-utils/dist/core/metadata';
 
 import logger from '@/utils/logger';
 

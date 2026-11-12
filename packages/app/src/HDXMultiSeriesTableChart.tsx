@@ -1,12 +1,12 @@
 import { useCallback, useMemo, useState } from 'react';
 import Link from 'next/link';
 import cx from 'classnames';
-import { MAX_TABLE_ROWS } from '@hyperdx/common-utils/dist/core/utils';
+import { MAX_TABLE_ROWS } from '@couchbase-traces/common-utils/dist/core/utils';
 import {
   ChartPaletteToken,
   ColorCondition,
   isChartPaletteToken,
-} from '@hyperdx/common-utils/dist/types';
+} from '@couchbase-traces/common-utils/dist/types';
 import { Tooltip, UnstyledButton } from '@mantine/core';
 import {
   IconArrowUpRight,

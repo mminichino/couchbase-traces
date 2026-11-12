@@ -1,6 +1,6 @@
 import { describe, expect, it } from '@jest/globals';
 
-import type { ColumnMetaType } from '@hyperdx/common-utils/dist/clickhouse';
+import type { ColumnMetaType } from '@couchbase-traces/common-utils/dist/clickhouse';
 
 import { buildColumnMap, getRowWhere } from '@/shared/useRowWhere';
 

@@ -2,7 +2,7 @@ import * as React from 'react';
 import Head from 'next/head';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
-import { AlertInterval } from '@hyperdx/common-utils/dist/types';
+import { AlertInterval } from '@couchbase-traces/common-utils/dist/types';
 import {
   ActionIcon,
   Anchor,

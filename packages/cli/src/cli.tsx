@@ -16,10 +16,10 @@ import chalk from 'chalk';
 import {
   TemplateMiner,
   TemplateMinerConfig,
-} from '@hyperdx/common-utils/dist/drain';
+} from '@couchbase-traces/common-utils/dist/drain';
 
-import { DashboardWithoutIdSchema } from '@hyperdx/common-utils/dist/types';
-import type { SavedChartConfig } from '@hyperdx/common-utils/dist/types';
+import { DashboardWithoutIdSchema } from '@couchbase-traces/common-utils/dist/types';
+import type { SavedChartConfig } from '@couchbase-traces/common-utils/dist/types';
 
 import App from '@/App';
 import { ApiClient, type SourceResponse, type MeTeam } from '@/api/client';
@@ -1419,7 +1419,7 @@ About:
 
   1. Full definition:  --file <json>
      The file must match the DashboardWithoutId schema from
-     @hyperdx/common-utils (the shape 'hdx dashboards export' emits):
+     @couchbase-traces/common-utils (the shape 'hdx dashboards export' emits):
 
        {
          "name": "My Dashboard",

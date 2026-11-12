@@ -1,10 +1,10 @@
 import { memo, useMemo } from 'react';
 import ReactMarkdown from 'react-markdown';
-import { ChartVariable } from '@hyperdx/common-utils/dist/types';
+import { ChartVariable } from '@couchbase-traces/common-utils/dist/types';
 import {
   substituteVariables,
   validateVariableReferencesInTemplate,
-} from '@hyperdx/common-utils/dist/variables';
+} from '@couchbase-traces/common-utils/dist/variables';
 
 import ChartContainer from './components/charts/ChartContainer';
 import {

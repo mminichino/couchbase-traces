@@ -4,7 +4,7 @@
  * explorer and on dashboards with no variables. An unexpanded macro is a
  * PromQL parse error, so a rendered chart or value proves expansion.
  */
-import { DisplayType } from '@hyperdx/common-utils/dist/types';
+import { DisplayType } from '@couchbase-traces/common-utils/dist/types';
 
 import { ChartExplorerPage } from '../page-objects/ChartExplorerPage';
 import { DashboardPage } from '../page-objects/DashboardPage';

@@ -4,7 +4,7 @@ import {
   AlertHistory,
   AlertState,
   AlertThresholdType,
-} from '@hyperdx/common-utils/dist/types';
+} from '@couchbase-traces/common-utils/dist/types';
 import { fireEvent, screen } from '@testing-library/react';
 
 import { AlertHistoryCardList } from '@/components/alerts/AlertHistoryCards';

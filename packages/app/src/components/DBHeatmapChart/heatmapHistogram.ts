@@ -1,4 +1,4 @@
-import { parsePromqlLe } from '@hyperdx/common-utils/dist/core/promql';
+import { parsePromqlLe } from '@couchbase-traces/common-utils/dist/core/promql';
 
 import type { HeatmapGrid } from './heatmapGrid';
 import { makeTimeIndexer } from './heatmapSeriesGrid';

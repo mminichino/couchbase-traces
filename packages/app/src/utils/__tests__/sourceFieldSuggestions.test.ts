@@ -1,5 +1,5 @@
-import { ColumnMetaType } from '@hyperdx/common-utils/dist/clickhouse';
-import { SourceKind } from '@hyperdx/common-utils/dist/types';
+import { ColumnMetaType } from '@couchbase-traces/common-utils/dist/clickhouse';
+import { SourceKind } from '@couchbase-traces/common-utils/dist/types';
 
 import {
   getSourceConfigPairingWarnings,

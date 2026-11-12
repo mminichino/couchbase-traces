@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
-import { tcFromSource } from '@hyperdx/common-utils/dist/core/metadata';
-import { SourceKind, TSource } from '@hyperdx/common-utils/dist/types';
+import { tcFromSource } from '@couchbase-traces/common-utils/dist/core/metadata';
+import { SourceKind, TSource } from '@couchbase-traces/common-utils/dist/types';
 
 import { useJsonColumns } from '@/hooks/useMetadata';
 import { getLLMExpressions, getLLMLogExpressions } from '@/llm/lib/expressions';

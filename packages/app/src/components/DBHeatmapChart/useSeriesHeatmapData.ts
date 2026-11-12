@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import { ResponseJSON } from '@hyperdx/common-utils/dist/clickhouse';
+import { ResponseJSON } from '@couchbase-traces/common-utils/dist/clickhouse';
 
 import { formatResponseForTimeChart } from '@/ChartUtils';
 import { useQueriedChartConfig } from '@/hooks/useChartConfig';

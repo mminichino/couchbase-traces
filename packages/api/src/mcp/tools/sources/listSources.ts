@@ -1,15 +1,15 @@
-import PQueue from '@esm2cjs/p-queue';
 import type {
   DataFormat,
   QueryInputs,
-} from '@hyperdx/common-utils/dist/clickhouse';
-import { ClickhouseClient } from '@hyperdx/common-utils/dist/clickhouse/node';
+} from '@couchbase-traces/common-utils/dist/clickhouse';
+import { ClickhouseClient } from '@couchbase-traces/common-utils/dist/clickhouse/node';
 import {
   Metadata,
   MetadataCache,
   quoteIdentifierIfNeeded,
-} from '@hyperdx/common-utils/dist/core/metadata';
-import { SourceKind } from '@hyperdx/common-utils/dist/types';
+} from '@couchbase-traces/common-utils/dist/core/metadata';
+import { SourceKind } from '@couchbase-traces/common-utils/dist/types';
+import PQueue from '@esm2cjs/p-queue';
 import { z } from 'zod';
 
 import {

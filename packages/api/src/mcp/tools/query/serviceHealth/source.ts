@@ -1,4 +1,4 @@
-import { SourceKind } from '@hyperdx/common-utils/dist/types';
+import { SourceKind } from '@couchbase-traces/common-utils/dist/types';
 
 import { getSource, getSources } from '@/controllers/sources';
 import type { McpErrorResult } from '@/mcp/utils/errors';

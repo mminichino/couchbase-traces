@@ -54,7 +54,7 @@ function CollapsibleSnippet({ snippet }: { snippet: TerraformSnippet }) {
 /**
  * Presentational panel for Terraform snippets. Takes fully-built strings, so
  * it needs no data fetching and its stories need no mocking — callers own
- * generation via `@hyperdx/common-utils/dist/iac`.
+ * generation via `@couchbase-traces/common-utils/dist/iac`.
  */
 export function TerraformHelperPanel({
   snippets,

@@ -3,7 +3,7 @@
  * to it: include / exclude toggle `key = value` / `key != value` on every such
  * filter. Tiles no ad hoc filter reaches offer no filter actions.
  */
-import { DisplayType } from '@hyperdx/common-utils/dist/types';
+import { DisplayType } from '@couchbase-traces/common-utils/dist/types';
 import type { Locator } from '@playwright/test';
 
 import { SidePanelComponent } from '../components/SidePanelComponent';

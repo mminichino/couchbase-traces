@@ -2,12 +2,12 @@ import {
   validateDashboardFilterModes,
   validateDashboardFilterOptionUniqueness,
   validateDashboardFilterVariableNames,
-} from '@hyperdx/common-utils/dist/dashboardValidation';
+} from '@couchbase-traces/common-utils/dist/dashboardValidation';
 import {
   getAdhocFilterSourceKinds,
   isAdhocFilter,
   isPrometheusLabelFilter,
-} from '@hyperdx/common-utils/dist/filters';
+} from '@couchbase-traces/common-utils/dist/filters';
 import {
   DashboardFilter,
   DashboardSchema,
@@ -17,7 +17,7 @@ import {
   resolveChartPaletteToken,
   SourceKind,
   walkRawDashboardTileColors,
-} from '@hyperdx/common-utils/dist/types';
+} from '@couchbase-traces/common-utils/dist/types';
 import express from 'express';
 import _ from 'lodash';
 import { z } from 'zod';

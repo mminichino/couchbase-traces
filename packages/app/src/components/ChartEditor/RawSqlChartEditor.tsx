@@ -3,23 +3,23 @@ import { Control, UseFormSetValue, useWatch } from 'react-hook-form';
 import {
   TableConnection,
   tcFromSource,
-} from '@hyperdx/common-utils/dist/core/metadata';
+} from '@couchbase-traces/common-utils/dist/core/metadata';
 import {
   displayTypeSupportsRawSqlAlerts,
   validateRawSqlChartConfig,
   validateRawSqlForAlert,
-} from '@hyperdx/common-utils/dist/core/utils';
+} from '@couchbase-traces/common-utils/dist/core/utils';
 import {
   ChartVariable,
   RawSqlChartConfig,
   SourceKind,
-} from '@hyperdx/common-utils/dist/types';
+} from '@couchbase-traces/common-utils/dist/types';
 import {
   DisplayType,
   isLogSource,
   isMetricSource,
   isTraceSource,
-} from '@hyperdx/common-utils/dist/types';
+} from '@couchbase-traces/common-utils/dist/types';
 import {
   Alert,
   Box,

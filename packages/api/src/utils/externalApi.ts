@@ -1,11 +1,11 @@
-import { TIME_SERIES_DISPLAY_TYPE_BY_NAME } from '@hyperdx/common-utils/dist/core/utils';
+import { TIME_SERIES_DISPLAY_TYPE_BY_NAME } from '@couchbase-traces/common-utils/dist/core/utils';
 import {
   isAdhocFilter,
   isAdhocFilterValue,
   isFilterBroadcastEnabled,
   isFilterRequired,
   isFilterVariableEnabled,
-} from '@hyperdx/common-utils/dist/filters';
+} from '@couchbase-traces/common-utils/dist/filters';
 import {
   AlertErrorType,
   AlertThresholdType,
@@ -13,7 +13,7 @@ import {
   DashboardFilter,
   DisplayType,
   SavedChartConfig,
-} from '@hyperdx/common-utils/dist/types';
+} from '@couchbase-traces/common-utils/dist/types';
 import { omit } from 'lodash';
 import { Types } from 'mongoose';
 

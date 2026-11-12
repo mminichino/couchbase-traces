@@ -1,18 +1,18 @@
-import { getMetadata } from '@hyperdx/common-utils/dist/core/metadata';
-import { buildSearchChartConfig } from '@hyperdx/common-utils/dist/core/searchChartConfig';
+import { getMetadata } from '@couchbase-traces/common-utils/dist/core/metadata';
+import { buildSearchChartConfig } from '@couchbase-traces/common-utils/dist/core/searchChartConfig';
 import {
   getFirstTimestampValueExpression,
   splitAndTrimWithBracket,
-} from '@hyperdx/common-utils/dist/core/utils';
+} from '@couchbase-traces/common-utils/dist/core/utils';
 import type {
   ChartConfigWithDateRange,
   TSource,
-} from '@hyperdx/common-utils/dist/types';
+} from '@couchbase-traces/common-utils/dist/types';
 import {
   DisplayType,
   isLogSource,
   isTraceSource,
-} from '@hyperdx/common-utils/dist/types';
+} from '@couchbase-traces/common-utils/dist/types';
 
 import { ClickhouseClient } from '@/clickhouse';
 import { getConnectionById } from '@/controllers/connection';

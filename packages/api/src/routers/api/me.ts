@@ -2,12 +2,12 @@ import type {
   MeApiResponse,
   OnboardingDataApiResponse,
   RotateAccessKeyApiResponse,
-} from '@hyperdx/common-utils/dist/types';
+} from '@couchbase-traces/common-utils/dist/types';
 import {
   CompleteOnboardingTaskApiBodySchema,
   DismissOnboardingApiBodySchema,
   OnboardingDataSchema,
-} from '@hyperdx/common-utils/dist/types';
+} from '@couchbase-traces/common-utils/dist/types';
 import express from 'express';
 import { validateRequest } from 'zod-express-middleware';
 

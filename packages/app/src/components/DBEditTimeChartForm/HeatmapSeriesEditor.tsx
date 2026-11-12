@@ -6,8 +6,11 @@ import {
   UseFormClearErrors,
   UseFormSetValue,
 } from 'react-hook-form';
-import { tcFromSource } from '@hyperdx/common-utils/dist/core/metadata';
-import { HeatmapMode, TSource } from '@hyperdx/common-utils/dist/types';
+import { tcFromSource } from '@couchbase-traces/common-utils/dist/core/metadata';
+import {
+  HeatmapMode,
+  TSource,
+} from '@couchbase-traces/common-utils/dist/types';
 import { Button, Divider, Flex, Stack, Text, Tooltip } from '@mantine/core';
 import { IconHelpCircle } from '@tabler/icons-react';
 

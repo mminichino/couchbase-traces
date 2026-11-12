@@ -2,7 +2,7 @@ import {
   type FilterState,
   filtersToQuery,
   isValidFilterCondition,
-} from '@hyperdx/common-utils/dist/filters';
+} from '@couchbase-traces/common-utils/dist/filters';
 
 import { buildJSONExtractQuery } from '@/components/DBRowJsonViewer';
 import { escapeFilterStateKeys, parseQuery } from '@/searchFilters';

@@ -22,7 +22,7 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
     const inlineApi = await import(
       /* webpackIgnore: true */
       /* turbopackIgnore: true */
-      '@hyperdx/api/build/serverless'
+      '@couchbase-traces/api/build/serverless'
     );
     const handler = inlineApi.default ?? inlineApi;
     return handler(req, res);

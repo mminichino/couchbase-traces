@@ -64,12 +64,12 @@ Inventory of commit adcb75c16715. Full detail is in `port/state/inventory/`.
 
 | Package | Directory | Role | Languages | Source files | Test files | CI targets |
 |---|---|---|---|---|---|---|
-| @hyperdx/api | packages/api | API server and tasks | javascript, typescript | 225 | 148 | ci:int, ci:lint, ci:unit |
-| @hyperdx/app | packages/app | web UI | javascript, typescript | 682 | 515 | ci:lint, ci:unit |
-| @hyperdx/cli | packages/cli | command-line client | javascript, typescript | 61 | 9 | ci:build, ci:lint, ci:unit |
-| @hyperdx/common-utils | packages/common-utils | shared query and data layer | javascript, typescript | 57 | 52 | ci:build, ci:int, ci:lint, ci:unit |
-| @hyperdx/hdx-eval | packages/hdx-eval | evaluation harness | javascript, typescript | 53 | 31 | ci:lint, ci:unit |
-| @hyperdx/otel-collector | packages/otel-collector | ingestion collector | go | 0 | 0 |  |
+| @couchbase-traces/api | packages/api | API server and tasks | javascript, typescript | 225 | 148 | ci:int, ci:lint, ci:unit |
+| @couchbase-traces/app | packages/app | web UI | javascript, typescript | 682 | 515 | ci:lint, ci:unit |
+| @couchbase-traces/cli | packages/cli | command-line client | javascript, typescript | 61 | 9 | ci:build, ci:lint, ci:unit |
+| @couchbase-traces/common-utils | packages/common-utils | shared query and data layer | javascript, typescript | 57 | 52 | ci:build, ci:int, ci:lint, ci:unit |
+| @couchbase-traces/hdx-eval | packages/hdx-eval | evaluation harness | javascript, typescript | 53 | 31 | ci:lint, ci:unit |
+| @couchbase-traces/otel-collector | packages/otel-collector | ingestion collector | go | 0 | 0 |  |
 
 ### Entry points
 
@@ -587,25 +587,25 @@ Collector components, pipelines, ClickHouse exporters, and management code.
 
 | Workspace | Script | Command |
 |---|---|---|
-| @hyperdx/api | `ci:int` | `DOTENV_CONFIG_PATH=.env.test DOTENV_CONFIG_OVERRIDE=true jest --config jest.int.config.js --runInBand --ci --forceExit --passWithNoTests` |
-| @hyperdx/api | `dev:int` | `DOTENV_CONFIG_PATH=.env.test DOTENV_CONFIG_OVERRIDE=true jest --config jest.int.config.js --runInBand --coverage --forceExit` |
-| @hyperdx/common-utils | `ci:int` | `DOTENV_CONFIG_PATH=.env.test jest --config jest.int.config.js --runInBand --ci --coverage --passWithNoTests` |
-| @hyperdx/common-utils | `dev:int` | `DOTENV_CONFIG_PATH=.env.test jest --config jest.int.config.js --watchAll --runInBand` |
+| @couchbase-traces/api | `ci:int` | `DOTENV_CONFIG_PATH=.env.test DOTENV_CONFIG_OVERRIDE=true jest --config jest.int.config.js --runInBand --ci --forceExit --passWithNoTests` |
+| @couchbase-traces/api | `dev:int` | `DOTENV_CONFIG_PATH=.env.test DOTENV_CONFIG_OVERRIDE=true jest --config jest.int.config.js --runInBand --coverage --forceExit` |
+| @couchbase-traces/common-utils | `ci:int` | `DOTENV_CONFIG_PATH=.env.test jest --config jest.int.config.js --runInBand --ci --coverage --passWithNoTests` |
+| @couchbase-traces/common-utils | `dev:int` | `DOTENV_CONFIG_PATH=.env.test jest --config jest.int.config.js --watchAll --runInBand` |
 
 ### Branding
 
 | Category | hyperdx | clickstack | clickhouse | deploysentinel | hdx |
 |---|---|---|---|---|---|
-| package_names | 1276 | 0 | 138 | 0 | 1 |
-| external_dependencies | 6 | 19 | 136 | 0 | 0 |
+| package_names | 0 | 0 | 138 | 0 | 1 |
+| external_dependencies | 6 | 18 | 135 | 0 | 0 |
 | env_vars | 442 | 12 | 547 | 0 | 555 |
-| telemetry_endpoints | 64 | 66 | 133 | 0 | 2 |
+| telemetry_endpoints | 63 | 66 | 133 | 0 | 2 |
 | assets | 0 | 10 | 0 | 0 | 4 |
-| docker | 98 | 3 | 117 | 0 | 110 |
-| docs | 977 | 459 | 665 | 0 | 258 |
-| ui_strings | 20 | 23 | 71 | 0 | 128 |
+| docker | 86 | 3 | 117 | 0 | 110 |
+| docs | 660 | 459 | 665 | 0 | 258 |
+| ui_strings | 15 | 23 | 71 | 0 | 128 |
 | code_identifiers | 125 | 22 | 2209 | 0 | 641 |
-| other | 1083 | 1542 | 1709 | 14 | 1715 |
+| other | 1017 | 1542 | 1709 | 14 | 1715 |
 
 ### Feature status
 
@@ -628,9 +628,73 @@ Collector components, pipelines, ClickHouse exporters, and management code.
 - W_PLAN_MISSING: 1 occurrences. First: COUCHBASE_PORT_PLAN.md not found at the project root; plan check skipped (COUCHBASE_PORT_PLAN.md)
 - W_SCHEMA_UNPARSED: 1 occurrences. First: Unparsed statement: CREATE DATABASE IF NOT EXISTS DATABASE (docker/otel-collector/schema/seed/00001_create_database.sql)
 - W_TABLE_REDEFINED: 3 occurrences. First: Table otel_logs is defined in docker/otel-collector/schema/seed/00002_otel_logs.sql and docker/otel-collector/schema/seed/00002_otel_logs_compat.sql (docker/otel-collector/schema/seed/00002_otel_logs_compat.sql)
-- W_UNRESOLVED_IMPORT: 1 occurrences. First: Cannot resolve "@hyperdx/api/build/serverless" (packages/app/pages/api/[...all].ts)
+- W_UNRESOLVED_IMPORT: 1 occurrences. First: Cannot resolve "@couchbase-traces/api/build/serverless" (packages/app/pages/api/[...all].ts)
 - W_UNRESOLVED_MOUNT: 1 occurrences. First: Cannot resolve router for mount "/v1/opamp" at line 13 (packages/api/src/opamp/app.ts)
 <!-- phase2:end -->
+
+<!-- phase3:start -->
+## Phase 3: Rebrand
+
+### Package renames
+
+| From | To | Directory |
+|---|---|---|
+| `@hyperdx/api` | `@couchbase-traces/api` | `packages/api` |
+| `@hyperdx/app` | `@couchbase-traces/app` | `packages/app` |
+| `@hyperdx/cli` | `@couchbase-traces/cli` | `packages/cli` |
+| `@hyperdx/common-utils` | `@couchbase-traces/common-utils` | `packages/common-utils` |
+| `@hyperdx/hdx-eval` | `@couchbase-traces/hdx-eval` | `packages/hdx-eval` |
+| `@hyperdx/otel-collector` | `@couchbase-traces/otel-collector` | `packages/otel-collector` |
+
+### Environment variable map
+
+None.
+
+### Token map by status
+
+| Key | Count |
+|---|---|
+| proposed | 256 |
+| review | 30 |
+
+### Allowlist by reason
+
+None.
+
+### URL actions by rule
+
+| Key | Count |
+|---|---|
+| rule 1 keep | 15 |
+| rule 1 replace | 23 |
+| rule 2 replace | 115 |
+| rule 3 replace | 11 |
+| rule 4 replace | 34 |
+| rule 5 keep | 11 |
+| rule 6 review | 55 |
+| rule 7 review | 20 |
+
+### Outbound hits by context
+
+| Key | Count |
+|---|---|
+| link | 24 |
+| request | 4 |
+| unknown | 5 |
+
+### Workflow classes
+
+| Key | Count |
+|---|---|
+| bot | 5 |
+| ci | 11 |
+| publish | 2 |
+
+### Features pending a decision
+
+- `api-team-clickhouse-settings`: Edits ClickHouse-specific query settings (such as limits and timeouts) for a team. Couchbase has no equivalent per-query engine settings, so the feature may be reduced to SDK query options or dropped.
+- `app-clickhouse`: Shows ClickHouse server health from system tables such as query_log and parts. Couchbase has no direct equivalent of these tables, so the dashboard needs a different data source or a sign-off to drop.
+<!-- phase3:end -->
 
 ### Plan corrections, resolved
 

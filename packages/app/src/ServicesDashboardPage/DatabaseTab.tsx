@@ -1,11 +1,11 @@
 import { useCallback, useMemo, useState } from 'react';
-import { convertDateRangeToGranularityString } from '@hyperdx/common-utils/dist/core/utils';
+import { convertDateRangeToGranularityString } from '@couchbase-traces/common-utils/dist/core/utils';
 import {
   BuilderChartConfigWithDateRange,
   CteChartConfig,
   DisplayType,
   SourceKind,
-} from '@hyperdx/common-utils/dist/types';
+} from '@couchbase-traces/common-utils/dist/types';
 import { Grid } from '@mantine/core';
 import { IconFilter, IconTable } from '@tabler/icons-react';
 

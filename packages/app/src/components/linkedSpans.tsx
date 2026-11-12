@@ -5,7 +5,7 @@ import {
   isTraceSource,
   TSource,
   TTraceSource,
-} from '@hyperdx/common-utils/dist/types';
+} from '@couchbase-traces/common-utils/dist/types';
 import { Group, Text } from '@mantine/core';
 
 import { useQueriedChartConfig } from '@/hooks/useChartConfig';

@@ -2,7 +2,7 @@ import {
   AggregateFunctionSchema,
   AlertChartConfig,
   DisplayType,
-} from '@hyperdx/common-utils/dist/types';
+} from '@couchbase-traces/common-utils/dist/types';
 import { omit } from 'lodash';
 
 import { AlertSource, IAlert } from '@/models/alert';

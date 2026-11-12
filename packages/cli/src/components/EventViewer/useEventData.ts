@@ -1,6 +1,6 @@
 import { useState, useCallback, useEffect, useRef } from 'react';
 
-import type { Metadata } from '@hyperdx/common-utils/dist/core/metadata';
+import type { Metadata } from '@couchbase-traces/common-utils/dist/core/metadata';
 
 import type { SourceResponse, ProxyClickhouseClient } from '@/api/client';
 import { buildEventSearchQuery, buildFullRowQuery } from '@/api/eventQuery';

@@ -2,7 +2,7 @@ import z from 'zod';
 import type {
   ConditionFilter,
   TTraceSource,
-} from '@hyperdx/common-utils/dist/types';
+} from '@couchbase-traces/common-utils/dist/types';
 
 import { getHttpMethod, getHttpStatusCode } from './httpSpanAttributes';
 import { getHttpUrl } from './httpUrl';

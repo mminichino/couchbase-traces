@@ -4,7 +4,7 @@ import {
   formatDate,
   fromWallClock,
   toWallClock,
-} from '@hyperdx/common-utils/dist/core/utils';
+} from '@couchbase-traces/common-utils/dist/core/utils';
 
 import { currentDate, getLocalTimeZone } from '@/timeZone';
 

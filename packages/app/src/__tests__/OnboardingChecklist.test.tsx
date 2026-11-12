@@ -1,4 +1,4 @@
-import { ONBOARDING_TASK_IDS } from '@hyperdx/common-utils/dist/types';
+import { ONBOARDING_TASK_IDS } from '@couchbase-traces/common-utils/dist/types';
 import { MantineProvider } from '@mantine/core';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { act, render, screen } from '@testing-library/react';

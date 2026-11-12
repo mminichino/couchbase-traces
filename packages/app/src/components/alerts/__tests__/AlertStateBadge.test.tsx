@@ -1,4 +1,4 @@
-import { AlertState } from '@hyperdx/common-utils/dist/types';
+import { AlertState } from '@couchbase-traces/common-utils/dist/types';
 import { screen } from '@testing-library/react';
 
 import { AlertStateBadge } from '@/components/alerts/AlertStateBadge';

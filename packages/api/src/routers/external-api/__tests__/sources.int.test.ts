@@ -1,8 +1,11 @@
 import {
   mapGranularityToExternalFormat,
   mapGranularityToInternalFormat,
-} from '@hyperdx/common-utils/dist/externalSource';
-import { MetricsDataType, SourceKind } from '@hyperdx/common-utils/dist/types';
+} from '@couchbase-traces/common-utils/dist/externalSource';
+import {
+  MetricsDataType,
+  SourceKind,
+} from '@couchbase-traces/common-utils/dist/types';
 import mongoose from 'mongoose';
 import request, { SuperAgentTest } from 'supertest';
 

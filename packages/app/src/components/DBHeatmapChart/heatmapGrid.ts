@@ -1,4 +1,4 @@
-import { ColumnMetaType } from '@hyperdx/common-utils/dist/clickhouse';
+import { ColumnMetaType } from '@couchbase-traces/common-utils/dist/clickhouse';
 
 export type HeatmapScaleType = 'log' | 'linear';
 

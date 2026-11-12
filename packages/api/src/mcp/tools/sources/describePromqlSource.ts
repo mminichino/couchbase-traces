@@ -1,4 +1,4 @@
-import { quoteIdentifierIfNeeded } from '@hyperdx/common-utils/dist/core/metadata';
+import { quoteIdentifierIfNeeded } from '@couchbase-traces/common-utils/dist/core/metadata';
 
 import { getPromqlLabelCatalog } from '@/controllers/promql';
 import type { ToolResult } from '@/mcp/tools/types';

@@ -4,9 +4,9 @@ import {
   getFilterVariableName,
   isFilterVariableEnabled,
   isStaticListFilter,
-} from '@hyperdx/common-utils/dist/filters';
-import type { ChartVariable } from '@hyperdx/common-utils/dist/types';
-import { isFilterSingleSelect } from '@hyperdx/common-utils/dist/variables';
+} from '@couchbase-traces/common-utils/dist/filters';
+import type { ChartVariable } from '@couchbase-traces/common-utils/dist/types';
+import { isFilterSingleSelect } from '@couchbase-traces/common-utils/dist/variables';
 import { z } from 'zod';
 
 import type {

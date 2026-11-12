@@ -1,10 +1,10 @@
-import { validateDashboardFilterOptionUniqueness } from '@hyperdx/common-utils/dist/dashboardValidation';
+import { validateDashboardFilterOptionUniqueness } from '@couchbase-traces/common-utils/dist/dashboardValidation';
 import {
   DashboardWithoutId,
   DashboardWithoutIdSchema,
   resolveChartPaletteToken,
   walkRawDashboardTileColors,
-} from '@hyperdx/common-utils/dist/types';
+} from '@couchbase-traces/common-utils/dist/types';
 import fs from 'fs';
 import path from 'path';
 

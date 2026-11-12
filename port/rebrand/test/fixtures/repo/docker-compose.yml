@@ -1,0 +1,5 @@
+services:
+  app:
+    image: ${HDX_IMAGE_REPO}/${IMAGE_NAME_DOCKERHUB}:latest
+    environment:
+      HDX_Y: ${HDX_Y:-1}

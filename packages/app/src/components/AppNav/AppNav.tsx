@@ -5,7 +5,7 @@ import Script from 'next/script';
 import cx from 'classnames';
 import { Badge } from '@clickhouse/click-ui';
 import { setAttributes, setUser } from '@clickhouse/clickstack-browser';
-import { SavedSearchListApiResponse } from '@hyperdx/common-utils/dist/types';
+import { SavedSearchListApiResponse } from '@couchbase-traces/common-utils/dist/types';
 import { Anchor, Collapse, Flex, Group, ScrollArea, Text } from '@mantine/core';
 import { useDisclosure, useFocusTrap, useLocalStorage } from '@mantine/hooks';
 import {

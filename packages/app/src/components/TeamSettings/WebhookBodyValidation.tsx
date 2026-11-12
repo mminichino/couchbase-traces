@@ -1,4 +1,4 @@
-import { WebhookTemplateError } from '@hyperdx/common-utils/dist/core/handlebarsEnv';
+import { WebhookTemplateError } from '@couchbase-traces/common-utils/dist/core/handlebarsEnv';
 import { Alert, Code } from '@mantine/core';
 import { IconAlertTriangle } from '@tabler/icons-react';
 

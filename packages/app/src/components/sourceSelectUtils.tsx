@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import { SourceKind, TSource } from '@hyperdx/common-utils/dist/types';
+import { SourceKind, TSource } from '@couchbase-traces/common-utils/dist/types';
 import { ComboboxItem, OptionsFilter } from '@mantine/core';
 import {
   IconChartLine,

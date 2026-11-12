@@ -1,5 +1,5 @@
 import { use } from 'react';
-import { TTraceSource } from '@hyperdx/common-utils/dist/types';
+import { TTraceSource } from '@couchbase-traces/common-utils/dist/types';
 import { Text } from '@mantine/core';
 import { Handle, Node, NodeProps, NodeToolbar, Position } from '@xyflow/react';
 

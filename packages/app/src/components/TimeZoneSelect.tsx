@@ -1,5 +1,5 @@
 import { useCallback, useMemo } from 'react';
-import { UTC_TIME_ZONE } from '@hyperdx/common-utils/dist/core/utils';
+import { UTC_TIME_ZONE } from '@couchbase-traces/common-utils/dist/core/utils';
 import {
   Box,
   Button,

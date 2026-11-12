@@ -1,5 +1,5 @@
-import { renderChartConfig } from '@hyperdx/common-utils/dist/core/renderChartConfig';
-import { ChartConfigWithOptDateRange } from '@hyperdx/common-utils/dist/types';
+import { renderChartConfig } from '@couchbase-traces/common-utils/dist/core/renderChartConfig';
+import { ChartConfigWithOptDateRange } from '@couchbase-traces/common-utils/dist/types';
 import { useQuery, UseQueryOptions } from '@tanstack/react-query';
 
 import { useClickhouseClient } from '@/clickhouse';

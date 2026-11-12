@@ -1,5 +1,5 @@
-import { SourceKind } from '@hyperdx/common-utils/dist/types';
-import { MetricsDataType } from '@hyperdx/common-utils/dist/types';
+import { SourceKind } from '@couchbase-traces/common-utils/dist/types';
+import { MetricsDataType } from '@couchbase-traces/common-utils/dist/types';
 import { ObjectId } from 'mongodb';
 import request from 'supertest';
 

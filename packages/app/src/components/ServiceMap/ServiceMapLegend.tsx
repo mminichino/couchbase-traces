@@ -1,4 +1,4 @@
-import { TTraceSource } from '@hyperdx/common-utils/dist/types';
+import { TTraceSource } from '@couchbase-traces/common-utils/dist/types';
 import { Group, Stack, Text } from '@mantine/core';
 
 import { formatDurationMs } from '@/utils';

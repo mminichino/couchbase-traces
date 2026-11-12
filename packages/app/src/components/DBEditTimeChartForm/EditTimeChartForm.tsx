@@ -8,19 +8,18 @@ import {
   type UseFormSetValue,
   useWatch,
 } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { getHeatmapMode } from '@hyperdx/common-utils/dist/core/heatmap';
-import { tcFromSource } from '@hyperdx/common-utils/dist/core/metadata';
-import { isReducibleRangeQuery } from '@hyperdx/common-utils/dist/core/promql';
+import { getHeatmapMode } from '@couchbase-traces/common-utils/dist/core/heatmap';
+import { tcFromSource } from '@couchbase-traces/common-utils/dist/core/metadata';
+import { isReducibleRangeQuery } from '@couchbase-traces/common-utils/dist/core/promql';
 import {
   displayTypeSupportsBuilderAlerts,
   displayTypeSupportsRawSqlAlerts,
   isTimeSeriesDisplayType,
-} from '@hyperdx/common-utils/dist/core/utils';
+} from '@couchbase-traces/common-utils/dist/core/utils';
 import {
   displayTypeRequiresSource,
   isRawSqlSavedChartConfig,
-} from '@hyperdx/common-utils/dist/guards';
+} from '@couchbase-traces/common-utils/dist/guards';
 import {
   BroadcastFilter,
   ChartConfigWithDateRange,
@@ -32,8 +31,9 @@ import {
   SourceKind,
   TILE_DESCRIPTION_MAX_LENGTH,
   TSource,
-} from '@hyperdx/common-utils/dist/types';
-import { getAlertVariableWarning } from '@hyperdx/common-utils/dist/variables';
+} from '@couchbase-traces/common-utils/dist/types';
+import { getAlertVariableWarning } from '@couchbase-traces/common-utils/dist/variables';
+import { zodResolver } from '@hookform/resolvers/zod';
 import {
   Box,
   Flex,

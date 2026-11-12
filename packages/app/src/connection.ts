@@ -1,6 +1,6 @@
 import store from 'store2';
-import { testLocalConnection } from '@hyperdx/common-utils/dist/clickhouse/browser';
-import { Connection } from '@hyperdx/common-utils/dist/types';
+import { testLocalConnection } from '@couchbase-traces/common-utils/dist/clickhouse/browser';
+import { Connection } from '@couchbase-traces/common-utils/dist/types';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
 import { hdxServer } from '@/api';

@@ -1,5 +1,8 @@
 import { useMemo } from 'react';
-import { SourceKind, TTraceSource } from '@hyperdx/common-utils/dist/types';
+import {
+  SourceKind,
+  TTraceSource,
+} from '@couchbase-traces/common-utils/dist/types';
 import { Select, SelectProps } from '@mantine/core';
 
 import { useQueriedChartConfig } from '@/hooks/useChartConfig';

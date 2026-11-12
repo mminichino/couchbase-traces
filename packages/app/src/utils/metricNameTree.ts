@@ -1,4 +1,4 @@
-import { MetricsDataType } from '@hyperdx/common-utils/dist/types';
+import { MetricsDataType } from '@couchbase-traces/common-utils/dist/types';
 import type { TreeNodeData } from '@mantine/core';
 
 /** One metric from the catalog: a (name, kind) pair plus its OTel metadata. */

@@ -13,7 +13,7 @@ import {
   SourceSchema,
   SourceSchemaNoId,
   TSource,
-} from '@hyperdx/common-utils/dist/types';
+} from '@couchbase-traces/common-utils/dist/types';
 import {
   ActionIcon,
   Anchor,

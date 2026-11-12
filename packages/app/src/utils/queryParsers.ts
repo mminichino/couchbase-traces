@@ -2,7 +2,7 @@ import { createParser } from 'nuqs';
 import {
   DashboardFilterValue,
   DashboardFilterValueSchema,
-} from '@hyperdx/common-utils/dist/types';
+} from '@couchbase-traces/common-utils/dist/types';
 import { SortingState } from '@tanstack/react-table';
 
 import {

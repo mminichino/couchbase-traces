@@ -8,7 +8,7 @@ import sub from 'date-fns/sub';
 import { useQueryState } from 'nuqs';
 import { useForm, useWatch } from 'react-hook-form';
 import { Badge } from '@clickhouse/click-ui';
-import { convertDateRangeToGranularityString } from '@hyperdx/common-utils/dist/core/utils';
+import { convertDateRangeToGranularityString } from '@couchbase-traces/common-utils/dist/core/utils';
 import {
   isLogSource,
   isMetricSource,
@@ -16,7 +16,7 @@ import {
   TLogSource,
   TMetricSource,
   TSource,
-} from '@hyperdx/common-utils/dist/types';
+} from '@couchbase-traces/common-utils/dist/types';
 import {
   ActionIcon,
   Alert,

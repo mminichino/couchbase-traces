@@ -1,7 +1,7 @@
 import { useMemo } from 'react';
 import stripAnsi from 'strip-ansi';
-import { convertDateRangeToGranularityString } from '@hyperdx/common-utils/dist/core/utils';
-import { BuilderChartConfigWithDateRange } from '@hyperdx/common-utils/dist/types';
+import { convertDateRangeToGranularityString } from '@couchbase-traces/common-utils/dist/core/utils';
+import { BuilderChartConfigWithDateRange } from '@couchbase-traces/common-utils/dist/types';
 import { useQuery } from '@tanstack/react-query';
 
 import { timeBucketByGranularity, toStartOfInterval } from '@/ChartUtils';

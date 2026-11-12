@@ -1,4 +1,4 @@
-import type { QueryAttribution } from '@hyperdx/common-utils/dist/clickhouse';
+import type { QueryAttribution } from '@couchbase-traces/common-utils/dist/clickhouse';
 import {
   getPromqlChartQueries,
   PromqlExpressionSamples,
@@ -6,13 +6,13 @@ import {
   reducePromqlChartRows,
   toPromqlChartResult,
   toPromqlSamples,
-} from '@hyperdx/common-utils/dist/core/promqlChart';
+} from '@couchbase-traces/common-utils/dist/core/promqlChart';
 import {
   DateRange,
   PromqlChartConfig,
   PromqlReducer,
   PromqlSeries,
-} from '@hyperdx/common-utils/dist/types';
+} from '@couchbase-traces/common-utils/dist/types';
 
 import { prometheusApi } from '@/api';
 import { ChartQueryResult } from '@/types';

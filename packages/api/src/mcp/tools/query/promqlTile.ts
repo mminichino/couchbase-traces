@@ -1,7 +1,7 @@
 import {
   displayTypeSupportsReducer,
   getQueriedPromqlSeries,
-} from '@hyperdx/common-utils/dist/core/promql';
+} from '@couchbase-traces/common-utils/dist/core/promql';
 import {
   getPromqlChartQueries,
   getPromqlChartRange,
@@ -10,13 +10,13 @@ import {
   reducePromqlChartRows,
   toPromqlChartResult,
   toPromqlSamples,
-} from '@hyperdx/common-utils/dist/core/promqlChart';
-import { convertGranularityToSeconds } from '@hyperdx/common-utils/dist/core/utils';
+} from '@couchbase-traces/common-utils/dist/core/promqlChart';
+import { convertGranularityToSeconds } from '@couchbase-traces/common-utils/dist/core/utils';
 import type {
   ChartVariable,
   PromqlSavedChartConfig,
   PromqlSeries,
-} from '@hyperdx/common-utils/dist/types';
+} from '@couchbase-traces/common-utils/dist/types';
 
 import {
   PromQLQueryError,

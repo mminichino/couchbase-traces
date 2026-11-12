@@ -1,5 +1,5 @@
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import type { BuilderChartConfigWithDateRange } from '@hyperdx/common-utils/dist/types';
+import type { BuilderChartConfigWithDateRange } from '@couchbase-traces/common-utils/dist/types';
 import { Flex, FlexProps, Text } from '@mantine/core';
 
 import { FilterPill, FilterValueEditor } from '@/components/FilterPill';

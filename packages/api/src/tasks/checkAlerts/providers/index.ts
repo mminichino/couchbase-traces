@@ -1,5 +1,8 @@
-import { ClickhouseClient } from '@hyperdx/common-utils/dist/clickhouse/node';
-import { AlertChartConfig, Tile } from '@hyperdx/common-utils/dist/types';
+import { ClickhouseClient } from '@couchbase-traces/common-utils/dist/clickhouse/node';
+import {
+  AlertChartConfig,
+  Tile,
+} from '@couchbase-traces/common-utils/dist/types';
 import _ from 'lodash';
 
 import { ObjectId } from '@/models';

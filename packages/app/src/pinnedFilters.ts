@@ -1,4 +1,4 @@
-import type { PinnedFiltersValue } from '@hyperdx/common-utils/dist/types';
+import type { PinnedFiltersValue } from '@couchbase-traces/common-utils/dist/types';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
 import { hdxServer } from './api';

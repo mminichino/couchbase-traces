@@ -1,0 +1,9 @@
+{
+  "name": "@hyperdx/api",
+  "version": "2.0.0",
+  "dependencies": {
+    "@hyperdx/common-utils": "^0.34.0",
+    "@hyperdx/lucene": "^1.0.0",
+    "@clickhouse/clickstack-node": "^1.0.0"
+  }
+}

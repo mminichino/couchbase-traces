@@ -12,7 +12,7 @@ import {
 import {
   Field,
   TableConnectionChoice,
-} from '@hyperdx/common-utils/dist/core/metadata';
+} from '@couchbase-traces/common-utils/dist/core/metadata';
 import {
   Flex,
   Paper,

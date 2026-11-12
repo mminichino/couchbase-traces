@@ -1,5 +1,8 @@
-import { ResponseJSON } from '@hyperdx/common-utils/dist/clickhouse';
-import { MetricsDataType, SourceKind } from '@hyperdx/common-utils/dist/types';
+import { ResponseJSON } from '@couchbase-traces/common-utils/dist/clickhouse';
+import {
+  MetricsDataType,
+  SourceKind,
+} from '@couchbase-traces/common-utils/dist/types';
 import { context, ROOT_CONTEXT } from '@opentelemetry/api';
 import { type AnyValueMap, SeverityNumber } from '@opentelemetry/api-logs';
 import {

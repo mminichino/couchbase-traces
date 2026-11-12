@@ -1,4 +1,4 @@
-import { ClickhouseClient } from '@hyperdx/common-utils/dist/clickhouse/node';
+import { ClickhouseClient } from '@couchbase-traces/common-utils/dist/clickhouse/node';
 import ms from 'ms';
 
 import * as config from '@/config';

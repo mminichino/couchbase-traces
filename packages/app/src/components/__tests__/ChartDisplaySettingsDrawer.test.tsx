@@ -2,7 +2,7 @@ import React from 'react';
 import {
   DisplayType,
   MAX_LEGEND_TEMPLATE_LENGTH,
-} from '@hyperdx/common-utils/dist/types';
+} from '@couchbase-traces/common-utils/dist/types';
 import { screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 

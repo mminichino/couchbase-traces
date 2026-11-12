@@ -1,6 +1,6 @@
 import React from 'react';
 import { Line, LineChart, ReferenceLine, XAxis, YAxis } from 'recharts';
-import { AlertThresholdType } from '@hyperdx/common-utils/dist/types';
+import { AlertThresholdType } from '@couchbase-traces/common-utils/dist/types';
 import { render } from '@testing-library/react';
 
 import { getAlertReferenceLines } from '@/components/Alerts';

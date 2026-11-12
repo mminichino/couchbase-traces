@@ -1,5 +1,5 @@
 import React from 'react';
-import type { IacResourceRef } from '@hyperdx/common-utils/dist/iac';
+import type { IacResourceRef } from '@couchbase-traces/common-utils/dist/iac';
 import { MantineProvider } from '@mantine/core';
 import { fireEvent, render, screen } from '@testing-library/react';
 

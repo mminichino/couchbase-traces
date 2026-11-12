@@ -1,4 +1,4 @@
-# @hyperdx/otel-collector
+# @couchbase-traces/otel-collector
 
 ## 2.44.0
 

@@ -4,7 +4,7 @@ import {
   BuilderChartConfigWithDateRange,
   SourceKind,
   TTraceSource,
-} from '@hyperdx/common-utils/dist/types';
+} from '@couchbase-traces/common-utils/dist/types';
 import { keepPreviousData } from '@tanstack/react-query';
 
 import { useQueriedChartConfig } from '@/hooks/useChartConfig';

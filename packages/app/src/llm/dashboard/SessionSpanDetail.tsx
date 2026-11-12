@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
 import SqlString from 'sqlstring';
-import { TTraceSource } from '@hyperdx/common-utils/dist/types';
+import { TTraceSource } from '@couchbase-traces/common-utils/dist/types';
 import { Loader, Stack, Text } from '@mantine/core';
 
 import { useQueriedChartConfig } from '@/hooks/useChartConfig';

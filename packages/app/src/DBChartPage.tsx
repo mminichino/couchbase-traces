@@ -6,7 +6,10 @@ import { parseAsJson, parseAsString, useQueryState } from 'nuqs';
 import { useForm } from 'react-hook-form';
 import { useHotkeys } from 'react-hotkeys-hook';
 import { Badge, Separator } from '@clickhouse/click-ui';
-import { SavedChartConfig, SourceKind } from '@hyperdx/common-utils/dist/types';
+import {
+  SavedChartConfig,
+  SourceKind,
+} from '@couchbase-traces/common-utils/dist/types';
 import {
   Alert,
   Anchor,

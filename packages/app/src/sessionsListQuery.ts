@@ -1,11 +1,11 @@
-import { ChSql, chSql } from '@hyperdx/common-utils/dist/clickhouse';
-import { getFirstTimestampValueExpression } from '@hyperdx/common-utils/dist/core/utils';
+import { ChSql, chSql } from '@couchbase-traces/common-utils/dist/clickhouse';
+import { getFirstTimestampValueExpression } from '@couchbase-traces/common-utils/dist/core/utils';
 import {
   BuilderChartConfigWithDateRange,
   Filter,
   TSessionSource,
   TTraceSource,
-} from '@hyperdx/common-utils/dist/types';
+} from '@couchbase-traces/common-utils/dist/types';
 
 import type { FieldExpressionGenerator } from './hooks/useFieldExpressionGenerator';
 import {

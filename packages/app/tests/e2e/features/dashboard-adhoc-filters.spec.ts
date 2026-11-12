@@ -6,7 +6,7 @@
  * `$__filters`; those of a PromQL filter are added to every selector of PromQL
  * tiles.
  */
-import { DisplayType } from '@hyperdx/common-utils/dist/types';
+import { DisplayType } from '@couchbase-traces/common-utils/dist/types';
 
 import { DashboardPage } from '../page-objects/DashboardPage';
 import { SERVICES } from '../seed-clickhouse';

@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
+import { ClickHouseQueryError } from '@couchbase-traces/common-utils/dist/clickhouse';
+import { TTraceSource } from '@couchbase-traces/common-utils/dist/types';
 import dagre from '@dagrejs/dagre';
-import { ClickHouseQueryError } from '@hyperdx/common-utils/dist/clickhouse';
-import { TTraceSource } from '@hyperdx/common-utils/dist/types';
 import {
   Box,
   Center,

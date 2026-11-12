@@ -4,7 +4,7 @@ import { add, min, sub } from 'date-fns';
 import {
   convertDateRangeToGranularityString,
   Granularity,
-} from '@hyperdx/common-utils/dist/core/utils';
+} from '@couchbase-traces/common-utils/dist/core/utils';
 import {
   BuilderChartConfigWithDateRange,
   DisplayType,
@@ -14,7 +14,7 @@ import {
   SourceKind,
   TMetricSource,
   TSource,
-} from '@hyperdx/common-utils/dist/types';
+} from '@couchbase-traces/common-utils/dist/types';
 import {
   Alert,
   Anchor,

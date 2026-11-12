@@ -1,4 +1,7 @@
-import { AlertErrorType, SourceKind } from '@hyperdx/common-utils/dist/types';
+import {
+  AlertErrorType,
+  SourceKind,
+} from '@couchbase-traces/common-utils/dist/types';
 import _ from 'lodash';
 import { ObjectId } from 'mongodb';
 import request from 'supertest';

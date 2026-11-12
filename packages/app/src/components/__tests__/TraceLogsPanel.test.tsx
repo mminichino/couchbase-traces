@@ -3,7 +3,7 @@ import {
   BuilderChartConfigWithDateRange,
   SourceKind,
   TLogSource,
-} from '@hyperdx/common-utils/dist/types';
+} from '@couchbase-traces/common-utils/dist/types';
 import { MantineProvider } from '@mantine/core';
 import { act, render, screen } from '@testing-library/react';
 

@@ -89,7 +89,7 @@
       "kind": "api_route",
       "key": "DELETE /api/v2/sources/:id",
       "file": "packages/api/src/routers/external-api/v2/sources.ts",
-      "line": 1247,
+      "line": 1250,
       "detail": {
         "method": "DELETE",
         "path": "/api/v2/sources/:id",
@@ -467,7 +467,7 @@
       "kind": "api_route",
       "key": "GET /api/v2/sources",
       "file": "packages/api/src/routers/external-api/v2/sources.ts",
-      "line": 906,
+      "line": 909,
       "detail": {
         "method": "GET",
         "path": "/api/v2/sources",
@@ -481,7 +481,7 @@
       "kind": "api_route",
       "key": "GET /api/v2/sources/:id",
       "file": "packages/api/src/routers/external-api/v2/sources.ts",
-      "line": 969,
+      "line": 972,
       "detail": {
         "method": "GET",
         "path": "/api/v2/sources/:id",
@@ -1153,7 +1153,7 @@
       "kind": "api_route",
       "key": "POST /api/v2/sources",
       "file": "packages/api/src/routers/external-api/v2/sources.ts",
-      "line": 1056,
+      "line": 1059,
       "detail": {
         "method": "POST",
         "path": "/api/v2/sources",
@@ -1531,7 +1531,7 @@
       "kind": "api_route",
       "key": "PUT /api/v2/sources/:id",
       "file": "packages/api/src/routers/external-api/v2/sources.ts",
-      "line": 1159,
+      "line": 1162,
       "detail": {
         "method": "PUT",
         "path": "/api/v2/sources/:id",
@@ -2210,7 +2210,7 @@
       "kind": "mcp_tool",
       "key": "clickstack_describe_source",
       "file": "packages/api/src/mcp/tools/sources/describeSource.ts",
-      "line": 569,
+      "line": 572,
       "detail": {
         "toolName": "clickstack_describe_source",
         "dir": "sources"

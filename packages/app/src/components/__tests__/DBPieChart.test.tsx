@@ -1,4 +1,7 @@
-import { DisplayType, PromqlReducer } from '@hyperdx/common-utils/dist/types';
+import {
+  DisplayType,
+  PromqlReducer,
+} from '@couchbase-traces/common-utils/dist/types';
 import { screen, within } from '@testing-library/react';
 
 import DateRangeIndicator from '@/components/charts/DateRangeIndicator';

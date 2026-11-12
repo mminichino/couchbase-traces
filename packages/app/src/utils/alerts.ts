@@ -6,9 +6,9 @@ import {
 } from 'date-fns';
 import _ from 'lodash';
 import { z } from 'zod';
-import { formatTileAlertDisplayName } from '@hyperdx/common-utils/dist/alerts';
-import { Granularity } from '@hyperdx/common-utils/dist/core/utils';
-import { isPromqlSavedChartConfig } from '@hyperdx/common-utils/dist/guards';
+import { formatTileAlertDisplayName } from '@couchbase-traces/common-utils/dist/alerts';
+import { Granularity } from '@couchbase-traces/common-utils/dist/core/utils';
+import { isPromqlSavedChartConfig } from '@couchbase-traces/common-utils/dist/guards';
 import {
   type Alert,
   ALERT_INTERVAL_TO_MINUTES,
@@ -20,7 +20,7 @@ import {
   AlertThresholdType,
   ChartAlertBaseSchema,
   SavedChartConfig,
-} from '@hyperdx/common-utils/dist/types';
+} from '@couchbase-traces/common-utils/dist/types';
 
 import { IS_DEV } from '@/config';
 import type { AlertsPageItem } from '@/types';

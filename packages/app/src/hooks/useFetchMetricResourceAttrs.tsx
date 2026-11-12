@@ -2,8 +2,11 @@ import {
   chSql,
   ResponseJSON,
   tableExpr,
-} from '@hyperdx/common-utils/dist/clickhouse';
-import { SourceKind, TMetricSource } from '@hyperdx/common-utils/dist/types';
+} from '@couchbase-traces/common-utils/dist/clickhouse';
+import {
+  SourceKind,
+  TMetricSource,
+} from '@couchbase-traces/common-utils/dist/types';
 import { useQuery } from '@tanstack/react-query';
 
 import { getClickhouseClient } from '@/clickhouse';

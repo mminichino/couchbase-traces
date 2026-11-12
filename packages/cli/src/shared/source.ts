@@ -9,7 +9,7 @@
  * Same exports as the web frontend so they can be moved to common-utils later.
  */
 
-import { splitAndTrimWithBracket } from '@hyperdx/common-utils/dist/core/utils';
+import { splitAndTrimWithBracket } from '@couchbase-traces/common-utils/dist/core/utils';
 
 import type { SourceResponse } from '@/api/client';
 

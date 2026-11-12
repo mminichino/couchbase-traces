@@ -2,11 +2,11 @@ import type {
   CreateOrgApiKeyApiResponse,
   OrgApiKeyApiResponse,
   OrgApiKeysApiResponse,
-} from '@hyperdx/common-utils/dist/types';
+} from '@couchbase-traces/common-utils/dist/types';
 import {
   CreateOrgApiKeyRequestSchema,
   UpdateOrgApiKeyRequestSchema,
-} from '@hyperdx/common-utils/dist/types';
+} from '@couchbase-traces/common-utils/dist/types';
 import express from 'express';
 import { z } from 'zod';
 import { processRequest, validateRequest } from 'zod-express-middleware';

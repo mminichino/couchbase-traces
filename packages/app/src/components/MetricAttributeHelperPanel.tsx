@@ -1,6 +1,6 @@
 import { useCallback, useMemo, useState } from 'react';
 import { Badge } from '@clickhouse/click-ui';
-import { TMetricSource } from '@hyperdx/common-utils/dist/types';
+import { TMetricSource } from '@couchbase-traces/common-utils/dist/types';
 import {
   Box,
   Button,

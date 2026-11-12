@@ -1,5 +1,5 @@
 import { ComponentProps, use, useEffect } from 'react';
-import { SourceKind } from '@hyperdx/common-utils/dist/types';
+import { SourceKind } from '@couchbase-traces/common-utils/dist/types';
 import { Loader } from '@mantine/core';
 
 import {

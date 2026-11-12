@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
 import { Control, Controller } from 'react-hook-form';
-import { WebhookService } from '@hyperdx/common-utils/dist/types';
+import { WebhookService } from '@couchbase-traces/common-utils/dist/types';
 import { ComboboxData, Group, Select } from '@mantine/core';
 import { IconWebhook } from '@tabler/icons-react';
 

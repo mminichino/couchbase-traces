@@ -1,5 +1,5 @@
-import { errorStatusPredicateSql } from '@hyperdx/common-utils/dist/core/spanPredicates';
-import { getFirstTimestampValueExpression } from '@hyperdx/common-utils/dist/core/utils';
+import { errorStatusPredicateSql } from '@couchbase-traces/common-utils/dist/core/spanPredicates';
+import { getFirstTimestampValueExpression } from '@couchbase-traces/common-utils/dist/core/utils';
 
 import {
   baseConfig,

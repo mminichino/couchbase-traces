@@ -1,7 +1,7 @@
-import type { ChSql } from '@hyperdx/common-utils/dist/clickhouse';
-import type { Metadata } from '@hyperdx/common-utils/dist/core/metadata';
-import { timeFilterExpr } from '@hyperdx/common-utils/dist/core/renderChartConfig';
-import type { QuerySettings } from '@hyperdx/common-utils/dist/types';
+import type { ChSql } from '@couchbase-traces/common-utils/dist/clickhouse';
+import type { Metadata } from '@couchbase-traces/common-utils/dist/core/metadata';
+import { timeFilterExpr } from '@couchbase-traces/common-utils/dist/core/renderChartConfig';
+import type { QuerySettings } from '@couchbase-traces/common-utils/dist/types';
 
 import { ClickhouseClient } from '@/clickhouse';
 import { getConnectionById } from '@/controllers/connection';

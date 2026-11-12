@@ -16,8 +16,11 @@ import {
   useQueryStates,
 } from 'nuqs';
 import { useForm, useWatch } from 'react-hook-form';
-import { tcFromSource } from '@hyperdx/common-utils/dist/core/metadata';
-import { SourceKind, TTraceSource } from '@hyperdx/common-utils/dist/types';
+import { tcFromSource } from '@couchbase-traces/common-utils/dist/core/metadata';
+import {
+  SourceKind,
+  TTraceSource,
+} from '@couchbase-traces/common-utils/dist/types';
 import {
   Button,
   Flex,

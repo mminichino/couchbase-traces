@@ -1,15 +1,15 @@
 import { useMemo } from 'react';
 import stripAnsi from 'strip-ansi';
-import { splitAndTrimWithBracket } from '@hyperdx/common-utils/dist/core/utils';
+import { splitAndTrimWithBracket } from '@couchbase-traces/common-utils/dist/core/utils';
 import {
   buildNoisyBodyMatcher,
   DENOISE_SAMPLE_SIZE,
   selectNoisyPatterns,
-} from '@hyperdx/common-utils/dist/drain';
+} from '@couchbase-traces/common-utils/dist/drain';
 import {
   BuilderChartConfigWithDateRange,
   TSource,
-} from '@hyperdx/common-utils/dist/types';
+} from '@couchbase-traces/common-utils/dist/types';
 
 import {
   DRAIN_EXTRA_DELIMITERS,

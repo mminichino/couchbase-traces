@@ -1,4 +1,4 @@
-# @hyperdx/cli — Development Guide
+# @couchbase-traces/cli — Development Guide
 
 ## Prerequisites
 
@@ -124,7 +124,7 @@ src/
 
 ```
 User types search → buildEventSearchQuery()
-  → renderChartConfig() from @hyperdx/common-utils
+  → renderChartConfig() from @couchbase-traces/common-utils
   → ProxyClickhouseClient.query()
   → API /clickhouse-proxy → ClickHouse
   → JSON response with { data, meta }
@@ -231,7 +231,7 @@ corresponding web component before making changes**:
 
 Files in `src/shared/` are copied from `packages/app` with `@source` annotations
 at the top of each file. These are candidates for future extraction to
-`@hyperdx/common-utils`:
+`@couchbase-traces/common-utils`:
 
 ```typescript
 /**

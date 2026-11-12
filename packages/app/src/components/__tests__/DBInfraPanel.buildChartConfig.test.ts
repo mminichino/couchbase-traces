@@ -1,9 +1,9 @@
-import { Granularity } from '@hyperdx/common-utils/dist/core/utils';
+import { Granularity } from '@couchbase-traces/common-utils/dist/core/utils';
 import {
   DisplayType,
   MetricsDataType,
   TMetricSource,
-} from '@hyperdx/common-utils/dist/types';
+} from '@couchbase-traces/common-utils/dist/types';
 
 import { buildChartConfig } from '@/components/DBInfraPanel';
 import { INFRA_CORRELATIONS } from '@/components/infraCorrelations';

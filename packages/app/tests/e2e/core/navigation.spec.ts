@@ -267,7 +267,7 @@ test.describe('Navigation', { tag: ['@core'] }, () => {
         drawer.getByTestId('whats-new-counts').first(),
       ).toHaveAttribute(
         'href',
-        /blob\/%40hyperdx%2Fapp%409\.9\.9\/CHANGELOG\.md#v999--2026-08-21$/,
+        /blob\/%40couchbase-traces%2Fapp%409\.9\.9\/CHANGELOG\.md#v999--2026-08-21$/,
       );
       await expect(drawer.getByTestId('drawer-github-link')).toHaveAttribute(
         'href',

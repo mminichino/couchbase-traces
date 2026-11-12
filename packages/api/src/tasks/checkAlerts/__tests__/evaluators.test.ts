@@ -1,4 +1,7 @@
-import { AlertErrorType, DisplayType } from '@hyperdx/common-utils/dist/types';
+import {
+  AlertErrorType,
+  DisplayType,
+} from '@couchbase-traces/common-utils/dist/types';
 import { Types } from 'mongoose';
 
 import { AlertState, IAlertError } from '@/models/alert';

@@ -19,21 +19,21 @@ import {
   convertToNumberChartConfig as convertToNumberChartConfigShared,
   convertToTableChartConfig as convertToTableChartConfigShared,
   getAlignedDateRange,
-} from '@hyperdx/common-utils/dist/core/utils';
+} from '@couchbase-traces/common-utils/dist/core/utils';
 import {
   displayTypeRequiresSource,
   isBuilderChartConfig,
   isBuilderSavedChartConfig,
   isPromqlSavedChartConfig,
   isRawSqlSavedChartConfig,
-} from '@hyperdx/common-utils/dist/guards';
+} from '@couchbase-traces/common-utils/dist/guards';
 import type {
   ChartConfigWithDateRange,
   Filter,
   MetricsDataType,
   SavedChartConfig,
-} from '@hyperdx/common-utils/dist/types';
-import { DisplayType } from '@hyperdx/common-utils/dist/types';
+} from '@couchbase-traces/common-utils/dist/types';
+import { DisplayType } from '@couchbase-traces/common-utils/dist/types';
 
 import type { SourceResponse } from '@/api/client';
 

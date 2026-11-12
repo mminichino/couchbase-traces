@@ -1,5 +1,8 @@
-import { ClickhouseClient } from '@hyperdx/common-utils/dist/clickhouse/node';
-import { MetricsDataType, SourceKind } from '@hyperdx/common-utils/dist/types';
+import { ClickhouseClient } from '@couchbase-traces/common-utils/dist/clickhouse/node';
+import {
+  MetricsDataType,
+  SourceKind,
+} from '@couchbase-traces/common-utils/dist/types';
 import { Client } from '@modelcontextprotocol/sdk/client/index.js';
 import { ObjectId } from 'mongodb';
 

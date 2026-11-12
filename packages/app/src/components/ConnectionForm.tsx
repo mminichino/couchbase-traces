@@ -1,8 +1,8 @@
 import { useCallback, useState } from 'react';
 import { omit } from 'lodash';
 import { Controller, useForm, useWatch } from 'react-hook-form';
-import { testLocalConnection } from '@hyperdx/common-utils/dist/clickhouse/browser';
-import { Connection } from '@hyperdx/common-utils/dist/types';
+import { testLocalConnection } from '@couchbase-traces/common-utils/dist/clickhouse/browser';
+import { Connection } from '@couchbase-traces/common-utils/dist/types';
 import {
   Anchor,
   Box,

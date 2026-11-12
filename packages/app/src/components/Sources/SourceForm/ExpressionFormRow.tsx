@@ -1,7 +1,7 @@
 import { useMemo } from 'react';
 import { Control, UseFormSetValue, useWatch } from 'react-hook-form';
-import { ColumnMetaType } from '@hyperdx/common-utils/dist/clickhouse';
-import { SourceKind, TSource } from '@hyperdx/common-utils/dist/types';
+import { ColumnMetaType } from '@couchbase-traces/common-utils/dist/clickhouse';
+import { SourceKind, TSource } from '@couchbase-traces/common-utils/dist/types';
 
 import { SQLInlineEditorControlled } from '@/components/SQLEditor/SQLInlineEditor';
 import {

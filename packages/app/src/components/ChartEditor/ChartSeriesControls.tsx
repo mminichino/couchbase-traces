@@ -1,6 +1,6 @@
 import { ReactNode } from 'react';
 import { Control, Path } from 'react-hook-form';
-import { NumberFormat } from '@hyperdx/common-utils/dist/types';
+import { NumberFormat } from '@couchbase-traces/common-utils/dist/types';
 import {
   ActionIcon,
   Button,

@@ -6,7 +6,7 @@
  * broadcast reaches. Checking "Block every tile" (`isGlobalRequirement: true`)
  * widens that to the whole dashboard. Markdown tiles are never blocked.
  */
-import { DisplayType } from '@hyperdx/common-utils/dist/types';
+import { DisplayType } from '@couchbase-traces/common-utils/dist/types';
 
 import { DashboardPage } from '../page-objects/DashboardPage';
 import { expect, test } from '../utils/base-test';

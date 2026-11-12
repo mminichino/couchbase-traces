@@ -2,7 +2,7 @@ import {
   DEFAULT_GENERIC_WEBHOOK_BODY,
   DEFAULT_INCIDENT_IO_WEBHOOK_BODY,
   WebhookService,
-} from '@hyperdx/common-utils/dist/types';
+} from '@couchbase-traces/common-utils/dist/types';
 import { MantineProvider } from '@mantine/core';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import {

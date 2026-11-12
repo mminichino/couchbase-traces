@@ -1,5 +1,8 @@
-import type { ResponseJSON } from '@hyperdx/common-utils/dist/clickhouse';
-import { SourceKind, TLogSource } from '@hyperdx/common-utils/dist/types';
+import type { ResponseJSON } from '@couchbase-traces/common-utils/dist/clickhouse';
+import {
+  SourceKind,
+  TLogSource,
+} from '@couchbase-traces/common-utils/dist/types';
 import { MantineProvider } from '@mantine/core';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { render, screen, waitFor } from '@testing-library/react';

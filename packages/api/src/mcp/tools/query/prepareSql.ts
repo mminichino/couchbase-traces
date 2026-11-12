@@ -1,5 +1,5 @@
-import { hasMacro } from '@hyperdx/common-utils/dist/macros';
-import { hasVariableMacro } from '@hyperdx/common-utils/dist/variables';
+import { hasMacro } from '@couchbase-traces/common-utils/dist/macros';
+import { hasVariableMacro } from '@couchbase-traces/common-utils/dist/variables';
 
 import { getSource } from '@/controllers/sources';
 import type { McpErrorResult } from '@/mcp/utils/errors';

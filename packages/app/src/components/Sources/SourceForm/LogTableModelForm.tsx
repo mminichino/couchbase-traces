@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useWatch } from 'react-hook-form';
 import { Separator } from '@clickhouse/click-ui';
-import { SourceKind } from '@hyperdx/common-utils/dist/types';
+import { SourceKind } from '@couchbase-traces/common-utils/dist/types';
 import { Anchor, Box, Button, Group, Stack } from '@mantine/core';
 import { IconSettings } from '@tabler/icons-react';
 

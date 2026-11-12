@@ -29,12 +29,12 @@ import {
 import { getTickValuesFixedDomain } from 'recharts/lib/util/scale/getNiceTickValues';
 import { CurveType } from 'recharts/types/shape/Curve';
 import { AxisDomain } from 'recharts/types/util/types';
-import { convertGranularityToSeconds } from '@hyperdx/common-utils/dist/core/utils';
+import { convertGranularityToSeconds } from '@couchbase-traces/common-utils/dist/core/utils';
 import {
   DisplayType,
   getDefaultLineInterpolation,
   LineInterpolation,
-} from '@hyperdx/common-utils/dist/types';
+} from '@couchbase-traces/common-utils/dist/types';
 import { Popover } from '@mantine/core';
 
 import type { NumberFormat } from '@/types';

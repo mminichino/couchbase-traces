@@ -1,11 +1,11 @@
-import { WebhookService } from '@hyperdx/common-utils/dist/types';
+import { WebhookService } from '@couchbase-traces/common-utils/dist/types';
 import {
   isValidSlackUrl,
   PASSWORD_MAX_LENGTH,
   PASSWORD_MIN_LENGTH,
   PASSWORD_SPECIAL_CHARS,
   passwordValidators,
-} from '@hyperdx/common-utils/dist/validation';
+} from '@couchbase-traces/common-utils/dist/validation';
 import dns from 'dns';
 import { Address4, Address6 } from 'ip-address';
 import type { LookupFunction } from 'net';

@@ -3,7 +3,7 @@ import {
   DashboardTemplateSchema,
   DashboardWithoutIdSchema,
   SourceKind,
-} from '@hyperdx/common-utils/dist/types';
+} from '@couchbase-traces/common-utils/dist/types';
 import { act, fireEvent, screen, waitFor } from '@testing-library/react';
 
 import { buildMappingFormSchema, Mapping } from '@/DBDashboardImportPage';

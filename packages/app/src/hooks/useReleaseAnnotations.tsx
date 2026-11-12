@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef } from 'react';
 import Link from 'next/link';
-import { isMissingColumnError } from '@hyperdx/common-utils/dist/clickhouse';
+import { isMissingColumnError } from '@couchbase-traces/common-utils/dist/clickhouse';
 import {
   BuilderChartConfigWithDateRange,
   Filter,
@@ -8,7 +8,7 @@ import {
   SelectList,
   SourceKind,
   TSource,
-} from '@hyperdx/common-utils/dist/types';
+} from '@couchbase-traces/common-utils/dist/types';
 import { Anchor, Stack, Text } from '@mantine/core';
 import { notifications } from '@mantine/notifications';
 

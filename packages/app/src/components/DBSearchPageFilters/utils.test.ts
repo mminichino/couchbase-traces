@@ -1,4 +1,4 @@
-import type { FilterState } from '@hyperdx/common-utils/dist/filters';
+import type { FilterState } from '@couchbase-traces/common-utils/dist/filters';
 
 import {
   cleanClickHouseExpression,

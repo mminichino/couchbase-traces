@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef } from 'react';
 import { Controller, useFieldArray, useWatch } from 'react-hook-form';
 import { Separator } from '@clickhouse/click-ui';
-import { SourceKind } from '@hyperdx/common-utils/dist/types';
+import { SourceKind } from '@couchbase-traces/common-utils/dist/types';
 import {
   ActionIcon,
   Box,

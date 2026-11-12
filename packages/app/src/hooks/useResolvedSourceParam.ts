@@ -1,5 +1,5 @@
 import { useEffect, useMemo } from 'react';
-import { SourceKind, TSource } from '@hyperdx/common-utils/dist/types';
+import { SourceKind, TSource } from '@couchbase-traces/common-utils/dist/types';
 import { notifications } from '@mantine/notifications';
 
 import { useSources } from '@/source';

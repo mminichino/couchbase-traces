@@ -1,7 +1,7 @@
 import {
   ONBOARDING_TASK_IDS,
   type OnboardingData,
-} from '@hyperdx/common-utils/dist/types';
+} from '@couchbase-traces/common-utils/dist/types';
 // @ts-expect-error don't install the @types for this package, as it conflicts with mongoose
 import passportLocalMongoose from '@hyperdx/passport-local-mongoose';
 import mongoose, { Schema } from 'mongoose';

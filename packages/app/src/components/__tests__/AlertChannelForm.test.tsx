@@ -1,5 +1,5 @@
 import { useForm } from 'react-hook-form';
-import { WebhookService } from '@hyperdx/common-utils/dist/types';
+import { WebhookService } from '@couchbase-traces/common-utils/dist/types';
 import { fireEvent, screen, waitFor, within } from '@testing-library/react';
 
 import { AlertChannelForm } from '@/components/Alerts';

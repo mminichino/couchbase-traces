@@ -4,7 +4,7 @@ import {
   MAX_TAGS,
   SavedChartConfig,
   tagsSchema,
-} from '@hyperdx/common-utils/dist/types';
+} from '@couchbase-traces/common-utils/dist/types';
 
 import { AlertSource } from '@/models/alert';
 import {

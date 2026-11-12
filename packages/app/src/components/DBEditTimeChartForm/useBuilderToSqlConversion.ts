@@ -9,8 +9,8 @@ import {
 import {
   renderBuilderConfigAsSqlTemplate,
   RenderedSqlTemplate,
-} from '@hyperdx/common-utils/dist/core/builderToRawSql';
-import { TSource } from '@hyperdx/common-utils/dist/types';
+} from '@couchbase-traces/common-utils/dist/core/builderToRawSql';
+import { TSource } from '@couchbase-traces/common-utils/dist/types';
 import { usePrevious } from '@mantine/hooks';
 import { notifications } from '@mantine/notifications';
 

@@ -1,4 +1,4 @@
-import { UTC_TIME_ZONE } from '@hyperdx/common-utils/dist/core/utils';
+import { UTC_TIME_ZONE } from '@couchbase-traces/common-utils/dist/core/utils';
 
 /** Time zone setting value that follows the browser's zone. */
 export const LOCAL_TIME_ZONE = 'local';

@@ -1,11 +1,11 @@
 import SqlString from 'sqlstring';
-import type { TSource } from '@hyperdx/common-utils/dist/types';
+import type { TSource } from '@couchbase-traces/common-utils/dist/types';
 import {
   Filter,
   isLogSource,
   isTraceSource,
   pickSampleWeightExpressionProps,
-} from '@hyperdx/common-utils/dist/types';
+} from '@couchbase-traces/common-utils/dist/types';
 
 import { HARD_LINES_LIMIT } from '@/HDXMultiSeriesTimeChart';
 import { getExpressions } from '@/serviceDashboard';

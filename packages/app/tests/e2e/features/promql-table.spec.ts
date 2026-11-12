@@ -8,7 +8,7 @@
  * The seed gives `e2e_service_up` one series per `SERVICES` entry, labelled
  * `service`, one sample a minute.
  */
-import { DisplayType } from '@hyperdx/common-utils/dist/types';
+import { DisplayType } from '@couchbase-traces/common-utils/dist/types';
 
 import { DashboardPage } from '../page-objects/DashboardPage';
 import { SERVICES } from '../seed-clickhouse';

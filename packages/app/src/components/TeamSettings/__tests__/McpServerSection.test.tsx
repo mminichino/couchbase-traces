@@ -94,7 +94,7 @@ describe('McpServerSection', () => {
     renderSection();
 
     expect(
-      screen.getByText(/^npx @hyperdx\/cli mcp install --app-url /),
+      screen.getByText(/^npx @couchbase-traces\/cli mcp install --app-url /),
     ).toBeInTheDocument();
   });
 

@@ -6,7 +6,10 @@ import {
   UseFormSetValue,
   useWatch,
 } from 'react-hook-form';
-import { NumberFormat, NumericUnit } from '@hyperdx/common-utils/dist/types';
+import {
+  NumberFormat,
+  NumericUnit,
+} from '@couchbase-traces/common-utils/dist/types';
 import {
   Checkbox as MCheckbox,
   NativeSelect,

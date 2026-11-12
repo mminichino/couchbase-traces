@@ -2,8 +2,8 @@ import { useFormState, useWatch } from 'react-hook-form';
 import {
   deriveVariableName,
   validateVariableName,
-} from '@hyperdx/common-utils/dist/filters';
-import { DashboardFilter } from '@hyperdx/common-utils/dist/types';
+} from '@couchbase-traces/common-utils/dist/filters';
+import { DashboardFilter } from '@couchbase-traces/common-utils/dist/types';
 import { TextInput } from '@mantine/core';
 
 import { CustomInputWrapper } from './CustomInputWrapper';

@@ -4,7 +4,7 @@ import {
   getPendingFilterValuesVariables,
   isAdhocConditionSupported,
   resolveFilterValuesWhere,
-} from '@hyperdx/common-utils/dist/filters';
+} from '@couchbase-traces/common-utils/dist/filters';
 import {
   ADHOC_FILTER_MAX_CONDITIONS,
   AdhocDashboardFilter as AdhocDashboardFilterType,
@@ -12,8 +12,8 @@ import {
   AdhocFilterConditionSchema,
   ChartVariable,
   DashboardFilter,
-} from '@hyperdx/common-utils/dist/types';
-import { getVariableReferences } from '@hyperdx/common-utils/dist/variables';
+} from '@couchbase-traces/common-utils/dist/types';
+import { getVariableReferences } from '@couchbase-traces/common-utils/dist/variables';
 import {
   ActionIcon,
   CloseButton,

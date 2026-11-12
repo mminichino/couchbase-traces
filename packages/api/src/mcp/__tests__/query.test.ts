@@ -10,7 +10,7 @@ import { ClickHouseError } from '@clickhouse/client-common';
 import {
   MacroExpansionError,
   UnknownVariableError,
-} from '@hyperdx/common-utils/dist/macroErrors';
+} from '@couchbase-traces/common-utils/dist/macroErrors';
 
 import {
   annotateIncreaseTopNHint,

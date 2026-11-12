@@ -9,7 +9,7 @@
  * `service`, so the bare metric is the multi-series case and a `service`
  * selector is the single-series case.
  */
-import { DisplayType } from '@hyperdx/common-utils/dist/types';
+import { DisplayType } from '@couchbase-traces/common-utils/dist/types';
 
 import { DashboardPage } from '../page-objects/DashboardPage';
 import { expect, test } from '../utils/base-test';

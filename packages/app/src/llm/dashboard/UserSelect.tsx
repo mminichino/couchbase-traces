@@ -1,4 +1,4 @@
-import { TTraceSource } from '@hyperdx/common-utils/dist/types';
+import { TTraceSource } from '@couchbase-traces/common-utils/dist/types';
 import { SelectProps } from '@mantine/core';
 
 import { LLMExpressions } from '@/llm/lib/expressions';

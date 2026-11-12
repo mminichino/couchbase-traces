@@ -10,12 +10,12 @@ import cx from 'classnames';
 import {
   TableMetadata,
   tcFromSource,
-} from '@hyperdx/common-utils/dist/core/metadata';
-import { FilterState } from '@hyperdx/common-utils/dist/filters';
+} from '@couchbase-traces/common-utils/dist/core/metadata';
+import { FilterState } from '@couchbase-traces/common-utils/dist/filters';
 import {
   BuilderChartConfigWithDateRange,
   SourceKind,
-} from '@hyperdx/common-utils/dist/types';
+} from '@couchbase-traces/common-utils/dist/types';
 import {
   Accordion,
   ActionIcon,

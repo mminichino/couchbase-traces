@@ -3,7 +3,7 @@ import {
   PASSWORD_MAX_LENGTH,
   PASSWORD_MIN_LENGTH,
   passwordValidators,
-} from '@hyperdx/common-utils/dist/validation';
+} from '@couchbase-traces/common-utils/dist/validation';
 import { IconCheck, IconX } from '@tabler/icons-react';
 
 const checkLength = (password: string) =>

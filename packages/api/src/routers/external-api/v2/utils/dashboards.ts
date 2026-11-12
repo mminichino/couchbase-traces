@@ -1,10 +1,10 @@
-import { getHeatmapMode } from '@hyperdx/common-utils/dist/core/heatmap';
-import { getPromqlSeries } from '@hyperdx/common-utils/dist/core/promql';
+import { getHeatmapMode } from '@couchbase-traces/common-utils/dist/core/heatmap';
+import { getPromqlSeries } from '@couchbase-traces/common-utils/dist/core/promql';
 import {
   isFormulaSourceKind,
   savedChartConfigSupportsAlerts,
   TIME_SERIES_DISPLAY_TYPE_BY_NAME,
-} from '@hyperdx/common-utils/dist/core/utils';
+} from '@couchbase-traces/common-utils/dist/core/utils';
 import {
   validateDashboardContainersStructure,
   validateDashboardFilterFieldGating,
@@ -12,17 +12,17 @@ import {
   validateDashboardFilterOptionUniqueness,
   validateDashboardFilterVariableNames,
   validateDashboardTileContainerRefs,
-} from '@hyperdx/common-utils/dist/dashboardValidation';
+} from '@couchbase-traces/common-utils/dist/dashboardValidation';
 import {
   isPrometheusLabelFilter,
   isStaticListFilter,
-} from '@hyperdx/common-utils/dist/filters';
+} from '@couchbase-traces/common-utils/dist/filters';
 import {
   isBuilderSavedChartConfig,
   isHeatmapCompatibleSource,
   isPromqlSavedChartConfig,
   isRawSqlSavedChartConfig,
-} from '@hyperdx/common-utils/dist/guards';
+} from '@couchbase-traces/common-utils/dist/guards';
 import {
   AggregateFunctionSchema,
   BuilderSavedChartConfig,
@@ -43,8 +43,8 @@ import {
   RawSqlSavedChartConfig,
   resolveChartPaletteToken,
   SavedChartConfig,
-} from '@hyperdx/common-utils/dist/types';
-import { SearchConditionLanguageSchema as whereLanguageSchema } from '@hyperdx/common-utils/dist/types';
+} from '@couchbase-traces/common-utils/dist/types';
+import { SearchConditionLanguageSchema as whereLanguageSchema } from '@couchbase-traces/common-utils/dist/types';
 import { pick } from 'lodash';
 import _ from 'lodash';
 import mongoose from 'mongoose';

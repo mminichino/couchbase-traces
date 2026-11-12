@@ -2,7 +2,7 @@ import * as React from 'react';
 import {
   AlertEvaluation,
   AlertInterval,
-} from '@hyperdx/common-utils/dist/types';
+} from '@couchbase-traces/common-utils/dist/types';
 import { Center, Skeleton, Table, Text, Tooltip } from '@mantine/core';
 
 import { AlertEvaluationRow } from '@/components/alerts/AlertEvaluationRow';

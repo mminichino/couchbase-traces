@@ -7,7 +7,7 @@ import {
   MAX_ALERT_CHANNELS,
   SearchConditionTrimmedLanguageSchema,
   tagsSchema,
-} from '@hyperdx/common-utils/dist/types';
+} from '@couchbase-traces/common-utils/dist/types';
 import { z } from 'zod';
 
 import {

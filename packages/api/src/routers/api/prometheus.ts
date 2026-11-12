@@ -1,8 +1,8 @@
 import {
   parseLogComment,
   QUERY_ATTRIBUTION_HEADER,
-} from '@hyperdx/common-utils/dist/clickhouse';
-import { withQueryAttribution } from '@hyperdx/common-utils/dist/clickhouse/node';
+} from '@couchbase-traces/common-utils/dist/clickhouse';
+import { withQueryAttribution } from '@couchbase-traces/common-utils/dist/clickhouse/node';
 import express from 'express';
 import { omit } from 'lodash';
 import { performance } from 'perf_hooks';

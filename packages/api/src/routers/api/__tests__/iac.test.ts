@@ -1,4 +1,4 @@
-import { IAC_MANIFEST_LIMIT } from '@hyperdx/common-utils/dist/iac';
+import { IAC_MANIFEST_LIMIT } from '@couchbase-traces/common-utils/dist/iac';
 
 import { capListing } from '@/routers/api/iac';
 

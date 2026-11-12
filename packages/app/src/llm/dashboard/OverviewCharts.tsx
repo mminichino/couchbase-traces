@@ -1,4 +1,7 @@
-import { DisplayType, NumberFormat } from '@hyperdx/common-utils/dist/types';
+import {
+  DisplayType,
+  NumberFormat,
+} from '@couchbase-traces/common-utils/dist/types';
 import { Grid } from '@mantine/core';
 
 import {

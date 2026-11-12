@@ -4,8 +4,8 @@ import {
   convertCHDataTypeToJSType,
   isCHIntegerType,
   JSDataType,
-} from '@hyperdx/common-utils/dist/clickhouse';
-import { SourceKind } from '@hyperdx/common-utils/dist/types';
+} from '@couchbase-traces/common-utils/dist/clickhouse';
+import { SourceKind } from '@couchbase-traces/common-utils/dist/types';
 
 export type SourceFieldKind =
   | 'bodyExpression'

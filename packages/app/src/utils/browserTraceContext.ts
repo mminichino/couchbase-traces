@@ -1,7 +1,7 @@
 import { get } from 'lodash';
-import type { ResponseJSON } from '@hyperdx/common-utils/dist/clickhouse';
-import { classifyTimestampType } from '@hyperdx/common-utils/dist/core/utils';
-import type { TLogSource } from '@hyperdx/common-utils/dist/types';
+import type { ResponseJSON } from '@couchbase-traces/common-utils/dist/clickhouse';
+import { classifyTimestampType } from '@couchbase-traces/common-utils/dist/core/utils';
+import type { TLogSource } from '@couchbase-traces/common-utils/dist/types';
 
 import { parseTimestampToMs } from '@/utils';
 import {

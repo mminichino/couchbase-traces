@@ -1,4 +1,4 @@
-import { SourceKind } from '@hyperdx/common-utils/dist/types';
+import { SourceKind } from '@couchbase-traces/common-utils/dist/types';
 
 /**
  * Minimal shape needed to resolve a source param. Structural rather than

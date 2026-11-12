@@ -1,7 +1,7 @@
 import router from 'next/router';
 import SqlString from 'sqlstring';
-import { errorStatusPredicateSql } from '@hyperdx/common-utils/dist/core/spanPredicates';
-import { TTraceSource } from '@hyperdx/common-utils/dist/types';
+import { errorStatusPredicateSql } from '@couchbase-traces/common-utils/dist/core/spanPredicates';
+import { TTraceSource } from '@couchbase-traces/common-utils/dist/types';
 
 import type { ServiceAggregation } from '@/hooks/useServiceMap';
 

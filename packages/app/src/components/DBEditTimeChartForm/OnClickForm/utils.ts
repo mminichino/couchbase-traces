@@ -1,6 +1,9 @@
 import { Control } from 'react-hook-form';
 import z from 'zod';
-import { OnClick, OnClickSchema } from '@hyperdx/common-utils/dist/types';
+import {
+  OnClick,
+  OnClickSchema,
+} from '@couchbase-traces/common-utils/dist/types';
 
 export const DrawerSchema = z.object({ onClick: OnClickSchema.nullish() });
 export type DrawerFormValues = z.infer<typeof DrawerSchema>;

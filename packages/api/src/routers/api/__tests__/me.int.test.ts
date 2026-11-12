@@ -1,8 +1,8 @@
 // Over 300 lines by design: one cohesive suite for the whole `me` router
 // against a shared server fixture. The 300-line guideline targets source
 // modules, not test suites.
-import type { OnboardingTaskId } from '@hyperdx/common-utils/dist/types';
-import { AlertThresholdType } from '@hyperdx/common-utils/dist/types';
+import type { OnboardingTaskId } from '@couchbase-traces/common-utils/dist/types';
+import { AlertThresholdType } from '@couchbase-traces/common-utils/dist/types';
 
 import {
   getAgent,

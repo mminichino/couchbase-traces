@@ -3,13 +3,13 @@ import {
   SourceKind,
   TSessionSource,
   TTraceSource,
-} from '@hyperdx/common-utils/dist/types';
+} from '@couchbase-traces/common-utils/dist/types';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { renderHook, waitFor } from '@testing-library/react';
 
 import { useSessions } from '@/sessions';
 
-jest.mock('@hyperdx/common-utils/dist/core/renderChartConfig', () => ({
+jest.mock('@couchbase-traces/common-utils/dist/core/renderChartConfig', () => ({
   renderChartConfig: jest.fn(async (config: unknown) => ({
     sql: JSON.stringify(config),
     params: {},

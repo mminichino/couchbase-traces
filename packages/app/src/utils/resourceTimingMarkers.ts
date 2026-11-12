@@ -3,7 +3,7 @@ import SqlString from 'sqlstring';
 import type {
   BuilderChartConfigWithDateRange,
   Filter,
-} from '@hyperdx/common-utils/dist/types';
+} from '@couchbase-traces/common-utils/dist/types';
 
 import type { TTimelineSpanEventMarker } from '@/components/TimelineChart/TimelineSpanEventMarker';
 import { getDisplayedTimestampValueExpression } from '@/source';

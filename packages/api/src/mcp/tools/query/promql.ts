@@ -1,7 +1,7 @@
 import {
   PromqlQueryTypeSchema,
   SQLIntervalSchema,
-} from '@hyperdx/common-utils/dist/types';
+} from '@couchbase-traces/common-utils/dist/types';
 import { z } from 'zod';
 
 import { READ_ONLY_TOOL } from '@/mcp/tools/annotations';

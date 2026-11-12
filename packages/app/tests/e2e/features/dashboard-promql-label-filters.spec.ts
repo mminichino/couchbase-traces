@@ -7,7 +7,7 @@
  * Values come from `E2E_PROMQL_TABLE`, seeded with one `service`-labelled series
  * per entry in `SERVICES` (see seed-clickhouse.ts).
  */
-import { DisplayType } from '@hyperdx/common-utils/dist/types';
+import { DisplayType } from '@couchbase-traces/common-utils/dist/types';
 import type { Page } from '@playwright/test';
 
 import { DashboardPage } from '../page-objects/DashboardPage';

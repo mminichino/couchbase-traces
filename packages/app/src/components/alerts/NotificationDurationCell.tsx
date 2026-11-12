@@ -1,5 +1,5 @@
 import * as React from 'react';
-import type { AlertHistoryAnalytics } from '@hyperdx/common-utils/dist/types';
+import type { AlertHistoryAnalytics } from '@couchbase-traces/common-utils/dist/types';
 import { Collapse, Group, Stack, Text, UnstyledButton } from '@mantine/core';
 import { IconChevronDown, IconChevronRight } from '@tabler/icons-react';
 

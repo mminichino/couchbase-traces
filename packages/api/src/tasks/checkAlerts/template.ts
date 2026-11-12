@@ -1,17 +1,17 @@
-import { ClickhouseClient } from '@hyperdx/common-utils/dist/clickhouse/node';
-import { Metadata } from '@hyperdx/common-utils/dist/core/metadata';
-import { getPromqlSeries } from '@hyperdx/common-utils/dist/core/promql';
-import { renderChartConfig } from '@hyperdx/common-utils/dist/core/renderChartConfig';
-import { buildSearchChartConfig } from '@hyperdx/common-utils/dist/core/searchChartConfig';
+import { ClickhouseClient } from '@couchbase-traces/common-utils/dist/clickhouse/node';
+import { Metadata } from '@couchbase-traces/common-utils/dist/core/metadata';
+import { getPromqlSeries } from '@couchbase-traces/common-utils/dist/core/promql';
+import { renderChartConfig } from '@couchbase-traces/common-utils/dist/core/renderChartConfig';
+import { buildSearchChartConfig } from '@couchbase-traces/common-utils/dist/core/searchChartConfig';
 import {
   formatDate,
   objectHash,
   UTC_TIME_ZONE,
-} from '@hyperdx/common-utils/dist/core/utils';
+} from '@couchbase-traces/common-utils/dist/core/utils';
 import {
   isPromqlSavedChartConfig,
   isRawSqlSavedChartConfig,
-} from '@hyperdx/common-utils/dist/guards';
+} from '@couchbase-traces/common-utils/dist/guards';
 import {
   AlertChannelType,
   AlertThresholdType,
@@ -22,7 +22,7 @@ import {
   SavedChartConfig,
   SourceKind,
   zAlertChannelType,
-} from '@hyperdx/common-utils/dist/types';
+} from '@couchbase-traces/common-utils/dist/types';
 import Handlebars, { HelperOptions } from 'handlebars';
 import _ from 'lodash';
 import PromisedHandlebars from 'promised-handlebars';

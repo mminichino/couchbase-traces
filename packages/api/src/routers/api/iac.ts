@@ -3,7 +3,7 @@ import {
   IAC_MANIFEST_LIMIT,
   type IacImportManifest,
   isImportableSource,
-} from '@hyperdx/common-utils/dist/iac';
+} from '@couchbase-traces/common-utils/dist/iac';
 import express from 'express';
 import type { Query } from 'mongoose';
 

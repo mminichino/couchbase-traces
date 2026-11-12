@@ -1,11 +1,11 @@
-import { DEFAULT_PROMQL_REDUCER } from '@hyperdx/common-utils/dist/core/promql';
+import { DEFAULT_PROMQL_REDUCER } from '@couchbase-traces/common-utils/dist/core/promql';
 import {
   BuilderChartConfigWithDateRange,
   DisplayType,
   PromqlReducer,
   SourceKind,
   TSource,
-} from '@hyperdx/common-utils/dist/types';
+} from '@couchbase-traces/common-utils/dist/types';
 
 import {
   ChartKeyJoiner,

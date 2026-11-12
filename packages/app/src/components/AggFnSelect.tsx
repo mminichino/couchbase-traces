@@ -1,7 +1,7 @@
 import { useCallback, useMemo } from 'react';
 import { useController, UseControllerProps } from 'react-hook-form';
-import { getPercentileAggFnLevel } from '@hyperdx/common-utils/dist/core/utils';
-import { MetricsDataType } from '@hyperdx/common-utils/dist/types';
+import { getPercentileAggFnLevel } from '@couchbase-traces/common-utils/dist/core/utils';
+import { MetricsDataType } from '@couchbase-traces/common-utils/dist/types';
 import { Select } from '@mantine/core';
 
 import { AGG_FNS } from '@/ChartUtils';

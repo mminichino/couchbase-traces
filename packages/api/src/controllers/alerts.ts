@@ -4,12 +4,12 @@ import {
   isFormulaSourceKind,
   savedChartConfigSupportsAlerts,
   validateRawSqlForAlert,
-} from '@hyperdx/common-utils/dist/core/utils';
+} from '@couchbase-traces/common-utils/dist/core/utils';
 import {
   isPromqlSavedChartConfig,
   isRawSqlSavedChartConfig,
-} from '@hyperdx/common-utils/dist/guards';
-import { isRangeThresholdType } from '@hyperdx/common-utils/dist/types';
+} from '@couchbase-traces/common-utils/dist/guards';
+import { isRangeThresholdType } from '@couchbase-traces/common-utils/dist/types';
 import { groupBy } from 'lodash';
 import { type FilterQuery, Types } from 'mongoose';
 import { z } from 'zod';

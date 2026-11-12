@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import { inferTimestampColumn } from '@hyperdx/common-utils/dist/clickhouse';
+import { inferTimestampColumn } from '@couchbase-traces/common-utils/dist/clickhouse';
 
 import { useQueriedChartConfig } from '@/hooks/useChartConfig';
 

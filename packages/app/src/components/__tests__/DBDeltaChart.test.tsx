@@ -2,7 +2,7 @@ import React from 'react';
 import {
   BuilderChartConfigWithDateRange,
   Filter,
-} from '@hyperdx/common-utils/dist/types';
+} from '@couchbase-traces/common-utils/dist/types';
 import { screen } from '@testing-library/react';
 
 import DBDeltaChart from '@/components/DBDeltaChart';

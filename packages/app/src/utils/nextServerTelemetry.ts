@@ -1,4 +1,4 @@
-import { decideSelfTelemetry } from '@hyperdx/common-utils/dist/selfTelemetry';
+import { decideSelfTelemetry } from '@couchbase-traces/common-utils/dist/selfTelemetry';
 
 import { BASE_PATH, HDX_EXPORTER_ENABLED } from '@/config';
 

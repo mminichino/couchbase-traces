@@ -11,7 +11,7 @@ import {
   SavedChartConfig,
   SearchConditionLanguage,
   walkRawDashboardTileColors,
-} from '@hyperdx/common-utils/dist/types';
+} from '@couchbase-traces/common-utils/dist/types';
 import { notifications } from '@mantine/notifications';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 

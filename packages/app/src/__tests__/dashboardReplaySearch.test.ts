@@ -5,7 +5,7 @@ import {
   SourceKind,
   TLogSource,
   TSessionSource,
-} from '@hyperdx/common-utils/dist/types';
+} from '@couchbase-traces/common-utils/dist/types';
 
 import { buildDashboardReplaySearchUrl } from '@/ChartUtils';
 

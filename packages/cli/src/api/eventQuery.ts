@@ -6,16 +6,16 @@
 import type {
   ChSql,
   ColumnMetaType,
-} from '@hyperdx/common-utils/dist/clickhouse';
-import { chSqlToAliasMap } from '@hyperdx/common-utils/dist/clickhouse';
-import { renderChartConfig } from '@hyperdx/common-utils/dist/core/renderChartConfig';
-import type { Metadata } from '@hyperdx/common-utils/dist/core/metadata';
-import { aliasMapToWithClauses } from '@hyperdx/common-utils/dist/core/utils';
-import { DisplayType } from '@hyperdx/common-utils/dist/types';
+} from '@couchbase-traces/common-utils/dist/clickhouse';
+import { chSqlToAliasMap } from '@couchbase-traces/common-utils/dist/clickhouse';
+import { renderChartConfig } from '@couchbase-traces/common-utils/dist/core/renderChartConfig';
+import type { Metadata } from '@couchbase-traces/common-utils/dist/core/metadata';
+import { aliasMapToWithClauses } from '@couchbase-traces/common-utils/dist/core/utils';
+import { DisplayType } from '@couchbase-traces/common-utils/dist/types';
 import type {
   BuilderChartConfigWithDateRange,
   BuilderChartConfigWithOptDateRange,
-} from '@hyperdx/common-utils/dist/types';
+} from '@couchbase-traces/common-utils/dist/types';
 
 import type { SourceResponse } from './client';
 import { getFirstTimestampValueExpression } from '@/shared/source';

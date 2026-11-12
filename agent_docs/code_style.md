@@ -37,7 +37,7 @@ grep -rniE "export (const|function|type|interface|enum) [a-zA-Z]*(bucket|interva
 Search order: the file you are editing, then `packages/common-utils/src/`, then
 the rest of your package. `common-utils` has **no root barrel** — no
 `src/index.ts`, and its `package.json` declares no entry point, which is why
-every import is a deep `@hyperdx/common-utils/dist/...` path. `src/types.ts`
+every import is a deep `@couchbase-traces/common-utils/dist/...` path. `src/types.ts`
 alone is ~2,850 lines and 280+ exports. You cannot discover what exists by
 reading an index; grep is the index.
 

@@ -1,6 +1,6 @@
-import type { ClickhouseClient } from '@hyperdx/common-utils/dist/clickhouse/node';
-import type { Metadata } from '@hyperdx/common-utils/dist/core/metadata';
-import type { ChartConfigWithOptDateRange } from '@hyperdx/common-utils/dist/types';
+import type { ClickhouseClient } from '@couchbase-traces/common-utils/dist/clickhouse/node';
+import type { Metadata } from '@couchbase-traces/common-utils/dist/core/metadata';
+import type { ChartConfigWithOptDateRange } from '@couchbase-traces/common-utils/dist/types';
 
 import { registerExtensions } from '@/extensions';
 import type { AlertState, IAlert, IAlertError } from '@/models/alert';

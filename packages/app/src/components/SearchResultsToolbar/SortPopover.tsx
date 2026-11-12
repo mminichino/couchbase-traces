@@ -1,5 +1,5 @@
 import { useRef, useState } from 'react';
-import { TableConnection } from '@hyperdx/common-utils/dist/core/metadata';
+import { TableConnection } from '@couchbase-traces/common-utils/dist/core/metadata';
 import {
   ActionIcon,
   Autocomplete,

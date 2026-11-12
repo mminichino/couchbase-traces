@@ -6,17 +6,20 @@ import {
   isJSDataTypeScalar,
   JSDataType,
   QueryAttribution,
-} from '@hyperdx/common-utils/dist/clickhouse';
-import { Field, tcFromSource } from '@hyperdx/common-utils/dist/core/metadata';
+} from '@couchbase-traces/common-utils/dist/clickhouse';
+import {
+  Field,
+  tcFromSource,
+} from '@couchbase-traces/common-utils/dist/core/metadata';
 import {
   getAdhocFilterSourceKinds,
   isAdhocComparableDataType,
   ResolvedFilterValuesQuery,
-} from '@hyperdx/common-utils/dist/filters';
+} from '@couchbase-traces/common-utils/dist/filters';
 import {
   AdhocDashboardFilter,
   TSource,
-} from '@hyperdx/common-utils/dist/types';
+} from '@couchbase-traces/common-utils/dist/types';
 import {
   keepPreviousData,
   useQueries,

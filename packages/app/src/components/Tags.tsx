@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { TagResourceType } from '@hyperdx/common-utils/dist/types';
+import { TagResourceType } from '@couchbase-traces/common-utils/dist/types';
 import {
   ActionIcon,
   Button,

@@ -1,4 +1,7 @@
-import { SourceKind, UseTextIndex } from '@hyperdx/common-utils/dist/types';
+import {
+  SourceKind,
+  UseTextIndex,
+} from '@couchbase-traces/common-utils/dist/types';
 
 import {
   MV_AGGREGATE_FUNCTIONS,

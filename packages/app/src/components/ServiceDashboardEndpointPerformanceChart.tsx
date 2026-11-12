@@ -2,7 +2,7 @@ import { pick } from 'lodash';
 import {
   pickSampleWeightExpressionProps,
   TTraceSource,
-} from '@hyperdx/common-utils/dist/types';
+} from '@couchbase-traces/common-utils/dist/types';
 
 import { INTEGER_NUMBER_FORMAT, MS_NUMBER_FORMAT } from '@/ChartUtils';
 import { ChartCard } from '@/components/charts/ChartCard';

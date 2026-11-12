@@ -159,7 +159,7 @@ dev-int:
 	@mkdir -p $(HDX_CI_LOGS_DIR)
 	@bash scripts/ensure-dev-portal.sh
 	docker compose -p $(HDX_CI_PROJECT) -f ./docker-compose.ci.yml up -d
-	bash -c 'set -o pipefail; npx nx run @hyperdx/api:dev:int $(FILE) 2>&1 | tee $(HDX_CI_LOGS_DIR)/api-int.log'; ret=$$?; \
+	bash -c 'set -o pipefail; npx nx run @couchbase-traces/api:dev:int $(FILE) 2>&1 | tee $(HDX_CI_LOGS_DIR)/api-int.log'; ret=$$?; \
 	docker compose -p $(HDX_CI_PROJECT) -f ./docker-compose.ci.yml down -v; \
 	$(call archive-int-logs); \
 	exit $$ret
@@ -170,7 +170,7 @@ dev-int-common-utils:
 	@mkdir -p $(HDX_CI_LOGS_DIR)
 	@bash scripts/ensure-dev-portal.sh
 	docker compose -p $(HDX_CI_PROJECT) -f ./docker-compose.ci.yml up -d
-	bash -c 'set -o pipefail; npx nx run @hyperdx/common-utils:dev:int $(FILE) 2>&1 | tee $(HDX_CI_LOGS_DIR)/common-utils-int.log'; ret=$$?; \
+	bash -c 'set -o pipefail; npx nx run @couchbase-traces/common-utils:dev:int $(FILE) 2>&1 | tee $(HDX_CI_LOGS_DIR)/common-utils-int.log'; ret=$$?; \
 	docker compose -p $(HDX_CI_PROJECT) -f ./docker-compose.ci.yml down -v; \
 	$(call archive-int-logs); \
 	exit $$ret
@@ -232,9 +232,9 @@ dev-e2e:
 .PHONY: dev-migrate-db
 dev-migrate-db:
 	@echo "Migrating Mongo db...\n"
-	npx nx run @hyperdx/api:dev:migrate-db
+	npx nx run @couchbase-traces/api:dev:migrate-db
 	@echo "Migrating ClickHouse db...\n"
-	npx nx run @hyperdx/api:dev:migrate-ch
+	npx nx run @couchbase-traces/api:dev:migrate-ch
 
 .PHONY: version
 version:

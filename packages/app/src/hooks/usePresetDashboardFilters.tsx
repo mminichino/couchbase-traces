@@ -1,9 +1,9 @@
 import { useCallback } from 'react';
-import { isQueryExpressionFilter } from '@hyperdx/common-utils/dist/filters';
+import { isQueryExpressionFilter } from '@couchbase-traces/common-utils/dist/filters';
 import {
   DashboardFilter,
   PresetDashboard,
-} from '@hyperdx/common-utils/dist/types';
+} from '@couchbase-traces/common-utils/dist/types';
 import { notifications } from '@mantine/notifications';
 
 import api from '@/api';

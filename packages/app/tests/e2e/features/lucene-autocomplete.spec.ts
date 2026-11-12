@@ -12,7 +12,7 @@
  * services dashboard, sessions, the trace waterfall's span/log filters and the
  * Kubernetes dashboard each assert autocomplete in their own spec.
  */
-import { DisplayType } from '@hyperdx/common-utils/dist/types';
+import { DisplayType } from '@couchbase-traces/common-utils/dist/types';
 import { Page } from '@playwright/test';
 
 import { DashboardPage } from '../page-objects/DashboardPage';

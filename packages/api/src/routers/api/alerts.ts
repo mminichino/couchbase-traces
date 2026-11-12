@@ -1,11 +1,11 @@
-import { isTileAlertUnaddressable } from '@hyperdx/common-utils/dist/iac';
+import { isTileAlertUnaddressable } from '@couchbase-traces/common-utils/dist/iac';
 import type {
   AlertApiResponse,
   AlertEvaluationsApiResponse,
   AlertHistoryRangeApiResponse,
   AlertsApiResponse,
   AlertsPageItem,
-} from '@hyperdx/common-utils/dist/types';
+} from '@couchbase-traces/common-utils/dist/types';
 import express from 'express';
 import { pick } from 'lodash';
 import { ObjectId } from 'mongodb';

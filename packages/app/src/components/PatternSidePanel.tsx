@@ -1,6 +1,6 @@
 import * as React from 'react';
-import { JSDataType } from '@hyperdx/common-utils/dist/clickhouse';
-import { TSource } from '@hyperdx/common-utils/dist/types';
+import { JSDataType } from '@couchbase-traces/common-utils/dist/clickhouse';
+import { TSource } from '@couchbase-traces/common-utils/dist/types';
 import { Button, Card, Drawer, Stack, Text } from '@mantine/core';
 
 import { IsolatedChartSyncProvider } from '@/chartSync';

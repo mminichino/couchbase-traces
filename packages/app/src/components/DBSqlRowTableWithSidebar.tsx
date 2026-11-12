@@ -3,11 +3,11 @@ import { useQueryState } from 'nuqs';
 import {
   ClickHouseQueryError,
   ColumnMetaType,
-} from '@hyperdx/common-utils/dist/clickhouse';
+} from '@couchbase-traces/common-utils/dist/clickhouse';
 import {
   BuilderChartConfigWithDateRange,
   TSource,
-} from '@hyperdx/common-utils/dist/types';
+} from '@couchbase-traces/common-utils/dist/types';
 import { SortingState } from '@tanstack/react-table';
 
 import { RowWhereResult, WithClause } from '@/hooks/useRowWhere';

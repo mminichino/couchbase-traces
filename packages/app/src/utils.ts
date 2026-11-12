@@ -7,8 +7,8 @@ import TimestampNano from 'timestamp-nano';
 import {
   TableConnection,
   unquoteIdentifier,
-} from '@hyperdx/common-utils/dist/core/metadata';
-import { splitAndTrimWithBracket } from '@hyperdx/common-utils/dist/core/utils';
+} from '@couchbase-traces/common-utils/dist/core/metadata';
+import { splitAndTrimWithBracket } from '@couchbase-traces/common-utils/dist/core/utils';
 import {
   CATEGORICAL_PALETTE_TOKENS,
   ChartPaletteToken,
@@ -17,7 +17,7 @@ import {
   SourceKind,
   TMetricSource,
   TSource,
-} from '@hyperdx/common-utils/dist/types';
+} from '@couchbase-traces/common-utils/dist/types';
 import { SortingState } from '@tanstack/react-table';
 
 import { MetricsDataType, NumberFormat } from './types';
@@ -394,7 +394,7 @@ export function getLogSeverityLevel({
  * accent, sidebar gradient, etc.).
  *
  * Keep in sync with `CATEGORICAL_PALETTE_TOKENS` in
- * `@hyperdx/common-utils/dist/types` and with the `--color-chart-{hue}`
+ * `@couchbase-traces/common-utils/dist/types` and with the `--color-chart-{hue}`
  * vars in `packages/app/src/theme/_chart-categorical-tokens.scss`
  * (the single shared SCSS source for categorical hues).
  */
@@ -489,7 +489,7 @@ export {
   CHART_PALETTE_TOKENS,
   resolveChartPaletteToken,
   SEMANTIC_PALETTE_TOKENS,
-} from '@hyperdx/common-utils/dist/types';
+} from '@couchbase-traces/common-utils/dist/types';
 export type { ChartPaletteToken };
 
 /**

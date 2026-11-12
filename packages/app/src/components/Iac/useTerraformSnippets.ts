@@ -5,7 +5,7 @@ import {
   type IacResourceRef,
   providerEndpoint,
   TERRAFORM_PROVIDER_TILE_ALERT_VERSION_CONSTRAINT,
-} from '@hyperdx/common-utils/dist/iac';
+} from '@couchbase-traces/common-utils/dist/iac';
 
 import api from '@/api';
 import { BASE_PATH } from '@/config';

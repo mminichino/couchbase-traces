@@ -3,7 +3,7 @@ import {
   isLogSource,
   isTraceSource,
   SourceKind,
-} from '@hyperdx/common-utils/dist/types';
+} from '@couchbase-traces/common-utils/dist/types';
 import { Grid } from '@mantine/core';
 
 import { INTEGER_NUMBER_FORMAT } from '@/ChartUtils';

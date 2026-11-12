@@ -1,4 +1,4 @@
-import { DASHBOARD_VARIABLE_NAME_MAX_LENGTH } from '@hyperdx/common-utils/dist/types';
+import { DASHBOARD_VARIABLE_NAME_MAX_LENGTH } from '@couchbase-traces/common-utils/dist/types';
 import mongoose from 'mongoose';
 
 import {

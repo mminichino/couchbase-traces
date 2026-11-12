@@ -1,4 +1,4 @@
-import { TSource } from '@hyperdx/common-utils/dist/types';
+import { TSource } from '@couchbase-traces/common-utils/dist/types';
 
 import {
   buildContextWhereClause,

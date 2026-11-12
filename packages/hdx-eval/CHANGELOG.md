@@ -1,4 +1,4 @@
-# @hyperdx/hdx-eval
+# @couchbase-traces/hdx-eval
 
 ## 0.3.3
 
@@ -77,7 +77,7 @@ openai:gpt-5.6-sol` over an Opus-graded batch would skip the LLM call and hand
 
 - 5bd1c681: feat: add AI eval framework for benchmarking MCP servers
 
-  New `@hyperdx/hdx-eval` package for benchmarking AI agents against
+  New `@couchbase-traces/hdx-eval` package for benchmarking AI agents against
   observability MCP servers. Generates deterministic synthetic telemetry
   with planted anomalies, spawns Claude Code as an SRE agent, records full
   trajectories, and grades answers using programmatic checks and an

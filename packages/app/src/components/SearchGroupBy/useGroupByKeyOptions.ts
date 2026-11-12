@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
-import { tcFromSource } from '@hyperdx/common-utils/dist/core/metadata';
-import { TSource } from '@hyperdx/common-utils/dist/types';
+import { tcFromSource } from '@couchbase-traces/common-utils/dist/core/metadata';
+import { TSource } from '@couchbase-traces/common-utils/dist/types';
 
 import { sortLowCardinalityFirst } from '@/components/DBSearchPageFilters/utils';
 import {

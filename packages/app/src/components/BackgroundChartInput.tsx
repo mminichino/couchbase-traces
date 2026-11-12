@@ -1,4 +1,4 @@
-import { BackgroundChart } from '@hyperdx/common-utils/dist/types';
+import { BackgroundChart } from '@couchbase-traces/common-utils/dist/types';
 import { Box, Select, Text } from '@mantine/core';
 
 import { ColorSwatchInput } from './ColorSwatchInput';

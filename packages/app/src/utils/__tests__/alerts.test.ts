@@ -2,7 +2,7 @@ import {
   AlertSource,
   AlertThresholdType,
   DisplayType,
-} from '@hyperdx/common-utils/dist/types';
+} from '@couchbase-traces/common-utils/dist/types';
 
 import type { AlertsPageItem } from '@/types';
 import {

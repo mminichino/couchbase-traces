@@ -1,4 +1,4 @@
-import { WebhookService } from '@hyperdx/common-utils/dist/types';
+import { WebhookService } from '@couchbase-traces/common-utils/dist/types';
 import { ObjectId } from 'mongodb';
 import request, { SuperAgentTest } from 'supertest';
 

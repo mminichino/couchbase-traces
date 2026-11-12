@@ -1,5 +1,5 @@
 import { useMemo, useRef, useState } from 'react';
-import { FilterState } from '@hyperdx/common-utils/dist/filters';
+import { FilterState } from '@couchbase-traces/common-utils/dist/filters';
 import { Accordion, Group, Text, Tooltip, UnstyledButton } from '@mantine/core';
 import { useVirtualizer } from '@tanstack/react-virtual';
 

@@ -145,8 +145,8 @@ jobs:
         run: |
           docker compose -f ./docker-compose.ci.yml up -d --quiet-pull
           status=0
-          yarn workspace @hyperdx/common-utils ci:int --shard=${{ matrix.shard }}/${{ strategy.job-total }} || status=1
-          yarn workspace @hyperdx/api ci:int --shard=${{ matrix.shard }}/${{ strategy.job-total }} || status=1
+          yarn workspace @couchbase-traces/common-utils ci:int --shard=${{ matrix.shard }}/${{ strategy.job-total }} || status=1
+          yarn workspace @couchbase-traces/api ci:int --shard=${{ matrix.shard }}/${{ strategy.job-total }} || status=1
           exit $status
   # Stable aggregator context: `integration` is green only when all four shards
   # pass. Merge-queue / required-status checks target this single context, since

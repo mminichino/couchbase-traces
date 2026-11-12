@@ -5,7 +5,7 @@ import {
 } from './iacEligibility';
 import { AlertSource, type IacImportManifest } from './types';
 
-// Re-exported so callers keep one import site (`@hyperdx/common-utils/dist/iac`)
+// Re-exported so callers keep one import site (`@couchbase-traces/common-utils/dist/iac`)
 // for both halves of the feature.
 export {
   dashboardHasUnexportableTiles,

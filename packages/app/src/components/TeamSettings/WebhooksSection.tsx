@@ -4,7 +4,7 @@ import { Separator } from '@clickhouse/click-ui';
 import {
   WebhookApiData,
   WebhookService,
-} from '@hyperdx/common-utils/dist/types';
+} from '@couchbase-traces/common-utils/dist/types';
 import { Button, Group, Stack, Text, Title } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
 import { notifications } from '@mantine/notifications';

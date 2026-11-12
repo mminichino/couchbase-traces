@@ -1,13 +1,13 @@
-import type { ChSql } from '@hyperdx/common-utils/dist/clickhouse';
-import { getMetadata } from '@hyperdx/common-utils/dist/core/metadata';
-import { pickBucketTimestampColumn } from '@hyperdx/common-utils/dist/core/utils';
+import type { ChSql } from '@couchbase-traces/common-utils/dist/clickhouse';
+import { getMetadata } from '@couchbase-traces/common-utils/dist/core/metadata';
+import { pickBucketTimestampColumn } from '@couchbase-traces/common-utils/dist/core/utils';
 import {
   type BuilderChartConfigWithDateRange,
   type ChartConfigWithDateRange,
   DisplayType,
   type QuerySettings,
   SourceKind,
-} from '@hyperdx/common-utils/dist/types';
+} from '@couchbase-traces/common-utils/dist/types';
 import { z } from 'zod';
 
 import type { ClickhouseClient } from '@/clickhouse';

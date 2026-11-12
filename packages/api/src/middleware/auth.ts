@@ -1,5 +1,5 @@
-import { withQueryAttribution } from '@hyperdx/common-utils/dist/clickhouse/node';
-import { Connection } from '@hyperdx/common-utils/dist/types';
+import { withQueryAttribution } from '@couchbase-traces/common-utils/dist/clickhouse/node';
+import { Connection } from '@couchbase-traces/common-utils/dist/types';
 import type { NextFunction, Request, Response } from 'express';
 import { serializeError } from 'serialize-error';
 

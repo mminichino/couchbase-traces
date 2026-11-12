@@ -5,11 +5,11 @@
  */
 import { useState, useEffect, useCallback, useRef } from 'react';
 
-import type { Metadata } from '@hyperdx/common-utils/dist/core/metadata';
+import type { Metadata } from '@couchbase-traces/common-utils/dist/core/metadata';
 import {
   minePatterns,
   type TrendBucket,
-} from '@hyperdx/common-utils/dist/drain';
+} from '@couchbase-traces/common-utils/dist/drain';
 
 import type { SourceResponse, ProxyClickhouseClient } from '@/api/client';
 import {

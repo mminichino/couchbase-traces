@@ -1,5 +1,8 @@
 import { useMemo } from 'react';
-import { SourceKind, TLogSource } from '@hyperdx/common-utils/dist/types';
+import {
+  SourceKind,
+  TLogSource,
+} from '@couchbase-traces/common-utils/dist/types';
 
 import { useQueriedChartConfig } from '@/hooks/useChartConfig';
 import useFieldExpressionGenerator from '@/hooks/useFieldExpressionGenerator';

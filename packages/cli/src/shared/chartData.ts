@@ -19,12 +19,12 @@ import {
   JSDataType,
   type ColumnMetaType,
   type ResponseJSON,
-} from '@hyperdx/common-utils/dist/clickhouse';
-import { convertGranularityToSeconds } from '@hyperdx/common-utils/dist/core/utils';
+} from '@couchbase-traces/common-utils/dist/clickhouse';
+import { convertGranularityToSeconds } from '@couchbase-traces/common-utils/dist/core/utils';
 import type {
   ChartConfigWithOptDateRange,
   SQLInterval,
-} from '@hyperdx/common-utils/dist/types';
+} from '@couchbase-traces/common-utils/dist/types';
 
 import type { SourceResponse } from '@/api/client';
 import type {

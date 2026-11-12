@@ -45,7 +45,7 @@ input, checks it, and adds the server to Claude Code, Codex, Cursor and VS Code.
 The key stays out of your shell history and agent chats.
 
 ```bash
-npx @hyperdx/cli mcp install --app-url <your-hyperdx-url>
+npx @couchbase-traces/cli mcp install --app-url <your-hyperdx-url>
 ```
 
 ### Claude Code

@@ -1,5 +1,5 @@
 import React from 'react';
-import { DashboardContainer as DashboardContainerSchema } from '@hyperdx/common-utils/dist/types';
+import { DashboardContainer as DashboardContainerSchema } from '@couchbase-traces/common-utils/dist/types';
 import { screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 

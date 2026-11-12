@@ -1,10 +1,10 @@
-import PQueue from '@esm2cjs/p-queue';
 import {
   ALERT_EVALUATION_GROUPS_LIMIT,
   ALERT_INTERVAL_TO_MINUTES,
   AlertInterval,
   AlertTransition,
-} from '@hyperdx/common-utils/dist/types';
+} from '@couchbase-traces/common-utils/dist/types';
+import PQueue from '@esm2cjs/p-queue';
 import { ObjectId } from 'mongodb';
 
 import { AlertState, IAlertError } from '@/models/alert';

@@ -1,12 +1,12 @@
-import { ColumnMetaType } from '@hyperdx/common-utils/dist/clickhouse';
-import { Metadata } from '@hyperdx/common-utils/dist/core/metadata';
+import { ColumnMetaType } from '@couchbase-traces/common-utils/dist/clickhouse';
+import { Metadata } from '@couchbase-traces/common-utils/dist/core/metadata';
 import {
   ChartConfigWithOptTimestamp,
   NumberFormat,
   SourceKind,
   TLogSource,
   TTraceSource,
-} from '@hyperdx/common-utils/dist/types';
+} from '@couchbase-traces/common-utils/dist/types';
 import { notifications } from '@mantine/notifications';
 import { renderHook } from '@testing-library/react';
 

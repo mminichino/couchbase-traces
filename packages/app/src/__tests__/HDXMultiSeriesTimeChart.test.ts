@@ -6,7 +6,10 @@
 // #2362 where a semantic-hex `lineData[].color` (e.g. the output of
 // `getChartColorInfo()` on HyperDX) would not have a matching gradient
 // def after the `COLORS` palette was unified to Observable 10.
-import { DisplayType, NumericUnit } from '@hyperdx/common-utils/dist/types';
+import {
+  DisplayType,
+  NumericUnit,
+} from '@couchbase-traces/common-utils/dist/types';
 
 import type { LineData } from '@/ChartUtils';
 import type { ActiveClickSeries } from '@/HDXMultiSeriesTimeChart';

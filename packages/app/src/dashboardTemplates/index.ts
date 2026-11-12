@@ -1,7 +1,7 @@
 import {
   type DashboardTemplate,
   DashboardTemplateSchema,
-} from '@hyperdx/common-utils/dist/types';
+} from '@couchbase-traces/common-utils/dist/types';
 
 import browserRum from './browser-rum.json';
 import dotnetRuntime from './dotnet-runtime.json';

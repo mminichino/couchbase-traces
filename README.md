@@ -111,12 +111,12 @@ OpenTelemetry collector spun up at `http://localhost:4318`.
 
 ## ClickStack CLI
 
-Prefer the terminal? [`@hyperdx/cli`](./packages/cli) provides an interactive
+Prefer the terminal? [`@couchbase-traces/cli`](./packages/cli) provides an interactive
 TUI and CLI (`hdx`) for working with your ClickStack data without leaving the
 shell:
 
 ```bash
-npm install -g @hyperdx/cli
+npm install -g @couchbase-traces/cli
 hdx auth login
 hdx tui
 ```

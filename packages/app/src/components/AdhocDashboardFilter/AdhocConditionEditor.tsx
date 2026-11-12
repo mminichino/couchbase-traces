@@ -1,9 +1,9 @@
 import { useState } from 'react';
-import { ResolvedFilterValuesQuery } from '@hyperdx/common-utils/dist/filters';
+import { ResolvedFilterValuesQuery } from '@couchbase-traces/common-utils/dist/filters';
 import {
   AdhocDashboardFilter,
   AdhocFilterCondition,
-} from '@hyperdx/common-utils/dist/types';
+} from '@couchbase-traces/common-utils/dist/types';
 
 import {
   FilterConditionEditor,

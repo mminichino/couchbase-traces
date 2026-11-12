@@ -2,7 +2,7 @@ import {
   SourceKind,
   TLogSource,
   TTraceSource,
-} from '@hyperdx/common-utils/dist/types';
+} from '@couchbase-traces/common-utils/dist/types';
 
 /** Fully-typed trace source for tests (default OTel schema). */
 export function makeTraceSource(

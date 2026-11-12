@@ -1,7 +1,7 @@
 import { describe, expect, it } from '@jest/globals';
 
-import type { ResponseJSON } from '@hyperdx/common-utils/dist/clickhouse';
-import type { SQLInterval } from '@hyperdx/common-utils/dist/types';
+import type { ResponseJSON } from '@couchbase-traces/common-utils/dist/clickhouse';
+import type { SQLInterval } from '@couchbase-traces/common-utils/dist/types';
 
 import { formatResponseForTimeChart } from '@/shared/chartData';
 

@@ -1,4 +1,7 @@
-import { DisplayType, SourceKind } from '@hyperdx/common-utils/dist/types';
+import {
+  DisplayType,
+  SourceKind,
+} from '@couchbase-traces/common-utils/dist/types';
 
 import { callTool, getFirstText } from '@/mcp/__tests__/mcpTestUtils';
 import Dashboard from '@/models/dashboard';

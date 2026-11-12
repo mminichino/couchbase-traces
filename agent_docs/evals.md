@@ -118,11 +118,11 @@ already exist and pass the check:
 # single-instance config. If you already have a combined two-MCP config,
 # you must re-run step 3 (jq merge) afterward.
 cp packages/hdx-eval/eval.config.branch.json packages/hdx-eval/eval.config.json 2>/dev/null && \
-  yarn workspace @hyperdx/hdx-eval dev setup-hyperdx --check && \
+  yarn workspace @couchbase-traces/hdx-eval dev setup-hyperdx --check && \
   echo "Branch config OK" || echo "Branch config needs setup"
 
 cp packages/hdx-eval/eval.config.main.json packages/hdx-eval/eval.config.json 2>/dev/null && \
-  yarn workspace @hyperdx/hdx-eval dev setup-hyperdx --check && \
+  yarn workspace @couchbase-traces/hdx-eval dev setup-hyperdx --check && \
   echo "Main config OK" || echo "Main config needs setup"
 ```
 
@@ -130,11 +130,11 @@ If either needs setup (or this is the first time):
 
 ```bash
 # Setup main instance (slot 98)
-yarn workspace @hyperdx/hdx-eval dev setup-hyperdx --api-url http://localhost:30198
+yarn workspace @couchbase-traces/hdx-eval dev setup-hyperdx --api-url http://localhost:30198
 cp packages/hdx-eval/eval.config.json packages/hdx-eval/eval.config.main.json
 
 # Setup branch instance (slot 99)
-yarn workspace @hyperdx/hdx-eval dev setup-hyperdx --api-url http://localhost:30199
+yarn workspace @couchbase-traces/hdx-eval dev setup-hyperdx --api-url http://localhost:30199
 cp packages/hdx-eval/eval.config.json packages/hdx-eval/eval.config.branch.json
 ```
 
@@ -196,10 +196,10 @@ instance explicitly:
 
 ```bash
 # Seed the main instance (slot 98, CH on port 30598)
-HDX_DEV_SLOT=98 yarn workspace @hyperdx/hdx-eval dev seed <scenario>
+HDX_DEV_SLOT=98 yarn workspace @couchbase-traces/hdx-eval dev seed <scenario>
 
 # Seed the branch instance (slot 99, CH on port 30599)
-HDX_DEV_SLOT=99 yarn workspace @hyperdx/hdx-eval dev seed <scenario>
+HDX_DEV_SLOT=99 yarn workspace @couchbase-traces/hdx-eval dev seed <scenario>
 ```
 
 The seed command is idempotent — it skips if data already exists. Replace
@@ -209,7 +209,7 @@ multiple scenarios by running the command once per scenario.
 ### 6. Run the comparison
 
 ```bash
-yarn workspace @hyperdx/hdx-eval dev run <scenario> \
+yarn workspace @couchbase-traces/hdx-eval dev run <scenario> \
   --mcp hyperdx-branch,hyperdx-main \
   --baseline hyperdx-main \
   --runs 3 \
@@ -251,8 +251,8 @@ Useful for validating that a scenario works or checking score after a change.
 ```bash
 # Single slot — just one `yarn dev` needed
 export HDX_DEV_SLOT=98
-yarn workspace @hyperdx/hdx-eval dev setup-hyperdx
-yarn workspace @hyperdx/hdx-eval dev run error-root-cause --mcp hyperdx --runs 1 --no-judge
+yarn workspace @couchbase-traces/hdx-eval dev setup-hyperdx
+yarn workspace @couchbase-traces/hdx-eval dev run error-root-cause --mcp hyperdx --runs 1 --no-judge
 ```
 
 ### Model comparison (same MCP, different models)
@@ -261,9 +261,9 @@ Compare how different models perform on the same MCP and data. Useful for
 evaluating model upgrades or cost/quality tradeoffs.
 
 ```bash
-yarn workspace @hyperdx/hdx-eval dev run error-root-cause \
+yarn workspace @couchbase-traces/hdx-eval dev run error-root-cause \
   --mcp hyperdx --model claude-sonnet-4-20250514 --runs 3
-yarn workspace @hyperdx/hdx-eval dev run error-root-cause \
+yarn workspace @couchbase-traces/hdx-eval dev run error-root-cause \
   --mcp hyperdx --model claude-opus-4-6 --runs 3
 ```
 
@@ -274,7 +274,7 @@ default in `eval.config.json` after setup. Use it to compare ClickStack's MCP
 against querying ClickHouse directly.
 
 ```bash
-yarn workspace @hyperdx/hdx-eval dev run error-root-cause \
+yarn workspace @couchbase-traces/hdx-eval dev run error-root-cause \
   --mcp hyperdx,clickhouse --baseline clickhouse --runs 3
 ```
 
@@ -297,22 +297,22 @@ Useful inspection commands:
 
 ```bash
 # List all batches
-yarn workspace @hyperdx/hdx-eval dev runs-list
+yarn workspace @couchbase-traces/hdx-eval dev runs-list
 
 # Show a specific run's tool calls and queries
-yarn workspace @hyperdx/hdx-eval dev runs-show <path> --queries
+yarn workspace @couchbase-traces/hdx-eval dev runs-show <path> --queries
 
 # Show the agent's final answer
-yarn workspace @hyperdx/hdx-eval dev runs-show <path> --final-answer
+yarn workspace @couchbase-traces/hdx-eval dev runs-show <path> --final-answer
 
 # Re-grade with only programmatic checks (fast, no API key needed)
-yarn workspace @hyperdx/hdx-eval dev grade <batch> --no-judge
+yarn workspace @couchbase-traces/hdx-eval dev grade <batch> --no-judge
 
 # Re-generate the comparison report with a different baseline
-yarn workspace @hyperdx/hdx-eval dev report <batch> --baseline hyperdx-main
+yarn workspace @couchbase-traces/hdx-eval dev report <batch> --baseline hyperdx-main
 
 # Browse results in the web viewer
-yarn workspace @hyperdx/hdx-eval viewer
+yarn workspace @couchbase-traces/hdx-eval viewer
 ```
 
 ## Common Pitfalls
@@ -368,5 +368,5 @@ bash -c 'export HDX_DEV_SLOT=99 && source scripts/dev-env.sh 2>/dev/null && \
   docker compose -p hdx-dev-99 -f docker-compose.dev.yml down'
 
 # Drop eval data from ClickHouse (optional)
-yarn workspace @hyperdx/hdx-eval dev drop <scenario>
+yarn workspace @couchbase-traces/hdx-eval dev drop <scenario>
 ```

@@ -1,4 +1,4 @@
-import { MAX_TAGS } from '@hyperdx/common-utils/dist/types';
+import { MAX_TAGS } from '@couchbase-traces/common-utils/dist/types';
 
 import {
   alertsPageQuerySchema,

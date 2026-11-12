@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { Badge } from '@clickhouse/click-ui';
-import { AlertState } from '@hyperdx/common-utils/dist/types';
+import { AlertState } from '@couchbase-traces/common-utils/dist/types';
 
 import { ALERT_STATE_LABELS } from '@/utils/alerts';
 

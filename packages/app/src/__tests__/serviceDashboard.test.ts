@@ -1,8 +1,8 @@
-import type { ColumnMeta } from '@hyperdx/common-utils/dist/clickhouse';
-import { rewriteSqlFilterWithKvItems } from '@hyperdx/common-utils/dist/core/renderChartConfig';
-import { parseQuery } from '@hyperdx/common-utils/dist/filters';
-import type { TTraceSource } from '@hyperdx/common-utils/dist/types';
-import { SourceKind } from '@hyperdx/common-utils/dist/types';
+import type { ColumnMeta } from '@couchbase-traces/common-utils/dist/clickhouse';
+import { rewriteSqlFilterWithKvItems } from '@couchbase-traces/common-utils/dist/core/renderChartConfig';
+import { parseQuery } from '@couchbase-traces/common-utils/dist/filters';
+import type { TTraceSource } from '@couchbase-traces/common-utils/dist/types';
+import { SourceKind } from '@couchbase-traces/common-utils/dist/types';
 import { renderHook } from '@testing-library/react';
 
 import * as metadataModule from '@/hooks/useMetadata';

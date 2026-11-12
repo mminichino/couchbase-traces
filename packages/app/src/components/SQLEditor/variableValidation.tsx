@@ -1,9 +1,9 @@
 import { useMemo } from 'react';
-import { SearchConditionLanguage } from '@hyperdx/common-utils/dist/types';
+import { SearchConditionLanguage } from '@couchbase-traces/common-utils/dist/types';
 import {
   validateVariableReferencesInTemplate,
   VariableReferenceIssues,
-} from '@hyperdx/common-utils/dist/variables';
+} from '@couchbase-traces/common-utils/dist/variables';
 import { List, Text, Tooltip } from '@mantine/core';
 import { useDebouncedValue } from '@mantine/hooks';
 import { IconAlertTriangle } from '@tabler/icons-react';

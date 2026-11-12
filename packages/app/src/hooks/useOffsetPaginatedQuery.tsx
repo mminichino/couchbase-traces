@@ -5,29 +5,29 @@ import type {
   ClickHouseSettings,
   ResponseJSON,
   Row,
-} from '@hyperdx/common-utils/dist/clickhouse';
+} from '@couchbase-traces/common-utils/dist/clickhouse';
 import {
   ChSql,
   ClickHouseQueryError,
   ColumnMetaType,
   type QueryAttribution,
-} from '@hyperdx/common-utils/dist/clickhouse';
-import { Metadata } from '@hyperdx/common-utils/dist/core/metadata';
-import { renderChartConfig } from '@hyperdx/common-utils/dist/core/renderChartConfig';
+} from '@couchbase-traces/common-utils/dist/clickhouse';
+import { Metadata } from '@couchbase-traces/common-utils/dist/core/metadata';
+import { renderChartConfig } from '@couchbase-traces/common-utils/dist/core/renderChartConfig';
 import {
   isFirstOrderByAscending,
   isTimestampExpressionInFirstOrderBy,
   MAX_TABLE_ROWS,
-} from '@hyperdx/common-utils/dist/core/utils';
+} from '@couchbase-traces/common-utils/dist/core/utils';
 import {
   isBuilderChartConfig,
   isPromqlChartConfig,
   isRawSqlChartConfig,
-} from '@hyperdx/common-utils/dist/guards';
+} from '@couchbase-traces/common-utils/dist/guards';
 import {
   ChartConfigWithOptTimestamp,
   TSource,
-} from '@hyperdx/common-utils/dist/types';
+} from '@couchbase-traces/common-utils/dist/types';
 import {
   QueryClient,
   QueryFunction,

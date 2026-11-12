@@ -1,6 +1,6 @@
 import { http, HttpResponse } from 'msw';
 import { useForm } from 'react-hook-form';
-import { SourceKind } from '@hyperdx/common-utils/dist/types';
+import { SourceKind } from '@couchbase-traces/common-utils/dist/types';
 import { Box } from '@mantine/core';
 import type { Meta, StoryObj } from '@storybook/nextjs';
 

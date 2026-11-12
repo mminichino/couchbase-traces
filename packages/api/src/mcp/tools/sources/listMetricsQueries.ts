@@ -3,8 +3,8 @@ import {
   chSql,
   concatChSql,
   tableExpr,
-} from '@hyperdx/common-utils/dist/clickhouse';
-import type { getMetadata } from '@hyperdx/common-utils/dist/core/metadata';
+} from '@couchbase-traces/common-utils/dist/clickhouse';
+import type { getMetadata } from '@couchbase-traces/common-utils/dist/core/metadata';
 import SqlString from 'sqlstring';
 
 import type { ClickhouseClient } from '@/clickhouse';

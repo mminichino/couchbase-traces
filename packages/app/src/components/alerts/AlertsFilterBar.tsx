@@ -1,5 +1,8 @@
-import { AlertSource, AlertState } from '@hyperdx/common-utils/dist/types';
-import { MAX_ALERT_DISPLAY_NAME_LENGTH } from '@hyperdx/common-utils/dist/types';
+import {
+  AlertSource,
+  AlertState,
+} from '@couchbase-traces/common-utils/dist/types';
+import { MAX_ALERT_DISPLAY_NAME_LENGTH } from '@couchbase-traces/common-utils/dist/types';
 import {
   Flex,
   Loader,

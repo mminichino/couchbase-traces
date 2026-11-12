@@ -1,15 +1,15 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import produce from 'immer';
-import type { ResponseJSON } from '@hyperdx/common-utils/dist/clickhouse';
+import type { ResponseJSON } from '@couchbase-traces/common-utils/dist/clickhouse';
 import {
   chSql,
   streamToAsyncIterator,
-} from '@hyperdx/common-utils/dist/clickhouse';
-import type { ClickhouseClient } from '@hyperdx/common-utils/dist/clickhouse/browser';
-import type { Metadata } from '@hyperdx/common-utils/dist/core/metadata';
-import { renderChartConfig } from '@hyperdx/common-utils/dist/core/renderChartConfig';
-import { getFirstTimestampValueExpression } from '@hyperdx/common-utils/dist/core/utils';
-import { filtersToQuery } from '@hyperdx/common-utils/dist/filters';
+} from '@couchbase-traces/common-utils/dist/clickhouse';
+import type { ClickhouseClient } from '@couchbase-traces/common-utils/dist/clickhouse/browser';
+import type { Metadata } from '@couchbase-traces/common-utils/dist/core/metadata';
+import { renderChartConfig } from '@couchbase-traces/common-utils/dist/core/renderChartConfig';
+import { getFirstTimestampValueExpression } from '@couchbase-traces/common-utils/dist/core/utils';
+import { filtersToQuery } from '@couchbase-traces/common-utils/dist/filters';
 import {
   DateRange,
   Filter,
@@ -18,7 +18,7 @@ import {
   SearchConditionLanguage,
   TSessionSource,
   TTraceSource,
-} from '@hyperdx/common-utils/dist/types';
+} from '@couchbase-traces/common-utils/dist/types';
 import { useQuery, UseQueryOptions } from '@tanstack/react-query';
 
 import { useQueryAttribution } from '@/queryAttribution';

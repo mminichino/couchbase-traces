@@ -13,7 +13,7 @@ import {
   AlertThresholdType,
   MAX_ALERT_CHANNELS,
   WebhookService,
-} from '@hyperdx/common-utils/dist/types';
+} from '@couchbase-traces/common-utils/dist/types';
 import { ActionIcon, Button, Group, Modal, Stack, Text } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
 import { IconPlus, IconTrash, IconWebhook } from '@tabler/icons-react';

@@ -9,12 +9,12 @@ import {
   filterColumnMetaByType,
   isCHIntegerType,
   JSDataType,
-} from '@hyperdx/common-utils/dist/clickhouse';
-import { inferGranularityFromMVSelect } from '@hyperdx/common-utils/dist/core/materializedViews';
-import { Metadata } from '@hyperdx/common-utils/dist/core/metadata';
-import { isRatioChartConfig } from '@hyperdx/common-utils/dist/core/renderChartConfig';
-import { splitAndTrimWithBracket } from '@hyperdx/common-utils/dist/core/utils';
-import { isBuilderChartConfig } from '@hyperdx/common-utils/dist/guards';
+} from '@couchbase-traces/common-utils/dist/clickhouse';
+import { inferGranularityFromMVSelect } from '@couchbase-traces/common-utils/dist/core/materializedViews';
+import { Metadata } from '@couchbase-traces/common-utils/dist/core/metadata';
+import { isRatioChartConfig } from '@couchbase-traces/common-utils/dist/core/renderChartConfig';
+import { splitAndTrimWithBracket } from '@couchbase-traces/common-utils/dist/core/utils';
+import { isBuilderChartConfig } from '@couchbase-traces/common-utils/dist/guards';
 import {
   BuilderSavedChartConfig,
   ChartConfig,
@@ -32,7 +32,7 @@ import {
   TSource,
   TSourceNoId,
   TTraceSource,
-} from '@hyperdx/common-utils/dist/types';
+} from '@couchbase-traces/common-utils/dist/types';
 import { notifications } from '@mantine/notifications';
 import {
   useMutation,

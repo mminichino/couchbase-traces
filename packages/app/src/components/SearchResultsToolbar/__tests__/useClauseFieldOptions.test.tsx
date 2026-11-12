@@ -1,5 +1,8 @@
-import { ColumnMeta, JSDataType } from '@hyperdx/common-utils/dist/clickhouse';
-import { Field } from '@hyperdx/common-utils/dist/core/metadata';
+import {
+  ColumnMeta,
+  JSDataType,
+} from '@couchbase-traces/common-utils/dist/clickhouse';
+import { Field } from '@couchbase-traces/common-utils/dist/core/metadata';
 import { renderHook } from '@testing-library/react';
 
 import { useClauseFieldOptions } from '@/components/SearchResultsToolbar/useClauseFieldOptions';

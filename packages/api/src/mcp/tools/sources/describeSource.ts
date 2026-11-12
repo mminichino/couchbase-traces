@@ -2,9 +2,12 @@ import {
   convertCHDataTypeToJSType,
   filterColumnMetaByType,
   JSDataType,
-} from '@hyperdx/common-utils/dist/clickhouse';
-import { getMetadata } from '@hyperdx/common-utils/dist/core/metadata';
-import { type MetricTable, SourceKind } from '@hyperdx/common-utils/dist/types';
+} from '@couchbase-traces/common-utils/dist/clickhouse';
+import { getMetadata } from '@couchbase-traces/common-utils/dist/core/metadata';
+import {
+  type MetricTable,
+  SourceKind,
+} from '@couchbase-traces/common-utils/dist/types';
 import { trace } from '@opentelemetry/api';
 import SqlString from 'sqlstring';
 import { z } from 'zod';

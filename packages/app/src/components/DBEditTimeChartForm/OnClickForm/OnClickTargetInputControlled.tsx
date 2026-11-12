@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
 import { Controller } from 'react-hook-form';
-import { OnClickTarget } from '@hyperdx/common-utils/dist/types';
+import { OnClickTarget } from '@couchbase-traces/common-utils/dist/types';
 import { Select } from '@mantine/core';
 
 import { TextInputControlled } from '@/components/InputControlled';

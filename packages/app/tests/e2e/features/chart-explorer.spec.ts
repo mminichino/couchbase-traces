@@ -1,4 +1,4 @@
-import { DisplayType } from '@hyperdx/common-utils/dist/types';
+import { DisplayType } from '@couchbase-traces/common-utils/dist/types';
 
 import { ChartExplorerPage } from '../page-objects/ChartExplorerPage';
 import { expect, test } from '../utils/base-test';

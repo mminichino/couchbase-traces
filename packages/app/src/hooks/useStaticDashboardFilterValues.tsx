@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import { StaticListDashboardFilter } from '@hyperdx/common-utils/dist/types';
+import { StaticListDashboardFilter } from '@couchbase-traces/common-utils/dist/types';
 
 /** Stable identities: static filters never error, so these never change. */
 const EMPTY_ERRORED_IDS: ReadonlySet<string> = new Set();

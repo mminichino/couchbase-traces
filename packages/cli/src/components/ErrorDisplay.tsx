@@ -18,7 +18,7 @@
 import React from 'react';
 import { Box, Text, useStdout } from 'ink';
 
-import { ClickHouseQueryError } from '@hyperdx/common-utils/dist/clickhouse';
+import { ClickHouseQueryError } from '@couchbase-traces/common-utils/dist/clickhouse';
 
 import { useSqlSuggestions, type Suggestion } from '@/shared/useSqlSuggestions';
 import { parseError, type ErrorSeverity } from '@/utils/parseError';

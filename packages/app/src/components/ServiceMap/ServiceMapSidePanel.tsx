@@ -1,5 +1,5 @@
 import { Badge } from '@clickhouse/click-ui';
-import { SourceKind } from '@hyperdx/common-utils/dist/types';
+import { SourceKind } from '@couchbase-traces/common-utils/dist/types';
 import { Group, Stack, Text } from '@mantine/core';
 
 import { useSource } from '@/source';

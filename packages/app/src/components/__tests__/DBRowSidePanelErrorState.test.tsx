@@ -1,6 +1,9 @@
 import React from 'react';
-import { ClickHouseQueryError } from '@hyperdx/common-utils/dist/clickhouse';
-import { SourceKind, TLogSource } from '@hyperdx/common-utils/dist/types';
+import { ClickHouseQueryError } from '@couchbase-traces/common-utils/dist/clickhouse';
+import {
+  SourceKind,
+  TLogSource,
+} from '@couchbase-traces/common-utils/dist/types';
 import { MantineProvider } from '@mantine/core';
 import { fireEvent, render, screen } from '@testing-library/react';
 

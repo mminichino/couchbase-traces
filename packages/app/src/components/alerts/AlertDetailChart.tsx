@@ -4,12 +4,12 @@ import { pick } from 'lodash';
 import {
   Granularity,
   isTimeSeriesDisplayType,
-} from '@hyperdx/common-utils/dist/core/utils';
-import { getDashboardVariableDeclarations } from '@hyperdx/common-utils/dist/filters';
+} from '@couchbase-traces/common-utils/dist/core/utils';
+import { getDashboardVariableDeclarations } from '@couchbase-traces/common-utils/dist/filters';
 import {
   isPromqlSavedChartConfig,
   isRawSqlSavedChartConfig,
-} from '@hyperdx/common-utils/dist/guards';
+} from '@couchbase-traces/common-utils/dist/guards';
 import {
   AlertSource,
   ChartConfigWithDateRange,
@@ -21,7 +21,7 @@ import {
   SavedChartConfig,
   SourceKind,
   TSource,
-} from '@hyperdx/common-utils/dist/types';
+} from '@couchbase-traces/common-utils/dist/types';
 import { Anchor, Center, Paper, Skeleton, Text } from '@mantine/core';
 
 import { AlertPreviewChart } from '@/components/AlertPreviewChart';

@@ -1,0 +1,23 @@
+{
+  "schemaVersion": 1,
+  "step": "packages",
+  "status": "pass",
+  "checks": [
+    {
+      "name": "no old workspace names",
+      "status": "pass",
+      "problems": []
+    },
+    {
+      "name": "lockfile-check --base e926991a667fc6ab7548cf1b1fa0565e1d329d18",
+      "status": "pass",
+      "problems": []
+    },
+    {
+      "name": "go.mod module path",
+      "status": "pass",
+      "problems": []
+    }
+  ],
+  "warnings": []
+}

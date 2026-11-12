@@ -5,11 +5,11 @@ import {
   useWatch,
 } from 'react-hook-form';
 import { Badge } from '@clickhouse/click-ui';
-import { formatTileAlertDisplayName } from '@hyperdx/common-utils/dist/alerts';
+import { formatTileAlertDisplayName } from '@couchbase-traces/common-utils/dist/alerts';
 import {
   AlertThresholdType,
   isRangeThresholdType,
-} from '@hyperdx/common-utils/dist/types';
+} from '@couchbase-traces/common-utils/dist/types';
 import {
   ActionIcon,
   Alert,

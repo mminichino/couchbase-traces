@@ -7,14 +7,14 @@ import {
   useWatch,
 } from 'react-hook-form';
 import { Separator } from '@clickhouse/click-ui';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { validateOnClickTemplate } from '@hyperdx/common-utils/dist/core/linkUrlBuilder';
-import { getFilterExpression } from '@hyperdx/common-utils/dist/filters';
+import { validateOnClickTemplate } from '@couchbase-traces/common-utils/dist/core/linkUrlBuilder';
+import { getFilterExpression } from '@couchbase-traces/common-utils/dist/filters';
 import {
   isSearchableSource,
   OnClick,
   OnClickTarget,
-} from '@hyperdx/common-utils/dist/types';
+} from '@couchbase-traces/common-utils/dist/types';
+import { zodResolver } from '@hookform/resolvers/zod';
 import {
   Box,
   Button,

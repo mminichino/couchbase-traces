@@ -1,5 +1,8 @@
-import { QUERY_PARAM_EXAMPLES } from '@hyperdx/common-utils/dist/rawSqlParams';
-import { ChartVariable, DisplayType } from '@hyperdx/common-utils/dist/types';
+import { QUERY_PARAM_EXAMPLES } from '@couchbase-traces/common-utils/dist/rawSqlParams';
+import {
+  ChartVariable,
+  DisplayType,
+} from '@couchbase-traces/common-utils/dist/types';
 import {
   ActionIcon,
   Anchor,

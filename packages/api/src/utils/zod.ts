@@ -1,4 +1,4 @@
-import { validateChartConfigFormulas } from '@hyperdx/common-utils/dist/dashboardValidation';
+import { validateChartConfigFormulas } from '@couchbase-traces/common-utils/dist/dashboardValidation';
 import {
   addDuplicateTileIdIssues,
   AggregateFunctionSchema,
@@ -40,7 +40,7 @@ import {
   WebhookService,
   zAlertChannel,
   zAlertChannels,
-} from '@hyperdx/common-utils/dist/types';
+} from '@couchbase-traces/common-utils/dist/types';
 import { Types } from 'mongoose';
 import { z } from 'zod';
 

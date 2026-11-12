@@ -1,8 +1,8 @@
 import type {
   ClickhouseClientOptions,
   Logger as ClickhouseLogger,
-} from '@hyperdx/common-utils/dist/clickhouse';
-import { ClickhouseClient as BaseClickhouseClient } from '@hyperdx/common-utils/dist/clickhouse/node';
+} from '@couchbase-traces/common-utils/dist/clickhouse';
+import { ClickhouseClient as BaseClickhouseClient } from '@couchbase-traces/common-utils/dist/clickhouse/node';
 
 import logger from '@/utils/logger';
 

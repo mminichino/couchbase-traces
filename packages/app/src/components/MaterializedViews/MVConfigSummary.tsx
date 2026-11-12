@@ -1,7 +1,7 @@
 import { useMemo } from 'react';
 import { Badge } from '@clickhouse/click-ui';
-import { splitAndTrimWithBracket } from '@hyperdx/common-utils/dist/core/utils';
-import { MaterializedViewConfiguration } from '@hyperdx/common-utils/dist/types';
+import { splitAndTrimWithBracket } from '@couchbase-traces/common-utils/dist/core/utils';
+import { MaterializedViewConfiguration } from '@couchbase-traces/common-utils/dist/types';
 import { Grid, Group, Stack, Table, Text, Tooltip } from '@mantine/core';
 import { IconInfoCircle } from '@tabler/icons-react';
 

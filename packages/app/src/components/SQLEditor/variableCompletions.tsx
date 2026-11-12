@@ -1,16 +1,16 @@
 import { createContext, use, useCallback, useMemo } from 'react';
-import { PROMQL_MACROS } from '@hyperdx/common-utils/dist/core/promql';
+import { PROMQL_MACROS } from '@couchbase-traces/common-utils/dist/core/promql';
 import {
   MacroSuggestion,
   VARIABLE_MACRO_SUGGESTIONS,
-} from '@hyperdx/common-utils/dist/macros';
-import { ChartVariable } from '@hyperdx/common-utils/dist/types';
+} from '@couchbase-traces/common-utils/dist/macros';
+import { ChartVariable } from '@couchbase-traces/common-utils/dist/types';
 import {
   isFilterSingleSelect,
   substituteVariables,
   TemplateLanguage,
   VariableFormat,
-} from '@hyperdx/common-utils/dist/variables';
+} from '@couchbase-traces/common-utils/dist/variables';
 
 import { type SQLCompletion } from './utils';
 

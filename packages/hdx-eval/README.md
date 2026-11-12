@@ -1,4 +1,4 @@
-# @hyperdx/hdx-eval
+# @couchbase-traces/hdx-eval
 
 Eval framework for benchmarking AI agents against observability MCP servers.
 Generates deterministic synthetic telemetry (traces + logs) with planted
@@ -33,24 +33,24 @@ stack is using — you can find this in the banner printed by `yarn dev`.
 export HDX_DEV_SLOT=98
 
 # 1. One-time setup: register eval account + create Sources + write config
-yarn workspace @hyperdx/hdx-eval dev setup-hyperdx
+yarn workspace @couchbase-traces/hdx-eval dev setup-hyperdx
 
 # 2. Seed a scenario (use --volume-factor 0.1 for faster iteration)
-yarn workspace @hyperdx/hdx-eval dev seed error-root-cause --volume-factor 0.1
+yarn workspace @couchbase-traces/hdx-eval dev seed error-root-cause --volume-factor 0.1
 
 # 3. Run the eval (all enabled MCPs, 3 runs each)
 #    First run saves an anchorTime to eval.config.json automatically.
-yarn workspace @hyperdx/hdx-eval dev run error-root-cause
+yarn workspace @couchbase-traces/hdx-eval dev run error-root-cause
 
 # 4. Re-run later — reuses saved anchor, skips reseed
-yarn workspace @hyperdx/hdx-eval dev run error-root-cause
+yarn workspace @couchbase-traces/hdx-eval dev run error-root-cause
 
 # 5. Grade + report (auto-runs after step 3 by default)
-yarn workspace @hyperdx/hdx-eval dev grade <batch>
-yarn workspace @hyperdx/hdx-eval dev report <batch>
+yarn workspace @couchbase-traces/hdx-eval dev grade <batch>
+yarn workspace @couchbase-traces/hdx-eval dev report <batch>
 
 # 6. Browse results in the web viewer
-yarn workspace @hyperdx/hdx-eval viewer
+yarn workspace @couchbase-traces/hdx-eval viewer
 ```
 
 ## Recommended: Dual-Slot Eval Setup
@@ -83,10 +83,10 @@ This gives you:
 
 ```bash
 # Setup baseline (slot 98)
-yarn workspace @hyperdx/hdx-eval dev setup-hyperdx --api-url http://localhost:30198
+yarn workspace @couchbase-traces/hdx-eval dev setup-hyperdx --api-url http://localhost:30198
 
 # Setup candidate (slot 99)
-yarn workspace @hyperdx/hdx-eval dev setup-hyperdx --api-url http://localhost:30199
+yarn workspace @couchbase-traces/hdx-eval dev setup-hyperdx --api-url http://localhost:30199
 ```
 
 After setup, `eval.config.json` will have the `hyperdx` MCP pointing at the
@@ -98,14 +98,14 @@ slot it was set up against. You can then manually add the second MCP entry
 Both instances need the eval data. Use `HDX_DEV_SLOT` to target each:
 
 ```bash
-HDX_DEV_SLOT=98 yarn workspace @hyperdx/hdx-eval dev seed error-root-cause
-HDX_DEV_SLOT=99 yarn workspace @hyperdx/hdx-eval dev seed error-root-cause
+HDX_DEV_SLOT=98 yarn workspace @couchbase-traces/hdx-eval dev seed error-root-cause
+HDX_DEV_SLOT=99 yarn workspace @couchbase-traces/hdx-eval dev seed error-root-cause
 ```
 
 ### 4. Run the comparison
 
 ```bash
-yarn workspace @hyperdx/hdx-eval dev run error-root-cause \
+yarn workspace @couchbase-traces/hdx-eval dev run error-root-cause \
   --mcp hyperdx-main,hyperdx-feature \
   --baseline hyperdx-main \
   --runs 5
@@ -273,15 +273,15 @@ Planted anomaly counts stay fixed.
 
 ```bash
 # Full volume (default) — realistic needle-in-haystack difficulty
-yarn workspace @hyperdx/hdx-eval dev seed error-root-cause
+yarn workspace @couchbase-traces/hdx-eval dev seed error-root-cause
 
 # 10% volume — much faster, still structurally valid
-yarn workspace @hyperdx/hdx-eval dev seed error-root-cause --volume-factor 0.1
+yarn workspace @couchbase-traces/hdx-eval dev seed error-root-cause --volume-factor 0.1
 ```
 
 ## CLI Reference
 
-All commands are run via `yarn workspace @hyperdx/hdx-eval dev <command>`.
+All commands are run via `yarn workspace @couchbase-traces/hdx-eval dev <command>`.
 
 ### Setup
 
@@ -379,7 +379,7 @@ while an OpenAI grader uses `OPENAI_API_KEY` without the two colliding.
 ### Viewer
 
 ```bash
-yarn workspace @hyperdx/hdx-eval viewer    # web UI at http://localhost:5176
+yarn workspace @couchbase-traces/hdx-eval viewer    # web UI at http://localhost:5176
 ```
 
 The viewer shows a **comparison dashboard** when you select a batch:
@@ -485,8 +485,8 @@ fresh reseed is much slower than reusing cached seed data).
 ## Tests
 
 ```bash
-yarn workspace @hyperdx/hdx-eval ci:unit   # all unit tests
-yarn workspace @hyperdx/hdx-eval dev:unit  # watch mode
+yarn workspace @couchbase-traces/hdx-eval ci:unit   # all unit tests
+yarn workspace @couchbase-traces/hdx-eval dev:unit  # watch mode
 ```
 
 Unit tests verify PRNG determinism, planted anomaly invariants, grading

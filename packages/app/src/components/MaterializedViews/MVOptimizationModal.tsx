@@ -1,7 +1,7 @@
 import { useMemo } from 'react';
 import { Badge } from '@clickhouse/click-ui';
-import { MVOptimizationExplanation } from '@hyperdx/common-utils/dist/core/materializedViews';
-import { MaterializedViewConfiguration } from '@hyperdx/common-utils/dist/types';
+import { MVOptimizationExplanation } from '@couchbase-traces/common-utils/dist/core/materializedViews';
+import { MaterializedViewConfiguration } from '@couchbase-traces/common-utils/dist/types';
 import { Accordion, Alert, Group, Modal, Text, Tooltip } from '@mantine/core';
 
 import MVConfigSummary from './MVConfigSummary';

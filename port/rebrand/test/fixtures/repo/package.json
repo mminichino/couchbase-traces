@@ -1,0 +1,10 @@
+{
+  "name": "hyperdx",
+  "private": true,
+  "workspaces": [
+    "packages/*"
+  ],
+  "scripts": {
+    "app:dev": "nx run @hyperdx/api:dev && echo ${HDX_DEV_LOGS_DIR:-.}"
+  }
+}

@@ -1,4 +1,4 @@
-import { type AlertInterval } from '@hyperdx/common-utils/dist/types';
+import { type AlertInterval } from '@couchbase-traces/common-utils/dist/types';
 import { ObjectId } from 'mongodb';
 import mongoose from 'mongoose';
 import { z } from 'zod';

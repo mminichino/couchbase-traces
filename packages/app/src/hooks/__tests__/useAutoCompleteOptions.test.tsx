@@ -1,7 +1,7 @@
 import React from 'react';
 import { enableMapSet } from 'immer';
-import { JSDataType } from '@hyperdx/common-utils/dist/clickhouse';
-import { Field } from '@hyperdx/common-utils/dist/core/metadata';
+import { JSDataType } from '@couchbase-traces/common-utils/dist/clickhouse';
+import { Field } from '@couchbase-traces/common-utils/dist/core/metadata';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { renderHook } from '@testing-library/react';
 

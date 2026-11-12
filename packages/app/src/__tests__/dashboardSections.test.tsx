@@ -2,7 +2,7 @@ import {
   DashboardContainerSchema,
   DashboardSchema,
   TileSchema,
-} from '@hyperdx/common-utils/dist/types';
+} from '@couchbase-traces/common-utils/dist/types';
 
 describe('DashboardContainer schema', () => {
   it('validates a valid group', () => {

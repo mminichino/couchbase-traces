@@ -1,4 +1,4 @@
-import { Filter } from '@hyperdx/common-utils/dist/types';
+import { Filter } from '@couchbase-traces/common-utils/dist/types';
 
 type AppliedConfigParams = {
   source?: string | null;

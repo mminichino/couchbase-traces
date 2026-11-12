@@ -3,7 +3,7 @@ import {
   AlertErrorType,
   AlertEvaluation,
   AlertState,
-} from '@hyperdx/common-utils/dist/types';
+} from '@couchbase-traces/common-utils/dist/types';
 import { fireEvent, screen, within } from '@testing-library/react';
 
 import { AlertEvaluationsTable } from '@/components/alerts/AlertEvaluationsTable';

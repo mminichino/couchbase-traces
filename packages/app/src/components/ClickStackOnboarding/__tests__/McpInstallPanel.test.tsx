@@ -27,7 +27,7 @@ describe('McpInstallPanel CLI installer', () => {
     renderPanel();
     expect(
       screen.getByText(
-        'npx @hyperdx/cli mcp install --app-url https://app.example.com',
+        'npx @couchbase-traces/cli mcp install --app-url https://app.example.com',
       ),
     ).toBeInTheDocument();
   });

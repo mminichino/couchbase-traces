@@ -1,7 +1,7 @@
 import * as React from 'react';
 import Link from 'next/link';
-import { isImportableAlert } from '@hyperdx/common-utils/dist/iac';
-import { AlertSource } from '@hyperdx/common-utils/dist/types';
+import { isImportableAlert } from '@couchbase-traces/common-utils/dist/iac';
+import { AlertSource } from '@couchbase-traces/common-utils/dist/types';
 import { ActionIcon, Menu, Modal } from '@mantine/core';
 import { notifications } from '@mantine/notifications';
 import {

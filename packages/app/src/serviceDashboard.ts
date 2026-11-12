@@ -1,12 +1,15 @@
 import { useMemo } from 'react';
-import { ColumnMeta } from '@hyperdx/common-utils/dist/clickhouse';
-import { tcFromSource } from '@hyperdx/common-utils/dist/core/metadata';
+import { ColumnMeta } from '@couchbase-traces/common-utils/dist/clickhouse';
+import { tcFromSource } from '@couchbase-traces/common-utils/dist/core/metadata';
 import {
   errorStatusPredicateSql,
   serverSpanKindPredicateSql,
-} from '@hyperdx/common-utils/dist/core/spanPredicates';
-import { escapeSqlString } from '@hyperdx/common-utils/dist/core/utils';
-import { SourceKind, TTraceSource } from '@hyperdx/common-utils/dist/types';
+} from '@couchbase-traces/common-utils/dist/core/spanPredicates';
+import { escapeSqlString } from '@couchbase-traces/common-utils/dist/core/utils';
+import {
+  SourceKind,
+  TTraceSource,
+} from '@couchbase-traces/common-utils/dist/types';
 
 import { useColumns, useJsonColumns } from './hooks/useMetadata';
 

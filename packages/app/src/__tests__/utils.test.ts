@@ -3,7 +3,7 @@ import {
   ColorCondition,
   NumericUnit,
   TSource,
-} from '@hyperdx/common-utils/dist/types';
+} from '@couchbase-traces/common-utils/dist/types';
 import { SortingState } from '@tanstack/react-table';
 import { act, renderHook } from '@testing-library/react';
 

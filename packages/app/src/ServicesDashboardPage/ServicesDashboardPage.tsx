@@ -15,12 +15,12 @@ import {
   useQueryStates,
 } from 'nuqs';
 import { UseControllerProps, useForm, useWatch } from 'react-hook-form';
-import { tcFromSource } from '@hyperdx/common-utils/dist/core/metadata';
+import { tcFromSource } from '@couchbase-traces/common-utils/dist/core/metadata';
 import {
   PresetDashboard,
   SourceKind,
   TSource,
-} from '@hyperdx/common-utils/dist/types';
+} from '@couchbase-traces/common-utils/dist/types';
 import {
   ActionIcon,
   Anchor,

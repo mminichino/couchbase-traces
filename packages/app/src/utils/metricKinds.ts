@@ -1,4 +1,4 @@
-import { MetricsDataType } from '@hyperdx/common-utils/dist/types';
+import { MetricsDataType } from '@couchbase-traces/common-utils/dist/types';
 
 /**
  * Metric kinds the query renderer can chart, in the order they are listed to

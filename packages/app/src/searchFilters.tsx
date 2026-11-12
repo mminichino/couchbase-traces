@@ -4,8 +4,8 @@ import {
   type FilterState,
   filtersToQuery,
   parseQuery,
-} from '@hyperdx/common-utils/dist/filters';
-import type { Filter } from '@hyperdx/common-utils/dist/types';
+} from '@couchbase-traces/common-utils/dist/filters';
+import type { Filter } from '@couchbase-traces/common-utils/dist/types';
 
 import {
   cleanClickHouseExpression,

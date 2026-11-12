@@ -4,7 +4,7 @@ import {
   TLogSource,
   TMetricSource,
   TSource,
-} from '@hyperdx/common-utils/dist/types';
+} from '@couchbase-traces/common-utils/dist/types';
 import { Modal, Paper, Stack, Tabs, Text, Tooltip } from '@mantine/core';
 import { IconCode, IconRefresh } from '@tabler/icons-react';
 

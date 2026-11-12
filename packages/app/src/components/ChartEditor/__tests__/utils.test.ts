@@ -4,14 +4,14 @@ import type {
   RawSqlSavedChartConfig,
   TMetricSource,
   TSource,
-} from '@hyperdx/common-utils/dist/types';
+} from '@couchbase-traces/common-utils/dist/types';
 import {
   AlertThresholdType,
   DisplayType,
   MetricsDataType,
   PromqlReducer,
   SourceKind,
-} from '@hyperdx/common-utils/dist/types';
+} from '@couchbase-traces/common-utils/dist/types';
 
 import type { ChartEditorFormState } from '@/components/ChartEditor/types';
 import {

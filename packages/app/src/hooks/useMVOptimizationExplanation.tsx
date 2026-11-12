@@ -1,11 +1,11 @@
 import {
   MVOptimizationExplanation,
   tryOptimizeConfigWithMaterializedViewWithExplanations,
-} from '@hyperdx/common-utils/dist/core/materializedViews';
+} from '@couchbase-traces/common-utils/dist/core/materializedViews';
 import {
   BuilderChartConfigWithOptDateRange,
   SourceKind,
-} from '@hyperdx/common-utils/dist/types';
+} from '@couchbase-traces/common-utils/dist/types';
 import {
   keepPreviousData,
   useQuery,

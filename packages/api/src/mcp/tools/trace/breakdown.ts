@@ -15,9 +15,9 @@
  * endpoint" without dropping into raw SQL with self-JOINs. The builder
  * tools (table / timeseries / search) can't express the TraceId subselect.
  */
-import type { ChSql } from '@hyperdx/common-utils/dist/clickhouse';
-import { getMetadata } from '@hyperdx/common-utils/dist/core/metadata';
-import { SourceKind } from '@hyperdx/common-utils/dist/types';
+import type { ChSql } from '@couchbase-traces/common-utils/dist/clickhouse';
+import { getMetadata } from '@couchbase-traces/common-utils/dist/core/metadata';
+import { SourceKind } from '@couchbase-traces/common-utils/dist/types';
 
 import { getSource } from '@/controllers/sources';
 import { READ_ONLY_TOOL } from '@/mcp/tools/annotations';

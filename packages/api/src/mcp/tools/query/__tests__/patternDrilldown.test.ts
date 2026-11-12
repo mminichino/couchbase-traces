@@ -1,4 +1,4 @@
-import { minePatterns } from '@hyperdx/common-utils/dist/drain';
+import { minePatterns } from '@couchbase-traces/common-utils/dist/drain';
 
 import {
   andSql,

@@ -1,6 +1,6 @@
 import { describe, expect, it } from '@jest/globals';
 
-import { NumericUnit } from '@hyperdx/common-utils/dist/types';
+import { NumericUnit } from '@couchbase-traces/common-utils/dist/types';
 
 import { axisTickFormatter, formatNumber } from '@/shared/formatNumber';
 

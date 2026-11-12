@@ -7,7 +7,7 @@ import {
   type IacImportManifest,
   type IacResourceType,
   providerEndpoint,
-} from '@hyperdx/common-utils/dist/iac';
+} from '@couchbase-traces/common-utils/dist/iac';
 import {
   Alert,
   Box,

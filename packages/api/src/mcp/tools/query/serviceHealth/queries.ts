@@ -1,9 +1,9 @@
-import type { Metadata } from '@hyperdx/common-utils/dist/core/metadata';
+import type { Metadata } from '@couchbase-traces/common-utils/dist/core/metadata';
 import {
   errorStatusPredicateSql,
   serverSpanKindPredicateSql,
-} from '@hyperdx/common-utils/dist/core/spanPredicates';
-import { escapeSqlString } from '@hyperdx/common-utils/dist/core/utils';
+} from '@couchbase-traces/common-utils/dist/core/spanPredicates';
+import { escapeSqlString } from '@couchbase-traces/common-utils/dist/core/utils';
 import {
   type BuilderChartConfigWithDateRange,
   DisplayType,
@@ -12,7 +12,7 @@ import {
   type QuerySettings,
   SourceKind,
   type TTraceSource,
-} from '@hyperdx/common-utils/dist/types';
+} from '@couchbase-traces/common-utils/dist/types';
 
 import type { ClickhouseClient } from '@/clickhouse';
 import { durationDivisor, mcpQuerySettings } from '@/mcp/tools/trace/shared';

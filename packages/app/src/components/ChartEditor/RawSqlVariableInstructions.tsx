@@ -1,4 +1,4 @@
-import { ChartVariable } from '@hyperdx/common-utils/dist/types';
+import { ChartVariable } from '@couchbase-traces/common-utils/dist/types';
 import { Box, Text } from '@mantine/core';
 
 /**

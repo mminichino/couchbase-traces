@@ -1,17 +1,17 @@
 import { useMemo } from 'react';
 import { ErrorBoundary } from 'react-error-boundary';
-import { isReducibleRangeQuery } from '@hyperdx/common-utils/dist/core/promql';
+import { isReducibleRangeQuery } from '@couchbase-traces/common-utils/dist/core/promql';
 import {
   isBuilderChartConfig,
   isPromqlChartConfig,
-} from '@hyperdx/common-utils/dist/guards';
+} from '@couchbase-traces/common-utils/dist/guards';
 import {
   BackgroundChart,
   ChartConfigWithDateRange,
   ChartPaletteToken,
   DisplayType,
   resolveChartPaletteToken,
-} from '@hyperdx/common-utils/dist/types';
+} from '@couchbase-traces/common-utils/dist/types';
 
 import {
   convertToPromqlSparklineChartConfig,

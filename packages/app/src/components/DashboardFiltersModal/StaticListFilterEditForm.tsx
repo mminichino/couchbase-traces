@@ -1,5 +1,5 @@
 import { Controller, useFormState } from 'react-hook-form';
-import { DashboardFilter } from '@hyperdx/common-utils/dist/types';
+import { DashboardFilter } from '@couchbase-traces/common-utils/dist/types';
 import { TagsInput } from '@mantine/core';
 
 import { CustomInputWrapper } from './CustomInputWrapper';

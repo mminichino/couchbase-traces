@@ -2,17 +2,17 @@ import {
   ChSql,
   chSql,
   concatChSql,
-} from '@hyperdx/common-utils/dist/clickhouse';
-import { supportsPrometheusHttpApi } from '@hyperdx/common-utils/dist/core/clickhouseVersion';
+} from '@couchbase-traces/common-utils/dist/clickhouse';
+import { supportsPrometheusHttpApi } from '@couchbase-traces/common-utils/dist/core/clickhouseVersion';
 import {
   Metadata,
   MetadataCache,
-} from '@hyperdx/common-utils/dist/core/metadata';
-import { promqlSelectorMetricName } from '@hyperdx/common-utils/dist/core/promqlSelector';
+} from '@couchbase-traces/common-utils/dist/core/metadata';
+import { promqlSelectorMetricName } from '@couchbase-traces/common-utils/dist/core/promqlSelector';
 import {
   PrometheusMatrixResult,
   PrometheusVectorResult,
-} from '@hyperdx/common-utils/dist/types';
+} from '@couchbase-traces/common-utils/dist/types';
 
 import { ClickhouseClient } from '@/clickhouse';
 import logger from '@/utils/logger';

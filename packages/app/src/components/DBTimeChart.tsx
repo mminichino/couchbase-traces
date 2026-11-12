@@ -11,18 +11,18 @@ import { add, differenceInSeconds } from 'date-fns';
 import {
   convertGranularityToSeconds,
   getAlignedDateRange,
-} from '@hyperdx/common-utils/dist/core/utils';
-import type { AdhocConditionEntry } from '@hyperdx/common-utils/dist/filters';
+} from '@couchbase-traces/common-utils/dist/core/utils';
+import type { AdhocConditionEntry } from '@couchbase-traces/common-utils/dist/filters';
 import {
   isBuilderChartConfig,
   isPromqlChartConfig,
   isRawSqlChartConfig,
-} from '@hyperdx/common-utils/dist/guards';
+} from '@couchbase-traces/common-utils/dist/guards';
 import {
   BuilderChartConfigWithDateRange,
   ChartConfigWithDateRange,
   DisplayType,
-} from '@hyperdx/common-utils/dist/types';
+} from '@couchbase-traces/common-utils/dist/types';
 import { Popover, Portal } from '@mantine/core';
 import {
   IconChartAreaLine,

@@ -5,11 +5,11 @@ import type {
   TeamMembersApiResponse,
   TeamTagsApiResponse,
   UpdateClickHouseSettingsApiResponse,
-} from '@hyperdx/common-utils/dist/types';
+} from '@couchbase-traces/common-utils/dist/types';
 import {
   TagResourceTypeSchema,
   TeamClickHouseSettingsUpdateSchema,
-} from '@hyperdx/common-utils/dist/types';
+} from '@couchbase-traces/common-utils/dist/types';
 import crypto from 'crypto';
 import express from 'express';
 import pick from 'lodash/pick';

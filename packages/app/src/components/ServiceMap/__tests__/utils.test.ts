@@ -1,5 +1,8 @@
 import router from 'next/router';
-import { SourceKind, TTraceSource } from '@hyperdx/common-utils/dist/types';
+import {
+  SourceKind,
+  TTraceSource,
+} from '@couchbase-traces/common-utils/dist/types';
 
 import {
   buildServiceMapErrorWhere,

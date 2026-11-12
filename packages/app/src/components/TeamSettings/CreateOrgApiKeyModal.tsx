@@ -2,7 +2,7 @@ import { useState } from 'react';
 import {
   type OrgApiKeyExpiry,
   OrgApiKeyExpirySchema,
-} from '@hyperdx/common-utils/dist/types';
+} from '@couchbase-traces/common-utils/dist/types';
 import {
   Button,
   Group,

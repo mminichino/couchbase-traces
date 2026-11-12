@@ -3,7 +3,7 @@ import { Box, Text } from 'ink';
 import TextInput from 'ink-text-input';
 import Spinner from 'ink-spinner';
 
-import { parameterizedQueryToSql } from '@hyperdx/common-utils/dist/clickhouse';
+import { parameterizedQueryToSql } from '@couchbase-traces/common-utils/dist/clickhouse';
 
 import ErrorDisplay from '@/components/ErrorDisplay';
 import type { TimeRange } from '@/utils/editor';

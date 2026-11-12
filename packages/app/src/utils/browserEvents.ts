@@ -1,5 +1,5 @@
 import { flatten } from 'flat';
-import { parseJSON } from '@hyperdx/common-utils/dist/core/utils';
+import { parseJSON } from '@couchbase-traces/common-utils/dist/core/utils';
 
 import { isRecord } from '@/llm/lib/attributeUtils';
 import { getShortUrl } from '@/utils';

@@ -2,7 +2,7 @@ import {
   NumberFormat,
   TLogSource,
   TTraceSource,
-} from '@hyperdx/common-utils/dist/types';
+} from '@couchbase-traces/common-utils/dist/types';
 
 import { LLMExpressions, LLMLogExpressions } from '@/llm/lib/expressions';
 

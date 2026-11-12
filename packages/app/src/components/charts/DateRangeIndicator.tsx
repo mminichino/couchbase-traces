@@ -1,5 +1,5 @@
-import { isDateRangeEqual } from '@hyperdx/common-utils/dist/core/utils';
-import { SQLInterval } from '@hyperdx/common-utils/dist/types';
+import { isDateRangeEqual } from '@couchbase-traces/common-utils/dist/core/utils';
+import { SQLInterval } from '@couchbase-traces/common-utils/dist/types';
 import { Tooltip } from '@mantine/core';
 import { IconClock } from '@tabler/icons-react';
 

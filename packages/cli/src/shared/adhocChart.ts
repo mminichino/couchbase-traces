@@ -7,8 +7,8 @@
  * dashboard tiles and the web UI.
  */
 
-import type { SavedChartConfig } from '@hyperdx/common-utils/dist/types';
-import { DisplayType } from '@hyperdx/common-utils/dist/types';
+import type { SavedChartConfig } from '@couchbase-traces/common-utils/dist/types';
+import { DisplayType } from '@couchbase-traces/common-utils/dist/types';
 
 import type { SourceResponse } from '@/api/client';
 

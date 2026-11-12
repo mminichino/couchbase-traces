@@ -1,4 +1,6 @@
 import { useMemo, useRef, useState } from 'react';
+import { TableConnection } from '@couchbase-traces/common-utils/dist/core/metadata';
+import { splitAndTrimWithBracket } from '@couchbase-traces/common-utils/dist/core/utils';
 import {
   DndContext,
   type DragEndEvent,
@@ -12,8 +14,6 @@ import {
   SortableContext,
   verticalListSortingStrategy,
 } from '@dnd-kit/sortable';
-import { TableConnection } from '@hyperdx/common-utils/dist/core/metadata';
-import { splitAndTrimWithBracket } from '@hyperdx/common-utils/dist/core/utils';
 import {
   Autocomplete,
   Box,

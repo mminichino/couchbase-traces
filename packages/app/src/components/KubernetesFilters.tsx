@@ -1,11 +1,11 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { escapeRegExp } from 'lodash';
 import { useForm, useWatch } from 'react-hook-form';
-import { FilterState } from '@hyperdx/common-utils/dist/filters';
+import { FilterState } from '@couchbase-traces/common-utils/dist/filters';
 import {
   BuilderChartConfigWithDateRange,
   TMetricSource,
-} from '@hyperdx/common-utils/dist/types';
+} from '@couchbase-traces/common-utils/dist/types';
 import { Box, Group, Select } from '@mantine/core';
 
 import { FilterLinkToggle } from '@/components/FilterLinkToggle';

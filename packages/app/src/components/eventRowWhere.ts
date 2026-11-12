@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { WithClauseSchema } from '@hyperdx/common-utils/dist/types';
+import { WithClauseSchema } from '@couchbase-traces/common-utils/dist/types';
 
 import { parseAsJsonEncoded } from '@/utils/queryParsers';
 

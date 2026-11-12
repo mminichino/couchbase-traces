@@ -1,5 +1,5 @@
 import React from 'react';
-import { TSource } from '@hyperdx/common-utils/dist/types';
+import { TSource } from '@couchbase-traces/common-utils/dist/types';
 import { MantineProvider } from '@mantine/core';
 import { render } from '@testing-library/react';
 

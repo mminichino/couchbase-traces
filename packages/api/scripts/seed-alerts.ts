@@ -15,8 +15,8 @@
  * The dev stack must be up (`yarn dev`) and registered once, since
  * the script attaches everything to the existing team and log source.
  */
-import { formatTileAlertDisplayName } from '@hyperdx/common-utils/dist/alerts';
-import { DisplayType } from '@hyperdx/common-utils/dist/types';
+import { formatTileAlertDisplayName } from '@couchbase-traces/common-utils/dist/alerts';
+import { DisplayType } from '@couchbase-traces/common-utils/dist/types';
 import mongoose from 'mongoose';
 
 import Alert, { AlertSource, AlertState } from '@/models/alert';

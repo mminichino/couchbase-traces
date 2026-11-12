@@ -1,4 +1,4 @@
-# @hyperdx/cli
+# @couchbase-traces/cli
 
 ## 0.9.0
 
@@ -6,7 +6,7 @@
 
 - 7935c64bc: feat: add `hdx mcp install` to connect AI agents without pasting a key
 
-  `npx @hyperdx/cli mcp install` asks for a personal access key or an
+  `npx @couchbase-traces/cli mcp install` asks for a personal access key or an
   organization API key with hidden input, checks it, and adds the ClickStack MCP
   server to Claude Code, Codex, Cursor, and VS Code. Team Settings now leads with
   this command, so the key no longer has to go into a copied command or an agent
@@ -202,7 +202,7 @@
 
   - **`hdx connections`** — list ClickHouse connections (`id`, `name`, `host`) for the authenticated team. Supports `--json` for programmatic consumption.
   - **`hdx query --connection-id <id> --sql <query>`** — run raw SQL against a configured ClickHouse connection via the `/clickhouse-proxy`. Default `--format` is `JSONEachRow` (NDJSON); any ClickHouse format is accepted. Exit codes: `0` on success (empty stdout = zero rows), `1` on failure. On error, a lazy connection lookup distinguishes "unknown connection ID" from "bad SQL".
-  - **`hdx query --patterns`** — post-process the result with the Drain algorithm (`@hyperdx/common-utils/dist/drain`) and emit one NDJSON pattern object per cluster, sorted by count desc: `{"pattern":"<template>","count":<n>,"sample":"<first sample>"}`. Use `--body-column <name>` to cluster a single column's string value; defaults to the whole row JSON-serialized so any SELECT shape works.
+  - **`hdx query --patterns`** — post-process the result with the Drain algorithm (`@couchbase-traces/common-utils/dist/drain`) and emit one NDJSON pattern object per cluster, sorted by count desc: `{"pattern":"<template>","count":<n>,"sample":"<first sample>"}`. Use `--body-column <name>` to cluster a single column's string value; defaults to the whole row JSON-serialized so any SELECT shape works.
   - `--help` documents the exit-code contract and includes sampling guidance (`ORDER BY rand()` + selective WHERE warning) for mining over large tables.
 
 ## 0.3.0
@@ -242,4 +242,4 @@
 
 ### Minor Changes
 
-- d995b78c: Add @hyperdx/cli package — terminal CLI for searching, tailing, and inspecting logs and traces from HyperDX with interactive TUI, trace waterfall, raw SQL queries, dashboard listing, and sourcemap uploads.
+- d995b78c: Add @couchbase-traces/cli package — terminal CLI for searching, tailing, and inspecting logs and traces from HyperDX with interactive TUI, trace waterfall, raw SQL queries, dashboard listing, and sourcemap uploads.

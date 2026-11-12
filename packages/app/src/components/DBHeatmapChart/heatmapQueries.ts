@@ -1,17 +1,17 @@
-import { getHeatmapMode } from '@hyperdx/common-utils/dist/core/heatmap';
+import { getHeatmapMode } from '@couchbase-traces/common-utils/dist/core/heatmap';
 import {
   getAlignedDateRange,
   getTimeChartGranularity,
   HEATMAP_AUTO_GRANULARITY_BUCKETS,
-} from '@hyperdx/common-utils/dist/core/utils';
-import { isPromqlChartConfig } from '@hyperdx/common-utils/dist/guards';
+} from '@couchbase-traces/common-utils/dist/core/utils';
+import { isPromqlChartConfig } from '@couchbase-traces/common-utils/dist/guards';
 import {
   BuilderChartConfigWithDateRange,
   ChartConfigWithDateRange,
   DisplayType,
   PromqlConfigWithDateRange,
   SQLInterval,
-} from '@hyperdx/common-utils/dist/types';
+} from '@couchbase-traces/common-utils/dist/types';
 
 import { convertToTimeChartConfig, isAggregateFunction } from '@/ChartUtils';
 

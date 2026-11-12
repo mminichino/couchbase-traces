@@ -2,7 +2,7 @@ import { useMemo } from 'react';
 import {
   MetricsDataType,
   TMetricSource,
-} from '@hyperdx/common-utils/dist/types';
+} from '@couchbase-traces/common-utils/dist/types';
 
 import { useGetKeyValues } from '@/hooks/useMetadata';
 

@@ -12,14 +12,14 @@
 
 import numbro from 'numbro';
 
-import { isRatioChartConfig } from '@hyperdx/common-utils/dist/core/renderChartConfig';
-import { isBuilderChartConfig } from '@hyperdx/common-utils/dist/guards';
-import type { ColumnMetaType } from '@hyperdx/common-utils/dist/clickhouse';
+import { isRatioChartConfig } from '@couchbase-traces/common-utils/dist/core/renderChartConfig';
+import { isBuilderChartConfig } from '@couchbase-traces/common-utils/dist/guards';
+import type { ColumnMetaType } from '@couchbase-traces/common-utils/dist/clickhouse';
 import type {
   ChartConfigWithOptDateRange,
   NumberFormat,
-} from '@hyperdx/common-utils/dist/types';
-import { NumericUnit } from '@hyperdx/common-utils/dist/types';
+} from '@couchbase-traces/common-utils/dist/types';
+import { NumericUnit } from '@couchbase-traces/common-utils/dist/types';
 
 import type { SourceResponse } from '@/api/client';
 

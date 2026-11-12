@@ -1,5 +1,5 @@
 {
-  "name": "@hyperdx/common-utils",
+  "name": "@couchbase-traces/common-utils",
   "description": "Common utilities for HyperDX application",
   "version": "0.34.0",
   "license": "MIT",

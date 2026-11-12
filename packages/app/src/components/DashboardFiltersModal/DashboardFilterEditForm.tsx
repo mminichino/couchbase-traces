@@ -3,13 +3,13 @@ import { useForm, useWatch } from 'react-hook-form';
 import {
   deriveVariableName,
   getFilterVariableName,
-} from '@hyperdx/common-utils/dist/filters';
+} from '@couchbase-traces/common-utils/dist/filters';
 import {
   ChartVariable,
   DashboardFilter,
   DashboardFilterType,
   TSource,
-} from '@hyperdx/common-utils/dist/types';
+} from '@couchbase-traces/common-utils/dist/types';
 import {
   Alert,
   Box,

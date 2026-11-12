@@ -1,4 +1,4 @@
-import { ConnectionSchema } from '@hyperdx/common-utils/dist/types';
+import { ConnectionSchema } from '@couchbase-traces/common-utils/dist/types';
 import express from 'express';
 import { z } from 'zod';
 

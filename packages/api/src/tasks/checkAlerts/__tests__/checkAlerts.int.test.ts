@@ -1,4 +1,4 @@
-import { ClickhouseClient } from '@hyperdx/common-utils/dist/clickhouse/node';
+import { ClickhouseClient } from '@couchbase-traces/common-utils/dist/clickhouse/node';
 import {
   AlertChartConfig,
   AlertErrorType,
@@ -7,7 +7,7 @@ import {
   SourceKind,
   Tile,
   WebhookService,
-} from '@hyperdx/common-utils/dist/types';
+} from '@couchbase-traces/common-utils/dist/types';
 import mongoose from 'mongoose';
 import ms from 'ms';
 
@@ -2012,8 +2012,10 @@ describe('checkAlerts', () => {
       };
 
       // Mock the getMetadata function
-      jest.mock('@hyperdx/common-utils/dist/core/metadata', () => ({
-        ...jest.requireActual('@hyperdx/common-utils/dist/core/metadata'),
+      jest.mock('@couchbase-traces/common-utils/dist/core/metadata', () => ({
+        ...jest.requireActual(
+          '@couchbase-traces/common-utils/dist/core/metadata',
+        ),
         getMetadata: jest.fn().mockReturnValue(mockMetadata),
       }));
 

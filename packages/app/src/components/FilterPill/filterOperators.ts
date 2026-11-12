@@ -1,7 +1,7 @@
 import {
   AdhocFilterOperator,
   PROMQL_ADHOC_FILTER_OPERATORS,
-} from '@hyperdx/common-utils/dist/types';
+} from '@couchbase-traces/common-utils/dist/types';
 
 import type { FilterOperatorOption } from './FilterConditionEditor';
 

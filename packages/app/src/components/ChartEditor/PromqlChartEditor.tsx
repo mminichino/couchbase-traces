@@ -8,14 +8,14 @@ import {
 import {
   displayTypeSupportsInstantQuery,
   displayTypeSupportsReducer,
-} from '@hyperdx/common-utils/dist/core/promql';
-import { isTimeSeriesDisplayType } from '@hyperdx/common-utils/dist/core/utils';
+} from '@couchbase-traces/common-utils/dist/core/promql';
+import { isTimeSeriesDisplayType } from '@couchbase-traces/common-utils/dist/core/utils';
 import {
   DisplayType,
   MAX_PROMQL_EXPRESSIONS,
   PromqlHeatmapMode,
   SourceKind,
-} from '@hyperdx/common-utils/dist/types';
+} from '@couchbase-traces/common-utils/dist/types';
 import { Box, Button, Divider, Flex, Group, Text } from '@mantine/core';
 import { IconCirclePlus } from '@tabler/icons-react';
 

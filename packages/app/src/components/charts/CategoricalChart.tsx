@@ -2,12 +2,12 @@ import { useMemo } from 'react';
 import {
   hasNonEmptyOrderBy,
   hasPositiveSeriesLimit,
-} from '@hyperdx/common-utils/dist/core/utils';
+} from '@couchbase-traces/common-utils/dist/core/utils';
 import {
   isBuilderChartConfig,
   isPromqlChartConfig,
-} from '@hyperdx/common-utils/dist/guards';
-import { ChartConfigWithOptTimestamp } from '@hyperdx/common-utils/dist/types';
+} from '@couchbase-traces/common-utils/dist/guards';
+import { ChartConfigWithOptTimestamp } from '@couchbase-traces/common-utils/dist/types';
 
 import {
   buildMVDateRangeIndicator,

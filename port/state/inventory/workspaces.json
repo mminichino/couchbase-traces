@@ -1,7 +1,7 @@
 {
   "workspaces": [
     {
-      "name": "@hyperdx/api",
+      "name": "@couchbase-traces/api",
       "dir": "packages/api",
       "private": true,
       "languages": [
@@ -36,7 +36,7 @@
         "ci:unit"
       ],
       "workspaceDeps": [
-        "@hyperdx/common-utils"
+        "@couchbase-traces/common-utils"
       ],
       "externalDeps": [
         "@ai-sdk/anthropic",
@@ -126,7 +126,7 @@
       "role": "API server and tasks"
     },
     {
-      "name": "@hyperdx/app",
+      "name": "@couchbase-traces/app",
       "dir": "packages/app",
       "private": true,
       "languages": [
@@ -156,8 +156,8 @@
         "ci:unit"
       ],
       "workspaceDeps": [
-        "@hyperdx/api",
-        "@hyperdx/common-utils"
+        "@couchbase-traces/api",
+        "@couchbase-traces/common-utils"
       ],
       "externalDeps": [
         "@chromatic-com/storybook",
@@ -292,7 +292,7 @@
       "role": "web UI"
     },
     {
-      "name": "@hyperdx/cli",
+      "name": "@couchbase-traces/cli",
       "dir": "packages/cli",
       "private": false,
       "languages": [
@@ -319,7 +319,7 @@
         "ci:unit"
       ],
       "workspaceDeps": [
-        "@hyperdx/common-utils"
+        "@couchbase-traces/common-utils"
       ],
       "externalDeps": [
         "@clickhouse/client",
@@ -351,7 +351,7 @@
       "role": "command-line client"
     },
     {
-      "name": "@hyperdx/common-utils",
+      "name": "@couchbase-traces/common-utils",
       "dir": "packages/common-utils",
       "private": true,
       "languages": [
@@ -419,7 +419,7 @@
       "role": "shared query and data layer"
     },
     {
-      "name": "@hyperdx/hdx-eval",
+      "name": "@couchbase-traces/hdx-eval",
       "dir": "packages/hdx-eval",
       "private": true,
       "languages": [
@@ -466,7 +466,7 @@
       "role": "evaluation harness"
     },
     {
-      "name": "@hyperdx/otel-collector",
+      "name": "@couchbase-traces/otel-collector",
       "dir": "packages/otel-collector",
       "private": true,
       "languages": [

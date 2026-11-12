@@ -1,4 +1,4 @@
-import type { BuilderChartConfigWithDateRange } from '@hyperdx/common-utils/dist/types';
+import type { BuilderChartConfigWithDateRange } from '@couchbase-traces/common-utils/dist/types';
 import { act, fireEvent, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 

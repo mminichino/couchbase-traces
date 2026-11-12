@@ -1,4 +1,4 @@
-import { DashboardFilter } from '@hyperdx/common-utils/dist/types';
+import { DashboardFilter } from '@couchbase-traces/common-utils/dist/types';
 
 import { getPendingVariablesTooltip } from '@/components/DashboardFilterLabel';
 import { getFilterEffect, getRequiredFilterTooltip } from '@/DashboardFilters';

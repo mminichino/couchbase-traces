@@ -1,14 +1,14 @@
 // TODO: we might want to move this test file to common-utils package
 
-import { ChSql, chSql } from '@hyperdx/common-utils/dist/clickhouse';
-import { ClickhouseClient } from '@hyperdx/common-utils/dist/clickhouse/node';
-import { getMetadata } from '@hyperdx/common-utils/dist/core/metadata';
-import { renderChartConfig } from '@hyperdx/common-utils/dist/core/renderChartConfig';
+import { ChSql, chSql } from '@couchbase-traces/common-utils/dist/clickhouse';
+import { ClickhouseClient } from '@couchbase-traces/common-utils/dist/clickhouse/node';
+import { getMetadata } from '@couchbase-traces/common-utils/dist/core/metadata';
+import { renderChartConfig } from '@couchbase-traces/common-utils/dist/core/renderChartConfig';
 import {
   DisplayType,
   MetricsDataType,
   QuerySettings,
-} from '@hyperdx/common-utils/dist/types';
+} from '@couchbase-traces/common-utils/dist/types';
 import _ from 'lodash';
 import ms from 'ms';
 

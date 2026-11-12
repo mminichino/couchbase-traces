@@ -1,9 +1,9 @@
 import {
   parseKeyPath,
   quoteIdentifierIfNeeded,
-} from '@hyperdx/common-utils/dist/core/metadata';
-import { splitAndTrimWithBracket } from '@hyperdx/common-utils/dist/core/utils';
-import { SourceKind, TSource } from '@hyperdx/common-utils/dist/types';
+} from '@couchbase-traces/common-utils/dist/core/metadata';
+import { splitAndTrimWithBracket } from '@couchbase-traces/common-utils/dist/core/utils';
+import { SourceKind, TSource } from '@couchbase-traces/common-utils/dist/types';
 
 import { cleanClickHouseExpression } from '@/components/DBSearchPageFilters/utils';
 import { isKeyCompatibleWithColumns } from '@/searchFilters';

@@ -336,7 +336,7 @@ ${PACKAGE_LIST_START}
 
 ${PACKAGE_LIST_HEADING}
 
-- \`@hyperdx/app\` 2.32.0 → 2.33.0 — [changelog](https://github.com/x)
+- \`@couchbase-traces/app\` 2.32.0 → 2.33.0 — [changelog](https://github.com/x)
 
 ${PACKAGE_LIST_END}
 
@@ -357,7 +357,7 @@ test('a reuse round-trip does not accumulate package lists', () => {
   // extract returns the published body including its list; the workflow strips
   // before appending a fresh one. Simulate three republish cycles.
   const append = b =>
-    `${b.trimEnd()}\n\n${PACKAGE_LIST_START}\n\n${PACKAGE_LIST_HEADING}\n\n- \`@hyperdx/app\` 1 → 2\n\n${PACKAGE_LIST_END}\n`;
+    `${b.trimEnd()}\n\n${PACKAGE_LIST_START}\n\n${PACKAGE_LIST_HEADING}\n\n- \`@couchbase-traces/app\` 1 → 2\n\n${PACKAGE_LIST_END}\n`;
   let body = 'Summary.\n';
   let file = null;
   for (let i = 0; i < 3; i++) {
@@ -736,7 +736,7 @@ test('insertSection refuses to splice over a non-release heading inside publishe
 });
 
 test('stripPackageList leaves a half-deleted marker pair alone', () => {
-  const list = `${PACKAGE_LIST_HEADING}\n\n- \`@hyperdx/app\` 1 → 2\n`;
+  const list = `${PACKAGE_LIST_HEADING}\n\n- \`@couchbase-traces/app\` 1 → 2\n`;
   const note = 'A maintainer note written below the generated list.';
 
   // End marker gone: there is no safe cut, so nothing is removed and the

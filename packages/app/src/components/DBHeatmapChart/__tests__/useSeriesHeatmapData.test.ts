@@ -1,9 +1,9 @@
-import { ResponseJSON } from '@hyperdx/common-utils/dist/clickhouse';
+import { ResponseJSON } from '@couchbase-traces/common-utils/dist/clickhouse';
 import {
   BuilderChartConfigWithDateRange,
   DisplayType,
   PromqlConfigWithDateRange,
-} from '@hyperdx/common-utils/dist/types';
+} from '@couchbase-traces/common-utils/dist/types';
 import { renderHook } from '@testing-library/react';
 
 import { useSeriesHeatmapData } from '@/components/DBHeatmapChart/useSeriesHeatmapData';

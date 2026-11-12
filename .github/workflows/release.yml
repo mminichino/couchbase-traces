@@ -54,10 +54,10 @@ jobs:
         run: npm config set registry https://registry.npmjs.org/
       - name: Install root dependencies
         run: yarn install
-      # Build @hyperdx/common-utils before changesets publish runs.
-      # @hyperdx/cli's `prepublishOnly` runs `yarn build` (tsup), which bundles
-      # imports from `@hyperdx/common-utils/dist/*`. Without this step those
-      # paths fail to resolve and the npm publish for @hyperdx/cli is skipped
+      # Build @couchbase-traces/common-utils before changesets publish runs.
+      # @couchbase-traces/cli's `prepublishOnly` runs `yarn build` (tsup), which bundles
+      # imports from `@couchbase-traces/common-utils/dist/*`. Without this step those
+      # paths fail to resolve and the npm publish for @couchbase-traces/cli is skipped
       # while the GitHub release/tag still succeeds. See HDX-4075.
       - name: Build common-utils
         run: make ci-build
@@ -1245,7 +1245,7 @@ jobs:
 
           # Write the combined release body
           {
-            echo "## @hyperdx/cli v${VERSION}"
+            echo "## @couchbase-traces/cli v${VERSION}"
             echo ""
             if [ -n "$NOTES" ]; then
               echo "$NOTES"
@@ -1258,12 +1258,12 @@ jobs:
 
           **npm (recommended):**
           ```bash
-          npm install -g @hyperdx/cli
+          npm install -g @couchbase-traces/cli
           ```
 
           **Or run directly with npx:**
           ```bash
-          npx @hyperdx/cli tui -s <your-hyperdx-api-url>
+          npx @couchbase-traces/cli tui -s <your-hyperdx-api-url>
           ```
 
           **Manual download (standalone binary, no Node.js required):**
@@ -1296,7 +1296,7 @@ jobs:
         uses: softprops/action-gh-release@153bb8e04406b158c6c84fc1615b65b24149a1fe # v2.6.1
         with:
           tag_name: cli-v${{ steps.cli_version.outputs.version }}
-          name: '@hyperdx/cli v${{ steps.cli_version.outputs.version }}'
+          name: '@couchbase-traces/cli v${{ steps.cli_version.outputs.version }}'
           body_path: /tmp/cli-release-notes.md
           draft: false
           prerelease: false

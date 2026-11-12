@@ -1,4 +1,4 @@
-import { WebhookService } from '@hyperdx/common-utils/dist/types';
+import { WebhookService } from '@couchbase-traces/common-utils/dist/types';
 
 import { deliverToChannel } from '@/tasks/checkAlerts/transports';
 import type { Message } from '@/tasks/checkAlerts/transports/types';

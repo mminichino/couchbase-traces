@@ -48,7 +48,10 @@ function setConfig(overrides: Record<string, string | undefined>) {
   Object.assign(mockConfig, overrides);
 }
 
-import { DisplayType, SourceKind } from '@hyperdx/common-utils/dist/types';
+import {
+  DisplayType,
+  SourceKind,
+} from '@couchbase-traces/common-utils/dist/types';
 
 import { getAIModel, getChartConfigFromResolvedConfig } from '@/controllers/ai';
 import type { ISource } from '@/models/source';

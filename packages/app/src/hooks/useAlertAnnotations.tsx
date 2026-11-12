@@ -1,5 +1,8 @@
 import { useMemo } from 'react';
-import { AlertState, AlertTransition } from '@hyperdx/common-utils/dist/types';
+import {
+  AlertState,
+  AlertTransition,
+} from '@couchbase-traces/common-utils/dist/types';
 
 import api from '@/api';
 import { ChartAnnotation } from '@/components/charts/chartAnnotations';

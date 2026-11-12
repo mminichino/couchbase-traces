@@ -1,41 +1,40 @@
 // --------------------------------------------------------
 // -------------- EXECUTE EVERY MINUTE --------------------
 // --------------------------------------------------------
-import PQueue from '@esm2cjs/p-queue';
-import * as clickhouse from '@hyperdx/common-utils/dist/clickhouse';
+import * as clickhouse from '@couchbase-traces/common-utils/dist/clickhouse';
 import {
   chSqlToAliasMap,
   type QueryAttribution,
   ResponseJSON,
-} from '@hyperdx/common-utils/dist/clickhouse';
+} from '@couchbase-traces/common-utils/dist/clickhouse';
 import {
   ClickhouseClient,
   withQueryAttribution,
-} from '@hyperdx/common-utils/dist/clickhouse/node';
-import { tryOptimizeConfigWithMaterializedView } from '@hyperdx/common-utils/dist/core/materializedViews';
+} from '@couchbase-traces/common-utils/dist/clickhouse/node';
+import { tryOptimizeConfigWithMaterializedView } from '@couchbase-traces/common-utils/dist/core/materializedViews';
 import {
   getMetadata,
   Metadata,
-} from '@hyperdx/common-utils/dist/core/metadata';
-import { renderChartConfig } from '@hyperdx/common-utils/dist/core/renderChartConfig';
+} from '@couchbase-traces/common-utils/dist/core/metadata';
+import { renderChartConfig } from '@couchbase-traces/common-utils/dist/core/renderChartConfig';
 import {
   ALERT_COUNT_DEFAULT_SELECT,
   buildSearchChartConfig,
-} from '@hyperdx/common-utils/dist/core/searchChartConfig';
+} from '@couchbase-traces/common-utils/dist/core/searchChartConfig';
 import {
   aliasMapToWithClauses,
   displayTypeSupportsBuilderAlerts,
   displayTypeSupportsRawSqlAlerts,
   isTimeSeriesDisplayType,
-} from '@hyperdx/common-utils/dist/core/utils';
-import { timeBucketByGranularity } from '@hyperdx/common-utils/dist/core/utils';
-import { getDashboardVariableDeclarations } from '@hyperdx/common-utils/dist/filters';
+} from '@couchbase-traces/common-utils/dist/core/utils';
+import { timeBucketByGranularity } from '@couchbase-traces/common-utils/dist/core/utils';
+import { getDashboardVariableDeclarations } from '@couchbase-traces/common-utils/dist/filters';
 import {
   isBuilderChartConfig,
   isPromqlSavedChartConfig,
   isRawSqlChartConfig,
   isRawSqlSavedChartConfig,
-} from '@hyperdx/common-utils/dist/guards';
+} from '@couchbase-traces/common-utils/dist/guards';
 import {
   ALERT_NOTIFICATION_TARGETS_LIMIT,
   AlertErrorType,
@@ -48,7 +47,8 @@ import {
   pickSampleWeightExpressionProps,
   SavedChartConfig,
   SourceKind,
-} from '@hyperdx/common-utils/dist/types';
+} from '@couchbase-traces/common-utils/dist/types';
+import PQueue from '@esm2cjs/p-queue';
 import * as fns from 'date-fns';
 import { isString, pick } from 'lodash';
 import { ObjectId } from 'mongoose';
@@ -819,7 +819,7 @@ const getChartConfigFromAlert = (
   if (details.taskType === AlertTaskType.SAVED_SEARCH) {
     const { source } = details;
     const savedSearch = details.savedSearch;
-    // Delegate to the shared builder (in @hyperdx/common-utils) so the alert
+    // Delegate to the shared builder (in @couchbase-traces/common-utils) so the alert
     // task, the alert preview chart, and the main app search page all
     // assemble saved-search chart configs identically — keeping source-level
     // fields like `tableFilterExpression` applied uniformly across paths.

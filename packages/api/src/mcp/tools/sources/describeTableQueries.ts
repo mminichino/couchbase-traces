@@ -3,12 +3,12 @@ import {
   type ChSql,
   chSql,
   tableExpr,
-} from '@hyperdx/common-utils/dist/clickhouse';
+} from '@couchbase-traces/common-utils/dist/clickhouse';
 import type {
   SkipIndexMetadata,
   TableMetadata,
-} from '@hyperdx/common-utils/dist/core/metadata';
-import { getDistributedTableArgs } from '@hyperdx/common-utils/dist/core/utils';
+} from '@couchbase-traces/common-utils/dist/core/metadata';
+import { getDistributedTableArgs } from '@couchbase-traces/common-utils/dist/core/utils';
 
 import type { ClickhouseClient } from '@/clickhouse';
 import { MCP_CLICKHOUSE_SETTINGS } from '@/mcp/tools/query/helpers';

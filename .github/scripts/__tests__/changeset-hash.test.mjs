@@ -39,7 +39,7 @@ function hash(dir) {
   }).trim();
 }
 
-const CHANGESET = '---\n"@hyperdx/app": minor\n---\n\nA change.\n';
+const CHANGESET = '---\n"@couchbase-traces/app": minor\n---\n\nA change.\n';
 
 test('the hash covers names with spaces and non-ASCII characters', async () => {
   // `git ls-tree` splitting on whitespace would push these out of the path

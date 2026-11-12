@@ -25,18 +25,17 @@ import {
 } from 'nuqs';
 import { useForm, useWatch } from 'react-hook-form';
 import { z } from 'zod';
-import { zodResolver } from '@hookform/resolvers/zod';
 import {
   ClickHouseQueryError,
   ColumnMeta,
-} from '@hyperdx/common-utils/dist/clickhouse';
-import { tcFromSource } from '@hyperdx/common-utils/dist/core/metadata';
-import { buildSearchChartConfig } from '@hyperdx/common-utils/dist/core/searchChartConfig';
+} from '@couchbase-traces/common-utils/dist/clickhouse';
+import { tcFromSource } from '@couchbase-traces/common-utils/dist/core/metadata';
+import { buildSearchChartConfig } from '@couchbase-traces/common-utils/dist/core/searchChartConfig';
 import {
   aliasMapToWithClauses,
   isBrowser,
   splitAndTrimWithBracket,
-} from '@hyperdx/common-utils/dist/core/utils';
+} from '@couchbase-traces/common-utils/dist/core/utils';
 import {
   BuilderChartConfigWithDateRange,
   ChartConfigWithDateRange,
@@ -46,7 +45,8 @@ import {
   isTraceSource,
   SourceKind,
   TSource,
-} from '@hyperdx/common-utils/dist/types';
+} from '@couchbase-traces/common-utils/dist/types';
+import { zodResolver } from '@hookform/resolvers/zod';
 import {
   ActionIcon,
   Anchor,

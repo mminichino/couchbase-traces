@@ -1,10 +1,10 @@
-import { FilterSelection } from '@hyperdx/common-utils/dist/dashboardFilterValues';
+import { FilterSelection } from '@couchbase-traces/common-utils/dist/dashboardFilterValues';
 import {
   ConditionFilter,
   DashboardFilter,
   PresetDashboard,
   PresetDashboardFilter,
-} from '@hyperdx/common-utils/dist/types';
+} from '@couchbase-traces/common-utils/dist/types';
 import { act, renderHook } from '@testing-library/react';
 
 import api from '@/api';

@@ -1,4 +1,7 @@
-import { SourceKind, SourceSchemaNoId } from '@hyperdx/common-utils/dist/types';
+import {
+  SourceKind,
+  SourceSchemaNoId,
+} from '@couchbase-traces/common-utils/dist/types';
 import mongoose from 'mongoose';
 
 import {

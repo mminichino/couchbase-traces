@@ -1,5 +1,5 @@
-import { splitAndTrimWithBracket } from '@hyperdx/common-utils/dist/core/utils';
-import { findBalancedParens } from '@hyperdx/common-utils/dist/variables';
+import { splitAndTrimWithBracket } from '@couchbase-traces/common-utils/dist/core/utils';
+import { findBalancedParens } from '@couchbase-traces/common-utils/dist/variables';
 
 import { parseAsSortingStateString } from '@/utils/queryParsers';
 

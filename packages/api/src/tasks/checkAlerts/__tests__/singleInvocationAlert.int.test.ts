@@ -1,4 +1,4 @@
-import { ClickhouseClient } from '@hyperdx/common-utils/dist/clickhouse/node';
+import { ClickhouseClient } from '@couchbase-traces/common-utils/dist/clickhouse/node';
 import { createServer } from 'http';
 import mongoose from 'mongoose';
 import ms from 'ms';
@@ -830,8 +830,10 @@ describe('Single Invocation Alert Test', () => {
     };
 
     // Mock the getMetadata function
-    jest.mock('@hyperdx/common-utils/dist/core/metadata', () => ({
-      ...jest.requireActual('@hyperdx/common-utils/dist/core/metadata'),
+    jest.mock('@couchbase-traces/common-utils/dist/core/metadata', () => ({
+      ...jest.requireActual(
+        '@couchbase-traces/common-utils/dist/core/metadata',
+      ),
       getMetadata: jest.fn().mockReturnValue(mockMetadata),
     }));
 

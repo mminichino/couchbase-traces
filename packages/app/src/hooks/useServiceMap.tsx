@@ -1,9 +1,9 @@
 import SqlString from 'sqlstring';
-import { chSql } from '@hyperdx/common-utils/dist/clickhouse';
-import { Metadata } from '@hyperdx/common-utils/dist/core/metadata';
-import { renderChartConfig } from '@hyperdx/common-utils/dist/core/renderChartConfig';
-import { errorStatusPredicateSql } from '@hyperdx/common-utils/dist/core/spanPredicates';
-import { TTraceSource } from '@hyperdx/common-utils/dist/types';
+import { chSql } from '@couchbase-traces/common-utils/dist/clickhouse';
+import { Metadata } from '@couchbase-traces/common-utils/dist/core/metadata';
+import { renderChartConfig } from '@couchbase-traces/common-utils/dist/core/renderChartConfig';
+import { errorStatusPredicateSql } from '@couchbase-traces/common-utils/dist/core/spanPredicates';
+import { TTraceSource } from '@couchbase-traces/common-utils/dist/types';
 import { useQuery } from '@tanstack/react-query';
 
 import { useClickhouseClient } from '@/clickhouse';

@@ -4,7 +4,7 @@
  * broadcast into a tile's `WHERE` clause, so the filter is a dashboard variable
  * and nothing else — and it is offered only where variables are.
  */
-import { DisplayType } from '@hyperdx/common-utils/dist/types';
+import { DisplayType } from '@couchbase-traces/common-utils/dist/types';
 
 import { DashboardPage } from '../page-objects/DashboardPage';
 import { ServicesDashboardPage } from '../page-objects/ServicesDashboardPage';

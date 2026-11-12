@@ -4,29 +4,29 @@ import {
   ClickHouseQueryError,
   parameterizedQueryToSql,
   ResponseJSON,
-} from '@hyperdx/common-utils/dist/clickhouse';
-import { ClickhouseClient } from '@hyperdx/common-utils/dist/clickhouse/browser';
-import { Metadata } from '@hyperdx/common-utils/dist/core/metadata';
+} from '@couchbase-traces/common-utils/dist/clickhouse';
+import { ClickhouseClient } from '@couchbase-traces/common-utils/dist/clickhouse/browser';
+import { Metadata } from '@couchbase-traces/common-utils/dist/core/metadata';
 import {
   appliesPromqlReducer,
   getQueriedPromqlSeries,
-} from '@hyperdx/common-utils/dist/core/promql';
+} from '@couchbase-traces/common-utils/dist/core/promql';
 import {
   isMetricChartConfig,
   isUsingGranularity,
   renderChartConfig,
-} from '@hyperdx/common-utils/dist/core/renderChartConfig';
+} from '@couchbase-traces/common-utils/dist/core/renderChartConfig';
 import {
   convertDateRangeToGranularityString,
   convertGranularityToSeconds,
   hasPositiveSeriesLimit,
-} from '@hyperdx/common-utils/dist/core/utils';
+} from '@couchbase-traces/common-utils/dist/core/utils';
 import {
   isBuilderChartConfig,
   isPromqlChartConfig,
   isRawSqlChartConfig,
-} from '@hyperdx/common-utils/dist/guards';
-import { format } from '@hyperdx/common-utils/dist/sqlFormatter';
+} from '@couchbase-traces/common-utils/dist/guards';
+import { format } from '@couchbase-traces/common-utils/dist/sqlFormatter';
 import {
   BuilderChartConfigWithOptDateRange,
   ChartConfigWithDateRange,
@@ -35,7 +35,7 @@ import {
   isPromqlSource,
   QuerySettings,
   TSource,
-} from '@hyperdx/common-utils/dist/types';
+} from '@couchbase-traces/common-utils/dist/types';
 import {
   useQuery,
   useQueryClient,

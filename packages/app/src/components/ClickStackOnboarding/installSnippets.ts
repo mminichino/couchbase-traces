@@ -192,7 +192,7 @@ function buildMcpJsonBlock(deployment: DeploymentShape): string {
  */
 export function buildCliInstallCommand(deployment: DeploymentShape): string {
   const appUrl = deployment.apiUrl.replace(/\/api\/?$/, '');
-  return `npx @hyperdx/cli mcp install --app-url ${appUrl}`;
+  return `npx @couchbase-traces/cli mcp install --app-url ${appUrl}`;
 }
 
 /**

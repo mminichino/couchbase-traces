@@ -8,7 +8,7 @@
  * `service`, one sample of 1 a minute. With every value equal, which series a
  * limit keeps is arbitrary, so the limit check counts slices.
  */
-import { DisplayType } from '@hyperdx/common-utils/dist/types';
+import { DisplayType } from '@couchbase-traces/common-utils/dist/types';
 
 import { DashboardPage } from '../page-objects/DashboardPage';
 import { SERVICES } from '../seed-clickhouse';

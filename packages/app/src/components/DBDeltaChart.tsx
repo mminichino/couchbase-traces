@@ -1,10 +1,10 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { ClickHouseQueryError } from '@hyperdx/common-utils/dist/clickhouse';
-import { tcFromChartConfig } from '@hyperdx/common-utils/dist/core/metadata';
+import { ClickHouseQueryError } from '@couchbase-traces/common-utils/dist/clickhouse';
+import { tcFromChartConfig } from '@couchbase-traces/common-utils/dist/core/metadata';
 import {
   BuilderChartConfigWithDateRange,
   Filter,
-} from '@hyperdx/common-utils/dist/types';
+} from '@couchbase-traces/common-utils/dist/types';
 import {
   Box,
   Code,

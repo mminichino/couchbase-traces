@@ -1,7 +1,7 @@
 import {
   AlertSource,
   AlertThresholdType,
-} from '@hyperdx/common-utils/dist/types';
+} from '@couchbase-traces/common-utils/dist/types';
 import { screen } from '@testing-library/react';
 
 import { AlertDetailProperties } from '@/components/alerts/AlertDetailProperties';

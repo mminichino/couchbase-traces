@@ -1,7 +1,7 @@
 import {
   BuilderChartConfig,
   MetricsDataType,
-} from '@hyperdx/common-utils/dist/types';
+} from '@couchbase-traces/common-utils/dist/types';
 
 import {
   getBuilderFilterKeys,

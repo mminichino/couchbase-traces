@@ -1,7 +1,7 @@
 import {
   SourceSchema,
   SourceSchemaNoId,
-} from '@hyperdx/common-utils/dist/types';
+} from '@couchbase-traces/common-utils/dist/types';
 import express from 'express';
 import { z } from 'zod';
 import { validateRequest } from 'zod-express-middleware';

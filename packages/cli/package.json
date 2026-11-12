@@ -1,5 +1,5 @@
 {
-  "name": "@hyperdx/cli",
+  "name": "@couchbase-traces/cli",
   "version": "0.9.0",
   "license": "MIT",
   "type": "module",
@@ -41,7 +41,7 @@
   },
   "devDependencies": {
     "@clickhouse/client": "1.23.0-head.fae5998.1",
-    "@hyperdx/common-utils": "^0.34.0",
+    "@couchbase-traces/common-utils": "workspace:*",
     "@jest/globals": "^30.2.0",
     "@types/crypto-js": "^4.2.2",
     "@types/jest": "^29.5.14",

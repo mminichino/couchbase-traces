@@ -1,5 +1,5 @@
 import { enableMapSet } from 'immer';
-import { filtersToQuery } from '@hyperdx/common-utils/dist/filters';
+import { filtersToQuery } from '@couchbase-traces/common-utils/dist/filters';
 import { act, renderHook } from '@testing-library/react';
 
 import {

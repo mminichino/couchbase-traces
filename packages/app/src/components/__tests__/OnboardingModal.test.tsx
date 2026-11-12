@@ -1,4 +1,7 @@
-import { SourceKind, TSourceNoId } from '@hyperdx/common-utils/dist/types';
+import {
+  SourceKind,
+  TSourceNoId,
+} from '@couchbase-traces/common-utils/dist/types';
 import { notifications } from '@mantine/notifications';
 import { screen } from '@testing-library/react';
 

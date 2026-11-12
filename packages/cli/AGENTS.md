@@ -1,6 +1,6 @@
-# @hyperdx/cli Development Guide
+# @couchbase-traces/cli Development Guide
 
-## What is @hyperdx/cli?
+## What is @couchbase-traces/cli?
 
 A terminal CLI for searching, tailing, and inspecting logs and traces from
 HyperDX. It provides both an interactive TUI (built with Ink — React for
@@ -9,7 +9,7 @@ scripting and piping.
 
 The CLI connects to the HyperDX API server and queries ClickHouse directly
 through the API's `/clickhouse-proxy` endpoint, using the same query generation
-logic (`@hyperdx/common-utils`) as the web frontend.
+logic (`@couchbase-traces/common-utils`) as the web frontend.
 
 ## CLI Commands
 

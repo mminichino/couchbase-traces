@@ -1,0 +1,9 @@
+{
+  "placeholders": [],
+  "tables": [
+    { "name": "hyperdx_sessions", "columns": [{ "name": "__hdx_materialized_session.id" }] }
+  ],
+  "materializedViews": [],
+  "views": [],
+  "other": []
+}

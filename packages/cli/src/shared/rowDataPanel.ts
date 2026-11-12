@@ -7,7 +7,7 @@
  * fetch query. Same exports as the web frontend for future move to common-utils.
  */
 
-import type { SelectList } from '@hyperdx/common-utils/dist/types';
+import type { SelectList } from '@couchbase-traces/common-utils/dist/types';
 
 import type { SourceResponse } from '@/api/client';
 import {

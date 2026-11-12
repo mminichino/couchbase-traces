@@ -2,7 +2,7 @@ import React from 'react';
 import { Box, Text } from 'ink';
 import Spinner from 'ink-spinner';
 
-import type { Metadata } from '@hyperdx/common-utils/dist/core/metadata';
+import type { Metadata } from '@couchbase-traces/common-utils/dist/core/metadata';
 
 import type { SourceResponse, ProxyClickhouseClient } from '@/api/client';
 import { ROW_DATA_ALIASES } from '@/shared/rowDataPanel';

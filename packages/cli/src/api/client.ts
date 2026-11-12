@@ -19,11 +19,11 @@ import {
   BaseClickhouseClient,
   type ClickhouseClientOptions,
   type QueryInputs,
-} from '@hyperdx/common-utils/dist/clickhouse';
+} from '@couchbase-traces/common-utils/dist/clickhouse';
 import {
   getMetadata,
   type Metadata,
-} from '@hyperdx/common-utils/dist/core/metadata';
+} from '@couchbase-traces/common-utils/dist/core/metadata';
 
 import { loadSession, saveSession, clearSession } from '@/utils/config';
 import type {
@@ -33,7 +33,7 @@ import type {
   SavedSearch,
   Tile,
   UseTextIndex,
-} from '@hyperdx/common-utils/dist/types';
+} from '@couchbase-traces/common-utils/dist/types';
 
 /**
  * Extract a readable detail string from an error response body.
