@@ -1,0 +1,536 @@
+import { use, useCallback, useMemo } from 'react';
+import isString from 'lodash/isString';
+import pickBy from 'lodash/pickBy';
+import {
+  isLogSource,
+  SourceKind,
+  TSource,
+} from '@hyperdx/common-utils/dist/types';
+import { Accordion, Box, Flex, Text } from '@mantine/core';
+
+import { WithClause } from '@/hooks/useRowWhere';
+import { getEventBody } from '@/source';
+import { getBrowserEventKind, isBrowserEventRow } from '@/utils/browserEvents';
+import { getHighlightedAttributesFromData } from '@/utils/highlightedAttributes';
+import {
+  isJavaScriptRuntime,
+  parseJavaScriptException,
+} from '@/utils/javascriptStack';
+import { resolveRowTimestampAnchor } from '@/utils/rowTimestamps';
+import { getRequestPanelTitle } from '@/utils/rpcSpanAttributes';
+import { isSet } from '@/utils/spanAttributeReaders';
+
+import { BrowserEventSubpanel } from './BrowserEventSubpanel';
+import {
+  getJSONColumnNames,
+  getMapColumnNames,
+  RowPanelLoader,
+  useRowData,
+} from './DBRowDataPanel';
+import { DBRowJsonViewer } from './DBRowJsonViewer';
+import { RowSidePanelContext } from './DBRowSidePanel';
+import DBRowSidePanelHeader from './DBRowSidePanelHeader';
+import EventTag from './EventTag';
+import { ExceptionSubpanel } from './ExceptionSubpanel';
+import { useLinkedSpanDetails, useReverseSpanLinks } from './linkedSpans';
+import { NetworkPropertySubpanel } from './NetworkPropertyPanel';
+import { SpanEventsSubpanel } from './SpanEventsSubpanel';
+import { SpanLinkedFromSubpanel } from './SpanLinkedFromSubpanel';
+import { getValidSpanLinks, SpanLinksSubpanel } from './SpanLinksSubpanel';
+
+const EMPTY_OBJ = {};
+const EXCEPTION_ATTRIBUTE_KEYS = [
+  'exception.type',
+  'exception.message',
+  'exception.stacktrace',
+];
+
+export function RowOverviewPanel({
+  source,
+  rowId,
+  aliasWith,
+  dateRange,
+  hideHeader = false,
+  flush = false,
+  'data-testid': dataTestId,
+}: {
+  source: TSource;
+  rowId: string | undefined | null;
+  aliasWith?: WithClause[];
+  dateRange?: [Date, Date];
+  hideHeader?: boolean;
+  // When true, drop the horizontal padding so content aligns flush with
+  // surrounding chrome (e.g. the tab bar in the trace span detail panel).
+  flush?: boolean;
+  'data-testid'?: string;
+}) {
+  const contentPx = flush ? 0 : 'md';
+  const { data, isLoading } = useRowData({
+    source,
+    rowId,
+    aliasWith,
+    dateRange,
+  });
+  const { onPropertyAddClick, generateSearchUrl, onOpenLinkedTrace } =
+    use(RowSidePanelContext);
+
+  const highlightedAttributeValues = useMemo(() => {
+    const attributeExpressions =
+      source.kind === SourceKind.Trace || source.kind === SourceKind.Log
+        ? (source.highlightedRowAttributeExpressions ?? [])
+        : [];
+
+    return data
+      ? getHighlightedAttributesFromData(
+          source,
+          attributeExpressions,
+          data.data || [],
+          data.meta || [],
+        )
+      : [];
+  }, [source, data]);
+
+  const jsonColumns = getJSONColumnNames(data?.meta);
+  const mapColumns = getMapColumnNames(data?.meta);
+
+  const eventAttributesExpr =
+    source.kind === SourceKind.Log || source.kind === SourceKind.Trace
+      ? source.eventAttributesExpression
+      : undefined;
+
+  const firstRow = useMemo(() => {
+    const firstRow = { ...(data?.data?.[0] ?? {}) };
+    if (!firstRow) {
+      return null;
+    }
+    return firstRow;
+  }, [data]);
+
+  // TODO: Use source config to select these in SQL, but we'll just
+  // assume OTel column names for now
+  const topLevelAttributeKeys = [
+    'ServiceName',
+    'EventName',
+    'SpanName',
+    'Duration',
+    'SeverityText',
+    'StatusCode',
+    'StatusMessage',
+    'SpanKind',
+    'TraceId',
+    'SpanId',
+    'ParentSpanId',
+    'ScopeName',
+    'ScopeVersion',
+  ];
+  // `*` leaves out an ALIAS or MATERIALIZED EventName, so `useRowData` only
+  // returns it under its alias.
+  const rowWithEventName =
+    isLogSource(source) &&
+    source.eventNameExpression?.trim() === 'EventName' &&
+    firstRow?.EventName == null &&
+    firstRow?.__hdx_event_name != null
+      ? { ...firstRow, EventName: firstRow.__hdx_event_name }
+      : firstRow;
+  const topLevelAttributes = pickBy(rowWithEventName, (value, key) => {
+    if (value === '') {
+      return false;
+    }
+    if (topLevelAttributeKeys.includes(key)) {
+      return true;
+    }
+    return false;
+  });
+
+  const resourceAttributes = firstRow?.__hdx_resource_attributes ?? EMPTY_OBJ;
+  const flattenedEventAttributes =
+    firstRow?.__hdx_event_attributes ?? EMPTY_OBJ;
+
+  const dataAttributes = useMemo(
+    () =>
+      eventAttributesExpr &&
+      firstRow?.[eventAttributesExpr] &&
+      Object.keys(firstRow[eventAttributesExpr]).length > 0
+        ? { [eventAttributesExpr]: firstRow[eventAttributesExpr] }
+        : {},
+    [eventAttributesExpr, firstRow],
+  );
+
+  const _generateSearchUrl = useCallback(
+    (query?: string, queryLanguage?: 'sql' | 'lucene' | 'promql') => {
+      return (
+        generateSearchUrl?.({
+          where: query,
+          whereLanguage: queryLanguage,
+        }) ?? '/'
+      );
+    },
+    [generateSearchUrl],
+  );
+
+  const requestPanelTitle = useMemo(
+    () => getRequestPanelTitle(flattenedEventAttributes),
+    [flattenedEventAttributes],
+  );
+
+  // Only log sources select the event name, and gating here keeps every trace
+  // row out whatever attributes it carries.
+  const { browserEventKind, isBrowserRow } = useMemo(() => {
+    if (!isLogSource(source)) {
+      return { browserEventKind: undefined, isBrowserRow: false };
+    }
+
+    const row = {
+      eventName: firstRow?.__hdx_event_name,
+      attributes: flattenedEventAttributes,
+    };
+
+    return {
+      browserEventKind: getBrowserEventKind(row),
+      isBrowserRow: isBrowserEventRow(row),
+    };
+  }, [source, firstRow?.__hdx_event_name, flattenedEventAttributes]);
+
+  const exceptionAttributes = useMemo(() => {
+    const spanEventAttributes = firstRow?.__hdx_events_exception_attributes;
+    if (
+      spanEventAttributes != null &&
+      Object.keys(spanEventAttributes).length > 0
+    ) {
+      return spanEventAttributes;
+    }
+    return EXCEPTION_ATTRIBUTE_KEYS.some(key =>
+      isSet(flattenedEventAttributes[key]),
+    )
+      ? flattenedEventAttributes
+      : undefined;
+  }, [firstRow?.__hdx_events_exception_attributes, flattenedEventAttributes]);
+
+  const exceptionValues = useMemo(() => {
+    const parsedEvents = exceptionAttributes ?? EMPTY_OBJ;
+    const stacktrace =
+      parsedEvents?.['exception.stacktrace'] ||
+      parsedEvents?.['exception.parsed_stacktrace'];
+
+    let parsedStacktrace = stacktrace ?? '[]';
+    try {
+      parsedStacktrace = JSON.parse(parsedStacktrace);
+    } catch {
+      // do nothing
+    }
+
+    const exception = {
+      stacktrace: parsedStacktrace,
+      type: parsedEvents?.['exception.type'],
+      value:
+        typeof parsedEvents?.['exception.message'] !== 'string'
+          ? JSON.stringify(parsedEvents?.['exception.message'])
+          : parsedEvents?.['exception.message'],
+      mechanism: parsedEvents?.['exception.mechanism'],
+    };
+
+    const parsed =
+      typeof parsedStacktrace === 'string' &&
+      isJavaScriptRuntime(resourceAttributes)
+        ? parseJavaScriptException(parsedStacktrace)
+        : undefined;
+    if (parsed == null) {
+      return [exception];
+    }
+    return [
+      {
+        ...exception,
+        stacktrace: { frames: parsed.frames },
+        rawStacktrace: parsedStacktrace,
+      },
+      ...parsed.causes.map(({ frames, ...cause }) => ({
+        ...cause,
+        stacktrace: { frames },
+      })),
+    ];
+  }, [exceptionAttributes, resourceAttributes]);
+
+  const hasException = exceptionAttributes != null;
+
+  const hasSpanEvents = useMemo(() => {
+    return (
+      Array.isArray(firstRow?.__hdx_span_events) &&
+      firstRow?.__hdx_span_events.length > 0
+    );
+  }, [firstRow?.__hdx_span_events]);
+
+  const validSpanLinks = useMemo(() => {
+    return getValidSpanLinks(firstRow?.__hdx_span_links);
+  }, [firstRow?.__hdx_span_links]);
+  const hasSpanLinks = validSpanLinks.length > 0;
+
+  const rowMeta = data?.meta;
+  const linkAnchorDate = useMemo(
+    () =>
+      resolveRowTimestampAnchor({
+        timestampValueExpression: source.timestampValueExpression,
+        row: firstRow,
+        meta: rowMeta,
+      }),
+    [source.timestampValueExpression, firstRow, rowMeta],
+  );
+
+  const rowTraceId = firstRow?.__hdx_trace_id;
+  const rowSpanId = firstRow?.__hdx_span_id;
+
+  const { links: reverseSpanLinks } = useReverseSpanLinks({
+    source,
+    traceId: typeof rowTraceId === 'string' ? rowTraceId : undefined,
+    spanId: typeof rowSpanId === 'string' ? rowSpanId : undefined,
+    anchorDate: linkAnchorDate,
+  });
+
+  const { details: linkedSpanDetails } = useLinkedSpanDetails({
+    source,
+    links: validSpanLinks,
+    anchorDate: linkAnchorDate,
+  });
+
+  const mainContentColumn = getEventBody(source);
+  const mainContent = isString(firstRow?.['__hdx_body'])
+    ? firstRow['__hdx_body']
+    : firstRow?.['__hdx_body'] !== undefined
+      ? JSON.stringify(firstRow['__hdx_body'])
+      : undefined;
+
+  if (isLoading) {
+    return <RowPanelLoader data-testid={dataTestId} />;
+  }
+
+  return (
+    <div className="flex-grow-1 overflow-auto" data-testid={dataTestId}>
+      {!hideHeader && (
+        <Box px={flush ? 0 : 'sm'} pt="md">
+          <DBRowSidePanelHeader
+            attributes={highlightedAttributeValues}
+            mainContent={mainContent}
+            mainContentHeader={mainContentColumn}
+            // `getEventBody` returns undefined when neither Body Expression
+            // nor Implicit Column Expression is configured on the source.
+            // In that case suppress the body paper entirely instead of
+            // rendering an "[Empty]" placeholder.
+            bodyConfigured={mainContentColumn !== undefined}
+            hideEmptyBody={isBrowserRow}
+            severityText={firstRow?.__hdx_severity_text}
+            rowData={firstRow}
+          />
+        </Box>
+      )}
+      <Accordion
+        mt="sm"
+        defaultValue={[
+          'exception',
+          'browserEvent',
+          'spanEvents',
+          'spanLinks',
+          'linkedFrom',
+          'network',
+          'resourceAttributes',
+          'eventAttributes',
+          'topLevelAttributes',
+        ]}
+        multiple
+        variant="noPadding"
+      >
+        {hasException && (
+          <Accordion.Item value="exception">
+            <Accordion.Control>
+              <Text size="sm" ps={contentPx}>
+                Exception
+              </Text>
+            </Accordion.Control>
+            <Accordion.Panel>
+              <Box px={contentPx}>
+                <ExceptionSubpanel
+                  exceptionValues={exceptionValues}
+                  logData={{
+                    timestamp: firstRow?.__hdx_timestamp,
+                  }}
+                />
+              </Box>
+            </Accordion.Panel>
+          </Accordion.Item>
+        )}
+
+        {browserEventKind != null && (
+          <Accordion.Item
+            value="browserEvent"
+            data-testid="browser-event-section"
+          >
+            <Accordion.Control>
+              <Text size="sm" ps={contentPx}>
+                Browser event
+              </Text>
+            </Accordion.Control>
+            <Accordion.Panel>
+              <Box px={contentPx}>
+                <BrowserEventSubpanel
+                  kind={browserEventKind}
+                  attributes={flattenedEventAttributes}
+                  body={mainContent}
+                />
+              </Box>
+            </Accordion.Panel>
+          </Accordion.Item>
+        )}
+
+        {requestPanelTitle != null && browserEventKind == null && (
+          <Accordion.Item value="network">
+            <Accordion.Control>
+              <Text size="sm" ps={contentPx}>
+                {requestPanelTitle}
+              </Text>
+            </Accordion.Control>
+            <Accordion.Panel>
+              <Box px={contentPx}>
+                <NetworkPropertySubpanel
+                  eventAttributes={flattenedEventAttributes}
+                  spanKind={firstRow?.__hdx_span_kind}
+                />
+              </Box>
+            </Accordion.Panel>
+          </Accordion.Item>
+        )}
+
+        {Object.keys(topLevelAttributes).length > 0 && (
+          <Accordion.Item value="topLevelAttributes">
+            <Accordion.Control>
+              <Text size="sm" ps={contentPx}>
+                Top Level Attributes
+              </Text>
+            </Accordion.Control>
+            <Accordion.Panel>
+              <Box px={contentPx}>
+                <DBRowJsonViewer
+                  data={topLevelAttributes}
+                  jsonColumns={jsonColumns}
+                  mapColumns={mapColumns}
+                />
+              </Box>
+            </Accordion.Panel>
+          </Accordion.Item>
+        )}
+
+        {Object.keys(dataAttributes).length > 0 && (
+          <Accordion.Item value="eventAttributes">
+            <Accordion.Control>
+              <Text size="sm" ps={contentPx}>
+                {source.kind === 'log' ? 'Log' : 'Span'} Attributes
+              </Text>
+            </Accordion.Control>
+            <Accordion.Panel>
+              <Box px={contentPx}>
+                <DBRowJsonViewer
+                  data={dataAttributes}
+                  jsonColumns={jsonColumns}
+                  mapColumns={mapColumns}
+                />
+              </Box>
+            </Accordion.Panel>
+          </Accordion.Item>
+        )}
+
+        {hasSpanEvents && (
+          <Accordion.Item value="spanEvents">
+            <Accordion.Control>
+              <Text size="sm" ps={contentPx}>
+                Span Events
+              </Text>
+            </Accordion.Control>
+            <Accordion.Panel>
+              <Box ps={contentPx}>
+                <SpanEventsSubpanel spanEvents={firstRow?.__hdx_span_events} />
+              </Box>
+            </Accordion.Panel>
+          </Accordion.Item>
+        )}
+
+        {hasSpanLinks && (
+          <Accordion.Item value="spanLinks">
+            <Accordion.Control>
+              <Text size="sm" ps={contentPx}>
+                Span Links
+              </Text>
+            </Accordion.Control>
+            <Accordion.Panel>
+              <Box ps={contentPx}>
+                <SpanLinksSubpanel
+                  spanLinks={firstRow?.__hdx_span_links}
+                  linkedSpanDetails={linkedSpanDetails}
+                  onOpenTrace={onOpenLinkedTrace}
+                />
+              </Box>
+            </Accordion.Panel>
+          </Accordion.Item>
+        )}
+
+        {reverseSpanLinks.length > 0 && (
+          <Accordion.Item value="linkedFrom">
+            <Accordion.Control>
+              <Text size="sm" ps={contentPx}>
+                Linked from
+              </Text>
+            </Accordion.Control>
+            <Accordion.Panel>
+              <Box ps={contentPx}>
+                <SpanLinkedFromSubpanel
+                  links={reverseSpanLinks}
+                  onOpenTrace={onOpenLinkedTrace}
+                />
+              </Box>
+            </Accordion.Panel>
+          </Accordion.Item>
+        )}
+
+        {Object.keys(resourceAttributes).length > 0 && (
+          <Accordion.Item value="resourceAttributes">
+            <Accordion.Control>
+              <Text size="sm" ps={contentPx}>
+                Resource Attributes
+              </Text>
+            </Accordion.Control>
+            <Accordion.Panel>
+              <Flex wrap="wrap" gap="2px" mx={contentPx} mb="lg">
+                {Object.entries(resourceAttributes).map(([key, value]) => (
+                  <EventTag
+                    {...(onPropertyAddClick
+                      ? {
+                          onPropertyAddClick,
+                          sqlExpression:
+                            'resourceAttributesExpression' in source &&
+                            source.resourceAttributesExpression &&
+                            jsonColumns?.includes(
+                              source.resourceAttributesExpression,
+                            )
+                              ? // If resource attributes is a JSON column, we need to cast the key to a string so we can run where X in Y queries
+                                `toString(${source.resourceAttributesExpression}.${key})`
+                              : 'resourceAttributesExpression' in source
+                                ? `${source.resourceAttributesExpression}['${key}']`
+                                : '',
+                        }
+                      : {
+                          onPropertyAddClick: undefined,
+                          sqlExpression: undefined,
+                        })}
+                    generateSearchUrl={
+                      generateSearchUrl ? _generateSearchUrl : undefined
+                    }
+                    displayedKey={key}
+                    name={`${'resourceAttributesExpression' in source ? source.resourceAttributesExpression : ''}.${key}`}
+                    value={value as string}
+                    key={key}
+                  />
+                ))}
+              </Flex>
+            </Accordion.Panel>
+          </Accordion.Item>
+        )}
+      </Accordion>
+    </div>
+  );
+}

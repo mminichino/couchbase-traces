@@ -1,0 +1,1141 @@
+import React from 'react';
+import * as metadataModule from '@hyperdx/app/src/metadata';
+import { ColumnMeta, JSDataType } from '@hyperdx/common-utils/dist/clickhouse';
+import { ClickhouseClient } from '@hyperdx/common-utils/dist/clickhouse/browser';
+import {
+  Field,
+  KeyValues,
+  Metadata,
+  MetadataCache,
+} from '@hyperdx/common-utils/dist/core/metadata';
+import { FilterState } from '@hyperdx/common-utils/dist/filters';
+import { BuilderChartConfigWithDateRange } from '@hyperdx/common-utils/dist/types';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { renderHook, waitFor } from '@testing-library/react';
+
+import api from '@/api';
+import {
+  deduplicate2dArray,
+  intersect2dArray,
+  useGetKeyValues,
+  useMergeTreeSettings,
+  useMultipleAllFields,
+  useMultipleGetKeyValues,
+} from '@/hooks/useMetadata';
+import { useSources } from '@/source';
+
+// Create a mock ChartConfig based on the Zod schema
+const createMockChartConfig = (
+  overrides: Partial<BuilderChartConfigWithDateRange> = {},
+): BuilderChartConfigWithDateRange =>
+  ({
+    timestampValueExpression: '',
+    connection: 'foo',
+    from: {
+      databaseName: 'telemetry',
+      tableName: 'traces',
+    },
+    ...overrides,
+  }) as BuilderChartConfigWithDateRange;
+
+const createMockMetadata = () =>
+  new Metadata({} as ClickhouseClient, {} as MetadataCache);
+
+jest.mock('@/source', () => ({
+  useSources: jest.fn().mockReturnValue({
+    data: [
+      { id: 'source1' },
+      { id: 'source2' },
+      {
+        id: 'logs',
+        kind: 'log',
+        metadataMaterializedViews: { kvRollupTable: 'logs_kv' },
+      },
+      {
+        id: 'traces',
+        kind: 'trace',
+        metadataMaterializedViews: { kvRollupTable: 'traces_kv' },
+      },
+    ],
+    isLoading: false,
+  }),
+}));
+
+describe('useGetKeyValues', () => {
+  let queryClient: QueryClient;
+  let wrapper: React.ComponentType<{ children: any }>;
+  let mockMetadata: Metadata;
+
+  beforeEach(() => {
+    // Reset mocks
+    jest.clearAllMocks();
+
+    // initialize metadata object
+    mockMetadata = createMockMetadata();
+    jest.spyOn(metadataModule, 'getMetadata').mockReturnValue(mockMetadata);
+
+    // Create a new QueryClient for each test
+    queryClient = new QueryClient({
+      defaultOptions: {
+        queries: {
+          retry: false,
+        },
+      },
+    });
+
+    // Create a wrapper component with QueryClientProvider
+    wrapper = ({ children }) => (
+      <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
+    );
+  });
+
+  // Test case: Basic functionality with single chart config
+  it('should fetch key values for a single chart config', async () => {
+    // Arrange
+    const mockChartConfig = createMockChartConfig();
+    const mockKeys = ["ResourceAttributes['service.name']"];
+
+    const mockKeyValues = [
+      {
+        key: "ResourceAttributes['service.name']",
+        value: ['frontend', 'backend', 'database'],
+      },
+    ];
+
+    jest
+      .spyOn(mockMetadata, 'getKeyValuesWithMVs')
+      .mockResolvedValue(mockKeyValues);
+
+    // Act
+    const { result } = renderHook(
+      () =>
+        useGetKeyValues({
+          chartConfig: mockChartConfig,
+          keys: mockKeys,
+        }),
+      { wrapper },
+    );
+
+    // Assert
+    await waitFor(() => expect(result.current.isSuccess).toBe(true));
+
+    //console.log(result.current.data);
+    expect(result.current.data).toEqual(mockKeyValues);
+  });
+
+  // Test case: Multiple chart configs with different configurations
+  it('should fetch key values for multiple chart configs', async () => {
+    // Arrange
+    const mockChartConfigs = [
+      createMockChartConfig({
+        from: { databaseName: 'telemetry', tableName: 'traces' },
+        groupBy: "ResourceAttributes['service.name']",
+      }),
+      createMockChartConfig({
+        from: { databaseName: 'logs', tableName: 'application_logs' },
+        orderBy: '"timestamp" DESC',
+      }),
+    ];
+    const mockKeys = [
+      'ResourceAttributes.service.name',
+      'ResourceAttributes.environment',
+    ];
+
+    jest
+      .spyOn(mockMetadata, 'getKeyValuesWithMVs')
+      .mockResolvedValueOnce([
+        {
+          key: "ResourceAttributes['service.name']",
+          value: ['frontend', 'backend'],
+        },
+      ])
+      .mockResolvedValueOnce([
+        {
+          key: "ResourceAttributes['environment']",
+          value: ['production', 'staging'],
+        },
+      ]);
+
+    // Act
+    const { result } = renderHook(
+      () =>
+        useMultipleGetKeyValues({
+          chartConfigs: mockChartConfigs,
+          keys: mockKeys,
+        }),
+      { wrapper },
+    );
+
+    // Assert
+    await waitFor(() => expect(result.current.isSuccess).toBe(true));
+
+    expect(result.current.data).toEqual([
+      {
+        key: "ResourceAttributes['service.name']",
+        value: ['frontend', 'backend'],
+      },
+      {
+        key: "ResourceAttributes['environment']",
+        value: ['production', 'staging'],
+      },
+    ]);
+    expect(
+      jest.spyOn(mockMetadata, 'getKeyValuesWithMVs'),
+    ).toHaveBeenCalledTimes(2);
+  });
+
+  // Test case: Handling empty keys
+  it('should not fetch when keys array is empty', () => {
+    // Arrange
+    const mockChartConfig = createMockChartConfig();
+
+    // Act
+    const { result } = renderHook(
+      () =>
+        useGetKeyValues({
+          chartConfig: mockChartConfig,
+          keys: [],
+        }),
+      { wrapper },
+    );
+
+    // Assert
+    expect(result.current.isFetched).toBe(false);
+    expect(
+      jest.spyOn(mockMetadata, 'getKeyValuesWithMVs'),
+    ).not.toHaveBeenCalled();
+  });
+
+  // Test case: Custom limit and disableRowLimit
+  it('should pass custom limit and disableRowLimit', async () => {
+    // Arrange
+    const mockChartConfig = createMockChartConfig();
+    const mockKeys = ['ResourceAttributes.service.name'];
+
+    const mockKeyValues = [
+      {
+        key: "ResourceAttributes['service.name']",
+        value: ['frontend', 'backend'],
+      },
+    ];
+
+    jest
+      .spyOn(mockMetadata, 'getKeyValuesWithMVs')
+      .mockResolvedValue(mockKeyValues);
+
+    // Act
+    const { result } = renderHook(
+      () =>
+        useGetKeyValues({
+          chartConfig: mockChartConfig,
+          keys: mockKeys,
+          limit: 50,
+          disableRowLimit: true,
+        }),
+      { wrapper },
+    );
+
+    // Assert
+    await waitFor(() => expect(result.current.isSuccess).toBe(true));
+  });
+
+  // Test case: Error handling
+  it('should handle errors when fetching key values', async () => {
+    // Arrange
+    const mockChartConfig = createMockChartConfig();
+    const mockKeys = ['ResourceAttributes.service.name'];
+
+    jest
+      .spyOn(mockMetadata, 'getKeyValuesWithMVs')
+      .mockRejectedValue(new Error('Fetch failed'));
+
+    // Act
+    const { result } = renderHook(
+      () =>
+        useGetKeyValues({
+          chartConfig: mockChartConfig,
+          keys: mockKeys,
+        }),
+      { wrapper },
+    );
+
+    // Assert
+    await waitFor(() => expect(result.current.isError).toBe(true));
+
+    expect(result.current.error).toEqual(expect.any(Error));
+    expect(result.current.error!.message).toBe('Fetch failed');
+  });
+
+  const keys = ["ResourceAttributes['service.name']"];
+  const logsConfig = createMockChartConfig({
+    source: 'logs',
+    from: { databaseName: 'db', tableName: 'logs' },
+  });
+  const tracesConfig = createMockChartConfig({
+    source: 'traces',
+    from: { databaseName: 'db', tableName: 'traces' },
+  });
+
+  const renderValues = (
+    params: Partial<Parameters<typeof useMultipleGetKeyValues>[0]> = {},
+  ) =>
+    renderHook(
+      () =>
+        useMultipleGetKeyValues({
+          chartConfigs: [logsConfig, tracesConfig],
+          keys,
+          ...params,
+        }),
+      { wrapper },
+    );
+
+  // 'all' mode publishes partial results, so `isSuccess` alone doesn't mean
+  // every source has answered.
+  const waitForSettled = (result: {
+    current: { isSuccess: boolean; isFetching: boolean };
+  }) =>
+    waitFor(() => {
+      expect(result.current.isSuccess).toBe(true);
+      expect(result.current.isFetching).toBe(false);
+    });
+
+  // One outcome per source, in config order.
+  type LookupOutcome = KeyValues[] | Error;
+  const mockLookups = {
+    all: (...outcomes: LookupOutcome[]) => {
+      const spy = jest.spyOn(mockMetadata, 'streamAllKeyValues');
+      for (const outcome of outcomes) {
+        spy.mockImplementationOnce(async function* () {
+          if (outcome instanceof Error) throw outcome;
+          yield outcome;
+        });
+      }
+      return spy;
+    },
+    exact: (...outcomes: LookupOutcome[]) => {
+      const spy = jest.spyOn(mockMetadata, 'getKeyValuesWithMVs');
+      for (const outcome of outcomes) {
+        if (outcome instanceof Error) spy.mockRejectedValueOnce(outcome);
+        else spy.mockResolvedValueOnce(outcome);
+      }
+      return spy;
+    },
+  };
+
+  it("streams every config in 'all' mode with its own source's MVs", async () => {
+    const streamAllKeyValues = mockLookups.all(
+      [{ key: keys[0], value: ['api'] }],
+      [{ key: keys[0], value: ['web'] }],
+    );
+
+    const { result } = renderValues({ mode: 'all' });
+
+    await waitForSettled(result);
+    expect(result.current.data).toEqual([
+      { key: keys[0], value: ['api'] },
+      { key: keys[0], value: ['web'] },
+    ]);
+    expect(streamAllKeyValues).toHaveBeenCalledWith(
+      expect.objectContaining({
+        tableName: 'logs',
+        metadataMVs: { kvRollupTable: 'logs_kv' },
+      }),
+    );
+    expect(streamAllKeyValues).toHaveBeenCalledWith(
+      expect.objectContaining({
+        tableName: 'traces',
+        metadataMVs: { kvRollupTable: 'traces_kv' },
+      }),
+    );
+  });
+
+  it("shows each source's values in 'all' mode before the slowest finishes", async () => {
+    let releaseSlowSource: () => void = () => {};
+    const slowSource = new Promise<void>(resolve => {
+      releaseSlowSource = resolve;
+    });
+    jest
+      .spyOn(mockMetadata, 'streamAllKeyValues')
+      .mockImplementationOnce(async function* () {
+        yield [{ key: keys[0], value: ['api'] }];
+      })
+      .mockImplementationOnce(async function* () {
+        await slowSource;
+        yield [{ key: keys[0], value: ['web'] }];
+      });
+
+    const { result } = renderValues({ mode: 'all' });
+
+    await waitFor(() =>
+      expect(result.current.data).toEqual([{ key: keys[0], value: ['api'] }]),
+    );
+    expect(result.current.isLoading).toBe(false);
+    expect(result.current.isFetching).toBe(true);
+
+    releaseSlowSource();
+
+    await waitForSettled(result);
+    expect(result.current.data).toEqual([
+      { key: keys[0], value: ['api'] },
+      { key: keys[0], value: ['web'] },
+    ]);
+  });
+
+  it("keeps the previous values until a new 'all' mode query completes", async () => {
+    let releaseSlowQuery: () => void = () => {};
+    const slowQuery = new Promise<void>(resolve => {
+      releaseSlowQuery = resolve;
+    });
+    let isSlowQueryWaiting = false;
+    jest
+      .spyOn(mockMetadata, 'streamAllKeyValues')
+      .mockImplementationOnce(async function* () {
+        yield [{ key: keys[0], value: ['api'] }];
+      })
+      .mockImplementationOnce(async function* () {
+        yield [{ key: keys[0], value: ['web'] }];
+        isSlowQueryWaiting = true;
+        await slowQuery;
+        yield [{ key: 'SeverityText', value: ['info'] }];
+      });
+
+    const { result, rerender } = renderHook(
+      ({ limit }: { limit: number }) =>
+        useMultipleGetKeyValues({
+          chartConfigs: [logsConfig],
+          keys,
+          limit,
+          mode: 'all',
+        }),
+      { wrapper, initialProps: { limit: 20 } },
+    );
+    await waitForSettled(result);
+
+    rerender({ limit: 50 });
+
+    await waitFor(() => expect(isSlowQueryWaiting).toBe(true));
+    expect(result.current.isFetching).toBe(true);
+    expect(result.current.data).toEqual([{ key: keys[0], value: ['api'] }]);
+
+    releaseSlowQuery();
+
+    await waitForSettled(result);
+    expect(result.current.data).toEqual([
+      { key: keys[0], value: ['web'] },
+      { key: 'SeverityText', value: ['info'] },
+    ]);
+  });
+
+  it("uses the metadataMVs override for a single config in 'all' mode", async () => {
+    const override = { kvRollupTable: 'override_kv', granularity: '15 minute' };
+    const streamAllKeyValues = mockLookups.all([]);
+
+    const { result } = renderValues({
+      mode: 'all',
+      chartConfigs: [logsConfig],
+      metadataMVs: override,
+    });
+
+    await waitForSettled(result);
+    expect(streamAllKeyValues).toHaveBeenCalledWith(
+      expect.objectContaining({ metadataMVs: override }),
+    );
+  });
+
+  it("ignores the metadataMVs override for multiple configs in 'all' mode", async () => {
+    const override = { kvRollupTable: 'override_kv', granularity: '15 minute' };
+    const streamAllKeyValues = mockLookups.all([], []);
+
+    const { result } = renderValues({ mode: 'all', metadataMVs: override });
+
+    await waitForSettled(result);
+    expect(
+      streamAllKeyValues.mock.calls.map(([args]) => args.metadataMVs),
+    ).toEqual([{ kvRollupTable: 'logs_kv' }, { kvRollupTable: 'traces_kv' }]);
+  });
+
+  it("passes limit to 'all' mode lookups as maxValuesPerKey", async () => {
+    const streamAllKeyValues = mockLookups.all([]);
+
+    const { result } = renderValues({
+      mode: 'all',
+      chartConfigs: [logsConfig],
+      limit: 100,
+    });
+
+    await waitForSettled(result);
+    expect(streamAllKeyValues).toHaveBeenCalledWith(
+      expect.objectContaining({ maxValuesPerKey: 100 }),
+    );
+  });
+
+  it("returns 'all' mode values as strings", async () => {
+    mockLookups.all([{ key: 'StatusCode', value: [200, 500] }]);
+
+    const { result } = renderValues({
+      mode: 'all',
+      chartConfigs: [logsConfig],
+    });
+
+    await waitForSettled(result);
+    expect(result.current.data).toEqual([
+      { key: 'StatusCode', value: ['200', '500'] },
+    ]);
+  });
+
+  it.each(['all', 'exact'] as const)(
+    "returns the other sources' values when one fails in '%s' mode",
+    async mode => {
+      mockLookups[mode](new Error('timeout'), [
+        { key: keys[0], value: ['web'] },
+      ]);
+
+      const { result } = renderValues({ mode });
+
+      await waitForSettled(result);
+      expect(result.current.data).toEqual([{ key: keys[0], value: ['web'] }]);
+    },
+  );
+
+  it.each(['all', 'exact'] as const)(
+    "errors when every source fails in '%s' mode",
+    async mode => {
+      mockLookups[mode](new Error('fail 1'), new Error('fail 2'));
+
+      const { result } = renderValues({ mode });
+
+      await waitFor(() => expect(result.current.isError).toBe(true));
+      expect(result.current.error?.message).toBe('fail 1');
+      expect(result.current.data).toBeUndefined();
+    },
+  );
+
+  it('applies the filter key limit to each Map column separately', async () => {
+    queryClient.setQueryData(['me'], { team: { filterKeysFetchLimit: 2 } });
+    const getKeyValuesWithMVs = jest
+      .spyOn(mockMetadata, 'getKeyValuesWithMVs')
+      .mockResolvedValue([]);
+    const conditionFor = (key: string): FilterState => ({
+      [key]: { included: new Set(['v']), excluded: new Set() },
+    });
+    const allKeys = [
+      "LogAttributes['a']",
+      "LogAttributes['b']",
+      "LogAttributes['c']",
+      "`Resource-Attributes`['x']",
+      'ServiceName',
+      'SeverityText',
+      'SpanName',
+    ];
+    const keptKeys = [
+      "LogAttributes['a']",
+      "LogAttributes['b']",
+      "`Resource-Attributes`['x']",
+      'ServiceName',
+      'SeverityText',
+    ];
+
+    const { result } = renderHook(
+      () =>
+        useGetKeyValues({
+          chartConfig: createMockChartConfig(),
+          keys: allKeys,
+          keyConditions: allKeys.map(conditionFor),
+        }),
+      { wrapper },
+    );
+
+    await waitFor(() => expect(result.current.isSuccess).toBe(true));
+    expect(getKeyValuesWithMVs).toHaveBeenCalledWith(
+      expect.objectContaining({
+        keys: keptKeys,
+        keyConditions: keptKeys.map(conditionFor),
+      }),
+    );
+  });
+
+  it('passes no keyConditions when none are given', async () => {
+    const getKeyValuesWithMVs = jest
+      .spyOn(mockMetadata, 'getKeyValuesWithMVs')
+      .mockResolvedValue([]);
+
+    const { result } = renderHook(
+      () => useGetKeyValues({ chartConfig: createMockChartConfig(), keys }),
+      { wrapper },
+    );
+
+    await waitFor(() => expect(result.current.isSuccess).toBe(true));
+    expect(getKeyValuesWithMVs.mock.calls[0][0].keyConditions).toBeUndefined();
+  });
+
+  it("retries a failed 'exact' mode lookup per the client's defaults", async () => {
+    queryClient.setDefaultOptions({ queries: { retry: 1, retryDelay: 0 } });
+    mockLookups.exact(new Error('transient'), [
+      { key: keys[0], value: ['api'] },
+    ]);
+
+    const { result } = renderValues({
+      mode: 'exact',
+      chartConfigs: [logsConfig],
+    });
+
+    await waitForSettled(result);
+    expect(result.current.data).toEqual([{ key: keys[0], value: ['api'] }]);
+  });
+
+  it('should be in a loading state while fetching sources', async () => {
+    jest.mocked(useSources).mockReturnValue({
+      data: undefined,
+      isLoading: true,
+      isFetching: true,
+    } as any);
+
+    // Arrange
+    const mockChartConfig = createMockChartConfig();
+    const mockKeys = ['ResourceAttributes.service.name'];
+
+    // Act
+    const { result } = renderHook(
+      () =>
+        useGetKeyValues({
+          chartConfig: mockChartConfig,
+          keys: mockKeys,
+        }),
+      { wrapper },
+    );
+
+    // Assert
+    expect(
+      jest.spyOn(mockMetadata, 'getKeyValuesWithMVs'),
+    ).not.toHaveBeenCalled();
+    await waitFor(() => expect(result.current.isLoading).toBe(true));
+  });
+});
+
+describe('useMultipleAllFields', () => {
+  let queryClient: QueryClient;
+  let wrapper: React.ComponentType<{ children: any }>;
+  let mockMetadata: Metadata;
+
+  const fieldsA: Field[] = [
+    { path: ['col_a'], type: 'string', jsType: JSDataType.String },
+    { path: ['col_shared'], type: 'number', jsType: JSDataType.Number },
+  ];
+
+  const fieldsB: Field[] = [
+    { path: ['col_b'], type: 'string', jsType: JSDataType.String },
+    { path: ['col_shared'], type: 'number', jsType: JSDataType.Number },
+  ];
+
+  const tcA = {
+    databaseName: 'db',
+    tableName: 'table_a',
+    connectionId: 'conn1',
+  };
+
+  const tcB = {
+    databaseName: 'db',
+    tableName: 'table_b',
+    connectionId: 'conn1',
+  };
+
+  const column = (name: string, type: string): ColumnMeta => ({
+    name,
+    type,
+    codec_expression: '',
+    comment: '',
+    default_expression: '',
+    default_type: '',
+    ttl_expression: '',
+  });
+  const columnsA = [
+    column('col_a', 'String'),
+    column('attrs', 'Map(String, String)'),
+    column('json', 'JSON'),
+  ];
+  const columnsB = [column('col_b', 'String')];
+
+  let team: { fieldMetadataDisabled?: boolean };
+
+  beforeEach(() => {
+    jest.clearAllMocks();
+    team = {};
+    mockMetadata = createMockMetadata();
+    jest.spyOn(metadataModule, 'getMetadata').mockReturnValue(mockMetadata);
+    jest.spyOn(api, 'useMe').mockImplementation(
+      () =>
+        ({
+          data: { team },
+          isFetched: true,
+        }) as any,
+    );
+    jest
+      .spyOn(mockMetadata, 'getColumns')
+      .mockImplementation(async ({ tableName }) =>
+        tableName === 'table_a' ? columnsA : columnsB,
+      );
+
+    queryClient = new QueryClient({
+      defaultOptions: { queries: { retry: false } },
+    });
+    wrapper = ({ children }) => (
+      <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
+    );
+  });
+
+  it('returns the other table connections and no error when only some fail', async () => {
+    jest.spyOn(console, 'warn').mockImplementation(() => {});
+    jest
+      .spyOn(mockMetadata, 'getAllFields')
+      .mockResolvedValueOnce(fieldsA)
+      .mockRejectedValueOnce(new Error('connection refused'));
+
+    const { result } = renderHook(() => useMultipleAllFields([tcA, tcB]), {
+      wrapper,
+    });
+
+    await waitFor(() => expect(result.current.isSuccess).toBe(true));
+
+    expect(result.current.data).toEqual(fieldsA);
+    expect(result.current.errorsByTableConnection).toEqual(
+      new Map([[1, new Error('connection refused')]]),
+    );
+    expect(result.current.isError).toBe(false);
+    expect(result.current.error).toBeNull();
+    // Columns loaded before the field lookup failed, so they're kept.
+    expect(result.current.columnsByTableConnection.get(1)).toEqual(columnsB);
+  });
+
+  it('falls back to each connection timestampValueExpression when none is passed', async () => {
+    const getAllFields = jest
+      .spyOn(mockMetadata, 'getAllFields')
+      .mockResolvedValue(fieldsA);
+
+    const { result } = renderHook(
+      () =>
+        useMultipleAllFields([
+          { ...tcA, timestampValueExpression: 'TimestampA' },
+          tcB,
+        ]),
+      { wrapper },
+    );
+
+    await waitFor(() => expect(result.current.isSuccess).toBe(true));
+    expect(getAllFields).toHaveBeenCalledWith(
+      expect.objectContaining({ timestampValueExpression: 'TimestampA' }),
+    );
+    expect(getAllFields).toHaveBeenCalledWith(
+      expect.objectContaining({
+        tableName: 'table_b',
+        timestampValueExpression: undefined,
+      }),
+    );
+  });
+
+  it('should deduplicate fields across successful connections', async () => {
+    jest
+      .spyOn(mockMetadata, 'getAllFields')
+      .mockResolvedValueOnce(fieldsA)
+      .mockResolvedValueOnce(fieldsB);
+
+    const { result } = renderHook(() => useMultipleAllFields([tcA, tcB]), {
+      wrapper,
+    });
+
+    await waitFor(() => expect(result.current.isSuccess).toBe(true));
+
+    // col_shared appears in both but should be deduplicated
+    expect(result.current.data).toEqual([
+      { path: ['col_a'], type: 'string', jsType: JSDataType.String },
+      { path: ['col_shared'], type: 'number', jsType: JSDataType.Number },
+      { path: ['col_b'], type: 'string', jsType: JSDataType.String },
+    ]);
+  });
+
+  it('should return empty array when all connections fail', async () => {
+    jest
+      .spyOn(mockMetadata, 'getAllFields')
+      .mockRejectedValueOnce(new Error('fail 1'))
+      .mockRejectedValueOnce(new Error('fail 2'));
+
+    const { result } = renderHook(() => useMultipleAllFields([tcA, tcB]), {
+      wrapper,
+    });
+
+    await waitFor(() => expect(result.current.isError).toBe(true));
+
+    expect(result.current.data).toEqual([]);
+    expect([...result.current.errorsByTableConnection.keys()]).toEqual([0, 1]);
+    expect(result.current.isSuccess).toBe(false);
+    expect(result.current.error).toEqual(new Error('fail 1'));
+  });
+
+  it('should log a warning for each failed connection', async () => {
+    const warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
+
+    jest
+      .spyOn(mockMetadata, 'getAllFields')
+      .mockResolvedValueOnce(fieldsA)
+      .mockRejectedValueOnce(new Error('timeout'));
+
+    const { result } = renderHook(() => useMultipleAllFields([tcA, tcB]), {
+      wrapper,
+    });
+
+    await waitFor(() => expect(result.current.isSuccess).toBe(true));
+
+    expect(warnSpy).toHaveBeenCalledWith(
+      'Failed to fetch fields for table connection',
+      expect.any(Error),
+    );
+
+    warnSpy.mockRestore();
+  });
+
+  it('should skip deduplication for a single connection', async () => {
+    jest.spyOn(mockMetadata, 'getAllFields').mockResolvedValueOnce(fieldsA);
+
+    const { result } = renderHook(() => useMultipleAllFields([tcA]), {
+      wrapper,
+    });
+
+    await waitFor(() => expect(result.current.isSuccess).toBe(true));
+
+    expect(result.current.data).toEqual(fieldsA);
+  });
+
+  // `tcFromSource` returns an all-empty-strings connection (never undefined)
+  // while the source is still loading, so an unpopulated connection must never
+  // reach `getAllFields` — it would issue `DESCRIBE .` with no connection id.
+  it('should not fetch for an unpopulated table connection', async () => {
+    const getAllFields = jest.spyOn(mockMetadata, 'getAllFields');
+
+    const { result } = renderHook(
+      () =>
+        useMultipleAllFields([
+          { databaseName: '', tableName: '', connectionId: '' },
+        ]),
+      { wrapper },
+    );
+
+    await waitFor(() => expect(result.current.isPending).toBe(true));
+    expect(getAllFields).not.toHaveBeenCalled();
+  });
+
+  it('should not fetch for an unpopulated table connection even when the caller passes enabled: true', async () => {
+    const getAllFields = jest.spyOn(mockMetadata, 'getAllFields');
+
+    const { result } = renderHook(
+      () =>
+        useMultipleAllFields(
+          [{ databaseName: '', tableName: '', connectionId: '' }],
+          { enabled: true },
+        ),
+      { wrapper },
+    );
+
+    await waitFor(() => expect(result.current.isPending).toBe(true));
+    expect(getAllFields).not.toHaveBeenCalled();
+  });
+
+  it('should still honor a caller opting out with enabled: false', async () => {
+    const getAllFields = jest
+      .spyOn(mockMetadata, 'getAllFields')
+      .mockResolvedValue(fieldsA);
+
+    const { result } = renderHook(
+      () => useMultipleAllFields([tcA], { enabled: false }),
+      { wrapper },
+    );
+
+    await waitFor(() => expect(result.current.isPending).toBe(true));
+    expect(getAllFields).not.toHaveBeenCalled();
+  });
+
+  it('returns the fields and columns of each table connection in input order', async () => {
+    jest
+      .spyOn(mockMetadata, 'getAllFields')
+      .mockImplementation(async ({ tableName }) =>
+        tableName === 'table_a' ? fieldsA : fieldsB,
+      );
+
+    const { result } = renderHook(() => useMultipleAllFields([tcA, tcB]), {
+      wrapper,
+    });
+
+    await waitFor(() => expect(result.current.isSuccess).toBe(true));
+    expect(result.current.fieldsByTableConnection).toEqual(
+      new Map([
+        [0, fieldsA],
+        [1, fieldsB],
+      ]),
+    );
+    expect(result.current.columnsByTableConnection).toEqual(
+      new Map([
+        [0, columnsA],
+        [1, columnsB],
+      ]),
+    );
+    expect(result.current.errorsByTableConnection.size).toBe(0);
+    expect(result.current.isError).toBe(false);
+  });
+
+  it('fails closed when intersecting and one table connection fails', async () => {
+    jest.spyOn(console, 'warn').mockImplementation(() => {});
+    jest
+      .spyOn(mockMetadata, 'getAllFields')
+      .mockImplementation(async ({ tableName }) => {
+        if (tableName === 'table_b') throw new Error('timeout');
+        return fieldsA;
+      });
+
+    const { result } = renderHook(
+      () => useMultipleAllFields([tcA, tcB], { intersect: true }),
+      { wrapper },
+    );
+
+    await waitFor(() => expect(result.current.isSuccess).toBe(true));
+    expect(result.current.data).toEqual([]);
+  });
+
+  it('returns only columns when the team disables field metadata', async () => {
+    team = { fieldMetadataDisabled: true };
+    const getAllFields = jest.spyOn(mockMetadata, 'getAllFields');
+
+    const { result } = renderHook(() => useMultipleAllFields([tcA]), {
+      wrapper,
+    });
+
+    await waitFor(() => expect(result.current.isSuccess).toBe(true));
+    expect(result.current.data).toEqual([]);
+    expect(result.current.isFieldMetadataDisabled).toBe(true);
+    expect(result.current.columnsByTableConnection.get(0)).toEqual(columnsA);
+    expect(getAllFields).not.toHaveBeenCalled();
+  });
+
+  it('keeps the same data reference across re-renders', async () => {
+    jest
+      .spyOn(mockMetadata, 'getAllFields')
+      .mockImplementation(async ({ tableName }) =>
+        tableName === 'table_a' ? fieldsA : fieldsB,
+      );
+    const tableConnections = [tcA, tcB];
+
+    const { result, rerender } = renderHook(
+      () => useMultipleAllFields(tableConnections),
+      { wrapper },
+    );
+
+    await waitFor(() => expect(result.current.isSuccess).toBe(true));
+    const first = result.current;
+    rerender();
+    expect(result.current.data).toBe(first.data);
+    expect(result.current.fieldsByTableConnection).toBe(
+      first.fieldsByTableConnection,
+    );
+  });
+
+  it('should fetch a populated table connection when the caller passes enabled: true', async () => {
+    jest.spyOn(mockMetadata, 'getAllFields').mockResolvedValueOnce(fieldsA);
+
+    const { result } = renderHook(
+      () => useMultipleAllFields([tcA], { enabled: true }),
+      { wrapper },
+    );
+
+    await waitFor(() => expect(result.current.isSuccess).toBe(true));
+
+    expect(result.current.data).toEqual(fieldsA);
+  });
+});
+
+describe('useMergeTreeSettings', () => {
+  let wrapper: React.ComponentType<{ children: any }>;
+  let mockMetadata: Metadata;
+  const settings = new Map([['enable_block_number_column', '1']]);
+
+  beforeEach(() => {
+    jest.clearAllMocks();
+    mockMetadata = createMockMetadata();
+    jest.spyOn(metadataModule, 'getMetadata').mockReturnValue(mockMetadata);
+    const queryClient = new QueryClient({
+      defaultOptions: { queries: { retry: false } },
+    });
+    wrapper = ({ children }) => (
+      <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
+    );
+  });
+
+  it('keeps a successful result fresh across mounts', async () => {
+    const spy = jest
+      .spyOn(mockMetadata, 'getMergeTreeSettings')
+      .mockResolvedValue(settings);
+
+    const first = renderHook(() => useMergeTreeSettings('conn1'), { wrapper });
+    await waitFor(() => expect(first.result.current.data).toEqual(settings));
+    first.unmount();
+
+    const second = renderHook(() => useMergeTreeSettings('conn1'), { wrapper });
+    expect(second.result.current.data).toEqual(settings);
+    expect(spy).toHaveBeenCalledTimes(1);
+  });
+
+  it('returns null on failure and refetches on the next mount', async () => {
+    const spy = jest
+      .spyOn(mockMetadata, 'getMergeTreeSettings')
+      .mockResolvedValueOnce(undefined)
+      .mockResolvedValueOnce(settings);
+
+    const first = renderHook(() => useMergeTreeSettings('conn1'), { wrapper });
+    await waitFor(() => expect(first.result.current.data).toBeNull());
+    first.unmount();
+
+    const second = renderHook(() => useMergeTreeSettings('conn1'), { wrapper });
+    await waitFor(() => expect(second.result.current.data).toEqual(settings));
+    expect(spy).toHaveBeenCalledTimes(2);
+  });
+
+  it('does not query without a connection', () => {
+    const spy = jest.spyOn(mockMetadata, 'getMergeTreeSettings');
+
+    const { result } = renderHook(() => useMergeTreeSettings(''), { wrapper });
+
+    expect(result.current.isLoading).toBe(false);
+    expect(spy).not.toHaveBeenCalled();
+  });
+});
+
+describe('deduplicate2dArray', () => {
+  // Test basic deduplication
+  it('should remove duplicate objects across 2D array', () => {
+    const input = [
+      [
+        { id: 1, name: 'Alice' },
+        { id: 2, name: 'Bob' },
+      ],
+      [
+        { id: 1, name: 'Alice' },
+        { id: 3, name: 'Charlie' },
+      ],
+    ];
+
+    const result = deduplicate2dArray(input);
+
+    expect(result).toHaveLength(3);
+    expect(result).toEqual([
+      { id: 1, name: 'Alice' },
+      { id: 2, name: 'Bob' },
+      { id: 3, name: 'Charlie' },
+    ]);
+  });
+
+  // Test with empty arrays
+  it('should handle empty 2D array', () => {
+    const input: object[][] = [];
+
+    const result = deduplicate2dArray(input);
+
+    expect(result).toHaveLength(0);
+  });
+
+  // Test with nested empty arrays
+  it('should handle 2D array with empty subarrays', () => {
+    const input = [[], [], []];
+
+    const result = deduplicate2dArray(input);
+
+    expect(result).toHaveLength(0);
+  });
+
+  // Test with complex objects
+  it('should deduplicate complex nested objects', () => {
+    const input = [
+      [
+        { user: { id: 1, details: { name: 'Alice' } } },
+        { user: { id: 2, details: { name: 'Bob' } } },
+      ],
+      [
+        { user: { id: 1, details: { name: 'Alice' } } },
+        { user: { id: 3, details: { name: 'Charlie' } } },
+      ],
+    ];
+
+    const result = deduplicate2dArray(input);
+
+    expect(result).toHaveLength(3);
+    expect(result).toEqual([
+      { user: { id: 1, details: { name: 'Alice' } } },
+      { user: { id: 2, details: { name: 'Bob' } } },
+      { user: { id: 3, details: { name: 'Charlie' } } },
+    ]);
+  });
+
+  // Test with different types of objects
+  it('should work with different types of objects', () => {
+    const input: {
+      value: any;
+    }[][] = [
+      [{ value: 'string' }, { value: 42 }],
+      [{ value: 'string' }, { value: true }],
+    ];
+
+    const result = deduplicate2dArray(input);
+
+    expect(result).toHaveLength(3);
+  });
+
+  // Test order preservation
+  it('should preserve the order of first occurrence', () => {
+    const input = [
+      [{ id: 1 }, { id: 2 }],
+      [{ id: 1 }, { id: 3 }],
+      [{ id: 4 }, { id: 2 }],
+    ];
+
+    const result = deduplicate2dArray(input);
+
+    expect(result).toEqual([{ id: 1 }, { id: 2 }, { id: 3 }, { id: 4 }]);
+  });
+});
+
+describe('intersect2dArray', () => {
+  it('keeps only elements present in every sub-array', () => {
+    const input = [
+      [
+        { id: 1, name: 'Alice' },
+        { id: 2, name: 'Bob' },
+      ],
+      [
+        { id: 1, name: 'Alice' },
+        { id: 3, name: 'Charlie' },
+      ],
+    ];
+
+    // Only Alice appears in both — the fields valid across all connections.
+    expect(intersect2dArray(input)).toEqual([{ id: 1, name: 'Alice' }]);
+  });
+
+  it('collapses to empty when any sub-array is empty (a failed fetch fails closed)', () => {
+    const input = [[{ id: 1, name: 'Alice' }], []];
+
+    expect(intersect2dArray(input)).toEqual([]);
+  });
+
+  it('dedupes repeats within a single sub-array before intersecting', () => {
+    const input = [
+      [
+        { id: 1, name: 'Alice' },
+        { id: 1, name: 'Alice' },
+      ],
+      [{ id: 1, name: 'Alice' }],
+    ];
+
+    // A repeat within one table must not be counted twice toward the "present
+    // in every sub-array" tally.
+    expect(intersect2dArray(input)).toEqual([{ id: 1, name: 'Alice' }]);
+  });
+
+  it('returns empty for an empty 2D array', () => {
+    expect(intersect2dArray([])).toEqual([]);
+  });
+});

@@ -1,0 +1,27 @@
+#!/bin/sh
+set -e
+
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+API_BUILD_DIR="${SCRIPT_DIR}/../build"
+
+# Self-telemetry preload, see src/telemetry.ts
+TELEMETRY_PRELOAD="${API_BUILD_DIR}/telemetry.js"
+
+command="$1"
+shift 2>/dev/null || true
+
+case "$command" in
+  api)
+    exec node -r "$TELEMETRY_PRELOAD" "$API_BUILD_DIR/index.js" "$@"
+    ;;
+  task)
+    exec node -r "$TELEMETRY_PRELOAD" "$API_BUILD_DIR/tasks/index.js" "$@"
+    ;;
+  *)
+    echo "Usage: hyperdx <command> [args...]"
+    echo "Commands:"
+    echo "  api           Start the HyperDX API server"
+    echo "  task <name>   Run a named task (e.g., check-alerts)"
+    exit 1
+    ;;
+esac

@@ -1,0 +1,135 @@
+import { useMemo } from 'react';
+import uniqBy from 'lodash/uniqBy';
+import { ChartConfigWithOptDateRange } from '@hyperdx/common-utils/dist/types';
+import { keepPreviousData } from '@tanstack/react-query';
+
+import { useQueriedChartConfig } from '@/hooks/useChartConfig';
+
+import { mergeLogMarkers, SessionLogEvent } from './utils/sessionLogEvents';
+import {
+  getSessionRowHttp,
+  SessionRow,
+  sessionRowSchema,
+} from './utils/sessions';
+import type { PlaybarMarker } from './PlaybarSlider';
+import { PlaybarSlider } from './PlaybarSlider';
+import { getShortUrl } from './utils';
+
+export default function Playbar({
+  playerState,
+  setPlayerState,
+  setFocus,
+  playbackRange,
+  focus,
+  queriedConfig,
+  logEvents,
+}: {
+  playerState: 'playing' | 'paused';
+  setPlayerState: (playerState: 'playing' | 'paused') => void;
+  focus: { ts: number; setBy: string } | undefined;
+  setFocus: (focus: { ts: number; setBy: string }) => void;
+  playbackRange: [Date, Date];
+  queriedConfig: ChartConfigWithOptDateRange;
+  logEvents: SessionLogEvent[];
+}) {
+  // might be outdated? state update or something? that's why the max slider val can be wrong?
+  const minTs = playbackRange[0].getTime();
+  const maxTs = playbackRange[1].getTime();
+  const maxSliderVal = Math.ceil(playbackRange[1].getTime() / 1000) * 1000;
+  const minSliderVal = Math.floor(playbackRange[0].getTime() / 1000) * 1000;
+
+  const { data } = useQueriedChartConfig(queriedConfig, {
+    placeholderData: keepPreviousData,
+    queryKey: ['PlayBar', queriedConfig],
+  });
+
+  const events: SessionRow[] = useMemo(
+    () =>
+      data?.data
+        ?.map(row => sessionRowSchema.safeParse(row))
+        .filter(parsed => parsed.success)
+        .map(parsed => parsed.data) ?? [],
+    [data?.data],
+  );
+
+  const spanMarkers = useMemo<PlaybarMarker[]>(() => {
+    return uniqBy(
+      events
+        .map(event => {
+          const { timestamp, durationInMs } = event;
+
+          // TODO: we should just use timestamp and durationInMs instead of startOffset and endOffset
+          const startOffset = new Date(timestamp).getTime();
+          const endOffset = new Date(startOffset).getTime() + durationInMs;
+
+          return {
+            ...event,
+            startOffset,
+            endOffset,
+          };
+        })
+        .filter(
+          ({ startOffset }) => startOffset >= minTs && startOffset <= maxTs,
+        )
+        .map(event => {
+          const spanName = event['span_name'];
+          const locationHref = event['location.href'] ?? '';
+          const shortLocationHref = getShortUrl(locationHref);
+
+          const errorMessage = event['error.message'] ?? '';
+
+          const { url, statusCode, label } = getSessionRowHttp(event);
+          const shortUrl = getShortUrl(url);
+
+          const isNavigation =
+            spanName === 'routeChange' || spanName === 'documentLoad';
+
+          const isError =
+            event.severity_text?.toLowerCase() === 'error' ||
+            event.component === 'error' ||
+            event.component === 'console' ||
+            statusCode >= 399;
+
+          const isSuccess = !isError && statusCode < 400 && statusCode > 99;
+
+          return {
+            id: event.id,
+            ts: event.startOffset,
+            percentage: Math.round(
+              ((event.startOffset - minTs) / (maxTs - minTs)) * 100,
+            ),
+            description: isNavigation
+              ? `Navigated to ${shortLocationHref}`
+              : url.length > 0
+                ? `${label} ${shortUrl}`
+                : errorMessage != null && errorMessage.length > 0
+                  ? errorMessage
+                  : spanName === 'intercom.onShow'
+                    ? 'Intercom Chat Opened'
+                    : (event.body ?? ''),
+            isError,
+            isSuccess,
+          };
+        }) ?? [],
+      'percentage',
+    );
+  }, [events, maxTs, minTs]);
+  const markers = useMemo(
+    () => mergeLogMarkers(spanMarkers, logEvents, minTs, maxTs),
+    [spanMarkers, logEvents, minTs, maxTs],
+  );
+
+  return (
+    <PlaybarSlider
+      markers={markers}
+      min={minSliderVal}
+      max={maxSliderVal}
+      value={focus?.ts}
+      onChange={ts => {
+        setFocus({ ts, setBy: 'slider' });
+      }}
+      setPlayerState={setPlayerState}
+      playerState={playerState}
+    />
+  );
+}

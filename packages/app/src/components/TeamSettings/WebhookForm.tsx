@@ -1,0 +1,510 @@
+import { useEffect, useMemo } from 'react';
+import { HTTPError } from 'ky';
+import { Controller, SubmitHandler, useForm, useWatch } from 'react-hook-form';
+import { ZodIssue } from 'zod';
+import { json, jsonParseLinter } from '@codemirror/lang-json';
+import { linter } from '@codemirror/lint';
+import { getWebhookTemplateError } from '@hyperdx/common-utils/dist/core/handlebarsEnv';
+import {
+  getDefaultWebhookBody,
+  WEBHOOK_TEMPLATE_VARIABLES,
+  WebhookApiData,
+  WebhookService,
+  WebhookTemplateVariable,
+} from '@hyperdx/common-utils/dist/types';
+import { isValidSlackUrl } from '@hyperdx/common-utils/dist/validation';
+import {
+  Alert,
+  Button,
+  Checkbox,
+  Code,
+  Group,
+  Radio,
+  SimpleGrid,
+  Stack,
+  Text,
+  TextInput,
+} from '@mantine/core';
+import { useDebouncedValue } from '@mantine/hooks';
+import { notifications } from '@mantine/notifications';
+import { IconInfoCircleFilled } from '@tabler/icons-react';
+import ReactCodeMirror, {
+  EditorView,
+  placeholder,
+} from '@uiw/react-codemirror';
+
+import api from '@/api';
+import { useBrandDisplayName } from '@/brand';
+import { WebhookBodyValidationAlert } from '@/components/TeamSettings/WebhookBodyValidation';
+import { isValidUrl } from '@/utils';
+
+// The default body and the variable list both come from common-utils, so this
+// form and the API's fallback cannot drift. The docs page restates them by
+// hand; a unit test in common-utils keeps that table honest.
+// Keyed by WebhookTemplateVariable so a variable added in common-utils cannot
+// reach the transports without a description here.
+const describeTemplateVariable = (
+  brandName: string,
+): Record<WebhookTemplateVariable, string> => ({
+  title: 'Alert title',
+  body: 'Rendered message body (markdown)',
+  link: `Deep link back into ${brandName}`,
+  state: 'Raw internal alert state',
+  status: 'firing, resolved, no_data, pending or error',
+  eventId: 'Unique id for this firing',
+  alertId: 'Stable id of the alert — the key to dedupe on',
+  alertType: 'search, dashboard_chart or inline_query',
+  comparator: '>=, >, <, <=, =, !=, between or outside',
+  threshold: 'The configured threshold (number)',
+  thresholdMax: 'Upper bound of a between/outside range (number)',
+  value: 'Value that triggered or resolved the alert (number)',
+  groupKey: 'The breaching group, if grouped',
+  var: 'Group-by values by column, e.g. {{var.customer_id}}',
+  sourceQuery: 'Search expression or SQL behind the alert',
+  startTime: 'Window start, Unix ms (number)',
+  endTime: 'Window end, Unix ms (number)',
+  startTimeISO: 'Window start, ISO-8601',
+  endTimeISO: 'Window end, ISO-8601',
+  teamId: 'Team the alert belongs to',
+  note: "Alert's note, commonly a runbook link",
+  tags: "Alert's tags, comma-separated; iterate with {{#each tags}}",
+});
+
+export const getWebhookTemplateVariables = (
+  brandName: string,
+): { name: string; description: string }[] => {
+  const descriptions = describeTemplateVariable(brandName);
+  return WEBHOOK_TEMPLATE_VARIABLES.map(name => ({
+    name: `{{${name}}}`,
+    description: descriptions[name],
+  }));
+};
+
+const jsonLinterWithEmptyCheck = () => (editorView: EditorView) => {
+  const text = editorView.state.doc.toString().trim();
+  if (text === '') return [];
+  return jsonParseLinter()(editorView);
+};
+
+type WebhookForm = {
+  name: string;
+  url: string;
+  service: WebhookService;
+  description?: string;
+  titleEmoji: boolean;
+  body?: string;
+  headers?: string;
+};
+
+export function WebhookForm({
+  webhook,
+  onClose,
+  onSuccess,
+}: {
+  webhook?: WebhookApiData;
+  onClose: VoidFunction;
+  onSuccess: (webhookId?: string) => void;
+}) {
+  const brandName = useBrandDisplayName();
+  const saveWebhook = api.useSaveWebhook();
+  const updateWebhook = api.useUpdateWebhook();
+  const testWebhook = api.useTestWebhook();
+  const isEditing = webhook != null;
+
+  const form = useForm<WebhookForm>({
+    defaultValues: {
+      service: webhook?.service || WebhookService.Slack,
+      name: webhook?.name || '',
+      url: webhook?.url || '',
+      description: webhook?.description || '',
+      titleEmoji: webhook?.titleEmoji !== false,
+      body: webhook?.body || '',
+      headers: webhook?.headers ? JSON.stringify(webhook.headers, null, 2) : '',
+    },
+  });
+
+  useEffect(() => {
+    if (webhook) {
+      form.reset(
+        {
+          service: webhook.service,
+          name: webhook.name,
+          url: webhook.url,
+          description: webhook.description,
+          titleEmoji: webhook.titleEmoji !== false,
+          body: webhook.body,
+          headers: webhook.headers
+            ? JSON.stringify(webhook.headers, null, 2)
+            : '',
+        },
+        {},
+      );
+    }
+  }, [webhook, form]);
+
+  const service = useWatch({ control: form.control, name: 'service' });
+  const bodyText = useWatch({ control: form.control, name: 'body' });
+  // Debounced so the error doesn't flash while a {{ … }} is half-typed.
+  const [debouncedBody] = useDebouncedValue(bodyText, 300);
+  const bodyError = useMemo(
+    // Slack sends a fixed payload and never renders the body.
+    () =>
+      service === WebhookService.Slack
+        ? null
+        : getWebhookTemplateError(debouncedBody),
+    [service, debouncedBody],
+  );
+
+  const handleTestWebhook = async (values: WebhookForm) => {
+    const { service, url, body, headers } = values;
+
+    // Parse headers if provided
+    let parsedHeaders: Record<string, string> | undefined;
+    if (headers && headers.trim()) {
+      try {
+        parsedHeaders = JSON.parse(headers);
+      } catch (parseError) {
+        const errorMessage =
+          parseError instanceof Error
+            ? parseError.message
+            : 'Invalid JSON format';
+        notifications.show({
+          message: `Invalid JSON in headers: ${errorMessage}`,
+          color: 'red',
+          autoClose: 5000,
+        });
+        return;
+      }
+    }
+
+    const defaultBody =
+      service === WebhookService.Slack
+        ? body
+        : body || getDefaultWebhookBody(service);
+
+    try {
+      await testWebhook.mutateAsync({
+        service,
+        url,
+        body: defaultBody,
+        headers: parsedHeaders,
+        ...(isEditing && { webhookId: webhook._id }),
+      });
+      notifications.show({
+        color: 'green',
+        message: 'Test webhook sent successfully',
+      });
+    } catch (e) {
+      console.error(e);
+      let message =
+        'Failed to send test webhook. Please check your webhook configuration.';
+
+      if (e instanceof HTTPError) {
+        try {
+          const errorData = await e.response.json();
+          if (errorData.message) {
+            message = errorData.message;
+          }
+        } catch (parseError) {
+          console.error('Failed to parse error response:', parseError);
+        }
+      }
+
+      notifications.show({
+        message,
+        color: 'red',
+        autoClose: 5000,
+      });
+    }
+  };
+
+  const onSubmit: SubmitHandler<WebhookForm> = async values => {
+    const { service, name, url, description, titleEmoji, body, headers } =
+      values;
+
+    try {
+      // Parse headers JSON if provided (API will validate the content)
+      let parsedHeaders: Record<string, string> | undefined;
+      if (headers && headers.trim()) {
+        try {
+          parsedHeaders = JSON.parse(headers);
+        } catch (parseError) {
+          const errorMessage =
+            parseError instanceof Error
+              ? parseError.message
+              : 'Invalid JSON format';
+          notifications.show({
+            message: `Invalid JSON in headers: ${errorMessage}`,
+            color: 'red',
+            autoClose: 5000,
+          });
+          return;
+        }
+      }
+
+      const defaultBody =
+        service === WebhookService.Slack
+          ? body
+          : body || getDefaultWebhookBody(service);
+
+      const webhookData = {
+        service,
+        name,
+        url,
+        description: description || '',
+        titleEmoji,
+        body: defaultBody,
+        headers: parsedHeaders,
+      };
+
+      const response = isEditing
+        ? await updateWebhook.mutateAsync({
+            id: webhook._id,
+            ...webhookData,
+          })
+        : await saveWebhook.mutateAsync(webhookData);
+
+      notifications.show({
+        color: 'green',
+        message: `Webhook ${isEditing ? 'updated' : 'created'} successfully`,
+      });
+      onSuccess(response.data?._id);
+      onClose();
+    } catch (e) {
+      console.error(e);
+      let message = `Something went wrong. Please contact ${brandName} team.`;
+
+      if (e instanceof HTTPError) {
+        try {
+          const errorData = await e.response.json();
+          // Handle Zod validation errors from zod-express-middleware
+          // The library returns errors in format: { error: { issues: [...] } }
+          if (
+            errorData.error?.issues &&
+            Array.isArray(errorData.error.issues)
+          ) {
+            // TODO: use a library to format Zod validation errors
+            // Format Zod validation errors
+            const validationErrors = errorData.error.issues
+              .map((issue: ZodIssue) => {
+                const path = issue.path.join('.');
+                return `${path}: ${issue.message}`;
+              })
+              .join(', ');
+            message = `Validation error: ${validationErrors}`;
+          } else if (errorData.message) {
+            message = errorData.message;
+          } else {
+            // Fallback: show the entire error object as JSON
+            message = JSON.stringify(errorData);
+          }
+        } catch (parseError) {
+          console.error('Failed to parse error response:', parseError);
+          // If parsing fails, use default message
+        }
+      }
+
+      notifications.show({
+        message,
+        color: 'red',
+        autoClose: 5000,
+      });
+    }
+  };
+
+  // A body left at the old service's default would still be sent verbatim, and
+  // each service's default is invalid to the others' receivers. A hand-edited
+  // body is the user's, so it survives the switch.
+  const onServiceChange = (next: WebhookService) => {
+    const body = form.getValues('body');
+    if (!body || body === getDefaultWebhookBody(service)) {
+      form.setValue('body', '');
+    }
+    form.setValue('service', next);
+  };
+  const templateVariables = getWebhookTemplateVariables(brandName);
+  const headersText = useWatch({ control: form.control, name: 'headers' });
+  const hasMaskedHeaders = isEditing && !!headersText?.includes('****');
+
+  return (
+    <form onSubmit={form.handleSubmit(onSubmit)}>
+      <Stack mt="sm">
+        <Text>{isEditing ? 'Edit Webhook' : 'Create Webhook'}</Text>
+        <Radio.Group
+          data-testid="service-type-radio-group"
+          label="Service Type"
+          required
+          value={service}
+          onChange={value => onServiceChange(value as WebhookService)}
+        >
+          <Group mt="xs">
+            <Radio value={WebhookService.Slack} label="Slack" />
+            <Radio value={WebhookService.IncidentIO} label="incident.io" />
+            <Radio value={WebhookService.Generic} label="Generic" />
+          </Group>
+        </Radio.Group>
+        <TextInput
+          label="Webhook Name"
+          data-testid="webhook-name-input"
+          placeholder="Post to #dev-alerts"
+          required
+          error={form.formState.errors.name?.message}
+          {...form.register('name', { required: true })}
+        />
+
+        <TextInput
+          label="Webhook URL"
+          data-testid="webhook-url-input"
+          description={
+            isEditing
+              ? 'URL is masked for security. Enter a new URL to update.'
+              : undefined
+          }
+          placeholder={
+            service === WebhookService.Slack
+              ? 'https://hooks.slack.com/services/T00000000/B00000000/XXXXXXXXXXXXXXXXXXXXXXXX'
+              : service === WebhookService.IncidentIO
+                ? 'https://api.incident.io/v2/alert_events/http/ZZZZZZZZ?token=XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX'
+                : 'https://example.com/webhook'
+          }
+          type="url"
+          required
+          error={form.formState.errors.url?.message}
+          {...form.register('url', {
+            required: true,
+            validate: (value, formValues) =>
+              formValues.service === WebhookService.Slack
+                ? isValidSlackUrl(value) ||
+                  'URL must be valid and have a slack.com domain'
+                : isValidUrl(value) || 'URL must be valid',
+          })}
+        />
+
+        <TextInput
+          label="Webhook Description (optional)"
+          placeholder="To be used for dev alerts"
+          error={form.formState.errors.description?.message}
+          {...form.register('description')}
+        />
+        <Checkbox
+          label="Show state emoji in notification titles"
+          data-testid="webhook-title-emoji-checkbox"
+          {...form.register('titleEmoji')}
+        />
+        {service === WebhookService.Generic && [
+          <label className=".mantine-TextInput-label" key="1">
+            Webhook Headers (optional)
+          </label>,
+          hasMaskedHeaders && (
+            <Text key="1a" size="xs" c="dimmed" mt={-4}>
+              Header values are masked. Enter new values to update or remove
+              keys to delete them.
+            </Text>
+          ),
+          <div className="mb-2" key="2">
+            <Controller
+              name="headers"
+              control={form.control}
+              render={({ field }) => (
+                <ReactCodeMirror
+                  height="100px"
+                  extensions={[
+                    json(),
+                    linter(jsonLinterWithEmptyCheck()),
+                    placeholder(
+                      `{\n\t"Authorization": "Bearer token",\n\t"X-Custom-Header": "value"\n}`,
+                    ),
+                  ]}
+                  theme="dark"
+                  value={field.value}
+                  onChange={value => field.onChange(value)}
+                />
+              )}
+            />
+          </div>,
+        ]}
+        {service !== WebhookService.Slack && [
+          <label className=".mantine-TextInput-label" key="3">
+            Webhook Body (optional)
+          </label>,
+          <div className="mb-2" key="4">
+            <Controller
+              name="body"
+              control={form.control}
+              render={({ field }) => (
+                <ReactCodeMirror
+                  height="100px"
+                  extensions={[
+                    json(),
+                    linter(jsonLinterWithEmptyCheck()),
+                    placeholder(getDefaultWebhookBody(service)),
+                  ]}
+                  theme="dark"
+                  value={field.value}
+                  onChange={value => field.onChange(value)}
+                />
+              )}
+            />
+          </div>,
+          bodyError && (
+            <WebhookBodyValidationAlert key="4a" error={bodyError} />
+          ),
+          <Alert
+            icon={<IconInfoCircleFilled size={16} />}
+            key="5"
+            className="mb-4"
+            color="gray"
+          >
+            <Text size="sm">
+              The body supports the following template variables:
+            </Text>
+            <SimpleGrid
+              cols={{ base: 1, sm: 2 }}
+              spacing="xs"
+              verticalSpacing={4}
+              mt="xs"
+              data-testid="webhook-template-variables"
+            >
+              {templateVariables.map(({ name, description }) => (
+                <Group key={name} gap="xs" wrap="nowrap" align="baseline">
+                  <Code>{name}</Code>
+                  <Text size="xs" c="dimmed">
+                    {description}
+                  </Text>
+                </Group>
+              ))}
+            </SimpleGrid>
+            <Text size="xs" c="dimmed" mt="xs">
+              Strings are JSON-escaped, so they are safe inside quotes. Numbers
+              are emitted raw for unquoted slots. A variable the alert
+              doesn&apos;t carry renders as an empty string.
+            </Text>
+          </Alert>,
+        ]}
+        <Group justify="space-between">
+          <Group>
+            <Button
+              variant="primary"
+              type="submit"
+              data-testid="add-webhook-button"
+              loading={saveWebhook.isPending || updateWebhook.isPending}
+            >
+              {isEditing ? 'Update Webhook' : 'Add Webhook'}
+            </Button>
+            <Button
+              variant="secondary"
+              onClick={form.handleSubmit(handleTestWebhook)}
+              loading={testWebhook.isPending}
+              type="button"
+            >
+              Test Webhook
+            </Button>
+          </Group>
+          <Button variant="secondary" onClick={onClose} type="reset">
+            Cancel
+          </Button>
+        </Group>
+      </Stack>
+    </form>
+  );
+}

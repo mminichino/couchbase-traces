@@ -1,0 +1,84 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-11-12T19:09:07Z",
+  "upstreamSha": "f172a489c81888099d70c799478c9a9cfbed25b6",
+  "nodeVersion": "22.23.4",
+  "yarnVersion": "4.13.0",
+  "checks": {
+    "lint": {
+      "status": "passed",
+      "command": "make ci-lint",
+      "exitCode": 0,
+      "durationSeconds": 60,
+      "log": "port/state/logs/lint.log",
+      "errors": 0,
+      "warnings": 937,
+      "filesWithErrors": []
+    },
+    "typecheck": {
+      "status": "passed",
+      "errorCount": 0,
+      "workspaces": [
+        {
+          "dir": "packages/api",
+          "name": "@hyperdx/api",
+          "status": "passed",
+          "exitCode": 0,
+          "durationSeconds": 6,
+          "log": "port/state/logs/typecheck-packages-api.log",
+          "errors": []
+        },
+        {
+          "dir": "packages/app",
+          "name": "@hyperdx/app",
+          "status": "passed",
+          "exitCode": 0,
+          "durationSeconds": 3,
+          "log": "port/state/logs/typecheck-packages-app.log",
+          "errors": []
+        },
+        {
+          "dir": "packages/cli",
+          "name": "@hyperdx/cli",
+          "status": "passed",
+          "exitCode": 0,
+          "durationSeconds": 2,
+          "log": "port/state/logs/typecheck-packages-cli.log",
+          "errors": []
+        },
+        {
+          "dir": "packages/common-utils",
+          "name": "@hyperdx/common-utils",
+          "status": "passed",
+          "exitCode": 0,
+          "durationSeconds": 3,
+          "log": "port/state/logs/typecheck-packages-common-utils.log",
+          "errors": []
+        },
+        {
+          "dir": "packages/hdx-eval",
+          "name": "@hyperdx/hdx-eval",
+          "status": "passed",
+          "exitCode": 0,
+          "durationSeconds": 2,
+          "log": "port/state/logs/typecheck-packages-hdx-eval.log",
+          "errors": []
+        }
+      ]
+    },
+    "unit": {
+      "status": "failed",
+      "command": "make ci-unit",
+      "exitCode": 2,
+      "durationSeconds": 45,
+      "log": "port/state/logs/unit.log",
+      "tests": {
+        "total": 10714,
+        "passed": 10714,
+        "failed": 0,
+        "skipped": 0
+      },
+      "failingSuites": []
+    }
+  }
+}

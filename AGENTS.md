@@ -58,3 +58,47 @@ Nothing is removed for being hard to port. A feature is dropped only with writte
 7. Never push to `origin` without an explicit instruction from the user. Do not commit credentials, `.env` files with secrets, or Capella connection strings.
 8. Keep `LICENSE` and the upstream copyright line intact in every phase.
 9. Stop and ask when: an existing file conflicts with an imported path at Phase 0, brand assets are missing from `BRAND_ASSETS`, or a feature cannot be expressed in SQL++ with the same result shape.
+
+## Upstream conventions
+
+Merged from docs/upstream-AGENTS.md, .cursor/rules/playwright.mdc, .cursor/rules/ui-sentence-case.mdc, AGENTS.md, CLAUDE.md at upstream commit f172a489c818. The sections above take precedence over anything here.
+
+### Commands
+- Use `yarn setup` to install dependencies.
+- Use `yarn dev` to start the full stack with worktree-isolated ports.
+- Use `yarn lint:fix` after finishing code edits to auto-fix formatting and lint across all packages.
+- Use `make ci-lint` for lint and TypeScript check across all packages.
+- Use `make ci-unit` for unit tests across all packages.
+- In `packages/app`, use `yarn ci:unit` for unit tests and `yarn dev:unit` for watch mode.
+- In `packages/api`, use `yarn ci:unit` for unit tests; use `make dev-int-build` once, then `make dev-int FILE=<TEST_FILE_NAME>` for integration tests.
+- In `packages/common-utils`, use `yarn ci:unit`, `yarn dev:unit`, `yarn ci:int`, and `yarn dev:int`.
+- Run a specific unit test with `yarn ci:unit <path/to/test.ts>` or `yarn ci:unit --testNamePattern="pattern"`.
+- In `packages/cli`, type-check with `npx tsc --noEmit`.
+- For E2E: install Chromium with `cd packages/app && yarn playwright install chromium`, then `make e2e`, or `make dev-e2e FILE=<name>` / `make dev-e2e GREP="<pattern>"`.
+- For Playwright E2E helpers, follow `.claude/skills/playwright/SKILL.md` and run via `./scripts/test-e2e.sh --quiet <file>`.
+
+### Code style
+- Use TypeScript strictly; validate with Zod schemas.
+- Before defining a type, Zod schema, helper, or component, search for an existing one (`packages/common-utils/src/` first, then the current package) and reuse it.
+- Keep files under 300 lines; break down large components.
+- Use custom Button/ActionIcon variants (`primary`, `secondary`, `danger`), `useConfirm` for confirmation dialogs, and sentence case for all user-facing UI text.
+- Prefer Mantine components as the UI standard.
+- Client state uses Jotai; server state uses TanStack Query; filters often live in URL params.
+- Comments explain why, not what; omit self-evident restatements.
+- Read `agent_docs/code_style.md` before writing or planning `packages/app` UI changes and before adding shared types, schemas, helpers, or components.
+- Read `agent_docs/naming_objects.md` before adding or changing any name field (`InlineNameInput`).
+
+### Testing
+- Put tests in `__tests__/` directories; use Jest for unit and integration tests.
+- Write or update tests alongside the implementation.
+- When writing or fixing Playwright E2E tests, follow `.claude/skills/playwright/SKILL.md`.
+
+### Repository layout
+- Monorepo with Yarn 4.13.0 workspaces.
+- `packages/app` — Next.js frontend (TypeScript, Mantine UI, TanStack Query).
+- `packages/api` — Express backend (Node.js 22+, MongoDB for metadata); also hosts MCP, External API v2, and OpAMP as sub-applications.
+- `packages/common-utils` — shared TypeScript utilities for query parsing and validation.
+- `packages/cli` — terminal CLI and interactive TUI (`hdx`) with its own `packages/cli/AGENTS.md`.
+- `packages/otel-collector` — custom OpenTelemetry Collector (Go, OCB).
+- `packages/hdx-eval` — AI eval framework for MCP server benchmarking.
+- Package-specific guides live under each package; cross-cutting agent docs live in `agent_docs/`.

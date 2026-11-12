@@ -1,0 +1,5 @@
+packages/app/src/Example.tsx
+  1:1  error  Unexpected console  no-console
+  2:1  warning  Unused var  no-unused-vars
+
+✖ 2 problems (1 error, 1 warning)

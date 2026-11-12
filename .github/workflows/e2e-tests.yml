@@ -1,0 +1,49 @@
+name: E2E Tests
+on:
+  workflow_call:
+
+jobs:
+  e2e-tests:
+    name: E2E Tests - Shard ${{ matrix.shard }}
+    # 8-core runner so the 4 Playwright workers (see playwright.config.ts) have
+    # CPU headroom alongside the app + ClickHouse + MongoDB — 4 workers
+    # over-subscribed the 4-vCPU ubuntu-24.04 runner and caused timeouts.
+    # RUNNER_E2E is a label or a JSON array of labels. On a smaller
+    # runner, set the E2E_WORKERS variable to 2 as well.
+    # Fork PRs can't use the custom runner group and would queue forever, so
+    # they fall back to the 4-vCPU ubuntu-24.04 runner with 2 workers and a
+    # longer timeout.
+    runs-on:
+      ${{ github.event.pull_request.head.repo.fork && 'ubuntu-24.04' ||
+      startsWith(vars.RUNNER_E2E, '[') && fromJSON(vars.RUNNER_E2E) ||
+      vars.RUNNER_E2E || '8-core-playwright' }}
+    timeout-minutes: ${{ github.event.pull_request.head.repo.fork && 25 || 15 }}
+    permissions:
+      contents: read
+    strategy:
+      fail-fast: false
+      matrix:
+        shard: [1, 2, 3, 4]
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: E2E setup
+        uses: ./.github/actions/e2e-setup
+
+      - name: Run Playwright tests (full-stack mode)
+        env:
+          # Unset falls back to the default in playwright.config.ts.
+          E2E_WORKERS:
+            ${{ github.event.pull_request.head.repo.fork && '2' ||
+            vars.E2E_WORKERS }}
+        run: |
+          cd packages/app
+          yarn test:e2e --shard=${{ matrix.shard }}/4
+
+      - name: E2E teardown
+        if: always()
+        uses: ./.github/actions/e2e-teardown
+        with:
+          artifact-suffix: ${{ matrix.shard }}

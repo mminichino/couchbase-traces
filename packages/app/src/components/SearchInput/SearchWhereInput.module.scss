@@ -1,0 +1,70 @@
+.root {
+  --editor-border-inset: 2px;
+
+  flex: 1 1 0%;
+  min-width: 0;
+  display: flex;
+  flex-direction: row;
+  align-items: stretch;
+}
+
+.inputWrapper {
+  flex: 1;
+  min-width: 0;
+
+  /* target only the SQLInlineEditor Paper (not the AutocompleteInput) */
+  /* stylelint-disable-next-line selector-pseudo-class-no-unknown */
+  :global(.mantine-Paper-root) {
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+
+    /* The Paper theme sets `border` inline, which outranks this rule. */
+    border-left: none !important;
+  }
+
+  /* target only the AutocompleteInput Paper (not the SQLInlineEditor) */
+  /* stylelint-disable-next-line selector-pseudo-class-no-unknown */
+  :global(.mantine-InputWrapper-root) {
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+    border-left: none;
+
+    textarea {
+      border-radius: 0 var(--mantine-radius-default)
+        var(--mantine-radius-default) 0;
+    }
+  }
+}
+
+/* Stretches with the input so the seam between the two stays flush however
+   many lines the query takes. */
+.languageSwitch {
+  flex-shrink: 0;
+  padding-left: 4px;
+  border: 1px solid var(--color-border);
+  border-right: none;
+  border-radius: var(--mantine-radius-default) 0 0 var(--mantine-radius-default);
+  background-color: var(--color-bg-field-addon);
+  min-height: var(--editor-base-height);
+}
+
+/* The switch and the input meet at a seam, so a focus border on only one of
+   them reads as half-focused. Keyed off focus inside the input specifically:
+   tabbing to the syntax-reference button shouldn't light up the switch alone. */
+.root:has(.inputWrapper :focus) .languageSwitch {
+  border-color: var(--color-bg-brand);
+}
+
+.root:has(.inputWrapper [data-validation-state='error']) .languageSwitch {
+  border-color: var(--color-bg-danger);
+}
+
+.root:has(.inputWrapper [data-validation-state='warning']) .languageSwitch {
+  border-color: var(--color-bg-warning);
+}
+
+/* Subtract the switch's borders so its controls align with the first row. */
+.languageSwitchRow {
+  flex-shrink: 0;
+  height: calc(var(--editor-base-height) - var(--editor-border-inset, 2px));
+}

@@ -1,0 +1,49 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-11-12T19:09:07Z",
+  "status": "pass",
+  "exitCode": 0,
+  "error": null,
+  "nextStep": "agents_merge",
+  "upstream": {
+    "path": "/Users/michael/IdeaProjects/hyperdx",
+    "sha": "f172a489c81888099d70c799478c9a9cfbed25b6",
+    "appReleaseTag": "@hyperdx/app@2.43.1",
+    "trackedFileCount": 2287
+  },
+  "import": {
+    "method": "git-checkout-index",
+    "importedFileCount": 2286,
+    "excludedPaths": ["AGENTS.md"],
+    "identicalPreexisting": 1,
+    "license": {
+      "path": "LICENSE",
+      "type": "MIT",
+      "copyrightLine": "Copyright (c) 2023 DeploySentinel, Inc."
+    },
+    "otherLicenseFiles": [],
+    "notice": "created",
+    "agentInstructionFiles": [".cursor/rules/playwright.mdc", ".cursor/rules/ui-sentence-case.mdc", "AGENTS.md", "CLAUDE.md"],
+    "upstreamAgentsCopiedTo": "docs/upstream-AGENTS.md"
+  },
+  "toolchain": {
+    "nodeRequired": "22.23.4",
+    "nodeVersion": "22.23.4",
+    "nodeBin": "/Users/michael/.nvm/versions/node/v22.23.4/bin",
+    "nodeSource": "path",
+    "yarnRequired": "4.13.0",
+    "yarnVersion": "4.13.0",
+    "yarnSource": "yarnPath",
+    "yarnCommand": "/Users/michael/.nvm/versions/node/v22.23.4/bin/node /Users/michael/IdeaProjects/couchbase-traces/.yarn/releases/yarn-4.13.0.cjs"
+  },
+  "install": {
+    "status": "passed",
+    "exitCode": 0,
+    "attempts": 1,
+    "durationSeconds": 20,
+    "log": "port/state/logs/install.log"
+  },
+  "warnings": [
+    { "code": "W_GITIGNORE_MERGED", "message": "Merged local .gitignore patterns into upstream .gitignore" }
+  ]
+}

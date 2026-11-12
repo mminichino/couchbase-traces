@@ -1,0 +1,310 @@
+import React from 'react';
+import { useForm } from 'react-hook-form';
+import { DisplayType } from '@hyperdx/common-utils/dist/types';
+import { screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
+
+import { ChartEditorFormState } from '@/components/ChartEditor/types';
+import {
+  ChartActionBar,
+  DashboardFiltersToggleProps,
+} from '@/components/DBEditTimeChartForm/ChartActionBar';
+
+jest.mock('@/components/SQLEditor/SQLInlineEditor', () => ({
+  SQLInlineEditorControlled: (props: any) => (
+    <div data-testid="sql-editor-order-by">{props.label}</div>
+  ),
+}));
+
+jest.mock('@/components/TimePicker', () => ({
+  TimePicker: () => <div data-testid="time-picker">TimePicker</div>,
+}));
+
+jest.mock('@/GranularityPicker', () => ({
+  GranularityPickerControlled: () => (
+    <div data-testid="granularity-picker">Granularity</div>
+  ),
+}));
+
+const defaultTableConnection = {
+  databaseName: 'default',
+  tableName: 'logs',
+  connectionId: 'default',
+};
+
+type WrapperProps = {
+  children: (props: { control: any }) => React.ReactNode;
+  defaultValues?: Partial<ChartEditorFormState>;
+};
+
+function FormWrapper({ children, defaultValues }: WrapperProps) {
+  const { control } = useForm<ChartEditorFormState>({
+    defaultValues: {
+      displayType: DisplayType.Line,
+      name: 'Test Chart',
+      select: [
+        {
+          aggFn: 'count',
+          aggCondition: '',
+          aggConditionLanguage: 'lucene',
+          valueExpression: '',
+        },
+      ],
+      where: '',
+      whereLanguage: 'lucene',
+      granularity: 'auto',
+      ...defaultValues,
+    },
+  });
+
+  return <>{children({ control })}</>;
+}
+
+const renderActionBar = (
+  overrides: Partial<React.ComponentProps<typeof ChartActionBar>> = {},
+  formValues: Partial<ChartEditorFormState> = {},
+) => {
+  const onSubmit = jest.fn();
+  const setSaveToDashboardModalOpen = jest.fn();
+
+  const result = renderWithMantine(
+    <FormWrapper defaultValues={formValues}>
+      {({ control }) => (
+        <ChartActionBar
+          control={control}
+          tableConnection={defaultTableConnection}
+          activeTab="time"
+          isRawSqlInput={false}
+          parentRef={null}
+          groupBy=""
+          onSubmit={onSubmit}
+          setSaveToDashboardModalOpen={setSaveToDashboardModalOpen}
+          {...overrides}
+        />
+      )}
+    </FormWrapper>,
+  );
+
+  return {
+    ...result,
+    onSubmit,
+    setSaveToDashboardModalOpen,
+  };
+};
+
+const filterSwitch = () =>
+  screen.getByRole('switch', { name: 'Apply filters' });
+
+const queryFilterSwitch = () =>
+  screen.queryByRole('switch', { name: 'Apply filters' });
+
+const toggle = (overrides: Partial<DashboardFiltersToggleProps> = {}) => ({
+  checked: true,
+  onChange: jest.fn(),
+  ...overrides,
+});
+
+describe('ChartActionBar', () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
+
+  describe('dashboard filter toggle', () => {
+    it('is absent off a dashboard', () => {
+      renderActionBar();
+
+      expect(queryFilterSwitch()).not.toBeInTheDocument();
+    });
+
+    it('is absent for a markdown tile, which queries nothing', () => {
+      renderActionBar({
+        activeTab: 'markdown',
+        filtersToggle: toggle(),
+      });
+
+      expect(queryFilterSwitch()).not.toBeInTheDocument();
+    });
+
+    it('reports a flip of the switch', async () => {
+      const onChange = jest.fn();
+      renderActionBar({ filtersToggle: toggle({ onChange }) });
+
+      expect(filterSwitch()).toBeChecked();
+      await userEvent.click(filterSwitch());
+
+      expect(onChange).toHaveBeenCalledWith(false);
+    });
+
+    it('says why it cannot be changed', async () => {
+      const disabledReason = 'Not while this tile has an alert';
+      renderActionBar({
+        filtersToggle: toggle({ checked: false, disabledReason }),
+      });
+
+      expect(filterSwitch()).not.toBeChecked();
+      expect(filterSwitch()).toBeDisabled();
+
+      // Hovering the wrapper, not the control: a disabled Switch emits none of
+      // the pointer events the tooltip opens on.
+      await userEvent.hover(screen.getByTestId('apply-dashboard-filters'));
+
+      expect(await screen.findByText(disabledReason)).toBeInTheDocument();
+    });
+  });
+
+  it('should render Run button for non-markdown tabs', () => {
+    renderActionBar({ activeTab: 'time' });
+
+    expect(screen.getByTestId('chart-run-query-button')).toBeInTheDocument();
+    expect(screen.getByTestId('chart-run-query-button')).toHaveTextContent(
+      'Run',
+    );
+  });
+
+  it('should not render Run button for markdown tab', () => {
+    renderActionBar({ activeTab: 'markdown' });
+
+    expect(
+      screen.queryByTestId('chart-run-query-button'),
+    ).not.toBeInTheDocument();
+  });
+
+  it('should call onSubmit when Run is clicked', async () => {
+    const { onSubmit } = renderActionBar();
+
+    await userEvent.click(screen.getByTestId('chart-run-query-button'));
+
+    expect(onSubmit).toHaveBeenCalledTimes(1);
+  });
+
+  it.each(['time', 'heatmap'])(
+    'should render granularity picker for %s tab',
+    activeTab => {
+      renderActionBar({ activeTab });
+
+      expect(screen.getByTestId('granularity-picker')).toBeInTheDocument();
+    },
+  );
+
+  it('should not render granularity picker for non-time tabs', () => {
+    renderActionBar({ activeTab: 'table' });
+
+    expect(screen.queryByTestId('granularity-picker')).not.toBeInTheDocument();
+  });
+
+  it('should render granularity picker for a PromQL tile that ranges', () => {
+    renderActionBar(
+      { activeTab: 'number' },
+      {
+        configType: 'promql',
+        displayType: DisplayType.Number,
+        promqlExpressions: [{ expression: 'up' }],
+      },
+    );
+
+    expect(screen.getByTestId('granularity-picker')).toBeInTheDocument();
+  });
+
+  it('should not render granularity picker for an all-instant PromQL tile', () => {
+    renderActionBar(
+      { activeTab: 'number' },
+      {
+        configType: 'promql',
+        displayType: DisplayType.Number,
+        promqlExpressions: [{ expression: 'up', queryType: 'instant' }],
+      },
+    );
+
+    expect(screen.queryByTestId('granularity-picker')).not.toBeInTheDocument();
+  });
+
+  it('should not render granularity picker when a PromQL tile switches to a display type without PromQL', () => {
+    renderActionBar(
+      { activeTab: 'markdown' },
+      {
+        configType: 'promql',
+        displayType: DisplayType.Markdown,
+        promqlExpressions: [{ expression: 'up' }],
+      },
+    );
+
+    expect(screen.queryByTestId('granularity-picker')).not.toBeInTheDocument();
+  });
+
+  it('should render ORDER BY editor for table tab when not raw SQL', () => {
+    renderActionBar({ activeTab: 'table', isRawSqlInput: false });
+
+    expect(screen.getByTestId('sql-editor-order-by')).toBeInTheDocument();
+  });
+
+  it('should not render ORDER BY editor for table tab when raw SQL', () => {
+    renderActionBar({ activeTab: 'table', isRawSqlInput: true });
+
+    expect(screen.queryByTestId('sql-editor-order-by')).not.toBeInTheDocument();
+  });
+
+  it('should render ORDER BY editor for pie tab when not raw SQL', () => {
+    renderActionBar({ activeTab: 'pie', isRawSqlInput: false });
+
+    expect(screen.getByTestId('sql-editor-order-by')).toBeInTheDocument();
+  });
+
+  it('should render ORDER BY editor for bar tab when not raw SQL', () => {
+    renderActionBar({ activeTab: 'bar', isRawSqlInput: false });
+
+    expect(screen.getByTestId('sql-editor-order-by')).toBeInTheDocument();
+  });
+
+  it('should not render ORDER BY editor for pie tab when raw SQL', () => {
+    renderActionBar({ activeTab: 'pie', isRawSqlInput: true });
+
+    expect(screen.queryByTestId('sql-editor-order-by')).not.toBeInTheDocument();
+  });
+
+  it('should not render ORDER BY editor for a PromQL table', () => {
+    renderActionBar(
+      { activeTab: 'table' },
+      {
+        configType: 'promql',
+        displayType: DisplayType.Table,
+        promqlExpressions: [{ expression: 'up' }],
+      },
+    );
+
+    expect(screen.queryByTestId('sql-editor-order-by')).not.toBeInTheDocument();
+  });
+
+  it('should not render ORDER BY editor for time tab', () => {
+    renderActionBar({ activeTab: 'time' });
+
+    expect(screen.queryByTestId('sql-editor-order-by')).not.toBeInTheDocument();
+  });
+
+  it('should render TimePicker when time range props are provided', () => {
+    renderActionBar({
+      displayedTimeInputValue: 'Last 24h',
+      setDisplayedTimeInputValue: jest.fn(),
+      onTimeRangeSearch: jest.fn(),
+    });
+
+    expect(screen.getByTestId('time-picker')).toBeInTheDocument();
+  });
+
+  it('should not render TimePicker when time range props are missing', () => {
+    renderActionBar({
+      displayedTimeInputValue: undefined,
+      setDisplayedTimeInputValue: undefined,
+      onTimeRangeSearch: undefined,
+    });
+
+    expect(screen.queryByTestId('time-picker')).not.toBeInTheDocument();
+  });
+
+  it('should render action bar controls for raw SQL input mode', () => {
+    renderActionBar({ isRawSqlInput: true, activeTab: 'time' });
+
+    // The key regression test: action bar renders even for raw SQL
+    expect(screen.getByTestId('chart-run-query-button')).toBeInTheDocument();
+    expect(screen.getByTestId('granularity-picker')).toBeInTheDocument();
+  });
+});

@@ -1,0 +1,563 @@
+import { useCallback, useEffect, useMemo } from 'react';
+import {
+  Control,
+  FieldErrors,
+  UseFormClearErrors,
+  UseFormSetValue,
+  useWatch,
+} from 'react-hook-form';
+import { Badge } from '@clickhouse/click-ui';
+import { indexToSeriesRef } from '@hyperdx/common-utils/dist/core/formula';
+import {
+  DateRange,
+  isChartPaletteToken,
+  MetricsDataType,
+  SourceKind,
+  TSource,
+} from '@hyperdx/common-utils/dist/types';
+import { ActionIcon, Flex, Group, Text, Tooltip } from '@mantine/core';
+import { useDisclosure } from '@mantine/hooks';
+import { IconListSearch, IconPalette } from '@tabler/icons-react';
+
+import { AGG_FNS } from '@/ChartUtils';
+import {
+  AggFnSelectControlled,
+  defaultAggFnForMetricType,
+  HISTOGRAM_SUPPORTED_AGG_FNS,
+} from '@/components/AggFnSelect';
+import { ChartSeriesControls } from '@/components/ChartEditor/ChartSeriesControls';
+import {
+  ChartEditorFormState,
+  SavedChartConfigWithSelectArray,
+} from '@/components/ChartEditor/types';
+import { isFormulaSourceKind } from '@/components/ChartEditor/utils';
+import { EDITOR_INPUT_HEIGHTS } from '@/components/editorInputHeights';
+import { CheckBoxControlled } from '@/components/InputControlled';
+import { MetricAttributeHelperPanel } from '@/components/MetricAttributeHelperPanel';
+import {
+  MetricExplorerModal,
+  type MetricExplorerSelection,
+} from '@/components/MetricExplorer/MetricExplorerModal';
+import { MetricNameSelect } from '@/components/MetricNameSelect';
+import SearchWhereInput from '@/components/SearchInput/SearchWhereInput';
+import SeriesColorDrawer from '@/components/SeriesColorDrawer';
+import SeriesNumberFormatDrawer from '@/components/SeriesNumberFormatDrawer';
+import { SQLInlineEditorControlled } from '@/components/SQLEditor/SQLInlineEditor';
+import { useFetchMetricMetadata } from '@/hooks/useFetchMetricMetadata';
+import {
+  parseAttributeKeysFromSuggestions,
+  useFetchMetricResourceAttrs,
+} from '@/hooks/useFetchMetricResourceAttrs';
+import { getColorFromCSSToken, getMetricTableName } from '@/utils';
+
+type SeriesItem = NonNullable<
+  SavedChartConfigWithSelectArray['select']
+>[number];
+
+type ChartSeriesEditorProps = {
+  control: Control<ChartEditorFormState>;
+  databaseName: string;
+  dateRange?: DateRange['dateRange'];
+  connectionId?: string;
+  index: number;
+  namePrefix: `series.${number}.`;
+  parentRef?: HTMLElement | null;
+  onRemoveSeries: (index: number) => void;
+  onSwapSeries: (from: number, to: number) => void;
+  onDuplicateSeries: (index: number) => void;
+  onSubmit: () => void;
+  setValue: UseFormSetValue<ChartEditorFormState>;
+  showGroupBy: boolean;
+  showHaving: boolean;
+  showDuplicate: boolean;
+  showColor: boolean;
+  showSeriesNumberFormat?: boolean;
+  tableName: string;
+  length: number;
+  tableSource?: TSource;
+  errors?: FieldErrors<SeriesItem>;
+  clearErrors: UseFormClearErrors<ChartEditorFormState>;
+};
+
+export function ChartSeriesEditor({
+  control,
+  databaseName,
+  dateRange,
+  connectionId,
+  index,
+  namePrefix,
+  onRemoveSeries,
+  onSwapSeries,
+  onDuplicateSeries,
+  onSubmit,
+  setValue,
+  showGroupBy,
+  showHaving,
+  showDuplicate,
+  showColor,
+  showSeriesNumberFormat = true,
+  tableName: _tableName,
+  parentRef,
+  length,
+  tableSource,
+  errors,
+  clearErrors,
+}: ChartSeriesEditorProps) {
+  const aggFn = useWatch({ control, name: `${namePrefix}aggFn` });
+  const aggConditionLanguage = useWatch({
+    control,
+    name: `${namePrefix}aggConditionLanguage`,
+    defaultValue: 'lucene',
+  });
+
+  const metricType = useWatch({ control, name: `${namePrefix}metricType` });
+
+  // Initialize metricType to 'gauge' when switching to a metric source
+  // and reset 'custom' aggFn to 'count' since custom is not supported for metrics
+  useEffect(() => {
+    if (tableSource?.kind === SourceKind.Metric) {
+      if (!metricType) {
+        setValue(`${namePrefix}metricType`, MetricsDataType.Gauge);
+      }
+      if (aggFn === 'none') {
+        setValue(`${namePrefix}aggFn`, 'count');
+      }
+    }
+  }, [tableSource?.kind, metricType, aggFn, namePrefix, setValue]);
+
+  // 'increase' aggFn is only valid on Sum metrics. Reset it if the user
+  // switches to a different metric type or source kind so the backend does
+  // not error on a stale 'increase' selection.
+  useEffect(() => {
+    const isSumMetric =
+      tableSource?.kind === SourceKind.Metric &&
+      metricType === MetricsDataType.Sum;
+    if (!isSumMetric && aggFn === 'increase') {
+      setValue(`${namePrefix}aggFn`, 'sum');
+    }
+  }, [tableSource?.kind, metricType, aggFn, namePrefix, setValue]);
+
+  // Histogram and exponential histogram metrics only support 'count' and
+  // 'quantile' aggregations. Reset any unsupported aggFn to a default, valid one
+  useEffect(() => {
+    const isHistogramMetric =
+      tableSource?.kind === SourceKind.Metric &&
+      (metricType === MetricsDataType.Histogram ||
+        metricType === MetricsDataType.ExponentialHistogram);
+    if (
+      isHistogramMetric &&
+      !HISTOGRAM_SUPPORTED_AGG_FNS.includes(aggFn ?? '')
+    ) {
+      setValue(`${namePrefix}aggFn`, 'count');
+    }
+  }, [tableSource?.kind, metricType, aggFn, namePrefix, setValue]);
+
+  const tableName =
+    tableSource?.kind === SourceKind.Metric
+      ? getMetricTableName(tableSource, metricType)
+      : _tableName;
+
+  const metricName = useWatch({ control, name: `${namePrefix}metricName` });
+  const aggCondition = useWatch({
+    control,
+    name: `${namePrefix}aggCondition`,
+  });
+  const groupBy = useWatch({ control, name: 'groupBy' });
+
+  const metricTableSource =
+    tableSource?.kind === SourceKind.Metric ? tableSource : undefined;
+
+  const { data: attributeSuggestions, isLoading: isLoadingAttributes } =
+    useFetchMetricResourceAttrs({
+      databaseName,
+      metricType,
+      metricName,
+      tableSource: metricTableSource,
+      isSql: aggConditionLanguage === 'sql',
+    });
+
+  const attributeKeys = useMemo(
+    () => parseAttributeKeysFromSuggestions(attributeSuggestions ?? []),
+    [attributeSuggestions],
+  );
+
+  const { data: metricMetadata } = useFetchMetricMetadata({
+    databaseName,
+    metricType,
+    metricName,
+    tableSource: metricTableSource,
+  });
+
+  const handleAddToWhere = useCallback(
+    (clause: string) => {
+      const currentValue = aggCondition || '';
+
+      const newValue = currentValue ? `${currentValue} AND ${clause}` : clause;
+      setValue(`${namePrefix}aggCondition`, newValue);
+      onSubmit();
+    },
+    [aggCondition, namePrefix, setValue, onSubmit],
+  );
+
+  const [
+    isMetricExplorerOpen,
+    { open: openMetricExplorer, close: closeMetricExplorer },
+  ] = useDisclosure(false);
+
+  // Applying from the explorer also resets the aggregation, so a metric picked
+  // for its own sake charts something meaningful instead of inheriting whatever
+  // the previous metric used. The coercion effects above accept every value
+  // `defaultAggFnForMetricType` can return.
+  const applyExplorerMetric = useCallback(
+    ({
+      name,
+      type,
+      where,
+      groupBy: stagedGroupBy,
+    }: MetricExplorerSelection) => {
+      setValue(`${namePrefix}metricName`, name);
+      setValue(`${namePrefix}metricType`, type);
+      setValue(`${namePrefix}valueExpression`, 'Value');
+      const { aggFn: nextAggFn, level } = defaultAggFnForMetricType(type);
+      setValue(`${namePrefix}aggFn`, nextAggFn);
+      if (level != null) {
+        setValue(`${namePrefix}level`, level);
+      }
+
+      // Filters were written against this metric's attributes, so they replace
+      // the series' condition rather than stacking onto the previous metric's.
+      // Unconditionally, including when nothing was staged: leaving the old
+      // condition in place would silently apply the previous metric's
+      // attributes to the new one, which reads as an empty chart rather than
+      // an error (a Map lookup for an absent key yields '', not a failure).
+      setValue(`${namePrefix}aggCondition`, where.join(' AND '));
+
+      // Staged group-bys replace the chart's, same as the filters above: they
+      // were chosen against this metric's tags. Only when something was staged
+      // though — group by is chart-level, so clearing it on every apply would
+      // discard a grouping the user set by hand elsewhere.
+      if (stagedGroupBy.length > 0) {
+        setValue('groupBy', stagedGroupBy.join(', '));
+      }
+
+      clearErrors(`${namePrefix}metricName`);
+      onSubmit();
+    },
+    [namePrefix, setValue, clearErrors, onSubmit],
+  );
+
+  const handleAddToGroupBy = useCallback(
+    (clause: string) => {
+      const currentValue = groupBy || '';
+      const newValue = currentValue ? `${currentValue}, ${clause}` : clause;
+      setValue('groupBy', newValue);
+      onSubmit();
+    },
+    [groupBy, setValue, onSubmit],
+  );
+
+  const showWhere = aggFn !== 'none';
+
+  const tableConnection = useMemo(
+    () => ({
+      databaseName,
+      tableName: tableName ?? '',
+      connectionId: connectionId ?? '',
+      metricName:
+        tableSource?.kind === SourceKind.Metric ? metricName : undefined,
+    }),
+    [databaseName, tableName, connectionId, metricName, tableSource],
+  );
+
+  const seriesNumberFormat = useWatch({
+    control,
+    name: `${namePrefix}numberFormat`,
+  });
+
+  const [
+    isSeriesNumberFormatOpen,
+    { open: openSeriesNumberFormat, close: closeSeriesNumberFormat },
+  ] = useDisclosure(false);
+
+  const seriesColor = useWatch({ control, name: `${namePrefix}color` });
+  const seriesColorRules = useWatch({
+    control,
+    name: `${namePrefix}colorRules`,
+  });
+
+  const [
+    isSeriesColorOpen,
+    { open: openSeriesColor, close: closeSeriesColor },
+  ] = useDisclosure(false);
+
+  return (
+    <>
+      <ChartSeriesControls
+        control={control}
+        aliasName={`${namePrefix}alias`}
+        aliasPlaceholder="Series alias"
+        index={index}
+        length={length}
+        numberFormat={seriesNumberFormat}
+        onSubmit={onSubmit}
+        onSwap={onSwapSeries}
+        onRemove={length > 1 ? onRemoveSeries : undefined}
+        onDuplicate={showDuplicate ? onDuplicateSeries : undefined}
+        onOpenNumberFormat={
+          showSeriesNumberFormat ? openSeriesNumberFormat : undefined
+        }
+        leadingSection={
+          isFormulaSourceKind(tableSource?.kind) ? (
+            <Tooltip label="Reference this series in a formula by this letter">
+              <Badge
+                size="sm"
+                text={indexToSeriesRef(index) ?? index + 1}
+                state="neutral"
+                data-testid="series-ref-badge"
+              />
+            </Tooltip>
+          ) : undefined
+        }
+        trailingSection={
+          showColor ? (
+            <Tooltip label="Edit column color">
+              <ActionIcon
+                variant="subtle"
+                color="gray"
+                size="xs"
+                onClick={openSeriesColor}
+                aria-label="Edit column color"
+                data-testid="series-color-button"
+              >
+                <IconPalette
+                  size={16}
+                  color={
+                    seriesColor && isChartPaletteToken(seriesColor)
+                      ? getColorFromCSSToken(seriesColor)
+                      : undefined
+                  }
+                />
+              </ActionIcon>
+            </Tooltip>
+          ) : undefined
+        }
+      />
+      <Flex gap="sm" mt="xs" align="start">
+        <div
+          style={{
+            minWidth: 200,
+          }}
+        >
+          <AggFnSelectControlled
+            aggFnName={`${namePrefix}aggFn`}
+            quantileLevelName={`${namePrefix}level`}
+            defaultValue={AGG_FNS[0]?.value ?? 'avg'}
+            control={control}
+            hideCustom={tableSource?.kind === SourceKind.Metric}
+            metricType={
+              tableSource?.kind === SourceKind.Metric ? metricType : undefined
+            }
+          />
+        </div>
+        {tableSource?.kind === SourceKind.Metric && metricType && (
+          <div style={{ minWidth: 220 }}>
+            <Group gap="xs" wrap="nowrap" align="start">
+              <div style={{ flex: 1, minWidth: 0 }}>
+                <MetricNameSelect
+                  metricName={metricName}
+                  metricType={metricType}
+                  setMetricName={value => {
+                    setValue(`${namePrefix}metricName`, value);
+                    setValue(`${namePrefix}valueExpression`, 'Value');
+                  }}
+                  setMetricType={value =>
+                    setValue(`${namePrefix}metricType`, value)
+                  }
+                  metricSource={tableSource}
+                  dateRange={dateRange}
+                  data-testid="metric-name-selector"
+                  error={errors?.metricName?.message}
+                  onFocus={() => clearErrors(`${namePrefix}metricName`)}
+                />
+              </div>
+              <Tooltip label="Browse metrics" withArrow>
+                <ActionIcon
+                  variant="subtle"
+                  size="input-sm"
+                  onClick={openMetricExplorer}
+                  aria-label="Browse metrics"
+                  data-testid="metric-explorer-open"
+                >
+                  <IconListSearch size={16} />
+                </ActionIcon>
+              </Tooltip>
+            </Group>
+            <MetricExplorerModal
+              opened={isMetricExplorerOpen}
+              onClose={closeMetricExplorer}
+              metricSource={tableSource}
+              dateRange={dateRange}
+              value={{ metricName, metricType }}
+              language={aggConditionLanguage === 'sql' ? 'sql' : 'lucene'}
+              onApply={applyExplorerMetric}
+            />
+            {metricType === 'gauge' && (
+              <CheckBoxControlled
+                control={control}
+                name={`${namePrefix}isDelta`}
+                label="Delta"
+                size="xs"
+                className="mt-2"
+              />
+            )}
+          </div>
+        )}
+        {tableSource?.kind !== SourceKind.Metric && aggFn !== 'count' && (
+          <div
+            style={{
+              minWidth: 220,
+              ...(aggFn === 'none' && { flexGrow: 2 }),
+            }}
+          >
+            <SQLInlineEditorControlled
+              tableConnection={tableConnection}
+              sourceId={tableSource?.id}
+              dateRange={dateRange}
+              control={control}
+              name={`${namePrefix}valueExpression`}
+              placeholder="SQL Column"
+              onSubmit={onSubmit}
+              enableVariables
+            />
+          </div>
+        )}
+        {(showWhere || showGroupBy || showHaving) && (
+          <div
+            className="flex-grow-1 gap-2"
+            style={{
+              display: 'grid',
+              gridTemplateColumns: 'auto 1fr auto 1fr',
+              alignItems: 'start',
+            }}
+          >
+            {showWhere && (
+              <>
+                <Flex h={`${EDITOR_INPUT_HEIGHTS.sm}px`} align="center">
+                  <Text size="sm">Where</Text>
+                </Flex>
+                <div
+                  style={{
+                    gridColumn:
+                      showHaving === showGroupBy ? 'span 3' : undefined,
+                  }}
+                >
+                  <SearchWhereInput
+                    tableConnection={tableConnection}
+                    sourceId={tableSource?.id}
+                    dateRange={dateRange}
+                    control={control}
+                    name={`${namePrefix}aggCondition`}
+                    onSubmit={onSubmit}
+                    additionalSuggestions={attributeSuggestions}
+                    data-testid="series-where-input"
+                    enableVariables
+                  />
+                </div>
+              </>
+            )}
+            {showGroupBy && (
+              <>
+                <Flex h={`${EDITOR_INPUT_HEIGHTS.sm}px`} align="center">
+                  <Text size="sm" style={{ whiteSpace: 'nowrap' }}>
+                    Group By
+                  </Text>
+                </Flex>
+                <div
+                  style={{
+                    minWidth: 200,
+                    maxWidth: '100%',
+                    gridColumn:
+                      !showHaving && !showWhere ? 'span 3' : undefined,
+                  }}
+                >
+                  <SQLInlineEditorControlled
+                    parentRef={parentRef}
+                    tableConnection={tableConnection}
+                    sourceId={tableSource?.id}
+                    dateRange={dateRange}
+                    control={control}
+                    name={`groupBy`}
+                    placeholder="SQL Columns"
+                    disableKeywordAutocomplete
+                    onSubmit={onSubmit}
+                    enableVariables
+                  />
+                </div>
+                {showHaving && (
+                  <>
+                    <Flex h={`${EDITOR_INPUT_HEIGHTS.sm}px`} align="center">
+                      <Text size="sm" style={{ whiteSpace: 'nowrap' }}>
+                        Having
+                      </Text>
+                    </Flex>
+                    <div style={{ minWidth: 300, maxWidth: '100%' }}>
+                      <SQLInlineEditorControlled
+                        tableConnection={tableConnection}
+                        sourceId={tableSource?.id}
+                        dateRange={dateRange}
+                        control={control}
+                        name="having"
+                        placeholder="SQL HAVING clause (ex. count() > 100)"
+                        disableKeywordAutocomplete
+                        onSubmit={onSubmit}
+                        enableVariables
+                      />
+                    </div>
+                  </>
+                )}
+              </>
+            )}
+          </div>
+        )}
+      </Flex>
+      {tableSource?.kind === SourceKind.Metric && metricName && metricType && (
+        <MetricAttributeHelperPanel
+          databaseName={databaseName}
+          metricType={metricType}
+          metricName={metricName}
+          tableSource={tableSource}
+          attributeKeys={attributeKeys}
+          isLoading={isLoadingAttributes}
+          language={aggConditionLanguage === 'sql' ? 'sql' : 'lucene'}
+          metricMetadata={metricMetadata}
+          onAddToWhere={handleAddToWhere}
+          onAddToGroupBy={showGroupBy ? handleAddToGroupBy : undefined}
+        />
+      )}
+      <SeriesNumberFormatDrawer
+        opened={isSeriesNumberFormatOpen}
+        numberFormat={seriesNumberFormat}
+        onChange={format => {
+          setValue(`${namePrefix}numberFormat`, format.numberFormat);
+          onSubmit();
+        }}
+        onClose={() => {
+          closeSeriesNumberFormat();
+        }}
+      />
+      {showColor && (
+        <SeriesColorDrawer
+          opened={isSeriesColorOpen}
+          color={seriesColor}
+          colorRules={seriesColorRules}
+          onChange={next => {
+            setValue(`${namePrefix}color`, next.color);
+            setValue(`${namePrefix}colorRules`, next.colorRules);
+            onSubmit();
+          }}
+          onClose={closeSeriesColor}
+        />
+      )}
+    </>
+  );
+}

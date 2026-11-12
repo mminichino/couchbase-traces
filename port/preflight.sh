@@ -77,6 +77,8 @@ parse_args() {
 main() {
   parse_args "$@"
 
+  PF_LOG_TAG=preflight
+  PF_FINISH_HOOK=pf_finish
   trap finish EXIT
 
   # Step 1

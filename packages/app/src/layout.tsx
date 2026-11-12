@@ -1,0 +1,132 @@
+import React from 'react';
+import Link from 'next/link';
+import { useRouter } from 'next/router';
+import type { QuerySurface } from '@hyperdx/common-utils/dist/clickhouse';
+import { Button, Center, Group, Text } from '@mantine/core';
+import { IconX } from '@tabler/icons-react';
+
+import { useBrandDisplayName } from '@/brand';
+import AppNav from '@/components/AppNav';
+import { IS_CLICKHOUSE_BUILD } from '@/config';
+import { QueryAttributionProvider } from '@/queryAttribution';
+
+import { HDXSpotlightProvider } from './Spotlights';
+import { useLocalStorage } from './utils';
+
+/**
+ * The scroll container every page inside the app nav scrolls in. Pages that
+ * virtualize their content have to virtualize against it, since they have no
+ * scroller of their own.
+ */
+export const APP_CONTENT_SCROLL_CONTAINER_ID = 'app-content-scroll-container';
+
+/**
+ * Next.js layout for pages that use the AppNav component. Using the same layout
+ * for all pages that use the AppNav component ensures that the AppNav state, such as
+ * scroll position, input values, etc. is preserved when navigating between pages.
+ *
+ * https://nextjs.org/docs/pages/building-your-application/routing/pages-and-layouts
+ *
+ * @example SearchPage.getLayout = withAppNav;
+ */
+function PageWrapper({ children }: { children: React.ReactNode }) {
+  const router = useRouter();
+  const brandName = useBrandDisplayName();
+  const [bannerState, setBannerState] = useLocalStorage(
+    'clickstack-banner-state',
+    'opened',
+  );
+  const [hasMounted, setHasMounted] = React.useState(false); // prevents banner flash
+  React.useEffect(() => setHasMounted(true), []);
+  const kioskQueryValue = router.query.kiosk;
+  const isDashboardKioskMode =
+    (router.pathname === '/dashboards' ||
+      router.pathname === '/dashboards/[dashboardId]') &&
+    (kioskQueryValue === 'true' ||
+      (Array.isArray(kioskQueryValue) && kioskQueryValue.includes('true')));
+  const bannerIsActive =
+    hasMounted &&
+    !isDashboardKioskMode &&
+    IS_CLICKHOUSE_BUILD &&
+    bannerState === 'opened';
+
+  React.useEffect(() => {
+    window.dispatchEvent(new Event('resize'));
+  }, [isDashboardKioskMode]);
+
+  return (
+    <div className={bannerIsActive ? 'app-layout-with-banner' : 'app-layout'}>
+      {bannerIsActive && (
+        <Group bg="var(--color-text-primary)">
+          <Center style={{ flexGrow: 1 }}>
+            <Text py="xs" size="sm" c="var(--color-text-inverted)">
+              This is not recommended for production use and is lacking core{' '}
+              {brandName} features such as alerts and saved searches. For a
+              proper experience, visit the{' '}
+              <strong>
+                <Link
+                  href="https://clickhouse.com/docs/use-cases/observability/clickstack/getting-started"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  {brandName} docs
+                </Link>
+              </strong>
+            </Text>
+          </Center>
+          <Button
+            onClick={() => setBannerState('closed')}
+            variant="transparent"
+            color="var(--color-text-inverted)"
+          >
+            <IconX />{' '}
+          </Button>
+        </Group>
+      )}
+      <div className="d-flex" style={{ height: '100%', overflow: 'hidden' }}>
+        {!isDashboardKioskMode && <AppNav />}
+        <div
+          id={APP_CONTENT_SCROLL_CONTAINER_ID}
+          className="w-100 min-w-0"
+          style={{
+            minWidth: 0,
+            overflowX: 'auto',
+            overflowY: 'scroll',
+            scrollbarGutter: 'stable',
+          }}
+        >
+          {children}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+export const withAppNav = (page: React.ReactNode): React.ReactNode => {
+  return (
+    <HDXSpotlightProvider>
+      <PageWrapper>{page}</PageWrapper>
+    </HDXSpotlightProvider>
+  );
+};
+
+/**
+ * `withAppNav`, and tags the page's ClickHouse queries so they stand out from
+ * other pages' in `system.query_log`.
+ *
+ * Use it when "which page" is all you need. A page with ids of its own, like a
+ * dashboard tile, adds `QueryAttributionProvider` further in instead.
+ *
+ * `label` tells a page apart from something else using the same surface, such
+ * as the alert detail page and the alert checker.
+ *
+ * @example KubernetesPage.getLayout = withAppNavForSurface('dashboard');
+ */
+export const withAppNavForSurface =
+  (surface: QuerySurface, label?: string) =>
+  (page: React.ReactNode): React.ReactNode =>
+    withAppNav(
+      <QueryAttributionProvider attribution={{ surface, label }}>
+        {page}
+      </QueryAttributionProvider>,
+    );

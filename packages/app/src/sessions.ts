@@ -1,0 +1,905 @@
+import { useCallback, useEffect, useRef, useState } from 'react';
+import produce from 'immer';
+import type { ResponseJSON } from '@hyperdx/common-utils/dist/clickhouse';
+import {
+  chSql,
+  streamToAsyncIterator,
+} from '@hyperdx/common-utils/dist/clickhouse';
+import type { ClickhouseClient } from '@hyperdx/common-utils/dist/clickhouse/browser';
+import type { Metadata } from '@hyperdx/common-utils/dist/core/metadata';
+import { renderChartConfig } from '@hyperdx/common-utils/dist/core/renderChartConfig';
+import { getFirstTimestampValueExpression } from '@hyperdx/common-utils/dist/core/utils';
+import { filtersToQuery } from '@hyperdx/common-utils/dist/filters';
+import {
+  DateRange,
+  Filter,
+  pickSampleWeightExpressionProps,
+  SearchCondition,
+  SearchConditionLanguage,
+  TSessionSource,
+  TTraceSource,
+} from '@hyperdx/common-utils/dist/types';
+import { useQuery, UseQueryOptions } from '@tanstack/react-query';
+
+import { useQueryAttribution } from '@/queryAttribution';
+import { usePrevious } from '@/utils';
+import {
+  anySessionIdPresence,
+  rumSessionIdPresence,
+  sessionIdFilter,
+  SessionIdKey,
+  sessionIdKeyExpr,
+  sessionTableSessionIdColumns,
+  traceSessionIdColumns,
+} from '@/utils/sessionId';
+
+import useFieldExpressionGenerator, {
+  FieldExpressionGenerator,
+} from './hooks/useFieldExpressionGenerator';
+import { useMetadataWithSettings } from './hooks/useMetadata';
+import { getClickhouseClient, useClickhouseClient } from './clickhouse';
+import { makeCoalescedFieldsAccessQuery } from './serviceDashboard';
+import {
+  buildOtelSessionIdsWithRecordingsChartConfig,
+  buildRecordingsChartConfig,
+  buildSessionsCtes,
+  isOtelSessionListEnabled,
+  unionSessionIds,
+} from './sessionsListQuery';
+import { SESSION_TABLE_EXPRESSIONS, useSource } from './source';
+
+export type Session = {
+  errorCount: string;
+  interactionCount: string;
+  maxTimestamp: string;
+  minTimestamp: string;
+  recordingCount: string;
+  serviceName: string;
+  sessionCount: string;
+  sessionId: string;
+  /** Which attribute holds `sessionId`, for single-key lookups. */
+  sessionIdKey: SessionIdKey;
+  teamId: string;
+  teamName: string;
+  userEmail: string;
+  userName: string;
+};
+
+// Recording rows are written throughout a session, so the range only needs
+// padding for skew between recording and span timestamps.
+const SERVICE_SCOPE_PADDING_MS = 60 * 60 * 1000;
+
+// Trace tables sorted by ServiceName first can't prune on time alone, so the
+// sessions query is scoped to the services in the session table. Returns []
+// (unscoped) when that isn't possible or the lookup fails.
+export async function fetchServiceScopeFilters({
+  traceSource,
+  sessionSource,
+  dateRange,
+  metadata,
+  clickhouseClient,
+}: {
+  traceSource: TTraceSource;
+  sessionSource: TSessionSource;
+  dateRange: [Date, Date];
+  metadata: Metadata;
+  clickhouseClient: ClickhouseClient;
+}): Promise<Filter[]> {
+  if (!traceSource.serviceNameExpression) {
+    return [];
+  }
+  try {
+    const columns = await metadata.getColumns({
+      databaseName: sessionSource.from.databaseName,
+      tableName: sessionSource.from.tableName,
+      connectionId: sessionSource.connection,
+    });
+    if (!columns.some(c => c.name === 'ServiceName')) {
+      return [];
+    }
+    const query = await renderChartConfig(
+      {
+        select: [
+          { valueExpression: 'DISTINCT ServiceName', alias: 'serviceName' },
+        ],
+        from: sessionSource.from,
+        dateRange: [
+          new Date(dateRange[0].getTime() - SERVICE_SCOPE_PADDING_MS),
+          new Date(dateRange[1].getTime() + SERVICE_SCOPE_PADDING_MS),
+        ],
+        where: '',
+        timestampValueExpression: sessionSource.timestampValueExpression,
+        connection: sessionSource.connection,
+      },
+      metadata,
+      sessionSource.querySettings,
+    );
+    const json = await clickhouseClient
+      .query({
+        query: query.sql,
+        query_params: query.params,
+        connectionId: sessionSource.connection,
+        format: 'JSON',
+      })
+      .then(res => res.json<{ serviceName: string }>());
+    const serviceNames = (json.data ?? [])
+      .map(row => row.serviceName)
+      .filter(name => name != null);
+    return filtersToQuery({
+      [traceSource.serviceNameExpression]: {
+        included: new Set(serviceNames),
+        excluded: new Set(),
+      },
+    });
+  } catch (e) {
+    console.warn('Sessions service scope lookup failed', e);
+    return [];
+  }
+}
+
+export function buildSessionsQueryFilters(
+  serviceScopeFilters: Filter[],
+  where: SearchCondition | undefined,
+  whereLanguage: SearchConditionLanguage | undefined,
+): Filter[] {
+  return [
+    ...serviceScopeFilters,
+    ...(where
+      ? [
+          {
+            type: whereLanguage === 'sql' ? 'sql' : 'lucene',
+            condition: where,
+          } satisfies Filter,
+        ]
+      : []),
+  ];
+}
+
+export function useSessions(
+  {
+    traceSource,
+    sessionSource,
+    dateRange,
+    where,
+    whereLanguage,
+  }: {
+    traceSource?: TTraceSource;
+    sessionSource?: TSessionSource;
+    dateRange: DateRange['dateRange'];
+    where?: SearchCondition;
+    whereLanguage?: SearchConditionLanguage;
+  },
+  options?: Omit<UseQueryOptions<any, Error>, 'queryKey'>,
+) {
+  const { enabled = true } = options || {};
+
+  const {
+    getFieldExpression: getTraceSourceFieldExpression,
+    isLoading: isLoadingFieldExpressionGenerator,
+  } = useFieldExpressionGenerator(traceSource);
+
+  const {
+    getFieldExpression: getSessionsSourceFieldExpression,
+    isLoading: isLoadingSessionsExpressionGenerator,
+  } = useFieldExpressionGenerator(sessionSource);
+
+  const FIXED_SDK_ATTRIBUTES = ['teamId', 'teamName'];
+  // OTel semconv keys first, then the legacy SDK's
+  const USER_ATTRIBUTES = {
+    userEmail: ['user.email', 'userEmail'],
+    userName: ['user.name', 'userName'],
+  };
+  const SESSIONS_CTE_NAME = 'sessions';
+  const clickhouseClient = useClickhouseClient();
+  const metadata = useMetadataWithSettings();
+  return useQuery<ResponseJSON<Session>, Error>({
+    queryKey: [
+      'sessions',
+      traceSource?.id,
+      sessionSource?.id,
+      dateRange,
+      where,
+      whereLanguage,
+    ],
+    queryFn: async () => {
+      if (
+        !traceSource ||
+        !sessionSource ||
+        !getTraceSourceFieldExpression ||
+        !getSessionsSourceFieldExpression
+      ) {
+        return [];
+      }
+
+      const traceSessionIdCols = traceSessionIdColumns(traceSource);
+
+      const serviceScopeFilters = await fetchServiceScopeFilters({
+        traceSource,
+        sessionSource,
+        dateRange,
+        metadata,
+        clickhouseClient,
+      });
+
+      const includeOtelSessions = isOtelSessionListEnabled({
+        traceSource,
+        sessionSource,
+        serviceScopeFilters,
+      });
+
+      const traceSessionIdExpression = includeOtelSessions
+        ? sessionIdKeyExpr(getTraceSourceFieldExpression, traceSessionIdCols)
+        : getTraceSourceFieldExpression(
+            traceSessionIdCols.resource,
+            'rum.sessionId',
+          );
+
+      const sessionsQueryFilters = buildSessionsQueryFilters(
+        serviceScopeFilters,
+        where,
+        whereLanguage,
+      );
+
+      const [
+        sessionsQuery,
+        sessionIdsWithRecordingsQuery,
+        sessionIdsWithUserActivityQuery,
+        recordingsQuery,
+        otelSessionIdsWithRecordingsQuery,
+      ] = await Promise.all([
+        renderChartConfig(
+          {
+            select: [
+              {
+                valueExpression: `${traceSource.serviceNameExpression}`,
+                alias: 'serviceName',
+              },
+              {
+                valueExpression: traceSessionIdExpression,
+                alias: 'sessionId',
+              },
+              // TODO: can't use aggFn max/min here for string value field
+              {
+                alias: 'maxTimestamp',
+                valueExpression: `MAX(${getFirstTimestampValueExpression(traceSource.timestampValueExpression)})`,
+              },
+              {
+                alias: 'minTimestamp',
+                valueExpression: `MIN(${getFirstTimestampValueExpression(traceSource.timestampValueExpression)})`,
+              },
+              {
+                aggFn: 'count',
+                alias: 'sessionCount',
+                valueExpression: '*',
+              },
+              {
+                aggFn: 'count',
+                aggConditionLanguage: 'lucene',
+                aggCondition: `${traceSource.eventAttributesExpression}.component:"user-interaction"`,
+                valueExpression: '',
+                alias: 'interactionCount',
+              },
+              {
+                aggFn: 'count',
+                aggConditionLanguage: 'lucene',
+                aggCondition: `${traceSource.statusCodeExpression}:error`,
+                valueExpression: '',
+                alias: 'errorCount',
+              },
+              {
+                aggFn: 'count',
+                aggConditionLanguage: 'lucene',
+                aggCondition: `${traceSource.spanNameExpression}:"record init"`,
+                valueExpression: '',
+                alias: 'recordingCount',
+              },
+              {
+                aggFn: 'count',
+                aggConditionLanguage: 'lucene',
+                aggCondition: rumSessionIdPresence(traceSessionIdCols),
+                valueExpression: '',
+                alias: 'rumRows',
+              },
+              ...FIXED_SDK_ATTRIBUTES.map(attr => ({
+                valueExpression: `MAX(${getTraceSourceFieldExpression(traceSource.eventAttributesExpression ?? 'SpanAttributes', attr)})`,
+                alias: attr,
+              })),
+              ...Object.entries(USER_ATTRIBUTES).map(([alias, keys]) => ({
+                // The non-JSON form also works on JSON columns, since the
+                // generator already wraps JSON paths in toString().
+                valueExpression: `MAX(${makeCoalescedFieldsAccessQuery(
+                  keys.map(key =>
+                    getTraceSourceFieldExpression(
+                      traceSource.eventAttributesExpression ?? 'SpanAttributes',
+                      key,
+                    ),
+                  ),
+                  false,
+                )})`,
+                alias,
+              })),
+            ],
+            from: traceSource.from,
+            dateRange,
+            where: includeOtelSessions
+              ? anySessionIdPresence(traceSessionIdCols)
+              : rumSessionIdPresence(traceSessionIdCols),
+            whereLanguage: 'lucene',
+            ...(sessionsQueryFilters.length > 0 && {
+              filters: sessionsQueryFilters,
+            }),
+            timestampValueExpression: traceSource.timestampValueExpression,
+            implicitColumnExpression: traceSource.implicitColumnExpression,
+            useTextIndexForImplicitColumn:
+              traceSource.useTextIndexForImplicitColumn,
+            ...pickSampleWeightExpressionProps(traceSource),
+            connection: traceSource.connection,
+            groupBy: [
+              { valueExpression: 'serviceName' },
+              { valueExpression: 'sessionId' },
+            ],
+            selectGroupBy: false,
+          },
+          metadata,
+          traceSource.querySettings,
+        ),
+        renderChartConfig(
+          {
+            select: [
+              {
+                valueExpression: `DISTINCT ${getSessionsSourceFieldExpression(
+                  sessionSource.resourceAttributesExpression ??
+                    'ResourceAttributes',
+                  'rum.sessionId',
+                )}`,
+                alias: 'sessionId',
+              },
+            ],
+            from: sessionSource.from,
+            dateRange,
+            where: `${getSessionsSourceFieldExpression(
+              sessionSource.resourceAttributesExpression ??
+                'ResourceAttributes',
+              'rum.sessionId',
+            )} IN (SELECT sessions.sessionId FROM ${SESSIONS_CTE_NAME})`,
+            whereLanguage: 'sql',
+            timestampValueExpression: sessionSource.timestampValueExpression,
+            implicitColumnExpression: undefined,
+            connection: sessionSource.connection,
+          },
+          metadata,
+          sessionSource.querySettings,
+        ),
+        renderChartConfig(
+          {
+            select: [
+              {
+                valueExpression: `DISTINCT ${getTraceSourceFieldExpression(traceSource.resourceAttributesExpression ?? 'ResourceAttributes', 'rum.sessionId')}`,
+                alias: 'sessionId',
+              },
+            ],
+            from: traceSource.from,
+            dateRange,
+            where: `(${traceSource.spanNameExpression}='record init' OR ${traceSource.spanNameExpression}='visibility') AND (${getTraceSourceFieldExpression(traceSource.resourceAttributesExpression ?? 'ResourceAttributes', 'rum.sessionId')} IN (SELECT sessions.sessionId FROM ${SESSIONS_CTE_NAME}))`,
+            whereLanguage: 'sql',
+            timestampValueExpression: traceSource.timestampValueExpression,
+            implicitColumnExpression: traceSource.implicitColumnExpression,
+            useTextIndexForImplicitColumn:
+              traceSource.useTextIndexForImplicitColumn,
+            connection: traceSource?.connection,
+          },
+          metadata,
+          traceSource.querySettings,
+        ),
+        includeOtelSessions && !where
+          ? renderChartConfig(
+              buildRecordingsChartConfig({
+                sessionSource,
+                dateRange,
+                getSessionSourceFieldExpression:
+                  getSessionsSourceFieldExpression,
+              }),
+              metadata,
+              sessionSource.querySettings,
+            )
+          : undefined,
+        includeOtelSessions && where
+          ? renderChartConfig(
+              buildOtelSessionIdsWithRecordingsChartConfig({
+                sessionSource,
+                dateRange,
+                getSessionSourceFieldExpression:
+                  getSessionsSourceFieldExpression,
+                sessionsCteName: SESSIONS_CTE_NAME,
+              }),
+              metadata,
+              sessionSource.querySettings,
+            )
+          : undefined,
+      ]);
+
+      const sessionsCTE = buildSessionsCtes({
+        name: SESSIONS_CTE_NAME,
+        spans: sessionsQuery,
+        recordings: recordingsQuery,
+        // If the user is giving us an explicit query, we don't need to filter out sessions with no interactions
+        // this is because the events that match the query might not be user interactions, and we'll just show 0 results otherwise.
+        withActivityFilter: !where,
+      });
+
+      const finalQuery =
+        where && where.length > 0
+          ? chSql`
+        ${sessionsCTE},
+        sessionIdsWithRecordings AS (${unionSessionIds(
+          sessionIdsWithRecordingsQuery,
+          otelSessionIdsWithRecordingsQuery,
+        )}),
+        sessionIdsWithUserActivity AS (${sessionIdsWithUserActivityQuery})
+        SELECT *
+        FROM ${SESSIONS_CTE_NAME}
+        WHERE ${SESSIONS_CTE_NAME}.sessionId IN (
+          SELECT sessionIdsWithRecordings.sessionId FROM sessionIdsWithRecordings
+        ) OR ${SESSIONS_CTE_NAME}.sessionId IN (
+          SELECT sessionIdsWithUserActivity.sessionId FROM sessionIdsWithUserActivity
+        )
+        ORDER BY maxTimestamp DESC
+      `
+          : chSql`
+        ${sessionsCTE}
+        SELECT *
+        FROM ${SESSIONS_CTE_NAME}
+        ORDER BY maxTimestamp DESC
+        `;
+
+      const json = await clickhouseClient
+        .query({
+          query: finalQuery.sql,
+          query_params: finalQuery.params,
+          connectionId: traceSource?.connection,
+        })
+        .then(res => res.json());
+
+      return json;
+    },
+    staleTime: 1000 * 60 * 5, // Cache every 5 min
+    ...options,
+    enabled:
+      !!enabled &&
+      !isLoadingFieldExpressionGenerator &&
+      !isLoadingSessionsExpressionGenerator,
+  });
+}
+
+// TODO: TO BE DEPRECATED
+// we want to use clickhouse-proxy instead
+class TimeoutError extends Error {}
+
+/**
+ * Whether an error is the expected rejection of an aborted request —
+ * replaced or unmounted rrweb event streams are cancelled on purpose.
+ */
+function isAbortError(e: unknown): boolean {
+  return (
+    e instanceof Error && (e.name === 'AbortError' || /abort/i.test(e.message))
+  );
+}
+
+/**
+ * Session sources map no precise timestamp, and the player already assumes
+ * the OTel log columns (Body, LogAttributes, ServiceName). Their `Timestamp`
+ * is DateTime64(9); the default `TimestampTime` has only seconds.
+ */
+const SESSION_PRECISE_TIMESTAMP_COLUMN = 'Timestamp';
+
+/**
+ * `Timestamp` when the session table has it, else the source's own
+ * timestamp. With the fallback, chunks are grouped at that precision, which
+ * still tells apart page loads in different seconds. The columns are
+ * usually cached already: the player's field expressions read them.
+ */
+export async function getRRWebTimestampExpression(
+  source: {
+    from: TSessionSource['from'];
+    timestampValueExpression: string;
+    connection: string;
+  },
+  metadata: Metadata,
+): Promise<string> {
+  const fallback = getFirstTimestampValueExpression(
+    source.timestampValueExpression,
+  );
+  try {
+    const column = await metadata.getColumn({
+      databaseName: source.from.databaseName,
+      tableName: source.from.tableName,
+      column: SESSION_PRECISE_TIMESTAMP_COLUMN,
+      connectionId: source.connection,
+    });
+    return column != null ? SESSION_PRECISE_TIMESTAMP_COLUMN : fallback;
+  } catch (error) {
+    // Don't fail the replay over a lookup that only sharpens chunk grouping
+    console.warn('Failed to read session table columns', error);
+    return fallback;
+  }
+}
+
+// OPTIMIZATION STRATEGY
+//
+// 1. Write a clickhouse query to divide a session into different chunks, where each chunk has a start time. Maybe each chunk contains 100 events.
+// 2. When slider advances, use the timestamp to determine which chunk you are in
+// 3. Fetch data associated with that chunk
+// 4. Probably do some prefetching for future times
+/**
+ * Builds the chart config used to stream rrweb events for a session replay.
+ *
+ * Large rrweb events are split by the recorder into multiple log records
+ * ("chunks") that all share the same event timestamp, so ordering by the
+ * timestamp alone lets ClickHouse return chunks of one event in arbitrary
+ * order, scrambling reassembly. `rr-web.offset` is a counter stamped on every
+ * record, and `rr-web.chunk` is the 1-based chunk index within an event —
+ * ordering by both (numerically — the attributes are stored as strings) makes
+ * the stream order deterministic.
+ * https://github.com/ClickHouse/ClickStack/issues/2569
+ *
+ * SDKs up to clickstack-browser 1.2.0 restart `rr-web.offset` on every page
+ * load, so the full-precision timestamp (see getRRWebTimestampExpression)
+ * sorts ahead of it: at second precision, rows of two page loads in the same
+ * second interleave. The source's own timestamp stays first to match the
+ * table's sort key; in the default schema it is `toDateTime(Timestamp)`, so
+ * `Timestamp` only breaks its ties.
+ */
+export function buildRRWebStreamChartConfig({
+  source,
+  serviceName,
+  sessionId,
+  sessionIdKey,
+  startDate,
+  endDate,
+  limit,
+  offset,
+  getSessionSourceFieldExpression,
+  preciseTimestampExpression,
+}: {
+  source: {
+    from: TSessionSource['from'];
+    timestampValueExpression: string;
+    connection: string;
+  };
+  serviceName: string;
+  sessionId: string;
+  sessionIdKey?: SessionIdKey;
+  startDate: Date;
+  endDate: Date;
+  limit: number;
+  offset: number;
+  getSessionSourceFieldExpression: FieldExpressionGenerator;
+  preciseTimestampExpression: string;
+}) {
+  const eventAttributeExpression = (key: string) =>
+    getSessionSourceFieldExpression(
+      SESSION_TABLE_EXPRESSIONS.eventAttributesExpression,
+      key,
+    );
+
+  return {
+    // FIXME: add mappings to session source
+    select: [
+      {
+        valueExpression: SESSION_TABLE_EXPRESSIONS.implicitColumnExpression,
+        alias: 'b',
+      },
+      {
+        valueExpression: `simpleJSONExtractInt(${SESSION_TABLE_EXPRESSIONS.implicitColumnExpression}, 'type')`,
+        alias: 't',
+      },
+      {
+        valueExpression: `${eventAttributeExpression('rr-web.chunk')}`,
+        alias: 'ck',
+      },
+      {
+        valueExpression: `${eventAttributeExpression('rr-web.total-chunks')}`,
+        alias: 'tcks',
+      },
+      {
+        valueExpression: `${eventAttributeExpression('rr-web.event')}`,
+        alias: 'ev',
+      },
+      // Tells apart events of different page loads that share an `ev`
+      {
+        valueExpression: preciseTimestampExpression,
+        alias: 'ts',
+      },
+    ],
+    dateRange: [startDate, endDate] as [Date, Date],
+    from: source.from,
+    whereLanguage: 'lucene' as const,
+    where: `ServiceName:"${serviceName}" AND ${sessionIdFilter(sessionTableSessionIdColumns(), sessionId, sessionIdKey)}`,
+    timestampValueExpression: source.timestampValueExpression,
+    implicitColumnExpression:
+      SESSION_TABLE_EXPRESSIONS.implicitColumnExpression,
+    connection: source.connection,
+    orderBy: [
+      ...new Set([source.timestampValueExpression, preciseTimestampExpression]),
+      `toUInt64OrZero(${eventAttributeExpression('rr-web.offset')})`,
+      `toUInt64OrZero(${eventAttributeExpression('rr-web.chunk')})`,
+    ]
+      .map(expression => `${expression} ASC`)
+      .join(', '),
+    limit: {
+      limit,
+      offset,
+    },
+  };
+}
+
+export function useRRWebEventStream(
+  {
+    serviceName,
+    sessionId,
+    sessionIdKey,
+    sourceId,
+    startDate,
+    endDate,
+    limit = 100,
+    onEvent,
+    onEnd,
+    resultsKey,
+    getSessionSourceFieldExpression,
+  }: {
+    serviceName: string;
+    sessionId: string;
+    sessionIdKey?: SessionIdKey;
+    sourceId: string;
+    startDate: Date;
+    endDate: Date;
+    limit?: number;
+    onEvent?: (event: any) => void;
+    onEnd?: (error?: any) => void;
+    resultsKey?: string;
+    getSessionSourceFieldExpression: FieldExpressionGenerator;
+  },
+  options?: {
+    keepPreviousData?: boolean;
+    shouldAbortPendingRequest?: boolean;
+  },
+) {
+  const keepPreviousData = options?.keepPreviousData ?? false;
+  const shouldAbortPendingRequest = options?.shouldAbortPendingRequest ?? true;
+  const metadata = useMetadataWithSettings();
+
+  const [results, setResults] = useState<{ key: string; data: any[] }>({
+    key: '',
+    data: [],
+  });
+  const [isFetching, setIsFetching] = useState<boolean>(true);
+  const [hasNextPage, setHasNextPage] = useState<boolean>(true);
+
+  const lastAbortControllerRef = useRef<AbortController | null>(null);
+  const [_fetchStatus, setFetchStatus] = useState<'fetching' | 'idle'>('idle');
+  const lastFetchStatusRef = useRef<'fetching' | 'idle' | undefined>(undefined);
+
+  const { data: source } = useSource({ id: sourceId });
+  const attribution = useQueryAttribution();
+
+  const fetchResults = useCallback(
+    async ({
+      pageParam = 0,
+      limit: limitOverride,
+    }: {
+      pageParam: number;
+      limit?: number;
+    }) => {
+      if (!source) return;
+      const resBuffer: any[] = [];
+      let linesFetched = 0;
+
+      const startTime = startDate.getTime().toString();
+      const endTime = endDate.getTime().toString();
+      const queryLimit = (limitOverride ?? limit).toString();
+      const offset = pageParam.toString();
+
+      const ctrl = new AbortController();
+      lastAbortControllerRef.current = ctrl;
+
+      setIsFetching(true);
+      setFetchStatus('fetching');
+      lastFetchStatusRef.current = 'fetching';
+
+      const MAX_LIMIT = 1e6;
+
+      const preciseTimestampExpression = await getRRWebTimestampExpression(
+        source,
+        metadata,
+      );
+      const query = await renderChartConfig(
+        buildRRWebStreamChartConfig({
+          source,
+          serviceName,
+          sessionId,
+          sessionIdKey,
+          startDate: new Date(parseInt(startTime)),
+          endDate: new Date(parseInt(endTime)),
+          limit: Math.min(MAX_LIMIT, parseInt(queryLimit)),
+          offset: parseInt(offset),
+          getSessionSourceFieldExpression,
+          preciseTimestampExpression,
+        }),
+        metadata,
+        source.querySettings,
+      );
+
+      const format = 'JSONEachRow';
+      const fetchPromise = (async () => {
+        const clickhouseClient = getClickhouseClient({ attribution });
+        const resultSet = await clickhouseClient.query({
+          query: query.sql,
+          query_params: query.params,
+          format,
+          connectionId: source.connection,
+          // Cancels the request when the stream is replaced (query key
+          // change), times out, or the consumer unmounts — otherwise a
+          // replaced stream keeps downloading and delivering rows to its
+          // callbacks until completion.
+          abort_signal: ctrl.signal,
+        });
+
+        let forFunc: (data: any) => void;
+        if (onEvent) {
+          forFunc = onEvent;
+        } else if (keepPreviousData) {
+          forFunc = (data: any) => resBuffer.push(data);
+        } else {
+          forFunc = (data: any) =>
+            setResults(prevResults =>
+              produce(prevResults, draft => {
+                draft.key = resultsKey ?? draft.key ?? 'DEFAULT_KEY';
+                draft.data.push(data);
+              }),
+            );
+        }
+        const stream = resultSet.stream();
+        for await (const chunk of streamToAsyncIterator(stream)) {
+          for (const row of chunk) {
+            try {
+              const parsed = row.json();
+              linesFetched++;
+              forFunc(parsed);
+            } catch {
+              // do noting
+            }
+          }
+        }
+
+        onEnd?.();
+
+        if (keepPreviousData) {
+          setResults({
+            key: resultsKey ?? 'DEFAULT_KEY',
+            data: resBuffer,
+          });
+        }
+
+        if (linesFetched === 0 || linesFetched < limit) {
+          setHasNextPage(false);
+        }
+      })();
+
+      try {
+        await Promise.race([
+          fetchPromise,
+          new Promise((_, reject) => {
+            setTimeout(() => {
+              reject(new TimeoutError('Timeout'));
+            }, 180 * 1000);
+          }),
+        ]);
+      } catch (e) {
+        if (e instanceof TimeoutError) {
+          setIsFetching(false);
+          setFetchStatus('idle');
+          lastFetchStatusRef.current = 'idle';
+          ctrl.abort();
+          console.warn('Closing event source due to timeout');
+          onEnd?.(new TimeoutError());
+        } else if (isAbortError(e)) {
+          // Expected: the stream was cancelled because it was replaced or
+          // its consumer unmounted. Not an error, and onEnd must not fire —
+          // the aborted stream did not finish.
+        } else {
+          console.error(e);
+        }
+      }
+
+      ctrl.abort();
+      setIsFetching(false);
+      setFetchStatus('idle');
+      lastFetchStatusRef.current = 'idle';
+    },
+    [
+      source,
+      serviceName,
+      sessionId,
+      sessionIdKey,
+      startDate,
+      endDate,
+      limit,
+      keepPreviousData,
+      setResults,
+      onEvent,
+      onEnd,
+      resultsKey,
+      metadata,
+      getSessionSourceFieldExpression,
+      attribution,
+    ],
+  );
+
+  const queryKey = [sessionId, startDate, endDate, limit].join('||');
+  const prevQueryKey = usePrevious(queryKey);
+
+  useEffect(() => {
+    // Only attempt fetching on new query keys
+    if (prevQueryKey != queryKey) {
+      if (
+        lastFetchStatusRef.current !== 'fetching' ||
+        shouldAbortPendingRequest
+      ) {
+        // Abort previous pending request
+        if (
+          shouldAbortPendingRequest &&
+          lastFetchStatusRef.current === 'fetching'
+        ) {
+          lastAbortControllerRef.current?.abort();
+        }
+
+        // Clean up previous results if we shouldn't keep them
+        if (!keepPreviousData) {
+          setResults({ key: '', data: [] });
+        }
+
+        setHasNextPage(true);
+        fetchResults({ pageParam: 0 });
+      }
+    }
+  }, [
+    prevQueryKey,
+    queryKey,
+    shouldAbortPendingRequest,
+    fetchResults,
+    keepPreviousData,
+  ]);
+
+  const fetchNextPage = useCallback(
+    (params?: { limit?: number; cb?: VoidFunction }) => {
+      // Make sure we don't try to fetch again when we're already fetching
+      // Make sure lastFetchStatusRef is not null, as that means we haven't done an initial fetch yet
+      if (
+        hasNextPage &&
+        lastFetchStatusRef.current === 'idle' &&
+        results.data.length > 0 // make sure we at least fetched initially
+      ) {
+        fetchResults({
+          pageParam: results.data.length,
+          limit: params?.limit,
+        }).then(() => {
+          params?.cb?.();
+        });
+      }
+    },
+    [fetchResults, results.data.length, hasNextPage],
+  );
+
+  const abort = useCallback(() => {
+    lastAbortControllerRef.current?.abort();
+  }, []);
+
+  return {
+    hasNextPage,
+    isFetching,
+    results: results.data,
+    resultsKey: results.key,
+    fetchNextPage,
+    abort,
+  };
+}

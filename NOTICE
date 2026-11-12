@@ -1,0 +1,8 @@
+Couchbase Traces
+
+This product is derived from HyperDX (https://github.com/hyperdxio/hyperdx),
+commit f172a489c81888099d70c799478c9a9cfbed25b6, which is distributed under the MIT License:
+
+  Copyright (c) 2023 DeploySentinel, Inc.
+
+The full license text is in the LICENSE file.

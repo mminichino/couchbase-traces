@@ -1,0 +1,25 @@
+#!/usr/bin/env bash
+set -euo pipefail
+FIXTURES=$(cd "$(dirname "$0")" && pwd -P)
+if [ "${1:-}" = "--version" ]; then echo '4.5.1'; exit 0; fi
+if [ "${1:-}" = "install" ]; then
+  if [ "${STUB_INSTALL_NETWORK_ONCE:-0}" = "1" ]; then
+    flag="${CBT_STUB_NET_FLAG:-$FIXTURES/.net-once}"
+    if [ ! -f "$flag" ]; then touch "$flag"; echo 'ECONNRESET network error' >&2; exit 1; fi
+  fi
+  if [ "${STUB_INSTALL_FAIL:-0}" = "1" ]; then echo 'install failed' >&2; exit 1; fi
+  if [ "${STUB_INSTALL_TOUCH:-0}" = "1" ] && [ -f README.md ]; then echo touched >>README.md; fi
+  exit 0
+fi
+if [ "${STUB_SLEEP:-0}" != "0" ]; then sleep "$STUB_SLEEP"; fi
+if [ "${1:-}" = "run" ] && [ "${2:-}" = "lint-stub" ]; then cat "$FIXTURES/eslint-sample.txt"; exit 1; fi
+if [ "${1:-}" = "run" ] && [ "${2:-}" = "unit-stub" ]; then
+  cat "$FIXTURES/jest-sample.txt"
+  if [ "${STUB_UNIT_EXTRA_FAIL:-0}" = "1" ]; then
+    echo 'FAIL src/__tests__/extra.test.ts'
+    echo 'Tests:       2 failed, 3 passed, 0 skipped, 5 total'
+  fi
+  exit 1
+fi
+if [ "${1:-}" = "workspace" ] && [ "${3:-}" = "exec" ]; then cat "$FIXTURES/tsc-sample.txt"; exit 1; fi
+echo "stub-yarn: unknown: $*" >&2; exit 1
