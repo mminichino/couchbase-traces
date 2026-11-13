@@ -867,8 +867,15 @@
       "name": "COUNT",
       "classification": "portable",
       "sqlppApproach": null,
-      "occurrences": 17,
+      "occurrences": 19,
       "files": [
+        {
+          "path": "packages/app/src/couchbase/serviceMap.ts",
+          "workspace": "@couchbase-traces/app",
+          "lines": [
+            158
+          ]
+        },
         {
           "path": "packages/common-utils/src/couchbase/cluster.ts",
           "workspace": "@couchbase-traces/common-utils",
@@ -1016,6 +1023,23 @@
           "workspace": "@couchbase-traces/api",
           "lines": [
             29
+          ]
+        }
+      ]
+    },
+    {
+      "category": "function",
+      "name": "ENCODE_JSON",
+      "classification": "unmapped",
+      "sqlppApproach": null,
+      "occurrences": 2,
+      "files": [
+        {
+          "path": "packages/common-utils/src/couchbase/render/metrics/translate.ts",
+          "workspace": "@couchbase-traces/common-utils",
+          "lines": [
+            67,
+            97
           ]
         }
       ]
@@ -1186,8 +1210,15 @@
       "name": "GREATEST",
       "classification": "portable",
       "sqlppApproach": null,
-      "occurrences": 1,
+      "occurrences": 2,
       "files": [
+        {
+          "path": "packages/common-utils/src/couchbase/render/metrics/translate.ts",
+          "workspace": "@couchbase-traces/common-utils",
+          "lines": [
+            101
+          ]
+        },
         {
           "path": "packages/common-utils/src/couchbase/render/select.ts",
           "workspace": "@couchbase-traces/common-utils",
@@ -1321,7 +1352,7 @@
       "name": "IFNULL",
       "classification": "unmapped",
       "sqlppApproach": null,
-      "occurrences": 11,
+      "occurrences": 14,
       "files": [
         {
           "path": "packages/common-utils/src/couchbase/fn/scalar.ts",
@@ -1339,6 +1370,15 @@
             26,
             182,
             188
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/metrics/translate.ts",
+          "workspace": "@couchbase-traces/common-utils",
+          "lines": [
+            67,
+            97,
+            101
           ]
         },
         {
@@ -2359,8 +2399,15 @@
       "name": "SUM",
       "classification": "portable",
       "sqlppApproach": null,
-      "occurrences": 15,
+      "occurrences": 17,
       "files": [
+        {
+          "path": "packages/app/src/couchbase/serviceMap.ts",
+          "workspace": "@couchbase-traces/app",
+          "lines": [
+            158
+          ]
+        },
         {
           "path": "packages/common-utils/src/core/renderChartConfig.ts",
           "workspace": "@couchbase-traces/common-utils",
@@ -2483,7 +2530,7 @@
       "name": "TONUMBER",
       "classification": "unmapped",
       "sqlppApproach": null,
-      "occurrences": 15,
+      "occurrences": 18,
       "files": [
         {
           "path": "packages/common-utils/src/couchbase/fn/scalar.ts",
@@ -2513,6 +2560,14 @@
           ]
         },
         {
+          "path": "packages/common-utils/src/couchbase/render/metrics/translate.ts",
+          "workspace": "@couchbase-traces/common-utils",
+          "lines": [
+            101,
+            102
+          ]
+        },
+        {
           "path": "packages/common-utils/src/couchbase/render/select.ts",
           "workspace": "@couchbase-traces/common-utils",
           "lines": [
@@ -2537,7 +2592,7 @@
       "name": "TOSTRING",
       "classification": "unmapped",
       "sqlppApproach": null,
-      "occurrences": 3,
+      "occurrences": 5,
       "files": [
         {
           "path": "packages/common-utils/src/couchbase/fn/scalar.ts",
@@ -2552,6 +2607,14 @@
           "workspace": "@couchbase-traces/common-utils",
           "lines": [
             242
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/metrics/translate.ts",
+          "workspace": "@couchbase-traces/common-utils",
+          "lines": [
+            67,
+            97
           ]
         }
       ]
@@ -13159,6 +13222,10 @@
       "count": 1
     },
     {
+      "path": "packages/app/src/couchbase/serviceMap.ts",
+      "count": 1
+    },
+    {
       "path": "packages/app/src/hdxDebug.ts",
       "count": 2
     },
@@ -13384,6 +13451,10 @@
     },
     {
       "path": "packages/common-utils/src/couchbase/render/macros.ts",
+      "count": 6
+    },
+    {
+      "path": "packages/common-utils/src/couchbase/render/metrics/translate.ts",
       "count": 6
     },
     {
@@ -13868,6 +13939,11 @@
     },
     {
       "path": "packages/app/src/components/linkedSpans.tsx",
+      "rawSql": 1,
+      "typeNames": 0
+    },
+    {
+      "path": "packages/app/src/couchbase/serviceMap.ts",
       "rawSql": 1,
       "typeNames": 0
     },

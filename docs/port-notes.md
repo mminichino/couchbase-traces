@@ -65,7 +65,7 @@ Inventory of commit adcb75c16715. Full detail is in `port/state/inventory/`.
 | Package | Directory | Role | Languages | Source files | Test files | CI targets |
 |---|---|---|---|---|---|---|
 | @couchbase-traces/api | packages/api | API server and tasks | javascript, typescript | 231 | 151 | ci:int, ci:lint, ci:unit |
-| @couchbase-traces/app | packages/app | web UI | javascript, typescript | 691 | 516 | ci:lint, ci:unit |
+| @couchbase-traces/app | packages/app | web UI | javascript, typescript | 692 | 516 | ci:lint, ci:unit |
 | @couchbase-traces/cli | packages/cli | command-line client | javascript, typescript | 61 | 9 | ci:build, ci:lint, ci:unit |
 | @couchbase-traces/common-utils | packages/common-utils | shared query and data layer | javascript, typescript | 116 | 72 | ci:build, ci:int, ci:lint, ci:unit |
 | @couchbase-traces/hdx-eval | packages/hdx-eval | evaluation harness | javascript, typescript | 53 | 31 | ci:lint, ci:unit |
@@ -88,15 +88,15 @@ Inventory of commit adcb75c16715. Full detail is in `port/state/inventory/`.
 
 | Module | Reasons | Exports | Importers | Server-side |
 |---|---|---|---|---|
-| `packages/common-utils/src/types.ts` | seed, sql_builder | 375 | 706 | yes |
+| `packages/common-utils/src/types.ts` | seed, sql_builder | 375 | 708 | yes |
 | `packages/common-utils/src/clickhouse/index.ts` | seed, clickhouse_client, clickhouse_path, sql_builder | 46 | 134 | yes |
-| `packages/common-utils/src/core/metadata.ts` | seed, clickhouse_client, sql_builder | 24 | 121 | yes |
+| `packages/common-utils/src/core/metadata.ts` | seed, clickhouse_client, sql_builder | 24 | 122 | yes |
 | `packages/api/src/fixtures.ts` | sql_builder | 44 | 59 | yes |
 | `packages/common-utils/src/filters.ts` | sql_builder | 51 | 58 | yes |
-| `packages/common-utils/src/dataLayer/index.ts` | seed | 19 | 37 | yes |
+| `packages/common-utils/src/dataLayer/index.ts` | seed | 19 | 38 | yes |
 | `packages/common-utils/src/core/renderChartConfig.ts` | seed, sql_builder | 16 | 36 | yes |
 | `packages/common-utils/src/clickhouse/node.ts` | seed, clickhouse_client, clickhouse_path | 4 | 31 | yes |
-| `packages/common-utils/src/couchbase/sqlpp.ts` | seed | 8 | 29 | yes |
+| `packages/common-utils/src/couchbase/sqlpp.ts` | seed | 8 | 30 | yes |
 | `packages/app/src/components/DBRowSidePanel.tsx` | clickhouse_client | 8 | 28 | no |
 | `packages/cli/src/api/client.ts` | clickhouse_client | 9 | 28 | no |
 | `packages/app/src/hooks/useRowWhere.tsx` | sql_builder | 6 | 26 | no |
@@ -138,6 +138,7 @@ Inventory of commit adcb75c16715. Full detail is in `port/state/inventory/`.
 | `packages/app/src/components/Iac/TerraformHelperPanel.tsx` | clickhouse_client, sql_builder | 2 | 5 | no |
 | `packages/app/src/hooks/useServiceMap.tsx` | sql_builder | 6 | 5 | no |
 | `packages/app/src/sessions.ts` | sql_builder | 7 | 5 | no |
+| `packages/common-utils/src/couchbase/fn/scalar.ts` | seed, sql_builder | 46 | 5 | no |
 | `packages/common-utils/src/couchbase/nodeTest.ts` | seed | 4 | 5 | yes |
 | `packages/common-utils/src/couchbase/render/index.ts` | seed, sql_builder | 9 | 5 | no |
 | `packages/common-utils/src/couchbase/render/where.ts` | seed, sql_builder | 4 | 5 | no |
@@ -156,7 +157,6 @@ Inventory of commit adcb75c16715. Full detail is in `port/state/inventory/`.
 | `packages/app/src/utils/browserTelemetry.ts` | clickhouse_client | 2 | 4 | no |
 | `packages/common-utils/src/couchbase/browser.ts` | seed | 5 | 4 | no |
 | `packages/common-utils/src/couchbase/fn/quantile.ts` | seed, sql_builder | 4 | 4 | no |
-| `packages/common-utils/src/couchbase/fn/scalar.ts` | seed, sql_builder | 46 | 4 | no |
 | `packages/common-utils/src/couchbase/inferMeta.ts` | seed, sql_builder | 7 | 4 | no |
 | `packages/common-utils/src/couchbase/nodeExecute.ts` | seed | 1 | 4 | yes |
 | `packages/common-utils/src/couchbase/statement.ts` | seed, sql_builder | 4 | 4 | yes |
@@ -395,13 +395,13 @@ Plus 31 more in datalayer.json.
 | `packages/app/src/components/TeamSettings/TeamMembersSection.tsx` | 1 | 0 |
 | `packages/app/src/components/charts/HiddenSeriesIndicator.tsx` | 1 | 0 |
 | `packages/app/src/components/linkedSpans.tsx` | 1 | 0 |
+| `packages/app/src/couchbase/serviceMap.ts` | 1 | 0 |
 | `packages/app/src/hooks/useAutoCompleteOptions.tsx` | 0 | 1 |
 | `packages/app/src/hooks/useResultColumnFilterKeys.ts` | 1 | 0 |
 | `packages/app/src/llm/__fixtures__/sources.ts` | 1 | 0 |
 | `packages/app/src/llm/dashboard/AttributionCharts.tsx` | 1 | 0 |
-| `packages/app/src/llm/dashboard/LLMSessionPanel.tsx` | 1 | 0 |
 
-Plus 4 more in sql-catalog.json.
+Plus 5 more in sql-catalog.json.
 
 ### ClickHouse constructs without a SQL++ mapping
 
@@ -425,11 +425,12 @@ Plus 4 more in sql-catalog.json.
 | setting | `max_execution_time` | 22 | 14 |
 | function | `__filter` | 20 | 1 |
 | type | `DateTime64` | 19 | 13 |
+| function | `TONUMBER` | 18 | 6 |
 | type | `Nullable` | 18 | 7 |
 | clause | `->` | 17 | 5 |
 | function | `match` | 17 | 8 |
 | function | `toStartOfFifteenMinutes` | 17 | 1 |
-| function | `TONUMBER` | 15 | 5 |
+| function | `IFNULL` | 14 | 5 |
 | function | `ARRAY_LENGTH` | 13 | 3 |
 | function | `__timeFilter` | 13 | 5 |
 | function | `__timeInterval` | 13 | 5 |
@@ -437,7 +438,6 @@ Plus 4 more in sql-catalog.json.
 | setting | `timeout_overflow_mode` | 12 | 6 |
 | type | `DateTime` | 12 | 7 |
 | type | `UInt32` | 12 | 6 |
-| function | `IFNULL` | 11 | 4 |
 | function | `MILLIS_TO_UTC` | 11 | 3 |
 | function | `STR_TO_MILLIS` | 11 | 2 |
 | function | `rate` | 11 | 2 |
@@ -476,6 +476,7 @@ Plus 4 more in sql-catalog.json.
 | function | `toDate` | 6 | 4 |
 | parameter_type | `Identifier` | 6 | 1 |
 | function | `META` | 5 | 2 |
+| function | `TOSTRING` | 5 | 3 |
 | function | `anyLast` | 5 | 3 |
 | function | `calc` | 5 | 2 |
 | function | `columns` | 5 | 1 |
@@ -506,9 +507,8 @@ Plus 4 more in sql-catalog.json.
 | setting | `read_overflow_mode` | 4 | 1 |
 | type | `Bool` | 4 | 4 |
 | type | `FixedString` | 4 | 2 |
-| type | `Nested` | 4 | 3 |
 
-Plus 347 more in sql-catalog.json.
+Plus 348 more in sql-catalog.json.
 
 ### Mapped constructs in use
 
@@ -606,7 +606,7 @@ Collector components, pipelines, ClickHouse exporters, and management code.
 | docs | 487 | 278 | 1352 | 2 | 191 |
 | ui_strings | 10 | 9 | 90 | 0 | 127 |
 | code_identifiers | 129 | 21 | 2434 | 0 | 644 |
-| other | 643 | 187 | 1825 | 2 | 1616 |
+| other | 643 | 187 | 1826 | 2 | 1616 |
 
 ### Feature status
 
@@ -630,7 +630,7 @@ Collector components, pipelines, ClickHouse exporters, and management code.
 - W_PLAN_MISSING: 1 occurrences. First: COUCHBASE_PORT_PLAN.md not found at the project root; plan check skipped (COUCHBASE_PORT_PLAN.md)
 - W_SCHEMA_UNPARSED: 1 occurrences. First: Unparsed statement: CREATE DATABASE IF NOT EXISTS DATABASE (docker/otel-collector/schema/seed/00001_create_database.sql)
 - W_TABLE_REDEFINED: 3 occurrences. First: Table otel_logs is defined in docker/otel-collector/schema/seed/00002_otel_logs.sql and docker/otel-collector/schema/seed/00002_otel_logs_compat.sql (docker/otel-collector/schema/seed/00002_otel_logs_compat.sql)
-- W_UNRESOLVED_IMPORT: 2 occurrences. First: Cannot resolve "@couchbase-traces/api/build/serverless" (packages/app/pages/api/[...all].ts)
+- W_UNRESOLVED_IMPORT: 1 occurrences. First: Cannot resolve "@couchbase-traces/api/build/serverless" (packages/app/pages/api/[...all].ts)
 - W_UNRESOLVED_MOUNT: 1 occurrences. First: Cannot resolve router for mount "/v1/opamp" at line 13 (packages/api/src/opamp/app.ts)
 <!-- phase2:end -->
 
@@ -887,6 +887,15 @@ Completed requests: `system:completed_requests` requires `query_system_catalog`.
 - E2E exclusions: `clickhouse-dashboard.spec.ts` (`clickhouse_admin`); external-api dashboard specs (`local_mode_only`).
 - Formulas remain `CouchbaseNotReadyError` until a dedicated parity path lands; metric multi-series is the metrics slice.
 - E2E smoke: `CBT_E2E_STORE=couchbase ./scripts/test-e2e.sh …/chart-explorer.spec.ts` needs `yarn` on PATH (shim to `.yarn/releases/yarn-4.13.0.cjs`); Playwright `webServer` still failed to start in this environment — parity is the green gate for the slice commit.
+
+### Phase 7: metrics
+
+- Slice flag `COUCHBASE_SLICES.metrics=true`. Area feature `api-v1` (PromQL) remains `dropped` (Phase 5a); metric chart configs use `translateMetricChartConfigCouchbase`.
+- Gauge/summary: Source CTE with `ENCODE_JSON(Attributes)` series key; `Value` always backtick-quoted (SQL++ reserved). Sum: LAG-based Rate with reset clamp (`GREATEST(delta, 0)`); `increase` → `SUM(Rate)`.
+- Histogram / exponential histogram / multi-select formulas: still `CouchbaseNotReadyError` (follow-up).
+- Avg/count gauge charts without `metricType` compare equal via lucene `MetricName` filter (CH `last_value` translate vs CB raw avg diverge); `metrics-gauge-max` exercises the translate path.
+- Query parity: `port/query-parity/run.sh --slice metrics` green (3 cases: gauge-avg, gauge-count, gauge-max).
+- E2E: `metric-name-streaming.spec.ts`, `metric-table-autofill.spec.ts`, `correlated-metric-source.spec.ts` listed under metrics in `port/slices/e2e.json`.
 
 ## Phase 6: SQL++ core and data-layer seam
 

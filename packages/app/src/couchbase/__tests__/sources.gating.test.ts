@@ -61,15 +61,28 @@ describe('search source gating', () => {
     );
   });
 
-  it('still drops couchbase for disabled metrics slice', () => {
-    expect(COUCHBASE_SLICES.metrics).toBe(false);
+  it('keeps couchbase sources when metrics slice is enabled', () => {
+    expect(COUCHBASE_SLICES.metrics).toBe(true);
     const out = filterSourcesForSliceWithConnections(
       sources,
       'metrics',
       connections,
     );
-    expect(out.map(s => s.id)).toEqual(['ch']);
+    expect(out.map(s => s.id)).toEqual(['ch', 'cb']);
     expect(isSourceAllowedForSlice(sources[1]!, 'metrics', connections)).toBe(
+      true,
+    );
+  });
+
+  it('still drops couchbase for disabled sessions slice', () => {
+    expect(COUCHBASE_SLICES.sessions).toBe(false);
+    const out = filterSourcesForSliceWithConnections(
+      sources,
+      'sessions',
+      connections,
+    );
+    expect(out.map(s => s.id)).toEqual(['ch']);
+    expect(isSourceAllowedForSlice(sources[1]!, 'sessions', connections)).toBe(
       false,
     );
   });

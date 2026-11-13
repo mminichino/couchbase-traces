@@ -79,7 +79,7 @@ export async function renderChartConfigCouchbase(
   }
 
   const translated = isMetricChartConfig(substituted)
-    ? await translateMetricChartConfigCouchbase()
+    ? await translateMetricChartConfigCouchbase(substituted)
     : substituted;
 
   const chartConfig: BuilderChartConfigWithOptDateRange = {

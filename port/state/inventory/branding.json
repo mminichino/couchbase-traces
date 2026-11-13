@@ -51665,6 +51665,14 @@
       "snippet": "import type { ColumnMetaType } from '@couchbase-traces/common-utils/dist/clickhouse';"
     },
     {
+      "path": "packages/app/src/couchbase/serviceMap.ts",
+      "line": 27,
+      "column": 4,
+      "term": "clickhouse",
+      "category": "other",
+      "snippet": "* ClickHouse join keys; document KEYS form is equivalent when joining the"
+    },
+    {
       "path": "packages/app/src/dashboard.ts",
       "line": 21,
       "column": 3,
@@ -91007,8 +91015,8 @@
     {
       "category": "other",
       "term": "clickhouse",
-      "count": 1825,
-      "files": 459
+      "count": 1826,
+      "files": 460
     },
     {
       "category": "other",

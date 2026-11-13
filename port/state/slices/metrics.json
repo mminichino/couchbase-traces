@@ -1,0 +1,28 @@
+{
+  "slice": "metrics",
+  "features": [],
+  "coreFunctions": [
+    {
+      "file": "packages/common-utils/src/couchbase/render/index.ts",
+      "name": "renderChartConfigCouchbase"
+    },
+    {
+      "file": "packages/common-utils/src/couchbase/render/metrics/translate.ts",
+      "name": "translateMetricChartConfigCouchbase"
+    }
+  ],
+  "appQuerySites": [],
+  "dataLayerSymbols": [],
+  "tests": {
+    "unit": [
+      "packages/app/src/couchbase/__tests__/sources.gating.test.ts"
+    ],
+    "int": [],
+    "e2e": [
+      "packages/app/tests/e2e/features/metric-name-streaming.spec.ts",
+      "packages/app/tests/e2e/features/metric-table-autofill.spec.ts",
+      "packages/app/tests/e2e/features/correlated-metric-source.spec.ts"
+    ]
+  },
+  "notes": "Area feature api-v1 is dropped (PromQL). Gauge/sum/summary translate paths land here; histogram/exp-histogram/formulas remain CouchbaseNotReadyError."
+}

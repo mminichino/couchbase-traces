@@ -202,6 +202,7 @@ Generated from `MAPPINGS` in `packages/common-utils/src/couchbase/functions.ts`.
 | `dynamicType` | No SQL++ equivalent in this phase; catalog token or ClickHouse-only function |
 | `each` | No SQL++ equivalent in this phase; catalog token or ClickHouse-only function |
 | `emptyArrayInt64` | No SQL++ equivalent in this phase; catalog token or ClickHouse-only function |
+| `ENCODE_JSON` | No SQL++ equivalent in this phase; catalog token or ClickHouse-only function |
 | `equal` | No SQL++ equivalent in this phase; catalog token or ClickHouse-only function |
 | `equality` | No SQL++ equivalent in this phase; catalog token or ClickHouse-only function |
 | `equals` | No SQL++ equivalent in this phase; catalog token or ClickHouse-only function |
@@ -209,6 +210,7 @@ Generated from `MAPPINGS` in `packages/common-utils/src/couchbase/functions.ts`.
 | `EXAMPLE` | No SQL++ equivalent in this phase; catalog token or ClickHouse-only function |
 | `EXCEPT` | No SQL++ equivalent in this phase; catalog token or ClickHouse-only function |
 | `exp2` | No SQL++ equivalent in this phase; catalog token or ClickHouse-only function |
+| `expandMacroCouchbase` | No SQL++ equivalent in this phase; catalog token or ClickHouse-only function |
 | `explicitly` | No SQL++ equivalent in this phase; catalog token or ClickHouse-only function |
 | `expression` | No SQL++ equivalent in this phase; catalog token or ClickHouse-only function |
 | `extract` | No SQL++ equivalent in this phase; catalog token or ClickHouse-only function |
@@ -237,12 +239,14 @@ Generated from `MAPPINGS` in `packages/common-utils/src/couchbase/functions.ts`.
 | `go` | No SQL++ equivalent in this phase; catalog token or ClickHouse-only function |
 | `granularity` | No SQL++ equivalent in this phase; catalog token or ClickHouse-only function |
 | `greatest` | No SQL++ equivalent in this phase; catalog token or ClickHouse-only function |
+| `GREATEST` | No SQL++ equivalent in this phase; catalog token or ClickHouse-only function |
 | `group_by_overflow_mode` | ClickHouse setting; the renderer drops SETTINGS |
 | `GROUPING` | No SQL++ equivalent in this phase; catalog token or ClickHouse-only function |
 | `groupUniqArrayArray` | No SQL++ equivalent in this phase; catalog token or ClickHouse-only function |
 | `groupUniqArrayIf` | No SQL++ equivalent in this phase; catalog token or ClickHouse-only function |
 | `groupUniqArrayMap` | No SQL++ equivalent in this phase; catalog token or ClickHouse-only function |
 | `hasAllTokens` | No SQL++ equivalent in this phase; catalog token or ClickHouse-only function |
+| `HASHBYTES` | No SQL++ equivalent in this phase; catalog token or ClickHouse-only function |
 | `header` | No SQL++ equivalent in this phase; catalog token or ClickHouse-only function |
 | `hex` | No SQL++ equivalent in this phase; catalog token or ClickHouse-only function |
 | `histogram` | No SQL++ equivalent in this phase; catalog token or ClickHouse-only function |
@@ -294,6 +298,7 @@ Generated from `MAPPINGS` in `packages/common-utils/src/couchbase/functions.ts`.
 | `LINKING` | No SQL++ equivalent in this phase; catalog token or ClickHouse-only function |
 | `list` | No SQL++ equivalent in this phase; catalog token or ClickHouse-only function |
 | `lists` | No SQL++ equivalent in this phase; catalog token or ClickHouse-only function |
+| `LN` | No SQL++ equivalent in this phase; catalog token or ClickHouse-only function |
 | `log` | No SQL++ equivalent in this phase; catalog token or ClickHouse-only function |
 | `long` | No SQL++ equivalent in this phase; catalog token or ClickHouse-only function |
 | `LowCardinality` | ClickHouse type name; column types come from INFER |
@@ -364,6 +369,7 @@ Generated from `MAPPINGS` in `packages/common-utils/src/couchbase/functions.ts`.
 | `Quantile` | No SQL++ equivalent in this phase; catalog token or ClickHouse-only function |
 | `query` | No SQL++ equivalent in this phase; catalog token or ClickHouse-only function |
 | `rand` | No SQL++ equivalent in this phase; catalog token or ClickHouse-only function |
+| `RANDOM` | No SQL++ equivalent in this phase; catalog token or ClickHouse-only function |
 | `range` | No SQL++ equivalent in this phase; catalog token or ClickHouse-only function |
 | `Range` | No SQL++ equivalent in this phase; catalog token or ClickHouse-only function |
 | `rate` | No SQL++ equivalent in this phase; catalog token or ClickHouse-only function |
@@ -418,6 +424,7 @@ Generated from `MAPPINGS` in `packages/common-utils/src/couchbase/functions.ts`.
 | `stream` | No SQL++ equivalent in this phase; catalog token or ClickHouse-only function |
 | `string` | No SQL++ equivalent in this phase; catalog token or ClickHouse-only function |
 | `String` | ClickHouse parameter type; SQL++ uses named parameters |
+| `SUBSTR` | No SQL++ equivalent in this phase; catalog token or ClickHouse-only function |
 | `substring` | No SQL++ equivalent in this phase; catalog token or ClickHouse-only function |
 | `sum` | No SQL++ equivalent in this phase; catalog token or ClickHouse-only function |
 | `Sum` | No SQL++ equivalent in this phase; catalog token or ClickHouse-only function |

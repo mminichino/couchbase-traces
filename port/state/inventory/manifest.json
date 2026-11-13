@@ -1,8 +1,8 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-11-13T18:48:24Z",
+  "generatedAt": "2026-11-13T19:01:23Z",
   "importCommit": "adcb75c16715a667ef5094b6850070d58bf29097",
-  "headCommit": "6682a1c817879a881e286273028b14412d36f1e1",
+  "headCommit": "6f3a2f5a368063be93502788440ea99d2e57e04b",
   "files": [
     "branding.json",
     "datalayer.json",
@@ -16,14 +16,14 @@
     "workspaces.json"
   ],
   "counts": {
-    "trackedFiles": 2463,
-    "sourceFiles": 1189,
+    "trackedFiles": 2464,
+    "sourceFiles": 1190,
     "testFiles": 791,
     "entryPoints": 210,
     "dataLayerModules": 199,
-    "unmappedConstructs": 447,
+    "unmappedConstructs": 448,
     "tables": 11,
-    "brandingHits": 11352
+    "brandingHits": 11353
   },
   "warnings": [
     {
@@ -53,7 +53,7 @@
     },
     {
       "code": "W_UNRESOLVED_IMPORT",
-      "count": 2,
+      "count": 1,
       "first": "Cannot resolve \"@couchbase-traces/api/build/serverless\" (packages/app/pages/api/[...all].ts)"
     },
     {

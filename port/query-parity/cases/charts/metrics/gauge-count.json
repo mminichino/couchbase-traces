@@ -1,0 +1,18 @@
+{
+  "id": "metrics-gauge-count",
+  "description": "count gauge points via lucene MetricName filter",
+  "source": "metrics_gauge",
+  "config": {
+    "select": [
+      {
+        "aggFn": "count",
+        "valueExpression": "",
+        "alias": "value"
+      }
+    ],
+    "where": "MetricName:\"parity.gauge\"",
+    "whereLanguage": "lucene",
+    "dateRange": { "fromMinutesAgo": 60, "toMinutesAgo": 0 }
+  },
+  "compare": { "ignoreColumns": ["__cbt_id"] }
+}

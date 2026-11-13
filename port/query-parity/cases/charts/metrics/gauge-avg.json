@@ -1,0 +1,21 @@
+{
+  "id": "metrics-gauge-avg",
+  "description": "gauge average of Value via lucene MetricName filter",
+  "source": "metrics_gauge",
+  "config": {
+    "select": [
+      {
+        "aggFn": "avg",
+        "valueExpression": "`Value`",
+        "alias": "value"
+      }
+    ],
+    "where": "MetricName:\"parity.gauge\"",
+    "whereLanguage": "lucene",
+    "dateRange": { "fromMinutesAgo": 60, "toMinutesAgo": 0 }
+  },
+  "compare": {
+    "numericTolerance": 0.05,
+    "ignoreColumns": ["__cbt_id"]
+  }
+}

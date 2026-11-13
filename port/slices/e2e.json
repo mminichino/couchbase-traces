@@ -44,6 +44,20 @@
     ],
     "exclusions": []
   },
+  "metrics": {
+    "specs": [
+      "packages/app/tests/e2e/features/metric-name-streaming.spec.ts",
+      "packages/app/tests/e2e/features/metric-table-autofill.spec.ts",
+      "packages/app/tests/e2e/features/correlated-metric-source.spec.ts"
+    ],
+    "exclusions": []
+  },
+  "sessions": {
+    "specs": [
+      "packages/app/tests/e2e/features/sessions.spec.ts"
+    ],
+    "exclusions": []
+  },
   "charts": {
     "specs": [
       "packages/app/tests/e2e/features/chart-explorer.spec.ts",

@@ -197,6 +197,7 @@
             "argMax",
             "count",
             "countIf",
+            "lag",
             "sumIf",
             "uniq"
           ]
@@ -4002,6 +4003,7 @@
             "argMax",
             "count",
             "countIf",
+            "lag",
             "sumIf",
             "uniq"
           ]
@@ -4734,6 +4736,7 @@
             "argMax",
             "count",
             "countIf",
+            "lag",
             "sumIf",
             "uniq"
           ]
@@ -5362,7 +5365,7 @@
           "file": "packages/app/pages/alerts/[alertId].tsx"
         }
       ],
-      "closureSize": 587,
+      "closureSize": 588,
       "exclusiveFiles": [
         "packages/api/src/routers/api/alerts.ts",
         "packages/app/pages/alerts/[alertId].tsx",
@@ -5930,6 +5933,7 @@
             "argMax",
             "count",
             "countIf",
+            "lag",
             "sumIf",
             "uniq"
           ]
@@ -6617,7 +6621,7 @@
           "file": "packages/app/pages/benchmark.tsx"
         }
       ],
-      "closureSize": 370,
+      "closureSize": 371,
       "exclusiveFiles": [
         "packages/app/pages/benchmark.tsx",
         "packages/app/src/BenchmarkPage.tsx"
@@ -6977,6 +6981,7 @@
             "argMax",
             "count",
             "countIf",
+            "lag",
             "sumIf",
             "uniq"
           ]
@@ -7537,7 +7542,7 @@
           "file": "packages/app/pages/chart.tsx"
         }
       ],
-      "closureSize": 549,
+      "closureSize": 550,
       "exclusiveFiles": [
         "packages/app/pages/chart.tsx",
         "packages/app/src/DBChartPage.tsx",
@@ -8078,6 +8083,7 @@
             "argMax",
             "count",
             "countIf",
+            "lag",
             "sumIf",
             "uniq"
           ]
@@ -8675,7 +8681,7 @@
           "file": "packages/app/pages/clickhouse.tsx"
         }
       ],
-      "closureSize": 442,
+      "closureSize": 443,
       "exclusiveFiles": [
         "packages/app/pages/clickhouse.tsx",
         "packages/app/src/ClickhousePage.tsx"
@@ -9131,6 +9137,7 @@
             "argMax",
             "count",
             "countIf",
+            "lag",
             "sumIf",
             "uniq"
           ]
@@ -9741,7 +9748,7 @@
           "file": "packages/app/pages/dashboards/templates.tsx"
         }
       ],
-      "closureSize": 655,
+      "closureSize": 656,
       "exclusiveFiles": [
         "packages/api/src/controllers/presetDashboardFilters.ts",
         "packages/api/src/models/presetDashboardFilter.ts",
@@ -10348,6 +10355,7 @@
             "argMax",
             "count",
             "countIf",
+            "lag",
             "sumIf",
             "uniq"
           ]
@@ -11646,7 +11654,7 @@
           "file": "packages/app/pages/kubernetes.tsx"
         }
       ],
-      "closureSize": 417,
+      "closureSize": 418,
       "exclusiveFiles": [
         "packages/app/pages/kubernetes.tsx",
         "packages/app/src/KubernetesDashboardPage.tsx",
@@ -12105,6 +12113,7 @@
             "argMax",
             "count",
             "countIf",
+            "lag",
             "sumIf",
             "uniq"
           ]
@@ -12650,7 +12659,7 @@
           "file": "packages/app/pages/llm.tsx"
         }
       ],
-      "closureSize": 541,
+      "closureSize": 542,
       "exclusiveFiles": [
         "packages/app/pages/llm.tsx",
         "packages/app/src/llm/components/ChatMessageItem.tsx",
@@ -13220,6 +13229,7 @@
             "argMax",
             "count",
             "countIf",
+            "lag",
             "sumIf",
             "uniq"
           ]
@@ -14547,7 +14557,7 @@
           "file": "packages/app/pages/search/list.tsx"
         }
       ],
-      "closureSize": 505,
+      "closureSize": 506,
       "exclusiveFiles": [
         "packages/app/pages/search/[savedSearchId].tsx",
         "packages/app/pages/search/index.tsx",
@@ -15063,6 +15073,7 @@
             "argMax",
             "count",
             "countIf",
+            "lag",
             "sumIf",
             "uniq"
           ]
@@ -15662,7 +15673,7 @@
           "file": "packages/app/pages/service-map.tsx"
         }
       ],
-      "closureSize": 238,
+      "closureSize": 239,
       "exclusiveFiles": [
         "packages/app/pages/service-map.tsx",
         "packages/app/src/DBServiceMapPage.tsx"
@@ -15975,6 +15986,7 @@
             "argMax",
             "count",
             "countIf",
+            "lag",
             "sumIf",
             "uniq"
           ]
@@ -16515,7 +16527,7 @@
           "file": "packages/app/pages/services.tsx"
         }
       ],
-      "closureSize": 470,
+      "closureSize": 471,
       "exclusiveFiles": [
         "packages/app/pages/services.tsx"
       ],
@@ -16984,6 +16996,7 @@
             "argMax",
             "count",
             "countIf",
+            "lag",
             "sumIf",
             "uniq"
           ]
@@ -17567,7 +17580,7 @@
           "file": "packages/app/pages/sessions.tsx"
         }
       ],
-      "closureSize": 413,
+      "closureSize": 414,
       "exclusiveFiles": [
         "packages/app/pages/sessions.tsx",
         "packages/app/src/SessionEventSourcePanel.tsx",
@@ -18006,6 +18019,7 @@
             "argMax",
             "count",
             "countIf",
+            "lag",
             "sumIf",
             "uniq"
           ]
@@ -18994,6 +19008,7 @@
             "argMax",
             "count",
             "countIf",
+            "lag",
             "sumIf",
             "uniq"
           ]
@@ -19843,6 +19858,7 @@
             "argMax",
             "count",
             "countIf",
+            "lag",
             "sumIf",
             "uniq"
           ]
@@ -20705,6 +20721,7 @@
             "argMax",
             "count",
             "countIf",
+            "lag",
             "sumIf",
             "uniq"
           ]
@@ -21406,6 +21423,7 @@
             "argMax",
             "count",
             "countIf",
+            "lag",
             "sumIf",
             "uniq"
           ]
@@ -22974,6 +22992,7 @@
             "argMax",
             "count",
             "countIf",
+            "lag",
             "sumIf",
             "uniq"
           ]
@@ -24482,6 +24501,7 @@
             "argMax",
             "count",
             "countIf",
+            "lag",
             "sumIf",
             "uniq"
           ]
@@ -25615,6 +25635,7 @@
             "argMax",
             "count",
             "countIf",
+            "lag",
             "sumIf",
             "uniq"
           ]
@@ -27881,6 +27902,7 @@
             "argMax",
             "count",
             "countIf",
+            "lag",
             "sumIf",
             "uniq"
           ]
@@ -28774,6 +28796,7 @@
             "argMax",
             "count",
             "countIf",
+            "lag",
             "sumIf",
             "uniq"
           ]
@@ -29965,6 +29988,7 @@
             "argMax",
             "count",
             "countIf",
+            "lag",
             "sumIf",
             "uniq"
           ]
@@ -30780,6 +30804,7 @@
             "argMax",
             "count",
             "countIf",
+            "lag",
             "sumIf",
             "uniq"
           ]
@@ -31551,6 +31576,7 @@
             "argMax",
             "count",
             "countIf",
+            "lag",
             "sumIf",
             "uniq"
           ]

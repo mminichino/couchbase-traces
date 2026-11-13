@@ -22626,6 +22626,21 @@
           ]
         },
         {
+          "path": "packages/app/src/couchbase/serviceMap.ts",
+          "workspace": "@couchbase-traces/app",
+          "test": false,
+          "typeOnly": true,
+          "symbols": [
+            {
+              "name": "Metadata",
+              "references": 1,
+              "lines": [
+                44
+              ]
+            }
+          ]
+        },
+        {
           "path": "packages/app/src/hdxMTViews.ts",
           "workspace": "@couchbase-traces/app",
           "test": false,
@@ -27030,6 +27045,21 @@
           "symbols": []
         },
         {
+          "path": "packages/common-utils/src/couchbase/render/metrics/translate.ts",
+          "workspace": "@couchbase-traces/common-utils",
+          "test": false,
+          "typeOnly": false,
+          "symbols": [
+            {
+              "name": "lag",
+              "references": 1,
+              "lines": [
+                98
+              ]
+            }
+          ]
+        },
+        {
           "path": "packages/common-utils/src/couchbase/render/select.ts",
           "workspace": "@couchbase-traces/common-utils",
           "test": false,
@@ -29590,7 +29620,8 @@
       "path": "packages/common-utils/src/couchbase/render/metrics/translate.ts",
       "workspace": "@couchbase-traces/common-utils",
       "reasons": [
-        "seed"
+        "seed",
+        "sql_builder"
       ],
       "exports": [
         {
@@ -31204,6 +31235,21 @@
           ]
         },
         {
+          "path": "packages/common-utils/src/couchbase/render/metrics/translate.ts",
+          "workspace": "@couchbase-traces/common-utils",
+          "test": false,
+          "typeOnly": false,
+          "symbols": [
+            {
+              "name": "keyspace",
+              "references": 1,
+              "lines": [
+                53
+              ]
+            }
+          ]
+        },
+        {
           "path": "packages/common-utils/src/couchbase/render/orderBy.ts",
           "workspace": "@couchbase-traces/common-utils",
           "test": false,
@@ -32789,9 +32835,14 @@
           "symbols": [
             {
               "name": "CouchbaseNotReadyError",
-              "references": 1,
+              "references": 6,
               "lines": [
-                4
+                32,
+                35,
+                42,
+                46,
+                133,
+                136
               ]
             }
           ]
@@ -33356,12 +33407,13 @@
           "symbols": [
             {
               "name": "COUCHBASE_SLICES",
-              "references": 4,
+              "references": 5,
               "lines": [
                 20,
                 39,
                 52,
-                65
+                65,
+                78
               ]
             }
           ]
@@ -33377,6 +33429,22 @@
               "references": 1,
               "lines": [
                 16
+              ]
+            }
+          ]
+        },
+        {
+          "path": "packages/app/src/couchbase/serviceMap.ts",
+          "workspace": "@couchbase-traces/app",
+          "test": false,
+          "typeOnly": false,
+          "symbols": [
+            {
+              "name": "renderChartConfig",
+              "references": 2,
+              "lines": [
+                109,
+                123
               ]
             }
           ]
@@ -54988,6 +55056,21 @@
           ]
         },
         {
+          "path": "packages/app/src/couchbase/serviceMap.ts",
+          "workspace": "@couchbase-traces/app",
+          "test": false,
+          "typeOnly": true,
+          "symbols": [
+            {
+              "name": "TTraceSource",
+              "references": 1,
+              "lines": [
+                41
+              ]
+            }
+          ]
+        },
+        {
           "path": "packages/app/src/couchbase/sources.ts",
           "workspace": "@couchbase-traces/app",
           "test": false,
@@ -62298,6 +62381,34 @@
               "references": 1,
               "lines": [
                 5
+              ]
+            }
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/metrics/translate.ts",
+          "workspace": "@couchbase-traces/common-utils",
+          "test": false,
+          "typeOnly": false,
+          "symbols": [
+            {
+              "name": "BuilderChartConfigWithOptDateRange",
+              "references": 2,
+              "lines": [
+                26,
+                27
+              ]
+            },
+            {
+              "name": "MetricsDataType",
+              "references": 6,
+              "lines": [
+                39,
+                63,
+                64,
+                96,
+                130,
+                131
               ]
             }
           ]

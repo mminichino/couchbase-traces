@@ -167713,6 +167713,79 @@
       "starReexports": []
     },
     {
+      "path": "packages/app/src/couchbase/serviceMap.ts",
+      "workspace": "@couchbase-traces/app",
+      "test": false,
+      "imports": [
+        {
+          "specifier": "@couchbase-traces/common-utils/dist/core/spanPredicates",
+          "target": "packages/common-utils/src/core/spanPredicates.ts",
+          "external": null,
+          "kind": "static",
+          "typeOnly": false,
+          "bindings": [
+            {
+              "imported": "errorStatusPredicateSql",
+              "local": "errorStatusPredicateSql"
+            }
+          ],
+          "line": 1
+        },
+        {
+          "specifier": "@couchbase-traces/common-utils/dist/dataLayer",
+          "target": "packages/common-utils/src/dataLayer/index.ts",
+          "external": null,
+          "kind": "static",
+          "typeOnly": false,
+          "bindings": [
+            {
+              "imported": "renderChartConfig",
+              "local": "renderChartConfig"
+            }
+          ],
+          "line": 2
+        },
+        {
+          "specifier": "@couchbase-traces/common-utils/dist/core/metadata",
+          "target": "packages/common-utils/src/core/metadata.ts",
+          "external": null,
+          "kind": "static",
+          "typeOnly": true,
+          "bindings": [
+            {
+              "imported": "Metadata",
+              "local": "Metadata"
+            }
+          ],
+          "line": 3
+        },
+        {
+          "specifier": "@couchbase-traces/common-utils/dist/types",
+          "target": "packages/common-utils/src/types.ts",
+          "external": null,
+          "kind": "static",
+          "typeOnly": true,
+          "bindings": [
+            {
+              "imported": "TTraceSource",
+              "local": "TTraceSource"
+            }
+          ],
+          "line": 4
+        }
+      ],
+      "exports": [
+        {
+          "name": "getServiceMapQueryCouchbase",
+          "kind": "function",
+          "from": null,
+          "original": null,
+          "line": 31
+        }
+      ],
+      "starReexports": []
+    },
+    {
       "path": "packages/app/src/couchbase/sources.ts",
       "workspace": "@couchbase-traces/app",
       "test": false,
@@ -178956,7 +179029,7 @@
         },
         {
           "specifier": "@/couchbase/serviceMap",
-          "target": null,
+          "target": "packages/app/src/couchbase/serviceMap.ts",
           "external": null,
           "kind": "static",
           "typeOnly": false,
@@ -226163,6 +226236,34 @@
       "test": false,
       "imports": [
         {
+          "specifier": "@/types",
+          "target": "packages/common-utils/src/types.ts",
+          "external": null,
+          "kind": "static",
+          "typeOnly": false,
+          "bindings": [
+            {
+              "imported": "MetricsDataType",
+              "local": "MetricsDataType"
+            }
+          ],
+          "line": 1
+        },
+        {
+          "specifier": "@/types",
+          "target": "packages/common-utils/src/types.ts",
+          "external": null,
+          "kind": "static",
+          "typeOnly": true,
+          "bindings": [
+            {
+              "imported": "BuilderChartConfigWithOptDateRange",
+              "local": "BuilderChartConfigWithOptDateRange"
+            }
+          ],
+          "line": 2
+        },
+        {
           "specifier": "@/dataLayer/errors",
           "target": "packages/common-utils/src/dataLayer/errors.ts",
           "external": null,
@@ -226174,7 +226275,35 @@
               "local": "CouchbaseNotReadyError"
             }
           ],
-          "line": 1
+          "line": 3
+        },
+        {
+          "specifier": "@/couchbase/fn/scalar",
+          "target": "packages/common-utils/src/couchbase/fn/scalar.ts",
+          "external": null,
+          "kind": "static",
+          "typeOnly": false,
+          "bindings": [
+            {
+              "imported": "lag",
+              "local": "lag"
+            }
+          ],
+          "line": 4
+        },
+        {
+          "specifier": "@/couchbase/sqlpp",
+          "target": "packages/common-utils/src/couchbase/sqlpp.ts",
+          "external": null,
+          "kind": "static",
+          "typeOnly": false,
+          "bindings": [
+            {
+              "imported": "keyspace",
+              "local": "keyspace"
+            }
+          ],
+          "line": 5
         }
       ],
       "exports": [
@@ -226183,7 +226312,7 @@
           "kind": "function",
           "from": null,
           "original": null,
-          "line": 3
+          "line": 25
         }
       ],
       "starReexports": []

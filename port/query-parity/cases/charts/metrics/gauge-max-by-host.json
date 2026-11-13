@@ -1,0 +1,27 @@
+{
+  "id": "metrics-gauge-max",
+  "description": "max gauge Value (exercises metric source + translate path)",
+  "source": "metrics_gauge",
+  "config": {
+    "select": [
+      {
+        "aggFn": "max",
+        "valueExpression": "`Value`",
+        "metricType": "gauge",
+        "metricName": "parity.gauge",
+        "alias": "value"
+      }
+    ],
+    "metricTables": {
+      "gauge": "otel_metrics_gauge",
+      "sum": "otel_metrics_sum",
+      "histogram": "otel_metrics_histogram",
+      "summary": "otel_metrics_summary",
+      "exponential histogram": "otel_metrics_exponential_histogram"
+    },
+    "dateRange": { "fromMinutesAgo": 60, "toMinutesAgo": 0 }
+  },
+  "compare": {
+    "ignoreColumns": ["__cbt_id"]
+  }
+}

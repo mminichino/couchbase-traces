@@ -25,6 +25,8 @@ const { primeConnectionKind } = require(join(dist, 'dataLayer/kind.js'));
 const {
   COUCHBASE_LOG_SOURCE,
   COUCHBASE_TRACE_SOURCE,
+  COUCHBASE_METRIC_SOURCE,
+  COUCHBASE_SESSION_SOURCE,
 } = require(join(dist, 'couchbase/defaultSources.js'));
 
 const renderOnly = process.argv.includes('--render-only');
@@ -70,8 +72,39 @@ const TRACE_COLUMNS = [
   { name: 'ResourceAttributes', type: 'Map(String, String)' },
 ];
 
+const METRIC_COLUMNS = [
+  { name: 'TimeUnix', type: "DateTime64(9, 'UTC')" },
+  { name: 'MetricName', type: 'LowCardinality(String)' },
+  { name: 'Value', type: 'Float64' },
+  { name: 'ServiceName', type: 'LowCardinality(String)' },
+  { name: 'Attributes', type: 'Map(String, String)' },
+  { name: 'ResourceAttributes', type: 'Map(String, String)' },
+];
+
+const SESSION_COLUMNS = [
+  { name: 'TimestampTime', type: "DateTime64(9, 'UTC')" },
+  { name: 'Timestamp', type: "DateTime64(9, 'UTC')" },
+  { name: 'ServiceName', type: 'LowCardinality(String)' },
+  { name: 'Body', type: 'String' },
+  {
+    name: '__hdx_materialized_session.id',
+    type: 'String',
+  },
+  {
+    name: '__hdx_materialized_rum.sessionId',
+    type: 'String',
+  },
+];
+
 function metadata(sourceKind = 'logs') {
-  const columns = sourceKind === 'traces' ? TRACE_COLUMNS : LOG_COLUMNS;
+  const columns =
+    sourceKind === 'traces'
+      ? TRACE_COLUMNS
+      : sourceKind?.startsWith('metrics_')
+        ? METRIC_COLUMNS
+        : sourceKind === 'sessions'
+          ? SESSION_COLUMNS
+          : LOG_COLUMNS;
   return {
     async getTableMetadata() {
       return { columns, engine: 'MergeTree' };
@@ -103,6 +136,12 @@ function metadata(sourceKind = 'logs') {
 const SOURCE_BY_KIND = {
   logs: COUCHBASE_LOG_SOURCE,
   traces: COUCHBASE_TRACE_SOURCE,
+  metrics_gauge: COUCHBASE_METRIC_SOURCE,
+  metrics_sum: COUCHBASE_METRIC_SOURCE,
+  metrics_histogram: COUCHBASE_METRIC_SOURCE,
+  metrics_exponential_histogram: COUCHBASE_METRIC_SOURCE,
+  metrics_summary: COUCHBASE_METRIC_SOURCE,
+  sessions: COUCHBASE_SESSION_SOURCE,
 };
 
 function resolveDateRange(config) {
@@ -131,9 +170,14 @@ function buildChartConfig(caseFile, connectionId) {
     delete from.scopeName;
   }
   if (caseFile.source?.startsWith('metrics_') && template.metricTables) {
-    const kind = caseFile.source.replace('metrics_', '').replace('_', ' ');
+    const kind = caseFile.source.slice('metrics_'.length).replace(/_/g, ' ');
     from.tableName =
-      template.metricTables[kind] ?? template.metricTables.gauge ?? from.tableName;
+      template.metricTables[kind] ??
+      template.metricTables.gauge ??
+      from.tableName;
+  }
+  if (template.metricTables && !from.tableName) {
+    from.tableName = template.metricTables.gauge;
   }
   const { dateRange: _dr, from: configFrom, ...rest } = caseFile.config;
   // CTE outer queries may select from a CTE name (empty databaseName).
