@@ -6,8 +6,8 @@ Generated from `port/features.json` and `port/state/inventory/`. Edit `port/feat
 |---|---|
 | not_started | 48 |
 | in_progress | 2 |
-| ported | 0 |
-| needs_decision | 3 |
+| ported | 1 |
+| needs_decision | 2 |
 | dropped | 1 |
 | replaced | 0 |
 
@@ -339,10 +339,10 @@ Entry points:
 | Connections (`api-connections`) | admin | not_started | 4 | attribution.ts, index.ts, node.ts, clickhouseVersion.ts, histogram.ts, +7 | 1 / 0 / 0 |
 | Favorites (`api-favorites`) | user | not_started | 3 | attribution.ts, index.ts, node.ts, clickhouseVersion.ts, histogram.ts, +7 | 0 / 0 / 0 |
 | Data sources (`api-sources`) | admin | not_started | 4 | attribution.ts, index.ts, node.ts, clickhouseVersion.ts, histogram.ts, +7 | 1 / 1 / 0 |
-| ClickHouse query settings (`api-team-clickhouse-settings`) | admin | needs_decision | 1 | attribution.ts, index.ts, node.ts, clickhouseVersion.ts, histogram.ts, +7 | 0 / 0 / 0 |
+| ClickHouse query settings (`api-team-clickhouse-settings`) | admin | ported | 1 | attribution.ts, index.ts, node.ts, clickhouseVersion.ts, histogram.ts, +7 | 0 / 0 / 0 |
 | Webhooks (`api-webhooks`) | admin | not_started | 5 | clickhouse.ts, errors.ts, attribution.ts, index.ts, node.ts, +9 | 0 / 0 / 0 |
 | ClickHouse server dashboard (`app-clickhouse`) | admin | needs_decision | 1 | clickhouse.tsx, ClickhousePage.tsx, UserPreferencesModal.tsx, clickhouse.ts, AppNav.components.tsx, +45 | 0 / 0 / 1 |
-| Team settings and members (`app-team`) | admin | not_started | 14 | UserPreferencesModal.tsx, clickhouse.ts, AppNav.components.tsx, AppNav.tsx, InstanceLabel.tsx, +34 | 7 / 0 / 1 |
+| Team settings and members (`app-team`) | admin | not_started | 14 | UserPreferencesModal.tsx, clickhouse.ts, AppNav.components.tsx, AppNav.tsx, InstanceLabel.tsx, +34 | 8 / 0 / 1 |
 
 ### Connections (`api-connections`)
 
@@ -383,8 +383,6 @@ Edit the ClickHouse query settings applied to every team query.
 Entry points:
 
 - `api_route:PATCH /team/clickhouse-settings`, `packages/api/src/routers/api/team.ts`
-
-Decision: Edits ClickHouse-specific query settings (such as limits and timeouts) for a team. Couchbase has no equivalent per-query engine settings, so the feature may be reduced to SDK query options or dropped. Not signed off.
 
 ### Webhooks (`api-webhooks`)
 

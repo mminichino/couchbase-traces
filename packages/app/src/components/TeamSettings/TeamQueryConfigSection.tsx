@@ -18,7 +18,6 @@ import { notifications } from '@mantine/notifications';
 import { IconHelpCircle, IconPencil } from '@tabler/icons-react';
 
 import api from '@/api';
-import { useBrandDisplayName } from '@/brand';
 import SelectControlled from '@/components/SelectControlled';
 import {
   DEFAULT_FILTER_KEYS_FETCH_LIMIT,
@@ -26,7 +25,7 @@ import {
   DEFAULT_SEARCH_ROW_LIMIT,
 } from '@/defaults';
 
-type ClickhouseSettingType = 'number' | 'boolean';
+type ClickhouseSettingType = 'number' | 'boolean' | 'select';
 
 interface ClickhouseSettingFormProps {
   settingKey: keyof TeamClickHouseSettings;
@@ -37,6 +36,7 @@ interface ClickhouseSettingFormProps {
   placeholder?: string;
   min?: number;
   max?: number;
+  options?: { value: string; label: string }[];
   displayValue?: (value: any, defaultValue?: any) => string;
   description?: string;
 }
@@ -59,6 +59,7 @@ function ClickhouseSettingForm({
   placeholder,
   min,
   max,
+  options,
   displayValue,
   description,
 }: ClickhouseSettingFormProps) {
@@ -83,7 +84,9 @@ function ClickhouseSettingForm({
         const settingValue =
           type === 'boolean'
             ? values.value === displayValue?.(true)
-            : Number(values.value);
+            : type === 'select'
+              ? values.value
+              : Number(values.value);
 
         updateClickhouseSettings.mutate(
           { [settingKey]: settingValue },
@@ -174,7 +177,24 @@ function ClickhouseSettingForm({
       {isEditing && hasAdminAccess ? (
         <form onSubmit={form.handleSubmit(onSubmit)}>
           <Group>
-            {type === 'boolean' && displayValue ? (
+            {type === 'select' && options ? (
+              <SelectControlled
+                control={form.control}
+                name="value"
+                data={options}
+                size="xs"
+                placeholder="Please select"
+                withAsterisk
+                miw={300}
+                readOnly={!isEditing}
+                autoFocus
+                onKeyDown={e => {
+                  if (e.key === 'Escape') {
+                    setIsEditing(false);
+                  }
+                }}
+              />
+            ) : type === 'boolean' && displayValue ? (
               <SelectControlled
                 control={form.control}
                 name="value"
@@ -239,9 +259,14 @@ function ClickhouseSettingForm({
       ) : (
         <Group>
           <Text className="text-white">
-            {displayValue
-              ? displayValue(currentValue, defaultValue)
-              : currentValue?.toString() || 'Not set'}
+            {type === 'select'
+              ? (options?.find(option => option.value === currentValue)
+                  ?.label ??
+                options?.find(option => option.value === defaultValue)?.label ??
+                'Not set')
+              : displayValue
+                ? displayValue(currentValue, defaultValue)
+                : currentValue?.toString() || 'Not set'}
           </Text>
           {hasAdminAccess && (
             <Button
@@ -269,8 +294,12 @@ function ClickhouseSettingForm({
   );
 }
 
+const SCAN_CONSISTENCY_OPTIONS = [
+  { value: 'not_bounded', label: 'Fast (not bounded)' },
+  { value: 'request_plus', label: 'Consistent (request plus)' },
+];
+
 export default function TeamQueryConfigSection() {
-  const brandName = useBrandDisplayName();
   const displayValueWithUnit =
     (unit: string) => (value: any, defaultValue?: any) =>
       value === undefined || value === defaultValue
@@ -281,14 +310,18 @@ export default function TeamQueryConfigSection() {
 
   return (
     <Box id="team_query_config">
-      <Text size="md">ClickHouse Client Settings</Text>
+      <Text size="md">Query settings</Text>
+      <Text size="sm" c="dimmed">
+        Team defaults for queries. Each setting says which sources it applies
+        to.
+      </Text>
       <Separator size="lg" />
       <Card>
         <Stack>
           <ClickhouseSettingForm
             settingKey="searchRowLimit"
             label="Search Row Limit"
-            tooltip="The number of rows per query for the Search page or search dashboard tiles"
+            tooltip="How many rows a search returns. Applies to all sources."
             type="number"
             defaultValue={DEFAULT_SEARCH_ROW_LIMIT}
             placeholder={`default = ${DEFAULT_SEARCH_ROW_LIMIT}, 0 = unlimited`}
@@ -299,7 +332,8 @@ export default function TeamQueryConfigSection() {
           <ClickhouseSettingForm
             settingKey="queryTimeout"
             label="Query Timeout (seconds)"
-            tooltip="Sets the max execution time of a query in seconds."
+            tooltip="Applies to all sources."
+            description="Applies to all sources."
             type="number"
             defaultValue={DEFAULT_QUERY_TIMEOUT}
             placeholder={`default = ${DEFAULT_QUERY_TIMEOUT}, 0 = unlimited`}
@@ -309,7 +343,8 @@ export default function TeamQueryConfigSection() {
           <ClickhouseSettingForm
             settingKey="metadataMaxRowsToRead"
             label="Max Rows to Read (METADATA ONLY)"
-            tooltip="The maximum number of rows that can be read from a table when running a query"
+            tooltip="On Couchbase sources, the number of recent documents sampled to list fields and values."
+            description="On Couchbase sources, the number of recent documents sampled to list fields and values."
             type="number"
             defaultValue={DEFAULT_METADATA_MAX_ROWS_TO_READ}
             placeholder={`default = ${DEFAULT_METADATA_MAX_ROWS_TO_READ.toLocaleString()}, 0 = unlimited`}
@@ -317,9 +352,28 @@ export default function TeamQueryConfigSection() {
             displayValue={displayValueWithUnit('rows')}
           />
           <ClickhouseSettingForm
+            settingKey="queryScanConsistency"
+            label="Couchbase scan consistency"
+            type="select"
+            options={SCAN_CONSISTENCY_OPTIONS}
+            defaultValue="not_bounded"
+            tooltip="Consistent waits for indexes to include all writes made before the query; it is slower under heavy ingest."
+            description="Consistent waits for indexes to include all writes made before the query; it is slower under heavy ingest."
+          />
+          <ClickhouseSettingForm
+            settingKey="queryMaxParallelism"
+            label="Couchbase max parallelism"
+            type="number"
+            min={1}
+            max={64}
+            placeholder="Server default"
+            tooltip="Upper bound on parallel execution per query. The server's own limit still applies."
+            description="Upper bound on parallel execution per query. The server's own limit still applies."
+          />
+          <ClickhouseSettingForm
             settingKey="filterKeysFetchLimit"
             label="Filter Keys Fetch Limit"
-            tooltip="The number of filter keys to fetch per map column (e.g. LogAttributes, ResourceAttributes) on the search page"
+            tooltip="How many field names to list per attribute map. Applies to all sources."
             type="number"
             defaultValue={DEFAULT_FILTER_KEYS_FETCH_LIMIT}
             placeholder={`default = ${DEFAULT_FILTER_KEYS_FETCH_LIMIT}`}
@@ -331,14 +385,14 @@ export default function TeamQueryConfigSection() {
           <ClickhouseSettingForm
             settingKey="fieldMetadataDisabled"
             label="Field Metadata Queries"
-            tooltip="Enable to fetch field metadata from ClickHouse"
+            tooltip="When disabled, field lists are not loaded. Applies to all sources."
             type="boolean"
             displayValue={value => (value ? 'Disabled' : 'Enabled')}
           />
           <ClickhouseSettingForm
             settingKey="parallelizeWhenPossible"
             label="Parallelize Queries When Possible"
-            tooltip={`${brandName} sends windowed queries to ClickHouse in series. This setting parallelizes those queries when it makes sense to. This may cause increased peak load on ClickHouse`}
+            tooltip="Runs independent parts of a query at the same time. Applies to all sources."
             type="boolean"
             displayValue={value => (value ? 'Enabled' : 'Disabled')}
           />

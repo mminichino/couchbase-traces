@@ -30998,6 +30998,71 @@
       "starReexports": []
     },
     {
+      "path": "packages/api/src/routers/api/__tests__/teamSettings.test.ts",
+      "workspace": "@couchbase-traces/api",
+      "test": true,
+      "imports": [
+        {
+          "specifier": "@couchbase-traces/common-utils/dist/types",
+          "target": "packages/common-utils/src/types.ts",
+          "external": null,
+          "kind": "static",
+          "typeOnly": false,
+          "bindings": [
+            {
+              "imported": "TeamClickHouseSettingsUpdateSchema",
+              "local": "TeamClickHouseSettingsUpdateSchema"
+            }
+          ],
+          "line": 1
+        },
+        {
+          "specifier": "express",
+          "target": null,
+          "external": "express",
+          "kind": "static",
+          "typeOnly": false,
+          "bindings": [
+            {
+              "imported": "default",
+              "local": "express"
+            }
+          ],
+          "line": 2
+        },
+        {
+          "specifier": "supertest",
+          "target": null,
+          "external": "supertest",
+          "kind": "static",
+          "typeOnly": false,
+          "bindings": [
+            {
+              "imported": "default",
+              "local": "request"
+            }
+          ],
+          "line": 3
+        },
+        {
+          "specifier": "zod-express-middleware",
+          "target": null,
+          "external": "zod-express-middleware",
+          "kind": "static",
+          "typeOnly": false,
+          "bindings": [
+            {
+              "imported": "processRequest",
+              "local": "processRequest"
+            }
+          ],
+          "line": 4
+        }
+      ],
+      "exports": [],
+      "starReexports": []
+    },
+    {
       "path": "packages/api/src/routers/api/__tests__/webhooks.int.test.ts",
       "workspace": "@couchbase-traces/api",
       "test": true,
@@ -32341,7 +32406,7 @@
           "kind": "const",
           "from": null,
           "original": null,
-          "line": 387
+          "line": 391
         }
       ],
       "starReexports": []
@@ -142008,20 +142073,6 @@
           "line": 20
         },
         {
-          "specifier": "@/brand",
-          "target": "packages/app/src/brand/index.tsx",
-          "external": null,
-          "kind": "static",
-          "typeOnly": false,
-          "bindings": [
-            {
-              "imported": "useBrandDisplayName",
-              "local": "useBrandDisplayName"
-            }
-          ],
-          "line": 21
-        },
-        {
           "specifier": "@/components/SelectControlled",
           "target": "packages/app/src/components/SelectControlled.tsx",
           "external": null,
@@ -142033,7 +142084,7 @@
               "local": "SelectControlled"
             }
           ],
-          "line": 22
+          "line": 21
         },
         {
           "specifier": "@/defaults",
@@ -142055,7 +142106,7 @@
               "local": "DEFAULT_SEARCH_ROW_LIMIT"
             }
           ],
-          "line": 27
+          "line": 26
         }
       ],
       "exports": [
@@ -142064,7 +142115,7 @@
           "kind": "function",
           "from": null,
           "original": null,
-          "line": 272
+          "line": 302
         }
       ],
       "starReexports": []
@@ -143200,6 +143251,74 @@
           "typeOnly": false,
           "bindings": [],
           "line": 19
+        }
+      ],
+      "exports": [],
+      "starReexports": []
+    },
+    {
+      "path": "packages/app/src/components/TeamSettings/__tests__/TeamQueryConfigSection.test.tsx",
+      "workspace": "@couchbase-traces/app",
+      "test": true,
+      "imports": [
+        {
+          "specifier": "@testing-library/react",
+          "target": null,
+          "external": "@testing-library/react",
+          "kind": "static",
+          "typeOnly": false,
+          "bindings": [
+            {
+              "imported": "fireEvent",
+              "local": "fireEvent"
+            },
+            {
+              "imported": "screen",
+              "local": "screen"
+            },
+            {
+              "imported": "within",
+              "local": "within"
+            }
+          ],
+          "line": 1
+        },
+        {
+          "specifier": "@testing-library/user-event",
+          "target": null,
+          "external": "@testing-library/user-event",
+          "kind": "static",
+          "typeOnly": false,
+          "bindings": [
+            {
+              "imported": "default",
+              "local": "userEvent"
+            }
+          ],
+          "line": 2
+        },
+        {
+          "specifier": "@/components/TeamSettings/TeamQueryConfigSection",
+          "target": "packages/app/src/components/TeamSettings/TeamQueryConfigSection.tsx",
+          "external": null,
+          "kind": "static",
+          "typeOnly": false,
+          "bindings": [
+            {
+              "imported": "default",
+              "local": "TeamQueryConfigSection"
+            }
+          ],
+          "line": 4
+        },
+        {
+          "specifier": "@/api",
+          "target": "packages/app/src/api.ts",
+          "external": null,
+          "kind": "mock",
+          "typeOnly": false,
+          "bindings": [],
+          "line": 8
         }
       ],
       "exports": [],
@@ -223984,7 +224103,7 @@
           "kind": "type",
           "from": null,
           "original": null,
-          "line": 3092
+          "line": 3109
         },
         {
           "name": "ALERT_EVALUATION_GROUPS_LIMIT",
@@ -224110,7 +224229,7 @@
           "kind": "type",
           "from": null,
           "original": null,
-          "line": 2743
+          "line": 2760
         },
         {
           "name": "Alert",
@@ -224124,14 +224243,14 @@
           "kind": "type",
           "from": null,
           "original": null,
-          "line": 3205
+          "line": 3222
         },
         {
           "name": "AlertApiResponseSchema",
           "kind": "const",
           "from": null,
           "original": null,
-          "line": 3201
+          "line": 3218
         },
         {
           "name": "AlertBaseObjectSchema",
@@ -224208,42 +224327,42 @@
           "kind": "type",
           "from": null,
           "original": null,
-          "line": 3236
+          "line": 3253
         },
         {
           "name": "AlertEvaluationGroup",
           "kind": "type",
           "from": null,
           "original": null,
-          "line": 3226
+          "line": 3243
         },
         {
           "name": "AlertEvaluationGroupSchema",
           "kind": "const",
           "from": null,
           "original": null,
-          "line": 3216
+          "line": 3233
         },
         {
           "name": "AlertEvaluationSchema",
           "kind": "const",
           "from": null,
           "original": null,
-          "line": 3230
+          "line": 3247
         },
         {
           "name": "AlertEvaluationsApiResponse",
           "kind": "type",
           "from": null,
           "original": null,
-          "line": 3255
+          "line": 3272
         },
         {
           "name": "AlertEvaluationsApiResponseSchema",
           "kind": "const",
           "from": null,
           "original": null,
-          "line": 3240
+          "line": 3257
         },
         {
           "name": "AlertHistory",
@@ -224271,14 +224390,14 @@
           "kind": "type",
           "from": null,
           "original": null,
-          "line": 3211
+          "line": 3228
         },
         {
           "name": "AlertHistoryRangeApiResponseSchema",
           "kind": "const",
           "from": null,
           "original": null,
-          "line": 3207
+          "line": 3224
         },
         {
           "name": "AlertHistorySchema",
@@ -224362,49 +224481,49 @@
           "kind": "type",
           "from": null,
           "original": null,
-          "line": 3199
+          "line": 3216
         },
         {
           "name": "AlertsApiResponseSchema",
           "kind": "const",
           "from": null,
           "original": null,
-          "line": 3187
+          "line": 3204
         },
         {
           "name": "AlertsPageItem",
           "kind": "type",
           "from": null,
           "original": null,
-          "line": 3185
+          "line": 3202
         },
         {
           "name": "AlertsPageItemSchema",
           "kind": "const",
           "from": null,
           "original": null,
-          "line": 3119
+          "line": 3136
         },
         {
           "name": "AssistantLineTableConfigSchema",
           "kind": "const",
           "from": null,
           "original": null,
-          "line": 3005
+          "line": 3022
         },
         {
           "name": "AssistantResponseConfig",
           "kind": "const",
           "from": null,
           "original": null,
-          "line": 3097
+          "line": 3114
         },
         {
           "name": "AssistantResponseConfigSchema",
           "kind": "type",
           "from": null,
           "original": null,
-          "line": 3103
+          "line": 3120
         },
         {
           "name": "BackgroundChart",
@@ -224425,7 +224544,7 @@
           "kind": "const",
           "from": null,
           "original": null,
-          "line": 2699
+          "line": 2716
         },
         {
           "name": "BroadcastFilter",
@@ -224593,14 +224712,14 @@
           "kind": "type",
           "from": null,
           "original": null,
-          "line": 3436
+          "line": 3453
         },
         {
           "name": "CompleteOnboardingTaskApiBodySchema",
           "kind": "const",
           "from": null,
           "original": null,
-          "line": 3432
+          "line": 3449
         },
         {
           "name": "ConditionFilter",
@@ -224677,28 +224796,28 @@
           "kind": "type",
           "from": null,
           "original": null,
-          "line": 3519
+          "line": 3536
         },
         {
           "name": "CreateOrgApiKeyApiResponseSchema",
           "kind": "const",
           "from": null,
           "original": null,
-          "line": 3517
+          "line": 3534
         },
         {
           "name": "CreateOrgApiKeyRequest",
           "kind": "type",
           "from": null,
           "original": null,
-          "line": 3484
+          "line": 3501
         },
         {
           "name": "CreateOrgApiKeyRequestSchema",
           "kind": "const",
           "from": null,
           "original": null,
-          "line": 3480
+          "line": 3497
         },
         {
           "name": "CteChartConfig",
@@ -224901,14 +225020,14 @@
           "kind": "type",
           "from": null,
           "original": null,
-          "line": 3445
+          "line": 3462
         },
         {
           "name": "DismissOnboardingApiBodySchema",
           "kind": "const",
           "from": null,
           "original": null,
-          "line": 3441
+          "line": 3458
         },
         {
           "name": "DisplayType",
@@ -224971,28 +225090,28 @@
           "kind": "type",
           "from": null,
           "original": null,
-          "line": 3585
+          "line": 3602
         },
         {
           "name": "IacImportManifestSchema",
           "kind": "const",
           "from": null,
           "original": null,
-          "line": 3537
+          "line": 3554
         },
         {
           "name": "InstallationApiResponse",
           "kind": "type",
           "from": null,
           "original": null,
-          "line": 3365
+          "line": 3382
         },
         {
           "name": "InstallationApiResponseSchema",
           "kind": "const",
           "from": null,
           "original": null,
-          "line": 3361
+          "line": 3378
         },
         {
           "name": "InternalAggregateFunction",
@@ -225055,7 +225174,7 @@
           "kind": "const",
           "from": null,
           "original": null,
-          "line": 2776
+          "line": 2793
         },
         {
           "name": "MAX_ALERT_CHANNELS",
@@ -225104,42 +225223,42 @@
           "kind": "type",
           "from": null,
           "original": null,
-          "line": 2761
+          "line": 2778
         },
         {
           "name": "MaterializedViewConfigurationSchema",
           "kind": "const",
           "from": null,
           "original": null,
-          "line": 2747
+          "line": 2764
         },
         {
           "name": "MeApiResponse",
           "kind": "type",
           "from": null,
           "original": null,
-          "line": 3429
+          "line": 3446
         },
         {
           "name": "MeApiResponseSchema",
           "kind": "const",
           "from": null,
           "original": null,
-          "line": 3413
+          "line": 3430
         },
         {
           "name": "MetadataMaterializedViews",
           "kind": "type",
           "from": null,
           "original": null,
-          "line": 2771
+          "line": 2788
         },
         {
           "name": "MetadataMaterializedViewsSchema",
           "kind": "const",
           "from": null,
           "original": null,
-          "line": 2765
+          "line": 2782
         },
         {
           "name": "MetricFormula",
@@ -225160,7 +225279,7 @@
           "kind": "const",
           "from": null,
           "original": null,
-          "line": 2908
+          "line": 2925
         },
         {
           "name": "MetricTable",
@@ -225195,7 +225314,7 @@
           "kind": "const",
           "from": null,
           "original": null,
-          "line": 2902
+          "line": 2919
         },
         {
           "name": "NumberFormat",
@@ -225237,7 +225356,7 @@
           "kind": "const",
           "from": null,
           "original": null,
-          "line": 3375
+          "line": 3392
         },
         {
           "name": "OnClick",
@@ -225335,77 +225454,77 @@
           "kind": "type",
           "from": null,
           "original": null,
-          "line": 3410
+          "line": 3427
         },
         {
           "name": "OnboardingDataApiResponse",
           "kind": "type",
           "from": null,
           "original": null,
-          "line": 3455
+          "line": 3472
         },
         {
           "name": "OnboardingDataApiResponseSchema",
           "kind": "const",
           "from": null,
           "original": null,
-          "line": 3451
+          "line": 3468
         },
         {
           "name": "OnboardingDataSchema",
           "kind": "const",
           "from": null,
           "original": null,
-          "line": 3395
+          "line": 3412
         },
         {
           "name": "OnboardingTaskId",
           "kind": "type",
           "from": null,
           "original": null,
-          "line": 3382
+          "line": 3399
         },
         {
           "name": "OrgApiKeyApiResponse",
           "kind": "type",
           "from": null,
           "original": null,
-          "line": 3510
+          "line": 3527
         },
         {
           "name": "OrgApiKeyApiResponseSchema",
           "kind": "const",
           "from": null,
           "original": null,
-          "line": 3495
+          "line": 3512
         },
         {
           "name": "OrgApiKeyExpiry",
           "kind": "type",
           "from": null,
           "original": null,
-          "line": 3476
+          "line": 3493
         },
         {
           "name": "OrgApiKeyExpirySchema",
           "kind": "const",
           "from": null,
           "original": null,
-          "line": 3475
+          "line": 3492
         },
         {
           "name": "OrgApiKeysApiResponse",
           "kind": "type",
           "from": null,
           "original": null,
-          "line": 3515
+          "line": 3532
         },
         {
           "name": "OrgApiKeysApiResponseSchema",
           "kind": "const",
           "from": null,
           "original": null,
-          "line": 3512
+          "line": 3529
         },
         {
           "name": "PERCENTILE_AGG_FN_LEVELS",
@@ -225629,7 +225748,7 @@
           "kind": "const",
           "from": null,
           "original": null,
-          "line": 2932
+          "line": 2949
         },
         {
           "name": "QueryExpressionDashboardFilter",
@@ -225650,7 +225769,7 @@
           "kind": "type",
           "from": null,
           "original": null,
-          "line": 2692
+          "line": 2709
         },
         {
           "name": "RatioMode",
@@ -225699,28 +225818,28 @@
           "kind": "type",
           "from": null,
           "original": null,
-          "line": 3469
+          "line": 3486
         },
         {
           "name": "RotateAccessKeyApiResponseSchema",
           "kind": "const",
           "from": null,
           "original": null,
-          "line": 3465
+          "line": 3482
         },
         {
           "name": "RotateApiKeyApiResponse",
           "kind": "type",
           "from": null,
           "original": null,
-          "line": 3356
+          "line": 3373
         },
         {
           "name": "RotateApiKeyApiResponseSchema",
           "kind": "const",
           "from": null,
           "original": null,
-          "line": 3352
+          "line": 3369
         },
         {
           "name": "SEMANTIC_PALETTE_TOKENS",
@@ -225860,7 +225979,7 @@
           "kind": "const",
           "from": null,
           "original": null,
-          "line": 2877
+          "line": 2894
         },
         {
           "name": "SortSpecificationList",
@@ -225888,21 +226007,21 @@
           "kind": "enum",
           "from": null,
           "original": null,
-          "line": 2676
+          "line": 2693
         },
         {
           "name": "SourceSchema",
           "kind": "const",
           "from": null,
           "original": null,
-          "line": 2938
+          "line": 2955
         },
         {
           "name": "SourceSchemaNoId",
           "kind": "const",
           "from": null,
           "original": null,
-          "line": 2947
+          "line": 2964
         },
         {
           "name": "SqlAstFilter",
@@ -225965,49 +226084,49 @@
           "kind": "type",
           "from": null,
           "original": null,
-          "line": 2957
+          "line": 2974
         },
         {
           "name": "TMetricSource",
           "kind": "type",
           "from": null,
           "original": null,
-          "line": 2960
+          "line": 2977
         },
         {
           "name": "TPromqlSource",
           "kind": "type",
           "from": null,
           "original": null,
-          "line": 2961
+          "line": 2978
         },
         {
           "name": "TSessionSource",
           "kind": "type",
           "from": null,
           "original": null,
-          "line": 2959
+          "line": 2976
         },
         {
           "name": "TSource",
           "kind": "type",
           "from": null,
           "original": null,
-          "line": 2945
+          "line": 2962
         },
         {
           "name": "TSourceNoId",
           "kind": "type",
           "from": null,
           "original": null,
-          "line": 2954
+          "line": 2971
         },
         {
           "name": "TTraceSource",
           "kind": "type",
           "from": null,
           "original": null,
-          "line": 2958
+          "line": 2975
         },
         {
           "name": "TagResourceType",
@@ -226028,126 +226147,126 @@
           "kind": "type",
           "from": null,
           "original": null,
-          "line": 2671
+          "line": 2688
         },
         {
           "name": "TeamApiResponse",
           "kind": "type",
           "from": null,
           "original": null,
-          "line": 3300
+          "line": 3317
         },
         {
           "name": "TeamApiResponseSchema",
           "kind": "const",
           "from": null,
           "original": null,
-          "line": 3291
+          "line": 3308
         },
         {
           "name": "TeamClickHouseSettings",
           "kind": "type",
           "from": null,
           "original": null,
-          "line": 2655
+          "line": 2672
         },
         {
           "name": "TeamClickHouseSettingsSchema",
           "kind": "const",
           "from": null,
           "original": null,
-          "line": 2634
+          "line": 2647
         },
         {
           "name": "TeamClickHouseSettingsUpdate",
           "kind": "type",
           "from": null,
           "original": null,
-          "line": 2652
+          "line": 2669
         },
         {
           "name": "TeamClickHouseSettingsUpdateSchema",
           "kind": "const",
           "from": null,
           "original": null,
-          "line": 2644
+          "line": 2659
         },
         {
           "name": "TeamInvitation",
           "kind": "type",
           "from": null,
           "original": null,
-          "line": 3329
+          "line": 3346
         },
         {
           "name": "TeamInvitationSchema",
           "kind": "const",
           "from": null,
           "original": null,
-          "line": 3321
+          "line": 3338
         },
         {
           "name": "TeamInvitationsApiResponse",
           "kind": "type",
           "from": null,
           "original": null,
-          "line": 3335
+          "line": 3352
         },
         {
           "name": "TeamInvitationsApiResponseSchema",
           "kind": "const",
           "from": null,
           "original": null,
-          "line": 3331
+          "line": 3348
         },
         {
           "name": "TeamMember",
           "kind": "type",
           "from": null,
           "original": null,
-          "line": 3311
+          "line": 3328
         },
         {
           "name": "TeamMemberSchema",
           "kind": "const",
           "from": null,
           "original": null,
-          "line": 3302
+          "line": 3319
         },
         {
           "name": "TeamMembersApiResponse",
           "kind": "type",
           "from": null,
           "original": null,
-          "line": 3317
+          "line": 3334
         },
         {
           "name": "TeamMembersApiResponseSchema",
           "kind": "const",
           "from": null,
           "original": null,
-          "line": 3313
+          "line": 3330
         },
         {
           "name": "TeamSchema",
           "kind": "const",
           "from": null,
           "original": null,
-          "line": 2659
+          "line": 2676
         },
         {
           "name": "TeamTagsApiResponse",
           "kind": "type",
           "from": null,
           "original": null,
-          "line": 3343
+          "line": 3360
         },
         {
           "name": "TeamTagsApiResponseSchema",
           "kind": "const",
           "from": null,
           "original": null,
-          "line": 3339
+          "line": 3356
         },
         {
           "name": "Tile",
@@ -226175,42 +226294,42 @@
           "kind": "type",
           "from": null,
           "original": null,
-          "line": 2720
+          "line": 2737
         },
         {
           "name": "TraceSourceSchema",
           "kind": "const",
           "from": null,
           "original": null,
-          "line": 2832
+          "line": 2849
         },
         {
           "name": "UpdateClickHouseSettingsApiResponse",
           "kind": "type",
           "from": null,
           "original": null,
-          "line": 3348
+          "line": 3365
         },
         {
           "name": "UpdateClickHouseSettingsApiResponseSchema",
           "kind": "const",
           "from": null,
           "original": null,
-          "line": 3345
+          "line": 3362
         },
         {
           "name": "UpdateOrgApiKeyRequest",
           "kind": "type",
           "from": null,
           "original": null,
-          "line": 3491
+          "line": 3508
         },
         {
           "name": "UpdateOrgApiKeyRequestSchema",
           "kind": "const",
           "from": null,
           "original": null,
-          "line": 3488
+          "line": 3505
         },
         {
           "name": "UseTextIndex",
@@ -226259,14 +226378,14 @@
           "kind": "type",
           "from": null,
           "original": null,
-          "line": 3270
+          "line": 3287
         },
         {
           "name": "WebhookCreateApiResponseSchema",
           "kind": "const",
           "from": null,
           "original": null,
-          "line": 3266
+          "line": 3283
         },
         {
           "name": "WebhookSchema",
@@ -226294,42 +226413,42 @@
           "kind": "type",
           "from": null,
           "original": null,
-          "line": 3286
+          "line": 3303
         },
         {
           "name": "WebhookTestApiResponseSchema",
           "kind": "const",
           "from": null,
           "original": null,
-          "line": 3282
+          "line": 3299
         },
         {
           "name": "WebhookUpdateApiResponse",
           "kind": "type",
           "from": null,
           "original": null,
-          "line": 3278
+          "line": 3295
         },
         {
           "name": "WebhookUpdateApiResponseSchema",
           "kind": "const",
           "from": null,
           "original": null,
-          "line": 3274
+          "line": 3291
         },
         {
           "name": "WebhooksApiResponse",
           "kind": "type",
           "from": null,
           "original": null,
-          "line": 3264
+          "line": 3281
         },
         {
           "name": "WebhooksApiResponseSchema",
           "kind": "const",
           "from": null,
           "original": null,
-          "line": 3260
+          "line": 3277
         },
         {
           "name": "WithClauseSchema",
@@ -226406,7 +226525,7 @@
           "kind": "function",
           "from": null,
           "original": null,
-          "line": 2989
+          "line": 3006
         },
         {
           "name": "isChartPaletteToken",
@@ -226427,14 +226546,14 @@
           "kind": "function",
           "from": null,
           "original": null,
-          "line": 2964
+          "line": 2981
         },
         {
           "name": "isMetricSource",
           "kind": "function",
           "from": null,
           "original": null,
-          "line": 2973
+          "line": 2990
         },
         {
           "name": "isOnClickDashboardById",
@@ -226455,14 +226574,14 @@
           "kind": "function",
           "from": null,
           "original": null,
-          "line": 3389
+          "line": 3406
         },
         {
           "name": "isPromqlSource",
           "kind": "function",
           "from": null,
           "original": null,
-          "line": 2976
+          "line": 2993
         },
         {
           "name": "isRangeThresholdType",
@@ -226476,28 +226595,28 @@
           "kind": "function",
           "from": null,
           "original": null,
-          "line": 2979
+          "line": 2996
         },
         {
           "name": "isSessionSource",
           "kind": "function",
           "from": null,
           "original": null,
-          "line": 2970
+          "line": 2987
         },
         {
           "name": "isTraceSource",
           "kind": "function",
           "from": null,
           "original": null,
-          "line": 2967
+          "line": 2984
         },
         {
           "name": "pickSampleWeightExpressionProps",
           "kind": "function",
           "from": null,
           "original": null,
-          "line": 2998
+          "line": 3015
         },
         {
           "name": "resolveChartPaletteToken",

@@ -46,6 +46,15 @@ export default mongoose.model<ITeam>(
       fieldMetadataDisabled: Boolean,
       parallelizeWhenPossible: Boolean,
       filterKeysFetchLimit: Number,
+      queryScanConsistency: {
+        type: String,
+        enum: ['not_bounded', 'request_plus'],
+      },
+      queryMaxParallelism: {
+        type: Number,
+        min: 1,
+        max: 64,
+      },
     },
     {
       timestamps: true,

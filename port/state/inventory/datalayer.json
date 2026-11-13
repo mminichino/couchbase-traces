@@ -11573,6 +11573,22 @@
               ]
             }
           ]
+        },
+        {
+          "path": "packages/app/src/components/TeamSettings/__tests__/TeamQueryConfigSection.test.tsx",
+          "workspace": "@couchbase-traces/app",
+          "test": true,
+          "typeOnly": false,
+          "symbols": [
+            {
+              "name": "default",
+              "references": 2,
+              "lines": [
+                29,
+                62
+              ]
+            }
+          ]
         }
       ],
       "serverSide": false
@@ -22456,8 +22472,8 @@
               "name": "DEFAULT_METADATA_MAX_ROWS_TO_READ",
               "references": 2,
               "lines": [
-                314,
-                315
+                349,
+                350
               ]
             }
           ]
@@ -31982,6 +31998,21 @@
                 119,
                 358,
                 372
+              ]
+            }
+          ]
+        },
+        {
+          "path": "packages/api/src/routers/api/__tests__/teamSettings.test.ts",
+          "workspace": "@couchbase-traces/api",
+          "test": true,
+          "typeOnly": false,
+          "symbols": [
+            {
+              "name": "TeamClickHouseSettingsUpdateSchema",
+              "references": 1,
+              "lines": [
+                11
               ]
             }
           ]
@@ -42791,7 +42822,7 @@
               "name": "TeamClickHouseSettings",
               "references": 1,
               "lines": [
-                32
+                31
               ]
             }
           ]

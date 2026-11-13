@@ -1251,7 +1251,7 @@
       "kind": "api_route",
       "key": "POST /couchbase/query",
       "file": "packages/api/src/routers/api/couchbase.ts",
-      "line": 272,
+      "line": 276,
       "detail": {
         "method": "POST",
         "path": "/couchbase/query",
@@ -1265,7 +1265,7 @@
       "kind": "api_route",
       "key": "POST /couchbase/test",
       "file": "packages/api/src/routers/api/couchbase.ts",
-      "line": 124,
+      "line": 128,
       "detail": {
         "method": "POST",
         "path": "/couchbase/test",
@@ -1279,7 +1279,7 @@
       "kind": "api_route",
       "key": "POST /couchbase/test-source",
       "file": "packages/api/src/routers/api/couchbase.ts",
-      "line": 210,
+      "line": 214,
       "detail": {
         "method": "POST",
         "path": "/couchbase/test-source",

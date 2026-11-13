@@ -64,8 +64,8 @@ Inventory of commit adcb75c16715. Full detail is in `port/state/inventory/`.
 
 | Package | Directory | Role | Languages | Source files | Test files | CI targets |
 |---|---|---|---|---|---|---|
-| @couchbase-traces/api | packages/api | API server and tasks | javascript, typescript | 227 | 147 | ci:int, ci:lint, ci:unit |
-| @couchbase-traces/app | packages/app | web UI | javascript, typescript | 684 | 507 | ci:lint, ci:unit |
+| @couchbase-traces/api | packages/api | API server and tasks | javascript, typescript | 227 | 148 | ci:int, ci:lint, ci:unit |
+| @couchbase-traces/app | packages/app | web UI | javascript, typescript | 684 | 508 | ci:lint, ci:unit |
 | @couchbase-traces/cli | packages/cli | command-line client | javascript, typescript | 61 | 9 | ci:build, ci:lint, ci:unit |
 | @couchbase-traces/common-utils | packages/common-utils | shared query and data layer | javascript, typescript | 72 | 63 | ci:build, ci:int, ci:lint, ci:unit |
 | @couchbase-traces/hdx-eval | packages/hdx-eval | evaluation harness | javascript, typescript | 53 | 31 | ci:lint, ci:unit |
@@ -88,7 +88,7 @@ Inventory of commit adcb75c16715. Full detail is in `port/state/inventory/`.
 
 | Module | Reasons | Exports | Importers | Server-side |
 |---|---|---|---|---|
-| `packages/common-utils/src/types.ts` | seed, sql_builder | 375 | 685 | yes |
+| `packages/common-utils/src/types.ts` | seed, sql_builder | 375 | 686 | yes |
 | `packages/common-utils/src/core/metadata.ts` | seed, clickhouse_client, sql_builder | 24 | 129 | yes |
 | `packages/common-utils/src/clickhouse/index.ts` | seed, clickhouse_client, clickhouse_path, sql_builder | 46 | 123 | yes |
 | `packages/api/src/fixtures.ts` | sql_builder | 44 | 59 | yes |
@@ -171,6 +171,7 @@ Inventory of commit adcb75c16715. Full detail is in `port/state/inventory/`.
 | `packages/app/src/components/TeamSettings/ApiKeysSection.tsx` | clickhouse_client | 1 | 2 | no |
 | `packages/app/src/components/TeamSettings/McpServerSection.tsx` | clickhouse_client | 1 | 2 | no |
 | `packages/app/src/components/TeamSettings/OrgApiKeysSection.tsx` | clickhouse_client | 1 | 2 | no |
+| `packages/app/src/components/TeamSettings/TeamQueryConfigSection.tsx` | clickhouse_client, sql_builder | 1 | 2 | no |
 | `packages/app/src/components/alerts/AlertDetailProperties.tsx` | clickhouse_client | 1 | 2 | no |
 | `packages/app/src/components/alerts/AlertDetails.tsx` | clickhouse_client | 2 | 2 | no |
 | `packages/app/src/hdxDebug.ts` | clickhouse_client | 3 | 2 | no |
@@ -187,7 +188,6 @@ Inventory of commit adcb75c16715. Full detail is in `port/state/inventory/`.
 | `packages/api/src/mcp/tools/trace/waterfall.ts` | sql_builder | 1 | 1 | yes |
 | `packages/app/src/ClickhousePage.tsx` | clickhouse_path | 1 | 1 | no |
 | `packages/app/src/DBChartPage.tsx` | clickhouse_client | 1 | 1 | no |
-| `packages/app/src/NamespaceDetailsSidePanel.tsx` | clickhouse_client | 1 | 1 | no |
 
 Plus 39 more in datalayer.json.
 
@@ -328,6 +328,7 @@ Plus 26 more in datalayer.json.
 | `packages/app/src/components/MetricExplorer/MetricDetailPanel.tsx` | 4 | 0 |
 | `packages/app/src/components/SearchTotalCountChart.tsx` | 4 | 0 |
 | `packages/app/src/components/ServiceDashboardEndpointPerformanceChart.tsx` | 4 | 0 |
+| `packages/app/src/components/TeamSettings/TeamQueryConfigSection.tsx` | 4 | 0 |
 | `packages/app/src/components/deltaChartUtils.ts` | 0 | 4 |
 | `packages/app/src/NodeDetailsSidePanel.tsx` | 3 | 0 |
 | `packages/app/src/components/DBEditTimeChartForm/ChartEditorControls.tsx` | 3 | 0 |
@@ -338,7 +339,6 @@ Plus 26 more in datalayer.json.
 | `packages/app/src/components/MaterializedViews/MVOptimizationModal.tsx` | 3 | 0 |
 | `packages/app/src/components/Sources/SourcesList.tsx` | 3 | 0 |
 | `packages/app/src/components/TeamSettings/IacMigrationSection.tsx` | 3 | 0 |
-| `packages/app/src/components/TeamSettings/TeamQueryConfigSection.tsx` | 3 | 0 |
 | `packages/app/src/components/infraCorrelations.ts` | 3 | 0 |
 | `packages/app/src/hooks/useFetchMetricMetadata.tsx` | 1 | 2 |
 | `packages/app/src/hooks/useFetchMetricResourceAttrs.tsx` | 1 | 2 |
@@ -436,10 +436,10 @@ Plus 4 more in sql-catalog.json.
 | type | `UInt32` | 12 | 6 |
 | function | `rate` | 11 | 2 |
 | parameter_type | `String` | 11 | 3 |
-| function | `column` | 10 | 3 |
 | function | `tiles` | 10 | 1 |
 | function | `toDateTime64` | 10 | 6 |
 | type | `UInt64` | 10 | 5 |
+| function | `column` | 9 | 2 |
 | function | `last_value` | 9 | 4 |
 | function | `tile` | 9 | 3 |
 | setting | `max_rows_to_read` | 9 | 1 |
@@ -508,7 +508,7 @@ Plus 4 more in sql-catalog.json.
 | function | `cbt_get_dashboard` | 3 | 1 |
 | function | `cluster` | 3 | 2 |
 
-Plus 309 more in sql-catalog.json.
+Plus 311 more in sql-catalog.json.
 
 ### Mapped constructs in use
 
@@ -604,9 +604,9 @@ Collector components, pipelines, ClickHouse exporters, and management code.
 | assets | 0 | 0 | 0 | 0 | 3 |
 | docker | 48 | 0 | 116 | 0 | 95 |
 | docs | 487 | 278 | 928 | 2 | 191 |
-| ui_strings | 7 | 9 | 78 | 0 | 127 |
-| code_identifiers | 128 | 21 | 2241 | 0 | 638 |
-| other | 639 | 188 | 1731 | 2 | 1611 |
+| ui_strings | 7 | 9 | 74 | 0 | 127 |
+| code_identifiers | 128 | 21 | 2246 | 0 | 638 |
+| other | 639 | 188 | 1737 | 2 | 1611 |
 
 ### Feature status
 
@@ -614,8 +614,8 @@ Collector components, pipelines, ClickHouse exporters, and management code.
 |---|---|
 | not_started | 48 |
 | in_progress | 2 |
-| ported | 0 |
-| needs_decision | 3 |
+| ported | 1 |
+| needs_decision | 2 |
 | dropped | 1 |
 | replaced | 0 |
 
@@ -739,7 +739,7 @@ Collector components, pipelines, ClickHouse exporters, and management code.
 |---|---|
 | engine_reference | 15 |
 | external_dependency | 56 |
-| internal_identifier | 395 |
+| internal_identifier | 394 |
 | pending_decision | 8 |
 | test_fixture | 12 |
 | upstream_attribution | 1 |
@@ -768,7 +768,6 @@ Collector components, pipelines, ClickHouse exporters, and management code.
 
 ### Features pending a decision
 
-- `api-team-clickhouse-settings`: Edits ClickHouse-specific query settings (such as limits and timeouts) for a team. Couchbase has no equivalent per-query engine settings, so the feature may be reduced to SDK query options or dropped.
 - `app-clickhouse`: Shows ClickHouse server health from system tables such as query_log and parts. Couchbase has no direct equivalent of these tables, so the dashboard needs a different data source or a sign-off to drop.
 - `app-careers`: ClickHouse recruiting page: lists ClickHouse jobs from boards-api.greenhouse.io and ClickStack commits from api.github.com. Kept unchanged until the user decides whether to remove it.
 <!-- phase3:end -->

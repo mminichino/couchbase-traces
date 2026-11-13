@@ -1133,6 +1133,15 @@
       "routes": []
     },
     {
+      "path": "packages/api/src/routers/api/__tests__/teamSettings.test.ts",
+      "workspace": "@couchbase-traces/api",
+      "kind": "unit",
+      "directImports": [
+        "packages/common-utils/src/types.ts"
+      ],
+      "routes": []
+    },
+    {
       "path": "packages/api/src/routers/api/__tests__/webhooks.int.test.ts",
       "workspace": "@couchbase-traces/api",
       "kind": "int",
@@ -3618,6 +3627,15 @@
         "packages/app/src/api.ts",
         "packages/app/src/components/TeamSettings/OrgApiKeysSection.tsx",
         "packages/app/src/useConfirm.tsx"
+      ],
+      "routes": []
+    },
+    {
+      "path": "packages/app/src/components/TeamSettings/__tests__/TeamQueryConfigSection.test.tsx",
+      "workspace": "@couchbase-traces/app",
+      "kind": "unit",
+      "directImports": [
+        "packages/app/src/components/TeamSettings/TeamQueryConfigSection.tsx"
       ],
       "routes": []
     },

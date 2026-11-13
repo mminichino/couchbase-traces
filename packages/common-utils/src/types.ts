@@ -2631,6 +2631,19 @@ export function isCouchbaseConnection(
   return c?.kind === 'couchbase';
 }
 
+const queryScanConsistencySchema = z.enum(['not_bounded', 'request_plus'], {
+  errorMap: () => ({
+    message: 'queryScanConsistency must be not_bounded or request_plus',
+  }),
+});
+const queryMaxParallelismMessage =
+  'queryMaxParallelism must be an integer from 1 to 64';
+const queryMaxParallelismSchema = z
+  .number({ invalid_type_error: queryMaxParallelismMessage })
+  .int(queryMaxParallelismMessage)
+  .min(1, queryMaxParallelismMessage)
+  .max(64, queryMaxParallelismMessage);
+
 export const TeamClickHouseSettingsSchema = z.object({
   fieldMetadataDisabled: z.boolean().optional(),
   searchRowLimit: z.number().optional(),
@@ -2638,6 +2651,8 @@ export const TeamClickHouseSettingsSchema = z.object({
   metadataMaxRowsToRead: z.number().optional(),
   parallelizeWhenPossible: z.boolean().optional(),
   filterKeysFetchLimit: z.number().optional(),
+  queryScanConsistency: queryScanConsistencySchema.optional(),
+  queryMaxParallelism: queryMaxParallelismSchema.optional(),
 });
 
 /** Accepts null to unset (reset to default) a setting. */
@@ -2648,6 +2663,8 @@ export const TeamClickHouseSettingsUpdateSchema = z.object({
   metadataMaxRowsToRead: z.number().nullish(),
   parallelizeWhenPossible: z.boolean().nullish(),
   filterKeysFetchLimit: z.number().nullish(),
+  queryScanConsistency: queryScanConsistencySchema.nullish(),
+  queryMaxParallelism: queryMaxParallelismSchema.nullish(),
 });
 export type TeamClickHouseSettingsUpdate = z.infer<
   typeof TeamClickHouseSettingsUpdateSchema

@@ -135,12 +135,16 @@ export function resolveQueryOptions(args: {
   const timeout = timeoutCandidates.find(t => t != null) ?? 60000;
 
   const settingConsistency = sourceSetting(settings, 'scan_consistency');
+  const teamConsistency = isScanConsistency(team?.queryScanConsistency)
+    ? team.queryScanConsistency
+    : undefined;
   const scanConsistency: ScanConsistency =
     inputs.scanConsistency ??
     (settingConsistency === 'request_plus' ||
     settingConsistency === 'not_bounded'
       ? settingConsistency
       : undefined) ??
+    teamConsistency ??
     'not_bounded';
 
   const out: ResolvedQueryOptions = {
@@ -154,7 +158,16 @@ export function resolveQueryOptions(args: {
     const v = sourceSetting(settings, name);
     return v != null ? Number(v) : undefined;
   };
-  const maxParallelism = num('max_parallelism');
+  const sourceParallelism = num('max_parallelism');
+  const teamParallelism = team?.queryMaxParallelism;
+  const maxParallelism =
+    sourceParallelism ??
+    (Number.isInteger(teamParallelism) &&
+    teamParallelism != null &&
+    teamParallelism >= 1 &&
+    teamParallelism <= 64
+      ? teamParallelism
+      : undefined);
   const scanCap = num('scan_cap');
   const pipelineBatch = num('pipeline_batch');
   const pipelineCap = num('pipeline_cap');

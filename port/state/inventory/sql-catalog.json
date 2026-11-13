@@ -553,6 +553,22 @@
     },
     {
       "category": "function",
+      "name": "Consistent",
+      "classification": "unmapped",
+      "sqlppApproach": null,
+      "occurrences": 1,
+      "files": [
+        {
+          "path": "packages/app/src/components/TeamSettings/TeamQueryConfigSection.tsx",
+          "workspace": "@couchbase-traces/app",
+          "lines": [
+            299
+          ]
+        }
+      ]
+    },
+    {
+      "category": "function",
       "name": "DDL",
       "classification": "unmapped",
       "sqlppApproach": null,
@@ -707,6 +723,22 @@
           "workspace": "@couchbase-traces/cli",
           "lines": [
             1872
+          ]
+        }
+      ]
+    },
+    {
+      "category": "function",
+      "name": "Fast",
+      "classification": "unmapped",
+      "sqlppApproach": null,
+      "occurrences": 1,
+      "files": [
+        {
+          "path": "packages/app/src/components/TeamSettings/TeamQueryConfigSection.tsx",
+          "workspace": "@couchbase-traces/app",
+          "lines": [
+            298
           ]
         }
       ]
@@ -1188,7 +1220,7 @@
           "path": "packages/app/src/components/TeamSettings/TeamQueryConfigSection.tsx",
           "workspace": "@couchbase-traces/app",
           "lines": [
-            311
+            345
           ]
         }
       ]
@@ -1339,7 +1371,7 @@
           "path": "packages/app/src/components/TeamSettings/TeamQueryConfigSection.tsx",
           "workspace": "@couchbase-traces/app",
           "lines": [
-            301
+            334
           ]
         }
       ]
@@ -1659,7 +1691,7 @@
           "path": "packages/common-utils/src/types.ts",
           "workspace": "@couchbase-traces/common-utils",
           "lines": [
-            3018
+            3035
           ]
         }
       ]
@@ -2856,7 +2888,7 @@
       "name": "column",
       "classification": "unmapped",
       "sqlppApproach": null,
-      "occurrences": 10,
+      "occurrences": 9,
       "files": [
         {
           "path": "packages/api/src/mcp/prompts/dashboards/content.ts",
@@ -2864,13 +2896,6 @@
           "lines": [
             29,
             825
-          ]
-        },
-        {
-          "path": "packages/app/src/components/TeamSettings/TeamQueryConfigSection.tsx",
-          "workspace": "@couchbase-traces/app",
-          "lines": [
-            322
           ]
         },
         {
@@ -11536,7 +11561,7 @@
     },
     {
       "path": "packages/app/src/components/TeamSettings/TeamQueryConfigSection.tsx",
-      "count": 3
+      "count": 4
     },
     {
       "path": "packages/app/src/components/TimePicker/TimePicker.tsx",
@@ -12130,7 +12155,7 @@
     },
     {
       "path": "packages/app/src/components/TeamSettings/TeamQueryConfigSection.tsx",
-      "rawSql": 3,
+      "rawSql": 4,
       "typeNames": 0
     },
     {

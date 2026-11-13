@@ -100,6 +100,8 @@ async function getTeamSettings(
     'fieldMetadataDisabled',
     'parallelizeWhenPossible',
     'filterKeysFetchLimit',
+    'queryScanConsistency',
+    'queryMaxParallelism',
   ]);
   if (team == null) return null;
   return {
@@ -109,6 +111,8 @@ async function getTeamSettings(
     fieldMetadataDisabled: team.fieldMetadataDisabled ?? undefined,
     parallelizeWhenPossible: team.parallelizeWhenPossible ?? undefined,
     filterKeysFetchLimit: team.filterKeysFetchLimit ?? undefined,
+    queryScanConsistency: team.queryScanConsistency ?? undefined,
+    queryMaxParallelism: team.queryMaxParallelism ?? undefined,
   };
 }
 

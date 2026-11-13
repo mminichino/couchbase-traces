@@ -28729,6 +28729,62 @@
       "snippet": "email: 'sa@service-accounts.hyperdx.invalid',"
     },
     {
+      "path": "packages/api/src/routers/api/__tests__/teamSettings.test.ts",
+      "line": 1,
+      "column": 14,
+      "term": "clickhouse",
+      "category": "code_identifiers",
+      "snippet": "import { TeamClickHouseSettingsUpdateSchema } from '@couchbase-traces/common-utils/dist/types';"
+    },
+    {
+      "path": "packages/api/src/routers/api/__tests__/teamSettings.test.ts",
+      "line": 10,
+      "column": 12,
+      "term": "clickhouse",
+      "category": "other",
+      "snippet": "'/team/clickhouse-settings',"
+    },
+    {
+      "path": "packages/api/src/routers/api/__tests__/teamSettings.test.ts",
+      "line": 11,
+      "column": 32,
+      "term": "clickhouse",
+      "category": "code_identifiers",
+      "snippet": "processRequest({ body: TeamClickHouseSettingsUpdateSchema }),"
+    },
+    {
+      "path": "packages/api/src/routers/api/__tests__/teamSettings.test.ts",
+      "line": 19,
+      "column": 23,
+      "term": "clickhouse",
+      "category": "other",
+      "snippet": "describe('PATCH /team/clickhouse-settings', () => {"
+    },
+    {
+      "path": "packages/api/src/routers/api/__tests__/teamSettings.test.ts",
+      "line": 22,
+      "column": 21,
+      "term": "clickhouse",
+      "category": "other",
+      "snippet": ".patch('/team/clickhouse-settings')"
+    },
+    {
+      "path": "packages/api/src/routers/api/__tests__/teamSettings.test.ts",
+      "line": 34,
+      "column": 21,
+      "term": "clickhouse",
+      "category": "other",
+      "snippet": ".patch('/team/clickhouse-settings')"
+    },
+    {
+      "path": "packages/api/src/routers/api/__tests__/teamSettings.test.ts",
+      "line": 43,
+      "column": 21,
+      "term": "clickhouse",
+      "category": "other",
+      "snippet": ".patch('/team/clickhouse-settings')"
+    },
+    {
       "path": "packages/api/src/routers/api/ai.ts",
       "line": 55,
       "column": 119,
@@ -44594,15 +44650,15 @@
     },
     {
       "path": "packages/app/src/components/TeamSettings/TeamQueryConfigSection.tsx",
-      "line": 29,
+      "line": 28,
       "column": 6,
       "term": "clickhouse",
       "category": "code_identifiers",
-      "snippet": "type ClickhouseSettingType = 'number' | 'boolean';"
+      "snippet": "type ClickhouseSettingType = 'number' | 'boolean' | 'select';"
     },
     {
       "path": "packages/app/src/components/TeamSettings/TeamQueryConfigSection.tsx",
-      "line": 31,
+      "line": 30,
       "column": 11,
       "term": "clickhouse",
       "category": "code_identifiers",
@@ -44610,7 +44666,7 @@
     },
     {
       "path": "packages/app/src/components/TeamSettings/TeamQueryConfigSection.tsx",
-      "line": 32,
+      "line": 31,
       "column": 25,
       "term": "clickhouse",
       "category": "code_identifiers",
@@ -44618,7 +44674,7 @@
     },
     {
       "path": "packages/app/src/components/TeamSettings/TeamQueryConfigSection.tsx",
-      "line": 35,
+      "line": 34,
       "column": 9,
       "term": "clickhouse",
       "category": "code_identifiers",
@@ -44634,7 +44690,7 @@
     },
     {
       "path": "packages/app/src/components/TeamSettings/TeamQueryConfigSection.tsx",
-      "line": 64,
+      "line": 65,
       "column": 4,
       "term": "clickhouse",
       "category": "code_identifiers",
@@ -44642,7 +44698,7 @@
     },
     {
       "path": "packages/app/src/components/TeamSettings/TeamQueryConfigSection.tsx",
-      "line": 66,
+      "line": 67,
       "column": 15,
       "term": "clickhouse",
       "category": "code_identifiers",
@@ -44650,7 +44706,7 @@
     },
     {
       "path": "packages/app/src/components/TeamSettings/TeamQueryConfigSection.tsx",
-      "line": 66,
+      "line": 67,
       "column": 49,
       "term": "clickhouse",
       "category": "code_identifiers",
@@ -44658,7 +44714,7 @@
     },
     {
       "path": "packages/app/src/components/TeamSettings/TeamQueryConfigSection.tsx",
-      "line": 88,
+      "line": 91,
       "column": 15,
       "term": "clickhouse",
       "category": "code_identifiers",
@@ -44666,7 +44722,7 @@
     },
     {
       "path": "packages/app/src/components/TeamSettings/TeamQueryConfigSection.tsx",
-      "line": 116,
+      "line": 119,
       "column": 13,
       "term": "clickhouse",
       "category": "code_identifiers",
@@ -44674,7 +44730,7 @@
     },
     {
       "path": "packages/app/src/components/TeamSettings/TeamQueryConfigSection.tsx",
-      "line": 126,
+      "line": 129,
       "column": 11,
       "term": "clickhouse",
       "category": "code_identifiers",
@@ -44682,7 +44738,7 @@
     },
     {
       "path": "packages/app/src/components/TeamSettings/TeamQueryConfigSection.tsx",
-      "line": 148,
+      "line": 151,
       "column": 11,
       "term": "clickhouse",
       "category": "code_identifiers",
@@ -44690,7 +44746,7 @@
     },
     {
       "path": "packages/app/src/components/TeamSettings/TeamQueryConfigSection.tsx",
-      "line": 222,
+      "line": 242,
       "column": 30,
       "term": "clickhouse",
       "category": "code_identifiers",
@@ -44698,7 +44754,7 @@
     },
     {
       "path": "packages/app/src/components/TeamSettings/TeamQueryConfigSection.tsx",
-      "line": 230,
+      "line": 250,
       "column": 31,
       "term": "clickhouse",
       "category": "code_identifiers",
@@ -44706,7 +44762,7 @@
     },
     {
       "path": "packages/app/src/components/TeamSettings/TeamQueryConfigSection.tsx",
-      "line": 260,
+      "line": 285,
       "column": 30,
       "term": "clickhouse",
       "category": "code_identifiers",
@@ -44714,15 +44770,7 @@
     },
     {
       "path": "packages/app/src/components/TeamSettings/TeamQueryConfigSection.tsx",
-      "line": 284,
-      "column": 23,
-      "term": "clickhouse",
-      "category": "ui_strings",
-      "snippet": "<Text size=\"md\">ClickHouse Client Settings</Text>"
-    },
-    {
-      "path": "packages/app/src/components/TeamSettings/TeamQueryConfigSection.tsx",
-      "line": 288,
+      "line": 321,
       "column": 12,
       "term": "clickhouse",
       "category": "code_identifiers",
@@ -44730,7 +44778,7 @@
     },
     {
       "path": "packages/app/src/components/TeamSettings/TeamQueryConfigSection.tsx",
-      "line": 299,
+      "line": 332,
       "column": 12,
       "term": "clickhouse",
       "category": "code_identifiers",
@@ -44738,7 +44786,7 @@
     },
     {
       "path": "packages/app/src/components/TeamSettings/TeamQueryConfigSection.tsx",
-      "line": 309,
+      "line": 343,
       "column": 12,
       "term": "clickhouse",
       "category": "code_identifiers",
@@ -44746,7 +44794,7 @@
     },
     {
       "path": "packages/app/src/components/TeamSettings/TeamQueryConfigSection.tsx",
-      "line": 319,
+      "line": 354,
       "column": 12,
       "term": "clickhouse",
       "category": "code_identifiers",
@@ -44754,7 +44802,7 @@
     },
     {
       "path": "packages/app/src/components/TeamSettings/TeamQueryConfigSection.tsx",
-      "line": 331,
+      "line": 363,
       "column": 12,
       "term": "clickhouse",
       "category": "code_identifiers",
@@ -44762,15 +44810,7 @@
     },
     {
       "path": "packages/app/src/components/TeamSettings/TeamQueryConfigSection.tsx",
-      "line": 334,
-      "column": 58,
-      "term": "clickhouse",
-      "category": "ui_strings",
-      "snippet": "tooltip=\"Enable to fetch field metadata from ClickHouse\""
-    },
-    {
-      "path": "packages/app/src/components/TeamSettings/TeamQueryConfigSection.tsx",
-      "line": 338,
+      "line": 373,
       "column": 12,
       "term": "clickhouse",
       "category": "code_identifiers",
@@ -44778,19 +44818,19 @@
     },
     {
       "path": "packages/app/src/components/TeamSettings/TeamQueryConfigSection.tsx",
-      "line": 341,
-      "column": 62,
+      "line": 385,
+      "column": 12,
       "term": "clickhouse",
-      "category": "ui_strings",
-      "snippet": "tooltip={`${brandName} sends windowed queries to ClickHouse in series. This setting parallelizes those queries when it makes sense to. This may cause increased "
+      "category": "code_identifiers",
+      "snippet": "<ClickhouseSettingForm"
     },
     {
       "path": "packages/app/src/components/TeamSettings/TeamQueryConfigSection.tsx",
-      "line": 341,
-      "column": 186,
+      "line": 392,
+      "column": 12,
       "term": "clickhouse",
-      "category": "ui_strings",
-      "snippet": "tooltip={`${brandName} sends windowed queries to ClickHouse in series. This setting parallelizes those queries when it makes sense to. This may cause increased "
+      "category": "code_identifiers",
+      "snippet": "<ClickhouseSettingForm"
     },
     {
       "path": "packages/app/src/components/TeamSettings/WebhooksSection.tsx",
@@ -44967,6 +45007,22 @@
       "term": "hdx",
       "category": "other",
       "snippet": "options?.onSuccess?.({ ...key(), key: 'hdx_org_secret' }),"
+    },
+    {
+      "path": "packages/app/src/components/TeamSettings/__tests__/TeamQueryConfigSection.test.tsx",
+      "line": 12,
+      "column": 14,
+      "term": "clickhouse",
+      "category": "code_identifiers",
+      "snippet": "useUpdateClickhouseSettings: () => ({ mutate, isPending: false }),"
+    },
+    {
+      "path": "packages/app/src/components/TeamSettings/__tests__/TeamQueryConfigSection.test.tsx",
+      "line": 57,
+      "column": 32,
+      "term": "clickhouse",
+      "category": "other",
+      "snippet": "expect(screen.queryByText(/clickhouse/i)).not.toBeInTheDocument();"
     },
     {
       "path": "packages/app/src/components/TimePicker/TimePicker.tsx",
@@ -73714,7 +73770,7 @@
     },
     {
       "path": "packages/common-utils/src/couchbase/__tests__/settings.test.ts",
-      "line": 104,
+      "line": 143,
       "column": 20,
       "term": "clickhouse",
       "category": "other",
@@ -73722,7 +73778,7 @@
     },
     {
       "path": "packages/common-utils/src/couchbase/__tests__/settings.test.ts",
-      "line": 113,
+      "line": 152,
       "column": 9,
       "term": "clickhouse",
       "category": "code_identifiers",
@@ -73730,7 +73786,7 @@
     },
     {
       "path": "packages/common-utils/src/couchbase/__tests__/settings.test.ts",
-      "line": 118,
+      "line": 157,
       "column": 15,
       "term": "clickhouse",
       "category": "code_identifiers",
@@ -75034,7 +75090,7 @@
     },
     {
       "path": "packages/common-utils/src/types.ts",
-      "line": 2634,
+      "line": 2647,
       "column": 18,
       "term": "clickhouse",
       "category": "code_identifiers",
@@ -75042,7 +75098,7 @@
     },
     {
       "path": "packages/common-utils/src/types.ts",
-      "line": 2644,
+      "line": 2659,
       "column": 18,
       "term": "clickhouse",
       "category": "code_identifiers",
@@ -75050,7 +75106,7 @@
     },
     {
       "path": "packages/common-utils/src/types.ts",
-      "line": 2652,
+      "line": 2669,
       "column": 17,
       "term": "clickhouse",
       "category": "code_identifiers",
@@ -75058,7 +75114,7 @@
     },
     {
       "path": "packages/common-utils/src/types.ts",
-      "line": 2653,
+      "line": 2670,
       "column": 14,
       "term": "clickhouse",
       "category": "code_identifiers",
@@ -75066,7 +75122,7 @@
     },
     {
       "path": "packages/common-utils/src/types.ts",
-      "line": 2655,
+      "line": 2672,
       "column": 17,
       "term": "clickhouse",
       "category": "code_identifiers",
@@ -75074,7 +75130,7 @@
     },
     {
       "path": "packages/common-utils/src/types.ts",
-      "line": 2656,
+      "line": 2673,
       "column": 14,
       "term": "clickhouse",
       "category": "code_identifiers",
@@ -75082,7 +75138,7 @@
     },
     {
       "path": "packages/common-utils/src/types.ts",
-      "line": 2669,
+      "line": 2686,
       "column": 14,
       "term": "clickhouse",
       "category": "code_identifiers",
@@ -75090,7 +75146,7 @@
     },
     {
       "path": "packages/common-utils/src/types.ts",
-      "line": 2814,
+      "line": 2831,
       "column": 39,
       "term": "clickhouse",
       "category": "other",
@@ -75098,7 +75154,7 @@
     },
     {
       "path": "packages/common-utils/src/types.ts",
-      "line": 2815,
+      "line": 2832,
       "column": 14,
       "term": "clickhouse",
       "category": "telemetry_endpoints",
@@ -75106,7 +75162,7 @@
     },
     {
       "path": "packages/common-utils/src/types.ts",
-      "line": 3345,
+      "line": 3362,
       "column": 20,
       "term": "clickhouse",
       "category": "code_identifiers",
@@ -75114,7 +75170,7 @@
     },
     {
       "path": "packages/common-utils/src/types.ts",
-      "line": 3346,
+      "line": 3363,
       "column": 7,
       "term": "clickhouse",
       "category": "code_identifiers",
@@ -75122,7 +75178,7 @@
     },
     {
       "path": "packages/common-utils/src/types.ts",
-      "line": 3348,
+      "line": 3365,
       "column": 19,
       "term": "clickhouse",
       "category": "code_identifiers",
@@ -75130,7 +75186,7 @@
     },
     {
       "path": "packages/common-utils/src/types.ts",
-      "line": 3349,
+      "line": 3366,
       "column": 16,
       "term": "clickhouse",
       "category": "code_identifiers",
@@ -75138,7 +75194,7 @@
     },
     {
       "path": "packages/common-utils/src/types.ts",
-      "line": 3425,
+      "line": 3442,
       "column": 16,
       "term": "clickhouse",
       "category": "code_identifiers",
@@ -75146,7 +75202,7 @@
     },
     {
       "path": "packages/common-utils/src/types.ts",
-      "line": 3562,
+      "line": 3579,
       "column": 39,
       "term": "clickhouse",
       "category": "other",
@@ -85053,8 +85109,8 @@
     {
       "category": "ui_strings",
       "term": "clickhouse",
-      "count": 78,
-      "files": 39
+      "count": 74,
+      "files": 38
     },
     {
       "category": "ui_strings",
@@ -85077,8 +85133,8 @@
     {
       "category": "code_identifiers",
       "term": "clickhouse",
-      "count": 2241,
-      "files": 198
+      "count": 2246,
+      "files": 200
     },
     {
       "category": "code_identifiers",
@@ -85101,8 +85157,8 @@
     {
       "category": "other",
       "term": "clickhouse",
-      "count": 1731,
-      "files": 428
+      "count": 1737,
+      "files": 430
     },
     {
       "category": "other",

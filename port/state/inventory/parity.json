@@ -2847,7 +2847,7 @@
       "name": "ClickHouse query settings",
       "area": "admin",
       "visibility": "admin",
-      "status": "needs_decision",
+      "status": "ported",
       "entryPoints": [
         {
           "id": "api_route:PATCH /team/clickhouse-settings",
@@ -13612,7 +13612,8 @@
           "packages/app/src/components/TeamSettings/__tests__/ApiKeysSection.test.tsx",
           "packages/app/src/components/TeamSettings/__tests__/IacMigrationSection.test.tsx",
           "packages/app/src/components/TeamSettings/__tests__/McpServerSection.test.tsx",
-          "packages/app/src/components/TeamSettings/__tests__/OrgApiKeysSection.test.tsx"
+          "packages/app/src/components/TeamSettings/__tests__/OrgApiKeysSection.test.tsx",
+          "packages/app/src/components/TeamSettings/__tests__/TeamQueryConfigSection.test.tsx"
         ],
         "int": [],
         "e2e": [
@@ -21024,11 +21025,11 @@
       },
       {
         "status": "ported",
-        "count": 0
+        "count": 1
       },
       {
         "status": "needs_decision",
-        "count": 3
+        "count": 2
       },
       {
         "status": "dropped",

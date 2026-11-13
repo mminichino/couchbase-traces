@@ -351,12 +351,8 @@
       "entryPoints": [
         "api_route:PATCH /team/clickhouse-settings"
       ],
-      "status": "needs_decision",
-      "decision": {
-        "note": "Edits ClickHouse-specific query settings (such as limits and timeouts) for a team. Couchbase has no equivalent per-query engine settings, so the feature may be reduced to SDK query options or dropped.",
-        "signedOffBy": null,
-        "date": null
-      }
+      "status": "ported",
+      "decision": null
     },
     {
       "id": "app-clickhouse",

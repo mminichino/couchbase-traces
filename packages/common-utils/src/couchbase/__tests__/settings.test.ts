@@ -95,6 +95,45 @@ describe('resolveQueryOptions other options', () => {
     ).toBe('not_bounded');
   });
 
+  it('uses team scan consistency and max parallelism when nothing closer is set', () => {
+    const team = {
+      queryScanConsistency: 'request_plus' as const,
+      queryMaxParallelism: 8,
+    };
+    const resolved = resolve({}, team);
+    expect(resolved.scanConsistency).toBe('request_plus');
+    expect(resolved.maxParallelism).toBe(8);
+  });
+
+  it('lets a request scan consistency override the team default', () => {
+    expect(
+      resolve(
+        { scanConsistency: 'request_plus' },
+        { queryScanConsistency: 'not_bounded' },
+      ).scanConsistency,
+    ).toBe('request_plus');
+  });
+
+  it('prefers source settings over the team defaults', () => {
+    const resolved = resolve(
+      {
+        sourceSettings: [
+          { setting: 'scan_consistency', value: 'not_bounded' },
+          { setting: 'max_parallelism', value: '4' },
+        ],
+      },
+      { queryScanConsistency: 'request_plus', queryMaxParallelism: 8 },
+    );
+    expect(resolved.scanConsistency).toBe('not_bounded');
+    expect(resolved.maxParallelism).toBe(4);
+  });
+
+  it('omits max parallelism when the team value is outside 1 to 64', () => {
+    expect(
+      resolve({}, { queryMaxParallelism: 100 }).maxParallelism,
+    ).toBeUndefined();
+  });
+
   it('throws PARSING_FAILED for invalid source settings', () => {
     expect(() =>
       resolve({ sourceSettings: [{ setting: 'max_threads', value: '1' }] }),
