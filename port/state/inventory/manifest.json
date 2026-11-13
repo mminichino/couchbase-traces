@@ -1,8 +1,8 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-11-12T23:21:20Z",
+  "generatedAt": "2026-11-13T01:42:36Z",
   "importCommit": "adcb75c16715a667ef5094b6850070d58bf29097",
-  "headCommit": "568f1b23d543f814d852090f0778277570a9b882",
+  "headCommit": "e554371e81971492024356cb7acaee985d6b9bbe",
   "files": [
     "branding.json",
     "datalayer.json",
@@ -16,14 +16,14 @@
     "workspaces.json"
   ],
   "counts": {
-    "trackedFiles": 2346,
+    "trackedFiles": 2347,
     "sourceFiles": 1105,
     "testFiles": 776,
     "entryPoints": 207,
     "dataLayerModules": 139,
     "unmappedConstructs": 409,
     "tables": 11,
-    "brandingHits": 10245
+    "brandingHits": 10253
   },
   "warnings": [
     {

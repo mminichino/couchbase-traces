@@ -36,6 +36,10 @@
     "packages/cli": {
       "ignoreBinaries": ["claude"]
     },
+    "packages/ingest": {
+      "entry": ["src/index.ts", "src/setup/cli.ts", "src/setup/docs.ts"],
+      "project": ["src/**/*.ts"]
+    },
     "packages/hdx-eval": {
       "project": ["src/**/*.ts"],
       "ignoreDependencies": ["tsx"],

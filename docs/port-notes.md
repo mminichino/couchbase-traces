@@ -605,16 +605,16 @@ Collector components, pipelines, ClickHouse exporters, and management code.
 | docs | 468 | 269 | 607 | 0 | 155 |
 | ui_strings | 7 | 9 | 78 | 0 | 127 |
 | code_identifiers | 125 | 21 | 2247 | 0 | 644 |
-| other | 631 | 188 | 1757 | 2 | 1593 |
+| other | 631 | 188 | 1766 | 2 | 1592 |
 
 ### Feature status
 
 | Status | Features |
 |---|---|
-| not_started | 50 |
-| in_progress | 1 |
+| not_started | 48 |
+| in_progress | 2 |
 | ported | 0 |
-| needs_decision | 3 |
+| needs_decision | 4 |
 | dropped | 0 |
 
 ### Plan corrections
@@ -766,6 +766,7 @@ Collector components, pipelines, ClickHouse exporters, and management code.
 
 ### Features pending a decision
 
+- `api-v1`: PromQL reads ClickHouse's experimental TimeSeries table fed by Prometheus remote-write; there is no Couchbase equivalent in the port's scope.
 - `api-team-clickhouse-settings`: Edits ClickHouse-specific query settings (such as limits and timeouts) for a team. Couchbase has no equivalent per-query engine settings, so the feature may be reduced to SDK query options or dropped.
 - `app-clickhouse`: Shows ClickHouse server health from system tables such as query_log and parts. Couchbase has no direct equivalent of these tables, so the dashboard needs a different data source or a sign-off to drop.
 - `app-careers`: ClickHouse recruiting page: lists ClickHouse jobs from boards-api.greenhouse.io and ClickStack commits from api.github.com. Kept unchanged until the user decides whether to remove it.
@@ -824,3 +825,12 @@ Collector components, pipelines, ClickHouse exporters, and management code.
 - The CA certificate for self-managed `couchbases://` clusters is written to a 0600 temp file because SDK 4.7.2 only accepts a trust store path. That block carries one `security/detect-non-literal-fs-filename` suppression, so the common-utils `eslint-disable` ratchet baseline rises from 39 to 40. The same update records the API count falling from 36 to 32.
 - The Couchbase query settings are documented in `DEPLOY.md`.
 - The IaC manifest is unchanged: connections and sources reach it through the v2 external API, which now accepts Couchbase connections.
+
+## Phase 5: Couchbase data model and ingestion
+
+- Dual-write: with `CBT_COUCHBASE_INGEST_ENABLED=true`, `buildOtelCollectorConfig` adds `otlphttp/couchbase` beside the ClickHouse exporters for traces, metrics, and logs, and `otlphttp/couchbase-rrweb` for session logs. The flag defaults to off, and that path leaves the collector config unchanged. ClickHouse remains the other copy until a later phase removes it.
+- Duplicate collapse: two identical records that share a nanosecond timestamp become one Couchbase document, because the key is the timestamp plus a content hash. ClickHouse keeps both rows. The behavior is recorded in `docs/data-model.md`.
+- Rollups are not created. The port does not build `otel_logs_kv_rollup_15m`, `otel_traces_kv_rollup_15m`, or any other rollup collection.
+- PromQL is pending a user decision. `api-v1` is `needs_decision`: PromQL reads ClickHouse's experimental TimeSeries table fed by Prometheus remote-write, and there is no Couchbase equivalent in the port's scope. Nothing is `dropped`.
+- Attribute doubles follow the collector's `AsString` for a double (the function the ClickHouse exporter writes): fixed digits on `[1e-6, 1e21)`, exponent notation outside that range (`1e+21`, `1e-7`), and infinities as `Infinity` and `-Infinity`.
+- Search datetime parser: the logs and traces indexes use Bleve's `dateTimeOptional` parser, which includes `time.RFC3339Nano` and accepts the 30-character timestamps. No custom parser was added. The ingest integration test finds a `Body` word with a `Timestamp` range. N1QL addresses the scope index as `otel.default.fts_otel_logs`; the short name is not in the n1fty mapping cache.

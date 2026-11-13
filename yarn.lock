@@ -3801,6 +3801,24 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@couchbase-traces/ingest@workspace:packages/ingest":
+  version: 0.0.0-use.local
+  resolution: "@couchbase-traces/ingest@workspace:packages/ingest"
+  dependencies:
+    "@couchbase-traces/common-utils": "workspace:*"
+    "@types/jest": "npm:^29.5.14"
+    "@types/node": "npm:^22.15.18"
+    couchbase: "npm:4.7.2"
+    eslint: "npm:^9.39.1"
+    jest: "npm:^30.2.0"
+    ts-jest: "npm:^29.4.11"
+    tsc-alias: "npm:^1.8.8"
+    tsx: "npm:^4.20.6"
+    typescript: "npm:^6.0.3"
+    typescript-eslint: "npm:^8.46.0"
+  languageName: unknown
+  linkType: soft
+
 "@couchbase-traces/otel-collector@workspace:packages/otel-collector":
   version: 0.0.0-use.local
   resolution: "@couchbase-traces/otel-collector@workspace:packages/otel-collector"
@@ -16818,7 +16836,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"esbuild@npm:^0.18.0 || ^0.19.0 || ^0.20.0 || ^0.21.0 || ^0.22.0 || ^0.23.0 || ^0.24.0 || ^0.25.0 || ^0.26.0 || ^0.27.0 || ^0.28.0":
+"esbuild@npm:^0.18.0 || ^0.19.0 || ^0.20.0 || ^0.21.0 || ^0.22.0 || ^0.23.0 || ^0.24.0 || ^0.25.0 || ^0.26.0 || ^0.27.0 || ^0.28.0, esbuild@npm:~0.28.0":
   version: 0.28.2
   resolution: "esbuild@npm:0.28.2"
   dependencies:
@@ -30201,6 +30219,21 @@ __metadata:
   bin:
     tsx: dist/cli.mjs
   checksum: 10c0/f5072923cd8459a1f9a26df87823a2ab5754641739d69df2a20b415f61814322b751fa6be85db7c6ec73cf68ba8fac2fd1cfc76bdb0aa86ded984d84d5d2126b
+  languageName: node
+  linkType: hard
+
+"tsx@npm:^4.20.6":
+  version: 4.23.15
+  resolution: "tsx@npm:4.23.15"
+  dependencies:
+    esbuild: "npm:~0.28.0"
+    fsevents: "npm:~2.3.3"
+  dependenciesMeta:
+    fsevents:
+      optional: true
+  bin:
+    tsx: dist/cli.mjs
+  checksum: 10c0/3c5fc53e578da87d3a63565286b1ecbb0e01b9bb646daec1957294ef890d14f22cc67bb4b09b5daffab0e7ce0217b1e7645393feb0f524b1ddf26ae9595d7e75
   languageName: node
   linkType: hard
 

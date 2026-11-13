@@ -10,7 +10,11 @@ import { ROLE, workspaceByRole } from './workspaces.mjs';
 
 const SKIPPED_PAGES = new Set(['/_app', '/_document', '/_error', '/404', '/500']);
 const HTTP_METHODS = new Set(['get', 'post', 'put', 'patch', 'delete', 'all', 'head', 'options']);
-const INGESTION_DIRS = ['packages/otel-collector', 'docker/otel-collector'];
+const INGESTION_DIRS = [
+  'packages/otel-collector',
+  'docker/otel-collector',
+  'packages/ingest',
+];
 
 /**
  * Route for a file under `pages/`.

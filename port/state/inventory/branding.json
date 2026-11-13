@@ -14538,7 +14538,7 @@
     },
     {
       "path": "knip.json",
-      "line": 39,
+      "line": 43,
       "column": 15,
       "term": "hdx",
       "category": "other",
@@ -14546,7 +14546,7 @@
     },
     {
       "path": "knip.json",
-      "line": 49,
+      "line": 53,
       "column": 13,
       "term": "hyperdx",
       "category": "other",
@@ -17426,7 +17426,7 @@
     },
     {
       "path": "packages/api/src/config.ts",
-      "line": 125,
+      "line": 129,
       "column": 14,
       "term": "clickhouse",
       "category": "env_vars",
@@ -17434,7 +17434,7 @@
     },
     {
       "path": "packages/api/src/config.ts",
-      "line": 125,
+      "line": 129,
       "column": 36,
       "term": "clickhouse",
       "category": "env_vars",
@@ -17442,7 +17442,7 @@
     },
     {
       "path": "packages/api/src/config.ts",
-      "line": 126,
+      "line": 130,
       "column": 14,
       "term": "clickhouse",
       "category": "env_vars",
@@ -17450,7 +17450,7 @@
     },
     {
       "path": "packages/api/src/config.ts",
-      "line": 126,
+      "line": 130,
       "column": 36,
       "term": "clickhouse",
       "category": "env_vars",
@@ -17458,7 +17458,7 @@
     },
     {
       "path": "packages/api/src/config.ts",
-      "line": 127,
+      "line": 131,
       "column": 14,
       "term": "clickhouse",
       "category": "env_vars",
@@ -17466,7 +17466,7 @@
     },
     {
       "path": "packages/api/src/config.ts",
-      "line": 127,
+      "line": 131,
       "column": 40,
       "term": "clickhouse",
       "category": "env_vars",
@@ -24618,7 +24618,7 @@
     },
     {
       "path": "packages/api/src/opamp/controllers/__tests__/opampController.test.ts",
-      "line": 52,
+      "line": 57,
       "column": 38,
       "term": "clickhouse",
       "category": "other",
@@ -24626,7 +24626,7 @@
     },
     {
       "path": "packages/api/src/opamp/controllers/__tests__/opampController.test.ts",
-      "line": 57,
+      "line": 62,
       "column": 9,
       "term": "clickhouse",
       "category": "code_identifiers",
@@ -24634,7 +24634,7 @@
     },
     {
       "path": "packages/api/src/opamp/controllers/__tests__/opampController.test.ts",
-      "line": 60,
+      "line": 65,
       "column": 10,
       "term": "clickhouse",
       "category": "other",
@@ -24642,7 +24642,7 @@
     },
     {
       "path": "packages/api/src/opamp/controllers/__tests__/opampController.test.ts",
-      "line": 76,
+      "line": 81,
       "column": 17,
       "term": "hyperdx",
       "category": "env_vars",
@@ -24650,7 +24650,7 @@
     },
     {
       "path": "packages/api/src/opamp/controllers/__tests__/opampController.test.ts",
-      "line": 79,
+      "line": 84,
       "column": 55,
       "term": "clickhouse",
       "category": "env_vars",
@@ -24658,7 +24658,7 @@
     },
     {
       "path": "packages/api/src/opamp/controllers/__tests__/opampController.test.ts",
-      "line": 86,
+      "line": 91,
       "column": 17,
       "term": "clickhouse",
       "category": "other",
@@ -24666,7 +24666,7 @@
     },
     {
       "path": "packages/api/src/opamp/controllers/__tests__/opampController.test.ts",
-      "line": 103,
+      "line": 108,
       "column": 20,
       "term": "clickhouse",
       "category": "other",
@@ -24674,7 +24674,7 @@
     },
     {
       "path": "packages/api/src/opamp/controllers/__tests__/opampController.test.ts",
-      "line": 107,
+      "line": 112,
       "column": 30,
       "term": "clickhouse",
       "category": "env_vars",
@@ -24682,7 +24682,7 @@
     },
     {
       "path": "packages/api/src/opamp/controllers/__tests__/opampController.test.ts",
-      "line": 113,
+      "line": 118,
       "column": 43,
       "term": "hyperdx",
       "category": "other",
@@ -24690,7 +24690,7 @@
     },
     {
       "path": "packages/api/src/opamp/controllers/__tests__/opampController.test.ts",
-      "line": 117,
+      "line": 122,
       "column": 34,
       "term": "hyperdx",
       "category": "other",
@@ -24698,7 +24698,7 @@
     },
     {
       "path": "packages/api/src/opamp/controllers/__tests__/opampController.test.ts",
-      "line": 125,
+      "line": 130,
       "column": 43,
       "term": "hyperdx",
       "category": "other",
@@ -24706,7 +24706,7 @@
     },
     {
       "path": "packages/api/src/opamp/controllers/__tests__/opampController.test.ts",
-      "line": 134,
+      "line": 139,
       "column": 46,
       "term": "hyperdx",
       "category": "other",
@@ -24714,7 +24714,7 @@
     },
     {
       "path": "packages/api/src/opamp/controllers/__tests__/opampController.test.ts",
-      "line": 147,
+      "line": 152,
       "column": 34,
       "term": "hyperdx",
       "category": "other",
@@ -24722,7 +24722,7 @@
     },
     {
       "path": "packages/api/src/opamp/controllers/__tests__/opampController.test.ts",
-      "line": 148,
+      "line": 153,
       "column": 41,
       "term": "hyperdx",
       "category": "other",
@@ -24730,7 +24730,7 @@
     },
     {
       "path": "packages/api/src/opamp/controllers/__tests__/opampController.test.ts",
-      "line": 150,
+      "line": 155,
       "column": 34,
       "term": "hyperdx",
       "category": "other",
@@ -24738,7 +24738,7 @@
     },
     {
       "path": "packages/api/src/opamp/controllers/__tests__/opampController.test.ts",
-      "line": 151,
+      "line": 156,
       "column": 41,
       "term": "hyperdx",
       "category": "other",
@@ -24746,7 +24746,7 @@
     },
     {
       "path": "packages/api/src/opamp/controllers/__tests__/opampController.test.ts",
-      "line": 163,
+      "line": 168,
       "column": 54,
       "term": "hyperdx",
       "category": "other",
@@ -24754,7 +24754,7 @@
     },
     {
       "path": "packages/api/src/opamp/controllers/__tests__/opampController.test.ts",
-      "line": 218,
+      "line": 223,
       "column": 56,
       "term": "hyperdx",
       "category": "other",
@@ -24762,7 +24762,7 @@
     },
     {
       "path": "packages/api/src/opamp/controllers/__tests__/opampController.test.ts",
-      "line": 232,
+      "line": 237,
       "column": 15,
       "term": "hyperdx",
       "category": "other",
@@ -24770,7 +24770,7 @@
     },
     {
       "path": "packages/api/src/opamp/controllers/__tests__/opampController.test.ts",
-      "line": 257,
+      "line": 262,
       "column": 19,
       "term": "hyperdx",
       "category": "other",
@@ -24778,15 +24778,87 @@
     },
     {
       "path": "packages/api/src/opamp/controllers/__tests__/opampController.test.ts",
-      "line": 258,
+      "line": 263,
       "column": 65,
       "term": "hyperdx",
       "category": "other",
       "snippet": "expect(cfg.service.extensions).toContain('bearertokenauth/hyperdx');"
     },
     {
+      "path": "packages/api/src/opamp/controllers/__tests__/opampController.test.ts",
+      "line": 271,
+      "column": 64,
+      "term": "clickhouse",
+      "category": "other",
+      "snippet": "expect(off.service.pipelines.traces.exporters).toEqual(['clickhouse']);"
+    },
+    {
+      "path": "packages/api/src/opamp/controllers/__tests__/opampController.test.ts",
+      "line": 272,
+      "column": 65,
+      "term": "clickhouse",
+      "category": "other",
+      "snippet": "expect(off.service.pipelines.metrics.exporters).toEqual(['clickhouse']);"
+    },
+    {
+      "path": "packages/api/src/opamp/controllers/__tests__/opampController.test.ts",
+      "line": 274,
+      "column": 10,
+      "term": "clickhouse",
+      "category": "other",
+      "snippet": "'clickhouse',"
+    },
+    {
+      "path": "packages/api/src/opamp/controllers/__tests__/opampController.test.ts",
+      "line": 277,
+      "column": 10,
+      "term": "clickhouse",
+      "category": "other",
+      "snippet": "'clickhouse/rrweb',"
+    },
+    {
+      "path": "packages/api/src/opamp/controllers/__tests__/opampController.test.ts",
+      "line": 282,
+      "column": 58,
+      "term": "clickhouse",
+      "category": "other",
+      "snippet": "it('appends the Couchbase exporters without removing ClickHouse', () => {"
+    },
+    {
+      "path": "packages/api/src/opamp/controllers/__tests__/opampController.test.ts",
+      "line": 307,
+      "column": 10,
+      "term": "clickhouse",
+      "category": "other",
+      "snippet": "'clickhouse',"
+    },
+    {
+      "path": "packages/api/src/opamp/controllers/__tests__/opampController.test.ts",
+      "line": 311,
+      "column": 10,
+      "term": "clickhouse",
+      "category": "other",
+      "snippet": "'clickhouse',"
+    },
+    {
+      "path": "packages/api/src/opamp/controllers/__tests__/opampController.test.ts",
+      "line": 315,
+      "column": 10,
+      "term": "clickhouse",
+      "category": "other",
+      "snippet": "'clickhouse',"
+    },
+    {
+      "path": "packages/api/src/opamp/controllers/__tests__/opampController.test.ts",
+      "line": 319,
+      "column": 10,
+      "term": "clickhouse",
+      "category": "other",
+      "snippet": "'clickhouse/rrweb',"
+    },
+    {
       "path": "packages/api/src/opamp/controllers/opampController.ts",
-      "line": 52,
+      "line": 71,
       "column": 11,
       "term": "hyperdx",
       "category": "other",
@@ -24794,7 +24866,7 @@
     },
     {
       "path": "packages/api/src/opamp/controllers/opampController.ts",
-      "line": 118,
+      "line": 137,
       "column": 6,
       "term": "clickhouse",
       "category": "other",
@@ -24802,7 +24874,7 @@
     },
     {
       "path": "packages/api/src/opamp/controllers/opampController.ts",
-      "line": 135,
+      "line": 154,
       "column": 5,
       "term": "clickhouse",
       "category": "code_identifiers",
@@ -24810,7 +24882,7 @@
     },
     {
       "path": "packages/api/src/opamp/controllers/opampController.ts",
-      "line": 199,
+      "line": 222,
       "column": 13,
       "term": "hyperdx",
       "category": "other",
@@ -24818,7 +24890,7 @@
     },
     {
       "path": "packages/api/src/opamp/controllers/opampController.ts",
-      "line": 229,
+      "line": 252,
       "column": 34,
       "term": "clickhouse",
       "category": "other",
@@ -24826,7 +24898,7 @@
     },
     {
       "path": "packages/api/src/opamp/controllers/opampController.ts",
-      "line": 233,
+      "line": 256,
       "column": 26,
       "term": "clickhouse",
       "category": "other",
@@ -24834,7 +24906,7 @@
     },
     {
       "path": "packages/api/src/opamp/controllers/opampController.ts",
-      "line": 238,
+      "line": 261,
       "column": 36,
       "term": "clickhouse",
       "category": "env_vars",
@@ -24842,7 +24914,7 @@
     },
     {
       "path": "packages/api/src/opamp/controllers/opampController.ts",
-      "line": 270,
+      "line": 293,
       "column": 8,
       "term": "clickhouse",
       "category": "other",
@@ -24850,7 +24922,7 @@
     },
     {
       "path": "packages/api/src/opamp/controllers/opampController.ts",
-      "line": 271,
+      "line": 294,
       "column": 26,
       "term": "clickhouse",
       "category": "env_vars",
@@ -24858,7 +24930,7 @@
     },
     {
       "path": "packages/api/src/opamp/controllers/opampController.ts",
-      "line": 272,
+      "line": 295,
       "column": 44,
       "term": "clickhouse",
       "category": "env_vars",
@@ -24866,7 +24938,7 @@
     },
     {
       "path": "packages/api/src/opamp/controllers/opampController.ts",
-      "line": 273,
+      "line": 296,
       "column": 26,
       "term": "clickhouse",
       "category": "env_vars",
@@ -24874,7 +24946,7 @@
     },
     {
       "path": "packages/api/src/opamp/controllers/opampController.ts",
-      "line": 274,
+      "line": 297,
       "column": 26,
       "term": "clickhouse",
       "category": "env_vars",
@@ -24882,7 +24954,7 @@
     },
     {
       "path": "packages/api/src/opamp/controllers/opampController.ts",
-      "line": 276,
+      "line": 299,
       "column": 27,
       "term": "hyperdx",
       "category": "other",
@@ -24890,7 +24962,7 @@
     },
     {
       "path": "packages/api/src/opamp/controllers/opampController.ts",
-      "line": 279,
+      "line": 302,
       "column": 40,
       "term": "clickhouse",
       "category": "env_vars",
@@ -24898,7 +24970,7 @@
     },
     {
       "path": "packages/api/src/opamp/controllers/opampController.ts",
-      "line": 287,
+      "line": 310,
       "column": 7,
       "term": "clickhouse",
       "category": "code_identifiers",
@@ -24906,7 +24978,7 @@
     },
     {
       "path": "packages/api/src/opamp/controllers/opampController.ts",
-      "line": 288,
+      "line": 311,
       "column": 26,
       "term": "clickhouse",
       "category": "env_vars",
@@ -24914,7 +24986,7 @@
     },
     {
       "path": "packages/api/src/opamp/controllers/opampController.ts",
-      "line": 289,
+      "line": 312,
       "column": 44,
       "term": "clickhouse",
       "category": "env_vars",
@@ -24922,7 +24994,7 @@
     },
     {
       "path": "packages/api/src/opamp/controllers/opampController.ts",
-      "line": 290,
+      "line": 313,
       "column": 26,
       "term": "clickhouse",
       "category": "env_vars",
@@ -24930,7 +25002,7 @@
     },
     {
       "path": "packages/api/src/opamp/controllers/opampController.ts",
-      "line": 291,
+      "line": 314,
       "column": 26,
       "term": "clickhouse",
       "category": "env_vars",
@@ -24938,7 +25010,7 @@
     },
     {
       "path": "packages/api/src/opamp/controllers/opampController.ts",
-      "line": 295,
+      "line": 318,
       "column": 40,
       "term": "clickhouse",
       "category": "env_vars",
@@ -24946,7 +25018,7 @@
     },
     {
       "path": "packages/api/src/opamp/controllers/opampController.ts",
-      "line": 317,
+      "line": 340,
       "column": 24,
       "term": "clickhouse",
       "category": "other",
@@ -24954,7 +25026,7 @@
     },
     {
       "path": "packages/api/src/opamp/controllers/opampController.ts",
-      "line": 322,
+      "line": 345,
       "column": 24,
       "term": "clickhouse",
       "category": "other",
@@ -24962,7 +25034,7 @@
     },
     {
       "path": "packages/api/src/opamp/controllers/opampController.ts",
-      "line": 331,
+      "line": 354,
       "column": 24,
       "term": "clickhouse",
       "category": "other",
@@ -24970,7 +25042,7 @@
     },
     {
       "path": "packages/api/src/opamp/controllers/opampController.ts",
-      "line": 335,
+      "line": 358,
       "column": 24,
       "term": "clickhouse",
       "category": "other",
@@ -24978,7 +25050,7 @@
     },
     {
       "path": "packages/api/src/opamp/controllers/opampController.ts",
-      "line": 341,
+      "line": 364,
       "column": 20,
       "term": "hyperdx",
       "category": "other",
@@ -24986,7 +25058,7 @@
     },
     {
       "path": "packages/api/src/opamp/controllers/opampController.ts",
-      "line": 342,
+      "line": 365,
       "column": 71,
       "term": "hyperdx",
       "category": "other",
@@ -24994,7 +25066,7 @@
     },
     {
       "path": "packages/api/src/opamp/controllers/opampController.ts",
-      "line": 344,
+      "line": 367,
       "column": 13,
       "term": "hyperdx",
       "category": "other",
@@ -25002,7 +25074,7 @@
     },
     {
       "path": "packages/api/src/opamp/controllers/opampController.ts",
-      "line": 347,
+      "line": 370,
       "column": 13,
       "term": "hyperdx",
       "category": "other",
@@ -25010,7 +25082,7 @@
     },
     {
       "path": "packages/api/src/opamp/controllers/opampController.ts",
-      "line": 352,
+      "line": 375,
       "column": 10,
       "term": "clickhouse",
       "category": "env_vars",
@@ -25018,7 +25090,7 @@
     },
     {
       "path": "packages/api/src/opamp/controllers/opampController.ts",
-      "line": 356,
+      "line": 379,
       "column": 55,
       "term": "clickhouse",
       "category": "env_vars",
@@ -25026,7 +25098,7 @@
     },
     {
       "path": "packages/api/src/opamp/controllers/opampController.ts",
-      "line": 365,
+      "line": 388,
       "column": 27,
       "term": "hyperdx",
       "category": "other",
@@ -25034,7 +25106,7 @@
     },
     {
       "path": "packages/api/src/opamp/controllers/opampController.ts",
-      "line": 372,
+      "line": 395,
       "column": 47,
       "term": "hyperdx",
       "category": "other",
@@ -25042,7 +25114,7 @@
     },
     {
       "path": "packages/api/src/opamp/controllers/opampController.ts",
-      "line": 374,
+      "line": 397,
       "column": 31,
       "term": "hyperdx",
       "category": "other",
@@ -25050,7 +25122,7 @@
     },
     {
       "path": "packages/api/src/opamp/controllers/opampController.ts",
-      "line": 377,
+      "line": 400,
       "column": 55,
       "term": "hyperdx",
       "category": "other",
@@ -25058,7 +25130,7 @@
     },
     {
       "path": "packages/api/src/opamp/controllers/opampController.ts",
-      "line": 381,
+      "line": 404,
       "column": 43,
       "term": "hyperdx",
       "category": "other",
@@ -25066,7 +25138,7 @@
     },
     {
       "path": "packages/api/src/opamp/controllers/opampController.ts",
-      "line": 382,
+      "line": 405,
       "column": 41,
       "term": "hyperdx",
       "category": "other",
@@ -25074,7 +25146,7 @@
     },
     {
       "path": "packages/api/src/opamp/controllers/opampController.ts",
-      "line": 384,
+      "line": 407,
       "column": 43,
       "term": "hyperdx",
       "category": "other",
@@ -25082,7 +25154,7 @@
     },
     {
       "path": "packages/api/src/opamp/controllers/opampController.ts",
-      "line": 385,
+      "line": 408,
       "column": 41,
       "term": "hyperdx",
       "category": "other",
@@ -25090,7 +25162,7 @@
     },
     {
       "path": "packages/api/src/opamp/controllers/opampController.ts",
-      "line": 387,
+      "line": 410,
       "column": 66,
       "term": "hyperdx",
       "category": "other",
@@ -25098,7 +25170,7 @@
     },
     {
       "path": "packages/api/src/opamp/controllers/opampController.ts",
-      "line": 392,
+      "line": 415,
       "column": 14,
       "term": "hyperdx",
       "category": "other",
@@ -25106,7 +25178,7 @@
     },
     {
       "path": "packages/api/src/opamp/controllers/opampController.ts",
-      "line": 395,
+      "line": 418,
       "column": 19,
       "term": "clickhouse",
       "category": "other",
@@ -25114,7 +25186,7 @@
     },
     {
       "path": "packages/api/src/opamp/controllers/opampController.ts",
-      "line": 407,
+      "line": 430,
       "column": 13,
       "term": "hyperdx",
       "category": "other",
@@ -25122,7 +25194,7 @@
     },
     {
       "path": "packages/api/src/opamp/controllers/opampController.ts",
-      "line": 411,
+      "line": 434,
       "column": 33,
       "term": "hyperdx",
       "category": "other",
@@ -71406,15 +71478,7 @@
       "column": 7,
       "term": "hyperdx",
       "category": "code_identifiers",
-      "snippet": "hyperdxSettingPrefix: 'hdx',"
-    },
-    {
-      "path": "packages/common-utils/src/couchbase/__tests__/types.test.ts",
-      "line": 17,
-      "column": 30,
-      "term": "hdx",
-      "category": "other",
-      "snippet": "hyperdxSettingPrefix: 'hdx',"
+      "snippet": "hyperdxSettingPrefix: 'cbt_',"
     },
     {
       "path": "packages/common-utils/src/couchbase/__tests__/types.test.ts",
@@ -81906,7 +81970,7 @@
     },
     {
       "path": "yarn.lock",
-      "line": 5146,
+      "line": 5164,
       "column": 3,
       "term": "hyperdx",
       "category": "other",
@@ -81914,7 +81978,7 @@
     },
     {
       "path": "yarn.lock",
-      "line": 5148,
+      "line": 5166,
       "column": 17,
       "term": "hyperdx",
       "category": "other",
@@ -81922,7 +81986,7 @@
     },
     {
       "path": "yarn.lock",
-      "line": 5153,
+      "line": 5171,
       "column": 3,
       "term": "hyperdx",
       "category": "other",
@@ -81930,7 +81994,7 @@
     },
     {
       "path": "yarn.lock",
-      "line": 5155,
+      "line": 5173,
       "column": 17,
       "term": "hyperdx",
       "category": "other",
@@ -81938,7 +82002,7 @@
     },
     {
       "path": "yarn.lock",
-      "line": 11413,
+      "line": 11431,
       "column": 9,
       "term": "hyperdx",
       "category": "other",
@@ -81946,7 +82010,7 @@
     },
     {
       "path": "yarn.lock",
-      "line": 19684,
+      "line": 19702,
       "column": 2,
       "term": "hyperdx",
       "category": "other",
@@ -81954,7 +82018,7 @@
     },
     {
       "path": "yarn.lock",
-      "line": 19686,
+      "line": 19704,
       "column": 16,
       "term": "hyperdx",
       "category": "other",
@@ -82151,7 +82215,7 @@
     {
       "category": "other",
       "term": "clickhouse",
-      "count": 1757,
+      "count": 1766,
       "files": 434
     },
     {
@@ -82163,8 +82227,8 @@
     {
       "category": "other",
       "term": "hdx",
-      "count": 1593,
-      "files": 245
+      "count": 1592,
+      "files": 244
     }
   ]
 }

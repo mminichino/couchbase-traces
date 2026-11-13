@@ -2404,42 +2404,42 @@
           "kind": "const",
           "from": null,
           "original": null,
-          "line": 132
+          "line": 136
         },
         {
           "name": "AI_BASE_URL",
           "kind": "const",
           "from": null,
           "original": null,
-          "line": 133
+          "line": 137
         },
         {
           "name": "AI_MODEL_NAME",
           "kind": "const",
           "from": null,
           "original": null,
-          "line": 134
+          "line": 138
         },
         {
           "name": "AI_PROVIDER",
           "kind": "const",
           "from": null,
           "original": null,
-          "line": 131
+          "line": 135
         },
         {
           "name": "AI_REQUEST_HEADERS",
           "kind": "const",
           "from": null,
           "original": null,
-          "line": 135
+          "line": 139
         },
         {
           "name": "ANTHROPIC_API_KEY",
           "kind": "const",
           "from": null,
           "original": null,
-          "line": 138
+          "line": 142
         },
         {
           "name": "APP_TYPE",
@@ -2467,21 +2467,21 @@
           "kind": "const",
           "from": null,
           "original": null,
-          "line": 125
+          "line": 129
         },
         {
           "name": "CLICKHOUSE_PASSWORD",
           "kind": "const",
           "from": null,
           "original": null,
-          "line": 127
+          "line": 131
         },
         {
           "name": "CLICKHOUSE_USER",
           "kind": "const",
           "from": null,
           "original": null,
-          "line": 126
+          "line": 130
         },
         {
           "name": "CODE_VERSION",
@@ -2495,49 +2495,56 @@
           "kind": "const",
           "from": null,
           "original": null,
-          "line": 107
+          "line": 111
         },
         {
           "name": "COUCHBASE_CONNECT_TIMEOUT_MS",
           "kind": "const",
           "from": null,
           "original": null,
-          "line": 103
+          "line": 107
         },
         {
           "name": "COUCHBASE_DEFAULT_TIMEOUT_MS",
           "kind": "const",
           "from": null,
           "original": null,
-          "line": 95
+          "line": 99
         },
         {
           "name": "COUCHBASE_FRAME_ROWS",
           "kind": "const",
           "from": null,
           "original": null,
-          "line": 119
+          "line": 123
+        },
+        {
+          "name": "COUCHBASE_INGEST_ENABLED",
+          "kind": "const",
+          "from": null,
+          "original": null,
+          "line": 74
         },
         {
           "name": "COUCHBASE_MAX_BUFFERED_BYTES",
           "kind": "const",
           "from": null,
           "original": null,
-          "line": 115
+          "line": 119
         },
         {
           "name": "COUCHBASE_MAX_CLUSTERS",
           "kind": "const",
           "from": null,
           "original": null,
-          "line": 111
+          "line": 115
         },
         {
           "name": "COUCHBASE_MAX_TIMEOUT_MS",
           "kind": "const",
           "from": null,
           "original": null,
-          "line": 99
+          "line": 103
         },
         {
           "name": "DEFAULT_CONNECTIONS",
@@ -2572,21 +2579,21 @@
           "kind": "const",
           "from": null,
           "original": null,
-          "line": 73
+          "line": 77
         },
         {
           "name": "EXTERNAL_API_SEARCH_DEFAULT_MAX_RESULTS",
           "kind": "const",
           "from": null,
           "original": null,
-          "line": 78
+          "line": 82
         },
         {
           "name": "EXTERNAL_API_SEARCH_MAX_RESULTS",
           "kind": "const",
           "from": null,
           "original": null,
-          "line": 80
+          "line": 84
         },
         {
           "name": "FRONTEND_REDIRECT_BASE",
@@ -28857,7 +28864,7 @@
           "kind": "mock",
           "typeOnly": false,
           "bindings": [],
-          "line": 12
+          "line": 13
         },
         {
           "specifier": "@/opamp/controllers/opampController",
@@ -28875,7 +28882,7 @@
               "local": "buildOtelCollectorConfig"
             }
           ],
-          "line": 36
+          "line": 40
         }
       ],
       "exports": [],
@@ -29063,28 +29070,28 @@
           "kind": "class",
           "from": null,
           "original": null,
-          "line": 429
+          "line": 486
         },
         {
           "name": "bearerTokenVariants",
           "kind": "const",
           "from": null,
           "original": null,
-          "line": 177
+          "line": 200
         },
         {
           "name": "buildOtelCollectorConfig",
           "kind": "const",
           "from": null,
           "original": null,
-          "line": 180
+          "line": 203
         },
         {
           "name": "opampController",
           "kind": "const",
           "from": null,
           "original": null,
-          "line": 663
+          "line": 720
         }
       ],
       "starReexports": []

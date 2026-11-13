@@ -1,0 +1,50 @@
+name: cbt-ingest-parity
+
+services:
+  ch-server:
+    image: clickhouse/clickhouse-server:26.8.36.3-alpine
+    environment:
+      CLICKHOUSE_USER: parity
+      CLICKHOUSE_PASSWORD: parity
+      CLICKHOUSE_DB: parity
+    ports:
+      - '127.0.0.1:${CH_HTTP_PORT:-8123}:8123'
+    ulimits:
+      nofile:
+        soft: 262144
+        hard: 262144
+
+  couchbase:
+    image: couchbase/server:enterprise-8.0.3
+    container_name: cbt-ingest-parity-couchbase
+    hostname: couchbase
+    mem_limit: 6g
+    ports:
+      - '127.0.0.1:${CB_QUERY_PORT:-8093}:8093'
+
+  ingest:
+    image: cbt-ingest-parity:local
+    environment:
+      CBT_INGEST_TOKEN: 0123456789abcdef0123456789abcdef
+      CBT_COUCHBASE_CONNSTR: couchbase://couchbase
+      CBT_COUCHBASE_INGEST_USER: cbt_ingest
+      CBT_COUCHBASE_INGEST_PASSWORD: cbt-ingest-password
+      CBT_COUCHBASE_BUCKET: otel
+      CBT_COUCHBASE_SCOPE: default
+      CBT_COUCHBASE_ADMIN_USER: Administrator
+      CBT_COUCHBASE_ADMIN_PASSWORD: cbt-test-admin
+      CBT_COUCHBASE_QUERY_USER: cbt_query
+      CBT_COUCHBASE_QUERY_PASSWORD: cbt-query-password
+    depends_on:
+      - couchbase
+
+  collector:
+    image: cbt-ingest-parity-collector:local
+    entrypoint: ['/otelcontribcol', '--config', '/etc/otel/collector.yaml']
+    volumes:
+      - ./collector.yaml:/etc/otel/collector.yaml:ro
+    ports:
+      - '127.0.0.1:${OTLP_PORT:-4318}:4318'
+    depends_on:
+      - ingest
+      - ch-server

@@ -33,9 +33,11 @@ cleanup() {
 trap cleanup EXIT
 
 if command -v yarn >/dev/null 2>&1; then
-  YARN=yarn
+  YARN=(yarn)
 elif [ -x "$ROOT/port/state/bin/yarn" ]; then
-  YARN="$ROOT/port/state/bin/yarn"
+  YARN=("$ROOT/port/state/bin/yarn")
+elif [ -f "$ROOT/.yarn/releases/yarn-4.13.0.cjs" ]; then
+  YARN=(node "$ROOT/.yarn/releases/yarn-4.13.0.cjs")
 else
   log "yarn not found on PATH"
   exit 1
@@ -110,13 +112,17 @@ fi
 status=0
 cd "$ROOT" || exit 1
 log "Running common-utils Couchbase integration tests"
-"$YARN" workspace @couchbase-traces/common-utils jest -c jest.int.config.js \
+"${YARN[@]}" workspace @couchbase-traces/common-utils jest -c jest.int.config.js \
   --runInBand --testPathPatterns 'couchbase\.int\.test' || status=$?
 
 log "Running api Couchbase integration tests"
 CBT_CI_MONGO_PORT=$MONGO_PORT DOTENV_CONFIG_PATH=.env.test DOTENV_CONFIG_OVERRIDE=true \
-  "$YARN" workspace @couchbase-traces/api jest -c jest.int.config.js \
+  "${YARN[@]}" workspace @couchbase-traces/api jest -c jest.int.config.js \
   --runInBand --forceExit --testPathPatterns 'couchbase\.int\.test' || status=$?
+
+log "Running ingest integration tests"
+"${YARN[@]}" workspace @couchbase-traces/ingest jest -c jest.int.config.js \
+  --runInBand --forceExit --testPathPatterns 'ingest\.int\.test' || status=$?
 
 log "Integration tests finished with status $status"
 exit "$status"

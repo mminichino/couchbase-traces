@@ -1,0 +1,191 @@
+import { connect, type ConnectOptions } from 'couchbase';
+
+import { isCapella, ttlByCollection, wanProfile } from '@/config';
+import { COLLECTIONS, searchDefinitionWithReplicas } from '@/model/collections';
+import { writeDocs } from '@/setup/docs';
+import { exitCodeOf, SetupError } from '@/setup/errors';
+import { ensureIndexes, indexStatements } from '@/setup/indexes';
+import { ensureBucket, ensureCollections } from '@/setup/keyspace';
+import { ensureSearchIndexes } from '@/setup/search';
+import { ensureUsers } from '@/setup/users';
+
+export type SetupOptions = {
+  createBucket: boolean;
+  bucketRamMb: number;
+  indexReplicas: number;
+  createUsers: boolean;
+  skipSearch: boolean;
+  recreateDrifted: boolean;
+  waitTimeoutS: number;
+  dryRun: boolean;
+  docs: boolean;
+};
+
+export function parseArgs(argv: string[]): SetupOptions {
+  const opts: SetupOptions = {
+    createBucket: false,
+    bucketRamMb: 1024,
+    indexReplicas: -1,
+    createUsers: false,
+    skipSearch: false,
+    recreateDrifted: false,
+    waitTimeoutS: 900,
+    dryRun: false,
+    docs: false,
+  };
+  for (let i = 0; i < argv.length; i++) {
+    const arg = argv[i];
+    if (arg === '--create-bucket') opts.createBucket = true;
+    else if (arg === '--create-users') opts.createUsers = true;
+    else if (arg === '--skip-search') opts.skipSearch = true;
+    else if (arg === '--recreate-drifted') opts.recreateDrifted = true;
+    else if (arg === '--dry-run') opts.dryRun = true;
+    else if (arg === '--docs') opts.docs = true;
+    else if (arg === '--bucket-ram-mb')
+      opts.bucketRamMb = numberArg(argv, ++i, arg);
+    else if (arg === '--index-replicas')
+      opts.indexReplicas = numberArg(argv, ++i, arg);
+    else if (arg === '--wait-timeout-s')
+      opts.waitTimeoutS = numberArg(argv, ++i, arg);
+    else throw new SetupError(`Unknown argument ${arg}`, 1);
+  }
+  return opts;
+}
+
+function numberArg(argv: string[], index: number, flag: string): number {
+  const raw = argv[index];
+  if (raw == null || !/^\d+$/.test(raw)) {
+    throw new SetupError(`${flag} requires a whole number`, 1);
+  }
+  return Number(raw);
+}
+
+export async function runSetup(
+  argv: string[],
+  env: NodeJS.ProcessEnv,
+  log: (line: string) => void = line => console.log(line),
+): Promise<number> {
+  try {
+    const opts = parseArgs(argv);
+    if (opts.docs) {
+      writeDocs();
+      log('updated docs');
+      return 0;
+    }
+    const connstr = required(env, 'CBT_COUCHBASE_CONNSTR');
+    const bucket = env.CBT_COUCHBASE_BUCKET || 'otel';
+    const scope = env.CBT_COUCHBASE_SCOPE || 'default';
+    const replicas =
+      opts.indexReplicas >= 0
+        ? opts.indexReplicas
+        : envInt(env.CBT_COUCHBASE_INDEX_REPLICAS, 0);
+    const ttl = ttlByCollection(env);
+    if (opts.dryRun) {
+      log(`${opts.createBucket ? 'created' : 'skipped'} bucket ${bucket}`);
+      for (const spec of COLLECTIONS) log(`created collection ${spec.name}`);
+      for (const statement of indexStatements(bucket, scope, replicas))
+        log(statement);
+      if (!opts.skipSearch) {
+        for (const spec of COLLECTIONS) {
+          if (!spec.search) continue;
+          log(`created search ${spec.search.name}`);
+          log(
+            JSON.stringify(searchDefinitionWithReplicas(spec.search, replicas)),
+          );
+        }
+      } else {
+        log('skipped search');
+      }
+      log(opts.createUsers ? 'created users' : 'skipped users');
+      return 0;
+    }
+    required(env, 'CBT_COUCHBASE_ADMIN_USER');
+    required(env, 'CBT_COUCHBASE_ADMIN_PASSWORD');
+    const cluster = await connectAdmin(env, connstr);
+    try {
+      await ensureBucket(cluster, {
+        name: bucket,
+        create: opts.createBucket,
+        capella: isCapella(connstr),
+        ramMb: opts.bucketRamMb,
+        log,
+      });
+      await ensureCollections(cluster, { bucket, scope, ttlMs: ttl, log });
+      await ensureIndexes(cluster, {
+        bucket,
+        scope,
+        replicas,
+        recreateDrifted: opts.recreateDrifted,
+        waitTimeoutS: opts.waitTimeoutS,
+        log,
+      });
+      if (opts.skipSearch) log('skipped search');
+      else await ensureSearchIndexes(cluster, { bucket, scope, replicas, log });
+      if (opts.createUsers) {
+        await ensureUsers(cluster, {
+          env,
+          bucket,
+          scope,
+          capella: isCapella(connstr),
+          log,
+        });
+      } else {
+        log('skipped users');
+      }
+    } finally {
+      await cluster.close().catch(() => undefined);
+    }
+    return 0;
+  } catch (err) {
+    log(describeError(err));
+    return exitCodeOf(err);
+  }
+}
+
+function describeError(err: unknown): string {
+  if (!(err instanceof Error)) return String(err);
+  const context = (err as { context?: unknown }).context;
+  return context ? `${err.message} ${JSON.stringify(context)}` : err.message;
+}
+
+function required(env: NodeJS.ProcessEnv, name: string): string {
+  const value = env[name];
+  if (value == null || value === '')
+    throw new SetupError(`${name} is required`, 1);
+  return value;
+}
+
+if (process.argv[1] && /(?:^|\/)cli\.(ts|js)$/.test(process.argv[1])) {
+  runSetup(process.argv.slice(2), process.env)
+    .then(code => process.exit(code))
+    .catch(err => {
+      console.error(err instanceof Error ? err.message : err);
+      process.exit(1);
+    });
+}
+
+function envInt(raw: string | undefined, fallback: number): number {
+  if (raw == null || raw === '') return fallback;
+  if (!/^\d+$/.test(raw)) {
+    throw new SetupError(
+      'CBT_COUCHBASE_INDEX_REPLICAS must be a whole number',
+      1,
+    );
+  }
+  return Number(raw);
+}
+
+async function connectAdmin(env: NodeJS.ProcessEnv, connstr: string) {
+  const options: ConnectOptions = {
+    username: env.CBT_COUCHBASE_ADMIN_USER,
+    password: env.CBT_COUCHBASE_ADMIN_PASSWORD,
+    timeouts: { connectTimeout: 10_000 },
+  };
+  if (wanProfile(connstr, env.CBT_COUCHBASE_WAN_PROFILE)) {
+    options.configProfile = 'wanDevelopment';
+  }
+  if (env.CBT_COUCHBASE_CA_CERT_PATH) {
+    options.security = { trustStorePath: env.CBT_COUCHBASE_CA_CERT_PATH };
+  }
+  return connect(connstr, options);
+}

@@ -69,6 +69,10 @@ export const DEFAULT_CONNECTIONS = env.DEFAULT_CONNECTIONS;
 export const DEFAULT_SOURCES = env.DEFAULT_SOURCES;
 
 export const IS_PROMQL_ENABLED = env.ENABLE_PROMQL === 'true';
+// Dual-write: the collector also exports OTLP/JSON to the Couchbase ingest
+// service. Off leaves the collector config unchanged.
+export const COUCHBASE_INGEST_ENABLED =
+  env.CBT_COUCHBASE_INGEST_ENABLED === 'true';
 
 export const EXTERNAL_API_RATE_LIMIT_MAX = (() => {
   const parsed = Number(env.EXTERNAL_API_RATE_LIMIT_MAX);

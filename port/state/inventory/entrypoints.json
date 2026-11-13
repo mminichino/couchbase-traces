@@ -2199,7 +2199,8 @@
       "detail": {
         "dirs": [
           "packages/otel-collector",
-          "docker/otel-collector"
+          "docker/otel-collector",
+          "packages/ingest"
         ]
       }
     },

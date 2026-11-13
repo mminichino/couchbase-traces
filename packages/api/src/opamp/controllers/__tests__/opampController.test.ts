@@ -7,6 +7,7 @@ const configState = {
   INGESTION_API_KEY: '' as string,
   IS_PROMQL_ENABLED: false,
   ENABLE_DATADOG_RECEIVER: false,
+  COUCHBASE_INGEST_ENABLED: false,
 };
 
 jest.mock('@/config', () => ({
@@ -28,6 +29,9 @@ jest.mock('@/config', () => ({
   get ENABLE_DATADOG_RECEIVER() {
     return configState.ENABLE_DATADOG_RECEIVER;
   },
+  get COUCHBASE_INGEST_ENABLED() {
+    return configState.COUCHBASE_INGEST_ENABLED;
+  },
 }));
 
 import {
@@ -42,6 +46,7 @@ const resetConfig = () => {
   configState.INGESTION_API_KEY = '';
   configState.IS_PROMQL_ENABLED = false;
   configState.ENABLE_DATADOG_RECEIVER = false;
+  configState.COUCHBASE_INGEST_ENABLED = false;
 };
 
 describe('opampController', () => {
@@ -256,6 +261,67 @@ describe('opampController', () => {
       expect(cfg.service.extensions).toContain('bearertokenauth/datadog');
       // The otlp/hyperdx auth extension stays intact alongside it.
       expect(cfg.service.extensions).toContain('bearertokenauth/hyperdx');
+    });
+  });
+
+  describe('buildOtelCollectorConfig Couchbase ingest', () => {
+    it('leaves the config unchanged when the flag is off', () => {
+      const off = buildOtelCollectorConfig([]);
+      expect(JSON.stringify(off)).not.toContain('otlphttp/couchbase');
+      expect(off.service.pipelines.traces.exporters).toEqual(['clickhouse']);
+      expect(off.service.pipelines.metrics.exporters).toEqual(['clickhouse']);
+      expect(off.service.pipelines['logs/out-default'].exporters).toEqual([
+        'clickhouse',
+      ]);
+      expect(off.service.pipelines['logs/out-rrweb'].exporters).toEqual([
+        'clickhouse/rrweb',
+      ]);
+      expect(off.service.pipelines['metrics/promql']).toBeUndefined();
+    });
+
+    it('appends the Couchbase exporters without removing ClickHouse', () => {
+      configState.COUCHBASE_INGEST_ENABLED = true;
+      configState.IS_PROMQL_ENABLED = true;
+      const cfg = buildOtelCollectorConfig([
+        { apiKey: 'k1', collectorAuthenticationEnforced: false },
+      ]);
+      expect(cfg.exporters?.['otlphttp/couchbase']).toEqual({
+        endpoint: '${env:CBT_INGEST_ENDPOINT}',
+        encoding: 'json',
+        compression: 'gzip',
+        headers: { Authorization: 'Bearer ${env:CBT_INGEST_TOKEN}' },
+        timeout: '30s',
+        retry_on_failure: {
+          enabled: true,
+          initial_interval: '5s',
+          max_interval: '30s',
+          max_elapsed_time: '300s',
+        },
+        sending_queue: { enabled: true, num_consumers: 4, queue_size: 1000 },
+      });
+      expect(cfg.exporters?.['otlphttp/couchbase-rrweb']).toMatchObject({
+        logs_endpoint: '${env:CBT_INGEST_ENDPOINT}/v1/sessions',
+        encoding: 'json',
+      });
+      expect(cfg.service.pipelines.traces.exporters).toEqual([
+        'clickhouse',
+        'otlphttp/couchbase',
+      ]);
+      expect(cfg.service.pipelines.metrics.exporters).toEqual([
+        'clickhouse',
+        'otlphttp/couchbase',
+      ]);
+      expect(cfg.service.pipelines['logs/out-default'].exporters).toEqual([
+        'clickhouse',
+        'otlphttp/couchbase',
+      ]);
+      expect(cfg.service.pipelines['logs/out-rrweb'].exporters).toEqual([
+        'clickhouse/rrweb',
+        'otlphttp/couchbase-rrweb',
+      ]);
+      expect(cfg.service.pipelines['metrics/promql'].exporters).toEqual([
+        'prometheusremotewrite',
+      ]);
     });
   });
 });

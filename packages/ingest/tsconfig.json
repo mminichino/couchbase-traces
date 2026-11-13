@@ -1,0 +1,17 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "types": ["jest", "node"],
+    "paths": {
+      "@/*": ["./src/*"]
+    },
+    "rootDir": "./src",
+    "outDir": "dist",
+    "isolatedModules": true,
+    "skipLibCheck": true,
+    "strict": true,
+    "target": "ES2022"
+  },
+  "include": ["src"],
+  "exclude": ["node_modules"]
+}

@@ -46,6 +46,25 @@ const opampRemoteConfigsCounter = getCounter('cbt.opamp.remote_configs', {
     'Count of OpAMP remote collector configs sent back to agents in a ServerToAgent response.',
 });
 
+type OtlpHttpCouchbaseExporter = {
+  endpoint: string;
+  encoding: string;
+  compression: string;
+  headers: { Authorization: string };
+  timeout: string;
+  retry_on_failure: {
+    enabled: boolean;
+    initial_interval: string;
+    max_interval: string;
+    max_elapsed_time: string;
+  };
+  sending_queue: {
+    enabled: boolean;
+    num_consumers: number;
+    queue_size: number;
+  };
+};
+
 type CollectorConfig = {
   extensions: Record<string, any>;
   receivers: {
@@ -156,6 +175,10 @@ type CollectorConfig = {
       resource_to_telemetry_conversion: {
         enabled: boolean;
       };
+    };
+    'otlphttp/couchbase'?: OtlpHttpCouchbaseExporter;
+    'otlphttp/couchbase-rrweb'?: OtlpHttpCouchbaseExporter & {
+      logs_endpoint: string;
     };
   };
   service: {
@@ -421,6 +444,40 @@ export const buildOtelCollectorConfig = (
       };
       otelCollectorConfig.service.extensions.push('bearertokenauth/datadog');
     }
+  }
+
+  if (config.COUCHBASE_INGEST_ENABLED && otelCollectorConfig.exporters) {
+    const couchbase: OtlpHttpCouchbaseExporter = {
+      endpoint: '${env:CBT_INGEST_ENDPOINT}',
+      encoding: 'json',
+      compression: 'gzip',
+      headers: { Authorization: 'Bearer ${env:CBT_INGEST_TOKEN}' },
+      timeout: '30s',
+      retry_on_failure: {
+        enabled: true,
+        initial_interval: '5s',
+        max_interval: '30s',
+        max_elapsed_time: '300s',
+      },
+      sending_queue: { enabled: true, num_consumers: 4, queue_size: 1000 },
+    };
+    otelCollectorConfig.exporters['otlphttp/couchbase'] = couchbase;
+    otelCollectorConfig.exporters['otlphttp/couchbase-rrweb'] = {
+      ...couchbase,
+      logs_endpoint: '${env:CBT_INGEST_ENDPOINT}/v1/sessions',
+    };
+    otelCollectorConfig.service.pipelines.traces.exporters.push(
+      'otlphttp/couchbase',
+    );
+    otelCollectorConfig.service.pipelines.metrics.exporters.push(
+      'otlphttp/couchbase',
+    );
+    otelCollectorConfig.service.pipelines['logs/out-default'].exporters.push(
+      'otlphttp/couchbase',
+    );
+    otelCollectorConfig.service.pipelines['logs/out-rrweb'].exporters.push(
+      'otlphttp/couchbase-rrweb',
+    );
   }
 
   return otelCollectorConfig;

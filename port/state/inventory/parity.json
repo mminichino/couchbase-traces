@@ -3148,7 +3148,7 @@
       "name": "Prometheus-compatible query API",
       "area": "metrics",
       "visibility": "api",
-      "status": "not_started",
+      "status": "needs_decision",
       "entryPoints": [
         {
           "id": "api_route:GET /v1/prometheus/label/:name/values",
@@ -17953,7 +17953,7 @@
       "name": "Telemetry ingestion",
       "area": "ingestion",
       "visibility": "api",
-      "status": "not_started",
+      "status": "in_progress",
       "entryPoints": [
         {
           "id": "ingestion:otel-collector",
@@ -20973,11 +20973,11 @@
     "byStatus": [
       {
         "status": "not_started",
-        "count": 50
+        "count": 48
       },
       {
         "status": "in_progress",
-        "count": 1
+        "count": 2
       },
       {
         "status": "ported",
@@ -20985,7 +20985,7 @@
       },
       {
         "status": "needs_decision",
-        "count": 3
+        "count": 4
       },
       {
         "status": "dropped",

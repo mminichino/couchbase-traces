@@ -255,8 +255,12 @@
         "api_route:POST /v1/prometheus/query_exemplars",
         "api_route:POST /v1/prometheus/query_range"
       ],
-      "status": "not_started",
-      "decision": null
+      "status": "needs_decision",
+      "decision": {
+        "note": "PromQL reads ClickHouse's experimental TimeSeries table fed by Prometheus remote-write; there is no Couchbase equivalent in the port's scope.",
+        "signedOffBy": null,
+        "date": null
+      }
     },
     {
       "id": "app-login",
@@ -787,7 +791,7 @@
       "entryPoints": [
         "ingestion:otel-collector"
       ],
-      "status": "not_started",
+      "status": "in_progress",
       "decision": null
     },
     {

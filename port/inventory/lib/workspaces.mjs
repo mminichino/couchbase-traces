@@ -12,6 +12,7 @@ const ROLES = {
   api: 'API server and tasks',
   'common-utils': 'shared query and data layer',
   'otel-collector': 'ingestion collector',
+  ingest: 'ingestion service',
   cli: 'command-line client',
   'hdx-eval': 'evaluation harness',
 };

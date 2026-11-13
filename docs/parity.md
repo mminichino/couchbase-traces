@@ -4,10 +4,10 @@ Generated from `port/features.json` and `port/state/inventory/`. Edit `port/feat
 
 | Status | Features |
 |---|---|
-| not_started | 50 |
-| in_progress | 1 |
+| not_started | 48 |
+| in_progress | 2 |
 | ported | 0 |
-| needs_decision | 3 |
+| needs_decision | 4 |
 | dropped | 0 |
 
 ## search
@@ -120,7 +120,7 @@ Entry points:
 
 | Feature | Visibility | Status | Entry points | Data layer | Tests (unit / int / e2e) |
 |---|---|---|---|---|---|
-| Prometheus-compatible query API (`api-v1`) | api | not_started | 8 | clickhouse.ts, timeseriesEngine.ts, attribution.ts, index.ts, node.ts, +9 | 1 / 1 / 0 |
+| Prometheus-compatible query API (`api-v1`) | api | needs_decision | 8 | clickhouse.ts, timeseriesEngine.ts, attribution.ts, index.ts, node.ts, +9 | 1 / 1 / 0 |
 
 ### Prometheus-compatible query API (`api-v1`)
 
@@ -136,6 +136,8 @@ Entry points:
 - `api_route:POST /v1/prometheus/query`, `packages/api/src/routers/api/prometheus.ts`
 - `api_route:POST /v1/prometheus/query_exemplars`, `packages/api/src/routers/api/prometheus.ts`
 - `api_route:POST /v1/prometheus/query_range`, `packages/api/src/routers/api/prometheus.ts`
+
+Decision: PromQL reads ClickHouse's experimental TimeSeries table fed by Prometheus remote-write; there is no Couchbase equivalent in the port's scope. Not signed off.
 
 ## sessions
 
@@ -630,7 +632,7 @@ Entry points:
 
 | Feature | Visibility | Status | Entry points | Data layer | Tests (unit / int / e2e) |
 |---|---|---|---|---|---|
-| Telemetry ingestion (`ingestion`) | api | not_started | 1 | - | 0 / 0 / 0 |
+| Telemetry ingestion (`ingestion`) | api | in_progress | 1 | - | 0 / 0 / 0 |
 
 ### Telemetry ingestion (`ingestion`)
 
