@@ -1,0 +1,27 @@
+{
+  "id": "charts-agg-sum-two",
+  "description": "sum with two group",
+  "source": "logs",
+  "config": {
+    "select": [
+      {
+        "aggFn": "sum",
+        "valueExpression": "SeverityNumber",
+        "aggCondition": "",
+        "aggConditionLanguage": "sql",
+        "alias": "value"
+      }
+    ],
+    "granularity": "5 minute",
+    "dateRange": {
+      "fromMinutesAgo": 60,
+      "toMinutesAgo": 0
+    },
+    "groupBy": "ServiceName, SeverityText"
+  },
+  "compare": {
+    "ignoreColumns": [
+      "__cbt_id"
+    ]
+  }
+}

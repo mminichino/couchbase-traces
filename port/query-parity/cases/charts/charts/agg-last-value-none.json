@@ -1,0 +1,22 @@
+{
+  "id": "charts-agg-last-value-none",
+  "description": "last_value aggregate without group",
+  "source": "logs",
+  "config": {
+    "select": [
+      {
+        "aggFn": "last_value",
+        "valueExpression": "SeverityNumber",
+        "alias": "value"
+      }
+    ],
+    "granularity": "5 minute",
+    "dateRange": {
+      "fromMinutesAgo": 60,
+      "toMinutesAgo": 0
+    }
+  },
+  "compare": {
+    "ignoreColumns": ["__cbt_id"]
+  }
+}

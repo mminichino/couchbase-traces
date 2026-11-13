@@ -1,0 +1,23 @@
+{
+  "id": "charts-sample-weight-count",
+  "description": "weighted count via sampleWeightExpression",
+  "source": "logs",
+  "config": {
+    "select": [
+      {
+        "aggFn": "count",
+        "valueExpression": "",
+        "alias": "value"
+      }
+    ],
+    "sampleWeightExpression": "1",
+    "granularity": "5 minute",
+    "dateRange": {
+      "fromMinutesAgo": 60,
+      "toMinutesAgo": 0
+    }
+  },
+  "compare": {
+    "ignoreColumns": ["__cbt_id"]
+  }
+}

@@ -1,0 +1,25 @@
+{
+  "id": "charts-agg-condition-lucene",
+  "description": "count with lucene aggCondition",
+  "source": "logs",
+  "config": {
+    "select": [
+      {
+        "aggFn": "count",
+        "valueExpression": "",
+        "aggCondition": "SeverityText:WARN",
+        "aggConditionLanguage": "lucene",
+        "alias": "value"
+      }
+    ],
+    "dateRange": {
+      "fromMinutesAgo": 60,
+      "toMinutesAgo": 0
+    }
+  },
+  "compare": {
+    "ignoreColumns": [
+      "__cbt_id"
+    ]
+  }
+}

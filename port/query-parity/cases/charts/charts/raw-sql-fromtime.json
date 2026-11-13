@@ -1,0 +1,12 @@
+{
+  "id": "charts-raw-sql-fromtime",
+  "description": "raw sql with fromTime macro",
+  "source": "logs",
+  "config": {
+    "configType": "sql",
+    "sqlTemplate": "SELECT COUNT(*) AS c FROM $__sourceTable AS d WHERE d.`Timestamp` >= $__fromTime AND d.`Timestamp` <= $__toTime",
+    "dateRange": { "fromMinutesAgo": 60, "toMinutesAgo": 0 },
+    "displayType": "table"
+  },
+  "compare": { "ignoreColumns": ["__cbt_id"] }
+}

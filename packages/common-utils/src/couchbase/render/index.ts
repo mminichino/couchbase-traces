@@ -5,33 +5,36 @@ import {
   isNonEmptyWhereExpr,
 } from '@/core/renderChartConfig';
 import { resolvePercentileAggFn } from '@/core/utils';
-import { substituteChartConfigVariables } from '@/variables';
+import { concatSqlPP, type SqlPP, sqlpp } from '@/couchbase/sqlpp';
 import { CouchbaseNotReadyError } from '@/dataLayer/errors';
 import {
   isBuilderChartConfig,
   isPromqlChartConfig,
   isRawSqlChartConfig,
 } from '@/guards';
-import { concatSqlPP, sqlpp, type SqlPP } from '@/couchbase/sqlpp';
-import type { BuilderChartConfigWithOptDateRange, QuerySettings } from '@/types';
+import type {
+  BuilderChartConfigWithOptDateRange,
+  QuerySettings,
+} from '@/types';
+import { substituteChartConfigVariables } from '@/variables';
 
-import { couchbaseMetadataRef } from './metadata';
 import { renderFromCouchbase, renderFromWithRowIdCouchbase } from './from';
+import { renderHavingCouchbase } from './having';
+import { renderLimitCouchbase } from './limit';
+import { couchbaseMetadataRef } from './metadata';
+import { renderMultiSeriesMetricChartConfigCouchbase } from './metrics/multiSeries';
+import { translateMetricChartConfigCouchbase } from './metrics/translate';
+import { renderOrderByCouchbase } from './orderBy';
+import { renderRawSqlChartConfigCouchbase } from './rawSql';
+import { parseRowIdWhere } from './rowId';
 import {
   renderGroupByCouchbase,
   renderSelectCouchbase,
   renderTimeBucketPartsCouchbase,
 } from './select';
-import { renderWhereCouchbase } from './where';
-import { renderHavingCouchbase } from './having';
-import { renderOrderByCouchbase } from './orderBy';
-import { renderLimitCouchbase } from './limit';
-import { renderWithCouchbase } from './with';
-import { parseRowIdWhere } from './rowId';
 import { renderSeriesLimitCteCouchbase } from './seriesLimit';
-import { renderRawSqlChartConfigCouchbase } from './rawSql';
-import { renderMultiSeriesMetricChartConfigCouchbase } from './metrics/multiSeries';
-import { translateMetricChartConfigCouchbase } from './metrics/translate';
+import { renderWhereCouchbase } from './where';
+import { renderWithCouchbase } from './with';
 
 export type SqlppQuery = {
   sql: string;
@@ -51,7 +54,10 @@ export async function renderChartConfigCouchbase(
     return renderRawSqlChartConfigCouchbase(rawChartConfig, metadata);
   }
   if (!isBuilderChartConfig(rawChartConfig)) {
-    const kind = 'configType' in rawChartConfig ? String(rawChartConfig.configType) : 'chart';
+    const kind =
+      'configType' in rawChartConfig
+        ? String(rawChartConfig.configType)
+        : 'chart';
     throw new CouchbaseNotReadyError(`charts: ${kind}`);
   }
 
@@ -93,10 +99,11 @@ export async function renderChartConfigCouchbase(
   );
   const select = await renderSelectCouchbase(chartConfig, ctx);
   const pureRowId =
-    chartConfig.whereLanguage === 'sql' && isNonEmptyWhereExpr(chartConfig.where)
+    chartConfig.whereLanguage === 'sql' &&
+    isNonEmptyWhereExpr(chartConfig.where)
       ? parseRowIdWhere(chartConfig.where ?? '')
       : undefined;
-  let from =
+  const from =
     pureRowId != null
       ? renderFromWithRowIdCouchbase(chartConfig, pureRowId)
       : renderFromCouchbase(chartConfig);
@@ -128,9 +135,7 @@ export async function renderChartConfigCouchbase(
       : seriesCap.predicate;
   }
 
-  const head = withSql?.statement
-    ? sqlpp`WITH ${withSql}`
-    : sqlpp``;
+  const head = withSql?.statement ? sqlpp`WITH ${withSql}` : sqlpp``;
   const statement = sqlpp`${head} SELECT ${select} ${from}${
     where?.statement ? sqlpp` WHERE ${where}` : sqlpp``
   }${groupBy?.statement ? sqlpp` GROUP BY ${groupBy}` : sqlpp``}${
@@ -147,12 +152,12 @@ export async function renderChartConfigCouchbase(
 }
 
 // Re-exports for callers and tests
+export { getStableSampleExpressionCouchbase } from './eventDeltas';
 export {
-  ROW_ID_ALIAS,
   parseRowIdWhere,
+  ROW_ID_ALIAS,
   rowIdSelect,
   rowIdUseKeys,
   rowIdWhere,
   rowIdWhereLiteral,
 } from './rowId';
-export { getStableSampleExpressionCouchbase } from './eventDeltas';

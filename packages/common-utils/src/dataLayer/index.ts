@@ -51,7 +51,7 @@ export type Slice =
 /** Phase 7 turns these on one slice at a time. */
 export const COUCHBASE_SLICES: Readonly<Record<Slice, boolean>> = {
   search: true,
-  charts: false,
+  charts: true,
   traces: false,
   metrics: false,
   sessions: false,

@@ -7,9 +7,16 @@ import PreviewCopyButton from '@/components/PreviewCopyButton';
 import { useConnectionKind } from '@/couchbase/connection';
 import { formatLanguageForConnection } from '@/couchbase/dialect';
 import { useRenderedSqlChartConfig } from '@/hooks/useChartConfig';
-import { clickhouseSql, formatSqlForDialect, sqlppSql } from '@/utils/codeMirror';
+import {
+  clickhouseSql,
+  formatSqlForDialect,
+  sqlppSql,
+} from '@/utils/codeMirror';
 
-function tryFormat(data?: string, dialect: 'clickhouse' | 'n1ql' = 'clickhouse') {
+function tryFormat(
+  data?: string,
+  dialect: 'clickhouse' | 'n1ql' = 'clickhouse',
+) {
   try {
     if (data != null) {
       return formatSqlForDialect(data, dialect);

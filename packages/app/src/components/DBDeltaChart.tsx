@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { ClickHouseQueryError } from '@couchbase-traces/common-utils/dist/clickhouse';
-import { getStableSampleExpressionCouchbase } from '@couchbase-traces/common-utils/dist/couchbase/render/eventDeltas';
 import { tcFromChartConfig } from '@couchbase-traces/common-utils/dist/core/metadata';
+import { getStableSampleExpressionCouchbase } from '@couchbase-traces/common-utils/dist/couchbase/render/eventDeltas';
 import {
   BuilderChartConfigWithDateRange,
   Filter,
@@ -126,8 +126,7 @@ export default function DBDeltaChart({
     useTableMetadata(tcFromChartConfig(config), { retry: false });
   const isLocalTable = tableMetadata != null && !tableMetadata.isPointerTable;
   const canUsePartIdsHint = !isCouchbase && isLocalTable;
-  const inOperator =
-    isCouchbase || isLocalTable ? 'IN' : 'GLOBAL IN';
+  const inOperator = isCouchbase || isLocalTable ? 'IN' : 'GLOBAL IN';
   const notInOperator =
     isCouchbase || isLocalTable ? 'NOT IN' : 'GLOBAL NOT IN';
   const isSelectionQueryEnabled = hasSelection && !isTableMetadataLoading;

@@ -1,0 +1,24 @@
+{
+  "id": "charts-heatmap-duration",
+  "description": "heatmap display over SeverityNumber buckets",
+  "source": "logs",
+  "config": {
+    "select": [
+      {
+        "aggFn": "count",
+        "valueExpression": "",
+        "alias": "count"
+      }
+    ],
+    "groupBy": "SeverityNumber",
+    "granularity": "5 minute",
+    "displayType": "heatmap",
+    "dateRange": {
+      "fromMinutesAgo": 60,
+      "toMinutesAgo": 0
+    }
+  },
+  "compare": {
+    "ignoreColumns": ["__cbt_id"]
+  }
+}

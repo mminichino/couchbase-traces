@@ -1,0 +1,97 @@
+{
+  "slice": "charts",
+  "features": [
+    {
+      "id": "app-chart",
+      "name": "Chart explorer",
+      "status": "ported",
+      "entryPoints": [
+        "app_page:/chart"
+      ]
+    },
+    {
+      "id": "app-dashboards",
+      "name": "Dashboards",
+      "status": "ported",
+      "entryPoints": [
+        "api_route:DELETE /dashboards/:id",
+        "api_route:DELETE /dashboards/preset/:presetDashboard/filter/:id",
+        "api_route:GET /dashboards",
+        "api_route:GET /dashboards/preset/:presetDashboard/filters",
+        "api_route:PATCH /dashboards/:id",
+        "api_route:POST /dashboards",
+        "api_route:POST /dashboards/preset/:presetDashboard/filter",
+        "api_route:PUT /dashboards/preset/:presetDashboard/filter",
+        "app_page:/dashboards",
+        "app_page:/dashboards/[dashboardId]",
+        "app_page:/dashboards/import",
+        "app_page:/dashboards/list",
+        "app_page:/dashboards/templates"
+      ]
+    }
+  ],
+  "coreFunctions": [
+    {
+      "file": "packages/common-utils/src/core/renderChartConfig.ts",
+      "name": "renderChartConfig"
+    },
+    {
+      "file": "packages/common-utils/src/couchbase/render/index.ts",
+      "name": "renderChartConfigCouchbase"
+    },
+    {
+      "file": "packages/common-utils/src/dashboardFilterValues.ts",
+      "name": "getAdhocFilterTargetsForTile"
+    },
+    {
+      "file": "packages/common-utils/src/dashboardFilterValues.ts",
+      "name": "getBlockingRequiredFilterNames"
+    }
+  ],
+  "appQuerySites": [
+    {
+      "path": "packages/app/src/DBDashboardPage.tsx",
+      "rawSql": 1,
+      "typeNames": 0
+    }
+  ],
+  "dataLayerSymbols": [
+    {
+      "path": "packages/app/src/DBChartPage.tsx",
+      "symbols": [
+        "default"
+      ]
+    }
+  ],
+  "tests": {
+    "unit": [
+      "packages/app/src/__tests__/DBDashboardImportPage.test.tsx",
+      "packages/app/src/__tests__/DashboardContainer.test.tsx",
+      "packages/app/src/__tests__/GridSnapOverlay.test.tsx",
+      "packages/app/src/__tests__/SnapGridLayout.test.tsx",
+      "packages/app/src/__tests__/gridSnap.test.ts",
+      "packages/app/src/components/Dashboards/__tests__/DashboardsListPage.test.tsx",
+      "packages/app/src/components/Dashboards/__tests__/dashboardsListUtils.test.ts",
+      "packages/app/src/components/__tests__/DashboardTableOfContents.test.tsx",
+      "packages/app/src/components/dashboard/__tests__/MoveToGroupSubmenu.test.tsx",
+      "packages/app/src/hooks/__tests__/useAlertSeededChartConfig.test.tsx",
+      "packages/app/src/hooks/__tests__/useDashboardContainers.test.tsx",
+      "packages/app/src/hooks/__tests__/useDashboardKioskMode.test.tsx",
+      "packages/app/src/hooks/__tests__/useReleaseAnnotations.test.tsx",
+      "packages/app/src/hooks/__tests__/useTileSelection.test.tsx"
+    ],
+    "int": [
+      "packages/api/src/routers/api/__tests__/dashboard.int.test.ts"
+    ],
+    "e2e": [
+      "packages/app/tests/e2e/core/navigation.spec.ts",
+      "packages/app/tests/e2e/features/dashboard-table-linking.spec.ts",
+      "packages/app/tests/e2e/features/dashboard-template-import.spec.ts",
+      "packages/app/tests/e2e/features/search/saved-search.spec.ts",
+      "packages/app/tests/e2e/page-objects/ChartExplorerPage.ts",
+      "packages/app/tests/e2e/page-objects/DashboardImportPage.ts",
+      "packages/app/tests/e2e/page-objects/DashboardPage.ts",
+      "packages/app/tests/e2e/page-objects/DashboardsListPage.ts"
+    ]
+  }
+}

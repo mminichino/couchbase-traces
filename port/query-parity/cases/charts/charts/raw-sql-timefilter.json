@@ -1,0 +1,15 @@
+{
+  "id": "charts-raw-sql-timefilter",
+  "description": "raw sql with timeFilter and interval macros",
+  "source": "logs",
+  "config": {
+    "configType": "sql",
+    "sqlTemplate": "SELECT COUNT(*) AS c, $__timeInterval(d.`Timestamp`) AS `__hdx_time_bucket` FROM $__sourceTable AS d WHERE $__timeFilter(d.`Timestamp`) GROUP BY $__timeInterval(d.`Timestamp`) ORDER BY `__hdx_time_bucket`",
+    "dateRange": { "fromMinutesAgo": 60, "toMinutesAgo": 0 },
+    "displayType": "line"
+  },
+  "compare": {
+    "ordered": true,
+    "ignoreColumns": ["__cbt_id"]
+  }
+}

@@ -35,5 +35,44 @@
         "reason": "clickhouse_admin"
       }
     ]
+  },
+  "charts": {
+    "specs": [
+      "packages/app/tests/e2e/features/chart-explorer.spec.ts",
+      "packages/app/tests/e2e/features/chart-editor-source-filtering.spec.ts",
+      "packages/app/tests/e2e/features/dashboard.spec.ts",
+      "packages/app/tests/e2e/features/dashboards-list.spec.ts",
+      "packages/app/tests/e2e/features/dashboard-adhoc-filters.spec.ts",
+      "packages/app/tests/e2e/features/dashboard-adhoc-click-filters.spec.ts",
+      "packages/app/tests/e2e/features/dashboard-filter-variables.spec.ts",
+      "packages/app/tests/e2e/features/dashboard-static-filters.spec.ts",
+      "packages/app/tests/e2e/features/dashboard-required-filters.spec.ts",
+      "packages/app/tests/e2e/features/dashboard-single-select-filters.spec.ts",
+      "packages/app/tests/e2e/features/dashboard-table-linking.spec.ts",
+      "packages/app/tests/e2e/features/dashboard-template-import.spec.ts",
+      "packages/app/tests/e2e/features/dashboard-tile-editor-filters.spec.ts",
+      "packages/app/tests/e2e/features/dashboard-tile-move-menu.spec.ts",
+      "packages/app/tests/e2e/features/dashboard-container.spec.ts",
+      "packages/app/tests/e2e/features/dashboard-filter-value-format.spec.ts",
+      "packages/app/tests/e2e/features/temporary-dashboard.spec.ts",
+      "packages/app/tests/e2e/features/heatmap.spec.ts",
+      "packages/app/tests/e2e/features/heatmap-series.spec.ts",
+      "packages/app/tests/e2e/features/line-interpolation.spec.ts",
+      "packages/app/tests/e2e/features/clickhouse-dashboard.spec.ts"
+    ],
+    "exclusions": [
+      {
+        "file": "packages/app/tests/e2e/features/clickhouse-dashboard.spec.ts",
+        "reason": "clickhouse_admin"
+      },
+      {
+        "file": "packages/app/tests/e2e/features/dashboard-external-api-config.spec.ts",
+        "reason": "local_mode_only"
+      },
+      {
+        "file": "packages/app/tests/e2e/features/dashboard-external-api-series.spec.ts",
+        "reason": "local_mode_only"
+      }
+    ]
   }
 }

@@ -13,7 +13,7 @@
           "file": "packages/api/src/routers/api/ai.ts"
         }
       ],
-      "closureSize": 72,
+      "closureSize": 93,
       "exclusiveFiles": [
         "packages/api/src/controllers/ai.ts",
         "packages/api/src/routers/api/ai.ts",
@@ -131,6 +131,12 @@
           "symbols": [
             "ChartConfigWithOptDateRangeEx",
             "FIXED_TIME_BUCKET_EXPR_ALIAS",
+            "hasMetricFormulas",
+            "isMetricChartConfig",
+            "isNonEmptyWhereExpr",
+            "isRatioChartConfig",
+            "isUsingGranularity",
+            "isUsingGroupBy",
             "renderChartConfig",
             "renderWhereExpressionStr",
             "setChartSelectsAlias",
@@ -175,6 +181,24 @@
             "FieldContext",
             "ResolvedField",
             "resolveField"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/fn/quantile.ts",
+          "symbols": [
+            "quantile"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/fn/scalar.ts",
+          "symbols": [
+            "aggIf",
+            "anyValue",
+            "argMax",
+            "count",
+            "countIf",
+            "sumIf",
+            "uniq"
           ]
         },
         {
@@ -282,6 +306,138 @@
           ]
         },
         {
+          "path": "packages/common-utils/src/couchbase/render/eventDeltas.ts",
+          "symbols": [
+            "getStableSampleExpressionCouchbase"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/from.ts",
+          "symbols": [
+            "renderFromCouchbase",
+            "renderFromWithRowIdCouchbase"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/having.ts",
+          "symbols": [
+            "renderHavingCouchbase"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/index.ts",
+          "symbols": [
+            "ROW_ID_ALIAS",
+            "SqlppQuery",
+            "getStableSampleExpressionCouchbase",
+            "renderChartConfigCouchbase",
+            "rowIdSelect",
+            "rowIdUseKeys",
+            "rowIdWhere"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/limit.ts",
+          "symbols": [
+            "renderLimitCouchbase"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/macros.ts",
+          "symbols": [
+            "expandMacrosCouchbase"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/metadata.ts",
+          "symbols": [
+            "couchbaseMetadataRef"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/metrics/multiSeries.ts",
+          "symbols": [
+            "renderMultiSeriesMetricChartConfigCouchbase"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/metrics/translate.ts",
+          "symbols": [
+            "translateMetricChartConfigCouchbase"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/orderBy.ts",
+          "symbols": [
+            "renderOrderByCouchbase"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/postprocess.ts",
+          "symbols": [
+            "couchbasePostprocessHints"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/ratio.ts",
+          "symbols": [
+            "ratioExprCouchbase"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/rawSql.ts",
+          "symbols": [
+            "renderRawSqlChartConfigCouchbase"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/rowId.ts",
+          "symbols": [
+            "ROW_ID_ALIAS",
+            "parseRowIdWhere",
+            "rowIdSelect",
+            "rowIdUseKeys",
+            "rowIdWhere",
+            "rowIdWhereLiteral"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/search.ts",
+          "symbols": [
+            "includeRowIdInSelect"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/select.ts",
+          "symbols": [
+            "getFirstTimestampColumn",
+            "renderGroupByCouchbase",
+            "renderSelectCouchbase",
+            "renderTimeBucketPartsCouchbase",
+            "timestampFormatOf"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/seriesLimit.ts",
+          "symbols": [
+            "renderSeriesLimitCteCouchbase"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/where.ts",
+          "symbols": [
+            "RenderFilterContext",
+            "compileWhereExpressionCouchbase",
+            "renderWhereCouchbase"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/with.ts",
+          "symbols": [
+            "renderWithCouchbase"
+          ]
+        },
+        {
           "path": "packages/common-utils/src/couchbase/resultset.ts",
           "symbols": [
             "DEFAULT_MAX_BUFFERED_BYTES",
@@ -323,7 +479,10 @@
         {
           "path": "packages/common-utils/src/couchbase/time.ts",
           "symbols": [
+            "SQLPP_DATE_FORMAT",
             "TimeFormat",
+            "parseGranularity",
+            "timeBucketExpr",
             "timeRangePredicate",
             "toIso30"
           ]
@@ -2322,7 +2481,7 @@
       "name": "Pinned filters",
       "area": "search",
       "visibility": "user",
-      "status": "not_started",
+      "status": "ported",
       "entryPoints": [
         {
           "id": "api_route:GET /pinned-filters",
@@ -2632,7 +2791,7 @@
       "name": "Saved searches",
       "area": "search",
       "visibility": "user",
-      "status": "not_started",
+      "status": "ported",
       "entryPoints": [
         {
           "id": "api_route:DELETE /saved-search/:id",
@@ -3657,7 +3816,7 @@
           "file": "packages/api/src/routers/api/prometheus.ts"
         }
       ],
-      "closureSize": 67,
+      "closureSize": 88,
       "exclusiveFiles": [
         "packages/api/src/routers/api/prometheus.ts"
       ],
@@ -3784,6 +3943,12 @@
           "symbols": [
             "ChartConfigWithOptDateRangeEx",
             "FIXED_TIME_BUCKET_EXPR_ALIAS",
+            "hasMetricFormulas",
+            "isMetricChartConfig",
+            "isNonEmptyWhereExpr",
+            "isRatioChartConfig",
+            "isUsingGranularity",
+            "isUsingGroupBy",
             "renderChartConfig",
             "renderWhereExpressionStr",
             "setChartSelectsAlias",
@@ -3820,6 +3985,24 @@
             "FieldContext",
             "ResolvedField",
             "resolveField"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/fn/quantile.ts",
+          "symbols": [
+            "quantile"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/fn/scalar.ts",
+          "symbols": [
+            "aggIf",
+            "anyValue",
+            "argMax",
+            "count",
+            "countIf",
+            "sumIf",
+            "uniq"
           ]
         },
         {
@@ -3899,6 +4082,138 @@
           ]
         },
         {
+          "path": "packages/common-utils/src/couchbase/render/eventDeltas.ts",
+          "symbols": [
+            "getStableSampleExpressionCouchbase"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/from.ts",
+          "symbols": [
+            "renderFromCouchbase",
+            "renderFromWithRowIdCouchbase"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/having.ts",
+          "symbols": [
+            "renderHavingCouchbase"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/index.ts",
+          "symbols": [
+            "ROW_ID_ALIAS",
+            "SqlppQuery",
+            "getStableSampleExpressionCouchbase",
+            "renderChartConfigCouchbase",
+            "rowIdSelect",
+            "rowIdUseKeys",
+            "rowIdWhere"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/limit.ts",
+          "symbols": [
+            "renderLimitCouchbase"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/macros.ts",
+          "symbols": [
+            "expandMacrosCouchbase"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/metadata.ts",
+          "symbols": [
+            "couchbaseMetadataRef"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/metrics/multiSeries.ts",
+          "symbols": [
+            "renderMultiSeriesMetricChartConfigCouchbase"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/metrics/translate.ts",
+          "symbols": [
+            "translateMetricChartConfigCouchbase"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/orderBy.ts",
+          "symbols": [
+            "renderOrderByCouchbase"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/postprocess.ts",
+          "symbols": [
+            "couchbasePostprocessHints"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/ratio.ts",
+          "symbols": [
+            "ratioExprCouchbase"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/rawSql.ts",
+          "symbols": [
+            "renderRawSqlChartConfigCouchbase"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/rowId.ts",
+          "symbols": [
+            "ROW_ID_ALIAS",
+            "parseRowIdWhere",
+            "rowIdSelect",
+            "rowIdUseKeys",
+            "rowIdWhere",
+            "rowIdWhereLiteral"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/search.ts",
+          "symbols": [
+            "includeRowIdInSelect"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/select.ts",
+          "symbols": [
+            "getFirstTimestampColumn",
+            "renderGroupByCouchbase",
+            "renderSelectCouchbase",
+            "renderTimeBucketPartsCouchbase",
+            "timestampFormatOf"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/seriesLimit.ts",
+          "symbols": [
+            "renderSeriesLimitCteCouchbase"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/where.ts",
+          "symbols": [
+            "RenderFilterContext",
+            "compileWhereExpressionCouchbase",
+            "renderWhereCouchbase"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/with.ts",
+          "symbols": [
+            "renderWithCouchbase"
+          ]
+        },
+        {
           "path": "packages/common-utils/src/couchbase/resultset.ts",
           "symbols": [
             "DEFAULT_MAX_BUFFERED_BYTES",
@@ -3940,7 +4255,10 @@
         {
           "path": "packages/common-utils/src/couchbase/time.ts",
           "symbols": [
+            "SQLPP_DATE_FORMAT",
             "TimeFormat",
+            "parseGranularity",
+            "timeBucketExpr",
             "timeRangePredicate",
             "toIso30"
           ]
@@ -4217,7 +4535,7 @@
           "file": "packages/api/src/routers/api/webhooks.ts"
         }
       ],
-      "closureSize": 99,
+      "closureSize": 120,
       "exclusiveFiles": [
         "packages/api/src/routers/api/webhooks.ts"
       ],
@@ -4348,6 +4666,12 @@
           "symbols": [
             "ChartConfigWithOptDateRangeEx",
             "FIXED_TIME_BUCKET_EXPR_ALIAS",
+            "hasMetricFormulas",
+            "isMetricChartConfig",
+            "isNonEmptyWhereExpr",
+            "isRatioChartConfig",
+            "isUsingGranularity",
+            "isUsingGroupBy",
             "renderChartConfig",
             "renderWhereExpressionStr",
             "setChartSelectsAlias",
@@ -4392,6 +4716,24 @@
             "FieldContext",
             "ResolvedField",
             "resolveField"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/fn/quantile.ts",
+          "symbols": [
+            "quantile"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/fn/scalar.ts",
+          "symbols": [
+            "aggIf",
+            "anyValue",
+            "argMax",
+            "count",
+            "countIf",
+            "sumIf",
+            "uniq"
           ]
         },
         {
@@ -4499,6 +4841,138 @@
           ]
         },
         {
+          "path": "packages/common-utils/src/couchbase/render/eventDeltas.ts",
+          "symbols": [
+            "getStableSampleExpressionCouchbase"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/from.ts",
+          "symbols": [
+            "renderFromCouchbase",
+            "renderFromWithRowIdCouchbase"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/having.ts",
+          "symbols": [
+            "renderHavingCouchbase"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/index.ts",
+          "symbols": [
+            "ROW_ID_ALIAS",
+            "SqlppQuery",
+            "getStableSampleExpressionCouchbase",
+            "renderChartConfigCouchbase",
+            "rowIdSelect",
+            "rowIdUseKeys",
+            "rowIdWhere"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/limit.ts",
+          "symbols": [
+            "renderLimitCouchbase"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/macros.ts",
+          "symbols": [
+            "expandMacrosCouchbase"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/metadata.ts",
+          "symbols": [
+            "couchbaseMetadataRef"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/metrics/multiSeries.ts",
+          "symbols": [
+            "renderMultiSeriesMetricChartConfigCouchbase"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/metrics/translate.ts",
+          "symbols": [
+            "translateMetricChartConfigCouchbase"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/orderBy.ts",
+          "symbols": [
+            "renderOrderByCouchbase"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/postprocess.ts",
+          "symbols": [
+            "couchbasePostprocessHints"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/ratio.ts",
+          "symbols": [
+            "ratioExprCouchbase"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/rawSql.ts",
+          "symbols": [
+            "renderRawSqlChartConfigCouchbase"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/rowId.ts",
+          "symbols": [
+            "ROW_ID_ALIAS",
+            "parseRowIdWhere",
+            "rowIdSelect",
+            "rowIdUseKeys",
+            "rowIdWhere",
+            "rowIdWhereLiteral"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/search.ts",
+          "symbols": [
+            "includeRowIdInSelect"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/select.ts",
+          "symbols": [
+            "getFirstTimestampColumn",
+            "renderGroupByCouchbase",
+            "renderSelectCouchbase",
+            "renderTimeBucketPartsCouchbase",
+            "timestampFormatOf"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/seriesLimit.ts",
+          "symbols": [
+            "renderSeriesLimitCteCouchbase"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/where.ts",
+          "symbols": [
+            "RenderFilterContext",
+            "compileWhereExpressionCouchbase",
+            "renderWhereCouchbase"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/with.ts",
+          "symbols": [
+            "renderWithCouchbase"
+          ]
+        },
+        {
           "path": "packages/common-utils/src/couchbase/resultset.ts",
           "symbols": [
             "DEFAULT_MAX_BUFFERED_BYTES",
@@ -4540,7 +5014,10 @@
         {
           "path": "packages/common-utils/src/couchbase/time.ts",
           "symbols": [
+            "SQLPP_DATE_FORMAT",
             "TimeFormat",
+            "parseGranularity",
+            "timeBucketExpr",
             "timeRangePredicate",
             "toIso30"
           ]
@@ -4882,7 +5359,7 @@
           "file": "packages/app/pages/alerts/[alertId].tsx"
         }
       ],
-      "closureSize": 561,
+      "closureSize": 587,
       "exclusiveFiles": [
         "packages/api/src/routers/api/alerts.ts",
         "packages/app/pages/alerts/[alertId].tsx",
@@ -5386,6 +5863,7 @@
           "symbols": [
             "ChartConfigWithOptDateRangeEx",
             "FIXED_TIME_BUCKET_EXPR_ALIAS",
+            "hasMetricFormulas",
             "isHistogramClassSelect",
             "isMetricChartConfig",
             "isNonEmptyWhereExpr",
@@ -5436,6 +5914,24 @@
           ]
         },
         {
+          "path": "packages/common-utils/src/couchbase/fn/quantile.ts",
+          "symbols": [
+            "quantile"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/fn/scalar.ts",
+          "symbols": [
+            "aggIf",
+            "anyValue",
+            "argMax",
+            "count",
+            "countIf",
+            "sumIf",
+            "uniq"
+          ]
+        },
+        {
           "path": "packages/common-utils/src/couchbase/infer.ts",
           "symbols": [
             "InferredField",
@@ -5448,6 +5944,13 @@
           "symbols": [
             "encodeRow",
             "isIsoDateTime"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/keywords.ts",
+          "symbols": [
+            "SQLPP_FUNCTIONS",
+            "SQLPP_KEYWORDS"
           ]
         },
         {
@@ -5486,8 +5989,142 @@
         {
           "path": "packages/common-utils/src/couchbase/render.ts",
           "symbols": [
+            "ROW_ID_ALIAS",
             "SqlppQuery",
-            "renderChartConfigCouchbase"
+            "renderChartConfigCouchbase",
+            "rowIdWhereLiteral"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/eventDeltas.ts",
+          "symbols": [
+            "getStableSampleExpressionCouchbase"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/from.ts",
+          "symbols": [
+            "renderFromCouchbase",
+            "renderFromWithRowIdCouchbase"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/having.ts",
+          "symbols": [
+            "renderHavingCouchbase"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/index.ts",
+          "symbols": [
+            "ROW_ID_ALIAS",
+            "SqlppQuery",
+            "getStableSampleExpressionCouchbase",
+            "renderChartConfigCouchbase",
+            "rowIdSelect",
+            "rowIdUseKeys",
+            "rowIdWhere"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/limit.ts",
+          "symbols": [
+            "renderLimitCouchbase"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/macros.ts",
+          "symbols": [
+            "expandMacrosCouchbase"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/metadata.ts",
+          "symbols": [
+            "couchbaseMetadataRef"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/metrics/multiSeries.ts",
+          "symbols": [
+            "renderMultiSeriesMetricChartConfigCouchbase"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/metrics/translate.ts",
+          "symbols": [
+            "translateMetricChartConfigCouchbase"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/orderBy.ts",
+          "symbols": [
+            "renderOrderByCouchbase"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/postprocess.ts",
+          "symbols": [
+            "couchbasePostprocessHints"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/ratio.ts",
+          "symbols": [
+            "ratioExprCouchbase"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/rawSql.ts",
+          "symbols": [
+            "renderRawSqlChartConfigCouchbase"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/rowId.ts",
+          "symbols": [
+            "ROW_ID_ALIAS",
+            "parseRowIdWhere",
+            "rowIdSelect",
+            "rowIdUseKeys",
+            "rowIdWhere",
+            "rowIdWhereLiteral"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/search.ts",
+          "symbols": [
+            "includeRowIdInSelect"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/select.ts",
+          "symbols": [
+            "getFirstTimestampColumn",
+            "renderGroupByCouchbase",
+            "renderSelectCouchbase",
+            "renderTimeBucketPartsCouchbase",
+            "timestampFormatOf"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/seriesLimit.ts",
+          "symbols": [
+            "renderSeriesLimitCteCouchbase"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/where.ts",
+          "symbols": [
+            "RenderFilterContext",
+            "compileWhereExpressionCouchbase",
+            "renderWhereCouchbase"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/with.ts",
+          "symbols": [
+            "renderWithCouchbase"
           ]
         },
         {
@@ -5538,7 +6175,10 @@
         {
           "path": "packages/common-utils/src/couchbase/time.ts",
           "symbols": [
+            "SQLPP_DATE_FORMAT",
             "TimeFormat",
+            "parseGranularity",
+            "timeBucketExpr",
             "timeRangePredicate",
             "toIso30"
           ]
@@ -5585,9 +6225,12 @@
         {
           "path": "packages/common-utils/src/dataLayer/index.ts",
           "symbols": [
+            "Slice",
             "clearConnectionKindCache",
+            "filterSourcesForSlice",
             "formatQueryForDisplay",
             "getMetadata",
+            "isCouchbaseSliceEnabled",
             "isMissingColumnError",
             "renderChartConfig"
           ]
@@ -5970,7 +6613,7 @@
           "file": "packages/app/pages/benchmark.tsx"
         }
       ],
-      "closureSize": 345,
+      "closureSize": 370,
       "exclusiveFiles": [
         "packages/app/pages/benchmark.tsx",
         "packages/app/src/BenchmarkPage.tsx"
@@ -6266,6 +6909,7 @@
           "symbols": [
             "ChartConfigWithOptDateRangeEx",
             "FIXED_TIME_BUCKET_EXPR_ALIAS",
+            "hasMetricFormulas",
             "isHistogramClassSelect",
             "isMetricChartConfig",
             "isNonEmptyWhereExpr",
@@ -6316,6 +6960,24 @@
           ]
         },
         {
+          "path": "packages/common-utils/src/couchbase/fn/quantile.ts",
+          "symbols": [
+            "quantile"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/fn/scalar.ts",
+          "symbols": [
+            "aggIf",
+            "anyValue",
+            "argMax",
+            "count",
+            "countIf",
+            "sumIf",
+            "uniq"
+          ]
+        },
+        {
           "path": "packages/common-utils/src/couchbase/infer.ts",
           "symbols": [
             "InferredField",
@@ -6328,6 +6990,13 @@
           "symbols": [
             "encodeRow",
             "isIsoDateTime"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/keywords.ts",
+          "symbols": [
+            "SQLPP_FUNCTIONS",
+            "SQLPP_KEYWORDS"
           ]
         },
         {
@@ -6366,8 +7035,142 @@
         {
           "path": "packages/common-utils/src/couchbase/render.ts",
           "symbols": [
+            "ROW_ID_ALIAS",
             "SqlppQuery",
-            "renderChartConfigCouchbase"
+            "renderChartConfigCouchbase",
+            "rowIdWhereLiteral"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/eventDeltas.ts",
+          "symbols": [
+            "getStableSampleExpressionCouchbase"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/from.ts",
+          "symbols": [
+            "renderFromCouchbase",
+            "renderFromWithRowIdCouchbase"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/having.ts",
+          "symbols": [
+            "renderHavingCouchbase"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/index.ts",
+          "symbols": [
+            "ROW_ID_ALIAS",
+            "SqlppQuery",
+            "getStableSampleExpressionCouchbase",
+            "renderChartConfigCouchbase",
+            "rowIdSelect",
+            "rowIdUseKeys",
+            "rowIdWhere"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/limit.ts",
+          "symbols": [
+            "renderLimitCouchbase"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/macros.ts",
+          "symbols": [
+            "expandMacrosCouchbase"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/metadata.ts",
+          "symbols": [
+            "couchbaseMetadataRef"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/metrics/multiSeries.ts",
+          "symbols": [
+            "renderMultiSeriesMetricChartConfigCouchbase"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/metrics/translate.ts",
+          "symbols": [
+            "translateMetricChartConfigCouchbase"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/orderBy.ts",
+          "symbols": [
+            "renderOrderByCouchbase"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/postprocess.ts",
+          "symbols": [
+            "couchbasePostprocessHints"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/ratio.ts",
+          "symbols": [
+            "ratioExprCouchbase"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/rawSql.ts",
+          "symbols": [
+            "renderRawSqlChartConfigCouchbase"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/rowId.ts",
+          "symbols": [
+            "ROW_ID_ALIAS",
+            "parseRowIdWhere",
+            "rowIdSelect",
+            "rowIdUseKeys",
+            "rowIdWhere",
+            "rowIdWhereLiteral"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/search.ts",
+          "symbols": [
+            "includeRowIdInSelect"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/select.ts",
+          "symbols": [
+            "getFirstTimestampColumn",
+            "renderGroupByCouchbase",
+            "renderSelectCouchbase",
+            "renderTimeBucketPartsCouchbase",
+            "timestampFormatOf"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/seriesLimit.ts",
+          "symbols": [
+            "renderSeriesLimitCteCouchbase"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/where.ts",
+          "symbols": [
+            "RenderFilterContext",
+            "compileWhereExpressionCouchbase",
+            "renderWhereCouchbase"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/with.ts",
+          "symbols": [
+            "renderWithCouchbase"
           ]
         },
         {
@@ -6418,7 +7221,10 @@
         {
           "path": "packages/common-utils/src/couchbase/time.ts",
           "symbols": [
+            "SQLPP_DATE_FORMAT",
             "TimeFormat",
+            "parseGranularity",
+            "timeBucketExpr",
             "timeRangePredicate",
             "toIso30"
           ]
@@ -6718,7 +7524,7 @@
       "name": "Chart explorer",
       "area": "charts",
       "visibility": "user",
-      "status": "not_started",
+      "status": "ported",
       "entryPoints": [
         {
           "id": "app_page:/chart",
@@ -6726,7 +7532,7 @@
           "file": "packages/app/pages/chart.tsx"
         }
       ],
-      "closureSize": 523,
+      "closureSize": 549,
       "exclusiveFiles": [
         "packages/app/pages/chart.tsx",
         "packages/app/src/DBChartPage.tsx",
@@ -7201,6 +8007,7 @@
           "symbols": [
             "ChartConfigWithOptDateRangeEx",
             "FIXED_TIME_BUCKET_EXPR_ALIAS",
+            "hasMetricFormulas",
             "isHistogramClassSelect",
             "isMetricChartConfig",
             "isNonEmptyWhereExpr",
@@ -7253,6 +8060,24 @@
           ]
         },
         {
+          "path": "packages/common-utils/src/couchbase/fn/quantile.ts",
+          "symbols": [
+            "quantile"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/fn/scalar.ts",
+          "symbols": [
+            "aggIf",
+            "anyValue",
+            "argMax",
+            "count",
+            "countIf",
+            "sumIf",
+            "uniq"
+          ]
+        },
+        {
           "path": "packages/common-utils/src/couchbase/infer.ts",
           "symbols": [
             "InferredField",
@@ -7265,6 +8090,13 @@
           "symbols": [
             "encodeRow",
             "isIsoDateTime"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/keywords.ts",
+          "symbols": [
+            "SQLPP_FUNCTIONS",
+            "SQLPP_KEYWORDS"
           ]
         },
         {
@@ -7303,8 +8135,142 @@
         {
           "path": "packages/common-utils/src/couchbase/render.ts",
           "symbols": [
+            "ROW_ID_ALIAS",
             "SqlppQuery",
-            "renderChartConfigCouchbase"
+            "renderChartConfigCouchbase",
+            "rowIdWhereLiteral"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/eventDeltas.ts",
+          "symbols": [
+            "getStableSampleExpressionCouchbase"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/from.ts",
+          "symbols": [
+            "renderFromCouchbase",
+            "renderFromWithRowIdCouchbase"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/having.ts",
+          "symbols": [
+            "renderHavingCouchbase"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/index.ts",
+          "symbols": [
+            "ROW_ID_ALIAS",
+            "SqlppQuery",
+            "getStableSampleExpressionCouchbase",
+            "renderChartConfigCouchbase",
+            "rowIdSelect",
+            "rowIdUseKeys",
+            "rowIdWhere"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/limit.ts",
+          "symbols": [
+            "renderLimitCouchbase"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/macros.ts",
+          "symbols": [
+            "expandMacrosCouchbase"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/metadata.ts",
+          "symbols": [
+            "couchbaseMetadataRef"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/metrics/multiSeries.ts",
+          "symbols": [
+            "renderMultiSeriesMetricChartConfigCouchbase"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/metrics/translate.ts",
+          "symbols": [
+            "translateMetricChartConfigCouchbase"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/orderBy.ts",
+          "symbols": [
+            "renderOrderByCouchbase"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/postprocess.ts",
+          "symbols": [
+            "couchbasePostprocessHints"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/ratio.ts",
+          "symbols": [
+            "ratioExprCouchbase"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/rawSql.ts",
+          "symbols": [
+            "renderRawSqlChartConfigCouchbase"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/rowId.ts",
+          "symbols": [
+            "ROW_ID_ALIAS",
+            "parseRowIdWhere",
+            "rowIdSelect",
+            "rowIdUseKeys",
+            "rowIdWhere",
+            "rowIdWhereLiteral"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/search.ts",
+          "symbols": [
+            "includeRowIdInSelect"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/select.ts",
+          "symbols": [
+            "getFirstTimestampColumn",
+            "renderGroupByCouchbase",
+            "renderSelectCouchbase",
+            "renderTimeBucketPartsCouchbase",
+            "timestampFormatOf"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/seriesLimit.ts",
+          "symbols": [
+            "renderSeriesLimitCteCouchbase"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/where.ts",
+          "symbols": [
+            "RenderFilterContext",
+            "compileWhereExpressionCouchbase",
+            "renderWhereCouchbase"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/with.ts",
+          "symbols": [
+            "renderWithCouchbase"
           ]
         },
         {
@@ -7355,7 +8321,10 @@
         {
           "path": "packages/common-utils/src/couchbase/time.ts",
           "symbols": [
+            "SQLPP_DATE_FORMAT",
             "TimeFormat",
+            "parseGranularity",
+            "timeBucketExpr",
             "timeRangePredicate",
             "toIso30"
           ]
@@ -7402,9 +8371,12 @@
         {
           "path": "packages/common-utils/src/dataLayer/index.ts",
           "symbols": [
+            "Slice",
             "clearConnectionKindCache",
+            "filterSourcesForSlice",
             "formatQueryForDisplay",
             "getMetadata",
+            "isCouchbaseSliceEnabled",
             "isMissingColumnError",
             "renderChartConfig"
           ]
@@ -7697,7 +8669,7 @@
           "file": "packages/app/pages/clickhouse.tsx"
         }
       ],
-      "closureSize": 417,
+      "closureSize": 442,
       "exclusiveFiles": [
         "packages/app/pages/clickhouse.tsx",
         "packages/app/src/ClickhousePage.tsx"
@@ -8087,6 +9059,7 @@
           "symbols": [
             "ChartConfigWithOptDateRangeEx",
             "FIXED_TIME_BUCKET_EXPR_ALIAS",
+            "hasMetricFormulas",
             "isHistogramClassSelect",
             "isMetricChartConfig",
             "isNonEmptyWhereExpr",
@@ -8139,6 +9112,24 @@
           ]
         },
         {
+          "path": "packages/common-utils/src/couchbase/fn/quantile.ts",
+          "symbols": [
+            "quantile"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/fn/scalar.ts",
+          "symbols": [
+            "aggIf",
+            "anyValue",
+            "argMax",
+            "count",
+            "countIf",
+            "sumIf",
+            "uniq"
+          ]
+        },
+        {
           "path": "packages/common-utils/src/couchbase/infer.ts",
           "symbols": [
             "InferredField",
@@ -8151,6 +9142,13 @@
           "symbols": [
             "encodeRow",
             "isIsoDateTime"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/keywords.ts",
+          "symbols": [
+            "SQLPP_FUNCTIONS",
+            "SQLPP_KEYWORDS"
           ]
         },
         {
@@ -8189,8 +9187,142 @@
         {
           "path": "packages/common-utils/src/couchbase/render.ts",
           "symbols": [
+            "ROW_ID_ALIAS",
             "SqlppQuery",
-            "renderChartConfigCouchbase"
+            "renderChartConfigCouchbase",
+            "rowIdWhereLiteral"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/eventDeltas.ts",
+          "symbols": [
+            "getStableSampleExpressionCouchbase"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/from.ts",
+          "symbols": [
+            "renderFromCouchbase",
+            "renderFromWithRowIdCouchbase"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/having.ts",
+          "symbols": [
+            "renderHavingCouchbase"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/index.ts",
+          "symbols": [
+            "ROW_ID_ALIAS",
+            "SqlppQuery",
+            "getStableSampleExpressionCouchbase",
+            "renderChartConfigCouchbase",
+            "rowIdSelect",
+            "rowIdUseKeys",
+            "rowIdWhere"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/limit.ts",
+          "symbols": [
+            "renderLimitCouchbase"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/macros.ts",
+          "symbols": [
+            "expandMacrosCouchbase"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/metadata.ts",
+          "symbols": [
+            "couchbaseMetadataRef"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/metrics/multiSeries.ts",
+          "symbols": [
+            "renderMultiSeriesMetricChartConfigCouchbase"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/metrics/translate.ts",
+          "symbols": [
+            "translateMetricChartConfigCouchbase"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/orderBy.ts",
+          "symbols": [
+            "renderOrderByCouchbase"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/postprocess.ts",
+          "symbols": [
+            "couchbasePostprocessHints"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/ratio.ts",
+          "symbols": [
+            "ratioExprCouchbase"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/rawSql.ts",
+          "symbols": [
+            "renderRawSqlChartConfigCouchbase"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/rowId.ts",
+          "symbols": [
+            "ROW_ID_ALIAS",
+            "parseRowIdWhere",
+            "rowIdSelect",
+            "rowIdUseKeys",
+            "rowIdWhere",
+            "rowIdWhereLiteral"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/search.ts",
+          "symbols": [
+            "includeRowIdInSelect"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/select.ts",
+          "symbols": [
+            "getFirstTimestampColumn",
+            "renderGroupByCouchbase",
+            "renderSelectCouchbase",
+            "renderTimeBucketPartsCouchbase",
+            "timestampFormatOf"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/seriesLimit.ts",
+          "symbols": [
+            "renderSeriesLimitCteCouchbase"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/where.ts",
+          "symbols": [
+            "RenderFilterContext",
+            "compileWhereExpressionCouchbase",
+            "renderWhereCouchbase"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/with.ts",
+          "symbols": [
+            "renderWithCouchbase"
           ]
         },
         {
@@ -8241,7 +9373,10 @@
         {
           "path": "packages/common-utils/src/couchbase/time.ts",
           "symbols": [
+            "SQLPP_DATE_FORMAT",
             "TimeFormat",
+            "parseGranularity",
+            "timeBucketExpr",
             "timeRangePredicate",
             "toIso30"
           ]
@@ -8531,7 +9666,7 @@
       "name": "Dashboards",
       "area": "dashboards",
       "visibility": "user",
-      "status": "not_started",
+      "status": "ported",
       "entryPoints": [
         {
           "id": "api_route:DELETE /dashboards/:id",
@@ -8599,7 +9734,7 @@
           "file": "packages/app/pages/dashboards/templates.tsx"
         }
       ],
-      "closureSize": 629,
+      "closureSize": 655,
       "exclusiveFiles": [
         "packages/api/src/controllers/presetDashboardFilters.ts",
         "packages/api/src/models/presetDashboardFilter.ts",
@@ -9140,6 +10275,7 @@
           "symbols": [
             "ChartConfigWithOptDateRangeEx",
             "FIXED_TIME_BUCKET_EXPR_ALIAS",
+            "hasMetricFormulas",
             "isHistogramClassSelect",
             "isMetricChartConfig",
             "isNonEmptyWhereExpr",
@@ -9192,6 +10328,24 @@
           ]
         },
         {
+          "path": "packages/common-utils/src/couchbase/fn/quantile.ts",
+          "symbols": [
+            "quantile"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/fn/scalar.ts",
+          "symbols": [
+            "aggIf",
+            "anyValue",
+            "argMax",
+            "count",
+            "countIf",
+            "sumIf",
+            "uniq"
+          ]
+        },
+        {
           "path": "packages/common-utils/src/couchbase/infer.ts",
           "symbols": [
             "InferredField",
@@ -9204,6 +10358,13 @@
           "symbols": [
             "encodeRow",
             "isIsoDateTime"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/keywords.ts",
+          "symbols": [
+            "SQLPP_FUNCTIONS",
+            "SQLPP_KEYWORDS"
           ]
         },
         {
@@ -9242,8 +10403,142 @@
         {
           "path": "packages/common-utils/src/couchbase/render.ts",
           "symbols": [
+            "ROW_ID_ALIAS",
             "SqlppQuery",
-            "renderChartConfigCouchbase"
+            "renderChartConfigCouchbase",
+            "rowIdWhereLiteral"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/eventDeltas.ts",
+          "symbols": [
+            "getStableSampleExpressionCouchbase"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/from.ts",
+          "symbols": [
+            "renderFromCouchbase",
+            "renderFromWithRowIdCouchbase"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/having.ts",
+          "symbols": [
+            "renderHavingCouchbase"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/index.ts",
+          "symbols": [
+            "ROW_ID_ALIAS",
+            "SqlppQuery",
+            "getStableSampleExpressionCouchbase",
+            "renderChartConfigCouchbase",
+            "rowIdSelect",
+            "rowIdUseKeys",
+            "rowIdWhere"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/limit.ts",
+          "symbols": [
+            "renderLimitCouchbase"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/macros.ts",
+          "symbols": [
+            "expandMacrosCouchbase"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/metadata.ts",
+          "symbols": [
+            "couchbaseMetadataRef"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/metrics/multiSeries.ts",
+          "symbols": [
+            "renderMultiSeriesMetricChartConfigCouchbase"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/metrics/translate.ts",
+          "symbols": [
+            "translateMetricChartConfigCouchbase"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/orderBy.ts",
+          "symbols": [
+            "renderOrderByCouchbase"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/postprocess.ts",
+          "symbols": [
+            "couchbasePostprocessHints"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/ratio.ts",
+          "symbols": [
+            "ratioExprCouchbase"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/rawSql.ts",
+          "symbols": [
+            "renderRawSqlChartConfigCouchbase"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/rowId.ts",
+          "symbols": [
+            "ROW_ID_ALIAS",
+            "parseRowIdWhere",
+            "rowIdSelect",
+            "rowIdUseKeys",
+            "rowIdWhere",
+            "rowIdWhereLiteral"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/search.ts",
+          "symbols": [
+            "includeRowIdInSelect"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/select.ts",
+          "symbols": [
+            "getFirstTimestampColumn",
+            "renderGroupByCouchbase",
+            "renderSelectCouchbase",
+            "renderTimeBucketPartsCouchbase",
+            "timestampFormatOf"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/seriesLimit.ts",
+          "symbols": [
+            "renderSeriesLimitCteCouchbase"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/where.ts",
+          "symbols": [
+            "RenderFilterContext",
+            "compileWhereExpressionCouchbase",
+            "renderWhereCouchbase"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/with.ts",
+          "symbols": [
+            "renderWithCouchbase"
           ]
         },
         {
@@ -9294,7 +10589,10 @@
         {
           "path": "packages/common-utils/src/couchbase/time.ts",
           "symbols": [
+            "SQLPP_DATE_FORMAT",
             "TimeFormat",
+            "parseGranularity",
+            "timeBucketExpr",
             "timeRangePredicate",
             "toIso30"
           ]
@@ -9341,9 +10639,12 @@
         {
           "path": "packages/common-utils/src/dataLayer/index.ts",
           "symbols": [
+            "Slice",
             "clearConnectionKindCache",
+            "filterSourcesForSlice",
             "formatQueryForDisplay",
             "getMetadata",
+            "isCouchbaseSliceEnabled",
             "isMissingColumnError",
             "renderChartConfig"
           ]
@@ -10337,7 +11638,7 @@
           "file": "packages/app/pages/kubernetes.tsx"
         }
       ],
-      "closureSize": 392,
+      "closureSize": 417,
       "exclusiveFiles": [
         "packages/app/pages/kubernetes.tsx",
         "packages/app/src/KubernetesDashboardPage.tsx",
@@ -10730,6 +12031,7 @@
           "symbols": [
             "ChartConfigWithOptDateRangeEx",
             "FIXED_TIME_BUCKET_EXPR_ALIAS",
+            "hasMetricFormulas",
             "isHistogramClassSelect",
             "isMetricChartConfig",
             "isNonEmptyWhereExpr",
@@ -10782,6 +12084,24 @@
           ]
         },
         {
+          "path": "packages/common-utils/src/couchbase/fn/quantile.ts",
+          "symbols": [
+            "quantile"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/fn/scalar.ts",
+          "symbols": [
+            "aggIf",
+            "anyValue",
+            "argMax",
+            "count",
+            "countIf",
+            "sumIf",
+            "uniq"
+          ]
+        },
+        {
           "path": "packages/common-utils/src/couchbase/infer.ts",
           "symbols": [
             "InferredField",
@@ -10794,6 +12114,13 @@
           "symbols": [
             "encodeRow",
             "isIsoDateTime"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/keywords.ts",
+          "symbols": [
+            "SQLPP_FUNCTIONS",
+            "SQLPP_KEYWORDS"
           ]
         },
         {
@@ -10832,8 +12159,142 @@
         {
           "path": "packages/common-utils/src/couchbase/render.ts",
           "symbols": [
+            "ROW_ID_ALIAS",
             "SqlppQuery",
-            "renderChartConfigCouchbase"
+            "renderChartConfigCouchbase",
+            "rowIdWhereLiteral"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/eventDeltas.ts",
+          "symbols": [
+            "getStableSampleExpressionCouchbase"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/from.ts",
+          "symbols": [
+            "renderFromCouchbase",
+            "renderFromWithRowIdCouchbase"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/having.ts",
+          "symbols": [
+            "renderHavingCouchbase"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/index.ts",
+          "symbols": [
+            "ROW_ID_ALIAS",
+            "SqlppQuery",
+            "getStableSampleExpressionCouchbase",
+            "renderChartConfigCouchbase",
+            "rowIdSelect",
+            "rowIdUseKeys",
+            "rowIdWhere"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/limit.ts",
+          "symbols": [
+            "renderLimitCouchbase"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/macros.ts",
+          "symbols": [
+            "expandMacrosCouchbase"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/metadata.ts",
+          "symbols": [
+            "couchbaseMetadataRef"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/metrics/multiSeries.ts",
+          "symbols": [
+            "renderMultiSeriesMetricChartConfigCouchbase"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/metrics/translate.ts",
+          "symbols": [
+            "translateMetricChartConfigCouchbase"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/orderBy.ts",
+          "symbols": [
+            "renderOrderByCouchbase"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/postprocess.ts",
+          "symbols": [
+            "couchbasePostprocessHints"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/ratio.ts",
+          "symbols": [
+            "ratioExprCouchbase"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/rawSql.ts",
+          "symbols": [
+            "renderRawSqlChartConfigCouchbase"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/rowId.ts",
+          "symbols": [
+            "ROW_ID_ALIAS",
+            "parseRowIdWhere",
+            "rowIdSelect",
+            "rowIdUseKeys",
+            "rowIdWhere",
+            "rowIdWhereLiteral"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/search.ts",
+          "symbols": [
+            "includeRowIdInSelect"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/select.ts",
+          "symbols": [
+            "getFirstTimestampColumn",
+            "renderGroupByCouchbase",
+            "renderSelectCouchbase",
+            "renderTimeBucketPartsCouchbase",
+            "timestampFormatOf"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/seriesLimit.ts",
+          "symbols": [
+            "renderSeriesLimitCteCouchbase"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/where.ts",
+          "symbols": [
+            "RenderFilterContext",
+            "compileWhereExpressionCouchbase",
+            "renderWhereCouchbase"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/with.ts",
+          "symbols": [
+            "renderWithCouchbase"
           ]
         },
         {
@@ -10884,7 +12345,10 @@
         {
           "path": "packages/common-utils/src/couchbase/time.ts",
           "symbols": [
+            "SQLPP_DATE_FORMAT",
             "TimeFormat",
+            "parseGranularity",
+            "timeBucketExpr",
             "timeRangePredicate",
             "toIso30"
           ]
@@ -11177,7 +12641,7 @@
           "file": "packages/app/pages/llm.tsx"
         }
       ],
-      "closureSize": 515,
+      "closureSize": 541,
       "exclusiveFiles": [
         "packages/app/pages/llm.tsx",
         "packages/app/src/llm/components/ChatMessageItem.tsx",
@@ -11681,6 +13145,7 @@
           "symbols": [
             "ChartConfigWithOptDateRangeEx",
             "FIXED_TIME_BUCKET_EXPR_ALIAS",
+            "hasMetricFormulas",
             "isHistogramClassSelect",
             "isMetricChartConfig",
             "isNonEmptyWhereExpr",
@@ -11733,6 +13198,24 @@
           ]
         },
         {
+          "path": "packages/common-utils/src/couchbase/fn/quantile.ts",
+          "symbols": [
+            "quantile"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/fn/scalar.ts",
+          "symbols": [
+            "aggIf",
+            "anyValue",
+            "argMax",
+            "count",
+            "countIf",
+            "sumIf",
+            "uniq"
+          ]
+        },
+        {
           "path": "packages/common-utils/src/couchbase/infer.ts",
           "symbols": [
             "InferredField",
@@ -11745,6 +13228,13 @@
           "symbols": [
             "encodeRow",
             "isIsoDateTime"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/keywords.ts",
+          "symbols": [
+            "SQLPP_FUNCTIONS",
+            "SQLPP_KEYWORDS"
           ]
         },
         {
@@ -11783,8 +13273,142 @@
         {
           "path": "packages/common-utils/src/couchbase/render.ts",
           "symbols": [
+            "ROW_ID_ALIAS",
             "SqlppQuery",
-            "renderChartConfigCouchbase"
+            "renderChartConfigCouchbase",
+            "rowIdWhereLiteral"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/eventDeltas.ts",
+          "symbols": [
+            "getStableSampleExpressionCouchbase"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/from.ts",
+          "symbols": [
+            "renderFromCouchbase",
+            "renderFromWithRowIdCouchbase"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/having.ts",
+          "symbols": [
+            "renderHavingCouchbase"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/index.ts",
+          "symbols": [
+            "ROW_ID_ALIAS",
+            "SqlppQuery",
+            "getStableSampleExpressionCouchbase",
+            "renderChartConfigCouchbase",
+            "rowIdSelect",
+            "rowIdUseKeys",
+            "rowIdWhere"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/limit.ts",
+          "symbols": [
+            "renderLimitCouchbase"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/macros.ts",
+          "symbols": [
+            "expandMacrosCouchbase"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/metadata.ts",
+          "symbols": [
+            "couchbaseMetadataRef"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/metrics/multiSeries.ts",
+          "symbols": [
+            "renderMultiSeriesMetricChartConfigCouchbase"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/metrics/translate.ts",
+          "symbols": [
+            "translateMetricChartConfigCouchbase"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/orderBy.ts",
+          "symbols": [
+            "renderOrderByCouchbase"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/postprocess.ts",
+          "symbols": [
+            "couchbasePostprocessHints"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/ratio.ts",
+          "symbols": [
+            "ratioExprCouchbase"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/rawSql.ts",
+          "symbols": [
+            "renderRawSqlChartConfigCouchbase"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/rowId.ts",
+          "symbols": [
+            "ROW_ID_ALIAS",
+            "parseRowIdWhere",
+            "rowIdSelect",
+            "rowIdUseKeys",
+            "rowIdWhere",
+            "rowIdWhereLiteral"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/search.ts",
+          "symbols": [
+            "includeRowIdInSelect"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/select.ts",
+          "symbols": [
+            "getFirstTimestampColumn",
+            "renderGroupByCouchbase",
+            "renderSelectCouchbase",
+            "renderTimeBucketPartsCouchbase",
+            "timestampFormatOf"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/seriesLimit.ts",
+          "symbols": [
+            "renderSeriesLimitCteCouchbase"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/where.ts",
+          "symbols": [
+            "RenderFilterContext",
+            "compileWhereExpressionCouchbase",
+            "renderWhereCouchbase"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/with.ts",
+          "symbols": [
+            "renderWithCouchbase"
           ]
         },
         {
@@ -11835,7 +13459,10 @@
         {
           "path": "packages/common-utils/src/couchbase/time.ts",
           "symbols": [
+            "SQLPP_DATE_FORMAT",
             "TimeFormat",
+            "parseGranularity",
+            "timeBucketExpr",
             "timeRangePredicate",
             "toIso30"
           ]
@@ -12892,7 +14519,7 @@
       "name": "Log and trace search",
       "area": "search",
       "visibility": "user",
-      "status": "not_started",
+      "status": "ported",
       "entryPoints": [
         {
           "id": "app_page:/search",
@@ -12910,7 +14537,7 @@
           "file": "packages/app/pages/search/list.tsx"
         }
       ],
-      "closureSize": 478,
+      "closureSize": 505,
       "exclusiveFiles": [
         "packages/app/pages/search/[savedSearchId].tsx",
         "packages/app/pages/search/index.tsx",
@@ -13360,6 +14987,7 @@
           "symbols": [
             "ChartConfigWithOptDateRangeEx",
             "FIXED_TIME_BUCKET_EXPR_ALIAS",
+            "hasMetricFormulas",
             "isHistogramClassSelect",
             "isMetricChartConfig",
             "isNonEmptyWhereExpr",
@@ -13412,6 +15040,24 @@
           ]
         },
         {
+          "path": "packages/common-utils/src/couchbase/fn/quantile.ts",
+          "symbols": [
+            "quantile"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/fn/scalar.ts",
+          "symbols": [
+            "aggIf",
+            "anyValue",
+            "argMax",
+            "count",
+            "countIf",
+            "sumIf",
+            "uniq"
+          ]
+        },
+        {
           "path": "packages/common-utils/src/couchbase/infer.ts",
           "symbols": [
             "InferredField",
@@ -13424,6 +15070,13 @@
           "symbols": [
             "encodeRow",
             "isIsoDateTime"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/keywords.ts",
+          "symbols": [
+            "SQLPP_FUNCTIONS",
+            "SQLPP_KEYWORDS"
           ]
         },
         {
@@ -13462,8 +15115,142 @@
         {
           "path": "packages/common-utils/src/couchbase/render.ts",
           "symbols": [
+            "ROW_ID_ALIAS",
             "SqlppQuery",
-            "renderChartConfigCouchbase"
+            "renderChartConfigCouchbase",
+            "rowIdWhereLiteral"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/eventDeltas.ts",
+          "symbols": [
+            "getStableSampleExpressionCouchbase"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/from.ts",
+          "symbols": [
+            "renderFromCouchbase",
+            "renderFromWithRowIdCouchbase"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/having.ts",
+          "symbols": [
+            "renderHavingCouchbase"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/index.ts",
+          "symbols": [
+            "ROW_ID_ALIAS",
+            "SqlppQuery",
+            "getStableSampleExpressionCouchbase",
+            "renderChartConfigCouchbase",
+            "rowIdSelect",
+            "rowIdUseKeys",
+            "rowIdWhere"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/limit.ts",
+          "symbols": [
+            "renderLimitCouchbase"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/macros.ts",
+          "symbols": [
+            "expandMacrosCouchbase"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/metadata.ts",
+          "symbols": [
+            "couchbaseMetadataRef"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/metrics/multiSeries.ts",
+          "symbols": [
+            "renderMultiSeriesMetricChartConfigCouchbase"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/metrics/translate.ts",
+          "symbols": [
+            "translateMetricChartConfigCouchbase"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/orderBy.ts",
+          "symbols": [
+            "renderOrderByCouchbase"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/postprocess.ts",
+          "symbols": [
+            "couchbasePostprocessHints"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/ratio.ts",
+          "symbols": [
+            "ratioExprCouchbase"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/rawSql.ts",
+          "symbols": [
+            "renderRawSqlChartConfigCouchbase"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/rowId.ts",
+          "symbols": [
+            "ROW_ID_ALIAS",
+            "parseRowIdWhere",
+            "rowIdSelect",
+            "rowIdUseKeys",
+            "rowIdWhere",
+            "rowIdWhereLiteral"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/search.ts",
+          "symbols": [
+            "includeRowIdInSelect"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/select.ts",
+          "symbols": [
+            "getFirstTimestampColumn",
+            "renderGroupByCouchbase",
+            "renderSelectCouchbase",
+            "renderTimeBucketPartsCouchbase",
+            "timestampFormatOf"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/seriesLimit.ts",
+          "symbols": [
+            "renderSeriesLimitCteCouchbase"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/where.ts",
+          "symbols": [
+            "RenderFilterContext",
+            "compileWhereExpressionCouchbase",
+            "renderWhereCouchbase"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/with.ts",
+          "symbols": [
+            "renderWithCouchbase"
           ]
         },
         {
@@ -13514,7 +15301,10 @@
         {
           "path": "packages/common-utils/src/couchbase/time.ts",
           "symbols": [
+            "SQLPP_DATE_FORMAT",
             "TimeFormat",
+            "parseGranularity",
+            "timeBucketExpr",
             "timeRangePredicate",
             "toIso30"
           ]
@@ -13561,9 +15351,13 @@
         {
           "path": "packages/common-utils/src/dataLayer/index.ts",
           "symbols": [
+            "CouchbaseNotReadyError",
+            "Slice",
             "clearConnectionKindCache",
+            "filterSourcesForSlice",
             "formatQueryForDisplay",
             "getMetadata",
+            "isCouchbaseSliceEnabled",
             "isMissingColumnError",
             "renderChartConfig"
           ]
@@ -13857,7 +15651,7 @@
           "file": "packages/app/pages/service-map.tsx"
         }
       ],
-      "closureSize": 213,
+      "closureSize": 237,
       "exclusiveFiles": [
         "packages/app/pages/service-map.tsx",
         "packages/app/src/DBServiceMapPage.tsx"
@@ -14105,6 +15899,7 @@
           "symbols": [
             "ChartConfigWithOptDateRangeEx",
             "FIXED_TIME_BUCKET_EXPR_ALIAS",
+            "hasMetricFormulas",
             "isMetricChartConfig",
             "isNonEmptyWhereExpr",
             "isRatioChartConfig",
@@ -14156,6 +15951,24 @@
           ]
         },
         {
+          "path": "packages/common-utils/src/couchbase/fn/quantile.ts",
+          "symbols": [
+            "quantile"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/fn/scalar.ts",
+          "symbols": [
+            "aggIf",
+            "anyValue",
+            "argMax",
+            "count",
+            "countIf",
+            "sumIf",
+            "uniq"
+          ]
+        },
+        {
           "path": "packages/common-utils/src/couchbase/infer.ts",
           "symbols": [
             "InferredField",
@@ -14168,6 +15981,13 @@
           "symbols": [
             "encodeRow",
             "isIsoDateTime"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/keywords.ts",
+          "symbols": [
+            "SQLPP_FUNCTIONS",
+            "SQLPP_KEYWORDS"
           ]
         },
         {
@@ -14206,8 +16026,141 @@
         {
           "path": "packages/common-utils/src/couchbase/render.ts",
           "symbols": [
+            "ROW_ID_ALIAS",
             "SqlppQuery",
             "renderChartConfigCouchbase"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/eventDeltas.ts",
+          "symbols": [
+            "getStableSampleExpressionCouchbase"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/from.ts",
+          "symbols": [
+            "renderFromCouchbase",
+            "renderFromWithRowIdCouchbase"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/having.ts",
+          "symbols": [
+            "renderHavingCouchbase"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/index.ts",
+          "symbols": [
+            "ROW_ID_ALIAS",
+            "SqlppQuery",
+            "getStableSampleExpressionCouchbase",
+            "renderChartConfigCouchbase",
+            "rowIdSelect",
+            "rowIdUseKeys",
+            "rowIdWhere"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/limit.ts",
+          "symbols": [
+            "renderLimitCouchbase"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/macros.ts",
+          "symbols": [
+            "expandMacrosCouchbase"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/metadata.ts",
+          "symbols": [
+            "couchbaseMetadataRef"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/metrics/multiSeries.ts",
+          "symbols": [
+            "renderMultiSeriesMetricChartConfigCouchbase"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/metrics/translate.ts",
+          "symbols": [
+            "translateMetricChartConfigCouchbase"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/orderBy.ts",
+          "symbols": [
+            "renderOrderByCouchbase"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/postprocess.ts",
+          "symbols": [
+            "couchbasePostprocessHints"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/ratio.ts",
+          "symbols": [
+            "ratioExprCouchbase"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/rawSql.ts",
+          "symbols": [
+            "renderRawSqlChartConfigCouchbase"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/rowId.ts",
+          "symbols": [
+            "ROW_ID_ALIAS",
+            "parseRowIdWhere",
+            "rowIdSelect",
+            "rowIdUseKeys",
+            "rowIdWhere",
+            "rowIdWhereLiteral"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/search.ts",
+          "symbols": [
+            "includeRowIdInSelect"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/select.ts",
+          "symbols": [
+            "getFirstTimestampColumn",
+            "renderGroupByCouchbase",
+            "renderSelectCouchbase",
+            "renderTimeBucketPartsCouchbase",
+            "timestampFormatOf"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/seriesLimit.ts",
+          "symbols": [
+            "renderSeriesLimitCteCouchbase"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/where.ts",
+          "symbols": [
+            "RenderFilterContext",
+            "compileWhereExpressionCouchbase",
+            "renderWhereCouchbase"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/with.ts",
+          "symbols": [
+            "renderWithCouchbase"
           ]
         },
         {
@@ -14258,7 +16211,10 @@
         {
           "path": "packages/common-utils/src/couchbase/time.ts",
           "symbols": [
+            "SQLPP_DATE_FORMAT",
             "TimeFormat",
+            "parseGranularity",
+            "timeBucketExpr",
             "timeRangePredicate",
             "toIso30"
           ]
@@ -14544,7 +16500,7 @@
           "file": "packages/app/pages/services.tsx"
         }
       ],
-      "closureSize": 445,
+      "closureSize": 470,
       "exclusiveFiles": [
         "packages/app/pages/services.tsx"
       ],
@@ -14947,6 +16903,7 @@
           "symbols": [
             "ChartConfigWithOptDateRangeEx",
             "FIXED_TIME_BUCKET_EXPR_ALIAS",
+            "hasMetricFormulas",
             "isHistogramClassSelect",
             "isMetricChartConfig",
             "isNonEmptyWhereExpr",
@@ -14999,6 +16956,24 @@
           ]
         },
         {
+          "path": "packages/common-utils/src/couchbase/fn/quantile.ts",
+          "symbols": [
+            "quantile"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/fn/scalar.ts",
+          "symbols": [
+            "aggIf",
+            "anyValue",
+            "argMax",
+            "count",
+            "countIf",
+            "sumIf",
+            "uniq"
+          ]
+        },
+        {
           "path": "packages/common-utils/src/couchbase/infer.ts",
           "symbols": [
             "InferredField",
@@ -15011,6 +16986,13 @@
           "symbols": [
             "encodeRow",
             "isIsoDateTime"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/keywords.ts",
+          "symbols": [
+            "SQLPP_FUNCTIONS",
+            "SQLPP_KEYWORDS"
           ]
         },
         {
@@ -15049,8 +17031,142 @@
         {
           "path": "packages/common-utils/src/couchbase/render.ts",
           "symbols": [
+            "ROW_ID_ALIAS",
             "SqlppQuery",
-            "renderChartConfigCouchbase"
+            "renderChartConfigCouchbase",
+            "rowIdWhereLiteral"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/eventDeltas.ts",
+          "symbols": [
+            "getStableSampleExpressionCouchbase"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/from.ts",
+          "symbols": [
+            "renderFromCouchbase",
+            "renderFromWithRowIdCouchbase"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/having.ts",
+          "symbols": [
+            "renderHavingCouchbase"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/index.ts",
+          "symbols": [
+            "ROW_ID_ALIAS",
+            "SqlppQuery",
+            "getStableSampleExpressionCouchbase",
+            "renderChartConfigCouchbase",
+            "rowIdSelect",
+            "rowIdUseKeys",
+            "rowIdWhere"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/limit.ts",
+          "symbols": [
+            "renderLimitCouchbase"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/macros.ts",
+          "symbols": [
+            "expandMacrosCouchbase"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/metadata.ts",
+          "symbols": [
+            "couchbaseMetadataRef"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/metrics/multiSeries.ts",
+          "symbols": [
+            "renderMultiSeriesMetricChartConfigCouchbase"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/metrics/translate.ts",
+          "symbols": [
+            "translateMetricChartConfigCouchbase"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/orderBy.ts",
+          "symbols": [
+            "renderOrderByCouchbase"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/postprocess.ts",
+          "symbols": [
+            "couchbasePostprocessHints"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/ratio.ts",
+          "symbols": [
+            "ratioExprCouchbase"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/rawSql.ts",
+          "symbols": [
+            "renderRawSqlChartConfigCouchbase"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/rowId.ts",
+          "symbols": [
+            "ROW_ID_ALIAS",
+            "parseRowIdWhere",
+            "rowIdSelect",
+            "rowIdUseKeys",
+            "rowIdWhere",
+            "rowIdWhereLiteral"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/search.ts",
+          "symbols": [
+            "includeRowIdInSelect"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/select.ts",
+          "symbols": [
+            "getFirstTimestampColumn",
+            "renderGroupByCouchbase",
+            "renderSelectCouchbase",
+            "renderTimeBucketPartsCouchbase",
+            "timestampFormatOf"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/seriesLimit.ts",
+          "symbols": [
+            "renderSeriesLimitCteCouchbase"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/where.ts",
+          "symbols": [
+            "RenderFilterContext",
+            "compileWhereExpressionCouchbase",
+            "renderWhereCouchbase"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/with.ts",
+          "symbols": [
+            "renderWithCouchbase"
           ]
         },
         {
@@ -15101,7 +17217,10 @@
         {
           "path": "packages/common-utils/src/couchbase/time.ts",
           "symbols": [
+            "SQLPP_DATE_FORMAT",
             "TimeFormat",
+            "parseGranularity",
+            "timeBucketExpr",
             "timeRangePredicate",
             "toIso30"
           ]
@@ -15432,7 +17551,7 @@
           "file": "packages/app/pages/sessions.tsx"
         }
       ],
-      "closureSize": 388,
+      "closureSize": 413,
       "exclusiveFiles": [
         "packages/app/pages/sessions.tsx",
         "packages/app/src/SessionEventSourcePanel.tsx",
@@ -15805,6 +17924,7 @@
           "symbols": [
             "ChartConfigWithOptDateRangeEx",
             "FIXED_TIME_BUCKET_EXPR_ALIAS",
+            "hasMetricFormulas",
             "isHistogramClassSelect",
             "isMetricChartConfig",
             "isNonEmptyWhereExpr",
@@ -15857,6 +17977,24 @@
           ]
         },
         {
+          "path": "packages/common-utils/src/couchbase/fn/quantile.ts",
+          "symbols": [
+            "quantile"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/fn/scalar.ts",
+          "symbols": [
+            "aggIf",
+            "anyValue",
+            "argMax",
+            "count",
+            "countIf",
+            "sumIf",
+            "uniq"
+          ]
+        },
+        {
           "path": "packages/common-utils/src/couchbase/infer.ts",
           "symbols": [
             "InferredField",
@@ -15869,6 +18007,13 @@
           "symbols": [
             "encodeRow",
             "isIsoDateTime"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/keywords.ts",
+          "symbols": [
+            "SQLPP_FUNCTIONS",
+            "SQLPP_KEYWORDS"
           ]
         },
         {
@@ -15907,8 +18052,142 @@
         {
           "path": "packages/common-utils/src/couchbase/render.ts",
           "symbols": [
+            "ROW_ID_ALIAS",
             "SqlppQuery",
-            "renderChartConfigCouchbase"
+            "renderChartConfigCouchbase",
+            "rowIdWhereLiteral"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/eventDeltas.ts",
+          "symbols": [
+            "getStableSampleExpressionCouchbase"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/from.ts",
+          "symbols": [
+            "renderFromCouchbase",
+            "renderFromWithRowIdCouchbase"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/having.ts",
+          "symbols": [
+            "renderHavingCouchbase"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/index.ts",
+          "symbols": [
+            "ROW_ID_ALIAS",
+            "SqlppQuery",
+            "getStableSampleExpressionCouchbase",
+            "renderChartConfigCouchbase",
+            "rowIdSelect",
+            "rowIdUseKeys",
+            "rowIdWhere"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/limit.ts",
+          "symbols": [
+            "renderLimitCouchbase"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/macros.ts",
+          "symbols": [
+            "expandMacrosCouchbase"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/metadata.ts",
+          "symbols": [
+            "couchbaseMetadataRef"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/metrics/multiSeries.ts",
+          "symbols": [
+            "renderMultiSeriesMetricChartConfigCouchbase"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/metrics/translate.ts",
+          "symbols": [
+            "translateMetricChartConfigCouchbase"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/orderBy.ts",
+          "symbols": [
+            "renderOrderByCouchbase"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/postprocess.ts",
+          "symbols": [
+            "couchbasePostprocessHints"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/ratio.ts",
+          "symbols": [
+            "ratioExprCouchbase"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/rawSql.ts",
+          "symbols": [
+            "renderRawSqlChartConfigCouchbase"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/rowId.ts",
+          "symbols": [
+            "ROW_ID_ALIAS",
+            "parseRowIdWhere",
+            "rowIdSelect",
+            "rowIdUseKeys",
+            "rowIdWhere",
+            "rowIdWhereLiteral"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/search.ts",
+          "symbols": [
+            "includeRowIdInSelect"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/select.ts",
+          "symbols": [
+            "getFirstTimestampColumn",
+            "renderGroupByCouchbase",
+            "renderSelectCouchbase",
+            "renderTimeBucketPartsCouchbase",
+            "timestampFormatOf"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/seriesLimit.ts",
+          "symbols": [
+            "renderSeriesLimitCteCouchbase"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/where.ts",
+          "symbols": [
+            "RenderFilterContext",
+            "compileWhereExpressionCouchbase",
+            "renderWhereCouchbase"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/with.ts",
+          "symbols": [
+            "renderWithCouchbase"
           ]
         },
         {
@@ -15959,7 +18238,10 @@
         {
           "path": "packages/common-utils/src/couchbase/time.ts",
           "symbols": [
+            "SQLPP_DATE_FORMAT",
             "TimeFormat",
+            "parseGranularity",
+            "timeBucketExpr",
             "timeRangePredicate",
             "toIso30"
           ]
@@ -16319,7 +18601,7 @@
           "file": "packages/app/pages/team/index.tsx"
         }
       ],
-      "closureSize": 227,
+      "closureSize": 251,
       "exclusiveFiles": [
         "packages/app/pages/team/index.tsx",
         "packages/app/src/TeamPage.tsx",
@@ -16630,6 +18912,7 @@
           "symbols": [
             "ChartConfigWithOptDateRangeEx",
             "FIXED_TIME_BUCKET_EXPR_ALIAS",
+            "hasMetricFormulas",
             "isMetricChartConfig",
             "isNonEmptyWhereExpr",
             "isRatioChartConfig",
@@ -16681,6 +18964,24 @@
           ]
         },
         {
+          "path": "packages/common-utils/src/couchbase/fn/quantile.ts",
+          "symbols": [
+            "quantile"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/fn/scalar.ts",
+          "symbols": [
+            "aggIf",
+            "anyValue",
+            "argMax",
+            "count",
+            "countIf",
+            "sumIf",
+            "uniq"
+          ]
+        },
+        {
           "path": "packages/common-utils/src/couchbase/infer.ts",
           "symbols": [
             "InferredField",
@@ -16693,6 +18994,13 @@
           "symbols": [
             "encodeRow",
             "isIsoDateTime"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/keywords.ts",
+          "symbols": [
+            "SQLPP_FUNCTIONS",
+            "SQLPP_KEYWORDS"
           ]
         },
         {
@@ -16731,8 +19039,141 @@
         {
           "path": "packages/common-utils/src/couchbase/render.ts",
           "symbols": [
+            "ROW_ID_ALIAS",
             "SqlppQuery",
             "renderChartConfigCouchbase"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/eventDeltas.ts",
+          "symbols": [
+            "getStableSampleExpressionCouchbase"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/from.ts",
+          "symbols": [
+            "renderFromCouchbase",
+            "renderFromWithRowIdCouchbase"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/having.ts",
+          "symbols": [
+            "renderHavingCouchbase"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/index.ts",
+          "symbols": [
+            "ROW_ID_ALIAS",
+            "SqlppQuery",
+            "getStableSampleExpressionCouchbase",
+            "renderChartConfigCouchbase",
+            "rowIdSelect",
+            "rowIdUseKeys",
+            "rowIdWhere"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/limit.ts",
+          "symbols": [
+            "renderLimitCouchbase"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/macros.ts",
+          "symbols": [
+            "expandMacrosCouchbase"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/metadata.ts",
+          "symbols": [
+            "couchbaseMetadataRef"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/metrics/multiSeries.ts",
+          "symbols": [
+            "renderMultiSeriesMetricChartConfigCouchbase"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/metrics/translate.ts",
+          "symbols": [
+            "translateMetricChartConfigCouchbase"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/orderBy.ts",
+          "symbols": [
+            "renderOrderByCouchbase"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/postprocess.ts",
+          "symbols": [
+            "couchbasePostprocessHints"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/ratio.ts",
+          "symbols": [
+            "ratioExprCouchbase"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/rawSql.ts",
+          "symbols": [
+            "renderRawSqlChartConfigCouchbase"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/rowId.ts",
+          "symbols": [
+            "ROW_ID_ALIAS",
+            "parseRowIdWhere",
+            "rowIdSelect",
+            "rowIdUseKeys",
+            "rowIdWhere",
+            "rowIdWhereLiteral"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/search.ts",
+          "symbols": [
+            "includeRowIdInSelect"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/select.ts",
+          "symbols": [
+            "getFirstTimestampColumn",
+            "renderGroupByCouchbase",
+            "renderSelectCouchbase",
+            "renderTimeBucketPartsCouchbase",
+            "timestampFormatOf"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/seriesLimit.ts",
+          "symbols": [
+            "renderSeriesLimitCteCouchbase"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/where.ts",
+          "symbols": [
+            "RenderFilterContext",
+            "compileWhereExpressionCouchbase",
+            "renderWhereCouchbase"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/with.ts",
+          "symbols": [
+            "renderWithCouchbase"
           ]
         },
         {
@@ -16783,7 +19224,10 @@
         {
           "path": "packages/common-utils/src/couchbase/time.ts",
           "symbols": [
+            "SQLPP_DATE_FORMAT",
             "TimeFormat",
+            "parseGranularity",
+            "timeBucketExpr",
             "timeRangePredicate",
             "toIso30"
           ]
@@ -17134,7 +19578,7 @@
           "file": "packages/app/pages/trace/[traceId].tsx"
         }
       ],
-      "closureSize": 118,
+      "closureSize": 139,
       "exclusiveFiles": [
         "packages/app/pages/trace/[traceId].tsx"
       ],
@@ -17318,6 +19762,7 @@
           "symbols": [
             "ChartConfigWithOptDateRangeEx",
             "FIXED_TIME_BUCKET_EXPR_ALIAS",
+            "hasMetricFormulas",
             "isMetricChartConfig",
             "isNonEmptyWhereExpr",
             "isRatioChartConfig",
@@ -17364,6 +19809,24 @@
             "FieldContext",
             "ResolvedField",
             "resolveField"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/fn/quantile.ts",
+          "symbols": [
+            "quantile"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/fn/scalar.ts",
+          "symbols": [
+            "aggIf",
+            "anyValue",
+            "argMax",
+            "count",
+            "countIf",
+            "sumIf",
+            "uniq"
           ]
         },
         {
@@ -17422,6 +19885,138 @@
           ]
         },
         {
+          "path": "packages/common-utils/src/couchbase/render/eventDeltas.ts",
+          "symbols": [
+            "getStableSampleExpressionCouchbase"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/from.ts",
+          "symbols": [
+            "renderFromCouchbase",
+            "renderFromWithRowIdCouchbase"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/having.ts",
+          "symbols": [
+            "renderHavingCouchbase"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/index.ts",
+          "symbols": [
+            "ROW_ID_ALIAS",
+            "SqlppQuery",
+            "getStableSampleExpressionCouchbase",
+            "renderChartConfigCouchbase",
+            "rowIdSelect",
+            "rowIdUseKeys",
+            "rowIdWhere"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/limit.ts",
+          "symbols": [
+            "renderLimitCouchbase"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/macros.ts",
+          "symbols": [
+            "expandMacrosCouchbase"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/metadata.ts",
+          "symbols": [
+            "couchbaseMetadataRef"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/metrics/multiSeries.ts",
+          "symbols": [
+            "renderMultiSeriesMetricChartConfigCouchbase"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/metrics/translate.ts",
+          "symbols": [
+            "translateMetricChartConfigCouchbase"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/orderBy.ts",
+          "symbols": [
+            "renderOrderByCouchbase"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/postprocess.ts",
+          "symbols": [
+            "couchbasePostprocessHints"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/ratio.ts",
+          "symbols": [
+            "ratioExprCouchbase"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/rawSql.ts",
+          "symbols": [
+            "renderRawSqlChartConfigCouchbase"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/rowId.ts",
+          "symbols": [
+            "ROW_ID_ALIAS",
+            "parseRowIdWhere",
+            "rowIdSelect",
+            "rowIdUseKeys",
+            "rowIdWhere",
+            "rowIdWhereLiteral"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/search.ts",
+          "symbols": [
+            "includeRowIdInSelect"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/select.ts",
+          "symbols": [
+            "getFirstTimestampColumn",
+            "renderGroupByCouchbase",
+            "renderSelectCouchbase",
+            "renderTimeBucketPartsCouchbase",
+            "timestampFormatOf"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/seriesLimit.ts",
+          "symbols": [
+            "renderSeriesLimitCteCouchbase"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/where.ts",
+          "symbols": [
+            "RenderFilterContext",
+            "compileWhereExpressionCouchbase",
+            "renderWhereCouchbase"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/with.ts",
+          "symbols": [
+            "renderWithCouchbase"
+          ]
+        },
+        {
           "path": "packages/common-utils/src/couchbase/resultset.ts",
           "symbols": [
             "DEFAULT_MAX_BUFFERED_BYTES",
@@ -17461,7 +20056,10 @@
         {
           "path": "packages/common-utils/src/couchbase/time.ts",
           "symbols": [
+            "SQLPP_DATE_FORMAT",
             "TimeFormat",
+            "parseGranularity",
+            "timeBucketExpr",
             "timeRangePredicate",
             "toIso30"
           ]
@@ -17852,7 +20450,7 @@
           "file": "packages/cli/src/cli.tsx"
         }
       ],
-      "closureSize": 104,
+      "closureSize": 124,
       "exclusiveFiles": [
         "packages/cli/package.json",
         "packages/cli/src/App.tsx",
@@ -18035,7 +20633,12 @@
           "symbols": [
             "ChartConfigWithOptDateRangeEx",
             "FIXED_TIME_BUCKET_EXPR_ALIAS",
+            "hasMetricFormulas",
+            "isMetricChartConfig",
+            "isNonEmptyWhereExpr",
             "isRatioChartConfig",
+            "isUsingGranularity",
+            "isUsingGroupBy",
             "renderChartConfig",
             "renderWhereExpressionStr",
             "setChartSelectsAlias",
@@ -18067,6 +20670,24 @@
             "FieldContext",
             "ResolvedField",
             "resolveField"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/fn/quantile.ts",
+          "symbols": [
+            "quantile"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/fn/scalar.ts",
+          "symbols": [
+            "aggIf",
+            "anyValue",
+            "argMax",
+            "count",
+            "countIf",
+            "sumIf",
+            "uniq"
           ]
         },
         {
@@ -18124,6 +20745,132 @@
           ]
         },
         {
+          "path": "packages/common-utils/src/couchbase/render/eventDeltas.ts",
+          "symbols": [
+            "getStableSampleExpressionCouchbase"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/from.ts",
+          "symbols": [
+            "renderFromCouchbase",
+            "renderFromWithRowIdCouchbase"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/having.ts",
+          "symbols": [
+            "renderHavingCouchbase"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/index.ts",
+          "symbols": [
+            "ROW_ID_ALIAS",
+            "SqlppQuery",
+            "getStableSampleExpressionCouchbase",
+            "renderChartConfigCouchbase",
+            "rowIdSelect",
+            "rowIdUseKeys",
+            "rowIdWhere"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/limit.ts",
+          "symbols": [
+            "renderLimitCouchbase"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/macros.ts",
+          "symbols": [
+            "expandMacrosCouchbase"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/metadata.ts",
+          "symbols": [
+            "couchbaseMetadataRef"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/metrics/multiSeries.ts",
+          "symbols": [
+            "renderMultiSeriesMetricChartConfigCouchbase"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/metrics/translate.ts",
+          "symbols": [
+            "translateMetricChartConfigCouchbase"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/orderBy.ts",
+          "symbols": [
+            "renderOrderByCouchbase"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/ratio.ts",
+          "symbols": [
+            "ratioExprCouchbase"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/rawSql.ts",
+          "symbols": [
+            "renderRawSqlChartConfigCouchbase"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/rowId.ts",
+          "symbols": [
+            "ROW_ID_ALIAS",
+            "parseRowIdWhere",
+            "rowIdSelect",
+            "rowIdUseKeys",
+            "rowIdWhere",
+            "rowIdWhereLiteral"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/search.ts",
+          "symbols": [
+            "includeRowIdInSelect"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/select.ts",
+          "symbols": [
+            "getFirstTimestampColumn",
+            "renderGroupByCouchbase",
+            "renderSelectCouchbase",
+            "renderTimeBucketPartsCouchbase",
+            "timestampFormatOf"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/seriesLimit.ts",
+          "symbols": [
+            "renderSeriesLimitCteCouchbase"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/where.ts",
+          "symbols": [
+            "RenderFilterContext",
+            "compileWhereExpressionCouchbase",
+            "renderWhereCouchbase"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/with.ts",
+          "symbols": [
+            "renderWithCouchbase"
+          ]
+        },
+        {
           "path": "packages/common-utils/src/couchbase/serializer.ts",
           "symbols": [
             "CouchbaseSearchBuilder",
@@ -18144,7 +20891,10 @@
         {
           "path": "packages/common-utils/src/couchbase/time.ts",
           "symbols": [
+            "SQLPP_DATE_FORMAT",
             "TimeFormat",
+            "parseGranularity",
+            "timeBucketExpr",
             "timeRangePredicate",
             "toIso30"
           ]
@@ -18348,7 +21098,7 @@
           "file": "packages/app/pages/cluster.tsx"
         }
       ],
-      "closureSize": 150,
+      "closureSize": 171,
       "exclusiveFiles": [
         "packages/api/src/routers/api/couchbaseCluster.ts",
         "packages/api/src/utils/couchbaseManagement.ts",
@@ -18545,6 +21295,7 @@
           "symbols": [
             "ChartConfigWithOptDateRangeEx",
             "FIXED_TIME_BUCKET_EXPR_ALIAS",
+            "hasMetricFormulas",
             "isMetricChartConfig",
             "isNonEmptyWhereExpr",
             "isRatioChartConfig",
@@ -18619,6 +21370,24 @@
             "FieldContext",
             "ResolvedField",
             "resolveField"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/fn/quantile.ts",
+          "symbols": [
+            "quantile"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/fn/scalar.ts",
+          "symbols": [
+            "aggIf",
+            "anyValue",
+            "argMax",
+            "count",
+            "countIf",
+            "sumIf",
+            "uniq"
           ]
         },
         {
@@ -18732,6 +21501,138 @@
           ]
         },
         {
+          "path": "packages/common-utils/src/couchbase/render/eventDeltas.ts",
+          "symbols": [
+            "getStableSampleExpressionCouchbase"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/from.ts",
+          "symbols": [
+            "renderFromCouchbase",
+            "renderFromWithRowIdCouchbase"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/having.ts",
+          "symbols": [
+            "renderHavingCouchbase"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/index.ts",
+          "symbols": [
+            "ROW_ID_ALIAS",
+            "SqlppQuery",
+            "getStableSampleExpressionCouchbase",
+            "renderChartConfigCouchbase",
+            "rowIdSelect",
+            "rowIdUseKeys",
+            "rowIdWhere"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/limit.ts",
+          "symbols": [
+            "renderLimitCouchbase"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/macros.ts",
+          "symbols": [
+            "expandMacrosCouchbase"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/metadata.ts",
+          "symbols": [
+            "couchbaseMetadataRef"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/metrics/multiSeries.ts",
+          "symbols": [
+            "renderMultiSeriesMetricChartConfigCouchbase"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/metrics/translate.ts",
+          "symbols": [
+            "translateMetricChartConfigCouchbase"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/orderBy.ts",
+          "symbols": [
+            "renderOrderByCouchbase"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/postprocess.ts",
+          "symbols": [
+            "couchbasePostprocessHints"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/ratio.ts",
+          "symbols": [
+            "ratioExprCouchbase"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/rawSql.ts",
+          "symbols": [
+            "renderRawSqlChartConfigCouchbase"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/rowId.ts",
+          "symbols": [
+            "ROW_ID_ALIAS",
+            "parseRowIdWhere",
+            "rowIdSelect",
+            "rowIdUseKeys",
+            "rowIdWhere",
+            "rowIdWhereLiteral"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/search.ts",
+          "symbols": [
+            "includeRowIdInSelect"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/select.ts",
+          "symbols": [
+            "getFirstTimestampColumn",
+            "renderGroupByCouchbase",
+            "renderSelectCouchbase",
+            "renderTimeBucketPartsCouchbase",
+            "timestampFormatOf"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/seriesLimit.ts",
+          "symbols": [
+            "renderSeriesLimitCteCouchbase"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/where.ts",
+          "symbols": [
+            "RenderFilterContext",
+            "compileWhereExpressionCouchbase",
+            "renderWhereCouchbase"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/with.ts",
+          "symbols": [
+            "renderWithCouchbase"
+          ]
+        },
+        {
           "path": "packages/common-utils/src/couchbase/resultset.ts",
           "symbols": [
             "DEFAULT_MAX_BUFFERED_BYTES",
@@ -18773,7 +21674,10 @@
         {
           "path": "packages/common-utils/src/couchbase/time.ts",
           "symbols": [
+            "SQLPP_DATE_FORMAT",
             "TimeFormat",
+            "parseGranularity",
+            "timeBucketExpr",
             "timeRangePredicate",
             "toIso30"
           ]
@@ -19871,7 +22775,7 @@
           "file": "packages/api/src/routers/external-api/v2/charts.ts"
         }
       ],
-      "closureSize": 68,
+      "closureSize": 89,
       "exclusiveFiles": [],
       "dataLayer": [
         {
@@ -19983,6 +22887,12 @@
           "symbols": [
             "ChartConfigWithOptDateRangeEx",
             "FIXED_TIME_BUCKET_EXPR_ALIAS",
+            "hasMetricFormulas",
+            "isMetricChartConfig",
+            "isNonEmptyWhereExpr",
+            "isRatioChartConfig",
+            "isUsingGranularity",
+            "isUsingGroupBy",
             "renderChartConfig",
             "renderWhereExpressionStr",
             "setChartSelectsAlias",
@@ -20027,6 +22937,24 @@
             "FieldContext",
             "ResolvedField",
             "resolveField"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/fn/quantile.ts",
+          "symbols": [
+            "quantile"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/fn/scalar.ts",
+          "symbols": [
+            "aggIf",
+            "anyValue",
+            "argMax",
+            "count",
+            "countIf",
+            "sumIf",
+            "uniq"
           ]
         },
         {
@@ -20134,6 +23062,138 @@
           ]
         },
         {
+          "path": "packages/common-utils/src/couchbase/render/eventDeltas.ts",
+          "symbols": [
+            "getStableSampleExpressionCouchbase"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/from.ts",
+          "symbols": [
+            "renderFromCouchbase",
+            "renderFromWithRowIdCouchbase"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/having.ts",
+          "symbols": [
+            "renderHavingCouchbase"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/index.ts",
+          "symbols": [
+            "ROW_ID_ALIAS",
+            "SqlppQuery",
+            "getStableSampleExpressionCouchbase",
+            "renderChartConfigCouchbase",
+            "rowIdSelect",
+            "rowIdUseKeys",
+            "rowIdWhere"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/limit.ts",
+          "symbols": [
+            "renderLimitCouchbase"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/macros.ts",
+          "symbols": [
+            "expandMacrosCouchbase"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/metadata.ts",
+          "symbols": [
+            "couchbaseMetadataRef"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/metrics/multiSeries.ts",
+          "symbols": [
+            "renderMultiSeriesMetricChartConfigCouchbase"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/metrics/translate.ts",
+          "symbols": [
+            "translateMetricChartConfigCouchbase"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/orderBy.ts",
+          "symbols": [
+            "renderOrderByCouchbase"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/postprocess.ts",
+          "symbols": [
+            "couchbasePostprocessHints"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/ratio.ts",
+          "symbols": [
+            "ratioExprCouchbase"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/rawSql.ts",
+          "symbols": [
+            "renderRawSqlChartConfigCouchbase"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/rowId.ts",
+          "symbols": [
+            "ROW_ID_ALIAS",
+            "parseRowIdWhere",
+            "rowIdSelect",
+            "rowIdUseKeys",
+            "rowIdWhere",
+            "rowIdWhereLiteral"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/search.ts",
+          "symbols": [
+            "includeRowIdInSelect"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/select.ts",
+          "symbols": [
+            "getFirstTimestampColumn",
+            "renderGroupByCouchbase",
+            "renderSelectCouchbase",
+            "renderTimeBucketPartsCouchbase",
+            "timestampFormatOf"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/seriesLimit.ts",
+          "symbols": [
+            "renderSeriesLimitCteCouchbase"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/where.ts",
+          "symbols": [
+            "RenderFilterContext",
+            "compileWhereExpressionCouchbase",
+            "renderWhereCouchbase"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/with.ts",
+          "symbols": [
+            "renderWithCouchbase"
+          ]
+        },
+        {
           "path": "packages/common-utils/src/couchbase/resultset.ts",
           "symbols": [
             "DEFAULT_MAX_BUFFERED_BYTES",
@@ -20175,7 +23235,10 @@
         {
           "path": "packages/common-utils/src/couchbase/time.ts",
           "symbols": [
+            "SQLPP_DATE_FORMAT",
             "TimeFormat",
+            "parseGranularity",
+            "timeBucketExpr",
             "timeRangePredicate",
             "toIso30"
           ]
@@ -21178,7 +24241,7 @@
           "file": "packages/api/src/routers/external-api/v2/index.ts"
         }
       ],
-      "closureSize": 130,
+      "closureSize": 151,
       "exclusiveFiles": [
         "packages/api/src/routers/external-api/v2/index.ts",
         "packages/api/src/utils/rateLimiter.ts"
@@ -21331,6 +24394,12 @@
           "symbols": [
             "ChartConfigWithOptDateRangeEx",
             "FIXED_TIME_BUCKET_EXPR_ALIAS",
+            "hasMetricFormulas",
+            "isMetricChartConfig",
+            "isNonEmptyWhereExpr",
+            "isRatioChartConfig",
+            "isUsingGranularity",
+            "isUsingGroupBy",
             "renderChartConfig",
             "renderWhereExpressionStr",
             "setChartSelectsAlias",
@@ -21375,6 +24444,24 @@
             "FieldContext",
             "ResolvedField",
             "resolveField"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/fn/quantile.ts",
+          "symbols": [
+            "quantile"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/fn/scalar.ts",
+          "symbols": [
+            "aggIf",
+            "anyValue",
+            "argMax",
+            "count",
+            "countIf",
+            "sumIf",
+            "uniq"
           ]
         },
         {
@@ -21483,6 +24570,138 @@
           ]
         },
         {
+          "path": "packages/common-utils/src/couchbase/render/eventDeltas.ts",
+          "symbols": [
+            "getStableSampleExpressionCouchbase"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/from.ts",
+          "symbols": [
+            "renderFromCouchbase",
+            "renderFromWithRowIdCouchbase"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/having.ts",
+          "symbols": [
+            "renderHavingCouchbase"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/index.ts",
+          "symbols": [
+            "ROW_ID_ALIAS",
+            "SqlppQuery",
+            "getStableSampleExpressionCouchbase",
+            "renderChartConfigCouchbase",
+            "rowIdSelect",
+            "rowIdUseKeys",
+            "rowIdWhere"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/limit.ts",
+          "symbols": [
+            "renderLimitCouchbase"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/macros.ts",
+          "symbols": [
+            "expandMacrosCouchbase"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/metadata.ts",
+          "symbols": [
+            "couchbaseMetadataRef"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/metrics/multiSeries.ts",
+          "symbols": [
+            "renderMultiSeriesMetricChartConfigCouchbase"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/metrics/translate.ts",
+          "symbols": [
+            "translateMetricChartConfigCouchbase"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/orderBy.ts",
+          "symbols": [
+            "renderOrderByCouchbase"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/postprocess.ts",
+          "symbols": [
+            "couchbasePostprocessHints"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/ratio.ts",
+          "symbols": [
+            "ratioExprCouchbase"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/rawSql.ts",
+          "symbols": [
+            "renderRawSqlChartConfigCouchbase"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/rowId.ts",
+          "symbols": [
+            "ROW_ID_ALIAS",
+            "parseRowIdWhere",
+            "rowIdSelect",
+            "rowIdUseKeys",
+            "rowIdWhere",
+            "rowIdWhereLiteral"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/search.ts",
+          "symbols": [
+            "includeRowIdInSelect"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/select.ts",
+          "symbols": [
+            "getFirstTimestampColumn",
+            "renderGroupByCouchbase",
+            "renderSelectCouchbase",
+            "renderTimeBucketPartsCouchbase",
+            "timestampFormatOf"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/seriesLimit.ts",
+          "symbols": [
+            "renderSeriesLimitCteCouchbase"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/where.ts",
+          "symbols": [
+            "RenderFilterContext",
+            "compileWhereExpressionCouchbase",
+            "renderWhereCouchbase"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/with.ts",
+          "symbols": [
+            "renderWithCouchbase"
+          ]
+        },
+        {
           "path": "packages/common-utils/src/couchbase/resultset.ts",
           "symbols": [
             "DEFAULT_MAX_BUFFERED_BYTES",
@@ -21531,7 +24750,10 @@
         {
           "path": "packages/common-utils/src/couchbase/time.ts",
           "symbols": [
+            "SQLPP_DATE_FORMAT",
             "TimeFormat",
+            "parseGranularity",
+            "timeBucketExpr",
             "timeRangePredicate",
             "toIso30"
           ]
@@ -22154,7 +25376,7 @@
           "file": "packages/api/src/routers/external-api/v2/search.ts"
         }
       ],
-      "closureSize": 106,
+      "closureSize": 127,
       "exclusiveFiles": [],
       "dataLayer": [
         {
@@ -22304,6 +25526,12 @@
           "symbols": [
             "ChartConfigWithOptDateRangeEx",
             "FIXED_TIME_BUCKET_EXPR_ALIAS",
+            "hasMetricFormulas",
+            "isMetricChartConfig",
+            "isNonEmptyWhereExpr",
+            "isRatioChartConfig",
+            "isUsingGranularity",
+            "isUsingGroupBy",
             "renderChartConfig",
             "renderWhereExpressionStr",
             "setChartSelectsAlias",
@@ -22348,6 +25576,24 @@
             "FieldContext",
             "ResolvedField",
             "resolveField"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/fn/quantile.ts",
+          "symbols": [
+            "quantile"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/fn/scalar.ts",
+          "symbols": [
+            "aggIf",
+            "anyValue",
+            "argMax",
+            "count",
+            "countIf",
+            "sumIf",
+            "uniq"
           ]
         },
         {
@@ -22455,6 +25701,138 @@
           ]
         },
         {
+          "path": "packages/common-utils/src/couchbase/render/eventDeltas.ts",
+          "symbols": [
+            "getStableSampleExpressionCouchbase"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/from.ts",
+          "symbols": [
+            "renderFromCouchbase",
+            "renderFromWithRowIdCouchbase"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/having.ts",
+          "symbols": [
+            "renderHavingCouchbase"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/index.ts",
+          "symbols": [
+            "ROW_ID_ALIAS",
+            "SqlppQuery",
+            "getStableSampleExpressionCouchbase",
+            "renderChartConfigCouchbase",
+            "rowIdSelect",
+            "rowIdUseKeys",
+            "rowIdWhere"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/limit.ts",
+          "symbols": [
+            "renderLimitCouchbase"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/macros.ts",
+          "symbols": [
+            "expandMacrosCouchbase"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/metadata.ts",
+          "symbols": [
+            "couchbaseMetadataRef"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/metrics/multiSeries.ts",
+          "symbols": [
+            "renderMultiSeriesMetricChartConfigCouchbase"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/metrics/translate.ts",
+          "symbols": [
+            "translateMetricChartConfigCouchbase"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/orderBy.ts",
+          "symbols": [
+            "renderOrderByCouchbase"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/postprocess.ts",
+          "symbols": [
+            "couchbasePostprocessHints"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/ratio.ts",
+          "symbols": [
+            "ratioExprCouchbase"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/rawSql.ts",
+          "symbols": [
+            "renderRawSqlChartConfigCouchbase"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/rowId.ts",
+          "symbols": [
+            "ROW_ID_ALIAS",
+            "parseRowIdWhere",
+            "rowIdSelect",
+            "rowIdUseKeys",
+            "rowIdWhere",
+            "rowIdWhereLiteral"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/search.ts",
+          "symbols": [
+            "includeRowIdInSelect"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/select.ts",
+          "symbols": [
+            "getFirstTimestampColumn",
+            "renderGroupByCouchbase",
+            "renderSelectCouchbase",
+            "renderTimeBucketPartsCouchbase",
+            "timestampFormatOf"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/seriesLimit.ts",
+          "symbols": [
+            "renderSeriesLimitCteCouchbase"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/where.ts",
+          "symbols": [
+            "RenderFilterContext",
+            "compileWhereExpressionCouchbase",
+            "renderWhereCouchbase"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/with.ts",
+          "symbols": [
+            "renderWithCouchbase"
+          ]
+        },
+        {
           "path": "packages/common-utils/src/couchbase/resultset.ts",
           "symbols": [
             "DEFAULT_MAX_BUFFERED_BYTES",
@@ -22496,7 +25874,10 @@
         {
           "path": "packages/common-utils/src/couchbase/time.ts",
           "symbols": [
+            "SQLPP_DATE_FORMAT",
             "TimeFormat",
+            "parseGranularity",
+            "timeBucketExpr",
             "timeRangePredicate",
             "toIso30"
           ]
@@ -23731,7 +27112,7 @@
           "file": "packages/otel-collector/builder-config.yaml"
         }
       ],
-      "closureSize": 66,
+      "closureSize": 67,
       "exclusiveFiles": [
         "docker/otel-collector/Dockerfile",
         "docker/otel-collector/config.standalone.auth.yaml",
@@ -23768,6 +27149,7 @@
         "packages/ingest/src/config.ts",
         "packages/ingest/src/index.ts",
         "packages/ingest/src/model/collections.ts",
+        "packages/ingest/src/model/fromClickHouseRow.ts",
         "packages/ingest/src/model/keys.ts",
         "packages/ingest/src/model/materialized.ts",
         "packages/ingest/src/model/sources.ts",
@@ -23800,7 +27182,12 @@
         "packages/otel-collector/go.sum",
         "packages/otel-collector/package.json"
       ],
-      "dataLayer": [],
+      "dataLayer": [
+        {
+          "path": "packages/ingest/src/model/fromClickHouseRow.ts",
+          "symbols": []
+        }
+      ],
       "tests": {
         "unit": [
           "packages/ingest/src/__tests__/model.test.ts",
@@ -23812,7 +27199,9 @@
         "int": [
           "packages/ingest/src/__tests__/ingest.int.test.ts"
         ],
-        "e2e": []
+        "e2e": [
+          "packages/app/tests/e2e/seed-couchbase.ts"
+        ]
       }
     },
     {
@@ -24221,7 +27610,7 @@
           "file": "packages/api/src/mcp/tools/dashboards/searchDashboards.ts"
         }
       ],
-      "closureSize": 117,
+      "closureSize": 138,
       "exclusiveFiles": [
         "packages/api/src/mcp/tools/dashboards/deleteDashboard.ts",
         "packages/api/src/mcp/tools/dashboards/getDashboard.ts",
@@ -24402,6 +27791,12 @@
           "symbols": [
             "ChartConfigWithOptDateRangeEx",
             "FIXED_TIME_BUCKET_EXPR_ALIAS",
+            "hasMetricFormulas",
+            "isMetricChartConfig",
+            "isNonEmptyWhereExpr",
+            "isRatioChartConfig",
+            "isUsingGranularity",
+            "isUsingGroupBy",
             "renderChartConfig",
             "renderWhereExpressionStr",
             "setChartSelectsAlias",
@@ -24446,6 +27841,24 @@
             "FieldContext",
             "ResolvedField",
             "resolveField"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/fn/quantile.ts",
+          "symbols": [
+            "quantile"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/fn/scalar.ts",
+          "symbols": [
+            "aggIf",
+            "anyValue",
+            "argMax",
+            "count",
+            "countIf",
+            "sumIf",
+            "uniq"
           ]
         },
         {
@@ -24553,6 +27966,138 @@
           ]
         },
         {
+          "path": "packages/common-utils/src/couchbase/render/eventDeltas.ts",
+          "symbols": [
+            "getStableSampleExpressionCouchbase"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/from.ts",
+          "symbols": [
+            "renderFromCouchbase",
+            "renderFromWithRowIdCouchbase"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/having.ts",
+          "symbols": [
+            "renderHavingCouchbase"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/index.ts",
+          "symbols": [
+            "ROW_ID_ALIAS",
+            "SqlppQuery",
+            "getStableSampleExpressionCouchbase",
+            "renderChartConfigCouchbase",
+            "rowIdSelect",
+            "rowIdUseKeys",
+            "rowIdWhere"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/limit.ts",
+          "symbols": [
+            "renderLimitCouchbase"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/macros.ts",
+          "symbols": [
+            "expandMacrosCouchbase"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/metadata.ts",
+          "symbols": [
+            "couchbaseMetadataRef"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/metrics/multiSeries.ts",
+          "symbols": [
+            "renderMultiSeriesMetricChartConfigCouchbase"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/metrics/translate.ts",
+          "symbols": [
+            "translateMetricChartConfigCouchbase"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/orderBy.ts",
+          "symbols": [
+            "renderOrderByCouchbase"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/postprocess.ts",
+          "symbols": [
+            "couchbasePostprocessHints"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/ratio.ts",
+          "symbols": [
+            "ratioExprCouchbase"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/rawSql.ts",
+          "symbols": [
+            "renderRawSqlChartConfigCouchbase"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/rowId.ts",
+          "symbols": [
+            "ROW_ID_ALIAS",
+            "parseRowIdWhere",
+            "rowIdSelect",
+            "rowIdUseKeys",
+            "rowIdWhere",
+            "rowIdWhereLiteral"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/search.ts",
+          "symbols": [
+            "includeRowIdInSelect"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/select.ts",
+          "symbols": [
+            "getFirstTimestampColumn",
+            "renderGroupByCouchbase",
+            "renderSelectCouchbase",
+            "renderTimeBucketPartsCouchbase",
+            "timestampFormatOf"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/seriesLimit.ts",
+          "symbols": [
+            "renderSeriesLimitCteCouchbase"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/where.ts",
+          "symbols": [
+            "RenderFilterContext",
+            "compileWhereExpressionCouchbase",
+            "renderWhereCouchbase"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/with.ts",
+          "symbols": [
+            "renderWithCouchbase"
+          ]
+        },
+        {
           "path": "packages/common-utils/src/couchbase/resultset.ts",
           "symbols": [
             "DEFAULT_MAX_BUFFERED_BYTES",
@@ -24594,7 +28139,10 @@
         {
           "path": "packages/common-utils/src/couchbase/time.ts",
           "symbols": [
+            "SQLPP_DATE_FORMAT",
             "TimeFormat",
+            "parseGranularity",
+            "timeBucketExpr",
             "timeRangePredicate",
             "toIso30"
           ]
@@ -24935,7 +28483,7 @@
           "file": "packages/api/src/mcp/tools/query/timeseries.ts"
         }
       ],
-      "closureSize": 116,
+      "closureSize": 137,
       "exclusiveFiles": [
         "packages/api/src/mcp/tools/query/builderCatalog.ts",
         "packages/api/src/mcp/tools/query/denoise.ts",
@@ -25135,6 +28683,12 @@
           "symbols": [
             "ChartConfigWithOptDateRangeEx",
             "FIXED_TIME_BUCKET_EXPR_ALIAS",
+            "hasMetricFormulas",
+            "isMetricChartConfig",
+            "isNonEmptyWhereExpr",
+            "isRatioChartConfig",
+            "isUsingGranularity",
+            "isUsingGroupBy",
             "renderChartConfig",
             "renderWhereExpressionStr",
             "setChartSelectsAlias",
@@ -25179,6 +28733,24 @@
             "FieldContext",
             "ResolvedField",
             "resolveField"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/fn/quantile.ts",
+          "symbols": [
+            "quantile"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/fn/scalar.ts",
+          "symbols": [
+            "aggIf",
+            "anyValue",
+            "argMax",
+            "count",
+            "countIf",
+            "sumIf",
+            "uniq"
           ]
         },
         {
@@ -25286,6 +28858,138 @@
           ]
         },
         {
+          "path": "packages/common-utils/src/couchbase/render/eventDeltas.ts",
+          "symbols": [
+            "getStableSampleExpressionCouchbase"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/from.ts",
+          "symbols": [
+            "renderFromCouchbase",
+            "renderFromWithRowIdCouchbase"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/having.ts",
+          "symbols": [
+            "renderHavingCouchbase"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/index.ts",
+          "symbols": [
+            "ROW_ID_ALIAS",
+            "SqlppQuery",
+            "getStableSampleExpressionCouchbase",
+            "renderChartConfigCouchbase",
+            "rowIdSelect",
+            "rowIdUseKeys",
+            "rowIdWhere"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/limit.ts",
+          "symbols": [
+            "renderLimitCouchbase"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/macros.ts",
+          "symbols": [
+            "expandMacrosCouchbase"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/metadata.ts",
+          "symbols": [
+            "couchbaseMetadataRef"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/metrics/multiSeries.ts",
+          "symbols": [
+            "renderMultiSeriesMetricChartConfigCouchbase"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/metrics/translate.ts",
+          "symbols": [
+            "translateMetricChartConfigCouchbase"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/orderBy.ts",
+          "symbols": [
+            "renderOrderByCouchbase"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/postprocess.ts",
+          "symbols": [
+            "couchbasePostprocessHints"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/ratio.ts",
+          "symbols": [
+            "ratioExprCouchbase"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/rawSql.ts",
+          "symbols": [
+            "renderRawSqlChartConfigCouchbase"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/rowId.ts",
+          "symbols": [
+            "ROW_ID_ALIAS",
+            "parseRowIdWhere",
+            "rowIdSelect",
+            "rowIdUseKeys",
+            "rowIdWhere",
+            "rowIdWhereLiteral"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/search.ts",
+          "symbols": [
+            "includeRowIdInSelect"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/select.ts",
+          "symbols": [
+            "getFirstTimestampColumn",
+            "renderGroupByCouchbase",
+            "renderSelectCouchbase",
+            "renderTimeBucketPartsCouchbase",
+            "timestampFormatOf"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/seriesLimit.ts",
+          "symbols": [
+            "renderSeriesLimitCteCouchbase"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/where.ts",
+          "symbols": [
+            "RenderFilterContext",
+            "compileWhereExpressionCouchbase",
+            "renderWhereCouchbase"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/with.ts",
+          "symbols": [
+            "renderWithCouchbase"
+          ]
+        },
+        {
           "path": "packages/common-utils/src/couchbase/resultset.ts",
           "symbols": [
             "DEFAULT_MAX_BUFFERED_BYTES",
@@ -25327,7 +29031,10 @@
         {
           "path": "packages/common-utils/src/couchbase/time.ts",
           "symbols": [
+            "SQLPP_DATE_FORMAT",
             "TimeFormat",
+            "parseGranularity",
+            "timeBucketExpr",
             "timeRangePredicate",
             "toIso30"
           ]
@@ -25958,7 +29665,7 @@
           "file": "packages/api/src/mcp/tools/sources/saveSource.ts"
         }
       ],
-      "closureSize": 120,
+      "closureSize": 141,
       "exclusiveFiles": [
         "packages/api/src/mcp/tools/sources/deleteSource.ts",
         "packages/api/src/mcp/tools/sources/describeMetric.ts",
@@ -26166,6 +29873,12 @@
           "symbols": [
             "ChartConfigWithOptDateRangeEx",
             "FIXED_TIME_BUCKET_EXPR_ALIAS",
+            "hasMetricFormulas",
+            "isMetricChartConfig",
+            "isNonEmptyWhereExpr",
+            "isRatioChartConfig",
+            "isUsingGranularity",
+            "isUsingGroupBy",
             "renderChartConfig",
             "renderWhereExpressionStr",
             "setChartSelectsAlias",
@@ -26210,6 +29923,24 @@
             "FieldContext",
             "ResolvedField",
             "resolveField"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/fn/quantile.ts",
+          "symbols": [
+            "quantile"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/fn/scalar.ts",
+          "symbols": [
+            "aggIf",
+            "anyValue",
+            "argMax",
+            "count",
+            "countIf",
+            "sumIf",
+            "uniq"
           ]
         },
         {
@@ -26317,6 +30048,138 @@
           ]
         },
         {
+          "path": "packages/common-utils/src/couchbase/render/eventDeltas.ts",
+          "symbols": [
+            "getStableSampleExpressionCouchbase"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/from.ts",
+          "symbols": [
+            "renderFromCouchbase",
+            "renderFromWithRowIdCouchbase"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/having.ts",
+          "symbols": [
+            "renderHavingCouchbase"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/index.ts",
+          "symbols": [
+            "ROW_ID_ALIAS",
+            "SqlppQuery",
+            "getStableSampleExpressionCouchbase",
+            "renderChartConfigCouchbase",
+            "rowIdSelect",
+            "rowIdUseKeys",
+            "rowIdWhere"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/limit.ts",
+          "symbols": [
+            "renderLimitCouchbase"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/macros.ts",
+          "symbols": [
+            "expandMacrosCouchbase"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/metadata.ts",
+          "symbols": [
+            "couchbaseMetadataRef"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/metrics/multiSeries.ts",
+          "symbols": [
+            "renderMultiSeriesMetricChartConfigCouchbase"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/metrics/translate.ts",
+          "symbols": [
+            "translateMetricChartConfigCouchbase"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/orderBy.ts",
+          "symbols": [
+            "renderOrderByCouchbase"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/postprocess.ts",
+          "symbols": [
+            "couchbasePostprocessHints"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/ratio.ts",
+          "symbols": [
+            "ratioExprCouchbase"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/rawSql.ts",
+          "symbols": [
+            "renderRawSqlChartConfigCouchbase"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/rowId.ts",
+          "symbols": [
+            "ROW_ID_ALIAS",
+            "parseRowIdWhere",
+            "rowIdSelect",
+            "rowIdUseKeys",
+            "rowIdWhere",
+            "rowIdWhereLiteral"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/search.ts",
+          "symbols": [
+            "includeRowIdInSelect"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/select.ts",
+          "symbols": [
+            "getFirstTimestampColumn",
+            "renderGroupByCouchbase",
+            "renderSelectCouchbase",
+            "renderTimeBucketPartsCouchbase",
+            "timestampFormatOf"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/seriesLimit.ts",
+          "symbols": [
+            "renderSeriesLimitCteCouchbase"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/where.ts",
+          "symbols": [
+            "RenderFilterContext",
+            "compileWhereExpressionCouchbase",
+            "renderWhereCouchbase"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/with.ts",
+          "symbols": [
+            "renderWithCouchbase"
+          ]
+        },
+        {
           "path": "packages/common-utils/src/couchbase/resultset.ts",
           "symbols": [
             "DEFAULT_MAX_BUFFERED_BYTES",
@@ -26358,7 +30221,10 @@
         {
           "path": "packages/common-utils/src/couchbase/time.ts",
           "symbols": [
+            "SQLPP_DATE_FORMAT",
             "TimeFormat",
+            "parseGranularity",
+            "timeBucketExpr",
             "timeRangePredicate",
             "toIso30"
           ]
@@ -26659,7 +30525,7 @@
           "file": "packages/api/src/mcp/tools/trace/waterfall.ts"
         }
       ],
-      "closureSize": 106,
+      "closureSize": 127,
       "exclusiveFiles": [
         "packages/api/src/mcp/tools/trace/breakdown.ts",
         "packages/api/src/mcp/tools/trace/breakdownSchema.ts",
@@ -26821,6 +30687,12 @@
           "symbols": [
             "ChartConfigWithOptDateRangeEx",
             "FIXED_TIME_BUCKET_EXPR_ALIAS",
+            "hasMetricFormulas",
+            "isMetricChartConfig",
+            "isNonEmptyWhereExpr",
+            "isRatioChartConfig",
+            "isUsingGranularity",
+            "isUsingGroupBy",
             "renderChartConfig",
             "renderWhereExpressionStr",
             "setChartSelectsAlias",
@@ -26865,6 +30737,24 @@
             "FieldContext",
             "ResolvedField",
             "resolveField"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/fn/quantile.ts",
+          "symbols": [
+            "quantile"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/fn/scalar.ts",
+          "symbols": [
+            "aggIf",
+            "anyValue",
+            "argMax",
+            "count",
+            "countIf",
+            "sumIf",
+            "uniq"
           ]
         },
         {
@@ -26972,6 +30862,138 @@
           ]
         },
         {
+          "path": "packages/common-utils/src/couchbase/render/eventDeltas.ts",
+          "symbols": [
+            "getStableSampleExpressionCouchbase"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/from.ts",
+          "symbols": [
+            "renderFromCouchbase",
+            "renderFromWithRowIdCouchbase"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/having.ts",
+          "symbols": [
+            "renderHavingCouchbase"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/index.ts",
+          "symbols": [
+            "ROW_ID_ALIAS",
+            "SqlppQuery",
+            "getStableSampleExpressionCouchbase",
+            "renderChartConfigCouchbase",
+            "rowIdSelect",
+            "rowIdUseKeys",
+            "rowIdWhere"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/limit.ts",
+          "symbols": [
+            "renderLimitCouchbase"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/macros.ts",
+          "symbols": [
+            "expandMacrosCouchbase"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/metadata.ts",
+          "symbols": [
+            "couchbaseMetadataRef"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/metrics/multiSeries.ts",
+          "symbols": [
+            "renderMultiSeriesMetricChartConfigCouchbase"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/metrics/translate.ts",
+          "symbols": [
+            "translateMetricChartConfigCouchbase"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/orderBy.ts",
+          "symbols": [
+            "renderOrderByCouchbase"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/postprocess.ts",
+          "symbols": [
+            "couchbasePostprocessHints"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/ratio.ts",
+          "symbols": [
+            "ratioExprCouchbase"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/rawSql.ts",
+          "symbols": [
+            "renderRawSqlChartConfigCouchbase"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/rowId.ts",
+          "symbols": [
+            "ROW_ID_ALIAS",
+            "parseRowIdWhere",
+            "rowIdSelect",
+            "rowIdUseKeys",
+            "rowIdWhere",
+            "rowIdWhereLiteral"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/search.ts",
+          "symbols": [
+            "includeRowIdInSelect"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/select.ts",
+          "symbols": [
+            "getFirstTimestampColumn",
+            "renderGroupByCouchbase",
+            "renderSelectCouchbase",
+            "renderTimeBucketPartsCouchbase",
+            "timestampFormatOf"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/seriesLimit.ts",
+          "symbols": [
+            "renderSeriesLimitCteCouchbase"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/where.ts",
+          "symbols": [
+            "RenderFilterContext",
+            "compileWhereExpressionCouchbase",
+            "renderWhereCouchbase"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/with.ts",
+          "symbols": [
+            "renderWithCouchbase"
+          ]
+        },
+        {
           "path": "packages/common-utils/src/couchbase/resultset.ts",
           "symbols": [
             "DEFAULT_MAX_BUFFERED_BYTES",
@@ -27013,7 +31035,10 @@
         {
           "path": "packages/common-utils/src/couchbase/time.ts",
           "symbols": [
+            "SQLPP_DATE_FORMAT",
             "TimeFormat",
+            "parseGranularity",
+            "timeBucketExpr",
             "timeRangePredicate",
             "toIso30"
           ]
@@ -27303,7 +31328,7 @@
           "file": "packages/api/src/tasks/checkAlerts/index.ts"
         }
       ],
-      "closureSize": 97,
+      "closureSize": 118,
       "exclusiveFiles": [],
       "dataLayer": [
         {
@@ -27432,6 +31457,12 @@
           "symbols": [
             "ChartConfigWithOptDateRangeEx",
             "FIXED_TIME_BUCKET_EXPR_ALIAS",
+            "hasMetricFormulas",
+            "isMetricChartConfig",
+            "isNonEmptyWhereExpr",
+            "isRatioChartConfig",
+            "isUsingGranularity",
+            "isUsingGroupBy",
             "renderChartConfig",
             "renderWhereExpressionStr",
             "setChartSelectsAlias",
@@ -27476,6 +31507,24 @@
             "FieldContext",
             "ResolvedField",
             "resolveField"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/fn/quantile.ts",
+          "symbols": [
+            "quantile"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/fn/scalar.ts",
+          "symbols": [
+            "aggIf",
+            "anyValue",
+            "argMax",
+            "count",
+            "countIf",
+            "sumIf",
+            "uniq"
           ]
         },
         {
@@ -27583,6 +31632,138 @@
           ]
         },
         {
+          "path": "packages/common-utils/src/couchbase/render/eventDeltas.ts",
+          "symbols": [
+            "getStableSampleExpressionCouchbase"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/from.ts",
+          "symbols": [
+            "renderFromCouchbase",
+            "renderFromWithRowIdCouchbase"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/having.ts",
+          "symbols": [
+            "renderHavingCouchbase"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/index.ts",
+          "symbols": [
+            "ROW_ID_ALIAS",
+            "SqlppQuery",
+            "getStableSampleExpressionCouchbase",
+            "renderChartConfigCouchbase",
+            "rowIdSelect",
+            "rowIdUseKeys",
+            "rowIdWhere"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/limit.ts",
+          "symbols": [
+            "renderLimitCouchbase"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/macros.ts",
+          "symbols": [
+            "expandMacrosCouchbase"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/metadata.ts",
+          "symbols": [
+            "couchbaseMetadataRef"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/metrics/multiSeries.ts",
+          "symbols": [
+            "renderMultiSeriesMetricChartConfigCouchbase"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/metrics/translate.ts",
+          "symbols": [
+            "translateMetricChartConfigCouchbase"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/orderBy.ts",
+          "symbols": [
+            "renderOrderByCouchbase"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/postprocess.ts",
+          "symbols": [
+            "couchbasePostprocessHints"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/ratio.ts",
+          "symbols": [
+            "ratioExprCouchbase"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/rawSql.ts",
+          "symbols": [
+            "renderRawSqlChartConfigCouchbase"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/rowId.ts",
+          "symbols": [
+            "ROW_ID_ALIAS",
+            "parseRowIdWhere",
+            "rowIdSelect",
+            "rowIdUseKeys",
+            "rowIdWhere",
+            "rowIdWhereLiteral"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/search.ts",
+          "symbols": [
+            "includeRowIdInSelect"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/select.ts",
+          "symbols": [
+            "getFirstTimestampColumn",
+            "renderGroupByCouchbase",
+            "renderSelectCouchbase",
+            "renderTimeBucketPartsCouchbase",
+            "timestampFormatOf"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/seriesLimit.ts",
+          "symbols": [
+            "renderSeriesLimitCteCouchbase"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/where.ts",
+          "symbols": [
+            "RenderFilterContext",
+            "compileWhereExpressionCouchbase",
+            "renderWhereCouchbase"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/with.ts",
+          "symbols": [
+            "renderWithCouchbase"
+          ]
+        },
+        {
           "path": "packages/common-utils/src/couchbase/resultset.ts",
           "symbols": [
             "DEFAULT_MAX_BUFFERED_BYTES",
@@ -27624,7 +31805,10 @@
         {
           "path": "packages/common-utils/src/couchbase/time.ts",
           "symbols": [
+            "SQLPP_DATE_FORMAT",
             "TimeFormat",
+            "parseGranularity",
+            "timeBucketExpr",
             "timeRangePredicate",
             "toIso30"
           ]
@@ -28177,7 +32361,7 @@
     "byStatus": [
       {
         "status": "not_started",
-        "count": 48
+        "count": 43
       },
       {
         "status": "in_progress",
@@ -28185,7 +32369,7 @@
       },
       {
         "status": "ported",
-        "count": 2
+        "count": 7
       },
       {
         "status": "needs_decision",

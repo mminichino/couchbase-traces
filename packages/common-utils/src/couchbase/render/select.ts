@@ -1,6 +1,7 @@
 import {
   FIXED_TIME_BUCKET_EXPR_ALIAS,
   isNonEmptyWhereExpr,
+  isRatioChartConfig,
   isUsingGranularity,
   isUsingGroupBy,
 } from '@/core/renderChartConfig';
@@ -9,6 +10,7 @@ import {
   getFirstTimestampValueExpression,
   resolvePercentileAggFn,
 } from '@/core/utils';
+import { quantile as quantileAgg } from '@/couchbase/fn/quantile';
 import {
   aggIf,
   anyValue,
@@ -18,20 +20,23 @@ import {
   sumIf,
   uniq,
 } from '@/couchbase/fn/scalar';
-import { quantile as quantileAgg } from '@/couchbase/fn/quantile';
-import { quoteIdent, sqlpp, type SqlPP } from '@/couchbase/sqlpp';
+import { quoteIdent, type SqlPP, sqlpp } from '@/couchbase/sqlpp';
 import {
   parseGranularity,
   timeBucketExpr as cbTimeBucketExpr,
   type TimeFormat,
 } from '@/couchbase/time';
-import { CouchbaseNotReadyError, CouchbaseUnsupportedError } from '@/dataLayer/errors';
+import {
+  CouchbaseNotReadyError,
+  CouchbaseUnsupportedError,
+} from '@/dataLayer/errors';
 import type { BuilderChartConfigWithOptDateRange, SelectList } from '@/types';
 
+import { ratioExprCouchbase } from './ratio';
+import { ROW_ID_ALIAS, rowIdSelect } from './rowId';
+import { includeRowIdInSelect } from './search';
 import type { RenderFilterContext } from './where';
 import { compileWhereExpressionCouchbase } from './where';
-import { includeRowIdInSelect } from './search';
-import { ROW_ID_ALIAS, rowIdSelect } from './rowId';
 
 const ALIAS = 'd';
 
@@ -40,11 +45,17 @@ type TimestampChartConfig = BuilderChartConfigWithOptDateRange & {
   bucketTimestampValueExpression?: string;
 };
 
-export function timestampFormatOf(chartConfig: TimestampChartConfig): TimeFormat {
-  return chartConfig.timestampFormat === 'epoch_millis' ? 'epoch_millis' : 'iso8601';
+export function timestampFormatOf(
+  chartConfig: TimestampChartConfig,
+): TimeFormat {
+  return chartConfig.timestampFormat === 'epoch_millis'
+    ? 'epoch_millis'
+    : 'iso8601';
 }
 
-export function getFirstTimestampColumn(chartConfig: TimestampChartConfig): string {
+export function getFirstTimestampColumn(
+  chartConfig: TimestampChartConfig,
+): string {
   const raw =
     chartConfig.bucketTimestampValueExpression ??
     getFirstTimestampValueExpression(
@@ -100,7 +111,7 @@ function normalizePercentileAgg(fn: string | undefined): {
 function aggExprCouchbase(
   fn: string,
   valueExpression: string,
-  whereSql: string,
+  whereCond: SqlPP | undefined,
   level: number | undefined,
   timestampExpr: string,
   sampleWeightExpression?: string,
@@ -108,9 +119,9 @@ function aggExprCouchbase(
   if (fn.endsWith('State') || fn.endsWith('Merge')) {
     throw new CouchbaseUnsupportedError(`${fn} combinators`);
   }
-  const cond = whereSql.trim() ? whereSql : 'TRUE';
   const x = valueExpression.trim() ? valueExpression : '*';
   const numX = x === '*' ? x : `TONUMBER(${x})`;
+  const hasCond = whereCond != null && whereCond.statement.trim() !== '';
 
   const weightExpr = sampleWeightExpression?.trim()
     ? `GREATEST(TONUMBER(${sampleWeightExpression}), 1)`
@@ -119,25 +130,31 @@ function aggExprCouchbase(
   switch (fn) {
     case 'count':
       if (weightExpr) {
-        return sqlpp`${{ Raw: cond === 'TRUE' ? `SUM(${weightExpr})` : `SUM(CASE WHEN ${cond} THEN ${weightExpr} END)` }}`;
+        if (!hasCond) return sqlpp`${{ Raw: `SUM(${weightExpr})` }}`;
+        return sqlpp`SUM(CASE WHEN ${whereCond!} THEN ${{ Raw: weightExpr }} END)`;
       }
-      return sqlpp`${{ Raw: cond === 'TRUE' ? count() : countIf(cond) }}`;
+      if (!hasCond) return sqlpp`${{ Raw: count() }}`;
+      return sqlpp`COUNT(CASE WHEN ${whereCond!} THEN 1 END)`;
     case 'count_distinct':
-      return cond === 'TRUE'
-        ? sqlpp`${{ Raw: uniq(x) }}`
-        : sqlpp`${{ Raw: `COUNT(DISTINCT CASE WHEN ${cond} THEN ${x} END)` }}`;
+      if (!hasCond) return sqlpp`${{ Raw: uniq(x) }}`;
+      return sqlpp`COUNT(DISTINCT CASE WHEN ${whereCond!} THEN ${{ Raw: x }} END)`;
     case 'sum':
       if (weightExpr) {
         const weighted = `TONUMBER(${x}) * ${weightExpr}`;
-        return sqlpp`${{ Raw: cond === 'TRUE' ? `SUM(${weighted})` : `SUM(CASE WHEN ${cond} THEN ${weighted} END)` }}`;
+        if (!hasCond) return sqlpp`${{ Raw: `SUM(${weighted})` }}`;
+        return sqlpp`SUM(CASE WHEN ${whereCond!} THEN ${{ Raw: weighted }} END)`;
       }
-      return sqlpp`${{ Raw: cond === 'TRUE' ? `SUM(${numX})` : sumIf(numX, cond) }}`;
+      if (!hasCond) return sqlpp`${{ Raw: `SUM(${numX})` }}`;
+      return sqlpp`IFNULL(SUM(CASE WHEN ${whereCond!} THEN ${{ Raw: numX }} END), 0)`;
     case 'avg':
-      return sqlpp`${{ Raw: cond === 'TRUE' ? `AVG(${numX})` : aggIf('AVG', numX, cond) }}`;
+      if (!hasCond) return sqlpp`${{ Raw: `AVG(${numX})` }}`;
+      return sqlpp`AVG(CASE WHEN ${whereCond!} THEN ${{ Raw: numX }} END)`;
     case 'min':
-      return sqlpp`${{ Raw: cond === 'TRUE' ? `MIN(${x})` : aggIf('MIN', x, cond) }}`;
+      if (!hasCond) return sqlpp`${{ Raw: `MIN(${x})` }}`;
+      return sqlpp`MIN(CASE WHEN ${whereCond!} THEN ${{ Raw: x }} END)`;
     case 'max':
-      return sqlpp`${{ Raw: cond === 'TRUE' ? `MAX(${x})` : aggIf('MAX', x, cond) }}`;
+      if (!hasCond) return sqlpp`${{ Raw: `MAX(${x})` }}`;
+      return sqlpp`MAX(CASE WHEN ${whereCond!} THEN ${{ Raw: x }} END)`;
     case 'any':
       return sqlpp`${{ Raw: anyValue(x) }}`;
     case 'last_value':
@@ -145,14 +162,22 @@ function aggExprCouchbase(
     case 'none':
       return sqlpp`${{ Raw: x }}`;
     case 'increase':
-      return sqlpp`${{ Raw: cond === 'TRUE' ? `SUM(${numX})` : sumIf(numX, cond) }}`;
+      if (!hasCond) return sqlpp`${{ Raw: `SUM(${numX})` }}`;
+      return sqlpp`IFNULL(SUM(CASE WHEN ${whereCond!} THEN ${{ Raw: numX }} END), 0)`;
     case 'quantile': {
-      const q = quantileAgg(level ?? 0.5, numX, cond);
-      return q;
+      // quantile() builder takes a condition string; nest params via Raw+merge
+      if (!hasCond) return quantileAgg(level ?? 0.5, numX, 'TRUE');
+      const q = quantileAgg(level ?? 0.5, numX, `(${whereCond!.statement})`);
+      return {
+        statement: q.statement,
+        parameters: { ...whereCond!.parameters, ...q.parameters },
+      };
     }
     default:
       if (weightExpr) {
-        throw new CouchbaseNotReadyError(`charts: sampleWeight with aggFn ${fn}`);
+        throw new CouchbaseNotReadyError(
+          `charts: sampleWeight with aggFn ${fn}`,
+        );
       }
       throw new CouchbaseNotReadyError(`charts: aggFn ${fn}`);
   }
@@ -195,15 +220,14 @@ async function renderSelectListCouchbase(
 
   const out: SqlPP[] = [];
   for (const select of selectList.map(resolvePercentileAggFn)) {
-    let whereSql = '';
+    let whereCond: SqlPP | undefined;
     if (isNonEmptyWhereExpr(select.aggCondition)) {
-      const compiled = await compileWhereExpressionCouchbase({
+      whereCond = await compileWhereExpressionCouchbase({
         condition: select.aggCondition ?? '',
         language: select.aggConditionLanguage ?? 'lucene',
         chartConfig,
         ctx,
       });
-      whereSql = compiled.statement;
     }
 
     const tsCol = getFirstTimestampColumn(chartConfig);
@@ -229,13 +253,15 @@ async function renderSelectListCouchbase(
       expr = aggExprCouchbase(
         fn,
         select.valueExpression,
-        whereSql,
+        whereCond,
         qLevel,
         timestampExpr,
         chartConfig.sampleWeightExpression,
       );
     }
 
+    // Match upstream: only emit AS when an alias is set. Bare expressions are
+    // required for ratio nesting (AS inside CASE/divide is a syntax error).
     if (select.alias != null && select.alias.trim() !== '') {
       out.push(sqlpp`${expr} AS ${{ Identifier: select.alias }}`);
     } else {
@@ -256,17 +282,39 @@ export async function renderSelectCouchbase(
   const parts: SqlPP[] = [];
 
   const hasFormulas =
-    Array.isArray(chartConfig.select) && (chartConfig.formulas?.length ?? 0) > 0;
+    Array.isArray(chartConfig.select) &&
+    (chartConfig.formulas?.length ?? 0) > 0;
   if (hasFormulas) {
     throw new CouchbaseNotReadyError('charts: formulas');
   }
 
-  const selectParts = await renderSelectListCouchbase(
-    chartConfig.select,
-    chartConfig,
-    ctx,
-  );
-  parts.push(...selectParts);
+  if (
+    Array.isArray(chartConfig.select) &&
+    isRatioChartConfig(chartConfig.select, chartConfig)
+  ) {
+    const [a, b] = chartConfig.select;
+    const numParts = await renderSelectListCouchbase(
+      [{ ...a, alias: undefined }],
+      chartConfig,
+      ctx,
+    );
+    const denParts = await renderSelectListCouchbase(
+      [{ ...b, alias: undefined }],
+      chartConfig,
+      ctx,
+    );
+    const ratio = ratioExprCouchbase(numParts[0], denParts[0]);
+    // SQL++ needs an alias; parity remaps CH's unaliased divide(...) to this name.
+    const alias = a.alias?.trim() || b.alias?.trim() || 'ratio';
+    parts.push(sqlpp`${ratio} AS ${{ Identifier: alias }}`);
+  } else {
+    const selectParts = await renderSelectListCouchbase(
+      chartConfig.select,
+      chartConfig,
+      ctx,
+    );
+    parts.push(...selectParts);
+  }
 
   if (isUsingGroupBy(chartConfig) && chartConfig.selectGroupBy !== false) {
     if (typeof chartConfig.groupBy === 'string') {

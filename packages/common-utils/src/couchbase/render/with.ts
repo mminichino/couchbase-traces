@@ -1,5 +1,5 @@
 import type { ChartConfigWithOptDateRangeEx } from '@/core/renderChartConfig';
-import { sqlpp, type SqlPP } from '@/couchbase/sqlpp';
+import { type SqlPP, sqlpp } from '@/couchbase/sqlpp';
 import type { BuilderChartConfigWithOptDateRange } from '@/types';
 import type { QuerySettings } from '@/types';
 
@@ -23,10 +23,14 @@ export async function renderWithCouchbase(
   const parts: SqlPP[] = [];
   for (const clause of withClauses) {
     if (clause.sql && clause.chartConfig) {
-      throw new Error("cannot specify both 'sql' and 'chartConfig' in with clause");
+      throw new Error(
+        "cannot specify both 'sql' and 'chartConfig' in with clause",
+      );
     }
     if (!(clause.sql || clause.chartConfig)) {
-      throw new Error("must specify either 'sql' or 'chartConfig' in with clause");
+      throw new Error(
+        "must specify either 'sql' or 'chartConfig' in with clause",
+      );
     }
 
     let inner: SqlPP;
@@ -36,7 +40,11 @@ export async function renderWithCouchbase(
         inner.parameters[k] = v;
       }
     } else if (clause.chartConfig) {
-      const rendered = await renderChart(clause.chartConfig, metadata, querySettings);
+      const rendered = await renderChart(
+        clause.chartConfig,
+        metadata,
+        querySettings,
+      );
       inner = sqlpp`${{ Raw: rendered.sql }}`;
       Object.assign(inner.parameters, rendered.params);
     } else {

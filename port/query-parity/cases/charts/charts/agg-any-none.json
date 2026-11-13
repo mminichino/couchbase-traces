@@ -1,0 +1,22 @@
+{
+  "id": "charts-agg-any-none",
+  "description": "any aggregate without group",
+  "source": "logs",
+  "config": {
+    "select": [
+      {
+        "aggFn": "any",
+        "valueExpression": "ServiceName",
+        "alias": "value"
+      }
+    ],
+    "granularity": "5 minute",
+    "dateRange": {
+      "fromMinutesAgo": 60,
+      "toMinutesAgo": 0
+    }
+  },
+  "compare": {
+    "ignoreColumns": ["__cbt_id"]
+  }
+}

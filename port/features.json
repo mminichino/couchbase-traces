@@ -78,7 +78,7 @@
       "entryPoints": [
         "app_page:/chart"
       ],
-      "status": "not_started",
+      "status": "ported",
       "decision": null
     },
     {
@@ -102,7 +102,7 @@
         "app_page:/dashboards/list",
         "app_page:/dashboards/templates"
       ],
-      "status": "not_started",
+      "status": "ported",
       "decision": null
     },
     {

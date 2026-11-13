@@ -29,11 +29,6 @@ import {
   ClickHouseQueryError,
   ColumnMeta,
 } from '@couchbase-traces/common-utils/dist/clickhouse';
-import { CouchbaseQueryError } from '@couchbase-traces/common-utils/dist/couchbase/errors';
-import {
-  CouchbaseNotReadyError,
-  isCouchbaseSliceEnabled,
-} from '@couchbase-traces/common-utils/dist/dataLayer';
 import { tcFromSource } from '@couchbase-traces/common-utils/dist/core/metadata';
 import { buildSearchChartConfig } from '@couchbase-traces/common-utils/dist/core/searchChartConfig';
 import {
@@ -41,6 +36,11 @@ import {
   isBrowser,
   splitAndTrimWithBracket,
 } from '@couchbase-traces/common-utils/dist/core/utils';
+import { CouchbaseQueryError } from '@couchbase-traces/common-utils/dist/couchbase/errors';
+import {
+  CouchbaseNotReadyError,
+  isCouchbaseSliceEnabled,
+} from '@couchbase-traces/common-utils/dist/dataLayer';
 import {
   BuilderChartConfigWithDateRange,
   ChartConfigWithDateRange,
@@ -124,6 +124,12 @@ import { SQLInlineEditorControlled } from '@/components/SQLEditor/SQLInlineEdito
 import { Tags } from '@/components/Tags';
 import { TimePicker } from '@/components/TimePicker';
 import { IS_LOCAL_MODE } from '@/config';
+import { isQueryErrorWithSql } from '@/couchbase/queryErrors';
+import {
+  useConnectionKind,
+  useIsSourceAllowedForSlice,
+  useSourcesForSlice,
+} from '@/couchbase/sources';
 import { useAliasMapFromChartConfig } from '@/hooks/useChartConfig';
 import { useExplainQuery } from '@/hooks/useExplainQuery';
 import { useResolvedSourceParam } from '@/hooks/useResolvedSourceParam';
@@ -137,12 +143,6 @@ import {
   useUpdateSavedSearch,
 } from '@/savedSearch';
 import { useSearchPageFilterState } from '@/searchFilters';
-import { isQueryErrorWithSql } from '@/couchbase/queryErrors';
-import {
-  useConnectionKind,
-  useIsSourceAllowedForSlice,
-  useSourcesForSlice,
-} from '@/couchbase/sources';
 import { getEventBody, useSource, useSources } from '@/source';
 import {
   parseRelativeTimeQuery,
@@ -1644,10 +1644,11 @@ function DBSearchPageContent() {
   // query error handling
   const { hasQueryError, queryError } = useMemo(() => {
     const hasQueryError = Object.values(_queryErrors).length > 0;
-    const queryError: Error | ClickHouseQueryError | CouchbaseQueryError | null =
-      hasQueryError
-      ? Object.values(_queryErrors)[0]
-      : null;
+    const queryError:
+      | Error
+      | ClickHouseQueryError
+      | CouchbaseQueryError
+      | null = hasQueryError ? Object.values(_queryErrors)[0] : null;
     return { hasQueryError, queryError };
   }, [_queryErrors]);
   const inputWhere = useWatch({ name: 'where', control });

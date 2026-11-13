@@ -1,4 +1,4 @@
-import { sqlpp, type SqlPP } from '@/couchbase/sqlpp';
+import { type SqlPP, sqlpp } from '@/couchbase/sqlpp';
 import type { BuilderChartConfigWithOptDateRange } from '@/types';
 
 export function renderLimitCouchbase(

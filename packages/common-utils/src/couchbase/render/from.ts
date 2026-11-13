@@ -1,4 +1,4 @@
-import { sqlpp, type SqlPP } from '@/couchbase/sqlpp';
+import { type SqlPP, sqlpp } from '@/couchbase/sqlpp';
 import type { BuilderChartConfigWithOptDateRange } from '@/types';
 
 const ALIAS = 'd';
@@ -7,10 +7,14 @@ export function renderFromCouchbase(
   chartConfig: Pick<BuilderChartConfigWithOptDateRange, 'from'>,
 ): SqlPP {
   const from = chartConfig.from;
-  const scope = from.scopeName ?? 'default';
+  // CTE / subquery alias: empty databaseName means tableName is a WITH name.
+  if (!from.databaseName && from.tableName) {
+    return sqlpp`FROM ${{ Identifier: from.tableName }} AS ${{ Raw: ALIAS }}`;
+  }
   if (!from.databaseName || !from.tableName) {
     return sqlpp`FROM ${{ Raw: ALIAS }}`;
   }
+  const scope = from.scopeName ?? 'default';
   return sqlpp`FROM ${{ Keyspace: { bucket: from.databaseName, scope, collection: from.tableName } }} AS ${{ Raw: ALIAS }}`;
 }
 

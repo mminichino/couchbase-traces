@@ -1,5 +1,6 @@
 import {
   FIXED_TIME_BUCKET_EXPR_ALIAS,
+  isRatioChartConfig,
   isUsingGranularity,
   isUsingGroupBy,
 } from '@/core/renderChartConfig';
@@ -13,10 +14,24 @@ function selectItemAlias(
   index: number,
 ): string {
   if (item.alias?.trim()) return item.alias.trim();
-  if (item.aggFn === 'count' || (!item.aggFn && !item.valueExpression)) {
-    return 'count()';
+  const fn = item.aggFn ?? '';
+  const expr = item.valueExpression?.trim() ?? '';
+  if (fn === 'count' || (!fn && !expr)) return 'count()';
+  if (fn === 'count_distinct') return `count(distinct ${expr})`;
+  if (fn === 'any') return `any(${expr})`;
+  if (fn === 'sum' || fn === 'avg' || fn === 'min' || fn === 'max') {
+    return `${fn}(${expr})`;
   }
-  return item.valueExpression?.trim() || `series_${index}`;
+  if (
+    fn.startsWith('quantile') ||
+    fn === 'p50' ||
+    fn === 'p90' ||
+    fn === 'p95' ||
+    fn === 'p99'
+  ) {
+    return expr ? `${fn}(${expr})` : fn;
+  }
+  return expr || `series_${index}`;
 }
 
 export function couchbaseResultColumnNames(
@@ -26,16 +41,24 @@ export function couchbaseResultColumnNames(
     return [];
   }
   const cols: string[] = [];
-  config.select.forEach((item, i) => {
-    cols.push(selectItemAlias(item, i));
-  });
+  if (isRatioChartConfig(config.select, config)) {
+    const [a, b] = config.select;
+    cols.push(a.alias?.trim() || b.alias?.trim() || 'ratio');
+  } else {
+    config.select.forEach((item, i) => {
+      cols.push(selectItemAlias(item, i));
+    });
+  }
   if (isUsingGroupBy(config) && config.selectGroupBy !== false) {
     if (typeof config.groupBy === 'string') {
       for (const col of config.groupBy.split(',')) {
         const trimmed = col.trim();
         if (trimmed) {
           const alias = trimmed.includes(' as ')
-            ? trimmed.split(/\s+as\s+/i).pop()?.trim()
+            ? trimmed
+                .split(/\s+as\s+/i)
+                .pop()
+                ?.trim()
             : trimmed;
           if (alias) cols.push(alias);
         }
@@ -77,7 +100,9 @@ export function couchbaseColumnTypesForConfig(
   return types;
 }
 
-export function couchbasePostprocessHints(config: BuilderChartConfigWithOptDateRange): {
+export function couchbasePostprocessHints(
+  config: BuilderChartConfigWithOptDateRange,
+): {
   columns?: string[];
   columnTypes?: Record<string, CouchbaseColumnType>;
 } {

@@ -1,0 +1,34 @@
+{
+  "id": "charts-ratio-line",
+  "description": "ratio of two counts",
+  "source": "logs",
+  "config": {
+    "select": [
+      {
+        "aggFn": "count",
+        "valueExpression": "",
+        "aggCondition": "SeverityText = 'WARN'",
+        "aggConditionLanguage": "sql",
+        "alias": "value0"
+      },
+      {
+        "aggFn": "count",
+        "valueExpression": "",
+        "aggCondition": "",
+        "aggConditionLanguage": "sql",
+        "alias": "value1"
+      }
+    ],
+    "seriesReturnType": "ratio",
+    "granularity": "5 minute",
+    "dateRange": {
+      "fromMinutesAgo": 60,
+      "toMinutesAgo": 0
+    }
+  },
+  "compare": {
+    "ignoreColumns": [
+      "__cbt_id"
+    ]
+  }
+}

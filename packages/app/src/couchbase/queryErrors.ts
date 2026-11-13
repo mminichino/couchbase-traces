@@ -1,7 +1,10 @@
 import { ClickHouseQueryError } from '@couchbase-traces/common-utils/dist/clickhouse';
 import { CouchbaseQueryError } from '@couchbase-traces/common-utils/dist/couchbase/errors';
 
-export type ChartQueryError = ClickHouseQueryError | CouchbaseQueryError | Error;
+export type ChartQueryError =
+  | ClickHouseQueryError
+  | CouchbaseQueryError
+  | Error;
 
 export function isChartQueryError(
   error: unknown,

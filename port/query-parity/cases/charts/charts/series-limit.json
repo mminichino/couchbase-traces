@@ -1,0 +1,26 @@
+{
+  "id": "charts-series-limit",
+  "description": "series limit top services",
+  "source": "logs",
+  "config": {
+    "select": [
+      {
+        "aggFn": "count",
+        "valueExpression": "",
+        "alias": "value"
+      }
+    ],
+    "groupBy": "ServiceName",
+    "granularity": "5 minute",
+    "seriesLimit": 2,
+    "dateRange": {
+      "fromMinutesAgo": 60,
+      "toMinutesAgo": 0
+    }
+  },
+  "compare": {
+    "ignoreColumns": [
+      "__cbt_id"
+    ]
+  }
+}

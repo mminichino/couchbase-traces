@@ -1,0 +1,23 @@
+{
+  "id": "charts-agg-quantile-none",
+  "description": "p95 quantile without group",
+  "source": "logs",
+  "config": {
+    "select": [
+      {
+        "aggFn": "p95",
+        "valueExpression": "SeverityNumber",
+        "alias": "value"
+      }
+    ],
+    "granularity": "5 minute",
+    "dateRange": {
+      "fromMinutesAgo": 60,
+      "toMinutesAgo": 0
+    }
+  },
+  "compare": {
+    "numericTolerance": 0.05,
+    "ignoreColumns": ["__cbt_id"]
+  }
+}

@@ -38,6 +38,7 @@ import SourceSchemaPreview, {
 import { SourceSelectControlled } from '@/components/SourceSelect';
 import { SQLInlineEditorControlled } from '@/components/SQLEditor/SQLInlineEditor';
 import { IS_LOCAL_MODE } from '@/config';
+import { useIsSourceAllowedForSlice } from '@/couchbase/sources';
 import { getEventBody, isSingleExpression } from '@/source';
 import { DEFAULT_TILE_ALERT } from '@/utils/alerts';
 
@@ -197,13 +198,14 @@ export function ChartEditorControls({
       additionalWarnings?.length ? additionalWarnings.join(' ') : undefined,
     [additionalWarnings],
   );
+  const isSourceAllowedForCharts = useIsSourceAllowedForSlice('charts');
 
   return (
     <>
       <Flex mb="md" align="center" justify="space-between">
         <Group>
           <Text pe="md" size="sm">
-            Data Source
+            Data source
           </Text>
           <SourceSelectControlled
             size="xs"
@@ -211,6 +213,7 @@ export function ChartEditorControls({
             name="source"
             data-testid="source-selector"
             allowedSourceKinds={allowedSourceKinds}
+            isSourceAllowed={isSourceAllowedForCharts}
             onSchemaPreview={() => setIsSourceSchemaPreviewOpen(true)}
             isSchemaPreviewEnabled={isSourceSchemaPreviewEnabled(tableSource)}
           />

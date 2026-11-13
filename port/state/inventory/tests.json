@@ -4917,6 +4917,37 @@
       "routes": []
     },
     {
+      "path": "packages/app/src/couchbase/__tests__/dialect.test.ts",
+      "workspace": "@couchbase-traces/app",
+      "kind": "unit",
+      "directImports": [
+        "packages/app/src/couchbase/dialect.ts",
+        "packages/app/src/couchbase/rowColumns.ts"
+      ],
+      "routes": []
+    },
+    {
+      "path": "packages/app/src/couchbase/__tests__/sources.gating.test.ts",
+      "workspace": "@couchbase-traces/app",
+      "kind": "unit",
+      "directImports": [
+        "packages/app/src/couchbase/sources.ts",
+        "packages/common-utils/src/dataLayer/index.ts",
+        "packages/common-utils/src/types.ts"
+      ],
+      "routes": []
+    },
+    {
+      "path": "packages/app/src/couchbase/__tests__/sources.test.ts",
+      "workspace": "@couchbase-traces/app",
+      "kind": "unit",
+      "directImports": [
+        "packages/app/src/couchbase/sources.ts",
+        "packages/common-utils/src/dataLayer/index.ts"
+      ],
+      "routes": []
+    },
+    {
       "path": "packages/app/src/hooks/__tests__/useAlertAnnotations.test.tsx",
       "workspace": "@couchbase-traces/app",
       "kind": "unit",
@@ -6851,6 +6882,16 @@
       "routes": []
     },
     {
+      "path": "packages/app/tests/e2e/global-setup-couchbase.ts",
+      "workspace": "@couchbase-traces/app",
+      "kind": "e2e",
+      "directImports": [
+        "packages/app/tests/e2e/global-setup-fullstack.ts",
+        "packages/app/tests/e2e/seed-couchbase.ts"
+      ],
+      "routes": []
+    },
+    {
       "path": "packages/app/tests/e2e/global-setup-fullstack.ts",
       "workspace": "@couchbase-traces/app",
       "kind": "e2e",
@@ -7010,12 +7051,33 @@
       ]
     },
     {
+      "path": "packages/app/tests/e2e/parseValuesTuples.ts",
+      "workspace": "@couchbase-traces/app",
+      "kind": "e2e",
+      "directImports": [
+        "packages/app/tests/e2e/seed-clickhouse.ts"
+      ],
+      "routes": []
+    },
+    {
       "path": "packages/app/tests/e2e/seed-clickhouse.ts",
       "workspace": "@couchbase-traces/app",
       "kind": "e2e",
       "directImports": [
         "packages/app/tests/e2e/seed-otel-sessions.ts",
         "packages/app/tests/e2e/utils/constants.ts"
+      ],
+      "routes": []
+    },
+    {
+      "path": "packages/app/tests/e2e/seed-couchbase.ts",
+      "workspace": "@couchbase-traces/app",
+      "kind": "e2e",
+      "directImports": [
+        "packages/app/tests/e2e/parseValuesTuples.ts",
+        "packages/app/tests/e2e/seed-clickhouse.ts",
+        "packages/app/tests/e2e/utils/constants.ts",
+        "packages/ingest/src/model/fromClickHouseRow.ts"
       ],
       "routes": []
     },
@@ -7835,6 +7897,18 @@
         "packages/common-utils/src/couchbase/serializer.ts",
         "packages/common-utils/src/couchbase/sqlpp.ts",
         "packages/common-utils/src/couchbase/time.ts"
+      ],
+      "routes": []
+    },
+    {
+      "path": "packages/common-utils/src/couchbase/__tests__/render.search.test.ts",
+      "workspace": "@couchbase-traces/common-utils",
+      "kind": "unit",
+      "directImports": [
+        "packages/common-utils/src/core/searchChartConfig.ts",
+        "packages/common-utils/src/couchbase/render.ts",
+        "packages/common-utils/src/couchbase/render/rowId.ts",
+        "packages/common-utils/src/types.ts"
       ],
       "routes": []
     },

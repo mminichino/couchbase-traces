@@ -3,10 +3,9 @@
  */
 import { execSync } from 'node:child_process';
 import path from 'node:path';
-
 import type { FullConfig } from '@playwright/test';
 
-import { ensureE2eCustomServiceCollection, seedCouchbase } from './seed-couchbase';
+import { seedCouchbase } from './seed-couchbase';
 
 const QUERY_URL =
   process.env.COUCHBASE_URL?.replace(/\/$/, '') ??

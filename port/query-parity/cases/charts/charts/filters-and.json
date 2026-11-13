@@ -1,0 +1,33 @@
+{
+  "id": "charts-filters-and",
+  "description": "dashboard-style filters AND",
+  "source": "logs",
+  "config": {
+    "select": [
+      {
+        "aggFn": "count",
+        "valueExpression": "",
+        "alias": "value"
+      }
+    ],
+    "filters": [
+      {
+        "type": "sql",
+        "condition": "ServiceName = 'api'"
+      },
+      {
+        "type": "lucene",
+        "condition": "SeverityText:INFO"
+      }
+    ],
+    "filtersLogicalOperator": "AND",
+    "granularity": "5 minute",
+    "dateRange": {
+      "fromMinutesAgo": 60,
+      "toMinutesAgo": 0
+    }
+  },
+  "compare": {
+    "ignoreColumns": ["__cbt_id"]
+  }
+}

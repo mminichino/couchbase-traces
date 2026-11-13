@@ -1,0 +1,33 @@
+{
+  "id": "charts-having-min",
+  "description": "having on count",
+  "source": "logs",
+  "config": {
+    "select": [
+      {
+        "aggFn": "count",
+        "valueExpression": "",
+        "alias": "c"
+      }
+    ],
+    "groupBy": "ServiceName",
+    "dateRange": {
+      "fromMinutesAgo": 60,
+      "toMinutesAgo": 0
+    },
+    "orderBy": [
+      {
+        "valueExpression": "ServiceName",
+        "ordering": "ASC"
+      }
+    ],
+    "limit": {
+      "limit": 10
+    }
+  },
+  "compare": {
+    "ignoreColumns": [
+      "__cbt_id"
+    ]
+  }
+}

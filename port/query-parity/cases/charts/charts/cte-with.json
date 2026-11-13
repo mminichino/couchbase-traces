@@ -1,0 +1,47 @@
+{
+  "id": "charts-cte-with",
+  "description": "WITH cte from nested chart config then select from it",
+  "source": "logs",
+  "config": {
+    "with": [
+      {
+        "name": "base_counts",
+        "chartConfig": {
+          "select": [
+            {
+              "aggFn": "count",
+              "valueExpression": "",
+              "alias": "c"
+            }
+          ],
+          "groupBy": [{ "valueExpression": "ServiceName" }],
+          "where": "",
+          "whereLanguage": "sql",
+          "dateRange": {
+            "fromMinutesAgo": 60,
+            "toMinutesAgo": 0
+          }
+        }
+      }
+    ],
+    "select": [
+      {
+        "aggFn": "none",
+        "valueExpression": "c",
+        "alias": "c"
+      }
+    ],
+    "from": {
+      "databaseName": "",
+      "tableName": "base_counts"
+    },
+    "where": "",
+    "whereLanguage": "sql",
+    "orderBy": [{ "valueExpression": "c", "ordering": "DESC" }],
+    "limit": { "limit": 5 }
+  },
+  "compare": {
+    "ordered": true,
+    "ignoreColumns": ["__cbt_id"]
+  }
+}

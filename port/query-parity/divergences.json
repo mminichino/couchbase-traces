@@ -8,5 +8,10 @@
     "caseId": "search-event-deltas-sample",
     "reason": "sampling",
     "note": "RANDOM() event-deltas sample rows differ between engines"
+  },
+  {
+    "caseId": "charts-agg-any-none",
+    "reason": "nondeterministic",
+    "note": "ClickHouse any() picks an arbitrary row; Couchbase uses MIN(x) per Phase 7 §5.3"
   }
 ]

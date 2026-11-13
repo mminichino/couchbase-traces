@@ -324,8 +324,7 @@ export function buildE2eMainLogRows(
 }
 
 function logRowToValuesTuple(row: E2eClickHouseRow, i: number): string {
-  const timestampNs =
-    new Date(String(row.Timestamp)).getTime() * 1_000_000;
+  const timestampNs = new Date(String(row.Timestamp)).getTime() * 1_000_000;
   const service = String(row.ServiceName);
   const severity = String(row.SeverityText);
   const message = String(row.Body);
@@ -381,8 +380,7 @@ export function buildE2eCustomServiceLogRows(
 }
 
 function customServiceRowToValuesTuple(row: E2eClickHouseRow): string {
-  const timestampNs =
-    new Date(String(row.Timestamp)).getTime() * 1_000_000;
+  const timestampNs = new Date(String(row.Timestamp)).getTime() * 1_000_000;
   const appName = String(row.AppName);
   const severity = String(row.SeverityText);
   const message = String(row.Body);
@@ -523,8 +521,7 @@ export function buildE2eTraceRows(
 }
 
 function traceRowToValuesTuple(row: E2eClickHouseRow): string {
-  const timestampNs =
-    new Date(String(row.Timestamp)).getTime() * 1_000_000;
+  const timestampNs = new Date(String(row.Timestamp)).getTime() * 1_000_000;
   const attrs = row.SpanAttributes as Record<string, string>;
   const service = String(row.ServiceName);
   return (

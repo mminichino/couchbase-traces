@@ -1,9 +1,10 @@
 export {
+  getStableSampleExpressionCouchbase,
   renderChartConfigCouchbase,
   ROW_ID_ALIAS,
   rowIdSelect,
-  rowIdWhere,
   rowIdUseKeys,
-  getStableSampleExpressionCouchbase,
+  rowIdWhere,
+  rowIdWhereLiteral,
   type SqlppQuery,
 } from './render/index';

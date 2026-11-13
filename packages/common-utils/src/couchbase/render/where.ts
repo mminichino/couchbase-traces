@@ -1,7 +1,7 @@
 import { isNonEmptyWhereExpr } from '@/core/renderChartConfig';
 import type { SerializerMetadata } from '@/couchbase/serializer';
 import { CouchbaseSearchBuilder } from '@/couchbase/serializer';
-import { sqlpp, type SqlPP } from '@/couchbase/sqlpp';
+import { type SqlPP, sqlpp } from '@/couchbase/sqlpp';
 import { timeRangePredicate, toIso30 } from '@/couchbase/time';
 import { CouchbaseNotReadyError } from '@/dataLayer/errors';
 import type {
@@ -9,6 +9,7 @@ import type {
   Filter,
   SqlAstFilter,
 } from '@/types';
+
 import { getFirstTimestampColumn, timestampFormatOf } from './select';
 
 const ALIAS = 'd';
@@ -20,12 +21,16 @@ export type RenderFilterContext = {
 
 function joinAnd(parts: SqlPP[]): SqlPP | undefined {
   if (parts.length === 0) return undefined;
-  return parts.slice(1).reduce((acc, part) => sqlpp`${acc} AND ${part}`, parts[0]);
+  return parts
+    .slice(1)
+    .reduce((acc, part) => sqlpp`${acc} AND ${part}`, parts[0]);
 }
 
 function joinOr(parts: SqlPP[]): SqlPP | undefined {
   if (parts.length === 0) return undefined;
-  return parts.slice(1).reduce((acc, part) => sqlpp`${acc} OR ${part}`, parts[0]);
+  return parts
+    .slice(1)
+    .reduce((acc, part) => sqlpp`${acc} OR ${part}`, parts[0]);
 }
 
 export function renderSqlAstFilterCouchbase(filter: SqlAstFilter): SqlPP {

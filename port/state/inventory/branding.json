@@ -40058,7 +40058,15 @@
     },
     {
       "path": "packages/app/playwright.config.ts",
-      "line": 10,
+      "line": 6,
+      "column": 49,
+      "term": "clickhouse",
+      "category": "ui_strings",
+      "snippet": "const E2E_STORE = process.env.CBT_E2E_STORE ?? 'clickhouse';"
+    },
+    {
+      "path": "packages/app/playwright.config.ts",
+      "line": 11,
       "column": 55,
       "term": "hdx",
       "category": "env_vars",
@@ -40066,7 +40074,7 @@
     },
     {
       "path": "packages/app/playwright.config.ts",
-      "line": 16,
+      "line": 17,
       "column": 39,
       "term": "hyperdx",
       "category": "other",
@@ -40074,7 +40082,7 @@
     },
     {
       "path": "packages/app/playwright.config.ts",
-      "line": 50,
+      "line": 53,
       "column": 29,
       "term": "clickhouse",
       "category": "other",
@@ -40314,8 +40322,24 @@
     },
     {
       "path": "packages/app/scripts/run-e2e.js",
-      "line": 81,
-      "column": 42,
+      "line": 104,
+      "column": 11,
+      "term": "hyperdx",
+      "category": "code_identifiers",
+      "snippet": "e2e_hyperdx_sessions: 'hyperdx_sessions',"
+    },
+    {
+      "path": "packages/app/scripts/run-e2e.js",
+      "line": 104,
+      "column": 30,
+      "term": "hyperdx",
+      "category": "ui_strings",
+      "snippet": "e2e_hyperdx_sessions: 'hyperdx_sessions',"
+    },
+    {
+      "path": "packages/app/scripts/run-e2e.js",
+      "line": 127,
+      "column": 44,
       "term": "clickhouse",
       "category": "other",
       "snippet": "// Patch connection hosts with dynamic ClickHouse port"
@@ -40650,7 +40674,7 @@
     },
     {
       "path": "packages/app/src/DBSearchPage.tsx",
-      "line": 96,
+      "line": 101,
       "column": 15,
       "term": "clickhouse",
       "category": "code_identifiers",
@@ -40658,7 +40682,7 @@
     },
     {
       "path": "packages/app/src/DBSearchPage.tsx",
-      "line": 1036,
+      "line": 1047,
       "column": 20,
       "term": "clickhouse",
       "category": "other",
@@ -40666,7 +40690,7 @@
     },
     {
       "path": "packages/app/src/DBSearchPage.tsx",
-      "line": 1092,
+      "line": 1104,
       "column": 6,
       "term": "hdx",
       "category": "ui_strings",
@@ -40674,7 +40698,7 @@
     },
     {
       "path": "packages/app/src/DBSearchPage.tsx",
-      "line": 1333,
+      "line": 1355,
       "column": 28,
       "term": "clickhouse",
       "category": "code_identifiers",
@@ -40682,15 +40706,15 @@
     },
     {
       "path": "packages/app/src/DBSearchPage.tsx",
-      "line": 1625,
+      "line": 1647,
       "column": 31,
       "term": "clickhouse",
       "category": "code_identifiers",
-      "snippet": "const queryError: Error | ClickHouseQueryError | null = hasQueryError"
+      "snippet": "const queryError: Error | ClickHouseQueryError | CouchbaseQueryError | null ="
     },
     {
       "path": "packages/app/src/DBSearchPage.tsx",
-      "line": 1923,
+      "line": 1948,
       "column": 21,
       "term": "clickhouse",
       "category": "code_identifiers",
@@ -40698,7 +40722,7 @@
     },
     {
       "path": "packages/app/src/DBSearchPage.tsx",
-      "line": 2114,
+      "line": 2139,
       "column": 26,
       "term": "clickhouse",
       "category": "code_identifiers",
@@ -40706,7 +40730,7 @@
     },
     {
       "path": "packages/app/src/DBSearchPage.tsx",
-      "line": 2275,
+      "line": 2300,
       "column": 56,
       "term": "clickstack",
       "category": "other",
@@ -40714,19 +40738,11 @@
     },
     {
       "path": "packages/app/src/DBSearchPage.tsx",
-      "line": 2295,
+      "line": 2320,
       "column": 11,
       "term": "clickstack",
       "category": "other",
       "snippet": "// the /clickstack build."
-    },
-    {
-      "path": "packages/app/src/DBSearchPage.tsx",
-      "line": 3000,
-      "column": 48,
-      "term": "clickhouse",
-      "category": "code_identifiers",
-      "snippet": "{queryError instanceof ClickHouseQueryError && ("
     },
     {
       "path": "packages/app/src/DBServiceMapPage.tsx",
@@ -44218,19 +44234,51 @@
     },
     {
       "path": "packages/app/src/components/ChartSQLPreview.tsx",
-      "line": 9,
+      "line": 10,
       "column": 10,
       "term": "clickhouse",
       "category": "code_identifiers",
-      "snippet": "import { clickhouseSql } from '@/utils/codeMirror';"
+      "snippet": "import { clickhouseSql, formatSqlForDialect, sqlppSql } from '@/utils/codeMirror';"
     },
     {
       "path": "packages/app/src/components/ChartSQLPreview.tsx",
-      "line": 51,
-      "column": 11,
+      "line": 12,
+      "column": 45,
+      "term": "clickhouse",
+      "category": "ui_strings",
+      "snippet": "function tryFormat(data?: string, dialect: 'clickhouse' | 'n1ql' = 'clickhouse') {"
+    },
+    {
+      "path": "packages/app/src/components/ChartSQLPreview.tsx",
+      "line": 12,
+      "column": 69,
+      "term": "clickhouse",
+      "category": "ui_strings",
+      "snippet": "function tryFormat(data?: string, dialect: 'clickhouse' | 'n1ql' = 'clickhouse') {"
+    },
+    {
+      "path": "packages/app/src/components/ChartSQLPreview.tsx",
+      "line": 29,
+      "column": 14,
+      "term": "clickhouse",
+      "category": "ui_strings",
+      "snippet": "dialect = 'clickhouse',"
+    },
+    {
+      "path": "packages/app/src/components/ChartSQLPreview.tsx",
+      "line": 36,
+      "column": 14,
+      "term": "clickhouse",
+      "category": "ui_strings",
+      "snippet": "dialect?: 'clickhouse' | 'n1ql';"
+    },
+    {
+      "path": "packages/app/src/components/ChartSQLPreview.tsx",
+      "line": 54,
+      "column": 45,
       "term": "clickhouse",
       "category": "code_identifiers",
-      "snippet": "clickhouseSql(),"
+      "snippet": "dialect === 'n1ql' ? sqlppSql() : clickhouseSql(),"
     },
     {
       "path": "packages/app/src/components/ClickStackOnboarding/__tests__/McpInstallPanel.test.tsx",
@@ -44546,7 +44594,7 @@
     },
     {
       "path": "packages/app/src/components/DBDeltaChart.tsx",
-      "line": 308,
+      "line": 326,
       "column": 53,
       "term": "clickhouse",
       "category": "other",
@@ -44554,23 +44602,15 @@
     },
     {
       "path": "packages/app/src/components/DBDeltaChart.tsx",
-      "line": 314,
+      "line": 332,
       "column": 67,
       "term": "clickhouse",
       "category": "other",
       "snippet": "// Wrap onAddFilter to convert flattened dot-notation keys into ClickHouse bracket notation"
     },
     {
-      "path": "packages/app/src/components/DBDeltaChart.tsx",
-      "line": 462,
-      "column": 27,
-      "term": "clickhouse",
-      "category": "code_identifiers",
-      "snippet": "{error instanceof ClickHouseQueryError && ("
-    },
-    {
       "path": "packages/app/src/components/DBEditTimeChartForm/ChartEditorControls.tsx",
-      "line": 123,
+      "line": 124,
       "column": 16,
       "term": "hdx",
       "category": "other",
@@ -45658,7 +45698,7 @@
     },
     {
       "path": "packages/app/src/components/DBRowTable.tsx",
-      "line": 413,
+      "line": 417,
       "column": 13,
       "term": "clickhouse",
       "category": "code_identifiers",
@@ -45666,7 +45706,7 @@
     },
     {
       "path": "packages/app/src/components/DBRowTable.tsx",
-      "line": 474,
+      "line": 478,
       "column": 12,
       "term": "clickhouse",
       "category": "other",
@@ -45674,7 +45714,7 @@
     },
     {
       "path": "packages/app/src/components/DBRowTable.tsx",
-      "line": 682,
+      "line": 686,
       "column": 33,
       "term": "hdx",
       "category": "ui_strings",
@@ -45682,7 +45722,7 @@
     },
     {
       "path": "packages/app/src/components/DBRowTable.tsx",
-      "line": 1326,
+      "line": 1330,
       "column": 59,
       "term": "hdx",
       "category": "ui_strings",
@@ -45690,7 +45730,7 @@
     },
     {
       "path": "packages/app/src/components/DBRowTable.tsx",
-      "line": 1638,
+      "line": 1642,
       "column": 68,
       "term": "hdx",
       "category": "ui_strings",
@@ -45698,7 +45738,7 @@
     },
     {
       "path": "packages/app/src/components/DBRowTable.tsx",
-      "line": 1639,
+      "line": 1643,
       "column": 27,
       "term": "hdx",
       "category": "ui_strings",
@@ -45706,7 +45746,7 @@
     },
     {
       "path": "packages/app/src/components/DBRowTable.tsx",
-      "line": 1751,
+      "line": 1755,
       "column": 29,
       "term": "clickhouse",
       "category": "code_identifiers",
@@ -45714,7 +45754,7 @@
     },
     {
       "path": "packages/app/src/components/DBRowTable.tsx",
-      "line": 1904,
+      "line": 1908,
       "column": 46,
       "term": "clickhouse",
       "category": "other",
@@ -45722,7 +45762,7 @@
     },
     {
       "path": "packages/app/src/components/DBRowTable.tsx",
-      "line": 1985,
+      "line": 1990,
       "column": 12,
       "term": "clickhouse",
       "category": "other",
@@ -47690,19 +47730,19 @@
     },
     {
       "path": "packages/app/src/components/SQLEditor/SQLInlineEditor.tsx",
-      "line": 38,
+      "line": 44,
       "column": 10,
       "term": "clickhouse",
       "category": "code_identifiers",
-      "snippet": "import { clickhouseSql } from '@/utils/codeMirror';"
+      "snippet": "import { clickhouseSql, formatSqlForDialect, sqlppSql } from '@/utils/codeMirror';"
     },
     {
       "path": "packages/app/src/components/SQLEditor/SQLInlineEditor.tsx",
-      "line": 299,
-      "column": 9,
+      "line": 314,
+      "column": 13,
       "term": "clickhouse",
       "category": "code_identifiers",
-      "snippet": "clickhouseSql({"
+      "snippet": ": clickhouseSql({ upperCaseKeywords: true }),"
     },
     {
       "path": "packages/app/src/components/SQLEditor/__tests__/variableCompletions.test.ts",
@@ -51465,6 +51505,166 @@
       "snippet": "await hdxServer(`connections/${id}`, {"
     },
     {
+      "path": "packages/app/src/couchbase/__tests__/dialect.test.ts",
+      "line": 7,
+      "column": 41,
+      "term": "clickhouse",
+      "category": "other",
+      "snippet": "expect(formatLanguageForConnection('clickhouse')).toBe('clickhouse');"
+    },
+    {
+      "path": "packages/app/src/couchbase/__tests__/dialect.test.ts",
+      "line": 7,
+      "column": 61,
+      "term": "clickhouse",
+      "category": "other",
+      "snippet": "expect(formatLanguageForConnection('clickhouse')).toBe('clickhouse');"
+    },
+    {
+      "path": "packages/app/src/couchbase/__tests__/sources.gating.test.ts",
+      "line": 14,
+      "column": 27,
+      "term": "clickhouse",
+      "category": "other",
+      "snippet": "{ id: 'ch-conn', kind: 'clickhouse' as const },"
+    },
+    {
+      "path": "packages/app/src/couchbase/__tests__/sources.test.ts",
+      "line": 11,
+      "column": 24,
+      "term": "clickhouse",
+      "category": "other",
+      "snippet": "{ id: 'ch', kind: 'clickhouse' as const },"
+    },
+    {
+      "path": "packages/app/src/couchbase/connection.ts",
+      "line": 8,
+      "column": 5,
+      "term": "clickhouse",
+      "category": "ui_strings",
+      "snippet": "): 'clickhouse' | 'couchbase' {"
+    },
+    {
+      "path": "packages/app/src/couchbase/connection.ts",
+      "line": 9,
+      "column": 30,
+      "term": "clickhouse",
+      "category": "ui_strings",
+      "snippet": "if (!connectionId) return 'clickhouse';"
+    },
+    {
+      "path": "packages/app/src/couchbase/connection.ts",
+      "line": 11,
+      "column": 55,
+      "term": "clickhouse",
+      "category": "ui_strings",
+      "snippet": "return found?.kind === 'couchbase' ? 'couchbase' : 'clickhouse';"
+    },
+    {
+      "path": "packages/app/src/couchbase/connection.ts",
+      "line": 16,
+      "column": 5,
+      "term": "clickhouse",
+      "category": "ui_strings",
+      "snippet": "): 'clickhouse' | 'couchbase' {"
+    },
+    {
+      "path": "packages/app/src/couchbase/dialect.ts",
+      "line": 11,
+      "column": 6,
+      "term": "hyperdx",
+      "category": "ui_strings",
+      "snippet": "'__hyperdx_id',"
+    },
+    {
+      "path": "packages/app/src/couchbase/dialect.ts",
+      "line": 12,
+      "column": 6,
+      "term": "hyperdx",
+      "category": "ui_strings",
+      "snippet": "'__hyperdx_alias_with',"
+    },
+    {
+      "path": "packages/app/src/couchbase/dialect.ts",
+      "line": 19,
+      "column": 52,
+      "term": "clickhouse",
+      "category": "ui_strings",
+      "snippet": "export function formatLanguageForConnection(kind: 'clickhouse' | 'couchbase'): 'clickhouse' | 'n1ql' {"
+    },
+    {
+      "path": "packages/app/src/couchbase/dialect.ts",
+      "line": 19,
+      "column": 81,
+      "term": "clickhouse",
+      "category": "ui_strings",
+      "snippet": "export function formatLanguageForConnection(kind: 'clickhouse' | 'couchbase'): 'clickhouse' | 'n1ql' {"
+    },
+    {
+      "path": "packages/app/src/couchbase/dialect.ts",
+      "line": 20,
+      "column": 43,
+      "term": "clickhouse",
+      "category": "ui_strings",
+      "snippet": "return kind === 'couchbase' ? 'n1ql' : 'clickhouse';"
+    },
+    {
+      "path": "packages/app/src/couchbase/queryErrors.ts",
+      "line": 1,
+      "column": 10,
+      "term": "clickhouse",
+      "category": "code_identifiers",
+      "snippet": "import { ClickHouseQueryError } from '@couchbase-traces/common-utils/dist/clickhouse';"
+    },
+    {
+      "path": "packages/app/src/couchbase/queryErrors.ts",
+      "line": 1,
+      "column": 75,
+      "term": "clickhouse",
+      "category": "package_names",
+      "snippet": "import { ClickHouseQueryError } from '@couchbase-traces/common-utils/dist/clickhouse';"
+    },
+    {
+      "path": "packages/app/src/couchbase/queryErrors.ts",
+      "line": 4,
+      "column": 31,
+      "term": "clickhouse",
+      "category": "code_identifiers",
+      "snippet": "export type ChartQueryError = ClickHouseQueryError | CouchbaseQueryError | Error;"
+    },
+    {
+      "path": "packages/app/src/couchbase/queryErrors.ts",
+      "line": 8,
+      "column": 13,
+      "term": "clickhouse",
+      "category": "code_identifiers",
+      "snippet": "): error is ClickHouseQueryError | CouchbaseQueryError {"
+    },
+    {
+      "path": "packages/app/src/couchbase/queryErrors.ts",
+      "line": 10,
+      "column": 22,
+      "term": "clickhouse",
+      "category": "code_identifiers",
+      "snippet": "error instanceof ClickHouseQueryError ||"
+    },
+    {
+      "path": "packages/app/src/couchbase/queryErrors.ts",
+      "line": 17,
+      "column": 13,
+      "term": "clickhouse",
+      "category": "code_identifiers",
+      "snippet": "): error is ClickHouseQueryError | CouchbaseQueryError {"
+    },
+    {
+      "path": "packages/app/src/couchbase/rowColumns.ts",
+      "line": 1,
+      "column": 74,
+      "term": "clickhouse",
+      "category": "package_names",
+      "snippet": "import type { ColumnMetaType } from '@couchbase-traces/common-utils/dist/clickhouse';"
+    },
+    {
       "path": "packages/app/src/dashboard.ts",
       "line": 21,
       "column": 3,
@@ -51522,7 +51722,15 @@
     },
     {
       "path": "packages/app/src/dataLayerSetup.ts",
-      "line": 17,
+      "line": 18,
+      "column": 58,
+      "term": "clickhouse",
+      "category": "ui_strings",
+      "snippet": "return found.kind === 'couchbase' ? 'couchbase' : 'clickhouse';"
+    },
+    {
+      "path": "packages/app/src/dataLayerSetup.ts",
+      "line": 22,
       "column": 22,
       "term": "hdx",
       "category": "code_identifiers",
@@ -51530,7 +51738,7 @@
     },
     {
       "path": "packages/app/src/dataLayerSetup.ts",
-      "line": 21,
+      "line": 26,
       "column": 56,
       "term": "clickhouse",
       "category": "ui_strings",
@@ -54618,7 +54826,7 @@
     },
     {
       "path": "packages/app/src/hooks/useRowWhere.tsx",
-      "line": 25,
+      "line": 29,
       "column": 10,
       "term": "hyperdx",
       "category": "ui_strings",
@@ -54626,7 +54834,7 @@
     },
     {
       "path": "packages/app/src/hooks/useRowWhere.tsx",
-      "line": 26,
+      "line": 30,
       "column": 18,
       "term": "hyperdx",
       "category": "ui_strings",
@@ -54634,7 +54842,7 @@
     },
     {
       "path": "packages/app/src/hooks/useRowWhere.tsx",
-      "line": 191,
+      "line": 202,
       "column": 45,
       "term": "clickhouse",
       "category": "other",
@@ -56286,11 +56494,11 @@
       "column": 10,
       "term": "clickhouse",
       "category": "code_identifiers",
-      "snippet": "import { clickhouse } from 'sql-formatter';"
+      "snippet": "import { clickhouse, n1ql } from 'sql-formatter';"
     },
     {
       "path": "packages/app/src/utils/codeMirror.ts",
-      "line": 5,
+      "line": 7,
       "column": 30,
       "term": "clickhouse",
       "category": "code_identifiers",
@@ -56298,7 +56506,7 @@
     },
     {
       "path": "packages/app/src/utils/codeMirror.ts",
-      "line": 16,
+      "line": 18,
       "column": 7,
       "term": "clickhouse",
       "category": "code_identifiers",
@@ -56306,7 +56514,7 @@
     },
     {
       "path": "packages/app/src/utils/codeMirror.ts",
-      "line": 26,
+      "line": 28,
       "column": 14,
       "term": "clickhouse",
       "category": "code_identifiers",
@@ -56314,11 +56522,27 @@
     },
     {
       "path": "packages/app/src/utils/codeMirror.ts",
-      "line": 27,
+      "line": 29,
       "column": 29,
       "term": "clickhouse",
       "category": "code_identifiers",
       "snippet": "sql({ ...config, dialect: clickhouseDialect });"
+    },
+    {
+      "path": "packages/app/src/utils/codeMirror.ts",
+      "line": 44,
+      "column": 13,
+      "term": "clickhouse",
+      "category": "ui_strings",
+      "snippet": "dialect: 'clickhouse' | 'n1ql',"
+    },
+    {
+      "path": "packages/app/src/utils/codeMirror.ts",
+      "line": 47,
+      "column": 53,
+      "term": "clickhouse",
+      "category": "code_identifiers",
+      "snippet": "return dialect === 'n1ql' ? n1ql.format(text) : clickhouse.format(text);"
     },
     {
       "path": "packages/app/src/utils/highlightedAttributes.ts",
@@ -57718,19 +57942,19 @@
       "column": 11,
       "term": "clickhouse",
       "category": "other",
-      "snippet": "// Seed ClickHouse with test data"
+      "snippet": "// Seed ClickHouse with test data (skip when Couchbase store handles telemetry)"
     },
     {
       "path": "packages/app/tests/e2e/global-setup-fullstack.ts",
-      "line": 95,
-      "column": 13,
+      "line": 96,
+      "column": 15,
       "term": "clickhouse",
       "category": "code_identifiers",
       "snippet": "await seedClickHouse();"
     },
     {
       "path": "packages/app/tests/e2e/global-setup-fullstack.ts",
-      "line": 294,
+      "line": 296,
       "column": 22,
       "term": "clickhouse",
       "category": "other",
@@ -57738,7 +57962,7 @@
     },
     {
       "path": "packages/app/tests/e2e/global-setup-fullstack.ts",
-      "line": 398,
+      "line": 400,
       "column": 6,
       "term": "hyperdx",
       "category": "other",
@@ -57905,6 +58129,54 @@
       "snippet": "this.querySettingsHeading = page.getByText('ClickHouse Client Settings', {"
     },
     {
+      "path": "packages/app/tests/e2e/parseValuesTuples.ts",
+      "line": 2,
+      "column": 51,
+      "term": "clickhouse",
+      "category": "other",
+      "snippet": "* Couchbase seeding uses the same row objects as ClickHouse VALUES generators."
+    },
+    {
+      "path": "packages/app/tests/e2e/parseValuesTuples.ts",
+      "line": 5,
+      "column": 18,
+      "term": "clickhouse",
+      "category": "code_identifiers",
+      "snippet": "import type { E2eClickHouseRow } from './seed-clickhouse';"
+    },
+    {
+      "path": "packages/app/tests/e2e/parseValuesTuples.ts",
+      "line": 5,
+      "column": 47,
+      "term": "clickhouse",
+      "category": "other",
+      "snippet": "import type { E2eClickHouseRow } from './seed-clickhouse';"
+    },
+    {
+      "path": "packages/app/tests/e2e/parseValuesTuples.ts",
+      "line": 10,
+      "column": 16,
+      "term": "clickhouse",
+      "category": "other",
+      "snippet": "} from './seed-clickhouse';"
+    },
+    {
+      "path": "packages/app/tests/e2e/parseValuesTuples.ts",
+      "line": 12,
+      "column": 18,
+      "term": "clickhouse",
+      "category": "code_identifiers",
+      "snippet": "export type { E2eClickHouseRow };"
+    },
+    {
+      "path": "packages/app/tests/e2e/parseValuesTuples.ts",
+      "line": 19,
+      "column": 7,
+      "term": "clickhouse",
+      "category": "code_identifiers",
+      "snippet": "): E2eClickHouseRow[] {"
+    },
+    {
       "path": "packages/app/tests/e2e/seed-clickhouse.ts",
       "line": 2,
       "column": 16,
@@ -58010,7 +58282,63 @@
     },
     {
       "path": "packages/app/tests/e2e/seed-clickhouse.ts",
-      "line": 331,
+      "line": 283,
+      "column": 16,
+      "term": "clickhouse",
+      "category": "code_identifiers",
+      "snippet": "export type E2eClickHouseRow = Record<string, unknown>;"
+    },
+    {
+      "path": "packages/app/tests/e2e/seed-clickhouse.ts",
+      "line": 289,
+      "column": 7,
+      "term": "clickhouse",
+      "category": "code_identifiers",
+      "snippet": "): E2eClickHouseRow[] {"
+    },
+    {
+      "path": "packages/app/tests/e2e/seed-clickhouse.ts",
+      "line": 290,
+      "column": 18,
+      "term": "clickhouse",
+      "category": "code_identifiers",
+      "snippet": "const rows: E2eClickHouseRow[] = [];"
+    },
+    {
+      "path": "packages/app/tests/e2e/seed-clickhouse.ts",
+      "line": 326,
+      "column": 38,
+      "term": "clickhouse",
+      "category": "code_identifiers",
+      "snippet": "function logRowToValuesTuple(row: E2eClickHouseRow, i: number): string {"
+    },
+    {
+      "path": "packages/app/tests/e2e/seed-clickhouse.ts",
+      "line": 360,
+      "column": 7,
+      "term": "clickhouse",
+      "category": "code_identifiers",
+      "snippet": "): E2eClickHouseRow[] {"
+    },
+    {
+      "path": "packages/app/tests/e2e/seed-clickhouse.ts",
+      "line": 361,
+      "column": 18,
+      "term": "clickhouse",
+      "category": "code_identifiers",
+      "snippet": "const rows: E2eClickHouseRow[] = [];"
+    },
+    {
+      "path": "packages/app/tests/e2e/seed-clickhouse.ts",
+      "line": 383,
+      "column": 48,
+      "term": "clickhouse",
+      "category": "code_identifiers",
+      "snippet": "function customServiceRowToValuesTuple(row: E2eClickHouseRow): string {"
+    },
+    {
+      "path": "packages/app/tests/e2e/seed-clickhouse.ts",
+      "line": 407,
       "column": 50,
       "term": "hdx",
       "category": "other",
@@ -58018,7 +58346,31 @@
     },
     {
       "path": "packages/app/tests/e2e/seed-clickhouse.ts",
-      "line": 787,
+      "line": 463,
+      "column": 7,
+      "term": "clickhouse",
+      "category": "code_identifiers",
+      "snippet": "): E2eClickHouseRow[] {"
+    },
+    {
+      "path": "packages/app/tests/e2e/seed-clickhouse.ts",
+      "line": 464,
+      "column": 18,
+      "term": "clickhouse",
+      "category": "code_identifiers",
+      "snippet": "const rows: E2eClickHouseRow[] = [];"
+    },
+    {
+      "path": "packages/app/tests/e2e/seed-clickhouse.ts",
+      "line": 525,
+      "column": 40,
+      "term": "clickhouse",
+      "category": "code_identifiers",
+      "snippet": "function traceRowToValuesTuple(row: E2eClickHouseRow): string {"
+    },
+    {
+      "path": "packages/app/tests/e2e/seed-clickhouse.ts",
+      "line": 895,
       "column": 49,
       "term": "hdx",
       "category": "other",
@@ -58026,7 +58378,7 @@
     },
     {
       "path": "packages/app/tests/e2e/seed-clickhouse.ts",
-      "line": 836,
+      "line": 944,
       "column": 7,
       "term": "clickhouse",
       "category": "env_vars",
@@ -58034,7 +58386,7 @@
     },
     {
       "path": "packages/app/tests/e2e/seed-clickhouse.ts",
-      "line": 837,
+      "line": 945,
       "column": 19,
       "term": "clickhouse",
       "category": "env_vars",
@@ -58042,7 +58394,7 @@
     },
     {
       "path": "packages/app/tests/e2e/seed-clickhouse.ts",
-      "line": 841,
+      "line": 949,
       "column": 23,
       "term": "clickhouse",
       "category": "code_identifiers",
@@ -58050,7 +58402,7 @@
     },
     {
       "path": "packages/app/tests/e2e/seed-clickhouse.ts",
-      "line": 842,
+      "line": 950,
       "column": 35,
       "term": "clickhouse",
       "category": "code_identifiers",
@@ -58058,7 +58410,7 @@
     },
     {
       "path": "packages/app/tests/e2e/seed-clickhouse.ts",
-      "line": 844,
+      "line": 952,
       "column": 30,
       "term": "clickhouse",
       "category": "other",
@@ -58066,7 +58418,7 @@
     },
     {
       "path": "packages/app/tests/e2e/seed-clickhouse.ts",
-      "line": 851,
+      "line": 959,
       "column": 35,
       "term": "clickhouse",
       "category": "env_vars",
@@ -58074,7 +58426,7 @@
     },
     {
       "path": "packages/app/tests/e2e/seed-clickhouse.ts",
-      "line": 854,
+      "line": 962,
       "column": 22,
       "term": "clickhouse",
       "category": "other",
@@ -58082,7 +58434,7 @@
     },
     {
       "path": "packages/app/tests/e2e/seed-clickhouse.ts",
-      "line": 861,
+      "line": 969,
       "column": 45,
       "term": "clickhouse",
       "category": "env_vars",
@@ -58090,7 +58442,7 @@
     },
     {
       "path": "packages/app/tests/e2e/seed-clickhouse.ts",
-      "line": 870,
+      "line": 978,
       "column": 6,
       "term": "clickhouse",
       "category": "other",
@@ -58098,7 +58450,7 @@
     },
     {
       "path": "packages/app/tests/e2e/seed-clickhouse.ts",
-      "line": 870,
+      "line": 978,
       "column": 35,
       "term": "clickhouse",
       "category": "env_vars",
@@ -58106,7 +58458,7 @@
     },
     {
       "path": "packages/app/tests/e2e/seed-clickhouse.ts",
-      "line": 877,
+      "line": 985,
       "column": 35,
       "term": "clickhouse",
       "category": "code_identifiers",
@@ -58114,7 +58466,7 @@
     },
     {
       "path": "packages/app/tests/e2e/seed-clickhouse.ts",
-      "line": 881,
+      "line": 989,
       "column": 37,
       "term": "clickhouse",
       "category": "env_vars",
@@ -58122,7 +58474,7 @@
     },
     {
       "path": "packages/app/tests/e2e/seed-clickhouse.ts",
-      "line": 884,
+      "line": 992,
       "column": 37,
       "term": "clickhouse",
       "category": "env_vars",
@@ -58130,7 +58482,7 @@
     },
     {
       "path": "packages/app/tests/e2e/seed-clickhouse.ts",
-      "line": 890,
+      "line": 998,
       "column": 37,
       "term": "clickhouse",
       "category": "env_vars",
@@ -58138,7 +58490,7 @@
     },
     {
       "path": "packages/app/tests/e2e/seed-clickhouse.ts",
-      "line": 893,
+      "line": 1001,
       "column": 37,
       "term": "clickhouse",
       "category": "env_vars",
@@ -58146,7 +58498,7 @@
     },
     {
       "path": "packages/app/tests/e2e/seed-clickhouse.ts",
-      "line": 896,
+      "line": 1004,
       "column": 37,
       "term": "clickhouse",
       "category": "env_vars",
@@ -58154,7 +58506,7 @@
     },
     {
       "path": "packages/app/tests/e2e/seed-clickhouse.ts",
-      "line": 899,
+      "line": 1007,
       "column": 37,
       "term": "clickhouse",
       "category": "env_vars",
@@ -58162,7 +58514,7 @@
     },
     {
       "path": "packages/app/tests/e2e/seed-clickhouse.ts",
-      "line": 902,
+      "line": 1010,
       "column": 37,
       "term": "clickhouse",
       "category": "env_vars",
@@ -58170,7 +58522,7 @@
     },
     {
       "path": "packages/app/tests/e2e/seed-clickhouse.ts",
-      "line": 905,
+      "line": 1013,
       "column": 37,
       "term": "clickhouse",
       "category": "env_vars",
@@ -58178,7 +58530,7 @@
     },
     {
       "path": "packages/app/tests/e2e/seed-clickhouse.ts",
-      "line": 910,
+      "line": 1018,
       "column": 37,
       "term": "clickhouse",
       "category": "env_vars",
@@ -58186,7 +58538,7 @@
     },
     {
       "path": "packages/app/tests/e2e/seed-clickhouse.ts",
-      "line": 913,
+      "line": 1021,
       "column": 37,
       "term": "clickhouse",
       "category": "env_vars",
@@ -58194,7 +58546,7 @@
     },
     {
       "path": "packages/app/tests/e2e/seed-clickhouse.ts",
-      "line": 916,
+      "line": 1024,
       "column": 37,
       "term": "clickhouse",
       "category": "env_vars",
@@ -58202,7 +58554,7 @@
     },
     {
       "path": "packages/app/tests/e2e/seed-clickhouse.ts",
-      "line": 925,
+      "line": 1033,
       "column": 62,
       "term": "clickhouse",
       "category": "other",
@@ -58210,7 +58562,7 @@
     },
     {
       "path": "packages/app/tests/e2e/seed-clickhouse.ts",
-      "line": 927,
+      "line": 1035,
       "column": 35,
       "term": "clickhouse",
       "category": "code_identifiers",
@@ -58218,7 +58570,7 @@
     },
     {
       "path": "packages/app/tests/e2e/seed-clickhouse.ts",
-      "line": 934,
+      "line": 1042,
       "column": 101,
       "term": "clickhouse",
       "category": "env_vars",
@@ -58226,7 +58578,7 @@
     },
     {
       "path": "packages/app/tests/e2e/seed-clickhouse.ts",
-      "line": 937,
+      "line": 1045,
       "column": 99,
       "term": "clickhouse",
       "category": "env_vars",
@@ -58234,7 +58586,7 @@
     },
     {
       "path": "packages/app/tests/e2e/seed-clickhouse.ts",
-      "line": 942,
+      "line": 1050,
       "column": 27,
       "term": "clickhouse",
       "category": "code_identifiers",
@@ -58242,7 +58594,7 @@
     },
     {
       "path": "packages/app/tests/e2e/seed-clickhouse.ts",
-      "line": 943,
+      "line": 1051,
       "column": 24,
       "term": "clickhouse",
       "category": "other",
@@ -58250,7 +58602,7 @@
     },
     {
       "path": "packages/app/tests/e2e/seed-clickhouse.ts",
-      "line": 944,
+      "line": 1052,
       "column": 24,
       "term": "clickhouse",
       "category": "code_identifiers",
@@ -58258,7 +58610,7 @@
     },
     {
       "path": "packages/app/tests/e2e/seed-clickhouse.ts",
-      "line": 946,
+      "line": 1054,
       "column": 16,
       "term": "clickhouse",
       "category": "code_identifiers",
@@ -58266,7 +58618,7 @@
     },
     {
       "path": "packages/app/tests/e2e/seed-clickhouse.ts",
-      "line": 958,
+      "line": 1063,
       "column": 23,
       "term": "clickhouse",
       "category": "env_vars",
@@ -58274,7 +58626,7 @@
     },
     {
       "path": "packages/app/tests/e2e/seed-clickhouse.ts",
-      "line": 969,
+      "line": 1074,
       "column": 23,
       "term": "clickhouse",
       "category": "env_vars",
@@ -58282,91 +58634,19 @@
     },
     {
       "path": "packages/app/tests/e2e/seed-clickhouse.ts",
-      "line": 979,
+      "line": 1084,
       "column": 23,
       "term": "clickhouse",
       "category": "env_vars",
       "snippet": "INSERT INTO ${E2E_CLICKHOUSE_DATABASE}.${E2E_LOGS_TABLE} ("
-    },
-    {
-      "path": "packages/app/tests/e2e/seed-clickhouse.ts",
-      "line": 990,
-      "column": 23,
-      "term": "clickhouse",
-      "category": "env_vars",
-      "snippet": "INSERT INTO ${E2E_CLICKHOUSE_DATABASE}.${E2E_TRACES_TABLE} ("
-    },
-    {
-      "path": "packages/app/tests/e2e/seed-clickhouse.ts",
-      "line": 1003,
-      "column": 23,
-      "term": "clickhouse",
-      "category": "env_vars",
-      "snippet": "INSERT INTO ${E2E_CLICKHOUSE_DATABASE}.${E2E_TRACES_TABLE} ("
-    },
-    {
-      "path": "packages/app/tests/e2e/seed-clickhouse.ts",
-      "line": 1016,
-      "column": 23,
-      "term": "clickhouse",
-      "category": "env_vars",
-      "snippet": "INSERT INTO ${E2E_CLICKHOUSE_DATABASE}.${E2E_TRACES_TABLE} ("
-    },
-    {
-      "path": "packages/app/tests/e2e/seed-clickhouse.ts",
-      "line": 1029,
-      "column": 23,
-      "term": "clickhouse",
-      "category": "env_vars",
-      "snippet": "INSERT INTO ${E2E_CLICKHOUSE_DATABASE}.${E2E_LOGS_TABLE} ("
-    },
-    {
-      "path": "packages/app/tests/e2e/seed-clickhouse.ts",
-      "line": 1039,
-      "column": 23,
-      "term": "clickhouse",
-      "category": "env_vars",
-      "snippet": "INSERT INTO ${E2E_CLICKHOUSE_DATABASE}.${E2E_SESSIONS_TABLE} ("
-    },
-    {
-      "path": "packages/app/tests/e2e/seed-clickhouse.ts",
-      "line": 1051,
-      "column": 23,
-      "term": "clickhouse",
-      "category": "env_vars",
-      "snippet": "INSERT INTO ${E2E_CLICKHOUSE_DATABASE}.${E2E_METRICS_GAUGE_TABLE} ("
-    },
-    {
-      "path": "packages/app/tests/e2e/seed-clickhouse.ts",
-      "line": 1066,
-      "column": 23,
-      "term": "clickhouse",
-      "category": "env_vars",
-      "snippet": "INSERT INTO ${E2E_CLICKHOUSE_DATABASE}.${E2E_METRICS_SUM_TABLE} ("
-    },
-    {
-      "path": "packages/app/tests/e2e/seed-clickhouse.ts",
-      "line": 1080,
-      "column": 23,
-      "term": "clickhouse",
-      "category": "env_vars",
-      "snippet": "INSERT INTO ${E2E_CLICKHOUSE_DATABASE}.${E2E_LOGS_TABLE} ("
-    },
-    {
-      "path": "packages/app/tests/e2e/seed-clickhouse.ts",
-      "line": 1092,
-      "column": 23,
-      "term": "clickhouse",
-      "category": "env_vars",
-      "snippet": "INSERT INTO ${E2E_CLICKHOUSE_DATABASE}.${E2E_INTERESTING_FILTER_KEYS_TABLE} ("
     },
     {
       "path": "packages/app/tests/e2e/seed-clickhouse.ts",
       "line": 1095,
-      "column": 11,
-      "term": "hdx",
-      "category": "other",
-      "snippet": "\\`__hdx_materialized_k8s.cluster.name\\`, \\`service-name\\`,"
+      "column": 23,
+      "term": "clickhouse",
+      "category": "env_vars",
+      "snippet": "INSERT INTO ${E2E_CLICKHOUSE_DATABASE}.${E2E_TRACES_TABLE} ("
     },
     {
       "path": "packages/app/tests/e2e/seed-clickhouse.ts",
@@ -58374,11 +58654,83 @@
       "column": 23,
       "term": "clickhouse",
       "category": "env_vars",
+      "snippet": "INSERT INTO ${E2E_CLICKHOUSE_DATABASE}.${E2E_TRACES_TABLE} ("
+    },
+    {
+      "path": "packages/app/tests/e2e/seed-clickhouse.ts",
+      "line": 1121,
+      "column": 23,
+      "term": "clickhouse",
+      "category": "env_vars",
+      "snippet": "INSERT INTO ${E2E_CLICKHOUSE_DATABASE}.${E2E_TRACES_TABLE} ("
+    },
+    {
+      "path": "packages/app/tests/e2e/seed-clickhouse.ts",
+      "line": 1134,
+      "column": 23,
+      "term": "clickhouse",
+      "category": "env_vars",
+      "snippet": "INSERT INTO ${E2E_CLICKHOUSE_DATABASE}.${E2E_LOGS_TABLE} ("
+    },
+    {
+      "path": "packages/app/tests/e2e/seed-clickhouse.ts",
+      "line": 1144,
+      "column": 23,
+      "term": "clickhouse",
+      "category": "env_vars",
+      "snippet": "INSERT INTO ${E2E_CLICKHOUSE_DATABASE}.${E2E_SESSIONS_TABLE} ("
+    },
+    {
+      "path": "packages/app/tests/e2e/seed-clickhouse.ts",
+      "line": 1156,
+      "column": 23,
+      "term": "clickhouse",
+      "category": "env_vars",
+      "snippet": "INSERT INTO ${E2E_CLICKHOUSE_DATABASE}.${E2E_METRICS_GAUGE_TABLE} ("
+    },
+    {
+      "path": "packages/app/tests/e2e/seed-clickhouse.ts",
+      "line": 1171,
+      "column": 23,
+      "term": "clickhouse",
+      "category": "env_vars",
+      "snippet": "INSERT INTO ${E2E_CLICKHOUSE_DATABASE}.${E2E_METRICS_SUM_TABLE} ("
+    },
+    {
+      "path": "packages/app/tests/e2e/seed-clickhouse.ts",
+      "line": 1185,
+      "column": 23,
+      "term": "clickhouse",
+      "category": "env_vars",
+      "snippet": "INSERT INTO ${E2E_CLICKHOUSE_DATABASE}.${E2E_LOGS_TABLE} ("
+    },
+    {
+      "path": "packages/app/tests/e2e/seed-clickhouse.ts",
+      "line": 1197,
+      "column": 23,
+      "term": "clickhouse",
+      "category": "env_vars",
+      "snippet": "INSERT INTO ${E2E_CLICKHOUSE_DATABASE}.${E2E_INTERESTING_FILTER_KEYS_TABLE} ("
+    },
+    {
+      "path": "packages/app/tests/e2e/seed-clickhouse.ts",
+      "line": 1200,
+      "column": 11,
+      "term": "hdx",
+      "category": "other",
+      "snippet": "\\`__hdx_materialized_k8s.cluster.name\\`, \\`service-name\\`,"
+    },
+    {
+      "path": "packages/app/tests/e2e/seed-clickhouse.ts",
+      "line": 1213,
+      "column": 23,
+      "term": "clickhouse",
+      "category": "env_vars",
       "snippet": "INSERT INTO ${E2E_CLICKHOUSE_DATABASE}.${E2E_METADATA_MV_LOGS_TABLE} ("
     },
     {
       "path": "packages/app/tests/e2e/seed-clickhouse.ts",
-      "line": 1118,
+      "line": 1223,
       "column": 23,
       "term": "clickhouse",
       "category": "env_vars",
@@ -58386,7 +58738,7 @@
     },
     {
       "path": "packages/app/tests/e2e/seed-clickhouse.ts",
-      "line": 1134,
+      "line": 1239,
       "column": 16,
       "term": "clickhouse",
       "category": "other",
@@ -58394,7 +58746,7 @@
     },
     {
       "path": "packages/app/tests/e2e/seed-clickhouse.ts",
-      "line": 1142,
+      "line": 1247,
       "column": 12,
       "term": "clickhouse",
       "category": "other",
@@ -58402,7 +58754,7 @@
     },
     {
       "path": "packages/app/tests/e2e/seed-clickhouse.ts",
-      "line": 1146,
+      "line": 1251,
       "column": 35,
       "term": "clickhouse",
       "category": "code_identifiers",
@@ -58410,7 +58762,7 @@
     },
     {
       "path": "packages/app/tests/e2e/seed-clickhouse.ts",
-      "line": 1156,
+      "line": 1261,
       "column": 24,
       "term": "clickhouse",
       "category": "env_vars",
@@ -58418,7 +58770,7 @@
     },
     {
       "path": "packages/app/tests/e2e/seed-clickhouse.ts",
-      "line": 1185,
+      "line": 1290,
       "column": 35,
       "term": "clickhouse",
       "category": "code_identifiers",
@@ -58426,7 +58778,7 @@
     },
     {
       "path": "packages/app/tests/e2e/seed-clickhouse.ts",
-      "line": 1223,
+      "line": 1328,
       "column": 35,
       "term": "clickhouse",
       "category": "code_identifiers",
@@ -58434,11 +58786,59 @@
     },
     {
       "path": "packages/app/tests/e2e/seed-clickhouse.ts",
-      "line": 1251,
+      "line": 1356,
       "column": 7,
       "term": "clickhouse",
       "category": "code_identifiers",
       "snippet": "seedClickHouse()"
+    },
+    {
+      "path": "packages/app/tests/e2e/seed-couchbase.ts",
+      "line": 4,
+      "column": 14,
+      "term": "clickhouse",
+      "category": "code_identifiers",
+      "snippet": "import { fromClickHouseRow } from '../../../ingest/src/model/fromClickHouseRow';"
+    },
+    {
+      "path": "packages/app/tests/e2e/seed-couchbase.ts",
+      "line": 4,
+      "column": 66,
+      "term": "clickhouse",
+      "category": "other",
+      "snippet": "import { fromClickHouseRow } from '../../../ingest/src/model/fromClickHouseRow';"
+    },
+    {
+      "path": "packages/app/tests/e2e/seed-couchbase.ts",
+      "line": 7,
+      "column": 42,
+      "term": "clickhouse",
+      "category": "other",
+      "snippet": "import { getE2eSeedWindow } from './seed-clickhouse';"
+    },
+    {
+      "path": "packages/app/tests/e2e/seed-couchbase.ts",
+      "line": 71,
+      "column": 21,
+      "term": "clickhouse",
+      "category": "code_identifiers",
+      "snippet": "const doc = fromClickHouseRow(E2E_LOGS_TABLE, row, {"
+    },
+    {
+      "path": "packages/app/tests/e2e/seed-couchbase.ts",
+      "line": 85,
+      "column": 21,
+      "term": "clickhouse",
+      "category": "code_identifiers",
+      "snippet": "const doc = fromClickHouseRow(E2E_TRACES_TABLE, row, {"
+    },
+    {
+      "path": "packages/app/tests/e2e/seed-couchbase.ts",
+      "line": 99,
+      "column": 21,
+      "term": "clickhouse",
+      "category": "code_identifiers",
+      "snippet": "const doc = fromClickHouseRow(E2E_CUSTOM_SERVICE_LOGS_TABLE, row, {"
     },
     {
       "path": "packages/app/tests/e2e/utils/api-helpers.ts",
@@ -75042,7 +75442,7 @@
     },
     {
       "path": "packages/common-utils/src/core/eventDeltas.ts",
-      "line": 338,
+      "line": 339,
       "column": 31,
       "term": "clickhouse",
       "category": "other",
@@ -75050,7 +75450,7 @@
     },
     {
       "path": "packages/common-utils/src/core/eventDeltas.ts",
-      "line": 352,
+      "line": 353,
       "column": 49,
       "term": "clickhouse",
       "category": "other",
@@ -77417,6 +77817,14 @@
       "snippet": "expect(m.getClickHouseSettings()).toMatchObject({ max_rows_to_read: '10' });"
     },
     {
+      "path": "packages/common-utils/src/couchbase/__tests__/render.search.test.ts",
+      "line": 94,
+      "column": 48,
+      "term": "hdx",
+      "category": "other",
+      "snippet": "expect(q.sql).not.toMatch(/GROUP BY[^S]*`__hdx_time_bucket`/i);"
+    },
+    {
       "path": "packages/common-utils/src/couchbase/__tests__/serializer.test.ts",
       "line": 23,
       "column": 14,
@@ -77607,6 +78015,14 @@
       "term": "clickhouse",
       "category": "code_identifiers",
       "snippet": "const maxExec = Number(inputs.clickhouse_settings?.max_execution_time);"
+    },
+    {
+      "path": "packages/common-utils/src/couchbase/defaultSources.ts",
+      "line": 80,
+      "column": 17,
+      "term": "hyperdx",
+      "category": "other",
+      "snippet": "tableName: 'hyperdx_sessions',"
     },
     {
       "path": "packages/common-utils/src/couchbase/errors.ts",
@@ -78902,19 +79318,19 @@
       "column": 19,
       "term": "clickhouse",
       "category": "code_identifiers",
-      "snippet": "import type { BaseClickhouseClient } from '@/clickhouse';"
+      "snippet": "import type { BaseClickhouseClient, QueryInputs } from '@/clickhouse';"
     },
     {
       "path": "packages/common-utils/src/dataLayer/chartQuery.ts",
       "line": 1,
-      "column": 46,
+      "column": 59,
       "term": "clickhouse",
       "category": "other",
-      "snippet": "import type { BaseClickhouseClient } from '@/clickhouse';"
+      "snippet": "import type { BaseClickhouseClient, QueryInputs } from '@/clickhouse';"
     },
     {
       "path": "packages/common-utils/src/dataLayer/chartQuery.ts",
-      "line": 6,
+      "line": 8,
       "column": 33,
       "term": "clickhouse",
       "category": "code_identifiers",
@@ -78922,7 +79338,7 @@
     },
     {
       "path": "packages/common-utils/src/dataLayer/chartQuery.ts",
-      "line": 8,
+      "line": 10,
       "column": 41,
       "term": "clickhouse",
       "category": "code_identifiers",
@@ -78930,7 +79346,7 @@
     },
     {
       "path": "packages/common-utils/src/dataLayer/chartQuery.ts",
-      "line": 10,
+      "line": 12,
       "column": 20,
       "term": "clickhouse",
       "category": "code_identifiers",
@@ -78938,7 +79354,7 @@
     },
     {
       "path": "packages/common-utils/src/dataLayer/chartQuery.ts",
-      "line": 15,
+      "line": 17,
       "column": 25,
       "term": "clickhouse",
       "category": "other",
@@ -78946,7 +79362,7 @@
     },
     {
       "path": "packages/common-utils/src/dataLayer/chartQuery.ts",
-      "line": 17,
+      "line": 19,
       "column": 37,
       "term": "clickhouse",
       "category": "other",
@@ -78954,7 +79370,7 @@
     },
     {
       "path": "packages/common-utils/src/dataLayer/chartQuery.ts",
-      "line": 29,
+      "line": 34,
       "column": 5,
       "term": "clickhouse",
       "category": "code_identifiers",
@@ -78962,7 +79378,7 @@
     },
     {
       "path": "packages/common-utils/src/dataLayer/chartQuery.ts",
-      "line": 29,
+      "line": 34,
       "column": 37,
       "term": "clickhouse",
       "category": "code_identifiers",
@@ -78970,7 +79386,7 @@
     },
     {
       "path": "packages/common-utils/src/dataLayer/chartQuery.ts",
-      "line": 38,
+      "line": 44,
       "column": 52,
       "term": "clickhouse",
       "category": "other",
@@ -78978,7 +79394,7 @@
     },
     {
       "path": "packages/common-utils/src/dataLayer/chartQuery.ts",
-      "line": 40,
+      "line": 46,
       "column": 37,
       "term": "clickhouse",
       "category": "other",
@@ -78986,7 +79402,7 @@
     },
     {
       "path": "packages/common-utils/src/dataLayer/chartQuery.ts",
-      "line": 53,
+      "line": 59,
       "column": 7,
       "term": "clickhouse",
       "category": "code_identifiers",
@@ -78994,7 +79410,7 @@
     },
     {
       "path": "packages/common-utils/src/dataLayer/chartQuery.ts",
-      "line": 53,
+      "line": 59,
       "column": 39,
       "term": "clickhouse",
       "category": "code_identifiers",
@@ -79002,7 +79418,7 @@
     },
     {
       "path": "packages/common-utils/src/dataLayer/errors.ts",
-      "line": 11,
+      "line": 12,
       "column": 19,
       "term": "clickhouse",
       "category": "other",
@@ -79242,7 +79658,7 @@
     },
     {
       "path": "packages/common-utils/src/dataLayer/routeQuery.ts",
-      "line": 19,
+      "line": 20,
       "column": 12,
       "term": "clickhouse",
       "category": "other",
@@ -79250,7 +79666,7 @@
     },
     {
       "path": "packages/common-utils/src/dataLayer/routeQuery.ts",
-      "line": 33,
+      "line": 35,
       "column": 5,
       "term": "clickhouse",
       "category": "code_identifiers",
@@ -79258,7 +79674,7 @@
     },
     {
       "path": "packages/common-utils/src/dataLayer/routeQuery.ts",
-      "line": 33,
+      "line": 35,
       "column": 47,
       "term": "clickhouse",
       "category": "code_identifiers",
@@ -80158,7 +80574,7 @@
       "column": 10,
       "term": "clickhouse",
       "category": "code_identifiers",
-      "snippet": "import { clickhouse, formatDialect } from 'sql-formatter';"
+      "snippet": "import { clickhouse, formatDialect, n1ql } from 'sql-formatter';"
     },
     {
       "path": "packages/common-utils/src/sqlFormatter.ts",
@@ -80171,10 +80587,26 @@
     {
       "path": "packages/common-utils/src/sqlFormatter.ts",
       "line": 27,
-      "column": 14,
+      "column": 13,
+      "term": "clickhouse",
+      "category": "other",
+      "snippet": "dialect: 'clickhouse' | 'n1ql' = 'clickhouse',"
+    },
+    {
+      "path": "packages/common-utils/src/sqlFormatter.ts",
+      "line": 27,
+      "column": 37,
+      "term": "clickhouse",
+      "category": "other",
+      "snippet": "dialect: 'clickhouse' | 'n1ql' = 'clickhouse',"
+    },
+    {
+      "path": "packages/common-utils/src/sqlFormatter.ts",
+      "line": 30,
+      "column": 42,
       "term": "clickhouse",
       "category": "code_identifiers",
-      "snippet": "dialect: clickhouse,"
+      "snippet": "dialect: dialect === 'n1ql' ? n1ql : clickhouse,"
     },
     {
       "path": "packages/common-utils/src/types.ts",
@@ -86401,6 +86833,62 @@
       "snippet": "else if (field.clickhouseType === 'DateTime') doc[field.name] = EPOCH_ISO;"
     },
     {
+      "path": "packages/ingest/src/model/fromClickHouseRow.ts",
+      "line": 8,
+      "column": 13,
+      "term": "clickhouse",
+      "category": "code_identifiers",
+      "snippet": "export type ClickHouseShapedRow = Record<string, unknown>;"
+    },
+    {
+      "path": "packages/ingest/src/model/fromClickHouseRow.ts",
+      "line": 16,
+      "column": 6,
+      "term": "hyperdx",
+      "category": "other",
+      "snippet": "| 'hyperdx_sessions'"
+    },
+    {
+      "path": "packages/ingest/src/model/fromClickHouseRow.ts",
+      "line": 30,
+      "column": 42,
+      "term": "hyperdx",
+      "category": "other",
+      "snippet": "if (lower.includes('session')) return 'hyperdx_sessions';"
+    },
+    {
+      "path": "packages/ingest/src/model/fromClickHouseRow.ts",
+      "line": 55,
+      "column": 34,
+      "term": "clickhouse",
+      "category": "code_identifiers",
+      "snippet": "function normalizeTimestamp(row: ClickHouseShapedRow): string {"
+    },
+    {
+      "path": "packages/ingest/src/model/fromClickHouseRow.ts",
+      "line": 69,
+      "column": 11,
+      "term": "clickhouse",
+      "category": "other",
+      "snippet": "* Maps a ClickHouse-shaped seed row to a Phase 5 Couchbase document."
+    },
+    {
+      "path": "packages/ingest/src/model/fromClickHouseRow.ts",
+      "line": 71,
+      "column": 21,
+      "term": "clickhouse",
+      "category": "code_identifiers",
+      "snippet": "export function fromClickHouseRow("
+    },
+    {
+      "path": "packages/ingest/src/model/fromClickHouseRow.ts",
+      "line": 73,
+      "column": 8,
+      "term": "clickhouse",
+      "category": "code_identifiers",
+      "snippet": "row: ClickHouseShapedRow,"
+    },
+    {
       "path": "packages/ingest/src/model/materialized.ts",
       "line": 5,
       "column": 3,
@@ -86551,14 +87039,6 @@
       "term": "hdx",
       "category": "other",
       "snippet": "doc['__hdx_materialized_rum.sessionId'] = fromMap("
-    },
-    {
-      "path": "packages/ingest/src/model/sources.ts",
-      "line": 83,
-      "column": 17,
-      "term": "hyperdx",
-      "category": "other",
-      "snippet": "tableName: 'hyperdx_sessions',"
     },
     {
       "path": "packages/ingest/src/otlp/values.ts",
@@ -88586,7 +89066,15 @@
     },
     {
       "path": "scripts/test-e2e.sh",
-      "line": 39,
+      "line": 28,
+      "column": 29,
+      "term": "clickhouse",
+      "category": "other",
+      "snippet": "E2E_STORE=\"${CBT_E2E_STORE:-clickhouse}\""
+    },
+    {
+      "path": "scripts/test-e2e.sh",
+      "line": 44,
       "column": 1,
       "term": "hdx",
       "category": "other",
@@ -88594,7 +89082,7 @@
     },
     {
       "path": "scripts/test-e2e.sh",
-      "line": 51,
+      "line": 56,
       "column": 36,
       "term": "hyperdx",
       "category": "other",
@@ -88602,7 +89090,7 @@
     },
     {
       "path": "scripts/test-e2e.sh",
-      "line": 65,
+      "line": 70,
       "column": 14,
       "term": "clickhouse",
       "category": "env_vars",
@@ -88610,7 +89098,7 @@
     },
     {
       "path": "scripts/test-e2e.sh",
-      "line": 66,
+      "line": 71,
       "column": 10,
       "term": "clickhouse",
       "category": "env_vars",
@@ -88618,7 +89106,15 @@
     },
     {
       "path": "scripts/test-e2e.sh",
-      "line": 126,
+      "line": 74,
+      "column": 32,
+      "term": "hdx",
+      "category": "other",
+      "snippet": "# CBT_E2E_CB_* ports come from hdx_e2e_ports (slot-based)."
+    },
+    {
+      "path": "scripts/test-e2e.sh",
+      "line": 137,
       "column": 7,
       "term": "clickhouse",
       "category": "other",
@@ -88626,7 +89122,7 @@
     },
     {
       "path": "scripts/test-e2e.sh",
-      "line": 132,
+      "line": 199,
       "column": 10,
       "term": "clickhouse",
       "category": "other",
@@ -88634,7 +89130,7 @@
     },
     {
       "path": "scripts/test-e2e.sh",
-      "line": 133,
+      "line": 200,
       "column": 21,
       "term": "clickhouse",
       "category": "other",
@@ -88642,7 +89138,7 @@
     },
     {
       "path": "scripts/test-e2e.sh",
-      "line": 136,
+      "line": 203,
       "column": 29,
       "term": "clickhouse",
       "category": "env_vars",
@@ -88650,7 +89146,7 @@
     },
     {
       "path": "scripts/test-e2e.sh",
-      "line": 137,
+      "line": 204,
       "column": 14,
       "term": "clickhouse",
       "category": "other",
@@ -88658,7 +89154,7 @@
     },
     {
       "path": "scripts/test-e2e.sh",
-      "line": 138,
+      "line": 205,
       "column": 13,
       "term": "clickhouse",
       "category": "other",
@@ -88666,7 +89162,7 @@
     },
     {
       "path": "scripts/test-e2e.sh",
-      "line": 142,
+      "line": 209,
       "column": 28,
       "term": "clickhouse",
       "category": "env_vars",
@@ -88674,7 +89170,7 @@
     },
     {
       "path": "scripts/test-e2e.sh",
-      "line": 143,
+      "line": 210,
       "column": 31,
       "term": "clickhouse",
       "category": "env_vars",
@@ -88682,7 +89178,7 @@
     },
     {
       "path": "scripts/test-e2e.sh",
-      "line": 143,
+      "line": 210,
       "column": 58,
       "term": "clickhouse",
       "category": "env_vars",
@@ -88690,7 +89186,7 @@
     },
     {
       "path": "scripts/test-e2e.sh",
-      "line": 144,
+      "line": 211,
       "column": 13,
       "term": "clickhouse",
       "category": "other",
@@ -88698,7 +89194,7 @@
     },
     {
       "path": "scripts/test-e2e.sh",
-      "line": 149,
+      "line": 216,
       "column": 23,
       "term": "clickhouse",
       "category": "other",
@@ -88706,7 +89202,7 @@
     },
     {
       "path": "scripts/test-e2e.sh",
-      "line": 149,
+      "line": 216,
       "column": 52,
       "term": "clickhouse",
       "category": "env_vars",
@@ -88714,7 +89210,7 @@
     },
     {
       "path": "scripts/test-e2e.sh",
-      "line": 151,
+      "line": 218,
       "column": 12,
       "term": "clickhouse",
       "category": "env_vars",
@@ -88722,7 +89218,7 @@
     },
     {
       "path": "scripts/test-e2e.sh",
-      "line": 199,
+      "line": 266,
       "column": 7,
       "term": "clickhouse",
       "category": "other",
@@ -88730,7 +89226,7 @@
     },
     {
       "path": "scripts/test-e2e.sh",
-      "line": 200,
+      "line": 267,
       "column": 18,
       "term": "clickhouse",
       "category": "other",
@@ -88738,7 +89234,7 @@
     },
     {
       "path": "scripts/test-e2e.sh",
-      "line": 203,
+      "line": 270,
       "column": 17,
       "term": "clickhouse",
       "category": "other",
@@ -88746,7 +89242,7 @@
     },
     {
       "path": "scripts/test-e2e.sh",
-      "line": 207,
+      "line": 274,
       "column": 11,
       "term": "clickhouse",
       "category": "other",
@@ -88754,7 +89250,7 @@
     },
     {
       "path": "scripts/test-e2e.sh",
-      "line": 216,
+      "line": 283,
       "column": 51,
       "term": "clickhouse",
       "category": "other",
@@ -88762,7 +89258,7 @@
     },
     {
       "path": "scripts/test-e2e.sh",
-      "line": 219,
+      "line": 286,
       "column": 61,
       "term": "clickhouse",
       "category": "other",
@@ -88770,16 +89266,16 @@
     },
     {
       "path": "scripts/test-e2e.sh",
-      "line": 230,
-      "column": 25,
+      "line": 297,
+      "column": 26,
       "term": "clickhouse",
       "category": "other",
-      "snippet": "# Always start and seed ClickHouse (shared by both modes)"
+      "snippet": "# Start telemetry store (ClickHouse or Couchbase)"
     },
     {
       "path": "scripts/test-e2e.sh",
-      "line": 231,
-      "column": 7,
+      "line": 301,
+      "column": 9,
       "term": "clickhouse",
       "category": "other",
       "snippet": "setup_clickhouse"
@@ -90309,8 +90805,8 @@
     {
       "category": "package_names",
       "term": "clickhouse",
-      "count": 132,
-      "files": 114
+      "count": 134,
+      "files": 116
     },
     {
       "category": "package_names",
@@ -90435,8 +90931,8 @@
     {
       "category": "ui_strings",
       "term": "hyperdx",
-      "count": 7,
-      "files": 4
+      "count": 10,
+      "files": 6
     },
     {
       "category": "ui_strings",
@@ -90447,8 +90943,8 @@
     {
       "category": "ui_strings",
       "term": "clickhouse",
-      "count": 76,
-      "files": 38
+      "count": 90,
+      "files": 43
     },
     {
       "category": "ui_strings",
@@ -90459,8 +90955,8 @@
     {
       "category": "code_identifiers",
       "term": "hyperdx",
-      "count": 128,
-      "files": 28
+      "count": 129,
+      "files": 29
     },
     {
       "category": "code_identifiers",
@@ -90471,8 +90967,8 @@
     {
       "category": "code_identifiers",
       "term": "clickhouse",
-      "count": 2409,
-      "files": 219
+      "count": 2434,
+      "files": 223
     },
     {
       "category": "code_identifiers",
@@ -90483,8 +90979,8 @@
     {
       "category": "other",
       "term": "hyperdx",
-      "count": 641,
-      "files": 162
+      "count": 643,
+      "files": 163
     },
     {
       "category": "other",
@@ -90495,8 +90991,8 @@
     {
       "category": "other",
       "term": "clickhouse",
-      "count": 1810,
-      "files": 451
+      "count": 1823,
+      "files": 457
     },
     {
       "category": "other",
@@ -90507,8 +91003,8 @@
     {
       "category": "other",
       "term": "hdx",
-      "count": 1614,
-      "files": 247
+      "count": 1616,
+      "files": 248
     }
   ]
 }

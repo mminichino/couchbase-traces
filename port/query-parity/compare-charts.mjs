@@ -106,13 +106,15 @@ const SOURCE_BY_KIND = {
 };
 
 function resolveDateRange(config) {
+  // Only apply a time window when the case asks for one. CTE outer queries that
+  // select from a WITH alias must not inherit PARITY_WINDOW Timestamp filters.
+  if (!config.dateRange) return undefined;
   if (process.env.PARITY_WINDOW) {
     const win = JSON.parse(process.env.PARITY_WINDOW);
     if (win.fromSec != null && win.toSec != null) {
       return [new Date(win.fromSec * 1000), new Date(win.toSec * 1000)];
     }
   }
-  if (!config.dateRange) return undefined;
   const now = Date.now();
   const { fromMinutesAgo = 60, toMinutesAgo = 0 } = config.dateRange;
   return [
@@ -133,11 +135,17 @@ function buildChartConfig(caseFile, connectionId) {
     from.tableName =
       template.metricTables[kind] ?? template.metricTables.gauge ?? from.tableName;
   }
-  const { dateRange: _dr, ...rest } = caseFile.config;
-  return {
+  const { dateRange: _dr, from: configFrom, ...rest } = caseFile.config;
+  // CTE outer queries may select from a CTE name (empty databaseName).
+  const resolvedFrom =
+    configFrom &&
+    (configFrom.databaseName == null || configFrom.databaseName === '')
+      ? { ...configFrom }
+      : from;
+  const base = {
     ...rest,
     connection: connectionId,
-    from,
+    from: resolvedFrom,
     timestampValueExpression: template.timestampValueExpression,
     timestampFormat: template.timestampFormat,
     implicitColumnExpression: template.implicitColumnExpression,
@@ -146,6 +154,32 @@ function buildChartConfig(caseFile, connectionId) {
     dateRange: resolveDateRange(caseFile.config),
     source: caseFile.source === 'traces' ? 'trace' : 'log',
   };
+  if (Array.isArray(base.with)) {
+    base.with = base.with.map(clause => {
+      if (!clause?.chartConfig) return clause;
+      const nested = buildChartConfig(
+        { ...caseFile, config: clause.chartConfig },
+        connectionId,
+      );
+      // CteChartConfigSchema requires where/whereLanguage; strip parity-only fields.
+      const {
+        searchIndexName: _s,
+        timestampFormat: _tf,
+        implicitColumnExpression: _i,
+        bodyExpression: _b,
+        source: _src,
+        ...cteConfig
+      } = nested;
+      if (cteConfig.where == null) cteConfig.where = '';
+      if (cteConfig.whereLanguage == null) cteConfig.whereLanguage = 'sql';
+      return { ...clause, chartConfig: cteConfig };
+    });
+  }
+  if (rest.configType === 'sql') {
+    // Raw SQL charts still need from for $__sourceTable expansion.
+    return base;
+  }
+  return base;
 }
 
 let cases = [];
@@ -196,6 +230,27 @@ function normalizeCell(key, value, defaultsEqual = []) {
     if (Number.isFinite(n)) return n;
   }
   return value;
+}
+
+function ratioColumnAlias(caseFile) {
+  const select = caseFile?.config?.select;
+  if (!Array.isArray(select) || caseFile?.config?.seriesReturnType !== 'ratio') {
+    return null;
+  }
+  return select[0]?.alias?.trim() || select[1]?.alias?.trim() || 'ratio';
+}
+
+function normalizeRatioKeys(row, ratioAlias) {
+  if (!ratioAlias) return row;
+  const out = {};
+  for (const [key, value] of Object.entries(row)) {
+    if (key.startsWith('divide(')) {
+      out[ratioAlias] = value;
+    } else {
+      out[key] = value;
+    }
+  }
+  return out;
 }
 
 function normalizeRow(row, ignore, defaultsEqual) {
@@ -295,7 +350,8 @@ async function runCase(caseFile) {
   primeConnectionKind('parity-ch', 'clickhouse');
   const chConfig = buildChartConfig(caseFile, 'parity-ch');
   // ClickHouse parity tables live under the `parity` database without a scope.
-  if (chConfig.from) {
+  // Keep empty databaseName for CTE aliases (FROM base_counts, not parity.base_counts).
+  if (chConfig.from?.databaseName) {
     chConfig.from = {
       databaseName: 'parity',
       tableName: chConfig.from.tableName,
@@ -324,7 +380,10 @@ async function runCase(caseFile) {
   const ordered = caseFile.compare?.ordered === true;
   const sortKeys = (a, b) =>
     JSON.stringify(a).localeCompare(JSON.stringify(b));
-  const chNorm = chRows.map(r => normalizeRow(r, ignore, defaultsEqual));
+  const ratioAlias = ratioColumnAlias(caseFile);
+  const chNorm = chRows
+    .map(r => normalizeRatioKeys(r, ratioAlias))
+    .map(r => normalizeRow(r, ignore, defaultsEqual));
   const cbNorm = cbRows.map(r => normalizeRow(r, ignore, defaultsEqual));
   if (!ordered) {
     chNorm.sort(sortKeys);

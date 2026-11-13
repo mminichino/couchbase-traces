@@ -287,8 +287,8 @@
         "uplot-react",
         "zod"
       ],
-      "sourceFiles": 686,
-      "testFiles": 510,
+      "sourceFiles": 691,
+      "testFiles": 516,
       "hasTsconfig": true,
       "role": "web UI"
     },
@@ -415,8 +415,8 @@
         "typescript",
         "zod"
       ],
-      "sourceFiles": 94,
-      "testFiles": 71,
+      "sourceFiles": 116,
+      "testFiles": 72,
       "hasTsconfig": true,
       "role": "shared query and data layer"
     },
@@ -505,7 +505,7 @@
         "typescript",
         "typescript-eslint"
       ],
-      "sourceFiles": 27,
+      "sourceFiles": 28,
       "testFiles": 6,
       "hasTsconfig": true,
       "role": "ingestion service"

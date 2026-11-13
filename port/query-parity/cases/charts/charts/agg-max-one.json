@@ -1,0 +1,27 @@
+{
+  "id": "charts-agg-max-one",
+  "description": "max with one group",
+  "source": "logs",
+  "config": {
+    "select": [
+      {
+        "aggFn": "max",
+        "valueExpression": "SeverityNumber",
+        "aggCondition": "",
+        "aggConditionLanguage": "sql",
+        "alias": "value"
+      }
+    ],
+    "granularity": "5 minute",
+    "dateRange": {
+      "fromMinutesAgo": 60,
+      "toMinutesAgo": 0
+    },
+    "groupBy": "ServiceName"
+  },
+  "compare": {
+    "ignoreColumns": [
+      "__cbt_id"
+    ]
+  }
+}

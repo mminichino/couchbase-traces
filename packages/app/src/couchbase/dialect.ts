@@ -16,6 +16,8 @@ export function sqlKeywordsForCouchbase(): string[] {
   return [...SQLPP_KEYWORDS, ...SQLPP_FUNCTIONS];
 }
 
-export function formatLanguageForConnection(kind: 'clickhouse' | 'couchbase'): 'clickhouse' | 'n1ql' {
+export function formatLanguageForConnection(
+  kind: 'clickhouse' | 'couchbase',
+): 'clickhouse' | 'n1ql' {
   return kind === 'couchbase' ? 'n1ql' : 'clickhouse';
 }

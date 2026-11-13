@@ -67,6 +67,10 @@ import { useVirtualizer } from '@tanstack/react-virtual';
 
 import api from '@/api';
 import { useChartSyncId } from '@/chartSync';
+import {
+  filterVisibleRowMeta,
+  stripHiddenRowFields,
+} from '@/couchbase/rowColumns';
 import { searchChartConfigDefaults } from '@/defaults';
 import {
   useAliasMapFromChartConfig,
@@ -81,10 +85,6 @@ import {
 } from '@/hooks/useMetadata';
 import useOffsetPaginatedQuery from '@/hooks/useOffsetPaginatedQuery';
 import { useRowSelection } from '@/hooks/useRowSelection';
-import {
-  filterVisibleRowMeta,
-  stripHiddenRowFields,
-} from '@/couchbase/rowColumns';
 import useRowWhere, {
   getRowId,
   INTERNAL_ROW_FIELDS,

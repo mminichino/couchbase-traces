@@ -1,0 +1,26 @@
+{
+  "id": "charts-agg-max-none",
+  "description": "max with none group",
+  "source": "logs",
+  "config": {
+    "select": [
+      {
+        "aggFn": "max",
+        "valueExpression": "SeverityNumber",
+        "aggCondition": "",
+        "aggConditionLanguage": "sql",
+        "alias": "value"
+      }
+    ],
+    "granularity": "5 minute",
+    "dateRange": {
+      "fromMinutesAgo": 60,
+      "toMinutesAgo": 0
+    }
+  },
+  "compare": {
+    "ignoreColumns": [
+      "__cbt_id"
+    ]
+  }
+}

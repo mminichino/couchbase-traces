@@ -1,9 +1,6 @@
-import {
-  isUsingGranularity,
-  isUsingGroupBy,
-} from '@/core/renderChartConfig';
-import { DisplayType } from '@/types';
+import { isUsingGranularity, isUsingGroupBy } from '@/core/renderChartConfig';
 import type { BuilderChartConfigWithOptDateRange } from '@/types';
+import { DisplayType } from '@/types';
 
 /** Search list queries include document keys for row identity. */
 export function includeRowIdInSelect(

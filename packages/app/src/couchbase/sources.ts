@@ -6,19 +6,23 @@ import {
 } from '@couchbase-traces/common-utils/dist/dataLayer';
 import type { TSource } from '@couchbase-traces/common-utils/dist/types';
 
+import { useConnections } from '@/connection';
 import {
   connectionKindFromList,
   useConnectionKind,
 } from '@/couchbase/connection';
-import { useConnections } from '@/connection';
 import { useSources } from '@/source';
 
-export async function filterSearchSources(sources: TSource[]): Promise<TSource[]> {
+export async function filterSearchSources(
+  sources: TSource[],
+): Promise<TSource[]> {
   return filterSourcesForSlice(sources, 'search');
 }
 
 /** Sync slice gating using connection kinds from the connections query. */
-export function filterSourcesForSliceWithConnections<T extends { connection: string }>(
+export function filterSourcesForSliceWithConnections<
+  T extends { connection: string },
+>(
   sources: T[],
   slice: Slice,
   connections: { id: string; kind?: string }[] | undefined,
@@ -30,7 +34,7 @@ export function filterSourcesForSliceWithConnections<T extends { connection: str
 }
 
 export function isSourceAllowedForSlice(
-  source: TSource,
+  source: { connection: string },
   slice: Slice,
   connections: { id: string; kind?: string }[] | undefined,
 ): boolean {
@@ -56,7 +60,8 @@ export function useSourcesForSlice(slice: Slice) {
 export function useIsSourceAllowedForSlice(slice: Slice) {
   const { data: connections } = useConnections();
   return useMemo(
-    () => (source: TSource) => isSourceAllowedForSlice(source, slice, connections),
+    () => (source: TSource) =>
+      isSourceAllowedForSlice(source, slice, connections),
     [slice, connections],
   );
 }

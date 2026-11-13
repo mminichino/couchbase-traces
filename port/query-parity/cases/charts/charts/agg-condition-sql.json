@@ -1,0 +1,25 @@
+{
+  "id": "charts-agg-condition-sql",
+  "description": "count with sql aggCondition",
+  "source": "logs",
+  "config": {
+    "select": [
+      {
+        "aggFn": "count",
+        "valueExpression": "",
+        "aggCondition": "SeverityText = 'WARN'",
+        "aggConditionLanguage": "sql",
+        "alias": "value"
+      }
+    ],
+    "dateRange": {
+      "fromMinutesAgo": 60,
+      "toMinutesAgo": 0
+    }
+  },
+  "compare": {
+    "ignoreColumns": [
+      "__cbt_id"
+    ]
+  }
+}

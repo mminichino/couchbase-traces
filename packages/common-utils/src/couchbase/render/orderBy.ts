@@ -2,7 +2,7 @@ import {
   FIXED_TIME_BUCKET_EXPR_ALIAS,
   isUsingGranularity,
 } from '@/core/renderChartConfig';
-import { sqlpp, type SqlPP } from '@/couchbase/sqlpp';
+import { quoteIdent, type SqlPP, sqlpp } from '@/couchbase/sqlpp';
 import type {
   BuilderChartConfigWithOptDateRange,
   SortSpecificationList,
@@ -16,6 +16,10 @@ function mapOrderExpr(expr: string): string {
   const cityHash = trimmed.match(/^cityHash64\((.+)\)$/i);
   if (cityHash) {
     return `HASHBYTES(${cityHash[1]}, {"algorithm":"crc32"})`;
+  }
+  // Bare aliases / column names (including reserved words like `value`).
+  if (/^[A-Za-z_][A-Za-z0-9_]*$/.test(trimmed)) {
+    return quoteIdent(trimmed);
   }
   return trimmed;
 }

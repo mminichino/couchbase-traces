@@ -1,0 +1,28 @@
+{
+  "id": "charts-orderby-limit",
+  "description": "order by count desc with limit",
+  "source": "logs",
+  "config": {
+    "select": [
+      {
+        "aggFn": "count",
+        "valueExpression": "",
+        "alias": "value"
+      }
+    ],
+    "groupBy": "ServiceName",
+    "orderBy": [
+      { "valueExpression": "value", "ordering": "DESC" },
+      { "valueExpression": "ServiceName", "ordering": "ASC" }
+    ],
+    "limit": { "limit": 3 },
+    "dateRange": {
+      "fromMinutesAgo": 60,
+      "toMinutesAgo": 0
+    }
+  },
+  "compare": {
+    "ordered": true,
+    "ignoreColumns": ["__cbt_id"]
+  }
+}

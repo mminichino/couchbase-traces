@@ -17,6 +17,6 @@ export function useConnectionKind(
   const { data: connections } = useConnections();
   return useMemo(
     () => connectionKindFromList(connectionId, connections),
-  [connectionId, connections],
+    [connectionId, connections],
   );
 }

@@ -7,16 +7,16 @@ import {
   convertCHDataTypeToJSType,
   JSDataType,
 } from '@couchbase-traces/common-utils/dist/clickhouse';
-import {
-  ROW_ID_ALIAS,
-  rowIdWhereLiteral,
-} from '@couchbase-traces/common-utils/dist/couchbase/render';
 import { quoteResultColumnNameIfNeeded } from '@couchbase-traces/common-utils/dist/core/metadata';
 import {
   aliasMapToWithClauses,
   LEFT_UTF8_HASH_CODE_POINTS,
   leftUtf8Prefix,
 } from '@couchbase-traces/common-utils/dist/core/utils';
+import {
+  ROW_ID_ALIAS,
+  rowIdWhereLiteral,
+} from '@couchbase-traces/common-utils/dist/couchbase/render';
 import { WithClauseSchema } from '@couchbase-traces/common-utils/dist/types';
 
 const MAX_STRING_LENGTH = 512;
@@ -183,7 +183,10 @@ export default function useRowWhere({
 
   return useCallback(
     (row: Record<string, any>): RowWhereResult => {
-      if (row[ROW_ID_ALIAS] != null && String(row[ROW_ID_ALIAS]).trim() !== '') {
+      if (
+        row[ROW_ID_ALIAS] != null &&
+        String(row[ROW_ID_ALIAS]).trim() !== ''
+      ) {
         return {
           where: rowIdWhereLiteral(String(row[ROW_ID_ALIAS])),
           aliasWith: [],

@@ -31,17 +31,21 @@ import CodeMirror, {
 } from '@uiw/react-codemirror';
 
 import { EDITOR_INPUT_HEIGHTS } from '@/components/editorInputHeights';
-import { useMultipleAllFields } from '@/hooks/useMetadata';
-import { useStableCallback } from '@/hooks/useStableCallback';
+import { useConnectionKind } from '@/couchbase/connection';
 import {
   formatLanguageForConnection,
   SQL_DIALECT_LABEL,
   sqlKeywordsForCouchbase,
 } from '@/couchbase/dialect';
-import { useConnectionKind } from '@/couchbase/connection';
+import { useMultipleAllFields } from '@/hooks/useMetadata';
+import { useStableCallback } from '@/hooks/useStableCallback';
 import { useSource } from '@/source';
 import { useQueryHistory } from '@/utils';
-import { clickhouseSql, formatSqlForDialect, sqlppSql } from '@/utils/codeMirror';
+import {
+  clickhouseSql,
+  formatSqlForDialect,
+  sqlppSql,
+} from '@/utils/codeMirror';
 
 import { KEYWORDS_FOR_WHERE_OR_ORDER_BY } from './constants';
 import {
