@@ -4,9 +4,9 @@ Generated from `port/features.json` and `port/state/inventory/`. Edit `port/feat
 
 | Status | Features |
 |---|---|
-| not_started | 43 |
+| not_started | 41 |
 | in_progress | 2 |
-| ported | 7 |
+| ported | 9 |
 | needs_decision | 0 |
 | dropped | 2 |
 | replaced | 1 |
@@ -93,7 +93,7 @@ Entry points:
 
 | Feature | Visibility | Status | Entry points | Data layer | Tests (unit / int / e2e) |
 |---|---|---|---|---|---|
-| Trace waterfall (`app-trace`) | user | not_started | 1 | UserPreferencesModal.tsx, clickhouse.ts, AppNav.components.tsx, AppNav.tsx, InstanceLabel.tsx, +63 | 1 / 0 / 0 |
+| Trace waterfall (`app-trace`) | user | ported | 1 | UserPreferencesModal.tsx, clickhouse.ts, AppNav.components.tsx, AppNav.tsx, InstanceLabel.tsx, +63 | 1 / 0 / 0 |
 
 ### Trace waterfall (`app-trace`)
 
@@ -107,7 +107,7 @@ Entry points:
 
 | Feature | Visibility | Status | Entry points | Data layer | Tests (unit / int / e2e) |
 |---|---|---|---|---|---|
-| Service map (`app-service-map`) | user | not_started | 1 | UserPreferencesModal.tsx, clickhouse.ts, AppNav.components.tsx, AppNav.tsx, InstanceLabel.tsx, +74 | 0 / 0 / 3 |
+| Service map (`app-service-map`) | user | ported | 1 | UserPreferencesModal.tsx, clickhouse.ts, AppNav.components.tsx, AppNav.tsx, InstanceLabel.tsx, +74 | 0 / 0 / 3 |
 
 ### Service map (`app-service-map`)
 

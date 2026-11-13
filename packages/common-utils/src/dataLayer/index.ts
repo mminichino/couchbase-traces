@@ -52,7 +52,7 @@ export type Slice =
 export const COUCHBASE_SLICES: Readonly<Record<Slice, boolean>> = {
   search: true,
   charts: true,
-  traces: false,
+  traces: true,
   metrics: false,
   sessions: false,
   presets: false,

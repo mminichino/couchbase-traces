@@ -1,0 +1,19 @@
+{
+  "id": "traces-span-count",
+  "description": "trace span count over time",
+  "source": "traces",
+  "config": {
+    "select": [
+      {
+        "aggFn": "count",
+        "valueExpression": "",
+        "alias": "value"
+      }
+    ],
+    "granularity": "5 minute",
+    "dateRange": { "fromMinutesAgo": 60, "toMinutesAgo": 0 }
+  },
+  "compare": {
+    "ignoreColumns": ["__cbt_id"]
+  }
+}

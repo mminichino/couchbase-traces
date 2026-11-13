@@ -1,0 +1,25 @@
+{
+  "id": "traces-service-group-count",
+  "description": "span counts grouped by service (service map node shape)",
+  "source": "traces",
+  "config": {
+    "select": [
+      {
+        "aggFn": "count",
+        "valueExpression": "",
+        "alias": "value"
+      }
+    ],
+    "groupBy": "ServiceName",
+    "orderBy": [
+      { "valueExpression": "value", "ordering": "DESC" },
+      { "valueExpression": "ServiceName", "ordering": "ASC" }
+    ],
+    "limit": { "limit": 10 },
+    "dateRange": { "fromMinutesAgo": 60, "toMinutesAgo": 0 }
+  },
+  "compare": {
+    "ordered": true,
+    "ignoreColumns": ["__cbt_id"]
+  }
+}

@@ -1,0 +1,20 @@
+{
+  "id": "traces-error-status-count",
+  "description": "count spans with error status",
+  "source": "traces",
+  "config": {
+    "select": [
+      {
+        "aggFn": "count",
+        "valueExpression": "",
+        "alias": "value"
+      }
+    ],
+    "where": "StatusCode:Error OR StatusCode:STATUS_CODE_ERROR",
+    "whereLanguage": "lucene",
+    "dateRange": { "fromMinutesAgo": 60, "toMinutesAgo": 0 }
+  },
+  "compare": {
+    "ignoreColumns": ["__cbt_id"]
+  }
+}

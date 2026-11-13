@@ -36,6 +36,14 @@
       }
     ]
   },
+  "traces": {
+    "specs": [
+      "packages/app/tests/e2e/features/traces-workflow.spec.ts",
+      "packages/app/tests/e2e/features/service-map-sampling.spec.ts",
+      "packages/app/tests/e2e/features/span-links.spec.ts"
+    ],
+    "exclusions": []
+  },
   "charts": {
     "specs": [
       "packages/app/tests/e2e/features/chart-explorer.spec.ts",

@@ -13,7 +13,8 @@ const ERROR_STATUS_CODES = ['error', 'status_code_error'] as const;
  */
 export function errorStatusPredicateSql(statusCodeExpression: string): string {
   const quoted = ERROR_STATUS_CODES.map(code => `'${code}'`).join(', ');
-  return `lower(${statusCodeExpression}) IN (${quoted})`;
+  // LOWER works in ClickHouse and SQL++; keep one predicate for both engines.
+  return `LOWER(${statusCodeExpression}) IN (${quoted})`;
 }
 
 /** Same match as {@link errorStatusPredicateSql}, for rows already fetched. */

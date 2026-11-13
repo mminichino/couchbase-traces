@@ -1,0 +1,23 @@
+{
+  "id": "traces-duration-p95-by-service",
+  "description": "duration p95 by service",
+  "source": "traces",
+  "config": {
+    "select": [
+      {
+        "aggFn": "p95",
+        "valueExpression": "Duration",
+        "alias": "value"
+      }
+    ],
+    "groupBy": "ServiceName",
+    "orderBy": [{ "valueExpression": "value", "ordering": "DESC" }],
+    "limit": { "limit": 10 },
+    "dateRange": { "fromMinutesAgo": 60, "toMinutesAgo": 0 }
+  },
+  "compare": {
+    "ordered": true,
+    "numericTolerance": 0.05,
+    "ignoreColumns": ["__cbt_id"]
+  }
+}

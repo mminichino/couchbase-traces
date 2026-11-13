@@ -7579,7 +7579,7 @@
               "name": "useClickhouseClient",
               "references": 1,
               "lines": [
-                311
+                327
               ]
             }
           ]
@@ -8220,7 +8220,7 @@
               "name": "ContactSupportText",
               "references": 1,
               "lines": [
-                1719
+                1720
               ]
             }
           ]
@@ -10687,7 +10687,7 @@
               "name": "KEYWORDS_FOR_WHERE_OR_ORDER_BY",
               "references": 1,
               "lines": [
-                207
+                211
               ]
             }
           ]
@@ -11731,7 +11731,7 @@
               "name": "TimePicker",
               "references": 1,
               "lines": [
-                2646
+                2647
               ]
             }
           ]
@@ -11746,7 +11746,7 @@
               "name": "TimePicker",
               "references": 1,
               "lines": [
-                298
+                301
               ]
             }
           ]
@@ -16920,8 +16920,8 @@
               "references": 3,
               "lines": [
                 1355,
-                1647,
-                1948
+                1649,
+                1949
               ]
             },
             {
@@ -17693,10 +17693,10 @@
               "name": "ClickHouseQueryError",
               "references": 4,
               "lines": [
-                4,
-                8,
-                10,
-                17
+                5,
+                11,
+                13,
+                20
               ]
             }
           ]
@@ -18296,11 +18296,11 @@
               "name": "chSql",
               "references": 5,
               "lines": [
-                153,
-                157,
-                165,
-                167,
-                174
+                169,
+                173,
+                181,
+                183,
+                190
               ]
             }
           ]
@@ -21861,7 +21861,7 @@
               "references": 2,
               "lines": [
                 892,
-                2200
+                2201
               ]
             }
           ]
@@ -21891,7 +21891,7 @@
               "name": "tcFromSource",
               "references": 1,
               "lines": [
-                153
+                155
               ]
             }
           ]
@@ -22431,15 +22431,15 @@
               "name": "Field",
               "references": 1,
               "lines": [
-                62
+                66
               ]
             },
             {
               "name": "TableConnectionChoice",
               "references": 2,
               "lines": [
-                112,
-                433
+                116,
+                437
               ]
             }
           ]
@@ -22892,7 +22892,7 @@
               "name": "Metadata",
               "references": 1,
               "lines": [
-                46
+                48
               ]
             }
           ]
@@ -24755,29 +24755,29 @@
               "name": "ChartConfigWithOptDateRangeEx",
               "references": 1,
               "lines": [
-                43
+                46
               ]
             },
             {
               "name": "hasMetricFormulas",
               "references": 1,
               "lines": [
-                70
+                76
               ]
             },
             {
               "name": "isMetricChartConfig",
               "references": 2,
               "lines": [
-                67,
-                75
+                73,
+                81
               ]
             },
             {
               "name": "isNonEmptyWhereExpr",
               "references": 1,
               "lines": [
-                96
+                103
               ]
             }
           ]
@@ -24814,30 +24814,30 @@
               "name": "FIXED_TIME_BUCKET_EXPR_ALIAS",
               "references": 2,
               "lines": [
-                65,
-                89
+                74,
+                98
               ]
             },
             {
               "name": "isRatioChartConfig",
               "references": 1,
               "lines": [
-                38
+                44
               ]
             },
             {
               "name": "isUsingGranularity",
               "references": 2,
               "lines": [
-                64,
-                88
+                73,
+                97
               ]
             },
             {
               "name": "isUsingGroupBy",
               "references": 1,
               "lines": [
-                46
+                52
               ]
             }
           ]
@@ -24852,7 +24852,7 @@
               "name": "ChartConfigWithOptDateRangeEx",
               "references": 1,
               "lines": [
-                13
+                11
               ]
             }
           ]
@@ -24867,14 +24867,14 @@
               "name": "isUsingGranularity",
               "references": 1,
               "lines": [
-                19
+                16
               ]
             },
             {
               "name": "isUsingGroupBy",
               "references": 1,
               "lines": [
-                18
+                15
               ]
             }
           ]
@@ -24889,38 +24889,38 @@
               "name": "FIXED_TIME_BUCKET_EXPR_ALIAS",
               "references": 1,
               "lines": [
-                79
+                88
               ]
             },
             {
               "name": "isNonEmptyWhereExpr",
               "references": 1,
               "lines": [
-                213
+                224
               ]
             },
             {
               "name": "isRatioChartConfig",
               "references": 1,
               "lines": [
-                281
+                293
               ]
             },
             {
               "name": "isUsingGranularity",
               "references": 2,
               "lines": [
-                63,
-                338
+                72,
+                350
               ]
             },
             {
               "name": "isUsingGroupBy",
               "references": 3,
               "lines": [
-                307,
-                338,
-                342
+                319,
+                350,
+                354
               ]
             }
           ]
@@ -24964,9 +24964,9 @@
               "name": "isNonEmptyWhereExpr",
               "references": 3,
               "lines": [
-                125,
-                128,
-                141
+                130,
+                133,
+                146
               ]
             }
           ]
@@ -25861,7 +25861,7 @@
               "name": "CouchbaseQueryError",
               "references": 1,
               "lines": [
-                1647
+                1650
               ]
             }
           ]
@@ -25892,10 +25892,10 @@
               "name": "CouchbaseQueryError",
               "references": 4,
               "lines": [
-                4,
-                8,
+                6,
                 11,
-                17
+                14,
+                20
               ]
             }
           ]
@@ -26464,8 +26464,8 @@
               "name": "quantile",
               "references": 2,
               "lines": [
-                160,
-                161
+                169,
+                170
               ]
             }
           ]
@@ -27044,21 +27044,21 @@
               "name": "anyValue",
               "references": 1,
               "lines": [
-                150
+                159
               ]
             },
             {
               "name": "argMax",
               "references": 1,
               "lines": [
-                152
+                161
               ]
             },
             {
               "name": "count",
               "references": 1,
               "lines": [
-                127
+                136
               ]
             },
             {
@@ -27075,7 +27075,7 @@
               "name": "uniq",
               "references": 1,
               "lines": [
-                130
+                139
               ]
             }
           ]
@@ -28989,6 +28989,10 @@
         {
           "name": "rowIdWhere",
           "kind": "reexport"
+        },
+        {
+          "name": "rowIdWhereLiteral",
+          "kind": "reexport"
         }
       ],
       "importers": [
@@ -29032,16 +29036,17 @@
               "name": "ROW_ID_ALIAS",
               "references": 4,
               "lines": [
-                186,
+                187,
                 188,
-                196
+                191,
+                199
               ]
             },
             {
               "name": "rowIdWhereLiteral",
               "references": 1,
               "lines": [
-                188
+                191
               ]
             }
           ]
@@ -29161,7 +29166,7 @@
               "name": "getStableSampleExpressionCouchbase",
               "references": 0,
               "lines": [
-                158
+                155
               ]
             }
           ]
@@ -29197,14 +29202,14 @@
               "name": "renderFromCouchbase",
               "references": 1,
               "lines": [
-                102
+                109
               ]
             },
             {
               "name": "renderFromWithRowIdCouchbase",
               "references": 1,
               "lines": [
-                101
+                108
               ]
             }
           ]
@@ -29235,7 +29240,7 @@
               "name": "renderHavingCouchbase",
               "references": 1,
               "lines": [
-                111
+                118
               ]
             }
           ]
@@ -29353,49 +29358,56 @@
               "name": "ROW_ID_ALIAS",
               "references": 0,
               "lines": [
-                9
+                10
               ]
             },
             {
               "name": "SqlppQuery",
               "references": 0,
               "lines": [
-                9
+                10
               ]
             },
             {
               "name": "getStableSampleExpressionCouchbase",
               "references": 0,
               "lines": [
-                9
+                10
               ]
             },
             {
               "name": "renderChartConfigCouchbase",
               "references": 0,
               "lines": [
-                9
+                10
               ]
             },
             {
               "name": "rowIdSelect",
               "references": 0,
               "lines": [
-                9
+                10
               ]
             },
             {
               "name": "rowIdUseKeys",
               "references": 0,
               "lines": [
-                9
+                10
               ]
             },
             {
               "name": "rowIdWhere",
               "references": 0,
               "lines": [
-                9
+                10
+              ]
+            },
+            {
+              "name": "rowIdWhereLiteral",
+              "references": 0,
+              "lines": [
+                10
               ]
             }
           ]
@@ -29464,7 +29476,7 @@
               "name": "renderLimitCouchbase",
               "references": 1,
               "lines": [
-                113
+                120
               ]
             }
           ]
@@ -29504,7 +29516,7 @@
               "name": "expandMacrosCouchbase",
               "references": 1,
               "lines": [
-                39
+                37
               ]
             }
           ]
@@ -29535,7 +29547,7 @@
               "name": "couchbaseMetadataRef",
               "references": 1,
               "lines": [
-                84
+                90
               ]
             }
           ]
@@ -29566,7 +29578,7 @@
               "name": "renderMultiSeriesMetricChartConfigCouchbase",
               "references": 1,
               "lines": [
-                72
+                78
               ]
             }
           ]
@@ -29597,7 +29609,7 @@
               "name": "translateMetricChartConfigCouchbase",
               "references": 1,
               "lines": [
-                76
+                82
               ]
             }
           ]
@@ -29629,7 +29641,7 @@
               "name": "renderOrderByCouchbase",
               "references": 1,
               "lines": [
-                112
+                119
               ]
             }
           ]
@@ -29704,7 +29716,7 @@
               "name": "ratioExprCouchbase",
               "references": 1,
               "lines": [
-                294
+                306
               ]
             }
           ]
@@ -29750,7 +29762,7 @@
               "name": "renderRawSqlChartConfigCouchbase",
               "references": 1,
               "lines": [
-                51
+                54
               ]
             }
           ]
@@ -29832,9 +29844,17 @@
               "name": "ROW_ID_ALIAS",
               "references": 4,
               "lines": [
-                186,
+                187,
                 188,
-                196
+                191,
+                199
+              ]
+            },
+            {
+              "name": "rowIdWhereLiteral",
+              "references": 1,
+              "lines": [
+                191
               ]
             }
           ]
@@ -29864,43 +29884,43 @@
               "name": "ROW_ID_ALIAS",
               "references": 0,
               "lines": [
-                157
+                163
               ]
             },
             {
               "name": "parseRowIdWhere",
               "references": 1,
               "lines": [
-                97,
-                157
+                104,
+                163
               ]
             },
             {
               "name": "rowIdSelect",
               "references": 0,
               "lines": [
-                157
+                163
               ]
             },
             {
               "name": "rowIdUseKeys",
               "references": 0,
               "lines": [
-                157
+                163
               ]
             },
             {
               "name": "rowIdWhere",
               "references": 0,
               "lines": [
-                157
+                163
               ]
             },
             {
               "name": "rowIdWhereLiteral",
               "references": 0,
               "lines": [
-                157
+                163
               ]
             }
           ]
@@ -29920,7 +29940,7 @@
               "name": "rowIdSelect",
               "references": 1,
               "lines": [
-                325
+                337
               ]
             }
           ]
@@ -29951,7 +29971,7 @@
               "name": "includeRowIdInSelect",
               "references": 1,
               "lines": [
-                324
+                336
               ]
             }
           ]
@@ -30007,21 +30027,21 @@
               "name": "renderGroupByCouchbase",
               "references": 1,
               "lines": [
-                110
+                117
               ]
             },
             {
               "name": "renderSelectCouchbase",
               "references": 1,
               "lines": [
-                94
+                100
               ]
             },
             {
               "name": "renderTimeBucketPartsCouchbase",
               "references": 1,
               "lines": [
-                85
+                91
               ]
             }
           ]
@@ -30036,15 +30056,15 @@
               "name": "getFirstTimestampColumn",
               "references": 2,
               "lines": [
-                71,
-                98
+                76,
+                103
               ]
             },
             {
               "name": "timestampFormatOf",
               "references": 1,
               "lines": [
-                100
+                105
               ]
             }
           ]
@@ -30076,7 +30096,7 @@
               "name": "renderSeriesLimitCteCouchbase",
               "references": 1,
               "lines": [
-                115
+                122
               ]
             }
           ]
@@ -30142,8 +30162,8 @@
               "name": "renderWhereCouchbase",
               "references": 2,
               "lines": [
-                105,
-                109
+                112,
+                116
               ]
             }
           ]
@@ -30173,17 +30193,17 @@
               "name": "RenderFilterContext",
               "references": 3,
               "lines": [
-                200,
-                269,
-                336
+                211,
+                280,
+                348
               ]
             },
             {
               "name": "compileWhereExpressionCouchbase",
               "references": 2,
               "lines": [
-                214,
-                227
+                225,
+                238
               ]
             }
           ]
@@ -30231,7 +30251,7 @@
               "name": "renderWithCouchbase",
               "references": 1,
               "lines": [
-                88
+                94
               ]
             }
           ]
@@ -30422,14 +30442,14 @@
               "name": "CouchbaseSearchBuilder",
               "references": 1,
               "lines": [
-                51
+                56
               ]
             },
             {
               "name": "SerializerMetadata",
               "references": 1,
               "lines": [
-                17
+                18
               ]
             }
           ]
@@ -31126,22 +31146,21 @@
               "name": "concatSqlPP",
               "references": 2,
               "lines": [
-                124,
-                127
+                131,
+                134
               ]
             },
             {
               "name": "sqlpp",
               "references": 13,
               "lines": [
-                132,
-                133,
-                134,
-                135,
-                136,
-                137,
                 138,
-                139
+                139,
+                140,
+                141,
+                142,
+                143,
+                144
               ]
             }
           ]
@@ -31179,7 +31198,7 @@
               "name": "sqlpp",
               "references": 1,
               "lines": [
-                150
+                157
               ]
             }
           ]
@@ -31250,7 +31269,7 @@
               "name": "keyspace",
               "references": 1,
               "lines": [
-                32
+                30
               ]
             }
           ]
@@ -31296,21 +31315,21 @@
               "name": "SqlPP",
               "references": 17,
               "lines": [
-                58,
-                85,
-                105,
-                109,
-                183,
-                190,
+                67,
+                94,
+                114,
+                118,
+                194,
                 201,
-                210,
                 212,
-                224,
-                263,
-                270,
-                271,
-                337,
-                341
+                221,
+                223,
+                235,
+                274,
+                281,
+                282,
+                349,
+                353
               ]
             },
             {
@@ -31322,26 +31341,26 @@
               "name": "sqlpp",
               "references": 35,
               "lines": [
-                79,
-                124,
-                125,
-                127,
-                128,
-                130,
-                131,
-                135,
+                88,
+                133,
+                134,
                 136,
-                138,
+                137,
                 139,
-                141,
-                142,
+                140,
                 144,
                 145,
                 147,
                 148,
                 150,
-                152,
-                154
+                151,
+                153,
+                154,
+                156,
+                157,
+                159,
+                161,
+                163
               ]
             }
           ]
@@ -31387,31 +31406,31 @@
               "name": "SqlPP",
               "references": 14,
               "lines": [
-                18,
-                21,
-                26,
-                31,
-                45,
-                82,
-                94,
-                116,
-                117,
-                139,
-                155
+                19,
+                22,
+                29,
+                36,
+                50,
+                87,
+                99,
+                121,
+                122,
+                144,
+                160
               ]
             },
             {
               "name": "sqlpp",
               "references": 8,
               "lines": [
-                23,
-                28,
-                32,
-                46,
-                48,
-                83,
-                152,
-                177
+                26,
+                33,
+                37,
+                51,
+                53,
+                88,
+                157,
+                182
               ]
             }
           ]
@@ -31428,18 +31447,18 @@
               "lines": [
                 19,
                 23,
-                32
+                36
               ]
             },
             {
               "name": "sqlpp",
               "references": 5,
               "lines": [
-                34,
-                40,
-                47,
-                49,
-                53
+                38,
+                48,
+                55,
+                57,
+                61
               ]
             }
           ]
@@ -31836,28 +31855,28 @@
               "name": "timeBucketExpr",
               "references": 2,
               "lines": [
-                131,
-                136
+                138,
+                143
               ]
             },
             {
               "name": "timeRangePredicate",
               "references": 4,
               "lines": [
-                78,
-                91,
-                107,
-                120
+                81,
+                95,
+                113,
+                127
               ]
             },
             {
               "name": "toIso30",
               "references": 4,
               "lines": [
-                56,
-                60,
-                66,
-                71
+                59,
+                63,
+                69,
+                74
               ]
             }
           ]
@@ -31872,21 +31891,21 @@
               "name": "TimeFormat",
               "references": 1,
               "lines": [
-                45
+                50
               ]
             },
             {
               "name": "parseGranularity",
               "references": 1,
               "lines": [
-                75
+                84
               ]
             },
             {
               "name": "timeBucketExpr",
               "references": 1,
               "lines": [
-                76
+                85
               ]
             }
           ]
@@ -31901,15 +31920,15 @@
               "name": "timeRangePredicate",
               "references": 1,
               "lines": [
-                101
+                106
               ]
             },
             {
               "name": "toIso30",
               "references": 2,
               "lines": [
-                69,
-                70
+                74,
+                75
               ]
             }
           ]
@@ -32742,7 +32761,7 @@
               "name": "CouchbaseNotReadyError",
               "references": 1,
               "lines": [
-                55
+                61
               ]
             }
           ]
@@ -32787,7 +32806,7 @@
               "name": "CouchbaseNotReadyError",
               "references": 1,
               "lines": [
-                17
+                15
               ]
             }
           ]
@@ -32802,16 +32821,16 @@
               "name": "CouchbaseNotReadyError",
               "references": 3,
               "lines": [
-                169,
-                171,
-                276
+                178,
+                182,
+                288
               ]
             },
             {
               "name": "CouchbaseUnsupportedError",
               "references": 1,
               "lines": [
-                111
+                120
               ]
             }
           ]
@@ -32826,7 +32845,7 @@
               "name": "CouchbaseNotReadyError",
               "references": 1,
               "lines": [
-                47
+                52
               ]
             }
           ]
@@ -33277,7 +33296,7 @@
               "references": 2,
               "lines": [
                 1265,
-                2752
+                2753
               ]
             }
           ]
@@ -33337,11 +33356,12 @@
           "symbols": [
             {
               "name": "COUCHBASE_SLICES",
-              "references": 3,
+              "references": 4,
               "lines": [
                 20,
                 39,
-                52
+                52,
+                65
               ]
             }
           ]
@@ -33371,25 +33391,25 @@
               "name": "Slice",
               "references": 4,
               "lines": [
-                23,
-                34,
-                43,
-                56
+                27,
+                38,
+                47,
+                60
               ]
             },
             {
               "name": "filterSourcesForSlice",
               "references": 1,
               "lines": [
-                17
+                19
               ]
             },
             {
               "name": "isCouchbaseSliceEnabled",
               "references": 2,
               "lines": [
-                26,
-                40
+                30,
+                44
               ]
             }
           ]
@@ -33487,8 +33507,8 @@
               "name": "renderChartConfig",
               "references": 2,
               "lines": [
-                119,
-                133
+                135,
+                149
               ]
             }
           ]
@@ -33730,6 +33750,21 @@
               "references": 1,
               "lines": [
                 14
+              ]
+            }
+          ]
+        },
+        {
+          "path": "packages/app/src/hooks/useServiceMap.tsx",
+          "workspace": "@couchbase-traces/app",
+          "test": false,
+          "typeOnly": false,
+          "symbols": [
+            {
+              "name": "resolveConnectionKind",
+              "references": 1,
+              "lines": [
+                120
               ]
             }
           ]
@@ -45056,8 +45091,8 @@
               "references": 3,
               "lines": [
                 361,
-                2054,
-                2147
+                2055,
+                2148
               ]
             },
             {
@@ -45073,7 +45108,7 @@
               "references": 2,
               "lines": [
                 828,
-                2040
+                2041
               ]
             },
             {
@@ -45096,8 +45131,8 @@
                 1108,
                 1241,
                 1242,
-                2247,
-                2748
+                2248,
+                2749
               ]
             },
             {
@@ -45106,9 +45141,9 @@
               "lines": [
                 243,
                 287,
-                1913,
-                2247,
-                2334
+                1914,
+                2248,
+                2335
               ]
             },
             {
@@ -45122,8 +45157,8 @@
               "name": "isTraceSource",
               "references": 2,
               "lines": [
-                2248,
-                2846
+                2249,
+                2847
               ]
             }
           ]
@@ -45258,16 +45293,16 @@
               "name": "SourceKind",
               "references": 3,
               "lines": [
-                102,
-                120,
-                267
+                104,
+                122,
+                269
               ]
             },
             {
               "name": "TTraceSource",
               "references": 1,
               "lines": [
-                119
+                121
               ]
             }
           ]
@@ -48361,7 +48396,7 @@
               "name": "ChartConfigWithOptDateRange",
               "references": 1,
               "lines": [
-                71
+                78
               ]
             }
           ]
@@ -48613,18 +48648,18 @@
               "references": 2,
               "lines": [
                 66,
-                184
+                183
               ]
             },
             {
               "name": "Filter",
               "references": 5,
               "lines": [
-                154,
-                158,
-                164,
-                209,
-                215
+                153,
+                157,
+                163,
+                208,
+                214
               ]
             }
           ]
@@ -54960,11 +54995,11 @@
           "symbols": [
             {
               "name": "TSource",
-              "references": 4,
+              "references": 3,
               "lines": [
-                16,
-                33,
-                59
+                17,
+                18,
+                63
               ]
             }
           ]
@@ -56836,8 +56871,8 @@
               "name": "TTraceSource",
               "references": 2,
               "lines": [
-                43,
-                303
+                45,
+                319
               ]
             }
           ]
@@ -62240,14 +62275,14 @@
               "name": "BuilderChartConfigWithOptDateRange",
               "references": 1,
               "lines": [
-                79
+                85
               ]
             },
             {
               "name": "QuerySettings",
               "references": 1,
               "lines": [
-                45
+                48
               ]
             }
           ]
@@ -62299,9 +62334,9 @@
               "name": "BuilderChartConfigWithOptDateRange",
               "references": 3,
               "lines": [
-                32,
-                73,
-                94
+                38,
+                82,
+                104
               ]
             }
           ]
@@ -62316,7 +62351,7 @@
               "name": "DisplayType",
               "references": 1,
               "lines": [
-                20
+                18
               ]
             }
           ]
@@ -62331,14 +62366,14 @@
               "name": "BuilderChartConfigWithOptDateRange",
               "references": 1,
               "lines": [
-                10
+                7
               ]
             },
             {
               "name": "DisplayType",
               "references": 1,
               "lines": [
-                12
+                9
               ]
             }
           ]
@@ -62353,19 +62388,19 @@
               "name": "BuilderChartConfigWithOptDateRange",
               "references": 6,
               "lines": [
-                40,
-                61,
-                84,
-                199,
-                268,
-                335
+                43,
+                70,
+                93,
+                210,
+                279,
+                347
               ]
             },
             {
               "name": "SelectList",
               "references": 1,
               "lines": [
-                198
+                209
               ]
             }
           ]
@@ -62396,24 +62431,24 @@
               "name": "BuilderChartConfigWithOptDateRange",
               "references": 4,
               "lines": [
-                43,
-                80,
-                93,
-                114
+                48,
+                85,
+                98,
+                119
               ]
             },
             {
               "name": "Filter",
               "references": 1,
               "lines": [
-                168
+                173
               ]
             },
             {
               "name": "SqlAstFilter",
               "references": 1,
               "lines": [
-                31
+                36
               ]
             }
           ]
@@ -63880,9 +63915,9 @@
               "name": "fromClickHouseRow",
               "references": 3,
               "lines": [
-                71,
-                85,
-                99
+                83,
+                97,
+                111
               ]
             }
           ]

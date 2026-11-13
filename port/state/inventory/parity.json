@@ -333,7 +333,8 @@
             "renderChartConfigCouchbase",
             "rowIdSelect",
             "rowIdUseKeys",
-            "rowIdWhere"
+            "rowIdWhere",
+            "rowIdWhereLiteral"
           ]
         },
         {
@@ -4109,7 +4110,8 @@
             "renderChartConfigCouchbase",
             "rowIdSelect",
             "rowIdUseKeys",
-            "rowIdWhere"
+            "rowIdWhere",
+            "rowIdWhereLiteral"
           ]
         },
         {
@@ -4868,7 +4870,8 @@
             "renderChartConfigCouchbase",
             "rowIdSelect",
             "rowIdUseKeys",
-            "rowIdWhere"
+            "rowIdWhere",
+            "rowIdWhereLiteral"
           ]
         },
         {
@@ -6023,7 +6026,8 @@
             "renderChartConfigCouchbase",
             "rowIdSelect",
             "rowIdUseKeys",
-            "rowIdWhere"
+            "rowIdWhere",
+            "rowIdWhereLiteral"
           ]
         },
         {
@@ -7069,7 +7073,8 @@
             "renderChartConfigCouchbase",
             "rowIdSelect",
             "rowIdUseKeys",
-            "rowIdWhere"
+            "rowIdWhere",
+            "rowIdWhereLiteral"
           ]
         },
         {
@@ -8169,7 +8174,8 @@
             "renderChartConfigCouchbase",
             "rowIdSelect",
             "rowIdUseKeys",
-            "rowIdWhere"
+            "rowIdWhere",
+            "rowIdWhereLiteral"
           ]
         },
         {
@@ -9221,7 +9227,8 @@
             "renderChartConfigCouchbase",
             "rowIdSelect",
             "rowIdUseKeys",
-            "rowIdWhere"
+            "rowIdWhere",
+            "rowIdWhereLiteral"
           ]
         },
         {
@@ -10437,7 +10444,8 @@
             "renderChartConfigCouchbase",
             "rowIdSelect",
             "rowIdUseKeys",
-            "rowIdWhere"
+            "rowIdWhere",
+            "rowIdWhereLiteral"
           ]
         },
         {
@@ -12193,7 +12201,8 @@
             "renderChartConfigCouchbase",
             "rowIdSelect",
             "rowIdUseKeys",
-            "rowIdWhere"
+            "rowIdWhere",
+            "rowIdWhereLiteral"
           ]
         },
         {
@@ -13307,7 +13316,8 @@
             "renderChartConfigCouchbase",
             "rowIdSelect",
             "rowIdUseKeys",
-            "rowIdWhere"
+            "rowIdWhere",
+            "rowIdWhereLiteral"
           ]
         },
         {
@@ -15149,7 +15159,8 @@
             "renderChartConfigCouchbase",
             "rowIdSelect",
             "rowIdUseKeys",
-            "rowIdWhere"
+            "rowIdWhere",
+            "rowIdWhereLiteral"
           ]
         },
         {
@@ -15643,7 +15654,7 @@
       "name": "Service map",
       "area": "service_map",
       "visibility": "user",
-      "status": "not_started",
+      "status": "ported",
       "entryPoints": [
         {
           "id": "app_page:/service-map",
@@ -15651,7 +15662,7 @@
           "file": "packages/app/pages/service-map.tsx"
         }
       ],
-      "closureSize": 237,
+      "closureSize": 238,
       "exclusiveFiles": [
         "packages/app/pages/service-map.tsx",
         "packages/app/src/DBServiceMapPage.tsx"
@@ -16059,7 +16070,8 @@
             "renderChartConfigCouchbase",
             "rowIdSelect",
             "rowIdUseKeys",
-            "rowIdWhere"
+            "rowIdWhere",
+            "rowIdWhereLiteral"
           ]
         },
         {
@@ -16261,9 +16273,12 @@
         {
           "path": "packages/common-utils/src/dataLayer/index.ts",
           "symbols": [
+            "Slice",
             "clearConnectionKindCache",
+            "filterSourcesForSlice",
             "formatQueryForDisplay",
             "getMetadata",
+            "isCouchbaseSliceEnabled",
             "renderChartConfig"
           ]
         },
@@ -17065,7 +17080,8 @@
             "renderChartConfigCouchbase",
             "rowIdSelect",
             "rowIdUseKeys",
-            "rowIdWhere"
+            "rowIdWhere",
+            "rowIdWhereLiteral"
           ]
         },
         {
@@ -18086,7 +18102,8 @@
             "renderChartConfigCouchbase",
             "rowIdSelect",
             "rowIdUseKeys",
-            "rowIdWhere"
+            "rowIdWhere",
+            "rowIdWhereLiteral"
           ]
         },
         {
@@ -19072,7 +19089,8 @@
             "renderChartConfigCouchbase",
             "rowIdSelect",
             "rowIdUseKeys",
-            "rowIdWhere"
+            "rowIdWhere",
+            "rowIdWhereLiteral"
           ]
         },
         {
@@ -19570,7 +19588,7 @@
       "name": "Trace waterfall",
       "area": "traces",
       "visibility": "user",
-      "status": "not_started",
+      "status": "ported",
       "entryPoints": [
         {
           "id": "app_page:/trace/[traceId]",
@@ -19912,7 +19930,8 @@
             "renderChartConfigCouchbase",
             "rowIdSelect",
             "rowIdUseKeys",
-            "rowIdWhere"
+            "rowIdWhere",
+            "rowIdWhereLiteral"
           ]
         },
         {
@@ -20772,7 +20791,8 @@
             "renderChartConfigCouchbase",
             "rowIdSelect",
             "rowIdUseKeys",
-            "rowIdWhere"
+            "rowIdWhere",
+            "rowIdWhereLiteral"
           ]
         },
         {
@@ -21528,7 +21548,8 @@
             "renderChartConfigCouchbase",
             "rowIdSelect",
             "rowIdUseKeys",
-            "rowIdWhere"
+            "rowIdWhere",
+            "rowIdWhereLiteral"
           ]
         },
         {
@@ -23089,7 +23110,8 @@
             "renderChartConfigCouchbase",
             "rowIdSelect",
             "rowIdUseKeys",
-            "rowIdWhere"
+            "rowIdWhere",
+            "rowIdWhereLiteral"
           ]
         },
         {
@@ -24597,7 +24619,8 @@
             "renderChartConfigCouchbase",
             "rowIdSelect",
             "rowIdUseKeys",
-            "rowIdWhere"
+            "rowIdWhere",
+            "rowIdWhereLiteral"
           ]
         },
         {
@@ -25728,7 +25751,8 @@
             "renderChartConfigCouchbase",
             "rowIdSelect",
             "rowIdUseKeys",
-            "rowIdWhere"
+            "rowIdWhere",
+            "rowIdWhereLiteral"
           ]
         },
         {
@@ -27993,7 +28017,8 @@
             "renderChartConfigCouchbase",
             "rowIdSelect",
             "rowIdUseKeys",
-            "rowIdWhere"
+            "rowIdWhere",
+            "rowIdWhereLiteral"
           ]
         },
         {
@@ -28885,7 +28910,8 @@
             "renderChartConfigCouchbase",
             "rowIdSelect",
             "rowIdUseKeys",
-            "rowIdWhere"
+            "rowIdWhere",
+            "rowIdWhereLiteral"
           ]
         },
         {
@@ -30075,7 +30101,8 @@
             "renderChartConfigCouchbase",
             "rowIdSelect",
             "rowIdUseKeys",
-            "rowIdWhere"
+            "rowIdWhere",
+            "rowIdWhereLiteral"
           ]
         },
         {
@@ -30889,7 +30916,8 @@
             "renderChartConfigCouchbase",
             "rowIdSelect",
             "rowIdUseKeys",
-            "rowIdWhere"
+            "rowIdWhere",
+            "rowIdWhereLiteral"
           ]
         },
         {
@@ -31659,7 +31687,8 @@
             "renderChartConfigCouchbase",
             "rowIdSelect",
             "rowIdUseKeys",
-            "rowIdWhere"
+            "rowIdWhere",
+            "rowIdWhereLiteral"
           ]
         },
         {
@@ -32361,7 +32390,7 @@
     "byStatus": [
       {
         "status": "not_started",
-        "count": 43
+        "count": 41
       },
       {
         "status": "in_progress",
@@ -32369,7 +32398,7 @@
       },
       {
         "status": "ported",
-        "count": 7
+        "count": 9
       },
       {
         "status": "needs_decision",

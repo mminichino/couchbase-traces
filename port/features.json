@@ -164,7 +164,7 @@
       "entryPoints": [
         "app_page:/trace/[traceId]"
       ],
-      "status": "not_started",
+      "status": "ported",
       "decision": null
     },
     {
@@ -176,7 +176,7 @@
       "entryPoints": [
         "app_page:/service-map"
       ],
-      "status": "not_started",
+      "status": "ported",
       "decision": null
     },
     {

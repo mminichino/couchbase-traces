@@ -38,6 +38,7 @@ import SearchWhereInput, {
   getStoredLanguage,
 } from '@/components/SearchInput/SearchWhereInput';
 import { IS_LOCAL_MODE } from '@/config';
+import { useIsSourceAllowedForSlice } from '@/couchbase/sources';
 import { useGetKeyValues } from '@/hooks/useMetadata';
 import { useResolvedSourceParam } from '@/hooks/useResolvedSourceParam';
 import { withAppNavForSurface } from '@/layout';
@@ -94,6 +95,7 @@ const searchQueryStateMap = {
 function DBServiceMapPage() {
   const defaultTimeRange = useDefaultTimeRange(DEFAULT_INTERVAL);
   const title = usePageTitle('Service Map');
+  const isSourceAllowedForTraces = useIsSourceAllowedForSlice('traces');
 
   const { data: sources } = useSources();
   // `?source=` accepts a source name as well as a source ID.
@@ -265,6 +267,7 @@ function DBServiceMapPage() {
         name="source"
         size="xs"
         allowedSourceKinds={[SourceKind.Trace]}
+        isSourceAllowed={isSourceAllowedForTraces}
         onSchemaPreview={() => setIsSourceSchemaPreviewOpen(true)}
         isSchemaPreviewEnabled={isSourceSchemaPreviewEnabled(source)}
       />

@@ -3,9 +3,11 @@ import { chSql } from '@couchbase-traces/common-utils/dist/clickhouse';
 import { Metadata } from '@couchbase-traces/common-utils/dist/core/metadata';
 import { errorStatusPredicateSql } from '@couchbase-traces/common-utils/dist/core/spanPredicates';
 import { renderChartConfig } from '@couchbase-traces/common-utils/dist/dataLayer';
+import { resolveConnectionKind } from '@couchbase-traces/common-utils/dist/dataLayer/kind';
 import { TTraceSource } from '@couchbase-traces/common-utils/dist/types';
 import { useQuery } from '@tanstack/react-query';
 
+import { getServiceMapQueryCouchbase } from '@/couchbase/serviceMap';
 import { useClickhouseClient } from '@/clickhouse';
 
 import { useMetadataWithSettings } from './useMetadata';
@@ -114,6 +116,20 @@ async function getServiceMapQuery({
         : []),
     ],
   };
+
+  const kind = await resolveConnectionKind(source.connection);
+  if (kind === 'couchbase') {
+    return getServiceMapQueryCouchbase({
+      source,
+      dateRange,
+      traceId,
+      metadata,
+      samplingFactor: effectiveSamplingLevel,
+      where,
+      whereLanguage,
+      serviceNames,
+    });
+  }
 
   const [serverCTE, clientCTE] = await Promise.all([
     renderChartConfig(
@@ -349,11 +365,29 @@ export default function useServiceMap({
         .then(res => res.json<Record<string, unknown>>())
         .then(data =>
           data.data.map((row: Record<string, unknown>) => {
-            // quantiles(...) returns a [p50, p95, p99] array; absent when the
-            // source has no duration expression.
+            // ClickHouse quantiles(...) returns [p50, p95, p99]; Couchbase
+            // projects named p50/p95/p99 columns.
             const quantiles = Array.isArray(row.quantiles)
               ? (row.quantiles as unknown[])
               : undefined;
+            const p50 =
+              quantiles != null
+                ? Number(quantiles[0])
+                : row.p50 != null
+                  ? Number(row.p50)
+                  : undefined;
+            const p95 =
+              quantiles != null
+                ? Number(quantiles[1])
+                : row.p95 != null
+                  ? Number(row.p95)
+                  : undefined;
+            const p99 =
+              quantiles != null
+                ? Number(quantiles[2])
+                : row.p99 != null
+                  ? Number(row.p99)
+                  : undefined;
             return {
               serverServiceName: row.serverServiceName as string,
               // serviceName is a non-nullable LowCardinality(String), so
@@ -361,11 +395,11 @@ export default function useServiceMap({
               // '' rather than null — normalize those to undefined (no edge).
               clientServiceName: (row.clientServiceName as string) || undefined,
               isNodeLevel: Number(row.isNodeLevel) === 1,
-              requestCount: Number.parseInt(row.requestCount as string, 10),
-              errorCount: Number.parseInt(row.errorCount as string, 10),
-              p50: quantiles ? Number(quantiles[0]) : undefined,
-              p95: quantiles ? Number(quantiles[1]) : undefined,
-              p99: quantiles ? Number(quantiles[2]) : undefined,
+              requestCount: Number.parseInt(String(row.requestCount), 10),
+              errorCount: Number.parseInt(String(row.errorCount), 10),
+              p50: Number.isFinite(p50) ? p50 : undefined,
+              p95: Number.isFinite(p95) ? p95 : undefined,
+              p99: Number.isFinite(p99) ? p99 : undefined,
             };
           }),
         );

@@ -117,17 +117,17 @@ Inventory of commit adcb75c16715. Full detail is in `port/state/inventory/`.
 | `packages/common-utils/src/clickhouse/browser.ts` | seed, clickhouse_client, clickhouse_path | 3 | 11 | no |
 | `packages/common-utils/src/couchbase/node.ts` | seed | 16 | 11 | yes |
 | `packages/common-utils/src/couchbase/nodeCluster.ts` | seed | 12 | 11 | yes |
+| `packages/common-utils/src/dataLayer/kind.ts` | seed | 7 | 11 | yes |
 | `packages/common-utils/src/queryParser.ts` | seed, sql_builder | 18 | 11 | no |
 | `packages/api/src/mcp/tools/query/schemas.ts` | sql_builder | 14 | 10 | yes |
 | `packages/common-utils/src/couchbase/time.ts` | seed, sql_builder | 9 | 10 | no |
-| `packages/common-utils/src/dataLayer/kind.ts` | seed | 7 | 10 | yes |
 | `packages/common-utils/src/core/materializedViews.ts` | sql_builder | 11 | 9 | yes |
 | `packages/common-utils/src/couchbase/nodeClusterCache.ts` | seed | 4 | 9 | yes |
 | `packages/hdx-eval/src/clickhouse/schema.ts` | clickhouse_client, clickhouse_path, sql_builder | 8 | 8 | no |
 | `packages/api/src/mcp/tools/dashboards/schemas.ts` | sql_builder | 13 | 7 | yes |
 | `packages/app/src/components/DBRowJsonViewer.tsx` | sql_builder | 3 | 7 | no |
 | `packages/common-utils/src/couchbase/connstr.ts` | seed | 7 | 7 | yes |
-| `packages/common-utils/src/couchbase/render.ts` | seed | 7 | 7 | no |
+| `packages/common-utils/src/couchbase/render.ts` | seed | 8 | 7 | no |
 | `packages/app/src/DBSearchPage.tsx` | sql_builder | 7 | 6 | no |
 | `packages/app/src/components/ExceptionSubpanel.tsx` | clickhouse_client | 3 | 6 | no |
 | `packages/common-utils/src/core/clickhouseVersion.ts` | clickhouse_path | 8 | 6 | yes |
@@ -606,15 +606,15 @@ Collector components, pipelines, ClickHouse exporters, and management code.
 | docs | 487 | 278 | 1352 | 2 | 191 |
 | ui_strings | 10 | 9 | 90 | 0 | 127 |
 | code_identifiers | 129 | 21 | 2434 | 0 | 644 |
-| other | 643 | 187 | 1823 | 2 | 1616 |
+| other | 643 | 187 | 1825 | 2 | 1616 |
 
 ### Feature status
 
 | Status | Features |
 |---|---|
-| not_started | 43 |
+| not_started | 41 |
 | in_progress | 2 |
-| ported | 7 |
+| ported | 9 |
 | needs_decision | 0 |
 | dropped | 2 |
 | replaced | 1 |
@@ -630,7 +630,7 @@ Collector components, pipelines, ClickHouse exporters, and management code.
 - W_PLAN_MISSING: 1 occurrences. First: COUCHBASE_PORT_PLAN.md not found at the project root; plan check skipped (COUCHBASE_PORT_PLAN.md)
 - W_SCHEMA_UNPARSED: 1 occurrences. First: Unparsed statement: CREATE DATABASE IF NOT EXISTS DATABASE (docker/otel-collector/schema/seed/00001_create_database.sql)
 - W_TABLE_REDEFINED: 3 occurrences. First: Table otel_logs is defined in docker/otel-collector/schema/seed/00002_otel_logs.sql and docker/otel-collector/schema/seed/00002_otel_logs_compat.sql (docker/otel-collector/schema/seed/00002_otel_logs_compat.sql)
-- W_UNRESOLVED_IMPORT: 1 occurrences. First: Cannot resolve "@couchbase-traces/api/build/serverless" (packages/app/pages/api/[...all].ts)
+- W_UNRESOLVED_IMPORT: 2 occurrences. First: Cannot resolve "@couchbase-traces/api/build/serverless" (packages/app/pages/api/[...all].ts)
 - W_UNRESOLVED_MOUNT: 1 occurrences. First: Cannot resolve router for mount "/v1/opamp" at line 13 (packages/api/src/opamp/app.ts)
 <!-- phase2:end -->
 
@@ -869,6 +869,14 @@ Completed requests: `system:completed_requests` requires `query_system_catalog`.
 - Allowed divergences: `search-patterns-sample` (`nondeterministic`), `search-event-deltas-sample` (`sampling`).
 - E2E exclusions: `select-star-error-state.spec.ts` (`asserts_engine_text`); `json-at-prefixed-key-row-details.spec.ts` (`clickhouse_admin`).
 - `needs_decision`: unchanged from Phase 6.
+
+### Phase 7: traces
+
+- Features ported: trace waterfall (`app-trace`) and service map (`app-service-map`). Trace search reuses the search slice on trace sources. Waterfall/correlated queries use `TraceId` filters served by `ix_traces_trace` / `ix_logs_trace`.
+- Service map: Couchbase path in `packages/app/src/couchbase/serviceMap.ts` — CTEs via `renderChartConfig`, child→parent equi-join (KEYS-equivalent on `TraceId:ParentSpanId`), `UNION ALL` instead of `GROUPING SETS`, `CRC32` sampling instead of `cityHash64`. Node-level latency percentiles are NULL (edge percentiles retained); allowed until a follow-up if parity requires node latency.
+- `spanPredicates.errorStatusPredicateSql` uses `LOWER(...)` for ClickHouse and SQL++.
+- Query parity: `port/query-parity/run.sh --slice traces` (waterfall, server-span count, error status, duration p95, service group counts).
+- Source gating: service map source picker uses `useIsSourceAllowedForSlice('traces')`.
 
 ### Phase 7: charts
 

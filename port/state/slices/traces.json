@@ -1,0 +1,46 @@
+{
+  "slice": "traces",
+  "features": [
+    {
+      "id": "app-trace",
+      "name": "Trace waterfall",
+      "status": "ported",
+      "entryPoints": [
+        "app_page:/trace/[traceId]"
+      ]
+    },
+    {
+      "id": "app-service-map",
+      "name": "Service map",
+      "status": "ported",
+      "entryPoints": [
+        "app_page:/service-map"
+      ]
+    }
+  ],
+  "coreFunctions": [
+    {
+      "file": "packages/common-utils/src/couchbase/render/index.ts",
+      "name": "renderChartConfigCouchbase"
+    }
+  ],
+  "appQuerySites": [
+    {
+      "path": "packages/app/src/DBServiceMapPage.tsx",
+      "rawSql": 1,
+      "typeNames": 0
+    }
+  ],
+  "dataLayerSymbols": [],
+  "tests": {
+    "unit": [
+      "packages/app/src/__tests__/TraceRedirectPage.test.tsx"
+    ],
+    "int": [],
+    "e2e": [
+      "packages/app/tests/e2e/core/navigation.spec.ts",
+      "packages/app/tests/e2e/features/search/saved-search.spec.ts",
+      "packages/app/tests/e2e/features/source-name-deeplink.spec.ts"
+    ]
+  }
+}
