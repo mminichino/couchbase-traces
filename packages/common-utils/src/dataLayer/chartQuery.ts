@@ -32,6 +32,7 @@ export async function couchbaseChartQuery(
     abort_signal: args.opts?.abort_signal,
     connectionId: args.config.connection,
     clickhouse_settings: args.opts?.clickhouse_settings,
+    scanConsistency: args.opts?.scanConsistency,
     attribution: { source: args.config.source },
     ...hints,
   } as QueryInputs<'JSON'>);

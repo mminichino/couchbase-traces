@@ -583,6 +583,8 @@ export const fetchSampleLines = async ({
         query: query.sql,
         query_params: query.params,
         format: 'CSV',
+        connectionId: source.connection,
+        scanConsistency: 'request_plus',
       })
       .then(res => res.text());
 

@@ -124,7 +124,7 @@
         "app_page:/alerts",
         "app_page:/alerts/[alertId]"
       ],
-      "status": "not_started",
+      "status": "ported",
       "decision": null
     },
     {
@@ -136,7 +136,7 @@
       "entryPoints": [
         "task:check-alerts"
       ],
-      "status": "not_started",
+      "status": "ported",
       "decision": null
     },
     {

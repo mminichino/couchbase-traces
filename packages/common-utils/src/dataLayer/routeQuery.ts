@@ -31,6 +31,7 @@ export async function queryViaCouchbase<Format extends DataFormat>(
     queryId: inputs.queryId,
     attribution: inputs.attribution,
     clickhouse_settings: plainSettings(inputs.clickhouse_settings),
+    scanConsistency: inputs.scanConsistency,
     columns: readStringArrayHint(inputs, 'columns'),
     columnTypes: readStringRecordHint(inputs, 'columnTypes'),
   });

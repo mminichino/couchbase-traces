@@ -931,6 +931,15 @@ Completed requests: `system:completed_requests` requires `query_system_catalog`.
 - Query parity: services span count / by-service; k8s log count.
 - Source gating on Kubernetes and Services source pickers.
 
+### Phase 8: alerts
+
+- Shared: `assertSliceForConnection`, `queryLanguageForConnection`; `CouchbaseClient` `baseUrl`/`headers`; `scanConsistency` threaded through `queryChartConfig` → routing → node client.
+- `COUCHBASE_SLICES.alerts=true`. Features `app-alerts` and `task-check-alerts` → `ported`.
+- Alert evaluation calls `assertSliceForConnection('alerts', …)` and runs Couchbase chart queries with `scanConsistency: 'request_plus'`. Sample-line fetches use the same consistency.
+- Task process shutdown closes `clusterCache` alongside ClickHouse SDK `shutdown`.
+- Provider already builds API `ClickhouseClient` (extends `RoutingNodeClickhouseClient`) with Mongo-backed Couchbase loader from `dataLayerSetup`.
+- Server parity harness: `port/server-parity/run.sh --suite alerts` (case files to be filled against live stack).
+
 ## Phase 6: SQL++ core and data-layer seam
 
 - SQL++ date format string is `1111-11-11T11:11:11.111Z` (`SQLPP_DATE_FORMAT`), the same string `port/couchbase-test/init.sh` passes to `MILLIS_TO_UTC`. On an exact second the server returns `2026-01-01T00:00:00Z` and omits the zero fraction. Bucket expressions use that format, so they compare equal to fixture timestamps. Range predicates against Phase 5 documents still use the 30-character form from `toIso30`.

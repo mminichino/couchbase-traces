@@ -116,6 +116,9 @@ export class CouchbaseClient implements DataClient {
   private readonly attribution?: QueryAttribution;
   private readonly fetchImpl: typeof fetch;
   private readonly baseUrl?: string;
+  private readonly headers?: () =>
+    | Record<string, string>
+    | Promise<Record<string, string>>;
   private readonly maxBufferedBytes: number;
 
   constructor(
@@ -123,8 +126,12 @@ export class CouchbaseClient implements DataClient {
       requestTimeout?: number;
       attribution?: QueryAttribution;
       fetchImpl?: typeof fetch;
-      /** Origin of the app; defaults to window.origin */
+      /** Origin of the app API; defaults to window.origin + path under /api */
       baseUrl?: string;
+      /** Extra headers (e.g. session cookie for the CLI). */
+      headers?: () =>
+        | Record<string, string>
+        | Promise<Record<string, string>>;
       maxBufferedBytes?: number;
     } = {},
   ) {
@@ -134,6 +141,7 @@ export class CouchbaseClient implements DataClient {
     this.attribution = opts.attribution;
     this.fetchImpl = opts.fetchImpl ?? ((input, init) => fetch(input, init));
     this.baseUrl = opts.baseUrl;
+    this.headers = opts.headers;
     this.maxBufferedBytes = opts.maxBufferedBytes ?? DEFAULT_MAX_BUFFERED_BYTES;
   }
 
@@ -142,6 +150,10 @@ export class CouchbaseClient implements DataClient {
       this.baseUrl ??
       (typeof window !== 'undefined' ? window.origin : undefined) ??
       '';
+    // When baseUrl is the API root (…/api), append /couchbase/query only.
+    if (origin.endsWith('/api') || origin.endsWith('/api/')) {
+      return `${origin.replace(/\/+$/, '')}/couchbase/query`;
+    }
     return `${origin}${COUCHBASE_QUERY_PATH}`;
   }
 
@@ -174,12 +186,17 @@ export class CouchbaseClient implements DataClient {
           )
         : new CouchbaseQueryError('CANCELED', 'Query was canceled', statement);
 
+    const extraHeaders =
+      this.headers != null ? await Promise.resolve(this.headers()) : {};
     let res: Response;
     try {
       res = await this.fetchImpl(this.url(), {
         method: 'POST',
         credentials: 'include',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          ...extraHeaders,
+        },
         body: JSON.stringify(
           buildQueryRequestBody(inputs, queryId, attribution),
         ),

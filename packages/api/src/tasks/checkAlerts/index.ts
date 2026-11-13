@@ -24,8 +24,11 @@ import {
   isTimeSeriesDisplayType,
 } from '@couchbase-traces/common-utils/dist/core/utils';
 import { timeBucketByGranularity } from '@couchbase-traces/common-utils/dist/core/utils';
-import { getMetadata } from '@couchbase-traces/common-utils/dist/dataLayer';
-import { renderChartConfig } from '@couchbase-traces/common-utils/dist/dataLayer';
+import {
+  assertSliceForConnection,
+  getMetadata,
+  renderChartConfig,
+} from '@couchbase-traces/common-utils/dist/dataLayer';
 import { getDashboardVariableDeclarations } from '@couchbase-traces/common-utils/dist/filters';
 import {
   isBuilderChartConfig,
@@ -1064,6 +1067,7 @@ export const processAlert = async (
       .slice(0, ALERT_NOTIFICATION_TARGETS_LIMIT);
   };
   try {
+    await assertSliceForConnection('alerts', connectionId);
     evaluator = findAlertEvaluator(alert);
     const now = getAlertEvaluationNow(alert, wallClockNow, evaluator);
     const windowSizeInMins = ms(alert.interval) / 60000;
@@ -1498,7 +1502,11 @@ export const processAlert = async (
       checksData = await clickhouseClient.queryChartConfig({
         config: optimizedChartConfig,
         metadata,
-        opts: { clickhouse_settings: clickHouseSettings },
+        opts: {
+          clickhouse_settings: clickHouseSettings,
+          // Alert evaluation must see all docs written before the query.
+          scanConsistency: 'request_plus',
+        },
         querySettings: source?.querySettings,
       });
       // SLO signal for alert data fetching (distinct from the end-to-end

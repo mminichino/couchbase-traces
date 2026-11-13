@@ -18,6 +18,7 @@ import {
 } from '@/couchbase/render';
 import type { QuerySettings } from '@/types';
 
+import { CouchbaseNotReadyError } from './errors';
 import { resolveConnectionKind } from './kind';
 
 export { CouchbaseNotReadyError, CouchbaseUnsupportedError } from './errors';
@@ -48,7 +49,9 @@ export type Slice =
   | 'ai'
   | 'cli';
 
-/** Phase 7 turns these on one slice at a time. */
+export type QueryLanguage = 'clickhouse' | 'sqlpp';
+
+/** Phase 8 turns remaining slices on one at a time after Phase 7. */
 export const COUCHBASE_SLICES: Readonly<Record<Slice, boolean>> = {
   search: true,
   charts: true,
@@ -56,7 +59,7 @@ export const COUCHBASE_SLICES: Readonly<Record<Slice, boolean>> = {
   metrics: true,
   sessions: true,
   presets: true,
-  alerts: false,
+  alerts: true,
   external_api: false,
   mcp: false,
   ai: false,
@@ -102,6 +105,30 @@ export async function filterSourcesForSlice<T extends { connection: string }>(
     if (kind !== 'couchbase') kept.push(source);
   }
   return kept;
+}
+
+/**
+ * Throws when a Couchbase connection is used while its Phase 8 slice is still
+ * off. ClickHouse connections always pass.
+ */
+export async function assertSliceForConnection(
+  slice: Slice,
+  connectionId: string | undefined,
+): Promise<void> {
+  if (connectionId == null || connectionId === '') return;
+  if (isCouchbaseSliceEnabled(slice)) return;
+  const kind = await resolveConnectionKind(connectionId);
+  if (kind === 'couchbase') {
+    throw new CouchbaseNotReadyError(slice);
+  }
+}
+
+/** Dialect a connection accepts for raw SQL and AI/MCP prompts. */
+export async function queryLanguageForConnection(
+  connectionId: string,
+): Promise<QueryLanguage> {
+  const kind = await resolveConnectionKind(connectionId);
+  return kind === 'couchbase' ? 'sqlpp' : 'clickhouse';
 }
 
 type Rendered = {

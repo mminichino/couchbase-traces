@@ -2,14 +2,19 @@ import type { BaseResultSet } from '@/clickhouse';
 import { ClickhouseClient } from '@/clickhouse/node';
 import { Metadata } from '@/core/metadata';
 import {
+  assertSliceForConnection,
   filterSourcesForSlice,
   formatQueryForDisplay,
   isAccessDeniedError,
   isCouchbaseSliceEnabled,
   isMissingColumnError,
+  queryLanguageForConnection,
   renderChartConfig,
 } from '@/dataLayer';
-import { CouchbaseUnsupportedError } from '@/dataLayer/errors';
+import {
+  CouchbaseNotReadyError,
+  CouchbaseUnsupportedError,
+} from '@/dataLayer/errors';
 import {
   primeConnectionKind,
   resetConnectionKindState,
@@ -257,11 +262,11 @@ describe('seam display helpers', () => {
   });
 
   it('hides couchbase sources while a slice is off', async () => {
-    expect(isCouchbaseSliceEnabled('alerts')).toBe(false);
+    expect(isCouchbaseSliceEnabled('external_api')).toBe(false);
     primeConnectionKind('cb', 'couchbase');
     const kept = await filterSourcesForSlice(
       [{ connection: 'ch' }, { connection: 'cb' }],
-      'alerts',
+      'external_api',
     );
     expect(kept.map(source => source.connection)).toEqual(['ch']);
   });
@@ -295,5 +300,22 @@ describe('seam display helpers', () => {
   it('combines dialect error checks', () => {
     expect(isMissingColumnError(undefined)).toBe(false);
     expect(isAccessDeniedError(undefined)).toBe(false);
+  });
+
+  it('assertSliceForConnection rejects couchbase when the slice is off', async () => {
+    primeConnectionKind('cb', 'couchbase');
+    await expect(
+      assertSliceForConnection('external_api', 'cb'),
+    ).rejects.toBeInstanceOf(CouchbaseNotReadyError);
+    await expect(
+      assertSliceForConnection('alerts', 'cb'),
+    ).resolves.toBeUndefined();
+  });
+
+  it('queryLanguageForConnection maps connection kind', async () => {
+    primeConnectionKind('cb', 'couchbase');
+    primeConnectionKind('ch', 'clickhouse');
+    expect(await queryLanguageForConnection('cb')).toBe('sqlpp');
+    expect(await queryLanguageForConnection('ch')).toBe('clickhouse');
   });
 });

@@ -1,5 +1,6 @@
 import '@/dataLayerSetup';
 
+import { clusterCache } from '@couchbase-traces/common-utils/dist/couchbase/node';
 import { shutdown } from '@clickhouse/clickstack-node';
 import { CronJob } from 'cron';
 import minimist from 'minimist';
@@ -75,7 +76,9 @@ const exitAfterShutdown = (code: number) => {
   // The SDK's shutdown timer does not hold the event loop open, so the
   // process can end on its own before process.exit() runs.
   process.exitCode = code;
-  void shutdown().finally(() => process.exit(code));
+  void Promise.allSettled([clusterCache.closeAll(), shutdown()]).finally(() =>
+    process.exit(code),
+  );
 };
 
 // Entry point

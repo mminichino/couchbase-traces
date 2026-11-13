@@ -494,6 +494,8 @@ export interface QueryInputs<Format extends DataFormat> {
   shouldSkipApplySettings?: boolean;
   /** Tags just this query. Added on top of the client's default. */
   attribution?: QueryAttribution;
+  /** Couchbase only; ignored by ClickHouse. Default not_bounded. */
+  scanConsistency?: 'not_bounded' | 'request_plus';
 }
 
 export type ClickhouseClientOptions = {
@@ -770,6 +772,8 @@ export abstract class BaseClickhouseClient {
     opts?: {
       abort_signal?: AbortSignal;
       clickhouse_settings?: Record<string, any>;
+      /** Couchbase only; ignored by ClickHouse. */
+      scanConsistency?: 'not_bounded' | 'request_plus';
     };
     querySettings: QuerySettings | undefined;
   }): Promise<ResponseJSON<Record<string, string | number>>> {
@@ -785,6 +789,7 @@ export abstract class BaseClickhouseClient {
       abort_signal: opts?.abort_signal,
       connectionId: config.connection,
       clickhouse_settings: opts?.clickhouse_settings,
+      scanConsistency: opts?.scanConsistency,
       attribution: { source: config.source },
     });
     return resp.json<any>();
