@@ -11,10 +11,7 @@ import {
   queryLanguageForConnection,
   renderChartConfig,
 } from '@/dataLayer';
-import {
-  CouchbaseNotReadyError,
-  CouchbaseUnsupportedError,
-} from '@/dataLayer/errors';
+import { CouchbaseUnsupportedError } from '@/dataLayer/errors';
 import {
   primeConnectionKind,
   resetConnectionKindState,

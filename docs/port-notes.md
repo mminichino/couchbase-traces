@@ -970,6 +970,14 @@ Completed requests: `system:completed_requests` requires `query_system_catalog`.
 - Query/trace/metric tools assert slice and map errors via `couchbaseConsumerMcpError`.
 - Parity scaffold: `port/server-parity/mcp.mjs`.
 
+### Phase 8: sweep
+
+- All `COUCHBASE_SLICES` entries are `true`.
+- Mongo-only / no data-store query features (auth, team, connections/sources CRUD, webhooks, IaC, health, favorites, home, ping-pong, provision-dashboards, app-api, benchmark) → `ported`.
+- Left `in_progress`: `ingestion` (Phase 9); `api-clickhouse-proxy` and `couchbase-connectivity` (Phase 10 proxy retirement).
+- Still `dropped`: `api-v1` (PromQL, Phase 5a), `app-careers`.
+- Server-parity case files and full dual-mode e2e remain open against a live stack; harnesses exit 0 without cases.
+
 ## Phase 6: SQL++ core and data-layer seam
 
 - SQL++ date format string is `1111-11-11T11:11:11.111Z` (`SQLPP_DATE_FORMAT`), the same string `port/couchbase-test/init.sh` passes to `MILLIS_TO_UTC`. On an exact second the server returns `2026-01-01T00:00:00Z` and omits the zero fraction. Bucket expressions use that format, so they compare equal to fixture timestamps. Range predicates against Phase 5 documents still use the 30-character form from `toIso30`.

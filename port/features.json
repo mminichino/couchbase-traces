@@ -10,7 +10,7 @@
       "entryPoints": [
         "app_page:/"
       ],
-      "status": "not_started",
+      "status": "ported",
       "decision": null
     },
     {
@@ -66,7 +66,7 @@
         "api_route:GET /favorites",
         "api_route:PUT /favorites"
       ],
-      "status": "not_started",
+      "status": "ported",
       "decision": null
     },
     {
@@ -152,7 +152,7 @@
         "api_route:POST /webhooks/test",
         "api_route:PUT /webhooks/:id"
       ],
-      "status": "not_started",
+      "status": "ported",
       "decision": null
     },
     {
@@ -273,7 +273,7 @@
         "api_route:POST /login/password",
         "app_page:/login"
       ],
-      "status": "not_started",
+      "status": "ported",
       "decision": null
     },
     {
@@ -286,7 +286,7 @@
         "api_route:POST /register/password",
         "app_page:/register"
       ],
-      "status": "not_started",
+      "status": "ported",
       "decision": null
     },
     {
@@ -299,7 +299,7 @@
         "api_route:POST /team/setup/:token",
         "app_page:/join-team"
       ],
-      "status": "not_started",
+      "status": "ported",
       "decision": null
     },
     {
@@ -314,7 +314,7 @@
         "api_route:PATCH /me/onboarding/dismiss",
         "api_route:POST /me/onboarding/task"
       ],
-      "status": "not_started",
+      "status": "ported",
       "decision": null
     },
     {
@@ -339,7 +339,7 @@
         "api_route:POST /team/invitation",
         "app_page:/team"
       ],
-      "status": "not_started",
+      "status": "ported",
       "decision": null
     },
     {
@@ -398,7 +398,7 @@
         "api_route:POST /connections",
         "api_route:PUT /connections/:id"
       ],
-      "status": "not_started",
+      "status": "ported",
       "decision": null
     },
     {
@@ -413,7 +413,7 @@
         "api_route:POST /sources",
         "api_route:PUT /sources/:id"
       ],
-      "status": "not_started",
+      "status": "ported",
       "decision": null
     },
     {
@@ -427,8 +427,9 @@
         "api_route:POST /clickhouse-proxy/*",
         "api_route:POST /clickhouse-proxy/test"
       ],
-      "status": "not_started",
-      "decision": null
+      "status": "in_progress",
+      "decision": null,
+      "notes": "Phase 10 replaces ClickHouse proxy with Couchbase query route."
     },
     {
       "id": "couchbase-connectivity",
@@ -442,7 +443,8 @@
         "api_route:POST /couchbase/query"
       ],
       "status": "in_progress",
-      "decision": null
+      "decision": null,
+      "notes": "Phase 9/10 connectivity and proxy retirement."
     },
     {
       "id": "api-iac",
@@ -453,7 +455,7 @@
       "entryPoints": [
         "api_route:GET /iac/import-manifest"
       ],
-      "status": "not_started",
+      "status": "ported",
       "decision": null
     },
     {
@@ -467,7 +469,7 @@
         "api_route:GET /installation",
         "api_route:GET /ready"
       ],
-      "status": "not_started",
+      "status": "ported",
       "decision": null
     },
     {
@@ -480,7 +482,7 @@
         "app_api_route:/api/[...all]",
         "app_api_route:/api/config"
       ],
-      "status": "not_started",
+      "status": "ported",
       "decision": null
     },
     {
@@ -492,7 +494,7 @@
       "entryPoints": [
         "app_page:/benchmark"
       ],
-      "status": "not_started",
+      "status": "ported",
       "decision": null
     },
     {
@@ -802,7 +804,8 @@
         "ingestion:otel-collector"
       ],
       "status": "in_progress",
-      "decision": null
+      "decision": null,
+      "notes": "Phase 9 completes ingestion."
     },
     {
       "id": "task-ping-pong",
@@ -813,7 +816,7 @@
       "entryPoints": [
         "task:ping-pong"
       ],
-      "status": "not_started",
+      "status": "ported",
       "decision": null
     },
     {
@@ -825,7 +828,7 @@
       "entryPoints": [
         "task:provision-dashboards"
       ],
-      "status": "not_started",
+      "status": "ported",
       "decision": null
     }
   ]
