@@ -1,5 +1,5 @@
-import { keyspace } from '@couchbase-traces/common-utils/dist/couchbase/sqlpp';
 import { convertCHDataTypeToJSType } from '@couchbase-traces/common-utils/dist/clickhouse';
+import { keyspace } from '@couchbase-traces/common-utils/dist/couchbase/sqlpp';
 import { getMetadata } from '@couchbase-traces/common-utils/dist/dataLayer';
 
 import type { ClickhouseClient } from '@/clickhouse';
@@ -56,12 +56,9 @@ async function listKeyspaces(
     );
   const start =
     afterName != null
-      ? collections.findIndex(
-          c => `${c.scope}.${c.collection}` > afterName,
-        )
+      ? collections.findIndex(c => `${c.scope}.${c.collection}` > afterName)
       : 0;
-  const slice =
-    start < 0 ? [] : collections.slice(start, start + limit + 1);
+  const slice = start < 0 ? [] : collections.slice(start, start + limit + 1);
   return slice;
 }
 

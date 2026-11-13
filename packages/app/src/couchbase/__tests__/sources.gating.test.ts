@@ -134,8 +134,6 @@ describe('search source gating', () => {
       connections,
     );
     expect(out.map(s => s.id)).toEqual(['ch', 'cb']);
-    expect(isSourceAllowedForSlice(sources[1]!, 'mcp', connections)).toBe(
-      true,
-    );
+    expect(isSourceAllowedForSlice(sources[1]!, 'mcp', connections)).toBe(true);
   });
 });

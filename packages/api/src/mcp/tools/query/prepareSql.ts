@@ -88,9 +88,7 @@ export async function prepareSqlQuery(
 
   const kind = await resolveConnectionKind(query.connectionId);
   const sqlTemplate =
-    kind === 'clickhouse'
-      ? ensureOutermostSelectLimit(query.sql)
-      : query.sql;
+    kind === 'clickhouse' ? ensureOutermostSelectLimit(query.sql) : query.sql;
 
   // Raw SQL only uses displayType to pick which query params to bind, and
   // only time-series types bind the interval params this tool advertises

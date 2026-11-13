@@ -156,7 +156,9 @@ export async function mineWindowPatterns(
     ...filters.map(f => ('condition' in f ? f.condition : undefined)),
   );
 
-  const sliceErr = await assertMcpSliceForConnection(source.connection.toString());
+  const sliceErr = await assertMcpSliceForConnection(
+    source.connection.toString(),
+  );
   if (sliceErr) return { error: sliceErr };
 
   const clickhouseClient = new ClickhouseClient({

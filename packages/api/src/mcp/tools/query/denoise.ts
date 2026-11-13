@@ -10,9 +10,9 @@ import type { ChartConfigWithDateRange } from '@couchbase-traces/common-utils/di
 import { DisplayType } from '@couchbase-traces/common-utils/dist/types';
 
 import { ClickhouseClient } from '@/clickhouse';
-import { assertMcpSliceForConnection } from '@/mcp/utils/mcpSlice';
 import { getConnectionById } from '@/controllers/connection';
 import { getSource } from '@/controllers/sources';
+import { assertMcpSliceForConnection } from '@/mcp/utils/mcpSlice';
 import { MCP_QUERY_MAX_EXECUTION_SEC } from '@/mcp/utils/timeout';
 
 import { resolveBodyExpression } from './helpers';
@@ -81,7 +81,9 @@ export async function denoiseSearchResults(
     return { rows, removedPatterns: [], skipped: 'connection_not_found' };
   }
 
-  const sliceErr = await assertMcpSliceForConnection(source.connection.toString());
+  const sliceErr = await assertMcpSliceForConnection(
+    source.connection.toString(),
+  );
   if (sliceErr) {
     return { rows, removedPatterns: [], skipped: 'slice_off' };
   }

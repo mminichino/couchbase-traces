@@ -5,7 +5,6 @@ import { z } from 'zod';
 import { validateRequest } from 'zod-express-middleware';
 
 import { ClickhouseClient } from '@/clickhouse';
-import { getConnectionById } from '@/controllers/connection';
 import {
   getAIMetadata,
   getAIModel,
@@ -16,18 +15,26 @@ import {
   buildChartAssistantPrompt,
 } from '@/controllers/aiPrompts';
 import { validateAiChartConfigForConnection } from '@/controllers/aiValidation';
+import { getConnectionById } from '@/controllers/connection';
 import { getSource } from '@/controllers/sources';
 import { getNonNullUserWithTeam } from '@/middleware/auth';
 import { llmTelemetry } from '@/utils/aiTelemetry';
 import { couchbaseConsumerHttpResponse } from '@/utils/couchbaseConsumerErrors';
-import { Api404Error, Api500Error, StatusCode, BaseError } from '@/utils/errors';
+import {
+  Api404Error,
+  Api500Error,
+  BaseError,
+  StatusCode,
+} from '@/utils/errors';
 import { withOperationMetrics } from '@/utils/instrumentation';
 import logger from '@/utils/logger';
 import { objectIdSchema } from '@/utils/zod';
 
 const router = express.Router();
 
-function mapCouchbaseError(err: unknown): { status: number; message: string } | null {
+function mapCouchbaseError(
+  err: unknown,
+): { status: number; message: string } | null {
   const mapped = couchbaseConsumerHttpResponse(err, 'message');
   if (!mapped) return null;
   return { status: mapped.status, message: mapped.body.message };
@@ -137,7 +144,9 @@ router.post(
     } catch (e) {
       const couchbase = mapCouchbaseError(e);
       if (couchbase) {
-        return res.status(couchbase.status).json({ message: couchbase.message });
+        return res
+          .status(couchbase.status)
+          .json({ message: couchbase.message });
       }
       if (
         e != null &&

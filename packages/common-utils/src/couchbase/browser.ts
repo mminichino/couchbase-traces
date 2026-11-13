@@ -129,9 +129,7 @@ export class CouchbaseClient implements DataClient {
       /** Origin of the app API; defaults to window.origin + path under /api */
       baseUrl?: string;
       /** Extra headers (e.g. session cookie for the CLI). */
-      headers?: () =>
-        | Record<string, string>
-        | Promise<Record<string, string>>;
+      headers?: () => Record<string, string> | Promise<Record<string, string>>;
       maxBufferedBytes?: number;
     } = {},
   ) {

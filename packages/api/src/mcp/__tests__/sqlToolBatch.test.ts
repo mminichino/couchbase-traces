@@ -18,7 +18,11 @@ jest.mock('@/controllers/sources', () => ({
   getSource: (...args: unknown[]) => mockGetSource(...args),
 }));
 jest.mock('@/controllers/connection', () => ({}));
+jest.mock('@/mcp/utils/mcpSlice', () => ({
+  assertMcpSliceForConnection: jest.fn().mockResolvedValue(null),
+}));
 
+import { MCP_RAW_SQL_DEFAULT_LIMIT } from '@couchbase-traces/common-utils/dist/couchbase/rawSqlLimit';
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import mongoose from 'mongoose';
 
@@ -36,6 +40,10 @@ type Handler = Parameters<RegisterToolFn>[2];
 const connectionId = new mongoose.Types.ObjectId().toString();
 const otherConnectionId = new mongoose.Types.ObjectId().toString();
 const sourceId = new mongoose.Types.ObjectId().toString();
+
+function limitedSql(sql: string): string {
+  return `${sql.trim()} LIMIT ${MCP_RAW_SQL_DEFAULT_LIMIT}`;
+}
 
 function buildHandler(): Handler {
   let captured: Handler | undefined;
@@ -122,7 +130,7 @@ describe('cbt_sql batch mode', () => {
           // Finish in reverse order to prove ordering is by input, not completion.
           setTimeout(
             () => resolve(rowsResult([{ sql: tile.config.sqlTemplate }])),
-            tile.config.sqlTemplate === 'SELECT 1' ? 20 : 1,
+            tile.config.sqlTemplate === limitedSql('SELECT 1') ? 20 : 1,
           ),
         ),
     );
@@ -140,9 +148,13 @@ describe('cbt_sql batch mode', () => {
         index: 0,
         id: 'first',
         status: 'ok',
-        result: [{ sql: 'SELECT 1' }],
+        result: [{ sql: limitedSql('SELECT 1') }],
       },
-      { index: 1, status: 'ok', result: [{ sql: 'SELECT 2' }] },
+      {
+        index: 1,
+        status: 'ok',
+        result: [{ sql: limitedSql('SELECT 2') }],
+      },
     ]);
   });
 
@@ -164,15 +176,17 @@ describe('cbt_sql batch mode', () => {
       '$__sourceTable needs a sourceId',
     );
     expect(parsed.results[2].status).toBe('ok');
-    expect(tileArgs().map(c => c.sqlTemplate)).toEqual(['SELECT 3']);
+    expect(tileArgs().map(c => c.sqlTemplate)).toEqual([
+      limitedSql('SELECT 3'),
+    ]);
   });
 
   it('reports ClickHouse errors and thrown errors per query', async () => {
     mockRunConfigTile.mockImplementation((_team, tile: TileArg) => {
-      if (tile.config.sqlTemplate === 'BAD') {
+      if (tile.config.sqlTemplate === limitedSql('BAD')) {
         return Promise.resolve(mcpUserError('Syntax error near BAD'));
       }
-      if (tile.config.sqlTemplate === 'THROW') {
+      if (tile.config.sqlTemplate === limitedSql('THROW')) {
         return Promise.reject(new Error('connection reset'));
       }
       return Promise.resolve(rowsResult([]));
@@ -232,12 +246,12 @@ describe('cbt_sql batch mode', () => {
     expect(result.isError).toBeFalsy();
     expect(tileArgs()).toEqual([
       expect.objectContaining({
-        sqlTemplate: 'SELECT 1',
+        sqlTemplate: limitedSql('SELECT 1'),
         connectionId,
         sourceId,
       }),
       expect.objectContaining({
-        sqlTemplate: 'SELECT 2',
+        sqlTemplate: limitedSql('SELECT 2'),
         connectionId: otherConnectionId,
         sourceId: otherSourceId,
       }),
@@ -256,7 +270,9 @@ describe('cbt_sql batch mode', () => {
 
     const parsed = JSON.parse(textOf(result));
     expect(parsed.summary.ok).toBe(2);
-    const overridden = tileArgs().find(c => c.sqlTemplate === 'SELECT 2');
+    const overridden = tileArgs().find(c =>
+      c.sqlTemplate.startsWith('SELECT 2 '),
+    );
     expect(overridden?.connectionId).toBe(otherConnectionId);
     expect(overridden?.sourceId).toBeUndefined();
   });
@@ -394,7 +410,7 @@ describe('cbt_sql batch mode', () => {
               // Once every slot has started, the first query to finish moves
               // the clock past the budget, so the query still waiting for a
               // slot must fail without being issued.
-              if (tile.config.sqlTemplate === 'SELECT 0') {
+              if (tile.config.sqlTemplate.startsWith('SELECT 0 ')) {
                 now = base + 10 * 60_000;
               }
               resolve(rowsResult([]));
@@ -419,7 +435,7 @@ describe('cbt_sql batch mode', () => {
       expect(last.error).toContain('deadline');
       expect(parsed.summary.timeout).toBe(1);
       expect(tileArgs().map(c => c.sqlTemplate)).not.toContain(
-        `SELECT ${SQL_BATCH_CONCURRENCY}`,
+        limitedSql(`SELECT ${SQL_BATCH_CONCURRENCY}`),
       );
     } finally {
       nowSpy.mockRestore();

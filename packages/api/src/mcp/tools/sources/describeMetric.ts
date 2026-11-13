@@ -504,7 +504,9 @@ async function describeMetricImpl(
     return mcpUserError(`Connection not found for source "${input.sourceId}".`);
   }
 
-  const sliceErr = await assertMcpSliceForConnection(source.connection.toString());
+  const sliceErr = await assertMcpSliceForConnection(
+    source.connection.toString(),
+  );
   if (sliceErr) return sliceErr;
 
   const clickhouseClient = new ClickhouseClient({

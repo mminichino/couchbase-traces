@@ -6,7 +6,6 @@ import { trace } from '@opentelemetry/api';
 import { ClickhouseClient } from '@/clickhouse';
 import { getConnectionById } from '@/controllers/connection';
 import { READ_ONLY_TOOL } from '@/mcp/tools/annotations';
-import { assertMcpSliceForConnection } from '@/mcp/utils/mcpSlice';
 import {
   clickHouseErrorResult,
   isQueryOutOfTime,
@@ -20,11 +19,16 @@ import {
   sanitizeFetchError,
   validateObjectId,
 } from '@/mcp/utils/errors';
+import { assertMcpSliceForConnection } from '@/mcp/utils/mcpSlice';
 import { MCP_TOOL_TIMEOUT_MS, runWithTimeout } from '@/mcp/utils/timeout';
 import { Source } from '@/models/source';
 import logger from '@/utils/logger';
 import { trimToolResponse } from '@/utils/trimToolResponse';
 
+import {
+  describeCouchbaseTable,
+  listCouchbaseTables,
+} from './describeTableCouchbase';
 import {
   databaseExists,
   fetchSampleRows,
@@ -43,10 +47,6 @@ import {
   MAX_SAMPLE_ROWS,
   validateDescribeTableInput,
 } from './describeTableSchema';
-import {
-  describeCouchbaseTable,
-  listCouchbaseTables,
-} from './describeTableCouchbase';
 
 // Sample rows can hold arbitrarily large values; keep them a small share of
 // the response so they never crowd out the schema.

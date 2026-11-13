@@ -90,8 +90,11 @@ export function registerServiceHealth({
 
       const source = await loadHealthSource(teamId, input.sourceId, TOOL_NAME);
       if ('isError' in source) return source;
-      const client = await requireMcpClickhouseClient(teamId, source.connection);
-      if (client.isError) {
+      const client = await requireMcpClickhouseClient(
+        teamId,
+        source.connection,
+      );
+      if ('isError' in client) {
         return client;
       }
       const groupExprs = errorGroupExpressions(

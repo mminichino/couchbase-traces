@@ -21,9 +21,9 @@ import {
 import {
   durationDivisor,
   getMcpClickhouseClient,
-  requireMcpClickhouseClient,
   inclusiveTimeFilter,
   mcpQuerySettings,
+  requireMcpClickhouseClient,
   type TimeFilterParams,
 } from '@/mcp/tools/trace/shared';
 import type { ToolRegistrar } from '@/mcp/tools/types';
@@ -360,7 +360,7 @@ export function registerTraceWaterfall({
         teamId.toString(),
         source.connection.toString(),
       );
-      if (clickhouseClient.isError) {
+      if ('isError' in clickhouseClient) {
         return clickhouseClient;
       }
       const metadata = getMetadata(clickhouseClient);

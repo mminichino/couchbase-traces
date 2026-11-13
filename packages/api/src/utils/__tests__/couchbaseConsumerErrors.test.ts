@@ -31,14 +31,20 @@ describe('couchbaseConsumerHttpResponse', () => {
   });
 
   it('maps CouchbaseQueryError to its httpStatus', () => {
-    const err = new CouchbaseQueryError('PERMISSION_DENIED', 'denied', 'SELECT 1');
+    const err = new CouchbaseQueryError(
+      'PERMISSION_DENIED',
+      'denied',
+      'SELECT 1',
+    );
     const mapped = couchbaseConsumerHttpResponse(err, 'message');
     expect(mapped?.status).toBe(err.httpStatus);
     expect(mapped?.body).toEqual({ message: 'denied' });
   });
 
   it('returns null for unrelated errors', () => {
-    expect(couchbaseConsumerHttpResponse(new Error('nope'), 'message')).toBeNull();
+    expect(
+      couchbaseConsumerHttpResponse(new Error('nope'), 'message'),
+    ).toBeNull();
   });
 });
 
@@ -51,7 +57,11 @@ describe('couchbaseConsumerMcpError', () => {
   });
 
   it('adds SQL++ hint on parse errors', () => {
-    const err = new CouchbaseQueryError('PARSING_FAILED', 'syntax error', 'SELECT');
+    const err = new CouchbaseQueryError(
+      'PARSING_FAILED',
+      'syntax error',
+      'SELECT',
+    );
     const mapped = couchbaseConsumerMcpError(err);
     expect(mapped?.content[0].text).toContain('This source uses SQL++.');
   });

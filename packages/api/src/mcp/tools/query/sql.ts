@@ -8,10 +8,6 @@ import { mcpUserError } from '@/mcp/utils/errors';
 import { BUILDER_TOOLS_LIST, SQL_FALLBACK_CRITERIA } from './builderCatalog';
 import { parseTimeRange, runConfigTile } from './helpers';
 import { createSourceLookup, prepareSqlQuery } from './prepareSql';
-import {
-  RAW_SQL_PARAM_DESCRIPTION,
-  RAW_SQL_TOOL_DESCRIPTION,
-} from './sqlDescriptions';
 import { endTimeSchema, startTimeSchema } from './schemas';
 import {
   MAX_SQL_BATCH_QUERIES,
@@ -19,6 +15,10 @@ import {
   SQL_BATCH_DEADLINE_MS,
   sqlBatchQuerySchema,
 } from './sqlBatch';
+import {
+  RAW_SQL_PARAM_DESCRIPTION,
+  RAW_SQL_TOOL_DESCRIPTION,
+} from './sqlDescriptions';
 
 // ─── Schema ──────────────────────────────────────────────────────────────────
 
@@ -37,10 +37,7 @@ const sqlSchema = z.object({
         "`$__sourceTable` expands to that source's database.table. The source's " +
         'connection must match connectionId. Call cbt_list_sources to find source IDs.',
     ),
-  sql: z
-    .string()
-    .optional()
-    .describe(RAW_SQL_PARAM_DESCRIPTION),
+  sql: z.string().optional().describe(RAW_SQL_PARAM_DESCRIPTION),
   queries: z
     .array(sqlBatchQuerySchema)
     .min(1)

@@ -8,8 +8,8 @@ import {
 } from '@couchbase-traces/common-utils/dist/core/metadata';
 import {
   getMetadata,
-  queryLanguageForConnection,
   type QueryLanguage,
+  queryLanguageForConnection,
 } from '@couchbase-traces/common-utils/dist/dataLayer';
 import { SourceKind } from '@couchbase-traces/common-utils/dist/types';
 import PQueue from '@esm2cjs/p-queue';
@@ -22,8 +22,8 @@ import {
 } from '@/controllers/connection';
 import { getSources } from '@/controllers/sources';
 import { READ_ONLY_TOOL } from '@/mcp/tools/annotations';
-import { assertMcpSliceForConnection } from '@/mcp/utils/mcpSlice';
 import type { ToolRegistrar } from '@/mcp/tools/types';
+import { assertMcpSliceForConnection } from '@/mcp/utils/mcpSlice';
 import { isHiddenSource, PROMQL_SOURCE_USAGE } from '@/mcp/utils/promql';
 import { runWithTimeout } from '@/mcp/utils/timeout';
 import logger from '@/utils/logger';

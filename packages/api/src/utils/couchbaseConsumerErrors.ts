@@ -9,20 +9,27 @@ import { mcpServerError, mcpUserError } from '@/mcp/utils/errors';
 
 export type ExternalApiErrorField = 'error' | 'message';
 
-export function couchbaseConsumerHttpResponse(
+function bodyFor<F extends ExternalApiErrorField>(
+  field: F,
+  message: string,
+): Record<F, string> {
+  return { [field]: message } as Record<F, string>;
+}
+
+export function couchbaseConsumerHttpResponse<F extends ExternalApiErrorField>(
   err: unknown,
-  field: ExternalApiErrorField,
-): { status: number; body: Record<ExternalApiErrorField, string> } | null {
+  field: F,
+): { status: number; body: Record<F, string> } | null {
   if (err instanceof CouchbaseNotReadyError) {
-    return { status: 409, body: { [field]: err.message } };
+    return { status: 409, body: bodyFor(field, err.message) };
   }
   if (err instanceof CouchbaseUnsupportedError) {
-    return { status: 422, body: { [field]: err.message } };
+    return { status: 422, body: bodyFor(field, err.message) };
   }
   if (err instanceof CouchbaseQueryError) {
     const safeMsg =
       (err.message.split('\n')[0] ?? '').slice(0, 300) || 'Query error';
-    return { status: err.httpStatus, body: { [field]: safeMsg } };
+    return { status: err.httpStatus, body: bodyFor(field, safeMsg) };
   }
   return null;
 }
@@ -46,7 +53,7 @@ export function couchbaseConsumerMcpError(err: unknown): McpErrorResult | null {
   if (err instanceof CouchbaseQueryError) {
     const base = firstLine(err.message) || 'Query error';
     const text =
-      /parse|syntax/i.test(base) || err.code === 'PARSE_ERROR'
+      /parse|syntax/i.test(base) || err.code === 'PARSING_FAILED'
         ? `${base}\n\n${SQLPP_HINT}`
         : base;
     const category =
@@ -57,9 +64,13 @@ export function couchbaseConsumerMcpError(err: unknown): McpErrorResult | null {
 }
 
 /** Append the SQL++ dialect hint when a Couchbase source failed on a CH-only query. */
-export function mcpSqlppDialectHint(err: unknown, queryLanguage: 'clickhouse' | 'sqlpp'): string | null {
+export function mcpSqlppDialectHint(
+  err: unknown,
+  queryLanguage: 'clickhouse' | 'sqlpp',
+): string | null {
   if (queryLanguage !== 'sqlpp') return null;
-  if (!(err instanceof CouchbaseQueryError) && !(err instanceof Error)) return null;
+  if (!(err instanceof CouchbaseQueryError) && !(err instanceof Error))
+    return null;
   const msg = err instanceof CouchbaseQueryError ? err.message : err.message;
   if (/PARSE|syntax|Syntax/i.test(msg)) return SQLPP_HINT;
   return null;

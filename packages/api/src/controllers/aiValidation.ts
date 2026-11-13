@@ -1,15 +1,14 @@
 import { MetadataCache } from '@couchbase-traces/common-utils/dist/core/metadata';
 import { CouchbaseMetadata } from '@couchbase-traces/common-utils/dist/couchbase/metadata';
 import {
-  resolveConnectionKind,
   type QueryLanguage,
+  resolveConnectionKind,
 } from '@couchbase-traces/common-utils/dist/dataLayer';
 import type { AILineTableResponse } from '@couchbase-traces/common-utils/dist/types';
 
 import type { ClickhouseClient } from '@/clickhouse';
-import { Api400Error } from '@/utils/errors';
-
 import type { ISource } from '@/models/source';
+import { Api400Error } from '@/utils/errors';
 
 const validationCache = new MetadataCache();
 

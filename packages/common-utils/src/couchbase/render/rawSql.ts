@@ -1,11 +1,10 @@
 import type { ChartConfigWithOptDateRangeEx } from '@/core/renderChartConfig';
+import { ensureOutermostSelectLimit } from '@/couchbase/rawSqlLimit';
 import { keyspace } from '@/couchbase/sqlpp';
 import { CouchbaseNotReadyError } from '@/dataLayer/errors';
 import { isRawSqlChartConfig } from '@/guards';
 import { QUERY_PARAMS_BY_DISPLAY_TYPE } from '@/rawSqlParams';
 import { DisplayType } from '@/types';
-
-import { ensureOutermostSelectLimit } from '@/couchbase/rawSqlLimit';
 
 import { expandMacrosCouchbase } from './macros';
 

@@ -1,7 +1,6 @@
-import { Types } from 'mongoose';
-
 import { ROW_ID_ALIAS } from '@couchbase-traces/common-utils/dist/couchbase/render';
 import { DisplayType } from '@couchbase-traces/common-utils/dist/types';
+import { Types } from 'mongoose';
 
 import { runSearchConfig } from '@/routers/external-api/v2/utils/search';
 
@@ -32,9 +31,10 @@ jest.mock('@/clickhouse', () => ({
   })),
 }));
 
+import { assertSliceForConnection } from '@couchbase-traces/common-utils/dist/dataLayer';
+
 import { getConnectionById } from '@/controllers/connection';
 import { getSource } from '@/controllers/sources';
-import { assertSliceForConnection } from '@couchbase-traces/common-utils/dist/dataLayer';
 
 const mockedGetSource = getSource as jest.MockedFunction<typeof getSource>;
 const mockedGetConnection = getConnectionById as jest.MockedFunction<

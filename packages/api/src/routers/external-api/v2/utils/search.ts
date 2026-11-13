@@ -170,7 +170,10 @@ export async function runSearchConfig({
     throw new Error('Unexpected ClickHouse response shape: missing data array');
   }
 
-  const rows = (result as { data: unknown[] }).data as Record<string, unknown>[];
+  const rows = (result as { data: unknown[] }).data as Record<
+    string,
+    unknown
+  >[];
   const data = rows.map(row => {
     if (!(ROW_ID_ALIAS in row)) return row;
     const { [ROW_ID_ALIAS]: _rowId, ...rest } = row;

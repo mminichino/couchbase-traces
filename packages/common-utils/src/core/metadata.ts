@@ -660,13 +660,15 @@ export class Metadata {
     databaseName,
     tableName,
     connectionId,
+    scopeName,
   }: {
     databaseName: string;
     tableName: string;
     connectionId: string;
+    scopeName?: string;
   }) {
     return this.cache.getOrFetch<ColumnMeta[]>(
-      `${connectionId}.${databaseName}.${tableName}.columns`,
+      `${connectionId}.${databaseName}.${scopeName ?? ''}.${tableName}.columns`,
       async () => {
         const sql = chSql`DESCRIBE ${tableExpr({ database: databaseName, table: tableName })}`;
         const columns = await this.clickhouseClient

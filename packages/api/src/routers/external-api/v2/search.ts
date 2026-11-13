@@ -9,13 +9,13 @@ import {
 } from '@/config';
 import { parseTimeRange } from '@/mcp/tools/query/helpers';
 import { getNonNullUserWithTeam } from '@/middleware/auth';
+import { couchbaseConsumerHttpResponse } from '@/utils/couchbaseConsumerErrors';
 import { processRequestWithEnhancedErrors as validateRequest } from '@/utils/enhancedErrors';
 import {
   getCounter,
   getHistogram,
   recordDuration,
 } from '@/utils/instrumentation';
-import { couchbaseConsumerHttpResponse } from '@/utils/couchbaseConsumerErrors';
 import logger from '@/utils/logger';
 import { externalDashboardSearchRequestSchema } from '@/utils/zod';
 
@@ -427,8 +427,7 @@ router.post(
       const couchbase = couchbaseConsumerHttpResponse(err, 'message');
       if (couchbase) {
         searchQueryErrors.add(1, {
-          error_type:
-            err instanceof Error ? err.constructor.name : 'COUCHBASE',
+          error_type: err instanceof Error ? err.constructor.name : 'COUCHBASE',
         });
         return res.status(couchbase.status).json(couchbase.body);
       }

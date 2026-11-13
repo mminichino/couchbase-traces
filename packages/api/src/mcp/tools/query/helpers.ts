@@ -40,10 +40,6 @@ import type { McpErrorResult } from '@/mcp/utils/errors';
 import { mcpServerError, mcpUserError } from '@/mcp/utils/errors';
 import { assertMcpSliceForConnection } from '@/mcp/utils/mcpSlice';
 import {
-  couchbaseConsumerMcpError,
-  mcpSqlppDialectHint,
-} from '@/utils/couchbaseConsumerErrors';
-import {
   MCP_QUERY_MAX_EXECUTION_SEC,
   MCP_TIMEOUT_GRACE_MS,
   MCP_TOOL_TIMEOUT_MS,
@@ -53,6 +49,10 @@ import {
   isConfigTile,
 } from '@/routers/external-api/v2/utils/dashboards';
 import { isQueryTimeoutError } from '@/tasks/checkAlerts/errors';
+import {
+  couchbaseConsumerMcpError,
+  mcpSqlppDialectHint,
+} from '@/utils/couchbaseConsumerErrors';
 import { trimToolResponse } from '@/utils/trimToolResponse';
 import type { ExternalDashboardTileWithId } from '@/utils/zod';
 import { externalDashboardTileSchemaWithId } from '@/utils/zod';
@@ -484,7 +484,14 @@ function toPlainMetricTables(
 
 export async function mcpQueryErrorResult(
   e: unknown,
-  context?: string | { prefix?: string; suffix?: string; rawSql?: boolean; connectionId?: string },
+  context?:
+    | string
+    | {
+        prefix?: string;
+        suffix?: string;
+        rawSql?: boolean;
+        connectionId?: string;
+      },
 ): Promise<McpErrorResult> {
   const mapped = couchbaseConsumerMcpError(e);
   if (mapped) return mapped;
@@ -493,8 +500,7 @@ export async function mcpQueryErrorResult(
     typeof context === 'object' && context?.connectionId
       ? context.connectionId
       : undefined;
-  let suffix =
-    typeof context === 'object' ? context.suffix : undefined;
+  let suffix = typeof context === 'object' ? context.suffix : undefined;
   if (connId) {
     const lang = await queryLanguageForConnection(connId);
     const dialectHint = mcpSqlppDialectHint(e, lang);

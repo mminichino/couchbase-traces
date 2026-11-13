@@ -74,7 +74,7 @@ function datastoreLine(queryLanguage: QueryLanguage): string {
 function filterExample(queryLanguage: QueryLanguage): string {
   return queryLanguage === 'sqlpp'
     ? 'If the user is requesting for a specific set of data (ex. "frontend service", filter the condition by the appropriate property based on the below properties ex. `ServiceName` = "frontend")'
-    : "If the user is requesting for a specific set of data (ex. \"frontend service\", filter the condition by the appropriate property based on the below properties ex. `ServiceName = 'frontend'`)";
+    : 'If the user is requesting for a specific set of data (ex. "frontend service", filter the condition by the appropriate property based on the below properties ex. `ServiceName = \'frontend\'`)';
 }
 
 function mapFieldGuidance(
@@ -113,7 +113,7 @@ export function buildChartAssistantPrompt({
 
   const mapSection =
     source.kind === SourceKind.Trace || source.kind === SourceKind.Log
-      ? mapFieldGuidance(queryLanguage, eventAttrs, resourceAttrs)
+      ? mapFieldGuidance(queryLanguage, eventAttrs ?? '', resourceAttrs ?? '')
       : '';
 
   return `You are an AI assistant that helps users create chart configurations for an observability platform called Couchbase Traces.

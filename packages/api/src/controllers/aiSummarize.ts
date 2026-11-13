@@ -21,9 +21,7 @@ export function normalizeRowsForSummarization(
 }
 
 function datastoreLabel(queryLanguage: QueryLanguage): string {
-  return queryLanguage === 'sqlpp'
-    ? 'SQL++ (Couchbase)'
-    : 'ClickHouse SQL';
+  return queryLanguage === 'sqlpp' ? 'SQL++ (Couchbase)' : 'ClickHouse SQL';
 }
 
 export function buildSummarizeResultsPrompt({

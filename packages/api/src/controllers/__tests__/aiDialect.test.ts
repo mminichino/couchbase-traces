@@ -14,7 +14,6 @@ import {
 } from '@/controllers/aiSummarize';
 import { validateAiChartConfigForConnection } from '@/controllers/aiValidation';
 import type { ISource } from '@/models/source';
-import { Api400Error } from '@/utils/errors';
 
 const mockValidateExpression = jest.fn<
   Promise<{ ok: true } | { ok: false; error: string }>,

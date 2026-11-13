@@ -34,9 +34,9 @@ import {
 } from '@/mcp/tools/trace/breakdownSchema';
 import {
   durationDivisor,
-  requireMcpClickhouseClient,
   inclusiveTimeFilter,
   mcpQuerySettings,
+  requireMcpClickhouseClient,
 } from '@/mcp/tools/trace/shared';
 import type { ToolRegistrar } from '@/mcp/tools/types';
 import { mcpUserError } from '@/mcp/utils/errors';
@@ -94,7 +94,7 @@ export function registerTraceBreakdown({
         teamId.toString(),
         source.connection.toString(),
       );
-      if (clickhouseClient.isError) {
+      if ('isError' in clickhouseClient) {
         return clickhouseClient;
       }
 

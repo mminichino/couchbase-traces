@@ -703,8 +703,7 @@ router.post(
           const couchbase = couchbaseConsumerHttpResponse(e, 'error');
           if (couchbase) {
             chartsSeriesErrors.add(1, {
-              error_type:
-                e instanceof Error ? e.constructor.name : 'COUCHBASE',
+              error_type: e instanceof Error ? e.constructor.name : 'COUCHBASE',
             });
             span.recordException(e as Error);
             span.setStatus({ code: SpanStatusCode.ERROR });
@@ -718,7 +717,13 @@ router.post(
 
           const errMsg =
             e instanceof Error ? e.message : 'Internal server error';
-          const statusCode = (e as any).statusCode || 500;
+          const statusCode =
+            e != null &&
+            typeof e === 'object' &&
+            'statusCode' in e &&
+            typeof e.statusCode === 'number'
+              ? e.statusCode
+              : 500;
           res.status(statusCode).json({ error: errMsg });
         }
       },
