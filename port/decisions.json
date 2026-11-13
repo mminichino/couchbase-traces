@@ -1,0 +1,21 @@
+{
+  "schemaVersion": 1,
+  "decisions": [
+    {
+      "id": "local_mode",
+      "question": "Local mode (IS_LOCAL_APP_MODE / all-in-one-noauth) supports ClickHouse connections only. Drop it in Phase 10, or keep it?",
+      "decision": "drop",
+      "signedOffBy": "mminichino",
+      "date": "11-13-2026",
+      "note": "From docs/port-notes.md Pending user decisions: Local mode supports ClickHouse connections only. Gate requires decision: \"drop\" to proceed; \"keep\" blocks Phase 10."
+    },
+    {
+      "id": "all_in_one_publish",
+      "question": "Publish the all-in-one image that bundles Couchbase Server Enterprise?",
+      "decision": "drop",
+      "signedOffBy": "mminichino",
+      "date": "11-13-2026",
+      "note": "From docs/port-notes.md Pending user decisions: Publishing the all-in-one image, which bundles Couchbase Server Enterprise. Redistribution needs Couchbase approval."
+    }
+  ]
+}

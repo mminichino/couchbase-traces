@@ -427,9 +427,12 @@
         "api_route:POST /clickhouse-proxy/*",
         "api_route:POST /clickhouse-proxy/test"
       ],
-      "status": "in_progress",
-      "decision": null,
-      "notes": "Phase 10 replaces ClickHouse proxy with Couchbase query route."
+      "status": "replaced",
+      "decision": {
+        "note": "Couchbase query route replaces the ClickHouse proxy.",
+        "replacedBy": "couchbase-connectivity"
+      },
+      "notes": "Phase 10: capability continues through couchbase-connectivity."
     },
     {
       "id": "couchbase-connectivity",
@@ -442,9 +445,9 @@
         "api_route:POST /couchbase/test-source",
         "api_route:POST /couchbase/query"
       ],
-      "status": "in_progress",
+      "status": "ported",
       "decision": null,
-      "notes": "Phase 9/10 connectivity and proxy retirement."
+      "notes": "Phase 4–9: SQL++ query/test routes. Replaces api-clickhouse-proxy."
     },
     {
       "id": "api-iac",
