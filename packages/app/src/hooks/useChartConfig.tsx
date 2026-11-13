@@ -2,7 +2,6 @@ import { useCallback } from 'react';
 import {
   chSqlToAliasMap,
   ClickHouseQueryError,
-  parameterizedQueryToSql,
   ResponseJSON,
 } from '@couchbase-traces/common-utils/dist/clickhouse';
 import { ClickhouseClient } from '@couchbase-traces/common-utils/dist/clickhouse/browser';
@@ -14,13 +13,16 @@ import {
 import {
   isMetricChartConfig,
   isUsingGranularity,
-  renderChartConfig,
 } from '@couchbase-traces/common-utils/dist/core/renderChartConfig';
 import {
   convertDateRangeToGranularityString,
   convertGranularityToSeconds,
   hasPositiveSeriesLimit,
 } from '@couchbase-traces/common-utils/dist/core/utils';
+import {
+  formatQueryForDisplay,
+  renderChartConfig,
+} from '@couchbase-traces/common-utils/dist/dataLayer';
 import {
   isBuilderChartConfig,
   isPromqlChartConfig,
@@ -533,7 +535,7 @@ export function useRenderedSqlChartConfig(
         metadata,
         source?.querySettings,
       );
-      const sql = parameterizedQueryToSql(query);
+      const sql = formatQueryForDisplay(query);
       // sql-formatter can't handle prometheusQuery() / CTE syntax in PromQL queries
       if (isPromqlChartConfig(config)) {
         return sql;

@@ -12,11 +12,7 @@ import {
   withQueryAttribution,
 } from '@couchbase-traces/common-utils/dist/clickhouse/node';
 import { tryOptimizeConfigWithMaterializedView } from '@couchbase-traces/common-utils/dist/core/materializedViews';
-import {
-  getMetadata,
-  Metadata,
-} from '@couchbase-traces/common-utils/dist/core/metadata';
-import { renderChartConfig } from '@couchbase-traces/common-utils/dist/core/renderChartConfig';
+import { Metadata } from '@couchbase-traces/common-utils/dist/core/metadata';
 import {
   ALERT_COUNT_DEFAULT_SELECT,
   buildSearchChartConfig,
@@ -28,6 +24,8 @@ import {
   isTimeSeriesDisplayType,
 } from '@couchbase-traces/common-utils/dist/core/utils';
 import { timeBucketByGranularity } from '@couchbase-traces/common-utils/dist/core/utils';
+import { getMetadata } from '@couchbase-traces/common-utils/dist/dataLayer';
+import { renderChartConfig } from '@couchbase-traces/common-utils/dist/dataLayer';
 import { getDashboardVariableDeclarations } from '@couchbase-traces/common-utils/dist/filters';
 import {
   isBuilderChartConfig,

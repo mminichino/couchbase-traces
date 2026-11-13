@@ -1,6 +1,7 @@
 import store from 'store2';
 import { testLocalConnection } from '@couchbase-traces/common-utils/dist/clickhouse/browser';
 import type { SerializedQueryError } from '@couchbase-traces/common-utils/dist/couchbase/errors';
+import { clearConnectionKindCache } from '@couchbase-traces/common-utils/dist/dataLayer';
 import { Connection } from '@couchbase-traces/common-utils/dist/types';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
@@ -110,6 +111,7 @@ export function useCreateConnection() {
       return res;
     },
     onSuccess: () => {
+      clearConnectionKindCache();
       queryClient.invalidateQueries({ queryKey: ['connections'] });
       queryClient.invalidateQueries({ queryKey: ['sources'] });
     },
@@ -147,6 +149,7 @@ export function useUpdateConnection() {
       return;
     },
     onSuccess: () => {
+      clearConnectionKindCache();
       queryClient.invalidateQueries({ queryKey: ['connections'] });
     },
   });
@@ -251,6 +254,7 @@ export function useDeleteConnection() {
       return;
     },
     onSuccess: () => {
+      clearConnectionKindCache();
       queryClient.invalidateQueries({ queryKey: ['connections'] });
     },
   });

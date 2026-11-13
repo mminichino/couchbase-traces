@@ -1,13 +1,13 @@
 import SqlString from 'sqlstring';
 
 import { Metadata } from '@/core/metadata';
-import { renderChartConfig } from '@/core/renderChartConfig';
 import {
   convertToCategoricalChartConfig,
   convertToNumberChartConfig,
   convertToTableChartConfig,
   isTimeSeriesDisplayType,
 } from '@/core/utils';
+import { renderChartConfig } from '@/dataLayer';
 import { isBuilderChartConfig } from '@/guards';
 import { format } from '@/sqlFormatter';
 import {

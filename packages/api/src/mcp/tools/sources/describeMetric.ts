@@ -6,7 +6,7 @@ import {
   JSDataType,
   tableExpr,
 } from '@couchbase-traces/common-utils/dist/clickhouse';
-import { getMetadata } from '@couchbase-traces/common-utils/dist/core/metadata';
+import { getMetadata } from '@couchbase-traces/common-utils/dist/dataLayer';
 import { SourceKind } from '@couchbase-traces/common-utils/dist/types';
 import { z } from 'zod';
 

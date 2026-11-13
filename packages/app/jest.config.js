@@ -32,6 +32,9 @@ module.exports = {
     // @clickhouse/click-ui depends on ESM-only lodash-es; lodash has the same API.
     '^lodash-es$': 'lodash',
     '^lodash-es/(.*)$': 'lodash/$1',
+    // See port/jest/dataLayerShim.cjs.
+    '^@couchbase-traces/common-utils/dist/dataLayer$':
+      '<rootDir>/../../port/jest/dataLayerShim.cjs',
   },
   setupFilesAfterEnv: ['<rootDir>/src/setupTests.tsx'],
   // Coverage floors are scoped to hooks/ and utils/ only — the genuinely

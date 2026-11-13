@@ -2,9 +2,24 @@ import type {
   ClickhouseClientOptions,
   Logger as ClickhouseLogger,
 } from '@couchbase-traces/common-utils/dist/clickhouse';
-import { ClickhouseClient as BaseClickhouseClient } from '@couchbase-traces/common-utils/dist/clickhouse/node';
+import type { CouchbaseConnectionConfig } from '@couchbase-traces/common-utils/dist/couchbase/node';
+import { RoutingNodeClickhouseClient } from '@couchbase-traces/common-utils/dist/dataLayer/node';
+import type { TeamClickHouseSettings } from '@couchbase-traces/common-utils/dist/types';
 
 import logger from '@/utils/logger';
+
+let loadCouchbaseConnection: (
+  id: string,
+) => Promise<CouchbaseConnectionConfig> = async id => {
+  throw new Error(`Couchbase connection loader is not registered (${id})`);
+};
+
+/** Registered at process startup so every client can open its Couchbase side. */
+export function setCouchbaseConnectionLoader(
+  loader: (id: string) => Promise<CouchbaseConnectionConfig>,
+): void {
+  loadCouchbaseConnection = loader;
+}
 
 const customLogger: ClickhouseLogger = {
   trace: ({ module, message, args }) =>
@@ -19,8 +34,16 @@ const customLogger: ClickhouseLogger = {
     logger.error({ ...args, module, err }, message),
 };
 
-export class ClickhouseClient extends BaseClickhouseClient {
-  constructor(options: ClickhouseClientOptions) {
-    super({ ...options, customLogger: options.customLogger ?? customLogger });
+export class ClickhouseClient extends RoutingNodeClickhouseClient {
+  constructor(
+    options: ClickhouseClientOptions & { team?: TeamClickHouseSettings | null },
+  ) {
+    super({
+      ...options,
+      customLogger: options.customLogger ?? customLogger,
+      // Read through the binding so registration after import still applies.
+      loadCouchbaseConnection: id => loadCouchbaseConnection(id),
+      team: options.team,
+    });
   }
 }

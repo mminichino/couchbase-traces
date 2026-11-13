@@ -13,12 +13,12 @@ import {
   type QueryAttribution,
 } from '@couchbase-traces/common-utils/dist/clickhouse';
 import { Metadata } from '@couchbase-traces/common-utils/dist/core/metadata';
-import { renderChartConfig } from '@couchbase-traces/common-utils/dist/core/renderChartConfig';
 import {
   isFirstOrderByAscending,
   isTimestampExpressionInFirstOrderBy,
   MAX_TABLE_ROWS,
 } from '@couchbase-traces/common-utils/dist/core/utils';
+import { renderChartConfig } from '@couchbase-traces/common-utils/dist/dataLayer';
 import {
   isBuilderChartConfig,
   isPromqlChartConfig,

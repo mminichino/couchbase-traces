@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef } from 'react';
 import Link from 'next/link';
-import { isMissingColumnError } from '@couchbase-traces/common-utils/dist/clickhouse';
+import { isMissingColumnError } from '@couchbase-traces/common-utils/dist/dataLayer';
 import {
   BuilderChartConfigWithDateRange,
   Filter,

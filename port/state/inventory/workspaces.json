@@ -121,7 +121,7 @@
         "zod",
         "zod-express-middleware"
       ],
-      "sourceFiles": 230,
+      "sourceFiles": 231,
       "testFiles": 151,
       "hasTsconfig": true,
       "role": "API server and tasks"
@@ -287,7 +287,7 @@
         "uplot-react",
         "zod"
       ],
-      "sourceFiles": 685,
+      "sourceFiles": 686,
       "testFiles": 510,
       "hasTsconfig": true,
       "role": "web UI"
@@ -415,8 +415,8 @@
         "typescript",
         "zod"
       ],
-      "sourceFiles": 74,
-      "testFiles": 65,
+      "sourceFiles": 94,
+      "testFiles": 71,
       "hasTsconfig": true,
       "role": "shared query and data layer"
     },

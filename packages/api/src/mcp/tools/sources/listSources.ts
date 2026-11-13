@@ -2,16 +2,16 @@ import type {
   DataFormat,
   QueryInputs,
 } from '@couchbase-traces/common-utils/dist/clickhouse';
-import { ClickhouseClient } from '@couchbase-traces/common-utils/dist/clickhouse/node';
 import {
-  Metadata,
-  MetadataCache,
+  type Metadata,
   quoteIdentifierIfNeeded,
 } from '@couchbase-traces/common-utils/dist/core/metadata';
+import { getMetadata } from '@couchbase-traces/common-utils/dist/dataLayer';
 import { SourceKind } from '@couchbase-traces/common-utils/dist/types';
 import PQueue from '@esm2cjs/p-queue';
 import { z } from 'zod';
 
+import { ClickhouseClient } from '@/clickhouse';
 import {
   getConnectionById,
   getConnectionsByTeam,
@@ -109,8 +109,7 @@ async function attachMetricNamePreviews({
       });
       clients.set(connectionId, {
         clickhouseClient,
-        // Private cache keeps any such truncation scoped to this preview.
-        metadata: new Metadata(clickhouseClient, new MetadataCache()),
+        metadata: getMetadata(clickhouseClient),
       });
     }),
   );

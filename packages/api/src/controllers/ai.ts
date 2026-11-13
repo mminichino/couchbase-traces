@@ -1,11 +1,11 @@
 import { createAnthropic } from '@ai-sdk/anthropic';
 import { createOpenAI } from '@ai-sdk/openai';
 import {
-  getMetadata,
   TableMetadata,
   tcFromSource,
 } from '@couchbase-traces/common-utils/dist/core/metadata';
 import { resolvePercentileAggFn } from '@couchbase-traces/common-utils/dist/core/utils';
+import { getMetadata } from '@couchbase-traces/common-utils/dist/dataLayer';
 import {
   AILineTableResponse,
   AssistantLineTableConfigSchema,

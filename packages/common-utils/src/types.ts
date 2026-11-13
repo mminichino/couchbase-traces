@@ -526,6 +526,7 @@ export const SelectSQLStatementSchema = z.object({
   select: SelectListSchema,
   from: z.object({
     databaseName: z.string(),
+    scopeName: z.string().optional(),
     tableName: z.string(),
   }),
   where: SearchConditionSchema,
@@ -1937,7 +1938,11 @@ const RawSqlBaseChartConfigSchema = SharedChartSettingsSchema.extend({
 const RawSqlChartConfigSchema = RawSqlBaseChartConfigSchema.extend({
   filters: z.array(FilterSchema).optional(),
   from: z
-    .object({ databaseName: z.string(), tableName: z.string() })
+    .object({
+      databaseName: z.string(),
+      scopeName: z.string().optional(),
+      tableName: z.string(),
+    })
     .optional(),
   implicitColumnExpression: z.string().optional(),
   // Same fallback as on `_ChartConfigSchema`; logs-only.
@@ -2037,7 +2042,11 @@ const PromqlChartConfigSchema = PromqlBaseChartConfigSchema.extend({
   connection: z.string(),
   filters: z.array(PromqlConditionFilterSchema).optional(),
   from: z
-    .object({ databaseName: z.string(), tableName: z.string() })
+    .object({
+      databaseName: z.string(),
+      scopeName: z.string().optional(),
+      tableName: z.string(),
+    })
     .optional(),
   variables: z.array(ChartVariableSchema).optional(),
 });

@@ -11,7 +11,8 @@ export type SqlPPValue =
   | SqlPP;
 
 const MAX_IDENT_LENGTH = 251;
-const PARAM_REF_RE = /\$p(\d+)\b/g;
+/** `$p0` from this tag, and `$s0` from the Lucene serializer, both renumber. */
+const PARAM_REF_RE = /\$([ps])(\d+)\b/g;
 
 export function quoteIdent(name: string): string {
   if (typeof name !== 'string' || name === '') {
@@ -70,17 +71,20 @@ class Builder {
   nested(child: SqlPP) {
     const childParams = new Map(Object.entries(child.parameters));
     const mapping = new Map<string, string>();
-    const statement = child.statement.replace(PARAM_REF_RE, (match, n) => {
-      const oldName = `p${n}`;
-      if (!childParams.has(oldName)) return match;
-      let newName = mapping.get(oldName);
-      if (newName == null) {
-        newName = `p${this.next++}`;
-        mapping.set(oldName, newName);
-        this.params.set(newName, childParams.get(oldName));
-      }
-      return `$${newName}`;
-    });
+    const statement = child.statement.replace(
+      PARAM_REF_RE,
+      (match, prefix: string, n: string) => {
+        const oldName = `${prefix}${n}`;
+        if (!childParams.has(oldName)) return match;
+        let newName = mapping.get(oldName);
+        if (newName == null) {
+          newName = `p${this.next++}`;
+          mapping.set(oldName, newName);
+          this.params.set(newName, childParams.get(oldName));
+        }
+        return `$${newName}`;
+      },
+    );
     // Parameters the child statement never references still travel with it.
     for (const [oldName, value] of childParams) {
       if (!mapping.has(oldName)) {

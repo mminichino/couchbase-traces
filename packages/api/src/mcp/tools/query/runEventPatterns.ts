@@ -1,4 +1,3 @@
-import { getMetadata } from '@couchbase-traces/common-utils/dist/core/metadata';
 import { getSourceTableFilters } from '@couchbase-traces/common-utils/dist/core/searchChartConfig';
 import {
   convertGranularityToSeconds,
@@ -6,6 +5,7 @@ import {
   type Granularity,
   splitAndTrimWithBracket,
 } from '@couchbase-traces/common-utils/dist/core/utils';
+import { getMetadata } from '@couchbase-traces/common-utils/dist/dataLayer';
 import { minePatterns } from '@couchbase-traces/common-utils/dist/drain';
 import type {
   ChartConfigWithDateRange,

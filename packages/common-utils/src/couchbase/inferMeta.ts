@@ -9,7 +9,7 @@ const ISO_FRACTION_RE = /^\.\d{1,9}/;
 const ISO_ZONE_RE = /^(?:Z|[+-]\d{2}:?\d{2})$/;
 
 /** `YYYY-MM-DDTHH:MM:SS`, optional 1-9 digit fraction, then `Z` or an offset. */
-function isIsoDateTime(v: string): boolean {
+export function isIsoDateTime(v: string): boolean {
   const head = ISO_DATETIME_RE.exec(v);
   if (head == null) return false;
   const rest = v.slice(head[0].length);

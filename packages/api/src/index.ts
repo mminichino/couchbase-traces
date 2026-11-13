@@ -1,3 +1,5 @@
+import '@/dataLayerSetup';
+
 import { flush } from '@clickhouse/clickstack-node';
 import { serializeError } from 'serialize-error';
 

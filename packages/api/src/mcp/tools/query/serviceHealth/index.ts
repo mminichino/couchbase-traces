@@ -1,5 +1,5 @@
-import { getMetadata } from '@couchbase-traces/common-utils/dist/core/metadata';
 import { splitAndTrimWithBracket } from '@couchbase-traces/common-utils/dist/core/utils';
+import { getMetadata } from '@couchbase-traces/common-utils/dist/dataLayer';
 import { trace } from '@opentelemetry/api';
 
 import { READ_ONLY_TOOL } from '@/mcp/tools/annotations';

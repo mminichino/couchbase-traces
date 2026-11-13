@@ -2,8 +2,8 @@ import {
   getStableSampleExpression,
   rankProperties,
 } from '@couchbase-traces/common-utils/dist/core/eventDeltas';
-import { getMetadata } from '@couchbase-traces/common-utils/dist/core/metadata';
-import { renderChartConfig } from '@couchbase-traces/common-utils/dist/core/renderChartConfig';
+import { getMetadata } from '@couchbase-traces/common-utils/dist/dataLayer';
+import { renderChartConfig } from '@couchbase-traces/common-utils/dist/dataLayer';
 import {
   type BuilderChartConfigWithDateRange,
   DisplayType,

@@ -182,6 +182,12 @@ create_index() {
   log "Creating index idx_events_ts"
   retry 30 query_ok "CREATE INDEX idx_events_ts IF NOT EXISTS
     ON \`$BUCKET\`.\`$SCOPE\`.\`events\`(ts DESC)"
+  log "Creating index ix_events_attr_items"
+  retry 30 query_ok "CREATE INDEX ix_events_attr_items IF NOT EXISTS
+    ON \`$BUCKET\`.\`$SCOPE\`.\`events\`(DISTINCT ARRAY (p.\`name\` || \"=\" || p.\`val\`) FOR p IN OBJECT_PAIRS(\`attrs\`) END)"
+  log "Creating index ix_events_service"
+  retry 30 query_ok "CREATE INDEX ix_events_service IF NOT EXISTS
+    ON \`$BUCKET\`.\`$SCOPE\`.\`events\`(\`service\`)"
 }
 
 # Publishes the shifted host ports so SDK clients using network=external

@@ -14,6 +14,7 @@ import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 
 import { usePageTitle } from '@/brand';
 import { MANTINE_FONT_MAP } from '@/config/fonts';
+import { registerDataLayer } from '@/dataLayerSetup';
 import { ibmPlexMono, inter, roboto, robotoMono } from '@/fonts';
 import { fetchServerVersion, installHdxDebug } from '@/hdxDebug';
 import { ThemeWrapper } from '@/ThemeWrapper';
@@ -49,6 +50,8 @@ const queryClient = new QueryClient({
     onError: console.error,
   }),
 });
+
+registerDataLayer(queryClient);
 
 export type NextPageWithLayout<P = object, IP = P> = NextPage<P, IP> & {
   getLayout?: (page: React.ReactElement) => React.ReactNode;

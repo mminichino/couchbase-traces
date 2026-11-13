@@ -3430,6 +3430,8 @@ export type TableConnection = {
   databaseName: string;
   tableName: string;
   connectionId: string;
+  /** Couchbase scope. Absent on ClickHouse sources. */
+  scopeName?: string;
   metricName?: string;
   metadataMVs?: MetadataMaterializedViews;
   // Bounds Map key discovery; without it Map keys are skipped. #3037
@@ -3461,6 +3463,7 @@ export function tcFromChartConfig(
 ): TableConnection {
   return {
     databaseName: config?.from?.databaseName ?? '',
+    scopeName: config?.from?.scopeName,
     tableName: config?.from?.tableName ?? '',
     connectionId: config?.connection ?? '',
   };
@@ -3469,6 +3472,7 @@ export function tcFromChartConfig(
 export function tcFromSource(source?: TSource): TableConnection {
   return {
     databaseName: source?.from?.databaseName ?? '',
+    scopeName: source?.from?.scopeName,
     tableName: source?.from?.tableName ?? '',
     connectionId: source?.connection ?? '',
     metadataMVs:

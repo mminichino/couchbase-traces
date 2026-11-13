@@ -1,9 +1,7 @@
 import Link from 'next/link';
-import {
-  ClickHouseQueryError,
-  isMissingColumnError,
-} from '@couchbase-traces/common-utils/dist/clickhouse';
+import { ClickHouseQueryError } from '@couchbase-traces/common-utils/dist/clickhouse';
 import { tcFromSource } from '@couchbase-traces/common-utils/dist/core/metadata';
+import { isMissingColumnError } from '@couchbase-traces/common-utils/dist/dataLayer';
 import {
   isLogSource,
   isTraceSource,

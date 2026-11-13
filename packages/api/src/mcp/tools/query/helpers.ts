@@ -3,7 +3,6 @@ import {
   type ClickHouseSettings,
 } from '@clickhouse/client-common';
 import { getHeatmapMode } from '@couchbase-traces/common-utils/dist/core/heatmap';
-import { getMetadata } from '@couchbase-traces/common-utils/dist/core/metadata';
 import { PromqlChartError } from '@couchbase-traces/common-utils/dist/core/promqlChart';
 import {
   convertToCategoricalChartConfig,
@@ -11,6 +10,7 @@ import {
   isTimeSeriesDisplayType,
   splitAndTrimWithBracket,
 } from '@couchbase-traces/common-utils/dist/core/utils';
+import { getMetadata } from '@couchbase-traces/common-utils/dist/dataLayer';
 import {
   isBuilderSavedChartConfig,
   isPromqlSavedChartConfig,

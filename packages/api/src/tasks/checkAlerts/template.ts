@@ -1,13 +1,13 @@
 import { ClickhouseClient } from '@couchbase-traces/common-utils/dist/clickhouse/node';
 import { Metadata } from '@couchbase-traces/common-utils/dist/core/metadata';
 import { getPromqlSeries } from '@couchbase-traces/common-utils/dist/core/promql';
-import { renderChartConfig } from '@couchbase-traces/common-utils/dist/core/renderChartConfig';
 import { buildSearchChartConfig } from '@couchbase-traces/common-utils/dist/core/searchChartConfig';
 import {
   formatDate,
   objectHash,
   UTC_TIME_ZONE,
 } from '@couchbase-traces/common-utils/dist/core/utils';
+import { renderChartConfig } from '@couchbase-traces/common-utils/dist/dataLayer';
 import {
   isPromqlSavedChartConfig,
   isRawSqlSavedChartConfig,

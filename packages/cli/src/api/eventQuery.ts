@@ -8,7 +8,7 @@ import type {
   ColumnMetaType,
 } from '@couchbase-traces/common-utils/dist/clickhouse';
 import { chSqlToAliasMap } from '@couchbase-traces/common-utils/dist/clickhouse';
-import { renderChartConfig } from '@couchbase-traces/common-utils/dist/core/renderChartConfig';
+import { renderChartConfig } from '@couchbase-traces/common-utils/dist/dataLayer';
 import type { Metadata } from '@couchbase-traces/common-utils/dist/core/metadata';
 import { aliasMapToWithClauses } from '@couchbase-traces/common-utils/dist/core/utils';
 import { DisplayType } from '@couchbase-traces/common-utils/dist/types';

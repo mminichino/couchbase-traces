@@ -7,8 +7,8 @@ import {
 } from '@couchbase-traces/common-utils/dist/clickhouse';
 import type { ClickhouseClient } from '@couchbase-traces/common-utils/dist/clickhouse/browser';
 import type { Metadata } from '@couchbase-traces/common-utils/dist/core/metadata';
-import { renderChartConfig } from '@couchbase-traces/common-utils/dist/core/renderChartConfig';
 import { getFirstTimestampValueExpression } from '@couchbase-traces/common-utils/dist/core/utils';
+import { renderChartConfig } from '@couchbase-traces/common-utils/dist/dataLayer';
 import { filtersToQuery } from '@couchbase-traces/common-utils/dist/filters';
 import {
   DateRange,

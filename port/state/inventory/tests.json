@@ -7782,6 +7782,18 @@
       "routes": []
     },
     {
+      "path": "packages/common-utils/src/couchbase/__tests__/functions.test.ts",
+      "workspace": "@couchbase-traces/common-utils",
+      "kind": "unit",
+      "directImports": [
+        "packages/common-utils/src/couchbase/fn/quantile.ts",
+        "packages/common-utils/src/couchbase/fn/scalar.ts",
+        "packages/common-utils/src/couchbase/functions.ts",
+        "packages/common-utils/src/couchbase/sqlpp.ts"
+      ],
+      "routes": []
+    },
+    {
       "path": "packages/common-utils/src/couchbase/__tests__/inferMeta.test.ts",
       "workspace": "@couchbase-traces/common-utils",
       "kind": "unit",
@@ -7800,6 +7812,33 @@
       "routes": []
     },
     {
+      "path": "packages/common-utils/src/couchbase/__tests__/metadata.test.ts",
+      "workspace": "@couchbase-traces/common-utils",
+      "kind": "unit",
+      "directImports": [
+        "packages/common-utils/src/core/metadata.ts",
+        "packages/common-utils/src/couchbase/infer.ts",
+        "packages/common-utils/src/couchbase/metadata.ts",
+        "packages/common-utils/src/couchbase/render.ts",
+        "packages/common-utils/src/dataLayer/errors.ts"
+      ],
+      "routes": []
+    },
+    {
+      "path": "packages/common-utils/src/couchbase/__tests__/phase6.couchbase.int.test.ts",
+      "workspace": "@couchbase-traces/common-utils",
+      "kind": "int",
+      "directImports": [
+        "packages/common-utils/src/couchbase/fn/quantile.ts",
+        "packages/common-utils/src/couchbase/fn/scalar.ts",
+        "packages/common-utils/src/couchbase/node.ts",
+        "packages/common-utils/src/couchbase/serializer.ts",
+        "packages/common-utils/src/couchbase/sqlpp.ts",
+        "packages/common-utils/src/couchbase/time.ts"
+      ],
+      "routes": []
+    },
+    {
       "path": "packages/common-utils/src/couchbase/__tests__/resultset.test.ts",
       "workspace": "@couchbase-traces/common-utils",
       "kind": "unit",
@@ -7807,6 +7846,17 @@
         "packages/common-utils/src/couchbase/errors.ts",
         "packages/common-utils/src/couchbase/resultset.ts",
         "packages/common-utils/src/couchbase/types.ts"
+      ],
+      "routes": []
+    },
+    {
+      "path": "packages/common-utils/src/couchbase/__tests__/serializer.test.ts",
+      "workspace": "@couchbase-traces/common-utils",
+      "kind": "unit",
+      "directImports": [
+        "packages/common-utils/src/couchbase/serializer.ts",
+        "packages/common-utils/src/couchbase/sqlpp.ts",
+        "packages/common-utils/src/couchbase/time.ts"
       ],
       "routes": []
     },
@@ -7854,6 +7904,31 @@
       "kind": "unit",
       "directImports": [
         "packages/common-utils/src/types.ts"
+      ],
+      "routes": []
+    },
+    {
+      "path": "packages/common-utils/src/dataLayer/__tests__/kind.test.ts",
+      "workspace": "@couchbase-traces/common-utils",
+      "kind": "unit",
+      "directImports": [
+        "packages/common-utils/src/dataLayer/kind.ts"
+      ],
+      "routes": []
+    },
+    {
+      "path": "packages/common-utils/src/dataLayer/__tests__/routing.test.ts",
+      "workspace": "@couchbase-traces/common-utils",
+      "kind": "unit",
+      "directImports": [
+        "packages/common-utils/src/clickhouse/index.ts",
+        "packages/common-utils/src/clickhouse/node.ts",
+        "packages/common-utils/src/core/metadata.ts",
+        "packages/common-utils/src/dataLayer/errors.ts",
+        "packages/common-utils/src/dataLayer/index.ts",
+        "packages/common-utils/src/dataLayer/kind.ts",
+        "packages/common-utils/src/dataLayer/node.ts",
+        "packages/common-utils/src/dataLayer/routingMetadata.ts"
       ],
       "routes": []
     },

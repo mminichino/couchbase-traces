@@ -16,7 +16,7 @@ services:
 
   couchbase:
     image: couchbase/server:enterprise-8.0.3
-    container_name: cbt-ingest-parity-couchbase
+    container_name: ${CBT_PARITY_COUCHBASE_CONTAINER:-cbt-ingest-parity-couchbase}
     hostname: couchbase
     mem_limit: 6g
     ports:
@@ -35,6 +35,8 @@ services:
       CBT_COUCHBASE_ADMIN_PASSWORD: cbt-test-admin
       CBT_COUCHBASE_QUERY_USER: cbt_query
       CBT_COUCHBASE_QUERY_PASSWORD: cbt-query-password
+      CBT_COUCHBASE_MONITOR_USER: cbt_monitor
+      CBT_COUCHBASE_MONITOR_PASSWORD: cbt-monitor-password
     depends_on:
       - couchbase
 

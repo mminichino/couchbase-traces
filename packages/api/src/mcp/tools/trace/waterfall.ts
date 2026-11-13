@@ -1,6 +1,6 @@
 import type { ChSql } from '@couchbase-traces/common-utils/dist/clickhouse';
-import { getMetadata } from '@couchbase-traces/common-utils/dist/core/metadata';
 import { pickBucketTimestampColumn } from '@couchbase-traces/common-utils/dist/core/utils';
+import { getMetadata } from '@couchbase-traces/common-utils/dist/dataLayer';
 import {
   type BuilderChartConfigWithDateRange,
   type ChartConfigWithDateRange,

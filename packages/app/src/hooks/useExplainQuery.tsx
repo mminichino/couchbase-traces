@@ -1,4 +1,4 @@
-import { renderChartConfig } from '@couchbase-traces/common-utils/dist/core/renderChartConfig';
+import { renderChartConfig } from '@couchbase-traces/common-utils/dist/dataLayer';
 import { ChartConfigWithOptDateRange } from '@couchbase-traces/common-utils/dist/types';
 import { useQuery, UseQueryOptions } from '@tanstack/react-query';
 

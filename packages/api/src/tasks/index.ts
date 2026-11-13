@@ -1,3 +1,5 @@
+import '@/dataLayerSetup';
+
 import { shutdown } from '@clickhouse/clickstack-node';
 import { CronJob } from 'cron';
 import minimist from 'minimist';

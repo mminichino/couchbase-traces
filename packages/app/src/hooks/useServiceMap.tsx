@@ -1,8 +1,8 @@
 import SqlString from 'sqlstring';
 import { chSql } from '@couchbase-traces/common-utils/dist/clickhouse';
 import { Metadata } from '@couchbase-traces/common-utils/dist/core/metadata';
-import { renderChartConfig } from '@couchbase-traces/common-utils/dist/core/renderChartConfig';
 import { errorStatusPredicateSql } from '@couchbase-traces/common-utils/dist/core/spanPredicates';
+import { renderChartConfig } from '@couchbase-traces/common-utils/dist/dataLayer';
 import { TTraceSource } from '@couchbase-traces/common-utils/dist/types';
 import { useQuery } from '@tanstack/react-query';
 

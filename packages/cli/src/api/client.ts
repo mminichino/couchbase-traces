@@ -20,10 +20,8 @@ import {
   type ClickhouseClientOptions,
   type QueryInputs,
 } from '@couchbase-traces/common-utils/dist/clickhouse';
-import {
-  getMetadata,
-  type Metadata,
-} from '@couchbase-traces/common-utils/dist/core/metadata';
+import { getMetadata } from '@couchbase-traces/common-utils/dist/dataLayer';
+import { type Metadata } from '@couchbase-traces/common-utils/dist/core/metadata';
 
 import { loadSession, saveSession, clearSession } from '@/utils/config';
 import type {

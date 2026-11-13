@@ -1,0 +1,7 @@
+[
+  { "name": "count by service", "kind": "count", "group": "ServiceName" },
+  { "name": "sum severity", "kind": "sum", "field": "SeverityNumber" },
+  { "name": "quantile severity", "kind": "quantile", "field": "SeverityNumber", "p": 0.5 },
+  { "name": "hour buckets", "kind": "bucket", "granularity": "1 hour" },
+  { "name": "gauge sum", "kind": "metricSum" }
+]

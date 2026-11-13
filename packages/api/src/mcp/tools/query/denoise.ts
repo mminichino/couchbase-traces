@@ -1,5 +1,5 @@
-import { getMetadata } from '@couchbase-traces/common-utils/dist/core/metadata';
 import { getFirstTimestampValueExpression } from '@couchbase-traces/common-utils/dist/core/utils';
+import { getMetadata } from '@couchbase-traces/common-utils/dist/dataLayer';
 import {
   buildNoisyBodyMatcher,
   DENOISE_SAMPLE_SIZE,

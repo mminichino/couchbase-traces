@@ -24,6 +24,9 @@ module.exports = {
   testTimeout: 30000,
   moduleNameMapper: {
     '@/(.*)$': '<rootDir>/$1',
+    // See port/jest/dataLayerShim.cjs. rootDir is src/.
+    '^@couchbase-traces/common-utils/dist/dataLayer$':
+      '<rootDir>/../../../port/jest/dataLayerShim.cjs',
   },
   // Keep in sync with jest.int.config.js.
   transformIgnorePatterns: ['/node_modules/(?!(ai|@ai-sdk|@workflow/serde)/)'],

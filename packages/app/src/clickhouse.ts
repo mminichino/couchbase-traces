@@ -13,6 +13,7 @@ import {
   ResponseJSON,
 } from '@couchbase-traces/common-utils/dist/clickhouse';
 import { ClickhouseClient } from '@couchbase-traces/common-utils/dist/clickhouse/browser';
+import { RoutingClickhouseClient } from '@couchbase-traces/common-utils/dist/dataLayer/browser';
 import { useQuery, UseQueryOptions } from '@tanstack/react-query';
 
 import { IS_LOCAL_MODE } from '@/config';
@@ -52,7 +53,7 @@ export const getClickhouseClient = (
       ...options,
     });
   }
-  return new ClickhouseClient({
+  return new RoutingClickhouseClient({
     host: PROXY_CLICKHOUSE_HOST,
     ...options,
   });

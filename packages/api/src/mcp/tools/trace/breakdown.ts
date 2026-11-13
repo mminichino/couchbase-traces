@@ -16,7 +16,7 @@
  * tools (table / timeseries / search) can't express the TraceId subselect.
  */
 import type { ChSql } from '@couchbase-traces/common-utils/dist/clickhouse';
-import { getMetadata } from '@couchbase-traces/common-utils/dist/core/metadata';
+import { getMetadata } from '@couchbase-traces/common-utils/dist/dataLayer';
 import { SourceKind } from '@couchbase-traces/common-utils/dist/types';
 
 import { getSource } from '@/controllers/sources';

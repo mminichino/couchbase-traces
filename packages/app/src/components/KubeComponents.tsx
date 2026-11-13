@@ -3,7 +3,7 @@ import Link from 'next/link';
 import { sub } from 'date-fns';
 import { Badge } from '@clickhouse/click-ui';
 import type { ResponseJSON } from '@couchbase-traces/common-utils/dist/clickhouse';
-import { renderChartConfig } from '@couchbase-traces/common-utils/dist/core/renderChartConfig';
+import { renderChartConfig } from '@couchbase-traces/common-utils/dist/dataLayer';
 import {
   BuilderChartConfigWithDateRange,
   DateRange,

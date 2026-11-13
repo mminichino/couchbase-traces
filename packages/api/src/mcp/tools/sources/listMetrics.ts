@@ -1,4 +1,4 @@
-import { getMetadata } from '@couchbase-traces/common-utils/dist/core/metadata';
+import { getMetadata } from '@couchbase-traces/common-utils/dist/dataLayer';
 import { SourceKind } from '@couchbase-traces/common-utils/dist/types';
 import { trace } from '@opentelemetry/api';
 import { z } from 'zod';

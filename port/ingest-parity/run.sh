@@ -96,7 +96,7 @@ fi
 log "Creating primary indexes so comparisons can read every document"
 for table in otel_logs hyperdx_sessions otel_traces otel_metrics_gauge otel_metrics_sum \
   otel_metrics_histogram otel_metrics_exponential_histogram otel_metrics_summary; do
-  response=$(docker exec cbt-ingest-parity-couchbase curl -s -u Administrator:cbt-test-admin \
+  response=$(docker exec "${CBT_PARITY_COUCHBASE_CONTAINER:-cbt-ingest-parity-couchbase}" curl -s -u Administrator:cbt-test-admin \
     http://127.0.0.1:8093/query/service -H 'content-type: application/json' \
     -d "{\"statement\":\"CREATE PRIMARY INDEX IF NOT EXISTS ON \`otel\`.\`default\`.\`${table}\`\"}")
   if ! grep -q '"status": *"success"' <<<"$response"; then
