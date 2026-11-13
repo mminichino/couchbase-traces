@@ -767,7 +767,7 @@ Collector components, pipelines, ClickHouse exporters, and management code.
 
 ### Features pending a decision
 
-None.
+- `metrics-exp-histogram`: Upstream translateExponentialHistogram depends on ClickHouse bitShiftRight/arraySplit/sumMap scale normalization and multi-window lag over positive/negative bucket arrays. A SQL++ port was attempted after explicit-bounds histogram landed; the scale-normalization and aligned array-delta path has no ready Phase 6 equivalent and would diverge without a dedicated design. Gated in the metric explorer for Couchbase sources; render throws CouchbaseNotReadyError naming this feature id if reached.
 <!-- phase3:end -->
 
 ### Phase 5a
@@ -881,21 +881,23 @@ Completed requests: `system:completed_requests` requires `query_system_catalog`.
 ### Phase 7: charts
 
 - Features ported: chart explorer and dashboards (`app-chart`, `app-dashboards`); builder aggregates (`count`, `count_distinct`, `sum`, `avg`, `min`, `max`, `any`→`MIN`, `last_value`→`argMax`, quantiles); `aggCondition` (lucene/sql) nested as SqlPP so `$pN` params survive; having/orderBy/limit; series-limit CTE (max per bucket then top N); ratio (`CASE WHEN den=0 THEN NULL`); sample weight; filters; WITH CTEs; raw SQL macros (`$__fromTime`/`$__toTime` as 30-char ISO params — `MILLIS_TO_UTC` drops fractions on exact seconds and breaks string compares); heatmap display configs.
+- Event-source formulas: `renderSelectListWithFormulasCouchbase` compiles via `compileFormulaAst` with `coalesce`→`IFNULL` / `nullif`→`NULLIF`.
 - `aggCondition` in WHERE when every select has one (upstream PREWHERE-style OR of conditions).
-- Query parity: `port/query-parity/run.sh --slice charts` green (33 cases).
+- Query parity: `compare-charts --render-only charts` green (34 cases, including `charts-formula-count-ratio`).
 - Allowed divergences: `charts-agg-any-none` (`nondeterministic` — CH `any()` vs SQL++ `MIN`).
 - E2E exclusions: `clickhouse-dashboard.spec.ts` (`clickhouse_admin`); external-api dashboard specs (`local_mode_only`).
-- Formulas remain `CouchbaseNotReadyError` until a dedicated parity path lands; metric multi-series is the metrics slice.
-- E2E smoke: `CBT_E2E_STORE=couchbase ./scripts/test-e2e.sh …/chart-explorer.spec.ts` needs `yarn` on PATH (shim to `.yarn/releases/yarn-4.13.0.cjs`); Playwright `webServer` still failed to start in this environment — parity is the green gate for the slice commit.
+- E2E smoke: Couchbase Playwright full-stack still heavy in this environment (see metrics note); render-only parity is the green gate for formula/chart gaps closed after the six slice commits.
 
 ### Phase 7: metrics
 
 - Slice flag `COUCHBASE_SLICES.metrics=true`. Area feature `api-v1` (PromQL) remains `dropped` (Phase 5a); metric chart configs use `translateMetricChartConfigCouchbase`.
 - Gauge/summary: Source CTE with `ENCODE_JSON(Attributes)` series key; `Value` always backtick-quoted (SQL++ reserved). Sum: LAG-based Rate with reset clamp (`GREATEST(delta, 0)`); `increase` → `SUM(Rate)`.
-- Histogram / exponential histogram / multi-select formulas: still `CouchbaseNotReadyError` (follow-up).
+- Explicit-bounds histogram: count (LAG Count deltas + `SUM(delta)`) and quantile (UNNEST bucket rates → rebuild arrays → Phase 6 `histogramQuantile`) in `render/metrics/histogram.ts`.
+- Multi-series + metric formulas: `renderMultiSeriesMetricChartConfigCouchbase` — per-series recurse, `UNION ALL`, pivot with `MAX(CASE…)`, formulas via SQL++-mapped `compileFormulaAst`.
+- **needs_decision:** `metrics-exp-histogram` — exponential histogram scale normalization (bitShift/arraySplit/sumMap) has no ready SQL++ equivalent after a solid attempt; gated in MetricExplorer for Couchbase (`unavailableKinds`); render throws `CouchbaseNotReadyError` naming the feature id. Parity case `metrics-exp-histogram-needs-decision` asserts that error (`compare.expectCouchbaseError`).
 - Avg/count gauge charts without `metricType` compare equal via lucene `MetricName` filter (CH `last_value` translate vs CB raw avg diverge); `metrics-gauge-max` exercises the translate path.
-- Query parity: `port/query-parity/run.sh --slice metrics` green (3 cases: gauge-avg, gauge-count, gauge-max).
-- E2E: `metric-name-streaming.spec.ts`, `metric-table-autofill.spec.ts`, `correlated-metric-source.spec.ts` listed under metrics in `port/slices/e2e.json`.
+- Query parity: `compare-charts --render-only metrics` green (8 cases: gauge×3, histogram count/p50, multi-series, formula, exp-hist expected error).
+- E2E: `metric-name-streaming.spec.ts`, `metric-table-autofill.spec.ts`, `correlated-metric-source.spec.ts` listed under metrics in `port/slices/e2e.json`. Full Couchbase e2e smoke not re-proven green in this follow-up (Playwright webServer / yarn PATH remain environmental); do not claim green.
 
 ### Phase 7: sessions
 

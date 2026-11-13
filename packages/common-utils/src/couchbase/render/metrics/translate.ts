@@ -1,8 +1,12 @@
+import { GROUP_ALIAS } from '@/core/histogram';
+import { FIXED_TIME_BUCKET_EXPR_ALIAS } from '@/core/renderChartConfig';
 import { MetricsDataType } from '@/types';
 import type { BuilderChartConfigWithOptDateRange } from '@/types';
-import { CouchbaseNotReadyError } from '@/dataLayer/errors';
 import { lag } from '@/couchbase/fn/scalar';
-import { keyspace } from '@/couchbase/sqlpp';
+import { keyspace, quoteIdent } from '@/couchbase/sqlpp';
+import { CouchbaseNotReadyError } from '@/dataLayer/errors';
+
+import { translateHistogramCouchbase } from './histogram';
 
 type MetricSelect = {
   metricType?: string;
@@ -21,6 +25,8 @@ type MetricSelect = {
  * Translate a metric chart config into a builder config with SQL++ CTEs.
  * Gauge: last Value per (series, bucket) then the requested agg.
  * Sum: per-point Rate via LAG (reset → clamp at 0), then SUM Rate per bucket.
+ * Histogram (explicit bounds): count / quantile CTEs (see histogram.ts).
+ * Exponential histogram: needs_decision — see port/features.json.
  */
 export async function translateMetricChartConfigCouchbase(
   chartConfig: BuilderChartConfigWithOptDateRange,
@@ -126,11 +132,40 @@ export async function translateMetricChartConfigCouchbase(
     };
   }
 
-  if (
-    metricType === MetricsDataType.Histogram ||
-    metricType === MetricsDataType.ExponentialHistogram
-  ) {
-    throw new CouchbaseNotReadyError(`metrics: ${metricType}`);
+  if (metricType === MetricsDataType.Histogram) {
+    const translated = translateHistogramCouchbase({
+      chartConfig,
+      select: first,
+      table,
+      nameFilter,
+      from,
+    });
+    const selectParts = [
+      translated.hasBucket ? quoteIdent(FIXED_TIME_BUCKET_EXPR_ALIAS) : null,
+      translated.hasGroup ? quoteIdent(GROUP_ALIAS) : null,
+      quoteIdent(translated.valueAlias),
+    ].filter(Boolean);
+    return {
+      ...chartConfig,
+      with: translated.with,
+      select: selectParts.join(', '),
+      from: { databaseName: '', tableName: 'metrics' },
+      where: '',
+      groupBy: undefined,
+      granularity: translated.hasBucket ? undefined : chartConfig.granularity,
+      timestampValueExpression: translated.hasBucket
+        ? quoteIdent(FIXED_TIME_BUCKET_EXPR_ALIAS)
+        : chartConfig.timestampValueExpression,
+      orderBy: translated.hasGroup
+        ? undefined
+        : chartConfig.orderBy,
+    };
+  }
+
+  if (metricType === MetricsDataType.ExponentialHistogram) {
+    throw new CouchbaseNotReadyError(
+      'metrics: exponential histogram (needs_decision: metrics-exp-histogram)',
+    );
   }
 
   throw new CouchbaseNotReadyError(`metrics: ${metricType}`);

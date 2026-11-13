@@ -386,11 +386,33 @@ async function runCase(caseFile) {
   const meta = metadata(caseFile.source);
   primeConnectionKind('parity-cb', 'couchbase');
   const cbConfig = buildChartConfig(caseFile, 'parity-cb');
-  const cbRendered = await renderChartConfigCouchbase(
-    cbConfig,
-    meta,
-    undefined,
-  );
+  const expectCbError = caseFile.compare?.expectCouchbaseError;
+  let cbRendered;
+  try {
+    cbRendered = await renderChartConfigCouchbase(
+      cbConfig,
+      meta,
+      undefined,
+    );
+  } catch (err) {
+    if (
+      expectCbError &&
+      String(err?.message ?? err).includes(String(expectCbError))
+    ) {
+      return {
+        id: caseFile.id,
+        mode: renderOnly ? 'render-only' : 'expect-error',
+        ok: true,
+        expectedError: true,
+      };
+    }
+    throw err;
+  }
+  if (expectCbError) {
+    throw new Error(
+      `Case ${caseFile.id}: expected Couchbase error matching "${expectCbError}" but render succeeded`,
+    );
+  }
 
   if (renderOnly) {
     const sql = cbRendered.sql ?? '';

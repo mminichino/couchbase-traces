@@ -263,6 +263,20 @@
       }
     },
     {
+      "id": "metrics-exp-histogram",
+      "name": "Exponential histogram metrics",
+      "area": "metrics",
+      "visibility": "user",
+      "description": "Chart OpenTelemetry exponential histogram metrics (scale-normalized bucket quantiles and counts).",
+      "entryPoints": [],
+      "status": "needs_decision",
+      "decision": {
+        "note": "Upstream translateExponentialHistogram depends on ClickHouse bitShiftRight/arraySplit/sumMap scale normalization and multi-window lag over positive/negative bucket arrays. A SQL++ port was attempted after explicit-bounds histogram landed; the scale-normalization and aligned array-delta path has no ready Phase 6 equivalent and would diverge without a dedicated design. Gated in the metric explorer for Couchbase sources; render throws CouchbaseNotReadyError naming this feature id if reached.",
+        "signedOffBy": "Michael",
+        "date": "2026-11-13"
+      }
+    },
+    {
       "id": "app-login",
       "name": "Sign in and sign out",
       "area": "auth",

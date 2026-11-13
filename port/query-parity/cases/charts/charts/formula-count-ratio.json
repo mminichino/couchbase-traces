@@ -1,0 +1,27 @@
+{
+  "id": "charts-formula-count-ratio",
+  "description": "event-source formula A / B over two count selects",
+  "source": "logs",
+  "config": {
+    "select": [
+      {
+        "aggFn": "count",
+        "valueExpression": "",
+        "aggCondition": "SeverityText:\"error\"",
+        "aggConditionLanguage": "lucene",
+        "alias": "errors"
+      },
+      {
+        "aggFn": "count",
+        "valueExpression": "",
+        "alias": "total"
+      }
+    ],
+    "formulas": [{ "expression": "A / B", "alias": "err rate" }],
+    "dateRange": { "fromMinutesAgo": 60, "toMinutesAgo": 0 }
+  },
+  "compare": {
+    "ignoreColumns": ["__cbt_id"],
+    "numericTolerance": 0.05
+  }
+}

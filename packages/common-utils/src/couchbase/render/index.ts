@@ -75,7 +75,12 @@ export async function renderChartConfigCouchbase(
     (substituted.select.length > 1 ||
       (substituted.select.length === 1 && hasMetricFormulas(substituted)))
   ) {
-    await renderMultiSeriesMetricChartConfigCouchbase();
+    return renderMultiSeriesMetricChartConfigCouchbase(
+      substituted,
+      metadata,
+      querySettings,
+      renderChartConfigCouchbase,
+    );
   }
 
   const translated = isMetricChartConfig(substituted)

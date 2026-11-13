@@ -1,0 +1,28 @@
+{
+  "id": "metrics-histogram-count",
+  "description": "explicit-bounds histogram count (delta temporality)",
+  "source": "metrics_histogram",
+  "config": {
+    "select": [
+      {
+        "aggFn": "count",
+        "valueExpression": "Value",
+        "metricType": "histogram",
+        "metricName": "parity.histogram",
+        "alias": "value"
+      }
+    ],
+    "metricTables": {
+      "gauge": "otel_metrics_gauge",
+      "sum": "otel_metrics_sum",
+      "histogram": "otel_metrics_histogram",
+      "summary": "otel_metrics_summary",
+      "exponential histogram": "otel_metrics_exponential_histogram"
+    },
+    "dateRange": { "fromMinutesAgo": 60, "toMinutesAgo": 0 }
+  },
+  "compare": {
+    "ignoreColumns": ["__cbt_id"],
+    "numericTolerance": 0.05
+  }
+}

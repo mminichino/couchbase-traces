@@ -1,3 +1,4 @@
+import { compileFormulaAst, validateFormula } from '@/core/formula';
 import {
   FIXED_TIME_BUCKET_EXPR_ALIAS,
   isNonEmptyWhereExpr,
@@ -275,6 +276,83 @@ function concatSelect(parts: SqlPP[]): SqlPP {
   return parts.slice(1).reduce((acc, p) => sqlpp`${acc}, ${p}`, parts[0]);
 }
 
+function compileFormulaAstCouchbase(
+  ast: Parameters<typeof compileFormulaAst>[0],
+  resolveSeriesRef: (index: number) => string,
+): string {
+  return compileFormulaAst(ast, resolveSeriesRef)
+    .replace(/\bcoalesce\(/gi, 'IFNULL(')
+    .replace(/\bnullif\(/gi, 'NULLIF(');
+}
+
+async function renderSelectListWithFormulasCouchbase(
+  select: Exclude<SelectList, string>,
+  chartConfig: BuilderChartConfigWithOptDateRange,
+  ctx: RenderFilterContext,
+): Promise<SqlPP[]> {
+  const formulas = chartConfig.formulas ?? [];
+  const operandParts = await renderSelectListCouchbase(
+    select.map(col => ({ ...col, alias: undefined })),
+    chartConfig,
+    ctx,
+  );
+  const operandAt = (index: number): SqlPP => {
+    const operand = operandParts.at(index);
+    if (operand == null) {
+      throw new Error(`Formula references unknown series index ${index}`);
+    }
+    return operand;
+  };
+
+  const columns: SqlPP[] = [];
+  if (chartConfig.showOperandSeries !== false) {
+    columns.push(
+      ...(await renderSelectListCouchbase(select, chartConfig, ctx)),
+    );
+  }
+
+  const seen = new Set<string>(
+    select.flatMap(s =>
+      s.alias != null && s.alias.trim() !== '' ? [s.alias] : [],
+    ),
+  );
+  const uniqueName = (base: string, columnIdx: number) => {
+    const name = seen.has(base) ? `${base}__${columnIdx}` : base;
+    seen.add(name);
+    return name;
+  };
+
+  for (const [formulaIdx, f] of formulas.entries()) {
+    const parsed = validateFormula(f.expression, {
+      seriesCount: select.length,
+    });
+    if (!parsed.ok) {
+      throw new Error(
+        `Invalid formula "${f.expression}": ${parsed.errors
+          .map(e => e.message)
+          .join('; ')}`,
+      );
+    }
+    const name = uniqueName(
+      f.alias || f.expression,
+      select.length + formulaIdx,
+    );
+    const expr = compileFormulaAstCouchbase(
+      parsed.ast,
+      index => operandAt(index).statement,
+    );
+    const params = Object.assign(
+      {},
+      ...parsed.referencedIndices.map(index => operandAt(index).parameters),
+    );
+    columns.push({
+      statement: `${expr} AS ${quoteIdent(name)}`,
+      parameters: params,
+    });
+  }
+  return columns;
+}
+
 export async function renderSelectCouchbase(
   chartConfig: BuilderChartConfigWithOptDateRange,
   ctx: RenderFilterContext,
@@ -284,11 +362,16 @@ export async function renderSelectCouchbase(
   const hasFormulas =
     Array.isArray(chartConfig.select) &&
     (chartConfig.formulas?.length ?? 0) > 0;
-  if (hasFormulas) {
-    throw new CouchbaseNotReadyError('charts: formulas');
-  }
 
-  if (
+  if (hasFormulas && Array.isArray(chartConfig.select)) {
+    parts.push(
+      ...(await renderSelectListWithFormulasCouchbase(
+        chartConfig.select,
+        chartConfig,
+        ctx,
+      )),
+    );
+  } else if (
     Array.isArray(chartConfig.select) &&
     isRatioChartConfig(chartConfig.select, chartConfig)
   ) {

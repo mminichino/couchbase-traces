@@ -1,0 +1,29 @@
+{
+  "id": "metrics-histogram-p50",
+  "description": "explicit-bounds histogram quantile p50",
+  "source": "metrics_histogram",
+  "config": {
+    "select": [
+      {
+        "aggFn": "quantile",
+        "level": 0.5,
+        "valueExpression": "Value",
+        "metricType": "histogram",
+        "metricName": "parity.histogram",
+        "alias": "value"
+      }
+    ],
+    "metricTables": {
+      "gauge": "otel_metrics_gauge",
+      "sum": "otel_metrics_sum",
+      "histogram": "otel_metrics_histogram",
+      "summary": "otel_metrics_summary",
+      "exponential histogram": "otel_metrics_exponential_histogram"
+    },
+    "dateRange": { "fromMinutesAgo": 60, "toMinutesAgo": 0 }
+  },
+  "compare": {
+    "ignoreColumns": ["__cbt_id"],
+    "numericTolerance": 0.05
+  }
+}

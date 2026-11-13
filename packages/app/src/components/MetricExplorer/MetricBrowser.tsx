@@ -39,6 +39,11 @@ type MetricBrowserProps = {
   entries: MetricCatalogEntry[];
   /** Kinds whose table could not be read; the catalog is a subset without them. */
   failedKinds?: MetricsDataType[];
+  /**
+   * Kinds intentionally gated (e.g. needs_decision on Couchbase). Shown with
+   * a different message than load failures.
+   */
+  unavailableKinds?: MetricsDataType[];
   isLoading?: boolean;
   /** Set when the catalog could not be loaded at all. */
   error?: Error | null;
@@ -59,6 +64,7 @@ type MetricBrowserProps = {
 export function MetricBrowser({
   entries,
   failedKinds = NO_FAILED_KINDS,
+  unavailableKinds = NO_FAILED_KINDS,
   isLoading,
   error,
   selected,
@@ -115,6 +121,19 @@ export function MetricBrowser({
           Could not load{' '}
           {failedKinds.map(k => METRIC_KIND_LABELS[k].toLowerCase()).join(', ')}{' '}
           metrics. The list below is incomplete.
+        </Text>
+      )}
+      {unavailableKinds.length > 0 && (
+        <Text
+          size="xxs"
+          style={{ color: 'var(--color-text-warning)' }}
+          data-testid="metric-explorer-unavailable-kinds"
+        >
+          {unavailableKinds
+            .map(k => METRIC_KIND_LABELS[k].toLowerCase())
+            .join(', ')}{' '}
+          {unavailableKinds.length === 1 ? 'is' : 'are'} not available on
+          Couchbase sources yet.
         </Text>
       )}
 
