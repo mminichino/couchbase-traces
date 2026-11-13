@@ -1,5 +1,8 @@
 import { Granularity } from '@couchbase-traces/common-utils/dist/core/utils';
-import { getMetadata } from '@couchbase-traces/common-utils/dist/dataLayer';
+import {
+  assertSliceForConnection,
+  getMetadata,
+} from '@couchbase-traces/common-utils/dist/dataLayer';
 import {
   ChartConfigWithOptDateRange,
   DisplayType,
@@ -16,6 +19,7 @@ import { getSource } from '@/controllers/sources';
 import { getTeam } from '@/controllers/team';
 import { IConnection } from '@/models/connection';
 import { ISource } from '@/models/source';
+import { couchbaseConsumerHttpResponse } from '@/utils/couchbaseConsumerErrors';
 import { validateRequestWithEnhancedErrors as validateRequest } from '@/utils/enhancedErrors';
 import {
   getCounter,
@@ -64,7 +68,9 @@ const chartsSeriesErrors = getCounter('cbt.charts.series.errors', {
  *           example: "duration"
  *         where:
  *           type: string
- *           description: Filter condition in Lucene query syntax
+ *           description: |
+ *             Filter condition in Lucene query syntax when whereLanguage is lucene,
+ *             or SQL when whereLanguage is sql. For Couchbase sources, write SQL++.
  *           example: "service:api AND level:error"
  *         whereLanguage:
  *           type: string
@@ -617,6 +623,11 @@ router.post(
                   } as SeriesResult;
                 }
 
+                await assertSliceForConnection(
+                  'external_api',
+                  source.connection.toString(),
+                );
+
                 const { chartConfig, groupByFields } =
                   await buildChartConfigFromRequest(
                     {
@@ -689,6 +700,17 @@ router.post(
           span.setStatus({ code: SpanStatusCode.OK });
           res.json({ data: responseData });
         } catch (e) {
+          const couchbase = couchbaseConsumerHttpResponse(e, 'error');
+          if (couchbase) {
+            chartsSeriesErrors.add(1, {
+              error_type:
+                e instanceof Error ? e.constructor.name : 'COUCHBASE',
+            });
+            span.recordException(e as Error);
+            span.setStatus({ code: SpanStatusCode.ERROR });
+            return res.status(couchbase.status).json(couchbase.body);
+          }
+
           chartsSeriesErrors.add(1, { error_type: 'UNHANDLED' });
           span.recordException(e as Error);
           span.setStatus({ code: SpanStatusCode.ERROR });

@@ -262,11 +262,11 @@ describe('seam display helpers', () => {
   });
 
   it('hides couchbase sources while a slice is off', async () => {
-    expect(isCouchbaseSliceEnabled('external_api')).toBe(false);
+    expect(isCouchbaseSliceEnabled('mcp')).toBe(false);
     primeConnectionKind('cb', 'couchbase');
     const kept = await filterSourcesForSlice(
       [{ connection: 'ch' }, { connection: 'cb' }],
-      'external_api',
+      'mcp',
     );
     expect(kept.map(source => source.connection)).toEqual(['ch']);
   });
@@ -304,11 +304,11 @@ describe('seam display helpers', () => {
 
   it('assertSliceForConnection rejects couchbase when the slice is off', async () => {
     primeConnectionKind('cb', 'couchbase');
+    await expect(assertSliceForConnection('mcp', 'cb')).rejects.toBeInstanceOf(
+      CouchbaseNotReadyError,
+    );
     await expect(
       assertSliceForConnection('external_api', 'cb'),
-    ).rejects.toBeInstanceOf(CouchbaseNotReadyError);
-    await expect(
-      assertSliceForConnection('alerts', 'cb'),
     ).resolves.toBeUndefined();
   });
 

@@ -940,6 +940,14 @@ Completed requests: `system:completed_requests` requires `query_system_catalog`.
 - Provider already builds API `ClickhouseClient` (extends `RoutingNodeClickhouseClient`) with Mongo-backed Couchbase loader from `dataLayerSetup`.
 - Server parity harness: `port/server-parity/run.sh --suite alerts` (case files to be filled against live stack).
 
+### Phase 8: external_api
+
+- `COUCHBASE_SLICES.external_api=true`. External API v2 features → `ported`.
+- Charts series and search call `assertSliceForConnection('external_api', …)` before query.
+- Errors: NotReady→409, Unsupported→422, QueryError→`httpStatus` via `couchbaseConsumerHttpResponse`.
+- Search strips `__cbt_id` from response rows. OpenAPI SQL fields note SQL++ for Couchbase.
+- Parity scaffold: `port/server-parity/externalApi.mjs`.
+
 ## Phase 6: SQL++ core and data-layer seam
 
 - SQL++ date format string is `1111-11-11T11:11:11.111Z` (`SQLPP_DATE_FORMAT`), the same string `port/couchbase-test/init.sh` passes to `MILLIS_TO_UTC`. On an exact second the server returns `2026-01-01T00:00:00Z` and omits the zero fraction. Bucket expressions use that format, so they compare equal to fixture timestamps. Range predicates against Phase 5 documents still use the 30-character form from `toIso30`.

@@ -113,16 +113,29 @@ describe('search source gating', () => {
     );
   });
 
-  it('still drops couchbase for disabled external_api slice', () => {
-    expect(COUCHBASE_SLICES.external_api).toBe(false);
+  it('keeps couchbase sources when external_api slice is enabled', () => {
+    expect(COUCHBASE_SLICES.external_api).toBe(true);
     const out = filterSourcesForSliceWithConnections(
       sources,
       'external_api',
       connections,
     );
-    expect(out.map(s => s.id)).toEqual(['ch']);
+    expect(out.map(s => s.id)).toEqual(['ch', 'cb']);
     expect(
       isSourceAllowedForSlice(sources[1]!, 'external_api', connections),
-    ).toBe(false);
+    ).toBe(true);
+  });
+
+  it('still drops couchbase for disabled mcp slice', () => {
+    expect(COUCHBASE_SLICES.mcp).toBe(false);
+    const out = filterSourcesForSliceWithConnections(
+      sources,
+      'mcp',
+      connections,
+    );
+    expect(out.map(s => s.id)).toEqual(['ch']);
+    expect(isSourceAllowedForSlice(sources[1]!, 'mcp', connections)).toBe(
+      false,
+    );
   });
 });

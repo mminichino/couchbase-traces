@@ -15,6 +15,7 @@ import {
   getHistogram,
   recordDuration,
 } from '@/utils/instrumentation';
+import { couchbaseConsumerHttpResponse } from '@/utils/couchbaseConsumerErrors';
 import logger from '@/utils/logger';
 import { externalDashboardSearchRequestSchema } from '@/utils/zod';
 
@@ -85,7 +86,8 @@ const CH_USER_INPUT_ERRORS = new Set([
  *               pipedream.pipeline_name:my-pipeline AND SeverityText:ERROR
  *               Body:timeout
  *
- *             SQL examples (whereLanguage: "sql"):
+ *             SQL examples (whereLanguage: "sql", ClickHouse SQL for ClickHouse
+ *             sources; for Couchbase sources, write SQL++):
  *               SeverityText = 'ERROR'
  *               `pipedream.pipeline_name` = 'my-pipeline'
  *           example: "SeverityText:ERROR"
@@ -104,8 +106,9 @@ const CH_USER_INPUT_ERRORS = new Set([
  *             each result row. When omitted the source's default select expression
  *             is used.
  *
- *             Each entry is a ClickHouse SQL expression executed under the team's
- *             database user. Semicolons and subqueries (SELECT keyword) are
+ *             Each entry is a SQL expression executed under the team's database
+ *             user (ClickHouse SQL for ClickHouse sources; for Couchbase sources,
+ *             write SQL++). Semicolons and subqueries (SELECT keyword) are
  *             rejected; use column references, map lookups, or function calls only.
  *
  *             Couchbase Traces rewrites known attribute column names to their materialized
@@ -193,6 +196,7 @@ const searchRequestSchema = z.object({
     .default('')
     .describe(
       'Row filter in Lucene syntax (default) or SQL (set whereLanguage: "sql"). ' +
+        'For Couchbase sources, write SQL++. ' +
         'Examples: "SeverityText:ERROR", "pipedream.pipeline_name:my-pipeline AND SeverityText:ERROR"',
     ),
   whereLanguage: z
@@ -420,6 +424,15 @@ router.post(
 
       return res.json({ data: result.data, rows: result.data.length });
     } catch (err) {
+      const couchbase = couchbaseConsumerHttpResponse(err, 'message');
+      if (couchbase) {
+        searchQueryErrors.add(1, {
+          error_type:
+            err instanceof Error ? err.constructor.name : 'COUCHBASE',
+        });
+        return res.status(couchbase.status).json(couchbase.body);
+      }
+
       if (err instanceof ClickHouseQueryError) {
         const chType = ((err.cause as Record<string, unknown> | undefined)
           ?.type ?? 'UNKNOWN') as string;

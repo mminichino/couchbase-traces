@@ -60,7 +60,7 @@ export const COUCHBASE_SLICES: Readonly<Record<Slice, boolean>> = {
   sessions: true,
   presets: true,
   alerts: true,
-  external_api: false,
+  external_api: true,
   mcp: false,
   ai: false,
   cli: false,

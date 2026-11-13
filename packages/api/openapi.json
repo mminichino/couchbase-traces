@@ -597,7 +597,7 @@
           },
           "where": {
             "type": "string",
-            "description": "Filter condition in Lucene query syntax",
+            "description": "Filter condition in Lucene query syntax when whereLanguage is lucene,\nor SQL when whereLanguage is sql. For Couchbase sources, write SQL++.\n",
             "example": "service:api AND level:error"
           },
           "whereLanguage": {
@@ -4869,7 +4869,7 @@
             "type": "string",
             "maxLength": 8192,
             "default": "",
-            "description": "Row filter expression. The language is controlled by whereLanguage.\n\nLucene examples (default):\n  SeverityText:ERROR\n  pipedream.pipeline_name:my-pipeline AND SeverityText:ERROR\n  Body:timeout\n\nSQL examples (whereLanguage: \"sql\"):\n  SeverityText = 'ERROR'\n  `pipedream.pipeline_name` = 'my-pipeline'\n",
+            "description": "Row filter expression. The language is controlled by whereLanguage.\n\nLucene examples (default):\n  SeverityText:ERROR\n  pipedream.pipeline_name:my-pipeline AND SeverityText:ERROR\n  Body:timeout\n\nSQL examples (whereLanguage: \"sql\", ClickHouse SQL for ClickHouse\nsources; for Couchbase sources, write SQL++):\n  SeverityText = 'ERROR'\n  `pipedream.pipeline_name` = 'my-pipeline'\n",
             "example": "SeverityText:ERROR"
           },
           "whereLanguage": {
@@ -4886,7 +4886,7 @@
             "type": "string",
             "maxLength": 4096,
             "default": "",
-            "description": "Comma-separated list of ClickHouse column expressions to include in\neach result row. When omitted the source's default select expression\nis used.\n\nEach entry is a ClickHouse SQL expression executed under the team's\ndatabase user. Semicolons and subqueries (SELECT keyword) are\nrejected; use column references, map lookups, or function calls only.\n\nCouchbase Traces rewrites known attribute column names to their materialized\nequivalents automatically; you can still pass the logical name.\n",
+            "description": "Comma-separated list of ClickHouse column expressions to include in\neach result row. When omitted the source's default select expression\nis used.\n\nEach entry is a SQL expression executed under the team's database\nuser (ClickHouse SQL for ClickHouse sources; for Couchbase sources,\nwrite SQL++). Semicolons and subqueries (SELECT keyword) are\nrejected; use column references, map lookups, or function calls only.\n\nCouchbase Traces rewrites known attribute column names to their materialized\nequivalents automatically; you can still pass the logical name.\n",
             "example": "Timestamp,SeverityText,Body,pipedream.pipeline_name"
           },
           "orderBy": {

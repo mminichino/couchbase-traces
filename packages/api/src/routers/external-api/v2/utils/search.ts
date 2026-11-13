@@ -3,7 +3,11 @@ import {
   getFirstTimestampValueExpression,
   splitAndTrimWithBracket,
 } from '@couchbase-traces/common-utils/dist/core/utils';
-import { getMetadata } from '@couchbase-traces/common-utils/dist/dataLayer';
+import { ROW_ID_ALIAS } from '@couchbase-traces/common-utils/dist/couchbase/render';
+import {
+  assertSliceForConnection,
+  getMetadata,
+} from '@couchbase-traces/common-utils/dist/dataLayer';
 import type {
   ChartConfigWithDateRange,
   TSource,
@@ -115,6 +119,8 @@ export async function runSearchConfig({
     };
   }
 
+  await assertSliceForConnection('external_api', source.connection.toString());
+
   // Set client-side HTTP timeout slightly above the source's max_execution_time
   // so CH can return a clean error first. value=0 means no server limit.
   const maxExecSetting = source.querySettings?.find(
@@ -164,8 +170,15 @@ export async function runSearchConfig({
     throw new Error('Unexpected ClickHouse response shape: missing data array');
   }
 
+  const rows = (result as { data: unknown[] }).data as Record<string, unknown>[];
+  const data = rows.map(row => {
+    if (!(ROW_ID_ALIAS in row)) return row;
+    const { [ROW_ID_ALIAS]: _rowId, ...rest } = row;
+    return rest;
+  });
+
   return {
     isError: false,
-    data: (result as { data: unknown[] }).data as Record<string, unknown>[],
+    data,
   };
 }
