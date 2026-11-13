@@ -224,7 +224,7 @@
       "entryPoints": [
         "app_page:/llm"
       ],
-      "status": "not_started",
+      "status": "ported",
       "decision": null
     },
     {
@@ -236,7 +236,7 @@
       "entryPoints": [
         "api_route:POST /ai/assistant"
       ],
-      "status": "not_started",
+      "status": "ported",
       "decision": null
     },
     {

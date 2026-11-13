@@ -955,6 +955,13 @@ Completed requests: `system:completed_requests` requires `query_system_catalog`.
 - Query sites typed to `CliDataClient`; source pickers / chart / TUI filter with `filterSourcesForSlice('cli', …)`.
 - Parity scaffold: `port/server-parity/cli.mjs`.
 
+### Phase 8: ai
+
+- `COUCHBASE_SLICES.ai=true`. Features `app-llm` / `api-ai` → `ported`.
+- Dialect-aware prompts/schemas (`aiPrompts.ts`); Couchbase SQL++ validation via metadata `validateExpression` (`aiValidation.ts`).
+- `assertSliceForConnection('ai', …)` before metadata queries; summarization strips `__cbt_id`.
+- Unit: `aiDialect.test.ts` (prompt snapshots, validation, summarize).
+
 ## Phase 6: SQL++ core and data-layer seam
 
 - SQL++ date format string is `1111-11-11T11:11:11.111Z` (`SQLPP_DATE_FORMAT`), the same string `port/couchbase-test/init.sh` passes to `MILLIS_TO_UTC`. On an exact second the server returns `2026-01-01T00:00:00Z` and omits the zero fraction. Bucket expressions use that format, so they compare equal to fixture timestamps. Range predicates against Phase 5 documents still use the 30-character form from `toIso30`.

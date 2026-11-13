@@ -1,26 +1,37 @@
-import {
-  AssistantLineTableConfigSchema,
-  SourceKind,
-} from '@couchbase-traces/common-utils/dist/types';
+import { queryLanguageForConnection } from '@couchbase-traces/common-utils/dist/dataLayer';
 import { APICallError, generateText, Output } from 'ai';
 import express from 'express';
 import { z } from 'zod';
 import { validateRequest } from 'zod-express-middleware';
 
+import { ClickhouseClient } from '@/clickhouse';
+import { getConnectionById } from '@/controllers/connection';
 import {
   getAIMetadata,
   getAIModel,
   getChartConfigFromResolvedConfig,
 } from '@/controllers/ai';
+import {
+  buildAssistantLineTableConfigSchema,
+  buildChartAssistantPrompt,
+} from '@/controllers/aiPrompts';
+import { validateAiChartConfigForConnection } from '@/controllers/aiValidation';
 import { getSource } from '@/controllers/sources';
 import { getNonNullUserWithTeam } from '@/middleware/auth';
 import { llmTelemetry } from '@/utils/aiTelemetry';
-import { Api404Error, Api500Error } from '@/utils/errors';
+import { couchbaseConsumerHttpResponse } from '@/utils/couchbaseConsumerErrors';
+import { Api404Error, Api500Error, StatusCode, BaseError } from '@/utils/errors';
 import { withOperationMetrics } from '@/utils/instrumentation';
 import logger from '@/utils/logger';
 import { objectIdSchema } from '@/utils/zod';
 
 const router = express.Router();
+
+function mapCouchbaseError(err: unknown): { status: number; message: string } | null {
+  const mapped = couchbaseConsumerHttpResponse(err, 'message');
+  if (!mapped) return null;
+  return { status: mapped.status, message: mapped.body.message };
+}
 
 router.post(
   '/assistant',
@@ -45,58 +56,36 @@ router.post(
         throw new Api404Error('Invalid source');
       }
 
+      const queryLanguage = await queryLanguageForConnection(
+        source.connection.toString(),
+      );
+
       const { allFieldsWithKeys, keyValues } = await getAIMetadata(source);
 
-      const prompt = `You are an AI assistant that helps users create chart configurations for an observability platform called Couchbase Traces.
-
-The user wants to create a chart based on the following description:
-${text}
-
-Generate a visualization or search that matches their request. The chart should query logs, metrics, or traces from a ClickHouse database.
-
-Here are some guidelines:
-- Use appropriate display types: 'line' for time series, 'table' for tabular data
-- Use appropriate aggregate functions depending on user's request: 'count', 'sum', 'avg', 'min', 'max', 'count_distinct', and 'p50', 'p90', 'p95', 'p99' for percentiles
-- If the user is requesting for a specific set of data (ex. "frontend service", filter the condition by the appropriate property based on the below properties ex. \`ServiceName = 'frontend'\`)
-- Pick an appropriate time range based on the user's request if one can be inferred from the request.
-
-The user is looking to do a query on their data source named: ${source.name} of type ${source.kind}.
-
-${
-  source.kind === SourceKind.Log
-    ? `The log level is stored in ${source.severityTextExpression}.`
-    : source.kind === SourceKind.Trace
-      ? `The span status code is stored in ${source.statusCodeExpression}.`
-      : ''
-}
-${'serviceNameExpression' in source ? `You can identify services via ${source.serviceNameExpression}` : ''}
-${
-  source.kind === SourceKind.Trace
-    ? `Duration of spans can be queried via ${source.durationExpression} which is expressed in 10^-${source.durationPrecision} seconds of precision.
-Span names under ${source.spanNameExpression} and span kinds under ${source.spanKindExpression}`
-    : 'bodyExpression' in source
-      ? `The log body can be queried via ${source.bodyExpression}`
-      : ''
-}
-${
-  source.kind === SourceKind.Trace || source.kind === SourceKind.Log
-    ? `Various log/span-specific attributes as a Map can be found under ${source.eventAttributesExpression} while resource attributes that follow the OpenTelemetry semantic convention can be found under ${source.resourceAttributesExpression}
-You must use the full field name ex. "column['key']" or "column.key" as it appears.`
-    : ''
-}
-
-The following is a list of properties and example values that exist in the source:
-${JSON.stringify(keyValues)}
-
-There may be additional properties that you can use as well:
-${JSON.stringify(allFieldsWithKeys.slice(0, 200).map(f => ({ field: f.key, type: f.type })))}
-`;
+      const prompt = buildChartAssistantPrompt({
+        text,
+        source,
+        queryLanguage,
+        metadata: { allFieldsWithKeys, keyValues },
+      });
 
       logger.info(prompt);
 
-      // The AI generation call is the externally-dependent, latency-defining
-      // part of the assistant, so it carries the SLO signal. Source lookup /
-      // validation above are client-side concerns and intentionally excluded.
+      const connection = await getConnectionById(
+        teamId.toString(),
+        source.connection.toString(),
+        true,
+      );
+      if (connection == null) {
+        throw new Api500Error('Invalid connection');
+      }
+
+      const clickhouseClient = new ClickhouseClient({
+        host: connection.host,
+        username: connection.username,
+        password: connection.password,
+      });
+
       const chartConfig = await withOperationMetrics(
         'ai.assistant',
         async () => {
@@ -104,7 +93,7 @@ ${JSON.stringify(allFieldsWithKeys.slice(0, 200).map(f => ({ field: f.key, type:
             const result = await generateText({
               model,
               output: Output.object({
-                schema: AssistantLineTableConfigSchema,
+                schema: buildAssistantLineTableConfigSchema(queryLanguage),
               }),
               ...llmTelemetry({
                 teamId: teamId.toString(),
@@ -113,8 +102,26 @@ ${JSON.stringify(allFieldsWithKeys.slice(0, 200).map(f => ({ field: f.key, type:
               prompt,
             });
 
-            return getChartConfigFromResolvedConfig(result.output, source);
+            const resolved = getChartConfigFromResolvedConfig(
+              result.output,
+              source,
+            );
+            await validateAiChartConfigForConnection({
+              chartConfig: resolved,
+              source,
+              client: clickhouseClient,
+              queryLanguage,
+            });
+            return resolved;
           } catch (err) {
+            const couchbase = mapCouchbaseError(err);
+            if (couchbase) {
+              return Promise.reject(
+                Object.assign(new Error(couchbase.message), {
+                  statusCode: couchbase.status,
+                }),
+              );
+            }
             if (err instanceof APICallError) {
               throw new Api500Error(
                 `AI Provider Error. Status: ${err.statusCode}. Message: ${err.message}`,
@@ -128,6 +135,28 @@ ${JSON.stringify(allFieldsWithKeys.slice(0, 200).map(f => ({ field: f.key, type:
 
       return res.json(chartConfig);
     } catch (e) {
+      const couchbase = mapCouchbaseError(e);
+      if (couchbase) {
+        return res.status(couchbase.status).json({ message: couchbase.message });
+      }
+      if (
+        e != null &&
+        typeof e === 'object' &&
+        'statusCode' in e &&
+        typeof (e as { statusCode: unknown }).statusCode === 'number'
+      ) {
+        const status = (e as { statusCode: number }).statusCode;
+        const message =
+          e instanceof Error
+            ? e.message
+            : StatusCode.INTERNAL_SERVER === status
+              ? 'Something went wrong'
+              : 'Bad Request';
+        return res.status(status).json({ message });
+      }
+      if (e instanceof BaseError) {
+        return res.status(e.statusCode).json({ message: e.name });
+      }
       next(e);
     }
   },

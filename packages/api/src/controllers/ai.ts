@@ -5,7 +5,10 @@ import {
   tcFromSource,
 } from '@couchbase-traces/common-utils/dist/core/metadata';
 import { resolvePercentileAggFn } from '@couchbase-traces/common-utils/dist/core/utils';
-import { getMetadata } from '@couchbase-traces/common-utils/dist/dataLayer';
+import {
+  assertSliceForConnection,
+  getMetadata,
+} from '@couchbase-traces/common-utils/dist/dataLayer';
 import {
   AILineTableResponse,
   AssistantLineTableConfigSchema,
@@ -86,6 +89,8 @@ export async function getAIMetadata(source: ISource) {
   if (connection == null) {
     throw new Api500Error('Invalid connection');
   }
+
+  await assertSliceForConnection('ai', connectionId);
 
   const clickhouseClient = new ClickhouseClient({
     host: connection.host,
