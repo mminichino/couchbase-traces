@@ -96,7 +96,7 @@ Inventory of commit adcb75c16715. Full detail is in `port/state/inventory/`.
 | `packages/common-utils/src/dataLayer/index.ts` | seed | 19 | 38 | yes |
 | `packages/common-utils/src/core/renderChartConfig.ts` | seed, sql_builder | 16 | 36 | yes |
 | `packages/common-utils/src/clickhouse/node.ts` | seed, clickhouse_client, clickhouse_path | 4 | 31 | yes |
-| `packages/common-utils/src/couchbase/sqlpp.ts` | seed | 8 | 30 | yes |
+| `packages/common-utils/src/couchbase/sqlpp.ts` | seed | 8 | 31 | yes |
 | `packages/app/src/components/DBRowSidePanel.tsx` | clickhouse_client | 8 | 28 | no |
 | `packages/cli/src/api/client.ts` | clickhouse_client | 9 | 28 | no |
 | `packages/app/src/hooks/useRowWhere.tsx` | sql_builder | 6 | 26 | no |
@@ -113,11 +113,11 @@ Inventory of commit adcb75c16715. Full detail is in `port/state/inventory/`.
 | `packages/app/src/components/MaterializedViews/MVOptimizationIndicator.tsx` | clickhouse_client | 1 | 14 | no |
 | `packages/app/src/components/TimePicker/TimePicker.tsx` | clickhouse_client, sql_builder | 1 | 14 | no |
 | `packages/app/src/components/DBHeatmapChart/heatmapQueries.ts` | sql_builder | 9 | 13 | no |
+| `packages/common-utils/src/dataLayer/kind.ts` | seed | 7 | 12 | yes |
 | `packages/app/src/serviceDashboard.ts` | sql_builder | 5 | 11 | no |
 | `packages/common-utils/src/clickhouse/browser.ts` | seed, clickhouse_client, clickhouse_path | 3 | 11 | no |
 | `packages/common-utils/src/couchbase/node.ts` | seed | 16 | 11 | yes |
 | `packages/common-utils/src/couchbase/nodeCluster.ts` | seed | 12 | 11 | yes |
-| `packages/common-utils/src/dataLayer/kind.ts` | seed | 7 | 11 | yes |
 | `packages/common-utils/src/queryParser.ts` | seed, sql_builder | 18 | 11 | no |
 | `packages/api/src/mcp/tools/query/schemas.ts` | sql_builder | 14 | 10 | yes |
 | `packages/common-utils/src/couchbase/time.ts` | seed, sql_builder | 9 | 10 | no |
@@ -312,12 +312,12 @@ Plus 31 more in datalayer.json.
 | `packages/app/src/components/SearchInput/SyntaxReferenceModal.tsx` | 5 | 2 |
 | `packages/app/src/hooks/useRowWhere.tsx` | 6 | 1 |
 | `packages/app/src/hooks/useServiceMap.tsx` | 6 | 1 |
-| `packages/app/src/sessions.ts` | 6 | 1 |
 | `packages/app/src/components/SQLEditor/constants.ts` | 6 | 0 |
 | `packages/app/src/components/ServiceMap/ServiceMapTooltip.tsx` | 6 | 0 |
 | `packages/app/src/hdxMTViews.ts` | 2 | 4 |
 | `packages/app/src/hooks/__fixtures__/browserTraceEvents.ts` | 0 | 6 |
 | `packages/app/src/hooks/useMetricCatalog.ts` | 4 | 2 |
+| `packages/app/src/sessions.ts` | 5 | 1 |
 | `packages/app/src/components/ChartDisplaySettingsDrawer.tsx` | 5 | 0 |
 | `packages/app/src/components/TimePicker/TimePicker.tsx` | 5 | 0 |
 | `packages/app/src/hooks/useFetchMetricAttributeValues.tsx` | 3 | 2 |
@@ -603,8 +603,8 @@ Collector components, pipelines, ClickHouse exporters, and management code.
 | telemetry_endpoints | 18 | 0 | 61 | 0 | 2 |
 | assets | 0 | 0 | 0 | 0 | 3 |
 | docker | 48 | 0 | 116 | 0 | 95 |
-| docs | 487 | 278 | 1352 | 2 | 191 |
-| ui_strings | 10 | 9 | 90 | 0 | 127 |
+| docs | 487 | 278 | 1359 | 2 | 191 |
+| ui_strings | 10 | 9 | 98 | 0 | 127 |
 | code_identifiers | 129 | 21 | 2434 | 0 | 644 |
 | other | 643 | 187 | 1826 | 2 | 1616 |
 
@@ -612,9 +612,9 @@ Collector components, pipelines, ClickHouse exporters, and management code.
 
 | Status | Features |
 |---|---|
-| not_started | 41 |
+| not_started | 40 |
 | in_progress | 2 |
-| ported | 9 |
+| ported | 10 |
 | needs_decision | 0 |
 | dropped | 2 |
 | replaced | 1 |
@@ -630,7 +630,7 @@ Collector components, pipelines, ClickHouse exporters, and management code.
 - W_PLAN_MISSING: 1 occurrences. First: COUCHBASE_PORT_PLAN.md not found at the project root; plan check skipped (COUCHBASE_PORT_PLAN.md)
 - W_SCHEMA_UNPARSED: 1 occurrences. First: Unparsed statement: CREATE DATABASE IF NOT EXISTS DATABASE (docker/otel-collector/schema/seed/00001_create_database.sql)
 - W_TABLE_REDEFINED: 3 occurrences. First: Table otel_logs is defined in docker/otel-collector/schema/seed/00002_otel_logs.sql and docker/otel-collector/schema/seed/00002_otel_logs_compat.sql (docker/otel-collector/schema/seed/00002_otel_logs_compat.sql)
-- W_UNRESOLVED_IMPORT: 1 occurrences. First: Cannot resolve "@couchbase-traces/api/build/serverless" (packages/app/pages/api/[...all].ts)
+- W_UNRESOLVED_IMPORT: 2 occurrences. First: Cannot resolve "@couchbase-traces/api/build/serverless" (packages/app/pages/api/[...all].ts)
 - W_UNRESOLVED_MOUNT: 1 occurrences. First: Cannot resolve router for mount "/v1/opamp" at line 13 (packages/api/src/opamp/app.ts)
 <!-- phase2:end -->
 
@@ -896,6 +896,15 @@ Completed requests: `system:completed_requests` requires `query_system_catalog`.
 - Avg/count gauge charts without `metricType` compare equal via lucene `MetricName` filter (CH `last_value` translate vs CB raw avg diverge); `metrics-gauge-max` exercises the translate path.
 - Query parity: `port/query-parity/run.sh --slice metrics` green (3 cases: gauge-avg, gauge-count, gauge-max).
 - E2E: `metric-name-streaming.spec.ts`, `metric-table-autofill.spec.ts`, `correlated-metric-source.spec.ts` listed under metrics in `port/slices/e2e.json`.
+
+### Phase 7: sessions
+
+- Features ported: session replay list and player (`app-sessions`). `COUCHBASE_SLICES.sessions=true`.
+- List CTE: `buildSessionsCtesCouchbase` / `unionSessionIdsCouchbase` — `CASE`/`IFNULL`/`MAX(CASE WHEN…)` instead of ClickHouse `if`/`maxIf`/`ifNull`; `UNION` instead of `UNION DISTINCT`.
+- Field expressions on Couchbase sources use `` `col`.`key` `` + `TOSTRING`/`TONUMBER` (`useFieldExpressionGenerator`).
+- RRWeb stream: `DECODE_JSON(Body).\`type\`` and `IFNULL(TONUMBER(…), 0)` instead of `simpleJSONExtractInt` / `toUInt64OrZero`.
+- Query parity seeds 200 rrweb session events; cases: count, by-service min/max, ordered replay rows.
+- Source gating: Sessions page `isSourceAllowed` uses the sessions slice.
 
 ## Phase 6: SQL++ core and data-layer seam
 

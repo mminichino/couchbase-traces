@@ -72351,6 +72351,20 @@
           "line": 50
         },
         {
+          "specifier": "@/couchbase/sources",
+          "target": "packages/app/src/couchbase/sources.ts",
+          "external": null,
+          "kind": "static",
+          "typeOnly": false,
+          "bindings": [
+            {
+              "imported": "useIsSourceAllowedForSlice",
+              "local": "useIsSourceAllowedForSlice"
+            }
+          ],
+          "line": 52
+        },
+        {
           "specifier": "./components/OnboardingModal",
           "target": "packages/app/src/components/OnboardingModal.tsx",
           "external": null,
@@ -72362,7 +72376,7 @@
               "local": "OnboardingModal"
             }
           ],
-          "line": 52
+          "line": 54
         },
         {
           "specifier": "./components/SearchInput/SearchWhereInput",
@@ -72380,7 +72394,7 @@
               "local": "getStoredLanguage"
             }
           ],
-          "line": 55
+          "line": 57
         },
         {
           "specifier": "./brand",
@@ -72398,7 +72412,7 @@
               "local": "usePageTitle"
             }
           ],
-          "line": 56
+          "line": 58
         },
         {
           "specifier": "./layout",
@@ -72412,7 +72426,7 @@
               "local": "withAppNavForSurface"
             }
           ],
-          "line": 57
+          "line": 59
         },
         {
           "specifier": "./sessions",
@@ -72430,7 +72444,7 @@
               "local": "useSessions"
             }
           ],
-          "line": 58
+          "line": 60
         },
         {
           "specifier": "./SessionSidePanel",
@@ -72444,7 +72458,7 @@
               "local": "SessionSidePanel"
             }
           ],
-          "line": 59
+          "line": 61
         },
         {
           "specifier": "./source",
@@ -72462,7 +72476,7 @@
               "local": "useSources"
             }
           ],
-          "line": 60
+          "line": 62
         },
         {
           "specifier": "./useFormatTime",
@@ -72476,7 +72490,7 @@
               "local": "FormatTime"
             }
           ],
-          "line": 61
+          "line": 63
         },
         {
           "specifier": "./utils",
@@ -72490,7 +72504,7 @@
               "local": "formatDistanceToNowStrictShort"
             }
           ],
-          "line": 62
+          "line": 64
         },
         {
           "specifier": "@styles/SessionsPage.module.scss",
@@ -72504,7 +72518,7 @@
               "local": "styles"
             }
           ],
-          "line": 64
+          "line": 66
         }
       ],
       "exports": [
@@ -72513,7 +72527,7 @@
           "kind": "const",
           "from": null,
           "original": null,
-          "line": 544
+          "line": 548
         }
       ],
       "starReexports": []
@@ -175502,6 +175516,20 @@
           "line": 2
         },
         {
+          "specifier": "@couchbase-traces/common-utils/dist/couchbase/sqlpp",
+          "target": "packages/common-utils/src/couchbase/sqlpp.ts",
+          "external": null,
+          "kind": "static",
+          "typeOnly": false,
+          "bindings": [
+            {
+              "imported": "quoteIdent",
+              "local": "quoteIdent"
+            }
+          ],
+          "line": 3
+        },
+        {
           "specifier": "@couchbase-traces/common-utils/dist/types",
           "target": "packages/common-utils/src/types.ts",
           "external": null,
@@ -175513,7 +175541,21 @@
               "local": "TSource"
             }
           ],
-          "line": 3
+          "line": 4
+        },
+        {
+          "specifier": "@/couchbase/connection",
+          "target": "packages/app/src/couchbase/connection.ts",
+          "external": null,
+          "kind": "static",
+          "typeOnly": false,
+          "bindings": [
+            {
+              "imported": "useConnectionKind",
+              "local": "useConnectionKind"
+            }
+          ],
+          "line": 6
         },
         {
           "specifier": "./useMetadata",
@@ -175527,7 +175569,7 @@
               "local": "useJsonColumns"
             }
           ],
-          "line": 5
+          "line": 8
         }
       ],
       "exports": [
@@ -175536,14 +175578,14 @@
           "kind": "type",
           "from": null,
           "original": null,
-          "line": 7
+          "line": 10
         },
         {
           "name": "default",
           "kind": "function",
           "from": null,
           "original": null,
-          "line": 17
+          "line": 40
         }
       ],
       "starReexports": []
@@ -187404,6 +187446,20 @@
           "line": 10
         },
         {
+          "specifier": "@couchbase-traces/common-utils/dist/dataLayer/kind",
+          "target": "packages/common-utils/src/dataLayer/kind.ts",
+          "external": null,
+          "kind": "static",
+          "typeOnly": false,
+          "bindings": [
+            {
+              "imported": "resolveConnectionKind",
+              "local": "resolveConnectionKind"
+            }
+          ],
+          "line": 11
+        },
+        {
           "specifier": "@couchbase-traces/common-utils/dist/dataLayer",
           "target": "packages/common-utils/src/dataLayer/index.ts",
           "external": null,
@@ -187415,7 +187471,7 @@
               "local": "renderChartConfig"
             }
           ],
-          "line": 11
+          "line": 12
         },
         {
           "specifier": "@couchbase-traces/common-utils/dist/filters",
@@ -187429,7 +187485,7 @@
               "local": "filtersToQuery"
             }
           ],
-          "line": 12
+          "line": 13
         },
         {
           "specifier": "@couchbase-traces/common-utils/dist/types",
@@ -187467,7 +187523,7 @@
               "local": "TTraceSource"
             }
           ],
-          "line": 21
+          "line": 22
         },
         {
           "specifier": "@tanstack/react-query",
@@ -187485,7 +187541,33 @@
               "local": "UseQueryOptions"
             }
           ],
-          "line": 22
+          "line": 23
+        },
+        {
+          "specifier": "@/couchbase/sessionsList",
+          "target": null,
+          "external": null,
+          "kind": "static",
+          "typeOnly": false,
+          "bindings": [
+            {
+              "imported": "buildSessionsCtesCouchbase",
+              "local": "buildSessionsCtesCouchbase"
+            },
+            {
+              "imported": "rrwebBodyTypeExpr",
+              "local": "rrwebBodyTypeExpr"
+            },
+            {
+              "imported": "toUInt64OrZeroCouchbase",
+              "local": "toUInt64OrZeroCouchbase"
+            },
+            {
+              "imported": "unionSessionIdsCouchbase",
+              "local": "unionSessionIdsCouchbase"
+            }
+          ],
+          "line": 30
         },
         {
           "specifier": "@/queryAttribution",
@@ -187499,7 +187581,7 @@
               "local": "useQueryAttribution"
             }
           ],
-          "line": 24
+          "line": 31
         },
         {
           "specifier": "@/utils",
@@ -187513,7 +187595,7 @@
               "local": "usePrevious"
             }
           ],
-          "line": 25
+          "line": 32
         },
         {
           "specifier": "@/utils/sessionId",
@@ -187551,7 +187633,7 @@
               "local": "traceSessionIdColumns"
             }
           ],
-          "line": 34
+          "line": 41
         },
         {
           "specifier": "./hooks/useFieldExpressionGenerator",
@@ -187569,7 +187651,7 @@
               "local": "FieldExpressionGenerator"
             }
           ],
-          "line": 38
+          "line": 45
         },
         {
           "specifier": "./hooks/useMetadata",
@@ -187583,7 +187665,7 @@
               "local": "useMetadataWithSettings"
             }
           ],
-          "line": 39
+          "line": 46
         },
         {
           "specifier": "./clickhouse",
@@ -187601,7 +187683,7 @@
               "local": "useClickhouseClient"
             }
           ],
-          "line": 40
+          "line": 47
         },
         {
           "specifier": "./serviceDashboard",
@@ -187615,7 +187697,7 @@
               "local": "makeCoalescedFieldsAccessQuery"
             }
           ],
-          "line": 41
+          "line": 48
         },
         {
           "specifier": "./sessionsListQuery",
@@ -187645,7 +187727,7 @@
               "local": "unionSessionIds"
             }
           ],
-          "line": 48
+          "line": 55
         },
         {
           "specifier": "./source",
@@ -187663,7 +187745,7 @@
               "local": "useSource"
             }
           ],
-          "line": 49
+          "line": 56
         }
       ],
       "exports": [
@@ -187672,49 +187754,49 @@
           "kind": "type",
           "from": null,
           "original": null,
-          "line": 51
+          "line": 58
         },
         {
           "name": "buildRRWebStreamChartConfig",
           "kind": "function",
           "from": null,
           "original": null,
-          "line": 552
+          "line": 574
         },
         {
           "name": "buildSessionsQueryFilters",
           "kind": "function",
           "from": null,
           "original": null,
-          "line": 140
+          "line": 147
         },
         {
           "name": "fetchServiceScopeFilters",
           "kind": "function",
           "from": null,
           "original": null,
-          "line": 75
+          "line": 82
         },
         {
           "name": "getRRWebTimestampExpression",
           "kind": "function",
           "from": null,
           "original": null,
-          "line": 501
+          "line": 523
         },
         {
           "name": "useRRWebEventStream",
           "kind": "function",
           "from": null,
           "original": null,
-          "line": 636
+          "line": 669
         },
         {
           "name": "useSessions",
           "kind": "function",
           "from": null,
           "original": null,
-          "line": 158
+          "line": 165
         }
       ],
       "starReexports": []
@@ -187829,7 +187911,7 @@
           "kind": "function",
           "from": null,
           "original": null,
-          "line": 87
+          "line": 90
         },
         {
           "name": "buildRecordingsChartConfig",
@@ -187843,7 +187925,7 @@
           "kind": "function",
           "from": null,
           "original": null,
-          "line": 131
+          "line": 134
         },
         {
           "name": "isOtelSessionListEnabled",
@@ -187857,7 +187939,7 @@
           "kind": "function",
           "from": null,
           "original": null,
-          "line": 119
+          "line": 122
         }
       ],
       "starReexports": []
@@ -196129,21 +196211,21 @@
           "kind": "function",
           "from": null,
           "original": null,
-          "line": 66
+          "line": 71
         },
         {
           "name": "rumSessionIdPresence",
           "kind": "function",
           "from": null,
           "original": null,
-          "line": 62
+          "line": 67
         },
         {
           "name": "sessionIdFilter",
           "kind": "function",
           "from": null,
           "original": null,
-          "line": 52
+          "line": 57
         },
         {
           "name": "sessionIdKeyExpr",

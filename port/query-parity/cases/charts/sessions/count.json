@@ -1,0 +1,12 @@
+{
+  "id": "sessions-count",
+  "description": "total session replay event count",
+  "source": "sessions",
+  "config": {
+    "select": [
+      { "aggFn": "count", "valueExpression": "", "alias": "count" }
+    ],
+    "dateRange": { "fromMinutesAgo": 60, "toMinutesAgo": 0 }
+  },
+  "compare": { "ignoreColumns": ["__cbt_id"] }
+}

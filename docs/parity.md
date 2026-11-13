@@ -4,9 +4,9 @@ Generated from `port/features.json` and `port/state/inventory/`. Edit `port/feat
 
 | Status | Features |
 |---|---|
-| not_started | 41 |
+| not_started | 40 |
 | in_progress | 2 |
-| ported | 9 |
+| ported | 10 |
 | needs_decision | 0 |
 | dropped | 2 |
 | replaced | 1 |
@@ -144,7 +144,7 @@ Decision: PromQL dropped by the user. It required ClickHouse's TimeSeries table 
 
 | Feature | Visibility | Status | Entry points | Data layer | Tests (unit / int / e2e) |
 |---|---|---|---|---|---|
-| Session replay (`app-sessions`) | user | not_started | 1 | UserPreferencesModal.tsx, clickhouse.ts, AppNav.components.tsx, AppNav.tsx, InstanceLabel.tsx, +90 | 1 / 0 / 4 |
+| Session replay (`app-sessions`) | user | ported | 1 | UserPreferencesModal.tsx, clickhouse.ts, AppNav.components.tsx, AppNav.tsx, InstanceLabel.tsx, +90 | 1 / 0 / 4 |
 
 ### Session replay (`app-sessions`)
 

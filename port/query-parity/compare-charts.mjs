@@ -86,6 +86,8 @@ const SESSION_COLUMNS = [
   { name: 'Timestamp', type: "DateTime64(9, 'UTC')" },
   { name: 'ServiceName', type: 'LowCardinality(String)' },
   { name: 'Body', type: 'String' },
+  { name: 'LogAttributes', type: 'Map(String, String)' },
+  { name: 'ResourceAttributes', type: 'Map(String, String)' },
   {
     name: '__hdx_materialized_session.id',
     type: 'String',
@@ -186,11 +188,18 @@ function buildChartConfig(caseFile, connectionId) {
     (configFrom.databaseName == null || configFrom.databaseName === '')
       ? { ...configFrom }
       : from;
+  // Parity ClickHouse hyperdx_sessions (compat schema) only has Timestamp;
+  // Couchbase session docs keep TimestampTime as in defaultSources.
+  const timestampValueExpression =
+    caseFile.config.timestampValueExpression ??
+    (caseFile.source === 'sessions' && connectionId === 'parity-ch'
+      ? 'Timestamp'
+      : template.timestampValueExpression);
   const base = {
     ...rest,
     connection: connectionId,
     from: resolvedFrom,
-    timestampValueExpression: template.timestampValueExpression,
+    timestampValueExpression,
     timestampFormat: template.timestampFormat,
     implicitColumnExpression: template.implicitColumnExpression,
     bodyExpression: template.bodyExpression,

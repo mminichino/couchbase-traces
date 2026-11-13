@@ -7,6 +7,7 @@
 const LOGS = 10_000;
 const SPANS = 5_000;
 const METRICS = 2_000;
+const SESSIONS = 200;
 const SERVICES = ['api', 'web', 'worker'];
 const REGIONS = ['us', 'eu'];
 
@@ -143,6 +144,50 @@ async function postMetrics(port) {
   }
 }
 
+/** rrweb-shaped logs that the collector routes into hyperdx_sessions. */
+function sessionRecord(i) {
+  const sessionId = `parity-session-${i % 20}`;
+  const sec = fromSec + (i % 3600);
+  return {
+    timeUnixNano: ns(sec, i),
+    severityText: 'INFO',
+    severityNumber: 9,
+    body: {
+      stringValue: JSON.stringify({ type: i % 3 === 0 ? 2 : 3, data: { i } }),
+    },
+    attributes: [
+      { key: 'rr-web.event', value: { stringValue: String((i % 50) + 1) } },
+      { key: 'rr-web.offset', value: { stringValue: String(i + 1) } },
+      { key: 'rr-web.chunk', value: { stringValue: '1' } },
+      { key: 'rr-web.total-chunks', value: { stringValue: '1' } },
+      { key: 'session.id', value: { stringValue: sessionId } },
+    ],
+  };
+}
+
+async function postSessions(port) {
+  const records = [];
+  for (let i = 0; i < SESSIONS; i++) records.push(sessionRecord(i));
+  for (let i = 0; i < records.length; i += 50) {
+    await post(port, '/v1/logs', {
+      resourceLogs: [
+        {
+          resource: {
+            attributes: [
+              { key: 'service.name', value: { stringValue: 'browser' } },
+              {
+                key: 'rum.sessionId',
+                value: { stringValue: `parity-session-${i % 20}` },
+              },
+            ],
+          },
+          scopeLogs: [{ logRecords: records.slice(i, i + 50) }],
+        },
+      ],
+    });
+  }
+}
+
 export const window = {
   from: new Date(fromSec * 1000).toISOString(),
   to: new Date(toSec * 1000).toISOString(),
@@ -151,6 +196,7 @@ export const window = {
   logs: LOGS,
   spans: SPANS,
   metrics: METRICS,
+  sessions: SESSIONS,
 };
 
 const isMain = process.argv[1] && process.argv[1].endsWith('dataset.mjs');
@@ -163,5 +209,6 @@ if (isMain) {
   await postLogs(port);
   await postSpans(port);
   await postMetrics(port);
+  await postSessions(port);
   process.stdout.write(`${JSON.stringify(window)}\n`);
 }

@@ -41,10 +41,12 @@ export function buildRecordingsChartConfig({
   sessionSource,
   dateRange,
   getSessionSourceFieldExpression,
+  dialect = 'clickhouse',
 }: {
   sessionSource: TSessionSource;
   dateRange: [Date, Date];
   getSessionSourceFieldExpression: FieldExpressionGenerator;
+  dialect?: 'clickhouse' | 'couchbase';
 }): BuilderChartConfigWithDateRange {
   const timestamp = getFirstTimestampValueExpression(
     sessionSource.timestampValueExpression,
@@ -56,6 +58,7 @@ export function buildRecordingsChartConfig({
         valueExpression: sessionIdKeyExpr(
           getSessionSourceFieldExpression,
           sessionTableSessionIdColumns(),
+          dialect,
         ),
         alias: 'sessionId',
       },

@@ -6031,7 +6031,7 @@
           "path": "packages/app/src/sessionsListQuery.ts",
           "workspace": "@couchbase-traces/app",
           "lines": [
-            154
+            157
           ]
         },
         {
@@ -6045,7 +6045,7 @@
           "path": "packages/app/src/utils/sessionId.ts",
           "workspace": "@couchbase-traces/app",
           "lines": [
-            45
+            50
           ]
         },
         {
@@ -6085,7 +6085,7 @@
           "path": "packages/app/src/sessionsListQuery.ts",
           "workspace": "@couchbase-traces/app",
           "lines": [
-            154
+            157
           ]
         },
         {
@@ -6879,7 +6879,7 @@
           "path": "packages/app/src/sessionsListQuery.ts",
           "workspace": "@couchbase-traces/app",
           "lines": [
-            154
+            157
           ]
         },
         {
@@ -6905,7 +6905,7 @@
           "path": "packages/app/src/sessionsListQuery.ts",
           "workspace": "@couchbase-traces/app",
           "lines": [
-            154
+            157
           ]
         }
       ]
@@ -7055,7 +7055,7 @@
           "path": "packages/app/src/sessionsListQuery.ts",
           "workspace": "@couchbase-traces/app",
           "lines": [
-            154
+            157
           ]
         },
         {
@@ -7085,7 +7085,7 @@
           "path": "packages/app/src/sessionsListQuery.ts",
           "workspace": "@couchbase-traces/app",
           "lines": [
-            154
+            157
           ]
         }
       ]
@@ -8435,7 +8435,7 @@
           "path": "packages/app/src/sessionsListQuery.ts",
           "workspace": "@couchbase-traces/app",
           "lines": [
-            154
+            157
           ]
         },
         {
@@ -9551,14 +9551,13 @@
       "name": "toUInt64OrZero",
       "classification": "unmapped",
       "sqlppApproach": null,
-      "occurrences": 3,
+      "occurrences": 2,
       "files": [
         {
           "path": "packages/app/src/sessions.ts",
           "workspace": "@couchbase-traces/app",
           "lines": [
-            624,
-            625
+            616
           ]
         },
         {
@@ -11832,7 +11831,7 @@
           "path": "packages/app/src/sessions.ts",
           "workspace": "@couchbase-traces/app",
           "lines": [
-            122
+            129
           ]
         },
         {
@@ -13295,7 +13294,7 @@
     },
     {
       "path": "packages/app/src/sessions.ts",
-      "count": 6
+      "count": 5
     },
     {
       "path": "packages/app/src/sessionsListQuery.ts",
@@ -14044,7 +14043,7 @@
     },
     {
       "path": "packages/app/src/sessions.ts",
-      "rawSql": 6,
+      "rawSql": 5,
       "typeNames": 1
     },
     {

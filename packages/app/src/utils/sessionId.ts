@@ -40,9 +40,14 @@ export function traceSessionIdColumns(
 export function sessionIdKeyExpr(
   getFieldExpression: FieldExpressionGenerator,
   cols: SessionIdColumns,
+  dialect: 'clickhouse' | 'couchbase' = 'clickhouse',
 ): string {
   const rumSessionId = getFieldExpression(cols.resource, 'rum.sessionId');
-  return `if(${rumSessionId} != '', ${rumSessionId}, ${getFieldExpression(cols.attrs, 'session.id')})`;
+  const otelSessionId = getFieldExpression(cols.attrs, 'session.id');
+  if (dialect === 'couchbase') {
+    return `CASE WHEN ${rumSessionId} != '' THEN ${rumSessionId} ELSE ${otelSessionId} END`;
+  }
+  return `if(${rumSessionId} != '', ${rumSessionId}, ${otelSessionId})`;
 }
 
 /**

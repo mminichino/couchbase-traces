@@ -49,6 +49,8 @@ import { useDashboardRefresh } from '@/hooks/useDashboardRefresh';
 import { useResolvedSourceParam } from '@/hooks/useResolvedSourceParam';
 import { useDefaultTimeRange, useNewTimeQuery } from '@/timeQuery';
 
+import { useIsSourceAllowedForSlice } from '@/couchbase/sources';
+
 import OnboardingModal from './components/OnboardingModal';
 import SearchWhereInput, {
   getStoredLanguage,
@@ -241,6 +243,7 @@ const DEFAULT_INTERVAL = 'Past 1h';
 function SessionsPage() {
   const defaultTimeRange = useDefaultTimeRange(DEFAULT_INTERVAL);
   const title = usePageTitle('Client Sessions');
+  const isSourceAllowedForSessions = useIsSourceAllowedForSlice('sessions');
   const [appliedConfig, setAppliedConfig] = useQueryStates(appliedConfigMap);
   // `?sessionSource=` accepts a source name as well as a source ID. The form
   // holds the resolved ID, so nothing downstream ever sees a name.
@@ -447,6 +450,7 @@ function SessionsPage() {
                   control={control}
                   name="source"
                   allowedSourceKinds={[SourceKind.Session]}
+                  isSourceAllowed={isSourceAllowedForSessions}
                 />
                 <SearchWhereInput
                   tableConnection={tcFromSource(traceTrace)}

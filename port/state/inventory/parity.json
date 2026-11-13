@@ -17572,7 +17572,7 @@
       "name": "Session replay",
       "area": "sessions",
       "visibility": "user",
-      "status": "not_started",
+      "status": "ported",
       "entryPoints": [
         {
           "id": "app_page:/sessions",
@@ -17580,7 +17580,7 @@
           "file": "packages/app/pages/sessions.tsx"
         }
       ],
-      "closureSize": 414,
+      "closureSize": 415,
       "exclusiveFiles": [
         "packages/app/pages/sessions.tsx",
         "packages/app/src/SessionEventSourcePanel.tsx",
@@ -18319,9 +18319,12 @@
         {
           "path": "packages/common-utils/src/dataLayer/index.ts",
           "symbols": [
+            "Slice",
             "clearConnectionKindCache",
+            "filterSourcesForSlice",
             "formatQueryForDisplay",
             "getMetadata",
+            "isCouchbaseSliceEnabled",
             "isMissingColumnError",
             "renderChartConfig"
           ]
@@ -32416,7 +32419,7 @@
     "byStatus": [
       {
         "status": "not_started",
-        "count": 41
+        "count": 40
       },
       {
         "status": "in_progress",
@@ -32424,7 +32427,7 @@
       },
       {
         "status": "ported",
-        "count": 9
+        "count": 10
       },
       {
         "status": "needs_decision",

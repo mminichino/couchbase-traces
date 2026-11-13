@@ -1,0 +1,47 @@
+{
+  "slice": "sessions",
+  "features": [
+    {
+      "id": "app-sessions",
+      "name": "Session replay",
+      "status": "ported",
+      "entryPoints": ["app_page:/sessions"]
+    }
+  ],
+  "coreFunctions": [
+    {
+      "file": "packages/common-utils/src/couchbase/render/index.ts",
+      "name": "renderChartConfigCouchbase"
+    },
+    {
+      "file": "packages/app/src/couchbase/sessionsList.ts",
+      "name": "buildSessionsCtesCouchbase"
+    },
+    {
+      "file": "packages/app/src/couchbase/sessionsList.ts",
+      "name": "unionSessionIdsCouchbase"
+    }
+  ],
+  "appQuerySites": [
+    {
+      "path": "packages/app/src/sessions.ts",
+      "rawSql": 1,
+      "typeNames": 0
+    },
+    {
+      "path": "packages/app/src/sessionsListQuery.ts",
+      "rawSql": 1,
+      "typeNames": 0
+    }
+  ],
+  "dataLayerSymbols": [],
+  "tests": {
+    "unit": [
+      "packages/app/src/couchbase/__tests__/sessionsList.test.ts",
+      "packages/app/src/couchbase/__tests__/sources.gating.test.ts",
+      "packages/app/src/__tests__/sessionsListQuery.test.tsx"
+    ],
+    "int": [],
+    "e2e": ["packages/app/tests/e2e/features/sessions.spec.ts"]
+  }
+}

@@ -8,6 +8,7 @@ import {
 import type { ClickhouseClient } from '@couchbase-traces/common-utils/dist/clickhouse/browser';
 import type { Metadata } from '@couchbase-traces/common-utils/dist/core/metadata';
 import { getFirstTimestampValueExpression } from '@couchbase-traces/common-utils/dist/core/utils';
+import { resolveConnectionKind } from '@couchbase-traces/common-utils/dist/dataLayer/kind';
 import { renderChartConfig } from '@couchbase-traces/common-utils/dist/dataLayer';
 import { filtersToQuery } from '@couchbase-traces/common-utils/dist/filters';
 import {
@@ -21,6 +22,12 @@ import {
 } from '@couchbase-traces/common-utils/dist/types';
 import { useQuery, UseQueryOptions } from '@tanstack/react-query';
 
+import {
+  buildSessionsCtesCouchbase,
+  rrwebBodyTypeExpr,
+  toUInt64OrZeroCouchbase,
+  unionSessionIdsCouchbase,
+} from '@/couchbase/sessionsList';
 import { useQueryAttribution } from '@/queryAttribution';
 import { usePrevious } from '@/utils';
 import {
@@ -212,6 +219,11 @@ export function useSessions(
       }
 
       const traceSessionIdCols = traceSessionIdColumns(traceSource);
+      const connectionKind = await resolveConnectionKind(
+        traceSource.connection,
+      );
+      const dialect =
+        connectionKind === 'couchbase' ? 'couchbase' : 'clickhouse';
 
       const serviceScopeFilters = await fetchServiceScopeFilters({
         traceSource,
@@ -228,7 +240,11 @@ export function useSessions(
       });
 
       const traceSessionIdExpression = includeOtelSessions
-        ? sessionIdKeyExpr(getTraceSourceFieldExpression, traceSessionIdCols)
+        ? sessionIdKeyExpr(
+            getTraceSourceFieldExpression,
+            traceSessionIdCols,
+            dialect,
+          )
         : getTraceSourceFieldExpression(
             traceSessionIdCols.resource,
             'rum.sessionId',
@@ -398,6 +414,7 @@ export function useSessions(
                 dateRange,
                 getSessionSourceFieldExpression:
                   getSessionsSourceFieldExpression,
+                dialect,
               }),
               metadata,
               sessionSource.querySettings,
@@ -418,7 +435,12 @@ export function useSessions(
           : undefined,
       ]);
 
-      const sessionsCTE = buildSessionsCtes({
+      const buildCtes =
+        dialect === 'couchbase' ? buildSessionsCtesCouchbase : buildSessionsCtes;
+      const unionIds =
+        dialect === 'couchbase' ? unionSessionIdsCouchbase : unionSessionIds;
+
+      const sessionsCTE = buildCtes({
         name: SESSIONS_CTE_NAME,
         spans: sessionsQuery,
         recordings: recordingsQuery,
@@ -431,7 +453,7 @@ export function useSessions(
         where && where.length > 0
           ? chSql`
         ${sessionsCTE},
-        sessionIdsWithRecordings AS (${unionSessionIds(
+        sessionIdsWithRecordings AS (${unionIds(
           sessionIdsWithRecordingsQuery,
           otelSessionIdsWithRecordingsQuery,
         )}),
@@ -560,6 +582,7 @@ export function buildRRWebStreamChartConfig({
   offset,
   getSessionSourceFieldExpression,
   preciseTimestampExpression,
+  dialect = 'clickhouse',
 }: {
   source: {
     from: TSessionSource['from'];
@@ -575,12 +598,22 @@ export function buildRRWebStreamChartConfig({
   offset: number;
   getSessionSourceFieldExpression: FieldExpressionGenerator;
   preciseTimestampExpression: string;
+  dialect?: 'clickhouse' | 'couchbase';
 }) {
   const eventAttributeExpression = (key: string) =>
     getSessionSourceFieldExpression(
       SESSION_TABLE_EXPRESSIONS.eventAttributesExpression,
       key,
     );
+
+  const bodyTypeExpr =
+    dialect === 'couchbase'
+      ? rrwebBodyTypeExpr(SESSION_TABLE_EXPRESSIONS.implicitColumnExpression)
+      : `simpleJSONExtractInt(${SESSION_TABLE_EXPRESSIONS.implicitColumnExpression}, 'type')`;
+  const uint64 = (expr: string) =>
+    dialect === 'couchbase'
+      ? toUInt64OrZeroCouchbase(expr)
+      : `toUInt64OrZero(${expr})`;
 
   return {
     // FIXME: add mappings to session source
@@ -590,7 +623,7 @@ export function buildRRWebStreamChartConfig({
         alias: 'b',
       },
       {
-        valueExpression: `simpleJSONExtractInt(${SESSION_TABLE_EXPRESSIONS.implicitColumnExpression}, 'type')`,
+        valueExpression: bodyTypeExpr,
         alias: 't',
       },
       {
@@ -621,8 +654,8 @@ export function buildRRWebStreamChartConfig({
     connection: source.connection,
     orderBy: [
       ...new Set([source.timestampValueExpression, preciseTimestampExpression]),
-      `toUInt64OrZero(${eventAttributeExpression('rr-web.offset')})`,
-      `toUInt64OrZero(${eventAttributeExpression('rr-web.chunk')})`,
+      uint64(eventAttributeExpression('rr-web.offset')),
+      uint64(eventAttributeExpression('rr-web.chunk')),
     ]
       .map(expression => `${expression} ASC`)
       .join(', '),
@@ -712,6 +745,9 @@ export function useRRWebEventStream(
         source,
         metadata,
       );
+      const connectionKind = await resolveConnectionKind(source.connection);
+      const dialect =
+        connectionKind === 'couchbase' ? 'couchbase' : 'clickhouse';
       const query = await renderChartConfig(
         buildRRWebStreamChartConfig({
           source,
@@ -724,6 +760,7 @@ export function useRRWebEventStream(
           offset: parseInt(offset),
           getSessionSourceFieldExpression,
           preciseTimestampExpression,
+          dialect,
         }),
         metadata,
         source.querySettings,

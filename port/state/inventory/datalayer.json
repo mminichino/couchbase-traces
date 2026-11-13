@@ -7609,14 +7609,14 @@
               "name": "getClickhouseClient",
               "references": 1,
               "lines": [
-                734
+                771
               ]
             },
             {
               "name": "useClickhouseClient",
               "references": 1,
               "lines": [
-                193
+                200
               ]
             }
           ]
@@ -11791,7 +11791,7 @@
               "name": "TimePicker",
               "references": 1,
               "lines": [
-                462
+                466
               ]
             }
           ]
@@ -14196,7 +14196,7 @@
               "name": "makeCoalescedFieldsAccessQuery",
               "references": 1,
               "lines": [
-                310
+                326
               ]
             }
           ]
@@ -14283,20 +14283,20 @@
               "name": "Session",
               "references": 7,
               "lines": [
-                120,
                 122,
-                249,
-                269,
-                296,
-                366,
-                449
+                124,
+                252,
+                272,
+                299,
+                369,
+                452
               ]
             },
             {
               "name": "useSessions",
               "references": 1,
               "lines": [
-                385
+                388
               ]
             }
           ]
@@ -14402,35 +14402,35 @@
               "name": "buildOtelSessionIdsWithRecordingsChartConfig",
               "references": 1,
               "lines": [
-                408
+                425
               ]
             },
             {
               "name": "buildRecordingsChartConfig",
               "references": 1,
               "lines": [
-                396
+                412
               ]
             },
             {
               "name": "buildSessionsCtes",
               "references": 1,
               "lines": [
-                421
+                439
               ]
             },
             {
               "name": "isOtelSessionListEnabled",
               "references": 1,
               "lines": [
-                224
+                236
               ]
             },
             {
               "name": "unionSessionIds",
               "references": 1,
               "lines": [
-                434
+                441
               ]
             }
           ]
@@ -16084,7 +16084,7 @@
               "name": "ClickhouseClient",
               "references": 1,
               "lines": [
-                86
+                93
               ]
             }
           ]
@@ -18372,22 +18372,22 @@
               "name": "ResponseJSON",
               "references": 1,
               "lines": [
-                195
+                202
               ]
             },
             {
               "name": "chSql",
               "references": 2,
               "lines": [
-                432,
-                448
+                454,
+                470
               ]
             },
             {
               "name": "streamToAsyncIterator",
               "references": 1,
               "lines": [
-                762
+                799
               ]
             }
           ]
@@ -18402,19 +18402,19 @@
               "name": "ChSql",
               "references": 5,
               "lines": [
-                119,
-                138,
-                139,
-                141
+                122,
+                141,
+                142,
+                144
               ]
             },
             {
               "name": "chSql",
               "references": 3,
               "lines": [
-                122,
-                154,
-                156
+                125,
+                157,
+                159
               ]
             }
           ]
@@ -21981,7 +21981,7 @@
               "name": "tcFromSource",
               "references": 1,
               "lines": [
-                452
+                456
               ]
             }
           ]
@@ -22788,7 +22788,7 @@
               "name": "tcFromSource",
               "references": 1,
               "lines": [
-                24
+                47
               ]
             }
           ]
@@ -22998,8 +22998,8 @@
               "name": "Metadata",
               "references": 2,
               "lines": [
-                85,
-                507
+                92,
+                529
               ]
             }
           ]
@@ -30798,6 +30798,21 @@
           ]
         },
         {
+          "path": "packages/app/src/hooks/useFieldExpressionGenerator.tsx",
+          "workspace": "@couchbase-traces/app",
+          "test": false,
+          "typeOnly": false,
+          "symbols": [
+            {
+              "name": "quoteIdent",
+              "references": 2,
+              "lines": [
+                24
+              ]
+            }
+          ]
+        },
+        {
           "path": "packages/common-utils/src/couchbase/__tests__/functions.test.ts",
           "workspace": "@couchbase-traces/common-utils",
           "test": true,
@@ -33407,13 +33422,14 @@
           "symbols": [
             {
               "name": "COUCHBASE_SLICES",
-              "references": 5,
+              "references": 6,
               "lines": [
                 20,
                 39,
                 52,
                 65,
-                78
+                78,
+                91
               ]
             }
           ]
@@ -33606,13 +33622,13 @@
               "name": "renderChartConfig",
               "references": 7,
               "lines": [
-                100,
-                250,
-                346,
-                373,
-                395,
-                407,
-                715
+                107,
+                266,
+                362,
+                389,
+                411,
+                424,
+                751
               ]
             }
           ]
@@ -33833,6 +33849,22 @@
               "references": 1,
               "lines": [
                 120
+              ]
+            }
+          ]
+        },
+        {
+          "path": "packages/app/src/sessions.ts",
+          "workspace": "@couchbase-traces/app",
+          "test": false,
+          "typeOnly": false,
+          "symbols": [
+            {
+              "name": "resolveConnectionKind",
+              "references": 2,
+              "lines": [
+                222,
+                748
               ]
             }
           ]
@@ -36059,7 +36091,7 @@
               "name": "filtersToQuery",
               "references": 1,
               "lines": [
-                128
+                135
               ]
             }
           ]
@@ -46088,25 +46120,25 @@
               "name": "SearchCondition",
               "references": 1,
               "lines": [
-                390
+                393
               ]
             },
             {
               "name": "SearchConditionLanguage",
               "references": 1,
               "lines": [
-                391
+                394
               ]
             },
             {
               "name": "SourceKind",
               "references": 5,
               "lines": [
-                249,
-                269,
-                274,
-                296,
-                449
+                252,
+                272,
+                277,
+                299,
+                452
               ]
             }
           ]
@@ -56458,7 +56490,7 @@
               "name": "TSource",
               "references": 1,
               "lines": [
-                18
+                41
               ]
             }
           ]
@@ -57500,58 +57532,58 @@
               "name": "DateRange",
               "references": 1,
               "lines": [
-                168
+                175
               ]
             },
             {
               "name": "Filter",
               "references": 4,
               "lines": [
-                87,
-                141,
-                144,
-                152
+                94,
+                148,
+                151,
+                159
               ]
             },
             {
               "name": "SearchCondition",
               "references": 2,
               "lines": [
-                142,
-                169
+                149,
+                176
               ]
             },
             {
               "name": "SearchConditionLanguage",
               "references": 2,
               "lines": [
-                143,
-                170
+                150,
+                177
               ]
             },
             {
               "name": "TSessionSource",
               "references": 4,
               "lines": [
-                83,
-                167,
-                503,
-                565
+                90,
+                174,
+                525,
+                588
               ]
             },
             {
               "name": "TTraceSource",
               "references": 2,
               "lines": [
-                82,
-                166
+                89,
+                173
               ]
             },
             {
               "name": "pickSampleWeightExpressionProps",
               "references": 1,
               "lines": [
-                335
+                351
               ]
             }
           ]
@@ -57566,8 +57598,8 @@
               "name": "BuilderChartConfigWithDateRange",
               "references": 2,
               "lines": [
-                48,
-                97
+                50,
+                100
               ]
             },
             {
@@ -57582,8 +57614,8 @@
               "references": 3,
               "lines": [
                 30,
-                45,
-                93
+                46,
+                96
               ]
             },
             {
