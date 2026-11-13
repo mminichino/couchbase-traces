@@ -90,6 +90,10 @@ jest.mock('@/source', () => ({
   }),
 }));
 
+jest.mock('@/connection', () => ({
+  useConnections: () => ({ data: [] }),
+}));
+
 jest.mock('@/timeQuery', () => ({
   parseRelativeTimeQuery: () => [new Date(0), new Date(1)],
   parseTimeQuery: () => [new Date(0), new Date(1)],

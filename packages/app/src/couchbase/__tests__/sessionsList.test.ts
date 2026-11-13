@@ -4,7 +4,7 @@ import {
   rrwebBodyTypeExpr,
   toUInt64OrZeroCouchbase,
   unionSessionIdsCouchbase,
-} from '../sessionsList';
+} from '@/couchbase/sessionsList';
 
 describe('couchbase sessionsList', () => {
   it('emits SQL++ CTE merge without ClickHouse if/maxIf', () => {

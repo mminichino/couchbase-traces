@@ -92,6 +92,7 @@ export type SearchChartConfigInput = {
   dateRangeStartInclusive?: boolean;
   dateRangeEndInclusive?: boolean;
   granularity?: SQLInterval;
+  limit?: BuilderChartConfig['limit'];
 };
 
 /**
@@ -190,6 +191,7 @@ export function buildSearchChartConfig(
       ? { dateRangeEndInclusive: input.dateRangeEndInclusive }
       : {}),
     ...(input.granularity != null ? { granularity: input.granularity } : {}),
+    ...(input.limit != null ? { limit: input.limit } : {}),
   };
 
   return config;

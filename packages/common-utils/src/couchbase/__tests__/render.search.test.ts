@@ -50,6 +50,7 @@ describe('renderChartConfigCouchbase (search)', () => {
 
   it('renders count aggregate for total results', async () => {
     const config = buildSearchChartConfig(logSource, {
+      where: '',
       select: [
         {
           aggFn: 'count',
@@ -66,6 +67,7 @@ describe('renderChartConfigCouchbase (search)', () => {
 
   it('maps rand() in orderBy to RANDOM()', async () => {
     const config = buildSearchChartConfig(logSource, {
+      where: '',
       orderBy: [{ valueExpression: 'rand()', ordering: 'DESC' }],
       limit: { limit: 100 },
       dateRange: [start, end],
@@ -77,6 +79,7 @@ describe('renderChartConfigCouchbase (search)', () => {
 
   it('groups by time-bucket expression, not the select alias', async () => {
     const config = buildSearchChartConfig(logSource, {
+      where: '',
       select: [
         {
           aggFn: 'count',

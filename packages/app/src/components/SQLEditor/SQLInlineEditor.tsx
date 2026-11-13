@@ -34,18 +34,13 @@ import { EDITOR_INPUT_HEIGHTS } from '@/components/editorInputHeights';
 import { useConnectionKind } from '@/couchbase/connection';
 import {
   formatLanguageForConnection,
-  SQL_DIALECT_LABEL,
   sqlKeywordsForCouchbase,
 } from '@/couchbase/dialect';
 import { useMultipleAllFields } from '@/hooks/useMetadata';
 import { useStableCallback } from '@/hooks/useStableCallback';
 import { useSource } from '@/source';
 import { useQueryHistory } from '@/utils';
-import {
-  clickhouseSql,
-  formatSqlForDialect,
-  sqlppSql,
-} from '@/utils/codeMirror';
+import { clickhouseSql, sqlppSql } from '@/utils/codeMirror';
 
 import { KEYWORDS_FOR_WHERE_OR_ORDER_BY } from './constants';
 import {
@@ -121,7 +116,6 @@ export default function SQLInlineEditor({
   const { data: source } = useSource({ id: sourceId });
   const connectionKind = useConnectionKind(source?.connection);
   const formatLang = formatLanguageForConnection(connectionKind);
-  const sqlLabel = connectionKind === 'couchbase' ? SQL_DIALECT_LABEL : 'SQL';
   const { data: fields } = useMultipleAllFields(_tableConnections ?? [], {
     dateRange,
     timestampValueExpression: source?.timestampValueExpression,
@@ -345,7 +339,7 @@ export default function SQLInlineEditor({
         },
       ]),
     ],
-    [allowMultiline, submitFromEditor, tooltipExt],
+    [allowMultiline, formatLang, submitFromEditor, tooltipExt],
   );
 
   const onClickCodeMirror = useCallback(() => {

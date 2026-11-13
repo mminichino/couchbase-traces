@@ -12,15 +12,7 @@ import {
   resolvePercentileAggFn,
 } from '@/core/utils';
 import { quantile as quantileAgg } from '@/couchbase/fn/quantile';
-import {
-  aggIf,
-  anyValue,
-  argMax,
-  count,
-  countIf,
-  sumIf,
-  uniq,
-} from '@/couchbase/fn/scalar';
+import { anyValue, argMax, count, uniq } from '@/couchbase/fn/scalar';
 import { quoteIdent, type SqlPP, sqlpp } from '@/couchbase/sqlpp';
 import {
   parseGranularity,
@@ -34,7 +26,7 @@ import {
 import type { BuilderChartConfigWithOptDateRange, SelectList } from '@/types';
 
 import { ratioExprCouchbase } from './ratio';
-import { ROW_ID_ALIAS, rowIdSelect } from './rowId';
+import { rowIdSelect } from './rowId';
 import { includeRowIdInSelect } from './search';
 import type { RenderFilterContext } from './where';
 import { compileWhereExpressionCouchbase } from './where';

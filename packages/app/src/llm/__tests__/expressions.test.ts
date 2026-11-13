@@ -36,7 +36,7 @@ describe('getLLMExpressions', () => {
       "mapContains(SpanAttributes, 'gen_ai.operation.name')",
     );
     expect(expressions.isError).toBe(
-      "lower(StatusCode) IN ('error', 'status_code_error')",
+      "LOWER(StatusCode) IN ('error', 'status_code_error')",
     );
     expect(expressions.durationInMillis).toBe('Duration/1e6');
     // Provided cost takes precedence in the cost expression.
@@ -280,7 +280,7 @@ describe('getLLMExpressions', () => {
     );
     expect(expressions.model).toContain("Attrs['gen_ai.response.model']");
     expect(expressions.isError).toBe(
-      "lower(Status) IN ('error', 'status_code_error')",
+      "LOWER(Status) IN ('error', 'status_code_error')",
     );
     expect(expressions.durationInMillis).toBe('DurationNs/1e6');
   });

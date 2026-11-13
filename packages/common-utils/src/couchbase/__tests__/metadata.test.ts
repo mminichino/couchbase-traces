@@ -2,7 +2,6 @@ import { MetadataCache } from '@/core/metadata';
 import { inferredToColumnType, parseInfer } from '@/couchbase/infer';
 import { CouchbaseMetadata } from '@/couchbase/metadata';
 import { renderChartConfigCouchbase } from '@/couchbase/render';
-import { CouchbaseNotReadyError } from '@/dataLayer/errors';
 
 const inferDoc = {
   properties: {

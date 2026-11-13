@@ -7,7 +7,7 @@ import {
 describe('errorStatusPredicateSql', () => {
   it('matches both short and legacy error statuses case-insensitively', () => {
     expect(errorStatusPredicateSql('StatusCode')).toBe(
-      "lower(StatusCode) IN ('error', 'status_code_error')",
+      "LOWER(StatusCode) IN ('error', 'status_code_error')",
     );
   });
 });

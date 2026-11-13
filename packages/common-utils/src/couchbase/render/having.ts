@@ -1,6 +1,5 @@
 import { isNonEmptyWhereExpr } from '@/core/renderChartConfig';
 import type { SqlPP } from '@/couchbase/sqlpp';
-import { sqlpp } from '@/couchbase/sqlpp';
 import type { BuilderChartConfigWithOptDateRange } from '@/types';
 
 import type { RenderFilterContext } from './where';

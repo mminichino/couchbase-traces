@@ -5,7 +5,7 @@ import {
   tupleElementExpr,
   uuidExpr,
   zipSeriesSqlpp,
-} from '../dialectExpr';
+} from '@/couchbase/dialectExpr';
 
 describe('dialectExpr', () => {
   it('maps JSONExtractString to DECODE_JSON for couchbase', () => {

@@ -3,8 +3,6 @@ import { type SqlPP, sqlpp } from '@/couchbase/sqlpp';
 import type { BuilderChartConfigWithOptDateRange } from '@/types';
 import type { QuerySettings } from '@/types';
 
-import type { RenderFilterContext } from './where';
-
 export type RenderChartFn = (
   config: ChartConfigWithOptDateRangeEx,
   metadata: unknown,

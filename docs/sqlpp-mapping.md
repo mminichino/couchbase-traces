@@ -290,6 +290,7 @@ Generated from `MAPPINGS` in `packages/common-utils/src/couchbase/functions.ts`.
 | `label` | No SQL++ equivalent in this phase; catalog token or ClickHouse-only function |
 | `LAG` | No SQL++ equivalent in this phase; catalog token or ClickHouse-only function |
 | `last_value` | No SQL++ equivalent in this phase; catalog token or ClickHouse-only function |
+| `LEAST` | No SQL++ equivalent in this phase; catalog token or ClickHouse-only function |
 | `LENGTH` | No SQL++ equivalent in this phase; catalog token or ClickHouse-only function |
 | `letters` | No SQL++ equivalent in this phase; catalog token or ClickHouse-only function |
 | `level` | No SQL++ equivalent in this phase; catalog token or ClickHouse-only function |
@@ -427,7 +428,7 @@ Generated from `MAPPINGS` in `packages/common-utils/src/couchbase/functions.ts`.
 | `substring` | No SQL++ equivalent in this phase; catalog token or ClickHouse-only function |
 | `sum` | No SQL++ equivalent in this phase; catalog token or ClickHouse-only function |
 | `Sum` | No SQL++ equivalent in this phase; catalog token or ClickHouse-only function |
-| `SUM` | No SQL++ equivalent in this phase; catalog token or ClickHouse-only function |
+| `SUM` | Combinator is expressed as CASE WHEN or ARRAY_CONTAINS |
 | `sumForEach` | No SQL++ equivalent in this phase; catalog token or ClickHouse-only function |
 | `sumMap` | No SQL++ equivalent in this phase; catalog token or ClickHouse-only function |
 | `syntax` | No SQL++ equivalent in this phase; catalog token or ClickHouse-only function |

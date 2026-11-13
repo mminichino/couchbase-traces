@@ -1,6 +1,6 @@
 import { COUCHBASE_SLICES } from '@couchbase-traces/common-utils/dist/dataLayer';
 
-import { filterSourcesForSliceWithConnections } from '../sources';
+import { filterSourcesForSliceWithConnections } from '@/couchbase/sources';
 
 describe('filterSearchSources', () => {
   const sources = [

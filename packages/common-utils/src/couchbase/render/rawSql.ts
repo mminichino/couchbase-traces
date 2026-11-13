@@ -15,6 +15,9 @@ export async function renderRawSqlChartConfigCouchbase(
     throw new CouchbaseNotReadyError('charts: rawSql');
   }
   const raw = config;
+  if (typeof raw.sqlTemplate !== 'string') {
+    throw new CouchbaseNotReadyError('charts: rawSql');
+  }
   const displayType = raw.displayType ?? DisplayType.Table;
   const queryParams = QUERY_PARAMS_BY_DISPLAY_TYPE[displayType] ?? [];
   const paramValues = Object.fromEntries(

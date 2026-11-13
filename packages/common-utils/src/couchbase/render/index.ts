@@ -5,7 +5,7 @@ import {
   isNonEmptyWhereExpr,
 } from '@/core/renderChartConfig';
 import { resolvePercentileAggFn } from '@/core/utils';
-import { concatSqlPP, type SqlPP, sqlpp } from '@/couchbase/sqlpp';
+import { concatSqlPP, sqlpp } from '@/couchbase/sqlpp';
 import { CouchbaseNotReadyError } from '@/dataLayer/errors';
 import {
   isBuilderChartConfig,

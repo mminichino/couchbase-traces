@@ -27,6 +27,30 @@ type MetricSelect = {
   aggConditionLanguage?: string;
 };
 
+function asMetricsDataType(
+  value: string | undefined,
+): MetricsDataType | undefined {
+  if (value == null) return undefined;
+  for (const candidate of Object.values(MetricsDataType)) {
+    if (candidate === value) return candidate;
+  }
+  return undefined;
+}
+
+/** Drop metric identity fields after CTE rewrite so the outer select is plain. */
+function clearMetricIdentity<T extends object>(
+  row: T,
+  overrides: Record<string, unknown>,
+): T {
+  return {
+    ...row,
+    ...overrides,
+    metricType: undefined,
+    metricName: undefined,
+    metricNameSql: undefined,
+  };
+}
+
 /**
  * Translate a metric chart config into a builder config with SQL++ CTEs.
  * Gauge: last Value per (series, bucket) then the requested agg.
@@ -48,7 +72,7 @@ export async function translateMetricChartConfigCouchbase(
   }
 
   const first = select[0] as MetricSelect;
-  const metricType = first.metricType as MetricsDataType | undefined;
+  const metricType = asMetricsDataType(first.metricType);
   const metricName = first.metricName;
   if (!metricType || !metricName) {
     throw new CouchbaseNotReadyError('metrics: metricType/metricName');
@@ -108,14 +132,10 @@ export async function translateMetricChartConfigCouchbase(
       ],
       from: { databaseName: '', tableName: 'Bucketed' },
       select: [
-        {
-          ...first,
+        clearMetricIdentity(select[0], {
           valueExpression: 'LastValue',
           aggCondition: '',
-          metricType: undefined,
-          metricName: undefined,
-          metricNameSql: undefined,
-        } as (typeof select)[0],
+        }),
       ],
       where: '',
       // Date range already applied in Source. Keep the caller's granularity
@@ -165,15 +185,11 @@ export async function translateMetricChartConfigCouchbase(
       ],
       from: { databaseName: '', tableName: 'Bucketed' },
       select: [
-        {
-          ...first,
+        clearMetricIdentity(select[0], {
           aggFn: first.aggFn === 'increase' ? 'sum' : first.aggFn,
           valueExpression: useRate ? 'Rate' : 'Sum',
           aggCondition: '',
-          metricType: undefined,
-          metricName: undefined,
-          metricNameSql: undefined,
-        } as (typeof select)[0],
+        }),
       ],
       where: '',
       timestampValueExpression: timeBucketCol,

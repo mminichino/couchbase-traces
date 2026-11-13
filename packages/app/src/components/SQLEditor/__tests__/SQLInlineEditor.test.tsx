@@ -9,6 +9,9 @@ jest.mock('@/hooks/useMetadata', () => ({
 jest.mock('@/source', () => ({
   useSource: jest.fn().mockReturnValue({ data: undefined }),
 }));
+jest.mock('@/couchbase/connection', () => ({
+  useConnectionKind: jest.fn().mockReturnValue('clickhouse'),
+}));
 
 const noop = () => {};
 const connection = { databaseName: 'db', tableName: 't', connectionId: 'c' };

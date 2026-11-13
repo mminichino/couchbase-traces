@@ -7,7 +7,7 @@ import {
 describe('serviceMapErrorCountSql', () => {
   it('counts short and legacy error statuses, not only Error', () => {
     expect(serviceMapErrorCountSql()).toBe(
-      "countIf(lower(ServerSpans.statusCode) IN ('error', 'status_code_error'))",
+      "countIf(LOWER(ServerSpans.statusCode) IN ('error', 'status_code_error'))",
     );
   });
 });

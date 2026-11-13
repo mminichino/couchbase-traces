@@ -1,5 +1,4 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { ClickHouseQueryError } from '@couchbase-traces/common-utils/dist/clickhouse';
 import { tcFromChartConfig } from '@couchbase-traces/common-utils/dist/core/metadata';
 import { getStableSampleExpressionCouchbase } from '@couchbase-traces/common-utils/dist/couchbase/render/eventDeltas';
 import {

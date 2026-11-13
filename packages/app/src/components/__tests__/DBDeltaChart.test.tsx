@@ -17,6 +17,10 @@ jest.mock('@/hooks/useMetadata', () => ({
   useTableMetadata: jest.fn(),
 }));
 
+jest.mock('@/couchbase/connection', () => ({
+  useConnectionKind: jest.fn().mockReturnValue('clickhouse'),
+}));
+
 // PropertyComparisonChart is the per-attribute renderer. Stubbing it out keeps
 // the legend assertions tight without dragging uPlot/element-size hooks into
 // the test environment.

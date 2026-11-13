@@ -4,7 +4,7 @@ import { SourceKind } from '@couchbase-traces/common-utils/dist/types';
 import {
   filterSourcesForSliceWithConnections,
   isSourceAllowedForSlice,
-} from '../sources';
+} from '@/couchbase/sources';
 
 const sources = [
   { id: 'ch', connection: 'ch-conn', name: 'CH', kind: SourceKind.Log },

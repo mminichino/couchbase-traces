@@ -1,5 +1,8 @@
-import { formatLanguageForConnection, HIDDEN_ROW_COLUMNS } from '../dialect';
-import { isHiddenRowColumn } from '../rowColumns';
+import {
+  formatLanguageForConnection,
+  HIDDEN_ROW_COLUMNS,
+} from '@/couchbase/dialect';
+import { isHiddenRowColumn } from '@/couchbase/rowColumns';
 
 describe('couchbase dialect helpers', () => {
   it('switches formatter language for couchbase', () => {

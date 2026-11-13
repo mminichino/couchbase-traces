@@ -8,6 +8,9 @@ import { useJsonColumns } from '@/hooks/useMetadata';
 jest.mock('../useMetadata', () => ({
   useJsonColumns: jest.fn(),
 }));
+jest.mock('@/couchbase/connection', () => ({
+  useConnectionKind: jest.fn().mockReturnValue('clickhouse'),
+}));
 
 describe('useFieldExpressionGenerator', () => {
   const mockSource = {
