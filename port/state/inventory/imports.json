@@ -66138,6 +66138,52 @@
           "line": 45
         },
         {
+          "specifier": "@/couchbase/connection",
+          "target": "packages/app/src/couchbase/connection.ts",
+          "external": null,
+          "kind": "static",
+          "typeOnly": false,
+          "bindings": [
+            {
+              "imported": "useConnectionKind",
+              "local": "useConnectionKind"
+            }
+          ],
+          "line": 46
+        },
+        {
+          "specifier": "@/couchbase/dialectExpr",
+          "target": null,
+          "external": null,
+          "kind": "static",
+          "typeOnly": false,
+          "bindings": [
+            {
+              "imported": "jsonExtractString",
+              "local": "jsonExtractString"
+            },
+            {
+              "imported": "mapKeyAccess",
+              "local": "mapKeyAccess"
+            }
+          ],
+          "line": 50
+        },
+        {
+          "specifier": "@/couchbase/sources",
+          "target": "packages/app/src/couchbase/sources.ts",
+          "external": null,
+          "kind": "static",
+          "typeOnly": false,
+          "bindings": [
+            {
+              "imported": "useIsSourceAllowedForSlice",
+              "local": "useIsSourceAllowedForSlice"
+            }
+          ],
+          "line": 51
+        },
+        {
           "specifier": "@/hooks/useResolvedSourceParam",
           "target": "packages/app/src/hooks/useResolvedSourceParam.ts",
           "external": null,
@@ -66149,7 +66195,7 @@
               "local": "useResolvedSourceParam"
             }
           ],
-          "line": 46
+          "line": 52
         },
         {
           "specifier": "@/hooks/useVirtualList",
@@ -66163,7 +66209,7 @@
               "local": "useVirtualList"
             }
           ],
-          "line": 47
+          "line": 53
         },
         {
           "specifier": "./components/DBSqlRowTableWithSidebar",
@@ -66177,7 +66223,7 @@
               "local": "DBSqlRowTableWithSideBar"
             }
           ],
-          "line": 49
+          "line": 55
         },
         {
           "specifier": "./components/DBTimeChart",
@@ -66191,7 +66237,7 @@
               "local": "DBTimeChart"
             }
           ],
-          "line": 50
+          "line": 56
         },
         {
           "specifier": "./components/KubeComponents",
@@ -66205,7 +66251,7 @@
               "local": "FormatPodStatus"
             }
           ],
-          "line": 51
+          "line": 57
         },
         {
           "specifier": "./components/KubernetesFilters",
@@ -66219,7 +66265,7 @@
               "local": "KubernetesFilters"
             }
           ],
-          "line": 52
+          "line": 58
         },
         {
           "specifier": "./components/OnboardingModal",
@@ -66233,7 +66279,7 @@
               "local": "OnboardingModal"
             }
           ],
-          "line": 53
+          "line": 59
         },
         {
           "specifier": "./components/SourceSchemaPreview",
@@ -66251,7 +66297,7 @@
               "local": "isSourceSchemaPreviewEnabled"
             }
           ],
-          "line": 56
+          "line": 62
         },
         {
           "specifier": "./components/SourceSelect",
@@ -66265,7 +66311,7 @@
               "local": "SourceSelectControlled"
             }
           ],
-          "line": 57
+          "line": 63
         },
         {
           "specifier": "./hooks/useChartConfig",
@@ -66279,7 +66325,7 @@
               "local": "useQueriedChartConfig"
             }
           ],
-          "line": 58
+          "line": 64
         },
         {
           "specifier": "./hooks/useDashboardRefresh",
@@ -66293,7 +66339,7 @@
               "local": "useDashboardRefresh"
             }
           ],
-          "line": 59
+          "line": 65
         },
         {
           "specifier": "./hooks/useMetadata",
@@ -66307,7 +66353,7 @@
               "local": "useJsonColumns"
             }
           ],
-          "line": 60
+          "line": 66
         },
         {
           "specifier": "./brand",
@@ -66321,7 +66367,7 @@
               "local": "usePageTitle"
             }
           ],
-          "line": 61
+          "line": 67
         },
         {
           "specifier": "./ChartUtils",
@@ -66343,7 +66389,7 @@
               "local": "K8S_MEM_NUMBER_FORMAT"
             }
           ],
-          "line": 66
+          "line": 72
         },
         {
           "specifier": "./layout",
@@ -66357,7 +66403,7 @@
               "local": "withAppNavForSurface"
             }
           ],
-          "line": 67
+          "line": 73
         },
         {
           "specifier": "./NamespaceDetailsSidePanel",
@@ -66371,7 +66417,7 @@
               "local": "NamespaceDetailsSidePanel"
             }
           ],
-          "line": 68
+          "line": 74
         },
         {
           "specifier": "./NodeDetailsSidePanel",
@@ -66385,7 +66431,7 @@
               "local": "NodeDetailsSidePanel"
             }
           ],
-          "line": 69
+          "line": 75
         },
         {
           "specifier": "./PodDetailsSidePanel",
@@ -66399,7 +66445,7 @@
               "local": "PodDetailsSidePanel"
             }
           ],
-          "line": 70
+          "line": 76
         },
         {
           "specifier": "./source",
@@ -66417,7 +66463,7 @@
               "local": "useSources"
             }
           ],
-          "line": 71
+          "line": 77
         },
         {
           "specifier": "./timeQuery",
@@ -66435,7 +66481,7 @@
               "local": "useTimeQuery"
             }
           ],
-          "line": 72
+          "line": 78
         },
         {
           "specifier": "./types",
@@ -66449,7 +66495,7 @@
               "local": "KubePhase"
             }
           ],
-          "line": 73
+          "line": 79
         },
         {
           "specifier": "./utils",
@@ -66467,7 +66513,7 @@
               "local": "formatUptime"
             }
           ],
-          "line": 74
+          "line": 80
         }
       ],
       "exports": [
@@ -66476,21 +66522,21 @@
           "kind": "const",
           "from": null,
           "original": null,
-          "line": 152
+          "line": 158
         },
         {
           "name": "default",
           "kind": "const",
           "from": null,
           "original": null,
-          "line": 1738
+          "line": 1764
         },
         {
           "name": "resolveSourceIds",
           "kind": "const",
           "from": null,
           "original": null,
-          "line": 933
+          "line": 939
         }
       ],
       "starReexports": []
@@ -69023,6 +69069,42 @@
           "line": 17
         },
         {
+          "specifier": "@/couchbase/connection",
+          "target": "packages/app/src/couchbase/connection.ts",
+          "external": null,
+          "kind": "static",
+          "typeOnly": false,
+          "bindings": [
+            {
+              "imported": "useConnectionKind",
+              "local": "useConnectionKind"
+            }
+          ],
+          "line": 18
+        },
+        {
+          "specifier": "@/couchbase/dialectExpr",
+          "target": null,
+          "external": null,
+          "kind": "static",
+          "typeOnly": false,
+          "bindings": [
+            {
+              "imported": "groupArrayExpr",
+              "local": "groupArrayExpr"
+            },
+            {
+              "imported": "tupleElementExpr",
+              "local": "tupleElementExpr"
+            },
+            {
+              "imported": "zipSeriesSqlpp",
+              "local": "zipSeriesSqlpp"
+            }
+          ],
+          "line": 23
+        },
+        {
           "specifier": "@/components/SearchInput/SearchWhereInput",
           "target": "packages/app/src/components/SearchInput/SearchWhereInput.tsx",
           "external": null,
@@ -69034,7 +69116,7 @@
               "local": "getStoredLanguage"
             }
           ],
-          "line": 18
+          "line": 24
         },
         {
           "specifier": "@/serviceDashboard",
@@ -69048,7 +69130,7 @@
               "local": "useServiceDashboardExpressions"
             }
           ],
-          "line": 19
+          "line": 25
         },
         {
           "specifier": "@/source",
@@ -69062,7 +69144,7 @@
               "local": "useSource"
             }
           ],
-          "line": 20
+          "line": 26
         },
         {
           "specifier": "./helpers",
@@ -69084,7 +69166,7 @@
               "local": "pickSourceConfigFields"
             }
           ],
-          "line": 26
+          "line": 32
         },
         {
           "specifier": "./types",
@@ -69098,7 +69180,7 @@
               "local": "AppliedConfig"
             }
           ],
-          "line": 27
+          "line": 33
         }
       ],
       "exports": [
@@ -69107,7 +69189,7 @@
           "kind": "function",
           "from": null,
           "original": null,
-          "line": 517
+          "line": 562
         }
       ],
       "starReexports": []
@@ -69533,6 +69615,42 @@
           "line": 27
         },
         {
+          "specifier": "@/couchbase/connection",
+          "target": "packages/app/src/couchbase/connection.ts",
+          "external": null,
+          "kind": "static",
+          "typeOnly": false,
+          "bindings": [
+            {
+              "imported": "useConnectionKind",
+              "local": "useConnectionKind"
+            }
+          ],
+          "line": 28
+        },
+        {
+          "specifier": "@/couchbase/dialectExpr",
+          "target": null,
+          "external": null,
+          "kind": "static",
+          "typeOnly": false,
+          "bindings": [
+            {
+              "imported": "groupArrayExpr",
+              "local": "groupArrayExpr"
+            },
+            {
+              "imported": "tupleElementExpr",
+              "local": "tupleElementExpr"
+            },
+            {
+              "imported": "zipSeriesSqlpp",
+              "local": "zipSeriesSqlpp"
+            }
+          ],
+          "line": 33
+        },
+        {
           "specifier": "@/components/SearchInput/SearchWhereInput",
           "target": "packages/app/src/components/SearchInput/SearchWhereInput.tsx",
           "external": null,
@@ -69544,7 +69662,7 @@
               "local": "getStoredLanguage"
             }
           ],
-          "line": 28
+          "line": 34
         },
         {
           "specifier": "@/serviceDashboard",
@@ -69558,7 +69676,7 @@
               "local": "useServiceDashboardExpressions"
             }
           ],
-          "line": 29
+          "line": 35
         },
         {
           "specifier": "@/source",
@@ -69572,7 +69690,7 @@
               "local": "useSource"
             }
           ],
-          "line": 30
+          "line": 36
         },
         {
           "specifier": "./helpers",
@@ -69594,7 +69712,7 @@
               "local": "pickSourceConfigFields"
             }
           ],
-          "line": 36
+          "line": 42
         },
         {
           "specifier": "./types",
@@ -69608,7 +69726,7 @@
               "local": "AppliedConfig"
             }
           ],
-          "line": 37
+          "line": 43
         }
       ],
       "exports": [
@@ -69617,14 +69735,14 @@
           "kind": "function",
           "from": null,
           "original": null,
-          "line": 39
+          "line": 45
         },
         {
           "name": "default",
           "kind": "function",
           "from": null,
           "original": null,
-          "line": 699
+          "line": 730
         }
       ],
       "starReexports": []
@@ -69975,6 +70093,20 @@
           "line": 50
         },
         {
+          "specifier": "@/couchbase/sources",
+          "target": "packages/app/src/couchbase/sources.ts",
+          "external": null,
+          "kind": "static",
+          "typeOnly": false,
+          "bindings": [
+            {
+              "imported": "useIsSourceAllowedForSlice",
+              "local": "useIsSourceAllowedForSlice"
+            }
+          ],
+          "line": 51
+        },
+        {
           "specifier": "@/components/TimePicker",
           "target": "packages/app/src/components/TimePicker/index.ts",
           "external": null,
@@ -69986,7 +70118,7 @@
               "local": "TimePicker"
             }
           ],
-          "line": 51
+          "line": 52
         },
         {
           "specifier": "@/config",
@@ -70000,7 +70132,7 @@
               "local": "IS_LOCAL_MODE"
             }
           ],
-          "line": 52
+          "line": 53
         },
         {
           "specifier": "@/DashboardFilters",
@@ -70014,7 +70146,7 @@
               "local": "DashboardFilters"
             }
           ],
-          "line": 53
+          "line": 54
         },
         {
           "specifier": "@/hooks/useChartConfig",
@@ -70028,7 +70160,7 @@
               "local": "useQueriedChartConfig"
             }
           ],
-          "line": 54
+          "line": 55
         },
         {
           "specifier": "@/hooks/useDashboardRefresh",
@@ -70042,7 +70174,7 @@
               "local": "useDashboardRefresh"
             }
           ],
-          "line": 55
+          "line": 56
         },
         {
           "specifier": "@/hooks/usePresetDashboardFilters",
@@ -70056,7 +70188,7 @@
               "local": "usePresetDashboardFilters"
             }
           ],
-          "line": 56
+          "line": 57
         },
         {
           "specifier": "@/hooks/useResolvedSourceParam",
@@ -70070,7 +70202,7 @@
               "local": "useResolvedSourceParam"
             }
           ],
-          "line": 57
+          "line": 58
         },
         {
           "specifier": "@/layout",
@@ -70084,7 +70216,7 @@
               "local": "withAppNavForSurface"
             }
           ],
-          "line": 58
+          "line": 59
         },
         {
           "specifier": "@/serviceDashboard",
@@ -70098,7 +70230,7 @@
               "local": "useServiceDashboardExpressions"
             }
           ],
-          "line": 59
+          "line": 60
         },
         {
           "specifier": "@/source",
@@ -70116,7 +70248,7 @@
               "local": "useSources"
             }
           ],
-          "line": 60
+          "line": 61
         },
         {
           "specifier": "@/timeQuery",
@@ -70134,7 +70266,7 @@
               "local": "useNewTimeQuery"
             }
           ],
-          "line": 61
+          "line": 62
         },
         {
           "specifier": "./DatabaseTab",
@@ -70148,7 +70280,7 @@
               "local": "DatabaseTab"
             }
           ],
-          "line": 63
+          "line": 64
         },
         {
           "specifier": "./ErrorsTab",
@@ -70162,7 +70294,7 @@
               "local": "ErrorsTab"
             }
           ],
-          "line": 64
+          "line": 65
         },
         {
           "specifier": "./HttpTab",
@@ -70176,7 +70308,7 @@
               "local": "HttpTab"
             }
           ],
-          "line": 65
+          "line": 66
         }
       ],
       "exports": [
@@ -70185,14 +70317,14 @@
           "kind": "const",
           "from": null,
           "original": null,
-          "line": 487
+          "line": 490
         },
         {
           "name": "getEffectiveTraceSourceId",
           "kind": "function",
           "from": null,
           "original": null,
-          "line": 154
+          "line": 155
         }
       ],
       "starReexports": []
@@ -121829,6 +121961,42 @@
           "line": 17
         },
         {
+          "specifier": "@/couchbase/connection",
+          "target": "packages/app/src/couchbase/connection.ts",
+          "external": null,
+          "kind": "static",
+          "typeOnly": false,
+          "bindings": [
+            {
+              "imported": "useConnectionKind",
+              "local": "useConnectionKind"
+            }
+          ],
+          "line": 18
+        },
+        {
+          "specifier": "@/couchbase/dialectExpr",
+          "target": null,
+          "external": null,
+          "kind": "static",
+          "typeOnly": false,
+          "bindings": [
+            {
+              "imported": "jsonExtractString",
+              "local": "jsonExtractString"
+            },
+            {
+              "imported": "mapKeyAccess",
+              "local": "mapKeyAccess"
+            },
+            {
+              "imported": "uuidExpr",
+              "local": "uuidExpr"
+            }
+          ],
+          "line": 23
+        },
+        {
           "specifier": "@/hooks/useMetadata",
           "target": "packages/app/src/hooks/useMetadata.tsx",
           "external": null,
@@ -121840,7 +122008,7 @@
               "local": "useMetadataWithSettings"
             }
           ],
-          "line": 18
+          "line": 24
         },
         {
           "specifier": "@/source",
@@ -121854,7 +122022,7 @@
               "local": "getDisplayedTimestampValueExpression"
             }
           ],
-          "line": 19
+          "line": 25
         },
         {
           "specifier": "@/types",
@@ -121868,7 +122036,7 @@
               "local": "KubePhase"
             }
           ],
-          "line": 20
+          "line": 26
         },
         {
           "specifier": "@/useFormatTime",
@@ -121882,7 +122050,7 @@
               "local": "FormatTime"
             }
           ],
-          "line": 21
+          "line": 27
         }
       ],
       "exports": [
@@ -121891,21 +122059,21 @@
           "kind": "const",
           "from": null,
           "original": null,
-          "line": 320
+          "line": 346
         },
         {
           "name": "KubeTimeline",
           "kind": "const",
           "from": null,
           "original": null,
-          "line": 167
+          "line": 173
         },
         {
           "name": "useV2LogBatch",
           "kind": "const",
           "from": null,
           "original": null,
-          "line": 39
+          "line": 45
         }
       ],
       "starReexports": []
@@ -167395,6 +167563,45 @@
       "starReexports": []
     },
     {
+      "path": "packages/app/src/couchbase/__tests__/sessionsList.test.ts",
+      "workspace": "@couchbase-traces/app",
+      "test": true,
+      "imports": [
+        {
+          "specifier": "../sessionsList",
+          "target": "packages/app/src/couchbase/sessionsList.ts",
+          "external": null,
+          "kind": "static",
+          "typeOnly": false,
+          "bindings": [
+            {
+              "imported": "buildSessionsCtesCouchbase",
+              "local": "buildSessionsCtesCouchbase"
+            },
+            {
+              "imported": "ifNonEmptyCouchbase",
+              "local": "ifNonEmptyCouchbase"
+            },
+            {
+              "imported": "rrwebBodyTypeExpr",
+              "local": "rrwebBodyTypeExpr"
+            },
+            {
+              "imported": "toUInt64OrZeroCouchbase",
+              "local": "toUInt64OrZeroCouchbase"
+            },
+            {
+              "imported": "unionSessionIdsCouchbase",
+              "local": "unionSessionIdsCouchbase"
+            }
+          ],
+          "line": 7
+        }
+      ],
+      "exports": [],
+      "starReexports": []
+    },
+    {
       "path": "packages/app/src/couchbase/__tests__/sources.gating.test.ts",
       "workspace": "@couchbase-traces/app",
       "test": true,
@@ -167795,6 +168002,79 @@
           "from": null,
           "original": null,
           "line": 31
+        }
+      ],
+      "starReexports": []
+    },
+    {
+      "path": "packages/app/src/couchbase/sessionsList.ts",
+      "workspace": "@couchbase-traces/app",
+      "test": false,
+      "imports": [
+        {
+          "specifier": "@couchbase-traces/common-utils/dist/clickhouse",
+          "target": "packages/common-utils/src/clickhouse/index.ts",
+          "external": null,
+          "kind": "static",
+          "typeOnly": true,
+          "bindings": [
+            {
+              "imported": "ChSql",
+              "local": "ChSql"
+            }
+          ],
+          "line": 1
+        },
+        {
+          "specifier": "@couchbase-traces/common-utils/dist/clickhouse",
+          "target": "packages/common-utils/src/clickhouse/index.ts",
+          "external": null,
+          "kind": "static",
+          "typeOnly": false,
+          "bindings": [
+            {
+              "imported": "chSql",
+              "local": "chSql"
+            }
+          ],
+          "line": 2
+        }
+      ],
+      "exports": [
+        {
+          "name": "buildSessionsCtesCouchbase",
+          "kind": "function",
+          "from": null,
+          "original": null,
+          "line": 19
+        },
+        {
+          "name": "ifNonEmptyCouchbase",
+          "kind": "function",
+          "from": null,
+          "original": null,
+          "line": 90
+        },
+        {
+          "name": "rrwebBodyTypeExpr",
+          "kind": "function",
+          "from": null,
+          "original": null,
+          "line": 80
+        },
+        {
+          "name": "toUInt64OrZeroCouchbase",
+          "kind": "function",
+          "from": null,
+          "original": null,
+          "line": 85
+        },
+        {
+          "name": "unionSessionIdsCouchbase",
+          "kind": "function",
+          "from": null,
+          "original": null,
+          "line": 10
         }
       ],
       "starReexports": []
@@ -187545,7 +187825,7 @@
         },
         {
           "specifier": "@/couchbase/sessionsList",
-          "target": null,
+          "target": "packages/app/src/couchbase/sessionsList.ts",
           "external": null,
           "kind": "static",
           "typeOnly": false,

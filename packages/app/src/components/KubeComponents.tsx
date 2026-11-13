@@ -15,6 +15,12 @@ import { Group, Text, Timeline } from '@mantine/core';
 import { useQuery, UseQueryOptions } from '@tanstack/react-query';
 
 import { useClickhouseClient } from '@/clickhouse';
+import { useConnectionKind } from '@/couchbase/connection';
+import {
+  jsonExtractString,
+  mapKeyAccess,
+  uuidExpr,
+} from '@/couchbase/dialectExpr';
 import { useMetadataWithSettings } from '@/hooks/useMetadata';
 import { getDisplayedTimestampValueExpression } from '@/source';
 import { KubePhase } from '@/types';
@@ -186,6 +192,14 @@ export const KubeTimeline = ({
     [dateRange],
   );
 
+  const connectionKind = useConnectionKind(logSource.connection);
+  const dialect =
+    connectionKind === 'couchbase' ? 'couchbase' : 'clickhouse';
+  const objectAccess = mapKeyAccess(
+    logSource.eventAttributesExpression ?? 'LogAttributes',
+    'object',
+    dialect,
+  );
   const { data, isLoading } = useV2LogBatch<KubeEvent>({
     dateRange: [startDate, endDate],
     limit: 50,
@@ -195,47 +209,59 @@ export const KubeTimeline = ({
     whereLanguage: 'lucene',
     extraSelects: [
       {
-        valueExpression: `generateUUIDv4()`,
+        valueExpression: uuidExpr(dialect),
         alias: 'id',
       },
       {
-        valueExpression: `JSONExtractString(${logSource.eventAttributesExpression}['object'], 'metadata', 'creationTimestamp')`,
+        valueExpression: jsonExtractString(
+          objectAccess,
+          ['metadata', 'creationTimestamp'],
+          dialect,
+        ),
         alias: 'object.metadata.creationTimestamp',
       },
       {
-        valueExpression: `JSONExtractString(${logSource.eventAttributesExpression}['object'], 'reason')`,
+        valueExpression: jsonExtractString(objectAccess, ['reason'], dialect),
         alias: 'object.reason',
       },
       {
-        valueExpression: `JSONExtractString(${logSource.eventAttributesExpression}['object'], 'note')`,
+        valueExpression: jsonExtractString(objectAccess, ['note'], dialect),
         alias: 'object.note',
       },
       {
-        valueExpression: `JSONExtractString(${logSource.eventAttributesExpression}['object'], 'type')`,
+        valueExpression: jsonExtractString(objectAccess, ['type'], dialect),
         alias: 'object.type',
       },
       {
-        valueExpression: `JSONExtractString(${logSource.eventAttributesExpression}['object'], 'message')`,
+        valueExpression: jsonExtractString(objectAccess, ['message'], dialect),
         alias: 'object.message',
       },
       {
-        valueExpression: `JSONExtractString(${logSource.eventAttributesExpression}['object'], 'regarding', 'name')`,
+        valueExpression: jsonExtractString(
+          objectAccess,
+          ['regarding', 'name'],
+          dialect,
+        ),
         alias: 'k8s.pod.name',
       },
       {
-        valueExpression: `JSONExtractString(${logSource.eventAttributesExpression}['object'], 'regarding', 'uid')`,
+        valueExpression: jsonExtractString(
+          objectAccess,
+          ['regarding', 'uid'],
+          dialect,
+        ),
         alias: 'k8s.pod.uid',
       },
       {
-        valueExpression: `JSONExtractString(${logSource.eventAttributesExpression}['object'], 'type')`,
+        valueExpression: jsonExtractString(objectAccess, ['type'], dialect),
         alias: 'type',
       },
       {
-        valueExpression: `JSONExtractString(${logSource.eventAttributesExpression}['object'], 'type')`,
+        valueExpression: jsonExtractString(objectAccess, ['type'], dialect),
         alias: 'severity_text',
       },
       {
-        valueExpression: `JSONExtractString(${logSource.eventAttributesExpression}['object'], 'note')`,
+        valueExpression: jsonExtractString(objectAccess, ['note'], dialect),
         alias: 'body',
       },
     ],

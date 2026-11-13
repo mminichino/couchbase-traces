@@ -87,15 +87,28 @@ describe('search source gating', () => {
     );
   });
 
-  it('still drops couchbase for disabled presets slice', () => {
-    expect(COUCHBASE_SLICES.presets).toBe(false);
+  it('keeps couchbase sources when presets slice is enabled', () => {
+    expect(COUCHBASE_SLICES.presets).toBe(true);
     const out = filterSourcesForSliceWithConnections(
       sources,
       'presets',
       connections,
     );
-    expect(out.map(s => s.id)).toEqual(['ch']);
+    expect(out.map(s => s.id)).toEqual(['ch', 'cb']);
     expect(isSourceAllowedForSlice(sources[1]!, 'presets', connections)).toBe(
+      true,
+    );
+  });
+
+  it('still drops couchbase for disabled alerts slice', () => {
+    expect(COUCHBASE_SLICES.alerts).toBe(false);
+    const out = filterSourcesForSliceWithConnections(
+      sources,
+      'alerts',
+      connections,
+    );
+    expect(out.map(s => s.id)).toEqual(['ch']);
+    expect(isSourceAllowedForSlice(sources[1]!, 'alerts', connections)).toBe(
       false,
     );
   });

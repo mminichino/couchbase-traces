@@ -1,0 +1,12 @@
+{
+  "id": "presets-k8s-log-count",
+  "description": "kubernetes dashboard log source count (materialized k8s fields unused when absent)",
+  "source": "logs",
+  "config": {
+    "select": [
+      { "aggFn": "count", "valueExpression": "", "alias": "count" }
+    ],
+    "dateRange": { "fromMinutesAgo": 60, "toMinutesAgo": 0 }
+  },
+  "compare": { "ignoreColumns": ["__cbt_id"] }
+}

@@ -233,7 +233,6 @@ Generated from `MAPPINGS` in `packages/common-utils/src/couchbase/functions.ts`.
 | `functions` | No SQL++ equivalent in this phase; catalog token or ClickHouse-only function |
 | `FUNCTIONS` | No SQL++ equivalent in this phase; catalog token or ClickHouse-only function |
 | `gaps` | No SQL++ equivalent in this phase; catalog token or ClickHouse-only function |
-| `generateUUIDv4` | No SQL++ equivalent in this phase; catalog token or ClickHouse-only function |
 | `getKeyValues` | No SQL++ equivalent in this phase; catalog token or ClickHouse-only function |
 | `getSubcolumn` | No SQL++ equivalent in this phase; catalog token or ClickHouse-only function |
 | `go` | No SQL++ equivalent in this phase; catalog token or ClickHouse-only function |

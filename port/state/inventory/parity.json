@@ -5365,7 +5365,7 @@
           "file": "packages/app/pages/alerts/[alertId].tsx"
         }
       ],
-      "closureSize": 588,
+      "closureSize": 589,
       "exclusiveFiles": [
         "packages/api/src/routers/api/alerts.ts",
         "packages/app/pages/alerts/[alertId].tsx",
@@ -5679,6 +5679,15 @@
             "InfraChartSpec",
             "InfraCorrelation",
             "getActiveInfraCorrelations"
+          ]
+        },
+        {
+          "path": "packages/app/src/couchbase/sessionsList.ts",
+          "symbols": [
+            "buildSessionsCtesCouchbase",
+            "rrwebBodyTypeExpr",
+            "toUInt64OrZeroCouchbase",
+            "unionSessionIdsCouchbase"
           ]
         },
         {
@@ -6621,7 +6630,7 @@
           "file": "packages/app/pages/benchmark.tsx"
         }
       ],
-      "closureSize": 371,
+      "closureSize": 372,
       "exclusiveFiles": [
         "packages/app/pages/benchmark.tsx",
         "packages/app/src/BenchmarkPage.tsx"
@@ -6754,6 +6763,15 @@
             "InfraChartSpec",
             "InfraCorrelation",
             "getActiveInfraCorrelations"
+          ]
+        },
+        {
+          "path": "packages/app/src/couchbase/sessionsList.ts",
+          "symbols": [
+            "buildSessionsCtesCouchbase",
+            "rrwebBodyTypeExpr",
+            "toUInt64OrZeroCouchbase",
+            "unionSessionIdsCouchbase"
           ]
         },
         {
@@ -7542,7 +7560,7 @@
           "file": "packages/app/pages/chart.tsx"
         }
       ],
-      "closureSize": 550,
+      "closureSize": 551,
       "exclusiveFiles": [
         "packages/app/pages/chart.tsx",
         "packages/app/src/DBChartPage.tsx",
@@ -7827,6 +7845,15 @@
             "InfraChartSpec",
             "InfraCorrelation",
             "getActiveInfraCorrelations"
+          ]
+        },
+        {
+          "path": "packages/app/src/couchbase/sessionsList.ts",
+          "symbols": [
+            "buildSessionsCtesCouchbase",
+            "rrwebBodyTypeExpr",
+            "toUInt64OrZeroCouchbase",
+            "unionSessionIdsCouchbase"
           ]
         },
         {
@@ -8681,7 +8708,7 @@
           "file": "packages/app/pages/clickhouse.tsx"
         }
       ],
-      "closureSize": 443,
+      "closureSize": 444,
       "exclusiveFiles": [
         "packages/app/pages/clickhouse.tsx",
         "packages/app/src/ClickhousePage.tsx"
@@ -8895,6 +8922,15 @@
             "InfraChartSpec",
             "InfraCorrelation",
             "getActiveInfraCorrelations"
+          ]
+        },
+        {
+          "path": "packages/app/src/couchbase/sessionsList.ts",
+          "symbols": [
+            "buildSessionsCtesCouchbase",
+            "rrwebBodyTypeExpr",
+            "toUInt64OrZeroCouchbase",
+            "unionSessionIdsCouchbase"
           ]
         },
         {
@@ -9748,7 +9784,7 @@
           "file": "packages/app/pages/dashboards/templates.tsx"
         }
       ],
-      "closureSize": 656,
+      "closureSize": 657,
       "exclusiveFiles": [
         "packages/api/src/controllers/presetDashboardFilters.ts",
         "packages/api/src/models/presetDashboardFilter.ts",
@@ -10091,6 +10127,15 @@
             "InfraChartSpec",
             "InfraCorrelation",
             "getActiveInfraCorrelations"
+          ]
+        },
+        {
+          "path": "packages/app/src/couchbase/sessionsList.ts",
+          "symbols": [
+            "buildSessionsCtesCouchbase",
+            "rrwebBodyTypeExpr",
+            "toUInt64OrZeroCouchbase",
+            "unionSessionIdsCouchbase"
           ]
         },
         {
@@ -11646,7 +11691,7 @@
       "name": "Kubernetes dashboard",
       "area": "presets",
       "visibility": "user",
-      "status": "not_started",
+      "status": "ported",
       "entryPoints": [
         {
           "id": "app_page:/kubernetes",
@@ -11654,7 +11699,7 @@
           "file": "packages/app/pages/kubernetes.tsx"
         }
       ],
-      "closureSize": 418,
+      "closureSize": 420,
       "exclusiveFiles": [
         "packages/app/pages/kubernetes.tsx",
         "packages/app/src/KubernetesDashboardPage.tsx",
@@ -11871,6 +11916,15 @@
             "InfraChartSpec",
             "InfraCorrelation",
             "getActiveInfraCorrelations"
+          ]
+        },
+        {
+          "path": "packages/app/src/couchbase/sessionsList.ts",
+          "symbols": [
+            "buildSessionsCtesCouchbase",
+            "rrwebBodyTypeExpr",
+            "toUInt64OrZeroCouchbase",
+            "unionSessionIdsCouchbase"
           ]
         },
         {
@@ -12413,9 +12467,12 @@
         {
           "path": "packages/common-utils/src/dataLayer/index.ts",
           "symbols": [
+            "Slice",
             "clearConnectionKindCache",
+            "filterSourcesForSlice",
             "formatQueryForDisplay",
             "getMetadata",
+            "isCouchbaseSliceEnabled",
             "isMissingColumnError",
             "renderChartConfig"
           ]
@@ -12659,7 +12716,7 @@
           "file": "packages/app/pages/llm.tsx"
         }
       ],
-      "closureSize": 542,
+      "closureSize": 544,
       "exclusiveFiles": [
         "packages/app/pages/llm.tsx",
         "packages/app/src/llm/components/ChatMessageItem.tsx",
@@ -12936,6 +12993,15 @@
             "InfraChartSpec",
             "InfraCorrelation",
             "getActiveInfraCorrelations"
+          ]
+        },
+        {
+          "path": "packages/app/src/couchbase/sessionsList.ts",
+          "symbols": [
+            "buildSessionsCtesCouchbase",
+            "rrwebBodyTypeExpr",
+            "toUInt64OrZeroCouchbase",
+            "unionSessionIdsCouchbase"
           ]
         },
         {
@@ -13529,9 +13595,12 @@
         {
           "path": "packages/common-utils/src/dataLayer/index.ts",
           "symbols": [
+            "Slice",
             "clearConnectionKindCache",
+            "filterSourcesForSlice",
             "formatQueryForDisplay",
             "getMetadata",
+            "isCouchbaseSliceEnabled",
             "isMissingColumnError",
             "renderChartConfig"
           ]
@@ -14557,7 +14626,7 @@
           "file": "packages/app/pages/search/list.tsx"
         }
       ],
-      "closureSize": 506,
+      "closureSize": 507,
       "exclusiveFiles": [
         "packages/app/pages/search/[savedSearchId].tsx",
         "packages/app/pages/search/index.tsx",
@@ -14830,6 +14899,15 @@
             "InfraChartSpec",
             "InfraCorrelation",
             "getActiveInfraCorrelations"
+          ]
+        },
+        {
+          "path": "packages/app/src/couchbase/sessionsList.ts",
+          "symbols": [
+            "buildSessionsCtesCouchbase",
+            "rrwebBodyTypeExpr",
+            "toUInt64OrZeroCouchbase",
+            "unionSessionIdsCouchbase"
           ]
         },
         {
@@ -16519,7 +16597,7 @@
       "name": "Services dashboard",
       "area": "presets",
       "visibility": "user",
-      "status": "not_started",
+      "status": "ported",
       "entryPoints": [
         {
           "id": "app_page:/services",
@@ -16527,7 +16605,7 @@
           "file": "packages/app/pages/services.tsx"
         }
       ],
-      "closureSize": 471,
+      "closureSize": 473,
       "exclusiveFiles": [
         "packages/app/pages/services.tsx"
       ],
@@ -16749,6 +16827,15 @@
             "InfraChartSpec",
             "InfraCorrelation",
             "getActiveInfraCorrelations"
+          ]
+        },
+        {
+          "path": "packages/app/src/couchbase/sessionsList.ts",
+          "symbols": [
+            "buildSessionsCtesCouchbase",
+            "rrwebBodyTypeExpr",
+            "toUInt64OrZeroCouchbase",
+            "unionSessionIdsCouchbase"
           ]
         },
         {
@@ -17296,9 +17383,12 @@
         {
           "path": "packages/common-utils/src/dataLayer/index.ts",
           "symbols": [
+            "Slice",
             "clearConnectionKindCache",
+            "filterSourcesForSlice",
             "formatQueryForDisplay",
             "getMetadata",
+            "isCouchbaseSliceEnabled",
             "isMissingColumnError",
             "renderChartConfig"
           ]
@@ -17580,7 +17670,7 @@
           "file": "packages/app/pages/sessions.tsx"
         }
       ],
-      "closureSize": 415,
+      "closureSize": 416,
       "exclusiveFiles": [
         "packages/app/pages/sessions.tsx",
         "packages/app/src/SessionEventSourcePanel.tsx",
@@ -17775,6 +17865,15 @@
             "InfraChartSpec",
             "InfraCorrelation",
             "getActiveInfraCorrelations"
+          ]
+        },
+        {
+          "path": "packages/app/src/couchbase/sessionsList.ts",
+          "symbols": [
+            "buildSessionsCtesCouchbase",
+            "rrwebBodyTypeExpr",
+            "toUInt64OrZeroCouchbase",
+            "unionSessionIdsCouchbase"
           ]
         },
         {
@@ -32419,7 +32518,7 @@
     "byStatus": [
       {
         "status": "not_started",
-        "count": 40
+        "count": 38
       },
       {
         "status": "in_progress",
@@ -32427,7 +32526,7 @@
       },
       {
         "status": "ported",
-        "count": 10
+        "count": 12
       },
       {
         "status": "needs_decision",

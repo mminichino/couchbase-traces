@@ -4927,6 +4927,15 @@
       "routes": []
     },
     {
+      "path": "packages/app/src/couchbase/__tests__/sessionsList.test.ts",
+      "workspace": "@couchbase-traces/app",
+      "kind": "unit",
+      "directImports": [
+        "packages/app/src/couchbase/sessionsList.ts"
+      ],
+      "routes": []
+    },
+    {
       "path": "packages/app/src/couchbase/__tests__/sources.gating.test.ts",
       "workspace": "@couchbase-traces/app",
       "kind": "unit",

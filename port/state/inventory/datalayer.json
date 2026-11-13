@@ -7045,7 +7045,7 @@
               "name": "default",
               "references": 1,
               "lines": [
-                1367
+                1393
               ]
             }
           ]
@@ -7077,7 +7077,7 @@
               "name": "default",
               "references": 1,
               "lines": [
-                1360
+                1386
               ]
             }
           ]
@@ -7108,7 +7108,7 @@
               "name": "default",
               "references": 1,
               "lines": [
-                446
+                449
               ]
             }
           ]
@@ -7143,7 +7143,7 @@
               "name": "default",
               "references": 1,
               "lines": [
-                440
+                443
               ]
             }
           ]
@@ -7357,7 +7357,7 @@
               "name": "useClickhouseClient",
               "references": 1,
               "lines": [
-                59
+                65
               ]
             }
           ]
@@ -9937,8 +9937,7 @@
       "path": "packages/app/src/components/KubeComponents.tsx",
       "workspace": "@couchbase-traces/app",
       "reasons": [
-        "clickhouse_client",
-        "sql_builder"
+        "clickhouse_client"
       ],
       "exports": [
         {
@@ -9965,7 +9964,7 @@
               "name": "FormatPodStatus",
               "references": 1,
               "lines": [
-                457
+                463
               ]
             }
           ]
@@ -11761,7 +11760,7 @@
               "name": "TimePicker",
               "references": 1,
               "lines": [
-                1307
+                1333
               ]
             }
           ]
@@ -11776,7 +11775,7 @@
               "name": "TimePicker",
               "references": 1,
               "lines": [
-                374
+                377
               ]
             }
           ]
@@ -12187,6 +12186,117 @@
                 56,
                 57,
                 61
+              ]
+            }
+          ]
+        }
+      ],
+      "serverSide": false
+    },
+    {
+      "path": "packages/app/src/couchbase/sessionsList.ts",
+      "workspace": "@couchbase-traces/app",
+      "reasons": [
+        "sql_builder"
+      ],
+      "exports": [
+        {
+          "name": "buildSessionsCtesCouchbase",
+          "kind": "function"
+        },
+        {
+          "name": "ifNonEmptyCouchbase",
+          "kind": "function"
+        },
+        {
+          "name": "rrwebBodyTypeExpr",
+          "kind": "function"
+        },
+        {
+          "name": "toUInt64OrZeroCouchbase",
+          "kind": "function"
+        },
+        {
+          "name": "unionSessionIdsCouchbase",
+          "kind": "function"
+        }
+      ],
+      "importers": [
+        {
+          "path": "packages/app/src/couchbase/__tests__/sessionsList.test.ts",
+          "workspace": "@couchbase-traces/app",
+          "test": true,
+          "typeOnly": false,
+          "symbols": [
+            {
+              "name": "buildSessionsCtesCouchbase",
+              "references": 1,
+              "lines": [
+                13
+              ]
+            },
+            {
+              "name": "ifNonEmptyCouchbase",
+              "references": 1,
+              "lines": [
+                37
+              ]
+            },
+            {
+              "name": "rrwebBodyTypeExpr",
+              "references": 1,
+              "lines": [
+                35
+              ]
+            },
+            {
+              "name": "toUInt64OrZeroCouchbase",
+              "references": 1,
+              "lines": [
+                36
+              ]
+            },
+            {
+              "name": "unionSessionIdsCouchbase",
+              "references": 1,
+              "lines": [
+                29
+              ]
+            }
+          ]
+        },
+        {
+          "path": "packages/app/src/sessions.ts",
+          "workspace": "@couchbase-traces/app",
+          "test": false,
+          "typeOnly": false,
+          "symbols": [
+            {
+              "name": "buildSessionsCtesCouchbase",
+              "references": 1,
+              "lines": [
+                439
+              ]
+            },
+            {
+              "name": "rrwebBodyTypeExpr",
+              "references": 1,
+              "lines": [
+                611
+              ]
+            },
+            {
+              "name": "toUInt64OrZeroCouchbase",
+              "references": 1,
+              "lines": [
+                615
+              ]
+            },
+            {
+              "name": "unionSessionIdsCouchbase",
+              "references": 1,
+              "lines": [
+                441
               ]
             }
           ]
@@ -13980,7 +14090,7 @@
               "name": "useServiceDashboardExpressions",
               "references": 1,
               "lines": [
-                41
+                50
               ]
             }
           ]
@@ -14010,8 +14120,8 @@
               "name": "useServiceDashboardExpressions",
               "references": 2,
               "lines": [
-                50,
-                190
+                56,
+                199
               ]
             }
           ]
@@ -14026,7 +14136,7 @@
               "name": "useServiceDashboardExpressions",
               "references": 1,
               "lines": [
-                82
+                83
               ]
             }
           ]
@@ -17464,8 +17574,8 @@
               "name": "ResponseJSON",
               "references": 2,
               "lines": [
-                61,
-                116
+                67,
+                122
               ]
             }
           ]
@@ -17713,6 +17823,35 @@
               "lines": [
                 10,
                 11
+              ]
+            }
+          ]
+        },
+        {
+          "path": "packages/app/src/couchbase/sessionsList.ts",
+          "workspace": "@couchbase-traces/app",
+          "test": false,
+          "typeOnly": false,
+          "symbols": [
+            {
+              "name": "ChSql",
+              "references": 6,
+              "lines": [
+                11,
+                12,
+                13,
+                26,
+                27,
+                29
+              ]
+            },
+            {
+              "name": "chSql",
+              "references": 3,
+              "lines": [
+                16,
+                42,
+                44
               ]
             }
           ]
@@ -21951,7 +22090,7 @@
               "name": "tcFromSource",
               "references": 1,
               "lines": [
-                364
+                367
               ]
             }
           ]
@@ -33392,7 +33531,7 @@
               "name": "renderChartConfig",
               "references": 1,
               "lines": [
-                73
+                79
               ]
             }
           ]
@@ -33422,14 +33561,15 @@
           "symbols": [
             {
               "name": "COUCHBASE_SLICES",
-              "references": 6,
+              "references": 7,
               "lines": [
                 20,
                 39,
                 52,
                 65,
                 78,
-                91
+                91,
+                104
               ]
             }
           ]
@@ -45536,60 +45676,60 @@
               "name": "SourceKind",
               "references": 14,
               "lines": [
-                916,
-                957,
-                973,
-                980,
-                997,
-                998,
+                922,
+                963,
+                979,
+                986,
                 1003,
+                1004,
                 1009,
-                1031,
-                1035,
-                1050,
-                1054,
-                1267,
-                1282
+                1015,
+                1037,
+                1041,
+                1056,
+                1060,
+                1291,
+                1307
               ]
             },
             {
               "name": "TLogSource",
               "references": 1,
               "lines": [
-                979
+                985
               ]
             },
             {
               "name": "TMetricSource",
               "references": 3,
               "lines": [
-                158,
-                547,
-                735
+                164,
+                553,
+                741
               ]
             },
             {
               "name": "TSource",
               "references": 2,
               "lines": [
-                914,
-                936
+                920,
+                942
               ]
             },
             {
               "name": "isLogSource",
               "references": 2,
               "lines": [
-                950,
-                1105
+                956,
+                1111
               ]
             },
             {
               "name": "isMetricSource",
               "references": 2,
               "lines": [
-                966,
-                1158
+                972,
+                1164
               ]
             }
           ]
@@ -45735,33 +45875,33 @@
               "name": "BuilderChartConfigWithDateRange",
               "references": 4,
               "lines": [
-                52,
-                166,
-                170,
-                282
+                61,
+                193,
+                197,
+                327
               ]
             },
             {
               "name": "CteChartConfig",
               "references": 2,
               "lines": [
-                95,
-                208
+                104,
+                235
               ]
             },
             {
               "name": "DisplayType",
               "references": 2,
               "lines": [
-                159,
-                272
+                186,
+                317
               ]
             },
             {
               "name": "SourceKind",
               "references": 1,
               "lines": [
-                39
+                45
               ]
             }
           ]
@@ -45812,67 +45952,67 @@
               "name": "BuilderChartConfigWithDateRange",
               "references": 3,
               "lines": [
-                211,
-                243,
-                393
+                220,
+                252,
+                417
               ]
             },
             {
               "name": "CteChartConfig",
               "references": 1,
               "lines": [
-                319
+                328
               ]
             },
             {
               "name": "DisplayType",
               "references": 3,
               "lines": [
-                220,
-                390,
-                443
+                229,
+                414,
+                474
               ]
             },
             {
               "name": "Filter",
               "references": 1,
               "lines": [
-                48
+                54
               ]
             },
             {
               "name": "SourceKind",
               "references": 1,
               "lines": [
-                188
+                194
               ]
             },
             {
               "name": "TTraceSource",
               "references": 1,
               "lines": [
-                45
+                51
               ]
             },
             {
               "name": "isLogSource",
               "references": 4,
               "lines": [
-                248,
-                252,
-                267,
-                271
+                257,
+                261,
+                276,
+                280
               ]
             },
             {
               "name": "isTraceSource",
               "references": 5,
               "lines": [
-                248,
-                252,
-                267,
-                271,
-                561
+                257,
+                261,
+                276,
+                280,
+                592
               ]
             }
           ]
@@ -45887,24 +46027,24 @@
               "name": "PresetDashboard",
               "references": 1,
               "lines": [
-                247
+                249
               ]
             },
             {
               "name": "SourceKind",
               "references": 4,
               "lines": [
-                80,
-                159,
-                186,
-                355
+                81,
+                160,
+                188,
+                357
               ]
             },
             {
               "name": "TSource",
               "references": 1,
               "lines": [
-                156
+                157
               ]
             }
           ]
@@ -51097,37 +51237,37 @@
               "name": "BuilderChartConfigWithDateRange",
               "references": 1,
               "lines": [
-                50
+                56
               ]
             },
             {
               "name": "DateRange",
               "references": 1,
               "lines": [
-                49
+                55
               ]
             },
             {
               "name": "SearchCondition",
               "references": 1,
               "lines": [
-                54
+                60
               ]
             },
             {
               "name": "SearchConditionLanguage",
               "references": 1,
               "lines": [
-                55
+                61
               ]
             },
             {
               "name": "TLogSource",
               "references": 3,
               "lines": [
-                52,
-                123,
-                174
+                58,
+                129,
+                180
               ]
             }
           ]

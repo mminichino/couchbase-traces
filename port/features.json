@@ -200,7 +200,7 @@
       "entryPoints": [
         "app_page:/kubernetes"
       ],
-      "status": "not_started",
+      "status": "ported",
       "decision": null
     },
     {
@@ -212,7 +212,7 @@
       "entryPoints": [
         "app_page:/services"
       ],
-      "status": "not_started",
+      "status": "ported",
       "decision": null
     },
     {

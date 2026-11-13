@@ -1,0 +1,78 @@
+{
+  "slice": "presets",
+  "features": [
+    {
+      "id": "app-kubernetes",
+      "name": "Kubernetes dashboard",
+      "status": "ported",
+      "entryPoints": [
+        "app_page:/kubernetes"
+      ]
+    },
+    {
+      "id": "app-services",
+      "name": "Services dashboard",
+      "status": "ported",
+      "entryPoints": [
+        "app_page:/services"
+      ]
+    }
+  ],
+  "coreFunctions": [
+    {
+      "file": "packages/common-utils/src/couchbase/render/index.ts",
+      "name": "renderChartConfigCouchbase"
+    }
+  ],
+  "appQuerySites": [
+    {
+      "path": "packages/app/src/KubernetesDashboardPage.tsx",
+      "rawSql": 26,
+      "typeNames": 0
+    },
+    {
+      "path": "packages/app/src/NamespaceDetailsSidePanel.tsx",
+      "rawSql": 2,
+      "typeNames": 0
+    },
+    {
+      "path": "packages/app/src/NodeDetailsSidePanel.tsx",
+      "rawSql": 3,
+      "typeNames": 0
+    }
+  ],
+  "dataLayerSymbols": [
+    {
+      "path": "packages/app/src/KubernetesDashboardPage.tsx",
+      "symbols": [
+        "InfraPodsStatusTable",
+        "default",
+        "resolveSourceIds"
+      ]
+    },
+    {
+      "path": "packages/app/src/NamespaceDetailsSidePanel.tsx",
+      "symbols": [
+        "default"
+      ]
+    },
+    {
+      "path": "packages/app/src/NodeDetailsSidePanel.tsx",
+      "symbols": [
+        "default"
+      ]
+    }
+  ],
+  "tests": {
+    "unit": [
+      "packages/app/src/__tests__/KubernetesDashboardPage.test.ts",
+      "packages/app/src/components/__tests__/KubernetesFilters.test.ts"
+    ],
+    "int": [],
+    "e2e": [
+      "packages/app/tests/e2e/features/source-name-deeplink.spec.ts",
+      "packages/app/tests/e2e/page-objects/KubernetesPage.ts",
+      "packages/app/tests/e2e/page-objects/ServicesDashboardPage.ts"
+    ]
+  }
+}

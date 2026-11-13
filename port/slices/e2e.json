@@ -1,7 +1,9 @@
 {
   "presets": {
     "specs": [
-      "packages/app/tests/e2e/features/couchbase-cluster.spec.ts"
+      "packages/app/tests/e2e/features/couchbase-cluster.spec.ts",
+      "packages/app/tests/e2e/features/kubernetes.spec.ts",
+      "packages/app/tests/e2e/features/services-dashboard.spec.ts"
     ],
     "exclusions": []
   },

@@ -1,0 +1,12 @@
+{
+  "id": "presets-services-span-count",
+  "description": "services dashboard base: count spans (Http/Database tabs share this source path)",
+  "source": "traces",
+  "config": {
+    "select": [
+      { "aggFn": "count", "valueExpression": "", "alias": "count" }
+    ],
+    "dateRange": { "fromMinutesAgo": 60, "toMinutesAgo": 0 }
+  },
+  "compare": { "ignoreColumns": ["__cbt_id"] }
+}

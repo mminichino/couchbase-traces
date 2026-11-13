@@ -15,6 +15,12 @@ import DisplaySwitcher from '@/components/charts/DisplaySwitcher';
 import DBListBarChart from '@/components/DBListBarChart';
 import DBTableChart from '@/components/DBTableChart';
 import { DBTimeChart } from '@/components/DBTimeChart';
+import { useConnectionKind } from '@/couchbase/connection';
+import {
+  groupArrayExpr,
+  tupleElementExpr,
+  zipSeriesSqlpp,
+} from '@/couchbase/dialectExpr';
 import { getStoredLanguage } from '@/components/SearchInput/SearchWhereInput';
 import { useServiceDashboardExpressions } from '@/serviceDashboard';
 import { useSource } from '@/source';
@@ -38,6 +44,9 @@ function DatabaseTab({
     id: appliedConfig.source,
     kinds: [SourceKind.Trace],
   });
+  const connectionKind = useConnectionKind(source?.connection);
+  const dialect =
+    connectionKind === 'couchbase' ? 'couchbase' : 'clickhouse';
   const { expressions } = useServiceDashboardExpressions({ source });
 
   const [chartType, setChartType] = useState<'table' | 'list'>('list');
@@ -102,11 +111,17 @@ function DatabaseTab({
               select: [
                 { valueExpression: 'Statement' },
                 {
-                  valueExpression: 'groupArray(total_query_time_ms)',
+                  valueExpression: groupArrayExpr(
+                    'total_query_time_ms',
+                    dialect,
+                  ),
                   alias: 'total_query_time_ms',
                 },
                 {
-                  valueExpression: 'groupArray(__hdx_time_bucket)',
+                  valueExpression: groupArrayExpr(
+                    '__hdx_time_bucket',
+                    dialect,
+                  ),
                   alias: '__hdx_time_buckets',
                 },
               ],
@@ -119,37 +134,49 @@ function DatabaseTab({
               timestampValueExpression: '', // required only to satisfy CTE schema
             },
           },
-          {
-            name: 'zipped_series',
-            isSubquery: true,
-            chartConfig: {
-              connection: source.connection,
-              select: [
-                { valueExpression: 'Statement' },
-                {
-                  valueExpression:
-                    'arrayJoin(arrayZip(total_query_time_ms, __hdx_time_buckets))',
-                  alias: 'zipped',
+          dialect === 'couchbase'
+            ? {
+                name: 'zipped_series',
+                sql: {
+                  sql: zipSeriesSqlpp({
+                    fromTable: 'top_queries_by_total_time',
+                    groupColumn: 'Statement',
+                    valuesAlias: 'total_query_time_ms',
+                  }),
+                  params: {},
                 },
-              ],
-              from: {
-                databaseName: '',
-                tableName: 'top_queries_by_total_time',
+              }
+            : {
+                name: 'zipped_series',
+                isSubquery: true,
+                chartConfig: {
+                  connection: source.connection,
+                  select: [
+                    { valueExpression: 'Statement' },
+                    {
+                      valueExpression:
+                        'arrayJoin(arrayZip(total_query_time_ms, __hdx_time_buckets))',
+                      alias: 'zipped',
+                    },
+                  ],
+                  from: {
+                    databaseName: '',
+                    tableName: 'top_queries_by_total_time',
+                  },
+                  where: '',
+                  timestampValueExpression: '', // required only to satisfy CTE schema
+                },
               },
-              where: '',
-              timestampValueExpression: '', // required only to satisfy CTE schema
-            },
-          },
         ],
 
         select: [
           { valueExpression: 'Statement' },
           {
-            valueExpression: 'tupleElement(zipped, 1)',
+            valueExpression: tupleElementExpr('zipped', 1, dialect),
             alias: 'Total Query Time',
           },
           {
-            valueExpression: 'tupleElement(zipped, 2)',
+            valueExpression: tupleElementExpr('zipped', 2, dialect),
             alias: 'series_time_bucket',
           },
         ],
@@ -164,7 +191,7 @@ function DatabaseTab({
         connection: source.connection,
         source: source.id,
       } satisfies BuilderChartConfigWithDateRange;
-    }, [appliedConfig, expressions, searchedTimeRange, source]);
+    }, [appliedConfig, expressions, searchedTimeRange, source, dialect]);
 
   const totalThroughputPerQueryConfig =
     useMemo<BuilderChartConfigWithDateRange | null>(() => {
@@ -215,11 +242,17 @@ function DatabaseTab({
               select: [
                 { valueExpression: 'Statement' },
                 {
-                  valueExpression: 'groupArray(total_query_count)',
+                  valueExpression: groupArrayExpr(
+                    'total_query_count',
+                    dialect,
+                  ),
                   alias: 'total_query_count',
                 },
                 {
-                  valueExpression: 'groupArray(__hdx_time_bucket)',
+                  valueExpression: groupArrayExpr(
+                    '__hdx_time_bucket',
+                    dialect,
+                  ),
                   alias: '__hdx_time_buckets',
                 },
               ],
@@ -232,37 +265,49 @@ function DatabaseTab({
               timestampValueExpression: '', // required only to satisfy CTE schema
             },
           },
-          {
-            name: 'zipped_series',
-            isSubquery: true,
-            chartConfig: {
-              connection: source.connection,
-              select: [
-                { valueExpression: 'Statement' },
-                {
-                  valueExpression:
-                    'arrayJoin(arrayZip(total_query_count, __hdx_time_buckets))',
-                  alias: 'zipped',
+          dialect === 'couchbase'
+            ? {
+                name: 'zipped_series',
+                sql: {
+                  sql: zipSeriesSqlpp({
+                    fromTable: 'top_queries_by_total_count',
+                    groupColumn: 'Statement',
+                    valuesAlias: 'total_query_count',
+                  }),
+                  params: {},
                 },
-              ],
-              from: {
-                databaseName: '',
-                tableName: 'top_queries_by_total_count',
+              }
+            : {
+                name: 'zipped_series',
+                isSubquery: true,
+                chartConfig: {
+                  connection: source.connection,
+                  select: [
+                    { valueExpression: 'Statement' },
+                    {
+                      valueExpression:
+                        'arrayJoin(arrayZip(total_query_count, __hdx_time_buckets))',
+                      alias: 'zipped',
+                    },
+                  ],
+                  from: {
+                    databaseName: '',
+                    tableName: 'top_queries_by_total_count',
+                  },
+                  where: '',
+                  timestampValueExpression: '', // required only to satisfy CTE schema
+                },
               },
-              where: '',
-              timestampValueExpression: '', // required only to satisfy CTE schema
-            },
-          },
         ],
 
         select: [
           { valueExpression: 'Statement' },
           {
-            valueExpression: 'tupleElement(zipped, 1)',
+            valueExpression: tupleElementExpr('zipped', 1, dialect),
             alias: 'Total Query Count',
           },
           {
-            valueExpression: 'tupleElement(zipped, 2)',
+            valueExpression: tupleElementExpr('zipped', 2, dialect),
             alias: 'series_time_bucket',
           },
         ],
@@ -280,7 +325,7 @@ function DatabaseTab({
         connection: source.connection,
         source: source.id,
       } satisfies BuilderChartConfigWithDateRange;
-    }, [appliedConfig, expressions, searchedTimeRange, source]);
+    }, [appliedConfig, expressions, searchedTimeRange, source, dialect]);
 
   const displaySwitcher = (
     <DisplaySwitcher

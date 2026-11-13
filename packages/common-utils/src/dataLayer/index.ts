@@ -55,7 +55,7 @@ export const COUCHBASE_SLICES: Readonly<Record<Slice, boolean>> = {
   traces: true,
   metrics: true,
   sessions: true,
-  presets: false,
+  presets: true,
   alerts: false,
   external_api: false,
   mcp: false,

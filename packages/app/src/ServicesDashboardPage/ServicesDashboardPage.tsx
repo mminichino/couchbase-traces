@@ -48,6 +48,7 @@ import SelectControlled from '@/components/SelectControlled';
 import ServiceDashboardDbQuerySidePanel from '@/components/ServiceDashboardDbQuerySidePanel';
 import ServiceDashboardEndpointSidePanel from '@/components/ServiceDashboardEndpointSidePanel';
 import { SourceSelectControlled } from '@/components/SourceSelect';
+import { useIsSourceAllowedForSlice } from '@/couchbase/sources';
 import { TimePicker } from '@/components/TimePicker';
 import { IS_LOCAL_MODE } from '@/config';
 import DashboardFilters from '@/DashboardFilters';
@@ -167,6 +168,7 @@ const DEFAULT_INTERVAL = 'Past 1h';
 function ServicesDashboardPage() {
   const defaultTimeRange = useDefaultTimeRange(DEFAULT_INTERVAL);
   const title = usePageTitle('Services Dashboard');
+  const isSourceAllowedForPresets = useIsSourceAllowedForSlice('presets');
   const [tab, setTab] = useQueryState(
     'tab',
     parseAsStringEnum<string>(['http', 'database', 'errors']).withDefault(
@@ -353,6 +355,7 @@ function ServicesDashboardPage() {
               control={control}
               name="source"
               allowedSourceKinds={[SourceKind.Trace]}
+              isSourceAllowed={isSourceAllowedForPresets}
             />
             <ServiceSelectControlled
               sourceId={sourceId}

@@ -4,9 +4,9 @@ Generated from `port/features.json` and `port/state/inventory/`. Edit `port/feat
 
 | Status | Features |
 |---|---|
-| not_started | 40 |
+| not_started | 38 |
 | in_progress | 2 |
-| ported | 10 |
+| ported | 12 |
 | needs_decision | 0 |
 | dropped | 2 |
 | replaced | 1 |
@@ -17,7 +17,7 @@ Generated from `port/features.json` and `port/state/inventory/`. Edit `port/feat
 |---|---|---|---|---|---|
 | Pinned filters (`api-pinned-filters`) | user | ported | 2 | attribution.ts, index.ts, node.ts, clickhouseVersion.ts, histogram.ts, +8 | 0 / 0 / 0 |
 | Saved searches (`api-saved-search`) | user | ported | 4 | attribution.ts, index.ts, node.ts, clickhouseVersion.ts, histogram.ts, +8 | 0 / 0 / 0 |
-| Log and trace search (`app-search`) | user | ported | 3 | DBSearchPage.tsx, UserPreferencesModal.tsx, clickhouse.ts, AppNav.components.tsx, AppNav.tsx, +98 | 14 / 0 / 10 |
+| Log and trace search (`app-search`) | user | ported | 3 | DBSearchPage.tsx, UserPreferencesModal.tsx, clickhouse.ts, AppNav.components.tsx, AppNav.tsx, +99 | 14 / 0 / 10 |
 
 ### Pinned filters (`api-pinned-filters`)
 
@@ -53,7 +53,7 @@ Entry points:
 
 | Feature | Visibility | Status | Entry points | Data layer | Tests (unit / int / e2e) |
 |---|---|---|---|---|---|
-| Chart explorer (`app-chart`) | user | ported | 1 | DBChartPage.tsx, UserPreferencesModal.tsx, clickhouse.ts, AppNav.components.tsx, AppNav.tsx, +105 | 1 / 0 / 2 |
+| Chart explorer (`app-chart`) | user | ported | 1 | DBChartPage.tsx, UserPreferencesModal.tsx, clickhouse.ts, AppNav.components.tsx, AppNav.tsx, +106 | 1 / 0 / 2 |
 
 ### Chart explorer (`app-chart`)
 
@@ -67,7 +67,7 @@ Entry points:
 
 | Feature | Visibility | Status | Entry points | Data layer | Tests (unit / int / e2e) |
 |---|---|---|---|---|---|
-| Dashboards (`app-dashboards`) | user | ported | 13 | UserPreferencesModal.tsx, clickhouse.ts, AppNav.components.tsx, AppNav.tsx, InstanceLabel.tsx, +110 | 13 / 1 / 7 |
+| Dashboards (`app-dashboards`) | user | ported | 13 | UserPreferencesModal.tsx, clickhouse.ts, AppNav.components.tsx, AppNav.tsx, InstanceLabel.tsx, +111 | 13 / 1 / 7 |
 
 ### Dashboards (`app-dashboards`)
 
@@ -144,7 +144,7 @@ Decision: PromQL dropped by the user. It required ClickHouse's TimeSeries table 
 
 | Feature | Visibility | Status | Entry points | Data layer | Tests (unit / int / e2e) |
 |---|---|---|---|---|---|
-| Session replay (`app-sessions`) | user | ported | 1 | UserPreferencesModal.tsx, clickhouse.ts, AppNav.components.tsx, AppNav.tsx, InstanceLabel.tsx, +90 | 1 / 0 / 4 |
+| Session replay (`app-sessions`) | user | ported | 1 | UserPreferencesModal.tsx, clickhouse.ts, AppNav.components.tsx, AppNav.tsx, InstanceLabel.tsx, +91 | 1 / 0 / 4 |
 
 ### Session replay (`app-sessions`)
 
@@ -158,7 +158,7 @@ Entry points:
 
 | Feature | Visibility | Status | Entry points | Data layer | Tests (unit / int / e2e) |
 |---|---|---|---|---|---|
-| Alerts (`app-alerts`) | user | not_started | 11 | UserPreferencesModal.tsx, clickhouse.ts, AppNav.components.tsx, AppNav.tsx, InstanceLabel.tsx, +107 | 11 / 0 / 1 |
+| Alerts (`app-alerts`) | user | not_started | 11 | UserPreferencesModal.tsx, clickhouse.ts, AppNav.components.tsx, AppNav.tsx, InstanceLabel.tsx, +108 | 11 / 0 / 1 |
 | Alert evaluation (`task-check-alerts`) | internal | not_started | 1 | clickhouse.ts, errors.ts, attribution.ts, index.ts, node.ts, +60 | 3 / 2 / 0 |
 
 ### Alerts (`app-alerts`)
@@ -191,8 +191,8 @@ Entry points:
 
 | Feature | Visibility | Status | Entry points | Data layer | Tests (unit / int / e2e) |
 |---|---|---|---|---|---|
-| Kubernetes dashboard (`app-kubernetes`) | user | not_started | 1 | KubernetesDashboardPage.tsx, NamespaceDetailsSidePanel.tsx, NodeDetailsSidePanel.tsx, UserPreferencesModal.tsx, clickhouse.ts, +93 | 2 / 0 / 1 |
-| Services dashboard (`app-services`) | user | not_started | 1 | DatabaseTab.tsx, HttpTab.tsx, UserPreferencesModal.tsx, clickhouse.ts, AppNav.components.tsx, +95 | 0 / 0 / 2 |
+| Kubernetes dashboard (`app-kubernetes`) | user | ported | 1 | KubernetesDashboardPage.tsx, NamespaceDetailsSidePanel.tsx, NodeDetailsSidePanel.tsx, UserPreferencesModal.tsx, clickhouse.ts, +94 | 2 / 0 / 1 |
+| Services dashboard (`app-services`) | user | ported | 1 | DatabaseTab.tsx, HttpTab.tsx, UserPreferencesModal.tsx, clickhouse.ts, AppNav.components.tsx, +96 | 0 / 0 / 2 |
 
 ### Kubernetes dashboard (`app-kubernetes`)
 
@@ -215,7 +215,7 @@ Entry points:
 | Feature | Visibility | Status | Entry points | Data layer | Tests (unit / int / e2e) |
 |---|---|---|---|---|---|
 | AI assistant (`api-ai`) | user | not_started | 1 | clickhouse.ts, attribution.ts, index.ts, node.ts, clickhouseVersion.ts, +59 | 2 / 1 / 0 |
-| LLM dashboard (`app-llm`) | user | not_started | 1 | DatabaseTab.tsx, HttpTab.tsx, UserPreferencesModal.tsx, clickhouse.ts, AppNav.components.tsx, +103 | 14 / 0 / 0 |
+| LLM dashboard (`app-llm`) | user | not_started | 1 | DatabaseTab.tsx, HttpTab.tsx, UserPreferencesModal.tsx, clickhouse.ts, AppNav.components.tsx, +104 | 14 / 0 / 0 |
 
 ### AI assistant (`api-ai`)
 
@@ -341,7 +341,7 @@ Entry points:
 | Data sources (`api-sources`) | admin | not_started | 4 | attribution.ts, index.ts, node.ts, clickhouseVersion.ts, histogram.ts, +13 | 1 / 1 / 0 |
 | ClickHouse query settings (`api-team-clickhouse-settings`) | admin | ported | 1 | attribution.ts, index.ts, node.ts, clickhouseVersion.ts, histogram.ts, +8 | 0 / 0 / 0 |
 | Webhooks (`api-webhooks`) | admin | not_started | 5 | clickhouse.ts, errors.ts, attribution.ts, index.ts, node.ts, +60 | 0 / 0 / 0 |
-| ClickHouse server dashboard (`app-clickhouse`) | admin | replaced | 1 | clickhouse.tsx, ClickhousePage.tsx, UserPreferencesModal.tsx, clickhouse.ts, AppNav.components.tsx, +93 | 0 / 0 / 1 |
+| ClickHouse server dashboard (`app-clickhouse`) | admin | replaced | 1 | clickhouse.tsx, ClickhousePage.tsx, UserPreferencesModal.tsx, clickhouse.ts, AppNav.components.tsx, +94 | 0 / 0 / 1 |
 | Team settings and members (`app-team`) | admin | not_started | 14 | UserPreferencesModal.tsx, clickhouse.ts, AppNav.components.tsx, AppNav.tsx, InstanceLabel.tsx, +82 | 8 / 0 / 1 |
 | Couchbase cluster (`couchbase-cluster`) | admin | ported | 4 | UserPreferencesModal.tsx, clickhouse.ts, AppNav.components.tsx, AppNav.tsx, InstanceLabel.tsx, +71 | 6 / 0 / 1 |
 
@@ -696,7 +696,7 @@ Entry points:
 |---|---|---|---|---|---|
 | Health and installation status (`api-health`) | internal | not_started | 3 | attribution.ts, index.ts, node.ts, clickhouseVersion.ts, histogram.ts, +8 | 0 / 0 / 0 |
 | App server API and config (`app-api`) | internal | not_started | 2 | - | 0 / 0 / 0 |
-| Benchmark page (`app-benchmark`) | internal | not_started | 1 | clickhouse.ts, ContactSupportText.tsx, DBRowJsonViewer.tsx, DBRowSidePanel.tsx, ExceptionSubpanel.tsx, +79 | 0 / 0 / 0 |
+| Benchmark page (`app-benchmark`) | internal | not_started | 1 | clickhouse.ts, ContactSupportText.tsx, DBRowJsonViewer.tsx, DBRowSidePanel.tsx, ExceptionSubpanel.tsx, +80 | 0 / 0 / 0 |
 | Careers page (`app-careers`) | internal | dropped | 0 | - | 0 / 0 / 0 |
 | Home page (`app-home`) | user | not_started | 1 | attribution.ts, index.ts, clickhouseVersion.ts, histogram.ts, materializedViews.ts, +7 | 0 / 0 / 3 |
 | Ping-pong task (`task-ping-pong`) | internal | not_started | 1 | - | 0 / 0 / 0 |

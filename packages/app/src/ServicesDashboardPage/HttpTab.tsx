@@ -25,6 +25,12 @@ import DBHistogramChart from '@/components/DBHistogramChart';
 import DBListBarChart from '@/components/DBListBarChart';
 import DBTableChart from '@/components/DBTableChart';
 import { DBTimeChart } from '@/components/DBTimeChart';
+import { useConnectionKind } from '@/couchbase/connection';
+import {
+  groupArrayExpr,
+  tupleElementExpr,
+  zipSeriesSqlpp,
+} from '@/couchbase/dialectExpr';
 import { getStoredLanguage } from '@/components/SearchInput/SearchWhereInput';
 import { useServiceDashboardExpressions } from '@/serviceDashboard';
 import { useSource } from '@/source';
@@ -187,6 +193,9 @@ function HttpTab({
     id: appliedConfig.source,
     kinds: [SourceKind.Trace],
   });
+  const connectionKind = useConnectionKind(source?.connection);
+  const dialect =
+    connectionKind === 'couchbase' ? 'couchbase' : 'clickhouse';
   const { expressions } = useServiceDashboardExpressions({ source });
 
   const [reqChartType, setReqChartType] = useQueryState(
@@ -329,12 +338,15 @@ function HttpTab({
               connection: source.connection,
               select: [
                 {
-                  valueExpression: 'groupArray(error_rate)',
+                  valueExpression: groupArrayExpr('error_rate', dialect),
                   alias: 'error_rate',
                 },
                 { valueExpression: 'endpoint' },
                 {
-                  valueExpression: 'groupArray(__hdx_time_bucket)',
+                  valueExpression: groupArrayExpr(
+                    '__hdx_time_bucket',
+                    dialect,
+                  ),
                   alias: '__hdx_time_buckets',
                 },
               ],
@@ -346,38 +358,50 @@ function HttpTab({
             },
           },
           // CTE that explodes series arrays into rows again for compatibility with DBTimeChart
-          {
-            name: 'zipped_error_series',
-            isSubquery: true,
-            chartConfig: {
-              timestampValueExpression: '__hdx_time_bucket',
-              connection: source.connection,
-              select: [
-                { valueExpression: 'endpoint' },
-                {
-                  valueExpression:
-                    'arrayJoin(arrayZip(error_rate, __hdx_time_buckets))',
-                  alias: 'zipped',
+          dialect === 'couchbase'
+            ? {
+                name: 'zipped_error_series',
+                sql: {
+                  sql: zipSeriesSqlpp({
+                    fromTable: 'selected_error_series',
+                    groupColumn: 'endpoint',
+                    valuesAlias: 'error_rate',
+                  }),
+                  params: {},
                 },
-              ],
-              from: {
-                databaseName: '',
-                tableName: 'selected_error_series',
+              }
+            : {
+                name: 'zipped_error_series',
+                isSubquery: true,
+                chartConfig: {
+                  timestampValueExpression: '__hdx_time_bucket',
+                  connection: source.connection,
+                  select: [
+                    { valueExpression: 'endpoint' },
+                    {
+                      valueExpression:
+                        'arrayJoin(arrayZip(error_rate, __hdx_time_buckets))',
+                      alias: 'zipped',
+                    },
+                  ],
+                  from: {
+                    databaseName: '',
+                    tableName: 'selected_error_series',
+                  },
+                  where: '',
+                },
               },
-              where: '',
-            },
-          },
         ],
         select: [
           {
-            valueExpression: 'tupleElement(zipped, 1)',
+            valueExpression: tupleElementExpr('zipped', 1, dialect),
             alias: 'Error Rate %',
           },
           {
             valueExpression: 'endpoint',
           },
           {
-            valueExpression: 'tupleElement(zipped, 2)',
+            valueExpression: tupleElementExpr('zipped', 2, dialect),
             alias: 'series_time_bucket',
           },
         ],
@@ -391,7 +415,14 @@ function HttpTab({
         numberFormat: ERROR_RATE_PERCENTAGE_NUMBER_FORMAT,
         groupBy: 'zipped, endpoint',
       } satisfies BuilderChartConfigWithDateRange;
-    }, [source, searchedTimeRange, appliedConfig, expressions, reqChartType]);
+    }, [
+      source,
+      searchedTimeRange,
+      appliedConfig,
+      expressions,
+      reqChartType,
+      dialect,
+    ]);
 
   return (
     <Grid mt="md" grow={false} w="100%" maw="100%">

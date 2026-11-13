@@ -1,0 +1,16 @@
+{
+  "id": "presets-services-by-service",
+  "description": "request volume grouped by ServiceName for services dashboard",
+  "source": "traces",
+  "config": {
+    "select": [
+      { "valueExpression": "ServiceName", "alias": "service" },
+      { "aggFn": "count", "valueExpression": "", "alias": "requests" }
+    ],
+    "groupBy": [{ "valueExpression": "ServiceName" }],
+    "selectGroupBy": false,
+    "orderBy": "requests DESC",
+    "dateRange": { "fromMinutesAgo": 60, "toMinutesAgo": 0 }
+  },
+  "compare": { "ordered": true, "ignoreColumns": ["__cbt_id"] }
+}

@@ -40985,6 +40985,14 @@
       "snippet": "import { Badge } from '@clickhouse/click-ui';"
     },
     {
+      "path": "packages/app/src/KubernetesDashboardPage.tsx",
+      "line": 1245,
+      "column": 56,
+      "term": "clickhouse",
+      "category": "ui_strings",
+      "snippet": "logConnectionKind === 'couchbase' ? 'couchbase' : 'clickhouse';"
+    },
+    {
       "path": "packages/app/src/NamespaceDetailsSidePanel.tsx",
       "line": 3,
       "column": 25,
@@ -41042,7 +41050,15 @@
     },
     {
       "path": "packages/app/src/ServicesDashboardPage/DatabaseTab.tsx",
-      "line": 91,
+      "line": 49,
+      "column": 53,
+      "term": "clickhouse",
+      "category": "ui_strings",
+      "snippet": "connectionKind === 'couchbase' ? 'couchbase' : 'clickhouse';"
+    },
+    {
+      "path": "packages/app/src/ServicesDashboardPage/DatabaseTab.tsx",
+      "line": 100,
       "column": 55,
       "term": "hdx",
       "category": "other",
@@ -41050,15 +41066,15 @@
     },
     {
       "path": "packages/app/src/ServicesDashboardPage/DatabaseTab.tsx",
-      "line": 109,
-      "column": 50,
+      "line": 122,
+      "column": 24,
       "term": "hdx",
       "category": "ui_strings",
-      "snippet": "valueExpression: 'groupArray(__hdx_time_bucket)',"
+      "snippet": "'__hdx_time_bucket',"
     },
     {
       "path": "packages/app/src/ServicesDashboardPage/DatabaseTab.tsx",
-      "line": 110,
+      "line": 125,
       "column": 29,
       "term": "hdx",
       "category": "ui_strings",
@@ -41066,15 +41082,15 @@
     },
     {
       "path": "packages/app/src/ServicesDashboardPage/DatabaseTab.tsx",
-      "line": 131,
-      "column": 64,
+      "line": 158,
+      "column": 68,
       "term": "hdx",
       "category": "ui_strings",
       "snippet": "'arrayJoin(arrayZip(total_query_time_ms, __hdx_time_buckets))',"
     },
     {
       "path": "packages/app/src/ServicesDashboardPage/DatabaseTab.tsx",
-      "line": 204,
+      "line": 231,
       "column": 55,
       "term": "hdx",
       "category": "other",
@@ -41082,15 +41098,15 @@
     },
     {
       "path": "packages/app/src/ServicesDashboardPage/DatabaseTab.tsx",
-      "line": 222,
-      "column": 50,
+      "line": 253,
+      "column": 24,
       "term": "hdx",
       "category": "ui_strings",
-      "snippet": "valueExpression: 'groupArray(__hdx_time_bucket)',"
+      "snippet": "'__hdx_time_bucket',"
     },
     {
       "path": "packages/app/src/ServicesDashboardPage/DatabaseTab.tsx",
-      "line": 223,
+      "line": 256,
       "column": 29,
       "term": "hdx",
       "category": "ui_strings",
@@ -41098,15 +41114,23 @@
     },
     {
       "path": "packages/app/src/ServicesDashboardPage/DatabaseTab.tsx",
-      "line": 244,
-      "column": 62,
+      "line": 289,
+      "column": 66,
       "term": "hdx",
       "category": "ui_strings",
       "snippet": "'arrayJoin(arrayZip(total_query_count, __hdx_time_buckets))',"
     },
     {
       "path": "packages/app/src/ServicesDashboardPage/HttpTab.tsx",
-      "line": 328,
+      "line": 198,
+      "column": 53,
+      "term": "clickhouse",
+      "category": "ui_strings",
+      "snippet": "connectionKind === 'couchbase' ? 'couchbase' : 'clickhouse';"
+    },
+    {
+      "path": "packages/app/src/ServicesDashboardPage/HttpTab.tsx",
+      "line": 337,
       "column": 44,
       "term": "hdx",
       "category": "ui_strings",
@@ -41114,15 +41138,15 @@
     },
     {
       "path": "packages/app/src/ServicesDashboardPage/HttpTab.tsx",
-      "line": 337,
-      "column": 50,
+      "line": 347,
+      "column": 24,
       "term": "hdx",
       "category": "ui_strings",
-      "snippet": "valueExpression: 'groupArray(__hdx_time_bucket)',"
+      "snippet": "'__hdx_time_bucket',"
     },
     {
       "path": "packages/app/src/ServicesDashboardPage/HttpTab.tsx",
-      "line": 338,
+      "line": 350,
       "column": 29,
       "term": "hdx",
       "category": "ui_strings",
@@ -41130,16 +41154,16 @@
     },
     {
       "path": "packages/app/src/ServicesDashboardPage/HttpTab.tsx",
-      "line": 353,
-      "column": 44,
+      "line": 377,
+      "column": 48,
       "term": "hdx",
       "category": "ui_strings",
       "snippet": "timestampValueExpression: '__hdx_time_bucket',"
     },
     {
       "path": "packages/app/src/ServicesDashboardPage/HttpTab.tsx",
-      "line": 359,
-      "column": 55,
+      "line": 383,
+      "column": 59,
       "term": "hdx",
       "category": "ui_strings",
       "snippet": "'arrayJoin(arrayZip(error_rate, __hdx_time_buckets))',"
@@ -47354,7 +47378,7 @@
     },
     {
       "path": "packages/app/src/components/KubeComponents.tsx",
-      "line": 59,
+      "line": 65,
       "column": 9,
       "term": "clickhouse",
       "category": "code_identifiers",
@@ -47362,7 +47386,7 @@
     },
     {
       "path": "packages/app/src/components/KubeComponents.tsx",
-      "line": 59,
+      "line": 65,
       "column": 31,
       "term": "clickhouse",
       "category": "code_identifiers",
@@ -47370,11 +47394,19 @@
     },
     {
       "path": "packages/app/src/components/KubeComponents.tsx",
-      "line": 108,
+      "line": 114,
       "column": 26,
       "term": "clickhouse",
       "category": "code_identifiers",
       "snippet": "const json = await clickhouseClient"
+    },
+    {
+      "path": "packages/app/src/components/KubeComponents.tsx",
+      "line": 197,
+      "column": 53,
+      "term": "clickhouse",
+      "category": "ui_strings",
+      "snippet": "connectionKind === 'couchbase' ? 'couchbase' : 'clickhouse';"
     },
     {
       "path": "packages/app/src/components/ListingCard.tsx",
@@ -51577,6 +51609,14 @@
       "snippet": "expect(formatLanguageForConnection('clickhouse')).toBe('clickhouse');"
     },
     {
+      "path": "packages/app/src/couchbase/__tests__/sessionsList.test.ts",
+      "line": 10,
+      "column": 37,
+      "term": "clickhouse",
+      "category": "other",
+      "snippet": "it('emits SQL++ CTE merge without ClickHouse if/maxIf', () => {"
+    },
+    {
       "path": "packages/app/src/couchbase/__tests__/sources.gating.test.ts",
       "line": 14,
       "column": 27,
@@ -51727,6 +51767,54 @@
       "term": "clickhouse",
       "category": "other",
       "snippet": "* ClickHouse join keys; document KEYS form is equivalent when joining the"
+    },
+    {
+      "path": "packages/app/src/couchbase/sessionsList.ts",
+      "line": 1,
+      "column": 65,
+      "term": "clickhouse",
+      "category": "package_names",
+      "snippet": "import type { ChSql } from '@couchbase-traces/common-utils/dist/clickhouse';"
+    },
+    {
+      "path": "packages/app/src/couchbase/sessionsList.ts",
+      "line": 2,
+      "column": 60,
+      "term": "clickhouse",
+      "category": "package_names",
+      "snippet": "import { chSql } from '@couchbase-traces/common-utils/dist/clickhouse';"
+    },
+    {
+      "path": "packages/app/src/couchbase/sessionsList.ts",
+      "line": 7,
+      "column": 4,
+      "term": "clickhouse",
+      "category": "other",
+      "snippet": "* ClickHouse `if` / `maxIf` / `ifNull`, and `UNION` instead of `UNION DISTINCT`."
+    },
+    {
+      "path": "packages/app/src/couchbase/sessionsList.ts",
+      "line": 79,
+      "column": 5,
+      "term": "clickhouse",
+      "category": "other",
+      "snippet": "/** ClickHouse `simpleJSONExtractInt(Body, 'type')` → SQL++. */"
+    },
+    {
+      "path": "packages/app/src/couchbase/sessionsList.ts",
+      "line": 84,
+      "column": 5,
+      "term": "clickhouse",
+      "category": "other",
+      "snippet": "/** ClickHouse `toUInt64OrZero(x)` → SQL++. */"
+    },
+    {
+      "path": "packages/app/src/couchbase/sessionsList.ts",
+      "line": 89,
+      "column": 5,
+      "term": "clickhouse",
+      "category": "other",
+      "snippet": "/** ClickHouse `if(a != '', a, b)` → SQL++. */"
     },
     {
       "path": "packages/app/src/dashboard.ts",
@@ -90949,8 +91037,8 @@
     {
       "category": "package_names",
       "term": "clickhouse",
-      "count": 134,
-      "files": 116
+      "count": 136,
+      "files": 117
     },
     {
       "category": "package_names",
@@ -91087,8 +91175,8 @@
     {
       "category": "ui_strings",
       "term": "clickhouse",
-      "count": 98,
-      "files": 45
+      "count": 102,
+      "files": 48
     },
     {
       "category": "ui_strings",
@@ -91135,8 +91223,8 @@
     {
       "category": "other",
       "term": "clickhouse",
-      "count": 1826,
-      "files": 460
+      "count": 1831,
+      "files": 462
     },
     {
       "category": "other",

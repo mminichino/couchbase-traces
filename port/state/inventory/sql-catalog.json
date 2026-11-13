@@ -11,7 +11,7 @@
           "path": "packages/app/src/ServicesDashboardPage/HttpTab.tsx",
           "workspace": "@couchbase-traces/app",
           "lines": [
-            161
+            167
           ]
         },
         {
@@ -1352,8 +1352,15 @@
       "name": "IFNULL",
       "classification": "unmapped",
       "sqlppApproach": null,
-      "occurrences": 14,
+      "occurrences": 16,
       "files": [
+        {
+          "path": "packages/app/src/couchbase/sessionsList.ts",
+          "workspace": "@couchbase-traces/app",
+          "lines": [
+            42
+          ]
+        },
         {
           "path": "packages/common-utils/src/couchbase/fn/scalar.ts",
           "workspace": "@couchbase-traces/common-utils",
@@ -1526,7 +1533,7 @@
       "name": "JSONExtractString",
       "classification": "mapped",
       "sqlppApproach": "Field path access on the JSON document, with TONUMBER, TOSTRING, or TOBOOLEAN for typing",
-      "occurrences": 21,
+      "occurrences": 7,
       "files": [
         {
           "path": "packages/api/src/mcp/tools/query/eventPatterns.ts",
@@ -1556,32 +1563,6 @@
           "workspace": "@couchbase-traces/api",
           "lines": [
             436
-          ]
-        },
-        {
-          "path": "packages/app/src/KubernetesDashboardPage.tsx",
-          "workspace": "@couchbase-traces/app",
-          "lines": [
-            1255,
-            1256,
-            1257,
-            1258
-          ]
-        },
-        {
-          "path": "packages/app/src/components/KubeComponents.tsx",
-          "workspace": "@couchbase-traces/app",
-          "lines": [
-            202,
-            206,
-            210,
-            214,
-            218,
-            222,
-            226,
-            230,
-            234,
-            238
           ]
         },
         {
@@ -1757,8 +1738,15 @@
       "name": "MAX",
       "classification": "portable",
       "sqlppApproach": null,
-      "occurrences": 7,
+      "occurrences": 13,
       "files": [
+        {
+          "path": "packages/app/src/couchbase/sessionsList.ts",
+          "workspace": "@couchbase-traces/app",
+          "lines": [
+            42
+          ]
+        },
         {
           "path": "packages/common-utils/src/couchbase/cluster.ts",
           "workspace": "@couchbase-traces/common-utils",
@@ -1864,8 +1852,15 @@
       "name": "MIN",
       "classification": "portable",
       "sqlppApproach": null,
-      "occurrences": 7,
+      "occurrences": 9,
       "files": [
+        {
+          "path": "packages/app/src/couchbase/sessionsList.ts",
+          "workspace": "@couchbase-traces/app",
+          "lines": [
+            42
+          ]
+        },
         {
           "path": "packages/common-utils/src/couchbase/fn/scalar.ts",
           "workspace": "@couchbase-traces/common-utils",
@@ -2399,13 +2394,20 @@
       "name": "SUM",
       "classification": "portable",
       "sqlppApproach": null,
-      "occurrences": 17,
+      "occurrences": 26,
       "files": [
         {
           "path": "packages/app/src/couchbase/serviceMap.ts",
           "workspace": "@couchbase-traces/app",
           "lines": [
             158
+          ]
+        },
+        {
+          "path": "packages/app/src/couchbase/sessionsList.ts",
+          "workspace": "@couchbase-traces/app",
+          "lines": [
+            42
           ]
         },
         {
@@ -2970,18 +2972,18 @@
           "path": "packages/app/src/ServicesDashboardPage/DatabaseTab.tsx",
           "workspace": "@couchbase-traces/app",
           "lines": [
-            386,
-            471
+            431,
+            516
           ]
         },
         {
           "path": "packages/app/src/ServicesDashboardPage/HttpTab.tsx",
           "workspace": "@couchbase-traces/app",
           "lines": [
-            507,
-            544,
-            627,
-            671
+            538,
+            575,
+            658,
+            702
           ]
         }
       ]
@@ -3317,11 +3319,11 @@
           "path": "packages/app/src/KubernetesDashboardPage.tsx",
           "workspace": "@couchbase-traces/app",
           "lines": [
-            271,
-            272,
-            273,
-            615,
-            793
+            277,
+            278,
+            279,
+            621,
+            799
           ]
         }
       ]
@@ -3400,15 +3402,15 @@
           "path": "packages/app/src/ServicesDashboardPage/DatabaseTab.tsx",
           "workspace": "@couchbase-traces/app",
           "lines": [
-            131,
-            244
+            158,
+            289
           ]
         },
         {
           "path": "packages/app/src/ServicesDashboardPage/HttpTab.tsx",
           "workspace": "@couchbase-traces/app",
           "lines": [
-            359
+            383
           ]
         },
         {
@@ -3431,7 +3433,7 @@
           "path": "packages/app/src/ServicesDashboardPage/HttpTab.tsx",
           "workspace": "@couchbase-traces/app",
           "lines": [
-            161
+            167
           ]
         },
         {
@@ -3582,15 +3584,15 @@
           "path": "packages/app/src/ServicesDashboardPage/DatabaseTab.tsx",
           "workspace": "@couchbase-traces/app",
           "lines": [
-            131,
-            244
+            158,
+            289
           ]
         },
         {
           "path": "packages/app/src/ServicesDashboardPage/HttpTab.tsx",
           "workspace": "@couchbase-traces/app",
           "lines": [
-            359
+            383
           ]
         },
         {
@@ -3708,13 +3710,13 @@
           "path": "packages/app/src/KubernetesDashboardPage.tsx",
           "workspace": "@couchbase-traces/app",
           "lines": [
-            276,
-            277,
-            278,
-            279,
-            616,
-            617,
-            618
+            282,
+            283,
+            284,
+            285,
+            622,
+            623,
+            624
           ]
         }
       ]
@@ -5470,22 +5472,6 @@
     },
     {
       "category": "function",
-      "name": "generateUUIDv4",
-      "classification": "unmapped",
-      "sqlppApproach": null,
-      "occurrences": 1,
-      "files": [
-        {
-          "path": "packages/app/src/components/KubeComponents.tsx",
-          "workspace": "@couchbase-traces/app",
-          "lines": [
-            198
-          ]
-        }
-      ]
-    },
-    {
-      "category": "function",
       "name": "getKeyValues",
       "classification": "unmapped",
       "sqlppApproach": null,
@@ -5601,31 +5587,13 @@
       "name": "groupArray",
       "classification": "unmapped",
       "sqlppApproach": null,
-      "occurrences": 7,
+      "occurrences": 1,
       "files": [
         {
           "path": "packages/api/src/mcp/tools/sources/describeMetric.ts",
           "workspace": "@couchbase-traces/api",
           "lines": [
             287
-          ]
-        },
-        {
-          "path": "packages/app/src/ServicesDashboardPage/DatabaseTab.tsx",
-          "workspace": "@couchbase-traces/app",
-          "lines": [
-            105,
-            109,
-            218,
-            222
-          ]
-        },
-        {
-          "path": "packages/app/src/ServicesDashboardPage/HttpTab.tsx",
-          "workspace": "@couchbase-traces/app",
-          "lines": [
-            332,
-            337
           ]
         }
       ]
@@ -6400,10 +6368,10 @@
           "path": "packages/app/src/KubernetesDashboardPage.tsx",
           "workspace": "@couchbase-traces/app",
           "lines": [
-            263,
-            274,
+            269,
             280,
-            796
+            286,
+            802
           ]
         },
         {
@@ -7905,11 +7873,11 @@
           "path": "packages/app/src/ServicesDashboardPage/HttpTab.tsx",
           "workspace": "@couchbase-traces/app",
           "lines": [
-            627,
-            638,
-            649,
-            659,
-            671
+            658,
+            669,
+            680,
+            690,
+            702
           ]
         },
         {
@@ -8427,8 +8395,8 @@
           "path": "packages/app/src/KubernetesDashboardPage.tsx",
           "workspace": "@couchbase-traces/app",
           "lines": [
-            794,
-            795
+            800,
+            801
           ]
         },
         {
@@ -8927,18 +8895,18 @@
           "path": "packages/app/src/ServicesDashboardPage/DatabaseTab.tsx",
           "workspace": "@couchbase-traces/app",
           "lines": [
-            386,
-            471
+            431,
+            516
           ]
         },
         {
           "path": "packages/app/src/ServicesDashboardPage/HttpTab.tsx",
           "workspace": "@couchbase-traces/app",
           "lines": [
-            507,
-            544,
-            627,
-            671
+            538,
+            575,
+            658,
+            702
           ]
         },
         {
@@ -9775,8 +9743,8 @@
           "path": "packages/app/src/KubernetesDashboardPage.tsx",
           "workspace": "@couchbase-traces/app",
           "lines": [
-            275,
-            619
+            281,
+            625
           ]
         },
         {
@@ -12966,7 +12934,7 @@
     },
     {
       "path": "packages/app/src/KubernetesDashboardPage.tsx",
-      "count": 26
+      "count": 22
     },
     {
       "path": "packages/app/src/NamespaceDetailsSidePanel.tsx",
@@ -12978,11 +12946,11 @@
     },
     {
       "path": "packages/app/src/ServicesDashboardPage/DatabaseTab.tsx",
-      "count": 8
+      "count": 4
     },
     {
       "path": "packages/app/src/ServicesDashboardPage/HttpTab.tsx",
-      "count": 11
+      "count": 9
     },
     {
       "path": "packages/app/src/SessionSubpanel.tsx",
@@ -13091,10 +13059,6 @@
     {
       "path": "packages/app/src/components/Iac/TerraformHelperPanel.tsx",
       "count": 3
-    },
-    {
-      "path": "packages/app/src/components/KubeComponents.tsx",
-      "count": 11
     },
     {
       "path": "packages/app/src/components/MaterializedViews/MVOptimizationIndicator.tsx",
@@ -13223,6 +13187,10 @@
     {
       "path": "packages/app/src/couchbase/serviceMap.ts",
       "count": 1
+    },
+    {
+      "path": "packages/app/src/couchbase/sessionsList.ts",
+      "count": 4
     },
     {
       "path": "packages/app/src/hdxDebug.ts",
@@ -13598,7 +13566,7 @@
     },
     {
       "path": "packages/app/src/KubernetesDashboardPage.tsx",
-      "rawSql": 26,
+      "rawSql": 22,
       "typeNames": 0
     },
     {
@@ -13613,12 +13581,12 @@
     },
     {
       "path": "packages/app/src/ServicesDashboardPage/DatabaseTab.tsx",
-      "rawSql": 8,
+      "rawSql": 4,
       "typeNames": 0
     },
     {
       "path": "packages/app/src/ServicesDashboardPage/HttpTab.tsx",
-      "rawSql": 11,
+      "rawSql": 9,
       "typeNames": 0
     },
     {
@@ -13769,11 +13737,6 @@
     {
       "path": "packages/app/src/components/Iac/TerraformHelperPanel.tsx",
       "rawSql": 3,
-      "typeNames": 0
-    },
-    {
-      "path": "packages/app/src/components/KubeComponents.tsx",
-      "rawSql": 11,
       "typeNames": 0
     },
     {
@@ -13944,6 +13907,11 @@
     {
       "path": "packages/app/src/couchbase/serviceMap.ts",
       "rawSql": 1,
+      "typeNames": 0
+    },
+    {
+      "path": "packages/app/src/couchbase/sessionsList.ts",
+      "rawSql": 4,
       "typeNames": 0
     },
     {

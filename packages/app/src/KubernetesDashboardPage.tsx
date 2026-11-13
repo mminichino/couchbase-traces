@@ -43,6 +43,12 @@ import { useVirtualizer } from '@tanstack/react-virtual';
 
 import { PageLayout } from '@/components/PageLayout';
 import { TimePicker } from '@/components/TimePicker';
+import { useConnectionKind } from '@/couchbase/connection';
+import {
+  jsonExtractString,
+  mapKeyAccess,
+} from '@/couchbase/dialectExpr';
+import { useIsSourceAllowedForSlice } from '@/couchbase/sources';
 import { useResolvedSourceParam } from '@/hooks/useResolvedSourceParam';
 import { useVirtualList } from '@/hooks/useVirtualList';
 
@@ -1234,6 +1240,11 @@ function KubernetesDashboardPage() {
       },
     );
 
+  const logConnectionKind = useConnectionKind(logSource?.connection);
+  const logDialect =
+    logConnectionKind === 'couchbase' ? 'couchbase' : 'clickhouse';
+  const isSourceAllowedForPresets = useIsSourceAllowedForSlice('presets');
+
   const eventAttributeExpressions = useMemo(() => {
     if (isLoadingJsonColumns || !logSource) {
       return undefined;
@@ -1251,13 +1262,26 @@ function KubernetesDashboardPage() {
       };
     }
 
+    const objectAccess = mapKeyAccess(
+      logSource.eventAttributesExpression ?? 'LogAttributes',
+      'object',
+      logDialect,
+    );
     return {
-      Severity: `JSONExtractString(${logSource.eventAttributesExpression}['object'], 'type')`,
-      Kind: `JSONExtractString(${logSource.eventAttributesExpression}['object'], 'regarding', 'kind')`,
-      Name: `JSONExtractString(${logSource.eventAttributesExpression}['object'], 'regarding', 'name')`,
-      Message: `JSONExtractString(${logSource.eventAttributesExpression}['object'], 'note')`,
+      Severity: jsonExtractString(objectAccess, ['type'], logDialect),
+      Kind: jsonExtractString(
+        objectAccess,
+        ['regarding', 'kind'],
+        logDialect,
+      ),
+      Name: jsonExtractString(
+        objectAccess,
+        ['regarding', 'name'],
+        logDialect,
+      ),
+      Message: jsonExtractString(objectAccess, ['note'], logDialect),
     };
-  }, [isLoadingJsonColumns, logSource, logSourceJsonColumns]);
+  }, [isLoadingJsonColumns, logSource, logSourceJsonColumns, logDialect]);
 
   const headerLeading = (
     <Group gap="xs">
@@ -1265,6 +1289,7 @@ function KubernetesDashboardPage() {
         name="logSourceId"
         control={control}
         allowedSourceKinds={[SourceKind.Log]}
+        isSourceAllowed={isSourceAllowedForPresets}
         size="xs"
         allowDeselect={false}
         onSchemaPreview={() => setIsLogSchemaPreviewOpen(true)}
@@ -1280,6 +1305,7 @@ function KubernetesDashboardPage() {
         name="metricSourceId"
         control={control}
         allowedSourceKinds={[SourceKind.Metric]}
+        isSourceAllowed={isSourceAllowedForPresets}
         size="xs"
         allowDeselect={false}
         onSchemaPreview={() => setIsMetricSchemaPreviewOpen(true)}

@@ -65,7 +65,7 @@ Inventory of commit adcb75c16715. Full detail is in `port/state/inventory/`.
 | Package | Directory | Role | Languages | Source files | Test files | CI targets |
 |---|---|---|---|---|---|---|
 | @couchbase-traces/api | packages/api | API server and tasks | javascript, typescript | 231 | 151 | ci:int, ci:lint, ci:unit |
-| @couchbase-traces/app | packages/app | web UI | javascript, typescript | 692 | 516 | ci:lint, ci:unit |
+| @couchbase-traces/app | packages/app | web UI | javascript, typescript | 693 | 517 | ci:lint, ci:unit |
 | @couchbase-traces/cli | packages/cli | command-line client | javascript, typescript | 61 | 9 | ci:build, ci:lint, ci:unit |
 | @couchbase-traces/common-utils | packages/common-utils | shared query and data layer | javascript, typescript | 116 | 72 | ci:build, ci:int, ci:lint, ci:unit |
 | @couchbase-traces/hdx-eval | packages/hdx-eval | evaluation harness | javascript, typescript | 53 | 31 | ci:lint, ci:unit |
@@ -89,7 +89,7 @@ Inventory of commit adcb75c16715. Full detail is in `port/state/inventory/`.
 | Module | Reasons | Exports | Importers | Server-side |
 |---|---|---|---|---|
 | `packages/common-utils/src/types.ts` | seed, sql_builder | 375 | 708 | yes |
-| `packages/common-utils/src/clickhouse/index.ts` | seed, clickhouse_client, clickhouse_path, sql_builder | 46 | 134 | yes |
+| `packages/common-utils/src/clickhouse/index.ts` | seed, clickhouse_client, clickhouse_path, sql_builder | 46 | 135 | yes |
 | `packages/common-utils/src/core/metadata.ts` | seed, clickhouse_client, sql_builder | 24 | 122 | yes |
 | `packages/api/src/fixtures.ts` | sql_builder | 44 | 59 | yes |
 | `packages/common-utils/src/filters.ts` | sql_builder | 51 | 58 | yes |
@@ -149,7 +149,7 @@ Inventory of commit adcb75c16715. Full detail is in `port/state/inventory/`.
 | `packages/app/src/KubernetesDashboardPage.tsx` | clickhouse_client, sql_builder | 3 | 4 | no |
 | `packages/app/src/components/AppNav/AppNav.components.tsx` | clickhouse_client | 4 | 4 | no |
 | `packages/app/src/components/ContactSupportText.tsx` | clickhouse_client | 1 | 4 | no |
-| `packages/app/src/components/KubeComponents.tsx` | clickhouse_client, sql_builder | 3 | 4 | no |
+| `packages/app/src/components/KubeComponents.tsx` | clickhouse_client | 3 | 4 | no |
 | `packages/app/src/components/Sources/SourcesList.tsx` | clickhouse_client, sql_builder | 2 | 4 | no |
 | `packages/app/src/components/alerts/AlertStateBadge.tsx` | clickhouse_client | 1 | 4 | no |
 | `packages/app/src/components/infraCorrelations.ts` | sql_builder | 4 | 4 | no |
@@ -189,7 +189,7 @@ Inventory of commit adcb75c16715. Full detail is in `port/state/inventory/`.
 | `packages/app/src/components/ListingCard.tsx` | clickhouse_client | 1 | 2 | no |
 | `packages/app/src/components/ListingListRow.tsx` | clickhouse_client | 1 | 2 | no |
 
-Plus 99 more in datalayer.json.
+Plus 100 more in datalayer.json.
 
 ### Server-side data-store callers
 
@@ -301,14 +301,12 @@ Plus 31 more in datalayer.json.
 | File | SQL literals | Type names |
 |---|---|---|
 | `packages/app/src/components/Sources/SourceForm/TraceTableModelForm.tsx` | 12 | 16 |
-| `packages/app/src/KubernetesDashboardPage.tsx` | 26 | 0 |
+| `packages/app/src/KubernetesDashboardPage.tsx` | 22 | 0 |
 | `packages/app/src/components/ChartEditor/constants.tsx` | 4 | 9 |
-| `packages/app/src/ServicesDashboardPage/HttpTab.tsx` | 11 | 0 |
-| `packages/app/src/components/KubeComponents.tsx` | 11 | 0 |
+| `packages/app/src/ServicesDashboardPage/HttpTab.tsx` | 9 | 0 |
 | `packages/app/src/components/AppNav/KeyboardShortcutsModal.tsx` | 9 | 0 |
 | `packages/app/src/llm/lib/expressions.ts` | 9 | 0 |
 | `packages/app/src/utils/sourceFieldSuggestions.tsx` | 0 | 9 |
-| `packages/app/src/ServicesDashboardPage/DatabaseTab.tsx` | 8 | 0 |
 | `packages/app/src/components/SearchInput/SyntaxReferenceModal.tsx` | 5 | 2 |
 | `packages/app/src/hooks/useRowWhere.tsx` | 6 | 1 |
 | `packages/app/src/hooks/useServiceMap.tsx` | 6 | 1 |
@@ -323,6 +321,7 @@ Plus 31 more in datalayer.json.
 | `packages/app/src/hooks/useFetchMetricAttributeValues.tsx` | 3 | 2 |
 | `packages/app/src/sessionsListQuery.ts` | 5 | 0 |
 | `packages/app/src/DBSearchPage.tsx` | 4 | 0 |
+| `packages/app/src/ServicesDashboardPage/DatabaseTab.tsx` | 4 | 0 |
 | `packages/app/src/components/DBEditTimeChartForm/OnClickForm/OnClickDrawer.tsx` | 4 | 0 |
 | `packages/app/src/components/DBRowDataPanel.tsx` | 0 | 4 |
 | `packages/app/src/components/MetricExplorer/MetricDetailPanel.tsx` | 4 | 0 |
@@ -330,6 +329,7 @@ Plus 31 more in datalayer.json.
 | `packages/app/src/components/ServiceDashboardEndpointPerformanceChart.tsx` | 4 | 0 |
 | `packages/app/src/components/TeamSettings/TeamQueryConfigSection.tsx` | 4 | 0 |
 | `packages/app/src/components/deltaChartUtils.ts` | 0 | 4 |
+| `packages/app/src/couchbase/sessionsList.ts` | 4 | 0 |
 | `packages/app/src/NodeDetailsSidePanel.tsx` | 3 | 0 |
 | `packages/app/src/components/DBEditTimeChartForm/ChartEditorControls.tsx` | 3 | 0 |
 | `packages/app/src/components/DBEditTimeChartForm/ChartFormulaEditor.tsx` | 3 | 0 |
@@ -430,7 +430,7 @@ Plus 5 more in sql-catalog.json.
 | clause | `->` | 17 | 5 |
 | function | `match` | 17 | 8 |
 | function | `toStartOfFifteenMinutes` | 17 | 1 |
-| function | `IFNULL` | 14 | 5 |
+| function | `IFNULL` | 16 | 6 |
 | function | `ARRAY_LENGTH` | 13 | 3 |
 | function | `__timeFilter` | 13 | 5 |
 | function | `__timeInterval` | 13 | 5 |
@@ -458,7 +458,6 @@ Plus 5 more in sql-catalog.json.
 | dynamic_suffix | `arrayExists` | 7 | 1 |
 | function | `arrayElement` | 7 | 2 |
 | function | `arraySum` | 7 | 2 |
-| function | `groupArray` | 7 | 3 |
 | function | `has` | 7 | 5 |
 | function | `map` | 7 | 4 |
 | function | `multiIf` | 7 | 2 |
@@ -507,8 +506,9 @@ Plus 5 more in sql-catalog.json.
 | setting | `read_overflow_mode` | 4 | 1 |
 | type | `Bool` | 4 | 4 |
 | type | `FixedString` | 4 | 2 |
+| type | `Nested` | 4 | 3 |
 
-Plus 348 more in sql-catalog.json.
+Plus 347 more in sql-catalog.json.
 
 ### Mapped constructs in use
 
@@ -521,7 +521,7 @@ Plus 348 more in sql-catalog.json.
 | `SETTINGS` | 17 | Query options passed through the SDK (timeout, scan consistency, named parameters); drop engine-specific settings |
 | `If` | 1 | COUNT(*) FILTER (WHERE cond) |
 | `JSONExtract` | 4 | Field path access on the JSON document, with TONUMBER, TOSTRING, or TOBOOLEAN for typing |
-| `JSONExtractString` | 21 | Field path access on the JSON document, with TONUMBER, TOSTRING, or TOBOOLEAN for typing |
+| `JSONExtractString` | 7 | Field path access on the JSON document, with TONUMBER, TOSTRING, or TOBOOLEAN for typing |
 | `any` | 17 | ARRAY_AGG(expr)[0], or MIN(expr) when any value is acceptable |
 | `argMax` | 5 | FIRST_VALUE(value) OVER (PARTITION BY group ORDER BY key DESC), or a subquery ordered by key DESC LIMIT 1 |
 | `arrayJoin` | 5 | UNNEST over the array field |
@@ -597,24 +597,24 @@ Collector components, pipelines, ClickHouse exporters, and management code.
 
 | Category | hyperdx | clickstack | clickhouse | deploysentinel | hdx |
 |---|---|---|---|---|---|
-| package_names | 0 | 0 | 134 | 0 | 1 |
+| package_names | 0 | 0 | 136 | 0 | 1 |
 | external_dependencies | 7 | 18 | 137 | 0 | 0 |
 | env_vars | 73 | 7 | 534 | 0 | 51 |
 | telemetry_endpoints | 18 | 0 | 61 | 0 | 2 |
 | assets | 0 | 0 | 0 | 0 | 3 |
 | docker | 48 | 0 | 116 | 0 | 95 |
 | docs | 487 | 278 | 1359 | 2 | 191 |
-| ui_strings | 10 | 9 | 98 | 0 | 127 |
+| ui_strings | 10 | 9 | 102 | 0 | 127 |
 | code_identifiers | 129 | 21 | 2434 | 0 | 644 |
-| other | 643 | 187 | 1826 | 2 | 1616 |
+| other | 643 | 187 | 1831 | 2 | 1616 |
 
 ### Feature status
 
 | Status | Features |
 |---|---|
-| not_started | 40 |
+| not_started | 38 |
 | in_progress | 2 |
-| ported | 10 |
+| ported | 12 |
 | needs_decision | 0 |
 | dropped | 2 |
 | replaced | 1 |
@@ -630,7 +630,7 @@ Collector components, pipelines, ClickHouse exporters, and management code.
 - W_PLAN_MISSING: 1 occurrences. First: COUCHBASE_PORT_PLAN.md not found at the project root; plan check skipped (COUCHBASE_PORT_PLAN.md)
 - W_SCHEMA_UNPARSED: 1 occurrences. First: Unparsed statement: CREATE DATABASE IF NOT EXISTS DATABASE (docker/otel-collector/schema/seed/00001_create_database.sql)
 - W_TABLE_REDEFINED: 3 occurrences. First: Table otel_logs is defined in docker/otel-collector/schema/seed/00002_otel_logs.sql and docker/otel-collector/schema/seed/00002_otel_logs_compat.sql (docker/otel-collector/schema/seed/00002_otel_logs_compat.sql)
-- W_UNRESOLVED_IMPORT: 2 occurrences. First: Cannot resolve "@couchbase-traces/api/build/serverless" (packages/app/pages/api/[...all].ts)
+- W_UNRESOLVED_IMPORT: 5 occurrences. First: Cannot resolve "@couchbase-traces/api/build/serverless" (packages/app/pages/api/[...all].ts)
 - W_UNRESOLVED_MOUNT: 1 occurrences. First: Cannot resolve router for mount "/v1/opamp" at line 13 (packages/api/src/opamp/app.ts)
 <!-- phase2:end -->
 
@@ -905,6 +905,14 @@ Completed requests: `system:completed_requests` requires `query_system_catalog`.
 - RRWeb stream: `DECODE_JSON(Body).\`type\`` and `IFNULL(TONUMBER(…), 0)` instead of `simpleJSONExtractInt` / `toUInt64OrZero`.
 - Query parity seeds 200 rrweb session events; cases: count, by-service min/max, ordered replay rows.
 - Source gating: Sessions page `isSourceAllowed` uses the sessions slice.
+
+### Phase 7: presets
+
+- Features ported: Kubernetes dashboard (`app-kubernetes`) and Services dashboard (`app-services`). `COUCHBASE_SLICES.presets=true`. Couchbase cluster page e2e remains under this slice.
+- Services Http/Database tabs: `groupArray`→`ARRAY_AGG`; `arrayJoin(arrayZip(…))`→`UNNEST ARRAY_RANGE` zip CTE (`zipSeriesSqlpp`); `tupleElement`→0-based array index.
+- K8s event attribute extracts: `JSONExtractString(map['object'], …)`→`TOSTRING(DECODE_JSON(map.`object`).…)`; `generateUUIDv4()`→`UUID()`.
+- Query parity: services span count / by-service; k8s log count.
+- Source gating on Kubernetes and Services source pickers.
 
 ## Phase 6: SQL++ core and data-layer seam
 
