@@ -869,6 +869,7 @@ Completed requests: `system:completed_requests` requires `query_system_catalog`.
 - Allowed divergences: `search-patterns-sample` (`nondeterministic`), `search-event-deltas-sample` (`sampling`).
 - E2E exclusions: `select-star-error-state.spec.ts` (`asserts_engine_text`); `json-at-prefixed-key-row-details.spec.ts` (`clickhouse_admin`).
 - `needs_decision`: unchanged from Phase 6.
+- Couchbase e2e smoke (2026-11-13): `CBT_E2E_STORE=couchbase ./scripts/test-e2e.sh --quiet packages/app/tests/e2e/features/search/search.spec.ts` — **not green**. Compose + cluster-init + Mongo come up; API webServer listens after fixing (1) missing `yarn` on PATH via bundled shim in `scripts/test-e2e.sh`, (2) `global-setup-couchbase` readiness on mgmt `/pools` (not N1QL), (3) tsup minify emit bug in `RoutingNodeClickhouseClient` (`byConnection` field init → invalid `call(this);,this.`). Blocker: Next.js `yarn build` typecheck fails before tests run — `DBDeltaChart.tsx` (`timestampFormat` missing on `BuilderChartConfigWithDateRange`), `codeMirror.ts` (`DialectOptions.format`), `packages/ingest/src/model/materialized.ts` (Cannot find module `@/otlp/values`). No chart/preset smoke attempted. Do not claim green.
 
 ### Phase 7: traces
 
@@ -897,7 +898,7 @@ Completed requests: `system:completed_requests` requires `query_system_catalog`.
 - **needs_decision:** `metrics-exp-histogram` — exponential histogram scale normalization (bitShift/arraySplit/sumMap) has no ready SQL++ equivalent after a solid attempt; gated in MetricExplorer for Couchbase (`unavailableKinds`); render throws `CouchbaseNotReadyError` naming the feature id. Parity case `metrics-exp-histogram-needs-decision` asserts that error (`compare.expectCouchbaseError`).
 - Avg/count gauge charts without `metricType` compare equal via lucene `MetricName` filter (CH `last_value` translate vs CB raw avg diverge); `metrics-gauge-max` exercises the translate path.
 - Query parity: `compare-charts --render-only metrics` green (8 cases: gauge×3, histogram count/p50, multi-series, formula, exp-hist expected error).
-- E2E: `metric-name-streaming.spec.ts`, `metric-table-autofill.spec.ts`, `correlated-metric-source.spec.ts` listed under metrics in `port/slices/e2e.json`. Full Couchbase e2e smoke not re-proven green in this follow-up (Playwright webServer / yarn PATH remain environmental); do not claim green.
+- E2E: `metric-name-streaming.spec.ts`, `metric-table-autofill.spec.ts`, `correlated-metric-source.spec.ts` listed under metrics in `port/slices/e2e.json`. Full Couchbase e2e smoke not green — see Phase 7 search smoke note (Next.js build typecheck blocker after yarn/API wiring fixes).
 
 ### Phase 7: sessions
 

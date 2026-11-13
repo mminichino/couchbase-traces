@@ -32,6 +32,20 @@ else
   DOCKER_COMPOSE_FILE="$REPO_ROOT/packages/app/tests/e2e/docker-compose.yml"
 fi
 
+# Agent / minimal PATH shells often lack a yarn binary. Playwright webServer
+# commands also invoke `yarn`, so put a shim ahead of PATH when needed.
+if ! command -v yarn >/dev/null 2>&1; then
+  _CBT_YARN_SHIM_DIR="${TMPDIR:-/tmp}/cbt-e2e-yarn-shim"
+  mkdir -p "$_CBT_YARN_SHIM_DIR"
+  cat > "$_CBT_YARN_SHIM_DIR/yarn" <<EOF
+#!/bin/bash
+exec node "$REPO_ROOT/.yarn/releases/yarn-4.13.0.cjs" "\$@"
+EOF
+  chmod +x "$_CBT_YARN_SHIM_DIR/yarn"
+  export PATH="$_CBT_YARN_SHIM_DIR:$PATH"
+  echo "Using bundled Yarn shim at $_CBT_YARN_SHIM_DIR/yarn"
+fi
+
 # ---------------------------------------------------------------------------
 # Multi-agent / worktree isolation
 # ---------------------------------------------------------------------------

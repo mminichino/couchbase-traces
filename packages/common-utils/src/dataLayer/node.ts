@@ -19,10 +19,9 @@ export class RoutingNodeClickhouseClient extends ClickhouseClient {
     id: string,
   ) => Promise<CouchbaseConnectionConfig>;
   private readonly team: TeamClickHouseSettings | null;
-  private readonly byConnection = new Map<
-    string,
-    Promise<CouchbaseNodeClient>
-  >();
+  // Init in constructor: tsup/esbuild emits invalid `call(this);,this.` when a
+  // field initializer (__init) sits beside constructor body assignments.
+  private readonly byConnection: Map<string, Promise<CouchbaseNodeClient>>;
 
   constructor(
     opts: ClickhouseClientOptions & {
@@ -33,6 +32,7 @@ export class RoutingNodeClickhouseClient extends ClickhouseClient {
     },
   ) {
     super(opts);
+    this.byConnection = new Map();
     this.loadCouchbaseConnection = opts.loadCouchbaseConnection;
     this.team = opts.team ?? null;
     this.couchbaseSampleSize = opts.team?.metadataMaxRowsToRead;

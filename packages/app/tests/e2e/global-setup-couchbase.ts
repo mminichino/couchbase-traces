@@ -7,19 +7,18 @@ import type { FullConfig } from '@playwright/test';
 
 import { seedCouchbase } from './seed-couchbase';
 
-const QUERY_URL =
-  process.env.COUCHBASE_URL?.replace(/\/$/, '') ??
-  `http://127.0.0.1:${process.env.CBT_E2E_CB_QUERY_PORT ?? '28291'}`;
 const MGMT_PORT = process.env.CBT_E2E_CB_MGMT_PORT ?? '28091';
+const MGMT_URL = `http://127.0.0.1:${MGMT_PORT}`;
 const KV_HOST = process.env.CBT_E2E_CB_HOST ?? '127.0.0.1';
 
 const repoRoot = path.join(__dirname, '../../../..');
 
 async function waitForCouchbase(): Promise<void> {
-  console.log(`Waiting for Couchbase at ${QUERY_URL}...`);
+  // /pools is served on the management port, not N1QL (COUCHBASE_URL).
+  console.log(`Waiting for Couchbase at ${MGMT_URL}...`);
   for (let attempt = 1; attempt <= 90; attempt++) {
     try {
-      const res = await fetch(`${QUERY_URL}/pools`);
+      const res = await fetch(`${MGMT_URL}/pools`);
       if (res.ok) {
         console.log('  ✓ Couchbase is ready');
         return;
