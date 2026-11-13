@@ -6,10 +6,10 @@ Generated from `port/features.json` and `port/state/inventory/`. Edit `port/feat
 |---|---|
 | not_started | 48 |
 | in_progress | 2 |
-| ported | 1 |
-| needs_decision | 2 |
+| ported | 2 |
+| needs_decision | 1 |
 | dropped | 1 |
-| replaced | 0 |
+| replaced | 1 |
 
 ## search
 
@@ -341,8 +341,9 @@ Entry points:
 | Data sources (`api-sources`) | admin | not_started | 4 | attribution.ts, index.ts, node.ts, clickhouseVersion.ts, histogram.ts, +7 | 1 / 1 / 0 |
 | ClickHouse query settings (`api-team-clickhouse-settings`) | admin | ported | 1 | attribution.ts, index.ts, node.ts, clickhouseVersion.ts, histogram.ts, +7 | 0 / 0 / 0 |
 | Webhooks (`api-webhooks`) | admin | not_started | 5 | clickhouse.ts, errors.ts, attribution.ts, index.ts, node.ts, +9 | 0 / 0 / 0 |
-| ClickHouse server dashboard (`app-clickhouse`) | admin | needs_decision | 1 | clickhouse.tsx, ClickhousePage.tsx, UserPreferencesModal.tsx, clickhouse.ts, AppNav.components.tsx, +45 | 0 / 0 / 1 |
+| ClickHouse server dashboard (`app-clickhouse`) | admin | replaced | 1 | clickhouse.tsx, ClickhousePage.tsx, UserPreferencesModal.tsx, clickhouse.ts, AppNav.components.tsx, +45 | 0 / 0 / 1 |
 | Team settings and members (`app-team`) | admin | not_started | 14 | UserPreferencesModal.tsx, clickhouse.ts, AppNav.components.tsx, AppNav.tsx, InstanceLabel.tsx, +34 | 8 / 0 / 1 |
+| Couchbase cluster (`couchbase-cluster`) | admin | ported | 4 | UserPreferencesModal.tsx, clickhouse.ts, AppNav.components.tsx, AppNav.tsx, InstanceLabel.tsx, +19 | 6 / 0 / 1 |
 
 ### Connections (`api-connections`)
 
@@ -404,7 +405,7 @@ Entry points:
 
 - `app_page:/clickhouse`, `packages/app/pages/clickhouse.tsx`
 
-Decision: Shows ClickHouse server health from system tables such as query_log and parts. Couchbase has no direct equivalent of these tables, so the dashboard needs a different data source or a sign-off to drop. Not signed off.
+Decision: Replaced by the Couchbase cluster page. The ClickHouse page is removed in Phase 10. Signed off by Michael on 2026-11-12.
 
 ### Team settings and members (`app-team`)
 
@@ -426,6 +427,17 @@ Entry points:
 - `api_route:POST /team/api-keys`, `packages/api/src/routers/api/orgApiKeys.ts`
 - `api_route:POST /team/invitation`, `packages/api/src/routers/api/team.ts`
 - `app_page:/team`, `packages/app/pages/team/index.tsx`
+
+### Couchbase cluster (`couchbase-cluster`)
+
+Shows Couchbase query activity, infrastructure metrics, and cluster status, with graceful handling where a managed service restricts access.
+
+Entry points:
+
+- `api_route:GET /couchbase/cluster/:connectionId/infrastructure`, `packages/api/src/routers/api/couchbaseCluster.ts`
+- `api_route:GET /couchbase/cluster/:connectionId/queries`, `packages/api/src/routers/api/couchbaseCluster.ts`
+- `api_route:GET /couchbase/cluster/:connectionId/status`, `packages/api/src/routers/api/couchbaseCluster.ts`
+- `app_page:/cluster`, `packages/app/pages/cluster.tsx`
 
 ## auth
 

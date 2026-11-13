@@ -39,6 +39,12 @@ export interface IConnection {
   wanProfile?: boolean;
   /** Couchbase only. PEM; write-only like `password`. */
   tlsCaCertificate?: string;
+  /** Couchbase only. Management API user; optional. */
+  monitorUsername?: string;
+  /** Couchbase only. Write-only like `password`. */
+  monitorPassword?: string;
+  /** Couchbase only. Management REST port; null clears a stored override. */
+  managementPort?: number | null;
   createdAt?: Date;
   updatedAt?: Date;
 }
@@ -76,6 +82,12 @@ export default mongoose.model<IConnection>(
         type: String,
         select: false,
       },
+      monitorUsername: String,
+      monitorPassword: {
+        type: String,
+        select: false,
+      },
+      managementPort: Number,
     },
     {
       timestamps: true,

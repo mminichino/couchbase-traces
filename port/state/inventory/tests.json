@@ -987,6 +987,15 @@
       "routes": []
     },
     {
+      "path": "packages/api/src/routers/api/__tests__/couchbaseCluster.test.ts",
+      "workspace": "@couchbase-traces/api",
+      "kind": "unit",
+      "directImports": [
+        "packages/api/src/routers/api/couchbaseCluster.ts"
+      ],
+      "routes": []
+    },
+    {
       "path": "packages/api/src/routers/api/__tests__/couchbaseConnections.test.ts",
       "workspace": "@couchbase-traces/api",
       "kind": "unit",
@@ -1612,6 +1621,24 @@
       "routes": []
     },
     {
+      "path": "packages/api/src/utils/__tests__/couchbaseManagement.test.ts",
+      "workspace": "@couchbase-traces/api",
+      "kind": "unit",
+      "directImports": [
+        "packages/api/src/utils/couchbaseManagement.ts"
+      ],
+      "routes": []
+    },
+    {
+      "path": "packages/api/src/utils/__tests__/couchbaseStats.test.ts",
+      "workspace": "@couchbase-traces/api",
+      "kind": "unit",
+      "directImports": [
+        "packages/api/src/utils/couchbaseStats.ts"
+      ],
+      "routes": []
+    },
+    {
       "path": "packages/api/src/utils/__tests__/enhancedErrors.test.ts",
       "workspace": "@couchbase-traces/api",
       "kind": "unit",
@@ -1897,6 +1924,15 @@
         "packages/app/src/utils/chartConfig.ts",
         "packages/common-utils/src/core/promql.ts",
         "packages/common-utils/src/types.ts"
+      ],
+      "routes": []
+    },
+    {
+      "path": "packages/app/src/__tests__/CouchbaseClusterPage.test.tsx",
+      "workspace": "@couchbase-traces/app",
+      "kind": "unit",
+      "directImports": [
+        "packages/app/src/CouchbaseClusterPage.tsx"
       ],
       "routes": []
     },
@@ -6120,6 +6156,15 @@
       "routes": []
     },
     {
+      "path": "packages/app/tests/e2e/features/couchbase-cluster.spec.ts",
+      "workspace": "@couchbase-traces/app",
+      "kind": "e2e",
+      "directImports": [],
+      "routes": [
+        "/cluster"
+      ]
+    },
+    {
       "path": "packages/app/tests/e2e/features/dashboard-adhoc-click-filters.spec.ts",
       "workspace": "@couchbase-traces/app",
       "kind": "e2e",
@@ -7699,6 +7744,15 @@
       "routes": []
     },
     {
+      "path": "packages/common-utils/src/couchbase/__tests__/cluster.test.ts",
+      "workspace": "@couchbase-traces/common-utils",
+      "kind": "unit",
+      "directImports": [
+        "packages/common-utils/src/couchbase/cluster.ts"
+      ],
+      "routes": []
+    },
+    {
       "path": "packages/common-utils/src/couchbase/__tests__/connstr.test.ts",
       "workspace": "@couchbase-traces/common-utils",
       "kind": "unit",
@@ -7733,6 +7787,15 @@
       "kind": "unit",
       "directImports": [
         "packages/common-utils/src/couchbase/inferMeta.ts"
+      ],
+      "routes": []
+    },
+    {
+      "path": "packages/common-utils/src/couchbase/__tests__/management.test.ts",
+      "workspace": "@couchbase-traces/common-utils",
+      "kind": "unit",
+      "directImports": [
+        "packages/common-utils/src/couchbase/management.ts"
       ],
       "routes": []
     },

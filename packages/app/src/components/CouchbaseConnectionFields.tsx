@@ -15,6 +15,7 @@ import { Box, Checkbox, Text, Textarea } from '@mantine/core';
 
 import {
   InputControlled,
+  PasswordInputControlled,
   TextInputControlled,
 } from '@/components/InputControlled';
 
@@ -30,6 +31,9 @@ export type ConnectionFormValues = {
   isPrometheusEndpoint?: boolean;
   wanProfile?: boolean;
   tlsCaCertificate?: string;
+  monitorUsername?: string;
+  monitorPassword?: string;
+  managementPort?: string;
 };
 
 export const COUCHBASE_HELP_TEXT =
@@ -156,6 +160,50 @@ export function CouchbaseConnectionFields({
           />
         </Box>
       )}
+      <Box>
+        <Text size="xs" mb="xs">
+          Monitoring username
+        </Text>
+        <InputControlled
+          data-testid="connection-monitor-username-input"
+          name="monitorUsername"
+          control={control}
+          placeholder="Optional. Used for cluster status and metrics"
+        />
+      </Box>
+      <Box>
+        <Text size="xs" mb="xs">
+          Monitoring password
+        </Text>
+        <PasswordInputControlled
+          data-testid="connection-monitor-password-input"
+          name="monitorPassword"
+          control={control}
+          placeholder={
+            isNew ? 'Optional' : 'Leave blank to keep the stored password'
+          }
+        />
+      </Box>
+      <Box>
+        <Text size="xs" mb="xs">
+          Management port
+        </Text>
+        <TextInputControlled
+          data-testid="connection-management-port-input"
+          name="managementPort"
+          control={control}
+          placeholder="Default (8091 or 18091)"
+          rules={{
+            validate: value => {
+              if (typeof value !== 'string' || value.trim() === '') return true;
+              const port = Number(value);
+              return Number.isInteger(port) && port >= 1 && port <= 65535
+                ? true
+                : 'Port must be an integer from 1 to 65535';
+            },
+          }}
+        />
+      </Box>
     </>
   );
 }

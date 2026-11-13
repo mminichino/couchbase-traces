@@ -55,7 +55,7 @@ export function getConnectionById(
   selectPassword = false,
 ) {
   return Connection.findOne({ _id: connectionId, team }).select(
-    selectPassword ? '+password +tlsCaCertificate' : '',
+    selectPassword ? '+password +tlsCaCertificate +monitorPassword' : '',
   );
 }
 

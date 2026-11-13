@@ -64,10 +64,10 @@ Inventory of commit adcb75c16715. Full detail is in `port/state/inventory/`.
 
 | Package | Directory | Role | Languages | Source files | Test files | CI targets |
 |---|---|---|---|---|---|---|
-| @couchbase-traces/api | packages/api | API server and tasks | javascript, typescript | 227 | 148 | ci:int, ci:lint, ci:unit |
-| @couchbase-traces/app | packages/app | web UI | javascript, typescript | 684 | 508 | ci:lint, ci:unit |
+| @couchbase-traces/api | packages/api | API server and tasks | javascript, typescript | 230 | 151 | ci:int, ci:lint, ci:unit |
+| @couchbase-traces/app | packages/app | web UI | javascript, typescript | 687 | 510 | ci:lint, ci:unit |
 | @couchbase-traces/cli | packages/cli | command-line client | javascript, typescript | 61 | 9 | ci:build, ci:lint, ci:unit |
-| @couchbase-traces/common-utils | packages/common-utils | shared query and data layer | javascript, typescript | 72 | 63 | ci:build, ci:int, ci:lint, ci:unit |
+| @couchbase-traces/common-utils | packages/common-utils | shared query and data layer | javascript, typescript | 74 | 65 | ci:build, ci:int, ci:lint, ci:unit |
 | @couchbase-traces/hdx-eval | packages/hdx-eval | evaluation harness | javascript, typescript | 53 | 31 | ci:lint, ci:unit |
 | @couchbase-traces/ingest | packages/ingest | ingestion service | javascript, typescript | 27 | 6 | ci:lint, ci:unit |
 | @couchbase-traces/otel-collector | packages/otel-collector | ingestion collector | go | 0 | 0 |  |
@@ -76,9 +76,9 @@ Inventory of commit adcb75c16715. Full detail is in `port/state/inventory/`.
 
 | Kind | Count |
 |---|---|
-| app_page | 25 |
+| app_page | 26 |
 | app_api_route | 2 |
-| api_route | 120 |
+| api_route | 123 |
 | mcp_tool | 32 |
 | task | 3 |
 | cli_command | 24 |
@@ -88,7 +88,7 @@ Inventory of commit adcb75c16715. Full detail is in `port/state/inventory/`.
 
 | Module | Reasons | Exports | Importers | Server-side |
 |---|---|---|---|---|
-| `packages/common-utils/src/types.ts` | seed, sql_builder | 375 | 686 | yes |
+| `packages/common-utils/src/types.ts` | seed, sql_builder | 375 | 687 | yes |
 | `packages/common-utils/src/core/metadata.ts` | seed, clickhouse_client, sql_builder | 24 | 129 | yes |
 | `packages/common-utils/src/clickhouse/index.ts` | seed, clickhouse_client, clickhouse_path, sql_builder | 46 | 123 | yes |
 | `packages/api/src/fixtures.ts` | sql_builder | 44 | 59 | yes |
@@ -180,6 +180,7 @@ Inventory of commit adcb75c16715. Full detail is in `port/state/inventory/`.
 | `packages/app/src/llm/components/LLMSpanSubpanel.tsx` | clickhouse_client | 1 | 2 | no |
 | `packages/app/src/utils/nextServerTelemetry.ts` | clickhouse_client | 3 | 2 | no |
 | `packages/cli/src/shared/useRowWhere.ts` | sql_builder | 3 | 2 | no |
+| `packages/common-utils/src/couchbase/cluster.ts` | sql_builder | 17 | 2 | yes |
 | `packages/hdx-eval/src/clickhouse/client.ts` | clickhouse_client, clickhouse_path | 3 | 2 | no |
 | `packages/hdx-eval/src/clickhouse/insert.ts` | clickhouse_client, clickhouse_path | 8 | 2 | no |
 | `packages/hdx-eval/src/scenarios/latency-spike/generate.ts` | sql_builder | 1 | 2 | no |
@@ -187,9 +188,8 @@ Inventory of commit adcb75c16715. Full detail is in `port/state/inventory/`.
 | `packages/api/src/mcp/tools/sources/describeMetric.ts` | sql_builder | 1 | 1 | yes |
 | `packages/api/src/mcp/tools/trace/waterfall.ts` | sql_builder | 1 | 1 | yes |
 | `packages/app/src/ClickhousePage.tsx` | clickhouse_path | 1 | 1 | no |
-| `packages/app/src/DBChartPage.tsx` | clickhouse_client | 1 | 1 | no |
 
-Plus 39 more in datalayer.json.
+Plus 40 more in datalayer.json.
 
 ### Server-side data-store callers
 
@@ -285,6 +285,7 @@ Plus 39 more in datalayer.json.
 - `packages/api/src/routers/api/alerts.ts`: `packages/common-utils/src/types.ts`
 - `packages/api/src/routers/api/connections.ts`: `packages/common-utils/src/types.ts`
 - `packages/api/src/routers/api/couchbase.ts`: `packages/common-utils/src/types.ts`
+- `packages/api/src/routers/api/couchbaseCluster.ts`: `packages/common-utils/src/couchbase/cluster.ts`, `packages/common-utils/src/types.ts`
 - `packages/api/src/routers/api/dashboards.ts`: `packages/common-utils/src/filters.ts`, `packages/common-utils/src/types.ts`
 - `packages/api/src/routers/api/iac.ts`: `packages/common-utils/src/types.ts`
 - `packages/api/src/routers/api/me.ts`: `packages/common-utils/src/types.ts`
@@ -292,9 +293,8 @@ Plus 39 more in datalayer.json.
 - `packages/api/src/routers/api/pinnedFilters.ts`: `packages/common-utils/src/types.ts`
 - `packages/api/src/routers/api/prometheus.ts`: `packages/api/src/controllers/timeseriesEngine.ts`, `packages/common-utils/src/clickhouse/attribution.ts`, `packages/common-utils/src/clickhouse/index.ts`, `packages/common-utils/src/clickhouse/node.ts`
 - `packages/api/src/routers/api/root.ts`: `packages/common-utils/src/types.ts`
-- `packages/api/src/routers/api/savedSearch.ts`: `packages/common-utils/src/types.ts`
 
-Plus 26 more in datalayer.json.
+Plus 27 more in datalayer.json.
 
 ### UI code with raw SQL or ClickHouse type names
 
@@ -436,6 +436,7 @@ Plus 4 more in sql-catalog.json.
 | type | `UInt32` | 12 | 6 |
 | function | `rate` | 11 | 2 |
 | parameter_type | `String` | 11 | 3 |
+| function | `STR_TO_MILLIS` | 10 | 1 |
 | function | `tiles` | 10 | 1 |
 | function | `toDateTime64` | 10 | 6 |
 | type | `UInt64` | 10 | 5 |
@@ -500,15 +501,14 @@ Plus 4 more in sql-catalog.json.
 | dynamic_suffix | `has` | 3 | 1 |
 | function | `Example` | 3 | 1 |
 | function | `IF` | 3 | 1 |
+| function | `STR_TO_DURATION` | 3 | 1 |
 | function | `__dateFilter` | 3 | 2 |
 | function | `__timeFilter_ms` | 3 | 2 |
 | function | `arrayWithConstant` | 3 | 1 |
 | function | `attributes` | 3 | 2 |
 | function | `cbt_describe_source` | 3 | 2 |
-| function | `cbt_get_dashboard` | 3 | 1 |
-| function | `cluster` | 3 | 2 |
 
-Plus 311 more in sql-catalog.json.
+Plus 314 more in sql-catalog.json.
 
 ### Mapped constructs in use
 
@@ -604,9 +604,9 @@ Collector components, pipelines, ClickHouse exporters, and management code.
 | assets | 0 | 0 | 0 | 0 | 3 |
 | docker | 48 | 0 | 116 | 0 | 95 |
 | docs | 487 | 278 | 928 | 2 | 191 |
-| ui_strings | 7 | 9 | 74 | 0 | 127 |
-| code_identifiers | 128 | 21 | 2246 | 0 | 638 |
-| other | 639 | 188 | 1737 | 2 | 1611 |
+| ui_strings | 7 | 9 | 77 | 0 | 127 |
+| code_identifiers | 128 | 21 | 2261 | 0 | 642 |
+| other | 639 | 188 | 1744 | 2 | 1611 |
 
 ### Feature status
 
@@ -614,10 +614,10 @@ Collector components, pipelines, ClickHouse exporters, and management code.
 |---|---|
 | not_started | 48 |
 | in_progress | 2 |
-| ported | 1 |
-| needs_decision | 2 |
+| ported | 2 |
+| needs_decision | 1 |
 | dropped | 1 |
-| replaced | 0 |
+| replaced | 1 |
 
 ### Plan corrections
 
@@ -768,9 +768,33 @@ Collector components, pipelines, ClickHouse exporters, and management code.
 
 ### Features pending a decision
 
-- `app-clickhouse`: Shows ClickHouse server health from system tables such as query_log and parts. Couchbase has no direct equivalent of these tables, so the dashboard needs a different data source or a sign-off to drop.
 - `app-careers`: ClickHouse recruiting page: lists ClickHouse jobs from boards-api.greenhouse.io and ClickStack commits from api.github.com. Kept unchanged until the user decides whether to remove it.
 <!-- phase3:end -->
+
+### Phase 5a
+
+Decisions signed off by Michael on 2026-11-12:
+
+- PromQL is dropped. It required ClickHouse's TimeSeries table fed by Prometheus remote-write, with no Couchbase equivalent in scope. Disabled in Phase 5a; code deleted in Phase 10.
+- Team query settings stay, as Couchbase SDK query options: scan consistency and max parallelism.
+- The ClickHouse server dashboard is replaced by the Couchbase cluster page (`couchbase-cluster`). The ClickHouse page is removed in Phase 10.
+
+Monitoring role: `ro_admin` only. Read-Only Admin can view server configuration, list buckets, and view statistics, which covers `GET /pools/default`, `/pools/default/buckets`, `/pools/default/tasks`, and `POST /pools/default/stats/range`. `external_stats_reader` only allows `GET /metrics` and `/prometheus_sd_config`, so it does not cover the statistics range API and is not granted.
+
+Infrastructure metrics, from `POST /pools/default/stats/range` on Enterprise 8.0.3. `start` and `end` are negative offsets in seconds, and `nodesAggregation` is omitted so each node stays separate. Counters request `applyFunctions: ["rate"]`. Every measure returned samples in the test window, so none were dropped:
+
+- CPU utilization: `sys_cpu_utilization_rate`
+- Free memory: `sys_mem_actual_free`, then `sys_mem_free`
+- Data service operations: `kv_ops` (rate)
+- Bucket memory: `kv_mem_used_bytes`
+- Disk write queue: `kv_ep_queue_size`, then `kv_disk_write_queue`
+- Query requests: `n1ql_requests` (rate)
+- Query errors: `n1ql_errors` (rate)
+- Query average request time: `n1ql_avg_req_time`, then `n1ql_request_time`
+- Index requests: `index_num_requests` (rate)
+- Search queries: `fts_total_queries` (rate)
+
+Completed requests: `system:completed_requests` requires `query_system_catalog`. The test query user, which has that role, saw one retained request and its user was `local:cbt_query`. A user with only `query_select[test]` is rejected: "User does not have credentials to run queries accessing the system tables. Add role query_system_catalog to allow the statement to run." The server does not fall back to showing that user's own requests. `system:indexes` does run for the `query_select` user; in this run it returned no rows, while the catalog role saw the test index.
 
 ### Removed integrations
 

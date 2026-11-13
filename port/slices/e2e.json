@@ -1,0 +1,8 @@
+{
+  "presets": {
+    "specs": [
+      "packages/app/tests/e2e/features/couchbase-cluster.spec.ts"
+    ],
+    "exclusions": []
+  }
+}

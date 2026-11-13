@@ -200,6 +200,11 @@ export function ConnectionForm({
             wanProfile:
               connection.wanProfile ??
               /^couchbases:\/\//i.test(connection.host ?? ''),
+            monitorUsername: connection.monitorUsername ?? '',
+            managementPort:
+              connection.managementPort == null
+                ? ''
+                : String(connection.managementPort),
           }
         : {
             hyperdxSettingPrefix: connection.hyperdxSettingPrefix,
@@ -235,6 +240,15 @@ export function ConnectionForm({
             kind: 'couchbase',
             host: data.host.trim(),
             wanProfile: data.wanProfile,
+            monitorUsername: data.monitorUsername?.trim() ?? '',
+            // Write-only: blank keeps the stored password on update.
+            ...(data.monitorPassword
+              ? { monitorPassword: data.monitorPassword }
+              : {}),
+            // Null clears a stored port so the scheme default applies.
+            managementPort: data.managementPort?.trim()
+              ? Number(data.managementPort)
+              : null,
             // Write-only: blank keeps the stored certificate on update.
             ...(data.tlsCaCertificate?.trim()
               ? { tlsCaCertificate: data.tlsCaCertificate.trim() }

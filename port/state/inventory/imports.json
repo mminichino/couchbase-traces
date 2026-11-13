@@ -1917,6 +1917,20 @@
           "line": 15
         },
         {
+          "specifier": "./routers/api/couchbaseCluster",
+          "target": "packages/api/src/routers/api/couchbaseCluster.ts",
+          "external": null,
+          "kind": "static",
+          "typeOnly": false,
+          "bindings": [
+            {
+              "imported": "default",
+              "local": "couchbaseClusterRouter"
+            }
+          ],
+          "line": 16
+        },
+        {
           "specifier": "./routers/api/favorites",
           "target": "packages/api/src/routers/api/favorites.ts",
           "external": null,
@@ -1928,7 +1942,7 @@
               "local": "favoritesRouter"
             }
           ],
-          "line": 16
+          "line": 17
         },
         {
           "specifier": "./routers/api/iac",
@@ -1942,7 +1956,7 @@
               "local": "iacRouter"
             }
           ],
-          "line": 17
+          "line": 18
         },
         {
           "specifier": "./routers/api/pinnedFilters",
@@ -1956,7 +1970,7 @@
               "local": "pinnedFiltersRouter"
             }
           ],
-          "line": 18
+          "line": 19
         },
         {
           "specifier": "./routers/api/savedSearch",
@@ -1970,7 +1984,7 @@
               "local": "savedSearchRouter"
             }
           ],
-          "line": 19
+          "line": 20
         },
         {
           "specifier": "./routers/api/sources",
@@ -1984,7 +1998,7 @@
               "local": "sourcesRouter"
             }
           ],
-          "line": 20
+          "line": 21
         },
         {
           "specifier": "./routers/external-api/v2",
@@ -1998,7 +2012,7 @@
               "local": "externalRoutersV2"
             }
           ],
-          "line": 21
+          "line": 22
         },
         {
           "specifier": "./utils/aiTelemetry",
@@ -2012,7 +2026,7 @@
               "local": "registerAITelemetry"
             }
           ],
-          "line": 22
+          "line": 23
         },
         {
           "specifier": "./utils/logger",
@@ -2030,7 +2044,7 @@
               "local": "expressLogger"
             }
           ],
-          "line": 23
+          "line": 24
         },
         {
           "specifier": "./utils/passport",
@@ -2044,7 +2058,7 @@
               "local": "passport"
             }
           ],
-          "line": 24
+          "line": 25
         },
         {
           "specifier": "./utils/proxyBody",
@@ -2058,7 +2072,7 @@
               "local": "captureProxyBody"
             }
           ],
-          "line": 25
+          "line": 26
         },
         {
           "specifier": "./utils/swagger",
@@ -2072,7 +2086,7 @@
               "local": "setupSwagger"
             }
           ],
-          "line": 133
+          "line": 135
         }
       ],
       "exports": [
@@ -2081,7 +2095,7 @@
           "kind": "const",
           "from": null,
           "original": null,
-          "line": 143
+          "line": 145
         }
       ],
       "starReexports": []
@@ -27286,7 +27300,7 @@
           "kind": "type",
           "from": null,
           "original": null,
-          "line": 46
+          "line": 52
         },
         {
           "name": "IConnection",
@@ -27300,7 +27314,7 @@
           "kind": "const",
           "from": null,
           "original": null,
-          "line": 48
+          "line": 54
         }
       ],
       "starReexports": []
@@ -29764,6 +29778,97 @@
       "starReexports": []
     },
     {
+      "path": "packages/api/src/routers/api/__tests__/couchbaseCluster.test.ts",
+      "workspace": "@couchbase-traces/api",
+      "test": true,
+      "imports": [
+        {
+          "specifier": "express",
+          "target": null,
+          "external": "express",
+          "kind": "static",
+          "typeOnly": false,
+          "bindings": [
+            {
+              "imported": "default",
+              "local": "express"
+            }
+          ],
+          "line": 1
+        },
+        {
+          "specifier": "supertest",
+          "target": null,
+          "external": "supertest",
+          "kind": "static",
+          "typeOnly": false,
+          "bindings": [
+            {
+              "imported": "default",
+              "local": "request"
+            }
+          ],
+          "line": 2
+        },
+        {
+          "specifier": "@couchbase-traces/common-utils/dist/couchbase/node",
+          "target": "packages/common-utils/src/couchbase/node.ts",
+          "external": null,
+          "kind": "mock",
+          "typeOnly": false,
+          "bindings": [],
+          "line": 8
+        },
+        {
+          "specifier": "@/utils/couchbaseManagement",
+          "target": "packages/api/src/utils/couchbaseManagement.ts",
+          "external": null,
+          "kind": "mock",
+          "typeOnly": false,
+          "bindings": [],
+          "line": 13
+        },
+        {
+          "specifier": "@/controllers/connection",
+          "target": "packages/api/src/controllers/connection.ts",
+          "external": null,
+          "kind": "mock",
+          "typeOnly": false,
+          "bindings": [],
+          "line": 21
+        },
+        {
+          "specifier": "@/controllers/team",
+          "target": "packages/api/src/controllers/team.ts",
+          "external": null,
+          "kind": "mock",
+          "typeOnly": false,
+          "bindings": [],
+          "line": 26
+        },
+        {
+          "specifier": "@/routers/api/couchbaseCluster",
+          "target": "packages/api/src/routers/api/couchbaseCluster.ts",
+          "external": null,
+          "kind": "static",
+          "typeOnly": false,
+          "bindings": [
+            {
+              "imported": "default",
+              "local": "couchbaseClusterRouter"
+            },
+            {
+              "imported": "clearClusterStatusCache",
+              "local": "clearClusterStatusCache"
+            }
+          ],
+          "line": 32
+        }
+      ],
+      "exports": [],
+      "starReexports": []
+    },
+    {
       "path": "packages/api/src/routers/api/__tests__/couchbaseConnections.test.ts",
       "workspace": "@couchbase-traces/api",
       "test": true,
@@ -32099,7 +32204,7 @@
           "kind": "const",
           "from": null,
           "original": null,
-          "line": 182
+          "line": 196
         }
       ],
       "starReexports": []
@@ -32407,6 +32512,369 @@
           "from": null,
           "original": null,
           "line": 391
+        }
+      ],
+      "starReexports": []
+    },
+    {
+      "path": "packages/api/src/routers/api/couchbaseCluster.ts",
+      "workspace": "@couchbase-traces/api",
+      "test": false,
+      "imports": [
+        {
+          "specifier": "@couchbase-traces/common-utils/dist/couchbase/cluster",
+          "target": "packages/common-utils/src/couchbase/cluster.ts",
+          "external": null,
+          "kind": "static",
+          "typeOnly": false,
+          "bindings": [
+            {
+              "imported": "ActiveRequestRow",
+              "local": "ActiveRequestRow"
+            },
+            {
+              "imported": "activeRequestsQuery",
+              "local": "activeRequestsQuery"
+            },
+            {
+              "imported": "bucketWidthMs",
+              "local": "bucketWidthMs"
+            },
+            {
+              "imported": "COMPLETED_REQUESTS_NOTE",
+              "local": "COMPLETED_REQUESTS_NOTE"
+            },
+            {
+              "imported": "CompletedBucket",
+              "local": "CompletedBucket"
+            },
+            {
+              "imported": "completedOverTimeQuery",
+              "local": "completedOverTimeQuery"
+            },
+            {
+              "imported": "indexesQuery",
+              "local": "indexesQuery"
+            },
+            {
+              "imported": "IndexRow",
+              "local": "IndexRow"
+            },
+            {
+              "imported": "mapActiveRequest",
+              "local": "mapActiveRequest"
+            },
+            {
+              "imported": "mapCompletedBucket",
+              "local": "mapCompletedBucket"
+            },
+            {
+              "imported": "mapIndex",
+              "local": "mapIndex"
+            },
+            {
+              "imported": "mapRecentRequest",
+              "local": "mapRecentRequest"
+            },
+            {
+              "imported": "mapTopStatement",
+              "local": "mapTopStatement"
+            },
+            {
+              "imported": "RecentRequestRow",
+              "local": "RecentRequestRow"
+            },
+            {
+              "imported": "recentRequestsQuery",
+              "local": "recentRequestsQuery"
+            },
+            {
+              "imported": "TopStatementRow",
+              "local": "TopStatementRow"
+            },
+            {
+              "imported": "topStatementsQuery",
+              "local": "topStatementsQuery"
+            }
+          ],
+          "line": 19
+        },
+        {
+          "specifier": "@couchbase-traces/common-utils/dist/couchbase/management",
+          "target": "packages/common-utils/src/couchbase/management.ts",
+          "external": null,
+          "kind": "static",
+          "typeOnly": false,
+          "bindings": [
+            {
+              "imported": "managementBaseUrl",
+              "local": "managementBaseUrl"
+            }
+          ],
+          "line": 20
+        },
+        {
+          "specifier": "@couchbase-traces/common-utils/dist/couchbase/node",
+          "target": "packages/common-utils/src/couchbase/node.ts",
+          "external": null,
+          "kind": "static",
+          "typeOnly": false,
+          "bindings": [
+            {
+              "imported": "executeQuery",
+              "local": "executeQuery"
+            }
+          ],
+          "line": 21
+        },
+        {
+          "specifier": "@couchbase-traces/common-utils/dist/couchbase/sqlpp",
+          "target": "packages/common-utils/src/couchbase/sqlpp.ts",
+          "external": null,
+          "kind": "static",
+          "typeOnly": true,
+          "bindings": [
+            {
+              "imported": "SqlPP",
+              "local": "SqlPP"
+            }
+          ],
+          "line": 22
+        },
+        {
+          "specifier": "@couchbase-traces/common-utils/dist/types",
+          "target": "packages/common-utils/src/types.ts",
+          "external": null,
+          "kind": "static",
+          "typeOnly": true,
+          "bindings": [
+            {
+              "imported": "TeamClickHouseSettings",
+              "local": "TeamClickHouseSettings"
+            }
+          ],
+          "line": 23
+        },
+        {
+          "specifier": "express",
+          "target": null,
+          "external": "express",
+          "kind": "static",
+          "typeOnly": false,
+          "bindings": [
+            {
+              "imported": "default",
+              "local": "express"
+            },
+            {
+              "imported": "Request",
+              "local": "Request"
+            },
+            {
+              "imported": "Response",
+              "local": "Response"
+            }
+          ],
+          "line": 24
+        },
+        {
+          "specifier": "zod",
+          "target": null,
+          "external": "zod",
+          "kind": "static",
+          "typeOnly": false,
+          "bindings": [
+            {
+              "imported": "z",
+              "local": "z"
+            }
+          ],
+          "line": 25
+        },
+        {
+          "specifier": "@/controllers/connection",
+          "target": "packages/api/src/controllers/connection.ts",
+          "external": null,
+          "kind": "static",
+          "typeOnly": false,
+          "bindings": [
+            {
+              "imported": "getConnectionById",
+              "local": "getConnectionById"
+            },
+            {
+              "imported": "toCouchbaseConnectionConfig",
+              "local": "toCouchbaseConnectionConfig"
+            }
+          ],
+          "line": 30
+        },
+        {
+          "specifier": "@/controllers/team",
+          "target": "packages/api/src/controllers/team.ts",
+          "external": null,
+          "kind": "static",
+          "typeOnly": false,
+          "bindings": [
+            {
+              "imported": "getTeam",
+              "local": "getTeam"
+            }
+          ],
+          "line": 31
+        },
+        {
+          "specifier": "@/middleware/auth",
+          "target": "packages/api/src/middleware/auth.ts",
+          "external": null,
+          "kind": "static",
+          "typeOnly": false,
+          "bindings": [
+            {
+              "imported": "getNonNullUserWithTeam",
+              "local": "getNonNullUserWithTeam"
+            }
+          ],
+          "line": 32
+        },
+        {
+          "specifier": "@/models/connection",
+          "target": "packages/api/src/models/connection.ts",
+          "external": null,
+          "kind": "static",
+          "typeOnly": true,
+          "bindings": [
+            {
+              "imported": "IConnection",
+              "local": "IConnection"
+            }
+          ],
+          "line": 33
+        },
+        {
+          "specifier": "@/utils/couchbaseManagement",
+          "target": "packages/api/src/utils/couchbaseManagement.ts",
+          "external": null,
+          "kind": "static",
+          "typeOnly": false,
+          "bindings": [
+            {
+              "imported": "managementCall",
+              "local": "managementCall"
+            },
+            {
+              "imported": "managementHostProblem",
+              "local": "managementHostProblem"
+            },
+            {
+              "imported": "ManagementResult",
+              "local": "ManagementResult"
+            },
+            {
+              "imported": "SectionDetail",
+              "local": "SectionDetail"
+            }
+          ],
+          "line": 39
+        },
+        {
+          "specifier": "@/utils/couchbaseStats",
+          "target": "packages/api/src/utils/couchbaseStats.ts",
+          "external": null,
+          "kind": "static",
+          "typeOnly": false,
+          "bindings": [
+            {
+              "imported": "BucketStatus",
+              "local": "BucketStatus"
+            },
+            {
+              "imported": "ClusterSummary",
+              "local": "ClusterSummary"
+            },
+            {
+              "imported": "MEASURES",
+              "local": "MEASURES"
+            },
+            {
+              "imported": "MetricSeries",
+              "local": "MetricSeries"
+            },
+            {
+              "imported": "NodeStatus",
+              "local": "NodeStatus"
+            },
+            {
+              "imported": "parseBuckets",
+              "local": "parseBuckets"
+            },
+            {
+              "imported": "parseCluster",
+              "local": "parseCluster"
+            },
+            {
+              "imported": "parseStatsRange",
+              "local": "parseStatsRange"
+            },
+            {
+              "imported": "parseTasks",
+              "local": "parseTasks"
+            },
+            {
+              "imported": "seriesHasPoints",
+              "local": "seriesHasPoints"
+            },
+            {
+              "imported": "statsRangeBody",
+              "local": "statsRangeBody"
+            },
+            {
+              "imported": "statsWindow",
+              "local": "statsWindow"
+            },
+            {
+              "imported": "TaskStatus",
+              "local": "TaskStatus"
+            }
+          ],
+          "line": 54
+        },
+        {
+          "specifier": "@/utils/zod",
+          "target": "packages/api/src/utils/zod.ts",
+          "external": null,
+          "kind": "static",
+          "typeOnly": false,
+          "bindings": [
+            {
+              "imported": "objectIdSchema",
+              "local": "objectIdSchema"
+            }
+          ],
+          "line": 55
+        }
+      ],
+      "exports": [
+        {
+          "name": "Section",
+          "kind": "type",
+          "from": null,
+          "original": null,
+          "line": 61
+        },
+        {
+          "name": "clearClusterStatusCache",
+          "kind": "function",
+          "from": null,
+          "original": null,
+          "line": 96
+        },
+        {
+          "name": "default",
+          "kind": "const",
+          "from": null,
+          "original": null,
+          "line": 503
         }
       ],
       "starReexports": []
@@ -37530,7 +37998,7 @@
           "kind": "const",
           "from": null,
           "original": null,
-          "line": 706
+          "line": 756
         }
       ],
       "starReexports": []
@@ -47234,6 +47702,78 @@
       "starReexports": []
     },
     {
+      "path": "packages/api/src/utils/__tests__/couchbaseManagement.test.ts",
+      "workspace": "@couchbase-traces/api",
+      "test": true,
+      "imports": [
+        {
+          "specifier": "node:http",
+          "target": null,
+          "external": "node:http",
+          "kind": "static",
+          "typeOnly": false,
+          "bindings": [
+            {
+              "imported": "default",
+              "local": "http"
+            }
+          ],
+          "line": 1
+        },
+        {
+          "specifier": "@/utils/couchbaseManagement",
+          "target": "packages/api/src/utils/couchbaseManagement.ts",
+          "external": null,
+          "kind": "static",
+          "typeOnly": false,
+          "bindings": [
+            {
+              "imported": "classifyManagementError",
+              "local": "classifyManagementError"
+            },
+            {
+              "imported": "managementCall",
+              "local": "managementCall"
+            },
+            {
+              "imported": "managementHostProblem",
+              "local": "managementHostProblem"
+            }
+          ],
+          "line": 7
+        }
+      ],
+      "exports": [],
+      "starReexports": []
+    },
+    {
+      "path": "packages/api/src/utils/__tests__/couchbaseStats.test.ts",
+      "workspace": "@couchbase-traces/api",
+      "test": true,
+      "imports": [
+        {
+          "specifier": "@/utils/couchbaseStats",
+          "target": "packages/api/src/utils/couchbaseStats.ts",
+          "external": null,
+          "kind": "static",
+          "typeOnly": false,
+          "bindings": [
+            {
+              "imported": "parseStatsRange",
+              "local": "parseStatsRange"
+            },
+            {
+              "imported": "statsWindow",
+              "local": "statsWindow"
+            }
+          ],
+          "line": 1
+        }
+      ],
+      "exports": [],
+      "starReexports": []
+    },
+    {
       "path": "packages/api/src/utils/__tests__/enhancedErrors.test.ts",
       "workspace": "@couchbase-traces/api",
       "test": true,
@@ -48754,6 +49294,229 @@
           "from": null,
           "original": null,
           "line": 25
+        }
+      ],
+      "starReexports": []
+    },
+    {
+      "path": "packages/api/src/utils/couchbaseManagement.ts",
+      "workspace": "@couchbase-traces/api",
+      "test": false,
+      "imports": [
+        {
+          "specifier": "node:http",
+          "target": null,
+          "external": "node:http",
+          "kind": "static",
+          "typeOnly": false,
+          "bindings": [
+            {
+              "imported": "default",
+              "local": "http"
+            }
+          ],
+          "line": 1
+        },
+        {
+          "specifier": "node:https",
+          "target": null,
+          "external": "node:https",
+          "kind": "static",
+          "typeOnly": false,
+          "bindings": [
+            {
+              "imported": "default",
+              "local": "https"
+            }
+          ],
+          "line": 2
+        },
+        {
+          "specifier": "@couchbase-traces/common-utils/dist/couchbase/connstr",
+          "target": "packages/common-utils/src/couchbase/connstr.ts",
+          "external": null,
+          "kind": "static",
+          "typeOnly": false,
+          "bindings": [
+            {
+              "imported": "ConnStrError",
+              "local": "ConnStrError"
+            },
+            {
+              "imported": "parseConnStr",
+              "local": "parseConnStr"
+            }
+          ],
+          "line": 7
+        },
+        {
+          "specifier": "@/utils/validators",
+          "target": "packages/api/src/utils/validators.ts",
+          "external": null,
+          "kind": "static",
+          "typeOnly": false,
+          "bindings": [
+            {
+              "imported": "IPV6_BRACKET_RE",
+              "local": "IPV6_BRACKET_RE"
+            },
+            {
+              "imported": "isPrivateIp",
+              "local": "isPrivateIp"
+            }
+          ],
+          "line": 9
+        }
+      ],
+      "exports": [
+        {
+          "name": "ManagementCall",
+          "kind": "type",
+          "from": null,
+          "original": null,
+          "line": 24
+        },
+        {
+          "name": "ManagementResult",
+          "kind": "type",
+          "from": null,
+          "original": null,
+          "line": 17
+        },
+        {
+          "name": "SectionDetail",
+          "kind": "type",
+          "from": null,
+          "original": null,
+          "line": 11
+        },
+        {
+          "name": "classifyManagementError",
+          "kind": "function",
+          "from": null,
+          "original": null,
+          "line": 44
+        },
+        {
+          "name": "managementCall",
+          "kind": "function",
+          "from": null,
+          "original": null,
+          "line": 94
+        },
+        {
+          "name": "managementHostProblem",
+          "kind": "function",
+          "from": null,
+          "original": null,
+          "line": 69
+        }
+      ],
+      "starReexports": []
+    },
+    {
+      "path": "packages/api/src/utils/couchbaseStats.ts",
+      "workspace": "@couchbase-traces/api",
+      "test": false,
+      "imports": [],
+      "exports": [
+        {
+          "name": "BucketStatus",
+          "kind": "type",
+          "from": null,
+          "original": null,
+          "line": 245
+        },
+        {
+          "name": "ClusterSummary",
+          "kind": "type",
+          "from": null,
+          "original": null,
+          "line": 226
+        },
+        {
+          "name": "MEASURES",
+          "kind": "const",
+          "from": null,
+          "original": null,
+          "line": 12
+        },
+        {
+          "name": "MeasureSpec",
+          "kind": "type",
+          "from": null,
+          "original": null,
+          "line": 3
+        },
+        {
+          "name": "MetricSeries",
+          "kind": "type",
+          "from": null,
+          "original": null,
+          "line": 1
+        },
+        {
+          "name": "NodeStatus",
+          "kind": "type",
+          "from": null,
+          "original": null,
+          "line": 233
+        },
+        {
+          "name": "TaskStatus",
+          "kind": "type",
+          "from": null,
+          "original": null,
+          "line": 256
+        },
+        {
+          "name": "parseBuckets",
+          "kind": "function",
+          "from": null,
+          "original": null,
+          "line": 310
+        },
+        {
+          "name": "parseCluster",
+          "kind": "function",
+          "from": null,
+          "original": null,
+          "line": 276
+        },
+        {
+          "name": "parseStatsRange",
+          "kind": "function",
+          "from": null,
+          "original": null,
+          "line": 209
+        },
+        {
+          "name": "parseTasks",
+          "kind": "function",
+          "from": null,
+          "original": null,
+          "line": 328
+        },
+        {
+          "name": "seriesHasPoints",
+          "kind": "function",
+          "from": null,
+          "original": null,
+          "line": 222
+        },
+        {
+          "name": "statsRangeBody",
+          "kind": "function",
+          "from": null,
+          "original": null,
+          "line": 103
+        },
+        {
+          "name": "statsWindow",
+          "kind": "function",
+          "from": null,
+          "original": null,
+          "line": 89
         }
       ],
       "starReexports": []
@@ -53257,6 +54020,37 @@
       "starReexports": []
     },
     {
+      "path": "packages/app/pages/cluster.tsx",
+      "workspace": "@couchbase-traces/app",
+      "test": false,
+      "imports": [
+        {
+          "specifier": "@/CouchbaseClusterPage",
+          "target": "packages/app/src/CouchbaseClusterPage.tsx",
+          "external": null,
+          "kind": "static",
+          "typeOnly": false,
+          "bindings": [
+            {
+              "imported": "default",
+              "local": "CouchbaseClusterPage"
+            }
+          ],
+          "line": 1
+        }
+      ],
+      "exports": [
+        {
+          "name": "default",
+          "kind": "reexport",
+          "from": "packages/app/src/CouchbaseClusterPage.tsx",
+          "original": "default",
+          "line": 3
+        }
+      ],
+      "starReexports": []
+    },
+    {
       "path": "packages/app/pages/dashboards/[dashboardId].tsx",
       "workspace": "@couchbase-traces/app",
       "test": false,
@@ -57012,6 +57806,281 @@
           "from": null,
           "original": null,
           "line": 6
+        }
+      ],
+      "starReexports": []
+    },
+    {
+      "path": "packages/app/src/CouchbaseClusterPage.tsx",
+      "workspace": "@couchbase-traces/app",
+      "test": false,
+      "imports": [
+        {
+          "specifier": "react",
+          "target": null,
+          "external": "react",
+          "kind": "static",
+          "typeOnly": false,
+          "bindings": [
+            {
+              "imported": "useEffect",
+              "local": "useEffect"
+            },
+            {
+              "imported": "useMemo",
+              "local": "useMemo"
+            },
+            {
+              "imported": "useState",
+              "local": "useState"
+            }
+          ],
+          "line": 1
+        },
+        {
+          "specifier": "next/head",
+          "target": null,
+          "external": "next",
+          "kind": "static",
+          "typeOnly": false,
+          "bindings": [
+            {
+              "imported": "default",
+              "local": "Head"
+            }
+          ],
+          "line": 2
+        },
+        {
+          "specifier": "next/link",
+          "target": null,
+          "external": "next",
+          "kind": "static",
+          "typeOnly": false,
+          "bindings": [
+            {
+              "imported": "default",
+              "local": "Link"
+            }
+          ],
+          "line": 3
+        },
+        {
+          "specifier": "recharts",
+          "target": null,
+          "external": "recharts",
+          "kind": "static",
+          "typeOnly": false,
+          "bindings": [
+            {
+              "imported": "CartesianGrid",
+              "local": "CartesianGrid"
+            },
+            {
+              "imported": "Legend",
+              "local": "Legend"
+            },
+            {
+              "imported": "Line",
+              "local": "Line"
+            },
+            {
+              "imported": "LineChart",
+              "local": "LineChart"
+            },
+            {
+              "imported": "ResponsiveContainer",
+              "local": "ResponsiveContainer"
+            },
+            {
+              "imported": "Tooltip",
+              "local": "ChartTooltip"
+            },
+            {
+              "imported": "XAxis",
+              "local": "XAxis"
+            },
+            {
+              "imported": "YAxis",
+              "local": "YAxis"
+            }
+          ],
+          "line": 13
+        },
+        {
+          "specifier": "@mantine/core",
+          "target": null,
+          "external": "@mantine/core",
+          "kind": "static",
+          "typeOnly": false,
+          "bindings": [
+            {
+              "imported": "Alert",
+              "local": "Alert"
+            },
+            {
+              "imported": "Anchor",
+              "local": "Anchor"
+            },
+            {
+              "imported": "Button",
+              "local": "Button"
+            },
+            {
+              "imported": "Collapse",
+              "local": "Collapse"
+            },
+            {
+              "imported": "Container",
+              "local": "Container"
+            },
+            {
+              "imported": "Group",
+              "local": "Group"
+            },
+            {
+              "imported": "Select",
+              "local": "Select"
+            },
+            {
+              "imported": "Skeleton",
+              "local": "Skeleton"
+            },
+            {
+              "imported": "Stack",
+              "local": "Stack"
+            },
+            {
+              "imported": "Table",
+              "local": "Table"
+            },
+            {
+              "imported": "Tabs",
+              "local": "Tabs"
+            },
+            {
+              "imported": "Text",
+              "local": "Text"
+            },
+            {
+              "imported": "Tooltip",
+              "local": "Tooltip"
+            }
+          ],
+          "line": 28
+        },
+        {
+          "specifier": "@mantine/hooks",
+          "target": null,
+          "external": "@mantine/hooks",
+          "kind": "static",
+          "typeOnly": false,
+          "bindings": [
+            {
+              "imported": "useDisclosure",
+              "local": "useDisclosure"
+            }
+          ],
+          "line": 29
+        },
+        {
+          "specifier": "@/brand",
+          "target": "packages/app/src/brand/index.tsx",
+          "external": null,
+          "kind": "static",
+          "typeOnly": false,
+          "bindings": [
+            {
+              "imported": "usePageTitle",
+              "local": "usePageTitle"
+            }
+          ],
+          "line": 31
+        },
+        {
+          "specifier": "@/clusterApi",
+          "target": "packages/app/src/clusterApi.ts",
+          "external": null,
+          "kind": "static",
+          "typeOnly": false,
+          "bindings": [
+            {
+              "imported": "InfrastructureResponse",
+              "local": "InfrastructureResponse"
+            },
+            {
+              "imported": "Section",
+              "local": "Section"
+            },
+            {
+              "imported": "StatusResponse",
+              "local": "StatusResponse"
+            },
+            {
+              "imported": "useClusterInfrastructure",
+              "local": "useClusterInfrastructure"
+            },
+            {
+              "imported": "useClusterQueries",
+              "local": "useClusterQueries"
+            },
+            {
+              "imported": "useClusterStatus",
+              "local": "useClusterStatus"
+            }
+          ],
+          "line": 39
+        },
+        {
+          "specifier": "@/connection",
+          "target": "packages/app/src/connection.ts",
+          "external": null,
+          "kind": "static",
+          "typeOnly": false,
+          "bindings": [
+            {
+              "imported": "useConnections",
+              "local": "useConnections"
+            }
+          ],
+          "line": 40
+        },
+        {
+          "specifier": "@/layout",
+          "target": "packages/app/src/layout.tsx",
+          "external": null,
+          "kind": "static",
+          "typeOnly": false,
+          "bindings": [
+            {
+              "imported": "withAppNav",
+              "local": "withAppNav"
+            }
+          ],
+          "line": 41
+        },
+        {
+          "specifier": "@/source",
+          "target": "packages/app/src/source.ts",
+          "external": null,
+          "kind": "static",
+          "typeOnly": false,
+          "bindings": [
+            {
+              "imported": "useSources",
+              "local": "useSources"
+            }
+          ],
+          "line": 42
+        }
+      ],
+      "exports": [
+        {
+          "name": "default",
+          "kind": "function",
+          "from": null,
+          "original": null,
+          "line": 517
         }
       ],
       "starReexports": []
@@ -71479,6 +72548,24 @@
           "line": 17
         },
         {
+          "specifier": "./connection",
+          "target": "packages/app/src/connection.ts",
+          "external": null,
+          "kind": "static",
+          "typeOnly": false,
+          "bindings": [
+            {
+              "imported": "dataStoreLinks",
+              "local": "dataStoreLinks"
+            },
+            {
+              "imported": "useConnections",
+              "local": "useConnections"
+            }
+          ],
+          "line": 18
+        },
+        {
           "specifier": "./dashboard",
           "target": "packages/app/src/dashboard.ts",
           "external": null,
@@ -71490,7 +72577,7 @@
               "local": "useDashboards"
             }
           ],
-          "line": 18
+          "line": 19
         },
         {
           "specifier": "./savedSearch",
@@ -71504,7 +72591,7 @@
               "local": "useSavedSearches"
             }
           ],
-          "line": 19
+          "line": 20
         },
         {
           "specifier": "@mantine/spotlight/styles.css",
@@ -71513,7 +72600,7 @@
           "kind": "side_effect",
           "typeOnly": false,
           "bindings": [],
-          "line": 21
+          "line": 22
         }
       ],
       "exports": [
@@ -71522,14 +72609,14 @@
           "kind": "const",
           "from": null,
           "original": null,
-          "line": 201
+          "line": 226
         },
         {
           "name": "useSpotlightActions",
           "kind": "const",
           "from": null,
           "original": null,
-          "line": 23
+          "line": 24
         }
       ],
       "starReexports": []
@@ -72616,6 +73703,83 @@
             }
           ],
           "line": 30
+        }
+      ],
+      "exports": [],
+      "starReexports": []
+    },
+    {
+      "path": "packages/app/src/__tests__/CouchbaseClusterPage.test.tsx",
+      "workspace": "@couchbase-traces/app",
+      "test": true,
+      "imports": [
+        {
+          "specifier": "@testing-library/react",
+          "target": null,
+          "external": "@testing-library/react",
+          "kind": "static",
+          "typeOnly": false,
+          "bindings": [
+            {
+              "imported": "fireEvent",
+              "local": "fireEvent"
+            },
+            {
+              "imported": "screen",
+              "local": "screen"
+            }
+          ],
+          "line": 1
+        },
+        {
+          "specifier": "@/CouchbaseClusterPage",
+          "target": "packages/app/src/CouchbaseClusterPage.tsx",
+          "external": null,
+          "kind": "static",
+          "typeOnly": false,
+          "bindings": [
+            {
+              "imported": "default",
+              "local": "CouchbaseClusterPage"
+            }
+          ],
+          "line": 3
+        },
+        {
+          "specifier": "next/head",
+          "target": null,
+          "external": "next",
+          "kind": "mock",
+          "typeOnly": false,
+          "bindings": [],
+          "line": 33
+        },
+        {
+          "specifier": "@/connection",
+          "target": "packages/app/src/connection.ts",
+          "external": null,
+          "kind": "mock",
+          "typeOnly": false,
+          "bindings": [],
+          "line": 34
+        },
+        {
+          "specifier": "@/source",
+          "target": "packages/app/src/source.ts",
+          "external": null,
+          "kind": "mock",
+          "typeOnly": false,
+          "bindings": [],
+          "line": 37
+        },
+        {
+          "specifier": "@/clusterApi",
+          "target": "packages/app/src/clusterApi.ts",
+          "external": null,
+          "kind": "mock",
+          "typeOnly": false,
+          "bindings": [],
+          "line": 42
         }
       ],
       "exports": [],
@@ -75200,6 +76364,15 @@
           "typeOnly": false,
           "bindings": [],
           "line": 25
+        },
+        {
+          "specifier": "../connection",
+          "target": "packages/app/src/connection.ts",
+          "external": null,
+          "kind": "mock",
+          "typeOnly": false,
+          "bindings": [],
+          "line": 26
         }
       ],
       "exports": [],
@@ -78818,6 +79991,170 @@
       "starReexports": []
     },
     {
+      "path": "packages/app/src/clusterApi.ts",
+      "workspace": "@couchbase-traces/app",
+      "test": false,
+      "imports": [
+        {
+          "specifier": "@tanstack/react-query",
+          "target": null,
+          "external": "@tanstack/react-query",
+          "kind": "static",
+          "typeOnly": false,
+          "bindings": [
+            {
+              "imported": "useQuery",
+              "local": "useQuery"
+            }
+          ],
+          "line": 1
+        },
+        {
+          "specifier": "@/api",
+          "target": "packages/app/src/api.ts",
+          "external": null,
+          "kind": "static",
+          "typeOnly": false,
+          "bindings": [
+            {
+              "imported": "hdxServer",
+              "local": "hdxServer"
+            }
+          ],
+          "line": 3
+        }
+      ],
+      "exports": [
+        {
+          "name": "ActiveRequest",
+          "kind": "type",
+          "from": null,
+          "original": null,
+          "line": 71
+        },
+        {
+          "name": "BucketStatus",
+          "kind": "type",
+          "from": null,
+          "original": null,
+          "line": 38
+        },
+        {
+          "name": "ClusterSummary",
+          "kind": "type",
+          "from": null,
+          "original": null,
+          "line": 19
+        },
+        {
+          "name": "CompletedBucket",
+          "kind": "type",
+          "from": null,
+          "original": null,
+          "line": 80
+        },
+        {
+          "name": "IndexInfo",
+          "kind": "type",
+          "from": null,
+          "original": null,
+          "line": 98
+        },
+        {
+          "name": "InfrastructureResponse",
+          "kind": "type",
+          "from": null,
+          "original": null,
+          "line": 69
+        },
+        {
+          "name": "MeasureSeries",
+          "kind": "type",
+          "from": null,
+          "original": null,
+          "line": 63
+        },
+        {
+          "name": "NodeStatus",
+          "kind": "type",
+          "from": null,
+          "original": null,
+          "line": 26
+        },
+        {
+          "name": "QueriesResponse",
+          "kind": "type",
+          "from": null,
+          "original": null,
+          "line": 106
+        },
+        {
+          "name": "RecentRequest",
+          "kind": "type",
+          "from": null,
+          "original": null,
+          "line": 89
+        },
+        {
+          "name": "Section",
+          "kind": "type",
+          "from": null,
+          "original": null,
+          "line": 11
+        },
+        {
+          "name": "SectionDetail",
+          "kind": "type",
+          "from": null,
+          "original": null,
+          "line": 5
+        },
+        {
+          "name": "StatusResponse",
+          "kind": "type",
+          "from": null,
+          "original": null,
+          "line": 56
+        },
+        {
+          "name": "TaskStatus",
+          "kind": "type",
+          "from": null,
+          "original": null,
+          "line": 49
+        },
+        {
+          "name": "TopStatement",
+          "kind": "type",
+          "from": null,
+          "original": null,
+          "line": 82
+        },
+        {
+          "name": "useClusterInfrastructure",
+          "kind": "function",
+          "from": null,
+          "original": null,
+          "line": 126
+        },
+        {
+          "name": "useClusterQueries",
+          "kind": "function",
+          "from": null,
+          "original": null,
+          "line": 141
+        },
+        {
+          "name": "useClusterStatus",
+          "kind": "function",
+          "from": null,
+          "original": null,
+          "line": 115
+        }
+      ],
+      "starReexports": []
+    },
+    {
       "path": "packages/app/src/components/AISummarizeButton.tsx",
       "workspace": "@couchbase-traces/app",
       "test": false,
@@ -82067,6 +83404,10 @@
               "local": "IconChartDots"
             },
             {
+              "imported": "IconDatabase",
+              "local": "IconDatabase"
+            },
+            {
               "imported": "IconDeviceFloppy",
               "local": "IconDeviceFloppy"
             },
@@ -82077,6 +83418,10 @@
             {
               "imported": "IconLayoutGrid",
               "local": "IconLayoutGrid"
+            },
+            {
+              "imported": "IconServer",
+              "local": "IconServer"
             },
             {
               "imported": "IconSettings",
@@ -82091,7 +83436,7 @@
               "local": "IconTable"
             }
           ],
-          "line": 19
+          "line": 21
         },
         {
           "specifier": "@/api",
@@ -82105,7 +83450,7 @@
               "local": "api"
             }
           ],
-          "line": 21
+          "line": 23
         },
         {
           "specifier": "@/brand",
@@ -82123,7 +83468,7 @@
               "local": "useWordmark"
             }
           ],
-          "line": 22
+          "line": 24
         },
         {
           "specifier": "@/components/AlertStatusIcon",
@@ -82137,7 +83482,7 @@
               "local": "AlertStatusIcon"
             }
           ],
-          "line": 23
+          "line": 25
         },
         {
           "specifier": "@/components/AppNav/InstanceLabel",
@@ -82151,7 +83496,7 @@
               "local": "InstanceLabel"
             }
           ],
-          "line": 24
+          "line": 26
         },
         {
           "specifier": "@/components/AppNav/useMobileNavOverlay",
@@ -82165,7 +83510,7 @@
               "local": "useMobileNavOverlay"
             }
           ],
-          "line": 25
+          "line": 27
         },
         {
           "specifier": "@/components/CompactViewport/useCompactViewport",
@@ -82179,7 +83524,7 @@
               "local": "useCompactViewport"
             }
           ],
-          "line": 26
+          "line": 28
         },
         {
           "specifier": "@/config",
@@ -82197,7 +83542,25 @@
               "local": "IS_LOCAL_MODE"
             }
           ],
-          "line": 27
+          "line": 29
+        },
+        {
+          "specifier": "@/connection",
+          "target": "packages/app/src/connection.ts",
+          "external": null,
+          "kind": "static",
+          "typeOnly": false,
+          "bindings": [
+            {
+              "imported": "dataStoreLinks",
+              "local": "dataStoreLinks"
+            },
+            {
+              "imported": "useConnections",
+              "local": "useConnections"
+            }
+          ],
+          "line": 30
         },
         {
           "specifier": "@/dashboard",
@@ -82215,7 +83578,7 @@
               "local": "useDashboards"
             }
           ],
-          "line": 28
+          "line": 31
         },
         {
           "specifier": "@/favorites",
@@ -82229,7 +83592,7 @@
               "local": "useFavorites"
             }
           ],
-          "line": 29
+          "line": 32
         },
         {
           "specifier": "@/hdxDebug",
@@ -82243,7 +83606,7 @@
               "local": "setHdxIdentity"
             }
           ],
-          "line": 30
+          "line": 33
         },
         {
           "specifier": "@/InstallInstructionsModal",
@@ -82257,7 +83620,7 @@
               "local": "InstallInstructionModal"
             }
           ],
-          "line": 31
+          "line": 34
         },
         {
           "specifier": "@/OnboardingChecklist",
@@ -82271,7 +83634,7 @@
               "local": "OnboardingChecklist"
             }
           ],
-          "line": 32
+          "line": 35
         },
         {
           "specifier": "@/savedSearch",
@@ -82285,7 +83648,7 @@
               "local": "useSavedSearches"
             }
           ],
-          "line": 33
+          "line": 36
         },
         {
           "specifier": "@/timeZone",
@@ -82299,7 +83662,7 @@
               "local": "getTimeZoneShortName"
             }
           ],
-          "line": 34
+          "line": 37
         },
         {
           "specifier": "@/useDisplayTimeZone",
@@ -82313,7 +83676,7 @@
               "local": "useDisplayTimeZone"
             }
           ],
-          "line": 35
+          "line": 38
         },
         {
           "specifier": "@/UserPreferencesModal",
@@ -82327,7 +83690,7 @@
               "local": "UserPreferencesModal"
             }
           ],
-          "line": 36
+          "line": 39
         },
         {
           "specifier": "./AppNav.components",
@@ -82353,7 +83716,7 @@
               "local": "AppNavUserMenu"
             }
           ],
-          "line": 43
+          "line": 46
         },
         {
           "specifier": "./AppNavFeedback",
@@ -82367,7 +83730,7 @@
               "local": "AppNavFeedback"
             }
           ],
-          "line": 44
+          "line": 47
         },
         {
           "specifier": "./AppNav.module.scss",
@@ -82381,7 +83744,7 @@
               "local": "styles"
             }
           ],
-          "line": 46
+          "line": 49
         }
       ],
       "exports": [
@@ -82390,7 +83753,7 @@
           "kind": "function",
           "from": null,
           "original": null,
-          "line": 96
+          "line": 99
         }
       ],
       "starReexports": []
@@ -89098,11 +90461,15 @@
               "local": "InputControlled"
             },
             {
+              "imported": "PasswordInputControlled",
+              "local": "PasswordInputControlled"
+            },
+            {
               "imported": "TextInputControlled",
               "local": "TextInputControlled"
             }
           ],
-          "line": 19
+          "line": 20
         }
       ],
       "exports": [
@@ -89111,21 +90478,21 @@
           "kind": "const",
           "from": null,
           "original": null,
-          "line": 35
+          "line": 39
         },
         {
           "name": "ConnectionFormValues",
           "kind": "type",
           "from": null,
           "original": null,
-          "line": 22
+          "line": 23
         },
         {
           "name": "CouchbaseConnectionFields",
           "kind": "function",
           "from": null,
           "original": null,
-          "line": 51
+          "line": 55
         }
       ],
       "starReexports": []
@@ -114624,6 +115991,24 @@
           "line": 50
         },
         {
+          "specifier": "@/connection",
+          "target": "packages/app/src/connection.ts",
+          "external": null,
+          "kind": "static",
+          "typeOnly": false,
+          "bindings": [
+            {
+              "imported": "dataStoreLinks",
+              "local": "dataStoreLinks"
+            },
+            {
+              "imported": "useConnections",
+              "local": "useConnections"
+            }
+          ],
+          "line": 51
+        },
+        {
           "specifier": "@/dashboard",
           "target": "packages/app/src/dashboard.ts",
           "external": null,
@@ -114647,7 +116032,7 @@
               "local": "useDeleteDashboard"
             }
           ],
-          "line": 56
+          "line": 57
         },
         {
           "specifier": "@/favorites",
@@ -114661,7 +116046,7 @@
               "local": "useFavorites"
             }
           ],
-          "line": 57
+          "line": 58
         },
         {
           "specifier": "@/layout",
@@ -114675,7 +116060,7 @@
               "local": "withAppNav"
             }
           ],
-          "line": 58
+          "line": 59
         },
         {
           "specifier": "@/useConfirm",
@@ -114689,7 +116074,7 @@
               "local": "useConfirm"
             }
           ],
-          "line": 59
+          "line": 60
         }
       ],
       "exports": [
@@ -114698,7 +116083,7 @@
           "kind": "function",
           "from": null,
           "original": null,
-          "line": 99
+          "line": 119
         }
       ],
       "starReexports": []
@@ -115008,6 +116393,15 @@
           "typeOnly": false,
           "bindings": [],
           "line": 80
+        },
+        {
+          "specifier": "@/connection",
+          "target": "packages/app/src/connection.ts",
+          "external": null,
+          "kind": "mock",
+          "typeOnly": false,
+          "bindings": [],
+          "line": 83
         }
       ],
       "exports": [],
@@ -165564,21 +166958,21 @@
           "kind": "type",
           "from": null,
           "original": null,
-          "line": 186
+          "line": 199
         },
         {
           "name": "ConnectionTestRequest",
           "kind": "type",
           "from": null,
           "original": null,
-          "line": 144
+          "line": 157
         },
         {
           "name": "ConnectionTestResult",
           "kind": "type",
           "from": null,
           "original": null,
-          "line": 142
+          "line": 155
         },
         {
           "name": "LOCAL_STORE_CONNECTIONS_KEY",
@@ -165586,6 +166980,13 @@
           "from": null,
           "original": null,
           "line": 11
+        },
+        {
+          "name": "dataStoreLinks",
+          "kind": "function",
+          "from": null,
+          "original": null,
+          "line": 44
         },
         {
           "name": "getLocalConnections",
@@ -165599,49 +167000,49 @@
           "kind": "function",
           "from": null,
           "original": null,
-          "line": 158
+          "line": 171
         },
         {
           "name": "useConnections",
           "kind": "function",
           "from": null,
           "original": null,
-          "line": 44
+          "line": 57
         },
         {
           "name": "useCreateConnection",
           "kind": "function",
           "from": null,
           "original": null,
-          "line": 57
+          "line": 70
         },
         {
           "name": "useDeleteConnection",
           "kind": "function",
           "from": null,
           "original": null,
-          "line": 215
+          "line": 228
         },
         {
           "name": "useTestConnectionByKind",
           "kind": "function",
           "from": null,
           "original": null,
-          "line": 180
+          "line": 193
         },
         {
           "name": "useTestCouchbaseCollection",
           "kind": "function",
           "from": null,
           "original": null,
-          "line": 190
+          "line": 203
         },
         {
           "name": "useUpdateConnection",
           "kind": "function",
           "from": null,
           "original": null,
-          "line": 106
+          "line": 119
         }
       ],
       "starReexports": []
@@ -195814,6 +197215,33 @@
       "starReexports": []
     },
     {
+      "path": "packages/app/tests/e2e/features/couchbase-cluster.spec.ts",
+      "workspace": "@couchbase-traces/app",
+      "test": true,
+      "imports": [
+        {
+          "specifier": "@playwright/test",
+          "target": null,
+          "external": "@playwright/test",
+          "kind": "static",
+          "typeOnly": false,
+          "bindings": [
+            {
+              "imported": "expect",
+              "local": "expect"
+            },
+            {
+              "imported": "test",
+              "local": "test"
+            }
+          ],
+          "line": 1
+        }
+      ],
+      "exports": [],
+      "starReexports": []
+    },
+    {
       "path": "packages/app/tests/e2e/features/dashboard-adhoc-click-filters.spec.ts",
       "workspace": "@couchbase-traces/app",
       "test": true,
@@ -218574,6 +220002,57 @@
       "starReexports": []
     },
     {
+      "path": "packages/common-utils/src/couchbase/__tests__/cluster.test.ts",
+      "workspace": "@couchbase-traces/common-utils",
+      "test": true,
+      "imports": [
+        {
+          "specifier": "@/couchbase/cluster",
+          "target": "packages/common-utils/src/couchbase/cluster.ts",
+          "external": null,
+          "kind": "static",
+          "typeOnly": false,
+          "bindings": [
+            {
+              "imported": "activeRequestsQuery",
+              "local": "activeRequestsQuery"
+            },
+            {
+              "imported": "bucketWidthMs",
+              "local": "bucketWidthMs"
+            },
+            {
+              "imported": "completedOverTimeQuery",
+              "local": "completedOverTimeQuery"
+            },
+            {
+              "imported": "indexesQuery",
+              "local": "indexesQuery"
+            },
+            {
+              "imported": "mapActiveRequest",
+              "local": "mapActiveRequest"
+            },
+            {
+              "imported": "mapCompletedBucket",
+              "local": "mapCompletedBucket"
+            },
+            {
+              "imported": "recentRequestsQuery",
+              "local": "recentRequestsQuery"
+            },
+            {
+              "imported": "topStatementsQuery",
+              "local": "topStatementsQuery"
+            }
+          ],
+          "line": 10
+        }
+      ],
+      "exports": [],
+      "starReexports": []
+    },
+    {
       "path": "packages/common-utils/src/couchbase/__tests__/connstr.test.ts",
       "workspace": "@couchbase-traces/common-utils",
       "test": true,
@@ -218794,6 +220273,29 @@
             }
           ],
           "line": 8
+        }
+      ],
+      "exports": [],
+      "starReexports": []
+    },
+    {
+      "path": "packages/common-utils/src/couchbase/__tests__/management.test.ts",
+      "workspace": "@couchbase-traces/common-utils",
+      "test": true,
+      "imports": [
+        {
+          "specifier": "@/couchbase/management",
+          "target": "packages/common-utils/src/couchbase/management.ts",
+          "external": null,
+          "kind": "static",
+          "typeOnly": false,
+          "bindings": [
+            {
+              "imported": "managementBaseUrl",
+              "local": "managementBaseUrl"
+            }
+          ],
+          "line": 1
         }
       ],
       "exports": [],
@@ -219205,6 +220707,153 @@
       "starReexports": []
     },
     {
+      "path": "packages/common-utils/src/couchbase/cluster.ts",
+      "workspace": "@couchbase-traces/common-utils",
+      "test": false,
+      "imports": [
+        {
+          "specifier": "./sqlpp",
+          "target": "packages/common-utils/src/couchbase/sqlpp.ts",
+          "external": null,
+          "kind": "static",
+          "typeOnly": false,
+          "bindings": [
+            {
+              "imported": "SqlPP",
+              "local": "SqlPP"
+            },
+            {
+              "imported": "sqlpp",
+              "local": "sqlpp"
+            }
+          ],
+          "line": 1
+        }
+      ],
+      "exports": [
+        {
+          "name": "ActiveRequestRow",
+          "kind": "type",
+          "from": null,
+          "original": null,
+          "line": 8
+        },
+        {
+          "name": "COMPLETED_REQUESTS_NOTE",
+          "kind": "const",
+          "from": null,
+          "original": null,
+          "line": 3
+        },
+        {
+          "name": "CompletedBucket",
+          "kind": "type",
+          "from": null,
+          "original": null,
+          "line": 17
+        },
+        {
+          "name": "IndexRow",
+          "kind": "type",
+          "from": null,
+          "original": null,
+          "line": 35
+        },
+        {
+          "name": "RecentRequestRow",
+          "kind": "type",
+          "from": null,
+          "original": null,
+          "line": 26
+        },
+        {
+          "name": "TopStatementRow",
+          "kind": "type",
+          "from": null,
+          "original": null,
+          "line": 19
+        },
+        {
+          "name": "activeRequestsQuery",
+          "kind": "function",
+          "from": null,
+          "original": null,
+          "line": 54
+        },
+        {
+          "name": "bucketWidthMs",
+          "kind": "function",
+          "from": null,
+          "original": null,
+          "line": 44
+        },
+        {
+          "name": "completedOverTimeQuery",
+          "kind": "function",
+          "from": null,
+          "original": null,
+          "line": 58
+        },
+        {
+          "name": "indexesQuery",
+          "kind": "function",
+          "from": null,
+          "original": null,
+          "line": 75
+        },
+        {
+          "name": "mapActiveRequest",
+          "kind": "function",
+          "from": null,
+          "original": null,
+          "line": 108
+        },
+        {
+          "name": "mapCompletedBucket",
+          "kind": "function",
+          "from": null,
+          "original": null,
+          "line": 120
+        },
+        {
+          "name": "mapIndex",
+          "kind": "function",
+          "from": null,
+          "original": null,
+          "line": 149
+        },
+        {
+          "name": "mapRecentRequest",
+          "kind": "function",
+          "from": null,
+          "original": null,
+          "line": 137
+        },
+        {
+          "name": "mapTopStatement",
+          "kind": "function",
+          "from": null,
+          "original": null,
+          "line": 127
+        },
+        {
+          "name": "recentRequestsQuery",
+          "kind": "function",
+          "from": null,
+          "original": null,
+          "line": 71
+        },
+        {
+          "name": "topStatementsQuery",
+          "kind": "function",
+          "from": null,
+          "original": null,
+          "line": 67
+        }
+      ],
+      "starReexports": []
+    },
+    {
       "path": "packages/common-utils/src/couchbase/connstr.ts",
       "workspace": "@couchbase-traces/common-utils",
       "test": false,
@@ -219439,6 +221088,62 @@
           "from": null,
           "original": null,
           "line": 101
+        }
+      ],
+      "starReexports": []
+    },
+    {
+      "path": "packages/common-utils/src/couchbase/management.ts",
+      "workspace": "@couchbase-traces/common-utils",
+      "test": false,
+      "imports": [
+        {
+          "specifier": "./connstr",
+          "target": "packages/common-utils/src/couchbase/connstr.ts",
+          "external": null,
+          "kind": "static",
+          "typeOnly": false,
+          "bindings": [
+            {
+              "imported": "ConnStrError",
+              "local": "ConnStrError"
+            },
+            {
+              "imported": "parseConnStr",
+              "local": "parseConnStr"
+            }
+          ],
+          "line": 1
+        },
+        {
+          "specifier": "./nodeCluster",
+          "target": "packages/common-utils/src/couchbase/nodeCluster.ts",
+          "external": null,
+          "kind": "static",
+          "typeOnly": true,
+          "bindings": [
+            {
+              "imported": "CouchbaseConnectionConfig",
+              "local": "CouchbaseConnectionConfig"
+            }
+          ],
+          "line": 2
+        }
+      ],
+      "exports": [
+        {
+          "name": "ManagementTarget",
+          "kind": "type",
+          "from": null,
+          "original": null,
+          "line": 4
+        },
+        {
+          "name": "managementBaseUrl",
+          "kind": "function",
+          "from": null,
+          "original": null,
+          "line": 32
         }
       ],
       "starReexports": []
@@ -224103,7 +225808,7 @@
           "kind": "type",
           "from": null,
           "original": null,
-          "line": 3109
+          "line": 3115
         },
         {
           "name": "ALERT_EVALUATION_GROUPS_LIMIT",
@@ -224229,7 +225934,7 @@
           "kind": "type",
           "from": null,
           "original": null,
-          "line": 2760
+          "line": 2766
         },
         {
           "name": "Alert",
@@ -224243,14 +225948,14 @@
           "kind": "type",
           "from": null,
           "original": null,
-          "line": 3222
+          "line": 3228
         },
         {
           "name": "AlertApiResponseSchema",
           "kind": "const",
           "from": null,
           "original": null,
-          "line": 3218
+          "line": 3224
         },
         {
           "name": "AlertBaseObjectSchema",
@@ -224327,42 +226032,42 @@
           "kind": "type",
           "from": null,
           "original": null,
-          "line": 3253
+          "line": 3259
         },
         {
           "name": "AlertEvaluationGroup",
           "kind": "type",
           "from": null,
           "original": null,
-          "line": 3243
+          "line": 3249
         },
         {
           "name": "AlertEvaluationGroupSchema",
           "kind": "const",
           "from": null,
           "original": null,
-          "line": 3233
+          "line": 3239
         },
         {
           "name": "AlertEvaluationSchema",
           "kind": "const",
           "from": null,
           "original": null,
-          "line": 3247
+          "line": 3253
         },
         {
           "name": "AlertEvaluationsApiResponse",
           "kind": "type",
           "from": null,
           "original": null,
-          "line": 3272
+          "line": 3278
         },
         {
           "name": "AlertEvaluationsApiResponseSchema",
           "kind": "const",
           "from": null,
           "original": null,
-          "line": 3257
+          "line": 3263
         },
         {
           "name": "AlertHistory",
@@ -224390,14 +226095,14 @@
           "kind": "type",
           "from": null,
           "original": null,
-          "line": 3228
+          "line": 3234
         },
         {
           "name": "AlertHistoryRangeApiResponseSchema",
           "kind": "const",
           "from": null,
           "original": null,
-          "line": 3224
+          "line": 3230
         },
         {
           "name": "AlertHistorySchema",
@@ -224481,49 +226186,49 @@
           "kind": "type",
           "from": null,
           "original": null,
-          "line": 3216
+          "line": 3222
         },
         {
           "name": "AlertsApiResponseSchema",
           "kind": "const",
           "from": null,
           "original": null,
-          "line": 3204
+          "line": 3210
         },
         {
           "name": "AlertsPageItem",
           "kind": "type",
           "from": null,
           "original": null,
-          "line": 3202
+          "line": 3208
         },
         {
           "name": "AlertsPageItemSchema",
           "kind": "const",
           "from": null,
           "original": null,
-          "line": 3136
+          "line": 3142
         },
         {
           "name": "AssistantLineTableConfigSchema",
           "kind": "const",
           "from": null,
           "original": null,
-          "line": 3022
+          "line": 3028
         },
         {
           "name": "AssistantResponseConfig",
           "kind": "const",
           "from": null,
           "original": null,
-          "line": 3114
+          "line": 3120
         },
         {
           "name": "AssistantResponseConfigSchema",
           "kind": "type",
           "from": null,
           "original": null,
-          "line": 3120
+          "line": 3126
         },
         {
           "name": "BackgroundChart",
@@ -224544,7 +226249,7 @@
           "kind": "const",
           "from": null,
           "original": null,
-          "line": 2716
+          "line": 2722
         },
         {
           "name": "BroadcastFilter",
@@ -224684,7 +226389,7 @@
           "kind": "type",
           "from": null,
           "original": null,
-          "line": 2617
+          "line": 2623
         },
         {
           "name": "ClickHouseConnectionSchema",
@@ -224712,14 +226417,14 @@
           "kind": "type",
           "from": null,
           "original": null,
-          "line": 3453
+          "line": 3459
         },
         {
           "name": "CompleteOnboardingTaskApiBodySchema",
           "kind": "const",
           "from": null,
           "original": null,
-          "line": 3449
+          "line": 3455
         },
         {
           "name": "ConditionFilter",
@@ -224740,7 +226445,7 @@
           "kind": "type",
           "from": null,
           "original": null,
-          "line": 2622
+          "line": 2628
         },
         {
           "name": "ConnectionBaseSchema",
@@ -224754,35 +226459,35 @@
           "kind": "type",
           "from": null,
           "original": null,
-          "line": 2623
+          "line": 2629
         },
         {
           "name": "ConnectionNoId",
           "kind": "type",
           "from": null,
           "original": null,
-          "line": 2624
+          "line": 2630
         },
         {
           "name": "ConnectionSchema",
           "kind": "const",
           "from": null,
           "original": null,
-          "line": 2599
+          "line": 2605
         },
         {
           "name": "ConnectionSchemaNoId",
           "kind": "const",
           "from": null,
           "original": null,
-          "line": 2607
+          "line": 2613
         },
         {
           "name": "CouchbaseConnection",
           "kind": "type",
           "from": null,
           "original": null,
-          "line": 2621
+          "line": 2627
         },
         {
           "name": "CouchbaseConnectionSchema",
@@ -224796,28 +226501,28 @@
           "kind": "type",
           "from": null,
           "original": null,
-          "line": 3536
+          "line": 3542
         },
         {
           "name": "CreateOrgApiKeyApiResponseSchema",
           "kind": "const",
           "from": null,
           "original": null,
-          "line": 3534
+          "line": 3540
         },
         {
           "name": "CreateOrgApiKeyRequest",
           "kind": "type",
           "from": null,
           "original": null,
-          "line": 3501
+          "line": 3507
         },
         {
           "name": "CreateOrgApiKeyRequestSchema",
           "kind": "const",
           "from": null,
           "original": null,
-          "line": 3497
+          "line": 3503
         },
         {
           "name": "CteChartConfig",
@@ -225020,14 +226725,14 @@
           "kind": "type",
           "from": null,
           "original": null,
-          "line": 3462
+          "line": 3468
         },
         {
           "name": "DismissOnboardingApiBodySchema",
           "kind": "const",
           "from": null,
           "original": null,
-          "line": 3458
+          "line": 3464
         },
         {
           "name": "DisplayType",
@@ -225090,28 +226795,28 @@
           "kind": "type",
           "from": null,
           "original": null,
-          "line": 3602
+          "line": 3608
         },
         {
           "name": "IacImportManifestSchema",
           "kind": "const",
           "from": null,
           "original": null,
-          "line": 3554
+          "line": 3560
         },
         {
           "name": "InstallationApiResponse",
           "kind": "type",
           "from": null,
           "original": null,
-          "line": 3382
+          "line": 3388
         },
         {
           "name": "InstallationApiResponseSchema",
           "kind": "const",
           "from": null,
           "original": null,
-          "line": 3378
+          "line": 3384
         },
         {
           "name": "InternalAggregateFunction",
@@ -225174,7 +226879,7 @@
           "kind": "const",
           "from": null,
           "original": null,
-          "line": 2793
+          "line": 2799
         },
         {
           "name": "MAX_ALERT_CHANNELS",
@@ -225223,42 +226928,42 @@
           "kind": "type",
           "from": null,
           "original": null,
-          "line": 2778
+          "line": 2784
         },
         {
           "name": "MaterializedViewConfigurationSchema",
           "kind": "const",
           "from": null,
           "original": null,
-          "line": 2764
+          "line": 2770
         },
         {
           "name": "MeApiResponse",
           "kind": "type",
           "from": null,
           "original": null,
-          "line": 3446
+          "line": 3452
         },
         {
           "name": "MeApiResponseSchema",
           "kind": "const",
           "from": null,
           "original": null,
-          "line": 3430
+          "line": 3436
         },
         {
           "name": "MetadataMaterializedViews",
           "kind": "type",
           "from": null,
           "original": null,
-          "line": 2788
+          "line": 2794
         },
         {
           "name": "MetadataMaterializedViewsSchema",
           "kind": "const",
           "from": null,
           "original": null,
-          "line": 2782
+          "line": 2788
         },
         {
           "name": "MetricFormula",
@@ -225279,7 +226984,7 @@
           "kind": "const",
           "from": null,
           "original": null,
-          "line": 2925
+          "line": 2931
         },
         {
           "name": "MetricTable",
@@ -225314,7 +227019,7 @@
           "kind": "const",
           "from": null,
           "original": null,
-          "line": 2919
+          "line": 2925
         },
         {
           "name": "NumberFormat",
@@ -225356,7 +227061,7 @@
           "kind": "const",
           "from": null,
           "original": null,
-          "line": 3392
+          "line": 3398
         },
         {
           "name": "OnClick",
@@ -225454,77 +227159,77 @@
           "kind": "type",
           "from": null,
           "original": null,
-          "line": 3427
+          "line": 3433
         },
         {
           "name": "OnboardingDataApiResponse",
           "kind": "type",
           "from": null,
           "original": null,
-          "line": 3472
+          "line": 3478
         },
         {
           "name": "OnboardingDataApiResponseSchema",
           "kind": "const",
           "from": null,
           "original": null,
-          "line": 3468
+          "line": 3474
         },
         {
           "name": "OnboardingDataSchema",
           "kind": "const",
           "from": null,
           "original": null,
-          "line": 3412
+          "line": 3418
         },
         {
           "name": "OnboardingTaskId",
           "kind": "type",
           "from": null,
           "original": null,
-          "line": 3399
+          "line": 3405
         },
         {
           "name": "OrgApiKeyApiResponse",
           "kind": "type",
           "from": null,
           "original": null,
-          "line": 3527
+          "line": 3533
         },
         {
           "name": "OrgApiKeyApiResponseSchema",
           "kind": "const",
           "from": null,
           "original": null,
-          "line": 3512
+          "line": 3518
         },
         {
           "name": "OrgApiKeyExpiry",
           "kind": "type",
           "from": null,
           "original": null,
-          "line": 3493
+          "line": 3499
         },
         {
           "name": "OrgApiKeyExpirySchema",
           "kind": "const",
           "from": null,
           "original": null,
-          "line": 3492
+          "line": 3498
         },
         {
           "name": "OrgApiKeysApiResponse",
           "kind": "type",
           "from": null,
           "original": null,
-          "line": 3532
+          "line": 3538
         },
         {
           "name": "OrgApiKeysApiResponseSchema",
           "kind": "const",
           "from": null,
           "original": null,
-          "line": 3529
+          "line": 3535
         },
         {
           "name": "PERCENTILE_AGG_FN_LEVELS",
@@ -225748,7 +227453,7 @@
           "kind": "const",
           "from": null,
           "original": null,
-          "line": 2949
+          "line": 2955
         },
         {
           "name": "QueryExpressionDashboardFilter",
@@ -225769,7 +227474,7 @@
           "kind": "type",
           "from": null,
           "original": null,
-          "line": 2709
+          "line": 2715
         },
         {
           "name": "RatioMode",
@@ -225818,28 +227523,28 @@
           "kind": "type",
           "from": null,
           "original": null,
-          "line": 3486
+          "line": 3492
         },
         {
           "name": "RotateAccessKeyApiResponseSchema",
           "kind": "const",
           "from": null,
           "original": null,
-          "line": 3482
+          "line": 3488
         },
         {
           "name": "RotateApiKeyApiResponse",
           "kind": "type",
           "from": null,
           "original": null,
-          "line": 3373
+          "line": 3379
         },
         {
           "name": "RotateApiKeyApiResponseSchema",
           "kind": "const",
           "from": null,
           "original": null,
-          "line": 3369
+          "line": 3375
         },
         {
           "name": "SEMANTIC_PALETTE_TOKENS",
@@ -225979,7 +227684,7 @@
           "kind": "const",
           "from": null,
           "original": null,
-          "line": 2894
+          "line": 2900
         },
         {
           "name": "SortSpecificationList",
@@ -226007,21 +227712,21 @@
           "kind": "enum",
           "from": null,
           "original": null,
-          "line": 2693
+          "line": 2699
         },
         {
           "name": "SourceSchema",
           "kind": "const",
           "from": null,
           "original": null,
-          "line": 2955
+          "line": 2961
         },
         {
           "name": "SourceSchemaNoId",
           "kind": "const",
           "from": null,
           "original": null,
-          "line": 2964
+          "line": 2970
         },
         {
           "name": "SqlAstFilter",
@@ -226084,49 +227789,49 @@
           "kind": "type",
           "from": null,
           "original": null,
-          "line": 2974
+          "line": 2980
         },
         {
           "name": "TMetricSource",
           "kind": "type",
           "from": null,
           "original": null,
-          "line": 2977
+          "line": 2983
         },
         {
           "name": "TPromqlSource",
           "kind": "type",
           "from": null,
           "original": null,
-          "line": 2978
+          "line": 2984
         },
         {
           "name": "TSessionSource",
           "kind": "type",
           "from": null,
           "original": null,
-          "line": 2976
+          "line": 2982
         },
         {
           "name": "TSource",
           "kind": "type",
           "from": null,
           "original": null,
-          "line": 2962
+          "line": 2968
         },
         {
           "name": "TSourceNoId",
           "kind": "type",
           "from": null,
           "original": null,
-          "line": 2971
+          "line": 2977
         },
         {
           "name": "TTraceSource",
           "kind": "type",
           "from": null,
           "original": null,
-          "line": 2975
+          "line": 2981
         },
         {
           "name": "TagResourceType",
@@ -226147,126 +227852,126 @@
           "kind": "type",
           "from": null,
           "original": null,
-          "line": 2688
+          "line": 2694
         },
         {
           "name": "TeamApiResponse",
           "kind": "type",
           "from": null,
           "original": null,
-          "line": 3317
+          "line": 3323
         },
         {
           "name": "TeamApiResponseSchema",
           "kind": "const",
           "from": null,
           "original": null,
-          "line": 3308
+          "line": 3314
         },
         {
           "name": "TeamClickHouseSettings",
           "kind": "type",
           "from": null,
           "original": null,
-          "line": 2672
+          "line": 2678
         },
         {
           "name": "TeamClickHouseSettingsSchema",
           "kind": "const",
           "from": null,
           "original": null,
-          "line": 2647
+          "line": 2653
         },
         {
           "name": "TeamClickHouseSettingsUpdate",
           "kind": "type",
           "from": null,
           "original": null,
-          "line": 2669
+          "line": 2675
         },
         {
           "name": "TeamClickHouseSettingsUpdateSchema",
           "kind": "const",
           "from": null,
           "original": null,
-          "line": 2659
+          "line": 2665
         },
         {
           "name": "TeamInvitation",
           "kind": "type",
           "from": null,
           "original": null,
-          "line": 3346
+          "line": 3352
         },
         {
           "name": "TeamInvitationSchema",
           "kind": "const",
           "from": null,
           "original": null,
-          "line": 3338
+          "line": 3344
         },
         {
           "name": "TeamInvitationsApiResponse",
           "kind": "type",
           "from": null,
           "original": null,
-          "line": 3352
+          "line": 3358
         },
         {
           "name": "TeamInvitationsApiResponseSchema",
           "kind": "const",
           "from": null,
           "original": null,
-          "line": 3348
+          "line": 3354
         },
         {
           "name": "TeamMember",
           "kind": "type",
           "from": null,
           "original": null,
-          "line": 3328
+          "line": 3334
         },
         {
           "name": "TeamMemberSchema",
           "kind": "const",
           "from": null,
           "original": null,
-          "line": 3319
+          "line": 3325
         },
         {
           "name": "TeamMembersApiResponse",
           "kind": "type",
           "from": null,
           "original": null,
-          "line": 3334
+          "line": 3340
         },
         {
           "name": "TeamMembersApiResponseSchema",
           "kind": "const",
           "from": null,
           "original": null,
-          "line": 3330
+          "line": 3336
         },
         {
           "name": "TeamSchema",
           "kind": "const",
           "from": null,
           "original": null,
-          "line": 2676
+          "line": 2682
         },
         {
           "name": "TeamTagsApiResponse",
           "kind": "type",
           "from": null,
           "original": null,
-          "line": 3360
+          "line": 3366
         },
         {
           "name": "TeamTagsApiResponseSchema",
           "kind": "const",
           "from": null,
           "original": null,
-          "line": 3356
+          "line": 3362
         },
         {
           "name": "Tile",
@@ -226294,42 +227999,42 @@
           "kind": "type",
           "from": null,
           "original": null,
-          "line": 2737
+          "line": 2743
         },
         {
           "name": "TraceSourceSchema",
           "kind": "const",
           "from": null,
           "original": null,
-          "line": 2849
+          "line": 2855
         },
         {
           "name": "UpdateClickHouseSettingsApiResponse",
           "kind": "type",
           "from": null,
           "original": null,
-          "line": 3365
+          "line": 3371
         },
         {
           "name": "UpdateClickHouseSettingsApiResponseSchema",
           "kind": "const",
           "from": null,
           "original": null,
-          "line": 3362
+          "line": 3368
         },
         {
           "name": "UpdateOrgApiKeyRequest",
           "kind": "type",
           "from": null,
           "original": null,
-          "line": 3508
+          "line": 3514
         },
         {
           "name": "UpdateOrgApiKeyRequestSchema",
           "kind": "const",
           "from": null,
           "original": null,
-          "line": 3505
+          "line": 3511
         },
         {
           "name": "UseTextIndex",
@@ -226378,14 +228083,14 @@
           "kind": "type",
           "from": null,
           "original": null,
-          "line": 3287
+          "line": 3293
         },
         {
           "name": "WebhookCreateApiResponseSchema",
           "kind": "const",
           "from": null,
           "original": null,
-          "line": 3283
+          "line": 3289
         },
         {
           "name": "WebhookSchema",
@@ -226413,42 +228118,42 @@
           "kind": "type",
           "from": null,
           "original": null,
-          "line": 3303
+          "line": 3309
         },
         {
           "name": "WebhookTestApiResponseSchema",
           "kind": "const",
           "from": null,
           "original": null,
-          "line": 3299
+          "line": 3305
         },
         {
           "name": "WebhookUpdateApiResponse",
           "kind": "type",
           "from": null,
           "original": null,
-          "line": 3295
+          "line": 3301
         },
         {
           "name": "WebhookUpdateApiResponseSchema",
           "kind": "const",
           "from": null,
           "original": null,
-          "line": 3291
+          "line": 3297
         },
         {
           "name": "WebhooksApiResponse",
           "kind": "type",
           "from": null,
           "original": null,
-          "line": 3281
+          "line": 3287
         },
         {
           "name": "WebhooksApiResponseSchema",
           "kind": "const",
           "from": null,
           "original": null,
-          "line": 3277
+          "line": 3283
         },
         {
           "name": "WithClauseSchema",
@@ -226525,7 +228230,7 @@
           "kind": "function",
           "from": null,
           "original": null,
-          "line": 3006
+          "line": 3012
         },
         {
           "name": "isChartPaletteToken",
@@ -226539,21 +228244,21 @@
           "kind": "function",
           "from": null,
           "original": null,
-          "line": 2628
+          "line": 2634
         },
         {
           "name": "isLogSource",
           "kind": "function",
           "from": null,
           "original": null,
-          "line": 2981
+          "line": 2987
         },
         {
           "name": "isMetricSource",
           "kind": "function",
           "from": null,
           "original": null,
-          "line": 2990
+          "line": 2996
         },
         {
           "name": "isOnClickDashboardById",
@@ -226574,14 +228279,14 @@
           "kind": "function",
           "from": null,
           "original": null,
-          "line": 3406
+          "line": 3412
         },
         {
           "name": "isPromqlSource",
           "kind": "function",
           "from": null,
           "original": null,
-          "line": 2993
+          "line": 2999
         },
         {
           "name": "isRangeThresholdType",
@@ -226595,28 +228300,28 @@
           "kind": "function",
           "from": null,
           "original": null,
-          "line": 2996
+          "line": 3002
         },
         {
           "name": "isSessionSource",
           "kind": "function",
           "from": null,
           "original": null,
-          "line": 2987
+          "line": 2993
         },
         {
           "name": "isTraceSource",
           "kind": "function",
           "from": null,
           "original": null,
-          "line": 2984
+          "line": 2990
         },
         {
           "name": "pickSampleWeightExpressionProps",
           "kind": "function",
           "from": null,
           "original": null,
-          "line": 3015
+          "line": 3021
         },
         {
           "name": "resolveChartPaletteToken",
@@ -226672,7 +228377,7 @@
           "kind": "function",
           "from": null,
           "original": null,
-          "line": 2591
+          "line": 2597
         },
         {
           "name": "zAlertChannel",
@@ -237684,14 +239389,14 @@
           "kind": "function",
           "from": null,
           "original": null,
-          "line": 124
+          "line": 125
         },
         {
           "name": "writeDocs",
           "kind": "function",
           "from": null,
           "original": null,
-          "line": 134
+          "line": 135
         }
       ],
       "starReexports": []
@@ -237984,14 +239689,14 @@
           "kind": "function",
           "from": null,
           "original": null,
-          "line": 25
+          "line": 32
         },
         {
           "name": "ensureUsers",
           "kind": "function",
           "from": null,
           "original": null,
-          "line": 31
+          "line": 38
         }
       ],
       "starReexports": []

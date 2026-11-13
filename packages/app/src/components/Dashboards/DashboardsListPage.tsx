@@ -48,6 +48,7 @@ import { ListingCard } from '@/components/ListingCard';
 import { ListingRow } from '@/components/ListingListRow';
 import { PageHeader } from '@/components/PageHeader';
 import { IS_K8S_DASHBOARD_ENABLED } from '@/config';
+import { dataStoreLinks, useConnections } from '@/connection';
 import {
   type Dashboard,
   useCreateDashboard,
@@ -69,35 +70,56 @@ function emptyStateTitle(tab: DashboardTab, hasFilters: boolean): string {
   return 'No dashboards yet';
 }
 
-const PRESET_DASHBOARDS = [
-  {
-    name: 'Services',
-    href: '/services',
-    description: 'Monitor HTTP endpoints, latency, and error rates',
-  },
-  {
-    name: 'ClickHouse',
-    href: '/clickhouse',
-    description: 'ClickHouse cluster health and query performance',
-  },
-  ...(IS_K8S_DASHBOARD_ENABLED
-    ? [
-        {
-          name: 'Kubernetes',
-          href: '/kubernetes',
-          description: 'Kubernetes cluster monitoring and pod health',
-        },
-      ]
-    : []),
-  {
-    name: 'LLM',
-    href: '/llm',
-    description: 'LLM calls, token usage, cost, and latency by model',
-  },
-];
+function presetDashboards(links: {
+  hasCouchbase: boolean;
+  hasClickHouse: boolean;
+}) {
+  return [
+    {
+      name: 'Services',
+      href: '/services',
+      description: 'Monitor HTTP endpoints, latency, and error rates',
+    },
+    ...(links.hasClickHouse
+      ? [
+          {
+            name: 'ClickHouse',
+            href: '/clickhouse',
+            description: 'ClickHouse cluster health and query performance',
+          },
+        ]
+      : []),
+    ...(links.hasCouchbase
+      ? [
+          {
+            name: 'Cluster',
+            href: '/cluster',
+            description:
+              'Couchbase query activity, infrastructure metrics, and cluster status',
+          },
+        ]
+      : []),
+    ...(IS_K8S_DASHBOARD_ENABLED
+      ? [
+          {
+            name: 'Kubernetes',
+            href: '/kubernetes',
+            description: 'Kubernetes cluster monitoring and pod health',
+          },
+        ]
+      : []),
+    {
+      name: 'LLM',
+      href: '/llm',
+      description: 'LLM calls, token usage, cost, and latency by model',
+    },
+  ];
+}
 
 export default function DashboardsListPage() {
   const title = usePageTitle('Dashboards');
+  const { data: connections } = useConnections();
+  const presets = presetDashboards(dataStoreLinks(connections));
   const { data: dashboards, isLoading, isError } = useDashboards();
   const { data: me, isPending: isMePending } = api.useMe();
   const confirm = useConfirm();
@@ -283,7 +305,7 @@ export default function DashboardsListPage() {
           Preset Dashboards
         </Text>
         <SimpleGrid cols={{ base: 1, sm: 2, md: 3, lg: 4 }} mb="sm">
-          {PRESET_DASHBOARDS.map(p => (
+          {presets.map(p => (
             <ListingCard key={p.href} {...p} />
           ))}
         </SimpleGrid>

@@ -123,6 +123,7 @@ describe('features', () => {
       },
     };
     const target = file.features[0];
+    target.status = 'ported';
     const replaced = {
       id: 'old-page',
       name: 'Old page',
@@ -140,6 +141,11 @@ describe('features', () => {
     };
     file.features.push(dropped, replaced);
     assert.deepEqual(validateFeatures(file, r.entry.entryPoints), []);
+
+    target.status = 'not_started';
+    const notPorted = validateFeatures(file, r.entry.entryPoints);
+    assert.ok(notPorted.some(e => e.includes('must be a ported feature')));
+    target.status = 'ported';
 
     replaced.decision.replacedBy = 'missing-feature';
     const errs = validateFeatures(file, r.entry.entryPoints);

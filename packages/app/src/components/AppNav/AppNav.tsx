@@ -10,9 +10,11 @@ import { useDisclosure, useFocusTrap, useLocalStorage } from '@mantine/hooks';
 import {
   IconBell,
   IconChartDots,
+  IconDatabase,
   IconDeviceFloppy,
   IconDeviceLaptop,
   IconLayoutGrid,
+  IconServer,
   IconSettings,
   IconSitemap,
   IconTable,
@@ -25,6 +27,7 @@ import { InstanceLabel } from '@/components/AppNav/InstanceLabel';
 import { useMobileNavOverlay } from '@/components/AppNav/useMobileNavOverlay';
 import { useCompactViewport } from '@/components/CompactViewport/useCompactViewport';
 import { APP_VERSION, IS_LOCAL_MODE } from '@/config';
+import { dataStoreLinks, useConnections } from '@/connection';
 import { Dashboard, useDashboards } from '@/dashboard';
 import { useFavorites } from '@/favorites';
 import { setHdxIdentity } from '@/hdxDebug';
@@ -96,6 +99,8 @@ const NAV_LINKS: NavLinkConfig[] = [
 export default function AppNav({ fixed = false }: { fixed?: boolean }) {
   const wordmark = useWordmark();
   const logomark = useLogomark({ size: 22 });
+  const { data: navConnections } = useConnections();
+  const { hasCouchbase, hasClickHouse } = dataStoreLinks(navConnections);
 
   useEffect(() => {
     let redirectUrl;
@@ -309,6 +314,7 @@ export default function AppNav({ fixed = false }: { fixed?: boolean }) {
       pathname?.startsWith('/dashboards/') ||
       pathname === '/services' ||
       pathname === '/clickhouse' ||
+      pathname === '/cluster' ||
       pathname === '/kubernetes' ||
       pathname === '/llm';
 
@@ -488,6 +494,21 @@ export default function AppNav({ fixed = false }: { fixed?: boolean }) {
                   isBeta={link.isBeta}
                 />
               ),
+            )}
+
+            {hasCouchbase && (
+              <AppNavLink
+                label="Cluster"
+                href="/cluster"
+                icon={<IconServer size={16} />}
+              />
+            )}
+            {hasClickHouse && (
+              <AppNavLink
+                label="ClickHouse"
+                href="/clickhouse"
+                icon={<IconDatabase size={16} />}
+              />
             )}
 
             {/* Dashboards */}

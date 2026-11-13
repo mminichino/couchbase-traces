@@ -80,6 +80,20 @@ jest.mock('@/components/AlertStatusIcon', () => ({
 jest.mock('@/config', () => ({
   IS_K8S_DASHBOARD_ENABLED: false,
 }));
+jest.mock('@/connection', () => ({
+  useConnections: () => ({
+    data: [
+      {
+        id: '65f0c0c0c0c0c0c0c0c0c0c0',
+        name: 'Local ClickHouse',
+        kind: 'clickhouse',
+        host: 'http://localhost:8123',
+        username: 'default',
+      },
+    ],
+  }),
+  dataStoreLinks: () => ({ hasCouchbase: false, hasClickHouse: true }),
+}));
 
 function makeDashboard(
   partial: Partial<Dashboard> & { id: string },

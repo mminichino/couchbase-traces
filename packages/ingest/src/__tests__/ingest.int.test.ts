@@ -30,6 +30,8 @@ function env(): NodeJS.ProcessEnv {
     CBT_COUCHBASE_QUERY_PASSWORD: 'cbt-otel-query-password',
     CBT_COUCHBASE_INGEST_USER: 'cbt_otel_ingest',
     CBT_COUCHBASE_INGEST_PASSWORD: 'cbt-otel-ingest-password',
+    CBT_COUCHBASE_MONITOR_USER: 'cbt_otel_monitor',
+    CBT_COUCHBASE_MONITOR_PASSWORD: 'cbt-otel-monitor-password',
     CBT_COUCHBASE_BUCKET: 'otel',
     CBT_COUCHBASE_SCOPE: 'default',
     CBT_LOGS_TTL: '1h',

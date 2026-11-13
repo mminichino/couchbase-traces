@@ -355,6 +355,21 @@
       "decision": null
     },
     {
+      "id": "couchbase-cluster",
+      "name": "Couchbase cluster",
+      "area": "admin",
+      "visibility": "admin",
+      "description": "Shows Couchbase query activity, infrastructure metrics, and cluster status, with graceful handling where a managed service restricts access.",
+      "entryPoints": [
+        "api_route:GET /couchbase/cluster/:connectionId/infrastructure",
+        "api_route:GET /couchbase/cluster/:connectionId/queries",
+        "api_route:GET /couchbase/cluster/:connectionId/status",
+        "app_page:/cluster"
+      ],
+      "status": "ported",
+      "decision": null
+    },
+    {
       "id": "app-clickhouse",
       "name": "ClickHouse server dashboard",
       "area": "admin",
@@ -363,11 +378,12 @@
       "entryPoints": [
         "app_page:/clickhouse"
       ],
-      "status": "needs_decision",
+      "status": "replaced",
       "decision": {
-        "note": "Shows ClickHouse server health from system tables such as query_log and parts. Couchbase has no direct equivalent of these tables, so the dashboard needs a different data source or a sign-off to drop.",
-        "signedOffBy": null,
-        "date": null
+        "note": "Replaced by the Couchbase cluster page. The ClickHouse page is removed in Phase 10.",
+        "replacedBy": "couchbase-cluster",
+        "signedOffBy": "Michael",
+        "date": "2026-11-12"
       }
     },
     {

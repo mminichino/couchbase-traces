@@ -47,7 +47,7 @@
       "kind": "api_route",
       "key": "DELETE /api/v2/connections/:id",
       "file": "packages/api/src/routers/external-api/v2/connections.ts",
-      "line": 672,
+      "line": 722,
       "detail": {
         "method": "DELETE",
         "path": "/api/v2/connections/:id",
@@ -145,7 +145,7 @@
       "kind": "api_route",
       "key": "DELETE /connections/:id",
       "file": "packages/api/src/routers/api/connections.ts",
-      "line": 166,
+      "line": 180,
       "detail": {
         "method": "DELETE",
         "path": "/connections/:id",
@@ -383,7 +383,7 @@
       "kind": "api_route",
       "key": "GET /api/v2/connections",
       "file": "packages/api/src/routers/external-api/v2/connections.ts",
-      "line": 300,
+      "line": 333,
       "detail": {
         "method": "GET",
         "path": "/api/v2/connections",
@@ -397,7 +397,7 @@
       "kind": "api_route",
       "key": "GET /api/v2/connections/:id",
       "file": "packages/api/src/routers/external-api/v2/connections.ts",
-      "line": 383,
+      "line": 416,
       "detail": {
         "method": "GET",
         "path": "/api/v2/connections/:id",
@@ -571,6 +571,48 @@
         "path": "/connections",
         "localPath": "/",
         "routerFile": "packages/api/src/routers/api/connections.ts",
+        "mounted": true
+      }
+    },
+    {
+      "id": "api_route:GET /couchbase/cluster/:connectionId/infrastructure",
+      "kind": "api_route",
+      "key": "GET /couchbase/cluster/:connectionId/infrastructure",
+      "file": "packages/api/src/routers/api/couchbaseCluster.ts",
+      "line": 421,
+      "detail": {
+        "method": "GET",
+        "path": "/couchbase/cluster/:connectionId/infrastructure",
+        "localPath": "/:connectionId/infrastructure",
+        "routerFile": "packages/api/src/routers/api/couchbaseCluster.ts",
+        "mounted": true
+      }
+    },
+    {
+      "id": "api_route:GET /couchbase/cluster/:connectionId/queries",
+      "kind": "api_route",
+      "key": "GET /couchbase/cluster/:connectionId/queries",
+      "file": "packages/api/src/routers/api/couchbaseCluster.ts",
+      "line": 448,
+      "detail": {
+        "method": "GET",
+        "path": "/couchbase/cluster/:connectionId/queries",
+        "localPath": "/:connectionId/queries",
+        "routerFile": "packages/api/src/routers/api/couchbaseCluster.ts",
+        "mounted": true
+      }
+    },
+    {
+      "id": "api_route:GET /couchbase/cluster/:connectionId/status",
+      "kind": "api_route",
+      "key": "GET /couchbase/cluster/:connectionId/status",
+      "file": "packages/api/src/routers/api/couchbaseCluster.ts",
+      "line": 399,
+      "detail": {
+        "method": "GET",
+        "path": "/couchbase/cluster/:connectionId/status",
+        "localPath": "/:connectionId/status",
+        "routerFile": "packages/api/src/routers/api/couchbaseCluster.ts",
         "mounted": true
       }
     },
@@ -1083,7 +1125,7 @@
       "kind": "api_route",
       "key": "POST /api/v2/connections",
       "file": "packages/api/src/routers/external-api/v2/connections.ts",
-      "line": 453,
+      "line": 486,
       "detail": {
         "method": "POST",
         "path": "/api/v2/connections",
@@ -1531,7 +1573,7 @@
       "kind": "api_route",
       "key": "PUT /api/v2/connections/:id",
       "file": "packages/api/src/routers/external-api/v2/connections.ts",
-      "line": 548,
+      "line": 590,
       "detail": {
         "method": "PUT",
         "path": "/api/v2/connections/:id",
@@ -1601,7 +1643,7 @@
       "kind": "api_route",
       "key": "PUT /connections/:id",
       "file": "packages/api/src/routers/api/connections.ts",
-      "line": 81,
+      "line": 91,
       "detail": {
         "method": "PUT",
         "path": "/connections/:id",
@@ -1768,6 +1810,16 @@
       "line": null,
       "detail": {
         "route": "/clickhouse"
+      }
+    },
+    {
+      "id": "app_page:/cluster",
+      "kind": "app_page",
+      "key": "/cluster",
+      "file": "packages/app/pages/cluster.tsx",
+      "line": null,
+      "detail": {
+        "route": "/cluster"
       }
     },
     {

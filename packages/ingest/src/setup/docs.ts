@@ -83,6 +83,7 @@ export function renderDataModelMd(): string {
     '|---|---|',
     '| `CBT_COUCHBASE_QUERY_USER` | `query_select[otel]`, `query_system_catalog`, `fts_searcher[otel]` |',
     '| `CBT_COUCHBASE_INGEST_USER` | `data_writer[otel:default]`, `data_reader[otel:default]` |',
+    '| `CBT_COUCHBASE_MONITOR_USER` | `ro_admin` |',
     '| `CBT_COUCHBASE_ADMIN_USER` | cluster administrator, not created by setup |',
     '',
   );

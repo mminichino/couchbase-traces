@@ -20,6 +20,13 @@ const USERS = [
       `data_reader[${bucket}:${scope}]`,
     ],
   },
+  {
+    // Read-Only Admin covers GET /pools/default, /buckets, /tasks, and the
+    // statistics range API. external_stats_reader only allows /metrics.
+    userEnv: 'CBT_COUCHBASE_MONITOR_USER',
+    passwordEnv: 'CBT_COUCHBASE_MONITOR_PASSWORD',
+    roles: (_bucket: string, _scope: string) => ['ro_admin'],
+  },
 ] as const;
 
 export function capellaAccess(bucket: string, scope: string): string[] {
@@ -43,6 +50,9 @@ export async function ensureUsers(
       'skipped users (Capella: create these database access credentials)',
     );
     for (const line of capellaAccess(opts.bucket, opts.scope)) opts.log(line);
+    opts.log(
+      'A monitoring credential is optional. Cluster management APIs may be restricted on Capella.',
+    );
     return;
   }
   for (const user of USERS) {

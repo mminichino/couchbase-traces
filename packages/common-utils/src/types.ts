@@ -2585,6 +2585,12 @@ export const CouchbaseConnectionSchema = ConnectionBaseSchema.extend({
   wanProfile: z.boolean().optional(),
   // PEM; write-only like password
   tlsCaCertificate: z.string().optional(),
+  /** Optional management API user. Not used for queries. */
+  monitorUsername: z.string().optional(),
+  /** Write-only, like password. Omitted on update means unchanged. */
+  monitorPassword: z.string().optional(),
+  /** Management REST port. Default 8091 for couchbase:// and 18091 for couchbases://. Null clears it. */
+  managementPort: z.number().int().min(1).max(65535).nullish(),
 });
 
 /** Connections stored before `kind` existed are ClickHouse connections. */

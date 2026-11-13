@@ -35,6 +35,7 @@ const externalConnectionSchema = z.preprocess(
     CouchbaseConnectionSchema.omit({
       password: true,
       tlsCaCertificate: true,
+      monitorPassword: true,
     }).extend(timestampFields),
   ]),
 );
@@ -187,6 +188,22 @@ function formatExternalConnection(connection: ConnectionDocument) {
  *           writeOnly: true
  *           example: "-----BEGIN CERTIFICATE-----\nMIIB...\n-----END CERTIFICATE-----"
  *           description: Couchbase only. PEM CA certificate for self-managed `couchbases://` clusters with a private CA. Never returned by the API.
+ *         monitorUsername:
+ *           type: string
+ *           description: Couchbase only. Optional user for cluster status and infrastructure metrics. Queries keep using `username`.
+ *           example: cbt_monitor
+ *         monitorPassword:
+ *           type: string
+ *           writeOnly: true
+ *           description: Couchbase only. Password for `monitorUsername`. Never returned by the API.
+ *           example: monitor-password
+ *         managementPort:
+ *           type: integer
+ *           minimum: 1
+ *           maximum: 65535
+ *           nullable: true
+ *           description: Couchbase only. Management REST port. Defaults to 8091 for `couchbase://` and 18091 for `couchbases://`.
+ *           example: 8091
  *     UpdateConnectionRequest:
  *       type: object
  *       required:
@@ -235,6 +252,22 @@ function formatExternalConnection(connection: ConnectionDocument) {
  *           writeOnly: true
  *           example: "-----BEGIN CERTIFICATE-----\nMIIB...\n-----END CERTIFICATE-----"
  *           description: Couchbase only. PEM CA certificate for self-managed `couchbases://` clusters with a private CA. Never returned by the API. If omitted or empty, the existing certificate is kept.
+ *         monitorUsername:
+ *           type: string
+ *           description: Couchbase only. Optional user for cluster status and infrastructure metrics.
+ *           example: cbt_monitor
+ *         monitorPassword:
+ *           type: string
+ *           writeOnly: true
+ *           description: Couchbase only. Password for `monitorUsername`. Never returned. If omitted or empty, the existing password is kept.
+ *           example: monitor-password
+ *         managementPort:
+ *           type: integer
+ *           minimum: 1
+ *           maximum: 65535
+ *           nullable: true
+ *           description: Couchbase only. Management REST port. Null clears a stored override. Omit to leave it unchanged.
+ *           example: 8091
  *     ConnectionResponseEnvelope:
  *       type: object
  *       properties:
@@ -467,7 +500,16 @@ router.post(
       const connection = await createConnection(
         teamId.toString(),
         body.kind === 'couchbase'
-          ? { ...body, password: body.password ?? '', team: teamId }
+          ? {
+              ...body,
+              password: body.password ?? '',
+              team: teamId,
+              managementPort:
+                typeof body.managementPort === 'number'
+                  ? body.managementPort
+                  : undefined,
+              monitorPassword: body.monitorPassword || undefined,
+            }
           : {
               ...body,
               password: body.password ?? '',
@@ -584,13 +626,21 @@ router.put(
       const unsetFields: string[] = [];
       let update;
       if (body.kind === 'couchbase') {
-        const { tlsCaCertificate, ...restBody } = body;
+        const {
+          tlsCaCertificate,
+          monitorPassword,
+          managementPort,
+          ...restBody
+        } = body;
         update = {
           ...restBody,
           team: teamId,
           password,
           ...(tlsCaCertificate ? { tlsCaCertificate } : {}),
+          ...(monitorPassword ? { monitorPassword } : {}),
+          ...(typeof managementPort === 'number' ? { managementPort } : {}),
         };
+        if (managementPort === null) unsetFields.push('managementPort');
       } else {
         const { hyperdxSettingPrefix, ...restBody } = body;
         if (hyperdxSettingPrefix === null || hyperdxSettingPrefix === '') {

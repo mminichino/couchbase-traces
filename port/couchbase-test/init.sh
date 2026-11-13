@@ -12,6 +12,12 @@ QUERY_USER=${CBT_TEST_COUCHBASE_USER:-cbt_query}
 QUERY_PASSWORD=${CBT_TEST_COUCHBASE_PASSWORD:-cbt-query-password}
 RBAC_ADMIN_USER=${CBT_TEST_COUCHBASE_RBAC_ADMIN_USER:-cbt_admin}
 RBAC_ADMIN_PASSWORD=${CBT_TEST_COUCHBASE_RBAC_ADMIN_PASSWORD:-cbt-admin-password}
+MONITOR_USER=${CBT_TEST_COUCHBASE_MONITOR_USER:-cbt_monitor}
+MONITOR_PASSWORD=${CBT_TEST_COUCHBASE_MONITOR_PASSWORD:-cbt-monitor-password}
+MONITOR_NONE_USER=${CBT_TEST_COUCHBASE_MONITOR_NONE_USER:-cbt_monitor_none}
+MONITOR_NONE_PASSWORD=${CBT_TEST_COUCHBASE_MONITOR_NONE_PASSWORD:-cbt-monitor-none-password}
+LIMITED_QUERY_USER=${CBT_TEST_COUCHBASE_LIMITED_QUERY_USER:-cbt_query_limited}
+LIMITED_QUERY_PASSWORD=${CBT_TEST_COUCHBASE_LIMITED_QUERY_PASSWORD:-cbt-query-limited-password}
 OFFSET=${CBT_TEST_COUCHBASE_PORT_OFFSET:-0}
 MGMT_PORT=$((8091 + OFFSET))
 WAIT_SECONDS=${CBT_TEST_COUCHBASE_WAIT_SECONDS:-180}
@@ -128,7 +134,7 @@ create_scope_and_collections() {
 }
 
 create_users() {
-  log "Upserting users $QUERY_USER and $RBAC_ADMIN_USER"
+  log "Upserting users $QUERY_USER, $MONITOR_USER, and $RBAC_ADMIN_USER"
   # query_use_sequential_scans lets collection tests sample collections that
   # have no index (metrics_gauge, and events without a predicate on ts).
   cli user-manage --set --auth-domain local \
@@ -137,6 +143,19 @@ create_users() {
   cli user-manage --set --auth-domain local \
     --rbac-username "$RBAC_ADMIN_USER" --rbac-password "$RBAC_ADMIN_PASSWORD" \
     --roles admin
+  # ro_admin reads cluster config, buckets, tasks, and statistics.
+  cli user-manage --set --auth-domain local \
+    --rbac-username "$MONITOR_USER" --rbac-password "$MONITOR_PASSWORD" \
+    --roles "ro_admin"
+  # Query user without query_system_catalog: system keyspaces are restricted.
+  cli user-manage --set --auth-domain local \
+    --rbac-username "$LIMITED_QUERY_USER" --rbac-password "$LIMITED_QUERY_PASSWORD" \
+    --roles "query_select[$BUCKET]"
+  # No roles: management APIs must be restricted.
+  docker exec "$CONTAINER" curl -fsS -u "$ADMIN_USER:$ADMIN_PASSWORD" \
+    -X PUT "http://127.0.0.1:8091/settings/rbac/users/local/$MONITOR_NONE_USER" \
+    --data-urlencode "password=$MONITOR_NONE_PASSWORD" \
+    --data-urlencode "roles="
 }
 
 load_fixtures() {

@@ -23,6 +23,10 @@ jest.mock('next/router', () => ({
 }));
 jest.mock('../savedSearch');
 jest.mock('../dashboard');
+jest.mock('../connection', () => ({
+  useConnections: () => ({ data: [] }),
+  dataStoreLinks: () => ({ hasCouchbase: false, hasClickHouse: false }),
+}));
 
 const mockUseSavedSearches = useSavedSearches as jest.Mock;
 const mockUseDashboards = useDashboards as jest.Mock;

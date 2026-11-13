@@ -6273,7 +6273,7 @@
               "name": "default",
               "references": 1,
               "lines": [
-                113
+                114
               ]
             }
           ]
@@ -7232,7 +7232,7 @@
               "name": "UserPreferencesModal",
               "references": 1,
               "lines": [
-                578
+                599
               ]
             }
           ]
@@ -7639,33 +7639,35 @@
               "name": "AppNavContext",
               "references": 2,
               "lines": [
-                333,
-                582
+                339,
+                603
               ]
             },
             {
               "name": "AppNavHelpMenu",
               "references": 1,
               "lines": [
-                526
+                547
               ]
             },
             {
               "name": "AppNavLink",
-              "references": 5,
+              "references": 7,
               "lines": [
-                446,
-                454,
-                483,
-                494,
-                536
+                452,
+                460,
+                489,
+                500,
+                507,
+                515,
+                557
               ]
             },
             {
               "name": "AppNavUserMenu",
               "references": 1,
               "lines": [
-                570
+                591
               ]
             }
           ]
@@ -7796,7 +7798,7 @@
               "name": "InstanceLabel",
               "references": 1,
               "lines": [
-                386
+                392
               ]
             }
           ]
@@ -10011,8 +10013,8 @@
               "name": "ListingCard",
               "references": 2,
               "lines": [
-                287,
-                409
+                309,
+                431
               ]
             }
           ]
@@ -10059,7 +10061,7 @@
               "name": "ListingRow",
               "references": 1,
               "lines": [
-                376
+                398
               ]
             }
           ]
@@ -12210,7 +12212,7 @@
               "name": "setHdxIdentity",
               "references": 1,
               "lines": [
-                216
+                221
               ]
             }
           ]
@@ -15987,7 +15989,7 @@
               "name": "testLocalConnection",
               "references": 1,
               "lines": [
-                67
+                80
               ]
             }
           ]
@@ -24645,6 +24647,279 @@
       "serverSide": true
     },
     {
+      "path": "packages/common-utils/src/couchbase/cluster.ts",
+      "workspace": "@couchbase-traces/common-utils",
+      "reasons": [
+        "sql_builder"
+      ],
+      "exports": [
+        {
+          "name": "ActiveRequestRow",
+          "kind": "type"
+        },
+        {
+          "name": "COMPLETED_REQUESTS_NOTE",
+          "kind": "const"
+        },
+        {
+          "name": "CompletedBucket",
+          "kind": "type"
+        },
+        {
+          "name": "IndexRow",
+          "kind": "type"
+        },
+        {
+          "name": "RecentRequestRow",
+          "kind": "type"
+        },
+        {
+          "name": "TopStatementRow",
+          "kind": "type"
+        },
+        {
+          "name": "activeRequestsQuery",
+          "kind": "function"
+        },
+        {
+          "name": "bucketWidthMs",
+          "kind": "function"
+        },
+        {
+          "name": "completedOverTimeQuery",
+          "kind": "function"
+        },
+        {
+          "name": "indexesQuery",
+          "kind": "function"
+        },
+        {
+          "name": "mapActiveRequest",
+          "kind": "function"
+        },
+        {
+          "name": "mapCompletedBucket",
+          "kind": "function"
+        },
+        {
+          "name": "mapIndex",
+          "kind": "function"
+        },
+        {
+          "name": "mapRecentRequest",
+          "kind": "function"
+        },
+        {
+          "name": "mapTopStatement",
+          "kind": "function"
+        },
+        {
+          "name": "recentRequestsQuery",
+          "kind": "function"
+        },
+        {
+          "name": "topStatementsQuery",
+          "kind": "function"
+        }
+      ],
+      "importers": [
+        {
+          "path": "packages/api/src/routers/api/couchbaseCluster.ts",
+          "workspace": "@couchbase-traces/api",
+          "test": false,
+          "typeOnly": false,
+          "symbols": [
+            {
+              "name": "ActiveRequestRow",
+              "references": 1,
+              "lines": [
+                84
+              ]
+            },
+            {
+              "name": "COMPLETED_REQUESTS_NOTE",
+              "references": 1,
+              "lines": [
+                490
+              ]
+            },
+            {
+              "name": "CompletedBucket",
+              "references": 2,
+              "lines": [
+                85,
+                479
+              ]
+            },
+            {
+              "name": "IndexRow",
+              "references": 1,
+              "lines": [
+                88
+              ]
+            },
+            {
+              "name": "RecentRequestRow",
+              "references": 1,
+              "lines": [
+                87
+              ]
+            },
+            {
+              "name": "TopStatementRow",
+              "references": 1,
+              "lines": [
+                86
+              ]
+            },
+            {
+              "name": "activeRequestsQuery",
+              "references": 1,
+              "lines": [
+                469
+              ]
+            },
+            {
+              "name": "bucketWidthMs",
+              "references": 1,
+              "lines": [
+                464
+              ]
+            },
+            {
+              "name": "completedOverTimeQuery",
+              "references": 1,
+              "lines": [
+                475
+              ]
+            },
+            {
+              "name": "indexesQuery",
+              "references": 1,
+              "lines": [
+                487
+              ]
+            },
+            {
+              "name": "mapActiveRequest",
+              "references": 1,
+              "lines": [
+                470
+              ]
+            },
+            {
+              "name": "mapCompletedBucket",
+              "references": 1,
+              "lines": [
+                478
+              ]
+            },
+            {
+              "name": "mapIndex",
+              "references": 1,
+              "lines": [
+                487
+              ]
+            },
+            {
+              "name": "mapRecentRequest",
+              "references": 1,
+              "lines": [
+                485
+              ]
+            },
+            {
+              "name": "mapTopStatement",
+              "references": 1,
+              "lines": [
+                482
+              ]
+            },
+            {
+              "name": "recentRequestsQuery",
+              "references": 1,
+              "lines": [
+                484
+              ]
+            },
+            {
+              "name": "topStatementsQuery",
+              "references": 1,
+              "lines": [
+                481
+              ]
+            }
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/__tests__/cluster.test.ts",
+          "workspace": "@couchbase-traces/common-utils",
+          "test": true,
+          "typeOnly": false,
+          "symbols": [
+            {
+              "name": "activeRequestsQuery",
+              "references": 1,
+              "lines": [
+                14
+              ]
+            },
+            {
+              "name": "bucketWidthMs",
+              "references": 2,
+              "lines": [
+                34,
+                35
+              ]
+            },
+            {
+              "name": "completedOverTimeQuery",
+              "references": 1,
+              "lines": [
+                18
+              ]
+            },
+            {
+              "name": "indexesQuery",
+              "references": 1,
+              "lines": [
+                30
+              ]
+            },
+            {
+              "name": "mapActiveRequest",
+              "references": 1,
+              "lines": [
+                40
+              ]
+            },
+            {
+              "name": "mapCompletedBucket",
+              "references": 1,
+              "lines": [
+                56
+              ]
+            },
+            {
+              "name": "recentRequestsQuery",
+              "references": 1,
+              "lines": [
+                26
+              ]
+            },
+            {
+              "name": "topStatementsQuery",
+              "references": 1,
+              "lines": [
+                25
+              ]
+            }
+          ]
+        }
+      ],
+      "serverSide": true
+    },
+    {
       "path": "packages/common-utils/src/filters.ts",
       "workspace": "@couchbase-traces/common-utils",
       "reasons": [
@@ -32129,8 +32404,8 @@
               "name": "ConnectionSchema",
               "references": 2,
               "lines": [
-                85,
-                103
+                95,
+                113
               ]
             },
             {
@@ -32154,6 +32429,22 @@
               "references": 1,
               "lines": [
                 95
+              ]
+            }
+          ]
+        },
+        {
+          "path": "packages/api/src/routers/api/couchbaseCluster.ts",
+          "workspace": "@couchbase-traces/api",
+          "test": false,
+          "typeOnly": true,
+          "symbols": [
+            {
+              "name": "TeamClickHouseSettings",
+              "references": 2,
+              "lines": [
+                148,
+                368
               ]
             }
           ]
@@ -32914,14 +33205,14 @@
               "references": 2,
               "lines": [
                 34,
-                50
+                51
               ]
             },
             {
               "name": "ConnectionSchemaNoId",
               "references": 1,
               "lines": [
-                42
+                43
               ]
             },
             {
@@ -32929,7 +33220,7 @@
               "references": 2,
               "lines": [
                 35,
-                58
+                59
               ]
             },
             {
@@ -32937,7 +33228,7 @@
               "references": 2,
               "lines": [
                 32,
-                48
+                49
               ]
             }
           ]
@@ -37773,7 +38064,7 @@
               "name": "SavedSearchListApiResponse",
               "references": 1,
               "lines": [
-                227
+                232
               ]
             }
           ]
@@ -38713,7 +39004,7 @@
               "references": 2,
               "lines": [
                 175,
-                231
+                236
               ]
             },
             {
@@ -38810,7 +39101,7 @@
               "name": "ConnectionKind",
               "references": 1,
               "lines": [
-                25
+                26
               ]
             }
           ]
@@ -45142,9 +45433,9 @@
               "lines": [
                 13,
                 27,
-                45,
-                63,
-                114
+                58,
+                76,
+                127
               ]
             }
           ]

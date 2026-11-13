@@ -1,0 +1,11 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`cluster query statements keeps active requests on system:active_requests 1`] = `"SELECT requestId, statement, state, elapsedTime, users, node FROM system:active_requests LIMIT 200"`;
+
+exports[`cluster query statements parameterizes the completed-request range 1`] = `"SELECT (STR_TO_MILLIS(requestTime) - (STR_TO_MILLIS(requestTime) % $p0)) AS bucketMs, COUNT(*) AS count, SUM(IFMISSINGORNULL(errorCount, 0)) AS errors FROM system:completed_requests WHERE STR_TO_MILLIS(requestTime) >= $p1 AND STR_TO_MILLIS(requestTime) < $p2 GROUP BY (STR_TO_MILLIS(requestTime) - (STR_TO_MILLIS(requestTime) % $p0)) ORDER BY bucketMs"`;
+
+exports[`cluster query statements parameterizes top statements and recent requests 1`] = `"SELECT statement, COUNT(*) AS count, AVG(STR_TO_DURATION(elapsedTime) / $p0) AS avgMs, MAX(STR_TO_DURATION(elapsedTime) / $p1) AS maxMs FROM system:completed_requests WHERE STR_TO_MILLIS(requestTime) >= $p2 AND STR_TO_MILLIS(requestTime) < $p3 GROUP BY statement ORDER BY count DESC LIMIT 20"`;
+
+exports[`cluster query statements parameterizes top statements and recent requests 2`] = `"SELECT statement, elapsedTime, resultCount, errorCount, users, node FROM system:completed_requests WHERE STR_TO_MILLIS(requestTime) >= $p0 AND STR_TO_MILLIS(requestTime) < $p1 ORDER BY STR_TO_DURATION(elapsedTime) DESC LIMIT 100"`;
+
+exports[`cluster query statements reads system:indexes with the reserved using column aliased 1`] = `"SELECT name, keyspace_id, state, \`using\` AS indexUsing, is_primary FROM system:indexes"`;

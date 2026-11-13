@@ -18906,7 +18906,7 @@
     },
     {
       "path": "packages/api/src/api-app.ts",
-      "line": 113,
+      "line": 114,
       "column": 11,
       "term": "clickhouse",
       "category": "other",
@@ -18914,7 +18914,7 @@
     },
     {
       "path": "packages/api/src/api-app.ts",
-      "line": 113,
+      "line": 114,
       "column": 51,
       "term": "clickhouse",
       "category": "code_identifiers",
@@ -27506,7 +27506,7 @@
     },
     {
       "path": "packages/api/src/models/connection.ts",
-      "line": 64,
+      "line": 70,
       "column": 7,
       "term": "hyperdx",
       "category": "code_identifiers",
@@ -27514,7 +27514,7 @@
     },
     {
       "path": "packages/api/src/models/connection.ts",
-      "line": 71,
+      "line": 77,
       "column": 17,
       "term": "clickhouse",
       "category": "other",
@@ -27522,7 +27522,7 @@
     },
     {
       "path": "packages/api/src/models/connection.ts",
-      "line": 72,
+      "line": 78,
       "column": 19,
       "term": "clickhouse",
       "category": "other",
@@ -28457,6 +28457,38 @@
       "snippet": "mockGetConnectionById.mockResolvedValue({ kind: 'clickhouse' });"
     },
     {
+      "path": "packages/api/src/routers/api/__tests__/couchbaseCluster.test.ts",
+      "line": 187,
+      "column": 50,
+      "term": "clickhouse",
+      "category": "other",
+      "snippet": "it('returns 404 for another team and 409 for a ClickHouse connection', async () => {"
+    },
+    {
+      "path": "packages/api/src/routers/api/__tests__/couchbaseCluster.test.ts",
+      "line": 194,
+      "column": 65,
+      "term": "clickhouse",
+      "category": "other",
+      "snippet": "mockGetConnectionById.mockResolvedValue(connection({ kind: 'clickhouse' }));"
+    },
+    {
+      "path": "packages/api/src/routers/api/__tests__/couchbaseCluster.test.ts",
+      "line": 195,
+      "column": 11,
+      "term": "clickhouse",
+      "category": "code_identifiers",
+      "snippet": "const clickhouse = await request(makeApp()).get("
+    },
+    {
+      "path": "packages/api/src/routers/api/__tests__/couchbaseCluster.test.ts",
+      "line": 198,
+      "column": 12,
+      "term": "clickhouse",
+      "category": "code_identifiers",
+      "snippet": "expect(clickhouse.status).toBe(409);"
+    },
+    {
       "path": "packages/api/src/routers/api/__tests__/couchbaseConnections.test.ts",
       "line": 33,
       "column": 8,
@@ -29130,7 +29162,7 @@
     },
     {
       "path": "packages/api/src/routers/api/connections.ts",
-      "line": 70,
+      "line": 80,
       "column": 15,
       "term": "hyperdx",
       "category": "code_identifiers",
@@ -29138,7 +29170,7 @@
     },
     {
       "path": "packages/api/src/routers/api/connections.ts",
-      "line": 70,
+      "line": 80,
       "column": 42,
       "term": "hyperdx",
       "category": "code_identifiers",
@@ -29146,7 +29178,7 @@
     },
     {
       "path": "packages/api/src/routers/api/connections.ts",
-      "line": 104,
+      "line": 114,
       "column": 46,
       "term": "clickhouse",
       "category": "other",
@@ -29154,7 +29186,7 @@
     },
     {
       "path": "packages/api/src/routers/api/connections.ts",
-      "line": 128,
+      "line": 142,
       "column": 12,
       "term": "hyperdx",
       "category": "other",
@@ -29162,7 +29194,7 @@
     },
     {
       "path": "packages/api/src/routers/api/connections.ts",
-      "line": 131,
+      "line": 145,
       "column": 17,
       "term": "hyperdx",
       "category": "code_identifiers",
@@ -29170,7 +29202,7 @@
     },
     {
       "path": "packages/api/src/routers/api/connections.ts",
-      "line": 136,
+      "line": 150,
       "column": 37,
       "term": "hyperdx",
       "category": "code_identifiers",
@@ -29178,7 +29210,7 @@
     },
     {
       "path": "packages/api/src/routers/api/connections.ts",
-      "line": 137,
+      "line": 151,
       "column": 17,
       "term": "hyperdx",
       "category": "code_identifiers",
@@ -29186,7 +29218,7 @@
     },
     {
       "path": "packages/api/src/routers/api/connections.ts",
-      "line": 140,
+      "line": 154,
       "column": 50,
       "term": "hyperdx",
       "category": "other",
@@ -29215,6 +29247,38 @@
       "term": "clickhouse",
       "category": "code_identifiers",
       "snippet": "): Promise<TeamClickHouseSettings | null> {"
+    },
+    {
+      "path": "packages/api/src/routers/api/couchbaseCluster.ts",
+      "line": 23,
+      "column": 19,
+      "term": "clickhouse",
+      "category": "code_identifiers",
+      "snippet": "import type { TeamClickHouseSettings } from '@couchbase-traces/common-utils/dist/types';"
+    },
+    {
+      "path": "packages/api/src/routers/api/couchbaseCluster.ts",
+      "line": 148,
+      "column": 16,
+      "term": "clickhouse",
+      "category": "code_identifiers",
+      "snippet": "): Promise<TeamClickHouseSettings | null> {"
+    },
+    {
+      "path": "packages/api/src/routers/api/couchbaseCluster.ts",
+      "line": 192,
+      "column": 28,
+      "term": "clickhouse",
+      "category": "other",
+      "snippet": "if ((connection.kind ?? 'clickhouse') !== 'couchbase') {"
+    },
+    {
+      "path": "packages/api/src/routers/api/couchbaseCluster.ts",
+      "line": 368,
+      "column": 13,
+      "term": "clickhouse",
+      "category": "code_identifiers",
+      "snippet": "team: TeamClickHouseSettings | null,"
     },
     {
       "path": "packages/api/src/routers/api/prometheus.ts",
@@ -30450,7 +30514,7 @@
     },
     {
       "path": "packages/api/src/routers/external-api/v2/connections.ts",
-      "line": 44,
+      "line": 45,
       "column": 15,
       "term": "hyperdx",
       "category": "other",
@@ -30458,7 +30522,7 @@
     },
     {
       "path": "packages/api/src/routers/external-api/v2/connections.ts",
-      "line": 50,
+      "line": 51,
       "column": 5,
       "term": "clickhouse",
       "category": "code_identifiers",
@@ -30466,7 +30530,7 @@
     },
     {
       "path": "packages/api/src/routers/external-api/v2/connections.ts",
-      "line": 51,
+      "line": 52,
       "column": 7,
       "term": "hyperdx",
       "category": "code_identifiers",
@@ -30474,7 +30538,7 @@
     },
     {
       "path": "packages/api/src/routers/external-api/v2/connections.ts",
-      "line": 104,
+      "line": 105,
       "column": 34,
       "term": "clickhouse",
       "category": "other",
@@ -30482,7 +30546,7 @@
     },
     {
       "path": "packages/api/src/routers/external-api/v2/connections.ts",
-      "line": 107,
+      "line": 108,
       "column": 21,
       "term": "clickhouse",
       "category": "other",
@@ -30490,7 +30554,7 @@
     },
     {
       "path": "packages/api/src/routers/external-api/v2/connections.ts",
-      "line": 108,
+      "line": 109,
       "column": 23,
       "term": "clickhouse",
       "category": "other",
@@ -30498,7 +30562,7 @@
     },
     {
       "path": "packages/api/src/routers/external-api/v2/connections.ts",
-      "line": 109,
+      "line": 110,
       "column": 57,
       "term": "clickhouse",
       "category": "other",
@@ -30506,7 +30570,7 @@
     },
     {
       "path": "packages/api/src/routers/external-api/v2/connections.ts",
-      "line": 110,
+      "line": 111,
       "column": 23,
       "term": "clickhouse",
       "category": "other",
@@ -30514,7 +30578,7 @@
     },
     {
       "path": "packages/api/src/routers/external-api/v2/connections.ts",
-      "line": 113,
+      "line": 114,
       "column": 27,
       "term": "clickhouse",
       "category": "other",
@@ -30522,7 +30586,7 @@
     },
     {
       "path": "packages/api/src/routers/external-api/v2/connections.ts",
-      "line": 114,
+      "line": 115,
       "column": 31,
       "term": "clickhouse",
       "category": "telemetry_endpoints",
@@ -30530,7 +30594,7 @@
     },
     {
       "path": "packages/api/src/routers/external-api/v2/connections.ts",
-      "line": 117,
+      "line": 118,
       "column": 27,
       "term": "clickhouse",
       "category": "other",
@@ -30538,7 +30602,7 @@
     },
     {
       "path": "packages/api/src/routers/external-api/v2/connections.ts",
-      "line": 119,
+      "line": 120,
       "column": 12,
       "term": "hyperdx",
       "category": "other",
@@ -30546,7 +30610,7 @@
     },
     {
       "path": "packages/api/src/routers/external-api/v2/connections.ts",
-      "line": 121,
+      "line": 122,
       "column": 73,
       "term": "clickhouse",
       "category": "other",
@@ -30554,7 +30618,7 @@
     },
     {
       "path": "packages/api/src/routers/external-api/v2/connections.ts",
-      "line": 123,
+      "line": 124,
       "column": 23,
       "term": "hyperdx",
       "category": "other",
@@ -30562,7 +30626,7 @@
     },
     {
       "path": "packages/api/src/routers/external-api/v2/connections.ts",
-      "line": 126,
+      "line": 127,
       "column": 207,
       "term": "clickhouse",
       "category": "other",
@@ -30570,7 +30634,7 @@
     },
     {
       "path": "packages/api/src/routers/external-api/v2/connections.ts",
-      "line": 152,
+      "line": 153,
       "column": 34,
       "term": "clickhouse",
       "category": "other",
@@ -30578,7 +30642,7 @@
     },
     {
       "path": "packages/api/src/routers/external-api/v2/connections.ts",
-      "line": 155,
+      "line": 156,
       "column": 21,
       "term": "clickhouse",
       "category": "other",
@@ -30586,7 +30650,7 @@
     },
     {
       "path": "packages/api/src/routers/external-api/v2/connections.ts",
-      "line": 156,
+      "line": 157,
       "column": 23,
       "term": "clickhouse",
       "category": "other",
@@ -30594,7 +30658,7 @@
     },
     {
       "path": "packages/api/src/routers/external-api/v2/connections.ts",
-      "line": 157,
+      "line": 158,
       "column": 57,
       "term": "clickhouse",
       "category": "other",
@@ -30602,7 +30666,7 @@
     },
     {
       "path": "packages/api/src/routers/external-api/v2/connections.ts",
-      "line": 158,
+      "line": 159,
       "column": 23,
       "term": "clickhouse",
       "category": "other",
@@ -30610,7 +30674,7 @@
     },
     {
       "path": "packages/api/src/routers/external-api/v2/connections.ts",
-      "line": 161,
+      "line": 162,
       "column": 27,
       "term": "clickhouse",
       "category": "other",
@@ -30618,7 +30682,7 @@
     },
     {
       "path": "packages/api/src/routers/external-api/v2/connections.ts",
-      "line": 162,
+      "line": 163,
       "column": 31,
       "term": "clickhouse",
       "category": "telemetry_endpoints",
@@ -30626,7 +30690,7 @@
     },
     {
       "path": "packages/api/src/routers/external-api/v2/connections.ts",
-      "line": 165,
+      "line": 166,
       "column": 27,
       "term": "clickhouse",
       "category": "other",
@@ -30634,7 +30698,7 @@
     },
     {
       "path": "packages/api/src/routers/external-api/v2/connections.ts",
-      "line": 170,
+      "line": 171,
       "column": 27,
       "term": "clickhouse",
       "category": "other",
@@ -30642,7 +30706,7 @@
     },
     {
       "path": "packages/api/src/routers/external-api/v2/connections.ts",
-      "line": 172,
+      "line": 173,
       "column": 12,
       "term": "hyperdx",
       "category": "other",
@@ -30650,7 +30714,7 @@
     },
     {
       "path": "packages/api/src/routers/external-api/v2/connections.ts",
-      "line": 174,
+      "line": 175,
       "column": 73,
       "term": "clickhouse",
       "category": "other",
@@ -30658,7 +30722,7 @@
     },
     {
       "path": "packages/api/src/routers/external-api/v2/connections.ts",
-      "line": 176,
+      "line": 177,
       "column": 23,
       "term": "hyperdx",
       "category": "other",
@@ -30666,7 +30730,7 @@
     },
     {
       "path": "packages/api/src/routers/external-api/v2/connections.ts",
-      "line": 179,
+      "line": 180,
       "column": 207,
       "term": "clickhouse",
       "category": "other",
@@ -30674,7 +30738,7 @@
     },
     {
       "path": "packages/api/src/routers/external-api/v2/connections.ts",
-      "line": 200,
+      "line": 217,
       "column": 34,
       "term": "clickhouse",
       "category": "other",
@@ -30682,7 +30746,7 @@
     },
     {
       "path": "packages/api/src/routers/external-api/v2/connections.ts",
-      "line": 203,
+      "line": 220,
       "column": 21,
       "term": "clickhouse",
       "category": "other",
@@ -30690,7 +30754,7 @@
     },
     {
       "path": "packages/api/src/routers/external-api/v2/connections.ts",
-      "line": 204,
+      "line": 221,
       "column": 23,
       "term": "clickhouse",
       "category": "other",
@@ -30698,7 +30762,7 @@
     },
     {
       "path": "packages/api/src/routers/external-api/v2/connections.ts",
-      "line": 205,
+      "line": 222,
       "column": 57,
       "term": "clickhouse",
       "category": "other",
@@ -30706,7 +30770,7 @@
     },
     {
       "path": "packages/api/src/routers/external-api/v2/connections.ts",
-      "line": 206,
+      "line": 223,
       "column": 23,
       "term": "clickhouse",
       "category": "other",
@@ -30714,7 +30778,7 @@
     },
     {
       "path": "packages/api/src/routers/external-api/v2/connections.ts",
-      "line": 209,
+      "line": 226,
       "column": 27,
       "term": "clickhouse",
       "category": "other",
@@ -30722,7 +30786,7 @@
     },
     {
       "path": "packages/api/src/routers/external-api/v2/connections.ts",
-      "line": 210,
+      "line": 227,
       "column": 31,
       "term": "clickhouse",
       "category": "telemetry_endpoints",
@@ -30730,7 +30794,7 @@
     },
     {
       "path": "packages/api/src/routers/external-api/v2/connections.ts",
-      "line": 213,
+      "line": 230,
       "column": 27,
       "term": "clickhouse",
       "category": "other",
@@ -30738,7 +30802,7 @@
     },
     {
       "path": "packages/api/src/routers/external-api/v2/connections.ts",
-      "line": 218,
+      "line": 235,
       "column": 27,
       "term": "clickhouse",
       "category": "other",
@@ -30746,7 +30810,7 @@
     },
     {
       "path": "packages/api/src/routers/external-api/v2/connections.ts",
-      "line": 220,
+      "line": 237,
       "column": 12,
       "term": "hyperdx",
       "category": "other",
@@ -30754,7 +30818,7 @@
     },
     {
       "path": "packages/api/src/routers/external-api/v2/connections.ts",
-      "line": 222,
+      "line": 239,
       "column": 73,
       "term": "clickhouse",
       "category": "other",
@@ -30762,7 +30826,7 @@
     },
     {
       "path": "packages/api/src/routers/external-api/v2/connections.ts",
-      "line": 224,
+      "line": 241,
       "column": 23,
       "term": "hyperdx",
       "category": "other",
@@ -30770,7 +30834,7 @@
     },
     {
       "path": "packages/api/src/routers/external-api/v2/connections.ts",
-      "line": 227,
+      "line": 244,
       "column": 142,
       "term": "clickhouse",
       "category": "other",
@@ -30778,7 +30842,7 @@
     },
     {
       "path": "packages/api/src/routers/external-api/v2/connections.ts",
-      "line": 420,
+      "line": 453,
       "column": 35,
       "term": "clickhouse",
       "category": "other",
@@ -30786,7 +30850,7 @@
     },
     {
       "path": "packages/api/src/routers/external-api/v2/connections.ts",
-      "line": 475,
+      "line": 517,
       "column": 15,
       "term": "hyperdx",
       "category": "code_identifiers",
@@ -30794,7 +30858,7 @@
     },
     {
       "path": "packages/api/src/routers/external-api/v2/connections.ts",
-      "line": 475,
+      "line": 517,
       "column": 42,
       "term": "hyperdx",
       "category": "code_identifiers",
@@ -30802,7 +30866,7 @@
     },
     {
       "path": "packages/api/src/routers/external-api/v2/connections.ts",
-      "line": 497,
+      "line": 539,
       "column": 29,
       "term": "hyperdx",
       "category": "other",
@@ -30810,7 +30874,7 @@
     },
     {
       "path": "packages/api/src/routers/external-api/v2/connections.ts",
-      "line": 575,
+      "line": 617,
       "column": 54,
       "term": "clickhouse",
       "category": "other",
@@ -30818,7 +30882,7 @@
     },
     {
       "path": "packages/api/src/routers/external-api/v2/connections.ts",
-      "line": 595,
+      "line": 645,
       "column": 17,
       "term": "hyperdx",
       "category": "code_identifiers",
@@ -30826,7 +30890,7 @@
     },
     {
       "path": "packages/api/src/routers/external-api/v2/connections.ts",
-      "line": 596,
+      "line": 646,
       "column": 13,
       "term": "hyperdx",
       "category": "code_identifiers",
@@ -30834,7 +30898,7 @@
     },
     {
       "path": "packages/api/src/routers/external-api/v2/connections.ts",
-      "line": 596,
+      "line": 646,
       "column": 46,
       "term": "hyperdx",
       "category": "code_identifiers",
@@ -30842,7 +30906,7 @@
     },
     {
       "path": "packages/api/src/routers/external-api/v2/connections.ts",
-      "line": 597,
+      "line": 647,
       "column": 29,
       "term": "hyperdx",
       "category": "other",
@@ -30850,7 +30914,7 @@
     },
     {
       "path": "packages/api/src/routers/external-api/v2/connections.ts",
-      "line": 603,
+      "line": 653,
       "column": 15,
       "term": "hyperdx",
       "category": "code_identifiers",
@@ -30858,7 +30922,7 @@
     },
     {
       "path": "packages/api/src/routers/external-api/v2/connections.ts",
-      "line": 603,
+      "line": 653,
       "column": 40,
       "term": "hyperdx",
       "category": "code_identifiers",
@@ -36802,7 +36866,15 @@
     },
     {
       "path": "packages/app/scripts/run-e2e.js",
-      "line": 63,
+      "line": 52,
+      "column": 63,
+      "term": "clickhouse",
+      "category": "other",
+      "snippet": "// The cluster spec runs in Phase 7's Couchbase e2e mode, not ClickHouse modes."
+    },
+    {
+      "path": "packages/app/scripts/run-e2e.js",
+      "line": 67,
       "column": 28,
       "term": "hdx",
       "category": "env_vars",
@@ -36810,7 +36882,7 @@
     },
     {
       "path": "packages/app/scripts/run-e2e.js",
-      "line": 66,
+      "line": 70,
       "column": 11,
       "term": "clickhouse",
       "category": "env_vars",
@@ -36818,7 +36890,7 @@
     },
     {
       "path": "packages/app/scripts/run-e2e.js",
-      "line": 66,
+      "line": 70,
       "column": 43,
       "term": "clickhouse",
       "category": "other",
@@ -36826,7 +36898,7 @@
     },
     {
       "path": "packages/app/scripts/run-e2e.js",
-      "line": 67,
+      "line": 71,
       "column": 5,
       "term": "clickhouse",
       "category": "env_vars",
@@ -36834,7 +36906,7 @@
     },
     {
       "path": "packages/app/scripts/run-e2e.js",
-      "line": 77,
+      "line": 81,
       "column": 42,
       "term": "clickhouse",
       "category": "other",
@@ -37714,39 +37786,55 @@
     },
     {
       "path": "packages/app/src/Spotlights.tsx",
-      "line": 73,
-      "column": 21,
+      "line": 75,
+      "column": 25,
+      "term": "clickhouse",
+      "category": "code_identifiers",
+      "snippet": "...(storeLinks.hasClickHouse"
+    },
+    {
+      "path": "packages/app/src/Spotlights.tsx",
+      "line": 78,
+      "column": 27,
       "term": "clickhouse",
       "category": "ui_strings",
       "snippet": "id: 'preset-clickhouse',"
     },
     {
       "path": "packages/app/src/Spotlights.tsx",
-      "line": 74,
-      "column": 17,
+      "line": 79,
+      "column": 23,
       "term": "clickhouse",
       "category": "ui_strings",
       "snippet": "label: 'ClickHouse',"
     },
     {
       "path": "packages/app/src/Spotlights.tsx",
-      "line": 75,
-      "column": 23,
+      "line": 80,
+      "column": 29,
       "term": "clickhouse",
       "category": "ui_strings",
       "snippet": "description: 'ClickHouse cluster health and query performance',"
     },
     {
       "path": "packages/app/src/Spotlights.tsx",
-      "line": 76,
-      "column": 17,
+      "line": 81,
+      "column": 23,
       "term": "clickhouse",
       "category": "ui_strings",
       "snippet": "href: '/clickhouse',"
     },
     {
       "path": "packages/app/src/Spotlights.tsx",
-      "line": 201,
+      "line": 219,
+      "column": 19,
+      "term": "clickhouse",
+      "category": "code_identifiers",
+      "snippet": "storeLinks.hasClickHouse,"
+    },
+    {
+      "path": "packages/app/src/Spotlights.tsx",
+      "line": 226,
       "column": 14,
       "term": "hdx",
       "category": "code_identifiers",
@@ -38855,6 +38943,14 @@
       "term": "clickhouse",
       "category": "other",
       "snippet": "// arbitrary SQL run against ClickHouse for teammates. ClickHouse also honors"
+    },
+    {
+      "path": "packages/app/src/__tests__/Spotlights.test.tsx",
+      "line": 28,
+      "column": 52,
+      "term": "clickhouse",
+      "category": "code_identifiers",
+      "snippet": "dataStoreLinks: () => ({ hasCouchbase: false, hasClickHouse: false }),"
     },
     {
       "path": "packages/app/src/__tests__/UserPreferencesModal.test.tsx",
@@ -40369,6 +40465,38 @@
       "snippet": "const json = await clickhouseClient"
     },
     {
+      "path": "packages/app/src/clusterApi.ts",
+      "line": 3,
+      "column": 10,
+      "term": "hdx",
+      "category": "code_identifiers",
+      "snippet": "import { hdxServer } from '@/api';"
+    },
+    {
+      "path": "packages/app/src/clusterApi.ts",
+      "line": 120,
+      "column": 7,
+      "term": "hdx",
+      "category": "code_identifiers",
+      "snippet": "hdxServer("
+    },
+    {
+      "path": "packages/app/src/clusterApi.ts",
+      "line": 135,
+      "column": 7,
+      "term": "hdx",
+      "category": "code_identifiers",
+      "snippet": "hdxServer("
+    },
+    {
+      "path": "packages/app/src/clusterApi.ts",
+      "line": 150,
+      "column": 7,
+      "term": "hdx",
+      "category": "code_identifiers",
+      "snippet": "hdxServer("
+    },
+    {
       "path": "packages/app/src/components/AISummarizePatternButton.tsx",
       "line": 32,
       "column": 9,
@@ -40498,7 +40626,7 @@
     },
     {
       "path": "packages/app/src/components/AppNav/AppNav.tsx",
-      "line": 30,
+      "line": 33,
       "column": 35,
       "term": "hdx",
       "category": "ui_strings",
@@ -40507,6 +40635,14 @@
     {
       "path": "packages/app/src/components/AppNav/AppNav.tsx",
       "line": 103,
+      "column": 28,
+      "term": "clickhouse",
+      "category": "code_identifiers",
+      "snippet": "const { hasCouchbase, hasClickHouse } = dataStoreLinks(navConnections);"
+    },
+    {
+      "path": "packages/app/src/components/AppNav/AppNav.tsx",
+      "line": 108,
       "column": 52,
       "term": "hdx",
       "category": "ui_strings",
@@ -40514,7 +40650,7 @@
     },
     {
       "path": "packages/app/src/components/AppNav/AppNav.tsx",
-      "line": 112,
+      "line": 117,
       "column": 41,
       "term": "hdx",
       "category": "ui_strings",
@@ -40522,7 +40658,7 @@
     },
     {
       "path": "packages/app/src/components/AppNav/AppNav.tsx",
-      "line": 215,
+      "line": 220,
       "column": 60,
       "term": "hdx",
       "category": "other",
@@ -40530,11 +40666,35 @@
     },
     {
       "path": "packages/app/src/components/AppNav/AppNav.tsx",
-      "line": 311,
+      "line": 316,
       "column": 22,
       "term": "clickhouse",
       "category": "ui_strings",
       "snippet": "pathname === '/clickhouse' ||"
+    },
+    {
+      "path": "packages/app/src/components/AppNav/AppNav.tsx",
+      "line": 506,
+      "column": 17,
+      "term": "clickhouse",
+      "category": "code_identifiers",
+      "snippet": "{hasClickHouse && ("
+    },
+    {
+      "path": "packages/app/src/components/AppNav/AppNav.tsx",
+      "line": 508,
+      "column": 24,
+      "term": "clickhouse",
+      "category": "ui_strings",
+      "snippet": "label=\"ClickHouse\""
+    },
+    {
+      "path": "packages/app/src/components/AppNav/AppNav.tsx",
+      "line": 509,
+      "column": 24,
+      "term": "clickhouse",
+      "category": "ui_strings",
+      "snippet": "href=\"/clickhouse\""
     },
     {
       "path": "packages/app/src/components/AppNav/AppNavFeedback.tsx",
@@ -40834,7 +40994,7 @@
     },
     {
       "path": "packages/app/src/components/ConnectionForm.tsx",
-      "line": 205,
+      "line": 210,
       "column": 13,
       "term": "hyperdx",
       "category": "code_identifiers",
@@ -40842,7 +41002,7 @@
     },
     {
       "path": "packages/app/src/components/ConnectionForm.tsx",
-      "line": 205,
+      "line": 210,
       "column": 46,
       "term": "hyperdx",
       "category": "code_identifiers",
@@ -40850,7 +41010,7 @@
     },
     {
       "path": "packages/app/src/components/ConnectionForm.tsx",
-      "line": 246,
+      "line": 260,
       "column": 22,
       "term": "clickhouse",
       "category": "ui_strings",
@@ -40858,7 +41018,7 @@
     },
     {
       "path": "packages/app/src/components/ConnectionForm.tsx",
-      "line": 249,
+      "line": 263,
       "column": 15,
       "term": "hyperdx",
       "category": "code_identifiers",
@@ -40866,7 +41026,7 @@
     },
     {
       "path": "packages/app/src/components/ConnectionForm.tsx",
-      "line": 254,
+      "line": 268,
       "column": 22,
       "term": "clickhouse",
       "category": "ui_strings",
@@ -40874,7 +41034,7 @@
     },
     {
       "path": "packages/app/src/components/ConnectionForm.tsx",
-      "line": 256,
+      "line": 270,
       "column": 15,
       "term": "hyperdx",
       "category": "code_identifiers",
@@ -40882,7 +41042,7 @@
     },
     {
       "path": "packages/app/src/components/ConnectionForm.tsx",
-      "line": 256,
+      "line": 270,
       "column": 42,
       "term": "hyperdx",
       "category": "code_identifiers",
@@ -40890,7 +41050,7 @@
     },
     {
       "path": "packages/app/src/components/ConnectionForm.tsx",
-      "line": 373,
+      "line": 387,
       "column": 29,
       "term": "clickhouse",
       "category": "ui_strings",
@@ -40898,7 +41058,7 @@
     },
     {
       "path": "packages/app/src/components/ConnectionForm.tsx",
-      "line": 392,
+      "line": 406,
       "column": 40,
       "term": "clickhouse",
       "category": "code_identifiers",
@@ -40906,7 +41066,7 @@
     },
     {
       "path": "packages/app/src/components/ConnectionForm.tsx",
-      "line": 392,
+      "line": 406,
       "column": 60,
       "term": "clickhouse",
       "category": "ui_strings",
@@ -40914,7 +41074,7 @@
     },
     {
       "path": "packages/app/src/components/ConnectionForm.tsx",
-      "line": 420,
+      "line": 434,
       "column": 26,
       "term": "clickhouse",
       "category": "ui_strings",
@@ -40922,7 +41082,7 @@
     },
     {
       "path": "packages/app/src/components/ConnectionForm.tsx",
-      "line": 437,
+      "line": 451,
       "column": 26,
       "term": "clickhouse",
       "category": "env_vars",
@@ -40930,7 +41090,7 @@
     },
     {
       "path": "packages/app/src/components/ConnectionForm.tsx",
-      "line": 531,
+      "line": 545,
       "column": 139,
       "term": "clickhouse",
       "category": "ui_strings",
@@ -40938,7 +41098,7 @@
     },
     {
       "path": "packages/app/src/components/ConnectionForm.tsx",
-      "line": 552,
+      "line": 566,
       "column": 91,
       "term": "clickhouse",
       "category": "ui_strings",
@@ -40946,7 +41106,7 @@
     },
     {
       "path": "packages/app/src/components/ConnectionForm.tsx",
-      "line": 552,
+      "line": 566,
       "column": 194,
       "term": "clickhouse",
       "category": "ui_strings",
@@ -40954,7 +41114,7 @@
     },
     {
       "path": "packages/app/src/components/ConnectionForm.tsx",
-      "line": 563,
+      "line": 577,
       "column": 29,
       "term": "hyperdx",
       "category": "ui_strings",
@@ -40962,7 +41122,7 @@
     },
     {
       "path": "packages/app/src/components/ConnectionForm.tsx",
-      "line": 565,
+      "line": 579,
       "column": 36,
       "term": "hyperdx",
       "category": "ui_strings",
@@ -40970,7 +41130,7 @@
     },
     {
       "path": "packages/app/src/components/ConnectionForm.tsx",
-      "line": 579,
+      "line": 593,
       "column": 52,
       "term": "clickhouse",
       "category": "ui_strings",
@@ -40978,7 +41138,7 @@
     },
     {
       "path": "packages/app/src/components/ConnectionForm.tsx",
-      "line": 581,
+      "line": 595,
       "column": 32,
       "term": "clickhouse",
       "category": "ui_strings",
@@ -41002,7 +41162,7 @@
     },
     {
       "path": "packages/app/src/components/CouchbaseConnectionFields.tsx",
-      "line": 29,
+      "line": 30,
       "column": 3,
       "term": "hyperdx",
       "category": "code_identifiers",
@@ -43378,27 +43538,67 @@
     },
     {
       "path": "packages/app/src/components/Dashboards/DashboardsListPage.tsx",
-      "line": 79,
-      "column": 12,
+      "line": 75,
+      "column": 6,
+      "term": "clickhouse",
+      "category": "code_identifiers",
+      "snippet": "hasClickHouse: boolean;"
+    },
+    {
+      "path": "packages/app/src/components/Dashboards/DashboardsListPage.tsx",
+      "line": 83,
+      "column": 18,
+      "term": "clickhouse",
+      "category": "code_identifiers",
+      "snippet": "...(links.hasClickHouse"
+    },
+    {
+      "path": "packages/app/src/components/Dashboards/DashboardsListPage.tsx",
+      "line": 86,
+      "column": 20,
       "term": "clickhouse",
       "category": "ui_strings",
       "snippet": "name: 'ClickHouse',"
     },
     {
       "path": "packages/app/src/components/Dashboards/DashboardsListPage.tsx",
-      "line": 80,
-      "column": 13,
+      "line": 87,
+      "column": 21,
       "term": "clickhouse",
       "category": "ui_strings",
       "snippet": "href: '/clickhouse',"
     },
     {
       "path": "packages/app/src/components/Dashboards/DashboardsListPage.tsx",
-      "line": 81,
-      "column": 19,
+      "line": 88,
+      "column": 27,
       "term": "clickhouse",
       "category": "ui_strings",
       "snippet": "description: 'ClickHouse cluster health and query performance',"
+    },
+    {
+      "path": "packages/app/src/components/Dashboards/__tests__/DashboardsListPage.test.tsx",
+      "line": 88,
+      "column": 22,
+      "term": "clickhouse",
+      "category": "other",
+      "snippet": "name: 'Local ClickHouse',"
+    },
+    {
+      "path": "packages/app/src/components/Dashboards/__tests__/DashboardsListPage.test.tsx",
+      "line": 89,
+      "column": 16,
+      "term": "clickhouse",
+      "category": "other",
+      "snippet": "kind: 'clickhouse',"
+    },
+    {
+      "path": "packages/app/src/components/Dashboards/__tests__/DashboardsListPage.test.tsx",
+      "line": 95,
+      "column": 52,
+      "term": "clickhouse",
+      "category": "code_identifiers",
+      "snippet": "dataStoreLinks: () => ({ hasCouchbase: false, hasClickHouse: true }),"
     },
     {
       "path": "packages/app/src/components/DatabaseSelect.tsx",
@@ -47802,7 +48002,31 @@
     },
     {
       "path": "packages/app/src/connection.ts",
+      "line": 46,
+      "column": 6,
+      "term": "clickhouse",
+      "category": "code_identifiers",
+      "snippet": "hasClickHouse: boolean;"
+    },
+    {
+      "path": "packages/app/src/connection.ts",
+      "line": 51,
+      "column": 8,
+      "term": "clickhouse",
+      "category": "code_identifiers",
+      "snippet": "hasClickHouse: list.some("
+    },
+    {
+      "path": "packages/app/src/connection.ts",
       "line": 52,
+      "column": 42,
+      "term": "clickhouse",
+      "category": "ui_strings",
+      "snippet": "connection => (connection.kind ?? 'clickhouse') !== 'couchbase',"
+    },
+    {
+      "path": "packages/app/src/connection.ts",
+      "line": 65,
       "column": 14,
       "term": "hdx",
       "category": "code_identifiers",
@@ -47810,7 +48034,7 @@
     },
     {
       "path": "packages/app/src/connection.ts",
-      "line": 75,
+      "line": 88,
       "column": 35,
       "term": "clickhouse",
       "category": "ui_strings",
@@ -47818,7 +48042,7 @@
     },
     {
       "path": "packages/app/src/connection.ts",
-      "line": 92,
+      "line": 105,
       "column": 25,
       "term": "hdx",
       "category": "code_identifiers",
@@ -47826,7 +48050,7 @@
     },
     {
       "path": "packages/app/src/connection.ts",
-      "line": 129,
+      "line": 142,
       "column": 13,
       "term": "hdx",
       "category": "code_identifiers",
@@ -47834,7 +48058,7 @@
     },
     {
       "path": "packages/app/src/connection.ts",
-      "line": 145,
+      "line": 158,
       "column": 14,
       "term": "clickhouse",
       "category": "ui_strings",
@@ -47842,7 +48066,7 @@
     },
     {
       "path": "packages/app/src/connection.ts",
-      "line": 163,
+      "line": 176,
       "column": 23,
       "term": "hdx",
       "category": "code_identifiers",
@@ -47850,7 +48074,7 @@
     },
     {
       "path": "packages/app/src/connection.ts",
-      "line": 174,
+      "line": 187,
       "column": 10,
       "term": "hdx",
       "category": "code_identifiers",
@@ -47858,7 +48082,7 @@
     },
     {
       "path": "packages/app/src/connection.ts",
-      "line": 174,
+      "line": 187,
       "column": 21,
       "term": "clickhouse",
       "category": "ui_strings",
@@ -47866,7 +48090,7 @@
     },
     {
       "path": "packages/app/src/connection.ts",
-      "line": 197,
+      "line": 210,
       "column": 25,
       "term": "hdx",
       "category": "code_identifiers",
@@ -47874,7 +48098,7 @@
     },
     {
       "path": "packages/app/src/connection.ts",
-      "line": 234,
+      "line": 247,
       "column": 13,
       "term": "hdx",
       "category": "code_identifiers",
@@ -53271,6 +53495,14 @@
       "term": "clickhouse",
       "category": "code_identifiers",
       "snippet": "await expect(await clickhousePage.queryLatencyChart).toBeVisible();"
+    },
+    {
+      "path": "packages/app/tests/e2e/features/couchbase-cluster.spec.ts",
+      "line": 3,
+      "column": 44,
+      "term": "clickhouse",
+      "category": "other",
+      "snippet": "// Runs from Phase 7's Couchbase e2e mode. ClickHouse modes exclude @couchbase."
     },
     {
       "path": "packages/app/tests/e2e/features/dashboard-adhoc-filters.spec.ts",
@@ -75002,7 +75234,7 @@
     },
     {
       "path": "packages/common-utils/src/types.ts",
-      "line": 2590,
+      "line": 2596,
       "column": 50,
       "term": "clickhouse",
       "category": "other",
@@ -75010,7 +75242,7 @@
     },
     {
       "path": "packages/common-utils/src/types.ts",
-      "line": 2595,
+      "line": 2601,
       "column": 22,
       "term": "clickhouse",
       "category": "other",
@@ -75018,7 +75250,7 @@
     },
     {
       "path": "packages/common-utils/src/types.ts",
-      "line": 2602,
+      "line": 2608,
       "column": 5,
       "term": "clickhouse",
       "category": "code_identifiers",
@@ -75026,7 +75258,7 @@
     },
     {
       "path": "packages/common-utils/src/types.ts",
-      "line": 2610,
+      "line": 2616,
       "column": 5,
       "term": "clickhouse",
       "category": "code_identifiers",
@@ -75034,7 +75266,7 @@
     },
     {
       "path": "packages/common-utils/src/types.ts",
-      "line": 2615,
+      "line": 2621,
       "column": 33,
       "term": "clickhouse",
       "category": "other",
@@ -75042,7 +75274,7 @@
     },
     {
       "path": "packages/common-utils/src/types.ts",
-      "line": 2616,
+      "line": 2622,
       "column": 34,
       "term": "clickhouse",
       "category": "other",
@@ -75050,7 +75282,7 @@
     },
     {
       "path": "packages/common-utils/src/types.ts",
-      "line": 2617,
+      "line": 2623,
       "column": 13,
       "term": "clickhouse",
       "category": "code_identifiers",
@@ -75058,7 +75290,7 @@
     },
     {
       "path": "packages/common-utils/src/types.ts",
-      "line": 2618,
+      "line": 2624,
       "column": 18,
       "term": "clickhouse",
       "category": "code_identifiers",
@@ -75066,7 +75298,7 @@
     },
     {
       "path": "packages/common-utils/src/types.ts",
-      "line": 2620,
+      "line": 2626,
       "column": 15,
       "term": "clickhouse",
       "category": "other",
@@ -75074,7 +75306,7 @@
     },
     {
       "path": "packages/common-utils/src/types.ts",
-      "line": 2622,
+      "line": 2628,
       "column": 26,
       "term": "clickhouse",
       "category": "code_identifiers",
@@ -75082,7 +75314,7 @@
     },
     {
       "path": "packages/common-utils/src/types.ts",
-      "line": 2625,
+      "line": 2631,
       "column": 10,
       "term": "clickhouse",
       "category": "code_identifiers",
@@ -75090,7 +75322,7 @@
     },
     {
       "path": "packages/common-utils/src/types.ts",
-      "line": 2647,
+      "line": 2653,
       "column": 18,
       "term": "clickhouse",
       "category": "code_identifiers",
@@ -75098,7 +75330,7 @@
     },
     {
       "path": "packages/common-utils/src/types.ts",
-      "line": 2659,
+      "line": 2665,
       "column": 18,
       "term": "clickhouse",
       "category": "code_identifiers",
@@ -75106,7 +75338,7 @@
     },
     {
       "path": "packages/common-utils/src/types.ts",
-      "line": 2669,
+      "line": 2675,
       "column": 17,
       "term": "clickhouse",
       "category": "code_identifiers",
@@ -75114,7 +75346,7 @@
     },
     {
       "path": "packages/common-utils/src/types.ts",
-      "line": 2670,
+      "line": 2676,
       "column": 14,
       "term": "clickhouse",
       "category": "code_identifiers",
@@ -75122,7 +75354,7 @@
     },
     {
       "path": "packages/common-utils/src/types.ts",
-      "line": 2672,
+      "line": 2678,
       "column": 17,
       "term": "clickhouse",
       "category": "code_identifiers",
@@ -75130,7 +75362,7 @@
     },
     {
       "path": "packages/common-utils/src/types.ts",
-      "line": 2673,
+      "line": 2679,
       "column": 14,
       "term": "clickhouse",
       "category": "code_identifiers",
@@ -75138,7 +75370,7 @@
     },
     {
       "path": "packages/common-utils/src/types.ts",
-      "line": 2686,
+      "line": 2692,
       "column": 14,
       "term": "clickhouse",
       "category": "code_identifiers",
@@ -75146,7 +75378,7 @@
     },
     {
       "path": "packages/common-utils/src/types.ts",
-      "line": 2831,
+      "line": 2837,
       "column": 39,
       "term": "clickhouse",
       "category": "other",
@@ -75154,7 +75386,7 @@
     },
     {
       "path": "packages/common-utils/src/types.ts",
-      "line": 2832,
+      "line": 2838,
       "column": 14,
       "term": "clickhouse",
       "category": "telemetry_endpoints",
@@ -75162,7 +75394,7 @@
     },
     {
       "path": "packages/common-utils/src/types.ts",
-      "line": 3362,
+      "line": 3368,
       "column": 20,
       "term": "clickhouse",
       "category": "code_identifiers",
@@ -75170,7 +75402,7 @@
     },
     {
       "path": "packages/common-utils/src/types.ts",
-      "line": 3363,
+      "line": 3369,
       "column": 7,
       "term": "clickhouse",
       "category": "code_identifiers",
@@ -75178,7 +75410,7 @@
     },
     {
       "path": "packages/common-utils/src/types.ts",
-      "line": 3365,
+      "line": 3371,
       "column": 19,
       "term": "clickhouse",
       "category": "code_identifiers",
@@ -75186,7 +75418,7 @@
     },
     {
       "path": "packages/common-utils/src/types.ts",
-      "line": 3366,
+      "line": 3372,
       "column": 16,
       "term": "clickhouse",
       "category": "code_identifiers",
@@ -75194,7 +75426,7 @@
     },
     {
       "path": "packages/common-utils/src/types.ts",
-      "line": 3442,
+      "line": 3448,
       "column": 16,
       "term": "clickhouse",
       "category": "code_identifiers",
@@ -75202,7 +75434,7 @@
     },
     {
       "path": "packages/common-utils/src/types.ts",
-      "line": 3579,
+      "line": 3585,
       "column": 39,
       "term": "clickhouse",
       "category": "other",
@@ -81274,7 +81506,7 @@
     },
     {
       "path": "packages/ingest/src/setup/docs.ts",
-      "line": 100,
+      "line": 101,
       "column": 37,
       "term": "clickhouse",
       "category": "code_identifiers",
@@ -85109,7 +85341,7 @@
     {
       "category": "ui_strings",
       "term": "clickhouse",
-      "count": 74,
+      "count": 77,
       "files": 38
     },
     {
@@ -85133,14 +85365,14 @@
     {
       "category": "code_identifiers",
       "term": "clickhouse",
-      "count": 2246,
-      "files": 200
+      "count": 2261,
+      "files": 208
     },
     {
       "category": "code_identifiers",
       "term": "hdx",
-      "count": 638,
-      "files": 109
+      "count": 642,
+      "files": 110
     },
     {
       "category": "other",
@@ -85157,8 +85389,8 @@
     {
       "category": "other",
       "term": "clickhouse",
-      "count": 1737,
-      "files": 430
+      "count": 1744,
+      "files": 434
     },
     {
       "category": "other",

@@ -6265,7 +6265,7 @@
       "name": "ClickHouse server dashboard",
       "area": "admin",
       "visibility": "admin",
-      "status": "needs_decision",
+      "status": "replaced",
       "entryPoints": [
         {
           "id": "app_page:/clickhouse",
@@ -14453,6 +14453,500 @@
       }
     },
     {
+      "id": "couchbase-cluster",
+      "name": "Couchbase cluster",
+      "area": "admin",
+      "visibility": "admin",
+      "status": "ported",
+      "entryPoints": [
+        {
+          "id": "api_route:GET /couchbase/cluster/:connectionId/infrastructure",
+          "kind": "api_route",
+          "file": "packages/api/src/routers/api/couchbaseCluster.ts"
+        },
+        {
+          "id": "api_route:GET /couchbase/cluster/:connectionId/queries",
+          "kind": "api_route",
+          "file": "packages/api/src/routers/api/couchbaseCluster.ts"
+        },
+        {
+          "id": "api_route:GET /couchbase/cluster/:connectionId/status",
+          "kind": "api_route",
+          "file": "packages/api/src/routers/api/couchbaseCluster.ts"
+        },
+        {
+          "id": "app_page:/cluster",
+          "kind": "app_page",
+          "file": "packages/app/pages/cluster.tsx"
+        }
+      ],
+      "closureSize": 133,
+      "exclusiveFiles": [
+        "packages/api/src/routers/api/couchbaseCluster.ts",
+        "packages/api/src/utils/couchbaseManagement.ts",
+        "packages/api/src/utils/couchbaseStats.ts",
+        "packages/app/pages/cluster.tsx",
+        "packages/app/src/CouchbaseClusterPage.tsx",
+        "packages/app/src/clusterApi.ts",
+        "packages/common-utils/src/couchbase/cluster.ts",
+        "packages/common-utils/src/couchbase/management.ts"
+      ],
+      "dataLayer": [
+        {
+          "path": "packages/app/src/UserPreferencesModal.tsx",
+          "symbols": [
+            "UserPreferencesModal"
+          ]
+        },
+        {
+          "path": "packages/app/src/clickhouse.ts",
+          "symbols": [
+            "getClickhouseClient",
+            "useClickhouseClient"
+          ]
+        },
+        {
+          "path": "packages/app/src/components/AppNav/AppNav.components.tsx",
+          "symbols": [
+            "AppNavContext",
+            "AppNavHelpMenu",
+            "AppNavLink",
+            "AppNavUserMenu"
+          ]
+        },
+        {
+          "path": "packages/app/src/components/AppNav/AppNav.tsx",
+          "symbols": [
+            "default"
+          ]
+        },
+        {
+          "path": "packages/app/src/components/AppNav/InstanceLabel.tsx",
+          "symbols": [
+            "InstanceLabel"
+          ]
+        },
+        {
+          "path": "packages/app/src/components/AppNav/KeyboardShortcutsModal.tsx",
+          "symbols": [
+            "KeyboardShortcutsModal"
+          ]
+        },
+        {
+          "path": "packages/app/src/components/AppNav/WhatsNewDrawer.tsx",
+          "symbols": [
+            "WhatsNewDrawer"
+          ]
+        },
+        {
+          "path": "packages/app/src/components/AppNav/WhatsNewHighlightRow.tsx",
+          "symbols": [
+            "WhatsNewHighlightRow"
+          ]
+        },
+        {
+          "path": "packages/app/src/hdxDebug.ts",
+          "symbols": [
+            "setHdxIdentity"
+          ]
+        },
+        {
+          "path": "packages/app/src/utils/browserTelemetry.ts",
+          "symbols": [
+            "recordAction"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/clickhouse/attribution.ts",
+          "symbols": [
+            "QUERY_ATTRIBUTION_HEADER",
+            "QUERY_ATTRIBUTION_VERSION",
+            "QUERY_SURFACES",
+            "QueryAttribution",
+            "QuerySurface",
+            "buildLogComment",
+            "buildQueryId",
+            "mergeQueryAttribution",
+            "parseLogComment"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/clickhouse/browser.ts",
+          "symbols": [
+            "ClickhouseClient",
+            "testLocalConnection"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/clickhouse/index.ts",
+          "symbols": [
+            "BaseClickhouseClient",
+            "ChSql",
+            "ClickHouseQueryError",
+            "ClickhouseClientOptions",
+            "ColumnMeta",
+            "ColumnMetaType",
+            "JSDataType",
+            "QUERY_ATTRIBUTION_HEADER",
+            "QueryAttribution",
+            "QueryInputs",
+            "QuerySurface",
+            "ResponseJSON",
+            "Row",
+            "buildLogComment",
+            "chSql",
+            "chSqlToAliasMap",
+            "concatChSql",
+            "convertCHDataTypeToJSType",
+            "convertCHTypeToLuceneSearchType",
+            "extractColumnReferencesFromKey",
+            "extractInnerCHArrayJSType",
+            "filterColumnMetaByType",
+            "inferTimestampColumn",
+            "isAccessDeniedError",
+            "isCHFixedStringType",
+            "isCHIntegerType",
+            "mergeQueryAttribution",
+            "parameterizedQueryToSql",
+            "streamToAsyncIterator",
+            "tableExpr",
+            "wrapChSqlIfNotEmpty"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/clickhouse/node.ts",
+          "symbols": [
+            "withQueryAttribution"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/core/clickhouseVersion.ts",
+          "symbols": [
+            "ClickHouseVersion",
+            "isClickHouseVersionAtLeast",
+            "parseClickHouseVersion",
+            "supportsDirectReadMap",
+            "supportsMergeTreeIndex",
+            "supportsMergeTreeTextIndex"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/core/histogram.ts",
+          "symbols": [
+            "GROUP_ALIAS",
+            "translateExponentialHistogram",
+            "translateHistogram"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/core/materializedViews.ts",
+          "symbols": [
+            "MVOptimizationExplanation",
+            "inferGranularityFromMVSelect",
+            "optimizeFacetedKeyValuesConfig",
+            "optimizeGetKeyValuesCalls",
+            "renderStartOfBucketExpr",
+            "tryOptimizeConfigWithMaterializedViewWithExplanations"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/core/metadata.ts",
+          "symbols": [
+            "Field",
+            "FieldsCondition",
+            "Metadata",
+            "MetricNames",
+            "SkipIndexMetadata",
+            "TableConnection",
+            "TableMetadata",
+            "getMetadata",
+            "parseKeyPath",
+            "quoteIdentifierIfNeeded",
+            "unquoteIdentifier"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/core/renderChartConfig.ts",
+          "symbols": [
+            "FIXED_TIME_BUCKET_EXPR_ALIAS",
+            "isMetricChartConfig",
+            "isNonEmptyWhereExpr",
+            "isRatioChartConfig",
+            "isUsingGranularity",
+            "isUsingGroupBy",
+            "renderChartConfig",
+            "renderWhereExpressionStr",
+            "setChartSelectsAlias",
+            "timeFilterExpr"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/cluster.ts",
+          "symbols": [
+            "ActiveRequestRow",
+            "COMPLETED_REQUESTS_NOTE",
+            "CompletedBucket",
+            "IndexRow",
+            "RecentRequestRow",
+            "TopStatementRow",
+            "activeRequestsQuery",
+            "bucketWidthMs",
+            "completedOverTimeQuery",
+            "indexesQuery",
+            "mapActiveRequest",
+            "mapCompletedBucket",
+            "mapIndex",
+            "mapRecentRequest",
+            "mapTopStatement",
+            "recentRequestsQuery",
+            "topStatementsQuery"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/filters.ts",
+          "symbols": [
+            "AdhocConditionAction",
+            "AdhocConditionEntry",
+            "FilterState",
+            "filterStateToPredicate",
+            "getFilterVariableName",
+            "hasFilterEffect",
+            "isAdhocFilter",
+            "isFilterBroadcastEnabled",
+            "isFilterVariableEnabled",
+            "isQueryExpressionFilter",
+            "isStaticListFilter",
+            "serializeFilterState"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/macros.ts",
+          "symbols": [
+            "MacroName",
+            "MacroSuggestion",
+            "getSourceDependentMacrosUsed",
+            "getSourceTableMacroArgCounts",
+            "hasMacro",
+            "isMissingFiltersMacro",
+            "replaceMacros",
+            "substitutePromqlChartConfigTemplates"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/queryParser.ts",
+          "symbols": [
+            "CustomSchemaSQLSerializerV2",
+            "IMPLICIT_FIELD",
+            "SearchQueryBuilder",
+            "TextIndexInfo",
+            "TextIndexInfoLookup",
+            "buildTextIndexInfoLookup",
+            "decodeSpecialTokensToSource",
+            "encodeSpecialTokens",
+            "parse",
+            "skipIndexMatches"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/types.ts",
+          "symbols": [
+            "ALERT_INTERVAL_TO_MINUTES",
+            "AdhocDashboardFilter",
+            "AdhocFilterCondition",
+            "AdhocFilterOperator",
+            "AdhocFilterSourceType",
+            "AdhocFilterValue",
+            "AggregateFunction",
+            "AggregateFunctionSchema",
+            "AggregateFunctionWithCombinators",
+            "Alert",
+            "AlertApiResponse",
+            "AlertChartConfig",
+            "AlertChartConfigSchema",
+            "AlertErrorType",
+            "AlertEvaluationsApiResponse",
+            "AlertHistoryRangeApiResponse",
+            "AlertSource",
+            "AlertState",
+            "AlertThresholdType",
+            "AlertsApiResponse",
+            "AlertsPageItem",
+            "BackgroundChartSchema",
+            "BroadcastFilter",
+            "BuilderChartConfig",
+            "BuilderChartConfigWithDateRange",
+            "BuilderChartConfigWithOptDateRange",
+            "BuilderChartConfigWithOptTimestamp",
+            "BuilderSavedChartConfig",
+            "CATEGORICAL_PALETTE_TOKENS",
+            "CHART_PALETTE_TOKENS",
+            "ChSqlSchema",
+            "ChartConfig",
+            "ChartConfigSchema",
+            "ChartConfigWithDateRange",
+            "ChartConfigWithOptDateRange",
+            "ChartConfigWithOptTimestamp",
+            "ChartPaletteToken",
+            "ChartPaletteTokenSchema",
+            "ChartVariable",
+            "ClickHouseConnection",
+            "ColorCondition",
+            "ConditionFilter",
+            "Connection",
+            "CreateOrgApiKeyApiResponse",
+            "CreateOrgApiKeyRequest",
+            "CteChartConfig",
+            "DASHBOARD_CONTAINER_ID_MAX",
+            "DASHBOARD_MAX_TILES",
+            "DASHBOARD_VARIABLE_NAME_MAX_LENGTH",
+            "DASHBOARD_VARIABLE_NAME_PATTERN",
+            "DASHBOARD_VARIABLE_NAME_PATTERN_ANCHORED",
+            "DashboardContainer",
+            "DashboardContainerSchema",
+            "DashboardFilter",
+            "DashboardFilterSchema",
+            "DashboardFilterValue",
+            "DashboardSchema",
+            "DashboardTemplateSchema",
+            "DashboardWithoutId",
+            "DateRange",
+            "DerivedColumn",
+            "DisplayType",
+            "Filter",
+            "HeatmapMode",
+            "HeatmapScaleTypeSchema",
+            "InstallationApiResponse",
+            "InternalAggregateFunction",
+            "InternalAggregateFunctionSchema",
+            "LineInterpolationSchema",
+            "MAX_LEGEND_TEMPLATE_LENGTH",
+            "MAX_PROMQL_EXPRESSIONS",
+            "MaterializedViewConfiguration",
+            "MeApiResponse",
+            "MetadataMaterializedViews",
+            "MetricFormula",
+            "MetricFormulaSchema",
+            "MetricsDataType",
+            "MetricsDataTypeSchema",
+            "NumberFormat",
+            "NumberFormatSchema",
+            "NumberTileColorConditionSchema",
+            "NumericUnit",
+            "ONBOARDING_TASK_IDS",
+            "OnClickDashboardSchema",
+            "OnClickExternalSchema",
+            "OnClickSearchSchema",
+            "OnboardingData",
+            "OnboardingDataApiResponse",
+            "OnboardingTaskId",
+            "OrgApiKeyApiResponse",
+            "OrgApiKeyExpiry",
+            "OrgApiKeysApiResponse",
+            "PERCENTILE_AGG_FN_LEVELS",
+            "PROMQL_ADHOC_FILTER_OPERATORS",
+            "PercentileAggregateFunctionSchema",
+            "PinnedFiltersValue",
+            "PresetDashboard",
+            "PresetDashboardFilter",
+            "PrometheusMatrixResult",
+            "PrometheusVectorResult",
+            "PromqlChartConfig",
+            "PromqlConditionFilter",
+            "PromqlExpressionList",
+            "PromqlHeatmapModeSchema",
+            "PromqlLabelDashboardFilterSchema",
+            "PromqlQueryType",
+            "PromqlQueryTypeSchema",
+            "PromqlReducer",
+            "PromqlReducerSchema",
+            "PromqlSavedChartConfig",
+            "PromqlSeries",
+            "QueryExpressionDashboardFilterSchema",
+            "QuerySettings",
+            "RawSqlChartConfig",
+            "RawSqlSavedChartConfig",
+            "RotateAccessKeyApiResponse",
+            "RotateApiKeyApiResponse",
+            "SEMANTIC_PALETTE_TOKENS",
+            "SQLInterval",
+            "SQLIntervalSchema",
+            "SQL_ADHOC_FILTER_OPERATORS",
+            "SavedChartConfig",
+            "SavedSearch",
+            "SavedSearchListApiResponse",
+            "SavedSearchSchema",
+            "SearchCondition",
+            "SearchConditionLanguage",
+            "SearchConditionLanguageSchema",
+            "SelectList",
+            "SortSpecificationList",
+            "SourceKind",
+            "SourceSchema",
+            "SqlAstFilter",
+            "StaticListDashboardFilterSchema",
+            "TILE_DESCRIPTION_MAX_LENGTH",
+            "TLogSource",
+            "TMetricSource",
+            "TPromqlSource",
+            "TSessionSource",
+            "TSource",
+            "TSourceNoId",
+            "TTraceSource",
+            "TagResourceType",
+            "Team",
+            "TeamApiResponse",
+            "TeamClickHouseSettings",
+            "TeamClickHouseSettingsUpdate",
+            "TeamInvitationsApiResponse",
+            "TeamMembersApiResponse",
+            "TeamTagsApiResponse",
+            "TileTemplateSchema",
+            "UpdateClickHouseSettingsApiResponse",
+            "UseTextIndex",
+            "VariableFilterValueSchema",
+            "WebhookCreateApiResponse",
+            "WebhookService",
+            "WebhookTestApiResponse",
+            "WebhookUpdateApiResponse",
+            "WebhooksApiResponse",
+            "addDuplicateTileIdIssues",
+            "alertDisplayNameSchema",
+            "alertNoteSchema",
+            "alertTagsSchema",
+            "isLogSource",
+            "isMetricSource",
+            "isPersistableUserId",
+            "isPromqlSource",
+            "isSearchableSource",
+            "isTraceSource",
+            "resolveChartPaletteToken",
+            "scheduleStartAtSchema",
+            "tagsSchema",
+            "validateAlertChannelSelection",
+            "validateAlertScheduleOffsetMinutes",
+            "validateAlertThresholdMax",
+            "walkRawDashboardTileColors",
+            "zAlertChannel",
+            "zAlertChannels"
+          ]
+        }
+      ],
+      "tests": {
+        "unit": [
+          "packages/api/src/routers/api/__tests__/couchbaseCluster.test.ts",
+          "packages/api/src/utils/__tests__/couchbaseManagement.test.ts",
+          "packages/api/src/utils/__tests__/couchbaseStats.test.ts",
+          "packages/app/src/__tests__/CouchbaseClusterPage.test.tsx",
+          "packages/common-utils/src/couchbase/__tests__/cluster.test.ts",
+          "packages/common-utils/src/couchbase/__tests__/management.test.ts"
+        ],
+        "int": [],
+        "e2e": [
+          "packages/app/tests/e2e/features/couchbase-cluster.spec.ts"
+        ]
+      }
+    },
+    {
       "id": "couchbase-connectivity",
       "name": "Couchbase connectivity",
       "area": "query_proxy",
@@ -21012,8 +21506,8 @@
     }
   ],
   "totals": {
-    "features": 54,
-    "entryPoints": 207,
+    "features": 55,
+    "entryPoints": 211,
     "byStatus": [
       {
         "status": "not_started",
@@ -21025,11 +21519,11 @@
       },
       {
         "status": "ported",
-        "count": 1
+        "count": 2
       },
       {
         "status": "needs_decision",
-        "count": 2
+        "count": 1
       },
       {
         "status": "dropped",
@@ -21037,7 +21531,7 @@
       },
       {
         "status": "replaced",
-        "count": 0
+        "count": 1
       }
     ]
   }

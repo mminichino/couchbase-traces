@@ -62,7 +62,17 @@ router.post(
       const connection = await createConnection(
         teamId.toString(),
         body.kind === 'couchbase'
-          ? { ...body, password: body.password ?? '', team: teamId }
+          ? {
+              ...body,
+              password: body.password ?? '',
+              team: teamId,
+              // Null means "no override"; don't store it on create.
+              managementPort:
+                typeof body.managementPort === 'number'
+                  ? body.managementPort
+                  : undefined,
+              monitorPassword: body.monitorPassword || undefined,
+            }
           : {
               ...body,
               password: body.password ?? '',
@@ -114,13 +124,17 @@ router.put(
       let newConnection;
       const unsetFields: string[] = [];
       if (body.kind === 'couchbase') {
-        const { tlsCaCertificate, ...rest } = body;
+        const { tlsCaCertificate, monitorPassword, managementPort, ...rest } =
+          body;
         newConnection = {
           ...rest,
           team: teamId,
           password,
           ...(tlsCaCertificate ? { tlsCaCertificate } : {}),
+          ...(monitorPassword ? { monitorPassword } : {}),
+          ...(typeof managementPort === 'number' ? { managementPort } : {}),
         };
+        if (managementPort === null) unsetFields.push('managementPort');
       } else {
         // Read from the raw body: the schema rejects '', which clears the prefix.
         const rawPrefix: unknown = Reflect.get(

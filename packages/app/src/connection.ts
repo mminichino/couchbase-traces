@@ -41,6 +41,19 @@ export function getLocalConnections(): Connection[] {
   return [];
 }
 
+export function dataStoreLinks(connections: { kind?: string }[] | undefined): {
+  hasCouchbase: boolean;
+  hasClickHouse: boolean;
+} {
+  const list = connections ?? [];
+  return {
+    hasCouchbase: list.some(connection => connection.kind === 'couchbase'),
+    hasClickHouse: list.some(
+      connection => (connection.kind ?? 'clickhouse') !== 'couchbase',
+    ),
+  };
+}
+
 export function useConnections() {
   return useQuery<Connection[]>({
     queryKey: ['connections'],

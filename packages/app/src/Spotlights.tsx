@@ -15,6 +15,7 @@ import {
 } from '@tabler/icons-react';
 
 import { IS_K8S_DASHBOARD_ENABLED } from './config';
+import { dataStoreLinks, useConnections } from './connection';
 import { useDashboards } from './dashboard';
 import { useSavedSearches } from './savedSearch';
 
@@ -25,6 +26,8 @@ export const useSpotlightActions = () => {
 
   const { data: logViewsData } = useSavedSearches();
   const { data: dashboardsData } = useDashboards();
+  const { data: connections } = useConnections();
+  const storeLinks = dataStoreLinks(connections);
 
   const actions = React.useMemo<SpotlightActionData[]>(() => {
     const logViews = logViewsData ?? [];
@@ -69,13 +72,29 @@ export const useSpotlightActions = () => {
         href: '/services',
         keywords: ['preset', 'dashboard', 'http', 'latency', 'errors'],
       },
-      {
-        id: 'preset-clickhouse',
-        label: 'ClickHouse',
-        description: 'ClickHouse cluster health and query performance',
-        href: '/clickhouse',
-        keywords: ['preset', 'dashboard', 'database', 'queries'],
-      },
+      ...(storeLinks.hasClickHouse
+        ? [
+            {
+              id: 'preset-clickhouse',
+              label: 'ClickHouse',
+              description: 'ClickHouse cluster health and query performance',
+              href: '/clickhouse',
+              keywords: ['preset', 'dashboard', 'database', 'queries'],
+            },
+          ]
+        : []),
+      ...(storeLinks.hasCouchbase
+        ? [
+            {
+              id: 'preset-cluster',
+              label: 'Cluster',
+              description:
+                'Couchbase query activity, infrastructure metrics, and cluster status',
+              href: '/cluster',
+              keywords: ['preset', 'dashboard', 'couchbase', 'cluster'],
+            },
+          ]
+        : []),
       ...(IS_K8S_DASHBOARD_ENABLED
         ? [
             {
@@ -193,7 +212,13 @@ export const useSpotlightActions = () => {
     );
 
     return logViewActions;
-  }, [logViewsData, dashboardsData, router]);
+  }, [
+    logViewsData,
+    dashboardsData,
+    router,
+    storeLinks.hasClickHouse,
+    storeLinks.hasCouchbase,
+  ]);
 
   return { actions };
 };

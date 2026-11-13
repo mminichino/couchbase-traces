@@ -225,8 +225,11 @@ export function validateFeatures(file, entryPoints) {
 
   for (const f of file.features) {
     if (!f || f.status !== 'replaced' || !nonEmpty(f.decision?.replacedBy)) continue;
-    if (!ids.has(f.decision.replacedBy)) {
+    const target = file.features.find(other => other && other.id === f.decision.replacedBy);
+    if (!target) {
       errors.push(`${f.id}: decision.replacedBy ${JSON.stringify(f.decision.replacedBy)} is not a feature id`);
+    } else if (target.status !== 'ported') {
+      errors.push(`${f.id}: decision.replacedBy ${JSON.stringify(f.decision.replacedBy)} must be a ported feature`);
     }
   }
 

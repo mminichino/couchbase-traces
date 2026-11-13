@@ -464,6 +464,22 @@
     },
     {
       "category": "function",
+      "name": "AVG",
+      "classification": "portable",
+      "sqlppApproach": null,
+      "occurrences": 1,
+      "files": [
+        {
+          "path": "packages/common-utils/src/couchbase/cluster.ts",
+          "workspace": "@couchbase-traces/common-utils",
+          "lines": [
+            68
+          ]
+        }
+      ]
+    },
+    {
+      "category": "function",
       "name": "BROADCAST",
       "classification": "unmapped",
       "sqlppApproach": null,
@@ -547,6 +563,23 @@
           "workspace": "@couchbase-traces/app",
           "lines": [
             57
+          ]
+        }
+      ]
+    },
+    {
+      "category": "function",
+      "name": "COUNT",
+      "classification": "portable",
+      "sqlppApproach": null,
+      "occurrences": 2,
+      "files": [
+        {
+          "path": "packages/common-utils/src/couchbase/cluster.ts",
+          "workspace": "@couchbase-traces/common-utils",
+          "lines": [
+            64,
+            68
           ]
         }
       ]
@@ -794,6 +827,22 @@
     },
     {
       "category": "function",
+      "name": "IFMISSINGORNULL",
+      "classification": "unmapped",
+      "sqlppApproach": null,
+      "occurrences": 1,
+      "files": [
+        {
+          "path": "packages/common-utils/src/couchbase/cluster.ts",
+          "workspace": "@couchbase-traces/common-utils",
+          "lines": [
+            64
+          ]
+        }
+      ]
+    },
+    {
+      "category": "function",
       "name": "INFRASTRUCTURE",
       "classification": "unmapped",
       "sqlppApproach": null,
@@ -1029,6 +1078,22 @@
           "workspace": "@couchbase-traces/api",
           "lines": [
             825
+          ]
+        }
+      ]
+    },
+    {
+      "category": "function",
+      "name": "MAX",
+      "classification": "portable",
+      "sqlppApproach": null,
+      "occurrences": 1,
+      "files": [
+        {
+          "path": "packages/common-utils/src/couchbase/cluster.ts",
+          "workspace": "@couchbase-traces/common-utils",
+          "lines": [
+            68
           ]
         }
       ]
@@ -1282,16 +1347,58 @@
     },
     {
       "category": "function",
+      "name": "STR_TO_DURATION",
+      "classification": "unmapped",
+      "sqlppApproach": null,
+      "occurrences": 3,
+      "files": [
+        {
+          "path": "packages/common-utils/src/couchbase/cluster.ts",
+          "workspace": "@couchbase-traces/common-utils",
+          "lines": [
+            68,
+            72
+          ]
+        }
+      ]
+    },
+    {
+      "category": "function",
+      "name": "STR_TO_MILLIS",
+      "classification": "unmapped",
+      "sqlppApproach": null,
+      "occurrences": 10,
+      "files": [
+        {
+          "path": "packages/common-utils/src/couchbase/cluster.ts",
+          "workspace": "@couchbase-traces/common-utils",
+          "lines": [
+            64,
+            68,
+            72
+          ]
+        }
+      ]
+    },
+    {
+      "category": "function",
       "name": "SUM",
       "classification": "portable",
       "sqlppApproach": null,
-      "occurrences": 1,
+      "occurrences": 2,
       "files": [
         {
           "path": "packages/common-utils/src/core/renderChartConfig.ts",
           "workspace": "@couchbase-traces/common-utils",
           "lines": [
             2281
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/cluster.ts",
+          "workspace": "@couchbase-traces/common-utils",
+          "lines": [
+            64
           ]
         }
       ]
@@ -1691,7 +1798,7 @@
           "path": "packages/common-utils/src/types.ts",
           "workspace": "@couchbase-traces/common-utils",
           "lines": [
-            3035
+            3041
           ]
         }
       ]
@@ -11738,6 +11845,10 @@
     {
       "path": "packages/common-utils/src/core/utils.ts",
       "count": 1
+    },
+    {
+      "path": "packages/common-utils/src/couchbase/cluster.ts",
+      "count": 5
     },
     {
       "path": "packages/common-utils/src/couchbase/nodeTest.ts",

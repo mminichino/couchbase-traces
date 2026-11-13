@@ -49,6 +49,10 @@ if (useDebug) {
 if (useLocal) {
   playwrightCmd.push('--grep-invert', '@full-stack');
 }
+// The cluster spec runs in Phase 7's Couchbase e2e mode, not ClickHouse modes.
+if (process.env.CBT_E2E_STORE !== 'couchbase') {
+  playwrightCmd.push('--grep-invert', '@couchbase');
+}
 
 // Add any additional playwright arguments
 playwrightCmd.push(...playwrightArgs);
