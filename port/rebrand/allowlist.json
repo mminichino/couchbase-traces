@@ -1122,34 +1122,6 @@
       "note": "Token \"clickstack-browser.ts\" allowed in the token map"
     },
     {
-      "path": "packages/app/src/CareersPage.tsx",
-      "term": "clickstack",
-      "snippet": "/hyperdx|clickstack/i",
-      "reason": "pending_decision",
-      "note": "Careers page (app-careers, needs_decision) filters upstream commits."
-    },
-    {
-      "path": "packages/app/src/CareersPage.tsx",
-      "term": "clickstack",
-      "snippet": "ClickStack/commits",
-      "reason": "pending_decision",
-      "note": "Careers page (app-careers, needs_decision) lists ClickStack commits."
-    },
-    {
-      "path": "packages/app/src/CareersPage.tsx",
-      "term": "hyperdx",
-      "snippet": "const FILTER_PATTERN = /hyperdx|clickstack/i;",
-      "reason": "internal_identifier",
-      "note": "Token \"hyperdx\" allowed in the token map"
-    },
-    {
-      "path": "packages/app/src/CareersPage.tsx",
-      "term": "url",
-      "snippet": "boards-api.greenhouse.io",
-      "reason": "pending_decision",
-      "note": "Careers page (app-careers, needs_decision) loads ClickHouse job listings."
-    },
-    {
       "path": "packages/app/src/ChartUtils.tsx",
       "term": "url",
       "snippet": "github.com/ClickHouse/ClickHouse",

@@ -18322,7 +18322,7 @@
     },
     {
       "path": "packages/api/openapi.json",
-      "line": 886,
+      "line": 905,
       "column": 36,
       "term": "clickhouse",
       "category": "other",
@@ -18330,7 +18330,7 @@
     },
     {
       "path": "packages/api/openapi.json",
-      "line": 891,
+      "line": 910,
       "column": 16,
       "term": "clickhouse",
       "category": "other",
@@ -18338,7 +18338,7 @@
     },
     {
       "path": "packages/api/openapi.json",
-      "line": 894,
+      "line": 913,
       "column": 25,
       "term": "clickhouse",
       "category": "other",
@@ -18346,7 +18346,7 @@
     },
     {
       "path": "packages/api/openapi.json",
-      "line": 895,
+      "line": 914,
       "column": 59,
       "term": "clickhouse",
       "category": "other",
@@ -18354,7 +18354,7 @@
     },
     {
       "path": "packages/api/openapi.json",
-      "line": 896,
+      "line": 915,
       "column": 25,
       "term": "clickhouse",
       "category": "other",
@@ -18362,7 +18362,7 @@
     },
     {
       "path": "packages/api/openapi.json",
-      "line": 900,
+      "line": 919,
       "column": 29,
       "term": "clickhouse",
       "category": "other",
@@ -18370,7 +18370,7 @@
     },
     {
       "path": "packages/api/openapi.json",
-      "line": 901,
+      "line": 920,
       "column": 33,
       "term": "clickhouse",
       "category": "telemetry_endpoints",
@@ -18378,7 +18378,7 @@
     },
     {
       "path": "packages/api/openapi.json",
-      "line": 905,
+      "line": 924,
       "column": 29,
       "term": "clickhouse",
       "category": "other",
@@ -18386,7 +18386,7 @@
     },
     {
       "path": "packages/api/openapi.json",
-      "line": 911,
+      "line": 930,
       "column": 29,
       "term": "clickhouse",
       "category": "other",
@@ -18394,7 +18394,7 @@
     },
     {
       "path": "packages/api/openapi.json",
-      "line": 914,
+      "line": 933,
       "column": 12,
       "term": "hyperdx",
       "category": "other",
@@ -18402,7 +18402,7 @@
     },
     {
       "path": "packages/api/openapi.json",
-      "line": 916,
+      "line": 935,
       "column": 75,
       "term": "clickhouse",
       "category": "other",
@@ -18410,7 +18410,7 @@
     },
     {
       "path": "packages/api/openapi.json",
-      "line": 918,
+      "line": 937,
       "column": 25,
       "term": "hyperdx",
       "category": "other",
@@ -18418,7 +18418,7 @@
     },
     {
       "path": "packages/api/openapi.json",
-      "line": 922,
+      "line": 941,
       "column": 144,
       "term": "clickhouse",
       "category": "other",
@@ -18426,7 +18426,7 @@
     },
     {
       "path": "packages/api/openapi.json",
-      "line": 1048,
+      "line": 1086,
       "column": 42,
       "term": "hdx",
       "category": "other",
@@ -18434,7 +18434,7 @@
     },
     {
       "path": "packages/api/openapi.json",
-      "line": 1084,
+      "line": 1122,
       "column": 16,
       "term": "hdx",
       "category": "other",
@@ -18442,7 +18442,7 @@
     },
     {
       "path": "packages/api/openapi.json",
-      "line": 2650,
+      "line": 2688,
       "column": 39,
       "term": "clickhouse",
       "category": "other",
@@ -18450,7 +18450,7 @@
     },
     {
       "path": "packages/api/openapi.json",
-      "line": 4024,
+      "line": 4062,
       "column": 73,
       "term": "clickhouse",
       "category": "other",
@@ -18458,7 +18458,7 @@
     },
     {
       "path": "packages/api/openapi.json",
-      "line": 4815,
+      "line": 4853,
       "column": 139,
       "term": "clickhouse",
       "category": "other",
@@ -18466,7 +18466,7 @@
     },
     {
       "path": "packages/api/openapi.json",
-      "line": 4851,
+      "line": 4889,
       "column": 53,
       "term": "clickhouse",
       "category": "other",
@@ -18474,7 +18474,7 @@
     },
     {
       "path": "packages/api/openapi.json",
-      "line": 4851,
+      "line": 4889,
       "column": 196,
       "term": "clickhouse",
       "category": "other",
@@ -18482,7 +18482,7 @@
     },
     {
       "path": "packages/api/openapi.json",
-      "line": 4857,
+      "line": 4895,
       "column": 29,
       "term": "clickhouse",
       "category": "other",
@@ -18490,7 +18490,7 @@
     },
     {
       "path": "packages/api/openapi.json",
-      "line": 4878,
+      "line": 4916,
       "column": 190,
       "term": "clickhouse",
       "category": "other",
@@ -18498,7 +18498,7 @@
     },
     {
       "path": "packages/api/openapi.json",
-      "line": 4906,
+      "line": 4944,
       "column": 29,
       "term": "clickhouse",
       "category": "other",
@@ -18506,7 +18506,7 @@
     },
     {
       "path": "packages/api/openapi.json",
-      "line": 4925,
+      "line": 4963,
       "column": 29,
       "term": "clickhouse",
       "category": "other",
@@ -18514,7 +18514,7 @@
     },
     {
       "path": "packages/api/openapi.json",
-      "line": 4935,
+      "line": 4973,
       "column": 29,
       "term": "clickhouse",
       "category": "other",
@@ -18522,7 +18522,7 @@
     },
     {
       "path": "packages/api/openapi.json",
-      "line": 4948,
+      "line": 4986,
       "column": 29,
       "term": "clickhouse",
       "category": "other",
@@ -18530,7 +18530,7 @@
     },
     {
       "path": "packages/api/openapi.json",
-      "line": 4958,
+      "line": 4996,
       "column": 29,
       "term": "clickhouse",
       "category": "other",
@@ -18538,7 +18538,7 @@
     },
     {
       "path": "packages/api/openapi.json",
-      "line": 5142,
+      "line": 5180,
       "column": 39,
       "term": "clickhouse",
       "category": "other",
@@ -18546,7 +18546,7 @@
     },
     {
       "path": "packages/api/openapi.json",
-      "line": 5151,
+      "line": 5189,
       "column": 38,
       "term": "clickhouse",
       "category": "other",
@@ -18554,7 +18554,7 @@
     },
     {
       "path": "packages/api/openapi.json",
-      "line": 5284,
+      "line": 5322,
       "column": 68,
       "term": "clickhouse",
       "category": "other",
@@ -18562,7 +18562,7 @@
     },
     {
       "path": "packages/api/openapi.json",
-      "line": 5319,
+      "line": 5357,
       "column": 33,
       "term": "clickhouse",
       "category": "other",
@@ -18570,7 +18570,7 @@
     },
     {
       "path": "packages/api/openapi.json",
-      "line": 5324,
+      "line": 5362,
       "column": 33,
       "term": "clickhouse",
       "category": "other",
@@ -18578,7 +18578,7 @@
     },
     {
       "path": "packages/api/openapi.json",
-      "line": 5387,
+      "line": 5425,
       "column": 39,
       "term": "clickhouse",
       "category": "other",
@@ -18586,7 +18586,7 @@
     },
     {
       "path": "packages/api/openapi.json",
-      "line": 5396,
+      "line": 5434,
       "column": 38,
       "term": "clickhouse",
       "category": "other",
@@ -18594,7 +18594,7 @@
     },
     {
       "path": "packages/api/openapi.json",
-      "line": 5553,
+      "line": 5591,
       "column": 68,
       "term": "clickhouse",
       "category": "other",
@@ -18602,7 +18602,7 @@
     },
     {
       "path": "packages/api/openapi.json",
-      "line": 5598,
+      "line": 5636,
       "column": 33,
       "term": "clickhouse",
       "category": "other",
@@ -18610,7 +18610,7 @@
     },
     {
       "path": "packages/api/openapi.json",
-      "line": 5603,
+      "line": 5641,
       "column": 33,
       "term": "clickhouse",
       "category": "other",
@@ -18618,7 +18618,7 @@
     },
     {
       "path": "packages/api/openapi.json",
-      "line": 5660,
+      "line": 5698,
       "column": 39,
       "term": "clickhouse",
       "category": "other",
@@ -18626,7 +18626,7 @@
     },
     {
       "path": "packages/api/openapi.json",
-      "line": 5669,
+      "line": 5707,
       "column": 38,
       "term": "clickhouse",
       "category": "other",
@@ -18634,7 +18634,7 @@
     },
     {
       "path": "packages/api/openapi.json",
-      "line": 5761,
+      "line": 5799,
       "column": 39,
       "term": "clickhouse",
       "category": "other",
@@ -18642,7 +18642,7 @@
     },
     {
       "path": "packages/api/openapi.json",
-      "line": 5770,
+      "line": 5808,
       "column": 38,
       "term": "clickhouse",
       "category": "other",
@@ -18650,7 +18650,7 @@
     },
     {
       "path": "packages/api/openapi.json",
-      "line": 5853,
+      "line": 5891,
       "column": 80,
       "term": "clickhouse",
       "category": "other",
@@ -18658,7 +18658,7 @@
     },
     {
       "path": "packages/api/openapi.json",
-      "line": 5858,
+      "line": 5896,
       "column": 77,
       "term": "clickhouse",
       "category": "other",
@@ -18666,7 +18666,7 @@
     },
     {
       "path": "packages/api/openapi.json",
-      "line": 5862,
+      "line": 5900,
       "column": 38,
       "term": "clickhouse",
       "category": "other",
@@ -18674,7 +18674,7 @@
     },
     {
       "path": "packages/api/openapi.json",
-      "line": 7130,
+      "line": 7168,
       "column": 39,
       "term": "clickhouse",
       "category": "other",
@@ -18682,7 +18682,7 @@
     },
     {
       "path": "packages/api/openapi.json",
-      "line": 7246,
+      "line": 7284,
       "column": 166,
       "term": "hyperdx",
       "category": "other",
@@ -37033,62 +37033,6 @@
       "snippet": "Clickhouse Query Benchmark"
     },
     {
-      "path": "packages/app/src/CareersPage.tsx",
-      "line": 49,
-      "column": 33,
-      "term": "clickhouse",
-      "category": "telemetry_endpoints",
-      "snippet": "'https://api.github.com/repos/ClickHouse/ClickStack/commits?sha=main&per_page=50';"
-    },
-    {
-      "path": "packages/app/src/CareersPage.tsx",
-      "line": 49,
-      "column": 44,
-      "term": "clickstack",
-      "category": "telemetry_endpoints",
-      "snippet": "'https://api.github.com/repos/ClickHouse/ClickStack/commits?sha=main&per_page=50';"
-    },
-    {
-      "path": "packages/app/src/CareersPage.tsx",
-      "line": 52,
-      "column": 47,
-      "term": "clickhouse",
-      "category": "telemetry_endpoints",
-      "snippet": "'https://boards-api.greenhouse.io/v1/boards/clickhouse/jobs';"
-    },
-    {
-      "path": "packages/app/src/CareersPage.tsx",
-      "line": 54,
-      "column": 25,
-      "term": "hyperdx",
-      "category": "other",
-      "snippet": "const FILTER_PATTERN = /hyperdx|clickstack/i;"
-    },
-    {
-      "path": "packages/app/src/CareersPage.tsx",
-      "line": 54,
-      "column": 33,
-      "term": "clickstack",
-      "category": "other",
-      "snippet": "const FILTER_PATTERN = /hyperdx|clickstack/i;"
-    },
-    {
-      "path": "packages/app/src/CareersPage.tsx",
-      "line": 102,
-      "column": 11,
-      "term": "clickhouse",
-      "category": "ui_strings",
-      "snippet": "ClickHouse Careers: Help Build the Future of Observability"
-    },
-    {
-      "path": "packages/app/src/CareersPage.tsx",
-      "line": 105,
-      "column": 43,
-      "term": "clickhouse",
-      "category": "ui_strings",
-      "snippet": "Join us to build {brandName} at ClickHouse, scaling a high performance"
-    },
-    {
       "path": "packages/app/src/ChartUtils.tsx",
       "line": 11,
       "column": 45,
@@ -40482,7 +40426,7 @@
     },
     {
       "path": "packages/app/src/clusterApi.ts",
-      "line": 135,
+      "line": 147,
       "column": 7,
       "term": "hdx",
       "category": "code_identifiers",
@@ -40490,7 +40434,7 @@
     },
     {
       "path": "packages/app/src/clusterApi.ts",
-      "line": 150,
+      "line": 162,
       "column": 7,
       "term": "hdx",
       "category": "code_identifiers",
@@ -85256,15 +85200,9 @@
     },
     {
       "category": "telemetry_endpoints",
-      "term": "clickstack",
-      "count": 1,
-      "files": 1
-    },
-    {
-      "category": "telemetry_endpoints",
       "term": "clickhouse",
-      "count": 63,
-      "files": 28
+      "count": 61,
+      "files": 27
     },
     {
       "category": "telemetry_endpoints",
@@ -85341,8 +85279,8 @@
     {
       "category": "ui_strings",
       "term": "clickhouse",
-      "count": 77,
-      "files": 38
+      "count": 75,
+      "files": 37
     },
     {
       "category": "ui_strings",
@@ -85377,14 +85315,14 @@
     {
       "category": "other",
       "term": "hyperdx",
-      "count": 639,
-      "files": 162
+      "count": 638,
+      "files": 161
     },
     {
       "category": "other",
       "term": "clickstack",
-      "count": 188,
-      "files": 74
+      "count": 187,
+      "files": 73
     },
     {
       "category": "other",

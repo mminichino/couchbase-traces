@@ -65,7 +65,7 @@ Inventory of commit adcb75c16715. Full detail is in `port/state/inventory/`.
 | Package | Directory | Role | Languages | Source files | Test files | CI targets |
 |---|---|---|---|---|---|---|
 | @couchbase-traces/api | packages/api | API server and tasks | javascript, typescript | 230 | 151 | ci:int, ci:lint, ci:unit |
-| @couchbase-traces/app | packages/app | web UI | javascript, typescript | 687 | 510 | ci:lint, ci:unit |
+| @couchbase-traces/app | packages/app | web UI | javascript, typescript | 685 | 510 | ci:lint, ci:unit |
 | @couchbase-traces/cli | packages/cli | command-line client | javascript, typescript | 61 | 9 | ci:build, ci:lint, ci:unit |
 | @couchbase-traces/common-utils | packages/common-utils | shared query and data layer | javascript, typescript | 74 | 65 | ci:build, ci:int, ci:lint, ci:unit |
 | @couchbase-traces/hdx-eval | packages/hdx-eval | evaluation harness | javascript, typescript | 53 | 31 | ci:lint, ci:unit |
@@ -76,7 +76,7 @@ Inventory of commit adcb75c16715. Full detail is in `port/state/inventory/`.
 
 | Kind | Count |
 |---|---|
-| app_page | 26 |
+| app_page | 25 |
 | app_api_route | 2 |
 | api_route | 123 |
 | mcp_tool | 32 |
@@ -600,13 +600,13 @@ Collector components, pipelines, ClickHouse exporters, and management code.
 | package_names | 0 | 0 | 136 | 0 | 1 |
 | external_dependencies | 6 | 18 | 135 | 0 | 0 |
 | env_vars | 73 | 7 | 534 | 0 | 51 |
-| telemetry_endpoints | 18 | 1 | 63 | 0 | 2 |
+| telemetry_endpoints | 18 | 0 | 61 | 0 | 2 |
 | assets | 0 | 0 | 0 | 0 | 3 |
 | docker | 48 | 0 | 116 | 0 | 95 |
 | docs | 487 | 278 | 928 | 2 | 191 |
-| ui_strings | 7 | 9 | 77 | 0 | 127 |
+| ui_strings | 7 | 9 | 75 | 0 | 127 |
 | code_identifiers | 128 | 21 | 2261 | 0 | 642 |
-| other | 639 | 188 | 1744 | 2 | 1611 |
+| other | 638 | 187 | 1744 | 2 | 1611 |
 
 ### Feature status
 
@@ -615,8 +615,8 @@ Collector components, pipelines, ClickHouse exporters, and management code.
 | not_started | 48 |
 | in_progress | 2 |
 | ported | 2 |
-| needs_decision | 1 |
-| dropped | 1 |
+| needs_decision | 0 |
+| dropped | 2 |
 | replaced | 1 |
 
 ### Plan corrections
@@ -739,8 +739,8 @@ Collector components, pipelines, ClickHouse exporters, and management code.
 |---|---|
 | engine_reference | 15 |
 | external_dependency | 56 |
-| internal_identifier | 394 |
-| pending_decision | 8 |
+| internal_identifier | 393 |
+| pending_decision | 5 |
 | test_fixture | 12 |
 | upstream_attribution | 1 |
 
@@ -750,15 +750,14 @@ Collector components, pipelines, ClickHouse exporters, and management code.
 |---|---|
 | rule 1 keep | 14 |
 | rule 5 keep | 11 |
-| rule 6 review | 26 |
-| rule 7 review | 12 |
+| rule 6 review | 25 |
+| rule 7 review | 11 |
 
 ### Outbound hits by context
 
 | Key | Count |
 |---|---|
 | link | 1 |
-| request | 1 |
 
 ### Workflow classes
 
@@ -768,7 +767,7 @@ Collector components, pipelines, ClickHouse exporters, and management code.
 
 ### Features pending a decision
 
-- `app-careers`: ClickHouse recruiting page: lists ClickHouse jobs from boards-api.greenhouse.io and ClickStack commits from api.github.com. Kept unchanged until the user decides whether to remove it.
+None.
 <!-- phase3:end -->
 
 ### Phase 5a
@@ -778,6 +777,7 @@ Decisions signed off by Michael on 2026-11-12:
 - PromQL is dropped. It required ClickHouse's TimeSeries table fed by Prometheus remote-write, with no Couchbase equivalent in scope. Disabled in Phase 5a; code deleted in Phase 10.
 - Team query settings stay, as Couchbase SDK query options: scan consistency and max parallelism.
 - The ClickHouse server dashboard is replaced by the Couchbase cluster page (`couchbase-cluster`). The ClickHouse page is removed in Phase 10.
+- The careers page is removed. It listed ClickHouse job openings from Greenhouse and has no place in this product.
 
 Monitoring role: `ro_admin` only. Read-Only Admin can view server configuration, list buckets, and view statistics, which covers `GET /pools/default`, `/pools/default/buckets`, `/pools/default/tasks`, and `POST /pools/default/stats/range`. `external_stats_reader` only allows `GET /metrics` and `/prometheus_sd_config`, so it does not cover the statistics range API and is not granted.
 

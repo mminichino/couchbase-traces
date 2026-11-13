@@ -5297,220 +5297,11 @@
       "name": "Careers page",
       "area": "internal",
       "visibility": "internal",
-      "status": "needs_decision",
-      "entryPoints": [
-        {
-          "id": "app_page:/careers",
-          "kind": "app_page",
-          "file": "packages/app/pages/careers.tsx"
-        }
-      ],
-      "closureSize": 31,
-      "exclusiveFiles": [
-        "packages/app/pages/careers.tsx",
-        "packages/app/src/CareersPage.tsx"
-      ],
-      "dataLayer": [
-        {
-          "path": "packages/common-utils/src/clickhouse/attribution.ts",
-          "symbols": [
-            "QUERY_ATTRIBUTION_HEADER",
-            "QUERY_ATTRIBUTION_VERSION",
-            "QUERY_SURFACES",
-            "QueryAttribution",
-            "QuerySurface",
-            "buildLogComment",
-            "buildQueryId",
-            "mergeQueryAttribution",
-            "parseLogComment"
-          ]
-        },
-        {
-          "path": "packages/common-utils/src/clickhouse/index.ts",
-          "symbols": [
-            "BaseClickhouseClient",
-            "ChSql",
-            "ColumnMeta",
-            "JSDataType",
-            "Row",
-            "chSql",
-            "concatChSql",
-            "convertCHDataTypeToJSType",
-            "convertCHTypeToLuceneSearchType",
-            "extractColumnReferencesFromKey",
-            "extractInnerCHArrayJSType",
-            "filterColumnMetaByType",
-            "isAccessDeniedError",
-            "isCHFixedStringType",
-            "isCHIntegerType",
-            "streamToAsyncIterator",
-            "tableExpr",
-            "wrapChSqlIfNotEmpty"
-          ]
-        },
-        {
-          "path": "packages/common-utils/src/core/clickhouseVersion.ts",
-          "symbols": [
-            "ClickHouseVersion",
-            "isClickHouseVersionAtLeast",
-            "parseClickHouseVersion",
-            "supportsDirectReadMap",
-            "supportsMergeTreeIndex",
-            "supportsMergeTreeTextIndex"
-          ]
-        },
-        {
-          "path": "packages/common-utils/src/core/histogram.ts",
-          "symbols": [
-            "GROUP_ALIAS",
-            "translateExponentialHistogram",
-            "translateHistogram"
-          ]
-        },
-        {
-          "path": "packages/common-utils/src/core/materializedViews.ts",
-          "symbols": [
-            "optimizeFacetedKeyValuesConfig",
-            "optimizeGetKeyValuesCalls",
-            "renderStartOfBucketExpr"
-          ]
-        },
-        {
-          "path": "packages/common-utils/src/core/metadata.ts",
-          "symbols": [
-            "Metadata",
-            "SkipIndexMetadata",
-            "TableConnection",
-            "TableMetadata",
-            "getMetadata",
-            "parseKeyPath",
-            "quoteIdentifierIfNeeded",
-            "unquoteIdentifier"
-          ]
-        },
-        {
-          "path": "packages/common-utils/src/core/renderChartConfig.ts",
-          "symbols": [
-            "FIXED_TIME_BUCKET_EXPR_ALIAS",
-            "renderChartConfig",
-            "renderWhereExpressionStr",
-            "setChartSelectsAlias",
-            "timeFilterExpr"
-          ]
-        },
-        {
-          "path": "packages/common-utils/src/filters.ts",
-          "symbols": [
-            "FilterState",
-            "filterStateToPredicate",
-            "isAdhocFilter",
-            "isQueryExpressionFilter",
-            "isStaticListFilter",
-            "serializeFilterState"
-          ]
-        },
-        {
-          "path": "packages/common-utils/src/macros.ts",
-          "symbols": [
-            "MacroName",
-            "MacroSuggestion",
-            "getSourceDependentMacrosUsed",
-            "getSourceTableMacroArgCounts",
-            "hasMacro",
-            "isMissingFiltersMacro",
-            "replaceMacros"
-          ]
-        },
-        {
-          "path": "packages/common-utils/src/queryParser.ts",
-          "symbols": [
-            "CustomSchemaSQLSerializerV2",
-            "IMPLICIT_FIELD",
-            "SearchQueryBuilder",
-            "TextIndexInfo",
-            "TextIndexInfoLookup",
-            "buildTextIndexInfoLookup",
-            "decodeSpecialTokensToSource",
-            "encodeSpecialTokens",
-            "parse",
-            "skipIndexMatches"
-          ]
-        },
-        {
-          "path": "packages/common-utils/src/types.ts",
-          "symbols": [
-            "AdhocDashboardFilter",
-            "AdhocFilterCondition",
-            "AdhocFilterOperator",
-            "AdhocFilterSourceType",
-            "AdhocFilterValue",
-            "AggregateFunction",
-            "AggregateFunctionWithCombinators",
-            "BroadcastFilter",
-            "BuilderChartConfig",
-            "BuilderChartConfigWithDateRange",
-            "BuilderChartConfigWithOptDateRange",
-            "BuilderChartConfigWithOptTimestamp",
-            "BuilderSavedChartConfig",
-            "ChSqlSchema",
-            "ChartConfig",
-            "ChartConfigSchema",
-            "ChartConfigWithOptDateRange",
-            "ChartVariable",
-            "ConditionFilter",
-            "Connection",
-            "CteChartConfig",
-            "DASHBOARD_VARIABLE_NAME_MAX_LENGTH",
-            "DASHBOARD_VARIABLE_NAME_PATTERN",
-            "DASHBOARD_VARIABLE_NAME_PATTERN_ANCHORED",
-            "DashboardFilter",
-            "DashboardFilterSchema",
-            "DashboardFilterValue",
-            "DashboardSchema",
-            "DashboardTemplateSchema",
-            "DashboardWithoutId",
-            "DateRange",
-            "DisplayType",
-            "Filter",
-            "HeatmapMode",
-            "InternalAggregateFunction",
-            "InternalAggregateFunctionSchema",
-            "MaterializedViewConfiguration",
-            "MetadataMaterializedViews",
-            "MetricsDataType",
-            "MetricsDataTypeSchema",
-            "PERCENTILE_AGG_FN_LEVELS",
-            "PROMQL_ADHOC_FILTER_OPERATORS",
-            "PercentileAggregateFunctionSchema",
-            "PromqlChartConfig",
-            "PromqlConditionFilter",
-            "PromqlExpressionList",
-            "PromqlQueryType",
-            "PromqlReducer",
-            "PromqlSavedChartConfig",
-            "PromqlSeries",
-            "QuerySettings",
-            "RawSqlChartConfig",
-            "RawSqlSavedChartConfig",
-            "SQLInterval",
-            "SQL_ADHOC_FILTER_OPERATORS",
-            "SavedChartConfig",
-            "SearchCondition",
-            "SearchConditionLanguage",
-            "SelectList",
-            "SortSpecificationList",
-            "SourceKind",
-            "SqlAstFilter",
-            "TLogSource",
-            "TSource",
-            "TTraceSource",
-            "TileTemplateSchema",
-            "UseTextIndex",
-            "isLogSource",
-            "isTraceSource"
-          ]
-        }
-      ],
+      "status": "dropped",
+      "entryPoints": [],
+      "closureSize": 0,
+      "exclusiveFiles": [],
+      "dataLayer": [],
       "tests": {
         "unit": [],
         "int": [],
@@ -21507,7 +21298,7 @@
   ],
   "totals": {
     "features": 55,
-    "entryPoints": 211,
+    "entryPoints": 210,
     "byStatus": [
       {
         "status": "not_started",
@@ -21523,11 +21314,11 @@
       },
       {
         "status": "needs_decision",
-        "count": 1
+        "count": 0
       },
       {
         "status": "dropped",
-        "count": 1
+        "count": 2
       },
       {
         "status": "replaced",

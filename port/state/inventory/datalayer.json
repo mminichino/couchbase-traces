@@ -7232,7 +7232,7 @@
               "name": "UserPreferencesModal",
               "references": 1,
               "lines": [
-                599
+                584
               ]
             }
           ]
@@ -7640,7 +7640,7 @@
               "references": 2,
               "lines": [
                 339,
-                603
+                588
               ]
             },
             {
@@ -7667,7 +7667,7 @@
               "name": "AppNavUserMenu",
               "references": 1,
               "lines": [
-                591
+                576
               ]
             }
           ]

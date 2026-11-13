@@ -7,8 +7,8 @@ Generated from `port/features.json` and `port/state/inventory/`. Edit `port/feat
 | not_started | 48 |
 | in_progress | 2 |
 | ported | 2 |
-| needs_decision | 1 |
-| dropped | 1 |
+| needs_decision | 0 |
+| dropped | 2 |
 | replaced | 1 |
 
 ## search
@@ -697,7 +697,7 @@ Entry points:
 | Health and installation status (`api-health`) | internal | not_started | 3 | attribution.ts, index.ts, node.ts, clickhouseVersion.ts, histogram.ts, +7 | 0 / 0 / 0 |
 | App server API and config (`app-api`) | internal | not_started | 2 | - | 0 / 0 / 0 |
 | Benchmark page (`app-benchmark`) | internal | not_started | 1 | clickhouse.ts, ContactSupportText.tsx, DBRowJsonViewer.tsx, DBRowSidePanel.tsx, ExceptionSubpanel.tsx, +31 | 0 / 0 / 0 |
-| Careers page (`app-careers`) | internal | needs_decision | 1 | attribution.ts, index.ts, clickhouseVersion.ts, histogram.ts, materializedViews.ts, +6 | 0 / 0 / 0 |
+| Careers page (`app-careers`) | internal | dropped | 0 | - | 0 / 0 / 0 |
 | Home page (`app-home`) | user | not_started | 1 | attribution.ts, index.ts, clickhouseVersion.ts, histogram.ts, materializedViews.ts, +6 | 0 / 0 / 3 |
 | Ping-pong task (`task-ping-pong`) | internal | not_started | 1 | - | 0 / 0 / 0 |
 | Dashboard provisioning task (`task-provision-dashboards`) | internal | not_started | 1 | attribution.ts, index.ts, clickhouseVersion.ts, histogram.ts, materializedViews.ts, +6 | 0 / 1 / 0 |
@@ -735,9 +735,8 @@ Marketing page listing open roles at the company.
 
 Entry points:
 
-- `app_page:/careers`, `packages/app/pages/careers.tsx`
 
-Decision: ClickHouse recruiting page: lists ClickHouse jobs from boards-api.greenhouse.io and ClickStack commits from api.github.com. Kept unchanged until the user decides whether to remove it. Not signed off.
+Decision: Careers page removed by the user. It listed ClickHouse job openings from Greenhouse and has no place in this product. Signed off by Michael on 2026-11-12.
 
 ### Home page (`app-home`)
 

@@ -1783,16 +1783,6 @@
       }
     },
     {
-      "id": "app_page:/careers",
-      "kind": "app_page",
-      "key": "/careers",
-      "file": "packages/app/pages/careers.tsx",
-      "line": null,
-      "detail": {
-        "route": "/careers"
-      }
-    },
-    {
       "id": "app_page:/chart",
       "kind": "app_page",
       "key": "/chart",

@@ -501,14 +501,12 @@
       "area": "internal",
       "visibility": "internal",
       "description": "Marketing page listing open roles at the company.",
-      "entryPoints": [
-        "app_page:/careers"
-      ],
-      "status": "needs_decision",
+      "entryPoints": [],
+      "status": "dropped",
       "decision": {
-        "note": "ClickHouse recruiting page: lists ClickHouse jobs from boards-api.greenhouse.io and ClickStack commits from api.github.com. Kept unchanged until the user decides whether to remove it.",
-        "signedOffBy": null,
-        "date": null
+        "note": "Careers page removed by the user. It listed ClickHouse job openings from Greenhouse and has no place in this product.",
+        "signedOffBy": "Michael",
+        "date": "2026-11-12"
       }
     },
     {

@@ -573,21 +573,6 @@ export default function AppNav({ fixed = false }: { fixed?: boolean }) {
         </ScrollArea>
 
         <div className={styles.footer} style={{ width: navWidth }}>
-          {IS_LOCAL_MODE && !isCollapsed && (
-            <Link
-              href="/careers"
-              style={{
-                display: 'block',
-                padding: '4px 16px',
-                textDecoration: 'none',
-                pointerEvents: 'auto',
-              }}
-            >
-              <Text size="xs" c="dimmed">
-                Join us & build the future of high scale observability &rarr;
-              </Text>
-            </Link>
-          )}
           <AppNavUserMenu
             userName={meData?.name}
             teamName={meData?.team?.name}

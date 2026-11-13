@@ -53927,37 +53927,6 @@
       "starReexports": []
     },
     {
-      "path": "packages/app/pages/careers.tsx",
-      "workspace": "@couchbase-traces/app",
-      "test": false,
-      "imports": [
-        {
-          "specifier": "@/CareersPage",
-          "target": "packages/app/src/CareersPage.tsx",
-          "external": null,
-          "kind": "static",
-          "typeOnly": false,
-          "bindings": [
-            {
-              "imported": "default",
-              "local": "CareersPage"
-            }
-          ],
-          "line": 1
-        }
-      ],
-      "exports": [
-        {
-          "name": "default",
-          "kind": "reexport",
-          "from": "packages/app/src/CareersPage.tsx",
-          "original": "default",
-          "line": 2
-        }
-      ],
-      "starReexports": []
-    },
-    {
       "path": "packages/app/pages/chart.tsx",
       "workspace": "@couchbase-traces/app",
       "test": false,
@@ -56416,129 +56385,6 @@
       "starReexports": []
     },
     {
-      "path": "packages/app/src/CareersPage.tsx",
-      "workspace": "@couchbase-traces/app",
-      "test": false,
-      "imports": [
-        {
-          "specifier": "react",
-          "target": null,
-          "external": "react",
-          "kind": "static",
-          "typeOnly": false,
-          "bindings": [
-            {
-              "imported": "useMemo",
-              "local": "useMemo"
-            }
-          ],
-          "line": 1
-        },
-        {
-          "specifier": "next/head",
-          "target": null,
-          "external": "next",
-          "kind": "static",
-          "typeOnly": false,
-          "bindings": [
-            {
-              "imported": "default",
-              "local": "Head"
-            }
-          ],
-          "line": 2
-        },
-        {
-          "specifier": "@mantine/core",
-          "target": null,
-          "external": "@mantine/core",
-          "kind": "static",
-          "typeOnly": false,
-          "bindings": [
-            {
-              "imported": "Anchor",
-              "local": "Anchor"
-            },
-            {
-              "imported": "Avatar",
-              "local": "Avatar"
-            },
-            {
-              "imported": "Card",
-              "local": "Card"
-            },
-            {
-              "imported": "Container",
-              "local": "Container"
-            },
-            {
-              "imported": "Group",
-              "local": "Group"
-            },
-            {
-              "imported": "Loader",
-              "local": "Loader"
-            },
-            {
-              "imported": "Stack",
-              "local": "Stack"
-            },
-            {
-              "imported": "Text",
-              "local": "Text"
-            },
-            {
-              "imported": "Title",
-              "local": "Title"
-            }
-          ],
-          "line": 13
-        },
-        {
-          "specifier": "@tanstack/react-query",
-          "target": null,
-          "external": "@tanstack/react-query",
-          "kind": "static",
-          "typeOnly": false,
-          "bindings": [
-            {
-              "imported": "useQuery",
-              "local": "useQuery"
-            }
-          ],
-          "line": 14
-        },
-        {
-          "specifier": "@/brand",
-          "target": "packages/app/src/brand/index.tsx",
-          "external": null,
-          "kind": "static",
-          "typeOnly": false,
-          "bindings": [
-            {
-              "imported": "useBrandDisplayName",
-              "local": "useBrandDisplayName"
-            },
-            {
-              "imported": "usePageTitle",
-              "local": "usePageTitle"
-            }
-          ],
-          "line": 16
-        }
-      ],
-      "exports": [
-        {
-          "name": "default",
-          "kind": "function",
-          "from": null,
-          "original": null,
-          "line": 84
-        }
-      ],
-      "starReexports": []
-    },
-    {
       "path": "packages/app/src/ChartUtils.tsx",
       "workspace": "@couchbase-traces/app",
       "test": false,
@@ -57822,10 +57668,6 @@
           "kind": "static",
           "typeOnly": false,
           "bindings": [
-            {
-              "imported": "useEffect",
-              "local": "useEffect"
-            },
             {
               "imported": "useMemo",
               "local": "useMemo"
@@ -80135,14 +79977,14 @@
           "kind": "function",
           "from": null,
           "original": null,
-          "line": 126
+          "line": 132
         },
         {
           "name": "useClusterQueries",
           "kind": "function",
           "from": null,
           "original": null,
-          "line": 141
+          "line": 153
         },
         {
           "name": "useClusterStatus",

@@ -51,7 +51,7 @@
   ],
   "warnings": [
     "W_NAME_TWICE LOCAL.md:18: <img alt=\"Demo of using Couchbase Traces Local for debugging a local app\" src=\"./.github/images/demo_local_animated.gif\"",
-    "W_NAME_TWICE packages/api/openapi.json:8561: \"description\": \"Fetch individual log or trace rows from a Couchbase Traces source.\\n\\nThis endpoint mirrors the \\\"search",
+    "W_NAME_TWICE packages/api/openapi.json:8599: \"description\": \"Fetch individual log or trace rows from a Couchbase Traces source.\\n\\nThis endpoint mirrors the \\\"search",
     "W_NAME_TWICE packages/app/src/ServicesDashboardPage/__tests__/ServicesDashboardPage.test.tsx:169: page ? `${page} - Couchbase Traces` : 'Couchbase Traces',",
     "W_NAME_TWICE packages/app/src/__tests__/DBSearchPage.directTrace.test.tsx:135: page ? `${page} - Couchbase Traces` : 'Couchbase Traces',",
     "W_NAME_TWICE packages/app/src/__tests__/DBSearchPage.saveSearch.test.tsx:125: page ? `${page} - Couchbase Traces` : 'Couchbase Traces',",
