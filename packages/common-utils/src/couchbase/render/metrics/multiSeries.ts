@@ -1,4 +1,8 @@
-import { compileFormulaAst, type FormulaAst, validateFormula } from '@/core/formula';
+import {
+  compileFormulaAst,
+  type FormulaAst,
+  validateFormula,
+} from '@/core/formula';
 import { GROUP_ALIAS } from '@/core/histogram';
 import {
   FIXED_TIME_BUCKET_EXPR_ALIAS,
@@ -6,14 +10,14 @@ import {
   isUsingGroupBy,
   setChartSelectsAlias,
 } from '@/core/renderChartConfig';
-import { MetricsDataType } from '@/types';
+import { quoteIdent } from '@/couchbase/sqlpp';
+import { CouchbaseNotReadyError } from '@/dataLayer/errors';
 import type {
   BuilderChartConfigWithOptDateRange,
   ChartConfigWithOptDateRange,
   QuerySettings,
 } from '@/types';
-import { quoteIdent } from '@/couchbase/sqlpp';
-import { CouchbaseNotReadyError } from '@/dataLayer/errors';
+import { MetricsDataType } from '@/types';
 
 const MULTI_SERIES_VALUE_ALIAS = '__hdx_value';
 const MULTI_SERIES_IDX_ALIAS = '__hdx_series_idx';
@@ -58,7 +62,6 @@ type RenderChartFn = (
 /**
  * Multi-series metric charts: one branch per select (recurse through the
  * single-series path), UNION ALL, then pivot with MAX(CASE…) and formulas.
- * Exponential-histogram branches are rejected (needs_decision).
  */
 export async function renderMultiSeriesMetricChartConfigCouchbase(
   rawChartConfig: BuilderChartConfigWithOptDateRange,
@@ -70,13 +73,6 @@ export async function renderMultiSeriesMetricChartConfigCouchbase(
   const select = chartConfig.select;
   if (!Array.isArray(select) || select.length === 0) {
     throw new CouchbaseNotReadyError('metrics: multiSeries select');
-  }
-  for (const s of select) {
-    if (s.metricType === MetricsDataType.ExponentialHistogram) {
-      throw new CouchbaseNotReadyError(
-        'metrics: exponential histogram (needs_decision: metrics-exp-histogram)',
-      );
-    }
   }
 
   const formulas = chartConfig.formulas ?? [];
@@ -164,7 +160,8 @@ export async function renderMultiSeriesMetricChartConfigCouchbase(
     }
     cols.push(`${branch.splitIdx} AS ${quoteIdent(MULTI_SERIES_IDX_ALIAS)}`);
     return {
-      sql: `SELECT ${cols.join(', ')} FROM (${branch.sql})`,
+      // SQL++ requires an alias on every FROM subquery.
+      sql: `SELECT ${cols.join(', ')} FROM (${branch.sql}) AS b${branch.splitIdx}`,
       params: branch.params,
     };
   });
@@ -203,9 +200,7 @@ export async function renderMultiSeriesMetricChartConfigCouchbase(
     );
   } else {
     outputNames.forEach((outputName, splitIdx) => {
-      projection.push(
-        `${valueExprFor(splitIdx)} AS ${quoteIdent(outputName)}`,
-      );
+      projection.push(`${valueExprFor(splitIdx)} AS ${quoteIdent(outputName)}`);
     });
   }
 

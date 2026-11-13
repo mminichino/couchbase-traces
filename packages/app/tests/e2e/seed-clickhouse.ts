@@ -15,11 +15,13 @@ import {
   E2E_ALT_METRICS_SUM_TABLE,
   E2E_CLICKHOUSE_DATABASE,
   E2E_CUSTOM_SERVICE_LOGS_TABLE,
+  E2E_EXP_HISTOGRAM_METRIC_NAME,
   E2E_INTERESTING_FILTER_KEYS_TABLE,
   E2E_LOGS_TABLE,
   E2E_METADATA_MV_KEY_ROLLUP_TABLE,
   E2E_METADATA_MV_KV_ROLLUP_TABLE,
   E2E_METADATA_MV_LOGS_TABLE,
+  E2E_METRICS_EXP_HISTOGRAM_TABLE,
   E2E_METRICS_GAUGE_TABLE,
   E2E_METRICS_SUM_TABLE,
   E2E_PROMQL_HISTOGRAM_METRIC_NAME,
@@ -1175,6 +1177,62 @@ export async function seedClickHouse(): Promise<void> {
     ) VALUES ${generateK8sSumMetrics(numDataPoints, startMs, endMs)}
   `);
   console.log(`  Inserted ${numDataPoints} Kubernetes sum metrics (uptime)`);
+
+  // Exponential histogram for metric explorer p95 e2e (Phase 7a).
+  console.log('  Ensuring exponential histogram table...');
+  await client.query(`
+    CREATE TABLE IF NOT EXISTS ${E2E_CLICKHOUSE_DATABASE}.${E2E_METRICS_EXP_HISTOGRAM_TABLE} (
+      ResourceAttributes Map(LowCardinality(String), String),
+      ResourceSchemaUrl String,
+      ScopeName String,
+      ScopeVersion String,
+      ScopeAttributes Map(LowCardinality(String), String),
+      ScopeDroppedAttrCount UInt32,
+      ScopeSchemaUrl String,
+      ServiceName LowCardinality(String),
+      MetricName String,
+      MetricDescription String,
+      MetricUnit String,
+      Attributes Map(LowCardinality(String), String),
+      StartTimeUnix DateTime64(9),
+      TimeUnix DateTime64(9),
+      Count UInt64,
+      Sum Float64,
+      Scale Int32,
+      ZeroCount UInt64,
+      PositiveOffset Int32,
+      PositiveBucketCounts Array(UInt64),
+      NegativeOffset Int32,
+      NegativeBucketCounts Array(UInt64),
+      Flags UInt32,
+      Min Float64,
+      Max Float64,
+      AggregationTemporality Int32
+    ) ENGINE = MergeTree
+    ORDER BY (ServiceName, MetricName, TimeUnix)
+  `);
+  const expRows: string[] = [];
+  for (let i = 0; i < 40; i++) {
+    const ts = startMs + i * 60_000;
+    const tsNs = `${ts}000000`;
+    const counts = [1 + (i % 3), 2 + (i % 5), 4 + (i % 7)];
+    const total = counts.reduce((a, b) => a + b, 0);
+    expRows.push(
+      `({'service.name':'api'}, '', '', '', {}, 0, '', 'api', '${E2E_EXP_HISTOGRAM_METRIC_NAME}', 'E2E request duration', 'ms', {'host':'h${i % 4}'}, '${tsNs}', '${tsNs}', ${total}, 0, 0, 0, 0, [${counts.join(',')}], 0, [], 0, 0, 0, 1)`,
+    );
+  }
+  await client.query(`
+    INSERT INTO ${E2E_CLICKHOUSE_DATABASE}.${E2E_METRICS_EXP_HISTOGRAM_TABLE} (
+      ResourceAttributes, ResourceSchemaUrl, ScopeName, ScopeVersion, ScopeAttributes,
+      ScopeDroppedAttrCount, ScopeSchemaUrl, ServiceName, MetricName, MetricDescription,
+      MetricUnit, Attributes, StartTimeUnix, TimeUnix, Count, Sum, Scale, ZeroCount,
+      PositiveOffset, PositiveBucketCounts, NegativeOffset, NegativeBucketCounts,
+      Flags, Min, Max, AggregationTemporality
+    ) VALUES ${expRows.join(',\n')}
+  `);
+  console.log(
+    `  Inserted 40 ${E2E_EXP_HISTOGRAM_METRIC_NAME} exponential histogram points`,
+  );
 
   // Insert Kubernetes event logs
   console.log('  Inserting Kubernetes event logs...');

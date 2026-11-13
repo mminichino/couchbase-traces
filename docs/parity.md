@@ -17,7 +17,7 @@ Generated from `port/features.json` and `port/state/inventory/`. Edit `port/feat
 |---|---|---|---|---|---|
 | Pinned filters (`api-pinned-filters`) | user | ported | 2 | attribution.ts, index.ts, node.ts, clickhouseVersion.ts, histogram.ts, +8 | 0 / 0 / 0 |
 | Saved searches (`api-saved-search`) | user | ported | 4 | attribution.ts, index.ts, node.ts, clickhouseVersion.ts, histogram.ts, +8 | 0 / 0 / 0 |
-| Log and trace search (`app-search`) | user | ported | 3 | DBSearchPage.tsx, UserPreferencesModal.tsx, clickhouse.ts, AppNav.components.tsx, AppNav.tsx, +99 | 14 / 0 / 10 |
+| Log and trace search (`app-search`) | user | ported | 3 | DBSearchPage.tsx, UserPreferencesModal.tsx, clickhouse.ts, AppNav.components.tsx, AppNav.tsx, +101 | 14 / 0 / 10 |
 
 ### Pinned filters (`api-pinned-filters`)
 
@@ -53,7 +53,7 @@ Entry points:
 
 | Feature | Visibility | Status | Entry points | Data layer | Tests (unit / int / e2e) |
 |---|---|---|---|---|---|
-| Chart explorer (`app-chart`) | user | ported | 1 | DBChartPage.tsx, UserPreferencesModal.tsx, clickhouse.ts, AppNav.components.tsx, AppNav.tsx, +106 | 1 / 0 / 2 |
+| Chart explorer (`app-chart`) | user | ported | 1 | DBChartPage.tsx, UserPreferencesModal.tsx, clickhouse.ts, AppNav.components.tsx, AppNav.tsx, +108 | 1 / 0 / 2 |
 
 ### Chart explorer (`app-chart`)
 
@@ -67,7 +67,7 @@ Entry points:
 
 | Feature | Visibility | Status | Entry points | Data layer | Tests (unit / int / e2e) |
 |---|---|---|---|---|---|
-| Dashboards (`app-dashboards`) | user | ported | 13 | UserPreferencesModal.tsx, clickhouse.ts, AppNav.components.tsx, AppNav.tsx, InstanceLabel.tsx, +111 | 13 / 1 / 7 |
+| Dashboards (`app-dashboards`) | user | ported | 13 | UserPreferencesModal.tsx, clickhouse.ts, AppNav.components.tsx, AppNav.tsx, InstanceLabel.tsx, +113 | 13 / 1 / 7 |
 
 ### Dashboards (`app-dashboards`)
 
@@ -93,7 +93,7 @@ Entry points:
 
 | Feature | Visibility | Status | Entry points | Data layer | Tests (unit / int / e2e) |
 |---|---|---|---|---|---|
-| Trace waterfall (`app-trace`) | user | ported | 1 | UserPreferencesModal.tsx, clickhouse.ts, AppNav.components.tsx, AppNav.tsx, InstanceLabel.tsx, +63 | 1 / 0 / 0 |
+| Trace waterfall (`app-trace`) | user | ported | 1 | UserPreferencesModal.tsx, clickhouse.ts, AppNav.components.tsx, AppNav.tsx, InstanceLabel.tsx, +64 | 1 / 0 / 0 |
 
 ### Trace waterfall (`app-trace`)
 
@@ -107,7 +107,7 @@ Entry points:
 
 | Feature | Visibility | Status | Entry points | Data layer | Tests (unit / int / e2e) |
 |---|---|---|---|---|---|
-| Service map (`app-service-map`) | user | ported | 1 | UserPreferencesModal.tsx, clickhouse.ts, AppNav.components.tsx, AppNav.tsx, InstanceLabel.tsx, +74 | 0 / 0 / 3 |
+| Service map (`app-service-map`) | user | ported | 1 | UserPreferencesModal.tsx, clickhouse.ts, AppNav.components.tsx, AppNav.tsx, InstanceLabel.tsx, +75 | 0 / 0 / 3 |
 
 ### Service map (`app-service-map`)
 
@@ -121,7 +121,7 @@ Entry points:
 
 | Feature | Visibility | Status | Entry points | Data layer | Tests (unit / int / e2e) |
 |---|---|---|---|---|---|
-| Prometheus-compatible query API (`api-v1`) | api | dropped | 8 | clickhouse.ts, timeseriesEngine.ts, attribution.ts, index.ts, node.ts, +54 | 1 / 0 / 0 |
+| Prometheus-compatible query API (`api-v1`) | api | dropped | 8 | clickhouse.ts, timeseriesEngine.ts, attribution.ts, index.ts, node.ts, +55 | 1 / 0 / 0 |
 
 ### Prometheus-compatible query API (`api-v1`)
 
@@ -144,7 +144,7 @@ Decision: PromQL dropped by the user. It required ClickHouse's TimeSeries table 
 
 | Feature | Visibility | Status | Entry points | Data layer | Tests (unit / int / e2e) |
 |---|---|---|---|---|---|
-| Session replay (`app-sessions`) | user | ported | 1 | UserPreferencesModal.tsx, clickhouse.ts, AppNav.components.tsx, AppNav.tsx, InstanceLabel.tsx, +91 | 1 / 0 / 4 |
+| Session replay (`app-sessions`) | user | ported | 1 | UserPreferencesModal.tsx, clickhouse.ts, AppNav.components.tsx, AppNav.tsx, InstanceLabel.tsx, +93 | 1 / 0 / 4 |
 
 ### Session replay (`app-sessions`)
 
@@ -158,8 +158,8 @@ Entry points:
 
 | Feature | Visibility | Status | Entry points | Data layer | Tests (unit / int / e2e) |
 |---|---|---|---|---|---|
-| Alerts (`app-alerts`) | user | not_started | 11 | UserPreferencesModal.tsx, clickhouse.ts, AppNav.components.tsx, AppNav.tsx, InstanceLabel.tsx, +108 | 11 / 0 / 1 |
-| Alert evaluation (`task-check-alerts`) | internal | not_started | 1 | clickhouse.ts, errors.ts, attribution.ts, index.ts, node.ts, +60 | 3 / 2 / 0 |
+| Alerts (`app-alerts`) | user | not_started | 11 | UserPreferencesModal.tsx, clickhouse.ts, AppNav.components.tsx, AppNav.tsx, InstanceLabel.tsx, +110 | 11 / 0 / 1 |
+| Alert evaluation (`task-check-alerts`) | internal | not_started | 1 | clickhouse.ts, errors.ts, attribution.ts, index.ts, node.ts, +61 | 3 / 2 / 0 |
 
 ### Alerts (`app-alerts`)
 
@@ -191,8 +191,8 @@ Entry points:
 
 | Feature | Visibility | Status | Entry points | Data layer | Tests (unit / int / e2e) |
 |---|---|---|---|---|---|
-| Kubernetes dashboard (`app-kubernetes`) | user | ported | 1 | KubernetesDashboardPage.tsx, NamespaceDetailsSidePanel.tsx, NodeDetailsSidePanel.tsx, UserPreferencesModal.tsx, clickhouse.ts, +94 | 2 / 0 / 1 |
-| Services dashboard (`app-services`) | user | ported | 1 | DatabaseTab.tsx, HttpTab.tsx, UserPreferencesModal.tsx, clickhouse.ts, AppNav.components.tsx, +96 | 0 / 0 / 2 |
+| Kubernetes dashboard (`app-kubernetes`) | user | ported | 1 | KubernetesDashboardPage.tsx, NamespaceDetailsSidePanel.tsx, NodeDetailsSidePanel.tsx, UserPreferencesModal.tsx, clickhouse.ts, +96 | 2 / 0 / 1 |
+| Services dashboard (`app-services`) | user | ported | 1 | DatabaseTab.tsx, HttpTab.tsx, UserPreferencesModal.tsx, clickhouse.ts, AppNav.components.tsx, +98 | 0 / 0 / 2 |
 
 ### Kubernetes dashboard (`app-kubernetes`)
 
@@ -214,8 +214,8 @@ Entry points:
 
 | Feature | Visibility | Status | Entry points | Data layer | Tests (unit / int / e2e) |
 |---|---|---|---|---|---|
-| AI assistant (`api-ai`) | user | not_started | 1 | clickhouse.ts, attribution.ts, index.ts, node.ts, clickhouseVersion.ts, +59 | 2 / 1 / 0 |
-| LLM dashboard (`app-llm`) | user | not_started | 1 | DatabaseTab.tsx, HttpTab.tsx, UserPreferencesModal.tsx, clickhouse.ts, AppNav.components.tsx, +104 | 14 / 0 / 0 |
+| AI assistant (`api-ai`) | user | not_started | 1 | clickhouse.ts, attribution.ts, index.ts, node.ts, clickhouseVersion.ts, +60 | 2 / 1 / 0 |
+| LLM dashboard (`app-llm`) | user | not_started | 1 | DatabaseTab.tsx, HttpTab.tsx, UserPreferencesModal.tsx, clickhouse.ts, AppNav.components.tsx, +106 | 14 / 0 / 0 |
 
 ### AI assistant (`api-ai`)
 
@@ -238,11 +238,11 @@ Entry points:
 | Feature | Visibility | Status | Entry points | Data layer | Tests (unit / int / e2e) |
 |---|---|---|---|---|---|
 | MCP tools: alerts and webhooks (`mcp-alerts`) | api | not_started | 5 | schemas.ts, schemas.ts, attribution.ts, index.ts, clickhouseVersion.ts, +9 | 1 / 0 / 0 |
-| MCP tools: dashboards (`mcp-dashboards`) | api | not_started | 8 | clickhouse.ts, timeseriesEngine.ts, schemas.ts, helpers.ts, runEventPatterns.ts, +65 | 4 / 0 / 0 |
-| MCP tools: query (`mcp-query`) | api | not_started | 8 | clickhouse.ts, timeseriesEngine.ts, eventPatterns.ts, helpers.ts, runEventPatterns.ts, +67 | 5 / 1 / 0 |
+| MCP tools: dashboards (`mcp-dashboards`) | api | not_started | 8 | clickhouse.ts, timeseriesEngine.ts, schemas.ts, helpers.ts, runEventPatterns.ts, +66 | 4 / 0 / 0 |
+| MCP tools: query (`mcp-query`) | api | not_started | 8 | clickhouse.ts, timeseriesEngine.ts, eventPatterns.ts, helpers.ts, runEventPatterns.ts, +68 | 5 / 1 / 0 |
 | MCP tools: saved searches (`mcp-saved-searches`) | api | not_started | 2 | attribution.ts, index.ts, clickhouseVersion.ts, histogram.ts, materializedViews.ts, +7 | 0 / 0 / 0 |
-| MCP tools: sources (`mcp-sources`) | api | not_started | 7 | clickhouse.ts, timeseriesEngine.ts, helpers.ts, runEventPatterns.ts, describeMetric.ts, +68 | 5 / 0 / 0 |
-| MCP tools: trace analysis (`mcp-trace`) | api | not_started | 2 | clickhouse.ts, timeseriesEngine.ts, helpers.ts, runEventPatterns.ts, waterfall.ts, +64 | 0 / 0 / 0 |
+| MCP tools: sources (`mcp-sources`) | api | not_started | 7 | clickhouse.ts, timeseriesEngine.ts, helpers.ts, runEventPatterns.ts, describeMetric.ts, +69 | 5 / 0 / 0 |
+| MCP tools: trace analysis (`mcp-trace`) | api | not_started | 2 | clickhouse.ts, timeseriesEngine.ts, helpers.ts, runEventPatterns.ts, waterfall.ts, +65 | 0 / 0 / 0 |
 
 ### MCP tools: alerts and webhooks (`mcp-alerts`)
 
@@ -340,10 +340,10 @@ Entry points:
 | Favorites (`api-favorites`) | user | not_started | 3 | attribution.ts, index.ts, node.ts, clickhouseVersion.ts, histogram.ts, +8 | 0 / 0 / 0 |
 | Data sources (`api-sources`) | admin | not_started | 4 | attribution.ts, index.ts, node.ts, clickhouseVersion.ts, histogram.ts, +13 | 1 / 1 / 0 |
 | ClickHouse query settings (`api-team-clickhouse-settings`) | admin | ported | 1 | attribution.ts, index.ts, node.ts, clickhouseVersion.ts, histogram.ts, +8 | 0 / 0 / 0 |
-| Webhooks (`api-webhooks`) | admin | not_started | 5 | clickhouse.ts, errors.ts, attribution.ts, index.ts, node.ts, +60 | 0 / 0 / 0 |
-| ClickHouse server dashboard (`app-clickhouse`) | admin | replaced | 1 | clickhouse.tsx, ClickhousePage.tsx, UserPreferencesModal.tsx, clickhouse.ts, AppNav.components.tsx, +94 | 0 / 0 / 1 |
-| Team settings and members (`app-team`) | admin | not_started | 14 | UserPreferencesModal.tsx, clickhouse.ts, AppNav.components.tsx, AppNav.tsx, InstanceLabel.tsx, +82 | 8 / 0 / 1 |
-| Couchbase cluster (`couchbase-cluster`) | admin | ported | 4 | UserPreferencesModal.tsx, clickhouse.ts, AppNav.components.tsx, AppNav.tsx, InstanceLabel.tsx, +71 | 6 / 0 / 1 |
+| Webhooks (`api-webhooks`) | admin | not_started | 5 | clickhouse.ts, errors.ts, attribution.ts, index.ts, node.ts, +61 | 0 / 0 / 0 |
+| ClickHouse server dashboard (`app-clickhouse`) | admin | replaced | 1 | clickhouse.tsx, ClickhousePage.tsx, UserPreferencesModal.tsx, clickhouse.ts, AppNav.components.tsx, +96 | 0 / 0 / 1 |
+| Team settings and members (`app-team`) | admin | not_started | 14 | UserPreferencesModal.tsx, clickhouse.ts, AppNav.components.tsx, AppNav.tsx, InstanceLabel.tsx, +83 | 8 / 0 / 1 |
+| Couchbase cluster (`couchbase-cluster`) | admin | ported | 4 | UserPreferencesModal.tsx, clickhouse.ts, AppNav.components.tsx, AppNav.tsx, InstanceLabel.tsx, +72 | 6 / 0 / 1 |
 
 ### Connections (`api-connections`)
 
@@ -492,12 +492,12 @@ Entry points:
 | Feature | Visibility | Status | Entry points | Data layer | Tests (unit / int / e2e) |
 |---|---|---|---|---|---|
 | External API: alerts (`external-alerts`) | api | not_started | 5 | attribution.ts, index.ts, clickhouseVersion.ts, histogram.ts, materializedViews.ts, +7 | 0 / 0 / 0 |
-| External API: charts (`external-charts`) | api | not_started | 1 | clickhouse.ts, attribution.ts, index.ts, node.ts, clickhouseVersion.ts, +59 | 0 / 0 / 0 |
+| External API: charts (`external-charts`) | api | not_started | 1 | clickhouse.ts, attribution.ts, index.ts, node.ts, clickhouseVersion.ts, +60 | 0 / 0 / 0 |
 | External API: connections (`external-connections`) | api | not_started | 5 | attribution.ts, index.ts, clickhouseVersion.ts, histogram.ts, materializedViews.ts, +19 | 0 / 0 / 0 |
 | External API: dashboards (`external-dashboards`) | api | not_started | 6 | attribution.ts, index.ts, clickhouseVersion.ts, histogram.ts, materializedViews.ts, +7 | 0 / 0 / 0 |
-| External API: root (`external-root`) | api | not_started | 1 | clickhouse.ts, timeseriesEngine.ts, helpers.ts, runEventPatterns.ts, errors.ts, +64 | 1 / 0 / 0 |
+| External API: root (`external-root`) | api | not_started | 1 | clickhouse.ts, timeseriesEngine.ts, helpers.ts, runEventPatterns.ts, errors.ts, +65 | 1 / 0 / 0 |
 | External API: saved searches (`external-saved-searches`) | api | not_started | 5 | attribution.ts, index.ts, clickhouseVersion.ts, histogram.ts, materializedViews.ts, +7 | 0 / 0 / 0 |
-| External API: search (`external-search`) | api | not_started | 1 | clickhouse.ts, timeseriesEngine.ts, helpers.ts, runEventPatterns.ts, errors.ts, +63 | 0 / 0 / 0 |
+| External API: search (`external-search`) | api | not_started | 1 | clickhouse.ts, timeseriesEngine.ts, helpers.ts, runEventPatterns.ts, errors.ts, +64 | 0 / 0 / 0 |
 | External API: sources (`external-sources`) | api | not_started | 5 | attribution.ts, index.ts, clickhouseVersion.ts, histogram.ts, materializedViews.ts, +12 | 0 / 0 / 0 |
 | External API: team (`external-team`) | api | not_started | 6 | attribution.ts, index.ts, clickhouseVersion.ts, histogram.ts, materializedViews.ts, +7 | 0 / 0 / 0 |
 | External API: webhooks (`external-webhooks`) | api | not_started | 5 | attribution.ts, index.ts, clickhouseVersion.ts, histogram.ts, materializedViews.ts, +7 | 0 / 0 / 0 |
@@ -657,7 +657,7 @@ Entry points:
 
 | Feature | Visibility | Status | Entry points | Data layer | Tests (unit / int / e2e) |
 |---|---|---|---|---|---|
-| Command-line interface (`cli`) | admin | not_started | 24 | client.ts, cli.tsx, useRowWhere.ts, attribution.ts, index.ts, +46 | 9 / 0 / 0 |
+| Command-line interface (`cli`) | admin | not_started | 24 | client.ts, cli.tsx, useRowWhere.ts, attribution.ts, index.ts, +47 | 9 / 0 / 0 |
 
 ### Command-line interface (`cli`)
 
@@ -696,7 +696,7 @@ Entry points:
 |---|---|---|---|---|---|
 | Health and installation status (`api-health`) | internal | not_started | 3 | attribution.ts, index.ts, node.ts, clickhouseVersion.ts, histogram.ts, +8 | 0 / 0 / 0 |
 | App server API and config (`app-api`) | internal | not_started | 2 | - | 0 / 0 / 0 |
-| Benchmark page (`app-benchmark`) | internal | not_started | 1 | clickhouse.ts, ContactSupportText.tsx, DBRowJsonViewer.tsx, DBRowSidePanel.tsx, ExceptionSubpanel.tsx, +80 | 0 / 0 / 0 |
+| Benchmark page (`app-benchmark`) | internal | not_started | 1 | clickhouse.ts, ContactSupportText.tsx, DBRowJsonViewer.tsx, DBRowSidePanel.tsx, ExceptionSubpanel.tsx, +82 | 0 / 0 / 0 |
 | Careers page (`app-careers`) | internal | dropped | 0 | - | 0 / 0 / 0 |
 | Home page (`app-home`) | user | not_started | 1 | attribution.ts, index.ts, clickhouseVersion.ts, histogram.ts, materializedViews.ts, +7 | 0 / 0 / 3 |
 | Ping-pong task (`task-ping-pong`) | internal | not_started | 1 | - | 0 / 0 / 0 |

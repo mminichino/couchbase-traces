@@ -65,9 +65,9 @@ Inventory of commit adcb75c16715. Full detail is in `port/state/inventory/`.
 | Package | Directory | Role | Languages | Source files | Test files | CI targets |
 |---|---|---|---|---|---|---|
 | @couchbase-traces/api | packages/api | API server and tasks | javascript, typescript | 231 | 151 | ci:int, ci:lint, ci:unit |
-| @couchbase-traces/app | packages/app | web UI | javascript, typescript | 693 | 517 | ci:lint, ci:unit |
+| @couchbase-traces/app | packages/app | web UI | javascript, typescript | 694 | 518 | ci:lint, ci:unit |
 | @couchbase-traces/cli | packages/cli | command-line client | javascript, typescript | 61 | 9 | ci:build, ci:lint, ci:unit |
-| @couchbase-traces/common-utils | packages/common-utils | shared query and data layer | javascript, typescript | 116 | 72 | ci:build, ci:int, ci:lint, ci:unit |
+| @couchbase-traces/common-utils | packages/common-utils | shared query and data layer | javascript, typescript | 117 | 72 | ci:build, ci:int, ci:lint, ci:unit |
 | @couchbase-traces/hdx-eval | packages/hdx-eval | evaluation harness | javascript, typescript | 53 | 31 | ci:lint, ci:unit |
 | @couchbase-traces/ingest | packages/ingest | ingestion service | javascript, typescript | 28 | 6 | ci:lint, ci:unit |
 | @couchbase-traces/otel-collector | packages/otel-collector | ingestion collector | go | 0 | 0 |  |
@@ -88,15 +88,15 @@ Inventory of commit adcb75c16715. Full detail is in `port/state/inventory/`.
 
 | Module | Reasons | Exports | Importers | Server-side |
 |---|---|---|---|---|
-| `packages/common-utils/src/types.ts` | seed, sql_builder | 375 | 708 | yes |
+| `packages/common-utils/src/types.ts` | seed, sql_builder | 375 | 710 | yes |
 | `packages/common-utils/src/clickhouse/index.ts` | seed, clickhouse_client, clickhouse_path, sql_builder | 46 | 135 | yes |
 | `packages/common-utils/src/core/metadata.ts` | seed, clickhouse_client, sql_builder | 24 | 122 | yes |
 | `packages/api/src/fixtures.ts` | sql_builder | 44 | 59 | yes |
 | `packages/common-utils/src/filters.ts` | sql_builder | 51 | 58 | yes |
+| `packages/common-utils/src/core/renderChartConfig.ts` | seed, sql_builder | 16 | 39 | yes |
 | `packages/common-utils/src/dataLayer/index.ts` | seed | 19 | 38 | yes |
-| `packages/common-utils/src/core/renderChartConfig.ts` | seed, sql_builder | 16 | 36 | yes |
+| `packages/common-utils/src/couchbase/sqlpp.ts` | seed | 8 | 34 | yes |
 | `packages/common-utils/src/clickhouse/node.ts` | seed, clickhouse_client, clickhouse_path | 4 | 31 | yes |
-| `packages/common-utils/src/couchbase/sqlpp.ts` | seed | 8 | 31 | yes |
 | `packages/app/src/components/DBRowSidePanel.tsx` | clickhouse_client | 8 | 28 | no |
 | `packages/cli/src/api/client.ts` | clickhouse_client | 9 | 28 | no |
 | `packages/app/src/hooks/useRowWhere.tsx` | sql_builder | 6 | 26 | no |
@@ -108,7 +108,7 @@ Inventory of commit adcb75c16715. Full detail is in `port/state/inventory/`.
 | `packages/app/src/llm/lib/expressions.ts` | sql_builder | 8 | 19 | no |
 | `packages/common-utils/src/couchbase/errors.ts` | seed | 13 | 19 | yes |
 | `packages/common-utils/src/dataLayer/routingMetadata.ts` | seed | 4 | 19 | yes |
-| `packages/common-utils/src/dataLayer/errors.ts` | seed | 2 | 15 | no |
+| `packages/common-utils/src/dataLayer/errors.ts` | seed | 2 | 16 | no |
 | `packages/common-utils/src/macros.ts` | sql_builder | 13 | 15 | yes |
 | `packages/app/src/components/MaterializedViews/MVOptimizationIndicator.tsx` | clickhouse_client | 1 | 14 | no |
 | `packages/app/src/components/TimePicker/TimePicker.tsx` | clickhouse_client, sql_builder | 1 | 14 | no |
@@ -118,9 +118,9 @@ Inventory of commit adcb75c16715. Full detail is in `port/state/inventory/`.
 | `packages/common-utils/src/clickhouse/browser.ts` | seed, clickhouse_client, clickhouse_path | 3 | 11 | no |
 | `packages/common-utils/src/couchbase/node.ts` | seed | 16 | 11 | yes |
 | `packages/common-utils/src/couchbase/nodeCluster.ts` | seed | 12 | 11 | yes |
+| `packages/common-utils/src/couchbase/time.ts` | seed, sql_builder | 9 | 11 | no |
 | `packages/common-utils/src/queryParser.ts` | seed, sql_builder | 18 | 11 | no |
 | `packages/api/src/mcp/tools/query/schemas.ts` | sql_builder | 14 | 10 | yes |
-| `packages/common-utils/src/couchbase/time.ts` | seed, sql_builder | 9 | 10 | no |
 | `packages/common-utils/src/core/materializedViews.ts` | sql_builder | 11 | 9 | yes |
 | `packages/common-utils/src/couchbase/nodeClusterCache.ts` | seed | 4 | 9 | yes |
 | `packages/hdx-eval/src/clickhouse/schema.ts` | clickhouse_client, clickhouse_path, sql_builder | 8 | 8 | no |
@@ -131,14 +131,16 @@ Inventory of commit adcb75c16715. Full detail is in `port/state/inventory/`.
 | `packages/app/src/DBSearchPage.tsx` | sql_builder | 7 | 6 | no |
 | `packages/app/src/components/ExceptionSubpanel.tsx` | clickhouse_client | 3 | 6 | no |
 | `packages/common-utils/src/core/clickhouseVersion.ts` | clickhouse_path | 8 | 6 | yes |
+| `packages/common-utils/src/couchbase/fn/scalar.ts` | seed, sql_builder | 46 | 6 | no |
 | `packages/common-utils/src/couchbase/render/rowId.ts` | seed, sql_builder | 6 | 6 | no |
 | `packages/common-utils/src/couchbase/settings.ts` | seed | 6 | 6 | no |
 | `packages/api/src/mcp/tools/query/serviceHealth/errorGroups.ts` | sql_builder | 6 | 5 | yes |
 | `packages/api/src/tasks/checkAlerts/errors.ts` | clickhouse_client | 8 | 5 | yes |
 | `packages/app/src/components/Iac/TerraformHelperPanel.tsx` | clickhouse_client, sql_builder | 2 | 5 | no |
+| `packages/app/src/couchbase/dialectExpr.ts` | sql_builder | 7 | 5 | no |
 | `packages/app/src/hooks/useServiceMap.tsx` | sql_builder | 6 | 5 | no |
 | `packages/app/src/sessions.ts` | sql_builder | 7 | 5 | no |
-| `packages/common-utils/src/couchbase/fn/scalar.ts` | seed, sql_builder | 46 | 5 | no |
+| `packages/common-utils/src/couchbase/fn/quantile.ts` | seed, sql_builder | 4 | 5 | no |
 | `packages/common-utils/src/couchbase/nodeTest.ts` | seed | 4 | 5 | yes |
 | `packages/common-utils/src/couchbase/render/index.ts` | seed, sql_builder | 9 | 5 | no |
 | `packages/common-utils/src/couchbase/render/where.ts` | seed, sql_builder | 4 | 5 | no |
@@ -155,8 +157,8 @@ Inventory of commit adcb75c16715. Full detail is in `port/state/inventory/`.
 | `packages/app/src/components/infraCorrelations.ts` | sql_builder | 4 | 4 | no |
 | `packages/app/src/llm/lib/cost.ts` | sql_builder | 4 | 4 | no |
 | `packages/app/src/utils/browserTelemetry.ts` | clickhouse_client | 2 | 4 | no |
+| `packages/common-utils/src/core/histogram.ts` | sql_builder | 3 | 4 | no |
 | `packages/common-utils/src/couchbase/browser.ts` | seed | 5 | 4 | no |
-| `packages/common-utils/src/couchbase/fn/quantile.ts` | seed, sql_builder | 4 | 4 | no |
 | `packages/common-utils/src/couchbase/inferMeta.ts` | seed, sql_builder | 7 | 4 | no |
 | `packages/common-utils/src/couchbase/nodeExecute.ts` | seed | 1 | 4 | yes |
 | `packages/common-utils/src/couchbase/statement.ts` | seed, sql_builder | 4 | 4 | yes |
@@ -173,6 +175,7 @@ Inventory of commit adcb75c16715. Full detail is in `port/state/inventory/`.
 | `packages/app/src/components/TeamSettings/IacMigrationSection.tsx` | clickhouse_client, sql_builder | 3 | 3 | no |
 | `packages/app/src/hooks/useMetricCatalog.ts` | sql_builder | 2 | 3 | no |
 | `packages/app/src/llm/dashboard/LLMSessionPanel.tsx` | clickhouse_client | 2 | 3 | no |
+| `packages/common-utils/src/couchbase/render/select.ts` | seed, sql_builder | 7 | 3 | no |
 | `packages/common-utils/src/couchbase/resultset.ts` | seed, sql_builder | 2 | 3 | no |
 | `packages/hdx-eval/src/scenarios/metric-saturation/generate.ts` | sql_builder | 1 | 3 | no |
 | `packages/api/src/mcp/prompts/dashboards/content.ts` | sql_builder | 4 | 2 | yes |
@@ -185,11 +188,8 @@ Inventory of commit adcb75c16715. Full detail is in `port/state/inventory/`.
 | `packages/app/src/UserPreferencesModal.tsx` | clickhouse_client | 1 | 2 | no |
 | `packages/app/src/components/AppNav/WhatsNewDrawer.tsx` | clickhouse_client | 2 | 2 | no |
 | `packages/app/src/components/ChartEditor/constants.tsx` | sql_builder | 2 | 2 | no |
-| `packages/app/src/components/DBEditTimeChartForm/ChartSeriesEditor.tsx` | clickhouse_client | 1 | 2 | no |
-| `packages/app/src/components/ListingCard.tsx` | clickhouse_client | 1 | 2 | no |
-| `packages/app/src/components/ListingListRow.tsx` | clickhouse_client | 1 | 2 | no |
 
-Plus 100 more in datalayer.json.
+Plus 102 more in datalayer.json.
 
 ### Server-side data-store callers
 
@@ -329,6 +329,7 @@ Plus 31 more in datalayer.json.
 | `packages/app/src/components/ServiceDashboardEndpointPerformanceChart.tsx` | 4 | 0 |
 | `packages/app/src/components/TeamSettings/TeamQueryConfigSection.tsx` | 4 | 0 |
 | `packages/app/src/components/deltaChartUtils.ts` | 0 | 4 |
+| `packages/app/src/couchbase/dialectExpr.ts` | 3 | 1 |
 | `packages/app/src/couchbase/sessionsList.ts` | 4 | 0 |
 | `packages/app/src/NodeDetailsSidePanel.tsx` | 3 | 0 |
 | `packages/app/src/components/DBEditTimeChartForm/ChartEditorControls.tsx` | 3 | 0 |
@@ -399,9 +400,8 @@ Plus 31 more in datalayer.json.
 | `packages/app/src/hooks/useAutoCompleteOptions.tsx` | 0 | 1 |
 | `packages/app/src/hooks/useResultColumnFilterKeys.ts` | 1 | 0 |
 | `packages/app/src/llm/__fixtures__/sources.ts` | 1 | 0 |
-| `packages/app/src/llm/dashboard/AttributionCharts.tsx` | 1 | 0 |
 
-Plus 5 more in sql-catalog.json.
+Plus 6 more in sql-catalog.json.
 
 ### ClickHouse constructs without a SQL++ mapping
 
@@ -418,20 +418,20 @@ Plus 5 more in sql-catalog.json.
 | function | `if` | 33 | 15 |
 | type | `Array` | 31 | 10 |
 | type | `Float64` | 31 | 9 |
+| function | `TONUMBER` | 30 | 8 |
 | clause | `INTERVAL` | 28 | 12 |
 | type | `LowCardinality` | 27 | 13 |
 | function | `toDateTime` | 24 | 8 |
 | function | `CAST` | 23 | 4 |
+| function | `IFNULL` | 22 | 8 |
 | setting | `max_execution_time` | 22 | 14 |
 | function | `__filter` | 20 | 1 |
+| function | `ARRAY_LENGTH` | 19 | 5 |
 | type | `DateTime64` | 19 | 13 |
-| function | `TONUMBER` | 18 | 6 |
 | type | `Nullable` | 18 | 7 |
 | clause | `->` | 17 | 5 |
 | function | `match` | 17 | 8 |
 | function | `toStartOfFifteenMinutes` | 17 | 1 |
-| function | `IFNULL` | 16 | 6 |
-| function | `ARRAY_LENGTH` | 13 | 3 |
 | function | `__timeFilter` | 13 | 5 |
 | function | `__timeInterval` | 13 | 5 |
 | function | `SUBSTR` | 12 | 1 |
@@ -456,14 +456,16 @@ Plus 5 more in sql-catalog.json.
 | function | `toJSONString` | 8 | 2 |
 | type | `Date` | 8 | 5 |
 | dynamic_suffix | `arrayExists` | 7 | 1 |
+| function | `ARRAY_AGG` | 7 | 4 |
 | function | `arrayElement` | 7 | 2 |
 | function | `arraySum` | 7 | 2 |
 | function | `has` | 7 | 5 |
 | function | `map` | 7 | 4 |
 | function | `multiIf` | 7 | 2 |
 | clause | `::` | 6 | 1 |
-| function | `ARRAY_AGG` | 6 | 3 |
+| function | `ARRAY_RANGE` | 6 | 3 |
 | function | `OBJECT_NAMES` | 6 | 4 |
+| function | `TOSTRING` | 6 | 4 |
 | function | `__conditionalAll` | 6 | 1 |
 | function | `age` | 6 | 2 |
 | function | `arrayConcat` | 6 | 3 |
@@ -475,7 +477,7 @@ Plus 5 more in sql-catalog.json.
 | function | `toDate` | 6 | 4 |
 | parameter_type | `Identifier` | 6 | 1 |
 | function | `META` | 5 | 2 |
-| function | `TOSTRING` | 5 | 3 |
+| function | `NULLIF` | 5 | 3 |
 | function | `anyLast` | 5 | 3 |
 | function | `calc` | 5 | 2 |
 | function | `columns` | 5 | 1 |
@@ -490,6 +492,7 @@ Plus 5 more in sql-catalog.json.
 | setting | `allow_experimental_time_series_table` | 5 | 3 |
 | setting | `wait_end_of_query` | 5 | 2 |
 | type | `UInt8` | 5 | 3 |
+| function | `IFMISSINGORNULL` | 4 | 3 |
 | function | `arrayMap` | 4 | 3 |
 | function | `arrayZip` | 4 | 3 |
 | function | `emptyArrayInt64` | 4 | 1 |
@@ -504,11 +507,8 @@ Plus 5 more in sql-catalog.json.
 | function | `tuple` | 4 | 1 |
 | parameter_type | `Float64` | 4 | 2 |
 | setting | `read_overflow_mode` | 4 | 1 |
-| type | `Bool` | 4 | 4 |
-| type | `FixedString` | 4 | 2 |
-| type | `Nested` | 4 | 3 |
 
-Plus 347 more in sql-catalog.json.
+Plus 348 more in sql-catalog.json.
 
 ### Mapped constructs in use
 
@@ -521,7 +521,7 @@ Plus 347 more in sql-catalog.json.
 | `SETTINGS` | 17 | Query options passed through the SDK (timeout, scan consistency, named parameters); drop engine-specific settings |
 | `If` | 1 | COUNT(*) FILTER (WHERE cond) |
 | `JSONExtract` | 4 | Field path access on the JSON document, with TONUMBER, TOSTRING, or TOBOOLEAN for typing |
-| `JSONExtractString` | 7 | Field path access on the JSON document, with TONUMBER, TOSTRING, or TOBOOLEAN for typing |
+| `JSONExtractString` | 8 | Field path access on the JSON document, with TONUMBER, TOSTRING, or TOBOOLEAN for typing |
 | `any` | 17 | ARRAY_AGG(expr)[0], or MIN(expr) when any value is acceptable |
 | `argMax` | 5 | FIRST_VALUE(value) OVER (PARTITION BY group ORDER BY key DESC), or a subquery ordered by key DESC LIMIT 1 |
 | `arrayJoin` | 5 | UNNEST over the array field |
@@ -599,14 +599,14 @@ Collector components, pipelines, ClickHouse exporters, and management code.
 |---|---|---|---|---|---|
 | package_names | 0 | 0 | 136 | 0 | 1 |
 | external_dependencies | 7 | 18 | 137 | 0 | 0 |
-| env_vars | 73 | 7 | 534 | 0 | 51 |
+| env_vars | 73 | 7 | 536 | 0 | 51 |
 | telemetry_endpoints | 18 | 0 | 61 | 0 | 2 |
 | assets | 0 | 0 | 0 | 0 | 3 |
 | docker | 48 | 0 | 116 | 0 | 95 |
-| docs | 487 | 278 | 1359 | 2 | 191 |
-| ui_strings | 10 | 9 | 102 | 0 | 127 |
+| docs | 487 | 278 | 1358 | 2 | 191 |
+| ui_strings | 10 | 9 | 109 | 0 | 128 |
 | code_identifiers | 129 | 21 | 2434 | 0 | 644 |
-| other | 643 | 187 | 1831 | 2 | 1616 |
+| other | 643 | 187 | 1835 | 2 | 1618 |
 
 ### Feature status
 
@@ -630,7 +630,7 @@ Collector components, pipelines, ClickHouse exporters, and management code.
 - W_PLAN_MISSING: 1 occurrences. First: COUCHBASE_PORT_PLAN.md not found at the project root; plan check skipped (COUCHBASE_PORT_PLAN.md)
 - W_SCHEMA_UNPARSED: 1 occurrences. First: Unparsed statement: CREATE DATABASE IF NOT EXISTS DATABASE (docker/otel-collector/schema/seed/00001_create_database.sql)
 - W_TABLE_REDEFINED: 3 occurrences. First: Table otel_logs is defined in docker/otel-collector/schema/seed/00002_otel_logs.sql and docker/otel-collector/schema/seed/00002_otel_logs_compat.sql (docker/otel-collector/schema/seed/00002_otel_logs_compat.sql)
-- W_UNRESOLVED_IMPORT: 5 occurrences. First: Cannot resolve "@couchbase-traces/api/build/serverless" (packages/app/pages/api/[...all].ts)
+- W_UNRESOLVED_IMPORT: 2 occurrences. First: Cannot resolve "@couchbase-traces/api/build/serverless" (packages/app/pages/api/[...all].ts)
 - W_UNRESOLVED_MOUNT: 1 occurrences. First: Cannot resolve router for mount "/v1/opamp" at line 13 (packages/api/src/opamp/app.ts)
 <!-- phase2:end -->
 
@@ -767,7 +767,7 @@ Collector components, pipelines, ClickHouse exporters, and management code.
 
 ### Features pending a decision
 
-- `metrics-exp-histogram`: Upstream translateExponentialHistogram depends on ClickHouse bitShiftRight/arraySplit/sumMap scale normalization and multi-window lag over positive/negative bucket arrays. A SQL++ port was attempted after explicit-bounds histogram landed; the scale-normalization and aligned array-delta path has no ready Phase 6 equivalent and would diverge without a dedicated design. Gated in the metric explorer for Couchbase sources; render throws CouchbaseNotReadyError naming this feature id if reached.
+None.
 <!-- phase3:end -->
 
 ### Phase 5a
@@ -895,10 +895,23 @@ Completed requests: `system:completed_requests` requires `query_system_catalog`.
 - Gauge/summary: Source CTE with `ENCODE_JSON(Attributes)` series key; `Value` always backtick-quoted (SQL++ reserved). Sum: LAG-based Rate with reset clamp (`GREATEST(delta, 0)`); `increase` → `SUM(Rate)`.
 - Explicit-bounds histogram: count (LAG Count deltas + `SUM(delta)`) and quantile (UNNEST bucket rates → rebuild arrays → Phase 6 `histogramQuantile`) in `render/metrics/histogram.ts`.
 - Multi-series + metric formulas: `renderMultiSeriesMetricChartConfigCouchbase` — per-series recurse, `UNION ALL`, pivot with `MAX(CASE…)`, formulas via SQL++-mapped `compileFormulaAst`.
-- **needs_decision:** `metrics-exp-histogram` — exponential histogram scale normalization (bitShift/arraySplit/sumMap) has no ready SQL++ equivalent after a solid attempt; gated in MetricExplorer for Couchbase (`unavailableKinds`); render throws `CouchbaseNotReadyError` naming the feature id. Parity case `metrics-exp-histogram-needs-decision` asserts that error (`compare.expectCouchbaseError`).
 - Avg/count gauge charts without `metricType` compare equal via lucene `MetricName` filter (CH `last_value` translate vs CB raw avg diverge); `metrics-gauge-max` exercises the translate path.
-- Query parity: `compare-charts --render-only metrics` green (8 cases: gauge×3, histogram count/p50, multi-series, formula, exp-hist expected error).
-- E2E: `metric-name-streaming.spec.ts`, `metric-table-autofill.spec.ts`, `correlated-metric-source.spec.ts` listed under metrics in `port/slices/e2e.json`. Search `@smoke` green on Couchbase; see Phase 7 search note for remaining non-smoke failures in `search.spec.ts`.
+- Query parity: see Phase 7a for live metrics/charts parity after exponential histogram landed.
+
+### Phase 7a
+
+- **Probes (2026-11-13, Server enterprise-8.0.3):** LAG of array values works; array slice with computed bounds `arr[a:b]` works; `ARRAY_SORT` on `[index, count]` pairs sorts by index; `FIRST … FOR … WHEN … END` works; `WITH` CTEs plus `min_scale[0]` works. No fallbacks used. `FLOOR(i / POWER(2, s))` matches floor-division for negative indexes; do not use `IDIV` (truncates toward zero).
+- **Prefix-sum:** kept the quadratic `ARRAY_SUM(counts[0:i+1])` comprehension; acceptable for OTel's default ~160 buckets/side.
+- **Renderer:** `packages/common-utils/src/couchbase/render/metrics/expHistogram.ts` — count via LAG deltas; quantile via filtered_series → min_scale CTE → scale-normalize (POWER/FLOOR/ARRAY_SUM slices) → aligned LAG deltas → UNNEST sumMap → ordered quantile. MetricExplorer Couchbase gate and `CouchbaseNotReadyError` for exp-hist removed. Placeholder feature `metrics-exp-histogram` removed from `port/features.json` (it had no inventory entry points); coverage sits with the already-ported chart/metrics slice (`app-chart`).
+- **Integration:** `expHistogram.couchbase.int.test.ts` — 11 cases vs reference (scale normalize, negatives, cumulative resets, quantiles 0–1, groups, 160×200 stress). Primary-scan DELETE is incomplete on fresh upserts; tests use `DELETE … USE KEYS` and wait for index visibility.
+- **Parity dataset:** seeds 400 delta-temporality `parity.exponential` points across api/web/worker. Live parity cases: count, p50/p95/p99, count/p50 by ServiceName.
+- **Date filter:** histogram / exp-hist CTEs weave `dateRange` into the source WHERE (`sourceWhereClause`) and clear the outer `dateRange` when there is no time bucket, matching upstream. Without that, the outer `d.TimeUnix` filter ran against the pre-aggregated `metrics` CTE (no TimeUnix) and returned 0 rows.
+- **Parity compare:** packed `group` arrays need deep equality in `compare-charts.mjs`; column names for hist/exp-hist come from the packed alias, not the pre-translate `groupBy` list.
+- **Multi-series:** formula branch wrappers now alias `FROM (branch) AS bN` (SQL++ requires subquery aliases).
+- **E2E:** added `metric-exp-histogram.spec.ts` (p95 in chart explorer); seeds `e2e.request.duration` into `e2e_otel_metrics_exponential_histogram` for ClickHouse and Couchbase. Metrics slice e2e list updated.
+- **Live parity (2026-11-13):** `port/query-parity/run.sh --slice metrics` EXIT 0 — all 6 exp-hist cases matched exactly; allowed divergences for Phase 7 leftovers `metrics-formula-gauge` / `metrics-multi-gauge-sum` (gauge last_value) and `metrics-histogram-p50` (unseeded hist table). `port/query-parity/run.sh --slice charts` EXIT 0 (34 cases).
+- **Integration (2026-11-13):** `port/couchbase-test/run.sh` EXIT 0 including `expHistogram.couchbase.int.test.ts`.
+- **E2E (2026-11-13):** Couchbase store — `metric-exp-histogram.spec.ts` passed (full stack). The other metrics-slice Couchbase specs (`metric-name-streaming`, `metric-table-autofill`, `correlated-metric-source`) failed in this run (UI/fetch); treat as a remaining gap outside exp-hist. ClickHouse store — metrics slice specs 6/6 passed.
 
 ### Phase 7: sessions
 

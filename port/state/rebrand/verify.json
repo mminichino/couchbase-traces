@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "step": "branding",
-  "status": "pass",
+  "status": "fail",
   "checks": [
     {
       "name": "brand assets",
@@ -15,8 +15,11 @@
     },
     {
       "name": "brand terms",
-      "status": "pass",
-      "problems": []
+      "status": "fail",
+      "problems": [
+        "packages/app/src/couchbase/dialect.ts:11: hyperdx (string): '__hyperdx_id',",
+        "packages/app/src/couchbase/dialect.ts:12: hyperdx (string): '__hyperdx_alias_with',"
+      ]
     },
     {
       "name": "outbound requests",
@@ -40,8 +43,12 @@
     },
     {
       "name": "test-diff --base HEAD",
-      "status": "pass",
-      "problems": []
+      "status": "fail",
+      "problems": [
+        "packages/app/tests/e2e/seed-clickhouse.ts: differs from the substituted base at line 18: expected \"  E2E_INTERESTING_FILTER_KEYS_TABLE,\", found \"  E2E_EXP_HISTOGRAM_METRIC_NAME,\"",
+        "packages/app/tests/e2e/seed-couchbase.ts: differs from the substituted base at line 8: expected \"  E2E_LOGS_TABLE,\", found \"  E2E_EXP_HISTOGRAM_METRIC_NAME,\"",
+        "packages/app/tests/e2e/utils/constants.ts: differs from the substituted base at line 58: expected \"// TimeSeries-engine table backing the PromQL source. `prometheusQueryRange`,\", found \"export const E2E_METRICS_EXP_HISTOGRAM_TABLE =\""
+      ]
     },
     {
       "name": "features.json against a fresh scan",

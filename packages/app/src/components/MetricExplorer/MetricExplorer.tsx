@@ -1,12 +1,9 @@
-import { useMemo } from 'react';
 import {
   DateRange,
-  MetricsDataType,
   TMetricSource,
 } from '@couchbase-traces/common-utils/dist/types';
 import { Box, Flex } from '@mantine/core';
 
-import { useConnectionKind } from '@/couchbase/connection';
 import { useMetricCatalog } from '@/hooks/useMetricCatalog';
 import type { MetricCatalogEntry } from '@/utils/metricNameTree';
 
@@ -59,25 +56,10 @@ export function MetricExplorer({
   onAddWhere,
   onAddGroupBy,
 }: MetricExplorerProps) {
-  const connectionKind = useConnectionKind(metricSource.connection);
   const { entries, failedKinds, isLoading, error } = useMetricCatalog({
     source: metricSource,
     dateRange,
   });
-
-  // Exponential histogram charts are needs_decision on Couchbase — hide them
-  // from the browser so NotReady is not the only user-facing outcome.
-  const { filteredEntries, unavailableKinds } = useMemo(() => {
-    if (connectionKind !== 'couchbase') {
-      return { filteredEntries: entries, unavailableKinds: [] as MetricsDataType[] };
-    }
-    return {
-      filteredEntries: entries.filter(
-        e => e.type !== MetricsDataType.ExponentialHistogram,
-      ),
-      unavailableKinds: [MetricsDataType.ExponentialHistogram],
-    };
-  }, [connectionKind, entries]);
 
   return (
     <Flex gap="md" align="stretch" h="100%" style={{ minHeight: 0 }}>
@@ -90,9 +72,8 @@ export function MetricExplorer({
         }}
       >
         <MetricBrowser
-          entries={filteredEntries}
+          entries={entries}
           failedKinds={failedKinds}
-          unavailableKinds={unavailableKinds}
           isLoading={isLoading}
           error={error}
           selected={selected}

@@ -287,8 +287,8 @@
         "uplot-react",
         "zod"
       ],
-      "sourceFiles": 693,
-      "testFiles": 517,
+      "sourceFiles": 694,
+      "testFiles": 518,
       "hasTsconfig": true,
       "role": "web UI"
     },
@@ -415,7 +415,7 @@
         "typescript",
         "zod"
       ],
-      "sourceFiles": 116,
+      "sourceFiles": 117,
       "testFiles": 72,
       "hasTsconfig": true,
       "role": "shared query and data layer"

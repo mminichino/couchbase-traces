@@ -55,6 +55,10 @@ export const E2E_TRACES_MV_TABLE = 'e2e_otel_traces_1m';
 export const E2E_SESSIONS_TABLE = 'e2e_hyperdx_sessions';
 export const E2E_METRICS_GAUGE_TABLE = 'e2e_otel_metrics_gauge';
 export const E2E_METRICS_SUM_TABLE = 'e2e_otel_metrics_sum';
+export const E2E_METRICS_EXP_HISTOGRAM_TABLE =
+  'e2e_otel_metrics_exponential_histogram';
+/** Delta-temporality exponential histogram seeded for metric explorer e2e. */
+export const E2E_EXP_HISTOGRAM_METRIC_NAME = 'e2e.request.duration';
 // TimeSeries-engine table backing the PromQL source. `prometheusQueryRange`,
 // which the API's PromQL path calls, reads only this engine — the otel_metrics_*
 // tables above are not usable for PromQL. The seeder writes through the

@@ -10131,14 +10131,6 @@
     {
       "path": "docs/sqlpp-mapping.md",
       "line": 236,
-      "column": 74,
-      "term": "clickhouse",
-      "category": "docs",
-      "snippet": "| `generateUUIDv4` | No SQL++ equivalent in this phase; catalog token or ClickHouse-only function |"
-    },
-    {
-      "path": "docs/sqlpp-mapping.md",
-      "line": 237,
       "column": 72,
       "term": "clickhouse",
       "category": "docs",
@@ -10146,7 +10138,7 @@
     },
     {
       "path": "docs/sqlpp-mapping.md",
-      "line": 238,
+      "line": 237,
       "column": 72,
       "term": "clickhouse",
       "category": "docs",
@@ -10154,7 +10146,7 @@
     },
     {
       "path": "docs/sqlpp-mapping.md",
-      "line": 239,
+      "line": 238,
       "column": 62,
       "term": "clickhouse",
       "category": "docs",
@@ -10162,7 +10154,7 @@
     },
     {
       "path": "docs/sqlpp-mapping.md",
-      "line": 240,
+      "line": 239,
       "column": 71,
       "term": "clickhouse",
       "category": "docs",
@@ -10170,7 +10162,7 @@
     },
     {
       "path": "docs/sqlpp-mapping.md",
-      "line": 241,
+      "line": 240,
       "column": 68,
       "term": "clickhouse",
       "category": "docs",
@@ -10178,7 +10170,7 @@
     },
     {
       "path": "docs/sqlpp-mapping.md",
-      "line": 242,
+      "line": 241,
       "column": 68,
       "term": "clickhouse",
       "category": "docs",
@@ -10186,7 +10178,7 @@
     },
     {
       "path": "docs/sqlpp-mapping.md",
-      "line": 243,
+      "line": 242,
       "column": 30,
       "term": "clickhouse",
       "category": "docs",
@@ -10194,7 +10186,7 @@
     },
     {
       "path": "docs/sqlpp-mapping.md",
-      "line": 244,
+      "line": 243,
       "column": 68,
       "term": "clickhouse",
       "category": "docs",
@@ -10202,7 +10194,7 @@
     },
     {
       "path": "docs/sqlpp-mapping.md",
-      "line": 245,
+      "line": 244,
       "column": 79,
       "term": "clickhouse",
       "category": "docs",
@@ -10210,7 +10202,7 @@
     },
     {
       "path": "docs/sqlpp-mapping.md",
-      "line": 246,
+      "line": 245,
       "column": 76,
       "term": "clickhouse",
       "category": "docs",
@@ -10218,7 +10210,7 @@
     },
     {
       "path": "docs/sqlpp-mapping.md",
-      "line": 247,
+      "line": 246,
       "column": 77,
       "term": "clickhouse",
       "category": "docs",
@@ -10226,7 +10218,7 @@
     },
     {
       "path": "docs/sqlpp-mapping.md",
-      "line": 248,
+      "line": 247,
       "column": 72,
       "term": "clickhouse",
       "category": "docs",
@@ -10234,7 +10226,7 @@
     },
     {
       "path": "docs/sqlpp-mapping.md",
-      "line": 249,
+      "line": 248,
       "column": 69,
       "term": "clickhouse",
       "category": "docs",
@@ -10242,7 +10234,7 @@
     },
     {
       "path": "docs/sqlpp-mapping.md",
-      "line": 250,
+      "line": 249,
       "column": 66,
       "term": "clickhouse",
       "category": "docs",
@@ -10250,7 +10242,7 @@
     },
     {
       "path": "docs/sqlpp-mapping.md",
-      "line": 251,
+      "line": 250,
       "column": 63,
       "term": "clickhouse",
       "category": "docs",
@@ -10258,7 +10250,7 @@
     },
     {
       "path": "docs/sqlpp-mapping.md",
-      "line": 252,
+      "line": 251,
       "column": 69,
       "term": "clickhouse",
       "category": "docs",
@@ -10266,7 +10258,7 @@
     },
     {
       "path": "docs/sqlpp-mapping.md",
-      "line": 253,
+      "line": 252,
       "column": 64,
       "term": "clickhouse",
       "category": "docs",
@@ -10274,7 +10266,7 @@
     },
     {
       "path": "docs/sqlpp-mapping.md",
-      "line": 254,
+      "line": 253,
       "column": 62,
       "term": "clickhouse",
       "category": "docs",
@@ -10282,7 +10274,7 @@
     },
     {
       "path": "docs/sqlpp-mapping.md",
-      "line": 255,
+      "line": 254,
       "column": 18,
       "term": "clickhouse",
       "category": "docs",
@@ -10290,7 +10282,7 @@
     },
     {
       "path": "docs/sqlpp-mapping.md",
-      "line": 256,
+      "line": 255,
       "column": 66,
       "term": "clickhouse",
       "category": "docs",
@@ -10298,7 +10290,7 @@
     },
     {
       "path": "docs/sqlpp-mapping.md",
-      "line": 257,
+      "line": 256,
       "column": 64,
       "term": "clickhouse",
       "category": "docs",
@@ -10306,7 +10298,7 @@
     },
     {
       "path": "docs/sqlpp-mapping.md",
-      "line": 258,
+      "line": 257,
       "column": 75,
       "term": "clickhouse",
       "category": "docs",
@@ -10314,7 +10306,7 @@
     },
     {
       "path": "docs/sqlpp-mapping.md",
-      "line": 259,
+      "line": 258,
       "column": 66,
       "term": "clickhouse",
       "category": "docs",
@@ -10322,7 +10314,7 @@
     },
     {
       "path": "docs/sqlpp-mapping.md",
-      "line": 260,
+      "line": 259,
       "column": 66,
       "term": "clickhouse",
       "category": "docs",
@@ -10330,7 +10322,7 @@
     },
     {
       "path": "docs/sqlpp-mapping.md",
-      "line": 261,
+      "line": 260,
       "column": 68,
       "term": "clickhouse",
       "category": "docs",
@@ -10338,7 +10330,7 @@
     },
     {
       "path": "docs/sqlpp-mapping.md",
-      "line": 262,
+      "line": 261,
       "column": 25,
       "term": "clickhouse",
       "category": "docs",
@@ -10346,7 +10338,7 @@
     },
     {
       "path": "docs/sqlpp-mapping.md",
-      "line": 263,
+      "line": 262,
       "column": 69,
       "term": "clickhouse",
       "category": "docs",
@@ -10354,7 +10346,7 @@
     },
     {
       "path": "docs/sqlpp-mapping.md",
-      "line": 264,
+      "line": 263,
       "column": 74,
       "term": "clickhouse",
       "category": "docs",
@@ -10362,7 +10354,7 @@
     },
     {
       "path": "docs/sqlpp-mapping.md",
-      "line": 265,
+      "line": 264,
       "column": 74,
       "term": "clickhouse",
       "category": "docs",
@@ -10370,7 +10362,7 @@
     },
     {
       "path": "docs/sqlpp-mapping.md",
-      "line": 266,
+      "line": 265,
       "column": 14,
       "term": "clickhouse",
       "category": "docs",
@@ -10378,7 +10370,7 @@
     },
     {
       "path": "docs/sqlpp-mapping.md",
-      "line": 267,
+      "line": 266,
       "column": 13,
       "term": "clickhouse",
       "category": "docs",
@@ -10386,7 +10378,7 @@
     },
     {
       "path": "docs/sqlpp-mapping.md",
-      "line": 268,
+      "line": 267,
       "column": 14,
       "term": "clickhouse",
       "category": "docs",
@@ -10394,7 +10386,7 @@
     },
     {
       "path": "docs/sqlpp-mapping.md",
-      "line": 269,
+      "line": 268,
       "column": 13,
       "term": "clickhouse",
       "category": "docs",
@@ -10402,7 +10394,7 @@
     },
     {
       "path": "docs/sqlpp-mapping.md",
-      "line": 270,
+      "line": 269,
       "column": 13,
       "term": "clickhouse",
       "category": "docs",
@@ -10410,7 +10402,7 @@
     },
     {
       "path": "docs/sqlpp-mapping.md",
-      "line": 271,
+      "line": 270,
       "column": 12,
       "term": "clickhouse",
       "category": "docs",
@@ -10418,7 +10410,7 @@
     },
     {
       "path": "docs/sqlpp-mapping.md",
-      "line": 272,
+      "line": 271,
       "column": 69,
       "term": "clickhouse",
       "category": "docs",
@@ -10426,7 +10418,7 @@
     },
     {
       "path": "docs/sqlpp-mapping.md",
-      "line": 274,
+      "line": 273,
       "column": 12,
       "term": "clickhouse",
       "category": "docs",
@@ -10434,7 +10426,7 @@
     },
     {
       "path": "docs/sqlpp-mapping.md",
-      "line": 275,
+      "line": 274,
       "column": 12,
       "term": "clickhouse",
       "category": "docs",
@@ -10442,7 +10434,7 @@
     },
     {
       "path": "docs/sqlpp-mapping.md",
-      "line": 276,
+      "line": 275,
       "column": 68,
       "term": "clickhouse",
       "category": "docs",
@@ -10450,7 +10442,7 @@
     },
     {
       "path": "docs/sqlpp-mapping.md",
-      "line": 277,
+      "line": 276,
       "column": 66,
       "term": "clickhouse",
       "category": "docs",
@@ -10458,7 +10450,7 @@
     },
     {
       "path": "docs/sqlpp-mapping.md",
-      "line": 278,
+      "line": 277,
       "column": 68,
       "term": "clickhouse",
       "category": "docs",
@@ -10466,7 +10458,7 @@
     },
     {
       "path": "docs/sqlpp-mapping.md",
-      "line": 279,
+      "line": 278,
       "column": 62,
       "term": "clickhouse",
       "category": "docs",
@@ -10474,7 +10466,7 @@
     },
     {
       "path": "docs/sqlpp-mapping.md",
-      "line": 280,
+      "line": 279,
       "column": 64,
       "term": "clickhouse",
       "category": "docs",
@@ -10482,7 +10474,7 @@
     },
     {
       "path": "docs/sqlpp-mapping.md",
-      "line": 281,
+      "line": 280,
       "column": 65,
       "term": "clickhouse",
       "category": "docs",
@@ -10490,7 +10482,7 @@
     },
     {
       "path": "docs/sqlpp-mapping.md",
-      "line": 282,
+      "line": 281,
       "column": 22,
       "term": "clickhouse",
       "category": "docs",
@@ -10498,7 +10490,7 @@
     },
     {
       "path": "docs/sqlpp-mapping.md",
-      "line": 283,
+      "line": 282,
       "column": 64,
       "term": "clickhouse",
       "category": "docs",
@@ -10506,7 +10498,7 @@
     },
     {
       "path": "docs/sqlpp-mapping.md",
-      "line": 284,
+      "line": 283,
       "column": 12,
       "term": "clickhouse",
       "category": "docs",
@@ -10514,7 +10506,7 @@
     },
     {
       "path": "docs/sqlpp-mapping.md",
-      "line": 285,
+      "line": 284,
       "column": 85,
       "term": "clickhouse",
       "category": "docs",
@@ -10522,7 +10514,7 @@
     },
     {
       "path": "docs/sqlpp-mapping.md",
-      "line": 286,
+      "line": 285,
       "column": 71,
       "term": "clickhouse",
       "category": "docs",
@@ -10530,7 +10522,7 @@
     },
     {
       "path": "docs/sqlpp-mapping.md",
-      "line": 287,
+      "line": 286,
       "column": 63,
       "term": "clickhouse",
       "category": "docs",
@@ -10538,7 +10530,7 @@
     },
     {
       "path": "docs/sqlpp-mapping.md",
-      "line": 288,
+      "line": 287,
       "column": 64,
       "term": "clickhouse",
       "category": "docs",
@@ -10546,7 +10538,7 @@
     },
     {
       "path": "docs/sqlpp-mapping.md",
-      "line": 289,
+      "line": 288,
       "column": 64,
       "term": "clickhouse",
       "category": "docs",
@@ -10554,7 +10546,7 @@
     },
     {
       "path": "docs/sqlpp-mapping.md",
-      "line": 290,
+      "line": 289,
       "column": 65,
       "term": "clickhouse",
       "category": "docs",
@@ -10562,7 +10554,7 @@
     },
     {
       "path": "docs/sqlpp-mapping.md",
-      "line": 291,
+      "line": 290,
       "column": 65,
       "term": "clickhouse",
       "category": "docs",
@@ -10570,7 +10562,7 @@
     },
     {
       "path": "docs/sqlpp-mapping.md",
-      "line": 292,
+      "line": 291,
       "column": 63,
       "term": "clickhouse",
       "category": "docs",
@@ -10578,7 +10570,7 @@
     },
     {
       "path": "docs/sqlpp-mapping.md",
-      "line": 293,
+      "line": 292,
       "column": 70,
       "term": "clickhouse",
       "category": "docs",
@@ -10586,7 +10578,7 @@
     },
     {
       "path": "docs/sqlpp-mapping.md",
-      "line": 294,
+      "line": 293,
       "column": 66,
       "term": "clickhouse",
       "category": "docs",
@@ -10594,7 +10586,7 @@
     },
     {
       "path": "docs/sqlpp-mapping.md",
-      "line": 295,
+      "line": 294,
       "column": 67,
       "term": "clickhouse",
       "category": "docs",
@@ -10602,7 +10594,7 @@
     },
     {
       "path": "docs/sqlpp-mapping.md",
-      "line": 296,
+      "line": 295,
       "column": 65,
       "term": "clickhouse",
       "category": "docs",
@@ -10610,7 +10602,7 @@
     },
     {
       "path": "docs/sqlpp-mapping.md",
-      "line": 297,
+      "line": 296,
       "column": 64,
       "term": "clickhouse",
       "category": "docs",
@@ -10618,7 +10610,7 @@
     },
     {
       "path": "docs/sqlpp-mapping.md",
-      "line": 298,
+      "line": 297,
       "column": 67,
       "term": "clickhouse",
       "category": "docs",
@@ -10626,7 +10618,7 @@
     },
     {
       "path": "docs/sqlpp-mapping.md",
-      "line": 299,
+      "line": 298,
       "column": 64,
       "term": "clickhouse",
       "category": "docs",
@@ -10634,7 +10626,7 @@
     },
     {
       "path": "docs/sqlpp-mapping.md",
-      "line": 300,
+      "line": 299,
       "column": 65,
       "term": "clickhouse",
       "category": "docs",
@@ -10642,7 +10634,7 @@
     },
     {
       "path": "docs/sqlpp-mapping.md",
-      "line": 301,
+      "line": 300,
       "column": 62,
       "term": "clickhouse",
       "category": "docs",
@@ -10650,7 +10642,7 @@
     },
     {
       "path": "docs/sqlpp-mapping.md",
-      "line": 302,
+      "line": 301,
       "column": 63,
       "term": "clickhouse",
       "category": "docs",
@@ -10658,7 +10650,7 @@
     },
     {
       "path": "docs/sqlpp-mapping.md",
-      "line": 303,
+      "line": 302,
       "column": 64,
       "term": "clickhouse",
       "category": "docs",
@@ -10666,7 +10658,7 @@
     },
     {
       "path": "docs/sqlpp-mapping.md",
-      "line": 304,
+      "line": 303,
       "column": 22,
       "term": "clickhouse",
       "category": "docs",
@@ -10674,7 +10666,7 @@
     },
     {
       "path": "docs/sqlpp-mapping.md",
-      "line": 305,
+      "line": 304,
       "column": 78,
       "term": "clickhouse",
       "category": "docs",
@@ -10682,7 +10674,7 @@
     },
     {
       "path": "docs/sqlpp-mapping.md",
-      "line": 306,
+      "line": 305,
       "column": 65,
       "term": "clickhouse",
       "category": "docs",
@@ -10690,7 +10682,7 @@
     },
     {
       "path": "docs/sqlpp-mapping.md",
-      "line": 307,
+      "line": 306,
       "column": 66,
       "term": "clickhouse",
       "category": "docs",
@@ -10698,7 +10690,7 @@
     },
     {
       "path": "docs/sqlpp-mapping.md",
-      "line": 308,
+      "line": 307,
       "column": 66,
       "term": "clickhouse",
       "category": "docs",
@@ -10706,7 +10698,7 @@
     },
     {
       "path": "docs/sqlpp-mapping.md",
-      "line": 309,
+      "line": 308,
       "column": 66,
       "term": "clickhouse",
       "category": "docs",
@@ -10714,7 +10706,7 @@
     },
     {
       "path": "docs/sqlpp-mapping.md",
-      "line": 310,
+      "line": 309,
       "column": 66,
       "term": "clickhouse",
       "category": "docs",
@@ -10722,7 +10714,7 @@
     },
     {
       "path": "docs/sqlpp-mapping.md",
-      "line": 311,
+      "line": 310,
       "column": 66,
       "term": "clickhouse",
       "category": "docs",
@@ -10730,7 +10722,7 @@
     },
     {
       "path": "docs/sqlpp-mapping.md",
-      "line": 312,
+      "line": 311,
       "column": 63,
       "term": "clickhouse",
       "category": "docs",
@@ -10738,7 +10730,7 @@
     },
     {
       "path": "docs/sqlpp-mapping.md",
-      "line": 313,
+      "line": 312,
       "column": 11,
       "term": "clickhouse",
       "category": "docs",
@@ -10746,7 +10738,7 @@
     },
     {
       "path": "docs/sqlpp-mapping.md",
-      "line": 314,
+      "line": 313,
       "column": 68,
       "term": "clickhouse",
       "category": "docs",
@@ -10754,7 +10746,7 @@
     },
     {
       "path": "docs/sqlpp-mapping.md",
-      "line": 315,
+      "line": 314,
       "column": 67,
       "term": "clickhouse",
       "category": "docs",
@@ -10762,7 +10754,7 @@
     },
     {
       "path": "docs/sqlpp-mapping.md",
-      "line": 316,
+      "line": 315,
       "column": 63,
       "term": "clickhouse",
       "category": "docs",
@@ -10770,7 +10762,7 @@
     },
     {
       "path": "docs/sqlpp-mapping.md",
-      "line": 317,
+      "line": 316,
       "column": 63,
       "term": "clickhouse",
       "category": "docs",
@@ -10778,7 +10770,7 @@
     },
     {
       "path": "docs/sqlpp-mapping.md",
-      "line": 318,
+      "line": 317,
       "column": 32,
       "term": "clickhouse",
       "category": "docs",
@@ -10786,7 +10778,7 @@
     },
     {
       "path": "docs/sqlpp-mapping.md",
-      "line": 319,
+      "line": 318,
       "column": 28,
       "term": "clickhouse",
       "category": "docs",
@@ -10794,7 +10786,7 @@
     },
     {
       "path": "docs/sqlpp-mapping.md",
-      "line": 320,
+      "line": 319,
       "column": 26,
       "term": "clickhouse",
       "category": "docs",
@@ -10802,7 +10794,7 @@
     },
     {
       "path": "docs/sqlpp-mapping.md",
-      "line": 321,
+      "line": 320,
       "column": 23,
       "term": "clickhouse",
       "category": "docs",
@@ -10810,7 +10802,7 @@
     },
     {
       "path": "docs/sqlpp-mapping.md",
-      "line": 322,
+      "line": 321,
       "column": 28,
       "term": "clickhouse",
       "category": "docs",
@@ -10818,7 +10810,7 @@
     },
     {
       "path": "docs/sqlpp-mapping.md",
-      "line": 323,
+      "line": 322,
       "column": 24,
       "term": "clickhouse",
       "category": "docs",
@@ -10826,7 +10818,7 @@
     },
     {
       "path": "docs/sqlpp-mapping.md",
-      "line": 324,
+      "line": 323,
       "column": 74,
       "term": "clickhouse",
       "category": "docs",
@@ -10834,7 +10826,7 @@
     },
     {
       "path": "docs/sqlpp-mapping.md",
-      "line": 325,
+      "line": 324,
       "column": 78,
       "term": "clickhouse",
       "category": "docs",
@@ -10842,7 +10834,7 @@
     },
     {
       "path": "docs/sqlpp-mapping.md",
-      "line": 326,
+      "line": 325,
       "column": 64,
       "term": "clickhouse",
       "category": "docs",
@@ -10850,7 +10842,7 @@
     },
     {
       "path": "docs/sqlpp-mapping.md",
-      "line": 327,
+      "line": 326,
       "column": 66,
       "term": "clickhouse",
       "category": "docs",
@@ -10858,7 +10850,7 @@
     },
     {
       "path": "docs/sqlpp-mapping.md",
-      "line": 328,
+      "line": 327,
       "column": 70,
       "term": "clickhouse",
       "category": "docs",
@@ -10866,7 +10858,7 @@
     },
     {
       "path": "docs/sqlpp-mapping.md",
-      "line": 329,
+      "line": 328,
       "column": 67,
       "term": "clickhouse",
       "category": "docs",
@@ -10874,7 +10866,7 @@
     },
     {
       "path": "docs/sqlpp-mapping.md",
-      "line": 330,
+      "line": 329,
       "column": 70,
       "term": "clickhouse",
       "category": "docs",
@@ -10882,7 +10874,7 @@
     },
     {
       "path": "docs/sqlpp-mapping.md",
-      "line": 331,
+      "line": 330,
       "column": 73,
       "term": "clickhouse",
       "category": "docs",
@@ -10890,7 +10882,7 @@
     },
     {
       "path": "docs/sqlpp-mapping.md",
-      "line": 332,
+      "line": 331,
       "column": 63,
       "term": "clickhouse",
       "category": "docs",
@@ -10898,7 +10890,7 @@
     },
     {
       "path": "docs/sqlpp-mapping.md",
-      "line": 333,
+      "line": 332,
       "column": 63,
       "term": "clickhouse",
       "category": "docs",
@@ -10906,7 +10898,7 @@
     },
     {
       "path": "docs/sqlpp-mapping.md",
-      "line": 334,
+      "line": 333,
       "column": 34,
       "term": "clickhouse",
       "category": "docs",
@@ -10914,7 +10906,7 @@
     },
     {
       "path": "docs/sqlpp-mapping.md",
-      "line": 335,
+      "line": 334,
       "column": 66,
       "term": "clickhouse",
       "category": "docs",
@@ -10922,7 +10914,7 @@
     },
     {
       "path": "docs/sqlpp-mapping.md",
-      "line": 336,
+      "line": 335,
       "column": 65,
       "term": "clickhouse",
       "category": "docs",
@@ -10930,7 +10922,7 @@
     },
     {
       "path": "docs/sqlpp-mapping.md",
-      "line": 337,
+      "line": 336,
       "column": 67,
       "term": "clickhouse",
       "category": "docs",
@@ -10938,7 +10930,7 @@
     },
     {
       "path": "docs/sqlpp-mapping.md",
-      "line": 338,
+      "line": 337,
       "column": 61,
       "term": "clickhouse",
       "category": "docs",
@@ -10946,7 +10938,7 @@
     },
     {
       "path": "docs/sqlpp-mapping.md",
-      "line": 339,
+      "line": 338,
       "column": 64,
       "term": "clickhouse",
       "category": "docs",
@@ -10954,7 +10946,7 @@
     },
     {
       "path": "docs/sqlpp-mapping.md",
-      "line": 340,
+      "line": 339,
       "column": 71,
       "term": "clickhouse",
       "category": "docs",
@@ -10962,7 +10954,7 @@
     },
     {
       "path": "docs/sqlpp-mapping.md",
-      "line": 341,
+      "line": 340,
       "column": 14,
       "term": "clickhouse",
       "category": "docs",
@@ -10970,7 +10962,7 @@
     },
     {
       "path": "docs/sqlpp-mapping.md",
-      "line": 342,
+      "line": 341,
       "column": 67,
       "term": "clickhouse",
       "category": "docs",
@@ -10978,7 +10970,7 @@
     },
     {
       "path": "docs/sqlpp-mapping.md",
-      "line": 343,
+      "line": 342,
       "column": 16,
       "term": "clickhouse",
       "category": "docs",
@@ -10986,7 +10978,7 @@
     },
     {
       "path": "docs/sqlpp-mapping.md",
-      "line": 344,
+      "line": 343,
       "column": 66,
       "term": "clickhouse",
       "category": "docs",
@@ -10994,7 +10986,7 @@
     },
     {
       "path": "docs/sqlpp-mapping.md",
-      "line": 345,
+      "line": 344,
       "column": 66,
       "term": "clickhouse",
       "category": "docs",
@@ -11002,7 +10994,7 @@
     },
     {
       "path": "docs/sqlpp-mapping.md",
-      "line": 346,
+      "line": 345,
       "column": 66,
       "term": "clickhouse",
       "category": "docs",
@@ -11010,7 +11002,7 @@
     },
     {
       "path": "docs/sqlpp-mapping.md",
-      "line": 347,
+      "line": 346,
       "column": 66,
       "term": "clickhouse",
       "category": "docs",
@@ -11018,7 +11010,7 @@
     },
     {
       "path": "docs/sqlpp-mapping.md",
-      "line": 348,
+      "line": 347,
       "column": 72,
       "term": "clickhouse",
       "category": "docs",
@@ -11026,7 +11018,7 @@
     },
     {
       "path": "docs/sqlpp-mapping.md",
-      "line": 349,
+      "line": 348,
       "column": 72,
       "term": "clickhouse",
       "category": "docs",
@@ -11034,7 +11026,7 @@
     },
     {
       "path": "docs/sqlpp-mapping.md",
-      "line": 350,
+      "line": 349,
       "column": 73,
       "term": "clickhouse",
       "category": "docs",
@@ -11042,7 +11034,7 @@
     },
     {
       "path": "docs/sqlpp-mapping.md",
-      "line": 351,
+      "line": 350,
       "column": 64,
       "term": "clickhouse",
       "category": "docs",
@@ -11050,7 +11042,7 @@
     },
     {
       "path": "docs/sqlpp-mapping.md",
-      "line": 352,
+      "line": 351,
       "column": 64,
       "term": "clickhouse",
       "category": "docs",
@@ -11058,7 +11050,7 @@
     },
     {
       "path": "docs/sqlpp-mapping.md",
-      "line": 353,
+      "line": 352,
       "column": 69,
       "term": "clickhouse",
       "category": "docs",
@@ -11066,7 +11058,7 @@
     },
     {
       "path": "docs/sqlpp-mapping.md",
-      "line": 354,
+      "line": 353,
       "column": 70,
       "term": "clickhouse",
       "category": "docs",
@@ -11074,7 +11066,7 @@
     },
     {
       "path": "docs/sqlpp-mapping.md",
-      "line": 355,
+      "line": 354,
       "column": 85,
       "term": "clickhouse",
       "category": "docs",
@@ -11082,7 +11074,7 @@
     },
     {
       "path": "docs/sqlpp-mapping.md",
-      "line": 356,
+      "line": 355,
       "column": 83,
       "term": "clickhouse",
       "category": "docs",
@@ -11090,7 +11082,7 @@
     },
     {
       "path": "docs/sqlpp-mapping.md",
-      "line": 357,
+      "line": 356,
       "column": 64,
       "term": "clickhouse",
       "category": "docs",
@@ -11098,7 +11090,7 @@
     },
     {
       "path": "docs/sqlpp-mapping.md",
-      "line": 358,
+      "line": 357,
       "column": 65,
       "term": "clickhouse",
       "category": "docs",
@@ -11106,7 +11098,7 @@
     },
     {
       "path": "docs/sqlpp-mapping.md",
-      "line": 359,
+      "line": 358,
       "column": 67,
       "term": "clickhouse",
       "category": "docs",
@@ -11114,7 +11106,7 @@
     },
     {
       "path": "docs/sqlpp-mapping.md",
-      "line": 360,
+      "line": 359,
       "column": 66,
       "term": "clickhouse",
       "category": "docs",
@@ -11122,7 +11114,7 @@
     },
     {
       "path": "docs/sqlpp-mapping.md",
-      "line": 361,
+      "line": 360,
       "column": 69,
       "term": "clickhouse",
       "category": "docs",
@@ -11130,7 +11122,7 @@
     },
     {
       "path": "docs/sqlpp-mapping.md",
-      "line": 362,
+      "line": 361,
       "column": 68,
       "term": "clickhouse",
       "category": "docs",
@@ -11138,7 +11130,7 @@
     },
     {
       "path": "docs/sqlpp-mapping.md",
-      "line": 363,
+      "line": 362,
       "column": 74,
       "term": "clickhouse",
       "category": "docs",
@@ -11146,7 +11138,7 @@
     },
     {
       "path": "docs/sqlpp-mapping.md",
-      "line": 364,
+      "line": 363,
       "column": 63,
       "term": "clickhouse",
       "category": "docs",
@@ -11154,7 +11146,7 @@
     },
     {
       "path": "docs/sqlpp-mapping.md",
-      "line": 365,
+      "line": 364,
       "column": 69,
       "term": "clickhouse",
       "category": "docs",
@@ -11162,7 +11154,7 @@
     },
     {
       "path": "docs/sqlpp-mapping.md",
-      "line": 366,
+      "line": 365,
       "column": 66,
       "term": "clickhouse",
       "category": "docs",
@@ -11170,7 +11162,7 @@
     },
     {
       "path": "docs/sqlpp-mapping.md",
-      "line": 367,
+      "line": 366,
       "column": 75,
       "term": "clickhouse",
       "category": "docs",
@@ -11178,7 +11170,7 @@
     },
     {
       "path": "docs/sqlpp-mapping.md",
-      "line": 368,
+      "line": 367,
       "column": 80,
       "term": "clickhouse",
       "category": "docs",
@@ -11186,7 +11178,7 @@
     },
     {
       "path": "docs/sqlpp-mapping.md",
-      "line": 369,
+      "line": 368,
       "column": 68,
       "term": "clickhouse",
       "category": "docs",
@@ -11194,7 +11186,7 @@
     },
     {
       "path": "docs/sqlpp-mapping.md",
-      "line": 370,
+      "line": 369,
       "column": 65,
       "term": "clickhouse",
       "category": "docs",
@@ -11202,7 +11194,7 @@
     },
     {
       "path": "docs/sqlpp-mapping.md",
-      "line": 371,
+      "line": 370,
       "column": 64,
       "term": "clickhouse",
       "category": "docs",
@@ -11210,7 +11202,7 @@
     },
     {
       "path": "docs/sqlpp-mapping.md",
-      "line": 372,
+      "line": 371,
       "column": 66,
       "term": "clickhouse",
       "category": "docs",
@@ -11218,7 +11210,7 @@
     },
     {
       "path": "docs/sqlpp-mapping.md",
-      "line": 373,
+      "line": 372,
       "column": 65,
       "term": "clickhouse",
       "category": "docs",
@@ -11226,7 +11218,7 @@
     },
     {
       "path": "docs/sqlpp-mapping.md",
-      "line": 374,
+      "line": 373,
       "column": 65,
       "term": "clickhouse",
       "category": "docs",
@@ -11234,7 +11226,7 @@
     },
     {
       "path": "docs/sqlpp-mapping.md",
-      "line": 375,
+      "line": 374,
       "column": 64,
       "term": "clickhouse",
       "category": "docs",
@@ -11242,7 +11234,7 @@
     },
     {
       "path": "docs/sqlpp-mapping.md",
-      "line": 376,
+      "line": 375,
       "column": 64,
       "term": "clickhouse",
       "category": "docs",
@@ -11250,7 +11242,7 @@
     },
     {
       "path": "docs/sqlpp-mapping.md",
-      "line": 377,
+      "line": 376,
       "column": 26,
       "term": "clickhouse",
       "category": "docs",
@@ -11258,7 +11250,7 @@
     },
     {
       "path": "docs/sqlpp-mapping.md",
-      "line": 378,
+      "line": 377,
       "column": 69,
       "term": "clickhouse",
       "category": "docs",
@@ -11266,7 +11258,7 @@
     },
     {
       "path": "docs/sqlpp-mapping.md",
-      "line": 379,
+      "line": 378,
       "column": 65,
       "term": "clickhouse",
       "category": "docs",
@@ -11274,7 +11266,7 @@
     },
     {
       "path": "docs/sqlpp-mapping.md",
-      "line": 380,
+      "line": 379,
       "column": 75,
       "term": "clickhouse",
       "category": "docs",
@@ -11282,7 +11274,7 @@
     },
     {
       "path": "docs/sqlpp-mapping.md",
-      "line": 381,
+      "line": 380,
       "column": 67,
       "term": "clickhouse",
       "category": "docs",
@@ -11290,7 +11282,7 @@
     },
     {
       "path": "docs/sqlpp-mapping.md",
-      "line": 382,
+      "line": 381,
       "column": 67,
       "term": "clickhouse",
       "category": "docs",
@@ -11298,7 +11290,7 @@
     },
     {
       "path": "docs/sqlpp-mapping.md",
-      "line": 383,
+      "line": 382,
       "column": 76,
       "term": "clickhouse",
       "category": "docs",
@@ -11306,7 +11298,7 @@
     },
     {
       "path": "docs/sqlpp-mapping.md",
-      "line": 384,
+      "line": 383,
       "column": 66,
       "term": "clickhouse",
       "category": "docs",
@@ -11314,7 +11306,7 @@
     },
     {
       "path": "docs/sqlpp-mapping.md",
-      "line": 385,
+      "line": 384,
       "column": 67,
       "term": "clickhouse",
       "category": "docs",
@@ -11322,7 +11314,7 @@
     },
     {
       "path": "docs/sqlpp-mapping.md",
-      "line": 386,
+      "line": 385,
       "column": 66,
       "term": "clickhouse",
       "category": "docs",
@@ -11330,7 +11322,7 @@
     },
     {
       "path": "docs/sqlpp-mapping.md",
-      "line": 387,
+      "line": 386,
       "column": 65,
       "term": "clickhouse",
       "category": "docs",
@@ -11338,7 +11330,7 @@
     },
     {
       "path": "docs/sqlpp-mapping.md",
-      "line": 388,
+      "line": 387,
       "column": 63,
       "term": "clickhouse",
       "category": "docs",
@@ -11346,7 +11338,7 @@
     },
     {
       "path": "docs/sqlpp-mapping.md",
-      "line": 389,
+      "line": 388,
       "column": 64,
       "term": "clickhouse",
       "category": "docs",
@@ -11354,7 +11346,7 @@
     },
     {
       "path": "docs/sqlpp-mapping.md",
-      "line": 391,
+      "line": 390,
       "column": 66,
       "term": "clickhouse",
       "category": "docs",
@@ -11362,7 +11354,7 @@
     },
     {
       "path": "docs/sqlpp-mapping.md",
-      "line": 392,
+      "line": 391,
       "column": 69,
       "term": "clickhouse",
       "category": "docs",
@@ -11370,7 +11362,7 @@
     },
     {
       "path": "docs/sqlpp-mapping.md",
-      "line": 393,
+      "line": 392,
       "column": 64,
       "term": "clickhouse",
       "category": "docs",
@@ -11378,7 +11370,7 @@
     },
     {
       "path": "docs/sqlpp-mapping.md",
-      "line": 394,
+      "line": 393,
       "column": 66,
       "term": "clickhouse",
       "category": "docs",
@@ -11386,7 +11378,7 @@
     },
     {
       "path": "docs/sqlpp-mapping.md",
-      "line": 395,
+      "line": 394,
       "column": 65,
       "term": "clickhouse",
       "category": "docs",
@@ -11394,7 +11386,7 @@
     },
     {
       "path": "docs/sqlpp-mapping.md",
-      "line": 396,
+      "line": 395,
       "column": 66,
       "term": "clickhouse",
       "category": "docs",
@@ -11402,7 +11394,7 @@
     },
     {
       "path": "docs/sqlpp-mapping.md",
-      "line": 397,
+      "line": 396,
       "column": 66,
       "term": "clickhouse",
       "category": "docs",
@@ -11410,7 +11402,7 @@
     },
     {
       "path": "docs/sqlpp-mapping.md",
-      "line": 398,
+      "line": 397,
       "column": 67,
       "term": "clickhouse",
       "category": "docs",
@@ -11418,7 +11410,7 @@
     },
     {
       "path": "docs/sqlpp-mapping.md",
-      "line": 399,
+      "line": 398,
       "column": 66,
       "term": "clickhouse",
       "category": "docs",
@@ -11426,7 +11418,7 @@
     },
     {
       "path": "docs/sqlpp-mapping.md",
-      "line": 400,
+      "line": 399,
       "column": 66,
       "term": "clickhouse",
       "category": "docs",
@@ -11434,7 +11426,7 @@
     },
     {
       "path": "docs/sqlpp-mapping.md",
-      "line": 401,
+      "line": 400,
       "column": 67,
       "term": "clickhouse",
       "category": "docs",
@@ -11442,7 +11434,7 @@
     },
     {
       "path": "docs/sqlpp-mapping.md",
-      "line": 402,
+      "line": 401,
       "column": 67,
       "term": "clickhouse",
       "category": "docs",
@@ -11450,7 +11442,7 @@
     },
     {
       "path": "docs/sqlpp-mapping.md",
-      "line": 403,
+      "line": 402,
       "column": 64,
       "term": "clickhouse",
       "category": "docs",
@@ -11458,7 +11450,7 @@
     },
     {
       "path": "docs/sqlpp-mapping.md",
-      "line": 404,
+      "line": 403,
       "column": 66,
       "term": "clickhouse",
       "category": "docs",
@@ -11466,7 +11458,7 @@
     },
     {
       "path": "docs/sqlpp-mapping.md",
-      "line": 405,
+      "line": 404,
       "column": 65,
       "term": "clickhouse",
       "category": "docs",
@@ -11474,7 +11466,7 @@
     },
     {
       "path": "docs/sqlpp-mapping.md",
-      "line": 406,
+      "line": 405,
       "column": 65,
       "term": "clickhouse",
       "category": "docs",
@@ -11482,7 +11474,7 @@
     },
     {
       "path": "docs/sqlpp-mapping.md",
-      "line": 407,
+      "line": 406,
       "column": 64,
       "term": "clickhouse",
       "category": "docs",
@@ -11490,7 +11482,7 @@
     },
     {
       "path": "docs/sqlpp-mapping.md",
-      "line": 408,
+      "line": 407,
       "column": 31,
       "term": "clickhouse",
       "category": "docs",
@@ -11498,7 +11490,7 @@
     },
     {
       "path": "docs/sqlpp-mapping.md",
-      "line": 409,
+      "line": 408,
       "column": 66,
       "term": "clickhouse",
       "category": "docs",
@@ -11506,7 +11498,7 @@
     },
     {
       "path": "docs/sqlpp-mapping.md",
-      "line": 410,
+      "line": 409,
       "column": 65,
       "term": "clickhouse",
       "category": "docs",
@@ -11514,7 +11506,7 @@
     },
     {
       "path": "docs/sqlpp-mapping.md",
-      "line": 411,
+      "line": 410,
       "column": 66,
       "term": "clickhouse",
       "category": "docs",
@@ -11522,7 +11514,7 @@
     },
     {
       "path": "docs/sqlpp-mapping.md",
-      "line": 412,
+      "line": 411,
       "column": 68,
       "term": "clickhouse",
       "category": "docs",
@@ -11530,7 +11522,7 @@
     },
     {
       "path": "docs/sqlpp-mapping.md",
-      "line": 413,
+      "line": 412,
       "column": 67,
       "term": "clickhouse",
       "category": "docs",
@@ -11538,7 +11530,7 @@
     },
     {
       "path": "docs/sqlpp-mapping.md",
-      "line": 414,
+      "line": 413,
       "column": 65,
       "term": "clickhouse",
       "category": "docs",
@@ -11546,7 +11538,7 @@
     },
     {
       "path": "docs/sqlpp-mapping.md",
-      "line": 415,
+      "line": 414,
       "column": 73,
       "term": "clickhouse",
       "category": "docs",
@@ -11554,7 +11546,7 @@
     },
     {
       "path": "docs/sqlpp-mapping.md",
-      "line": 416,
+      "line": 415,
       "column": 63,
       "term": "clickhouse",
       "category": "docs",
@@ -11562,7 +11554,7 @@
     },
     {
       "path": "docs/sqlpp-mapping.md",
-      "line": 417,
+      "line": 416,
       "column": 17,
       "term": "clickhouse",
       "category": "docs",
@@ -11570,7 +11562,7 @@
     },
     {
       "path": "docs/sqlpp-mapping.md",
-      "line": 418,
+      "line": 417,
       "column": 71,
       "term": "clickhouse",
       "category": "docs",
@@ -11578,7 +11570,7 @@
     },
     {
       "path": "docs/sqlpp-mapping.md",
-      "line": 419,
+      "line": 418,
       "column": 65,
       "term": "clickhouse",
       "category": "docs",
@@ -11586,7 +11578,7 @@
     },
     {
       "path": "docs/sqlpp-mapping.md",
-      "line": 420,
+      "line": 419,
       "column": 70,
       "term": "clickhouse",
       "category": "docs",
@@ -11594,7 +11586,7 @@
     },
     {
       "path": "docs/sqlpp-mapping.md",
-      "line": 421,
+      "line": 420,
       "column": 64,
       "term": "clickhouse",
       "category": "docs",
@@ -11602,7 +11594,7 @@
     },
     {
       "path": "docs/sqlpp-mapping.md",
-      "line": 422,
+      "line": 421,
       "column": 75,
       "term": "clickhouse",
       "category": "docs",
@@ -11610,7 +11602,7 @@
     },
     {
       "path": "docs/sqlpp-mapping.md",
-      "line": 423,
+      "line": 422,
       "column": 73,
       "term": "clickhouse",
       "category": "docs",
@@ -11618,7 +11610,7 @@
     },
     {
       "path": "docs/sqlpp-mapping.md",
-      "line": 424,
+      "line": 423,
       "column": 66,
       "term": "clickhouse",
       "category": "docs",
@@ -11626,7 +11618,7 @@
     },
     {
       "path": "docs/sqlpp-mapping.md",
-      "line": 425,
+      "line": 424,
       "column": 66,
       "term": "clickhouse",
       "category": "docs",
@@ -11634,7 +11626,7 @@
     },
     {
       "path": "docs/sqlpp-mapping.md",
-      "line": 426,
+      "line": 425,
       "column": 14,
       "term": "clickhouse",
       "category": "docs",
@@ -11642,7 +11634,7 @@
     },
     {
       "path": "docs/sqlpp-mapping.md",
-      "line": 427,
+      "line": 426,
       "column": 66,
       "term": "clickhouse",
       "category": "docs",
@@ -11650,7 +11642,7 @@
     },
     {
       "path": "docs/sqlpp-mapping.md",
-      "line": 428,
+      "line": 427,
       "column": 69,
       "term": "clickhouse",
       "category": "docs",
@@ -11658,7 +11650,7 @@
     },
     {
       "path": "docs/sqlpp-mapping.md",
-      "line": 429,
+      "line": 428,
       "column": 63,
       "term": "clickhouse",
       "category": "docs",
@@ -11666,7 +11658,7 @@
     },
     {
       "path": "docs/sqlpp-mapping.md",
-      "line": 430,
+      "line": 429,
       "column": 63,
       "term": "clickhouse",
       "category": "docs",
@@ -11674,7 +11666,7 @@
     },
     {
       "path": "docs/sqlpp-mapping.md",
-      "line": 431,
+      "line": 430,
       "column": 63,
       "term": "clickhouse",
       "category": "docs",
@@ -11682,7 +11674,7 @@
     },
     {
       "path": "docs/sqlpp-mapping.md",
-      "line": 432,
+      "line": 431,
       "column": 70,
       "term": "clickhouse",
       "category": "docs",
@@ -11690,7 +11682,7 @@
     },
     {
       "path": "docs/sqlpp-mapping.md",
-      "line": 433,
+      "line": 432,
       "column": 66,
       "term": "clickhouse",
       "category": "docs",
@@ -11698,7 +11690,7 @@
     },
     {
       "path": "docs/sqlpp-mapping.md",
-      "line": 434,
+      "line": 433,
       "column": 66,
       "term": "clickhouse",
       "category": "docs",
@@ -11706,7 +11698,7 @@
     },
     {
       "path": "docs/sqlpp-mapping.md",
-      "line": 435,
+      "line": 434,
       "column": 63,
       "term": "clickhouse",
       "category": "docs",
@@ -11714,7 +11706,7 @@
     },
     {
       "path": "docs/sqlpp-mapping.md",
-      "line": 436,
+      "line": 435,
       "column": 65,
       "term": "clickhouse",
       "category": "docs",
@@ -11722,7 +11714,7 @@
     },
     {
       "path": "docs/sqlpp-mapping.md",
-      "line": 437,
+      "line": 436,
       "column": 66,
       "term": "clickhouse",
       "category": "docs",
@@ -11730,7 +11722,7 @@
     },
     {
       "path": "docs/sqlpp-mapping.md",
-      "line": 438,
+      "line": 437,
       "column": 68,
       "term": "clickhouse",
       "category": "docs",
@@ -11738,7 +11730,7 @@
     },
     {
       "path": "docs/sqlpp-mapping.md",
-      "line": 439,
+      "line": 438,
       "column": 64,
       "term": "clickhouse",
       "category": "docs",
@@ -11746,7 +11738,7 @@
     },
     {
       "path": "docs/sqlpp-mapping.md",
-      "line": 440,
+      "line": 439,
       "column": 66,
       "term": "clickhouse",
       "category": "docs",
@@ -11754,7 +11746,7 @@
     },
     {
       "path": "docs/sqlpp-mapping.md",
-      "line": 441,
+      "line": 440,
       "column": 64,
       "term": "clickhouse",
       "category": "docs",
@@ -11762,7 +11754,7 @@
     },
     {
       "path": "docs/sqlpp-mapping.md",
-      "line": 442,
+      "line": 441,
       "column": 65,
       "term": "clickhouse",
       "category": "docs",
@@ -11770,7 +11762,7 @@
     },
     {
       "path": "docs/sqlpp-mapping.md",
-      "line": 443,
+      "line": 442,
       "column": 65,
       "term": "clickhouse",
       "category": "docs",
@@ -11778,7 +11770,7 @@
     },
     {
       "path": "docs/sqlpp-mapping.md",
-      "line": 444,
+      "line": 443,
       "column": 64,
       "term": "clickhouse",
       "category": "docs",
@@ -11786,7 +11778,7 @@
     },
     {
       "path": "docs/sqlpp-mapping.md",
-      "line": 445,
+      "line": 444,
       "column": 67,
       "term": "clickhouse",
       "category": "docs",
@@ -11794,7 +11786,7 @@
     },
     {
       "path": "docs/sqlpp-mapping.md",
-      "line": 446,
+      "line": 445,
       "column": 29,
       "term": "clickhouse",
       "category": "docs",
@@ -11802,7 +11794,7 @@
     },
     {
       "path": "docs/sqlpp-mapping.md",
-      "line": 447,
+      "line": 446,
       "column": 74,
       "term": "clickhouse",
       "category": "docs",
@@ -11810,7 +11802,7 @@
     },
     {
       "path": "docs/sqlpp-mapping.md",
-      "line": 448,
+      "line": 447,
       "column": 78,
       "term": "clickhouse",
       "category": "docs",
@@ -11818,7 +11810,7 @@
     },
     {
       "path": "docs/sqlpp-mapping.md",
-      "line": 449,
+      "line": 448,
       "column": 74,
       "term": "clickhouse",
       "category": "docs",
@@ -11826,7 +11818,7 @@
     },
     {
       "path": "docs/sqlpp-mapping.md",
-      "line": 450,
+      "line": 449,
       "column": 80,
       "term": "clickhouse",
       "category": "docs",
@@ -11834,7 +11826,7 @@
     },
     {
       "path": "docs/sqlpp-mapping.md",
-      "line": 451,
+      "line": 450,
       "column": 69,
       "term": "clickhouse",
       "category": "docs",
@@ -11842,7 +11834,7 @@
     },
     {
       "path": "docs/sqlpp-mapping.md",
-      "line": 452,
+      "line": 451,
       "column": 62,
       "term": "clickhouse",
       "category": "docs",
@@ -11850,7 +11842,7 @@
     },
     {
       "path": "docs/sqlpp-mapping.md",
-      "line": 453,
+      "line": 452,
       "column": 69,
       "term": "clickhouse",
       "category": "docs",
@@ -11858,7 +11850,7 @@
     },
     {
       "path": "docs/sqlpp-mapping.md",
-      "line": 454,
+      "line": 453,
       "column": 66,
       "term": "clickhouse",
       "category": "docs",
@@ -11866,7 +11858,7 @@
     },
     {
       "path": "docs/sqlpp-mapping.md",
-      "line": 455,
+      "line": 454,
       "column": 68,
       "term": "clickhouse",
       "category": "docs",
@@ -11874,7 +11866,7 @@
     },
     {
       "path": "docs/sqlpp-mapping.md",
-      "line": 456,
+      "line": 455,
       "column": 70,
       "term": "clickhouse",
       "category": "docs",
@@ -11882,7 +11874,7 @@
     },
     {
       "path": "docs/sqlpp-mapping.md",
-      "line": 457,
+      "line": 456,
       "column": 72,
       "term": "clickhouse",
       "category": "docs",
@@ -11890,7 +11882,7 @@
     },
     {
       "path": "docs/sqlpp-mapping.md",
-      "line": 458,
+      "line": 457,
       "column": 78,
       "term": "clickhouse",
       "category": "docs",
@@ -11898,7 +11890,7 @@
     },
     {
       "path": "docs/sqlpp-mapping.md",
-      "line": 459,
+      "line": 458,
       "column": 75,
       "term": "clickhouse",
       "category": "docs",
@@ -11906,7 +11898,7 @@
     },
     {
       "path": "docs/sqlpp-mapping.md",
-      "line": 460,
+      "line": 459,
       "column": 68,
       "term": "clickhouse",
       "category": "docs",
@@ -11914,7 +11906,7 @@
     },
     {
       "path": "docs/sqlpp-mapping.md",
-      "line": 461,
+      "line": 460,
       "column": 72,
       "term": "clickhouse",
       "category": "docs",
@@ -11922,7 +11914,7 @@
     },
     {
       "path": "docs/sqlpp-mapping.md",
-      "line": 462,
+      "line": 461,
       "column": 76,
       "term": "clickhouse",
       "category": "docs",
@@ -11930,7 +11922,7 @@
     },
     {
       "path": "docs/sqlpp-mapping.md",
-      "line": 463,
+      "line": 462,
       "column": 72,
       "term": "clickhouse",
       "category": "docs",
@@ -11938,7 +11930,7 @@
     },
     {
       "path": "docs/sqlpp-mapping.md",
-      "line": 464,
+      "line": 463,
       "column": 66,
       "term": "clickhouse",
       "category": "docs",
@@ -11946,7 +11938,7 @@
     },
     {
       "path": "docs/sqlpp-mapping.md",
-      "line": 465,
+      "line": 464,
       "column": 70,
       "term": "clickhouse",
       "category": "docs",
@@ -11954,7 +11946,7 @@
     },
     {
       "path": "docs/sqlpp-mapping.md",
-      "line": 466,
+      "line": 465,
       "column": 68,
       "term": "clickhouse",
       "category": "docs",
@@ -11962,7 +11954,7 @@
     },
     {
       "path": "docs/sqlpp-mapping.md",
-      "line": 467,
+      "line": 466,
       "column": 65,
       "term": "clickhouse",
       "category": "docs",
@@ -11970,7 +11962,7 @@
     },
     {
       "path": "docs/sqlpp-mapping.md",
-      "line": 468,
+      "line": 467,
       "column": 68,
       "term": "clickhouse",
       "category": "docs",
@@ -11978,7 +11970,7 @@
     },
     {
       "path": "docs/sqlpp-mapping.md",
-      "line": 469,
+      "line": 468,
       "column": 68,
       "term": "clickhouse",
       "category": "docs",
@@ -11986,7 +11978,7 @@
     },
     {
       "path": "docs/sqlpp-mapping.md",
-      "line": 470,
+      "line": 469,
       "column": 74,
       "term": "clickhouse",
       "category": "docs",
@@ -11994,7 +11986,7 @@
     },
     {
       "path": "docs/sqlpp-mapping.md",
-      "line": 471,
+      "line": 470,
       "column": 68,
       "term": "clickhouse",
       "category": "docs",
@@ -12002,7 +11994,7 @@
     },
     {
       "path": "docs/sqlpp-mapping.md",
-      "line": 472,
+      "line": 471,
       "column": 74,
       "term": "clickhouse",
       "category": "docs",
@@ -12010,7 +12002,7 @@
     },
     {
       "path": "docs/sqlpp-mapping.md",
-      "line": 473,
+      "line": 472,
       "column": 67,
       "term": "clickhouse",
       "category": "docs",
@@ -12018,7 +12010,7 @@
     },
     {
       "path": "docs/sqlpp-mapping.md",
-      "line": 474,
+      "line": 473,
       "column": 69,
       "term": "clickhouse",
       "category": "docs",
@@ -12026,7 +12018,7 @@
     },
     {
       "path": "docs/sqlpp-mapping.md",
-      "line": 475,
+      "line": 474,
       "column": 66,
       "term": "clickhouse",
       "category": "docs",
@@ -12034,7 +12026,7 @@
     },
     {
       "path": "docs/sqlpp-mapping.md",
-      "line": 476,
+      "line": 475,
       "column": 64,
       "term": "clickhouse",
       "category": "docs",
@@ -12042,7 +12034,7 @@
     },
     {
       "path": "docs/sqlpp-mapping.md",
-      "line": 477,
+      "line": 476,
       "column": 65,
       "term": "clickhouse",
       "category": "docs",
@@ -12050,7 +12042,7 @@
     },
     {
       "path": "docs/sqlpp-mapping.md",
-      "line": 478,
+      "line": 477,
       "column": 63,
       "term": "clickhouse",
       "category": "docs",
@@ -12058,7 +12050,7 @@
     },
     {
       "path": "docs/sqlpp-mapping.md",
-      "line": 479,
+      "line": 478,
       "column": 65,
       "term": "clickhouse",
       "category": "docs",
@@ -12066,7 +12058,7 @@
     },
     {
       "path": "docs/sqlpp-mapping.md",
-      "line": 480,
+      "line": 479,
       "column": 13,
       "term": "clickhouse",
       "category": "docs",
@@ -12074,7 +12066,7 @@
     },
     {
       "path": "docs/sqlpp-mapping.md",
-      "line": 481,
+      "line": 480,
       "column": 65,
       "term": "clickhouse",
       "category": "docs",
@@ -12082,7 +12074,7 @@
     },
     {
       "path": "docs/sqlpp-mapping.md",
-      "line": 482,
+      "line": 481,
       "column": 15,
       "term": "clickhouse",
       "category": "docs",
@@ -12090,7 +12082,7 @@
     },
     {
       "path": "docs/sqlpp-mapping.md",
-      "line": 483,
+      "line": 482,
       "column": 14,
       "term": "clickhouse",
       "category": "docs",
@@ -12098,7 +12090,7 @@
     },
     {
       "path": "docs/sqlpp-mapping.md",
-      "line": 484,
+      "line": 483,
       "column": 15,
       "term": "clickhouse",
       "category": "docs",
@@ -12106,7 +12098,7 @@
     },
     {
       "path": "docs/sqlpp-mapping.md",
-      "line": 485,
+      "line": 484,
       "column": 14,
       "term": "clickhouse",
       "category": "docs",
@@ -12114,7 +12106,7 @@
     },
     {
       "path": "docs/sqlpp-mapping.md",
-      "line": 486,
+      "line": 485,
       "column": 14,
       "term": "clickhouse",
       "category": "docs",
@@ -12122,7 +12114,7 @@
     },
     {
       "path": "docs/sqlpp-mapping.md",
-      "line": 487,
+      "line": 486,
       "column": 13,
       "term": "clickhouse",
       "category": "docs",
@@ -12130,7 +12122,7 @@
     },
     {
       "path": "docs/sqlpp-mapping.md",
-      "line": 488,
+      "line": 487,
       "column": 69,
       "term": "clickhouse",
       "category": "docs",
@@ -12138,7 +12130,7 @@
     },
     {
       "path": "docs/sqlpp-mapping.md",
-      "line": 489,
+      "line": 488,
       "column": 65,
       "term": "clickhouse",
       "category": "docs",
@@ -12146,7 +12138,7 @@
     },
     {
       "path": "docs/sqlpp-mapping.md",
-      "line": 490,
+      "line": 489,
       "column": 23,
       "term": "clickhouse",
       "category": "docs",
@@ -12154,7 +12146,7 @@
     },
     {
       "path": "docs/sqlpp-mapping.md",
-      "line": 491,
+      "line": 490,
       "column": 64,
       "term": "clickhouse",
       "category": "docs",
@@ -12162,7 +12154,7 @@
     },
     {
       "path": "docs/sqlpp-mapping.md",
-      "line": 492,
+      "line": 491,
       "column": 12,
       "term": "clickhouse",
       "category": "docs",
@@ -12170,7 +12162,7 @@
     },
     {
       "path": "docs/sqlpp-mapping.md",
-      "line": 493,
+      "line": 492,
       "column": 65,
       "term": "clickhouse",
       "category": "docs",
@@ -12178,7 +12170,7 @@
     },
     {
       "path": "docs/sqlpp-mapping.md",
-      "line": 494,
+      "line": 493,
       "column": 63,
       "term": "clickhouse",
       "category": "docs",
@@ -12186,7 +12178,7 @@
     },
     {
       "path": "docs/sqlpp-mapping.md",
-      "line": 495,
+      "line": 494,
       "column": 68,
       "term": "clickhouse",
       "category": "docs",
@@ -12194,7 +12186,7 @@
     },
     {
       "path": "docs/sqlpp-mapping.md",
-      "line": 496,
+      "line": 495,
       "column": 68,
       "term": "clickhouse",
       "category": "docs",
@@ -12202,7 +12194,7 @@
     },
     {
       "path": "docs/sqlpp-mapping.md",
-      "line": 497,
+      "line": 496,
       "column": 72,
       "term": "clickhouse",
       "category": "docs",
@@ -12210,7 +12202,7 @@
     },
     {
       "path": "docs/sqlpp-mapping.md",
-      "line": 498,
+      "line": 497,
       "column": 69,
       "term": "clickhouse",
       "category": "docs",
@@ -12218,7 +12210,7 @@
     },
     {
       "path": "docs/sqlpp-mapping.md",
-      "line": 499,
+      "line": 498,
       "column": 15,
       "term": "clickhouse",
       "category": "docs",
@@ -12226,7 +12218,7 @@
     },
     {
       "path": "docs/sqlpp-mapping.md",
-      "line": 500,
+      "line": 499,
       "column": 67,
       "term": "clickhouse",
       "category": "docs",
@@ -12234,7 +12226,7 @@
     },
     {
       "path": "docs/sqlpp-mapping.md",
-      "line": 501,
+      "line": 500,
       "column": 70,
       "term": "clickhouse",
       "category": "docs",
@@ -12242,7 +12234,7 @@
     },
     {
       "path": "docs/sqlpp-mapping.md",
-      "line": 502,
+      "line": 501,
       "column": 25,
       "term": "clickhouse",
       "category": "docs",
@@ -12250,7 +12242,7 @@
     },
     {
       "path": "docs/sqlpp-mapping.md",
-      "line": 503,
+      "line": 502,
       "column": 64,
       "term": "clickhouse",
       "category": "docs",
@@ -12258,7 +12250,7 @@
     },
     {
       "path": "docs/sqlpp-mapping.md",
-      "line": 504,
+      "line": 503,
       "column": 66,
       "term": "clickhouse",
       "category": "docs",
@@ -12266,7 +12258,7 @@
     },
     {
       "path": "docs/sqlpp-mapping.md",
-      "line": 505,
+      "line": 504,
       "column": 71,
       "term": "clickhouse",
       "category": "docs",
@@ -12274,7 +12266,7 @@
     },
     {
       "path": "docs/sqlpp-mapping.md",
-      "line": 506,
+      "line": 505,
       "column": 68,
       "term": "clickhouse",
       "category": "docs",
@@ -12282,7 +12274,7 @@
     },
     {
       "path": "docs/sqlpp-mapping.md",
-      "line": 507,
+      "line": 506,
       "column": 69,
       "term": "clickhouse",
       "category": "docs",
@@ -12290,7 +12282,7 @@
     },
     {
       "path": "docs/sqlpp-mapping.md",
-      "line": 508,
+      "line": 507,
       "column": 66,
       "term": "clickhouse",
       "category": "docs",
@@ -12298,7 +12290,7 @@
     },
     {
       "path": "docs/sqlpp-mapping.md",
-      "line": 509,
+      "line": 508,
       "column": 63,
       "term": "clickhouse",
       "category": "docs",
@@ -40378,7 +40370,7 @@
     },
     {
       "path": "packages/app/scripts/run-e2e.js",
-      "line": 104,
+      "line": 103,
       "column": 11,
       "term": "hyperdx",
       "category": "code_identifiers",
@@ -40386,7 +40378,7 @@
     },
     {
       "path": "packages/app/scripts/run-e2e.js",
-      "line": 104,
+      "line": 103,
       "column": 30,
       "term": "hyperdx",
       "category": "ui_strings",
@@ -40394,7 +40386,7 @@
     },
     {
       "path": "packages/app/scripts/run-e2e.js",
-      "line": 127,
+      "line": 126,
       "column": 44,
       "term": "clickhouse",
       "category": "other",
@@ -40986,7 +40978,7 @@
     },
     {
       "path": "packages/app/src/KubernetesDashboardPage.tsx",
-      "line": 1245,
+      "line": 1242,
       "column": 56,
       "term": "clickhouse",
       "category": "ui_strings",
@@ -41050,15 +41042,15 @@
     },
     {
       "path": "packages/app/src/ServicesDashboardPage/DatabaseTab.tsx",
-      "line": 49,
-      "column": 53,
+      "line": 48,
+      "column": 67,
       "term": "clickhouse",
       "category": "ui_strings",
-      "snippet": "connectionKind === 'couchbase' ? 'couchbase' : 'clickhouse';"
+      "snippet": "const dialect = connectionKind === 'couchbase' ? 'couchbase' : 'clickhouse';"
     },
     {
       "path": "packages/app/src/ServicesDashboardPage/DatabaseTab.tsx",
-      "line": 100,
+      "line": 99,
       "column": 55,
       "term": "hdx",
       "category": "other",
@@ -41066,15 +41058,15 @@
     },
     {
       "path": "packages/app/src/ServicesDashboardPage/DatabaseTab.tsx",
-      "line": 122,
-      "column": 24,
+      "line": 120,
+      "column": 54,
       "term": "hdx",
       "category": "ui_strings",
-      "snippet": "'__hdx_time_bucket',"
+      "snippet": "valueExpression: groupArrayExpr('__hdx_time_bucket', dialect),"
     },
     {
       "path": "packages/app/src/ServicesDashboardPage/DatabaseTab.tsx",
-      "line": 125,
+      "line": 121,
       "column": 29,
       "term": "hdx",
       "category": "ui_strings",
@@ -41082,7 +41074,7 @@
     },
     {
       "path": "packages/app/src/ServicesDashboardPage/DatabaseTab.tsx",
-      "line": 158,
+      "line": 154,
       "column": 68,
       "term": "hdx",
       "category": "ui_strings",
@@ -41090,7 +41082,7 @@
     },
     {
       "path": "packages/app/src/ServicesDashboardPage/DatabaseTab.tsx",
-      "line": 231,
+      "line": 227,
       "column": 55,
       "term": "hdx",
       "category": "other",
@@ -41098,15 +41090,15 @@
     },
     {
       "path": "packages/app/src/ServicesDashboardPage/DatabaseTab.tsx",
-      "line": 253,
-      "column": 24,
+      "line": 245,
+      "column": 54,
       "term": "hdx",
       "category": "ui_strings",
-      "snippet": "'__hdx_time_bucket',"
+      "snippet": "valueExpression: groupArrayExpr('__hdx_time_bucket', dialect),"
     },
     {
       "path": "packages/app/src/ServicesDashboardPage/DatabaseTab.tsx",
-      "line": 256,
+      "line": 246,
       "column": 29,
       "term": "hdx",
       "category": "ui_strings",
@@ -41114,7 +41106,7 @@
     },
     {
       "path": "packages/app/src/ServicesDashboardPage/DatabaseTab.tsx",
-      "line": 289,
+      "line": 279,
       "column": 66,
       "term": "hdx",
       "category": "ui_strings",
@@ -41122,15 +41114,15 @@
     },
     {
       "path": "packages/app/src/ServicesDashboardPage/HttpTab.tsx",
-      "line": 198,
-      "column": 53,
+      "line": 197,
+      "column": 67,
       "term": "clickhouse",
       "category": "ui_strings",
-      "snippet": "connectionKind === 'couchbase' ? 'couchbase' : 'clickhouse';"
+      "snippet": "const dialect = connectionKind === 'couchbase' ? 'couchbase' : 'clickhouse';"
     },
     {
       "path": "packages/app/src/ServicesDashboardPage/HttpTab.tsx",
-      "line": 337,
+      "line": 336,
       "column": 44,
       "term": "hdx",
       "category": "ui_strings",
@@ -41138,15 +41130,15 @@
     },
     {
       "path": "packages/app/src/ServicesDashboardPage/HttpTab.tsx",
-      "line": 347,
-      "column": 24,
+      "line": 345,
+      "column": 54,
       "term": "hdx",
       "category": "ui_strings",
-      "snippet": "'__hdx_time_bucket',"
+      "snippet": "valueExpression: groupArrayExpr('__hdx_time_bucket', dialect),"
     },
     {
       "path": "packages/app/src/ServicesDashboardPage/HttpTab.tsx",
-      "line": 350,
+      "line": 346,
       "column": 29,
       "term": "hdx",
       "category": "ui_strings",
@@ -41154,7 +41146,7 @@
     },
     {
       "path": "packages/app/src/ServicesDashboardPage/HttpTab.tsx",
-      "line": 377,
+      "line": 373,
       "column": 48,
       "term": "hdx",
       "category": "ui_strings",
@@ -41162,7 +41154,7 @@
     },
     {
       "path": "packages/app/src/ServicesDashboardPage/HttpTab.tsx",
-      "line": 383,
+      "line": 379,
       "column": 59,
       "term": "hdx",
       "category": "ui_strings",
@@ -41218,7 +41210,7 @@
     },
     {
       "path": "packages/app/src/SessionsPage.tsx",
-      "line": 582,
+      "line": 581,
       "column": 34,
       "term": "hyperdx",
       "category": "ui_strings",
@@ -41226,7 +41218,7 @@
     },
     {
       "path": "packages/app/src/SessionsPage.tsx",
-      "line": 587,
+      "line": 586,
       "column": 34,
       "term": "hyperdx",
       "category": "ui_strings",
@@ -44674,7 +44666,7 @@
     },
     {
       "path": "packages/app/src/components/DBDeltaChart.tsx",
-      "line": 325,
+      "line": 326,
       "column": 53,
       "term": "clickhouse",
       "category": "other",
@@ -44682,7 +44674,7 @@
     },
     {
       "path": "packages/app/src/components/DBDeltaChart.tsx",
-      "line": 331,
+      "line": 332,
       "column": 67,
       "term": "clickhouse",
       "category": "other",
@@ -47402,11 +47394,11 @@
     },
     {
       "path": "packages/app/src/components/KubeComponents.tsx",
-      "line": 197,
-      "column": 53,
+      "line": 196,
+      "column": 67,
       "term": "clickhouse",
       "category": "ui_strings",
-      "snippet": "connectionKind === 'couchbase' ? 'couchbase' : 'clickhouse';"
+      "snippet": "const dialect = connectionKind === 'couchbase' ? 'couchbase' : 'clickhouse';"
     },
     {
       "path": "packages/app/src/components/ListingCard.tsx",
@@ -51609,6 +51601,22 @@
       "snippet": "expect(formatLanguageForConnection('clickhouse')).toBe('clickhouse');"
     },
     {
+      "path": "packages/app/src/couchbase/__tests__/dialectExpr.test.ts",
+      "line": 19,
+      "column": 13,
+      "term": "clickhouse",
+      "category": "other",
+      "snippet": "it('keeps ClickHouse JSONExtractString', () => {"
+    },
+    {
+      "path": "packages/app/src/couchbase/__tests__/dialectExpr.test.ts",
+      "line": 21,
+      "column": 63,
+      "term": "clickhouse",
+      "category": "other",
+      "snippet": "jsonExtractString(\"LogAttributes['object']\", ['type'], 'clickhouse'),"
+    },
+    {
       "path": "packages/app/src/couchbase/__tests__/sessionsList.test.ts",
       "line": 10,
       "column": 37,
@@ -51703,6 +51711,86 @@
       "term": "clickhouse",
       "category": "ui_strings",
       "snippet": "return kind === 'couchbase' ? 'n1ql' : 'clickhouse';"
+    },
+    {
+      "path": "packages/app/src/couchbase/dialectExpr.ts",
+      "line": 3,
+      "column": 27,
+      "term": "clickhouse",
+      "category": "ui_strings",
+      "snippet": "export type SqlDialect = 'clickhouse' | 'couchbase';"
+    },
+    {
+      "path": "packages/app/src/couchbase/dialectExpr.ts",
+      "line": 6,
+      "column": 4,
+      "term": "clickhouse",
+      "category": "other",
+      "snippet": "* ClickHouse `JSONExtractString(col['object'], 'a', 'b')` → SQL++"
+    },
+    {
+      "path": "packages/app/src/couchbase/dialectExpr.ts",
+      "line": 12,
+      "column": 26,
+      "term": "clickhouse",
+      "category": "ui_strings",
+      "snippet": "dialect: SqlDialect = 'clickhouse',"
+    },
+    {
+      "path": "packages/app/src/couchbase/dialectExpr.ts",
+      "line": 14,
+      "column": 20,
+      "term": "clickhouse",
+      "category": "ui_strings",
+      "snippet": "if (dialect === 'clickhouse') {"
+    },
+    {
+      "path": "packages/app/src/couchbase/dialectExpr.ts",
+      "line": 30,
+      "column": 26,
+      "term": "clickhouse",
+      "category": "ui_strings",
+      "snippet": "dialect: SqlDialect = 'clickhouse',"
+    },
+    {
+      "path": "packages/app/src/couchbase/dialectExpr.ts",
+      "line": 40,
+      "column": 26,
+      "term": "clickhouse",
+      "category": "ui_strings",
+      "snippet": "dialect: SqlDialect = 'clickhouse',"
+    },
+    {
+      "path": "packages/app/src/couchbase/dialectExpr.ts",
+      "line": 45,
+      "column": 49,
+      "term": "clickhouse",
+      "category": "ui_strings",
+      "snippet": "export function uuidExpr(dialect: SqlDialect = 'clickhouse'): string {"
+    },
+    {
+      "path": "packages/app/src/couchbase/dialectExpr.ts",
+      "line": 52,
+      "column": 26,
+      "term": "clickhouse",
+      "category": "ui_strings",
+      "snippet": "dialect: SqlDialect = 'clickhouse',"
+    },
+    {
+      "path": "packages/app/src/couchbase/dialectExpr.ts",
+      "line": 55,
+      "column": 34,
+      "term": "clickhouse",
+      "category": "other",
+      "snippet": "// SQL++ arrays are 0-based; ClickHouse tupleElement is 1-based."
+    },
+    {
+      "path": "packages/app/src/couchbase/dialectExpr.ts",
+      "line": 66,
+      "column": 21,
+      "term": "hdx",
+      "category": "ui_strings",
+      "snippet": "bucketsAlias = '__hdx_time_buckets',"
     },
     {
       "path": "packages/app/src/couchbase/queryErrors.ts",
@@ -55010,7 +55098,7 @@
     },
     {
       "path": "packages/app/src/hooks/useServiceMap.tsx",
-      "line": 11,
+      "line": 10,
       "column": 13,
       "term": "clickhouse",
       "category": "code_identifiers",
@@ -55018,7 +55106,7 @@
     },
     {
       "path": "packages/app/src/hooks/useServiceMap.tsx",
-      "line": 11,
+      "line": 10,
       "column": 40,
       "term": "clickhouse",
       "category": "ui_strings",
@@ -55730,7 +55818,7 @@
     },
     {
       "path": "packages/app/src/sessions.ts",
-      "line": 477,
+      "line": 479,
       "column": 26,
       "term": "clickhouse",
       "category": "code_identifiers",
@@ -55738,7 +55826,7 @@
     },
     {
       "path": "packages/app/src/sessions.ts",
-      "line": 497,
+      "line": 499,
       "column": 19,
       "term": "clickhouse",
       "category": "other",
@@ -55746,7 +55834,7 @@
     },
     {
       "path": "packages/app/src/sessions.ts",
-      "line": 551,
+      "line": 553,
       "column": 15,
       "term": "clickhouse",
       "category": "other",
@@ -55754,7 +55842,7 @@
     },
     {
       "path": "packages/app/src/sessions.ts",
-      "line": 560,
+      "line": 562,
       "column": 25,
       "term": "clickhouse",
       "category": "other",
@@ -55762,7 +55850,7 @@
     },
     {
       "path": "packages/app/src/sessions.ts",
-      "line": 567,
+      "line": 569,
       "column": 15,
       "term": "clickstack",
       "category": "other",
@@ -55770,7 +55858,7 @@
     },
     {
       "path": "packages/app/src/sessions.ts",
-      "line": 585,
+      "line": 587,
       "column": 14,
       "term": "clickhouse",
       "category": "ui_strings",
@@ -55778,7 +55866,7 @@
     },
     {
       "path": "packages/app/src/sessions.ts",
-      "line": 601,
+      "line": 603,
       "column": 14,
       "term": "clickhouse",
       "category": "ui_strings",
@@ -55786,7 +55874,7 @@
     },
     {
       "path": "packages/app/src/sessions.ts",
-      "line": 750,
+      "line": 752,
       "column": 57,
       "term": "clickhouse",
       "category": "ui_strings",
@@ -55794,7 +55882,7 @@
     },
     {
       "path": "packages/app/src/sessions.ts",
-      "line": 771,
+      "line": 773,
       "column": 15,
       "term": "clickhouse",
       "category": "code_identifiers",
@@ -55802,7 +55890,7 @@
     },
     {
       "path": "packages/app/src/sessions.ts",
-      "line": 771,
+      "line": 773,
       "column": 37,
       "term": "clickhouse",
       "category": "code_identifiers",
@@ -55810,7 +55898,7 @@
     },
     {
       "path": "packages/app/src/sessions.ts",
-      "line": 772,
+      "line": 774,
       "column": 33,
       "term": "clickhouse",
       "category": "code_identifiers",
@@ -56702,7 +56790,7 @@
       "column": 10,
       "term": "clickhouse",
       "category": "code_identifiers",
-      "snippet": "import { clickhouse, n1ql } from 'sql-formatter';"
+      "snippet": "import { clickhouse, formatDialect, n1ql } from 'sql-formatter';"
     },
     {
       "path": "packages/app/src/utils/codeMirror.ts",
@@ -56746,11 +56834,11 @@
     },
     {
       "path": "packages/app/src/utils/codeMirror.ts",
-      "line": 47,
-      "column": 53,
+      "line": 48,
+      "column": 44,
       "term": "clickhouse",
       "category": "code_identifiers",
-      "snippet": "return dialect === 'n1ql' ? n1ql.format(text) : clickhouse.format(text);"
+      "snippet": "dialect: dialect === 'n1ql' ? n1ql : clickhouse,"
     },
     {
       "path": "packages/app/src/utils/highlightedAttributes.ts",
@@ -58426,7 +58514,7 @@
     },
     {
       "path": "packages/app/tests/e2e/seed-clickhouse.ts",
-      "line": 38,
+      "line": 40,
       "column": 11,
       "term": "clickhouse",
       "category": "code_identifiers",
@@ -58434,7 +58522,7 @@
     },
     {
       "path": "packages/app/tests/e2e/seed-clickhouse.ts",
-      "line": 44,
+      "line": 46,
       "column": 23,
       "term": "clickhouse",
       "category": "code_identifiers",
@@ -58442,7 +58530,7 @@
     },
     {
       "path": "packages/app/tests/e2e/seed-clickhouse.ts",
-      "line": 46,
+      "line": 48,
       "column": 17,
       "term": "clickhouse",
       "category": "env_vars",
@@ -58450,7 +58538,7 @@
     },
     {
       "path": "packages/app/tests/e2e/seed-clickhouse.ts",
-      "line": 48,
+      "line": 50,
       "column": 21,
       "term": "clickhouse",
       "category": "env_vars",
@@ -58458,7 +58546,7 @@
     },
     {
       "path": "packages/app/tests/e2e/seed-clickhouse.ts",
-      "line": 49,
+      "line": 51,
       "column": 25,
       "term": "clickhouse",
       "category": "env_vars",
@@ -58466,7 +58554,7 @@
     },
     {
       "path": "packages/app/tests/e2e/seed-clickhouse.ts",
-      "line": 52,
+      "line": 54,
       "column": 16,
       "term": "clickhouse",
       "category": "code_identifiers",
@@ -58474,7 +58562,7 @@
     },
     {
       "path": "packages/app/tests/e2e/seed-clickhouse.ts",
-      "line": 52,
+      "line": 54,
       "column": 41,
       "term": "clickhouse",
       "category": "code_identifiers",
@@ -58482,7 +58570,7 @@
     },
     {
       "path": "packages/app/tests/e2e/seed-clickhouse.ts",
-      "line": 70,
+      "line": 72,
       "column": 12,
       "term": "clickhouse",
       "category": "other",
@@ -58490,7 +58578,7 @@
     },
     {
       "path": "packages/app/tests/e2e/seed-clickhouse.ts",
-      "line": 103,
+      "line": 105,
       "column": 60,
       "term": "hdx",
       "category": "other",
@@ -58498,7 +58586,7 @@
     },
     {
       "path": "packages/app/tests/e2e/seed-clickhouse.ts",
-      "line": 144,
+      "line": 146,
       "column": 14,
       "term": "hdx",
       "category": "other",
@@ -58506,7 +58594,7 @@
     },
     {
       "path": "packages/app/tests/e2e/seed-clickhouse.ts",
-      "line": 283,
+      "line": 285,
       "column": 16,
       "term": "clickhouse",
       "category": "code_identifiers",
@@ -58514,7 +58602,7 @@
     },
     {
       "path": "packages/app/tests/e2e/seed-clickhouse.ts",
-      "line": 289,
+      "line": 291,
       "column": 7,
       "term": "clickhouse",
       "category": "code_identifiers",
@@ -58522,7 +58610,7 @@
     },
     {
       "path": "packages/app/tests/e2e/seed-clickhouse.ts",
-      "line": 290,
+      "line": 292,
       "column": 18,
       "term": "clickhouse",
       "category": "code_identifiers",
@@ -58530,7 +58618,7 @@
     },
     {
       "path": "packages/app/tests/e2e/seed-clickhouse.ts",
-      "line": 326,
+      "line": 328,
       "column": 38,
       "term": "clickhouse",
       "category": "code_identifiers",
@@ -58538,7 +58626,7 @@
     },
     {
       "path": "packages/app/tests/e2e/seed-clickhouse.ts",
-      "line": 359,
+      "line": 361,
       "column": 7,
       "term": "clickhouse",
       "category": "code_identifiers",
@@ -58546,7 +58634,7 @@
     },
     {
       "path": "packages/app/tests/e2e/seed-clickhouse.ts",
-      "line": 360,
+      "line": 362,
       "column": 18,
       "term": "clickhouse",
       "category": "code_identifiers",
@@ -58554,7 +58642,7 @@
     },
     {
       "path": "packages/app/tests/e2e/seed-clickhouse.ts",
-      "line": 382,
+      "line": 384,
       "column": 48,
       "term": "clickhouse",
       "category": "code_identifiers",
@@ -58562,7 +58650,7 @@
     },
     {
       "path": "packages/app/tests/e2e/seed-clickhouse.ts",
-      "line": 405,
+      "line": 407,
       "column": 50,
       "term": "hdx",
       "category": "other",
@@ -58570,7 +58658,7 @@
     },
     {
       "path": "packages/app/tests/e2e/seed-clickhouse.ts",
-      "line": 461,
+      "line": 463,
       "column": 7,
       "term": "clickhouse",
       "category": "code_identifiers",
@@ -58578,7 +58666,7 @@
     },
     {
       "path": "packages/app/tests/e2e/seed-clickhouse.ts",
-      "line": 462,
+      "line": 464,
       "column": 18,
       "term": "clickhouse",
       "category": "code_identifiers",
@@ -58586,7 +58674,7 @@
     },
     {
       "path": "packages/app/tests/e2e/seed-clickhouse.ts",
-      "line": 523,
+      "line": 525,
       "column": 40,
       "term": "clickhouse",
       "category": "code_identifiers",
@@ -58594,7 +58682,7 @@
     },
     {
       "path": "packages/app/tests/e2e/seed-clickhouse.ts",
-      "line": 892,
+      "line": 894,
       "column": 49,
       "term": "hdx",
       "category": "other",
@@ -58602,7 +58690,7 @@
     },
     {
       "path": "packages/app/tests/e2e/seed-clickhouse.ts",
-      "line": 941,
+      "line": 943,
       "column": 7,
       "term": "clickhouse",
       "category": "env_vars",
@@ -58610,7 +58698,7 @@
     },
     {
       "path": "packages/app/tests/e2e/seed-clickhouse.ts",
-      "line": 942,
+      "line": 944,
       "column": 19,
       "term": "clickhouse",
       "category": "env_vars",
@@ -58618,7 +58706,7 @@
     },
     {
       "path": "packages/app/tests/e2e/seed-clickhouse.ts",
-      "line": 946,
+      "line": 948,
       "column": 23,
       "term": "clickhouse",
       "category": "code_identifiers",
@@ -58626,7 +58714,7 @@
     },
     {
       "path": "packages/app/tests/e2e/seed-clickhouse.ts",
-      "line": 947,
+      "line": 949,
       "column": 35,
       "term": "clickhouse",
       "category": "code_identifiers",
@@ -58634,7 +58722,7 @@
     },
     {
       "path": "packages/app/tests/e2e/seed-clickhouse.ts",
-      "line": 949,
+      "line": 951,
       "column": 30,
       "term": "clickhouse",
       "category": "other",
@@ -58642,7 +58730,7 @@
     },
     {
       "path": "packages/app/tests/e2e/seed-clickhouse.ts",
-      "line": 956,
+      "line": 958,
       "column": 35,
       "term": "clickhouse",
       "category": "env_vars",
@@ -58650,7 +58738,7 @@
     },
     {
       "path": "packages/app/tests/e2e/seed-clickhouse.ts",
-      "line": 959,
+      "line": 961,
       "column": 22,
       "term": "clickhouse",
       "category": "other",
@@ -58658,7 +58746,7 @@
     },
     {
       "path": "packages/app/tests/e2e/seed-clickhouse.ts",
-      "line": 966,
+      "line": 968,
       "column": 45,
       "term": "clickhouse",
       "category": "env_vars",
@@ -58666,7 +58754,7 @@
     },
     {
       "path": "packages/app/tests/e2e/seed-clickhouse.ts",
-      "line": 975,
+      "line": 977,
       "column": 6,
       "term": "clickhouse",
       "category": "other",
@@ -58674,7 +58762,7 @@
     },
     {
       "path": "packages/app/tests/e2e/seed-clickhouse.ts",
-      "line": 975,
+      "line": 977,
       "column": 35,
       "term": "clickhouse",
       "category": "env_vars",
@@ -58682,7 +58770,7 @@
     },
     {
       "path": "packages/app/tests/e2e/seed-clickhouse.ts",
-      "line": 982,
+      "line": 984,
       "column": 35,
       "term": "clickhouse",
       "category": "code_identifiers",
@@ -58690,7 +58778,7 @@
     },
     {
       "path": "packages/app/tests/e2e/seed-clickhouse.ts",
-      "line": 986,
+      "line": 988,
       "column": 37,
       "term": "clickhouse",
       "category": "env_vars",
@@ -58698,7 +58786,7 @@
     },
     {
       "path": "packages/app/tests/e2e/seed-clickhouse.ts",
-      "line": 989,
+      "line": 991,
       "column": 37,
       "term": "clickhouse",
       "category": "env_vars",
@@ -58706,7 +58794,7 @@
     },
     {
       "path": "packages/app/tests/e2e/seed-clickhouse.ts",
-      "line": 995,
+      "line": 997,
       "column": 37,
       "term": "clickhouse",
       "category": "env_vars",
@@ -58714,7 +58802,7 @@
     },
     {
       "path": "packages/app/tests/e2e/seed-clickhouse.ts",
-      "line": 998,
+      "line": 1000,
       "column": 37,
       "term": "clickhouse",
       "category": "env_vars",
@@ -58722,7 +58810,7 @@
     },
     {
       "path": "packages/app/tests/e2e/seed-clickhouse.ts",
-      "line": 1001,
+      "line": 1003,
       "column": 37,
       "term": "clickhouse",
       "category": "env_vars",
@@ -58730,7 +58818,7 @@
     },
     {
       "path": "packages/app/tests/e2e/seed-clickhouse.ts",
-      "line": 1004,
+      "line": 1006,
       "column": 37,
       "term": "clickhouse",
       "category": "env_vars",
@@ -58738,7 +58826,7 @@
     },
     {
       "path": "packages/app/tests/e2e/seed-clickhouse.ts",
-      "line": 1007,
+      "line": 1009,
       "column": 37,
       "term": "clickhouse",
       "category": "env_vars",
@@ -58746,7 +58834,7 @@
     },
     {
       "path": "packages/app/tests/e2e/seed-clickhouse.ts",
-      "line": 1010,
+      "line": 1012,
       "column": 37,
       "term": "clickhouse",
       "category": "env_vars",
@@ -58754,7 +58842,7 @@
     },
     {
       "path": "packages/app/tests/e2e/seed-clickhouse.ts",
-      "line": 1015,
+      "line": 1017,
       "column": 37,
       "term": "clickhouse",
       "category": "env_vars",
@@ -58762,7 +58850,7 @@
     },
     {
       "path": "packages/app/tests/e2e/seed-clickhouse.ts",
-      "line": 1018,
+      "line": 1020,
       "column": 37,
       "term": "clickhouse",
       "category": "env_vars",
@@ -58770,7 +58858,7 @@
     },
     {
       "path": "packages/app/tests/e2e/seed-clickhouse.ts",
-      "line": 1021,
+      "line": 1023,
       "column": 37,
       "term": "clickhouse",
       "category": "env_vars",
@@ -58778,7 +58866,7 @@
     },
     {
       "path": "packages/app/tests/e2e/seed-clickhouse.ts",
-      "line": 1030,
+      "line": 1032,
       "column": 62,
       "term": "clickhouse",
       "category": "other",
@@ -58786,7 +58874,7 @@
     },
     {
       "path": "packages/app/tests/e2e/seed-clickhouse.ts",
-      "line": 1032,
+      "line": 1034,
       "column": 35,
       "term": "clickhouse",
       "category": "code_identifiers",
@@ -58794,7 +58882,7 @@
     },
     {
       "path": "packages/app/tests/e2e/seed-clickhouse.ts",
-      "line": 1039,
+      "line": 1041,
       "column": 101,
       "term": "clickhouse",
       "category": "env_vars",
@@ -58802,7 +58890,7 @@
     },
     {
       "path": "packages/app/tests/e2e/seed-clickhouse.ts",
-      "line": 1042,
+      "line": 1044,
       "column": 99,
       "term": "clickhouse",
       "category": "env_vars",
@@ -58810,7 +58898,7 @@
     },
     {
       "path": "packages/app/tests/e2e/seed-clickhouse.ts",
-      "line": 1047,
+      "line": 1049,
       "column": 27,
       "term": "clickhouse",
       "category": "code_identifiers",
@@ -58818,7 +58906,7 @@
     },
     {
       "path": "packages/app/tests/e2e/seed-clickhouse.ts",
-      "line": 1048,
+      "line": 1050,
       "column": 24,
       "term": "clickhouse",
       "category": "other",
@@ -58826,7 +58914,7 @@
     },
     {
       "path": "packages/app/tests/e2e/seed-clickhouse.ts",
-      "line": 1049,
+      "line": 1051,
       "column": 24,
       "term": "clickhouse",
       "category": "code_identifiers",
@@ -58834,7 +58922,7 @@
     },
     {
       "path": "packages/app/tests/e2e/seed-clickhouse.ts",
-      "line": 1051,
+      "line": 1053,
       "column": 16,
       "term": "clickhouse",
       "category": "code_identifiers",
@@ -58842,7 +58930,7 @@
     },
     {
       "path": "packages/app/tests/e2e/seed-clickhouse.ts",
-      "line": 1060,
+      "line": 1062,
       "column": 23,
       "term": "clickhouse",
       "category": "env_vars",
@@ -58850,7 +58938,7 @@
     },
     {
       "path": "packages/app/tests/e2e/seed-clickhouse.ts",
-      "line": 1071,
+      "line": 1073,
       "column": 23,
       "term": "clickhouse",
       "category": "env_vars",
@@ -58858,7 +58946,7 @@
     },
     {
       "path": "packages/app/tests/e2e/seed-clickhouse.ts",
-      "line": 1081,
+      "line": 1083,
       "column": 23,
       "term": "clickhouse",
       "category": "env_vars",
@@ -58866,7 +58954,7 @@
     },
     {
       "path": "packages/app/tests/e2e/seed-clickhouse.ts",
-      "line": 1092,
+      "line": 1094,
       "column": 23,
       "term": "clickhouse",
       "category": "env_vars",
@@ -58874,7 +58962,7 @@
     },
     {
       "path": "packages/app/tests/e2e/seed-clickhouse.ts",
-      "line": 1105,
+      "line": 1107,
       "column": 23,
       "term": "clickhouse",
       "category": "env_vars",
@@ -58882,7 +58970,7 @@
     },
     {
       "path": "packages/app/tests/e2e/seed-clickhouse.ts",
-      "line": 1118,
+      "line": 1120,
       "column": 23,
       "term": "clickhouse",
       "category": "env_vars",
@@ -58890,7 +58978,7 @@
     },
     {
       "path": "packages/app/tests/e2e/seed-clickhouse.ts",
-      "line": 1131,
+      "line": 1133,
       "column": 23,
       "term": "clickhouse",
       "category": "env_vars",
@@ -58898,7 +58986,7 @@
     },
     {
       "path": "packages/app/tests/e2e/seed-clickhouse.ts",
-      "line": 1141,
+      "line": 1143,
       "column": 23,
       "term": "clickhouse",
       "category": "env_vars",
@@ -58906,7 +58994,7 @@
     },
     {
       "path": "packages/app/tests/e2e/seed-clickhouse.ts",
-      "line": 1153,
+      "line": 1155,
       "column": 23,
       "term": "clickhouse",
       "category": "env_vars",
@@ -58914,7 +59002,7 @@
     },
     {
       "path": "packages/app/tests/e2e/seed-clickhouse.ts",
-      "line": 1168,
+      "line": 1170,
       "column": 23,
       "term": "clickhouse",
       "category": "env_vars",
@@ -58922,7 +59010,23 @@
     },
     {
       "path": "packages/app/tests/e2e/seed-clickhouse.ts",
-      "line": 1182,
+      "line": 1184,
+      "column": 38,
+      "term": "clickhouse",
+      "category": "env_vars",
+      "snippet": "CREATE TABLE IF NOT EXISTS ${E2E_CLICKHOUSE_DATABASE}.${E2E_METRICS_EXP_HISTOGRAM_TABLE} ("
+    },
+    {
+      "path": "packages/app/tests/e2e/seed-clickhouse.ts",
+      "line": 1225,
+      "column": 23,
+      "term": "clickhouse",
+      "category": "env_vars",
+      "snippet": "INSERT INTO ${E2E_CLICKHOUSE_DATABASE}.${E2E_METRICS_EXP_HISTOGRAM_TABLE} ("
+    },
+    {
+      "path": "packages/app/tests/e2e/seed-clickhouse.ts",
+      "line": 1240,
       "column": 23,
       "term": "clickhouse",
       "category": "env_vars",
@@ -58930,7 +59034,7 @@
     },
     {
       "path": "packages/app/tests/e2e/seed-clickhouse.ts",
-      "line": 1194,
+      "line": 1252,
       "column": 23,
       "term": "clickhouse",
       "category": "env_vars",
@@ -58938,7 +59042,7 @@
     },
     {
       "path": "packages/app/tests/e2e/seed-clickhouse.ts",
-      "line": 1197,
+      "line": 1255,
       "column": 11,
       "term": "hdx",
       "category": "other",
@@ -58946,7 +59050,7 @@
     },
     {
       "path": "packages/app/tests/e2e/seed-clickhouse.ts",
-      "line": 1210,
+      "line": 1268,
       "column": 23,
       "term": "clickhouse",
       "category": "env_vars",
@@ -58954,7 +59058,7 @@
     },
     {
       "path": "packages/app/tests/e2e/seed-clickhouse.ts",
-      "line": 1220,
+      "line": 1278,
       "column": 23,
       "term": "clickhouse",
       "category": "env_vars",
@@ -58962,7 +59066,7 @@
     },
     {
       "path": "packages/app/tests/e2e/seed-clickhouse.ts",
-      "line": 1236,
+      "line": 1294,
       "column": 16,
       "term": "clickhouse",
       "category": "other",
@@ -58970,7 +59074,7 @@
     },
     {
       "path": "packages/app/tests/e2e/seed-clickhouse.ts",
-      "line": 1244,
+      "line": 1302,
       "column": 12,
       "term": "clickhouse",
       "category": "other",
@@ -58978,7 +59082,7 @@
     },
     {
       "path": "packages/app/tests/e2e/seed-clickhouse.ts",
-      "line": 1248,
+      "line": 1306,
       "column": 35,
       "term": "clickhouse",
       "category": "code_identifiers",
@@ -58986,7 +59090,7 @@
     },
     {
       "path": "packages/app/tests/e2e/seed-clickhouse.ts",
-      "line": 1258,
+      "line": 1316,
       "column": 24,
       "term": "clickhouse",
       "category": "env_vars",
@@ -58994,7 +59098,7 @@
     },
     {
       "path": "packages/app/tests/e2e/seed-clickhouse.ts",
-      "line": 1287,
+      "line": 1345,
       "column": 35,
       "term": "clickhouse",
       "category": "code_identifiers",
@@ -59002,7 +59106,7 @@
     },
     {
       "path": "packages/app/tests/e2e/seed-clickhouse.ts",
-      "line": 1325,
+      "line": 1383,
       "column": 35,
       "term": "clickhouse",
       "category": "code_identifiers",
@@ -59010,7 +59114,7 @@
     },
     {
       "path": "packages/app/tests/e2e/seed-clickhouse.ts",
-      "line": 1353,
+      "line": 1411,
       "column": 7,
       "term": "clickhouse",
       "category": "code_identifiers",
@@ -59034,7 +59138,7 @@
     },
     {
       "path": "packages/app/tests/e2e/seed-couchbase.ts",
-      "line": 12,
+      "line": 14,
       "column": 42,
       "term": "clickhouse",
       "category": "other",
@@ -59042,7 +59146,7 @@
     },
     {
       "path": "packages/app/tests/e2e/seed-couchbase.ts",
-      "line": 83,
+      "line": 98,
       "column": 21,
       "term": "clickhouse",
       "category": "code_identifiers",
@@ -59050,7 +59154,7 @@
     },
     {
       "path": "packages/app/tests/e2e/seed-couchbase.ts",
-      "line": 97,
+      "line": 112,
       "column": 21,
       "term": "clickhouse",
       "category": "code_identifiers",
@@ -59058,7 +59162,7 @@
     },
     {
       "path": "packages/app/tests/e2e/seed-couchbase.ts",
-      "line": 111,
+      "line": 126,
       "column": 21,
       "term": "clickhouse",
       "category": "code_identifiers",
@@ -59122,7 +59226,7 @@
     },
     {
       "path": "packages/app/tests/e2e/utils/constants.ts",
-      "line": 72,
+      "line": 76,
       "column": 10,
       "term": "clickhouse",
       "category": "other",
@@ -59130,7 +59234,7 @@
     },
     {
       "path": "packages/app/tests/e2e/utils/constants.ts",
-      "line": 72,
+      "line": 76,
       "column": 70,
       "term": "clickhouse",
       "category": "other",
@@ -59138,7 +59242,7 @@
     },
     {
       "path": "packages/app/tests/e2e/utils/constants.ts",
-      "line": 78,
+      "line": 82,
       "column": 12,
       "term": "clickhouse",
       "category": "other",
@@ -59146,7 +59250,7 @@
     },
     {
       "path": "packages/app/tests/e2e/utils/constants.ts",
-      "line": 78,
+      "line": 82,
       "column": 65,
       "term": "clickhouse",
       "category": "other",
@@ -59154,7 +59258,7 @@
     },
     {
       "path": "packages/app/tests/e2e/utils/constants.ts",
-      "line": 83,
+      "line": 87,
       "column": 12,
       "term": "clickhouse",
       "category": "other",
@@ -59162,7 +59266,7 @@
     },
     {
       "path": "packages/app/tests/e2e/utils/constants.ts",
-      "line": 83,
+      "line": 87,
       "column": 65,
       "term": "clickhouse",
       "category": "other",
@@ -59170,7 +59274,7 @@
     },
     {
       "path": "packages/app/tests/e2e/utils/constants.ts",
-      "line": 88,
+      "line": 92,
       "column": 12,
       "term": "clickhouse",
       "category": "other",
@@ -59178,7 +59282,7 @@
     },
     {
       "path": "packages/app/tests/e2e/utils/constants.ts",
-      "line": 88,
+      "line": 92,
       "column": 65,
       "term": "clickhouse",
       "category": "other",
@@ -79089,6 +79193,22 @@
       "snippet": "import { JSDataType } from '@/clickhouse';"
     },
     {
+      "path": "packages/common-utils/src/couchbase/render/metrics/multiSeries.ts",
+      "line": 22,
+      "column": 37,
+      "term": "hdx",
+      "category": "other",
+      "snippet": "const MULTI_SERIES_VALUE_ALIAS = '__hdx_value';"
+    },
+    {
+      "path": "packages/common-utils/src/couchbase/render/metrics/multiSeries.ts",
+      "line": 23,
+      "column": 35,
+      "term": "hdx",
+      "category": "other",
+      "snippet": "const MULTI_SERIES_IDX_ALIAS = '__hdx_series_idx';"
+    },
+    {
       "path": "packages/common-utils/src/couchbase/resultset.ts",
       "line": 70,
       "column": 50,
@@ -79818,7 +79938,7 @@
     },
     {
       "path": "packages/common-utils/src/dataLayer/node.ts",
-      "line": 28,
+      "line": 27,
       "column": 11,
       "term": "clickhouse",
       "category": "code_identifiers",
@@ -79826,7 +79946,7 @@
     },
     {
       "path": "packages/common-utils/src/dataLayer/node.ts",
-      "line": 32,
+      "line": 31,
       "column": 18,
       "term": "clickhouse",
       "category": "code_identifiers",
@@ -89306,7 +89426,7 @@
     },
     {
       "path": "scripts/test-e2e.sh",
-      "line": 44,
+      "line": 58,
       "column": 1,
       "term": "hdx",
       "category": "other",
@@ -89314,7 +89434,7 @@
     },
     {
       "path": "scripts/test-e2e.sh",
-      "line": 56,
+      "line": 70,
       "column": 36,
       "term": "hyperdx",
       "category": "other",
@@ -89322,7 +89442,7 @@
     },
     {
       "path": "scripts/test-e2e.sh",
-      "line": 70,
+      "line": 84,
       "column": 14,
       "term": "clickhouse",
       "category": "env_vars",
@@ -89330,7 +89450,7 @@
     },
     {
       "path": "scripts/test-e2e.sh",
-      "line": 71,
+      "line": 85,
       "column": 10,
       "term": "clickhouse",
       "category": "env_vars",
@@ -89338,7 +89458,7 @@
     },
     {
       "path": "scripts/test-e2e.sh",
-      "line": 74,
+      "line": 88,
       "column": 32,
       "term": "hdx",
       "category": "other",
@@ -89346,7 +89466,7 @@
     },
     {
       "path": "scripts/test-e2e.sh",
-      "line": 137,
+      "line": 151,
       "column": 7,
       "term": "clickhouse",
       "category": "other",
@@ -89354,7 +89474,7 @@
     },
     {
       "path": "scripts/test-e2e.sh",
-      "line": 199,
+      "line": 213,
       "column": 10,
       "term": "clickhouse",
       "category": "other",
@@ -89362,7 +89482,7 @@
     },
     {
       "path": "scripts/test-e2e.sh",
-      "line": 200,
+      "line": 214,
       "column": 21,
       "term": "clickhouse",
       "category": "other",
@@ -89370,7 +89490,7 @@
     },
     {
       "path": "scripts/test-e2e.sh",
-      "line": 203,
+      "line": 217,
       "column": 29,
       "term": "clickhouse",
       "category": "env_vars",
@@ -89378,7 +89498,7 @@
     },
     {
       "path": "scripts/test-e2e.sh",
-      "line": 204,
+      "line": 218,
       "column": 14,
       "term": "clickhouse",
       "category": "other",
@@ -89386,7 +89506,7 @@
     },
     {
       "path": "scripts/test-e2e.sh",
-      "line": 205,
+      "line": 219,
       "column": 13,
       "term": "clickhouse",
       "category": "other",
@@ -89394,7 +89514,7 @@
     },
     {
       "path": "scripts/test-e2e.sh",
-      "line": 209,
+      "line": 223,
       "column": 28,
       "term": "clickhouse",
       "category": "env_vars",
@@ -89402,7 +89522,7 @@
     },
     {
       "path": "scripts/test-e2e.sh",
-      "line": 210,
+      "line": 224,
       "column": 31,
       "term": "clickhouse",
       "category": "env_vars",
@@ -89410,7 +89530,7 @@
     },
     {
       "path": "scripts/test-e2e.sh",
-      "line": 210,
+      "line": 224,
       "column": 58,
       "term": "clickhouse",
       "category": "env_vars",
@@ -89418,7 +89538,7 @@
     },
     {
       "path": "scripts/test-e2e.sh",
-      "line": 211,
+      "line": 225,
       "column": 13,
       "term": "clickhouse",
       "category": "other",
@@ -89426,7 +89546,7 @@
     },
     {
       "path": "scripts/test-e2e.sh",
-      "line": 216,
+      "line": 230,
       "column": 23,
       "term": "clickhouse",
       "category": "other",
@@ -89434,7 +89554,7 @@
     },
     {
       "path": "scripts/test-e2e.sh",
-      "line": 216,
+      "line": 230,
       "column": 52,
       "term": "clickhouse",
       "category": "env_vars",
@@ -89442,7 +89562,7 @@
     },
     {
       "path": "scripts/test-e2e.sh",
-      "line": 218,
+      "line": 232,
       "column": 12,
       "term": "clickhouse",
       "category": "env_vars",
@@ -89450,7 +89570,7 @@
     },
     {
       "path": "scripts/test-e2e.sh",
-      "line": 266,
+      "line": 280,
       "column": 7,
       "term": "clickhouse",
       "category": "other",
@@ -89458,7 +89578,7 @@
     },
     {
       "path": "scripts/test-e2e.sh",
-      "line": 267,
+      "line": 281,
       "column": 18,
       "term": "clickhouse",
       "category": "other",
@@ -89466,7 +89586,7 @@
     },
     {
       "path": "scripts/test-e2e.sh",
-      "line": 270,
+      "line": 284,
       "column": 17,
       "term": "clickhouse",
       "category": "other",
@@ -89474,7 +89594,7 @@
     },
     {
       "path": "scripts/test-e2e.sh",
-      "line": 274,
+      "line": 288,
       "column": 11,
       "term": "clickhouse",
       "category": "other",
@@ -89482,7 +89602,7 @@
     },
     {
       "path": "scripts/test-e2e.sh",
-      "line": 283,
+      "line": 297,
       "column": 51,
       "term": "clickhouse",
       "category": "other",
@@ -89490,7 +89610,7 @@
     },
     {
       "path": "scripts/test-e2e.sh",
-      "line": 286,
+      "line": 300,
       "column": 61,
       "term": "clickhouse",
       "category": "other",
@@ -89498,7 +89618,7 @@
     },
     {
       "path": "scripts/test-e2e.sh",
-      "line": 297,
+      "line": 311,
       "column": 26,
       "term": "clickhouse",
       "category": "other",
@@ -89506,7 +89626,7 @@
     },
     {
       "path": "scripts/test-e2e.sh",
-      "line": 301,
+      "line": 315,
       "column": 9,
       "term": "clickhouse",
       "category": "other",
@@ -91079,7 +91199,7 @@
     {
       "category": "env_vars",
       "term": "clickhouse",
-      "count": 534,
+      "count": 536,
       "files": 101
     },
     {
@@ -91145,7 +91265,7 @@
     {
       "category": "docs",
       "term": "clickhouse",
-      "count": 1359,
+      "count": 1358,
       "files": 45
     },
     {
@@ -91175,14 +91295,14 @@
     {
       "category": "ui_strings",
       "term": "clickhouse",
-      "count": 102,
-      "files": 48
+      "count": 109,
+      "files": 49
     },
     {
       "category": "ui_strings",
       "term": "hdx",
-      "count": 127,
-      "files": 58
+      "count": 128,
+      "files": 59
     },
     {
       "category": "code_identifiers",
@@ -91223,8 +91343,8 @@
     {
       "category": "other",
       "term": "clickhouse",
-      "count": 1831,
-      "files": 462
+      "count": 1835,
+      "files": 464
     },
     {
       "category": "other",
@@ -91235,8 +91355,8 @@
     {
       "category": "other",
       "term": "hdx",
-      "count": 1616,
-      "files": 248
+      "count": 1618,
+      "files": 249
     }
   ]
 }

@@ -7,6 +7,7 @@
 const LOGS = 10_000;
 const SPANS = 5_000;
 const METRICS = 2_000;
+const EXP_HIST = 400;
 const SESSIONS = 200;
 const SERVICES = ['api', 'web', 'worker'];
 const REGIONS = ['us', 'eu'];
@@ -120,6 +121,24 @@ async function postSpans(port) {
   }
 }
 
+function expHistPoint(i) {
+  // Delta-temporality points with a few positive buckets so count and
+  // quantile paths are exercised on both stores.
+  const counts = [1 + (i % 3), 2 + (i % 5), 4 + (i % 7)];
+  const total = counts.reduce((a, b) => a + b, 0);
+  return {
+    timeUnixNano: ns(fromSec + (i % 3600), i),
+    count: String(total),
+    scale: 0,
+    zeroCount: '0',
+    positive: {
+      offset: 0,
+      bucketCounts: counts.map(String),
+    },
+    attributes: [{ key: 'host', value: { stringValue: `h${i % 10}` } }],
+  };
+}
+
 async function postMetrics(port) {
   const points = [];
   for (let i = 0; i < METRICS; i++) points.push(gaugePoint(i));
@@ -141,6 +160,39 @@ async function postMetrics(port) {
         },
       ],
     });
+  }
+
+  const expPointsByService = new Map();
+  for (let i = 0; i < EXP_HIST; i++) {
+    const service = SERVICES[i % SERVICES.length];
+    const list = expPointsByService.get(service) ?? [];
+    list.push(expHistPoint(i));
+    expPointsByService.set(service, list);
+  }
+  for (const [service, points] of expPointsByService) {
+    for (let i = 0; i < points.length; i += 100) {
+      await post(port, '/v1/metrics', {
+        resourceMetrics: [
+          {
+            resource: resource(service),
+            scopeMetrics: [
+              {
+                metrics: [
+                  {
+                    name: 'parity.exponential',
+                    unit: 'ms',
+                    exponentialHistogram: {
+                      aggregationTemporality: 1,
+                      dataPoints: points.slice(i, i + 100),
+                    },
+                  },
+                ],
+              },
+            ],
+          },
+        ],
+      });
+    }
   }
 }
 
@@ -196,6 +248,7 @@ export const window = {
   logs: LOGS,
   spans: SPANS,
   metrics: METRICS,
+  expHist: EXP_HIST,
   sessions: SESSIONS,
 };
 

@@ -1,11 +1,12 @@
 {
-  "id": "metrics-exp-histogram-needs-decision",
-  "description": "exponential histogram is needs_decision — render-only expects CouchbaseNotReadyError",
+  "id": "metrics-exp-histogram-p50",
+  "description": "exponential histogram quantile p50 (ungrouped)",
   "source": "metrics_exponential_histogram",
   "config": {
     "select": [
       {
-        "aggFn": "count",
+        "aggFn": "quantile",
+        "level": 0.5,
         "valueExpression": "Value",
         "metricType": "exponential histogram",
         "metricName": "parity.exponential",
@@ -22,6 +23,6 @@
     "dateRange": { "fromMinutesAgo": 60, "toMinutesAgo": 0 }
   },
   "compare": {
-    "expectCouchbaseError": "exponential histogram"
+    "ignoreColumns": ["__cbt_id"]
   }
 }

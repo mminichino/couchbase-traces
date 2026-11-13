@@ -6,15 +6,17 @@ import {
 } from '@/core/utils';
 import { histogramQuantile } from '@/couchbase/fn/quantile';
 import { lag } from '@/couchbase/fn/scalar';
+import { timestampFormatOf } from '@/couchbase/render/select';
 import { keyspace, quoteIdent } from '@/couchbase/sqlpp';
 import {
   parseGranularity,
   timeBucketExpr as cbTimeBucketExpr,
+  toIso30,
 } from '@/couchbase/time';
 import { CouchbaseNotReadyError } from '@/dataLayer/errors';
 import type { BuilderChartConfigWithOptDateRange } from '@/types';
 
-type MetricSelect = {
+export type MetricSelect = {
   aggFn?: string | null;
   alias?: string;
   level?: number;
@@ -22,7 +24,7 @@ type MetricSelect = {
   metricNameSql?: string;
 };
 
-type HistInput = {
+export type HistInput = {
   chartConfig: BuilderChartConfigWithOptDateRange;
   select: MetricSelect;
   table: string;
@@ -30,11 +32,12 @@ type HistInput = {
   from: { databaseName: string; scopeName?: string; tableName: string };
 };
 
-function seriesKeyExpr(): string {
+/** Series identity matching Phase 7 gauge/sum/histogram (Attributes JSON). */
+export function seriesKeyExpr(): string {
   return `TOSTRING(ENCODE_JSON(IFNULL(Attributes, {})))`;
 }
 
-function timeBucketSql(
+export function timeBucketSql(
   chartConfig: BuilderChartConfigWithOptDateRange,
 ): string | undefined {
   if (chartConfig.granularity == null) return undefined;
@@ -50,16 +53,12 @@ function timeBucketSql(
         )
       : chartConfig.granularity;
   const gran = parseGranularity(String(interval));
-  const format =
-    (chartConfig as { timestampFormat?: string }).timestampFormat ===
-    'epoch_millis'
-      ? 'epoch_millis'
-      : 'iso8601';
+  const format = timestampFormatOf(chartConfig);
   // Bucket over the bare column (CTE rows are not aliased as d).
   return cbTimeBucketExpr(tsCol, format, gran).statement;
 }
 
-function groupBySql(
+export function groupBySql(
   chartConfig: BuilderChartConfigWithOptDateRange,
 ): string | undefined {
   if (!chartConfig.groupBy) return undefined;
@@ -78,25 +77,70 @@ function groupBySql(
   return `[${parts.join(', ')}]`;
 }
 
-function dimSelect(bucket: string | undefined, group: string | undefined): string {
+export function dimSelect(
+  bucket: string | undefined,
+  group: string | undefined,
+): string {
   const parts: string[] = [];
-  if (bucket) parts.push(`${bucket} AS ${quoteIdent(FIXED_TIME_BUCKET_EXPR_ALIAS)}`);
+  if (bucket)
+    parts.push(`${bucket} AS ${quoteIdent(FIXED_TIME_BUCKET_EXPR_ALIAS)}`);
   if (group) parts.push(`${group} AS ${quoteIdent(GROUP_ALIAS)}`);
   return parts.length ? `${parts.join(', ')}, ` : '';
 }
 
-function dimGroupBy(bucket: string | undefined, group: string | undefined): string {
+export function dimGroupBy(
+  bucket: string | undefined,
+  group: string | undefined,
+): string {
   const parts: string[] = [];
   if (bucket) parts.push(quoteIdent(FIXED_TIME_BUCKET_EXPR_ALIAS));
   if (group) parts.push(quoteIdent(GROUP_ALIAS));
   return parts.length ? ` GROUP BY ${parts.join(', ')}` : '';
 }
 
-function dimProject(bucket: string | undefined, group: string | undefined): string {
+export function dimProject(
+  bucket: string | undefined,
+  group: string | undefined,
+): string {
   const parts: string[] = [];
   if (bucket) parts.push(quoteIdent(FIXED_TIME_BUCKET_EXPR_ALIAS));
   if (group) parts.push(quoteIdent(GROUP_ALIAS));
   return parts.length ? `${parts.join(', ')}, ` : '';
+}
+
+/**
+ * Name + date-range predicate for histogram / exp-hist source CTEs.
+ * Mirrors upstream weaving `renderMetricWhere` into the CTE so the outer
+ * query (which only has group/value) does not re-filter on TimeUnix.
+ */
+export function sourceWhereClause(
+  chartConfig: BuilderChartConfigWithOptDateRange,
+  nameFilter: string,
+): { sql: string; params: Record<string, unknown> } {
+  const parts = [`(${nameFilter})`];
+  const params: Record<string, unknown> = {};
+  if (chartConfig.dateRange != null) {
+    const tsCol = getFirstTimestampValueExpression(
+      chartConfig.timestampValueExpression || 'TimeUnix',
+    );
+    // Qualify with d. — source CTEs always alias the keyspace as d.
+    const tsExpr = tsCol.includes('.') ? tsCol : `d.${tsCol}`;
+    const format = timestampFormatOf(chartConfig);
+    const startOp = chartConfig.dateRangeStartInclusive === false ? '>' : '>=';
+    const endOp = chartConfig.dateRangeEndInclusive === true ? '<=' : '<';
+    const from = chartConfig.dateRange[0];
+    const to = chartConfig.dateRange[1];
+    if (format === 'epoch_millis') {
+      params.p0 = from.getTime();
+      params.p1 = to.getTime();
+    } else {
+      params.p0 = toIso30(from);
+      params.p1 = toIso30(to);
+    }
+    parts.push(`${tsExpr} ${startOp} $p0`);
+    parts.push(`${tsExpr} ${endOp} $p1`);
+  }
+  return { sql: parts.join(' AND '), params };
 }
 
 /**
@@ -120,13 +164,14 @@ function translateHistogramCountCouchbase(input: HistInput) {
     'TimeUnix',
   );
   const delta = `CASE WHEN AggregationTemporality = 1 THEN TONUMBER(\`Count\`) WHEN ${lagCount} IS NOT NULL THEN CASE WHEN TONUMBER(\`Count\`) < ${lagCount} THEN TONUMBER(\`Count\`) ELSE TONUMBER(\`Count\`) - ${lagCount} END ELSE 0 END`;
+  const where = sourceWhereClause(chartConfig, nameFilter);
 
-  const sourceSql = `SELECT ${dimSelect(bucket, group)}${sk} AS AttributesHash, AggregationTemporality, TONUMBER(\`Count\`) AS current_count, ${lagCount} AS prev_count, ${delta} AS delta FROM ${ks} AS d WHERE (${nameFilter})`;
+  const sourceSql = `SELECT ${dimSelect(bucket, group)}${sk} AS AttributesHash, AggregationTemporality, TONUMBER(\`Count\`) AS current_count, ${lagCount} AS prev_count, ${delta} AS delta FROM ${ks} AS d WHERE ${where.sql}`;
   const metricsSql = `SELECT ${dimProject(bucket, group)}SUM(delta) AS ${quoteIdent(valueAlias)} FROM source${dimGroupBy(bucket, group)}`;
 
   return {
     with: [
-      { name: 'source', sql: { sql: sourceSql, params: {} } },
+      { name: 'source', sql: { sql: sourceSql, params: where.params } },
       { name: 'metrics', sql: { sql: metricsSql, params: {} } },
     ],
     valueAlias,
@@ -139,7 +184,9 @@ function translateHistogramCountCouchbase(input: HistInput) {
  * Explicit-bounds histogram quantile: UNNEST bucket deltas, SUM per index,
  * rebuild arrays, then Phase 6 histogramQuantile.
  */
-function translateHistogramQuantileCouchbase(input: HistInput & { level: number }) {
+function translateHistogramQuantileCouchbase(
+  input: HistInput & { level: number },
+) {
   const { chartConfig, select, table, nameFilter, from, level } = input;
   const ks = keyspace({
     bucket: from.databaseName,
@@ -156,10 +203,13 @@ function translateHistogramQuantileCouchbase(input: HistInput & { level: number 
     'TimeUnix',
   );
   // Delta temporality or reset / first point → use current counts; else element-wise subtract.
-  const rates = `CASE WHEN AggregationTemporality = 1 OR ${lagCounts} IS NULL THEN BucketCounts WHEN ARRAY_LENGTH(ARRAY x FOR x IN ARRAY_RANGE(0, LEAST(ARRAY_LENGTH(BucketCounts), ARRAY_LENGTH(${lagCounts}))) WHEN TONUMBER(BucketCounts[x]) < TONUMBER((${lagCounts})[x]) END) > 0 THEN BucketCounts ELSE (ARRAY TONUMBER(BucketCounts[i]) - TONUMBER(IFNULL((${lagCounts})[i], 0)) FOR i IN ARRAY_RANGE(0, ARRAY_LENGTH(BucketCounts)) END) END`;
+  // Qualify keyspace columns with d. — the source CTE aliases the collection as d.
+  const rates = `CASE WHEN d.AggregationTemporality = 1 OR ${lagCounts} IS NULL THEN d.BucketCounts WHEN ARRAY_LENGTH(ARRAY x FOR x IN ARRAY_RANGE(0, LEAST(ARRAY_LENGTH(d.BucketCounts), ARRAY_LENGTH(${lagCounts}))) WHEN TONUMBER(d.BucketCounts[x]) < TONUMBER((${lagCounts})[x]) END) > 0 THEN d.BucketCounts ELSE (ARRAY TONUMBER(d.BucketCounts[i]) - TONUMBER(IFNULL((${lagCounts})[i], 0)) FOR i IN ARRAY_RANGE(0, ARRAY_LENGTH(d.BucketCounts)) END) END`;
+  const where = sourceWhereClause(chartConfig, nameFilter);
 
-  const sourceSql = `SELECT ${dimSelect(bucket, group)}${sk} AS AttributesHash, ExplicitBounds, ${rates} AS rates FROM ${ks} AS d WHERE (${nameFilter})`;
-  const flatSql = `SELECT ${dimProject(bucket, group)}i, IFMISSINGORNULL(ExplicitBounds[i], NULL) AS bound, TONUMBER(IFNULL(rates[i], 0)) AS rate FROM source UNNEST ARRAY_RANGE(0, ARRAY_LENGTH(rates)) AS i`;
+  const sourceSql = `SELECT ${dimSelect(bucket, group)}${sk} AS AttributesHash, d.ExplicitBounds AS ExplicitBounds, ${rates} AS rates FROM ${ks} AS d WHERE ${where.sql}`;
+  // Alias source as s so ExplicitBounds/rates are not ambiguous under UNNEST.
+  const flatSql = `SELECT ${dimProject(bucket, group)}i, IFMISSINGORNULL(s.ExplicitBounds[i], NULL) AS bound, TONUMBER(IFNULL(s.rates[i], 0)) AS rate FROM source AS s UNNEST ARRAY_RANGE(0, ARRAY_LENGTH(s.rates)) AS i`;
   const dimKeys = [
     bucket ? quoteIdent(FIXED_TIME_BUCKET_EXPR_ALIAS) : null,
     group ? quoteIdent(GROUP_ALIAS) : null,
@@ -182,7 +232,7 @@ function translateHistogramQuantileCouchbase(input: HistInput & { level: number 
 
   return {
     with: [
-      { name: 'source', sql: { sql: sourceSql, params: {} } },
+      { name: 'source', sql: { sql: sourceSql, params: where.params } },
       { name: 'flat', sql: { sql: flatSql, params: {} } },
       { name: 'agg', sql: { sql: aggSql, params: {} } },
       {

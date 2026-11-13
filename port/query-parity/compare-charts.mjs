@@ -315,19 +315,29 @@ function normalizeRow(row, ignore, defaultsEqual) {
   return out;
 }
 
+function cellsEqual(left, right, tolerance = 1e-9) {
+  if (left == null && right == null) return true;
+  if (typeof left === 'number' && typeof right === 'number') {
+    if (left === right) return true;
+    const denom = Math.max(Math.abs(left), Math.abs(right), 1);
+    return Math.abs(left - right) / denom <= tolerance;
+  }
+  // Histogram / exp-hist pack group-by into an array (`group`).
+  if (Array.isArray(left) || Array.isArray(right)) {
+    if (!Array.isArray(left) || !Array.isArray(right)) return false;
+    if (left.length !== right.length) return false;
+    return left.every((v, i) => cellsEqual(v, right[i], tolerance));
+  }
+  if (left !== null && right !== null && typeof left === 'object' && typeof right === 'object') {
+    return rowsEqual(left, right, tolerance);
+  }
+  return left === right;
+}
+
 function rowsEqual(a, b, tolerance = 1e-9) {
   const keys = new Set([...Object.keys(a), ...Object.keys(b)]);
   for (const key of keys) {
-    const left = a[key];
-    const right = b[key];
-    if (left == null && right == null) continue;
-    if (typeof left === 'number' && typeof right === 'number') {
-      if (left === right) continue;
-      const denom = Math.max(Math.abs(left), Math.abs(right), 1);
-      if (Math.abs(left - right) / denom <= tolerance) continue;
-      return false;
-    }
-    if (left !== right) return false;
+    if (!cellsEqual(a[key], b[key], tolerance)) return false;
   }
   return true;
 }
@@ -348,6 +358,32 @@ async function chQuery(sql, params = {}) {
     .split('\n')
     .filter(line => line.trim())
     .map(line => JSON.parse(line));
+}
+
+/**
+ * Histogram / exp-hist CTEs pack group-by into the `group` array alias (same
+ * as ClickHouse). The pre-translate config still lists the raw groupBy
+ * expressions, so couchbaseResultColumnNames would mis-label the columns.
+ */
+function columnNamesForCase(caseFile, cbConfig) {
+  const metricType = caseFile.config?.select?.[0]?.metricType;
+  if (
+    metricType === 'histogram' ||
+    metricType === 'exponential histogram'
+  ) {
+    const cols = [];
+    if (caseFile.config.granularity != null) {
+      cols.push('__hdx_time_bucket');
+    }
+    if (caseFile.config.groupBy) cols.push('group');
+    const alias =
+      caseFile.config.select[0].alias?.trim() ||
+      caseFile.config.select[0].valueExpression?.trim() ||
+      'Value';
+    cols.push(alias);
+    return cols;
+  }
+  return couchbaseResultColumnNames(cbConfig);
 }
 
 function normalizeCouchbaseRows(rows, columnNames) {
@@ -438,7 +474,7 @@ async function runCase(caseFile) {
   const defaultsEqual = caseFile.compare?.defaultsEqual ?? [];
   const tolerance = caseFile.compare?.numericTolerance ?? 1e-9;
   const chRows = await chQuery(chRendered.sql, chRendered.params ?? {});
-  const cbColumnNames = couchbaseResultColumnNames(cbConfig);
+  const cbColumnNames = columnNamesForCase(caseFile, cbConfig);
   const cbRows = normalizeCouchbaseRows(
     await cbQuery(cbRendered.sql, cbRendered.params ?? {}),
     cbColumnNames,

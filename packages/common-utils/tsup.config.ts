@@ -10,5 +10,10 @@ export const tsup: Options = {
   bundle: true,
   skipNodeModulesBundle: true,
   outDir: 'dist',
-  entry: ['src/**/*.ts', '!src/__tests__/**', '!src/**/*.test.*'],
+  entry: [
+    'src/**/*.ts',
+    '!src/__tests__/**',
+    '!src/**/__tests__/**',
+    '!src/**/*.test.*',
+  ],
 };

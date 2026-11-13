@@ -15,14 +15,18 @@
   "dataLayerSymbols": [],
   "tests": {
     "unit": [
-      "packages/app/src/couchbase/__tests__/sources.gating.test.ts"
+      "packages/app/src/couchbase/__tests__/sources.gating.test.ts",
+      "packages/common-utils/src/couchbase/render/metrics/__tests__/expHistogram.test.ts"
     ],
-    "int": [],
+    "int": [
+      "packages/common-utils/src/couchbase/__tests__/expHistogram.couchbase.int.test.ts"
+    ],
     "e2e": [
       "packages/app/tests/e2e/features/metric-name-streaming.spec.ts",
       "packages/app/tests/e2e/features/metric-table-autofill.spec.ts",
-      "packages/app/tests/e2e/features/correlated-metric-source.spec.ts"
+      "packages/app/tests/e2e/features/correlated-metric-source.spec.ts",
+      "packages/app/tests/e2e/features/metric-exp-histogram.spec.ts"
     ]
   },
-  "notes": "Area feature api-v1 is dropped (PromQL). Gauge/sum/summary translate paths land here; histogram/exp-histogram/formulas remain CouchbaseNotReadyError."
+  "notes": "Area feature api-v1 is dropped (PromQL). Gauge/sum/summary/histogram/exp-histogram/formulas translate on Couchbase. metrics-exp-histogram ported in Phase 7a."
 }
