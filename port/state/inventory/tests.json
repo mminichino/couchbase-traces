@@ -325,35 +325,6 @@
       "routes": []
     },
     {
-      "path": "packages/api/src/mcp/__tests__/dashboards/promqlQueryTile.int.test.ts",
-      "workspace": "@couchbase-traces/api",
-      "kind": "int",
-      "directImports": [
-        "packages/api/src/fixtures.ts",
-        "packages/api/src/mcp/__tests__/dashboards/setup.ts",
-        "packages/api/src/mcp/__tests__/mcpTestUtils.ts",
-        "packages/api/src/models/connection.ts",
-        "packages/api/src/models/dashboard.ts",
-        "packages/api/src/models/source.ts",
-        "packages/common-utils/src/core/metadata.ts",
-        "packages/common-utils/src/types.ts"
-      ],
-      "routes": []
-    },
-    {
-      "path": "packages/api/src/mcp/__tests__/dashboards/promqlTiles.int.test.ts",
-      "workspace": "@couchbase-traces/api",
-      "kind": "int",
-      "directImports": [
-        "packages/api/src/mcp/__tests__/dashboards/setup.ts",
-        "packages/api/src/mcp/__tests__/mcpTestUtils.ts",
-        "packages/api/src/models/dashboard.ts",
-        "packages/api/src/models/source.ts",
-        "packages/common-utils/src/types.ts"
-      ],
-      "routes": []
-    },
-    {
       "path": "packages/api/src/mcp/__tests__/dashboards/queryTile.int.test.ts",
       "workspace": "@couchbase-traces/api",
       "kind": "int",
@@ -482,7 +453,6 @@
       "kind": "unit",
       "directImports": [
         "packages/api/src/controllers/connection.ts",
-        "packages/api/src/controllers/promql.ts",
         "packages/api/src/controllers/sources.ts",
         "packages/api/src/mcp/tools/sources/describeSource.ts",
         "packages/api/src/mcp/tools/sources/metricNames.ts",
@@ -596,37 +566,6 @@
       "kind": "unit",
       "directImports": [
         "packages/api/src/mcp/__tests__/mcpTestUtils.ts"
-      ],
-      "routes": []
-    },
-    {
-      "path": "packages/api/src/mcp/__tests__/promqlQueryTool.int.test.ts",
-      "workspace": "@couchbase-traces/api",
-      "kind": "int",
-      "directImports": [
-        "packages/api/src/controllers/promql.ts",
-        "packages/api/src/fixtures.ts",
-        "packages/api/src/mcp/__tests__/dashboards/setup.ts",
-        "packages/api/src/mcp/__tests__/mcpTestUtils.ts",
-        "packages/api/src/models/connection.ts",
-        "packages/api/src/models/source.ts",
-        "packages/common-utils/src/core/metadata.ts",
-        "packages/common-utils/src/types.ts"
-      ],
-      "routes": []
-    },
-    {
-      "path": "packages/api/src/mcp/__tests__/promqlSources.int.test.ts",
-      "workspace": "@couchbase-traces/api",
-      "kind": "int",
-      "directImports": [
-        "packages/api/src/config.ts",
-        "packages/api/src/controllers/promql.ts",
-        "packages/api/src/fixtures.ts",
-        "packages/api/src/mcp/__tests__/mcpTestUtils.ts",
-        "packages/api/src/models/connection.ts",
-        "packages/api/src/models/source.ts",
-        "packages/common-utils/src/types.ts"
       ],
       "routes": []
     },
@@ -1139,23 +1078,6 @@
       "directImports": [
         "packages/api/src/fixtures.ts",
         "packages/api/src/models/source.ts",
-        "packages/common-utils/src/types.ts"
-      ],
-      "routes": []
-    },
-    {
-      "path": "packages/api/src/routers/api/__tests__/prometheus.int.test.ts",
-      "workspace": "@couchbase-traces/api",
-      "kind": "int",
-      "directImports": [
-        "packages/api/src/config.ts",
-        "packages/api/src/controllers/promql.ts",
-        "packages/api/src/fixtures.ts",
-        "packages/api/src/models/connection.ts",
-        "packages/api/src/models/source.ts",
-        "packages/api/src/routers/api/prometheus.ts",
-        "packages/common-utils/src/clickhouse/index.ts",
-        "packages/common-utils/src/core/metadata.ts",
         "packages/common-utils/src/types.ts"
       ],
       "routes": []
@@ -1814,6 +1736,15 @@
       "kind": "unit",
       "directImports": [
         "packages/api/src/utils/redactSecrets.ts"
+      ],
+      "routes": []
+    },
+    {
+      "path": "packages/api/src/utils/__tests__/rejectPromql.test.ts",
+      "workspace": "@couchbase-traces/api",
+      "kind": "unit",
+      "directImports": [
+        "packages/api/src/utils/rejectPromql.ts"
       ],
       "routes": []
     },
@@ -6260,19 +6191,6 @@
       "routes": []
     },
     {
-      "path": "packages/app/tests/e2e/features/dashboard-promql-label-filters.spec.ts",
-      "workspace": "@couchbase-traces/app",
-      "kind": "e2e",
-      "directImports": [
-        "packages/app/tests/e2e/page-objects/DashboardPage.ts",
-        "packages/app/tests/e2e/seed-clickhouse.ts",
-        "packages/app/tests/e2e/utils/base-test.ts",
-        "packages/app/tests/e2e/utils/constants.ts",
-        "packages/common-utils/src/types.ts"
-      ],
-      "routes": []
-    },
-    {
       "path": "packages/app/tests/e2e/features/dashboard-required-filters.spec.ts",
       "workspace": "@couchbase-traces/app",
       "kind": "e2e",
@@ -6523,105 +6441,6 @@
         "packages/app/tests/e2e/utils/api-helpers.ts",
         "packages/app/tests/e2e/utils/base-test.ts",
         "packages/app/tests/e2e/utils/constants.ts"
-      ],
-      "routes": []
-    },
-    {
-      "path": "packages/app/tests/e2e/features/promql-heatmap.spec.ts",
-      "workspace": "@couchbase-traces/app",
-      "kind": "e2e",
-      "directImports": [
-        "packages/app/tests/e2e/components/HeatmapComponent.ts",
-        "packages/app/tests/e2e/page-objects/DashboardPage.ts",
-        "packages/app/tests/e2e/seed-clickhouse.ts",
-        "packages/app/tests/e2e/utils/base-test.ts",
-        "packages/app/tests/e2e/utils/constants.ts",
-        "packages/common-utils/src/types.ts"
-      ],
-      "routes": []
-    },
-    {
-      "path": "packages/app/tests/e2e/features/promql-legend-template.spec.ts",
-      "workspace": "@couchbase-traces/app",
-      "kind": "e2e",
-      "directImports": [
-        "packages/app/tests/e2e/page-objects/DashboardPage.ts",
-        "packages/app/tests/e2e/utils/base-test.ts",
-        "packages/app/tests/e2e/utils/constants.ts"
-      ],
-      "routes": []
-    },
-    {
-      "path": "packages/app/tests/e2e/features/promql-macros.spec.ts",
-      "workspace": "@couchbase-traces/app",
-      "kind": "e2e",
-      "directImports": [
-        "packages/app/tests/e2e/page-objects/ChartExplorerPage.ts",
-        "packages/app/tests/e2e/page-objects/DashboardPage.ts",
-        "packages/app/tests/e2e/utils/base-test.ts",
-        "packages/app/tests/e2e/utils/constants.ts",
-        "packages/common-utils/src/types.ts"
-      ],
-      "routes": []
-    },
-    {
-      "path": "packages/app/tests/e2e/features/promql-multi-expression.spec.ts",
-      "workspace": "@couchbase-traces/app",
-      "kind": "e2e",
-      "directImports": [
-        "packages/app/tests/e2e/page-objects/DashboardPage.ts",
-        "packages/app/tests/e2e/utils/base-test.ts",
-        "packages/app/tests/e2e/utils/constants.ts"
-      ],
-      "routes": []
-    },
-    {
-      "path": "packages/app/tests/e2e/features/promql-number.spec.ts",
-      "workspace": "@couchbase-traces/app",
-      "kind": "e2e",
-      "directImports": [
-        "packages/app/tests/e2e/page-objects/DashboardPage.ts",
-        "packages/app/tests/e2e/utils/base-test.ts",
-        "packages/app/tests/e2e/utils/constants.ts",
-        "packages/common-utils/src/types.ts"
-      ],
-      "routes": []
-    },
-    {
-      "path": "packages/app/tests/e2e/features/promql-pie-bar.spec.ts",
-      "workspace": "@couchbase-traces/app",
-      "kind": "e2e",
-      "directImports": [
-        "packages/app/tests/e2e/page-objects/DashboardPage.ts",
-        "packages/app/tests/e2e/seed-clickhouse.ts",
-        "packages/app/tests/e2e/utils/base-test.ts",
-        "packages/app/tests/e2e/utils/constants.ts",
-        "packages/common-utils/src/types.ts"
-      ],
-      "routes": []
-    },
-    {
-      "path": "packages/app/tests/e2e/features/promql-series-limit.spec.ts",
-      "workspace": "@couchbase-traces/app",
-      "kind": "e2e",
-      "directImports": [
-        "packages/app/tests/e2e/page-objects/DashboardPage.ts",
-        "packages/app/tests/e2e/seed-clickhouse.ts",
-        "packages/app/tests/e2e/utils/base-test.ts",
-        "packages/app/tests/e2e/utils/constants.ts"
-      ],
-      "routes": []
-    },
-    {
-      "path": "packages/app/tests/e2e/features/promql-table.spec.ts",
-      "workspace": "@couchbase-traces/app",
-      "kind": "e2e",
-      "directImports": [
-        "packages/app/tests/e2e/page-objects/DashboardPage.ts",
-        "packages/app/tests/e2e/seed-clickhouse.ts",
-        "packages/app/tests/e2e/utils/base-test.ts",
-        "packages/app/tests/e2e/utils/constants.ts",
-        "packages/common-utils/src/types.ts"
       ],
       "routes": []
     },
@@ -8291,6 +8110,78 @@
         "packages/hdx-eval/src/harness/systemPrompt.ts",
         "packages/hdx-eval/src/scenarios/index.ts",
         "packages/hdx-eval/src/scenarios/types.ts"
+      ],
+      "routes": []
+    },
+    {
+      "path": "packages/ingest/src/__tests__/ingest.int.test.ts",
+      "workspace": "@couchbase-traces/ingest",
+      "kind": "int",
+      "directImports": [
+        "packages/ingest/src/config.ts",
+        "packages/ingest/src/server.ts",
+        "packages/ingest/src/setup/cli.ts",
+        "packages/ingest/src/writer.ts"
+      ],
+      "routes": []
+    },
+    {
+      "path": "packages/ingest/src/__tests__/model.test.ts",
+      "workspace": "@couchbase-traces/ingest",
+      "kind": "unit",
+      "directImports": [
+        "packages/common-utils/src/couchbase/source.ts",
+        "packages/ingest/src/model/collections.ts",
+        "packages/ingest/src/model/keys.ts",
+        "packages/ingest/src/model/materialized.ts",
+        "packages/ingest/src/model/sources.ts",
+        "packages/ingest/src/setup/cli.ts",
+        "packages/ingest/src/setup/docs.ts",
+        "packages/ingest/src/ttl.ts"
+      ],
+      "routes": []
+    },
+    {
+      "path": "packages/ingest/src/__tests__/server.test.ts",
+      "workspace": "@couchbase-traces/ingest",
+      "kind": "unit",
+      "directImports": [
+        "packages/ingest/src/config.ts",
+        "packages/ingest/src/server.ts",
+        "packages/ingest/src/transform/common.ts",
+        "packages/ingest/src/writer.ts"
+      ],
+      "routes": []
+    },
+    {
+      "path": "packages/ingest/src/__tests__/transform.test.ts",
+      "workspace": "@couchbase-traces/ingest",
+      "kind": "unit",
+      "directImports": [
+        "packages/ingest/src/transform/logs.ts",
+        "packages/ingest/src/transform/metrics.ts",
+        "packages/ingest/src/transform/sessions.ts",
+        "packages/ingest/src/transform/traces.ts"
+      ],
+      "routes": []
+    },
+    {
+      "path": "packages/ingest/src/__tests__/values.test.ts",
+      "workspace": "@couchbase-traces/ingest",
+      "kind": "unit",
+      "directImports": [
+        "packages/ingest/src/otlp/values.ts"
+      ],
+      "routes": []
+    },
+    {
+      "path": "packages/ingest/src/__tests__/writer.test.ts",
+      "workspace": "@couchbase-traces/ingest",
+      "kind": "unit",
+      "directImports": [
+        "packages/ingest/src/model/collections.ts",
+        "packages/ingest/src/transform/common.ts",
+        "packages/ingest/src/writer.ts"
       ],
       "routes": []
     },

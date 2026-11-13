@@ -479,8 +479,7 @@ export class ChartEditorComponent {
   }
 
   /**
-   * Switch the chart editor to PromQL mode. Only offered when the app is run
-   * with NEXT_PUBLIC_ENABLE_PROMQL=true (the e2e webServer sets it).
+   * Switch the chart editor to PromQL mode. PromQL is no longer offered.
    *
    * Matched exactly: "SQL" is a substring of the PromQL label, so a
    * `has-text("SQL")` selector would resolve to both.

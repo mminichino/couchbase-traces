@@ -45,7 +45,6 @@ services:
       #   CBT_OTEL_EXPORTER_LOGS_TTL / _TRACES_TTL / _METRICS_TTL / _SESSIONS_TTL
       # Apply TTL changes to already-existing tables too (default false):
       #   CBT_OTEL_EXPORTER_RECONCILE_TABLE_TTL: 'true'
-      ENABLE_PROMQL: 'true'
     volumes:
       - ./docker/otel-collector/config.yaml:/etc/otelcol-contrib/config.yaml
       - ./docker/otel-collector/supervisor_docker.yaml.tmpl:/etc/otel/supervisor.yaml.tmpl

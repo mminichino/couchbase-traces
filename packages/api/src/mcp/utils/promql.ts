@@ -1,10 +1,11 @@
 import { SourceKind } from '@couchbase-traces/common-utils/dist/types';
 
-import * as config from '@/config';
 import type { McpContext } from '@/mcp/tools/types';
 
 export function isPromqlEnabled(context: McpContext): boolean {
-  return context.promqlEnabled ?? config.IS_PROMQL_ENABLED;
+  // A request cannot turn PromQL back on. The context field is ignored.
+  void context.promqlEnabled;
+  return false;
 }
 
 /** Whether MCP hides `source` from the agent: PromQL sources while PromQL is off. */

@@ -121,8 +121,8 @@
         "zod",
         "zod-express-middleware"
       ],
-      "sourceFiles": 226,
-      "testFiles": 151,
+      "sourceFiles": 227,
+      "testFiles": 147,
       "hasTsconfig": true,
       "role": "API server and tasks"
     },
@@ -288,7 +288,7 @@
         "zod"
       ],
       "sourceFiles": 684,
-      "testFiles": 516,
+      "testFiles": 507,
       "hasTsconfig": true,
       "role": "web UI"
     },
@@ -466,6 +466,49 @@
       "testFiles": 31,
       "hasTsconfig": true,
       "role": "evaluation harness"
+    },
+    {
+      "name": "@couchbase-traces/ingest",
+      "dir": "packages/ingest",
+      "private": true,
+      "languages": [
+        "javascript",
+        "typescript"
+      ],
+      "scripts": [
+        "build",
+        "ci:lint",
+        "ci:unit",
+        "dev",
+        "docs",
+        "lint",
+        "lint:fix",
+        "setup",
+        "start"
+      ],
+      "ciTargets": [
+        "ci:lint",
+        "ci:unit"
+      ],
+      "workspaceDeps": [
+        "@couchbase-traces/common-utils"
+      ],
+      "externalDeps": [
+        "@types/jest",
+        "@types/node",
+        "couchbase",
+        "eslint",
+        "jest",
+        "ts-jest",
+        "tsc-alias",
+        "tsx",
+        "typescript",
+        "typescript-eslint"
+      ],
+      "sourceFiles": 27,
+      "testFiles": 6,
+      "hasTsconfig": true,
+      "role": "ingestion service"
     },
     {
       "name": "@couchbase-traces/otel-collector",

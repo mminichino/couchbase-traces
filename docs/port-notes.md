@@ -64,11 +64,12 @@ Inventory of commit adcb75c16715. Full detail is in `port/state/inventory/`.
 
 | Package | Directory | Role | Languages | Source files | Test files | CI targets |
 |---|---|---|---|---|---|---|
-| @couchbase-traces/api | packages/api | API server and tasks | javascript, typescript | 226 | 151 | ci:int, ci:lint, ci:unit |
-| @couchbase-traces/app | packages/app | web UI | javascript, typescript | 684 | 516 | ci:lint, ci:unit |
+| @couchbase-traces/api | packages/api | API server and tasks | javascript, typescript | 227 | 147 | ci:int, ci:lint, ci:unit |
+| @couchbase-traces/app | packages/app | web UI | javascript, typescript | 684 | 507 | ci:lint, ci:unit |
 | @couchbase-traces/cli | packages/cli | command-line client | javascript, typescript | 61 | 9 | ci:build, ci:lint, ci:unit |
 | @couchbase-traces/common-utils | packages/common-utils | shared query and data layer | javascript, typescript | 72 | 63 | ci:build, ci:int, ci:lint, ci:unit |
 | @couchbase-traces/hdx-eval | packages/hdx-eval | evaluation harness | javascript, typescript | 53 | 31 | ci:lint, ci:unit |
+| @couchbase-traces/ingest | packages/ingest | ingestion service | javascript, typescript | 27 | 6 | ci:lint, ci:unit |
 | @couchbase-traces/otel-collector | packages/otel-collector | ingestion collector | go | 0 | 0 |  |
 
 ### Entry points
@@ -87,10 +88,10 @@ Inventory of commit adcb75c16715. Full detail is in `port/state/inventory/`.
 
 | Module | Reasons | Exports | Importers | Server-side |
 |---|---|---|---|---|
-| `packages/common-utils/src/types.ts` | seed, sql_builder | 375 | 696 | yes |
-| `packages/common-utils/src/core/metadata.ts` | seed, clickhouse_client, sql_builder | 24 | 132 | yes |
-| `packages/common-utils/src/clickhouse/index.ts` | seed, clickhouse_client, clickhouse_path, sql_builder | 46 | 124 | yes |
-| `packages/api/src/fixtures.ts` | sql_builder | 44 | 63 | yes |
+| `packages/common-utils/src/types.ts` | seed, sql_builder | 375 | 685 | yes |
+| `packages/common-utils/src/core/metadata.ts` | seed, clickhouse_client, sql_builder | 24 | 129 | yes |
+| `packages/common-utils/src/clickhouse/index.ts` | seed, clickhouse_client, clickhouse_path, sql_builder | 46 | 123 | yes |
+| `packages/api/src/fixtures.ts` | sql_builder | 44 | 59 | yes |
 | `packages/common-utils/src/filters.ts` | sql_builder | 51 | 58 | yes |
 | `packages/common-utils/src/core/renderChartConfig.ts` | seed, sql_builder | 16 | 35 | yes |
 | `packages/common-utils/src/clickhouse/node.ts` | seed, clickhouse_client, clickhouse_path | 4 | 31 | yes |
@@ -99,8 +100,8 @@ Inventory of commit adcb75c16715. Full detail is in `port/state/inventory/`.
 | `packages/app/src/hooks/useRowWhere.tsx` | sql_builder | 6 | 26 | no |
 | `packages/api/src/mcp/tools/query/helpers.ts` | clickhouse_client, sql_builder | 19 | 25 | yes |
 | `packages/api/src/clickhouse.ts` | clickhouse_path | 1 | 23 | yes |
-| `packages/common-utils/src/clickhouse/attribution.ts` | seed, clickhouse_path | 9 | 21 | yes |
 | `packages/app/src/clickhouse.ts` | clickhouse_path | 4 | 20 | no |
+| `packages/common-utils/src/clickhouse/attribution.ts` | seed, clickhouse_path | 9 | 20 | yes |
 | `packages/app/src/llm/lib/expressions.ts` | sql_builder | 8 | 19 | no |
 | `packages/common-utils/src/macros.ts` | sql_builder | 13 | 15 | yes |
 | `packages/app/src/components/MaterializedViews/MVOptimizationIndicator.tsx` | clickhouse_client | 1 | 14 | no |
@@ -407,44 +408,47 @@ Plus 4 more in sql-catalog.json.
 | Category | Name | Occurrences | Files |
 |---|---|---|---|
 | type | `JSON` | 112 | 35 |
-| type | `String` | 77 | 15 |
+| type | `String` | 82 | 17 |
 | type | `Int64` | 57 | 11 |
 | function | `fromUnixTimestamp64Milli` | 56 | 14 |
 | function | `var` | 43 | 15 |
 | function | `toString` | 40 | 23 |
 | parameter_type | `Int64` | 39 | 7 |
 | function | `if` | 33 | 15 |
-| type | `Map` | 30 | 13 |
+| type | `Map` | 31 | 14 |
+| type | `Float64` | 29 | 7 |
 | clause | `INTERVAL` | 28 | 12 |
+| type | `LowCardinality` | 27 | 13 |
+| type | `Array` | 26 | 8 |
 | function | `toDateTime` | 24 | 8 |
 | function | `CAST` | 23 | 4 |
 | setting | `max_execution_time` | 22 | 14 |
-| type | `Array` | 22 | 7 |
 | function | `__filter` | 20 | 1 |
-| type | `Float64` | 18 | 6 |
-| type | `LowCardinality` | 18 | 11 |
 | clause | `->` | 17 | 5 |
 | function | `match` | 17 | 8 |
 | function | `toStartOfFifteenMinutes` | 17 | 1 |
-| type | `DateTime64` | 15 | 9 |
+| type | `DateTime64` | 16 | 10 |
 | function | `__timeFilter` | 13 | 5 |
 | function | `__timeInterval` | 13 | 5 |
 | type | `Nullable` | 13 | 6 |
 | setting | `timeout_overflow_mode` | 12 | 6 |
+| type | `DateTime` | 12 | 7 |
+| type | `UInt32` | 12 | 6 |
 | function | `rate` | 11 | 2 |
 | parameter_type | `String` | 11 | 3 |
 | function | `column` | 10 | 3 |
 | function | `tiles` | 10 | 1 |
 | function | `toDateTime64` | 10 | 6 |
+| type | `UInt64` | 10 | 5 |
 | function | `last_value` | 9 | 4 |
 | function | `tile` | 9 | 3 |
 | setting | `max_rows_to_read` | 9 | 1 |
+| type | `Int32` | 9 | 3 |
 | function | `groupUniqArray` | 8 | 3 |
 | function | `range` | 8 | 3 |
 | function | `toInt64` | 8 | 1 |
 | function | `toJSONString` | 8 | 2 |
 | type | `Date` | 8 | 5 |
-| type | `DateTime` | 8 | 4 |
 | dynamic_suffix | `arrayExists` | 7 | 1 |
 | function | `arrayElement` | 7 | 2 |
 | function | `arraySum` | 7 | 2 |
@@ -452,7 +456,6 @@ Plus 4 more in sql-catalog.json.
 | function | `has` | 7 | 5 |
 | function | `map` | 7 | 4 |
 | function | `multiIf` | 7 | 2 |
-| type | `UInt32` | 7 | 5 |
 | clause | `::` | 6 | 1 |
 | function | `__conditionalAll` | 6 | 1 |
 | function | `age` | 6 | 2 |
@@ -476,6 +479,7 @@ Plus 4 more in sql-catalog.json.
 | parameter_type | `UInt32` | 5 | 3 |
 | setting | `allow_experimental_time_series_table` | 5 | 3 |
 | setting | `wait_end_of_query` | 5 | 2 |
+| type | `UInt8` | 5 | 3 |
 | function | `arrayMap` | 4 | 3 |
 | function | `arrayZip` | 4 | 3 |
 | function | `emptyArrayInt64` | 4 | 1 |
@@ -492,7 +496,7 @@ Plus 4 more in sql-catalog.json.
 | parameter_type | `Float64` | 4 | 2 |
 | setting | `read_overflow_mode` | 4 | 1 |
 | type | `FixedString` | 4 | 2 |
-| type | `UInt64` | 4 | 3 |
+| type | `Nested` | 4 | 3 |
 | dynamic_suffix | `has` | 3 | 1 |
 | function | `Example` | 3 | 1 |
 | function | `IF` | 3 | 1 |
@@ -503,9 +507,6 @@ Plus 4 more in sql-catalog.json.
 | function | `cbt_describe_source` | 3 | 2 |
 | function | `cbt_get_dashboard` | 3 | 1 |
 | function | `cluster` | 3 | 2 |
-| function | `expression` | 3 | 2 |
-| function | `ifNull` | 3 | 2 |
-| function | `name` | 3 | 1 |
 
 Plus 309 more in sql-catalog.json.
 
@@ -596,16 +597,16 @@ Collector components, pipelines, ClickHouse exporters, and management code.
 
 | Category | hyperdx | clickstack | clickhouse | deploysentinel | hdx |
 |---|---|---|---|---|---|
-| package_names | 0 | 0 | 137 | 0 | 1 |
+| package_names | 0 | 0 | 136 | 0 | 1 |
 | external_dependencies | 6 | 18 | 135 | 0 | 0 |
-| env_vars | 73 | 7 | 545 | 0 | 51 |
+| env_vars | 73 | 7 | 534 | 0 | 51 |
 | telemetry_endpoints | 18 | 1 | 63 | 0 | 2 |
 | assets | 0 | 0 | 0 | 0 | 3 |
-| docker | 48 | 0 | 116 | 0 | 93 |
-| docs | 468 | 269 | 607 | 0 | 155 |
+| docker | 48 | 0 | 116 | 0 | 95 |
+| docs | 487 | 278 | 928 | 2 | 191 |
 | ui_strings | 7 | 9 | 78 | 0 | 127 |
-| code_identifiers | 125 | 21 | 2247 | 0 | 644 |
-| other | 631 | 188 | 1766 | 2 | 1592 |
+| code_identifiers | 128 | 21 | 2241 | 0 | 638 |
+| other | 639 | 188 | 1731 | 2 | 1611 |
 
 ### Feature status
 
@@ -614,8 +615,9 @@ Collector components, pipelines, ClickHouse exporters, and management code.
 | not_started | 48 |
 | in_progress | 2 |
 | ported | 0 |
-| needs_decision | 4 |
-| dropped | 0 |
+| needs_decision | 3 |
+| dropped | 1 |
+| replaced | 0 |
 
 ### Plan corrections
 
@@ -766,7 +768,6 @@ Collector components, pipelines, ClickHouse exporters, and management code.
 
 ### Features pending a decision
 
-- `api-v1`: PromQL reads ClickHouse's experimental TimeSeries table fed by Prometheus remote-write; there is no Couchbase equivalent in the port's scope.
 - `api-team-clickhouse-settings`: Edits ClickHouse-specific query settings (such as limits and timeouts) for a team. Couchbase has no equivalent per-query engine settings, so the feature may be reduced to SDK query options or dropped.
 - `app-clickhouse`: Shows ClickHouse server health from system tables such as query_log and parts. Couchbase has no direct equivalent of these tables, so the dashboard needs a different data source or a sign-off to drop.
 - `app-careers`: ClickHouse recruiting page: lists ClickHouse jobs from boards-api.greenhouse.io and ClickStack commits from api.github.com. Kept unchanged until the user decides whether to remove it.

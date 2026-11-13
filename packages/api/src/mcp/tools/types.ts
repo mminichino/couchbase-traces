@@ -16,8 +16,8 @@ export type McpContext = {
    */
   mcpClient?: McpClientInfo;
   /**
-   * Whether PromQL sources, tiles and filters are exposed. Defaults to the
-   * deployment's ENABLE_PROMQL; read it through `isPromqlEnabled`.
+   * Ignored. PromQL cannot be turned on. Read it through `isPromqlEnabled`,
+   * which always returns false.
    */
   promqlEnabled?: boolean;
 };

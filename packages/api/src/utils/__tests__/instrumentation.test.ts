@@ -56,7 +56,7 @@ jest.mock('@opentelemetry/core', () => ({
 jest.mock('@/config', () => ({
   CODE_VERSION: 'test-version',
   IS_LOCAL_APP_MODE: false,
-  IS_PROMQL_ENABLED: true,
+  IS_PROMQL_ENABLED: false,
   RUN_SCHEDULED_TASKS_EXTERNALLY: false,
   AI_API_KEY: '',
   ANTHROPIC_API_KEY: 'present',
@@ -193,7 +193,7 @@ describe('instrumentation', () => {
     it('reflects config-derived flag states', () => {
       expect(getStaticFeatureFlags()).toEqual({
         'feature_flag.local_app_mode': false,
-        'feature_flag.promql_enabled': true,
+        'feature_flag.promql_enabled': false,
         'feature_flag.ai_assistant_enabled': true,
         'feature_flag.scheduled_tasks_external': false,
       });

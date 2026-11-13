@@ -7,7 +7,7 @@ import { screen } from '@testing-library/react';
 
 import OnboardingModal from '@/components/OnboardingModal';
 
-const mockConfig = { IS_PROMQL_ENABLED: true };
+const mockConfig = { IS_PROMQL_ENABLED: false };
 jest.mock('@/config', () => ({
   IS_CLICKHOUSE_BUILD: false,
   IS_LOCAL_MODE: false,
@@ -88,7 +88,7 @@ describe('OnboardingModal auto-detection', () => {
     // The notifications store is global, so earlier tests' toasts linger.
     notifications.clean();
     jest.clearAllMocks();
-    mockConfig.IS_PROMQL_ENABLED = true;
+    mockConfig.IS_PROMQL_ENABLED = false;
     mockCreateSource.mockImplementation(
       async ({ source }: { source: TSourceNoId }) => ({
         ...source,
@@ -102,59 +102,12 @@ describe('OnboardingModal auto-detection', () => {
     ]);
   });
 
-  it('creates a PromQL source for a detected TimeSeries table', async () => {
-    renderWithMantine(<OnboardingModal />);
-
-    await screen.findByText('Automatically detected and created 2 sources.');
-    expect(mockMetadata.getTimeSeriesTables).toHaveBeenCalledWith({
-      connectionId: 'conn-1',
-    });
-    expect(createdKinds()).toEqual([SourceKind.Log, SourceKind.Promql]);
-    expect(mockCreateSource).toHaveBeenLastCalledWith({
-      source: {
-        kind: SourceKind.Promql,
-        name: 'PromQL',
-        connection: 'conn-1',
-        from: { databaseName: 'default', tableName: 'metrics_ts' },
-        timestampValueExpression: 'timestamp',
-      },
-    });
-  });
-
   it('skips PromQL detection when PromQL is disabled', async () => {
-    mockConfig.IS_PROMQL_ENABLED = false;
-
     renderWithMantine(<OnboardingModal />);
 
     await screen.findByText('Automatically detected and created 1 source.');
     expect(mockMetadata.getTimeSeriesTables).not.toHaveBeenCalled();
     expect(createdKinds()).toEqual([SourceKind.Log]);
-  });
-
-  it('creates a PromQL source when no OTel tables exist', async () => {
-    mockMetadata.getOtelTables.mockResolvedValue(null);
-
-    renderWithMantine(<OnboardingModal />);
-
-    await screen.findByText('Automatically detected and created 1 source.');
-    expect(createdKinds()).toEqual([SourceKind.Promql]);
-  });
-
-  it('keeps the other sources when the PromQL source fails', async () => {
-    jest.spyOn(console, 'error').mockImplementation(() => {});
-    mockCreateSource.mockImplementation(
-      async ({ source }: { source: TSourceNoId }) => {
-        if (source.kind === SourceKind.Promql) {
-          throw new Error('boom');
-        }
-        return { ...source, id: `${source.kind}-id` };
-      },
-    );
-
-    renderWithMantine(<OnboardingModal />);
-
-    await screen.findByText('Automatically detected and created 1 source.');
-    expect(createdKinds()).toEqual([SourceKind.Log, SourceKind.Promql]);
   });
 
   it('keeps OTel detection when TimeSeries detection fails', async () => {

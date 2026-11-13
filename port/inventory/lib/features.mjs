@@ -7,8 +7,8 @@ import { cmp } from './context.mjs';
  *   'ingestion' | 'cli' | 'internal'} Area
  * @typedef {{ id: string, name: string, area: Area, visibility: 'user' | 'admin' | 'api' | 'internal',
  *   description: string, entryPoints: string[],
- *   status: 'not_started' | 'in_progress' | 'ported' | 'needs_decision' | 'dropped',
- *   decision: { note: string, signedOffBy: string | null, date: string | null } | null }} Feature
+ *   status: 'not_started' | 'in_progress' | 'ported' | 'needs_decision' | 'dropped' | 'replaced',
+ *   decision: { note: string, signedOffBy: string | null, date: string | null, replacedBy?: string } | null }} Feature
  * @typedef {{ schemaVersion: 1, features: Feature[] }} FeaturesFile
  */
 
@@ -18,7 +18,7 @@ export const AREAS = [
   'cli', 'internal',
 ];
 export const VISIBILITIES = ['user', 'admin', 'api', 'internal'];
-export const STATUSES = ['not_started', 'in_progress', 'ported', 'needs_decision', 'dropped'];
+export const STATUSES = ['not_started', 'in_progress', 'ported', 'needs_decision', 'dropped', 'replaced'];
 
 /** @type {Record<string, Area>} */
 const SEGMENT_AREA = {
@@ -197,7 +197,8 @@ export function validateFeatures(file, entryPoints) {
     if (!VISIBILITIES.includes(f.visibility)) errors.push(`${label}: unknown visibility ${JSON.stringify(f.visibility)}`);
     if (!STATUSES.includes(f.status)) errors.push(`${label}: unknown status ${JSON.stringify(f.status)}`);
 
-    if (!Array.isArray(f.entryPoints) || f.entryPoints.length === 0) {
+    const allowsEmpty = f.status === 'dropped' || f.status === 'replaced';
+    if (!Array.isArray(f.entryPoints) || (f.entryPoints.length === 0 && !allowsEmpty)) {
       errors.push(`${label}: entryPoints is empty`);
     } else {
       for (const ep of f.entryPoints) {
@@ -211,13 +212,21 @@ export function validateFeatures(file, entryPoints) {
     if (f.status === 'needs_decision' && !nonEmpty(f.decision?.note)) {
       errors.push(`${label}: needs_decision requires decision.note`);
     }
-    if (f.status === 'dropped') {
+    if (f.status === 'dropped' || f.status === 'replaced') {
       const d = f.decision;
       const missing = [];
       if (!nonEmpty(d?.note)) missing.push('decision.note');
       if (!nonEmpty(d?.signedOffBy)) missing.push('decision.signedOffBy');
       if (typeof d?.date !== 'string' || !DATE_RE.test(d.date)) missing.push('decision.date (YYYY-MM-DD)');
-      if (missing.length) errors.push(`${label}: dropped requires ${missing.join(', ')}`);
+      if (f.status === 'replaced' && !nonEmpty(d?.replacedBy)) missing.push('decision.replacedBy');
+      if (missing.length) errors.push(`${label}: ${f.status} requires ${missing.join(', ')}`);
+    }
+  }
+
+  for (const f of file.features) {
+    if (!f || f.status !== 'replaced' || !nonEmpty(f.decision?.replacedBy)) continue;
+    if (!ids.has(f.decision.replacedBy)) {
+      errors.push(`${f.id}: decision.replacedBy ${JSON.stringify(f.decision.replacedBy)} is not a feature id`);
     }
   }
 

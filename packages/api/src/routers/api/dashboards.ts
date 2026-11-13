@@ -39,6 +39,7 @@ import {
 import { getSources } from '@/controllers/sources';
 import { getNonNullUserWithTeam } from '@/middleware/auth';
 import type { ObjectId } from '@/models';
+import { rejectPromqlBody } from '@/utils/rejectPromql';
 import { objectIdSchema } from '@/utils/zod';
 
 // create routes that will get and update dashboards
@@ -162,6 +163,7 @@ router.get('/', async (req, res, next) => {
 
 router.post(
   '/',
+  rejectPromqlBody,
   migrateLegacyDashboardTileColors,
   validateRequest({
     body: DashboardWithoutIdSchema.superRefine(addFilterIssues),
@@ -194,6 +196,7 @@ router.post(
 
 router.patch(
   '/:id',
+  rejectPromqlBody,
   migrateLegacyDashboardTileColors,
   validateRequest({
     params: z.object({

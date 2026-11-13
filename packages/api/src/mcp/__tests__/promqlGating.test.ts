@@ -16,18 +16,13 @@ describe('MCP PromQL gating', () => {
     return content.type === 'text' ? content.text : '';
   };
 
-  it('registers cbt_promql and documents it while PromQL is enabled', async () => {
+  it('ignores promqlEnabled and keeps cbt_promql hidden', async () => {
     const client = await connect(true);
 
     const { tools } = await client.listTools();
-    expect(tools.map(tool => tool.name)).toContain('cbt_promql');
-    expect(client.getInstructions()).toContain('cbt_promql');
-    expect(await queryGuide(client)).toContain('== PROMQL SOURCES ==');
-
-    const { prompts } = await client.listPrompts();
-    expect(
-      prompts.find(prompt => prompt.name === 'query_guide')?.description,
-    ).toContain('PromQL');
+    expect(tools.map(tool => tool.name)).not.toContain('cbt_promql');
+    expect(client.getInstructions()).not.toContain('PromQL');
+    expect(await queryGuide(client)).not.toContain('cbt_promql');
   });
 
   it('hides cbt_promql and every mention of it while PromQL is disabled', async () => {

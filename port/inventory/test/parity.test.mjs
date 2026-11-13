@@ -62,6 +62,7 @@ describe('parity', () => {
         ['ported', 0],
         ['needs_decision', 0],
         ['dropped', 0],
+        ['replaced', 0],
       ],
     );
   });

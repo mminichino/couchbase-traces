@@ -246,27 +246,6 @@ describe('External API v2 Sources CRUD', () => {
       );
     });
 
-    it('should create a promql source', async () => {
-      const response = await authRequest('post', BASE_URL)
-        .send({
-          kind: SourceKind.Promql,
-          name: 'Prometheus Metrics',
-          // Required by the API for all source kinds; unused for promql
-          from: { databaseName: 'default', tableName: 'default' },
-          timestampValueExpression: 'timestamp',
-          connection: connection._id.toString(),
-        })
-        .expect(200);
-
-      expect(response.body.data).toMatchObject({
-        kind: SourceKind.Promql,
-        name: 'Prometheus Metrics',
-      });
-
-      const persisted = await Source.findById(response.body.data.id);
-      expect(persisted!.kind).toBe(SourceKind.Promql);
-    });
-
     it('should round-trip minAutoGranularity in the SQL interval format', async () => {
       const response = await authRequest('post', BASE_URL)
         .send({ ...metricSourceBody(), minAutoGranularity: '1 minute' })
@@ -323,21 +302,13 @@ describe('External API v2 Sources CRUD', () => {
       connection: connection._id.toString(),
     });
 
-    beforeEach(() => {
-      jest.replaceProperty(config, 'IS_PROMQL_ENABLED', false);
-    });
-
-    afterEach(() => {
-      jest.restoreAllMocks();
-    });
-
     it('rejects creating a PromQL source', async () => {
       const response = await authRequest('post', BASE_URL)
         .send(promqlSourceBody())
         .expect(400);
 
       expect(response.body.message).toBe(
-        'PromQL is not enabled on this deployment',
+        'PromQL sources are no longer supported.',
       );
       expect(await Source.findOne({ team: team._id })).toBeNull();
     });
@@ -353,7 +324,7 @@ describe('External API v2 Sources CRUD', () => {
         .expect(400);
 
       expect(response.body.message).toBe(
-        'PromQL is not enabled on this deployment',
+        'PromQL sources are no longer supported.',
       );
       expect((await Source.findById(logSource._id))!.kind).toBe(SourceKind.Log);
     });

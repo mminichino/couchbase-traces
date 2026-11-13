@@ -80,7 +80,8 @@ export const IS_LLM_COST_ENABLED =
 export const IS_METRICS_ENABLED = true;
 export const IS_MTVIEWS_ENABLED = false;
 export const IS_SESSIONS_ENABLED = true;
-export const IS_PROMQL_ENABLED = env('NEXT_PUBLIC_ENABLE_PROMQL') === 'true';
+/** PromQL was dropped (Phase 5a). Code is deleted in Phase 10. */
+export const IS_PROMQL_ENABLED = false;
 export const IS_ADHOC_FILTERS_ENABLED =
   env('NEXT_PUBLIC_ENABLE_ADHOC_FILTERS') === 'true';
 // Suffix for the tab title/sidebar pill. Shown in full in the page title;

@@ -255,11 +255,11 @@
         "api_route:POST /v1/prometheus/query_exemplars",
         "api_route:POST /v1/prometheus/query_range"
       ],
-      "status": "needs_decision",
+      "status": "dropped",
       "decision": {
-        "note": "PromQL reads ClickHouse's experimental TimeSeries table fed by Prometheus remote-write; there is no Couchbase equivalent in the port's scope.",
-        "signedOffBy": null,
-        "date": null
+        "note": "PromQL dropped by the user. It required ClickHouse's TimeSeries table fed by Prometheus remote-write, with no Couchbase equivalent in scope. Disabled in Phase 5a; code deleted in Phase 10.",
+        "signedOffBy": "Michael",
+        "date": "2026-11-12"
       }
     },
     {

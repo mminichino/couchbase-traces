@@ -34,8 +34,6 @@ services:
       OPAMP_SERVER_URL: 'http://app:${CBT_OPAMP_PORT}'
       # TODO: use new schema
       CBT_OTEL_EXPORTER_CREATE_LEGACY_SCHEMA: 'true'
-      # Uncomment to enable PromQL schema (must match app service's ENABLE_PROMQL)
-      # ENABLE_PROMQL: 'true'
     ports:
       - '13133:13133' # health_check extension
       - '24225:24225' # fluentd receiver
@@ -82,9 +80,6 @@ services:
       # tokens; unset means they are stored in plain text.
       TOKEN_ENCRYPTION_KEY: ${TOKEN_ENCRYPTION_KEY:-}
       EXPRESS_SESSION_SECRET: ${EXPRESS_SESSION_SECRET:-}
-      # Uncomment the next two lines to enable PromQL (Prometheus-compatible metrics)
-      # ENABLE_PROMQL: 'true'
-      # NEXT_PUBLIC_ENABLE_PROMQL: 'true'
       # Uncomment to enable the alert detail page (in development)
       # NEXT_PUBLIC_ENABLE_ALERT_DETAILS: 'true'
       # Uncomment and set to append a label to the browser tab title, e.g.

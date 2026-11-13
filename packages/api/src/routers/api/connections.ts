@@ -15,6 +15,7 @@ import {
 } from '@/controllers/connection';
 import { getNonNullUserWithTeam } from '@/middleware/auth';
 import logger from '@/utils/logger';
+import { rejectPromqlBody } from '@/utils/rejectPromql';
 
 const router = express.Router();
 
@@ -40,6 +41,7 @@ router.get('/', async (req, res, next) => {
 
 router.post(
   '/',
+  rejectPromqlBody,
   validateRequest({
     body: ConnectionSchemaNoId,
   }),
@@ -78,6 +80,7 @@ router.post(
 
 router.put(
   '/:id',
+  rejectPromqlBody,
   validateRequest({
     body: ConnectionSchema,
   }),

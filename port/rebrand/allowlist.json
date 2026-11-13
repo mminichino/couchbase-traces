@@ -970,13 +970,6 @@
     {
       "path": "packages/api/src/opamp/controllers/opampController.ts",
       "term": "hyperdx",
-      "snippet": "receivers: ['otlp/hyperdx'],",
-      "reason": "internal_identifier",
-      "note": "Token \"hyperdx\" allowed in the token map"
-    },
-    {
-      "path": "packages/api/src/opamp/controllers/opampController.ts",
-      "term": "hyperdx",
       "snippet": "throw new Error('otlp/hyperdx receiver not found');",
       "reason": "internal_identifier",
       "note": "Token \"hyperdx\" allowed in the token map"

@@ -210,37 +210,6 @@ Discovery workflow for metrics:
 
 ### PromQL Sources
 
-Available when PromQL is enabled for the deployment (self-hosted: the API's
-`ENABLE_PROMQL` setting). With it off, PromQL sources, tiles, label filters,
-the `cbt_promql` tool and the PromQL prompt sections are all hidden
-from MCP.
-
-A source with `kind: "promql"` holds Prometheus metrics, either on a
-Prometheus-compatible endpoint or in a ClickHouse `TimeSeries` table. The
-builder tools do not read it; use PromQL:
-
-1. `cbt_list_sources` shows each PromQL source with its `backend`
-   (`prometheus` or `clickhouse`).
-2. `cbt_describe_source` lists its metric names and label names.
-3. `cbt_promql` runs an expression. A `range` query (default) returns
-   `{ __hdx_time_bucket, series_name, value }` rows plus `seriesLabels`; an
-   `instant` query evaluates at `endTime` and returns one row per series with
-   a column per label. `granularity` sets the step and `$__interval` in the
-   same `"<number> <unit>"` format PromQL tiles use.
-4. `cbt_save_dashboard` with a `configType: "promql"` tile keeps the
-   chart; `cbt_query_tile` returns the same rows for the same
-   expression and granularity. `PROMETHEUS_LABEL` filters give the dashboard
-   a label dropdown that tiles reference as `{job=~"$job"}`.
-
-```jsonc
-{
-  "sourceId": "<promql source id>",
-  "expression": "sum by (job) (rate(http_requests_total[$__rate_interval]))",
-  "startTime": "2026-01-01T00:00:00Z",
-  "endTime": "2026-01-01T01:00:00Z"
-}
-```
-
-The `$__interval`, `$__rate_interval` and `$__range` macros expand as they do
-in a PromQL tile. Dashboard variables do not resolve in `cbt_promql`;
-write the value inline.
+PromQL is no longer supported. `cbt_promql`, PromQL sources, tiles, and label
+filters are hidden from MCP. Creating or updating a PromQL source, tile, or
+Prometheus endpoint is rejected.

@@ -162,10 +162,10 @@ describe('report identity + features', () => {
   });
 
   it('lists only enabled features and dynamic toggles', () => {
-    const report = reportFor(loadHdxDebug({ IS_PROMQL_ENABLED: true }), {
+    const report = reportFor(loadHdxDebug(), {
       features: { aiAssistant: true, usageStats: false },
     });
-    expect(report).toContain('features: promql, aiAssistant');
+    expect(report).toContain('features: aiAssistant');
     expect(report).not.toContain('usageStats');
   });
 

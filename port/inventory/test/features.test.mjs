@@ -101,4 +101,52 @@ describe('features', () => {
     assert.ok(errs.some(e => e.includes('kebab-case')));
     assert.ok(errs.some(e => e.includes('entryPoints is empty')));
   });
+
+  it('allows an empty dropped feature and a replaced feature that names another id', () => {
+    const file = skeleton(r.entry.entryPoints);
+    for (const f of file.features) {
+      f.name = `Name ${f.id}`;
+      f.description = 'Does something.';
+    }
+    const dropped = {
+      id: 'gone',
+      name: 'Gone',
+      area: 'internal',
+      visibility: 'internal',
+      description: 'Removed.',
+      entryPoints: [],
+      status: 'dropped',
+      decision: {
+        note: 'Removed.',
+        signedOffBy: 'Michael',
+        date: '2026-11-12',
+      },
+    };
+    const target = file.features[0];
+    const replaced = {
+      id: 'old-page',
+      name: 'Old page',
+      area: 'internal',
+      visibility: 'internal',
+      description: 'Replaced.',
+      entryPoints: [],
+      status: 'replaced',
+      decision: {
+        note: 'Replaced.',
+        replacedBy: target.id,
+        signedOffBy: 'Michael',
+        date: '2026-11-12',
+      },
+    };
+    file.features.push(dropped, replaced);
+    assert.deepEqual(validateFeatures(file, r.entry.entryPoints), []);
+
+    replaced.decision.replacedBy = 'missing-feature';
+    const errs = validateFeatures(file, r.entry.entryPoints);
+    assert.ok(errs.some(e => e.includes('is not a feature id')));
+
+    replaced.decision.replacedBy = '';
+    const missing = validateFeatures(file, r.entry.entryPoints);
+    assert.ok(missing.some(e => e.includes('replaced requires') && e.includes('decision.replacedBy')));
+  });
 });

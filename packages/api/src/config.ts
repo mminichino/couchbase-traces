@@ -68,7 +68,8 @@ export const TOKEN_ENCRYPTION_KEY = env.TOKEN_ENCRYPTION_KEY;
 export const DEFAULT_CONNECTIONS = env.DEFAULT_CONNECTIONS;
 export const DEFAULT_SOURCES = env.DEFAULT_SOURCES;
 
-export const IS_PROMQL_ENABLED = env.ENABLE_PROMQL === 'true';
+/** PromQL was dropped (Phase 5a). Code is deleted in Phase 10. */
+export const IS_PROMQL_ENABLED = false;
 // Dual-write: the collector also exports OTLP/JSON to the Couchbase ingest
 // service. Off leaves the collector config unchanged.
 export const COUCHBASE_INGEST_ENABLED =

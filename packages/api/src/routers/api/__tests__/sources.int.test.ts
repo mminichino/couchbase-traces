@@ -844,89 +844,40 @@ describe('sources router', () => {
     });
   });
 
-  describe('minAutoGranularity on a PromQL source', () => {
-    it('POST / - creates a PromQL source with minAutoGranularity and it round-trips', async () => {
+  describe('PromQL sources', () => {
+    it('POST / rejects a PromQL source', async () => {
       const { agent } = await getLoggedInAgent(server);
 
       const response = await agent
         .post('/sources')
-        .send({
-          ...MOCK_PROMQL_SOURCE,
-          minAutoGranularity: '1 minute',
-        })
-        .expect(200);
+        .send(MOCK_PROMQL_SOURCE)
+        .expect(400);
 
-      expect(response.body.minAutoGranularity).toBe('1 minute');
-
-      const sources = await Source.find({}).lean();
-      expect(sources).toHaveLength(1);
-      const persisted = sources[0];
-      if (persisted?.kind !== SourceKind.Promql) {
-        expect(persisted?.kind).toBe(SourceKind.Promql);
-        throw new Error('Source is not a PromQL source');
-      }
-      expect(persisted.minAutoGranularity).toBe('1 minute');
+      expect(response.body.message).toBe(
+        'PromQL sources are no longer supported.',
+      );
+      expect(await Source.find({})).toHaveLength(0);
     });
 
-    it("POST / - the form's \"No minimum\" value ('') persists as unset, not as an empty string", async () => {
-      const { agent } = await getLoggedInAgent(server);
+    it('PUT /:id rejects an update that keeps a PromQL source', async () => {
+      const { agent, team } = await getLoggedInAgent(server);
+
+      const promqlSource = await Source.create({
+        ...MOCK_PROMQL_SOURCE,
+        team: team._id,
+      });
 
       const response = await agent
-        .post('/sources')
-        .send({
-          ...MOCK_PROMQL_SOURCE,
-          minAutoGranularity: '',
-        })
-        .expect(200);
-
-      expect(response.body).not.toHaveProperty('minAutoGranularity');
-
-      const sources = await Source.find({}).lean();
-      expect(sources).toHaveLength(1);
-      expect(sources[0]).not.toHaveProperty('minAutoGranularity');
-    });
-
-    it('PUT /:id - updates minAutoGranularity', async () => {
-      const { agent, team } = await getLoggedInAgent(server);
-
-      const promqlSource = await Source.create({
-        ...MOCK_PROMQL_SOURCE,
-        minAutoGranularity: '1 minute',
-        team: team._id,
-      });
-
-      await agent
-        .put(`/sources/${promqlSource._id}`)
-        .send({
-          id: promqlSource._id.toString(),
-          ...MOCK_PROMQL_SOURCE,
-          minAutoGranularity: '5 minute',
-        })
-        .expect(200);
-
-      const updatedSource = await Source.findById(promqlSource._id).lean();
-      expect(updatedSource).toHaveProperty('minAutoGranularity', '5 minute');
-    });
-
-    it('PUT /:id - removes minAutoGranularity when omitted from the update payload', async () => {
-      const { agent, team } = await getLoggedInAgent(server);
-
-      const promqlSource = await Source.create({
-        ...MOCK_PROMQL_SOURCE,
-        minAutoGranularity: '1 minute',
-        team: team._id,
-      });
-
-      await agent
         .put(`/sources/${promqlSource._id}`)
         .send({
           id: promqlSource._id.toString(),
           ...MOCK_PROMQL_SOURCE,
         })
-        .expect(200);
+        .expect(400);
 
-      const updatedSource = await Source.findById(promqlSource._id).lean();
-      expect(updatedSource).not.toHaveProperty('minAutoGranularity');
+      expect(response.body.message).toBe(
+        'PromQL sources are no longer supported.',
+      );
     });
   });
 

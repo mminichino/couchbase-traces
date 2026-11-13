@@ -18,6 +18,7 @@ import {
   updateSource,
 } from '@/controllers/sources';
 import { getNonNullUserWithTeam } from '@/middleware/auth';
+import { rejectPromqlBody } from '@/utils/rejectPromql';
 import { objectIdSchema } from '@/utils/zod';
 
 const router = express.Router();
@@ -55,6 +56,7 @@ router.get('/', async (req, res, next) => {
 
 router.post(
   '/',
+  rejectPromqlBody,
   validateRequest({
     body: SourceSchemaNoId,
   }),
@@ -94,6 +96,7 @@ router.post(
 
 router.put(
   '/:id',
+  rejectPromqlBody,
   validateRequest({
     body: SourceSchema,
     params: z.object({

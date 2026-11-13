@@ -2404,42 +2404,42 @@
           "kind": "const",
           "from": null,
           "original": null,
-          "line": 136
+          "line": 137
         },
         {
           "name": "AI_BASE_URL",
           "kind": "const",
           "from": null,
           "original": null,
-          "line": 137
+          "line": 138
         },
         {
           "name": "AI_MODEL_NAME",
           "kind": "const",
           "from": null,
           "original": null,
-          "line": 138
+          "line": 139
         },
         {
           "name": "AI_PROVIDER",
           "kind": "const",
           "from": null,
           "original": null,
-          "line": 135
+          "line": 136
         },
         {
           "name": "AI_REQUEST_HEADERS",
           "kind": "const",
           "from": null,
           "original": null,
-          "line": 139
+          "line": 140
         },
         {
           "name": "ANTHROPIC_API_KEY",
           "kind": "const",
           "from": null,
           "original": null,
-          "line": 142
+          "line": 143
         },
         {
           "name": "APP_TYPE",
@@ -2467,21 +2467,21 @@
           "kind": "const",
           "from": null,
           "original": null,
-          "line": 129
+          "line": 130
         },
         {
           "name": "CLICKHOUSE_PASSWORD",
           "kind": "const",
           "from": null,
           "original": null,
-          "line": 131
+          "line": 132
         },
         {
           "name": "CLICKHOUSE_USER",
           "kind": "const",
           "from": null,
           "original": null,
-          "line": 130
+          "line": 131
         },
         {
           "name": "CODE_VERSION",
@@ -2495,56 +2495,56 @@
           "kind": "const",
           "from": null,
           "original": null,
-          "line": 111
+          "line": 112
         },
         {
           "name": "COUCHBASE_CONNECT_TIMEOUT_MS",
           "kind": "const",
           "from": null,
           "original": null,
-          "line": 107
+          "line": 108
         },
         {
           "name": "COUCHBASE_DEFAULT_TIMEOUT_MS",
           "kind": "const",
           "from": null,
           "original": null,
-          "line": 99
+          "line": 100
         },
         {
           "name": "COUCHBASE_FRAME_ROWS",
           "kind": "const",
           "from": null,
           "original": null,
-          "line": 123
+          "line": 124
         },
         {
           "name": "COUCHBASE_INGEST_ENABLED",
           "kind": "const",
           "from": null,
           "original": null,
-          "line": 74
+          "line": 75
         },
         {
           "name": "COUCHBASE_MAX_BUFFERED_BYTES",
           "kind": "const",
           "from": null,
           "original": null,
-          "line": 119
+          "line": 120
         },
         {
           "name": "COUCHBASE_MAX_CLUSTERS",
           "kind": "const",
           "from": null,
           "original": null,
-          "line": 115
+          "line": 116
         },
         {
           "name": "COUCHBASE_MAX_TIMEOUT_MS",
           "kind": "const",
           "from": null,
           "original": null,
-          "line": 103
+          "line": 104
         },
         {
           "name": "DEFAULT_CONNECTIONS",
@@ -2579,21 +2579,21 @@
           "kind": "const",
           "from": null,
           "original": null,
-          "line": 77
+          "line": 78
         },
         {
           "name": "EXTERNAL_API_SEARCH_DEFAULT_MAX_RESULTS",
           "kind": "const",
           "from": null,
           "original": null,
-          "line": 82
+          "line": 83
         },
         {
           "name": "EXTERNAL_API_SEARCH_MAX_RESULTS",
           "kind": "const",
           "from": null,
           "original": null,
-          "line": 84
+          "line": 85
         },
         {
           "name": "FRONTEND_REDIRECT_BASE",
@@ -2684,7 +2684,7 @@
           "kind": "const",
           "from": null,
           "original": null,
-          "line": 71
+          "line": 72
         },
         {
           "name": "MONGO_URI",
@@ -8331,230 +8331,6 @@
       "starReexports": []
     },
     {
-      "path": "packages/api/src/mcp/__tests__/dashboards/promqlQueryTile.int.test.ts",
-      "workspace": "@couchbase-traces/api",
-      "test": true,
-      "imports": [
-        {
-          "specifier": "@couchbase-traces/common-utils/dist/core/metadata",
-          "target": "packages/common-utils/src/core/metadata.ts",
-          "external": null,
-          "kind": "static",
-          "typeOnly": false,
-          "bindings": [
-            {
-              "imported": "Metadata",
-              "local": "Metadata"
-            }
-          ],
-          "line": 1
-        },
-        {
-          "specifier": "@couchbase-traces/common-utils/dist/types",
-          "target": "packages/common-utils/src/types.ts",
-          "external": null,
-          "kind": "static",
-          "typeOnly": false,
-          "bindings": [
-            {
-              "imported": "DisplayType",
-              "local": "DisplayType"
-            },
-            {
-              "imported": "SourceKind",
-              "local": "SourceKind"
-            }
-          ],
-          "line": 5
-        },
-        {
-          "specifier": "@/fixtures",
-          "target": "packages/api/src/fixtures.ts",
-          "external": null,
-          "kind": "static",
-          "typeOnly": false,
-          "bindings": [
-            {
-              "imported": "DEFAULT_DATABASE",
-              "local": "DEFAULT_DATABASE"
-            },
-            {
-              "imported": "dropTimeSeriesTable",
-              "local": "dropTimeSeriesTable"
-            },
-            {
-              "imported": "seedTimeSeriesTagsTable",
-              "local": "seedTimeSeriesTagsTable"
-            }
-          ],
-          "line": 11
-        },
-        {
-          "specifier": "@/mcp/__tests__/mcpTestUtils",
-          "target": "packages/api/src/mcp/__tests__/mcpTestUtils.ts",
-          "external": null,
-          "kind": "static",
-          "typeOnly": false,
-          "bindings": [
-            {
-              "imported": "callTool",
-              "local": "callTool"
-            },
-            {
-              "imported": "getFirstText",
-              "local": "getFirstText"
-            }
-          ],
-          "line": 12
-        },
-        {
-          "specifier": "@/models/connection",
-          "target": "packages/api/src/models/connection.ts",
-          "external": null,
-          "kind": "static",
-          "typeOnly": false,
-          "bindings": [
-            {
-              "imported": "default",
-              "local": "Connection"
-            }
-          ],
-          "line": 13
-        },
-        {
-          "specifier": "@/models/dashboard",
-          "target": "packages/api/src/models/dashboard.ts",
-          "external": null,
-          "kind": "static",
-          "typeOnly": false,
-          "bindings": [
-            {
-              "imported": "default",
-              "local": "Dashboard"
-            }
-          ],
-          "line": 14
-        },
-        {
-          "specifier": "@/models/source",
-          "target": "packages/api/src/models/source.ts",
-          "external": null,
-          "kind": "static",
-          "typeOnly": false,
-          "bindings": [
-            {
-              "imported": "Source",
-              "local": "Source"
-            }
-          ],
-          "line": 15
-        },
-        {
-          "specifier": "./setup",
-          "target": "packages/api/src/mcp/__tests__/dashboards/setup.ts",
-          "external": null,
-          "kind": "static",
-          "typeOnly": false,
-          "bindings": [
-            {
-              "imported": "setupDashboardTests",
-              "local": "setupDashboardTests"
-            }
-          ],
-          "line": 17
-        }
-      ],
-      "exports": [],
-      "starReexports": []
-    },
-    {
-      "path": "packages/api/src/mcp/__tests__/dashboards/promqlTiles.int.test.ts",
-      "workspace": "@couchbase-traces/api",
-      "test": true,
-      "imports": [
-        {
-          "specifier": "@couchbase-traces/common-utils/dist/types",
-          "target": "packages/common-utils/src/types.ts",
-          "external": null,
-          "kind": "static",
-          "typeOnly": false,
-          "bindings": [
-            {
-              "imported": "DisplayType",
-              "local": "DisplayType"
-            },
-            {
-              "imported": "SourceKind",
-              "local": "SourceKind"
-            }
-          ],
-          "line": 4
-        },
-        {
-          "specifier": "@/mcp/__tests__/mcpTestUtils",
-          "target": "packages/api/src/mcp/__tests__/mcpTestUtils.ts",
-          "external": null,
-          "kind": "static",
-          "typeOnly": false,
-          "bindings": [
-            {
-              "imported": "callTool",
-              "local": "callTool"
-            },
-            {
-              "imported": "getFirstText",
-              "local": "getFirstText"
-            }
-          ],
-          "line": 6
-        },
-        {
-          "specifier": "@/models/dashboard",
-          "target": "packages/api/src/models/dashboard.ts",
-          "external": null,
-          "kind": "static",
-          "typeOnly": false,
-          "bindings": [
-            {
-              "imported": "default",
-              "local": "Dashboard"
-            }
-          ],
-          "line": 7
-        },
-        {
-          "specifier": "@/models/source",
-          "target": "packages/api/src/models/source.ts",
-          "external": null,
-          "kind": "static",
-          "typeOnly": false,
-          "bindings": [
-            {
-              "imported": "Source",
-              "local": "Source"
-            }
-          ],
-          "line": 8
-        },
-        {
-          "specifier": "./setup",
-          "target": "packages/api/src/mcp/__tests__/dashboards/setup.ts",
-          "external": null,
-          "kind": "static",
-          "typeOnly": false,
-          "bindings": [
-            {
-              "imported": "setupDashboardTests",
-              "local": "setupDashboardTests"
-            }
-          ],
-          "line": 10
-        }
-      ],
-      "exports": [],
-      "starReexports": []
-    },
-    {
       "path": "packages/api/src/mcp/__tests__/dashboards/queryTile.int.test.ts",
       "workspace": "@couchbase-traces/api",
       "test": true,
@@ -9625,20 +9401,6 @@
           "line": 28
         },
         {
-          "specifier": "@/controllers/promql",
-          "target": "packages/api/src/controllers/promql.ts",
-          "external": null,
-          "kind": "static",
-          "typeOnly": false,
-          "bindings": [
-            {
-              "imported": "getPromqlLabelCatalog",
-              "local": "getPromqlLabelCatalog"
-            }
-          ],
-          "line": 29
-        },
-        {
           "specifier": "@/controllers/sources",
           "target": "packages/api/src/controllers/sources.ts",
           "external": null,
@@ -9650,7 +9412,7 @@
               "local": "getSource"
             }
           ],
-          "line": 30
+          "line": 29
         },
         {
           "specifier": "@/mcp/tools/sources/describeSource",
@@ -9672,7 +9434,7 @@
               "local": "registerDescribeSource"
             }
           ],
-          "line": 35
+          "line": 34
         },
         {
           "specifier": "@/mcp/tools/sources/metricNames",
@@ -9686,7 +9448,7 @@
               "local": "sampleMetricNamesWithLookback"
             }
           ],
-          "line": 36
+          "line": 35
         },
         {
           "specifier": "@/mcp/tools/types",
@@ -9704,7 +9466,7 @@
               "local": "ToolResult"
             }
           ],
-          "line": 37
+          "line": 36
         }
       ],
       "exports": [],
@@ -10485,284 +10247,6 @@
             }
           ],
           "line": 1
-        }
-      ],
-      "exports": [],
-      "starReexports": []
-    },
-    {
-      "path": "packages/api/src/mcp/__tests__/promqlQueryTool.int.test.ts",
-      "workspace": "@couchbase-traces/api",
-      "test": true,
-      "imports": [
-        {
-          "specifier": "@couchbase-traces/common-utils/dist/core/metadata",
-          "target": "packages/common-utils/src/core/metadata.ts",
-          "external": null,
-          "kind": "static",
-          "typeOnly": false,
-          "bindings": [
-            {
-              "imported": "Metadata",
-              "local": "Metadata"
-            }
-          ],
-          "line": 1
-        },
-        {
-          "specifier": "@couchbase-traces/common-utils/dist/types",
-          "target": "packages/common-utils/src/types.ts",
-          "external": null,
-          "kind": "static",
-          "typeOnly": false,
-          "bindings": [
-            {
-              "imported": "SourceKind",
-              "local": "SourceKind"
-            }
-          ],
-          "line": 2
-        },
-        {
-          "specifier": "@/controllers/promql",
-          "target": "packages/api/src/controllers/promql.ts",
-          "external": null,
-          "kind": "static",
-          "typeOnly": false,
-          "bindings": [
-            {
-              "imported": "PROMETHEUS_MAX_RESPONSE_BYTES",
-              "local": "PROMETHEUS_MAX_RESPONSE_BYTES"
-            }
-          ],
-          "line": 4
-        },
-        {
-          "specifier": "@/fixtures",
-          "target": "packages/api/src/fixtures.ts",
-          "external": null,
-          "kind": "static",
-          "typeOnly": false,
-          "bindings": [
-            {
-              "imported": "DEFAULT_DATABASE",
-              "local": "DEFAULT_DATABASE"
-            },
-            {
-              "imported": "dropTimeSeriesTable",
-              "local": "dropTimeSeriesTable"
-            },
-            {
-              "imported": "seedTimeSeriesTagsTable",
-              "local": "seedTimeSeriesTagsTable"
-            }
-          ],
-          "line": 9
-        },
-        {
-          "specifier": "@/mcp/__tests__/dashboards/setup",
-          "target": "packages/api/src/mcp/__tests__/dashboards/setup.ts",
-          "external": null,
-          "kind": "static",
-          "typeOnly": false,
-          "bindings": [
-            {
-              "imported": "setupDashboardTests",
-              "local": "setupDashboardTests"
-            }
-          ],
-          "line": 10
-        },
-        {
-          "specifier": "@/mcp/__tests__/mcpTestUtils",
-          "target": "packages/api/src/mcp/__tests__/mcpTestUtils.ts",
-          "external": null,
-          "kind": "static",
-          "typeOnly": false,
-          "bindings": [
-            {
-              "imported": "callTool",
-              "local": "callTool"
-            },
-            {
-              "imported": "getFirstText",
-              "local": "getFirstText"
-            }
-          ],
-          "line": 11
-        },
-        {
-          "specifier": "@/models/connection",
-          "target": "packages/api/src/models/connection.ts",
-          "external": null,
-          "kind": "static",
-          "typeOnly": false,
-          "bindings": [
-            {
-              "imported": "default",
-              "local": "Connection"
-            }
-          ],
-          "line": 12
-        },
-        {
-          "specifier": "@/models/source",
-          "target": "packages/api/src/models/source.ts",
-          "external": null,
-          "kind": "static",
-          "typeOnly": false,
-          "bindings": [
-            {
-              "imported": "Source",
-              "local": "Source"
-            }
-          ],
-          "line": 13
-        }
-      ],
-      "exports": [],
-      "starReexports": []
-    },
-    {
-      "path": "packages/api/src/mcp/__tests__/promqlSources.int.test.ts",
-      "workspace": "@couchbase-traces/api",
-      "test": true,
-      "imports": [
-        {
-          "specifier": "@couchbase-traces/common-utils/dist/types",
-          "target": "packages/common-utils/src/types.ts",
-          "external": null,
-          "kind": "static",
-          "typeOnly": false,
-          "bindings": [
-            {
-              "imported": "SourceKind",
-              "local": "SourceKind"
-            }
-          ],
-          "line": 1
-        },
-        {
-          "specifier": "@modelcontextprotocol/sdk/client/index.js",
-          "target": null,
-          "external": "@modelcontextprotocol/sdk",
-          "kind": "static",
-          "typeOnly": false,
-          "bindings": [
-            {
-              "imported": "Client",
-              "local": "Client"
-            }
-          ],
-          "line": 2
-        },
-        {
-          "specifier": "@/config",
-          "target": "packages/api/src/config.ts",
-          "external": null,
-          "kind": "static",
-          "typeOnly": false,
-          "bindings": [
-            {
-              "imported": "*",
-              "local": "config"
-            }
-          ],
-          "line": 4
-        },
-        {
-          "specifier": "@/controllers/promql",
-          "target": "packages/api/src/controllers/promql.ts",
-          "external": null,
-          "kind": "static",
-          "typeOnly": false,
-          "bindings": [
-            {
-              "imported": "PROMETHEUS_MAX_RESPONSE_BYTES",
-              "local": "PROMETHEUS_MAX_RESPONSE_BYTES"
-            }
-          ],
-          "line": 5
-        },
-        {
-          "specifier": "@/fixtures",
-          "target": "packages/api/src/fixtures.ts",
-          "external": null,
-          "kind": "static",
-          "typeOnly": false,
-          "bindings": [
-            {
-              "imported": "DEFAULT_DATABASE",
-              "local": "DEFAULT_DATABASE"
-            },
-            {
-              "imported": "dropTimeSeriesTable",
-              "local": "dropTimeSeriesTable"
-            },
-            {
-              "imported": "getLoggedInAgent",
-              "local": "getLoggedInAgent"
-            },
-            {
-              "imported": "getServer",
-              "local": "getServer"
-            },
-            {
-              "imported": "seedTimeSeriesTagsTable",
-              "local": "seedTimeSeriesTagsTable"
-            }
-          ],
-          "line": 12
-        },
-        {
-          "specifier": "@/models/connection",
-          "target": "packages/api/src/models/connection.ts",
-          "external": null,
-          "kind": "static",
-          "typeOnly": false,
-          "bindings": [
-            {
-              "imported": "default",
-              "local": "Connection"
-            }
-          ],
-          "line": 13
-        },
-        {
-          "specifier": "@/models/source",
-          "target": "packages/api/src/models/source.ts",
-          "external": null,
-          "kind": "static",
-          "typeOnly": false,
-          "bindings": [
-            {
-              "imported": "Source",
-              "local": "Source"
-            }
-          ],
-          "line": 14
-        },
-        {
-          "specifier": "./mcpTestUtils",
-          "target": "packages/api/src/mcp/__tests__/mcpTestUtils.ts",
-          "external": null,
-          "kind": "static",
-          "typeOnly": false,
-          "bindings": [
-            {
-              "imported": "callTool",
-              "local": "callTool"
-            },
-            {
-              "imported": "createTestClient",
-              "local": "createTestClient"
-            },
-            {
-              "imported": "getFirstText",
-              "local": "getFirstText"
-            }
-          ],
-          "line": 16
         }
       ],
       "exports": [],
@@ -26238,20 +25722,6 @@
           "line": 1
         },
         {
-          "specifier": "@/config",
-          "target": "packages/api/src/config.ts",
-          "external": null,
-          "kind": "static",
-          "typeOnly": false,
-          "bindings": [
-            {
-              "imported": "*",
-              "local": "config"
-            }
-          ],
-          "line": 3
-        },
-        {
           "specifier": "@/mcp/tools/types",
           "target": "packages/api/src/mcp/tools/types.ts",
           "external": null,
@@ -26263,7 +25733,7 @@
               "local": "McpContext"
             }
           ],
-          "line": 4
+          "line": 3
         }
       ],
       "exports": [
@@ -26272,35 +25742,35 @@
           "kind": "const",
           "from": null,
           "original": null,
-          "line": 18
+          "line": 19
         },
         {
           "name": "PROMQL_SOURCE_USAGE",
           "kind": "const",
           "from": null,
           "original": null,
-          "line": 31
+          "line": 32
         },
         {
           "name": "isHiddenSource",
           "kind": "function",
           "from": null,
           "original": null,
-          "line": 11
+          "line": 12
         },
         {
           "name": "isPromqlEnabled",
           "kind": "function",
           "from": null,
           "original": null,
-          "line": 6
+          "line": 5
         },
         {
           "name": "timeSeriesSqlUsage",
           "kind": "function",
           "from": null,
           "original": null,
-          "line": 23
+          "line": 24
         }
       ],
       "starReexports": []
@@ -29070,7 +28540,7 @@
           "kind": "class",
           "from": null,
           "original": null,
-          "line": 486
+          "line": 465
         },
         {
           "name": "bearerTokenVariants",
@@ -29091,7 +28561,7 @@
           "kind": "const",
           "from": null,
           "original": null,
-          "line": 720
+          "line": 699
         }
       ],
       "starReexports": []
@@ -31083,187 +30553,6 @@
       "starReexports": []
     },
     {
-      "path": "packages/api/src/routers/api/__tests__/prometheus.int.test.ts",
-      "workspace": "@couchbase-traces/api",
-      "test": true,
-      "imports": [
-        {
-          "specifier": "@couchbase-traces/common-utils/dist/clickhouse",
-          "target": "packages/common-utils/src/clickhouse/index.ts",
-          "external": null,
-          "kind": "static",
-          "typeOnly": false,
-          "bindings": [
-            {
-              "imported": "buildLogComment",
-              "local": "buildLogComment"
-            },
-            {
-              "imported": "QUERY_ATTRIBUTION_HEADER",
-              "local": "QUERY_ATTRIBUTION_HEADER"
-            }
-          ],
-          "line": 4
-        },
-        {
-          "specifier": "@couchbase-traces/common-utils/dist/core/metadata",
-          "target": "packages/common-utils/src/core/metadata.ts",
-          "external": null,
-          "kind": "static",
-          "typeOnly": false,
-          "bindings": [
-            {
-              "imported": "Metadata",
-              "local": "Metadata"
-            }
-          ],
-          "line": 5
-        },
-        {
-          "specifier": "@couchbase-traces/common-utils/dist/types",
-          "target": "packages/common-utils/src/types.ts",
-          "external": null,
-          "kind": "static",
-          "typeOnly": false,
-          "bindings": [
-            {
-              "imported": "SourceKind",
-              "local": "SourceKind"
-            }
-          ],
-          "line": 6
-        },
-        {
-          "specifier": "mongoose",
-          "target": null,
-          "external": "mongoose",
-          "kind": "static",
-          "typeOnly": false,
-          "bindings": [
-            {
-              "imported": "Types",
-              "local": "Types"
-            }
-          ],
-          "line": 7
-        },
-        {
-          "specifier": "@/config",
-          "target": "packages/api/src/config.ts",
-          "external": null,
-          "kind": "static",
-          "typeOnly": false,
-          "bindings": [
-            {
-              "imported": "*",
-              "local": "config"
-            }
-          ],
-          "line": 9
-        },
-        {
-          "specifier": "@/controllers/promql",
-          "target": "packages/api/src/controllers/promql.ts",
-          "external": null,
-          "kind": "static",
-          "typeOnly": false,
-          "bindings": [
-            {
-              "imported": "CLICKHOUSE_PROMETHEUS_API_PREFIX",
-              "local": "CLICKHOUSE_PROMETHEUS_API_PREFIX"
-            },
-            {
-              "imported": "clickhousePrometheusUpstream",
-              "local": "clickhousePrometheusUpstream"
-            },
-            {
-              "imported": "joinPrometheusUpstreamUrl",
-              "local": "joinPrometheusUpstreamUrl"
-            }
-          ],
-          "line": 14
-        },
-        {
-          "specifier": "@/fixtures",
-          "target": "packages/api/src/fixtures.ts",
-          "external": null,
-          "kind": "static",
-          "typeOnly": false,
-          "bindings": [
-            {
-              "imported": "DEFAULT_DATABASE",
-              "local": "DEFAULT_DATABASE"
-            },
-            {
-              "imported": "dropTimeSeriesTable",
-              "local": "dropTimeSeriesTable"
-            },
-            {
-              "imported": "getAgent",
-              "local": "getAgent"
-            },
-            {
-              "imported": "getLoggedInAgent",
-              "local": "getLoggedInAgent"
-            },
-            {
-              "imported": "getServer",
-              "local": "getServer"
-            },
-            {
-              "imported": "seedTimeSeriesTagsTable",
-              "local": "seedTimeSeriesTagsTable"
-            }
-          ],
-          "line": 22
-        },
-        {
-          "specifier": "@/models/connection",
-          "target": "packages/api/src/models/connection.ts",
-          "external": null,
-          "kind": "static",
-          "typeOnly": false,
-          "bindings": [
-            {
-              "imported": "default",
-              "local": "Connection"
-            }
-          ],
-          "line": 23
-        },
-        {
-          "specifier": "@/models/source",
-          "target": "packages/api/src/models/source.ts",
-          "external": null,
-          "kind": "static",
-          "typeOnly": false,
-          "bindings": [
-            {
-              "imported": "Source",
-              "local": "Source"
-            }
-          ],
-          "line": 24
-        },
-        {
-          "specifier": "@/routers/api/prometheus",
-          "target": "packages/api/src/routers/api/prometheus.ts",
-          "external": null,
-          "kind": "static",
-          "typeOnly": false,
-          "bindings": [
-            {
-              "imported": "PROMETHEUS_MAX_EXEMPLAR_WINDOW_SEC",
-              "local": "PROMETHEUS_MAX_EXEMPLAR_WINDOW_SEC"
-            }
-          ],
-          "line": 25
-        }
-      ],
-      "exports": [],
-      "starReexports": []
-    },
-    {
       "path": "packages/api/src/routers/api/__tests__/prometheus.test.ts",
       "workspace": "@couchbase-traces/api",
       "test": true,
@@ -32723,6 +32012,20 @@
             }
           ],
           "line": 17
+        },
+        {
+          "specifier": "@/utils/rejectPromql",
+          "target": "packages/api/src/utils/rejectPromql.ts",
+          "external": null,
+          "kind": "static",
+          "typeOnly": false,
+          "bindings": [
+            {
+              "imported": "rejectPromqlBody",
+              "local": "rejectPromqlBody"
+            }
+          ],
+          "line": 18
         }
       ],
       "exports": [
@@ -32731,7 +32034,7 @@
           "kind": "const",
           "from": null,
           "original": null,
-          "line": 179
+          "line": 182
         }
       ],
       "starReexports": []
@@ -33289,6 +32592,20 @@
           "line": 41
         },
         {
+          "specifier": "@/utils/rejectPromql",
+          "target": "packages/api/src/utils/rejectPromql.ts",
+          "external": null,
+          "kind": "static",
+          "typeOnly": false,
+          "bindings": [
+            {
+              "imported": "rejectPromqlBody",
+              "local": "rejectPromqlBody"
+            }
+          ],
+          "line": 42
+        },
+        {
           "specifier": "@/utils/zod",
           "target": "packages/api/src/utils/zod.ts",
           "external": null,
@@ -33300,7 +32617,7 @@
               "local": "objectIdSchema"
             }
           ],
-          "line": 42
+          "line": 43
         }
       ],
       "exports": [
@@ -33309,7 +32626,7 @@
           "kind": "const",
           "from": null,
           "original": null,
-          "line": 397
+          "line": 400
         }
       ],
       "starReexports": []
@@ -35072,6 +34389,20 @@
           "line": 20
         },
         {
+          "specifier": "@/utils/rejectPromql",
+          "target": "packages/api/src/utils/rejectPromql.ts",
+          "external": null,
+          "kind": "static",
+          "typeOnly": false,
+          "bindings": [
+            {
+              "imported": "rejectPromqlBody",
+              "local": "rejectPromqlBody"
+            }
+          ],
+          "line": 21
+        },
+        {
           "specifier": "@/utils/zod",
           "target": "packages/api/src/utils/zod.ts",
           "external": null,
@@ -35083,7 +34414,7 @@
               "local": "objectIdSchema"
             }
           ],
-          "line": 21
+          "line": 22
         }
       ],
       "exports": [
@@ -35092,7 +34423,7 @@
           "kind": "const",
           "from": null,
           "original": null,
-          "line": 162
+          "line": 165
         }
       ],
       "starReexports": []
@@ -38100,6 +37431,20 @@
           "line": 20
         },
         {
+          "specifier": "@/utils/rejectPromql",
+          "target": "packages/api/src/utils/rejectPromql.ts",
+          "external": null,
+          "kind": "static",
+          "typeOnly": false,
+          "bindings": [
+            {
+              "imported": "rejectPromqlBody",
+              "local": "rejectPromqlBody"
+            }
+          ],
+          "line": 21
+        },
+        {
           "specifier": "@/utils/zod",
           "target": "packages/api/src/utils/zod.ts",
           "external": null,
@@ -38111,7 +37456,7 @@
               "local": "objectIdSchema"
             }
           ],
-          "line": 21
+          "line": 22
         }
       ],
       "exports": [
@@ -38120,7 +37465,7 @@
           "kind": "const",
           "from": null,
           "original": null,
-          "line": 703
+          "line": 706
         }
       ],
       "starReexports": []
@@ -38223,6 +37568,20 @@
           "line": 10
         },
         {
+          "specifier": "@/utils/rejectPromql",
+          "target": "packages/api/src/utils/rejectPromql.ts",
+          "external": null,
+          "kind": "static",
+          "typeOnly": false,
+          "bindings": [
+            {
+              "imported": "rejectPromqlBody",
+              "local": "rejectPromqlBody"
+            }
+          ],
+          "line": 11
+        },
+        {
           "specifier": "@/utils/zod",
           "target": "packages/api/src/utils/zod.ts",
           "external": null,
@@ -38238,7 +37597,7 @@
               "local": "objectIdSchema"
             }
           ],
-          "line": 11
+          "line": 12
         },
         {
           "specifier": "./utils/dashboards",
@@ -38280,7 +37639,7 @@
               "local": "validateDashboardTiles"
             }
           ],
-          "line": 22
+          "line": 23
         }
       ],
       "exports": [
@@ -38289,7 +37648,7 @@
           "kind": "const",
           "from": null,
           "original": null,
-          "line": 3751
+          "line": 3752
         }
       ],
       "starReexports": []
@@ -38977,20 +38336,6 @@
           "line": 11
         },
         {
-          "specifier": "@/config",
-          "target": "packages/api/src/config.ts",
-          "external": null,
-          "kind": "static",
-          "typeOnly": false,
-          "bindings": [
-            {
-              "imported": "*",
-              "local": "config"
-            }
-          ],
-          "line": 13
-        },
-        {
           "specifier": "@/controllers/connection",
           "target": "packages/api/src/controllers/connection.ts",
           "external": null,
@@ -39006,7 +38351,7 @@
               "local": "validateConnectionId"
             }
           ],
-          "line": 17
+          "line": 16
         },
         {
           "specifier": "@/controllers/sources",
@@ -39036,7 +38381,7 @@
               "local": "updateSource"
             }
           ],
-          "line": 24
+          "line": 23
         },
         {
           "specifier": "@/models/source",
@@ -39050,7 +38395,7 @@
               "local": "SourceDocument"
             }
           ],
-          "line": 25
+          "line": 24
         },
         {
           "specifier": "@/utils/enhancedErrors",
@@ -39064,7 +38409,7 @@
               "local": "validateRequest"
             }
           ],
-          "line": 26
+          "line": 25
         },
         {
           "specifier": "@/utils/logger",
@@ -39078,7 +38423,7 @@
               "local": "logger"
             }
           ],
-          "line": 27
+          "line": 26
         },
         {
           "specifier": "@/utils/zod",
@@ -39092,7 +38437,7 @@
               "local": "objectIdSchema"
             }
           ],
-          "line": 28
+          "line": 27
         }
       ],
       "exports": [
@@ -39101,7 +38446,7 @@
           "kind": "const",
           "from": null,
           "original": null,
-          "line": 1367
+          "line": 1366
         }
       ],
       "starReexports": []
@@ -48687,6 +48032,61 @@
       "starReexports": []
     },
     {
+      "path": "packages/api/src/utils/__tests__/rejectPromql.test.ts",
+      "workspace": "@couchbase-traces/api",
+      "test": true,
+      "imports": [
+        {
+          "specifier": "express",
+          "target": null,
+          "external": "express",
+          "kind": "static",
+          "typeOnly": false,
+          "bindings": [
+            {
+              "imported": "default",
+              "local": "express"
+            }
+          ],
+          "line": 1
+        },
+        {
+          "specifier": "supertest",
+          "target": null,
+          "external": "supertest",
+          "kind": "static",
+          "typeOnly": false,
+          "bindings": [
+            {
+              "imported": "default",
+              "local": "request"
+            }
+          ],
+          "line": 2
+        },
+        {
+          "specifier": "@/utils/rejectPromql",
+          "target": "packages/api/src/utils/rejectPromql.ts",
+          "external": null,
+          "kind": "static",
+          "typeOnly": false,
+          "bindings": [
+            {
+              "imported": "PROMQL_UNSUPPORTED",
+              "local": "PROMQL_UNSUPPORTED"
+            },
+            {
+              "imported": "rejectPromqlBody",
+              "local": "rejectPromqlBody"
+            }
+          ],
+          "line": 4
+        }
+      ],
+      "exports": [],
+      "starReexports": []
+    },
+    {
       "path": "packages/api/src/utils/__tests__/retry.test.ts",
       "workspace": "@couchbase-traces/api",
       "test": true,
@@ -50787,6 +50187,59 @@
           "from": null,
           "original": null,
           "line": 179
+        }
+      ],
+      "starReexports": []
+    },
+    {
+      "path": "packages/api/src/utils/rejectPromql.ts",
+      "workspace": "@couchbase-traces/api",
+      "test": false,
+      "imports": [
+        {
+          "specifier": "express",
+          "target": null,
+          "external": "express",
+          "kind": "static",
+          "typeOnly": true,
+          "bindings": [
+            {
+              "imported": "NextFunction",
+              "local": "NextFunction"
+            },
+            {
+              "imported": "Request",
+              "local": "Request"
+            },
+            {
+              "imported": "Response",
+              "local": "Response"
+            }
+          ],
+          "line": 1
+        }
+      ],
+      "exports": [
+        {
+          "name": "PROMQL_UNSUPPORTED",
+          "kind": "const",
+          "from": null,
+          "original": null,
+          "line": 4
+        },
+        {
+          "name": "findPromqlWrite",
+          "kind": "function",
+          "from": null,
+          "original": null,
+          "line": 7
+        },
+        {
+          "name": "rejectPromqlBody",
+          "kind": "function",
+          "from": null,
+          "original": null,
+          "line": 21
         }
       ],
       "starReexports": []
@@ -165681,28 +165134,28 @@
           "kind": "const",
           "from": null,
           "original": null,
-          "line": 90
+          "line": 91
         },
         {
           "name": "INSTANCE_TITLE_SUFFIX",
           "kind": "const",
           "from": null,
           "original": null,
-          "line": 96
+          "line": 97
         },
         {
           "name": "IS_ADHOC_FILTERS_ENABLED",
           "kind": "const",
           "from": null,
           "original": null,
-          "line": 84
+          "line": 85
         },
         {
           "name": "IS_ALERT_DETAILS_ENABLED",
           "kind": "const",
           "from": null,
           "original": null,
-          "line": 99
+          "line": 100
         },
         {
           "name": "IS_CLICKHOUSE_BUILD",
@@ -165723,7 +165176,7 @@
           "kind": "const",
           "from": null,
           "original": null,
-          "line": 108
+          "line": 109
         },
         {
           "name": "IS_K8S_DASHBOARD_ENABLED",
@@ -165779,7 +165232,7 @@
           "kind": "const",
           "from": null,
           "original": null,
-          "line": 83
+          "line": 84
         },
         {
           "name": "IS_SESSIONS_ENABLED",
@@ -196869,111 +196322,6 @@
       "starReexports": []
     },
     {
-      "path": "packages/app/tests/e2e/features/dashboard-promql-label-filters.spec.ts",
-      "workspace": "@couchbase-traces/app",
-      "test": true,
-      "imports": [
-        {
-          "specifier": "@couchbase-traces/common-utils/dist/types",
-          "target": "packages/common-utils/src/types.ts",
-          "external": null,
-          "kind": "static",
-          "typeOnly": false,
-          "bindings": [
-            {
-              "imported": "DisplayType",
-              "local": "DisplayType"
-            }
-          ],
-          "line": 10
-        },
-        {
-          "specifier": "@playwright/test",
-          "target": null,
-          "external": "@playwright/test",
-          "kind": "static",
-          "typeOnly": true,
-          "bindings": [
-            {
-              "imported": "Page",
-              "local": "Page"
-            }
-          ],
-          "line": 11
-        },
-        {
-          "specifier": "../page-objects/DashboardPage",
-          "target": "packages/app/tests/e2e/page-objects/DashboardPage.ts",
-          "external": null,
-          "kind": "static",
-          "typeOnly": false,
-          "bindings": [
-            {
-              "imported": "DashboardPage",
-              "local": "DashboardPage"
-            }
-          ],
-          "line": 13
-        },
-        {
-          "specifier": "../seed-clickhouse",
-          "target": "packages/app/tests/e2e/seed-clickhouse.ts",
-          "external": null,
-          "kind": "static",
-          "typeOnly": false,
-          "bindings": [
-            {
-              "imported": "SERVICES",
-              "local": "SERVICES"
-            }
-          ],
-          "line": 14
-        },
-        {
-          "specifier": "../utils/base-test",
-          "target": "packages/app/tests/e2e/utils/base-test.ts",
-          "external": null,
-          "kind": "static",
-          "typeOnly": false,
-          "bindings": [
-            {
-              "imported": "expect",
-              "local": "expect"
-            },
-            {
-              "imported": "test",
-              "local": "test"
-            }
-          ],
-          "line": 15
-        },
-        {
-          "specifier": "../utils/constants",
-          "target": "packages/app/tests/e2e/utils/constants.ts",
-          "external": null,
-          "kind": "static",
-          "typeOnly": false,
-          "bindings": [
-            {
-              "imported": "DEFAULT_LOGS_SOURCE_NAME",
-              "local": "DEFAULT_LOGS_SOURCE_NAME"
-            },
-            {
-              "imported": "E2E_PROMQL_METRIC_NAME",
-              "local": "E2E_PROMQL_METRIC_NAME"
-            },
-            {
-              "imported": "PROMQL_SOURCE_NAME",
-              "local": "PROMQL_SOURCE_NAME"
-            }
-          ],
-          "line": 20
-        }
-      ],
-      "exports": [],
-      "starReexports": []
-    },
-    {
       "path": "packages/app/tests/e2e/features/dashboard-required-filters.spec.ts",
       "workspace": "@couchbase-traces/app",
       "test": true,
@@ -198775,636 +198123,6 @@
             }
           ],
           "line": 34
-        }
-      ],
-      "exports": [],
-      "starReexports": []
-    },
-    {
-      "path": "packages/app/tests/e2e/features/promql-heatmap.spec.ts",
-      "workspace": "@couchbase-traces/app",
-      "test": true,
-      "imports": [
-        {
-          "specifier": "@couchbase-traces/common-utils/dist/types",
-          "target": "packages/common-utils/src/types.ts",
-          "external": null,
-          "kind": "static",
-          "typeOnly": false,
-          "bindings": [
-            {
-              "imported": "DisplayType",
-              "local": "DisplayType"
-            }
-          ],
-          "line": 10
-        },
-        {
-          "specifier": "../components/HeatmapComponent",
-          "target": "packages/app/tests/e2e/components/HeatmapComponent.ts",
-          "external": null,
-          "kind": "static",
-          "typeOnly": false,
-          "bindings": [
-            {
-              "imported": "HeatmapComponent",
-              "local": "HeatmapComponent"
-            }
-          ],
-          "line": 12
-        },
-        {
-          "specifier": "../page-objects/DashboardPage",
-          "target": "packages/app/tests/e2e/page-objects/DashboardPage.ts",
-          "external": null,
-          "kind": "static",
-          "typeOnly": false,
-          "bindings": [
-            {
-              "imported": "DashboardPage",
-              "local": "DashboardPage"
-            }
-          ],
-          "line": 13
-        },
-        {
-          "specifier": "../seed-clickhouse",
-          "target": "packages/app/tests/e2e/seed-clickhouse.ts",
-          "external": null,
-          "kind": "static",
-          "typeOnly": false,
-          "bindings": [
-            {
-              "imported": "SERVICES",
-              "local": "SERVICES"
-            }
-          ],
-          "line": 14
-        },
-        {
-          "specifier": "../utils/base-test",
-          "target": "packages/app/tests/e2e/utils/base-test.ts",
-          "external": null,
-          "kind": "static",
-          "typeOnly": false,
-          "bindings": [
-            {
-              "imported": "expect",
-              "local": "expect"
-            },
-            {
-              "imported": "test",
-              "local": "test"
-            }
-          ],
-          "line": 15
-        },
-        {
-          "specifier": "../utils/constants",
-          "target": "packages/app/tests/e2e/utils/constants.ts",
-          "external": null,
-          "kind": "static",
-          "typeOnly": false,
-          "bindings": [
-            {
-              "imported": "E2E_PROMQL_HISTOGRAM_METRIC_NAME",
-              "local": "E2E_PROMQL_HISTOGRAM_METRIC_NAME"
-            },
-            {
-              "imported": "E2E_PROMQL_METRIC_NAME",
-              "local": "E2E_PROMQL_METRIC_NAME"
-            },
-            {
-              "imported": "PROMQL_SOURCE_NAME",
-              "local": "PROMQL_SOURCE_NAME"
-            }
-          ],
-          "line": 20
-        }
-      ],
-      "exports": [],
-      "starReexports": []
-    },
-    {
-      "path": "packages/app/tests/e2e/features/promql-legend-template.spec.ts",
-      "workspace": "@couchbase-traces/app",
-      "test": true,
-      "imports": [
-        {
-          "specifier": "../page-objects/DashboardPage",
-          "target": "packages/app/tests/e2e/page-objects/DashboardPage.ts",
-          "external": null,
-          "kind": "static",
-          "typeOnly": false,
-          "bindings": [
-            {
-              "imported": "DashboardPage",
-              "local": "DashboardPage"
-            }
-          ],
-          "line": 9
-        },
-        {
-          "specifier": "../utils/base-test",
-          "target": "packages/app/tests/e2e/utils/base-test.ts",
-          "external": null,
-          "kind": "static",
-          "typeOnly": false,
-          "bindings": [
-            {
-              "imported": "expect",
-              "local": "expect"
-            },
-            {
-              "imported": "test",
-              "local": "test"
-            }
-          ],
-          "line": 10
-        },
-        {
-          "specifier": "../utils/constants",
-          "target": "packages/app/tests/e2e/utils/constants.ts",
-          "external": null,
-          "kind": "static",
-          "typeOnly": false,
-          "bindings": [
-            {
-              "imported": "E2E_PROMQL_METRIC_NAME",
-              "local": "E2E_PROMQL_METRIC_NAME"
-            },
-            {
-              "imported": "PROMQL_SOURCE_NAME",
-              "local": "PROMQL_SOURCE_NAME"
-            }
-          ],
-          "line": 11
-        }
-      ],
-      "exports": [],
-      "starReexports": []
-    },
-    {
-      "path": "packages/app/tests/e2e/features/promql-macros.spec.ts",
-      "workspace": "@couchbase-traces/app",
-      "test": true,
-      "imports": [
-        {
-          "specifier": "@couchbase-traces/common-utils/dist/types",
-          "target": "packages/common-utils/src/types.ts",
-          "external": null,
-          "kind": "static",
-          "typeOnly": false,
-          "bindings": [
-            {
-              "imported": "DisplayType",
-              "local": "DisplayType"
-            }
-          ],
-          "line": 7
-        },
-        {
-          "specifier": "../page-objects/ChartExplorerPage",
-          "target": "packages/app/tests/e2e/page-objects/ChartExplorerPage.ts",
-          "external": null,
-          "kind": "static",
-          "typeOnly": false,
-          "bindings": [
-            {
-              "imported": "ChartExplorerPage",
-              "local": "ChartExplorerPage"
-            }
-          ],
-          "line": 9
-        },
-        {
-          "specifier": "../page-objects/DashboardPage",
-          "target": "packages/app/tests/e2e/page-objects/DashboardPage.ts",
-          "external": null,
-          "kind": "static",
-          "typeOnly": false,
-          "bindings": [
-            {
-              "imported": "DashboardPage",
-              "local": "DashboardPage"
-            }
-          ],
-          "line": 10
-        },
-        {
-          "specifier": "../utils/base-test",
-          "target": "packages/app/tests/e2e/utils/base-test.ts",
-          "external": null,
-          "kind": "static",
-          "typeOnly": false,
-          "bindings": [
-            {
-              "imported": "expect",
-              "local": "expect"
-            },
-            {
-              "imported": "test",
-              "local": "test"
-            }
-          ],
-          "line": 11
-        },
-        {
-          "specifier": "../utils/constants",
-          "target": "packages/app/tests/e2e/utils/constants.ts",
-          "external": null,
-          "kind": "static",
-          "typeOnly": false,
-          "bindings": [
-            {
-              "imported": "E2E_PROMQL_METRIC_NAME",
-              "local": "E2E_PROMQL_METRIC_NAME"
-            },
-            {
-              "imported": "PROMQL_SOURCE_NAME",
-              "local": "PROMQL_SOURCE_NAME"
-            }
-          ],
-          "line": 12
-        }
-      ],
-      "exports": [],
-      "starReexports": []
-    },
-    {
-      "path": "packages/app/tests/e2e/features/promql-multi-expression.spec.ts",
-      "workspace": "@couchbase-traces/app",
-      "test": true,
-      "imports": [
-        {
-          "specifier": "../page-objects/DashboardPage",
-          "target": "packages/app/tests/e2e/page-objects/DashboardPage.ts",
-          "external": null,
-          "kind": "static",
-          "typeOnly": false,
-          "bindings": [
-            {
-              "imported": "DashboardPage",
-              "local": "DashboardPage"
-            }
-          ],
-          "line": 9
-        },
-        {
-          "specifier": "../utils/base-test",
-          "target": "packages/app/tests/e2e/utils/base-test.ts",
-          "external": null,
-          "kind": "static",
-          "typeOnly": false,
-          "bindings": [
-            {
-              "imported": "expect",
-              "local": "expect"
-            },
-            {
-              "imported": "test",
-              "local": "test"
-            }
-          ],
-          "line": 10
-        },
-        {
-          "specifier": "../utils/constants",
-          "target": "packages/app/tests/e2e/utils/constants.ts",
-          "external": null,
-          "kind": "static",
-          "typeOnly": false,
-          "bindings": [
-            {
-              "imported": "E2E_PROMQL_METRIC_NAME",
-              "local": "E2E_PROMQL_METRIC_NAME"
-            },
-            {
-              "imported": "PROMQL_SOURCE_NAME",
-              "local": "PROMQL_SOURCE_NAME"
-            }
-          ],
-          "line": 11
-        }
-      ],
-      "exports": [],
-      "starReexports": []
-    },
-    {
-      "path": "packages/app/tests/e2e/features/promql-number.spec.ts",
-      "workspace": "@couchbase-traces/app",
-      "test": true,
-      "imports": [
-        {
-          "specifier": "@couchbase-traces/common-utils/dist/types",
-          "target": "packages/common-utils/src/types.ts",
-          "external": null,
-          "kind": "static",
-          "typeOnly": false,
-          "bindings": [
-            {
-              "imported": "DisplayType",
-              "local": "DisplayType"
-            }
-          ],
-          "line": 12
-        },
-        {
-          "specifier": "../page-objects/DashboardPage",
-          "target": "packages/app/tests/e2e/page-objects/DashboardPage.ts",
-          "external": null,
-          "kind": "static",
-          "typeOnly": false,
-          "bindings": [
-            {
-              "imported": "DashboardPage",
-              "local": "DashboardPage"
-            }
-          ],
-          "line": 14
-        },
-        {
-          "specifier": "../utils/base-test",
-          "target": "packages/app/tests/e2e/utils/base-test.ts",
-          "external": null,
-          "kind": "static",
-          "typeOnly": false,
-          "bindings": [
-            {
-              "imported": "expect",
-              "local": "expect"
-            },
-            {
-              "imported": "test",
-              "local": "test"
-            }
-          ],
-          "line": 15
-        },
-        {
-          "specifier": "../utils/constants",
-          "target": "packages/app/tests/e2e/utils/constants.ts",
-          "external": null,
-          "kind": "static",
-          "typeOnly": false,
-          "bindings": [
-            {
-              "imported": "E2E_PROMQL_METRIC_NAME",
-              "local": "E2E_PROMQL_METRIC_NAME"
-            },
-            {
-              "imported": "PROMQL_SOURCE_NAME",
-              "local": "PROMQL_SOURCE_NAME"
-            }
-          ],
-          "line": 16
-        }
-      ],
-      "exports": [],
-      "starReexports": []
-    },
-    {
-      "path": "packages/app/tests/e2e/features/promql-pie-bar.spec.ts",
-      "workspace": "@couchbase-traces/app",
-      "test": true,
-      "imports": [
-        {
-          "specifier": "@couchbase-traces/common-utils/dist/types",
-          "target": "packages/common-utils/src/types.ts",
-          "external": null,
-          "kind": "static",
-          "typeOnly": false,
-          "bindings": [
-            {
-              "imported": "DisplayType",
-              "local": "DisplayType"
-            }
-          ],
-          "line": 11
-        },
-        {
-          "specifier": "../page-objects/DashboardPage",
-          "target": "packages/app/tests/e2e/page-objects/DashboardPage.ts",
-          "external": null,
-          "kind": "static",
-          "typeOnly": false,
-          "bindings": [
-            {
-              "imported": "DashboardPage",
-              "local": "DashboardPage"
-            }
-          ],
-          "line": 13
-        },
-        {
-          "specifier": "../seed-clickhouse",
-          "target": "packages/app/tests/e2e/seed-clickhouse.ts",
-          "external": null,
-          "kind": "static",
-          "typeOnly": false,
-          "bindings": [
-            {
-              "imported": "SERVICES",
-              "local": "SERVICES"
-            }
-          ],
-          "line": 14
-        },
-        {
-          "specifier": "../utils/base-test",
-          "target": "packages/app/tests/e2e/utils/base-test.ts",
-          "external": null,
-          "kind": "static",
-          "typeOnly": false,
-          "bindings": [
-            {
-              "imported": "expect",
-              "local": "expect"
-            },
-            {
-              "imported": "test",
-              "local": "test"
-            }
-          ],
-          "line": 15
-        },
-        {
-          "specifier": "../utils/constants",
-          "target": "packages/app/tests/e2e/utils/constants.ts",
-          "external": null,
-          "kind": "static",
-          "typeOnly": false,
-          "bindings": [
-            {
-              "imported": "E2E_PROMQL_METRIC_NAME",
-              "local": "E2E_PROMQL_METRIC_NAME"
-            },
-            {
-              "imported": "PROMQL_SOURCE_NAME",
-              "local": "PROMQL_SOURCE_NAME"
-            }
-          ],
-          "line": 16
-        }
-      ],
-      "exports": [],
-      "starReexports": []
-    },
-    {
-      "path": "packages/app/tests/e2e/features/promql-series-limit.spec.ts",
-      "workspace": "@couchbase-traces/app",
-      "test": true,
-      "imports": [
-        {
-          "specifier": "../page-objects/DashboardPage",
-          "target": "packages/app/tests/e2e/page-objects/DashboardPage.ts",
-          "external": null,
-          "kind": "static",
-          "typeOnly": false,
-          "bindings": [
-            {
-              "imported": "DashboardPage",
-              "local": "DashboardPage"
-            }
-          ],
-          "line": 10
-        },
-        {
-          "specifier": "../seed-clickhouse",
-          "target": "packages/app/tests/e2e/seed-clickhouse.ts",
-          "external": null,
-          "kind": "static",
-          "typeOnly": false,
-          "bindings": [
-            {
-              "imported": "SERVICES",
-              "local": "SERVICES"
-            }
-          ],
-          "line": 11
-        },
-        {
-          "specifier": "../utils/base-test",
-          "target": "packages/app/tests/e2e/utils/base-test.ts",
-          "external": null,
-          "kind": "static",
-          "typeOnly": false,
-          "bindings": [
-            {
-              "imported": "expect",
-              "local": "expect"
-            },
-            {
-              "imported": "test",
-              "local": "test"
-            }
-          ],
-          "line": 12
-        },
-        {
-          "specifier": "../utils/constants",
-          "target": "packages/app/tests/e2e/utils/constants.ts",
-          "external": null,
-          "kind": "static",
-          "typeOnly": false,
-          "bindings": [
-            {
-              "imported": "E2E_PROMQL_METRIC_NAME",
-              "local": "E2E_PROMQL_METRIC_NAME"
-            },
-            {
-              "imported": "PROMQL_SOURCE_NAME",
-              "local": "PROMQL_SOURCE_NAME"
-            }
-          ],
-          "line": 13
-        }
-      ],
-      "exports": [],
-      "starReexports": []
-    },
-    {
-      "path": "packages/app/tests/e2e/features/promql-table.spec.ts",
-      "workspace": "@couchbase-traces/app",
-      "test": true,
-      "imports": [
-        {
-          "specifier": "@couchbase-traces/common-utils/dist/types",
-          "target": "packages/common-utils/src/types.ts",
-          "external": null,
-          "kind": "static",
-          "typeOnly": false,
-          "bindings": [
-            {
-              "imported": "DisplayType",
-              "local": "DisplayType"
-            }
-          ],
-          "line": 11
-        },
-        {
-          "specifier": "../page-objects/DashboardPage",
-          "target": "packages/app/tests/e2e/page-objects/DashboardPage.ts",
-          "external": null,
-          "kind": "static",
-          "typeOnly": false,
-          "bindings": [
-            {
-              "imported": "DashboardPage",
-              "local": "DashboardPage"
-            }
-          ],
-          "line": 13
-        },
-        {
-          "specifier": "../seed-clickhouse",
-          "target": "packages/app/tests/e2e/seed-clickhouse.ts",
-          "external": null,
-          "kind": "static",
-          "typeOnly": false,
-          "bindings": [
-            {
-              "imported": "SERVICES",
-              "local": "SERVICES"
-            }
-          ],
-          "line": 14
-        },
-        {
-          "specifier": "../utils/base-test",
-          "target": "packages/app/tests/e2e/utils/base-test.ts",
-          "external": null,
-          "kind": "static",
-          "typeOnly": false,
-          "bindings": [
-            {
-              "imported": "expect",
-              "local": "expect"
-            },
-            {
-              "imported": "test",
-              "local": "test"
-            }
-          ],
-          "line": 15
-        },
-        {
-          "specifier": "../utils/constants",
-          "target": "packages/app/tests/e2e/utils/constants.ts",
-          "external": null,
-          "kind": "static",
-          "typeOnly": false,
-          "bindings": [
-            {
-              "imported": "E2E_PROMQL_METRIC_NAME",
-              "local": "E2E_PROMQL_METRIC_NAME"
-            },
-            {
-              "imported": "PROMQL_SOURCE_NAME",
-              "local": "PROMQL_SOURCE_NAME"
-            }
-          ],
-          "line": 16
         }
       ],
       "exports": [],
@@ -236841,6 +235559,3073 @@
           "from": null,
           "original": null,
           "line": 158
+        }
+      ],
+      "starReexports": []
+    },
+    {
+      "path": "packages/ingest/eslint.config.mjs",
+      "workspace": "@couchbase-traces/ingest",
+      "test": false,
+      "imports": [
+        {
+          "specifier": "@eslint/js",
+          "target": null,
+          "external": "@eslint/js",
+          "kind": "static",
+          "typeOnly": false,
+          "bindings": [
+            {
+              "imported": "default",
+              "local": "js"
+            }
+          ],
+          "line": 1
+        },
+        {
+          "specifier": "typescript-eslint",
+          "target": null,
+          "external": "typescript-eslint",
+          "kind": "static",
+          "typeOnly": false,
+          "bindings": [
+            {
+              "imported": "default",
+              "local": "tseslint"
+            }
+          ],
+          "line": 2
+        },
+        {
+          "specifier": "eslint-config-prettier",
+          "target": null,
+          "external": "eslint-config-prettier",
+          "kind": "static",
+          "typeOnly": false,
+          "bindings": [
+            {
+              "imported": "default",
+              "local": "prettierConfig"
+            }
+          ],
+          "line": 3
+        },
+        {
+          "specifier": "eslint-plugin-prettier",
+          "target": null,
+          "external": "eslint-plugin-prettier",
+          "kind": "static",
+          "typeOnly": false,
+          "bindings": [
+            {
+              "imported": "default",
+              "local": "prettierPlugin"
+            }
+          ],
+          "line": 4
+        },
+        {
+          "specifier": "eslint-plugin-simple-import-sort",
+          "target": null,
+          "external": "eslint-plugin-simple-import-sort",
+          "kind": "static",
+          "typeOnly": false,
+          "bindings": [
+            {
+              "imported": "default",
+              "local": "simpleImportSort"
+            }
+          ],
+          "line": 5
+        },
+        {
+          "specifier": "eslint-plugin-n",
+          "target": null,
+          "external": "eslint-plugin-n",
+          "kind": "static",
+          "typeOnly": false,
+          "bindings": [
+            {
+              "imported": "default",
+              "local": "nodePlugin"
+            }
+          ],
+          "line": 6
+        },
+        {
+          "specifier": "eslint-plugin-security",
+          "target": null,
+          "external": "eslint-plugin-security",
+          "kind": "static",
+          "typeOnly": false,
+          "bindings": [
+            {
+              "imported": "default",
+              "local": "securityPlugin"
+            }
+          ],
+          "line": 7
+        }
+      ],
+      "exports": [
+        {
+          "name": "default",
+          "kind": "const",
+          "from": null,
+          "original": null,
+          "line": 9
+        }
+      ],
+      "starReexports": []
+    },
+    {
+      "path": "packages/ingest/jest.config.js",
+      "workspace": "@couchbase-traces/ingest",
+      "test": false,
+      "imports": [
+        {
+          "specifier": "ts-jest",
+          "target": null,
+          "external": "ts-jest",
+          "kind": "require",
+          "typeOnly": false,
+          "bindings": [
+            {
+              "imported": "createJsWithTsPreset",
+              "local": "createJsWithTsPreset"
+            }
+          ],
+          "line": 1
+        }
+      ],
+      "exports": [],
+      "starReexports": []
+    },
+    {
+      "path": "packages/ingest/jest.int.config.js",
+      "workspace": "@couchbase-traces/ingest",
+      "test": false,
+      "imports": [
+        {
+          "specifier": "./jest.config.js",
+          "target": "packages/ingest/jest.config.js",
+          "external": null,
+          "kind": "require",
+          "typeOnly": false,
+          "bindings": [
+            {
+              "imported": "*",
+              "local": "base"
+            }
+          ],
+          "line": 1
+        }
+      ],
+      "exports": [],
+      "starReexports": []
+    },
+    {
+      "path": "packages/ingest/src/__tests__/ingest.int.test.ts",
+      "workspace": "@couchbase-traces/ingest",
+      "test": true,
+      "imports": [
+        {
+          "specifier": "node:child_process",
+          "target": null,
+          "external": "node:child_process",
+          "kind": "static",
+          "typeOnly": false,
+          "bindings": [
+            {
+              "imported": "execFile",
+              "local": "execFile"
+            }
+          ],
+          "line": 1
+        },
+        {
+          "specifier": "node:util",
+          "target": null,
+          "external": "node:util",
+          "kind": "static",
+          "typeOnly": false,
+          "bindings": [
+            {
+              "imported": "promisify",
+              "local": "promisify"
+            }
+          ],
+          "line": 2
+        },
+        {
+          "specifier": "couchbase",
+          "target": null,
+          "external": "couchbase",
+          "kind": "static",
+          "typeOnly": false,
+          "bindings": [
+            {
+              "imported": "Cluster",
+              "local": "Cluster"
+            },
+            {
+              "imported": "connect",
+              "local": "connect"
+            }
+          ],
+          "line": 4
+        },
+        {
+          "specifier": "@/config",
+          "target": "packages/ingest/src/config.ts",
+          "external": null,
+          "kind": "static",
+          "typeOnly": false,
+          "bindings": [
+            {
+              "imported": "connectCluster",
+              "local": "connectCluster"
+            },
+            {
+              "imported": "loadConfig",
+              "local": "loadConfig"
+            }
+          ],
+          "line": 6
+        },
+        {
+          "specifier": "@/server",
+          "target": "packages/ingest/src/server.ts",
+          "external": null,
+          "kind": "static",
+          "typeOnly": false,
+          "bindings": [
+            {
+              "imported": "createIngestApp",
+              "local": "createIngestApp"
+            }
+          ],
+          "line": 7
+        },
+        {
+          "specifier": "@/setup/cli",
+          "target": "packages/ingest/src/setup/cli.ts",
+          "external": null,
+          "kind": "static",
+          "typeOnly": false,
+          "bindings": [
+            {
+              "imported": "runSetup",
+              "local": "runSetup"
+            }
+          ],
+          "line": 8
+        },
+        {
+          "specifier": "@/writer",
+          "target": "packages/ingest/src/writer.ts",
+          "external": null,
+          "kind": "static",
+          "typeOnly": false,
+          "bindings": [
+            {
+              "imported": "Writer",
+              "local": "Writer"
+            }
+          ],
+          "line": 9
+        }
+      ],
+      "exports": [],
+      "starReexports": []
+    },
+    {
+      "path": "packages/ingest/src/__tests__/model.test.ts",
+      "workspace": "@couchbase-traces/ingest",
+      "test": true,
+      "imports": [
+        {
+          "specifier": "node:fs",
+          "target": null,
+          "external": "node:fs",
+          "kind": "static",
+          "typeOnly": false,
+          "bindings": [
+            {
+              "imported": "readFileSync",
+              "local": "readFileSync"
+            }
+          ],
+          "line": 1
+        },
+        {
+          "specifier": "node:path",
+          "target": null,
+          "external": "node:path",
+          "kind": "static",
+          "typeOnly": false,
+          "bindings": [
+            {
+              "imported": "default",
+              "local": "path"
+            }
+          ],
+          "line": 2
+        },
+        {
+          "specifier": "@couchbase-traces/common-utils/dist/couchbase/source",
+          "target": "packages/common-utils/src/couchbase/source.ts",
+          "external": null,
+          "kind": "static",
+          "typeOnly": false,
+          "bindings": [
+            {
+              "imported": "validateSourceForConnectionKind",
+              "local": "validateSourceForConnectionKind"
+            }
+          ],
+          "line": 4
+        },
+        {
+          "specifier": "@/model/collections",
+          "target": "packages/ingest/src/model/collections.ts",
+          "external": null,
+          "kind": "static",
+          "typeOnly": false,
+          "bindings": [
+            {
+              "imported": "COLLECTIONS",
+              "local": "COLLECTIONS"
+            },
+            {
+              "imported": "CollectionSpec",
+              "local": "CollectionSpec"
+            },
+            {
+              "imported": "createIndexSql",
+              "local": "createIndexSql"
+            },
+            {
+              "imported": "FieldSpec",
+              "local": "FieldSpec"
+            }
+          ],
+          "line": 11
+        },
+        {
+          "specifier": "@/model/keys",
+          "target": "packages/ingest/src/model/keys.ts",
+          "external": null,
+          "kind": "static",
+          "typeOnly": false,
+          "bindings": [
+            {
+              "imported": "contentKey",
+              "local": "contentKey"
+            },
+            {
+              "imported": "spanKey",
+              "local": "spanKey"
+            }
+          ],
+          "line": 12
+        },
+        {
+          "specifier": "@/model/materialized",
+          "target": "packages/ingest/src/model/materialized.ts",
+          "external": null,
+          "kind": "static",
+          "typeOnly": false,
+          "bindings": [
+            {
+              "imported": "LOG_MATERIALIZED",
+              "local": "LOG_MATERIALIZED"
+            },
+            {
+              "imported": "SESSION_MATERIALIZED",
+              "local": "SESSION_MATERIALIZED"
+            },
+            {
+              "imported": "TRACE_MATERIALIZED",
+              "local": "TRACE_MATERIALIZED"
+            }
+          ],
+          "line": 17
+        },
+        {
+          "specifier": "@/model/sources",
+          "target": "packages/ingest/src/model/sources.ts",
+          "external": null,
+          "kind": "static",
+          "typeOnly": false,
+          "bindings": [
+            {
+              "imported": "COUCHBASE_SOURCES",
+              "local": "COUCHBASE_SOURCES"
+            }
+          ],
+          "line": 18
+        },
+        {
+          "specifier": "@/setup/cli",
+          "target": "packages/ingest/src/setup/cli.ts",
+          "external": null,
+          "kind": "static",
+          "typeOnly": false,
+          "bindings": [
+            {
+              "imported": "runSetup",
+              "local": "runSetup"
+            }
+          ],
+          "line": 19
+        },
+        {
+          "specifier": "@/setup/docs",
+          "target": "packages/ingest/src/setup/docs.ts",
+          "external": null,
+          "kind": "static",
+          "typeOnly": false,
+          "bindings": [
+            {
+              "imported": "renderDataModelMd",
+              "local": "renderDataModelMd"
+            },
+            {
+              "imported": "renderIndexesMd",
+              "local": "renderIndexesMd"
+            }
+          ],
+          "line": 20
+        },
+        {
+          "specifier": "@/ttl",
+          "target": "packages/ingest/src/ttl.ts",
+          "external": null,
+          "kind": "static",
+          "typeOnly": false,
+          "bindings": [
+            {
+              "imported": "parseTtl",
+              "local": "parseTtl"
+            }
+          ],
+          "line": 21
+        }
+      ],
+      "exports": [],
+      "starReexports": []
+    },
+    {
+      "path": "packages/ingest/src/__tests__/server.test.ts",
+      "workspace": "@couchbase-traces/ingest",
+      "test": true,
+      "imports": [
+        {
+          "specifier": "node:http",
+          "target": null,
+          "external": "node:http",
+          "kind": "static",
+          "typeOnly": false,
+          "bindings": [
+            {
+              "imported": "request",
+              "local": "request"
+            }
+          ],
+          "line": 1
+        },
+        {
+          "specifier": "node:zlib",
+          "target": null,
+          "external": "node:zlib",
+          "kind": "static",
+          "typeOnly": false,
+          "bindings": [
+            {
+              "imported": "gzipSync",
+              "local": "gzipSync"
+            }
+          ],
+          "line": 2
+        },
+        {
+          "specifier": "@/config",
+          "target": "packages/ingest/src/config.ts",
+          "external": null,
+          "kind": "static",
+          "typeOnly": true,
+          "bindings": [
+            {
+              "imported": "IngestConfig",
+              "local": "IngestConfig"
+            }
+          ],
+          "line": 4
+        },
+        {
+          "specifier": "@/server",
+          "target": "packages/ingest/src/server.ts",
+          "external": null,
+          "kind": "static",
+          "typeOnly": false,
+          "bindings": [
+            {
+              "imported": "createIngestApp",
+              "local": "createIngestApp"
+            },
+            {
+              "imported": "IngestWriter",
+              "local": "IngestWriter"
+            }
+          ],
+          "line": 5
+        },
+        {
+          "specifier": "@/transform/common",
+          "target": "packages/ingest/src/transform/common.ts",
+          "external": null,
+          "kind": "static",
+          "typeOnly": true,
+          "bindings": [
+            {
+              "imported": "Doc",
+              "local": "Doc"
+            }
+          ],
+          "line": 6
+        },
+        {
+          "specifier": "@/writer",
+          "target": "packages/ingest/src/writer.ts",
+          "external": null,
+          "kind": "static",
+          "typeOnly": true,
+          "bindings": [
+            {
+              "imported": "WriteOutcome",
+              "local": "WriteOutcome"
+            }
+          ],
+          "line": 7
+        }
+      ],
+      "exports": [],
+      "starReexports": []
+    },
+    {
+      "path": "packages/ingest/src/__tests__/transform.test.ts",
+      "workspace": "@couchbase-traces/ingest",
+      "test": true,
+      "imports": [
+        {
+          "specifier": "@/transform/logs",
+          "target": "packages/ingest/src/transform/logs.ts",
+          "external": null,
+          "kind": "static",
+          "typeOnly": false,
+          "bindings": [
+            {
+              "imported": "transformLogs",
+              "local": "transformLogs"
+            }
+          ],
+          "line": 1
+        },
+        {
+          "specifier": "@/transform/metrics",
+          "target": "packages/ingest/src/transform/metrics.ts",
+          "external": null,
+          "kind": "static",
+          "typeOnly": false,
+          "bindings": [
+            {
+              "imported": "transformMetrics",
+              "local": "transformMetrics"
+            }
+          ],
+          "line": 2
+        },
+        {
+          "specifier": "@/transform/sessions",
+          "target": "packages/ingest/src/transform/sessions.ts",
+          "external": null,
+          "kind": "static",
+          "typeOnly": false,
+          "bindings": [
+            {
+              "imported": "transformSessions",
+              "local": "transformSessions"
+            }
+          ],
+          "line": 3
+        },
+        {
+          "specifier": "@/transform/traces",
+          "target": "packages/ingest/src/transform/traces.ts",
+          "external": null,
+          "kind": "static",
+          "typeOnly": false,
+          "bindings": [
+            {
+              "imported": "transformTraces",
+              "local": "transformTraces"
+            }
+          ],
+          "line": 4
+        }
+      ],
+      "exports": [],
+      "starReexports": []
+    },
+    {
+      "path": "packages/ingest/src/__tests__/values.test.ts",
+      "workspace": "@couchbase-traces/ingest",
+      "test": true,
+      "imports": [
+        {
+          "specifier": "@/otlp/values",
+          "target": "packages/ingest/src/otlp/values.ts",
+          "external": null,
+          "kind": "static",
+          "typeOnly": false,
+          "bindings": [
+            {
+              "imported": "anyValueToString",
+              "local": "anyValueToString"
+            },
+            {
+              "imported": "formatFloatGo",
+              "local": "formatFloatGo"
+            },
+            {
+              "imported": "nanosToIso",
+              "local": "nanosToIso"
+            }
+          ],
+          "line": 1
+        }
+      ],
+      "exports": [],
+      "starReexports": []
+    },
+    {
+      "path": "packages/ingest/src/__tests__/writer.test.ts",
+      "workspace": "@couchbase-traces/ingest",
+      "test": true,
+      "imports": [
+        {
+          "specifier": "@/model/collections",
+          "target": "packages/ingest/src/model/collections.ts",
+          "external": null,
+          "kind": "static",
+          "typeOnly": true,
+          "bindings": [
+            {
+              "imported": "CollectionName",
+              "local": "CollectionName"
+            }
+          ],
+          "line": 1
+        },
+        {
+          "specifier": "@/transform/common",
+          "target": "packages/ingest/src/transform/common.ts",
+          "external": null,
+          "kind": "static",
+          "typeOnly": true,
+          "bindings": [
+            {
+              "imported": "Doc",
+              "local": "Doc"
+            }
+          ],
+          "line": 2
+        },
+        {
+          "specifier": "@/writer",
+          "target": "packages/ingest/src/writer.ts",
+          "external": null,
+          "kind": "static",
+          "typeOnly": false,
+          "bindings": [
+            {
+              "imported": "KvCollection",
+              "local": "KvCollection"
+            },
+            {
+              "imported": "KvScope",
+              "local": "KvScope"
+            },
+            {
+              "imported": "Writer",
+              "local": "Writer"
+            }
+          ],
+          "line": 3
+        }
+      ],
+      "exports": [],
+      "starReexports": []
+    },
+    {
+      "path": "packages/ingest/src/config.ts",
+      "workspace": "@couchbase-traces/ingest",
+      "test": false,
+      "imports": [
+        {
+          "specifier": "node:fs",
+          "target": null,
+          "external": "node:fs",
+          "kind": "static",
+          "typeOnly": false,
+          "bindings": [
+            {
+              "imported": "existsSync",
+              "local": "existsSync"
+            }
+          ],
+          "line": 1
+        },
+        {
+          "specifier": "couchbase",
+          "target": null,
+          "external": "couchbase",
+          "kind": "static",
+          "typeOnly": false,
+          "bindings": [
+            {
+              "imported": "Cluster",
+              "local": "Cluster"
+            },
+            {
+              "imported": "connect",
+              "local": "connect"
+            },
+            {
+              "imported": "ConnectOptions",
+              "local": "ConnectOptions"
+            }
+          ],
+          "line": 3
+        },
+        {
+          "specifier": "@/model/collections",
+          "target": "packages/ingest/src/model/collections.ts",
+          "external": null,
+          "kind": "static",
+          "typeOnly": true,
+          "bindings": [
+            {
+              "imported": "CollectionName",
+              "local": "CollectionName"
+            }
+          ],
+          "line": 5
+        },
+        {
+          "specifier": "@/model/collections",
+          "target": "packages/ingest/src/model/collections.ts",
+          "external": null,
+          "kind": "static",
+          "typeOnly": false,
+          "bindings": [
+            {
+              "imported": "COLLECTIONS",
+              "local": "COLLECTIONS"
+            }
+          ],
+          "line": 6
+        },
+        {
+          "specifier": "@/ttl",
+          "target": "packages/ingest/src/ttl.ts",
+          "external": null,
+          "kind": "static",
+          "typeOnly": false,
+          "bindings": [
+            {
+              "imported": "resolveTtlMs",
+              "local": "resolveTtlMs"
+            },
+            {
+              "imported": "TtlEnvName",
+              "local": "TtlEnvName"
+            }
+          ],
+          "line": 7
+        }
+      ],
+      "exports": [
+        {
+          "name": "IngestConfig",
+          "kind": "type",
+          "from": null,
+          "original": null,
+          "line": 9
+        },
+        {
+          "name": "TTL_ENVS",
+          "kind": "const",
+          "from": null,
+          "original": null,
+          "line": 134
+        },
+        {
+          "name": "connectCluster",
+          "kind": "function",
+          "from": null,
+          "original": null,
+          "line": 122
+        },
+        {
+          "name": "isCapella",
+          "kind": "function",
+          "from": null,
+          "original": null,
+          "line": 110
+        },
+        {
+          "name": "loadConfig",
+          "kind": "function",
+          "from": null,
+          "original": null,
+          "line": 36
+        },
+        {
+          "name": "ttlByCollection",
+          "kind": "function",
+          "from": null,
+          "original": null,
+          "line": 141
+        },
+        {
+          "name": "wanProfile",
+          "kind": "function",
+          "from": null,
+          "original": null,
+          "line": 98
+        }
+      ],
+      "starReexports": []
+    },
+    {
+      "path": "packages/ingest/src/index.ts",
+      "workspace": "@couchbase-traces/ingest",
+      "test": false,
+      "imports": [
+        {
+          "specifier": "couchbase",
+          "target": null,
+          "external": "couchbase",
+          "kind": "static",
+          "typeOnly": false,
+          "bindings": [
+            {
+              "imported": "CollectionNotFoundError",
+              "local": "CollectionNotFoundError"
+            }
+          ],
+          "line": 1
+        },
+        {
+          "specifier": "@/config",
+          "target": "packages/ingest/src/config.ts",
+          "external": null,
+          "kind": "static",
+          "typeOnly": false,
+          "bindings": [
+            {
+              "imported": "connectCluster",
+              "local": "connectCluster"
+            },
+            {
+              "imported": "loadConfig",
+              "local": "loadConfig"
+            }
+          ],
+          "line": 3
+        },
+        {
+          "specifier": "@/model/collections",
+          "target": "packages/ingest/src/model/collections.ts",
+          "external": null,
+          "kind": "static",
+          "typeOnly": false,
+          "bindings": [
+            {
+              "imported": "COLLECTIONS",
+              "local": "COLLECTIONS"
+            }
+          ],
+          "line": 4
+        },
+        {
+          "specifier": "@/server",
+          "target": "packages/ingest/src/server.ts",
+          "external": null,
+          "kind": "static",
+          "typeOnly": false,
+          "bindings": [
+            {
+              "imported": "createIngestApp",
+              "local": "createIngestApp"
+            }
+          ],
+          "line": 5
+        },
+        {
+          "specifier": "@/writer",
+          "target": "packages/ingest/src/writer.ts",
+          "external": null,
+          "kind": "static",
+          "typeOnly": false,
+          "bindings": [
+            {
+              "imported": "Logger",
+              "local": "Logger"
+            },
+            {
+              "imported": "Writer",
+              "local": "Writer"
+            }
+          ],
+          "line": 6
+        }
+      ],
+      "exports": [],
+      "starReexports": []
+    },
+    {
+      "path": "packages/ingest/src/model/collections.ts",
+      "workspace": "@couchbase-traces/ingest",
+      "test": false,
+      "imports": [
+        {
+          "specifier": "@/model/materialized",
+          "target": "packages/ingest/src/model/materialized.ts",
+          "external": null,
+          "kind": "static",
+          "typeOnly": false,
+          "bindings": [
+            {
+              "imported": "LOG_MATERIALIZED",
+              "local": "LOG_MATERIALIZED"
+            },
+            {
+              "imported": "MaterializedSpec",
+              "local": "MaterializedSpec"
+            },
+            {
+              "imported": "SESSION_MATERIALIZED",
+              "local": "SESSION_MATERIALIZED"
+            },
+            {
+              "imported": "TRACE_MATERIALIZED",
+              "local": "TRACE_MATERIALIZED"
+            }
+          ],
+          "line": 6
+        },
+        {
+          "specifier": "@/otlp/values",
+          "target": "packages/ingest/src/otlp/values.ts",
+          "external": null,
+          "kind": "static",
+          "typeOnly": false,
+          "bindings": [
+            {
+              "imported": "EPOCH_ISO",
+              "local": "EPOCH_ISO"
+            }
+          ],
+          "line": 7
+        }
+      ],
+      "exports": [
+        {
+          "name": "COLLECTIONS",
+          "kind": "const",
+          "from": null,
+          "original": null,
+          "line": 403
+        },
+        {
+          "name": "CollectionName",
+          "kind": "type",
+          "from": null,
+          "original": null,
+          "line": 9
+        },
+        {
+          "name": "CollectionSpec",
+          "kind": "type",
+          "from": null,
+          "original": null,
+          "line": 46
+        },
+        {
+          "name": "FieldEncoding",
+          "kind": "type",
+          "from": null,
+          "original": null,
+          "line": 19
+        },
+        {
+          "name": "FieldSpec",
+          "kind": "type",
+          "from": null,
+          "original": null,
+          "line": 29
+        },
+        {
+          "name": "IndexSpec",
+          "kind": "type",
+          "from": null,
+          "original": null,
+          "line": 36
+        },
+        {
+          "name": "SearchIndexSpec",
+          "kind": "type",
+          "from": null,
+          "original": null,
+          "line": 38
+        },
+        {
+          "name": "TtlEnv",
+          "kind": "type",
+          "from": null,
+          "original": null,
+          "line": 40
+        },
+        {
+          "name": "collectionFor",
+          "kind": "function",
+          "from": null,
+          "original": null,
+          "line": 445
+        },
+        {
+          "name": "createIndexSql",
+          "kind": "function",
+          "from": null,
+          "original": null,
+          "line": 498
+        },
+        {
+          "name": "defaultDocument",
+          "kind": "function",
+          "from": null,
+          "original": null,
+          "line": 473
+        },
+        {
+          "name": "keyspace",
+          "kind": "function",
+          "from": null,
+          "original": null,
+          "line": 489
+        },
+        {
+          "name": "quoteIdent",
+          "kind": "function",
+          "from": null,
+          "original": null,
+          "line": 484
+        },
+        {
+          "name": "searchDefinitionWithReplicas",
+          "kind": "function",
+          "from": null,
+          "original": null,
+          "line": 509
+        }
+      ],
+      "starReexports": []
+    },
+    {
+      "path": "packages/ingest/src/model/keys.ts",
+      "workspace": "@couchbase-traces/ingest",
+      "test": false,
+      "imports": [
+        {
+          "specifier": "node:crypto",
+          "target": null,
+          "external": "node:crypto",
+          "kind": "static",
+          "typeOnly": false,
+          "bindings": [
+            {
+              "imported": "createHash",
+              "local": "createHash"
+            }
+          ],
+          "line": 1
+        }
+      ],
+      "exports": [
+        {
+          "name": "canonicalJson",
+          "kind": "function",
+          "from": null,
+          "original": null,
+          "line": 4
+        },
+        {
+          "name": "contentHash",
+          "kind": "function",
+          "from": null,
+          "original": null,
+          "line": 29
+        },
+        {
+          "name": "contentKey",
+          "kind": "function",
+          "from": null,
+          "original": null,
+          "line": 37
+        },
+        {
+          "name": "spanKey",
+          "kind": "function",
+          "from": null,
+          "original": null,
+          "line": 48
+        }
+      ],
+      "starReexports": []
+    },
+    {
+      "path": "packages/ingest/src/model/materialized.ts",
+      "workspace": "@couchbase-traces/ingest",
+      "test": false,
+      "imports": [
+        {
+          "specifier": "@/otlp/values",
+          "target": "packages/ingest/src/otlp/values.ts",
+          "external": null,
+          "kind": "static",
+          "typeOnly": false,
+          "bindings": [
+            {
+              "imported": "parseUInt64OrZero",
+              "local": "parseUInt64OrZero"
+            },
+            {
+              "imported": "truncateToSeconds",
+              "local": "truncateToSeconds"
+            }
+          ],
+          "line": 1
+        }
+      ],
+      "exports": [
+        {
+          "name": "LOG_MATERIALIZED",
+          "kind": "const",
+          "from": null,
+          "original": null,
+          "line": 10
+        },
+        {
+          "name": "MaterializedSpec",
+          "kind": "type",
+          "from": null,
+          "original": null,
+          "line": 3
+        },
+        {
+          "name": "SESSION_MATERIALIZED",
+          "kind": "const",
+          "from": null,
+          "original": null,
+          "line": 43
+        },
+        {
+          "name": "TRACE_MATERIALIZED",
+          "kind": "const",
+          "from": null,
+          "original": null,
+          "line": 30
+        },
+        {
+          "name": "applyLogMaterialized",
+          "kind": "function",
+          "from": null,
+          "original": null,
+          "line": 79
+        },
+        {
+          "name": "applySessionMaterialized",
+          "kind": "function",
+          "from": null,
+          "original": null,
+          "line": 102
+        },
+        {
+          "name": "applyTraceMaterialized",
+          "kind": "function",
+          "from": null,
+          "original": null,
+          "line": 92
+        }
+      ],
+      "starReexports": []
+    },
+    {
+      "path": "packages/ingest/src/model/sources.ts",
+      "workspace": "@couchbase-traces/ingest",
+      "test": false,
+      "imports": [],
+      "exports": [
+        {
+          "name": "COUCHBASE_LOG_SOURCE",
+          "kind": "const",
+          "from": null,
+          "original": null,
+          "line": 5
+        },
+        {
+          "name": "COUCHBASE_METRIC_SOURCE",
+          "kind": "const",
+          "from": null,
+          "original": null,
+          "line": 62
+        },
+        {
+          "name": "COUCHBASE_SESSION_SOURCE",
+          "kind": "const",
+          "from": null,
+          "original": null,
+          "line": 79
+        },
+        {
+          "name": "COUCHBASE_SOURCES",
+          "kind": "const",
+          "from": null,
+          "original": null,
+          "line": 93
+        },
+        {
+          "name": "COUCHBASE_TRACE_SOURCE",
+          "kind": "const",
+          "from": null,
+          "original": null,
+          "line": 28
+        }
+      ],
+      "starReexports": []
+    },
+    {
+      "path": "packages/ingest/src/otlp/types.ts",
+      "workspace": "@couchbase-traces/ingest",
+      "test": false,
+      "imports": [],
+      "exports": [
+        {
+          "name": "AnyValue",
+          "kind": "type",
+          "from": null,
+          "original": null,
+          "line": 3
+        },
+        {
+          "name": "Exemplar",
+          "kind": "type",
+          "from": null,
+          "original": null,
+          "line": 88
+        },
+        {
+          "name": "ExponentialHistogramDataPoint",
+          "kind": "type",
+          "from": null,
+          "original": null,
+          "line": 121
+        },
+        {
+          "name": "ExportLogsServiceRequest",
+          "kind": "type",
+          "from": null,
+          "original": null,
+          "line": 35
+        },
+        {
+          "name": "ExportMetricsServiceRequest",
+          "kind": "type",
+          "from": null,
+          "original": null,
+          "line": 168
+        },
+        {
+          "name": "ExportTraceServiceRequest",
+          "kind": "type",
+          "from": null,
+          "original": null,
+          "line": 76
+        },
+        {
+          "name": "HistogramDataPoint",
+          "kind": "type",
+          "from": null,
+          "original": null,
+          "line": 107
+        },
+        {
+          "name": "KeyValue",
+          "kind": "type",
+          "from": null,
+          "original": null,
+          "line": 13
+        },
+        {
+          "name": "LogRecord",
+          "kind": "type",
+          "from": null,
+          "original": null,
+          "line": 15
+        },
+        {
+          "name": "Metric",
+          "kind": "type",
+          "from": null,
+          "original": null,
+          "line": 147
+        },
+        {
+          "name": "NumberDataPoint",
+          "kind": "type",
+          "from": null,
+          "original": null,
+          "line": 97
+        },
+        {
+          "name": "Scope",
+          "kind": "type",
+          "from": null,
+          "original": null,
+          "line": 28
+        },
+        {
+          "name": "Span",
+          "kind": "type",
+          "from": null,
+          "original": null,
+          "line": 60
+        },
+        {
+          "name": "SpanEvent",
+          "kind": "type",
+          "from": null,
+          "original": null,
+          "line": 47
+        },
+        {
+          "name": "SpanLink",
+          "kind": "type",
+          "from": null,
+          "original": null,
+          "line": 53
+        },
+        {
+          "name": "SummaryDataPoint",
+          "kind": "type",
+          "from": null,
+          "original": null,
+          "line": 137
+        }
+      ],
+      "starReexports": []
+    },
+    {
+      "path": "packages/ingest/src/otlp/values.ts",
+      "workspace": "@couchbase-traces/ingest",
+      "test": false,
+      "imports": [
+        {
+          "specifier": "@/model/keys",
+          "target": "packages/ingest/src/model/keys.ts",
+          "external": null,
+          "kind": "static",
+          "typeOnly": false,
+          "bindings": [
+            {
+              "imported": "canonicalJson",
+              "local": "canonicalJson"
+            }
+          ],
+          "line": 1
+        },
+        {
+          "specifier": "@/otlp/types",
+          "target": "packages/ingest/src/otlp/types.ts",
+          "external": null,
+          "kind": "static",
+          "typeOnly": true,
+          "bindings": [
+            {
+              "imported": "AnyValue",
+              "local": "AnyValue"
+            },
+            {
+              "imported": "KeyValue",
+              "local": "KeyValue"
+            }
+          ],
+          "line": 2
+        }
+      ],
+      "exports": [
+        {
+          "name": "EPOCH_ISO",
+          "kind": "const",
+          "from": null,
+          "original": null,
+          "line": 5
+        },
+        {
+          "name": "anyValueToRaw",
+          "kind": "function",
+          "from": null,
+          "original": null,
+          "line": 121
+        },
+        {
+          "name": "anyValueToString",
+          "kind": "function",
+          "from": null,
+          "original": null,
+          "line": 143
+        },
+        {
+          "name": "attributesToMap",
+          "kind": "function",
+          "from": null,
+          "original": null,
+          "line": 163
+        },
+        {
+          "name": "dateToIso",
+          "kind": "function",
+          "from": null,
+          "original": null,
+          "line": 93
+        },
+        {
+          "name": "formatFloatGo",
+          "kind": "function",
+          "from": null,
+          "original": null,
+          "line": 14
+        },
+        {
+          "name": "hexId",
+          "kind": "function",
+          "from": null,
+          "original": null,
+          "line": 175
+        },
+        {
+          "name": "int64ToNumber",
+          "kind": "function",
+          "from": null,
+          "original": null,
+          "line": 61
+        },
+        {
+          "name": "isoToEpochMs",
+          "kind": "function",
+          "from": null,
+          "original": null,
+          "line": 98
+        },
+        {
+          "name": "nanosToIso",
+          "kind": "function",
+          "from": null,
+          "original": null,
+          "line": 72
+        },
+        {
+          "name": "parseUInt64OrZero",
+          "kind": "function",
+          "from": null,
+          "original": null,
+          "line": 49
+        },
+        {
+          "name": "truncateToSeconds",
+          "kind": "function",
+          "from": null,
+          "original": null,
+          "line": 104
+        }
+      ],
+      "starReexports": []
+    },
+    {
+      "path": "packages/ingest/src/selfMetrics.ts",
+      "workspace": "@couchbase-traces/ingest",
+      "test": false,
+      "imports": [],
+      "exports": [
+        {
+          "name": "SelfMetrics",
+          "kind": "class",
+          "from": null,
+          "original": null,
+          "line": 5
+        }
+      ],
+      "starReexports": []
+    },
+    {
+      "path": "packages/ingest/src/server.ts",
+      "workspace": "@couchbase-traces/ingest",
+      "test": false,
+      "imports": [
+        {
+          "specifier": "node:crypto",
+          "target": null,
+          "external": "node:crypto",
+          "kind": "static",
+          "typeOnly": false,
+          "bindings": [
+            {
+              "imported": "createHash",
+              "local": "createHash"
+            },
+            {
+              "imported": "timingSafeEqual",
+              "local": "timingSafeEqual"
+            }
+          ],
+          "line": 1
+        },
+        {
+          "specifier": "node:http",
+          "target": null,
+          "external": "node:http",
+          "kind": "static",
+          "typeOnly": false,
+          "bindings": [
+            {
+              "imported": "createServer",
+              "local": "createServer"
+            },
+            {
+              "imported": "IncomingMessage",
+              "local": "IncomingMessage"
+            },
+            {
+              "imported": "ServerResponse",
+              "local": "ServerResponse"
+            }
+          ],
+          "line": 6
+        },
+        {
+          "specifier": "node:zlib",
+          "target": null,
+          "external": "node:zlib",
+          "kind": "static",
+          "typeOnly": false,
+          "bindings": [
+            {
+              "imported": "gunzipSync",
+              "local": "gunzipSync"
+            }
+          ],
+          "line": 7
+        },
+        {
+          "specifier": "@/config",
+          "target": "packages/ingest/src/config.ts",
+          "external": null,
+          "kind": "static",
+          "typeOnly": true,
+          "bindings": [
+            {
+              "imported": "IngestConfig",
+              "local": "IngestConfig"
+            }
+          ],
+          "line": 9
+        },
+        {
+          "specifier": "@/selfMetrics",
+          "target": "packages/ingest/src/selfMetrics.ts",
+          "external": null,
+          "kind": "static",
+          "typeOnly": false,
+          "bindings": [
+            {
+              "imported": "SelfMetrics",
+              "local": "SelfMetrics"
+            }
+          ],
+          "line": 10
+        },
+        {
+          "specifier": "@/transform/common",
+          "target": "packages/ingest/src/transform/common.ts",
+          "external": null,
+          "kind": "static",
+          "typeOnly": true,
+          "bindings": [
+            {
+              "imported": "Doc",
+              "local": "Doc"
+            },
+            {
+              "imported": "TransformResult",
+              "local": "TransformResult"
+            }
+          ],
+          "line": 11
+        },
+        {
+          "specifier": "@/transform/logs",
+          "target": "packages/ingest/src/transform/logs.ts",
+          "external": null,
+          "kind": "static",
+          "typeOnly": false,
+          "bindings": [
+            {
+              "imported": "transformLogs",
+              "local": "transformLogs"
+            }
+          ],
+          "line": 12
+        },
+        {
+          "specifier": "@/transform/metrics",
+          "target": "packages/ingest/src/transform/metrics.ts",
+          "external": null,
+          "kind": "static",
+          "typeOnly": false,
+          "bindings": [
+            {
+              "imported": "transformMetrics",
+              "local": "transformMetrics"
+            }
+          ],
+          "line": 13
+        },
+        {
+          "specifier": "@/transform/sessions",
+          "target": "packages/ingest/src/transform/sessions.ts",
+          "external": null,
+          "kind": "static",
+          "typeOnly": false,
+          "bindings": [
+            {
+              "imported": "transformSessions",
+              "local": "transformSessions"
+            }
+          ],
+          "line": 14
+        },
+        {
+          "specifier": "@/transform/traces",
+          "target": "packages/ingest/src/transform/traces.ts",
+          "external": null,
+          "kind": "static",
+          "typeOnly": false,
+          "bindings": [
+            {
+              "imported": "transformTraces",
+              "local": "transformTraces"
+            }
+          ],
+          "line": 15
+        },
+        {
+          "specifier": "@/writer",
+          "target": "packages/ingest/src/writer.ts",
+          "external": null,
+          "kind": "static",
+          "typeOnly": true,
+          "bindings": [
+            {
+              "imported": "WriteOutcome",
+              "local": "WriteOutcome"
+            }
+          ],
+          "line": 16
+        }
+      ],
+      "exports": [
+        {
+          "name": "IngestApp",
+          "kind": "type",
+          "from": null,
+          "original": null,
+          "line": 53
+        },
+        {
+          "name": "IngestWriter",
+          "kind": "type",
+          "from": null,
+          "original": null,
+          "line": 18
+        },
+        {
+          "name": "createIngestApp",
+          "kind": "function",
+          "from": null,
+          "original": null,
+          "line": 59
+        }
+      ],
+      "starReexports": []
+    },
+    {
+      "path": "packages/ingest/src/setup/cli.ts",
+      "workspace": "@couchbase-traces/ingest",
+      "test": false,
+      "imports": [
+        {
+          "specifier": "couchbase",
+          "target": null,
+          "external": "couchbase",
+          "kind": "static",
+          "typeOnly": false,
+          "bindings": [
+            {
+              "imported": "connect",
+              "local": "connect"
+            },
+            {
+              "imported": "ConnectOptions",
+              "local": "ConnectOptions"
+            }
+          ],
+          "line": 1
+        },
+        {
+          "specifier": "@/config",
+          "target": "packages/ingest/src/config.ts",
+          "external": null,
+          "kind": "static",
+          "typeOnly": false,
+          "bindings": [
+            {
+              "imported": "isCapella",
+              "local": "isCapella"
+            },
+            {
+              "imported": "ttlByCollection",
+              "local": "ttlByCollection"
+            },
+            {
+              "imported": "wanProfile",
+              "local": "wanProfile"
+            }
+          ],
+          "line": 3
+        },
+        {
+          "specifier": "@/model/collections",
+          "target": "packages/ingest/src/model/collections.ts",
+          "external": null,
+          "kind": "static",
+          "typeOnly": false,
+          "bindings": [
+            {
+              "imported": "COLLECTIONS",
+              "local": "COLLECTIONS"
+            },
+            {
+              "imported": "searchDefinitionWithReplicas",
+              "local": "searchDefinitionWithReplicas"
+            }
+          ],
+          "line": 4
+        },
+        {
+          "specifier": "@/setup/docs",
+          "target": "packages/ingest/src/setup/docs.ts",
+          "external": null,
+          "kind": "static",
+          "typeOnly": false,
+          "bindings": [
+            {
+              "imported": "writeDocs",
+              "local": "writeDocs"
+            }
+          ],
+          "line": 5
+        },
+        {
+          "specifier": "@/setup/errors",
+          "target": "packages/ingest/src/setup/errors.ts",
+          "external": null,
+          "kind": "static",
+          "typeOnly": false,
+          "bindings": [
+            {
+              "imported": "exitCodeOf",
+              "local": "exitCodeOf"
+            },
+            {
+              "imported": "SetupError",
+              "local": "SetupError"
+            }
+          ],
+          "line": 6
+        },
+        {
+          "specifier": "@/setup/indexes",
+          "target": "packages/ingest/src/setup/indexes.ts",
+          "external": null,
+          "kind": "static",
+          "typeOnly": false,
+          "bindings": [
+            {
+              "imported": "ensureIndexes",
+              "local": "ensureIndexes"
+            },
+            {
+              "imported": "indexStatements",
+              "local": "indexStatements"
+            }
+          ],
+          "line": 7
+        },
+        {
+          "specifier": "@/setup/keyspace",
+          "target": "packages/ingest/src/setup/keyspace.ts",
+          "external": null,
+          "kind": "static",
+          "typeOnly": false,
+          "bindings": [
+            {
+              "imported": "ensureBucket",
+              "local": "ensureBucket"
+            },
+            {
+              "imported": "ensureCollections",
+              "local": "ensureCollections"
+            }
+          ],
+          "line": 8
+        },
+        {
+          "specifier": "@/setup/search",
+          "target": "packages/ingest/src/setup/search.ts",
+          "external": null,
+          "kind": "static",
+          "typeOnly": false,
+          "bindings": [
+            {
+              "imported": "ensureSearchIndexes",
+              "local": "ensureSearchIndexes"
+            }
+          ],
+          "line": 9
+        },
+        {
+          "specifier": "@/setup/users",
+          "target": "packages/ingest/src/setup/users.ts",
+          "external": null,
+          "kind": "static",
+          "typeOnly": false,
+          "bindings": [
+            {
+              "imported": "ensureUsers",
+              "local": "ensureUsers"
+            }
+          ],
+          "line": 10
+        }
+      ],
+      "exports": [
+        {
+          "name": "SetupOptions",
+          "kind": "type",
+          "from": null,
+          "original": null,
+          "line": 12
+        },
+        {
+          "name": "parseArgs",
+          "kind": "function",
+          "from": null,
+          "original": null,
+          "line": 24
+        },
+        {
+          "name": "runSetup",
+          "kind": "function",
+          "from": null,
+          "original": null,
+          "line": 63
+        }
+      ],
+      "starReexports": []
+    },
+    {
+      "path": "packages/ingest/src/setup/docs.ts",
+      "workspace": "@couchbase-traces/ingest",
+      "test": false,
+      "imports": [
+        {
+          "specifier": "node:fs",
+          "target": null,
+          "external": "node:fs",
+          "kind": "static",
+          "typeOnly": false,
+          "bindings": [
+            {
+              "imported": "existsSync",
+              "local": "existsSync"
+            },
+            {
+              "imported": "mkdirSync",
+              "local": "mkdirSync"
+            },
+            {
+              "imported": "writeFileSync",
+              "local": "writeFileSync"
+            }
+          ],
+          "line": 1
+        },
+        {
+          "specifier": "node:path",
+          "target": null,
+          "external": "node:path",
+          "kind": "static",
+          "typeOnly": false,
+          "bindings": [
+            {
+              "imported": "dirname",
+              "local": "dirname"
+            },
+            {
+              "imported": "join",
+              "local": "join"
+            }
+          ],
+          "line": 2
+        },
+        {
+          "specifier": "@/model/collections",
+          "target": "packages/ingest/src/model/collections.ts",
+          "external": null,
+          "kind": "static",
+          "typeOnly": false,
+          "bindings": [
+            {
+              "imported": "COLLECTIONS",
+              "local": "COLLECTIONS"
+            },
+            {
+              "imported": "createIndexSql",
+              "local": "createIndexSql"
+            },
+            {
+              "imported": "FieldSpec",
+              "local": "FieldSpec"
+            },
+            {
+              "imported": "searchDefinitionWithReplicas",
+              "local": "searchDefinitionWithReplicas"
+            }
+          ],
+          "line": 9
+        }
+      ],
+      "exports": [
+        {
+          "name": "GENERATED_HEADER",
+          "kind": "const",
+          "from": null,
+          "original": null,
+          "line": 11
+        },
+        {
+          "name": "renderDataModelMd",
+          "kind": "function",
+          "from": null,
+          "original": null,
+          "line": 37
+        },
+        {
+          "name": "renderIndexesMd",
+          "kind": "function",
+          "from": null,
+          "original": null,
+          "line": 14
+        },
+        {
+          "name": "repoRoot",
+          "kind": "function",
+          "from": null,
+          "original": null,
+          "line": 124
+        },
+        {
+          "name": "writeDocs",
+          "kind": "function",
+          "from": null,
+          "original": null,
+          "line": 134
+        }
+      ],
+      "starReexports": []
+    },
+    {
+      "path": "packages/ingest/src/setup/errors.ts",
+      "workspace": "@couchbase-traces/ingest",
+      "test": false,
+      "imports": [],
+      "exports": [
+        {
+          "name": "SetupError",
+          "kind": "class",
+          "from": null,
+          "original": null,
+          "line": 1
+        },
+        {
+          "name": "exitCodeOf",
+          "kind": "function",
+          "from": null,
+          "original": null,
+          "line": 11
+        }
+      ],
+      "starReexports": []
+    },
+    {
+      "path": "packages/ingest/src/setup/indexes.ts",
+      "workspace": "@couchbase-traces/ingest",
+      "test": false,
+      "imports": [
+        {
+          "specifier": "couchbase",
+          "target": null,
+          "external": "couchbase",
+          "kind": "static",
+          "typeOnly": true,
+          "bindings": [
+            {
+              "imported": "Cluster",
+              "local": "Cluster"
+            }
+          ],
+          "line": 1
+        },
+        {
+          "specifier": "@/model/collections",
+          "target": "packages/ingest/src/model/collections.ts",
+          "external": null,
+          "kind": "static",
+          "typeOnly": false,
+          "bindings": [
+            {
+              "imported": "COLLECTIONS",
+              "local": "COLLECTIONS"
+            },
+            {
+              "imported": "CollectionSpec",
+              "local": "CollectionSpec"
+            },
+            {
+              "imported": "createIndexSql",
+              "local": "createIndexSql"
+            },
+            {
+              "imported": "keyspace",
+              "local": "keyspace"
+            }
+          ],
+          "line": 8
+        },
+        {
+          "specifier": "@/setup/errors",
+          "target": "packages/ingest/src/setup/errors.ts",
+          "external": null,
+          "kind": "static",
+          "typeOnly": false,
+          "bindings": [
+            {
+              "imported": "SetupError",
+              "local": "SetupError"
+            }
+          ],
+          "line": 9
+        }
+      ],
+      "exports": [
+        {
+          "name": "IndexRow",
+          "kind": "type",
+          "from": null,
+          "original": null,
+          "line": 11
+        },
+        {
+          "name": "ensureIndexes",
+          "kind": "function",
+          "from": null,
+          "original": null,
+          "line": 40
+        },
+        {
+          "name": "indexStatements",
+          "kind": "function",
+          "from": null,
+          "original": null,
+          "line": 26
+        },
+        {
+          "name": "normalizeIndexExpr",
+          "kind": "function",
+          "from": null,
+          "original": null,
+          "line": 19
+        }
+      ],
+      "starReexports": []
+    },
+    {
+      "path": "packages/ingest/src/setup/keyspace.ts",
+      "workspace": "@couchbase-traces/ingest",
+      "test": false,
+      "imports": [
+        {
+          "specifier": "couchbase",
+          "target": null,
+          "external": "couchbase",
+          "kind": "static",
+          "typeOnly": true,
+          "bindings": [
+            {
+              "imported": "Cluster",
+              "local": "Cluster"
+            }
+          ],
+          "line": 1
+        },
+        {
+          "specifier": "@/model/collections",
+          "target": "packages/ingest/src/model/collections.ts",
+          "external": null,
+          "kind": "static",
+          "typeOnly": false,
+          "bindings": [
+            {
+              "imported": "COLLECTIONS",
+              "local": "COLLECTIONS"
+            }
+          ],
+          "line": 3
+        },
+        {
+          "specifier": "@/setup/errors",
+          "target": "packages/ingest/src/setup/errors.ts",
+          "external": null,
+          "kind": "static",
+          "typeOnly": false,
+          "bindings": [
+            {
+              "imported": "SetupError",
+              "local": "SetupError"
+            }
+          ],
+          "line": 4
+        },
+        {
+          "specifier": "@/ttl",
+          "target": "packages/ingest/src/ttl.ts",
+          "external": null,
+          "kind": "static",
+          "typeOnly": false,
+          "bindings": [
+            {
+              "imported": "ttlSeconds",
+              "local": "ttlSeconds"
+            }
+          ],
+          "line": 5
+        }
+      ],
+      "exports": [
+        {
+          "name": "ensureBucket",
+          "kind": "function",
+          "from": null,
+          "original": null,
+          "line": 7
+        },
+        {
+          "name": "ensureCollections",
+          "kind": "function",
+          "from": null,
+          "original": null,
+          "line": 46
+        }
+      ],
+      "starReexports": []
+    },
+    {
+      "path": "packages/ingest/src/setup/search.ts",
+      "workspace": "@couchbase-traces/ingest",
+      "test": false,
+      "imports": [
+        {
+          "specifier": "couchbase",
+          "target": null,
+          "external": "couchbase",
+          "kind": "static",
+          "typeOnly": true,
+          "bindings": [
+            {
+              "imported": "Cluster",
+              "local": "Cluster"
+            },
+            {
+              "imported": "ISearchIndex",
+              "local": "ISearchIndex"
+            }
+          ],
+          "line": 1
+        },
+        {
+          "specifier": "@/model/collections",
+          "target": "packages/ingest/src/model/collections.ts",
+          "external": null,
+          "kind": "static",
+          "typeOnly": false,
+          "bindings": [
+            {
+              "imported": "COLLECTIONS",
+              "local": "COLLECTIONS"
+            },
+            {
+              "imported": "searchDefinitionWithReplicas",
+              "local": "searchDefinitionWithReplicas"
+            }
+          ],
+          "line": 3
+        }
+      ],
+      "exports": [
+        {
+          "name": "ensureSearchIndexes",
+          "kind": "function",
+          "from": null,
+          "original": null,
+          "line": 5
+        }
+      ],
+      "starReexports": []
+    },
+    {
+      "path": "packages/ingest/src/setup/users.ts",
+      "workspace": "@couchbase-traces/ingest",
+      "test": false,
+      "imports": [
+        {
+          "specifier": "couchbase",
+          "target": null,
+          "external": "couchbase",
+          "kind": "static",
+          "typeOnly": true,
+          "bindings": [
+            {
+              "imported": "Cluster",
+              "local": "Cluster"
+            }
+          ],
+          "line": 1
+        },
+        {
+          "specifier": "@/setup/errors",
+          "target": "packages/ingest/src/setup/errors.ts",
+          "external": null,
+          "kind": "static",
+          "typeOnly": false,
+          "bindings": [
+            {
+              "imported": "SetupError",
+              "local": "SetupError"
+            }
+          ],
+          "line": 3
+        }
+      ],
+      "exports": [
+        {
+          "name": "capellaAccess",
+          "kind": "function",
+          "from": null,
+          "original": null,
+          "line": 25
+        },
+        {
+          "name": "ensureUsers",
+          "kind": "function",
+          "from": null,
+          "original": null,
+          "line": 31
+        }
+      ],
+      "starReexports": []
+    },
+    {
+      "path": "packages/ingest/src/transform/common.ts",
+      "workspace": "@couchbase-traces/ingest",
+      "test": false,
+      "imports": [
+        {
+          "specifier": "@/model/collections",
+          "target": "packages/ingest/src/model/collections.ts",
+          "external": null,
+          "kind": "static",
+          "typeOnly": true,
+          "bindings": [
+            {
+              "imported": "CollectionName",
+              "local": "CollectionName"
+            }
+          ],
+          "line": 1
+        },
+        {
+          "specifier": "@/model/collections",
+          "target": "packages/ingest/src/model/collections.ts",
+          "external": null,
+          "kind": "static",
+          "typeOnly": false,
+          "bindings": [
+            {
+              "imported": "collectionFor",
+              "local": "collectionFor"
+            },
+            {
+              "imported": "defaultDocument",
+              "local": "defaultDocument"
+            }
+          ],
+          "line": 2
+        },
+        {
+          "specifier": "@/model/keys",
+          "target": "packages/ingest/src/model/keys.ts",
+          "external": null,
+          "kind": "static",
+          "typeOnly": false,
+          "bindings": [
+            {
+              "imported": "contentKey",
+              "local": "contentKey"
+            },
+            {
+              "imported": "spanKey",
+              "local": "spanKey"
+            }
+          ],
+          "line": 3
+        },
+        {
+          "specifier": "@/model/materialized",
+          "target": "packages/ingest/src/model/materialized.ts",
+          "external": null,
+          "kind": "static",
+          "typeOnly": false,
+          "bindings": [
+            {
+              "imported": "applyLogMaterialized",
+              "local": "applyLogMaterialized"
+            },
+            {
+              "imported": "applySessionMaterialized",
+              "local": "applySessionMaterialized"
+            },
+            {
+              "imported": "applyTraceMaterialized",
+              "local": "applyTraceMaterialized"
+            }
+          ],
+          "line": 8
+        },
+        {
+          "specifier": "@/otlp/types",
+          "target": "packages/ingest/src/otlp/types.ts",
+          "external": null,
+          "kind": "static",
+          "typeOnly": true,
+          "bindings": [
+            {
+              "imported": "KeyValue",
+              "local": "KeyValue"
+            }
+          ],
+          "line": 9
+        },
+        {
+          "specifier": "@/otlp/values",
+          "target": "packages/ingest/src/otlp/values.ts",
+          "external": null,
+          "kind": "static",
+          "typeOnly": false,
+          "bindings": [
+            {
+              "imported": "attributesToMap",
+              "local": "attributesToMap"
+            },
+            {
+              "imported": "dateToIso",
+              "local": "dateToIso"
+            },
+            {
+              "imported": "EPOCH_ISO",
+              "local": "EPOCH_ISO"
+            },
+            {
+              "imported": "isoToEpochMs",
+              "local": "isoToEpochMs"
+            },
+            {
+              "imported": "nanosToIso",
+              "local": "nanosToIso"
+            }
+          ],
+          "line": 16
+        }
+      ],
+      "exports": [
+        {
+          "name": "Doc",
+          "kind": "type",
+          "from": null,
+          "original": null,
+          "line": 18
+        },
+        {
+          "name": "ResourceScope",
+          "kind": "type",
+          "from": null,
+          "original": null,
+          "line": 31
+        },
+        {
+          "name": "TransformResult",
+          "kind": "type",
+          "from": null,
+          "original": null,
+          "line": 25
+        },
+        {
+          "name": "blank",
+          "kind": "function",
+          "from": null,
+          "original": null,
+          "line": 119
+        },
+        {
+          "name": "finishLog",
+          "kind": "function",
+          "from": null,
+          "original": null,
+          "line": 104
+        },
+        {
+          "name": "finishSpan",
+          "kind": "function",
+          "from": null,
+          "original": null,
+          "line": 123
+        },
+        {
+          "name": "orEpoch",
+          "kind": "function",
+          "from": null,
+          "original": null,
+          "line": 97
+        },
+        {
+          "name": "reject",
+          "kind": "function",
+          "from": null,
+          "original": null,
+          "line": 45
+        },
+        {
+          "name": "rejectedOf",
+          "kind": "function",
+          "from": null,
+          "original": null,
+          "line": 53
+        },
+        {
+          "name": "resolveTimestamp",
+          "kind": "function",
+          "from": null,
+          "original": null,
+          "line": 84
+        },
+        {
+          "name": "resourceOf",
+          "kind": "function",
+          "from": null,
+          "original": null,
+          "line": 59
+        },
+        {
+          "name": "serviceName",
+          "kind": "function",
+          "from": null,
+          "original": null,
+          "line": 41
+        }
+      ],
+      "starReexports": []
+    },
+    {
+      "path": "packages/ingest/src/transform/logs.ts",
+      "workspace": "@couchbase-traces/ingest",
+      "test": false,
+      "imports": [
+        {
+          "specifier": "@/otlp/types",
+          "target": "packages/ingest/src/otlp/types.ts",
+          "external": null,
+          "kind": "static",
+          "typeOnly": true,
+          "bindings": [
+            {
+              "imported": "ExportLogsServiceRequest",
+              "local": "ExportLogsServiceRequest"
+            }
+          ],
+          "line": 1
+        },
+        {
+          "specifier": "@/otlp/values",
+          "target": "packages/ingest/src/otlp/values.ts",
+          "external": null,
+          "kind": "static",
+          "typeOnly": false,
+          "bindings": [
+            {
+              "imported": "anyValueToString",
+              "local": "anyValueToString"
+            },
+            {
+              "imported": "attributesToMap",
+              "local": "attributesToMap"
+            },
+            {
+              "imported": "hexId",
+              "local": "hexId"
+            }
+          ],
+          "line": 2
+        },
+        {
+          "specifier": "@/transform/common",
+          "target": "packages/ingest/src/transform/common.ts",
+          "external": null,
+          "kind": "static",
+          "typeOnly": false,
+          "bindings": [
+            {
+              "imported": "blank",
+              "local": "blank"
+            },
+            {
+              "imported": "Doc",
+              "local": "Doc"
+            },
+            {
+              "imported": "finishLog",
+              "local": "finishLog"
+            },
+            {
+              "imported": "rejectedOf",
+              "local": "rejectedOf"
+            },
+            {
+              "imported": "resolveTimestamp",
+              "local": "resolveTimestamp"
+            },
+            {
+              "imported": "resourceOf",
+              "local": "resourceOf"
+            },
+            {
+              "imported": "serviceName",
+              "local": "serviceName"
+            },
+            {
+              "imported": "TransformResult",
+              "local": "TransformResult"
+            }
+          ],
+          "line": 12
+        }
+      ],
+      "exports": [
+        {
+          "name": "transformLogRecords",
+          "kind": "function",
+          "from": null,
+          "original": null,
+          "line": 21
+        },
+        {
+          "name": "transformLogs",
+          "kind": "function",
+          "from": null,
+          "original": null,
+          "line": 14
+        }
+      ],
+      "starReexports": []
+    },
+    {
+      "path": "packages/ingest/src/transform/metrics.ts",
+      "workspace": "@couchbase-traces/ingest",
+      "test": false,
+      "imports": [
+        {
+          "specifier": "@/model/collections",
+          "target": "packages/ingest/src/model/collections.ts",
+          "external": null,
+          "kind": "static",
+          "typeOnly": true,
+          "bindings": [
+            {
+              "imported": "CollectionName",
+              "local": "CollectionName"
+            }
+          ],
+          "line": 1
+        },
+        {
+          "specifier": "@/model/keys",
+          "target": "packages/ingest/src/model/keys.ts",
+          "external": null,
+          "kind": "static",
+          "typeOnly": false,
+          "bindings": [
+            {
+              "imported": "contentKey",
+              "local": "contentKey"
+            }
+          ],
+          "line": 2
+        },
+        {
+          "specifier": "@/otlp/types",
+          "target": "packages/ingest/src/otlp/types.ts",
+          "external": null,
+          "kind": "static",
+          "typeOnly": true,
+          "bindings": [
+            {
+              "imported": "Exemplar",
+              "local": "Exemplar"
+            },
+            {
+              "imported": "ExponentialHistogramDataPoint",
+              "local": "ExponentialHistogramDataPoint"
+            },
+            {
+              "imported": "ExportMetricsServiceRequest",
+              "local": "ExportMetricsServiceRequest"
+            },
+            {
+              "imported": "HistogramDataPoint",
+              "local": "HistogramDataPoint"
+            },
+            {
+              "imported": "Metric",
+              "local": "Metric"
+            },
+            {
+              "imported": "NumberDataPoint",
+              "local": "NumberDataPoint"
+            },
+            {
+              "imported": "SummaryDataPoint",
+              "local": "SummaryDataPoint"
+            }
+          ],
+          "line": 11
+        },
+        {
+          "specifier": "@/otlp/values",
+          "target": "packages/ingest/src/otlp/values.ts",
+          "external": null,
+          "kind": "static",
+          "typeOnly": false,
+          "bindings": [
+            {
+              "imported": "attributesToMap",
+              "local": "attributesToMap"
+            },
+            {
+              "imported": "hexId",
+              "local": "hexId"
+            },
+            {
+              "imported": "int64ToNumber",
+              "local": "int64ToNumber"
+            }
+          ],
+          "line": 12
+        },
+        {
+          "specifier": "@/otlp/values",
+          "target": "packages/ingest/src/otlp/values.ts",
+          "external": null,
+          "kind": "static",
+          "typeOnly": false,
+          "bindings": [
+            {
+              "imported": "isoToEpochMs",
+              "local": "isoToEpochMs"
+            }
+          ],
+          "line": 13
+        },
+        {
+          "specifier": "@/transform/common",
+          "target": "packages/ingest/src/transform/common.ts",
+          "external": null,
+          "kind": "static",
+          "typeOnly": false,
+          "bindings": [
+            {
+              "imported": "blank",
+              "local": "blank"
+            },
+            {
+              "imported": "Doc",
+              "local": "Doc"
+            },
+            {
+              "imported": "orEpoch",
+              "local": "orEpoch"
+            },
+            {
+              "imported": "reject",
+              "local": "reject"
+            },
+            {
+              "imported": "rejectedOf",
+              "local": "rejectedOf"
+            },
+            {
+              "imported": "resolveTimestamp",
+              "local": "resolveTimestamp"
+            },
+            {
+              "imported": "resourceOf",
+              "local": "resourceOf"
+            },
+            {
+              "imported": "ResourceScope",
+              "local": "ResourceScope"
+            },
+            {
+              "imported": "serviceName",
+              "local": "serviceName"
+            },
+            {
+              "imported": "TransformResult",
+              "local": "TransformResult"
+            }
+          ],
+          "line": 25
+        }
+      ],
+      "exports": [
+        {
+          "name": "transformMetrics",
+          "kind": "function",
+          "from": null,
+          "original": null,
+          "line": 34
+        }
+      ],
+      "starReexports": []
+    },
+    {
+      "path": "packages/ingest/src/transform/sessions.ts",
+      "workspace": "@couchbase-traces/ingest",
+      "test": false,
+      "imports": [
+        {
+          "specifier": "@/otlp/types",
+          "target": "packages/ingest/src/otlp/types.ts",
+          "external": null,
+          "kind": "static",
+          "typeOnly": true,
+          "bindings": [
+            {
+              "imported": "ExportLogsServiceRequest",
+              "local": "ExportLogsServiceRequest"
+            }
+          ],
+          "line": 1
+        },
+        {
+          "specifier": "@/transform/common",
+          "target": "packages/ingest/src/transform/common.ts",
+          "external": null,
+          "kind": "static",
+          "typeOnly": true,
+          "bindings": [
+            {
+              "imported": "TransformResult",
+              "local": "TransformResult"
+            }
+          ],
+          "line": 2
+        },
+        {
+          "specifier": "@/transform/logs",
+          "target": "packages/ingest/src/transform/logs.ts",
+          "external": null,
+          "kind": "static",
+          "typeOnly": false,
+          "bindings": [
+            {
+              "imported": "transformLogRecords",
+              "local": "transformLogRecords"
+            }
+          ],
+          "line": 3
+        }
+      ],
+      "exports": [
+        {
+          "name": "transformSessions",
+          "kind": "function",
+          "from": null,
+          "original": null,
+          "line": 5
+        }
+      ],
+      "starReexports": []
+    },
+    {
+      "path": "packages/ingest/src/transform/traces.ts",
+      "workspace": "@couchbase-traces/ingest",
+      "test": false,
+      "imports": [
+        {
+          "specifier": "@/otlp/types",
+          "target": "packages/ingest/src/otlp/types.ts",
+          "external": null,
+          "kind": "static",
+          "typeOnly": true,
+          "bindings": [
+            {
+              "imported": "ExportTraceServiceRequest",
+              "local": "ExportTraceServiceRequest"
+            },
+            {
+              "imported": "SpanEvent",
+              "local": "SpanEvent"
+            },
+            {
+              "imported": "SpanLink",
+              "local": "SpanLink"
+            }
+          ],
+          "line": 5
+        },
+        {
+          "specifier": "@/otlp/values",
+          "target": "packages/ingest/src/otlp/values.ts",
+          "external": null,
+          "kind": "static",
+          "typeOnly": false,
+          "bindings": [
+            {
+              "imported": "attributesToMap",
+              "local": "attributesToMap"
+            },
+            {
+              "imported": "hexId",
+              "local": "hexId"
+            }
+          ],
+          "line": 6
+        },
+        {
+          "specifier": "@/transform/common",
+          "target": "packages/ingest/src/transform/common.ts",
+          "external": null,
+          "kind": "static",
+          "typeOnly": false,
+          "bindings": [
+            {
+              "imported": "blank",
+              "local": "blank"
+            },
+            {
+              "imported": "Doc",
+              "local": "Doc"
+            },
+            {
+              "imported": "finishSpan",
+              "local": "finishSpan"
+            },
+            {
+              "imported": "orEpoch",
+              "local": "orEpoch"
+            },
+            {
+              "imported": "rejectedOf",
+              "local": "rejectedOf"
+            },
+            {
+              "imported": "resolveTimestamp",
+              "local": "resolveTimestamp"
+            },
+            {
+              "imported": "resourceOf",
+              "local": "resourceOf"
+            },
+            {
+              "imported": "serviceName",
+              "local": "serviceName"
+            },
+            {
+              "imported": "TransformResult",
+              "local": "TransformResult"
+            }
+          ],
+          "line": 17
+        }
+      ],
+      "exports": [
+        {
+          "name": "transformTraces",
+          "kind": "function",
+          "from": null,
+          "original": null,
+          "line": 29
+        }
+      ],
+      "starReexports": []
+    },
+    {
+      "path": "packages/ingest/src/ttl.ts",
+      "workspace": "@couchbase-traces/ingest",
+      "test": false,
+      "imports": [],
+      "exports": [
+        {
+          "name": "TtlEnvName",
+          "kind": "type",
+          "from": null,
+          "original": null,
+          "line": 44
+        },
+        {
+          "name": "parseTtl",
+          "kind": "function",
+          "from": null,
+          "original": null,
+          "line": 19
+        },
+        {
+          "name": "resolveTtlMs",
+          "kind": "function",
+          "from": null,
+          "original": null,
+          "line": 51
+        },
+        {
+          "name": "ttlSeconds",
+          "kind": "function",
+          "from": null,
+          "original": null,
+          "line": 40
+        }
+      ],
+      "starReexports": []
+    },
+    {
+      "path": "packages/ingest/src/writer.ts",
+      "workspace": "@couchbase-traces/ingest",
+      "test": false,
+      "imports": [
+        {
+          "specifier": "@/model/collections",
+          "target": "packages/ingest/src/model/collections.ts",
+          "external": null,
+          "kind": "static",
+          "typeOnly": true,
+          "bindings": [
+            {
+              "imported": "CollectionName",
+              "local": "CollectionName"
+            }
+          ],
+          "line": 1
+        },
+        {
+          "specifier": "@/transform/common",
+          "target": "packages/ingest/src/transform/common.ts",
+          "external": null,
+          "kind": "static",
+          "typeOnly": true,
+          "bindings": [
+            {
+              "imported": "Doc",
+              "local": "Doc"
+            }
+          ],
+          "line": 2
+        }
+      ],
+      "exports": [
+        {
+          "name": "KvCollection",
+          "kind": "type",
+          "from": null,
+          "original": null,
+          "line": 22
+        },
+        {
+          "name": "KvScope",
+          "kind": "type",
+          "from": null,
+          "original": null,
+          "line": 30
+        },
+        {
+          "name": "Logger",
+          "kind": "type",
+          "from": null,
+          "original": null,
+          "line": 4
+        },
+        {
+          "name": "WriteOutcome",
+          "kind": "type",
+          "from": null,
+          "original": null,
+          "line": 11
+        },
+        {
+          "name": "Writer",
+          "kind": "class",
+          "from": null,
+          "original": null,
+          "line": 52
         }
       ],
       "starReexports": []

@@ -8,6 +8,7 @@ import {
 } from '@/controllers/dashboard';
 import Dashboard, { IDashboard } from '@/models/dashboard';
 import { processRequestWithEnhancedErrors as validateRequest } from '@/utils/enhancedErrors';
+import { rejectPromqlBody } from '@/utils/rejectPromql';
 import { ExternalDashboardTileWithId, objectIdSchema } from '@/utils/zod';
 
 import {
@@ -1581,8 +1582,8 @@ const EXTERNAL_DASHBOARD_PROJECTION = {
  *       description: >
  *         Shared fields for PromQL chart configs. Set configType to "promql" and
  *         provide sourceId + expressions. The connection is read from the source.
- *         PromQL is a preview feature and must be enabled on the deployment
- *         (ENABLE_PROMQL) before PromQL tiles can be queried.
+ *         Creating or updating a PromQL tile is rejected. PromQL sources are
+ *         no longer supported.
  *       properties:
  *         configType:
  *           type: string
@@ -2592,9 +2593,7 @@ const EXTERNAL_DASHBOARD_PROJECTION = {
  *       description: |
  *         A filter whose dropdown lists the values for a Prometheus label,
  *         read from a PromQL source over the dashboard's time range.
- *         Supports variable mode only. PromQL is a preview feature and must be
- *         enabled on the deployment (ENABLE_PROMQL) before these filters can
- *         list values.
+ *         Supports variable mode only. PromQL sources are no longer supported.
  *       required:
  *         - type
  *         - name
@@ -3169,7 +3168,7 @@ router.get(
  *             example:
  *               message: "Unauthorized access. API key is missing or invalid."
  */
-router.post('/validate', async (req, res, next) => {
+router.post('/validate', rejectPromqlBody, async (req, res, next) => {
   try {
     const teamId = req.user?.team;
     if (teamId == null) {
@@ -3350,6 +3349,7 @@ router.post('/validate', async (req, res, next) => {
  */
 router.post(
   '/',
+  rejectPromqlBody,
   validateRequest({
     body: createDashboardBodySchema,
   }),
@@ -3559,6 +3559,7 @@ router.post(
  */
 router.put(
   '/:id',
+  rejectPromqlBody,
   validateRequest({
     params: z.object({
       id: objectIdSchema,

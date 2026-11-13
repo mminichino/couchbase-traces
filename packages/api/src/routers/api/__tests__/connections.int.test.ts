@@ -43,7 +43,7 @@ describe('connections router', () => {
     expect(res.body[0].name).toBe('My Team Connection');
   });
 
-  it('persists isPrometheusEndpoint through POST /connections', async () => {
+  it('rejects isPrometheusEndpoint through POST /connections', async () => {
     const { agent } = await getLoggedInAgent(server);
 
     const res = await agent
@@ -55,14 +55,13 @@ describe('connections router', () => {
         password: '',
         isPrometheusEndpoint: true,
       })
-      .expect(200);
+      .expect(400);
 
-    const stored = await Connection.findById(res.body.id);
-    expect(stored?.host).toBe('http://thanos:10902');
-    expect(stored?.isPrometheusEndpoint).toBe(true);
+    expect(res.body.message).toBe('PromQL sources are no longer supported.');
+    expect(await Connection.countDocuments()).toBe(0);
   });
 
-  it('persists isPrometheusEndpoint through PUT /connections/:id', async () => {
+  it('rejects isPrometheusEndpoint through PUT /connections/:id', async () => {
     const { agent, team } = await getLoggedInAgent(server);
 
     const created = await Connection.create({
@@ -73,7 +72,7 @@ describe('connections router', () => {
       password: '',
     });
 
-    await agent
+    const res = await agent
       .put(`/connections/${created._id.toString()}`)
       .send({
         id: created._id.toString(),
@@ -83,11 +82,11 @@ describe('connections router', () => {
         password: '',
         isPrometheusEndpoint: true,
       })
-      .expect(200);
+      .expect(400);
 
+    expect(res.body.message).toBe('PromQL sources are no longer supported.');
     const stored = await Connection.findById(created._id);
-    expect(stored?.host).toBe('http://thanos:10902');
-    expect(stored?.isPrometheusEndpoint).toBe(true);
+    expect(stored?.isPrometheusEndpoint).not.toBe(true);
   });
 
   it('toggles isPrometheusEndpoint back to false through PUT', async () => {

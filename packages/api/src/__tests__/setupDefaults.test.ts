@@ -61,22 +61,6 @@ describe('setupTeamDefaults', () => {
     jest.mocked(createSource).mockClear();
   });
 
-  it('creates a default PromQL source when PromQL is enabled', async () => {
-    configState.IS_PROMQL_ENABLED = true;
-
-    await setupTeamDefaults('team-1');
-
-    expect(createdKinds()).toEqual([SourceKind.Log, SourceKind.Promql]);
-    expect(createSource).toHaveBeenLastCalledWith(
-      'team-1',
-      expect.objectContaining({
-        kind: SourceKind.Promql,
-        connection: 'conn-1',
-        from: { databaseName: 'default', tableName: 'metrics_ts' },
-      }),
-    );
-  });
-
   it('skips a default PromQL source when PromQL is disabled', async () => {
     configState.IS_PROMQL_ENABLED = false;
 

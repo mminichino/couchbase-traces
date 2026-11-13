@@ -10,7 +10,6 @@ import {
 import express from 'express';
 import { z } from 'zod';
 
-import * as config from '@/config';
 import {
   getConnectionById,
   validateConnectionId,
@@ -110,10 +109,10 @@ function rejectPromqlSourceWhenDisabled(
   res: express.Response,
   next: express.NextFunction,
 ) {
-  if (req.body?.kind === SourceKind.Promql && !config.IS_PROMQL_ENABLED) {
+  if (req.body?.kind === SourceKind.Promql) {
     return res
       .status(400)
-      .json({ message: 'PromQL is not enabled on this deployment' });
+      .json({ message: 'PromQL sources are no longer supported.' });
   }
   next();
 }
@@ -864,7 +863,7 @@ function formatExternalSource(source: SourceDocument) {
  *           example: ResourceAttributes
  *     PromqlSource:
  *       type: object
- *       description: A source queried with PromQL. It reads either a ClickHouse TimeSeries table (through a ClickHouse connection) or a Prometheus-compatible endpoint (through a connection with isPrometheusEndpoint set to true). PromQL is a preview feature, so creating or updating a PromQL source is rejected unless it is enabled on the deployment (ENABLE_PROMQL).
+ *       description: A source queried with PromQL. Creating or updating a PromQL source is rejected. PromQL sources are no longer supported.
  *       required:
  *         - name
  *         - kind

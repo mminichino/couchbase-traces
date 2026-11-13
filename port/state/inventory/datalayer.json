@@ -1252,35 +1252,6 @@
           ]
         },
         {
-          "path": "packages/api/src/mcp/__tests__/dashboards/promqlQueryTile.int.test.ts",
-          "workspace": "@couchbase-traces/api",
-          "test": true,
-          "typeOnly": false,
-          "symbols": [
-            {
-              "name": "DEFAULT_DATABASE",
-              "references": 1,
-              "lines": [
-                61
-              ]
-            },
-            {
-              "name": "dropTimeSeriesTable",
-              "references": 1,
-              "lines": [
-                45
-              ]
-            },
-            {
-              "name": "seedTimeSeriesTagsTable",
-              "references": 1,
-              "lines": [
-                32
-              ]
-            }
-          ]
-        },
-        {
           "path": "packages/api/src/mcp/__tests__/dashboards/queryTile.int.test.ts",
           "workspace": "@couchbase-traces/api",
           "test": true,
@@ -1569,83 +1540,6 @@
               "references": 1,
               "lines": [
                 27
-              ]
-            }
-          ]
-        },
-        {
-          "path": "packages/api/src/mcp/__tests__/promqlQueryTool.int.test.ts",
-          "workspace": "@couchbase-traces/api",
-          "test": true,
-          "typeOnly": false,
-          "symbols": [
-            {
-              "name": "DEFAULT_DATABASE",
-              "references": 1,
-              "lines": [
-                60
-              ]
-            },
-            {
-              "name": "dropTimeSeriesTable",
-              "references": 1,
-              "lines": [
-                44
-              ]
-            },
-            {
-              "name": "seedTimeSeriesTagsTable",
-              "references": 1,
-              "lines": [
-                31
-              ]
-            }
-          ]
-        },
-        {
-          "path": "packages/api/src/mcp/__tests__/promqlSources.int.test.ts",
-          "workspace": "@couchbase-traces/api",
-          "test": true,
-          "typeOnly": false,
-          "symbols": [
-            {
-              "name": "DEFAULT_DATABASE",
-              "references": 6,
-              "lines": [
-                96,
-                123,
-                143,
-                170,
-                176,
-                288
-              ]
-            },
-            {
-              "name": "dropTimeSeriesTable",
-              "references": 1,
-              "lines": [
-                107
-              ]
-            },
-            {
-              "name": "getLoggedInAgent",
-              "references": 1,
-              "lines": [
-                83
-              ]
-            },
-            {
-              "name": "getServer",
-              "references": 1,
-              "lines": [
-                26
-              ]
-            },
-            {
-              "name": "seedTimeSeriesTagsTable",
-              "references": 1,
-              "lines": [
-                62
               ]
             }
           ]
@@ -2447,8 +2341,8 @@
               "lines": [
                 23,
                 47,
-                66,
-                94
+                65,
+                93
               ]
             },
             {
@@ -2722,84 +2616,6 @@
               "references": 1,
               "lines": [
                 17
-              ]
-            }
-          ]
-        },
-        {
-          "path": "packages/api/src/routers/api/__tests__/prometheus.int.test.ts",
-          "workspace": "@couchbase-traces/api",
-          "test": true,
-          "typeOnly": false,
-          "symbols": [
-            {
-              "name": "DEFAULT_DATABASE",
-              "references": 3,
-              "lines": [
-                89,
-                1043,
-                2256
-              ]
-            },
-            {
-              "name": "dropTimeSeriesTable",
-              "references": 4,
-              "lines": [
-                962,
-                1127,
-                1692,
-                1943
-              ]
-            },
-            {
-              "name": "getAgent",
-              "references": 2,
-              "lines": [
-                133,
-                2227
-              ]
-            },
-            {
-              "name": "getLoggedInAgent",
-              "references": 79,
-              "lines": [
-                138,
-                151,
-                164,
-                179,
-                201,
-                233,
-                264,
-                295,
-                328,
-                360,
-                390,
-                407,
-                433,
-                457,
-                489,
-                523,
-                555,
-                590,
-                624,
-                657
-              ]
-            },
-            {
-              "name": "getServer",
-              "references": 1,
-              "lines": [
-                69
-              ]
-            },
-            {
-              "name": "seedTimeSeriesTagsTable",
-              "references": 4,
-              "lines": [
-                941,
-                1112,
-                1671,
-                1922
               ]
             }
           ]
@@ -6285,10 +6101,10 @@
               "references": 5,
               "lines": [
                 20,
-                311,
-                325,
-                341,
-                357
+                303,
+                317,
+                333,
+                349
               ]
             }
           ]
@@ -15598,28 +15414,6 @@
           ]
         },
         {
-          "path": "packages/api/src/routers/api/__tests__/prometheus.int.test.ts",
-          "workspace": "@couchbase-traces/api",
-          "test": true,
-          "typeOnly": false,
-          "symbols": [
-            {
-              "name": "QUERY_ATTRIBUTION_HEADER",
-              "references": 1,
-              "lines": [
-                842
-              ]
-            },
-            {
-              "name": "buildLogComment",
-              "references": 1,
-              "lines": [
-                843
-              ]
-            }
-          ]
-        },
-        {
           "path": "packages/api/src/routers/api/prometheus.ts",
           "workspace": "@couchbase-traces/api",
           "test": false,
@@ -16893,28 +16687,6 @@
               "references": 1,
               "lines": [
                 379
-              ]
-            }
-          ]
-        },
-        {
-          "path": "packages/api/src/routers/api/__tests__/prometheus.int.test.ts",
-          "workspace": "@couchbase-traces/api",
-          "test": true,
-          "typeOnly": false,
-          "symbols": [
-            {
-              "name": "QUERY_ATTRIBUTION_HEADER",
-              "references": 1,
-              "lines": [
-                842
-              ]
-            },
-            {
-              "name": "buildLogComment",
-              "references": 1,
-              "lines": [
-                843
               ]
             }
           ]
@@ -21481,36 +21253,6 @@
           ]
         },
         {
-          "path": "packages/api/src/mcp/__tests__/dashboards/promqlQueryTile.int.test.ts",
-          "workspace": "@couchbase-traces/api",
-          "test": true,
-          "typeOnly": false,
-          "symbols": [
-            {
-              "name": "Metadata",
-              "references": 1,
-              "lines": [
-                177
-              ]
-            }
-          ]
-        },
-        {
-          "path": "packages/api/src/mcp/__tests__/promqlQueryTool.int.test.ts",
-          "workspace": "@couchbase-traces/api",
-          "test": true,
-          "typeOnly": false,
-          "symbols": [
-            {
-              "name": "Metadata",
-              "references": 1,
-              "lines": [
-                166
-              ]
-            }
-          ]
-        },
-        {
           "path": "packages/api/src/mcp/tools/query/__tests__/serviceHealthComparison.test.ts",
           "workspace": "@couchbase-traces/api",
           "test": true,
@@ -21850,21 +21592,6 @@
               "lines": [
                 51,
                 152
-              ]
-            }
-          ]
-        },
-        {
-          "path": "packages/api/src/routers/api/__tests__/prometheus.int.test.ts",
-          "workspace": "@couchbase-traces/api",
-          "test": true,
-          "typeOnly": false,
-          "symbols": [
-            {
-              "name": "Metadata",
-              "references": 1,
-              "lines": [
-                1132
               ]
             }
           ]
@@ -25240,21 +24967,21 @@
               "name": "getAdhocFilterSourceKinds",
               "references": 1,
               "lines": [
-                75
+                76
               ]
             },
             {
               "name": "isAdhocFilter",
               "references": 1,
               "lines": [
-                74
+                75
               ]
             },
             {
               "name": "isPrometheusLabelFilter",
               "references": 1,
               "lines": [
-                71
+                72
               ]
             }
           ]
@@ -29629,11 +29356,9 @@
           "symbols": [
             {
               "name": "SourceKind",
-              "references": 4,
+              "references": 1,
               "lines": [
-                69,
-                73,
-                85
+                69
               ]
             }
           ]
@@ -30310,54 +30035,6 @@
           ]
         },
         {
-          "path": "packages/api/src/mcp/__tests__/dashboards/promqlQueryTile.int.test.ts",
-          "workspace": "@couchbase-traces/api",
-          "test": true,
-          "typeOnly": false,
-          "symbols": [
-            {
-              "name": "DisplayType",
-              "references": 2,
-              "lines": [
-                101,
-                197
-              ]
-            },
-            {
-              "name": "SourceKind",
-              "references": 2,
-              "lines": [
-                57,
-                75
-              ]
-            }
-          ]
-        },
-        {
-          "path": "packages/api/src/mcp/__tests__/dashboards/promqlTiles.int.test.ts",
-          "workspace": "@couchbase-traces/api",
-          "test": true,
-          "typeOnly": false,
-          "symbols": [
-            {
-              "name": "DisplayType",
-              "references": 3,
-              "lines": [
-                37,
-                51,
-                310
-              ]
-            },
-            {
-              "name": "SourceKind",
-              "references": 1,
-              "lines": [
-                18
-              ]
-            }
-          ]
-        },
-        {
           "path": "packages/api/src/mcp/__tests__/dashboards/queryTile.int.test.ts",
           "workspace": "@couchbase-traces/api",
           "test": true,
@@ -30493,13 +30170,10 @@
           "symbols": [
             {
               "name": "SourceKind",
-              "references": 5,
+              "references": 2,
               "lines": [
-                48,
-                59,
-                67,
-                386,
-                400
+                47,
+                58
               ]
             }
           ]
@@ -30534,41 +30208,6 @@
               "references": 1,
               "lines": [
                 52
-              ]
-            }
-          ]
-        },
-        {
-          "path": "packages/api/src/mcp/__tests__/promqlQueryTool.int.test.ts",
-          "workspace": "@couchbase-traces/api",
-          "test": true,
-          "typeOnly": false,
-          "symbols": [
-            {
-              "name": "SourceKind",
-              "references": 2,
-              "lines": [
-                56,
-                74
-              ]
-            }
-          ]
-        },
-        {
-          "path": "packages/api/src/mcp/__tests__/promqlSources.int.test.ts",
-          "workspace": "@couchbase-traces/api",
-          "test": true,
-          "typeOnly": false,
-          "symbols": [
-            {
-              "name": "SourceKind",
-              "references": 5,
-              "lines": [
-                50,
-                92,
-                121,
-                168,
-                227
               ]
             }
           ]
@@ -31677,8 +31316,8 @@
               "name": "SourceKind",
               "references": 2,
               "lines": [
-                13,
-                15
+                14,
+                16
               ]
             }
           ]
@@ -32253,22 +31892,6 @@
           ]
         },
         {
-          "path": "packages/api/src/routers/api/__tests__/prometheus.int.test.ts",
-          "workspace": "@couchbase-traces/api",
-          "test": true,
-          "typeOnly": false,
-          "symbols": [
-            {
-              "name": "SourceKind",
-              "references": 2,
-              "lines": [
-                94,
-                2252
-              ]
-            }
-          ]
-        },
-        {
           "path": "packages/api/src/routers/api/__tests__/savedSearch.int.test.ts",
           "workspace": "@couchbase-traces/api",
           "test": true,
@@ -32291,7 +31914,7 @@
           "symbols": [
             {
               "name": "SourceKind",
-              "references": 71,
+              "references": 69,
               "lines": [
                 20,
                 32,
@@ -32323,24 +31946,24 @@
                 31,
                 50,
                 572,
-                1497
+                1448
               ]
             },
             {
               "name": "UseTextIndex",
               "references": 11,
               "lines": [
-                1477,
-                1482,
-                1491,
-                1511,
-                1520,
-                1527,
-                1536,
-                1544,
-                1552,
-                1561,
-                1568
+                1428,
+                1433,
+                1442,
+                1462,
+                1471,
+                1478,
+                1487,
+                1495,
+                1503,
+                1512,
+                1519
               ]
             }
           ]
@@ -32475,16 +32098,16 @@
               "name": "ConnectionSchema",
               "references": 2,
               "lines": [
-                82,
-                100
+                85,
+                103
               ]
             },
             {
               "name": "ConnectionSchemaNoId",
               "references": 2,
               "lines": [
-                44,
-                58
+                46,
+                60
               ]
             }
           ]
@@ -32514,65 +32137,65 @@
               "name": "DashboardFilter",
               "references": 3,
               "lines": [
-                69,
-                93,
-                94
+                70,
+                94,
+                95
               ]
             },
             {
               "name": "DashboardSchema",
               "references": 1,
               "lines": [
-                202
+                205
               ]
             },
             {
               "name": "DashboardWithoutIdSchema",
               "references": 2,
               "lines": [
-                167,
-                224
+                169,
+                227
               ]
             },
             {
               "name": "PresetDashboard",
               "references": 4,
               "lines": [
-                272,
-                304,
-                341,
-                371
+                275,
+                307,
+                344,
+                374
               ]
             },
             {
               "name": "PresetDashboardFilterSchema",
               "references": 2,
               "lines": [
-                301,
-                338
+                304,
+                341
               ]
             },
             {
               "name": "SourceKind",
               "references": 3,
               "lines": [
-                70,
-                72,
-                96
+                71,
+                73,
+                97
               ]
             },
             {
               "name": "resolveChartPaletteToken",
               "references": 1,
               "lines": [
-                145
+                146
               ]
             },
             {
               "name": "walkRawDashboardTileColors",
               "references": 1,
               "lines": [
-                144
+                145
               ]
             }
           ]
@@ -32750,14 +32373,14 @@
               "name": "SourceSchema",
               "references": 1,
               "lines": [
-                98
+                101
               ]
             },
             {
               "name": "SourceSchemaNoId",
               "references": 1,
               "lines": [
-                59
+                61
               ]
             }
           ]
@@ -33115,7 +32738,7 @@
           "symbols": [
             {
               "name": "SourceKind",
-              "references": 15,
+              "references": 12,
               "lines": [
                 63,
                 75,
@@ -33123,15 +32746,12 @@
                 116,
                 150,
                 188,
-                252,
-                262,
-                267,
-                312,
-                319,
-                358,
-                417,
-                482,
-                487
+                291,
+                298,
+                329,
+                388,
+                453,
+                458
               ]
             }
           ]
@@ -33262,31 +32882,31 @@
               "name": "ClickHouseConnectionSchema",
               "references": 2,
               "lines": [
-                33,
-                49
+                34,
+                50
               ]
             },
             {
               "name": "ConnectionSchemaNoId",
               "references": 1,
               "lines": [
-                41
+                42
               ]
             },
             {
               "name": "CouchbaseConnectionSchema",
               "references": 2,
               "lines": [
-                34,
-                57
+                35,
+                58
               ]
             },
             {
               "name": "withDefaultConnectionKind",
               "references": 2,
               "lines": [
-                31,
-                47
+                32,
+                48
               ]
             }
           ]
@@ -33325,20 +32945,20 @@
               "name": "SourceKind",
               "references": 6,
               "lines": [
-                113,
-                126,
-                128,
-                130,
-                132,
-                134
+                112,
+                125,
+                127,
+                129,
+                131,
+                133
               ]
             },
             {
               "name": "SourceSchemaNoId",
               "references": 2,
               "lines": [
-                1148,
-                1255
+                1147,
+                1254
               ]
             }
           ]
@@ -44231,25 +43851,19 @@
           "symbols": [
             {
               "name": "SourceKind",
-              "references": 10,
+              "references": 3,
               "lines": [
                 30,
-                112,
-                115,
-                131,
-                140,
-                147,
-                157,
-                167
+                110,
+                120
               ]
             },
             {
               "name": "TSourceNoId",
-              "references": 3,
+              "references": 2,
               "lines": [
                 79,
-                93,
-                146
+                93
               ]
             }
           ]
@@ -49215,21 +48829,6 @@
           ]
         },
         {
-          "path": "packages/app/tests/e2e/features/dashboard-promql-label-filters.spec.ts",
-          "workspace": "@couchbase-traces/app",
-          "test": true,
-          "typeOnly": false,
-          "symbols": [
-            {
-              "name": "DisplayType",
-              "references": 1,
-              "lines": [
-                215
-              ]
-            }
-          ]
-        },
-        {
           "path": "packages/app/tests/e2e/features/dashboard-required-filters.spec.ts",
           "workspace": "@couchbase-traces/app",
           "test": true,
@@ -49357,84 +48956,6 @@
                 101,
                 102,
                 103
-              ]
-            }
-          ]
-        },
-        {
-          "path": "packages/app/tests/e2e/features/promql-heatmap.spec.ts",
-          "workspace": "@couchbase-traces/app",
-          "test": true,
-          "typeOnly": false,
-          "symbols": [
-            {
-              "name": "DisplayType",
-              "references": 1,
-              "lines": [
-                39
-              ]
-            }
-          ]
-        },
-        {
-          "path": "packages/app/tests/e2e/features/promql-macros.spec.ts",
-          "workspace": "@couchbase-traces/app",
-          "test": true,
-          "typeOnly": false,
-          "symbols": [
-            {
-              "name": "DisplayType",
-              "references": 2,
-              "lines": [
-                26,
-                57
-              ]
-            }
-          ]
-        },
-        {
-          "path": "packages/app/tests/e2e/features/promql-number.spec.ts",
-          "workspace": "@couchbase-traces/app",
-          "test": true,
-          "typeOnly": false,
-          "symbols": [
-            {
-              "name": "DisplayType",
-              "references": 2,
-              "lines": [
-                43,
-                103
-              ]
-            }
-          ]
-        },
-        {
-          "path": "packages/app/tests/e2e/features/promql-pie-bar.spec.ts",
-          "workspace": "@couchbase-traces/app",
-          "test": true,
-          "typeOnly": false,
-          "symbols": [
-            {
-              "name": "DisplayType",
-              "references": 2,
-              "lines": [
-                52,
-                109
-              ]
-            }
-          ]
-        },
-        {
-          "path": "packages/app/tests/e2e/features/promql-table.spec.ts",
-          "workspace": "@couchbase-traces/app",
-          "test": true,
-          "typeOnly": false,
-          "symbols": [
-            {
-              "name": "DisplayType",
-              "references": 1,
-              "lines": [
-                65
               ]
             }
           ]

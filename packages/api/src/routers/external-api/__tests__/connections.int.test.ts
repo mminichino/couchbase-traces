@@ -208,7 +208,7 @@ describe('External API v2 Connections', () => {
         .expect(400);
     });
 
-    it('should create a Prometheus-compatible connection', async () => {
+    it('should reject a Prometheus-compatible connection', async () => {
       const response = await authRequest('post', CONNECTIONS_BASE_URL)
         .send({
           name: 'Thanos',
@@ -217,13 +217,11 @@ describe('External API v2 Connections', () => {
           password: '',
           isPrometheusEndpoint: true,
         })
-        .expect(200);
+        .expect(400);
 
-      expect(response.body.data).toMatchObject({
-        name: 'Thanos',
-        host: 'http://thanos:10902',
-        isPrometheusEndpoint: true,
-      });
+      expect(response.body.message).toBe(
+        'PromQL sources are no longer supported.',
+      );
     });
 
     it('should require authentication', async () => {
@@ -327,23 +325,28 @@ describe('External API v2 Connections', () => {
       expect(stored?.hyperdxSettingPrefix).toBeUndefined();
     });
 
-    it('should toggle isPrometheusEndpoint', async () => {
+    it('should reject turning on isPrometheusEndpoint', async () => {
       const connection = await Connection.create({
         ...MOCK_CONNECTION,
         team: team._id,
       });
 
-      await authRequest('put', `${CONNECTIONS_BASE_URL}/${connection._id}`)
+      const response = await authRequest(
+        'put',
+        `${CONNECTIONS_BASE_URL}/${connection._id}`,
+      )
         .send({
           ...MOCK_CONNECTION,
           host: 'http://thanos:10902',
           isPrometheusEndpoint: true,
         })
-        .expect(200);
+        .expect(400);
 
+      expect(response.body.message).toBe(
+        'PromQL sources are no longer supported.',
+      );
       const stored = await Connection.findById(connection._id);
-      expect(stored?.host).toBe('http://thanos:10902');
-      expect(stored?.isPrometheusEndpoint).toBe(true);
+      expect(stored?.isPrometheusEndpoint).not.toBe(true);
     });
 
     it('should keep hyperdxSettingPrefix unchanged when omitted', async () => {

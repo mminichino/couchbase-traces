@@ -47,7 +47,7 @@
       "kind": "api_route",
       "key": "DELETE /api/v2/connections/:id",
       "file": "packages/api/src/routers/external-api/v2/connections.ts",
-      "line": 669,
+      "line": 672,
       "detail": {
         "method": "DELETE",
         "path": "/api/v2/connections/:id",
@@ -61,7 +61,7 @@
       "kind": "api_route",
       "key": "DELETE /api/v2/dashboards/:id",
       "file": "packages/api/src/routers/external-api/v2/dashboards.ts",
-      "line": 3727,
+      "line": 3728,
       "detail": {
         "method": "DELETE",
         "path": "/api/v2/dashboards/:id",
@@ -89,7 +89,7 @@
       "kind": "api_route",
       "key": "DELETE /api/v2/sources/:id",
       "file": "packages/api/src/routers/external-api/v2/sources.ts",
-      "line": 1337,
+      "line": 1336,
       "detail": {
         "method": "DELETE",
         "path": "/api/v2/sources/:id",
@@ -145,7 +145,7 @@
       "kind": "api_route",
       "key": "DELETE /connections/:id",
       "file": "packages/api/src/routers/api/connections.ts",
-      "line": 163,
+      "line": 166,
       "detail": {
         "method": "DELETE",
         "path": "/connections/:id",
@@ -159,7 +159,7 @@
       "kind": "api_route",
       "key": "DELETE /dashboards/:id",
       "file": "packages/api/src/routers/api/dashboards.ts",
-      "line": 249,
+      "line": 252,
       "detail": {
         "method": "DELETE",
         "path": "/dashboards/:id",
@@ -173,7 +173,7 @@
       "kind": "api_route",
       "key": "DELETE /dashboards/preset/:presetDashboard/filter/:id",
       "file": "packages/api/src/routers/api/dashboards.ts",
-      "line": 367,
+      "line": 370,
       "detail": {
         "method": "DELETE",
         "path": "/dashboards/preset/:presetDashboard/filter/:id",
@@ -215,7 +215,7 @@
       "kind": "api_route",
       "key": "DELETE /sources/:id",
       "file": "packages/api/src/routers/api/sources.ts",
-      "line": 142,
+      "line": 145,
       "detail": {
         "method": "DELETE",
         "path": "/sources/:id",
@@ -383,7 +383,7 @@
       "kind": "api_route",
       "key": "GET /api/v2/connections",
       "file": "packages/api/src/routers/external-api/v2/connections.ts",
-      "line": 299,
+      "line": 300,
       "detail": {
         "method": "GET",
         "path": "/api/v2/connections",
@@ -397,7 +397,7 @@
       "kind": "api_route",
       "key": "GET /api/v2/connections/:id",
       "file": "packages/api/src/routers/external-api/v2/connections.ts",
-      "line": 382,
+      "line": 383,
       "detail": {
         "method": "GET",
         "path": "/api/v2/connections/:id",
@@ -411,7 +411,7 @@
       "kind": "api_route",
       "key": "GET /api/v2/dashboards",
       "file": "packages/api/src/routers/external-api/v2/dashboards.ts",
-      "line": 2960,
+      "line": 2959,
       "detail": {
         "method": "GET",
         "path": "/api/v2/dashboards",
@@ -425,7 +425,7 @@
       "kind": "api_route",
       "key": "GET /api/v2/dashboards/:id",
       "file": "packages/api/src/routers/external-api/v2/dashboards.ts",
-      "line": 3061,
+      "line": 3060,
       "detail": {
         "method": "GET",
         "path": "/api/v2/dashboards/:id",
@@ -467,7 +467,7 @@
       "kind": "api_route",
       "key": "GET /api/v2/sources",
       "file": "packages/api/src/routers/external-api/v2/sources.ts",
-      "line": 994,
+      "line": 993,
       "detail": {
         "method": "GET",
         "path": "/api/v2/sources",
@@ -481,7 +481,7 @@
       "kind": "api_route",
       "key": "GET /api/v2/sources/:id",
       "file": "packages/api/src/routers/external-api/v2/sources.ts",
-      "line": 1057,
+      "line": 1056,
       "detail": {
         "method": "GET",
         "path": "/api/v2/sources/:id",
@@ -565,7 +565,7 @@
       "kind": "api_route",
       "key": "GET /connections",
       "file": "packages/api/src/routers/api/connections.ts",
-      "line": 29,
+      "line": 30,
       "detail": {
         "method": "GET",
         "path": "/connections",
@@ -579,7 +579,7 @@
       "kind": "api_route",
       "key": "GET /dashboards",
       "file": "packages/api/src/routers/api/dashboards.ts",
-      "line": 151,
+      "line": 152,
       "detail": {
         "method": "GET",
         "path": "/dashboards",
@@ -593,7 +593,7 @@
       "kind": "api_route",
       "key": "GET /dashboards/preset/:presetDashboard/filters",
       "file": "packages/api/src/routers/api/dashboards.ts",
-      "line": 268,
+      "line": 271,
       "detail": {
         "method": "GET",
         "path": "/dashboards/preset/:presetDashboard/filters",
@@ -733,7 +733,7 @@
       "kind": "api_route",
       "key": "GET /sources",
       "file": "packages/api/src/routers/api/sources.ts",
-      "line": 39,
+      "line": 40,
       "detail": {
         "method": "GET",
         "path": "/sources",
@@ -901,7 +901,7 @@
       "kind": "api_route",
       "key": "PATCH /dashboards/:id",
       "file": "packages/api/src/routers/api/dashboards.ts",
-      "line": 195,
+      "line": 197,
       "detail": {
         "method": "PATCH",
         "path": "/dashboards/:id",
@@ -1083,7 +1083,7 @@
       "kind": "api_route",
       "key": "POST /api/v2/connections",
       "file": "packages/api/src/routers/external-api/v2/connections.ts",
-      "line": 452,
+      "line": 453,
       "detail": {
         "method": "POST",
         "path": "/api/v2/connections",
@@ -1097,7 +1097,7 @@
       "kind": "api_route",
       "key": "POST /api/v2/dashboards",
       "file": "packages/api/src/routers/external-api/v2/dashboards.ts",
-      "line": 3351,
+      "line": 3350,
       "detail": {
         "method": "POST",
         "path": "/api/v2/dashboards",
@@ -1111,7 +1111,7 @@
       "kind": "api_route",
       "key": "POST /api/v2/dashboards/validate",
       "file": "packages/api/src/routers/external-api/v2/dashboards.ts",
-      "line": 3172,
+      "line": 3171,
       "detail": {
         "method": "POST",
         "path": "/api/v2/dashboards/validate",
@@ -1153,7 +1153,7 @@
       "kind": "api_route",
       "key": "POST /api/v2/sources",
       "file": "packages/api/src/routers/external-api/v2/sources.ts",
-      "line": 1144,
+      "line": 1143,
       "detail": {
         "method": "POST",
         "path": "/api/v2/sources",
@@ -1237,7 +1237,7 @@
       "kind": "api_route",
       "key": "POST /connections",
       "file": "packages/api/src/routers/api/connections.ts",
-      "line": 41,
+      "line": 42,
       "detail": {
         "method": "POST",
         "path": "/connections",
@@ -1293,7 +1293,7 @@
       "kind": "api_route",
       "key": "POST /dashboards",
       "file": "packages/api/src/routers/api/dashboards.ts",
-      "line": 163,
+      "line": 164,
       "detail": {
         "method": "POST",
         "path": "/dashboards",
@@ -1307,7 +1307,7 @@
       "kind": "api_route",
       "key": "POST /dashboards/preset/:presetDashboard/filter",
       "file": "packages/api/src/routers/api/dashboards.ts",
-      "line": 334,
+      "line": 337,
       "detail": {
         "method": "POST",
         "path": "/dashboards/preset/:presetDashboard/filter",
@@ -1377,7 +1377,7 @@
       "kind": "api_route",
       "key": "POST /sources",
       "file": "packages/api/src/routers/api/sources.ts",
-      "line": 56,
+      "line": 57,
       "detail": {
         "method": "POST",
         "path": "/sources",
@@ -1531,7 +1531,7 @@
       "kind": "api_route",
       "key": "PUT /api/v2/connections/:id",
       "file": "packages/api/src/routers/external-api/v2/connections.ts",
-      "line": 546,
+      "line": 548,
       "detail": {
         "method": "PUT",
         "path": "/api/v2/connections/:id",
@@ -1573,7 +1573,7 @@
       "kind": "api_route",
       "key": "PUT /api/v2/sources/:id",
       "file": "packages/api/src/routers/external-api/v2/sources.ts",
-      "line": 1248,
+      "line": 1247,
       "detail": {
         "method": "PUT",
         "path": "/api/v2/sources/:id",
@@ -1601,7 +1601,7 @@
       "kind": "api_route",
       "key": "PUT /connections/:id",
       "file": "packages/api/src/routers/api/connections.ts",
-      "line": 79,
+      "line": 81,
       "detail": {
         "method": "PUT",
         "path": "/connections/:id",
@@ -1615,7 +1615,7 @@
       "kind": "api_route",
       "key": "PUT /dashboards/preset/:presetDashboard/filter",
       "file": "packages/api/src/routers/api/dashboards.ts",
-      "line": 297,
+      "line": 300,
       "detail": {
         "method": "PUT",
         "path": "/dashboards/preset/:presetDashboard/filter",
@@ -1657,7 +1657,7 @@
       "kind": "api_route",
       "key": "PUT /sources/:id",
       "file": "packages/api/src/routers/api/sources.ts",
-      "line": 95,
+      "line": 97,
       "detail": {
         "method": "PUT",
         "path": "/sources/:id",

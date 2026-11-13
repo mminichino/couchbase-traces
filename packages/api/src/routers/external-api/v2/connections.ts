@@ -18,6 +18,7 @@ import {
 import { ConnectionDocument } from '@/models/connection';
 import { processRequestWithEnhancedErrors as validateRequest } from '@/utils/enhancedErrors';
 import logger from '@/utils/logger';
+import { rejectPromqlBody } from '@/utils/rejectPromql';
 import { objectIdSchema } from '@/utils/zod';
 
 const timestampFields = {
@@ -451,6 +452,7 @@ router.get(
  */
 router.post(
   '/',
+  rejectPromqlBody,
   validateRequest({
     body: createConnectionBodySchema,
   }),
@@ -545,6 +547,7 @@ router.post(
  */
 router.put(
   '/:id',
+  rejectPromqlBody,
   validateRequest({
     params: z.object({
       id: objectIdSchema,

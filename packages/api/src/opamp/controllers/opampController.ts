@@ -370,27 +370,6 @@ export const buildOtelCollectorConfig = (
       'otlp/hyperdx',
     );
 
-    if (config.IS_PROMQL_ENABLED && otelCollectorConfig.exporters) {
-      // The collector's entrypoint.sh derives the scheme and TLS mode from
-      // CLICKHOUSE_PROMETHEUS_METRICS_ENDPOINT. The defaults keep plain HTTP
-      // for collector images that predate it.
-      otelCollectorConfig.exporters.prometheusremotewrite = {
-        endpoint:
-          '${env:CBT_PROMETHEUS_SCHEME:-http}://${env:CLICKHOUSE_PROMETHEUS_METRICS_ENDPOINT}/write',
-        tls: {
-          insecure: '${env:CBT_PROMETHEUS_TLS_INSECURE:-true}',
-        },
-        resource_to_telemetry_conversion: {
-          enabled: true,
-        },
-      };
-      otelCollectorConfig.service.pipelines['metrics/promql'] = {
-        receivers: ['otlp/hyperdx'],
-        processors: ['memory_limiter', 'batch'],
-        exporters: ['prometheusremotewrite'],
-      };
-    }
-
     if (collectorAuthenticationEnforced) {
       if (otelCollectorConfig.receivers['otlp/hyperdx'] == null) {
         // should never happen

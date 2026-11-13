@@ -650,7 +650,7 @@
           "file": "packages/api/src/routers/api/connections.ts"
         }
       ],
-      "closureSize": 49,
+      "closureSize": 50,
       "exclusiveFiles": [
         "packages/api/src/routers/api/connections.ts"
       ],
@@ -2552,7 +2552,7 @@
           "file": "packages/api/src/routers/api/sources.ts"
         }
       ],
-      "closureSize": 44,
+      "closureSize": 45,
       "exclusiveFiles": [
         "packages/api/src/routers/api/sources.ts"
       ],
@@ -3148,7 +3148,7 @@
       "name": "Prometheus-compatible query API",
       "area": "metrics",
       "visibility": "api",
-      "status": "needs_decision",
+      "status": "dropped",
       "entryPoints": [
         {
           "id": "api_route:GET /v1/prometheus/label/:name/values",
@@ -3501,9 +3501,7 @@
         "unit": [
           "packages/api/src/routers/api/__tests__/prometheus.test.ts"
         ],
-        "int": [
-          "packages/api/src/routers/api/__tests__/prometheus.int.test.ts"
-        ],
+        "int": [],
         "e2e": []
       }
     },
@@ -6949,7 +6947,7 @@
           "file": "packages/app/pages/dashboards/templates.tsx"
         }
       ],
-      "closureSize": 608,
+      "closureSize": 609,
       "exclusiveFiles": [
         "packages/api/src/controllers/presetDashboardFilters.ts",
         "packages/api/src/models/presetDashboardFilter.ts",
@@ -15411,7 +15409,7 @@
           "file": "packages/api/src/routers/external-api/v2/connections.ts"
         }
       ],
-      "closureSize": 43,
+      "closureSize": 44,
       "exclusiveFiles": [],
       "dataLayer": [
         {
@@ -15713,7 +15711,7 @@
           "file": "packages/api/src/routers/external-api/v2/dashboards.ts"
         }
       ],
-      "closureSize": 47,
+      "closureSize": 48,
       "exclusiveFiles": [],
       "dataLayer": [
         {
@@ -16014,7 +16012,7 @@
           "file": "packages/api/src/routers/external-api/v2/index.ts"
         }
       ],
-      "closureSize": 112,
+      "closureSize": 113,
       "exclusiveFiles": [
         "packages/api/src/routers/external-api/v2/index.ts",
         "packages/api/src/utils/rateLimiter.ts"
@@ -17961,7 +17959,7 @@
           "file": "packages/otel-collector/builder-config.yaml"
         }
       ],
-      "closureSize": 29,
+      "closureSize": 66,
       "exclusiveFiles": [
         "docker/otel-collector/Dockerfile",
         "docker/otel-collector/config.standalone.auth.yaml",
@@ -17984,6 +17982,43 @@
         "docker/otel-collector/schema/seed/00007_otel_traces_rollups.sql",
         "docker/otel-collector/schema/seed/00008_otel_metrics_timeseries.sql",
         "docker/otel-collector/supervisor_docker.yaml.tmpl",
+        "packages/ingest/Dockerfile",
+        "packages/ingest/eslint.config.mjs",
+        "packages/ingest/jest.config.js",
+        "packages/ingest/jest.int.config.js",
+        "packages/ingest/package.json",
+        "packages/ingest/src/__tests__/ingest.int.test.ts",
+        "packages/ingest/src/__tests__/model.test.ts",
+        "packages/ingest/src/__tests__/server.test.ts",
+        "packages/ingest/src/__tests__/transform.test.ts",
+        "packages/ingest/src/__tests__/values.test.ts",
+        "packages/ingest/src/__tests__/writer.test.ts",
+        "packages/ingest/src/config.ts",
+        "packages/ingest/src/index.ts",
+        "packages/ingest/src/model/collections.ts",
+        "packages/ingest/src/model/keys.ts",
+        "packages/ingest/src/model/materialized.ts",
+        "packages/ingest/src/model/sources.ts",
+        "packages/ingest/src/otlp/types.ts",
+        "packages/ingest/src/otlp/values.ts",
+        "packages/ingest/src/selfMetrics.ts",
+        "packages/ingest/src/server.ts",
+        "packages/ingest/src/setup/cli.ts",
+        "packages/ingest/src/setup/docs.ts",
+        "packages/ingest/src/setup/errors.ts",
+        "packages/ingest/src/setup/indexes.ts",
+        "packages/ingest/src/setup/keyspace.ts",
+        "packages/ingest/src/setup/search.ts",
+        "packages/ingest/src/setup/users.ts",
+        "packages/ingest/src/transform/common.ts",
+        "packages/ingest/src/transform/logs.ts",
+        "packages/ingest/src/transform/metrics.ts",
+        "packages/ingest/src/transform/sessions.ts",
+        "packages/ingest/src/transform/traces.ts",
+        "packages/ingest/src/ttl.ts",
+        "packages/ingest/src/writer.ts",
+        "packages/ingest/tsconfig.build.json",
+        "packages/ingest/tsconfig.json",
         "packages/otel-collector/CHANGELOG.md",
         "packages/otel-collector/README.md",
         "packages/otel-collector/builder-config.yaml",
@@ -17995,8 +18030,16 @@
       ],
       "dataLayer": [],
       "tests": {
-        "unit": [],
-        "int": [],
+        "unit": [
+          "packages/ingest/src/__tests__/model.test.ts",
+          "packages/ingest/src/__tests__/server.test.ts",
+          "packages/ingest/src/__tests__/transform.test.ts",
+          "packages/ingest/src/__tests__/values.test.ts",
+          "packages/ingest/src/__tests__/writer.test.ts"
+        ],
+        "int": [
+          "packages/ingest/src/__tests__/ingest.int.test.ts"
+        ],
         "e2e": []
       }
     },
@@ -20985,10 +21028,14 @@
       },
       {
         "status": "needs_decision",
-        "count": 4
+        "count": 3
       },
       {
         "status": "dropped",
+        "count": 1
+      },
+      {
+        "status": "replaced",
         "count": 0
       }
     ]
