@@ -100,9 +100,11 @@ Generated from `MAPPINGS` in `packages/common-utils/src/couchbase/functions.ts`.
 | `array` | No SQL++ equivalent in this phase; catalog token or ClickHouse-only function |
 | `Array` | ClickHouse type name; column types come from INFER |
 | `ARRAY_AGG` | No SQL++ equivalent in this phase; catalog token or ClickHouse-only function |
+| `ARRAY_CONCAT` | No SQL++ equivalent in this phase; catalog token or ClickHouse-only function |
 | `ARRAY_CONTAINS` | No SQL++ equivalent in this phase; catalog token or ClickHouse-only function |
 | `ARRAY_LENGTH` | No SQL++ equivalent in this phase; catalog token or ClickHouse-only function |
 | `ARRAY_RANGE` | No SQL++ equivalent in this phase; catalog token or ClickHouse-only function |
+| `ARRAY_REVERSE` | No SQL++ equivalent in this phase; catalog token or ClickHouse-only function |
 | `ARRAY_SORT` | No SQL++ equivalent in this phase; catalog token or ClickHouse-only function |
 | `ARRAY_SUM` | No SQL++ equivalent in this phase; catalog token or ClickHouse-only function |
 | `arrayConcat` | No SQL++ equivalent in this phase; catalog token or ClickHouse-only function |
@@ -330,7 +332,7 @@ Generated from `MAPPINGS` in `packages/common-utils/src/couchbase/functions.ts`.
 | `metricType` | No SQL++ equivalent in this phase; catalog token or ClickHouse-only function |
 | `MILLIS_TO_UTC` | No SQL++ equivalent in this phase; catalog token or ClickHouse-only function |
 | `min` | No SQL++ equivalent in this phase; catalog token or ClickHouse-only function |
-| `MIN` | No SQL++ equivalent in this phase; catalog token or ClickHouse-only function |
+| `MIN` | Combinator is expressed as CASE WHEN or ARRAY_CONTAINS |
 | `min_bytes_to_use_direct_io` | ClickHouse setting; the renderer drops SETTINGS |
 | `mining` | No SQL++ equivalent in this phase; catalog token or ClickHouse-only function |
 | `Modes` | No SQL++ equivalent in this phase; catalog token or ClickHouse-only function |
@@ -362,6 +364,7 @@ Generated from `MAPPINGS` in `packages/common-utils/src/couchbase/functions.ts`.
 | `position` | No SQL++ equivalent in this phase; catalog token or ClickHouse-only function |
 | `positiveModulo` | No SQL++ equivalent in this phase; catalog token or ClickHouse-only function |
 | `pow` | No SQL++ equivalent in this phase; catalog token or ClickHouse-only function |
+| `POWER` | No SQL++ equivalent in this phase; catalog token or ClickHouse-only function |
 | `precision` | No SQL++ equivalent in this phase; catalog token or ClickHouse-only function |
 | `prefix` | No SQL++ equivalent in this phase; catalog token or ClickHouse-only function |
 | `prometheusQuery` | No SQL++ equivalent in this phase; catalog token or ClickHouse-only function |
@@ -405,6 +408,7 @@ Generated from `MAPPINGS` in `packages/common-utils/src/couchbase/functions.ts`.
 | `shape` | No SQL++ equivalent in this phase; catalog token or ClickHouse-only function |
 | `shell` | No SQL++ equivalent in this phase; catalog token or ClickHouse-only function |
 | `sign` | No SQL++ equivalent in this phase; catalog token or ClickHouse-only function |
+| `SIGN` | No SQL++ equivalent in this phase; catalog token or ClickHouse-only function |
 | `SimpleAggregateFunction` | ClickHouse type name; column types come from INFER |
 | `slices` | No SQL++ equivalent in this phase; catalog token or ClickHouse-only function |
 | `small` | No SQL++ equivalent in this phase; catalog token or ClickHouse-only function |

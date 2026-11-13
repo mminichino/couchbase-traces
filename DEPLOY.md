@@ -1,15 +1,15 @@
 # Couchbase Traces Deployment Guide
 
 Couchbase Traces helps engineers quickly figure out why production is broken by
-making it easy to search and visualize logs and traces. The current build still
-stores telemetry in ClickHouse. You can learn more about Couchbase Traces in the
+making it easy to search and visualize logs and traces. Telemetry is stored in
+**Couchbase Server 8.x** (or Capella). You can learn more in the
 [README](/README.md).
 
 Couchbase Traces can be deployed in a few different ways:
 
-- [Bring Your Own ClickHouse](#bring-your-own-clickhouse)
+- [Bring Your Own Couchbase](#bring-your-own-couchbase)
 - [All-in-one Docker Compose Stack](#all-in-one-docker-compose-stack)
-- [Local Development Mode](#local-development-mode)
+- [Single-container all-in-one (local build)](#single-container-all-in-one-local-build)
 
 ## Container image names
 
@@ -19,16 +19,18 @@ locally with the `make` targets until they are.
 | Image                       | Name                                         |
 | --------------------------- | -------------------------------------------- |
 | Couchbase Traces (UI + API) | `mminichino/couchbase-traces`                |
-| All-in-one (with auth)      | `mminichino/couchbase-traces-all-in-one`     |
-| Local (all-in-one, no auth) | `mminichino/couchbase-traces-local`          |
-| OpenTelemetry collector     | `mminichino/couchbase-traces-otel-collector` |
+| All-in-one (with auth)      | `ghcr.io/mminichino/couchbase-traces-all-in-one`     |
+| Ingest                      | `ghcr.io/mminichino/couchbase-traces-ingest`         |
+| OpenTelemetry collector     | `ghcr.io/mminichino/couchbase-traces-otel-collector` |
 
-## Bring Your Own ClickHouse
+Images are built locally (`make build-app`, `make build-ingest`, `make build-all-in-one`); they are not published to a registry yet.
 
-If you already have an existing ClickHouse cluster, you can simply deploy the
-Couchbase Traces container that connects to your ClickHouse cluster. You'll need
-a separate MongoDB instance to persist your users, dashboards, searches and
-more.
+## Bring Your Own Couchbase
+
+If you already run Couchbase Server 8.x or Capella, deploy the API/UI container
+with `MONGO_URI` and a Couchbase connection configured in the UI (or via
+`DEFAULT_CONNECTIONS`). See [docs/self-managed.md](docs/self-managed.md) and
+[docs/capella.md](docs/capella.md).
 
 To get started, you can run the following image:
 
@@ -64,14 +66,14 @@ environment variables tune it; each takes a positive integer.
 | `CBT_COUCHBASE_MAX_BUFFERED_BYTES` | `268435456` | Result size limit for formats that buffer the whole result |
 | `CBT_COUCHBASE_FRAME_ROWS`         | `500`       | Rows per streamed result frame                             |
 
-Couchbase connections need the API process, so local mode supports ClickHouse
-connections only.
+Browser-only local mode still supports ClickHouse connections only; full stacks
+use Couchbase through the API.
 
 ## All-in-one Docker Compose Stack
 
-The easiest way to get started with Couchbase Traces from scratch is to use our
-all-in-one Docker Compose stack. This stack will start ClickHouse, an
-OpenTelemetry collector, the Couchbase Traces UI and API, and MongoDB.
+The easiest way to get started from scratch is the product Docker Compose stack
+(Couchbase, ingest, OpenTelemetry collector, API, UI, and MongoDB). Copy
+`.env.example` to `.env`, set required secrets, then:
 
 To get started, clone this repository and run the following command:
 
@@ -102,15 +104,16 @@ Reuse the same secret across restarts and all replicas. Without it the API
 generates one per process, which signs users out on every restart and prevents
 replicas from sharing sessions. The old public value is not a production secret.
 
-## Local Development Mode
+## Single-container all-in-one (local build)
 
-Couchbase Traces can also be deployed alongside your existing local development
-stack to help you debug issues locally. This mode will start an OpenTelemetry
-collector, ClickHouse, the Couchbase Traces UI and API, and MongoDB in a single
-container, without any authentication or configuration persistence.
-
-To get started, spin up the local mode container:
+For demos or air-gapped trials, build the all-in-one image locally (bundles
+Couchbase Server Enterprise — not redistributed without Couchbase approval):
 
 ```bash
-docker run -p 8080:8080 ghcr.io/mminichino/couchbase-traces-local:2
+make build-all-in-one
+docker run --memory=4g -p 8080:8080 -p 4318:4318 \
+  ghcr.io/mminichino/couchbase-traces-all-in-one:2
 ```
+
+Register a user at first visit; the entrypoint generates Couchbase and ingest
+secrets under `/data/cbt/secrets.env`.

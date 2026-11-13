@@ -5,7 +5,7 @@
       "name": "AI assistant",
       "area": "ai",
       "visibility": "user",
-      "status": "not_started",
+      "status": "ported",
       "entryPoints": [
         {
           "id": "api_route:POST /ai/assistant",
@@ -13,9 +13,11 @@
           "file": "packages/api/src/routers/api/ai.ts"
         }
       ],
-      "closureSize": 94,
+      "closureSize": 100,
       "exclusiveFiles": [
         "packages/api/src/controllers/ai.ts",
+        "packages/api/src/controllers/aiPrompts.ts",
+        "packages/api/src/controllers/aiValidation.ts",
         "packages/api/src/routers/api/ai.ts",
         "packages/api/src/utils/aiTelemetry.ts"
       ],
@@ -193,13 +195,10 @@
         {
           "path": "packages/common-utils/src/couchbase/fn/scalar.ts",
           "symbols": [
-            "aggIf",
             "anyValue",
             "argMax",
             "count",
-            "countIf",
             "lag",
-            "sumIf",
             "uniq"
           ]
         },
@@ -301,6 +300,12 @@
           ]
         },
         {
+          "path": "packages/common-utils/src/couchbase/rawSqlLimit.ts",
+          "symbols": [
+            "ensureOutermostSelectLimit"
+          ]
+        },
+        {
           "path": "packages/common-utils/src/couchbase/render.ts",
           "symbols": [
             "SqlppQuery",
@@ -358,8 +363,22 @@
           ]
         },
         {
+          "path": "packages/common-utils/src/couchbase/render/metrics/expHistogram.ts",
+          "symbols": [
+            "translateExponentialHistogramCouchbase"
+          ]
+        },
+        {
           "path": "packages/common-utils/src/couchbase/render/metrics/histogram.ts",
           "symbols": [
+            "HistInput",
+            "dimGroupBy",
+            "dimProject",
+            "dimSelect",
+            "groupBySql",
+            "seriesKeyExpr",
+            "sourceWhereClause",
+            "timeBucketSql",
             "translateHistogramCouchbase"
           ]
         },
@@ -532,7 +551,13 @@
         {
           "path": "packages/common-utils/src/dataLayer/index.ts",
           "symbols": [
-            "getMetadata"
+            "CouchbaseNotReadyError",
+            "CouchbaseUnsupportedError",
+            "QueryLanguage",
+            "assertSliceForConnection",
+            "getMetadata",
+            "queryLanguageForConnection",
+            "resolveConnectionKind"
           ]
         },
         {
@@ -750,6 +775,7 @@
       "tests": {
         "unit": [
           "packages/api/src/controllers/__tests__/ai.test.ts",
+          "packages/api/src/controllers/__tests__/aiDialect.test.ts",
           "packages/api/src/utils/__tests__/aiTelemetry.test.ts"
         ],
         "int": [
@@ -763,7 +789,7 @@
       "name": "Query proxy",
       "area": "query_proxy",
       "visibility": "internal",
-      "status": "not_started",
+      "status": "in_progress",
       "entryPoints": [
         {
           "id": "api_route:GET /clickhouse-proxy/*",
@@ -1076,7 +1102,7 @@
       "name": "Connections",
       "area": "admin",
       "visibility": "admin",
-      "status": "not_started",
+      "status": "ported",
       "entryPoints": [
         {
           "id": "api_route:DELETE /connections/:id",
@@ -1493,7 +1519,7 @@
       "name": "Favorites",
       "area": "admin",
       "visibility": "user",
-      "status": "not_started",
+      "status": "ported",
       "entryPoints": [
         {
           "id": "api_route:DELETE /favorites/:resourceType/:resourceId",
@@ -1799,7 +1825,7 @@
       "name": "Health and installation status",
       "area": "internal",
       "visibility": "internal",
-      "status": "not_started",
+      "status": "ported",
       "entryPoints": [
         {
           "id": "api_route:GET /health",
@@ -1817,7 +1843,7 @@
           "file": "packages/api/src/routers/api/root.ts"
         }
       ],
-      "closureSize": 51,
+      "closureSize": 52,
       "exclusiveFiles": [],
       "dataLayer": [
         {
@@ -1919,6 +1945,15 @@
           "path": "packages/common-utils/src/couchbase/connstr.ts",
           "symbols": [
             "isValidCouchbaseConnStr"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/defaultSources.ts",
+          "symbols": [
+            "COUCHBASE_LOG_SOURCE",
+            "COUCHBASE_METRIC_SOURCE",
+            "COUCHBASE_SESSION_SOURCE",
+            "COUCHBASE_TRACE_SOURCE"
           ]
         },
         {
@@ -2112,7 +2147,7 @@
       "name": "Infrastructure-as-code import manifest",
       "area": "iac",
       "visibility": "api",
-      "status": "not_started",
+      "status": "ported",
       "entryPoints": [
         {
           "id": "api_route:GET /iac/import-manifest",
@@ -2420,7 +2455,7 @@
       "name": "Current user and onboarding",
       "area": "auth",
       "visibility": "user",
-      "status": "not_started",
+      "status": "ported",
       "entryPoints": [
         {
           "id": "api_route:GET /me",
@@ -3121,7 +3156,7 @@
       "name": "Data sources",
       "area": "admin",
       "visibility": "admin",
-      "status": "not_started",
+      "status": "ported",
       "entryPoints": [
         {
           "id": "api_route:DELETE /sources/:id",
@@ -3825,7 +3860,7 @@
           "file": "packages/api/src/routers/api/prometheus.ts"
         }
       ],
-      "closureSize": 89,
+      "closureSize": 91,
       "exclusiveFiles": [
         "packages/api/src/routers/api/prometheus.ts"
       ],
@@ -4006,13 +4041,10 @@
         {
           "path": "packages/common-utils/src/couchbase/fn/scalar.ts",
           "symbols": [
-            "aggIf",
             "anyValue",
             "argMax",
             "count",
-            "countIf",
             "lag",
-            "sumIf",
             "uniq"
           ]
         },
@@ -4087,6 +4119,12 @@
           ]
         },
         {
+          "path": "packages/common-utils/src/couchbase/rawSqlLimit.ts",
+          "symbols": [
+            "ensureOutermostSelectLimit"
+          ]
+        },
+        {
           "path": "packages/common-utils/src/couchbase/render.ts",
           "symbols": [
             "renderChartConfigCouchbase"
@@ -4143,8 +4181,22 @@
           ]
         },
         {
+          "path": "packages/common-utils/src/couchbase/render/metrics/expHistogram.ts",
+          "symbols": [
+            "translateExponentialHistogramCouchbase"
+          ]
+        },
+        {
           "path": "packages/common-utils/src/couchbase/render/metrics/histogram.ts",
           "symbols": [
+            "HistInput",
+            "dimGroupBy",
+            "dimProject",
+            "dimSelect",
+            "groupBySql",
+            "seriesKeyExpr",
+            "sourceWhereClause",
+            "timeBucketSql",
             "translateHistogramCouchbase"
           ]
         },
@@ -4525,7 +4577,7 @@
       "name": "Webhooks",
       "area": "admin",
       "visibility": "admin",
-      "status": "not_started",
+      "status": "ported",
       "entryPoints": [
         {
           "id": "api_route:DELETE /webhooks/:id",
@@ -4553,7 +4605,7 @@
           "file": "packages/api/src/routers/api/webhooks.ts"
         }
       ],
-      "closureSize": 121,
+      "closureSize": 123,
       "exclusiveFiles": [
         "packages/api/src/routers/api/webhooks.ts"
       ],
@@ -4746,13 +4798,10 @@
         {
           "path": "packages/common-utils/src/couchbase/fn/scalar.ts",
           "symbols": [
-            "aggIf",
             "anyValue",
             "argMax",
             "count",
-            "countIf",
             "lag",
-            "sumIf",
             "uniq"
           ]
         },
@@ -4854,6 +4903,12 @@
           ]
         },
         {
+          "path": "packages/common-utils/src/couchbase/rawSqlLimit.ts",
+          "symbols": [
+            "ensureOutermostSelectLimit"
+          ]
+        },
+        {
           "path": "packages/common-utils/src/couchbase/render.ts",
           "symbols": [
             "SqlppQuery",
@@ -4911,8 +4966,22 @@
           ]
         },
         {
+          "path": "packages/common-utils/src/couchbase/render/metrics/expHistogram.ts",
+          "symbols": [
+            "translateExponentialHistogramCouchbase"
+          ]
+        },
+        {
           "path": "packages/common-utils/src/couchbase/render/metrics/histogram.ts",
           "symbols": [
+            "HistInput",
+            "dimGroupBy",
+            "dimProject",
+            "dimSelect",
+            "groupBySql",
+            "seriesKeyExpr",
+            "sourceWhereClause",
+            "timeBucketSql",
             "translateHistogramCouchbase"
           ]
         },
@@ -5085,6 +5154,7 @@
         {
           "path": "packages/common-utils/src/dataLayer/index.ts",
           "symbols": [
+            "assertSliceForConnection",
             "getMetadata",
             "renderChartConfig"
           ]
@@ -5328,7 +5398,7 @@
       "name": "Alerts",
       "area": "alerts",
       "visibility": "user",
-      "status": "not_started",
+      "status": "ported",
       "entryPoints": [
         {
           "id": "api_route:DELETE /alerts/:id",
@@ -5386,7 +5456,7 @@
           "file": "packages/app/pages/alerts/[alertId].tsx"
         }
       ],
-      "closureSize": 591,
+      "closureSize": 593,
       "exclusiveFiles": [
         "packages/api/src/routers/api/alerts.ts",
         "packages/app/pages/alerts/[alertId].tsx",
@@ -5967,13 +6037,10 @@
         {
           "path": "packages/common-utils/src/couchbase/fn/scalar.ts",
           "symbols": [
-            "aggIf",
             "anyValue",
             "argMax",
             "count",
-            "countIf",
             "lag",
-            "sumIf",
             "uniq"
           ]
         },
@@ -6030,6 +6097,12 @@
             "negate",
             "rangeExpr",
             "searchObject"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/rawSqlLimit.ts",
+          "symbols": [
+            "ensureOutermostSelectLimit"
           ]
         },
         {
@@ -6092,8 +6165,22 @@
           ]
         },
         {
+          "path": "packages/common-utils/src/couchbase/render/metrics/expHistogram.ts",
+          "symbols": [
+            "translateExponentialHistogramCouchbase"
+          ]
+        },
+        {
           "path": "packages/common-utils/src/couchbase/render/metrics/histogram.ts",
           "symbols": [
+            "HistInput",
+            "dimGroupBy",
+            "dimProject",
+            "dimSelect",
+            "groupBySql",
+            "seriesKeyExpr",
+            "sourceWhereClause",
+            "timeBucketSql",
             "translateHistogramCouchbase"
           ]
         },
@@ -6628,7 +6715,7 @@
       "name": "App server API and config",
       "area": "internal",
       "visibility": "internal",
-      "status": "not_started",
+      "status": "ported",
       "entryPoints": [
         {
           "id": "app_api_route:/api/[...all]",
@@ -6658,7 +6745,7 @@
       "name": "Benchmark page",
       "area": "internal",
       "visibility": "internal",
-      "status": "not_started",
+      "status": "ported",
       "entryPoints": [
         {
           "id": "app_page:/benchmark",
@@ -6666,7 +6753,7 @@
           "file": "packages/app/pages/benchmark.tsx"
         }
       ],
-      "closureSize": 374,
+      "closureSize": 376,
       "exclusiveFiles": [
         "packages/app/pages/benchmark.tsx",
         "packages/app/src/BenchmarkPage.tsx"
@@ -7039,13 +7126,10 @@
         {
           "path": "packages/common-utils/src/couchbase/fn/scalar.ts",
           "symbols": [
-            "aggIf",
             "anyValue",
             "argMax",
             "count",
-            "countIf",
             "lag",
-            "sumIf",
             "uniq"
           ]
         },
@@ -7102,6 +7186,12 @@
             "negate",
             "rangeExpr",
             "searchObject"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/rawSqlLimit.ts",
+          "symbols": [
+            "ensureOutermostSelectLimit"
           ]
         },
         {
@@ -7164,8 +7254,22 @@
           ]
         },
         {
+          "path": "packages/common-utils/src/couchbase/render/metrics/expHistogram.ts",
+          "symbols": [
+            "translateExponentialHistogramCouchbase"
+          ]
+        },
+        {
           "path": "packages/common-utils/src/couchbase/render/metrics/histogram.ts",
           "symbols": [
+            "HistInput",
+            "dimGroupBy",
+            "dimProject",
+            "dimSelect",
+            "groupBySql",
+            "seriesKeyExpr",
+            "sourceWhereClause",
+            "timeBucketSql",
             "translateHistogramCouchbase"
           ]
         },
@@ -7611,7 +7715,7 @@
           "file": "packages/app/pages/chart.tsx"
         }
       ],
-      "closureSize": 553,
+      "closureSize": 555,
       "exclusiveFiles": [
         "packages/app/pages/chart.tsx",
         "packages/app/src/DBChartPage.tsx",
@@ -8165,13 +8269,10 @@
         {
           "path": "packages/common-utils/src/couchbase/fn/scalar.ts",
           "symbols": [
-            "aggIf",
             "anyValue",
             "argMax",
             "count",
-            "countIf",
             "lag",
-            "sumIf",
             "uniq"
           ]
         },
@@ -8228,6 +8329,12 @@
             "negate",
             "rangeExpr",
             "searchObject"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/rawSqlLimit.ts",
+          "symbols": [
+            "ensureOutermostSelectLimit"
           ]
         },
         {
@@ -8290,8 +8397,22 @@
           ]
         },
         {
+          "path": "packages/common-utils/src/couchbase/render/metrics/expHistogram.ts",
+          "symbols": [
+            "translateExponentialHistogramCouchbase"
+          ]
+        },
+        {
           "path": "packages/common-utils/src/couchbase/render/metrics/histogram.ts",
           "symbols": [
+            "HistInput",
+            "dimGroupBy",
+            "dimProject",
+            "dimSelect",
+            "groupBySql",
+            "seriesKeyExpr",
+            "sourceWhereClause",
+            "timeBucketSql",
             "translateHistogramCouchbase"
           ]
         },
@@ -8774,7 +8895,7 @@
           "file": "packages/app/pages/clickhouse.tsx"
         }
       ],
-      "closureSize": 446,
+      "closureSize": 448,
       "exclusiveFiles": [
         "packages/app/pages/clickhouse.tsx",
         "packages/app/src/ClickhousePage.tsx"
@@ -9243,13 +9364,10 @@
         {
           "path": "packages/common-utils/src/couchbase/fn/scalar.ts",
           "symbols": [
-            "aggIf",
             "anyValue",
             "argMax",
             "count",
-            "countIf",
             "lag",
-            "sumIf",
             "uniq"
           ]
         },
@@ -9306,6 +9424,12 @@
             "negate",
             "rangeExpr",
             "searchObject"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/rawSqlLimit.ts",
+          "symbols": [
+            "ensureOutermostSelectLimit"
           ]
         },
         {
@@ -9368,8 +9492,22 @@
           ]
         },
         {
+          "path": "packages/common-utils/src/couchbase/render/metrics/expHistogram.ts",
+          "symbols": [
+            "translateExponentialHistogramCouchbase"
+          ]
+        },
+        {
           "path": "packages/common-utils/src/couchbase/render/metrics/histogram.ts",
           "symbols": [
+            "HistInput",
+            "dimGroupBy",
+            "dimProject",
+            "dimSelect",
+            "groupBySql",
+            "seriesKeyExpr",
+            "sourceWhereClause",
+            "timeBucketSql",
             "translateHistogramCouchbase"
           ]
         },
@@ -9865,7 +10003,7 @@
           "file": "packages/app/pages/dashboards/templates.tsx"
         }
       ],
-      "closureSize": 659,
+      "closureSize": 661,
       "exclusiveFiles": [
         "packages/api/src/controllers/presetDashboardFilters.ts",
         "packages/api/src/models/presetDashboardFilter.ts",
@@ -10485,13 +10623,10 @@
         {
           "path": "packages/common-utils/src/couchbase/fn/scalar.ts",
           "symbols": [
-            "aggIf",
             "anyValue",
             "argMax",
             "count",
-            "countIf",
             "lag",
-            "sumIf",
             "uniq"
           ]
         },
@@ -10548,6 +10683,12 @@
             "negate",
             "rangeExpr",
             "searchObject"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/rawSqlLimit.ts",
+          "symbols": [
+            "ensureOutermostSelectLimit"
           ]
         },
         {
@@ -10610,8 +10751,22 @@
           ]
         },
         {
+          "path": "packages/common-utils/src/couchbase/render/metrics/expHistogram.ts",
+          "symbols": [
+            "translateExponentialHistogramCouchbase"
+          ]
+        },
+        {
           "path": "packages/common-utils/src/couchbase/render/metrics/histogram.ts",
           "symbols": [
+            "HistInput",
+            "dimGroupBy",
+            "dimProject",
+            "dimSelect",
+            "groupBySql",
+            "seriesKeyExpr",
+            "sourceWhereClause",
+            "timeBucketSql",
             "translateHistogramCouchbase"
           ]
         },
@@ -11186,7 +11341,7 @@
       "name": "Home page",
       "area": "internal",
       "visibility": "user",
-      "status": "not_started",
+      "status": "ported",
       "entryPoints": [
         {
           "id": "app_page:/",
@@ -11476,7 +11631,7 @@
       "name": "Join a team",
       "area": "auth",
       "visibility": "user",
-      "status": "not_started",
+      "status": "ported",
       "entryPoints": [
         {
           "id": "api_route:POST /team/setup/:token",
@@ -11489,7 +11644,7 @@
           "file": "packages/app/pages/join-team.tsx"
         }
       ],
-      "closureSize": 62,
+      "closureSize": 63,
       "exclusiveFiles": [
         "packages/app/pages/join-team.tsx",
         "packages/app/src/JoinTeamPage.tsx"
@@ -11594,6 +11749,15 @@
           "path": "packages/common-utils/src/couchbase/connstr.ts",
           "symbols": [
             "isValidCouchbaseConnStr"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/defaultSources.ts",
+          "symbols": [
+            "COUCHBASE_LOG_SOURCE",
+            "COUCHBASE_METRIC_SOURCE",
+            "COUCHBASE_SESSION_SOURCE",
+            "COUCHBASE_TRACE_SOURCE"
           ]
         },
         {
@@ -11795,7 +11959,7 @@
           "file": "packages/app/pages/kubernetes.tsx"
         }
       ],
-      "closureSize": 422,
+      "closureSize": 424,
       "exclusiveFiles": [
         "packages/app/pages/kubernetes.tsx",
         "packages/app/src/KubernetesDashboardPage.tsx",
@@ -12267,13 +12431,10 @@
         {
           "path": "packages/common-utils/src/couchbase/fn/scalar.ts",
           "symbols": [
-            "aggIf",
             "anyValue",
             "argMax",
             "count",
-            "countIf",
             "lag",
-            "sumIf",
             "uniq"
           ]
         },
@@ -12330,6 +12491,12 @@
             "negate",
             "rangeExpr",
             "searchObject"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/rawSqlLimit.ts",
+          "symbols": [
+            "ensureOutermostSelectLimit"
           ]
         },
         {
@@ -12392,8 +12559,22 @@
           ]
         },
         {
+          "path": "packages/common-utils/src/couchbase/render/metrics/expHistogram.ts",
+          "symbols": [
+            "translateExponentialHistogramCouchbase"
+          ]
+        },
+        {
           "path": "packages/common-utils/src/couchbase/render/metrics/histogram.ts",
           "symbols": [
+            "HistInput",
+            "dimGroupBy",
+            "dimProject",
+            "dimSelect",
+            "groupBySql",
+            "seriesKeyExpr",
+            "sourceWhereClause",
+            "timeBucketSql",
             "translateHistogramCouchbase"
           ]
         },
@@ -12819,7 +13000,7 @@
       "name": "LLM dashboard",
       "area": "ai",
       "visibility": "user",
-      "status": "not_started",
+      "status": "ported",
       "entryPoints": [
         {
           "id": "app_page:/llm",
@@ -12827,7 +13008,7 @@
           "file": "packages/app/pages/llm.tsx"
         }
       ],
-      "closureSize": 546,
+      "closureSize": 548,
       "exclusiveFiles": [
         "packages/app/pages/llm.tsx",
         "packages/app/src/llm/components/ChatMessageItem.tsx",
@@ -13413,13 +13594,10 @@
         {
           "path": "packages/common-utils/src/couchbase/fn/scalar.ts",
           "symbols": [
-            "aggIf",
             "anyValue",
             "argMax",
             "count",
-            "countIf",
             "lag",
-            "sumIf",
             "uniq"
           ]
         },
@@ -13476,6 +13654,12 @@
             "negate",
             "rangeExpr",
             "searchObject"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/rawSqlLimit.ts",
+          "symbols": [
+            "ensureOutermostSelectLimit"
           ]
         },
         {
@@ -13538,8 +13722,22 @@
           ]
         },
         {
+          "path": "packages/common-utils/src/couchbase/render/metrics/expHistogram.ts",
+          "symbols": [
+            "translateExponentialHistogramCouchbase"
+          ]
+        },
+        {
           "path": "packages/common-utils/src/couchbase/render/metrics/histogram.ts",
           "symbols": [
+            "HistInput",
+            "dimGroupBy",
+            "dimProject",
+            "dimSelect",
+            "groupBySql",
+            "seriesKeyExpr",
+            "sourceWhereClause",
+            "timeBucketSql",
             "translateHistogramCouchbase"
           ]
         },
@@ -14018,7 +14216,7 @@
       "name": "Sign in and sign out",
       "area": "auth",
       "visibility": "user",
-      "status": "not_started",
+      "status": "ported",
       "entryPoints": [
         {
           "id": "api_route:GET /logout",
@@ -14036,7 +14234,7 @@
           "file": "packages/app/pages/login/index.tsx"
         }
       ],
-      "closureSize": 69,
+      "closureSize": 70,
       "exclusiveFiles": [
         "packages/app/pages/login/index.tsx"
       ],
@@ -14144,6 +14342,15 @@
           "path": "packages/common-utils/src/couchbase/connstr.ts",
           "symbols": [
             "isValidCouchbaseConnStr"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/defaultSources.ts",
+          "symbols": [
+            "COUCHBASE_LOG_SOURCE",
+            "COUCHBASE_METRIC_SOURCE",
+            "COUCHBASE_SESSION_SOURCE",
+            "COUCHBASE_TRACE_SOURCE"
           ]
         },
         {
@@ -14380,7 +14587,7 @@
       "name": "Registration",
       "area": "auth",
       "visibility": "user",
-      "status": "not_started",
+      "status": "ported",
       "entryPoints": [
         {
           "id": "api_route:POST /register/password",
@@ -14393,7 +14600,7 @@
           "file": "packages/app/pages/register.tsx"
         }
       ],
-      "closureSize": 69,
+      "closureSize": 70,
       "exclusiveFiles": [
         "packages/app/pages/register.tsx"
       ],
@@ -14501,6 +14708,15 @@
           "path": "packages/common-utils/src/couchbase/connstr.ts",
           "symbols": [
             "isValidCouchbaseConnStr"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/defaultSources.ts",
+          "symbols": [
+            "COUCHBASE_LOG_SOURCE",
+            "COUCHBASE_METRIC_SOURCE",
+            "COUCHBASE_SESSION_SOURCE",
+            "COUCHBASE_TRACE_SOURCE"
           ]
         },
         {
@@ -14755,7 +14971,7 @@
           "file": "packages/app/pages/search/list.tsx"
         }
       ],
-      "closureSize": 509,
+      "closureSize": 511,
       "exclusiveFiles": [
         "packages/app/pages/search/[savedSearchId].tsx",
         "packages/app/pages/search/index.tsx",
@@ -15284,13 +15500,10 @@
         {
           "path": "packages/common-utils/src/couchbase/fn/scalar.ts",
           "symbols": [
-            "aggIf",
             "anyValue",
             "argMax",
             "count",
-            "countIf",
             "lag",
-            "sumIf",
             "uniq"
           ]
         },
@@ -15347,6 +15560,12 @@
             "negate",
             "rangeExpr",
             "searchObject"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/rawSqlLimit.ts",
+          "symbols": [
+            "ensureOutermostSelectLimit"
           ]
         },
         {
@@ -15409,8 +15628,22 @@
           ]
         },
         {
+          "path": "packages/common-utils/src/couchbase/render/metrics/expHistogram.ts",
+          "symbols": [
+            "translateExponentialHistogramCouchbase"
+          ]
+        },
+        {
           "path": "packages/common-utils/src/couchbase/render/metrics/histogram.ts",
           "symbols": [
+            "HistInput",
+            "dimGroupBy",
+            "dimProject",
+            "dimSelect",
+            "groupBySql",
+            "seriesKeyExpr",
+            "sourceWhereClause",
+            "timeBucketSql",
             "translateHistogramCouchbase"
           ]
         },
@@ -15895,7 +16128,7 @@
           "file": "packages/app/pages/service-map.tsx"
         }
       ],
-      "closureSize": 240,
+      "closureSize": 243,
       "exclusiveFiles": [
         "packages/app/pages/service-map.tsx",
         "packages/app/src/DBServiceMapPage.tsx"
@@ -16011,6 +16244,12 @@
           "path": "packages/app/src/hdxDebug.ts",
           "symbols": [
             "setHdxIdentity"
+          ]
+        },
+        {
+          "path": "packages/app/src/hooks/useRowWhere.tsx",
+          "symbols": [
+            "INTERNAL_ROW_FIELDS"
           ]
         },
         {
@@ -16134,6 +16373,7 @@
             "getMetadata",
             "parseKeyPath",
             "quoteIdentifierIfNeeded",
+            "quoteResultColumnNameIfNeeded",
             "tcFromSource",
             "unquoteIdentifier"
           ]
@@ -16204,13 +16444,10 @@
         {
           "path": "packages/common-utils/src/couchbase/fn/scalar.ts",
           "symbols": [
-            "aggIf",
             "anyValue",
             "argMax",
             "count",
-            "countIf",
             "lag",
-            "sumIf",
             "uniq"
           ]
         },
@@ -16270,11 +16507,18 @@
           ]
         },
         {
+          "path": "packages/common-utils/src/couchbase/rawSqlLimit.ts",
+          "symbols": [
+            "ensureOutermostSelectLimit"
+          ]
+        },
+        {
           "path": "packages/common-utils/src/couchbase/render.ts",
           "symbols": [
             "ROW_ID_ALIAS",
             "SqlppQuery",
-            "renderChartConfigCouchbase"
+            "renderChartConfigCouchbase",
+            "rowIdWhereLiteral"
           ]
         },
         {
@@ -16328,8 +16572,22 @@
           ]
         },
         {
+          "path": "packages/common-utils/src/couchbase/render/metrics/expHistogram.ts",
+          "symbols": [
+            "translateExponentialHistogramCouchbase"
+          ]
+        },
+        {
           "path": "packages/common-utils/src/couchbase/render/metrics/histogram.ts",
           "symbols": [
+            "HistInput",
+            "dimGroupBy",
+            "dimProject",
+            "dimSelect",
+            "groupBySql",
+            "seriesKeyExpr",
+            "sourceWhereClause",
+            "timeBucketSql",
             "translateHistogramCouchbase"
           ]
         },
@@ -16722,6 +16980,7 @@
             "WebhookTestApiResponse",
             "WebhookUpdateApiResponse",
             "WebhooksApiResponse",
+            "WithClauseSchema",
             "isLogSource",
             "isMetricSource",
             "isPersistableUserId",
@@ -16756,7 +17015,7 @@
           "file": "packages/app/pages/services.tsx"
         }
       ],
-      "closureSize": 475,
+      "closureSize": 477,
       "exclusiveFiles": [
         "packages/app/pages/services.tsx"
       ],
@@ -17241,13 +17500,10 @@
         {
           "path": "packages/common-utils/src/couchbase/fn/scalar.ts",
           "symbols": [
-            "aggIf",
             "anyValue",
             "argMax",
             "count",
-            "countIf",
             "lag",
-            "sumIf",
             "uniq"
           ]
         },
@@ -17304,6 +17560,12 @@
             "negate",
             "rangeExpr",
             "searchObject"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/rawSqlLimit.ts",
+          "symbols": [
+            "ensureOutermostSelectLimit"
           ]
         },
         {
@@ -17366,8 +17628,22 @@
           ]
         },
         {
+          "path": "packages/common-utils/src/couchbase/render/metrics/expHistogram.ts",
+          "symbols": [
+            "translateExponentialHistogramCouchbase"
+          ]
+        },
+        {
           "path": "packages/common-utils/src/couchbase/render/metrics/histogram.ts",
           "symbols": [
+            "HistInput",
+            "dimGroupBy",
+            "dimProject",
+            "dimSelect",
+            "groupBySql",
+            "seriesKeyExpr",
+            "sourceWhereClause",
+            "timeBucketSql",
             "translateHistogramCouchbase"
           ]
         },
@@ -17839,7 +18115,7 @@
           "file": "packages/app/pages/sessions.tsx"
         }
       ],
-      "closureSize": 418,
+      "closureSize": 420,
       "exclusiveFiles": [
         "packages/app/pages/sessions.tsx",
         "packages/app/src/SessionEventSourcePanel.tsx",
@@ -18291,13 +18567,10 @@
         {
           "path": "packages/common-utils/src/couchbase/fn/scalar.ts",
           "symbols": [
-            "aggIf",
             "anyValue",
             "argMax",
             "count",
-            "countIf",
             "lag",
-            "sumIf",
             "uniq"
           ]
         },
@@ -18354,6 +18627,12 @@
             "negate",
             "rangeExpr",
             "searchObject"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/rawSqlLimit.ts",
+          "symbols": [
+            "ensureOutermostSelectLimit"
           ]
         },
         {
@@ -18416,8 +18695,22 @@
           ]
         },
         {
+          "path": "packages/common-utils/src/couchbase/render/metrics/expHistogram.ts",
+          "symbols": [
+            "translateExponentialHistogramCouchbase"
+          ]
+        },
+        {
           "path": "packages/common-utils/src/couchbase/render/metrics/histogram.ts",
           "symbols": [
+            "HistInput",
+            "dimGroupBy",
+            "dimProject",
+            "dimSelect",
+            "groupBySql",
+            "seriesKeyExpr",
+            "sourceWhereClause",
+            "timeBucketSql",
             "translateHistogramCouchbase"
           ]
         },
@@ -18845,7 +19138,7 @@
       "name": "Team settings and members",
       "area": "admin",
       "visibility": "admin",
-      "status": "not_started",
+      "status": "ported",
       "entryPoints": [
         {
           "id": "api_route:DELETE /team/api-keys/:id",
@@ -18918,7 +19211,7 @@
           "file": "packages/app/pages/team/index.tsx"
         }
       ],
-      "closureSize": 252,
+      "closureSize": 255,
       "exclusiveFiles": [
         "packages/app/pages/team/index.tsx",
         "packages/app/src/TeamPage.tsx",
@@ -19101,6 +19394,12 @@
           ]
         },
         {
+          "path": "packages/app/src/hooks/useRowWhere.tsx",
+          "symbols": [
+            "INTERNAL_ROW_FIELDS"
+          ]
+        },
+        {
           "path": "packages/app/src/utils/browserTelemetry.ts",
           "symbols": [
             "recordAction"
@@ -19221,6 +19520,7 @@
             "getMetadata",
             "parseKeyPath",
             "quoteIdentifierIfNeeded",
+            "quoteResultColumnNameIfNeeded",
             "unquoteIdentifier"
           ]
         },
@@ -19290,13 +19590,10 @@
         {
           "path": "packages/common-utils/src/couchbase/fn/scalar.ts",
           "symbols": [
-            "aggIf",
             "anyValue",
             "argMax",
             "count",
-            "countIf",
             "lag",
-            "sumIf",
             "uniq"
           ]
         },
@@ -19356,11 +19653,18 @@
           ]
         },
         {
+          "path": "packages/common-utils/src/couchbase/rawSqlLimit.ts",
+          "symbols": [
+            "ensureOutermostSelectLimit"
+          ]
+        },
+        {
           "path": "packages/common-utils/src/couchbase/render.ts",
           "symbols": [
             "ROW_ID_ALIAS",
             "SqlppQuery",
-            "renderChartConfigCouchbase"
+            "renderChartConfigCouchbase",
+            "rowIdWhereLiteral"
           ]
         },
         {
@@ -19414,8 +19718,22 @@
           ]
         },
         {
+          "path": "packages/common-utils/src/couchbase/render/metrics/expHistogram.ts",
+          "symbols": [
+            "translateExponentialHistogramCouchbase"
+          ]
+        },
+        {
           "path": "packages/common-utils/src/couchbase/render/metrics/histogram.ts",
           "symbols": [
+            "HistInput",
+            "dimGroupBy",
+            "dimProject",
+            "dimSelect",
+            "groupBySql",
+            "seriesKeyExpr",
+            "sourceWhereClause",
+            "timeBucketSql",
             "translateHistogramCouchbase"
           ]
         },
@@ -19851,6 +20169,7 @@
             "WebhookTestApiResponse",
             "WebhookUpdateApiResponse",
             "WebhooksApiResponse",
+            "WithClauseSchema",
             "addDuplicateTileIdIssues",
             "alertDisplayNameSchema",
             "alertNoteSchema",
@@ -19904,7 +20223,7 @@
           "file": "packages/app/pages/trace/[traceId].tsx"
         }
       ],
-      "closureSize": 140,
+      "closureSize": 142,
       "exclusiveFiles": [
         "packages/app/pages/trace/[traceId].tsx"
       ],
@@ -20147,13 +20466,10 @@
         {
           "path": "packages/common-utils/src/couchbase/fn/scalar.ts",
           "symbols": [
-            "aggIf",
             "anyValue",
             "argMax",
             "count",
-            "countIf",
             "lag",
-            "sumIf",
             "uniq"
           ]
         },
@@ -20203,6 +20519,12 @@
             "negate",
             "rangeExpr",
             "searchObject"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/rawSqlLimit.ts",
+          "symbols": [
+            "ensureOutermostSelectLimit"
           ]
         },
         {
@@ -20263,8 +20585,22 @@
           ]
         },
         {
+          "path": "packages/common-utils/src/couchbase/render/metrics/expHistogram.ts",
+          "symbols": [
+            "translateExponentialHistogramCouchbase"
+          ]
+        },
+        {
           "path": "packages/common-utils/src/couchbase/render/metrics/histogram.ts",
           "symbols": [
+            "HistInput",
+            "dimGroupBy",
+            "dimProject",
+            "dimSelect",
+            "groupBySql",
+            "seriesKeyExpr",
+            "sourceWhereClause",
+            "timeBucketSql",
             "translateHistogramCouchbase"
           ]
         },
@@ -20662,7 +20998,7 @@
       "name": "Command-line interface",
       "area": "cli",
       "visibility": "admin",
-      "status": "not_started",
+      "status": "ported",
       "entryPoints": [
         {
           "id": "cli_command:auth",
@@ -20785,7 +21121,7 @@
           "file": "packages/cli/src/cli.tsx"
         }
       ],
-      "closureSize": 125,
+      "closureSize": 135,
       "exclusiveFiles": [
         "packages/cli/package.json",
         "packages/cli/src/App.tsx",
@@ -20852,9 +21188,9 @@
             "AlertHistoryItem",
             "AlertItem",
             "ApiClient",
+            "CliDataClient",
             "DashboardResponse",
             "MeTeam",
-            "ProxyClickhouseClient",
             "SavedSearchResponse",
             "SourceResponse"
           ]
@@ -20888,11 +21224,13 @@
           "path": "packages/common-utils/src/clickhouse/index.ts",
           "symbols": [
             "BaseClickhouseClient",
+            "BaseResultSet",
             "ChSql",
             "ClickHouseQueryError",
             "ClickhouseClientOptions",
             "ColumnMeta",
             "ColumnMetaType",
+            "DataFormat",
             "JSDataType",
             "QueryInputs",
             "ResponseJSON",
@@ -20981,6 +21319,12 @@
           ]
         },
         {
+          "path": "packages/common-utils/src/couchbase/browser.ts",
+          "symbols": [
+            "CouchbaseClient"
+          ]
+        },
+        {
           "path": "packages/common-utils/src/couchbase/connstr.ts",
           "symbols": [
             "isValidCouchbaseConnStr"
@@ -20995,8 +21339,12 @@
         {
           "path": "packages/common-utils/src/couchbase/errors.ts",
           "symbols": [
+            "CouchbaseQueryError",
+            "SerializedQueryError",
+            "deserialize",
             "isAccessDeniedError",
-            "isMissingColumnError"
+            "isMissingColumnError",
+            "isSerializedQueryError"
           ]
         },
         {
@@ -21017,13 +21365,10 @@
         {
           "path": "packages/common-utils/src/couchbase/fn/scalar.ts",
           "symbols": [
-            "aggIf",
             "anyValue",
             "argMax",
             "count",
-            "countIf",
             "lag",
-            "sumIf",
             "uniq"
           ]
         },
@@ -21038,6 +21383,7 @@
         {
           "path": "packages/common-utils/src/couchbase/inferMeta.ts",
           "symbols": [
+            "encodeRow",
             "isIsoDateTime"
           ]
         },
@@ -21072,6 +21418,12 @@
             "negate",
             "rangeExpr",
             "searchObject"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/rawSqlLimit.ts",
+          "symbols": [
+            "ensureOutermostSelectLimit"
           ]
         },
         {
@@ -21132,8 +21484,22 @@
           ]
         },
         {
+          "path": "packages/common-utils/src/couchbase/render/metrics/expHistogram.ts",
+          "symbols": [
+            "translateExponentialHistogramCouchbase"
+          ]
+        },
+        {
           "path": "packages/common-utils/src/couchbase/render/metrics/histogram.ts",
           "symbols": [
+            "HistInput",
+            "dimGroupBy",
+            "dimProject",
+            "dimSelect",
+            "groupBySql",
+            "seriesKeyExpr",
+            "sourceWhereClause",
+            "timeBucketSql",
             "translateHistogramCouchbase"
           ]
         },
@@ -21153,6 +21519,12 @@
           "path": "packages/common-utils/src/couchbase/render/orderBy.ts",
           "symbols": [
             "renderOrderByCouchbase"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/render/postprocess.ts",
+          "symbols": [
+            "couchbasePostprocessHints"
           ]
         },
         {
@@ -21215,11 +21587,24 @@
           ]
         },
         {
+          "path": "packages/common-utils/src/couchbase/resultset.ts",
+          "symbols": [
+            "DEFAULT_MAX_BUFFERED_BYTES",
+            "fromFrames"
+          ]
+        },
+        {
           "path": "packages/common-utils/src/couchbase/serializer.ts",
           "symbols": [
             "CouchbaseSearchBuilder",
             "CouchbaseSerializerOptions",
             "SerializerMetadata"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/settings.ts",
+          "symbols": [
+            "buildClientContextId"
           ]
         },
         {
@@ -21230,6 +21615,12 @@
             "keyspace",
             "quoteIdent",
             "sqlpp"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/couchbase/statement.ts",
+          "symbols": [
+            "isReadOnlyExempt"
           ]
         },
         {
@@ -21244,6 +21635,32 @@
           ]
         },
         {
+          "path": "packages/common-utils/src/couchbase/types.ts",
+          "symbols": [
+            "COUCHBASE_FORMATS",
+            "ColumnMeta",
+            "CouchbaseFormat",
+            "CouchbaseLogger",
+            "CouchbaseQueryInputs",
+            "CouchbaseQueryRequestBody",
+            "CouchbaseResultSet",
+            "DataClient",
+            "Frame",
+            "Keyspace",
+            "ResponseJSON",
+            "Row",
+            "ScanConsistency",
+            "Statistics"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/dataLayer/chartQuery.ts",
+          "symbols": [
+            "couchbaseChartQuery",
+            "couchbaseChartValidity"
+          ]
+        },
+        {
           "path": "packages/common-utils/src/dataLayer/errors.ts",
           "symbols": [
             "CouchbaseNotReadyError",
@@ -21253,9 +21670,12 @@
         {
           "path": "packages/common-utils/src/dataLayer/index.ts",
           "symbols": [
+            "filterSourcesForSlice",
             "formatQueryForDisplay",
             "getMetadata",
-            "renderChartConfig"
+            "renderChartConfig",
+            "resolveConnectionKind",
+            "setConnectionKindResolver"
           ]
         },
         {
@@ -21267,6 +21687,12 @@
             "primeConnectionKind",
             "resolveConnectionKind",
             "setConnectionKindResolver"
+          ]
+        },
+        {
+          "path": "packages/common-utils/src/dataLayer/routeQuery.ts",
+          "symbols": [
+            "queryViaCouchbase"
           ]
         },
         {
@@ -21390,6 +21816,7 @@
             "TLogSource",
             "TSource",
             "TTraceSource",
+            "TeamClickHouseSettings",
             "Tile",
             "TileTemplateSchema",
             "UseTextIndex",
@@ -21402,12 +21829,14 @@
         "unit": [
           "packages/cli/src/__tests__/adhocChart.test.ts",
           "packages/cli/src/__tests__/chartData.test.ts",
+          "packages/cli/src/__tests__/cliRoutingClient.test.ts",
           "packages/cli/src/__tests__/formatNumber.test.ts",
           "packages/cli/src/__tests__/mcpInstall.test.ts",
           "packages/cli/src/__tests__/rowWhere.test.ts",
           "packages/cli/src/__tests__/sourcemaps.test.ts",
           "packages/cli/src/__tests__/termchart.test.ts",
           "packages/cli/src/__tests__/tileConfig.test.ts",
+          "packages/cli/src/__tests__/tileQuery.test.ts",
           "packages/cli/src/__tests__/tileRender.test.ts"
         ],
         "int": [],
@@ -21442,7 +21871,7 @@
           "file": "packages/app/pages/cluster.tsx"
         }
       ],
-      "closureSize": 172,
+      "closureSize": 174,
       "exclusiveFiles": [
         "packages/api/src/routers/api/couchbaseCluster.ts",
         "packages/api/src/utils/couchbaseManagement.ts",
@@ -21726,13 +22155,10 @@
         {
           "path": "packages/common-utils/src/couchbase/fn/scalar.ts",
           "symbols": [
-            "aggIf",
             "anyValue",
             "argMax",
             "count",
-            "countIf",
             "lag",
-            "sumIf",
             "uniq"
           ]
         },
@@ -21840,6 +22266,12 @@
           ]
         },
         {
+          "path": "packages/common-utils/src/couchbase/rawSqlLimit.ts",
+          "symbols": [
+            "ensureOutermostSelectLimit"
+          ]
+        },
+        {
           "path": "packages/common-utils/src/couchbase/render.ts",
           "symbols": [
             "SqlppQuery",
@@ -21897,8 +22329,22 @@
           ]
         },
         {
+          "path": "packages/common-utils/src/couchbase/render/metrics/expHistogram.ts",
+          "symbols": [
+            "translateExponentialHistogramCouchbase"
+          ]
+        },
+        {
           "path": "packages/common-utils/src/couchbase/render/metrics/histogram.ts",
           "symbols": [
+            "HistInput",
+            "dimGroupBy",
+            "dimProject",
+            "dimSelect",
+            "groupBySql",
+            "seriesKeyExpr",
+            "sourceWhereClause",
+            "timeBucketSql",
             "translateHistogramCouchbase"
           ]
         },
@@ -22796,7 +23242,7 @@
       "name": "External API: alerts",
       "area": "external_api",
       "visibility": "api",
-      "status": "not_started",
+      "status": "ported",
       "entryPoints": [
         {
           "id": "api_route:DELETE /api/v2/alerts/:id",
@@ -23120,7 +23566,7 @@
       "name": "External API: charts",
       "area": "external_api",
       "visibility": "api",
-      "status": "not_started",
+      "status": "ported",
       "entryPoints": [
         {
           "id": "api_route:POST /api/v2/charts/series",
@@ -23128,7 +23574,7 @@
           "file": "packages/api/src/routers/external-api/v2/charts.ts"
         }
       ],
-      "closureSize": 90,
+      "closureSize": 94,
       "exclusiveFiles": [],
       "dataLayer": [
         {
@@ -23302,13 +23748,10 @@
         {
           "path": "packages/common-utils/src/couchbase/fn/scalar.ts",
           "symbols": [
-            "aggIf",
             "anyValue",
             "argMax",
             "count",
-            "countIf",
             "lag",
-            "sumIf",
             "uniq"
           ]
         },
@@ -23410,6 +23853,12 @@
           ]
         },
         {
+          "path": "packages/common-utils/src/couchbase/rawSqlLimit.ts",
+          "symbols": [
+            "ensureOutermostSelectLimit"
+          ]
+        },
+        {
           "path": "packages/common-utils/src/couchbase/render.ts",
           "symbols": [
             "SqlppQuery",
@@ -23467,8 +23916,22 @@
           ]
         },
         {
+          "path": "packages/common-utils/src/couchbase/render/metrics/expHistogram.ts",
+          "symbols": [
+            "translateExponentialHistogramCouchbase"
+          ]
+        },
+        {
           "path": "packages/common-utils/src/couchbase/render/metrics/histogram.ts",
           "symbols": [
+            "HistInput",
+            "dimGroupBy",
+            "dimProject",
+            "dimSelect",
+            "groupBySql",
+            "seriesKeyExpr",
+            "sourceWhereClause",
+            "timeBucketSql",
             "translateHistogramCouchbase"
           ]
         },
@@ -23641,6 +24104,9 @@
         {
           "path": "packages/common-utils/src/dataLayer/index.ts",
           "symbols": [
+            "CouchbaseNotReadyError",
+            "CouchbaseUnsupportedError",
+            "assertSliceForConnection",
             "getMetadata"
           ]
         },
@@ -23859,7 +24325,7 @@
       "name": "External API: connections",
       "area": "external_api",
       "visibility": "api",
-      "status": "not_started",
+      "status": "ported",
       "entryPoints": [
         {
           "id": "api_route:DELETE /api/v2/connections/:id",
@@ -24263,7 +24729,7 @@
       "name": "External API: dashboards",
       "area": "external_api",
       "visibility": "api",
-      "status": "not_started",
+      "status": "ported",
       "entryPoints": [
         {
           "id": "api_route:DELETE /api/v2/dashboards/:id",
@@ -24595,7 +25061,7 @@
       "name": "External API: root",
       "area": "external_api",
       "visibility": "api",
-      "status": "not_started",
+      "status": "ported",
       "entryPoints": [
         {
           "id": "api_route:GET /api/v2",
@@ -24603,7 +25069,7 @@
           "file": "packages/api/src/routers/external-api/v2/index.ts"
         }
       ],
-      "closureSize": 152,
+      "closureSize": 156,
       "exclusiveFiles": [
         "packages/api/src/routers/external-api/v2/index.ts",
         "packages/api/src/utils/rateLimiter.ts"
@@ -24818,13 +25284,10 @@
         {
           "path": "packages/common-utils/src/couchbase/fn/scalar.ts",
           "symbols": [
-            "aggIf",
             "anyValue",
             "argMax",
             "count",
-            "countIf",
             "lag",
-            "sumIf",
             "uniq"
           ]
         },
@@ -24927,8 +25390,15 @@
           ]
         },
         {
+          "path": "packages/common-utils/src/couchbase/rawSqlLimit.ts",
+          "symbols": [
+            "ensureOutermostSelectLimit"
+          ]
+        },
+        {
           "path": "packages/common-utils/src/couchbase/render.ts",
           "symbols": [
+            "ROW_ID_ALIAS",
             "SqlppQuery",
             "renderChartConfigCouchbase"
           ]
@@ -24984,8 +25454,22 @@
           ]
         },
         {
+          "path": "packages/common-utils/src/couchbase/render/metrics/expHistogram.ts",
+          "symbols": [
+            "translateExponentialHistogramCouchbase"
+          ]
+        },
+        {
           "path": "packages/common-utils/src/couchbase/render/metrics/histogram.ts",
           "symbols": [
+            "HistInput",
+            "dimGroupBy",
+            "dimProject",
+            "dimSelect",
+            "groupBySql",
+            "seriesKeyExpr",
+            "sourceWhereClause",
+            "timeBucketSql",
             "translateHistogramCouchbase"
           ]
         },
@@ -25165,7 +25649,11 @@
         {
           "path": "packages/common-utils/src/dataLayer/index.ts",
           "symbols": [
-            "getMetadata"
+            "CouchbaseNotReadyError",
+            "CouchbaseUnsupportedError",
+            "assertSliceForConnection",
+            "getMetadata",
+            "queryLanguageForConnection"
           ]
         },
         {
@@ -25425,7 +25913,7 @@
       "name": "External API: saved searches",
       "area": "external_api",
       "visibility": "api",
-      "status": "not_started",
+      "status": "ported",
       "entryPoints": [
         {
           "id": "api_route:DELETE /api/v2/saved-searches/:id",
@@ -25739,7 +26227,7 @@
       "name": "External API: search",
       "area": "external_api",
       "visibility": "api",
-      "status": "not_started",
+      "status": "ported",
       "entryPoints": [
         {
           "id": "api_route:POST /api/v2/search",
@@ -25747,7 +26235,7 @@
           "file": "packages/api/src/routers/external-api/v2/search.ts"
         }
       ],
-      "closureSize": 128,
+      "closureSize": 132,
       "exclusiveFiles": [],
       "dataLayer": [
         {
@@ -25959,13 +26447,10 @@
         {
           "path": "packages/common-utils/src/couchbase/fn/scalar.ts",
           "symbols": [
-            "aggIf",
             "anyValue",
             "argMax",
             "count",
-            "countIf",
             "lag",
-            "sumIf",
             "uniq"
           ]
         },
@@ -26067,8 +26552,15 @@
           ]
         },
         {
+          "path": "packages/common-utils/src/couchbase/rawSqlLimit.ts",
+          "symbols": [
+            "ensureOutermostSelectLimit"
+          ]
+        },
+        {
           "path": "packages/common-utils/src/couchbase/render.ts",
           "symbols": [
+            "ROW_ID_ALIAS",
             "SqlppQuery",
             "renderChartConfigCouchbase"
           ]
@@ -26124,8 +26616,22 @@
           ]
         },
         {
+          "path": "packages/common-utils/src/couchbase/render/metrics/expHistogram.ts",
+          "symbols": [
+            "translateExponentialHistogramCouchbase"
+          ]
+        },
+        {
           "path": "packages/common-utils/src/couchbase/render/metrics/histogram.ts",
           "symbols": [
+            "HistInput",
+            "dimGroupBy",
+            "dimProject",
+            "dimSelect",
+            "groupBySql",
+            "seriesKeyExpr",
+            "sourceWhereClause",
+            "timeBucketSql",
             "translateHistogramCouchbase"
           ]
         },
@@ -26298,7 +26804,11 @@
         {
           "path": "packages/common-utils/src/dataLayer/index.ts",
           "symbols": [
-            "getMetadata"
+            "CouchbaseNotReadyError",
+            "CouchbaseUnsupportedError",
+            "assertSliceForConnection",
+            "getMetadata",
+            "queryLanguageForConnection"
           ]
         },
         {
@@ -26543,7 +27053,7 @@
       "name": "External API: sources",
       "area": "external_api",
       "visibility": "api",
-      "status": "not_started",
+      "status": "ported",
       "entryPoints": [
         {
           "id": "api_route:DELETE /api/v2/sources/:id",
@@ -26880,7 +27390,7 @@
       "name": "External API: team",
       "area": "external_api",
       "visibility": "api",
-      "status": "not_started",
+      "status": "ported",
       "entryPoints": [
         {
           "id": "api_route:DELETE /api/v2/team/invitation/:id",
@@ -27188,7 +27698,7 @@
       "name": "External API: webhooks",
       "area": "external_api",
       "visibility": "api",
-      "status": "not_started",
+      "status": "ported",
       "entryPoints": [
         {
           "id": "api_route:DELETE /api/v2/webhooks/:id",
@@ -27484,7 +27994,7 @@
       "name": "Telemetry ingestion",
       "area": "ingestion",
       "visibility": "api",
-      "status": "in_progress",
+      "status": "ported",
       "entryPoints": [
         {
           "id": "ingestion:otel-collector",
@@ -27589,7 +28099,7 @@
       "name": "MCP tools: alerts and webhooks",
       "area": "mcp",
       "visibility": "api",
-      "status": "not_started",
+      "status": "ported",
       "entryPoints": [
         {
           "id": "mcp_tool:cbt_delete_webhook",
@@ -27947,7 +28457,7 @@
       "name": "MCP tools: dashboards",
       "area": "mcp",
       "visibility": "api",
-      "status": "not_started",
+      "status": "ported",
       "entryPoints": [
         {
           "id": "mcp_tool:cbt_delete_dashboard",
@@ -27990,7 +28500,7 @@
           "file": "packages/api/src/mcp/tools/dashboards/searchDashboards.ts"
         }
       ],
-      "closureSize": 139,
+      "closureSize": 143,
       "exclusiveFiles": [
         "packages/api/src/mcp/tools/dashboards/deleteDashboard.ts",
         "packages/api/src/mcp/tools/dashboards/getDashboard.ts",
@@ -28233,13 +28743,10 @@
         {
           "path": "packages/common-utils/src/couchbase/fn/scalar.ts",
           "symbols": [
-            "aggIf",
             "anyValue",
             "argMax",
             "count",
-            "countIf",
             "lag",
-            "sumIf",
             "uniq"
           ]
         },
@@ -28341,6 +28848,12 @@
           ]
         },
         {
+          "path": "packages/common-utils/src/couchbase/rawSqlLimit.ts",
+          "symbols": [
+            "ensureOutermostSelectLimit"
+          ]
+        },
+        {
           "path": "packages/common-utils/src/couchbase/render.ts",
           "symbols": [
             "SqlppQuery",
@@ -28398,8 +28911,22 @@
           ]
         },
         {
+          "path": "packages/common-utils/src/couchbase/render/metrics/expHistogram.ts",
+          "symbols": [
+            "translateExponentialHistogramCouchbase"
+          ]
+        },
+        {
           "path": "packages/common-utils/src/couchbase/render/metrics/histogram.ts",
           "symbols": [
+            "HistInput",
+            "dimGroupBy",
+            "dimProject",
+            "dimSelect",
+            "groupBySql",
+            "seriesKeyExpr",
+            "sourceWhereClause",
+            "timeBucketSql",
             "translateHistogramCouchbase"
           ]
         },
@@ -28572,7 +29099,11 @@
         {
           "path": "packages/common-utils/src/dataLayer/index.ts",
           "symbols": [
-            "getMetadata"
+            "CouchbaseNotReadyError",
+            "CouchbaseUnsupportedError",
+            "assertSliceForConnection",
+            "getMetadata",
+            "queryLanguageForConnection"
           ]
         },
         {
@@ -28829,7 +29360,7 @@
       "name": "MCP tools: query",
       "area": "mcp",
       "visibility": "api",
-      "status": "not_started",
+      "status": "ported",
       "entryPoints": [
         {
           "id": "mcp_tool:cbt_emerging_signals",
@@ -28872,7 +29403,7 @@
           "file": "packages/api/src/mcp/tools/query/timeseries.ts"
         }
       ],
-      "closureSize": 138,
+      "closureSize": 143,
       "exclusiveFiles": [
         "packages/api/src/mcp/tools/query/builderCatalog.ts",
         "packages/api/src/mcp/tools/query/denoise.ts",
@@ -28884,6 +29415,7 @@
         "packages/api/src/mcp/tools/query/search.ts",
         "packages/api/src/mcp/tools/query/sql.ts",
         "packages/api/src/mcp/tools/query/sqlBatch.ts",
+        "packages/api/src/mcp/tools/query/sqlDescriptions.ts",
         "packages/api/src/mcp/tools/query/table.ts",
         "packages/api/src/mcp/tools/query/timeseries.ts"
       ],
@@ -28950,8 +29482,11 @@
           ]
         },
         {
-          "path": "packages/api/src/mcp/tools/query/sql.ts",
-          "symbols": []
+          "path": "packages/api/src/mcp/tools/query/sqlDescriptions.ts",
+          "symbols": [
+            "RAW_SQL_PARAM_DESCRIPTION",
+            "RAW_SQL_TOOL_DESCRIPTION"
+          ]
         },
         {
           "path": "packages/api/src/mcp/tools/query/table.ts",
@@ -29134,13 +29669,10 @@
         {
           "path": "packages/common-utils/src/couchbase/fn/scalar.ts",
           "symbols": [
-            "aggIf",
             "anyValue",
             "argMax",
             "count",
-            "countIf",
             "lag",
-            "sumIf",
             "uniq"
           ]
         },
@@ -29242,6 +29774,12 @@
           ]
         },
         {
+          "path": "packages/common-utils/src/couchbase/rawSqlLimit.ts",
+          "symbols": [
+            "ensureOutermostSelectLimit"
+          ]
+        },
+        {
           "path": "packages/common-utils/src/couchbase/render.ts",
           "symbols": [
             "SqlppQuery",
@@ -29299,8 +29837,22 @@
           ]
         },
         {
+          "path": "packages/common-utils/src/couchbase/render/metrics/expHistogram.ts",
+          "symbols": [
+            "translateExponentialHistogramCouchbase"
+          ]
+        },
+        {
           "path": "packages/common-utils/src/couchbase/render/metrics/histogram.ts",
           "symbols": [
+            "HistInput",
+            "dimGroupBy",
+            "dimProject",
+            "dimSelect",
+            "groupBySql",
+            "seriesKeyExpr",
+            "sourceWhereClause",
+            "timeBucketSql",
             "translateHistogramCouchbase"
           ]
         },
@@ -29473,8 +30025,13 @@
         {
           "path": "packages/common-utils/src/dataLayer/index.ts",
           "symbols": [
+            "CouchbaseNotReadyError",
+            "CouchbaseUnsupportedError",
+            "assertSliceForConnection",
             "getMetadata",
-            "renderChartConfig"
+            "queryLanguageForConnection",
+            "renderChartConfig",
+            "resolveConnectionKind"
           ]
         },
         {
@@ -29723,7 +30280,7 @@
       "name": "MCP tools: saved searches",
       "area": "mcp",
       "visibility": "api",
-      "status": "not_started",
+      "status": "ported",
       "entryPoints": [
         {
           "id": "mcp_tool:cbt_get_saved_search",
@@ -30025,7 +30582,7 @@
       "name": "MCP tools: sources",
       "area": "mcp",
       "visibility": "api",
-      "status": "not_started",
+      "status": "ported",
       "entryPoints": [
         {
           "id": "mcp_tool:cbt_delete_source",
@@ -30063,13 +30620,14 @@
           "file": "packages/api/src/mcp/tools/sources/saveSource.ts"
         }
       ],
-      "closureSize": 142,
+      "closureSize": 147,
       "exclusiveFiles": [
         "packages/api/src/mcp/tools/sources/deleteSource.ts",
         "packages/api/src/mcp/tools/sources/describeMetric.ts",
         "packages/api/src/mcp/tools/sources/describePromqlSource.ts",
         "packages/api/src/mcp/tools/sources/describeSource.ts",
         "packages/api/src/mcp/tools/sources/describeTable.ts",
+        "packages/api/src/mcp/tools/sources/describeTableCouchbase.ts",
         "packages/api/src/mcp/tools/sources/describeTableQueries.ts",
         "packages/api/src/mcp/tools/sources/describeTableSchema.ts",
         "packages/api/src/mcp/tools/sources/listMetrics.ts",
@@ -30122,6 +30680,13 @@
         {
           "path": "packages/api/src/mcp/tools/sources/describeMetric.ts",
           "symbols": []
+        },
+        {
+          "path": "packages/api/src/mcp/tools/sources/describeTableCouchbase.ts",
+          "symbols": [
+            "describeCouchbaseTable",
+            "listCouchbaseTables"
+          ]
         },
         {
           "path": "packages/api/src/mcp/tools/sources/describeTableQueries.ts",
@@ -30333,13 +30898,10 @@
         {
           "path": "packages/common-utils/src/couchbase/fn/scalar.ts",
           "symbols": [
-            "aggIf",
             "anyValue",
             "argMax",
             "count",
-            "countIf",
             "lag",
-            "sumIf",
             "uniq"
           ]
         },
@@ -30441,6 +31003,12 @@
           ]
         },
         {
+          "path": "packages/common-utils/src/couchbase/rawSqlLimit.ts",
+          "symbols": [
+            "ensureOutermostSelectLimit"
+          ]
+        },
+        {
           "path": "packages/common-utils/src/couchbase/render.ts",
           "symbols": [
             "SqlppQuery",
@@ -30498,8 +31066,22 @@
           ]
         },
         {
+          "path": "packages/common-utils/src/couchbase/render/metrics/expHistogram.ts",
+          "symbols": [
+            "translateExponentialHistogramCouchbase"
+          ]
+        },
+        {
           "path": "packages/common-utils/src/couchbase/render/metrics/histogram.ts",
           "symbols": [
+            "HistInput",
+            "dimGroupBy",
+            "dimProject",
+            "dimSelect",
+            "groupBySql",
+            "seriesKeyExpr",
+            "sourceWhereClause",
+            "timeBucketSql",
             "translateHistogramCouchbase"
           ]
         },
@@ -30672,7 +31254,13 @@
         {
           "path": "packages/common-utils/src/dataLayer/index.ts",
           "symbols": [
-            "getMetadata"
+            "CouchbaseNotReadyError",
+            "CouchbaseUnsupportedError",
+            "QueryLanguage",
+            "assertSliceForConnection",
+            "getMetadata",
+            "queryLanguageForConnection",
+            "resolveConnectionKind"
           ]
         },
         {
@@ -30919,7 +31507,7 @@
       "name": "MCP tools: trace analysis",
       "area": "mcp",
       "visibility": "api",
-      "status": "not_started",
+      "status": "ported",
       "entryPoints": [
         {
           "id": "mcp_tool:cbt_trace_top_time_consuming_operations",
@@ -30932,7 +31520,7 @@
           "file": "packages/api/src/mcp/tools/trace/waterfall.ts"
         }
       ],
-      "closureSize": 128,
+      "closureSize": 132,
       "exclusiveFiles": [
         "packages/api/src/mcp/tools/trace/breakdown.ts",
         "packages/api/src/mcp/tools/trace/breakdownSchema.ts",
@@ -31156,13 +31744,10 @@
         {
           "path": "packages/common-utils/src/couchbase/fn/scalar.ts",
           "symbols": [
-            "aggIf",
             "anyValue",
             "argMax",
             "count",
-            "countIf",
             "lag",
-            "sumIf",
             "uniq"
           ]
         },
@@ -31264,6 +31849,12 @@
           ]
         },
         {
+          "path": "packages/common-utils/src/couchbase/rawSqlLimit.ts",
+          "symbols": [
+            "ensureOutermostSelectLimit"
+          ]
+        },
+        {
           "path": "packages/common-utils/src/couchbase/render.ts",
           "symbols": [
             "SqlppQuery",
@@ -31321,8 +31912,22 @@
           ]
         },
         {
+          "path": "packages/common-utils/src/couchbase/render/metrics/expHistogram.ts",
+          "symbols": [
+            "translateExponentialHistogramCouchbase"
+          ]
+        },
+        {
           "path": "packages/common-utils/src/couchbase/render/metrics/histogram.ts",
           "symbols": [
+            "HistInput",
+            "dimGroupBy",
+            "dimProject",
+            "dimSelect",
+            "groupBySql",
+            "seriesKeyExpr",
+            "sourceWhereClause",
+            "timeBucketSql",
             "translateHistogramCouchbase"
           ]
         },
@@ -31495,7 +32100,11 @@
         {
           "path": "packages/common-utils/src/dataLayer/index.ts",
           "symbols": [
-            "getMetadata"
+            "CouchbaseNotReadyError",
+            "CouchbaseUnsupportedError",
+            "assertSliceForConnection",
+            "getMetadata",
+            "queryLanguageForConnection"
           ]
         },
         {
@@ -31736,7 +32345,7 @@
       "name": "Alert evaluation",
       "area": "alerts",
       "visibility": "internal",
-      "status": "not_started",
+      "status": "ported",
       "entryPoints": [
         {
           "id": "task:check-alerts",
@@ -31744,7 +32353,7 @@
           "file": "packages/api/src/tasks/checkAlerts/index.ts"
         }
       ],
-      "closureSize": 119,
+      "closureSize": 121,
       "exclusiveFiles": [],
       "dataLayer": [
         {
@@ -31935,13 +32544,10 @@
         {
           "path": "packages/common-utils/src/couchbase/fn/scalar.ts",
           "symbols": [
-            "aggIf",
             "anyValue",
             "argMax",
             "count",
-            "countIf",
             "lag",
-            "sumIf",
             "uniq"
           ]
         },
@@ -32043,6 +32649,12 @@
           ]
         },
         {
+          "path": "packages/common-utils/src/couchbase/rawSqlLimit.ts",
+          "symbols": [
+            "ensureOutermostSelectLimit"
+          ]
+        },
+        {
           "path": "packages/common-utils/src/couchbase/render.ts",
           "symbols": [
             "SqlppQuery",
@@ -32100,8 +32712,22 @@
           ]
         },
         {
+          "path": "packages/common-utils/src/couchbase/render/metrics/expHistogram.ts",
+          "symbols": [
+            "translateExponentialHistogramCouchbase"
+          ]
+        },
+        {
           "path": "packages/common-utils/src/couchbase/render/metrics/histogram.ts",
           "symbols": [
+            "HistInput",
+            "dimGroupBy",
+            "dimProject",
+            "dimSelect",
+            "groupBySql",
+            "seriesKeyExpr",
+            "sourceWhereClause",
+            "timeBucketSql",
             "translateHistogramCouchbase"
           ]
         },
@@ -32274,6 +32900,7 @@
         {
           "path": "packages/common-utils/src/dataLayer/index.ts",
           "symbols": [
+            "assertSliceForConnection",
             "getMetadata",
             "renderChartConfig"
           ]
@@ -32519,7 +33146,7 @@
       "name": "Ping-pong task",
       "area": "internal",
       "visibility": "internal",
-      "status": "not_started",
+      "status": "ported",
       "entryPoints": [
         {
           "id": "task:ping-pong",
@@ -32543,7 +33170,7 @@
       "name": "Dashboard provisioning task",
       "area": "internal",
       "visibility": "internal",
-      "status": "not_started",
+      "status": "ported",
       "entryPoints": [
         {
           "id": "task:provision-dashboards",
@@ -32786,7 +33413,7 @@
     "byStatus": [
       {
         "status": "not_started",
-        "count": 38
+        "count": 0
       },
       {
         "status": "in_progress",
@@ -32794,7 +33421,7 @@
       },
       {
         "status": "ported",
-        "count": 12
+        "count": 50
       },
       {
         "status": "needs_decision",

@@ -86,6 +86,24 @@ dev-up:
 dev-down:
 	yarn dev:down
 
+.PHONY: dev-sample-data
+dev-sample-data:
+	@. ./scripts/dev-env.sh 2>/dev/null || true; \
+	ENDPOINT="http://127.0.0.1:$${CBT_DEV_OTEL_HTTP_PORT:-4318}"; \
+	KEY="$${CBT_API_KEY:-$${INGESTION_API_KEY:-}}"; \
+	if [ -z "$$KEY" ]; then echo "Set CBT_API_KEY or INGESTION_API_KEY in .env"; exit 1; fi; \
+	yarn workspace @couchbase-traces/ingest sample-data --endpoint "$$ENDPOINT" --api-key "$$KEY" --hours 6
+
+.PHONY: dev-couchbase-setup
+dev-couchbase-setup:
+	@. ./scripts/dev-env.sh 2>/dev/null || true; \
+	COUCHBASE_HOST=127.0.0.1 COUCHBASE_INIT_WAIT_SECONDS=300 \
+	bash docker/couchbase/init.sh
+
+.PHONY: ci-e2e-couchbase
+ci-e2e-couchbase:
+	CBT_E2E_STORE=couchbase ./scripts/test-e2e.sh
+
 .PHONY: dev-portal
 dev-portal:
 	node scripts/dev-portal/server.js
@@ -195,6 +213,7 @@ ci-unit:
 	node --test .github/scripts/__tests__/changeset-hash.test.mjs
 	node --test .github/scripts/code-review/__tests__/review-comments.test.mjs
 	node --test scripts/__tests__/slots.test.mjs
+	node --test scripts/__tests__/compose-config.test.mjs
 
 .PHONY: ci-triage
 ci-triage:
@@ -249,30 +268,22 @@ build-otel-collector:
 		-t ${NEXT_OTEL_COLLECTOR_IMAGE_NAME_DOCKERHUB}:${IMAGE_VERSION}${IMAGE_VERSION_SUB_TAG} \
 		--target prod
 
-.PHONY: build-local
-build-local:
-	docker build . -f ./docker/hyperdx/Dockerfile \
-		--build-context clickhouse=./docker/clickhouse \
-		--build-context otel-collector=./docker/otel-collector \
-		--build-context hyperdx=./docker/hyperdx \
-		--build-context api=./packages/api \
-		--build-context app=./packages/app \
-		--build-arg CODE_VERSION=${CODE_VERSION} \
-		-t ${LOCAL_IMAGE_NAME_DOCKERHUB}:${IMAGE_VERSION}${IMAGE_VERSION_SUB_TAG} \
-		-t ${NEXT_LOCAL_IMAGE_NAME_DOCKERHUB}:${IMAGE_VERSION}${IMAGE_VERSION_SUB_TAG} \
-		--target all-in-one-noauth
+.PHONY: build-ingest
+build-ingest:
+	docker build . -f packages/ingest/Dockerfile \
+		-t ${CBT_IMAGE_REPO:-ghcr.io}/${CBT_INGEST_IMAGE_NAME:-mminichino/couchbase-traces-ingest}:${IMAGE_VERSION}${IMAGE_VERSION_SUB_TAG}
 
 .PHONY: build-all-in-one
 build-all-in-one:
 	docker build . -f ./docker/hyperdx/Dockerfile \
-		--build-context clickhouse=./docker/clickhouse \
 		--build-context otel-collector=./docker/otel-collector \
 		--build-context hyperdx=./docker/hyperdx \
 		--build-context api=./packages/api \
 		--build-context app=./packages/app \
 		--build-arg CODE_VERSION=${CODE_VERSION} \
-		-t ${ALL_IN_ONE_IMAGE_NAME_DOCKERHUB}:${IMAGE_VERSION}${IMAGE_VERSION_SUB_TAG} \
-		-t ${NEXT_ALL_IN_ONE_IMAGE_NAME_DOCKERHUB}:${IMAGE_VERSION}${IMAGE_VERSION_SUB_TAG} \
+		--build-arg COUCHBASE_IMAGE=${COUCHBASE_IMAGE:-couchbase/server:enterprise-8.0.3} \
+		-t ${CBT_IMAGE_REPO:-ghcr.io}/${ALL_IN_ONE_IMAGE_NAME_DOCKERHUB}:${IMAGE_VERSION}${IMAGE_VERSION_SUB_TAG} \
+		-t ${CBT_IMAGE_REPO:-ghcr.io}/${NEXT_ALL_IN_ONE_IMAGE_NAME_DOCKERHUB}:${IMAGE_VERSION}${IMAGE_VERSION_SUB_TAG} \
 		--target all-in-one-auth
 
 .PHONY: build-app
@@ -304,29 +315,16 @@ build-app-nightly:
 		-t ${NEXT_IMAGE_NAME_DOCKERHUB}:${IMAGE_NIGHTLY_TAG} \
 		--target prod
 
-.PHONY: build-local-nightly
-build-local-nightly:
-	docker build . -f ./docker/hyperdx/Dockerfile \
-		--build-context clickhouse=./docker/clickhouse \
-		--build-context otel-collector=./docker/otel-collector \
-		--build-context hyperdx=./docker/hyperdx \
-		--build-context api=./packages/api \
-		--build-context app=./packages/app \
-		--build-arg CODE_VERSION=${CODE_VERSION} \
-		-t ${LOCAL_IMAGE_NAME_DOCKERHUB}:${IMAGE_NIGHTLY_TAG} \
-		-t ${NEXT_LOCAL_IMAGE_NAME_DOCKERHUB}:${IMAGE_NIGHTLY_TAG} \
-		--target all-in-one-noauth
-
 .PHONY: build-all-in-one-nightly
 build-all-in-one-nightly:
 	docker build . -f ./docker/hyperdx/Dockerfile \
-		--build-context clickhouse=./docker/clickhouse \
 		--build-context otel-collector=./docker/otel-collector \
 		--build-context hyperdx=./docker/hyperdx \
 		--build-context api=./packages/api \
 		--build-context app=./packages/app \
 		--build-arg CODE_VERSION=${CODE_VERSION} \
-		-t ${ALL_IN_ONE_IMAGE_NAME_DOCKERHUB}:${IMAGE_NIGHTLY_TAG} \
-		-t ${NEXT_ALL_IN_ONE_IMAGE_NAME_DOCKERHUB}:${IMAGE_NIGHTLY_TAG} \
+		--build-arg COUCHBASE_IMAGE=${COUCHBASE_IMAGE:-couchbase/server:enterprise-8.0.3} \
+		-t ${CBT_IMAGE_REPO:-ghcr.io}/${ALL_IN_ONE_IMAGE_NAME_DOCKERHUB}:${IMAGE_NIGHTLY_TAG} \
+		-t ${CBT_IMAGE_REPO:-ghcr.io}/${NEXT_ALL_IN_ONE_IMAGE_NAME_DOCKERHUB}:${IMAGE_NIGHTLY_TAG} \
 		--target all-in-one-auth
 

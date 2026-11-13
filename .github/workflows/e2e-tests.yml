@@ -3,6 +3,33 @@ on:
   workflow_call:
 
 jobs:
+  e2e-couchbase:
+    name: E2E Couchbase - Shard ${{ matrix.shard }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    permissions:
+      contents: read
+    strategy:
+      fail-fast: false
+      matrix:
+        shard: [1, 2]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+      - name: E2E setup
+        uses: ./.github/actions/e2e-setup
+      - name: Run Playwright tests (Couchbase mode)
+        env:
+          CBT_E2E_STORE: couchbase
+          E2E_WORKERS: '2'
+        run: |
+          cd packages/app
+          yarn test:e2e --shard=${{ matrix.shard }}/2
+      - name: E2E teardown
+        if: always()
+        uses: ./.github/actions/e2e-teardown
+        with:
+          artifact-suffix: couchbase-${{ matrix.shard }}
   e2e-tests:
     name: E2E Tests - Shard ${{ matrix.shard }}
     # 8-core runner so the 4 Playwright workers (see playwright.config.ts) have

@@ -8,6 +8,8 @@
 # - Otel Collector (otelcol)
 
 ARG NODE_VERSION=22.23.4
+ARG COUCHBASE_IMAGE=couchbase/server:enterprise-8.0.3
+ARG MONGODB_VERSION=5.0.32
 ARG CLICKHOUSE_VERSION=26.8.36.3
 ARG OTEL_COLLECTOR_VERSION=0.155.0
 ARG OTEL_COLLECTOR_CORE_VERSION=1.61.0
@@ -41,6 +43,19 @@ COPY packages/otel-collector/go.mod packages/otel-collector/go.sum ./
 RUN go mod download
 COPY packages/otel-collector/ ./
 RUN CGO_ENABLED=0 GOOS=linux go build -ldflags="-s -w" -o /migrate ./cmd/migrate
+
+FROM node:${NODE_VERSION}-bookworm-slim AS node_bookworm
+WORKDIR /ingest
+COPY .yarn ./.yarn
+COPY .yarnrc.yml yarn.lock package.json tsconfig.base.json ./
+COPY packages/common-utils/package.json packages/common-utils/package.json
+COPY packages/ingest/package.json packages/ingest/package.json
+RUN corepack enable && yarn install --mode=skip-build
+COPY packages/common-utils packages/common-utils
+RUN yarn workspace @couchbase-traces/common-utils run build
+COPY packages/ingest packages/ingest
+RUN yarn workspace @couchbase-traces/ingest run build && \
+    yarn workspaces focus @couchbase-traces/ingest --production
 
 FROM node:${NODE_VERSION}-alpine AS node_base
 
@@ -153,95 +168,65 @@ ENTRYPOINT ["sh", "/etc/local/entry.sh"]
 
 # all-in-one base ############################################################################################
 FROM hairyhenderson/gomplate:v4.3.3-alpine AS gomplate
-FROM clickhouse/clickhouse-server:${CLICKHOUSE_VERSION}-alpine AS all-in-one-base
+FROM ${COUCHBASE_IMAGE} AS all-in-one-base
 
 ARG CODE_VERSION
+ARG COUCHBASE_IMAGE
+ARG MONGODB_VERSION
 ARG USER_UID=10001
 ARG USER_GID=10001
 
 ENV CODE_VERSION=$CODE_VERSION
 ENV OTEL_RESOURCE_ATTRIBUTES="service.version=$CODE_VERSION"
-# Service name for Couchbase Traces's own telemetry, sent only when CBT_API_KEY or
-# OTEL_EXPORTER_OTLP_HEADERS is set. The API and alert task use it as is, the
-# Next.js server adds "-next". Override it with -e OTEL_SERVICE_NAME=<name>.
 ENV OTEL_SERVICE_NAME=hdx-oss-app
-# Copy from otel collector bases
+
 COPY --from=ocb-builder --chmod=755 /build/output/otelcol-couchbase-traces /otelcontribcol
 COPY --from=otel_collector_opampsupervisor_base --chmod=755 /usr/local/bin/opampsupervisor /usr/local/bin/opampsupervisor
 
-# Copy Node.js runtime from node base.
-# Deliberately NOT copying node's /usr/lib: it overwrites this image's
-# libapk.so, libssl, libcrypto and libz with whatever Alpine point release the
-# node image happens to be built on. When the two drift, apk stops linking
-# ("Error relocating /sbin/apk: ... symbol not found") and the build dies.
-# Node only needs libstdc++/libgcc from there; those are installed via apk below.
-COPY --from=node_base --link /usr/local/bin /usr/local/bin
-COPY --from=node_base --link /usr/local/lib /usr/local/lib
-COPY --from=node_base /usr/local/include /usr/local/include
+# Node.js runtime (glibc) for API, app, and ingest
+COPY --from=node_bookworm --link /usr/local/bin /usr/local/bin
+COPY --from=node_bookworm --link /usr/local/lib /usr/local/lib
+COPY --from=node_bookworm /usr/local/include /usr/local/include
 
-# Set up Clickhouse
-COPY --from=clickhouse ./local/*.xml /etc/clickhouse-server
-COPY --from=hyperdx ./clickhouseConfig.xml /etc/clickhouse-server/config.xml
-
-# Set up Otel Collector
 COPY --from=otel-collector ./config.yaml /etc/otelcol-contrib/config.yaml
 COPY --from=otel-collector ./supervisor_docker.yaml.tmpl /etc/otel/supervisor.yaml.tmpl
-COPY --from=otel-collector ./schema /etc/otel/schema
-
-# Copy otel-collector entrypoint script
 COPY --from=otel-collector --chmod=755 ./entrypoint.sh /otel-entrypoint.sh
-
-# Copy gomplate binary from the gomplate image
 COPY --from=gomplate /bin/gomplate /usr/local/bin/gomplate
 
-# Copy goose binary from the goose image
-COPY --from=goose /bin/goose /usr/local/bin/goose
+COPY --from=node_bookworm /ingest /opt/cbt/ingest
+COPY --chmod=755 ./docker/couchbase/init.sh /opt/cbt/bin/init.sh
 
-# Copy migrate binary (Go-based goose migration tool with full TLS support)
-COPY --from=migrate-builder /migrate /usr/local/bin/migrate
-
-# Install MongoDB and other dependencies (consolidated into a single RUN command).
-# libstdc++/libgcc are the Node.js runtime deps, installed before the v3.9
-# repositories are appended so they resolve from this image's own Alpine release.
-RUN apk add --no-cache libstdc++ libgcc && \
-  echo 'http://dl-cdn.alpinelinux.org/alpine/v3.9/main' >> /etc/apk/repositories && \
-  echo 'http://dl-cdn.alpinelinux.org/alpine/v3.9/community' >> /etc/apk/repositories && \
-  apk update && \
-  apk add --no-cache mongodb yaml-cpp=0.6.2-r2 ca-certificates && \
-  apk add --no-cache --upgrade curl busybox && \
-  addgroup -S -g ${USER_GID} otel && \
-  adduser  -S -u ${USER_UID} -G otel otel && \
-  mkdir -p /data/db && \
-  install -d -m 0777 -o ${USER_UID} -g ${USER_GID} /etc/otel/supervisor-data && \
-  rm -rf /var/cache/apk/* && \
-  rm -rf /usr/local/lib/node_modules/npm /usr/local/lib/node_modules/corepack \
-    /usr/local/bin/npm /usr/local/bin/npx /usr/local/bin/corepack \
-    /usr/local/bin/yarn /usr/local/bin/yarnpkg
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends ca-certificates curl gnupg openssl && \
+    curl -fsSL https://www.mongodb.org/static/pgp/server-5.0.asc | gpg --dearmor -o /usr/share/keyrings/mongodb-server-5.0.gpg && \
+    echo "deb [ signed-by=/usr/share/keyrings/mongodb-server-5.0.gpg ] https://repo.mongodb.org/apt/ubuntu focal/mongodb-org/5.0 multiverse" > /etc/apt/sources.list.d/mongodb-org-5.0.list && \
+    apt-get update && \
+    apt-get install -y --no-install-recommends mongodb-org=${MONGODB_VERSION} mongodb-org-server=${MONGODB_VERSION} mongodb-org-shell=${MONGODB_VERSION} && \
+    apt-get clean && rm -rf /var/lib/apt/lists/* && \
+    groupadd --gid ${USER_GID} otel && \
+    useradd --uid ${USER_UID} --gid otel --shell /usr/sbin/nologin otel && \
+    mkdir -p /data/db /data/cbt && \
+    install -d -m 0777 -o ${USER_UID} -g ${USER_GID} /etc/otel/supervisor-data && \
+    rm -rf /usr/local/lib/node_modules/npm /usr/local/lib/node_modules/corepack \
+      /usr/local/bin/npm /usr/local/bin/npx /usr/local/bin/corepack \
+      /usr/local/bin/yarn /usr/local/bin/yarnpkg
 
 ENV NODE_ENV=production
 
-# Set up App
 COPY --from=prod /app /app
 COPY --from=hyperdx ./refresh-env.js /etc/local/refresh-env.js
-COPY --from=hyperdx ./entry.local.base.sh /etc/local/entry.base.sh
-
-# Copy VEX exception files for Docker Scout vulnerability suppression
-# Reference via: docker scout cves --vex-location /etc/vex/ <image>
 COPY .vex/*.vex.json /etc/vex/
 
 WORKDIR /app
 
-# Add hosts entry in entrypoint script instead of here
-
-# Expose ports
-EXPOSE 8080 4317 4318 13133 8123 9000 8125/udp
+EXPOSE 8080 4317 4318 13133 4320 8091-8097 11210
 
 # all-in-one no auth ############################################################################################
 FROM all-in-one-base AS all-in-one-noauth
 
 LABEL org.opencontainers.image.vendor="Couchbase Traces" \
       org.opencontainers.image.title="Couchbase Traces All-in-One (No Auth)" \
-      org.opencontainers.image.description="Couchbase Traces all-in-one image with ClickHouse, MongoDB, and OTel Collector (no authentication)" \
+      org.opencontainers.image.description="Couchbase Traces all-in-one image with Couchbase, MongoDB, and OTel Collector (no authentication)" \
       org.opencontainers.image.source="https://github.com/mminichino/couchbase-traces" \
       org.opencontainers.image.licenses="MIT"
 
@@ -257,13 +242,13 @@ FROM all-in-one-base AS all-in-one-auth
 
 LABEL org.opencontainers.image.vendor="Couchbase Traces" \
       org.opencontainers.image.title="Couchbase Traces All-in-One (With Auth)" \
-      org.opencontainers.image.description="Couchbase Traces all-in-one image with ClickHouse, MongoDB, and OTel Collector (with authentication)" \
+      org.opencontainers.image.description="Couchbase Traces all-in-one image with Couchbase Server, MongoDB, and OTel Collector (with authentication)" \
       org.opencontainers.image.source="https://github.com/mminichino/couchbase-traces" \
       org.opencontainers.image.licenses="MIT"
 
-COPY --from=hyperdx ./entry.local.auth.sh /etc/local/entry.sh
+COPY --from=hyperdx --chmod=755 ./entry.cbt.sh /etc/local/entry.sh
 
-HEALTHCHECK --interval=30s --timeout=5s --start-period=60s --retries=3 \
+HEALTHCHECK --interval=30s --timeout=5s --start-period=120s --retries=3 \
     CMD curl -f http://localhost:8080/api/health || exit 1
 
 ENTRYPOINT ["sh", "/etc/local/entry.sh"]

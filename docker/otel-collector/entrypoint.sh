@@ -44,42 +44,46 @@ prometheus_endpoint_error() {
   exit 1
 }
 
-if [ -n "$CLICKHOUSE_PROMETHEUS_METRICS_ENDPOINT" ]; then
-  CBT_PROMETHEUS_SCHEME=http
-  CBT_PROMETHEUS_TLS_INSECURE=true
-  case "$CLICKHOUSE_PROMETHEUS_METRICS_ENDPOINT" in
-    https://*)
-      CBT_PROMETHEUS_SCHEME=https
-      CBT_PROMETHEUS_TLS_INSECURE=false
-      ;;
-    http://*) ;;
-    # Only the scheme is echoed back: the rest of the URL may carry credentials.
-    *://*) prometheus_endpoint_error "has an unsupported scheme '${CLICKHOUSE_PROMETHEUS_METRICS_ENDPOINT%%://*}'" ;;
-  esac
+if [ -z "$CLICKHOUSE_ENDPOINT" ]; then
+  echo "ClickHouse export disabled; skipping schema migration."
+else
+  if [ -n "$CLICKHOUSE_PROMETHEUS_METRICS_ENDPOINT" ]; then
+    CBT_PROMETHEUS_SCHEME=http
+    CBT_PROMETHEUS_TLS_INSECURE=true
+    case "$CLICKHOUSE_PROMETHEUS_METRICS_ENDPOINT" in
+      https://*)
+        CBT_PROMETHEUS_SCHEME=https
+        CBT_PROMETHEUS_TLS_INSECURE=false
+        ;;
+      http://*) ;;
+      # Only the scheme is echoed back: the rest of the URL may carry credentials.
+      *://*) prometheus_endpoint_error "has an unsupported scheme '${CLICKHOUSE_PROMETHEUS_METRICS_ENDPOINT%%://*}'" ;;
+    esac
 
-  PROMETHEUS_HOST_PORT="${CLICKHOUSE_PROMETHEUS_METRICS_ENDPOINT#*://}"
-  PROMETHEUS_HOST_PORT="${PROMETHEUS_HOST_PORT%/}"
-  case "$PROMETHEUS_HOST_PORT" in
-    "") prometheus_endpoint_error "has no host" ;;
-    */*) prometheus_endpoint_error "must not include a path (/write is appended automatically)" ;;
-  esac
+    PROMETHEUS_HOST_PORT="${CLICKHOUSE_PROMETHEUS_METRICS_ENDPOINT#*://}"
+    PROMETHEUS_HOST_PORT="${PROMETHEUS_HOST_PORT%/}"
+    case "$PROMETHEUS_HOST_PORT" in
+      "") prometheus_endpoint_error "has no host" ;;
+      */*) prometheus_endpoint_error "must not include a path (/write is appended automatically)" ;;
+    esac
 
-  export CLICKHOUSE_PROMETHEUS_METRICS_ENDPOINT="$PROMETHEUS_HOST_PORT"
-  export CBT_PROMETHEUS_SCHEME CBT_PROMETHEUS_TLS_INSECURE
-  echo "CLICKHOUSE_PROMETHEUS_METRICS_ENDPOINT scheme: $CBT_PROMETHEUS_SCHEME"
-fi
+    export CLICKHOUSE_PROMETHEUS_METRICS_ENDPOINT="$PROMETHEUS_HOST_PORT"
+    export CBT_PROMETHEUS_SCHEME CBT_PROMETHEUS_TLS_INSECURE
+    echo "CLICKHOUSE_PROMETHEUS_METRICS_ENDPOINT scheme: $CBT_PROMETHEUS_SCHEME"
+  fi
 
-# Run ClickHouse schema migrations if not using legacy schema creation
-if [ "$CBT_OTEL_EXPORTER_CREATE_LEGACY_SCHEMA" != "true" ]; then
-  # Run Go-based migrate tool with TLS support
-  # TLS configuration:
-  # - CLICKHOUSE_TLS_CA_FILE: CA certificate file
-  # - CLICKHOUSE_TLS_CERT_FILE: Client certificate file
-  # - CLICKHOUSE_TLS_KEY_FILE: Client private key file
-  # - CLICKHOUSE_TLS_SERVER_NAME_OVERRIDE: Server name for TLS verification
-  # - CLICKHOUSE_TLS_INSECURE_SKIP_VERIFY: Skip TLS verification (set to "true")
-  echo "🚀 Using Go-based migrate tool with TLS support 🔐"
-  migrate /etc/otel/schema/seed
+  # Run ClickHouse schema migrations if not using legacy schema creation
+  if [ "$CBT_OTEL_EXPORTER_CREATE_LEGACY_SCHEMA" != "true" ]; then
+    # Run Go-based migrate tool with TLS support
+    # TLS configuration:
+    # - CLICKHOUSE_TLS_CA_FILE: CA certificate file
+    # - CLICKHOUSE_TLS_CERT_FILE: Client certificate file
+    # - CLICKHOUSE_TLS_KEY_FILE: Client private key file
+    # - CLICKHOUSE_TLS_SERVER_NAME_OVERRIDE: Server name for TLS verification
+    # - CLICKHOUSE_TLS_INSECURE_SKIP_VERIFY: Skip TLS verification (set to "true")
+    echo "🚀 Using Go-based migrate tool with TLS support 🔐"
+    migrate /etc/otel/schema/seed
+  fi
 fi
 
 # Check if OPAMP_SERVER_URL is defined to determine mode

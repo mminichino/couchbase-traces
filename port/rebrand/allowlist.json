@@ -53,13 +53,6 @@
     {
       "path": ".github/workflows/docker-build.yml",
       "term": "hyperdx",
-      "snippet": "# — docker/hyperdx targets all-in-one-auth AND all-in-one-noauth (the Local",
-      "reason": "internal_identifier",
-      "note": "Token \"hyperdx\" allowed in the token map"
-    },
-    {
-      "path": ".github/workflows/docker-build.yml",
-      "term": "hyperdx",
       "snippet": "docker/hyperdx/**",
       "reason": "internal_identifier",
       "note": "Token \"hyperdx\" allowed in the token map"
@@ -105,13 +98,6 @@
       "snippet": "- '@hyperdx/*'",
       "reason": "external_dependency",
       "note": "Token \"@hyperdx\" allowed in the token map"
-    },
-    {
-      "path": "LOCAL.md",
-      "term": "hyperdx",
-      "snippet": "`@hyperdx/*`",
-      "reason": "external_dependency",
-      "note": "Older upstream SDK packages on npm."
     },
     {
       "path": "Makefile",
@@ -424,28 +410,14 @@
     {
       "path": "docker/hyperdx/Dockerfile",
       "term": "hyperdx",
-      "snippet": "COPY --from=hyperdx ./clickhouseConfig.xml /etc/clickhouse-server/config.xml",
-      "reason": "internal_identifier",
-      "note": "Token \"hyperdx\" allowed in the token map"
-    },
-    {
-      "path": "docker/hyperdx/Dockerfile",
-      "term": "hyperdx",
-      "snippet": "COPY --from=hyperdx ./entry.local.auth.sh /etc/local/entry.sh",
-      "reason": "internal_identifier",
-      "note": "Token \"hyperdx\" allowed in the token map"
-    },
-    {
-      "path": "docker/hyperdx/Dockerfile",
-      "term": "hyperdx",
-      "snippet": "COPY --from=hyperdx ./entry.local.base.sh /etc/local/entry.base.sh",
-      "reason": "internal_identifier",
-      "note": "Token \"hyperdx\" allowed in the token map"
-    },
-    {
-      "path": "docker/hyperdx/Dockerfile",
-      "term": "hyperdx",
       "snippet": "COPY --from=hyperdx ./entry.local.noauth.sh /etc/local/entry.sh",
+      "reason": "internal_identifier",
+      "note": "Token \"hyperdx\" allowed in the token map"
+    },
+    {
+      "path": "docker/hyperdx/Dockerfile",
+      "term": "hyperdx",
+      "snippet": "COPY --from=hyperdx --chmod=755 ./entry.cbt.sh /etc/local/entry.sh",
       "reason": "internal_identifier",
       "note": "Token \"hyperdx\" allowed in the token map"
     },
@@ -476,6 +448,27 @@
       "snippet": "docker build --squash . -f ./docker/hyperdx/Dockerfile \\",
       "reason": "internal_identifier",
       "note": "Token \"hyperdx\" allowed in the token map"
+    },
+    {
+      "path": "docker/hyperdx/entry.cbt.sh",
+      "term": "hyperdx",
+      "snippet": "\"./packages/api/bin/hyperdx task check-alerts\" \\",
+      "reason": "internal_identifier",
+      "note": "Token \"hyperdx\" allowed in the token map"
+    },
+    {
+      "path": "docker/hyperdx/entry.cbt.sh",
+      "term": "hyperdx",
+      "snippet": "\"PORT=${CBT_API_PORT:-8000} CBT_APP_PORT=${CBT_APP_PORT:-8080} ./packages/api/bin/hyperdx api\" \\",
+      "reason": "internal_identifier",
+      "note": "Token \"hyperdx\" allowed in the token map"
+    },
+    {
+      "path": "docker/hyperdx/entry.cbt.sh",
+      "term": "hyperdx",
+      "snippet": "export MONGO_URI=\"${MONGO_URI:-mongodb://127.0.0.1:27017/hyperdx}\"",
+      "reason": "internal_identifier",
+      "note": "Legacy Mongo database name kept for local volume compatibility."
     },
     {
       "path": "docker/hyperdx/entry.local.base.sh",
@@ -607,20 +600,6 @@
       "path": "docker/otel-collector/config.standalone.yaml",
       "term": "hyperdx",
       "snippet": "receivers: [otlp/hyperdx]",
-      "reason": "internal_identifier",
-      "note": "Token \"hyperdx\" allowed in the token map"
-    },
-    {
-      "path": "docker/otel-collector/custom.config.yaml",
-      "term": "hyperdx",
-      "snippet": "#     - otlp/hyperdx",
-      "reason": "internal_identifier",
-      "note": "Token \"hyperdx\" allowed in the token map"
-    },
-    {
-      "path": "docker/otel-collector/custom.config.yaml",
-      "term": "hyperdx",
-      "snippet": "- otlp/hyperdx",
       "reason": "internal_identifier",
       "note": "Token \"hyperdx\" allowed in the token map"
     },
@@ -3253,13 +3232,6 @@
       "path": "scripts/__tests__/slots.test.mjs",
       "term": "hyperdx",
       "snippet": "for (const name of ['a/hyperdx', 'b/hyperdx']) {",
-      "reason": "internal_identifier",
-      "note": "Token \"hyperdx\" allowed in the token map"
-    },
-    {
-      "path": "scripts/ci/smoke-all-in-one.sh",
-      "term": "hyperdx",
-      "snippet": "# OTLP receiver (see docker/hyperdx/entry.local.base.sh). A keyless OTLP canary",
       "reason": "internal_identifier",
       "note": "Token \"hyperdx\" allowed in the token map"
     },

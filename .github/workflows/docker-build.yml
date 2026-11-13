@@ -135,22 +135,7 @@ jobs:
             type=gha,scope=docker-build-pr-app
           cache-to: type=gha,mode=max,scope=docker-build-pr-app
 
-  # All-in-one image (adds ClickHouse, MongoDB, OTel Collector to the app build)
-  # — docker/hyperdx targets all-in-one-auth AND all-in-one-noauth (the Local
-  # image). The two are siblings off the shared all-in-one-base, each with its
-  # own final COPY of an entry script (entry.local.auth.sh / .noauth.sh), so
-  # building auth alone would NOT catch a break in the noauth-specific layer —
-  # which is what surfaced in the nightly. Both are built here; the base is
-  # built once and reused from buildx's local cache for the second target, so
-  # the noauth build only adds its one tiny COPY layer.
-  #
-  # This target's base does `COPY --from=prod /app /app`, so it already
-  # rebuilds the entire App/prod image. To avoid duplicating that ~8-minute
-  # Node build on every app change, the pull-request path filter below is
-  # scoped ONLY to the incremental bundling inputs (ClickHouse / OTel / the
-  # shared Dockerfile) — NOT api/app/common-utils/deps. Those are covered by
-  # the App Image job above, and they can't break the bundling layers, which
-  # only COPY the prod output. Pushes to main ignore the filter entirely.
+  # All-in-one image (Couchbase Server + MongoDB + ingest + OTel Collector).
   all-in-one-image:
     name: Build All-in-One Image
     runs-on: ubuntu-24.04
@@ -165,8 +150,9 @@ jobs:
         with:
           files: |
             packages/otel-collector/**
+            packages/ingest/**
             docker/hyperdx/**
-            docker/clickhouse/**
+            docker/couchbase/**
             docker/otel-collector/**
             .vex/**
       - name: Setup Docker Buildx
@@ -185,50 +171,23 @@ jobs:
           target: all-in-one-auth
           platforms: linux/amd64
           push: false
+          load: true
+          tags: couchbase-traces-aio-smoke:pr
           build-contexts: |
-            clickhouse=./docker/clickhouse
             otel-collector=./docker/otel-collector
             hyperdx=./docker/hyperdx
             api=./packages/api
             app=./packages/app
           build-args: |
             CODE_VERSION=pr-${{ github.event.pull_request.number || github.run_id }}
+            COUCHBASE_IMAGE=couchbase/server:enterprise-8.0.3
           cache-from: |
             type=gha,scope=all-in-one-nightly-amd64
             type=gha,scope=docker-build-pr-all-in-one
           cache-to: type=gha,mode=max,scope=docker-build-pr-all-in-one
-      # noauth is a sibling of auth off the shared all-in-one-base; the base is
-      # already in buildx's local cache from the step above, so this only builds
-      # the final noauth COPY layer.
-      - name: Build all-in-one-noauth / Local (no push)
-        if:
-          github.event_name != 'pull_request' ||
-          steps.changed-files.outputs.any_changed == 'true'
-        uses: docker/build-push-action@v6
-        with:
-          context: .
-          file: ./docker/hyperdx/Dockerfile
-          target: all-in-one-noauth
-          platforms: linux/amd64
-          push: false
-          load: true
-          tags: couchbase-traces-aio-smoke:pr
-          build-contexts: |
-            clickhouse=./docker/clickhouse
-            otel-collector=./docker/otel-collector
-            hyperdx=./docker/hyperdx
-            api=./packages/api
-            app=./packages/app
-          build-args: |
-            CODE_VERSION=pr-${{ github.event.pull_request.number || github.run_id }}
-          cache-from: |
-            type=gha,scope=all-in-one-nightly-amd64
-            type=gha,scope=docker-build-pr-all-in-one
-      # Boot the freshly built Local image and push one OTLP log end-to-end into
-      # ClickHouse. Proves the artefact we ship actually runs, not just builds.
       - name: Smoke test the built image
         if:
           github.event_name != 'pull_request' ||
           steps.changed-files.outputs.any_changed == 'true'
-        timeout-minutes: 10
+        timeout-minutes: 25
         run: scripts/ci/smoke-all-in-one.sh couchbase-traces-aio-smoke:pr

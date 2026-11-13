@@ -1055,7 +1055,7 @@
       "kind": "api_route",
       "key": "POST /ai/assistant",
       "file": "packages/api/src/routers/api/ai.ts",
-      "line": 25,
+      "line": 43,
       "detail": {
         "method": "POST",
         "path": "/ai/assistant",
@@ -1111,7 +1111,7 @@
       "kind": "api_route",
       "key": "POST /api/v2/charts/series",
       "file": "packages/api/src/routers/external-api/v2/charts.ts",
-      "line": 528,
+      "line": 534,
       "detail": {
         "method": "POST",
         "path": "/api/v2/charts/series",
@@ -1181,7 +1181,7 @@
       "kind": "api_route",
       "key": "POST /api/v2/search",
       "file": "packages/api/src/routers/external-api/v2/search.ts",
-      "line": 370,
+      "line": 374,
       "detail": {
         "method": "POST",
         "path": "/api/v2/search",
@@ -1997,7 +1997,7 @@
       "kind": "cli_command",
       "key": "auth",
       "file": "packages/cli/src/cli.tsx",
-      "line": 430,
+      "line": 431,
       "detail": {
         "name": "auth"
       }
@@ -2007,7 +2007,7 @@
       "kind": "cli_command",
       "key": "auth login",
       "file": "packages/cli/src/cli.tsx",
-      "line": 436,
+      "line": 437,
       "detail": {
         "name": "login"
       }
@@ -2017,7 +2017,7 @@
       "kind": "cli_command",
       "key": "auth logout",
       "file": "packages/cli/src/cli.tsx",
-      "line": 475,
+      "line": 476,
       "detail": {
         "name": "logout"
       }
@@ -2027,7 +2027,7 @@
       "kind": "cli_command",
       "key": "auth status",
       "file": "packages/cli/src/cli.tsx",
-      "line": 483,
+      "line": 484,
       "detail": {
         "name": "status"
       }
@@ -2037,7 +2037,7 @@
       "kind": "cli_command",
       "key": "chart",
       "file": "packages/cli/src/cli.tsx",
-      "line": 1806,
+      "line": 1811,
       "detail": {
         "name": "chart"
       }
@@ -2047,7 +2047,7 @@
       "kind": "cli_command",
       "key": "connections",
       "file": "packages/cli/src/cli.tsx",
-      "line": 957,
+      "line": 958,
       "detail": {
         "name": "connections"
       }
@@ -2057,7 +2057,7 @@
       "kind": "cli_command",
       "key": "dashboards",
       "file": "packages/cli/src/cli.tsx",
-      "line": 1253,
+      "line": 1254,
       "detail": {
         "name": "dashboards"
       }
@@ -2067,7 +2067,7 @@
       "kind": "cli_command",
       "key": "dashboards create",
       "file": "packages/cli/src/cli.tsx",
-      "line": 1392,
+      "line": 1393,
       "detail": {
         "name": "create"
       }
@@ -2077,7 +2077,7 @@
       "kind": "cli_command",
       "key": "dashboards export",
       "file": "packages/cli/src/cli.tsx",
-      "line": 1318,
+      "line": 1319,
       "detail": {
         "name": "export"
       }
@@ -2087,7 +2087,7 @@
       "kind": "cli_command",
       "key": "dashboards import",
       "file": "packages/cli/src/cli.tsx",
-      "line": 1560,
+      "line": 1561,
       "detail": {
         "name": "import"
       }
@@ -2097,7 +2097,7 @@
       "kind": "cli_command",
       "key": "dashboards list",
       "file": "packages/cli/src/cli.tsx",
-      "line": 1307,
+      "line": 1308,
       "detail": {
         "name": "list"
       }
@@ -2107,7 +2107,7 @@
       "kind": "cli_command",
       "key": "mcp",
       "file": "packages/cli/src/cli.tsx",
-      "line": 548,
+      "line": 549,
       "detail": {
         "name": "mcp"
       }
@@ -2117,7 +2117,7 @@
       "kind": "cli_command",
       "key": "mcp install",
       "file": "packages/cli/src/cli.tsx",
-      "line": 554,
+      "line": 555,
       "detail": {
         "name": "install"
       }
@@ -2127,7 +2127,7 @@
       "kind": "cli_command",
       "key": "query",
       "file": "packages/cli/src/cli.tsx",
-      "line": 2223,
+      "line": 2231,
       "detail": {
         "name": "query"
       }
@@ -2137,7 +2137,7 @@
       "kind": "cli_command",
       "key": "saved-searches",
       "file": "packages/cli/src/cli.tsx",
-      "line": 1613,
+      "line": 1614,
       "detail": {
         "name": "saved-searches"
       }
@@ -2147,7 +2147,7 @@
       "kind": "cli_command",
       "key": "saved-searches create",
       "file": "packages/cli/src/cli.tsx",
-      "line": 1690,
+      "line": 1691,
       "detail": {
         "name": "create"
       }
@@ -2157,7 +2157,7 @@
       "kind": "cli_command",
       "key": "saved-searches list",
       "file": "packages/cli/src/cli.tsx",
-      "line": 1617,
+      "line": 1618,
       "detail": {
         "name": "list"
       }
@@ -2167,7 +2167,7 @@
       "kind": "cli_command",
       "key": "sources",
       "file": "packages/cli/src/cli.tsx",
-      "line": 798,
+      "line": 799,
       "detail": {
         "name": "sources"
       }
@@ -2177,7 +2177,7 @@
       "kind": "cli_command",
       "key": "team",
       "file": "packages/cli/src/cli.tsx",
-      "line": 610,
+      "line": 611,
       "detail": {
         "name": "team"
       }
@@ -2187,7 +2187,7 @@
       "kind": "cli_command",
       "key": "team current",
       "file": "packages/cli/src/cli.tsx",
-      "line": 698,
+      "line": 699,
       "detail": {
         "name": "current"
       }
@@ -2197,7 +2197,7 @@
       "kind": "cli_command",
       "key": "team list",
       "file": "packages/cli/src/cli.tsx",
-      "line": 618,
+      "line": 619,
       "detail": {
         "name": "list"
       }
@@ -2207,7 +2207,7 @@
       "kind": "cli_command",
       "key": "team use",
       "file": "packages/cli/src/cli.tsx",
-      "line": 737,
+      "line": 738,
       "detail": {
         "name": "use"
       }
@@ -2217,7 +2217,7 @@
       "kind": "cli_command",
       "key": "tui",
       "file": "packages/cli/src/cli.tsx",
-      "line": 396,
+      "line": 397,
       "detail": {
         "name": "tui"
       }
@@ -2227,7 +2227,7 @@
       "kind": "cli_command",
       "key": "upload-sourcemaps",
       "file": "packages/cli/src/cli.tsx",
-      "line": 2434,
+      "line": 2442,
       "detail": {
         "name": "upload-sourcemaps"
       }
@@ -2284,7 +2284,7 @@
       "kind": "mcp_tool",
       "key": "cbt_describe_metric",
       "file": "packages/api/src/mcp/tools/sources/describeMetric.ts",
-      "line": 718,
+      "line": 724,
       "detail": {
         "toolName": "cbt_describe_metric",
         "dir": "sources"
@@ -2295,7 +2295,7 @@
       "kind": "mcp_tool",
       "key": "cbt_describe_source",
       "file": "packages/api/src/mcp/tools/sources/describeSource.ts",
-      "line": 572,
+      "line": 579,
       "detail": {
         "toolName": "cbt_describe_source",
         "dir": "sources"
@@ -2306,7 +2306,7 @@
       "kind": "mcp_tool",
       "key": "cbt_describe_table",
       "file": "packages/api/src/mcp/tools/sources/describeTable.ts",
-      "line": 304,
+      "line": 310,
       "detail": {
         "toolName": "cbt_describe_table",
         "dir": "sources"
@@ -2328,7 +2328,7 @@
       "kind": "mcp_tool",
       "key": "cbt_event_deltas",
       "file": "packages/api/src/mcp/tools/query/eventDeltas.ts",
-      "line": 163,
+      "line": 164,
       "detail": {
         "toolName": "cbt_event_deltas",
         "dir": "query"
@@ -2405,7 +2405,7 @@
       "kind": "mcp_tool",
       "key": "cbt_list_metrics",
       "file": "packages/api/src/mcp/tools/sources/listMetrics.ts",
-      "line": 51,
+      "line": 52,
       "detail": {
         "toolName": "cbt_list_metrics",
         "dir": "sources"
@@ -2416,7 +2416,7 @@
       "kind": "mcp_tool",
       "key": "cbt_list_sources",
       "file": "packages/api/src/mcp/tools/sources/listSources.ts",
-      "line": 206,
+      "line": 213,
       "detail": {
         "toolName": "cbt_list_sources",
         "dir": "sources"
@@ -2548,7 +2548,7 @@
       "kind": "mcp_tool",
       "key": "cbt_sql",
       "file": "packages/api/src/mcp/tools/query/sql.ts",
-      "line": 97,
+      "line": 63,
       "detail": {
         "toolName": "cbt_sql",
         "dir": "query"
@@ -2592,7 +2592,7 @@
       "kind": "mcp_tool",
       "key": "cbt_trace_waterfall",
       "file": "packages/api/src/mcp/tools/trace/waterfall.ts",
-      "line": 310,
+      "line": 311,
       "detail": {
         "toolName": "cbt_trace_waterfall",
         "dir": "trace"
@@ -2603,7 +2603,7 @@
       "kind": "task",
       "key": "check-alerts",
       "file": "packages/api/src/tasks/checkAlerts/index.ts",
-      "line": 26,
+      "line": 27,
       "detail": {
         "enumMember": "CHECK_ALERTS",
         "className": "CheckAlertTask"
@@ -2614,7 +2614,7 @@
       "kind": "task",
       "key": "ping-pong",
       "file": "packages/api/src/tasks/pingPongTask.ts",
-      "line": 28,
+      "line": 29,
       "detail": {
         "enumMember": "PING_PONG",
         "className": "PingPongTask"
@@ -2625,7 +2625,7 @@
       "kind": "task",
       "key": "provision-dashboards",
       "file": "packages/api/src/tasks/provisionDashboards/index.ts",
-      "line": 30,
+      "line": 31,
       "detail": {
         "enumMember": "PROVISION_DASHBOARDS",
         "className": "ProvisionDashboardsTask"

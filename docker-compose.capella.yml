@@ -1,0 +1,33 @@
+# Override for Capella or other external Couchbase clusters.
+# Usage: docker compose -f docker-compose.yml -f docker-compose.capella.yml up -d
+
+services:
+  couchbase:
+    profiles: ['disabled']
+
+  couchbase-init:
+    environment:
+      CBT_EXTERNAL_COUCHBASE: 'true'
+      CBT_COUCHBASE_CONNSTR: ${CBT_COUCHBASE_CONNSTR:?set CBT_COUCHBASE_CONNSTR in .env}
+      CBT_COUCHBASE_WAN_PROFILE: ${CBT_COUCHBASE_WAN_PROFILE:-}
+      CBT_COUCHBASE_CA_CERT_PATH: ${CBT_COUCHBASE_CA_CERT_PATH:-}
+    depends_on: !reset []
+
+  ingest:
+    environment:
+      CBT_COUCHBASE_CONNSTR: ${CBT_COUCHBASE_CONNSTR:?set CBT_COUCHBASE_CONNSTR in .env}
+      CBT_COUCHBASE_WAN_PROFILE: ${CBT_COUCHBASE_WAN_PROFILE:-}
+      CBT_COUCHBASE_CA_CERT_PATH: ${CBT_COUCHBASE_CA_CERT_PATH:-}
+    depends_on:
+      couchbase-init:
+        condition: service_completed_successfully
+
+  app:
+    environment:
+      DEFAULT_CONNECTIONS: >-
+        [{"name":"Capella Couchbase","kind":"couchbase","host":"${CBT_COUCHBASE_CONNSTR}","username":"${CBT_COUCHBASE_QUERY_USER}","password":"${CBT_COUCHBASE_QUERY_PASSWORD}","monitorUsername":"${CBT_COUCHBASE_MONITOR_USER:-}","monitorPassword":"${CBT_COUCHBASE_MONITOR_PASSWORD:-}"}]
+    depends_on:
+      db:
+        condition: service_started
+      couchbase-init:
+        condition: service_completed_successfully

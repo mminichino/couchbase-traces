@@ -1,5 +1,76 @@
 name: hdx-ci
+
+# development only — CI Couchbase credentials
+x-cbt-couchbase-env: &cbt-couchbase-env
+  CBT_COUCHBASE_CONNSTR: couchbase://couchbase
+  CBT_COUCHBASE_BUCKET: otel
+  CBT_COUCHBASE_SCOPE: default
+  CBT_COUCHBASE_ADMIN_USER: Administrator
+  CBT_COUCHBASE_ADMIN_PASSWORD: dev-admin-password
+  CBT_COUCHBASE_QUERY_USER: cbt_query
+  CBT_COUCHBASE_QUERY_PASSWORD: dev-query-password
+  CBT_COUCHBASE_INGEST_USER: cbt_ingest
+  CBT_COUCHBASE_INGEST_PASSWORD: dev-ingest-password
+  CBT_COUCHBASE_MONITOR_USER: cbt_monitor
+  CBT_COUCHBASE_MONITOR_PASSWORD: dev-monitor-password
+  CBT_COUCHBASE_RAM_MB: '2048'
+  CBT_COUCHBASE_INDEX_RAM_MB: '512'
+  CBT_COUCHBASE_SEARCH_RAM_MB: '512'
+
 services:
+  couchbase:
+    image: couchbase/server:enterprise-8.0.3
+    mem_limit: 4g
+    healthcheck:
+      test:
+        ['CMD', 'curl', '-fs', 'http://localhost:8091/ui/index.html']
+      interval: 5s
+      timeout: 5s
+      retries: 60
+    networks:
+      - internal
+
+  couchbase-init:
+    build:
+      context: .
+      dockerfile: packages/ingest/Dockerfile
+    environment:
+      <<: *cbt-couchbase-env
+    entrypoint: ['/bin/bash', '/docker/couchbase/init.sh']
+    volumes:
+      - ./docker/couchbase/init.sh:/docker/couchbase/init.sh:ro
+    depends_on:
+      couchbase:
+        condition: service_healthy
+    restart: 'no'
+    networks:
+      - internal
+
+  ingest:
+    build:
+      context: .
+      dockerfile: packages/ingest/Dockerfile
+    environment:
+      <<: *cbt-couchbase-env
+      CBT_INGEST_TOKEN: dev-ingest-token-0000000000000000000000
+    healthcheck:
+      test:
+        [
+          'CMD',
+          'node',
+          '-e',
+          "fetch('http://127.0.0.1:4320/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))",
+        ]
+      interval: 5s
+      timeout: 5s
+      retries: 30
+    depends_on:
+      couchbase-init:
+        condition: service_completed_successfully
+    restart: on-failure
+    networks:
+      - internal
+
   otel-collector:
     build:
       context: .
@@ -12,6 +83,10 @@ services:
       CLICKHOUSE_ENDPOINT: 'tcp://ch-server:9000?dial_timeout=10s'
       CBT_OTEL_EXPORTER_CLICKHOUSE_DATABASE: ${CBT_OTEL_EXPORTER_CLICKHOUSE_DATABASE}
       CBT_OTEL_EXPORTER_TABLES_TTL: '87600h'
+      CBT_COUCHBASE_INGEST_ENABLED: 'true'
+      CBT_CLICKHOUSE_EXPORT_ENABLED: 'true'
+      CBT_INGEST_ENDPOINT: http://ingest:4320
+      CBT_INGEST_TOKEN: dev-ingest-token-0000000000000000000000
       CBT_API_KEY: ${CBT_API_KEY}
       CBT_LOG_LEVEL: ${CBT_LOG_LEVEL}
     volumes:
@@ -20,20 +95,24 @@ services:
     networks:
       - internal
     depends_on:
-      - ch-server
+      ch-server:
+        condition: service_started
+      ingest:
+        condition: service_healthy
+
   ch-server:
     image: clickhouse/clickhouse-server:26.8.36.3-alpine
     environment:
-      # default settings
       CLICKHOUSE_DEFAULT_ACCESS_MANAGEMENT: 1
     volumes:
       - ./docker/clickhouse/local/config.xml:/etc/clickhouse-server/config.xml
       - ./docker/clickhouse/local/users.xml:/etc/clickhouse-server/users.xml
     restart: on-failure
     ports:
-      - '${CBT_CI_CH_PORT:-18123}:8123' # http api
+      - '${CBT_CI_CH_PORT:-18123}:8123'
     networks:
       - internal
+
   db:
     image: mongo:5.0.32-focal
     command: --port 29999
@@ -41,5 +120,6 @@ services:
       - '${CBT_CI_MONGO_PORT:-39999}:29999'
     networks:
       - internal
+
 networks:
   internal:

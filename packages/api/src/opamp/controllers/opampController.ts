@@ -203,6 +203,30 @@ export const bearerTokenVariants = (keys: string[]): string[] =>
 export const buildOtelCollectorConfig = (
   teams: Pick<ITeam, 'apiKey' | 'collectorAuthenticationEnforced'>[],
 ): CollectorConfig => {
+  if (!config.COUCHBASE_INGEST_ENABLED && !config.CLICKHOUSE_EXPORT_ENABLED) {
+    throw new Error(
+      'No telemetry destination: enable CBT_COUCHBASE_INGEST_ENABLED or CBT_CLICKHOUSE_EXPORT_ENABLED.',
+    );
+  }
+
+  const traceExporters: string[] = [];
+  const metricsExporters: string[] = [];
+  const logsDefaultExporters: string[] = [];
+  const logsRrwebExporters: string[] = [];
+
+  if (config.CLICKHOUSE_EXPORT_ENABLED) {
+    traceExporters.push('clickhouse');
+    metricsExporters.push('clickhouse');
+    logsDefaultExporters.push('clickhouse');
+    logsRrwebExporters.push('clickhouse/rrweb');
+  }
+  if (config.COUCHBASE_INGEST_ENABLED) {
+    traceExporters.push('otlphttp/couchbase');
+    metricsExporters.push('otlphttp/couchbase');
+    logsDefaultExporters.push('otlphttp/couchbase');
+    logsRrwebExporters.push('otlphttp/couchbase-rrweb');
+  }
+
   const apiKeys = teams.filter(team => team.apiKey).map(team => team.apiKey);
 
   if (config.IS_ALL_IN_ONE_IMAGE || config.IS_LOCAL_APP_MODE || config.IS_DEV) {
@@ -248,20 +272,26 @@ export const buildOtelCollectorConfig = (
               scrape_interval: '30s',
               static_configs: [{ targets: ['0.0.0.0:8888'] }],
             },
-            // Separate job because the collector's own endpoint is always
-            // plain HTTP, while ClickHouse may be served over https. The
-            // default keeps collector images that predate
-            // CBT_PROMETHEUS_SCHEME on http.
-            {
-              job_name: 'clickhouse',
-              scrape_interval: '30s',
-              scheme: '${env:CBT_PROMETHEUS_SCHEME:-http}',
-              static_configs: [
-                {
-                  targets: ['${env:CLICKHOUSE_PROMETHEUS_METRICS_ENDPOINT}'],
-                },
-              ],
-            },
+            ...(config.CLICKHOUSE_EXPORT_ENABLED
+              ? [
+                  // Separate job because the collector's own endpoint is always
+                  // plain HTTP, while ClickHouse may be served over https. The
+                  // default keeps collector images that predate
+                  // CBT_PROMETHEUS_SCHEME on http.
+                  {
+                    job_name: 'clickhouse',
+                    scrape_interval: '30s',
+                    scheme: '${env:CBT_PROMETHEUS_SCHEME:-http}',
+                    static_configs: [
+                      {
+                        targets: [
+                          '${env:CLICKHOUSE_PROMETHEUS_METRICS_ENDPOINT}',
+                        ],
+                      },
+                    ],
+                  },
+                ]
+              : []),
           ],
         },
       },
@@ -290,39 +320,45 @@ export const buildOtelCollectorConfig = (
         sampling_initial: 5,
         sampling_thereafter: 200,
       },
-      'clickhouse/rrweb': {
-        endpoint: '${env:CLICKHOUSE_ENDPOINT}',
-        database: '${env:CBT_OTEL_EXPORTER_CLICKHOUSE_DATABASE}',
-        username: '${env:CLICKHOUSE_USER}',
-        password: '${env:CLICKHOUSE_PASSWORD}',
-        ttl: '${env:CBT_OTEL_EXPORTER_TABLES_TTL:-720h}',
-        logs_table_name: 'hyperdx_sessions',
-        timeout: '${env:CBT_OTEL_EXPORTER_TIMEOUT:-5s}',
-        create_schema: '${env:CBT_OTEL_EXPORTER_CREATE_LEGACY_SCHEMA:-false}',
-        json: '${env:CBT_OTEL_EXPORTER_CLICKHOUSE_JSON_ENABLE:-false}',
-        retry_on_failure: {
-          enabled: true,
-          initial_interval: '5s',
-          max_interval: '30s',
-          max_elapsed_time: '300s',
-        },
-      },
-      clickhouse: {
-        endpoint: '${env:CLICKHOUSE_ENDPOINT}',
-        database: '${env:CBT_OTEL_EXPORTER_CLICKHOUSE_DATABASE}',
-        username: '${env:CLICKHOUSE_USER}',
-        password: '${env:CLICKHOUSE_PASSWORD}',
-        ttl: '${env:CBT_OTEL_EXPORTER_TABLES_TTL:-720h}',
-        timeout: '${env:CBT_OTEL_EXPORTER_TIMEOUT:-5s}',
-        create_schema: '${env:CBT_OTEL_EXPORTER_CREATE_LEGACY_SCHEMA:-false}',
-        json: '${env:CBT_OTEL_EXPORTER_CLICKHOUSE_JSON_ENABLE:-false}',
-        retry_on_failure: {
-          enabled: true,
-          initial_interval: '5s',
-          max_interval: '30s',
-          max_elapsed_time: '300s',
-        },
-      },
+      ...(config.CLICKHOUSE_EXPORT_ENABLED
+        ? {
+            'clickhouse/rrweb': {
+              endpoint: '${env:CLICKHOUSE_ENDPOINT}',
+              database: '${env:CBT_OTEL_EXPORTER_CLICKHOUSE_DATABASE}',
+              username: '${env:CLICKHOUSE_USER}',
+              password: '${env:CLICKHOUSE_PASSWORD}',
+              ttl: '${env:CBT_OTEL_EXPORTER_TABLES_TTL:-720h}',
+              logs_table_name: 'hyperdx_sessions',
+              timeout: '${env:CBT_OTEL_EXPORTER_TIMEOUT:-5s}',
+              create_schema:
+                '${env:CBT_OTEL_EXPORTER_CREATE_LEGACY_SCHEMA:-false}',
+              json: '${env:CBT_OTEL_EXPORTER_CLICKHOUSE_JSON_ENABLE:-false}',
+              retry_on_failure: {
+                enabled: true,
+                initial_interval: '5s',
+                max_interval: '30s',
+                max_elapsed_time: '300s',
+              },
+            },
+            clickhouse: {
+              endpoint: '${env:CLICKHOUSE_ENDPOINT}',
+              database: '${env:CBT_OTEL_EXPORTER_CLICKHOUSE_DATABASE}',
+              username: '${env:CLICKHOUSE_USER}',
+              password: '${env:CLICKHOUSE_PASSWORD}',
+              ttl: '${env:CBT_OTEL_EXPORTER_TABLES_TTL:-720h}',
+              timeout: '${env:CBT_OTEL_EXPORTER_TIMEOUT:-5s}',
+              create_schema:
+                '${env:CBT_OTEL_EXPORTER_CREATE_LEGACY_SCHEMA:-false}',
+              json: '${env:CBT_OTEL_EXPORTER_CLICKHOUSE_JSON_ENABLE:-false}',
+              retry_on_failure: {
+                enabled: true,
+                initial_interval: '5s',
+                max_interval: '30s',
+                max_elapsed_time: '300s',
+              },
+            },
+          }
+        : {}),
     },
     service: {
       extensions: [],
@@ -337,12 +373,12 @@ export const buildOtelCollectorConfig = (
       pipelines: {
         traces: {
           receivers: ['nop'],
-          exporters: ['clickhouse'],
+          exporters: [...traceExporters],
         },
         metrics: {
           // TODO: prometheus needs to be authenticated
           receivers: ['prometheus'],
-          exporters: ['clickhouse'],
+          exporters: [...metricsExporters],
         },
         'logs/in': {
           // TODO: fluentforward needs to be authenticated
@@ -351,11 +387,11 @@ export const buildOtelCollectorConfig = (
         },
         'logs/out-default': {
           receivers: ['routing/logs'],
-          exporters: ['clickhouse'],
+          exporters: [...logsDefaultExporters],
         },
         'logs/out-rrweb': {
           receivers: ['routing/logs'],
-          exporters: ['clickhouse/rrweb'],
+          exporters: [...logsRrwebExporters],
         },
       },
     },
@@ -445,18 +481,6 @@ export const buildOtelCollectorConfig = (
       ...couchbase,
       logs_endpoint: '${env:CBT_INGEST_ENDPOINT}/v1/sessions',
     };
-    otelCollectorConfig.service.pipelines.traces.exporters.push(
-      'otlphttp/couchbase',
-    );
-    otelCollectorConfig.service.pipelines.metrics.exporters.push(
-      'otlphttp/couchbase',
-    );
-    otelCollectorConfig.service.pipelines['logs/out-default'].exporters.push(
-      'otlphttp/couchbase',
-    );
-    otelCollectorConfig.service.pipelines['logs/out-rrweb'].exporters.push(
-      'otlphttp/couchbase-rrweb',
-    );
   }
 
   return otelCollectorConfig;

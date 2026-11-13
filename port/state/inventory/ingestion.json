@@ -188,52 +188,10 @@
         "hostmetrics"
       ],
       "processors": [],
-      "exporters": [
-        "otlphttp/json"
-      ],
+      "exporters": [],
       "extensions": [],
       "connectors": [],
-      "pipelines": [
-        {
-          "name": "logs/json",
-          "receivers": [
-            "otlp/hyperdx"
-          ],
-          "processors": [
-            "memory_limiter",
-            "batch"
-          ],
-          "exporters": [
-            "otlphttp/json"
-          ]
-        },
-        {
-          "name": "metrics/hostmetrics",
-          "receivers": [
-            "hostmetrics"
-          ],
-          "processors": [
-            "memory_limiter",
-            "batch"
-          ],
-          "exporters": [
-            "clickhouse"
-          ]
-        },
-        {
-          "name": "traces/json",
-          "receivers": [
-            "otlp/hyperdx"
-          ],
-          "processors": [
-            "memory_limiter",
-            "batch"
-          ],
-          "exporters": [
-            "otlphttp/json"
-          ]
-        }
-      ]
+      "pipelines": []
     },
     {
       "file": "smoke-tests/otel-collector/custom-pipeline-config.yaml",

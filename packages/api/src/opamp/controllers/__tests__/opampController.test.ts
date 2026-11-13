@@ -8,6 +8,7 @@ const configState = {
   IS_PROMQL_ENABLED: false,
   ENABLE_DATADOG_RECEIVER: false,
   COUCHBASE_INGEST_ENABLED: false,
+  CLICKHOUSE_EXPORT_ENABLED: true,
 };
 
 jest.mock('@/config', () => ({
@@ -32,6 +33,9 @@ jest.mock('@/config', () => ({
   get COUCHBASE_INGEST_ENABLED() {
     return configState.COUCHBASE_INGEST_ENABLED;
   },
+  get CLICKHOUSE_EXPORT_ENABLED() {
+    return configState.CLICKHOUSE_EXPORT_ENABLED;
+  },
 }));
 
 import {
@@ -47,6 +51,7 @@ const resetConfig = () => {
   configState.IS_PROMQL_ENABLED = false;
   configState.ENABLE_DATADOG_RECEIVER = false;
   configState.COUCHBASE_INGEST_ENABLED = false;
+  configState.CLICKHOUSE_EXPORT_ENABLED = true;
 };
 
 describe('opampController', () => {
@@ -54,8 +59,20 @@ describe('opampController', () => {
     resetConfig();
   });
 
+  describe('buildOtelCollectorConfig telemetry destinations', () => {
+    it('throws when both Couchbase ingest and ClickHouse export are disabled', () => {
+      configState.COUCHBASE_INGEST_ENABLED = false;
+      configState.CLICKHOUSE_EXPORT_ENABLED = false;
+
+      expect(() => buildOtelCollectorConfig([])).toThrow(
+        'No telemetry destination: enable CBT_COUCHBASE_INGEST_ENABLED or CBT_CLICKHOUSE_EXPORT_ENABLED.',
+      );
+    });
+  });
+
   describe('buildOtelCollectorConfig ClickHouse exporters', () => {
     it('allows both exporter timeouts to be configured from the collector environment', () => {
+      configState.CLICKHOUSE_EXPORT_ENABLED = true;
       const cfg = buildOtelCollectorConfig([]);
 
       expect(cfg.exporters).toMatchObject({
@@ -70,7 +87,19 @@ describe('opampController', () => {
   });
 
   describe('buildOtelCollectorConfig prometheus receiver', () => {
+    it('omits the ClickHouse scrape job when ClickHouse export is disabled', () => {
+      configState.CLICKHOUSE_EXPORT_ENABLED = false;
+      configState.COUCHBASE_INGEST_ENABLED = true;
+
+      const scrapeConfigs = buildOtelCollectorConfig([]).receivers.prometheus
+        ?.config.scrape_configs;
+
+      expect(scrapeConfigs).toHaveLength(1);
+      expect(scrapeConfigs?.[0]?.job_name).toBe('otelcol');
+    });
+
     it('scrapes ClickHouse in its own job so the scheme follows the endpoint', () => {
+      configState.CLICKHOUSE_EXPORT_ENABLED = true;
       const cfg = buildOtelCollectorConfig([
         { apiKey: 'k1', collectorAuthenticationEnforced: false },
       ]);
@@ -245,7 +274,30 @@ describe('opampController', () => {
   });
 
   describe('buildOtelCollectorConfig Couchbase ingest', () => {
+    it('uses only Couchbase exporters when ClickHouse export is off', () => {
+      configState.COUCHBASE_INGEST_ENABLED = true;
+      configState.CLICKHOUSE_EXPORT_ENABLED = false;
+
+      const cfg = buildOtelCollectorConfig([]);
+
+      expect(cfg.exporters?.clickhouse).toBeUndefined();
+      expect(JSON.stringify(cfg)).not.toContain('clickhouse/rrweb');
+      expect(cfg.service.pipelines.traces.exporters).toEqual([
+        'otlphttp/couchbase',
+      ]);
+      expect(cfg.service.pipelines.metrics.exporters).toEqual([
+        'otlphttp/couchbase',
+      ]);
+      expect(cfg.service.pipelines['logs/out-default'].exporters).toEqual([
+        'otlphttp/couchbase',
+      ]);
+      expect(cfg.service.pipelines['logs/out-rrweb'].exporters).toEqual([
+        'otlphttp/couchbase-rrweb',
+      ]);
+    });
+
     it('leaves the config unchanged when the flag is off', () => {
+      configState.CLICKHOUSE_EXPORT_ENABLED = true;
       const off = buildOtelCollectorConfig([]);
       expect(JSON.stringify(off)).not.toContain('otlphttp/couchbase');
       expect(off.service.pipelines.traces.exporters).toEqual(['clickhouse']);
@@ -261,6 +313,7 @@ describe('opampController', () => {
 
     it('appends the Couchbase exporters without removing ClickHouse', () => {
       configState.COUCHBASE_INGEST_ENABLED = true;
+      configState.CLICKHOUSE_EXPORT_ENABLED = true;
       const cfg = buildOtelCollectorConfig([
         { apiKey: 'k1', collectorAuthenticationEnforced: false },
       ]);

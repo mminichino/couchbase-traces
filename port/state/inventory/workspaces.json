@@ -121,8 +121,8 @@
         "zod",
         "zod-express-middleware"
       ],
-      "sourceFiles": 231,
-      "testFiles": 151,
+      "sourceFiles": 238,
+      "testFiles": 154,
       "hasTsconfig": true,
       "role": "API server and tasks"
     },
@@ -288,7 +288,7 @@
         "zod"
       ],
       "sourceFiles": 694,
-      "testFiles": 518,
+      "testFiles": 520,
       "hasTsconfig": true,
       "role": "web UI"
     },
@@ -347,7 +347,7 @@
         "typescript"
       ],
       "sourceFiles": 61,
-      "testFiles": 9,
+      "testFiles": 11,
       "hasTsconfig": true,
       "role": "command-line client"
     },
@@ -415,8 +415,8 @@
         "typescript",
         "zod"
       ],
-      "sourceFiles": 117,
-      "testFiles": 72,
+      "sourceFiles": 119,
+      "testFiles": 76,
       "hasTsconfig": true,
       "role": "shared query and data layer"
     },
@@ -483,6 +483,7 @@
         "docs",
         "lint",
         "lint:fix",
+        "sample-data",
         "setup",
         "start"
       ],

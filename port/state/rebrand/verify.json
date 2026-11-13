@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "step": "branding",
-  "status": "fail",
+  "status": "pass",
   "checks": [
     {
       "name": "brand assets",
@@ -15,11 +15,8 @@
     },
     {
       "name": "brand terms",
-      "status": "fail",
-      "problems": [
-        "packages/app/src/couchbase/dialect.ts:11: hyperdx (string): '__hyperdx_id',",
-        "packages/app/src/couchbase/dialect.ts:12: hyperdx (string): '__hyperdx_alias_with',"
-      ]
+      "status": "pass",
+      "problems": []
     },
     {
       "name": "outbound requests",
@@ -43,12 +40,8 @@
     },
     {
       "name": "test-diff --base HEAD",
-      "status": "fail",
-      "problems": [
-        "packages/app/tests/e2e/seed-clickhouse.ts: differs from the substituted base at line 18: expected \"  E2E_INTERESTING_FILTER_KEYS_TABLE,\", found \"  E2E_EXP_HISTOGRAM_METRIC_NAME,\"",
-        "packages/app/tests/e2e/seed-couchbase.ts: differs from the substituted base at line 8: expected \"  E2E_LOGS_TABLE,\", found \"  E2E_EXP_HISTOGRAM_METRIC_NAME,\"",
-        "packages/app/tests/e2e/utils/constants.ts: differs from the substituted base at line 58: expected \"// TimeSeries-engine table backing the PromQL source. `prometheusQueryRange`,\", found \"export const E2E_METRICS_EXP_HISTOGRAM_TABLE =\""
-      ]
+      "status": "pass",
+      "problems": []
     },
     {
       "name": "features.json against a fresh scan",
@@ -57,11 +50,10 @@
     }
   ],
   "warnings": [
-    "W_NAME_TWICE LOCAL.md:18: <img alt=\"Demo of using Couchbase Traces Local for debugging a local app\" src=\"./.github/images/demo_local_animated.gif\"",
     "W_NAME_TWICE packages/api/openapi.json:8599: \"description\": \"Fetch individual log or trace rows from a Couchbase Traces source.\\n\\nThis endpoint mirrors the \\\"search",
     "W_NAME_TWICE packages/app/src/ServicesDashboardPage/__tests__/ServicesDashboardPage.test.tsx:169: page ? `${page} - Couchbase Traces` : 'Couchbase Traces',",
-    "W_NAME_TWICE packages/app/src/__tests__/DBSearchPage.directTrace.test.tsx:135: page ? `${page} - Couchbase Traces` : 'Couchbase Traces',",
-    "W_NAME_TWICE packages/app/src/__tests__/DBSearchPage.saveSearch.test.tsx:125: page ? `${page} - Couchbase Traces` : 'Couchbase Traces',",
+    "W_NAME_TWICE packages/app/src/__tests__/DBSearchPage.directTrace.test.tsx:139: page ? `${page} - Couchbase Traces` : 'Couchbase Traces',",
+    "W_NAME_TWICE packages/app/src/__tests__/DBSearchPage.saveSearch.test.tsx:129: page ? `${page} - Couchbase Traces` : 'Couchbase Traces',",
     "W_NAME_TWICE packages/app/src/components/Dashboards/__tests__/DashboardsListPage.test.tsx:69: page ? `${page} - Couchbase Traces` : 'Couchbase Traces',"
   ]
 }

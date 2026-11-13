@@ -1,13 +1,23 @@
+import {
+  COUCHBASE_LOG_SOURCE,
+  COUCHBASE_METRIC_SOURCE,
+  COUCHBASE_SESSION_SOURCE,
+  COUCHBASE_TRACE_SOURCE,
+} from '@couchbase-traces/common-utils/dist/couchbase/defaultSources';
 import { SourceKind } from '@couchbase-traces/common-utils/dist/types';
 
 import {
+  COUCHBASE_BUCKET,
+  COUCHBASE_SCOPE,
   DEFAULT_CONNECTIONS,
   DEFAULT_SOURCES,
+  DEFAULT_SOURCES_PRESET,
   IS_PROMQL_ENABLED,
 } from '@/config';
 import { createConnection, getConnections } from '@/controllers/connection';
 import { createSource, getSources, updateSource } from '@/controllers/sources';
 import { getTeam } from '@/controllers/team';
+import type { ITeam } from '@/models/team';
 import logger from '@/utils/logger';
 
 function tryParseJSON(str: string | undefined) {
@@ -21,6 +31,161 @@ function tryParseJSON(str: string | undefined) {
   return undefined;
 }
 
+type TeamConnection = Awaited<ReturnType<typeof getConnections>>[number];
+
+async function seedSourcesFromConfigs(
+  teamId: string,
+  team: ITeam,
+  sourceConfigs: object[],
+  teamConnections: TeamConnection[],
+) {
+  const sourceConfigsByName: { [key: string]: any } = {};
+  const createdSources: { [key: string]: any } = {};
+
+  for (const sourceConfig of sourceConfigs) {
+    try {
+      const config = sourceConfig as {
+        name?: string;
+        kind?: string;
+        connection?: string;
+        [key: string]: unknown;
+      };
+      if (!config.name || !config.kind || !config.connection) {
+        logger.warn(
+          `Skipping invalid source config: ${JSON.stringify(sourceConfig)}`,
+        );
+        continue;
+      }
+
+      if (config.kind === SourceKind.Promql && !IS_PROMQL_ENABLED) {
+        logger.info(
+          `Skipping default source ${config.name}: PromQL is disabled`,
+        );
+        continue;
+      }
+
+      sourceConfigsByName[config.name] = sourceConfig;
+
+      let connectionId = config.connection;
+      if (
+        typeof connectionId === 'string' &&
+        !connectionId.match(/^[0-9a-fA-F]{24}$/)
+      ) {
+        const connection = teamConnections.find(c => c.name === connectionId);
+        if (!connection) {
+          logger.warn({ connectionId }, 'Connection not found with name');
+          continue;
+        }
+        connectionId = connection._id.toString();
+      }
+
+      const sourceConfigCleaned = {
+        ...sourceConfig,
+        connection: connectionId,
+        team: team._id,
+      } as Record<string, unknown>;
+
+      delete sourceConfigCleaned.logSourceId;
+      delete sourceConfigCleaned.traceSourceId;
+      delete sourceConfigCleaned.sessionSourceId;
+      delete sourceConfigCleaned.metricSourceId;
+
+      const newSource = await createSource(
+        teamId,
+        sourceConfigCleaned as Parameters<typeof createSource>[1],
+      );
+
+      logger.info(`Created default source: ${config.name} (${newSource._id})`);
+
+      createdSources[config.name] = newSource;
+    } catch (error) {
+      logger.error({ err: error }, 'Failed to create source');
+    }
+  }
+
+  for (const sourceName in createdSources) {
+    try {
+      const sourceConfig = sourceConfigsByName[sourceName];
+      const createdSource = createdSources[sourceName];
+
+      const updateFields: { [key: string]: string } = {};
+
+      if (
+        sourceConfig.logSourceId &&
+        createdSources[sourceConfig.logSourceId]
+      ) {
+        updateFields.logSourceId =
+          createdSources[sourceConfig.logSourceId]._id.toString();
+      }
+
+      if (
+        sourceConfig.traceSourceId &&
+        createdSources[sourceConfig.traceSourceId]
+      ) {
+        updateFields.traceSourceId =
+          createdSources[sourceConfig.traceSourceId]._id.toString();
+      }
+
+      if (
+        sourceConfig.sessionSourceId &&
+        createdSources[sourceConfig.sessionSourceId]
+      ) {
+        updateFields.sessionSourceId =
+          createdSources[sourceConfig.sessionSourceId]._id.toString();
+      }
+
+      if (
+        sourceConfig.metricSourceId &&
+        createdSources[sourceConfig.metricSourceId]
+      ) {
+        updateFields.metricSourceId =
+          createdSources[sourceConfig.metricSourceId]._id.toString();
+      }
+
+      if (Object.keys(updateFields).length > 0) {
+        await updateSource(teamId, createdSource._id.toString(), {
+          ...createdSource.toObject(),
+          ...updateFields,
+        });
+
+        logger.info(
+          `Updated source ${sourceName} with references: ${JSON.stringify(updateFields)}`,
+        );
+      }
+    } catch (error) {
+      logger.error({ err: error }, 'Failed to update source references');
+    }
+  }
+}
+
+function couchbasePresetSourceConfigs(
+  bucket: string,
+  scope: string,
+  connectionId: string,
+): object[] {
+  const withLocation = (template: {
+    from?: { databaseName?: string; scopeName?: string; tableName?: string };
+    [key: string]: unknown;
+  }) => ({
+    ...template,
+    connection: connectionId,
+    from: template.from
+      ? {
+          ...template.from,
+          databaseName: bucket,
+          scopeName: scope,
+        }
+      : template.from,
+  });
+
+  return [
+    withLocation(COUCHBASE_LOG_SOURCE),
+    withLocation(COUCHBASE_TRACE_SOURCE),
+    withLocation(COUCHBASE_METRIC_SOURCE),
+    withLocation(COUCHBASE_SESSION_SOURCE),
+  ];
+}
+
 /**
  * Sets up default connections and sources for a team
  * @param teamId The ID of the team to set up defaults for
@@ -32,25 +197,26 @@ export async function setupTeamDefaults(teamId: string) {
   const parsedDefaultConnections = tryParseJSON(DEFAULT_CONNECTIONS);
   const parsedDefaultSources = tryParseJSON(DEFAULT_SOURCES);
 
-  if (parsedDefaultConnections == null && parsedDefaultSources == null) {
+  if (
+    parsedDefaultConnections == null &&
+    parsedDefaultSources == null &&
+    DEFAULT_SOURCES_PRESET !== 'couchbase'
+  ) {
     logger.info(
       'No DEFAULT_CONNECTIONS or DEFAULT_SOURCES environment variables defined, skipping auto-provisioning',
     );
     return;
   }
 
-  // Get the team object
   const team = await getTeam(teamId);
   if (!team) {
     logger.warn({ teamId }, 'Team not found');
     return;
   }
 
-  // Check existing connections for this team
   const connections = await getConnections();
   const teamConnections = connections.filter(c => c.team.toString() === teamId);
 
-  // Create default connections if none exist for this team
   if (teamConnections.length === 0 && Array.isArray(parsedDefaultConnections)) {
     logger.info(
       `No connections found for team ${teamId}, creating default connections`,
@@ -58,7 +224,6 @@ export async function setupTeamDefaults(teamId: string) {
 
     for (const connectionConfig of parsedDefaultConnections) {
       try {
-        // Validate that the connection has the required fields
         if (!connectionConfig.name || !connectionConfig.host) {
           logger.warn(
             `Skipping invalid connection config: ${JSON.stringify(connectionConfig)}`,
@@ -66,7 +231,6 @@ export async function setupTeamDefaults(teamId: string) {
           continue;
         }
 
-        // Create the connection
         const newConnection = await createConnection(teamId, {
           ...connectionConfig,
           password: connectionConfig.password || '',
@@ -86,16 +250,9 @@ export async function setupTeamDefaults(teamId: string) {
     );
   }
 
-  // Check existing sources for this team
   const sources = await getSources(teamId);
 
-  // Create default sources if none exist
-  if (sources.length === 0 && Array.isArray(parsedDefaultSources)) {
-    logger.info(
-      `No sources found for team ${teamId}, creating default sources`,
-    );
-
-    // Get the connections again in case we just created some
+  if (sources.length === 0) {
     const updatedConnections = await getConnections();
     const teamUpdatedConnections = updatedConnections.filter(
       c => c.team.toString() === teamId,
@@ -108,142 +265,51 @@ export async function setupTeamDefaults(teamId: string) {
       return;
     }
 
-    // Create a mapping of source configurations by name for later correlation
-    const sourceConfigsByName: { [key: string]: any } = {};
-
-    // First create all sources
-    const createdSources: { [key: string]: any } = {};
-
-    for (const sourceConfig of parsedDefaultSources) {
-      try {
-        // Validate that the source has the required fields
-        if (
-          !sourceConfig.name ||
-          !sourceConfig.kind ||
-          !sourceConfig.connection
-        ) {
-          logger.warn(
-            `Skipping invalid source config: ${JSON.stringify(sourceConfig)}`,
-          );
-          continue;
-        }
-
-        if (sourceConfig.kind === SourceKind.Promql && !IS_PROMQL_ENABLED) {
-          logger.info(
-            `Skipping default source ${sourceConfig.name}: PromQL is disabled`,
-          );
-          continue;
-        }
-
-        // Store the config by name for later reference
-        sourceConfigsByName[sourceConfig.name] = sourceConfig;
-
-        // Find the connection by name if string provided
-        let connectionId = sourceConfig.connection;
-        if (
-          typeof connectionId === 'string' &&
-          !connectionId.match(/^[0-9a-fA-F]{24}$/)
-        ) {
-          // If not a valid ObjectId, treat as a connection name
-          const connection = teamUpdatedConnections.find(
-            c => c.name === connectionId,
-          );
-          if (!connection) {
-            logger.warn({ connectionId }, 'Connection not found with name');
-            continue;
-          }
-          connectionId = connection._id.toString();
-        }
-
-        // Create a cleaned version of the source config without reference fields
-        // that will be processed in the second pass
-        const sourceConfigCleaned = {
-          ...sourceConfig,
-          connection: connectionId,
-          team: team._id,
-        };
-
-        // Remove source reference fields that will be handled in the second pass
-        delete sourceConfigCleaned.logSourceId;
-        delete sourceConfigCleaned.traceSourceId;
-        delete sourceConfigCleaned.sessionSourceId;
-        delete sourceConfigCleaned.metricSourceId;
-
-        // Create the source
-        const newSource = await createSource(teamId, sourceConfigCleaned);
-
+    if (DEFAULT_SOURCES != null) {
+      if (DEFAULT_SOURCES_PRESET) {
         logger.info(
-          `Created default source: ${sourceConfig.name} (${newSource._id})`,
+          'DEFAULT_SOURCES is set; ignoring CBT_DEFAULT_SOURCES_PRESET',
         );
-
-        // Store the created source for the second pass
-        createdSources[sourceConfig.name] = newSource;
-      } catch (error) {
-        logger.error({ err: error }, 'Failed to create source');
       }
-    }
-
-    // Second pass: update sources with references to other sources
-    for (const sourceName in createdSources) {
-      try {
-        const sourceConfig = sourceConfigsByName[sourceName];
-        const createdSource = createdSources[sourceName];
-
-        // Check if this source has any reference fields that need to be updated
-        const updateFields: { [key: string]: string } = {};
-
-        // Process logSourceId reference
-        if (
-          sourceConfig.logSourceId &&
-          createdSources[sourceConfig.logSourceId]
-        ) {
-          updateFields.logSourceId =
-            createdSources[sourceConfig.logSourceId]._id.toString();
-        }
-
-        // Process traceSourceId reference
-        if (
-          sourceConfig.traceSourceId &&
-          createdSources[sourceConfig.traceSourceId]
-        ) {
-          updateFields.traceSourceId =
-            createdSources[sourceConfig.traceSourceId]._id.toString();
-        }
-
-        // Process sessionSourceId reference
-        if (
-          sourceConfig.sessionSourceId &&
-          createdSources[sourceConfig.sessionSourceId]
-        ) {
-          updateFields.sessionSourceId =
-            createdSources[sourceConfig.sessionSourceId]._id.toString();
-        }
-
-        // Process metricSourceId reference
-        if (
-          sourceConfig.metricSourceId &&
-          createdSources[sourceConfig.metricSourceId]
-        ) {
-          updateFields.metricSourceId =
-            createdSources[sourceConfig.metricSourceId]._id.toString();
-        }
-
-        // If we have fields to update, update the source
-        if (Object.keys(updateFields).length > 0) {
-          await updateSource(teamId, createdSource._id.toString(), {
-            ...createdSource.toObject(),
-            ...updateFields,
-          });
-
-          logger.info(
-            `Updated source ${sourceName} with references: ${JSON.stringify(updateFields)}`,
-          );
-        }
-      } catch (error) {
-        logger.error({ err: error }, 'Failed to update source references');
+      if (Array.isArray(parsedDefaultSources)) {
+        logger.info(
+          `No sources found for team ${teamId}, creating default sources`,
+        );
+        await seedSourcesFromConfigs(
+          teamId,
+          team,
+          parsedDefaultSources,
+          teamUpdatedConnections,
+        );
       }
+    } else if (DEFAULT_SOURCES_PRESET === 'couchbase') {
+      const couchbaseConnection = teamUpdatedConnections.find(
+        c => c.kind === 'couchbase',
+      );
+      if (!couchbaseConnection) {
+        logger.error(
+          'CBT_DEFAULT_SOURCES_PRESET=couchbase but no Couchbase connection exists for this team; skipping default source seeding',
+        );
+        return;
+      }
+
+      logger.info(
+        `No sources found for team ${teamId}, creating Couchbase preset sources`,
+      );
+
+      const presetConfigs = couchbasePresetSourceConfigs(
+        COUCHBASE_BUCKET,
+        COUCHBASE_SCOPE,
+        couchbaseConnection._id.toString(),
+      );
+      await seedSourcesFromConfigs(
+        teamId,
+        team,
+        presetConfigs,
+        teamUpdatedConnections,
+      );
     }
-  } else if (parsedDefaultSources) {
+  } else if (parsedDefaultSources || DEFAULT_SOURCES_PRESET === 'couchbase') {
     logger.info(
       `Sources already exist for team ${teamId}, skipping default source creation`,
     );

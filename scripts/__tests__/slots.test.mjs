@@ -64,6 +64,15 @@ test('exports the dev stack ports', () => {
     CBT_DEV_OTEL_HTTP_PORT: '30944',
     CBT_DEV_OTEL_METRICS_PORT: '31044',
     CBT_DEV_OTEL_JSON_HTTP_PORT: '31144',
+    CBT_DEV_INGEST_PORT: '31244',
+    CBT_DEV_CB_MGMT_PORT: '18135',
+    CBT_DEV_CB_PORT_8092: '18136',
+    CBT_DEV_CB_PORT_8093: '18137',
+    CBT_DEV_CB_PORT_8094: '18138',
+    CBT_DEV_CB_PORT_8095: '18139',
+    CBT_DEV_CB_PORT_8096: '18140',
+    CBT_DEV_CB_PORT_8097: '18141',
+    CBT_DEV_CB_KV_PORT: '19054',
     CBT_DEV_PROJECT: 'hdx-dev-44',
   });
 });
@@ -90,6 +99,14 @@ test('exports the E2E test ports', () => {
     CBT_E2E_APP_LOCAL_PORT: '21244',
     CBT_E2E_APP_PORT: '21344',
     CBT_E2E_REPORT_PORT: '9367',
+    CBT_E2E_CB_MGMT_PORT: '28135',
+    CBT_E2E_CB_VIEW_PORT: '28235',
+    CBT_E2E_CB_QUERY_PORT: '28335',
+    CBT_E2E_CB_FTS_PORT: '28435',
+    CBT_E2E_CB_ANALYTICS_PORT: '28535',
+    CBT_E2E_CB_EVENTING_PORT: '28635',
+    CBT_E2E_CB_BACKUP_PORT: '28735',
+    CBT_E2E_CB_KV_PORT: '28835',
     E2E_PROJECT: 'e2e-44',
   });
 });
@@ -210,6 +227,7 @@ test('no other code derives a slot', () => {
       'Makefile',
       '*.yml',
       ':!scripts/__tests__/slots.test.mjs',
+      ':!port/lib/baseline.sh',
     ],
     { cwd: REPO, encoding: 'utf8' },
   )

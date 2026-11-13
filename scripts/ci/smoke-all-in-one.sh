@@ -1,16 +1,10 @@
 #!/usr/bin/env bash
-# Boots an all-in-one image and proves it actually runs.
+# Boots an all-in-one image and proves Couchbase ingest works end-to-end.
 #
-# Default (full) mode — for the noauth/Local image, which accepts OTLP without
-# an API key: boot, wait for /api/health, push one OTLP log through the bundled
-# collector, and assert it lands in ClickHouse. End-to-end ingest of the
-# artefact we ship.
+# Default: boot, wait for health, register a user, send one OTLP log with the
+# team API key, and assert it appears through the Couchbase query API.
 #
-# --health-only mode — for the auth all-in-one image, which gates ingestion
-# behind an INGESTION_API_KEY bootstrap so the collector never opens a keyless
-# OTLP receiver (see docker/hyperdx/entry.local.base.sh). A keyless OTLP canary
-# cannot work there, so instead: boot, wait for /api/health, and assert
-# ClickHouse is up inside the container. The OTLP port is not mapped in this mode.
+# --health-only: boot, wait for health, and assert Couchbase responds in-container.
 set -euo pipefail
 
 IMAGE="${1:?usage: smoke-all-in-one.sh <image-ref> [--health-only]}"
@@ -25,20 +19,20 @@ case "$MODE" in
     ;;
 esac
 
-NAME="hdx-smoke-$$"
+NAME="cbt-smoke-$$"
 APP_PORT="${SMOKE_APP_PORT:-18080}"
 OTLP_PORT="${SMOKE_OTLP_PORT:-14318}"
+API_BASE="http://localhost:${APP_PORT}/api"
+COOKIE_JAR="$(mktemp)"
+EMAIL="smoke-$(date +%s)-$$@couchbase-traces.test"
+PASSWORD="smoke-password-$$"
 
 cleanup() {
+  rm -f "$COOKIE_JAR"
   docker rm -f "$NAME" >/dev/null 2>&1 || true
 }
 trap cleanup EXIT
 
-# Pull with a small retry so a transient registry hiccup can't flake the release
-# gate (docker run would otherwise pull implicitly, with no retry). Skip the pull
-# when the image is already in the local daemon — the PR build loads its image
-# with `load: true` and never pushes it, so a `docker pull` would hit the
-# registry and fail for a tag that only exists locally.
 if docker image inspect "$IMAGE" >/dev/null 2>&1; then
   echo "using locally-loaded image $IMAGE (skipping pull)"
 else
@@ -51,21 +45,20 @@ else
   done
 fi
 
-if [ "$HEALTH_ONLY" = 1 ]; then
-  docker run -d --name "$NAME" -p "$APP_PORT:8080" "$IMAGE"
-else
-  docker run -d --name "$NAME" -p "$APP_PORT:8080" -p "$OTLP_PORT:4318" "$IMAGE"
-fi
+docker run -d --name "$NAME" --memory=4g \
+  -p "${APP_PORT}:8080" \
+  $([ "$HEALTH_ONLY" = 0 ] && echo "-p ${OTLP_PORT}:4318") \
+  "$IMAGE"
 
-echo "waiting for app health..."
-for i in $(seq 1 90); do
-  # Fail fast if the container exited (bad entrypoint, port clash, missing env)
-  # instead of polling a dead container for the full timeout.
+echo "waiting for app health (up to 300s)..."
+for i in $(seq 1 150); do
   if [ "$(docker inspect -f '{{.State.Running}}' "$NAME" 2>/dev/null)" != "true" ]; then
     echo "::error::container exited during startup"; docker logs "$NAME" --tail 200; exit 1
   fi
-  curl -fsS "http://localhost:$APP_PORT/api/health" >/dev/null 2>&1 && break
-  if [ "$i" = 90 ]; then
+  if curl -fsS "${API_BASE}/health" >/dev/null 2>&1; then
+    break
+  fi
+  if [ "$i" = 150 ]; then
     echo "::error::app never became healthy"; docker logs "$NAME" --tail 100; exit 1
   fi
   sleep 2
@@ -73,15 +66,16 @@ done
 echo "app healthy"
 
 if [ "$HEALTH_ONLY" = 1 ]; then
-  echo "waiting for ClickHouse..."
-  for i in $(seq 1 45); do
-    ok="$(docker exec "$NAME" clickhouse-client --query "SELECT 1" 2>/dev/null || echo 0)"
-    if [ "${ok:-0}" = 1 ]; then
-      echo "health-only smoke passed: app healthy + clickhouse up"
+  echo "waiting for Couchbase..."
+  for i in $(seq 1 60); do
+    if docker exec "$NAME" curl -fsS -o /dev/null -u "Administrator:placeholder" \
+      http://127.0.0.1:8091/ui/index.html 2>/dev/null || \
+      docker exec "$NAME" curl -fsS -o /dev/null http://127.0.0.1:8091/ui/index.html 2>/dev/null; then
+      echo "health-only smoke passed: app healthy + couchbase UI up"
       exit 0
     fi
-    if [ "$i" = 45 ]; then
-      echo "::error::clickhouse never came up"; docker logs "$NAME" --tail 200; exit 1
+    if [ "$i" = 60 ]; then
+      echo "::error::couchbase never came up"; docker logs "$NAME" --tail 200; exit 1
     fi
     sleep 2
   done
@@ -91,14 +85,44 @@ CANARY="smoke-canary-$(date +%s)-$$"
 NOW_NS="$(date +%s)000000000"
 PAYLOAD="{\"resourceLogs\":[{\"resource\":{\"attributes\":[{\"key\":\"service.name\",\"value\":{\"stringValue\":\"ci-smoke\"}}]},\"scopeLogs\":[{\"logRecords\":[{\"timeUnixNano\":\"$NOW_NS\",\"severityText\":\"INFO\",\"body\":{\"stringValue\":\"$CANARY\"}}]}]}]}"
 
-# The Node app reports /api/health before the separately-supervised collector's
-# :4318 receiver is necessarily listening, so retry the POST until it's accepted
-# rather than aborting on a transient connection-refused (which would false-fail
-# the release gate).
+register_and_login() {
+  curl -fsS -c "$COOKIE_JAR" -b "$COOKIE_JAR" -X POST "${API_BASE}/register/password" \
+    -H 'Content-Type: application/json' \
+    -d "{\"email\":\"${EMAIL}\",\"password\":\"${PASSWORD}\",\"confirmPassword\":\"${PASSWORD}\"}" \
+    >/dev/null
+  curl -fsS -c "$COOKIE_JAR" -b "$COOKIE_JAR" -X POST "${API_BASE}/login/password" \
+    -H 'Content-Type: application/json' \
+    -d "{\"email\":\"${EMAIL}\",\"password\":\"${PASSWORD}\"}" \
+    >/dev/null
+}
+
+api_key() {
+  curl -fsS -b "$COOKIE_JAR" "${API_BASE}/team" | python3 -c 'import json,sys; print(json.load(sys.stdin)["apiKey"])'
+}
+
+connection_id() {
+  curl -fsS -b "$COOKIE_JAR" "${API_BASE}/connections" | python3 -c '
+import json, sys
+for c in json.load(sys.stdin):
+    if c.get("kind") == "couchbase":
+        print(c["_id"])
+        break
+else:
+    sys.exit(1)
+'
+}
+
+echo "registering smoke user..."
+register_and_login
+TEAM_KEY="$(api_key)"
+CONN_ID="$(connection_id)"
+
 echo "sending canary (collector may still be starting)..."
 for i in $(seq 1 45); do
-  if curl -fsS -X POST "http://localhost:$OTLP_PORT/v1/logs" \
-       -H 'Content-Type: application/json' -d "$PAYLOAD" >/dev/null 2>&1; then
+  if curl -fsS -X POST "http://localhost:${OTLP_PORT}/v1/logs" \
+       -H "Content-Type: application/json" \
+       -H "Authorization: ${TEAM_KEY}" \
+       -d "$PAYLOAD" >/dev/null 2>&1; then
     echo "canary sent"
     break
   fi
@@ -109,17 +133,19 @@ for i in $(seq 1 45); do
   sleep 2
 done
 
-echo "waiting for canary in ClickHouse..."
-for i in $(seq 1 45); do
-  n="$(docker exec "$NAME" clickhouse-client --query \
-    "SELECT count() FROM default.otel_logs WHERE Body LIKE '%$CANARY%'" 2>/dev/null || echo 0)"
-  n="${n//[!0-9]/}"
-  if [ "${n:-0}" -ge 1 ]; then
-    echo "canary ingested end-to-end: collector -> clickhouse"
+STATEMENT="SELECT RAW Body FROM \\\`otel\\\`.\\\`default\\\`.\\\`otel_logs\\\` WHERE Body LIKE \"%${CANARY}%\" LIMIT 1"
+echo "waiting for canary via Couchbase query API (up to 120s)..."
+for i in $(seq 1 60); do
+  if RESP="$(curl -fsS -b "$COOKIE_JAR" -X POST "${API_BASE}/couchbase/query" \
+       -H 'Content-Type: application/json' \
+       -d "{\"connectionId\":\"${CONN_ID}\",\"statement\":\"${STATEMENT}\",\"format\":\"json\"}" 2>/dev/null)" && \
+     printf '%s' "$RESP" | grep -q "$CANARY"; then
+    echo "canary ingested end-to-end: collector -> ingest -> couchbase -> API"
     exit 0
   fi
   sleep 2
 done
-echo "::error::canary never arrived in ClickHouse"
+
+echo "::error::canary never arrived in Couchbase"
 docker logs "$NAME" --tail 200
 exit 1

@@ -27,19 +27,20 @@ can't triage the issue or review the PR.
 
 **Reproduce it locally.** The quickest way is the frontend in local mode, which
 needs no Docker and no account: run `yarn app:dev:local`, open the app URL it
-prints, and add a connection to a ClickHouse server you control. Connections
-and sources live in browser storage; clear site data to start over.
+prints, and add a connection to a ClickHouse server you control (local mode is
+ClickHouse-only). Connections and sources live in browser storage; clear site
+data to start over.
 
 Local mode has no API behind it (dashboards and saved searches are kept in local
 storage), so it can't reproduce anything involving alerts, webhooks, auth,
-teams, or the API itself. For those, use the full stack (`yarn dev`, see
-[Development](#development)). It sets up a `Local ClickHouse` connection and
-sources for every new team, and has the data your local stack sends to itself
-(see `CBT_API_KEY` under [Development](#development)).
+teams, or the API itself. For those, use the full stack (`make dev`, see
+[Development](#development) and [docs/development.md](docs/development.md)).
+Preset Couchbase sources apply when `CBT_DEFAULT_SOURCES_PRESET=couchbase` (see
+`CBT_API_KEY` under [Development](#development)).
 
-If the bug depends on your own schema or data, say so, and include the table
-definition (`SHOW CREATE TABLE ...`) and the source settings. Strip anything
-sensitive.
+If the bug depends on your own schema or data, say so, and include Couchbase
+collection/index detail or ClickHouse `SHOW CREATE TABLE` output and source
+settings. Strip anything sensitive.
 
 **What good steps look like:**
 
@@ -83,14 +84,14 @@ them.
 
 Service Descriptions:
 
-- OpenTelemetry Collector (otel-collector): Receives OpenTelemetry data from
-  instrumented applications and forwards it to ClickHouse for storage. Includes
-  OpAMP supervisor that dynamically pulls configuration from Couchbase Traces API.
-- ClickHouse (ch-server): ClickHouse database, stores all telemetry.
-- MongoDB (db): Stores user/saved search/alert/dashboard data.
-- Couchbase Traces API (api): Node.js API, executes ClickHouse queries on behalf of the
-  frontend and serves the frontend. Can also run alert
-  checker.
+- OpenTelemetry Collector (otel-collector): Receives OTLP and forwards to the
+  ingest service (Couchbase) and optionally ClickHouse in CI until Phase 10.
+  Includes OpAMP supervisor that pulls configuration from the API.
+- Couchbase: Telemetry storage (logs, traces, metrics, sessions).
+- Ingest: Normalizes OTLP and writes to Couchbase.
+- MongoDB (db): Stores users, saved searches, alerts, and dashboards.
+- Couchbase Traces API (api): Executes SQL++ on behalf of the frontend and runs
+  alert checks.
 - Couchbase Traces UI (app): Next.js frontend, serves the UI.
 
 ## Development
@@ -107,8 +108,9 @@ You can get started by deploying a complete development stack in dev mode.
 yarn dev
 ```
 
-This will start the Node.js API, Next.js frontend locally and the OpenTelemetry
-collector and ClickHouse server in Docker.
+This starts the API, Next.js frontend, OpenTelemetry collector, MongoDB, and
+Couchbase (see [docs/development.md](docs/development.md)). CI still includes
+ClickHouse until Phase 10.
 
 Each worktree automatically gets unique ports so multiple developers (or agents)
 can run `yarn dev` simultaneously without conflicts. A dev portal at
@@ -145,7 +147,7 @@ see them reflected in real-time.
 
 The development stack mounts volumes locally for persisting storage under
 `.volumes`. Each worktree gets its own volume directory (e.g.
-`.volumes/ch_data_dev_89`). Clear the `.volumes` directory to reset ClickHouse
+`.volumes/couchbase_dev_89`). Clear the `.volumes` directory to reset Couchbase
 and MongoDB storage.
 
 ### Windows
@@ -166,8 +168,8 @@ simultaneously with the dev stack and across multiple worktrees.
 
 ### E2E Tests
 
-E2E tests run against a full local stack (MongoDB + ClickHouse + API). Docker
-must be running.
+E2E tests run against a full local stack (MongoDB + Couchbase or ClickHouse +
+API). Docker must be running. Couchbase mode: `make ci-e2e-couchbase`.
 
 ```bash
 # Run all E2E tests

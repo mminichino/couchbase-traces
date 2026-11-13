@@ -78,8 +78,10 @@
       "workspace": "@couchbase-traces/api",
       "kind": "unit",
       "directImports": [
+        "packages/api/src/controllers/connection.ts",
         "packages/api/src/controllers/sources.ts",
         "packages/api/src/setupDefaults.ts",
+        "packages/api/src/utils/logger.ts",
         "packages/common-utils/src/types.ts"
       ],
       "routes": []
@@ -115,6 +117,19 @@
       "kind": "unit",
       "directImports": [
         "packages/api/src/controllers/ai.ts",
+        "packages/api/src/models/source.ts",
+        "packages/common-utils/src/types.ts"
+      ],
+      "routes": []
+    },
+    {
+      "path": "packages/api/src/controllers/__tests__/aiDialect.test.ts",
+      "workspace": "@couchbase-traces/api",
+      "kind": "unit",
+      "directImports": [
+        "packages/api/src/controllers/aiPrompts.ts",
+        "packages/api/src/controllers/aiSummarize.ts",
+        "packages/api/src/controllers/aiValidation.ts",
         "packages/api/src/models/source.ts",
         "packages/common-utils/src/types.ts"
       ],
@@ -665,7 +680,8 @@
         "packages/api/src/mcp/tools/query/sql.ts",
         "packages/api/src/mcp/tools/query/sqlBatch.ts",
         "packages/api/src/mcp/tools/types.ts",
-        "packages/api/src/mcp/utils/errors.ts"
+        "packages/api/src/mcp/utils/errors.ts",
+        "packages/common-utils/src/couchbase/rawSqlLimit.ts"
       ],
       "routes": []
     },
@@ -1354,6 +1370,20 @@
       "routes": []
     },
     {
+      "path": "packages/api/src/routers/external-api/v2/utils/__tests__/search.test.ts",
+      "workspace": "@couchbase-traces/api",
+      "kind": "unit",
+      "directImports": [
+        "packages/api/src/controllers/connection.ts",
+        "packages/api/src/controllers/sources.ts",
+        "packages/api/src/routers/external-api/v2/utils/search.ts",
+        "packages/common-utils/src/couchbase/render.ts",
+        "packages/common-utils/src/dataLayer/index.ts",
+        "packages/common-utils/src/types.ts"
+      ],
+      "routes": []
+    },
+    {
       "path": "packages/api/src/tasks/__tests__/index.test.ts",
       "workspace": "@couchbase-traces/api",
       "kind": "unit",
@@ -1617,6 +1647,17 @@
       "kind": "unit",
       "directImports": [
         "packages/api/src/utils/common.ts"
+      ],
+      "routes": []
+    },
+    {
+      "path": "packages/api/src/utils/__tests__/couchbaseConsumerErrors.test.ts",
+      "workspace": "@couchbase-traces/api",
+      "kind": "unit",
+      "directImports": [
+        "packages/api/src/utils/couchbaseConsumerErrors.ts",
+        "packages/common-utils/src/couchbase/errors.ts",
+        "packages/common-utils/src/dataLayer/index.ts"
       ],
       "routes": []
     },
@@ -6532,6 +6573,29 @@
       "routes": []
     },
     {
+      "path": "packages/app/tests/e2e/features/metric-exp-histogram.spec.ts",
+      "workspace": "@couchbase-traces/app",
+      "kind": "e2e",
+      "directImports": [
+        "packages/app/tests/e2e/page-objects/ChartExplorerPage.ts",
+        "packages/app/tests/e2e/utils/base-test.ts",
+        "packages/app/tests/e2e/utils/constants.ts",
+        "packages/common-utils/src/types.ts"
+      ],
+      "routes": []
+    },
+    {
+      "path": "packages/app/tests/e2e/features/metric-name-streaming.couchbase.spec.ts",
+      "workspace": "@couchbase-traces/app",
+      "kind": "e2e",
+      "directImports": [
+        "packages/app/tests/e2e/page-objects/ChartExplorerPage.ts",
+        "packages/app/tests/e2e/utils/base-test.ts",
+        "packages/app/tests/e2e/utils/constants.ts"
+      ],
+      "routes": []
+    },
+    {
       "path": "packages/app/tests/e2e/features/metric-name-streaming.spec.ts",
       "workspace": "@couchbase-traces/app",
       "kind": "e2e",
@@ -7197,6 +7261,16 @@
       "routes": []
     },
     {
+      "path": "packages/cli/src/__tests__/cliRoutingClient.test.ts",
+      "workspace": "@couchbase-traces/cli",
+      "kind": "unit",
+      "directImports": [
+        "packages/cli/src/api/client.ts",
+        "packages/common-utils/src/dataLayer/kind.ts"
+      ],
+      "routes": []
+    },
+    {
       "path": "packages/cli/src/__tests__/formatNumber.test.ts",
       "workspace": "@couchbase-traces/cli",
       "kind": "unit",
@@ -7250,6 +7324,18 @@
       "directImports": [
         "packages/cli/src/api/client.ts",
         "packages/cli/src/shared/tileConfig.ts",
+        "packages/common-utils/src/types.ts"
+      ],
+      "routes": []
+    },
+    {
+      "path": "packages/cli/src/__tests__/tileQuery.test.ts",
+      "workspace": "@couchbase-traces/cli",
+      "kind": "unit",
+      "directImports": [
+        "packages/cli/src/api/client.ts",
+        "packages/cli/src/shared/tileQuery.ts",
+        "packages/common-utils/src/dataLayer/kind.ts",
         "packages/common-utils/src/types.ts"
       ],
       "routes": []
@@ -7862,6 +7948,18 @@
       "routes": []
     },
     {
+      "path": "packages/common-utils/src/couchbase/__tests__/expHistogram.couchbase.int.test.ts",
+      "workspace": "@couchbase-traces/common-utils",
+      "kind": "int",
+      "directImports": [
+        "packages/common-utils/src/couchbase/node.ts",
+        "packages/common-utils/src/couchbase/render/metrics/__tests__/expHistogramReference.ts",
+        "packages/common-utils/src/couchbase/render/metrics/expHistogram.ts",
+        "packages/common-utils/src/couchbase/sqlpp.ts"
+      ],
+      "routes": []
+    },
+    {
       "path": "packages/common-utils/src/couchbase/__tests__/functions.test.ts",
       "workspace": "@couchbase-traces/common-utils",
       "kind": "unit",
@@ -7899,8 +7997,7 @@
         "packages/common-utils/src/core/metadata.ts",
         "packages/common-utils/src/couchbase/infer.ts",
         "packages/common-utils/src/couchbase/metadata.ts",
-        "packages/common-utils/src/couchbase/render.ts",
-        "packages/common-utils/src/dataLayer/errors.ts"
+        "packages/common-utils/src/couchbase/render.ts"
       ],
       "routes": []
     },
@@ -7915,6 +8012,15 @@
         "packages/common-utils/src/couchbase/serializer.ts",
         "packages/common-utils/src/couchbase/sqlpp.ts",
         "packages/common-utils/src/couchbase/time.ts"
+      ],
+      "routes": []
+    },
+    {
+      "path": "packages/common-utils/src/couchbase/__tests__/rawSqlLimit.test.ts",
+      "workspace": "@couchbase-traces/common-utils",
+      "kind": "unit",
+      "directImports": [
+        "packages/common-utils/src/couchbase/rawSqlLimit.ts"
       ],
       "routes": []
     },
@@ -7997,6 +8103,24 @@
       "directImports": [
         "packages/common-utils/src/types.ts"
       ],
+      "routes": []
+    },
+    {
+      "path": "packages/common-utils/src/couchbase/render/metrics/__tests__/expHistogram.test.ts",
+      "workspace": "@couchbase-traces/common-utils",
+      "kind": "unit",
+      "directImports": [
+        "packages/common-utils/src/couchbase/render/metrics/__tests__/expHistogramReference.ts",
+        "packages/common-utils/src/couchbase/render/metrics/expHistogram.ts",
+        "packages/common-utils/src/couchbase/render/metrics/histogram.ts"
+      ],
+      "routes": []
+    },
+    {
+      "path": "packages/common-utils/src/couchbase/render/metrics/__tests__/expHistogramReference.ts",
+      "workspace": "@couchbase-traces/common-utils",
+      "kind": "support",
+      "directImports": [],
       "routes": []
     },
     {

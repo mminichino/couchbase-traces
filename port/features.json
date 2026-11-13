@@ -803,9 +803,9 @@
       "entryPoints": [
         "ingestion:otel-collector"
       ],
-      "status": "in_progress",
+      "status": "ported",
       "decision": null,
-      "notes": "Phase 9 completes ingestion."
+      "notes": "Phase 9: Couchbase-only product stacks, ingest service, sample-data loader."
     },
     {
       "id": "task-ping-pong",
