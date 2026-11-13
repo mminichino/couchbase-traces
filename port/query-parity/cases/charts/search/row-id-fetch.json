@@ -1,0 +1,18 @@
+{
+  "id": "search-row-id-fetch",
+  "description": "Row list includes stable row identity column",
+  "source": "logs",
+  "config": {
+    "displayType": "search",
+    "select": "Timestamp, ServiceName, Body",
+    "where": "ServiceName:api",
+    "whereLanguage": "lucene",
+    "dateRange": { "fromMinutesAgo": 60, "toMinutesAgo": 0 },
+    "limit": { "limit": 3 },
+    "orderBy": [{ "valueExpression": "Body", "ordering": "ASC" }]
+  },
+  "compare": {
+    "ordered": true,
+    "ignoreColumns": ["__cbt_id", "Timestamp"]
+  }
+}

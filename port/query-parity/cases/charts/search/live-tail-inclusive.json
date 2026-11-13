@@ -1,0 +1,18 @@
+{
+  "id": "search-live-tail-inclusive",
+  "description": "Live tail moving window with inclusive bounds",
+  "source": "logs",
+  "config": {
+    "displayType": "search",
+    "select": "Timestamp, ServiceName, Body",
+    "dateRange": { "fromMinutesAgo": 45, "toMinutesAgo": 5 },
+    "dateRangeStartInclusive": true,
+    "dateRangeEndInclusive": true,
+    "limit": { "limit": 20 },
+    "orderBy": [{ "valueExpression": "Timestamp", "ordering": "DESC" }]
+  },
+  "compare": {
+    "ordered": true,
+    "ignoreColumns": ["__cbt_id", "Timestamp"]
+  }
+}

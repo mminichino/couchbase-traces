@@ -56,6 +56,8 @@ build_ingest() {
     mkdir -p "$stage/packages/$name"
     cp "$ROOT/packages/$name/package.json" "$stage/packages/$name/package.json"
   done
+  cp -R "$ROOT/packages/common-utils/." "$stage/packages/common-utils/"
+  rm -rf "$stage/packages/common-utils/node_modules" "$stage/packages/common-utils/dist" "$stage/packages/common-utils/coverage"
   cp -R "$ROOT/packages/ingest/." "$stage/packages/ingest/"
   rm -rf "$stage/packages/ingest/node_modules" "$stage/packages/ingest/dist" "$stage/packages/ingest/coverage"
   docker build -f "$ROOT/packages/ingest/Dockerfile" -t cbt-ingest-parity:local "$stage"
@@ -195,3 +197,12 @@ fi
 export CH_URL="http://127.0.0.1:${CH_HTTP_PORT}"
 export CB_URL="http://127.0.0.1:${CB_QUERY_PORT}"
 node "$HERE/compare.mjs"
+
+SLICE="${1:-}"
+if [ "${SLICE}" = "--slice" ]; then
+  SLICE="${2:-}"
+fi
+if [ -n "${SLICE}" ] && [ "${SLICE}" != "--slice" ]; then
+  log "Chart parity for slice: ${SLICE}"
+  PARITY_SLICE="${SLICE}" node "$HERE/compare-charts.mjs" "${SLICE}" || exit 1
+fi

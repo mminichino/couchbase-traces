@@ -1,0 +1,12 @@
+[
+  {
+    "caseId": "search-patterns-sample",
+    "reason": "nondeterministic",
+    "note": "RANDOM() sample order differs between engines"
+  },
+  {
+    "caseId": "search-event-deltas-sample",
+    "reason": "sampling",
+    "note": "RANDOM() event-deltas sample rows differ between engines"
+  }
+]

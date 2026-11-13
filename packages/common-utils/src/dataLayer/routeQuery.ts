@@ -2,6 +2,7 @@ import type { BaseResultSet, DataFormat, QueryInputs } from '@/clickhouse';
 import {
   COUCHBASE_FORMATS,
   type CouchbaseFormat,
+  type CouchbaseQueryInputs,
   type DataClient,
 } from '@/couchbase/types';
 
@@ -22,6 +23,7 @@ export async function queryViaCouchbase<Format extends DataFormat>(
   inputs: QueryInputs<Format>,
 ): Promise<BaseResultSet<ReadableStream, Format>> {
   const format = assertCouchbaseFormat(inputs.format);
+  const couchbaseHints = inputs as CouchbaseQueryInputs;
   const result = await client.query({
     query: inputs.query,
     query_params: inputs.query_params,
@@ -31,6 +33,8 @@ export async function queryViaCouchbase<Format extends DataFormat>(
     queryId: inputs.queryId,
     attribution: inputs.attribution,
     clickhouse_settings: plainSettings(inputs.clickhouse_settings),
+    columns: couchbaseHints.columns,
+    columnTypes: couchbaseHints.columnTypes,
   });
   // One implementation cannot satisfy the format conditional (JSON is `never`
   // for stream, while JSONEachRow is a stream). Callers use these methods.

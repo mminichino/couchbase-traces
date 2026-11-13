@@ -3,6 +3,7 @@ import path from 'path';
 
 // Check if we should use full-stack mode (with backend)
 const USE_FULLSTACK = process.env.E2E_FULLSTACK === 'true';
+const E2E_STORE = process.env.CBT_E2E_STORE ?? 'clickhouse';
 // Check if we should use next dev (hot reload) instead of build + start
 const USE_DEV = process.env.E2E_USE_DEV === 'true';
 const AUTH_FILE = path.join(__dirname, 'tests/e2e/.auth/user.json');
@@ -30,7 +31,9 @@ export default defineConfig({
   testDir: './tests/e2e',
   /* Global setup to ensure server is ready */
   globalSetup: USE_FULLSTACK
-    ? require.resolve('./tests/e2e/global-setup-fullstack.ts')
+    ? E2E_STORE === 'couchbase'
+      ? require.resolve('./tests/e2e/global-setup-couchbase.ts')
+      : require.resolve('./tests/e2e/global-setup-fullstack.ts')
     : require.resolve('./tests/e2e/global-setup-local.ts'),
   /* Run tests in files in parallel */
   fullyParallel: true,

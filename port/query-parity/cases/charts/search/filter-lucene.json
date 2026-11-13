@@ -1,0 +1,10 @@
+{
+  "id": "search-filter-lucene",
+  "description": "Lucene filter chip",
+  "source": "logs",
+  "config": {
+    "select": [{ "aggFn": "count", "valueExpression": "" }],
+    "filters": [{ "type": "lucene", "condition": "SeverityText:\"WARN\"" }],
+    "dateRange": { "fromMinutesAgo": 60, "toMinutesAgo": 0 }
+  }
+}

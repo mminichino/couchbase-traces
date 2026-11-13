@@ -24,7 +24,7 @@
         "app_page:/search/[savedSearchId]",
         "app_page:/search/list"
       ],
-      "status": "not_started",
+      "status": "ported",
       "decision": null
     },
     {
@@ -39,7 +39,7 @@
         "api_route:PATCH /saved-search/:id",
         "api_route:POST /saved-search"
       ],
-      "status": "not_started",
+      "status": "ported",
       "decision": null
     },
     {
@@ -52,7 +52,7 @@
         "api_route:GET /pinned-filters",
         "api_route:PUT /pinned-filters"
       ],
-      "status": "not_started",
+      "status": "ported",
       "decision": null
     },
     {

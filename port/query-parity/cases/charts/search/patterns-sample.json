@@ -1,0 +1,15 @@
+{
+  "id": "search-patterns-sample",
+  "description": "Event patterns sample query",
+  "source": "logs",
+  "config": {
+    "displayType": "event_patterns",
+    "select": "Body",
+    "dateRange": { "fromMinutesAgo": 60, "toMinutesAgo": 0 },
+    "orderBy": [{ "valueExpression": "rand()", "ordering": "DESC" }],
+    "limit": { "limit": 200 }
+  },
+  "compare": {
+    "ignoreColumns": ["__cbt_id"]
+  }
+}

@@ -178,6 +178,7 @@ export function isDenylisted(
   key: string,
   columnMeta: { name: string; type: string }[],
 ): boolean {
+  if (key === '__cbt_id') return true;
   return isIdField(key, columnMeta) || isTimestampArrayField(key, columnMeta);
 }
 

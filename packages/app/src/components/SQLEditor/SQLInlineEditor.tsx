@@ -33,9 +33,15 @@ import CodeMirror, {
 import { EDITOR_INPUT_HEIGHTS } from '@/components/editorInputHeights';
 import { useMultipleAllFields } from '@/hooks/useMetadata';
 import { useStableCallback } from '@/hooks/useStableCallback';
+import {
+  formatLanguageForConnection,
+  SQL_DIALECT_LABEL,
+  sqlKeywordsForCouchbase,
+} from '@/couchbase/dialect';
+import { useConnectionKind } from '@/couchbase/connection';
 import { useSource } from '@/source';
 import { useQueryHistory } from '@/utils';
-import { clickhouseSql } from '@/utils/codeMirror';
+import { clickhouseSql, formatSqlForDialect, sqlppSql } from '@/utils/codeMirror';
 
 import { KEYWORDS_FOR_WHERE_OR_ORDER_BY } from './constants';
 import {
@@ -109,6 +115,9 @@ export default function SQLInlineEditor({
     ? [tableConnection]
     : tableConnections;
   const { data: source } = useSource({ id: sourceId });
+  const connectionKind = useConnectionKind(source?.connection);
+  const formatLang = formatLanguageForConnection(connectionKind);
+  const sqlLabel = connectionKind === 'couchbase' ? SQL_DIALECT_LABEL : 'SQL';
   const { data: fields } = useMultipleAllFields(_tableConnections ?? [], {
     dateRange,
     timestampValueExpression: source?.timestampValueExpression,
@@ -192,7 +201,10 @@ export default function SQLInlineEditor({
 
       const auto = createCodeMirrorSqlDialect({
         identifiers,
-        keywords: KEYWORDS_FOR_WHERE_OR_ORDER_BY,
+        keywords:
+          connectionKind === 'couchbase'
+            ? sqlKeywordsForCouchbase()
+            : KEYWORDS_FOR_WHERE_OR_ORDER_BY,
         includeRegularFunctions: !disableKeywordAutocomplete,
         additionalCompletions: variableCompletions,
       });
@@ -216,6 +228,7 @@ export default function SQLInlineEditor({
       disableKeywordAutocomplete,
       createHistoryList,
       hasNonEmptyValue,
+      connectionKind,
     ],
   );
 
@@ -296,9 +309,9 @@ export default function SQLInlineEditor({
 
       // eslint-disable-next-line react-hooks/refs
       compartmentRef.current.of(
-        clickhouseSql({
-          upperCaseKeywords: true,
-        }),
+        formatLang === 'n1ql'
+          ? sqlppSql({ upperCaseKeywords: true })
+          : clickhouseSql({ upperCaseKeywords: true }),
       ),
 
       // Configure Enter key to submit search, and Shift + Enter to insert new line when multiline is allowed

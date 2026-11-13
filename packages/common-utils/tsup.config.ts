@@ -6,7 +6,7 @@ export const tsup: Options = {
   // Declarations come from (the more efficient) tsc
   dts: false,
   format: ['cjs', 'esm'], // generate cjs and esm files
-  minify: true,
+  minify: process.env.CBT_COVERAGE !== '1',
   bundle: true,
   skipNodeModulesBundle: true,
   outDir: 'dist',

@@ -247,23 +247,22 @@ describe('render skeleton', () => {
     expect(rendered.dialect).toBe('sqlpp');
     expect(rendered.sql).toContain('FROM `otel`.`default`.`otel_logs` AS d');
     expect(rendered.sql).toContain('ServiceName');
-    await expect(
-      renderChartConfigCouchbase(
-        { ...base, select: 'count()' } as never,
-        undefined,
-        undefined,
-      ),
-    ).rejects.toBeInstanceOf(CouchbaseNotReadyError);
-    await expect(
-      renderChartConfigCouchbase(
-        {
-          ...base,
-          whereLanguage: 'sql',
-          select: [{ aggFn: 'count' }],
-        } as never,
-        undefined,
-        undefined,
-      ),
-    ).rejects.toThrow(/does not support Couchbase sources yet/);
+    const counted = await renderChartConfigCouchbase(
+      { ...base, select: 'count()', where: '', whereLanguage: 'sql' } as never,
+      undefined,
+      undefined,
+    );
+    expect(counted.sql).toContain('count()');
+    const total = await renderChartConfigCouchbase(
+      {
+        ...base,
+        where: '',
+        whereLanguage: 'sql',
+        select: [{ aggFn: 'count', aggCondition: '', valueExpression: '' }],
+      } as never,
+      undefined,
+      undefined,
+    );
+    expect(total.sql).toContain('COUNT(*)');
   });
 });

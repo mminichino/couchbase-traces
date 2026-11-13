@@ -1,17 +1,18 @@
-import { format } from '@couchbase-traces/common-utils/dist/sqlFormatter';
 import { ChartConfigWithOptDateRange } from '@couchbase-traces/common-utils/dist/types';
 import { Paper, Text, useMantineColorScheme } from '@mantine/core';
 import { keepPreviousData } from '@tanstack/react-query';
 import CodeMirror, { EditorView } from '@uiw/react-codemirror';
 
 import PreviewCopyButton from '@/components/PreviewCopyButton';
+import { useConnectionKind } from '@/couchbase/connection';
+import { formatLanguageForConnection } from '@/couchbase/dialect';
 import { useRenderedSqlChartConfig } from '@/hooks/useChartConfig';
-import { clickhouseSql } from '@/utils/codeMirror';
+import { clickhouseSql, formatSqlForDialect, sqlppSql } from '@/utils/codeMirror';
 
-function tryFormat(data?: string) {
+function tryFormat(data?: string, dialect: 'clickhouse' | 'n1ql' = 'clickhouse') {
   try {
     if (data != null) {
-      return format(data);
+      return formatSqlForDialect(data, dialect);
     }
     return data;
   } catch {
@@ -25,14 +26,16 @@ export function SQLPreview({
   enableCopy = false,
   copyButtonSize = 'md',
   enableLineWrapping = false,
+  dialect = 'clickhouse',
 }: {
   data?: string;
   formatData?: boolean;
   enableCopy?: boolean;
   copyButtonSize?: 'xs' | 'md';
   enableLineWrapping?: boolean;
+  dialect?: 'clickhouse' | 'n1ql';
 }) {
-  const displayed = formatData ? tryFormat(data) : data;
+  const displayed = formatData ? tryFormat(data, dialect) : data;
   const { colorScheme } = useMantineColorScheme();
 
   return (
@@ -48,7 +51,7 @@ export function SQLPreview({
           highlightActiveLineGutter: false,
         }}
         extensions={[
-          clickhouseSql(),
+          dialect === 'n1ql' ? sqlppSql() : clickhouseSql(),
           ...(enableLineWrapping ? [EditorView.lineWrapping] : []),
         ]}
         editable={false}
@@ -68,6 +71,8 @@ export default function ChartSQLPreview({
   config: ChartConfigWithOptDateRange;
   enableCopy?: boolean;
 }) {
+  const connectionKind = useConnectionKind(config.connection);
+  const formatDialect = formatLanguageForConnection(connectionKind);
   const { data, error, isLoading } = useRenderedSqlChartConfig(config, {
     // Keep the previously rendered SQL visible while a new one is generated so
     // the preview doesn't flicker when the config changes (e.g. live tail
@@ -89,7 +94,12 @@ export default function ChartSQLPreview({
         // so the preview doesn't flicker when the query re-runs — e.g. live tail
         // refreshes the dateRange each poll, and builder configs briefly report
         // isLoading via the MV-optimization lookup.
-        <SQLPreview data={data} formatData={false} enableCopy={enableCopy} />
+        <SQLPreview
+          data={data}
+          formatData={false}
+          enableCopy={enableCopy}
+          dialect={formatDialect}
+        />
       ) : isLoading ? (
         <Text className="text-muted" size="xs">
           Loading query preview...
@@ -99,7 +109,12 @@ export default function ChartSQLPreview({
           Unable to format query. {error.message}
         </Text>
       ) : (
-        <SQLPreview data={data} formatData={false} enableCopy={enableCopy} />
+        <SQLPreview
+          data={data}
+          formatData={false}
+          enableCopy={enableCopy}
+          dialect={formatDialect}
+        />
       )}
     </Paper>
   );

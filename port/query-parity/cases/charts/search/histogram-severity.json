@@ -1,0 +1,11 @@
+{
+  "id": "search-histogram-severity",
+  "description": "Histogram by severity",
+  "source": "logs",
+  "config": {
+    "select": [{ "aggFn": "count", "valueExpression": "" }],
+    "groupBy": "SeverityText",
+    "granularity": "5 minute",
+    "dateRange": { "fromMinutesAgo": 120, "toMinutesAgo": 0 }
+  }
+}

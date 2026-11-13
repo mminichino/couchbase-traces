@@ -8,6 +8,7 @@
     "node": ">=22.16.0"
   },
   "dependencies": {
+    "@couchbase-traces/common-utils": "workspace:*",
     "couchbase": "4.7.2"
   },
   "devDependencies": {

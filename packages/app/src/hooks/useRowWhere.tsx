@@ -7,6 +7,10 @@ import {
   convertCHDataTypeToJSType,
   JSDataType,
 } from '@couchbase-traces/common-utils/dist/clickhouse';
+import {
+  ROW_ID_ALIAS,
+  rowIdWhereLiteral,
+} from '@couchbase-traces/common-utils/dist/couchbase/render';
 import { quoteResultColumnNameIfNeeded } from '@couchbase-traces/common-utils/dist/core/metadata';
 import {
   aliasMapToWithClauses,
@@ -179,10 +183,17 @@ export default function useRowWhere({
 
   return useCallback(
     (row: Record<string, any>): RowWhereResult => {
+      if (row[ROW_ID_ALIAS] != null && String(row[ROW_ID_ALIAS]).trim() !== '') {
+        return {
+          where: rowIdWhereLiteral(String(row[ROW_ID_ALIAS])),
+          aliasWith: [],
+        };
+      }
       // Filter out synthetic columns that aren't in the database schema
       const {
         [INTERNAL_ROW_FIELDS.ID]: _id,
         [INTERNAL_ROW_FIELDS.ALIAS_WITH]: _aliasWith,
+        [ROW_ID_ALIAS]: _cbtId,
         ...dbRow
       } = row;
 

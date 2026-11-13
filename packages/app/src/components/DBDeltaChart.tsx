@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { ClickHouseQueryError } from '@couchbase-traces/common-utils/dist/clickhouse';
+import { getStableSampleExpressionCouchbase } from '@couchbase-traces/common-utils/dist/couchbase/render/eventDeltas';
 import { tcFromChartConfig } from '@couchbase-traces/common-utils/dist/core/metadata';
 import {
   BuilderChartConfigWithDateRange,
@@ -17,6 +18,8 @@ import {
 import { useElementSize } from '@mantine/hooks';
 
 import { isAggregateFunction } from '@/ChartUtils';
+import { useConnectionKind } from '@/couchbase/connection';
+import { isQueryErrorWithSql } from '@/couchbase/queryErrors';
 import { useQueriedChartConfig } from '@/hooks/useChartConfig';
 import { useTableMetadata } from '@/hooks/useMetadata';
 import { getFirstTimestampValueExpression } from '@/source';
@@ -96,8 +99,12 @@ export default function DBDeltaChart({
   // Determine if the value expression uses aggregate functions
   const isAggregate = isAggregateFunction(valueExpr);
 
-  // Build deterministic ORDER BY expression from source's spanIdExpression
-  const stableSampleExpr = getStableSampleExpression(spanIdExpression);
+  const connectionKind = useConnectionKind(config.connection);
+  const isCouchbase = connectionKind === 'couchbase';
+
+  const stableSampleExpr = isCouchbase
+    ? getStableSampleExpressionCouchbase(spanIdExpression)
+    : getStableSampleExpression(spanIdExpression);
 
   // Get the timestamp expression from config
   const timestampExpr = getFirstTimestampValueExpression(
@@ -118,10 +125,17 @@ export default function DBDeltaChart({
   const { data: tableMetadata, isLoading: isTableMetadataLoading } =
     useTableMetadata(tcFromChartConfig(config), { retry: false });
   const isLocalTable = tableMetadata != null && !tableMetadata.isPointerTable;
-  const canUsePartIdsHint = isLocalTable;
-  const inOperator = isLocalTable ? 'IN' : 'GLOBAL IN';
-  const notInOperator = isLocalTable ? 'NOT IN' : 'GLOBAL NOT IN';
+  const canUsePartIdsHint = !isCouchbase && isLocalTable;
+  const inOperator =
+    isCouchbase || isLocalTable ? 'IN' : 'GLOBAL IN';
+  const notInOperator =
+    isCouchbase || isLocalTable ? 'NOT IN' : 'GLOBAL NOT IN';
   const isSelectionQueryEnabled = hasSelection && !isTableMetadataLoading;
+
+  const tsCompare = (op: string, ms: number) =>
+    isCouchbase && config.timestampFormat !== 'epoch_millis'
+      ? `MILLIS(${timestampExpr}) ${op} ${ms}`
+      : `${timestampExpr} ${op} ${ms}`;
 
   // Helper to build the shared AggregatedTimestamps CTE (used by both outlier and inlier queries)
   const buildAggregatedTimestampsCTE = () =>
@@ -136,11 +150,11 @@ export default function DBDeltaChart({
               ...(config.filters ?? []),
               {
                 type: 'sql',
-                condition: `${timestampExpr} >= ${xMin}`,
+                condition: tsCompare('>=', xMin),
               } satisfies Filter,
               {
                 type: 'sql',
-                condition: `${timestampExpr} <= ${xMax}`,
+                condition: tsCompare('<=', xMax),
               } satisfies Filter,
               ...(config.where
                 ? [
@@ -157,8 +171,12 @@ export default function DBDeltaChart({
         }
       : null;
 
-  const buildAggregateTimestampCondition = (isOutlier: boolean) =>
-    `${timestampExpr} ${isOutlier ? inOperator : notInOperator} (SELECT ${timestampExpr} FROM AggregatedTimestamps)`;
+  const buildAggregateTimestampCondition = (isOutlier: boolean) => {
+    const sub = isCouchbase
+      ? `(SELECT RAW ${timestampExpr} FROM AggregatedTimestamps)`
+      : `(SELECT ${timestampExpr} FROM AggregatedTimestamps)`;
+    return `${timestampExpr} ${isOutlier ? inOperator : notInOperator} ${sub}`;
+  };
 
   // Helper to build WITH clauses for a query (outlier or inlier)
   const buildWithClauses = (
@@ -168,7 +186,7 @@ export default function DBDeltaChart({
 
     // Build the SQL condition for filtering
     const buildSqlCondition = () => {
-      const timestampExpression = `${timestampExpr} >= ${xMin} AND ${timestampExpr} <= ${xMax}`;
+      const timestampExpression = `${tsCompare('>=', xMin)} AND ${tsCompare('<=', xMax)}`;
       let query = timestampExpression;
       if (!isAggregate) {
         // For non-aggregates, we filter directly on both timestamp and value
@@ -459,7 +477,7 @@ export default function DBDeltaChart({
             {error.message}
           </Code>
         </Box>
-        {error instanceof ClickHouseQueryError && (
+        {isQueryErrorWithSql(error) && (
           <Box mt="lg">
             <Text my="sm" size="sm">
               Original Query:

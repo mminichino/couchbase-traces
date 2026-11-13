@@ -1,0 +1,34 @@
+# Couchbase + Mongo for Phase 7 search e2e (CBT_E2E_STORE=couchbase).
+# Host ports come from the E2E slot (see scripts/test-e2e.sh).
+name: cbt-e2e-couchbase
+
+services:
+  couchbase:
+    image: couchbase/server:enterprise-8.0.3
+    mem_limit: 4g
+    ports:
+      - '127.0.0.1:${CBT_E2E_CB_MGMT_PORT:-28091}:8091'
+      - '127.0.0.1:${CBT_E2E_CB_VIEW_PORT:-28092}:8092'
+      - '127.0.0.1:${CBT_E2E_CB_QUERY_PORT:-28093}:8093'
+      - '127.0.0.1:${CBT_E2E_CB_FTS_PORT:-28094}:8094'
+      - '127.0.0.1:${CBT_E2E_CB_ANALYTICS_PORT:-28095}:8095'
+      - '127.0.0.1:${CBT_E2E_CB_EVENTING_PORT:-28096}:8096'
+      - '127.0.0.1:${CBT_E2E_CB_BACKUP_PORT:-28097}:8097'
+      - '127.0.0.1:${CBT_E2E_CB_KV_PORT:-28123}:11210'
+  db:
+    image: mongo:5.0.32-focal
+    ports:
+      - '${CBT_E2E_MONGO_PORT:-21100}:27017'
+    networks:
+      - internal
+    deploy:
+      resources:
+        limits:
+          memory: 1G
+          cpus: '2.0'
+        reservations:
+          memory: 512M
+          cpus: '0.5'
+
+networks:
+  internal:

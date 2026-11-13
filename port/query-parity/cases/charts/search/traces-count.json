@@ -1,0 +1,11 @@
+{
+  "id": "search-trace-count",
+  "description": "Trace search count",
+  "source": "traces",
+  "config": {
+    "select": [{ "aggFn": "count", "valueExpression": "" }],
+    "where": "ServiceName:api",
+    "whereLanguage": "lucene",
+    "dateRange": { "fromMinutesAgo": 60, "toMinutesAgo": 0 }
+  }
+}

@@ -16,6 +16,9 @@ COPY packages/otel-collector/package.json packages/otel-collector/package.json
 
 RUN corepack enable && yarn install --mode=skip-build
 
+COPY packages/common-utils packages/common-utils
+RUN yarn workspace @couchbase-traces/common-utils build
+
 COPY packages/ingest packages/ingest
 RUN yarn workspace @couchbase-traces/ingest build
 

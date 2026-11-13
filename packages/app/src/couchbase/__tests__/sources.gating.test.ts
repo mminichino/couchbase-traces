@@ -1,0 +1,50 @@
+import { COUCHBASE_SLICES } from '@couchbase-traces/common-utils/dist/dataLayer';
+import { SourceKind } from '@couchbase-traces/common-utils/dist/types';
+
+import {
+  filterSourcesForSliceWithConnections,
+  isSourceAllowedForSlice,
+} from '../sources';
+
+const sources = [
+  { id: 'ch', connection: 'ch-conn', name: 'CH', kind: SourceKind.Log },
+  { id: 'cb', connection: 'cb-conn', name: 'CB', kind: SourceKind.Log },
+];
+const connections = [
+  { id: 'ch-conn', kind: 'clickhouse' as const },
+  { id: 'cb-conn', kind: 'couchbase' as const },
+];
+
+describe('search source gating', () => {
+  it('keeps couchbase sources when search slice is enabled', () => {
+    expect(COUCHBASE_SLICES.search).toBe(true);
+    const out = filterSourcesForSliceWithConnections(
+      sources,
+      'search',
+      connections,
+    );
+    expect(out.map(s => s.id)).toEqual(['ch', 'cb']);
+  });
+
+  it('isSourceAllowed accepts couchbase when search is on', () => {
+    expect(isSourceAllowedForSlice(sources[1]!, 'search', connections)).toBe(
+      true,
+    );
+    expect(isSourceAllowedForSlice(sources[0]!, 'search', connections)).toBe(
+      true,
+    );
+  });
+
+  it('still drops couchbase for disabled charts slice', () => {
+    expect(COUCHBASE_SLICES.charts).toBe(false);
+    const out = filterSourcesForSliceWithConnections(
+      sources,
+      'charts',
+      connections,
+    );
+    expect(out.map(s => s.id)).toEqual(['ch']);
+    expect(isSourceAllowedForSlice(sources[1]!, 'charts', connections)).toBe(
+      false,
+    );
+  });
+});

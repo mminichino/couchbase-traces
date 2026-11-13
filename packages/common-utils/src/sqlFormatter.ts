@@ -1,4 +1,4 @@
-import { clickhouse, formatDialect } from 'sql-formatter';
+import { clickhouse, formatDialect, n1ql } from 'sql-formatter';
 
 /** Matches a call to an aggregate-combinator function (eg. `countIf(`,). */
 const COMBINATOR_FUNCTION_CALL_PATTERN =
@@ -22,9 +22,12 @@ const PARAMETRIC_COMBINATOR_FUNCTION_CALL_PATTERN =
  *
  * Throws if the SQL can't be parsed (callers that want resilience should catch).
  */
-export function format(query: string): string {
+export function format(
+  query: string,
+  dialect: 'clickhouse' | 'n1ql' = 'clickhouse',
+): string {
   const formatted = formatDialect(query, {
-    dialect: clickhouse,
+    dialect: dialect === 'n1ql' ? n1ql : clickhouse,
     // sql-formatter can't parse $__macros, so treat them as params.
     paramTypes: { custom: [{ regex: String.raw`\$__\w+` }] },
   });

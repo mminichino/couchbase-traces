@@ -76,35 +76,44 @@ export function timeRangePredicate(
   format: TimeFormat,
   from: Date,
   to: Date,
-  opts?: { inclusiveEnd?: boolean },
+  opts?: { inclusiveStart?: boolean; inclusiveEnd?: boolean },
 ): SqlPP {
+  const startOp = opts?.inclusiveStart === false ? '>' : '>=';
   const endOp = opts?.inclusiveEnd ? '<=' : '<';
   if (format === 'epoch_millis') {
-    return sqlpp`${{ Raw: tsExpr }} >= ${{ Param: from.getTime() }} AND ${{ Raw: tsExpr }} ${{ Raw: endOp }} ${{ Param: to.getTime() }}`;
+    return sqlpp`${{ Raw: tsExpr }} ${{ Raw: startOp }} ${{ Param: from.getTime() }} AND ${{ Raw: tsExpr }} ${{ Raw: endOp }} ${{ Param: to.getTime() }}`;
   }
-  return sqlpp`${{ Raw: tsExpr }} >= ${{ Param: toIso30(from) }} AND ${{ Raw: tsExpr }} ${{ Raw: endOp }} ${{ Param: toIso30(to) }}`;
+  return sqlpp`${{ Raw: tsExpr }} ${{ Raw: startOp }} ${{ Param: toIso30(from) }} AND ${{ Raw: tsExpr }} ${{ Raw: endOp }} ${{ Param: toIso30(to) }}`;
 }
 
 export function tsMillisExpr(tsExpr: string, format: TimeFormat): string {
   return format === 'epoch_millis' ? tsExpr : `STR_TO_MILLIS(${tsExpr})`;
 }
 
+/**
+ * Time-bucket expression. Granularity constants and the date format are
+ * embedded as literals so SELECT and GROUP BY can share the same text —
+ * nesting the expression twice through `sqlpp` would renumber `$pN` and
+ * make N1QL treat them as different expressions (error 4210).
+ */
 export function timeBucketExpr(
   tsExpr: string,
   format: TimeFormat,
   granularity: Granularity,
 ): SqlPP {
   const millis = tsMillisExpr(tsExpr, format);
+  const fmtLit = JSON.stringify(SQLPP_DATE_FORMAT);
   if (granularity.unit === 'week' || granularity.unit === 'month') {
-    const part = granularity.unit;
+    const partLit = JSON.stringify(granularity.unit);
     const shift =
       granularity.unit === 'week' && WEEK_ALIGN_OFFSET_MS !== 0
         ? ` + ${WEEK_ALIGN_OFFSET_MS}`
         : '';
-    return sqlpp`MILLIS_TO_UTC(DATE_TRUNC_MILLIS(${{ Raw: millis }}, ${{ Param: part }})${{ Raw: shift }}, ${{ Param: SQLPP_DATE_FORMAT }})`;
+    return sqlpp`MILLIS_TO_UTC(DATE_TRUNC_MILLIS(${{ Raw: millis }}, ${{ Raw: partLit }})${{ Raw: shift }}, ${{ Raw: fmtLit }})`;
   }
   if (granularity.ms == null) {
     throw new Error(`Cannot bucket by ${granularity.n} ${granularity.unit}`);
   }
-  return sqlpp`MILLIS_TO_UTC(FLOOR(${{ Raw: millis }} / ${{ Param: granularity.ms }}) * ${{ Param: granularity.ms }}, ${{ Param: SQLPP_DATE_FORMAT }})`;
+  const msLit = String(granularity.ms);
+  return sqlpp`MILLIS_TO_UTC(FLOOR(${{ Raw: millis }} / ${{ Raw: msLit }}) * ${{ Raw: msLit }}, ${{ Raw: fmtLit }})`;
 }

@@ -1,0 +1,139 @@
+{
+  "slice": "search",
+  "features": [
+    {
+      "id": "app-search",
+      "name": "Log and trace search",
+      "status": "not_started",
+      "entryPoints": [
+        "app_page:/search",
+        "app_page:/search/[savedSearchId]",
+        "app_page:/search/list"
+      ]
+    },
+    {
+      "id": "api-saved-search",
+      "name": "Saved searches",
+      "status": "not_started",
+      "entryPoints": [
+        "api_route:DELETE /saved-search/:id",
+        "api_route:GET /saved-search",
+        "api_route:PATCH /saved-search/:id",
+        "api_route:POST /saved-search"
+      ]
+    },
+    {
+      "id": "api-pinned-filters",
+      "name": "Pinned filters",
+      "status": "not_started",
+      "entryPoints": [
+        "api_route:GET /pinned-filters",
+        "api_route:PUT /pinned-filters"
+      ]
+    }
+  ],
+  "coreFunctions": [
+    {
+      "file": "packages/common-utils/src/core/renderChartConfig.ts",
+      "name": "renderSelect"
+    },
+    {
+      "file": "packages/common-utils/src/core/searchChartConfig.ts",
+      "name": "buildSearchChartConfig"
+    },
+    {
+      "file": "packages/common-utils/src/couchbase/render/index.ts",
+      "name": "renderChartConfigCouchbase"
+    },
+    {
+      "file": "packages/common-utils/src/core/eventDeltas.ts",
+      "name": "getPropertyStatistics"
+    },
+    {
+      "file": "packages/common-utils/src/couchbase/render/eventDeltas.ts",
+      "name": "getStableSampleExpressionCouchbase"
+    },
+    {
+      "file": "packages/common-utils/src/couchbase/render/postprocess.ts",
+      "name": "couchbaseColumnTypesForConfig"
+    }
+  ],
+  "appQuerySites": [
+    {
+      "path": "packages/app/src/components/DBSearchPageFilters.tsx",
+      "rawSql": 2,
+      "typeNames": 0
+    },
+    {
+      "path": "packages/app/src/DBSearchPage.tsx",
+      "rawSql": 4,
+      "typeNames": 0
+    },
+    {
+      "path": "packages/app/src/components/DBDeltaChart.tsx",
+      "rawSql": 0,
+      "typeNames": 0
+    },
+    {
+      "path": "packages/app/src/hooks/useRowWhere.tsx",
+      "rawSql": 0,
+      "typeNames": 0
+    },
+    {
+      "path": "packages/app/src/components/PatternTable.tsx",
+      "rawSql": 0,
+      "typeNames": 0
+    }
+  ],
+  "dataLayerSymbols": [
+    {
+      "path": "packages/app/src/components/DBSearchPageFilters/FilterSettingsPopover.tsx",
+      "symbols": [
+        "FilterSettingsPanel"
+      ]
+    },
+    {
+      "path": "packages/app/src/DBSearchPage.tsx",
+      "symbols": [
+        "DBSearchPage",
+        "SearchNumRows",
+        "buildSavedSearchNavigationUrl",
+        "default",
+        "getDefaultSourceId",
+        "useDefaultOrderBy",
+        "useSearchTelemetry"
+      ]
+    }
+  ],
+  "tests": {
+    "unit": [
+      "packages/app/src/__tests__/DBSearchPage.directTrace.test.tsx",
+      "packages/app/src/__tests__/DBSearchPage.saveSearch.test.tsx",
+      "packages/app/src/__tests__/DBSearchPage.test.tsx",
+      "packages/app/src/__tests__/DBSearchPageAlertModal.test.tsx",
+      "packages/app/src/__tests__/useSearchTelemetry.test.tsx",
+      "packages/app/src/components/CompactViewport/__tests__/ResponsiveSidePanel.test.tsx",
+      "packages/app/src/components/Search/__tests__/DirectTraceSidePanel.test.tsx",
+      "packages/app/src/components/SearchGroupBy/__tests__/SearchGroupBySelect.test.tsx",
+      "packages/app/src/components/SearchGroupBy/__tests__/searchGroupBy.test.ts",
+      "packages/app/src/components/SplitValueButton/__tests__/SplitValueButton.test.tsx",
+      "packages/app/src/components/__tests__/ActiveFilterPills.test.tsx",
+      "packages/app/src/components/__tests__/DBSearchPageFilters.test.tsx",
+      "packages/app/src/hooks/__tests__/useSqlSuggestions.test.tsx",
+      "packages/app/src/utils/__tests__/groupByTags.test.ts"
+    ],
+    "int": [],
+    "e2e": [
+      "packages/app/tests/e2e/core/navigation.spec.ts",
+      "packages/app/tests/e2e/features/dashboard-container.spec.ts",
+      "packages/app/tests/e2e/features/dashboard.spec.ts",
+      "packages/app/tests/e2e/features/search/side-panel-navigation.spec.ts",
+      "packages/app/tests/e2e/features/sessions.spec.ts",
+      "packages/app/tests/e2e/features/source-name-deeplink.spec.ts",
+      "packages/app/tests/e2e/features/temporary-dashboard.spec.ts",
+      "packages/app/tests/e2e/global-setup-fullstack.ts",
+      "packages/app/tests/e2e/page-objects/SavedSearchesListPage.ts",
+      "packages/app/tests/e2e/page-objects/SearchPage.ts"
+    ]
+  }
+}

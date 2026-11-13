@@ -1,0 +1,11 @@
+{
+  "id": "search-lucene-web",
+  "description": "Lucene service web count",
+  "source": "logs",
+  "config": {
+    "select": [{ "aggFn": "count", "valueExpression": "" }],
+    "where": "ServiceName:web",
+    "whereLanguage": "lucene",
+    "dateRange": { "fromMinutesAgo": 60, "toMinutesAgo": 0 }
+  }
+}

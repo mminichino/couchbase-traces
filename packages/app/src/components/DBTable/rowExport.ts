@@ -1,3 +1,6 @@
+import { ROW_ID_ALIAS } from '@couchbase-traces/common-utils/dist/couchbase/render';
+
+import { HIDDEN_ROW_COLUMNS } from '@/couchbase/dialect';
 import { INTERNAL_ROW_FIELDS } from '@/hooks/useRowWhere';
 
 /**
@@ -16,8 +19,12 @@ export function toExportableRow(
   const {
     [INTERNAL_ROW_FIELDS.ID]: _id,
     [INTERNAL_ROW_FIELDS.ALIAS_WITH]: _aliasWith,
+    [ROW_ID_ALIAS]: _cbtId,
     ...rest
   } = row;
+  for (const key of HIDDEN_ROW_COLUMNS) {
+    delete rest[key];
+  }
 
   const entries =
     columns == null

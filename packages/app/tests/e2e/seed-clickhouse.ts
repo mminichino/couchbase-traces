@@ -188,7 +188,7 @@ export const CUSTOM_SERVICE_LOGS_APP_NAMES = [
 ] as const;
 
 // Body templates for `e2e_custom_service_name`.
-const CUSTOM_SERVICE_LOG_MESSAGES = [
+export const CUSTOM_SERVICE_LOG_MESSAGES = [
   'Started request handler for endpoint',
   'Completed background reconciliation loop for object',
   'Cache lookup finished for entry',
@@ -270,28 +270,81 @@ const FUTURE_MS =
     parseInt(process.env.E2E_SEED_FUTURE_MS, 10)) ||
   2 * 60 * 60 * 1000; // 2 hours default
 
+export function getE2eSeedWindow() {
+  const seedRef = Date.now();
+  return {
+    seedRef,
+    startMs: seedRef - PAST_MS,
+    endMs: seedRef + FUTURE_MS,
+    numDataPoints: 500,
+  };
+}
+
+export type E2eClickHouseRow = Record<string, unknown>;
+
+export function buildE2eMainLogRows(
+  count: number,
+  startMs: number,
+  endMs: number,
+): E2eClickHouseRow[] {
+  const rows: E2eClickHouseRow[] = [];
+  const span = endMs - startMs;
+
+  for (let i = 0; i < count; i++) {
+    const t = count > 1 ? startMs + (i / (count - 1)) * span : startMs;
+    const timestampNs = Math.round(t) * 1_000_000;
+    const severity = SEVERITIES[i % SEVERITIES.length];
+    const service = SERVICES[i % SERVICES.length];
+    const message = LOG_MESSAGES[i % LOG_MESSAGES.length];
+    const traceId = i < 10 ? `trace-${i}` : '';
+
+    rows.push({
+      Timestamp: new Date(timestampNs / 1_000_000).toISOString(),
+      TraceId: traceId,
+      SpanId: '',
+      TraceFlags: 0,
+      SeverityText: severity,
+      SeverityNumber: 0,
+      ServiceName: service,
+      Body: message,
+      ResourceSchemaUrl: '',
+      ResourceAttributes: { 'service.name': service, environment: 'test' },
+      ScopeSchemaUrl: '',
+      ScopeName: '',
+      ScopeVersion: '',
+      ScopeAttributes: {},
+      LogAttributes: {
+        'request.id': `req-${i}`,
+        'user.id': `user-${i % 5}`,
+      },
+    });
+  }
+
+  return rows;
+}
+
+function logRowToValuesTuple(row: E2eClickHouseRow, i: number): string {
+  const timestampNs =
+    new Date(String(row.Timestamp)).getTime() * 1_000_000;
+  const service = String(row.ServiceName);
+  const severity = String(row.SeverityText);
+  const message = String(row.Body);
+  const traceId = String(row.TraceId ?? '');
+  return (
+    `('${timestampNs}', '${traceId}', '', 0, '${severity}', 0, '${service}', '${message}', '', ` +
+    `{'service.name':'${service}','environment':'test'}, '', '', '', {}, ` +
+    `{'request.id':'req-${i}','user.id':'user-${i % 5}'})`
+  );
+}
+
 function generateLogData(
   count: number,
   startMs: number,
   endMs: number,
 ): string {
-  const rows: string[] = [];
-  const span = endMs - startMs;
-
-  for (let i = 0; i < count; i++) {
-    const t = count > 1 ? startMs + (i / (count - 1)) * span : startMs;
-    const timestampNs = Math.round(t) * 1000000;
-    const severity = SEVERITIES[i % SEVERITIES.length];
-    const service = SERVICES[i % SERVICES.length];
-    const message = LOG_MESSAGES[i % LOG_MESSAGES.length];
-    const traceId = i < 10 ? `trace-${i}` : ''; // Link first 10 logs to traces
-
-    rows.push(
-      `('${timestampNs}', '${traceId}', '', 0, '${severity}', 0, '${service}', '${message}', '', {'service.name':'${service}','environment':'test'}, '', '', '', {}, {'request.id':'req-${i}','user.id':'user-${i % 5}'})`,
-    );
-  }
-
-  return rows.join(',\n');
+  return buildE2eMainLogRows(count, startMs, endMs)
+    .map((row, i) => logRowToValuesTuple(row, i))
+    .join(',\n');
 }
 
 /**
@@ -300,27 +353,50 @@ function generateLogData(
  * samples span multiple services. Spread across the seed window like the other
  * log data so relative time ranges find them.
  */
+export function buildE2eCustomServiceLogRows(
+  count: number,
+  startMs: number,
+  endMs: number,
+): E2eClickHouseRow[] {
+  const rows: E2eClickHouseRow[] = [];
+  const span = endMs - startMs;
+
+  for (let i = 0; i < count; i++) {
+    const t = count > 1 ? startMs + (i / (count - 1)) * span : startMs;
+    const timestampNs = Math.round(t) * 1_000_000;
+    const appName =
+      CUSTOM_SERVICE_LOGS_APP_NAMES[i % CUSTOM_SERVICE_LOGS_APP_NAMES.length];
+    const severity = SEVERITIES[i % SEVERITIES.length];
+    const message = `${CUSTOM_SERVICE_LOG_MESSAGES[i % CUSTOM_SERVICE_LOG_MESSAGES.length]} ${i}`;
+    rows.push({
+      Timestamp: new Date(timestampNs / 1_000_000).toISOString(),
+      AppName: appName,
+      SeverityText: severity,
+      Body: message,
+      LogAttributes: { level: severity },
+    });
+  }
+
+  return rows;
+}
+
+function customServiceRowToValuesTuple(row: E2eClickHouseRow): string {
+  const timestampNs =
+    new Date(String(row.Timestamp)).getTime() * 1_000_000;
+  const appName = String(row.AppName);
+  const severity = String(row.SeverityText);
+  const message = String(row.Body);
+  return `('${timestampNs}', '${appName}', '${severity}', '${message}', {'level':'${severity}'})`;
+}
+
 function generateCustomServiceLogData(
   count: number,
   startMs: number,
   endMs: number,
 ): string {
-  const rows: string[] = [];
-  const span = endMs - startMs;
-
-  for (let i = 0; i < count; i++) {
-    const t = count > 1 ? startMs + (i / (count - 1)) * span : startMs;
-    const timestampNs = Math.round(t) * 1000000;
-    const appName =
-      CUSTOM_SERVICE_LOGS_APP_NAMES[i % CUSTOM_SERVICE_LOGS_APP_NAMES.length];
-    const severity = SEVERITIES[i % SEVERITIES.length];
-    const message = `${CUSTOM_SERVICE_LOG_MESSAGES[i % CUSTOM_SERVICE_LOG_MESSAGES.length]} ${i}`;
-    rows.push(
-      `('${timestampNs}', '${appName}', '${severity}', '${message}', {'level':'${severity}'})`,
-    );
-  }
-
-  return rows.join(',\n');
+  return buildE2eCustomServiceLogRows(count, startMs, endMs)
+    .map(customServiceRowToValuesTuple)
+    .join(',\n');
 }
 
 /**
@@ -380,62 +456,94 @@ function generateK8sLogData(
   return rows.join(',\n');
 }
 
-function generateTraceData(
+export function buildE2eTraceRows(
   count: number,
   startMs: number,
   endMs: number,
-): string {
-  const rows: string[] = [];
-  const spansPerTrace = 4; // Each trace will have 4 spans
+): E2eClickHouseRow[] {
+  const rows: E2eClickHouseRow[] = [];
+  const spansPerTrace = 4;
   const numTraces = Math.ceil(count / spansPerTrace);
   const span = endMs - startMs;
 
   for (let traceIdx = 0; traceIdx < numTraces; traceIdx++) {
     const traceId = `trace-${traceIdx}`;
-    // Anchor each trace in the window; spans stay close (10s apart)
     const traceAnchor =
       numTraces > 1 ? startMs + (traceIdx / (numTraces - 1)) * span : startMs;
     const traceStartTime = traceAnchor;
 
-    // Create spans within this trace
     for (let spanIdx = 0; spanIdx < spansPerTrace; spanIdx++) {
       const spanId = `span-${traceIdx}-${spanIdx}`;
       const parentSpanId =
         spanIdx === 0 ? '' : `span-${traceIdx}-${spanIdx - 1}`;
-
-      // Each span starts slightly after the previous one (same trace grouping)
-      const timestampNs = (traceStartTime - spanIdx * 100) * 1000000;
-
+      const timestampNs = (traceStartTime - spanIdx * 100) * 1_000_000;
       const service = SERVICES[spanIdx % SERVICES.length];
-      // Use row count to cycle through all span names, not just first 4
       const spanName = SPAN_NAMES[rows.length % SPAN_NAMES.length];
       const spanKind =
         spanIdx === 0
           ? 'SPAN_KIND_SERVER'
           : SPAN_KINDS[spanIdx % SPAN_KINDS.length];
-
-      // 10% error rate for root spans
       const isError = traceIdx % 10 === 0 && spanIdx === 0;
       const statusCode = isError ? 'STATUS_CODE_ERROR' : 'STATUS_CODE_OK';
       const httpStatusCode = isError ? '500' : '200';
-
-      // Duration decreases for nested spans (child spans take less time)
       const duration =
-        Math.floor(Math.random() * 500000000) +
-        (spansPerTrace - spanIdx) * 100000000;
+        ((rows.length * 17) % 500) * 1_000_000 +
+        (spansPerTrace - spanIdx) * 100_000_000;
 
-      rows.push(
-        `('${timestampNs}', '${traceId}', '${spanId}', '${parentSpanId}', '', '${spanName}', '${spanKind}', '${service}', {'service.name':'${service}','environment':'test'}, '', '', {'http.method':'GET','http.status_code':'${httpStatusCode}'}, ${duration}, '${statusCode}', '', [], [], [], [], [], [], [])`,
-      );
+      rows.push({
+        Timestamp: new Date(timestampNs / 1_000_000).toISOString(),
+        TraceId: traceId,
+        SpanId: spanId,
+        ParentSpanId: parentSpanId,
+        TraceState: '',
+        SpanName: spanName,
+        SpanKind: spanKind,
+        ServiceName: service,
+        ResourceAttributes: { 'service.name': service, environment: 'test' },
+        ScopeName: '',
+        ScopeVersion: '',
+        SpanAttributes: {
+          'http.method': 'GET',
+          'http.status_code': httpStatusCode,
+        },
+        Duration: duration,
+        StatusCode: statusCode,
+        StatusMessage: '',
+        Events: [],
+        Links: [],
+      });
 
-      // Stop if we've generated enough spans
       if (rows.length >= count) {
-        return rows.join(',\n');
+        return rows;
       }
     }
   }
 
-  return rows.join(',\n');
+  return rows;
+}
+
+function traceRowToValuesTuple(row: E2eClickHouseRow): string {
+  const timestampNs =
+    new Date(String(row.Timestamp)).getTime() * 1_000_000;
+  const attrs = row.SpanAttributes as Record<string, string>;
+  const service = String(row.ServiceName);
+  return (
+    `('${timestampNs}', '${row.TraceId}', '${row.SpanId}', '${row.ParentSpanId}', '', ` +
+    `'${row.SpanName}', '${row.SpanKind}', '${service}', ` +
+    `{'service.name':'${service}','environment':'test'}, '', '', ` +
+    `{'http.method':'${attrs['http.method']}','http.status_code':'${attrs['http.status_code']}'}, ` +
+    `${row.Duration}, '${row.StatusCode}', '', [], [], [], [], [], [], [])`
+  );
+}
+
+function generateTraceData(
+  count: number,
+  startMs: number,
+  endMs: number,
+): string {
+  return buildE2eTraceRows(count, startMs, endMs)
+    .map(traceRowToValuesTuple)
+    .join(',\n');
 }
 
 // Cross-trace span-link pair: a consumer span in its own trace whose Links
@@ -947,10 +1055,7 @@ export async function seedClickHouse(): Promise<void> {
   await createAltMetricsDatabase(client);
   await clearTestData(client);
 
-  const seedRef = Date.now();
-  const startMs = seedRef - PAST_MS;
-  const endMs = seedRef + FUTURE_MS;
-  const numDataPoints = 500;
+  const { seedRef, startMs, endMs, numDataPoints } = getE2eSeedWindow();
 
   // Insert log data
   console.log('  Inserting log data...');

@@ -1,0 +1,11 @@
+{
+  "id": "search-where-sql",
+  "description": "SQL where on service",
+  "source": "logs",
+  "config": {
+    "select": [{ "aggFn": "count", "valueExpression": "" }],
+    "where": "ServiceName = 'api'",
+    "whereLanguage": "sql",
+    "dateRange": { "fromMinutesAgo": 60, "toMinutesAgo": 0 }
+  }
+}

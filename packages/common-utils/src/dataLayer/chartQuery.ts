@@ -1,5 +1,7 @@
-import type { BaseClickhouseClient } from '@/clickhouse';
+import type { BaseClickhouseClient, QueryInputs } from '@/clickhouse';
 import { renderChartConfigCouchbase } from '@/couchbase/render';
+import { couchbasePostprocessHints } from '@/couchbase/render/postprocess';
+import { isBuilderChartConfig } from '@/guards';
 
 import { resolveConnectionKind } from './kind';
 
@@ -20,6 +22,9 @@ export async function couchbaseChartQuery(
     args.metadata,
     args.querySettings,
   );
+  const hints = isBuilderChartConfig(args.config)
+    ? couchbasePostprocessHints(args.config)
+    : {};
   const resp = await query({
     query: rendered.sql,
     query_params: rendered.params,
@@ -28,7 +33,8 @@ export async function couchbaseChartQuery(
     connectionId: args.config.connection,
     clickhouse_settings: args.opts?.clickhouse_settings,
     attribution: { source: args.config.source },
-  });
+    ...hints,
+  } as QueryInputs<'JSON'>);
   return resp.json() as Promise<ChartJson>;
 }
 

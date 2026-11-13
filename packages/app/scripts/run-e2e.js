@@ -69,6 +69,11 @@ const chPort = env.CBT_E2E_CH_PORT || '20500';
 
 // Ensure CLICKHOUSE_HOST is set for seed-clickhouse.ts (used by both modes)
 env.CLICKHOUSE_HOST = `http://localhost:${chPort}`;
+if (env.CBT_E2E_STORE === 'couchbase') {
+  env.COUCHBASE_URL =
+    env.COUCHBASE_URL ?? `http://127.0.0.1:${env.CBT_E2E_CB_QUERY_PORT ?? '18093'}`;
+  env.CBT_E2E_CB_MGMT_PORT = env.CBT_E2E_CB_MGMT_PORT ?? '18091';
+}
 
 // Full-stack: inject DEFAULT_CONNECTIONS/DEFAULT_SOURCES from fixture so the API gets them
 if (!useLocal) {
@@ -78,14 +83,56 @@ if (!useLocal) {
   );
   const fixture = JSON.parse(fs.readFileSync(fixturePath, 'utf8'));
 
-  // Patch connection hosts with dynamic ClickHouse port
-  const connections = (fixture.connections ?? []).map(conn => ({
-    ...conn,
-    host: conn.host?.replace(/localhost:\d+/, `localhost:${chPort}`),
-  }));
+  if (env.CBT_E2E_STORE === 'couchbase') {
+    const cbQueryPort = env.CBT_E2E_CB_QUERY_PORT ?? '18093';
+    const cbMgmtPort = env.CBT_E2E_CB_MGMT_PORT ?? '18091';
+    const connections = [
+      {
+        id: 'local',
+        name: 'local',
+        kind: 'couchbase',
+        host: `couchbase://127.0.0.1`,
+        username: 'Administrator',
+        password: 'cbt-test-admin',
+        mgmtPort: Number(cbMgmtPort),
+      },
+    ];
+    const tableToCollection = {
+      e2e_otel_logs: 'otel_logs',
+      e2e_otel_traces: 'otel_traces',
+      e2e_custom_service_name: 'e2e_custom_service_name',
+      e2e_hyperdx_sessions: 'hyperdx_sessions',
+    };
+    const sources = (fixture.sources ?? []).map(src => {
+      const table = src.from?.tableName ?? '';
+      const collection = tableToCollection[table] ?? table;
+      return {
+        ...src,
+        from: {
+          databaseName: 'otel',
+          scopeName: 'default',
+          tableName: collection,
+        },
+        ...(src.kind === 'log' && src.id === 'E2E Logs'
+          ? { searchIndexName: 'fts_otel_logs' }
+          : {}),
+        ...(src.kind === 'trace' && src.id === 'E2E Traces'
+          ? { searchIndexName: 'fts_otel_traces' }
+          : {}),
+      };
+    });
+    env.DEFAULT_CONNECTIONS = JSON.stringify(connections);
+    env.DEFAULT_SOURCES = JSON.stringify(sources);
+  } else {
+    // Patch connection hosts with dynamic ClickHouse port
+    const connections = (fixture.connections ?? []).map(conn => ({
+      ...conn,
+      host: conn.host?.replace(/localhost:\d+/, `localhost:${chPort}`),
+    }));
 
-  env.DEFAULT_CONNECTIONS = JSON.stringify(connections);
-  env.DEFAULT_SOURCES = JSON.stringify(fixture.sources ?? []);
+    env.DEFAULT_CONNECTIONS = JSON.stringify(connections);
+    env.DEFAULT_SOURCES = JSON.stringify(fixture.sources ?? []);
+  }
 }
 
 // Run playwright

@@ -1,0 +1,17 @@
+{
+  "id": "search-filter-sql-ast",
+  "description": "SQL AST filter on severity",
+  "source": "logs",
+  "config": {
+    "select": [{ "aggFn": "count", "valueExpression": "" }],
+    "filters": [
+      {
+        "type": "sql_ast",
+        "operator": "=",
+        "left": "SeverityText",
+        "right": "'INFO'"
+      }
+    ],
+    "dateRange": { "fromMinutesAgo": 60, "toMinutesAgo": 0 }
+  }
+}

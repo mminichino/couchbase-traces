@@ -29,6 +29,11 @@ import {
   ClickHouseQueryError,
   ColumnMeta,
 } from '@couchbase-traces/common-utils/dist/clickhouse';
+import { CouchbaseQueryError } from '@couchbase-traces/common-utils/dist/couchbase/errors';
+import {
+  CouchbaseNotReadyError,
+  isCouchbaseSliceEnabled,
+} from '@couchbase-traces/common-utils/dist/dataLayer';
 import { tcFromSource } from '@couchbase-traces/common-utils/dist/core/metadata';
 import { buildSearchChartConfig } from '@couchbase-traces/common-utils/dist/core/searchChartConfig';
 import {
@@ -132,6 +137,12 @@ import {
   useUpdateSavedSearch,
 } from '@/savedSearch';
 import { useSearchPageFilterState } from '@/searchFilters';
+import { isQueryErrorWithSql } from '@/couchbase/queryErrors';
+import {
+  useConnectionKind,
+  useIsSourceAllowedForSlice,
+  useSourcesForSlice,
+} from '@/couchbase/sources';
 import { getEventBody, useSource, useSources } from '@/source';
 import {
   parseRelativeTimeQuery,
@@ -1087,7 +1098,8 @@ function DBSearchPageContent() {
     savedSearch ? `${savedSearch.name} Search` : 'Search',
   );
 
-  const { data: sources } = useSources();
+  const { data: sources } = useSourcesForSlice('search');
+  const isSourceAllowedForSearch = useIsSourceAllowedForSlice('search');
   const [lastSelectedSourceId, setLastSelectedSourceId] = useLocalStorage(
     'hdx-last-selected-source-id',
     '',
@@ -1244,6 +1256,16 @@ function DBSearchPageContent() {
 
   const [displayedTimeInputValue, setDisplayedTimeInputValue] =
     useState('Live Tail');
+
+  const selectedConnectionKind = useConnectionKind(
+    inputSourceObj?.connection ?? searchedSource?.connection,
+  );
+  const couchbaseSearchBlocked =
+    selectedConnectionKind === 'couchbase' &&
+    !isCouchbaseSliceEnabled('search');
+  const couchbaseNotReadyMessage = couchbaseSearchBlocked
+    ? new CouchbaseNotReadyError('search').message
+    : undefined;
 
   const { isReady, searchedTimeRange, onSearch, onTimeRangeSelect } =
     useNewTimeQuery({
@@ -1622,7 +1644,8 @@ function DBSearchPageContent() {
   // query error handling
   const { hasQueryError, queryError } = useMemo(() => {
     const hasQueryError = Object.values(_queryErrors).length > 0;
-    const queryError: Error | ClickHouseQueryError | null = hasQueryError
+    const queryError: Error | ClickHouseQueryError | CouchbaseQueryError | null =
+      hasQueryError
       ? Object.values(_queryErrors)[0]
       : null;
     return { hasQueryError, queryError };
@@ -1639,6 +1662,8 @@ function DBSearchPageContent() {
     chartConfig?.from?.databaseName &&
     chartConfig?.from?.tableName &&
     chartConfig?.timestampValueExpression;
+
+  const searchQueriesEnabled = isReady && !couchbaseSearchBlocked;
 
   const updateSavedSearch = useUpdateSavedSearch();
   const deleteSavedSearch = useDeleteSavedSearch();
@@ -2514,6 +2539,7 @@ function DBSearchPageContent() {
               inputSourceObj,
             )}
             allowedSourceKinds={ALLOWED_SOURCE_KINDS}
+            isSourceAllowed={isSourceAllowedForSearch}
             data-testid="source-selector"
             style={
               isCompact ? { flex: '1 1 140px', minWidth: 0 } : { minWidth: 150 }
@@ -2687,7 +2713,14 @@ function DBSearchPageContent() {
         style={{ overflow: 'hidden', flex: 1, minHeight: 0 }}
         className="bg-body"
       >
-        {!queryReady ? (
+        {couchbaseSearchBlocked && searchedSource ? (
+          <EmptyState
+            h="100%"
+            icon={<IconStack2 size={32} />}
+            title="Couchbase search is not ready"
+            description={couchbaseNotReadyMessage}
+          />
+        ) : !queryReady ? (
           <EmptyState
             h="100%"
             icon={<IconStack2 size={32} />}
@@ -2714,7 +2747,9 @@ function DBSearchPageContent() {
                     showDelta={
                       !!(searchedSource?.kind === SourceKind.Trace
                         ? searchedSource.durationExpression
-                        : undefined)
+                        : undefined) &&
+                      (selectedConnectionKind !== 'couchbase' ||
+                        isCouchbaseSliceEnabled('charts'))
                     }
                     onColumnToggle={toggleColumn}
                     displayedColumns={displayedColumns}
@@ -2748,7 +2783,7 @@ function DBSearchPageContent() {
                             dateRange: searchedTimeRange,
                           }}
                           sqlConfig={histogramTimeChartConfig ?? undefined}
-                          enabled={isReady}
+                          enabled={searchQueriesEnabled}
                           searchElapsedMs={searchElapsedMs}
                           isSearching={isAnyQueryFetching}
                           isLiveTail={isLive ?? false}
@@ -2768,7 +2803,7 @@ function DBSearchPageContent() {
                           sourceId={searchedConfig.source ?? undefined}
                           showLegend={isCustomGroupBy}
                           config={histogramTimeChartConfig}
-                          enabled={isReady}
+                          enabled={searchQueriesEnabled}
                           showDisplaySwitcher={false}
                           showMVOptimizationIndicator={false}
                           showDateRangeIndicator={false}
@@ -2822,7 +2857,7 @@ function DBSearchPageContent() {
                           dateRange: searchedTimeRange,
                           with: aliasWith,
                         }}
-                        isReady={isReady}
+                        isReady={searchQueriesEnabled}
                         source={searchedSource}
                         onAddFilter={searchFilters.setFilterValue}
                       />
@@ -2864,7 +2899,7 @@ function DBSearchPageContent() {
                                 sqlConfig={
                                   histogramTimeChartConfig ?? undefined
                                 }
-                                enabled={isReady}
+                                enabled={searchQueriesEnabled}
                                 searchElapsedMs={searchElapsedMs}
                                 isSearching={isAnyQueryFetching}
                                 isLiveTail={isLive ?? false}
@@ -2885,7 +2920,7 @@ function DBSearchPageContent() {
                               sourceId={searchedConfig.source ?? undefined}
                               showLegend={isCustomGroupBy}
                               config={histogramTimeChartConfig}
-                              enabled={isReady}
+                              enabled={searchQueriesEnabled}
                               showDisplaySwitcher={false}
                               showMVOptimizationIndicator={false}
                               showDateRangeIndicator={false}
@@ -2997,7 +3032,7 @@ function DBSearchPageContent() {
                             {queryError.message}
                           </Code>
                         </Box>
-                        {queryError instanceof ClickHouseQueryError && (
+                        {isQueryErrorWithSql(queryError) && (
                           <Box mt="lg">
                             <Text my="sm" size="sm">
                               Original Query:

@@ -91,8 +91,10 @@ async function globalSetup(_config: FullConfig) {
   // Set timezone
   process.env.TZ = 'America/New_York';
 
-  // Seed ClickHouse with test data
-  await seedClickHouse();
+  // Seed ClickHouse with test data (skip when Couchbase store handles telemetry)
+  if (process.env.CBT_E2E_STORE !== 'couchbase') {
+    await seedClickHouse();
+  }
 
   // Clean up any existing auth state to ensure fresh setup
   if (fs.existsSync(AUTH_FILE)) {

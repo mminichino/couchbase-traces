@@ -4,5 +4,36 @@
       "packages/app/tests/e2e/features/couchbase-cluster.spec.ts"
     ],
     "exclusions": []
+  },
+  "search": {
+    "specs": [
+      "packages/app/tests/e2e/features/search/search.spec.ts",
+      "packages/app/tests/e2e/features/search/search-filters.spec.ts",
+      "packages/app/tests/e2e/features/search/saved-search.spec.ts",
+      "packages/app/tests/e2e/features/search/histogram-group-by.spec.ts",
+      "packages/app/tests/e2e/features/search/total-count-matches-table.spec.ts",
+      "packages/app/tests/e2e/features/search/event-patterns.spec.ts",
+      "packages/app/tests/e2e/features/search/relative-time.spec.ts",
+      "packages/app/tests/e2e/features/search/custom-time-range.spec.ts",
+      "packages/app/tests/e2e/features/search/shared-filters.spec.ts",
+      "packages/app/tests/e2e/features/search/row-multi-select.spec.ts",
+      "packages/app/tests/e2e/features/search/side-panel-navigation.spec.ts",
+      "packages/app/tests/e2e/features/search/json-viewer-key-order.spec.ts",
+      "packages/app/tests/e2e/features/search/json-viewer-whitespace.spec.ts",
+      "packages/app/tests/e2e/features/search/json-add-to-filter.spec.ts",
+      "packages/app/tests/e2e/features/search/json-at-prefixed-key-row-details.spec.ts",
+      "packages/app/tests/e2e/features/search/virtualized-row-heights.spec.ts",
+      "packages/app/tests/e2e/features/search/select-star-error-state.spec.ts"
+    ],
+    "exclusions": [
+      {
+        "file": "packages/app/tests/e2e/features/search/select-star-error-state.spec.ts",
+        "reason": "asserts_engine_text"
+      },
+      {
+        "file": "packages/app/tests/e2e/features/search/json-at-prefixed-key-row-details.spec.ts",
+        "reason": "clickhouse_admin"
+      }
+    ]
   }
 }

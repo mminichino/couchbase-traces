@@ -1,0 +1,21 @@
+{
+  "id": "search-count",
+  "description": "Total row count with Lucene where",
+  "source": "logs",
+  "config": {
+    "select": [
+      {
+        "aggFn": "count",
+        "aggCondition": "",
+        "aggConditionLanguage": "sql",
+        "valueExpression": ""
+      }
+    ],
+    "where": "ServiceName:api",
+    "whereLanguage": "lucene",
+    "dateRange": { "fromMinutesAgo": 60, "toMinutesAgo": 0 }
+  },
+  "compare": {
+    "ignoreColumns": ["__cbt_id"]
+  }
+}

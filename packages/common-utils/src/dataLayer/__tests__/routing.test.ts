@@ -257,7 +257,7 @@ describe('seam display helpers', () => {
   });
 
   it('hides couchbase sources while a slice is off', async () => {
-    expect(isCouchbaseSliceEnabled('search')).toBe(false);
+    expect(isCouchbaseSliceEnabled('charts')).toBe(false);
     primeConnectionKind('cb', 'couchbase');
     const kept = await filterSourcesForSlice(
       [{ connection: 'ch' }, { connection: 'cb' }],

@@ -1,0 +1,16 @@
+{
+  "id": "search-traces-rows",
+  "description": "Trace search rows",
+  "source": "traces",
+  "config": {
+    "displayType": "search",
+    "select": "Timestamp, ServiceName, SpanName, StatusCode",
+    "dateRange": { "fromMinutesAgo": 60, "toMinutesAgo": 0 },
+    "limit": { "limit": 50 },
+    "orderBy": [{ "valueExpression": "SpanName", "ordering": "ASC" }]
+  },
+  "compare": {
+    "ordered": true,
+    "ignoreColumns": ["__cbt_id", "Timestamp"]
+  }
+}

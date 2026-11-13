@@ -1,0 +1,16 @@
+{
+  "id": "search-rows-custom-select",
+  "description": "Search table with custom select list",
+  "source": "logs",
+  "config": {
+    "displayType": "search",
+    "select": "ServiceName, SeverityText, Body",
+    "dateRange": { "fromMinutesAgo": 60, "toMinutesAgo": 0 },
+    "limit": { "limit": 25 },
+    "orderBy": [{ "valueExpression": "Timestamp", "ordering": "DESC" }]
+  },
+  "compare": {
+    "ordered": true,
+    "ignoreColumns": ["__cbt_id", "Timestamp"]
+  }
+}

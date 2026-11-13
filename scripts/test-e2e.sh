@@ -25,7 +25,12 @@ set -e
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPO_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
-DOCKER_COMPOSE_FILE="$REPO_ROOT/packages/app/tests/e2e/docker-compose.yml"
+E2E_STORE="${CBT_E2E_STORE:-clickhouse}"
+if [ "$E2E_STORE" = "couchbase" ]; then
+  DOCKER_COMPOSE_FILE="$REPO_ROOT/packages/app/tests/e2e/docker-compose.couchbase.yml"
+else
+  DOCKER_COMPOSE_FILE="$REPO_ROOT/packages/app/tests/e2e/docker-compose.yml"
+fi
 
 # ---------------------------------------------------------------------------
 # Multi-agent / worktree isolation
@@ -64,6 +69,12 @@ readonly MAX_MONGODB_WAIT_ATTEMPTS=15
 readonly MONGODB_WAIT_DELAY_SECONDS=1
 readonly MAX_CLICKHOUSE_WAIT_ATTEMPTS=30
 readonly CLICKHOUSE_WAIT_DELAY_SECONDS=1
+readonly MAX_COUCHBASE_WAIT_ATTEMPTS=60
+readonly COUCHBASE_WAIT_DELAY_SECONDS=2
+# CBT_E2E_CB_* ports come from hdx_e2e_ports (slot-based).
+export CBT_E2E_CB_QUERY_PORT CBT_E2E_CB_MGMT_PORT CBT_E2E_CB_KV_PORT \
+  CBT_E2E_CB_VIEW_PORT CBT_E2E_CB_FTS_PORT CBT_E2E_CB_ANALYTICS_PORT \
+  CBT_E2E_CB_EVENTING_PORT CBT_E2E_CB_BACKUP_PORT
 
 # Parse arguments
 LOCAL_MODE=false
@@ -127,6 +138,62 @@ check_clickhouse_health() {
   # Health check from HOST perspective (not inside container)
   # This ensures the port is actually accessible to Playwright
   curl -sf "http://localhost:${CBT_E2E_CH_PORT}/ping" >/dev/null 2>&1 || wget --spider -q "http://localhost:${CBT_E2E_CH_PORT}/ping" 2>&1
+}
+
+check_couchbase_health() {
+  # /pools is served on the management port (8091 inside the container).
+  curl -sf "http://127.0.0.1:${CBT_E2E_CB_MGMT_PORT}/ui/index.html" >/dev/null 2>&1
+}
+
+wait_for_couchbase() {
+  echo "Waiting for Couchbase to be ready..."
+  local attempt=1
+
+  while [ $attempt -le $MAX_COUCHBASE_WAIT_ATTEMPTS ]; do
+    if check_couchbase_health >/dev/null 2>&1; then
+      echo "Couchbase is ready"
+      return 0
+    fi
+
+    if [ $attempt -eq $MAX_COUCHBASE_WAIT_ATTEMPTS ]; then
+      local total_wait=$((MAX_COUCHBASE_WAIT_ATTEMPTS * COUCHBASE_WAIT_DELAY_SECONDS))
+      echo "Couchbase failed to become ready after $total_wait seconds"
+      echo "Try running: docker compose -p $E2E_PROJECT -f $DOCKER_COMPOSE_FILE logs couchbase"
+      return 1
+    fi
+
+    echo "Waiting for Couchbase... ($attempt/$MAX_COUCHBASE_WAIT_ATTEMPTS)"
+    attempt=$((attempt + 1))
+    sleep $COUCHBASE_WAIT_DELAY_SECONDS
+  done
+}
+
+setup_couchbase() {
+  echo "Starting Couchbase (mgmt=${CBT_E2E_CB_MGMT_PORT} query=${CBT_E2E_CB_QUERY_PORT})..."
+  docker compose -p "$E2E_PROJECT" -f "$DOCKER_COMPOSE_FILE" up -d couchbase
+
+  if ! wait_for_couchbase; then
+    exit 1
+  fi
+
+  local container
+  container=$(docker compose -p "$E2E_PROJECT" -f "$DOCKER_COMPOSE_FILE" ps -q couchbase)
+  container=$(docker inspect -f '{{.Name}}' "$container" | sed 's#^/##')
+  echo "Initializing Couchbase cluster in $container..."
+  export CBT_PARITY_COUCHBASE_CONTAINER="$container"
+  bash "$REPO_ROOT/port/ingest-parity/init.sh" || {
+    echo "Couchbase cluster-init failed"
+    exit 1
+  }
+  # Publish remapped host ports for SDK clients using ?network=external.
+  docker exec "$container" /opt/couchbase/bin/couchbase-cli setting-alternate-address \
+    -c 127.0.0.1:8091 -u Administrator -p cbt-test-admin \
+    --set --node 127.0.0.1 --hostname localhost \
+    --ports mgmt=${CBT_E2E_CB_MGMT_PORT},mgmtSSL=$((CBT_E2E_CB_MGMT_PORT + 1000)),\
+kv=${CBT_E2E_CB_KV_PORT},kvSSL=$((CBT_E2E_CB_KV_PORT + 1000)),\
+n1ql=${CBT_E2E_CB_QUERY_PORT},n1qlSSL=$((CBT_E2E_CB_QUERY_PORT + 1000)),\
+fts=${CBT_E2E_CB_FTS_PORT},ftsSSL=$((CBT_E2E_CB_FTS_PORT + 1000)) \
+    || echo "Warning: alternate address not set (may already exist)"
 }
 
 wait_for_clickhouse() {
@@ -227,8 +294,12 @@ setup_cleanup_trap
 # Clean up E2E Next.js build directory to avoid stale lock/cache issues
 rm -rf "$REPO_ROOT/packages/app/.next-e2e" 2>/dev/null || true
 
-# Always start and seed ClickHouse (shared by both modes)
-setup_clickhouse
+# Start telemetry store (ClickHouse or Couchbase)
+if [ "$E2E_STORE" = "couchbase" ]; then
+  setup_couchbase
+else
+  setup_clickhouse
+fi
 
 # Conditionally start MongoDB for full-stack mode
 if [ "$LOCAL_MODE" = false ]; then

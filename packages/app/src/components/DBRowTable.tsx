@@ -81,6 +81,10 @@ import {
 } from '@/hooks/useMetadata';
 import useOffsetPaginatedQuery from '@/hooks/useOffsetPaginatedQuery';
 import { useRowSelection } from '@/hooks/useRowSelection';
+import {
+  filterVisibleRowMeta,
+  stripHiddenRowFields,
+} from '@/couchbase/rowColumns';
 import useRowWhere, {
   getRowId,
   INTERNAL_ROW_FIELDS,
@@ -1840,7 +1844,7 @@ function DBSqlRowTableComponent({
   // can dedup the columns between the user select and pk
   const columnMap = useMemo(() => {
     return selectColumnMapWithoutAdditionalKeys(
-      data?.meta,
+      filterVisibleRowMeta(data?.meta),
       mergedConfig?.additionalKeysLength,
     );
   }, [data, mergedConfig]);
@@ -1895,7 +1899,7 @@ function DBSqlRowTableComponent({
   const processedRows = useMemo(() => {
     const rows = data?.data ?? [];
     return rows.map(row => {
-      const newRow = { ...row };
+      const newRow = stripHiddenRowFields({ ...row });
       objectTypeColumns.forEach(c => {
         if (columnMap.get(c)?._type === JSDataType.JSON) {
           // special rule for json
@@ -1938,8 +1942,9 @@ function DBSqlRowTableComponent({
   // Surface the result-set column types upward.
   // `data?.meta` keeps a stable identity per query result.
   useEffect(() => {
-    if (data?.meta != null && data.meta.length > 0) {
-      onResolvedColumnsChange?.(data.meta);
+    const visible = filterVisibleRowMeta(data?.meta);
+    if (visible.length > 0) {
+      onResolvedColumnsChange?.(visible);
     }
   }, [data?.meta, onResolvedColumnsChange]);
 

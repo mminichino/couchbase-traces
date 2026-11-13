@@ -859,6 +859,17 @@ Completed requests: `system:completed_requests` requires `query_system_catalog`.
 - Attribute doubles follow the collector's `AsString` for a double (the function the ClickHouse exporter writes): fixed digits on `[1e-6, 1e21)`, exponent notation outside that range (`1e+21`, `1e-7`), and infinities as `Infinity` and `-Infinity`.
 - Search datetime parser: the logs and traces indexes use Bleve's `dateTimeOptional` parser, which includes `time.RFC3339Nano` and accepts the 30-character timestamps. No custom parser was added. The ingest integration test finds a `Body` word with a `Timestamp` range. N1QL addresses the scope index as `otel.default.fts_otel_logs`; the short name is not in the n1fty mapping cache.
 
+### Phase 7: search
+
+- Features ported: search page (logs and traces), saved searches API, pinned filters; Lucene/SQL/`sql_ast` filters; histogram by severity/service; total count; live-tail window; event-patterns sample (`ORDER BY RANDOM()`); event-deltas sampling; row identity via `__cbt_id` / `USE KEYS`.
+- Event Deltas heatmap tab: hidden for Couchbase sources until `COUCHBASE_SLICES.charts` is enabled; `heatmap.ts` remains `CouchbaseNotReadyError`.
+- E2E: `CBT_E2E_STORE=couchbase` selects `docker-compose.couchbase.yml` with slot-based host ports (`scripts/slots.sh`), `global-setup-couchbase.ts` (cluster init + ingest setup + `seed-couchbase.ts` via `fromClickHouseRow`), and Couchbase `DEFAULT_CONNECTIONS`/`DEFAULT_SOURCES`. Custom service collection `e2e_custom_service_name` is created in seed.
+- Query parity: `port/query-parity/run.sh --slice search` green (17 chart cases). `compare-charts.mjs` supports `--render-only` and live CH/CB compare.
+- Time buckets: granularity constants are embedded as SQL++ literals so SELECT and GROUP BY share identical text (`sqlpp` nesting would renumber `$pN` and trigger error 4210).
+- Allowed divergences: `search-patterns-sample` (`nondeterministic`), `search-event-deltas-sample` (`sampling`).
+- E2E exclusions: `select-star-error-state.spec.ts` (`asserts_engine_text`); `json-at-prefixed-key-row-details.spec.ts` (`clickhouse_admin`).
+- `needs_decision`: unchanged from Phase 6.
+
 ## Phase 6: SQL++ core and data-layer seam
 
 - SQL++ date format string is `1111-11-11T11:11:11.111Z` (`SQLPP_DATE_FORMAT`), the same string `port/couchbase-test/init.sh` passes to `MILLIS_TO_UTC`. On an exact second the server returns `2026-01-01T00:00:00Z` and omits the zero fraction. Bucket expressions use that format, so they compare equal to fixture timestamps. Range predicates against Phase 5 documents still use the 30-character form from `toIso30`.

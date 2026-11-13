@@ -1,0 +1,10 @@
+{
+  "id": "search-filter-sql",
+  "description": "SQL filter on severity",
+  "source": "logs",
+  "config": {
+    "select": [{ "aggFn": "count", "valueExpression": "" }],
+    "filters": [{ "type": "sql", "condition": "SeverityText = 'WARN'" }],
+    "dateRange": { "fromMinutesAgo": 60, "toMinutesAgo": 0 }
+  }
+}
