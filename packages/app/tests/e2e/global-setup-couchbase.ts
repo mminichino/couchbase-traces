@@ -5,21 +5,35 @@ import { execSync } from 'node:child_process';
 import path from 'node:path';
 import type { FullConfig } from '@playwright/test';
 
+import fullstackSetup from './global-setup-fullstack';
 import { seedCouchbase } from './seed-couchbase';
 
 const MGMT_PORT = process.env.CBT_E2E_CB_MGMT_PORT ?? '28091';
+const KV_PORT = process.env.CBT_E2E_CB_KV_PORT ?? '28123';
 const MGMT_URL = `http://127.0.0.1:${MGMT_PORT}`;
 const KV_HOST = process.env.CBT_E2E_CB_HOST ?? '127.0.0.1';
+// Remapped host ports need network=external (see scripts/test-e2e.sh alternate-address).
+const CONNSTR = `couchbase://${KV_HOST}:${KV_PORT}?network=external`;
 
 const repoRoot = path.join(__dirname, '../../../..');
 
 async function waitForCouchbase(): Promise<void> {
-  // /pools is served on the management port, not N1QL (COUCHBASE_URL).
+  // Prefer /ui/index.html (same probe as scripts/test-e2e.sh). /pools often
+  // returns 401 unauthenticated once the REST API is up — treat that as ready.
   console.log(`Waiting for Couchbase at ${MGMT_URL}...`);
   for (let attempt = 1; attempt <= 90; attempt++) {
     try {
-      const res = await fetch(`${MGMT_URL}/pools`);
-      if (res.ok) {
+      const ui = await fetch(`${MGMT_URL}/ui/index.html`);
+      if (ui.ok) {
+        console.log('  ✓ Couchbase is ready');
+        return;
+      }
+    } catch {
+      // retry
+    }
+    try {
+      const pools = await fetch(`${MGMT_URL}/pools`);
+      if (pools.ok || pools.status === 401) {
         console.log('  ✓ Couchbase is ready');
         return;
       }
@@ -39,7 +53,7 @@ function runIngestSetup(): void {
   );
   const setupEnv = {
     ...process.env,
-    CBT_COUCHBASE_CONNSTR: `couchbase://${KV_HOST}`,
+    CBT_COUCHBASE_CONNSTR: CONNSTR,
     CBT_COUCHBASE_BUCKET: 'otel',
     CBT_COUCHBASE_SCOPE: 'default',
     CBT_COUCHBASE_ADMIN_USER: process.env.COUCHBASE_USERNAME ?? 'Administrator',
@@ -51,8 +65,6 @@ function runIngestSetup(): void {
     CBT_COUCHBASE_INGEST_PASSWORD: 'cbt-otel-ingest-password',
     CBT_COUCHBASE_MONITOR_USER: 'cbt_otel_monitor',
     CBT_COUCHBASE_MONITOR_PASSWORD: 'cbt-otel-monitor-password',
-    CBT_COUCHBASE_MGMT_PORT: MGMT_PORT,
-    CBT_COUCHBASE_NETWORK: 'external',
   };
   execSync(
     'node packages/ingest/dist/setup/cli.js --create-bucket --create-users --bucket-ram-mb 1024 --index-replicas 0',
@@ -65,6 +77,6 @@ export default async function globalSetupCouchbase(config: FullConfig) {
   await waitForCouchbase();
   runIngestSetup();
   await seedCouchbase();
-  const { default: fullstackSetup } = await import('./global-setup-fullstack');
+  // Static import — dynamic import() bypasses Playwright's TS loader.
   await fullstackSetup(config);
 }

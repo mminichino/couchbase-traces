@@ -1,4 +1,4 @@
-import { parseUInt64OrZero, truncateToSeconds } from '@/otlp/values';
+import { parseUInt64OrZero, truncateToSeconds } from '../otlp/values';
 
 export type MaterializedSpec = {
   name: string;

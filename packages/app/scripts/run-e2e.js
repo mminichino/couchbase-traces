@@ -84,17 +84,16 @@ if (!useLocal) {
   const fixture = JSON.parse(fs.readFileSync(fixturePath, 'utf8'));
 
   if (env.CBT_E2E_STORE === 'couchbase') {
-    const cbQueryPort = env.CBT_E2E_CB_QUERY_PORT ?? '18093';
-    const cbMgmtPort = env.CBT_E2E_CB_MGMT_PORT ?? '18091';
+    const cbKvPort = env.CBT_E2E_CB_KV_PORT ?? '28123';
+    // Remapped host ports require network=external (alternate-address in test-e2e.sh).
     const connections = [
       {
         id: 'local',
         name: 'local',
         kind: 'couchbase',
-        host: `couchbase://127.0.0.1`,
+        host: `couchbase://127.0.0.1:${cbKvPort}?network=external`,
         username: 'Administrator',
         password: 'cbt-test-admin',
-        mgmtPort: Number(cbMgmtPort),
       },
     ];
     const tableToCollection = {

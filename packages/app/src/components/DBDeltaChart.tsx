@@ -132,7 +132,8 @@ export default function DBDeltaChart({
   const isSelectionQueryEnabled = hasSelection && !isTableMetadataLoading;
 
   const tsCompare = (op: string, ms: number) =>
-    isCouchbase && config.timestampFormat !== 'epoch_millis'
+    isCouchbase &&
+    (config as { timestampFormat?: string }).timestampFormat !== 'epoch_millis'
       ? `MILLIS(${timestampExpr}) ${op} ${ms}`
       : `${timestampExpr} ${op} ${ms}`;
 

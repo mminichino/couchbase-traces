@@ -1,5 +1,5 @@
-import { canonicalJson } from '@/model/keys';
-import type { AnyValue, KeyValue } from '@/otlp/types';
+import { canonicalJson } from '../model/keys';
+import type { AnyValue, KeyValue } from './types';
 
 /** ClickHouse's zero DateTime / DateTime64, fixed-width ISO-8601. */
 export const EPOCH_ISO = '1970-01-01T00:00:00.000000000Z';

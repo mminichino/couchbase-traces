@@ -57,9 +57,22 @@ export async function ensureE2eCustomServiceCollection(): Promise<void> {
   await runStatement(
     'CREATE COLLECTION `otel`.`default`.`e2e_custom_service_name` IF NOT EXISTS',
   );
-  await runStatement(
-    'CREATE PRIMARY INDEX IF NOT EXISTS ON `otel`.`default`.`e2e_custom_service_name`',
-  );
+  // Query engine can lag the catalog after CREATE COLLECTION.
+  let lastError: unknown;
+  for (let attempt = 1; attempt <= 30; attempt++) {
+    try {
+      await runStatement(
+        'CREATE PRIMARY INDEX IF NOT EXISTS ON `otel`.`default`.`e2e_custom_service_name`',
+      );
+      return;
+    } catch (err) {
+      lastError = err;
+      await new Promise(resolve => setTimeout(resolve, 1000));
+    }
+  }
+  throw lastError instanceof Error
+    ? lastError
+    : new Error(String(lastError ?? 'primary index create failed'));
 }
 
 export async function seedCouchbase(): Promise<void> {

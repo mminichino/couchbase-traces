@@ -1,4 +1,4 @@
-import { clickhouse, n1ql } from 'sql-formatter';
+import { clickhouse, formatDialect, n1ql } from 'sql-formatter';
 import { SQLConfig, SQLDialect } from '@codemirror/lang-sql';
 import { sql } from '@codemirror/lang-sql';
 
@@ -44,7 +44,9 @@ export function formatSqlForDialect(
   dialect: 'clickhouse' | 'n1ql',
 ): string {
   try {
-    return dialect === 'n1ql' ? n1ql.format(text) : clickhouse.format(text);
+    return formatDialect(text, {
+      dialect: dialect === 'n1ql' ? n1ql : clickhouse,
+    });
   } catch {
     return text;
   }
