@@ -44,10 +44,7 @@ import { useVirtualizer } from '@tanstack/react-virtual';
 import { PageLayout } from '@/components/PageLayout';
 import { TimePicker } from '@/components/TimePicker';
 import { useConnectionKind } from '@/couchbase/connection';
-import {
-  jsonExtractString,
-  mapKeyAccess,
-} from '@/couchbase/dialectExpr';
+import { jsonExtractString, mapKeyAccess } from '@/couchbase/dialectExpr';
 import { useIsSourceAllowedForSlice } from '@/couchbase/sources';
 import { useResolvedSourceParam } from '@/hooks/useResolvedSourceParam';
 import { useVirtualList } from '@/hooks/useVirtualList';
@@ -1269,16 +1266,8 @@ function KubernetesDashboardPage() {
     );
     return {
       Severity: jsonExtractString(objectAccess, ['type'], logDialect),
-      Kind: jsonExtractString(
-        objectAccess,
-        ['regarding', 'kind'],
-        logDialect,
-      ),
-      Name: jsonExtractString(
-        objectAccess,
-        ['regarding', 'name'],
-        logDialect,
-      ),
+      Kind: jsonExtractString(objectAccess, ['regarding', 'kind'], logDialect),
+      Name: jsonExtractString(objectAccess, ['regarding', 'name'], logDialect),
       Message: jsonExtractString(objectAccess, ['note'], logDialect),
     };
   }, [isLoadingJsonColumns, logSource, logSourceJsonColumns, logDialect]);

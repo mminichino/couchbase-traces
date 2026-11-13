@@ -105,6 +105,21 @@ if (!useLocal) {
     const sources = (fixture.sources ?? []).map(src => {
       const table = src.from?.tableName ?? '';
       const collection = tableToCollection[table] ?? table;
+      const metricTables =
+        src.kind === 'metric' && src.metricTables
+          ? Object.fromEntries(
+              Object.entries(src.metricTables).map(([k, v]) => [
+                k,
+                // Keep e2e_* metric collections when seeded under that name;
+                // otherwise map to the Phase 5 otel_metrics_* collections.
+                typeof v === 'string' && v.startsWith('e2e_')
+                  ? v
+                  : String(v).replace(/^e2e_/, ''),
+              ]),
+            )
+          : src.metricTables;
+      const isOtelLogs = collection === 'otel_logs';
+      const isOtelTraces = collection === 'otel_traces';
       return {
         ...src,
         from: {
@@ -112,10 +127,13 @@ if (!useLocal) {
           scopeName: 'default',
           tableName: collection,
         },
-        ...(src.kind === 'log' && src.id === 'E2E Logs'
+        ...(metricTables ? { metricTables } : {}),
+        // Any log/trace source on the OTel collections needs the FTS index
+        // name for Lucene where clauses (not only the primary E2E sources).
+        ...(src.kind === 'log' && isOtelLogs
           ? { searchIndexName: 'fts_otel_logs' }
           : {}),
-        ...(src.kind === 'trace' && src.id === 'E2E Traces'
+        ...(src.kind === 'trace' && isOtelTraces
           ? { searchIndexName: 'fts_otel_traces' }
           : {}),
       };

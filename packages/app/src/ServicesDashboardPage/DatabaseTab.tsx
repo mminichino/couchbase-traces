@@ -15,13 +15,13 @@ import DisplaySwitcher from '@/components/charts/DisplaySwitcher';
 import DBListBarChart from '@/components/DBListBarChart';
 import DBTableChart from '@/components/DBTableChart';
 import { DBTimeChart } from '@/components/DBTimeChart';
+import { getStoredLanguage } from '@/components/SearchInput/SearchWhereInput';
 import { useConnectionKind } from '@/couchbase/connection';
 import {
   groupArrayExpr,
   tupleElementExpr,
   zipSeriesSqlpp,
 } from '@/couchbase/dialectExpr';
-import { getStoredLanguage } from '@/components/SearchInput/SearchWhereInput';
 import { useServiceDashboardExpressions } from '@/serviceDashboard';
 import { useSource } from '@/source';
 
@@ -45,8 +45,7 @@ function DatabaseTab({
     kinds: [SourceKind.Trace],
   });
   const connectionKind = useConnectionKind(source?.connection);
-  const dialect =
-    connectionKind === 'couchbase' ? 'couchbase' : 'clickhouse';
+  const dialect = connectionKind === 'couchbase' ? 'couchbase' : 'clickhouse';
   const { expressions } = useServiceDashboardExpressions({ source });
 
   const [chartType, setChartType] = useState<'table' | 'list'>('list');
@@ -118,10 +117,7 @@ function DatabaseTab({
                   alias: 'total_query_time_ms',
                 },
                 {
-                  valueExpression: groupArrayExpr(
-                    '__hdx_time_bucket',
-                    dialect,
-                  ),
+                  valueExpression: groupArrayExpr('__hdx_time_bucket', dialect),
                   alias: '__hdx_time_buckets',
                 },
               ],
@@ -242,17 +238,11 @@ function DatabaseTab({
               select: [
                 { valueExpression: 'Statement' },
                 {
-                  valueExpression: groupArrayExpr(
-                    'total_query_count',
-                    dialect,
-                  ),
+                  valueExpression: groupArrayExpr('total_query_count', dialect),
                   alias: 'total_query_count',
                 },
                 {
-                  valueExpression: groupArrayExpr(
-                    '__hdx_time_bucket',
-                    dialect,
-                  ),
+                  valueExpression: groupArrayExpr('__hdx_time_bucket', dialect),
                   alias: '__hdx_time_buckets',
                 },
               ],

@@ -4,12 +4,15 @@ import {
 } from '@couchbase-traces/common-utils/dist/couchbase/keywords';
 import { ROW_ID_ALIAS } from '@couchbase-traces/common-utils/dist/couchbase/render';
 
+import { INTERNAL_ROW_FIELDS } from '@/hooks/useRowWhere';
+
 export const SQL_DIALECT_LABEL = 'SQL++';
 
+/** Hide engine-internal row keys (Couchbase `__cbt_id` and ClickHouse aliases). */
 export const HIDDEN_ROW_COLUMNS = new Set([
   ROW_ID_ALIAS,
-  '__hyperdx_id',
-  '__hyperdx_alias_with',
+  INTERNAL_ROW_FIELDS.ID,
+  INTERNAL_ROW_FIELDS.ALIAS_WITH,
 ]);
 
 export function sqlKeywordsForCouchbase(): string[] {

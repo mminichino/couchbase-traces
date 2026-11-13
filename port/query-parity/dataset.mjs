@@ -7,6 +7,8 @@
 const LOGS = 10_000;
 const SPANS = 5_000;
 const METRICS = 2_000;
+const SUM_METRICS = 400;
+const HIST_METRICS = 400;
 const EXP_HIST = 400;
 const SESSIONS = 200;
 const SERVICES = ['api', 'web', 'worker'];
@@ -63,6 +65,28 @@ function gaugePoint(i) {
   return {
     timeUnixNano: ns(fromSec + (i % 3600), i),
     asDouble: (i % 100) + 0.5,
+    attributes: [{ key: 'host', value: { stringValue: `h${i % 10}` } }],
+  };
+}
+
+function sumPoint(i) {
+  // Cumulative monotonic counter; increase between points is 1.
+  return {
+    timeUnixNano: ns(fromSec + (i % 3600), i),
+    asDouble: i + 1,
+    attributes: [{ key: 'host', value: { stringValue: `h${i % 10}` } }],
+  };
+}
+
+function histPoint(i) {
+  const counts = [1 + (i % 3), 2 + (i % 5), 3 + (i % 7)];
+  const total = counts.reduce((a, b) => a + b, 0);
+  return {
+    timeUnixNano: ns(fromSec + (i % 3600), i),
+    count: String(total),
+    sum: total * 1.5,
+    bucketCounts: counts.map(String),
+    explicitBounds: [1, 5],
     attributes: [{ key: 'host', value: { stringValue: `h${i % 10}` } }],
   };
 }
@@ -153,6 +177,58 @@ async function postMetrics(port) {
                 {
                   name: 'parity.gauge',
                   gauge: { dataPoints: points.slice(i, i + 200) },
+                },
+              ],
+            },
+          ],
+        },
+      ],
+    });
+  }
+
+  const sumPoints = [];
+  for (let i = 0; i < SUM_METRICS; i++) sumPoints.push(sumPoint(i));
+  for (let i = 0; i < sumPoints.length; i += 100) {
+    await post(port, '/v1/metrics', {
+      resourceMetrics: [
+        {
+          resource: resource('api'),
+          scopeMetrics: [
+            {
+              metrics: [
+                {
+                  name: 'parity.sum',
+                  sum: {
+                    isMonotonic: true,
+                    aggregationTemporality: 2,
+                    dataPoints: sumPoints.slice(i, i + 100),
+                  },
+                },
+              ],
+            },
+          ],
+        },
+      ],
+    });
+  }
+
+  const histPoints = [];
+  for (let i = 0; i < HIST_METRICS; i++) histPoints.push(histPoint(i));
+  for (let i = 0; i < histPoints.length; i += 100) {
+    await post(port, '/v1/metrics', {
+      resourceMetrics: [
+        {
+          resource: resource('api'),
+          scopeMetrics: [
+            {
+              metrics: [
+                {
+                  name: 'parity.histogram',
+                  unit: 'ms',
+                  histogram: {
+                    aggregationTemporality: 1,
+                    dataPoints: histPoints.slice(i, i + 100),
+                  },
                 },
               ],
             },

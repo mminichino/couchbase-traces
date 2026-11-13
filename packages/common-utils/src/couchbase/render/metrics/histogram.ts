@@ -32,9 +32,13 @@ export type HistInput = {
   from: { databaseName: string; scopeName?: string; tableName: string };
 };
 
-/** Series identity matching Phase 7 gauge/sum/histogram (Attributes JSON). */
+/**
+ * Series identity matching upstream cityHash64(ScopeAttributes,
+ * ResourceAttributes, Attributes). Encode the same three maps so gauge
+ * last_value bucketing groups the same series as ClickHouse.
+ */
 export function seriesKeyExpr(): string {
-  return `TOSTRING(ENCODE_JSON(IFNULL(Attributes, {})))`;
+  return `TOSTRING(ENCODE_JSON({"scope":IFNULL(ScopeAttributes, {}), "resource":IFNULL(ResourceAttributes, {}), "attrs":IFNULL(Attributes, {})}))`;
 }
 
 export function timeBucketSql(
@@ -209,7 +213,10 @@ function translateHistogramQuantileCouchbase(
 
   const sourceSql = `SELECT ${dimSelect(bucket, group)}${sk} AS AttributesHash, d.ExplicitBounds AS ExplicitBounds, ${rates} AS rates FROM ${ks} AS d WHERE ${where.sql}`;
   // Alias source as s so ExplicitBounds/rates are not ambiguous under UNNEST.
-  const flatSql = `SELECT ${dimProject(bucket, group)}i, IFMISSINGORNULL(s.ExplicitBounds[i], NULL) AS bound, TONUMBER(IFNULL(s.rates[i], 0)) AS rate FROM source AS s UNNEST ARRAY_RANGE(0, ARRAY_LENGTH(s.rates)) AS i`;
+  // OTel histograms have N+1 bucket counts for N explicit bounds; the last
+  // bucket's upper bound is +Inf. Use a large sentinel so quantile math can
+  // interpolate into that bucket (NULL breaks histogramQuantile).
+  const flatSql = `SELECT ${dimProject(bucket, group)}i, IFMISSINGORNULL(s.ExplicitBounds[i], 1e12) AS bound, TONUMBER(IFNULL(s.rates[i], 0)) AS rate FROM source AS s UNNEST ARRAY_RANGE(0, ARRAY_LENGTH(s.rates)) AS i`;
   const dimKeys = [
     bucket ? quoteIdent(FIXED_TIME_BUCKET_EXPR_ALIAS) : null,
     group ? quoteIdent(GROUP_ALIAS) : null,

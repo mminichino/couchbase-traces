@@ -1,13 +1,18 @@
 import { GROUP_ALIAS } from '@/core/histogram';
 import { FIXED_TIME_BUCKET_EXPR_ALIAS } from '@/core/renderChartConfig';
-import { lag } from '@/couchbase/fn/scalar';
+import { argMax, lag } from '@/couchbase/fn/scalar';
 import { keyspace, quoteIdent } from '@/couchbase/sqlpp';
 import { CouchbaseNotReadyError } from '@/dataLayer/errors';
 import type { BuilderChartConfigWithOptDateRange } from '@/types';
 import { MetricsDataType } from '@/types';
 
 import { translateExponentialHistogramCouchbase } from './expHistogram';
-import { translateHistogramCouchbase } from './histogram';
+import {
+  seriesKeyExpr,
+  sourceWhereClause,
+  timeBucketSql,
+  translateHistogramCouchbase,
+} from './histogram';
 
 type MetricSelect = {
   metricType?: string;
@@ -70,25 +75,42 @@ export async function translateMetricChartConfigCouchbase(
     metricType === MetricsDataType.Gauge ||
     metricType === MetricsDataType.Summary
   ) {
-    // last_value(Value) per series per bucket via MAX([TimeUnix, Value])[1]
-    const seriesKey = `TOSTRING(ENCODE_JSON(IFNULL(Attributes, {})))`;
-    const sourceSql = `SELECT d.*, ${seriesKey} AS AttributesHash FROM ${ks} AS d WHERE (${nameFilter})`;
+    // Mirror upstream: Source (+AttributesHash) → Bucketed last_value per
+    // (series, time bucket) → outer agg over LastValue. Always bucket
+    // (granularity || 'auto'), same as core/renderChartConfig.ts.
+    const timeBucketCol = '__hdx_time_bucket2';
+    const bucketedConfig = {
+      ...chartConfig,
+      granularity: chartConfig.granularity || ('auto' as const),
+    };
+    const bucketExpr = timeBucketSql(bucketedConfig);
+    if (!bucketExpr) {
+      throw new CouchbaseNotReadyError('metrics: gauge time bucket');
+    }
+    const where = sourceWhereClause(chartConfig, nameFilter);
+    const seriesKey = seriesKeyExpr();
+    const lastValue = argMax('TONUMBER(`Value`)', 'TimeUnix');
+    const sourceSql = `SELECT d.*, ${seriesKey} AS AttributesHash FROM ${ks} AS d WHERE ${where.sql}`;
+    // GROUP BY the bucket expression itself — SQL++ rejects grouping by its
+    // select-list alias (error 5370).
+    const bucketedSql = `SELECT ${bucketExpr} AS ${quoteIdent(timeBucketCol)}, AttributesHash, ${lastValue} AS LastValue FROM Source GROUP BY AttributesHash, ${bucketExpr}`;
     return {
       ...chartConfig,
       with: [
         {
           name: 'Source',
-          sql: { sql: sourceSql, params: {} },
+          sql: { sql: sourceSql, params: where.params },
+        },
+        {
+          name: 'Bucketed',
+          sql: { sql: bucketedSql, params: {} },
         },
       ],
-      from: { databaseName: '', tableName: 'Source' },
+      from: { databaseName: '', tableName: 'Bucketed' },
       select: [
         {
           ...first,
-          // Value is reserved in SQL++; always quote the metric value column.
-          valueExpression: first.valueExpression?.trim()
-            ? first.valueExpression
-            : '`Value`',
+          valueExpression: 'LastValue',
           aggCondition: '',
           metricType: undefined,
           metricName: undefined,
@@ -96,32 +118,57 @@ export async function translateMetricChartConfigCouchbase(
         } as (typeof select)[0],
       ],
       where: '',
-      timestampValueExpression: 'TimeUnix',
+      // Date range already applied in Source. Keep the caller's granularity
+      // (do not force 'auto') so a non-timeseries formula/agg averages
+      // LastValue across buckets instead of re-bucketing — same as upstream.
+      timestampValueExpression: timeBucketCol,
+      dateRange: undefined,
     };
   }
 
   if (metricType === MetricsDataType.Sum) {
-    const seriesKey = `TOSTRING(ENCODE_JSON(IFNULL(Attributes, {})))`;
-    const lagExpr = lag('`Value`', 'AttributesHash', 'TimeUnix');
-    const rateExpr =
-      first.aggFn === 'increase' || first.isDelta
-        ? `GREATEST(TONUMBER(\`Value\`) - TONUMBER(IFNULL(${lagExpr}, \`Value\`)), 0)`
-        : `TONUMBER(\`Value\`)`;
-    const sourceSql = `SELECT d.*, ${seriesKey} AS AttributesHash, ${rateExpr} AS Rate FROM ${ks} AS d WHERE (${nameFilter})`;
+    // Mirror upstream Sum Source + Bucketed: per-point Rate (delta / reset
+    // clamp), Sum cumulative, then per-(series, bucket) sum(Rate) and
+    // argMax(Sum). Outer agg uses Rate when aggFn is set, else last Sum.
+    const timeBucketCol = '__hdx_time_bucket2';
+    const bucketedConfig = {
+      ...chartConfig,
+      granularity: chartConfig.granularity || ('auto' as const),
+    };
+    const bucketExpr = timeBucketSql(bucketedConfig);
+    if (!bucketExpr) {
+      throw new CouchbaseNotReadyError('metrics: sum time bucket');
+    }
+    const seriesKey = seriesKeyExpr();
+    const where = sourceWhereClause(chartConfig, nameFilter);
+    // Partition by the series-key expression (not the select alias) — SQL++
+    // window functions cannot see sibling aliases in the same SELECT.
+    const lagExpr = lag('TONUMBER(`Value`)', seriesKey, 'TimeUnix');
+    // DELTA temporality (1): Value is already the increase. CUMULATIVE (2):
+    // rate is greatest(delta, 0); NULL lag (first point) → NULL rate, ignored
+    // by SUM — same as upstream greatest(Value - lagInFrame(...), 0).
+    const rateExpr = `CASE WHEN AggregationTemporality = 1 THEN TONUMBER(\`Value\`) ELSE GREATEST(TONUMBER(\`Value\`) - ${lagExpr}, 0) END`;
+    const sourceSql = `SELECT d.*, ${seriesKey} AS AttributesHash, ${rateExpr} AS Rate, TONUMBER(\`Value\`) AS Sum FROM ${ks} AS d WHERE ${where.sql}`;
+    const bucketedSql = `SELECT ${bucketExpr} AS ${quoteIdent(timeBucketCol)}, AttributesHash, SUM(Rate) AS Rate, ${argMax('Sum', 'TimeUnix')} AS Sum FROM Source GROUP BY AttributesHash, ${bucketExpr}`;
+    const useRate = first.aggFn != null && first.aggFn !== '';
     return {
       ...chartConfig,
       with: [
         {
           name: 'Source',
-          sql: { sql: sourceSql, params: {} },
+          sql: { sql: sourceSql, params: where.params },
+        },
+        {
+          name: 'Bucketed',
+          sql: { sql: bucketedSql, params: {} },
         },
       ],
-      from: { databaseName: '', tableName: 'Source' },
+      from: { databaseName: '', tableName: 'Bucketed' },
       select: [
         {
           ...first,
           aggFn: first.aggFn === 'increase' ? 'sum' : first.aggFn,
-          valueExpression: first.aggFn === 'increase' ? 'Rate' : '`Value`',
+          valueExpression: useRate ? 'Rate' : 'Sum',
           aggCondition: '',
           metricType: undefined,
           metricName: undefined,
@@ -129,7 +176,8 @@ export async function translateMetricChartConfigCouchbase(
         } as (typeof select)[0],
       ],
       where: '',
-      timestampValueExpression: 'TimeUnix',
+      timestampValueExpression: timeBucketCol,
+      dateRange: undefined,
     };
   }
 

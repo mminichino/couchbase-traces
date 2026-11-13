@@ -45,11 +45,10 @@ import { PageHeader } from '@/components/PageHeader';
 import { PageLayout } from '@/components/PageLayout';
 import { SourceSelectControlled } from '@/components/SourceSelect';
 import { TimePicker } from '@/components/TimePicker';
+import { useIsSourceAllowedForSlice } from '@/couchbase/sources';
 import { useDashboardRefresh } from '@/hooks/useDashboardRefresh';
 import { useResolvedSourceParam } from '@/hooks/useResolvedSourceParam';
 import { useDefaultTimeRange, useNewTimeQuery } from '@/timeQuery';
-
-import { useIsSourceAllowedForSlice } from '@/couchbase/sources';
 
 import OnboardingModal from './components/OnboardingModal';
 import SearchWhereInput, {

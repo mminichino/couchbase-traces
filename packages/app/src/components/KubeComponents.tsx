@@ -193,8 +193,7 @@ export const KubeTimeline = ({
   );
 
   const connectionKind = useConnectionKind(logSource.connection);
-  const dialect =
-    connectionKind === 'couchbase' ? 'couchbase' : 'clickhouse';
+  const dialect = connectionKind === 'couchbase' ? 'couchbase' : 'clickhouse';
   const objectAccess = mapKeyAccess(
     logSource.eventAttributesExpression ?? 'LogAttributes',
     'object',

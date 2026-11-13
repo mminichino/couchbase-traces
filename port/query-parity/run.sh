@@ -101,7 +101,7 @@ if [ "$setup_ok" != "1" ]; then
 fi
 
 log "Creating primary indexes so comparisons can read every document"
-for table in otel_logs otel_traces otel_metrics_gauge otel_metrics_exponential_histogram hyperdx_sessions; do
+for table in otel_logs otel_traces otel_metrics_gauge otel_metrics_sum otel_metrics_histogram otel_metrics_exponential_histogram hyperdx_sessions; do
   response=$(docker exec "$CBT_PARITY_COUCHBASE_CONTAINER" curl -s -u Administrator:cbt-test-admin \
     http://127.0.0.1:8093/query/service -H 'content-type: application/json' \
     -d "{\"statement\":\"CREATE PRIMARY INDEX IF NOT EXISTS ON \`otel\`.\`default\`.\`${table}\`\"}")
@@ -177,16 +177,20 @@ while [ "$SECONDS" -lt "$deadline" ]; do
   ch_logs=$(ch_count otel_logs || true)
   ch_traces=$(ch_count otel_traces || true)
   ch_gauge=$(ch_count otel_metrics_gauge || true)
+  ch_sum=$(ch_count otel_metrics_sum || true)
+  ch_hist=$(ch_count otel_metrics_histogram || true)
   ch_exp=$(ch_count otel_metrics_exponential_histogram || true)
   ch_sessions=$(ch_count hyperdx_sessions || true)
   cb_logs=$(cb_count otel_logs || true)
   cb_traces=$(cb_count otel_traces || true)
   cb_gauge=$(cb_count otel_metrics_gauge || true)
+  cb_sum=$(cb_count otel_metrics_sum || true)
+  cb_hist=$(cb_count otel_metrics_histogram || true)
   cb_exp=$(cb_count otel_metrics_exponential_histogram || true)
   cb_sessions=$(cb_count hyperdx_sessions || true)
-  last_counts="ch logs=${ch_logs:-err} traces=${ch_traces:-err} gauge=${ch_gauge:-err} exp=${ch_exp:-err} sessions=${ch_sessions:-err} cb logs=${cb_logs:-err} traces=${cb_traces:-err} gauge=${cb_gauge:-err} exp=${cb_exp:-err} sessions=${cb_sessions:-err}"
-  if [ "$ch_logs" = "10000" ] && [ "$ch_traces" = "5000" ] && [ "$ch_gauge" = "2000" ] && [ "$ch_exp" = "400" ] && [ "$ch_sessions" = "200" ] \
-    && [ "$cb_logs" = "10000" ] && [ "$cb_traces" = "5000" ] && [ "$cb_gauge" = "2000" ] && [ "$cb_exp" = "400" ] && [ "$cb_sessions" = "200" ]; then
+  last_counts="ch logs=${ch_logs:-err} traces=${ch_traces:-err} gauge=${ch_gauge:-err} sum=${ch_sum:-err} hist=${ch_hist:-err} exp=${ch_exp:-err} sessions=${ch_sessions:-err} cb logs=${cb_logs:-err} traces=${cb_traces:-err} gauge=${cb_gauge:-err} sum=${cb_sum:-err} hist=${cb_hist:-err} exp=${cb_exp:-err} sessions=${cb_sessions:-err}"
+  if [ "$ch_logs" = "10000" ] && [ "$ch_traces" = "5000" ] && [ "$ch_gauge" = "2000" ] && [ "$ch_sum" = "400" ] && [ "$ch_hist" = "400" ] && [ "$ch_exp" = "400" ] && [ "$ch_sessions" = "200" ] \
+    && [ "$cb_logs" = "10000" ] && [ "$cb_traces" = "5000" ] && [ "$cb_gauge" = "2000" ] && [ "$cb_sum" = "400" ] && [ "$cb_hist" = "400" ] && [ "$cb_exp" = "400" ] && [ "$cb_sessions" = "200" ]; then
     ready=1
     break
   fi

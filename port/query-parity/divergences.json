@@ -13,20 +13,5 @@
     "caseId": "charts-agg-any-none",
     "reason": "nondeterministic",
     "note": "ClickHouse any() picks an arbitrary row; Couchbase uses MIN(x) per Phase 7 §5.3"
-  },
-  {
-    "caseId": "metrics-formula-gauge",
-    "reason": "gauge_last_value",
-    "note": "CH gauge translate always auto-buckets with last_value per series; CB gauge Source still averages raw points (Phase 7 leftover). Exp-hist parity is unaffected."
-  },
-  {
-    "caseId": "metrics-histogram-p50",
-    "reason": "unseeded",
-    "note": "query-parity dataset does not seed otel_metrics_histogram; CH returns 0 quantile rows, CB may emit a null row (Phase 7 leftover)."
-  },
-  {
-    "caseId": "metrics-multi-gauge-sum",
-    "reason": "gauge_last_value",
-    "note": "Same gauge last_value / missing parity.sum seed gap as formula-gauge (Phase 7 leftover)."
   }
 ]

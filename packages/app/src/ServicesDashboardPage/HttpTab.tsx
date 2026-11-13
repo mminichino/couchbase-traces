@@ -25,13 +25,13 @@ import DBHistogramChart from '@/components/DBHistogramChart';
 import DBListBarChart from '@/components/DBListBarChart';
 import DBTableChart from '@/components/DBTableChart';
 import { DBTimeChart } from '@/components/DBTimeChart';
+import { getStoredLanguage } from '@/components/SearchInput/SearchWhereInput';
 import { useConnectionKind } from '@/couchbase/connection';
 import {
   groupArrayExpr,
   tupleElementExpr,
   zipSeriesSqlpp,
 } from '@/couchbase/dialectExpr';
-import { getStoredLanguage } from '@/components/SearchInput/SearchWhereInput';
 import { useServiceDashboardExpressions } from '@/serviceDashboard';
 import { useSource } from '@/source';
 
@@ -194,8 +194,7 @@ function HttpTab({
     kinds: [SourceKind.Trace],
   });
   const connectionKind = useConnectionKind(source?.connection);
-  const dialect =
-    connectionKind === 'couchbase' ? 'couchbase' : 'clickhouse';
+  const dialect = connectionKind === 'couchbase' ? 'couchbase' : 'clickhouse';
   const { expressions } = useServiceDashboardExpressions({ source });
 
   const [reqChartType, setReqChartType] = useQueryState(
@@ -343,10 +342,7 @@ function HttpTab({
                 },
                 { valueExpression: 'endpoint' },
                 {
-                  valueExpression: groupArrayExpr(
-                    '__hdx_time_bucket',
-                    dialect,
-                  ),
+                  valueExpression: groupArrayExpr('__hdx_time_bucket', dialect),
                   alias: '__hdx_time_buckets',
                 },
               ],

@@ -49,11 +49,21 @@
   "metrics": {
     "specs": [
       "packages/app/tests/e2e/features/metric-name-streaming.spec.ts",
+      "packages/app/tests/e2e/features/metric-name-streaming.couchbase.spec.ts",
       "packages/app/tests/e2e/features/metric-table-autofill.spec.ts",
       "packages/app/tests/e2e/features/correlated-metric-source.spec.ts",
       "packages/app/tests/e2e/features/metric-exp-histogram.spec.ts"
     ],
-    "exclusions": []
+    "exclusions": [
+      {
+        "file": "packages/app/tests/e2e/features/metric-name-streaming.spec.ts",
+        "reason": "clickhouse_admin"
+      },
+      {
+        "file": "packages/app/tests/e2e/features/metric-table-autofill.spec.ts",
+        "reason": "clickhouse_admin"
+      }
+    ]
   },
   "sessions": {
     "specs": [

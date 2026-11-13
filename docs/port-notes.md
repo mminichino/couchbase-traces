@@ -892,11 +892,12 @@ Completed requests: `system:completed_requests` requires `query_system_catalog`.
 ### Phase 7: metrics
 
 - Slice flag `COUCHBASE_SLICES.metrics=true`. Area feature `api-v1` (PromQL) remains `dropped` (Phase 5a); metric chart configs use `translateMetricChartConfigCouchbase`.
-- Gauge/summary: Source CTE with `ENCODE_JSON(Attributes)` series key; `Value` always backtick-quoted (SQL++ reserved). Sum: LAG-based Rate with reset clamp (`GREATEST(delta, 0)`); `increase` → `SUM(Rate)`.
-- Explicit-bounds histogram: count (LAG Count deltas + `SUM(delta)`) and quantile (UNNEST bucket rates → rebuild arrays → Phase 6 `histogramQuantile`) in `render/metrics/histogram.ts`.
-- Multi-series + metric formulas: `renderMultiSeriesMetricChartConfigCouchbase` — per-series recurse, `UNION ALL`, pivot with `MAX(CASE…)`, formulas via SQL++-mapped `compileFormulaAst`.
-- Avg/count gauge charts without `metricType` compare equal via lucene `MetricName` filter (CH `last_value` translate vs CB raw avg diverge); `metrics-gauge-max` exercises the translate path.
-- Query parity: see Phase 7a for live metrics/charts parity after exponential histogram landed.
+- Gauge/summary: Source + Bucketed CTEs — series key encodes scope/resource/attrs (upstream `cityHash64` triple); `last_value` via `MAX([TimeUnix, Value])[1]` per (series, auto bucket); outer keeps the caller's granularity (do not force `auto`) so formula/agg paths average LastValue instead of re-bucketing then `MAX`-collapsing.
+- Sum: Source Rate (delta / reset clamp; LAG partitions by the series-key expression, not the select alias) + Bucketed `SUM(Rate)` / `argMax(Sum)`; outer uses Rate when `aggFn` is set.
+- Explicit-bounds histogram: count / quantile CTEs; missing last bound (+Inf) uses `1e12` sentinel so quantiles are not NULL.
+- Multi-series + metric formulas: per-series recurse, `UNION ALL`, pivot with `MAX(CASE…)`, formulas via SQL++-mapped `compileFormulaAst`.
+- Query parity dataset seeds gauge (2000), sum (400), histogram (400), exp-hist (400). Live `--slice metrics` (2026-11-13 follow-up): **13/13** with no leftover `gauge_last_value` / `unseeded` divergences. `multi-gauge-sum` uses `numericTolerance: 0.15` for sum-rate edge vs CH `includedDataInterval` lookaround.
+- E2E exclusions: `metric-name-streaming.spec.ts` and `metric-table-autofill.spec.ts` (`clickhouse_admin` — mergeTreeIndex / CH table-suffix autofill). Couchbase variant: `metric-name-streaming.couchbase.spec.ts`. Gauge points seeded into `e2e_otel_metrics_gauge`. Log sources on `otel_logs` get `searchIndexName: fts_otel_logs` in Couchbase `run-e2e.js` remapping.
 
 ### Phase 7a
 

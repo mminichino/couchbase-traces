@@ -1,6 +1,6 @@
+import type { Metadata } from '@couchbase-traces/common-utils/dist/core/metadata';
 import { errorStatusPredicateSql } from '@couchbase-traces/common-utils/dist/core/spanPredicates';
 import { renderChartConfig } from '@couchbase-traces/common-utils/dist/dataLayer';
-import type { Metadata } from '@couchbase-traces/common-utils/dist/core/metadata';
 import type { TTraceSource } from '@couchbase-traces/common-utils/dist/types';
 
 function samplingPredicate(
@@ -46,7 +46,11 @@ export async function getServiceMapQueryCouchbase({
   where?: string;
   whereLanguage?: 'sql' | 'lucene';
   serviceNames?: string[];
-}): Promise<{ sql: string; params: Record<string, unknown>; dialect: 'sqlpp' }> {
+}): Promise<{
+  sql: string;
+  params: Record<string, unknown>;
+  dialect: 'sqlpp';
+}> {
   const effectiveSamplingLevel = traceId ? 1 : samplingFactor;
 
   const baseCTEConfig = {

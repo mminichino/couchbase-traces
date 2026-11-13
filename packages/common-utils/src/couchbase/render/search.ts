@@ -7,7 +7,10 @@ export function includeRowIdInSelect(
   chartConfig: BuilderChartConfigWithOptDateRange,
 ): boolean {
   if (chartConfig.displayType === DisplayType.Search) return true;
+  // Metric translates rewrite select to a CTE string; those rows have no META id.
+  if (chartConfig.metricTables) return false;
   const select = chartConfig.select;
+  // Pattern / delta sample queries use a string select without Search display.
   if (
     typeof select === 'string' &&
     select.trim() !== '' &&
@@ -15,6 +18,7 @@ export function includeRowIdInSelect(
     !isUsingGroupBy(chartConfig) &&
     !isUsingGranularity(chartConfig)
   ) {
+    return true;
   }
   return false;
 }

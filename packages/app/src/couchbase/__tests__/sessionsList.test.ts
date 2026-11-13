@@ -18,14 +18,14 @@ describe('couchbase sessionsList', () => {
     });
     expect(cte.sql).toContain('CASE WHEN SUM(rumRows) > 0');
     expect(cte.sql).toContain('MAX(CASE WHEN fromReplay = 0 THEN maxTs END)');
-    expect(cte.sql).toContain('IFNULL(MAX(email), \'\')');
+    expect(cte.sql).toContain("IFNULL(MAX(email), '')");
     expect(cte.sql).not.toContain('maxIf(');
     expect(cte.sql).not.toMatch(/\bif\(/);
   });
 
   it('unions session ids without UNION DISTINCT', () => {
-    const a = { sql: 'SELECT \'a\' AS sessionId', params: {} };
-    const b = { sql: 'SELECT \'b\' AS sessionId', params: {} };
+    const a = { sql: "SELECT 'a' AS sessionId", params: {} };
+    const b = { sql: "SELECT 'b' AS sessionId", params: {} };
     const sql = unionSessionIdsCouchbase(a, b).sql;
     expect(sql).toContain('UNION');
     expect(sql).not.toContain('UNION DISTINCT');

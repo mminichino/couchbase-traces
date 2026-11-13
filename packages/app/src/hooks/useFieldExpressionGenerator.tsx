@@ -28,7 +28,11 @@ function couchbaseFieldAccess(
   if (convertFn === 'toFloat64' || convertFn === 'toFloat64OrNull') {
     return `TONUMBER(${access})`;
   }
-  if (convertFn === 'toUInt64' || convertFn === 'toInt64' || convertFn === 'toInt') {
+  if (
+    convertFn === 'toUInt64' ||
+    convertFn === 'toInt64' ||
+    convertFn === 'toInt'
+  ) {
     return `TRUNC(TONUMBER(${access}))`;
   }
   // Unknown convertFn: still return object access; callers that need a cast

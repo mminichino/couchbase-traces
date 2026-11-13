@@ -7,8 +7,8 @@ import { resolveConnectionKind } from '@couchbase-traces/common-utils/dist/dataL
 import { TTraceSource } from '@couchbase-traces/common-utils/dist/types';
 import { useQuery } from '@tanstack/react-query';
 
-import { getServiceMapQueryCouchbase } from '@/couchbase/serviceMap';
 import { useClickhouseClient } from '@/clickhouse';
+import { getServiceMapQueryCouchbase } from '@/couchbase/serviceMap';
 
 import { useMetadataWithSettings } from './useMetadata';
 

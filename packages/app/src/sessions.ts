@@ -8,8 +8,8 @@ import {
 import type { ClickhouseClient } from '@couchbase-traces/common-utils/dist/clickhouse/browser';
 import type { Metadata } from '@couchbase-traces/common-utils/dist/core/metadata';
 import { getFirstTimestampValueExpression } from '@couchbase-traces/common-utils/dist/core/utils';
-import { resolveConnectionKind } from '@couchbase-traces/common-utils/dist/dataLayer/kind';
 import { renderChartConfig } from '@couchbase-traces/common-utils/dist/dataLayer';
+import { resolveConnectionKind } from '@couchbase-traces/common-utils/dist/dataLayer/kind';
 import { filtersToQuery } from '@couchbase-traces/common-utils/dist/filters';
 import {
   DateRange,
@@ -436,7 +436,9 @@ export function useSessions(
       ]);
 
       const buildCtes =
-        dialect === 'couchbase' ? buildSessionsCtesCouchbase : buildSessionsCtes;
+        dialect === 'couchbase'
+          ? buildSessionsCtesCouchbase
+          : buildSessionsCtes;
       const unionIds =
         dialect === 'couchbase' ? unionSessionIdsCouchbase : unionSessionIds;
 
