@@ -5,6 +5,8 @@ import { isRawSqlChartConfig } from '@/guards';
 import { QUERY_PARAMS_BY_DISPLAY_TYPE } from '@/rawSqlParams';
 import { DisplayType } from '@/types';
 
+import { ensureOutermostSelectLimit } from '@/couchbase/rawSqlLimit';
+
 import { expandMacrosCouchbase } from './macros';
 
 export async function renderRawSqlChartConfigCouchbase(
@@ -49,7 +51,7 @@ export async function renderRawSqlChartConfigCouchbase(
   });
 
   return {
-    sql: expanded.sql,
+    sql: ensureOutermostSelectLimit(expanded.sql),
     params: { ...paramValues, ...expanded.params },
     dialect: 'sqlpp',
   };

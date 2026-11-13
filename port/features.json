@@ -672,7 +672,7 @@
         "mcp_tool:cbt_save_alert",
         "mcp_tool:cbt_save_webhook"
       ],
-      "status": "not_started",
+      "status": "ported",
       "decision": null
     },
     {
@@ -691,7 +691,7 @@
         "mcp_tool:cbt_save_dashboard",
         "mcp_tool:cbt_search_dashboards"
       ],
-      "status": "not_started",
+      "status": "ported",
       "decision": null
     },
     {
@@ -710,7 +710,7 @@
         "mcp_tool:cbt_table",
         "mcp_tool:cbt_timeseries"
       ],
-      "status": "not_started",
+      "status": "ported",
       "decision": null
     },
     {
@@ -723,7 +723,7 @@
         "mcp_tool:cbt_get_saved_search",
         "mcp_tool:cbt_save_saved_search"
       ],
-      "status": "not_started",
+      "status": "ported",
       "decision": null
     },
     {
@@ -741,7 +741,7 @@
         "mcp_tool:cbt_list_sources",
         "mcp_tool:cbt_save_source"
       ],
-      "status": "not_started",
+      "status": "ported",
       "decision": null
     },
     {
@@ -754,7 +754,7 @@
         "mcp_tool:cbt_trace_top_time_consuming_operations",
         "mcp_tool:cbt_trace_waterfall"
       ],
-      "status": "not_started",
+      "status": "ported",
       "decision": null
     },
     {

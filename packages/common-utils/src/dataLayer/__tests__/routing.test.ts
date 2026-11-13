@@ -261,14 +261,14 @@ describe('seam display helpers', () => {
     expect(rendered.dialect).not.toBe('sqlpp');
   });
 
-  it('hides couchbase sources while a slice is off', async () => {
-    expect(isCouchbaseSliceEnabled('mcp')).toBe(false);
+  it('keeps couchbase sources when every Phase 8 slice is on', async () => {
+    expect(isCouchbaseSliceEnabled('mcp')).toBe(true);
     primeConnectionKind('cb', 'couchbase');
     const kept = await filterSourcesForSlice(
       [{ connection: 'ch' }, { connection: 'cb' }],
       'mcp',
     );
-    expect(kept.map(source => source.connection)).toEqual(['ch']);
+    expect(kept.map(source => source.connection)).toEqual(['ch', 'cb']);
   });
 
   it('reports a couchbase chart as not ready', async () => {
@@ -302,11 +302,11 @@ describe('seam display helpers', () => {
     expect(isAccessDeniedError(undefined)).toBe(false);
   });
 
-  it('assertSliceForConnection rejects couchbase when the slice is off', async () => {
+  it('assertSliceForConnection allows couchbase when the slice is on', async () => {
     primeConnectionKind('cb', 'couchbase');
-    await expect(assertSliceForConnection('mcp', 'cb')).rejects.toBeInstanceOf(
-      CouchbaseNotReadyError,
-    );
+    await expect(
+      assertSliceForConnection('mcp', 'cb'),
+    ).resolves.toBeUndefined();
     await expect(
       assertSliceForConnection('external_api', 'cb'),
     ).resolves.toBeUndefined();

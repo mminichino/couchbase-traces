@@ -9,7 +9,7 @@ import {
   isQueryOutOfTime,
   parseTimeRange,
 } from '@/mcp/tools/query/helpers';
-import { getMcpClickhouseClient } from '@/mcp/tools/trace/shared';
+import { requireMcpClickhouseClient } from '@/mcp/tools/trace/shared';
 import type { ToolRegistrar } from '@/mcp/tools/types';
 import { mcpUserError } from '@/mcp/utils/errors';
 import { trimToolResponse } from '@/utils/trimToolResponse';
@@ -90,11 +90,9 @@ export function registerServiceHealth({
 
       const source = await loadHealthSource(teamId, input.sourceId, TOOL_NAME);
       if ('isError' in source) return source;
-      const client = await getMcpClickhouseClient(teamId, source.connection);
-      if (!client) {
-        return mcpUserError(
-          `Connection not found for source: ${input.sourceId}`,
-        );
+      const client = await requireMcpClickhouseClient(teamId, source.connection);
+      if (client.isError) {
+        return client;
       }
       const groupExprs = errorGroupExpressions(
         source,

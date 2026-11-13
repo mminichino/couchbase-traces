@@ -1,9 +1,12 @@
+import { ensureOutermostSelectLimit } from '@couchbase-traces/common-utils/dist/couchbase/rawSqlLimit';
+import { resolveConnectionKind } from '@couchbase-traces/common-utils/dist/dataLayer';
 import { hasMacro } from '@couchbase-traces/common-utils/dist/macros';
 import { hasVariableMacro } from '@couchbase-traces/common-utils/dist/variables';
 
 import { getSource } from '@/controllers/sources';
 import type { McpErrorResult } from '@/mcp/utils/errors';
 import { mcpUserError } from '@/mcp/utils/errors';
+import { assertMcpSliceForConnection } from '@/mcp/utils/mcpSlice';
 import type { ExternalDashboardTileWithId } from '@/utils/zod';
 
 import { buildTile } from './helpers';
@@ -34,6 +37,9 @@ export async function prepareSqlQuery(
   query: { sql: string; connectionId: string; sourceId?: string },
   lookupSource: SourceLookup,
 ): Promise<{ tile: ExternalDashboardTileWithId } | { error: McpErrorResult }> {
+  const sliceErr = await assertMcpSliceForConnection(query.connectionId);
+  if (sliceErr) return { error: sliceErr };
+
   // $__filter / $__conditionalAll read the variables a dashboard's filters
   // declare, and this tool has no dashboard behind it.
   if (hasVariableMacro(query.sql)) {
@@ -42,7 +48,7 @@ export async function prepareSqlQuery(
         'The $__filter and $__conditionalAll macros only resolve for a tile ' +
           'on a dashboard, because they read the dashboard variables its ' +
           'filters declare. This tool has no dashboard, so they would be ' +
-          'sent to ClickHouse as literal text. Inline the condition here, ' +
+          'sent to the server as literal text. Inline the condition here, ' +
           'or save the query as a dashboard tile and validate it with ' +
           'cbt_query_tile.',
       ),
@@ -80,6 +86,12 @@ export async function prepareSqlQuery(
     };
   }
 
+  const kind = await resolveConnectionKind(query.connectionId);
+  const sqlTemplate =
+    kind === 'clickhouse'
+      ? ensureOutermostSelectLimit(query.sql)
+      : query.sql;
+
   // Raw SQL only uses displayType to pick which query params to bind, and
   // only time-series types bind the interval params this tool advertises
   // ({intervalSeconds}, $__interval_s, $__timeInterval). Rows come back
@@ -89,7 +101,7 @@ export async function prepareSqlQuery(
     displayType: 'line' as const,
     connectionId: query.connectionId,
     sourceId: query.sourceId,
-    sqlTemplate: query.sql,
+    sqlTemplate,
   });
   return { tile };
 }

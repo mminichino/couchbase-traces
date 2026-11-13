@@ -4,7 +4,10 @@ import {
   CouchbaseUnsupportedError,
 } from '@couchbase-traces/common-utils/dist/dataLayer';
 
-import { couchbaseConsumerHttpResponse } from '@/utils/couchbaseConsumerErrors';
+import {
+  couchbaseConsumerHttpResponse,
+  couchbaseConsumerMcpError,
+} from '@/utils/couchbaseConsumerErrors';
 
 describe('couchbaseConsumerHttpResponse', () => {
   it('maps CouchbaseNotReadyError to 409', () => {
@@ -36,5 +39,20 @@ describe('couchbaseConsumerHttpResponse', () => {
 
   it('returns null for unrelated errors', () => {
     expect(couchbaseConsumerHttpResponse(new Error('nope'), 'message')).toBeNull();
+  });
+});
+
+describe('couchbaseConsumerMcpError', () => {
+  it('maps CouchbaseNotReadyError to a tool error', () => {
+    const err = new CouchbaseNotReadyError('mcp');
+    const mapped = couchbaseConsumerMcpError(err);
+    expect(mapped?.isError).toBe(true);
+    expect(mapped?.content[0].text).toBe(err.message);
+  });
+
+  it('adds SQL++ hint on parse errors', () => {
+    const err = new CouchbaseQueryError('PARSING_FAILED', 'syntax error', 'SELECT');
+    const mapped = couchbaseConsumerMcpError(err);
+    expect(mapped?.content[0].text).toContain('This source uses SQL++.');
   });
 });

@@ -24,6 +24,7 @@ import {
   mcpUserError,
   sanitizeFetchError,
 } from '@/mcp/utils/errors';
+import { assertMcpSliceForConnection } from '@/mcp/utils/mcpSlice';
 import { MCP_TOOL_TIMEOUT_MS, runWithTimeout } from '@/mcp/utils/timeout';
 import logger from '@/utils/logger';
 import { trimToolResponse } from '@/utils/trimToolResponse';
@@ -502,6 +503,9 @@ async function describeMetricImpl(
   if (!connection) {
     return mcpUserError(`Connection not found for source "${input.sourceId}".`);
   }
+
+  const sliceErr = await assertMcpSliceForConnection(source.connection.toString());
+  if (sliceErr) return sliceErr;
 
   const clickhouseClient = new ClickhouseClient({
     host: connection.host,

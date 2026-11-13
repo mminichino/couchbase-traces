@@ -34,7 +34,7 @@ import {
 } from '@/mcp/tools/trace/breakdownSchema';
 import {
   durationDivisor,
-  getMcpClickhouseClient,
+  requireMcpClickhouseClient,
   inclusiveTimeFilter,
   mcpQuerySettings,
 } from '@/mcp/tools/trace/shared';
@@ -90,14 +90,12 @@ export function registerTraceBreakdown({
         );
       }
 
-      const clickhouseClient = await getMcpClickhouseClient(
+      const clickhouseClient = await requireMcpClickhouseClient(
         teamId.toString(),
         source.connection.toString(),
       );
-      if (!clickhouseClient) {
-        return mcpUserError(
-          `Connection not found for source: ${input.sourceId}`,
-        );
+      if (clickhouseClient.isError) {
+        return clickhouseClient;
       }
 
       const timeFilterParams = {

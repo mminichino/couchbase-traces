@@ -10,7 +10,10 @@ import {
   isTimeSeriesDisplayType,
   splitAndTrimWithBracket,
 } from '@couchbase-traces/common-utils/dist/core/utils';
-import { getMetadata } from '@couchbase-traces/common-utils/dist/dataLayer';
+import {
+  getMetadata,
+  queryLanguageForConnection,
+} from '@couchbase-traces/common-utils/dist/dataLayer';
 import {
   isBuilderSavedChartConfig,
   isPromqlSavedChartConfig,
@@ -35,6 +38,11 @@ import { PromQLQueryError } from '@/controllers/promql';
 import { getSource } from '@/controllers/sources';
 import type { McpErrorResult } from '@/mcp/utils/errors';
 import { mcpServerError, mcpUserError } from '@/mcp/utils/errors';
+import { assertMcpSliceForConnection } from '@/mcp/utils/mcpSlice';
+import {
+  couchbaseConsumerMcpError,
+  mcpSqlppDialectHint,
+} from '@/utils/couchbaseConsumerErrors';
 import {
   MCP_QUERY_MAX_EXECUTION_SEC,
   MCP_TIMEOUT_GRACE_MS,
@@ -474,6 +482,33 @@ function toPlainMetricTables(
     : metricTables;
 }
 
+export async function mcpQueryErrorResult(
+  e: unknown,
+  context?: string | { prefix?: string; suffix?: string; rawSql?: boolean; connectionId?: string },
+): Promise<McpErrorResult> {
+  const mapped = couchbaseConsumerMcpError(e);
+  if (mapped) return mapped;
+
+  const connId =
+    typeof context === 'object' && context?.connectionId
+      ? context.connectionId
+      : undefined;
+  let suffix =
+    typeof context === 'object' ? context.suffix : undefined;
+  if (connId) {
+    const lang = await queryLanguageForConnection(connId);
+    const dialectHint = mcpSqlppDialectHint(e, lang);
+    if (dialectHint) {
+      suffix = suffix ? `${suffix} ${dialectHint}` : dialectHint;
+    }
+  }
+
+  return clickHouseErrorResult(e, {
+    ...(typeof context === 'string' ? { prefix: context } : context),
+    suffix,
+  });
+}
+
 export async function runConfigTile(
   teamId: string,
   tile: ExternalDashboardTileWithId,
@@ -570,6 +605,11 @@ export async function runConfigTile(
         `Connection not found for source: ${builderConfig.source}`,
       );
     }
+
+    const sliceErr = await assertMcpSliceForConnection(
+      source.connection.toString(),
+    );
+    if (sliceErr) return sliceErr;
 
     const clickhouseClient = new ClickhouseClient({
       host: connection.host,
@@ -706,7 +746,9 @@ export async function runConfigTile(
       });
       return formatQueryResult(result, options?.maxResponseChars);
     } catch (e) {
-      return clickHouseErrorResult(e);
+      return mcpQueryErrorResult(e, {
+        connectionId: source.connection.toString(),
+      });
     }
   }
 
@@ -777,6 +819,9 @@ export async function runConfigTile(
     );
   }
 
+  const sliceErr = await assertMcpSliceForConnection(savedConfig.connection);
+  if (sliceErr) return sliceErr;
+
   const clickhouseClient = new ClickhouseClient({
     host: connection.host,
     username: connection.username,
@@ -804,7 +849,10 @@ export async function runConfigTile(
     });
     return formatQueryResult(result, options?.maxResponseChars);
   } catch (e) {
-    return clickHouseErrorResult(e, { rawSql: true });
+    return mcpQueryErrorResult(e, {
+      rawSql: true,
+      connectionId: savedConfig.connection,
+    });
   }
 }
 

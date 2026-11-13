@@ -6,7 +6,11 @@ import {
   type Metadata,
   quoteIdentifierIfNeeded,
 } from '@couchbase-traces/common-utils/dist/core/metadata';
-import { getMetadata } from '@couchbase-traces/common-utils/dist/dataLayer';
+import {
+  getMetadata,
+  queryLanguageForConnection,
+  type QueryLanguage,
+} from '@couchbase-traces/common-utils/dist/dataLayer';
 import { SourceKind } from '@couchbase-traces/common-utils/dist/types';
 import PQueue from '@esm2cjs/p-queue';
 import { z } from 'zod';
@@ -18,6 +22,7 @@ import {
 } from '@/controllers/connection';
 import { getSources } from '@/controllers/sources';
 import { READ_ONLY_TOOL } from '@/mcp/tools/annotations';
+import { assertMcpSliceForConnection } from '@/mcp/utils/mcpSlice';
 import type { ToolRegistrar } from '@/mcp/tools/types';
 import { isHiddenSource, PROMQL_SOURCE_USAGE } from '@/mcp/utils/promql';
 import { runWithTimeout } from '@/mcp/utils/timeout';
@@ -100,6 +105,8 @@ async function attachMetricNamePreviews({
   >();
   await Promise.all(
     connectionIds.map(async connectionId => {
+      const sliceErr = await assertMcpSliceForConnection(connectionId);
+      if (sliceErr) return;
       const connection = await getConnectionById(teamId, connectionId, true);
       if (!connection) return;
       const clickhouseClient = new PreviewClickhouseClient({
@@ -218,7 +225,7 @@ export function registerListSources({
         'This two-step approach avoids fetching expensive schema details for sources you do not need.\n\n' +
         'NOTE: For most queries, use source IDs with cbt_timeseries, cbt_table, ' +
         'cbt_search, or cbt_event_patterns. ' +
-        'Connection IDs are only needed for cbt_sql (raw ClickHouse SQL).\n\n' +
+        'Connection IDs are only needed for cbt_sql (raw SQL — dialect is queryLanguage on each source/connection).\n\n' +
         'Metric sources may list a "summary" table in metricTables. Summary metrics are ' +
         'not supported by the builder tools — use cbt_sql to look at them.',
       inputSchema: z.object({}),
@@ -341,12 +348,32 @@ export function registerListSources({
         );
       }
 
+      const langByConnection = new Map<string, Promise<QueryLanguage>>();
+      const languageFor = (connectionId: string) => {
+        let pending = langByConnection.get(connectionId);
+        if (!pending) {
+          pending = queryLanguageForConnection(connectionId);
+          langByConnection.set(connectionId, pending);
+        }
+        return pending;
+      };
+      await Promise.all(
+        sourceSummaries.map(async summary => {
+          summary.queryLanguage = await languageFor(
+            summary.connectionId as string,
+          );
+        }),
+      );
+
       const output = {
         sources: sourceSummaries,
-        connections: connections.map(c => ({
-          id: c._id.toString(),
-          name: c.name,
-        })),
+        connections: await Promise.all(
+          connections.map(async c => ({
+            id: c._id.toString(),
+            name: c.name,
+            queryLanguage: await languageFor(c._id.toString()),
+          })),
+        ),
         ...(metricPreviewEntries.length > 0
           ? {
               metricsUsage:

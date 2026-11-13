@@ -22,6 +22,7 @@ import {
   mcpServerError,
   mcpUserError,
 } from '@/mcp/utils/errors';
+import { assertMcpSliceForConnection } from '@/mcp/utils/mcpSlice';
 import { MCP_QUERY_MAX_EXECUTION_SEC } from '@/mcp/utils/timeout';
 import { getCounter } from '@/utils/instrumentation';
 import logger from '@/utils/logger';
@@ -154,6 +155,9 @@ export async function mineWindowPatterns(
   const tableFilterSql = andSql(
     ...filters.map(f => ('condition' in f ? f.condition : undefined)),
   );
+
+  const sliceErr = await assertMcpSliceForConnection(source.connection.toString());
+  if (sliceErr) return { error: sliceErr };
 
   const clickhouseClient = new ClickhouseClient({
     host: connection.host,

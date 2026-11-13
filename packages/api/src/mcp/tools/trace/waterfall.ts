@@ -21,6 +21,7 @@ import {
 import {
   durationDivisor,
   getMcpClickhouseClient,
+  requireMcpClickhouseClient,
   inclusiveTimeFilter,
   mcpQuerySettings,
   type TimeFilterParams,
@@ -355,14 +356,12 @@ export function registerTraceWaterfall({
         );
       }
 
-      const clickhouseClient = await getMcpClickhouseClient(
+      const clickhouseClient = await requireMcpClickhouseClient(
         teamId.toString(),
         source.connection.toString(),
       );
-      if (!clickhouseClient) {
-        return mcpUserError(
-          `Connection not found for source: ${input.sourceId}`,
-        );
+      if (clickhouseClient.isError) {
+        return clickhouseClient;
       }
       const metadata = getMetadata(clickhouseClient);
 

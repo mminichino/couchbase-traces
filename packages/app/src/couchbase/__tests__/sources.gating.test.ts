@@ -126,16 +126,16 @@ describe('search source gating', () => {
     ).toBe(true);
   });
 
-  it('still drops couchbase for disabled mcp slice', () => {
-    expect(COUCHBASE_SLICES.mcp).toBe(false);
+  it('keeps couchbase sources when mcp slice is enabled', () => {
+    expect(COUCHBASE_SLICES.mcp).toBe(true);
     const out = filterSourcesForSliceWithConnections(
       sources,
       'mcp',
       connections,
     );
-    expect(out.map(s => s.id)).toEqual(['ch']);
+    expect(out.map(s => s.id)).toEqual(['ch', 'cb']);
     expect(isSourceAllowedForSlice(sources[1]!, 'mcp', connections)).toBe(
-      false,
+      true,
     );
   });
 });

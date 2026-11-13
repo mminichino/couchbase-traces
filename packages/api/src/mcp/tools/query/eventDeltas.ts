@@ -17,6 +17,7 @@ import { getSource } from '@/controllers/sources';
 import { READ_ONLY_TOOL } from '@/mcp/tools/annotations';
 import type { ToolRegistrar } from '@/mcp/tools/types';
 import { mcpUserError } from '@/mcp/utils/errors';
+import { assertMcpSliceForConnection } from '@/mcp/utils/mcpSlice';
 import { MCP_QUERY_MAX_EXECUTION_SEC } from '@/mcp/utils/timeout';
 import { trimToolResponse } from '@/utils/trimToolResponse';
 
@@ -261,6 +262,11 @@ export function registerEventDeltas({ context, registerTool }: ToolRegistrar) {
           `Connection not found for source: ${input.sourceId}`,
         );
       }
+
+      const sliceErr = await assertMcpSliceForConnection(
+        source.connection.toString(),
+      );
+      if (sliceErr) return sliceErr;
 
       const clickhouseClient = new ClickhouseClient({
         host: connection.host,

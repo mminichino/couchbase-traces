@@ -1,10 +1,12 @@
 import { quoteIdentifierIfNeeded } from '@couchbase-traces/common-utils/dist/core/metadata';
+import { resolveConnectionKind } from '@couchbase-traces/common-utils/dist/dataLayer';
 import { SourceKind } from '@couchbase-traces/common-utils/dist/types';
 import { trace } from '@opentelemetry/api';
 
 import { ClickhouseClient } from '@/clickhouse';
 import { getConnectionById } from '@/controllers/connection';
 import { READ_ONLY_TOOL } from '@/mcp/tools/annotations';
+import { assertMcpSliceForConnection } from '@/mcp/utils/mcpSlice';
 import {
   clickHouseErrorResult,
   isQueryOutOfTime,
@@ -41,6 +43,10 @@ import {
   MAX_SAMPLE_ROWS,
   validateDescribeTableInput,
 } from './describeTableSchema';
+import {
+  describeCouchbaseTable,
+  listCouchbaseTables,
+} from './describeTableCouchbase';
 
 // Sample rows can hold arbitrarily large values; keep them a small share of
 // the response so they never crowd out the schema.
@@ -304,12 +310,13 @@ export function registerDescribeTable({
   registerTool(
     'cbt_describe_table',
     {
-      title: 'Describe ClickHouse Table',
+      title: 'Describe Database Table',
       annotations: READ_ONLY_TOOL,
       description:
-        'Inspect ClickHouse tables that are NOT registered as sources. For a source, ' +
+        'Inspect tables or collections that are NOT registered as sources. For a source, ' +
         'call cbt_describe_source instead.\n\n' +
-        'Use this instead of querying system.tables / system.columns with cbt_sql.\n\n' +
+        'Dialect follows the connection queryLanguage (ClickHouse: system.tables/columns; Couchbase: INFER and keyspaces). ' +
+        'Use this instead of querying system catalogs with cbt_sql.\n\n' +
         'With table set, returns:\n' +
         '- table: engine, sorting key, primary key, partition key, approximate total rows and bytes\n' +
         '- columns[]: name, type, default kind/expression, comment, and whether it is in the sorting/primary key\n' +
@@ -346,6 +353,9 @@ export function registerDescribeTable({
         );
       }
 
+      const sliceErr = await assertMcpSliceForConnection(input.connectionId);
+      if (sliceErr) return sliceErr;
+
       const clickhouseClient = new ClickhouseClient({
         host: connection.host,
         username: connection.username,
@@ -353,8 +363,23 @@ export function registerDescribeTable({
         requestTimeout: MCP_REQUEST_TIMEOUT,
       });
 
+      const kind = await resolveConnectionKind(input.connectionId);
       const outcome = await runWithTimeout(
         signal => {
+          if (kind === 'couchbase') {
+            const couchCtx = {
+              clickhouseClient,
+              connectionId: input.connectionId,
+              signal,
+            };
+            return input.table
+              ? describeCouchbaseTable(couchCtx, {
+                  ...input,
+                  table: input.table,
+                  teamId,
+                })
+              : listCouchbaseTables(couchCtx, input);
+          }
           const ctx = {
             clickhouseClient,
             connectionId: input.connectionId,

@@ -9,6 +9,9 @@ import {
   MCP_CLICKHOUSE_SETTINGS,
   MCP_REQUEST_TIMEOUT,
 } from '@/mcp/tools/query/helpers';
+import type { McpErrorResult } from '@/mcp/utils/errors';
+import { mcpUserError } from '@/mcp/utils/errors';
+import { assertMcpSliceForConnection } from '@/mcp/utils/mcpSlice';
 
 export function durationDivisor(precision: number): number {
   // durationPrecision is the number of decimal digits in the stored value.
@@ -29,6 +32,20 @@ export async function getMcpClickhouseClient(
     password: connection.password,
     requestTimeout: MCP_REQUEST_TIMEOUT,
   });
+}
+
+/** Slice guard + connection resolution for trace MCP tools. */
+export async function requireMcpClickhouseClient(
+  teamId: string,
+  connectionId: string,
+): Promise<ClickhouseClient | McpErrorResult> {
+  const sliceErr = await assertMcpSliceForConnection(connectionId);
+  if (sliceErr) return sliceErr;
+  const client = await getMcpClickhouseClient(teamId, connectionId);
+  if (!client) {
+    return mcpUserError(`Connection not found: ${connectionId}`);
+  }
+  return client;
 }
 
 // MCP settings win over source.querySettings so a source can't relax the

@@ -3,7 +3,10 @@ import {
   filterColumnMetaByType,
   JSDataType,
 } from '@couchbase-traces/common-utils/dist/clickhouse';
-import { getMetadata } from '@couchbase-traces/common-utils/dist/dataLayer';
+import {
+  getMetadata,
+  queryLanguageForConnection,
+} from '@couchbase-traces/common-utils/dist/dataLayer';
 import {
   type MetricTable,
   SourceKind,
@@ -18,6 +21,7 @@ import { getSource } from '@/controllers/sources';
 import { READ_ONLY_TOOL } from '@/mcp/tools/annotations';
 import type { McpContext, ToolRegistrar, ToolResult } from '@/mcp/tools/types';
 import { mcpServerError, mcpUserError } from '@/mcp/utils/errors';
+import { assertMcpSliceForConnection } from '@/mcp/utils/mcpSlice';
 import { isHiddenSource } from '@/mcp/utils/promql';
 import {
   MCP_QUERY_MAX_EXECUTION_SEC,
@@ -105,11 +109,16 @@ async function describeSourceSchema(
     );
   }
 
+  const connectionId = source.connection.toString();
+  const sliceErr = await assertMcpSliceForConnection(connectionId);
+  if (sliceErr) return sliceErr;
+
   const meta: Record<string, unknown> = {
     id: source._id.toString(),
     name: source.name,
     kind: source.kind,
-    connectionId: source.connection.toString(),
+    connectionId,
+    queryLanguage: await queryLanguageForConnection(connectionId),
     timestampColumn: source.timestampValueExpression,
     // Round-trippable config for clickstack_save_source (clone / read-modify-
     // write); includes fields the curated summary below omits.
@@ -220,8 +229,6 @@ async function describeSourceSchema(
   const metadata = getMetadata(clickhouseClient);
   const databaseName = source.from.databaseName;
   const tableName = discoveryTableName;
-  const connectionId = source.connection.toString();
-
   // Track which sampling stages were skipped due to timeout
   const skippedStages: string[] = [];
 

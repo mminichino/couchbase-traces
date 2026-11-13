@@ -962,6 +962,14 @@ Completed requests: `system:completed_requests` requires `query_system_catalog`.
 - `assertSliceForConnection('ai', …)` before metadata queries; summarization strips `__cbt_id`.
 - Unit: `aiDialect.test.ts` (prompt snapshots, validation, summarize).
 
+### Phase 8: mcp
+
+- `COUCHBASE_SLICES.mcp=true`. MCP area features → `ported`.
+- `queryLanguage` on list/describe source; dialect-aware sql tool descriptions; slice guard via `mcpSlice.ts`.
+- Couchbase raw SQL: LIMIT helper, macro expansion, SQL++ parse hint; describe_table Couchbase path.
+- Query/trace/metric tools assert slice and map errors via `couchbaseConsumerMcpError`.
+- Parity scaffold: `port/server-parity/mcp.mjs`.
+
 ## Phase 6: SQL++ core and data-layer seam
 
 - SQL++ date format string is `1111-11-11T11:11:11.111Z` (`SQLPP_DATE_FORMAT`), the same string `port/couchbase-test/init.sh` passes to `MILLIS_TO_UTC`. On an exact second the server returns `2026-01-01T00:00:00Z` and omits the zero fraction. Bucket expressions use that format, so they compare equal to fixture timestamps. Range predicates against Phase 5 documents still use the 30-character form from `toIso30`.

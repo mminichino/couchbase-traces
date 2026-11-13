@@ -9,6 +9,7 @@ import { getCounter } from '@/utils/instrumentation';
 
 import { runConfigTile } from './helpers';
 import { createSourceLookup, prepareSqlQuery } from './prepareSql';
+import { RAW_SQL_PARAM_DESCRIPTION } from './sqlDescriptions';
 
 export const MAX_SQL_BATCH_QUERIES = 10;
 
@@ -47,9 +48,7 @@ export const sqlBatchQuerySchema = z.object({
     .describe(
       "Label echoed back on this query's result. Results also carry their array index.",
     ),
-  sql: z
-    .string()
-    .describe('Raw ClickHouse SQL, with the same macros as the sql field.'),
+  sql: z.string().describe(RAW_SQL_PARAM_DESCRIPTION),
   connectionId: z
     .string()
     .optional()
