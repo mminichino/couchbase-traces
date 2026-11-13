@@ -1,6 +1,6 @@
 import type { Metadata } from '@couchbase-traces/common-utils/dist/core/metadata';
 
-import type { ProxyClickhouseClient, SourceResponse } from '@/api/client';
+import type { CliDataClient, SourceResponse } from '@/api/client';
 
 export interface SpanRow {
   Timestamp: string;
@@ -24,7 +24,7 @@ export interface SpanNode extends TaggedSpanRow {
 }
 
 export interface TraceWaterfallProps {
-  clickhouseClient: ProxyClickhouseClient;
+  clickhouseClient: CliDataClient;
   metadata: Metadata;
   source: SourceResponse;
   /** Correlated log source (optional) */

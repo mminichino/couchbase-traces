@@ -16,7 +16,7 @@ import type { Tile } from '@couchbase-traces/common-utils/dist/types';
 import type {
   ApiClient,
   DashboardResponse,
-  ProxyClickhouseClient,
+  CliDataClient,
   SourceResponse,
 } from '@/api/client';
 import TileChart from '@/components/Tile/TileChart';
@@ -52,7 +52,7 @@ function formatTimeRange(range: TimeRange): string {
 
 interface DashboardPageProps {
   client: ApiClient;
-  clickhouseClient: ProxyClickhouseClient;
+  clickhouseClient: CliDataClient;
   metadata: ReturnType<ApiClient['createMetadata']>;
   sources: SourceResponse[];
   onClose: () => void;

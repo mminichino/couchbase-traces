@@ -15,13 +15,13 @@ import Spinner from 'ink-spinner';
 import type { Metadata } from '@couchbase-traces/common-utils/dist/core/metadata';
 import type { Tile } from '@couchbase-traces/common-utils/dist/types';
 
-import type { ProxyClickhouseClient, SourceResponse } from '@/api/client';
+import type { CliDataClient, SourceResponse } from '@/api/client';
 import { renderTileContent } from '@/shared/tileRender';
 
 import { useTileData } from './useTileData';
 
 export interface TileChartProps {
-  clickhouseClient: ProxyClickhouseClient;
+  clickhouseClient: CliDataClient;
   metadata: Metadata;
   tile: Tile;
   /** All available sources — the tile's source is resolved by ID */

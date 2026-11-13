@@ -12,7 +12,7 @@ import type {
 } from '@couchbase-traces/common-utils/dist/types';
 import { DisplayType } from '@couchbase-traces/common-utils/dist/types';
 
-import type { ProxyClickhouseClient, SourceResponse } from '@/api/client';
+import type { CliDataClient, SourceResponse } from '@/api/client';
 import {
   CLI_SUPPORTED_DISPLAY_TYPES,
   convertTileConfigForQuery,
@@ -39,7 +39,7 @@ export type TileQueryResult =
     };
 
 export interface FetchTileDataParams {
-  clickhouseClient: ProxyClickhouseClient;
+  clickhouseClient: CliDataClient;
   metadata: Metadata;
   config: SavedChartConfig;
   source: SourceResponse | undefined;

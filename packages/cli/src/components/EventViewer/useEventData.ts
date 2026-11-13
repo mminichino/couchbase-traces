@@ -2,7 +2,7 @@ import { useState, useCallback, useEffect, useRef } from 'react';
 
 import type { Metadata } from '@couchbase-traces/common-utils/dist/core/metadata';
 
-import type { SourceResponse, ProxyClickhouseClient } from '@/api/client';
+import type { CliDataClient, SourceResponse } from '@/api/client';
 import { buildEventSearchQuery, buildFullRowQuery } from '@/api/eventQuery';
 import { ROW_DATA_ALIASES } from '@/shared/rowDataPanel';
 import type { TimeRange } from '@/utils/editor';
@@ -13,7 +13,7 @@ import { TAIL_INTERVAL_MS, PAGE_SIZE } from './types';
 // ---- Types ---------------------------------------------------------
 
 export interface UseEventDataParams {
-  clickhouseClient: ProxyClickhouseClient;
+  clickhouseClient: CliDataClient;
   metadata: Metadata;
   source: SourceResponse;
   customSelect: string | undefined;

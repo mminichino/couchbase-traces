@@ -20,7 +20,18 @@ import {
   type ClickhouseClientOptions,
   type QueryInputs,
 } from '@couchbase-traces/common-utils/dist/clickhouse';
-import { getMetadata } from '@couchbase-traces/common-utils/dist/dataLayer';
+import { CouchbaseClient } from '@couchbase-traces/common-utils/dist/couchbase/browser';
+import type { DataClient } from '@couchbase-traces/common-utils/dist/couchbase/types';
+import {
+  couchbaseChartQuery,
+  couchbaseChartValidity,
+} from '@couchbase-traces/common-utils/dist/dataLayer/chartQuery';
+import {
+  getMetadata,
+  resolveConnectionKind,
+  setConnectionKindResolver,
+} from '@couchbase-traces/common-utils/dist/dataLayer';
+import { queryViaCouchbase } from '@couchbase-traces/common-utils/dist/dataLayer/routeQuery';
 import { type Metadata } from '@couchbase-traces/common-utils/dist/core/metadata';
 
 import { loadSession, saveSession, clearSession } from '@/utils/config';
@@ -292,8 +303,9 @@ export class ApiClient {
 
   createClickHouseClient(
     opts: Partial<ClickhouseClientOptions> = {},
-  ): ProxyClickhouseClient {
-    return new ProxyClickhouseClient(this, opts);
+  ): CliRoutingClient {
+    registerCliConnectionKindResolver(this);
+    return new CliRoutingClient(this, opts);
   }
 
   createMetadata(opts: Partial<ClickhouseClientOptions> = {}): Metadata {
@@ -450,6 +462,95 @@ export class ProxyClickhouseClient extends BaseClickhouseClient {
   }
 }
 
+/**
+ * Routes queries by connection kind (Phase 8.5). ClickHouse traffic uses the
+ * session-cookie proxy; Couchbase uses {@link CouchbaseClient} against the API.
+ */
+export class CliRoutingClient extends ProxyClickhouseClient {
+  private readonly couchbaseClient: CouchbaseClient;
+
+  constructor(
+    apiClient: ApiClient,
+    opts: Partial<ClickhouseClientOptions> = {},
+  ) {
+    super(apiClient, opts);
+    this.couchbaseClient = new CouchbaseClient({
+      requestTimeout: this.requestTimeoutMs,
+      attribution: this.attribution,
+      baseUrl: apiClient.getApiUrl(),
+      headers: () => {
+        const h: Record<string, string> = {
+          cookie: apiClient.getCookieHeader(),
+          'content-type': 'text/plain',
+        };
+        const activeTeamId = apiClient.getActiveTeamId();
+        if (activeTeamId) {
+          h['x-hdx-team'] = activeTeamId;
+        }
+        return h;
+      },
+    });
+  }
+
+  couchbaseDataClient(): DataClient {
+    return this.couchbaseClient;
+  }
+
+  override async query<Format extends DataFormat>(
+    inputs: QueryInputs<Format>,
+  ): Promise<BaseResultSet<ReadableStream, Format>> {
+    const kind = await resolveConnectionKind(inputs.connectionId);
+    if (kind !== 'couchbase') return super.query(inputs);
+    return queryViaCouchbase(this.couchbaseClient, inputs);
+  }
+
+  override async queryChartConfig(
+    args: Parameters<BaseClickhouseClient['queryChartConfig']>[0],
+  ): ReturnType<BaseClickhouseClient['queryChartConfig']> {
+    const routed = await couchbaseChartQuery(
+      inputs => this.query(inputs),
+      args,
+    );
+    if (routed === 'clickhouse') return super.queryChartConfig(args);
+    return routed;
+  }
+
+  override async testChartConfigValidity(
+    args: Parameters<BaseClickhouseClient['testChartConfigValidity']>[0],
+  ): ReturnType<BaseClickhouseClient['testChartConfigValidity']> {
+    const routed = await couchbaseChartValidity(
+      inputs => this.query(inputs),
+      args,
+    );
+    if (routed === 'clickhouse') return super.testChartConfigValidity(args);
+    return routed;
+  }
+
+  override async close(): Promise<void> {
+    await Promise.all([super.close(), this.couchbaseClient.close()]);
+  }
+}
+
+/** Data client used by TUI hooks and `cbt chart` (ClickHouse proxy + Couchbase API). */
+export type CliDataClient = CliRoutingClient;
+
+let cliConnectionsPromise: Promise<ConnectionResponse[]> | null = null;
+
+/**
+ * Registers a connection-kind resolver that loads `/api/connections` once per
+ * CLI session (cached for subsequent lookups).
+ */
+export function registerCliConnectionKindResolver(apiClient: ApiClient): void {
+  cliConnectionsPromise = null;
+  setConnectionKindResolver(async id => {
+    cliConnectionsPromise ??= apiClient.getConnections();
+    const connections = await cliConnectionsPromise;
+    const found = connections.find(c => c.id === id || c._id === id);
+    if (found == null) return undefined;
+    return found.kind === 'couchbase' ? 'couchbase' : 'clickhouse';
+  });
+}
+
 // ------------------------------------------------------------------
 // Response types (matching the internal API shapes)
 // ------------------------------------------------------------------
@@ -522,12 +623,13 @@ export interface SourceResponse {
   sessionSourceId?: string;
 }
 
-interface ConnectionResponse {
+export interface ConnectionResponse {
   id: string;
   _id: string;
   name: string;
   host: string;
   username: string;
+  kind?: 'clickhouse' | 'couchbase';
 }
 
 /** Body accepted by POST /saved-search (SavedSearchSchema minus the id). */

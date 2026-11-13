@@ -3,11 +3,11 @@ import type { Metadata } from '@couchbase-traces/common-utils/dist/core/metadata
 import type {
   SourceResponse,
   SavedSearchResponse,
-  ProxyClickhouseClient,
+  CliDataClient,
 } from '@/api/client';
 
 export interface EventViewerProps {
-  clickhouseClient: ProxyClickhouseClient;
+  clickhouseClient: CliDataClient;
   metadata: Metadata;
   /** HyperDX app URL (e.g. http://localhost:8080) for opening in browser */
   appUrl: string;

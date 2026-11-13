@@ -63,7 +63,7 @@ export const COUCHBASE_SLICES: Readonly<Record<Slice, boolean>> = {
   external_api: true,
   mcp: false,
   ai: false,
-  cli: false,
+  cli: true,
 };
 
 export function isCouchbaseSliceEnabled(slice: Slice): boolean {

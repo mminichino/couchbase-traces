@@ -11,7 +11,7 @@ import {
   type TrendBucket,
 } from '@couchbase-traces/common-utils/dist/drain';
 
-import type { SourceResponse, ProxyClickhouseClient } from '@/api/client';
+import type { CliDataClient, SourceResponse } from '@/api/client';
 import {
   buildPatternSampleQuery,
   buildTotalCountQuery,
@@ -40,7 +40,7 @@ export interface PatternGroup {
 }
 
 export interface UsePatternDataParams {
-  clickhouseClient: ProxyClickhouseClient;
+  clickhouseClient: CliDataClient;
   metadata: Metadata;
   source: SourceResponse;
   submittedQuery: string;

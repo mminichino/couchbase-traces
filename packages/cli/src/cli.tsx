@@ -18,6 +18,7 @@ import {
   TemplateMinerConfig,
 } from '@couchbase-traces/common-utils/dist/drain';
 
+import { filterSourcesForSlice } from '@couchbase-traces/common-utils/dist/dataLayer';
 import { DashboardWithoutIdSchema } from '@couchbase-traces/common-utils/dist/types';
 import type { SavedChartConfig } from '@couchbase-traces/common-utils/dist/types';
 
@@ -1728,8 +1729,12 @@ Examples:
       process.exit(1);
     }
 
+    client.createClickHouseClient();
     // Resolve the source by ID or (case-insensitive) name
-    const sources = await client.getSources();
+    const sources = await filterSourcesForSlice(
+      await client.getSources(),
+      'cli',
+    );
     const needle = String(opts.source).toLowerCase();
     const source = sources.find(
       s =>
@@ -2115,7 +2120,10 @@ Examples:
 
     if (isAdhoc) {
       // ---- Ad-hoc mode (builder or raw SQL)
-      const sources = await client.getSources();
+      const sources = await filterSourcesForSlice(
+        await client.getSources(),
+        'cli',
+      );
       let adhoc;
       try {
         adhoc = buildAdhocChartConfig(
@@ -2154,7 +2162,7 @@ Examples:
       // ---- Dashboard tile mode
       const [dashboards, sources] = await Promise.all([
         client.getDashboards(),
-        client.getSources(),
+        filterSourcesForSlice(await client.getSources(), 'cli'),
       ]);
       const needle = String(opts.dashboard).toLowerCase();
       const dashboard = dashboards.find(

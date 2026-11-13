@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { Box, Text } from 'ink';
 import Spinner from 'ink-spinner';
 
+import { filterSourcesForSlice } from '@couchbase-traces/common-utils/dist/dataLayer';
 import { SourceKind } from '@couchbase-traces/common-utils/dist/types';
 
 import {
@@ -73,10 +74,11 @@ export default function App({ appUrl, query, sourceName, follow }: AppProps) {
 
   const loadData = async (apiClient: ApiClient) => {
     try {
-      const [sources, searches] = await Promise.all([
+      const [rawSources, searches] = await Promise.all([
         apiClient.getSources(),
         apiClient.getSavedSearches().catch(() => [] as SavedSearchResponse[]),
       ]);
+      const sources = await filterSourcesForSlice(rawSources, 'cli');
 
       setAllSources(sources);
 

@@ -4,7 +4,7 @@ import Spinner from 'ink-spinner';
 
 import type { Metadata } from '@couchbase-traces/common-utils/dist/core/metadata';
 
-import type { SourceResponse, ProxyClickhouseClient } from '@/api/client';
+import type { CliDataClient, SourceResponse } from '@/api/client';
 import { ROW_DATA_ALIASES } from '@/shared/rowDataPanel';
 import { getDisplayedTimestampValueExpression } from '@/shared/source';
 import ColumnValues from '@/components/ColumnValues';
@@ -22,7 +22,7 @@ type DetailTab = 'overview' | 'columns' | 'trace';
 type DetailPanelProps = {
   source: SourceResponse;
   sources: SourceResponse[];
-  clickhouseClient: ProxyClickhouseClient;
+  clickhouseClient: CliDataClient;
   metadata: Metadata;
   detailTab: DetailTab;
   expandedRowData: Record<string, unknown> | null;

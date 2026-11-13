@@ -10,11 +10,11 @@ import { useEffect, useRef, useState } from 'react';
 import type { Metadata } from '@couchbase-traces/common-utils/dist/core/metadata';
 import type { SavedChartConfig } from '@couchbase-traces/common-utils/dist/types';
 
-import type { ProxyClickhouseClient, SourceResponse } from '@/api/client';
+import type { CliDataClient, SourceResponse } from '@/api/client';
 import { fetchTileData, type TileQueryResult } from '@/shared/tileQuery';
 
 export interface UseTileDataParams {
-  clickhouseClient: ProxyClickhouseClient;
+  clickhouseClient: CliDataClient;
   metadata: Metadata;
   config: SavedChartConfig;
   source: SourceResponse | undefined;

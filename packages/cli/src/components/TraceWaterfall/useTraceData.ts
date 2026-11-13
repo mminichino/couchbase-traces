@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 
 import type { Metadata } from '@couchbase-traces/common-utils/dist/core/metadata';
 
-import type { ProxyClickhouseClient, SourceResponse } from '@/api/client';
+import type { CliDataClient, SourceResponse } from '@/api/client';
 import {
   buildTraceSpansQuery,
   buildTraceLogsQuery,
@@ -15,7 +15,7 @@ import type { SpanRow, TaggedSpanRow, SpanNode } from './types';
 // ---- Types ---------------------------------------------------------
 
 export interface UseTraceDataParams {
-  clickhouseClient: ProxyClickhouseClient;
+  clickhouseClient: CliDataClient;
   metadata: Metadata;
   source: SourceResponse;
   logSource?: SourceResponse | null;
