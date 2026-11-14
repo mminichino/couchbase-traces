@@ -1,5 +1,3 @@
-import type { ClickHouseClient } from '@clickhouse/client';
-
 import type {
   ExponentialHistogramMetricRow,
   GaugeMetricRow,
@@ -10,6 +8,7 @@ import type {
   TraceRow,
 } from '@/generators/types';
 
+import type { ClickHouseClient } from './client';
 import { EVAL_DATABASE } from './schema';
 
 const BATCH_SIZE = 100_000;

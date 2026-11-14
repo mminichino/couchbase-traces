@@ -21,7 +21,6 @@
     "@ai-sdk/otel": "^1.0.116",
     "@braintree/sanitize-url": "^7.1.1",
     "@clickhouse/clickstack-node": "^1.0.2",
-    "@clickhouse/client-common": "1.23.0-head.fae5998.1",
     "@couchbase-traces/common-utils": "workspace:*",
     "@esm2cjs/p-queue": "^7.3.0",
     "@hyperdx/passport-local-mongoose": "^9.0.1",

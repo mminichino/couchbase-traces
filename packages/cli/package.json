@@ -40,7 +40,6 @@
     "dev:unit": "NODE_OPTIONS=--experimental-vm-modules jest --watchAll --runInBand"
   },
   "devDependencies": {
-    "@clickhouse/client": "1.23.0-head.fae5998.1",
     "@couchbase-traces/common-utils": "workspace:*",
     "@jest/globals": "^30.2.0",
     "@types/crypto-js": "^4.2.2",

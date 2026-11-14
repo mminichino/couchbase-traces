@@ -1,4 +1,4 @@
-import type { ClickHouseClient } from '@clickhouse/client';
+import type { ClickHouseClient } from './client';
 
 export const EVAL_DATABASE = 'default';
 const SOURCE_TRACES_TABLE = 'otel_traces';
@@ -73,7 +73,7 @@ async function tableExists(
     query_params: { db: database, tbl: table },
     format: 'JSONEachRow',
   });
-  const rows = await rs.json<unknown>();
+  const rows = (await rs.json()) as unknown[];
   return rows.length > 0;
 }
 
@@ -177,7 +177,7 @@ export async function scenarioIsSeeded(
       query: `SELECT 1 FROM ${EVAL_DATABASE}.${table} LIMIT 1`,
       format: 'JSONEachRow',
     });
-    const rows = await rs.json<unknown>();
+    const rows = (await rs.json()) as unknown[];
     if (rows.length > 0) {
       return true;
     }

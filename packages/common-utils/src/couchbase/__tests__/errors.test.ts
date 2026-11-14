@@ -9,7 +9,7 @@ import {
   scrubMessage,
   serialize,
 } from '@/couchbase/errors';
-import { QueryError } from '@/query';
+import { ClickHouseError, QueryError } from '@/query';
 
 // Objects shaped like the SDK's errors: the class name is what matters.
 function sdkError(
@@ -201,6 +201,19 @@ describe('serialize / deserialize', () => {
     expect(httpStatusForCode('CONNECTION_NOT_FOUND')).toBe(404);
     expect(httpStatusForCode('WRONG_CONNECTION_KIND')).toBe(409);
     expect(httpStatusForCode('STATEMENT_NOT_ALLOWED')).toBe(400);
+  });
+});
+
+describe('ClickHouseError', () => {
+  it('carries code and type for legacy error classification', () => {
+    const err = new ClickHouseError({
+      message: 'Timeout exceeded',
+      code: '159',
+      type: 'TIMEOUT_EXCEEDED',
+    });
+    expect(err).toBeInstanceOf(ClickHouseError);
+    expect(err.code).toBe('159');
+    expect(err.type).toBe('TIMEOUT_EXCEEDED');
   });
 });
 

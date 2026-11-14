@@ -1,5 +1,4 @@
-import type { ClickHouseClient } from '@clickhouse/client';
-
+import type { ClickHouseClient } from '@/clickhouse/client';
 import {
   insertExponentialHistogramMetricRows,
   insertGaugeMetricRows,

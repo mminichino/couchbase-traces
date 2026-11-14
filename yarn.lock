@@ -3334,27 +3334,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@clickhouse/client-common@npm:1.23.0-head.fae5998.1":
-  version: 1.23.0-head.fae5998.1
-  resolution: "@clickhouse/client-common@npm:1.23.0-head.fae5998.1"
-  checksum: 10c0/8fa132376daa46cb046e7a50c2ef53c61456034aecd36363e2d60bc948265f08e1a521f7835935fb067a0673c70081eed64462709f64c5a10e1249155bc189c9
-  languageName: node
-  linkType: hard
-
-"@clickhouse/client-web@npm:1.23.0-head.fae5998.1":
-  version: 1.23.0-head.fae5998.1
-  resolution: "@clickhouse/client-web@npm:1.23.0-head.fae5998.1"
-  checksum: 10c0/15ca088a6ea2d6e568bda7f68dc74a0216520127859e2dc46c8868135712efdbae409ccf8bc201d730da62d2e9831b124e0310fae8f7e7ea8cb19ca73224b256
-  languageName: node
-  linkType: hard
-
-"@clickhouse/client@npm:1.23.0-head.fae5998.1":
-  version: 1.23.0-head.fae5998.1
-  resolution: "@clickhouse/client@npm:1.23.0-head.fae5998.1"
-  checksum: 10c0/a13e1c8d350b59bb42882b7b83a1299675e3fa5bcc2b9786b12506e920f9a592edb74ad5de62cceddab95ed12d21e5e4276bc1e0030e6bc2e0d7fd42d65b7c59
-  languageName: node
-  linkType: hard
-
 "@codemirror/autocomplete@npm:^6.0.0":
   version: 6.13.0
   resolution: "@codemirror/autocomplete@npm:6.13.0"
@@ -3490,7 +3469,6 @@ __metadata:
     "@ai-sdk/otel": "npm:^1.0.116"
     "@braintree/sanitize-url": "npm:^7.1.1"
     "@clickhouse/clickstack-node": "npm:^1.0.2"
-    "@clickhouse/client-common": "npm:1.23.0-head.fae5998.1"
     "@couchbase-traces/common-utils": "workspace:*"
     "@esm2cjs/p-queue": "npm:^7.3.0"
     "@hyperdx/passport-local-mongoose": "npm:^9.0.1"
@@ -3708,7 +3686,6 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@couchbase-traces/cli@workspace:packages/cli"
   dependencies:
-    "@clickhouse/client": "npm:1.23.0-head.fae5998.1"
     "@couchbase-traces/common-utils": "workspace:*"
     "@jest/globals": "npm:^30.2.0"
     "@types/crypto-js": "npm:^4.2.2"
@@ -3740,9 +3717,6 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@couchbase-traces/common-utils@workspace:packages/common-utils"
   dependencies:
-    "@clickhouse/client": "npm:1.23.0-head.fae5998.1"
-    "@clickhouse/client-common": "npm:1.23.0-head.fae5998.1"
-    "@clickhouse/client-web": "npm:1.23.0-head.fae5998.1"
     "@hyperdx/lucene": "npm:^3.1.1"
     "@lezer/highlight": "npm:^1.1.2"
     "@lezer/lr": "npm:^1.2.3"
@@ -3781,7 +3755,7 @@ __metadata:
   dependencies:
     "@ai-sdk/anthropic": "npm:^4.0.65"
     "@ai-sdk/openai": "npm:^4.0.78"
-    "@clickhouse/client": "npm:1.23.0-head.fae5998.1"
+    "@couchbase-traces/common-utils": "workspace:*"
     "@dotenvx/dotenvx": "npm:^1.51.1"
     "@types/jest": "npm:^29.5.14"
     "@types/ms": "npm:^0.7.31"

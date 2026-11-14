@@ -1,4 +1,3 @@
-import { ClickHouseError } from '@clickhouse/client-common';
 import { getHeatmapMode } from '@couchbase-traces/common-utils/dist/core/heatmap';
 import {
   convertToCategoricalChartConfig,
@@ -12,6 +11,7 @@ import {
 } from '@couchbase-traces/common-utils/dist/dataLayer';
 import { isBuilderSavedChartConfig } from '@couchbase-traces/common-utils/dist/guards';
 import { UnknownVariableError } from '@couchbase-traces/common-utils/dist/macroErrors';
+import { ClickHouseError } from '@couchbase-traces/common-utils/dist/query';
 import type {
   ChartConfigWithDateRange,
   ChartVariable,

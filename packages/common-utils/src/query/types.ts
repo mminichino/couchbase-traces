@@ -1,8 +1,23 @@
-import type { ResponseJSON } from '@clickhouse/client-common';
-
 import type { QueryAttribution } from './attribution';
 
-export type { ResponseJSON };
+/** JSON query result envelope (ClickHouse `JSON` format compatibility). */
+export type ResponseJSON<T = unknown> = {
+  data: T[];
+  query_id?: string;
+  totals?: T;
+  extremes?: Record<string, unknown>;
+  meta?: Array<{
+    name: string;
+    type: string;
+  }>;
+  statistics?: {
+    elapsed: number;
+    rows_read: number;
+    bytes_read: number;
+  };
+  rows?: number;
+  rows_before_limit_at_least?: number;
+};
 
 export type ColumnMeta = {
   codec_expression: string;

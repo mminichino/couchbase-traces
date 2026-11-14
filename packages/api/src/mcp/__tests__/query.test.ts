@@ -6,11 +6,11 @@ jest.mock('@/utils/trimToolResponse', () => ({
   trimToolResponse: (data: unknown) => ({ data, isTrimmed: false }),
 }));
 
-import { ClickHouseError } from '@clickhouse/client-common';
 import {
   MacroExpansionError,
   UnknownVariableError,
 } from '@couchbase-traces/common-utils/dist/macroErrors';
+import { ClickHouseError } from '@couchbase-traces/common-utils/dist/query';
 
 import {
   annotateIncreaseTopNHint,

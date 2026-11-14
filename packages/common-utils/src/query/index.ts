@@ -33,7 +33,7 @@ export {
   isJSDataTypeScalar,
   JSDataType,
 } from './columnTypes';
-export { QueryError } from './errors';
+export { ClickHouseError, QueryError } from './errors';
 export { streamToAsyncIterator } from './stream';
 export {
   type ColumnMeta,

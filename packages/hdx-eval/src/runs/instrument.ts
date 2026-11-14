@@ -1,7 +1,7 @@
-import type { ClickHouseClient } from '@clickhouse/client';
 import { existsSync, readFileSync, writeFileSync } from 'fs';
 import { join } from 'path';
 
+import type { ClickHouseClient } from '@/clickhouse/client';
 import type { RunRecord } from '@/harness/types';
 import { createEvalClient, defaultClickHouseUrl } from '@/query/client';
 import { scenarioTables } from '@/query/schema';

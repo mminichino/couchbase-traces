@@ -1,4 +1,4 @@
-import { ClickHouseError } from '@clickhouse/client-common';
+import { ClickHouseError } from '@couchbase-traces/common-utils/dist/query';
 
 import {
   isClientTimeoutOrAbortError,
