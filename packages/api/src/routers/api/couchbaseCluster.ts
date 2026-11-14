@@ -20,7 +20,7 @@ import {
 import { managementBaseUrl } from '@couchbase-traces/common-utils/dist/couchbase/management';
 import { executeQuery } from '@couchbase-traces/common-utils/dist/couchbase/node';
 import type { SqlPP } from '@couchbase-traces/common-utils/dist/couchbase/sqlpp';
-import type { TeamClickHouseSettings } from '@couchbase-traces/common-utils/dist/types';
+import type { TeamQuerySettings } from '@couchbase-traces/common-utils/dist/types';
 import express, { type Request, type Response } from 'express';
 import { z } from 'zod';
 
@@ -143,9 +143,7 @@ function one(value: unknown): unknown {
   return Array.isArray(value) ? value[0] : value;
 }
 
-async function teamSettings(
-  teamId: string,
-): Promise<TeamClickHouseSettings | null> {
+async function teamSettings(teamId: string): Promise<TeamQuerySettings | null> {
   const team = await getTeam(teamId, [
     'queryTimeout',
     'metadataMaxRowsToRead',
@@ -365,7 +363,7 @@ async function buildInfrastructure(
 
 async function runQuery<T>(
   connection: IConnection,
-  team: TeamClickHouseSettings | null,
+  team: TeamQuerySettings | null,
   built: SqlPP,
   map: (rows: Record<string, unknown>[]) => T,
 ): Promise<Section<T>> {

@@ -279,7 +279,7 @@ const mcpTileSelectItemSchema = z
       .describe(
         'Display label for this series — used in chart legends, table column headers, CSV exports, and onClick templates. ' +
           'Always set a short, human-readable alias (e.g. "Requests", "P95 Latency", "Error Rate"). ' +
-          'Without an alias the UI shows the raw ClickHouse expression (e.g. count(), quantile(0.95)(Duration)) which is hard to read. ' +
+          'Without an alias the UI shows the raw legacy store expression (e.g. count(), quantile(0.95)(Duration)) which is hard to read. ' +
           'Heatmap select items are the only exception (no alias needed).',
       ),
     level: mcpQuantileLevelSchema
@@ -400,7 +400,7 @@ const tileFormulasDescription =
   'items via letter-ref arithmetic ("A" = select[0], "B" = select[1], ...). ' +
   'Example: [{ expression: "A / B * 100", alias: "Error rate %" }] with ' +
   'select = [errors count, total count]. Each formula adds one series ' +
-  'computed in ClickHouse. Cannot be combined with asRatio (express the ' +
+  'computed in legacy store. Cannot be combined with asRatio (express the ' +
   'ratio as a formula instead). Rejected on other source kinds (e.g. session).';
 
 const mcpTileFormulasSchema = z
@@ -1211,7 +1211,7 @@ export const mcpSqlTileSchema = mcpTileLayoutSchema.extend({
             'The sourceId must belong to the same connection as connectionId.',
         ),
       sqlTemplate: z.string().describe(`
-Raw ClickHouse SQL query. SQL guidelines:
+Raw legacy SQL query. SQL guidelines:
 
 1. ALWAYS include a LIMIT clause to avoid excessive data.
 2. ALWAYS include a date/time filter in the WHERE clause using either macros or raw parameters to ensure the chart responds to user selected time range.

@@ -21,13 +21,13 @@ import {
 } from 'recharts';
 import { splitAndTrimWithBracket } from '@couchbase-traces/common-utils/dist/core/utils';
 import {
-  chSqlToAliasMap,
   ColumnMetaType,
   columnTypeToJSType,
   extractColumnReferencesFromKey,
   isJSDataTypeJSONStringifiable,
   JSDataType,
   QueryError,
+  sqlExprToAliasMap,
 } from '@couchbase-traces/common-utils/dist/query';
 import {
   BuilderChartConfigWithDateRange,
@@ -475,7 +475,7 @@ export const RawLogTable = memo(
     const timeZone = useDisplayTimeZone();
     const { scale: contentFontScale } = useContentFontSize();
 
-    // The ClickHouse dashboard's slow-query list has no side panel to open, so
+    // The legacy store dashboard's slow-query list has no side panel to open, so
     // inline expansion is the only thing a row click can do there.
     const canOpenSidePanel = onRowDetailsClick != null;
 
@@ -1905,7 +1905,7 @@ function DBSqlRowTableComponent({
           // special rule for json
           // for json {SomePath: /c}, CH will return {SomePath: \/c}
           // add this to make sure SHA256 gets the correct result... slashes are escaped so the
-          // client-side JSON string matches ClickHouse's serialization before hashing.
+          // client-side JSON string matches legacy store's serialization before hashing.
           newRow[c] = JSON.stringify(row[c]).replace(/\//g, '\\/');
         } else {
           newRow[c] = JSON.stringify(row[c]);
@@ -1916,7 +1916,7 @@ function DBSqlRowTableComponent({
   }, [data, objectTypeColumns, columnMap]);
 
   const aliasMap = useMemo(
-    () => chSqlToAliasMap(data?.chSql ?? { sql: '', params: {} }),
+    () => sqlExprToAliasMap(data?.sqlExpr ?? { sql: '', params: {} }),
     [data],
   );
 
@@ -1987,7 +1987,7 @@ function DBSqlRowTableComponent({
         // onPropertySearchClick={onPropertySearchClick}
         hasNextPage={hasNextPage}
         // Passed through conditionally so tables with no side panel (the
-        // ClickHouse dashboard's slow-query list) don't offer to open one.
+        // legacy store dashboard's slow-query list) don't offer to open one.
         onRowDetailsClick={onRowDetailsClick ? _onRowDetailsClick : undefined}
         onScroll={onScroll}
         generateRowId={getRowWhere}

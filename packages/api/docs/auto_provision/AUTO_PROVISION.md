@@ -37,8 +37,8 @@ Example:
 ```json
 [
   {
-    "name": "Local ClickHouse",
-    "host": "clickhouse:8123",
+    "name": "Local connection",
+    "host": "store:8123",
     "username": "default",
     "password": ""
   }
@@ -66,7 +66,7 @@ Example for logs:
   {
     "name": "Couchbase Traces Logs",
     "kind": "log",
-    "connection": "Local ClickHouse",
+    "connection": "Local connection",
     "from": {
       "databaseName": "default",
       "tableName": "logs"
@@ -101,7 +101,7 @@ Example with correlated sources:
   {
     "name": "Couchbase Traces Logs",
     "kind": "log",
-    "connection": "Local ClickHouse",
+    "connection": "Local connection",
     "from": {
       "databaseName": "default",
       "tableName": "logs"
@@ -115,7 +115,7 @@ Example with correlated sources:
   {
     "name": "Couchbase Traces Traces",
     "kind": "trace",
-    "connection": "Local ClickHouse",
+    "connection": "Local connection",
     "from": {
       "databaseName": "default",
       "tableName": "traces"
@@ -151,11 +151,11 @@ services:
     image: ghcr.io/mminichino/couchbase-traces:2
     environment:
       - DEFAULT_CONNECTIONS=[{"name":"Local
-        ClickHouse","host":"clickhouse:8123","username":"default","password":""}]
+        legacy store","host":"store:8123","username":"default","password":""}]
       - DEFAULT_SOURCES=[{"name":"Couchbase Traces Logs","kind":"log","connection":"Local
-        ClickHouse","from":{"databaseName":"default","tableName":"logs"},"timestampValueExpression":"timestamp","bodyExpression":"body","traceSourceId":"Couchbase Traces
+        legacy store","from":{"databaseName":"default","tableName":"logs"},"timestampValueExpression":"timestamp","bodyExpression":"body","traceSourceId":"Couchbase Traces
         Traces"},{"name":"Couchbase Traces Traces","kind":"trace","connection":"Local
-        ClickHouse","from":{"databaseName":"default","tableName":"traces"},"timestampValueExpression":"startTimeUnixNano
+        legacy store","from":{"databaseName":"default","tableName":"traces"},"timestampValueExpression":"startTimeUnixNano
         / 1000000000","traceIdExpression":"traceId","logSourceId":"Couchbase Traces
         Logs"}]
 ```

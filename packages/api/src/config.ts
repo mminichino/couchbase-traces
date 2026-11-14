@@ -42,7 +42,7 @@ export const IS_INLINE_API = env.CBT_PREVIEW_INLINE_API === 'true';
 export const FRONTEND_REDIRECT_BASE = IS_INLINE_API ? '' : FRONTEND_URL;
 export const INGESTION_API_KEY = env.INGESTION_API_KEY ?? '';
 // Opt-in: emit the contrib `datadogreceiver` on the collector so a
-// Datadog Agent can ship APM traces (DD trace API -> OTLP -> ClickHouse).
+// Datadog Agent can ship APM traces (DD trace API -> OTLP -> legacy store).
 // Off by default because the receiver has no per-team bearer-token auth like
 // `otlp/hyperdx`, so enabling it opens an unauthenticated ingest port (:8126).
 export const ENABLE_DATADOG_RECEIVER = env.ENABLE_DATADOG_RECEIVER === 'true';

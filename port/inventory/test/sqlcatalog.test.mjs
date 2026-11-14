@@ -15,11 +15,11 @@ describe('sqlcatalog', () => {
     root = makeRepo({
       files: {
         [`${CORE}/q14.ts`]:
-          'export const q14 = chSql`SELECT countIf(x) FROM t PREWHERE y SETTINGS max_threads = 1`;\n',
-        [`${CORE}/q15.ts`]: 'export const q15 = (fn: string, a: string) => chSql`${fn}If(${a})`;\n',
+          'export const q14 = sqlExpr`SELECT countIf(x) FROM t PREWHERE y SETTINGS max_threads = 1`;\n',
+        [`${CORE}/q15.ts`]: 'export const q15 = (fn: string, a: string) => sqlExpr`${fn}If(${a})`;\n',
         [`${CORE}/q16.ts`]: [
           "export const q16a = `toStartOfInterval(ts, INTERVAL 1 minute)`;",
-          'export const q16b = chSql`{start:DateTime64(3)}`;',
+          'export const q16b = sqlExpr`{start:DateTime64(3)}`;',
           '',
         ].join('\n'),
         [`${CORE}/q18.ts`]: "export const q18 = 'SELECT lower(x), arrayMap(y -> y, z) FROM t';\n",

@@ -94,11 +94,11 @@ export async function getAIMetadata(source: ISource) {
 
   await assertSliceForConnection('ai', connectionId);
 
-  const clickhouseClient = new DataClient({
+  const dataClient = new DataClient({
     requestTimeout: MCP_REQUEST_TIMEOUT,
   });
 
-  const metadata = getMetadata(clickhouseClient);
+  const metadata = getMetadata(dataClient);
 
   const databaseName = source.from.databaseName;
   const tableName = source.from.tableName;

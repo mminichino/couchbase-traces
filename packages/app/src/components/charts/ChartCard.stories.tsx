@@ -17,7 +17,7 @@ export default meta;
 
 /**
  * A dependency-free stand-in for a real chart body so the stories render the
- * card chrome (border + header divider) without wiring up ClickHouse queries.
+ * card chrome (border + header divider) without wiring up legacy store queries.
  */
 function FakeChart({ color = 'var(--color-chart-blue)' }: { color?: string }) {
   const points = [4, 18, 10, 26, 14, 30, 20, 34, 22, 40, 28, 44];

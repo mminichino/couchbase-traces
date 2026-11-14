@@ -1,4 +1,3 @@
-import type { ClickHouseClient } from '@/clickhouse/client';
 import {
   insertExponentialHistogramMetricRows,
   insertGaugeMetricRows,
@@ -14,6 +13,7 @@ import {
   truncateScenarioTables,
 } from '@/query/schema';
 import { mulberry32 } from '@/rng/seeded';
+import type { EvalStoreClient } from '@/store/client';
 
 import { getScenario } from './index';
 import type { MetricBatch } from './types';
@@ -59,7 +59,7 @@ export type SeedResult = {
 };
 
 export async function seedScenario(args: {
-  client: ClickHouseClient;
+  client: EvalStoreClient;
   scenarioName: string;
   seed: number;
   nowMs: number;
@@ -111,7 +111,7 @@ export async function seedScenario(args: {
 }
 
 async function insertMetricBatch(
-  client: ClickHouseClient,
+  client: EvalStoreClient,
   tables: ScenarioTables,
   metrics: MetricBatch,
   counts: MetricInsertCounts,

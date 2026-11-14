@@ -40,7 +40,7 @@ export default function ServiceDashboardEndpointPerformanceChart({
   const parentSpanWhereCondition = [
     service && `${expressions.service} = '${service}'`,
     endpoint && `${expressions.spanName} = '${endpoint}'`,
-    // Ideally should use `timeFilterExpr`, but it returns chSql while filter.condition is string
+    // Ideally should use `timeFilterExpr`, but it returns sqlExpr while filter.condition is string
     `${source.timestampValueExpression} >=
         fromUnixTimestamp64Milli(${dateRange[0].getTime()}) AND
       ${source.timestampValueExpression} <=
@@ -69,7 +69,7 @@ export default function ServiceDashboardEndpointPerformanceChart({
   const spanAttributesExpression =
     source.eventAttributesExpression || 'SpanAttributes';
 
-  // ClickHouse does not support NULLIF(some_dynamic_column)
+  // legacy store does not support NULLIF(some_dynamic_column)
   // so we instead use toString() and an empty string check to check for
   // existence of the serverAddress/httpHost to build the span name
   if (jsonColumns.includes(spanAttributesExpression)) {

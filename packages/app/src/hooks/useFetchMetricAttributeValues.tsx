@@ -1,6 +1,6 @@
 import {
-  chSql,
   ResponseJSON,
+  sqlExpr,
   tableExpr,
 } from '@couchbase-traces/common-utils/dist/query';
 import {
@@ -9,7 +9,7 @@ import {
 } from '@couchbase-traces/common-utils/dist/types';
 import { useQuery } from '@tanstack/react-query';
 
-import { getClickhouseClient } from '@/query';
+import { getDataClient } from '@/query';
 import { useMetadataQueryAttribution } from '@/queryAttribution';
 import { getMetricTableName } from '@/utils';
 
@@ -75,14 +75,14 @@ export const useFetchMetricAttributeValues = ({
         return [];
       }
 
-      const clickhouseClient = getClickhouseClient({ attribution });
+      const dataClient = getDataClient({ attribution });
 
       // Build optional search filter
       const searchFilter = searchTerm
-        ? chSql` AND ${attributeCategory}[${{ String: attributeName }}] ILIKE ${{ String: `%${searchTerm}%` }}`
-        : chSql``;
+        ? sqlExpr` AND ${attributeCategory}[${{ String: attributeName }}] ILIKE ${{ String: `%${searchTerm}%` }}`
+        : sqlExpr``;
 
-      const sql = chSql`
+      const sql = sqlExpr`
         SELECT DISTINCT ${attributeCategory}[${{ String: attributeName }}] as value
         FROM ${tableExpr({ database: databaseName, table: tableName })}
         WHERE MetricName = ${{ String: metricName }}
@@ -92,14 +92,14 @@ export const useFetchMetricAttributeValues = ({
         LIMIT ${{ Int32: ATTRIBUTE_VALUES_LIMIT }}
       `;
 
-      const result = (await clickhouseClient
+      const result = (await dataClient
         .query<'JSON'>({
           query: sql.sql,
           query_params: sql.params,
           format: 'JSON',
           abort_signal: signal,
           connectionId: tableSource!.connection,
-          clickhouse_settings: {
+          query_settings: {
             max_execution_time: 60,
             timeout_overflow_mode: 'break',
           },

@@ -2,7 +2,7 @@ import { LLMSpanEvent, SpanAttributeMap } from '@/llm/lib/types';
 
 /**
  * Realistic span-attribute fixtures per instrumentation dialect. Values are
- * strings, matching how ClickHouse `Map(String, String)` columns deliver
+ * strings, matching how legacy store `Map(String, String)` columns deliver
  * attributes to the UI.
  */
 

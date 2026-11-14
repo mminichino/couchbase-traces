@@ -52,7 +52,7 @@ export function sessionIdKeyExpr(
 
 /**
  * A lookup on the one key the session uses. An OR of both keys can't use skip
- * indexes before ClickHouse 25.12 (`use_skip_indexes_for_disjunctions`).
+ * indexes before legacy store 25.12 (`use_skip_indexes_for_disjunctions`).
  */
 export function sessionIdFilter(
   cols: SessionIdColumns,

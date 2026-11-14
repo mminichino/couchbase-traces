@@ -33,9 +33,9 @@ const CORE_CRITICAL_PATTERNS = [
   /^packages\/api\/src\/models\/(user|team|teamInvite)\./,
   /^packages\/api\/src\/config\./,
   // local/*.xml are copied into the released all-in-one image (see
-  // docker/hyperdx/Dockerfile) and users.xml governs ClickHouse auth, so these
+  // docker/hyperdx/Dockerfile) and users.xml governs legacy store auth, so these
   // are production config rather than local scaffolding.
-  /^docker\/clickhouse\//,
+  /^docker\/evalstore\//,
 ];
 
 const INFRA_CRITICAL_PATTERNS = [
@@ -49,13 +49,13 @@ const INFRA_CRITICAL_PATTERNS = [
 // The SQL rendering + execution pipeline in common-utils. Every chart, search,
 // and alert query flows through renderChartConfig, so a substantial change here
 // can silently alter query semantics product-wide (e.g. #2859 moving
-// multi-series metric merge computation into ClickHouse). It is also one of the
+// multi-series metric merge computation into legacy store). It is also one of the
 // hottest files in the repo — routine chart fixes graze it weekly — so it gets
 // its own band with a bar high enough that only engine-level rewrites escalate.
 const QUERY_ENGINE_CRITICAL_PATTERNS = [
   /^packages\/common-utils\/src\/core\/renderChartConfig\./,
   /^packages\/common-utils\/src\/core\/builderToRawSql\./,
-  /^packages\/common-utils\/src\/clickhouse\//,
+  /^packages\/common-utils\/src\/evalstore\//,
 ];
 
 // Docs and images carry no functional risk, so they never escalate a PR — not
@@ -82,9 +82,9 @@ const TEST_FILE_PATTERNS = [
   // so they carry no production risk and should not drive the tier.
   /\.stories\.[jt]sx?$/,
   /^packages\/app\/tests\//,
-  // E2E-only ClickHouse fixture, mounted solely by packages/app/tests/e2e. Its
+  // E2E-only legacy store fixture, mounted solely by packages/app/tests/e2e. Its
   // siblings (config.xml, users.xml) ship in the image and stay critical.
-  /^docker\/clickhouse\/local\/init-db-e2e\.sh$/,
+  /^docker\/evalstore\/local\/init-db-e2e\.sh$/,
 ];
 
 // Private packages that are never published. Excluded from production line

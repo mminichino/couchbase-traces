@@ -1,7 +1,7 @@
 // Server only: the Couchbase SDK is a native addon. Browser code must not
 // import this module; packages/app enforces that with no-restricted-imports.
 import type { QueryAttribution } from '@/query/attribution';
-import type { TeamClickHouseSettings } from '@/types';
+import type { TeamQuerySettings } from '@/types';
 
 import {
   type CouchbaseConnectionConfig,
@@ -49,14 +49,14 @@ export class CouchbaseNodeClient implements DataClient {
   /** Team `metadataMaxRowsToRead`, kept for the metadata layer (Phase 6). */
   readonly metadataMaxRows?: number;
   private readonly conn: CouchbaseConnectionConfig;
-  private readonly team: TeamClickHouseSettings | null;
+  private readonly team: TeamQuerySettings | null;
   private readonly logger: Logger;
   private readonly attribution?: QueryAttribution;
   private readonly open = new Set<CouchbaseResultSet<CouchbaseFormat>>();
 
   constructor(opts: {
     conn: CouchbaseConnectionConfig;
-    team?: TeamClickHouseSettings | null;
+    team?: TeamQuerySettings | null;
     requestTimeout?: number;
     logger?: Logger;
     attribution?: QueryAttribution;

@@ -67,7 +67,7 @@ function headerRows(meta: ColumnMeta[]): Row[] {
   ];
 }
 
-/** Rows take whatever type the caller names, as ClickHouse result sets do. */
+/** Rows take whatever type the caller names, as legacy store result sets do. */
 function callerTyped(value: unknown): any {
   return value;
 }

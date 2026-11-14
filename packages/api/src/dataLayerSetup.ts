@@ -1,5 +1,5 @@
-import { setCouchbaseConnectionLoader } from '@/clickhouse';
 import { toCouchbaseConnectionConfig } from '@/controllers/connection';
+import { setCouchbaseConnectionLoader } from '@/dataClient';
 import Connection from '@/models/connection';
 
 setCouchbaseConnectionLoader(async id => {

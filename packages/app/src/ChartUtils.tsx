@@ -267,8 +267,8 @@ export function toStartOfInterval(date: Date, granularity: SQLInterval): Date {
         ),
       );
     case 'day': {
-      // Clickhouse uses the # of days since unix epoch to round dates
-      // see: https://github.com/ClickHouse/ClickHouse/blob/master/src/Common/DateLUTImpl.h#L1059
+      // Cluster uses the # of days since unix epoch to round dates
+      // see: https://github.com/legacy store/legacy store/blob/master/src/Common/DateLUTImpl.h#L1059
       const daysSinceEpoch = date.getTime() / 1000 / 60 / 60 / 24;
       const daysSinceEpochRounded = roundFn(daysSinceEpoch / numInt) * numInt;
 
@@ -402,7 +402,7 @@ export const isAggregateFunction = (value: string) => {
     'kurtSamp',
   ];
 
-  // Make case-insensitive since ClickHouse function names are case-insensitive
+  // Make case-insensitive since legacy store function names are case-insensitive
   const lowerValue = value.toLowerCase();
   return fns.some(fn => lowerValue.includes(fn.toLowerCase() + '('));
 };

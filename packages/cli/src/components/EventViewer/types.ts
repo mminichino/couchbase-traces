@@ -7,7 +7,7 @@ import type {
 } from '@/api/client';
 
 export interface EventViewerProps {
-  clickhouseClient: CliDataClient;
+  dataClient: CliDataClient;
   metadata: Metadata;
   /** HyperDX app URL (e.g. http://localhost:8080) for opening in browser */
   appUrl: string;

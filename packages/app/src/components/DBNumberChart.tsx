@@ -285,7 +285,7 @@ export default function DBNumberChart({
   //   3. Default text color when nothing else resolves.
   //
   // The raw value (pre-format) is used so rules match on the actual data
-  // value, not the formatted string. ClickHouse returns UInt64 counts as
+  // value, not the formatted string. legacy store returns UInt64 counts as
   // strings over JSON (output_format_json_quote_64bit_integers=1), so
   // coerce string values to numbers when possible so numeric operators
   // match correctly.

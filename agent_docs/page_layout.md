@@ -68,7 +68,7 @@ Header styling is defined in `PageHeader.module.scss`: sticky top, bottom border
 - Put filters, tables, and tabs in a `Container` below the header (see `AlertsPage.tsx`, `DashboardsListPage.tsx`).
 - Simple title-only pages: `<PageHeader title="Dashboards" />` — **only** when the header row has **no** inputs.
 
-### Tool / canvas pages (Service Map, Kubernetes, Clickhouse, Chart Explorer)
+### Tool / canvas pages (Service Map, Kubernetes, Cluster, Chart Explorer)
 
 - Prefer `PageLayout` with `fillViewport` when the main UI should fill remaining height.
 - Put **global** controls in `actions` (time picker, sampling, Run)—not inside the canvas.
@@ -128,7 +128,7 @@ Sessions keeps a **single-row** query toolbar (source, where filter, time range,
 - Alerts, Dashboards, Saved Searches — `PageHeader` with `title`
 - Team — custom `PageHeader` `children` (editable name)
 - Service Map — `PageLayout` with `fillViewport`, `leading` / `actions` only (no `title`; top-level tool)
-- Kubernetes Dashboard, Clickhouse Dashboard — `PageLayout` with `breadcrumbs`, `leading`, `actions`, `padded` (no `title`)
+- Kubernetes Dashboard, Cluster dashboard — `PageLayout` with `breadcrumbs`, `leading`, `actions`, `padded` (no `title`)
 - Client Sessions — `PageLayout` with custom `PageHeader` containing the full single-row query toolbar
 
 ## Compact viewports

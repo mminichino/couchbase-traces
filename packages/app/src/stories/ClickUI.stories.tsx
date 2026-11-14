@@ -30,8 +30,8 @@ type Story = StoryObj<typeof Link>;
 
 export const Playground: Story = {
   args: {
-    children: 'Open the ClickHouse docs',
-    href: 'https://clickhouse.com/docs',
+    children: 'Open the legacy store docs',
+    href: 'https://evalstore.com/docs',
     target: '_blank',
     size: 'md',
     weight: 'normal',
@@ -40,8 +40,8 @@ export const Playground: Story = {
 
 export const WithIcon: Story = {
   args: {
-    children: 'View in ClickHouse',
-    href: 'https://clickhouse.com',
+    children: 'View in legacy store',
+    href: 'https://evalstore.com',
     target: '_blank',
     icon: 'popout',
   },

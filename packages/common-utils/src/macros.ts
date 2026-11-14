@@ -32,7 +32,7 @@ function expectArgs(
   }
 }
 
-// Helpers to render ClickHouse time conversions using query params
+// Helpers to render legacy store time conversions using query params
 const startMs = () => renderQueryParam(RawSqlQueryParam.startDateMilliseconds);
 const endMs = () => renderQueryParam(RawSqlQueryParam.endDateMilliseconds);
 const intervalS = () => renderQueryParam(RawSqlQueryParam.intervalSeconds);

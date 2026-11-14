@@ -1,11 +1,11 @@
 /** Shared MCP raw-SQL tool copy (Phase 8 §6.1). */
 export const RAW_SQL_PARAM_DESCRIPTION =
-  'Raw SQL for one source. Use ClickHouse SQL when the connection queryLanguage is clickhouse and SQL++ when queryLanguage is sqlpp. Call cbt_describe_source (or cbt_describe_table for non-source tables) first. Use this or queries, not both. Always include a LIMIT.\n\n' +
+  'Raw SQL for one source. Use legacy SQL when the connection queryLanguage is evalstore and SQL++ when queryLanguage is sqlpp. Call cbt_describe_source (or cbt_describe_table for non-source tables) first. Use this or queries, not both. Always include a LIMIT.\n\n' +
   'TIME FILTERING (preferred path):\n' +
   '  $__timeFilter(column)    — column >= <start> AND column <= <end> (DateTime precision)\n' +
   '  $__timeFilter_ms(column) — same with DateTime64 millisecond precision\n' +
   '  {startDateMilliseconds:Int64} / {endDateMilliseconds:Int64} — epoch ms parameters\n\n' +
-  'LITERAL-CAST FALLBACKS (ClickHouse sources):\n' +
+  'LITERAL-CAST FALLBACKS (legacy store sources):\n' +
   "  parseDateTime64BestEffortOrNull('2024-01-01T00:00:00Z')\n" +
   "  toDateTime64('2024-01-01 00:00:00', 9)\n\n" +
   'OTHER MACROS:\n' +
@@ -37,6 +37,6 @@ export const RAW_SQL_PARAM_DESCRIPTION =
 
 export const RAW_SQL_TOOL_DESCRIPTION =
   'Execute raw SQL. LAST-RESORT — prefer builder tools.\n\n' +
-  "Use each connection's queryLanguage from cbt_list_sources: clickhouse → ClickHouse SQL, sqlpp → SQL++. Always include a LIMIT.\n\n" +
+  "Use each connection's queryLanguage from cbt_list_sources: evalstore → legacy SQL, sqlpp → SQL++. Always include a LIMIT.\n\n" +
   'Requires connectionId; optional sourceId for $__sourceTable. Inspect columns with cbt_describe_source or cbt_describe_table first.\n\n' +
   'Pass queries[] instead of sql to run independent statements in parallel (each may use its own connectionId and dialect).';

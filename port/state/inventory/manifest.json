@@ -1,8 +1,8 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-11-13T22:55:44Z",
+  "generatedAt": "2026-11-14T05:34:44Z",
   "importCommit": "adcb75c16715a667ef5094b6850070d58bf29097",
-  "headCommit": "ead0428ac3460e1771d3bc10120e7e15de87300b",
+  "headCommit": "2174075a9798aa8a85147f156a4158ff4adbff62",
   "files": [
     "branding.json",
     "datalayer.json",
@@ -16,14 +16,14 @@
     "workspaces.json"
   ],
   "counts": {
-    "trackedFiles": 2487,
-    "sourceFiles": 1202,
-    "testFiles": 804,
-    "entryPoints": 210,
-    "dataLayerModules": 205,
-    "unmappedConstructs": 452,
-    "tables": 11,
-    "brandingHits": 11378
+    "trackedFiles": 2257,
+    "sourceFiles": 1185,
+    "testFiles": 734,
+    "entryPoints": 197,
+    "dataLayerModules": 171,
+    "unmappedConstructs": 343,
+    "tables": 0,
+    "brandingHits": 5919
   },
   "warnings": [
     {
@@ -40,16 +40,6 @@
       "code": "W_PLAN_MISSING",
       "count": 1,
       "first": "COUCHBASE_PORT_PLAN.md not found at the project root; plan check skipped (COUCHBASE_PORT_PLAN.md)"
-    },
-    {
-      "code": "W_SCHEMA_UNPARSED",
-      "count": 1,
-      "first": "Unparsed statement: CREATE DATABASE IF NOT EXISTS DATABASE (docker/otel-collector/schema/seed/00001_create_database.sql)"
-    },
-    {
-      "code": "W_TABLE_REDEFINED",
-      "count": 3,
-      "first": "Table otel_logs is defined in docker/otel-collector/schema/seed/00002_otel_logs.sql and docker/otel-collector/schema/seed/00002_otel_logs_compat.sql (docker/otel-collector/schema/seed/00002_otel_logs_compat.sql)"
     },
     {
       "code": "W_UNRESOLVED_IMPORT",

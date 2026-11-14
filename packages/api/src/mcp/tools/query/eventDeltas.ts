@@ -22,7 +22,7 @@ import { DataClient } from '@/query';
 import { trimToolResponse } from '@/utils/trimToolResponse';
 
 import { PREFER_BUILDER_OVER_SQL_NUDGE } from './builderCatalog';
-import { clickHouseErrorResult, parseTimeRange } from './helpers';
+import { parseTimeRange, queryErrorResult } from './helpers';
 
 // ─── Schema ──────────────────────────────────────────────────────────────────
 
@@ -268,10 +268,10 @@ export function registerEventDeltas({ context, registerTool }: ToolRegistrar) {
       );
       if (sliceErr) return sliceErr;
 
-      const clickhouseClient = new DataClient({
+      const dataClient = new DataClient({
         requestTimeout: MCP_REQUEST_TIMEOUT,
       });
-      const metadata = getMetadata(clickhouseClient);
+      const metadata = getMetadata(dataClient);
 
       // Build a stable per-source ORDER BY for sampling (matches what the
       // app does — uses spanIdExpression on traces, falls back to rand()).
@@ -317,7 +317,7 @@ export function registerEventDeltas({ context, registerTool }: ToolRegistrar) {
       );
 
       // Run renderChartConfig for both groups and getColumns in parallel —
-      // they're independent and each hits ClickHouse metadata.
+      // they're independent and each hits legacy store metadata.
       let targetSql, baselineSql;
       let columnMeta: { name: string; type: string }[] = [];
       let columnMetaUnavailable = false;
@@ -347,7 +347,7 @@ export function registerEventDeltas({ context, registerTool }: ToolRegistrar) {
           columnMetaUnavailable = true;
         }
       } catch (e) {
-        return clickHouseErrorResult(e, 'Failed to build sample queries');
+        return queryErrorResult(e, 'Failed to build sample queries');
       }
 
       let targetRows: Record<string, any>[];
@@ -355,14 +355,14 @@ export function registerEventDeltas({ context, registerTool }: ToolRegistrar) {
       const abortController = new AbortController();
       try {
         const [targetRes, baselineRes] = await Promise.all([
-          clickhouseClient.query({
+          dataClient.query({
             query: targetSql.sql,
             query_params: targetSql.params,
             format: 'JSON',
             connectionId: source.connection.toString(),
             abort_signal: abortController.signal,
           }),
-          clickhouseClient.query({
+          dataClient.query({
             query: baselineSql.sql,
             query_params: baselineSql.params,
             format: 'JSON',
@@ -380,7 +380,7 @@ export function registerEventDeltas({ context, registerTool }: ToolRegistrar) {
         baselineRows = baselineJson.data ?? [];
       } catch (e) {
         abortController.abort();
-        return clickHouseErrorResult(e, 'Failed to sample rows');
+        return queryErrorResult(e, 'Failed to sample rows');
       }
 
       const ranked = rankProperties({

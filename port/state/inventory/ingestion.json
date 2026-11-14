@@ -33,39 +33,14 @@
       "pipelines": []
     },
     {
-      "file": "docker/otel-collector/config.standalone.promql.yaml",
-      "receivers": [],
-      "processors": [],
-      "exporters": [
-        "prometheusremotewrite"
-      ],
-      "extensions": [],
-      "connectors": [],
-      "pipelines": [
-        {
-          "name": "metrics/promql",
-          "receivers": [
-            "otlp/hyperdx"
-          ],
-          "processors": [
-            "memory_limiter",
-            "batch"
-          ],
-          "exporters": [
-            "prometheusremotewrite"
-          ]
-        }
-      ]
-    },
-    {
       "file": "docker/otel-collector/config.standalone.yaml",
       "receivers": [
         "otlp/hyperdx"
       ],
       "processors": [],
       "exporters": [
-        "clickhouse",
-        "clickhouse/rrweb"
+        "otlphttp/couchbase",
+        "otlphttp/couchbase-rrweb"
       ],
       "extensions": [],
       "connectors": [
@@ -89,7 +64,7 @@
           ],
           "processors": [],
           "exporters": [
-            "clickhouse"
+            "otlphttp/couchbase"
           ]
         },
         {
@@ -99,7 +74,7 @@
           ],
           "processors": [],
           "exporters": [
-            "clickhouse/rrweb"
+            "otlphttp/couchbase-rrweb"
           ]
         },
         {
@@ -109,7 +84,7 @@
           ],
           "processors": [],
           "exporters": [
-            "clickhouse"
+            "otlphttp/couchbase"
           ]
         },
         {
@@ -119,7 +94,7 @@
           ],
           "processors": [],
           "exporters": [
-            "clickhouse"
+            "otlphttp/couchbase"
           ]
         }
       ]
@@ -192,98 +167,9 @@
       "extensions": [],
       "connectors": [],
       "pipelines": []
-    },
-    {
-      "file": "smoke-tests/otel-collector/custom-pipeline-config.yaml",
-      "receivers": [],
-      "processors": [
-        "batch/lowlatency",
-        "memory_limiter/custom"
-      ],
-      "exporters": [],
-      "extensions": [],
-      "connectors": [],
-      "pipelines": [
-        {
-          "name": "logs/out-default",
-          "receivers": [],
-          "processors": [],
-          "exporters": []
-        },
-        {
-          "name": "logs/out-rrweb",
-          "receivers": [],
-          "processors": [],
-          "exporters": []
-        },
-        {
-          "name": "metrics",
-          "receivers": [],
-          "processors": [
-            "memory_limiter/custom",
-            "batch/lowlatency"
-          ],
-          "exporters": []
-        },
-        {
-          "name": "traces",
-          "receivers": [],
-          "processors": [],
-          "exporters": []
-        }
-      ]
-    },
-    {
-      "file": "smoke-tests/otel-collector/receiver-config.yaml",
-      "receivers": [
-        "fluentforward",
-        "otlp/hyperdx",
-        "prometheus"
-      ],
-      "processors": [],
-      "exporters": [],
-      "extensions": [],
-      "connectors": [],
-      "pipelines": [
-        {
-          "name": "logs/in",
-          "receivers": [
-            "otlp/hyperdx",
-            "fluentforward"
-          ],
-          "processors": [],
-          "exporters": []
-        },
-        {
-          "name": "metrics",
-          "receivers": [
-            "otlp/hyperdx",
-            "prometheus"
-          ],
-          "processors": [],
-          "exporters": []
-        },
-        {
-          "name": "traces",
-          "receivers": [
-            "otlp/hyperdx"
-          ],
-          "processors": [],
-          "exporters": []
-        }
-      ]
     }
   ],
-  "clickhouseExporters": [
-    {
-      "file": "docker/otel-collector/config.standalone.yaml",
-      "name": "clickhouse"
-    },
-    {
-      "file": "docker/otel-collector/config.standalone.yaml",
-      "name": "clickhouse/rrweb"
-    }
-  ],
+  "clickhouseExporters": [],
   "managementCode": [
     "packages/api/src/config.ts",
     "packages/api/src/opamp/app.ts",
@@ -293,20 +179,11 @@
     "packages/api/src/opamp/utils/agentTelemetry.ts",
     "packages/api/src/opamp/utils/protobuf.ts",
     "packages/api/src/server.ts",
-    "packages/app/src/config.ts"
+    "packages/app/src/components/ExceptionSubpanel.tsx",
+    "packages/app/src/components/Iac/TerraformHelperPanel.tsx",
+    "packages/app/src/components/TeamSettings/McpServerSection.tsx",
+    "packages/app/src/config.ts",
+    "packages/app/src/stories/docs/AgentDoc.tsx"
   ],
-  "goSources": [
-    {
-      "file": "packages/otel-collector/cmd/migrate/main.go",
-      "package": "main",
-      "clickhouseImports": [
-        "github.com/ClickHouse/clickhouse-go/v2"
-      ]
-    },
-    {
-      "file": "packages/otel-collector/cmd/migrate/main_test.go",
-      "package": "main",
-      "clickhouseImports": []
-    }
-  ]
+  "goSources": []
 }

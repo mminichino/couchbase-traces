@@ -54,7 +54,7 @@ export type ScenarioBatch = {
  * Context passed to the system prompt builder hook.
  */
 export type SystemPromptContext = {
-  /** Scenario-specific ClickHouse table names. */
+  /** Scenario-specific source table names. */
   tables: { traces: string; logs: string };
   /** Fixed anchor time ISO string (if set). */
   anchorTimeIso?: string;

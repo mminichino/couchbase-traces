@@ -40,7 +40,6 @@ export type HeatmapChartConfig = {
 export type HeatmapSeriesChartConfig = BuilderChartConfigWithDateRange;
 
 /** @deprecated PromQL heatmaps removed; kept for import stability. */
-export const PROMQL_DEFAULT_HEATMAP_SCALE_TYPE: HeatmapScaleType = 'linear';
 
 export type HeatmapQuery =
   | {

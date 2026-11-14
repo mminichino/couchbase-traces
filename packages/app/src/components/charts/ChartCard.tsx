@@ -23,7 +23,7 @@ export interface ChartCardProps {
  * (centered title row + a full-bleed bottom divider under the title).
  *
  * Not dashboard-specific — use it anywhere a chart should read as a card (search
- * page, service dashboards, the ClickHouse page, etc.).
+ * page, service dashboards, the legacy store page, etc.).
  *
  * The header divider is only drawn when a descendant renders a `ChartContainer`
  * with a `title` or `toolbarItems` (e.g. `DBTimeChart`, `DBTableChart`); this

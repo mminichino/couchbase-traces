@@ -1,1 +1,1 @@
-export * from '@/clickhouse/insert';
+export * from '@/store/insert';

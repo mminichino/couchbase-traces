@@ -581,7 +581,7 @@ export class DashboardPage {
 
     // Wait for query to complete
     await this.page.waitForResponse(
-      resp => resp.url().includes('/clickhouse-proxy') && resp.status() === 200,
+      resp => resp.url().includes('/evalstore-proxy') && resp.status() === 200,
     );
     // Wait for tile to be added
     await this.saveTile();
@@ -1562,7 +1562,7 @@ export class DashboardPage {
     });
   }
 
-  /** The ad hoc filter form's ClickHouse / Prometheus source type control. */
+  /** The ad hoc filter form's legacy store / Prometheus source type control. */
   getAdhocFilterSourceTypeControl(): Locator {
     return this.getFilterForm().getByTestId('adhoc-filter-source-type');
   }
@@ -1572,8 +1572,8 @@ export class DashboardPage {
     return this.getFilterForm().getByTestId('adhoc-filter-sources');
   }
 
-  /** Switch the ad hoc filter form between ClickHouse and Prometheus sources. */
-  async selectAdhocFilterSourceType(label: 'ClickHouse' | 'Prometheus') {
+  /** Switch the ad hoc filter form between legacy store and Prometheus sources. */
+  async selectAdhocFilterSourceType(label: 'legacy store' | 'Prometheus') {
     await this.getAdhocFilterSourceTypeControl()
       .getByText(label, { exact: true })
       .click();
@@ -1599,7 +1599,7 @@ export class DashboardPage {
     sourceNames: string[],
     options?: {
       variableName?: string;
-      sourceType?: 'ClickHouse' | 'Prometheus';
+      sourceType?: 'legacy store' | 'Prometheus';
       where?: FilterWhereOptions;
     },
   ) {

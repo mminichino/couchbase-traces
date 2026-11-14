@@ -32,8 +32,8 @@ import logger from '@/utils/logger';
 import { type Reduction, trimToolResponse } from '@/utils/trimToolResponse';
 
 import {
-  clickHouseErrorResult,
   normalizeBodyExpression,
+  queryErrorResult,
   resolveBodyExpression,
 } from './helpers';
 import {
@@ -172,10 +172,10 @@ export async function mineWindowPatterns(
   );
   if (sliceErr) return { error: sliceErr };
 
-  const clickhouseClient = new DataClient({
+  const dataClient = new DataClient({
     requestTimeout: MCP_REQUEST_TIMEOUT,
   });
-  const metadata = getMetadata(clickhouseClient);
+  const metadata = getMetadata(dataClient);
   const tsExpr = getFirstTimestampValueExpression(
     source.timestampValueExpression,
   );
@@ -276,7 +276,7 @@ export async function mineWindowPatterns(
   let userWhereSql: string | null | undefined;
   try {
     [sampleResult, countResult, userWhereSql] = await Promise.all([
-      clickhouseClient.queryChartConfig({
+      dataClient.queryChartConfig({
         config: sampleConfig,
         metadata,
         querySettings: source.querySettings,
@@ -284,7 +284,7 @@ export async function mineWindowPatterns(
           abort_signal: options?.abortSignal,
         },
       }),
-      clickhouseClient.queryChartConfig({
+      dataClient.queryChartConfig({
         config: countConfig,
         metadata,
         querySettings: source.querySettings,
@@ -296,9 +296,9 @@ export async function mineWindowPatterns(
     ]);
   } catch (err) {
     queriesFailed = true;
-    return { error: clickHouseErrorResult(err) };
+    return { error: queryErrorResult(err) };
   } finally {
-    await clickhouseClient.close().catch(() => {});
+    await dataClient.close().catch(() => {});
   }
 
   const sampleRows = sampleResult.data ?? [];

@@ -275,7 +275,7 @@ export default function EditTimeChartForm({
   // variant (e.g. avg + p95 of the same column) does not have to be re-entered.
   // structuredClone keeps the copy independent of the source row. The alias is
   // cleared on the copy: a non-empty alias renders as `AS "<alias>"`, so two
-  // rows sharing one alias produce duplicate column names and ClickHouse rejects
+  // rows sharing one alias produce duplicate column names and legacy store rejects
   // the query. An empty alias renders without `AS`, giving each row a distinct
   // auto-generated name.
   const duplicateSeries = useCallback(

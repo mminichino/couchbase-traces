@@ -1,5 +1,1 @@
-export {
-  ClickhouseClient,
-  DataClient,
-  setCouchbaseConnectionLoader,
-} from './clickhouse';
+export { DataClient, setCouchbaseConnectionLoader } from './dataClient';

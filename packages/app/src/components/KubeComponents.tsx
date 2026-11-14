@@ -21,7 +21,7 @@ import {
   uuidExpr,
 } from '@/couchbase/dialectExpr';
 import { useMetadataWithSettings } from '@/hooks/useMetadata';
-import { useClickhouseClient } from '@/query';
+import { useDataClient } from '@/query';
 import { getDisplayedTimestampValueExpression } from '@/source';
 import { KubePhase } from '@/types';
 import { FormatTime } from '@/useFormatTime';
@@ -62,7 +62,7 @@ export const useV2LogBatch = <T = any,>(
   },
   options?: Omit<UseQueryOptions<any>, 'queryKey' | 'queryFn'>,
 ) => {
-  const clickhouseClient = useClickhouseClient();
+  const dataClient = useDataClient();
   const metadata = useMetadataWithSettings();
   return useQuery<ResponseJSON<T>, Error>({
     queryKey: [
@@ -111,7 +111,7 @@ export const useV2LogBatch = <T = any,>(
         logSource.querySettings,
       );
 
-      const json = await clickhouseClient
+      const json = await dataClient
         .query({
           query: query.sql,
           query_params: query.params,

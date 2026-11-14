@@ -135,7 +135,7 @@ const orgApiKeyAuthFailures = getCounter('cbt.org_api_key.auth_failures', {
 });
 
 /**
- * Continue the request with its route recorded on any ClickHouse queries it
+ * Continue the request with its route recorded on any legacy store queries it
  * makes. Here because every authenticated route passes through this point.
  */
 function nextWithQueryAttribution(req: Request, next: NextFunction): void {

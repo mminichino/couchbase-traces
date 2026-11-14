@@ -29,7 +29,7 @@ const RELEASE_EMPTY_NOTIFICATION_ID = 'release-markers-empty';
 const RELEASE_ERROR_NOTIFICATION_ID = 'release-markers-error';
 
 /**
- * A ClickHouse error message often echoes the full rendered SQL, which reads
+ * A query error message often echoes the full rendered SQL, which reads
  * as an unreadable wall of text in a toast. Truncating keeps the notification
  * skimmable while still surfacing enough of the raw error to be useful.
  */
@@ -56,7 +56,7 @@ const BUCKET_MS = 60_000;
 const MIN_LOOKBACK_MS = 30 * 60_000;
 const LOOKBACK_RATIO = 0.1;
 
-/** A row of the releases query. Values arrive as strings from ClickHouse. */
+/** A row of the releases query. Values arrive as strings from legacy store. */
 export type ReleaseRow = {
   firstSeen?: string | number | null;
   version?: string | null;

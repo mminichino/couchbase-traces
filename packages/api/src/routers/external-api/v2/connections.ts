@@ -3,7 +3,7 @@ import {
   ConnectionSchema,
   ConnectionSchemaNoId,
   CouchbaseConnectionSchema,
-  UnsupportedClickHouseConnectionSchema,
+  UnsupportedLegacyConnectionSchema,
 } from '@couchbase-traces/common-utils/dist/types';
 import express from 'express';
 import { z } from 'zod';
@@ -35,7 +35,7 @@ const externalCouchbaseConnectionSchema = CouchbaseConnectionSchema.omit({
 }).extend(timestampFields);
 
 const externalConnectionSchema = z.discriminatedUnion('kind', [
-  UnsupportedClickHouseConnectionSchema,
+  UnsupportedLegacyConnectionSchema,
   externalCouchbaseConnectionSchema,
 ]);
 
@@ -92,7 +92,7 @@ function formatExternalConnection(connection: ConnectionDocument) {
  *         name:
  *           type: string
  *           description: Display name for the connection.
- *           example: Production ClickHouse
+ *           example: Production legacy store
  *         kind:
  *           type: string
  *           enum: [clickhouse, couchbase]
@@ -101,20 +101,20 @@ function formatExternalConnection(connection: ConnectionDocument) {
  *           example: clickhouse
  *         host:
  *           type: string
- *           description: ClickHouse HTTP endpoint URL, or a `couchbase://` / `couchbases://` connection string for Couchbase connections.
+ *           description: query HTTP endpoint URL, or a `couchbase://` / `couchbases://` connection string for Couchbase connections.
  *           example: https://clickhouse.example.com:8443
  *         username:
  *           type: string
- *           description: ClickHouse username.
+ *           description: legacy store username.
  *           example: default
  *         hyperdxSettingPrefix:
  *           type: string
- *           description: Optional prefix for Couchbase Traces-specific ClickHouse settings. Must only contain alphanumeric characters and underscores.
+ *           description: Optional prefix for Couchbase Traces-specific legacy store settings. Must only contain alphanumeric characters and underscores.
  *           nullable: true
  *           example: hyperdx_
  *         isPrometheusEndpoint:
  *           type: boolean
- *           description: Optional. When true, `host` is treated as a Prometheus-compatible API endpoint (e.g. Prometheus or Thanos) and PromQL queries are proxied to it. When false or omitted, `host` is a ClickHouse HTTP endpoint.
+ *           description: Optional. When true, `host` is treated as a Prometheus-compatible API endpoint (e.g. Prometheus or Thanos) and PromQL queries are proxied to it. When false or omitted, `host` is a query HTTP endpoint.
  *           example: false
  *         wanProfile:
  *           type: boolean
@@ -140,7 +140,7 @@ function formatExternalConnection(connection: ConnectionDocument) {
  *         name:
  *           type: string
  *           description: Display name for the connection.
- *           example: Production ClickHouse
+ *           example: Production legacy store
  *         kind:
  *           type: string
  *           enum: [clickhouse, couchbase]
@@ -149,25 +149,25 @@ function formatExternalConnection(connection: ConnectionDocument) {
  *           example: clickhouse
  *         host:
  *           type: string
- *           description: ClickHouse HTTP endpoint URL, or a `couchbase://` / `couchbases://` connection string for Couchbase connections.
+ *           description: query HTTP endpoint URL, or a `couchbase://` / `couchbases://` connection string for Couchbase connections.
  *           example: https://clickhouse.example.com:8443
  *         username:
  *           type: string
- *           description: ClickHouse username.
+ *           description: legacy store username.
  *           example: default
  *         password:
  *           type: string
  *           writeOnly: true
- *           description: ClickHouse password. Never returned by the API.
+ *           description: legacy store password. Never returned by the API.
  *           example: my-secret-password
  *         hyperdxSettingPrefix:
  *           type: string
- *           description: Optional prefix for Couchbase Traces-specific ClickHouse settings. Must only contain alphanumeric characters and underscores.
+ *           description: Optional prefix for Couchbase Traces-specific legacy store settings. Must only contain alphanumeric characters and underscores.
  *           nullable: true
  *           example: hyperdx_
  *         isPrometheusEndpoint:
  *           type: boolean
- *           description: Optional. When true, `host` is treated as a Prometheus-compatible API endpoint (e.g. Prometheus or Thanos) and PromQL queries are proxied to it. When false or omitted, `host` is a ClickHouse HTTP endpoint.
+ *           description: Optional. When true, `host` is treated as a Prometheus-compatible API endpoint (e.g. Prometheus or Thanos) and PromQL queries are proxied to it. When false or omitted, `host` is a query HTTP endpoint.
  *           example: false
  *         wanProfile:
  *           type: boolean
@@ -204,7 +204,7 @@ function formatExternalConnection(connection: ConnectionDocument) {
  *         name:
  *           type: string
  *           description: Display name for the connection.
- *           example: Production ClickHouse
+ *           example: Production legacy store
  *         kind:
  *           type: string
  *           enum: [clickhouse, couchbase]
@@ -213,25 +213,25 @@ function formatExternalConnection(connection: ConnectionDocument) {
  *           example: clickhouse
  *         host:
  *           type: string
- *           description: ClickHouse HTTP endpoint URL, or a `couchbase://` / `couchbases://` connection string for Couchbase connections.
+ *           description: query HTTP endpoint URL, or a `couchbase://` / `couchbases://` connection string for Couchbase connections.
  *           example: https://clickhouse.example.com:8443
  *         username:
  *           type: string
- *           description: ClickHouse username.
+ *           description: legacy store username.
  *           example: default
  *         password:
  *           type: string
  *           writeOnly: true
- *           description: ClickHouse password. If omitted or empty, the existing password is kept.
+ *           description: legacy store password. If omitted or empty, the existing password is kept.
  *           example: my-new-secret-password
  *         hyperdxSettingPrefix:
  *           type: string
- *           description: Optional prefix for Couchbase Traces-specific ClickHouse settings. Set to null or an empty string to clear the existing value. If omitted, the existing value is kept.
+ *           description: Optional prefix for Couchbase Traces-specific legacy store settings. Set to null or an empty string to clear the existing value. If omitted, the existing value is kept.
  *           nullable: true
  *           example: hyperdx_
  *         isPrometheusEndpoint:
  *           type: boolean
- *           description: Optional. When true, `host` is treated as a Prometheus-compatible API endpoint. When false or omitted, `host` is a ClickHouse HTTP endpoint. Omit to keep the existing value unchanged.
+ *           description: Optional. When true, `host` is treated as a Prometheus-compatible API endpoint. When false or omitted, `host` is a query HTTP endpoint. Omit to keep the existing value unchanged.
  *           example: false
  *         wanProfile:
  *           type: boolean
@@ -440,7 +440,7 @@ router.get(
  * /api/v2/connections:
  *   post:
  *     summary: Create Connection
- *     description: Creates a new ClickHouse or Couchbase connection
+ *     description: Creates a new legacy store or Couchbase connection
  *     operationId: createConnection
  *     tags: [Connections]
  *     requestBody:

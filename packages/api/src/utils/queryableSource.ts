@@ -9,13 +9,3 @@ export function toQueryableTSource(source: ISource): TSource {
   }
   return source as unknown as TSource;
 }
-
-export function skipPromqlSource<T>(
-  source: ISource,
-  fn: (s: TSource) => T,
-): T | null {
-  if (source.kind === SourceKind.Promql) {
-    return null;
-  }
-  return fn(toQueryableTSource(source));
-}

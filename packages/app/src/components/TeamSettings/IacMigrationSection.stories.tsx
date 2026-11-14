@@ -35,7 +35,7 @@ const meta = {
             ],
             sources: [{ id: '655b1b7d9143aa1b1b73f4f9', name: 'Logs' }],
             connections: [
-              { id: '655b1b7d9143aa1b1b73f4fa', name: 'Local ClickHouse' },
+              { id: '655b1b7d9143aa1b1b73f4fa', name: 'Local connection' },
             ],
             webhooks: [],
             truncatedTypes: [],

@@ -178,7 +178,7 @@ const sampleRows = (() => {
       rows.push(
         makeRow(
           `svc-${g}-w${s}`,
-          services[4 + (s % 4)], // postgres / redis / kafka / clickhouse
+          services[4 + (s % 4)], // postgres / redis / kafka / evalstore
           `${shortOps[s % shortOps.length]} row-${s}`,
           start,
           childDuration,

@@ -5,7 +5,7 @@
  *
  * Generates a WHERE clause to uniquely identify a row for a SELECT * lookup.
  * Uses column metadata + alias map to resolve aliased column names back to
- * actual ClickHouse expressions, with proper type handling for each column.
+ * actual legacy store expressions, with proper type handling for each column.
  *
  * This file uses the same exports as the web frontend so it can be moved
  * to common-utils later.
@@ -184,7 +184,7 @@ function buildAliasWith(
  *
  * When primaryKeyColumns is provided, only those columns are used in the
  * WHERE clause. This avoids filtering on large columns like Body that
- * trigger expensive index loading in ClickHouse.
+ * trigger expensive index loading in legacy store.
  */
 export function getRowWhere(
   row: Record<string, unknown>,

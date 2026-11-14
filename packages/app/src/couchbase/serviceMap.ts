@@ -24,7 +24,7 @@ function mergeParams(
 /**
  * Service-map query for Couchbase per Phase 7 §9.3.
  * Child→parent equi-join on (traceId, parentSpanId=spanId), matching the
- * ClickHouse join keys; document KEYS form is equivalent when joining the
+ * legacy store join keys; document KEYS form is equivalent when joining the
  * base collection (`TraceId || ":" || ParentSpanId`). GROUPING SETS becomes
  * UNION ALL of edge and node aggregations.
  */

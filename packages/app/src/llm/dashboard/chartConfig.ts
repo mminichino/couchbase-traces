@@ -56,7 +56,7 @@ export function baseLLMChartConfig({
     ...pickSampleWeightExpressionProps(source),
     // Bind the (catalog-sized) cost expression once per query; charts
     // reference it as LLM_COST_SQL_ALIAS. Referencing the full expression
-    // repeatedly would exceed ClickHouse's default 256 KiB max_query_size.
+    // repeatedly would exceed legacy store's default 256 KiB max_query_size.
     ...(withCostAlias
       ? {
           with: [
@@ -128,7 +128,7 @@ export function buildTrimmedDeltaSelect(
 
 /**
  * Build a where-clause fragment for a delta-chart filter click. `property`
- * arrives in ClickHouse bracket notation (e.g.
+ * arrives in legacy store bracket notation (e.g.
  * `SpanAttributes['gen_ai.request.model']`) from DBDeltaChart. For lucene,
  * bracket notation is converted to the dot form the lucene parser expects.
  * The 'only' action is equivalent to 'include' here — with a single where

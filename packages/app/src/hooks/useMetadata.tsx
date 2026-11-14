@@ -62,7 +62,7 @@ export function useMetadataWithSettings() {
 
     const createNewMetadata = (event: StorageEvent) => {
       if (event.key === LOCAL_STORE_CONNECTIONS_KEY && event.newValue) {
-        // Create a new metadata instance with a new ClickHouse client,
+        // Create a new metadata instance with a new data client,
         // since the existing one will not have connection / auth info.
         setMetadata(getMetadata());
         // Clear react-query cache so that metadata is refetched with
@@ -110,7 +110,7 @@ export function useColumns(
   });
 }
 
-// Derives a map of DateTime/Date column name → ClickHouse type.
+// Derives a map of DateTime/Date column name → legacy store type.
 export function useDateTimeColumns(
   columns: ColumnMetaType[] | undefined,
 ): Map<string, string> {

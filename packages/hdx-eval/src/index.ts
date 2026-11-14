@@ -1,4 +1,3 @@
-export { scenarioTables } from './clickhouse/schema';
 export {
   makeExponentialHistogram,
   makeGauge,
@@ -27,3 +26,4 @@ export type {
   Scenario,
   ScenarioBatch,
 } from './scenarios/types';
+export { scenarioTables } from './store/schema';

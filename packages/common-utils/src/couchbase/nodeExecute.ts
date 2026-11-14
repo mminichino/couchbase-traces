@@ -2,7 +2,7 @@
 import type { QueryMetaData, QueryOptions } from 'couchbase';
 import { QueryScanConsistency } from 'couchbase';
 
-import type { TeamClickHouseSettings } from '@/types';
+import type { TeamQuerySettings } from '@/types';
 
 import { normalizeParameters } from './browser';
 import { CouchbaseQueryError, fromSdkError, serialize } from './errors';
@@ -103,7 +103,7 @@ function mergeMeta(
 
 function buildSdkOptions(
   inputs: CouchbaseQueryInputs<any>,
-  team: TeamClickHouseSettings | null,
+  team: TeamQuerySettings | null,
   logger: Logger,
 ): QueryOptions {
   const cfg = getCouchbaseRuntimeConfig();
@@ -154,7 +154,7 @@ function buildSdkOptions(
 export async function* executeQuery(args: {
   conn: CouchbaseConnectionConfig;
   inputs: CouchbaseQueryInputs<any>;
-  team: TeamClickHouseSettings | null;
+  team: TeamQuerySettings | null;
   signal?: AbortSignal;
   frameRows: number;
   /** Tests only; never set by the API route or clients */

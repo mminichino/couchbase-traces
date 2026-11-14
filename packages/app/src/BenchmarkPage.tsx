@@ -8,7 +8,7 @@ import { Button, Code, Grid, Stack, Table, Text, Title } from '@mantine/core';
 import { useQuery, UseQueryOptions } from '@tanstack/react-query';
 
 import { SQLEditorControlled } from '@/components/SQLEditor/SQLEditor';
-import { useClickhouseClient } from '@/query';
+import { useDataClient } from '@/query';
 
 import { ConnectionSelectControlled } from './components/ConnectionSelect';
 import DBTableChart from './components/DBTableChart';
@@ -24,7 +24,7 @@ function useBenchmarkQueryIds({
   iterations?: number;
 }) {
   const enabled = queries.length > 0 && connections.length > 0;
-  const clickhouseClient = useClickhouseClient();
+  const dataClient = useDataClient();
 
   return useQuery({
     enabled,
@@ -39,12 +39,12 @@ function useBenchmarkQueryIds({
           // ask CH to use ours instead
           const queryId = crypto.randomUUID();
 
-          await clickhouseClient
+          await dataClient
             .query({
               query: shuffledQueries[j],
               connectionId: connections[j],
-              format: 'NULL' as DataFormat, // clickhouse doesn't have this under the client-js lib for some reason
-              clickhouse_settings: {
+              format: 'NULL' as DataFormat, // evalstore doesn't have this under the client-js lib for some reason
+              query_settings: {
                 min_bytes_to_use_direct_io: '1',
                 use_query_cache: 0,
                 wait_end_of_query: 1,
@@ -81,13 +81,13 @@ function useEstimates(
   },
   options: Omit<UseQueryOptions<any>, 'queryKey' | 'queryFn'> = {},
 ) {
-  const clickhouseClient = useClickhouseClient();
+  const dataClient = useDataClient();
   return useQuery({
     queryKey: ['estimate', queries, connections],
     queryFn: async () => {
       return Promise.all(
         queries.map((query, i) =>
-          clickhouseClient
+          dataClient
             .query({
               query: `EXPLAIN ESTIMATE ${query}`,
               format: 'JSON',
@@ -111,13 +111,13 @@ function useIndexes(
   },
   options: Omit<UseQueryOptions<any>, 'queryKey' | 'queryFn'> = {},
 ) {
-  const clickhouseClient = useClickhouseClient();
+  const dataClient = useDataClient();
   return useQuery({
     queryKey: ['indexes', queries, connections],
     queryFn: async () => {
       return Promise.all(
         queries.map((query, i) =>
-          clickhouseClient
+          dataClient
             .query({
               query: `EXPLAIN indexes=1, json=1, description = 0 ${query}`,
               format: 'TabSeparatedRaw',
@@ -217,7 +217,7 @@ function BenchmarkPage() {
   return (
     <div className="p-4">
       <Title order={1} fw={400} mb="md">
-        Clickhouse Query Benchmark
+        Cluster Query Benchmark
       </Title>
       <form onSubmit={handleSubmit(onSubmit)}>
         <Stack gap="md">

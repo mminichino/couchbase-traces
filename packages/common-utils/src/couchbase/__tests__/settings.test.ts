@@ -27,13 +27,12 @@ describe('resolveQueryOptions timeout', () => {
     const team = { queryTimeout: 4 };
     expect(
       resolve(
-        { timeoutMs: 1000, clickhouse_settings: ch, sourceSettings: settings },
+        { timeoutMs: 1000, query_settings: ch, sourceSettings: settings },
         team,
       ).timeoutMs,
     ).toBe(1000);
     expect(
-      resolve({ clickhouse_settings: ch, sourceSettings: settings }, team)
-        .timeoutMs,
+      resolve({ query_settings: ch, sourceSettings: settings }, team).timeoutMs,
     ).toBe(2000);
     expect(resolve({ sourceSettings: settings }, team).timeoutMs).toBe(3000);
     expect(resolve({}, team).timeoutMs).toBe(4000);
@@ -43,7 +42,7 @@ describe('resolveQueryOptions timeout', () => {
   it('ignores values ≤ 0 and caps at maxTimeoutMs', () => {
     expect(
       resolve(
-        { timeoutMs: 0, clickhouse_settings: { max_execution_time: -1 } },
+        { timeoutMs: 0, query_settings: { max_execution_time: -1 } },
         { queryTimeout: 0 },
       ).timeoutMs,
     ).toBe(60000);
@@ -149,12 +148,12 @@ describe('resolveQueryOptions other options', () => {
     };
     resolve(
       {
-        clickhouse_settings: { some_unique_setting: 1, max_execution_time: 1 },
+        query_settings: { some_unique_setting: 1, max_execution_time: 1 },
       },
       null,
       logger,
     );
-    resolve({ clickhouse_settings: { some_unique_setting: 1 } }, null, logger);
+    resolve({ query_settings: { some_unique_setting: 1 } }, null, logger);
     expect(logger.debug).toHaveBeenCalledTimes(1);
   });
 });

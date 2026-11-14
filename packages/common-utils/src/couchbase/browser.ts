@@ -38,7 +38,7 @@ export function buildQueryRequestBody(
   queryId: string,
   attribution: QueryAttribution | undefined,
 ): CouchbaseQueryRequestBody {
-  const maxExec = Number(inputs.clickhouse_settings?.max_execution_time);
+  const maxExec = Number(inputs.query_settings?.max_execution_time);
   const timeoutMs =
     inputs.timeoutMs ??
     (Number.isFinite(maxExec) && maxExec > 0 ? maxExec * 1000 : undefined);

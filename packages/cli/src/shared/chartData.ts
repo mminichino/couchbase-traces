@@ -94,7 +94,7 @@ function toStartOfInterval(date: Date, granularity: SQLInterval): Date {
         ),
       );
     case 'day': {
-      // Clickhouse uses the # of days since unix epoch to round dates
+      // Cluster uses the # of days since unix epoch to round dates
       const daysSinceEpoch = date.getTime() / 1000 / 60 / 60 / 24;
       const daysSinceEpochRounded = roundFn(daysSinceEpoch / numInt) * numInt;
 

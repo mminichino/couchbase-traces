@@ -23,7 +23,7 @@
  * page's event of the same id and corrupts it. Second precision is not enough,
  * since two page loads can start within the same second.
  *
- * ClickHouse returns the attributes as strings (or `''` when absent), so all
+ * legacy store returns the attributes as strings (or `''` when absent), so all
  * fields are coerced before use.
  */
 

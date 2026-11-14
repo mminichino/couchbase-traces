@@ -29,7 +29,7 @@ type ChartFormulaEditorProps = {
  * (`A` = series 1, `B` = series 2, ...). See `core/formula.ts` in
  * common-utils for the grammar; expressions are validated inline with the
  * same structured validator the query renderer uses, so errors surface here
- * before they can reach ClickHouse.
+ * before they can reach legacy store.
  */
 export function ChartFormulaEditor({
   control,

@@ -22,7 +22,7 @@ type DetailTab = 'overview' | 'columns' | 'trace';
 type DetailPanelProps = {
   source: SourceResponse;
   sources: SourceResponse[];
-  clickhouseClient: CliDataClient;
+  dataClient: CliDataClient;
   metadata: Metadata;
   detailTab: DetailTab;
   expandedRowData: Record<string, unknown> | null;
@@ -51,7 +51,7 @@ type DetailPanelProps = {
   expandedRow: number;
   /** Callback when the trace tab's SQL changes */
   onTraceChSqlChange?: (
-    chSql: { sql: string; params: Record<string, unknown> } | null,
+    sqlExpr: { sql: string; params: Record<string, unknown> } | null,
   ) => void;
   /** Callback when the selected span/log node in the trace waterfall changes */
   onTraceSelectedNodeChange?: (node: SpanNode | null) => void;
@@ -60,7 +60,7 @@ type DetailPanelProps = {
 export function DetailPanel({
   source,
   sources,
-  clickhouseClient,
+  dataClient,
   metadata,
   detailTab,
   expandedRowData,
@@ -222,7 +222,7 @@ export function DetailPanel({
 
           return (
             <TraceWaterfall
-              clickhouseClient={clickhouseClient}
+              dataClient={dataClient}
               metadata={metadata}
               source={traceSource}
               logSource={logSource}

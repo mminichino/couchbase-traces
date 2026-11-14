@@ -222,9 +222,9 @@ describe('MCP Dashboard Prompts', () => {
       expect(section).toMatch(/AS Route/);
     });
 
-    it('points at Couchbase Traces and ClickHouse docs in REFERENCES', () => {
+    it('points at Couchbase Traces and SQL++ docs in REFERENCES', () => {
       // Without external doc links, the LLM has to guess at Lucene
-      // operators and ClickHouse function names. Anchor the canonical
+      // operators and SQL++ function names. Anchor the canonical
       // URLs in the prompt so it can cite them and so a future doc
       // restructure can be caught here.
       const prompt = buildQueryGuidePrompt();
@@ -234,7 +234,9 @@ describe('MCP Dashboard Prompts', () => {
       expect(section).toContain(
         'https://github.com/mminichino/couchbase-traces/tree/main/docs',
       );
-      expect(section).toContain('https://clickhouse.com/docs/sql-reference');
+      expect(section).toContain(
+        'https://docs.couchbase.com/server/current/n1ql/n1ql-language-reference/index.html',
+      );
       expect(section).toContain(
         'https://github.com/mminichino/couchbase-traces/tree/main/docs',
       );

@@ -63,10 +63,10 @@ export const HEATMAP_AUTO_GRANULARITY_BUCKETS = 245;
  */
 export const MAX_TABLE_ROWS = 10_000;
 
-/** Code-point limit for row-lookup string hashes (matches ClickHouse leftUTF8). */
+/** Code-point limit for row-lookup string hashes (matches legacy store leftUTF8). */
 export const LEFT_UTF8_HASH_CODE_POINTS = 1000;
 
-/** First `limit` Unicode code points, matching ClickHouse leftUTF8(s, limit). */
+/** First `limit` Unicode code points, matching legacy store leftUTF8(s, limit). */
 export function leftUtf8Prefix(value: string, limit: number): string {
   let prefix = '';
   let n = 0;
@@ -139,7 +139,7 @@ export function splitAndTrimCSV(input: string): string[] {
     .filter(column => column.length > 0);
 }
 
-/** Escape a value for embedding in a single-quoted ClickHouse string literal. */
+/** Escape a value for embedding in a single-quoted legacy store string literal. */
 export const escapeSqlString = (value: string) =>
   value.replace(/\\/g, '\\\\').replace(/'/g, "''");
 
@@ -239,7 +239,7 @@ export function getFirstTimestampValueExpression(valueExpression: string) {
 export type TimestampTypeKind = 'date' | 'datetime' | 'datetime64';
 
 /**
- * Classify a ClickHouse timestamp type into its kind and sub-second precision.
+ * Classify a legacy store timestamp type into its kind and sub-second precision.
  *
  * `kind: 'date'` means day precision — a value read from such a column lands at
  * midnight and can't locate an event within its day. Callers that need an
@@ -753,8 +753,8 @@ export function toStartOfInterval(date: Date, granularity: SQLInterval): Date {
         ),
       );
     case 'day': {
-      // Clickhouse uses the # of days since unix epoch to round dates
-      // see: https://github.com/ClickHouse/ClickHouse/blob/master/src/Common/DateLUTImpl.h#L1059
+      // Cluster uses the # of days since unix epoch to round dates
+      // see: https://github.com/legacy store/legacy store/blob/master/src/Common/DateLUTImpl.h#L1059
       const daysSinceEpoch = date.getTime() / 1000 / 60 / 60 / 24;
       const daysSinceEpochRounded = roundFn(daysSinceEpoch / numInt) * numInt;
 
@@ -1102,7 +1102,7 @@ export function convertToCategoricalChartConfig(
     if (!firstSelect.alias?.trim()) {
       firstSelect.alias = 'Value';
     }
-    // Quote the alias as a ClickHouse identifier, doubling any embedded
+    // Quote the alias as a legacy store identifier, doubling any embedded
     // double quotes so aliases like `Request "Count"` are escaped correctly.
     const quotedAlias = `"${firstSelect.alias.trim().replace(/"/g, '""')}"`;
     convertedConfig.orderBy = [
@@ -1608,7 +1608,7 @@ export function parseTokenizerFromTextIndex({
 }
 
 /**
- * Converts an aliasMap (e.g. from chSqlToAliasMap) to an array of WITH clause entries.
+ * Converts an aliasMap (e.g. from sqlExprToAliasMap) to an array of WITH clause entries.
  * These WITH clauses define aliases as expressions (isSubquery: false),
  * making them available in WHERE and other clauses.
  */

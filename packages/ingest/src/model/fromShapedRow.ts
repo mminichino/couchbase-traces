@@ -5,7 +5,7 @@ import {
   applyTraceMaterialized,
 } from './materialized';
 
-export type ClickHouseShapedRow = Record<string, unknown>;
+export type ShapedRow = Record<string, unknown>;
 
 export type CouchbaseSeedCollection =
   | 'logs'
@@ -52,7 +52,7 @@ export function nanosToIso(nanos: unknown): string | undefined {
   return undefined;
 }
 
-function normalizeTimestamp(row: ClickHouseShapedRow): string {
+function normalizeTimestamp(row: ShapedRow): string {
   const fromNanos = nanosToIso(row.TimestampUnixNano);
   if (fromNanos) return fromNanos;
   const direct = row.Timestamp ?? row.TimestampTime ?? row.TimeUnix;
@@ -66,11 +66,11 @@ function normalizeTimestamp(row: ClickHouseShapedRow): string {
 }
 
 /**
- * Maps a ClickHouse-shaped seed row to a Phase 5 Couchbase document.
+ * Maps a legacy store-shaped seed row to a Phase 5 Couchbase document.
  */
-export function fromClickHouseRow(
+export function fromShapedRow(
   table: string,
-  row: ClickHouseShapedRow,
+  row: ShapedRow,
   opts?: {
     ttlMs?: number;
     nowMs?: number;

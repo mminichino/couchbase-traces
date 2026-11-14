@@ -78,7 +78,7 @@ export function MetricNameSelect({
 
   // Mantine mirrors the selected option's *label* into a searchable Select's
   // input when the selection changes, and reports it through `onSearchChange`
-  // exactly like typed text. Passing that on would search ClickHouse for
+  // exactly like typed text. Passing that on would search legacy store for
   // "up (Gauge)", which matches nothing, so an already-configured chart would
   // open to an empty list. Built from the same label helper as the options, so
   // the two always agree; compared case-insensitively as a cheap guard against

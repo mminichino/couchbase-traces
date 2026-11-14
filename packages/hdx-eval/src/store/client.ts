@@ -1,8 +1,8 @@
 import type { ResponseJSON } from '@couchbase-traces/common-utils/dist/query';
-import { ClickHouseError } from '@couchbase-traces/common-utils/dist/query';
+import { CodedQueryError } from '@couchbase-traces/common-utils/dist/query';
 import ms from 'ms';
 
-export type EvalClickHouseConfig = {
+export type EvalStoreConfig = {
   url: string;
   username?: string;
   password?: string;
@@ -18,7 +18,7 @@ export type EvalQueryResultSet = {
   json<T = unknown>(): Promise<T[] | ResponseJSON<T>>;
 };
 
-export type ClickHouseClient = {
+export type EvalStoreClient = {
   query(params: QueryParams): Promise<EvalQueryResultSet>;
   command(params: { query: string }): Promise<void>;
   insert(params: {
@@ -33,24 +33,24 @@ function authHeader(username: string, password: string): string {
   return `Basic ${Buffer.from(`${username}:${password}`).toString('base64')}`;
 }
 
-function parseClickHouseErrorBody(text: string): Error {
+function parseEvalStoreErrorBody(text: string): Error {
   const match = text.match(
     /Code: (?<code>\d+)\. DB::Exception: (?<message>[^\n]+)\. \((?<type>[A-Z0-9_]+)\)/,
   );
   if (match?.groups) {
-    return new ClickHouseError({
+    return new CodedQueryError({
       message: match.groups.message,
       code: match.groups.code,
       type: match.groups.type,
     });
   }
-  return new Error(text.trim() || 'ClickHouse request failed');
+  return new Error(text.trim() || 'legacy store request failed');
 }
 
-export function createEvalClient(
-  cfg: EvalClickHouseConfig,
+export function createEvalStoreClient(
+  cfg: EvalStoreConfig,
   application = 'hdx-eval',
-): ClickHouseClient {
+): EvalStoreClient {
   const baseUrl = new URL(cfg.url);
   const username = cfg.username ?? 'default';
   const password = cfg.password ?? '';
@@ -95,7 +95,7 @@ export function createEvalClient(
       });
       const text = await res.text();
       if (!res.ok) {
-        throw parseClickHouseErrorBody(text);
+        throw parseEvalStoreErrorBody(text);
       }
       return text;
     } catch (err) {
@@ -143,7 +143,7 @@ export function createEvalClient(
   };
 }
 
-export function defaultClickHouseUrl(): string {
+export function defaultEvalStoreUrl(): string {
   if (process.env.CBT_EVAL_CH_URL) return process.env.CBT_EVAL_CH_URL;
   if (process.env.CBT_DEV_CH_HTTP_PORT) {
     return `http://localhost:${process.env.CBT_DEV_CH_HTTP_PORT}`;

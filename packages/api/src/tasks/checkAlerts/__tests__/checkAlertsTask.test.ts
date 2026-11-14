@@ -42,7 +42,7 @@ describe('CheckAlertTask', () => {
         buildChartLink: jest.fn(),
         buildChartExplorerLink: jest.fn(),
         buildLogSearchLink: jest.fn(),
-        getClickHouseClient: jest.fn().mockResolvedValue({} as DataClient),
+        getDataClient: jest.fn().mockResolvedValue({} as DataClient),
       };
 
       jest.mocked(loadProvider).mockResolvedValue(mockAlertProvider);
@@ -153,9 +153,7 @@ describe('CheckAlertTask', () => {
 
       mockAlertProvider.getAlertTasks.mockResolvedValue([mockAlertTask]);
       mockAlertProvider.getWebhooks.mockResolvedValue(teamWebhooksById);
-      mockAlertProvider.getClickHouseClient.mockResolvedValue(
-        new DataClient({}),
-      );
+      mockAlertProvider.getDataClient.mockResolvedValue(new DataClient({}));
 
       await task.execute();
 
@@ -280,9 +278,7 @@ describe('CheckAlertTask', () => {
         mockAlertTask2,
       ]);
 
-      mockAlertProvider.getClickHouseClient.mockResolvedValue(
-        new DataClient({}),
-      );
+      mockAlertProvider.getDataClient.mockResolvedValue(new DataClient({}));
 
       // Mock getWebhooks to return team-specific webhooks
       mockAlertProvider.getWebhooks.mockImplementation(
@@ -389,7 +385,7 @@ describe('CheckAlertTask', () => {
           buildAlertTask('conn-healthy', 'alert-healthy', teamId),
         ]);
         mockAlertProvider.getWebhooks.mockResolvedValue(new Map());
-        mockAlertProvider.getClickHouseClient.mockImplementation(
+        mockAlertProvider.getDataClient.mockImplementation(
           async (conn: any) => {
             if (conn.id === 'conn-broken') {
               throw new Error('connect ECONNREFUSED');

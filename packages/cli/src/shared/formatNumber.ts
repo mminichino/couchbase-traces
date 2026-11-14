@@ -199,7 +199,7 @@ export const formatNumber = (
     return 'N/A';
   }
 
-  // Guard against NaN only - ClickHouse can return numbers as strings, which
+  // Guard against NaN only - legacy store can return numbers as strings, which
   // we should still format. Only truly non-numeric values (NaN) get passed through.
   if (typeof value !== 'number') {
     if (isNaN(Number(value))) {

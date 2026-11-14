@@ -5,7 +5,7 @@ import { testLocalConnection } from '@couchbase-traces/common-utils/dist/dataLay
 import {
   Connection,
   isCouchbaseConnection,
-  type UnsupportedClickHouseConnection,
+  type UnsupportedLegacyConnection,
 } from '@couchbase-traces/common-utils/dist/types';
 import { Box, Button, Flex, Group, Stack, Text, Tooltip } from '@mantine/core';
 import { notifications } from '@mantine/notifications';
@@ -34,9 +34,9 @@ enum TestConnectionState {
   Invalid = 'invalid',
 }
 
-function isUnsupportedClickHouseConnection(
+function isUnsupportedLegacyConnection(
   connection: Connection,
-): connection is UnsupportedClickHouseConnection {
+): connection is UnsupportedLegacyConnection {
   return (
     connection.kind === 'clickhouse' &&
     'unsupported' in connection &&
@@ -252,7 +252,7 @@ export function ConnectionForm({
     isNew,
   });
 
-  if (isUnsupportedClickHouseConnection(connection)) {
+  if (isUnsupportedLegacyConnection(connection)) {
     return (
       <Stack gap="md" data-testid="connection-form-unsupported">
         <Text fw={600}>ClickHouse (no longer supported)</Text>

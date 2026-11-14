@@ -13,7 +13,7 @@ import {
 } from '@tabler/icons-react';
 import { ColumnDef, Row, Table as TanstackTable } from '@tanstack/react-table';
 
-import { CopySnippet } from '@/components/ClickStackOnboarding/CopySnippet';
+import { CopySnippet } from '@/components/CollectorOnboarding/CopySnippet';
 import type {
   StacktraceBreadcrumb,
   StacktraceFrame as TStacktraceFrame,

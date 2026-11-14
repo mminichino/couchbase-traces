@@ -36,9 +36,9 @@ const LIST_TIMEOUT_MS = MCP_TOOL_TIMEOUT_MS;
 // timed out and the kinds that finished are returned.
 const ENRICH_RESERVE_MS = 4_000;
 
-// Per-query ClickHouse caps. The names cap sits above the scan deadline
+// Per-query legacy store caps. The names cap sits above the scan deadline
 // (LIST_TIMEOUT_MS - ENRICH_RESERVE_MS) so a slow kind is aborted and
-// reported as timed out, not cut short by ClickHouse. A partial name set
+// reported as timed out, not cut short by legacy store. A partial name set
 // would look complete and the cursor would skip the names never read.
 const NAMES_MAX_EXEC_SECONDS = 28;
 const ENRICH_MAX_EXEC_SECONDS = 3;
@@ -162,10 +162,10 @@ async function listMetricsImpl(
   );
   if (sliceErr) return sliceErr;
 
-  const clickhouseClient = new DataClient({
+  const dataClient = new DataClient({
     requestTimeout: MCP_REQUEST_TIMEOUT,
   });
-  const metadata = getMetadata(clickhouseClient);
+  const metadata = getMetadata(dataClient);
 
   const limit = input.limit ?? DEFAULT_LIMIT;
   const databaseName = source.from.databaseName;
@@ -184,7 +184,7 @@ async function listMetricsImpl(
     signal,
     fetchNames: ({ kind, afterName }, kindSignal) =>
       fetchMetricNames({
-        clickhouseClient,
+        dataClient,
         databaseName,
         tableName: source.metricTables[kind]!,
         connectionId,
@@ -211,7 +211,7 @@ async function listMetricsImpl(
   ]);
   const metrics = await enrichEntries({
     entries: page.entries,
-    clickhouseClient,
+    dataClient,
     metadata,
     databaseName,
     metricTables: source.metricTables,

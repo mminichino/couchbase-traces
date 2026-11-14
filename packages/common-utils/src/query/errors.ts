@@ -8,8 +8,8 @@ export class QueryError extends Error {
   }
 }
 
-/** Legacy ClickHouse server error shape for timeout / MCP error classification. */
-export class ClickHouseError extends Error {
+/** Server error shape with code/type for timeout and MCP error classification. */
+export class CodedQueryError extends Error {
   readonly code: string;
   readonly type: string | undefined;
 
@@ -25,6 +25,7 @@ export class ClickHouseError extends Error {
     super(message);
     this.code = code;
     this.type = type;
-    Object.setPrototypeOf(this, ClickHouseError.prototype);
+    this.name = 'CodedQueryError';
+    Object.setPrototypeOf(this, CodedQueryError.prototype);
   }
 }

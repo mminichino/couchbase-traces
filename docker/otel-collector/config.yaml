@@ -169,11 +169,11 @@ processors:
     timeout: 5s
     override: false
   batch:
-    # Defaults are tuned for ClickHouse, which prefers fewer, larger inserts.
-    # ClickHouse recommends inserting in packets of at least 1000 rows or no
+    # Defaults are tuned for legacy store, which prefers fewer, larger inserts.
+    # legacy store recommends inserting in packets of at least 1000 rows or no
     # more than 1 request per second. The upstream collector defaults
     # (send_batch_size: 8192, timeout: 200ms) can yield very small batches
-    # under low load, which hurts ClickHouse insert performance and creates
+    # under low load, which hurts legacy store insert performance and creates
     # excess parts in MergeTree tables.
     #
     # Each setting can be overridden via env vars (mirroring the upstream

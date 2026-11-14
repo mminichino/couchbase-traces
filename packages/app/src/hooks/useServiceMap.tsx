@@ -3,12 +3,12 @@ import { Metadata } from '@couchbase-traces/common-utils/dist/core/metadata';
 import { errorStatusPredicateSql } from '@couchbase-traces/common-utils/dist/core/spanPredicates';
 import { renderChartConfig } from '@couchbase-traces/common-utils/dist/dataLayer';
 import { resolveConnectionKind } from '@couchbase-traces/common-utils/dist/dataLayer';
-import { chSql } from '@couchbase-traces/common-utils/dist/query';
+import { sqlExpr } from '@couchbase-traces/common-utils/dist/query';
 import { TTraceSource } from '@couchbase-traces/common-utils/dist/types';
 import { useQuery } from '@tanstack/react-query';
 
 import { getServiceMapQueryCouchbase } from '@/couchbase/serviceMap';
-import { useClickhouseClient } from '@/query';
+import { useDataClient } from '@/query';
 
 import { useMetadataWithSettings } from './useMetadata';
 
@@ -166,11 +166,11 @@ async function getServiceMapQuery({
     ? { UNSAFE_RAW_SQL: serviceNames.map(s => SqlString.escape(s)).join(', ') }
     : null;
   const serviceNameFilter = serviceNameInList
-    ? chSql`AND (
+    ? sqlExpr`AND (
         ServerSpans.serviceName IN (${serviceNameInList})
         OR ClientSpans.serviceName IN (${serviceNameInList})
       )`
-    : chSql``;
+    : sqlExpr``;
 
   // Latency percentiles over the server spans. Empty fragment when the source
   // has no duration expression. Percentiles can't be combined client-side, so
@@ -178,16 +178,16 @@ async function getServiceMapQuery({
   // One quantiles(...) call maintains a single reservoir sketch for all three
   // percentiles, ~3x cheaper than three separate quantile() aggregations.
   const latencySelect = source.durationExpression
-    ? chSql`,
+    ? sqlExpr`,
       quantiles(0.5, 0.95, 0.99)(ServerSpans.duration) as quantiles`
-    : chSql``;
+    : sqlExpr``;
 
   // Left join to support services which receive requests from clients that are
   // not instrumented. GROUPING SETS emits, in one pass, both a per-edge row
   // (server + client) and a rolled-up per-service node row (server only);
   // GROUPING() flags which is which so node and edge percentiles are each
   // computed over the right set of spans. Ordering helps stable graph layout.
-  return chSql`
+  return sqlExpr`
     WITH
       ServerSpans AS (${serverCTE}),
       ClientSpans AS (${clientCTE})
@@ -324,7 +324,7 @@ export default function useServiceMap({
   whereLanguage?: 'sql' | 'lucene';
   serviceNames?: string[];
 }) {
-  const client = useClickhouseClient();
+  const client = useDataClient();
   const metadata = useMetadataWithSettings();
 
   return useQuery({
@@ -357,7 +357,7 @@ export default function useServiceMap({
           connectionId: source.connection,
           format: 'JSON',
           abort_signal: signal,
-          clickhouse_settings: {
+          query_settings: {
             max_execution_time: 60,
             join_algorithm: 'auto',
           },
@@ -365,7 +365,7 @@ export default function useServiceMap({
         .then(res => res.json<Record<string, unknown>>())
         .then(data =>
           data.data.map((row: Record<string, unknown>) => {
-            // ClickHouse quantiles(...) returns [p50, p95, p99]; Couchbase
+            // legacy store quantiles(...) returns [p50, p95, p99]; Couchbase
             // projects named p50/p95/p99 columns.
             const quantiles = Array.isArray(row.quantiles)
               ? (row.quantiles as unknown[])

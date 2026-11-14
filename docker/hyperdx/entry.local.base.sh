@@ -1,8 +1,8 @@
 #!/bin/bash
 
 export CBT_LOG_LEVEL="error"
-# https://clickhouse.com/docs/en/operations/server-configuration-parameters/settings#logger
-export CLICKHOUSE_LOG_LEVEL="error"
+# https://evalstore.com/docs/en/operations/server-configuration-parameters/settings#logger
+export EVAL_STORE_LOG_LEVEL="error"
 
 # User can specify either an entire SERVER_URL, or override selectively the
 # CBT_API_PORT from the defaults
@@ -12,11 +12,10 @@ export FRONTEND_URL="${FRONTEND_URL:-${CBT_APP_URL:-http://localhost}:${CBT_APP_
 export OPAMP_PORT=${CBT_OPAMP_PORT:-4320}
 
 # Internal Services
-export CBT_OTEL_EXPORTER_CLICKHOUSE_DATABASE="${CBT_OTEL_EXPORTER_CLICKHOUSE_DATABASE:-default}"
-export CLICKHOUSE_ENDPOINT="${CLICKHOUSE_ENDPOINT:-tcp://ch-server:9000?dial_timeout=10s}"
+export EVAL_STORE_ENDPOINT="${EVAL_STORE_ENDPOINT:-tcp://ch-server:9000?dial_timeout=10s}"
 export MONGO_URI="mongodb://db:27017/hyperdx"
 export OPAMP_SERVER_URL="http://127.0.0.1:${OPAMP_PORT}"
-export CLICKHOUSE_PROMETHEUS_METRICS_ENDPOINT="${CLICKHOUSE_PROMETHEUS_METRICS_ENDPOINT:-ch-server:9363}"
+export EVAL_STORE_PROMETHEUS_METRICS_ENDPOINT="${EVAL_STORE_PROMETHEUS_METRICS_ENDPOINT:-ch-server:9363}"
 
 # These values must match the strings compared against in packages/api/src/config.ts
 # (IS_LOCAL_IMAGE / IS_ALL_IN_ONE_IMAGE). The auth variant must report
@@ -33,13 +32,13 @@ export NEXT_TELEMETRY_DISABLED="1"
 
 # Set Default Connections and Sources
 if [ -z "${DEFAULT_CONNECTIONS}" ]; then
-  DEFAULT_CONNECTIONS='[{"name":"Local ClickHouse","host":"http://localhost:8123","username":"default","password":""}]'
+  DEFAULT_CONNECTIONS='[{"name":"Local connection","host":"http://localhost:8123","username":"default","password":""}]'
 fi
 export DEFAULT_CONNECTIONS
-export DEFAULT_SOURCES='[{"from":{"databaseName":"default","tableName":"otel_logs"},"kind":"log","timestampValueExpression":"Timestamp","name":"Logs","displayedTimestampValueExpression":"Timestamp","implicitColumnExpression":"Body","serviceNameExpression":"ServiceName","bodyExpression":"Body","eventAttributesExpression":"LogAttributes","resourceAttributesExpression":"ResourceAttributes","defaultTableSelectExpression":"Timestamp,ServiceName,SeverityText,Body","severityTextExpression":"SeverityText","severityNumberExpression":"SeverityNumber","eventNameExpression":"EventName","traceIdExpression":"TraceId","spanIdExpression":"SpanId","metadataMaterializedViews":{"kvRollupTable":"otel_logs_kv_rollup_15m","granularity":"15 minute"},"connection":"Local ClickHouse","traceSourceId":"Traces","metricSourceId":"Metrics"},{"from":{"databaseName":"default","tableName":"otel_traces"},"kind":"trace","timestampValueExpression":"Timestamp","name":"Traces","displayedTimestampValueExpression":"Timestamp","implicitColumnExpression":"SpanName","serviceNameExpression":"ServiceName","eventAttributesExpression":"SpanAttributes","resourceAttributesExpression":"ResourceAttributes","defaultTableSelectExpression":"Timestamp,ServiceName,StatusCode,round(Duration/1e6),SpanName","traceIdExpression":"TraceId","spanIdExpression":"SpanId","durationExpression":"Duration","durationPrecision":9,"parentSpanIdExpression":"ParentSpanId","spanNameExpression":"SpanName","spanKindExpression":"SpanKind","statusCodeExpression":"StatusCode","statusMessageExpression":"StatusMessage","spanEventsValueExpression":"Events","spanLinksValueExpression":"Links","metadataMaterializedViews":{"kvRollupTable":"otel_traces_kv_rollup_15m","granularity":"15 minute"},"connection":"Local ClickHouse","logSourceId":"Logs","sessionSourceId":"Sessions","metricSourceId":"Metrics"},{"from":{"databaseName":"default","tableName":""},"kind":"metric","timestampValueExpression":"TimeUnix","name":"Metrics","resourceAttributesExpression":"ResourceAttributes","metricTables":{"gauge":"otel_metrics_gauge","histogram":"otel_metrics_histogram","sum":"otel_metrics_sum","summary":"otel_metrics_summary","exponential histogram":"otel_metrics_exponential_histogram"},"connection":"Local ClickHouse","logSourceId":"Logs"},{"from":{"databaseName":"default","tableName":"hyperdx_sessions"},"kind":"session","timestampValueExpression":"TimestampTime","name":"Sessions","resourceAttributesExpression":"ResourceAttributes","connection":"Local ClickHouse","traceSourceId":"Traces"}]'
+export DEFAULT_SOURCES='[{"from":{"databaseName":"default","tableName":"otel_logs"},"kind":"log","timestampValueExpression":"Timestamp","name":"Logs","displayedTimestampValueExpression":"Timestamp","implicitColumnExpression":"Body","serviceNameExpression":"ServiceName","bodyExpression":"Body","eventAttributesExpression":"LogAttributes","resourceAttributesExpression":"ResourceAttributes","defaultTableSelectExpression":"Timestamp,ServiceName,SeverityText,Body","severityTextExpression":"SeverityText","severityNumberExpression":"SeverityNumber","eventNameExpression":"EventName","traceIdExpression":"TraceId","spanIdExpression":"SpanId","metadataMaterializedViews":{"kvRollupTable":"otel_logs_kv_rollup_15m","granularity":"15 minute"},"connection":"Local connection","traceSourceId":"Traces","metricSourceId":"Metrics"},{"from":{"databaseName":"default","tableName":"otel_traces"},"kind":"trace","timestampValueExpression":"Timestamp","name":"Traces","displayedTimestampValueExpression":"Timestamp","implicitColumnExpression":"SpanName","serviceNameExpression":"ServiceName","eventAttributesExpression":"SpanAttributes","resourceAttributesExpression":"ResourceAttributes","defaultTableSelectExpression":"Timestamp,ServiceName,StatusCode,round(Duration/1e6),SpanName","traceIdExpression":"TraceId","spanIdExpression":"SpanId","durationExpression":"Duration","durationPrecision":9,"parentSpanIdExpression":"ParentSpanId","spanNameExpression":"SpanName","spanKindExpression":"SpanKind","statusCodeExpression":"StatusCode","statusMessageExpression":"StatusMessage","spanEventsValueExpression":"Events","spanLinksValueExpression":"Links","metadataMaterializedViews":{"kvRollupTable":"otel_traces_kv_rollup_15m","granularity":"15 minute"},"connection":"Local connection","logSourceId":"Logs","sessionSourceId":"Sessions","metricSourceId":"Metrics"},{"from":{"databaseName":"default","tableName":""},"kind":"metric","timestampValueExpression":"TimeUnix","name":"Metrics","resourceAttributesExpression":"ResourceAttributes","metricTables":{"gauge":"otel_metrics_gauge","histogram":"otel_metrics_histogram","sum":"otel_metrics_sum","summary":"otel_metrics_summary","exponential histogram":"otel_metrics_exponential_histogram"},"connection":"Local connection","logSourceId":"Logs"},{"from":{"databaseName":"default","tableName":"hyperdx_sessions"},"kind":"session","timestampValueExpression":"TimestampTime","name":"Sessions","resourceAttributesExpression":"ResourceAttributes","connection":"Local connection","traceSourceId":"Traces"}]'
 # if BETA_CH_OTEL_JSON_SCHEMA_ENABLED is true then return empty default sources
 if [ "$BETA_CH_OTEL_JSON_SCHEMA_ENABLED" = "true" ]; then
-  export DEFAULT_SOURCES='[{"from":{"databaseName":"default","tableName":"otel_logs"},"kind":"log","timestampValueExpression":"Timestamp","name":"Logs","displayedTimestampValueExpression":"Timestamp","implicitColumnExpression":"Body","serviceNameExpression":"ServiceName","bodyExpression":"Body","eventAttributesExpression":"LogAttributes","resourceAttributesExpression":"ResourceAttributes","defaultTableSelectExpression":"Timestamp,ServiceName,SeverityText,Body","severityTextExpression":"SeverityText","severityNumberExpression":"SeverityNumber","eventNameExpression":"EventName","traceIdExpression":"TraceId","spanIdExpression":"SpanId","connection":"Local ClickHouse","traceSourceId":"Traces","metricSourceId":"Metrics"},{"from":{"databaseName":"default","tableName":"otel_traces"},"kind":"trace","timestampValueExpression":"Timestamp","name":"Traces","displayedTimestampValueExpression":"Timestamp","implicitColumnExpression":"SpanName","serviceNameExpression":"ServiceName","eventAttributesExpression":"SpanAttributes","resourceAttributesExpression":"ResourceAttributes","defaultTableSelectExpression":"Timestamp,ServiceName,StatusCode,round(Duration/1e6),SpanName","traceIdExpression":"TraceId","spanIdExpression":"SpanId","durationExpression":"Duration","durationPrecision":9,"parentSpanIdExpression":"ParentSpanId","spanNameExpression":"SpanName","spanKindExpression":"SpanKind","statusCodeExpression":"StatusCode","statusMessageExpression":"StatusMessage","spanEventsValueExpression":"Events","spanLinksValueExpression":"Links","connection":"Local ClickHouse","logSourceId":"Logs","sessionSourceId":"Sessions","metricSourceId":"Metrics"},{"from":{"databaseName":"default","tableName":""},"kind":"metric","timestampValueExpression":"TimeUnix","name":"Metrics","resourceAttributesExpression":"ResourceAttributes","metricTables":{"gauge":"otel_metrics_gauge","histogram":"otel_metrics_histogram","sum":"otel_metrics_sum","summary":"otel_metrics_summary","exponential histogram":"otel_metrics_exponential_histogram"},"connection":"Local ClickHouse","logSourceId":"Logs"},{"from":{"databaseName":"default","tableName":"hyperdx_sessions"},"kind":"session","timestampValueExpression":"Timestamp","name":"Sessions","resourceAttributesExpression":"ResourceAttributes","connection":"Local ClickHouse","traceSourceId":"Traces"}]'
+  export DEFAULT_SOURCES='[{"from":{"databaseName":"default","tableName":"otel_logs"},"kind":"log","timestampValueExpression":"Timestamp","name":"Logs","displayedTimestampValueExpression":"Timestamp","implicitColumnExpression":"Body","serviceNameExpression":"ServiceName","bodyExpression":"Body","eventAttributesExpression":"LogAttributes","resourceAttributesExpression":"ResourceAttributes","defaultTableSelectExpression":"Timestamp,ServiceName,SeverityText,Body","severityTextExpression":"SeverityText","severityNumberExpression":"SeverityNumber","eventNameExpression":"EventName","traceIdExpression":"TraceId","spanIdExpression":"SpanId","connection":"Local connection","traceSourceId":"Traces","metricSourceId":"Metrics"},{"from":{"databaseName":"default","tableName":"otel_traces"},"kind":"trace","timestampValueExpression":"Timestamp","name":"Traces","displayedTimestampValueExpression":"Timestamp","implicitColumnExpression":"SpanName","serviceNameExpression":"ServiceName","eventAttributesExpression":"SpanAttributes","resourceAttributesExpression":"ResourceAttributes","defaultTableSelectExpression":"Timestamp,ServiceName,StatusCode,round(Duration/1e6),SpanName","traceIdExpression":"TraceId","spanIdExpression":"SpanId","durationExpression":"Duration","durationPrecision":9,"parentSpanIdExpression":"ParentSpanId","spanNameExpression":"SpanName","spanKindExpression":"SpanKind","statusCodeExpression":"StatusCode","statusMessageExpression":"StatusMessage","spanEventsValueExpression":"Events","spanLinksValueExpression":"Links","connection":"Local connection","logSourceId":"Logs","sessionSourceId":"Sessions","metricSourceId":"Metrics"},{"from":{"databaseName":"default","tableName":""},"kind":"metric","timestampValueExpression":"TimeUnix","name":"Metrics","resourceAttributesExpression":"ResourceAttributes","metricTables":{"gauge":"otel_metrics_gauge","histogram":"otel_metrics_histogram","sum":"otel_metrics_sum","summary":"otel_metrics_summary","exponential histogram":"otel_metrics_exponential_histogram"},"connection":"Local connection","logSourceId":"Logs"},{"from":{"databaseName":"default","tableName":"hyperdx_sessions"},"kind":"session","timestampValueExpression":"Timestamp","name":"Sessions","resourceAttributesExpression":"ResourceAttributes","connection":"Local connection","traceSourceId":"Traces"}]'
 fi
 
 # Simulate Docker Service DNS
@@ -51,23 +50,21 @@ echo "Send OpenTelemetry data via:
   http/protobuf: OTEL_EXPORTER_OTLP_ENDPOINT=http://localhost:4318
   gRPC: OTEL_EXPORTER_OTLP_ENDPOINT=http://localhost:4317
 "
-echo "Exporting data to ClickHouse:
-  Endpoint: $CLICKHOUSE_ENDPOINT
-  Database: $CBT_OTEL_EXPORTER_CLICKHOUSE_DATABASE
+echo "Exporting data to legacy store:
+  Endpoint: $EVAL_STORE_ENDPOINT
 "
 
-# Start Clickhouse Server
-/entrypoint.sh > /var/log/clickhouse.log 2>&1 &
+/entrypoint.sh > /var/log/evalstore.log 2>&1 &
 
 # Start Mongo Server
 mongod --quiet --dbpath /data/db > /var/log/mongod.log 2>&1 &
 
-# Wait for Clickhouse to be ready
+# Wait for Cluster to be ready
 while ! curl -s "http://ch-server:8123" > /dev/null; do
-  echo "Waiting for ClickHouse to be ready..."
+  echo "Waiting for legacy store to be ready..."
   sleep 1
 done
-echo "ClickHouse is ready!"
+echo "legacy store is ready!"
 
 # Start Otel Collector with entrypoint script for template rendering and log rotation
 /otel-entrypoint.sh /usr/local/bin/opampsupervisor > /var/log/otel-collector.log 2>&1 &

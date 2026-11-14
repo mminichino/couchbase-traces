@@ -1,5 +1,5 @@
 /**
- * Realistic body/attribute generators inspired by the public ClickHouse
+ * Realistic body/attribute generators inspired by the public legacy store
  * otel_v2 demo dataset (~68M log rows, ~55% unique bodies). Each helper
  * produces a body string with embedded dynamic values plus an attribute
  * map — the goal is high body cardinality with stable identifiable
@@ -67,7 +67,7 @@ export function pickSeverityIn(
 
 /**
  * Normalize messy OTel severity text (case variants, aliases) into the
- * canonical uppercase form used by ClickHouse schema columns.
+ * canonical uppercase form used by legacy store schema columns.
  */
 export function normalizeSeverityText(
   raw: string,

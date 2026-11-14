@@ -202,7 +202,7 @@ export default function useRowWhere({
 
       // When primaryKeyColumns is provided, only use those columns in the
       // WHERE clause. This avoids filtering on large columns like Body that
-      // trigger expensive index loading in ClickHouse.
+      // trigger expensive index loading in legacy store.
       const filteredRow = primaryKeyColumns
         ? Object.fromEntries(
             Object.entries(dbRow).filter(([col]) => primaryKeyColumns.has(col)),

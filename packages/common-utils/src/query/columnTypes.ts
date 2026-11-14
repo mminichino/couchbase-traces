@@ -147,7 +147,7 @@ export function filterColumnMetaByType(
 }
 
 export function inferTimestampColumn(
-  // from: https://github.com/ClickHouse/clickhouse-js/blob/442392c83834f313a964f9e5bd7ff44474631755/packages/client-common/src/clickhouse_types.ts#L8C3-L8C47
+  // from: https://github.com/legacy store/the previous JS client/blob/442392c83834f313a964f9e5bd7ff44474631755/packages/client-common/src/clickhouse_types.ts#L8C3-L8C47
   meta: Array<ColumnMetaType>,
 ) {
   return filterColumnMetaByType(meta, [JSDataType.Date])?.[0];

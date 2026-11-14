@@ -1,6 +1,6 @@
 import type { QueryAttribution } from './attribution';
 
-/** JSON query result envelope (ClickHouse `JSON` format compatibility). */
+/** JSON query result envelope (legacy store `JSON` format compatibility). */
 export type ResponseJSON<T = unknown> = {
   data: T[];
   query_id?: string;

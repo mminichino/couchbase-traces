@@ -125,11 +125,11 @@ export const runAlert = async ({
     savedSearch,
     previousMap: new Map(),
   };
-  const clickhouseClient = new DataClient({});
+  const dataClient = new DataClient({});
   await processAlert(
     NOW,
     details,
-    clickhouseClient,
+    dataClient,
     connection.id,
     alertProvider,
     new Map(webhooks.map(w => [w._id.toString(), w])),

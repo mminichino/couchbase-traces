@@ -49,8 +49,8 @@ Nine modules carry ~90% of all cross-package imports:
 |-------------|-------|
 | `.../dist/types` | Every shared Zod schema and its inferred type: sources, alerts, dashboards, tiles, webhooks, chart configs, `SQLInterval`, `MetricsDataType`, `StacktraceFrame` |
 | `.../dist/core/utils` | Time-bucket and granularity math (`toStartOfInterval`, `timeBucketByGranularity`, `convertGranularityToSeconds`), string splitting (`splitAndTrimCSV`, `splitAndTrimWithBracket`, `escapeSqlString`), `hashCode`, `parseJSON`, `formatDate` |
-| `.../dist/core/metadata` | ClickHouse table/column introspection — `Metadata`, `getMetadata`, `parseKeyPath`, `unquoteIdentifier` |
-| `.../dist/clickhouse` (`/node`, `/browser`) | Query client, `ChSql`/`chSql`/`concatChSql`, CH↔JS type conversion |
+| `.../dist/core/metadata` | source table/column introspection — `Metadata`, `getMetadata`, `parseKeyPath`, `unquoteIdentifier` |
+| `.../dist/evalstore` (`/node`, `/browser`) | Query client, `SqlFrag`/`sqlExpr`/`concatSqlExpr`, CH↔JS type conversion |
 | `.../dist/core/renderChartConfig` | `ChartConfig` → SQL |
 | `.../dist/filters` | Filter state, serialization, and validation (`FilterState`, `filtersToQuery`, `parseQuery`) |
 | `.../dist/guards` | Chart-config and source type guards (`isBuilderChartConfig`, `isRawSqlChartConfig`, `isHeatmapCompatibleSource`) |
@@ -300,7 +300,7 @@ header, or a "Name" field inside a save modal. See
 | Kind | Component | When |
 |------|-----------|------|
 | **Inline code** | Mantine `<Code>` | Short tokens in prose (`Session`, a column name, a flag). |
-| **Fenced / multi-line / copyable** | `CopySnippet` (`@/components/ClickStackOnboarding/CopySnippet`) | Install commands, HCL, JSX examples, any block the user might copy. Wraps `<Code block>` plus a Copy button. |
+| **Fenced / multi-line / copyable** | `CopySnippet` (`@/components/CollectorOnboarding/CopySnippet`) | Install commands, HCL, JSX examples, any block the user might copy. Wraps `<Code block>` plus a Copy button. |
 
 ```tsx
 // ✅ inline — Mantine Code
@@ -320,7 +320,7 @@ Create a source with <Code>Session</Code> type.
 <Paper bg="var(--color-bg-code)"><Text component="pre" ff="monospace">{snippet}</Text></Paper>
 ```
 
-**SQL query previews** (rendered ClickHouse SQL with highlighting) still use `SQLPreview` / `ChartSQLPreview` — those are editors, not snippet chrome.
+**SQL query previews** (rendered legacy SQL with highlighting) still use `SQLPreview` / `ChartSQLPreview` — those are editors, not snippet chrome.
 
 Storybook: `Components/Code` (live `InlineCode`, `FencedBlocks`, and `Usage`). Guidelines markdown maps fenced blocks → `CopySnippet` and inline `` `code` `` → `<Code>` automatically. Follow the same split in app UI.
 
@@ -388,9 +388,9 @@ column headers, empty states, and toast/notification copy.
 
 **Keep the original casing of proper nouns, product names, and acronyms**
 anywhere in the string — sentence case only changes the words around them:
-Couchbase Traces, ClickHouse, OpenTelemetry/OTel, Lucene, SQL, PromQL,
+Couchbase Traces, legacy store, OpenTelemetry/OTel, Lucene, SQL, PromQL,
 MongoDB, Kubernetes, JSON, CSV, URL, ID, API, MCP, CPU, P95. For example:
-`Search your events w/ Lucene`, `Edit SQL`, `Copy as cURL`, `View in ClickHouse`.
+`Search your events w/ Lucene`, `Edit SQL`, `Copy as cURL`, `View in legacy store`.
 
 Only sentence-case **static UI chrome**. Never rewrite dynamic/user data (column
 names, tag values, log/trace content, source or dashboard names a user typed) —

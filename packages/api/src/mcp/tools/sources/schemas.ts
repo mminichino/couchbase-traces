@@ -38,7 +38,7 @@ const highlightedAttributeExpressionsSchema = () =>
       sqlExpression: z
         .string()
         .describe(
-          "ClickHouse SQL expression for the attribute, e.g. ResourceAttributes['http.host'].",
+          "legacy SQL expression for the attribute, e.g. ResourceAttributes['http.host'].",
         ),
       luceneExpression: z
         .string()
@@ -77,10 +77,12 @@ const materializedViewsSchema = z.array(
   z.object({
     databaseName: z
       .string()
-      .describe('ClickHouse database containing the materialized view table.'),
+      .describe(
+        'legacy store database containing the materialized view table.',
+      ),
     tableName: z
       .string()
-      .describe('ClickHouse table the materialized view writes to.'),
+      .describe('source table the materialized view writes to.'),
     dimensionColumns: z
       .string()
       .describe(
@@ -156,7 +158,7 @@ const metricTablesSchema = z
       .describe('Table containing exponential histogram metrics data.'),
   })
   .describe(
-    'Metric source only. Map of OTel metric kind to the ClickHouse table (in ' +
+    'Metric source only. Map of OTel metric kind to the source table (in ' +
       'databaseName) holding that kind. At least one entry is required for ' +
       'metric sources.',
   );
@@ -183,13 +185,13 @@ const mcpSaveSourceSchema = z.object({
     .string()
     .min(1)
     .describe(
-      'ClickHouse database containing the table (stored as from.databaseName). ' +
+      'legacy store database containing the table (stored as from.databaseName). ' +
         'For promql sources, use a placeholder such as "prometheus".',
     ),
   tableName: z
     .string()
     .describe(
-      'ClickHouse table name (maps to from.tableName). Required for all kinds ' +
+      'source table name (maps to from.tableName). Required for all kinds ' +
         'except metric (where it may be empty) and promql (use a placeholder).',
     ),
   timestampValueExpression: z

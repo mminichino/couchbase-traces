@@ -1,5 +1,5 @@
-# This configuration is derived from packages/api/src/opamp/controllers/opampController.ts
-# When updating this file, ensure it stays in sync with buildOtelCollectorConfig()
+# Standalone collector config (no OpAMP). Mirrors the Couchbase exporters
+# produced by buildOtelCollectorConfig() in opampController.ts.
 
 receivers:
   otlp/hyperdx:
@@ -11,8 +11,6 @@ receivers:
         cors:
           allowed_origins: ['*']
           allowed_headers: ['*']
-          # Lets browsers cache preflights for 10 minutes, see
-          # buildOtelCollectorConfig()
           max_age: 600
         include_metadata: true
         endpoint: '0.0.0.0:4318'
@@ -27,53 +25,56 @@ connectors:
         pipelines: [logs/out-rrweb]
 
 exporters:
-  clickhouse/rrweb:
-    database: ${env:CBT_OTEL_EXPORTER_CLICKHOUSE_DATABASE}
-    endpoint: ${env:CLICKHOUSE_ENDPOINT}
-    password: ${env:CLICKHOUSE_PASSWORD}
-    username: ${env:CLICKHOUSE_USER}
-    ttl: 720h
-    logs_table_name: hyperdx_sessions
-    timeout: ${env:CBT_OTEL_EXPORTER_TIMEOUT:-5s}
-    create_schema: ${env:CBT_OTEL_EXPORTER_CREATE_LEGACY_SCHEMA:-false}
-    json: ${env:CBT_OTEL_EXPORTER_CLICKHOUSE_JSON_ENABLE:-false}
+  otlphttp/couchbase-rrweb:
+    endpoint: ${env:CBT_INGEST_ENDPOINT}
+    logs_endpoint: ${env:CBT_INGEST_ENDPOINT}/v1/sessions
+    encoding: json
+    compression: gzip
+    headers:
+      Authorization: Bearer ${env:CBT_INGEST_TOKEN}
+    timeout: 30s
     retry_on_failure:
       enabled: true
       initial_interval: 5s
       max_interval: 30s
       max_elapsed_time: 300s
-  clickhouse:
-    database: ${env:CBT_OTEL_EXPORTER_CLICKHOUSE_DATABASE}
-    endpoint: ${env:CLICKHOUSE_ENDPOINT}
-    password: ${env:CLICKHOUSE_PASSWORD}
-    username: ${env:CLICKHOUSE_USER}
-    ttl: 720h
-    timeout: ${env:CBT_OTEL_EXPORTER_TIMEOUT:-5s}
-    create_schema: ${env:CBT_OTEL_EXPORTER_CREATE_LEGACY_SCHEMA:-false}
-    json: ${env:CBT_OTEL_EXPORTER_CLICKHOUSE_JSON_ENABLE:-false}
+    sending_queue:
+      enabled: true
+      num_consumers: 4
+      queue_size: 1000
+  otlphttp/couchbase:
+    endpoint: ${env:CBT_INGEST_ENDPOINT}
+    encoding: json
+    compression: gzip
+    headers:
+      Authorization: Bearer ${env:CBT_INGEST_TOKEN}
+    timeout: 30s
     retry_on_failure:
       enabled: true
       initial_interval: 5s
       max_interval: 30s
       max_elapsed_time: 300s
+    sending_queue:
+      enabled: true
+      num_consumers: 4
+      queue_size: 1000
 
 service:
   # Pipeline `processors:` lists live in the base config.yaml so users can
-  # swap them via CUSTOM_OTELCOL_CONFIG_FILE. See
-  # https://github.com/mminichino/couchbase-traces/pull/2351.
+  # swap them via CUSTOM_OTELCOL_CONFIG_FILE.
   pipelines:
     traces:
       receivers: [otlp/hyperdx]
-      exporters: [clickhouse]
+      exporters: [otlphttp/couchbase]
     metrics:
       receivers: [otlp/hyperdx]
-      exporters: [clickhouse]
+      exporters: [otlphttp/couchbase]
     logs/in:
       receivers: [otlp/hyperdx]
       exporters: [routing/logs]
     logs/out-default:
       receivers: [routing/logs]
-      exporters: [clickhouse]
+      exporters: [otlphttp/couchbase]
     logs/out-rrweb:
       receivers: [routing/logs]
-      exporters: [clickhouse/rrweb]
+      exporters: [otlphttp/couchbase-rrweb]

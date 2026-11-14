@@ -193,7 +193,7 @@ export function TableSourceForm({
         if (watchedTableName !== prevTableNameRef.current) {
           prevTableNameRef.current = watchedTableName;
 
-          // Schema inference reads ClickHouse system tables.
+          // Schema inference reads legacy store system tables.
           if (isPrometheusOnlyConnection || isCouchbaseSource) {
             return;
           }
@@ -743,7 +743,7 @@ export function TableSourceForm({
         <FormRow
           label={
             <Anchor
-              href="https://clickhouse.com/docs/operations/settings/settings"
+              href="https://evalstore.com/docs/operations/settings/settings"
               size="sm"
               target="_blank"
             >

@@ -94,7 +94,7 @@ src/
 │                          # loading → login → pick-source → EventViewer
 ├── api/
 │   ├── client.ts          # ApiClient (REST + session cookies)
-│   │                      # ProxyClickhouseClient (ClickHouse via /clickhouse-proxy)
+│   │                      # ProxyDataClient (legacy store via /evalstore-proxy)
 │   └── eventQuery.ts      # Query builders:
 │                          #   buildEventSearchQuery — table view (uses renderChartConfig)
 │                          #   buildTraceSpansSql — waterfall trace spans
@@ -125,10 +125,10 @@ src/
 ```
 User types search → buildEventSearchQuery()
   → renderChartConfig() from @couchbase-traces/common-utils
-  → ProxyClickhouseClient.query()
-  → API /clickhouse-proxy → ClickHouse
+  → ProxyDataClient.query()
+  → API /evalstore-proxy → legacy store
   → JSON response with { data, meta }
-  → Store chSql in lastTableChSqlRef, meta in lastTableMetaRef
+  → Store sqlExpr in lastTableSqlFragRef, meta in lastTableMetaRef
   → Render dynamic table columns from row keys
 ```
 
@@ -136,7 +136,7 @@ User types search → buildEventSearchQuery()
 
 ```
 User expands row → buildFullRowQuery()
-  → chSqlToAliasMap(lastTableChSql) for alias resolution
+  → sqlExprToAliasMap(lastTableChSql) for alias resolution
   → buildColumnMap(lastTableMeta, aliasMap) for type-aware WHERE
   → processRowToWhereClause() with proper type handling
   → renderChartConfig() with SELECT *, __hdx_* aliases
@@ -154,13 +154,13 @@ User switches to Trace tab
   → j/k navigation highlights spans, fetches SELECT * for Event Details
 ```
 
-### ClickHouse Proxy Client
+### legacy store Proxy Client
 
-`ProxyClickhouseClient` extends `BaseClickhouseClient` from common-utils:
+`ProxyDataClient` extends `BaseDataClient` from common-utils:
 
-- Derives proxy pathname from API URL (e.g. `/api/clickhouse-proxy` for Next.js
-  proxy, `/clickhouse-proxy` for direct API)
-- Passes `origin` only to `createClient` (not the path, which ClickHouse client
+- Derives proxy pathname from API URL (e.g. `/api/evalstore-proxy` for Next.js
+  proxy, `/evalstore-proxy` for direct API)
+- Passes `origin` only to `createClient` (not the path, which data client
   would interpret as a database name)
 - Injects session cookies + `x-hyperdx-connection-id` header
 - Forces `content-type: text/plain` to prevent Express body parser issues
@@ -287,19 +287,19 @@ or the server URL may have changed.
 
 The API URL may be pointing to the Next.js frontend instead of the Express API
 server. Both work — the CLI auto-detects the `/api` prefix in the URL and
-adjusts the ClickHouse proxy path accordingly.
+adjusts the legacy store proxy path accordingly.
 
 ### "Database api does not exist"
 
-The `ProxyClickhouseClient` was sending the URL path as a database name. This
+The `ProxyDataClient` was sending the URL path as a database name. This
 was fixed by passing `origin` only (without path) to `createClient`.
 
 ### Row detail shows partial data
 
 The `SELECT *` row detail fetch requires:
 
-1. `lastTableChSqlRef` — the rendered SQL from the last table query (for
-   `chSqlToAliasMap`)
+1. `lastTableSqlFragRef` — the rendered SQL from the last table query (for
+   `sqlExprToAliasMap`)
 2. `lastTableMetaRef` — column metadata from the query response (for type-aware
    WHERE clause)
 

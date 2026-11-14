@@ -12,11 +12,11 @@ import mongoose from 'mongoose';
 import ms from 'ms';
 import request from 'supertest';
 
-import { DataClient } from '@/clickhouse';
 import * as config from '@/config';
 import { AlertInput } from '@/controllers/alerts';
 import { getTeam } from '@/controllers/team';
 import { findUserByEmail } from '@/controllers/user';
+import { DataClient } from '@/dataClient';
 import { mongooseConnection } from '@/models';
 import { AlertInterval, AlertSource } from '@/models/alert';
 import Server from '@/server';
@@ -41,27 +41,27 @@ export const DEFAULT_METRICS_TABLE = {
   EXPONENTIAL_HISTOGRAM: 'otel_metrics_exponential_histogram',
 };
 
-let clickhouseClient: any;
+let dataClient: any;
 
-export const getTestFixtureClickHouseClient = async () => {
-  if (!clickhouseClient) {
-    clickhouseClient = new DataClient({ requestTimeout: ms('1m') });
+export const getTestFixtureDataClient = async () => {
+  if (!dataClient) {
+    dataClient = new DataClient({ requestTimeout: ms('1m') });
   }
-  return clickhouseClient;
+  return dataClient;
 };
 
-export const closeTestFixtureClickHouseClient = async () => {
-  if (clickhouseClient) {
-    await clickhouseClient.close();
-    clickhouseClient = null;
+export const closeTestFixtureDataClient = async () => {
+  if (dataClient) {
+    await dataClient.close();
+    dataClient = null;
   }
 };
 
 const healthCheck = async () => {
-  const client = await getTestFixtureClickHouseClient();
+  const client = await getTestFixtureDataClient();
   const result = await client.ping();
   if (!result.success) {
-    logger.error({ error: result.error }, 'ClickHouse health check failed');
+    logger.error({ error: result.error }, 'legacy store health check failed');
     throw result.error;
   }
 };
@@ -76,10 +76,10 @@ const REQUIRED_TABLES = [
   DEFAULT_METRICS_TABLE.EXPONENTIAL_HISTOGRAM,
 ];
 
-const waitForClickhouseSchema = async () => {
+const waitForFixtureSchema = async () => {
   await healthCheck();
 
-  const client = await getTestFixtureClickHouseClient();
+  const client = await getTestFixtureDataClient();
   const maxWaitMs = 30_000;
   const pollIntervalMs = 500;
   const start = Date.now();
@@ -96,18 +96,18 @@ const waitForClickhouseSchema = async () => {
     const missing = REQUIRED_TABLES.filter(t => !existingTables.has(t));
 
     if (missing.length === 0) {
-      logger.info('All required ClickHouse tables are ready');
+      logger.info('All required legacy store tables are ready');
       return;
     }
 
     logger.info(
-      `Waiting for ClickHouse tables: ${missing.join(', ')} (${Math.round((Date.now() - start) / 1000)}s elapsed)`,
+      `Waiting for legacy store tables: ${missing.join(', ')} (${Math.round((Date.now() - start) / 1000)}s elapsed)`,
     );
     await new Promise(resolve => setTimeout(resolve, pollIntervalMs));
   }
 
   throw new Error(
-    `Timed out waiting for ClickHouse tables after ${maxWaitMs / 1000}s`,
+    `Timed out waiting for legacy store tables after ${maxWaitMs / 1000}s`,
   );
 };
 
@@ -148,7 +148,7 @@ export const initCiEnvs = async () => {
   }
 
   // Populate fake persistent data here...
-  await waitForClickhouseSchema();
+  await waitForFixtureSchema();
 };
 
 class MockServer extends Server {
@@ -186,12 +186,12 @@ class MockServer extends Server {
         });
       });
     });
-    await closeTestFixtureClickHouseClient();
+    await closeTestFixtureDataClient();
     await super.shutdown();
   }
 
   clearDBs() {
-    return Promise.all([clearClickhouseTables(), clearDBCollections()]);
+    return Promise.all([clearFixtureTables(), clearDBCollections()]);
   }
 }
 
@@ -231,10 +231,10 @@ export const getLoggedInAgent = async (
 };
 
 // ------------------------------------------------
-// ------------------ Clickhouse ------------------
+// ------------------ Cluster ------------------
 // ------------------------------------------------
 export const executeSqlCommand = async (sql: string) => {
-  const client = await getTestFixtureClickHouseClient();
+  const client = await getTestFixtureDataClient();
   return await client.command({
     query: sql,
   });
@@ -245,7 +245,7 @@ export const executeSqlCommand = async (sql: string) => {
 // settings. Every statement therefore carries it, which is why these tables
 // cannot go through `executeSqlCommand`.
 export const executeTimeSeriesSqlCommand = async (sql: string) => {
-  const client = await getTestFixtureClickHouseClient();
+  const client = await getTestFixtureDataClient();
   return await client.command({
     query: sql,
   });
@@ -280,7 +280,7 @@ export type TimeSeriesFixtureSeries = {
  * `endSec`. A `match[]` lookup matches only series that have a sample in the
  * window, so on a tags-only table every selector answers nothing.
  *
- * `timeRanges: true` creates a schema version 8 table (ClickHouse 26.10+),
+ * `timeRanges: true` creates a schema version 8 table (legacy store 26.10+),
  * which keeps each series' time range in a separate time ranges inner table
  * instead of the tags table's min_time/max_time.
  */
@@ -319,7 +319,7 @@ export const seedTimeSeriesTagsTable = async ({
     ]);
   } else {
     const settings = storeTimeBounds ? [] : ['store_min_time_and_max_time = 0'];
-    // ClickHouse 26.10 creates version 8 tables by default, without
+    // legacy store 26.10 creates version 8 tables by default, without
     // min_time/max_time in the tags table: pin version 7 where the server
     // knows the setting (older servers don't, and use that layout anyway).
     try {
@@ -383,7 +383,7 @@ export const seedTimeSeriesTagsTable = async ({
   }
 };
 
-export const clearClickhouseTables = async () => {
+export const clearFixtureTables = async () => {
   if (!config.IS_CI) {
     throw new Error('ONLY execute this in CI env 😈 !!!');
   }
@@ -398,7 +398,7 @@ export const clearClickhouseTables = async () => {
   ];
 
   const promises: any = [];
-  const client = await getTestFixtureClickHouseClient();
+  const client = await getTestFixtureDataClient();
   for (const table of tables) {
     promises.push(
       client.command({
@@ -413,7 +413,7 @@ export const selectAllLogs = async () => {
   if (!config.IS_CI) {
     throw new Error('ONLY execute this in CI env 😈 !!!');
   }
-  return clickhouseClient
+  return dataClient
     .query({
       query: `SELECT * FROM ${DEFAULT_DATABASE}.${DEFAULT_LOGS_TABLE}`,
       format: 'JSONEachRow',
@@ -428,7 +428,7 @@ export const bulkInsertData = async (
   if (!config.IS_CI) {
     throw new Error('ONLY execute this in CI env 😈 !!!');
   }
-  const client = await getTestFixtureClickHouseClient();
+  const client = await getTestFixtureDataClient();
   await client.insert({
     table,
     values: data,
@@ -453,7 +453,7 @@ export const bulkInsertLogs = async (
 
 // ScopeAttributes and Attributes are optional so existing call sites that
 // only populate ResourceAttributes keep compiling unchanged. Omitting either
-// field drops the key from the JSONEachRow payload, and ClickHouse falls back
+// field drops the key from the JSONEachRow payload, and legacy store falls back
 // to the column default — an empty Map(LowCardinality(String), String) — so
 // the on-disk row is byte-identical to today's behaviour. New tests that need
 // to exercise the cross-scope attribute hashing (see HDX-4466) can opt in by

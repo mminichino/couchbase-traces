@@ -223,7 +223,7 @@ export const Table = ({
 
               // Resolve this cell's color from the column config: ordered
               // rules first (last match wins), then the column's static
-              // color, else no override. ClickHouse serializes numeric
+              // color, else no override. legacy store serializes numeric
               // aggregates (count is UInt64, sums, etc.) as strings, so coerce
               // a numeric-looking value to a number first; otherwise the
               // numeric operators (gt / lt / between) never match. Genuine

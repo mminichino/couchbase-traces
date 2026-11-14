@@ -749,7 +749,7 @@ About:
   survives across CLI invocations.
 
   The CLI sends the chosen team ID as an ${chalk.bold('x-hdx-team')} HTTP
-  header on every API and ClickHouse-proxy request. The server validates
+  header on every API and legacy store-proxy request. The server validates
   membership — switching to a team the authenticated user does not
   belong to fails with an auth error on the next request.
 
@@ -798,7 +798,7 @@ Examples:
 program
   .command('sources')
   .description(
-    'List data sources (log, trace, session, metric) with ClickHouse table schemas',
+    'List data sources (log, trace, session, metric) with source table schemas',
   )
   .option('-a, --app-url <url>', 'Couchbase Traces app URL')
   .option('--json', 'Output as JSON (for programmatic consumption)')
@@ -806,12 +806,12 @@ program
     'after',
     `
 About:
-  A "source" in Couchbase Traces is a named data source backed by a ClickHouse table.
+  A "source" in Couchbase Traces is a named data source backed by a source table.
   Each source has a kind (log, trace, session, or metric) and a set of
   expression mappings that tell Couchbase Traces which columns hold timestamps, trace
   IDs, span names, severity levels, etc.
 
-  This command lists all sources and fetches the ClickHouse CREATE TABLE
+  This command lists all sources and fetches the legacy store CREATE TABLE
   schema for each (metric sources are skipped since their schema is not
   useful for direct queries).
 
@@ -822,9 +822,9 @@ JSON output schema (--json):
     id                  - Source ID (use with other cbt commands)
     name                - Human-readable source name
     kind                - "log" | "trace" | "session" | "metric"
-    database            - ClickHouse database name
-    table               - ClickHouse table name
-    connection          - Connection ID for the ClickHouse proxy
+    database            - legacy store database name
+    table               - source table name
+    connection          - Connection ID for the legacy store proxy
     schema              - Full CREATE TABLE DDL (null for metric sources)
     expressions         - Column expression mappings:
         timestamp             - Primary timestamp column (e.g. "TimestampTime")
@@ -869,14 +869,14 @@ Examples:
       return;
     }
 
-    const chClient = client.createClickHouseClient();
+    const dataClient = client.createDataClient();
 
     // Fetch schemas for non-metric sources (in parallel)
     const schemaEntries = await Promise.all(
       sources.map(async (s): Promise<[string, string | null]> => {
         if (s.kind === 'metric') return [s.id, null];
         try {
-          const resultSet = await chClient.query({
+          const resultSet = await dataClient.query({
             query: `SHOW CREATE TABLE ${s.from.databaseName}.${s.from.tableName}`,
             format: 'JSON',
             connectionId: s.connection,
@@ -956,14 +956,14 @@ Examples:
 
 program
   .command('connections')
-  .description('List ClickHouse connections (id, name, host)')
+  .description('List legacy store connections (id, name, host)')
   .option('-a, --app-url <url>', 'Couchbase Traces app URL')
   .option('--json', 'Output as JSON (for programmatic consumption)')
   .addHelpText(
     'after',
     `
 About:
-  Lists ClickHouse connections configured for the authenticated team.
+  Lists legacy store connections configured for the authenticated team.
   Each connection is a named set of credentials that one or more
   sources point at (via the 'connection' field on a source).
 
@@ -973,7 +973,7 @@ JSON output schema (--json):
   Array of objects, each with:
     id    - Connection ID (matches source.connection)
     name  - Human-readable connection name
-    host  - ClickHouse host URL
+    host  - legacy store host URL
 
 Examples:
   $ cbt connections
@@ -1263,7 +1263,7 @@ const dashboardsCmd = program
     `
 About:
   Lists all dashboards for the authenticated team. Each dashboard
-  contains tiles (charts/visualizations) that query ClickHouse sources.
+  contains tiles (charts/visualizations) that query legacy store sources.
 
   Subcommands:
     list     List dashboards (default; same as bare 'cbt dashboards')
@@ -1729,7 +1729,7 @@ Examples:
       process.exit(1);
     }
 
-    client.createClickHouseClient();
+    client.createDataClient();
     // Resolve the source by ID or (case-insensitive) name
     const sources = await filterSourcesForSlice(
       await client.getSources(),
@@ -1844,10 +1844,10 @@ program
     (value: string, prev: string[]) => [...prev, value],
     [] as string[],
   )
-  .option('--sql <query>', 'Raw ClickHouse SQL to chart (raw SQL mode)')
+  .option('--sql <query>', 'Raw legacy SQL to chart (raw SQL mode)')
   .option(
     '--connection-id <id>',
-    'ClickHouse connection for --sql (alternative to --source)',
+    'legacy connection for --sql (alternative to --source)',
   )
   .option('--since <duration>', 'Relative time range (e.g. 15m, 1h, 7d)', '1h')
   .option(
@@ -1945,7 +1945,7 @@ Examples:
   )
   .action(async opts => {
     const client = await ensureSession(opts.appUrl);
-    const chClient = client.createClickHouseClient();
+    const dataClient = client.createDataClient();
     const metadata = client.createMetadata();
 
     // ---- Resolve time range
@@ -2071,7 +2071,7 @@ Examples:
     }) => {
       try {
         const result = await fetchTileData({
-          clickhouseClient: chClient,
+          dataClient: dataClient,
           metadata,
           config,
           source,
@@ -2230,7 +2230,7 @@ Examples:
 program
   .command('query')
   .description(
-    'Run raw SQL against a ClickHouse connection (add --patterns to cluster result into Drain log patterns)',
+    'Run raw SQL against a legacy connection (add --patterns to cluster result into Drain log patterns)',
   )
   .requiredOption(
     '--connection-id <id>',
@@ -2238,7 +2238,7 @@ program
   )
   .requiredOption('--sql <query>', 'SQL query to execute')
   .option('-a, --app-url <url>', 'Couchbase Traces app URL')
-  .option('--format <format>', 'ClickHouse output format', 'JSONEachRow')
+  .option('--format <format>', 'legacy store output format', 'JSONEachRow')
   .option(
     '--patterns',
     'Mine Drain log patterns from the query result instead of emitting rows',
@@ -2251,17 +2251,17 @@ program
     'after',
     `
 About:
-  Execute a raw ClickHouse SQL query through the Couchbase Traces proxy, using
-  a configured ClickHouse connection. Designed for ad-hoc exploration,
+  Execute a raw legacy SQL query through the Couchbase Traces proxy, using
+  a configured legacy connection. Designed for ad-hoc exploration,
   debugging, and agent-driven queries.
 
   The --connection-id flag takes a connection ID. Use 'cbt connections
   --json' to discover available connection IDs. Use 'cbt sources --json'
   to see which connection each source uses (the 'connection' field).
 
-  The query is sent as-is to ClickHouse — you are responsible for
+  The query is sent as-is to legacy store — you are responsible for
   writing valid SQL. Output is written to stdout. Use --format to
-  control the ClickHouse response format (JSONEachRow, JSON,
+  control the legacy store response format (JSONEachRow, JSON,
   TabSeparated, CSV, etc.). The default is JSONEachRow (one JSON
   object per line) — streamable and easy to consume from agents and
   shell pipelines (e.g. \`jq -c\`).
@@ -2295,7 +2295,7 @@ Pattern mining (--patterns):
              WHERE Timestamp > now() - INTERVAL 1 HOUR
              ORDER BY rand() LIMIT 10000"
 
-    Be aware: \`ORDER BY rand()\` forces ClickHouse to scan and sort
+    Be aware: \`ORDER BY rand()\` forces legacy store to scan and sort
     all rows matched by the WHERE clause before applying LIMIT, which
     can be expensive on large tables. Always pair it with a selective
     WHERE (time range, service, severity, etc.) to bound the scan.
@@ -2317,7 +2317,7 @@ Examples:
   )
   .action(async opts => {
     const client = await ensureSession(opts.appUrl);
-    const chClient = client.createClickHouseClient();
+    const dataClient = client.createDataClient();
 
     try {
       if (opts.patterns) {
@@ -2331,7 +2331,7 @@ Examples:
             chalk.dim('--patterns: ignoring --format, using JSON internally\n'),
           );
         }
-        const resultSet = await chClient.query({
+        const resultSet = await dataClient.query({
           query: opts.sql,
           format: 'JSON',
           connectionId: opts.connectionId,
@@ -2396,7 +2396,7 @@ Examples:
       }
 
       // Default: raw SQL → stdout in the requested format.
-      const resultSet = await chClient.query({
+      const resultSet = await dataClient.query({
         query: opts.sql,
         format: opts.format,
         connectionId: opts.connectionId,

@@ -56,7 +56,7 @@ const quoteJsonPathSegment = (segment: string): string => {
 };
 
 /**
- * Backtick-quote an identifier unless it is already a valid bare ClickHouse
+ * Backtick-quote an identifier unless it is already a valid bare legacy store
  * identifier. Strips one level of existing quoting first, so it is idempotent.
  */
 export const quoteIdentifierIfNeeded = (identifier: string): string => {
@@ -69,7 +69,7 @@ export const quoteIdentifierIfNeeded = (identifier: string): string => {
 // A single column or JSON path segment. No quoting/grouping characters, no `.` separator.
 const PLAIN_PATH_SEGMENT = /^[^`'"()[\],.]+/;
 
-// A JSON sub-object accessor or type cast. ClickHouse reports the operand
+// A JSON sub-object accessor or type cast. legacy store reports the operand
 // backticked (j.^`a`, j.a.:`Int64`).
 const OPERATOR_PATH_SEGMENT = /^[\^:]`(?:[^`]|``)*`/;
 
@@ -105,7 +105,7 @@ const quotePathSegment = (segment: string): string =>
  * - Function calls (e.g., `plus(a, b)`, `arrayElement(m, 'key')`)
  *
  * Dotted names are JSON/nested subcolumn paths (e.g. `event.@request_id`,
- * which ClickHouse reports for the select `` event.`@request_id` ``). Each
+ * which legacy store reports for the select `` event.`@request_id` ``). Each
  * segment is quoted on its own. JSON type casts (eg. `` .:`String` ``) and
  * `` ^`sub` `` sub-object accessors are preserved.
  */
@@ -274,7 +274,7 @@ export type TableConnection = {
   databaseName: string;
   tableName: string;
   connectionId: string;
-  /** Couchbase scope. Absent on ClickHouse sources. */
+  /** Couchbase scope. Absent on legacy store sources. */
   scopeName?: string;
   metricName?: string;
   metadataMVs?: MetadataMaterializedViews;

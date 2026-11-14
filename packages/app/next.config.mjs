@@ -20,7 +20,7 @@ const { version } = packageJson;
 // pre/post lifecycle scripts; next.config is evaluated by both `next dev`
 // (Turbopack) and `next build` (Webpack), so this runs in every build mode. The
 // ClickStack static export additionally needs `whats-new.json` allow-listed in
-// scripts/prepare-clickhouse-build-export.js, and the Docker builder stages must
+// scripts/prepare-evalstore-build-export.js, and the Docker builder stages must
 // COPY the root CHANGELOG.md and scripts/ in as build inputs (see the
 // Dockerfiles).
 //

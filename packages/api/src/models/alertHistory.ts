@@ -16,7 +16,7 @@ import type { ObjectId } from '.';
  */
 export interface IAlertHistoryAnalytics {
   /**
-   * ClickHouse query duration for the evaluation (ms). On query-failure
+   * SQL query duration for the evaluation (ms). On query-failure
    * ERROR records, the time until the query failed — for QUERY_TIMEOUT this
    * is approximately the configured evaluation timeout.
    */

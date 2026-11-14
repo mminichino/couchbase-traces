@@ -80,14 +80,14 @@ export const setChartSelectsAlias = (
 // per-series branch projects its VALUE under this fixed name (and is tagged
 // with its series index) so the outer pivot can reference them. Group-by and
 // time-bucket columns deliberately keep their natural single-series names —
-// consumers look rows up by ClickHouse's derived column names, which can't
+// consumers look rows up by legacy store's derived column names, which can't
 // be reproduced node-side (see renderMultiSeriesMetricChartConfig).
 const _MULTI_SERIES_VALUE_ALIAS = '__hdx_value';
 const _MULTI_SERIES_IDX_ALIAS = '__hdx_series_idx';
 // Prefix for internal sort-key companion columns. When the user's ORDER BY
 // references a group-by *expression* (e.g. ResourceAttributes['service.name']),
 // the outer composed query can't evaluate it — the source columns don't exist
-// there and the passthrough column's ClickHouse-derived name is unknowable
+// there and the passthrough column's legacy store-derived name is unknowable
 // node-side. Each such expression is instead projected once more in every
 // scalar branch under `__hdx_sort_<n>`, excluded from the output via
 // * EXCEPT, and referenced from the outer ORDER BY through
@@ -95,9 +95,9 @@ const _MULTI_SERIES_IDX_ALIAS = '__hdx_series_idx';
 const _MULTI_SERIES_SORT_ALIAS_PREFIX = '__hdx_sort_';
 
 /**
- * Render a user-facing output column name as a ClickHouse double-quoted
+ * Render a user-facing output column name as a legacy store double-quoted
  * identifier. User aliases (and metric names, which flow into the default
- * aliases) can contain double quotes; ClickHouse escapes them by doubling,
+ * aliases) can contain double quotes; legacy store escapes them by doubling,
  * so `bad"name` becomes "bad""name" instead of terminating the identifier
  * early. Escaping happens only at SQL-emission time — collision dedup and
  * the meta column names consumers see keep the raw name.
@@ -116,7 +116,7 @@ export const isHistogramClassSelect = (select: {
 
 /**
  * Merge per-branch trailing SETTINGS clauses into one deduped item list for
- * the composed query. ClickHouse rejects SETTINGS on a UNION ALL branch that
+ * the composed query. legacy store rejects SETTINGS on a UNION ALL branch that
  * is followed by further branches, so the clauses are stripped from each
  * branch and hoisted here. Known settings (translate-injected internals plus
  * source querySettings) are simple `key = value` pairs without commas.

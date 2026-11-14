@@ -20,7 +20,7 @@ import {
   DEFAULT_DATABASE,
   DEFAULT_METRICS_TABLE,
   getServer,
-  getTestFixtureClickHouseClient,
+  getTestFixtureDataClient,
   makeAlertChartConfig,
   makeTile,
   RAW_SQL_ALERT_TEMPLATE,
@@ -1233,8 +1233,8 @@ describe('checkAlerts', () => {
       getMapValues: jest.fn().mockResolvedValue([]),
       getAllFields: jest.fn().mockResolvedValue([]),
       getTableMetadata: jest.fn().mockResolvedValue({}),
-      getClickHouseSettings: jest.fn().mockReturnValue({}),
-      setClickHouseSettings: jest.fn(),
+      getQuerySettings: jest.fn().mockReturnValue({}),
+      setQuerySettings: jest.fn(),
       getSkipIndices: jest.fn().mockResolvedValue([]),
       getSetting: jest.fn().mockResolvedValue(undefined),
     } as any;
@@ -1643,7 +1643,7 @@ describe('checkAlerts', () => {
 
       await renderAlertTemplate({
         alertProvider,
-        clickhouseClient: mockClickhouseClient,
+        dataClient: mockClickhouseClient,
         metadata: mockMetadata,
         state: AlertState.ALERT,
         template: 'Custom body @webhook-My_Web', // partial name should work
@@ -1681,7 +1681,7 @@ describe('checkAlerts', () => {
 
       await renderAlertTemplate({
         alertProvider,
-        clickhouseClient: mockClickhouseClient,
+        dataClient: mockClickhouseClient,
         metadata: mockMetadata,
         state: AlertState.ALERT,
         template: 'Custom body @webhook-My_Web', // partial name should work
@@ -1739,7 +1739,7 @@ describe('checkAlerts', () => {
 
       await renderAlertTemplate({
         alertProvider,
-        clickhouseClient: mockClickhouseClient,
+        dataClient: mockClickhouseClient,
         metadata: mockMetadata,
         state: AlertState.ALERT,
         template: 'Custom body @webhook-{{attributes.webhookName}}', // partial name should work
@@ -1810,7 +1810,7 @@ describe('checkAlerts', () => {
 
       await renderAlertTemplate({
         alertProvider,
-        clickhouseClient: mockClickhouseClient,
+        dataClient: mockClickhouseClient,
         metadata: mockMetadata,
         state: AlertState.ALERT,
         template: `
@@ -1849,7 +1849,7 @@ describe('checkAlerts', () => {
       // @webhook should not be called
       await renderAlertTemplate({
         alertProvider,
-        clickhouseClient: mockClickhouseClient,
+        dataClient: mockClickhouseClient,
         metadata: mockMetadata,
         state: AlertState.ALERT,
         template:
@@ -1941,7 +1941,7 @@ describe('checkAlerts', () => {
 
       await renderAlertTemplate({
         alertProvider,
-        clickhouseClient: mockClickhouseClient,
+        dataClient: mockClickhouseClient,
         metadata: mockMetadata,
         state: AlertState.OK, // Resolved state
         template: '@webhook-My_Webhook',
@@ -2082,7 +2082,7 @@ describe('checkAlerts', () => {
         tags: ['test'],
       }).save();
 
-      const clickhouseClient = new DataClient({});
+      const dataClient = new DataClient({});
 
       return {
         team,
@@ -2091,7 +2091,7 @@ describe('checkAlerts', () => {
         source,
         savedSearch,
         teamWebhooksById,
-        clickhouseClient,
+        dataClient,
       };
     };
 
@@ -2140,7 +2140,7 @@ describe('checkAlerts', () => {
     const processAlertAtTime = async (
       now: Date,
       details: AlertDetails,
-      clickhouseClient: DataClient,
+      dataClient: DataClient,
       connection: IConnection,
       alertProvider: AlertProvider,
       teamWebhooksById: Map<string, IWebhook>,
@@ -2156,7 +2156,7 @@ describe('checkAlerts', () => {
           previousMap,
           recentHistoryMap,
         },
-        clickhouseClient,
+        dataClient,
         connection.id,
         alertProvider,
         teamWebhooksById,
@@ -2171,7 +2171,7 @@ describe('checkAlerts', () => {
         source,
         savedSearch,
         teamWebhooksById,
-        clickhouseClient,
+        dataClient,
       } = await setupSavedSearchAlertTest();
 
       const details = await createAlertDetails(
@@ -2195,12 +2195,12 @@ describe('checkAlerts', () => {
         },
       );
 
-      const querySpy = jest.spyOn(clickhouseClient, 'queryChartConfig');
+      const querySpy = jest.spyOn(dataClient, 'queryChartConfig');
 
       await processAlertAtTime(
         new Date('2023-11-16T22:12:00.000Z'),
         details,
-        clickhouseClient,
+        dataClient,
         connection.id,
         alertProvider,
         teamWebhooksById,
@@ -2220,7 +2220,7 @@ describe('checkAlerts', () => {
         source,
         savedSearch,
         teamWebhooksById,
-        clickhouseClient,
+        dataClient,
       } = await setupSavedSearchAlertTest();
 
       const details = await createAlertDetails(
@@ -2244,12 +2244,12 @@ describe('checkAlerts', () => {
         },
       );
 
-      const querySpy = jest.spyOn(clickhouseClient, 'queryChartConfig');
+      const querySpy = jest.spyOn(dataClient, 'queryChartConfig');
 
       await processAlertAtTime(
         new Date('2023-11-16T22:13:45.000Z'),
         details,
-        clickhouseClient,
+        dataClient,
         connection.id,
         alertProvider,
         teamWebhooksById,
@@ -2262,7 +2262,7 @@ describe('checkAlerts', () => {
       await processAlertAtTime(
         new Date('2023-11-16T22:18:31.000Z'),
         details,
-        clickhouseClient,
+        dataClient,
         connection.id,
         alertProvider,
         teamWebhooksById,
@@ -2281,7 +2281,7 @@ describe('checkAlerts', () => {
         source,
         savedSearch,
         teamWebhooksById,
-        clickhouseClient,
+        dataClient,
       } = await setupSavedSearchAlertTest();
 
       const details = await createAlertDetails(
@@ -2341,7 +2341,7 @@ describe('checkAlerts', () => {
       await processAlertAtTime(
         now,
         details,
-        clickhouseClient,
+        dataClient,
         connection.id,
         alertProvider,
         teamWebhooksById,
@@ -2353,7 +2353,7 @@ describe('checkAlerts', () => {
       await processAlertAtTime(
         later,
         details,
-        clickhouseClient,
+        dataClient,
         connection.id,
         alertProvider,
         teamWebhooksById,
@@ -2365,7 +2365,7 @@ describe('checkAlerts', () => {
       await processAlertAtTime(
         nextWindow,
         details,
-        clickhouseClient,
+        dataClient,
         connection.id,
         alertProvider,
         teamWebhooksById,
@@ -2377,7 +2377,7 @@ describe('checkAlerts', () => {
       await processAlertAtTime(
         nextNextWindow,
         details,
-        clickhouseClient,
+        dataClient,
         connection.id,
         alertProvider,
         teamWebhooksById,
@@ -2439,14 +2439,8 @@ describe('checkAlerts', () => {
     });
 
     it('SAVED_SEARCH alert - titleEmoji is applied per webhook on fired and resolved titles', async () => {
-      const {
-        team,
-        webhook,
-        connection,
-        source,
-        savedSearch,
-        clickhouseClient,
-      } = await setupSavedSearchAlertTest();
+      const { team, webhook, connection, source, savedSearch, dataClient } =
+        await setupSavedSearchAlertTest();
       webhook.titleEmoji = false;
       await webhook.save();
       const emojiWebhook = await new Webhook({
@@ -2499,7 +2493,7 @@ describe('checkAlerts', () => {
       await processAlertAtTime(
         new Date('2023-11-16T22:12:00.000Z'),
         details,
-        clickhouseClient,
+        dataClient,
         connection.id,
         alertProvider,
         teamWebhooksById,
@@ -2509,7 +2503,7 @@ describe('checkAlerts', () => {
       await processAlertAtTime(
         new Date('2023-11-16T22:20:00.000Z'),
         details,
-        clickhouseClient,
+        dataClient,
         connection.id,
         alertProvider,
         teamWebhooksById,
@@ -2549,7 +2543,7 @@ describe('checkAlerts', () => {
         source,
         savedSearch,
         teamWebhooksById,
-        clickhouseClient,
+        dataClient,
       } = await setupSavedSearchAlertTest();
 
       // Configure the source to hide the 'excluded' service, matching the
@@ -2613,7 +2607,7 @@ describe('checkAlerts', () => {
       await processAlertAtTime(
         now,
         details,
-        clickhouseClient,
+        dataClient,
         connection.id,
         alertProvider,
         teamWebhooksById,
@@ -2640,12 +2634,12 @@ describe('checkAlerts', () => {
     });
 
     it('SAVED_SEARCH alert - applies a saved filter whose column needs backtick-quoting', async () => {
-      const { team, webhook, connection, teamWebhooksById, clickhouseClient } =
+      const { team, webhook, connection, teamWebhooksById, dataClient } =
         await setupSavedSearchAlertTest();
 
       // A table with a column whose name requires backtick-quoting. The default
       // otel_logs schema has no such column, so create a dedicated one.
-      const nativeClient = await getTestFixtureClickHouseClient();
+      const nativeClient = await getTestFixtureDataClient();
       const ESCAPED_FILTER_TABLE = 'otel_logs_alert_escaped_filter';
       await nativeClient.command({
         query: `CREATE OR REPLACE TABLE ${DEFAULT_DATABASE}.${ESCAPED_FILTER_TABLE} (
@@ -2717,12 +2711,12 @@ describe('checkAlerts', () => {
           },
         ]);
 
-        const querySpy = jest.spyOn(clickhouseClient, 'queryChartConfig');
+        const querySpy = jest.spyOn(dataClient, 'queryChartConfig');
 
         await processAlertAtTime(
           now,
           details,
-          clickhouseClient,
+          dataClient,
           connection.id,
           alertProvider,
           teamWebhooksById,
@@ -2756,7 +2750,7 @@ describe('checkAlerts', () => {
         connection,
         source,
         teamWebhooksById,
-        clickhouseClient,
+        dataClient,
       } = await setupSavedSearchAlertTest();
 
       const now = new Date('2023-11-16T22:12:00.000Z');
@@ -2843,7 +2837,7 @@ describe('checkAlerts', () => {
       await processAlertAtTime(
         now,
         details,
-        clickhouseClient,
+        dataClient,
         connection.id,
         alertProvider,
         teamWebhooksById,
@@ -2855,7 +2849,7 @@ describe('checkAlerts', () => {
       await processAlertAtTime(
         later,
         details,
-        clickhouseClient,
+        dataClient,
         connection.id,
         alertProvider,
         teamWebhooksById,
@@ -2867,7 +2861,7 @@ describe('checkAlerts', () => {
       await processAlertAtTime(
         nextWindow,
         details,
-        clickhouseClient,
+        dataClient,
         connection.id,
         alertProvider,
         teamWebhooksById,
@@ -2926,7 +2920,7 @@ describe('checkAlerts', () => {
         connection,
         source,
         teamWebhooksById,
-        clickhouseClient,
+        dataClient,
       } = await setupSavedSearchAlertTest();
 
       const now = new Date('2023-11-16T22:12:00.000Z');
@@ -2973,7 +2967,7 @@ describe('checkAlerts', () => {
       await processAlertAtTime(
         now,
         details,
-        clickhouseClient,
+        dataClient,
         connection.id,
         alertProvider,
         teamWebhooksById,
@@ -2985,7 +2979,7 @@ describe('checkAlerts', () => {
       await processAlertAtTime(
         later,
         details,
-        clickhouseClient,
+        dataClient,
         connection.id,
         alertProvider,
         teamWebhooksById,
@@ -2996,7 +2990,7 @@ describe('checkAlerts', () => {
       await processAlertAtTime(
         nextWindow,
         details,
-        clickhouseClient,
+        dataClient,
         connection.id,
         alertProvider,
         teamWebhooksById,
@@ -3069,7 +3063,7 @@ describe('checkAlerts', () => {
         connection,
         source,
         teamWebhooksById,
-        clickhouseClient,
+        dataClient,
       } = await setupSavedSearchAlertTest();
 
       const now = new Date('2023-11-16T22:12:00.000Z');
@@ -3119,7 +3113,7 @@ describe('checkAlerts', () => {
       await processAlertAtTime(
         now,
         details,
-        clickhouseClient,
+        dataClient,
         connection.id,
         alertProvider,
         teamWebhooksById,
@@ -3149,7 +3143,7 @@ describe('checkAlerts', () => {
           source,
           savedSearch,
           teamWebhooksById,
-          clickhouseClient,
+          dataClient,
         } = await setupSavedSearchAlertTest();
 
         const now = new Date('2023-11-16T22:12:00.000Z');
@@ -3188,7 +3182,7 @@ describe('checkAlerts', () => {
         await processAlertAtTime(
           now,
           details,
-          clickhouseClient,
+          dataClient,
           connection.id,
           alertProvider,
           teamWebhooksById,
@@ -3279,7 +3273,7 @@ describe('checkAlerts', () => {
           source,
           savedSearch,
           teamWebhooksById,
-          clickhouseClient,
+          dataClient,
         } = await setupSavedSearchAlertTest();
 
         const details = await createAlertDetails(
@@ -3310,13 +3304,13 @@ describe('checkAlerts', () => {
         );
 
         jest
-          .spyOn(clickhouseClient, 'queryChartConfig')
+          .spyOn(dataClient, 'queryChartConfig')
           .mockRejectedValueOnce(new Error('clickhouse kaput'));
 
         await processAlertAtTime(
           new Date('2023-11-16T22:12:00.000Z'),
           details,
-          clickhouseClient,
+          dataClient,
           connection.id,
           alertProvider,
           teamWebhooksById,
@@ -3372,7 +3366,7 @@ describe('checkAlerts', () => {
           source,
           savedSearch,
           teamWebhooksById,
-          clickhouseClient,
+          dataClient,
         } = await setupSavedSearchAlertTest();
 
         const details = await createAlertDetails(
@@ -3396,13 +3390,13 @@ describe('checkAlerts', () => {
         );
 
         jest
-          .spyOn(clickhouseClient, 'queryChartConfig')
+          .spyOn(dataClient, 'queryChartConfig')
           .mockRejectedValueOnce(new Error('boom'));
 
         await processAlertAtTime(
           new Date('2023-11-16T22:12:00.000Z'),
           details,
-          clickhouseClient,
+          dataClient,
           connection.id,
           alertProvider,
           teamWebhooksById,
@@ -3430,7 +3424,7 @@ describe('checkAlerts', () => {
           source,
           savedSearch,
           teamWebhooksById,
-          clickhouseClient,
+          dataClient,
         } = await setupSavedSearchAlertTest();
 
         const details = await createAlertDetails(
@@ -3456,13 +3450,13 @@ describe('checkAlerts', () => {
         // The exact message the ClickHouse client rejects with when
         // request_timeout elapses.
         jest
-          .spyOn(clickhouseClient, 'queryChartConfig')
+          .spyOn(dataClient, 'queryChartConfig')
           .mockRejectedValueOnce(new Error('Timeout error.'));
 
         await processAlertAtTime(
           new Date('2023-11-16T22:12:00.000Z'),
           details,
-          clickhouseClient,
+          dataClient,
           connection.id,
           alertProvider,
           teamWebhooksById,
@@ -3502,7 +3496,7 @@ describe('checkAlerts', () => {
           source,
           savedSearch,
           teamWebhooksById,
-          clickhouseClient,
+          dataClient,
         } = await setupSavedSearchAlertTest();
 
         const details = await createAlertDetails(
@@ -3526,7 +3520,7 @@ describe('checkAlerts', () => {
         );
 
         const querySpy = jest
-          .spyOn(clickhouseClient, 'queryChartConfig')
+          .spyOn(dataClient, 'queryChartConfig')
           .mockRejectedValueOnce(new Error('boom 1'))
           .mockRejectedValueOnce(new Error('boom 2'))
           .mockRejectedValueOnce(new Error('boom 3'));
@@ -3537,7 +3531,7 @@ describe('checkAlerts', () => {
         await processAlertAtTime(
           new Date('2023-11-16T22:12:00.000Z'),
           details,
-          clickhouseClient,
+          dataClient,
           connection.id,
           alertProvider,
           teamWebhooksById,
@@ -3545,7 +3539,7 @@ describe('checkAlerts', () => {
         await processAlertAtTime(
           new Date('2023-11-16T22:13:00.000Z'),
           details,
-          clickhouseClient,
+          dataClient,
           connection.id,
           alertProvider,
           teamWebhooksById,
@@ -3568,7 +3562,7 @@ describe('checkAlerts', () => {
         await processAlertAtTime(
           new Date('2023-11-16T22:16:00.000Z'),
           details,
-          clickhouseClient,
+          dataClient,
           connection.id,
           alertProvider,
           teamWebhooksById,
@@ -3599,7 +3593,7 @@ describe('checkAlerts', () => {
           source,
           savedSearch,
           teamWebhooksById,
-          clickhouseClient,
+          dataClient,
         } = await setupSavedSearchAlertTest();
 
         // Data inside the window evaluated at 22:10 (range [22:05, 22:10))
@@ -3640,13 +3634,13 @@ describe('checkAlerts', () => {
 
         // First tick fails — records an ERROR row, no state/history change
         jest
-          .spyOn(clickhouseClient, 'queryChartConfig')
+          .spyOn(dataClient, 'queryChartConfig')
           .mockRejectedValueOnce(new Error('transient failure'));
 
         await processAlertAtTime(
           new Date('2023-11-16T22:12:00.000Z'),
           details,
-          clickhouseClient,
+          dataClient,
           connection.id,
           alertProvider,
           teamWebhooksById,
@@ -3661,7 +3655,7 @@ describe('checkAlerts', () => {
         await processAlertAtTime(
           new Date('2023-11-16T22:13:00.000Z'),
           details,
-          clickhouseClient,
+          dataClient,
           connection.id,
           alertProvider,
           teamWebhooksById,
@@ -3728,14 +3722,8 @@ describe('checkAlerts', () => {
       // an empty dispatch finishes instantly — 0ms would read as a target that
       // answered at once.
       it('records no delivery time when the webhook no longer exists', async () => {
-        const {
-          team,
-          webhook,
-          connection,
-          source,
-          savedSearch,
-          clickhouseClient,
-        } = await setupSavedSearchAlertTest();
+        const { team, webhook, connection, source, savedSearch, dataClient } =
+          await setupSavedSearchAlertTest();
 
         await bulkInsertLogs([
           {
@@ -3775,7 +3763,7 @@ describe('checkAlerts', () => {
         await processAlertAtTime(
           new Date('2023-11-16T22:10:00.000Z'),
           details,
-          clickhouseClient,
+          dataClient,
           connection.id,
           alertProvider,
           // The alert still points at a webhook the team no longer has.
@@ -3802,7 +3790,7 @@ describe('checkAlerts', () => {
           source,
           savedSearch,
           teamWebhooksById,
-          clickhouseClient,
+          dataClient,
         } = await setupSavedSearchAlertTest();
 
         await bulkInsertLogs([
@@ -3844,7 +3832,7 @@ describe('checkAlerts', () => {
         await processAlertAtTime(
           new Date('2023-11-16T22:10:00.000Z'),
           details,
-          clickhouseClient,
+          dataClient,
           connection.id,
           alertProvider,
           teamWebhooksById,
@@ -3874,7 +3862,7 @@ describe('checkAlerts', () => {
           source,
           savedSearch,
           teamWebhooksById,
-          clickhouseClient,
+          dataClient,
         } = await setupSavedSearchAlertTest();
 
         // Non-breaching data in the 22:15 window (range [22:10, 22:15))
@@ -3909,12 +3897,12 @@ describe('checkAlerts', () => {
 
         // Tick in the 22:10 window fails — ERROR row at 22:10
         jest
-          .spyOn(clickhouseClient, 'queryChartConfig')
+          .spyOn(dataClient, 'queryChartConfig')
           .mockRejectedValueOnce(new Error('transient failure'));
         await processAlertAtTime(
           new Date('2023-11-16T22:12:00.000Z'),
           details,
-          clickhouseClient,
+          dataClient,
           connection.id,
           alertProvider,
           teamWebhooksById,
@@ -3928,7 +3916,7 @@ describe('checkAlerts', () => {
         await processAlertAtTime(
           new Date('2023-11-16T22:17:00.000Z'),
           details,
-          clickhouseClient,
+          dataClient,
           connection.id,
           alertProvider,
           teamWebhooksById,
@@ -3961,7 +3949,7 @@ describe('checkAlerts', () => {
           source,
           savedSearch,
           teamWebhooksById,
-          clickhouseClient,
+          dataClient,
         } = await setupSavedSearchAlertTest();
 
         const details = await createAlertDetails(
@@ -3988,7 +3976,7 @@ describe('checkAlerts', () => {
         await processAlertAtTime(
           new Date('2023-11-16T22:07:00.000Z'),
           details,
-          clickhouseClient,
+          dataClient,
           connection.id,
           alertProvider,
           teamWebhooksById,
@@ -4015,12 +4003,12 @@ describe('checkAlerts', () => {
         // Tick 2 (window 22:10) fails — ERROR row at 22:10, window not
         // marked evaluated.
         jest
-          .spyOn(clickhouseClient, 'queryChartConfig')
+          .spyOn(dataClient, 'queryChartConfig')
           .mockRejectedValueOnce(new Error('transient failure'));
         await processAlertAtTime(
           new Date('2023-11-16T22:12:00.000Z'),
           details,
-          clickhouseClient,
+          dataClient,
           connection.id,
           alertProvider,
           teamWebhooksById,
@@ -4040,7 +4028,7 @@ describe('checkAlerts', () => {
         await processAlertAtTime(
           new Date('2023-11-16T22:17:00.000Z'),
           details,
-          clickhouseClient,
+          dataClient,
           connection.id,
           alertProvider,
           teamWebhooksById,
@@ -4079,7 +4067,7 @@ describe('checkAlerts', () => {
           source,
           savedSearch,
           teamWebhooksById,
-          clickhouseClient,
+          dataClient,
         } = await setupSavedSearchAlertTest();
 
         const details = await createAlertDetails(
@@ -4106,7 +4094,7 @@ describe('checkAlerts', () => {
         await processAlertAtTime(
           new Date('2023-11-16T22:12:00.000Z'),
           details,
-          clickhouseClient,
+          dataClient,
           connection.id,
           alertProvider,
           teamWebhooksById,
@@ -4122,7 +4110,7 @@ describe('checkAlerts', () => {
         await processAlertAtTime(
           new Date('2023-11-16T22:27:00.000Z'),
           details,
-          clickhouseClient,
+          dataClient,
           connection.id,
           alertProvider,
           teamWebhooksById,
@@ -4180,7 +4168,7 @@ describe('checkAlerts', () => {
             connection,
             source,
             teamWebhooksById,
-            clickhouseClient,
+            dataClient,
             dashboard,
           } = await setupTileAlertForErrors({
             webhookSettings: {
@@ -4235,7 +4223,7 @@ describe('checkAlerts', () => {
           await processAlertAtTime(
             now,
             details,
-            clickhouseClient,
+            dataClient,
             connection.id,
             alertProvider,
             teamWebhooksById,
@@ -4302,7 +4290,7 @@ describe('checkAlerts', () => {
           connection,
           source,
           teamWebhooksById,
-          clickhouseClient,
+          dataClient,
           dashboard,
         } = await setupTileAlertForErrors({
           webhookSettings: {
@@ -4357,7 +4345,7 @@ describe('checkAlerts', () => {
         await processAlertAtTime(
           now,
           details,
-          clickhouseClient,
+          dataClient,
           connection.id,
           alertProvider,
           teamWebhooksById,
@@ -4393,7 +4381,7 @@ describe('checkAlerts', () => {
           connection,
           source,
           teamWebhooksById,
-          clickhouseClient,
+          dataClient,
           dashboard,
         } = await setupTileAlertForErrors({
           webhookSettings: {
@@ -4450,7 +4438,7 @@ describe('checkAlerts', () => {
         await processAlertAtTime(
           alertingNow,
           details,
-          clickhouseClient,
+          dataClient,
           connection.id,
           alertProvider,
           teamWebhooksById,
@@ -4463,7 +4451,7 @@ describe('checkAlerts', () => {
         await processAlertAtTime(
           resolvingNow,
           details,
-          clickhouseClient,
+          dataClient,
           connection.id,
           alertProvider,
           teamWebhooksById,
@@ -4485,7 +4473,7 @@ describe('checkAlerts', () => {
           connection,
           source,
           teamWebhooksById,
-          clickhouseClient,
+          dataClient,
           dashboard,
         } = await setupTileAlertForErrors();
 
@@ -4541,7 +4529,7 @@ describe('checkAlerts', () => {
         await processAlertAtTime(
           now,
           details,
-          clickhouseClient,
+          dataClient,
           connection.id,
           alertProvider,
           teamWebhooksById,
@@ -4569,7 +4557,7 @@ describe('checkAlerts', () => {
           source,
           savedSearch,
           teamWebhooksById,
-          clickhouseClient,
+          dataClient,
         } = await setupSavedSearchAlertTest({
           webhookSettings: {
             service: WebhookService.Generic,
@@ -4634,7 +4622,7 @@ describe('checkAlerts', () => {
         await processAlertAtTime(
           now,
           details,
-          clickhouseClient,
+          dataClient,
           connection.id,
           alertProvider,
           teamWebhooksById,
@@ -4695,7 +4683,7 @@ describe('checkAlerts', () => {
 
       it('records a WEBHOOK_ERROR when the referenced webhook is not found', async () => {
         // Don't pre-create a webhook — we'll reference one that doesn't exist.
-        const { team, connection, source, savedSearch, clickhouseClient } =
+        const { team, connection, source, savedSearch, dataClient } =
           await setupSavedSearchAlertTest();
 
         // Fresh map with no webhooks in it, mimicking a deleted webhook.
@@ -4743,7 +4731,7 @@ describe('checkAlerts', () => {
         await processAlertAtTime(
           now,
           details,
-          clickhouseClient,
+          dataClient,
           connection.id,
           alertProvider,
           emptyWebhooksById,
@@ -4794,7 +4782,7 @@ describe('checkAlerts', () => {
           source,
           savedSearch,
           teamWebhooksById,
-          clickhouseClient,
+          dataClient,
         } = await setupSavedSearchAlertTest();
 
         const details = await createAlertDetails(
@@ -4828,7 +4816,7 @@ describe('checkAlerts', () => {
         await processAlertAtTime(
           new Date('2023-11-16T22:12:00.000Z'),
           details,
-          clickhouseClient,
+          dataClient,
           connection.id,
           alertProvider,
           teamWebhooksById,
@@ -4859,7 +4847,7 @@ describe('checkAlerts', () => {
         connection,
         source,
         teamWebhooksById,
-        clickhouseClient,
+        dataClient,
       } = await setupSavedSearchAlertTest({
         webhookSettings: {
           service: WebhookService.Generic,
@@ -4963,7 +4951,7 @@ describe('checkAlerts', () => {
       await processAlertAtTime(
         now,
         details,
-        clickhouseClient,
+        dataClient,
         connection.id,
         alertProvider,
         teamWebhooksById,
@@ -4975,7 +4963,7 @@ describe('checkAlerts', () => {
       await processAlertAtTime(
         later,
         details,
-        clickhouseClient,
+        dataClient,
         connection.id,
         alertProvider,
         teamWebhooksById,
@@ -4987,7 +4975,7 @@ describe('checkAlerts', () => {
       await processAlertAtTime(
         nextWindow,
         details,
-        clickhouseClient,
+        dataClient,
         connection.id,
         alertProvider,
         teamWebhooksById,
@@ -5052,7 +5040,7 @@ describe('checkAlerts', () => {
         source,
         savedSearch,
         teamWebhooksById,
-        clickhouseClient,
+        dataClient,
       } = await setupSavedSearchAlertTest({
         webhookSettings: {
           service: WebhookService.Generic,
@@ -5093,7 +5081,7 @@ describe('checkAlerts', () => {
       await processAlertAtTime(
         now,
         details,
-        clickhouseClient,
+        dataClient,
         connection.id,
         alertProvider,
         teamWebhooksById,
@@ -5112,7 +5100,7 @@ describe('checkAlerts', () => {
     });
 
     it('TILE alert (raw SQL line chart) - should trigger and resolve', async () => {
-      const { team, webhook, connection, teamWebhooksById, clickhouseClient } =
+      const { team, webhook, connection, teamWebhooksById, dataClient } =
         await setupSavedSearchAlertTest();
 
       const now = new Date('2023-11-16T22:12:00.000Z');
@@ -5189,7 +5177,7 @@ describe('checkAlerts', () => {
       await processAlertAtTime(
         now,
         details,
-        clickhouseClient,
+        dataClient,
         connection,
         alertProvider,
         teamWebhooksById,
@@ -5201,7 +5189,7 @@ describe('checkAlerts', () => {
       await processAlertAtTime(
         nextWindow,
         details,
-        clickhouseClient,
+        dataClient,
         connection,
         alertProvider,
         teamWebhooksById,
@@ -5277,7 +5265,7 @@ describe('checkAlerts', () => {
           connection,
           source,
           teamWebhooksById,
-          clickhouseClient,
+          dataClient,
         } = await setupSavedSearchAlertTest();
 
         await seedLogs(['api', 'web']);
@@ -5334,7 +5322,7 @@ describe('checkAlerts', () => {
         await processAlertAtTime(
           NOW,
           details,
-          clickhouseClient,
+          dataClient,
           connection,
           alertProvider,
           teamWebhooksById,
@@ -5357,7 +5345,7 @@ describe('checkAlerts', () => {
           connection,
           source,
           teamWebhooksById,
-          clickhouseClient,
+          dataClient,
         } = await setupSavedSearchAlertTest();
 
         await seedLogs(['api', 'web']);
@@ -5407,7 +5395,7 @@ describe('checkAlerts', () => {
         await processAlertAtTime(
           NOW,
           details,
-          clickhouseClient,
+          dataClient,
           connection,
           alertProvider,
           teamWebhooksById,
@@ -5427,7 +5415,7 @@ describe('checkAlerts', () => {
           connection,
           source,
           teamWebhooksById,
-          clickhouseClient,
+          dataClient,
         } = await setupSavedSearchAlertTest();
 
         await seedLogs(['$abc', '$hidden', 'api']);
@@ -5488,7 +5476,7 @@ describe('checkAlerts', () => {
         await processAlertAtTime(
           NOW,
           details,
-          clickhouseClient,
+          dataClient,
           connection,
           alertProvider,
           teamWebhooksById,
@@ -5501,13 +5489,8 @@ describe('checkAlerts', () => {
       });
 
       it('expands $__filter in a raw SQL tile while leaving an undeclared literal alone', async () => {
-        const {
-          team,
-          webhook,
-          connection,
-          teamWebhooksById,
-          clickhouseClient,
-        } = await setupSavedSearchAlertTest();
+        const { team, webhook, connection, teamWebhooksById, dataClient } =
+          await setupSavedSearchAlertTest();
 
         await seedLogs(['api', 'web', '$abc']);
 
@@ -5556,7 +5539,7 @@ describe('checkAlerts', () => {
         await processAlertAtTime(
           NOW,
           details,
-          clickhouseClient,
+          dataClient,
           connection,
           alertProvider,
           teamWebhooksById,
@@ -5570,7 +5553,7 @@ describe('checkAlerts', () => {
     });
 
     it('TILE alert (raw SQL) - multiple rows per time bucket from GROUP BY', async () => {
-      const { team, webhook, connection, teamWebhooksById, clickhouseClient } =
+      const { team, webhook, connection, teamWebhooksById, dataClient } =
         await setupSavedSearchAlertTest();
 
       const now = new Date('2023-11-16T22:12:00.000Z');
@@ -5660,7 +5643,7 @@ describe('checkAlerts', () => {
       await processAlertAtTime(
         now,
         details,
-        clickhouseClient,
+        dataClient,
         connection,
         alertProvider,
         teamWebhooksById,
@@ -5693,7 +5676,7 @@ describe('checkAlerts', () => {
     });
 
     it('TILE alert (raw SQL) - group-by fields are exposed as {{attributes.*}} in the notification payload', async () => {
-      const { team, webhook, connection, teamWebhooksById, clickhouseClient } =
+      const { team, webhook, connection, teamWebhooksById, dataClient } =
         await setupSavedSearchAlertTest();
 
       const now = new Date('2023-11-16T22:12:00.000Z');
@@ -5779,7 +5762,7 @@ describe('checkAlerts', () => {
       await processAlertAtTime(
         now,
         details,
-        clickhouseClient,
+        dataClient,
         connection,
         alertProvider,
         teamWebhooksById,
@@ -5816,7 +5799,7 @@ describe('checkAlerts', () => {
       name?: string;
       message?: string;
     }) => {
-      const { team, webhook, connection, teamWebhooksById, clickhouseClient } =
+      const { team, webhook, connection, teamWebhooksById, dataClient } =
         await setupSavedSearchAlertTest(setup);
 
       const firedAt = new Date('2023-11-16T22:12:00.000Z');
@@ -5891,7 +5874,7 @@ describe('checkAlerts', () => {
         processAlertAtTime(
           at,
           details,
-          clickhouseClient,
+          dataClient,
           connection,
           alertProvider,
           teamWebhooksById,
@@ -6004,7 +5987,7 @@ describe('checkAlerts', () => {
     });
 
     it('TILE alert (raw SQL) - alert is evaluated using the last numeric column', async () => {
-      const { team, webhook, connection, teamWebhooksById, clickhouseClient } =
+      const { team, webhook, connection, teamWebhooksById, dataClient } =
         await setupSavedSearchAlertTest();
 
       const now = new Date('2023-11-16T22:12:00.000Z');
@@ -6097,7 +6080,7 @@ describe('checkAlerts', () => {
       await processAlertAtTime(
         now,
         details,
-        clickhouseClient,
+        dataClient,
         connection,
         alertProvider,
         teamWebhooksById,
@@ -6122,7 +6105,7 @@ describe('checkAlerts', () => {
         connection,
         source,
         teamWebhooksById,
-        clickhouseClient,
+        dataClient,
       } = await setupSavedSearchAlertTest();
 
       const now = new Date('2023-11-16T22:12:00.000Z');
@@ -6207,7 +6190,7 @@ describe('checkAlerts', () => {
       await processAlertAtTime(
         now,
         details,
-        clickhouseClient,
+        dataClient,
         connection,
         alertProvider,
         teamWebhooksById,
@@ -6225,7 +6208,7 @@ describe('checkAlerts', () => {
     });
 
     it('TILE alert (raw SQL) - catches up on multiple missed windows', async () => {
-      const { team, webhook, connection, teamWebhooksById, clickhouseClient } =
+      const { team, webhook, connection, teamWebhooksById, dataClient } =
         await setupSavedSearchAlertTest();
 
       // Scenario: 5m alert interval.
@@ -6307,7 +6290,7 @@ describe('checkAlerts', () => {
       await processAlertAtTime(
         new Date('2023-11-16T22:02:00.000Z'),
         details,
-        clickhouseClient,
+        dataClient,
         connection,
         alertProvider,
         teamWebhooksById,
@@ -6325,7 +6308,7 @@ describe('checkAlerts', () => {
       await processAlertAtTime(
         new Date('2023-11-16T22:17:00.000Z'),
         details,
-        clickhouseClient,
+        dataClient,
         connection,
         alertProvider,
         teamWebhooksById,
@@ -6350,7 +6333,7 @@ describe('checkAlerts', () => {
     });
 
     it('TILE alert (raw SQL Number chart) - should trigger and resolve', async () => {
-      const { team, webhook, connection, teamWebhooksById, clickhouseClient } =
+      const { team, webhook, connection, teamWebhooksById, dataClient } =
         await setupSavedSearchAlertTest();
 
       const now = new Date('2023-11-16T22:12:00.000Z');
@@ -6420,7 +6403,7 @@ describe('checkAlerts', () => {
       await processAlertAtTime(
         now,
         details,
-        clickhouseClient,
+        dataClient,
         connection,
         alertProvider,
         teamWebhooksById,
@@ -6442,7 +6425,7 @@ describe('checkAlerts', () => {
       await processAlertAtTime(
         nextWindow,
         details,
-        clickhouseClient,
+        dataClient,
         connection,
         alertProvider,
         teamWebhooksById,
@@ -6457,7 +6440,7 @@ describe('checkAlerts', () => {
     });
 
     it('TILE alert (raw SQL Number chart) - no data returns zero value', async () => {
-      const { team, webhook, connection, teamWebhooksById, clickhouseClient } =
+      const { team, webhook, connection, teamWebhooksById, dataClient } =
         await setupSavedSearchAlertTest();
 
       const now = new Date('2023-11-16T22:12:00.000Z');
@@ -6512,7 +6495,7 @@ describe('checkAlerts', () => {
       await processAlertAtTime(
         now,
         details,
-        clickhouseClient,
+        dataClient,
         connection,
         alertProvider,
         teamWebhooksById,
@@ -6530,7 +6513,7 @@ describe('checkAlerts', () => {
     });
 
     it('TILE alert (raw SQL Number chart) - threshold compares with last numeric column', async () => {
-      const { team, webhook, connection, teamWebhooksById, clickhouseClient } =
+      const { team, webhook, connection, teamWebhooksById, dataClient } =
         await setupSavedSearchAlertTest();
 
       const now = new Date('2023-11-16T22:12:00.000Z');
@@ -6623,7 +6606,7 @@ describe('checkAlerts', () => {
       await processAlertAtTime(
         now,
         details,
-        clickhouseClient,
+        dataClient,
         connection,
         alertProvider,
         teamWebhooksById,
@@ -6642,7 +6625,7 @@ describe('checkAlerts', () => {
     });
 
     it('TILE alert (raw SQL Number chart) - only first row is compared to threshold when query returns multiple rows', async () => {
-      const { team, webhook, connection, teamWebhooksById, clickhouseClient } =
+      const { team, webhook, connection, teamWebhooksById, dataClient } =
         await setupSavedSearchAlertTest();
 
       const now = new Date('2023-11-16T22:12:00.000Z');
@@ -6741,7 +6724,7 @@ describe('checkAlerts', () => {
       await processAlertAtTime(
         now,
         details,
-        clickhouseClient,
+        dataClient,
         connection,
         alertProvider,
         teamWebhooksById,
@@ -6768,7 +6751,7 @@ describe('checkAlerts', () => {
         source,
         savedSearch,
         teamWebhooksById,
-        clickhouseClient,
+        dataClient,
       } = await setupSavedSearchAlertTest();
 
       const now = new Date('2023-11-16T22:12:00.000Z');
@@ -6843,7 +6826,7 @@ describe('checkAlerts', () => {
       await processAlertAtTime(
         now,
         details,
-        clickhouseClient,
+        dataClient,
         connection.id,
         alertProvider,
         teamWebhooksById,
@@ -6870,7 +6853,7 @@ describe('checkAlerts', () => {
       await processAlertAtTime(
         nextWindow,
         details,
-        clickhouseClient,
+        dataClient,
         connection.id,
         alertProvider,
         teamWebhooksById,
@@ -6933,7 +6916,7 @@ describe('checkAlerts', () => {
         source,
         savedSearch,
         teamWebhooksById,
-        clickhouseClient,
+        dataClient,
       } = await setupSavedSearchAlertTest();
 
       const eventMs = new Date('2023-11-16T22:05:00.000Z');
@@ -6986,12 +6969,12 @@ describe('checkAlerts', () => {
       );
 
       // The sample fetch is the only CSV query in an evaluation.
-      const querySpy = jest.spyOn(clickhouseClient, 'query');
+      const querySpy = jest.spyOn(dataClient, 'query');
 
       await processAlertAtTime(
         new Date('2023-11-16T22:12:00.000Z'),
         details,
-        clickhouseClient,
+        dataClient,
         connection.id,
         alertProvider,
         teamWebhooksById,
@@ -7014,7 +6997,7 @@ describe('checkAlerts', () => {
         source,
         savedSearch,
         teamWebhooksById,
-        clickhouseClient,
+        dataClient,
       } = await setupSavedSearchAlertTest();
 
       // First run at 22:10 (creates history for both service-a and service-b)
@@ -7073,7 +7056,7 @@ describe('checkAlerts', () => {
       await processAlertAtTime(
         firstRun,
         details,
-        clickhouseClient,
+        dataClient,
         connection.id,
         alertProvider,
         teamWebhooksById,
@@ -7095,7 +7078,7 @@ describe('checkAlerts', () => {
       await processAlertAtTime(
         secondRun,
         details,
-        clickhouseClient,
+        dataClient,
         connection.id,
         alertProvider,
         teamWebhooksById,
@@ -7116,7 +7099,7 @@ describe('checkAlerts', () => {
       await processAlertAtTime(
         thirdRun,
         details,
-        clickhouseClient,
+        dataClient,
         connection.id,
         alertProvider,
         teamWebhooksById,
@@ -7140,7 +7123,7 @@ describe('checkAlerts', () => {
         source,
         savedSearch,
         teamWebhooksById,
-        clickhouseClient,
+        dataClient,
       } = await setupSavedSearchAlertTest();
 
       const details = await createAlertDetails(
@@ -7186,7 +7169,7 @@ describe('checkAlerts', () => {
       await processAlertAtTime(
         now,
         details,
-        clickhouseClient,
+        dataClient,
         connection.id,
         alertProvider,
         teamWebhooksById,
@@ -7214,7 +7197,7 @@ describe('checkAlerts', () => {
         source,
         savedSearch,
         teamWebhooksById,
-        clickhouseClient,
+        dataClient,
       } = await setupSavedSearchAlertTest();
 
       const details = await createAlertDetails(
@@ -7261,7 +7244,7 @@ describe('checkAlerts', () => {
       await processAlertAtTime(
         firstRun,
         details,
-        clickhouseClient,
+        dataClient,
         connection.id,
         alertProvider,
         teamWebhooksById,
@@ -7297,7 +7280,7 @@ describe('checkAlerts', () => {
       await processAlertAtTime(
         secondRun,
         details,
-        clickhouseClient,
+        dataClient,
         connection.id,
         alertProvider,
         teamWebhooksById,
@@ -7321,7 +7304,7 @@ describe('checkAlerts', () => {
         source,
         savedSearch,
         teamWebhooksById,
-        clickhouseClient,
+        dataClient,
       } = await setupSavedSearchAlertTest();
 
       const details = await createAlertDetails(
@@ -7402,7 +7385,7 @@ describe('checkAlerts', () => {
       await processAlertAtTime(
         now,
         details,
-        clickhouseClient,
+        dataClient,
         connection.id,
         alertProvider,
         teamWebhooksById,
@@ -7429,7 +7412,7 @@ describe('checkAlerts', () => {
       await processAlertAtTime(
         nextWindow,
         details,
-        clickhouseClient,
+        dataClient,
         connection.id,
         alertProvider,
         teamWebhooksById,
@@ -7490,7 +7473,7 @@ describe('checkAlerts', () => {
         source,
         savedSearch,
         teamWebhooksById,
-        clickhouseClient,
+        dataClient,
       } = await setupSavedSearchAlertTest();
 
       const details = await createAlertDetails(
@@ -7530,7 +7513,7 @@ describe('checkAlerts', () => {
         await processAlertAtTime(
           new Date(at),
           details,
-          clickhouseClient,
+          dataClient,
           connection.id,
           alertProvider,
           teamWebhooksById,
@@ -7545,7 +7528,7 @@ describe('checkAlerts', () => {
     });
 
     it('TILE alert (metrics) - slack webhook', async () => {
-      const { team, webhook, connection, teamWebhooksById, clickhouseClient } =
+      const { team, webhook, connection, teamWebhooksById, dataClient } =
         await setupSavedSearchAlertTest();
 
       const now = new Date('2023-11-16T22:12:00.000Z');
@@ -7644,7 +7627,7 @@ describe('checkAlerts', () => {
       await processAlertAtTime(
         now,
         details,
-        clickhouseClient,
+        dataClient,
         connection.id,
         alertProvider,
         teamWebhooksById,
@@ -7656,7 +7639,7 @@ describe('checkAlerts', () => {
       await processAlertAtTime(
         later,
         details,
-        clickhouseClient,
+        dataClient,
         connection.id,
         alertProvider,
         teamWebhooksById,
@@ -7668,7 +7651,7 @@ describe('checkAlerts', () => {
       await processAlertAtTime(
         nextWindow,
         details,
-        clickhouseClient,
+        dataClient,
         connection.id,
         alertProvider,
         teamWebhooksById,
@@ -7721,7 +7704,7 @@ describe('checkAlerts', () => {
     });
 
     it('TILE alert (metrics) with groupBy - should track per-group alerts', async () => {
-      const { team, webhook, connection, teamWebhooksById, clickhouseClient } =
+      const { team, webhook, connection, teamWebhooksById, dataClient } =
         await setupSavedSearchAlertTest();
 
       const now = new Date('2023-11-16T22:12:00.000Z');
@@ -7842,7 +7825,7 @@ describe('checkAlerts', () => {
       await processAlertAtTime(
         now,
         details,
-        clickhouseClient,
+        dataClient,
         connection.id,
         alertProvider,
         teamWebhooksById,
@@ -7939,7 +7922,7 @@ describe('checkAlerts', () => {
       groupBy?: string;
       threshold: number;
     }) => {
-      const { team, webhook, connection, teamWebhooksById, clickhouseClient } =
+      const { team, webhook, connection, teamWebhooksById, dataClient } =
         await setupSavedSearchAlertTest();
 
       // Persistent mock: the beforeEach mockResolvedValueOnce only covers the
@@ -8018,7 +8001,7 @@ describe('checkAlerts', () => {
         },
       );
 
-      return { details, connection, teamWebhooksById, clickhouseClient };
+      return { details, connection, teamWebhooksById, dataClient };
     };
 
     it('TILE alert (metrics, multi-series) - threshold compares the last series value', async () => {
@@ -8033,7 +8016,7 @@ describe('checkAlerts', () => {
         gaugePoint('test.errors', 6, eventMs),
       ]);
 
-      const { details, connection, teamWebhooksById, clickhouseClient } =
+      const { details, connection, teamWebhooksById, dataClient } =
         await setupMetricTileAlert({
           select: [
             {
@@ -8055,7 +8038,7 @@ describe('checkAlerts', () => {
       await processAlertAtTime(
         now,
         details,
-        clickhouseClient,
+        dataClient,
         connection.id,
         alertProvider,
         teamWebhooksById,
@@ -8081,7 +8064,7 @@ describe('checkAlerts', () => {
       await processAlertAtTime(
         nextWindow,
         details,
-        clickhouseClient,
+        dataClient,
         connection.id,
         alertProvider,
         teamWebhooksById,
@@ -8101,7 +8084,7 @@ describe('checkAlerts', () => {
         gaugePoint('test.errors', 999, now.getTime() - ms('2h')),
       ]);
 
-      const { details, connection, teamWebhooksById, clickhouseClient } =
+      const { details, connection, teamWebhooksById, dataClient } =
         await setupMetricTileAlert({
           select: [
             {
@@ -8123,7 +8106,7 @@ describe('checkAlerts', () => {
       await processAlertAtTime(
         now,
         details,
-        clickhouseClient,
+        dataClient,
         connection.id,
         alertProvider,
         teamWebhooksById,
@@ -8154,7 +8137,7 @@ describe('checkAlerts', () => {
         gaugePoint('test.requests', 0, eventMs),
       ]);
 
-      const { details, connection, teamWebhooksById, clickhouseClient } =
+      const { details, connection, teamWebhooksById, dataClient } =
         await setupMetricTileAlert({
           select: [
             {
@@ -8177,7 +8160,7 @@ describe('checkAlerts', () => {
       await processAlertAtTime(
         now,
         details,
-        clickhouseClient,
+        dataClient,
         connection.id,
         alertProvider,
         teamWebhooksById,
@@ -8213,7 +8196,7 @@ describe('checkAlerts', () => {
         gaugePoint('test.errors', 10, eventMs),
       ]);
 
-      const { details, connection, teamWebhooksById, clickhouseClient } =
+      const { details, connection, teamWebhooksById, dataClient } =
         await setupMetricTileAlert({
           select: [
             {
@@ -8239,7 +8222,7 @@ describe('checkAlerts', () => {
       await processAlertAtTime(
         now,
         details,
-        clickhouseClient,
+        dataClient,
         connection.id,
         alertProvider,
         teamWebhooksById,
@@ -8271,7 +8254,7 @@ describe('checkAlerts', () => {
         gaugePoint('test.errors', 10, eventMs),
       ]);
 
-      const { details, connection, teamWebhooksById, clickhouseClient } =
+      const { details, connection, teamWebhooksById, dataClient } =
         await setupMetricTileAlert({
           select: [
             {
@@ -8297,7 +8280,7 @@ describe('checkAlerts', () => {
       await processAlertAtTime(
         now,
         details,
-        clickhouseClient,
+        dataClient,
         connection.id,
         alertProvider,
         teamWebhooksById,
@@ -8328,7 +8311,7 @@ describe('checkAlerts', () => {
         gaugePoint('test.requests', 0, eventMs),
       ]);
 
-      const { details, connection, teamWebhooksById, clickhouseClient } =
+      const { details, connection, teamWebhooksById, dataClient } =
         await setupMetricTileAlert({
           select: [
             {
@@ -8352,7 +8335,7 @@ describe('checkAlerts', () => {
       await processAlertAtTime(
         now,
         details,
-        clickhouseClient,
+        dataClient,
         connection.id,
         alertProvider,
         teamWebhooksById,
@@ -8383,7 +8366,7 @@ describe('checkAlerts', () => {
         connection,
         source,
         teamWebhooksById,
-        clickhouseClient,
+        dataClient,
       } = await setupSavedSearchAlertTest();
 
       // Persistent mock: the beforeEach mockResolvedValueOnce only covers the
@@ -8481,7 +8464,7 @@ describe('checkAlerts', () => {
       await processAlertAtTime(
         now,
         details,
-        clickhouseClient,
+        dataClient,
         connection.id,
         alertProvider,
         teamWebhooksById,
@@ -8507,7 +8490,7 @@ describe('checkAlerts', () => {
       await processAlertAtTime(
         nextWindow,
         details,
-        clickhouseClient,
+        dataClient,
         connection.id,
         alertProvider,
         teamWebhooksById,
@@ -8533,7 +8516,7 @@ describe('checkAlerts', () => {
         gaugePoint('test.requests', 30, eventMs, 'service-b'),
       ]);
 
-      const { details, connection, teamWebhooksById, clickhouseClient } =
+      const { details, connection, teamWebhooksById, dataClient } =
         await setupMetricTileAlert({
           select: [
             {
@@ -8560,7 +8543,7 @@ describe('checkAlerts', () => {
       await processAlertAtTime(
         now,
         details,
-        clickhouseClient,
+        dataClient,
         connection.id,
         alertProvider,
         teamWebhooksById,
@@ -8597,7 +8580,7 @@ describe('checkAlerts', () => {
         source,
         savedSearch,
         teamWebhooksById,
-        clickhouseClient,
+        dataClient,
       } = await setupSavedSearchAlertTest();
 
       const details = await createAlertDetails(
@@ -8678,7 +8661,7 @@ describe('checkAlerts', () => {
       await processAlertAtTime(
         now,
         details,
-        clickhouseClient,
+        dataClient,
         connection.id,
         alertProvider,
         teamWebhooksById,
@@ -8742,7 +8725,7 @@ describe('checkAlerts', () => {
       await processAlertAtTime(
         nextRun,
         details,
-        clickhouseClient,
+        dataClient,
         connection.id,
         alertProvider,
         teamWebhooksById,
@@ -8776,7 +8759,7 @@ describe('checkAlerts', () => {
         source,
         savedSearch,
         teamWebhooksById,
-        clickhouseClient,
+        dataClient,
       } = await setupSavedSearchAlertTest();
 
       const details = await createAlertDetails(
@@ -8905,7 +8888,7 @@ describe('checkAlerts', () => {
       await processAlertAtTime(
         now,
         details,
-        clickhouseClient,
+        dataClient,
         connection.id,
         alertProvider,
         teamWebhooksById,
@@ -8963,7 +8946,7 @@ describe('checkAlerts', () => {
       await processAlertAtTime(
         nextRun,
         details,
-        clickhouseClient,
+        dataClient,
         connection.id,
         alertProvider,
         teamWebhooksById,
@@ -8998,7 +8981,7 @@ describe('checkAlerts', () => {
         source,
         savedSearch,
         teamWebhooksById,
-        clickhouseClient,
+        dataClient,
       } = await setupSavedSearchAlertTest();
 
       const details = await createAlertDetails(
@@ -9049,7 +9032,7 @@ describe('checkAlerts', () => {
       await processAlertAtTime(
         firstRunTime,
         details,
-        clickhouseClient,
+        dataClient,
         connection.id,
         alertProvider,
         teamWebhooksById,
@@ -9081,7 +9064,7 @@ describe('checkAlerts', () => {
       await processAlertAtTime(
         secondRunTime,
         details,
-        clickhouseClient,
+        dataClient,
         connection.id,
         alertProvider,
         teamWebhooksById,
@@ -9116,7 +9099,7 @@ describe('checkAlerts', () => {
         source,
         savedSearch,
         teamWebhooksById,
-        clickhouseClient,
+        dataClient,
       } = await setupSavedSearchAlertTest();
 
       const details = await createAlertDetails(
@@ -9175,7 +9158,7 @@ describe('checkAlerts', () => {
       await processAlertAtTime(
         firstRunTime,
         details,
-        clickhouseClient,
+        dataClient,
         connection.id,
         alertProvider,
         teamWebhooksById,
@@ -9205,7 +9188,7 @@ describe('checkAlerts', () => {
       await processAlertAtTime(
         secondRunTime,
         details,
-        clickhouseClient,
+        dataClient,
         connection.id,
         alertProvider,
         teamWebhooksById,
@@ -9246,7 +9229,7 @@ describe('checkAlerts', () => {
         source,
         savedSearch,
         teamWebhooksById,
-        clickhouseClient,
+        dataClient,
       } = await setupSavedSearchAlertTest();
 
       const details = await createAlertDetails(
@@ -9297,7 +9280,7 @@ describe('checkAlerts', () => {
       await processAlertAtTime(
         firstRunTime,
         details,
-        clickhouseClient,
+        dataClient,
         connection.id,
         alertProvider,
         teamWebhooksById,
@@ -9327,7 +9310,7 @@ describe('checkAlerts', () => {
       await processAlertAtTime(
         secondRunTime,
         details,
-        clickhouseClient,
+        dataClient,
         connection.id,
         alertProvider,
         teamWebhooksById,
@@ -9365,7 +9348,7 @@ describe('checkAlerts', () => {
         source,
         savedSearch,
         teamWebhooksById,
-        clickhouseClient,
+        dataClient,
       } = await setupSavedSearchAlertTest();
 
       const details = await createAlertDetails(
@@ -9437,7 +9420,7 @@ describe('checkAlerts', () => {
       await processAlertAtTime(
         firstRunTime,
         details,
-        clickhouseClient,
+        dataClient,
         connection.id,
         alertProvider,
         teamWebhooksById,
@@ -9484,7 +9467,7 @@ describe('checkAlerts', () => {
       await processAlertAtTime(
         secondRunTime,
         details,
-        clickhouseClient,
+        dataClient,
         connection.id,
         alertProvider,
         teamWebhooksById,
@@ -9530,7 +9513,7 @@ describe('checkAlerts', () => {
       await processAlertAtTime(
         thirdRunTime,
         details,
-        clickhouseClient,
+        dataClient,
         connection.id,
         alertProvider,
         teamWebhooksById,
@@ -9575,7 +9558,7 @@ describe('checkAlerts', () => {
         source,
         savedSearch,
         teamWebhooksById,
-        clickhouseClient,
+        dataClient,
       } = await setupSavedSearchAlertTest();
 
       const details = await createAlertDetails(
@@ -9633,7 +9616,7 @@ describe('checkAlerts', () => {
       await processAlertAtTime(
         firstRunTime,
         details,
-        clickhouseClient,
+        dataClient,
         connection.id,
         alertProvider,
         teamWebhooksById,
@@ -9679,7 +9662,7 @@ describe('checkAlerts', () => {
       await processAlertAtTime(
         secondRunTime,
         details,
-        clickhouseClient,
+        dataClient,
         connection.id,
         alertProvider,
         teamWebhooksById,
@@ -9710,7 +9693,7 @@ describe('checkAlerts', () => {
         source,
         savedSearch,
         teamWebhooksById,
-        clickhouseClient,
+        dataClient,
       } = await setupSavedSearchAlertTest();
 
       const details = await createAlertDetails(
@@ -9762,7 +9745,7 @@ describe('checkAlerts', () => {
       await processAlertAtTime(
         firstRunTime,
         details,
-        clickhouseClient,
+        dataClient,
         connection.id,
         alertProvider,
         teamWebhooksById,
@@ -9808,7 +9791,7 @@ describe('checkAlerts', () => {
       await processAlertAtTime(
         secondRunTime,
         details,
-        clickhouseClient,
+        dataClient,
         connection.id,
         alertProvider,
         teamWebhooksById,
@@ -9838,7 +9821,7 @@ describe('checkAlerts', () => {
         source,
         savedSearch,
         teamWebhooksById,
-        clickhouseClient,
+        dataClient,
       } = await setupSavedSearchAlertTest();
 
       const now = new Date('2023-11-16T22:12:00.000Z');
@@ -9901,7 +9884,7 @@ describe('checkAlerts', () => {
       await processAlertAtTime(
         now,
         details,
-        clickhouseClient,
+        dataClient,
         connection.id,
         alertProvider,
         teamWebhooksById,
@@ -9922,7 +9905,7 @@ describe('checkAlerts', () => {
         source,
         savedSearch,
         teamWebhooksById,
-        clickhouseClient,
+        dataClient,
       } = await setupSavedSearchAlertTest();
 
       const now = new Date('2023-11-16T22:12:00.000Z');
@@ -9984,7 +9967,7 @@ describe('checkAlerts', () => {
       await processAlertAtTime(
         now,
         details,
-        clickhouseClient,
+        dataClient,
         connection.id,
         alertProvider,
         teamWebhooksById,
@@ -10003,7 +9986,7 @@ describe('checkAlerts', () => {
         source,
         savedSearch,
         teamWebhooksById,
-        clickhouseClient,
+        dataClient,
       } = await setupSavedSearchAlertTest();
 
       const now = new Date('2023-11-16T22:12:00.000Z');
@@ -10062,7 +10045,7 @@ describe('checkAlerts', () => {
       await processAlertAtTime(
         now,
         details,
-        clickhouseClient,
+        dataClient,
         connection.id,
         alertProvider,
         teamWebhooksById,
@@ -10120,7 +10103,7 @@ describe('checkAlerts', () => {
         tags: ['test'],
       }).save();
 
-      const clickhouseClient = new DataClient({});
+      const dataClient = new DataClient({});
 
       const now = new Date('2023-11-16T22:12:00.000Z');
       const eventMs = new Date('2023-11-16T22:05:00.000Z');
@@ -10166,7 +10149,7 @@ describe('checkAlerts', () => {
       await processAlertAtTime(
         now,
         details,
-        clickhouseClient,
+        dataClient,
         connection.id,
         alertProvider,
         teamWebhooksById,
@@ -10221,7 +10204,7 @@ describe('checkAlerts', () => {
         tags: ['test'],
       }).save();
 
-      const clickhouseClient = new DataClient({});
+      const dataClient = new DataClient({});
 
       const now = new Date('2023-11-16T22:12:00.000Z');
       const eventMs = new Date('2023-11-16T22:05:00.000Z');
@@ -10258,7 +10241,7 @@ describe('checkAlerts', () => {
       await processAlertAtTime(
         now,
         details,
-        clickhouseClient,
+        dataClient,
         connection.id,
         alertProvider,
         teamWebhooksById,
@@ -10315,7 +10298,7 @@ describe('checkAlerts', () => {
         tags: ['test'],
       }).save();
 
-      const clickhouseClient = new DataClient({});
+      const dataClient = new DataClient({});
 
       const now = new Date('2023-11-16T22:12:00.000Z');
       const eventMs = new Date('2023-11-16T22:05:00.000Z');
@@ -10358,7 +10341,7 @@ describe('checkAlerts', () => {
       await processAlertAtTime(
         now,
         details,
-        clickhouseClient,
+        dataClient,
         connection.id,
         alertProvider,
         teamWebhooksById,
@@ -10383,7 +10366,7 @@ describe('checkAlerts', () => {
         source,
         savedSearch,
         teamWebhooksById,
-        clickhouseClient,
+        dataClient,
       } = await setupSavedSearchAlertTest();
 
       // threshold = 2, ABOVE_EXCLUSIVE means value > 2
@@ -10450,7 +10433,7 @@ describe('checkAlerts', () => {
       await processAlertAtTime(
         firstRunTime,
         details,
-        clickhouseClient,
+        dataClient,
         connection.id,
         alertProvider,
         teamWebhooksById,
@@ -10462,7 +10445,7 @@ describe('checkAlerts', () => {
       await processAlertAtTime(
         secondRunTime,
         details,
-        clickhouseClient,
+        dataClient,
         connection.id,
         alertProvider,
         teamWebhooksById,
@@ -10477,7 +10460,7 @@ describe('checkAlerts', () => {
         connection,
         source,
         teamWebhooksById,
-        clickhouseClient,
+        dataClient,
       } = await setupSavedSearchAlertTest();
 
       const period1Start = new Date('2023-11-16T22:05:00.000Z');
@@ -10581,7 +10564,7 @@ describe('checkAlerts', () => {
       await processAlertAtTime(
         firstRunTime,
         details,
-        clickhouseClient,
+        dataClient,
         connection.id,
         alertProvider,
         teamWebhooksById,
@@ -10593,7 +10576,7 @@ describe('checkAlerts', () => {
       await processAlertAtTime(
         secondRunTime,
         details,
-        clickhouseClient,
+        dataClient,
         connection.id,
         alertProvider,
         teamWebhooksById,
@@ -10609,7 +10592,7 @@ describe('checkAlerts', () => {
         source,
         savedSearch,
         teamWebhooksById,
-        clickhouseClient,
+        dataClient,
       } = await setupSavedSearchAlertTest();
 
       // threshold = 2, BELOW_OR_EQUAL means value <= 2
@@ -10676,7 +10659,7 @@ describe('checkAlerts', () => {
       await processAlertAtTime(
         firstRunTime,
         details,
-        clickhouseClient,
+        dataClient,
         connection.id,
         alertProvider,
         teamWebhooksById,
@@ -10688,7 +10671,7 @@ describe('checkAlerts', () => {
       await processAlertAtTime(
         secondRunTime,
         details,
-        clickhouseClient,
+        dataClient,
         connection.id,
         alertProvider,
         teamWebhooksById,
@@ -10703,7 +10686,7 @@ describe('checkAlerts', () => {
         connection,
         source,
         teamWebhooksById,
-        clickhouseClient,
+        dataClient,
       } = await setupSavedSearchAlertTest();
 
       const period1Start = new Date('2023-11-16T22:05:00.000Z');
@@ -10792,7 +10775,7 @@ describe('checkAlerts', () => {
       await processAlertAtTime(
         firstRunTime,
         details,
-        clickhouseClient,
+        dataClient,
         connection.id,
         alertProvider,
         teamWebhooksById,
@@ -10804,7 +10787,7 @@ describe('checkAlerts', () => {
       await processAlertAtTime(
         secondRunTime,
         details,
-        clickhouseClient,
+        dataClient,
         connection.id,
         alertProvider,
         teamWebhooksById,
@@ -10820,7 +10803,7 @@ describe('checkAlerts', () => {
         source,
         savedSearch,
         teamWebhooksById,
-        clickhouseClient,
+        dataClient,
       } = await setupSavedSearchAlertTest();
 
       // threshold = 2, EQUAL means value == 2
@@ -10887,7 +10870,7 @@ describe('checkAlerts', () => {
       await processAlertAtTime(
         firstRunTime,
         details,
-        clickhouseClient,
+        dataClient,
         connection.id,
         alertProvider,
         teamWebhooksById,
@@ -10899,7 +10882,7 @@ describe('checkAlerts', () => {
       await processAlertAtTime(
         secondRunTime,
         details,
-        clickhouseClient,
+        dataClient,
         connection.id,
         alertProvider,
         teamWebhooksById,
@@ -10914,7 +10897,7 @@ describe('checkAlerts', () => {
         connection,
         source,
         teamWebhooksById,
-        clickhouseClient,
+        dataClient,
       } = await setupSavedSearchAlertTest();
 
       const period1Start = new Date('2023-11-16T22:05:00.000Z');
@@ -11015,7 +10998,7 @@ describe('checkAlerts', () => {
       await processAlertAtTime(
         firstRunTime,
         details,
-        clickhouseClient,
+        dataClient,
         connection.id,
         alertProvider,
         teamWebhooksById,
@@ -11027,7 +11010,7 @@ describe('checkAlerts', () => {
       await processAlertAtTime(
         secondRunTime,
         details,
-        clickhouseClient,
+        dataClient,
         connection.id,
         alertProvider,
         teamWebhooksById,
@@ -11043,7 +11026,7 @@ describe('checkAlerts', () => {
         source,
         savedSearch,
         teamWebhooksById,
-        clickhouseClient,
+        dataClient,
       } = await setupSavedSearchAlertTest();
 
       // threshold = 2, NOT_EQUAL means value != 2
@@ -11110,7 +11093,7 @@ describe('checkAlerts', () => {
       await processAlertAtTime(
         firstRunTime,
         details,
-        clickhouseClient,
+        dataClient,
         connection.id,
         alertProvider,
         teamWebhooksById,
@@ -11122,7 +11105,7 @@ describe('checkAlerts', () => {
       await processAlertAtTime(
         secondRunTime,
         details,
-        clickhouseClient,
+        dataClient,
         connection.id,
         alertProvider,
         teamWebhooksById,
@@ -11137,7 +11120,7 @@ describe('checkAlerts', () => {
         connection,
         source,
         teamWebhooksById,
-        clickhouseClient,
+        dataClient,
       } = await setupSavedSearchAlertTest();
 
       const period1Start = new Date('2023-11-16T22:05:00.000Z');
@@ -11239,7 +11222,7 @@ describe('checkAlerts', () => {
       await processAlertAtTime(
         firstRunTime,
         details,
-        clickhouseClient,
+        dataClient,
         connection.id,
         alertProvider,
         teamWebhooksById,
@@ -11251,7 +11234,7 @@ describe('checkAlerts', () => {
       await processAlertAtTime(
         secondRunTime,
         details,
-        clickhouseClient,
+        dataClient,
         connection.id,
         alertProvider,
         teamWebhooksById,
@@ -11267,7 +11250,7 @@ describe('checkAlerts', () => {
         source,
         savedSearch,
         teamWebhooksById,
-        clickhouseClient,
+        dataClient,
       } = await setupSavedSearchAlertTest();
 
       const details = await createAlertDetails(
@@ -11333,7 +11316,7 @@ describe('checkAlerts', () => {
       await processAlertAtTime(
         new Date('2024-03-01T22:18:00Z'),
         details,
-        clickhouseClient,
+        dataClient,
         connection.id as any,
         alertProvider,
         teamWebhooksById,
@@ -11358,7 +11341,7 @@ describe('checkAlerts', () => {
           source,
           savedSearch,
           teamWebhooksById,
-          clickhouseClient,
+          dataClient,
         } = await setupSavedSearchAlertTest();
 
         const details = await createAlertDetails(
@@ -11388,7 +11371,7 @@ describe('checkAlerts', () => {
         await processAlertAtTime(
           new Date('2024-01-01T00:12:00Z'),
           details,
-          clickhouseClient,
+          dataClient,
           connection,
           alertProvider,
           teamWebhooksById,
@@ -11409,7 +11392,7 @@ describe('checkAlerts', () => {
           source,
           savedSearch,
           teamWebhooksById,
-          clickhouseClient,
+          dataClient,
         } = await setupSavedSearchAlertTest();
 
         jest
@@ -11456,7 +11439,7 @@ describe('checkAlerts', () => {
         await processAlertAtTime(
           new Date('2024-01-01T00:12:00Z'),
           details,
-          clickhouseClient,
+          dataClient,
           connection,
           alertProvider,
           teamWebhooksById,
@@ -11472,7 +11455,7 @@ describe('checkAlerts', () => {
         await processAlertAtTime(
           new Date('2024-01-01T00:17:00Z'),
           details,
-          clickhouseClient,
+          dataClient,
           connection,
           alertProvider,
           teamWebhooksById,
@@ -11488,7 +11471,7 @@ describe('checkAlerts', () => {
         await processAlertAtTime(
           new Date('2024-01-01T00:22:00Z'),
           details,
-          clickhouseClient,
+          dataClient,
           connection,
           alertProvider,
           teamWebhooksById,
@@ -11510,7 +11493,7 @@ describe('checkAlerts', () => {
           source,
           savedSearch,
           teamWebhooksById,
-          clickhouseClient,
+          dataClient,
         } = await setupSavedSearchAlertTest();
 
         jest
@@ -11550,7 +11533,7 @@ describe('checkAlerts', () => {
         await processAlertAtTime(
           new Date('2024-01-01T00:12:00Z'),
           details,
-          clickhouseClient,
+          dataClient,
           connection,
           alertProvider,
           teamWebhooksById,
@@ -11560,7 +11543,7 @@ describe('checkAlerts', () => {
         await processAlertAtTime(
           new Date('2024-01-01T00:17:00Z'),
           details,
-          clickhouseClient,
+          dataClient,
           connection,
           alertProvider,
           teamWebhooksById,
@@ -11571,7 +11554,7 @@ describe('checkAlerts', () => {
         await processAlertAtTime(
           new Date('2024-01-01T00:22:00Z'),
           details,
-          clickhouseClient,
+          dataClient,
           connection,
           alertProvider,
           teamWebhooksById,
@@ -11597,7 +11580,7 @@ describe('checkAlerts', () => {
           source,
           savedSearch,
           teamWebhooksById,
-          clickhouseClient,
+          dataClient,
         } = await setupSavedSearchAlertTest();
 
         jest
@@ -11647,7 +11630,7 @@ describe('checkAlerts', () => {
         await processAlertAtTime(
           new Date('2024-01-01T00:12:00Z'),
           details,
-          clickhouseClient,
+          dataClient,
           connection,
           alertProvider,
           teamWebhooksById,
@@ -11659,7 +11642,7 @@ describe('checkAlerts', () => {
         await processAlertAtTime(
           new Date('2024-01-01T00:17:00Z'),
           details,
-          clickhouseClient,
+          dataClient,
           connection,
           alertProvider,
           teamWebhooksById,
@@ -11700,7 +11683,7 @@ describe('checkAlerts', () => {
     const server = getServer();
 
     const createMV = async () => {
-      const client = await getTestFixtureClickHouseClient();
+      const client = await getTestFixtureDataClient();
       await client.command({
         query: `
           CREATE TABLE IF NOT EXISTS ${DEFAULT_DATABASE}.${MV_TABLE_NAME}
@@ -11719,7 +11702,7 @@ describe('checkAlerts', () => {
     };
 
     const clearMV = async () => {
-      const client = await getTestFixtureClickHouseClient();
+      const client = await getTestFixtureDataClient();
       await client.command({
         query: `TRUNCATE ${DEFAULT_DATABASE}.${MV_TABLE_NAME}`,
       });
@@ -11783,11 +11766,11 @@ describe('checkAlerts', () => {
         tags: ['test'],
       }).save();
 
-      const clickhouseClient = new DataClient({});
+      const dataClient = new DataClient({});
 
       return {
         team,
-        clickhouseClient,
+        dataClient,
         webhook,
         savedSearch,
         source,
@@ -11816,7 +11799,7 @@ describe('checkAlerts', () => {
     });
 
     afterAll(async () => {
-      const client = await getTestFixtureClickHouseClient();
+      const client = await getTestFixtureDataClient();
       await client.command({
         query: `DROP TABLE IF EXISTS ${DEFAULT_DATABASE}.${MV_TABLE_NAME}`,
       });
@@ -11827,7 +11810,7 @@ describe('checkAlerts', () => {
       // Arrange
       const {
         team,
-        clickhouseClient,
+        dataClient,
         webhook,
         savedSearch,
         source,
@@ -11903,7 +11886,7 @@ describe('checkAlerts', () => {
           ...details,
           previousMap,
         },
-        clickhouseClient,
+        dataClient,
         connection.id,
         alertProvider,
         teamWebhooksById,
@@ -11917,7 +11900,7 @@ describe('checkAlerts', () => {
       await processAlert(
         nextWindow,
         details,
-        clickhouseClient,
+        dataClient,
         connection.id,
         alertProvider,
         teamWebhooksById,
@@ -11952,7 +11935,7 @@ describe('checkAlerts', () => {
       // Arrange
       const {
         team,
-        clickhouseClient,
+        dataClient,
         webhook,
         savedSearch,
         source,
@@ -12047,7 +12030,7 @@ describe('checkAlerts', () => {
           ...details,
           previousMap,
         },
-        clickhouseClient,
+        dataClient,
         connection.id,
         alertProvider,
         teamWebhooksById,
@@ -12061,7 +12044,7 @@ describe('checkAlerts', () => {
       await processAlert(
         nextWindow,
         details,
-        clickhouseClient,
+        dataClient,
         connection.id,
         alertProvider,
         teamWebhooksById,

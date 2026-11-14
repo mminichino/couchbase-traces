@@ -61,8 +61,8 @@ install-tools:
 #   App (Next.js)     : 30200 + slot
 #   OpAMP             : 30300 + slot
 #   MongoDB           : 30400 + slot
-#   ClickHouse HTTP   : 30500 + slot
-#   ClickHouse Native : 30600 + slot
+#   query HTTP   : 30500 + slot
+#   legacy store Native : 30600 + slot
 #   OTel health       : 30700 + slot
 #   OTel gRPC         : 30800 + slot
 #   OTel HTTP         : 30900 + slot

@@ -48,5 +48,5 @@ receivers:
 #     logs/out-default:
 #       processors: [memory_limiter, transform, transform/session_id, batch/lowlatency]
 # Extend the collector through OpAMP-managed config. Add optional pipelines here
-# only when they do not require removed ClickHouse or JSON-collector services.
+# only when they do not require removed legacy store or JSON-collector services.
 # See packages/otel-collector/README.md for examples.

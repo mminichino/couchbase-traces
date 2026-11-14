@@ -7,8 +7,8 @@ import {
   INSTANCE_LABEL,
   IS_ADHOC_FILTERS_ENABLED,
   IS_ALERT_DETAILS_ENABLED,
-  IS_CLICKHOUSE_BUILD,
   IS_DEV,
+  IS_LEGACY_ENGINE_BUILD,
   IS_LLM_COST_ENABLED,
   IS_LOCAL_MODE,
   IS_OSS,
@@ -181,7 +181,7 @@ function buildReport(): string {
     `frontend: ${APP_VERSION}`,
     `backend:  ${cachedServerVersion || 'unknown'}`,
     `mode:     ${IS_LOCAL_MODE ? 'local' : isOss ? 'oss' : 'cloud'}${
-      IS_CLICKHOUSE_BUILD ? ' (couchbase-traces)' : ''
+      IS_LEGACY_ENGINE_BUILD ? ' (couchbase-traces)' : ''
     }`,
     ...(userId ? [`user:     ${userId}`] : []),
     ...(teamId ? [`team:     ${teamId}`] : []),
@@ -222,7 +222,7 @@ export function installHdxDebug(): void {
     build: {
       isOss,
       isLocalMode: IS_LOCAL_MODE,
-      isClickhouseBuild: IS_CLICKHOUSE_BUILD,
+      isClickhouseBuild: IS_LEGACY_ENGINE_BUILD,
       isDev: IS_DEV,
       basePath: BASE_PATH,
     },

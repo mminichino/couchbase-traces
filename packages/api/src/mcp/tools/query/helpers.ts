@@ -11,7 +11,7 @@ import {
 } from '@couchbase-traces/common-utils/dist/dataLayer';
 import { isBuilderSavedChartConfig } from '@couchbase-traces/common-utils/dist/guards';
 import { UnknownVariableError } from '@couchbase-traces/common-utils/dist/macroErrors';
-import { ClickHouseError } from '@couchbase-traces/common-utils/dist/query';
+import { CodedQueryError } from '@couchbase-traces/common-utils/dist/query';
 import type {
   ChartConfigWithDateRange,
   ChartVariable,
@@ -141,8 +141,8 @@ export function normalizeBodyExpression(expression: string): string | null {
 export const MCP_QUERY_SCAN_CONSISTENCY = 'request_plus' as const;
 
 /**
- * HTTP request timeout for MCP query-tool ClickHouse clients. Set above
- * max_execution_time so ClickHouse returns a clean timeout before the HTTP
+ * HTTP request timeout for MCP query-tool legacy store clients. Set above
+ * max_execution_time so legacy store returns a clean timeout before the HTTP
  * connection is aborted.
  */
 export const MCP_REQUEST_TIMEOUT = MCP_TOOL_TIMEOUT_MS + MCP_TIMEOUT_GRACE_MS;
@@ -393,7 +393,7 @@ type SelectItemForKindCheck = { metricType?: unknown };
  * don't match the source kind:
  *   - Non-metric source with any select item carrying `metricType` would
  *     fall through to SQL generation that references the metric `Value`
- *     column and fail with a cryptic ClickHouse error.
+ *     column and fail with a cryptic query error.
  *   - Metric source with no select item carrying `metricType` would also
  *     reach the renderer in a broken state.
  *
@@ -491,7 +491,7 @@ export async function mcpQueryErrorResult(
     }
   }
 
-  return clickHouseErrorResult(e, {
+  return queryErrorResult(e, {
     ...(typeof context === 'string' ? { prefix: context } : context),
     suffix,
   });
@@ -599,7 +599,7 @@ export async function runConfigTile(
     );
     if (sliceErr) return sliceErr;
 
-    const clickhouseClient = new DataClient({
+    const dataClient = new DataClient({
       requestTimeout: MCP_REQUEST_TIMEOUT,
     });
 
@@ -637,7 +637,7 @@ export async function runConfigTile(
     // Metric sources need three adjustments before the renderer can
     // translate the query:
     //   1. `from.tableName` is blank — the renderer picks the correct
-    //      per-kind ClickHouse table from `metricTables` at render time.
+    //      per-kind source table from `metricTables` at render time.
     //   2. `metricTables` must be threaded onto the chart config (mirrors
     //      packages/api/src/routers/external-api/v2/charts.ts:261-267).
     //   3. Each select item's `valueExpression` defaults to "Value" (the
@@ -718,9 +718,9 @@ export async function runConfigTile(
       ? convertToCategoricalChartConfig(chartConfig)
       : chartConfig;
 
-    const metadata = getMetadata(clickhouseClient);
+    const metadata = getMetadata(dataClient);
     try {
-      const result = await clickhouseClient.queryChartConfig({
+      const result = await dataClient.queryChartConfig({
         config: renderConfig,
         metadata,
         querySettings: source.querySettings,
@@ -780,7 +780,7 @@ export async function runConfigTile(
   const sliceErr = await assertMcpSliceForConnection(savedConfig.connection);
   if (sliceErr) return sliceErr;
 
-  const clickhouseClient = new DataClient({
+  const dataClient = new DataClient({
     requestTimeout: MCP_REQUEST_TIMEOUT,
   });
 
@@ -791,9 +791,9 @@ export async function runConfigTile(
     variables: options?.variables,
   } satisfies ChartConfigWithDateRange;
 
-  const metadata = getMetadata(clickhouseClient);
+  const metadata = getMetadata(dataClient);
   try {
-    const result = await clickhouseClient.queryChartConfig({
+    const result = await dataClient.queryChartConfig({
       config: chartConfig,
       metadata,
       querySettings: undefined,
@@ -813,9 +813,9 @@ export async function runConfigTile(
 // ─── Error hints ─────────────────────────────────────────────────────────────
 
 /**
- * ClickHouse server-side error types that indicate an infrastructure problem
- * rather than a user query issue. These appear in `ClickHouseError.type` when
- * the ClickHouse server itself reports a connection/network failure (e.g. to
+ * query server-side error types that indicate an infrastructure problem
+ * rather than a user query issue. These appear in `QueryError.type` when
+ * the query server itself reports a connection/network failure (e.g. to
  * a replica or Zookeeper).
  */
 const SERVER_CH_ERROR_TYPES = new Set([
@@ -830,9 +830,9 @@ const SERVER_CH_ERROR_TYPES = new Set([
 
 /**
  * Node.js system error codes that indicate a TCP-level connection failure.
- * These appear on plain `Error` objects thrown by the ClickHouse HTTP client
+ * These appear on plain `Error` objects thrown by the query HTTP client
  * when the server is unreachable — the client never gets an HTTP response,
- * so no `ClickHouseError` is constructed.
+ * so no `QueryError` is constructed.
  */
 const SERVER_NODE_ERROR_CODES = new Set([
   'ECONNREFUSED',
@@ -846,20 +846,18 @@ const SERVER_NODE_ERROR_CODES = new Set([
 ]);
 
 /**
- * Check whether an error is a ClickHouseError, using both `instanceof`
+ * Check whether an error is a QueryError, using both `instanceof`
  * and a constructor-name fallback. The fallback handles the case where
- * multiple copies of `@clickhouse/client-common` are installed (e.g.
+ * multiple copies of `the previous client-common package` are installed (e.g.
  * the root workspace uses one version while `common-utils` bundles
  * another). In that scenario, `instanceof` fails because the class
  * identities are different even though the shapes are identical.
  */
-function isClickHouseError(
-  err: unknown,
-): err is ClickHouseError & { type: string } {
-  if (err instanceof ClickHouseError) return true;
+function isQueryError(err: unknown): err is CodedQueryError {
+  if (err instanceof CodedQueryError) return true;
   if (
     err instanceof Error &&
-    err.constructor?.name === 'ClickHouseError' &&
+    err.constructor?.name === 'CodedQueryError' &&
     'type' in err &&
     typeof (err as Record<string, unknown>).type === 'string'
   ) {
@@ -869,22 +867,22 @@ function isClickHouseError(
 }
 
 /**
- * Extract the ClickHouse error `type` from an error, walking `.cause` to
- * find the original `ClickHouseError` from `@clickhouse/client-common`.
+ * Extract the query error `type` from an error, walking `.cause` to
+ * find the original `QueryError` from `the previous client-common package`.
  *
  * Uses `instanceof` with a constructor-name fallback to handle duplicate
- * package installations across the monorepo (see `isClickHouseError`).
+ * package installations across the monorepo (see `isQueryError`).
  *
  * @internal Exported for testing only.
  */
-export function getClickHouseErrorType(e: unknown): string | undefined {
+export function getQueryErrorType(e: unknown): string | undefined {
   if (!(e instanceof Error)) return undefined;
-  // QueryError wraps the original ClickHouseError as .cause
-  if (isClickHouseError(e.cause)) {
+  // QueryError wraps the original QueryError as .cause
+  if (isQueryError(e.cause)) {
     return e.cause.type;
   }
-  // Direct ClickHouseError (has .type on itself)
-  if (isClickHouseError(e)) {
+  // Direct QueryError (has .type on itself)
+  if (isQueryError(e)) {
     return e.type;
   }
   return undefined;
@@ -892,16 +890,16 @@ export function getClickHouseErrorType(e: unknown): string | undefined {
 
 /**
  * Check whether an error represents a system-level infrastructure failure
- * rather than a user query issue. Covers both ClickHouse server-side error
+ * rather than a user query issue. Covers both query server-side error
  * types (e.g. NETWORK_ERROR) and Node.js TCP-level errors (e.g. ECONNREFUSED)
  * which the client throws as plain `Error` objects.
  *
  * @internal Exported for testing only.
  */
 export function isServerError(e: unknown): boolean {
-  // Walk the full cause chain checking for both ClickHouse server-side
+  // Walk the full cause chain checking for both query server-side
   // error types and Node.js TCP-level errors at every depth. This
-  // ensures a ClickHouseError with NETWORK_ERROR nested at arbitrary
+  // ensures a QueryError with NETWORK_ERROR nested at arbitrary
   // depth is caught, not just at depth 0-1.
   let current: unknown = e;
   const seen = new Set<unknown>(); // guard against circular .cause
@@ -909,14 +907,15 @@ export function isServerError(e: unknown): boolean {
     if (seen.has(current)) break;
     seen.add(current);
 
-    // ClickHouse server-side error type at this level
-    if (isClickHouseError(current)) {
-      if (SERVER_CH_ERROR_TYPES.has(current.type)) return true;
+    // query server-side error type at this level
+    if (isQueryError(current)) {
+      if (current.type && SERVER_CH_ERROR_TYPES.has(current.type)) return true;
     }
-    // Also check .cause for a direct ClickHouseError (the common
-    // QueryError -> ClickHouseError pattern)
-    if (isClickHouseError(current.cause)) {
-      if (SERVER_CH_ERROR_TYPES.has(current.cause.type)) return true;
+    // Also check .cause for a direct QueryError (the common
+    // QueryError -> QueryError pattern)
+    if (isQueryError(current.cause)) {
+      if (current.cause.type && SERVER_CH_ERROR_TYPES.has(current.cause.type))
+        return true;
     }
 
     // Node.js TCP/socket-level error
@@ -945,12 +944,12 @@ function hasNodeErrorCode(val: unknown, codes: ReadonlySet<string>): boolean {
 }
 
 /**
- * Decorate raw ClickHouse error messages with actionable guidance before
- * they reach the agent. Some ClickHouse errors are unhelpful in isolation —
+ * Decorate raw query error messages with actionable guidance before
+ * they reach the agent. Some legacy store errors are unhelpful in isolation —
  * e.g. "Cannot convert string '...Z' to type DateTime64(9)" leaves the agent
  * guessing about the right format. Catch common patterns and append a hint.
  *
- * ClickHouse query errors are classified as user errors by default since the
+ * SQL query errors are classified as user errors by default since the
  * user/agent wrote the query that failed. Only infrastructure-level errors
  * (network, socket, connection failures) are classified as server errors.
  *
@@ -958,10 +957,10 @@ function hasNodeErrorCode(val: unknown, codes: ReadonlySet<string>): boolean {
  * @param context  Optional message context. `prefix` is prepended (e.g.
  *                 "Failed to sample rows") and `suffix` is appended (e.g.
  *                 guidance about valid input). The categorization is derived
- *                 from the underlying ClickHouse error type regardless of the
+ *                 from the underlying query error type regardless of the
  *                 surrounding context.
  */
-export function clickHouseErrorResult(
+export function queryErrorResult(
   e: unknown,
   context?: string | { prefix?: string; suffix?: string; rawSql?: boolean },
 ): McpErrorResult {
@@ -985,7 +984,7 @@ export function clickHouseErrorResult(
 
   // Default to a user error — the user wrote the query that failed.
   // Only promote to a server error for known infrastructure error types
-  // (ClickHouse server-side errors or TCP-level connection failures).
+  // (query server-side errors or TCP-level connection failures).
   return isServerError(e) ? mcpServerError(text) : mcpUserError(text);
 }
 
@@ -1007,8 +1006,8 @@ function findCause<T>(
 const SOCKET_TIMEOUT_CODES: ReadonlySet<string> = new Set(['ETIMEDOUT']);
 
 /**
- * True when a query ran out of time: ClickHouse's max_execution_time or the
- * client request timeout. A socket ETIMEDOUT is excluded because ClickHouse
+ * True when a query ran out of time: legacy store's max_execution_time or the
+ * client request timeout. A socket ETIMEDOUT is excluded because legacy store
  * was unreachable, so narrowing the query won't help.
  */
 export function isQueryOutOfTime(e: unknown): boolean {
@@ -1070,7 +1069,7 @@ export function errorHint(
   ) {
     return (
       'The query exceeded its execution-time limit. Narrow the time range so ' +
-      'ClickHouse can prune partitions, add filters to reduce the rows scanned, ' +
+      'legacy store can prune partitions, add filters to reduce the rows scanned, ' +
       'or lower the requested LIMIT.'
     );
   }
@@ -1108,7 +1107,7 @@ export function errorHint(
   }
   if (/SETTING_CONSTRAINT_VIOLATION|shouldn't be greater than/i.test(msg)) {
     return (
-      'This ClickHouse connection has a profile that restricts one or more ' +
+      'This legacy connection has a profile that restricts one or more ' +
       'settings to a value lower than requested. This is a server-side ' +
       'constraint — the query cannot override it. Try running the query ' +
       'without the constrained setting, or contact the connection administrator.'

@@ -4,11 +4,11 @@ import type {
   TeamInvitationsApiResponse,
   TeamMembersApiResponse,
   TeamTagsApiResponse,
-  UpdateClickHouseSettingsApiResponse,
+  UpdateQuerySettingsApiResponse,
 } from '@couchbase-traces/common-utils/dist/types';
 import {
   TagResourceTypeSchema,
-  TeamClickHouseSettingsUpdateSchema,
+  TeamQuerySettingsUpdateSchema,
 } from '@couchbase-traces/common-utils/dist/types';
 import crypto from 'crypto';
 import express from 'express';
@@ -22,7 +22,7 @@ import {
   getTeamInviteUrl,
   rotateTeamApiKey,
   setTeamName,
-  updateTeamClickhouseSettings,
+  updateTeamQuerySettings,
 } from '@/controllers/team';
 import {
   deleteTeamMember,
@@ -111,13 +111,9 @@ router.patch(
 router.patch(
   '/query-settings',
   processRequest({
-    body: TeamClickHouseSettingsUpdateSchema,
+    body: TeamQuerySettingsUpdateSchema,
   }),
-  async (
-    req,
-    res: express.Response<UpdateClickHouseSettingsApiResponse>,
-    next,
-  ) => {
+  async (req, res: express.Response<UpdateQuerySettingsApiResponse>, next) => {
     try {
       const teamId = req.user?.team;
       if (teamId == null) {
@@ -128,7 +124,7 @@ router.patch(
         return res.json({});
       }
 
-      const team = await updateTeamClickhouseSettings(teamId, req.body);
+      const team = await updateTeamQuerySettings(teamId, req.body);
 
       res.json(pick(team, Object.keys(req.body)));
     } catch (e) {

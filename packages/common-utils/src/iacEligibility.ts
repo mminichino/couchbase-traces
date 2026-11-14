@@ -1,7 +1,7 @@
 import { AlertSource, DisplayType, SourceKind } from './types';
 
 //
-// Which resources the ClickHouse Terraform provider can actually take
+// Which resources the legacy store Terraform provider can actually take
 // ownership of. Split out of ./iac.ts, which generates the HCL: these are the
 // rules about *whether* to emit a resource, not how. Both the API and the app
 // import them, so the bulk export and the per-resource popovers cannot
@@ -215,7 +215,7 @@ export function isImportableDashboard(dashboard: {
 
 /**
  * A PromQL source has no `clickhouse_clickstack_source` representation — the
- * provider models the ClickHouse-backed kinds. Emitting one produces an import
+ * provider models the legacy store-backed kinds. Emitting one produces an import
  * block for a resource the provider cannot read, which fails the plan. Same
  * shape as the tile-alert rule: eligibility decided once, here.
  */

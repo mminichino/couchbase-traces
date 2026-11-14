@@ -75,10 +75,10 @@ export const useSpotlightActions = () => {
       ...(storeLinks.hasClickHouse
         ? [
             {
-              id: 'preset-clickhouse',
-              label: 'ClickHouse',
-              description: 'ClickHouse cluster health and query performance',
-              href: '/clickhouse',
+              id: 'preset-evalstore',
+              label: 'legacy store',
+              description: 'legacy store cluster health and query performance',
+              href: '/evalstore',
               keywords: ['preset', 'dashboard', 'database', 'queries'],
             },
           ]

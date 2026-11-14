@@ -46,7 +46,7 @@
     {
       "path": ".github/workflows/docker-build.yml",
       "term": "hyperdx",
-      "snippet": "# App/prod image (API + App + common-utils Node build) — docker/hyperdx target prod.",
+      "snippet": "# App/prod image (API + App + common-utils Node build) \u2014 docker/hyperdx target prod.",
       "reason": "internal_identifier",
       "note": "Token \"hyperdx\" allowed in the token map"
     },
@@ -68,20 +68,6 @@
       "path": ".github/workflows/docker-build.yml",
       "term": "hyperdx",
       "snippet": "hyperdx=./docker/hyperdx",
-      "reason": "internal_identifier",
-      "note": "Token \"hyperdx\" allowed in the token map"
-    },
-    {
-      "path": ".github/workflows/main.yml",
-      "term": "url",
-      "snippet": "packages.clickhouse.com",
-      "reason": "engine_reference",
-      "note": "ClickHouse package repository used to install the engine in CI."
-    },
-    {
-      "path": ".opencode/commands/eval-summary.md",
-      "term": "hyperdx",
-      "snippet": "Use **parallel Task subagents** — one per MCP (hyperdx, clickhouse). Each",
       "reason": "internal_identifier",
       "note": "Token \"hyperdx\" allowed in the token map"
     },
@@ -142,13 +128,6 @@
       "note": "Required attribution to the upstream project."
     },
     {
-      "path": "agent_docs/code_style.md",
-      "term": "clickstack",
-      "snippet": "| **Fenced / multi-line / copyable** | `CopySnippet` (`@/components/ClickStackOnboarding/CopySnippet`) | Install commands, HCL, JSX examples, any block the user",
-      "reason": "internal_identifier",
-      "note": "Token \"ClickStackOnboarding\" allowed in the token map"
-    },
-    {
       "path": "agent_docs/development.md",
       "term": "hyperdx",
       "snippet": "If your worktrees share a folder name (`a/hyperdx`, `b/hyperdx`), they get the",
@@ -193,13 +172,6 @@
     {
       "path": "agent_docs/evals.md",
       "term": "hyperdx",
-      "snippet": "### 2. Run `setup-hyperdx` against each instance (if needed)",
-      "reason": "internal_identifier",
-      "note": "Token \"setup-hyperdx\" allowed in the token map"
-    },
-    {
-      "path": "agent_docs/evals.md",
-      "term": "hyperdx",
       "snippet": "--baseline hyperdx-main \\",
       "reason": "internal_identifier",
       "note": "Token \"hyperdx-main\" allowed in the token map"
@@ -215,13 +187,6 @@
       "path": "agent_docs/evals.md",
       "term": "hyperdx",
       "snippet": "--mcp hyperdx --model claude-sonnet-4-20250514 --runs 3",
-      "reason": "internal_identifier",
-      "note": "Token \"hyperdx\" allowed in the token map"
-    },
-    {
-      "path": "agent_docs/evals.md",
-      "term": "hyperdx",
-      "snippet": "--mcp hyperdx,clickhouse --baseline clickhouse --runs 3",
       "reason": "internal_identifier",
       "note": "Token \"hyperdx\" allowed in the token map"
     },
@@ -277,37 +242,9 @@
     {
       "path": "agent_docs/evals.md",
       "term": "hyperdx",
-      "snippet": "Each slot runs its own ClickHouse instance. `setup-hyperdx` (step 2) creates",
-      "reason": "internal_identifier",
-      "note": "Token \"setup-hyperdx\" allowed in the token map"
-    },
-    {
-      "path": "agent_docs/evals.md",
-      "term": "hyperdx",
       "snippet": "MAIN_KEY=$(jq -r '.mcps[\"hyperdx-main\"].headers.Authorization' packages/hdx-eval/eval.config.json | sed 's/Bearer //')",
       "reason": "internal_identifier",
       "note": "Token \"hyperdx-main\" allowed in the token map"
-    },
-    {
-      "path": "agent_docs/evals.md",
-      "term": "hyperdx",
-      "snippet": "They must be regenerated per environment using `setup-hyperdx`.",
-      "reason": "internal_identifier",
-      "note": "Token \"setup-hyperdx\" allowed in the token map"
-    },
-    {
-      "path": "agent_docs/evals.md",
-      "term": "hyperdx",
-      "snippet": "`setup-hyperdx` against the affected instance and rebuild the combined config.",
-      "reason": "internal_identifier",
-      "note": "Token \"setup-hyperdx\" allowed in the token map"
-    },
-    {
-      "path": "agent_docs/evals.md",
-      "term": "hyperdx",
-      "snippet": "`setup-hyperdx` creates the Couchbase Traces account and Sources but does **not** seed",
-      "reason": "internal_identifier",
-      "note": "Token \"setup-hyperdx\" allowed in the token map"
     },
     {
       "path": "agent_docs/evals.md",
@@ -329,13 +266,6 @@
       "snippet": "yarn workspace @couchbase-traces/hdx-eval dev run error-root-cause --mcp hyperdx --runs 1 --no-judge",
       "reason": "internal_identifier",
       "note": "Token \"hyperdx\" allowed in the token map"
-    },
-    {
-      "path": "agent_docs/evals.md",
-      "term": "hyperdx",
-      "snippet": "yarn workspace @couchbase-traces/hdx-eval dev setup-hyperdx",
-      "reason": "internal_identifier",
-      "note": "Token \"setup-hyperdx\" allowed in the token map"
     },
     {
       "path": "agent_docs/evals.md",
@@ -366,32 +296,11 @@
       "note": "Token \"hyperdx\" allowed in the token map"
     },
     {
-      "path": "agent_docs/themes.md",
-      "term": "clickhouse cloud",
-      "snippet": "features (embedded mode, ClickHouse Cloud onboarding).",
-      "reason": "pending_decision",
-      "note": "Token \"ClickHouse Cloud\" allowed in the token map"
-    },
-    {
       "path": "docker-compose.yml",
       "term": "hyperdx",
       "snippet": "MONGO_URI: 'mongodb://db:27017/hyperdx'",
       "reason": "internal_identifier",
       "note": "Token \"hyperdx\" allowed in the token map"
-    },
-    {
-      "path": "docker/clickhouse/local/config.xml",
-      "term": "hyperdx",
-      "snippet": "<custom_settings_prefixes>hyperdx</custom_settings_prefixes>",
-      "reason": "internal_identifier",
-      "note": "Token \"hyperdx\" allowed in the token map"
-    },
-    {
-      "path": "docker/clickhouse/local/init-db-e2e.sh",
-      "term": "hyperdx",
-      "snippet": "CREATE TABLE ${DATABASE}.e2e_hyperdx_sessions",
-      "reason": "engine_reference",
-      "note": "Token \"e2e_hyperdx_sessions\" allowed in the token map"
     },
     {
       "path": "docker/hyperdx/Dockerfile",
@@ -410,14 +319,14 @@
     {
       "path": "docker/hyperdx/Dockerfile",
       "term": "hyperdx",
-      "snippet": "COPY --from=hyperdx ./entry.local.noauth.sh /etc/local/entry.sh",
+      "snippet": "COPY --from=hyperdx --chmod=755 ./entry.cbt.sh /etc/local/entry.sh",
       "reason": "internal_identifier",
       "note": "Token \"hyperdx\" allowed in the token map"
     },
     {
       "path": "docker/hyperdx/Dockerfile",
       "term": "hyperdx",
-      "snippet": "COPY --from=hyperdx --chmod=755 ./entry.cbt.sh /etc/local/entry.sh",
+      "snippet": "COPY --from=hyperdx ./entry.local.noauth.sh /etc/local/entry.sh",
       "reason": "internal_identifier",
       "note": "Token \"hyperdx\" allowed in the token map"
     },
@@ -487,7 +396,7 @@
     {
       "path": "docker/hyperdx/entry.local.base.sh",
       "term": "hyperdx",
-      "snippet": "export EXPRESS_SESSION_SECRET=\"${EXPRESS_SESSION_SECRET:-hyperdx is cool 👋}\"",
+      "snippet": "export EXPRESS_SESSION_SECRET=\"${EXPRESS_SESSION_SECRET:-hyperdx is cool \ud83d\udc4b}\"",
       "reason": "internal_identifier",
       "note": "Token \"hyperdx\" allowed in the token map"
     },
@@ -583,13 +492,6 @@
       "note": "Token \"hyperdx\" allowed in the token map"
     },
     {
-      "path": "docker/otel-collector/config.standalone.promql.yaml",
-      "term": "hyperdx",
-      "snippet": "receivers: [otlp/hyperdx]",
-      "reason": "internal_identifier",
-      "note": "Token \"hyperdx\" allowed in the token map"
-    },
-    {
       "path": "docker/otel-collector/config.standalone.yaml",
       "term": "hyperdx",
       "snippet": "otlp/hyperdx:",
@@ -602,6 +504,62 @@
       "snippet": "receivers: [otlp/hyperdx]",
       "reason": "internal_identifier",
       "note": "Token \"hyperdx\" allowed in the token map"
+    },
+    {
+      "path": "docs/licenses.md",
+      "term": "clickstack",
+      "snippet": "| @clickhouse/clickstack-browser | 1.2.1 | Apache-2.0 | https://github.com/ClickHouse/clickstack-browser | @couchbase-traces/app |",
+      "reason": "external_dependency",
+      "note": "Retained package in license report."
+    },
+    {
+      "path": "docs/licenses.md",
+      "term": "clickstack",
+      "snippet": "| @clickhouse/clickstack-browser | 1.2.1 | https://github.com/ClickHouse/clickstack-browser |",
+      "reason": "external_dependency",
+      "note": "Retained package in license report."
+    },
+    {
+      "path": "docs/licenses.md",
+      "term": "clickstack",
+      "snippet": "| @clickhouse/clickstack-node | 1.0.2 | Apache-2.0 | https://github.com/ClickHouse/clickstack-node | @couchbase-traces/api, @couchbase-traces/app |",
+      "reason": "external_dependency",
+      "note": "Retained package in license report."
+    },
+    {
+      "path": "docs/licenses.md",
+      "term": "clickstack",
+      "snippet": "| @clickhouse/clickstack-node | 1.0.2 | https://github.com/ClickHouse/clickstack-node |",
+      "reason": "external_dependency",
+      "note": "Retained package in license report."
+    },
+    {
+      "path": "docs/licenses.md",
+      "term": "hyperdx",
+      "snippet": "| @hyperdx/passport-local-mongoose | 9.0.1 | MIT | https://github.com/hyperdxio/passport-local-mongoose | @couchbase-traces/api |",
+      "reason": "external_dependency",
+      "note": "Upstream scoped package in license report."
+    },
+    {
+      "path": "docs/licenses.md",
+      "term": "hyperdx",
+      "snippet": "| @hyperdx/passport-local-mongoose | 9.0.1 | https://github.com/hyperdxio/passport-local-mongoose |",
+      "reason": "external_dependency",
+      "note": "Upstream scoped package in license report."
+    },
+    {
+      "path": "docs/licenses.md",
+      "term": "url",
+      "snippet": "https://github.com/ClickHouse/click-ui",
+      "reason": "external_dependency",
+      "note": "Package repository URL in license report."
+    },
+    {
+      "path": "docs/licenses.md",
+      "term": "url",
+      "snippet": "https://github.com/ClickHouse/clickhouse-js",
+      "reason": "external_dependency",
+      "note": "Package repository URL in license report."
     },
     {
       "path": "docs/upstream-AGENTS.md",
@@ -704,14 +662,14 @@
     {
       "path": "packages/api/src/__tests__/config.test.ts",
       "term": "hyperdx",
-      "snippet": "expect(config.EXPRESS_SESSION_SECRET).toBe('hyperdx is cool 👋');",
+      "snippet": "expect(config.EXPRESS_SESSION_SECRET).toBe('hyperdx is cool \ud83d\udc4b');",
       "reason": "internal_identifier",
       "note": "Token \"hyperdx\" allowed in the token map"
     },
     {
       "path": "packages/api/src/__tests__/config.test.ts",
       "term": "hyperdx",
-      "snippet": "for (const value of [undefined, '', 'hyperdx is cool 👋']) {",
+      "snippet": "for (const value of [undefined, '', 'hyperdx is cool \ud83d\udc4b']) {",
       "reason": "internal_identifier",
       "note": "Token \"hyperdx\" allowed in the token map"
     },
@@ -725,28 +683,28 @@
     {
       "path": "packages/api/src/__tests__/config.test.ts",
       "term": "hyperdx",
-      "snippet": "process.env.EXPRESS_SESSION_SECRET = 'hyperdx is cool 👋';",
+      "snippet": "process.env.EXPRESS_SESSION_SECRET = 'hyperdx is cool \ud83d\udc4b';",
       "reason": "internal_identifier",
       "note": "Token \"hyperdx\" allowed in the token map"
     },
     {
       "path": "packages/api/src/__tests__/sessionSecretStartup.test.ts",
       "term": "hyperdx",
-      "snippet": "[false, 'hyperdx is cool 👋', 1],",
+      "snippet": "[false, 'hyperdx is cool \ud83d\udc4b', 1],",
       "reason": "internal_identifier",
       "note": "Token \"hyperdx\" allowed in the token map"
     },
     {
       "path": "packages/api/src/__tests__/sessionSecretStartup.test.ts",
       "term": "hyperdx",
-      "snippet": "[true, 'hyperdx is cool 👋', 0],",
+      "snippet": "[true, 'hyperdx is cool \ud83d\udc4b', 0],",
       "reason": "internal_identifier",
       "note": "Token \"hyperdx\" allowed in the token map"
     },
     {
       "path": "packages/api/src/config.ts",
       "term": "hyperdx",
-      "snippet": "const LEGACY_PUBLIC_SESSION_SECRET = 'hyperdx is cool 👋';",
+      "snippet": "const LEGACY_PUBLIC_SESSION_SECRET = 'hyperdx is cool \ud83d\udc4b';",
       "reason": "internal_identifier",
       "note": "Token \"hyperdx\" allowed in the token map"
     },
@@ -954,18 +912,11 @@
       "note": "Token \"hyperdx\" allowed in the token map"
     },
     {
-      "path": "packages/api/src/routers/api/__tests__/clickhouseProxy.int.test.ts",
-      "term": "hyperdx",
-      "snippet": ".set('x-hyperdx-connection-id', connectionId)",
-      "reason": "internal_identifier",
-      "note": "Token \"x-hyperdx-connection-id\" allowed in the token map"
-    },
-    {
       "path": "packages/api/src/routers/api/__tests__/iac.int.test.ts",
       "term": "url",
-      "snippet": "abc.clickhouse.cloud",
+      "snippet": "https://abc.clickhouse.cloud:8443",
       "reason": "test_fixture",
-      "note": "Example ClickHouse endpoint value; never requested."
+      "note": "Example ClickHouse endpoint in IaC import rejection test."
     },
     {
       "path": "packages/api/src/routers/api/__tests__/sources.int.test.ts",
@@ -980,55 +931,6 @@
       "snippet": "email: 'sa@service-accounts.hyperdx.invalid',",
       "reason": "internal_identifier",
       "note": "Token \"sa@service-accounts.hyperdx.invalid\" allowed in the token map"
-    },
-    {
-      "path": "packages/api/src/routers/api/clickhouseProxy.ts",
-      "term": "hyperdx",
-      "snippet": "'x-hyperdx-connection-id': objectIdSchema,",
-      "reason": "internal_identifier",
-      "note": "Token \"x-hyperdx-connection-id\" allowed in the token map"
-    },
-    {
-      "path": "packages/api/src/routers/api/clickhouseProxy.ts",
-      "term": "hyperdx",
-      "snippet": "const connection_id = req.headers['x-hyperdx-connection-id']!; // ! because zod already validated",
-      "reason": "internal_identifier",
-      "note": "Token \"x-hyperdx-connection-id\" allowed in the token map"
-    },
-    {
-      "path": "packages/api/src/routers/api/clickhouseProxy.ts",
-      "term": "hyperdx",
-      "snippet": "delete req.headers['x-hyperdx-connection-id'];",
-      "reason": "internal_identifier",
-      "note": "Token \"x-hyperdx-connection-id\" allowed in the token map"
-    },
-    {
-      "path": "packages/api/src/routers/api/clickhouseProxy.ts",
-      "term": "hyperdx",
-      "snippet": "logger.debug('hyperdxSettingPrefix set, no session user found');",
-      "reason": "internal_identifier",
-      "note": "Token \"hyperdxSettingPrefix\" allowed in the token map"
-    },
-    {
-      "path": "packages/api/src/routers/api/clickhouseProxy.ts",
-      "term": "hyperdx",
-      "snippet": "proxyReq.setHeader('user-agent', `hyperdx ${CODE_VERSION}`);",
-      "reason": "internal_identifier",
-      "note": "Token \"hyperdx\" allowed in the token map"
-    },
-    {
-      "path": "packages/api/src/routers/api/connections.ts",
-      "term": "hyperdx",
-      "snippet": "'hyperdxSettingPrefix',",
-      "reason": "internal_identifier",
-      "note": "Token \"hyperdxSettingPrefix\" allowed in the token map"
-    },
-    {
-      "path": "packages/api/src/routers/api/connections.ts",
-      "term": "hyperdx",
-      "snippet": "if (shouldUnsetPrefix) unsetFields.push('hyperdxSettingPrefix');",
-      "reason": "internal_identifier",
-      "note": "Token \"hyperdxSettingPrefix\" allowed in the token map"
     },
     {
       "path": "packages/api/src/routers/external-api/__tests__/connections.int.test.ts",
@@ -1066,20 +968,6 @@
       "note": "Token \"hyperdxSettingPrefix\" allowed in the token map"
     },
     {
-      "path": "packages/api/src/routers/external-api/v2/connections.ts",
-      "term": "hyperdx",
-      "snippet": "unsetFields.push('hyperdxSettingPrefix');",
-      "reason": "internal_identifier",
-      "note": "Token \"hyperdxSettingPrefix\" allowed in the token map"
-    },
-    {
-      "path": "packages/api/src/utils/__tests__/proxyBody.test.ts",
-      "term": "url",
-      "snippet": "localhost/clickhouse-proxy",
-      "reason": "internal_identifier",
-      "note": "Local proxy route in a request fixture."
-    },
-    {
       "path": "packages/api/src/utils/logParser.ts",
       "term": "hyperdx",
       "snippet": "HyperDX = 'hyperdx',",
@@ -1101,13 +989,6 @@
       "note": "Token \"clickstack-browser.ts\" allowed in the token map"
     },
     {
-      "path": "packages/app/src/ChartUtils.tsx",
-      "term": "url",
-      "snippet": "github.com/ClickHouse/ClickHouse",
-      "reason": "engine_reference",
-      "note": "Source reference for engine behavior."
-    },
-    {
       "path": "packages/app/src/__tests__/hdxDebug.test.ts",
       "term": "hdx",
       "snippet": "if (!window.hdx) throw new Error('window.hdx was not installed');",
@@ -1115,32 +996,11 @@
       "note": "Token \"window.hdx\" allowed in the token map"
     },
     {
-      "path": "packages/app/src/__tests__/prometheusApi.test.ts",
-      "term": "hyperdx",
-      "snippet": "expect(JSON.parse(headers['x-hyperdx-query-attribution'])).toEqual({",
-      "reason": "internal_identifier",
-      "note": "Token \"x-hyperdx-query-attribution\" allowed in the token map"
-    },
-    {
       "path": "packages/app/src/__tests__/searchFilters.test.ts",
       "term": "hyperdx",
       "snippet": "{ type: 'sql', condition: `hyperdx_event_type IN ('span')` },",
       "reason": "engine_reference",
       "note": "Token \"hyperdx_event_type\" allowed in the token map"
-    },
-    {
-      "path": "packages/app/src/components/ConnectionForm.tsx",
-      "term": "hyperdx",
-      "snippet": "name=\"hyperdxSettingPrefix\"",
-      "reason": "internal_identifier",
-      "note": "Token \"hyperdxSettingPrefix\" allowed in the token map"
-    },
-    {
-      "path": "packages/app/src/components/ConnectionForm.tsx",
-      "term": "hyperdx",
-      "snippet": "placeholder=\"hyperdx\"",
-      "reason": "internal_identifier",
-      "note": "Token \"hyperdx\" allowed in the token map"
     },
     {
       "path": "packages/app/src/components/Iac/__tests__/ResourceTerraformPopover.test.tsx",
@@ -1187,7 +1047,7 @@
     {
       "path": "packages/app/src/components/Iac/useTerraformSnippets.ts",
       "term": "clickstack",
-      "snippet": "? ' The generated config pins dashboard_id and tile_id as literals — replace them with clickhouse_clickstack_dashboard references before you apply, or a later d",
+      "snippet": "? ' The generated config pins dashboard_id and tile_id as literals \u2014 replace them with clickhouse_clickstack_dashboard references before you apply, or a later d",
       "reason": "external_dependency",
       "note": "Token \"clickhouse_clickstack_dashboard\" allowed in the token map"
     },
@@ -1204,20 +1064,6 @@
       "snippet": "const CLAUDE_CLI_ONELINER = `claude mcp add hyperdx -- npx -y @hyperdx/mcp-server --api-key ${SAMPLE_ACCESS_KEY}`;",
       "reason": "internal_identifier",
       "note": "Token \"hyperdx\" allowed in the token map"
-    },
-    {
-      "path": "packages/app/src/components/RevealSnippet/RevealSnippet.stories.tsx",
-      "term": "url",
-      "snippet": "otel.clickhouse.cloud",
-      "reason": "test_fixture",
-      "note": "Storybook placeholder value; never requested."
-    },
-    {
-      "path": "packages/app/src/components/TeamSettings/IacMigrationSection.tsx",
-      "term": "clickhouse cloud",
-      "snippet": "? 'Exported as reference-only locals — connections are platform-managed on ClickHouse Cloud'",
-      "reason": "pending_decision",
-      "note": "Token \"ClickHouse Cloud\" allowed in the token map"
     },
     {
       "path": "packages/app/src/components/TeamSettings/__tests__/IacMigrationSection.test.tsx",
@@ -1262,53 +1108,39 @@
       "note": "Token \"clickhouse_clickstack_connection\" allowed in the token map"
     },
     {
-      "path": "packages/app/src/components/__tests__/ConnectionForm.test.tsx",
-      "term": "hyperdx",
-      "snippet": "const settingPrefixInput = screen.getByPlaceholderText('hyperdx');",
-      "reason": "internal_identifier",
-      "note": "Token \"hyperdx\" allowed in the token map"
-    },
-    {
-      "path": "packages/app/src/components/__tests__/ConnectionForm.test.tsx",
-      "term": "hyperdx",
-      "snippet": "it('should convert empty hyperdxSettingPrefix to null when updating', async () => {",
-      "reason": "internal_identifier",
-      "note": "Token \"hyperdxSettingPrefix\" allowed in the token map"
-    },
-    {
-      "path": "packages/app/src/components/__tests__/ConnectionForm.test.tsx",
-      "term": "hyperdx",
-      "snippet": "it('should include hyperdxSettingPrefix when creating connection', async () => {",
-      "reason": "internal_identifier",
-      "note": "Token \"hyperdxSettingPrefix\" allowed in the token map"
-    },
-    {
       "path": "packages/app/src/components/__tests__/DBRowOverviewPanel.exception.test.tsx",
       "term": "url",
-      "snippet": ".clickhouse.com/",
+      "snippet": "https://example.clickhouse.com/assets/app.js",
       "reason": "test_fixture",
-      "note": "Sample span and stack-frame URLs; never requested."
+      "note": "Example stack-frame URL in exception panel test."
     },
     {
       "path": "packages/app/src/components/__tests__/DBTraceWaterfallChart.test.tsx",
-      "term": "url",
-      "snippet": ".clickhouse.com/",
+      "snippet": "https://example-api.clickhouse.com/users",
       "reason": "test_fixture",
-      "note": "Sample span and stack-frame URLs; never requested."
+      "term": "url",
+      "note": "Example URL in waterfall test."
     },
     {
       "path": "packages/app/src/components/__tests__/ExceptionSubpanel.test.tsx",
-      "term": "url",
-      "snippet": ".clickhouse.com/",
+      "snippet": "https://example.clickhouse.com/_next/static/chunks/framework-2c79e2a64abdb08b.js",
       "reason": "test_fixture",
-      "note": "Sample span and stack-frame URLs; never requested."
+      "term": "url",
+      "note": "Example chunk URL in exception test."
+    },
+    {
+      "path": "packages/app/src/components/__tests__/ExceptionSubpanel.test.tsx",
+      "snippet": "https://example.clickhouse.com/assets/app.js",
+      "reason": "test_fixture",
+      "term": "url",
+      "note": "Example stack URL in exception test."
     },
     {
       "path": "packages/app/src/components/__tests__/NetworkPropertyPanel.test.tsx",
-      "term": "url",
-      "snippet": ".clickhouse.com/",
+      "snippet": "https://example-api.clickhouse.com/users",
       "reason": "test_fixture",
-      "note": "Sample span and stack-frame URLs; never requested."
+      "term": "url",
+      "note": "Example URL in network panel test."
     },
     {
       "path": "packages/app/src/hdxMTViews.ts",
@@ -1351,41 +1183,6 @@
       "snippet": "filename=\"clickstack-wordmark.svg\"",
       "reason": "internal_identifier",
       "note": "Storybook download filename for the brand asset card; the story is a test file kept at its substituted base."
-    },
-    {
-      "path": "packages/app/src/stories/ClickUI.stories.tsx",
-      "term": "url",
-      "snippet": "https://clickhouse.com",
-      "reason": "test_fixture",
-      "note": "Storybook sample link for the Click UI component library."
-    },
-    {
-      "path": "packages/app/src/stories/Code.stories.tsx",
-      "term": "clickstack",
-      "snippet": "'import {\\n  clickhouse_clickstack_dashboard.example\\n} from \"clickhouse/couchbase-traces\"',",
-      "reason": "external_dependency",
-      "note": "Token \"clickhouse_clickstack_dashboard.example\" allowed in the token map"
-    },
-    {
-      "path": "packages/app/src/stories/Code.stories.tsx",
-      "term": "clickstack",
-      "snippet": "<Code>@/components/ClickStackOnboarding/CopySnippet</Code>. It renders",
-      "reason": "internal_identifier",
-      "note": "Token \"ClickStackOnboarding\" allowed in the token map"
-    },
-    {
-      "path": "packages/app/src/stories/Code.stories.tsx",
-      "term": "clickstack",
-      "snippet": "clickhouse_clickstack_dashboard.example",
-      "reason": "external_dependency",
-      "note": "Token \"clickhouse_clickstack_dashboard.example\" allowed in the token map"
-    },
-    {
-      "path": "packages/app/src/stories/Code.stories.tsx",
-      "term": "clickstack",
-      "snippet": "snippet={\\`import { clickstack_dashboard } from \"clickhouse/couchbase-traces\"\\`}",
-      "reason": "external_dependency",
-      "note": "Token \"clickstack_dashboard\" allowed in the token map"
     },
     {
       "path": "packages/app/tests/e2e/features/dashboard.spec.ts",
@@ -1453,7 +1250,7 @@
     {
       "path": "packages/cli/AGENTS.md",
       "term": "hyperdx",
-      "snippet": "├── config.ts        # Session persistence (~/.config/hyperdx/cli/session.json)",
+      "snippet": "\u251c\u2500\u2500 config.ts        # Session persistence (~/.config/hyperdx/cli/session.json)",
       "reason": "internal_identifier",
       "note": "Token \"hyperdx\" allowed in the token map"
     },
@@ -1481,7 +1278,7 @@
     {
       "path": "packages/cli/CONTRIBUTING.md",
       "term": "hyperdx",
-      "snippet": "├── config.ts          # Session persistence (~/.config/hyperdx/cli/session.json)",
+      "snippet": "\u251c\u2500\u2500 config.ts          # Session persistence (~/.config/hyperdx/cli/session.json)",
       "reason": "internal_identifier",
       "note": "Token \"hyperdx\" allowed in the token map"
     },
@@ -1491,13 +1288,6 @@
       "snippet": "The session is saved to `~/.config/hyperdx/cli/session.json` (mode `0600`) and",
       "reason": "internal_identifier",
       "note": "Token \"hyperdx\" allowed in the token map"
-    },
-    {
-      "path": "packages/cli/src/api/client.ts",
-      "term": "hyperdx",
-      "snippet": "httpHeaders['x-hyperdx-connection-id'] = connectionId;",
-      "reason": "internal_identifier",
-      "note": "Token \"x-hyperdx-connection-id\" allowed in the token map"
     },
     {
       "path": "packages/cli/src/cli.tsx",
@@ -1533,27 +1323,6 @@
       "snippet": "\"@types/hyperdx__lucene\": \"npm:@types/lucene@*\",",
       "reason": "external_dependency",
       "note": "Token \"hyperdx__lucene\" allowed in the token map"
-    },
-    {
-      "path": "packages/common-utils/src/__tests__/builderToRawSql.test.ts",
-      "term": "hyperdx",
-      "snippet": "HYPERDX_PARAM_",
-      "reason": "internal_identifier",
-      "note": "Query parameter placeholder name inside generated SQL; never shown to users."
-    },
-    {
-      "path": "packages/common-utils/src/__tests__/clickhouse.test.ts",
-      "term": "hyperdx",
-      "snippet": "HYPERDX_PARAM_",
-      "reason": "internal_identifier",
-      "note": "Query parameter placeholder name inside generated SQL; never shown to users."
-    },
-    {
-      "path": "packages/common-utils/src/__tests__/clickhouseVersion.test.ts",
-      "term": "clickhouse cloud",
-      "snippet": "describe('ClickHouse Cloud (isCloud=true)', () => {",
-      "reason": "pending_decision",
-      "note": "Token \"ClickHouse Cloud\" allowed in the token map"
     },
     {
       "path": "packages/common-utils/src/__tests__/iac.test.ts",
@@ -1738,34 +1507,6 @@
       "note": "Token \"ResourceAttributes.hyperdx.distro\" allowed in the token map"
     },
     {
-      "path": "packages/common-utils/src/clickhouse/attribution.ts",
-      "term": "hyperdx",
-      "snippet": "export const QUERY_ATTRIBUTION_HEADER = 'x-hyperdx-query-attribution';",
-      "reason": "internal_identifier",
-      "note": "Token \"x-hyperdx-query-attribution\" allowed in the token map"
-    },
-    {
-      "path": "packages/common-utils/src/clickhouse/browser.ts",
-      "term": "hyperdx",
-      "snippet": "? { 'x-hyperdx-connection-id': connectionId }",
-      "reason": "internal_identifier",
-      "note": "Token \"x-hyperdx-connection-id\" allowed in the token map"
-    },
-    {
-      "path": "packages/common-utils/src/clickhouse/index.ts",
-      "term": "hyperdx",
-      "snippet": "HYPERDX_PARAM_",
-      "reason": "internal_identifier",
-      "note": "Query parameter placeholder name inside generated SQL; never shown to users."
-    },
-    {
-      "path": "packages/common-utils/src/clickhouse/index.ts",
-      "term": "url",
-      "snippet": "github.com/ClickHouse/",
-      "reason": "engine_reference",
-      "note": "Source references for engine and client behavior."
-    },
-    {
       "path": "packages/common-utils/src/core/builderToRawSql.ts",
       "term": "hyperdx",
       "snippet": "HYPERDX_PARAM_",
@@ -1773,23 +1514,16 @@
       "note": "Query parameter placeholder name inside generated SQL; never shown to users."
     },
     {
-      "path": "packages/common-utils/src/core/metadata.ts",
-      "term": "clickhouse cloud",
-      "snippet": "console.warn('Error detecting ClickHouse Cloud:', e);",
-      "reason": "pending_decision",
-      "note": "Token \"ClickHouse Cloud\" allowed in the token map"
-    },
-    {
-      "path": "packages/common-utils/src/core/utils.ts",
-      "term": "url",
-      "snippet": "github.com/ClickHouse/ClickHouse",
-      "reason": "engine_reference",
-      "note": "Source reference for engine behavior."
+      "path": "packages/common-utils/src/couchbase/__tests__/types.test.ts",
+      "term": "hyperdx",
+      "snippet": "expect(parsed).not.toHaveProperty('hyperdxSettingPrefix');",
+      "reason": "internal_identifier",
+      "note": "Token \"hyperdxSettingPrefix\" allowed in the token map"
     },
     {
       "path": "packages/common-utils/src/iac.ts",
       "term": "clickstack",
-      "snippet": "#   (clickstack_service_id) rejects any team-scoped call — on that path a",
+      "snippet": "#   (clickstack_service_id) rejects any team-scoped call \u2014 on that path a",
       "reason": "external_dependency",
       "note": "Token \"clickstack_service_id\" allowed in the token map"
     },
@@ -1890,6 +1624,20 @@
       "snippet": "webhook: 'clickhouse_clickstack_webhook',",
       "reason": "external_dependency",
       "note": "Token \"clickhouse_clickstack_webhook\" allowed in the token map"
+    },
+    {
+      "path": "packages/common-utils/src/query/attribution.ts",
+      "term": "hyperdx",
+      "snippet": "export const QUERY_ATTRIBUTION_HEADER = 'x-hyperdx-query-attribution';",
+      "reason": "internal_identifier",
+      "note": "HTTP header name retained from upstream wire format."
+    },
+    {
+      "path": "packages/common-utils/src/query/sqlExpr.ts",
+      "term": "hyperdx",
+      "snippet": "return `HYPERDX_PARAM_${hash(str)}`;",
+      "reason": "internal_identifier",
+      "note": "SQL parameter name prefix retained from upstream wire format."
     },
     {
       "path": "packages/hdx-eval/README.md",
@@ -2020,7 +1768,7 @@
     {
       "path": "packages/hdx-eval/README.md",
       "term": "hyperdx",
-      "snippet": "| Metric         | hyperdx-main | hyperdx-feature | Δ (hyperdx-feature) |",
+      "snippet": "| Metric         | hyperdx-main | hyperdx-feature | \u0394 (hyperdx-feature) |",
       "reason": "internal_identifier",
       "note": "Token \"hyperdx-main\" allowed in the token map"
     },
@@ -2336,8 +2084,8 @@
       "path": "packages/hdx-eval/src/__tests__/aggregate.test.ts",
       "term": "hyperdx",
       "snippet": "expect(summary.columnOrder).toEqual(['clickhouse', 'hyperdx']);",
-      "reason": "internal_identifier",
-      "note": "Token \"hyperdx\" allowed in the token map"
+      "reason": "test_fixture",
+      "note": "Eval MCP registry fixture ids."
     },
     {
       "path": "packages/hdx-eval/src/__tests__/aggregate.test.ts",
@@ -2350,8 +2098,8 @@
       "path": "packages/hdx-eval/src/__tests__/aggregate.test.ts",
       "term": "hyperdx",
       "snippet": "expect(summary.mcpOrder).toEqual(['clickhouse', 'hyperdx']);",
-      "reason": "internal_identifier",
-      "note": "Token \"hyperdx\" allowed in the token map"
+      "reason": "test_fixture",
+      "note": "Eval MCP registry fixture ids."
     },
     {
       "path": "packages/hdx-eval/src/__tests__/aggregate.test.ts",
@@ -2539,8 +2287,8 @@
       "path": "packages/hdx-eval/src/__tests__/markdown.test.ts",
       "term": "hyperdx",
       "snippet": "expect(md).toContain('MCPs: clickhouse, hyperdx');",
-      "reason": "internal_identifier",
-      "note": "Token \"hyperdx\" allowed in the token map"
+      "reason": "test_fixture",
+      "note": "Eval MCP registry fixture ids."
     },
     {
       "path": "packages/hdx-eval/src/__tests__/markdown.test.ts",
@@ -2566,7 +2314,7 @@
     {
       "path": "packages/hdx-eval/src/__tests__/markdown.test.ts",
       "term": "hyperdx",
-      "snippet": "expect(md).toContain('Δ (hyperdx/none)');",
+      "snippet": "expect(md).toContain('\u0394 (hyperdx/none)');",
       "reason": "internal_identifier",
       "note": "Token \"hyperdx\" allowed in the token map"
     },
@@ -2804,7 +2552,7 @@
     {
       "path": "packages/hdx-eval/src/__tests__/reportsStore.test.ts",
       "term": "hyperdx",
-      "snippet": "expect(md).toContain('Δ (hyperdx/none)');",
+      "snippet": "expect(md).toContain('\u0394 (hyperdx/none)');",
       "reason": "internal_identifier",
       "note": "Token \"hyperdx\" allowed in the token map"
     },
@@ -3112,7 +2860,7 @@
     {
       "path": "packages/otel-collector/README.md",
       "term": "hyperdx",
-      "snippet": "**`docker/hyperdx/Dockerfile`** — ARG defaults:",
+      "snippet": "**`docker/hyperdx/Dockerfile`** \u2014 ARG defaults:",
       "reason": "internal_identifier",
       "note": "Token \"hyperdx\" allowed in the token map"
     },
@@ -3126,7 +2874,14 @@
     {
       "path": "packages/otel-collector/README.md",
       "term": "hyperdx",
-      "snippet": "ingests — works with `otlp/hyperdx` directly, and is most useful alongside",
+      "snippet": "docker/hyperdx/Dockerfile",
+      "reason": "internal_identifier",
+      "note": "Historical docker image directory name."
+    },
+    {
+      "path": "packages/otel-collector/README.md",
+      "term": "hyperdx",
+      "snippet": "ingests \u2014 works with `otlp/hyperdx` directly, and is most useful alongside",
       "reason": "internal_identifier",
       "note": "Token \"hyperdx\" allowed in the token map"
     },
@@ -3157,62 +2912,6 @@
       "snippet": "receivers: [otlp/hyperdx]",
       "reason": "internal_identifier",
       "note": "Token \"hyperdx\" allowed in the token map"
-    },
-    {
-      "path": "packages/otel-collector/README.md",
-      "term": "hyperdx",
-      "snippet": "| `docker/hyperdx/Dockerfile`        | All-in-one image (includes collector, ClickHouse, MongoDB, API, App) |",
-      "reason": "internal_identifier",
-      "note": "Token \"hyperdx\" allowed in the token map"
-    },
-    {
-      "path": "packages/otel-collector/cmd/migrate/main.go",
-      "term": "hyperdx",
-      "snippet": "// 00004_hyperdx_sessions_compat.sql to take its place, so goose runs the",
-      "reason": "engine_reference",
-      "note": "Token \"00004_hyperdx_sessions_compat.sql\" allowed in the token map"
-    },
-    {
-      "path": "packages/otel-collector/cmd/migrate/main.go",
-      "term": "hyperdx",
-      "snippet": "// processed temp directory. It removes 00004_hyperdx_sessions.sql and renames",
-      "reason": "engine_reference",
-      "note": "Token \"00004_hyperdx_sessions.sql\" allowed in the token map"
-    },
-    {
-      "path": "packages/otel-collector/cmd/migrate/main.go",
-      "term": "hyperdx",
-      "snippet": "compatPath := filepath.Join(tempDir, \"00004_hyperdx_sessions_compat.sql\")",
-      "reason": "engine_reference",
-      "note": "Token \"00004_hyperdx_sessions_compat.sql\" allowed in the token map"
-    },
-    {
-      "path": "packages/otel-collector/cmd/migrate/main.go",
-      "term": "hyperdx",
-      "snippet": "fullTextPath := filepath.Join(tempDir, \"00004_hyperdx_sessions.sql\")",
-      "reason": "engine_reference",
-      "note": "Token \"00004_hyperdx_sessions.sql\" allowed in the token map"
-    },
-    {
-      "path": "packages/otel-collector/cmd/migrate/main_test.go",
-      "term": "hyperdx",
-      "snippet": "compatPath := filepath.Join(dir, \"00004_hyperdx_sessions_compat.sql\")",
-      "reason": "engine_reference",
-      "note": "Token \"00004_hyperdx_sessions_compat.sql\" allowed in the token map"
-    },
-    {
-      "path": "packages/otel-collector/cmd/migrate/main_test.go",
-      "term": "hyperdx",
-      "snippet": "fullTextPath := filepath.Join(dir, \"00004_hyperdx_sessions.sql\")",
-      "reason": "engine_reference",
-      "note": "Token \"00004_hyperdx_sessions.sql\" allowed in the token map"
-    },
-    {
-      "path": "packages/otel-collector/cmd/migrate/main_test.go",
-      "term": "url",
-      "snippet": "//clickhouse",
-      "reason": "engine_reference",
-      "note": "Docker service hostname of the ClickHouse container."
     },
     {
       "path": "scripts/__tests__/slots.test.mjs",
@@ -3290,62 +2989,6 @@
       "snippet": "CBT_E2E_SLOTS_DIR=\"${HOME}/.config/hyperdx/dev-slots\"",
       "reason": "internal_identifier",
       "note": "Token \"hyperdx\" allowed in the token map"
-    },
-    {
-      "path": "smoke-tests/otel-collector/metrics.bats",
-      "term": "hyperdx",
-      "snippet": "# Exercises the `metrics` pipeline (otlp/hyperdx -> clickhouse exporter ->",
-      "reason": "internal_identifier",
-      "note": "Token \"hyperdx\" allowed in the token map"
-    },
-    {
-      "path": "smoke-tests/otel-collector/receiver-config.yaml",
-      "term": "hyperdx",
-      "snippet": "- otlp/hyperdx",
-      "reason": "internal_identifier",
-      "note": "Token \"hyperdx\" allowed in the token map"
-    },
-    {
-      "path": "smoke-tests/otel-collector/receiver-config.yaml",
-      "term": "hyperdx",
-      "snippet": "otlp/hyperdx:",
-      "reason": "internal_identifier",
-      "note": "Token \"hyperdx\" allowed in the token map"
-    },
-    {
-      "path": "smoke-tests/otel-collector/traces.bats",
-      "term": "hyperdx",
-      "snippet": "# Exercises the `traces` pipeline (otlp/hyperdx -> clickhouse exporter ->",
-      "reason": "internal_identifier",
-      "note": "Token \"hyperdx\" allowed in the token map"
-    },
-    {
-      "path": "packages/api/src/routers/api/__tests__/couchbaseConnections.test.ts",
-      "term": "hyperdx",
-      "snippet": ".set('x-hyperdx-connection-id', CONNECTION_ID)",
-      "reason": "internal_identifier",
-      "note": "Token \"x-hyperdx-connection-id\" allowed in the token map"
-    },
-    {
-      "path": "packages/api/src/routers/api/__tests__/couchbaseConnections.test.ts",
-      "term": "hyperdx",
-      "snippet": "expect(update).not.toHaveProperty('hyperdxSettingPrefix');",
-      "reason": "internal_identifier",
-      "note": "Token \"hyperdxSettingPrefix\" allowed in the token map"
-    },
-    {
-      "path": "packages/api/src/routers/api/__tests__/couchbaseConnections.test.ts",
-      "term": "hyperdx",
-      "snippet": "expect(created).not.toHaveProperty('hyperdxSettingPrefix');",
-      "reason": "internal_identifier",
-      "note": "Token \"hyperdxSettingPrefix\" allowed in the token map"
-    },
-    {
-      "path": "packages/common-utils/src/couchbase/__tests__/types.test.ts",
-      "term": "hyperdx",
-      "snippet": "expect(parsed).not.toHaveProperty('hyperdxSettingPrefix');",
-      "reason": "internal_identifier",
-      "note": "Token \"hyperdxSettingPrefix\" allowed in the token map"
     }
   ]
 }

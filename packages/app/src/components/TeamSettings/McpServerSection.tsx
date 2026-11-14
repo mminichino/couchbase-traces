@@ -3,8 +3,8 @@ import { Separator } from '@clickhouse/click-ui';
 import { Box, Card, Text } from '@mantine/core';
 
 import api from '@/api';
-import { type DeploymentShape } from '@/components/ClickStackOnboarding/installSnippets';
-import McpInstallPanel from '@/components/ClickStackOnboarding/McpInstallPanel';
+import { type DeploymentShape } from '@/components/CollectorOnboarding/installSnippets';
+import McpInstallPanel from '@/components/CollectorOnboarding/McpInstallPanel';
 
 /**
  * Renders the "Connect your AI Agents" section on the Team

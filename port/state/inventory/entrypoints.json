@@ -47,7 +47,7 @@
       "kind": "api_route",
       "key": "DELETE /api/v2/connections/:id",
       "file": "packages/api/src/routers/external-api/v2/connections.ts",
-      "line": 722,
+      "line": 686,
       "detail": {
         "method": "DELETE",
         "path": "/api/v2/connections/:id",
@@ -145,7 +145,7 @@
       "kind": "api_route",
       "key": "DELETE /connections/:id",
       "file": "packages/api/src/routers/api/connections.ts",
-      "line": 180,
+      "line": 174,
       "detail": {
         "method": "DELETE",
         "path": "/connections/:id",
@@ -243,7 +243,7 @@
       "kind": "api_route",
       "key": "DELETE /team/invitation/:id",
       "file": "packages/api/src/routers/api/team.ts",
-      "line": 227,
+      "line": 223,
       "detail": {
         "method": "DELETE",
         "path": "/team/invitation/:id",
@@ -257,7 +257,7 @@
       "kind": "api_route",
       "key": "DELETE /team/member/:id",
       "file": "packages/api/src/routers/api/team.ts",
-      "line": 284,
+      "line": 280,
       "detail": {
         "method": "DELETE",
         "path": "/team/member/:id",
@@ -383,7 +383,7 @@
       "kind": "api_route",
       "key": "GET /api/v2/connections",
       "file": "packages/api/src/routers/external-api/v2/connections.ts",
-      "line": 333,
+      "line": 323,
       "detail": {
         "method": "GET",
         "path": "/api/v2/connections",
@@ -397,7 +397,7 @@
       "kind": "api_route",
       "key": "GET /api/v2/connections/:id",
       "file": "packages/api/src/routers/external-api/v2/connections.ts",
-      "line": 416,
+      "line": 406,
       "detail": {
         "method": "GET",
         "path": "/api/v2/connections/:id",
@@ -547,25 +547,11 @@
       }
     },
     {
-      "id": "api_route:GET /clickhouse-proxy/*",
-      "kind": "api_route",
-      "key": "GET /clickhouse-proxy/*",
-      "file": "packages/api/src/routers/api/clickhouseProxy.ts",
-      "line": 351,
-      "detail": {
-        "method": "GET",
-        "path": "/clickhouse-proxy/*",
-        "localPath": "/*",
-        "routerFile": "packages/api/src/routers/api/clickhouseProxy.ts",
-        "mounted": true
-      }
-    },
-    {
       "id": "api_route:GET /connections",
       "kind": "api_route",
       "key": "GET /connections",
       "file": "packages/api/src/routers/api/connections.ts",
-      "line": 30,
+      "line": 53,
       "detail": {
         "method": "GET",
         "path": "/connections",
@@ -579,7 +565,7 @@
       "kind": "api_route",
       "key": "GET /couchbase/cluster/:connectionId/infrastructure",
       "file": "packages/api/src/routers/api/couchbaseCluster.ts",
-      "line": 421,
+      "line": 419,
       "detail": {
         "method": "GET",
         "path": "/couchbase/cluster/:connectionId/infrastructure",
@@ -593,7 +579,7 @@
       "kind": "api_route",
       "key": "GET /couchbase/cluster/:connectionId/queries",
       "file": "packages/api/src/routers/api/couchbaseCluster.ts",
-      "line": 448,
+      "line": 446,
       "detail": {
         "method": "GET",
         "path": "/couchbase/cluster/:connectionId/queries",
@@ -607,7 +593,7 @@
       "kind": "api_route",
       "key": "GET /couchbase/cluster/:connectionId/status",
       "file": "packages/api/src/routers/api/couchbaseCluster.ts",
-      "line": 399,
+      "line": 397,
       "detail": {
         "method": "GET",
         "path": "/couchbase/cluster/:connectionId/status",
@@ -817,7 +803,7 @@
       "kind": "api_route",
       "key": "GET /team/invitations",
       "file": "packages/api/src/routers/api/team.ts",
-      "line": 198,
+      "line": 194,
       "detail": {
         "method": "GET",
         "path": "/team/invitations",
@@ -831,7 +817,7 @@
       "kind": "api_route",
       "key": "GET /team/members",
       "file": "packages/api/src/routers/api/team.ts",
-      "line": 257,
+      "line": 253,
       "detail": {
         "method": "GET",
         "path": "/team/members",
@@ -845,82 +831,12 @@
       "kind": "api_route",
       "key": "GET /team/tags",
       "file": "packages/api/src/routers/api/team.ts",
-      "line": 323,
+      "line": 319,
       "detail": {
         "method": "GET",
         "path": "/team/tags",
         "localPath": "/tags",
         "routerFile": "packages/api/src/routers/api/team.ts",
-        "mounted": true
-      }
-    },
-    {
-      "id": "api_route:GET /v1/prometheus/label/:name/values",
-      "kind": "api_route",
-      "key": "GET /v1/prometheus/label/:name/values",
-      "file": "packages/api/src/routers/api/prometheus.ts",
-      "line": 879,
-      "detail": {
-        "method": "GET",
-        "path": "/v1/prometheus/label/:name/values",
-        "localPath": "/label/:name/values",
-        "routerFile": "packages/api/src/routers/api/prometheus.ts",
-        "mounted": true
-      }
-    },
-    {
-      "id": "api_route:GET /v1/prometheus/labels",
-      "kind": "api_route",
-      "key": "GET /v1/prometheus/labels",
-      "file": "packages/api/src/routers/api/prometheus.ts",
-      "line": 871,
-      "detail": {
-        "method": "GET",
-        "path": "/v1/prometheus/labels",
-        "localPath": "/labels",
-        "routerFile": "packages/api/src/routers/api/prometheus.ts",
-        "mounted": true
-      }
-    },
-    {
-      "id": "api_route:GET /v1/prometheus/query",
-      "kind": "api_route",
-      "key": "GET /v1/prometheus/query",
-      "file": "packages/api/src/routers/api/prometheus.ts",
-      "line": 552,
-      "detail": {
-        "method": "GET",
-        "path": "/v1/prometheus/query",
-        "localPath": "/query",
-        "routerFile": "packages/api/src/routers/api/prometheus.ts",
-        "mounted": true
-      }
-    },
-    {
-      "id": "api_route:GET /v1/prometheus/query_exemplars",
-      "kind": "api_route",
-      "key": "GET /v1/prometheus/query_exemplars",
-      "file": "packages/api/src/routers/api/prometheus.ts",
-      "line": 687,
-      "detail": {
-        "method": "GET",
-        "path": "/v1/prometheus/query_exemplars",
-        "localPath": "/query_exemplars",
-        "routerFile": "packages/api/src/routers/api/prometheus.ts",
-        "mounted": true
-      }
-    },
-    {
-      "id": "api_route:GET /v1/prometheus/query_range",
-      "kind": "api_route",
-      "key": "GET /v1/prometheus/query_range",
-      "file": "packages/api/src/routers/api/prometheus.ts",
-      "line": 458,
-      "detail": {
-        "method": "GET",
-        "path": "/v1/prometheus/query_range",
-        "localPath": "/query_range",
-        "routerFile": "packages/api/src/routers/api/prometheus.ts",
         "mounted": true
       }
     },
@@ -1023,20 +939,6 @@
       }
     },
     {
-      "id": "api_route:PATCH /team/clickhouse-settings",
-      "kind": "api_route",
-      "key": "PATCH /team/clickhouse-settings",
-      "file": "packages/api/src/routers/api/team.ts",
-      "line": 111,
-      "detail": {
-        "method": "PATCH",
-        "path": "/team/clickhouse-settings",
-        "localPath": "/clickhouse-settings",
-        "routerFile": "packages/api/src/routers/api/team.ts",
-        "mounted": true
-      }
-    },
-    {
       "id": "api_route:PATCH /team/name",
       "kind": "api_route",
       "key": "PATCH /team/name",
@@ -1051,11 +953,25 @@
       }
     },
     {
+      "id": "api_route:PATCH /team/query-settings",
+      "kind": "api_route",
+      "key": "PATCH /team/query-settings",
+      "file": "packages/api/src/routers/api/team.ts",
+      "line": 111,
+      "detail": {
+        "method": "PATCH",
+        "path": "/team/query-settings",
+        "localPath": "/query-settings",
+        "routerFile": "packages/api/src/routers/api/team.ts",
+        "mounted": true
+      }
+    },
+    {
       "id": "api_route:POST /ai/assistant",
       "kind": "api_route",
       "key": "POST /ai/assistant",
       "file": "packages/api/src/routers/api/ai.ts",
-      "line": 43,
+      "line": 44,
       "detail": {
         "method": "POST",
         "path": "/ai/assistant",
@@ -1111,7 +1027,7 @@
       "kind": "api_route",
       "key": "POST /api/v2/charts/series",
       "file": "packages/api/src/routers/external-api/v2/charts.ts",
-      "line": 534,
+      "line": 535,
       "detail": {
         "method": "POST",
         "path": "/api/v2/charts/series",
@@ -1125,7 +1041,7 @@
       "kind": "api_route",
       "key": "POST /api/v2/connections",
       "file": "packages/api/src/routers/external-api/v2/connections.ts",
-      "line": 486,
+      "line": 476,
       "detail": {
         "method": "POST",
         "path": "/api/v2/connections",
@@ -1181,7 +1097,7 @@
       "kind": "api_route",
       "key": "POST /api/v2/search",
       "file": "packages/api/src/routers/external-api/v2/search.ts",
-      "line": 374,
+      "line": 377,
       "detail": {
         "method": "POST",
         "path": "/api/v2/search",
@@ -1247,39 +1163,11 @@
       }
     },
     {
-      "id": "api_route:POST /clickhouse-proxy/*",
-      "kind": "api_route",
-      "key": "POST /clickhouse-proxy/*",
-      "file": "packages/api/src/routers/api/clickhouseProxy.ts",
-      "line": 358,
-      "detail": {
-        "method": "POST",
-        "path": "/clickhouse-proxy/*",
-        "localPath": "/*",
-        "routerFile": "packages/api/src/routers/api/clickhouseProxy.ts",
-        "mounted": true
-      }
-    },
-    {
-      "id": "api_route:POST /clickhouse-proxy/test",
-      "kind": "api_route",
-      "key": "POST /clickhouse-proxy/test",
-      "file": "packages/api/src/routers/api/clickhouseProxy.ts",
-      "line": 99,
-      "detail": {
-        "method": "POST",
-        "path": "/clickhouse-proxy/test",
-        "localPath": "/test",
-        "routerFile": "packages/api/src/routers/api/clickhouseProxy.ts",
-        "mounted": true
-      }
-    },
-    {
       "id": "api_route:POST /connections",
       "kind": "api_route",
       "key": "POST /connections",
       "file": "packages/api/src/routers/api/connections.ts",
-      "line": 42,
+      "line": 65,
       "detail": {
         "method": "POST",
         "path": "/connections",
@@ -1447,7 +1335,7 @@
       "kind": "api_route",
       "key": "POST /team/invitation",
       "file": "packages/api/src/routers/api/team.ts",
-      "line": 140,
+      "line": 136,
       "detail": {
         "method": "POST",
         "path": "/team/invitation",
@@ -1467,48 +1355,6 @@
         "path": "/team/setup/:token",
         "localPath": "/team/setup/:token",
         "routerFile": "packages/api/src/routers/api/root.ts",
-        "mounted": true
-      }
-    },
-    {
-      "id": "api_route:POST /v1/prometheus/query",
-      "kind": "api_route",
-      "key": "POST /v1/prometheus/query",
-      "file": "packages/api/src/routers/api/prometheus.ts",
-      "line": 553,
-      "detail": {
-        "method": "POST",
-        "path": "/v1/prometheus/query",
-        "localPath": "/query",
-        "routerFile": "packages/api/src/routers/api/prometheus.ts",
-        "mounted": true
-      }
-    },
-    {
-      "id": "api_route:POST /v1/prometheus/query_exemplars",
-      "kind": "api_route",
-      "key": "POST /v1/prometheus/query_exemplars",
-      "file": "packages/api/src/routers/api/prometheus.ts",
-      "line": 688,
-      "detail": {
-        "method": "POST",
-        "path": "/v1/prometheus/query_exemplars",
-        "localPath": "/query_exemplars",
-        "routerFile": "packages/api/src/routers/api/prometheus.ts",
-        "mounted": true
-      }
-    },
-    {
-      "id": "api_route:POST /v1/prometheus/query_range",
-      "kind": "api_route",
-      "key": "POST /v1/prometheus/query_range",
-      "file": "packages/api/src/routers/api/prometheus.ts",
-      "line": 459,
-      "detail": {
-        "method": "POST",
-        "path": "/v1/prometheus/query_range",
-        "localPath": "/query_range",
-        "routerFile": "packages/api/src/routers/api/prometheus.ts",
         "mounted": true
       }
     },
@@ -1573,7 +1419,7 @@
       "kind": "api_route",
       "key": "PUT /api/v2/connections/:id",
       "file": "packages/api/src/routers/external-api/v2/connections.ts",
-      "line": 590,
+      "line": 571,
       "detail": {
         "method": "PUT",
         "path": "/api/v2/connections/:id",
@@ -1643,7 +1489,7 @@
       "kind": "api_route",
       "key": "PUT /connections/:id",
       "file": "packages/api/src/routers/api/connections.ts",
-      "line": 91,
+      "line": 104,
       "detail": {
         "method": "PUT",
         "path": "/connections/:id",
@@ -1790,16 +1636,6 @@
       "line": null,
       "detail": {
         "route": "/chart"
-      }
-    },
-    {
-      "id": "app_page:/clickhouse",
-      "kind": "app_page",
-      "key": "/clickhouse",
-      "file": "packages/app/pages/clickhouse.tsx",
-      "line": null,
-      "detail": {
-        "route": "/clickhouse"
       }
     },
     {
@@ -2284,7 +2120,7 @@
       "kind": "mcp_tool",
       "key": "cbt_describe_metric",
       "file": "packages/api/src/mcp/tools/sources/describeMetric.ts",
-      "line": 724,
+      "line": 711,
       "detail": {
         "toolName": "cbt_describe_metric",
         "dir": "sources"
@@ -2295,7 +2131,7 @@
       "kind": "mcp_tool",
       "key": "cbt_describe_source",
       "file": "packages/api/src/mcp/tools/sources/describeSource.ts",
-      "line": 579,
+      "line": 578,
       "detail": {
         "toolName": "cbt_describe_source",
         "dir": "sources"
@@ -2306,7 +2142,7 @@
       "kind": "mcp_tool",
       "key": "cbt_describe_table",
       "file": "packages/api/src/mcp/tools/sources/describeTable.ts",
-      "line": 310,
+      "line": 33,
       "detail": {
         "toolName": "cbt_describe_table",
         "dir": "sources"
@@ -2416,7 +2252,7 @@
       "kind": "mcp_tool",
       "key": "cbt_list_sources",
       "file": "packages/api/src/mcp/tools/sources/listSources.ts",
-      "line": 213,
+      "line": 199,
       "detail": {
         "toolName": "cbt_list_sources",
         "dir": "sources"
@@ -2431,17 +2267,6 @@
       "detail": {
         "toolName": "cbt_patch_dashboard",
         "dir": "dashboards"
-      }
-    },
-    {
-      "id": "mcp_tool:cbt_promql",
-      "kind": "mcp_tool",
-      "key": "cbt_promql",
-      "file": "packages/api/src/mcp/tools/query/promql.ts",
-      "line": 55,
-      "detail": {
-        "toolName": "cbt_promql",
-        "dir": "query"
       }
     },
     {
@@ -2504,7 +2329,7 @@
       "kind": "mcp_tool",
       "key": "cbt_save_source",
       "file": "packages/api/src/mcp/tools/sources/saveSource.ts",
-      "line": 26,
+      "line": 25,
       "detail": {
         "toolName": "cbt_save_source",
         "dir": "sources"
@@ -2581,7 +2406,7 @@
       "kind": "mcp_tool",
       "key": "cbt_trace_top_time_consuming_operations",
       "file": "packages/api/src/mcp/tools/trace/breakdown.ts",
-      "line": 64,
+      "line": 63,
       "detail": {
         "toolName": "cbt_trace_top_time_consuming_operations",
         "dir": "trace"
@@ -2592,7 +2417,7 @@
       "kind": "mcp_tool",
       "key": "cbt_trace_waterfall",
       "file": "packages/api/src/mcp/tools/trace/waterfall.ts",
-      "line": 311,
+      "line": 305,
       "detail": {
         "toolName": "cbt_trace_waterfall",
         "dir": "trace"

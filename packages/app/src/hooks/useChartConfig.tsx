@@ -18,9 +18,9 @@ import {
   isRawSqlChartConfig,
 } from '@couchbase-traces/common-utils/dist/guards';
 import {
-  chSqlToAliasMap,
   QueryError,
   ResponseJSON,
+  sqlExprToAliasMap,
 } from '@couchbase-traces/common-utils/dist/query';
 import { format } from '@couchbase-traces/common-utils/dist/sqlFormatter';
 import {
@@ -41,7 +41,7 @@ import { toStartOfInterval } from '@/ChartUtils';
 import { IS_MTVIEWS_ENABLED } from '@/config';
 import { buildMTViewSelectQuery } from '@/hdxMTViews';
 import { useMetadataWithSettings } from '@/hooks/useMetadata';
-import { useClickhouseClient } from '@/query';
+import { useDataClient } from '@/query';
 import { useSource } from '@/source';
 import { ChartQueryResult } from '@/types';
 import { stripClientSideConfigFields } from '@/utils/chartConfig';
@@ -53,7 +53,7 @@ interface AdditionalUseQueriedChartConfigOptions {
   onError?: (error: Error | QueryError) => void;
   /**
    * Queries with large date ranges can be split into multiple smaller queries to
-   * avoid overloading the ClickHouse server and running into timeouts. In some cases, such
+   * avoid overloading the query server and running into timeouts. In some cases, such
    * as when data is being sampled across the entire range, this chunking is not desirable
    * and should be disabled.
    */
@@ -168,7 +168,7 @@ export const getGranularityAlignedTimeWindows = (
 
 async function* fetchDataInChunks({
   config,
-  clickhouseClient,
+  dataClient,
   signal,
   enableQueryChunking = false,
   enableParallelQueries = false,
@@ -176,7 +176,7 @@ async function* fetchDataInChunks({
   querySettings,
 }: {
   config: ChartConfigWithOptDateRange;
-  clickhouseClient: DataClient;
+  dataClient: DataClient;
   signal: AbortSignal;
   enableQueryChunking?: boolean;
   enableParallelQueries?: boolean;
@@ -226,7 +226,7 @@ async function* fetchDataInChunks({
       const windowedConfig = windowedConfigFor(w);
       return {
         index,
-        queryResult: await clickhouseClient.queryChartConfig({
+        queryResult: await dataClient.queryChartConfig({
           config: windowedConfig,
           metadata,
           opts: {
@@ -263,7 +263,7 @@ async function* fetchDataInChunks({
   for (let i = 0; i < windows.length; i++) {
     const windowedConfig = windowedConfigFor(windows[i]);
 
-    const result = await clickhouseClient.queryChartConfig({
+    const result = await dataClient.queryChartConfig({
       config: windowedConfig,
       metadata,
       opts: {
@@ -343,7 +343,7 @@ export function useQueriedChartConfig(
     AdditionalUseQueriedChartConfigOptions,
 ) {
   const { enabled = true } = options ?? {};
-  const clickhouseClient = useClickhouseClient();
+  const dataClient = useDataClient();
   const queryClient = useQueryClient();
   const metadata = useMetadataWithSettings();
 
@@ -395,7 +395,7 @@ export function useQueriedChartConfig(
 
       const chunks = fetchDataInChunks({
         config: optimizedConfig,
-        clickhouseClient,
+        dataClient,
         signal: context.signal,
         enableQueryChunking: options?.enableQueryChunking,
         enableParallelQueries: options?.enableParallelQueries,
@@ -537,7 +537,7 @@ export function useAliasMapFromChartConfig(
         undefined, // no query settings for creating alias map
       );
 
-      const aliasMap = chSqlToAliasMap(query);
+      const aliasMap = sqlExprToAliasMap(query);
 
       return aliasMap;
     },

@@ -18,7 +18,7 @@ export function captureProxyBody(
   _res: ServerResponse,
   body: Buffer,
 ) {
-  if (/^\/clickhouse-proxy(?:\/|$)/i.test(req.path ?? '')) {
+  if (/^\/evalstore-proxy(?:\/|$)/i.test(req.path ?? '')) {
     // verify receives inflated bytes before parsing can change their values.
     req._hdxProxyBody = body;
   }
@@ -31,8 +31,10 @@ export function writeProxyBody(proxyReq: ProxyRequest, req: ParsedRequest) {
     if (!req._body) return;
 
     // A drained stream would leave upstream waiting on the original length.
-    const err = new Error('ClickHouse proxy body was parsed but not captured');
-    logger.error({ err }, 'Unable to forward ClickHouse proxy body');
+    const err = new Error(
+      'legacy store proxy body was parsed but not captured',
+    );
+    logger.error({ err }, 'Unable to forward legacy store proxy body');
     proxyReq.destroy(err);
     return;
   }
@@ -46,7 +48,7 @@ export function writeProxyBody(proxyReq: ProxyRequest, req: ParsedRequest) {
     }
     proxyReq.write(body);
   } catch (err) {
-    logger.error({ err }, 'Unable to forward ClickHouse proxy body');
+    logger.error({ err }, 'Unable to forward legacy store proxy body');
     proxyReq.destroy(
       err instanceof Error ? err : new Error('Unable to forward proxy body'),
     );

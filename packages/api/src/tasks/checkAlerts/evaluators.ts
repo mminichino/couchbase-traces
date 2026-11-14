@@ -32,7 +32,7 @@ export interface AlertEvaluationContext {
   /** Unoptimized config: evaluators that change the date range or
    * granularity must re-run materialized-view selection themselves. */
   chartConfig: ChartConfigWithOptDateRange;
-  clickhouseClient: DataClient;
+  dataClient: DataClient;
   metadata: Metadata;
   dateRange: [Date, Date];
   windowSizeInMins: number;

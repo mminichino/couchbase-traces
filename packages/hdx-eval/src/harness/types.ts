@@ -15,7 +15,7 @@ type HttpMcpTransport = {
 };
 
 /**
- * Transport configuration for a stdio-based MCP server (e.g. mcp-clickhouse).
+ * Transport configuration for a stdio-based MCP server (e.g. mcp-eval-store).
  */
 type StdioMcpTransport = {
   type: 'stdio';

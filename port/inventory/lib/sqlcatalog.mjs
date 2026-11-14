@@ -19,7 +19,7 @@ import { ROLE, workspaceByRole, workspaceOf } from './workspaces.mjs';
  *   appSites: { path: string, rawSql: number, typeNames: number }[] }} SqlCatalog
  */
 
-const SQL_TAGS = new Set(['chSql', 'sql', 'SQL']);
+const SQL_TAGS = new Set(['sqlExpr', 'sql', 'SQL']);
 const KEYWORD_RE =
   /\b(?:SELECT|FROM|WHERE|GROUP BY|ORDER BY|PREWHERE|ARRAY JOIN|SETTINGS|FORMAT|INTERVAL|LIMIT)\b/;
 const FUNC_RE = /(?<![.\w])([A-Za-z_][A-Za-z0-9_]*)\s*\(/g;

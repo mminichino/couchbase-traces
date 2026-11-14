@@ -168,7 +168,7 @@ export function computeDbTimeChartConfig(
  * ones the chart config references. When applySelections is false, return empty
  * selections for each variable.
  */
-export function resolvePreviewVariables({
+function resolvePreviewVariables({
   config,
   variables,
   applySelections,
@@ -257,17 +257,6 @@ export function withBroadcastFilters(
     return config;
   }
   return { ...config, filters: filters && getSqlFilters(filters) };
-}
-
-/** PromQL tiles were removed in Phase 10. */
-export function buildRenderedPromqlExpression(
-  queriedConfig: ChartConfigWithDateRange | undefined,
-  _minGranularitySeconds?: number,
-): undefined {
-  if (queriedConfig != null && isPromqlChartConfig(queriedConfig)) {
-    return undefined;
-  }
-  return undefined;
 }
 
 export function buildSampleEventsConfig(

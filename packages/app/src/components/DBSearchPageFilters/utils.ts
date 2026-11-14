@@ -64,7 +64,7 @@ export function listRequestedFacets({
   return { facets, pendingKeys };
 }
 
-// Clean ClickHouse expressions to extract clean property paths
+// Clean legacy store expressions to extract clean property paths
 export function cleanClickHouseExpression(key: string): string {
   // Remove toString() wrapper if present
   let cleanKey = key.replace(/^toString\((.+)\)$/, '$1');
@@ -131,7 +131,7 @@ function isBracketFormMapKey(key: string): boolean {
 // — a filterState entry like `LogAttributes.time` and a facet entry like
 // `LogAttributes['time']` refer to the same logical field and must collapse
 // into a single child. When merging, we keep the bracket-form key so
-// `child.key` remains a valid ClickHouse expression for "Load more" SQL.
+// `child.key` remains a valid legacy store expression for "Load more" SQL.
 export function groupFacetsByBaseName(facets: FacetEntry[]) {
   const grouped: Map<
     string,
@@ -236,11 +236,11 @@ export function getFilterStateEntry(
 
 // A key that begins with `identifier(` is a raw SQL function call (e.g.
 // `toString(...)`, `JSONExtractString(...)`), not a column name or a dot-form
-// Map sub-key, so it is already a valid ClickHouse expression.
+// Map sub-key, so it is already a valid legacy store expression.
 const isSqlFunctionCallExpression = (key: string): boolean =>
   /^[A-Za-z_]\w*\(/.test(key);
 
-// Coerce a filterState key into a ClickHouse expression suitable for raw SQL.
+// Coerce a filterState key into a legacy store expression suitable for raw SQL.
 // A dot-form Map sub-key like `LogAttributes.host.name` is rewritten to bracket
 // form `LogAttributes['host.name']` via `mergePath` so the conversion stays
 // consistent with the keys produced by the facet-discovery path. Bracket form,
@@ -248,7 +248,7 @@ const isSqlFunctionCallExpression = (key: string): boolean =>
 // (`toString(...)`, `JSONExtractString(...)`), and plain column names are
 // returned unchanged. Use this when handing a filterState key off to a SQL
 // caller (e.g. "Load more" via metadata.getKeyValues), since `setFilterValue`
-// normalizes Map sub-keys to dot form which ClickHouse cannot resolve as map
+// normalizes Map sub-keys to dot form which legacy store cannot resolve as map
 // access.
 //
 // `parseMapFieldName` already guarantees `parsed.baseName` is a Map (its only
@@ -280,7 +280,7 @@ export function toClickHouseKeyExpression(key: string): string {
 }
 
 /**
- * Quote a single identifier if it isn't already a valid bare ClickHouse identifier.
+ * Quote a single identifier if it isn't already a valid bare legacy store identifier.
  * @param id - The identifier to quote
  * @returns The quoted identifier if needed, otherwise the original identifier
  */
@@ -291,7 +291,7 @@ function quoteIdentifierIfNeeded(id: string): string {
 }
 
 /**
- * Coerce a filterState key into a ClickHouse expression suitable for raw SQL,
+ * Coerce a filterState key into a legacy store expression suitable for raw SQL,
  * backtick-quoting identifiers with special characters.
  *
  * `knownColumns` is the set of real top-level column names on the table. Only

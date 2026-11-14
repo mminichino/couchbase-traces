@@ -49,8 +49,8 @@ export const APP_VERSION = packageJson.version ?? 'dev';
 export const IS_OSS = process.env.NEXT_PUBLIC_IS_OSS ?? 'true' === 'true';
 /** Local app mode was removed in Phase 10. */
 export const IS_LOCAL_MODE = false;
-/** ClickHouse Cloud embed build was removed in Phase 10. */
-export const IS_CLICKHOUSE_BUILD = false;
+/** managed cloud embed build was removed in Phase 10. */
+export const IS_LEGACY_ENGINE_BUILD = false;
 // Deployment path prefix, mirroring `basePath` in next.config.mjs. Needed
 // anywhere an absolute URL is built for something outside the browser to call:
 // `window.location.origin` alone drops the prefix, and the API is served under

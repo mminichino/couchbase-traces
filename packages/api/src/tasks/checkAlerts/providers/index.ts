@@ -129,7 +129,7 @@ export interface AlertProvider {
   /**
    * Replace the alert's `executionErrors` field without changing state or the
    * alert's normal history. Use this when an error prevents the normal
-   * state/history update from running (e.g. a ClickHouse query error).
+   * state/history update from running (e.g. a SQL query error).
    *
    * When `evaluationWindowStart` is provided, the errors are also upserted as
    * an ERROR-state AlertHistory row for that window (one row per window,
@@ -148,8 +148,8 @@ export interface AlertProvider {
   /** Fetch all webhooks for the given team, returning a map of webhook ID to webhook */
   getWebhooks(teamId: string | ObjectId): Promise<Map<string, IWebhook>>;
 
-  /** Create and return an authenticated ClickHouse client */
-  getClickHouseClient(
+  /** Create and return an authenticated data client */
+  getDataClient(
     connection: IConnection,
     requestTimeout?: number,
   ): Promise<DataClient>;

@@ -85,8 +85,8 @@ export function resolveSpanCostUsd(info: LLMSpanInfo): {
 }
 
 /**
- * Escape a string for embedding in a ClickHouse single-quoted literal.
- * Backslashes are doubled BEFORE quotes are escaped: ClickHouse decodes
+ * Escape a string for embedding in a legacy store single-quoted literal.
+ * Backslashes are doubled BEFORE quotes are escaped: legacy store decodes
  * recognized escapes (\b, \t, \xHH, ...) inside literals, so a regex like
  * `\bfoo` would otherwise arrive with a literal backspace. (Unrecognized
  * escapes such as \d keep their backslash, but relying on that nuance is a
@@ -96,7 +96,7 @@ const escapeSqlString = (value: string) =>
   value.replace(/\\/g, '\\\\').replace(/'/g, "\\'");
 
 /**
- * Generate a ClickHouse SQL expression estimating per-row cost in USD for
+ * Generate a legacy SQL expression estimating per-row cost in USD for
  * dashboard aggregation. Prices cache reads and cache writes at their
  * discounted/premium rates when the catalog has them (mirrors
  * computeCostUsd), with the instrumentation-provided cost taking
@@ -106,7 +106,7 @@ const escapeSqlString = (value: string) =>
  * rate-only `multiIf` over the catalog's patterns (RE2-compatible, matched
  * case-insensitively). Embedding the token expressions inside every model
  * branch instead would multiply their (large) coalesce chains by the
- * catalog size and blow past ClickHouse's default 256 KiB max_query_size
+ * catalog size and blow past legacy store's default 256 KiB max_query_size
  * once a query sums the cost more than once. `maxModels` bounds the
  * expression size; entries beyond it fall through to 0.
  */

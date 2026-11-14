@@ -1,4 +1,4 @@
-import { TeamClickHouseSettingsUpdateSchema } from '@couchbase-traces/common-utils/dist/types';
+import { TeamQuerySettingsUpdateSchema } from '@couchbase-traces/common-utils/dist/types';
 import express from 'express';
 import request from 'supertest';
 import { processRequest } from 'zod-express-middleware';
@@ -8,7 +8,7 @@ function app() {
   server.use(express.json());
   server.patch(
     '/team/query-settings',
-    processRequest({ body: TeamClickHouseSettingsUpdateSchema }),
+    processRequest({ body: TeamQuerySettingsUpdateSchema }),
     (req, res) => {
       res.json(req.body);
     },

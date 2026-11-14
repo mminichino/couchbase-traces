@@ -16,16 +16,16 @@
  * tools (table / timeseries / search) can't express the TraceId subselect.
  */
 import { getMetadata } from '@couchbase-traces/common-utils/dist/dataLayer';
-import type { ChSql } from '@couchbase-traces/common-utils/dist/query';
+import type { SqlFrag } from '@couchbase-traces/common-utils/dist/query';
 import { SourceKind } from '@couchbase-traces/common-utils/dist/types';
 
 import { getSource } from '@/controllers/sources';
 import { READ_ONLY_TOOL } from '@/mcp/tools/annotations';
 import {
-  clickHouseErrorResult,
   isQueryOutOfTime,
   isServerError,
   parseTimeRange,
+  queryErrorResult,
 } from '@/mcp/tools/query/helpers';
 import {
   TRACE_BREAKDOWN_DESCRIPTION,
@@ -35,7 +35,7 @@ import {
 import {
   durationDivisor,
   inclusiveTimeFilter,
-  requireMcpClickhouseClient,
+  requireMcpDataClient,
 } from '@/mcp/tools/trace/shared';
 import type { ToolRegistrar } from '@/mcp/tools/types';
 import { mcpUserError } from '@/mcp/utils/errors';
@@ -52,7 +52,7 @@ const TIMEOUT_SUFFIX =
   'maxParentTraces.';
 
 const INVALID_FILTER_SUFFIX =
-  "The parentFilter must be valid ClickHouse SQL referencing columns on the trace table (e.g. ServiceName = 'X' AND SpanName = 'Y').";
+  "The parentFilter must be valid legacy SQL referencing columns on the trace table (e.g. ServiceName = 'X' AND SpanName = 'Y').";
 
 export function registerTraceBreakdown({
   context,
@@ -89,12 +89,12 @@ export function registerTraceBreakdown({
         );
       }
 
-      const clickhouseClient = await requireMcpClickhouseClient(
+      const dataClient = await requireMcpDataClient(
         teamId.toString(),
         source.connection.toString(),
       );
-      if ('isError' in clickhouseClient) {
-        return clickhouseClient;
+      if ('isError' in dataClient) {
+        return dataClient;
       }
 
       const timeFilterParams = {
@@ -102,12 +102,12 @@ export function registerTraceBreakdown({
         databaseName: source.from.databaseName,
         tableName: source.from.tableName,
         timestampValueExpression: source.timestampValueExpression,
-        metadata: getMetadata(clickhouseClient),
+        metadata: getMetadata(dataClient),
       };
       const renderTimeFilter = (start: number, end: number) =>
         inclusiveTimeFilter(timeFilterParams, new Date(start), new Date(end));
-      let parentTimeFilter: ChSql;
-      let childTimeFilter: ChSql;
+      let parentTimeFilter: SqlFrag;
+      let childTimeFilter: SqlFrag;
       try {
         [parentTimeFilter, childTimeFilter] = await Promise.all([
           renderTimeFilter(startDate.getTime(), endDate.getTime()),
@@ -122,7 +122,7 @@ export function registerTraceBreakdown({
       } catch (e) {
         // Only the DESCRIBE lookups run here; they don't depend on the window or
         // filters, so neither suffix applies.
-        return clickHouseErrorResult(e, 'Failed to compute breakdown');
+        return queryErrorResult(e, 'Failed to compute breakdown');
       }
 
       // Source-configured SQL expressions. These are trusted (set by the
@@ -196,7 +196,7 @@ LIMIT {topN:UInt32}
 
       let rows: Row[];
       try {
-        const result = await clickhouseClient.query({
+        const result = await dataClient.query({
           query: sql,
           query_params: params,
           format: 'JSON',
@@ -207,7 +207,7 @@ LIMIT {topN:UInt32}
         ).json()) ?? { data: [] };
         rows = json.data ?? [];
       } catch (e) {
-        return clickHouseErrorResult(e, {
+        return queryErrorResult(e, {
           prefix: 'Failed to compute breakdown',
           suffix: isQueryOutOfTime(e)
             ? TIMEOUT_SUFFIX
@@ -217,7 +217,7 @@ LIMIT {topN:UInt32}
         });
       }
 
-      // Normalise numerics — ClickHouse JSON sometimes returns strings for
+      // Normalise numerics — legacy store JSON sometimes returns strings for
       // 64-bit integers. Cast everything to Number and compute share of
       // total time at the same time.
       const operations = rows.map(r => ({

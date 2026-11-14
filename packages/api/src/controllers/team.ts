@@ -1,6 +1,6 @@
 import {
   TagResourceType,
-  TeamClickHouseSettingsUpdate,
+  TeamQuerySettingsUpdate,
 } from '@couchbase-traces/common-utils/dist/types';
 import mongoose from 'mongoose';
 import { v4 as uuidv4 } from 'uuid';
@@ -101,9 +101,9 @@ export function setTeamName(teamId: ObjectId, name: string) {
   return Team.findByIdAndUpdate(teamId, { name }, { new: true });
 }
 
-export function updateTeamClickhouseSettings(
+export function updateTeamQuerySettings(
   teamId: ObjectId,
-  settings: TeamClickHouseSettingsUpdate,
+  settings: TeamQuerySettingsUpdate,
 ) {
   const $set: Record<string, any> = {};
   const $unset: Record<string, any> = {};

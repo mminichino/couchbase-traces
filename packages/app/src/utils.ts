@@ -992,7 +992,7 @@ export const formatNumber = (
     return 'N/A';
   }
 
-  // Guard against NaN only - ClickHouse can return numbers as strings, which
+  // Guard against NaN only - legacy store can return numbers as strings, which
   // we should still format. Only truly non-numeric values (NaN) get passed through.
   if (typeof value !== 'number') {
     if (isNaN(Number(value))) {
@@ -1162,7 +1162,7 @@ export const formatUptime = (seconds: number) => {
 //
 // Without the Map-column branch, a Map(String, String) like `LogAttributes`
 // with a numeric-looking key (`"1"`) collapses into the array branch and
-// ClickHouse rejects the resulting `LogAttributes[2]` with
+// legacy store rejects the resulting `LogAttributes[2]` with
 // `Illegal types of arguments: Map(String, String), UInt8 for function
 // arrayElement`. HDX-4369.
 // Escape backslash and single-quote inside a key before interpolating it
@@ -1192,7 +1192,7 @@ export const mergePath = (
       .join('.')}`;
   }
   if (mapColumns.includes(key)) {
-    // Map columns always take string-key subscripts; ClickHouse's Map index
+    // Map columns always take string-key subscripts; legacy store's Map index
     // operator is keyed by the Map's key type, not by integer position. A
     // numeric-looking sub-key like `"1"` on a Map(String, ...) must still
     // render as `Map['1']`.
@@ -1202,7 +1202,7 @@ export const mergePath = (
     .map(v => {
       const asNumber = Number(v);
       const isArrayIndex = Number.isInteger(asNumber) && asNumber >= 0;
-      // ClickHouse arrays are 1-based, but flattened data uses 0-based indices
+      // legacy store arrays are 1-based, but flattened data uses 0-based indices
       return isArrayIndex
         ? `[${asNumber + 1}]`
         : `['${escapeSqlSingleQuoted(v)}']`;
@@ -1268,7 +1268,7 @@ export const withMapKeyAlias = (
     /["\\]/.test(key) ||
     // Table columns not loaded yet, so a clash with one cannot be ruled out
     tableColumns.size === 0 ||
-    // ClickHouse resolves an alias before a column of the same name
+    // legacy store resolves an alias before a column of the same name
     tableColumns.has(key) ||
     // Two selected columns cannot share a name
     selectedNames.includes(key)

@@ -1,1 +1,1 @@
-export * from '@/clickhouse/schema';
+export * from '@/store/schema';

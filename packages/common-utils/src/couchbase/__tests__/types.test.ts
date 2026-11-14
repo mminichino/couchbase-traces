@@ -5,7 +5,7 @@ import {
   CouchbaseConnectionSchema,
   isCouchbaseConnection,
   LogSourceSchema,
-  UnsupportedClickHouseConnectionSchema,
+  UnsupportedLegacyConnectionSchema,
 } from '@/types';
 
 describe('ConnectionSchema', () => {
@@ -48,9 +48,9 @@ describe('ConnectionResponseSchema', () => {
       kind: 'clickhouse',
       unsupported: true,
     });
-    expect(
-      UnsupportedClickHouseConnectionSchema.parse(parsed).unsupported,
-    ).toBe(true);
+    expect(UnsupportedLegacyConnectionSchema.parse(parsed).unsupported).toBe(
+      true,
+    );
   });
 
   it('an external schema omits secrets from Couchbase connections', () => {

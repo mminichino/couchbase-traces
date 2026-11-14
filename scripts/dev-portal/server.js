@@ -81,7 +81,7 @@ function parseContainerLabels(container) {
   // Docker --format "{{json .}}" gives us Labels as a comma-separated string
   const labels = {};
   const labelsStr = container.Labels || '';
-  // Labels look like: "hdx.dev.slot=89,hdx.dev.service=clickhouse,com.docker.compose.service=ch-server,..."
+  // Labels look like: "hdx.dev.slot=89,hdx.dev.service=evalstore,com.docker.compose.service=ch-server,..."
   labelsStr.split(',').forEach(pair => {
     const eqIdx = pair.indexOf('=');
     if (eqIdx > 0) {
@@ -516,7 +516,7 @@ const ENV_LOG_DIRS = {
 
 // Map canonical service names to Docker Compose service names
 const DOCKER_SERVICE_NAMES = {
-  clickhouse: 'ch-server',
+  store: 'ch-server',
   mongodb: 'db',
   'otel-collector': 'otel-collector',
   'otel-collector-json': 'otel-collector-json',

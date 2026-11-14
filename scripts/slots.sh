@@ -55,7 +55,7 @@ hdx_dev_ports() {
   CBT_APP_PORT=$((30200 + CBT_DEV_SLOT))
   CBT_OPAMP_PORT=$((30300 + CBT_DEV_SLOT))
   CBT_DEV_MONGO_PORT=$((30400 + CBT_DEV_SLOT))
-  # Kept for ClickHouse CI/parity tools until Phase 10.
+  # Kept for legacy store CI/parity tools until Phase 10.
   CBT_DEV_CH_HTTP_PORT=$((30500 + CBT_DEV_SLOT))
   CBT_DEV_CH_NATIVE_PORT=$((30600 + CBT_DEV_SLOT))
   CBT_DEV_OTEL_HEALTH_PORT=$((30700 + CBT_DEV_SLOT))
@@ -84,7 +84,7 @@ hdx_dev_ports() {
     CBT_DEV_PROJECT
 }
 
-# Integration tests (make dev-int): ClickHouse 18123+, MongoDB 39999+,
+# Integration tests (make dev-int): legacy store 18123+, MongoDB 39999+,
 # API 19000+, OpAMP 14320+.
 hdx_ci_ports() {
   CBT_CI_SLOT="${CBT_CI_SLOT:-$(_hdx_default_slot "$1")}"

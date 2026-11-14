@@ -83,7 +83,7 @@ describe('DBTableChart', () => {
           { name: 'column1', type: 'String' },
           { name: 'column2', type: 'String' },
         ],
-        chSql: { sql: '', params: {} },
+        sqlExpr: { sql: '', params: {} },
         window: {
           startTime: new Date(),
           endTime: new Date(),
@@ -225,7 +225,7 @@ describe('DBTableChart', () => {
             },
           ],
           meta: [],
-          chSql: { sql: '', params: {} },
+          sqlExpr: { sql: '', params: {} },
           window: {
             startTime: new Date(),
             endTime: new Date(),
@@ -298,7 +298,7 @@ describe('DBTableChart', () => {
             },
           ],
           meta: [],
-          chSql: { sql: '', params: {} },
+          sqlExpr: { sql: '', params: {} },
           window: {
             startTime: new Date(),
             endTime: new Date(),
@@ -359,7 +359,7 @@ describe('DBTableChart', () => {
             },
           ],
           meta: [],
-          chSql: { sql: '', params: {} },
+          sqlExpr: { sql: '', params: {} },
           window: {
             startTime: new Date(),
             endTime: new Date(),

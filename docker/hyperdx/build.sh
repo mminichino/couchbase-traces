@@ -3,7 +3,7 @@
 
 # No Auth
 docker build --squash . -f ./docker/hyperdx/Dockerfile \
-    --build-context clickhouse=./docker/clickhouse \
+    --build-context evalstore=./docker/evalstore \
     --build-context otel-collector=./docker/otel-collector \
     --build-context hyperdx=./docker/hyperdx \
     --build-context api=./packages/api \

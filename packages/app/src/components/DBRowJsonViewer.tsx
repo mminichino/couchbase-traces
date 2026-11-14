@@ -63,7 +63,7 @@ export function buildJSONExtractQuery(
   }
 
   // `parsedJsonRootPath[0]` is the column the parsed-JSON view is anchored on.
-  // It can be a JSON column (auto-detected by ClickHouse JSON type) OR a Map
+  // It can be a JSON column (auto-detected by legacy store JSON type) OR a Map
   // column whose sub-value is a JSON-parseable string (HyperJson promotes those
   // to `isInParsedJson=true`, see HyperJson.tsx:227). Thread `mapColumns` so a
   // numeric-looking Map sub-key renders as `Map['1']` instead of the array

@@ -15,7 +15,7 @@ import {
 const DEFAULT_SCOPE = 'default';
 
 type CouchTableCtx = {
-  clickhouseClient: DataClient;
+  dataClient: DataClient;
   connectionId: string;
   signal: AbortSignal;
 };
@@ -38,7 +38,7 @@ async function listKeyspaces(
   afterName: string | undefined,
   limit: number,
 ): Promise<Array<{ scope: string; collection: string }>> {
-  const response = await ctx.clickhouseClient.query({
+  const response = await ctx.dataClient.query({
     query:
       "SELECT RAW [k.`bucket`, k.`scope`, k.`name`] FROM system:all_keyspaces AS k WHERE k.`namespace` = 'default' AND k.`scope` IS VALUED AND k.`scope` != '_system'",
     format: 'JSON',
@@ -109,7 +109,7 @@ export async function describeCouchbaseTable(
   input: DescribeTableInput & { table: string; teamId: string },
 ): Promise<ToolResult> {
   const { scope, collection } = parseCouchTable(input.table);
-  const metadata = getMetadata(ctx.clickhouseClient);
+  const metadata = getMetadata(ctx.dataClient);
   const columns = await metadata.getColumns({
     databaseName: input.database,
     scopeName: scope,
@@ -125,7 +125,7 @@ export async function describeCouchbaseTable(
   const qualified = ks(input.database, scope, collection);
   let sampleRows: Record<string, unknown>[] | undefined;
   if (input.sampleRows > 0) {
-    const sample = await ctx.clickhouseClient.query({
+    const sample = await ctx.dataClient.query({
       query: `SELECT META().id AS __cbt_id, d.* FROM ${qualified} AS d LIMIT ${input.sampleRows}`,
       format: 'JSON',
       connectionId: ctx.connectionId,

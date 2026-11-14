@@ -1,7 +1,7 @@
 import type { Metadata } from '@couchbase-traces/common-utils/dist/core/metadata';
 import { getMetadata as _getMetadata } from '@couchbase-traces/common-utils/dist/dataLayer';
 
-import { getClickhouseClient } from '@/query';
+import { getDataClient } from '@/query';
 
 import { DEFAULT_QUERY_TIMEOUT } from './defaults';
 
@@ -12,7 +12,7 @@ import { DEFAULT_QUERY_TIMEOUT } from './defaults';
 // a user's chart queries, and there are a lot of them.
 export const getMetadata = (): Metadata =>
   _getMetadata(
-    getClickhouseClient({
+    getDataClient({
       requestTimeout: DEFAULT_QUERY_TIMEOUT,
       attribution: { surface: 'metadata' },
     }),

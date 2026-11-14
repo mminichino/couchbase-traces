@@ -136,7 +136,7 @@ export default function DBTableChart({
     }
 
     // If the config.select is a string, we can't infer this.
-    // One day, we could potentially run this through chSqlToAliasMap but AST parsing
+    // One day, we could potentially run this through sqlExprToAliasMap but AST parsing
     //  doesn't work for most DBTableChart queries.
     if (typeof config.select === 'string') {
       return [];

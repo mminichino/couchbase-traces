@@ -10,7 +10,7 @@ export interface SessionConfig {
   cookies: string[];
   /**
    * Active team ID for multi-team users. When set, the CLI sends an
-   * `x-hdx-team` header on every API/ClickHouse-proxy request so the
+   * `x-hdx-team` header on every API/legacy store-proxy request so the
    * server scopes data to that team. Persisted across CLI invocations
    * so the user doesn't have to re-pick on every command.
    *

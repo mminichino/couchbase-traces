@@ -150,7 +150,7 @@ export function inferMeta(
   }));
 }
 
-/** Applies ClickHouse JSON output conventions to one value. */
+/** Applies legacy store JSON output conventions to one value. */
 export function encodeValue(type: string, v: unknown): unknown {
   if (v === null || v === undefined) return null;
   const { inner } = unwrapNullable(type);

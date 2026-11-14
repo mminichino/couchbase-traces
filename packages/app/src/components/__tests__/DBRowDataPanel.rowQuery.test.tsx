@@ -11,7 +11,7 @@ import { RowDataPanel, useRowData } from '@/components/DBRowDataPanel';
 
 const mockQueryChartConfig = jest.fn();
 jest.mock('@/query', () => ({
-  useClickhouseClient: () => ({ queryChartConfig: mockQueryChartConfig }),
+  useDataClient: () => ({ queryChartConfig: mockQueryChartConfig }),
 }));
 jest.mock('@/hooks/useMetadata', () => ({
   useColumns: () => ({ data: undefined, isLoading: false }),

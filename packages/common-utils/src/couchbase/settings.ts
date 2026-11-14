@@ -1,5 +1,5 @@
 import type { QueryAttribution } from '@/query/attribution';
-import type { TeamClickHouseSettings } from '@/types';
+import type { TeamQuerySettings } from '@/types';
 
 import { CouchbaseQueryError } from './errors';
 import { quoteIdent } from './sqlpp';
@@ -100,7 +100,7 @@ const loggedIgnoredSettings = new Set<string>();
 
 export function resolveQueryOptions(args: {
   inputs: CouchbaseQueryInputs<any>;
-  team: TeamClickHouseSettings | null;
+  team: TeamQuerySettings | null;
   config: { defaultTimeoutMs: number; maxTimeoutMs: number };
   logger?: CouchbaseLogger;
 }): ResolvedQueryOptions {
@@ -112,13 +112,13 @@ export function resolveQueryOptions(args: {
     throw new CouchbaseQueryError('PARSING_FAILED', invalid, inputs.query);
   }
 
-  const chSettings = inputs.clickhouse_settings ?? {};
+  const chSettings = inputs.query_settings ?? {};
   for (const key of Object.keys(chSettings)) {
     if (key !== 'max_execution_time' && !loggedIgnoredSettings.has(key)) {
       loggedIgnoredSettings.add(key);
       logger?.debug(
         { setting: key },
-        'Ignoring ClickHouse setting on a Couchbase query',
+        'Ignoring legacy store setting on a Couchbase query',
       );
     }
   }

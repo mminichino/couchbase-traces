@@ -3,14 +3,14 @@
 # - API (Node)
 # - App (Frontend)
 # For all-in-one build:
-# - Clickhouse
+# - Couchbase (external)
 # - Mongo
 # - Otel Collector (otelcol)
 
 ARG NODE_VERSION=22.23.4
 ARG COUCHBASE_IMAGE=couchbase/server:enterprise-8.0.3
 ARG MONGODB_VERSION=5.0.32
-ARG CLICKHOUSE_VERSION=26.8.36.3
+ARG EVAL_STORE_VERSION=26.8.36.3
 ARG OTEL_COLLECTOR_VERSION=0.155.0
 ARG OTEL_COLLECTOR_CORE_VERSION=1.61.0
 
@@ -36,7 +36,7 @@ RUN --mount=type=cache,target=/go/pkg/mod,id=ocb-gomod \
     sed -i "s/__OTEL_COLLECTOR_VERSION__/${OTEL_COLLECTOR_VERSION}/g; s/__OTEL_COLLECTOR_CORE_VERSION__/${OTEL_COLLECTOR_CORE_VERSION}/g" builder-config.yaml && \
     CGO_ENABLED=0 ocb --config=builder-config.yaml
 
-# Build the Go migration tool with full TLS support for ClickHouse
+# Build the Go migration tool with full TLS support for legacy store
 FROM golang:1.26-alpine AS migrate-builder
 WORKDIR /build
 COPY packages/otel-collector/go.mod packages/otel-collector/go.sum ./

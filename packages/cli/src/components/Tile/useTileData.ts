@@ -14,7 +14,7 @@ import type { CliDataClient, SourceResponse } from '@/api/client';
 import { fetchTileData, type TileQueryResult } from '@/shared/tileQuery';
 
 export interface UseTileDataParams {
-  clickhouseClient: CliDataClient;
+  dataClient: CliDataClient;
   metadata: Metadata;
   config: SavedChartConfig;
   source: SourceResponse | undefined;
@@ -34,7 +34,7 @@ export interface UseTileDataReturn {
 }
 
 export function useTileData({
-  clickhouseClient,
+  dataClient,
   metadata,
   config,
   source,
@@ -66,7 +66,7 @@ export function useTileData({
       setError(null);
       try {
         const res = await fetchTileData({
-          clickhouseClient,
+          dataClient,
           metadata,
           config: configRef.current,
           source: sourceRef.current,
@@ -97,7 +97,7 @@ export function useTileData({
       controller.abort();
     };
   }, [
-    clickhouseClient,
+    dataClient,
     metadata,
     dateRangeKey,
     granularity,

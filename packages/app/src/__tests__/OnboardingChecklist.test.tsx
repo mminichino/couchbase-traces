@@ -129,8 +129,8 @@ describe('OnboardingChecklist', () => {
 
     renderChecklist();
 
-    expect(screen.getByText('Set up ClickHouse')).toBeInTheDocument();
-    expect(screen.getByText('Connect to ClickHouse')).toBeInTheDocument();
+    expect(screen.getByText('Set up Couchbase')).toBeInTheDocument();
+    expect(screen.getByText('Connect to Couchbase')).toBeInTheDocument();
     // Product-phase tasks are not shown yet.
     expect(screen.queryByText('Build a dashboard')).not.toBeInTheDocument();
   });
@@ -174,7 +174,7 @@ describe('OnboardingChecklist', () => {
     expect(
       screen.queryByText('Get started with Couchbase Traces'),
     ).not.toBeInTheDocument();
-    expect(screen.queryByText('Set up ClickHouse')).not.toBeInTheDocument();
+    expect(screen.queryByText('Set up Couchbase')).not.toBeInTheDocument();
   });
 
   it('is hidden in the all-in-one-noauth image (synthetic user id)', () => {
@@ -188,7 +188,7 @@ describe('OnboardingChecklist', () => {
     expect(
       screen.queryByText('Get started with Couchbase Traces'),
     ).not.toBeInTheDocument();
-    expect(screen.queryByText('Set up ClickHouse')).not.toBeInTheDocument();
+    expect(screen.queryByText('Set up Couchbase')).not.toBeInTheDocument();
   });
 
   it('hides immediately (no celebration) when already complete on load', () => {
@@ -336,7 +336,7 @@ describe('OnboardingChecklist', () => {
 
     renderChecklist();
 
-    expect(screen.queryByText('Set up ClickHouse')).not.toBeInTheDocument();
+    expect(screen.queryByText('Set up Couchbase')).not.toBeInTheDocument();
   });
 
   it('still shows the product phase for a set-up team within the product window (3-7 days)', () => {

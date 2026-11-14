@@ -10,6 +10,6 @@
 | Shared logic | `packages/common-utils` (SQL++, chart rendering, Lucene) |
 | Tests | Jest (unit/int), Playwright (E2E) |
 
-Self-instrumentation uses ClickStack SDKs (`@clickhouse/clickstack-node` /
+Self-instrumentation uses telemetry SDKs (`@clickhouse/clickstack-node` /
 `@clickhouse/clickstack-browser`) and `@clickhouse/click-ui` for theming — not
 part of the telemetry data path.

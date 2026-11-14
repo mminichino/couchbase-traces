@@ -18,8 +18,6 @@
         "dev-task",
         "dev:int",
         "dev:mcp",
-        "dev:migrate-ch",
-        "dev:migrate-ch-create",
         "dev:migrate-db",
         "dev:migrate-db-create",
         "dev:unit",
@@ -44,7 +42,6 @@
         "@ai-sdk/otel",
         "@braintree/sanitize-url",
         "@clickhouse/clickstack-node",
-        "@clickhouse/client-common",
         "@esm2cjs/p-queue",
         "@hyperdx/passport-local-mongoose",
         "@modelcontextprotocol/sdk",
@@ -121,8 +118,8 @@
         "zod",
         "zod-express-middleware"
       ],
-      "sourceFiles": 238,
-      "testFiles": 154,
+      "sourceFiles": 233,
+      "testFiles": 141,
       "hasTsconfig": true,
       "role": "API server and tasks"
     },
@@ -136,7 +133,6 @@
       ],
       "scripts": [
         "build",
-        "build:clickhouse",
         "ci:lint",
         "ci:unit",
         "dev",
@@ -145,7 +141,6 @@
         "lint",
         "lint:fix",
         "lint:styles",
-        "run:clickhouse",
         "start",
         "storybook",
         "storybook:build",
@@ -188,7 +183,6 @@
         "@opentelemetry/api",
         "@opentelemetry/browser-sdk",
         "@playwright/test",
-        "@prometheus-io/codemirror-promql",
         "@rrweb/replay",
         "@storybook/addon-docs",
         "@storybook/addon-links",
@@ -274,7 +268,6 @@
         "serve",
         "sql-formatter",
         "sqlstring",
-        "store2",
         "storybook",
         "strip-ansi",
         "stylelint",
@@ -287,8 +280,8 @@
         "uplot-react",
         "zod"
       ],
-      "sourceFiles": 694,
-      "testFiles": 520,
+      "sourceFiles": 673,
+      "testFiles": 492,
       "hasTsconfig": true,
       "role": "web UI"
     },
@@ -323,7 +316,6 @@
         "@couchbase-traces/common-utils"
       ],
       "externalDeps": [
-        "@clickhouse/client",
         "@jest/globals",
         "@types/crypto-js",
         "@types/jest",
@@ -347,7 +339,7 @@
         "typescript"
       ],
       "sourceFiles": 61,
-      "testFiles": 11,
+      "testFiles": 5,
       "hasTsconfig": true,
       "role": "command-line client"
     },
@@ -382,13 +374,7 @@
       ],
       "workspaceDeps": [],
       "externalDeps": [
-        "@clickhouse/client",
-        "@clickhouse/client-common",
-        "@clickhouse/client-web",
         "@hyperdx/lucene",
-        "@lezer/highlight",
-        "@lezer/lr",
-        "@prometheus-io/lezer-promql",
         "@stryker-mutator/core",
         "@stryker-mutator/jest-runner",
         "@stryker-mutator/typescript-checker",
@@ -415,8 +401,8 @@
         "typescript",
         "zod"
       ],
-      "sourceFiles": 119,
-      "testFiles": 76,
+      "sourceFiles": 116,
+      "testFiles": 50,
       "hasTsconfig": true,
       "role": "shared query and data layer"
     },
@@ -442,11 +428,12 @@
         "ci:lint",
         "ci:unit"
       ],
-      "workspaceDeps": [],
+      "workspaceDeps": [
+        "@couchbase-traces/common-utils"
+      ],
       "externalDeps": [
         "@ai-sdk/anthropic",
         "@ai-sdk/openai",
-        "@clickhouse/client",
         "@dotenvx/dotenvx",
         "@types/jest",
         "@types/ms",
@@ -462,7 +449,7 @@
         "typescript",
         "zod"
       ],
-      "sourceFiles": 53,
+      "sourceFiles": 56,
       "testFiles": 31,
       "hasTsconfig": true,
       "role": "evaluation harness"
@@ -506,8 +493,8 @@
         "typescript",
         "typescript-eslint"
       ],
-      "sourceFiles": 28,
-      "testFiles": 6,
+      "sourceFiles": 37,
+      "testFiles": 8,
       "hasTsconfig": true,
       "role": "ingestion service"
     },
@@ -515,9 +502,7 @@
       "name": "@couchbase-traces/otel-collector",
       "dir": "packages/otel-collector",
       "private": true,
-      "languages": [
-        "go"
-      ],
+      "languages": [],
       "scripts": [],
       "ciTargets": [],
       "workspaceDeps": [],

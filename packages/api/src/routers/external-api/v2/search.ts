@@ -22,13 +22,14 @@ import { externalDashboardSearchRequestSchema } from '@/utils/zod';
 import { runSearchConfig, type SearchErrorCode } from './utils/search';
 
 const searchQueryDuration = getHistogram('cbt.search.query.duration_ms', {
-  description: 'Duration of external API v2 search queries against ClickHouse.',
+  description:
+    'Duration of external API v2 search queries against legacy store.',
   unit: 'ms',
 });
 const searchQueryErrors = getCounter('cbt.search.query_errors', {
   description:
     'Count of external API v2 search query failures, labeled by error type ' +
-    '(semantic error codes like SOURCE_NOT_FOUND, or ClickHouse error types).',
+    '(semantic error codes like SOURCE_NOT_FOUND, or query error types).',
 });
 
 // CH error types caused by user-supplied query content — map to 400.
@@ -59,7 +60,7 @@ const CH_USER_INPUT_ERRORS = new Set([
  *           type: string
  *           description: |
  *             Source ID to query. Call GET /api/v2/sources to list available sources.
- *             The source determines the underlying ClickHouse table (e.g. otel.otel_logs,
+ *             The source determines the underlying source table (e.g. otel.otel_logs,
  *             otel.otel_traces) and its column schema.
  *           example: "69b46cb0d964ce2d0b9506a8"
  *         startTime:
@@ -86,7 +87,7 @@ const CH_USER_INPUT_ERRORS = new Set([
  *               pipedream.pipeline_name:my-pipeline AND SeverityText:ERROR
  *               Body:timeout
  *
- *             SQL examples (whereLanguage: "sql", ClickHouse SQL for ClickHouse
+ *             SQL examples (whereLanguage: "sql", legacy SQL for legacy store
  *             sources; for Couchbase sources, write SQL++):
  *               SeverityText = 'ERROR'
  *               `pipedream.pipeline_name` = 'my-pipeline'
@@ -102,12 +103,12 @@ const CH_USER_INPUT_ERRORS = new Set([
  *           maxLength: 4096
  *           default: ""
  *           description: |
- *             Comma-separated list of ClickHouse column expressions to include in
+ *             Comma-separated list of legacy store column expressions to include in
  *             each result row. When omitted the source's default select expression
  *             is used.
  *
  *             Each entry is a SQL expression executed under the team's database
- *             user (ClickHouse SQL for ClickHouse sources; for Couchbase sources,
+ *             user (legacy SQL for legacy store sources; for Couchbase sources,
  *             write SQL++). Semicolons and subqueries (SELECT keyword) are
  *             rejected; use column references, map lookups, or function calls only.
  *
@@ -118,7 +119,7 @@ const CH_USER_INPUT_ERRORS = new Set([
  *           type: string
  *           maxLength: 1024
  *           description: |
- *             ClickHouse ORDER BY expression. When omitted the source's default
+ *             legacy store ORDER BY expression. When omitted the source's default
  *             ordering (typically timestamp DESC) is used.
  *           example: "Timestamp DESC"
  *         maxResults:
@@ -144,7 +145,7 @@ const CH_USER_INPUT_ERRORS = new Set([
  *       description: >
  *         A single result row. Keys correspond to the requested columns (or the
  *         source default columns when columns was omitted). Values are strings
- *         or numbers as returned by ClickHouse.
+ *         or numbers as returned by legacy store.
  *       additionalProperties: true
  *
  *     SearchResponse:
@@ -440,7 +441,7 @@ router.post(
         const safeMsg =
           (err.message.split('\n')[0] ?? '').slice(0, 300) || 'Query error';
         searchQueryErrors.add(1, { error_type: chType });
-        logger.error({ chType, safeMsg }, '[search] ClickHouse query error');
+        logger.error({ chType, safeMsg }, '[search] SQL query error');
 
         if (CH_USER_INPUT_ERRORS.has(chType)) {
           return res.status(400).json({ message: `${chType}: ${safeMsg}` });

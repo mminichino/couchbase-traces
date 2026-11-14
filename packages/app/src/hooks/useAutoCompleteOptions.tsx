@@ -36,7 +36,7 @@ function chartConfigFromTableConnection(
 }
 
 // Derive top-level Map column names from a fields list. Matches on the
-// canonical `JSDataType.Map` rather than the raw ClickHouse type string so
+// canonical `JSDataType.Map` rather than the raw legacy store type string so
 // wrapped Map types (e.g. `LowCardinality(Map(...))`, `Nullable(Map(...))`)
 // are detected too: `columnTypeToJSType` unwraps those wrappers before
 // classifying. Top-level only (path.length === 1) since nested Map sub-keys

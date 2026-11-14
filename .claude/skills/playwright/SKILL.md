@@ -87,6 +87,6 @@ Always import from the base test, not directly from `@playwright/test`:
 import { expect, test } from '../utils/base-test';
 ```
 
-### Mock ClickHouse Data
-- E2E tests run against a local Docker environment with seeded ClickHouse data
+### Mock legacy store Data
+- E2E tests run against a local Docker environment with seeded legacy store data
 - Update `packages/app/tests/e2e/seed-data.ts` and `seed-couchbase.ts` only if the scenario requires specific data not already seeded

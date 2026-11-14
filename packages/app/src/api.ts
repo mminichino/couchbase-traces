@@ -2,11 +2,6 @@ import { useCallback } from 'react';
 import Router from 'next/router';
 import type { HTTPError, Options, ResponsePromise } from 'ky';
 import ky from 'ky-universal';
-import {
-  buildLogComment,
-  QUERY_ATTRIBUTION_HEADER,
-  type QueryAttribution,
-} from '@couchbase-traces/common-utils/dist/query';
 import type {
   Alert,
   AlertApiResponse,
@@ -23,17 +18,15 @@ import type {
   OrgApiKeysApiResponse,
   PresetDashboard,
   PresetDashboardFilter,
-  PrometheusMatrixResult,
-  PrometheusVectorResult,
   RotateAccessKeyApiResponse,
   RotateApiKeyApiResponse,
   TagResourceType,
   TeamApiResponse,
-  TeamClickHouseSettingsUpdate,
   TeamInvitationsApiResponse,
   TeamMembersApiResponse,
+  TeamQuerySettingsUpdate,
   TeamTagsApiResponse,
-  UpdateClickHouseSettingsApiResponse,
+  UpdateQuerySettingsApiResponse,
   WebhookCreateApiResponse,
   WebhooksApiResponse,
   WebhookTestApiResponse,
@@ -144,7 +137,7 @@ export function useCompleteOnboardingTask() {
 
 // Patches the `me` cache in place (no request, no invalidation) after the
 // backend has already recorded a task server-side. Invalidating `['me']` would
-// refetch for every useMe consumer (metadata, clickhouse settings, AppNav) for
+// refetch for every useMe consumer (metadata, evalstore settings, AppNav) for
 // a change only the sidebar cares about.
 export function useMarkOnboardingTaskComplete() {
   const queryClient = useQueryClient();
@@ -617,15 +610,15 @@ const api = {
   },
   useUpdateClickhouseSettings() {
     return useMutation<
-      UpdateClickHouseSettingsApiResponse,
+      UpdateQuerySettingsApiResponse,
       HTTPError,
-      TeamClickHouseSettingsUpdate
+      TeamQuerySettingsUpdate
     >({
       mutationFn: async settings =>
         hdxServer(`team/query-settings`, {
           method: 'PATCH',
           json: settings,
-        }).json<UpdateClickHouseSettingsApiResponse>(),
+        }).json<UpdateQuerySettingsApiResponse>(),
     });
   },
   getTagsQueryKey: (resourceType?: TagResourceType) =>
@@ -816,7 +809,7 @@ const api = {
       { host: string; username: string; password: string }
     >({
       mutationFn: async ({ host, username, password }) =>
-        hdxServer(`clickhouse-proxy/test`, {
+        hdxServer(`evalstore-proxy/test`, {
           method: 'POST',
           json: {
             host,
@@ -828,183 +821,3 @@ const api = {
   },
 };
 export default api;
-
-// --------------------------
-// Prometheus API
-// --------------------------
-export type PrometheusQueryRangeResponse = {
-  status: 'success' | 'error';
-  data?: {
-    resultType: 'matrix';
-    result: PrometheusMatrixResult[];
-  };
-  error?: string;
-};
-/**
- * An instant query's result. `vector` carries one sample per series; `scalar`
- * is a bare sample with no labels at all, which `scalar(...)`, `1 + 1` and
- * `time()` all return.
- *
- * `matrix` is reachable here too -- a range-vector selector (`up[5m]`) or a
- * subquery evaluates to one even on this endpoint -- and carries a series of
- * samples rather than a single value. `string` carries nothing numeric.
- */
-export type PrometheusInstantQueryResponse = {
-  status: 'success' | 'error';
-  data?:
-    | { resultType: 'vector'; result: PrometheusVectorResult[] }
-    | { resultType: 'scalar'; result: [number, string] }
-    | { resultType: 'matrix'; result: PrometheusMatrixResult[] }
-    | { resultType: 'string'; result: unknown };
-  error?: string;
-};
-type PrometheusLabelsResponse = {
-  status: 'success' | 'error';
-  data?: string[];
-  error?: string;
-};
-
-/** Reports the reason a Prometheus-shaped error body carries, not ky's. */
-async function withPrometheusError<T>(request: () => Promise<T>): Promise<T> {
-  try {
-    return await request();
-  } catch (e: any) {
-    // ky throws HTTPError on non-2xx — read the response body for the real error
-    if (e?.response) {
-      try {
-        const body = await e.response.json();
-        if (body?.error) {
-          throw new Error(body.error);
-        }
-      } catch (parseErr) {
-        if (parseErr instanceof Error && parseErr.message !== e.message) {
-          throw parseErr;
-        }
-      }
-    }
-    throw e;
-  }
-}
-
-/**
- * Some Prometheus backends return the same label name or value more than once,
- * de-dupe to prevent any duplicate option errors downstream.
- */
-const uniqueLabels = (
-  resp: PrometheusLabelsResponse,
-): PrometheusLabelsResponse =>
-  resp.data ? { ...resp, data: [...new Set(resp.data)] } : resp;
-
-const attributionHeaders = (
-  attribution: QueryAttribution | undefined,
-): Record<string, string> | undefined => {
-  const logComment = buildLogComment(attribution);
-  return logComment ? { [QUERY_ATTRIBUTION_HEADER]: logComment } : undefined;
-};
-
-const prometheusFetch = <T>(
-  path: string,
-  searchParams: Record<string, string>,
-  signal?: AbortSignal,
-  attribution?: QueryAttribution,
-): Promise<T> =>
-  withPrometheusError(() =>
-    server
-      .post(path, {
-        searchParams,
-        signal,
-        headers: attributionHeaders(attribution),
-      })
-      .json<T>(),
-  );
-
-export const prometheusApi = {
-  queryRange: (params: {
-    query: string;
-    start: number;
-    end: number;
-    step: string;
-    sourceId: string;
-    signal?: AbortSignal;
-    attribution?: QueryAttribution;
-  }): Promise<PrometheusQueryRangeResponse> =>
-    prometheusFetch(
-      'v1/prometheus/query_range',
-      {
-        query: params.query,
-        start: String(params.start),
-        end: String(params.end),
-        step: params.step,
-        sourceId: params.sourceId,
-      },
-      params.signal,
-      params.attribution,
-    ),
-
-  query: (params: {
-    query: string;
-    time: number;
-    sourceId: string;
-    /** Maximum number of series to return. */
-    limit?: number;
-    signal?: AbortSignal;
-    attribution?: QueryAttribution;
-  }): Promise<PrometheusInstantQueryResponse> =>
-    prometheusFetch(
-      'v1/prometheus/query',
-      {
-        query: params.query,
-        time: String(params.time),
-        sourceId: params.sourceId,
-        ...(params.limit ? { limit: String(params.limit) } : {}),
-      },
-      params.signal,
-      params.attribution,
-    ),
-
-  labels: (params: {
-    sourceId: string;
-    start?: number;
-    end?: number;
-    attribution?: QueryAttribution;
-  }): Promise<PrometheusLabelsResponse> =>
-    server
-      .get('v1/prometheus/labels', {
-        searchParams: labelLookupSearchParams(params),
-        headers: attributionHeaders(params.attribution),
-      })
-      .json<PrometheusLabelsResponse>()
-      .then(uniqueLabels),
-
-  labelValues: (params: {
-    label: string;
-    sourceId: string;
-    start?: number;
-    end?: number;
-    match?: string;
-    attribution?: QueryAttribution;
-  }): Promise<PrometheusLabelsResponse> =>
-    withPrometheusError(() =>
-      server
-        .get(`v1/prometheus/label/${params.label}/values`, {
-          searchParams: labelLookupSearchParams(params),
-          headers: attributionHeaders(params.attribution),
-        })
-        .json<PrometheusLabelsResponse>()
-        .then(uniqueLabels),
-    ),
-};
-
-function labelLookupSearchParams(params: {
-  sourceId: string;
-  start?: number;
-  end?: number;
-  match?: string;
-}): Record<string, string> {
-  return {
-    sourceId: params.sourceId,
-    ...(params.start != null ? { start: String(params.start) } : {}),
-    ...(params.end != null ? { end: String(params.end) } : {}),
-    ...(params.match ? { 'match[]': params.match } : {}),
-  };
-}

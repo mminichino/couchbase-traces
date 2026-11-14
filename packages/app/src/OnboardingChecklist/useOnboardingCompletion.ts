@@ -92,7 +92,7 @@ export function useOnboardingCompletion(
     teamAgeDays != null &&
     teamAgeDays < PRODUCT_MAX_TEAM_AGE_DAYS &&
     !onboardingData?.isDismissed;
-  // Empty `connection` fails clickhouse-proxy Zod validation; an empty filters
+  // Empty `connection` fails evalstore-proxy Zod validation; an empty filters
   // list (no enabled sources) would scan all of system.tables and wrongly count
   // unrelated tables as data.
   const isSourceRowsQueryEnabled =
@@ -113,7 +113,7 @@ export function useOnboardingCompletion(
     () => [
       {
         id: 'connection',
-        title: 'Connect to ClickHouse',
+        title: 'Connect to Couchbase',
         description: 'Set up your database connection',
         isComplete: hasConnections,
         isLoading: isConnectionsLoading,
@@ -170,7 +170,7 @@ export function useOnboardingCompletion(
   const steps = isSetupComplete ? productSteps : setupSteps;
   const phaseLabel = isSetupComplete
     ? `Get started with ${brandName}`
-    : 'Set up ClickHouse';
+    : 'Set up Couchbase';
   const completedCount = steps.filter(step => step.isComplete).length;
   const isPhaseComplete = completedCount === steps.length;
   // First incomplete step; rendered as the active call-to-action.

@@ -944,7 +944,7 @@ Alternative to Lucene. Set whereLanguage: "sql" when using SQL syntax.
 
 == RAW SQL TEMPLATES ==
 
-For configType: "sql" tiles, write ClickHouse SQL with template macros:
+For configType: "sql" tiles, write legacy SQL with template macros:
 
   MACROS (expanded before execution):
     $__timeFilter(col)         col >= <start> AND col <= <end>
@@ -971,7 +971,7 @@ For configType: "sql" tiles, write ClickHouse SQL with template macros:
                                        operators IN cannot express, such as NOT IN or LIKE.
     The variable argument carries the leading $, exactly as a bare reference would.
 
-  QUERY PARAMETERS (ClickHouse parameterized syntax):
+  QUERY PARAMETERS (legacy store parameterized syntax):
     {startDateMilliseconds:Int64}
     {endDateMilliseconds:Int64}
     {intervalSeconds:Int64}
@@ -1561,7 +1561,7 @@ drill into a pattern with cbt_search.
 16. Forgetting that map-attribute values are often empty strings
     Wrong:   groupBy on SpanAttributes['db.collection.name'] without filtering empty values; the result has an empty-string bucket alongside the real ones, which renders as a blank row in tables and an unlabelled slice in pies.
     Correct: add where: "SpanAttributes['db.collection.name'] != ''" alongside the groupBy.
-    ClickHouse map columns return '' (not NULL) for keys that were not set on a given row. Filter them out whenever you groupBy a map-attribute key that is not guaranteed populated on every event.
+    legacy store map columns return '' (not NULL) for keys that were not set on a given row. Filter them out whenever you groupBy a map-attribute key that is not guaranteed populated on every event.
 
 17. onClick on a non-table tile
     Only table tiles (builder displayType: "table" and raw-SQL configType: "sql"
@@ -1629,8 +1629,8 @@ External docs for the syntax and macros referenced in this guide:
   Lucene search syntax (the "where" field with whereLanguage: "lucene"):
     https://github.com/mminichino/couchbase-traces/tree/main/docs
 
-  ClickHouse SQL functions (the "where" field with whereLanguage: "sql", and any sqlTemplate body):
-    https://clickhouse.com/docs/sql-reference
+  SQL++ functions (the "where" field with whereLanguage: "sql", and any sqlTemplate body):
+    https://docs.couchbase.com/server/current/n1ql/n1ql-language-reference/index.html
 
   Dashboard time / filter macros used in raw-SQL tile sqlTemplate ($__timeFilter, $__timeFilter_ms, $__timeInterval, $__timeInterval_ms, $__filters, $__sourceTable):
     https://github.com/mminichino/couchbase-traces/tree/main/docs`;

@@ -1,8 +1,4 @@
 import {
-  type ClickHouseVersion,
-  parseClickHouseVersion,
-} from '@/core/clickhouseVersion';
-import {
   COLUMNS_CACHE_TTL_MS,
   defaultFieldMetadataDateRange,
   type Field,
@@ -11,6 +7,7 @@ import {
   type MetricNames,
   type TableMetadata,
 } from '@/core/metadata';
+import { parseServerVersion, type ServerVersion } from '@/core/serverVersion';
 import { columnTypeToJSType, JSDataType } from '@/query/columnTypes';
 import type { ColumnMeta } from '@/query/types';
 
@@ -54,12 +51,12 @@ export class Metadata {
     },
   ) {}
 
-  getClickHouseSettings(): Record<string, unknown> {
+  getQuerySettings(): Record<string, unknown> {
     return this.cache.get('cb:settings') ?? {};
   }
 
-  setClickHouseSettings(settings: Record<string, unknown>): void {
-    const current = this.getClickHouseSettings();
+  setQuerySettings(settings: Record<string, unknown>): void {
+    const current = this.getQuerySettings();
     this.cache.set('cb:settings', { ...current, ...settings });
   }
 
@@ -318,10 +315,10 @@ export class Metadata {
 
   async getServerVersion(args: {
     connectionId: string;
-  }): Promise<ClickHouseVersion | undefined> {
+  }): Promise<ServerVersion | undefined> {
     const rows = await this.rows(args, versionStatement());
     const version = rows.length > 0 ? String(raw(rows[0])) : '';
-    return parseClickHouseVersion(version);
+    return parseServerVersion(version);
   }
 
   async getOtelTables(args: { connectionId: string }) {

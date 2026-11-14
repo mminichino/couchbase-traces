@@ -11,7 +11,7 @@ import {
   writeConfig,
 } from './config';
 
-const EVAL_CONNECTION_NAME = 'hdx-eval-clickhouse';
+const EVAL_CONNECTION_NAME = 'hdx-eval-store';
 const TRACE_DEFAULT_SELECT =
   'Timestamp, ServiceName, SpanName, Duration, StatusCode';
 const LOG_DEFAULT_SELECT = 'Timestamp, ServiceName, SeverityText, Body';
@@ -20,7 +20,7 @@ export type SetupOptions = {
   apiUrl: string;
   email: string;
   password: string;
-  clickhouse: {
+  store: {
     host: string;
     port: string;
     user: string;
@@ -45,23 +45,23 @@ export async function runSetup(opts: SetupOptions): Promise<SetupResult> {
   // 2. Fetch user accessKey for MCP Bearer auth.
   const me = await api.me();
 
-  // 3. Ensure eval Connection exists pointing at the local ClickHouse.
+  // 3. Ensure eval Connection exists pointing at the local legacy store.
   const connections = await api.listConnections();
-  const chHost = `http://${opts.clickhouse.host}:${opts.clickhouse.port}`;
+  const chHost = `http://${opts.store.host}:${opts.store.port}`;
   let connection = connections.find(c => c.name === EVAL_CONNECTION_NAME);
   let createdConnection = false;
   if (!connection) {
     const { id } = await api.createConnection({
       name: EVAL_CONNECTION_NAME,
       host: chHost,
-      username: opts.clickhouse.user,
-      password: opts.clickhouse.password,
+      username: opts.store.user,
+      password: opts.store.password,
     });
     connection = {
       _id: id,
       name: EVAL_CONNECTION_NAME,
       host: chHost,
-      username: opts.clickhouse.user,
+      username: opts.store.user,
     };
     createdConnection = true;
   }
@@ -165,35 +165,35 @@ export async function runSetup(opts: SetupOptions): Promise<SetupResult> {
     ],
   };
 
-  const clickhouseMcp: McpDefinition = {
+  const evalStoreMcp: McpDefinition = {
     type: 'stdio',
     command: 'uv',
     args: [
       'run',
       '--with',
-      'mcp-clickhouse==0.3.0',
+      'mcp-eval-store==0.3.0',
       '--python',
       '3.10',
-      'mcp-clickhouse',
+      'mcp-eval-store',
     ],
     env: {
-      CLICKHOUSE_HOST: opts.clickhouse.host,
-      CLICKHOUSE_PORT: opts.clickhouse.port,
-      CLICKHOUSE_USER: opts.clickhouse.user,
-      CLICKHOUSE_PASSWORD: opts.clickhouse.password,
-      CLICKHOUSE_SECURE: 'false',
-      CLICKHOUSE_VERIFY: 'false',
-      CLICKHOUSE_SEND_RECEIVE_TIMEOUT: String(QUERY_TIMEOUT_SECONDS),
+      CLICKHOUSE_HOST: opts.store.host,
+      EVAL_STORE_PORT: opts.store.port,
+      CLICKHOUSE_USER: opts.store.user,
+      CLICKHOUSE_PASSWORD: opts.store.password,
+      EVAL_STORE_SECURE: 'false',
+      EVAL_STORE_VERIFY: 'false',
+      EVAL_STORE_SEND_RECEIVE_TIMEOUT: String(QUERY_TIMEOUT_SECONDS),
     },
-    toolPattern: 'mcp__clickhouse__*',
-    label: 'ClickHouse MCP',
-    brandTerms: ['ClickHouse MCP', 'clickhouse'],
+    toolPattern: 'mcp__eval_store__*',
+    label: 'legacy store MCP',
+    brandTerms: ['legacy store MCP', 'clickhouse'],
   };
 
   const config: EvalConfig = {
     mcps: {
       hyperdx: hyperdxMcp,
-      clickhouse: clickhouseMcp,
+      store: evalStoreMcp,
     },
     scenarios: scenarioIds,
     hyperdxApi: {
@@ -201,7 +201,7 @@ export async function runSetup(opts: SetupOptions): Promise<SetupResult> {
       accessKey: me.accessKey,
       connectionId: connection._id,
     },
-    clickhouse: opts.clickhouse,
+    store: opts.store,
   };
   writeConfig(config);
 
@@ -217,7 +217,7 @@ function sourceId(source: HyperdxSource): string {
 }
 
 // Apply a per-query max_execution_time to every Source so the HyperDX MCP
-// faces the same query timeout as the ClickHouse MCP. Simulates a busy
+// faces the same query timeout as the legacy store MCP. Simulates a busy
 // production cluster where queries that scan everything time out.
 const EVAL_QUERY_SETTINGS = [
   { setting: 'max_execution_time', value: String(QUERY_TIMEOUT_SECONDS) },
@@ -323,7 +323,7 @@ function buildLogSourceBody(
 export type CheckResult = {
   configOk: boolean;
   mcpReachable: boolean;
-  clickhouseReachable: boolean;
+  storeReachable: boolean;
   uvAvailable: boolean;
   errors: string[];
 };
@@ -360,17 +360,17 @@ export async function runCheck(
         );
       }
     }
-    if (cfg.clickhouse) {
+    if (cfg.store) {
       try {
-        const chUrl = `http://${cfg.clickhouse.host}:${cfg.clickhouse.port}/ping`;
+        const chUrl = `http://${cfg.store.host}:${cfg.store.port}/ping`;
         const res = await fetch(chUrl, {
           signal: AbortSignal.timeout(10_000),
         });
         chReachable = res.ok;
-        if (!chReachable) errors.push(`ClickHouse ping → ${res.status}`);
+        if (!chReachable) errors.push(`legacy store ping → ${res.status}`);
       } catch (e) {
         errors.push(
-          `ClickHouse not reachable: ${e instanceof Error ? e.message : e}`,
+          `legacy store not reachable: ${e instanceof Error ? e.message : e}`,
         );
       }
     }
@@ -386,7 +386,7 @@ export async function runCheck(
   return {
     configOk,
     mcpReachable,
-    clickhouseReachable: chReachable,
+    storeReachable: chReachable,
     uvAvailable,
     errors,
   };

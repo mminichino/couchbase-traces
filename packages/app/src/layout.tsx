@@ -7,7 +7,7 @@ import { IconX } from '@tabler/icons-react';
 
 import { useBrandDisplayName } from '@/brand';
 import AppNav from '@/components/AppNav';
-import { IS_CLICKHOUSE_BUILD } from '@/config';
+import { IS_LEGACY_ENGINE_BUILD } from '@/config';
 import { QueryAttributionProvider } from '@/queryAttribution';
 
 import { HDXSpotlightProvider } from './Spotlights';
@@ -47,7 +47,7 @@ function PageWrapper({ children }: { children: React.ReactNode }) {
   const bannerIsActive =
     hasMounted &&
     !isDashboardKioskMode &&
-    IS_CLICKHOUSE_BUILD &&
+    IS_LEGACY_ENGINE_BUILD &&
     bannerState === 'opened';
 
   React.useEffect(() => {
@@ -111,7 +111,7 @@ export const withAppNav = (page: React.ReactNode): React.ReactNode => {
 };
 
 /**
- * `withAppNav`, and tags the page's ClickHouse queries so they stand out from
+ * `withAppNav`, and tags the page's legacy store queries so they stand out from
  * other pages' in `system.query_log`.
  *
  * Use it when "which page" is all you need. A page with ids of its own, like a

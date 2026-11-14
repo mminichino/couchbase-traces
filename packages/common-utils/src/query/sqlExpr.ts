@@ -16,14 +16,14 @@ const paramHash = (str: string | number) => {
   return `HYPERDX_PARAM_${hash(str)}`;
 };
 
-export type ChSql = {
+export type SqlFrag = {
   sql: string;
   params: Record<string, any>;
 };
 
 type ParamTypes =
-  | ChSql
-  | ChSql[]
+  | SqlFrag
+  | SqlFrag[]
   | { Identifier: string }
   | { String: string }
   | { Float32: number }
@@ -33,10 +33,10 @@ type ParamTypes =
   | { UNSAFE_RAW_SQL: string }
   | string; // TODO: Deprecate raw string interpolation
 
-export const chSql = (
+export const sqlExpr = (
   strings: TemplateStringsArray,
   ...values: ParamTypes[]
-): ChSql => {
+): SqlFrag => {
   const sql = strings
     .map((str, i) => {
       const value = values[i];
@@ -106,9 +106,12 @@ export const chSql = (
   };
 };
 
-export const concatChSql = (sep: string, ...args: (ChSql | ChSql[])[]) => {
+export const concatSqlExpr = (
+  sep: string,
+  ...args: (SqlFrag | SqlFrag[])[]
+) => {
   return args.reduce(
-    (acc: ChSql, arg) => {
+    (acc: SqlFrag, arg) => {
       if (Array.isArray(arg)) {
         if (arg.length === 0) {
           return acc;
@@ -134,23 +137,23 @@ export const concatChSql = (sep: string, ...args: (ChSql | ChSql[])[]) => {
   );
 };
 
-const isChSqlEmpty = (chSql: ChSql | ChSql[]) => {
-  if (Array.isArray(chSql)) {
-    return chSql.every(c => c.sql.length === 0);
+const isSqlFragEmpty = (sqlExpr: SqlFrag | SqlFrag[]) => {
+  if (Array.isArray(sqlExpr)) {
+    return sqlExpr.every(c => c.sql.length === 0);
   }
-  return chSql.sql.length === 0;
+  return sqlExpr.sql.length === 0;
 };
 
-export const wrapChSqlIfNotEmpty = (
-  sql: ChSql | ChSql[],
+export const wrapSqlExprIfNotEmpty = (
+  sql: SqlFrag | SqlFrag[],
   left: string,
   right: string,
-): ChSql | [] => {
-  if (isChSqlEmpty(sql)) {
+): SqlFrag | [] => {
+  if (isSqlFragEmpty(sql)) {
     return [];
   }
 
-  return chSql`${left}${sql}${right}`;
+  return sqlExpr`${left}${sql}${right}`;
 };
 
 export const extractColumnReferencesFromKey = (expr: string): string[] => {
@@ -206,7 +209,7 @@ export const tableExpr = ({
   database: string;
   table: string;
 }) => {
-  return chSql`${{ Identifier: database }}.${{ Identifier: table }}`;
+  return sqlExpr`${{ Identifier: database }}.${{ Identifier: table }}`;
 };
 
 /**
@@ -307,7 +310,7 @@ function selectColumnsToAliasMap(
  * and nested subqueries are skipped because their SELECT/FROM keywords sit
  * inside parentheses. Returns null when no top-level SELECT...FROM is found.
  *
- * Used as a fallback by chSqlToAliasMap: the alias map only needs the outer
+ * Used as a fallback by sqlExprToAliasMap: the alias map only needs the outer
  * projection's `expr AS alias` pairs, so when the full statement is
  * unparseable by node-sql-parser (e.g. a sampling CTE containing
  * `CAST(x AS UInt32)`), re-parsing just the projection still recovers them.
@@ -399,12 +402,12 @@ function extractOuterSelectProjection(sql: string): string | null {
 }
 
 /**
- * Renders `chSql` and swaps the constructs node-sql-parser rejects (the
+ * Renders `sqlExpr` and swaps the constructs node-sql-parser rejects (the
  * SETTINGS clause, backtick-quoted identifiers, JSON paths) for parseable
  * tokens. `restore` puts the originals back into text sliced from `sql`.
  */
-function prepareChSqlForParser(chSql: ChSql) {
-  const sql = parameterizedQueryToSql(chSql);
+function prepareSqlFragForParser(sqlExpr: SqlFrag) {
+  const sql = parameterizedQueryToSql(sqlExpr);
 
   // Remove the SETTINGS clause because `SQLParser` doesn't understand it.
   const [sqlWithoutSettingsClause] = extractSettingsClauseFromEnd(sql);
@@ -433,16 +436,16 @@ function prepareChSqlForParser(chSql: ChSql) {
   };
 }
 
-export function chSqlToAliasMap(
-  chSql: ChSql | undefined,
+export function sqlExprToAliasMap(
+  sqlExpr: SqlFrag | undefined,
 ): Record<string, string> {
-  if (chSql == null || !chSql.sql) {
+  if (sqlExpr == null || !sqlExpr.sql) {
     return {};
   }
 
   try {
     const { sql, jsonReplacements, identifierReplacements } =
-      prepareChSqlForParser(chSql);
+      prepareSqlFragForParser(sqlExpr);
 
     try {
       return selectColumnsToAliasMap(
@@ -451,7 +454,7 @@ export function chSqlToAliasMap(
         identifierReplacements,
       );
     } catch (fullParseError) {
-      // node-sql-parser's Postgresql dialect rejects some ClickHouse-specific
+      // node-sql-parser's Postgresql dialect rejects some legacy store-specific
       // SQL (e.g. `CAST(x AS UInt32)` in a sampling CTE, or parameterized
       // identifiers). The alias map only needs the outer SELECT projection, so
       // retry with `SELECT <projection> FROM <table>` before giving up.
@@ -470,7 +473,7 @@ export function chSqlToAliasMap(
       'Error parsing alias map with JSON removed',
       e,
       'for query',
-      chSql,
+      sqlExpr,
     );
   }
 
@@ -496,19 +499,19 @@ export type SelectColumn = {
 };
 
 /**
- * The outer SELECT list of `chSql`, in order, so the i-th item lines up with
- * the i-th result column even where ClickHouse renames an unaliased
+ * The outer SELECT list of `sqlExpr`, in order, so the i-th item lines up with
+ * the i-th result column even where legacy store renames an unaliased
  * expression's column. Undefined when the query doesn't parse, has no GROUP BY
  * (or `GROUP BY ALL`, which doesn't parse), or selects `*`.
  */
-export function chSqlToSelectColumns(
-  chSql: ChSql | undefined,
+export function sqlExprToSelectColumns(
+  sqlExpr: SqlFrag | undefined,
 ): SelectColumn[] | undefined {
-  if (chSql == null || !chSql.sql) return undefined;
+  if (sqlExpr == null || !sqlExpr.sql) return undefined;
 
   try {
     const { sql, restore, identifierReplacements } =
-      prepareChSqlForParser(chSql);
+      prepareSqlFragForParser(sqlExpr);
     const parser = new SQLParser.Parser();
     const options = {
       database: 'Postgresql',

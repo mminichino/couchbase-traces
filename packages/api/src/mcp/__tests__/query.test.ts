@@ -10,19 +10,19 @@ import {
   MacroExpansionError,
   UnknownVariableError,
 } from '@couchbase-traces/common-utils/dist/macroErrors';
-import { ClickHouseError } from '@couchbase-traces/common-utils/dist/query';
+import { CodedQueryError } from '@couchbase-traces/common-utils/dist/query';
 
 import {
   annotateIncreaseTopNHint,
   assertSourceKindMatchesSelect,
-  clickHouseErrorResult,
   errorHint,
-  getClickHouseErrorType,
+  getQueryErrorType,
   INCREASE_TOP_N_CAP,
   isServerError,
   mergeWhereIntoSelectItems,
   normalizeBodyExpression,
   parseTimeRange,
+  queryErrorResult,
 } from '@/mcp/tools/query/helpers';
 import {
   applyMetricSelectDefaults,
@@ -432,89 +432,89 @@ describe('errorHint', () => {
   });
 });
 
-// ─── getClickHouseErrorType ──────────────────────────────────────────────────
+// ─── getQueryErrorType ──────────────────────────────────────────────────
 
-describe('getClickHouseErrorType', () => {
+describe('getQueryErrorType', () => {
   it('returns undefined for a non-Error value', () => {
-    expect(getClickHouseErrorType('NETWORK_ERROR')).toBeUndefined();
-    expect(getClickHouseErrorType(null)).toBeUndefined();
-    expect(getClickHouseErrorType(undefined)).toBeUndefined();
-    expect(getClickHouseErrorType({ type: 'NETWORK_ERROR' })).toBeUndefined();
+    expect(getQueryErrorType('NETWORK_ERROR')).toBeUndefined();
+    expect(getQueryErrorType(null)).toBeUndefined();
+    expect(getQueryErrorType(undefined)).toBeUndefined();
+    expect(getQueryErrorType({ type: 'NETWORK_ERROR' })).toBeUndefined();
   });
 
-  it('returns the type from .cause when present (wrapped ClickHouseError)', () => {
-    const cause = new ClickHouseError({
+  it('returns the type from .cause when present (wrapped CodedQueryError)', () => {
+    const cause = new CodedQueryError({
       message: 'timeout',
       code: '159',
       type: 'SOCKET_TIMEOUT',
     });
     const err = new Error('query failed', { cause });
-    expect(getClickHouseErrorType(err)).toBe('SOCKET_TIMEOUT');
+    expect(getQueryErrorType(err)).toBe('SOCKET_TIMEOUT');
   });
 
-  it('returns the type from a direct ClickHouseError', () => {
-    const err = new ClickHouseError({
+  it('returns the type from a direct CodedQueryError', () => {
+    const err = new CodedQueryError({
       message: 'direct',
       code: '62',
       type: 'SYNTAX_ERROR',
     });
-    expect(getClickHouseErrorType(err)).toBe('SYNTAX_ERROR');
+    expect(getQueryErrorType(err)).toBe('SYNTAX_ERROR');
   });
 
-  it('returns .cause type when wrapper carries a ClickHouseError cause', () => {
-    const cause = new ClickHouseError({
+  it('returns .cause type when wrapper carries a CodedQueryError cause', () => {
+    const cause = new CodedQueryError({
       message: 'inner',
       code: '210',
       type: 'NETWORK_ERROR',
     });
     const err = new Error('outer wrapper', { cause });
-    expect(getClickHouseErrorType(err)).toBe('NETWORK_ERROR');
+    expect(getQueryErrorType(err)).toBe('NETWORK_ERROR');
   });
 
-  it('returns undefined when neither .cause nor the error is a ClickHouseError', () => {
-    expect(getClickHouseErrorType(new Error('plain'))).toBeUndefined();
+  it('returns undefined when neither .cause nor the error is a CodedQueryError', () => {
+    expect(getQueryErrorType(new Error('plain'))).toBeUndefined();
   });
 
-  it('ignores non-ClickHouseError objects with a .type property', () => {
+  it('ignores non-CodedQueryError objects with a .type property', () => {
     const err = Object.assign(new Error('not CH'), { type: 'NETWORK_ERROR' });
-    expect(getClickHouseErrorType(err)).toBeUndefined();
+    expect(getQueryErrorType(err)).toBeUndefined();
   });
 
-  it('ignores .cause that is a plain object with a type (not ClickHouseError)', () => {
+  it('ignores .cause that is a plain object with a type (not CodedQueryError)', () => {
     const err = new Error('no CH cause', {
       cause: { type: 'SOCKET_TIMEOUT' },
     });
-    expect(getClickHouseErrorType(err)).toBeUndefined();
+    expect(getQueryErrorType(err)).toBeUndefined();
   });
 
-  it('detects a cross-package ClickHouseError via constructor-name fallback', () => {
-    // Simulate a ClickHouseError from a different copy of
+  it('detects a cross-package CodedQueryError via constructor-name fallback', () => {
+    // Simulate a CodedQueryError from a different copy of
     // @clickhouse/client-common where instanceof would fail.
-    class ClickHouseError extends Error {
+    class CodedQueryError extends Error {
       type: string;
       code: string;
       constructor(opts: { message: string; code: string; type: string }) {
         super(opts.message);
-        this.name = 'ClickHouseError';
+        this.name = 'CodedQueryError';
         this.type = opts.type;
         this.code = opts.code;
       }
     }
-    const cause = new ClickHouseError({
+    const cause = new CodedQueryError({
       message: 'network',
       code: '210',
       type: 'NETWORK_ERROR',
     });
     const err = new Error('query failed', { cause });
-    expect(getClickHouseErrorType(err)).toBe('NETWORK_ERROR');
+    expect(getQueryErrorType(err)).toBe('NETWORK_ERROR');
   });
 });
 
 // ─── isServerError ───────────────────────────────────────────────────────────
 
 describe('isServerError', () => {
-  it('returns true for ClickHouseError with a server-side type', () => {
-    const cause = new ClickHouseError({
+  it('returns true for CodedQueryError with a server-side type', () => {
+    const cause = new CodedQueryError({
       message: 'network',
       code: '210',
       type: 'NETWORK_ERROR',
@@ -523,8 +523,8 @@ describe('isServerError', () => {
     expect(isServerError(err)).toBe(true);
   });
 
-  it('returns false for ClickHouseError with a query-level type', () => {
-    const cause = new ClickHouseError({
+  it('returns false for CodedQueryError with a query-level type', () => {
+    const cause = new CodedQueryError({
       message: 'syntax',
       code: '62',
       type: 'SYNTAX_ERROR',
@@ -535,7 +535,7 @@ describe('isServerError', () => {
 
   it('returns true for TIMEOUT_EXCEEDED (max_execution_time overrun)', () => {
     // Query timeouts are a resource failure, not a user mistake.
-    const cause = new ClickHouseError({
+    const cause = new CodedQueryError({
       message: 'Timeout exceeded: elapsed 30s',
       code: '159',
       type: 'TIMEOUT_EXCEEDED',
@@ -590,8 +590,8 @@ describe('isServerError', () => {
     expect(isServerError(null)).toBe(false);
   });
 
-  it('returns true for ClickHouseError nested at depth 2+', () => {
-    const chErr = new ClickHouseError({
+  it('returns true for CodedQueryError nested at depth 2+', () => {
+    const chErr = new CodedQueryError({
       message: 'network',
       code: '210',
       type: 'NETWORK_ERROR',
@@ -601,20 +601,20 @@ describe('isServerError', () => {
     expect(isServerError(outer)).toBe(true);
   });
 
-  it('detects a cross-package ClickHouseError via constructor-name fallback', () => {
+  it('detects a cross-package CodedQueryError via constructor-name fallback', () => {
     // Locally-declared class — instanceof against the imported
-    // ClickHouseError will fail, exercising the name-based fallback.
-    class ClickHouseError extends Error {
+    // CodedQueryError will fail, exercising the name-based fallback.
+    class CodedQueryError extends Error {
       type: string;
       code: string;
       constructor(opts: { message: string; code: string; type: string }) {
         super(opts.message);
-        this.name = 'ClickHouseError';
+        this.name = 'CodedQueryError';
         this.type = opts.type;
         this.code = opts.code;
       }
     }
-    const cause = new ClickHouseError({
+    const cause = new CodedQueryError({
       message: 'network',
       code: '210',
       type: 'NETWORK_ERROR',
@@ -642,9 +642,9 @@ describe('isServerError', () => {
   });
 });
 
-// ─── clickHouseErrorResult ───────────────────────────────────────────────────
+// ─── queryErrorResult ───────────────────────────────────────────────────
 
-describe('clickHouseErrorResult', () => {
+describe('queryErrorResult', () => {
   it('classifies infrastructure error types as "server"', () => {
     for (const type of [
       'NETWORK_ERROR',
@@ -652,50 +652,47 @@ describe('clickHouseErrorResult', () => {
       'POCO_EXCEPTION',
       'ALL_CONNECTION_TRIES_FAILED',
     ]) {
-      const cause = new ClickHouseError({
+      const cause = new CodedQueryError({
         message: 'infra down',
         code: '210',
         type,
       });
       const err = new Error('infra down', { cause });
-      const result = clickHouseErrorResult(err);
+      const result = queryErrorResult(err);
       expect(result.isError).toBe(true);
       expect(getErrorCategory(result)).toBe('server');
     }
   });
 
   it('classifies query/syntax errors as "user"', () => {
-    const cause = new ClickHouseError({
+    const cause = new CodedQueryError({
       message: 'bad query',
       code: '62',
       type: 'SYNTAX_ERROR',
     });
     const err = new Error('bad query', { cause });
-    const result = clickHouseErrorResult(err);
+    const result = queryErrorResult(err);
     expect(getErrorCategory(result)).toBe('user');
   });
 
   it('defaults to "user" when no error type is available', () => {
-    const result = clickHouseErrorResult(new Error('mystery'));
+    const result = queryErrorResult(new Error('mystery'));
     expect(getErrorCategory(result)).toBe('user');
   });
 
   it('classifies a non-Error value as "user"', () => {
-    const result = clickHouseErrorResult('some string failure');
+    const result = queryErrorResult('some string failure');
     expect(getErrorCategory(result)).toBe('user');
     expect(result.content[0].text).toContain('some string failure');
   });
 
   it('prepends a string prefix to the message', () => {
-    const result = clickHouseErrorResult(
-      new Error('boom'),
-      'Failed to sample rows',
-    );
+    const result = queryErrorResult(new Error('boom'), 'Failed to sample rows');
     expect(result.content[0].text).toBe('Failed to sample rows: boom');
   });
 
   it('supports prefix and suffix via the object form', () => {
-    const result = clickHouseErrorResult(new Error('boom'), {
+    const result = queryErrorResult(new Error('boom'), {
       prefix: 'Failed to compute breakdown',
       suffix: 'The parentFilter must be valid ClickHouse SQL.',
     });
@@ -705,19 +702,19 @@ describe('clickHouseErrorResult', () => {
   });
 
   it('preserves categorization regardless of message context', () => {
-    const cause = new ClickHouseError({
+    const cause = new CodedQueryError({
       message: 'infra down',
       code: '210',
       type: 'NETWORK_ERROR',
     });
     const err = new Error('infra down', { cause });
-    const result = clickHouseErrorResult(err, 'Failed to sample rows');
+    const result = queryErrorResult(err, 'Failed to sample rows');
     expect(getErrorCategory(result)).toBe('server');
   });
 
   it('appends the DateTime64 hint and still classifies as "user"', () => {
     const err = new Error("Cannot parse string '2024Z' as DateTime64(9)");
-    const result = clickHouseErrorResult(err);
+    const result = queryErrorResult(err);
     expect(result.content[0].text).toContain('HINT:');
     expect(getErrorCategory(result)).toBe('user');
   });
@@ -727,7 +724,7 @@ describe('clickHouseErrorResult', () => {
       new Error('connect ECONNREFUSED 127.0.0.1:19999'),
       { code: 'ECONNREFUSED' },
     );
-    const result = clickHouseErrorResult(err);
+    const result = queryErrorResult(err);
     expect(result.isError).toBe(true);
     expect(getErrorCategory(result)).toBe('server');
   });
@@ -737,7 +734,7 @@ describe('clickHouseErrorResult', () => {
       new Error('getaddrinfo ENOTFOUND bogus.invalid'),
       { code: 'ENOTFOUND' },
     );
-    const result = clickHouseErrorResult(err);
+    const result = queryErrorResult(err);
     expect(result.isError).toBe(true);
     expect(getErrorCategory(result)).toBe('server');
   });

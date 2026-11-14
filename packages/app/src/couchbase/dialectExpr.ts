@@ -3,7 +3,7 @@ import { quoteIdent } from '@couchbase-traces/common-utils/dist/couchbase/sqlpp'
 export type SqlDialect = 'clickhouse' | 'couchbase';
 
 /**
- * ClickHouse `JSONExtractString(col['object'], 'a', 'b')` → SQL++
+ * legacy store `JSONExtractString(col['object'], 'a', 'b')` → SQL++
  * `TOSTRING(DECODE_JSON(col.`object`).a.b)` when the map value is a JSON string.
  */
 export function jsonExtractString(
@@ -52,7 +52,7 @@ export function tupleElementExpr(
   dialect: SqlDialect = 'clickhouse',
 ): string {
   if (dialect === 'couchbase') {
-    // SQL++ arrays are 0-based; ClickHouse tupleElement is 1-based.
+    // SQL++ arrays are 0-based; legacy store tupleElement is 1-based.
     return `${tupleExpr}[${oneBasedIndex - 1}]`;
   }
   return `tupleElement(${tupleExpr}, ${oneBasedIndex})`;

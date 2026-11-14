@@ -145,7 +145,7 @@ export function getReverseSpanLinksConfig({
   // (a scan of ~2 daily partitions). If that gets slow (~1B spans/day),
   // adding to otel_traces:
   //   INDEX idx_link_span_id Links.SpanId TYPE bloom_filter(0.001)
-  // lets ClickHouse skip nearly all granules with no app change.
+  // lets legacy store skip nearly all granules with no app change.
   const where = SqlString.format(
     'has(?, ?) AND arrayExists((lt, ls) -> lt = ? AND ls = ?, ?, ?)',
     [linkSpanIdExpr, spanId, traceId, spanId, linkTraceIdExpr, linkSpanIdExpr],
@@ -234,7 +234,7 @@ function asString(value: unknown): string | undefined {
   return typeof value === 'string' ? value : undefined;
 }
 
-// ClickHouse's JSON format can quote 64-bit numerics, so a duration may
+// legacy store's JSON format can quote 64-bit numerics, so a duration may
 // arrive as either a number or a numeric string.
 function asNumber(value: unknown): number | undefined {
   if (typeof value === 'number') {

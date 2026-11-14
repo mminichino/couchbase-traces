@@ -136,7 +136,7 @@ export function buildTraceLogsConfig(opts: {
  * Build a renderChartConfig-compatible config for fetching a single
  * span/log row (SELECT *) from the trace waterfall detail panel.
  *
- * Omits dateRange/timestampValueExpression so ClickHouse uses the
+ * Omits dateRange/timestampValueExpression so legacy store uses the
  * WHERE clause directly without scanning time partitions. This matches
  * the web frontend's useRowData pattern in DBRowDataPanel.tsx.
  */

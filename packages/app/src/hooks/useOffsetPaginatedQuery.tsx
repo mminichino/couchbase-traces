@@ -13,10 +13,10 @@ import {
 } from '@couchbase-traces/common-utils/dist/guards';
 import type { ResponseJSON } from '@couchbase-traces/common-utils/dist/query';
 import {
-  ChSql,
   ColumnMetaType,
   type QueryAttribution,
   QueryError,
+  SqlFrag,
 } from '@couchbase-traces/common-utils/dist/query';
 import {
   ChartConfigWithOptTimestamp,
@@ -32,7 +32,7 @@ import {
 import api from '@/api';
 import { useMetadataWithSettings } from '@/hooks/useMetadata';
 import { useMVOptimizationExplanation } from '@/hooks/useMVOptimizationExplanation';
-import { getClickhouseClient } from '@/query';
+import { getDataClient } from '@/query';
 import { useQueryAttribution } from '@/queryAttribution';
 import { useSource } from '@/source';
 import {
@@ -75,7 +75,7 @@ type TPageParam = {
 type TQueryFnData = {
   data: Record<string, any>[];
   meta: ColumnMetaType[];
-  chSql: ChSql;
+  sqlExpr: SqlFrag;
   window: TimeWindow;
 };
 
@@ -189,7 +189,7 @@ const queryFn: QueryFunction<TQueryFnData, TQueryKey, TPageParam> = async ({
   } = meta as QueryMeta;
 
   const queryTimeout = queryKey[2];
-  const clickhouseClient = getClickhouseClient({
+  const dataClient = getDataClient({
     requestTimeout: queryTimeout,
     attribution,
   });
@@ -209,7 +209,7 @@ const queryFn: QueryFunction<TQueryFnData, TQueryKey, TPageParam> = async ({
         direction: 'DESC' as const,
       };
 
-  // PromQL goes to the Prometheus API route rather than ClickHouse, and never
+  // PromQL goes to the Prometheus API route rather than legacy store, and never
   // paginates (see getNextPageParam), so it answers in a single page.
 
   // Create config with windowed date range
@@ -236,7 +236,7 @@ const queryFn: QueryFunction<TQueryFnData, TQueryKey, TPageParam> = async ({
     setTimeout(() => abortController.abort(), queryTimeout * 1000);
   }
 
-  const resultSet = await clickhouseClient.query<'JSON'>({
+  const resultSet = await dataClient.query<'JSON'>({
     query: query.sql,
     query_params: query.params,
     format: 'JSON',
@@ -248,7 +248,7 @@ const queryFn: QueryFunction<TQueryFnData, TQueryKey, TPageParam> = async ({
   return {
     data: json.data ?? [],
     meta: json.meta ?? [],
-    chSql: query,
+    sqlExpr: query,
     window: timeWindow,
   };
 };
@@ -265,7 +265,7 @@ function flattenData(data: TData | undefined): TQueryFnData | null {
   return {
     meta: data.pages[0].meta,
     data: flattenPages(data.pages),
-    chSql: data.pages[0].chSql,
+    sqlExpr: data.pages[0].sqlExpr,
     window: data.pages[data.pages.length - 1].window,
   };
 }

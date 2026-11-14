@@ -1,5 +1,5 @@
 import { getFirstTimestampValueExpression } from '@couchbase-traces/common-utils/dist/core/utils';
-import { ChSql, chSql } from '@couchbase-traces/common-utils/dist/query';
+import { sqlExpr, SqlFrag } from '@couchbase-traces/common-utils/dist/query';
 import {
   BuilderChartConfigWithDateRange,
   Filter,
@@ -119,10 +119,10 @@ export function buildOtelSessionIdsWithRecordingsChartConfig({
  * Two single-key `IN` lookups stay index-served where one OR lookup wouldn't.
  * This only tests membership, so a session with both keys can't count twice.
  */
-export function unionSessionIds(rumIds: ChSql, otelIds: ChSql | undefined) {
+export function unionSessionIds(rumIds: SqlFrag, otelIds: SqlFrag | undefined) {
   return otelIds == null
     ? rumIds
-    : chSql`SELECT sessionId FROM (${rumIds}) UNION DISTINCT SELECT sessionId FROM (${otelIds})`;
+    : sqlExpr`SELECT sessionId FROM (${rumIds}) UNION DISTINCT SELECT sessionId FROM (${otelIds})`;
 }
 
 /**
@@ -138,10 +138,10 @@ export function buildSessionsCtes({
   withActivityFilter,
 }: {
   name: string;
-  spans: ChSql;
-  recordings: ChSql | undefined;
+  spans: SqlFrag;
+  recordings: SqlFrag | undefined;
   withActivityFilter: boolean;
-}): ChSql {
+}): SqlFrag {
   const recordingsUnion =
     recordings != null
       ? `UNION ALL
@@ -154,9 +154,9 @@ export function buildSessionsCtes({
   const having = withActivityFilter
     ? `HAVING ${recordings != null ? 'max(fromReplay) = 1 OR ' : ''}interactionCount > 0 OR recordingCount > 0`
     : '';
-  return chSql`
+  return sqlExpr`
     WITH _spans AS (${spans}),
-    ${recordings != null ? chSql`_recordings AS (${recordings}),` : ''}
+    ${recordings != null ? sqlExpr`_recordings AS (${recordings}),` : ''}
     ${name} AS (
       SELECT svc AS serviceName, sid AS sessionId,
         if(sum(rumRows) > 0, 'rum.sessionId', 'session.id') AS sessionIdKey,

@@ -29,7 +29,7 @@ export type FilterState = {
   };
 };
 
-// Wrap a quoted string literal in a ClickHouse expression whose result type
+// Wrap a quoted string literal in a legacy store expression whose result type
 // matches the date column's type.
 const dateTimeValueExpr = (chType: string, quotedValue: string): string => {
   const dt64 = chType.match(/DateTime64\((\d+)/);
@@ -61,7 +61,7 @@ export const filtersToQuery = (
     dateTimeColumns,
   }: {
     stringifyKeys?: boolean;
-    /** Map of DateTime/Date column name → its ClickHouse type. */
+    /** Map of DateTime/Date column name → its legacy store type. */
     dateTimeColumns?: ReadonlyMap<string, string>;
   } = {},
 ): ConditionFilter[] => {
@@ -77,7 +77,7 @@ export const filtersToQuery = (
       const actualKey = stringifyKeys ? `toString(${key})` : key;
 
       // DateTime/DateTime64 columns can't be compared against a bare string
-      // literal in ClickHouse, so wrap each value in a parse/convert expression whose
+      // literal in legacy store, so wrap each value in a parse/convert expression whose
       // result type matches the column type.
       const chType = stringifyKeys ? undefined : dateTimeColumns?.get(key);
       const formatValue = (v: string | boolean): string | boolean =>
@@ -187,7 +187,7 @@ const getBooleanOrUnquotedString = (value: string): string | boolean => {
 };
 
 // Returns true when the single-quote at position `i` is a real string delimiter
-// rather than an escape sequence.  Handles both ClickHouse/SQL '' escaping and
+// rather than an escape sequence.  Handles both legacy store/SQL '' escaping and
 // backslash \' escaping.  An odd number of preceding backslashes means the
 // quote is escaped via \'; an even number (including zero) means the
 // backslashes are themselves escaped (\\) and the quote is a real boundary.
@@ -660,7 +660,7 @@ const isParseableLucene = (condition: string): boolean => {
   }
 };
 
-// node-sql-parser can't handle ClickHouse map / array access (e.g.
+// node-sql-parser can't handle legacy store map / array access (e.g.
 // `LogAttributes['k']` or `arr[1]`), so swap those out for harmless literals
 // before parsing — we only care whether the predicate is structurally valid.
 const MAP_OR_ARRAY_ACCESS_REGEX = /\b[a-zA-Z0-9_]+\[([0-9]+|'[^']*')\]/g;
@@ -783,7 +783,7 @@ export type DashboardFilterQueryIssue = {
  *
  * Note: this only checks that the `where` clause *parses*. It cannot catch a
  * `where`/`expression` that references a non-existent column — that only fails
- * when the query runs against ClickHouse.
+ * when the query runs against legacy store.
  */
 export function validateDashboardFilterQueries(
   filters: DashboardFilter[],
@@ -796,7 +796,7 @@ export function validateDashboardFilterQueries(
   ).map(declaration => ({ ...declaration, values: [] }));
 
   for (const filter of filters) {
-    // Only ClickHouse-queried filters carry a values query to validate.
+    // Only legacy store-queried filters carry a values query to validate.
     // A PromQL ad hoc filter may store a `where`, but nothing reads it.
     const isSqlAdhoc = isAdhocFilter(filter) && filter.sourceType === 'sql';
     if (!isQueryExpressionFilter(filter) && !isSqlAdhoc) continue;
@@ -950,7 +950,7 @@ export function isAdhocFilterValue(
 }
 
 /**
- * Whether a SQL ad hoc condition on a value of this ClickHouse type can match.
+ * Whether a SQL ad hoc condition on a value of this legacy store type can match.
  * Conditions compare `toString(key)` with the value as queries return it, and
  * queries return DateTimes as ISO UTC, unlike toString's space-separated form
  * in the column's timezone.

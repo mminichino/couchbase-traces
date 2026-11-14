@@ -1,11 +1,11 @@
-/** Server-side ClickHouse max_execution_time for MCP tool queries. */
+/** Server-side legacy store max_execution_time for MCP tool queries. */
 export const MCP_QUERY_MAX_EXECUTION_SEC = 30;
 
 /** Default wall-clock budget for a whole MCP tool call. */
 export const MCP_TOOL_TIMEOUT_MS = MCP_QUERY_MAX_EXECUTION_SEC * 1000;
 
 /**
- * Extra time past a deadline to wait for ClickHouse to return its own clean
+ * Extra time past a deadline to wait for legacy store to return its own clean
  * timeout, or for work to wind down after its signal aborts.
  */
 export const MCP_TIMEOUT_GRACE_MS = 2_000;
@@ -75,7 +75,7 @@ export class DeadlineExceededError extends Error {
  *
  * `startWork` is a thunk, not an already-started promise, so the deadline is
  * checked BEFORE the query is issued: once the budget is spent, items a queue
- * schedules during the drain fail fast without touching ClickHouse.
+ * schedules during the drain fail fast without touching legacy store.
  *
  * Work that did start runs under `runWithTimeout`: at the deadline its query
  * is cancelled and the call rejects with `DeadlineExceededError`.

@@ -53,7 +53,7 @@ const SERVER_INFO: Implementation = {
   version: `${CODE_VERSION}-beta`,
   description:
     'Query and investigate logs, metrics, traces, and sessions stored in ' +
-    'ClickHouse, and manage Couchbase Traces dashboards, alerts, data sources, ' +
+    'legacy store, and manage Couchbase Traces dashboards, alerts, data sources, ' +
     'and saved searches.',
   websiteUrl: 'https://github.com/mminichino/couchbase-traces/tree/main/docs',
   ...(SERVER_ICON_URL && {

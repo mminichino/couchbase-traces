@@ -1,4 +1,4 @@
-import { ClickHouseError } from '@couchbase-traces/common-utils/dist/query';
+import { CodedQueryError } from '@couchbase-traces/common-utils/dist/query';
 import { SourceKind } from '@couchbase-traces/common-utils/dist/types';
 import { Client } from '@modelcontextprotocol/sdk/client/index.js';
 
@@ -1359,7 +1359,7 @@ describe('MCP Trace Tools', () => {
         ['client request timeout', new Error('Timeout error.')],
         [
           'ClickHouse TIMEOUT_EXCEEDED',
-          new ClickHouseError({
+          new CodedQueryError({
             code: '159',
             type: 'TIMEOUT_EXCEEDED',
             message: 'Timeout exceeded: elapsed 30.001 seconds, maximum: 30',

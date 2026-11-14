@@ -39,7 +39,7 @@ const METRIC_PREVIEW_TIMEOUT_MS = 3_000;
 // clickstack_describe_source / clickstack_list_metrics list more.
 const MAX_PREVIEW_NAMES_PER_KIND = 10;
 
-// Max concurrent ClickHouse sampling queries during preview collection.
+// Max concurrent legacy store sampling queries during preview collection.
 const PREVIEW_CONCURRENCY = 6;
 
 // Server-side cap per preview query, slightly under the wall-clock budget
@@ -50,7 +50,7 @@ const PREVIEW_QUERY_MAX_EXECUTION_SEC = 2.5;
 /**
  * DataClient that caps every query with max_execution_time +
  * timeout_overflow_mode=break, so a slow sampling query returns whatever
- * rows ClickHouse processed within the budget instead of timing out with
+ * rows legacy store processed within the budget instead of timing out with
  * nothing. The timeout in attachMetricNamePreviews remains the
  * wall-clock backstop for stalls the server-side cap cannot cover (e.g.
  * network).
@@ -87,7 +87,7 @@ async function attachMetricNamePreviews({
   const clients = new Map<
     string,
     {
-      clickhouseClient: DataClient;
+      dataClient: DataClient;
       metadata: Metadata;
     }
   >();
@@ -97,12 +97,12 @@ async function attachMetricNamePreviews({
       if (sliceErr) return;
       const connection = await getConnectionById(teamId, connectionId, true);
       if (!connection) return;
-      const clickhouseClient = new PreviewDataClient({
+      const dataClient = new PreviewDataClient({
         requestTimeout: PREVIEW_QUERY_MAX_EXECUTION_SEC * 1000,
       });
       clients.set(connectionId, {
-        clickhouseClient,
-        metadata: getMetadata(clickhouseClient),
+        dataClient,
+        metadata: getMetadata(dataClient),
       });
     }),
   );
@@ -138,7 +138,7 @@ async function attachMetricNamePreviews({
         if (!namesPromise) {
           namesPromise = sampleMetricNamesWithLookback({
             metadata: client.metadata,
-            clickhouseClient: client.clickhouseClient,
+            dataClient: client.dataClient,
             databaseName: entry.databaseName,
             tableName,
             connectionId: entry.connectionId,
@@ -163,7 +163,7 @@ async function attachMetricNamePreviews({
   }
 
   const queue = new PQueue({ concurrency: PREVIEW_CONCURRENCY });
-  // Stops waiting at the budget even if a ClickHouse call ignores the
+  // Stops waiting at the budget even if a legacy store call ignores the
   // signal, so it cannot hold list_sources past it.
   await runWithTimeout(
     signal =>
@@ -250,7 +250,7 @@ export function registerListSources({
         // be. An unqualified name only resolves in the connection's default
         // database. Metric sources query the tables in metricTables, even
         // when from.tableName is set, so they get the database instead.
-        // A PromQL source on a Prometheus endpoint has no ClickHouse table:
+        // A PromQL source on a Prometheus endpoint has no source table:
         // its database and table are placeholders, so it gets neither.
         const onPrometheusEndpoint =
           s.kind === SourceKind.Promql &&

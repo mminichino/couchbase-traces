@@ -9,7 +9,7 @@ import {
   scrubMessage,
   serialize,
 } from '@/couchbase/errors';
-import { ClickHouseError, QueryError } from '@/query';
+import { CodedQueryError, QueryError } from '@/query';
 
 // Objects shaped like the SDK's errors: the class name is what matters.
 function sdkError(
@@ -204,14 +204,14 @@ describe('serialize / deserialize', () => {
   });
 });
 
-describe('ClickHouseError', () => {
+describe('CodedQueryError', () => {
   it('carries code and type for legacy error classification', () => {
-    const err = new ClickHouseError({
+    const err = new CodedQueryError({
       message: 'Timeout exceeded',
       code: '159',
       type: 'TIMEOUT_EXCEEDED',
     });
-    expect(err).toBeInstanceOf(ClickHouseError);
+    expect(err).toBeInstanceOf(CodedQueryError);
     expect(err.code).toBe('159');
     expect(err.type).toBe('TIMEOUT_EXCEEDED');
   });

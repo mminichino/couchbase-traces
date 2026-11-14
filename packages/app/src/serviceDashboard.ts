@@ -158,7 +158,7 @@ export function inList(expression: string, value: string): string {
  * Condition selecting the spans of a single database statement.
  *
  * No skip index covers the coalesced attribute lookup, so on its own it makes
- * ClickHouse read every granule in the time range. The prefilter compares the
+ * legacy store read every granule in the time range. The prefilter compares the
  * same keys directly, which matches a superset of those spans while the
  * coalesced comparison still decides; `rewriteSqlFilterWithKvItems` then
  * rewrites each comparison onto the schema's indexed items column, and older

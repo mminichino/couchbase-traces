@@ -11,14 +11,14 @@ jest.retryTimes(
 );
 
 // http-proxy-middleware v4 is ESM-only and Jest's CJS module loader cannot
-// load ESM packages. Auto-mock it; the clickhouse-proxy int tests opt out via
+// load ESM packages. Auto-mock it; the evalstore-proxy int tests opt out via
 // jest.unmock() (jest.int.config.js transpiles the package for them).
 jest.mock('http-proxy-middleware', () => ({
   createProxyMiddleware: jest.fn(() => jest.fn()),
 }));
 
 // Suppress noisy console output during test runs.
-// - debug/info: ClickHouse query logging, server startup messages
+// - debug/info: SQL query logging, server startup messages
 // - warn: expected column-not-found warnings from renderChartConfig on CTE tables
 jest.spyOn(console, 'debug').mockImplementation(() => {});
 jest.spyOn(console, 'info').mockImplementation(() => {});
@@ -32,7 +32,7 @@ jest.mock('@/utils/slack', () => ({
 
 // Mock global fetch for generic webhook calls. The real one is kept on
 // `globalThis.realFetch` so a test that needs to reach a live service (e.g.
-// ClickHouse's Prometheus API) can `mockFetch.mockImplementation(realFetch)`
+// legacy store's Prometheus API) can `mockFetch.mockImplementation(realFetch)`
 // for its duration.
 Object.assign(globalThis, { realFetch: global.fetch });
 global.fetch = jest.fn().mockResolvedValue({

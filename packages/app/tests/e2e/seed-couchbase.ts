@@ -1,7 +1,7 @@
 /**
  * Seeds Couchbase collections for full-stack E2E.
  */
-import { fromClickHouseRow } from '../../../ingest/src/model/fromClickHouseRow';
+import { fromShapedRow } from '../../../ingest/src/model/fromShapedRow';
 
 import {
   E2E_CUSTOM_SERVICE_LOGS_TABLE,
@@ -91,7 +91,7 @@ export async function seedCouchbase(): Promise<void> {
     endMs,
   );
   for (const row of logRows) {
-    const doc = fromClickHouseRow(E2E_LOGS_TABLE, row, {
+    const doc = fromShapedRow(E2E_LOGS_TABLE, row, {
       collection: 'otel_logs',
     });
     await upsertDoc(doc.collection, doc.key, doc.value);
@@ -105,7 +105,7 @@ export async function seedCouchbase(): Promise<void> {
     endMs,
   );
   for (const row of traceRows) {
-    const doc = fromClickHouseRow(E2E_TRACES_TABLE, row, {
+    const doc = fromShapedRow(E2E_TRACES_TABLE, row, {
       collection: 'otel_traces',
     });
     await upsertDoc(doc.collection, doc.key, doc.value);
@@ -119,7 +119,7 @@ export async function seedCouchbase(): Promise<void> {
     endMs,
   );
   for (const row of customRows) {
-    const doc = fromClickHouseRow(E2E_CUSTOM_SERVICE_LOGS_TABLE, row, {
+    const doc = fromShapedRow(E2E_CUSTOM_SERVICE_LOGS_TABLE, row, {
       collection: 'e2e_custom_service_name',
     });
     await upsertDoc(doc.collection, doc.key, doc.value);

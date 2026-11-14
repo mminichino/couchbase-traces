@@ -7,9 +7,9 @@ import {
   renderChartConfig,
 } from '@couchbase-traces/common-utils/dist/core/renderChartConfig';
 import {
-  ChSql,
-  chSql,
   parameterizedQueryToSql,
+  sqlExpr,
+  SqlFrag,
 } from '@couchbase-traces/common-utils/dist/query';
 import {
   AggregateFunction,
@@ -70,7 +70,7 @@ const buildMTViewDataTableDDL = (
     throw new Error('Group by is not supported');
   }
 
-  return chSql`CREATE TABLE IF NOT EXISTS ${HDX_DATABASE}.${{ Identifier: table }}
+  return sqlExpr`CREATE TABLE IF NOT EXISTS ${HDX_DATABASE}.${{ Identifier: table }}
       (
         ${{ Identifier: FIXED_TIME_BUCKET_EXPR_ALIAS }} DateTime,
         ${chartConfig.select
@@ -89,8 +89,8 @@ const buildMTViewDataTableDDL = (
       `;
 };
 
-const buildMTViewDDL = (name: string, table: string, query: ChSql) => {
-  return chSql`CREATE MATERIALIZED VIEW IF NOT EXISTS ${HDX_DATABASE}.${{ Identifier: name }} TO ${HDX_DATABASE}.${{ Identifier: table }} AS
+const buildMTViewDDL = (name: string, table: string, query: SqlFrag) => {
+  return sqlExpr`CREATE MATERIALIZED VIEW IF NOT EXISTS ${HDX_DATABASE}.${{ Identifier: name }} TO ${HDX_DATABASE}.${{ Identifier: table }} AS
       ${query}
     `;
 };

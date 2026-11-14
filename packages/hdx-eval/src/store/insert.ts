@@ -8,7 +8,7 @@ import type {
   TraceRow,
 } from '@/generators/types';
 
-import type { ClickHouseClient } from './client';
+import type { EvalStoreClient } from './client';
 import { EVAL_DATABASE } from './schema';
 
 const BATCH_SIZE = 100_000;
@@ -34,7 +34,7 @@ function chunk<T>(rows: T[], size: number): T[][] {
 }
 
 async function insertMappedRows<T>(
-  client: ClickHouseClient,
+  client: EvalStoreClient,
   table: string,
   rows: T[],
   mapper: (row: T) => Record<string, unknown>,
@@ -101,7 +101,7 @@ function logRowToCHObject(r: LogRow): Record<string, unknown> {
 }
 
 export function insertTraceRows(
-  client: ClickHouseClient,
+  client: EvalStoreClient,
   table: string,
   rows: TraceRow[],
 ): Promise<number> {
@@ -109,7 +109,7 @@ export function insertTraceRows(
 }
 
 export function insertLogRows(
-  client: ClickHouseClient,
+  client: EvalStoreClient,
   table: string,
   rows: LogRow[],
 ): Promise<number> {
@@ -218,7 +218,7 @@ function summaryRowToCHObject(r: SummaryMetricRow): Record<string, unknown> {
 }
 
 export function insertGaugeMetricRows(
-  client: ClickHouseClient,
+  client: EvalStoreClient,
   table: string,
   rows: GaugeMetricRow[],
 ): Promise<number> {
@@ -226,7 +226,7 @@ export function insertGaugeMetricRows(
 }
 
 export function insertSumMetricRows(
-  client: ClickHouseClient,
+  client: EvalStoreClient,
   table: string,
   rows: SumMetricRow[],
 ): Promise<number> {
@@ -234,7 +234,7 @@ export function insertSumMetricRows(
 }
 
 export function insertHistogramMetricRows(
-  client: ClickHouseClient,
+  client: EvalStoreClient,
   table: string,
   rows: HistogramMetricRow[],
 ): Promise<number> {
@@ -242,7 +242,7 @@ export function insertHistogramMetricRows(
 }
 
 export function insertExponentialHistogramMetricRows(
-  client: ClickHouseClient,
+  client: EvalStoreClient,
   table: string,
   rows: ExponentialHistogramMetricRow[],
 ): Promise<number> {
@@ -255,7 +255,7 @@ export function insertExponentialHistogramMetricRows(
 }
 
 export function insertSummaryMetricRows(
-  client: ClickHouseClient,
+  client: EvalStoreClient,
   table: string,
   rows: SummaryMetricRow[],
 ): Promise<number> {
@@ -263,7 +263,7 @@ export function insertSummaryMetricRows(
 }
 
 // Exported for unit tests so the CH row shape can be asserted without a live
-// ClickHouse. Not part of the public seeding API.
+// legacy store. Not part of the public seeding API.
 export const __metricMappers = {
   gauge: gaugeRowToCHObject,
   sum: sumRowToCHObject,

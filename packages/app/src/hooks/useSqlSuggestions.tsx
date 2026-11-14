@@ -33,7 +33,7 @@ class DoubleQuoteSuggestion implements ISuggestionEngine {
   }
 
   userMessage(key: string): string {
-    return `ClickHouse does not support double quotes (") but they were detected in ${key.toUpperCase()}. Switch to single quotes?`;
+    return `SQL++ string literals use single quotes; double quotes (") were detected in ${key.toUpperCase()}. Switch to single quotes?`;
   }
 
   correct(input: string): string {

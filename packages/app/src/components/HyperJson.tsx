@@ -43,7 +43,7 @@ export type FormatLeafValue = (arg0: {
 /**
  * How object keys are ordered at every level of the tree.
  *
- * `original` keeps the object's own key order — for ClickHouse `Map(...)`
+ * `original` keeps the object's own key order — for legacy store `Map(...)`
  * columns, physical storage order — except that integer-like keys (`"200"`,
  * `Map(UInt64, …)` keys) always come first in ascending numeric order. JS
  * objects order keys that way, so the true order is already gone once the
@@ -376,7 +376,7 @@ function TreeNode({
 
   const { keyOrder } = useAtomValue(hyperJsonAtom);
 
-  // ClickHouse hands back `Map(...)` keys in physical storage order, which reads
+  // legacy store hands back `Map(...)` keys in physical storage order, which reads
   // as random for wide maps like `ProfileEvents`. Sorting here (rather than
   // upstream) covers every nesting level for free, since TreeNode recurses, and
   // it puts the sort ahead of the MAX_TREE_NODE_ITEMS slice below so the

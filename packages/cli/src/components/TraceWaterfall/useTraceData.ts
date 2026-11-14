@@ -15,7 +15,7 @@ import type { SpanRow, TaggedSpanRow, SpanNode } from './types';
 // ---- Types ---------------------------------------------------------
 
 export interface UseTraceDataParams {
-  clickhouseClient: CliDataClient;
+  dataClient: CliDataClient;
   metadata: Metadata;
   source: SourceResponse;
   logSource?: SourceResponse | null;
@@ -43,7 +43,7 @@ export interface UseTraceDataReturn {
 // ---- Hook ----------------------------------------------------------
 
 export function useTraceData({
-  clickhouseClient,
+  dataClient,
   metadata,
   source,
   logSource,
@@ -88,7 +88,7 @@ export function useTraceData({
           setLastTraceChSql(traceChSql);
         }
 
-        const traceResultSet = await clickhouseClient.query({
+        const traceResultSet = await dataClient.query({
           query: traceChSql.sql,
           query_params: traceChSql.params,
           format: 'JSON',
@@ -107,7 +107,7 @@ export function useTraceData({
             { source: logSource, traceId, dateRange },
             metadata,
           );
-          const logResultSet = await clickhouseClient.query({
+          const logResultSet = await dataClient.query({
             query: logChSql.sql,
             query_params: logChSql.params,
             format: 'JSON',
@@ -137,7 +137,7 @@ export function useTraceData({
     return () => {
       cancelled = true;
     };
-  }, [clickhouseClient, metadata, source, logSource, traceId, eventTimestamp]);
+  }, [dataClient, metadata, source, logSource, traceId, eventTimestamp]);
 
   // ---- Fetch SELECT * for the selected span/log --------------------
   // Stable scalar deps (SpanId, Timestamp, kind) are used to avoid
@@ -181,7 +181,7 @@ export function useTraceData({
 
     (async () => {
       try {
-        const chSql = await buildTraceRowDetailQuery(
+        const sqlExpr = await buildTraceRowDetailQuery(
           {
             source: rowSource,
             traceId,
@@ -190,9 +190,9 @@ export function useTraceData({
           },
           metadata,
         );
-        const resultSet = await clickhouseClient.query({
-          query: chSql.sql,
-          query_params: chSql.params,
+        const resultSet = await dataClient.query({
+          query: sqlExpr.sql,
+          query_params: sqlExpr.params,
           format: 'JSON',
           connectionId: rowSource.connection,
         });

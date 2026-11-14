@@ -334,13 +334,13 @@
       "decision": null
     },
     {
-      "id": "api-team-clickhouse-settings",
+      "id": "api-team-query-settings",
       "name": "ClickHouse query settings",
       "area": "admin",
       "visibility": "admin",
       "description": "Edit the ClickHouse query settings applied to every team query.",
       "entryPoints": [
-        "api_route:PATCH /team/clickhouse-settings"
+        "api_route:PATCH /team/query-settings"
       ],
       "status": "ported",
       "decision": null
@@ -415,7 +415,9 @@
       "status": "replaced",
       "decision": {
         "note": "Couchbase query route replaces the ClickHouse proxy.",
-        "replacedBy": "couchbase-connectivity"
+        "replacedBy": "couchbase-connectivity",
+        "signedOffBy": "mminichino",
+        "date": "2026-11-13"
       },
       "notes": "Phase 10: capability continues through couchbase-connectivity."
     },

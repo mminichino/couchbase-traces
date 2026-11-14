@@ -453,7 +453,7 @@ export class SearchPage {
 
   /**
    * Locator for the results table's error state (rendered by ChartErrorState
-   * when the underlying ClickHouse query fails). Assert `toHaveCount(0)` to
+   * when the underlying SQL query fails). Assert `toHaveCount(0)` to
    * confirm the results loaded without error.
    */
   getTableError() {

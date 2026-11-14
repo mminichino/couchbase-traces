@@ -21,7 +21,7 @@ import { renderTileContent } from '@/shared/tileRender';
 import { useTileData } from './useTileData';
 
 export interface TileChartProps {
-  clickhouseClient: CliDataClient;
+  dataClient: CliDataClient;
   metadata: Metadata;
   tile: Tile;
   /** All available sources — the tile's source is resolved by ID */
@@ -44,7 +44,7 @@ function findTileSource(
 }
 
 export default function TileChart({
-  clickhouseClient,
+  dataClient,
   metadata,
   tile,
   sources,
@@ -61,7 +61,7 @@ export default function TileChart({
   const maxTimeBuckets = Math.max(20, Math.min(80, width - 14));
 
   const { result, loading, error } = useTileData({
-    clickhouseClient,
+    dataClient,
     metadata,
     config: tile.config,
     source,

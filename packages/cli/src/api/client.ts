@@ -47,7 +47,7 @@ interface ApiClientOptions {
   appUrl: string;
   /**
    * Active team ID. When set, the client sends an `x-hdx-team` header on
-   * every REST and ClickHouse-proxy request so the server scopes data
+   * every REST and legacy store-proxy request so the server scopes data
    * to that team. If not provided, the client picks up `activeTeamId`
    * from the saved session (if any).
    */
@@ -283,11 +283,6 @@ export class ApiClient {
 
   createDataClient(opts: Partial<DataClientOptions> = {}): CliDataClient {
     return new CliDataClient(this, opts);
-  }
-
-  /** @deprecated Use createDataClient */
-  createClickHouseClient(opts: Partial<DataClientOptions> = {}): CliDataClient {
-    return this.createDataClient(opts);
   }
 
   createMetadata(opts: Partial<DataClientOptions> = {}): Metadata {

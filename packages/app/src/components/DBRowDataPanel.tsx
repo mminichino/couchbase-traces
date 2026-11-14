@@ -418,7 +418,7 @@ export function getJSONColumnNames(meta: ResponseJSON['meta'] | undefined) {
 
 // Returns the names of Map-typed columns in the result metadata. Used by
 // `mergePath` to keep numeric-looking sub-keys on a Map(String, ...) from
-// collapsing into ClickHouse array-index syntax (`Map[2]`), which the
+// collapsing into legacy store array-index syntax (`Map[2]`), which the
 // server rejects with
 // `Illegal types of arguments: Map(String, ...), UInt8 for function
 // arrayElement`. HDX-4369.

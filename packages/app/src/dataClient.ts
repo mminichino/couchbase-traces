@@ -23,9 +23,6 @@ export const getDataClient = (
   options: DataClientOptions & { attribution: QueryAttribution },
 ): DataClient => createDataClient(options);
 
-/** @deprecated Use getDataClient */
-export const getClickhouseClient = getDataClient;
-
 export const useDataClient = (options: DataClientOptions = {}): DataClient => {
   const { data: me } = api.useMe();
   const queryTimeout = me?.team?.queryTimeout ?? DEFAULT_QUERY_TIMEOUT;
@@ -40,9 +37,6 @@ export const useDataClient = (options: DataClientOptions = {}): DataClient => {
     attribution,
   });
 };
-
-/** @deprecated Use useDataClient */
-export const useClickhouseClient = useDataClient;
 
 export function useDatabasesDirect(
   { connectionId }: { connectionId: string },

@@ -18,7 +18,7 @@ export const SQL_BATCH_CONCURRENCY = 5;
 
 /**
  * Whole-call budget shared by every query in the batch. Each query still has
- * ClickHouse's own max_execution_time; this bounds the call as a whole so a
+ * legacy store's own max_execution_time; this bounds the call as a whole so a
  * queue of slow queries cannot run past the client's patience.
  */
 export const SQL_BATCH_DEADLINE_MS = 60_000;
@@ -101,7 +101,7 @@ function parsePayload(text: string): Record<string, unknown> {
   return { raw: text };
 }
 
-/** The row array of an ok entry: `result` itself, or ClickHouse's `result.data`. */
+/** The row array of an ok entry: `result` itself, or legacy store's `result.data`. */
 function rowsOf(entry: SqlBatchEntry): unknown[] | undefined {
   const { result } = entry;
   if (Array.isArray(result)) return result;

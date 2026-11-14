@@ -1,4 +1,4 @@
-import type { ClickHouseClient } from './client';
+import type { EvalStoreClient } from './client';
 
 export const EVAL_DATABASE = 'default';
 const SOURCE_TRACES_TABLE = 'otel_traces';
@@ -64,7 +64,7 @@ export function scenarioTables(scenario: string): ScenarioTables {
 }
 
 async function tableExists(
-  client: ClickHouseClient,
+  client: EvalStoreClient,
   database: string,
   table: string,
 ): Promise<boolean> {
@@ -77,9 +77,7 @@ async function tableExists(
   return rows.length > 0;
 }
 
-async function assertSourceTablesExist(
-  client: ClickHouseClient,
-): Promise<void> {
+async function assertSourceTablesExist(client: EvalStoreClient): Promise<void> {
   const required = [
     SOURCE_TRACES_TABLE,
     SOURCE_LOGS_TABLE,
@@ -97,7 +95,7 @@ async function assertSourceTablesExist(
 }
 
 export async function ensureScenarioTables(
-  client: ClickHouseClient,
+  client: EvalStoreClient,
   scenario: string,
 ): Promise<ScenarioTables> {
   await assertSourceTablesExist(client);
@@ -135,7 +133,7 @@ export async function ensureScenarioTables(
 }
 
 async function removeTtlIfPresent(
-  client: ClickHouseClient,
+  client: EvalStoreClient,
   table: string,
 ): Promise<void> {
   try {
@@ -160,7 +158,7 @@ async function removeTtlIfPresent(
  * (~10 min) reseed on every run.
  */
 export async function scenarioIsSeeded(
-  client: ClickHouseClient,
+  client: EvalStoreClient,
   scenario: string,
 ): Promise<boolean> {
   const tables = scenarioTables(scenario);
@@ -186,7 +184,7 @@ export async function scenarioIsSeeded(
 }
 
 export async function truncateScenarioTables(
-  client: ClickHouseClient,
+  client: EvalStoreClient,
   scenario: string,
 ): Promise<void> {
   const tables = scenarioTables(scenario);
@@ -217,7 +215,7 @@ export async function truncateScenarioTables(
 }
 
 export async function dropScenarioTables(
-  client: ClickHouseClient,
+  client: EvalStoreClient,
   scenario: string,
 ): Promise<void> {
   const tables = scenarioTables(scenario);
@@ -368,7 +366,7 @@ GROUP BY ColumnIdentifier, Key, Timestamp`;
 }
 
 async function ensureRollupTables(
-  client: ClickHouseClient,
+  client: EvalStoreClient,
   tables: ScenarioTables,
 ): Promise<void> {
   const db = EVAL_DATABASE;
@@ -407,7 +405,7 @@ async function ensureRollupTables(
 }
 
 async function dropRollupTables(
-  client: ClickHouseClient,
+  client: EvalStoreClient,
   tables: ScenarioTables,
 ): Promise<void> {
   const db = EVAL_DATABASE;

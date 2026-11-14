@@ -137,7 +137,7 @@ export async function runSearchConfig({
       ? maxExecSeconds * 1000 + 2_000
       : undefined;
 
-  const clickhouseClient = new DataClient({
+  const dataClient = new DataClient({
     ...(requestTimeout != null ? { requestTimeout } : {}),
   });
 
@@ -164,8 +164,8 @@ export async function runSearchConfig({
     limit: { limit: maxResults, offset },
   } as ChartConfigWithDateRange;
 
-  const metadata = getMetadata(clickhouseClient);
-  const result = await clickhouseClient.queryChartConfig({
+  const metadata = getMetadata(dataClient);
+  const result = await dataClient.queryChartConfig({
     config: chartConfig,
     metadata,
     querySettings: source.querySettings,
@@ -177,7 +177,9 @@ export async function runSearchConfig({
     !('data' in result) ||
     !Array.isArray((result as { data: unknown }).data)
   ) {
-    throw new Error('Unexpected ClickHouse response shape: missing data array');
+    throw new Error(
+      'Unexpected legacy store response shape: missing data array',
+    );
   }
 
   const rows = (result as { data: unknown[] }).data as Record<

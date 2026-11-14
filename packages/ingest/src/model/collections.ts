@@ -28,7 +28,7 @@ export type FieldEncoding =
 
 export type FieldSpec = {
   name: string;
-  clickhouseType: string;
+  columnType: string;
   encoding: FieldEncoding;
   nested?: FieldSpec[];
 };
@@ -46,7 +46,7 @@ export type TtlEnv =
 export type CollectionSpec = {
   name: CollectionName;
   signal: 'logs' | 'traces' | 'metrics' | 'sessions';
-  clickhouseTable: string;
+  sourceTable: string;
   timestampField: 'Timestamp' | 'TimeUnix';
   ttlEnv: TtlEnv;
   fields: FieldSpec[];
@@ -59,38 +59,38 @@ const MAP = 'Map(LowCardinality(String), String)';
 
 const str = (name: string, type = 'String'): FieldSpec => ({
   name,
-  clickhouseType: type,
+  columnType: type,
   encoding: 'string',
 });
 const lc = (name: string): FieldSpec => str(name, 'LowCardinality(String)');
 const tsNs = (name: string): FieldSpec => ({
   name,
-  clickhouseType: 'DateTime64(9)',
+  columnType: 'DateTime64(9)',
   encoding: 'timestamp_ns',
 });
 const tsS = (name: string): FieldSpec => ({
   name,
-  clickhouseType: 'DateTime',
+  columnType: 'DateTime',
   encoding: 'timestamp_s',
 });
 const num = (name: string, type: string): FieldSpec => ({
   name,
-  clickhouseType: type,
+  columnType: type,
   encoding: 'number',
 });
 const map = (name: string): FieldSpec => ({
   name,
-  clickhouseType: MAP,
+  columnType: MAP,
   encoding: 'map',
 });
 const arr = (name: string, type: string): FieldSpec => ({
   name,
-  clickhouseType: type,
+  columnType: type,
   encoding: 'array',
 });
 const nested = (name: string, fields: FieldSpec[]): FieldSpec => ({
   name,
-  clickhouseType: 'Nested',
+  columnType: 'Nested',
   encoding: 'nested',
   nested: fields,
 });
@@ -137,20 +137,20 @@ const TRACE_FIELDS: FieldSpec[] = [
   nested('Events', [
     tsNs('Timestamp'),
     lc('Name'),
-    { name: 'Attributes', clickhouseType: `Array(${MAP})`, encoding: 'map' },
+    { name: 'Attributes', columnType: `Array(${MAP})`, encoding: 'map' },
   ]),
   nested('Links', [
     str('TraceId'),
     str('SpanId'),
     str('TraceState'),
-    { name: 'Attributes', clickhouseType: `Array(${MAP})`, encoding: 'map' },
+    { name: 'Attributes', columnType: `Array(${MAP})`, encoding: 'map' },
   ]),
 ];
 
 const EXEMPLARS = nested('Exemplars', [
   {
     name: 'FilteredAttributes',
-    clickhouseType: `Array(${MAP})`,
+    columnType: `Array(${MAP})`,
     encoding: 'map',
   },
   tsS('TimeUnix'),
@@ -185,7 +185,7 @@ const GAUGE_FIELDS: FieldSpec[] = [
 const SUM_FIELDS: FieldSpec[] = [
   ...GAUGE_FIELDS,
   num('AggregationTemporality', 'Int32'),
-  { name: 'IsMonotonic', clickhouseType: 'Bool', encoding: 'bool' },
+  { name: 'IsMonotonic', columnType: 'Bool', encoding: 'bool' },
 ];
 const HISTOGRAM_FIELDS: FieldSpec[] = [
   ...METRIC_COMMON,
@@ -391,7 +391,7 @@ function metricCollection(
   return {
     name,
     signal: 'metrics',
-    clickhouseTable: name,
+    sourceTable: name,
     timestampField: 'TimeUnix',
     ttlEnv: 'CBT_METRICS_TTL',
     fields,
@@ -404,7 +404,7 @@ export const COLLECTIONS: readonly CollectionSpec[] = [
   {
     name: 'otel_logs',
     signal: 'logs',
-    clickhouseTable: 'otel_logs',
+    sourceTable: 'otel_logs',
     timestampField: 'Timestamp',
     ttlEnv: 'CBT_LOGS_TTL',
     fields: LOG_FIELDS,
@@ -415,7 +415,7 @@ export const COLLECTIONS: readonly CollectionSpec[] = [
   {
     name: 'otel_traces',
     signal: 'traces',
-    clickhouseTable: 'otel_traces',
+    sourceTable: 'otel_traces',
     timestampField: 'Timestamp',
     ttlEnv: 'CBT_TRACES_TTL',
     fields: TRACE_FIELDS,
@@ -431,7 +431,7 @@ export const COLLECTIONS: readonly CollectionSpec[] = [
   {
     name: 'hyperdx_sessions',
     signal: 'sessions',
-    clickhouseTable: 'hyperdx_sessions',
+    sourceTable: 'hyperdx_sessions',
     timestampField: 'Timestamp',
     ttlEnv: 'CBT_SESSIONS_TTL',
     fields: SESSION_FIELDS,
@@ -469,13 +469,13 @@ function defaultValue(field: FieldSpec): unknown {
   }
 }
 
-/** Every field at its ClickHouse default, including materialized columns. */
+/** Every field at its legacy store default, including materialized columns. */
 export function defaultDocument(spec: CollectionSpec): Record<string, unknown> {
   const doc: Record<string, unknown> = {};
   for (const field of spec.fields) doc[field.name] = defaultValue(field);
   for (const field of spec.materialized) {
     if (field.name === 'SampleRate') doc[field.name] = 1;
-    else if (field.clickhouseType === 'DateTime') doc[field.name] = EPOCH_ISO;
+    else if (field.columnType === 'DateTime') doc[field.name] = EPOCH_ISO;
     else doc[field.name] = '';
   }
   return doc;

@@ -7,8 +7,8 @@ Couchbase Traces. It provides both an interactive TUI (built with Ink — React 
 terminals) and non-interactive commands (`query`, `chart`, `sources`, …) for
 scripting and piping.
 
-The CLI connects to the Couchbase Traces API server and queries ClickHouse directly
-through the API's `/clickhouse-proxy` endpoint, using the same query generation
+The CLI connects to the Couchbase Traces API server and queries legacy store directly
+through the API's `/evalstore-proxy` endpoint, using the same query generation
 logic (`@couchbase-traces/common-utils`) as the web frontend.
 
 ## CLI Commands
@@ -16,7 +16,7 @@ logic (`@couchbase-traces/common-utils`) as the web frontend.
 ```
 cbt tui -a <url>                    # Interactive TUI (main command)
 cbt sources -a <url>                # List available sources (with schemas)
-cbt connections                     # List ClickHouse connections (id, name, host)
+cbt connections                     # List legacy store connections (id, name, host)
 cbt dashboards [list]               # List dashboards (--query, --format table|json|csv)
 cbt dashboards export --id <id>     # Export a dashboard definition as JSON
 cbt dashboards create               # Create from -f <json> or --name + --chart/--chart-file
@@ -56,7 +56,7 @@ src/
 │                        #   loading → login → pick-source → EventViewer
 ├── api/
 │   ├── client.ts        # ApiClient (REST + session cookies)
-│   │                    # ProxyClickhouseClient (routes through /clickhouse-proxy)
+│   │                    # ProxyDataClient (routes through /evalstore-proxy)
 │   └── eventQuery.ts    # Query builders:
 │                        #   buildEventSearchQuery (table view, uses renderChartConfig)
 │                        #   buildTraceSpansSql (waterfall trace spans)
@@ -156,10 +156,10 @@ dashboard**:
    `convertToTableChartConfig` / `convertToCategoricalChartConfig` are the
    shared common-utils transforms the web imports too — the number transform
    is formula-aware, hiding operand series on number tiles with `formulas`).
-2. `shared/tileQuery.ts` executes it via `clickhouseClient.queryChartConfig()`
+2. `shared/tileQuery.ts` executes it via `dataClient.queryChartConfig()`
    from common-utils — internally `setChartSelectsAlias → renderChartConfig`
    (one composed statement, even for multi-series metric charts and metric
-   formula tiles, whose derived `formulas` columns are computed in ClickHouse),
+   formula tiles, whose derived `formulas` columns are computed in legacy store),
    identical to the web's `useQueriedChartConfig` core (minus chunking / MV
    optimization / PromQL).
 3. `shared/chartData.ts` shapes the response (ports of
@@ -296,11 +296,11 @@ Session is stored at `~/.config/hyperdx/cli/session.json` with mode `0o600`.
 Contains `apiUrl` and `cookies[]`. The `ApiClient` constructor loads the saved
 session and checks if the stored `apiUrl` matches the requested one.
 
-### ClickHouse Proxy Client
+### legacy store Proxy Client
 
-`ProxyClickhouseClient` extends `BaseClickhouseClient` from common-utils. It:
+`ProxyDataClient` extends `BaseDataClient` from common-utils. It:
 
-- Routes queries through `/clickhouse-proxy` (sets `pathname`)
+- Routes queries through `/evalstore-proxy` (sets `pathname`)
 - Injects session cookies for auth
 - Passes `x-hyperdx-connection-id` header
 - Disables basic auth (`set_basic_auth_header: false`)
@@ -308,7 +308,7 @@ session and checks if the stored `apiUrl` matches the requested one.
 
 ### Source Expressions
 
-Sources have many expression fields that map to ClickHouse column names. Key
+Sources have many expression fields that map to legacy store column names. Key
 ones used in the CLI:
 
 - `timestampValueExpression` — Primary timestamp (often `TimestampTime`,

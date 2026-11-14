@@ -7,7 +7,7 @@
  *   convertToTableChartConfig).
  *
  * The resulting configs are passed to
- * `clickhouseClient.queryChartConfig()` (common-utils), which renders
+ * `dataClient.queryChartConfig()` (common-utils), which renders
  * SQL via `renderChartConfig` — the exact same pipeline the web
  * frontend uses. Do NOT modify the resolution rules without checking
  * the web components first.

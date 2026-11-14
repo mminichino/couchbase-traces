@@ -26,6 +26,3 @@ export class DataClient extends NodeDataClient {
     });
   }
 }
-
-/** @deprecated Use DataClient */
-export const ClickhouseClient = DataClient;

@@ -175,7 +175,7 @@ export function getRpcStatus(attributes: Attributes): RpcStatus | undefined {
 
 /**
  * The server the client called, e.g. `quote:8080`. `spanKind` is the
- * SpanKind column, which the ClickHouse exporter writes as `Server` and older
+ * SpanKind column, which the legacy store exporter writes as `Server` and older
  * versions as `SPAN_KIND_SERVER`.
  */
 export function getRpcServerAddress(

@@ -12,7 +12,7 @@ export interface IConnection {
   team: ObjectId;
   hyperdxSettingPrefix?: string;
   isPrometheusEndpoint?: boolean;
-  /** Legacy ClickHouse connections the product no longer queries. */
+  /** Legacy legacy store connections the product no longer queries. */
   unsupported?: boolean;
   /** How this connection came to exist, for IaC tooling. Named distinctly
    *  from `Dashboard.provisioned`, which is an unrelated boolean (machine-
@@ -22,7 +22,7 @@ export interface IConnection {
    *  stays distinguishable from an explicit `false`:
    *
    *  - `undefined` — unknown provenance. Assume it may be platform-managed.
-   *  - `true`      — provisioned by the platform (e.g. ClickHouse Cloud). The
+   *  - `true`      — provisioned by the platform (e.g. managed cloud). The
    *                  Terraform provider cannot manage it.
    *  - `false`     — explicitly self-managed; safe for `terraform import`.
    *

@@ -23,7 +23,7 @@ Read from upstream `main` on 2026-11-12, with earlier phases applied.
 
 | Item | State before Phase 10 |
 |---|---|
-| ClickHouse client and types | `common-utils/src/clickhouse/` (`index.ts`, `browser.ts`, `node.ts`, `attribution.ts`): clients, `chSql`, `ChSql`, `concatChSql`, `ClickHouseQueryError`, `JSDataType`, `convertCHDataTypeToJSType`, `ResponseJSON`, `ColumnMeta`, `QueryInputs`, query attribution helpers |
+| ClickHouse client and types | `common-utils/src/clickhouse/` (`index.ts`, `browser.ts`, `node.ts`, `attribution.ts`): clients, `sqlExpr`, `SqlFrag`, `concatSqlExpr`, `ClickHouseQueryError`, `JSDataType`, `convertCHDataTypeToJSType`, `ResponseJSON`, `ColumnMeta`, `QueryInputs`, query attribution helpers |
 | ClickHouse rendering and search | `core/renderChartConfig.ts`, ClickHouse serializers in `queryParser.ts`, ClickHouse expansions in `macros.ts`, ClickHouse paths in other `core/` modules |
 | Metadata | Upstream `Metadata` (ClickHouse) and `CouchbaseMetadata`, routed by `RoutingMetadata` |
 | Seam | `dataLayer/`: routing client subclasses, kind resolver, `COUCHBASE_SLICES` (all `true` after Phase 8), `filterSourcesForSlice`, `assertSliceForConnection` |
@@ -182,7 +182,7 @@ Move these out of `common-utils/src/clickhouse/` before deleting it, renaming wh
 | Query attribution (`QueryAttribution`, `mergeQueryAttribution`, `buildQueryId`) | `common-utils/src/query/attribution.ts` | same; `buildLogComment` is deleted |
 | `streamToAsyncIterator` | `common-utils/src/query/stream.ts` | same |
 
-Functions only used by ClickHouse code (`isCHFixedStringType`, `isCHIntegerType`, `chSqlToAliasMap`, `chSqlToSelectColumns`, `parameterizedQueryToSql`, `tableExpr`, `extractColumnReferencesFromKey`, `getResponseHeaders`, and similar) are deleted with their tests. If one turns out to have a Couchbase caller, move it instead and record it in the notes.
+Functions only used by ClickHouse code (`isCHFixedStringType`, `isCHIntegerType`, `sqlExprToAliasMap`, `sqlExprToSelectColumns`, `parameterizedQueryToSql`, `tableExpr`, `extractColumnReferencesFromKey`, `getResponseHeaders`, and similar) are deleted with their tests. If one turns out to have a Couchbase caller, move it instead and record it in the notes.
 
 ### 7.2 Collapse the seam
 
@@ -197,7 +197,7 @@ Functions only used by ClickHouse code (`isCHFixedStringType`, `isCHIntegerType`
 | `SqlppQuery` | `Query` (`{ sql, params }`; the `dialect` tag is removed) |
 | `formatQueryForDisplay` | Same name, SQL++ only |
 | Kind resolver (`kind.ts`), `COUCHBASE_SLICES`, `isCouchbaseSliceEnabled`, `filterSourcesForSlice`, `assertSliceForConnection`, `queryLanguageForConnection`, `CouchbaseNotReadyError` | Deleted, with every call site |
-| App `getClickhouseClient`, `useClickhouseClient` | `getDataClient`, `useDataClient` |
+| App `getDataClient`, `useDataClient` | `getDataClient`, `useDataClient` |
 | `TeamClickHouseSettings*` schemas and types | `TeamQuerySettings*`; Mongo field names unchanged |
 | Route `/team/clickhouse-settings` | `/team/query-settings`, with the app and tests updated |
 
@@ -287,7 +287,7 @@ Commit `Add dependency license report`.
 
 | Check | Requirement |
 |---|---|
-| Text | No case-insensitive `clickhouse`, `clickstack`, or `chSql` in tracked text files, except entries matched by `port/remove-ch/allowlist.json` |
+| Text | No case-insensitive `clickhouse`, `clickstack`, or `sqlExpr` in tracked text files, except entries matched by `port/remove-ch/allowlist.json` |
 | npm | No dependency on `@clickhouse/client`, `@clickhouse/client-web`, or `@clickhouse/client-common` in any `package.json` or `yarn.lock` |
 | Go | No module path containing `clickhouse` in `go.mod`, `go.sum`, or `builder-config.yaml` |
 | Images | No `clickhouse/` image reference in compose files, Dockerfiles, or workflows |

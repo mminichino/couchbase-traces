@@ -2,7 +2,7 @@ import { MantineProvider } from '@mantine/core';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
-import McpInstallPanel from '@/components/ClickStackOnboarding/McpInstallPanel';
+import McpInstallPanel from '@/components/CollectorOnboarding/McpInstallPanel';
 import { defaultRedact } from '@/components/RevealSnippet/RevealSnippet';
 
 // A realistic-length access key so defaultRedact keeps a visible prefix and

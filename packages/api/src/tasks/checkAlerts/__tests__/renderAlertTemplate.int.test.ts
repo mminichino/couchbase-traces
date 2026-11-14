@@ -69,8 +69,8 @@ const mockMetadata = {
   getMapValues: jest.fn().mockResolvedValue([]),
   getAllFields: jest.fn().mockResolvedValue([]),
   getTableMetadata: jest.fn().mockResolvedValue({}),
-  getClickHouseSettings: jest.fn().mockReturnValue({}),
-  setClickHouseSettings: jest.fn(),
+  getQuerySettings: jest.fn().mockReturnValue({}),
+  setQuerySettings: jest.fn(),
   getSkipIndices: jest.fn().mockResolvedValue([]),
   getSetting: jest.fn().mockResolvedValue(undefined),
 } as any;
@@ -229,7 +229,7 @@ const render = async (
   (
     await renderAlertTemplate({
       alertProvider,
-      clickhouseClient: mockClickhouseClient,
+      dataClient: mockClickhouseClient,
       metadata: mockMetadata,
       state,
       template: null,
@@ -346,7 +346,7 @@ describe('renderAlertTemplate', () => {
 
           const { body: result } = await renderAlertTemplate({
             alertProvider,
-            clickhouseClient: maliciousClickhouseClient,
+            dataClient: maliciousClickhouseClient,
             metadata: mockMetadata,
             state: AlertState.ALERT,
             template: null,
@@ -502,7 +502,7 @@ describe('enriched message fields', () => {
 
     const result = await renderAlertTemplate({
       alertProvider,
-      clickhouseClient: mockClickhouseClient,
+      dataClient: mockClickhouseClient,
       metadata: mockMetadata,
       state,
       template: null,
@@ -731,7 +731,7 @@ describe('enriched message fields', () => {
     try {
       await renderAlertTemplate({
         alertProvider,
-        clickhouseClient: mockClickhouseClient,
+        dataClient: mockClickhouseClient,
         metadata: mockMetadata,
         state: AlertState.ALERT,
         template: null,
@@ -990,7 +990,7 @@ describe('per-event notification cap', () => {
 
     await renderAlertTemplate({
       alertProvider,
-      clickhouseClient: mockClickhouseClient,
+      dataClient: mockClickhouseClient,
       metadata: mockMetadata,
       state: AlertState.ALERT,
       template,
@@ -1029,7 +1029,7 @@ describe('per-event notification cap', () => {
 
     await renderAlertTemplate({
       alertProvider,
-      clickhouseClient: mockClickhouseClient,
+      dataClient: mockClickhouseClient,
       metadata: mockMetadata,
       state: AlertState.ALERT,
       template: `{{#is_match "group" "http"}}routed{{/is_match}} @webhook-${mentioned._id.toString()}`,
@@ -1068,7 +1068,7 @@ describe('per-event notification cap', () => {
 
     const { failures } = await renderAlertTemplate({
       alertProvider,
-      clickhouseClient: mockClickhouseClient,
+      dataClient: mockClickhouseClient,
       metadata: mockMetadata,
       state: AlertState.ALERT,
       template,
@@ -1093,7 +1093,7 @@ describe('per-event notification cap', () => {
 
     const { failures } = await renderAlertTemplate({
       alertProvider,
-      clickhouseClient: mockClickhouseClient,
+      dataClient: mockClickhouseClient,
       metadata: mockMetadata,
       state: AlertState.ALERT,
       template,
@@ -1132,7 +1132,7 @@ describe('per-event notification cap', () => {
 
     const { failures } = await renderAlertTemplate({
       alertProvider,
-      clickhouseClient: mockClickhouseClient,
+      dataClient: mockClickhouseClient,
       metadata: mockMetadata,
       state: AlertState.ALERT,
       template,
@@ -1170,7 +1170,7 @@ describe('notification targets are resolved once per webhook', () => {
 
     const { failures } = await renderAlertTemplate({
       alertProvider,
-      clickhouseClient: mockClickhouseClient,
+      dataClient: mockClickhouseClient,
       metadata: mockMetadata,
       state: AlertState.ALERT,
       // The same webhook named by the message and configured as a channel.
@@ -1199,7 +1199,7 @@ describe('notification targets are resolved once per webhook', () => {
 
     const { failures } = await renderAlertTemplate({
       alertProvider,
-      clickhouseClient: mockClickhouseClient,
+      dataClient: mockClickhouseClient,
       metadata: mockMetadata,
       state: AlertState.ALERT,
       // "@here" is not a channel; it must not take down the whole render.

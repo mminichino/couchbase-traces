@@ -22,7 +22,7 @@ import {
 import { mcpVariableValuesParam, resolveDashboardVariables } from './variables';
 
 /**
- * How many tiles to query against ClickHouse at once. Kept lowish so a batch
+ * How many tiles to query against legacy store at once. Kept lowish so a batch
  * validation of a large dashboard doesn't hammer the connection — each tile is
  * a full chart-config query.
  *
@@ -33,7 +33,7 @@ export const TILE_QUERY_CONCURRENCY = 6;
 /**
  * Soft cap on how many tiles a single call will run. A pathological dashboard
  * (or a very long explicit `tileIds` list) would otherwise turn one MCP call
- * into an unbounded run of ClickHouse queries. Tiles past the cap are returned
+ * into an unbounded run of legacy store queries. Tiles past the cap are returned
  * as `unrunTileIds` so nothing is silently dropped — the caller can page
  * through the remainder in a follow-up call.
  */
@@ -255,8 +255,8 @@ export function registerQueryTiles({
             // so withDeadline can skip issuing it entirely once the budget is
             // spent (see withDeadline). withDeadline hands the thunk an
             // AbortSignal it fires on timeout; threading it into runConfigTile
-            // cancels the in-flight ClickHouse query instead of leaving it to
-            // run headless. runConfigTile turns ClickHouse errors into isError
+            // cancels the in-flight SQL query instead of leaving it to
+            // run headless. runConfigTile turns legacy store errors into isError
             // results; the try/catch covers an unexpected throw or a deadline
             // timeout, folding either into a status:'error' entry so one
             // misbehaving tile never rejects the whole batch.

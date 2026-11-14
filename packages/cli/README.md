@@ -33,7 +33,7 @@ cbt tui
 # Chart error volume by service for the past 3 hours
 cbt chart -s Logs --where 'SeverityText:error' --group-by ServiceName --since 3h
 
-# Run raw SQL against ClickHouse
+# Run raw SQL against legacy store
 cbt query --connection-id "$CONN" --sql "SELECT count() FROM default.otel_logs"
 ```
 
@@ -45,8 +45,8 @@ cbt query --connection-id "$CONN" --sql "SELECT count() FROM default.otel_logs"
   and open-in-browser deep links
 - **Terminal charts** — render saved dashboard tiles or ad-hoc charts (line,
   stacked bar, number, table, bar, pie) as ANSI output
-- **Raw SQL** — query ClickHouse directly through the Couchbase Traces proxy, in any
-  ClickHouse output format
+- **Raw SQL** — query legacy store directly through the Couchbase Traces proxy, in any
+  legacy store output format
 - **Log pattern mining** — cluster query results into Drain log patterns to
   summarize large result sets
 - **Alerts & dashboards** — browse alerts (with trigger history) and dashboards
@@ -65,7 +65,7 @@ cbt chart -s <source> [--agg ...]   # Ad-hoc chart over a source
 cbt chart --sql <query> -s <source> # Ad-hoc chart from raw SQL
 cbt query --connection-id <id> --sql <query>  # Raw SQL to stdout
 cbt sources                         # List data sources with table schemas
-cbt connections                     # List ClickHouse connections
+cbt connections                     # List legacy store connections
 cbt dashboards                      # List dashboards with tile summaries
 cbt auth login|status|logout        # Manage authentication
 cbt team list|current|use <team>    # Switch between teams
@@ -152,9 +152,9 @@ cbt chart -s Logs --sql "SELECT \$__timeInterval(TimestampTime) AS ts, count()
 
 ### `cbt query` — Raw SQL
 
-Execute raw ClickHouse SQL through the Couchbase Traces proxy. Output defaults to
+Execute raw legacy SQL through the Couchbase Traces proxy. Output defaults to
 `JSONEachRow` (NDJSON — one JSON object per line), so results pipe cleanly into
-`jq` and friends. Any ClickHouse output format is accepted via `--format`
+`jq` and friends. Any legacy store output format is accepted via `--format`
 (`JSON`, `TabSeparated`, `CSV`, ...).
 
 ```bash
@@ -178,11 +178,11 @@ Exit codes: `0` on success (empty stdout means zero rows), `1` on failure.
 
 ### `cbt sources` / `cbt connections` / `cbt dashboards` — Discovery
 
-List the data sources, ClickHouse connections, and dashboards available to your
+List the data sources, legacy store connections, and dashboards available to your
 team. All three support `--json` for structured output.
 
 ```bash
-cbt sources               # Sources with ClickHouse CREATE TABLE schemas
+cbt sources               # Sources with legacy store CREATE TABLE schemas
 cbt sources --json        # Includes column expression mappings per source
 cbt connections --json    # Connection IDs for `cbt query` / `cbt chart --sql`
 cbt dashboards            # Dashboards + tile names for `cbt chart -d`

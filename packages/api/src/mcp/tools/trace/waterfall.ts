@@ -1,6 +1,6 @@
 import { pickBucketTimestampColumn } from '@couchbase-traces/common-utils/dist/core/utils';
 import { getMetadata } from '@couchbase-traces/common-utils/dist/dataLayer';
-import type { ChSql } from '@couchbase-traces/common-utils/dist/query';
+import type { SqlFrag } from '@couchbase-traces/common-utils/dist/query';
 import {
   type BuilderChartConfigWithDateRange,
   type ChartConfigWithDateRange,
@@ -12,15 +12,12 @@ import { z } from 'zod';
 
 import { getSource } from '@/controllers/sources';
 import { READ_ONLY_TOOL } from '@/mcp/tools/annotations';
-import {
-  clickHouseErrorResult,
-  parseTimeRange,
-} from '@/mcp/tools/query/helpers';
+import { parseTimeRange, queryErrorResult } from '@/mcp/tools/query/helpers';
 import {
   durationDivisor,
-  getMcpClickhouseClient,
+  getMcpDataClient,
   inclusiveTimeFilter,
-  requireMcpClickhouseClient,
+  requireMcpDataClient,
   type TimeFilterParams,
 } from '@/mcp/tools/trace/shared';
 import type { ToolRegistrar } from '@/mcp/tools/types';
@@ -123,7 +120,7 @@ const traceSchema = z.object({
 type TraceInput = z.infer<typeof traceSchema>;
 
 // Probe-window tuning. The span/log fetch is time-bounded to the
-// trace's probed [min, max] extent so ClickHouse prunes partitions. The pads
+// trace's probed [min, max] extent so legacy store prunes partitions. The pads
 // absorb clock skew between emitters; they do NOT cover trace duration — the
 // [min, max] extent already does. MAX_FETCH_WINDOW clamps the width so a
 // reused/sentinel id (e.g. an all-zero TraceId) whose min and max are days
@@ -205,7 +202,7 @@ type TimestampExprs = {
   eventTs: string;
   /** Inclusive filter over every configured timestamp column, so a
    *  composite "EventDate, EventTime" source still prunes on its Date column. */
-  timeFilter: (start: Date, end: Date) => Promise<ChSql>;
+  timeFilter: (start: Date, end: Date) => Promise<SqlFrag>;
 };
 
 async function resolveTimestampExprs(
@@ -233,7 +230,7 @@ type ProbedWindow = { start: Date; end: Date; clamped: boolean };
  * back to its window.
  */
 async function probeTraceWindow(
-  clickhouseClient: DataClient,
+  dataClient: DataClient,
   params: {
     databaseName: string;
     tableName: string;
@@ -260,7 +257,7 @@ async function probeTraceWindow(
     WHERE ${params.traceIdExpr} = {tid:String}
       AND ${timeFilter.sql}
   `;
-  const result = await clickhouseClient.query({
+  const result = await dataClient.query({
     query: probeQuery,
     query_params: {
       ...timeFilter.params,
@@ -353,14 +350,14 @@ export function registerTraceWaterfall({
         );
       }
 
-      const clickhouseClient = await requireMcpClickhouseClient(
+      const dataClient = await requireMcpDataClient(
         teamId.toString(),
         source.connection.toString(),
       );
-      if ('isError' in clickhouseClient) {
-        return clickhouseClient;
+      if ('isError' in dataClient) {
+        return dataClient;
       }
-      const metadata = getMetadata(clickhouseClient);
+      const metadata = getMetadata(dataClient);
 
       const traceIdExpr = source.traceIdExpression;
       const spanIdExpr = source.spanIdExpression;
@@ -438,13 +435,13 @@ export function registerTraceWaterfall({
 
         let pickResult: { data?: Array<Record<string, unknown>> } = {};
         try {
-          pickResult = (await clickhouseClient.queryChartConfig({
+          pickResult = (await dataClient.queryChartConfig({
             config: pickConfig as ChartConfigWithDateRange,
             metadata,
             querySettings: source.querySettings,
           })) as { data?: Array<Record<string, unknown>> };
         } catch (e) {
-          return clickHouseErrorResult(e, 'Failed to pick a trace');
+          return queryErrorResult(e, 'Failed to pick a trace');
         }
 
         const firstRow = pickResult.data?.[0];
@@ -482,7 +479,7 @@ export function registerTraceWaterfall({
         pickedTraceId = String(candidate[1]);
       }
 
-      // The fetch must be time-bounded so ClickHouse prunes partitions, but the
+      // The fetch must be time-bounded so legacy store prunes partitions, but the
       // [startDate, endDate] window is often too narrow to bound it safely:
       //   - an explicit traceId with the default window may be for an older
       //     trace outside it;
@@ -510,7 +507,7 @@ export function registerTraceWaterfall({
               endDate,
             ];
         try {
-          const probed = await probeTraceWindow(clickhouseClient, {
+          const probed = await probeTraceWindow(dataClient, {
             databaseName: source.from.databaseName,
             tableName: source.from.tableName,
             connectionId: source.connection.toString(),
@@ -564,7 +561,7 @@ export function registerTraceWaterfall({
           ORDER BY ${ts.eventTs} ASC
           LIMIT {n:UInt32}
         `;
-        const result = await clickhouseClient.query({
+        const result = await dataClient.query({
           query: treeQuery,
           query_params: {
             ...timeFilter.params,
@@ -580,10 +577,7 @@ export function registerTraceWaterfall({
         rows =
           (await (result as { json: () => Promise<SpanRow[]> }).json()) ?? [];
       } catch (e) {
-        return clickHouseErrorResult(
-          e,
-          `Failed to fetch trace ${pickedTraceId}`,
-        );
+        return queryErrorResult(e, `Failed to fetch trace ${pickedTraceId}`);
       }
 
       const truncated = rows.length > input.maxSpans;
@@ -676,11 +670,11 @@ export function registerTraceWaterfall({
           const logSvcExpr = logSource.serviceNameExpression ?? "''";
 
           // Reuse the same connection only when the log source lives there.
-          let logClient: DataClient | null = clickhouseClient;
+          let logClient: DataClient | null = dataClient;
           if (
             logSource.connection.toString() !== source.connection.toString()
           ) {
-            logClient = await getMcpClickhouseClient(
+            logClient = await getMcpDataClient(
               teamId.toString(),
               logSource.connection.toString(),
             );
@@ -694,9 +688,7 @@ export function registerTraceWaterfall({
               const logTs = await resolveTimestampExprs({
                 timestampValueExpression: logSource.timestampValueExpression,
                 metadata:
-                  logClient === clickhouseClient
-                    ? metadata
-                    : getMetadata(logClient),
+                  logClient === dataClient ? metadata : getMetadata(logClient),
                 databaseName: logSource.from.databaseName,
                 tableName: logSource.from.tableName,
                 connectionId: logSource.connection.toString(),

@@ -1,6 +1,6 @@
 /**
  * Utilities for parsing and classifying error messages,
- * particularly ClickHouse DB errors that can be verbose HTML
+ * particularly legacy store DB errors that can be verbose HTML
  * or include DB::Exception stack traces.
  *
  * Mirrors the error handling patterns from the web frontend:
@@ -23,9 +23,9 @@ export interface ParsedError {
 const MAX_MESSAGE_LENGTH = 500;
 
 /**
- * Extract a readable message from a ClickHouse DB::Exception string.
+ * Extract a readable message from a legacy store DB::Exception string.
  *
- * ClickHouse errors typically look like:
+ * legacy store errors typically look like:
  *   "Code: 62. DB::Exception: Syntax error: failed at position 5 ... (SYNTAX_ERROR) (version 24.8.1.1)"
  *
  * We extract everything up to the first "(version" or the error code suffix.
@@ -51,7 +51,7 @@ function parseClickHouseException(raw: string): string {
 }
 
 /**
- * Strip HTML tags from a string — ClickHouse proxy errors sometimes
+ * Strip HTML tags from a string — legacy store proxy errors sometimes
  * return full HTML error pages.
  */
 function stripHtml(raw: string): string {
@@ -79,7 +79,7 @@ function cleanMessage(raw: string): string {
     message = stripHtml(message);
   }
 
-  // Handle ClickHouse DB::Exception
+  // Handle legacy store DB::Exception
   if (message.includes('DB::Exception')) {
     message = parseClickHouseException(message);
   }

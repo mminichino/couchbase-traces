@@ -8,7 +8,7 @@ import {
   dropTimeSeriesTable,
   getLoggedInAgent,
   getServer,
-  getTestFixtureClickHouseClient,
+  getTestFixtureDataClient,
   seedTimeSeriesTagsTable,
 } from '@/fixtures';
 import Connection from '@/models/connection';
@@ -65,7 +65,7 @@ describe('request query attribution', () => {
 
   // query_log is written asynchronously, so flush and poll.
   async function findRouteQueries() {
-    const client = await getTestFixtureClickHouseClient();
+    const client = await getTestFixtureDataClient();
     for (let attempt = 0; attempt < 10; attempt++) {
       await client.command({ query: 'SYSTEM FLUSH LOGS' });
       const result = await client.query({
@@ -90,7 +90,7 @@ describe('request query attribution', () => {
 
   // As findRouteQueries, for the PromQL evaluation a tile's request ran.
   async function findTileQueries(queryText: string, tile: string) {
-    const client = await getTestFixtureClickHouseClient();
+    const client = await getTestFixtureDataClient();
     for (let attempt = 0; attempt < 10; attempt++) {
       await client.command({ query: 'SYSTEM FLUSH LOGS' });
       const result = await client.query({

@@ -25,7 +25,7 @@
 //                     ws(s), ftp, sftp, ssh, postgres(ql), mysql,
 //                     mariadb, mongodb(+srv), mssql, sqlserver,
 //                     snowflake, redis(s), amqp(s), kafka(+ssl),
-//                     clickhouse, smtp(s), ldap(s), nats. Match is
+//                     evalstore, smtp(s), ldap(s), nats. Match is
 //                     case-insensitive (RFC 3986 schemes are).
 //   key-value         password=secret, api_key=abc
 //   json-quoted       {"password":"secret"} and similar
@@ -84,7 +84,7 @@ const PATTERNS: RedactionPattern[] = [
   // with embedded credentials. Schemes listed alphabetically.
   {
     name: 'basic-auth-url',
-    re: /\b(amqps?|clickhouse|ftp|https?|kafka(?:\+ssl)?|ldaps?|mariadb|mongodb(?:\+srv)?|mssql|mysql|nats|postgres(?:ql)?|rediss?|sftp|smtps?|snowflake|sqlserver|ssh|wss?):\/\/([^/\s:@]+):([^/\s]+)@([^/\s@]+)/gi,
+    re: /\b(amqps?|clickhouse|couchbase|ftp|https?|kafka(?:\+ssl)?|ldaps?|mariadb|mongodb(?:\+srv)?|mssql|mysql|nats|postgres(?:ql)?|rediss?|sftp|smtps?|snowflake|sqlserver|ssh|wss?):\/\/([^/\s:@]+):([^/\s]+)@([^/\s@]+)/gi,
     replace: '$1://[REDACTED]:[REDACTED]@$4',
   },
   // Authorization: Bearer xxx. RFC 6750's b64token alphabet

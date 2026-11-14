@@ -1,19 +1,19 @@
-import type { ChSql } from '@couchbase-traces/common-utils/dist/query';
-import { chSql } from '@couchbase-traces/common-utils/dist/query';
+import type { SqlFrag } from '@couchbase-traces/common-utils/dist/query';
+import { sqlExpr } from '@couchbase-traces/common-utils/dist/query';
 
 /**
  * SQL++ session-list CTE merge (Phase 7 §9.5).
  * Mirrors `buildSessionsCtes` / `unionSessionIds` with CASE/IFNULL instead of
- * ClickHouse `if` / `maxIf` / `ifNull`, and `UNION` instead of `UNION DISTINCT`.
+ * legacy store `if` / `maxIf` / `ifNull`, and `UNION` instead of `UNION DISTINCT`.
  */
 
 export function unionSessionIdsCouchbase(
-  rumIds: ChSql,
-  otelIds: ChSql | undefined,
-): ChSql {
+  rumIds: SqlFrag,
+  otelIds: SqlFrag | undefined,
+): SqlFrag {
   return otelIds == null
     ? rumIds
-    : chSql`SELECT sessionId FROM (${rumIds}) UNION SELECT sessionId FROM (${otelIds})`;
+    : sqlExpr`SELECT sessionId FROM (${rumIds}) UNION SELECT sessionId FROM (${otelIds})`;
 }
 
 export function buildSessionsCtesCouchbase({
@@ -23,10 +23,10 @@ export function buildSessionsCtesCouchbase({
   withActivityFilter,
 }: {
   name: string;
-  spans: ChSql;
-  recordings: ChSql | undefined;
+  spans: SqlFrag;
+  recordings: SqlFrag | undefined;
   withActivityFilter: boolean;
-}): ChSql {
+}): SqlFrag {
   const recordingsUnion =
     recordings != null
       ? `UNION ALL
@@ -39,9 +39,9 @@ export function buildSessionsCtesCouchbase({
   const having = withActivityFilter
     ? `HAVING ${recordings != null ? 'MAX(fromReplay) = 1 OR ' : ''}interactionCount > 0 OR recordingCount > 0`
     : '';
-  return chSql`
+  return sqlExpr`
     WITH _spans AS (${spans}),
-    ${recordings != null ? chSql`_recordings AS (${recordings}),` : ''}
+    ${recordings != null ? sqlExpr`_recordings AS (${recordings}),` : ''}
     ${name} AS (
       SELECT svc AS serviceName, sid AS sessionId,
         CASE WHEN SUM(rumRows) > 0 THEN 'rum.sessionId' ELSE 'session.id' END AS sessionIdKey,
@@ -76,17 +76,17 @@ export function buildSessionsCtesCouchbase({
   `;
 }
 
-/** ClickHouse `simpleJSONExtractInt(Body, 'type')` → SQL++. */
+/** legacy store `simpleJSONExtractInt(Body, 'type')` → SQL++. */
 export function rrwebBodyTypeExpr(bodyExpression: string): string {
   return `IFNULL(TONUMBER(DECODE_JSON(${bodyExpression}).\`type\`), 0)`;
 }
 
-/** ClickHouse `toUInt64OrZero(x)` → SQL++. */
+/** legacy store `toUInt64OrZero(x)` → SQL++. */
 export function toUInt64OrZeroCouchbase(expr: string): string {
   return `IFNULL(TONUMBER(${expr}), 0)`;
 }
 
-/** ClickHouse `if(a != '', a, b)` → SQL++. */
+/** legacy store `if(a != '', a, b)` → SQL++. */
 export function ifNonEmptyCouchbase(a: string, b: string): string {
   return `CASE WHEN ${a} != '' THEN ${a} ELSE ${b} END`;
 }

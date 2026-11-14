@@ -192,11 +192,11 @@ describe('Single Invocation Alert Test', () => {
       savedSearch,
       previousMap: new Map(),
     };
-    const clickhouseClient = new DataClient({});
+    const dataClient = new DataClient({});
     await processAlert(
       now,
       details,
-      clickhouseClient,
+      dataClient,
       connection.id,
       alertProvider,
       new Map([[webhook.id.toString(), webhook]]),
@@ -362,12 +362,12 @@ describe('Single Invocation Alert Test', () => {
       savedSearch,
       previousMap: new Map(),
     };
-    const clickhouseClient = new DataClient({});
+    const dataClient = new DataClient({});
 
     await processAlert(
       now,
       details,
-      clickhouseClient,
+      dataClient,
       connection.id,
       alertProvider,
       new Map([[webhook.id.toString(), webhook]]),
@@ -485,12 +485,12 @@ describe('Single Invocation Alert Test', () => {
       savedSearch,
       previousMap: new Map(),
     };
-    const clickhouseClient = new DataClient({});
+    const dataClient = new DataClient({});
 
     await processAlert(
       now,
       details,
-      clickhouseClient,
+      dataClient,
       connection.id,
       alertProvider,
       new Map([[webhook.id.toString(), webhook]]),
@@ -619,12 +619,12 @@ describe('Single Invocation Alert Test', () => {
       savedSearch,
       previousMap: new Map(),
     };
-    const clickhouseClient = new DataClient({});
+    const dataClient = new DataClient({});
 
     await processAlert(
       now,
       details,
-      clickhouseClient,
+      dataClient,
       connection.id,
       alertProvider,
       new Map([[webhook.id.toString(), webhook]]),
@@ -790,7 +790,7 @@ describe('Single Invocation Alert Test', () => {
       previousMap: new Map(),
     } satisfies AlertDetails;
 
-    const clickhouseClient = new DataClient({});
+    const dataClient = new DataClient({});
 
     const mockMetadata = {
       getColumn: jest.fn().mockImplementation(({ column }) => {
@@ -816,7 +816,7 @@ describe('Single Invocation Alert Test', () => {
     await processAlert(
       now,
       details,
-      clickhouseClient,
+      dataClient,
       connection.id,
       alertProvider,
       new Map([[webhook.id.toString(), webhook]]),
@@ -939,12 +939,12 @@ describe('Single Invocation Alert Test', () => {
       previousMap: new Map(),
     };
 
-    const clickhouseClient = new DataClient({});
+    const dataClient = new DataClient({});
 
     await processAlert(
       now,
       details,
-      clickhouseClient,
+      dataClient,
       connection.id,
       alertProvider,
       new Map([[webhook.id.toString(), webhook]]),

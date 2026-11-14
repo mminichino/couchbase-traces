@@ -1,11 +1,11 @@
 import { existsSync, readFileSync, writeFileSync } from 'fs';
 import { join } from 'path';
 
-import type { ClickHouseClient } from '@/clickhouse/client';
 import type { RunRecord } from '@/harness/types';
-import { createEvalClient, defaultClickHouseUrl } from '@/query/client';
+import { createEvalStoreClient, defaultEvalStoreUrl } from '@/query/client';
 import { scenarioTables } from '@/query/schema';
 import { SCENARIO_NAMES } from '@/scenarios';
+import type { EvalStoreClient } from '@/store/client';
 
 import { getRunFilesInBatch, runsRoot } from './path';
 
@@ -53,7 +53,7 @@ type QueryLogRow = {
 };
 
 export type InstrumentOptions = {
-  clickhouseUrl?: string;
+  storeUrl?: string;
   username?: string;
   password?: string;
 };
@@ -125,7 +125,7 @@ function extractToolCallWindows(record: RunRecord): Array<{
 }
 
 async function fetchQueryLog(
-  client: ClickHouseClient,
+  client: EvalStoreClient,
   startTs: string,
   endTs: string,
   tablePatterns: string[],
@@ -185,7 +185,7 @@ function matchQueriesToCalls(
 
   let unmatched = 0;
   for (const q of queries) {
-    // ClickHouse returns toString(DateTime64(6)) as 'YYYY-MM-DD HH:MM:SS.uuuuuu'
+    // legacy store returns toString(DateTime64(6)) as 'YYYY-MM-DD HH:MM:SS.uuuuuu'
     // (UTC, space-separated). Convert to ISO so Date.parse() accepts it.
     const isoForm = q.event_time_microseconds.replace(' ', 'T') + 'Z';
     const ts = Date.parse(isoForm);
@@ -231,13 +231,13 @@ function matchQueriesToCalls(
 
 async function instrumentRun(args: {
   runPath: string;
-  client: ClickHouseClient;
+  client: EvalStoreClient;
 }): Promise<TimingRecord> {
   const record = JSON.parse(readFileSync(args.runPath, 'utf8')) as RunRecord;
   const windows = extractToolCallWindows(record);
 
   // Match query_log on either the eval-specific tables OR system.tables
-  // calls (mcp-clickhouse does list_tables internally).
+  // calls (mcp-eval-store does list_tables internally).
   const tables = scenarioTables(record.scenario);
   const tablePatterns = [tables.traces, tables.logs, 'system.tables'];
 
@@ -276,8 +276,8 @@ export async function instrumentBatch(
   if (!existsSync(resolved)) {
     throw new Error(`Batch not found: ${resolved}`);
   }
-  const client = createEvalClient({
-    url: opts.clickhouseUrl ?? defaultClickHouseUrl(),
+  const client = createEvalStoreClient({
+    url: opts.storeUrl ?? defaultEvalStoreUrl(),
     username: opts.username,
     password: opts.password,
   });

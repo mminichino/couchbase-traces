@@ -78,7 +78,6 @@
       "workspace": "@couchbase-traces/api",
       "kind": "unit",
       "directImports": [
-        "packages/api/src/controllers/connection.ts",
         "packages/api/src/controllers/sources.ts",
         "packages/api/src/setupDefaults.ts",
         "packages/api/src/utils/logger.ts",
@@ -91,24 +90,6 @@
       "workspace": "@couchbase-traces/api",
       "kind": "unit",
       "directImports": [],
-      "routes": []
-    },
-    {
-      "path": "packages/api/src/clickhouse/__tests__/renderChartConfig.int.test.ts",
-      "workspace": "@couchbase-traces/api",
-      "kind": "int",
-      "directImports": [
-        "packages/api/src/config.ts",
-        "packages/api/src/controllers/team.ts",
-        "packages/api/src/fixtures.ts",
-        "packages/api/src/models/connection.ts",
-        "packages/api/src/models/source.ts",
-        "packages/common-utils/src/clickhouse/index.ts",
-        "packages/common-utils/src/clickhouse/node.ts",
-        "packages/common-utils/src/core/metadata.ts",
-        "packages/common-utils/src/core/renderChartConfig.ts",
-        "packages/common-utils/src/types.ts"
-      ],
       "routes": []
     },
     {
@@ -128,8 +109,6 @@
       "kind": "unit",
       "directImports": [
         "packages/api/src/controllers/aiPrompts.ts",
-        "packages/api/src/controllers/aiSummarize.ts",
-        "packages/api/src/controllers/aiValidation.ts",
         "packages/api/src/models/source.ts",
         "packages/common-utils/src/types.ts"
       ],
@@ -172,23 +151,6 @@
       "routes": []
     },
     {
-      "path": "packages/api/src/controllers/__tests__/metadataCacheLimits.int.test.ts",
-      "workspace": "@couchbase-traces/api",
-      "kind": "int",
-      "directImports": [
-        "packages/api/src/api-app.ts",
-        "packages/api/src/clickhouse.ts",
-        "packages/api/src/config.ts",
-        "packages/api/src/controllers/ai.ts",
-        "packages/api/src/fixtures.ts",
-        "packages/api/src/models/connection.ts",
-        "packages/api/src/models/index.ts",
-        "packages/api/src/models/source.ts",
-        "packages/api/src/models/user.ts"
-      ],
-      "routes": []
-    },
-    {
       "path": "packages/api/src/controllers/__tests__/orgApiKey.int.test.ts",
       "workspace": "@couchbase-traces/api",
       "kind": "int",
@@ -198,15 +160,6 @@
         "packages/api/src/controllers/user.ts",
         "packages/api/src/fixtures.ts",
         "packages/api/src/models/user.ts"
-      ],
-      "routes": []
-    },
-    {
-      "path": "packages/api/src/controllers/__tests__/promql.test.ts",
-      "workspace": "@couchbase-traces/api",
-      "kind": "unit",
-      "directImports": [
-        "packages/api/src/controllers/promql.ts"
       ],
       "routes": []
     },
@@ -228,28 +181,6 @@
         "packages/api/src/config.ts",
         "packages/api/src/controllers/team.ts",
         "packages/api/src/fixtures.ts"
-      ],
-      "routes": []
-    },
-    {
-      "path": "packages/api/src/controllers/__tests__/timeseriesEngine.int.test.ts",
-      "workspace": "@couchbase-traces/api",
-      "kind": "int",
-      "directImports": [
-        "packages/api/src/clickhouse.ts",
-        "packages/api/src/config.ts",
-        "packages/api/src/controllers/timeseriesEngine.ts",
-        "packages/api/src/fixtures.ts",
-        "packages/api/src/utils/logger.ts"
-      ],
-      "routes": []
-    },
-    {
-      "path": "packages/api/src/controllers/__tests__/timeseriesEngine.test.ts",
-      "workspace": "@couchbase-traces/api",
-      "kind": "unit",
-      "directImports": [
-        "packages/api/src/controllers/timeseriesEngine.ts"
       ],
       "routes": []
     },
@@ -463,20 +394,6 @@
       "routes": []
     },
     {
-      "path": "packages/api/src/mcp/__tests__/describeSourceTimeout.test.ts",
-      "workspace": "@couchbase-traces/api",
-      "kind": "unit",
-      "directImports": [
-        "packages/api/src/controllers/connection.ts",
-        "packages/api/src/controllers/sources.ts",
-        "packages/api/src/mcp/tools/sources/describeSource.ts",
-        "packages/api/src/mcp/tools/sources/metricNames.ts",
-        "packages/api/src/mcp/tools/types.ts",
-        "packages/common-utils/src/types.ts"
-      ],
-      "routes": []
-    },
-    {
       "path": "packages/api/src/mcp/__tests__/describeTable.int.test.ts",
       "workspace": "@couchbase-traces/api",
       "kind": "int",
@@ -488,19 +405,6 @@
         "packages/api/src/models/connection.ts",
         "packages/api/src/models/source.ts",
         "packages/common-utils/src/types.ts"
-      ],
-      "routes": []
-    },
-    {
-      "path": "packages/api/src/mcp/__tests__/describeTable.test.ts",
-      "workspace": "@couchbase-traces/api",
-      "kind": "unit",
-      "directImports": [
-        "packages/api/src/mcp/tools/sources/describeTable.ts",
-        "packages/api/src/mcp/tools/sources/describeTableQueries.ts",
-        "packages/api/src/mcp/tools/sources/describeTableSchema.ts",
-        "packages/api/src/mcp/tools/types.ts",
-        "packages/api/src/mcp/utils/errors.ts"
       ],
       "routes": []
     },
@@ -576,15 +480,6 @@
       "routes": []
     },
     {
-      "path": "packages/api/src/mcp/__tests__/promqlGating.test.ts",
-      "workspace": "@couchbase-traces/api",
-      "kind": "unit",
-      "directImports": [
-        "packages/api/src/mcp/__tests__/mcpTestUtils.ts"
-      ],
-      "routes": []
-    },
-    {
       "path": "packages/api/src/mcp/__tests__/query.test.ts",
       "workspace": "@couchbase-traces/api",
       "kind": "unit",
@@ -593,7 +488,8 @@
         "packages/api/src/mcp/tools/query/schemas.ts",
         "packages/api/src/mcp/tools/query/table.ts",
         "packages/api/src/mcp/utils/errors.ts",
-        "packages/common-utils/src/macroErrors.ts"
+        "packages/common-utils/src/macroErrors.ts",
+        "packages/common-utils/src/query/index.ts"
       ],
       "routes": []
     },
@@ -611,7 +507,6 @@
         "packages/api/src/models/connection.ts",
         "packages/api/src/models/source.ts",
         "packages/api/src/models/team.ts",
-        "packages/common-utils/src/clickhouse/node.ts",
         "packages/common-utils/src/types.ts"
       ],
       "routes": []
@@ -673,19 +568,6 @@
       "routes": []
     },
     {
-      "path": "packages/api/src/mcp/__tests__/sqlToolBatch.test.ts",
-      "workspace": "@couchbase-traces/api",
-      "kind": "unit",
-      "directImports": [
-        "packages/api/src/mcp/tools/query/sql.ts",
-        "packages/api/src/mcp/tools/query/sqlBatch.ts",
-        "packages/api/src/mcp/tools/types.ts",
-        "packages/api/src/mcp/utils/errors.ts",
-        "packages/common-utils/src/couchbase/rawSqlLimit.ts"
-      ],
-      "routes": []
-    },
-    {
       "path": "packages/api/src/mcp/__tests__/sqlToolVariableGuard.test.ts",
       "workspace": "@couchbase-traces/api",
       "kind": "unit",
@@ -739,14 +621,14 @@
       "workspace": "@couchbase-traces/api",
       "kind": "int",
       "directImports": [
-        "packages/api/src/clickhouse.ts",
         "packages/api/src/config.ts",
         "packages/api/src/fixtures.ts",
         "packages/api/src/mcp/__tests__/mcpTestUtils.ts",
-        "packages/api/src/mcp/tools/query/helpers.ts",
         "packages/api/src/mcp/tools/types.ts",
         "packages/api/src/models/connection.ts",
         "packages/api/src/models/source.ts",
+        "packages/api/src/query.ts",
+        "packages/common-utils/src/query/index.ts",
         "packages/common-utils/src/types.ts"
       ],
       "routes": []
@@ -806,26 +688,16 @@
       "routes": []
     },
     {
-      "path": "packages/api/src/mcp/tools/query/__tests__/promqlTile.test.ts",
-      "workspace": "@couchbase-traces/api",
-      "kind": "unit",
-      "directImports": [
-        "packages/api/src/mcp/tools/query/promqlTile.ts",
-        "packages/common-utils/src/types.ts"
-      ],
-      "routes": []
-    },
-    {
       "path": "packages/api/src/mcp/tools/query/__tests__/serviceHealthComparison.test.ts",
       "workspace": "@couchbase-traces/api",
       "kind": "unit",
       "directImports": [
-        "packages/api/src/clickhouse.ts",
         "packages/api/src/mcp/tools/query/serviceHealth/comparison.ts",
         "packages/api/src/mcp/tools/query/serviceHealth/operations.ts",
         "packages/api/src/mcp/tools/query/serviceHealth/queries.ts",
         "packages/api/src/mcp/tools/query/serviceHealth/schema.ts",
-        "packages/common-utils/src/core/metadata.ts"
+        "packages/api/src/query.ts",
+        "packages/common-utils/src/dataLayer/index.ts"
       ],
       "routes": []
     },
@@ -862,8 +734,8 @@
         "packages/api/src/fixtures.ts",
         "packages/api/src/models/connection.ts",
         "packages/api/src/models/source.ts",
-        "packages/common-utils/src/clickhouse/index.ts",
         "packages/common-utils/src/core/metadata.ts",
+        "packages/common-utils/src/query/index.ts",
         "packages/common-utils/src/types.ts"
       ],
       "routes": []
@@ -957,18 +829,6 @@
       "routes": []
     },
     {
-      "path": "packages/api/src/routers/api/__tests__/clickhouseProxy.int.test.ts",
-      "workspace": "@couchbase-traces/api",
-      "kind": "int",
-      "directImports": [
-        "packages/api/src/fixtures.ts",
-        "packages/api/src/models/connection.ts",
-        "packages/api/src/utils/logger.ts",
-        "packages/common-utils/src/clickhouse/index.ts"
-      ],
-      "routes": []
-    },
-    {
       "path": "packages/api/src/routers/api/__tests__/connections.int.test.ts",
       "workspace": "@couchbase-traces/api",
       "kind": "int",
@@ -1016,9 +876,7 @@
       "workspace": "@couchbase-traces/api",
       "kind": "unit",
       "directImports": [
-        "packages/api/src/routers/api/clickhouseProxy.ts",
-        "packages/api/src/routers/api/connections.ts",
-        "packages/api/src/routers/api/sources.ts"
+        "packages/api/src/routers/api/connections.ts"
       ],
       "routes": []
     },
@@ -1104,16 +962,6 @@
         "packages/api/src/fixtures.ts",
         "packages/api/src/models/source.ts",
         "packages/common-utils/src/types.ts"
-      ],
-      "routes": []
-    },
-    {
-      "path": "packages/api/src/routers/api/__tests__/prometheus.test.ts",
-      "workspace": "@couchbase-traces/api",
-      "kind": "unit",
-      "directImports": [
-        "packages/api/src/controllers/promql.ts",
-        "packages/api/src/routers/api/prometheus.ts"
       ],
       "routes": []
     },
@@ -1370,20 +1218,6 @@
       "routes": []
     },
     {
-      "path": "packages/api/src/routers/external-api/v2/utils/__tests__/search.test.ts",
-      "workspace": "@couchbase-traces/api",
-      "kind": "unit",
-      "directImports": [
-        "packages/api/src/controllers/connection.ts",
-        "packages/api/src/controllers/sources.ts",
-        "packages/api/src/routers/external-api/v2/utils/search.ts",
-        "packages/common-utils/src/couchbase/render.ts",
-        "packages/common-utils/src/dataLayer/index.ts",
-        "packages/common-utils/src/types.ts"
-      ],
-      "routes": []
-    },
-    {
       "path": "packages/api/src/tasks/__tests__/index.test.ts",
       "workspace": "@couchbase-traces/api",
       "kind": "unit",
@@ -1435,11 +1269,11 @@
         "packages/api/src/models/source.ts",
         "packages/api/src/models/team.ts",
         "packages/api/src/models/webhook.ts",
+        "packages/api/src/query.ts",
         "packages/api/src/tasks/checkAlerts/index.ts",
         "packages/api/src/tasks/checkAlerts/providers/index.ts",
         "packages/api/src/tasks/checkAlerts/template.ts",
         "packages/api/src/utils/slack.ts",
-        "packages/common-utils/src/clickhouse/node.ts",
         "packages/common-utils/src/types.ts"
       ],
       "routes": []
@@ -1454,10 +1288,10 @@
         "packages/api/src/models/index.ts",
         "packages/api/src/models/source.ts",
         "packages/api/src/models/webhook.ts",
+        "packages/api/src/query.ts",
         "packages/api/src/tasks/checkAlerts/index.ts",
         "packages/api/src/tasks/checkAlerts/providers/index.ts",
-        "packages/api/src/tasks/types.ts",
-        "packages/common-utils/src/clickhouse/node.ts"
+        "packages/api/src/tasks/types.ts"
       ],
       "routes": []
     },
@@ -1466,7 +1300,8 @@
       "workspace": "@couchbase-traces/api",
       "kind": "unit",
       "directImports": [
-        "packages/api/src/tasks/checkAlerts/errors.ts"
+        "packages/api/src/tasks/checkAlerts/errors.ts",
+        "packages/common-utils/src/query/index.ts"
       ],
       "routes": []
     },
@@ -1496,9 +1331,9 @@
         "packages/api/src/models/savedSearch.ts",
         "packages/api/src/models/source.ts",
         "packages/api/src/models/webhook.ts",
+        "packages/api/src/query.ts",
         "packages/api/src/tasks/checkAlerts/index.ts",
-        "packages/api/src/tasks/checkAlerts/providers/index.ts",
-        "packages/common-utils/src/clickhouse/node.ts"
+        "packages/api/src/tasks/checkAlerts/providers/index.ts"
       ],
       "routes": []
     },
@@ -1558,10 +1393,10 @@
         "packages/api/src/models/savedSearch.ts",
         "packages/api/src/models/source.ts",
         "packages/api/src/models/webhook.ts",
+        "packages/api/src/query.ts",
         "packages/api/src/tasks/checkAlerts/index.ts",
         "packages/api/src/tasks/checkAlerts/providers/index.ts",
-        "packages/api/src/utils/slack.ts",
-        "packages/common-utils/src/clickhouse/node.ts"
+        "packages/api/src/utils/slack.ts"
       ],
       "routes": []
     },
@@ -1656,8 +1491,7 @@
       "kind": "unit",
       "directImports": [
         "packages/api/src/utils/couchbaseConsumerErrors.ts",
-        "packages/common-utils/src/couchbase/errors.ts",
-        "packages/common-utils/src/dataLayer/index.ts"
+        "packages/common-utils/src/couchbase/errors.ts"
       ],
       "routes": []
     },
@@ -1962,8 +1796,6 @@
         "packages/app/src/ChartUtils.tsx",
         "packages/app/src/defaults.ts",
         "packages/app/src/utils.ts",
-        "packages/app/src/utils/chartConfig.ts",
-        "packages/common-utils/src/core/promql.ts",
         "packages/common-utils/src/types.ts"
       ],
       "routes": []
@@ -2263,10 +2095,7 @@
       "path": "packages/app/src/__tests__/dashboard.test.ts",
       "workspace": "@couchbase-traces/app",
       "kind": "unit",
-      "directImports": [
-        "packages/app/src/dashboard.ts",
-        "packages/common-utils/src/types.ts"
-      ],
+      "directImports": [],
       "routes": []
     },
     {
@@ -2324,16 +2153,6 @@
       "routes": []
     },
     {
-      "path": "packages/app/src/__tests__/localStore.test.ts",
-      "workspace": "@couchbase-traces/app",
-      "kind": "unit",
-      "directImports": [
-        "packages/app/src/localStore.ts",
-        "packages/common-utils/src/types.ts"
-      ],
-      "routes": []
-    },
-    {
       "path": "packages/app/src/__tests__/metricDrilldownWarning.test.tsx",
       "workspace": "@couchbase-traces/app",
       "kind": "unit",
@@ -2371,15 +2190,6 @@
       "routes": []
     },
     {
-      "path": "packages/app/src/__tests__/prometheusApi.test.ts",
-      "workspace": "@couchbase-traces/app",
-      "kind": "unit",
-      "directImports": [
-        "packages/app/src/api.ts"
-      ],
-      "routes": []
-    },
-    {
       "path": "packages/app/src/__tests__/queryAttribution.test.tsx",
       "workspace": "@couchbase-traces/app",
       "kind": "unit",
@@ -2392,9 +2202,7 @@
       "path": "packages/app/src/__tests__/savedSearch.test.ts",
       "workspace": "@couchbase-traces/app",
       "kind": "unit",
-      "directImports": [
-        "packages/app/src/savedSearch.ts"
-      ],
+      "directImports": [],
       "routes": []
     },
     {
@@ -2404,56 +2212,6 @@
       "directImports": [
         "packages/app/src/searchFilters.tsx",
         "packages/common-utils/src/filters.ts"
-      ],
-      "routes": []
-    },
-    {
-      "path": "packages/app/src/__tests__/serviceDashboard.test.ts",
-      "workspace": "@couchbase-traces/app",
-      "kind": "unit",
-      "directImports": [
-        "packages/app/src/hooks/useMetadata.tsx",
-        "packages/app/src/serviceDashboard.ts",
-        "packages/common-utils/src/clickhouse/index.ts",
-        "packages/common-utils/src/core/renderChartConfig.ts",
-        "packages/common-utils/src/filters.ts",
-        "packages/common-utils/src/types.ts"
-      ],
-      "routes": []
-    },
-    {
-      "path": "packages/app/src/__tests__/sessions.test.ts",
-      "workspace": "@couchbase-traces/app",
-      "kind": "unit",
-      "directImports": [
-        "packages/app/src/sessions.ts",
-        "packages/common-utils/src/clickhouse/browser.ts",
-        "packages/common-utils/src/core/metadata.ts",
-        "packages/common-utils/src/core/renderChartConfig.ts",
-        "packages/common-utils/src/types.ts"
-      ],
-      "routes": []
-    },
-    {
-      "path": "packages/app/src/__tests__/sessionsListQuery.test.tsx",
-      "workspace": "@couchbase-traces/app",
-      "kind": "unit",
-      "directImports": [
-        "packages/app/src/sessions.ts",
-        "packages/common-utils/src/types.ts"
-      ],
-      "routes": []
-    },
-    {
-      "path": "packages/app/src/__tests__/source.test.ts",
-      "workspace": "@couchbase-traces/app",
-      "kind": "unit",
-      "directImports": [
-        "packages/app/src/api.ts",
-        "packages/app/src/source.ts",
-        "packages/common-utils/src/clickhouse/index.ts",
-        "packages/common-utils/src/core/metadata.ts",
-        "packages/common-utils/src/types.ts"
       ],
       "routes": []
     },
@@ -2591,9 +2349,8 @@
       "directImports": [
         "packages/app/src/components/AdhocDashboardFilter/useAdhocFilterOptions.ts",
         "packages/app/src/hooks/useMetadata.tsx",
-        "packages/app/src/hooks/usePromqlMetadata.ts",
-        "packages/common-utils/src/clickhouse/index.ts",
         "packages/common-utils/src/filters.ts",
+        "packages/common-utils/src/query/index.ts",
         "packages/common-utils/src/types.ts"
       ],
       "routes": []
@@ -2731,21 +2488,21 @@
       "routes": []
     },
     {
-      "path": "packages/app/src/components/ClickStackOnboarding/__tests__/McpInstallPanel.test.tsx",
+      "path": "packages/app/src/components/CollectorOnboarding/__tests__/McpInstallPanel.test.tsx",
       "workspace": "@couchbase-traces/app",
       "kind": "unit",
       "directImports": [
-        "packages/app/src/components/ClickStackOnboarding/McpInstallPanel.tsx",
+        "packages/app/src/components/CollectorOnboarding/McpInstallPanel.tsx",
         "packages/app/src/components/RevealSnippet/RevealSnippet.tsx"
       ],
       "routes": []
     },
     {
-      "path": "packages/app/src/components/ClickStackOnboarding/__tests__/installSnippets.test.ts",
+      "path": "packages/app/src/components/CollectorOnboarding/__tests__/installSnippets.test.ts",
       "workspace": "@couchbase-traces/app",
       "kind": "unit",
       "directImports": [
-        "packages/app/src/components/ClickStackOnboarding/installSnippets.ts"
+        "packages/app/src/components/CollectorOnboarding/installSnippets.ts"
       ],
       "routes": []
     },
@@ -3053,17 +2810,6 @@
       "routes": []
     },
     {
-      "path": "packages/app/src/components/DBHeatmapChart/__tests__/useCalculatedHeatmapData.test.ts",
-      "workspace": "@couchbase-traces/app",
-      "kind": "unit",
-      "directImports": [
-        "packages/app/src/components/DBHeatmapChart/useCalculatedHeatmapData.ts",
-        "packages/app/src/components/DBHeatmapChart/useSeriesHeatmapData.ts",
-        "packages/common-utils/src/types.ts"
-      ],
-      "routes": []
-    },
-    {
       "path": "packages/app/src/components/DBHeatmapChart/__tests__/useHeatmapData.test.ts",
       "workspace": "@couchbase-traces/app",
       "kind": "unit",
@@ -3075,22 +2821,12 @@
       "routes": []
     },
     {
-      "path": "packages/app/src/components/DBHeatmapChart/__tests__/useHistogramHeatmapData.test.ts",
-      "workspace": "@couchbase-traces/app",
-      "kind": "unit",
-      "directImports": [
-        "packages/app/src/components/DBHeatmapChart/useHistogramHeatmapData.ts",
-        "packages/common-utils/src/types.ts"
-      ],
-      "routes": []
-    },
-    {
       "path": "packages/app/src/components/DBHeatmapChart/__tests__/useSeriesHeatmapData.test.ts",
       "workspace": "@couchbase-traces/app",
       "kind": "unit",
       "directImports": [
         "packages/app/src/components/DBHeatmapChart/useSeriesHeatmapData.ts",
-        "packages/common-utils/src/clickhouse/index.ts",
+        "packages/common-utils/src/query/index.ts",
         "packages/common-utils/src/types.ts"
       ],
       "routes": []
@@ -3158,7 +2894,7 @@
       "kind": "unit",
       "directImports": [
         "packages/app/src/components/DBTable/adhocCellCondition.ts",
-        "packages/common-utils/src/clickhouse/index.ts"
+        "packages/common-utils/src/query/index.ts"
       ],
       "routes": []
     },
@@ -3178,17 +2914,6 @@
       "directImports": [
         "packages/app/src/components/DashboardFiltersModal/filterFormState.ts",
         "packages/app/src/components/DashboardFiltersModal/index.tsx",
-        "packages/common-utils/src/types.ts"
-      ],
-      "routes": []
-    },
-    {
-      "path": "packages/app/src/components/DashboardFiltersModal/__tests__/PromqlLabelFilterEditForm.test.tsx",
-      "workspace": "@couchbase-traces/app",
-      "kind": "unit",
-      "directImports": [
-        "packages/app/src/components/DashboardFiltersModal/PromqlLabelFilterEditForm.tsx",
-        "packages/app/src/components/DashboardFiltersModal/filterFormState.ts",
         "packages/common-utils/src/types.ts"
       ],
       "routes": []
@@ -3397,24 +3122,6 @@
       "routes": []
     },
     {
-      "path": "packages/app/src/components/PromQLEditor/__tests__/templateMaskedLanguage.test.ts",
-      "workspace": "@couchbase-traces/app",
-      "kind": "unit",
-      "directImports": [
-        "packages/app/src/components/PromQLEditor/templateMaskedLanguage.ts"
-      ],
-      "routes": []
-    },
-    {
-      "path": "packages/app/src/components/PromQLEditor/__tests__/variableCompletionSource.test.ts",
-      "workspace": "@couchbase-traces/app",
-      "kind": "unit",
-      "directImports": [
-        "packages/app/src/components/PromQLEditor/variableCompletionSource.ts"
-      ],
-      "routes": []
-    },
-    {
       "path": "packages/app/src/components/RevealSnippet/RevealSnippet.stories.tsx",
       "workspace": "@couchbase-traces/app",
       "kind": "support",
@@ -3465,16 +3172,6 @@
       "kind": "unit",
       "directImports": [
         "packages/app/src/components/SQLEditor/SQLInlineEditor.tsx"
-      ],
-      "routes": []
-    },
-    {
-      "path": "packages/app/src/components/SQLEditor/__tests__/promqlVariableCompletions.test.ts",
-      "workspace": "@couchbase-traces/app",
-      "kind": "unit",
-      "directImports": [
-        "packages/app/src/components/SQLEditor/variableCompletions.tsx",
-        "packages/common-utils/src/types.ts"
       ],
       "routes": []
     },
@@ -3583,8 +3280,8 @@
       "directImports": [
         "packages/app/src/components/SearchResultsToolbar/useClauseFieldOptions.ts",
         "packages/app/src/hooks/useMetadata.tsx",
-        "packages/common-utils/src/clickhouse/index.ts",
-        "packages/common-utils/src/core/metadata.ts"
+        "packages/common-utils/src/core/metadata.ts",
+        "packages/common-utils/src/query/index.ts"
       ],
       "routes": []
     },
@@ -3969,7 +3666,6 @@
       "directImports": [
         "packages/app/src/components/DBBarChart.tsx",
         "packages/app/src/components/MaterializedViews/MVOptimizationIndicator.tsx",
-        "packages/app/src/components/charts/DateRangeIndicator.tsx",
         "packages/app/src/hooks/useChartConfig.tsx",
         "packages/app/src/hooks/useMVOptimizationExplanation.tsx",
         "packages/app/src/source.ts"
@@ -3995,7 +3691,6 @@
       "directImports": [
         "packages/app/src/components/DBHistogramChart.tsx",
         "packages/app/src/components/MaterializedViews/MVOptimizationIndicator.tsx",
-        "packages/app/src/components/charts/DateRangeIndicator.tsx",
         "packages/app/src/hooks/useChartConfig.tsx",
         "packages/app/src/hooks/useMVOptimizationExplanation.tsx",
         "packages/app/src/source.ts"
@@ -4021,7 +3716,6 @@
       "directImports": [
         "packages/app/src/components/DBListBarChart.tsx",
         "packages/app/src/components/MaterializedViews/MVOptimizationIndicator.tsx",
-        "packages/app/src/components/charts/DateRangeIndicator.tsx",
         "packages/app/src/hooks/useChartConfig.tsx",
         "packages/app/src/hooks/useMVOptimizationExplanation.tsx",
         "packages/app/src/source.ts"
@@ -4036,13 +3730,11 @@
         "packages/app/src/components/DBNumberChart.tsx",
         "packages/app/src/components/MaterializedViews/MVOptimizationIndicator.tsx",
         "packages/app/src/components/NumberTileBackgroundChart.tsx",
-        "packages/app/src/components/charts/DateRangeIndicator.tsx",
         "packages/app/src/hooks/useChartConfig.tsx",
         "packages/app/src/hooks/useMVOptimizationExplanation.tsx",
         "packages/app/src/source.ts",
         "packages/app/src/types.ts",
-        "packages/app/src/utils.ts",
-        "packages/common-utils/src/types.ts"
+        "packages/app/src/utils.ts"
       ],
       "routes": []
     },
@@ -4053,11 +3745,9 @@
       "directImports": [
         "packages/app/src/components/DBPieChart.tsx",
         "packages/app/src/components/MaterializedViews/MVOptimizationIndicator.tsx",
-        "packages/app/src/components/charts/DateRangeIndicator.tsx",
         "packages/app/src/hooks/useChartConfig.tsx",
         "packages/app/src/hooks/useMVOptimizationExplanation.tsx",
-        "packages/app/src/source.ts",
-        "packages/common-utils/src/types.ts"
+        "packages/app/src/source.ts"
       ],
       "routes": []
     },
@@ -4067,7 +3757,7 @@
       "kind": "unit",
       "directImports": [
         "packages/app/src/components/DBRowDataPanel.tsx",
-        "packages/common-utils/src/clickhouse/index.ts",
+        "packages/common-utils/src/query/index.ts",
         "packages/common-utils/src/types.ts"
       ],
       "routes": []
@@ -4079,7 +3769,7 @@
       "directImports": [
         "packages/app/src/components/DBRowDataPanel.tsx",
         "packages/app/src/hooks/useChartConfig.tsx",
-        "packages/common-utils/src/clickhouse/index.ts",
+        "packages/common-utils/src/query/index.ts",
         "packages/common-utils/src/types.ts"
       ],
       "routes": []
@@ -4258,17 +3948,6 @@
       "routes": []
     },
     {
-      "path": "packages/app/src/components/__tests__/DBRowSidePanelErrorState.test.tsx",
-      "workspace": "@couchbase-traces/app",
-      "kind": "unit",
-      "directImports": [
-        "packages/app/src/components/DBRowSidePanelErrorState.tsx",
-        "packages/common-utils/src/clickhouse/index.ts",
-        "packages/common-utils/src/types.ts"
-      ],
-      "routes": []
-    },
-    {
       "path": "packages/app/src/components/__tests__/DBRowSidePanelHeader.test.tsx",
       "workspace": "@couchbase-traces/app",
       "kind": "unit",
@@ -4321,8 +4000,6 @@
         "packages/app/src/HDXMultiSeriesTableChart.tsx",
         "packages/app/src/components/DBTableChart.tsx",
         "packages/app/src/components/MaterializedViews/MVOptimizationIndicator.tsx",
-        "packages/app/src/components/charts/DateRangeIndicator.tsx",
-        "packages/app/src/hooks/useChartConfig.tsx",
         "packages/app/src/hooks/useMVOptimizationExplanation.tsx",
         "packages/app/src/hooks/useOffsetPaginatedQuery.tsx",
         "packages/app/src/hooks/useOnClickLinkBuilder.ts",
@@ -4339,7 +4016,6 @@
         "packages/app/src/api.ts",
         "packages/app/src/components/DBTimeChart.tsx",
         "packages/app/src/components/MaterializedViews/MVOptimizationIndicator.tsx",
-        "packages/app/src/components/charts/DateRangeIndicator.tsx",
         "packages/app/src/defaults.ts",
         "packages/app/src/hooks/useChartConfig.tsx",
         "packages/app/src/hooks/useMVOptimizationExplanation.tsx",
@@ -4474,16 +4150,6 @@
       "routes": []
     },
     {
-      "path": "packages/app/src/components/__tests__/MetricNameSelectSearch.test.tsx",
-      "workspace": "@couchbase-traces/app",
-      "kind": "unit",
-      "directImports": [
-        "packages/app/src/components/MetricNameSelect.tsx",
-        "packages/common-utils/src/types.ts"
-      ],
-      "routes": []
-    },
-    {
       "path": "packages/app/src/components/__tests__/MetricTableModelForm.test.tsx",
       "workspace": "@couchbase-traces/app",
       "kind": "unit",
@@ -4509,9 +4175,7 @@
       "workspace": "@couchbase-traces/app",
       "kind": "unit",
       "directImports": [
-        "packages/app/src/ChartUtils.tsx",
         "packages/app/src/components/NumberTileBackgroundChart.tsx",
-        "packages/app/src/components/Sparkline.tsx",
         "packages/app/src/hooks/useChartConfig.tsx",
         "packages/app/src/source.ts",
         "packages/common-utils/src/types.ts"
@@ -4736,11 +4400,11 @@
       "workspace": "@couchbase-traces/app",
       "kind": "unit",
       "directImports": [
-        "packages/app/src/clickhouse.ts",
         "packages/app/src/components/ConnectionSelect.tsx",
         "packages/app/src/components/DBTableSelect.tsx",
         "packages/app/src/components/DatabaseSelect.tsx",
-        "packages/app/src/connection.ts"
+        "packages/app/src/connection.ts",
+        "packages/app/src/query.ts"
       ],
       "routes": []
     },
@@ -5036,8 +4700,8 @@
         "packages/app/src/components/SearchInput/SearchInputV2.tsx",
         "packages/app/src/hooks/useAutoCompleteOptions.tsx",
         "packages/app/src/hooks/useMetadata.tsx",
-        "packages/common-utils/src/clickhouse/index.ts",
-        "packages/common-utils/src/core/metadata.ts"
+        "packages/common-utils/src/core/metadata.ts",
+        "packages/common-utils/src/query/index.ts"
       ],
       "routes": []
     },
@@ -5059,23 +4723,6 @@
       "directImports": [
         "packages/app/src/hooks/__fixtures__/browserTraceEvents.ts",
         "packages/app/src/hooks/useBrowserTraceEvents.ts",
-        "packages/common-utils/src/types.ts"
-      ],
-      "routes": []
-    },
-    {
-      "path": "packages/app/src/hooks/__tests__/useChartConfig.test.tsx",
-      "workspace": "@couchbase-traces/app",
-      "kind": "unit",
-      "directImports": [
-        "packages/app/src/api.ts",
-        "packages/app/src/clickhouse.ts",
-        "packages/app/src/hooks/useChartConfig.tsx",
-        "packages/app/src/hooks/useMVOptimizationExplanation.tsx",
-        "packages/common-utils/src/clickhouse/browser.ts",
-        "packages/common-utils/src/clickhouse/index.ts",
-        "packages/common-utils/src/core/promql.ts",
-        "packages/common-utils/src/guards.ts",
         "packages/common-utils/src/types.ts"
       ],
       "routes": []
@@ -5160,23 +4807,6 @@
       "routes": []
     },
     {
-      "path": "packages/app/src/hooks/__tests__/useMetadata.test.tsx",
-      "workspace": "@couchbase-traces/app",
-      "kind": "unit",
-      "directImports": [
-        "packages/app/src/api.ts",
-        "packages/app/src/hooks/useMetadata.tsx",
-        "packages/app/src/metadata.ts",
-        "packages/app/src/source.ts",
-        "packages/common-utils/src/clickhouse/browser.ts",
-        "packages/common-utils/src/clickhouse/index.ts",
-        "packages/common-utils/src/core/metadata.ts",
-        "packages/common-utils/src/filters.ts",
-        "packages/common-utils/src/types.ts"
-      ],
-      "routes": []
-    },
-    {
       "path": "packages/app/src/hooks/__tests__/useMetricCatalog.test.ts",
       "workspace": "@couchbase-traces/app",
       "kind": "unit",
@@ -5186,38 +4816,11 @@
       "routes": []
     },
     {
-      "path": "packages/app/src/hooks/__tests__/useMetricNames.test.tsx",
-      "workspace": "@couchbase-traces/app",
-      "kind": "unit",
-      "directImports": [
-        "packages/app/src/hooks/useMetricNames.ts",
-        "packages/common-utils/src/types.ts"
-      ],
-      "routes": []
-    },
-    {
       "path": "packages/app/src/hooks/__tests__/useMetricsSeriesTableAvailability.test.ts",
       "workspace": "@couchbase-traces/app",
       "kind": "unit",
       "directImports": [
         "packages/app/src/hooks/useMetricsSeriesTableAvailability.ts"
-      ],
-      "routes": []
-    },
-    {
-      "path": "packages/app/src/hooks/__tests__/useOffsetPaginatedQuery.test.tsx",
-      "workspace": "@couchbase-traces/app",
-      "kind": "unit",
-      "directImports": [
-        "packages/app/src/clickhouse.ts",
-        "packages/app/src/hooks/useMVOptimizationExplanation.tsx",
-        "packages/app/src/hooks/useMetadata.tsx",
-        "packages/app/src/hooks/useOffsetPaginatedQuery.tsx",
-        "packages/app/src/utils/promqlChartQuery.ts",
-        "packages/common-utils/src/clickhouse/index.ts",
-        "packages/common-utils/src/core/renderChartConfig.ts",
-        "packages/common-utils/src/guards.ts",
-        "packages/common-utils/src/types.ts"
       ],
       "routes": []
     },
@@ -5259,39 +4862,10 @@
       "routes": []
     },
     {
-      "path": "packages/app/src/hooks/__tests__/usePromqlLabelFilterValues.test.tsx",
-      "workspace": "@couchbase-traces/app",
-      "kind": "unit",
-      "directImports": [
-        "packages/app/src/hooks/usePromqlLabelFilterValues.tsx",
-        "packages/common-utils/src/types.ts"
-      ],
-      "routes": []
-    },
-    {
       "path": "packages/app/src/hooks/__tests__/useQueriedDashboardFilterValues.test.tsx",
       "workspace": "@couchbase-traces/app",
       "kind": "unit",
-      "directImports": [
-        "packages/app/src/hooks/useMetadata.tsx",
-        "packages/app/src/hooks/useQueriedDashboardFilterValues.tsx",
-        "packages/app/src/source.ts",
-        "packages/common-utils/src/core/materializedViews.ts",
-        "packages/common-utils/src/core/metadata.ts",
-        "packages/common-utils/src/dashboardFilterValues.ts",
-        "packages/common-utils/src/types.ts"
-      ],
-      "routes": []
-    },
-    {
-      "path": "packages/app/src/hooks/__tests__/useReleaseAnnotations.test.tsx",
-      "workspace": "@couchbase-traces/app",
-      "kind": "unit",
-      "directImports": [
-        "packages/app/src/hooks/useReleaseAnnotations.tsx",
-        "packages/app/src/utils.ts",
-        "packages/common-utils/src/types.ts"
-      ],
+      "directImports": [],
       "routes": []
     },
     {
@@ -5349,8 +4923,8 @@
       "kind": "unit",
       "directImports": [
         "packages/app/src/hooks/useRowWhere.tsx",
-        "packages/common-utils/src/clickhouse/index.ts",
-        "packages/common-utils/src/core/utils.ts"
+        "packages/common-utils/src/core/utils.ts",
+        "packages/common-utils/src/query/index.ts"
       ],
       "routes": []
     },
@@ -5614,7 +5188,7 @@
       "kind": "support",
       "directImports": [
         "packages/app/src/brand/index.tsx",
-        "packages/app/src/components/ClickStackOnboarding/CopySnippet.tsx",
+        "packages/app/src/components/CollectorOnboarding/CopySnippet.tsx",
         "packages/app/src/stories/AssetCard.tsx"
       ],
       "routes": []
@@ -5640,7 +5214,7 @@
       "workspace": "@couchbase-traces/app",
       "kind": "support",
       "directImports": [
-        "packages/app/src/components/ClickStackOnboarding/CopySnippet.tsx"
+        "packages/app/src/components/CollectorOnboarding/CopySnippet.tsx"
       ],
       "routes": []
     },
@@ -5650,7 +5224,7 @@
       "kind": "support",
       "directImports": [
         "packages/app/src/SVGIcons.tsx",
-        "packages/app/src/components/ClickStackOnboarding/CopySnippet.tsx",
+        "packages/app/src/components/CollectorOnboarding/CopySnippet.tsx",
         "packages/app/src/components/sourceSelectUtils.tsx",
         "packages/app/src/stories/AssetCard.tsx"
       ],
@@ -5784,8 +5358,7 @@
       "workspace": "@couchbase-traces/app",
       "kind": "unit",
       "directImports": [
-        "packages/app/src/utils/chartConfig.ts",
-        "packages/common-utils/src/types.ts"
+        "packages/app/src/utils/chartConfig.ts"
       ],
       "routes": []
     },
@@ -5890,17 +5463,6 @@
       "routes": []
     },
     {
-      "path": "packages/app/src/utils/__tests__/materializedViews.test.ts",
-      "workspace": "@couchbase-traces/app",
-      "kind": "unit",
-      "directImports": [
-        "packages/app/src/utils/materializedViews.ts",
-        "packages/common-utils/src/clickhouse/index.ts",
-        "packages/common-utils/src/core/metadata.ts"
-      ],
-      "routes": []
-    },
-    {
       "path": "packages/app/src/utils/__tests__/metricNameTree.test.ts",
       "workspace": "@couchbase-traces/app",
       "kind": "unit",
@@ -5935,17 +5497,6 @@
       "kind": "unit",
       "directImports": [
         "packages/app/src/utils/nextServerTelemetry.ts"
-      ],
-      "routes": []
-    },
-    {
-      "path": "packages/app/src/utils/__tests__/promqlChartQuery.test.ts",
-      "workspace": "@couchbase-traces/app",
-      "kind": "unit",
-      "directImports": [
-        "packages/app/src/api.ts",
-        "packages/app/src/utils/promqlChartQuery.ts",
-        "packages/common-utils/src/types.ts"
       ],
       "routes": []
     },
@@ -6020,7 +5571,7 @@
       "kind": "unit",
       "directImports": [
         "packages/app/src/utils/sourceFieldSuggestions.tsx",
-        "packages/common-utils/src/clickhouse/index.ts",
+        "packages/common-utils/src/query/index.ts",
         "packages/common-utils/src/types.ts"
       ],
       "routes": []
@@ -6226,16 +5777,6 @@
       "routes": []
     },
     {
-      "path": "packages/app/tests/e2e/features/clickhouse-dashboard.spec.ts",
-      "workspace": "@couchbase-traces/app",
-      "kind": "e2e",
-      "directImports": [
-        "packages/app/tests/e2e/page-objects/ClickHouseDashboardPage.ts",
-        "packages/app/tests/e2e/utils/base-test.ts"
-      ],
-      "routes": []
-    },
-    {
       "path": "packages/app/tests/e2e/features/correlated-metric-source.spec.ts",
       "workspace": "@couchbase-traces/app",
       "kind": "e2e",
@@ -6275,7 +5816,7 @@
       "kind": "e2e",
       "directImports": [
         "packages/app/tests/e2e/page-objects/DashboardPage.ts",
-        "packages/app/tests/e2e/seed-clickhouse.ts",
+        "packages/app/tests/e2e/seed-data.ts",
         "packages/app/tests/e2e/utils/base-test.ts",
         "packages/app/tests/e2e/utils/constants.ts",
         "packages/app/tests/e2e/utils/filters-param.ts",
@@ -6337,7 +5878,7 @@
       "kind": "e2e",
       "directImports": [
         "packages/app/tests/e2e/page-objects/DashboardPage.ts",
-        "packages/app/tests/e2e/seed-clickhouse.ts",
+        "packages/app/tests/e2e/seed-data.ts",
         "packages/app/tests/e2e/utils/base-test.ts",
         "packages/app/tests/e2e/utils/constants.ts"
       ],
@@ -6489,7 +6030,7 @@
       "directImports": [
         "packages/app/tests/e2e/page-objects/DashboardPage.ts",
         "packages/app/tests/e2e/page-objects/SearchPage.ts",
-        "packages/app/tests/e2e/seed-clickhouse.ts",
+        "packages/app/tests/e2e/seed-data.ts",
         "packages/app/tests/e2e/utils/base-test.ts",
         "packages/app/tests/e2e/utils/constants.ts",
         "packages/app/tests/e2e/utils/filters-param.ts"
@@ -6503,7 +6044,7 @@
       "directImports": [
         "packages/app/tests/e2e/components/HeatmapComponent.ts",
         "packages/app/tests/e2e/page-objects/DashboardPage.ts",
-        "packages/app/tests/e2e/seed-clickhouse.ts",
+        "packages/app/tests/e2e/seed-data.ts",
         "packages/app/tests/e2e/utils/api-helpers.ts",
         "packages/app/tests/e2e/utils/base-test.ts",
         "packages/app/tests/e2e/utils/constants.ts",
@@ -6559,20 +6100,6 @@
       "routes": []
     },
     {
-      "path": "packages/app/tests/e2e/features/materialized-views.spec.ts",
-      "workspace": "@couchbase-traces/app",
-      "kind": "e2e",
-      "directImports": [
-        "packages/app/tests/e2e/components/MaterializedViewComponent.ts",
-        "packages/app/tests/e2e/components/SourceFormComponent.ts",
-        "packages/app/tests/e2e/page-objects/DashboardPage.ts",
-        "packages/app/tests/e2e/page-objects/SearchPage.ts",
-        "packages/app/tests/e2e/utils/base-test.ts",
-        "packages/app/tests/e2e/utils/constants.ts"
-      ],
-      "routes": []
-    },
-    {
       "path": "packages/app/tests/e2e/features/metric-exp-histogram.spec.ts",
       "workspace": "@couchbase-traces/app",
       "kind": "e2e",
@@ -6585,25 +6112,13 @@
       "routes": []
     },
     {
-      "path": "packages/app/tests/e2e/features/metric-name-streaming.couchbase.spec.ts",
-      "workspace": "@couchbase-traces/app",
-      "kind": "e2e",
-      "directImports": [
-        "packages/app/tests/e2e/page-objects/ChartExplorerPage.ts",
-        "packages/app/tests/e2e/utils/base-test.ts",
-        "packages/app/tests/e2e/utils/constants.ts"
-      ],
-      "routes": []
-    },
-    {
       "path": "packages/app/tests/e2e/features/metric-name-streaming.spec.ts",
       "workspace": "@couchbase-traces/app",
       "kind": "e2e",
       "directImports": [
         "packages/app/tests/e2e/page-objects/ChartExplorerPage.ts",
         "packages/app/tests/e2e/utils/base-test.ts",
-        "packages/app/tests/e2e/utils/constants.ts",
-        "packages/app/tests/e2e/utils/db-helpers.ts"
+        "packages/app/tests/e2e/utils/constants.ts"
       ],
       "routes": []
     },
@@ -6627,7 +6142,8 @@
       "directImports": [
         "packages/app/tests/e2e/page-objects/DashboardPage.ts",
         "packages/app/tests/e2e/utils/base-test.ts",
-        "packages/app/tests/e2e/utils/constants.ts"
+        "packages/app/tests/e2e/utils/constants.ts",
+        "packages/app/tests/e2e/utils/db-helpers.ts"
       ],
       "routes": []
     },
@@ -6647,7 +6163,7 @@
       "kind": "e2e",
       "directImports": [
         "packages/app/tests/e2e/page-objects/SearchPage.ts",
-        "packages/app/tests/e2e/seed-clickhouse.ts",
+        "packages/app/tests/e2e/seed-data.ts",
         "packages/app/tests/e2e/utils/base-test.ts",
         "packages/app/tests/e2e/utils/constants.ts"
       ],
@@ -6670,7 +6186,7 @@
       "kind": "e2e",
       "directImports": [
         "packages/app/tests/e2e/page-objects/SearchPage.ts",
-        "packages/app/tests/e2e/seed-clickhouse.ts",
+        "packages/app/tests/e2e/seed-data.ts",
         "packages/app/tests/e2e/utils/base-test.ts"
       ],
       "routes": []
@@ -6681,7 +6197,7 @@
       "kind": "e2e",
       "directImports": [
         "packages/app/tests/e2e/page-objects/SearchPage.ts",
-        "packages/app/tests/e2e/seed-clickhouse.ts",
+        "packages/app/tests/e2e/seed-data.ts",
         "packages/app/tests/e2e/utils/base-test.ts",
         "packages/app/tests/e2e/utils/constants.ts"
       ],
@@ -6734,7 +6250,7 @@
       "directImports": [
         "packages/app/tests/e2e/page-objects/SavedSearchesListPage.ts",
         "packages/app/tests/e2e/page-objects/SearchPage.ts",
-        "packages/app/tests/e2e/seed-clickhouse.ts",
+        "packages/app/tests/e2e/seed-data.ts",
         "packages/app/tests/e2e/utils/api-helpers.ts",
         "packages/app/tests/e2e/utils/base-test.ts",
         "packages/app/tests/e2e/utils/constants.ts"
@@ -6753,7 +6269,7 @@
       "kind": "e2e",
       "directImports": [
         "packages/app/tests/e2e/page-objects/SearchPage.ts",
-        "packages/app/tests/e2e/seed-clickhouse.ts",
+        "packages/app/tests/e2e/seed-data.ts",
         "packages/app/tests/e2e/utils/base-test.ts",
         "packages/app/tests/e2e/utils/constants.ts"
       ],
@@ -6813,7 +6329,7 @@
       "directImports": [
         "packages/app/tests/e2e/page-objects/SearchPage.ts",
         "packages/app/tests/e2e/utils/base-test.ts",
-        "packages/app/tests/e2e/utils/constants.ts"
+        "packages/app/tests/e2e/utils/db-helpers.ts"
       ],
       "routes": []
     },
@@ -6921,7 +6437,7 @@
       "kind": "e2e",
       "directImports": [
         "packages/app/tests/e2e/page-objects/SearchPage.ts",
-        "packages/app/tests/e2e/seed-clickhouse.ts",
+        "packages/app/tests/e2e/seed-data.ts",
         "packages/app/tests/e2e/utils/base-test.ts",
         "packages/app/tests/e2e/utils/constants.ts"
       ],
@@ -6964,36 +6480,17 @@
       "routes": []
     },
     {
-      "path": "packages/app/tests/e2e/global-setup-couchbase.ts",
-      "workspace": "@couchbase-traces/app",
-      "kind": "e2e",
-      "directImports": [
-        "packages/app/tests/e2e/global-setup-fullstack.ts",
-        "packages/app/tests/e2e/seed-couchbase.ts"
-      ],
-      "routes": []
-    },
-    {
       "path": "packages/app/tests/e2e/global-setup-fullstack.ts",
       "workspace": "@couchbase-traces/app",
       "kind": "e2e",
       "directImports": [
-        "packages/app/tests/e2e/seed-clickhouse.ts",
+        "packages/app/tests/e2e/seed-couchbase.ts",
         "packages/app/tests/e2e/utils/db-helpers.ts"
       ],
       "routes": [
         "/",
         "/search"
       ]
-    },
-    {
-      "path": "packages/app/tests/e2e/global-setup-local.ts",
-      "workspace": "@couchbase-traces/app",
-      "kind": "e2e",
-      "directImports": [
-        "packages/app/tests/e2e/seed-clickhouse.ts"
-      ],
-      "routes": []
     },
     {
       "path": "packages/app/tests/e2e/page-objects/AlertsPage.ts",
@@ -7013,15 +6510,6 @@
       ],
       "routes": [
         "/chart"
-      ]
-    },
-    {
-      "path": "packages/app/tests/e2e/page-objects/ClickHouseDashboardPage.ts",
-      "workspace": "@couchbase-traces/app",
-      "kind": "e2e",
-      "directImports": [],
-      "routes": [
-        "/clickhouse"
       ]
     },
     {
@@ -7137,17 +6625,7 @@
       "workspace": "@couchbase-traces/app",
       "kind": "e2e",
       "directImports": [
-        "packages/app/tests/e2e/seed-clickhouse.ts"
-      ],
-      "routes": []
-    },
-    {
-      "path": "packages/app/tests/e2e/seed-clickhouse.ts",
-      "workspace": "@couchbase-traces/app",
-      "kind": "e2e",
-      "directImports": [
-        "packages/app/tests/e2e/seed-otel-sessions.ts",
-        "packages/app/tests/e2e/utils/constants.ts"
+        "packages/app/tests/e2e/seed-data.ts"
       ],
       "routes": []
     },
@@ -7157,10 +6635,17 @@
       "kind": "e2e",
       "directImports": [
         "packages/app/tests/e2e/parseValuesTuples.ts",
-        "packages/app/tests/e2e/seed-clickhouse.ts",
+        "packages/app/tests/e2e/seed-data.ts",
         "packages/app/tests/e2e/utils/constants.ts",
-        "packages/ingest/src/model/fromClickHouseRow.ts"
+        "packages/ingest/src/model/fromShapedRow.ts"
       ],
+      "routes": []
+    },
+    {
+      "path": "packages/app/tests/e2e/seed-data.ts",
+      "workspace": "@couchbase-traces/app",
+      "kind": "e2e",
+      "directImports": [],
       "routes": []
     },
     {
@@ -7197,7 +6682,10 @@
       "path": "packages/app/tests/e2e/utils/db-helpers.ts",
       "workspace": "@couchbase-traces/app",
       "kind": "e2e",
-      "directImports": [],
+      "directImports": [
+        "packages/app/tests/e2e/utils/constants.ts",
+        "packages/ingest/src/model/fromShapedRow.ts"
+      ],
       "routes": []
     },
     {
@@ -7250,52 +6738,11 @@
       "routes": []
     },
     {
-      "path": "packages/cli/src/__tests__/chartData.test.ts",
-      "workspace": "@couchbase-traces/cli",
-      "kind": "unit",
-      "directImports": [
-        "packages/cli/src/shared/chartData.ts",
-        "packages/common-utils/src/clickhouse/index.ts",
-        "packages/common-utils/src/types.ts"
-      ],
-      "routes": []
-    },
-    {
-      "path": "packages/cli/src/__tests__/cliRoutingClient.test.ts",
-      "workspace": "@couchbase-traces/cli",
-      "kind": "unit",
-      "directImports": [
-        "packages/cli/src/api/client.ts",
-        "packages/common-utils/src/dataLayer/kind.ts"
-      ],
-      "routes": []
-    },
-    {
-      "path": "packages/cli/src/__tests__/formatNumber.test.ts",
-      "workspace": "@couchbase-traces/cli",
-      "kind": "unit",
-      "directImports": [
-        "packages/cli/src/shared/formatNumber.ts",
-        "packages/common-utils/src/types.ts"
-      ],
-      "routes": []
-    },
-    {
       "path": "packages/cli/src/__tests__/mcpInstall.test.ts",
       "workspace": "@couchbase-traces/cli",
       "kind": "unit",
       "directImports": [
         "packages/cli/src/mcp/install.ts"
-      ],
-      "routes": []
-    },
-    {
-      "path": "packages/cli/src/__tests__/rowWhere.test.ts",
-      "workspace": "@couchbase-traces/cli",
-      "kind": "unit",
-      "directImports": [
-        "packages/cli/src/shared/useRowWhere.ts",
-        "packages/common-utils/src/clickhouse/index.ts"
       ],
       "routes": []
     },
@@ -7329,30 +6776,6 @@
       "routes": []
     },
     {
-      "path": "packages/cli/src/__tests__/tileQuery.test.ts",
-      "workspace": "@couchbase-traces/cli",
-      "kind": "unit",
-      "directImports": [
-        "packages/cli/src/api/client.ts",
-        "packages/cli/src/shared/tileQuery.ts",
-        "packages/common-utils/src/dataLayer/kind.ts",
-        "packages/common-utils/src/types.ts"
-      ],
-      "routes": []
-    },
-    {
-      "path": "packages/cli/src/__tests__/tileRender.test.ts",
-      "workspace": "@couchbase-traces/cli",
-      "kind": "unit",
-      "directImports": [
-        "packages/cli/src/shared/tileQuery.ts",
-        "packages/cli/src/shared/tileRender.ts",
-        "packages/cli/src/termchart/index.ts",
-        "packages/common-utils/src/types.ts"
-      ],
-      "routes": []
-    },
-    {
       "path": "packages/common-utils/src/__tests__/alertChannels.test.ts",
       "workspace": "@couchbase-traces/common-utils",
       "kind": "unit",
@@ -7368,40 +6791,6 @@
       "directImports": [
         "packages/common-utils/src/alerts.ts",
         "packages/common-utils/src/types.ts"
-      ],
-      "routes": []
-    },
-    {
-      "path": "packages/common-utils/src/__tests__/builderToRawSql.test.ts",
-      "workspace": "@couchbase-traces/common-utils",
-      "kind": "unit",
-      "directImports": [
-        "packages/common-utils/src/core/builderToRawSql.ts",
-        "packages/common-utils/src/core/metadata.ts",
-        "packages/common-utils/src/core/utils.ts",
-        "packages/common-utils/src/macros.ts",
-        "packages/common-utils/src/types.ts"
-      ],
-      "routes": []
-    },
-    {
-      "path": "packages/common-utils/src/__tests__/clickhouse.test.ts",
-      "workspace": "@couchbase-traces/common-utils",
-      "kind": "unit",
-      "directImports": [
-        "packages/common-utils/src/clickhouse/index.ts",
-        "packages/common-utils/src/clickhouse/node.ts",
-        "packages/common-utils/src/core/metadata.ts",
-        "packages/common-utils/src/macros.ts"
-      ],
-      "routes": []
-    },
-    {
-      "path": "packages/common-utils/src/__tests__/clickhouseVersion.test.ts",
-      "workspace": "@couchbase-traces/common-utils",
-      "kind": "unit",
-      "directImports": [
-        "packages/common-utils/src/core/clickhouseVersion.ts"
       ],
       "routes": []
     },
@@ -7486,73 +6875,12 @@
       "routes": []
     },
     {
-      "path": "packages/common-utils/src/__tests__/kvItemsRewrite.int.test.ts",
-      "workspace": "@couchbase-traces/common-utils",
-      "kind": "int",
-      "directImports": [
-        "packages/common-utils/src/clickhouse/index.ts",
-        "packages/common-utils/src/clickhouse/node.ts",
-        "packages/common-utils/src/core/metadata.ts",
-        "packages/common-utils/src/core/renderChartConfig.ts",
-        "packages/common-utils/src/types.ts"
-      ],
-      "routes": []
-    },
-    {
       "path": "packages/common-utils/src/__tests__/macros.test.ts",
       "workspace": "@couchbase-traces/common-utils",
       "kind": "unit",
       "directImports": [
         "packages/common-utils/src/macroErrors.ts",
         "packages/common-utils/src/macros.ts",
-        "packages/common-utils/src/types.ts"
-      ],
-      "routes": []
-    },
-    {
-      "path": "packages/common-utils/src/__tests__/materializedViews.test.ts",
-      "workspace": "@couchbase-traces/common-utils",
-      "kind": "unit",
-      "directImports": [
-        "packages/common-utils/src/core/materializedViews.ts"
-      ],
-      "routes": []
-    },
-    {
-      "path": "packages/common-utils/src/__tests__/metadata.int.test.ts",
-      "workspace": "@couchbase-traces/common-utils",
-      "kind": "int",
-      "directImports": [
-        "packages/common-utils/src/clickhouse/node.ts",
-        "packages/common-utils/src/core/clickhouseVersion.ts",
-        "packages/common-utils/src/core/metadata.ts",
-        "packages/common-utils/src/queryParser.ts",
-        "packages/common-utils/src/types.ts"
-      ],
-      "routes": []
-    },
-    {
-      "path": "packages/common-utils/src/__tests__/metadata.test.ts",
-      "workspace": "@couchbase-traces/common-utils",
-      "kind": "unit",
-      "directImports": [
-        "packages/common-utils/src/clickhouse/index.ts",
-        "packages/common-utils/src/clickhouse/node.ts",
-        "packages/common-utils/src/core/metadata.ts",
-        "packages/common-utils/src/core/renderChartConfig.ts",
-        "packages/common-utils/src/guards.ts",
-        "packages/common-utils/src/queryParser.ts",
-        "packages/common-utils/src/types.ts"
-      ],
-      "routes": []
-    },
-    {
-      "path": "packages/common-utils/src/__tests__/metricNoRecordedValue.int.test.ts",
-      "workspace": "@couchbase-traces/common-utils",
-      "kind": "int",
-      "directImports": [
-        "packages/common-utils/src/clickhouse/node.ts",
-        "packages/common-utils/src/core/metadata.ts",
         "packages/common-utils/src/types.ts"
       ],
       "routes": []
@@ -7577,94 +6905,20 @@
       "routes": []
     },
     {
-      "path": "packages/common-utils/src/__tests__/queryAttribution.int.test.ts",
-      "workspace": "@couchbase-traces/common-utils",
-      "kind": "int",
-      "directImports": [
-        "packages/common-utils/src/clickhouse/node.ts"
-      ],
-      "routes": []
-    },
-    {
-      "path": "packages/common-utils/src/__tests__/queryChartConfig.int.test.ts",
-      "workspace": "@couchbase-traces/common-utils",
-      "kind": "int",
-      "directImports": [
-        "packages/common-utils/src/clickhouse/index.ts",
-        "packages/common-utils/src/clickhouse/node.ts",
-        "packages/common-utils/src/core/metadata.ts",
-        "packages/common-utils/src/core/utils.ts",
-        "packages/common-utils/src/types.ts"
-      ],
-      "routes": []
-    },
-    {
-      "path": "packages/common-utils/src/__tests__/queryParser.test.ts",
-      "workspace": "@couchbase-traces/common-utils",
-      "kind": "unit",
-      "directImports": [
-        "packages/common-utils/src/clickhouse/index.ts",
-        "packages/common-utils/src/clickhouse/node.ts",
-        "packages/common-utils/src/core/metadata.ts",
-        "packages/common-utils/src/queryParser.ts",
-        "packages/common-utils/src/types.ts"
-      ],
-      "routes": []
-    },
-    {
-      "path": "packages/common-utils/src/__tests__/rawSqlParams.test.ts",
-      "workspace": "@couchbase-traces/common-utils",
-      "kind": "unit",
-      "directImports": [
-        "packages/common-utils/src/core/metadata.ts",
-        "packages/common-utils/src/core/renderChartConfig.ts",
-        "packages/common-utils/src/types.ts"
-      ],
-      "routes": []
-    },
-    {
-      "path": "packages/common-utils/src/__tests__/renderChartConfig.test.ts",
-      "workspace": "@couchbase-traces/common-utils",
-      "kind": "unit",
-      "directImports": [
-        "packages/common-utils/src/clickhouse/index.ts",
-        "packages/common-utils/src/core/metadata.ts",
-        "packages/common-utils/src/core/renderChartConfig.ts",
-        "packages/common-utils/src/core/utils.ts",
-        "packages/common-utils/src/filters.ts",
-        "packages/common-utils/src/types.ts"
-      ],
-      "routes": []
-    },
-    {
-      "path": "packages/common-utils/src/__tests__/rewriteSqlFilterWithKvItems.test.ts",
-      "workspace": "@couchbase-traces/common-utils",
-      "kind": "unit",
-      "directImports": [
-        "packages/common-utils/src/core/renderChartConfig.ts",
-        "packages/common-utils/src/queryParser.ts"
-      ],
-      "routes": []
-    },
-    {
-      "path": "packages/common-utils/src/__tests__/sampleWeightedAggregations.int.test.ts",
-      "workspace": "@couchbase-traces/common-utils",
-      "kind": "int",
-      "directImports": [
-        "packages/common-utils/src/clickhouse/index.ts",
-        "packages/common-utils/src/clickhouse/node.ts",
-        "packages/common-utils/src/core/metadata.ts",
-        "packages/common-utils/src/core/renderChartConfig.ts",
-        "packages/common-utils/src/types.ts"
-      ],
-      "routes": []
-    },
-    {
       "path": "packages/common-utils/src/__tests__/selfTelemetry.test.ts",
       "workspace": "@couchbase-traces/common-utils",
       "kind": "unit",
       "directImports": [
         "packages/common-utils/src/selfTelemetry.ts"
+      ],
+      "routes": []
+    },
+    {
+      "path": "packages/common-utils/src/__tests__/serverVersion.test.ts",
+      "workspace": "@couchbase-traces/common-utils",
+      "kind": "unit",
+      "directImports": [
+        "packages/common-utils/src/core/serverVersion.ts"
       ],
       "routes": []
     },
@@ -7683,16 +6937,6 @@
       "kind": "unit",
       "directImports": [
         "packages/common-utils/src/sqlFormatter.ts"
-      ],
-      "routes": []
-    },
-    {
-      "path": "packages/common-utils/src/__tests__/streamDistinctIndexValues.test.ts",
-      "workspace": "@couchbase-traces/common-utils",
-      "kind": "unit",
-      "directImports": [
-        "packages/common-utils/src/clickhouse/node.ts",
-        "packages/common-utils/src/core/metadata.ts"
       ],
       "routes": []
     },
@@ -7757,59 +7001,6 @@
       "routes": []
     },
     {
-      "path": "packages/common-utils/src/clickhouse/__tests__/attribution.test.ts",
-      "workspace": "@couchbase-traces/common-utils",
-      "kind": "unit",
-      "directImports": [
-        "packages/common-utils/src/clickhouse/attribution.ts",
-        "packages/common-utils/src/clickhouse/index.ts"
-      ],
-      "routes": []
-    },
-    {
-      "path": "packages/common-utils/src/clickhouse/__tests__/browser.test.ts",
-      "workspace": "@couchbase-traces/common-utils",
-      "kind": "unit",
-      "directImports": [
-        "packages/common-utils/src/clickhouse/browser.ts"
-      ],
-      "routes": []
-    },
-    {
-      "path": "packages/common-utils/src/clickhouse/__tests__/index.test.ts",
-      "workspace": "@couchbase-traces/common-utils",
-      "kind": "unit",
-      "directImports": [
-        "packages/common-utils/src/clickhouse/index.ts",
-        "packages/common-utils/src/clickhouse/node.ts"
-      ],
-      "routes": []
-    },
-    {
-      "path": "packages/common-utils/src/clickhouse/__tests__/materializedViews.test.ts",
-      "workspace": "@couchbase-traces/common-utils",
-      "kind": "unit",
-      "directImports": [
-        "packages/common-utils/src/clickhouse/index.ts",
-        "packages/common-utils/src/clickhouse/node.ts",
-        "packages/common-utils/src/core/materializedViews.ts",
-        "packages/common-utils/src/core/metadata.ts",
-        "packages/common-utils/src/guards.ts",
-        "packages/common-utils/src/types.ts"
-      ],
-      "routes": []
-    },
-    {
-      "path": "packages/common-utils/src/clickhouse/__tests__/nodeAttribution.test.ts",
-      "workspace": "@couchbase-traces/common-utils",
-      "kind": "unit",
-      "directImports": [
-        "packages/common-utils/src/clickhouse/index.ts",
-        "packages/common-utils/src/clickhouse/node.ts"
-      ],
-      "routes": []
-    },
-    {
       "path": "packages/common-utils/src/core/__tests__/handlebarsEnv.test.ts",
       "workspace": "@couchbase-traces/common-utils",
       "kind": "unit",
@@ -7836,45 +7027,6 @@
       "directImports": [
         "packages/common-utils/src/core/linkUrlBuilder.ts",
         "packages/common-utils/src/types.ts"
-      ],
-      "routes": []
-    },
-    {
-      "path": "packages/common-utils/src/core/__tests__/promql.test.ts",
-      "workspace": "@couchbase-traces/common-utils",
-      "kind": "unit",
-      "directImports": [
-        "packages/common-utils/src/core/promql.ts",
-        "packages/common-utils/src/types.ts"
-      ],
-      "routes": []
-    },
-    {
-      "path": "packages/common-utils/src/core/__tests__/promqlChart.test.ts",
-      "workspace": "@couchbase-traces/common-utils",
-      "kind": "unit",
-      "directImports": [
-        "packages/common-utils/src/core/promqlChart.ts",
-        "packages/common-utils/src/core/utils.ts",
-        "packages/common-utils/src/types.ts"
-      ],
-      "routes": []
-    },
-    {
-      "path": "packages/common-utils/src/core/__tests__/promqlLabelInjection.test.ts",
-      "workspace": "@couchbase-traces/common-utils",
-      "kind": "unit",
-      "directImports": [
-        "packages/common-utils/src/core/promqlLabelInjection.ts"
-      ],
-      "routes": []
-    },
-    {
-      "path": "packages/common-utils/src/core/__tests__/promqlSelector.test.ts",
-      "workspace": "@couchbase-traces/common-utils",
-      "kind": "unit",
-      "directImports": [
-        "packages/common-utils/src/core/promqlSelector.ts"
       ],
       "routes": []
     },
@@ -7942,8 +7094,8 @@
       "workspace": "@couchbase-traces/common-utils",
       "kind": "unit",
       "directImports": [
-        "packages/common-utils/src/clickhouse/index.ts",
-        "packages/common-utils/src/couchbase/errors.ts"
+        "packages/common-utils/src/couchbase/errors.ts",
+        "packages/common-utils/src/query/index.ts"
       ],
       "routes": []
     },
@@ -8121,31 +7273,6 @@
       "workspace": "@couchbase-traces/common-utils",
       "kind": "support",
       "directImports": [],
-      "routes": []
-    },
-    {
-      "path": "packages/common-utils/src/dataLayer/__tests__/kind.test.ts",
-      "workspace": "@couchbase-traces/common-utils",
-      "kind": "unit",
-      "directImports": [
-        "packages/common-utils/src/dataLayer/kind.ts"
-      ],
-      "routes": []
-    },
-    {
-      "path": "packages/common-utils/src/dataLayer/__tests__/routing.test.ts",
-      "workspace": "@couchbase-traces/common-utils",
-      "kind": "unit",
-      "directImports": [
-        "packages/common-utils/src/clickhouse/index.ts",
-        "packages/common-utils/src/clickhouse/node.ts",
-        "packages/common-utils/src/core/metadata.ts",
-        "packages/common-utils/src/dataLayer/errors.ts",
-        "packages/common-utils/src/dataLayer/index.ts",
-        "packages/common-utils/src/dataLayer/kind.ts",
-        "packages/common-utils/src/dataLayer/node.ts",
-        "packages/common-utils/src/dataLayer/routingMetadata.ts"
-      ],
       "routes": []
     },
     {
@@ -8340,10 +7467,10 @@
       "workspace": "@couchbase-traces/hdx-eval",
       "kind": "unit",
       "directImports": [
-        "packages/hdx-eval/src/clickhouse/insert.ts",
-        "packages/hdx-eval/src/clickhouse/schema.ts",
         "packages/hdx-eval/src/generators/metrics.ts",
         "packages/hdx-eval/src/generators/types.ts",
+        "packages/hdx-eval/src/query/insert.ts",
+        "packages/hdx-eval/src/query/schema.ts",
         "packages/hdx-eval/src/rng/seeded.ts",
         "packages/hdx-eval/src/scenarios/types.ts"
       ],
@@ -8555,6 +7682,32 @@
         "packages/ingest/src/transform/common.ts",
         "packages/ingest/src/writer.ts"
       ],
+      "routes": []
+    },
+    {
+      "path": "packages/ingest/src/sample/__tests__/generate.test.ts",
+      "workspace": "@couchbase-traces/ingest",
+      "kind": "unit",
+      "directImports": [
+        "packages/ingest/src/sample/generate.ts"
+      ],
+      "routes": []
+    },
+    {
+      "path": "packages/ingest/src/sample/__tests__/send.test.ts",
+      "workspace": "@couchbase-traces/ingest",
+      "kind": "unit",
+      "directImports": [
+        "packages/ingest/src/sample/generate.ts",
+        "packages/ingest/src/sample/send.ts"
+      ],
+      "routes": []
+    },
+    {
+      "path": "scripts/__tests__/compose-config.test.mjs",
+      "workspace": null,
+      "kind": "unit",
+      "directImports": [],
       "routes": []
     },
     {

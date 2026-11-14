@@ -72,7 +72,7 @@ function HeatmapPreview({
 }
 
 /**
- * Heatmap renders via two sequential ClickHouse queries — bounds first, then
+ * Heatmap renders via two sequential legacy store queries — bounds first, then
  * the bucketed-counts query that uses the resolved min/max.  Show both,
  * labeled, with placeholder tokens for the bucket-array literals (which only
  * exist at runtime once the bounds query returns). A series heatmap runs a

@@ -33,7 +33,7 @@ export type DenoiseSkipReason =
 
 /**
  * The result column holding the source's body. `columns` follow the order of
- * the SELECT items, and ClickHouse may rename a column, so the body is located
+ * the SELECT items, and legacy store may rename a column, so the body is located
  * by its position in the SELECT list, then by name (e.g. for `SELECT *`).
  */
 export function findBodyResultColumn(

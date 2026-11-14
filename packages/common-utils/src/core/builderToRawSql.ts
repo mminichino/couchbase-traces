@@ -28,7 +28,7 @@ const RAW_SQL_DISPLAY_TYPES = new Set<DisplayType>([
 ]);
 
 /**
- * Inlines any remaining ChSql query params (e.g. LIMIT/OFFSET values) into
+ * Inlines any remaining SqlFrag query params (e.g. LIMIT/OFFSET values) into
  * the SQL text with type-appropriate quoting. `parameterizedQueryToSql` is
  * not suitable here — it splices values in raw, dropping quotes.
  */

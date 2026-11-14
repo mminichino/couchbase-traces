@@ -13,7 +13,7 @@ import { TAIL_INTERVAL_MS, PAGE_SIZE } from './types';
 // ---- Types ---------------------------------------------------------
 
 export interface UseEventDataParams {
-  clickhouseClient: CliDataClient;
+  dataClient: CliDataClient;
   metadata: Metadata;
   source: SourceResponse;
   customSelect: string | undefined;
@@ -38,17 +38,17 @@ export interface UseEventDataReturn {
   expandedSpanId: string | null;
   /** SQL WHERE clause that uniquely identifies the expanded row (for browser URL) */
   expandedRowWhere: string | null;
-  /** The last rendered ChSql (parameterized SQL + params) for the table query */
-  lastChSql: { sql: string; params: Record<string, unknown> } | null;
-  /** The last rendered ChSql for the expanded row (SELECT *) query */
-  lastExpandedChSql: { sql: string; params: Record<string, unknown> } | null;
+  /** The last rendered SqlFrag (parameterized SQL + params) for the table query */
+  lastSqlFrag: { sql: string; params: Record<string, unknown> } | null;
+  /** The last rendered SqlFrag for the expanded row (SELECT *) query */
+  lastExpandedSqlFrag: { sql: string; params: Record<string, unknown> } | null;
   fetchNextPage: () => Promise<void>;
 }
 
 // ---- Hook ----------------------------------------------------------
 
 export function useEventData({
-  clickhouseClient,
+  dataClient,
   metadata,
   source,
   customSelect,
@@ -78,20 +78,20 @@ export function useEventData({
 
   const lastTimestampRef = useRef<string | null>(null);
   const dateRangeRef = useRef<{ start: Date; end: Date } | null>(null);
-  const [lastChSql, setLastChSql] = useState<{
+  const [lastSqlFrag, setLastSqlFrag] = useState<{
     sql: string;
     params: Record<string, unknown>;
   } | null>(null);
   // Keep a ref copy for use inside the expanded row effect (which needs
-  // the table ChSql to build the WHERE clause for the SELECT * query).
-  const lastTableChSqlRef = useRef<{
+  // the table SqlFrag to build the WHERE clause for the SELECT * query).
+  const lastTableSqlFragRef = useRef<{
     sql: string;
     params: Record<string, unknown>;
   } | null>(null);
   const lastTableMetaRef = useRef<Array<{ name: string; type: string }> | null>(
     null,
   );
-  const [lastExpandedChSql, setLastExpandedChSql] = useState<{
+  const [lastExpandedSqlFrag, setLastExpandedSqlFrag] = useState<{
     sql: string;
     params: Record<string, unknown>;
   } | null>(null);
@@ -109,7 +109,7 @@ export function useEventData({
       setError(null);
       setPaginationError(null);
       try {
-        const chSql = await buildEventSearchQuery(
+        const sqlExpr = await buildEventSearchQuery(
           {
             source,
             selectOverride: customSelect,
@@ -120,11 +120,11 @@ export function useEventData({
           },
           metadata,
         );
-        lastTableChSqlRef.current = chSql;
-        setLastChSql(chSql);
-        const resultSet = await clickhouseClient.query({
-          query: chSql.sql,
-          query_params: chSql.params,
+        lastTableSqlFragRef.current = sqlExpr;
+        setLastSqlFrag(sqlExpr);
+        const resultSet = await dataClient.query({
+          query: sqlExpr.sql,
+          query_params: sqlExpr.params,
           format: 'JSON',
           connectionId: source.connection,
         });
@@ -154,7 +154,7 @@ export function useEventData({
         setLoading(false);
       }
     },
-    [clickhouseClient, metadata, source, tsExpr, customSelect],
+    [dataClient, metadata, source, tsExpr, customSelect],
   );
 
   // ---- fetchNextPage -----------------------------------------------
@@ -165,7 +165,7 @@ export function useEventData({
     setPaginationError(null);
     try {
       const { start, end } = dateRangeRef.current;
-      const chSql = await buildEventSearchQuery(
+      const sqlExpr = await buildEventSearchQuery(
         {
           source,
           selectOverride: customSelect,
@@ -177,9 +177,9 @@ export function useEventData({
         },
         metadata,
       );
-      const resultSet = await clickhouseClient.query({
-        query: chSql.sql,
-        query_params: chSql.params,
+      const resultSet = await dataClient.query({
+        query: sqlExpr.sql,
+        query_params: sqlExpr.params,
         format: 'JSON',
         connectionId: source.connection,
       });
@@ -205,7 +205,7 @@ export function useEventData({
     customSelect,
     source,
     metadata,
-    clickhouseClient,
+    dataClient,
   ]);
 
   // ---- Effect: initial fetch + re-fetch on query/time change -------
@@ -243,7 +243,7 @@ export function useEventData({
       setExpandedTraceId(null);
       setExpandedSpanId(null);
       setExpandedRowWhere(null);
-      setLastExpandedChSql(null);
+      setLastExpandedSqlFrag(null);
       return;
     }
     const row = events[expandedRow];
@@ -255,25 +255,25 @@ export function useEventData({
 
     (async () => {
       try {
-        const tableChSql = lastTableChSqlRef.current ?? {
+        const tableSqlFrag = lastTableSqlFragRef.current ?? {
           sql: '',
           params: {},
         };
         const tableMeta = lastTableMetaRef.current ?? [];
-        const { chSql, rowWhere } = await buildFullRowQuery({
+        const { sqlExpr, rowWhere } = await buildFullRowQuery({
           source,
           row: row as Record<string, unknown>,
-          tableChSql,
+          tableSqlFrag,
           tableMeta,
           metadata,
         });
-        setLastExpandedChSql(chSql);
+        setLastExpandedSqlFrag(sqlExpr);
         if (!cancelled) {
           setExpandedRowWhere(rowWhere);
         }
-        const resultSet = await clickhouseClient.query({
-          query: chSql.sql,
-          query_params: chSql.params,
+        const resultSet = await dataClient.query({
+          query: sqlExpr.sql,
+          query_params: sqlExpr.params,
           format: 'JSON',
           connectionId: source.connection,
         });
@@ -317,7 +317,7 @@ export function useEventData({
     return () => {
       cancelled = true;
     };
-  }, [expandedRow, events, source, metadata, clickhouseClient]);
+  }, [expandedRow, events, source, metadata, dataClient]);
 
   return {
     events,
@@ -332,8 +332,8 @@ export function useEventData({
     expandedTraceId,
     expandedSpanId,
     expandedRowWhere,
-    lastChSql,
-    lastExpandedChSql,
+    lastSqlFrag,
+    lastExpandedSqlFrag,
     fetchNextPage,
   };
 }

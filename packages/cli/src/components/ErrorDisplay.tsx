@@ -70,7 +70,7 @@ const SEVERITY_CONFIG = {
  * │ Sent Query:                                     │
  * │ SELECT * FROM default.logs WHERE "name" = 'foo' │
  * │                                                 │
- * │ 💡 ClickHouse does not support double quotes ... │
+ * │ 💡 SQL++ string literals use single quotes ... │
  * ╰─────────────────────────────────────────────────╯
  *
  * Medium terminal (20–35 rows):

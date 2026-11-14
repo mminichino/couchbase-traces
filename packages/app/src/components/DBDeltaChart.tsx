@@ -322,13 +322,13 @@ export default function DBDeltaChart({
 
   const error = outlierError ?? allSpansError;
 
-  // Column metadata for field classification (from ClickHouse response)
+  // Column metadata for field classification (from legacy store response)
   const columnMeta = useMemo<{ name: string; type: string }[]>(
     () => outlierData?.meta ?? inlierData?.meta ?? allSpansData?.meta ?? [],
     [outlierData?.meta, inlierData?.meta, allSpansData?.meta],
   );
 
-  // Wrap onAddFilter to convert flattened dot-notation keys into ClickHouse bracket notation
+  // Wrap onAddFilter to convert flattened dot-notation keys into legacy store bracket notation
   const handleAddFilter = useCallback<NonNullable<AddFilterFn>>(
     (property, value, action) => {
       if (!onAddFilter) return;

@@ -1,9 +1,9 @@
 import { addDays, differenceInDays, subDays } from 'date-fns';
 import dayjs from 'dayjs';
 import {
-  chSql,
-  concatChSql,
+  concatSqlExpr,
   ResponseJSON,
+  sqlExpr,
   tableExpr,
 } from '@couchbase-traces/common-utils/dist/query';
 import {
@@ -14,7 +14,7 @@ import {
 import { useQuery } from '@tanstack/react-query';
 
 import { useMetadataWithSettings } from '@/hooks/useMetadata';
-import { getClickhouseClient } from '@/query';
+import { getDataClient } from '@/query';
 import { useMetadataQueryAttribution } from '@/queryAttribution';
 import { QUERYABLE_KINDS } from '@/utils/metricKinds';
 import {
@@ -104,7 +104,7 @@ export function useMetricCatalog({
       // unstable time references leaking into render. This runs inside the
       // queryFn, not during render, but the rule is syntactic.
       const [start, end] = clampCatalogDateRange(dateRange, dayjs().toDate());
-      const clickhouseClient = getClickhouseClient({ attribution });
+      const dataClient = getDataClient({ attribution });
 
       // Settled, not all: a source can legitimately have one misconfigured or
       // ungranted kind table, and failing the whole catalog would hide every
@@ -122,17 +122,17 @@ export function useMetricCatalog({
           const columnNames = new Set(columns.map(c => c.name));
 
           const projections = [
-            chSql`MetricName`,
+            sqlExpr`MetricName`,
             ...(columnNames.has('MetricUnit')
-              ? [chSql`anyLast(MetricUnit) AS MetricUnit`]
+              ? [sqlExpr`anyLast(MetricUnit) AS MetricUnit`]
               : []),
             ...(columnNames.has('MetricDescription')
-              ? [chSql`anyLast(MetricDescription) AS MetricDescription`]
+              ? [sqlExpr`anyLast(MetricDescription) AS MetricDescription`]
               : []),
           ];
 
-          const sql = chSql`
-            SELECT ${concatChSql(', ', projections)}
+          const sql = sqlExpr`
+            SELECT ${concatSqlExpr(', ', projections)}
             FROM ${tableExpr({ database: databaseName, table: tableName })}
             WHERE ${{ Identifier: timestampExpression }} >= fromUnixTimestamp64Milli(${{ Int64: start.getTime() }})
               AND ${{ Identifier: timestampExpression }} <= fromUnixTimestamp64Milli(${{ Int64: end.getTime() }})
@@ -141,14 +141,14 @@ export function useMetricCatalog({
             LIMIT ${{ Int32: MAX_METRICS_PER_KIND }}
           `;
 
-          const result = (await clickhouseClient
+          const result = (await dataClient
             .query<'JSON'>({
               query: sql.sql,
               query_params: sql.params,
               format: 'JSON',
               abort_signal: signal,
               connectionId,
-              clickhouse_settings: {
+              query_settings: {
                 max_execution_time: MAX_EXEC_SECONDS,
                 timeout_overflow_mode: 'break',
               },

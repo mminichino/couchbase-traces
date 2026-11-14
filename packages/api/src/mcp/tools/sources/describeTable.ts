@@ -77,14 +77,14 @@ export function registerDescribeTable({
         );
       }
 
-      const clickhouseClient = new DataClient({
+      const dataClient = new DataClient({
         requestTimeout: MCP_REQUEST_TIMEOUT,
       });
 
       const outcome = await runWithTimeout(
         signal => {
           const couchCtx = {
-            clickhouseClient,
+            dataClient,
             connectionId: input.connectionId,
             signal,
           };

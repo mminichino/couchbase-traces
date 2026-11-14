@@ -77,7 +77,7 @@ packages/common-utils/src/couchbase/render/
   postprocess.ts                   result normalization (section 5.8)
 packages/common-utils/src/couchbase/defaultSources.ts   moved from packages/ingest/src/model/sources.ts
 packages/common-utils/src/couchbase/keywords.ts         SQL++ keywords and functions for editors
-packages/ingest/src/model/fromClickHouseRow.ts          ClickHouse-shaped row → document, for seeding and parity
+packages/ingest/src/model/fromShapedRow.ts          ClickHouse-shaped row → document, for seeding and parity
 packages/app/src/couchbase/                             app-side dialect helpers for the query sites on the work lists
 packages/app/tests/e2e/
   docker-compose.couchbase.yml
@@ -285,7 +285,7 @@ Only these reasons are accepted. `engine_limit` entries also require a feature n
 ## 7. E2E in Couchbase mode
 
 - **Stack:** `tests/e2e/docker-compose.couchbase.yml` runs Couchbase Enterprise (Phase 4 tag) and Mongo. `global-setup-couchbase.ts` waits for both, runs the ingest setup command (`--create-bucket --create-users`), runs `seed-couchbase.ts`, then creates a Couchbase connection and sources through the API from `defaultSources.ts`, matching what `global-setup-fullstack.ts` does for ClickHouse.
-- **Seed:** `seed-couchbase.ts` reuses `seed-clickhouse.ts`'s row generators and writes each row through `fromClickHouseRow` with Phase 5 keys and expiry.
+- **Seed:** `seed-couchbase.ts` reuses `seed-clickhouse.ts`'s row generators and writes each row through `fromShapedRow` with Phase 5 keys and expiry.
 - **Selection:** Playwright runs in full-stack mode with `CBT_E2E_STORE=couchbase`, which selects the Couchbase global setup. `port/slices/e2e.json` lists each slice's spec files, starting from the work list's `tests.e2e`.
 - **Exclusions:** a spec may be excluded only with a reason: `promql`, `materialized_views`, `clickhouse_admin`, `local_mode_only`, or `asserts_engine_text` (the spec checks text such as a ClickHouse error message). `asserts_engine_text` exclusions need a Couchbase variant of the spec that checks the same behavior with Couchbase text.
 - **Requirement:** every non-excluded spec for the slice passes in Couchbase mode, and still passes in the existing ClickHouse modes.

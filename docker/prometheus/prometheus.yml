@@ -13,8 +13,8 @@ scrape_configs:
     static_configs:
       - targets: ['otel-collector:8888']
 
-  # Scrape ClickHouse metrics (if the /metrics handler is available)
-  - job_name: 'clickhouse'
+  # Scrape legacy store metrics (if the /metrics handler is available)
+  - job_name: 'evalstore'
     static_configs:
       - targets: ['ch-server:9363']
     metrics_path: '/metrics'

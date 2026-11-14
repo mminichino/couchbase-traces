@@ -8,7 +8,6 @@ export {
   buildHeatmapBoundsConfig,
   buildHeatmapBucketConfig,
   buildHeatmapSeriesConfig,
-  PROMQL_DEFAULT_HEATMAP_SCALE_TYPE,
   resolveHeatmapGranularity,
   toHeatmapQuery,
 } from './heatmapQueries';

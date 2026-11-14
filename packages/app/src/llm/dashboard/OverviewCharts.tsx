@@ -45,7 +45,7 @@ const COST_PER_CALL_NUMBER_FORMAT: NumberFormat = {
  * Headline KPI tiles + request/error trends, scoped to LLM spans.
  *
  * DBNumberChart displays the first numeric column of the result, so tiles
- * with derived values list the derived expression first — ClickHouse
+ * with derived values list the derived expression first — legacy store
  * resolves the forward alias references.
  */
 export function OverviewCharts(props: LLMChartProps) {

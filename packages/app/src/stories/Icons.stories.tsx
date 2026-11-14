@@ -1,6 +1,6 @@
 import { ActionIcon, Button, Group, Stack, Table, Text } from '@mantine/core';
 
-import { CopySnippet } from '@/components/ClickStackOnboarding/CopySnippet';
+import { CopySnippet } from '@/components/CollectorOnboarding/CopySnippet';
 import { SOURCE_KIND_ICONS } from '@/components/sourceSelectUtils';
 import { IconAiNotebook, IncidentIOIcon } from '@/SVGIcons';
 

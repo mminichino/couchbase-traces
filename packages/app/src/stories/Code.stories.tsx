@@ -1,7 +1,7 @@
 import { Code, Stack, Text } from '@mantine/core';
 import type { Meta, StoryObj } from '@storybook/nextjs';
 
-import { CopySnippet } from '@/components/ClickStackOnboarding/CopySnippet';
+import { CopySnippet } from '@/components/CollectorOnboarding/CopySnippet';
 
 /**
  * Snippet chrome for the app and for Storybook guidelines.
@@ -29,7 +29,7 @@ type Story = StoryObj<typeof CopySnippet>;
 
 const FENCED_EXAMPLE = `<CopySnippet
   label="Import block"
-  snippet={\`import { clickstack_dashboard } from "clickhouse/couchbase-traces"\`}
+  snippet={\`import { cbt_dashboard } from "couchbase-traces"\`}
 />`;
 
 const INLINE_EXAMPLE = `Create a source with <Code>Session</Code> type.`;
@@ -38,7 +38,7 @@ export const Playground: Story = {
   args: {
     label: 'Import block',
     snippet:
-      'import {\n  clickhouse_clickstack_dashboard.example\n} from "clickhouse/couchbase-traces"',
+      'import {\n  clickhouse_cbt_dashboard.example\n} from "couchbase-traces"',
   },
 };
 
@@ -69,15 +69,15 @@ export const FencedBlocks = () => (
       </Text>
       <Text size="sm" c="var(--color-text-muted)">
         Multi-line or copyable snippets. Use <Code>CopySnippet</Code> from{' '}
-        <Code>@/components/ClickStackOnboarding/CopySnippet</Code>. It renders
+        <Code>@/components/CollectorOnboarding/CopySnippet</Code>. It renders
         Mantine <Code>Code block</Code> plus a Copy button.
       </Text>
     </div>
     <CopySnippet
       label="Import block"
       snippet={`import {
-  clickhouse_clickstack_dashboard.example
-} from "clickhouse/couchbase-traces"`}
+  clickhouse_cbt_dashboard.example
+} from "couchbase-traces"`}
     />
     <div>
       <Text size="sm" fw={600} mb="xs">
@@ -117,7 +117,7 @@ export const Usage = () => (
 </Paper>`}
     />
     <Text size="sm" c="var(--color-text-muted)">
-      SQL query previews (rendered ClickHouse SQL with highlighting) still use{' '}
+      SQL query previews (rendered legacy SQL with highlighting) still use{' '}
       <Code>SQLPreview</Code> / <Code>ChartSQLPreview</Code> — those are
       editors, not snippet chrome.
     </Text>

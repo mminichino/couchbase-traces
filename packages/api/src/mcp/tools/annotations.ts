@@ -12,7 +12,7 @@ export type ToolBehaviorAnnotations = Required<
 >;
 
 // Every tool reads or writes only the calling team's own ClickStack metadata
-// (MongoDB) and telemetry (ClickHouse), so none of them is open-world.
+// (MongoDB) and telemetry (legacy store), so none of them is open-world.
 
 export const READ_ONLY_TOOL: ToolBehaviorAnnotations = {
   readOnlyHint: true,

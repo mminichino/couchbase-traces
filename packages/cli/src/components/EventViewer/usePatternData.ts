@@ -1,5 +1,5 @@
 /**
- * Fetches a random sample of events from ClickHouse, mines patterns
+ * Fetches a random sample of events from legacy store, mines patterns
  * using the Drain algorithm, and estimates total counts using a
  * sampleMultiplier — mirroring the web frontend's useGroupedPatterns.
  */
@@ -40,7 +40,7 @@ export interface PatternGroup {
 }
 
 export interface UsePatternDataParams {
-  clickhouseClient: CliDataClient;
+  dataClient: CliDataClient;
   metadata: Metadata;
   source: SourceResponse;
   submittedQuery: string;
@@ -61,7 +61,7 @@ export interface UsePatternDataReturn {
 // ---- Hook ----------------------------------------------------------
 
 export function usePatternData({
-  clickhouseClient,
+  dataClient,
   metadata,
   source,
   submittedQuery,
@@ -119,13 +119,13 @@ export function usePatternData({
       ]);
 
       const [sampleResult, countResult] = await Promise.all([
-        clickhouseClient.query({
+        dataClient.query({
           query: sampleChSql.sql,
           query_params: sampleChSql.params,
           format: 'JSON',
           connectionId: source.connection,
         }),
-        clickhouseClient.query({
+        dataClient.query({
           query: countChSql.sql,
           query_params: countChSql.params,
           format: 'JSON',
@@ -194,7 +194,7 @@ export function usePatternData({
       setLoading(false);
     }
   }, [
-    clickhouseClient,
+    dataClient,
     metadata,
     source,
     submittedQuery,

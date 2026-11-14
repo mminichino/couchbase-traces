@@ -29,11 +29,11 @@ import {
   isRawSqlChartConfig,
   isRawSqlSavedChartConfig,
 } from '@couchbase-traces/common-utils/dist/guards';
-import * as clickhouse from '@couchbase-traces/common-utils/dist/query';
+import * as evalstore from '@couchbase-traces/common-utils/dist/query';
 import {
-  chSqlToAliasMap,
   type QueryAttribution,
   ResponseJSON,
+  sqlExprToAliasMap,
 } from '@couchbase-traces/common-utils/dist/query';
 import {
   ALERT_NOTIFICATION_TARGETS_LIMIT,
@@ -130,7 +130,7 @@ const alertEvaluationsCounter = getCounter('cbt.alerts.evaluations', {
 });
 const alertQueryFailuresCounter = getCounter('cbt.alerts.query_failures', {
   description:
-    'Count of alert evaluations where the ClickHouse query failed, skipping the state/history update.',
+    'Count of alert evaluations where the SQL query failed, skipping the state/history update.',
 });
 const alertProcessFailuresCounter = getCounter('cbt.alerts.process_failures', {
   description:
@@ -138,7 +138,7 @@ const alertProcessFailuresCounter = getCounter('cbt.alerts.process_failures', {
 });
 const alertBatchFailuresCounter = getCounter('cbt.alerts.batch_failures', {
   description:
-    'Count of alert batches (one per connection) that failed before their alerts could be evaluated, e.g. a ClickHouse connection failure.',
+    'Count of alert batches (one per connection) that failed before their alerts could be evaluated, e.g. a legacy connection failure.',
 });
 
 /**
@@ -193,7 +193,7 @@ export async function computeAliasWithClauses(
     timestampValueExpression: source.timestampValueExpression,
   };
   const query = await renderChartConfig(config, metadata, source.querySettings);
-  const aliasMap = chSqlToAliasMap(query);
+  const aliasMap = sqlExprToAliasMap(query);
   return aliasMapToWithClauses(aliasMap);
 }
 
@@ -207,7 +207,7 @@ class InvalidAlertError extends Error {
 // For security, we do not surface raw error messages for webhook or unknown
 // failures — they may leak URLs, response bodies, or other sensitive detail
 // from upstream systems. QUERY_ERROR and INVALID_ALERT messages are authored
-// by us (ClickHouse errors or our own validation) and are safe to display.
+// by us (legacy store errors or our own validation) and are safe to display.
 const HARDCODED_ALERT_ERROR_MESSAGES: Partial<Record<AlertErrorType, string>> =
   {
     [AlertErrorType.WEBHOOK_ERROR]:
@@ -248,7 +248,7 @@ const makeQueryAlertError = (
     return makeAlertError(AlertErrorType.QUERY_ERROR, getErrorMessage(e));
   }
   // For the client's own request timeout we know the configured limit; for
-  // server-side timeouts the original ClickHouse message carries the limit.
+  // server-side timeouts the original legacy store message carries the limit.
   const message = isClientTimeoutOrAbortError(e)
     ? `Alert query did not complete within the ${Math.round(requestTimeoutMs / 1000)}s evaluation timeout. ${QUERY_TIMEOUT_RETRY_NOTE}`
     : `Alert query timed out before completing: ${getErrorMessage(e)}. ${QUERY_TIMEOUT_RETRY_NOTE}`;
@@ -488,7 +488,7 @@ const fireChannelEvent = async ({
   alert,
   alertProvider,
   attributes,
-  clickhouseClient,
+  dataClient,
   dashboard,
   endTime,
   group,
@@ -506,7 +506,7 @@ const fireChannelEvent = async ({
   alert: IAlert;
   alertProvider: AlertProvider;
   attributes: Record<string, string>; // TODO: support other types than string
-  clickhouseClient: DataClient;
+  dataClient: DataClient;
   dashboard?: IDashboard | null;
   endTime: Date;
   group?: string;
@@ -576,7 +576,7 @@ const fireChannelEvent = async ({
 
   const { failures, timings, dispatchDurationMs } = await renderAlertTemplate({
     alertProvider,
-    clickhouseClient,
+    dataClient,
     metadata,
     state,
     title: buildAlertMessageTemplateTitle({ view: templateView }),
@@ -909,13 +909,11 @@ const getResponseMetadata = (
   const meta =
     data.meta?.map(m => ({
       ...m,
-      jsType: clickhouse.columnTypeToJSType(m.type),
+      jsType: evalstore.columnTypeToJSType(m.type),
     })) ?? [];
 
   const valueColumnNames = new Set(
-    meta
-      .filter(m => m.jsType === clickhouse.JSDataType.Number)
-      .map(m => m.name),
+    meta.filter(m => m.jsType === evalstore.JSDataType.Number).map(m => m.name),
   );
 
   if (valueColumnNames.size === 0) {
@@ -932,7 +930,7 @@ const getResponseMetadata = (
     return { type: 'single_value', valueColumnNames };
   } else {
     const timestampColumnName = meta.find(
-      m => m.jsType === clickhouse.JSDataType.Date,
+      m => m.jsType === evalstore.JSDataType.Date,
     )?.name;
 
     if (timestampColumnName == null) {
@@ -1006,7 +1004,7 @@ export const alertQueryAttribution = (
 export const processAlert = async (
   wallClockNow: Date,
   details: AlertDetails,
-  clickhouseClient: DataClient,
+  dataClient: DataClient,
   connectionId: string,
   alertProvider: AlertProvider,
   teamWebhooksById: Map<string, IWebhook>,
@@ -1178,7 +1176,7 @@ export const processAlert = async (
       return;
     }
 
-    const metadata = getMetadata(clickhouseClient);
+    const metadata = getMetadata(dataClient);
 
     // For saved search alerts, the WHERE clause may reference aliased columns
     // from the saved search's select expression (e.g. `toString(Body) AS body`).
@@ -1254,7 +1252,7 @@ export const processAlert = async (
               sampleLinesByWindow.get(key) ??
               fetchSampleLines({
                 aliasWith: aliasWithClauses,
-                clickhouseClient,
+                dataClient,
                 endTime: fns.addMinutes(startTime, windowSizeInMins),
                 metadata,
                 savedSearch: details.savedSearch,
@@ -1322,7 +1320,7 @@ export const processAlert = async (
             alert,
             alertProvider,
             attributes,
-            clickhouseClient,
+            dataClient,
             dashboard: (details as any).dashboard,
             startTime,
             endTime: fns.addMinutes(startTime, windowSizeInMins),
@@ -1451,7 +1449,7 @@ export const processAlert = async (
         details,
         source,
         chartConfig,
-        clickhouseClient,
+        dataClient,
         metadata,
         dateRange,
         windowSizeInMins,
@@ -1481,7 +1479,7 @@ export const processAlert = async (
     let checksData;
     const queryStartedAt = performance.now();
     try {
-      checksData = await clickhouseClient.queryChartConfig({
+      checksData = await dataClient.queryChartConfig({
         config: optimizedChartConfig,
         metadata,
         opts: {
@@ -1491,7 +1489,7 @@ export const processAlert = async (
         querySettings: source?.querySettings,
       });
       // SLO signal for alert data fetching (distinct from the end-to-end
-      // evaluation SLI): did ClickHouse serve the alert query, and how fast.
+      // evaluation SLI): did legacy store serve the alert query, and how fast.
       const queryDurationMs = performance.now() - queryStartedAt;
       evaluationAnalytics.queryDurationMs = Math.round(queryDurationMs);
       recordOperationOutcome({
@@ -1512,10 +1510,7 @@ export const processAlert = async (
         attributes: { alert_source: alert.source ?? 'unknown' },
       });
       evalOutcome = 'error';
-      const alertError = makeQueryAlertError(
-        e,
-        clickhouseClient.requestTimeoutMs,
-      );
+      const alertError = makeQueryAlertError(e, dataClient.requestTimeoutMs);
       alertQueryFailuresCounter.add(1, {
         error_type:
           alertError.type === AlertErrorType.QUERY_TIMEOUT
@@ -1641,7 +1636,7 @@ export const processAlert = async (
         alertEvaluationsCounter.add(1, { outcome: 'empty_bucket' });
         logger.info(
           { alertId: alert.id, bucketStart },
-          'No data returned from ClickHouse for time bucket',
+          'No data returned from legacy store for time bucket',
         );
 
         const zeroValueIsAlert = doesExceedThreshold(alert, 0);
@@ -2122,7 +2117,7 @@ export default class CheckAlertTask implements HdxTask {
           'Processing alerts in batch',
         );
 
-        const clickhouseClient = await this.provider.getClickHouseClient(
+        const dataClient = await this.provider.getDataClient(
           conn,
           this.args.sourceTimeoutMs,
         );
@@ -2143,7 +2138,7 @@ export default class CheckAlertTask implements HdxTask {
                     processAlert(
                       alertTask.now,
                       alert,
-                      clickhouseClient,
+                      dataClient,
                       conn.id,
                       this.provider,
                       teamWebhooksById,

@@ -7,7 +7,7 @@ import { execFileSync } from 'child_process';
 import fs from 'fs';
 import path from 'path';
 
-import { fromClickHouseRow } from '../../../../ingest/src/model/fromClickHouseRow';
+import { fromShapedRow } from '../../../../ingest/src/model/fromShapedRow';
 
 import { E2E_LOGS_TABLE } from './constants';
 
@@ -113,7 +113,7 @@ async function runCouchbaseStatement(
 export async function upsertE2eLogRow(
   row: Record<string, unknown>,
 ): Promise<void> {
-  const doc = fromClickHouseRow(E2E_LOGS_TABLE, row, {
+  const doc = fromShapedRow(E2E_LOGS_TABLE, row, {
     collection: 'otel_logs',
   });
   await runCouchbaseStatement(

@@ -328,7 +328,7 @@
         const map = {
           app: 'App (Next.js)',
           api: 'API Server',
-          clickhouse: 'ClickHouse',
+          store: 'the previous analytics store',
           mongodb: 'MongoDB',
           'otel-collector': 'OTel Collector',
           'otel-collector-json': 'OTel JSON',
@@ -499,7 +499,7 @@
         const chService =
           devStack &&
           devStack.services.find(
-            s => s.name === 'clickhouse' && s.status === 'up',
+            s => s.name === 'evalstore' && s.status === 'up',
           );
         const chUrl = chService ? `http://localhost:${chService.port}` : null;
 
@@ -537,7 +537,7 @@
               <div class="worktree" title="${escapeHtml(worktreePath)}">${escapeHtml(worktreeLabel(header.worktree, worktreePath, dupNames))}</div>
             </div>
             <div class="stack-actions">
-              ${chUrl ? `<a href="${chUrl}" target="_blank" class="open-btn open-btn-secondary">Open ClickHouse</a>` : ''}
+              ${chUrl ? `<a href="${chUrl}" target="_blank" class="open-btn open-btn-secondary">Open the previous analytics store</a>` : ''}
               ${appUrl ? `<a href="${appUrl}" target="_blank" class="open-btn">Open App</a>` : ''}
             </div>
           </div>

@@ -242,26 +242,26 @@ export const TableHeader = React.memo(function TableHeader({
 // ---- SqlPreviewScreen ----------------------------------------------
 
 type SqlPreviewScreenProps = {
-  chSql: { sql: string; params: Record<string, unknown> } | null;
+  sqlExpr: { sql: string; params: Record<string, unknown> } | null;
   scrollOffset: number;
   maxRows: number;
 };
 
 export const SqlPreviewScreen = React.memo(function SqlPreviewScreen({
-  chSql,
+  sqlExpr,
   scrollOffset,
   maxRows,
 }: SqlPreviewScreenProps) {
   let resolvedSql = '';
-  if (chSql) {
+  if (sqlExpr) {
     try {
       resolvedSql = formatQueryForDisplay({
-        sql: chSql.sql,
-        params: chSql.params,
+        sql: sqlExpr.sql,
+        params: sqlExpr.params,
       });
     } catch {
       // Fall back to the raw parameterized SQL if resolution fails
-      resolvedSql = chSql.sql;
+      resolvedSql = sqlExpr.sql;
     }
   }
 

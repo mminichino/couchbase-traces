@@ -119,7 +119,7 @@ export function registerTimeseries({ context, registerTool }: ToolRegistrar) {
 
       // Validate cross-field constraints (metric rules, level/quantile,
       // valueExpression presence) and surface friendly errors before we
-      // touch ClickHouse.
+      // touch legacy store.
       const validation = validateMetricSelectItems(rawSelect);
       if (validation) return validation;
 

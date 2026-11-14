@@ -106,7 +106,7 @@ export async function testConnectionByKind(
     };
   }
   const { host, username, password } = request;
-  return hdxServer('clickhouse-proxy/test', {
+  return hdxServer('evalstore-proxy/test', {
     method: 'POST',
     json: { host, username, password },
   }).json<ConnectionTestResult>();

@@ -536,7 +536,7 @@ export type RenderedAlert = {
  */
 export const fetchSampleLines = async ({
   aliasWith,
-  clickhouseClient,
+  dataClient,
   endTime,
   metadata,
   savedSearch,
@@ -545,7 +545,7 @@ export const fetchSampleLines = async ({
 }: {
   /** Reuses the evaluation's clauses; recomputed here when absent. */
   aliasWith?: BuilderChartConfigWithOptDateRange['with'];
-  clickhouseClient: DataClient;
+  dataClient: DataClient;
   endTime: Date;
   metadata: Metadata;
   savedSearch: Pick<
@@ -560,7 +560,7 @@ export const fetchSampleLines = async ({
   }
   const chartConfig: ChartConfigWithOptDateRange = {
     ...buildSearchChartConfig(toQueryableTSource(source), {
-      connection: '', // no need for the connection id since clickhouse client is already initialized
+      connection: '', // no need for the connection id since evalstore client is already initialized
       dateRange: [startTime, endTime],
       select: savedSearch.select,
       where: savedSearch.where,
@@ -588,7 +588,7 @@ export const fetchSampleLines = async ({
       metadata,
       source.querySettings,
     );
-    const json = await clickhouseClient
+    const json = await dataClient
       .query({
         query: query.sql,
         query_params: query.params,
@@ -626,7 +626,7 @@ export const fetchSampleLines = async ({
 // this method will build the body of the alert message and will be used to send the alert to the channel
 export const renderAlertTemplate = async ({
   alertProvider,
-  clickhouseClient,
+  dataClient,
   metadata,
   state,
   template,
@@ -639,7 +639,7 @@ export const renderAlertTemplate = async ({
   groupValues,
 }: {
   alertProvider: AlertProvider;
-  clickhouseClient: DataClient;
+  dataClient: DataClient;
   metadata: Metadata;
   state: AlertState;
   template?: string | null;
@@ -937,7 +937,7 @@ ${targetTemplate}`;
       sampleLines ??
       (() =>
         fetchSampleLines({
-          clickhouseClient,
+          dataClient,
           endTime,
           metadata,
           savedSearch,

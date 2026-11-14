@@ -1,6 +1,6 @@
 import type { TeamQuerySettings } from '@couchbase-traces/common-utils/dist/types';
 
-import { DataClient } from '@/clickhouse';
+import { DataClient } from '@/dataClient';
 
 export function createTeamDataClient(
   team?: TeamQuerySettings | null,

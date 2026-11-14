@@ -214,7 +214,7 @@ describe('request helpers', () => {
         {
           query: 'SELECT 1',
           connectionId: 'c',
-          clickhouse_settings: { max_execution_time: 5 },
+          query_settings: { max_execution_time: 5 },
         },
         'q',
         undefined,

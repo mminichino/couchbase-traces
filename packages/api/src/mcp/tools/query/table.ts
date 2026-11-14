@@ -91,7 +91,7 @@ const tableSchema = z.object({
 
 // ─── orderBy resolution ──────────────────────────────────────────────────────
 
-/** Aggregation function names that ClickHouse cannot resolve as bare identifiers in ORDER BY.
+/** Aggregation function names that legacy store cannot resolve as bare identifiers in ORDER BY.
  *  Excluded:
  *  - 'none' passes a raw expression through unchanged and has no synthesizable form.
  *  - 'increase' is a metric-only renderer marker that compiles to a multi-CTE
@@ -101,7 +101,7 @@ const AGG_FN_NAMES: ReadonlySet<string> = new Set(
   MCP_AGG_FN_OPTIONS.filter(fn => fn !== 'none' && fn !== 'increase'),
 );
 
-/** A bare ClickHouse identifier: a letter or underscore followed by word chars.
+/** A bare legacy store identifier: a letter or underscore followed by word chars.
  *  Anything outside this shape (spaces, punctuation, leading digit) must be
  *  quoted to be valid in ORDER BY. */
 const BARE_IDENTIFIER = /^[A-Za-z_][A-Za-z0-9_]*$/;
@@ -134,19 +134,19 @@ function quoteAliasForOrderBy(alias: string): string {
 
 /**
  * Resolve an orderBy value that matches a bare aggregation function name
- * (e.g. "count") to something ClickHouse can resolve in ORDER BY.
+ * (e.g. "count") to something legacy store can resolve in ORDER BY.
  *
  * The model frequently writes `orderBy: "count"`, which generates
- * `ORDER BY count ASC` in ClickHouse — but ClickHouse can't resolve bare
+ * `ORDER BY count ASC` in legacy store — but legacy store can't resolve bare
  * `count` since it's a function, not a column. We fix this by finding
  * the select item whose aggFn matches and using its alias, or synthesizing
- * the ClickHouse expression (e.g. `count()`) when no alias is set.
+ * the legacy store expression (e.g. `count()`) when no alias is set.
  *
  * Resolution order:
  *   1. If orderBy matches a select item's alias → emit the canonical alias,
  *      quoting it when it is not a bare identifier (e.g. `"P95 Latency"`)
  *   2. If orderBy matches an aggFn name → use that item's alias if set
- *      (quoted as needed), otherwise synthesize the ClickHouse expression
+ *      (quoted as needed), otherwise synthesize the legacy store expression
  *      (e.g. `count()`)
  *   3. Otherwise → pass through unchanged
  */
@@ -174,7 +174,7 @@ export function resolveOrderBy(
   const lower = stripIdentifierQuotes(identifier).toLowerCase();
 
   // Already matches an alias? Return the canonical alias case so
-  // ClickHouse's case-sensitive identifier resolution works correctly.
+  // legacy store's case-sensitive identifier resolution works correctly.
   // Multi-word / special-character aliases are quoted so the emitted
   // ORDER BY is valid SQL even when the agent passed the alias unquoted.
   const aliasMatch = selectItems.find(
@@ -193,9 +193,9 @@ export function resolveOrderBy(
         return `${quoteAliasForOrderBy(match.alias)}${direction}`;
       }
 
-      // Synthesize the ClickHouse expression so ORDER BY works
+      // Synthesize the legacy store expression so ORDER BY works
       if (match.aggFn === 'count') return `count()${direction}`;
-      // count_distinct compiles to count(DISTINCT expr) in ClickHouse,
+      // count_distinct compiles to count(DISTINCT expr) in legacy store,
       // not count_distinct(expr) which is not a valid function.
       if (match.aggFn === 'count_distinct' && match.valueExpression) {
         return `count(DISTINCT ${match.valueExpression})${direction}`;
@@ -298,7 +298,7 @@ export function registerTable({ context, registerTool }: ToolRegistrar) {
 
       // Validate cross-field constraints (metric rules, level/quantile,
       // valueExpression presence) and surface friendly errors before we
-      // touch ClickHouse.
+      // touch legacy store.
       const validation = validateMetricSelectItems(rawSelect);
       if (validation) return validation;
 

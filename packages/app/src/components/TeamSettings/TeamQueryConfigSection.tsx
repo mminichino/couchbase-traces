@@ -2,7 +2,7 @@ import { useCallback, useState } from 'react';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { Separator } from '@clickhouse/click-ui';
 import { DEFAULT_METADATA_MAX_ROWS_TO_READ } from '@couchbase-traces/common-utils/dist/core/metadata';
-import { type TeamClickHouseSettings } from '@couchbase-traces/common-utils/dist/types';
+import { type TeamQuerySettings } from '@couchbase-traces/common-utils/dist/types';
 import {
   Box,
   Button,
@@ -28,7 +28,7 @@ import {
 type ClickhouseSettingType = 'number' | 'boolean' | 'select';
 
 interface ClickhouseSettingFormProps {
-  settingKey: keyof TeamClickHouseSettings;
+  settingKey: keyof TeamQuerySettings;
   label: string;
   tooltip?: string;
   type: ClickhouseSettingType;

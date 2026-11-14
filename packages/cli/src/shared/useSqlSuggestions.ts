@@ -1,6 +1,6 @@
 /**
  * SQL query suggestion engines for detecting and correcting common
- * ClickHouse query mistakes (e.g. double quotes instead of single quotes).
+ * SQL query mistakes (e.g. double quotes instead of single quotes).
  *
  * @source packages/app/src/hooks/useSqlSuggestions.tsx
  *
@@ -42,7 +42,7 @@ class DoubleQuoteSuggestion implements ISuggestionEngine {
   }
 
   userMessage(key: string): string {
-    return `ClickHouse does not support double quotes (") but they were detected in ${key.toUpperCase()}. Switch to single quotes?`;
+    return `SQL++ string literals use single quotes; double quotes (") were detected in ${key.toUpperCase()}. Switch to single quotes?`;
   }
 
   correct(input: string): string {

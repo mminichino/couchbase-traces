@@ -3,7 +3,7 @@ import ReactMarkdown, { Components } from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { Code } from '@mantine/core';
 
-import { CopySnippet } from '@/components/ClickStackOnboarding/CopySnippet';
+import { CopySnippet } from '@/components/CollectorOnboarding/CopySnippet';
 
 import styles from './AgentDoc.module.scss';
 

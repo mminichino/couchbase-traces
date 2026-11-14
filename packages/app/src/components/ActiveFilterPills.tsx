@@ -157,7 +157,7 @@ export const ActiveFilterPills = memo(function ActiveFilterPills({
 }: {
   searchFilters: FilterStateHook;
   /**
-   * Map of DateTime/Date column name → ClickHouse type. Their pill values are
+   * Map of DateTime/Date column name → legacy store type. Their pill values are
    * formatted to the user's locale/timezone for display, matching the results
    * table, while the underlying raw value is preserved for SQL/editing/copy.
    */

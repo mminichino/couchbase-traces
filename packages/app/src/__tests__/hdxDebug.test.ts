@@ -6,7 +6,7 @@ const baseConfig = {
   BASE_PATH: '',
   IS_ADHOC_FILTERS_ENABLED: false,
   IS_ALERT_DETAILS_ENABLED: false,
-  IS_CLICKHOUSE_BUILD: false,
+  IS_LEGACY_ENGINE_BUILD: false,
   IS_LLM_COST_ENABLED: false,
   IS_DEV: false,
   IS_LOCAL_MODE: false,
@@ -141,8 +141,8 @@ describe('report mode line', () => {
     );
   });
 
-  it('appends the couchbase-traces suffix for ClickHouse builds', () => {
-    expect(reportFor(loadHdxDebug({ IS_CLICKHOUSE_BUILD: true }))).toContain(
+  it('appends the couchbase-traces suffix for legacy-engine builds', () => {
+    expect(reportFor(loadHdxDebug({ IS_LEGACY_ENGINE_BUILD: true }))).toContain(
       'mode:     oss (couchbase-traces)',
     );
   });

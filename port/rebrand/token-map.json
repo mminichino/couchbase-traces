@@ -107,7 +107,7 @@
         ".github/ISSUE_TEMPLATE/bug-report.md",
         "agent_docs/themes.md",
         "packages/app/src/components/TeamSettings/IacMigrationSection.tsx",
-        "packages/common-utils/src/__tests__/clickhouseVersion.test.ts",
+        "packages/common-utils/src/__tests__/serverVersion.test.ts",
         "packages/common-utils/src/core/metadata.ts"
       ]
     },

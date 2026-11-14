@@ -49,18 +49,16 @@ export function renderDataModelMd(): string {
   ];
   for (const spec of COLLECTIONS) {
     lines.push(`## \`${spec.name}\``, '');
-    lines.push('| Field | ClickHouse | Document |', '|---|---|---|');
+    lines.push('| Field | legacy store | Document |', '|---|---|---|');
     for (const field of spec.fields) lines.push(fieldRow(field));
     for (const field of spec.materialized) {
       const doc =
         field.name === 'SampleRate'
           ? 'number'
-          : field.clickhouseType === 'DateTime'
+          : field.columnType === 'DateTime'
             ? 'string (seconds)'
             : 'string';
-      lines.push(
-        `| \`${field.name}\` | \`${field.clickhouseType}\` | ${doc} |`,
-      );
+      lines.push(`| \`${field.name}\` | \`${field.columnType}\` | ${doc} |`);
     }
     lines.push(
       '',
@@ -98,7 +96,7 @@ function fieldRow(field: FieldSpec, prefix = ''): string {
       ...field.nested.map(child => fieldRow(child, name)),
     ].join('\n');
   }
-  return `| \`${name}\` | \`${field.clickhouseType}\` | ${documentType(field)} |`;
+  return `| \`${name}\` | \`${field.columnType}\` | ${documentType(field)} |`;
 }
 
 function documentType(field: FieldSpec): string {

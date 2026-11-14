@@ -35,7 +35,7 @@ export type HistInput = {
 /**
  * Series identity matching upstream cityHash64(ScopeAttributes,
  * ResourceAttributes, Attributes). Encode the same three maps so gauge
- * last_value bucketing groups the same series as ClickHouse.
+ * last_value bucketing groups the same series as legacy store.
  */
 export function seriesKeyExpr(): string {
   return `TOSTRING(ENCODE_JSON({"scope":IFNULL(ScopeAttributes, {}), "resource":IFNULL(ResourceAttributes, {}), "attrs":IFNULL(Attributes, {})}))`;

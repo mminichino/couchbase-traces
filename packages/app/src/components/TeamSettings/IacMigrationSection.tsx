@@ -104,7 +104,7 @@ const SKIP_RULES: readonly {
     key: 'sources',
     noun: 'PromQL source',
     count: c => c.skippedSources,
-    reason: 'the provider models only ClickHouse-backed sources',
+    reason: 'the provider models only legacy store-backed sources',
   },
 ];
 
@@ -240,7 +240,7 @@ export default function IacMigrationSection({
           <Text span ff="monospace" size="xs">
             terraform plan -generate-config-out=generated.tf
           </Text>{' '}
-          to generate resource configuration using the ClickHouse provider.
+          to generate resource configuration using the legacy store provider.
         </Text>
         <Stack gap="xs" mb="md">
           {RESOURCE_TYPE_ORDER.map(type => {
@@ -251,7 +251,7 @@ export default function IacMigrationSection({
                 label={`${opt.label} (${manifest?.[opt.key]?.length ?? 0})`}
                 description={
                   type === 'connection'
-                    ? 'Exported as reference-only locals — connections are platform-managed on ClickHouse Cloud'
+                    ? 'Exported as reference-only locals — connections are platform-managed on managed cloud'
                     : undefined
                 }
                 checked={selected.includes(type)}

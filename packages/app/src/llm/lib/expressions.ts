@@ -357,7 +357,7 @@ function getLLMAttributeExpressions({
     // Emitters disagree on encoding ('stop' vs '["stop"]'); strip the JSON
     // array wrapper so the group-by buckets align.
     // The char class is written backslash-free (leading ] in an RE2 class
-    // is literal) so it survives ClickHouse string-literal escape decoding
+    // is literal) so it survives legacy store string-literal escape decoding
     // verbatim.
     finishReason: `replaceRegexpAll(${coalesceString(
       attributeField,
@@ -507,7 +507,7 @@ export type LLMLogExpressions = ReturnType<typeof getLLMLogExpressions>;
 /**
  * Query-level alias for the per-row cost expression. The full `costUsd`
  * expression embeds the model price catalog (~70 KiB of SQL); referencing it
- * more than once per query risks ClickHouse's 256 KiB max_query_size, so
+ * more than once per query risks legacy store's 256 KiB max_query_size, so
  * `baseLLMChartConfig` binds it once as a WITH expression alias and charts
  * reference this name instead.
  */
@@ -525,7 +525,7 @@ type GateExpressions = Pick<
  * are then added up.
  *
  * `Map[k]` defaults to 0 for absent keys and sumMap keeps zero totals, so
- * iterating the union of keys is safe. ClickHouse computes syntactically
+ * iterating the union of keys is safe. legacy store computes syntactically
  * identical aggregate expressions once, so the repeated sumMaps don't
  * re-scan.
  */

@@ -9,7 +9,7 @@ import { TableSourceForm } from './SourceForm';
 const mockConnections = [
   {
     id: 'conn-1',
-    name: 'Local ClickHouse',
+    name: 'Local connection',
     host: 'localhost:8123',
     username: 'default',
   },
@@ -59,10 +59,10 @@ const defaultHandlers = {
     }
     return new HttpResponse(null, { status: 404 });
   }),
-  databases: http.get('*/api/clickhouse/databases', () => {
+  databases: http.get('*/api/evalstore/databases', () => {
     return HttpResponse.json(mockDatabases);
   }),
-  tables: http.get('*/api/clickhouse/tables', () => {
+  tables: http.get('*/api/evalstore/tables', () => {
     return HttpResponse.json(mockTables);
   }),
   createSource: http.post('*/api/sources', async ({ request }) => {

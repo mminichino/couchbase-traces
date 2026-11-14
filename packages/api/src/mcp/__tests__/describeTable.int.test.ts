@@ -6,7 +6,7 @@ import * as config from '@/config';
 import {
   getLoggedInAgent,
   getServer,
-  getTestFixtureClickHouseClient,
+  getTestFixtureDataClient,
 } from '@/fixtures';
 import { McpContext } from '@/mcp/tools/types';
 import Connection from '@/models/connection';
@@ -25,7 +25,7 @@ describe('cbt_describe_table', () => {
 
   beforeAll(async () => {
     await server.start();
-    const ch = await getTestFixtureClickHouseClient();
+    const ch = await getTestFixtureDataClient();
     await ch.command({ query: `DROP DATABASE IF EXISTS ${DATABASE}` });
     await ch.command({ query: `DROP DATABASE IF EXISTS ${DIST_DATABASE}` });
     await ch.command({ query: `CREATE DATABASE ${DATABASE}` });
@@ -85,7 +85,7 @@ describe('cbt_describe_table', () => {
   });
 
   afterAll(async () => {
-    const ch = await getTestFixtureClickHouseClient();
+    const ch = await getTestFixtureDataClient();
     await ch.command({ query: `DROP DATABASE IF EXISTS ${DIST_DATABASE}` });
     await ch.command({ query: `DROP DATABASE IF EXISTS ${DATABASE}` });
     await server.stop();
@@ -178,7 +178,7 @@ describe('cbt_describe_table', () => {
 
   it('reflects an index added after a previous describe', async () => {
     await call({ database: DATABASE, table: 'events' });
-    const ch = await getTestFixtureClickHouseClient();
+    const ch = await getTestFixtureDataClient();
     await ch.command({
       query: `ALTER TABLE ${DATABASE}.events ADD INDEX idx_svc ServiceName TYPE set(10) GRANULARITY 1`,
     });

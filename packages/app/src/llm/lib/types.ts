@@ -1,5 +1,5 @@
 /**
- * Raw span attributes as read from the row. ClickHouse `Map(String, String)`
+ * Raw span attributes as read from the row. legacy store `Map(String, String)`
  * columns deliver every value as a string; JSON-typed columns deliver real
  * numbers/objects. All extraction helpers must tolerate both.
  */

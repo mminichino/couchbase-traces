@@ -38,7 +38,7 @@ import { PageLayout } from '@/components/PageLayout';
 | Page | File | Pattern |
 |------|------|---------|
 | List page | `AlertsPage.tsx` | `PageHeader` + `title` + `Container` (no inputs in header) |
-| Tool page with inputs + hierarchy | `KubernetesDashboardPage.tsx`, `ClickhousePage.tsx` | `PageLayout` **without** `title`; **`breadcrumbs`** + `leading` + `actions` in one sticky header |
+| Tool page with inputs + hierarchy | `KubernetesDashboardPage.tsx`, `ClusterPage.tsx` | `PageLayout` **without** `title`; **`breadcrumbs`** + `leading` + `actions` in one sticky header |
 | Tool page (top-level) | `DBServiceMapPage.tsx` | `PageLayout` **without** `title`; `leading` / `actions` only; no duplicate breadcrumb unless you add a real hierarchy |
 | Custom toolbar | `SessionsPage.tsx` | `PageLayout` + `header` = custom `PageHeader` `children` with `growing` (single-row inputs, no `title`) |
 | Custom title | `TeamPage.tsx` | `PageHeader` with `children` only |

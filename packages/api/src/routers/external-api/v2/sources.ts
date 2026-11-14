@@ -163,7 +163,7 @@ function formatExternalSource(source: SourceDocument) {
  *       properties:
  *         setting:
  *           type: string
- *           description: ClickHouse setting name
+ *           description: legacy store setting name
  *           example: max_threads
  *         value:
  *           type: string
@@ -177,7 +177,7 @@ function formatExternalSource(source: SourceDocument) {
  *       properties:
  *         databaseName:
  *           type: string
- *           description: ClickHouse database name
+ *           description: legacy store database name
  *           example: otel
  *         scopeName:
  *           type: string
@@ -185,7 +185,7 @@ function formatExternalSource(source: SourceDocument) {
  *           example: _default
  *         tableName:
  *           type: string
- *           description: ClickHouse table name
+ *           description: source table name
  *           example: otel_logs
  *     MetricSourceFrom:
  *       type: object
@@ -194,7 +194,7 @@ function formatExternalSource(source: SourceDocument) {
  *       properties:
  *         databaseName:
  *           type: string
- *           description: ClickHouse database name
+ *           description: legacy store database name
  *           example: otel
  *         scopeName:
  *           type: string
@@ -202,7 +202,7 @@ function formatExternalSource(source: SourceDocument) {
  *           example: _default
  *         tableName:
  *           type: string
- *           description: ClickHouse table name
+ *           description: source table name
  *           nullable: true
  *           example: otel_metrics_gauge
  *     MetricTables:
@@ -345,14 +345,14 @@ function formatExternalSource(source: SourceDocument) {
  *           example: log
  *         connection:
  *           type: string
- *           description: ID of the ClickHouse connection used by this source.
+ *           description: ID of the legacy connection used by this source.
  *           example: 507f1f77bcf86cd799439012
  *         from:
  *           $ref: '#/components/schemas/SourceFrom'
  *           description: Database and table location of the source data.
  *         querySettings:
  *           type: array
- *           description: Optional ClickHouse query settings applied when querying this source.
+ *           description: Optional SQL query settings applied when querying this source.
  *           items:
  *             $ref: '#/components/schemas/QuerySetting'
  *           nullable: true
@@ -456,7 +456,7 @@ function formatExternalSource(source: SourceDocument) {
  *         useTextIndexForImplicitColumn:
  *           type: string
  *           enum: [auto, enabled, disabled]
- *           description: Controls whether lucene rendering uses ClickHouse text indices via hasAllTokens() against the implicit column. "auto" detects a covering index at query time, "enabled" forces text index usage, "disabled" forces a LIKE/hasToken fallback.
+ *           description: Controls whether lucene rendering uses legacy store text indices via hasAllTokens() against the implicit column. "auto" detects a covering index at query time, "enabled" forces text index usage, "disabled" forces a LIKE/hasToken fallback.
  *           nullable: true
  *           example: auto
  *         highlightedTraceAttributeExpressions:
@@ -484,11 +484,11 @@ function formatExternalSource(source: SourceDocument) {
  *           properties:
  *             keyRollupTable:
  *               type: string
- *               description: ClickHouse table name for the key rollup (field discovery).
+ *               description: source table name for the key rollup (field discovery).
  *               example: otel_logs_key_rollup_15m
  *             kvRollupTable:
  *               type: string
- *               description: ClickHouse table name for the key-value rollup (value autocomplete).
+ *               description: source table name for the key-value rollup (value autocomplete).
  *               example: otel_logs_kv_rollup_15m
  *             granularity:
  *               type: string
@@ -537,14 +537,14 @@ function formatExternalSource(source: SourceDocument) {
  *           example: trace
  *         connection:
  *           type: string
- *           description: ID of the ClickHouse connection used by this source.
+ *           description: ID of the legacy connection used by this source.
  *           example: 507f1f77bcf86cd799439012
  *         from:
  *           $ref: '#/components/schemas/SourceFrom'
  *           description: Database and table location of the source data.
  *         querySettings:
  *           type: array
- *           description: Optional ClickHouse query settings applied when querying this source.
+ *           description: Optional SQL query settings applied when querying this source.
  *           items:
  *             $ref: '#/components/schemas/QuerySetting'
  *           nullable: true
@@ -667,7 +667,7 @@ function formatExternalSource(source: SourceDocument) {
  *         useTextIndexForImplicitColumn:
  *           type: string
  *           enum: [auto, enabled, disabled]
- *           description: Controls whether lucene rendering uses ClickHouse text indices via hasAllTokens() against the implicit column. "auto" detects a covering index at query time, "enabled" forces text index usage, "disabled" forces a LIKE/hasToken fallback.
+ *           description: Controls whether lucene rendering uses legacy store text indices via hasAllTokens() against the implicit column. "auto" detects a covering index at query time, "enabled" forces text index usage, "disabled" forces a LIKE/hasToken fallback.
  *           nullable: true
  *           example: auto
  *         highlightedTraceAttributeExpressions:
@@ -703,11 +703,11 @@ function formatExternalSource(source: SourceDocument) {
  *           properties:
  *             keyRollupTable:
  *               type: string
- *               description: ClickHouse table name for the key rollup (field discovery).
+ *               description: source table name for the key rollup (field discovery).
  *               example: otel_traces_key_rollup_15m
  *             kvRollupTable:
  *               type: string
- *               description: ClickHouse table name for the key-value rollup (value autocomplete).
+ *               description: source table name for the key-value rollup (value autocomplete).
  *               example: otel_traces_kv_rollup_15m
  *             granularity:
  *               type: string
@@ -750,14 +750,14 @@ function formatExternalSource(source: SourceDocument) {
  *           example: metric
  *         connection:
  *           type: string
- *           description: ID of the ClickHouse connection used by this source.
+ *           description: ID of the legacy connection used by this source.
  *           example: 507f1f77bcf86cd799439012
  *         from:
  *           $ref: '#/components/schemas/MetricSourceFrom'
  *           description: Database and optional table location of the metric source data.
  *         querySettings:
  *           type: array
- *           description: Optional ClickHouse query settings applied when querying this source.
+ *           description: Optional SQL query settings applied when querying this source.
  *           items:
  *             $ref: '#/components/schemas/QuerySetting'
  *           nullable: true
@@ -827,14 +827,14 @@ function formatExternalSource(source: SourceDocument) {
  *           example: session
  *         connection:
  *           type: string
- *           description: ID of the ClickHouse connection used by this source.
+ *           description: ID of the legacy connection used by this source.
  *           example: 507f1f77bcf86cd799439012
  *         from:
  *           $ref: '#/components/schemas/SourceFrom'
  *           description: Database and table location of the source data.
  *         querySettings:
  *           type: array
- *           description: Optional ClickHouse query settings applied when querying this source.
+ *           description: Optional SQL query settings applied when querying this source.
  *           items:
  *             $ref: '#/components/schemas/QuerySetting'
  *           nullable: true
@@ -897,14 +897,14 @@ function formatExternalSource(source: SourceDocument) {
  *           example: promql
  *         connection:
  *           type: string
- *           description: ID of the connection used by this source. Either a ClickHouse connection holding the TimeSeries table, or a Prometheus-compatible connection.
+ *           description: ID of the connection used by this source. Either a legacy connection holding the TimeSeries table, or a Prometheus-compatible connection.
  *           example: 507f1f77bcf86cd799439012
  *         from:
  *           $ref: '#/components/schemas/SourceFrom'
- *           description: The database and TimeSeries table to query on a ClickHouse connection. Not used for a Prometheus-compatible connection, but still required (empty strings are not accepted — use placeholder values such as "default").
+ *           description: The database and TimeSeries table to query on a legacy connection. Not used for a Prometheus-compatible connection, but still required (empty strings are not accepted — use placeholder values such as "default").
  *         querySettings:
  *           type: array
- *           description: Optional ClickHouse query settings applied when querying this source.
+ *           description: Optional SQL query settings applied when querying this source.
  *           items:
  *             $ref: '#/components/schemas/QuerySetting'
  *           nullable: true

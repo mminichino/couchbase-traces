@@ -139,9 +139,9 @@ export function buildSearchChartConfig(
   // Log sources are the only kind that carries `tableFilterExpression` today.
   //
   // NOTE: `tableFilterExpression` is deprecated. It's an application-side SQL
-  // predicate (not a ClickHouse row policy), so it can't enforce real tenant
+  // predicate (not a legacy store row policy), so it can't enforce real tenant
   // isolation — anyone with direct SELECT access to the table bypasses it.
-  // For hard isolation, configure a ClickHouse ROW POLICY at the DB level
+  // For hard isolation, configure a legacy store ROW POLICY at the DB level
   // instead. Existing values are still honored here for backward
   // compatibility; new sources should not set the field.
   const tableFilter = getSourceTableFilters(source);

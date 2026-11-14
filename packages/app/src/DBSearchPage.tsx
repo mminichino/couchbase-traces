@@ -1044,7 +1044,7 @@ function getSavedSearchIdFromPath(): string | null {
 }
 
 /**
- * Tags the page's ClickHouse queries with the saved search they belong to.
+ * Tags the page's legacy store queries with the saved search they belong to.
  * A wrapper so the page component's own JSX stays where it is.
  */
 export function DBSearchPage() {

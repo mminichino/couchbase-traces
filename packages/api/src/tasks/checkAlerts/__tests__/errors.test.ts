@@ -1,4 +1,4 @@
-import { ClickHouseError } from '@couchbase-traces/common-utils/dist/query';
+import { CodedQueryError } from '@couchbase-traces/common-utils/dist/query';
 
 import {
   isClientTimeoutOrAbortError,
@@ -20,7 +20,7 @@ describe('checkAlerts errors', () => {
     it('detects server-side TIMEOUT_EXCEEDED by type', () => {
       expect(
         isQueryTimeoutError(
-          new ClickHouseError({
+          new CodedQueryError({
             code: '159',
             type: 'TIMEOUT_EXCEEDED',
             message: 'Timeout exceeded: elapsed 301.1 seconds',
@@ -32,7 +32,7 @@ describe('checkAlerts errors', () => {
     it('detects server-side timeouts by code when the type is not populated', () => {
       expect(
         isQueryTimeoutError(
-          new ClickHouseError({
+          new CodedQueryError({
             code: '159',
             type: '',
             message: 'Timeout exceeded',
@@ -51,7 +51,7 @@ describe('checkAlerts errors', () => {
     // that copies the message but keeps the original error only on `cause`.
     it('detects server-side TIMEOUT_EXCEEDED wrapped by the query client', () => {
       const wrapper = new Error('Timeout exceeded: elapsed 301.1 seconds');
-      wrapper.cause = new ClickHouseError({
+      wrapper.cause = new CodedQueryError({
         code: '159',
         type: 'TIMEOUT_EXCEEDED',
         message: 'Timeout exceeded: elapsed 301.1 seconds',
@@ -68,7 +68,7 @@ describe('checkAlerts errors', () => {
     });
 
     it('detects timeouts nested multiple causes deep', () => {
-      const inner = new ClickHouseError({
+      const inner = new CodedQueryError({
         code: '159',
         type: 'TIMEOUT_EXCEEDED',
         message: 'Timeout exceeded',
@@ -82,7 +82,7 @@ describe('checkAlerts errors', () => {
 
     it('does not classify wrapped non-timeout errors as timeouts', () => {
       const wrapper = new Error("Table default.foo doesn't exist");
-      wrapper.cause = new ClickHouseError({
+      wrapper.cause = new CodedQueryError({
         code: '60',
         type: 'UNKNOWN_TABLE',
         message: "Table default.foo doesn't exist",
@@ -99,7 +99,7 @@ describe('checkAlerts errors', () => {
     it('does not classify other ClickHouse errors as timeouts', () => {
       expect(
         isQueryTimeoutError(
-          new ClickHouseError({
+          new CodedQueryError({
             code: '60',
             type: 'UNKNOWN_TABLE',
             message: "Table default.foo doesn't exist",
@@ -122,7 +122,7 @@ describe('checkAlerts errors', () => {
       ).toBe(true);
       expect(
         isClientTimeoutOrAbortError(
-          new ClickHouseError({
+          new CodedQueryError({
             code: '159',
             type: 'TIMEOUT_EXCEEDED',
             message: 'Timeout exceeded',

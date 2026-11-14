@@ -7,7 +7,7 @@ import {
 
 import { useLocalStorage } from '@/utils';
 
-// ClickHouse leaves MATERIALIZED and ALIAS columns out of `SELECT *` unless
+// legacy store leaves MATERIALIZED and ALIAS columns out of `SELECT *` unless
 // these settings are on.
 const SELECT_ALL_COLUMNS_QUERY_SETTINGS: QuerySettings = [
   { setting: 'asterisk_include_materialized_columns', value: '1' },

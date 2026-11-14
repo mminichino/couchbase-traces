@@ -26,7 +26,7 @@ export function quantile(p: number, x: string, c = 'TRUE'): SqlPP {
 /**
  * Histogram quantile matching `core/histogram.ts`: cumulative counts, the
  * first bucket whose cumulative count exceeds `p * total`, then linear
- * interpolation. Indexes in this function are 1-based, like the ClickHouse
+ * interpolation. Indexes in this function are 1-based, like the legacy store
  * query this ports.
  */
 export function histogramQuantileValue(

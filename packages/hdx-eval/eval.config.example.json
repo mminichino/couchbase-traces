@@ -22,29 +22,29 @@
         "mcp__hyperdx__hyperdx_save_alert"
       ]
     },
-    "clickhouse": {
+    "evalstore": {
       "type": "stdio",
       "command": "uv",
       "args": [
         "run",
         "--with",
-        "mcp-clickhouse==0.3.0",
+        "mcp-eval-store==0.3.0",
         "--python",
         "3.10",
-        "mcp-clickhouse"
+        "mcp-eval-store"
       ],
       "env": {
-        "CLICKHOUSE_HOST": "localhost",
-        "CLICKHOUSE_PORT": "30596",
-        "CLICKHOUSE_USER": "default",
-        "CLICKHOUSE_PASSWORD": "",
-        "CLICKHOUSE_SECURE": "false",
-        "CLICKHOUSE_VERIFY": "false",
-        "CLICKHOUSE_SEND_RECEIVE_TIMEOUT": "10"
+        "EVAL_STORE_HOST": "localhost",
+        "EVAL_STORE_PORT": "30596",
+        "EVAL_STORE_USER": "default",
+        "EVAL_STORE_PASSWORD": "",
+        "EVAL_STORE_SECURE": "false",
+        "EVAL_STORE_VERIFY": "false",
+        "EVAL_STORE_SEND_RECEIVE_TIMEOUT": "10"
       },
-      "toolPattern": "mcp__clickhouse__*",
-      "label": "ClickHouse MCP",
-      "brandTerms": ["ClickHouse MCP", "clickhouse"]
+      "toolPattern": "mcp__eval_store__*",
+      "label": "legacy store MCP",
+      "brandTerms": ["legacy store MCP", "evalstore"]
     }
   },
   "plugins": {
@@ -76,7 +76,7 @@
     "accessKey": "uuid-from-/me-endpoint",
     "connectionId": "mongo-objectid"
   },
-  "clickhouse": {
+  "evalstore": {
     "host": "localhost",
     "port": "30596",
     "user": "default",

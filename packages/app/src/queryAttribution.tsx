@@ -5,8 +5,8 @@ import {
 } from '@couchbase-traces/common-utils/dist/query';
 
 /**
- * What the ClickHouse queries below this point belong to.
- * `useClickhouseClient` reads it and tags each query.
+ * What the legacy store queries below this point belong to.
+ * `useDataClient` reads it and tags each query.
  *
  * Providers nest, so a dashboard sets its id once and each tile adds its own.
  *

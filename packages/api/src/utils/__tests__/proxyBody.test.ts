@@ -17,7 +17,7 @@ const makeProxyRequest = () => ({
   destroy: jest.fn().mockReturnThis(),
 });
 
-describe('ClickHouse proxy body capture', () => {
+describe('Legacy query proxy body capture', () => {
   const makeRequest = (
     path?: string,
     url?: string,
@@ -26,20 +26,20 @@ describe('ClickHouse proxy body capture', () => {
   const response = new ServerResponse(new IncomingMessage(new Socket()));
 
   it.each([
-    { path: '/clickhouse-proxy', url: '/clickhouse-proxy' },
-    { path: '/CLICKHOUSE-PROXY', url: '/CLICKHOUSE-PROXY' },
-    { path: '/clickhouse-proxy/', url: '/clickhouse-proxy/' },
+    { path: '/evalstore-proxy', url: '/evalstore-proxy' },
+    { path: '/EVALSTORE-PROXY', url: '/EVALSTORE-PROXY' },
+    { path: '/evalstore-proxy/', url: '/evalstore-proxy/' },
     {
-      path: '/clickhouse-proxy',
-      url: '/clickhouse-proxy?query=SELECT%201',
+      path: '/evalstore-proxy',
+      url: '/evalstore-proxy?query=SELECT%201',
     },
     {
-      path: '/clickhouse-proxy/database',
-      url: '/clickhouse-proxy/database?query=SELECT%201',
+      path: '/evalstore-proxy/database',
+      url: '/evalstore-proxy/database?query=SELECT%201',
     },
     {
-      path: '/clickhouse-proxy',
-      url: 'http://localhost/clickhouse-proxy?query=SELECT%201',
+      path: '/evalstore-proxy',
+      url: 'http://localhost/evalstore-proxy?query=SELECT%201',
     },
   ])('retains the inflated bytes for $url', ({ path, url }) => {
     const req = makeRequest(path, url);
@@ -53,9 +53,9 @@ describe('ClickHouse proxy body capture', () => {
   it.each([
     undefined,
     '',
-    '/clickhouse-proxy-other',
+    '/evalstore-proxy-other',
     '/login',
-    '/api/clickhouse-proxy',
+    '/api/evalstore-proxy',
   ])('does not retain bodies for unrelated path %s', path => {
     const req = makeRequest(path);
 

@@ -1,6 +1,6 @@
 import {
-  chSql,
   ResponseJSON,
+  sqlExpr,
   tableExpr,
 } from '@couchbase-traces/common-utils/dist/query';
 import {
@@ -9,7 +9,7 @@ import {
 } from '@couchbase-traces/common-utils/dist/types';
 import { useQuery } from '@tanstack/react-query';
 
-import { getClickhouseClient } from '@/query';
+import { getDataClient } from '@/query';
 import { useMetadataQueryAttribution } from '@/queryAttribution';
 import { getMetricTableName } from '@/utils';
 
@@ -58,8 +58,8 @@ export const useFetchMetricMetadata = ({
         return null;
       }
 
-      const clickhouseClient = getClickhouseClient({ attribution });
-      const sql = chSql`
+      const dataClient = getDataClient({ attribution });
+      const sql = sqlExpr`
         SELECT
           MetricUnit,
           MetricDescription
@@ -68,7 +68,7 @@ export const useFetchMetricMetadata = ({
         LIMIT 1
       `;
 
-      const result = (await clickhouseClient
+      const result = (await dataClient
         .query<'JSON'>({
           query: sql.sql,
           query_params: sql.params,

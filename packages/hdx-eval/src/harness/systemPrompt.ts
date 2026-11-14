@@ -78,7 +78,7 @@ export function buildInvestigationSystemPrompt(
   const { traces, logs } = scenarioTables(scenarioName);
   const signalsNote = opts?.signalsNote ?? '';
   const sharedSchema = '';
-  //   `These follow the standard OpenTelemetry ClickHouse schema:
+  //   `These follow the standard OpenTelemetry legacy store schema:
   // - traces have Timestamp DateTime64(9), TraceId, SpanId, ParentSpanId,
   //   ServiceName, SpanName, SpanKind, Duration (nanoseconds), StatusCode,
   //   StatusMessage, plus Map(String,String) columns ResourceAttributes and
@@ -146,7 +146,7 @@ plausible story (anchoring) AND ignoring the obvious in favor of busywork
       : '';
 
   return `You are an SRE answering an operational question using
-observability data. The OpenTelemetry data lives in ClickHouse:
+observability data. The OpenTelemetry data lives in legacy store:
 
 - Traces: default.${traces}
 - Logs:   default.${logs}

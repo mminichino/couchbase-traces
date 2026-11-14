@@ -139,7 +139,7 @@ export function applyTopNAggregation(
 }
 
 // ---------------------------------------------------------------------------
-// Filter key conversion helpers (UI-specific — produce ClickHouse SQL
+// Filter key conversion helpers (UI-specific — produce legacy SQL
 // expressions / filter keys for the search bar).
 // ---------------------------------------------------------------------------
 
@@ -149,13 +149,13 @@ function escapeRegExp(s: string): string {
 
 /**
  * Converts a flattened dot-notation property key (produced by flattenData())
- * into a valid ClickHouse SQL expression for use in filter conditions.
+ * into a valid legacy SQL expression for use in filter conditions.
  *
  * flattenData() uses JavaScript's object/array iteration, producing keys like:
  *   "ResourceAttributes.service.name"     for Map(String, String) columns
  *   "Events.Attributes[0].message.type"   for Array(Map(String, String)) columns
  *
- * These must be converted to bracket notation for ClickHouse Map access:
+ * These must be converted to bracket notation for legacy store Map access:
  *   "ResourceAttributes['service.name']"
  *   "Events.Attributes[1]['message.type']"  (note: 0-based JS -> 1-based CH index)
  */
@@ -191,7 +191,7 @@ export function flattenedKeyToSqlExpression(
 
 /**
  * Converts a flattened dot-notation property key into a filter key using
- * ClickHouse bracket notation for Map columns.
+ * legacy store bracket notation for Map columns.
  * This matches the search bar format (WHERE ResourceAttributes['k8s.pod.name'] = ...).
  * For simple (non-Map) columns, returns the key unchanged.
  *

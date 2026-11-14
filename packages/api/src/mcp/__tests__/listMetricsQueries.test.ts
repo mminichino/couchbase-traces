@@ -7,7 +7,7 @@ describe('fetchMetricNames', () => {
     });
 
     const names = await fetchMetricNames({
-      clickhouseClient: { query },
+      dataClient: { query },
       databaseName: 'default',
       tableName: 'otel_metrics_gauge',
       connectionId: 'conn',

@@ -517,7 +517,7 @@ const Tile = ({
 
   // Lazy loading: only fetch a tile's data once it has scrolled into the
   // browser viewport. React Grid Layout mounts every tile up front, so
-  // without this gating each tile would issue its ClickHouse query
+  // without this gating each tile would issue its SQL query
   // immediately, regardless of whether it is visible. We debounce the
   // viewport signal (RGL briefly renders all tiles before the layout
   // settles) and make visibility "sticky" so that a tile keeps its data

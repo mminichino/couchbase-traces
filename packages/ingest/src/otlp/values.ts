@@ -1,13 +1,13 @@
 import { canonicalJson } from '../model/keys';
 import type { AnyValue, KeyValue } from './types';
 
-/** ClickHouse's zero DateTime / DateTime64, fixed-width ISO-8601. */
+/** legacy store's zero DateTime / DateTime64, fixed-width ISO-8601. */
 export const EPOCH_ISO = '1970-01-01T00:00:00.000000000Z';
 
 const UINT64_MAX = 18446744073709551615n;
 
 /**
- * `pcommon.Value.AsString` for a double, which the ClickHouse exporter stores.
+ * `pcommon.Value.AsString` for a double, which the legacy store exporter stores.
  * ES6 number-to-string: fixed digits on `[1e-6, 1e21)`, exponent notation
  * outside that range, and a one-digit negative exponent (`1e-7`, not `1e-07`).
  */
@@ -45,7 +45,7 @@ export function formatFloatGo(v: number): string {
   return sign + String(abs);
 }
 
-/** ASCII digits within uint64, otherwise 0. Matches ClickHouse `toUInt64OrZero`. */
+/** ASCII digits within uint64, otherwise 0. Matches legacy store `toUInt64OrZero`. */
 export function parseUInt64OrZero(raw: string): number {
   if (!/^[0-9]+$/.test(raw)) return 0;
   let value: bigint;
@@ -67,7 +67,7 @@ export function int64ToNumber(s: string | number | undefined): number {
 
 /**
  * Fixed-width UTC timestamp. `null` for absent or zero so callers can apply
- * the ClickHouse default or the observed-time fallback.
+ * the legacy store default or the observed-time fallback.
  */
 export function nanosToIso(
   nanos: string | number | undefined,

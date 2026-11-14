@@ -53,7 +53,7 @@ const VALUE_SAMPLE_LOOKBACK_MS = 24 * 60 * 60 * 1000; // 24 hours
 export const DESCRIBE_TIMEOUT_MS = MCP_TOOL_TIMEOUT_MS;
 
 // Extra time after the abort before the handler stops waiting, in case a
-// ClickHouse call ignores the signal.
+// legacy store call ignores the signal.
 export const DESCRIBE_BACKSTOP_MS = MCP_TIMEOUT_GRACE_MS;
 
 // Max sampled values per low-cardinality column / map attribute key.
@@ -65,7 +65,7 @@ const MAX_MAP_KEYS_TO_SAMPLE = 10;
  * Pick the representative metric table to use as the starting point for
  * schema/attribute discovery on a metric source. Prefers gauge → sum →
  * histogram → exponential histogram from the source's populated metricTables
- * map. Returns the ClickHouse table name, or undefined when no queryable metric
+ * map. Returns the source table name, or undefined when no queryable metric
  * table is populated.
  */
 function pickRepresentativeMetricTable(
@@ -233,10 +233,10 @@ async function describeSourceSchema(
     return mcpUserError(`Connection not found for source "${sourceId}".`);
   }
 
-  const clickhouseClient = new DataClient({
+  const dataClient = new DataClient({
     requestTimeout: MCP_REQUEST_TIMEOUT,
   });
-  const metadata = getMetadata(clickhouseClient);
+  const metadata = getMetadata(dataClient);
   const databaseName = source.from.databaseName;
   const tableName = discoveryTableName;
   // Track which sampling stages were skipped due to timeout
@@ -394,7 +394,7 @@ async function describeSourceSchema(
     const keyExprs: string[] = [];
     for (const [colName, keys] of Object.entries(mapKeysResults)) {
       for (const key of keys.slice(0, MAX_MAP_KEYS_TO_SAMPLE)) {
-        // Map keys come from ClickHouse data (customer telemetry) so they can
+        // Map keys come from legacy store data (customer telemetry) so they can
         // contain arbitrary characters, including single quotes. Escape as a
         // SQL string literal — `SqlString.escape` returns a fully-quoted,
         // safely-escaped value — before embedding in the key expression.
@@ -450,7 +450,7 @@ async function describeSourceSchema(
         try {
           const samples = await sampleMetricNamesWithLookback({
             metadata,
-            clickhouseClient,
+            dataClient,
             databaseName,
             tableName: kindTableName,
             connectionId,
@@ -587,7 +587,7 @@ export function registerDescribeSource({
         'Workflow: call cbt_list_sources first to get source IDs, then call this tool ' +
         'for each source you plan to query.\n\n' +
         'Returns:\n' +
-        '- columns[]: column name, ClickHouse type, and JS type\n' +
+        '- columns[]: column name, legacy store type, and JS type\n' +
         '- mapAttributeKeys: discovered keys in Map columns (e.g. SpanAttributes, ResourceAttributes)\n' +
         '- lowCardinalityValues: sampled values for LowCardinality(String) columns ' +
         '(SeverityText, StatusCode, ServiceName, etc.) — use these in filters instead of guessing\n' +
@@ -627,13 +627,13 @@ export function registerDescribeSource({
         recordOutcome('timeout');
         return mcpServerError(
           'Schema discovery timed out before the column schema loaded. ' +
-            'The ClickHouse server may be under load. Try again, or use ' +
+            'The query server may be under load. Try again, or use ' +
             'cbt_list_sources for basic source info without schema details.',
         );
       };
 
       // At the deadline, discovery skips its remaining stages and returns
-      // what it has. The grace window covers ClickHouse calls that ignore
+      // what it has. The grace window covers legacy store calls that ignore
       // the signal: past it we answer from the latest snapshot instead.
       let outcome: TimeoutOutcome<ToolResult>;
       try {

@@ -48,8 +48,8 @@ Mantine component overrides are in `packages/app/src/theme/mantineTheme.ts`.
 - Don't branch on color mode to pick a semantic color. The var already
   resolves. Branch only when a component truly needs a different asset
   (for example the heatmap palette).
-- Don't confuse `IS_CLICKHOUSE_BUILD` with appearance. That flag gates
-  features (embedded mode, ClickHouse Cloud onboarding).
+- Don't confuse `IS_LEGACY_ENGINE_BUILD` with appearance. That flag gates
+  features (embedded mode, managed cloud onboarding).
 
 ## Brand
 

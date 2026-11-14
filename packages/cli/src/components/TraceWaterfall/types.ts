@@ -24,7 +24,7 @@ export interface SpanNode extends TaggedSpanRow {
 }
 
 export interface TraceWaterfallProps {
-  clickhouseClient: CliDataClient;
+  dataClient: CliDataClient;
   metadata: Metadata;
   source: SourceResponse;
   /** Correlated log source (optional) */
@@ -32,7 +32,7 @@ export interface TraceWaterfallProps {
   traceId: string;
   /**
    * Timestamp of the originating event row. Used to derive a tight
-   * dateRange for trace span queries so ClickHouse can prune time
+   * dateRange for trace span queries so legacy store can prune time
    * partitions instead of scanning the entire table.
    */
   eventTimestamp?: string;
@@ -65,7 +65,7 @@ export interface TraceWaterfallProps {
   maxRows?: number;
   /** Callback when the trace query SQL changes (for SQL preview) */
   onChSqlChange?: (
-    chSql: { sql: string; params: Record<string, unknown> } | null,
+    sqlExpr: { sql: string; params: Record<string, unknown> } | null,
   ) => void;
   /** Callback when the selected span/log node changes (for browser URL) */
   onSelectedNodeChange?: (node: SpanNode | null) => void;

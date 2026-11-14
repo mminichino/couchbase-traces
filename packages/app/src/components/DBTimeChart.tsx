@@ -539,7 +539,7 @@ function DBTimeChartComponent({
   // Determine whether the config can be optimized with an MV, to drive the MV
   // optimization indicator and the MV-derived date-range indicator in the
   // toolbar. Only those two indicators consume `mvOptimizationData`, so skip
-  // this extra ClickHouse EXPLAIN when both are hidden — which includes the
+  // this extra legacy store EXPLAIN when both are hidden — which includes the
   // edit-modal preview (ChartPreviewPanel passes showMVOptimizationIndicator and
   // showDateRangeIndicator both false), so the EXPLAIN is skipped there too.
   const builderQueriedConfig: BuilderChartConfigWithDateRange | undefined =

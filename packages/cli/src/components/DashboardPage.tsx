@@ -2,7 +2,7 @@
  * Dashboards page — dashboard picker + tile chart view.
  *
  * Tiles are rendered top-to-bottom in grid order (sorted by y, then x)
- * and query ClickHouse through the same renderChartConfig pipeline as
+ * and query legacy store through the same renderChartConfig pipeline as
  * the web dashboard (see shared/tileQuery.ts). Only tiles scrolled
  * into view are mounted, mirroring the web's viewport-gated fetching.
  */
@@ -52,7 +52,7 @@ function formatTimeRange(range: TimeRange): string {
 
 interface DashboardPageProps {
   client: ApiClient;
-  clickhouseClient: CliDataClient;
+  dataClient: CliDataClient;
   metadata: ReturnType<ApiClient['createMetadata']>;
   sources: SourceResponse[];
   onClose: () => void;
@@ -60,7 +60,7 @@ interface DashboardPageProps {
 
 export default function DashboardPage({
   client,
-  clickhouseClient,
+  dataClient,
   metadata,
   sources,
   onClose,
@@ -277,7 +277,7 @@ export default function DashboardPage({
         >
           <TileChart
             key={`fullscreen-${tile.id}`}
-            clickhouseClient={clickhouseClient}
+            dataClient={dataClient}
             metadata={metadata}
             tile={tile}
             sources={sources}
@@ -326,7 +326,7 @@ export default function DashboardPage({
                 <Text dimColor>({tile.config.displayType ?? 'chart'})</Text>
               </Text>
               <TileChart
-                clickhouseClient={clickhouseClient}
+                dataClient={dataClient}
                 metadata={metadata}
                 tile={tile}
                 sources={sources}

@@ -50,13 +50,10 @@ export default function App({ appUrl, query, sourceName, follow }: AppProps) {
   const [activeQuery, setActiveQuery] = useState(query ?? '');
   const [error, setError] = useState<string | null>(null);
 
-  // Stable ClickHouse client + metadata instances — recreating them on
+  // Stable data client + metadata instances — recreating them on
   // every render would re-trigger data-fetch effects downstream (each
   // effect aborts its in-flight query when its deps change).
-  const clickhouseClient = useMemo(
-    () => client.createClickHouseClient(),
-    [client],
-  );
+  const dataClient = useMemo(() => client.createDataClient(), [client]);
   const metadata = useMemo(() => client.createMetadata(), [client]);
 
   // Check existing session on mount
@@ -245,7 +242,7 @@ export default function App({ appUrl, query, sourceName, follow }: AppProps) {
       return (
         <DashboardPage
           client={client}
-          clickhouseClient={clickhouseClient}
+          dataClient={dataClient}
           metadata={metadata}
           sources={allSources}
           onClose={handleCloseDashboards}
@@ -256,7 +253,7 @@ export default function App({ appUrl, query, sourceName, follow }: AppProps) {
       if (!selectedSource) return null;
       return (
         <EventViewer
-          clickhouseClient={clickhouseClient}
+          dataClient={dataClient}
           metadata={metadata}
           appUrl={currentAppUrl}
           source={selectedSource}

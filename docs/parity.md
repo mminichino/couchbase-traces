@@ -5,19 +5,19 @@ Generated from `port/features.json` and `port/state/inventory/`. Edit `port/feat
 | Status | Features |
 |---|---|
 | not_started | 0 |
-| in_progress | 2 |
-| ported | 50 |
+| in_progress | 0 |
+| ported | 51 |
 | needs_decision | 0 |
 | dropped | 2 |
-| replaced | 1 |
+| replaced | 2 |
 
 ## search
 
 | Feature | Visibility | Status | Entry points | Data layer | Tests (unit / int / e2e) |
 |---|---|---|---|---|---|
-| Pinned filters (`api-pinned-filters`) | user | ported | 2 | attribution.ts, index.ts, node.ts, clickhouseVersion.ts, histogram.ts, +8 | 0 / 0 / 0 |
-| Saved searches (`api-saved-search`) | user | ported | 4 | attribution.ts, index.ts, node.ts, clickhouseVersion.ts, histogram.ts, +8 | 0 / 0 / 0 |
-| Log and trace search (`app-search`) | user | ported | 3 | DBSearchPage.tsx, UserPreferencesModal.tsx, clickhouse.ts, AppNav.components.tsx, AppNav.tsx, +103 | 14 / 0 / 10 |
+| Pinned filters (`api-pinned-filters`) | user | ported | 2 | metadata.ts, renderChartConfig.ts, browser.ts, connstr.ts, errors.ts, +47 | 0 / 0 / 0 |
+| Saved searches (`api-saved-search`) | user | ported | 4 | metadata.ts, renderChartConfig.ts, browser.ts, connstr.ts, errors.ts, +47 | 0 / 0 / 0 |
+| Log and trace search (`app-search`) | user | ported | 3 | DBSearchPage.tsx, UserPreferencesModal.tsx, AppNav.components.tsx, AppNav.tsx, InstanceLabel.tsx, +90 | 14 / 0 / 10 |
 
 ### Pinned filters (`api-pinned-filters`)
 
@@ -53,7 +53,7 @@ Entry points:
 
 | Feature | Visibility | Status | Entry points | Data layer | Tests (unit / int / e2e) |
 |---|---|---|---|---|---|
-| Chart explorer (`app-chart`) | user | ported | 1 | DBChartPage.tsx, UserPreferencesModal.tsx, clickhouse.ts, AppNav.components.tsx, AppNav.tsx, +110 | 1 / 0 / 2 |
+| Chart explorer (`app-chart`) | user | ported | 1 | DBChartPage.tsx, UserPreferencesModal.tsx, AppNav.components.tsx, AppNav.tsx, InstanceLabel.tsx, +97 | 1 / 0 / 2 |
 
 ### Chart explorer (`app-chart`)
 
@@ -67,7 +67,7 @@ Entry points:
 
 | Feature | Visibility | Status | Entry points | Data layer | Tests (unit / int / e2e) |
 |---|---|---|---|---|---|
-| Dashboards (`app-dashboards`) | user | ported | 13 | UserPreferencesModal.tsx, clickhouse.ts, AppNav.components.tsx, AppNav.tsx, InstanceLabel.tsx, +115 | 13 / 1 / 7 |
+| Dashboards (`app-dashboards`) | user | ported | 13 | UserPreferencesModal.tsx, AppNav.components.tsx, AppNav.tsx, InstanceLabel.tsx, KeyboardShortcutsModal.tsx, +101 | 12 / 1 / 7 |
 
 ### Dashboards (`app-dashboards`)
 
@@ -93,7 +93,7 @@ Entry points:
 
 | Feature | Visibility | Status | Entry points | Data layer | Tests (unit / int / e2e) |
 |---|---|---|---|---|---|
-| Trace waterfall (`app-trace`) | user | ported | 1 | UserPreferencesModal.tsx, clickhouse.ts, AppNav.components.tsx, AppNav.tsx, InstanceLabel.tsx, +66 | 1 / 0 / 0 |
+| Trace waterfall (`app-trace`) | user | ported | 1 | UserPreferencesModal.tsx, AppNav.components.tsx, AppNav.tsx, InstanceLabel.tsx, KeyboardShortcutsModal.tsx, +57 | 1 / 0 / 0 |
 
 ### Trace waterfall (`app-trace`)
 
@@ -107,7 +107,7 @@ Entry points:
 
 | Feature | Visibility | Status | Entry points | Data layer | Tests (unit / int / e2e) |
 |---|---|---|---|---|---|
-| Service map (`app-service-map`) | user | ported | 1 | UserPreferencesModal.tsx, clickhouse.ts, AppNav.components.tsx, AppNav.tsx, InstanceLabel.tsx, +78 | 0 / 0 / 3 |
+| Service map (`app-service-map`) | user | ported | 1 | UserPreferencesModal.tsx, AppNav.components.tsx, AppNav.tsx, InstanceLabel.tsx, KeyboardShortcutsModal.tsx, +68 | 0 / 0 / 3 |
 
 ### Service map (`app-service-map`)
 
@@ -121,7 +121,7 @@ Entry points:
 
 | Feature | Visibility | Status | Entry points | Data layer | Tests (unit / int / e2e) |
 |---|---|---|---|---|---|
-| Prometheus-compatible query API (`api-v1`) | api | dropped | 8 | clickhouse.ts, timeseriesEngine.ts, attribution.ts, index.ts, node.ts, +57 | 1 / 0 / 0 |
+| Prometheus-compatible query API (`api-v1`) | api | dropped | 0 | - | 0 / 0 / 0 |
 
 ### Prometheus-compatible query API (`api-v1`)
 
@@ -129,14 +129,6 @@ Query metrics through Prometheus-style endpoints for use by Grafana and similar 
 
 Entry points:
 
-- `api_route:GET /v1/prometheus/label/:name/values`, `packages/api/src/routers/api/prometheus.ts`
-- `api_route:GET /v1/prometheus/labels`, `packages/api/src/routers/api/prometheus.ts`
-- `api_route:GET /v1/prometheus/query`, `packages/api/src/routers/api/prometheus.ts`
-- `api_route:GET /v1/prometheus/query_exemplars`, `packages/api/src/routers/api/prometheus.ts`
-- `api_route:GET /v1/prometheus/query_range`, `packages/api/src/routers/api/prometheus.ts`
-- `api_route:POST /v1/prometheus/query`, `packages/api/src/routers/api/prometheus.ts`
-- `api_route:POST /v1/prometheus/query_exemplars`, `packages/api/src/routers/api/prometheus.ts`
-- `api_route:POST /v1/prometheus/query_range`, `packages/api/src/routers/api/prometheus.ts`
 
 Decision: PromQL dropped by the user. It required ClickHouse's TimeSeries table fed by Prometheus remote-write, with no Couchbase equivalent in scope. Disabled in Phase 5a; code deleted in Phase 10. Signed off by Michael on 2026-11-12.
 
@@ -144,7 +136,7 @@ Decision: PromQL dropped by the user. It required ClickHouse's TimeSeries table 
 
 | Feature | Visibility | Status | Entry points | Data layer | Tests (unit / int / e2e) |
 |---|---|---|---|---|---|
-| Session replay (`app-sessions`) | user | ported | 1 | UserPreferencesModal.tsx, clickhouse.ts, AppNav.components.tsx, AppNav.tsx, InstanceLabel.tsx, +95 | 1 / 0 / 4 |
+| Session replay (`app-sessions`) | user | ported | 1 | UserPreferencesModal.tsx, AppNav.components.tsx, AppNav.tsx, InstanceLabel.tsx, KeyboardShortcutsModal.tsx, +82 | 1 / 0 / 4 |
 
 ### Session replay (`app-sessions`)
 
@@ -158,8 +150,8 @@ Entry points:
 
 | Feature | Visibility | Status | Entry points | Data layer | Tests (unit / int / e2e) |
 |---|---|---|---|---|---|
-| Alerts (`app-alerts`) | user | ported | 11 | UserPreferencesModal.tsx, clickhouse.ts, AppNav.components.tsx, AppNav.tsx, InstanceLabel.tsx, +112 | 11 / 0 / 1 |
-| Alert evaluation (`task-check-alerts`) | internal | ported | 1 | clickhouse.ts, errors.ts, attribution.ts, index.ts, node.ts, +63 | 3 / 2 / 0 |
+| Alerts (`app-alerts`) | user | ported | 11 | UserPreferencesModal.tsx, AppNav.components.tsx, AppNav.tsx, InstanceLabel.tsx, KeyboardShortcutsModal.tsx, +99 | 11 / 0 / 1 |
+| Alert evaluation (`task-check-alerts`) | internal | ported | 1 | metadata.ts, renderChartConfig.ts, browser.ts, connstr.ts, debug.ts, +48 | 3 / 2 / 0 |
 
 ### Alerts (`app-alerts`)
 
@@ -191,8 +183,8 @@ Entry points:
 
 | Feature | Visibility | Status | Entry points | Data layer | Tests (unit / int / e2e) |
 |---|---|---|---|---|---|
-| Kubernetes dashboard (`app-kubernetes`) | user | ported | 1 | KubernetesDashboardPage.tsx, NamespaceDetailsSidePanel.tsx, NodeDetailsSidePanel.tsx, UserPreferencesModal.tsx, clickhouse.ts, +98 | 2 / 0 / 1 |
-| Services dashboard (`app-services`) | user | ported | 1 | DatabaseTab.tsx, HttpTab.tsx, UserPreferencesModal.tsx, clickhouse.ts, AppNav.components.tsx, +100 | 0 / 0 / 2 |
+| Kubernetes dashboard (`app-kubernetes`) | user | ported | 1 | KubernetesDashboardPage.tsx, NamespaceDetailsSidePanel.tsx, NodeDetailsSidePanel.tsx, UserPreferencesModal.tsx, AppNav.components.tsx, +85 | 2 / 0 / 1 |
+| Services dashboard (`app-services`) | user | ported | 1 | DatabaseTab.tsx, HttpTab.tsx, UserPreferencesModal.tsx, AppNav.components.tsx, AppNav.tsx, +87 | 0 / 0 / 2 |
 
 ### Kubernetes dashboard (`app-kubernetes`)
 
@@ -214,8 +206,8 @@ Entry points:
 
 | Feature | Visibility | Status | Entry points | Data layer | Tests (unit / int / e2e) |
 |---|---|---|---|---|---|
-| AI assistant (`api-ai`) | user | ported | 1 | clickhouse.ts, attribution.ts, index.ts, node.ts, clickhouseVersion.ts, +62 | 3 / 1 / 0 |
-| LLM dashboard (`app-llm`) | user | ported | 1 | DatabaseTab.tsx, HttpTab.tsx, UserPreferencesModal.tsx, clickhouse.ts, AppNav.components.tsx, +108 | 14 / 0 / 0 |
+| AI assistant (`api-ai`) | user | ported | 1 | helpers.ts, runEventPatterns.ts, metadata.ts, renderChartConfig.ts, browser.ts, +50 | 3 / 0 / 0 |
+| LLM dashboard (`app-llm`) | user | ported | 1 | DatabaseTab.tsx, HttpTab.tsx, UserPreferencesModal.tsx, AppNav.components.tsx, AppNav.tsx, +95 | 14 / 0 / 0 |
 
 ### AI assistant (`api-ai`)
 
@@ -237,12 +229,12 @@ Entry points:
 
 | Feature | Visibility | Status | Entry points | Data layer | Tests (unit / int / e2e) |
 |---|---|---|---|---|---|
-| MCP tools: alerts and webhooks (`mcp-alerts`) | api | ported | 5 | schemas.ts, schemas.ts, attribution.ts, index.ts, clickhouseVersion.ts, +9 | 1 / 0 / 0 |
-| MCP tools: dashboards (`mcp-dashboards`) | api | ported | 8 | clickhouse.ts, timeseriesEngine.ts, schemas.ts, helpers.ts, runEventPatterns.ts, +68 | 4 / 0 / 0 |
-| MCP tools: query (`mcp-query`) | api | ported | 8 | clickhouse.ts, timeseriesEngine.ts, eventPatterns.ts, helpers.ts, runEventPatterns.ts, +70 | 5 / 1 / 0 |
-| MCP tools: saved searches (`mcp-saved-searches`) | api | ported | 2 | attribution.ts, index.ts, clickhouseVersion.ts, histogram.ts, materializedViews.ts, +7 | 0 / 0 / 0 |
-| MCP tools: sources (`mcp-sources`) | api | ported | 7 | clickhouse.ts, timeseriesEngine.ts, helpers.ts, runEventPatterns.ts, describeMetric.ts, +72 | 5 / 0 / 0 |
-| MCP tools: trace analysis (`mcp-trace`) | api | ported | 2 | clickhouse.ts, timeseriesEngine.ts, helpers.ts, runEventPatterns.ts, waterfall.ts, +67 | 0 / 0 / 0 |
+| MCP tools: alerts and webhooks (`mcp-alerts`) | api | ported | 5 | schemas.ts, schemas.ts, metadata.ts, connstr.ts, errors.ts, +10 | 1 / 0 / 0 |
+| MCP tools: dashboards (`mcp-dashboards`) | api | ported | 8 | schemas.ts, helpers.ts, runEventPatterns.ts, schemas.ts, metadata.ts, +52 | 4 / 0 / 0 |
+| MCP tools: query (`mcp-query`) | api | ported | 7 | eventPatterns.ts, helpers.ts, runEventPatterns.ts, schemas.ts, sqlDescriptions.ts, +54 | 4 / 1 / 0 |
+| MCP tools: saved searches (`mcp-saved-searches`) | api | ported | 2 | metadata.ts, connstr.ts, errors.ts, infer.ts, inferMeta.ts, +8 | 0 / 0 / 0 |
+| MCP tools: sources (`mcp-sources`) | api | ported | 7 | helpers.ts, runEventPatterns.ts, describeMetric.ts, describeTableCouchbase.ts, listMetricsQueries.ts, +55 | 3 / 0 / 0 |
+| MCP tools: trace analysis (`mcp-trace`) | api | ported | 2 | helpers.ts, runEventPatterns.ts, waterfall.ts, metadata.ts, renderChartConfig.ts, +51 | 0 / 0 / 0 |
 
 ### MCP tools: alerts and webhooks (`mcp-alerts`)
 
@@ -280,7 +272,6 @@ Entry points:
 - `mcp_tool:cbt_emerging_signals`, `packages/api/src/mcp/tools/query/emergingSignals.ts`
 - `mcp_tool:cbt_event_deltas`, `packages/api/src/mcp/tools/query/eventDeltas.ts`
 - `mcp_tool:cbt_event_patterns`, `packages/api/src/mcp/tools/query/eventPatterns.ts`
-- `mcp_tool:cbt_promql`, `packages/api/src/mcp/tools/query/promql.ts`
 - `mcp_tool:cbt_search`, `packages/api/src/mcp/tools/query/search.ts`
 - `mcp_tool:cbt_sql`, `packages/api/src/mcp/tools/query/sql.ts`
 - `mcp_tool:cbt_table`, `packages/api/src/mcp/tools/query/table.ts`
@@ -322,7 +313,7 @@ Entry points:
 
 | Feature | Visibility | Status | Entry points | Data layer | Tests (unit / int / e2e) |
 |---|---|---|---|---|---|
-| Infrastructure-as-code import manifest (`api-iac`) | api | ported | 1 | attribution.ts, index.ts, node.ts, clickhouseVersion.ts, histogram.ts, +8 | 1 / 1 / 0 |
+| Infrastructure-as-code import manifest (`api-iac`) | api | ported | 1 | metadata.ts, renderChartConfig.ts, browser.ts, connstr.ts, errors.ts, +47 | 1 / 1 / 0 |
 
 ### Infrastructure-as-code import manifest (`api-iac`)
 
@@ -336,14 +327,14 @@ Entry points:
 
 | Feature | Visibility | Status | Entry points | Data layer | Tests (unit / int / e2e) |
 |---|---|---|---|---|---|
-| Connections (`api-connections`) | admin | ported | 4 | attribution.ts, index.ts, node.ts, clickhouseVersion.ts, histogram.ts, +20 | 1 / 0 / 0 |
-| Favorites (`api-favorites`) | user | ported | 3 | attribution.ts, index.ts, node.ts, clickhouseVersion.ts, histogram.ts, +8 | 0 / 0 / 0 |
-| Data sources (`api-sources`) | admin | ported | 4 | attribution.ts, index.ts, node.ts, clickhouseVersion.ts, histogram.ts, +13 | 1 / 1 / 0 |
-| ClickHouse query settings (`api-team-clickhouse-settings`) | admin | ported | 1 | attribution.ts, index.ts, node.ts, clickhouseVersion.ts, histogram.ts, +8 | 0 / 0 / 0 |
-| Webhooks (`api-webhooks`) | admin | ported | 5 | clickhouse.ts, errors.ts, attribution.ts, index.ts, node.ts, +63 | 0 / 0 / 0 |
-| ClickHouse server dashboard (`app-clickhouse`) | admin | replaced | 1 | clickhouse.tsx, ClickhousePage.tsx, UserPreferencesModal.tsx, clickhouse.ts, AppNav.components.tsx, +98 | 0 / 0 / 1 |
-| Team settings and members (`app-team`) | admin | ported | 14 | UserPreferencesModal.tsx, clickhouse.ts, AppNav.components.tsx, AppNav.tsx, InstanceLabel.tsx, +86 | 8 / 0 / 1 |
-| Couchbase cluster (`couchbase-cluster`) | admin | ported | 4 | UserPreferencesModal.tsx, clickhouse.ts, AppNav.components.tsx, AppNav.tsx, InstanceLabel.tsx, +74 | 6 / 0 / 1 |
+| Connections (`api-connections`) | admin | ported | 4 | metadata.ts, renderChartConfig.ts, browser.ts, connstr.ts, errors.ts, +47 | 1 / 0 / 0 |
+| Favorites (`api-favorites`) | user | ported | 3 | metadata.ts, renderChartConfig.ts, browser.ts, connstr.ts, errors.ts, +47 | 0 / 0 / 0 |
+| Data sources (`api-sources`) | admin | ported | 4 | metadata.ts, renderChartConfig.ts, browser.ts, connstr.ts, errors.ts, +48 | 0 / 1 / 0 |
+| ClickHouse query settings (`api-team-query-settings`) | admin | ported | 1 | metadata.ts, renderChartConfig.ts, browser.ts, connstr.ts, errors.ts, +47 | 0 / 0 / 0 |
+| Webhooks (`api-webhooks`) | admin | ported | 5 | metadata.ts, renderChartConfig.ts, browser.ts, connstr.ts, debug.ts, +48 | 0 / 0 / 0 |
+| ClickHouse server dashboard (`app-clickhouse`) | admin | replaced | 0 | - | 0 / 0 / 0 |
+| Team settings and members (`app-team`) | admin | ported | 14 | UserPreferencesModal.tsx, AppNav.components.tsx, AppNav.tsx, InstanceLabel.tsx, KeyboardShortcutsModal.tsx, +75 | 8 / 0 / 1 |
+| Couchbase cluster (`couchbase-cluster`) | admin | ported | 4 | UserPreferencesModal.tsx, AppNav.components.tsx, AppNav.tsx, InstanceLabel.tsx, KeyboardShortcutsModal.tsx, +59 | 6 / 0 / 1 |
 
 ### Connections (`api-connections`)
 
@@ -377,13 +368,13 @@ Entry points:
 - `api_route:POST /sources`, `packages/api/src/routers/api/sources.ts`
 - `api_route:PUT /sources/:id`, `packages/api/src/routers/api/sources.ts`
 
-### ClickHouse query settings (`api-team-clickhouse-settings`)
+### ClickHouse query settings (`api-team-query-settings`)
 
 Edit the ClickHouse query settings applied to every team query.
 
 Entry points:
 
-- `api_route:PATCH /team/clickhouse-settings`, `packages/api/src/routers/api/team.ts`
+- `api_route:PATCH /team/query-settings`, `packages/api/src/routers/api/team.ts`
 
 ### Webhooks (`api-webhooks`)
 
@@ -403,7 +394,6 @@ Monitor ClickHouse CPU, memory, disk, parts and query log from system tables.
 
 Entry points:
 
-- `app_page:/clickhouse`, `packages/app/pages/clickhouse.tsx`
 
 Decision: Replaced by the Couchbase cluster page. The ClickHouse page is removed in Phase 10. Signed off by Michael on 2026-11-12.
 
@@ -444,9 +434,9 @@ Entry points:
 | Feature | Visibility | Status | Entry points | Data layer | Tests (unit / int / e2e) |
 |---|---|---|---|---|---|
 | Current user and onboarding (`api-me`) | user | ported | 4 | connstr.ts, types.ts | 0 / 0 / 0 |
-| Join a team (`app-join-team`) | user | ported | 2 | attribution.ts, index.ts, node.ts, clickhouseVersion.ts, histogram.ts, +9 | 0 / 0 / 0 |
-| Sign in and sign out (`app-login`) | user | ported | 3 | attribution.ts, index.ts, node.ts, clickhouseVersion.ts, histogram.ts, +9 | 0 / 0 / 0 |
-| Registration (`app-register`) | user | ported | 2 | attribution.ts, index.ts, node.ts, clickhouseVersion.ts, histogram.ts, +9 | 0 / 0 / 0 |
+| Join a team (`app-join-team`) | user | ported | 2 | metadata.ts, renderChartConfig.ts, browser.ts, connstr.ts, defaultSources.ts, +48 | 0 / 0 / 0 |
+| Sign in and sign out (`app-login`) | user | ported | 3 | metadata.ts, renderChartConfig.ts, browser.ts, connstr.ts, defaultSources.ts, +48 | 0 / 0 / 0 |
+| Registration (`app-register`) | user | ported | 2 | metadata.ts, renderChartConfig.ts, browser.ts, connstr.ts, defaultSources.ts, +48 | 0 / 0 / 0 |
 
 ### Current user and onboarding (`api-me`)
 
@@ -491,16 +481,16 @@ Entry points:
 
 | Feature | Visibility | Status | Entry points | Data layer | Tests (unit / int / e2e) |
 |---|---|---|---|---|---|
-| External API: alerts (`external-alerts`) | api | ported | 5 | attribution.ts, index.ts, clickhouseVersion.ts, histogram.ts, materializedViews.ts, +7 | 0 / 0 / 0 |
-| External API: charts (`external-charts`) | api | ported | 1 | clickhouse.ts, attribution.ts, index.ts, node.ts, clickhouseVersion.ts, +62 | 0 / 0 / 0 |
-| External API: connections (`external-connections`) | api | ported | 5 | attribution.ts, index.ts, clickhouseVersion.ts, histogram.ts, materializedViews.ts, +19 | 0 / 0 / 0 |
-| External API: dashboards (`external-dashboards`) | api | ported | 6 | attribution.ts, index.ts, clickhouseVersion.ts, histogram.ts, materializedViews.ts, +7 | 0 / 0 / 0 |
-| External API: root (`external-root`) | api | ported | 1 | clickhouse.ts, timeseriesEngine.ts, helpers.ts, runEventPatterns.ts, errors.ts, +67 | 1 / 0 / 0 |
-| External API: saved searches (`external-saved-searches`) | api | ported | 5 | attribution.ts, index.ts, clickhouseVersion.ts, histogram.ts, materializedViews.ts, +7 | 0 / 0 / 0 |
-| External API: search (`external-search`) | api | ported | 1 | clickhouse.ts, timeseriesEngine.ts, helpers.ts, runEventPatterns.ts, errors.ts, +66 | 0 / 0 / 0 |
-| External API: sources (`external-sources`) | api | ported | 5 | attribution.ts, index.ts, clickhouseVersion.ts, histogram.ts, materializedViews.ts, +12 | 0 / 0 / 0 |
-| External API: team (`external-team`) | api | ported | 6 | attribution.ts, index.ts, clickhouseVersion.ts, histogram.ts, materializedViews.ts, +7 | 0 / 0 / 0 |
-| External API: webhooks (`external-webhooks`) | api | ported | 5 | attribution.ts, index.ts, clickhouseVersion.ts, histogram.ts, materializedViews.ts, +7 | 0 / 0 / 0 |
+| External API: alerts (`external-alerts`) | api | ported | 5 | metadata.ts, connstr.ts, errors.ts, infer.ts, inferMeta.ts, +8 | 0 / 0 / 0 |
+| External API: charts (`external-charts`) | api | ported | 1 | helpers.ts, runEventPatterns.ts, metadata.ts, renderChartConfig.ts, browser.ts, +50 | 0 / 0 / 0 |
+| External API: connections (`external-connections`) | api | ported | 5 | metadata.ts, browser.ts, connstr.ts, errors.ts, infer.ts, +17 | 0 / 0 / 0 |
+| External API: dashboards (`external-dashboards`) | api | ported | 6 | metadata.ts, connstr.ts, errors.ts, infer.ts, inferMeta.ts, +8 | 0 / 0 / 0 |
+| External API: root (`external-root`) | api | ported | 1 | helpers.ts, runEventPatterns.ts, metadata.ts, renderChartConfig.ts, browser.ts, +51 | 1 / 0 / 0 |
+| External API: saved searches (`external-saved-searches`) | api | ported | 5 | metadata.ts, connstr.ts, errors.ts, infer.ts, inferMeta.ts, +8 | 0 / 0 / 0 |
+| External API: search (`external-search`) | api | ported | 1 | helpers.ts, runEventPatterns.ts, metadata.ts, renderChartConfig.ts, browser.ts, +50 | 0 / 0 / 0 |
+| External API: sources (`external-sources`) | api | ported | 5 | metadata.ts, connstr.ts, errors.ts, infer.ts, inferMeta.ts, +11 | 0 / 0 / 0 |
+| External API: team (`external-team`) | api | ported | 6 | metadata.ts, connstr.ts, errors.ts, infer.ts, inferMeta.ts, +8 | 0 / 0 / 0 |
+| External API: webhooks (`external-webhooks`) | api | ported | 5 | metadata.ts, connstr.ts, errors.ts, infer.ts, inferMeta.ts, +8 | 0 / 0 / 0 |
 
 ### External API: alerts (`external-alerts`)
 
@@ -616,8 +606,8 @@ Entry points:
 
 | Feature | Visibility | Status | Entry points | Data layer | Tests (unit / int / e2e) |
 |---|---|---|---|---|---|
-| Query proxy (`api-clickhouse-proxy`) | internal | in_progress | 3 | clickhouseProxy.ts, attribution.ts, index.ts, node.ts, clickhouseVersion.ts, +9 | 2 / 0 / 0 |
-| Couchbase connectivity (`couchbase-connectivity`) | internal | in_progress | 3 | attribution.ts, index.ts, node.ts, clickhouseVersion.ts, histogram.ts, +21 | 1 / 0 / 0 |
+| Query proxy (`api-clickhouse-proxy`) | internal | replaced | 0 | - | 0 / 0 / 0 |
+| Couchbase connectivity (`couchbase-connectivity`) | internal | ported | 3 | metadata.ts, renderChartConfig.ts, browser.ts, connstr.ts, errors.ts, +48 | 3 / 1 / 0 |
 
 ### Query proxy (`api-clickhouse-proxy`)
 
@@ -625,9 +615,8 @@ Forward browser queries to the data store through the API using the saved connec
 
 Entry points:
 
-- `api_route:GET /clickhouse-proxy/*`, `packages/api/src/routers/api/clickhouseProxy.ts`
-- `api_route:POST /clickhouse-proxy/*`, `packages/api/src/routers/api/clickhouseProxy.ts`
-- `api_route:POST /clickhouse-proxy/test`, `packages/api/src/routers/api/clickhouseProxy.ts`
+
+Decision: Couchbase query route replaces the ClickHouse proxy. Signed off by mminichino on 2026-11-13.
 
 ### Couchbase connectivity (`couchbase-connectivity`)
 
@@ -643,7 +632,7 @@ Entry points:
 
 | Feature | Visibility | Status | Entry points | Data layer | Tests (unit / int / e2e) |
 |---|---|---|---|---|---|
-| Telemetry ingestion (`ingestion`) | api | ported | 1 | fromClickHouseRow.ts | 5 / 1 / 1 |
+| Telemetry ingestion (`ingestion`) | api | ported | 1 | - | 7 / 1 / 2 |
 
 ### Telemetry ingestion (`ingestion`)
 
@@ -657,7 +646,7 @@ Entry points:
 
 | Feature | Visibility | Status | Entry points | Data layer | Tests (unit / int / e2e) |
 |---|---|---|---|---|---|
-| Command-line interface (`cli`) | admin | ported | 24 | client.ts, cli.tsx, useRowWhere.ts, attribution.ts, index.ts, +57 | 11 / 0 / 0 |
+| Command-line interface (`cli`) | admin | ported | 24 | cli.tsx, useRowWhere.ts, metadata.ts, renderChartConfig.ts, browser.ts, +50 | 5 / 0 / 0 |
 
 ### Command-line interface (`cli`)
 
@@ -694,13 +683,13 @@ Entry points:
 
 | Feature | Visibility | Status | Entry points | Data layer | Tests (unit / int / e2e) |
 |---|---|---|---|---|---|
-| Health and installation status (`api-health`) | internal | ported | 3 | attribution.ts, index.ts, node.ts, clickhouseVersion.ts, histogram.ts, +9 | 0 / 0 / 0 |
+| Health and installation status (`api-health`) | internal | ported | 3 | metadata.ts, renderChartConfig.ts, browser.ts, connstr.ts, defaultSources.ts, +48 | 0 / 0 / 0 |
 | App server API and config (`app-api`) | internal | ported | 2 | - | 0 / 0 / 0 |
-| Benchmark page (`app-benchmark`) | internal | ported | 1 | clickhouse.ts, ContactSupportText.tsx, DBRowJsonViewer.tsx, DBRowSidePanel.tsx, ExceptionSubpanel.tsx, +84 | 0 / 0 / 0 |
+| Benchmark page (`app-benchmark`) | internal | ported | 1 | ContactSupportText.tsx, DBRowJsonViewer.tsx, DBRowSidePanel.tsx, ExceptionSubpanel.tsx, KubeComponents.tsx, +71 | 0 / 0 / 0 |
 | Careers page (`app-careers`) | internal | dropped | 0 | - | 0 / 0 / 0 |
-| Home page (`app-home`) | user | ported | 1 | attribution.ts, index.ts, clickhouseVersion.ts, histogram.ts, materializedViews.ts, +7 | 0 / 0 / 3 |
+| Home page (`app-home`) | user | ported | 1 | metadata.ts, connstr.ts, errors.ts, infer.ts, inferMeta.ts, +8 | 0 / 0 / 3 |
 | Ping-pong task (`task-ping-pong`) | internal | ported | 1 | - | 0 / 0 / 0 |
-| Dashboard provisioning task (`task-provision-dashboards`) | internal | ported | 1 | attribution.ts, index.ts, clickhouseVersion.ts, histogram.ts, materializedViews.ts, +7 | 0 / 1 / 0 |
+| Dashboard provisioning task (`task-provision-dashboards`) | internal | ported | 1 | metadata.ts, connstr.ts, errors.ts, infer.ts, inferMeta.ts, +8 | 0 / 1 / 0 |
 
 ### Health and installation status (`api-health`)
 

@@ -8,7 +8,7 @@ import { SourcesList } from './SourcesList';
 const mockConnections = [
   {
     id: 'conn-1',
-    name: 'Local ClickHouse',
+    name: 'Local connection',
     host: 'localhost:8123',
     username: 'default',
   },

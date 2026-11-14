@@ -2,12 +2,23 @@
   "$schema": "https://unpkg.com/knip@6/schema.json",
   "workspaces": {
     ".": {
-      "entry": ["scripts/__tests__/*.test.mjs"]
+      "entry": [
+        "scripts/__tests__/*.test.mjs"
+      ]
     },
     "packages/app": {
-      "entry": ["pages/**/*.{ts,tsx}", "scripts/*.js", "tests/e2e/**/*.ts"],
-      "project": ["src/**/*.{ts,tsx}", "pages/**/*.{ts,tsx}"],
-      "ignore": [".storybook/public/**"],
+      "entry": [
+        "pages/**/*.{ts,tsx}",
+        "scripts/*.js",
+        "tests/e2e/**/*.ts"
+      ],
+      "project": [
+        "src/**/*.{ts,tsx}",
+        "pages/**/*.{ts,tsx}"
+      ],
+      "ignore": [
+        ".storybook/public/**"
+      ],
       "ignoreDependencies": [
         "eslint-config-next",
         "@chromatic-com/storybook",
@@ -23,27 +34,59 @@
         "scripts/*.ts",
         "src/fixtures.ts"
       ],
-      "project": ["src/**/*.ts"],
-      "ignoreDependencies": ["pino-pretty", "aws4"],
-      "ignore": ["src/opamp/**", "src/utils/logParser.ts"]
+      "project": [
+        "src/**/*.ts"
+      ],
+      "ignoreDependencies": [
+        "pino-pretty",
+        "aws4"
+      ],
+      "ignore": [
+        "src/opamp/**",
+        "src/utils/logParser.ts"
+      ]
     },
     "packages/common-utils": {
-      "entry": ["src/**/*.ts", "!src/__tests__/**", "!src/**/*.test.*"],
-      "project": ["src/**/*.ts"],
-      "ignoreDependencies": ["@stryker-mutator/core"],
-      "ignoreBinaries": ["stryker"]
+      "entry": [
+        "src/**/*.ts",
+        "!src/__tests__/**",
+        "!src/**/*.test.*"
+      ],
+      "project": [
+        "src/**/*.ts"
+      ],
+      "ignoreDependencies": [
+        "@stryker-mutator/core"
+      ],
+      "ignoreBinaries": [
+        "stryker"
+      ]
     },
     "packages/cli": {
-      "ignoreBinaries": ["claude"]
+      "ignoreBinaries": [
+        "claude"
+      ]
     },
     "packages/ingest": {
-      "entry": ["src/index.ts", "src/setup/cli.ts", "src/setup/docs.ts"],
-      "project": ["src/**/*.ts"]
+      "entry": [
+        "src/index.ts",
+        "src/setup/cli.ts",
+        "src/setup/docs.ts"
+      ],
+      "project": [
+        "src/**/*.ts"
+      ]
     },
     "packages/hdx-eval": {
-      "project": ["src/**/*.ts"],
-      "ignoreDependencies": ["tsx"],
-      "ignoreBinaries": ["claude"]
+      "project": [
+        "src/**/*.ts"
+      ],
+      "ignoreDependencies": [
+        "tsx"
+      ],
+      "ignoreBinaries": [
+        "claude"
+      ]
     }
   },
   "ignore": [
@@ -51,9 +94,14 @@
     ".github/scripts/**",
     ".github/actions/**",
     "docker/hyperdx/**",
-    ".claude/**"
+    ".claude/**",
+    "port/**"
   ],
-  "ignoreBinaries": ["make", "migrate", "stryker"],
+  "ignoreBinaries": [
+    "make",
+    "migrate",
+    "stryker"
+  ],
   "ignoreDependencies": [
     "@dotenvx/dotenvx",
     "concurrently",
@@ -62,6 +110,11 @@
     "@stryker-mutator/core",
     "jscpd"
   ],
-  "include": ["nsExports"],
-  "exclude": ["enumMembers", "duplicates"]
+  "include": [
+    "nsExports"
+  ],
+  "exclude": [
+    "enumMembers",
+    "duplicates"
+  ]
 }

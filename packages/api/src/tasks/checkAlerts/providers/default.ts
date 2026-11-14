@@ -679,7 +679,7 @@ export default class DefaultAlertProvider implements AlertProvider {
     return new Map<string, IWebhook>(webhooks.map(w => [w.id, w]));
   }
 
-  async getClickHouseClient(
+  async getDataClient(
     { password, id }: IConnection,
     requestTimeout?: number,
   ): Promise<DataClient> {

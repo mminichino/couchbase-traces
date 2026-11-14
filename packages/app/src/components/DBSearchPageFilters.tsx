@@ -53,7 +53,7 @@ import {
   IconSitemap,
 } from '@tabler/icons-react';
 
-import { IS_CLICKHOUSE_BUILD } from '@/config';
+import { IS_LEGACY_ENGINE_BUILD } from '@/config';
 import {
   useColumns,
   useGetValuesDistribution,
@@ -1253,7 +1253,7 @@ const DBSearchPageFiltersComponent = ({
   const showRefreshButton = isLive && dateRange !== chartConfig.dateRange;
 
   // Conditionally backtick-quote facet keys that contain special characters and
-  // match known column names, so they can be used in the ClickHouse query to get
+  // match known column names, so they can be used in the SQL query to get
   // key values.
   const knownColumns = useMemo(
     () => (columns ? new Set(columns.map(c => c.name)) : new Set<string>()),
@@ -1835,7 +1835,7 @@ const DBSearchPageFiltersComponent = ({
                   <Text size="xs">Event Deltas</Text>
                 </Tabs.Tab>
               )}
-              {!IS_CLICKHOUSE_BUILD && (
+              {!IS_LEGACY_ENGINE_BUILD && (
                 <Tabs.Tab value="pattern" size="xs" h="24px">
                   <Text size="xs">Event Patterns</Text>
                 </Tabs.Tab>

@@ -31,10 +31,10 @@ export interface CouchbaseQueryInputs<F extends CouchbaseFormat = 'JSON'> {
   queryId?: string;
   attribution?: QueryAttribution;
   /** Accepted for signature compatibility; only max_execution_time is honored */
-  clickhouse_settings?: Record<string, unknown>;
+  query_settings?: Record<string, unknown>;
   /** Column order hint */
   columns?: string[];
-  /** ClickHouse type name overrides */
+  /** legacy store type name overrides */
   columnTypes?: Record<string, string>;
   timeoutMs?: number;
   scanConsistency?: ScanConsistency;

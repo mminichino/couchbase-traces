@@ -1346,7 +1346,7 @@ const EXTERNAL_DASHBOARD_PROJECTION = {
  *           example: "sql"
  *         connectionId:
  *           type: string
- *           description: ID of the ClickHouse connection to execute the query against.
+ *           description: ID of the legacy connection to execute the query against.
  *           example: "65f5e4a3b9e77c001a567890"
  *         sqlTemplate:
  *           type: string
@@ -2379,7 +2379,7 @@ const EXTERNAL_DASHBOARD_PROJECTION = {
  *     QueryExpressionFilterInput:
  *       type: object
  *       description: |
- *         A filter whose dropdown values are queried from ClickHouse: "expression"
+ *         A filter whose dropdown values are queried from legacy store: "expression"
  *         names the column and "sourceId" the source to read them from. Its
  *         selection can be broadcast into matching tiles' WHERE clauses.
  *       required:

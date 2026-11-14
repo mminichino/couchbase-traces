@@ -24,9 +24,9 @@ Read from upstream `main` on 2026-11-12.
 |---|---|
 | Search parsing | `packages/common-utils/src/queryParser.ts` (2,314 lines): `parse(query)` returns a Lucene AST; `genWhereSQL(ast, serializer)` walks it with a module-private `serialize` function; `SearchQueryBuilder(query, serializer).build()` returns a WHERE string |
 | Serializer contract | Methods `operator`, `eq`, `isNotNull`, `gte`, `lte`, `lt`, `gt`, `fieldSearch`, `range`, each returning a SQL string, with a `SerializerContext` of `implicitColumnExpression`, `bodyExpression`, `isNegatedAndParenthesized`. `SQLSerializer` inlines values with `SqlString.format`. `CustomSchemaSQLSerializerV2` resolves fields with `getColumnForField`, using map columns, prefix matching (`findPrefixMatch`), text and skip indexes, and `*AttributeItems` key-value arrays. Not-found fields render as `(1 = 0)` |
-| Chart rendering | `core/renderChartConfig.ts` (3,429 lines), `renderChartConfig(config, metadata, querySettings)` returns `ChSql` `{ sql, params }` |
+| Chart rendering | `core/renderChartConfig.ts` (3,429 lines), `renderChartConfig(config, metadata, querySettings)` returns `SqlFrag` `{ sql, params }` |
 | Metadata | `core/metadata.ts` (3,487 lines): class `Metadata` with about 30 public async methods (`getColumns`, `getColumn`, `getMapKeys`, `getMapValues`, `getJSONKeys`, `getAllFields`, `getKeyValues`, `getAllKeyValues`, `getValuesDistribution`, `getKeyValuesWithMVs`, `getMetricNames`, `getTableMetadata`, `getAllTableMetadata`, `getSetting`, `getSettings`, `getMergeTreeSettings`, `isClickHouseCloud`, `getServerVersion`, `getSkipIndices`, `getMapColumnTextIndexes`, `getNativeArrayColumnTextIndexes`, `getMaterializedColumnsLookupTable`, `queryMaterializedViewsByTarget`, `getTimeSeriesTable*`, `getOtelTables`, `renderKeyExpressions`); `MetadataCache`; `getMetadata(client)`; `TableConnection` with `databaseName`, `tableName`, `connectionId` |
-| Clients in the app | `getClickhouseClient()` and `useClickhouseClient()` in `packages/app/src/clickhouse.ts`, used by 16 non-test files; `getMetadata()` in `packages/app/src/metadata.ts` |
+| Clients in the app | `getDataClient()` and `useDataClient()` in `packages/app/src/clickhouse.ts`, used by 16 non-test files; `getMetadata()` in `packages/app/src/metadata.ts` |
 | Direct renderer imports | 21 non-test files across `app`, `api`, `cli` import `core/renderChartConfig` |
 | Server-side clients | `new ClickhouseClient(...)` (node) in API controllers, alert providers, external API v2, MCP tools |
 | Debug SQL | `parameterizedQueryToSql({ sql, params })` renders a query with values inlined for display and logs |
@@ -38,7 +38,7 @@ Read from upstream `main` on 2026-11-12.
 | Routing key | The connection's `kind`, resolved from the connection id that every query, metadata call, and chart config already carries. | Lets ClickHouse and Couchbase sources coexist through Phase 9, which a single global switch per slice would not. |
 | Slice flags | `COUCHBASE_SLICES` marks which features can use Couchbase sources. They gate source selection in each feature (Phase 7), not routing. | Routing must work for every call; readiness is a feature decision. |
 | Seam shape | Subclasses of the existing ClickHouse client and `Metadata`, overriding each public method to route. | Hundreds of type annotations name `BaseClickhouseClient` or `Metadata`; subclasses keep them valid with no signature changes. |
-| Rendered query shape | Couchbase renderers return `{ sql, params, dialect: 'sqlpp' }`, the same shape as `ChSql` plus a tag. | Callers that pass `q.sql` and `q.params` to `client.query` work unchanged; the routing client sends them to Couchbase. |
+| Rendered query shape | Couchbase renderers return `{ sql, params, dialect: 'sqlpp' }`, the same shape as `SqlFrag` plus a tag. | Callers that pass `q.sql` and `q.params` to `client.query` work unchanged; the routing client sends them to Couchbase. |
 | Serializer values | All values become named parameters; the serializer records them on its instance and emits `$name` placeholders, so upstream's AST walker (`genWhereSQL`) is reused unchanged. | Rule 4 in `AGENTS.md`; no fork of the walker. |
 | Quantiles | Exact, with linear interpolation, through `ARRAY_AGG` and `ARRAY_SORT`, not window-function emulation. | Simpler and exact; ClickHouse's `quantile` is approximate, so parity tests use a tolerance. |
 | `any(x)` | `MIN(x)` | ClickHouse returns an arbitrary value; `MIN` is deterministic and cheap. |
@@ -64,7 +64,7 @@ packages/common-utils/src/couchbase/
   debug.ts             sqlppToDisplay
   __tests__/           unit tests
   __tests__/*.int.test.ts      integration tests
-packages/app/src/clickhouse.ts   getClickhouseClient and useClickhouseClient return the routing client
+packages/app/src/clickhouse.ts   getDataClient and useDataClient return the routing client
 packages/app/src/metadata.ts     getMetadata returns RoutingMetadata
 packages/app/src/dataLayerSetup.ts   registers the app's kind resolver at startup
 packages/api/src/dataLayerSetup.ts   registers the API's kind resolver at startup
@@ -435,8 +435,8 @@ Phase 6 implements only the shared skeleton: keyspace and alias (`d`), the time 
 `dataLayer/index.ts` also exports:
 
 ```ts
-export async function renderChartConfig(config: ChartConfigWithOptDateRange, metadata: Metadata, querySettings?: QuerySettings): Promise<ChSql | SqlppQuery>;
-export function formatQueryForDisplay(q: ChSql | SqlppQuery): string;    // parameterizedQueryToSql or sqlppToDisplay
+export async function renderChartConfig(config: ChartConfigWithOptDateRange, metadata: Metadata, querySettings?: QuerySettings): Promise<SqlFrag | SqlppQuery>;
+export function formatQueryForDisplay(q: SqlFrag | SqlppQuery): string;    // parameterizedQueryToSql or sqlppToDisplay
 export function isMissingColumnError(e: unknown): boolean;               // either dialect
 export function isAccessDeniedError(e: unknown): boolean;
 export { getRoutingMetadata as getMetadata };
@@ -450,7 +450,7 @@ export { getRoutingMetadata as getMetadata };
 |---|---|
 | `import { renderChartConfig } from '<scope>/common-utils/dist/core/renderChartConfig'` in non-test files | Import from `<scope>/common-utils/dist/dataLayer` |
 | `parameterizedQueryToSql(q)` used for display or logs on a rendered chart query | `formatQueryForDisplay(q)` |
-| App `getClickhouseClient` and `useClickhouseClient` constructing `ClickhouseClient` | Construct `RoutingClickhouseClient` with the same options |
+| App `getDataClient` and `useDataClient` constructing `ClickhouseClient` | Construct `RoutingClickhouseClient` with the same options |
 | App `getMetadata` calling upstream `getMetadata(client)` | `getRoutingMetadata(client)` |
 | API, tasks, external API, MCP: `new ClickhouseClient(...)` (node) | `new RoutingNodeClickhouseClient({...same, loadCouchbaseConnection })`, where the loader reads the connection with password and certificate from Mongo |
 | `isMissingColumnError`, `isAccessDeniedError` imported from the ClickHouse module in non-test files | Seam versions |

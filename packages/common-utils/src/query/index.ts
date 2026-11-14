@@ -10,17 +10,6 @@ export {
 } from './attribution';
 export { buildQueryId as buildLogComment } from './attribution';
 export {
-  type ChSql,
-  chSql,
-  chSqlToAliasMap,
-  chSqlToSelectColumns,
-  concatChSql,
-  extractColumnReferencesFromKey,
-  parameterizedQueryToSql,
-  tableExpr,
-  wrapChSqlIfNotEmpty,
-} from './chSql';
-export {
   type ColumnMetaType,
   columnTypeToJSType,
   columnTypeToLuceneSearchType,
@@ -33,7 +22,18 @@ export {
   isJSDataTypeScalar,
   JSDataType,
 } from './columnTypes';
-export { ClickHouseError, QueryError } from './errors';
+export { CodedQueryError, QueryError } from './errors';
+export {
+  concatSqlExpr,
+  extractColumnReferencesFromKey,
+  parameterizedQueryToSql,
+  sqlExpr,
+  sqlExprToAliasMap,
+  sqlExprToSelectColumns,
+  type SqlFrag,
+  tableExpr,
+  wrapSqlExprIfNotEmpty,
+} from './sqlExpr';
 export { streamToAsyncIterator } from './stream';
 export {
   type ColumnMeta,

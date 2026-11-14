@@ -47,7 +47,7 @@ export const listMetricsSchema = z.object({
     .string()
     .optional()
     .describe(
-      'ClickHouse ILIKE pattern (case-insensitive) matched against MetricName. ' +
+      'legacy store ILIKE pattern (case-insensitive) matched against MetricName. ' +
         'Use % as the wildcard. Examples: "system.cpu.%", "%duration%", "http.server.%".',
     ),
   startTime: z

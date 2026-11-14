@@ -1,6 +1,6 @@
 import { Head, Html, Main, NextScript } from 'next/document';
 
-import { IS_CLICKHOUSE_BUILD, IS_NOINDEX } from '@/config';
+import { IS_LEGACY_ENGINE_BUILD, IS_NOINDEX } from '@/config';
 import { ibmPlexMono, inter, roboto, robotoMono } from '@/fonts';
 
 export default function Document() {
@@ -45,7 +45,7 @@ export default function Document() {
           href="/favicons/couchbase-traces/apple-touch-icon.png"
         />
         <meta name="theme-color" content="#1a1a1a" />
-        {!IS_CLICKHOUSE_BUILD && (
+        {!IS_LEGACY_ENGINE_BUILD && (
           <>
             {/* eslint-disable-next-line @next/next/no-sync-scripts */}
             <script src="/pyodide/pyodide.js"></script>

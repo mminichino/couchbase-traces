@@ -28,7 +28,7 @@ describe('useSqlSuggestions', () => {
 
     const suggestion = suggestions[0];
     expect(suggestion.userMessage('where')).toBe(
-      'ClickHouse does not support double quotes (") but they were detected in WHERE. Switch to single quotes?',
+      'SQL++ string literals use single quotes; double quotes (") were detected in WHERE. Switch to single quotes?',
     );
     expect(suggestion.corrected()).toBe("SeverityText = 'error'");
   });

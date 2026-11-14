@@ -1,13 +1,13 @@
 /**
- * Builds ClickHouse SQL for searching events (logs or traces) using
+ * Builds legacy SQL for searching events (logs or traces) using
  * renderChartConfig from common-utils.
  */
 
 import type {
-  ChSql,
+  SqlFrag,
   ColumnMetaType,
 } from '@couchbase-traces/common-utils/dist/query';
-import { chSqlToAliasMap } from '@couchbase-traces/common-utils/dist/query';
+import { sqlExprToAliasMap } from '@couchbase-traces/common-utils/dist/query';
 import { renderChartConfig } from '@couchbase-traces/common-utils/dist/dataLayer';
 import type { Metadata } from '@couchbase-traces/common-utils/dist/core/metadata';
 import { aliasMapToWithClauses } from '@couchbase-traces/common-utils/dist/core/utils';
@@ -69,7 +69,7 @@ function buildTraceSelectExpression(source: SourceResponse): string {
 export async function buildEventSearchQuery(
   opts: SearchQueryOptions,
   metadata: Metadata,
-): Promise<ChSql> {
+): Promise<SqlFrag> {
   const {
     source,
     selectOverride,
@@ -143,7 +143,7 @@ async function buildAliasWithClauses(
     metadata,
     source.querySettings,
   );
-  const aliasMap = chSqlToAliasMap(dummySql);
+  const aliasMap = sqlExprToAliasMap(dummySql);
   return aliasMapToWithClauses(aliasMap);
 }
 
@@ -165,7 +165,7 @@ export interface PatternSampleQueryOptions {
 export async function buildPatternSampleQuery(
   opts: PatternSampleQueryOptions,
   metadata: Metadata,
-): Promise<ChSql> {
+): Promise<SqlFrag> {
   const {
     source,
     searchQuery = '',
@@ -221,7 +221,7 @@ export interface TotalCountQueryOptions {
 export async function buildTotalCountQuery(
   opts: TotalCountQueryOptions,
   metadata: Metadata,
-): Promise<ChSql> {
+): Promise<SqlFrag> {
   const { source, searchQuery = '', startTime, endTime } = opts;
 
   const tsExpr = source.timestampValueExpression ?? 'TimestampTime';
@@ -267,7 +267,7 @@ export interface TraceSpansQueryOptions {
 export async function buildTraceSpansQuery(
   opts: TraceSpansQueryOptions,
   metadata: Metadata,
-): Promise<ChSql> {
+): Promise<SqlFrag> {
   const config = buildTraceSpansConfig(opts);
   return renderChartConfig(config, metadata, opts.source.querySettings);
 }
@@ -279,14 +279,14 @@ export async function buildTraceSpansQuery(
 export async function buildTraceLogsQuery(
   opts: TraceSpansQueryOptions,
   metadata: Metadata,
-): Promise<ChSql> {
+): Promise<SqlFrag> {
   const config = buildTraceLogsConfig(opts);
   return renderChartConfig(config, metadata, opts.source.querySettings);
 }
 
 /**
  * Build a query to fetch a single span/log row (SELECT *) from the
- * trace waterfall detail panel. Omits dateRange so ClickHouse uses
+ * trace waterfall detail panel. Omits dateRange so legacy store uses
  * the WHERE clause directly.
  */
 export async function buildTraceRowDetailQuery(
@@ -297,7 +297,7 @@ export async function buildTraceRowDetailQuery(
     timestamp: string;
   },
   metadata: Metadata,
-): Promise<ChSql> {
+): Promise<SqlFrag> {
   const config = buildTraceRowDetailConfig(opts);
   return renderChartConfig(config, metadata, opts.source.querySettings);
 }
@@ -315,7 +315,7 @@ export interface FullRowQueryOptions {
  * @source packages/app/src/components/DBRowDataPanel.tsx (useRowData)
  * @source packages/app/src/hooks/useRowWhere.tsx (processRowToWhereClause)
  *
- * Uses chSqlToAliasMap from the table query's rendered SQL + column
+ * Uses sqlExprToAliasMap from the table query's rendered SQL + column
  * metadata to build a proper WHERE clause with type-aware matching,
  * then queries:
  *   SELECT *, <__hdx_* aliases>
@@ -325,15 +325,15 @@ export interface FullRowQueryOptions {
  *   LIMIT 1
  */
 export interface FullRowQueryResult {
-  chSql: ChSql;
+  sqlExpr: SqlFrag;
   /** The SQL WHERE clause that uniquely identifies the row (for browser URL) */
   rowWhere: string;
 }
 
 export async function buildFullRowQuery(
   opts: FullRowQueryOptions & {
-    /** The rendered ChSql from the table query (for alias resolution) */
-    tableChSql: ChSql;
+    /** The rendered SqlFrag from the table query (for alias resolution) */
+    tableSqlFrag: SqlFrag;
     /** Column metadata from the table query response */
     tableMeta: ColumnMetaType[];
     metadata: Metadata;
@@ -341,11 +341,11 @@ export async function buildFullRowQuery(
     primaryKeyColumns?: Set<string>;
   },
 ): Promise<FullRowQueryResult> {
-  const { source, row, tableChSql, tableMeta, metadata, primaryKeyColumns } =
+  const { source, row, tableSqlFrag, tableMeta, metadata, primaryKeyColumns } =
     opts;
 
   // Parse the rendered table SQL to get alias → expression mapping
-  const aliasMap = chSqlToAliasMap(tableChSql);
+  const aliasMap = sqlExprToAliasMap(tableSqlFrag);
 
   // Build column map using both meta (types) and aliasMap (expressions)
   const columnMap = buildColumnMap(tableMeta, aliasMap);
@@ -361,7 +361,7 @@ export async function buildFullRowQuery(
   const selectList = buildRowDataSelectList(source);
 
   // Omit dateRange and timestampValueExpression — the WHERE clause
-  // already uniquely identifies the row so ClickHouse can use the
+  // already uniquely identifies the row so legacy store can use the
   // filter directly without scanning time partitions.
   // This matches the web frontend's useRowData in DBRowDataPanel.tsx.
   const config: BuilderChartConfigWithOptDateRange = {
@@ -376,6 +376,10 @@ export async function buildFullRowQuery(
       : {}),
   };
 
-  const chSql = await renderChartConfig(config, metadata, source.querySettings);
-  return { chSql, rowWhere: rowWhereResult.where };
+  const sqlExpr = await renderChartConfig(
+    config,
+    metadata,
+    source.querySettings,
+  );
+  return { sqlExpr, rowWhere: rowWhereResult.where };
 }

@@ -88,10 +88,10 @@ export async function denoiseSearchResults(
     return { rows, removedPatterns: [], skipped: 'slice_off' };
   }
 
-  const clickhouseClient = new DataClient({
+  const dataClient = new DataClient({
     requestTimeout: MCP_REQUEST_TIMEOUT,
   });
-  const metadata = getMetadata(clickhouseClient);
+  const metadata = getMetadata(dataClient);
 
   const tsExpr = getFirstTimestampValueExpression(
     source.timestampValueExpression,
@@ -144,21 +144,17 @@ export async function denoiseSearchResults(
     dateRange: [startDate, endDate] as [Date, Date],
   } satisfies ChartConfigWithDateRange;
 
-  let sampleResult: Awaited<
-    ReturnType<typeof clickhouseClient.queryChartConfig>
-  >;
-  let countResult: Awaited<
-    ReturnType<typeof clickhouseClient.queryChartConfig>
-  >;
+  let sampleResult: Awaited<ReturnType<typeof dataClient.queryChartConfig>>;
+  let countResult: Awaited<ReturnType<typeof dataClient.queryChartConfig>>;
   try {
     [sampleResult, countResult] = await Promise.all([
-      clickhouseClient.queryChartConfig({
+      dataClient.queryChartConfig({
         config: sampleConfig,
         metadata,
         querySettings: source.querySettings,
         opts: {},
       }),
-      clickhouseClient.queryChartConfig({
+      dataClient.queryChartConfig({
         config: countConfig,
         metadata,
         querySettings: source.querySettings,
@@ -244,7 +240,7 @@ export async function denoiseSearchResults(
 
 /**
  * Find the key in a result row that corresponds to the body column expression.
- * ClickHouse may return the column under its expression name or a simplified alias.
+ * legacy store may return the column under its expression name or a simplified alias.
  */
 function findBodyColumnKey(
   row: Record<string, unknown>,

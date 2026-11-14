@@ -26,10 +26,10 @@ column headers, empty states, and toast copy.
 ```
 
 **Preserve proper nouns, product names, and acronyms** wherever they appear —
-sentence case only touches the surrounding words: Couchbase Traces, ClickHouse,
+sentence case only touches the surrounding words: Couchbase Traces, legacy store,
 Couchbase Traces, OpenTelemetry/OTel, Lucene, SQL, PromQL, MongoDB, Kubernetes, JSON,
 CSV, URL, ID, API, MCP, CPU, P95. E.g. `Search your events w/ Lucene`,
-`Edit SQL`, `View in ClickHouse`.
+`Edit SQL`, `View in legacy store`.
 
 Only sentence-case **static UI chrome**. Render dynamic/user data (column names,
 tag values, log/trace content, user-typed source/dashboard names) verbatim.

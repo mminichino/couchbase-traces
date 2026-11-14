@@ -1,10 +1,8 @@
 import { createContext, use, useCallback, useMemo } from 'react';
 import {
-  MacroSuggestion,
+  type MacroSuggestion,
   VARIABLE_MACRO_SUGGESTIONS,
 } from '@couchbase-traces/common-utils/dist/macros';
-
-const PROMQL_MACROS: MacroSuggestion[] = [];
 import { ChartVariable } from '@couchbase-traces/common-utils/dist/types';
 import {
   substituteVariables,
@@ -172,17 +170,6 @@ export function buildSqlVariableCompletions(
   ];
 }
 
-/** Legacy PromQL variable completions removed in Phase 10. */
-export function buildPromqlVariableCompletions(
-  _variables: ChartVariable[] | undefined,
-): SQLCompletion[] {
-  return [];
-}
-
-/** Completions for the macros a PromQL chart expression can use. */
-export const PROMQL_MACRO_COMPLETIONS: SQLCompletion[] =
-  PROMQL_MACROS.map(toMacroCompletion);
-
 /** One bare `$name` suggestion for a Lucene input. */
 export type LuceneVariableSuggestion = {
   value: string;
@@ -284,16 +271,6 @@ export function useSqlVariableCompletions(
 ): SQLCompletion[] {
   const variables = useChartVariables(options);
   return useMemo(() => buildSqlVariableCompletions(variables), [variables]);
-}
-
-/**
- * Variable completions for a PromQL input inside a `SqlVariablesProvider`.
- */
-export function usePromqlVariableCompletions(
-  options?: VariableSupportOptions,
-): SQLCompletion[] {
-  const variables = useChartVariables(options);
-  return useMemo(() => buildPromqlVariableCompletions(variables), [variables]);
 }
 
 /** Variable suggestions for a Lucene input inside a `SqlVariablesProvider`. */

@@ -10,10 +10,10 @@ name: Docker Build
 # On pushes to main every image is built regardless of what changed. The path
 # filter is the wrong instrument there, because these builds can break with no
 # repo change at all: the Dockerfile pins floating upstream tags
-# (`node:${NODE_VERSION}-alpine`, `clickhouse-server:${CLICKHOUSE_VERSION}-alpine`)
+# (`node:${NODE_VERSION}-alpine`, `evalstore-server:${EVAL_STORE_VERSION}-alpine`)
 # and the registry re-points them whenever upstream publishes a patch. That is
 # exactly how the 26.8-alpine break reached a release: the tag moved from
-# ClickHouse 26.8.6 to 26.8.7 mid-afternoon, upgrading apk-tools 3.0.6 -> 3.0.8
+# legacy store 26.8.6 to 26.8.7 mid-afternoon, upgrading apk-tools 3.0.6 -> 3.0.8
 # underneath us. The PR check and the nightly had both already passed against
 # the older digest, two commits then merged to main with no image build between
 # them, and the failure only appeared in the release run hours later. Building

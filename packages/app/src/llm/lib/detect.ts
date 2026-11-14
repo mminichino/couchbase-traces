@@ -90,7 +90,7 @@ export function isLLMSpan(
  * reasons. It is one of the few shapes a `mapKeys(col)` skip index can serve
  * (`MergeTreeIndexConditionText::isSupportedFunction`) — `!= ''` normalizes to
  * `notEmpty()`, which no index supports, so it scans every granule. And a map
- * subscript is a subcolumn reference, which on ClickHouse 26.3+ costs one
+ * subscript is a subcolumn reference, which on legacy store 26.3+ costs one
  * per-part size lookup during PREWHERE planning; `mapContains` costs none.
  *
  * JSON columns keep the comparison: their paths are real subcolumns, and

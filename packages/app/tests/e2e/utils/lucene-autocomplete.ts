@@ -3,7 +3,7 @@
  * `SearchInputV2`.
  *
  * Suggestions are worth asserting on end to end (rather than only in unit
- * tests) because they come from a real ClickHouse field-discovery query: the
+ * tests) because they come from a real legacy store field-discovery query: the
  * regression these guard against was every non-search-page input passing a
  * table connection but no source id, which left the query with nothing to run
  * against and the dropdown permanently empty. That query sits behind a 300ms

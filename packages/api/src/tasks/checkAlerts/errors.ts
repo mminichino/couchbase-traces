@@ -1,4 +1,4 @@
-import { ClickHouseError } from '@couchbase-traces/common-utils/dist/query';
+import { CodedQueryError } from '@couchbase-traces/common-utils/dist/query';
 
 export const WEBHOOK_REDIRECT_ERROR_MESSAGE =
   'Webhook destination responded with a redirect. Redirects are not supported.';
@@ -52,33 +52,27 @@ export class WebhookResponseError extends Error {
   }
 }
 
-// @clickhouse/client (Node) rejects with these exact messages when the
-// configured request_timeout elapses or the request is aborted. See
-// clickhouse-js packages/client-node/src/connection/socket_pool.ts.
+// Data-client timeout messages when request_timeout elapses or the request
+// is aborted.
 const CLIENT_TIMEOUT_MESSAGE = 'Timeout error.';
 const CLIENT_ABORT_MESSAGE = 'The user aborted a request.';
 
-// ClickHouse server-side error for exceeded execution limits
+// Server-side error for exceeded execution limits
 // (e.g. max_execution_time): TIMEOUT_EXCEEDED, code 159.
 const CH_TIMEOUT_TYPE = 'TIMEOUT_EXCEEDED';
 const CH_TIMEOUT_CODE = '159';
 
 /**
- * Check whether an error is a ClickHouseError, using both `instanceof` and a
- * constructor-name fallback. The fallback handles the case where multiple
- * copies of `@clickhouse/client-common` are installed (e.g. the api package
- * uses one version while `common-utils` bundles another) — `instanceof` fails
- * across the two class identities even though the shapes are identical.
+ * Check whether an error is a CodedQueryError, using both `instanceof` and a
+ * constructor-name fallback across bundled copies of common-utils.
  */
-const isClickHouseError = (
-  err: unknown,
-): err is ClickHouseError & { type?: string; code?: string } => {
-  if (err instanceof ClickHouseError) return true;
-  return err instanceof Error && err.constructor?.name === 'ClickHouseError';
+const isQueryError = (err: unknown): err is CodedQueryError => {
+  if (err instanceof CodedQueryError) return true;
+  return err instanceof Error && err.constructor?.name === 'CodedQueryError';
 };
 
 /**
- * Check whether an error is the ClickHouse client's own request_timeout
+ * Check whether an error is the data client's own request_timeout
  * firing (or the request being aborted) — i.e. the client-side evaluation
  * timeout, as opposed to a server-side TIMEOUT_EXCEEDED.
  */
@@ -92,7 +86,7 @@ const isTimeoutErrorShallow = (e: Error): boolean => {
   }
 
   if (
-    isClickHouseError(e) &&
+    isQueryError(e) &&
     (e.type === CH_TIMEOUT_TYPE || e.code === CH_TIMEOUT_CODE)
   ) {
     return true;
@@ -107,12 +101,12 @@ const MAX_CAUSE_DEPTH = 5;
 /**
  * Classify whether an alert query failure is a timeout/abort (rather than a
  * query or connection error). Covers:
- * - the ClickHouse client's request_timeout ("Timeout error.")
+ * - the data client's request_timeout ("Timeout error.")
  * - aborted requests ("The user aborted a request.")
  * - server-side TIMEOUT_EXCEEDED (code 159, e.g. max_execution_time)
  * - TCP-level socket timeouts (ETIMEDOUT)
  *
- * Walks the `cause` chain: `BaseClickhouseClient.query` wraps failures in a
+ * Walks the `cause` chain: `BaseDataClient.query` wraps failures in a
  * `QueryError` that preserves the message but keeps the original
  * error (and its identifying type/code) only on `cause`, so server-side
  * TIMEOUT_EXCEEDED and socket ETIMEDOUT would otherwise misclassify as

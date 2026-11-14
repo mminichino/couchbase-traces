@@ -8,7 +8,7 @@ import type { DataClient } from '@couchbase-traces/common-utils/dist/dataLayer/b
 import { filtersToQuery } from '@couchbase-traces/common-utils/dist/filters';
 import type { ResponseJSON } from '@couchbase-traces/common-utils/dist/query';
 import {
-  chSql,
+  sqlExpr,
   streamToAsyncIterator,
 } from '@couchbase-traces/common-utils/dist/query';
 import {
@@ -44,7 +44,7 @@ import useFieldExpressionGenerator, {
   FieldExpressionGenerator,
 } from './hooks/useFieldExpressionGenerator';
 import { useMetadataWithSettings } from './hooks/useMetadata';
-import { getClickhouseClient, useClickhouseClient } from './clickhouse';
+import { getDataClient, useDataClient } from './dataClient';
 import { makeCoalescedFieldsAccessQuery } from './serviceDashboard';
 import {
   buildOtelSessionIdsWithRecordingsChartConfig,
@@ -84,13 +84,13 @@ export async function fetchServiceScopeFilters({
   sessionSource,
   dateRange,
   metadata,
-  clickhouseClient,
+  dataClient,
 }: {
   traceSource: TTraceSource;
   sessionSource: TSessionSource;
   dateRange: [Date, Date];
   metadata: Metadata;
-  clickhouseClient: DataClient;
+  dataClient: DataClient;
 }): Promise<Filter[]> {
   if (!traceSource.serviceNameExpression) {
     return [];
@@ -121,7 +121,7 @@ export async function fetchServiceScopeFilters({
       metadata,
       sessionSource.querySettings,
     );
-    const json = await clickhouseClient
+    const json = await dataClient
       .query({
         query: query.sql,
         query_params: query.params,
@@ -199,7 +199,7 @@ export function useSessions(
     userName: ['user.name', 'userName'],
   };
   const SESSIONS_CTE_NAME = 'sessions';
-  const clickhouseClient = useClickhouseClient();
+  const dataClient = useDataClient();
   const metadata = useMetadataWithSettings();
   return useQuery<ResponseJSON<Session>, Error>({
     queryKey: [
@@ -232,7 +232,7 @@ export function useSessions(
         sessionSource,
         dateRange,
         metadata,
-        clickhouseClient,
+        dataClient,
       });
 
       const includeOtelSessions = isOtelSessionListEnabled({
@@ -455,7 +455,7 @@ export function useSessions(
 
       const finalQuery =
         where && where.length > 0
-          ? chSql`
+          ? sqlExpr`
         ${sessionsCTE},
         sessionIdsWithRecordings AS (${unionIds(
           sessionIdsWithRecordingsQuery,
@@ -471,14 +471,14 @@ export function useSessions(
         )
         ORDER BY maxTimestamp DESC
       `
-          : chSql`
+          : sqlExpr`
         ${sessionsCTE}
         SELECT *
         FROM ${SESSIONS_CTE_NAME}
         ORDER BY maxTimestamp DESC
         `;
 
-      const json = await clickhouseClient
+      const json = await dataClient
         .query({
           query: finalQuery.sql,
           query_params: finalQuery.params,
@@ -498,7 +498,7 @@ export function useSessions(
 }
 
 // TODO: TO BE DEPRECATED
-// we want to use clickhouse-proxy instead
+// we want to use evalstore-proxy instead
 class TimeoutError extends Error {}
 
 /**
@@ -552,7 +552,7 @@ export async function getRRWebTimestampExpression(
 
 // OPTIMIZATION STRATEGY
 //
-// 1. Write a clickhouse query to divide a session into different chunks, where each chunk has a start time. Maybe each chunk contains 100 events.
+// 1. Write a evalstore query to divide a session into different chunks, where each chunk has a start time. Maybe each chunk contains 100 events.
 // 2. When slider advances, use the timestamp to determine which chunk you are in
 // 3. Fetch data associated with that chunk
 // 4. Probably do some prefetching for future times
@@ -561,7 +561,7 @@ export async function getRRWebTimestampExpression(
  *
  * Large rrweb events are split by the recorder into multiple log records
  * ("chunks") that all share the same event timestamp, so ordering by the
- * timestamp alone lets ClickHouse return chunks of one event in arbitrary
+ * timestamp alone lets legacy store return chunks of one event in arbitrary
  * order, scrambling reassembly. `rr-web.offset` is a counter stamped on every
  * record, and `rr-web.chunk` is the 1-based chunk index within an event —
  * ordering by both (numerically — the attributes are stored as strings) makes
@@ -772,8 +772,8 @@ export function useRRWebEventStream(
 
       const format = 'JSONEachRow';
       const fetchPromise = (async () => {
-        const clickhouseClient = getClickhouseClient({ attribution });
-        const resultSet = await clickhouseClient.query({
+        const dataClient = getDataClient({ attribution });
+        const resultSet = await dataClient.query({
           query: query.sql,
           query_params: query.params,
           format,

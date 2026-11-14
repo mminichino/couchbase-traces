@@ -191,8 +191,8 @@ describe('couchbase metadata', () => {
         .length,
     ).toBeGreaterThan(0);
     expect(await m.getTableMetadata(tc)).toMatchObject({ name: 'otel_logs' });
-    m.setClickHouseSettings({ max_rows_to_read: '10' });
-    expect(m.getClickHouseSettings()).toMatchObject({ max_rows_to_read: '10' });
+    m.setQuerySettings({ max_rows_to_read: '10' });
+    expect(m.getQuerySettings()).toMatchObject({ max_rows_to_read: '10' });
     const checked = await m.validateExpression({
       ...tc,
       expression: 'd.`ServiceName`',

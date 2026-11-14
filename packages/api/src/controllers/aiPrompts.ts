@@ -14,7 +14,7 @@ type AIMetadataFields = {
   keyValues: unknown;
 };
 
-const SQL_CONDITION_CLICKHOUSE =
+const SQL_CONDITION_LEGACY =
   "SQL filter condition to filter on ex. `SeverityText = 'error'`";
 const SQL_CONDITION_SQLPP =
   'SQL++ filter condition to filter on ex. `SeverityText` = "error"';
@@ -22,9 +22,7 @@ const SQL_CONDITION_SQLPP =
 export function sqlConditionSchemaDescription(
   queryLanguage: QueryLanguage,
 ): string {
-  return queryLanguage === 'sqlpp'
-    ? SQL_CONDITION_SQLPP
-    : SQL_CONDITION_CLICKHOUSE;
+  return queryLanguage === 'sqlpp' ? SQL_CONDITION_SQLPP : SQL_CONDITION_LEGACY;
 }
 
 export const buildAssistantLineTableConfigSchema = (
@@ -68,7 +66,7 @@ function datastoreLine(queryLanguage: QueryLanguage): string {
   if (queryLanguage === 'sqlpp') {
     return 'The chart should query logs, metrics, or traces using SQL++ (Couchbase).';
   }
-  return 'The chart should query logs, metrics, or traces from a ClickHouse database.';
+  return 'The chart should query logs, metrics, or traces from the configured database.';
 }
 
 function filterExample(queryLanguage: QueryLanguage): string {
@@ -129,7 +127,7 @@ Here are some guidelines:
 - ${filterExample(queryLanguage)}
 - Pick an appropriate time range based on the user's request if one can be inferred from the request.
 - SQL conditions in select[].condition must be written in ${
-    queryLanguage === 'sqlpp' ? 'SQL++ (Couchbase)' : 'ClickHouse SQL'
+    queryLanguage === 'sqlpp' ? 'SQL++ (Couchbase)' : 'legacy SQL'
   }.
 
 The user is looking to do a query on their data source named: ${source.name} of type ${source.kind}.

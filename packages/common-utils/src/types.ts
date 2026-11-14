@@ -2439,7 +2439,7 @@ export const ConnectionBaseSchema = z.object({
   password: z.string().optional(),
 });
 
-export const UnsupportedClickHouseConnectionSchema = z.object({
+export const UnsupportedLegacyConnectionSchema = z.object({
   id: z.string(),
   name: z.string(),
   kind: z.literal('clickhouse'),
@@ -2472,15 +2472,15 @@ export const ConnectionSchemaNoId = CouchbaseConnectionSchema.omit({
 });
 
 export const ConnectionResponseSchema = z.discriminatedUnion('kind', [
-  UnsupportedClickHouseConnectionSchema,
+  UnsupportedLegacyConnectionSchema,
   CouchbaseConnectionSchema,
 ]);
 
-export type UnsupportedClickHouseConnection = z.infer<
-  typeof UnsupportedClickHouseConnectionSchema
+export type UnsupportedLegacyConnection = z.infer<
+  typeof UnsupportedLegacyConnectionSchema
 >;
 export type CouchbaseConnection = z.infer<typeof CouchbaseConnectionSchema>;
-export type Connection = CouchbaseConnection | UnsupportedClickHouseConnection;
+export type Connection = CouchbaseConnection | UnsupportedLegacyConnection;
 export type ConnectionKind = Connection['kind'];
 export type ConnectionNoId = Omit<CouchbaseConnection, 'id'>;
 
@@ -2503,7 +2503,7 @@ const queryMaxParallelismSchema = z
   .min(1, queryMaxParallelismMessage)
   .max(64, queryMaxParallelismMessage);
 
-export const TeamClickHouseSettingsSchema = z.object({
+export const TeamQuerySettingsSchema = z.object({
   fieldMetadataDisabled: z.boolean().optional(),
   searchRowLimit: z.number().optional(),
   queryTimeout: z.number().optional(),
@@ -2515,7 +2515,7 @@ export const TeamClickHouseSettingsSchema = z.object({
 });
 
 /** Accepts null to unset (reset to default) a setting. */
-export const TeamClickHouseSettingsUpdateSchema = z.object({
+export const TeamQuerySettingsUpdateSchema = z.object({
   fieldMetadataDisabled: z.boolean().nullish(),
   searchRowLimit: z.number().nullish(),
   queryTimeout: z.number().nullish(),
@@ -2525,16 +2525,10 @@ export const TeamClickHouseSettingsUpdateSchema = z.object({
   queryScanConsistency: queryScanConsistencySchema.nullish(),
   queryMaxParallelism: queryMaxParallelismSchema.nullish(),
 });
-export type TeamClickHouseSettingsUpdate = z.infer<
-  typeof TeamClickHouseSettingsUpdateSchema
+export type TeamQuerySettingsUpdate = z.infer<
+  typeof TeamQuerySettingsUpdateSchema
 >;
-export type TeamClickHouseSettings = z.infer<
-  typeof TeamClickHouseSettingsSchema
->;
-export const TeamQuerySettingsSchema = TeamClickHouseSettingsSchema;
-export const TeamQuerySettingsUpdateSchema = TeamClickHouseSettingsUpdateSchema;
-export type TeamQuerySettings = TeamClickHouseSettings;
-export type TeamQuerySettingsUpdate = TeamClickHouseSettingsUpdate;
+export type TeamQuerySettings = z.infer<typeof TeamQuerySettingsSchema>;
 
 export const TeamSchema = z
   .object({
@@ -2546,7 +2540,7 @@ export const TeamSchema = z
     collectorAuthenticationEnforced: z.boolean(),
     isMetricsSeriesTableEnabled: z.boolean(),
   })
-  .merge(TeamClickHouseSettingsSchema);
+  .merge(TeamQuerySettingsSchema);
 
 export type Team = z.infer<typeof TeamSchema>;
 
@@ -3187,11 +3181,11 @@ export const TeamTagsApiResponseSchema = z.object({
 
 export type TeamTagsApiResponse = z.infer<typeof TeamTagsApiResponseSchema>;
 
-export const UpdateClickHouseSettingsApiResponseSchema =
-  TeamClickHouseSettingsSchema.partial();
+export const UpdateQuerySettingsApiResponseSchema =
+  TeamQuerySettingsSchema.partial();
 
-export type UpdateClickHouseSettingsApiResponse = z.infer<
-  typeof UpdateClickHouseSettingsApiResponseSchema
+export type UpdateQuerySettingsApiResponse = z.infer<
+  typeof UpdateQuerySettingsApiResponseSchema
 >;
 
 export const RotateApiKeyApiResponseSchema = z.object({
@@ -3267,7 +3261,7 @@ export const MeApiResponseSchema = z.object({
     name: true,
     allowedAuthMethods: true,
     apiKey: true,
-  }).merge(TeamClickHouseSettingsSchema),
+  }).merge(TeamQuerySettingsSchema),
   aiAssistantEnabled: z.boolean(),
 });
 

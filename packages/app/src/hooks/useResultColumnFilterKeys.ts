@@ -12,11 +12,11 @@ import {
   isRawSqlChartConfig,
 } from '@couchbase-traces/common-utils/dist/guards';
 import {
-  ChSql,
-  chSqlToAliasMap,
-  chSqlToSelectColumns,
   ColumnMetaType,
   inferNumericColumn,
+  sqlExprToAliasMap,
+  sqlExprToSelectColumns,
+  SqlFrag,
 } from '@couchbase-traces/common-utils/dist/query';
 import {
   BuilderChartConfig,
@@ -39,12 +39,12 @@ const EMPTY_FILTER_KEYS: FilterKeys = new Map();
 /** The expression of a select item, without any `AS alias`. */
 const stripAlias = (item: string): string =>
   Object.values(
-    chSqlToAliasMap({ sql: `SELECT ${item} FROM t`, params: {} }),
+    sqlExprToAliasMap({ sql: `SELECT ${item} FROM t`, params: {} }),
   )[0] ?? item;
 
 /**
  * Builder group-by columns follow the value columns (see `renderSelect`). They
- * are matched by position because ClickHouse renames unaliased expressions.
+ * are matched by position because legacy store renames unaliased expressions.
  */
 export function getBuilderFilterKeys(
   config: BuilderChartConfig,
@@ -93,11 +93,11 @@ export function getBuilderFilterKeys(
  * can't be read, the columns a time chart would group by are used instead.
  */
 export function getRawSqlFilterKeys(
-  chSql: ChSql,
+  sqlExpr: SqlFrag,
   meta: ColumnMetaType[],
 ): FilterKeys {
   const keys = new Map<string, string>();
-  const selectColumns = chSqlToSelectColumns(chSql);
+  const selectColumns = sqlExprToSelectColumns(sqlExpr);
   if (selectColumns && selectColumns.length === meta.length) {
     selectColumns.forEach(({ expression, isGroupBy }, index) => {
       if (isGroupBy && isAdhocComparableDataType(meta[index].type)) {
@@ -107,7 +107,7 @@ export function getRawSqlFilterKeys(
     return keys;
   }
 
-  const aliasMap = chSqlToAliasMap(chSql);
+  const aliasMap = sqlExprToAliasMap(sqlExpr);
   for (const { name, type } of inferGroupColumns(meta) ?? []) {
     if (isAdhocComparableDataType(type)) {
       // quoteResultColumnNameIfNeeded because the response meta column name may not be correctly quoted
@@ -151,7 +151,7 @@ export function useResultColumnFilterKeys({
   const isRawSql = isRawSqlChartConfig(config);
 
   // Rendering substitutes variables and macros, so the query parses as run.
-  const { data: chSql } = useQuery({
+  const { data: sqlExpr } = useQuery({
     queryKey: ['resultColumnFilterKeys', config],
     enabled: enabled && isRawSql,
     staleTime: Infinity,
@@ -162,7 +162,7 @@ export function useResultColumnFilterKeys({
     if (!enabled || !meta) return EMPTY_FILTER_KEYS;
     if (isBuilderChartConfig(config)) return getBuilderFilterKeys(config, meta);
     if (isPromqlChartConfig(config)) return getPromqlFilterKeys(meta);
-    if (isRawSql && chSql) return getRawSqlFilterKeys(chSql, meta);
+    if (isRawSql && sqlExpr) return getRawSqlFilterKeys(sqlExpr, meta);
     return EMPTY_FILTER_KEYS;
-  }, [enabled, meta, config, isRawSql, chSql]);
+  }, [enabled, meta, config, isRawSql, sqlExpr]);
 }

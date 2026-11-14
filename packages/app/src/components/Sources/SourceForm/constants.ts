@@ -5,16 +5,6 @@ import {
 
 export const DEFAULT_DATABASE = 'default';
 
-const MV_AGGREGATE_FUNCTIONS = [
-  'count',
-  'countDistinct',
-  'sum',
-  'avg',
-  'min',
-  'max',
-  'any',
-] as const;
-
 const MV_GRANULARITY_OPTIONS: { value: string; label: string }[] = [
   { value: '1 minute', label: '1 minute' },
   { value: '5 minute', label: '5 minute' },
@@ -47,12 +37,7 @@ export const EVENT_NAME_EXPRESSION_HELP_TEXT =
 // selected connection is Prometheus-only.
 export const PROMETHEUS_PLACEHOLDER = 'prometheus';
 
-export const MV_AGGREGATE_FUNCTION_OPTIONS = MV_AGGREGATE_FUNCTIONS.map(fn => ({
-  value: fn,
-  label: fn,
-}));
-
-// TODO: maybe otel clickhouse export migrate the schema?
+// TODO: maybe otel export migrate the schema?
 export const OTEL_CLICKHOUSE_EXPRESSIONS = {
   timestampValueExpression: 'TimeUnix',
   resourceAttributesExpression: 'ResourceAttributes',

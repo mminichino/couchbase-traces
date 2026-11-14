@@ -1,6 +1,6 @@
 import type { Metadata } from '@couchbase-traces/common-utils/dist/core/metadata';
-import type { ChSql } from '@couchbase-traces/common-utils/dist/query';
-import { chSql } from '@couchbase-traces/common-utils/dist/query';
+import type { SqlFrag } from '@couchbase-traces/common-utils/dist/query';
+import { sqlExpr } from '@couchbase-traces/common-utils/dist/query';
 import type { QuerySettings } from '@couchbase-traces/common-utils/dist/types';
 
 import { getConnectionById } from '@/controllers/connection';
@@ -29,9 +29,6 @@ export async function getMcpDataClient(
   return new DataClient({ requestTimeout: MCP_REQUEST_TIMEOUT });
 }
 
-/** @deprecated Use getMcpDataClient */
-export const getMcpClickhouseClient = getMcpDataClient;
-
 /** Slice guard + connection resolution for trace MCP tools. */
 export async function requireMcpDataClient(
   teamId: string,
@@ -45,9 +42,6 @@ export async function requireMcpDataClient(
   }
   return client;
 }
-
-/** @deprecated Use requireMcpDataClient */
-export const requireMcpClickhouseClient = requireMcpDataClient;
 
 export function mcpQuerySettings(_querySettings: QuerySettings | undefined) {
   return undefined;
@@ -65,9 +59,9 @@ export function inclusiveTimeFilter(
   params: TimeFilterParams,
   start: Date,
   end: Date,
-): Promise<ChSql> {
+): Promise<SqlFrag> {
   const expr = params.timestampValueExpression;
   return Promise.resolve(
-    chSql`(${expr} >= ${{ String: start.toISOString() }} AND ${expr} <= ${{ String: end.toISOString() }})`,
+    sqlExpr`(${expr} >= ${{ String: start.toISOString() }} AND ${expr} <= ${{ String: end.toISOString() }})`,
   );
 }

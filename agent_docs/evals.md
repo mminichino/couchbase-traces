@@ -67,7 +67,7 @@ talks to **two separate Couchbase Traces API instances** running on different sl
        main worktree                            branch worktree
 ```
 
-Each slot runs its own Couchbase cluster (via `yarn dev`). `setup-hyperdx` (step 2)
+Each slot runs its own Couchbase cluster (via `yarn dev`). `setup-eval` (step 2)
 creates the Couchbase Traces account, Connection, and Sources on each instance,
 but does **not** seed telemetry data. The `run` command auto-seeds on first run;
 for dual-slot comparisons you must seed each instance explicitly (step 4b).
@@ -99,7 +99,7 @@ curl -s -o /dev/null -w "Slot 99 CB mgmt: %{http_code}\n" http://localhost:30599
 # Expected: 200
 ```
 
-### 2. Run `setup-hyperdx` against each instance (if needed)
+### 2. Run `setup-eval` against each instance (if needed)
 
 > Run these commands from the worktree that has the eval framework code (the
 > branch under test).
@@ -117,11 +117,11 @@ already exist and pass the check:
 # single-instance config. If you already have a combined two-MCP config,
 # you must re-run step 3 (jq merge) afterward.
 cp packages/hdx-eval/eval.config.branch.json packages/hdx-eval/eval.config.json 2>/dev/null && \
-  yarn workspace @couchbase-traces/hdx-eval dev setup-hyperdx --check && \
+  yarn workspace @couchbase-traces/hdx-eval dev setup-eval --check && \
   echo "Branch config OK" || echo "Branch config needs setup"
 
 cp packages/hdx-eval/eval.config.main.json packages/hdx-eval/eval.config.json 2>/dev/null && \
-  yarn workspace @couchbase-traces/hdx-eval dev setup-hyperdx --check && \
+  yarn workspace @couchbase-traces/hdx-eval dev setup-eval --check && \
   echo "Main config OK" || echo "Main config needs setup"
 ```
 
@@ -129,11 +129,11 @@ If either needs setup (or this is the first time):
 
 ```bash
 # Setup main instance (slot 98)
-yarn workspace @couchbase-traces/hdx-eval dev setup-hyperdx --api-url http://localhost:30198
+yarn workspace @couchbase-traces/hdx-eval dev setup-eval --api-url http://localhost:30198
 cp packages/hdx-eval/eval.config.json packages/hdx-eval/eval.config.main.json
 
 # Setup branch instance (slot 99)
-yarn workspace @couchbase-traces/hdx-eval dev setup-hyperdx --api-url http://localhost:30199
+yarn workspace @couchbase-traces/hdx-eval dev setup-eval --api-url http://localhost:30199
 cp packages/hdx-eval/eval.config.json packages/hdx-eval/eval.config.branch.json
 ```
 
@@ -186,11 +186,11 @@ curl -s -o /dev/null -w "Main MCP: %{http_code}\n" \
 # Expected: 406 (SSE endpoint, wrong HTTP method — but proves auth works)
 ```
 
-### 5. Seed both ClickHouse instances
+### 5. Seed both legacy store instances
 
-`setup-hyperdx` creates the Couchbase Traces account and Sources but does **not** seed
+`setup-eval` creates the Couchbase Traces account and Sources but does **not** seed
 telemetry data. The `run` command's auto-seed only writes to the single
-ClickHouse in the top-level `clickhouse` config, so you must seed each
+legacy store in the top-level `evalstore` config, so you must seed each
 instance explicitly:
 
 ```bash
@@ -250,7 +250,7 @@ Useful for validating that a scenario works or checking score after a change.
 ```bash
 # Single slot — just one `yarn dev` needed
 export CBT_DEV_SLOT=98
-yarn workspace @couchbase-traces/hdx-eval dev setup-hyperdx
+yarn workspace @couchbase-traces/hdx-eval dev setup-eval
 yarn workspace @couchbase-traces/hdx-eval dev run error-root-cause --mcp hyperdx --runs 1 --no-judge
 ```
 
@@ -266,15 +266,15 @@ yarn workspace @couchbase-traces/hdx-eval dev run error-root-cause \
   --mcp hyperdx --model claude-opus-4-6 --runs 3
 ```
 
-### Non-Couchbase Traces MCP (e.g. raw ClickHouse)
+### Non-Couchbase Traces MCP (e.g. raw legacy store)
 
-The framework works with any MCP. The `clickhouse` stdio MCP is included by
+The framework works with any MCP. The `evalstore` stdio MCP is included by
 default in `eval.config.json` after setup. Use it to compare Couchbase Traces's MCP
-against querying ClickHouse directly.
+against querying legacy store directly.
 
 ```bash
 yarn workspace @couchbase-traces/hdx-eval dev run error-root-cause \
-  --mcp hyperdx,clickhouse --baseline clickhouse --runs 3
+  --mcp primary,baseline --baseline baseline --runs 3
 ```
 
 ## Reading Results
@@ -326,7 +326,7 @@ Always use the `bash -c 'export CBT_DEV_SLOT=... && source scripts/dev-env.sh
 ### Access keys go stale after container restarts
 
 When MongoDB is recreated, the eval account's access key changes. Re-run
-`setup-hyperdx` against the affected instance and rebuild the combined config.
+`setup-eval` against the affected instance and rebuild the combined config.
 
 ### False timeouts
 
@@ -340,9 +340,9 @@ Two common causes:
 
 The eval config files (`eval.config.json`, `eval.config.*.json`) are
 gitignored because they contain instance-specific access keys and Source IDs.
-They must be regenerated per environment using `setup-hyperdx`.
+They must be regenerated per environment using `setup-eval`.
 
-### ClickHouse data missing after container recreation
+### legacy store data missing after container recreation
 
 If Docker volumes are removed (e.g. `docker compose down -v`), seeded data is
 lost. The eval harness auto-seeds on the next run if it detects empty tables,
@@ -366,6 +366,6 @@ bash -c 'export CBT_DEV_SLOT=98 && source scripts/dev-env.sh 2>/dev/null && \
 bash -c 'export CBT_DEV_SLOT=99 && source scripts/dev-env.sh 2>/dev/null && \
   docker compose -p hdx-dev-99 -f docker-compose.dev.yml down'
 
-# Drop eval data from ClickHouse (optional)
+# Drop eval data from legacy store (optional)
 yarn workspace @couchbase-traces/hdx-eval dev drop <scenario>
 ```

@@ -19,7 +19,7 @@ export const IS_ROOT_SPAN_COLUMN_NAME = 'isRootSpan';
 // Filter keys live in two forms.
 // 1. In-memory `FilterState`: use the clean/unquoted forms of each key. This is what
 // the UI renders, what test ids are built from, and what every key comparison expects.
-// 2. The persisted `Filter[]`: Uses the quoted/bracketed ClickHouse form so it emits
+// 2. The persisted `Filter[]`: Uses the quoted/bracketed legacy store form so it emits
 // valid SQL verbatim. Persisted in URL params, local storage, and MongoDB for saved searches.
 
 // Convert the clean FilterState keys to valid SQL (quoted/bracket) keys.

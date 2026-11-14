@@ -252,10 +252,10 @@ export const mcpSelectItemSchema = z.object({
     .string()
     .optional()
     .describe(
-      'ClickHouse SQL expression to aggregate. Required for every aggFn except "count". ' +
+      'legacy SQL expression to aggregate. Required for every aggFn except "count". ' +
         'Top-level columns are PascalCase (Duration, StatusCode); ' +
         "map attributes use bracket syntax: SpanAttributes['key'], ResourceAttributes['key']. " +
-        'Any ClickHouse expression is allowed — common useful forms: ' +
+        'Any legacy store expression is allowed — common useful forms: ' +
         '"Duration / 1e6" (ns→ms), ' +
         '"toFloat64OrZero(SpanAttributes[\'response.size_bytes\'])" (cast attribute), ' +
         '"if(StatusCode = \'STATUS_CODE_ERROR\', 1, 0)" (boolean→numeric for ratios).\n\n' +
@@ -422,13 +422,13 @@ export const groupBySchema = z
   .string()
   .optional()
   .describe(
-    'Column(s) or ClickHouse expression(s) to group/split by, as one entry or a ' +
+    'Column(s) or legacy store expression(s) to group/split by, as one entry or a ' +
       'comma-delimited list. Multiple entries give a multi-dimensional breakdown ' +
       'in one query (e.g. "ServiceName, SpanName, StatusMessage") instead of one ' +
       'query per dimension; a table gets one row per distinct combination. ' +
       'Top-level columns use PascalCase ("SpanName", "StatusCode"). ' +
       "Map attributes: SpanAttributes['key'], ResourceAttributes['key'].\n\n" +
-      'Arbitrary ClickHouse expressions are also allowed in groupBy — useful when ' +
+      'Arbitrary legacy store expressions are also allowed in groupBy — useful when ' +
       'you need to group by a derived column without falling back to raw SQL:\n' +
       '  - "substring(Body, 1, 80)" — group by body prefix (log pattern bucketing)\n' +
       '  - "toStartOfInterval(Timestamp, INTERVAL 5 MINUTE)" — explicit time bucketing ' +

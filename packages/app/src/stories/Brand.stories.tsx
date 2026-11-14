@@ -1,7 +1,7 @@
 import { Group, Stack, Text } from '@mantine/core';
 
 import { BRAND_DISPLAY_NAME, useLogomark, useWordmark } from '@/brand';
-import { CopySnippet } from '@/components/ClickStackOnboarding/CopySnippet';
+import { CopySnippet } from '@/components/CollectorOnboarding/CopySnippet';
 
 import { AssetCard } from './AssetCard';
 

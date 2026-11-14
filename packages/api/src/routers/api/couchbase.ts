@@ -20,7 +20,7 @@ import {
   type CouchbaseQueryInputs,
   type Frame,
 } from '@couchbase-traces/common-utils/dist/couchbase/types';
-import type { TeamClickHouseSettings } from '@couchbase-traces/common-utils/dist/types';
+import type { TeamQuerySettings } from '@couchbase-traces/common-utils/dist/types';
 import express, { type Request, type Response } from 'express';
 import { performance } from 'perf_hooks';
 import { z } from 'zod';
@@ -81,7 +81,7 @@ function checkHost(host: string): string | null {
   } catch (e) {
     return e instanceof ConnStrError ? e.message : 'Invalid connection string';
   }
-  // Hostnames are not resolved, matching the ClickHouse test route.
+  // Hostnames are not resolved, matching the legacy store test route.
   if (
     parsed.hosts.some(h => isPrivateIp(h.host.replace(IPV6_BRACKET_RE, '')))
   ) {
@@ -92,7 +92,7 @@ function checkHost(host: string): string | null {
 
 async function getTeamSettings(
   teamId: string,
-): Promise<TeamClickHouseSettings | null> {
+): Promise<TeamQuerySettings | null> {
   const team = await getTeam(teamId, [
     'queryTimeout',
     'metadataMaxRowsToRead',

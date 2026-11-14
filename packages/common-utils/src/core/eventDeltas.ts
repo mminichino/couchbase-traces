@@ -112,7 +112,7 @@ export function getPropertyStatistics(
 // Field classification
 // ---------------------------------------------------------------------------
 
-/** Strips LowCardinality(...)/Nullable(...) wrappers from a ClickHouse type. */
+/** Strips LowCardinality(...)/Nullable(...) wrappers from a legacy store type. */
 export function stripTypeWrappers(type: string): string {
   let t = type.trim();
   let changed = true;
@@ -336,7 +336,7 @@ export interface RankPropertiesOptions {
   targetRows: Record<string, any>[];
   /** Rows in the baseline / inlier group. */
   baselineRows: Record<string, any>[];
-  /** Column metadata (name + ClickHouse type) for denylist + cardinality checks. */
+  /** Column metadata (name + legacy store type) for denylist + cardinality checks. */
   columnMeta: { name: string; type: string }[];
 }
 
@@ -350,7 +350,7 @@ export interface RankPropertiesResult {
  * Run getPropertyStatistics on both groups, then rank every property by
  * computeComparisonScore + semanticBoost. Annotates each entry with whether
  * it would be hidden in the UI (denylisted ID / timestamp arrays, or high
- * cardinality). Pure function — does not query ClickHouse.
+ * cardinality). Pure function — does not query legacy store.
  */
 export function rankProperties(
   opts: RankPropertiesOptions,

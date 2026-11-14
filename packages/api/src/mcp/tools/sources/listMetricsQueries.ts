@@ -1,8 +1,8 @@
 import type { getMetadata } from '@couchbase-traces/common-utils/dist/dataLayer';
 import {
-  type ChSql,
-  chSql,
-  concatChSql,
+  concatSqlExpr,
+  sqlExpr,
+  type SqlFrag,
   tableExpr,
 } from '@couchbase-traces/common-utils/dist/query';
 import SqlString from 'sqlstring';
@@ -14,21 +14,21 @@ import type { MetricEntry } from './listMetricsPage';
 import type { DiscoverableMetricKind } from './metricKinds';
 
 async function queryRows<T>({
-  clickhouseClient,
+  dataClient,
   sql,
   connectionId,
   maxExecutionSeconds: _maxExecutionSeconds,
   timeoutOverflowMode: _timeoutOverflowMode,
   signal,
 }: {
-  clickhouseClient: Pick<DataClient, 'query'>;
-  sql: ChSql;
+  dataClient: Pick<DataClient, 'query'>;
+  sql: SqlFrag;
   connectionId: string;
   maxExecutionSeconds: number;
   timeoutOverflowMode: 'break' | 'throw';
   signal: AbortSignal;
 }): Promise<T[]> {
-  const response = await clickhouseClient.query({
+  const response = await dataClient.query({
     query: sql.sql,
     query_params: sql.params,
     format: 'JSON',
@@ -46,7 +46,7 @@ async function queryRows<T>({
  * the bytes read.
  */
 export async function fetchMetricNames({
-  clickhouseClient,
+  dataClient,
   databaseName,
   tableName,
   connectionId,
@@ -58,7 +58,7 @@ export async function fetchMetricNames({
   maxExecutionSeconds,
   signal,
 }: {
-  clickhouseClient: Pick<DataClient, 'query'>;
+  dataClient: Pick<DataClient, 'query'>;
   databaseName: string;
   tableName: string;
   connectionId: string;
@@ -71,27 +71,27 @@ export async function fetchMetricNames({
   signal: AbortSignal;
 }): Promise<string[]> {
   const whereParts = [
-    chSql`TimeUnix >= fromUnixTimestamp64Milli(${{ Int64: startDate.getTime() }})`,
-    chSql`TimeUnix <= fromUnixTimestamp64Milli(${{ Int64: endDate.getTime() }})`,
+    sqlExpr`TimeUnix >= fromUnixTimestamp64Milli(${{ Int64: startDate.getTime() }})`,
+    sqlExpr`TimeUnix <= fromUnixTimestamp64Milli(${{ Int64: endDate.getTime() }})`,
     ...(afterName !== undefined
-      ? [chSql`MetricName > ${{ String: afterName }}`]
+      ? [sqlExpr`MetricName > ${{ String: afterName }}`]
       : []),
     ...(namePattern
-      ? [chSql`MetricName ILIKE ${{ String: namePattern }}`]
+      ? [sqlExpr`MetricName ILIKE ${{ String: namePattern }}`]
       : []),
   ];
 
-  const sql = chSql`
+  const sql = sqlExpr`
     SELECT MetricName
     FROM ${tableExpr({ database: databaseName, table: tableName })}
-    WHERE ${concatChSql(' AND ', whereParts)}
+    WHERE ${concatSqlExpr(' AND ', whereParts)}
     GROUP BY MetricName
     ORDER BY MetricName ASC
     LIMIT ${{ Int32: limit }}
   `;
 
   const rows = await queryRows<{ MetricName: string }>({
-    clickhouseClient,
+    dataClient,
     sql,
     connectionId,
     maxExecutionSeconds,
@@ -104,13 +104,13 @@ export async function fetchMetricNames({
 
 /**
  * Unit and description for a page of metric names. `LIMIT 1 BY` plus the
- * outer LIMIT lets ClickHouse stop reading once every name has a row, instead
+ * outer LIMIT lets legacy store stop reading once every name has a row, instead
  * of aggregating every point in the window. The row picked is arbitrary, which
  * matches the `anyLast` this replaced; unit and description are effectively
  * constant per metric.
  */
 async function fetchMetricUnitsAndDescriptions({
-  clickhouseClient,
+  dataClient,
   databaseName,
   tableName,
   connectionId,
@@ -122,7 +122,7 @@ async function fetchMetricUnitsAndDescriptions({
   maxExecutionSeconds,
   signal,
 }: {
-  clickhouseClient: Pick<DataClient, 'query'>;
+  dataClient: Pick<DataClient, 'query'>;
   databaseName: string;
   tableName: string;
   connectionId: string;
@@ -141,12 +141,14 @@ async function fetchMetricUnitsAndDescriptions({
   if (names.length === 0 || (!hasUnit && !hasDescription)) return enrichments;
 
   const projections = [
-    chSql`MetricName`,
-    ...(hasUnit ? [chSql`${{ Identifier: 'MetricUnit' }}`] : []),
-    ...(hasDescription ? [chSql`${{ Identifier: 'MetricDescription' }}`] : []),
+    sqlExpr`MetricName`,
+    ...(hasUnit ? [sqlExpr`${{ Identifier: 'MetricUnit' }}`] : []),
+    ...(hasDescription
+      ? [sqlExpr`${{ Identifier: 'MetricDescription' }}`]
+      : []),
   ];
-  const sql = chSql`
-    SELECT ${concatChSql(', ', projections)}
+  const sql = sqlExpr`
+    SELECT ${concatSqlExpr(', ', projections)}
     FROM ${tableExpr({ database: databaseName, table: tableName })}
     WHERE MetricName IN (${{
       // Inline names as escaped literals: one bind param per name (up to
@@ -165,7 +167,7 @@ async function fetchMetricUnitsAndDescriptions({
     MetricUnit?: string;
     MetricDescription?: string;
   }>({
-    clickhouseClient,
+    dataClient,
     sql,
     connectionId,
     maxExecutionSeconds,
@@ -190,7 +192,7 @@ type Enrichments = Awaited<ReturnType<typeof fetchMetricUnitsAndDescriptions>>;
  */
 export async function enrichEntries({
   entries,
-  clickhouseClient,
+  dataClient,
   metadata,
   databaseName,
   metricTables,
@@ -201,7 +203,7 @@ export async function enrichEntries({
   signal,
 }: {
   entries: MetricEntry[];
-  clickhouseClient: DataClient;
+  dataClient: DataClient;
   metadata: ReturnType<typeof getMetadata>;
   databaseName: string;
   metricTables: Partial<Record<DiscoverableMetricKind, string>>;
@@ -231,7 +233,7 @@ export async function enrichEntries({
         });
         const columnNames = new Set(columns.map(c => c.name));
         const enrichments = await fetchMetricUnitsAndDescriptions({
-          clickhouseClient,
+          dataClient,
           databaseName,
           tableName,
           connectionId,

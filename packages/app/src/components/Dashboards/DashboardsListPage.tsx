@@ -83,9 +83,9 @@ function presetDashboards(links: {
     ...(links.hasClickHouse
       ? [
           {
-            name: 'ClickHouse',
-            href: '/clickhouse',
-            description: 'ClickHouse cluster health and query performance',
+            name: 'legacy store',
+            href: '/evalstore',
+            description: 'legacy store cluster health and query performance',
           },
         ]
       : []),

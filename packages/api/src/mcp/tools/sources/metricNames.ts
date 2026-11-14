@@ -1,7 +1,7 @@
 import type { Metadata } from '@couchbase-traces/common-utils/dist/core/metadata';
 import {
-  chSql,
-  concatChSql,
+  concatSqlExpr,
+  sqlExpr,
   tableExpr,
 } from '@couchbase-traces/common-utils/dist/query';
 
@@ -41,7 +41,7 @@ export type MetricNameSample = {
  */
 export async function sampleMetricNamesForKind({
   metadata,
-  clickhouseClient,
+  dataClient,
   databaseName,
   tableName,
   connectionId,
@@ -52,7 +52,7 @@ export async function sampleMetricNamesForKind({
   enrich = true,
 }: {
   metadata: Metadata;
-  clickhouseClient: DataClient;
+  dataClient: DataClient;
   databaseName: string;
   tableName: string;
   connectionId: string;
@@ -101,7 +101,7 @@ export async function sampleMetricNamesForKind({
   if ((hasUnit || hasDescription) && !signal.aborted) {
     try {
       enrichments = await fetchMetricNameEnrichments({
-        clickhouseClient,
+        dataClient,
         databaseName,
         tableName,
         connectionId,
@@ -165,7 +165,7 @@ export async function sampleMetricNamesWithLookback({
  * an arbitrary value — it depends on parallel read order, not time).
  */
 async function fetchMetricNameEnrichments({
-  clickhouseClient,
+  dataClient,
   databaseName,
   tableName,
   connectionId,
@@ -175,7 +175,7 @@ async function fetchMetricNameEnrichments({
   hasDescription,
   signal,
 }: {
-  clickhouseClient: DataClient;
+  dataClient: DataClient;
   databaseName: string;
   tableName: string;
   connectionId: string;
@@ -185,26 +185,28 @@ async function fetchMetricNameEnrichments({
   hasDescription: boolean;
   signal: AbortSignal;
 }): Promise<Map<string, { unit?: string; description?: string }>> {
-  // Build the projection fragments via the parameterised chSql DSL so
+  // Build the projection fragments via the parameterised sqlExpr DSL so
   // identifiers are quoted and the unit/description columns only appear
   // when present on the source table.
   const projections = [
-    chSql`MetricName`,
+    sqlExpr`MetricName`,
     ...(hasUnit
-      ? [chSql`argMax(${{ Identifier: 'MetricUnit' }}, TimeUnix) AS MetricUnit`]
+      ? [
+          sqlExpr`argMax(${{ Identifier: 'MetricUnit' }}, TimeUnix) AS MetricUnit`,
+        ]
       : []),
     ...(hasDescription
       ? [
-          chSql`argMax(${{ Identifier: 'MetricDescription' }}, TimeUnix) AS MetricDescription`,
+          sqlExpr`argMax(${{ Identifier: 'MetricDescription' }}, TimeUnix) AS MetricDescription`,
         ]
       : []),
   ];
-  const namePlaceholders = concatChSql(
+  const namePlaceholders = concatSqlExpr(
     ',',
-    names.map(name => chSql`${{ String: name }}`),
+    names.map(name => sqlExpr`${{ String: name }}`),
   );
-  const sql = chSql`
-    SELECT ${concatChSql(', ', projections)}
+  const sql = sqlExpr`
+    SELECT ${concatSqlExpr(', ', projections)}
     FROM ${tableExpr({ database: databaseName, table: tableName })}
     WHERE MetricName IN (${namePlaceholders})
       AND TimeUnix >= fromUnixTimestamp64Milli(${{ Int64: dateRange[0].getTime() }})
@@ -218,7 +220,7 @@ async function fetchMetricNameEnrichments({
     MetricDescription?: string;
   };
 
-  const response = await clickhouseClient.query({
+  const response = await dataClient.query({
     query: sql.sql,
     query_params: sql.params,
     format: 'JSON',

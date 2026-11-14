@@ -88,7 +88,7 @@ router.post(
         throw new Api500Error('Invalid connection');
       }
 
-      const clickhouseClient = new DataClient({
+      const dataClient = new DataClient({
         requestTimeout: MCP_REQUEST_TIMEOUT,
       });
 
@@ -115,7 +115,7 @@ router.post(
             await validateAiChartConfigForConnection({
               chartConfig: resolved,
               source,
-              client: clickhouseClient,
+              client: dataClient,
               queryLanguage,
             });
             return resolved;

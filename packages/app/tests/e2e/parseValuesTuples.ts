@@ -1,5 +1,5 @@
 /**
- * Couchbase seeding uses the same row objects as ClickHouse VALUES generators.
+ * Couchbase seeding uses the same row objects as legacy store VALUES generators.
  * Callers should use the exported builders rather than parsing tuple strings.
  */
 import type { E2eClickHouseRow } from './seed-data';

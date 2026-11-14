@@ -39,7 +39,7 @@ export type TileQueryResult =
     };
 
 export interface FetchTileDataParams {
-  clickhouseClient: CliDataClient;
+  dataClient: CliDataClient;
   metadata: Metadata;
   config: SavedChartConfig;
   source: SourceResponse | undefined;
@@ -51,7 +51,7 @@ export interface FetchTileDataParams {
 }
 
 export async function fetchTileData({
-  clickhouseClient,
+  dataClient,
   metadata,
   config,
   source,
@@ -98,7 +98,7 @@ export async function fetchTileData({
   // Same call the web frontend's useQueriedChartConfig makes —
   // internally: setChartSelectsAlias → renderChartConfig → query (one
   // composed statement, even for multi-series metric charts).
-  const data = await clickhouseClient.queryChartConfig({
+  const data = await dataClient.queryChartConfig({
     config: queriedConfig,
     metadata,
     opts: {

@@ -6,7 +6,7 @@ import { RevealSnippet } from './RevealSnippet';
 const SAMPLE_API_KEY = 'hdx_ing_9f8a7b6c5d4e3f2a1b0c9d8e7f6a5b4c';
 const SAMPLE_ACCESS_KEY = 'a1b2c3d4-e5f6-7890-abcd-ef1234567890';
 const SAMPLE_ORG_ID = 'org_abc123def456';
-const SAMPLE_ENDPOINT = 'https://abc123.otel.clickhouse.cloud:4318';
+const SAMPLE_ENDPOINT = 'https://abc123.otel.store.cloud:4318';
 
 const COLLECTOR_YAML = [
   'exporters:',
@@ -326,7 +326,7 @@ export const RevealDisabled: Story = {
 };
 
 /**
- * A nullable secret (`secrets={[null]}`) — e.g. a ClickHouse Cloud deployment
+ * A nullable secret (`secrets={[null]}`) — e.g. a managed cloud deployment
  * that has no key to embed. Nothing is masked, the reveal toggle is absent, and
  * the snippet behaves like a plain copyable block. Guards against a crash when
  * a caller passes `secrets={[maybeSecret]}` and the value is `null`.

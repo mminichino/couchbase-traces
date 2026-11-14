@@ -82,7 +82,7 @@ describe('collections', () => {
         if (field) {
           expect(field.encoding).toBe(encodingFor(col.type, false));
         } else if (materialized) {
-          expect(materialized.clickhouseType).toBe(col.type);
+          expect(materialized.columnType).toBe(col.type);
         } else if (col.name.includes('.')) {
           const dot = col.name.indexOf('.');
           const parent = col.name.slice(0, dot);

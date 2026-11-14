@@ -1,10 +1,10 @@
 import { getMetadata } from '@couchbase-traces/common-utils/dist/dataLayer';
 import {
-  chSql,
   columnTypeToJSType,
-  concatChSql,
+  concatSqlExpr,
   filterColumnMetaByType,
   JSDataType,
+  sqlExpr,
   tableExpr,
 } from '@couchbase-traces/common-utils/dist/query';
 import { SourceKind } from '@couchbase-traces/common-utils/dist/types';
@@ -14,9 +14,9 @@ import { getConnectionById } from '@/controllers/connection';
 import { getSource } from '@/controllers/sources';
 import { READ_ONLY_TOOL } from '@/mcp/tools/annotations';
 import {
-  clickHouseErrorResult,
   MCP_REQUEST_TIMEOUT,
   parseTimeRange,
+  queryErrorResult,
 } from '@/mcp/tools/query/helpers';
 import type { ToolRegistrar } from '@/mcp/tools/types';
 import {
@@ -40,7 +40,7 @@ const DESCRIBE_TIMEOUT_MS = MCP_TOOL_TIMEOUT_MS;
 
 // Server-side safety nets for the attribute-keys discovery query.
 // Sample at most N rows that match (MetricName, time range), then
-// aggregate from that sample. ClickHouse can stop scanning once the
+// aggregate from that sample. legacy store can stop scanning once the
 // CTE has N matching rows so a hot metric does not starve the
 // wall-clock budget. 100k rows is plenty to surface every unique map
 // key on a healthy OTel metric.
@@ -149,7 +149,7 @@ type FetchResult<T> = { ok: true; data: T } | { ok: false; error: string };
  * Returns undefined values when the columns are absent from the schema.
  */
 async function fetchUnitAndDescription({
-  clickhouseClient,
+  dataClient,
   databaseName,
   tableName,
   connectionId,
@@ -160,7 +160,7 @@ async function fetchUnitAndDescription({
   hasDescription,
   signal,
 }: {
-  clickhouseClient: DataClient;
+  dataClient: DataClient;
   databaseName: string;
   tableName: string;
   connectionId: string;
@@ -174,28 +174,30 @@ async function fetchUnitAndDescription({
   if (!hasUnit && !hasDescription) return {};
 
   const innerProjections = [
-    ...(hasUnit ? [chSql`${{ Identifier: 'MetricUnit' }}`] : []),
-    ...(hasDescription ? [chSql`${{ Identifier: 'MetricDescription' }}`] : []),
+    ...(hasUnit ? [sqlExpr`${{ Identifier: 'MetricUnit' }}`] : []),
+    ...(hasDescription
+      ? [sqlExpr`${{ Identifier: 'MetricDescription' }}`]
+      : []),
   ];
   const outerProjections = [
     ...(hasUnit
-      ? [chSql`anyLast(${{ Identifier: 'MetricUnit' }}) AS MetricUnit`]
+      ? [sqlExpr`anyLast(${{ Identifier: 'MetricUnit' }}) AS MetricUnit`]
       : []),
     ...(hasDescription
       ? [
-          chSql`anyLast(${{ Identifier: 'MetricDescription' }}) AS MetricDescription`,
+          sqlExpr`anyLast(${{ Identifier: 'MetricDescription' }}) AS MetricDescription`,
         ]
       : []),
   ];
 
-  // Wrap in a bounded subquery so ClickHouse stops scanning once it
+  // Wrap in a bounded subquery so legacy store stops scanning once it
   // has enough rows — unit and description are typically constant per
   // metric, so a small sample is sufficient. Mirrors the bounding
   // pattern used by fetchAttributeKeys / sampleAttributeValues.
-  const sql = chSql`
-    SELECT ${concatChSql(', ', outerProjections)}
+  const sql = sqlExpr`
+    SELECT ${concatSqlExpr(', ', outerProjections)}
     FROM (
-      SELECT ${concatChSql(', ', innerProjections)}
+      SELECT ${concatSqlExpr(', ', innerProjections)}
       FROM ${tableExpr({ database: databaseName, table: tableName })}
       WHERE MetricName = ${{ String: metricName }}
         AND TimeUnix >= fromUnixTimestamp64Milli(${{ Int64: startDate.getTime() }})
@@ -204,7 +206,7 @@ async function fetchUnitAndDescription({
     )
   `;
   try {
-    const response = await clickhouseClient.query({
+    const response = await dataClient.query({
       query: sql.sql,
       query_params: sql.params,
       format: 'JSON',
@@ -248,7 +250,7 @@ async function fetchUnitAndDescription({
  * timeout on production tables.
  */
 async function fetchAttributeKeys({
-  clickhouseClient,
+  dataClient,
   databaseName,
   tableName,
   connectionId,
@@ -258,7 +260,7 @@ async function fetchAttributeKeys({
   endDate,
   signal,
 }: {
-  clickhouseClient: DataClient;
+  dataClient: DataClient;
   databaseName: string;
   tableName: string;
   connectionId: string;
@@ -275,24 +277,24 @@ async function fetchAttributeKeys({
   if (mapColumns.length === 0) return { ok: true, data: {} };
 
   const sampleProjections = mapColumns.map(
-    col => chSql`${{ Identifier: col.name }}`,
+    col => sqlExpr`${{ Identifier: col.name }}`,
   );
 
   const aggProjections = mapColumns.map(
     col =>
-      chSql`arrayDistinct(arrayFlatten(groupArray(mapKeys(${{ Identifier: col.name }})))) AS ${{ Identifier: col.name }}`,
+      sqlExpr`arrayDistinct(arrayFlatten(groupArray(mapKeys(${{ Identifier: col.name }})))) AS ${{ Identifier: col.name }}`,
   );
 
   // Aggregate from a bounded sample of matching rows. The inner LIMIT
-  // lets ClickHouse stop scanning once it has SAMPLE_SIZE rows that
+  // lets legacy store stop scanning once it has SAMPLE_SIZE rows that
   // match (MetricName, time range), which keeps the query fast on hot
   // metric tables. ResourceAttributes / Attributes / ScopeAttributes
   // are rarely keyed independently per row, so 100k rows surfaces
   // every realistic key set.
-  const sql = chSql`
-    SELECT ${concatChSql(', ', aggProjections)}
+  const sql = sqlExpr`
+    SELECT ${concatSqlExpr(', ', aggProjections)}
     FROM (
-      SELECT ${concatChSql(', ', sampleProjections)}
+      SELECT ${concatSqlExpr(', ', sampleProjections)}
       FROM ${tableExpr({ database: databaseName, table: tableName })}
       WHERE MetricName = ${{ String: metricName }}
         AND TimeUnix >= fromUnixTimestamp64Milli(${{ Int64: startDate.getTime() }})
@@ -302,7 +304,7 @@ async function fetchAttributeKeys({
   `;
 
   try {
-    const response = await clickhouseClient.query({
+    const response = await dataClient.query({
       query: sql.sql,
       query_params: sql.params,
       format: 'JSON',
@@ -348,7 +350,7 @@ type SampleAttributeValuesData = {
  * "sampled but empty in the window".
  */
 async function sampleAttributeValues({
-  clickhouseClient,
+  dataClient,
   databaseName,
   tableName,
   connectionId,
@@ -358,7 +360,7 @@ async function sampleAttributeValues({
   endDate,
   signal,
 }: {
-  clickhouseClient: DataClient;
+  dataClient: DataClient;
   databaseName: string;
   tableName: string;
   connectionId: string;
@@ -391,7 +393,7 @@ async function sampleAttributeValues({
   }
 
   const projections = flatKeyExprs.map(
-    ({ mapColumn, key }, idx) => chSql`
+    ({ mapColumn, key }, idx) => sqlExpr`
       groupUniqArray(${{ Int32: MAX_ATTR_VALUES }})(
         ${{ Identifier: mapColumn }}[${{ String: key }}]
       ) AS param${{ UNSAFE_RAW_SQL: String(idx) }}
@@ -405,18 +407,18 @@ async function sampleAttributeValues({
     new Set(flatKeyExprs.map(e => e.mapColumn)),
   );
   const sampleProjections = sampledMapColumns.map(
-    col => chSql`${{ Identifier: col }}`,
+    col => sqlExpr`${{ Identifier: col }}`,
   );
 
   // Aggregate from a bounded sample of matching rows. Mirrors
-  // fetchAttributeKeys: the inner LIMIT lets ClickHouse stop scanning
+  // fetchAttributeKeys: the inner LIMIT lets legacy store stop scanning
   // once it has SAMPLE_SIZE rows that match (MetricName, time range),
-  // and the matching clickhouse_settings cap server-side execution so a
+  // and the matching query_settings cap server-side execution so a
   // hot metric cannot starve the wall-clock budget.
-  const sql = chSql`
-    SELECT ${concatChSql(', ', projections)}
+  const sql = sqlExpr`
+    SELECT ${concatSqlExpr(', ', projections)}
     FROM (
-      SELECT ${concatChSql(', ', sampleProjections)}
+      SELECT ${concatSqlExpr(', ', sampleProjections)}
       FROM ${tableExpr({ database: databaseName, table: tableName })}
       WHERE MetricName = ${{ String: metricName }}
         AND TimeUnix >= fromUnixTimestamp64Milli(${{ Int64: startDate.getTime() }})
@@ -426,7 +428,7 @@ async function sampleAttributeValues({
   `;
 
   try {
-    const response = await clickhouseClient.query({
+    const response = await dataClient.query({
       query: sql.sql,
       query_params: sql.params,
       format: 'JSON',
@@ -496,10 +498,10 @@ async function describeMetricImpl(
   );
   if (sliceErr) return sliceErr;
 
-  const clickhouseClient = new DataClient({
+  const dataClient = new DataClient({
     requestTimeout: MCP_REQUEST_TIMEOUT,
   });
-  const metadata = getMetadata(clickhouseClient);
+  const metadata = getMetadata(dataClient);
   const databaseName = source.from.databaseName;
   const connectionId = source.connection.toString();
 
@@ -527,7 +529,7 @@ async function describeMetricImpl(
       { kind, error: e instanceof Error ? e.message : String(e) },
       'describeMetric: getColumns failed',
     );
-    return clickHouseErrorResult(e, {
+    return queryErrorResult(e, {
       prefix: `Failed to load columns for "${tableName}"`,
       suffix: 'The metric table may be missing or unreachable.',
     });
@@ -538,7 +540,7 @@ async function describeMetricImpl(
 
   const [meta, attributeKeysResult] = await Promise.all([
     fetchUnitAndDescription({
-      clickhouseClient,
+      dataClient,
       databaseName,
       tableName,
       connectionId,
@@ -550,7 +552,7 @@ async function describeMetricImpl(
       signal,
     }),
     fetchAttributeKeys({
-      clickhouseClient,
+      dataClient,
       databaseName,
       tableName,
       connectionId,
@@ -564,7 +566,7 @@ async function describeMetricImpl(
 
   // Track discovery sub-queries that failed so the agent can distinguish
   // "fetch failed" (retry / report) from "genuinely empty" (widen the
-  // window). Without this, transient ClickHouse errors surfaced as the
+  // window). Without this, transient legacy store errors surfaced as the
   // misleading "No data found" hint.
   const partialFailure: { stage: string; error: string }[] = [];
   const attributeKeys = attributeKeysResult.ok ? attributeKeysResult.data : {};
@@ -586,7 +588,7 @@ async function describeMetricImpl(
 
   if (input.sampleValues && Object.keys(attributeKeys).length > 0) {
     const valuesResult = await sampleAttributeValues({
-      clickhouseClient,
+      dataClient,
       databaseName,
       tableName,
       connectionId,

@@ -232,20 +232,20 @@ const chartConfig = await withOperationMetrics(
 Because every operation reports through the same two metrics, an SLO is just a
 filter on `operation` — availability = `outcome:success` / total, latency =
 the duration histogram. Keep `operation` a constant (e.g. `ai.assistant`,
-`clickhouse_proxy.query`); never interpolate IDs or user input into it. Reach
+`query_proxy.query`); never interpolate IDs or user input into it. Reach
 for this on functionality with real failure modes worth a target (external
 dependencies, query proxies, AI calls) — not on thin CRUD that the HTTP
 auto-instrumentation and error middleware already cover.
 
 ## Query attribution
 
-Every ClickHouse query Couchbase Traces runs is tagged with what asked for it, so a row
+Every SQL query Couchbase Traces runs is tagged with what asked for it, so a row
 in the customer's `system.query_log` points back to a dashboard tile, a saved
 search, an alert, or an MCP tool. This is the one piece of our instrumentation
 that lands in *their* data rather than ours, so it stays small, carries no
 identity, and must never be able to fail a query.
 
-Two channels carry it, set by `BaseClickhouseClient.query`:
+Two channels carry it, set by `BaseDataClient.query`:
 
 | Where | Shape | What it answers |
 | --- | --- | --- |
@@ -253,7 +253,7 @@ Two channels carry it, set by `BaseClickhouseClient.query`:
 | `query_id` | `hdx-<surface>-<uuid>` | Right now: reading `system.processes` while a query is still running |
 
 The vocabulary lives in
-[`packages/common-utils/src/clickhouse/attribution.ts`](../packages/common-utils/src/clickhouse/attribution.ts).
+[`packages/common-utils/src/evalstore/attribution.ts`](../packages/common-utils/src/evalstore/attribution.ts).
 `QUERY_SURFACES` is a fixed, short list, because it goes in the `query_id` and
 people group by it. Anything naming one specific dashboard, tile or search goes
 in the id fields instead.
@@ -264,7 +264,7 @@ Not at the call site that runs the query: there are roughly sixty of those, and
 `Metadata` accounts for two dozen on its own. Set it once where the reason for
 the query is known, and everything underneath picks it up.
 
-**Browser** — React context, read by `useClickhouseClient`:
+**Browser** — React context, read by `useDataClient`:
 
 ```tsx
 <QueryAttributionProvider
@@ -296,8 +296,8 @@ everything below it, including the materialized-view `EXPLAIN` probes.
 Order of precedence: the client's default, then the scope around the current
 request or job, then anything passed with an individual query.
 
-**Browser to API route** — for requests that reach ClickHouse through an API
-route instead of a ClickHouse client. PromQL is the case today: the browser
+**Browser to API route** — for requests that reach legacy store through an API
+route instead of a data client. PromQL is the case today: the browser
 calls `/api/v1/prometheus/query{,_range}`, and `/labels` and
 `/label/:name/values` for autocomplete and dashboard filters (tagged with
 `useMetadataQueryAttribution()`), over fetch. The caller sends
@@ -305,11 +305,11 @@ calls `/api/v1/prometheus/query{,_range}`, and `/labels` and
 (`QUERY_ATTRIBUTION_HEADER`), and the router parses it with `parseLogComment`
 into a `withQueryAttribution` scope layered over the auth middleware's `api`
 scope. The browser's surface and ids win; `trace` and `label` stay the
-server's. Queries the route runs through a ClickHouse client (label lookups,
+server's. Queries the route runs through a data client (label lookups,
 and the `prometheusQuery()`/`prometheusQueryRange()` fallback) pick the scope
-up as usual. Requests proxied to ClickHouse's Prometheus HTTP API on 26.6+ are tagged
+up as usual. Requests proxied to legacy store's Prometheus HTTP API on 26.6+ are tagged
 by `clickhousePrometheusRequest`: `log_comment` as a URL setting, `query_id` as
-the `X-ClickHouse-Query-Id` header, because the handler rejects `query_id` as an
+the `X-legacy store-Query-Id` header, because the handler rejects `query_id` as an
 unknown setting in the URL.
 
 ### Rules

@@ -2,7 +2,7 @@ import {
   buildAllSnippets,
   type DeploymentShape,
   SERVER_NAME,
-} from '@/components/ClickStackOnboarding/installSnippets';
+} from '@/components/CollectorOnboarding/installSnippets';
 
 const DEPLOYMENT: DeploymentShape = {
   apiUrl: 'https://couchbase-traces.example.com/api',

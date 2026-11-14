@@ -34,9 +34,9 @@ export type EvalConfig = {
   scenarios?: Record<string, ScenarioSourceIds>;
   /** HyperDX API config — only needed for `setup-hyperdx`. */
   hyperdxApi?: HyperdxApiConfig;
-  /** ClickHouse connection details — used by seed/drop/instrument commands
+  /** legacy connection details — used by seed/drop/instrument commands
    *  and as the default for stdio MCP env vars. */
-  clickhouse?: {
+  store?: {
     host: string;
     port: string;
     user: string;

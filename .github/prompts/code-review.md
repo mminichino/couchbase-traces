@@ -1,4 +1,4 @@
-REPO: ClickHouse/Couchbase Traces
+REPO: legacy store/Couchbase Traces
 PR: #{{PR_NUMBER}}
 
 Review this pull request.

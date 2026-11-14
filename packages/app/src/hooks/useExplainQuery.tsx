@@ -2,7 +2,7 @@ import { renderChartConfig } from '@couchbase-traces/common-utils/dist/dataLayer
 import { ChartConfigWithOptDateRange } from '@couchbase-traces/common-utils/dist/types';
 import { useQuery, UseQueryOptions } from '@tanstack/react-query';
 
-import { useClickhouseClient } from '@/query';
+import { useDataClient } from '@/query';
 import { useSource } from '@/source';
 
 import { useMetadataWithSettings } from './useMetadata';
@@ -17,7 +17,7 @@ export function useExplainQuery(
     ..._config,
     with: undefined,
   };
-  const clickhouseClient = useClickhouseClient();
+  const dataClient = useDataClient();
 
   const metadata = useMetadataWithSettings();
 
@@ -33,7 +33,7 @@ export function useExplainQuery(
         metadata,
         source?.querySettings,
       );
-      const response = await clickhouseClient.query<'JSONEachRow'>({
+      const response = await dataClient.query<'JSONEachRow'>({
         query: `EXPLAIN ESTIMATE ${query.sql}`,
         query_params: query.params,
         format: 'JSONEachRow',

@@ -10,7 +10,7 @@ Each document expires at its event time plus the collection TTL.
 
 ## `otel_logs`
 
-| Field | ClickHouse | Document |
+| Field | legacy store | Document |
 |---|---|---|
 | `Timestamp` | `DateTime64(9)` | string (nanoseconds) |
 | `TraceId` | `String` | string |
@@ -54,7 +54,7 @@ Materialized values:
 
 ## `otel_traces`
 
-| Field | ClickHouse | Document |
+| Field | legacy store | Document |
 |---|---|---|
 | `Timestamp` | `DateTime64(9)` | string (nanoseconds) |
 | `TraceId` | `String` | string |
@@ -92,7 +92,7 @@ Materialized values:
 
 ## `otel_metrics_gauge`
 
-| Field | ClickHouse | Document |
+| Field | legacy store | Document |
 |---|---|---|
 | `ResourceAttributes` | `Map(LowCardinality(String), String)` | object |
 | `ResourceSchemaUrl` | `String` | string |
@@ -125,7 +125,7 @@ Materialized values:
 
 ## `otel_metrics_sum`
 
-| Field | ClickHouse | Document |
+| Field | legacy store | Document |
 |---|---|---|
 | `ResourceAttributes` | `Map(LowCardinality(String), String)` | object |
 | `ResourceSchemaUrl` | `String` | string |
@@ -160,7 +160,7 @@ Materialized values:
 
 ## `otel_metrics_histogram`
 
-| Field | ClickHouse | Document |
+| Field | legacy store | Document |
 |---|---|---|
 | `ResourceAttributes` | `Map(LowCardinality(String), String)` | object |
 | `ResourceSchemaUrl` | `String` | string |
@@ -199,7 +199,7 @@ Materialized values:
 
 ## `otel_metrics_exponential_histogram`
 
-| Field | ClickHouse | Document |
+| Field | legacy store | Document |
 |---|---|---|
 | `ResourceAttributes` | `Map(LowCardinality(String), String)` | object |
 | `ResourceSchemaUrl` | `String` | string |
@@ -242,7 +242,7 @@ Materialized values:
 
 ## `otel_metrics_summary`
 
-| Field | ClickHouse | Document |
+| Field | legacy store | Document |
 |---|---|---|
 | `ResourceAttributes` | `Map(LowCardinality(String), String)` | object |
 | `ResourceSchemaUrl` | `String` | string |
@@ -273,7 +273,7 @@ Materialized values:
 
 ## `hyperdx_sessions`
 
-| Field | ClickHouse | Document |
+| Field | legacy store | Document |
 |---|---|---|
 | `Timestamp` | `DateTime64(9)` | string (nanoseconds) |
 | `TraceId` | `String` | string |

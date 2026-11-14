@@ -32,7 +32,7 @@ import { buildTree } from './buildTree';
 import { useTraceData } from './useTraceData';
 
 export default function TraceWaterfall({
-  clickhouseClient,
+  dataClient,
   metadata,
   source,
   logSource,
@@ -68,7 +68,7 @@ export default function TraceWaterfall({
     lastTraceChSql,
     fetchSelectedRow,
   } = useTraceData({
-    clickhouseClient,
+    dataClient,
     metadata,
     source,
     logSource,

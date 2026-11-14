@@ -162,7 +162,7 @@ const chartsSeriesErrors = getCounter('cbt.charts.series.errors', {
 // Types
 type ExternalSeriesInput = z.infer<typeof externalQueryChartSeriesSchema>;
 
-// Mapping between short format granularity strings and clickhouse Granularity enum values
+// Mapping between short format granularity strings and evalstore Granularity enum values
 const API_GRANULARITY_TO_INTERNAL: Record<string, Granularity> = {
   '1s': '1 second' as Granularity, // For testing only
   '30s': Granularity.ThirtySecond,
@@ -206,7 +206,7 @@ const millisecondTimestampSchema = z
   });
 
 /**
- * Translates short granularity string (e.g., "30s", "1m") to ClickHouse INTERVAL syntax.
+ * Translates short granularity string (e.g., "30s", "1m") to legacy store INTERVAL syntax.
  */
 const translateGranularityToInterval = (
   granularity: string | undefined,
@@ -261,7 +261,7 @@ const buildChartConfigFromRequest = async (
     ? (metricName ?? field)
     : metricName;
 
-  // For metric sources, valueExpression should be 'Value' (the ClickHouse column)
+  // For metric sources, valueExpression should be 'Value' (the legacy store column)
   // unless the user explicitly provides both metricName and field
   const resolvedValueExpression = isMetricSource
     ? metricName && field
@@ -323,7 +323,7 @@ const buildChartConfigFromRequest = async (
 };
 
 /**
- * Formats the raw Clickhouse query result rows into the structure expected by the API response (for row-based results).
+ * Formats the raw Cluster query result rows into the structure expected by the API response (for row-based results).
  * 
  * Example input:
  * [
@@ -645,12 +645,12 @@ router.post(
                     connection,
                   );
 
-                const clickhouseClient = new DataClient({
+                const dataClient = new DataClient({
                   requestTimeout: MCP_REQUEST_TIMEOUT,
                 });
 
-                const metadata = getMetadata(clickhouseClient);
-                const result = await clickhouseClient.queryChartConfig({
+                const metadata = getMetadata(dataClient);
+                const result = await dataClient.queryChartConfig({
                   config: chartConfig,
                   metadata,
                   querySettings: source.querySettings,

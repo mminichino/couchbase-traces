@@ -64,7 +64,7 @@ export function registerSql({ context, registerTool }: ToolRegistrar) {
     'cbt_sql',
     {
       title: 'Raw SQL Query',
-      // Enforces ClickHouse readonly=2, so effectively read-only.
+      // Enforces legacy store readonly=2, so effectively read-only.
       annotations: READ_ONLY_TOOL,
       description:
         `${RAW_SQL_TOOL_DESCRIPTION}\n\nPrefer:\n${BUILDER_TOOLS_LIST}\n\n` +

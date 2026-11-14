@@ -23,7 +23,7 @@ import { usePatternData } from './usePatternData';
 import { useKeybindings } from './useKeybindings';
 
 export default function EventViewer({
-  clickhouseClient,
+  dataClient,
   metadata,
   appUrl,
   source,
@@ -106,11 +106,11 @@ export default function EventViewer({
     expandedTraceId,
     expandedSpanId,
     expandedRowWhere,
-    lastChSql,
-    lastExpandedChSql,
+    lastSqlFrag,
+    lastExpandedSqlFrag,
     fetchNextPage,
   } = useEventData({
-    clickhouseClient,
+    dataClient,
     metadata,
     source,
     customSelect,
@@ -129,7 +129,7 @@ export default function EventViewer({
     error: patternsError,
     totalCount: patternsTotalCount,
   } = usePatternData({
-    clickhouseClient,
+    dataClient,
     metadata,
     source,
     submittedQuery,
@@ -185,11 +185,11 @@ export default function EventViewer({
 
   // Determine which SQL to show based on current context
   const activeChSql = useMemo(() => {
-    if (expandedRow === null) return lastChSql;
+    if (expandedRow === null) return lastSqlFrag;
     if (detailTab === 'trace') return traceChSql;
     // overview / columns tabs use the expanded row SELECT * query
-    return lastExpandedChSql;
-  }, [expandedRow, detailTab, lastChSql, lastExpandedChSql, traceChSql]);
+    return lastExpandedSqlFrag;
+  }, [expandedRow, detailTab, lastSqlFrag, lastExpandedSqlFrag, traceChSql]);
 
   // ---- Keybindings -------------------------------------------------
 
@@ -290,7 +290,7 @@ export default function EventViewer({
       {overlay === 'sql' && (
         <Box flexDirection="column" paddingX={1} height={termHeight}>
           <SqlPreviewScreen
-            chSql={activeChSql}
+            sqlExpr={activeChSql}
             scrollOffset={sqlScrollOffset}
             maxRows={sqlMaxRows}
           />
@@ -329,7 +329,7 @@ export default function EventViewer({
           <DetailPanel
             source={source}
             sources={sources}
-            clickhouseClient={clickhouseClient}
+            dataClient={dataClient}
             metadata={metadata}
             detailTab={detailTab}
             expandedRowData={expandedRowData}

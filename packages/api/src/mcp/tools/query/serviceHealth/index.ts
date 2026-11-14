@@ -5,11 +5,11 @@ import { trace } from '@opentelemetry/api';
 import { READ_ONLY_TOOL } from '@/mcp/tools/annotations';
 import { PREFER_BUILDER_OVER_SQL_NUDGE } from '@/mcp/tools/query/builderCatalog';
 import {
-  clickHouseErrorResult,
   isQueryOutOfTime,
   parseTimeRange,
+  queryErrorResult,
 } from '@/mcp/tools/query/helpers';
-import { requireMcpClickhouseClient } from '@/mcp/tools/trace/shared';
+import { requireMcpDataClient } from '@/mcp/tools/trace/shared';
 import type { ToolRegistrar } from '@/mcp/tools/types';
 import { mcpUserError } from '@/mcp/utils/errors';
 import { trimToolResponse } from '@/utils/trimToolResponse';
@@ -90,10 +90,7 @@ export function registerServiceHealth({
 
       const source = await loadHealthSource(teamId, input.sourceId, TOOL_NAME);
       if ('isError' in source) return source;
-      const client = await requireMcpClickhouseClient(
-        teamId,
-        source.connection,
-      );
+      const client = await requireMcpDataClient(teamId, source.connection);
       if ('isError' in client) {
         return client;
       }
@@ -200,7 +197,7 @@ export function registerServiceHealth({
         };
       } catch (e) {
         abort.abort();
-        return clickHouseErrorResult(e, {
+        return queryErrorResult(e, {
           prefix: 'Failed to compute service health',
           suffix: isQueryOutOfTime(e) ? TIMEOUT_SUFFIX : undefined,
         });

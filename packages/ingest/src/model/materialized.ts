@@ -2,7 +2,7 @@ import { parseUInt64OrZero, truncateToSeconds } from '../otlp/values';
 
 export type MaterializedSpec = {
   name: string;
-  clickhouseType: string;
+  columnType: string;
   /** Human-readable source, written into the data-model doc. */
   source: string;
 };
@@ -22,7 +22,7 @@ export const LOG_MATERIALIZED: readonly MaterializedSpec[] = [
   ),
   {
     name: '__hdx_materialized_session.id',
-    clickhouseType: 'String',
+    columnType: 'String',
     source: "LogAttributes['session.id']",
   },
 ];
@@ -30,12 +30,12 @@ export const LOG_MATERIALIZED: readonly MaterializedSpec[] = [
 export const TRACE_MATERIALIZED: readonly MaterializedSpec[] = [
   {
     name: '__hdx_materialized_rum.sessionId',
-    clickhouseType: 'String',
+    columnType: 'String',
     source: "ResourceAttributes['rum.sessionId']",
   },
   {
     name: 'SampleRate',
-    clickhouseType: 'UInt64',
+    columnType: 'UInt64',
     source: "max(parseUInt64OrZero(SpanAttributes['SampleRate']), 1)",
   },
 ];
@@ -43,29 +43,29 @@ export const TRACE_MATERIALIZED: readonly MaterializedSpec[] = [
 export const SESSION_MATERIALIZED: readonly MaterializedSpec[] = [
   {
     name: '__hdx_materialized_session.id',
-    clickhouseType: 'String',
+    columnType: 'String',
     source: "LogAttributes['session.id']",
   },
   {
     name: '__hdx_materialized_rum.sessionId',
-    clickhouseType: 'String',
+    columnType: 'String',
     source: "ResourceAttributes['rum.sessionId']",
   },
   {
     name: 'TimestampTime',
-    clickhouseType: 'DateTime',
+    columnType: 'DateTime',
     source: 'Timestamp truncated to seconds',
   },
 ];
 
 function mat(
   key: string,
-  clickhouseType: string,
+  columnType: string,
   mapName: string,
 ): MaterializedSpec {
   return {
     name: `__hdx_materialized_${key}`,
-    clickhouseType,
+    columnType,
     source: `${mapName}['${key}']`,
   };
 }

@@ -12,9 +12,6 @@
   },
   "dependencies": {
     "@hyperdx/lucene": "^3.1.1",
-    "@lezer/highlight": "^1.1.2",
-    "@lezer/lr": "^1.2.3",
-    "@prometheus-io/lezer-promql": "^0.311.3",
     "couchbase": "4.7.2",
     "date-fns": "^2.28.0",
     "date-fns-tz": "^2.0.0",

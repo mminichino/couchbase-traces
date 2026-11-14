@@ -34,7 +34,7 @@ export const swaggerOptions = {
       },
       {
         name: 'Connections',
-        description: 'Endpoints for managing ClickHouse connections',
+        description: 'Endpoints for managing legacy store connections',
       },
       {
         name: 'Sources',

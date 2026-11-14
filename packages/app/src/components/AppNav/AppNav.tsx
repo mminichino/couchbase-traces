@@ -313,7 +313,7 @@ export default function AppNav({ fixed = false }: { fixed?: boolean }) {
     const isDashboardsPathname =
       pathname?.startsWith('/dashboards/') ||
       pathname === '/services' ||
-      pathname === '/clickhouse' ||
+      pathname === '/evalstore' ||
       pathname === '/cluster' ||
       pathname === '/kubernetes' ||
       pathname === '/llm';
@@ -505,8 +505,8 @@ export default function AppNav({ fixed = false }: { fixed?: boolean }) {
             )}
             {hasClickHouse && (
               <AppNavLink
-                label="ClickHouse"
-                href="/clickhouse"
+                label="legacy store"
+                href="/evalstore"
                 icon={<IconDatabase size={16} />}
               />
             )}

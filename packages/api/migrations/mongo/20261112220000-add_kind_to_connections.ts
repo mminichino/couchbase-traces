@@ -1,6 +1,6 @@
 import { Db, MongoClient } from 'mongodb';
 
-// Connections created before Couchbase support are ClickHouse connections.
+// Connections created before Couchbase support are legacy store connections.
 // Both directions are idempotent.
 module.exports = {
   async up(db: Db, _client: MongoClient) {

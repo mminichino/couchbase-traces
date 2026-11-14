@@ -39,7 +39,7 @@ function pickBestMatch(candidates: string[]): string {
 }
 
 /**
- * Given a list of table names from a ClickHouse database, returns the
+ * Given a list of table names from the configured database, returns the
  * best-matching table name for the metrics `series` table,
  * based on suffix conventions. Returns undefined if a value is already set
  * or no candidate matches.
@@ -61,7 +61,7 @@ export function matchSeriesTable(
 }
 
 /**
- * Given a list of table names from a ClickHouse database, returns a map from
+ * Given a list of table names from the configured database, returns a map from
  * MetricsDataType to the best-matching table name based on suffix conventions.
  *
  * Only populates entries for metric types whose current value is empty/unset.

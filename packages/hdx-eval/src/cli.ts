@@ -3,13 +3,6 @@ import { Command } from 'commander';
 import fs from 'fs';
 import { resolve } from 'path';
 
-import { createEvalClient, defaultClickHouseUrl } from './clickhouse/client';
-import {
-  dropScenarioTables,
-  scenarioIsSeeded,
-  scenarioSlug,
-  scenarioTables,
-} from './clickhouse/schema';
 import { buildBlindingEntries } from './grading/blind';
 import {
   gradeBatch,
@@ -45,6 +38,13 @@ import {
   type SeedProgress,
   seedScenario,
 } from './scenarios/seedScenario';
+import { createEvalStoreClient, defaultEvalStoreUrl } from './store/client';
+import {
+  dropScenarioTables,
+  scenarioIsSeeded,
+  scenarioSlug,
+  scenarioTables,
+} from './store/schema';
 
 if (!process.env.ANTHROPIC_API_KEY && process.env.AI_API_KEY) {
   process.env.ANTHROPIC_API_KEY = process.env.AI_API_KEY;
@@ -80,8 +80,8 @@ type GlobalOpts = {
 };
 
 function buildClient(opts: GlobalOpts) {
-  return createEvalClient({
-    url: opts.chUrl ?? defaultClickHouseUrl(),
+  return createEvalStoreClient({
+    url: opts.chUrl ?? defaultEvalStoreUrl(),
     username: opts.chUser,
     password: opts.chPassword,
   });
@@ -91,14 +91,14 @@ function buildClientFromConfig(
   cfg: import('./hyperdx/config').EvalConfig,
   globals: GlobalOpts,
 ) {
-  return createEvalClient({
+  return createEvalStoreClient({
     url:
       globals.chUrl ??
-      (cfg.clickhouse
-        ? `http://${cfg.clickhouse.host}:${cfg.clickhouse.port}`
-        : defaultClickHouseUrl()),
-    username: globals.chUser ?? cfg.clickhouse?.user,
-    password: globals.chPassword ?? cfg.clickhouse?.password,
+      (cfg.store
+        ? `http://${cfg.store.host}:${cfg.store.port}`
+        : defaultEvalStoreUrl()),
+    username: globals.chUser ?? cfg.store?.user,
+    password: globals.chPassword ?? cfg.store?.password,
   });
 }
 
@@ -167,9 +167,9 @@ program
   .description(
     'Couchbase Traces eval framework — synthetic telemetry generators + agent harness',
   )
-  .option('--ch-url <url>', 'ClickHouse HTTP URL')
-  .option('--ch-user <user>', 'ClickHouse username', 'default')
-  .option('--ch-password <password>', 'ClickHouse password', '');
+  .option('--ch-url <url>', 'query HTTP URL')
+  .option('--ch-user <user>', 'legacy store username', 'default')
+  .option('--ch-password <password>', 'legacy store password', '');
 
 program
   .command('list')
@@ -188,7 +188,7 @@ program
 
 program
   .command('seed <scenario>')
-  .description('Seed ClickHouse with synthetic data for the given scenario')
+  .description('Seed legacy store with synthetic data for the given scenario')
   .option('--seed <n>', 'PRNG seed', '42')
   .option('--now <iso>', 'Anchor "now" to a fixed ISO timestamp')
   .option(
@@ -336,8 +336,8 @@ program
           result.mcpReachable ? 'OK' : 'UNREACHABLE',
         );
         console.log(
-          'ClickHouse:       ',
-          result.clickhouseReachable ? 'OK' : 'UNREACHABLE',
+          'legacy store:       ',
+          result.storeReachable ? 'OK' : 'UNREACHABLE',
         );
         console.log(
           'uv installed:     ',
@@ -351,7 +351,7 @@ program
         return;
       }
 
-      const chUrl = opts.chUrl ?? defaultClickHouseUrl();
+      const chUrl = opts.chUrl ?? defaultEvalStoreUrl();
       const url = new URL(chUrl);
       console.log(
         `Setting up Couchbase Traces eval account at ${cmdOpts.apiUrl}`,
@@ -360,7 +360,7 @@ program
         apiUrl: cmdOpts.apiUrl,
         email,
         password,
-        clickhouse: {
+        store: {
           host: url.hostname,
           port: url.port || '8123',
           user: opts.chUser ?? 'default',
@@ -424,7 +424,7 @@ program
   )
   .option(
     '--reseed',
-    'Re-seed ClickHouse data before running (default: skip reseed and reuse ' +
+    'Re-seed legacy store data before running (default: skip reseed and reuse ' +
       'existing data). Use after changing seed parameters or when data is stale.',
   )
   .option(
@@ -1070,7 +1070,7 @@ program
 program
   .command('runs-instrument <batch>')
   .description(
-    'Enrich each run with per-tool-call query_log timings from ClickHouse',
+    'Enrich each run with per-tool-call query_log timings from legacy store',
   )
   .action(async (batch: string) => {
     const opts = program.opts<GlobalOpts>();
@@ -1080,15 +1080,15 @@ program
     let chPassword = opts.chPassword;
     if (!chUrl && cfgPath) {
       const cfg = readConfig();
-      if (cfg.clickhouse) {
-        chUrl = `http://${cfg.clickhouse.host}:${cfg.clickhouse.port}`;
-        chUser = chUser ?? cfg.clickhouse.user;
-        chPassword = chPassword ?? cfg.clickhouse.password;
+      if (cfg.store) {
+        chUrl = `http://${cfg.store.host}:${cfg.store.port}`;
+        chUser = chUser ?? cfg.store.user;
+        chPassword = chPassword ?? cfg.store.password;
       }
     }
-    chUrl = chUrl ?? defaultClickHouseUrl();
+    chUrl = chUrl ?? defaultEvalStoreUrl();
     const records = await instrumentBatch(batch, {
-      clickhouseUrl: chUrl,
+      storeUrl: chUrl,
       username: chUser,
       password: chPassword,
     });
