@@ -1,17 +1,17 @@
 import {
+  FIXED_TIME_BUCKET_EXPR_ALIAS,
+  isUsingGranularity,
+  isUsingGroupBy,
+  setChartSelectsAlias,
+} from '@/core/chartConfig';
+import {
   compileFormulaAst,
   type FormulaAst,
   validateFormula,
 } from '@/core/formula';
 import { GROUP_ALIAS } from '@/core/histogram';
-import {
-  FIXED_TIME_BUCKET_EXPR_ALIAS,
-  isUsingGranularity,
-  isUsingGroupBy,
-  setChartSelectsAlias,
-} from '@/core/renderChartConfig';
+import { CouchbaseUnsupportedError } from '@/couchbase/errors';
 import { quoteIdent } from '@/couchbase/sqlpp';
-import { CouchbaseNotReadyError } from '@/dataLayer/errors';
 import type {
   BuilderChartConfigWithOptDateRange,
   ChartConfigWithOptDateRange,
@@ -72,7 +72,7 @@ export async function renderMultiSeriesMetricChartConfigCouchbase(
   const chartConfig = setChartSelectsAlias(rawChartConfig);
   const select = chartConfig.select;
   if (!Array.isArray(select) || select.length === 0) {
-    throw new CouchbaseNotReadyError('metrics: multiSeries select');
+    throw new CouchbaseUnsupportedError('metrics: multiSeries select');
   }
 
   const formulas = chartConfig.formulas ?? [];

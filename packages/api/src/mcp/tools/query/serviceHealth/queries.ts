@@ -14,8 +14,8 @@ import {
   type TTraceSource,
 } from '@couchbase-traces/common-utils/dist/types';
 
-import type { ClickhouseClient } from '@/clickhouse';
-import { durationDivisor, mcpQuerySettings } from '@/mcp/tools/trace/shared';
+import { durationDivisor } from '@/mcp/tools/trace/shared';
+import type { DataClient } from '@/query';
 
 import type { WindowStats } from './rank';
 import type { ServiceHealthInput, Window } from './schema';
@@ -49,7 +49,7 @@ export type HealthSource = Pick<
 };
 
 export type QueryContext = {
-  client: ClickhouseClient;
+  client: DataClient;
   metadata: Metadata;
   source: HealthSource;
   input: ServiceHealthInput;
@@ -116,7 +116,6 @@ export async function run(
     metadata,
     querySettings: source.querySettings,
     opts: {
-      clickhouse_settings: mcpQuerySettings(source.querySettings),
       abort_signal: signal,
     },
   });

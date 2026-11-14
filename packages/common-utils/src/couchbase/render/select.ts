@@ -1,16 +1,17 @@
-import { compileFormulaAst, validateFormula } from '@/core/formula';
 import {
   FIXED_TIME_BUCKET_EXPR_ALIAS,
   isNonEmptyWhereExpr,
   isRatioChartConfig,
   isUsingGranularity,
   isUsingGroupBy,
-} from '@/core/renderChartConfig';
+} from '@/core/chartConfig';
+import { compileFormulaAst, validateFormula } from '@/core/formula';
 import {
   convertDateRangeToGranularityString,
   getFirstTimestampValueExpression,
   resolvePercentileAggFn,
 } from '@/core/utils';
+import { CouchbaseUnsupportedError } from '@/couchbase/errors';
 import { quantile as quantileAgg } from '@/couchbase/fn/quantile';
 import { anyValue, argMax, count, uniq } from '@/couchbase/fn/scalar';
 import { quoteIdent, type SqlPP, sqlpp } from '@/couchbase/sqlpp';
@@ -19,10 +20,6 @@ import {
   timeBucketExpr as cbTimeBucketExpr,
   type TimeFormat,
 } from '@/couchbase/time';
-import {
-  CouchbaseNotReadyError,
-  CouchbaseUnsupportedError,
-} from '@/dataLayer/errors';
 import type { BuilderChartConfigWithOptDateRange, SelectList } from '@/types';
 
 import { ratioExprCouchbase } from './ratio';
@@ -168,11 +165,11 @@ function aggExprCouchbase(
     }
     default:
       if (weightExpr) {
-        throw new CouchbaseNotReadyError(
+        throw new CouchbaseUnsupportedError(
           `charts: sampleWeight with aggFn ${fn}`,
         );
       }
-      throw new CouchbaseNotReadyError(`charts: aggFn ${fn}`);
+      throw new CouchbaseUnsupportedError(`charts: aggFn ${fn}`);
   }
 }
 

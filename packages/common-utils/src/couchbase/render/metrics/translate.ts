@@ -1,8 +1,8 @@
+import { FIXED_TIME_BUCKET_EXPR_ALIAS } from '@/core/chartConfig';
 import { GROUP_ALIAS } from '@/core/histogram';
-import { FIXED_TIME_BUCKET_EXPR_ALIAS } from '@/core/renderChartConfig';
+import { CouchbaseUnsupportedError } from '@/couchbase/errors';
 import { argMax, lag } from '@/couchbase/fn/scalar';
 import { keyspace, quoteIdent } from '@/couchbase/sqlpp';
-import { CouchbaseNotReadyError } from '@/dataLayer/errors';
 import type { BuilderChartConfigWithOptDateRange } from '@/types';
 import { MetricsDataType } from '@/types';
 
@@ -65,21 +65,21 @@ export async function translateMetricChartConfigCouchbase(
   if (!metricTables) return chartConfig;
   const select = chartConfig.select;
   if (!Array.isArray(select) || select.length === 0) {
-    throw new CouchbaseNotReadyError('metrics: select shape');
+    throw new CouchbaseUnsupportedError('metrics: select shape');
   }
   if (select.length > 1) {
-    throw new CouchbaseNotReadyError('metrics: multi-select');
+    throw new CouchbaseUnsupportedError('metrics: multi-select');
   }
 
   const first = select[0] as MetricSelect;
   const metricType = asMetricsDataType(first.metricType);
   const metricName = first.metricName;
   if (!metricType || !metricName) {
-    throw new CouchbaseNotReadyError('metrics: metricType/metricName');
+    throw new CouchbaseUnsupportedError('metrics: metricType/metricName');
   }
   const table = metricTables[metricType as keyof typeof metricTables];
   if (!table) {
-    throw new CouchbaseNotReadyError(`metrics: table for ${metricType}`);
+    throw new CouchbaseUnsupportedError(`metrics: table for ${metricType}`);
   }
 
   const from = {
@@ -109,7 +109,7 @@ export async function translateMetricChartConfigCouchbase(
     };
     const bucketExpr = timeBucketSql(bucketedConfig);
     if (!bucketExpr) {
-      throw new CouchbaseNotReadyError('metrics: gauge time bucket');
+      throw new CouchbaseUnsupportedError('metrics: gauge time bucket');
     }
     const where = sourceWhereClause(chartConfig, nameFilter);
     const seriesKey = seriesKeyExpr();
@@ -157,7 +157,7 @@ export async function translateMetricChartConfigCouchbase(
     };
     const bucketExpr = timeBucketSql(bucketedConfig);
     if (!bucketExpr) {
-      throw new CouchbaseNotReadyError('metrics: sum time bucket');
+      throw new CouchbaseUnsupportedError('metrics: sum time bucket');
     }
     const seriesKey = seriesKeyExpr();
     const where = sourceWhereClause(chartConfig, nameFilter);
@@ -257,5 +257,5 @@ export async function translateMetricChartConfigCouchbase(
     };
   }
 
-  throw new CouchbaseNotReadyError(`metrics: ${metricType}`);
+  throw new CouchbaseUnsupportedError(`metrics: ${metricType}`);
 }

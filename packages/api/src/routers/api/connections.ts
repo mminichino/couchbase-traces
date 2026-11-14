@@ -19,6 +19,29 @@ import { rejectPromqlBody } from '@/utils/rejectPromql';
 
 const router = express.Router();
 
+function connectionForClient(
+  doc: Awaited<ReturnType<typeof getConnectionsByTeam>>[number],
+) {
+  const json = doc.toJSON({ virtuals: true }) as Record<string, unknown>;
+  const kind = (json.kind as string | undefined) ?? 'clickhouse';
+  const unsupported = Boolean(json.unsupported) || kind === 'clickhouse';
+  if (unsupported) {
+    return {
+      id: String(json.id ?? json._id),
+      name: String(json.name ?? ''),
+      kind: 'clickhouse' as const,
+      unsupported: true as const,
+    };
+  }
+  const {
+    password: _password,
+    tlsCaCertificate: _tls,
+    monitorPassword: _monitorPassword,
+    ...rest
+  } = json;
+  return rest;
+}
+
 async function invalidateCouchbaseCluster(connectionId: string) {
   try {
     await clusterCache.invalidate(connectionId);
@@ -33,7 +56,7 @@ router.get('/', async (req, res, next) => {
 
     const connections = await getConnectionsByTeam(teamId.toString());
 
-    res.json(connections.map(c => c.toJSON({ virtuals: true })));
+    res.json(connections.map(connectionForClient));
   } catch (e) {
     next(e);
   }
@@ -59,27 +82,17 @@ router.post(
       // than `keyof T`, so a typo in the name would compile silently.
       const body = ConnectionSchemaNoId.parse(req.body);
 
-      const connection = await createConnection(
-        teamId.toString(),
-        body.kind === 'couchbase'
-          ? {
-              ...body,
-              password: body.password ?? '',
-              team: teamId,
-              // Null means "no override"; don't store it on create.
-              managementPort:
-                typeof body.managementPort === 'number'
-                  ? body.managementPort
-                  : undefined,
-              monitorPassword: body.monitorPassword || undefined,
-            }
-          : {
-              ...body,
-              password: body.password ?? '',
-              team: teamId,
-              hyperdxSettingPrefix: body.hyperdxSettingPrefix ?? undefined,
-            },
-      );
+      const connection = await createConnection(teamId.toString(), {
+        ...body,
+        password: body.password ?? '',
+        team: teamId,
+        kind: 'couchbase',
+        managementPort:
+          typeof body.managementPort === 'number'
+            ? body.managementPort
+            : undefined,
+        monitorPassword: body.monitorPassword || undefined,
+      });
 
       res.status(200).send({ id: connection._id.toString() });
     } catch (e) {
@@ -112,47 +125,28 @@ router.put(
       // `platformProvisioned` is server-owned — see the POST handler above.
       const body = ConnectionSchema.parse(req.body);
       const storedKind = connection.kind ?? 'clickhouse';
-      if (body.kind !== storedKind) {
+      if (storedKind !== 'couchbase' || connection.unsupported) {
         res.status(400).json({
-          message: `Connection kind cannot change from ${storedKind} to ${body.kind}`,
+          message:
+            'This connection used ClickHouse, which is no longer supported. Delete it and create a Couchbase connection.',
         });
         return;
       }
 
-      // Secrets are write-only: an omitted or empty value keeps the stored one.
       const password = body.password || connection.password;
-      let newConnection;
+      const { tlsCaCertificate, monitorPassword, managementPort, ...rest } =
+        body;
       const unsetFields: string[] = [];
-      if (body.kind === 'couchbase') {
-        const { tlsCaCertificate, monitorPassword, managementPort, ...rest } =
-          body;
-        newConnection = {
-          ...rest,
-          team: teamId,
-          password,
-          ...(tlsCaCertificate ? { tlsCaCertificate } : {}),
-          ...(monitorPassword ? { monitorPassword } : {}),
-          ...(typeof managementPort === 'number' ? { managementPort } : {}),
-        };
-        if (managementPort === null) unsetFields.push('managementPort');
-      } else {
-        // Read from the raw body: the schema rejects '', which clears the prefix.
-        const rawPrefix: unknown = Reflect.get(
-          Object(req.body),
-          'hyperdxSettingPrefix',
-        );
-        const shouldUnsetPrefix = rawPrefix === null || rawPrefix === '';
-        const { hyperdxSettingPrefix, ...rest } = body;
-        newConnection = {
-          ...rest,
-          team: teamId,
-          password,
-          ...(!shouldUnsetPrefix && hyperdxSettingPrefix
-            ? { hyperdxSettingPrefix }
-            : {}),
-        };
-        if (shouldUnsetPrefix) unsetFields.push('hyperdxSettingPrefix');
-      }
+      const newConnection = {
+        ...rest,
+        team: teamId,
+        kind: 'couchbase' as const,
+        password,
+        ...(tlsCaCertificate ? { tlsCaCertificate } : {}),
+        ...(monitorPassword ? { monitorPassword } : {}),
+        ...(typeof managementPort === 'number' ? { managementPort } : {}),
+      };
+      if (managementPort === null) unsetFields.push('managementPort');
 
       const updatedConnection = await updateConnection(
         teamId.toString(),

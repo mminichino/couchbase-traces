@@ -1,4 +1,4 @@
-import { ResponseJSON } from '@couchbase-traces/common-utils/dist/clickhouse';
+import { ResponseJSON } from '@couchbase-traces/common-utils/dist/query';
 import { TLogSource, TSource } from '@couchbase-traces/common-utils/dist/types';
 
 import { getJSONColumnNames } from '@/components/DBRowDataPanel';

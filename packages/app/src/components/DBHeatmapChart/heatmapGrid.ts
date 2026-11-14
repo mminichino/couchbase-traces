@@ -1,4 +1,4 @@
-import { ColumnMetaType } from '@couchbase-traces/common-utils/dist/clickhouse';
+import { ColumnMetaType } from '@couchbase-traces/common-utils/dist/query';
 
 export type HeatmapScaleType = 'log' | 'linear';
 

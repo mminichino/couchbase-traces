@@ -15,9 +15,9 @@ import SHA256 from 'crypto-js/sha256';
 import SqlString from 'sqlstring';
 import {
   ColumnMetaType,
-  convertCHDataTypeToJSType,
+  columnTypeToJSType,
   JSDataType,
-} from '@couchbase-traces/common-utils/dist/clickhouse';
+} from '@couchbase-traces/common-utils/dist/query';
 import { quoteResultColumnNameIfNeeded } from '@couchbase-traces/common-utils/dist/core/metadata';
 import {
   aliasMapToWithClauses,
@@ -162,7 +162,7 @@ export function buildColumnMap(
         {
           ...c,
           valueExpr,
-          jsType: convertCHDataTypeToJSType(c.type),
+          jsType: columnTypeToJSType(c.type),
         },
       ];
     }),

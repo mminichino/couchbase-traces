@@ -1,4 +1,3 @@
-import { ClickhouseClient } from '@couchbase-traces/common-utils/dist/clickhouse/node';
 import {
   MetricsDataType,
   SourceKind,
@@ -51,7 +50,6 @@ describe('MCP Query Tools', () => {
     connection = await Connection.create({
       team: team._id,
       name: 'Default',
-      host: config.CLICKHOUSE_HOST,
       username: config.CLICKHOUSE_USER,
       password: config.CLICKHOUSE_PASSWORD,
     });
@@ -1616,7 +1614,6 @@ describe('MCP Query Tools', () => {
         const otherConnection = await Connection.create({
           team: team._id,
           name: 'Other',
-          host: config.CLICKHOUSE_HOST,
           username: config.CLICKHOUSE_USER,
           password: config.CLICKHOUSE_PASSWORD,
         });
@@ -1874,7 +1871,6 @@ describe('MCP Query Tools', () => {
         deadConnection = await Connection.create({
           team: team._id,
           name: 'Dead',
-          host: 'http://localhost:1',
           username: 'default',
           password: '',
         });
@@ -1968,29 +1964,6 @@ describe('MCP Query Tools', () => {
         });
 
         expect(result.isError).toBeFalsy();
-      });
-    });
-
-    describe('max_execution_time enforcement', () => {
-      it('should kill a query that exceeds max_execution_time', async () => {
-        // Test directly with ClickhouseClient to use a short timeout (1s)
-        // instead of waiting for the full 30s MCP default.
-        const clickhouseClient = new ClickhouseClient({
-          host: config.CLICKHOUSE_HOST,
-          username: config.CLICKHOUSE_USER,
-          password: config.CLICKHOUSE_PASSWORD,
-          requestTimeout: 5_000,
-        });
-
-        await expect(
-          clickhouseClient.query({
-            query: 'SELECT sleep(3)',
-            format: 'JSON',
-            clickhouse_settings: {
-              max_execution_time: 1,
-            },
-          }),
-        ).rejects.toThrow(/TIMEOUT_EXCEEDED|timeout/i);
       });
     });
 

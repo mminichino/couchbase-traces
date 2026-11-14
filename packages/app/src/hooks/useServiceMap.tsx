@@ -1,14 +1,14 @@
 import SqlString from 'sqlstring';
-import { chSql } from '@couchbase-traces/common-utils/dist/clickhouse';
 import { Metadata } from '@couchbase-traces/common-utils/dist/core/metadata';
 import { errorStatusPredicateSql } from '@couchbase-traces/common-utils/dist/core/spanPredicates';
 import { renderChartConfig } from '@couchbase-traces/common-utils/dist/dataLayer';
-import { resolveConnectionKind } from '@couchbase-traces/common-utils/dist/dataLayer/kind';
+import { resolveConnectionKind } from '@couchbase-traces/common-utils/dist/dataLayer';
+import { chSql } from '@couchbase-traces/common-utils/dist/query';
 import { TTraceSource } from '@couchbase-traces/common-utils/dist/types';
 import { useQuery } from '@tanstack/react-query';
 
-import { useClickhouseClient } from '@/clickhouse';
 import { getServiceMapQueryCouchbase } from '@/couchbase/serviceMap';
+import { useClickhouseClient } from '@/query';
 
 import { useMetadataWithSettings } from './useMetadata';
 

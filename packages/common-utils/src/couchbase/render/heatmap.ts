@@ -1,5 +1,5 @@
+import { CouchbaseUnsupportedError } from '@/couchbase/errors';
 import { type SqlPP, sqlpp } from '@/couchbase/sqlpp';
-import { CouchbaseNotReadyError } from '@/dataLayer/errors';
 
 /**
  * Heatmap value-axis bucketing. Boundary lists come from TypeScript (same as
@@ -11,7 +11,7 @@ export function heatmapBucketExpr(
   mode: 'linear' | 'logarithmic' = 'linear',
 ): SqlPP {
   if (bounds.length < 2) {
-    throw new CouchbaseNotReadyError('charts: heatmap bounds');
+    throw new CouchbaseUnsupportedError('charts: heatmap bounds');
   }
   if (mode === 'logarithmic') {
     const lo = bounds[0];

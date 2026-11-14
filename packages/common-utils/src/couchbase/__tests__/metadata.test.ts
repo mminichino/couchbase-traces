@@ -1,6 +1,6 @@
 import { MetadataCache } from '@/core/metadata';
 import { inferredToColumnType, parseInfer } from '@/couchbase/infer';
-import { CouchbaseMetadata } from '@/couchbase/metadata';
+import { Metadata } from '@/couchbase/metadata';
 import { renderChartConfigCouchbase } from '@/couchbase/render';
 
 const inferDoc = {
@@ -94,7 +94,7 @@ describe('couchbase metadata', () => {
     });
     return {
       fake,
-      meta: new CouchbaseMetadata(fake.data as never, new MetadataCache()),
+      meta: new Metadata(fake.data as never, new MetadataCache()),
     };
   }
 
@@ -145,9 +145,6 @@ describe('couchbase metadata', () => {
     const tables = await m.getOtelTables({ connectionId: 'c' });
     expect(tables?.databaseName).toBe('otel');
     expect(tables?.tables.logs).toBe('otel_logs');
-    expect(await m.getSettings()).toEqual(new Map());
-    expect(await m.getSetting()).toBeUndefined();
-    expect(await m.isClickHouseCloud()).toBe(false);
     expect(
       (await m.getJSONKeys({ ...tc, column: 'LogAttributes' })).map(
         row => row.key,
@@ -194,28 +191,14 @@ describe('couchbase metadata', () => {
         .length,
     ).toBeGreaterThan(0);
     expect(await m.getTableMetadata(tc)).toMatchObject({ name: 'otel_logs' });
-    expect(await m.getMergeTreeSettings()).toEqual(new Map());
-    expect(await m.getSkipIndices()).toEqual([]);
-    expect(await m.renderKeyExpressions({ keys: ['ServiceName'] })).toEqual(
-      new Map([['ServiceName', 'ServiceName']]),
-    );
     m.setClickHouseSettings({ max_rows_to_read: '10' });
     expect(m.getClickHouseSettings()).toMatchObject({ max_rows_to_read: '10' });
-    await expect(m.getTimeSeriesTableColumns()).rejects.toThrow(
-      /getTimeSeriesTableColumns/,
-    );
-    await expect(m.getTimeSeriesTableVersion()).rejects.toThrow(
-      /getTimeSeriesTableVersion/,
-    );
     const checked = await m.validateExpression({
       ...tc,
       expression: 'd.`ServiceName`',
     });
     expect(checked).toEqual({ ok: true });
     expect(fake.queries.some(query => query.startsWith('EXPLAIN'))).toBe(true);
-    await expect(m.getTimeSeriesTables()).rejects.toThrow(
-      /Not supported on Couchbase/,
-    );
   });
 });
 
@@ -243,7 +226,6 @@ describe('render skeleton', () => {
       { getColumns: async () => [{ name: 'ServiceName', type: 'String' }] },
       undefined,
     );
-    expect(rendered.dialect).toBe('sqlpp');
     expect(rendered.sql).toContain('FROM `otel`.`default`.`otel_logs` AS d');
     expect(rendered.sql).toContain('ServiceName');
     const counted = await renderChartConfigCouchbase(

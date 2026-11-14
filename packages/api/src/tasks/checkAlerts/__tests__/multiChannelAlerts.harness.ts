@@ -1,4 +1,3 @@
-import { ClickhouseClient } from '@couchbase-traces/common-utils/dist/clickhouse/node';
 import ms from 'ms';
 
 import * as config from '@/config';
@@ -8,6 +7,7 @@ import Connection from '@/models/connection';
 import { SavedSearch } from '@/models/savedSearch';
 import { Source } from '@/models/source';
 import Webhook, { IWebhook } from '@/models/webhook';
+import { DataClient } from '@/query';
 import { processAlert } from '@/tasks/checkAlerts';
 import { AlertTaskType } from '@/tasks/checkAlerts/providers';
 
@@ -47,7 +47,6 @@ export const setupAlertFixtures = async (
   const connection = await Connection.create({
     team: team._id,
     name: 'Test Connection',
-    host: config.CLICKHOUSE_HOST,
     username: config.CLICKHOUSE_USER,
     password: config.CLICKHOUSE_PASSWORD,
   });
@@ -126,11 +125,7 @@ export const runAlert = async ({
     savedSearch,
     previousMap: new Map(),
   };
-  const clickhouseClient = new ClickhouseClient({
-    host: connection.host,
-    username: connection.username,
-    password: connection.password,
-  });
+  const clickhouseClient = new DataClient({});
   await processAlert(
     NOW,
     details,

@@ -1,4 +1,4 @@
-import { withQueryAttribution } from '@couchbase-traces/common-utils/dist/clickhouse/node';
+import { withQueryAttribution } from '@couchbase-traces/common-utils/dist/dataLayer/node';
 import type { CallToolResult } from '@modelcontextprotocol/sdk/types.js';
 
 import { recordOnboardingTaskCompletion } from '@/controllers/user';

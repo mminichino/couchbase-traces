@@ -1,6 +1,6 @@
 // Server only: the Couchbase SDK is a native addon. Browser code must not
 // import this module; packages/app enforces that with no-restricted-imports.
-import type { QueryAttribution } from '@/clickhouse/attribution';
+import type { QueryAttribution } from '@/query/attribution';
 import type { TeamClickHouseSettings } from '@/types';
 
 import {

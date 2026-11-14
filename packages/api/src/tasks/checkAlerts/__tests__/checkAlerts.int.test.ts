@@ -1,4 +1,3 @@
-import { ClickhouseClient } from '@couchbase-traces/common-utils/dist/clickhouse/node';
 import {
   AlertChartConfig,
   AlertErrorType,
@@ -35,6 +34,7 @@ import { ISavedSearch, SavedSearch } from '@/models/savedSearch';
 import { ISource, LogSource, Source } from '@/models/source';
 import { ITeam } from '@/models/team';
 import Webhook, { IWebhook } from '@/models/webhook';
+import { DataClient } from '@/query';
 import * as checkAlert from '@/tasks/checkAlerts';
 import {
   alertHasGroupBy,
@@ -1862,9 +1862,7 @@ describe('checkAlerts', () => {
               type: null, // using template instead
             },
           },
-          attributes: {
-            host: 'web2',
-          },
+          attributes: {},
         },
         title: 'Alert for "My Search" - 10 lines found',
         teamId: team._id.toString(),
@@ -2057,7 +2055,6 @@ describe('checkAlerts', () => {
       const connection = await Connection.create({
         team: team._id,
         name: 'Default',
-        host: config.CLICKHOUSE_HOST,
         username: config.CLICKHOUSE_USER,
         password: config.CLICKHOUSE_PASSWORD,
       });
@@ -2085,11 +2082,7 @@ describe('checkAlerts', () => {
         tags: ['test'],
       }).save();
 
-      const clickhouseClient = new ClickhouseClient({
-        host: connection.host,
-        username: connection.username,
-        password: connection.password,
-      });
+      const clickhouseClient = new DataClient({});
 
       return {
         team,
@@ -2147,7 +2140,7 @@ describe('checkAlerts', () => {
     const processAlertAtTime = async (
       now: Date,
       details: AlertDetails,
-      clickhouseClient: ClickhouseClient,
+      clickhouseClient: DataClient,
       connection: IConnection,
       alertProvider: AlertProvider,
       teamWebhooksById: Map<string, IWebhook>,
@@ -2660,7 +2653,6 @@ describe('checkAlerts', () => {
           \`service-name\` String,
           Body String
         ) ENGINE = MergeTree ORDER BY Timestamp`,
-        clickhouse_settings: { wait_end_of_query: 1 },
       });
 
       try {
@@ -2753,7 +2745,6 @@ describe('checkAlerts', () => {
       } finally {
         await nativeClient.command({
           query: `DROP TABLE IF EXISTS ${DEFAULT_DATABASE}.${ESCAPED_FILTER_TABLE}`,
-          clickhouse_settings: { wait_end_of_query: 1 },
         });
       }
     });
@@ -7570,7 +7561,6 @@ describe('checkAlerts', () => {
         MetricName: 'test.cpu',
         ServiceName: 'db',
         ResourceAttributes: {
-          host: 'host1',
           ip: '127.0.0.1',
         },
         Value: point.value,
@@ -10100,7 +10090,6 @@ describe('checkAlerts', () => {
       const connection = await Connection.create({
         team: team._id,
         name: 'Default',
-        host: config.CLICKHOUSE_HOST,
         username: config.CLICKHOUSE_USER,
         password: config.CLICKHOUSE_PASSWORD,
       });
@@ -10131,11 +10120,7 @@ describe('checkAlerts', () => {
         tags: ['test'],
       }).save();
 
-      const clickhouseClient = new ClickhouseClient({
-        host: connection.host,
-        username: connection.username,
-        password: connection.password,
-      });
+      const clickhouseClient = new DataClient({});
 
       const now = new Date('2023-11-16T22:12:00.000Z');
       const eventMs = new Date('2023-11-16T22:05:00.000Z');
@@ -10208,7 +10193,6 @@ describe('checkAlerts', () => {
       const connection = await Connection.create({
         team: team._id,
         name: 'Default',
-        host: config.CLICKHOUSE_HOST,
         username: config.CLICKHOUSE_USER,
         password: config.CLICKHOUSE_PASSWORD,
       });
@@ -10237,11 +10221,7 @@ describe('checkAlerts', () => {
         tags: ['test'],
       }).save();
 
-      const clickhouseClient = new ClickhouseClient({
-        host: connection.host,
-        username: connection.username,
-        password: connection.password,
-      });
+      const clickhouseClient = new DataClient({});
 
       const now = new Date('2023-11-16T22:12:00.000Z');
       const eventMs = new Date('2023-11-16T22:05:00.000Z');
@@ -10307,7 +10287,6 @@ describe('checkAlerts', () => {
       const connection = await Connection.create({
         team: team._id,
         name: 'Default',
-        host: config.CLICKHOUSE_HOST,
         username: config.CLICKHOUSE_USER,
         password: config.CLICKHOUSE_PASSWORD,
       });
@@ -10336,11 +10315,7 @@ describe('checkAlerts', () => {
         tags: ['test'],
       }).save();
 
-      const clickhouseClient = new ClickhouseClient({
-        host: connection.host,
-        username: connection.username,
-        password: connection.password,
-      });
+      const clickhouseClient = new DataClient({});
 
       const now = new Date('2023-11-16T22:12:00.000Z');
       const eventMs = new Date('2023-11-16T22:05:00.000Z');
@@ -11740,9 +11715,6 @@ describe('checkAlerts', () => {
           ORDER BY (ServiceName, SeverityText, Timestamp)
           SETTINGS index_granularity = 8192
         `,
-        clickhouse_settings: {
-          wait_end_of_query: 1,
-        },
       });
     };
 
@@ -11750,9 +11722,6 @@ describe('checkAlerts', () => {
       const client = await getTestFixtureClickHouseClient();
       await client.command({
         query: `TRUNCATE ${DEFAULT_DATABASE}.${MV_TABLE_NAME}`,
-        clickhouse_settings: {
-          wait_end_of_query: 1,
-        },
       });
     };
 
@@ -11771,7 +11740,6 @@ describe('checkAlerts', () => {
       const connection = await Connection.create({
         team: team._id,
         name: 'Default',
-        host: config.CLICKHOUSE_HOST,
         username: config.CLICKHOUSE_USER,
         password: config.CLICKHOUSE_PASSWORD,
       });
@@ -11815,11 +11783,7 @@ describe('checkAlerts', () => {
         tags: ['test'],
       }).save();
 
-      const clickhouseClient = new ClickhouseClient({
-        host: connection.host,
-        username: connection.username,
-        password: connection.password,
-      });
+      const clickhouseClient = new DataClient({});
 
       return {
         team,
@@ -11855,7 +11819,6 @@ describe('checkAlerts', () => {
       const client = await getTestFixtureClickHouseClient();
       await client.command({
         query: `DROP TABLE IF EXISTS ${DEFAULT_DATABASE}.${MV_TABLE_NAME}`,
-        clickhouse_settings: { wait_end_of_query: 1 },
       });
       await server.stop();
     });

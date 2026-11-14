@@ -1,21 +1,21 @@
+import { getMetadata } from '@couchbase-traces/common-utils/dist/dataLayer';
 import {
   chSql,
+  columnTypeToJSType,
   concatChSql,
-  convertCHDataTypeToJSType,
   filterColumnMetaByType,
   JSDataType,
   tableExpr,
-} from '@couchbase-traces/common-utils/dist/clickhouse';
-import { getMetadata } from '@couchbase-traces/common-utils/dist/dataLayer';
+} from '@couchbase-traces/common-utils/dist/query';
 import { SourceKind } from '@couchbase-traces/common-utils/dist/types';
 import { z } from 'zod';
 
-import { ClickhouseClient } from '@/clickhouse';
 import { getConnectionById } from '@/controllers/connection';
 import { getSource } from '@/controllers/sources';
 import { READ_ONLY_TOOL } from '@/mcp/tools/annotations';
 import {
   clickHouseErrorResult,
+  MCP_REQUEST_TIMEOUT,
   parseTimeRange,
 } from '@/mcp/tools/query/helpers';
 import type { ToolRegistrar } from '@/mcp/tools/types';
@@ -26,6 +26,7 @@ import {
 } from '@/mcp/utils/errors';
 import { assertMcpSliceForConnection } from '@/mcp/utils/mcpSlice';
 import { MCP_TOOL_TIMEOUT_MS, runWithTimeout } from '@/mcp/utils/timeout';
+import { DataClient } from '@/query';
 import logger from '@/utils/logger';
 import { trimToolResponse } from '@/utils/trimToolResponse';
 
@@ -47,8 +48,6 @@ const METRIC_ATTR_KEYS_SAMPLE_SIZE = 100_000;
 // Attribute keys and value sampling run back to back, so each gets under half
 // the wall-clock budget; with timeout_overflow_mode: 'break' both return
 // partial results before DESCRIBE_TIMEOUT_MS fires.
-const METRIC_ATTR_KEYS_MAX_EXEC_SECONDS = 14;
-
 // Max sampled values per attribute key (when sampleValues is true).
 const MAX_ATTR_VALUES = 10;
 // Cap on the number of attribute keys we sample values for per kind to
@@ -161,7 +160,7 @@ async function fetchUnitAndDescription({
   hasDescription,
   signal,
 }: {
-  clickhouseClient: ClickhouseClient;
+  clickhouseClient: DataClient;
   databaseName: string;
   tableName: string;
   connectionId: string;
@@ -205,15 +204,11 @@ async function fetchUnitAndDescription({
     )
   `;
   try {
-    const response = await clickhouseClient.query<'JSON'>({
+    const response = await clickhouseClient.query({
       query: sql.sql,
       query_params: sql.params,
       format: 'JSON',
       connectionId,
-      clickhouse_settings: {
-        max_execution_time: METRIC_ATTR_KEYS_MAX_EXEC_SECONDS,
-        timeout_overflow_mode: 'break',
-      },
       abort_signal: signal,
     });
     const result = (await response.json()) as {
@@ -263,7 +258,7 @@ async function fetchAttributeKeys({
   endDate,
   signal,
 }: {
-  clickhouseClient: ClickhouseClient;
+  clickhouseClient: DataClient;
   databaseName: string;
   tableName: string;
   connectionId: string;
@@ -275,7 +270,7 @@ async function fetchAttributeKeys({
 }): Promise<FetchResult<Record<string, string[]>>> {
   const mapColumns =
     filterColumnMetaByType(columns, [JSDataType.Map])?.filter(
-      c => convertCHDataTypeToJSType(c.type) === JSDataType.Map,
+      c => columnTypeToJSType(c.type) === JSDataType.Map,
     ) ?? [];
   if (mapColumns.length === 0) return { ok: true, data: {} };
 
@@ -307,15 +302,11 @@ async function fetchAttributeKeys({
   `;
 
   try {
-    const response = await clickhouseClient.query<'JSON'>({
+    const response = await clickhouseClient.query({
       query: sql.sql,
       query_params: sql.params,
       format: 'JSON',
       connectionId,
-      clickhouse_settings: {
-        max_execution_time: METRIC_ATTR_KEYS_MAX_EXEC_SECONDS,
-        timeout_overflow_mode: 'break',
-      },
       abort_signal: signal,
     });
     const result = (await response.json()) as {
@@ -367,7 +358,7 @@ async function sampleAttributeValues({
   endDate,
   signal,
 }: {
-  clickhouseClient: ClickhouseClient;
+  clickhouseClient: DataClient;
   databaseName: string;
   tableName: string;
   connectionId: string;
@@ -435,15 +426,11 @@ async function sampleAttributeValues({
   `;
 
   try {
-    const response = await clickhouseClient.query<'JSON'>({
+    const response = await clickhouseClient.query({
       query: sql.sql,
       query_params: sql.params,
       format: 'JSON',
       connectionId,
-      clickhouse_settings: {
-        max_execution_time: METRIC_ATTR_KEYS_MAX_EXEC_SECONDS,
-        timeout_overflow_mode: 'break',
-      },
       abort_signal: signal,
     });
     const result = (await response.json()) as {
@@ -509,10 +496,8 @@ async function describeMetricImpl(
   );
   if (sliceErr) return sliceErr;
 
-  const clickhouseClient = new ClickhouseClient({
-    host: connection.host,
-    username: connection.username,
-    password: connection.password,
+  const clickhouseClient = new DataClient({
+    requestTimeout: MCP_REQUEST_TIMEOUT,
   });
   const metadata = getMetadata(clickhouseClient);
   const databaseName = source.from.databaseName;

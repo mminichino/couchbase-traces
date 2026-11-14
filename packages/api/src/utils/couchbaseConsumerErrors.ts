@@ -1,8 +1,7 @@
-import { CouchbaseQueryError } from '@couchbase-traces/common-utils/dist/couchbase/errors';
 import {
-  CouchbaseNotReadyError,
+  CouchbaseQueryError,
   CouchbaseUnsupportedError,
-} from '@couchbase-traces/common-utils/dist/dataLayer';
+} from '@couchbase-traces/common-utils/dist/couchbase/errors';
 
 import type { McpErrorResult } from '@/mcp/utils/errors';
 import { mcpServerError, mcpUserError } from '@/mcp/utils/errors';
@@ -20,11 +19,9 @@ export function couchbaseConsumerHttpResponse<F extends ExternalApiErrorField>(
   err: unknown,
   field: F,
 ): { status: number; body: Record<F, string> } | null {
-  if (err instanceof CouchbaseNotReadyError) {
-    return { status: 409, body: bodyFor(field, err.message) };
-  }
   if (err instanceof CouchbaseUnsupportedError) {
-    return { status: 422, body: bodyFor(field, err.message) };
+    const status = /multiSeries/i.test(err.message) ? 422 : 409;
+    return { status, body: bodyFor(field, err.message) };
   }
   if (err instanceof CouchbaseQueryError) {
     const safeMsg =
@@ -44,9 +41,6 @@ function firstLine(message: string): string {
  * Map Couchbase data-layer errors to MCP tool errors (Phase 8 §3.5).
  */
 export function couchbaseConsumerMcpError(err: unknown): McpErrorResult | null {
-  if (err instanceof CouchbaseNotReadyError) {
-    return mcpUserError(err.message);
-  }
   if (err instanceof CouchbaseUnsupportedError) {
     return mcpUserError(err.message);
   }

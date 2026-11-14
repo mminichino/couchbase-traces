@@ -1,10 +1,10 @@
 import { JSX } from 'react';
 import {
   ColumnMetaType,
-  convertCHDataTypeToJSType,
+  columnTypeToJSType,
   isCHIntegerType,
   JSDataType,
-} from '@couchbase-traces/common-utils/dist/clickhouse';
+} from '@couchbase-traces/common-utils/dist/query';
 import { SourceKind } from '@couchbase-traces/common-utils/dist/types';
 
 export type SourceFieldKind =
@@ -47,11 +47,11 @@ function unwrap(chType: string): string {
 
 /** String, LowCardinality(String), Nullable(String), FixedString, Enum, UUID. */
 const isStringy: TypePredicate = t =>
-  convertCHDataTypeToJSType(t) === JSDataType.String;
+  columnTypeToJSType(t) === JSDataType.String;
 
 /** Map(String, *) or JSON. */
 const isMapLike: TypePredicate = t => {
-  const js = convertCHDataTypeToJSType(t);
+  const js = columnTypeToJSType(t);
   return js === JSDataType.Map || js === JSDataType.JSON;
 };
 

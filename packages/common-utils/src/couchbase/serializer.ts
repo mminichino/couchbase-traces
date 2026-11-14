@@ -1,7 +1,7 @@
 import lucene from '@hyperdx/lucene';
 
-import { JSDataType } from '@/clickhouse';
 import { concatSqlPP, type SqlPP } from '@/couchbase/sqlpp';
+import { JSDataType } from '@/query';
 import { genWhereSQL, parse } from '@/queryParser';
 
 import type { FieldContext, ResolvedField } from './fields';

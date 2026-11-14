@@ -1,12 +1,5 @@
 import { useMemo } from 'react';
 import {
-  ColumnMeta,
-  convertCHDataTypeToJSType,
-  filterColumnMetaByType,
-  isJSDataTypeScalar,
-  JSDataType,
-} from '@couchbase-traces/common-utils/dist/clickhouse';
-import {
   Field,
   tcFromSource,
 } from '@couchbase-traces/common-utils/dist/core/metadata';
@@ -15,6 +8,13 @@ import {
   isAdhocComparableDataType,
   ResolvedFilterValuesQuery,
 } from '@couchbase-traces/common-utils/dist/filters';
+import {
+  ColumnMeta,
+  columnTypeToJSType,
+  filterColumnMetaByType,
+  isJSDataTypeScalar,
+  JSDataType,
+} from '@couchbase-traces/common-utils/dist/query';
 import {
   AdhocDashboardFilter,
   TSource,
@@ -76,7 +76,7 @@ export function getSqlSourceColumnKeys(
   const keys = columns
     .filter(
       column =>
-        isJSDataTypeScalar(convertCHDataTypeToJSType(column.type)) &&
+        isJSDataTypeScalar(columnTypeToJSType(column.type)) &&
         keepType(column.type),
     )
     .map(column => column.name);

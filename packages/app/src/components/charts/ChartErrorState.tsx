@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
 import cx from 'classnames';
-import { ClickHouseQueryError } from '@couchbase-traces/common-utils/dist/clickhouse';
+import { QueryError } from '@couchbase-traces/common-utils/dist/query';
 import { Button, Code, Group, Modal, Stack, Text } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
 import { IconArrowsDiagonal } from '@tabler/icons-react';
@@ -13,7 +13,7 @@ export default function ChartErrorState({
   error,
   variant = 'collapsible',
 }: {
-  error: Error | ClickHouseQueryError;
+  error: Error | QueryError;
   variant?: ChartErrorStateVariant;
 }) {
   const [isErrorExpanded, errorExpansion] = useDisclosure(false);
@@ -33,7 +33,7 @@ export default function ChartErrorState({
         >
           {error.message}
         </Code>
-        {error instanceof ClickHouseQueryError && (
+        {error instanceof QueryError && (
           <>
             <Text size="sm" ta="center">
               Sent Query:

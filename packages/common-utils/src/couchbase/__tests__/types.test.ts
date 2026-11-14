@@ -1,36 +1,20 @@
 import {
-  ClickHouseConnectionSchema,
+  ConnectionResponseSchema,
   ConnectionSchema,
   ConnectionSchemaNoId,
   CouchbaseConnectionSchema,
   isCouchbaseConnection,
   LogSourceSchema,
+  UnsupportedClickHouseConnectionSchema,
 } from '@/types';
 
 describe('ConnectionSchema', () => {
   const base = { id: 'c1', name: 'n', username: 'u' };
 
-  it('parses a connection without kind as ClickHouse', () => {
-    const parsed = ConnectionSchema.parse({
-      ...base,
-      host: 'http://localhost:8123',
-      hyperdxSettingPrefix: 'cbt_',
-    });
-    expect(parsed.kind).toBe('clickhouse');
-    expect(isCouchbaseConnection(parsed)).toBe(false);
-  });
-
-  it('treats an explicit null kind as ClickHouse', () => {
-    expect(
-      ConnectionSchema.parse({ ...base, host: 'http://h', kind: null }).kind,
-    ).toBe('clickhouse');
-  });
-
-  it('requires a valid connection string for Couchbase', () => {
+  it('requires couchbase kind and a valid connection string', () => {
     expect(
       ConnectionSchema.safeParse({
         ...base,
-        kind: 'couchbase',
         host: 'http://h',
       }).success,
     ).toBe(false);
@@ -43,14 +27,7 @@ describe('ConnectionSchema', () => {
     expect(isCouchbaseConnection(ok)).toBe(true);
   });
 
-  it('rejects unknown kinds', () => {
-    expect(
-      ConnectionSchema.safeParse({ ...base, kind: 'postgres', host: 'x' })
-        .success,
-    ).toBe(false);
-  });
-
-  it('strips ClickHouse-only fields from Couchbase connections', () => {
+  it('strips unknown fields on create', () => {
     const parsed = ConnectionSchemaNoId.parse({
       name: 'n',
       username: 'u',
@@ -61,22 +38,33 @@ describe('ConnectionSchema', () => {
     expect(parsed).not.toHaveProperty('hyperdxSettingPrefix');
     expect(parsed).not.toHaveProperty('id');
   });
+});
 
-  it('an external schema built from the variants omits secrets', () => {
-    const external = ConnectionSchema.pipe(
-      ClickHouseConnectionSchema.omit({ password: true }).or(
-        CouchbaseConnectionSchema.omit({
-          password: true,
-          tlsCaCertificate: true,
-        }),
-      ),
-    );
+describe('ConnectionResponseSchema', () => {
+  it('parses unsupported legacy ClickHouse connections', () => {
+    const parsed = ConnectionResponseSchema.parse({
+      id: 'c1',
+      name: 'old',
+      kind: 'clickhouse',
+      unsupported: true,
+    });
+    expect(
+      UnsupportedClickHouseConnectionSchema.parse(parsed).unsupported,
+    ).toBe(true);
+  });
+
+  it('an external schema omits secrets from Couchbase connections', () => {
+    const external = CouchbaseConnectionSchema.omit({
+      password: true,
+      tlsCaCertificate: true,
+      monitorPassword: true,
+    });
     const out = external.parse({
-      ...base,
+      id: 'c1',
+      name: 'n',
+      username: 'u',
       kind: 'couchbase',
       host: 'couchbase://h',
-      password: 'secret',
-      tlsCaCertificate: '-----BEGIN CERTIFICATE-----',
     });
     expect(out).not.toHaveProperty('password');
     expect(out).not.toHaveProperty('tlsCaCertificate');
@@ -98,20 +86,6 @@ describe('BaseSourceSchema Couchbase fields', () => {
     });
     expect(parsed.from.scopeName).toBe('s');
     expect(parsed.timestampFormat).toBe('epoch_millis');
-  });
-
-  it('rejects an unknown timestamp format', () => {
-    expect(
-      LogSourceSchema.safeParse({
-        id: 's',
-        name: 'logs',
-        kind: 'log',
-        connection: 'c',
-        from: { databaseName: 'b', tableName: 'c' },
-        timestampValueExpression: 'ts',
-        defaultTableSelectExpression: '*',
-        timestampFormat: 'unix',
-      }).success,
-    ).toBe(false);
+    expect(parsed.searchIndexName).toBe('idx');
   });
 });

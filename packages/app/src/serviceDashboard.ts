@@ -1,11 +1,11 @@
 import { useMemo } from 'react';
-import { ColumnMeta } from '@couchbase-traces/common-utils/dist/clickhouse';
 import { tcFromSource } from '@couchbase-traces/common-utils/dist/core/metadata';
 import {
   errorStatusPredicateSql,
   serverSpanKindPredicateSql,
 } from '@couchbase-traces/common-utils/dist/core/spanPredicates';
 import { escapeSqlString } from '@couchbase-traces/common-utils/dist/core/utils';
+import { ColumnMeta } from '@couchbase-traces/common-utils/dist/query';
 import {
   SourceKind,
   TTraceSource,

@@ -1,27 +1,15 @@
 import { useCallback, useState } from 'react';
 import { omit } from 'lodash';
-import { Controller, useForm, useWatch } from 'react-hook-form';
-import { testLocalConnection } from '@couchbase-traces/common-utils/dist/clickhouse/browser';
+import { useForm, useWatch } from 'react-hook-form';
+import { testLocalConnection } from '@couchbase-traces/common-utils/dist/dataLayer/browser';
 import {
   Connection,
-  ConnectionKind,
+  isCouchbaseConnection,
+  type UnsupportedClickHouseConnection,
 } from '@couchbase-traces/common-utils/dist/types';
-import {
-  Anchor,
-  Box,
-  Button,
-  Flex,
-  Group,
-  SegmentedControl,
-  Stack,
-  Switch,
-  Text,
-  Tooltip,
-} from '@mantine/core';
+import { Box, Button, Flex, Group, Stack, Text, Tooltip } from '@mantine/core';
 import { notifications } from '@mantine/notifications';
-import { IconHelpCircle, IconSettings } from '@tabler/icons-react';
 
-import api from '@/api';
 import {
   type ConnectionFormValues,
   CouchbaseConnectionFields,
@@ -29,20 +17,14 @@ import {
 import {
   InputControlled,
   PasswordInputControlled,
-  TextInputControlled,
 } from '@/components/InputControlled';
-import {
-  IS_CLICKHOUSE_BUILD,
-  IS_LOCAL_MODE,
-  IS_PROMQL_ENABLED,
-} from '@/config';
+import { IS_LOCAL_MODE } from '@/config';
 import {
   testConnectionByKind,
   useCreateConnection,
   useDeleteConnection,
   useUpdateConnection,
 } from '@/connection';
-import { stripTrailingSlash } from '@/utils';
 
 import ConfirmDeleteMenu from './ConfirmDeleteMenu';
 
@@ -52,10 +34,15 @@ enum TestConnectionState {
   Invalid = 'invalid',
 }
 
-const KIND_LABELS: Record<ConnectionKind, string> = {
-  clickhouse: 'ClickHouse',
-  couchbase: 'Couchbase',
-};
+function isUnsupportedClickHouseConnection(
+  connection: Connection,
+): connection is UnsupportedClickHouseConnection {
+  return (
+    connection.kind === 'clickhouse' &&
+    'unsupported' in connection &&
+    connection.unsupported === true
+  );
+}
 
 function useTestConnection({
   getValues,
@@ -66,7 +53,6 @@ function useTestConnection({
   connectionId: string;
   isNew: boolean;
 }) {
-  const testClickHouseConnection = api.useTestConnection();
   const [testConnectionState, setTestConnectionState] =
     useState<TestConnectionState | null>(null);
 
@@ -74,10 +60,7 @@ function useTestConnection({
     const values = getValues();
     const { username } = values;
     const password = values.password ?? '';
-    const host =
-      values.kind === 'couchbase'
-        ? values.host.trim()
-        : stripTrailingSlash(values.host);
+    const host = values.host.trim();
 
     if (testConnectionState) {
       return;
@@ -109,23 +92,15 @@ function useTestConnection({
       }
     } else {
       try {
-        const result =
-          values.kind === 'couchbase'
-            ? await testConnectionByKind({
-                kind: 'couchbase',
-                host,
-                username,
-                // Blank secrets on edit reuse the stored ones.
-                password: password || undefined,
-                wanProfile: values.wanProfile,
-                tlsCaCertificate: values.tlsCaCertificate || undefined,
-                connectionId: isNew ? undefined : connectionId,
-              })
-            : await testClickHouseConnection.mutateAsync({
-                host,
-                username,
-                password,
-              });
+        const result = await testConnectionByKind({
+          kind: 'couchbase',
+          host,
+          username,
+          password: password || undefined,
+          wanProfile: values.wanProfile,
+          tlsCaCertificate: values.tlsCaCertificate || undefined,
+          connectionId: isNew ? undefined : connectionId,
+        });
         if (result.success) {
           setTestConnectionState(TestConnectionState.Valid);
         } else {
@@ -150,13 +125,7 @@ function useTestConnection({
     setTimeout(() => {
       setTestConnectionState(null);
     }, 2000);
-  }, [
-    getValues,
-    testConnectionState,
-    connectionId,
-    isNew,
-    testClickHouseConnection,
-  ]);
+  }, [getValues, testConnectionState, connectionId, isNew]);
 
   return {
     testConnectionState,
@@ -179,97 +148,55 @@ export function ConnectionForm({
   showCancelButton?: boolean;
   showDeleteButton?: boolean;
 }) {
-  const {
-    control,
-    handleSubmit,
-    resetField,
-    getValues,
-    setValue,
-    formState,
-    trigger,
-  } = useForm<ConnectionFormValues>({
-    defaultValues: {
-      id: connection.id,
-      name: connection.name,
-      kind: connection.kind ?? 'clickhouse',
-      host: connection.host ?? '',
-      username: connection.username,
-      password: connection.password,
-      ...(connection.kind === 'couchbase'
-        ? {
-            wanProfile:
-              connection.wanProfile ??
-              /^couchbases:\/\//i.test(connection.host ?? ''),
-            monitorUsername: connection.monitorUsername ?? '',
-            managementPort:
-              connection.managementPort == null
-                ? ''
-                : String(connection.managementPort),
-          }
-        : {
-            hyperdxSettingPrefix: connection.hyperdxSettingPrefix,
-            isPrometheusEndpoint: connection.isPrometheusEndpoint,
-          }),
-    },
-  });
+  const { control, handleSubmit, resetField, getValues, setValue, formState } =
+    useForm<ConnectionFormValues>({
+      defaultValues: {
+        id: connection.id,
+        name: connection.name,
+        kind: 'couchbase',
+        host: isCouchbaseConnection(connection) ? connection.host : '',
+        username: isCouchbaseConnection(connection) ? connection.username : '',
+        password: isCouchbaseConnection(connection) ? connection.password : '',
+        wanProfile: isCouchbaseConnection(connection)
+          ? (connection.wanProfile ??
+            /^couchbases:\/\//i.test(connection.host ?? ''))
+          : false,
+        monitorUsername: isCouchbaseConnection(connection)
+          ? (connection.monitorUsername ?? '')
+          : '',
+        managementPort:
+          isCouchbaseConnection(connection) && connection.managementPort != null
+            ? String(connection.managementPort)
+            : '',
+      },
+    });
 
   const watchedHost = useWatch({ control, name: 'host' });
-  const kind = useWatch({ control, name: 'kind' });
-  const isCouchbase = kind === 'couchbase';
-  const isPrometheusEndpoint = useWatch({
-    control,
-    name: 'isPrometheusEndpoint',
-  });
 
   const createConnection = useCreateConnection();
   const updateConnection = useUpdateConnection();
   const deleteConnection = useDeleteConnection();
 
   const onSubmit = (data: ConnectionFormValues) => {
-    const base = {
+    const normalizedData: Connection = {
       id: data.id,
       name: data.name,
+      kind: 'couchbase',
+      host: data.host.trim(),
       username: data.username,
       password: data.password,
+      wanProfile: data.wanProfile,
+      monitorUsername: data.monitorUsername?.trim() ?? '',
+      ...(data.monitorPassword
+        ? { monitorPassword: data.monitorPassword }
+        : {}),
+      managementPort: data.managementPort?.trim()
+        ? Number(data.managementPort)
+        : null,
+      ...(data.tlsCaCertificate?.trim()
+        ? { tlsCaCertificate: data.tlsCaCertificate.trim() }
+        : {}),
     };
-    const stripped = data.host ? stripTrailingSlash(data.host) : '';
-    const normalizedData: Connection =
-      data.kind === 'couchbase'
-        ? {
-            ...base,
-            kind: 'couchbase',
-            host: data.host.trim(),
-            wanProfile: data.wanProfile,
-            monitorUsername: data.monitorUsername?.trim() ?? '',
-            // Write-only: blank keeps the stored password on update.
-            ...(data.monitorPassword
-              ? { monitorPassword: data.monitorPassword }
-              : {}),
-            // Null clears a stored port so the scheme default applies.
-            managementPort: data.managementPort?.trim()
-              ? Number(data.managementPort)
-              : null,
-            // Write-only: blank keeps the stored certificate on update.
-            ...(data.tlsCaCertificate?.trim()
-              ? { tlsCaCertificate: data.tlsCaCertificate.trim() }
-              : {}),
-          }
-        : data.isPrometheusEndpoint
-          ? {
-              ...base,
-              kind: 'clickhouse',
-              host: stripped,
-              username: '',
-              hyperdxSettingPrefix: null,
-              isPrometheusEndpoint: true,
-            }
-          : {
-              ...base,
-              kind: 'clickhouse',
-              host: stripped,
-              hyperdxSettingPrefix: data.hyperdxSettingPrefix || null,
-              isPrometheusEndpoint: data.isPrometheusEndpoint,
-            };
 
     if (isNew) {
       const connection = omit(normalizedData, ['id']);
@@ -318,13 +245,41 @@ export function ConnectionForm({
   };
 
   const [showUpdatePassword, setShowUpdatePassword] = useState(false);
-  const [showAdvancedSettings, setShowAdvancedSettings] = useState(false);
 
   const { testConnectionState, handleTestConnection } = useTestConnection({
     getValues,
     connectionId: connection.id,
     isNew,
   });
+
+  if (isUnsupportedClickHouseConnection(connection)) {
+    return (
+      <Stack gap="md" data-testid="connection-form-unsupported">
+        <Text fw={600}>ClickHouse (no longer supported)</Text>
+        <Text size="sm" c="dimmed">
+          This connection cannot be edited. Delete it and create a Couchbase
+          connection to continue querying data.
+        </Text>
+        <Group justify="flex-end">
+          {onClose && showCancelButton && (
+            <Button variant="secondary" onClick={onClose}>
+              Close
+            </Button>
+          )}
+          {showDeleteButton !== false && (
+            <ConfirmDeleteMenu
+              onDelete={() =>
+                deleteConnection.mutate(
+                  { id: connection.id },
+                  { onSuccess: () => onClose?.() },
+                )
+              }
+            />
+          )}
+        </Group>
+      </Stack>
+    );
+  }
 
   const passwordField = (
     <>
@@ -384,231 +339,25 @@ export function ConnectionForm({
             data-testid="connection-name-input"
             name="name"
             control={control}
-            placeholder="My Clickhouse Server"
+            placeholder="My Couchbase cluster"
             rules={{ required: 'Connection name is required' }}
           />
         </Box>
-        {!IS_LOCAL_MODE && isNew && (
-          <Controller
-            control={control}
-            name="kind"
-            render={({ field: { value, onChange } }) => (
-              <SegmentedControl
-                data-testid="connection-kind-selector"
-                value={value}
-                onChange={v => {
-                  onChange(v);
-                  if (formState.isSubmitted || formState.touchedFields.host) {
-                    void trigger('host');
-                  }
-                }}
-                data={[
-                  { label: KIND_LABELS.clickhouse, value: 'clickhouse' },
-                  { label: KIND_LABELS.couchbase, value: 'couchbase' },
-                ]}
-              />
-            )}
-          />
-        )}
-        {!IS_LOCAL_MODE && !isNew && (
-          <Text size="xs" data-testid="connection-kind-label">
-            Type: {KIND_LABELS[kind]}
-          </Text>
-        )}
-        {isCouchbase ? (
-          <CouchbaseConnectionFields
-            control={control}
-            setValue={setValue}
-            isNew={isNew}
-            passwordField={passwordField}
-          />
-        ) : (
-          <>
-            <Box>
-              <Group gap="xs" mb="xs">
-                <Text size="xs">Host</Text>
-                <Tooltip
-                  label={
-                    isPrometheusEndpoint
-                      ? 'Prometheus-compatible API endpoint. PromQL queries are proxied to this URL.'
-                      : 'ClickHouse HTTP endpoint URL.'
-                  }
-                  color="dark"
-                  c="white"
-                  multiline
-                  maw={400}
-                >
-                  <IconHelpCircle size={16} className="cursor-pointer" />
-                </Tooltip>
-              </Group>
-              <TextInputControlled
-                data-testid="connection-host-input"
-                name="host"
-                control={control}
-                placeholder={
-                  isPrometheusEndpoint
-                    ? 'http://thanos-querier:10902'
-                    : IS_CLICKHOUSE_BUILD
-                      ? window.location.origin
-                      : 'http://localhost:8123'
-                }
-                rules={{
-                  validate: value => {
-                    if (typeof value !== 'string' || !value) {
-                      return 'Host is required';
-                    }
-                    if (isPrometheusEndpoint) {
-                      try {
-                        new URL(value);
-                        return true;
-                      } catch {
-                        return 'Must be a valid URL';
-                      }
-                    }
-                    return true;
-                  },
-                }}
-              />
-            </Box>
-            {!isPrometheusEndpoint && (
-              <>
-                <Box>
-                  <Text size="xs" mb="xs">
-                    Username
-                  </Text>
-                  <InputControlled
-                    data-testid="connection-username-input"
-                    name="username"
-                    control={control}
-                    placeholder="Username (default: default)"
-                  />
-                </Box>
-                <Box>
-                  <Text size="xs" mb="xs">
-                    Password
-                  </Text>
-                  {passwordField}
-                </Box>
-              </>
-            )}
-            <Box>
-              {!showAdvancedSettings && (
-                <Anchor
-                  underline="always"
-                  onClick={() => setShowAdvancedSettings(true)}
-                  size="xs"
-                >
-                  <Group gap="xs">
-                    <IconSettings size={14} />
-                    Advanced Settings
-                  </Group>
-                </Anchor>
-              )}
-              {showAdvancedSettings && (
-                <Button
-                  onClick={() => setShowAdvancedSettings(false)}
-                  size="xs"
-                  variant="subtle"
-                >
-                  Hide Advanced Settings
-                </Button>
-              )}
-            </Box>
-            <Box
-              style={{
-                display: showAdvancedSettings ? 'block' : 'none',
-              }}
-            >
-              <Stack gap="md">
-                {IS_PROMQL_ENABLED && (
-                  <Box>
-                    <Controller
-                      control={control}
-                      name="isPrometheusEndpoint"
-                      render={({ field: { value, onChange } }) => (
-                        <Group gap="xs">
-                          <Switch
-                            data-testid="connection-prometheus-compatible-switch"
-                            checked={!!value}
-                            onChange={e => {
-                              onChange(e.currentTarget.checked);
-                              if (
-                                formState.isSubmitted ||
-                                formState.touchedFields.host
-                              ) {
-                                void trigger('host');
-                              }
-                            }}
-                          />
-                          <Text size="sm">Prometheus compatible</Text>
-                          <Tooltip
-                            label="Treat the Host as a Prometheus-compatible API endpoint (e.g. Thanos). PromQL queries are proxied here. ClickHouse-backed sources (logs, traces, OTel metrics) are not available on this connection."
-                            color="dark"
-                            c="white"
-                            multiline
-                            maw={400}
-                          >
-                            <IconHelpCircle
-                              size={16}
-                              className="cursor-pointer"
-                            />
-                          </Tooltip>
-                        </Group>
-                      )}
-                    />
-                  </Box>
-                )}
-                {!isPrometheusEndpoint && (
-                  <Box>
-                    <Group gap="xs" mb="xs">
-                      <Text size="xs">Query Log Setting Prefix</Text>
-                      <Tooltip
-                        label="Tracks query origins by adding the current user's email to ClickHouse queries (as {prefix}_user in system.query_log). Requires 'custom_settings_prefixes' in your ClickHouse config.xml to include this exact value, otherwise queries will be rejected."
-                        color="dark"
-                        c="white"
-                        multiline
-                        maw={400}
-                      >
-                        <IconHelpCircle size={16} className="cursor-pointer" />
-                      </Tooltip>
-                    </Group>
-                    <InputControlled
-                      data-testid="connection-setting-prefix-input"
-                      name="hyperdxSettingPrefix"
-                      control={control}
-                      placeholder="hyperdx"
-                    />
-                  </Box>
-                )}
-              </Stack>
-            </Box>
-          </>
-        )}
+        <CouchbaseConnectionFields
+          control={control}
+          setValue={setValue}
+          isNew={isNew}
+          passwordField={passwordField}
+        />
         <Group justify="space-between">
           <Tooltip
-            label={
-              isCouchbase
-                ? 'Enter a connection string to test the connection.'
-                : isPrometheusEndpoint
-                  ? 'Test Connection only verifies ClickHouse hosts; Prometheus-compatible endpoints have no equivalent probe.'
-                  : !watchedHost
-                    ? 'Enter a ClickHouse host to test the connection.'
-                    : '🔒 Password re-entry required for security'
-            }
+            label="Enter a connection string to test the connection."
             position="right"
-            disabled={
-              isCouchbase
-                ? !!watchedHost
-                : isNew && !!watchedHost && !isPrometheusEndpoint
-            }
+            disabled={!!watchedHost}
             withArrow
           >
             <Button
-              disabled={
-                !formState.isValid ||
-                !watchedHost ||
-                (!isCouchbase && isPrometheusEndpoint)
-              }
+              disabled={!formState.isValid || !watchedHost}
               variant={
                 testConnectionState === TestConnectionState.Invalid
                   ? 'danger'

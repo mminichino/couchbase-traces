@@ -1,4 +1,3 @@
-import { ClickhouseClient } from '@couchbase-traces/common-utils/dist/clickhouse/node';
 import {
   AlertChartConfig,
   Tile,
@@ -13,6 +12,7 @@ import { IDashboard } from '@/models/dashboard';
 import { ISavedSearch } from '@/models/savedSearch';
 import { ISource } from '@/models/source';
 import { IWebhook } from '@/models/webhook';
+import { DataClient } from '@/query';
 import { AggregatedAlertHistory } from '@/tasks/checkAlerts';
 import DefaultAlertProvider from '@/tasks/checkAlerts/providers/default';
 import logger from '@/utils/logger';
@@ -152,7 +152,7 @@ export interface AlertProvider {
   getClickHouseClient(
     connection: IConnection,
     requestTimeout?: number,
-  ): Promise<ClickhouseClient>;
+  ): Promise<DataClient>;
 }
 
 const ADDITIONAL_PROVIDERS: Record<string, () => AlertProvider> = {

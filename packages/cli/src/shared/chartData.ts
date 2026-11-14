@@ -19,7 +19,7 @@ import {
   JSDataType,
   type ColumnMetaType,
   type ResponseJSON,
-} from '@couchbase-traces/common-utils/dist/clickhouse';
+} from '@couchbase-traces/common-utils/dist/query';
 import { convertGranularityToSeconds } from '@couchbase-traces/common-utils/dist/core/utils';
 import type {
   ChartConfigWithOptDateRange,

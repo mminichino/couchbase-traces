@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react';
-import { ClickHouseQueryError } from '@couchbase-traces/common-utils/dist/clickhouse';
+import { QueryError } from '@couchbase-traces/common-utils/dist/query';
 
 import { timeBucketByGranularity } from '@/ChartUtils';
 
@@ -21,7 +21,7 @@ export type HeatmapData = {
   view: HeatmapView;
   isLoading: boolean;
   isRefreshing: boolean;
-  error: Error | ClickHouseQueryError | null | undefined;
+  error: Error | QueryError | null | undefined;
 };
 
 /** The heatmap's time columns: bucket starts across the date range. */

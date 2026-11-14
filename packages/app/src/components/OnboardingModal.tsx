@@ -373,15 +373,16 @@ function OnboardingModalComponent({
       {step === 'connection' && connections != null && (
         <>
           <Text size="sm" mb="md">
-            Lets set up your connection to ClickHouse
+            Let's set up your Couchbase connection
           </Text>
           {connections.length === 0 ? (
             <ConnectionForm
               connection={{
                 id: '',
+                kind: 'couchbase',
                 name: 'Default',
-                host: 'http://localhost:8123',
-                username: 'default',
+                host: 'couchbase://localhost',
+                username: 'Administrator',
                 password: '',
               }}
               onSave={() => {

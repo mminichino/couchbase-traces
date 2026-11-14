@@ -3,7 +3,7 @@ import { useController, UseControllerProps } from 'react-hook-form';
 import { ComboboxChevron, Flex, Select } from '@mantine/core';
 import { IconTable } from '@tabler/icons-react';
 
-import { useTablesDirect } from '@/clickhouse';
+import { useTablesDirect } from '@/query';
 
 import SourceSchemaPreview, {
   isSourceSchemaPreviewEnabled,

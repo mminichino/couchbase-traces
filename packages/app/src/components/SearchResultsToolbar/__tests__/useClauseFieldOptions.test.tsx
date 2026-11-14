@@ -1,8 +1,8 @@
+import { Field } from '@couchbase-traces/common-utils/dist/core/metadata';
 import {
   ColumnMeta,
   JSDataType,
-} from '@couchbase-traces/common-utils/dist/clickhouse';
-import { Field } from '@couchbase-traces/common-utils/dist/core/metadata';
+} from '@couchbase-traces/common-utils/dist/query';
 import { renderHook } from '@testing-library/react';
 
 import { useClauseFieldOptions } from '@/components/SearchResultsToolbar/useClauseFieldOptions';

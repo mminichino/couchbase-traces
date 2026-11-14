@@ -1,7 +1,7 @@
 import React from 'react';
 import { enableMapSet } from 'immer';
-import { JSDataType } from '@couchbase-traces/common-utils/dist/clickhouse';
 import { Field } from '@couchbase-traces/common-utils/dist/core/metadata';
+import { JSDataType } from '@couchbase-traces/common-utils/dist/query';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { renderHook } from '@testing-library/react';
 
@@ -493,7 +493,7 @@ describe('deriveMapColumnsFromFields', () => {
   });
 
   it('matches wrapped Map types via the canonical jsType', () => {
-    // convertCHDataTypeToJSType peels off LowCardinality(...) and
+    // columnTypeToJSType peels off LowCardinality(...) and
     // Nullable(...) before classifying, so jsType is the canonical signal.
     // A raw-string check on f.type would miss these wrappers and silently
     // fall through to the array-index path in mergePath.

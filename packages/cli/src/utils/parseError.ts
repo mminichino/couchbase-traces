@@ -5,10 +5,10 @@
  *
  * Mirrors the error handling patterns from the web frontend:
  * @source packages/app/src/DBSearchPage.tsx (queryError rendering)
- * @source packages/app/src/components/DBTableChart.tsx (ClickHouseQueryError handling)
+ * @source packages/app/src/components/DBTableChart.tsx (QueryError handling)
  */
 
-import { ClickHouseQueryError } from '@couchbase-traces/common-utils/dist/clickhouse';
+import { QueryError } from '@couchbase-traces/common-utils/dist/query';
 
 export type ErrorSeverity = 'error' | 'warning';
 
@@ -16,7 +16,7 @@ export interface ParsedError {
   severity: ErrorSeverity;
   /** Human-readable summary of the error */
   message: string;
-  /** The original SQL query that caused the error (from ClickHouseQueryError) */
+  /** The original SQL query that caused the error (from QueryError) */
   query?: string;
 }
 
@@ -96,21 +96,21 @@ function cleanMessage(raw: string): string {
  * Parse an error into a structured ParsedError.
  *
  * Accepts:
- * - `ClickHouseQueryError` — extracts both `.message` and `.query`
+ * - `QueryError` — extracts both `.message` and `.query`
  *   (mirrors DBSearchPage.tsx and DBTableChart.tsx patterns)
  * - `Error` — uses `.message`
  * - `string` — raw message with heuristic parsing
  */
 export function parseError(
-  err: string | Error | ClickHouseQueryError,
+  err: string | Error | QueryError,
   severity: ErrorSeverity = 'error',
 ): ParsedError {
   if (!err) {
     return { severity, message: 'An unknown error occurred.' };
   }
 
-  // ClickHouseQueryError — structured error with query context
-  if (err instanceof ClickHouseQueryError) {
+  // QueryError — structured error with query context
+  if (err instanceof QueryError) {
     return {
       severity,
       message: cleanMessage(err.message),

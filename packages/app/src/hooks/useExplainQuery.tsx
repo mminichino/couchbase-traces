@@ -2,7 +2,7 @@ import { renderChartConfig } from '@couchbase-traces/common-utils/dist/dataLayer
 import { ChartConfigWithOptDateRange } from '@couchbase-traces/common-utils/dist/types';
 import { useQuery, UseQueryOptions } from '@tanstack/react-query';
 
-import { useClickhouseClient } from '@/clickhouse';
+import { useClickhouseClient } from '@/query';
 import { useSource } from '@/source';
 
 import { useMetadataWithSettings } from './useMetadata';

@@ -1,4 +1,4 @@
-import { isNonEmptyWhereExpr } from '@/core/renderChartConfig';
+import { isNonEmptyWhereExpr } from '@/core/chartConfig';
 import type { SqlPP } from '@/couchbase/sqlpp';
 import type { BuilderChartConfigWithOptDateRange } from '@/types';
 

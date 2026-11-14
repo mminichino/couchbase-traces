@@ -3,7 +3,7 @@ import {
   filterColumnMetaByType,
   JSDataType,
   ResponseJSON,
-} from '@couchbase-traces/common-utils/dist/clickhouse';
+} from '@couchbase-traces/common-utils/dist/query';
 import { BuilderChartConfigWithDateRange } from '@couchbase-traces/common-utils/dist/types';
 import { Text } from '@mantine/core';
 import { keepPreviousData } from '@tanstack/react-query';

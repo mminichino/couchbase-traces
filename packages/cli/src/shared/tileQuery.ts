@@ -4,7 +4,7 @@
  * renders SQL via `renderChartConfig` exactly like the web frontend.
  */
 
-import type { ResponseJSON } from '@couchbase-traces/common-utils/dist/clickhouse';
+import type { ResponseJSON } from '@couchbase-traces/common-utils/dist/query';
 import type { Metadata } from '@couchbase-traces/common-utils/dist/core/metadata';
 import type {
   ChartConfigWithDateRange,

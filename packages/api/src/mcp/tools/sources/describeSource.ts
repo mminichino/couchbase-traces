@@ -1,12 +1,12 @@
 import {
-  convertCHDataTypeToJSType,
-  filterColumnMetaByType,
-  JSDataType,
-} from '@couchbase-traces/common-utils/dist/clickhouse';
-import {
   getMetadata,
   queryLanguageForConnection,
 } from '@couchbase-traces/common-utils/dist/dataLayer';
+import {
+  columnTypeToJSType,
+  filterColumnMetaByType,
+  JSDataType,
+} from '@couchbase-traces/common-utils/dist/query';
 import {
   type MetricTable,
   SourceKind,
@@ -15,10 +15,10 @@ import { trace } from '@opentelemetry/api';
 import SqlString from 'sqlstring';
 import { z } from 'zod';
 
-import { ClickhouseClient } from '@/clickhouse';
 import { getConnectionById } from '@/controllers/connection';
 import { getSource } from '@/controllers/sources';
 import { READ_ONLY_TOOL } from '@/mcp/tools/annotations';
+import { MCP_REQUEST_TIMEOUT } from '@/mcp/tools/query/helpers';
 import type { McpContext, ToolRegistrar, ToolResult } from '@/mcp/tools/types';
 import { mcpServerError, mcpUserError } from '@/mcp/utils/errors';
 import { isHiddenSource } from '@/mcp/utils/legacySourceKinds';
@@ -30,6 +30,7 @@ import {
   runWithTimeout,
   type TimeoutOutcome,
 } from '@/mcp/utils/timeout';
+import { DataClient } from '@/query';
 import logger from '@/utils/logger';
 import { trimToolResponse } from '@/utils/trimToolResponse';
 
@@ -232,10 +233,8 @@ async function describeSourceSchema(
     return mcpUserError(`Connection not found for source "${sourceId}".`);
   }
 
-  const clickhouseClient = new ClickhouseClient({
-    host: connection.host,
-    username: connection.username,
-    password: connection.password,
+  const clickhouseClient = new DataClient({
+    requestTimeout: MCP_REQUEST_TIMEOUT,
   });
   const metadata = getMetadata(clickhouseClient);
   const databaseName = source.from.databaseName;
@@ -245,11 +244,6 @@ async function describeSourceSchema(
 
   // Shared by stages 2–4 so map-key discovery can use rollup tables
   // instead of falling back to expensive main-table scans.
-  const metadataMVs =
-    'metadataMaterializedViews' in source
-      ? source.metadataMaterializedViews
-      : undefined;
-
   const now = new Date();
   const dateRange: [Date, Date] = [
     new Date(now.getTime() - VALUE_SAMPLE_LOOKBACK_MS),
@@ -266,7 +260,7 @@ async function describeSourceSchema(
   meta.columns = columns.map(c => ({
     name: c.name,
     type: c.type,
-    jsType: convertCHDataTypeToJSType(c.type),
+    jsType: columnTypeToJSType(c.type),
   }));
 
   const isMetricSource = source.kind === SourceKind.Metric;
@@ -326,10 +320,8 @@ async function describeSourceSchema(
             column: col.name,
             maxKeys: 50,
             connectionId,
-            metadataMVs,
             dateRange,
             timestampValueExpression,
-            signal,
           });
           mapKeysResults[col.name] = keys;
           // Visible to the backstop snapshot before the other columns finish.
@@ -372,10 +364,8 @@ async function describeSourceSchema(
         keyExpressions: lcColumns.map(col => col.name),
         maxValuesPerKey: MAX_LC_VALUES,
         connectionId,
-        metadataMVs,
         dateRange,
         timestampValueExpression,
-        signal,
       });
       for (const { key, value } of results) {
         if (value.length > 0) {
@@ -419,10 +409,8 @@ async function describeSourceSchema(
         keyExpressions: keyExprs,
         maxValuesPerKey: MAX_MAP_KEY_VALUES,
         connectionId,
-        metadataMVs,
         dateRange,
         timestampValueExpression,
-        signal,
       });
       for (const { key, value } of results) {
         if (value.length > 0) {

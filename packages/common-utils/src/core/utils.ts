@@ -6,7 +6,6 @@ import { z } from 'zod';
 
 export { default as objectHash } from 'object-hash';
 
-import { ChSql, chSql } from '@/clickhouse';
 import {
   isAdhocFilter,
   isQueryExpressionFilter,
@@ -1973,33 +1972,3 @@ export type MetadataMVQueryOptions = Map<
   string,
   Map<'NativeColumn' | string, string[]> // map from column name to keys
 >;
-
-const NAMED_BUCKET_FUNCTIONS: Record<string, SQLInterval> = {
-  toStartOfSecond: '1 second',
-  toStartOfMinute: '1 minute',
-  toStartOfFiveMinutes: '5 minute',
-  toStartOfTenMinutes: '10 minute',
-  toStartOfFifteenMinutes: '15 minute',
-  toStartOfHour: '1 hour',
-  toStartOfDay: '1 day',
-};
-
-function getNamedBucketFunction(granularity: SQLInterval): string | undefined {
-  for (const [fn, g] of Object.entries(NAMED_BUCKET_FUNCTIONS)) {
-    if (g === granularity) return fn;
-  }
-  return undefined;
-}
-
-/** Render a ClickHouse time bucketing expression for metadata rollup reads. */
-export function renderStartOfBucketExpr(
-  granularity: SQLInterval,
-  inner: ChSql,
-): ChSql {
-  const namedFn = getNamedBucketFunction(granularity);
-  if (namedFn) {
-    return chSql`${{ UNSAFE_RAW_SQL: namedFn }}(${inner})`;
-  }
-  const seconds = convertGranularityToSeconds(granularity);
-  return chSql`toStartOfInterval(${inner}, INTERVAL ${{ Int64: seconds }} SECOND)`;
-}

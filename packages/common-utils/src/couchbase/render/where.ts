@@ -1,9 +1,9 @@
-import { isNonEmptyWhereExpr } from '@/core/renderChartConfig';
+import { isNonEmptyWhereExpr } from '@/core/chartConfig';
+import { CouchbaseUnsupportedError } from '@/couchbase/errors';
 import type { SerializerMetadata } from '@/couchbase/serializer';
 import { CouchbaseSearchBuilder } from '@/couchbase/serializer';
 import { type SqlPP, sqlpp } from '@/couchbase/sqlpp';
 import { timeRangePredicate, toIso30 } from '@/couchbase/time';
-import { CouchbaseNotReadyError } from '@/dataLayer/errors';
 import type {
   BuilderChartConfigWithOptDateRange,
   Filter,
@@ -49,7 +49,8 @@ export async function compileWhereExpressionCouchbase({
   ctx: RenderFilterContext;
 }): Promise<SqlPP> {
   if (!condition.trim()) return sqlpp``;
-  if (language === 'promql') throw new CouchbaseNotReadyError('charts: promql');
+  if (language === 'promql')
+    throw new CouchbaseUnsupportedError('charts: promql');
   if (language === 'sql') return sqlpp`(${{ Raw: condition }})`;
   const from = chartConfig.from;
   const scope = from.scopeName ?? 'default';

@@ -1,4 +1,4 @@
-import { convertCHDataTypeToJSType, JSDataType } from '@/clickhouse';
+import { columnTypeToJSType, JSDataType } from '@/query';
 import { IMPLICIT_FIELD } from '@/queryParser';
 
 import type { CouchbaseSerializerOptions } from './serializer';
@@ -93,7 +93,7 @@ function resolveImplicit(
 }
 
 function asColumn(col: Column, alias: string): ResolvedField {
-  const jsType = convertCHDataTypeToJSType(col.type) ?? JSDataType.String;
+  const jsType = columnTypeToJSType(col.type) ?? JSDataType.String;
   return {
     kind: 'column',
     expr: `${alias}.${quoteIdent(col.name)}`,
@@ -107,7 +107,7 @@ function withRemainder(
   rest: string[],
   alias: string,
 ): ResolvedField {
-  const jsType = convertCHDataTypeToJSType(col.type) ?? JSDataType.String;
+  const jsType = columnTypeToJSType(col.type) ?? JSDataType.String;
   let quoted: string;
   try {
     quoted = `${alias}.${quoteIdent(col.name)}`;
@@ -168,7 +168,7 @@ function withRemainder(
       elementExpr,
       elementIsMap,
       mapKey,
-      jsType: convertCHDataTypeToJSType(inner) ?? JSDataType.String,
+      jsType: columnTypeToJSType(inner) ?? JSDataType.String,
     };
   }
   return { kind: 'not_found' };

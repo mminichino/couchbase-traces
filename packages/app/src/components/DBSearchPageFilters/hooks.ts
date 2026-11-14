@@ -4,10 +4,7 @@ import {
   TableConnection,
   tcFromSource,
 } from '@couchbase-traces/common-utils/dist/core/metadata';
-import {
-  FilterState,
-  filtersToQuery,
-} from '@couchbase-traces/common-utils/dist/filters';
+import { FilterState } from '@couchbase-traces/common-utils/dist/filters';
 import {
   BuilderChartConfigWithDateRange,
   isMetricSource,
@@ -19,14 +16,13 @@ import {
   SINGLE_KEY_VALUES_LIMIT,
   useAllFields,
   useColumns,
-  useDateTimeColumns,
   useFilterKeysFetchLimit,
   useGetKeyValues,
   useJsonColumns,
   useMapColumns,
   useMetadataWithSettings,
 } from '@/hooks/useMetadata';
-import { escapeFilterStateKeys, usePinnedFilters } from '@/searchFilters';
+import { usePinnedFilters } from '@/searchFilters';
 import { useSource } from '@/source';
 import { mergePath } from '@/utils';
 
@@ -97,7 +93,6 @@ function useFacets({
   );
   const { data: columns, isLoading: isColumnsLoading } =
     useColumns(tableConnection);
-  const dateTimeColumns = useDateTimeColumns(columns);
   const knownColumns = useMemo(
     () => (columns ? new Set(columns.map(c => c.name)) : new Set<string>()),
     [columns],
@@ -225,15 +220,9 @@ function useFacets({
             chartConfig: {
               ...chartConfig,
               dateRange,
-              filters: filtersToQuery(
-                escapeFilterStateKeys(strippedFilterState, knownColumns),
-                { dateTimeColumns },
-              ),
             },
             keys: [sqlKey],
             limit: SINGLE_KEY_VALUES_LIMIT,
-            disableRowLimit: true,
-            source,
           });
           return {
             key,
@@ -254,7 +243,6 @@ function useFacets({
           databaseName: tableConnection.databaseName,
           tableName: tableConnection.tableName,
           connectionId: tableConnection.connectionId,
-          metadataMVs: tableConnection.metadataMVs,
           keyExpressions: [sqlKey],
           maxValuesPerKey: SINGLE_KEY_VALUES_LIMIT,
           dateRange,
@@ -284,7 +272,6 @@ function useFacets({
       knownColumns,
       source,
       filterState,
-      dateTimeColumns,
     ],
   );
 

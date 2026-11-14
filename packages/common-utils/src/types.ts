@@ -2439,15 +2439,11 @@ export const ConnectionBaseSchema = z.object({
   password: z.string().optional(),
 });
 
-export const ClickHouseConnectionSchema = ConnectionBaseSchema.extend({
-  kind: z.literal('clickhouse').default('clickhouse'),
-  host: z.string(),
-  hyperdxSettingPrefix: z
-    .string()
-    .regex(/^[a-z0-9_]+$/i)
-    .optional()
-    .nullable(),
-  isPrometheusEndpoint: z.boolean().optional(),
+export const UnsupportedClickHouseConnectionSchema = z.object({
+  id: z.string(),
+  name: z.string(),
+  kind: z.literal('clickhouse'),
+  unsupported: z.literal(true),
 });
 
 export const CouchbaseConnectionSchema = ConnectionBaseSchema.extend({
@@ -2469,43 +2465,24 @@ export const CouchbaseConnectionSchema = ConnectionBaseSchema.extend({
   managementPort: z.number().int().min(1).max(65535).nullish(),
 });
 
-/** Connections stored before `kind` existed are ClickHouse connections. */
-export function withDefaultConnectionKind(v: unknown): unknown {
-  return v != null &&
-    typeof v === 'object' &&
-    (!('kind' in v) || v.kind == null)
-    ? { ...v, kind: 'clickhouse' }
-    : v;
-}
+export const ConnectionSchema = CouchbaseConnectionSchema;
 
-export const ConnectionSchema = z.preprocess(
-  withDefaultConnectionKind,
-  z.discriminatedUnion('kind', [
-    ClickHouseConnectionSchema,
-    CouchbaseConnectionSchema,
-  ]),
-);
+export const ConnectionSchemaNoId = CouchbaseConnectionSchema.omit({
+  id: true,
+});
 
-export const ConnectionSchemaNoId = z.preprocess(
-  withDefaultConnectionKind,
-  z.discriminatedUnion('kind', [
-    ClickHouseConnectionSchema.omit({ id: true }),
-    CouchbaseConnectionSchema.omit({ id: true }),
-  ]),
-);
+export const ConnectionResponseSchema = z.discriminatedUnion('kind', [
+  UnsupportedClickHouseConnectionSchema,
+  CouchbaseConnectionSchema,
+]);
 
-// `kind` stays optional on the ClickHouse variant: values stored before it
-// existed, and objects built by ClickHouse-only code, omit it.
-export type ClickHouseConnection = Omit<
-  z.infer<typeof ClickHouseConnectionSchema>,
-  'kind'
-> & { kind?: 'clickhouse' };
+export type UnsupportedClickHouseConnection = z.infer<
+  typeof UnsupportedClickHouseConnectionSchema
+>;
 export type CouchbaseConnection = z.infer<typeof CouchbaseConnectionSchema>;
-export type Connection = ClickHouseConnection | CouchbaseConnection;
-export type ConnectionKind = NonNullable<Connection['kind']>;
-export type ConnectionNoId =
-  | Omit<ClickHouseConnection, 'id'>
-  | Omit<CouchbaseConnection, 'id'>;
+export type Connection = CouchbaseConnection | UnsupportedClickHouseConnection;
+export type ConnectionKind = Connection['kind'];
+export type ConnectionNoId = Omit<CouchbaseConnection, 'id'>;
 
 export function isCouchbaseConnection(
   c: Pick<Connection, 'kind'> | null | undefined,
@@ -2554,6 +2531,10 @@ export type TeamClickHouseSettingsUpdate = z.infer<
 export type TeamClickHouseSettings = z.infer<
   typeof TeamClickHouseSettingsSchema
 >;
+export const TeamQuerySettingsSchema = TeamClickHouseSettingsSchema;
+export const TeamQuerySettingsUpdateSchema = TeamClickHouseSettingsUpdateSchema;
+export type TeamQuerySettings = TeamClickHouseSettings;
+export type TeamQuerySettingsUpdate = TeamClickHouseSettingsUpdate;
 
 export const TeamSchema = z
   .object({

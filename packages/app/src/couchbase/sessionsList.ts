@@ -1,5 +1,5 @@
-import type { ChSql } from '@couchbase-traces/common-utils/dist/clickhouse';
-import { chSql } from '@couchbase-traces/common-utils/dist/clickhouse';
+import type { ChSql } from '@couchbase-traces/common-utils/dist/query';
+import { chSql } from '@couchbase-traces/common-utils/dist/query';
 
 /**
  * SQL++ session-list CTE merge (Phase 7 §9.5).

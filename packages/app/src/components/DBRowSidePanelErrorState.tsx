@@ -1,7 +1,7 @@
 import Link from 'next/link';
-import { ClickHouseQueryError } from '@couchbase-traces/common-utils/dist/clickhouse';
 import { tcFromSource } from '@couchbase-traces/common-utils/dist/core/metadata';
 import { isMissingColumnError } from '@couchbase-traces/common-utils/dist/dataLayer';
+import { QueryError } from '@couchbase-traces/common-utils/dist/query';
 import {
   isLogSource,
   isTraceSource,
@@ -112,7 +112,7 @@ export function DBRowSidePanelErrorState({
   error,
   source,
 }: {
-  error: Error | ClickHouseQueryError;
+  error: Error | QueryError;
   source: TSource;
 }) {
   const [editOpened, editModal] = useDisclosure(false);
@@ -152,7 +152,7 @@ export function DBRowSidePanelErrorState({
         >
           {error.message}
         </Code>
-        {error instanceof ClickHouseQueryError && (
+        {error instanceof QueryError && (
           <>
             <Text size="sm" ta="center">
               Sent Query:

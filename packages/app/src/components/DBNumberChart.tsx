@@ -1,14 +1,14 @@
 import { useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { ErrorBoundary } from 'react-error-boundary';
 import {
-  filterColumnMetaByType,
-  JSDataType,
-} from '@couchbase-traces/common-utils/dist/clickhouse';
-import {
   isBuilderChartConfig,
   isPromqlChartConfig,
   isRawSqlChartConfig,
 } from '@couchbase-traces/common-utils/dist/guards';
+import {
+  filterColumnMetaByType,
+  JSDataType,
+} from '@couchbase-traces/common-utils/dist/query';
 import {
   ChartConfigWithDateRange,
   resolveChartPaletteToken,

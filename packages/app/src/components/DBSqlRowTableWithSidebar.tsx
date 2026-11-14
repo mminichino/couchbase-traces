@@ -1,9 +1,9 @@
 import { useCallback, useState } from 'react';
 import { useQueryState } from 'nuqs';
 import {
-  ClickHouseQueryError,
   ColumnMetaType,
-} from '@couchbase-traces/common-utils/dist/clickhouse';
+  QueryError,
+} from '@couchbase-traces/common-utils/dist/query';
 import {
   BuilderChartConfigWithDateRange,
   TSource,
@@ -29,7 +29,7 @@ import { DBRowTableVariant, DBSqlRowTable } from './DBRowTable';
 interface Props {
   sourceId: string;
   config: BuilderChartConfigWithDateRange;
-  onError?: (error: Error | ClickHouseQueryError) => void;
+  onError?: (error: Error | QueryError) => void;
   onScroll?: (scrollTop: number) => void;
   onSidebarOpen?: (rowId: string) => void;
   onExpandedRowsChange?: (hasExpandedRows: boolean) => void;

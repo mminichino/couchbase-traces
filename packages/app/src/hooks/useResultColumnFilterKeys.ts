@@ -1,11 +1,4 @@
 import { useMemo } from 'react';
-import {
-  ChSql,
-  chSqlToAliasMap,
-  chSqlToSelectColumns,
-  ColumnMetaType,
-  inferNumericColumn,
-} from '@couchbase-traces/common-utils/dist/clickhouse';
 import { quoteResultColumnNameIfNeeded } from '@couchbase-traces/common-utils/dist/core/metadata';
 import {
   isHistogramClassSelect,
@@ -18,6 +11,13 @@ import {
   isPromqlChartConfig,
   isRawSqlChartConfig,
 } from '@couchbase-traces/common-utils/dist/guards';
+import {
+  ChSql,
+  chSqlToAliasMap,
+  chSqlToSelectColumns,
+  ColumnMetaType,
+  inferNumericColumn,
+} from '@couchbase-traces/common-utils/dist/query';
 import {
   BuilderChartConfig,
   ChartConfigWithOptTimestamp,

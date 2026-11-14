@@ -1,19 +1,12 @@
-// ================================
-// NOTE:
-// This file should only hold functions that relate to the clickhouse client
-// not specific querying/functionality logic
-// please move app-specific functions elsewhere in the app
-// ================================
 import {
-  chSql,
-  ClickhouseClientOptions,
-  ColumnMeta,
-  mergeQueryAttribution,
-  type QueryAttribution,
-  ResponseJSON,
-} from '@couchbase-traces/common-utils/dist/clickhouse';
-import { ClickhouseClient } from '@couchbase-traces/common-utils/dist/clickhouse/browser';
-import { RoutingClickhouseClient } from '@couchbase-traces/common-utils/dist/dataLayer/browser';
+  DataClient,
+  type DataClientOptions,
+  getDataClient as createDataClient,
+} from '@couchbase-traces/common-utils/dist/dataLayer/browser';
+import type { QueryAttribution } from '@couchbase-traces/common-utils/dist/query/attribution';
+import { mergeQueryAttribution } from '@couchbase-traces/common-utils/dist/query/attribution';
+import type { ResponseJSON } from '@couchbase-traces/common-utils/dist/query/types';
+import type { ColumnMeta } from '@couchbase-traces/common-utils/dist/query/types';
 import { useQuery, UseQueryOptions } from '@tanstack/react-query';
 
 import {
@@ -24,87 +17,98 @@ import {
 import api from './api';
 import { DEFAULT_QUERY_TIMEOUT } from './defaults';
 
-const PROXY_CLICKHOUSE_HOST = '/api/clickhouse-proxy';
+export type { DataClientOptions };
 
-/**
- * `attribution` is required, not optional, on purpose. This cannot read React
- * context the way `useClickhouseClient` below does, so a caller that forgot it
- * would silently produce queries with no `log_comment` and an
- * `hdx-unknown-*` id. Making it required means the compiler asks instead.
- */
-export const getClickhouseClient = (
-  options: ClickhouseClientOptions & { attribution: QueryAttribution },
-): ClickhouseClient => {
-  return new RoutingClickhouseClient({
-    host: PROXY_CLICKHOUSE_HOST,
-    ...options,
-  });
-};
+export const getDataClient = (
+  options: DataClientOptions & { attribution: QueryAttribution },
+): DataClient => createDataClient(options);
 
-export const useClickhouseClient = (
-  options: ClickhouseClientOptions = {},
-): ClickhouseClient => {
+/** @deprecated Use getDataClient */
+export const getClickhouseClient = getDataClient;
+
+export const useDataClient = (options: DataClientOptions = {}): DataClient => {
   const { data: me } = api.useMe();
-  // The team's timeout wins over anything the caller passed, as it always has.
   const queryTimeout = me?.team?.queryTimeout ?? DEFAULT_QUERY_TIMEOUT;
-
-  // Set on the client, not at each query: everything reaches ClickHouse
-  // through a client from here or from the factory above.
   const surfaceAttribution = useQueryAttribution();
   const attribution = mergeQueryAttribution(
     surfaceAttribution,
     options.attribution,
   );
-
-  return getClickhouseClient({ ...options, queryTimeout, attribution });
+  return getDataClient({
+    ...options,
+    requestTimeout: queryTimeout,
+    attribution,
+  });
 };
+
+/** @deprecated Use useDataClient */
+export const useClickhouseClient = useDataClient;
 
 export function useDatabasesDirect(
   { connectionId }: { connectionId: string },
-  options?: Omit<UseQueryOptions<any, Error>, 'queryKey'>,
+  options?: Omit<UseQueryOptions<ResponseJSON<ColumnMeta>, Error>, 'queryKey'>,
 ) {
-  const clickhouseClient = getClickhouseClient({
+  const client = getDataClient({
     attribution: useMetadataQueryAttribution(),
   });
   return useQuery<ResponseJSON<ColumnMeta>, Error>({
     queryKey: [`direct_datasources/databases`, connectionId],
     queryFn: async () => {
-      const json = await clickhouseClient
+      const json = await client
         .query({
-          query: 'SHOW DATABASES',
+          query:
+            'SELECT RAW name FROM system:keyspaces WHERE `namespace` = "bucket"',
           connectionId,
         })
-        .then(res => res.json());
-
-      return json;
+        .then(res => res.json<ResponseJSON<{ name: string }>>());
+      const rows: Array<{ name: string } | string> = Array.isArray(json)
+        ? (json as unknown as Array<string | { name: string }>)
+        : (json.data as unknown as Array<string | { name: string }>);
+      return {
+        ...(Array.isArray(json) ? {} : json),
+        data: rows.map(row => ({
+          name: String(typeof row === 'string' ? row : row.name),
+          type: 'String',
+        })),
+        meta: [{ name: 'name', type: 'String' }],
+      } as ResponseJSON<ColumnMeta>;
     },
-    staleTime: 1000 * 60 * 5, // Cache every 5 min
+    staleTime: 1000 * 60 * 5,
     ...options,
   });
 }
 
 export function useTablesDirect(
   { database, connectionId }: { database: string; connectionId: string },
-  options?: Omit<UseQueryOptions<any, Error>, 'queryKey'>,
+  options?: Omit<UseQueryOptions<ResponseJSON<ColumnMeta>, Error>, 'queryKey'>,
 ) {
-  const clickhouseClient = getClickhouseClient({
+  const client = getDataClient({
     attribution: useMetadataQueryAttribution(),
   });
   return useQuery<ResponseJSON<ColumnMeta>, Error>({
     queryKey: [`direct_datasources/databases/${database}/tables`, connectionId],
     queryFn: async () => {
-      const paramSql = chSql`SHOW TABLES FROM ${{ Identifier: database }}`;
-      const json = await clickhouseClient
+      const json = await client
         .query({
-          query: paramSql.sql,
-          query_params: paramSql.params,
+          query:
+            'SELECT RAW c.name FROM system:keyspaces c WHERE c.`bucket` = $bucket AND c.`namespace` = "collection"',
+          query_params: { bucket: database },
           connectionId,
         })
-        .then(res => res.json());
-
-      return json;
+        .then(res => res.json<ResponseJSON<{ name: string }>>());
+      const rows: Array<{ name: string } | string> = Array.isArray(json)
+        ? (json as unknown as Array<string | { name: string }>)
+        : (json.data as unknown as Array<string | { name: string }>);
+      return {
+        ...(Array.isArray(json) ? {} : json),
+        data: rows.map(row => ({
+          name: String(typeof row === 'string' ? row : row.name),
+          type: 'String',
+        })),
+        meta: [{ name: 'name', type: 'String' }],
+      } as ResponseJSON<ColumnMeta>;
     },
-    staleTime: 1000 * 60 * 5, // Cache every 5 min
+    staleTime: 1000 * 60 * 5,
     ...options,
   });
 }

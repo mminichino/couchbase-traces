@@ -1,10 +1,11 @@
 import { useState } from 'react';
 import { Separator } from '@clickhouse/click-ui';
+import { isCouchbaseConnection } from '@couchbase-traces/common-utils/dist/types';
 import { Box, Button, Card, Flex, Stack, Text } from '@mantine/core';
 import { IconPencil, IconX } from '@tabler/icons-react';
 
 import { ConnectionForm } from '@/components/ConnectionForm';
-import { IS_CLICKHOUSE_BUILD, IS_LOCAL_MODE } from '@/config';
+import { IS_LOCAL_MODE } from '@/config';
 import { useConnections } from '@/connection';
 
 export default function ConnectionsSection() {
@@ -27,24 +28,36 @@ export default function ConnectionsSection() {
                   <Text fw={500} size="lg">
                     {connection.name}
                   </Text>
-                  <Text size="sm" c="dimmed">
-                    <b>Host:</b> {connection.host}
-                  </Text>
-                  <Text size="sm" c="dimmed">
-                    <b>Username:</b> {connection.username}
-                  </Text>
-                  <Text size="sm" c="dimmed">
-                    <b>Password:</b> [Configured]
-                  </Text>
+                  {connection.kind === 'clickhouse' &&
+                  'unsupported' in connection &&
+                  connection.unsupported ? (
+                    <Text size="sm" c="orange">
+                      ClickHouse (no longer supported)
+                    </Text>
+                  ) : isCouchbaseConnection(connection) ? (
+                    <>
+                      <Text size="sm" c="dimmed">
+                        <b>Connection string:</b> {connection.host}
+                      </Text>
+                      <Text size="sm" c="dimmed">
+                        <b>Username:</b> {connection.username}
+                      </Text>
+                      <Text size="sm" c="dimmed">
+                        <b>Password:</b> [Configured]
+                      </Text>
+                    </>
+                  ) : null}
                 </Stack>
                 {editedConnectionId !== connection.id ? (
-                  <Button
-                    variant="subtle"
-                    onClick={() => setEditedConnectionId(connection.id)}
-                    size="sm"
-                  >
-                    <IconPencil size={14} className="me-2" /> Edit
-                  </Button>
+                  isCouchbaseConnection(connection) ? (
+                    <Button
+                      variant="subtle"
+                      onClick={() => setEditedConnectionId(connection.id)}
+                      size="sm"
+                    >
+                      <IconPencil size={14} className="me-2" /> Edit
+                    </Button>
+                  ) : null
                 ) : (
                   <Button
                     variant="subtle"
@@ -85,11 +98,10 @@ export default function ConnectionsSection() {
             <ConnectionForm
               connection={{
                 id: 'new',
+                kind: 'couchbase',
                 name: 'My New Connection',
-                host: IS_CLICKHOUSE_BUILD
-                  ? window.location.origin
-                  : 'http://localhost:8123',
-                username: 'default',
+                host: 'couchbase://localhost',
+                username: 'Administrator',
                 password: '',
               }}
               isNew={true}

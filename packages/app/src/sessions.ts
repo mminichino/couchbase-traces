@@ -1,16 +1,16 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import produce from 'immer';
-import type { ResponseJSON } from '@couchbase-traces/common-utils/dist/clickhouse';
-import {
-  chSql,
-  streamToAsyncIterator,
-} from '@couchbase-traces/common-utils/dist/clickhouse';
-import type { ClickhouseClient } from '@couchbase-traces/common-utils/dist/clickhouse/browser';
 import type { Metadata } from '@couchbase-traces/common-utils/dist/core/metadata';
 import { getFirstTimestampValueExpression } from '@couchbase-traces/common-utils/dist/core/utils';
 import { renderChartConfig } from '@couchbase-traces/common-utils/dist/dataLayer';
-import { resolveConnectionKind } from '@couchbase-traces/common-utils/dist/dataLayer/kind';
+import { resolveConnectionKind } from '@couchbase-traces/common-utils/dist/dataLayer';
+import type { DataClient } from '@couchbase-traces/common-utils/dist/dataLayer/browser';
 import { filtersToQuery } from '@couchbase-traces/common-utils/dist/filters';
+import type { ResponseJSON } from '@couchbase-traces/common-utils/dist/query';
+import {
+  chSql,
+  streamToAsyncIterator,
+} from '@couchbase-traces/common-utils/dist/query';
 import {
   DateRange,
   Filter,
@@ -90,7 +90,7 @@ export async function fetchServiceScopeFilters({
   sessionSource: TSessionSource;
   dateRange: [Date, Date];
   metadata: Metadata;
-  clickhouseClient: ClickhouseClient;
+  clickhouseClient: DataClient;
 }): Promise<Filter[]> {
   if (!traceSource.serviceNameExpression) {
     return [];
@@ -128,10 +128,12 @@ export async function fetchServiceScopeFilters({
         connectionId: sessionSource.connection,
         format: 'JSON',
       })
-      .then(res => res.json<{ serviceName: string }>());
+      .then(
+        res => res.json() as Promise<ResponseJSON<{ serviceName: string }>>,
+      );
     const serviceNames = (json.data ?? [])
-      .map(row => row.serviceName)
-      .filter(name => name != null);
+      .map((row: { serviceName: string }) => row.serviceName)
+      .filter((name: string | null | undefined) => name != null);
     return filtersToQuery({
       [traceSource.serviceNameExpression]: {
         included: new Set(serviceNames),

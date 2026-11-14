@@ -145,6 +145,11 @@ export function TableSourceForm({
   const isPrometheusOnlyConnection = Boolean(
     selectedConnection &&
       selectedConnection.kind !== 'couchbase' &&
+      (selectedConnection.kind !== 'clickhouse' ||
+        !(
+          'unsupported' in selectedConnection && selectedConnection.unsupported
+        )) &&
+      'isPrometheusEndpoint' in selectedConnection &&
       selectedConnection.isPrometheusEndpoint,
   );
 

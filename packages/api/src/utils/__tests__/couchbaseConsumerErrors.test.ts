@@ -1,8 +1,7 @@
-import { CouchbaseQueryError } from '@couchbase-traces/common-utils/dist/couchbase/errors';
 import {
-  CouchbaseNotReadyError,
+  CouchbaseQueryError,
   CouchbaseUnsupportedError,
-} from '@couchbase-traces/common-utils/dist/dataLayer';
+} from '@couchbase-traces/common-utils/dist/couchbase/errors';
 
 import {
   couchbaseConsumerHttpResponse,
@@ -10,8 +9,8 @@ import {
 } from '@/utils/couchbaseConsumerErrors';
 
 describe('couchbaseConsumerHttpResponse', () => {
-  it('maps CouchbaseNotReadyError to 409', () => {
-    const err = new CouchbaseNotReadyError('external_api');
+  it('maps CouchbaseUnsupportedError to 409', () => {
+    const err = new CouchbaseUnsupportedError('external_api');
     expect(couchbaseConsumerHttpResponse(err, 'message')).toEqual({
       status: 409,
       body: { message: err.message },
@@ -49,8 +48,8 @@ describe('couchbaseConsumerHttpResponse', () => {
 });
 
 describe('couchbaseConsumerMcpError', () => {
-  it('maps CouchbaseNotReadyError to a tool error', () => {
-    const err = new CouchbaseNotReadyError('mcp');
+  it('maps CouchbaseUnsupportedError to a tool error', () => {
+    const err = new CouchbaseUnsupportedError('mcp');
     const mapped = couchbaseConsumerMcpError(err);
     expect(mapped?.isError).toBe(true);
     expect(mapped?.content[0].text).toBe(err.message);

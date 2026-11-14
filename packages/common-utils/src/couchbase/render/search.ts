@@ -1,4 +1,4 @@
-import { isUsingGranularity, isUsingGroupBy } from '@/core/renderChartConfig';
+import { isUsingGranularity, isUsingGroupBy } from '@/core/chartConfig';
 import type { BuilderChartConfigWithOptDateRange } from '@/types';
 import { DisplayType } from '@/types';
 

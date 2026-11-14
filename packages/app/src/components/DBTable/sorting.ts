@@ -1,7 +1,7 @@
 import {
   ColumnMetaType,
-  convertCHDataTypeToJSType,
-} from '@couchbase-traces/common-utils/dist/clickhouse';
+  columnTypeToJSType,
+} from '@couchbase-traces/common-utils/dist/query';
 import { Row, SortingFnOption } from '@tanstack/react-table';
 
 export const numericRowSortingFn = ((
@@ -26,9 +26,7 @@ export const getClientSideSortingFn = (
   columnName: string,
 ): SortingFnOption<unknown> => {
   const columnMeta = meta?.find(col => col.name === columnName);
-  const jsType = columnMeta
-    ? convertCHDataTypeToJSType(columnMeta.type)
-    : undefined;
+  const jsType = columnMeta ? columnTypeToJSType(columnMeta.type) : undefined;
 
   if (jsType === 'number') {
     return numericRowSortingFn;

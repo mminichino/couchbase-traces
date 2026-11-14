@@ -1,19 +1,18 @@
 import type { Metadata } from '@couchbase-traces/common-utils/dist/core/metadata';
-import { renderWhereExpressionStr } from '@couchbase-traces/common-utils/dist/core/renderChartConfig';
 import { escapeSqlString } from '@couchbase-traces/common-utils/dist/core/utils';
-import type {
-  ChartVariable,
+import { CouchbaseSerializer } from '@couchbase-traces/common-utils/dist/couchbase/serializer';
+import {
+  genWhereSQL,
+  parse,
+} from '@couchbase-traces/common-utils/dist/queryParser';
+import {
+  type ChartVariable,
   UseTextIndex,
 } from '@couchbase-traces/common-utils/dist/types';
 import { substituteVariables } from '@couchbase-traces/common-utils/dist/variables';
 
 const PATTERN_WILDCARD = '<*>';
 
-/**
- * Templates longer than this get no predicate: the regex (and the SQL that
- * embeds it) would be unwieldy, and very long templates are usually a
- * single unparameterized payload rather than a reusable shape.
- */
 export const MAX_PREDICATE_TEMPLATE_LENGTH = 4000;
 
 export const PATTERN_MATCH_SEMANTICS =
@@ -23,10 +22,6 @@ export const PATTERN_MATCH_SEMANTICS =
   'It can also match unsampled events whose shape fits, including ones Drain would have ' +
   'put in a more specific cluster, so the drill-down is a superset of cluster membership.';
 
-// Drain tokenizes with JS `\s`, which includes Unicode spaces and BOM; RE2's
-// `\s` is ASCII-only. JS `\s` = RE2 `\s` + \v + \pZ (Zs/Zl/Zp) + BOM. `\pZ`
-// keeps the snippet short; spelling out the code points repeats ~100 chars
-// between every token.
 const JS_WHITESPACE = '\\s\\x{0B}\\pZ\\x{FEFF}';
 const WS = `[${JS_WHITESPACE}]`;
 const NON_WS = `[^${JS_WHITESPACE}]`;
@@ -35,7 +30,6 @@ function escapeRe2Literal(token: string): string {
   return token.replace(/[\\^$.|?*+()[\]{}]/g, '\\$&');
 }
 
-/** Anchored RE2 regex that a value matches when it fits the Drain template. */
 export function templateToRegex(template: string): string {
   const tokens = template.split(/\s+/).filter(t => t.length > 0);
   const body = tokens
@@ -44,10 +38,6 @@ export function templateToRegex(template: string): string {
   return `^${WS}*${body}${WS}*$`;
 }
 
-/**
- * SQL predicate selecting events whose `valueExpression` fits the template,
- * or null when the template is too long to turn into a predicate.
- */
 export function buildPatternPredicate(
   valueExpression: string,
   template: string,
@@ -56,7 +46,6 @@ export function buildPatternPredicate(
   return `match(${valueExpression}, '${escapeSqlString(templateToRegex(template))}')`;
 }
 
-/** AND together SQL conditions, skipping blanks. */
 export function andSql(...conditions: Array<string | undefined>): string {
   const parts = conditions.filter(
     (c): c is string => c != null && c.trim() !== '',
@@ -65,12 +54,6 @@ export function andSql(...conditions: Array<string | undefined>): string {
   return parts.map(c => `(${c})`).join(' AND ');
 }
 
-/**
- * Render the caller's filter as SQL so it can be ANDed with a pattern
- * predicate in one clickstack_search `where`. Uses the same rendering as the
- * mining query. Dashboard variables are expanded first because the search
- * tool has no variable context.
- */
 export async function userWhereAsSql({
   where,
   whereLanguage,
@@ -96,13 +79,28 @@ export async function userWhereAsSql({
   const expanded = variables
     ? substituteVariables(where, { variables, inputLanguage: whereLanguage })
     : where;
-  return renderWhereExpressionStr({
-    condition: expanded,
-    language: whereLanguage,
-    metadata,
-    from: { databaseName, tableName },
-    connectionId,
+  if (whereLanguage === 'sql') return expanded;
+  const serializer = new CouchbaseSerializer({
+    metadata: {
+      getColumns: args => metadata.getColumns(args),
+    },
+    tc: {
+      connectionId,
+      databaseName,
+      scopeName: 'default',
+      tableName,
+    },
+    alias: 't',
     implicitColumnExpression,
-    useTextIndexForImplicitColumn,
+    searchIndexName:
+      useTextIndexForImplicitColumn !== undefined &&
+      useTextIndexForImplicitColumn !== UseTextIndex.Disabled
+        ? 'default'
+        : undefined,
   });
+  try {
+    return await genWhereSQL(parse(expanded), serializer);
+  } catch {
+    return expanded;
+  }
 }

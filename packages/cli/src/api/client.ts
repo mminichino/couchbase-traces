@@ -1,37 +1,17 @@
 /**
- * HTTP client for the HyperDX internal API.
+ * HTTP client for the Couchbase Traces internal API.
  *
  * Handles session cookie auth and exposes:
  *  - REST calls (login, sources, connections, me)
- *  - A ClickHouse node client that routes through /clickhouse-proxy
- *    with session cookies and connection-id header injection
+ *  - A Couchbase data client that queries through /api/couchbase/query
  */
 
-import { ClickHouseLogLevel, createClient } from '@clickhouse/client';
-import type {
-  BaseResultSet,
-  ClickHouseClient as NodeClickHouseClient,
-  ClickHouseSettings,
-  DataFormat,
-} from '@clickhouse/client';
-
+import { mergeQueryAttribution } from '@couchbase-traces/common-utils/dist/query/attribution';
 import {
-  BaseClickhouseClient,
-  type ClickhouseClientOptions,
-  type QueryInputs,
-} from '@couchbase-traces/common-utils/dist/clickhouse';
-import { CouchbaseClient } from '@couchbase-traces/common-utils/dist/couchbase/browser';
-import type { DataClient } from '@couchbase-traces/common-utils/dist/couchbase/types';
-import {
-  couchbaseChartQuery,
-  couchbaseChartValidity,
-} from '@couchbase-traces/common-utils/dist/dataLayer/chartQuery';
-import {
-  getMetadata,
-  resolveConnectionKind,
-  setConnectionKindResolver,
-} from '@couchbase-traces/common-utils/dist/dataLayer';
-import { queryViaCouchbase } from '@couchbase-traces/common-utils/dist/dataLayer/routeQuery';
+  DataClient,
+  type DataClientOptions,
+} from '@couchbase-traces/common-utils/dist/dataLayer/browser';
+import { getMetadata } from '@couchbase-traces/common-utils/dist/dataLayer';
 import { type Metadata } from '@couchbase-traces/common-utils/dist/core/metadata';
 
 import { loadSession, saveSession, clearSession } from '@/utils/config';
@@ -299,17 +279,19 @@ export class ApiClient {
     return res.json() as Promise<AlertsResponse>;
   }
 
-  // ---- ClickHouse client via proxy ---------------------------------
+  // ---- Couchbase query client --------------------------------------
 
-  createClickHouseClient(
-    opts: Partial<ClickhouseClientOptions> = {},
-  ): CliRoutingClient {
-    registerCliConnectionKindResolver(this);
-    return new CliRoutingClient(this, opts);
+  createDataClient(opts: Partial<DataClientOptions> = {}): CliDataClient {
+    return new CliDataClient(this, opts);
   }
 
-  createMetadata(opts: Partial<ClickhouseClientOptions> = {}): Metadata {
-    return getMetadata(this.createClickHouseClient(opts));
+  /** @deprecated Use createDataClient */
+  createClickHouseClient(opts: Partial<DataClientOptions> = {}): CliDataClient {
+    return this.createDataClient(opts);
+  }
+
+  createMetadata(opts: Partial<DataClientOptions> = {}): Metadata {
+    return getMetadata(this.createDataClient(opts));
   }
 
   // ---- Internal ----------------------------------------------------
@@ -337,151 +319,22 @@ export class ApiClient {
 }
 
 // ------------------------------------------------------------------
-// ClickHouse client that proxies through /clickhouse-proxy
-// using the native Node @clickhouse/client with cookie auth
+// Couchbase query client (session cookie auth via the app API)
 // ------------------------------------------------------------------
 
-export class ProxyClickhouseClient extends BaseClickhouseClient {
-  private apiClient: ApiClient;
-
+export class CliDataClient extends DataClient {
   constructor(
-    apiClient: ApiClient,
-    opts: Partial<ClickhouseClientOptions> = {},
+    private readonly apiClient: ApiClient,
+    opts: Partial<DataClientOptions> = {},
   ) {
     super({
-      host: `${apiClient.getApiUrl()}/clickhouse-proxy`,
-      // This extends the base client, not the node one, so it never sees the
-      // AsyncLocalStorage scope the API uses. A client-level surface is all
-      // the attribution the CLI gets.
-      attribution: { surface: 'cli' },
-      ...opts,
-    });
-    this.apiClient = apiClient;
-
-    // The @clickhouse/client treats the path portion of `url` as the
-    // database name, NOT the HTTP path. Use `pathname` to set the proxy
-    // path so requests go to http://<host>/clickhouse-proxy/?query=...
-    // Derive the clickhouse-proxy pathname from the API URL.
-    // If apiUrl has a path (e.g. /api), the proxy path becomes /api/clickhouse-proxy
-    // so it works through the Next.js proxy at pages/api/[...all].ts.
-    // Pass origin-only URL to createClient to prevent the path from being
-    // interpreted as a ClickHouse database name.
-    const apiUrlObj = new URL(apiClient.getApiUrl());
-    const basePath = apiUrlObj.pathname.replace(/\/+$/, '');
-    const chProxyPath = `${basePath}/clickhouse-proxy`;
-
-    const baseHeaders: Record<string, string> = {
-      cookie: apiClient.getCookieHeader(),
-      // Force text/plain so Express's body parsers keep req.body as a
-      // string. Without this, the proxy's proxyReq.write(req.body) fails
-      // because express.json() parses the body into an Object.
-      'content-type': 'text/plain',
-    };
-    const activeTeamId = apiClient.getActiveTeamId();
-    if (activeTeamId) {
-      baseHeaders['x-hdx-team'] = activeTeamId;
-    }
-
-    this.client = createClient({
-      url: apiUrlObj.origin,
-      pathname: chProxyPath,
-      // No ClickHouse credentials — the proxy handles auth to ClickHouse.
-      // We authenticate to the proxy via session cookie.
-      username: '',
-      password: '',
-      // Disable the Authorization header — we auth via session cookie,
-      // and a stray "Authorization: Basic Og==" (empty creds) causes
-      // Express to reject the request before reading the session cookie.
-      set_basic_auth_header: false,
-      request_timeout: this.requestTimeout,
       application: 'couchbase-traces-tui',
-      http_headers: baseHeaders,
-      keep_alive: { enabled: false },
-      // Silence the client's internal logger. Its DefaultLogger writes
-      // via console.error at WARN level, and Ink's patchConsole re-routes
-      // console output into the TUI — so aborted in-flight queries
-      // (normal when tiles unmount or a time range changes) would spew
-      // stack traces over the UI despite silenceLogs.
-      log: { level: ClickHouseLogLevel.OFF },
-    });
-  }
-
-  // This subclass always builds a node client, so narrow the base class's
-  // platform-agnostic client type to the node-specific one.
-  protected getClient(): NodeClickHouseClient {
-    return super.getClient() as NodeClickHouseClient;
-  }
-
-  protected async __query<Format extends DataFormat>({
-    query,
-    format = 'JSON' as Format,
-    query_params = {},
-    abort_signal,
-    clickhouse_settings: externalClickhouseSettings,
-    connectionId,
-    queryId,
-    shouldSkipApplySettings,
-  }: QueryInputs<Format>): Promise<BaseResultSet<ReadableStream, Format>> {
-    let clickhouseSettings: ClickHouseSettings | undefined;
-    if (!shouldSkipApplySettings) {
-      const neutralSettings = await this.processClickhouseSettings({
-        connectionId,
-        externalClickhouseSettings,
-      });
-      // processClickhouseSettings returns the shared base class's settings type
-      // (from @clickhouse/client-common). It is structurally identical to the
-      // node client's own self-bundled ClickHouseSettings, but the two packages'
-      // copies are distinct nominal types since 1.23, so bridge explicitly.
-
-      clickhouseSettings = neutralSettings as ClickHouseSettings;
-    }
-
-    // Pass connection ID as HTTP header — the proxy uses this to
-    // look up the ClickHouse connection credentials from MongoDB
-    const httpHeaders: Record<string, string> = {};
-    if (connectionId && connectionId !== 'local') {
-      httpHeaders['x-hyperdx-connection-id'] = connectionId;
-    }
-    // Re-send the active team header per-query so a mid-session team
-    // change on the apiClient is picked up immediately. (The constructor-
-    // level http_headers above only reflect the team at client creation.)
-    const activeTeamId = this.apiClient.getActiveTeamId();
-    if (activeTeamId) {
-      httpHeaders['x-hdx-team'] = activeTeamId;
-    }
-
-    return this.getClient().query({
-      query,
-      query_params,
-      format,
-      abort_signal,
-      http_headers: httpHeaders,
-      clickhouse_settings: clickhouseSettings,
-      query_id: queryId,
-    }) as unknown as Promise<BaseResultSet<ReadableStream, Format>>;
-  }
-}
-
-/**
- * Routes queries by connection kind (Phase 8.5). ClickHouse traffic uses the
- * session-cookie proxy; Couchbase uses {@link CouchbaseClient} against the API.
- */
-export class CliRoutingClient extends ProxyClickhouseClient {
-  private readonly couchbaseClient: CouchbaseClient;
-
-  constructor(
-    apiClient: ApiClient,
-    opts: Partial<ClickhouseClientOptions> = {},
-  ) {
-    super(apiClient, opts);
-    this.couchbaseClient = new CouchbaseClient({
-      requestTimeout: this.requestTimeoutMs,
-      attribution: this.attribution,
+      attribution: mergeQueryAttribution({ surface: 'cli' }, opts.attribution),
+      requestTimeout: opts.requestTimeout,
       baseUrl: apiClient.getApiUrl(),
       headers: () => {
         const h: Record<string, string> = {
           cookie: apiClient.getCookieHeader(),
-          'content-type': 'text/plain',
         };
         const activeTeamId = apiClient.getActiveTeamId();
         if (activeTeamId) {
@@ -491,65 +344,10 @@ export class CliRoutingClient extends ProxyClickhouseClient {
       },
     });
   }
-
-  couchbaseDataClient(): DataClient {
-    return this.couchbaseClient;
-  }
-
-  override async query<Format extends DataFormat>(
-    inputs: QueryInputs<Format>,
-  ): Promise<BaseResultSet<ReadableStream, Format>> {
-    const kind = await resolveConnectionKind(inputs.connectionId);
-    if (kind !== 'couchbase') return super.query(inputs);
-    return queryViaCouchbase(this.couchbaseClient, inputs);
-  }
-
-  override async queryChartConfig(
-    args: Parameters<BaseClickhouseClient['queryChartConfig']>[0],
-  ): ReturnType<BaseClickhouseClient['queryChartConfig']> {
-    const routed = await couchbaseChartQuery(
-      inputs => this.query(inputs),
-      args,
-    );
-    if (routed === 'clickhouse') return super.queryChartConfig(args);
-    return routed;
-  }
-
-  override async testChartConfigValidity(
-    args: Parameters<BaseClickhouseClient['testChartConfigValidity']>[0],
-  ): ReturnType<BaseClickhouseClient['testChartConfigValidity']> {
-    const routed = await couchbaseChartValidity(
-      inputs => this.query(inputs),
-      args,
-    );
-    if (routed === 'clickhouse') return super.testChartConfigValidity(args);
-    return routed;
-  }
-
-  override async close(): Promise<void> {
-    await Promise.all([super.close(), this.couchbaseClient.close()]);
-  }
 }
 
-/** Data client used by TUI hooks and `cbt chart` (ClickHouse proxy + Couchbase API). */
-export type CliDataClient = CliRoutingClient;
-
-let cliConnectionsPromise: Promise<ConnectionResponse[]> | null = null;
-
-/**
- * Registers a connection-kind resolver that loads `/api/connections` once per
- * CLI session (cached for subsequent lookups).
- */
-export function registerCliConnectionKindResolver(apiClient: ApiClient): void {
-  cliConnectionsPromise = null;
-  setConnectionKindResolver(async id => {
-    cliConnectionsPromise ??= apiClient.getConnections();
-    const connections = await cliConnectionsPromise;
-    const found = connections.find(c => c.id === id || c._id === id);
-    if (found == null) return undefined;
-    return found.kind === 'couchbase' ? 'couchbase' : 'clickhouse';
-  });
-}
+/** @deprecated Use CliDataClient */
+export const CliRoutingClient = CliDataClient;
 
 // ------------------------------------------------------------------
 // Response types (matching the internal API shapes)
@@ -627,9 +425,10 @@ export interface ConnectionResponse {
   id: string;
   _id: string;
   name: string;
-  host: string;
-  username: string;
   kind?: 'clickhouse' | 'couchbase';
+  unsupported?: boolean;
+  host?: string;
+  username?: string;
 }
 
 /** Body accepted by POST /saved-search (SavedSearchSchema minus the id). */

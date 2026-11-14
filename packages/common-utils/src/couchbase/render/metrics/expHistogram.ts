@@ -1,8 +1,8 @@
+import { FIXED_TIME_BUCKET_EXPR_ALIAS } from '@/core/chartConfig';
 import { GROUP_ALIAS } from '@/core/histogram';
-import { FIXED_TIME_BUCKET_EXPR_ALIAS } from '@/core/renderChartConfig';
+import { CouchbaseUnsupportedError } from '@/couchbase/errors';
 import { lag } from '@/couchbase/fn/scalar';
 import { keyspace, quoteIdent } from '@/couchbase/sqlpp';
-import { CouchbaseNotReadyError } from '@/dataLayer/errors';
 import type { BuilderChartConfigWithOptDateRange } from '@/types';
 
 import {
@@ -65,7 +65,7 @@ export function translateExponentialHistogramCouchbase(
   }
   if (aggFn === 'quantile') {
     if (input.select.level == null) {
-      throw new CouchbaseNotReadyError(
+      throw new CouchbaseUnsupportedError(
         'metrics: exponential histogram quantile level',
       );
     }

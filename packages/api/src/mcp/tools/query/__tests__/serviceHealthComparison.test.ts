@@ -1,6 +1,5 @@
-import { getMetadata } from '@couchbase-traces/common-utils/dist/core/metadata';
+import { getMetadata } from '@couchbase-traces/common-utils/dist/dataLayer';
 
-import { ClickhouseClient } from '@/clickhouse';
 import { resolveComparison } from '@/mcp/tools/query/serviceHealth/comparison';
 import { findNewOperations } from '@/mcp/tools/query/serviceHealth/operations';
 import type {
@@ -12,6 +11,7 @@ import {
   comparisonWindow,
   serviceHealthSchema,
 } from '@/mcp/tools/query/serviceHealth/schema';
+import { DataClient } from '@/query';
 
 jest.mock('@/mcp/tools/query/serviceHealth/queries', () => ({
   ...jest.requireActual('@/mcp/tools/query/serviceHealth/queries'),
@@ -49,7 +49,7 @@ const source: HealthSource = {
 };
 
 const ctxWith = (results: { data: Record<string, string | number>[] }[]) => {
-  const client = new ClickhouseClient({ host: 'http://localhost:1' });
+  const client = new DataClient({});
   const query = jest.spyOn(client, 'queryChartConfig');
   for (const r of results) query.mockResolvedValueOnce({ data: r.data });
   const ctx: QueryContext = {

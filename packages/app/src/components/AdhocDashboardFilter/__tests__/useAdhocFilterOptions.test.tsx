@@ -1,10 +1,10 @@
 // @ts-nocheck
 import { ReactNode } from 'react';
+import { ResolvedFilterValuesQuery } from '@couchbase-traces/common-utils/dist/filters';
 import {
   ColumnMeta,
   JSDataType,
-} from '@couchbase-traces/common-utils/dist/clickhouse';
-import { ResolvedFilterValuesQuery } from '@couchbase-traces/common-utils/dist/filters';
+} from '@couchbase-traces/common-utils/dist/query';
 import {
   AdhocDashboardFilter,
   SourceKind,

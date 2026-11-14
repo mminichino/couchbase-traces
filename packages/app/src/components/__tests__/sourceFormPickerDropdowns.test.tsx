@@ -2,13 +2,13 @@ import { useForm } from 'react-hook-form';
 import { screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
-import { useDatabasesDirect, useTablesDirect } from '@/clickhouse';
 import { ConnectionSelectControlled } from '@/components/ConnectionSelect';
 import { DatabaseSelectControlled } from '@/components/DatabaseSelect';
 import { DBTableSelectControlled } from '@/components/DBTableSelect';
 import { useConnections } from '@/connection';
+import { useDatabasesDirect, useTablesDirect } from '@/query';
 
-jest.mock('@/clickhouse', () => ({
+jest.mock('@/query', () => ({
   useDatabasesDirect: jest.fn(),
   useTablesDirect: jest.fn(),
 }));

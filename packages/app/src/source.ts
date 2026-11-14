@@ -1,17 +1,17 @@
 import React, { useMemo } from 'react';
-import {
-  ColumnMeta,
-  ColumnMetaType,
-  convertCHDataTypeToJSType,
-  extractColumnReferencesFromKey,
-  filterColumnMetaByType,
-  isCHIntegerType,
-  JSDataType,
-} from '@couchbase-traces/common-utils/dist/clickhouse';
 import { Metadata } from '@couchbase-traces/common-utils/dist/core/metadata';
 import { isRatioChartConfig } from '@couchbase-traces/common-utils/dist/core/renderChartConfig';
 import { splitAndTrimWithBracket } from '@couchbase-traces/common-utils/dist/core/utils';
 import { isBuilderChartConfig } from '@couchbase-traces/common-utils/dist/guards';
+import {
+  ColumnMeta,
+  ColumnMetaType,
+  columnTypeToJSType,
+  extractColumnReferencesFromKey,
+  filterColumnMetaByType,
+  isCHIntegerType,
+  JSDataType,
+} from '@couchbase-traces/common-utils/dist/query';
 import {
   BuilderSavedChartConfig,
   ChartConfig,
@@ -380,7 +380,7 @@ export async function inferTableSourceConfig({
   const hasEventName = columns.some(
     col =>
       col.name === 'EventName' &&
-      convertCHDataTypeToJSType(col.type) === JSDataType.String,
+      columnTypeToJSType(col.type) === JSDataType.String,
   );
 
   // Check if metadata rollup tables exist and, if so, infer the bucketing

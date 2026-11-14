@@ -1,6 +1,6 @@
 import { get } from 'lodash';
-import type { ResponseJSON } from '@couchbase-traces/common-utils/dist/clickhouse';
 import { classifyTimestampType } from '@couchbase-traces/common-utils/dist/core/utils';
+import type { ResponseJSON } from '@couchbase-traces/common-utils/dist/query';
 import type { TLogSource } from '@couchbase-traces/common-utils/dist/types';
 
 import { parseTimestampToMs } from '@/utils';

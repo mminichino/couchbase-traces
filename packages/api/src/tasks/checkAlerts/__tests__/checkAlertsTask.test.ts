@@ -1,4 +1,3 @@
-import { ClickhouseClient } from '@couchbase-traces/common-utils/dist/clickhouse/node';
 import mongoose from 'mongoose';
 
 import * as config from '@/config';
@@ -6,6 +5,7 @@ import { ObjectId } from '@/models';
 import { AlertSource, AlertThresholdType, IAlert } from '@/models/alert';
 import { ISource } from '@/models/source';
 import { IWebhook } from '@/models/webhook';
+import { DataClient } from '@/query';
 import * as checkAlerts from '@/tasks/checkAlerts';
 import CheckAlertTask from '@/tasks/checkAlerts';
 import {
@@ -42,9 +42,7 @@ describe('CheckAlertTask', () => {
         buildChartLink: jest.fn(),
         buildChartExplorerLink: jest.fn(),
         buildLogSearchLink: jest.fn(),
-        getClickHouseClient: jest
-          .fn()
-          .mockResolvedValue({} as ClickhouseClient),
+        getClickHouseClient: jest.fn().mockResolvedValue({} as DataClient),
       };
 
       jest.mocked(loadProvider).mockResolvedValue(mockAlertProvider);
@@ -133,7 +131,8 @@ describe('CheckAlertTask', () => {
         conn: {
           id: 'conn-123',
           _id: new mongoose.Types.ObjectId(),
-          host: config.CLICKHOUSE_HOST,
+          host: 'couchbase://localhost',
+          kind: 'couchbase' as const,
           username: config.CLICKHOUSE_USER,
           password: config.CLICKHOUSE_PASSWORD,
           name: '',
@@ -155,7 +154,7 @@ describe('CheckAlertTask', () => {
       mockAlertProvider.getAlertTasks.mockResolvedValue([mockAlertTask]);
       mockAlertProvider.getWebhooks.mockResolvedValue(teamWebhooksById);
       mockAlertProvider.getClickHouseClient.mockResolvedValue(
-        new ClickhouseClient({}),
+        new DataClient({}),
       );
 
       await task.execute();
@@ -164,7 +163,7 @@ describe('CheckAlertTask', () => {
       expect(mockProcessAlert).toHaveBeenCalledWith(
         mockAlertTask.now,
         mockAlertTask.alerts[0],
-        expect.any(ClickhouseClient),
+        expect.any(DataClient),
         'conn-123',
         mockAlertProvider,
         teamWebhooksById,
@@ -219,7 +218,8 @@ describe('CheckAlertTask', () => {
         conn: {
           id: 'conn-123',
           _id: new mongoose.Types.ObjectId(),
-          host: config.CLICKHOUSE_HOST,
+          host: 'couchbase://localhost',
+          kind: 'couchbase' as const,
           username: config.CLICKHOUSE_USER,
           password: config.CLICKHOUSE_PASSWORD,
           name: 'Team1 Connection',
@@ -240,7 +240,8 @@ describe('CheckAlertTask', () => {
         conn: {
           id: 'conn-456',
           _id: new mongoose.Types.ObjectId(),
-          host: config.CLICKHOUSE_HOST,
+          host: 'couchbase://localhost',
+          kind: 'couchbase' as const,
           username: config.CLICKHOUSE_USER,
           password: config.CLICKHOUSE_PASSWORD,
           name: 'Team2 Connection',
@@ -280,7 +281,7 @@ describe('CheckAlertTask', () => {
       ]);
 
       mockAlertProvider.getClickHouseClient.mockResolvedValue(
-        new ClickhouseClient({}),
+        new DataClient({}),
       );
 
       // Mock getWebhooks to return team-specific webhooks
@@ -305,7 +306,7 @@ describe('CheckAlertTask', () => {
         1,
         mockAlertTask1.now,
         mockAlertTask1.alerts[0],
-        expect.any(ClickhouseClient),
+        expect.any(DataClient),
         'conn-123',
         mockAlertProvider,
         team1WebhooksById,
@@ -316,7 +317,7 @@ describe('CheckAlertTask', () => {
         2,
         mockAlertTask2.now,
         mockAlertTask2.alerts[0],
-        expect.any(ClickhouseClient),
+        expect.any(DataClient),
         'conn-456',
         mockAlertProvider,
         team2WebhooksById,
@@ -367,7 +368,8 @@ describe('CheckAlertTask', () => {
           conn: {
             id: connId,
             _id: new mongoose.Types.ObjectId(),
-            host: config.CLICKHOUSE_HOST,
+            host: 'couchbase://localhost',
+            kind: 'couchbase' as const,
             username: config.CLICKHOUSE_USER,
             password: config.CLICKHOUSE_PASSWORD,
             name: '',
@@ -392,7 +394,7 @@ describe('CheckAlertTask', () => {
             if (conn.id === 'conn-broken') {
               throw new Error('connect ECONNREFUSED');
             }
-            return new ClickhouseClient({});
+            return new DataClient({});
           },
         );
       });
@@ -424,7 +426,7 @@ describe('CheckAlertTask', () => {
           expect.objectContaining({
             alert: expect.objectContaining({ id: 'alert-healthy' }),
           }),
-          expect.any(ClickhouseClient),
+          expect.any(DataClient),
           'conn-healthy',
           mockAlertProvider,
           expect.any(Map),

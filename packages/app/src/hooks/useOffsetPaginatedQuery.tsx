@@ -1,28 +1,23 @@
 import { useMemo } from 'react';
 import { isEqual, omit } from 'lodash';
 import ms from 'ms';
-import type {
-  ClickHouseSettings,
-  ResponseJSON,
-  Row,
-} from '@couchbase-traces/common-utils/dist/clickhouse';
-import {
-  ChSql,
-  ClickHouseQueryError,
-  ColumnMetaType,
-  type QueryAttribution,
-} from '@couchbase-traces/common-utils/dist/clickhouse';
 import { Metadata } from '@couchbase-traces/common-utils/dist/core/metadata';
 import {
   isFirstOrderByAscending,
   isTimestampExpressionInFirstOrderBy,
-  MAX_TABLE_ROWS,
 } from '@couchbase-traces/common-utils/dist/core/utils';
 import { renderChartConfig } from '@couchbase-traces/common-utils/dist/dataLayer';
 import {
   isBuilderChartConfig,
   isRawSqlChartConfig,
 } from '@couchbase-traces/common-utils/dist/guards';
+import type { ResponseJSON } from '@couchbase-traces/common-utils/dist/query';
+import {
+  ChSql,
+  ColumnMetaType,
+  type QueryAttribution,
+  QueryError,
+} from '@couchbase-traces/common-utils/dist/query';
 import {
   ChartConfigWithOptTimestamp,
   TSource,
@@ -35,9 +30,9 @@ import {
 } from '@tanstack/react-query';
 
 import api from '@/api';
-import { getClickhouseClient } from '@/clickhouse';
 import { useMetadataWithSettings } from '@/hooks/useMetadata';
 import { useMVOptimizationExplanation } from '@/hooks/useMVOptimizationExplanation';
+import { getClickhouseClient } from '@/query';
 import { useQueryAttribution } from '@/queryAttribution';
 import { useSource } from '@/source';
 import {
@@ -186,23 +181,18 @@ const queryFn: QueryFunction<TQueryFnData, TQueryKey, TPageParam> = async ({
   }
 
   const {
-    queryClient,
     windowDurationsSeconds,
     metadata,
-    hasPreviousQueries,
     optimizedConfig,
     source,
     attribution,
   } = meta as QueryMeta;
 
-  // Only stream incrementally if this is a fresh query with no previous
-  // response or if it's a paginated query
-  // otherwise we'll flicker the UI with streaming data
-  const isStreamingIncrementally =
-    !hasPreviousQueries || pageParam.offset > 0 || pageParam.windowIndex > 0;
-
   const queryTimeout = queryKey[2];
-  const clickhouseClient = getClickhouseClient({ queryTimeout, attribution });
+  const clickhouseClient = getClickhouseClient({
+    requestTimeout: queryTimeout,
+    attribution,
+  });
 
   const rawConfig = queryKey[1];
   const config = optimizedConfig ?? rawConfig;
@@ -246,198 +236,21 @@ const queryFn: QueryFunction<TQueryFnData, TQueryKey, TPageParam> = async ({
     setTimeout(() => abortController.abort(), queryTimeout * 1000);
   }
 
-  const clickHouseSettings: ClickHouseSettings = {};
-  if (isRawSqlChartConfig(config)) {
-    // Readonly = 2 means the query is readonly but can still specify query settings.
-    clickHouseSettings.readonly = '2';
+  const resultSet = await clickhouseClient.query<'JSON'>({
+    query: query.sql,
+    query_params: query.params,
+    format: 'JSON',
+    abort_signal: abortController?.signal || signal,
+    connectionId: config.connection,
+  });
 
-    const existingMaxResultRowsSetting = await metadata.getSetting({
-      settingName: 'max_result_rows',
-      connectionId: config.connection,
-    });
-
-    const maxResultRows =
-      existingMaxResultRowsSetting != null &&
-      Number(existingMaxResultRowsSetting) > 0
-        ? Math.min(Number(existingMaxResultRowsSetting), MAX_TABLE_ROWS)
-        : MAX_TABLE_ROWS;
-
-    // result_overflow_mode=break will prevent an error when the result set exceeds max_result_rows,
-    // and instead just return the first max_result_rows rows.
-    clickHouseSettings.max_result_rows = String(maxResultRows);
-    clickHouseSettings.result_overflow_mode = 'break';
-  }
-
-  const resultSet =
-    await clickhouseClient.query<'JSONCompactEachRowWithNamesAndTypes'>({
-      query: query.sql,
-      query_params: query.params,
-      format: 'JSONCompactEachRowWithNamesAndTypes',
-      abort_signal: abortController?.signal || signal,
-      connectionId: config.connection,
-      clickhouse_settings: clickHouseSettings,
-    });
-
-  const stream = resultSet.stream();
-
-  const reader = stream.getReader();
-
-  const headerRows: Row<unknown[], 'JSONCompactEachRowWithNamesAndTypes'>[] =
-    [];
-
-  if (isStreamingIncrementally) {
-    queryClient.setQueryData<TData>(queryKey, (oldData): TData => {
-      const EMPTY_PAGE: TQueryFnData = {
-        data: [],
-        meta: [],
-        chSql: { sql: '', params: {} },
-        window: timeWindow,
-      };
-      if (oldData == null) {
-        return {
-          pages: [EMPTY_PAGE],
-          pageParams: [pageParam],
-        };
-      }
-
-      return {
-        pages: [...oldData.pages, EMPTY_PAGE],
-        pageParams: [...oldData.pageParams, pageParam],
-      };
-    });
-  }
-
-  const queryResultMeta: NonNullable<ResponseJSON['meta']> = [];
-  // Buffer for all data rows for the current query
-  const queryResultData: Record<string, unknown>[] = [];
-
-  async function read(): Promise<void> {
-    const { done, value } = await reader.read();
-
-    if (done || value == null) {
-      return;
-    }
-
-    if (queryResultMeta.length === 0) {
-      headerRows.push(...value);
-    }
-
-    if (queryResultMeta.length > 0 || headerRows.length >= 2) {
-      let dataRows = value;
-      if (queryResultMeta.length === 0) {
-        const names = headerRows[0].json<string[]>();
-        const values = headerRows[1].json<string[]>();
-
-        if (names.length !== values.length) {
-          throw new Error(
-            'Invalid JSONCompactEachRowWithNamesAndTypes header rows',
-          );
-        }
-
-        for (let i = 0; i < names.length; i++) {
-          queryResultMeta.push({
-            name: names[i],
-            type: values[i],
-          });
-        }
-
-        dataRows = headerRows.slice(2);
-        headerRows.length = 0;
-      }
-
-      const rowObjs: Record<string, unknown>[] = [];
-      for (let i = 0; i < dataRows.length; i++) {
-        const rowArr = dataRows[i].json();
-        const rowObj: Record<string, unknown> = {};
-        for (let j = 0; j < rowArr.length; j++) {
-          rowObj[queryResultMeta[j].name] = rowArr[j];
-        }
-
-        rowObjs.push(rowObj);
-        queryResultData.push(rowObj);
-      }
-
-      if (isStreamingIncrementally) {
-        queryClient.setQueryData<TData>(queryKey, oldData => {
-          if (oldData == null) {
-            return {
-              pages: [
-                {
-                  data: rowObjs,
-                  meta: queryResultMeta,
-                  chSql: query,
-                  window: timeWindow,
-                },
-              ],
-              pageParams: [pageParam],
-            };
-          }
-
-          const oldPages = oldData.pages.slice(0, -1);
-          const page = oldData.pages[oldData.pages.length - 1];
-
-          return {
-            pages: [
-              ...oldPages,
-              {
-                ...page,
-                data: [...(page.data ?? []), ...rowObjs],
-                meta: queryResultMeta,
-                chSql: query,
-                window: timeWindow,
-              },
-            ],
-            pageParams: oldData.pageParams,
-          };
-        });
-      }
-    }
-
-    return await read();
-  }
-
-  function deleteProgressCache() {
-    queryClient.setQueryData<TData>(queryKey, oldData => {
-      if (oldData == null) {
-        return;
-      }
-
-      return {
-        pages: oldData.pages.slice(0, -1),
-        pageParams: oldData.pageParams.slice(0, -1),
-      };
-    });
-  }
-
-  try {
-    await read();
-  } catch (e) {
-    if (isStreamingIncrementally) {
-      deleteProgressCache();
-    }
-    throw e;
-  }
-
-  if (!isStreamingIncrementally) {
-    return {
-      data: queryResultData,
-      meta: queryResultMeta,
-      chSql: query,
-      window: timeWindow,
-    };
-  }
-
-  // Clear out in-progress page and return full page result from cache
-  const cachedQueryData = queryClient.getQueryData<TData>(queryKey);
-  if (cachedQueryData == null) {
-    throw new Error('Data not found in cache');
-  }
-  const { pages } = cachedQueryData;
-  const lastPage = pages[pages.length - 1];
-
-  deleteProgressCache();
-
-  return lastPage;
+  const json = await resultSet.json<ResponseJSON<Record<string, unknown>>>();
+  return {
+    data: json.data ?? [],
+    meta: json.meta ?? [],
+    chSql: query,
+    window: timeWindow,
+  };
 };
 
 function flattenPages(pages: TQueryFnData[]) {
@@ -512,7 +325,7 @@ export default function useOffsetPaginatedQuery(
     isPlaceholderData,
   } = useInfiniteQuery<
     TQueryFnData,
-    Error | ClickHouseQueryError,
+    Error | QueryError,
     TData,
     TQueryKey,
     TPageParam

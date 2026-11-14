@@ -1757,14 +1757,16 @@ describe('utils', () => {
       const connections: Connection[] = [
         {
           id: 'conn1',
+          kind: 'couchbase',
           name: 'Production DB',
-          host: 'http://localhost:8123',
+          host: 'couchbase://localhost',
           username: 'default',
         },
         {
           id: 'conn2',
+          kind: 'couchbase',
           name: 'Staging DB',
-          host: 'http://localhost:8124',
+          host: 'couchbase://localhost',
           username: 'default',
         },
       ];
@@ -1831,8 +1833,9 @@ describe('utils', () => {
       const connections: Connection[] = [
         {
           id: 'conn1',
+          kind: 'couchbase',
           name: 'Production DB',
-          host: 'http://localhost:8123',
+          host: 'couchbase://localhost',
           username: 'default',
         },
       ];

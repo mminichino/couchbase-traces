@@ -1,4 +1,3 @@
-import { ClickhouseClient } from '@couchbase-traces/common-utils/dist/clickhouse/node';
 import { Metadata } from '@couchbase-traces/common-utils/dist/core/metadata';
 import { buildSearchChartConfig } from '@couchbase-traces/common-utils/dist/core/searchChartConfig';
 import {
@@ -39,6 +38,7 @@ import { IDashboard } from '@/models/dashboard';
 import { ISavedSearch } from '@/models/savedSearch';
 import { ISource } from '@/models/source';
 import { IWebhook } from '@/models/webhook';
+import { DataClient } from '@/query';
 import {
   computeAliasWithClauses,
   doesExceedThreshold,
@@ -545,7 +545,7 @@ export const fetchSampleLines = async ({
 }: {
   /** Reuses the evaluation's clauses; recomputed here when absent. */
   aliasWith?: BuilderChartConfigWithOptDateRange['with'];
-  clickhouseClient: ClickhouseClient;
+  clickhouseClient: DataClient;
   endTime: Date;
   metadata: Metadata;
   savedSearch: Pick<
@@ -588,15 +588,20 @@ export const fetchSampleLines = async ({
       metadata,
       source.querySettings,
     );
-    const raw = await clickhouseClient
-      .query<'CSV'>({
+    const json = await clickhouseClient
+      .query({
         query: query.sql,
         query_params: query.params,
-        format: 'CSV',
+        format: 'JSON',
         connectionId: source.connection,
         scanConsistency: 'request_plus',
       })
-      .then(res => res.text());
+      .then(res => res.json());
+
+    const rows = Array.isArray(json)
+      ? (json as Record<string, unknown>[])
+      : ((json as { data?: Record<string, unknown>[] }).data ?? []);
+    const raw = rows.map(row => Object.values(row).join(', ')).join('\n');
 
     return truncateString(
       raw
@@ -634,7 +639,7 @@ export const renderAlertTemplate = async ({
   groupValues,
 }: {
   alertProvider: AlertProvider;
-  clickhouseClient: ClickhouseClient;
+  clickhouseClient: DataClient;
   metadata: Metadata;
   state: AlertState;
   template?: string | null;

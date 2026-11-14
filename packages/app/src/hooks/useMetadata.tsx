@@ -1,11 +1,5 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import objectHash from 'object-hash';
-import {
-  ColumnMeta,
-  ColumnMetaType,
-  filterColumnMetaByType,
-  JSDataType,
-} from '@couchbase-traces/common-utils/dist/clickhouse';
 import {
   Field,
   FieldsCondition,
@@ -18,6 +12,12 @@ import {
   FilterState,
   serializeFilterState,
 } from '@couchbase-traces/common-utils/dist/filters';
+import {
+  ColumnMeta,
+  ColumnMetaType,
+  filterColumnMetaByType,
+  JSDataType,
+} from '@couchbase-traces/common-utils/dist/query';
 import {
   BuilderChartConfigWithDateRange,
   isLogSource,
@@ -35,7 +35,7 @@ import api from '@/api';
 import { IS_LOCAL_MODE } from '@/config';
 import { LOCAL_STORE_CONNECTIONS_KEY } from '@/connection';
 import { DEFAULT_FILTER_KEYS_FETCH_LIMIT } from '@/defaults';
-import { mergeStreams, useStreamingQuery } from '@/hooks/useStreamingQuery';
+import { useStreamingQuery } from '@/hooks/useStreamingQuery';
 import { getMetadata } from '@/metadata';
 import { useSource, useSources } from '@/source';
 import { toArray } from '@/utils';
@@ -51,8 +51,7 @@ export const SINGLE_KEY_VALUES_LIMIT = 10000;
 // Hook to get metadata with proper settings applied
 export function useMetadataWithSettings() {
   const [metadata, setMetadata] = useState(getMetadata());
-  const { data: me } = api.useMe();
-  const settingsAppliedRef = useRef(false);
+  api.useMe();
   const queryClient = useQueryClient();
 
   // Create a listener that triggers when connections are updated in local mode
@@ -66,7 +65,6 @@ export function useMetadataWithSettings() {
         // Create a new metadata instance with a new ClickHouse client,
         // since the existing one will not have connection / auth info.
         setMetadata(getMetadata());
-        settingsAppliedRef.current = false;
         // Clear react-query cache so that metadata is refetched with
         // the new connection info, and error states are cleared.
         queryClient.resetQueries();
@@ -78,15 +76,6 @@ export function useMetadataWithSettings() {
       window.removeEventListener('storage', createNewMetadata);
     };
   }, [queryClient]);
-
-  useEffect(() => {
-    if (me?.team?.metadataMaxRowsToRead && !settingsAppliedRef.current) {
-      metadata.setClickHouseSettings({
-        max_rows_to_read: String(me.team.metadataMaxRowsToRead),
-      });
-      settingsAppliedRef.current = true;
-    }
-  }, [me?.team?.metadataMaxRowsToRead, metadata]);
 
   return metadata;
 }
@@ -293,7 +282,7 @@ export function useMultipleAllFields(
     ],
     queryFn: () =>
       Promise.all(
-        tableConnections.map(async (tc, i): Promise<TableConnectionFields> => {
+        tableConnections.map(async (tc): Promise<TableConnectionFields> => {
           let columns: ColumnMeta[] = [];
           try {
             columns = await metadata.getColumns({
@@ -308,7 +297,6 @@ export function useMultipleAllFields(
                   dateRange,
                   timestampValueExpression:
                     timestampValueExpression ?? tc.timestampValueExpression,
-                  condition: conditions?.[i],
                 });
             return { fields, columns };
           } catch (error) {
@@ -432,12 +420,10 @@ export function useMergeTreeSettings(
     'queryKey' | 'queryFn'
   >,
 ) {
-  const metadata = useMetadataWithSettings();
   return useQuery<Map<string, string> | null>({
     queryKey: ['useMetadata.useMergeTreeSettings', { connectionId }],
     // react-query rejects undefined
-    queryFn: async () =>
-      (await metadata.getMergeTreeSettings({ connectionId })) ?? null,
+    queryFn: async () => null,
     // Keep failures stale to refetch on next mount.
     staleTime: query => (query.state.data ? 1000 * 60 * 5 : 0),
     enabled: !!connectionId,
@@ -544,13 +530,13 @@ export function useMultipleGetKeyValues(
       maxKeys,
       limit,
     ],
-    streamFactory: async function* ({ signal }) {
+    streamFactory: async function* ({ signal: _signal }) {
       if (keys.length === 0) return;
       const usableMVsOverride =
         chartConfigsArr.length === 1 ? metadataMVsOverride : undefined;
       // The limit applies per Map column, so one wide Map (e.g. LogAttributes)
       // can't crowd out the others. Top-level columns share a single limit.
-      const { limitedKeys, limitedKeyConditions } = keys.reduce<{
+      const { limitedKeys } = keys.reduce<{
         countByColumn: Map<string, number>;
         limitedKeys: string[];
         limitedKeyConditions?: (FilterState | undefined)[];
@@ -587,44 +573,36 @@ export function useMultipleGetKeyValues(
 
       if (mode === 'exact') {
         const results = await settleAllOrThrow(
-          lookups.map(({ chartConfig, source }) =>
+          lookups.map(({ chartConfig }) =>
             metadata.getKeyValuesWithMVs({
               chartConfig,
               keys: limitedKeys,
-              keyConditions: limitedKeyConditions,
               limit,
-              disableRowLimit,
-              source,
-              signal,
             }),
           ),
         );
-        // Numeric values have always passed through unconverted here; `useQuery`
-        // used to hide the mismatch with `Facet`. HDX-1548.
         yield results.flat() as Facet[];
         return;
       }
 
-      // mode === 'all'
-      const streams = lookups.map(({ chartConfig, metadataMVs }) =>
-        metadata.streamAllKeyValues({
-          databaseName: chartConfig.from.databaseName,
-          tableName: chartConfig.from.tableName,
-          keyExpressions: limitedKeys,
-          maxValuesPerKey: limit,
-          connectionId: chartConfig.connection,
-          metadataMVs,
-          dateRange: chartConfig.dateRange,
-          timestampValueExpression: chartConfig.timestampValueExpression,
-          signal,
-        }),
+      const results = await Promise.all(
+        lookups.map(({ chartConfig }) =>
+          metadata.getAllKeyValues({
+            databaseName: chartConfig.from.databaseName,
+            tableName: chartConfig.from.tableName,
+            connectionId: chartConfig.connection,
+            keyExpressions: limitedKeys,
+            maxValuesPerKey: limit,
+            dateRange: chartConfig.dateRange,
+            timestampValueExpression:
+              chartConfig.timestampValueExpression ?? '',
+          }),
+        ),
       );
-      for await (const keyValues of mergeStreams(streams)) {
-        yield keyValues.map(({ key, value }) => ({
-          key,
-          value: value.map(val => val.toString()),
-        }));
-      }
+      yield results.flat().map(({ key, value }) => ({
+        key,
+        value: value.map(val => val.toString()),
+      }));
     },
     staleTime: 1000 * 60 * 5, // Cache every 5 min
     placeholderData: keepPreviousData,
@@ -652,7 +630,7 @@ export function useGetValuesDistribution(
   options?: Omit<UseQueryOptions<Map<string, number>, Error>, 'queryKey'>,
 ) {
   const metadata = useMetadataWithSettings();
-  const { data: source, isLoading: isLoadingSource } = useSource({
+  useSource({
     id: chartConfig.source,
   });
 
@@ -663,11 +641,10 @@ export function useGetValuesDistribution(
         chartConfig,
         key,
         limit,
-        source,
       });
     },
     staleTime: Infinity,
-    enabled: !!key && !isLoadingSource,
+    enabled: !!key,
     placeholderData: keepPreviousData,
     retry: false,
     ...options,
@@ -747,7 +724,7 @@ export function useGetMetricNames(
         namePattern,
       },
     ],
-    queryFn: async ({ signal }) =>
+    queryFn: async () =>
       metadata.getMetricNames({
         databaseName,
         tableName,
@@ -755,7 +732,6 @@ export function useGetMetricNames(
         dateRange,
         timestampValueExpression,
         namePattern,
-        signal,
       }),
     // An empty table name means the source has no table for this metric kind.
     enabled:

@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { JSDataType } from '@couchbase-traces/common-utils/dist/clickhouse';
+import { JSDataType } from '@couchbase-traces/common-utils/dist/query';
 import { TSource } from '@couchbase-traces/common-utils/dist/types';
 import { Button, Card, Drawer, Stack, Text } from '@mantine/core';
 

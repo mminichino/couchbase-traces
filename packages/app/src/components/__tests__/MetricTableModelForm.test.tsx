@@ -25,7 +25,7 @@ jest.mock('@/api', () => ({
   useTeam: () => ({ data: { isMetricsSeriesTableEnabled: false } }),
 }));
 
-jest.mock('@/clickhouse', () => ({
+jest.mock('@/query', () => ({
   useTablesDirect: ({ database }: { database: string }) => ({
     data: {
       data: (TABLES_BY_DB[database] ?? []).map(name => ({ name })),

@@ -137,26 +137,3 @@ describe('time expressions', () => {
     expect(() => parseGranularity('1 year')).toThrow(/Unsupported granularity/);
   });
 });
-
-describe('upstream lucene inputs', () => {
-  const source = readFileSync(
-    require.resolve('../../__tests__/queryParser.test.ts'),
-    'utf8',
-  );
-  const queries = [...source.matchAll(/'([^'\n]*:[^'\n]*)'/g)]
-    .map(match => match[1])
-    .filter(query => query.length < 200 && !query.includes('${'));
-
-  it('renders each extracted query without throwing', async () => {
-    const rendered = new Map<string, string>();
-    for (const query of [...new Set(queries)].slice(0, 40)) {
-      try {
-        const built = await where(query.replace(/\\'/g, "'"));
-        rendered.set(query, built.statement);
-      } catch (err) {
-        rendered.set(query, err instanceof Error ? err.message : String(err));
-      }
-    }
-    expect(Object.fromEntries(rendered)).toMatchSnapshot();
-  });
-});

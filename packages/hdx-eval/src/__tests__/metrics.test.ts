@@ -1,5 +1,3 @@
-import { __metricMappers } from '@/clickhouse/insert';
-import { scenarioTables } from '@/clickhouse/schema';
 import {
   bucketize,
   expBucketize,
@@ -10,6 +8,8 @@ import {
   makeSummary,
 } from '@/generators/metrics';
 import type { GaugeMetricRow, SumMetricRow } from '@/generators/types';
+import { __metricMappers } from '@/query/insert';
+import { scenarioTables } from '@/query/schema';
 import { mulberry32 } from '@/rng/seeded';
 import {
   collectScenario,

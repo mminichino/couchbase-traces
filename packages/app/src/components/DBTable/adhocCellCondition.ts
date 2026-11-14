@@ -1,9 +1,9 @@
+import { quoteResultColumnNameIfNeeded } from '@couchbase-traces/common-utils/dist/core/metadata';
+import { isAdhocComparableDataType } from '@couchbase-traces/common-utils/dist/filters';
 import {
   isJSDataTypeScalar,
   JSDataType,
-} from '@couchbase-traces/common-utils/dist/clickhouse';
-import { quoteResultColumnNameIfNeeded } from '@couchbase-traces/common-utils/dist/core/metadata';
-import { isAdhocComparableDataType } from '@couchbase-traces/common-utils/dist/filters';
+} from '@couchbase-traces/common-utils/dist/query';
 
 type ColumnType = { _type: JSDataType | null; type?: string };
 

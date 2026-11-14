@@ -4,7 +4,6 @@ import express from 'express';
 import { z } from 'zod';
 import { validateRequest } from 'zod-express-middleware';
 
-import { ClickhouseClient } from '@/clickhouse';
 import {
   getAIMetadata,
   getAIModel,
@@ -17,7 +16,9 @@ import {
 import { validateAiChartConfigForConnection } from '@/controllers/aiValidation';
 import { getConnectionById } from '@/controllers/connection';
 import { getSource } from '@/controllers/sources';
+import { MCP_REQUEST_TIMEOUT } from '@/mcp/tools/query/helpers';
 import { getNonNullUserWithTeam } from '@/middleware/auth';
+import { DataClient } from '@/query';
 import { llmTelemetry } from '@/utils/aiTelemetry';
 import { couchbaseConsumerHttpResponse } from '@/utils/couchbaseConsumerErrors';
 import {
@@ -87,10 +88,8 @@ router.post(
         throw new Api500Error('Invalid connection');
       }
 
-      const clickhouseClient = new ClickhouseClient({
-        host: connection.host,
-        username: connection.username,
-        password: connection.password,
+      const clickhouseClient = new DataClient({
+        requestTimeout: MCP_REQUEST_TIMEOUT,
       });
 
       const chartConfig = await withOperationMetrics(

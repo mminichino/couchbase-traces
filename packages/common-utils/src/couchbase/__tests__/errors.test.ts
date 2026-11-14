@@ -1,4 +1,3 @@
-import { ClickHouseQueryError } from '@/clickhouse';
 import {
   CouchbaseQueryError,
   deserialize,
@@ -10,6 +9,7 @@ import {
   scrubMessage,
   serialize,
 } from '@/couchbase/errors';
+import { QueryError } from '@/query';
 
 // Objects shaped like the SDK's errors: the class name is what matters.
 function sdkError(
@@ -51,7 +51,7 @@ describe('fromSdkError', () => {
   ])('%s → %s', (name, code, status, retriable) => {
     const e = fromSdkError(sdkError(name), 'SELECT 1');
     expect(e).toBeInstanceOf(CouchbaseQueryError);
-    expect(e).toBeInstanceOf(ClickHouseQueryError);
+    expect(e).toBeInstanceOf(QueryError);
     expect(e.code).toBe(code);
     expect(e.httpStatus).toBe(status);
     expect(e.retriable).toBe(retriable);

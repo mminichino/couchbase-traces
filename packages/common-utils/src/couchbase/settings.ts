@@ -1,4 +1,4 @@
-import type { QueryAttribution } from '@/clickhouse/attribution';
+import type { QueryAttribution } from '@/query/attribution';
 import type { TeamClickHouseSettings } from '@/types';
 
 import { CouchbaseQueryError } from './errors';

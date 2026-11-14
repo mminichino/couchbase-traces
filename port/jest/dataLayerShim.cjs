@@ -20,7 +20,7 @@ Object.defineProperty(out, 'renderChartConfig', {
 Object.defineProperty(out, 'getMetadata', {
   enumerable: true,
   get() {
-    const mod = require('../../packages/common-utils/dist/core/metadata.js');
+    const mod = require('../../packages/common-utils/dist/dataLayer/metadata.js');
     // A mock that replaces the whole module exports the factory and not the class.
     if (
       typeof mod.Metadata !== 'function' &&

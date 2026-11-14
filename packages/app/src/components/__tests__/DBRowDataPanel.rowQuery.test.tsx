@@ -1,4 +1,4 @@
-import type { ResponseJSON } from '@couchbase-traces/common-utils/dist/clickhouse';
+import type { ResponseJSON } from '@couchbase-traces/common-utils/dist/query';
 import {
   SourceKind,
   TLogSource,
@@ -10,7 +10,7 @@ import { render, screen, waitFor } from '@testing-library/react';
 import { RowDataPanel, useRowData } from '@/components/DBRowDataPanel';
 
 const mockQueryChartConfig = jest.fn();
-jest.mock('@/clickhouse', () => ({
+jest.mock('@/query', () => ({
   useClickhouseClient: () => ({ queryChartConfig: mockQueryChartConfig }),
 }));
 jest.mock('@/hooks/useMetadata', () => ({

@@ -9,11 +9,11 @@ import {
 import type { ChartConfigWithDateRange } from '@couchbase-traces/common-utils/dist/types';
 import { DisplayType } from '@couchbase-traces/common-utils/dist/types';
 
-import { ClickhouseClient } from '@/clickhouse';
 import { getConnectionById } from '@/controllers/connection';
 import { getSource } from '@/controllers/sources';
+import { MCP_REQUEST_TIMEOUT } from '@/mcp/tools/query/helpers';
 import { assertMcpSliceForConnection } from '@/mcp/utils/mcpSlice';
-import { MCP_QUERY_MAX_EXECUTION_SEC } from '@/mcp/utils/timeout';
+import { DataClient } from '@/query';
 
 import { resolveBodyExpression } from './helpers';
 
@@ -88,10 +88,8 @@ export async function denoiseSearchResults(
     return { rows, removedPatterns: [], skipped: 'slice_off' };
   }
 
-  const clickhouseClient = new ClickhouseClient({
-    host: connection.host,
-    username: connection.username,
-    password: connection.password,
+  const clickhouseClient = new DataClient({
+    requestTimeout: MCP_REQUEST_TIMEOUT,
   });
   const metadata = getMetadata(clickhouseClient);
 
@@ -158,21 +156,13 @@ export async function denoiseSearchResults(
         config: sampleConfig,
         metadata,
         querySettings: source.querySettings,
-        opts: {
-          clickhouse_settings: {
-            max_execution_time: MCP_QUERY_MAX_EXECUTION_SEC,
-          },
-        },
+        opts: {},
       }),
       clickhouseClient.queryChartConfig({
         config: countConfig,
         metadata,
         querySettings: source.querySettings,
-        opts: {
-          clickhouse_settings: {
-            max_execution_time: MCP_QUERY_MAX_EXECUTION_SEC,
-          },
-        },
+        opts: {},
       }),
     ]);
   } catch {

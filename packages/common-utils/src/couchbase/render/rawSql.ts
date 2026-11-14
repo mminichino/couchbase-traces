@@ -1,7 +1,7 @@
-import type { ChartConfigWithOptDateRangeEx } from '@/core/renderChartConfig';
+import type { ChartConfigWithOptDateRangeEx } from '@/core/chartConfig';
+import { CouchbaseUnsupportedError } from '@/couchbase/errors';
 import { ensureOutermostSelectLimit } from '@/couchbase/rawSqlLimit';
 import { keyspace } from '@/couchbase/sqlpp';
-import { CouchbaseNotReadyError } from '@/dataLayer/errors';
 import { isRawSqlChartConfig } from '@/guards';
 import { QUERY_PARAMS_BY_DISPLAY_TYPE } from '@/rawSqlParams';
 import { DisplayType } from '@/types';
@@ -13,11 +13,11 @@ export async function renderRawSqlChartConfigCouchbase(
   _metadata: unknown,
 ): Promise<{ sql: string; params: Record<string, unknown>; dialect: 'sqlpp' }> {
   if (!isRawSqlChartConfig(config)) {
-    throw new CouchbaseNotReadyError('charts: rawSql');
+    throw new CouchbaseUnsupportedError('charts: rawSql');
   }
   const raw = config;
   if (typeof raw.sqlTemplate !== 'string') {
-    throw new CouchbaseNotReadyError('charts: rawSql');
+    throw new CouchbaseUnsupportedError('charts: rawSql');
   }
   const displayType = raw.displayType ?? DisplayType.Table;
   const queryParams = QUERY_PARAMS_BY_DISPLAY_TYPE[displayType] ?? [];

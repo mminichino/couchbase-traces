@@ -1,4 +1,3 @@
-import type { ClickhouseClient } from '@couchbase-traces/common-utils/dist/clickhouse/node';
 import type { Metadata } from '@couchbase-traces/common-utils/dist/core/metadata';
 import type { ChartConfigWithOptDateRange } from '@couchbase-traces/common-utils/dist/types';
 
@@ -9,6 +8,7 @@ import type {
   IAlertHistoryAnalytics,
 } from '@/models/alertHistory';
 import type { ISource } from '@/models/source';
+import type { DataClient } from '@/query';
 import type { AggregatedAlertHistory } from '@/tasks/checkAlerts';
 import type {
   AlertDetails,
@@ -32,7 +32,7 @@ export interface AlertEvaluationContext {
   /** Unoptimized config: evaluators that change the date range or
    * granularity must re-run materialized-view selection themselves. */
   chartConfig: ChartConfigWithOptDateRange;
-  clickhouseClient: ClickhouseClient;
+  clickhouseClient: DataClient;
   metadata: Metadata;
   dateRange: [Date, Date];
   windowSizeInMins: number;

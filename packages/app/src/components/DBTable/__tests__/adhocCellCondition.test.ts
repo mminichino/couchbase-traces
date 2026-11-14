@@ -1,12 +1,12 @@
 import {
-  convertCHDataTypeToJSType,
+  columnTypeToJSType,
   JSDataType,
-} from '@couchbase-traces/common-utils/dist/clickhouse';
+} from '@couchbase-traces/common-utils/dist/query';
 
 import { getAdhocCellCondition } from '@/components/DBTable/adhocCellCondition';
 
 const columnType = (type: string) => ({
-  _type: convertCHDataTypeToJSType(type),
+  _type: columnTypeToJSType(type),
   type,
 });
 

@@ -1,13 +1,13 @@
+import type { getMetadata } from '@couchbase-traces/common-utils/dist/dataLayer';
 import {
   type ChSql,
   chSql,
   concatChSql,
   tableExpr,
-} from '@couchbase-traces/common-utils/dist/clickhouse';
-import type { getMetadata } from '@couchbase-traces/common-utils/dist/core/metadata';
+} from '@couchbase-traces/common-utils/dist/query';
 import SqlString from 'sqlstring';
 
-import type { ClickhouseClient } from '@/clickhouse';
+import type { DataClient } from '@/query';
 import logger from '@/utils/logger';
 
 import type { MetricEntry } from './listMetricsPage';
@@ -17,26 +17,22 @@ async function queryRows<T>({
   clickhouseClient,
   sql,
   connectionId,
-  maxExecutionSeconds,
-  timeoutOverflowMode,
+  maxExecutionSeconds: _maxExecutionSeconds,
+  timeoutOverflowMode: _timeoutOverflowMode,
   signal,
 }: {
-  clickhouseClient: Pick<ClickhouseClient, 'query'>;
+  clickhouseClient: Pick<DataClient, 'query'>;
   sql: ChSql;
   connectionId: string;
   maxExecutionSeconds: number;
   timeoutOverflowMode: 'break' | 'throw';
   signal: AbortSignal;
 }): Promise<T[]> {
-  const response = await clickhouseClient.query<'JSON'>({
+  const response = await clickhouseClient.query({
     query: sql.sql,
     query_params: sql.params,
     format: 'JSON',
     connectionId,
-    clickhouse_settings: {
-      max_execution_time: maxExecutionSeconds,
-      timeout_overflow_mode: timeoutOverflowMode,
-    },
     abort_signal: signal,
   });
   const result = (await response.json()) as { data: T[] };
@@ -62,7 +58,7 @@ export async function fetchMetricNames({
   maxExecutionSeconds,
   signal,
 }: {
-  clickhouseClient: Pick<ClickhouseClient, 'query'>;
+  clickhouseClient: Pick<DataClient, 'query'>;
   databaseName: string;
   tableName: string;
   connectionId: string;
@@ -126,7 +122,7 @@ async function fetchMetricUnitsAndDescriptions({
   maxExecutionSeconds,
   signal,
 }: {
-  clickhouseClient: Pick<ClickhouseClient, 'query'>;
+  clickhouseClient: Pick<DataClient, 'query'>;
   databaseName: string;
   tableName: string;
   connectionId: string;
@@ -205,7 +201,7 @@ export async function enrichEntries({
   signal,
 }: {
   entries: MetricEntry[];
-  clickhouseClient: ClickhouseClient;
+  clickhouseClient: DataClient;
   metadata: ReturnType<typeof getMetadata>;
   databaseName: string;
   metricTables: Partial<Record<DiscoverableMetricKind, string>>;

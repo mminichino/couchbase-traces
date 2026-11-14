@@ -14,7 +14,7 @@ import numbro from 'numbro';
 
 import { isRatioChartConfig } from '@couchbase-traces/common-utils/dist/core/renderChartConfig';
 import { isBuilderChartConfig } from '@couchbase-traces/common-utils/dist/guards';
-import type { ColumnMetaType } from '@couchbase-traces/common-utils/dist/clickhouse';
+import type { ColumnMetaType } from '@couchbase-traces/common-utils/dist/query';
 import type {
   ChartConfigWithOptDateRange,
   NumberFormat,

@@ -2,13 +2,13 @@ import { useEffect, useMemo, useState } from 'react';
 import dynamic from 'next/dynamic';
 import { parseAsInteger, parseAsJson, useQueryState } from 'nuqs';
 import { useForm } from 'react-hook-form';
-import { DataFormat } from '@couchbase-traces/common-utils/dist/clickhouse';
+import { DataFormat } from '@couchbase-traces/common-utils/dist/query';
 import { DisplayType } from '@couchbase-traces/common-utils/dist/types';
 import { Button, Code, Grid, Stack, Table, Text, Title } from '@mantine/core';
 import { useQuery, UseQueryOptions } from '@tanstack/react-query';
 
-import { useClickhouseClient } from '@/clickhouse';
 import { SQLEditorControlled } from '@/components/SQLEditor/SQLEditor';
+import { useClickhouseClient } from '@/query';
 
 import { ConnectionSelectControlled } from './components/ConnectionSelect';
 import DBTableChart from './components/DBTableChart';

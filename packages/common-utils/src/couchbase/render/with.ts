@@ -1,4 +1,4 @@
-import type { ChartConfigWithOptDateRangeEx } from '@/core/renderChartConfig';
+import type { ChartConfigWithOptDateRangeEx } from '@/core/chartConfig';
 import { type SqlPP, sqlpp } from '@/couchbase/sqlpp';
 import type { BuilderChartConfigWithOptDateRange } from '@/types';
 import type { QuerySettings } from '@/types';

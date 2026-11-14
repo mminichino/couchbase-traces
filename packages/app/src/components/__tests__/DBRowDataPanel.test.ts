@@ -1,4 +1,4 @@
-import { ClickHouseQueryError } from '@couchbase-traces/common-utils/dist/clickhouse';
+import { QueryError } from '@couchbase-traces/common-utils/dist/query';
 import {
   SourceKind,
   TLogSource,
@@ -373,7 +373,7 @@ describe('DBRowDataPanel', () => {
     // The client's parsed error, wrapped the way the row query sees it.
     const message =
       "Cannot modify 'asterisk_include_materialized_columns' setting in readonly mode. ";
-    const readonlyError = new ClickHouseQueryError(message, 'SELECT * LIMIT 1');
+    const readonlyError = new QueryError(message, 'SELECT * LIMIT 1');
     readonlyError.cause = Object.assign(new Error(message), {
       code: '164',
       type: 'READONLY',

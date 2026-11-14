@@ -1,12 +1,12 @@
-import type { ChartConfigWithOptDateRangeEx } from '@/core/renderChartConfig';
+import type { ChartConfigWithOptDateRangeEx } from '@/core/chartConfig';
 import {
   hasMetricFormulas,
   isMetricChartConfig,
   isNonEmptyWhereExpr,
-} from '@/core/renderChartConfig';
+} from '@/core/chartConfig';
 import { resolvePercentileAggFn } from '@/core/utils';
+import { CouchbaseUnsupportedError } from '@/couchbase/errors';
 import { concatSqlPP, sqlpp } from '@/couchbase/sqlpp';
-import { CouchbaseNotReadyError } from '@/dataLayer/errors';
 import { isBuilderChartConfig, isRawSqlChartConfig } from '@/guards';
 import type {
   BuilderChartConfigWithOptDateRange,
@@ -35,7 +35,6 @@ import { renderWithCouchbase } from './with';
 export type SqlppQuery = {
   sql: string;
   params: Record<string, unknown>;
-  dialect: 'sqlpp';
 };
 
 export async function renderChartConfigCouchbase(
@@ -51,7 +50,7 @@ export async function renderChartConfigCouchbase(
       'configType' in rawChartConfig
         ? String(rawChartConfig.configType)
         : 'chart';
-    throw new CouchbaseNotReadyError(`charts: ${kind}`);
+    throw new CouchbaseUnsupportedError(`charts: unsupported ${kind}`);
   }
 
   const variableSubstituted = substituteChartConfigVariables(rawChartConfig);
@@ -145,7 +144,6 @@ export async function renderChartConfigCouchbase(
   return {
     sql: statement.statement,
     params: statement.parameters,
-    dialect: 'sqlpp',
   };
 }
 

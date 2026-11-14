@@ -45,7 +45,6 @@ describe('renderChartConfigCouchbase (search)', () => {
     expect(q.sql).toContain('META(d).id');
     expect(q.sql).toContain(ROW_ID_ALIAS);
     expect(q.sql).toContain('WHERE');
-    expect(q.dialect).toBe('sqlpp');
   });
 
   it('renders count aggregate for total results', async () => {

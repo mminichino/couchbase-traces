@@ -1,5 +1,5 @@
-import type { ResponseJSON } from '@/clickhouse';
-import type { QueryAttribution } from '@/clickhouse/attribution';
+import type { ResponseJSON } from '@/query';
+import type { QueryAttribution } from '@/query/attribution';
 
 import type { SerializedQueryError } from './errors';
 

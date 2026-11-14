@@ -15,8 +15,8 @@
  * endpoint" without dropping into raw SQL with self-JOINs. The builder
  * tools (table / timeseries / search) can't express the TraceId subselect.
  */
-import type { ChSql } from '@couchbase-traces/common-utils/dist/clickhouse';
 import { getMetadata } from '@couchbase-traces/common-utils/dist/dataLayer';
+import type { ChSql } from '@couchbase-traces/common-utils/dist/query';
 import { SourceKind } from '@couchbase-traces/common-utils/dist/types';
 
 import { getSource } from '@/controllers/sources';
@@ -35,7 +35,6 @@ import {
 import {
   durationDivisor,
   inclusiveTimeFilter,
-  mcpQuerySettings,
   requireMcpClickhouseClient,
 } from '@/mcp/tools/trace/shared';
 import type { ToolRegistrar } from '@/mcp/tools/types';
@@ -202,7 +201,6 @@ LIMIT {topN:UInt32}
           query_params: params,
           format: 'JSON',
           connectionId: source.connection.toString(),
-          clickhouse_settings: mcpQuerySettings(source.querySettings),
         });
         const json = (await (
           result as { json: () => Promise<{ data: Row[] }> }

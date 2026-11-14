@@ -1,5 +1,5 @@
-import { withQueryAttribution } from '@couchbase-traces/common-utils/dist/clickhouse/node';
-import { ClickHouseConnection } from '@couchbase-traces/common-utils/dist/types';
+import { withQueryAttribution } from '@couchbase-traces/common-utils/dist/dataLayer/node';
+import type { Connection } from '@couchbase-traces/common-utils/dist/types';
 import type { NextFunction, Request, Response } from 'express';
 import { serializeError } from 'serialize-error';
 
@@ -23,7 +23,7 @@ declare global {
     // eslint-disable-next-line @typescript-eslint/no-empty-object-type
     interface User extends UserDocument {}
     interface Request {
-      _hdx_connection?: ClickHouseConnection;
+      _hdx_connection?: Connection;
     }
   }
 }

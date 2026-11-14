@@ -1,4 +1,4 @@
-import { scenarioTables } from '@/clickhouse/schema';
+import { scenarioTables } from '@/query/schema';
 import type { Scenario } from '@/scenarios/types';
 
 import type { PromptVariant } from './types';

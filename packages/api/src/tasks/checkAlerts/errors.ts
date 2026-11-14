@@ -113,7 +113,7 @@ const MAX_CAUSE_DEPTH = 5;
  * - TCP-level socket timeouts (ETIMEDOUT)
  *
  * Walks the `cause` chain: `BaseClickhouseClient.query` wraps failures in a
- * `ClickHouseQueryError` that preserves the message but keeps the original
+ * `QueryError` that preserves the message but keeps the original
  * error (and its identifying type/code) only on `cause`, so server-side
  * TIMEOUT_EXCEEDED and socket ETIMEDOUT would otherwise misclassify as
  * generic query errors.

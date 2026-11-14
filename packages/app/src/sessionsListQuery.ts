@@ -1,5 +1,5 @@
-import { ChSql, chSql } from '@couchbase-traces/common-utils/dist/clickhouse';
 import { getFirstTimestampValueExpression } from '@couchbase-traces/common-utils/dist/core/utils';
+import { ChSql, chSql } from '@couchbase-traces/common-utils/dist/query';
 import {
   BuilderChartConfigWithDateRange,
   Filter,

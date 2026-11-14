@@ -1,4 +1,4 @@
-import type { ColumnMetaType } from '@couchbase-traces/common-utils/dist/clickhouse';
+import type { ColumnMetaType } from '@couchbase-traces/common-utils/dist/query';
 
 import { HIDDEN_ROW_COLUMNS } from '@/couchbase/dialect';
 

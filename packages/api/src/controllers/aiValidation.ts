@@ -1,22 +1,11 @@
-import { MetadataCache } from '@couchbase-traces/common-utils/dist/core/metadata';
-import { CouchbaseMetadata } from '@couchbase-traces/common-utils/dist/couchbase/metadata';
-import {
-  type QueryLanguage,
-  resolveConnectionKind,
-} from '@couchbase-traces/common-utils/dist/dataLayer';
+import type { Metadata } from '@couchbase-traces/common-utils/dist/couchbase/metadata';
+import type { QueryLanguage } from '@couchbase-traces/common-utils/dist/dataLayer';
+import { getMetadata } from '@couchbase-traces/common-utils/dist/dataLayer';
 import type { AILineTableResponse } from '@couchbase-traces/common-utils/dist/types';
 
-import type { ClickhouseClient } from '@/clickhouse';
 import type { ISource } from '@/models/source';
+import type { DataClient } from '@/query';
 import { Api400Error } from '@/utils/errors';
-
-const validationCache = new MetadataCache();
-
-function couchbaseMetadata(client: ClickhouseClient): CouchbaseMetadata {
-  return new CouchbaseMetadata(client.couchbaseDataClient(), validationCache, {
-    sampleSize: client.couchbaseSampleSize,
-  });
-}
 
 function tableContext(source: ISource) {
   return {
@@ -30,7 +19,7 @@ function tableContext(source: ISource) {
 }
 
 async function assertExpression(
-  metadata: CouchbaseMetadata,
+  metadata: Metadata,
   tc: ReturnType<typeof tableContext>,
   expression: string,
 ): Promise<void> {
@@ -45,10 +34,7 @@ async function assertExpression(
   }
 }
 
-/**
- * Validates SQL++ expressions in an AI-generated chart config for Couchbase
- * sources. ClickHouse sources skip validation here (unchanged upstream path).
- */
+/** Validates SQL++ expressions in an AI-generated chart config. */
 export async function validateAiChartConfigForConnection({
   chartConfig,
   source,
@@ -57,15 +43,14 @@ export async function validateAiChartConfigForConnection({
 }: {
   chartConfig: AILineTableResponse;
   source: ISource;
-  client: ClickhouseClient;
+  client: DataClient;
   queryLanguage: QueryLanguage;
 }): Promise<void> {
-  const kind = await resolveConnectionKind(source.connection.toString());
-  if (kind !== 'couchbase' || queryLanguage !== 'sqlpp') {
+  if (queryLanguage !== 'sqlpp') {
     return;
   }
 
-  const metadata = couchbaseMetadata(client);
+  const metadata = getMetadata(client);
   const tc = tableContext(source);
 
   if (chartConfig.whereLanguage === 'sql' && chartConfig.where?.trim()) {

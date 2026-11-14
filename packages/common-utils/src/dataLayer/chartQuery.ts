@@ -1,70 +1,82 @@
-import type { BaseClickhouseClient, QueryInputs } from '@/clickhouse';
-import { renderChartConfigCouchbase } from '@/couchbase/render';
+import { setChartSelectsAlias } from '@/core/chartConfig';
+import { renderChartConfig } from '@/core/renderChartConfig';
 import { couchbasePostprocessHints } from '@/couchbase/render/postprocess';
 import { isBuilderChartConfig } from '@/guards';
+import { QueryError } from '@/query/errors';
+import type { ResponseJSON } from '@/query/types';
+import type { ChartConfigWithOptDateRange, QuerySettings } from '@/types';
 
-import { resolveConnectionKind } from './kind';
+import type { DataClientLike } from './clientLike';
+import type { Metadata } from './metadata';
 
-type ChartArgs = Parameters<BaseClickhouseClient['queryChartConfig']>[0];
+type ChartJson = ResponseJSON<Record<string, string | number>>;
 
-type ChartJson = Awaited<ReturnType<BaseClickhouseClient['queryChartConfig']>>;
-
-type QueryFn = BaseClickhouseClient['query'];
-
-export async function couchbaseChartQuery(
-  query: QueryFn,
-  args: ChartArgs,
-): Promise<ChartJson | 'clickhouse'> {
-  const kind = await resolveConnectionKind(args.config.connection);
-  if (kind !== 'couchbase') return 'clickhouse';
-  const rendered = await renderChartConfigCouchbase(
-    args.config,
+export async function runChartQuery(
+  client: DataClientLike,
+  args: {
+    config: ChartConfigWithOptDateRange;
+    metadata: Metadata;
+    opts?: {
+      abort_signal?: AbortSignal;
+      scanConsistency?: 'not_bounded' | 'request_plus';
+    };
+    querySettings: QuerySettings | undefined;
+  },
+): Promise<ChartJson> {
+  let config = args.config;
+  config = isBuilderChartConfig(config) ? setChartSelectsAlias(config) : config;
+  const rendered = await renderChartConfig(
+    config,
     args.metadata,
     args.querySettings,
   );
-  const hints = isBuilderChartConfig(args.config)
-    ? couchbasePostprocessHints(args.config)
+  const hints = isBuilderChartConfig(config)
+    ? couchbasePostprocessHints(config)
     : {};
-  const resp = await query({
+  const resp = await client.query({
     query: rendered.sql,
     query_params: rendered.params,
     format: 'JSON',
     abort_signal: args.opts?.abort_signal,
-    connectionId: args.config.connection,
-    clickhouse_settings: args.opts?.clickhouse_settings,
+    connectionId: config.connection,
     scanConsistency: args.opts?.scanConsistency,
-    attribution: { source: args.config.source },
+    attribution: { source: config.source },
     ...hints,
-  } as QueryInputs<'JSON'>);
+  });
   return resp.json() as Promise<ChartJson>;
 }
 
-export async function couchbaseChartValidity(
-  query: QueryFn,
-  args: ChartArgs,
-): Promise<{ isValid: boolean; error?: string } | 'clickhouse'> {
-  const kind = await resolveConnectionKind(args.config.connection);
-  if (kind !== 'couchbase') return 'clickhouse';
+export async function runChartValidity(
+  client: DataClientLike,
+  args: {
+    config: ChartConfigWithOptDateRange;
+    metadata: Metadata;
+    opts?: { abort_signal?: AbortSignal };
+    querySettings: QuerySettings | undefined;
+  },
+): Promise<{ isValid: boolean; rowEstimate?: number; error?: string }> {
   try {
-    const rendered = await renderChartConfigCouchbase(
+    const rendered = await renderChartConfig(
       args.config,
       args.metadata,
       args.querySettings,
     );
-    await query({
+    await client.query({
       query: `EXPLAIN ${rendered.sql}`,
       query_params: rendered.params,
       format: 'JSON',
       abort_signal: args.opts?.abort_signal,
       connectionId: args.config.connection,
-      clickhouse_settings: args.opts?.clickhouse_settings,
       attribution: { source: args.config.source },
     });
     return { isValid: true };
-  } catch (err) {
+  } catch (error: unknown) {
     return {
       isValid: false,
-      error: err instanceof Error ? err.message : String(err),
+      error:
+        error instanceof QueryError
+          ? error.message
+          : 'Error while validating chart config',
     };
   }
 }

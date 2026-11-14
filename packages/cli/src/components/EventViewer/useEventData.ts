@@ -302,7 +302,7 @@ export function useEventData({
       } catch (err) {
         // Non-fatal — fall back to partial row data, surface the error
         // separately so ErrorDisplay can render query context from
-        // ClickHouseQueryError.
+        // QueryError.
         if (!cancelled) {
           setExpandedRowData(row as Record<string, unknown>);
           setExpandedRowError(

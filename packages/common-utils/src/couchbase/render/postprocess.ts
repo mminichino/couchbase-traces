@@ -3,7 +3,7 @@ import {
   isRatioChartConfig,
   isUsingGranularity,
   isUsingGroupBy,
-} from '@/core/renderChartConfig';
+} from '@/core/chartConfig';
 import { isBuilderChartConfig } from '@/guards';
 import type { BuilderChartConfigWithOptDateRange } from '@/types';
 

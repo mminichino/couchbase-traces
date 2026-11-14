@@ -8,12 +8,12 @@ import {
   insertSummaryMetricRows,
   insertSumMetricRows,
   insertTraceRows,
-} from '@/clickhouse/insert';
+} from '@/query/insert';
 import {
   ensureScenarioTables,
   type ScenarioTables,
   truncateScenarioTables,
-} from '@/clickhouse/schema';
+} from '@/query/schema';
 import { mulberry32 } from '@/rng/seeded';
 
 import { getScenario } from './index';

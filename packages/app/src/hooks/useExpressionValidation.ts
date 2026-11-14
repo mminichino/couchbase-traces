@@ -1,5 +1,5 @@
 import { useCallback, useState } from 'react';
-import { ClickHouseQueryError } from '@couchbase-traces/common-utils/dist/clickhouse';
+import { QueryError } from '@couchbase-traces/common-utils/dist/query';
 import { useDebouncedCallback, useDidUpdate } from '@mantine/hooks';
 
 import { useExplainQuery } from '@/hooks/useExplainQuery';
@@ -58,7 +58,7 @@ export function useExpressionValidation({
 
   const isValid = !!data?.length;
 
-  const isInvalid = error instanceof ClickHouseQueryError;
+  const isInvalid = error instanceof QueryError;
 
   const matchesCurrentInput =
     explainParams?.expression === expression && explainParams?.alias === alias;

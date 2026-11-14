@@ -13,12 +13,13 @@ import express from 'express';
 import _ from 'lodash';
 import { z } from 'zod';
 
-import { ClickhouseClient } from '@/clickhouse';
 import { getConnectionById } from '@/controllers/connection';
 import { getSource } from '@/controllers/sources';
 import { getTeam } from '@/controllers/team';
+import { MCP_REQUEST_TIMEOUT } from '@/mcp/tools/query/helpers';
 import { IConnection } from '@/models/connection';
 import { ISource } from '@/models/source';
+import { DataClient } from '@/query';
 import { couchbaseConsumerHttpResponse } from '@/utils/couchbaseConsumerErrors';
 import { validateRequestWithEnhancedErrors as validateRequest } from '@/utils/enhancedErrors';
 import {
@@ -644,10 +645,8 @@ router.post(
                     connection,
                   );
 
-                const clickhouseClient = new ClickhouseClient({
-                  host: connection.host,
-                  username: connection.username,
-                  password: connection.password,
+                const clickhouseClient = new DataClient({
+                  requestTimeout: MCP_REQUEST_TIMEOUT,
                 });
 
                 const metadata = getMetadata(clickhouseClient);

@@ -1,10 +1,10 @@
 import { useEffect, useMemo } from 'react';
-import { JSDataType } from '@couchbase-traces/common-utils/dist/clickhouse';
 import {
   Field,
   parseKeyPath,
   TableConnection,
 } from '@couchbase-traces/common-utils/dist/core/metadata';
+import { JSDataType } from '@couchbase-traces/common-utils/dist/query';
 import { BuilderChartConfigWithDateRange } from '@couchbase-traces/common-utils/dist/types';
 
 import {
@@ -38,7 +38,7 @@ function chartConfigFromTableConnection(
 // Derive top-level Map column names from a fields list. Matches on the
 // canonical `JSDataType.Map` rather than the raw ClickHouse type string so
 // wrapped Map types (e.g. `LowCardinality(Map(...))`, `Nullable(Map(...))`)
-// are detected too: `convertCHDataTypeToJSType` unwraps those wrappers before
+// are detected too: `columnTypeToJSType` unwraps those wrappers before
 // classifying. Top-level only (path.length === 1) since nested Map sub-keys
 // surface as deeper path segments and are not themselves Map-typed parents.
 //

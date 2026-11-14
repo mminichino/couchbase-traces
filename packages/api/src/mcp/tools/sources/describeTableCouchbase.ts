@@ -1,11 +1,10 @@
-import { convertCHDataTypeToJSType } from '@couchbase-traces/common-utils/dist/clickhouse';
 import { keyspace } from '@couchbase-traces/common-utils/dist/couchbase/sqlpp';
 import { getMetadata } from '@couchbase-traces/common-utils/dist/dataLayer';
+import { columnTypeToJSType } from '@couchbase-traces/common-utils/dist/query';
 
-import type { ClickhouseClient } from '@/clickhouse';
-import { MCP_CLICKHOUSE_SETTINGS } from '@/mcp/tools/query/helpers';
 import type { ToolResult } from '@/mcp/tools/types';
 import { mcpUserError } from '@/mcp/utils/errors';
+import type { DataClient } from '@/query';
 
 import {
   decodeTableListCursor,
@@ -16,7 +15,7 @@ import {
 const DEFAULT_SCOPE = 'default';
 
 type CouchTableCtx = {
-  clickhouseClient: ClickhouseClient;
+  clickhouseClient: DataClient;
   connectionId: string;
   signal: AbortSignal;
 };
@@ -39,12 +38,11 @@ async function listKeyspaces(
   afterName: string | undefined,
   limit: number,
 ): Promise<Array<{ scope: string; collection: string }>> {
-  const response = await ctx.clickhouseClient.query<'JSON'>({
+  const response = await ctx.clickhouseClient.query({
     query:
       "SELECT RAW [k.`bucket`, k.`scope`, k.`name`] FROM system:all_keyspaces AS k WHERE k.`namespace` = 'default' AND k.`scope` IS VALUED AND k.`scope` != '_system'",
     format: 'JSON',
     connectionId: ctx.connectionId,
-    clickhouse_settings: MCP_CLICKHOUSE_SETTINGS,
     abort_signal: ctx.signal,
   });
   const rows = (await response.json()) as { data: [string, string, string][] };
@@ -127,11 +125,10 @@ export async function describeCouchbaseTable(
   const qualified = ks(input.database, scope, collection);
   let sampleRows: Record<string, unknown>[] | undefined;
   if (input.sampleRows > 0) {
-    const sample = await ctx.clickhouseClient.query<'JSON'>({
+    const sample = await ctx.clickhouseClient.query({
       query: `SELECT META().id AS __cbt_id, d.* FROM ${qualified} AS d LIMIT ${input.sampleRows}`,
       format: 'JSON',
       connectionId: ctx.connectionId,
-      clickhouse_settings: MCP_CLICKHOUSE_SETTINGS,
       abort_signal: ctx.signal,
     });
     const json = (await sample.json()) as { data: Record<string, unknown>[] };
@@ -154,7 +151,7 @@ export async function describeCouchbaseTable(
             columns: columns.map(c => ({
               name: c.name,
               type: c.type,
-              jsType: convertCHDataTypeToJSType(c.type),
+              jsType: columnTypeToJSType(c.type),
             })),
             ...(sampleRows && { sampleRows }),
             exampleQueries: {

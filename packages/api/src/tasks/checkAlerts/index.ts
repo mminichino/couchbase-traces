@@ -1,16 +1,6 @@
 // --------------------------------------------------------
 // -------------- EXECUTE EVERY MINUTE --------------------
 // --------------------------------------------------------
-import * as clickhouse from '@couchbase-traces/common-utils/dist/clickhouse';
-import {
-  chSqlToAliasMap,
-  type QueryAttribution,
-  ResponseJSON,
-} from '@couchbase-traces/common-utils/dist/clickhouse';
-import {
-  ClickhouseClient,
-  withQueryAttribution,
-} from '@couchbase-traces/common-utils/dist/clickhouse/node';
 import { Metadata } from '@couchbase-traces/common-utils/dist/core/metadata';
 import {
   ALERT_COUNT_DEFAULT_SELECT,
@@ -28,6 +18,10 @@ import {
   getMetadata,
   renderChartConfig,
 } from '@couchbase-traces/common-utils/dist/dataLayer';
+import {
+  DataClient,
+  withQueryAttribution,
+} from '@couchbase-traces/common-utils/dist/dataLayer/node';
 import { getDashboardVariableDeclarations } from '@couchbase-traces/common-utils/dist/filters';
 import {
   isBuilderChartConfig,
@@ -35,6 +29,12 @@ import {
   isRawSqlChartConfig,
   isRawSqlSavedChartConfig,
 } from '@couchbase-traces/common-utils/dist/guards';
+import * as clickhouse from '@couchbase-traces/common-utils/dist/query';
+import {
+  chSqlToAliasMap,
+  type QueryAttribution,
+  ResponseJSON,
+} from '@couchbase-traces/common-utils/dist/query';
 import {
   ALERT_NOTIFICATION_TARGETS_LIMIT,
   AlertErrorType,
@@ -506,7 +506,7 @@ const fireChannelEvent = async ({
   alert: IAlert;
   alertProvider: AlertProvider;
   attributes: Record<string, string>; // TODO: support other types than string
-  clickhouseClient: ClickhouseClient;
+  clickhouseClient: DataClient;
   dashboard?: IDashboard | null;
   endTime: Date;
   group?: string;
@@ -909,7 +909,7 @@ const getResponseMetadata = (
   const meta =
     data.meta?.map(m => ({
       ...m,
-      jsType: clickhouse.convertCHDataTypeToJSType(m.type),
+      jsType: clickhouse.columnTypeToJSType(m.type),
     })) ?? [];
 
   const valueColumnNames = new Set(
@@ -1006,7 +1006,7 @@ export const alertQueryAttribution = (
 export const processAlert = async (
   wallClockNow: Date,
   details: AlertDetails,
-  clickhouseClient: ClickhouseClient,
+  clickhouseClient: DataClient,
   connectionId: string,
   alertProvider: AlertProvider,
   teamWebhooksById: Map<string, IWebhook>,
@@ -1216,14 +1216,6 @@ export const processAlert = async (
     }
 
     const optimizedChartConfig = chartConfig;
-
-    // Readonly = 2 means the query is readonly but can still specify query settings.
-    // This is done only for Raw SQL configs because it carries a minor risk of conflict with
-    // existing settings (which may have readonly = 1) and is not required for builder
-    // chart configs, which are always rendered as select statements.
-    const clickHouseSettings = isRawSqlChartConfig(optimizedChartConfig)
-      ? { readonly: '2' }
-      : {};
 
     // Track state per group (or one history if no groupBy)
     const histories = new Map<string, IAlertHistory>();
@@ -1493,7 +1485,6 @@ export const processAlert = async (
         config: optimizedChartConfig,
         metadata,
         opts: {
-          clickhouse_settings: clickHouseSettings,
           // Alert evaluation must see all docs written before the query.
           scanConsistency: 'request_plus',
         },

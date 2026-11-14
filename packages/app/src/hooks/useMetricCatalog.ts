@@ -5,7 +5,7 @@ import {
   concatChSql,
   ResponseJSON,
   tableExpr,
-} from '@couchbase-traces/common-utils/dist/clickhouse';
+} from '@couchbase-traces/common-utils/dist/query';
 import {
   DateRange,
   SourceKind,
@@ -13,8 +13,8 @@ import {
 } from '@couchbase-traces/common-utils/dist/types';
 import { useQuery } from '@tanstack/react-query';
 
-import { getClickhouseClient } from '@/clickhouse';
 import { useMetadataWithSettings } from '@/hooks/useMetadata';
+import { getClickhouseClient } from '@/query';
 import { useMetadataQueryAttribution } from '@/queryAttribution';
 import { QUERYABLE_KINDS } from '@/utils/metricKinds';
 import {

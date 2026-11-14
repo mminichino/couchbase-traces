@@ -1,9 +1,4 @@
 import objectHash from 'object-hash';
-import {
-  ChSql,
-  chSql,
-  parameterizedQueryToSql,
-} from '@couchbase-traces/common-utils/dist/clickhouse';
 import { Metadata } from '@couchbase-traces/common-utils/dist/core/metadata';
 import {
   FIXED_TIME_BUCKET_EXPR_ALIAS,
@@ -11,6 +6,11 @@ import {
   isUsingGroupBy,
   renderChartConfig,
 } from '@couchbase-traces/common-utils/dist/core/renderChartConfig';
+import {
+  ChSql,
+  chSql,
+  parameterizedQueryToSql,
+} from '@couchbase-traces/common-utils/dist/query';
 import {
   AggregateFunction,
   BuilderChartConfigWithOptDateRange,

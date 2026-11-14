@@ -2,7 +2,7 @@ import { useController, UseControllerProps } from 'react-hook-form';
 import { Select } from '@mantine/core';
 import { IconDatabase } from '@tabler/icons-react';
 
-import { useDatabasesDirect } from '@/clickhouse';
+import { useDatabasesDirect } from '@/query';
 
 type DatabaseSelectProps = {
   database: string | undefined;

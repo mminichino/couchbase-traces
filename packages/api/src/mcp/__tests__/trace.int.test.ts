@@ -2,7 +2,6 @@ import { ClickHouseError } from '@clickhouse/client-common';
 import { SourceKind } from '@couchbase-traces/common-utils/dist/types';
 import { Client } from '@modelcontextprotocol/sdk/client/index.js';
 
-import { ClickhouseClient } from '@/clickhouse';
 import * as config from '@/config';
 import {
   bulkInsertData,
@@ -12,10 +11,10 @@ import {
   getLoggedInAgent,
   getServer,
 } from '@/fixtures';
-import { MCP_REQUEST_TIMEOUT } from '@/mcp/tools/query/helpers';
 import { McpContext } from '@/mcp/tools/types';
 import Connection from '@/models/connection';
 import { Source, type SourceDocument } from '@/models/source';
+import { DataClient } from '@/query';
 
 import { callTool, createTestClient, getFirstText } from './mcpTestUtils';
 
@@ -805,10 +804,10 @@ describe('MCP Trace Tools', () => {
             StatusCode: 'STATUS_CODE_OK',
           },
         ]);
-        const original = ClickhouseClient.prototype.query;
+        const original = DataClient.prototype.query;
         const spy = jest
-          .spyOn(ClickhouseClient.prototype, 'query')
-          .mockImplementation(function (this: ClickhouseClient, args) {
+          .spyOn(DataClient.prototype, 'query')
+          .mockImplementation(function (this: DataClient, args) {
             if (args.query.includes('AS firstSeen')) {
               return Promise.reject(new Error('Timeout exceeded'));
             }
@@ -1356,46 +1355,6 @@ describe('MCP Trace Tools', () => {
         expect(text).not.toContain('shorter startTime/endTime window');
       });
 
-      it('applies the MCP time limits even when the source sets max_execution_time', async () => {
-        await Source.updateOne(
-          { _id: traceSource._id },
-          {
-            querySettings: [
-              { setting: 'max_execution_time', value: '3600' },
-              { setting: 'max_threads', value: '2' },
-            ],
-          },
-        );
-        const querySpy = jest.spyOn(ClickhouseClient.prototype, 'query');
-        try {
-          const result = await callTool(
-            client,
-            'cbt_trace_top_time_consuming_operations',
-            {
-              sourceId: traceSource._id.toString(),
-              parentFilter: `ServiceName = '${PARENT_SVC}' AND SpanName = '${PARENT_OP}'`,
-              startTime: new Date(now.getTime() - 10 * 60 * 1000).toISOString(),
-              endTime: new Date(now.getTime() + 60 * 1000).toISOString(),
-            },
-          );
-
-          expect(result.isError).toBeFalsy();
-          const call = querySpy.mock.calls.find(([args]) =>
-            args.query.includes('parent_traces'),
-          );
-          expect(call?.[0].clickhouse_settings).toMatchObject({
-            max_execution_time: 30,
-            readonly: '2',
-            max_threads: '2',
-          });
-          const ctx: ClickhouseClient =
-            querySpy.mock.contexts[querySpy.mock.calls.indexOf(call!)];
-          expect(ctx.requestTimeoutMs).toBe(MCP_REQUEST_TIMEOUT);
-        } finally {
-          querySpy.mockRestore();
-        }
-      });
-
       it.each([
         ['client request timeout', new Error('Timeout error.')],
         [
@@ -1426,10 +1385,10 @@ describe('MCP Trace Tools', () => {
       });
 
       async function callBreakdownWithFailingQuery(error: Error) {
-        const original = ClickhouseClient.prototype.query;
+        const original = DataClient.prototype.query;
         const querySpy = jest
-          .spyOn(ClickhouseClient.prototype, 'query')
-          .mockImplementation(function (this: ClickhouseClient, args) {
+          .spyOn(DataClient.prototype, 'query')
+          .mockImplementation(function (this: DataClient, args) {
             if (args.query.includes('parent_traces')) {
               return Promise.reject(error);
             }

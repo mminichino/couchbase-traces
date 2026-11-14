@@ -2,9 +2,9 @@ import type { ClickHouseClient } from '@clickhouse/client';
 import { existsSync, readFileSync, writeFileSync } from 'fs';
 import { join } from 'path';
 
-import { createEvalClient, defaultClickHouseUrl } from '@/clickhouse/client';
-import { scenarioTables } from '@/clickhouse/schema';
 import type { RunRecord } from '@/harness/types';
+import { createEvalClient, defaultClickHouseUrl } from '@/query/client';
+import { scenarioTables } from '@/query/schema';
 import { SCENARIO_NAMES } from '@/scenarios';
 
 import { getRunFilesInBatch, runsRoot } from './path';

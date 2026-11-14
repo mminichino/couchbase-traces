@@ -17,16 +17,16 @@ import {
 } from '@couchbase-traces/common-utils/dist/types';
 import { trace } from '@opentelemetry/api';
 
-import { ClickhouseClient } from '@/clickhouse';
 import { getConnectionById } from '@/controllers/connection';
 import { getSource } from '@/controllers/sources';
+import { MCP_REQUEST_TIMEOUT } from '@/mcp/tools/query/helpers';
 import {
   type McpErrorResult,
   mcpServerError,
   mcpUserError,
 } from '@/mcp/utils/errors';
 import { assertMcpSliceForConnection } from '@/mcp/utils/mcpSlice';
-import { MCP_QUERY_MAX_EXECUTION_SEC } from '@/mcp/utils/timeout';
+import { DataClient } from '@/query';
 import { getCounter } from '@/utils/instrumentation';
 import logger from '@/utils/logger';
 import { type Reduction, trimToolResponse } from '@/utils/trimToolResponse';
@@ -172,10 +172,8 @@ export async function mineWindowPatterns(
   );
   if (sliceErr) return { error: sliceErr };
 
-  const clickhouseClient = new ClickhouseClient({
-    host: connection.host,
-    username: connection.username,
-    password: connection.password,
+  const clickhouseClient = new DataClient({
+    requestTimeout: MCP_REQUEST_TIMEOUT,
   });
   const metadata = getMetadata(clickhouseClient);
   const tsExpr = getFirstTimestampValueExpression(
@@ -283,9 +281,6 @@ export async function mineWindowPatterns(
         metadata,
         querySettings: source.querySettings,
         opts: {
-          clickhouse_settings: {
-            max_execution_time: MCP_QUERY_MAX_EXECUTION_SEC,
-          },
           abort_signal: options?.abortSignal,
         },
       }),
@@ -294,9 +289,6 @@ export async function mineWindowPatterns(
         metadata,
         querySettings: source.querySettings,
         opts: {
-          clickhouse_settings: {
-            max_execution_time: MCP_QUERY_MAX_EXECUTION_SEC,
-          },
           abort_signal: options?.abortSignal,
         },
       }),

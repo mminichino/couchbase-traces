@@ -10,7 +10,6 @@ import mongoose from 'mongoose';
 import ms from 'ms';
 import { URLSearchParams } from 'url';
 
-import { ClickhouseClient } from '@/clickhouse';
 import * as config from '@/config';
 import { ALERT_HISTORY_QUERY_CONCURRENCY } from '@/controllers/alertHistory';
 import { LOCAL_APP_TEAM } from '@/controllers/team';
@@ -30,6 +29,7 @@ import Dashboard from '@/models/dashboard';
 import { type ISavedSearch, SavedSearch } from '@/models/savedSearch';
 import { type ISource, Source } from '@/models/source';
 import Webhook, { IWebhook } from '@/models/webhook';
+import { DataClient } from '@/query';
 import {
   AggregatedAlertHistory,
   getConsecutiveWindowHistories,
@@ -680,9 +680,9 @@ export default class DefaultAlertProvider implements AlertProvider {
   }
 
   async getClickHouseClient(
-    { host, username, password, id }: IConnection,
+    { password, id }: IConnection,
     requestTimeout?: number,
-  ): Promise<ClickhouseClient> {
+  ): Promise<DataClient> {
     if (!password && password !== '') {
       logger.info({
         message: `connection password not found`,
@@ -691,13 +691,9 @@ export default class DefaultAlertProvider implements AlertProvider {
       });
     }
 
-    return new ClickhouseClient({
-      host,
-      username,
-      password,
+    return new DataClient({
       application: `couchbase-traces-alerts ${config.CODE_VERSION}`,
       requestTimeout: requestTimeout ?? 30_000,
-      // Fallback for anything outside a per-alert scope.
       attribution: { surface: 'alert' },
     });
   }

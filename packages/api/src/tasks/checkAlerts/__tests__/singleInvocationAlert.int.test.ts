@@ -1,4 +1,3 @@
-import { ClickhouseClient } from '@couchbase-traces/common-utils/dist/clickhouse/node';
 import { createServer } from 'http';
 import mongoose from 'mongoose';
 import ms from 'ms';
@@ -18,6 +17,7 @@ import Dashboard from '@/models/dashboard';
 import { SavedSearch } from '@/models/savedSearch';
 import { Source } from '@/models/source';
 import Webhook from '@/models/webhook';
+import { DataClient } from '@/query';
 import { processAlert } from '@/tasks/checkAlerts';
 import {
   AlertDetails,
@@ -102,7 +102,6 @@ describe('Single Invocation Alert Test', () => {
     const connection = await Connection.create({
       team: team._id,
       name: 'Test Connection',
-      host: config.CLICKHOUSE_HOST,
       username: config.CLICKHOUSE_USER,
       password: config.CLICKHOUSE_PASSWORD,
     });
@@ -193,11 +192,7 @@ describe('Single Invocation Alert Test', () => {
       savedSearch,
       previousMap: new Map(),
     };
-    const clickhouseClient = new ClickhouseClient({
-      host: connection.host,
-      username: connection.username,
-      password: connection.password,
-    });
+    const clickhouseClient = new DataClient({});
     await processAlert(
       now,
       details,
@@ -263,7 +258,6 @@ describe('Single Invocation Alert Test', () => {
     const connection = await Connection.create({
       team: team._id,
       name: 'Test Connection',
-      host: config.CLICKHOUSE_HOST,
       username: config.CLICKHOUSE_USER,
       password: config.CLICKHOUSE_PASSWORD,
     });
@@ -368,11 +362,7 @@ describe('Single Invocation Alert Test', () => {
       savedSearch,
       previousMap: new Map(),
     };
-    const clickhouseClient = new ClickhouseClient({
-      host: connection.host,
-      username: connection.username,
-      password: connection.password,
-    });
+    const clickhouseClient = new DataClient({});
 
     await processAlert(
       now,
@@ -404,7 +394,6 @@ describe('Single Invocation Alert Test', () => {
     const connection = await Connection.create({
       team: team._id,
       name: 'Test Connection',
-      host: config.CLICKHOUSE_HOST,
       username: config.CLICKHOUSE_USER,
       password: config.CLICKHOUSE_PASSWORD,
     });
@@ -496,11 +485,7 @@ describe('Single Invocation Alert Test', () => {
       savedSearch,
       previousMap: new Map(),
     };
-    const clickhouseClient = new ClickhouseClient({
-      host: connection.host,
-      username: connection.username,
-      password: connection.password,
-    });
+    const clickhouseClient = new DataClient({});
 
     await processAlert(
       now,
@@ -526,7 +511,6 @@ describe('Single Invocation Alert Test', () => {
     const connection = await Connection.create({
       team: team._id,
       name: 'Test Connection',
-      host: config.CLICKHOUSE_HOST,
       username: config.CLICKHOUSE_USER,
       password: config.CLICKHOUSE_PASSWORD,
     });
@@ -635,11 +619,7 @@ describe('Single Invocation Alert Test', () => {
       savedSearch,
       previousMap: new Map(),
     };
-    const clickhouseClient = new ClickhouseClient({
-      host: connection.host,
-      username: connection.username,
-      password: connection.password,
-    });
+    const clickhouseClient = new DataClient({});
 
     await processAlert(
       now,
@@ -692,7 +672,6 @@ describe('Single Invocation Alert Test', () => {
     const connection = await Connection.create({
       team: team._id,
       name: 'Test Connection',
-      host: config.CLICKHOUSE_HOST,
       username: config.CLICKHOUSE_USER,
       password: config.CLICKHOUSE_PASSWORD,
     });
@@ -811,11 +790,7 @@ describe('Single Invocation Alert Test', () => {
       previousMap: new Map(),
     } satisfies AlertDetails;
 
-    const clickhouseClient = new ClickhouseClient({
-      host: connection.host,
-      username: connection.username,
-      password: connection.password,
-    });
+    const clickhouseClient = new DataClient({});
 
     const mockMetadata = {
       getColumn: jest.fn().mockImplementation(({ column }) => {
@@ -873,7 +848,6 @@ describe('Single Invocation Alert Test', () => {
     const connection = await Connection.create({
       team: team._id,
       name: 'Test Connection',
-      host: config.CLICKHOUSE_HOST,
       username: config.CLICKHOUSE_USER,
       password: config.CLICKHOUSE_PASSWORD,
     });
@@ -965,11 +939,7 @@ describe('Single Invocation Alert Test', () => {
       previousMap: new Map(),
     };
 
-    const clickhouseClient = new ClickhouseClient({
-      host: connection.host,
-      username: connection.username,
-      password: connection.password,
-    });
+    const clickhouseClient = new DataClient({});
 
     await processAlert(
       now,

@@ -1,12 +1,12 @@
 import SHA256 from 'crypto-js/sha256';
 import {
-  ColumnMetaType,
-  JSDataType,
-} from '@couchbase-traces/common-utils/dist/clickhouse';
-import {
   LEFT_UTF8_HASH_CODE_POINTS,
   leftUtf8Prefix,
 } from '@couchbase-traces/common-utils/dist/core/utils';
+import {
+  ColumnMetaType,
+  JSDataType,
+} from '@couchbase-traces/common-utils/dist/query';
 import { renderHook } from '@testing-library/react';
 
 import useRowWhere, { processRowToWhereClause } from '@/hooks/useRowWhere';
@@ -99,10 +99,10 @@ function columnMapForSha256TestCase(testCase: Sha256TestCase) {
   ]);
 }
 
-// Mock convertCHDataTypeToJSType
-jest.mock('@couchbase-traces/common-utils/dist/clickhouse', () => ({
-  ...jest.requireActual('@couchbase-traces/common-utils/dist/clickhouse'),
-  convertCHDataTypeToJSType: jest.fn((type: string) => {
+// Mock columnTypeToJSType
+jest.mock('@couchbase-traces/common-utils/dist/query', () => ({
+  ...jest.requireActual('@couchbase-traces/common-utils/dist/query'),
+  columnTypeToJSType: jest.fn((type: string) => {
     const typeMap: Record<string, JSDataType> = {
       String: JSDataType.String,
       DateTime64: JSDataType.Date,

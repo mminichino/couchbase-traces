@@ -1,7 +1,4 @@
-import {
-  ClickHouseError,
-  type ClickHouseSettings,
-} from '@clickhouse/client-common';
+import { ClickHouseError } from '@clickhouse/client-common';
 import { getHeatmapMode } from '@couchbase-traces/common-utils/dist/core/heatmap';
 import {
   convertToCategoricalChartConfig,
@@ -28,17 +25,13 @@ import {
 import { ObjectId } from 'mongodb';
 import ms from 'ms';
 
-import { ClickhouseClient } from '@/clickhouse';
 import { getConnectionById } from '@/controllers/connection';
 import { getSource } from '@/controllers/sources';
 import type { McpErrorResult } from '@/mcp/utils/errors';
 import { mcpServerError, mcpUserError } from '@/mcp/utils/errors';
 import { assertMcpSliceForConnection } from '@/mcp/utils/mcpSlice';
-import {
-  MCP_QUERY_MAX_EXECUTION_SEC,
-  MCP_TIMEOUT_GRACE_MS,
-  MCP_TOOL_TIMEOUT_MS,
-} from '@/mcp/utils/timeout';
+import { MCP_TIMEOUT_GRACE_MS, MCP_TOOL_TIMEOUT_MS } from '@/mcp/utils/timeout';
+import { DataClient } from '@/query';
 import {
   convertToInternalTileConfig,
   isConfigTile,
@@ -145,12 +138,7 @@ export function normalizeBodyExpression(expression: string): string | null {
 
 // ─── Safety limits ───────────────────────────────────────────────────────────
 
-/** ClickHouse settings applied to all MCP query-tool executions.
- *  readonly=2 so max_execution_time can be set (readonly=1 rejects it). */
-export const MCP_CLICKHOUSE_SETTINGS: ClickHouseSettings = {
-  max_execution_time: MCP_QUERY_MAX_EXECUTION_SEC,
-  readonly: '2',
-};
+export const MCP_QUERY_SCAN_CONSISTENCY = 'request_plus' as const;
 
 /**
  * HTTP request timeout for MCP query-tool ClickHouse clients. Set above
@@ -611,10 +599,7 @@ export async function runConfigTile(
     );
     if (sliceErr) return sliceErr;
 
-    const clickhouseClient = new ClickhouseClient({
-      host: connection.host,
-      username: connection.username,
-      password: connection.password,
+    const clickhouseClient = new DataClient({
       requestTimeout: MCP_REQUEST_TIMEOUT,
     });
 
@@ -740,7 +725,6 @@ export async function runConfigTile(
         metadata,
         querySettings: source.querySettings,
         opts: {
-          clickhouse_settings: MCP_CLICKHOUSE_SETTINGS,
           abort_signal: options?.abortSignal,
         },
       });
@@ -796,10 +780,7 @@ export async function runConfigTile(
   const sliceErr = await assertMcpSliceForConnection(savedConfig.connection);
   if (sliceErr) return sliceErr;
 
-  const clickhouseClient = new ClickhouseClient({
-    host: connection.host,
-    username: connection.username,
-    password: connection.password,
+  const clickhouseClient = new DataClient({
     requestTimeout: MCP_REQUEST_TIMEOUT,
   });
 
@@ -817,7 +798,6 @@ export async function runConfigTile(
       metadata,
       querySettings: undefined,
       opts: {
-        clickhouse_settings: MCP_CLICKHOUSE_SETTINGS,
         abort_signal: options?.abortSignal,
       },
     });
@@ -899,7 +879,7 @@ function isClickHouseError(
  */
 export function getClickHouseErrorType(e: unknown): string | undefined {
   if (!(e instanceof Error)) return undefined;
-  // ClickHouseQueryError wraps the original ClickHouseError as .cause
+  // QueryError wraps the original ClickHouseError as .cause
   if (isClickHouseError(e.cause)) {
     return e.cause.type;
   }
@@ -934,7 +914,7 @@ export function isServerError(e: unknown): boolean {
       if (SERVER_CH_ERROR_TYPES.has(current.type)) return true;
     }
     // Also check .cause for a direct ClickHouseError (the common
-    // ClickHouseQueryError -> ClickHouseError pattern)
+    // QueryError -> ClickHouseError pattern)
     if (isClickHouseError(current.cause)) {
       if (SERVER_CH_ERROR_TYPES.has(current.cause.type)) return true;
     }
@@ -991,7 +971,7 @@ export function clickHouseErrorResult(
       : (context ?? {});
 
   // Prefer .message, but fall back to .cause.message when the wrapper
-  // (e.g. ClickHouseQueryError from common-utils) has an empty message
+  // (e.g. QueryError from common-utils) has an empty message
   // and the real error details are in the cause chain.
   const raw =
     e instanceof Error

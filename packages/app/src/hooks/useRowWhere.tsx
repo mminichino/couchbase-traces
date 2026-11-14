@@ -2,11 +2,6 @@ import { useCallback, useMemo } from 'react';
 import SHA256 from 'crypto-js/sha256';
 import SqlString from 'sqlstring';
 import z from 'zod';
-import {
-  ColumnMetaType,
-  convertCHDataTypeToJSType,
-  JSDataType,
-} from '@couchbase-traces/common-utils/dist/clickhouse';
 import { quoteResultColumnNameIfNeeded } from '@couchbase-traces/common-utils/dist/core/metadata';
 import {
   aliasMapToWithClauses,
@@ -17,6 +12,11 @@ import {
   ROW_ID_ALIAS,
   rowIdWhereLiteral,
 } from '@couchbase-traces/common-utils/dist/couchbase/render';
+import {
+  ColumnMetaType,
+  columnTypeToJSType,
+  JSDataType,
+} from '@couchbase-traces/common-utils/dist/query';
 import { WithClauseSchema } from '@couchbase-traces/common-utils/dist/types';
 
 const MAX_STRING_LENGTH = 512;
@@ -167,7 +167,7 @@ export default function useRowWhere({
             {
               ...c,
               valueExpr: valueExpr,
-              jsType: convertCHDataTypeToJSType(c.type),
+              jsType: columnTypeToJSType(c.type),
             },
           ];
         }),

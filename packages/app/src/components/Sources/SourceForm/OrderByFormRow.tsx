@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Control, useWatch } from 'react-hook-form';
-import { ClickHouseQueryError } from '@couchbase-traces/common-utils/dist/clickhouse';
+import { QueryError } from '@couchbase-traces/common-utils/dist/query';
 import { TSource } from '@couchbase-traces/common-utils/dist/types';
 import { ActionIcon, Box, Flex, Text, Tooltip } from '@mantine/core';
 import { useDebouncedCallback, useDidUpdate } from '@mantine/hooks';
@@ -61,7 +61,7 @@ export function OrderByFormRow({
   };
 
   const isExpressionValid = !!explainData?.length;
-  const isExpressionInvalid = explainError instanceof ClickHouseQueryError;
+  const isExpressionInvalid = explainError instanceof QueryError;
 
   const shouldShowResult =
     explainExpression === (orderByInput ?? '') &&

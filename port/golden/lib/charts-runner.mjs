@@ -32,7 +32,7 @@ const { couchbaseResultColumnNames } = require(join(
   dist,
   'couchbase/render/postprocess.js',
 ));
-const { primeConnectionKind } = require(join(dist, 'dataLayer/kind.js'));
+const { primeConnectionKind } = require(join(dist, 'dataLayer/index.js'));
 const {
   COUCHBASE_LOG_SOURCE,
   COUCHBASE_TRACE_SOURCE,

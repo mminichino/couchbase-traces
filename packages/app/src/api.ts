@@ -6,7 +6,7 @@ import {
   buildLogComment,
   QUERY_ATTRIBUTION_HEADER,
   type QueryAttribution,
-} from '@couchbase-traces/common-utils/dist/clickhouse';
+} from '@couchbase-traces/common-utils/dist/query';
 import type {
   Alert,
   AlertApiResponse,
@@ -622,7 +622,7 @@ const api = {
       TeamClickHouseSettingsUpdate
     >({
       mutationFn: async settings =>
-        hdxServer(`team/clickhouse-settings`, {
+        hdxServer(`team/query-settings`, {
           method: 'PATCH',
           json: settings,
         }).json<UpdateClickHouseSettingsApiResponse>(),

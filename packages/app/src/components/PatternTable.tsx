@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react';
-import { ClickHouseQueryError } from '@couchbase-traces/common-utils/dist/clickhouse';
+import { QueryError } from '@couchbase-traces/common-utils/dist/query';
 import {
   BuilderChartConfigWithDateRange,
   SourceKind,
@@ -121,7 +121,7 @@ export default function PatternTable({
               {error.message}
             </Code>
           </Box>
-          {error instanceof ClickHouseQueryError && (
+          {error instanceof QueryError && (
             <Box mt="lg">
               <Text my="sm" size="sm">
                 Original Query:

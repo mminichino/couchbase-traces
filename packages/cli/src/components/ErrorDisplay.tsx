@@ -11,14 +11,14 @@
  *   - Large  (> 35 rows):  full display with query context + suggestions
  *
  * Mirrors the error rendering patterns from the web frontend:
- * @source packages/app/src/DBSearchPage.tsx (queryError + ClickHouseQueryError rendering)
+ * @source packages/app/src/DBSearchPage.tsx (queryError + QueryError rendering)
  * @source packages/app/src/components/DBTableChart.tsx (error message + sent query)
  */
 
 import React from 'react';
 import { Box, Text, useStdout } from 'ink';
 
-import { ClickHouseQueryError } from '@couchbase-traces/common-utils/dist/clickhouse';
+import { QueryError } from '@couchbase-traces/common-utils/dist/query';
 
 import { useSqlSuggestions, type Suggestion } from '@/shared/useSqlSuggestions';
 import { parseError, type ErrorSeverity } from '@/utils/parseError';
@@ -28,14 +28,14 @@ const COMPACT_THRESHOLD = 20;
 const FULL_THRESHOLD = 35;
 
 interface ErrorDisplayProps {
-  /** The error — accepts a string, Error, or ClickHouseQueryError */
-  error: string | Error | ClickHouseQueryError;
+  /** The error — accepts a string, Error, or QueryError */
+  error: string | Error | QueryError;
   /** Severity level — defaults to 'error' */
   severity?: ErrorSeverity;
   /** Optional additional context shown below the error message */
   detail?: string;
   /**
-   * The user's search query — when provided alongside a ClickHouseQueryError,
+   * The user's search query — when provided alongside a QueryError,
    * SQL suggestions (e.g. double-quote correction) will be shown.
    * @source packages/app/src/DBSearchPage.tsx (whereSuggestions)
    */

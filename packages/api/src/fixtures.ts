@@ -1,4 +1,3 @@
-import { createNativeClient } from '@couchbase-traces/common-utils/dist/clickhouse/node';
 import {
   AlertChartConfig,
   AlertThresholdType,
@@ -13,6 +12,7 @@ import mongoose from 'mongoose';
 import ms from 'ms';
 import request from 'supertest';
 
+import { DataClient } from '@/clickhouse';
 import * as config from '@/config';
 import { AlertInput } from '@/controllers/alerts';
 import { getTeam } from '@/controllers/team';
@@ -45,23 +45,7 @@ let clickhouseClient: any;
 
 export const getTestFixtureClickHouseClient = async () => {
   if (!clickhouseClient) {
-    clickhouseClient = createNativeClient({
-      url: config.CLICKHOUSE_HOST,
-      username: config.CLICKHOUSE_USER,
-      password: config.CLICKHOUSE_PASSWORD,
-      request_timeout: ms('1m'),
-      compression: {
-        request: false,
-        response: false, // has to be off to enable streaming
-      },
-      clickhouse_settings: {
-        connect_timeout: ms('1m') / 1000,
-        date_time_output_format: 'iso',
-        max_download_buffer_size: (10 * 1024 * 1024).toString(), // default
-        max_download_threads: 32,
-        max_execution_time: ms('2m') / 1000,
-      },
-    });
+    clickhouseClient = new DataClient({ requestTimeout: ms('1m') });
   }
   return clickhouseClient;
 };
@@ -253,9 +237,6 @@ export const executeSqlCommand = async (sql: string) => {
   const client = await getTestFixtureClickHouseClient();
   return await client.command({
     query: sql,
-    clickhouse_settings: {
-      wait_end_of_query: 1,
-    },
   });
 };
 
@@ -267,10 +248,6 @@ export const executeTimeSeriesSqlCommand = async (sql: string) => {
   const client = await getTestFixtureClickHouseClient();
   return await client.command({
     query: sql,
-    clickhouse_settings: {
-      allow_experimental_time_series_table: 1,
-      wait_end_of_query: 1,
-    },
   });
 };
 
@@ -426,9 +403,6 @@ export const clearClickhouseTables = async () => {
     promises.push(
       client.command({
         query: `TRUNCATE TABLE ${table}`,
-        clickhouse_settings: {
-          wait_end_of_query: 1,
-        },
       }),
     );
   }
@@ -459,11 +433,6 @@ export const bulkInsertData = async (
     table,
     values: data,
     format: 'JSONEachRow',
-    clickhouse_settings: {
-      // Allows to insert serialized JS Dates (such as '2023-12-06T10:54:48.000Z')
-      date_time_input_format: 'best_effort',
-      wait_end_of_query: 1,
-    },
   });
 };
 

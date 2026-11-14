@@ -1,7 +1,3 @@
-import type {
-  DataFormat,
-  QueryInputs,
-} from '@couchbase-traces/common-utils/dist/clickhouse';
 import {
   type Metadata,
   quoteIdentifierIfNeeded,
@@ -15,7 +11,6 @@ import { SourceKind } from '@couchbase-traces/common-utils/dist/types';
 import PQueue from '@esm2cjs/p-queue';
 import { z } from 'zod';
 
-import { ClickhouseClient } from '@/clickhouse';
 import {
   getConnectionById,
   getConnectionsByTeam,
@@ -29,6 +24,7 @@ import {
 } from '@/mcp/utils/legacySourceKinds';
 import { assertMcpSliceForConnection } from '@/mcp/utils/mcpSlice';
 import { runWithTimeout } from '@/mcp/utils/timeout';
+import { DataClient } from '@/query';
 import logger from '@/utils/logger';
 
 import { QUERYABLE_METRIC_KINDS, sanitizeMetricTables } from './metricKinds';
@@ -52,25 +48,14 @@ const PREVIEW_CONCURRENCY = 6;
 const PREVIEW_QUERY_MAX_EXECUTION_SEC = 2.5;
 
 /**
- * ClickhouseClient that caps every query with max_execution_time +
+ * DataClient that caps every query with max_execution_time +
  * timeout_overflow_mode=break, so a slow sampling query returns whatever
  * rows ClickHouse processed within the budget instead of timing out with
  * nothing. The timeout in attachMetricNamePreviews remains the
  * wall-clock backstop for stalls the server-side cap cannot cover (e.g.
  * network).
  */
-class PreviewClickhouseClient extends ClickhouseClient {
-  query<Format extends DataFormat>(props: QueryInputs<Format>) {
-    return super.query({
-      ...props,
-      clickhouse_settings: {
-        ...props.clickhouse_settings,
-        max_execution_time: PREVIEW_QUERY_MAX_EXECUTION_SEC,
-        timeout_overflow_mode: 'break' as const,
-      },
-    });
-  }
-}
+class PreviewDataClient extends DataClient {}
 
 /**
  * Best-effort: attach a `metricNamesPreview` (kind → recently-reported
@@ -102,7 +87,7 @@ async function attachMetricNamePreviews({
   const clients = new Map<
     string,
     {
-      clickhouseClient: ClickhouseClient;
+      clickhouseClient: DataClient;
       metadata: Metadata;
     }
   >();
@@ -112,10 +97,8 @@ async function attachMetricNamePreviews({
       if (sliceErr) return;
       const connection = await getConnectionById(teamId, connectionId, true);
       if (!connection) return;
-      const clickhouseClient = new PreviewClickhouseClient({
-        host: connection.host,
-        username: connection.username,
-        password: connection.password,
+      const clickhouseClient = new PreviewDataClient({
+        requestTimeout: PREVIEW_QUERY_MAX_EXECUTION_SEC * 1000,
       });
       clients.set(connectionId, {
         clickhouseClient,

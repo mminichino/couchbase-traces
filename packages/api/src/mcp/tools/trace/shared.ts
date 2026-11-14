@@ -1,63 +1,56 @@
-import type { ChSql } from '@couchbase-traces/common-utils/dist/clickhouse';
 import type { Metadata } from '@couchbase-traces/common-utils/dist/core/metadata';
-import { timeFilterExpr } from '@couchbase-traces/common-utils/dist/core/renderChartConfig';
+import type { ChSql } from '@couchbase-traces/common-utils/dist/query';
+import { chSql } from '@couchbase-traces/common-utils/dist/query';
 import type { QuerySettings } from '@couchbase-traces/common-utils/dist/types';
 
-import { ClickhouseClient } from '@/clickhouse';
 import { getConnectionById } from '@/controllers/connection';
-import {
-  MCP_CLICKHOUSE_SETTINGS,
-  MCP_REQUEST_TIMEOUT,
-} from '@/mcp/tools/query/helpers';
+import { MCP_REQUEST_TIMEOUT } from '@/mcp/tools/query/helpers';
 import type { McpErrorResult } from '@/mcp/utils/errors';
 import { mcpUserError } from '@/mcp/utils/errors';
 import { assertMcpSliceForConnection } from '@/mcp/utils/mcpSlice';
+import { DataClient } from '@/query';
 
 export function durationDivisor(precision: number): number {
-  // durationPrecision is the number of decimal digits in the stored value.
-  // precision=9 → ns (divide by 1e6 for ms), precision=6 → µs (divide by 1e3),
-  // precision=3 → already ms (divide by 1).
   return Math.pow(10, Math.max(0, precision - 3));
 }
 
-export async function getMcpClickhouseClient(
+export async function getMcpDataClient(
   teamId: string,
   connectionId: string,
-): Promise<ClickhouseClient | null> {
+): Promise<DataClient | null> {
   const connection = await getConnectionById(teamId, connectionId, true);
-  if (!connection) return null;
-  return new ClickhouseClient({
-    host: connection.host,
-    username: connection.username,
-    password: connection.password,
-    requestTimeout: MCP_REQUEST_TIMEOUT,
-  });
+  if (
+    connection == null ||
+    connection.kind !== 'couchbase' ||
+    connection.unsupported
+  ) {
+    return null;
+  }
+  return new DataClient({ requestTimeout: MCP_REQUEST_TIMEOUT });
 }
 
+/** @deprecated Use getMcpDataClient */
+export const getMcpClickhouseClient = getMcpDataClient;
+
 /** Slice guard + connection resolution for trace MCP tools. */
-export async function requireMcpClickhouseClient(
+export async function requireMcpDataClient(
   teamId: string,
   connectionId: string,
-): Promise<ClickhouseClient | McpErrorResult> {
+): Promise<DataClient | McpErrorResult> {
   const sliceErr = await assertMcpSliceForConnection(connectionId);
   if (sliceErr) return sliceErr;
-  const client = await getMcpClickhouseClient(teamId, connectionId);
+  const client = await getMcpDataClient(teamId, connectionId);
   if (!client) {
     return mcpUserError(`Connection not found: ${connectionId}`);
   }
   return client;
 }
 
-// MCP settings win over source.querySettings so a source can't relax the
-// max_execution_time ceiling, or the readonly guard that blocks DDL/DML
-// injected through raw SQL filters.
-export function mcpQuerySettings(querySettings: QuerySettings | undefined) {
-  return {
-    ...(querySettings
-      ? Object.fromEntries(querySettings.map(s => [s.setting, s.value]))
-      : {}),
-    ...MCP_CLICKHOUSE_SETTINGS,
-  };
+/** @deprecated Use requireMcpDataClient */
+export const requireMcpClickhouseClient = requireMcpDataClient;
+
+export function mcpQuerySettings(_querySettings: QuerySettings | undefined) {
+  return undefined;
 }
 
 export type TimeFilterParams = {
@@ -68,18 +61,13 @@ export type TimeFilterParams = {
   connectionId: string;
 };
 
-// Filters on every column of a multi-column timestampValueExpression and
-// compares Date columns at day precision, so a composite "EventDate, EventTime"
-// source prunes on its Date column without dropping same-day rows.
 export function inclusiveTimeFilter(
   params: TimeFilterParams,
   start: Date,
   end: Date,
 ): Promise<ChSql> {
-  return timeFilterExpr({
-    ...params,
-    dateRange: [start, end],
-    dateRangeStartInclusive: true,
-    dateRangeEndInclusive: true,
-  });
+  const expr = params.timestampValueExpression;
+  return Promise.resolve(
+    chSql`(${expr} >= ${{ String: start.toISOString() }} AND ${expr} <= ${{ String: end.toISOString() }})`,
+  );
 }

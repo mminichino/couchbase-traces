@@ -1,6 +1,6 @@
-import type { ChSql } from '@couchbase-traces/common-utils/dist/clickhouse';
 import { pickBucketTimestampColumn } from '@couchbase-traces/common-utils/dist/core/utils';
 import { getMetadata } from '@couchbase-traces/common-utils/dist/dataLayer';
+import type { ChSql } from '@couchbase-traces/common-utils/dist/query';
 import {
   type BuilderChartConfigWithDateRange,
   type ChartConfigWithDateRange,
@@ -10,24 +10,22 @@ import {
 } from '@couchbase-traces/common-utils/dist/types';
 import { z } from 'zod';
 
-import type { ClickhouseClient } from '@/clickhouse';
 import { getSource } from '@/controllers/sources';
 import { READ_ONLY_TOOL } from '@/mcp/tools/annotations';
 import {
   clickHouseErrorResult,
-  MCP_CLICKHOUSE_SETTINGS,
   parseTimeRange,
 } from '@/mcp/tools/query/helpers';
 import {
   durationDivisor,
   getMcpClickhouseClient,
   inclusiveTimeFilter,
-  mcpQuerySettings,
   requireMcpClickhouseClient,
   type TimeFilterParams,
 } from '@/mcp/tools/trace/shared';
 import type { ToolRegistrar } from '@/mcp/tools/types';
 import { mcpUserError } from '@/mcp/utils/errors';
+import type { DataClient } from '@/query';
 import logger from '@/utils/logger';
 
 // ─── Schema ──────────────────────────────────────────────────────────────────
@@ -235,7 +233,7 @@ type ProbedWindow = { start: Date; end: Date; clamped: boolean };
  * back to its window.
  */
 async function probeTraceWindow(
-  clickhouseClient: ClickhouseClient,
+  clickhouseClient: DataClient,
   params: {
     databaseName: string;
     tableName: string;
@@ -272,7 +270,6 @@ async function probeTraceWindow(
     },
     format: 'JSONEachRow',
     connectionId: params.connectionId,
-    clickhouse_settings: mcpQuerySettings(params.querySettings),
   });
   const rows =
     (await (
@@ -445,7 +442,6 @@ export function registerTraceWaterfall({
             config: pickConfig as ChartConfigWithDateRange,
             metadata,
             querySettings: source.querySettings,
-            opts: { clickhouse_settings: MCP_CLICKHOUSE_SETTINGS },
           })) as { data?: Array<Record<string, unknown>> };
         } catch (e) {
           return clickHouseErrorResult(e, 'Failed to pick a trace');
@@ -580,7 +576,6 @@ export function registerTraceWaterfall({
           },
           format: 'JSONEachRow',
           connectionId: source.connection.toString(),
-          clickhouse_settings: mcpQuerySettings(source.querySettings),
         });
         rows =
           (await (result as { json: () => Promise<SpanRow[]> }).json()) ?? [];
@@ -681,7 +676,7 @@ export function registerTraceWaterfall({
           const logSvcExpr = logSource.serviceNameExpression ?? "''";
 
           // Reuse the same connection only when the log source lives there.
-          let logClient: ClickhouseClient | null = clickhouseClient;
+          let logClient: DataClient | null = clickhouseClient;
           if (
             logSource.connection.toString() !== source.connection.toString()
           ) {
@@ -734,7 +729,6 @@ export function registerTraceWaterfall({
                 },
                 format: 'JSONEachRow',
                 connectionId: logSource.connection.toString(),
-                clickhouse_settings: mcpQuerySettings(logSource.querySettings),
               });
               const allLogs =
                 (await (

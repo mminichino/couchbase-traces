@@ -2,8 +2,8 @@ import * as React from 'react';
 import Link from 'next/link';
 import { sub } from 'date-fns';
 import { Badge } from '@clickhouse/click-ui';
-import type { ResponseJSON } from '@couchbase-traces/common-utils/dist/clickhouse';
 import { renderChartConfig } from '@couchbase-traces/common-utils/dist/dataLayer';
+import type { ResponseJSON } from '@couchbase-traces/common-utils/dist/query';
 import {
   BuilderChartConfigWithDateRange,
   DateRange,
@@ -14,7 +14,6 @@ import {
 import { Group, Text, Timeline } from '@mantine/core';
 import { useQuery, UseQueryOptions } from '@tanstack/react-query';
 
-import { useClickhouseClient } from '@/clickhouse';
 import { useConnectionKind } from '@/couchbase/connection';
 import {
   jsonExtractString,
@@ -22,6 +21,7 @@ import {
   uuidExpr,
 } from '@/couchbase/dialectExpr';
 import { useMetadataWithSettings } from '@/hooks/useMetadata';
+import { useClickhouseClient } from '@/query';
 import { getDisplayedTimestampValueExpression } from '@/source';
 import { KubePhase } from '@/types';
 import { FormatTime } from '@/useFormatTime';

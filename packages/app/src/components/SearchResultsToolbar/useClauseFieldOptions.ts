@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
-import { ColumnMeta } from '@couchbase-traces/common-utils/dist/clickhouse';
 import { TableConnection } from '@couchbase-traces/common-utils/dist/core/metadata';
+import { ColumnMeta } from '@couchbase-traces/common-utils/dist/query';
 
 import {
   getSqlSourceColumnKeys,

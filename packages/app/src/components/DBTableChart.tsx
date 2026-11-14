@@ -1,11 +1,11 @@
 import { useCallback, useMemo, useState } from 'react';
-import { inferNumericColumn } from '@couchbase-traces/common-utils/dist/clickhouse';
 import { isRatioChartConfig } from '@couchbase-traces/common-utils/dist/core/renderChartConfig';
 import {
   isBuilderChartConfig,
   isPromqlChartConfig,
   isRawSqlChartConfig,
 } from '@couchbase-traces/common-utils/dist/guards';
+import { inferNumericColumn } from '@couchbase-traces/common-utils/dist/query';
 import {
   ChartConfigWithOptTimestamp,
   ChartPaletteToken,

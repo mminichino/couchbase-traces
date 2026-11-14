@@ -2,13 +2,6 @@ import { useMemo } from 'react';
 import { add, differenceInSeconds } from 'date-fns';
 import SqlString from 'sqlstring';
 import { z } from 'zod';
-import {
-  ColumnMetaType,
-  filterColumnMetaByType,
-  inferTimestampColumn,
-  JSDataType,
-  ResponseJSON,
-} from '@couchbase-traces/common-utils/dist/clickhouse';
 import { isMetricChartConfig } from '@couchbase-traces/common-utils/dist/core/renderChartConfig';
 import { SERIES_KEY_JOINER } from '@couchbase-traces/common-utils/dist/core/seriesNameTemplate';
 import {
@@ -24,6 +17,13 @@ import {
   TIME_SERIES_DISPLAY_TYPE_BY_NAME,
 } from '@couchbase-traces/common-utils/dist/core/utils';
 import { isBuilderChartConfig } from '@couchbase-traces/common-utils/dist/guards';
+import {
+  ColumnMetaType,
+  filterColumnMetaByType,
+  inferTimestampColumn,
+  JSDataType,
+  ResponseJSON,
+} from '@couchbase-traces/common-utils/dist/query';
 import {
   AggregateFunction as AggFnV2,
   BuilderChartConfigWithDateRange,

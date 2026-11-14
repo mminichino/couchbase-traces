@@ -1,94 +1,92 @@
-import type { BaseResultSet, DataFormat } from '@clickhouse/client';
+import { AsyncLocalStorage } from 'node:async_hooks';
 
-import type { ClickhouseClientOptions, QueryInputs } from '@/clickhouse';
-import { ClickhouseClient } from '@/clickhouse/node';
 import {
   type CouchbaseConnectionConfig,
   CouchbaseNodeClient,
 } from '@/couchbase/node';
-import type { DataClient } from '@/couchbase/types';
-import type { TeamClickHouseSettings } from '@/types';
+import {
+  mergeQueryAttribution,
+  type QueryAttribution,
+} from '@/query/attribution';
+import type { TeamQuerySettings } from '@/types';
 
-import { couchbaseChartQuery, couchbaseChartValidity } from './chartQuery';
-import { resolveConnectionKind } from './kind';
-import { queryViaCouchbase } from './routeQuery';
+import { runChartQuery, runChartValidity } from './chartQuery';
+import type { DataClientLike, DataClientOptions } from './clientLike';
 
-export class RoutingNodeClickhouseClient extends ClickhouseClient {
-  readonly couchbaseSampleSize?: number;
+export type { DataClientOptions };
+
+const attributionStore = new AsyncLocalStorage<QueryAttribution>();
+
+export function withQueryAttribution<T>(
+  attribution: QueryAttribution,
+  fn: () => T,
+): T {
+  const merged = mergeQueryAttribution(
+    attributionStore.getStore(),
+    attribution,
+  );
+  return attributionStore.run(merged, fn);
+}
+
+export function getCurrentQueryAttribution(): QueryAttribution | undefined {
+  return attributionStore.getStore();
+}
+
+/** @deprecated Integration tests should use DataClient from the API package. */
+export function createNativeClient(_opts: Record<string, unknown> = {}): never {
+  throw new Error(
+    'createNativeClient was removed; use DataClient with a connection id',
+  );
+}
+
+export class NodeDataClient implements DataClientLike {
+  readonly requestTimeoutMs: number;
+  readonly metadataMaxRows?: number;
+  private readonly team: TeamQuerySettings | null;
   private readonly loadCouchbaseConnection: (
     id: string,
   ) => Promise<CouchbaseConnectionConfig>;
-  private readonly team: TeamClickHouseSettings | null;
-  // Init in constructor: tsup/esbuild emits invalid `call(this);,this.` when a
-  // field initializer (__init) sits beside constructor body assignments.
-  private readonly byConnection: Map<string, Promise<CouchbaseNodeClient>>;
+  private readonly attribution?: DataClientOptions['attribution'];
+  private readonly byConnection = new Map<
+    string,
+    Promise<CouchbaseNodeClient>
+  >();
 
   constructor(
-    opts: ClickhouseClientOptions & {
+    opts: DataClientOptions & {
       loadCouchbaseConnection: (
         id: string,
       ) => Promise<CouchbaseConnectionConfig>;
-      team?: TeamClickHouseSettings | null;
+      team?: TeamQuerySettings | null;
     },
   ) {
-    super(opts);
-    this.byConnection = new Map();
     this.loadCouchbaseConnection = opts.loadCouchbaseConnection;
     this.team = opts.team ?? null;
-    this.couchbaseSampleSize = opts.team?.metadataMaxRowsToRead;
+    this.attribution = opts.attribution;
+    this.metadataMaxRows = opts.team?.metadataMaxRowsToRead;
+    this.requestTimeoutMs = opts.requestTimeout ?? 3600000;
   }
 
-  couchbaseDataClient(): DataClient {
-    return {
-      requestTimeoutMs: this.requestTimeoutMs,
-      query: async inputs => {
-        const id = inputs.connectionId;
-        if (!id) {
-          throw new Error('A connection id is required for Couchbase queries');
-        }
-        const client = await this.clientFor(id);
-        return client.query(inputs);
-      },
-      close: async () => {
-        const clients = await Promise.all(this.byConnection.values());
-        await Promise.all(clients.map(client => client.close()));
-        this.byConnection.clear();
-      },
-    };
+  async query(...args: Parameters<DataClientLike['query']>) {
+    const inputs = args[0];
+    const id = inputs.connectionId;
+    if (!id) {
+      throw new Error('A connection id is required for Couchbase queries');
+    }
+    const client = await this.clientFor(id);
+    return client.query(inputs);
   }
 
-  override async query<Format extends DataFormat>(
-    inputs: QueryInputs<Format>,
-  ): Promise<BaseResultSet<ReadableStream, Format>> {
-    const kind = await resolveConnectionKind(inputs.connectionId);
-    if (kind !== 'couchbase') return super.query(inputs);
-    return queryViaCouchbase(this.couchbaseDataClient(), inputs);
-  }
+  queryChartConfig: DataClientLike['queryChartConfig'] = args =>
+    runChartQuery(this, args);
 
-  override async queryChartConfig(
-    args: Parameters<ClickhouseClient['queryChartConfig']>[0],
-  ): ReturnType<ClickhouseClient['queryChartConfig']> {
-    const routed = await couchbaseChartQuery(
-      inputs => this.query(inputs),
-      args,
-    );
-    if (routed === 'clickhouse') return super.queryChartConfig(args);
-    return routed;
-  }
+  testChartConfigValidity: DataClientLike['testChartConfigValidity'] = args =>
+    runChartValidity(this, args);
 
-  override async testChartConfigValidity(
-    args: Parameters<ClickhouseClient['testChartConfigValidity']>[0],
-  ): ReturnType<ClickhouseClient['testChartConfigValidity']> {
-    const routed = await couchbaseChartValidity(
-      inputs => this.query(inputs),
-      args,
-    );
-    if (routed === 'clickhouse') return super.testChartConfigValidity(args);
-    return routed;
-  }
-
-  override async close(): Promise<void> {
-    await Promise.all([super.close(), this.couchbaseDataClient().close()]);
+  async close(): Promise<void> {
+    const clients = await Promise.all(this.byConnection.values());
+    await Promise.all(clients.map(c => c.close()));
+    this.byConnection.clear();
   }
 
   private clientFor(id: string): Promise<CouchbaseNodeClient> {
@@ -110,3 +108,5 @@ export class RoutingNodeClickhouseClient extends ClickhouseClient {
     return created;
   }
 }
+
+export { NodeDataClient as DataClient };

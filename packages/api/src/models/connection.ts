@@ -11,11 +11,9 @@ export interface IConnection {
   username: string;
   team: ObjectId;
   hyperdxSettingPrefix?: string;
-  /** When true, `host` is treated as a Prometheus-compatible API endpoint
-   *  (e.g. Prometheus or Thanos) and PromQL queries are proxied directly to
-   *  it. When false/unset, `host` is a ClickHouse HTTP endpoint and PromQL
-   *  queries use ClickHouse's prometheusQuery() function. */
   isPrometheusEndpoint?: boolean;
+  /** Legacy ClickHouse connections the product no longer queries. */
+  unsupported?: boolean;
   /** How this connection came to exist, for IaC tooling. Named distinctly
    *  from `Dashboard.provisioned`, which is an unrelated boolean (machine-
    *  managed by ProvisionDashboardsTask) that DOES carry `default: false`.
@@ -77,6 +75,7 @@ export default mongoose.model<IConnection>(
         enum: ['clickhouse', 'couchbase'],
         default: 'clickhouse',
       },
+      unsupported: Boolean,
       wanProfile: Boolean,
       tlsCaCertificate: {
         type: String,

@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { ClickHouseQueryError } from '@couchbase-traces/common-utils/dist/clickhouse';
+import { QueryError } from '@couchbase-traces/common-utils/dist/query';
 import { TTraceSource } from '@couchbase-traces/common-utils/dist/types';
 import dagre from '@dagrejs/dagre';
 import {
@@ -262,7 +262,7 @@ function ServiceMapPresentation({
         >
           {error?.message}
         </Code>
-        {error instanceof ClickHouseQueryError && (
+        {error instanceof QueryError && (
           <Box mt="lg">
             <Text my="sm" size="sm">
               Original query:

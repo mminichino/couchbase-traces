@@ -1,7 +1,7 @@
 import {
   mergeQueryAttribution,
   type QueryAttribution,
-} from '@/clickhouse/attribution';
+} from '@/query/attribution';
 
 import {
   CouchbaseQueryError,
@@ -123,6 +123,7 @@ export class CouchbaseClient implements DataClient {
 
   constructor(
     opts: {
+      application?: string;
       requestTimeout?: number;
       attribution?: QueryAttribution;
       fetchImpl?: typeof fetch;

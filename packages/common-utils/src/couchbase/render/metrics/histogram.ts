@@ -1,9 +1,10 @@
+import { FIXED_TIME_BUCKET_EXPR_ALIAS } from '@/core/chartConfig';
 import { GROUP_ALIAS } from '@/core/histogram';
-import { FIXED_TIME_BUCKET_EXPR_ALIAS } from '@/core/renderChartConfig';
 import {
   convertDateRangeToGranularityString,
   getFirstTimestampValueExpression,
 } from '@/core/utils';
+import { CouchbaseUnsupportedError } from '@/couchbase/errors';
 import { histogramQuantile } from '@/couchbase/fn/quantile';
 import { lag } from '@/couchbase/fn/scalar';
 import { timestampFormatOf } from '@/couchbase/render/select';
@@ -13,7 +14,6 @@ import {
   timeBucketExpr as cbTimeBucketExpr,
   toIso30,
 } from '@/couchbase/time';
-import { CouchbaseNotReadyError } from '@/dataLayer/errors';
 import type { BuilderChartConfigWithOptDateRange } from '@/types';
 
 export type MetricSelect = {
@@ -265,12 +265,12 @@ export function translateHistogramCouchbase(input: HistInput): {
   }
   if (aggFn === 'quantile') {
     if (input.select.level == null) {
-      throw new CouchbaseNotReadyError('metrics: histogram quantile level');
+      throw new CouchbaseUnsupportedError('metrics: histogram quantile level');
     }
     return translateHistogramQuantileCouchbase({
       ...input,
       level: input.select.level,
     });
   }
-  throw new CouchbaseNotReadyError(`metrics: histogram aggFn ${aggFn}`);
+  throw new CouchbaseUnsupportedError(`metrics: histogram aggFn ${aggFn}`);
 }

@@ -1,4 +1,15 @@
-import { ClickHouseQueryError } from '@/clickhouse';
+import { QueryError } from '@/query/errors';
+
+/** Raised when a construct has no SQL++ equivalent. */
+export class CouchbaseUnsupportedError extends Error {
+  readonly code: 'COUCHBASE_UNSUPPORTED';
+
+  constructor(what: string) {
+    super(`Not supported on Couchbase: ${what}.`);
+    this.code = 'COUCHBASE_UNSUPPORTED';
+    this.name = 'CouchbaseUnsupportedError';
+  }
+}
 
 export const COUCHBASE_ERROR_CODES = [
   'STATEMENT_NOT_ALLOWED',
@@ -59,7 +70,7 @@ export function httpStatusForCode(code: CouchbaseErrorCode): number {
   return HTTP_STATUS.get(code) ?? 500;
 }
 
-export class CouchbaseQueryError extends ClickHouseQueryError {
+export class CouchbaseQueryError extends QueryError {
   readonly code: CouchbaseErrorCode;
   readonly sqlppCode: number | null;
   readonly retriable: boolean;

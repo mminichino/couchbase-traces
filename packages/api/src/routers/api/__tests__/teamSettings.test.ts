@@ -7,7 +7,7 @@ function app() {
   const server = express();
   server.use(express.json());
   server.patch(
-    '/team/clickhouse-settings',
+    '/team/query-settings',
     processRequest({ body: TeamClickHouseSettingsUpdateSchema }),
     (req, res) => {
       res.json(req.body);
@@ -16,10 +16,10 @@ function app() {
   return server;
 }
 
-describe('PATCH /team/clickhouse-settings', () => {
+describe('PATCH /team/query-settings', () => {
   it('accepts scan consistency and max parallelism', async () => {
     const response = await request(app())
-      .patch('/team/clickhouse-settings')
+      .patch('/team/query-settings')
       .send({ queryScanConsistency: 'request_plus', queryMaxParallelism: 8 })
       .expect(200);
 
@@ -31,7 +31,7 @@ describe('PATCH /team/clickhouse-settings', () => {
 
   it('returns 400 naming queryScanConsistency when the value is invalid', async () => {
     const response = await request(app())
-      .patch('/team/clickhouse-settings')
+      .patch('/team/query-settings')
       .send({ queryScanConsistency: 'at_plus' })
       .expect(400);
 
@@ -40,7 +40,7 @@ describe('PATCH /team/clickhouse-settings', () => {
 
   it('returns 400 naming queryMaxParallelism when the value is out of range', async () => {
     const response = await request(app())
-      .patch('/team/clickhouse-settings')
+      .patch('/team/query-settings')
       .send({ queryMaxParallelism: 0 })
       .expect(400);
 

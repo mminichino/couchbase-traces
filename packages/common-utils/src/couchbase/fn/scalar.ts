@@ -1,6 +1,6 @@
+import { CouchbaseUnsupportedError } from '@/couchbase/errors';
 import { quoteIdent, type SqlPP, sqlpp } from '@/couchbase/sqlpp';
 import { SQLPP_DATE_FORMAT } from '@/couchbase/time';
-import { CouchbaseUnsupportedError } from '@/dataLayer/errors';
 
 export function count(): string {
   return 'COUNT(*)';

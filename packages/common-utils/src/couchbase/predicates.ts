@@ -1,5 +1,5 @@
-import { JSDataType } from '@/clickhouse';
 import { toIso30 } from '@/couchbase/time';
+import { JSDataType } from '@/query';
 
 import type { ResolvedField } from './fields';
 

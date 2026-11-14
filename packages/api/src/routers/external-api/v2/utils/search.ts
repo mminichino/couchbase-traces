@@ -19,9 +19,9 @@ import {
   SourceKind,
 } from '@couchbase-traces/common-utils/dist/types';
 
-import { ClickhouseClient } from '@/clickhouse';
 import { getConnectionById } from '@/controllers/connection';
 import { getSource } from '@/controllers/sources';
+import { DataClient } from '@/query';
 import { toQueryableTSource } from '@/utils/queryableSource';
 import type { ExternalDashboardSearchRequestConfig } from '@/utils/zod';
 
@@ -137,10 +137,7 @@ export async function runSearchConfig({
       ? maxExecSeconds * 1000 + 2_000
       : undefined;
 
-  const clickhouseClient = new ClickhouseClient({
-    host: connection.host,
-    username: connection.username,
-    password: connection.password,
+  const clickhouseClient = new DataClient({
     ...(requestTimeout != null ? { requestTimeout } : {}),
   });
 

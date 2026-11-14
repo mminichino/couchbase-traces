@@ -1,8 +1,8 @@
-import { ResponseJSON } from '@couchbase-traces/common-utils/dist/clickhouse';
 import type {
   AdhocConditionAction,
   AdhocConditionEntry,
 } from '@couchbase-traces/common-utils/dist/filters';
+import { ResponseJSON } from '@couchbase-traces/common-utils/dist/query';
 import {
   Alert,
   AlertsPageItem as _AlertsPageItem,

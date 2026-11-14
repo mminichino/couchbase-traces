@@ -3,15 +3,15 @@ import { SourceKind } from '@couchbase-traces/common-utils/dist/types';
 import { trace } from '@opentelemetry/api';
 import { z } from 'zod';
 
-import { ClickhouseClient } from '@/clickhouse';
 import { getConnectionById } from '@/controllers/connection';
 import { getSource } from '@/controllers/sources';
 import { READ_ONLY_TOOL } from '@/mcp/tools/annotations';
-import { parseTimeRange } from '@/mcp/tools/query/helpers';
+import { MCP_REQUEST_TIMEOUT, parseTimeRange } from '@/mcp/tools/query/helpers';
 import type { ToolRegistrar } from '@/mcp/tools/types';
 import { mcpServerError, mcpUserError } from '@/mcp/utils/errors';
 import { assertMcpSliceForConnection } from '@/mcp/utils/mcpSlice';
 import { MCP_TOOL_TIMEOUT_MS, runWithTimeout } from '@/mcp/utils/timeout';
+import { DataClient } from '@/query';
 import logger from '@/utils/logger';
 
 import { KIND_TIMED_OUT_ERROR, scanKindsForPage } from './listMetricsPage';
@@ -162,10 +162,8 @@ async function listMetricsImpl(
   );
   if (sliceErr) return sliceErr;
 
-  const clickhouseClient = new ClickhouseClient({
-    host: connection.host,
-    username: connection.username,
-    password: connection.password,
+  const clickhouseClient = new DataClient({
+    requestTimeout: MCP_REQUEST_TIMEOUT,
   });
   const metadata = getMetadata(clickhouseClient);
 

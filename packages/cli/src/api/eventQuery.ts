@@ -6,8 +6,8 @@
 import type {
   ChSql,
   ColumnMetaType,
-} from '@couchbase-traces/common-utils/dist/clickhouse';
-import { chSqlToAliasMap } from '@couchbase-traces/common-utils/dist/clickhouse';
+} from '@couchbase-traces/common-utils/dist/query';
+import { chSqlToAliasMap } from '@couchbase-traces/common-utils/dist/query';
 import { renderChartConfig } from '@couchbase-traces/common-utils/dist/dataLayer';
 import type { Metadata } from '@couchbase-traces/common-utils/dist/core/metadata';
 import { aliasMapToWithClauses } from '@couchbase-traces/common-utils/dist/core/utils';

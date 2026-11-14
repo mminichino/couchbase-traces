@@ -1,7 +1,7 @@
 import {
   FIXED_TIME_BUCKET_EXPR_ALIAS,
   isUsingGranularity,
-} from '@/core/renderChartConfig';
+} from '@/core/chartConfig';
 import { quoteIdent, type SqlPP, sqlpp } from '@/couchbase/sqlpp';
 import type {
   BuilderChartConfigWithOptDateRange,

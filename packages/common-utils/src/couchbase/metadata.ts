@@ -1,9 +1,4 @@
 import {
-  type ColumnMeta,
-  convertCHDataTypeToJSType,
-  JSDataType,
-} from '@/clickhouse';
-import {
   type ClickHouseVersion,
   parseClickHouseVersion,
 } from '@/core/clickhouseVersion';
@@ -16,7 +11,8 @@ import {
   type MetricNames,
   type TableMetadata,
 } from '@/core/metadata';
-import { CouchbaseUnsupportedError } from '@/dataLayer/errors';
+import { columnTypeToJSType, JSDataType } from '@/query/columnTypes';
+import type { ColumnMeta } from '@/query/types';
 
 import { isAccessDeniedError } from './errors';
 import { type InferredField, inferredToColumnType, parseInfer } from './infer';
@@ -48,7 +44,7 @@ type Tc = {
   scopeName?: string;
 };
 
-export class CouchbaseMetadata {
+export class Metadata {
   constructor(
     private readonly client: DataClient,
     private readonly cache: MetadataCache,
@@ -161,17 +157,17 @@ export class CouchbaseMetadata {
       .map(c => ({
         path: [c.name],
         type: c.type,
-        jsType: convertCHDataTypeToJSType(c.type),
+        jsType: columnTypeToJSType(c.type),
       }));
     for (const column of columns) {
-      const js = convertCHDataTypeToJSType(column.type);
+      const js = columnTypeToJSType(column.type);
       if (js === 'json') {
         const paths = await this.getJSONKeys({ ...args, column: column.name });
         for (const path of paths) {
           fields.push({
             path: [column.name, path.key],
             type: path.chType,
-            jsType: convertCHDataTypeToJSType(path.chType),
+            jsType: columnTypeToJSType(path.chType),
           });
         }
       } else if (js === 'map') {
@@ -270,7 +266,7 @@ export class CouchbaseMetadata {
   }
 
   async getKeyValuesWithMVs(
-    args: Parameters<CouchbaseMetadata['getKeyValues']>[0],
+    args: Parameters<Metadata['getKeyValues']>[0],
   ): Promise<KeyValues[]> {
     return this.getKeyValues(args);
   }
@@ -318,42 +314,6 @@ export class CouchbaseMetadata {
           tableName: ks.collection,
         }),
       );
-  }
-
-  async getSetting(): Promise<undefined> {
-    return undefined;
-  }
-
-  async getSettings(): Promise<Map<string, string>> {
-    return new Map();
-  }
-
-  async getMergeTreeSettings(): Promise<Map<string, string>> {
-    return new Map();
-  }
-
-  async getSkipIndices(): Promise<never[]> {
-    return [];
-  }
-
-  async getMapColumnTextIndexes(): Promise<Map<string, never>> {
-    return new Map<string, never>();
-  }
-
-  async getNativeArrayColumnTextIndexes(): Promise<Map<string, never>> {
-    return new Map<string, never>();
-  }
-
-  async queryMaterializedViewsByTarget(): Promise<never[]> {
-    return [];
-  }
-
-  async getMaterializedColumnsLookupTable(): Promise<Map<string, string>> {
-    return new Map();
-  }
-
-  async isClickHouseCloud(): Promise<boolean> {
-    return false;
   }
 
   async getServerVersion(args: {
@@ -411,24 +371,6 @@ export class CouchbaseMetadata {
         },
       },
     };
-  }
-
-  async getTimeSeriesTableColumns(): Promise<never> {
-    throw new CouchbaseUnsupportedError('getTimeSeriesTableColumns');
-  }
-
-  async getTimeSeriesTableVersion(): Promise<never> {
-    throw new CouchbaseUnsupportedError('getTimeSeriesTableVersion');
-  }
-
-  async getTimeSeriesTables(): Promise<never> {
-    throw new CouchbaseUnsupportedError('getTimeSeriesTables');
-  }
-
-  async renderKeyExpressions(args: {
-    keys: string[];
-  }): Promise<Map<string, string>> {
-    return new Map(args.keys.map(key => [key, key]));
   }
 
   async listKeyspaces(args: { connectionId: string }): Promise<Keyspace[]> {
@@ -505,7 +447,7 @@ export class CouchbaseMetadata {
       'Timestamp';
     const column = columns.find(c => c.name === ts);
     const format: TimeFormat =
-      column && convertCHDataTypeToJSType(column.type) === 'number'
+      column && columnTypeToJSType(column.type) === 'number'
         ? 'epoch_millis'
         : 'iso8601';
     return { from, to, ts, format };

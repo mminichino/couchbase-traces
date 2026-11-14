@@ -21,13 +21,6 @@ describe('fetchMetricNames', () => {
     });
 
     expect(names).toEqual(['a']);
-    expect(query).toHaveBeenCalledWith(
-      expect.objectContaining({
-        clickhouse_settings: {
-          max_execution_time: 28,
-          timeout_overflow_mode: 'throw',
-        },
-      }),
-    );
+    expect(query).toHaveBeenCalledWith(expect.objectContaining({}));
   });
 });

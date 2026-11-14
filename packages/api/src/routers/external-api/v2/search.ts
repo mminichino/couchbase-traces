@@ -1,4 +1,4 @@
-import { ClickHouseQueryError } from '@couchbase-traces/common-utils/dist/clickhouse';
+import { QueryError } from '@couchbase-traces/common-utils/dist/query';
 import express from 'express';
 import { ObjectId } from 'mongodb';
 import { z } from 'zod';
@@ -434,7 +434,7 @@ router.post(
         return res.status(couchbase.status).json(couchbase.body);
       }
 
-      if (err instanceof ClickHouseQueryError) {
+      if (err instanceof QueryError) {
         const chType = ((err.cause as Record<string, unknown> | undefined)
           ?.type ?? 'UNKNOWN') as string;
         const safeMsg =

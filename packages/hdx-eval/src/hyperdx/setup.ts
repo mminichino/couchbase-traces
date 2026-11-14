@@ -1,6 +1,6 @@
-import { scenarioTables } from '@/clickhouse/schema';
 import { QUERY_TIMEOUT_SECONDS } from '@/harness/mcpConfig';
 import type { McpDefinition } from '@/harness/types';
+import { scenarioTables } from '@/query/schema';
 import { SCENARIO_NAMES } from '@/scenarios';
 
 import { HyperdxApiClient, type HyperdxSource } from './api';

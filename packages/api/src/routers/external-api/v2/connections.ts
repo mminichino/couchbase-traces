@@ -1,9 +1,9 @@
 import { clusterCache } from '@couchbase-traces/common-utils/dist/couchbase/node';
 import {
-  ClickHouseConnectionSchema,
+  ConnectionSchema,
   ConnectionSchemaNoId,
   CouchbaseConnectionSchema,
-  withDefaultConnectionKind,
+  UnsupportedClickHouseConnectionSchema,
 } from '@couchbase-traces/common-utils/dist/types';
 import express from 'express';
 import { z } from 'zod';
@@ -28,51 +28,41 @@ const timestampFields = {
 
 // External representation of a connection. Secrets (password and CA
 // certificate) are intentionally excluded so they are never returned.
-const externalConnectionSchema = z.preprocess(
-  withDefaultConnectionKind,
-  z.discriminatedUnion('kind', [
-    ClickHouseConnectionSchema.omit({ password: true }).extend(timestampFields),
-    CouchbaseConnectionSchema.omit({
-      password: true,
-      tlsCaCertificate: true,
-      monitorPassword: true,
-    }).extend(timestampFields),
-  ]),
-);
+const externalCouchbaseConnectionSchema = CouchbaseConnectionSchema.omit({
+  password: true,
+  tlsCaCertificate: true,
+  monitorPassword: true,
+}).extend(timestampFields);
+
+const externalConnectionSchema = z.discriminatedUnion('kind', [
+  UnsupportedClickHouseConnectionSchema,
+  externalCouchbaseConnectionSchema,
+]);
 
 const createConnectionBodySchema = ConnectionSchemaNoId;
-
-// On update, hyperdxSettingPrefix additionally accepts '' meaning "clear the
-// existing value". The base ConnectionSchema rejects '' because the prefix
-// regex requires 1+ chars.
-const updateConnectionBodySchema = z.preprocess(
-  withDefaultConnectionKind,
-  z.discriminatedUnion('kind', [
-    ClickHouseConnectionSchema.omit({ id: true }).extend({
-      hyperdxSettingPrefix: z
-        .string()
-        .regex(/^[a-z0-9_]+$/i)
-        .or(z.literal(''))
-        .optional()
-        .nullable(),
-    }),
-    CouchbaseConnectionSchema.omit({ id: true }),
-  ]),
-);
+const updateConnectionBodySchema = ConnectionSchema;
 
 function formatExternalConnection(connection: ConnectionDocument) {
-  // Convert to JSON so that any ObjectIds and Dates are converted to strings
-  const json = JSON.stringify(connection.toJSON({ virtuals: true }));
+  const json = connection.toJSON({ virtuals: true }) as Record<string, unknown>;
+  const kind = (json.kind as string | undefined) ?? 'clickhouse';
+  const unsupported = Boolean(json.unsupported) || kind === 'clickhouse';
+  const payload = unsupported
+    ? {
+        id: String(json.id ?? json._id),
+        name: String(json.name ?? ''),
+        kind: 'clickhouse' as const,
+        unsupported: true as const,
+      }
+    : externalCouchbaseConnectionSchema.parse({
+        ...json,
+        kind: 'couchbase',
+      });
 
-  // Parse using the externalConnectionSchema to strip out any fields not
-  // defined in the schema (e.g. password, team, _id, __v)
-  const parseResult = externalConnectionSchema.safeParse(JSON.parse(json));
+  const parseResult = externalConnectionSchema.safeParse(payload);
   if (parseResult.success) {
     return parseResult.data;
   }
 
-  // If parsing fails, log and throw so handlers return an explicit 500
-  // instead of silently responding with `{}` or a partial list.
   logger.error(
     { connectionId: connection._id, error: parseResult.error },
     'Failed to parse connection using externalConnectionSchema:',
@@ -497,26 +487,17 @@ router.post(
       }
 
       const body: z.infer<typeof createConnectionBodySchema> = req.body;
-      const connection = await createConnection(
-        teamId.toString(),
-        body.kind === 'couchbase'
-          ? {
-              ...body,
-              password: body.password ?? '',
-              team: teamId,
-              managementPort:
-                typeof body.managementPort === 'number'
-                  ? body.managementPort
-                  : undefined,
-              monitorPassword: body.monitorPassword || undefined,
-            }
-          : {
-              ...body,
-              password: body.password ?? '',
-              team: teamId,
-              hyperdxSettingPrefix: body.hyperdxSettingPrefix ?? undefined,
-            },
-      );
+      const connection = await createConnection(teamId.toString(), {
+        ...body,
+        kind: 'couchbase',
+        password: body.password ?? '',
+        team: teamId,
+        managementPort:
+          typeof body.managementPort === 'number'
+            ? body.managementPort
+            : undefined,
+        monitorPassword: body.monitorPassword || undefined,
+      });
 
       res.json({
         data: formatExternalConnection(connection),
@@ -615,44 +596,27 @@ router.put(
 
       const body: z.infer<typeof updateConnectionBodySchema> = req.body;
       const storedKind = existingConnection.kind ?? 'clickhouse';
-      if (body.kind !== storedKind) {
+      if (storedKind !== 'couchbase' || existingConnection.unsupported) {
         return res.status(400).json({
-          message: `Connection kind cannot change from ${storedKind} to ${body.kind}`,
+          message:
+            'This connection used ClickHouse, which is no longer supported. Delete it and create a Couchbase connection.',
         });
       }
 
-      // Secrets are write-only: omitted or empty keeps the stored value.
       const password = body.password || existingConnection.password;
+      const { tlsCaCertificate, monitorPassword, managementPort, ...restBody } =
+        body;
       const unsetFields: string[] = [];
-      let update;
-      if (body.kind === 'couchbase') {
-        const {
-          tlsCaCertificate,
-          monitorPassword,
-          managementPort,
-          ...restBody
-        } = body;
-        update = {
-          ...restBody,
-          team: teamId,
-          password,
-          ...(tlsCaCertificate ? { tlsCaCertificate } : {}),
-          ...(monitorPassword ? { monitorPassword } : {}),
-          ...(typeof managementPort === 'number' ? { managementPort } : {}),
-        };
-        if (managementPort === null) unsetFields.push('managementPort');
-      } else {
-        const { hyperdxSettingPrefix, ...restBody } = body;
-        if (hyperdxSettingPrefix === null || hyperdxSettingPrefix === '') {
-          unsetFields.push('hyperdxSettingPrefix');
-        }
-        update = {
-          ...restBody,
-          team: teamId,
-          password,
-          ...(hyperdxSettingPrefix ? { hyperdxSettingPrefix } : {}),
-        };
-      }
+      const update = {
+        ...restBody,
+        team: teamId,
+        kind: 'couchbase' as const,
+        password,
+        ...(tlsCaCertificate ? { tlsCaCertificate } : {}),
+        ...(monitorPassword ? { monitorPassword } : {}),
+        ...(typeof managementPort === 'number' ? { managementPort } : {}),
+      };
+      if (managementPort === null) unsetFields.push('managementPort');
 
       const updatedConnection = await updateConnection(
         teamId.toString(),

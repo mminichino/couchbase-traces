@@ -1,9 +1,3 @@
-import {
-  chSqlToAliasMap,
-  ClickHouseQueryError,
-  ResponseJSON,
-} from '@couchbase-traces/common-utils/dist/clickhouse';
-import { ClickhouseClient } from '@couchbase-traces/common-utils/dist/clickhouse/browser';
 import { Metadata } from '@couchbase-traces/common-utils/dist/core/metadata';
 import {
   isMetricChartConfig,
@@ -18,10 +12,16 @@ import {
   formatQueryForDisplay,
   renderChartConfig,
 } from '@couchbase-traces/common-utils/dist/dataLayer';
+import type { DataClient } from '@couchbase-traces/common-utils/dist/dataLayer/browser';
 import {
   isBuilderChartConfig,
   isRawSqlChartConfig,
 } from '@couchbase-traces/common-utils/dist/guards';
+import {
+  chSqlToAliasMap,
+  QueryError,
+  ResponseJSON,
+} from '@couchbase-traces/common-utils/dist/query';
 import { format } from '@couchbase-traces/common-utils/dist/sqlFormatter';
 import {
   BuilderChartConfigWithOptDateRange,
@@ -38,10 +38,10 @@ import {
 } from '@tanstack/react-query';
 
 import { toStartOfInterval } from '@/ChartUtils';
-import { useClickhouseClient } from '@/clickhouse';
 import { IS_MTVIEWS_ENABLED } from '@/config';
 import { buildMTViewSelectQuery } from '@/hdxMTViews';
 import { useMetadataWithSettings } from '@/hooks/useMetadata';
+import { useClickhouseClient } from '@/query';
 import { useSource } from '@/source';
 import { ChartQueryResult } from '@/types';
 import { stripClientSideConfigFields } from '@/utils/chartConfig';
@@ -50,7 +50,7 @@ import { generateTimeWindowsDescending } from '@/utils/searchWindows';
 import { useMVOptimizationExplanation } from './useMVOptimizationExplanation';
 
 interface AdditionalUseQueriedChartConfigOptions {
-  onError?: (error: Error | ClickHouseQueryError) => void;
+  onError?: (error: Error | QueryError) => void;
   /**
    * Queries with large date ranges can be split into multiple smaller queries to
    * avoid overloading the ClickHouse server and running into timeouts. In some cases, such
@@ -176,7 +176,7 @@ async function* fetchDataInChunks({
   querySettings,
 }: {
   config: ChartConfigWithOptDateRange;
-  clickhouseClient: ClickhouseClient;
+  clickhouseClient: DataClient;
   signal: AbortSignal;
   enableQueryChunking?: boolean;
   enableParallelQueries?: boolean;
@@ -220,11 +220,6 @@ async function* fetchDataInChunks({
     await renderMTViewConfig();
   }
 
-  // Readonly = 2 means the query is readonly but can still specify query settings.
-  const clickHouseSettings = isRawSqlChartConfig(config)
-    ? { readonly: '2' }
-    : {};
-
   if (enableParallelQueries) {
     // fetch in parallel
     const promises = windows.map(async (w, index) => {
@@ -236,7 +231,6 @@ async function* fetchDataInChunks({
           metadata,
           opts: {
             abort_signal: signal,
-            clickhouse_settings: clickHouseSettings,
           },
           querySettings,
         }),
@@ -364,7 +358,7 @@ export function useQueriedChartConfig(
   });
   const minGranularitySeconds = getMinGranularitySeconds(source);
 
-  const query = useQuery<TQueryFnData, ClickHouseQueryError | Error>({
+  const query = useQuery<TQueryFnData, QueryError | Error>({
     // Include enableQueryChunking in the query key to ensure that queries with the
     // same config but different enableQueryChunking values do not share a query.
     // minGranularitySeconds too: it can change independently of `config`.

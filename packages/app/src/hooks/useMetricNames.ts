@@ -5,15 +5,9 @@ import {
   TMetricSource,
 } from '@couchbase-traces/common-utils/dist/types';
 
-import {
-  useGetMetricNames,
-  useMetadataWithSettings,
-} from '@/hooks/useMetadata';
+import { useGetMetricNames } from '@/hooks/useMetadata';
 import { clampCatalogDateRange } from '@/hooks/useMetricCatalog';
-import { useStreamingQuery } from '@/hooks/useStreamingQuery';
 import type { QueryableMetricKind } from '@/utils/metricKinds';
-
-const METRIC_NAME_COLUMN = 'MetricName';
 
 type MetricNamesQueryArgs = ReturnType<typeof metricNamesQueryArgs>;
 
@@ -58,106 +52,20 @@ function useMetricNamesForKind(
   args: MetricNamesQueryArgs,
   namePattern?: string,
 ) {
-  const metadata = useMetadataWithSettings();
-  // An unconfigured kind resolves to an empty table name.
   const isQueryable = !!args.databaseName && !!args.tableName;
-  const isSearching = !!namePattern;
-
-  const streamed = useStreamingQuery<string>({
-    queryKey: [
-      'useMetricNames.index',
-      args.connectionId,
-      args.databaseName,
-      args.tableName,
-      args.timestampValueExpression,
-      args.dateRange[0].getTime(),
-      args.dateRange[1].getTime(),
-    ],
-    // Not memoized: read when the query runs, not hashed into its key.
-    streamFactory: ({ signal }) =>
-      metadata.streamDistinctIndexValues({
-        databaseName: args.databaseName,
-        tableName: args.tableName,
-        column: METRIC_NAME_COLUMN,
-        connectionId: args.connectionId,
-        dateRange: args.dateRange,
-        timestampValueExpression: args.timestampValueExpression,
-        signal,
-      }),
-    enabled: isQueryable && !isSearching,
-  });
-
-  const useExhaustive = isSearching || streamed.isError;
   const exhaustive = useGetMetricNames(
     { ...args, namePattern },
-    { enabled: isQueryable && useExhaustive },
+    { enabled: isQueryable },
   );
 
-  // A placeholder page holds the *previous* pattern's results, which cannot
-  // match the new one — the consumer would filter them to nothing and flash an
-  // empty picker, and its `truncated` flag describes a search already moved on
-  // from. Hold the unfiltered browse list until the real page lands.
-  const settled = useExhaustive && !exhaustive.isPlaceholderData;
-  const streamedNames = streamed.data;
-
-  return useMemo(() => {
-    // The index emits in granule order, so sort — otherwise the options
-    // reshuffle on every chunk. Search results are already relevance-ranked in
-    // SQL, so they are never re-sorted.
-    const browsed = streamedNames && {
-      names: [...streamedNames].sort((a, b) => a.localeCompare(b)),
-      truncated: false,
-    };
-
-    if (!useExhaustive) {
-      return {
-        data: browsed,
-        isError: false,
-        isFetching: streamed.isStreaming,
-      };
-    }
-    if (exhaustive.isError) {
-      // This kind has no answer for the pattern. Holding the browse list would
-      // offer names that do not match what was typed.
-      return {
-        data: undefined,
-        isError: true,
-        isFetching: exhaustive.isFetching,
-      };
-    }
-    if (settled && exhaustive.data) {
-      return {
-        data: exhaustive.data,
-        isError: false,
-        isFetching: exhaustive.isFetching,
-      };
-    }
-    // In flight, or holding a placeholder page for another pattern. Offer both
-    // sets: the consumer filters by the typed text, so only what matches
-    // renders, and nothing blanks. Either alone is insufficient — a fallback
-    // deployment has no browse list at all (`streamed.data` is suppressed on
-    // error), and a browse list omits the index-invisible names that a
-    // prefix-extending search's previous page still holds.
-    const provisional = new Set([
-      ...(browsed?.names ?? []),
-      ...(exhaustive.data?.names ?? []),
-    ]);
-    return {
-      data: provisional.size
-        ? { names: [...provisional], truncated: false }
-        : undefined,
-      isError: false,
+  return useMemo(
+    () => ({
+      data: exhaustive.data,
+      isError: exhaustive.isError,
       isFetching: exhaustive.isFetching,
-    };
-  }, [
-    settled,
-    exhaustive.data,
-    exhaustive.isError,
-    exhaustive.isFetching,
-    streamedNames,
-    streamed.isStreaming,
-    useExhaustive,
-  ]);
+    }),
+    [exhaustive.data, exhaustive.isError, exhaustive.isFetching],
+  );
 }
 
 /**

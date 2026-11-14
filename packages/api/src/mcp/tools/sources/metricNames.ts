@@ -1,11 +1,11 @@
+import type { Metadata } from '@couchbase-traces/common-utils/dist/core/metadata';
 import {
   chSql,
   concatChSql,
   tableExpr,
-} from '@couchbase-traces/common-utils/dist/clickhouse';
-import { ClickhouseClient } from '@couchbase-traces/common-utils/dist/clickhouse/node';
-import type { Metadata } from '@couchbase-traces/common-utils/dist/core/metadata';
+} from '@couchbase-traces/common-utils/dist/query';
 
+import { DataClient } from '@/query';
 import logger from '@/utils/logger';
 
 // Max MetricName values returned per metric kind by the starter sample.
@@ -52,7 +52,7 @@ export async function sampleMetricNamesForKind({
   enrich = true,
 }: {
   metadata: Metadata;
-  clickhouseClient: ClickhouseClient;
+  clickhouseClient: DataClient;
   databaseName: string;
   tableName: string;
   connectionId: string;
@@ -75,7 +75,6 @@ export async function sampleMetricNamesForKind({
     connectionId,
     dateRange,
     timestampValueExpression,
-    signal,
   });
   const names = nameResults[0]?.value.map(v => v.toString()) ?? [];
   if (names.length === 0) return [];
@@ -176,7 +175,7 @@ async function fetchMetricNameEnrichments({
   hasDescription,
   signal,
 }: {
-  clickhouseClient: ClickhouseClient;
+  clickhouseClient: DataClient;
   databaseName: string;
   tableName: string;
   connectionId: string;
@@ -219,7 +218,7 @@ async function fetchMetricNameEnrichments({
     MetricDescription?: string;
   };
 
-  const response = await clickhouseClient.query<'JSON'>({
+  const response = await clickhouseClient.query({
     query: sql.sql,
     query_params: sql.params,
     format: 'JSON',

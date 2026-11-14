@@ -1,36 +1,5 @@
 // Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
 
-exports[`buildChartAssistantPrompt matches clickhouse prompt snapshot: clickhouse 1`] = `
-"You are an AI assistant that helps users create chart configurations for an observability platform called Couchbase Traces.
-
-The user wants to create a chart based on the following description:
-errors per service
-
-Generate a visualization or search that matches their request. The chart should query logs, metrics, or traces from a ClickHouse database.
-
-Here are some guidelines:
-- Use appropriate display types: 'line' for time series, 'table' for tabular data
-- Use appropriate aggregate functions depending on user's request: 'count', 'sum', 'avg', 'min', 'max', 'count_distinct', and 'p50', 'p90', 'p95', 'p99' for percentiles
-- If the user is requesting for a specific set of data (ex. "frontend service", filter the condition by the appropriate property based on the below properties ex. \`ServiceName = 'frontend'\`)
-- Pick an appropriate time range based on the user's request if one can be inferred from the request.
-- SQL conditions in select[].condition must be written in ClickHouse SQL.
-
-The user is looking to do a query on their data source named: otel logs of type log.
-
-The log level is stored in SeverityText.
-You can identify services via ServiceName
-The log body can be queried via Body
-Various log/span-specific attributes as a Map can be found under LogAttributes while resource attributes that follow the OpenTelemetry semantic convention can be found under ResourceAttributes
-You must use the full field name ex. "column['key']" or "column.key" as it appears.
-
-The following is a list of properties and example values that exist in the source:
-{"SeverityText":["error","info"]}
-
-There may be additional properties that you can use as well:
-[{"field":"SeverityText","type":"string"}]
-"
-`;
-
 exports[`buildChartAssistantPrompt matches sqlpp prompt snapshot: sqlpp 1`] = `
 "You are an AI assistant that helps users create chart configurations for an observability platform called Couchbase Traces.
 
@@ -60,16 +29,4 @@ The following is a list of properties and example values that exist in the sourc
 There may be additional properties that you can use as well:
 [{"field":"SeverityText","type":"string"}]
 "
-`;
-
-exports[`summarize prompts over Couchbase rows strips __cbt_id and snapshots sqlpp summarization prompt: sqlpp-summarize 1`] = `
-"You are an AI assistant for Couchbase Traces. Summarize the following query result rows for an engineer.
-The data was queried with SQL++ (Couchbase). Field names may use SQL++ backtick quoting in conditions elsewhere; row keys here are plain column names as returned by the query.
-
-The user asked: What stands out?
-
-Rows:
-[{"ServiceName":"api","SeverityText":"error"},{"ServiceName":"web","SeverityText":"info"}]
-
-Highlight patterns, outliers, errors, and notable values. Be concise."
 `;

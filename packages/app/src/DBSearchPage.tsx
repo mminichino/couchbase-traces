@@ -25,10 +25,6 @@ import {
 } from 'nuqs';
 import { useForm, useWatch } from 'react-hook-form';
 import { z } from 'zod';
-import {
-  ClickHouseQueryError,
-  ColumnMeta,
-} from '@couchbase-traces/common-utils/dist/clickhouse';
 import { tcFromSource } from '@couchbase-traces/common-utils/dist/core/metadata';
 import { buildSearchChartConfig } from '@couchbase-traces/common-utils/dist/core/searchChartConfig';
 import {
@@ -38,9 +34,13 @@ import {
 } from '@couchbase-traces/common-utils/dist/core/utils';
 import { CouchbaseQueryError } from '@couchbase-traces/common-utils/dist/couchbase/errors';
 import {
-  CouchbaseNotReadyError,
+  CouchbaseUnsupportedError,
   isCouchbaseSliceEnabled,
 } from '@couchbase-traces/common-utils/dist/dataLayer';
+import {
+  ColumnMeta,
+  QueryError,
+} from '@couchbase-traces/common-utils/dist/query';
 import {
   BuilderChartConfigWithDateRange,
   ChartConfigWithDateRange,
@@ -1264,7 +1264,7 @@ function DBSearchPageContent() {
     selectedConnectionKind === 'couchbase' &&
     !isCouchbaseSliceEnabled('search');
   const couchbaseNotReadyMessage = couchbaseSearchBlocked
-    ? new CouchbaseNotReadyError('search').message
+    ? new CouchbaseUnsupportedError('search').message
     : undefined;
 
   const { isReady, searchedTimeRange, onSearch, onTimeRangeSelect } =
@@ -1352,7 +1352,7 @@ function DBSearchPageContent() {
   ]);
 
   const [_queryErrors, setQueryErrors] = useState<{
-    [key: string]: Error | ClickHouseQueryError;
+    [key: string]: Error | QueryError;
   }>({});
 
   const completeOnboardingTask = useCompleteOnboardingTask();
@@ -1644,11 +1644,8 @@ function DBSearchPageContent() {
   // query error handling
   const { hasQueryError, queryError } = useMemo(() => {
     const hasQueryError = Object.values(_queryErrors).length > 0;
-    const queryError:
-      | Error
-      | ClickHouseQueryError
-      | CouchbaseQueryError
-      | null = hasQueryError ? Object.values(_queryErrors)[0] : null;
+    const queryError: Error | QueryError | CouchbaseQueryError | null =
+      hasQueryError ? Object.values(_queryErrors)[0] : null;
     return { hasQueryError, queryError };
   }, [_queryErrors]);
   const inputWhere = useWatch({ name: 'where', control });
@@ -1946,7 +1943,7 @@ function DBSearchPageContent() {
   );
 
   const handleTableError = useCallback(
-    (error: Error | ClickHouseQueryError) => {
+    (error: Error | QueryError) => {
       setIsLive(false);
       setQueryErrors(prev => ({ ...prev, DBSqlRowTable: error }));
     },

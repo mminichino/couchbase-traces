@@ -19,16 +19,16 @@ import {
   XAxis,
   YAxis,
 } from 'recharts';
+import { splitAndTrimWithBracket } from '@couchbase-traces/common-utils/dist/core/utils';
 import {
   chSqlToAliasMap,
-  ClickHouseQueryError,
   ColumnMetaType,
-  convertCHDataTypeToJSType,
+  columnTypeToJSType,
   extractColumnReferencesFromKey,
   isJSDataTypeJSONStringifiable,
   JSDataType,
-} from '@couchbase-traces/common-utils/dist/clickhouse';
-import { splitAndTrimWithBracket } from '@couchbase-traces/common-utils/dist/core/utils';
+  QueryError,
+} from '@couchbase-traces/common-utils/dist/query';
 import {
   BuilderChartConfigWithDateRange,
   SelectList,
@@ -414,7 +414,7 @@ export const RawLogTable = memo(
     columnTypeMap: Map<string, { _type: JSDataType | null; type?: string }>;
 
     isError?: boolean;
-    error?: ClickHouseQueryError | Error;
+    error?: QueryError | Error;
     errorVariant?: ChartErrorStateVariant;
     dateRange?: [Date, Date];
     loadingDate?: Date;
@@ -1701,7 +1701,7 @@ function selectColumnMapWithoutAdditionalKeys(
       c.name,
       {
         ...c,
-        _type: convertCHDataTypeToJSType(c.type),
+        _type: columnTypeToJSType(c.type),
       },
     ]),
   );
@@ -1752,7 +1752,7 @@ function DBSqlRowTableComponent({
     [key: string]: unknown;
   }) => React.ReactNode;
   onScroll?: (scrollTop: number) => void;
-  onError?: (error: Error | ClickHouseQueryError) => void;
+  onError?: (error: Error | QueryError) => void;
   denoiseResults?: boolean;
   onChildModalOpen?: (open: boolean) => void;
   onExpandedRowsChange?: (hasExpandedRows: boolean) => void;

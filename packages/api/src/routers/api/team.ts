@@ -109,7 +109,7 @@ router.patch(
 );
 
 router.patch(
-  '/clickhouse-settings',
+  '/query-settings',
   processRequest({
     body: TeamClickHouseSettingsUpdateSchema,
   }),

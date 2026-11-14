@@ -201,6 +201,8 @@ export function useLocalStorage<T>(key: string, initialValue: T) {
       const item = window.localStorage.getItem(key);
       // Parse stored json or if none return initialValue
       if (item != null) {
+        // Hydrate from localStorage on mount; intentional setState in effect.
+        // eslint-disable-next-line react-hooks/set-state-in-effect -- one-shot hydration
         setStoredValue(JSON.parse(item));
       }
     } catch (error) {

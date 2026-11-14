@@ -1,5 +1,5 @@
 // @ts-nocheck
-import { ResponseJSON } from '@couchbase-traces/common-utils/dist/clickhouse';
+import { ResponseJSON } from '@couchbase-traces/common-utils/dist/query';
 import {
   BuilderChartConfigWithDateRange,
   DisplayType,

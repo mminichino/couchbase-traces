@@ -2,14 +2,14 @@ import {
   chSql,
   ResponseJSON,
   tableExpr,
-} from '@couchbase-traces/common-utils/dist/clickhouse';
+} from '@couchbase-traces/common-utils/dist/query';
 import {
   SourceKind,
   TMetricSource,
 } from '@couchbase-traces/common-utils/dist/types';
 import { useQuery } from '@tanstack/react-query';
 
-import { getClickhouseClient } from '@/clickhouse';
+import { getClickhouseClient } from '@/query';
 import { useMetadataQueryAttribution } from '@/queryAttribution';
 import { formatAttributeClause, getMetricTableName } from '@/utils';
 

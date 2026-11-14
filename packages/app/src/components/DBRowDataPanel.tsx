@@ -1,7 +1,7 @@
 import { useMemo } from 'react';
 import { flatten } from 'flat';
-import type { ResponseJSON } from '@couchbase-traces/common-utils/dist/clickhouse';
 import { tcFromSource } from '@couchbase-traces/common-utils/dist/core/metadata';
+import type { ResponseJSON } from '@couchbase-traces/common-utils/dist/query';
 import {
   isLogSource,
   isTraceSource,

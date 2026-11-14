@@ -2,7 +2,7 @@ import { createContext, use, useMemo } from 'react';
 import {
   mergeQueryAttribution,
   QueryAttribution,
-} from '@couchbase-traces/common-utils/dist/clickhouse';
+} from '@couchbase-traces/common-utils/dist/query';
 
 /**
  * What the ClickHouse queries below this point belong to.

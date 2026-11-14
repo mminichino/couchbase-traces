@@ -47,7 +47,7 @@ describe('checkAlerts errors', () => {
       expect(isQueryTimeoutError(err)).toBe(true);
     });
 
-    // BaseClickhouseClient.query wraps failures in a ClickHouseQueryError
+    // BaseClickhouseClient.query wraps failures in a QueryError
     // that copies the message but keeps the original error only on `cause`.
     it('detects server-side TIMEOUT_EXCEEDED wrapped by the query client', () => {
       const wrapper = new Error('Timeout exceeded: elapsed 301.1 seconds');

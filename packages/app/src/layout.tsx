@@ -1,7 +1,7 @@
 import React from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
-import type { QuerySurface } from '@couchbase-traces/common-utils/dist/clickhouse';
+import type { QuerySurface } from '@couchbase-traces/common-utils/dist/query';
 import { Button, Center, Group, Text } from '@mantine/core';
 import { IconX } from '@tabler/icons-react';
 

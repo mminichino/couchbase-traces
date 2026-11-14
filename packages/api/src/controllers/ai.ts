@@ -1,9 +1,6 @@
 import { createAnthropic } from '@ai-sdk/anthropic';
 import { createOpenAI } from '@ai-sdk/openai';
-import {
-  TableMetadata,
-  tcFromSource,
-} from '@couchbase-traces/common-utils/dist/core/metadata';
+import { TableMetadata } from '@couchbase-traces/common-utils/dist/core/metadata';
 import { resolvePercentileAggFn } from '@couchbase-traces/common-utils/dist/core/utils';
 import {
   assertSliceForConnection,
@@ -21,9 +18,10 @@ import * as chrono from 'chrono-node';
 import ms from 'ms';
 import z from 'zod';
 
-import { ClickhouseClient } from '@/clickhouse';
 import * as config from '@/config';
+import { MCP_REQUEST_TIMEOUT } from '@/mcp/tools/query/helpers';
 import { ISource } from '@/models/source';
+import { DataClient } from '@/query';
 import { parseJSON } from '@/utils/common';
 import { Api500Error } from '@/utils/errors';
 import logger from '@/utils/logger';
@@ -96,10 +94,8 @@ export async function getAIMetadata(source: ISource) {
 
   await assertSliceForConnection('ai', connectionId);
 
-  const clickhouseClient = new ClickhouseClient({
-    host: connection.host,
-    username: connection.username,
-    password: connection.password,
+  const clickhouseClient = new DataClient({
+    requestTimeout: MCP_REQUEST_TIMEOUT,
   });
 
   const metadata = getMetadata(clickhouseClient);
@@ -117,7 +113,6 @@ export async function getAIMetadata(source: ISource) {
     databaseName,
     tableName,
     connectionId,
-    metadataMVs: tcFromSource(source).metadataMVs,
     timestampValueExpression: source.timestampValueExpression,
   });
 
@@ -160,7 +155,6 @@ export async function getAIMetadata(source: ISource) {
   const keyValues = await metadata.getKeyValues({
     chartConfig: cc,
     keys: keysToFetch.map(f => f.key),
-    source,
   });
 
   return {
