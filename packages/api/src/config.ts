@@ -72,13 +72,6 @@ export const DEFAULT_SOURCES_PRESET = env.CBT_DEFAULT_SOURCES_PRESET;
 
 /** PromQL was dropped (Phase 5a). Code is deleted in Phase 10. */
 export const IS_PROMQL_ENABLED = false;
-// Phase 9: Couchbase ingest is on by default. Set CBT_COUCHBASE_INGEST_ENABLED=false
-// to disable. Empty/unset means enabled.
-export const COUCHBASE_INGEST_ENABLED =
-  env.CBT_COUCHBASE_INGEST_ENABLED !== 'false';
-/** ClickHouse exporters in the generated collector config. Off by default. */
-export const CLICKHOUSE_EXPORT_ENABLED =
-  env.CBT_CLICKHOUSE_EXPORT_ENABLED === 'true';
 
 export const COUCHBASE_BUCKET = env.CBT_COUCHBASE_BUCKET ?? 'otel';
 export const COUCHBASE_SCOPE = env.CBT_COUCHBASE_SCOPE ?? 'default';

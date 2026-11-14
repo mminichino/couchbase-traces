@@ -9,7 +9,7 @@
 import { DisplayType } from '@couchbase-traces/common-utils/dist/types';
 
 import { DashboardPage } from '../page-objects/DashboardPage';
-import { SERVICES } from '../seed-clickhouse';
+import { SERVICES } from '../seed-data';
 import { expect, test } from '../utils/base-test';
 import {
   DEFAULT_LOGS_SOURCE_NAME,

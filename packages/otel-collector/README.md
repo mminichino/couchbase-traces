@@ -2,9 +2,10 @@
 
 Custom-built OpenTelemetry Collector for Couchbase Traces, compiled via
 [OCB (OpenTelemetry Collector Builder)](https://github.com/open-telemetry/opentelemetry-collector/tree/main/cmd/builder).
-This replaces the pre-built `otel/opentelemetry-collector-contrib` image with a
-binary that includes the components Couchbase Traces needs plus commonly-used core and
-contrib components, and any custom receivers/processors added in this package.
+Telemetry leaves the collector through **OTLP HTTP** to the Couchbase ingest
+service (no ClickHouse or Prometheus remote-write exporters). The binary still
+includes commonly-used core and contrib receivers/processors for user custom
+configs and OpAMP-managed pipelines.
 
 ## Architecture
 
@@ -25,15 +26,14 @@ Dockerfile:
 | File                  | Purpose                                                                                                                                                              |
 | --------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `builder-config.yaml` | OCB manifest — declares which components to include. Uses `__OTEL_COLLECTOR_VERSION__` and `__OTEL_COLLECTOR_CORE_VERSION__` placeholders substituted at build time. |
-| `cmd/migrate/main.go` | Go-based ClickHouse migration tool (goose) with full TLS support                                                                                                     |
-| `go.mod` / `go.sum`   | Go module for the migration tool                                                                                                                                     |
+| `go.mod`              | Placeholder Go module (collector binary is built by OCB only)                                                                                                        |
 
 ### Dockerfiles that build this collector
 
 | Dockerfile                         | Description                                                          |
 | ---------------------------------- | -------------------------------------------------------------------- |
 | `docker/otel-collector/Dockerfile` | Standalone collector image (dev + prod targets)                      |
-| `docker/hyperdx/Dockerfile`        | All-in-one image (includes collector, ClickHouse, MongoDB, API, App) |
+| `docker/hyperdx/Dockerfile`        | All-in-one image (Couchbase, MongoDB, API, App, collector)           |
 
 ### Version configuration
 
@@ -93,13 +93,12 @@ custom OTel configurations without rebuilding the collector.
 
 ### Exporters
 
-| Component    | Module  | Used in                              |
-| ------------ | ------- | ------------------------------------ |
-| `clickhouse` | contrib | standalone configs, OpAMP controller |
-| `debug`      | core    | OpAMP controller                     |
-| `nop`        | core    | OpAMP controller                     |
-| `otlp`       | core    | included for utility                 |
-| `otlphttp`   | core    | custom.config.yaml                   |
+| Component  | Module | Used in                                              |
+| ---------- | ------ | ---------------------------------------------------- |
+| `debug`    | core   | OpAMP controller                                     |
+| `nop`      | core   | OpAMP controller                                     |
+| `otlp`     | core   | included for utility                                 |
+| `otlphttp` | core   | OpAMP controller, ingest → Couchbase                 |
 
 ### Connectors
 
@@ -137,7 +136,7 @@ The `datadogreceiver` contrib component is compiled into the binary so a
 Datadog Agent can ship **traces, metrics, and logs** to Couchbase Traces. The receiver
 runs a single HTTP server on `:8126` that serves the Datadog intake API for
 all three signals and translates them into OTLP, which flows through the
-existing `traces`, `metrics`, and `logs` pipelines into ClickHouse. It is
+existing `traces`, `metrics`, and `logs` pipelines toward Couchbase ingest. It is
 **opt-in**:
 
 - In OpAMP supervisor mode, set `ENABLE_DATADOG_RECEIVER=true` on the API/

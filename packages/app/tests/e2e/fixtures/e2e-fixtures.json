@@ -3,9 +3,10 @@
     {
       "id": "local",
       "name": "local",
-      "host": "http://localhost:8123",
-      "username": "default",
-      "password": ""
+      "kind": "couchbase",
+      "host": "couchbase://127.0.0.1:28791?network=external",
+      "username": "Administrator",
+      "password": "cbt-test-admin"
     }
   ],
   "sources": [

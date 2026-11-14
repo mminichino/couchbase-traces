@@ -2,12 +2,12 @@
  * Couchbase seeding uses the same row objects as ClickHouse VALUES generators.
  * Callers should use the exported builders rather than parsing tuple strings.
  */
-import type { E2eClickHouseRow } from './seed-clickhouse';
+import type { E2eClickHouseRow } from './seed-data';
 import {
   buildE2eCustomServiceLogRows,
   buildE2eMainLogRows,
   buildE2eTraceRows,
-} from './seed-clickhouse';
+} from './seed-data';
 
 export type { E2eClickHouseRow };
 

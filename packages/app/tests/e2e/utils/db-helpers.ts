@@ -1,11 +1,15 @@
 /**
- * Direct MongoDB and ClickHouse access helpers for full-stack E2E tests. Only usable in
- * full-stack mode (real Mongo via docker-compose) — there is no database in
- * local mode, so callers must gate on `{ tag: ['@full-stack'] }`.
+ * Direct MongoDB and Couchbase access helpers for full-stack E2E tests. Only
+ * usable in full-stack mode (real Mongo and Couchbase via docker-compose) — there
+ * is no database in local mode, so callers must gate on `{ tag: ['@full-stack'] }`.
  */
 import { execFileSync } from 'child_process';
 import fs from 'fs';
 import path from 'path';
+
+import { fromClickHouseRow } from '../../../../ingest/src/model/fromClickHouseRow';
+
+import { E2E_LOGS_TABLE } from './constants';
 
 /**
  * Run a mongosh script against the e2e MongoDB container by piping the script
@@ -71,31 +75,49 @@ db.teams.updateOne({}, { $set: { [${JSON.stringify(flagName)}]: ${JSON.stringify
 `);
 }
 
-const CLICKHOUSE_HOST =
-  process.env.CLICKHOUSE_HOST ||
-  `http://localhost:${process.env.CBT_E2E_CH_PORT || '20500'}`;
+const QUERY_URL =
+  process.env.COUCHBASE_URL?.replace(/\/$/, '') ??
+  `http://127.0.0.1:${process.env.CBT_E2E_CB_QUERY_PORT ?? '28093'}`;
 
-/** ClickHouse HTTP endpoint with credentials, as the E2E stack exposes it. */
-function clickhouseUrl(): string {
-  const url = new URL(CLICKHOUSE_HOST);
-  url.searchParams.set('user', process.env.CLICKHOUSE_USER || 'default');
-  if (process.env.CLICKHOUSE_PASSWORD) {
-    url.searchParams.set('password', process.env.CLICKHOUSE_PASSWORD);
-  }
-  return url.toString();
+function couchbaseAuthHeader(): string {
+  const user = process.env.COUCHBASE_USERNAME ?? 'Administrator';
+  const pass = process.env.COUCHBASE_PASSWORD ?? 'cbt-test-admin';
+  return `Basic ${Buffer.from(`${user}:${pass}`).toString('base64')}`;
 }
 
-/** Runs a SELECT and returns one trimmed line per row (TSV). */
-export async function clickhouseSelect(sql: string): Promise<string[]> {
-  const response = await fetch(clickhouseUrl(), {
-    method: 'POST',
-    body: `${sql} FORMAT TSV`,
-    headers: { 'Content-Type': 'text/plain' },
-  });
-  if (!response.ok) {
-    throw new Error(
-      `ClickHouse query failed (${response.status}): ${await response.text()}`,
-    );
+async function runCouchbaseStatement(
+  statement: string,
+  parameters?: Record<string, unknown>,
+): Promise<void> {
+  const args: Record<string, unknown> = { statement };
+  if (parameters) {
+    for (const [k, v] of Object.entries(parameters)) {
+      args[`$${k}`] = v;
+    }
   }
-  return (await response.text()).trim().split('\n').filter(Boolean);
+  const res = await fetch(`${QUERY_URL}/query/service`, {
+    method: 'POST',
+    headers: {
+      authorization: couchbaseAuthHeader(),
+      'content-type': 'application/json',
+    },
+    body: JSON.stringify(args),
+  });
+  const body = await res.json();
+  if (body.status !== 'success') {
+    throw new Error(JSON.stringify(body.errors ?? body));
+  }
+}
+
+/** Upsert one log document into the default E2E logs collection. */
+export async function upsertE2eLogRow(
+  row: Record<string, unknown>,
+): Promise<void> {
+  const doc = fromClickHouseRow(E2E_LOGS_TABLE, row, {
+    collection: 'otel_logs',
+  });
+  await runCouchbaseStatement(
+    `UPSERT INTO \`otel\`.\`default\`.\`${doc.collection}\` (KEY, VALUE) VALUES ($key, $value)`,
+    { key: doc.key, value: doc.value },
+  );
 }

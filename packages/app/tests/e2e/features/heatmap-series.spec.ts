@@ -2,7 +2,7 @@ import { DisplayType } from '@couchbase-traces/common-utils/dist/types';
 
 import { HeatmapComponent } from '../components/HeatmapComponent';
 import { DashboardPage } from '../page-objects/DashboardPage';
-import { SERVICES } from '../seed-clickhouse';
+import { SERVICES } from '../seed-data';
 import { getApiUrl, getSources } from '../utils/api-helpers';
 import { expect, test } from '../utils/base-test';
 import {

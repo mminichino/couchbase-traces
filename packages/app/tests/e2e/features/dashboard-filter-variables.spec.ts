@@ -12,7 +12,7 @@
  * `api-server` (index 0) only info and error.
  */
 import { DashboardPage } from '../page-objects/DashboardPage';
-import { SERVICES } from '../seed-clickhouse';
+import { SERVICES } from '../seed-data';
 import { expect, test } from '../utils/base-test';
 import {
   DEFAULT_LOGS_SOURCE_NAME,

@@ -10,38 +10,8 @@
  */
 import { DashboardPage } from '../page-objects/DashboardPage';
 import { expect, test } from '../utils/base-test';
-import {
-  DEFAULT_LOGS_SOURCE_NAME,
-  E2E_CLICKHOUSE_DATABASE,
-  E2E_LOGS_TABLE,
-} from '../utils/constants';
-
-const CLICKHOUSE_HOST =
-  process.env.CLICKHOUSE_HOST ||
-  `http://localhost:${process.env.CBT_E2E_CH_PORT || '20500'}`;
-const CLICKHOUSE_USER = process.env.CLICKHOUSE_USER || 'default';
-const CLICKHOUSE_PASSWORD = process.env.CLICKHOUSE_PASSWORD || '';
-
-async function clickhouseQuery(sql: string): Promise<void> {
-  const url = new URL(CLICKHOUSE_HOST);
-  url.searchParams.set('user', CLICKHOUSE_USER);
-  if (CLICKHOUSE_PASSWORD) {
-    url.searchParams.set('password', CLICKHOUSE_PASSWORD);
-  }
-
-  const response = await fetch(url.toString(), {
-    method: 'POST',
-    body: sql,
-    headers: { 'Content-Type': 'text/plain' },
-  });
-
-  if (!response.ok) {
-    const errorText = await response.text();
-    throw new Error(
-      `ClickHouse query failed (${response.status}): ${errorText}`,
-    );
-  }
-}
+import { DEFAULT_LOGS_SOURCE_NAME } from '../utils/constants';
+import { upsertE2eLogRow } from '../utils/db-helpers';
 
 // Spread across the dashboard's default "Past 1h" window with ~20 minutes
 // between each. Labels collapse into "N releases" once neighbours are closer
@@ -68,32 +38,34 @@ const OTHER_VERSION = 'oth-9.9.9';
 const OTHER_SERVICE = 'release_markers_other_e2e';
 const OTHER_VERSION_AGO_MS = 29 * 60 * 1000;
 
-/** Seed releases for two services into the shared logs table. */
+/** Seed releases for two services into the shared logs collection. */
 async function seedReleases(): Promise<void> {
-  const row = (agoMs: number, version: string, service: string) => {
-    // Timestamp is written in nanoseconds; TimestampTime is a DEFAULT column.
-    const timestampNs = (Date.now() - agoMs) * 1_000_000;
-    return (
-      `('${timestampNs}', '', '', 0, 'info', 0, ` +
-      `'${service}', 'release ${version}', '', ` +
-      `{'service.name':'${service}','service.version':'${version}'}, ` +
-      `'', '', '', {}, {})`
-    );
-  };
+  const row = (agoMs: number, version: string, service: string) => ({
+    Timestamp: new Date(Date.now() - agoMs).toISOString(),
+    TraceId: '',
+    SpanId: '',
+    TraceFlags: 0,
+    SeverityText: 'info',
+    SeverityNumber: 0,
+    ServiceName: service,
+    Body: `release ${version}`,
+    ResourceSchemaUrl: '',
+    ResourceAttributes: {
+      'service.name': service,
+      'service.version': version,
+    },
+    ScopeSchemaUrl: '',
+    ScopeName: '',
+    ScopeVersion: '',
+    ScopeAttributes: {},
+    LogAttributes: {},
+  });
 
-  const values = [
-    row(OLD_VERSION_AGO_MS, OLD_VERSION, RELEASE_SERVICE),
-    row(NEW_VERSION_AGO_MS, NEW_VERSION, RELEASE_SERVICE),
+  await upsertE2eLogRow(row(OLD_VERSION_AGO_MS, OLD_VERSION, RELEASE_SERVICE));
+  await upsertE2eLogRow(row(NEW_VERSION_AGO_MS, NEW_VERSION, RELEASE_SERVICE));
+  await upsertE2eLogRow(
     row(OTHER_VERSION_AGO_MS, OTHER_VERSION, OTHER_SERVICE),
-  ].join(', ');
-
-  await clickhouseQuery(`
-    INSERT INTO ${E2E_CLICKHOUSE_DATABASE}.${E2E_LOGS_TABLE} (
-      Timestamp, TraceId, SpanId, TraceFlags, SeverityText, SeverityNumber,
-      ServiceName, Body, ResourceSchemaUrl, ResourceAttributes, ScopeSchemaUrl,
-      ScopeName, ScopeVersion, ScopeAttributes, LogAttributes
-    ) VALUES ${values}
-  `);
+  );
 }
 
 test.describe('Release markers', { tag: ['@full-stack', '@dashboard'] }, () => {

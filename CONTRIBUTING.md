@@ -27,8 +27,8 @@ can't triage the issue or review the PR.
 
 **Reproduce it locally.** The quickest way is the frontend in local mode, which
 needs no Docker and no account: run `yarn app:dev:local`, open the app URL it
-prints, and add a connection to a ClickHouse server you control (local mode is
-ClickHouse-only). Connections and sources live in browser storage; clear site
+prints, and add a connection to your telemetry backend (full-stack dev uses
+Couchbase via `make dev`). Connections and sources live in browser storage; clear site
 data to start over.
 
 Local mode has no API behind it (dashboards and saved searches are kept in local
@@ -39,7 +39,7 @@ Preset Couchbase sources apply when `CBT_DEFAULT_SOURCES_PRESET=couchbase` (see
 `CBT_API_KEY` under [Development](#development)).
 
 If the bug depends on your own schema or data, say so, and include Couchbase
-collection/index detail or ClickHouse `SHOW CREATE TABLE` output and source
+collection/index detail or source
 settings. Strip anything sensitive.
 
 **What good steps look like:**
@@ -85,7 +85,7 @@ them.
 Service Descriptions:
 
 - OpenTelemetry Collector (otel-collector): Receives OTLP and forwards to the
-  ingest service (Couchbase) and optionally ClickHouse in CI until Phase 10.
+  ingest service (Couchbase).
   Includes OpAMP supervisor that pulls configuration from the API.
 - Couchbase: Telemetry storage (logs, traces, metrics, sessions).
 - Ingest: Normalizes OTLP and writes to Couchbase.
@@ -109,8 +109,7 @@ yarn dev
 ```
 
 This starts the API, Next.js frontend, OpenTelemetry collector, MongoDB, and
-Couchbase (see [docs/development.md](docs/development.md)). CI still includes
-ClickHouse until Phase 10.
+Couchbase (see [docs/development.md](docs/development.md)).
 
 Each worktree automatically gets unique ports so multiple developers (or agents)
 can run `yarn dev` simultaneously without conflicts. A dev portal at
@@ -168,8 +167,8 @@ simultaneously with the dev stack and across multiple worktrees.
 
 ### E2E Tests
 
-E2E tests run against a full local stack (MongoDB + Couchbase or ClickHouse +
-API). Docker must be running. Couchbase mode: `make ci-e2e-couchbase`.
+E2E tests run against a full local stack (MongoDB + Couchbase + API). Docker must
+be running.
 
 ```bash
 # Run all E2E tests

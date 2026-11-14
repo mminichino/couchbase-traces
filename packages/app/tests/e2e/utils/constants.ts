@@ -4,7 +4,7 @@ export const DEFAULT_METRICS_SOURCE_NAME = 'E2E Metrics';
 export const DEFAULT_LOGS_SOURCE_NAME = 'E2E Logs';
 export const PROMQL_SOURCE_NAME = 'E2E PromQL';
 
-// The single ClickHouse connection seeded from `fixtures/e2e-fixtures.json`.
+// The Couchbase connection seeded from `fixtures/e2e-fixtures.json`.
 export const DEFAULT_CONNECTION_NAME = 'local';
 
 // Log source deliberately left without a correlated metric source, so tests can
@@ -43,10 +43,12 @@ export const DEFAULT_TRACES_MV_SOURCE_NAME = 'E2E Traces MV';
 export const DEFAULT_TRACES_MV_AUTOPOPULATE_SOURCE_NAME =
   'E2E Traces MV AutoPopulate';
 
-// ClickHouse database/table names backing the default E2E sources. Must stay
-// in sync with `tests/e2e/fixtures/e2e-fixtures.json` and the CREATE TABLE
-// statements in `docker/clickhouse/local/init-db-e2e.sh`.
-export const E2E_CLICKHOUSE_DATABASE = 'default';
+// Source `databaseName` / collection names for E2E fixtures (`e2e-fixtures.json`).
+// On Couchbase, `databaseName` stays `default` in fixtures while data lives in
+// the `otel` bucket (`default` scope).
+export const E2E_SOURCE_DATABASE = 'default';
+/** @deprecated Use {@link E2E_SOURCE_DATABASE}. */
+export const E2E_CLICKHOUSE_DATABASE = E2E_SOURCE_DATABASE;
 export const E2E_LOGS_TABLE = 'e2e_otel_logs';
 export const E2E_TRACES_TABLE = 'e2e_otel_traces';
 // AggregatingMergeTree rollup of e2e_otel_traces populated by the
@@ -68,26 +70,13 @@ export const E2E_PROMQL_TABLE = 'e2e_promql';
 export const E2E_PROMQL_METRIC_NAME = 'e2e_service_up';
 /** A classic histogram seeded into the PromQL table as `<name>_bucket` series. */
 export const E2E_PROMQL_HISTOGRAM_METRIC_NAME = 'e2e_request_duration_seconds';
-// A second database holding OTEL-shaped metric tables, so the metric table
-// autofill tests can switch the source form's database and see tables detected
-// from the new one. The table names differ from the `default` database's so an
-// assertion can tell which database a detected table came from. Created
-// (idempotently, structure copied from the `default` tables) by
-// `seed-clickhouse.ts` rather than `init-db-e2e.sh`, so an existing ClickHouse
-// volume picks it up without being reset.
+// Legacy second-database names (ClickHouse-only autofill tests; skipped on Couchbase).
 export const E2E_ALT_METRICS_DATABASE = 'e2e_metrics_alt';
 export const E2E_ALT_METRICS_GAUGE_TABLE = 'alt_otel_metrics_gauge';
 export const E2E_ALT_METRICS_SUM_TABLE = 'alt_otel_metrics_sum';
-// Table backing the INTERESTING_FILTER_KEYS_SOURCE_NAME source. Created in
-// `docker/clickhouse/local/init-db-e2e.sh` and seeded in `seed-clickhouse.ts`.
 export const E2E_INTERESTING_FILTER_KEYS_TABLE =
   'otel_logs_interesting_filter_keys';
-// Base table backing METADATA_MV_LOGS_SOURCE_NAME, plus the key/value rollup
-// tables auto-populated by materialized views on insert. Created in
-// `docker/clickhouse/local/init-db-e2e.sh` and seeded in `seed-clickhouse.ts`.
 export const E2E_METADATA_MV_LOGS_TABLE = 'e2e_otel_logs_metadata_mv';
 export const E2E_METADATA_MV_KV_ROLLUP_TABLE = 'e2e_otel_logs_kv_rollup_15m';
 export const E2E_METADATA_MV_KEY_ROLLUP_TABLE = 'e2e_otel_logs_key_rollup_15m';
-// Table backing CUSTOM_SERVICE_LOGS_SOURCE_NAME. Created in
-// `docker/clickhouse/local/init-db-e2e.sh` and seeded in `seed-clickhouse.ts`.
 export const E2E_CUSTOM_SERVICE_LOGS_TABLE = 'e2e_custom_service_name';

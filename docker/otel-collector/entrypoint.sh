@@ -2,89 +2,12 @@
 set -e
 
 # Go 1.24+ opens Multipath TCP listeners by default; turn that off for the
-# collector, supervisor and migrate to mitigate CVE-2026-98432. Appended so
-# other GODEBUG settings survive; an explicit multipathtcp= value wins.
+# collector and supervisor to mitigate CVE-2026-98432. Appended so other GODEBUG
+# settings survive; an explicit multipathtcp= value wins.
 case "$GODEBUG" in
   *multipathtcp=*) ;;
   *) export GODEBUG="${GODEBUG:+$GODEBUG,}multipathtcp=0" ;;
 esac
-
-# DEPRECATED: The clickhouse.json feature gate has been removed upstream.
-# When OTEL_AGENT_FEATURE_GATE_ARG contains clickhouse.json, strip it and
-# map it to CBT_OTEL_EXPORTER_CLICKHOUSE_JSON_ENABLE instead. Other feature gates
-# are preserved and passed through to the collector.
-if echo "$OTEL_AGENT_FEATURE_GATE_ARG" | grep -q "clickhouse.json"; then
-  echo "WARNING: '--feature-gates=clickhouse.json' is deprecated and no longer supported by the collector."
-  echo "WARNING: Use CBT_OTEL_EXPORTER_CLICKHOUSE_JSON_ENABLE=true instead. This flag will be removed in a future release."
-  export CBT_OTEL_EXPORTER_CLICKHOUSE_JSON_ENABLE=true
-
-  # Strip clickhouse.json from the feature gates, keeping any other gates
-  REMAINING_GATES=$(echo "$OTEL_AGENT_FEATURE_GATE_ARG" | sed 's/--feature-gates=//' | tr ',' '\n' | grep -v 'clickhouse.json' | tr '\n' ',' | sed 's/,$//')
-  if [ -n "$REMAINING_GATES" ]; then
-    export OTEL_AGENT_FEATURE_GATE_ARG="--feature-gates=$REMAINING_GATES"
-  else
-    unset OTEL_AGENT_FEATURE_GATE_ARG
-  fi
-fi
-
-# Fall back to legacy schema when ClickHouse JSON exporter mode is enabled
-if [ "$CBT_OTEL_EXPORTER_CLICKHOUSE_JSON_ENABLE" = "true" ]; then
-  export CBT_OTEL_EXPORTER_CREATE_LEGACY_SCHEMA=true
-fi
-
-# CLICKHOUSE_PROMETHEUS_METRICS_ENDPOINT accepts a bare host:port (plain HTTP,
-# the original format) or an http:// or https:// URL. Both the standalone
-# config and the OpAMP-managed config (opampController.ts) need it as
-# host:port, because it is also a Prometheus scrape target, so the scheme is
-# split off here and handed to the prometheusremotewrite exporter through
-# CBT_PROMETHEUS_SCHEME and CBT_PROMETHEUS_TLS_INSECURE. Runs before
-# migrations so a bad value fails fast without touching ClickHouse.
-prometheus_endpoint_error() {
-  echo "ERROR: CLICKHOUSE_PROMETHEUS_METRICS_ENDPOINT $1. Use host:port, http://host:port or https://host:port." >&2
-  exit 1
-}
-
-if [ -z "$CLICKHOUSE_ENDPOINT" ]; then
-  echo "ClickHouse export disabled; skipping schema migration."
-else
-  if [ -n "$CLICKHOUSE_PROMETHEUS_METRICS_ENDPOINT" ]; then
-    CBT_PROMETHEUS_SCHEME=http
-    CBT_PROMETHEUS_TLS_INSECURE=true
-    case "$CLICKHOUSE_PROMETHEUS_METRICS_ENDPOINT" in
-      https://*)
-        CBT_PROMETHEUS_SCHEME=https
-        CBT_PROMETHEUS_TLS_INSECURE=false
-        ;;
-      http://*) ;;
-      # Only the scheme is echoed back: the rest of the URL may carry credentials.
-      *://*) prometheus_endpoint_error "has an unsupported scheme '${CLICKHOUSE_PROMETHEUS_METRICS_ENDPOINT%%://*}'" ;;
-    esac
-
-    PROMETHEUS_HOST_PORT="${CLICKHOUSE_PROMETHEUS_METRICS_ENDPOINT#*://}"
-    PROMETHEUS_HOST_PORT="${PROMETHEUS_HOST_PORT%/}"
-    case "$PROMETHEUS_HOST_PORT" in
-      "") prometheus_endpoint_error "has no host" ;;
-      */*) prometheus_endpoint_error "must not include a path (/write is appended automatically)" ;;
-    esac
-
-    export CLICKHOUSE_PROMETHEUS_METRICS_ENDPOINT="$PROMETHEUS_HOST_PORT"
-    export CBT_PROMETHEUS_SCHEME CBT_PROMETHEUS_TLS_INSECURE
-    echo "CLICKHOUSE_PROMETHEUS_METRICS_ENDPOINT scheme: $CBT_PROMETHEUS_SCHEME"
-  fi
-
-  # Run ClickHouse schema migrations if not using legacy schema creation
-  if [ "$CBT_OTEL_EXPORTER_CREATE_LEGACY_SCHEMA" != "true" ]; then
-    # Run Go-based migrate tool with TLS support
-    # TLS configuration:
-    # - CLICKHOUSE_TLS_CA_FILE: CA certificate file
-    # - CLICKHOUSE_TLS_CERT_FILE: Client certificate file
-    # - CLICKHOUSE_TLS_KEY_FILE: Client private key file
-    # - CLICKHOUSE_TLS_SERVER_NAME_OVERRIDE: Server name for TLS verification
-    # - CLICKHOUSE_TLS_INSECURE_SKIP_VERIFY: Skip TLS verification (set to "true")
-    echo "🚀 Using Go-based migrate tool with TLS support 🔐"
-    migrate /etc/otel/schema/seed
-  fi
-fi
 
 # Check if OPAMP_SERVER_URL is defined to determine mode
 if [ -z "$OPAMP_SERVER_URL" ]; then
@@ -114,15 +37,6 @@ if [ -z "$OPAMP_SERVER_URL" ]; then
   elif [ -n "$OTLP_AUTH_TOKEN" ]; then
     echo "OTLP_AUTH_TOKEN is configured, enabling bearer token authentication"
     COLLECTOR_ARGS="$COLLECTOR_ARGS --config /etc/otelcol-contrib/standalone-auth-config.yaml"
-  fi
-
-  # Enable prometheus remote-write of OTLP metrics only when an endpoint is
-  # configured. Mirrors the OpAMP-managed IS_PROMQL_ENABLED gating in
-  # packages/api/src/opamp/controllers/opampController.ts so the standalone
-  # collector does not attempt to export to a missing endpoint.
-  if [ -n "$CLICKHOUSE_PROMETHEUS_METRICS_ENDPOINT" ]; then
-    echo "CLICKHOUSE_PROMETHEUS_METRICS_ENDPOINT is set, enabling prometheus remote-write"
-    COLLECTOR_ARGS="$COLLECTOR_ARGS --config /etc/otelcol-contrib/standalone-promql-config.yaml"
   fi
 
   # Add custom config file if specified

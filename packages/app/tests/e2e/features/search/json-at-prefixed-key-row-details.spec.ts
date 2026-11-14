@@ -16,7 +16,7 @@ import { SearchPage } from '../../page-objects/SearchPage';
 import {
   INTERESTING_FILTER_KEYS_JSON_AT_KEY,
   INTERESTING_FILTER_KEYS_ROWS,
-} from '../../seed-clickhouse';
+} from '../../seed-data';
 import { expect, test } from '../../utils/base-test';
 import { INTERESTING_FILTER_KEYS_SOURCE_NAME } from '../../utils/constants';
 

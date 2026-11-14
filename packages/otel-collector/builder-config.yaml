@@ -121,13 +121,6 @@ exporters:
   - gomod:
       go.opentelemetry.io/collector/exporter/otlphttpexporter
       v__OTEL_COLLECTOR_VERSION__
-  # Contrib
-  - gomod:
-      github.com/open-telemetry/opentelemetry-collector-contrib/exporter/clickhouseexporter
-      v__OTEL_COLLECTOR_VERSION__
-  - gomod:
-      github.com/open-telemetry/opentelemetry-collector-contrib/exporter/prometheusremotewriteexporter
-      v__OTEL_COLLECTOR_VERSION__
 
 connectors:
   # Core

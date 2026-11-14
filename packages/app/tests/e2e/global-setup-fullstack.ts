@@ -2,23 +2,20 @@
  * Global setup for full-stack E2E tests
  *
  * This setup:
- * 1. Clears MongoDB database to ensure clean state
- * 2. Creates a test user and team
- * 3. Applies DEFAULT_SOURCES from .env.e2e
- * 4. Saves authentication state for tests
- *
- * Full-stack mode uses:
- * - MongoDB (local) for authentication, teams, users, persistence
- * - API server (local) for backend logic
- * - Demo ClickHouse (remote) for telemetry data (logs, traces, metrics, K8s)
+ * 1. Initializes Couchbase and seeds telemetry documents
+ * 2. Clears MongoDB database to ensure clean state
+ * 3. Creates a test user and team
+ * 4. Applies DEFAULT_SOURCES from .env.e2e
+ * 5. Saves authentication state for tests
  */
 
 import fs from 'fs';
+import { execSync } from 'node:child_process';
 import path from 'path';
 import { chromium, FullConfig } from '@playwright/test';
 
 import { runMongoshScript } from './utils/db-helpers';
-import { seedClickHouse } from './seed-clickhouse';
+import { seedCouchbase } from './seed-couchbase';
 
 // Configuration constants
 const API_HEALTH_CHECK_MAX_RETRIES = parseInt(
@@ -42,6 +39,65 @@ const APP_PORT = process.env.CBT_E2E_APP_PORT || '21300';
 const API_URL = process.env.E2E_API_URL || `http://localhost:${API_PORT}`;
 const APP_URL = process.env.E2E_APP_URL || `http://localhost:${APP_PORT}`;
 const AUTH_FILE = path.join(__dirname, '.auth/user.json');
+const repoRoot = path.join(__dirname, '../../../..');
+const MGMT_PORT = process.env.CBT_E2E_CB_MGMT_PORT ?? '28091';
+const KV_PORT = process.env.CBT_E2E_CB_KV_PORT ?? '28123';
+const MGMT_URL = `http://127.0.0.1:${MGMT_PORT}`;
+const KV_HOST = process.env.CBT_E2E_CB_HOST ?? '127.0.0.1';
+const CONNSTR = `couchbase://${KV_HOST}:${KV_PORT}?network=external`;
+
+async function waitForCouchbase(): Promise<void> {
+  console.log(`Waiting for Couchbase at ${MGMT_URL}...`);
+  for (let attempt = 1; attempt <= 90; attempt++) {
+    try {
+      const ui = await fetch(`${MGMT_URL}/ui/index.html`);
+      if (ui.ok) {
+        console.log('  ✓ Couchbase is ready');
+        return;
+      }
+    } catch {
+      // retry
+    }
+    try {
+      const pools = await fetch(`${MGMT_URL}/pools`);
+      if (pools.ok || pools.status === 401) {
+        console.log('  ✓ Couchbase is ready');
+        return;
+      }
+    } catch {
+      // retry
+    }
+    await new Promise(resolve => setTimeout(resolve, 2000));
+  }
+  throw new Error('Couchbase did not become ready in time');
+}
+
+function runIngestSetup(): void {
+  console.log('Running ingest setup (bucket, users, indexes)...');
+  execSync(
+    'node .yarn/releases/yarn-4.13.0.cjs workspace @couchbase-traces/ingest build',
+    { cwd: repoRoot, stdio: 'inherit' },
+  );
+  const setupEnv = {
+    ...process.env,
+    CBT_COUCHBASE_CONNSTR: CONNSTR,
+    CBT_COUCHBASE_BUCKET: 'otel',
+    CBT_COUCHBASE_SCOPE: 'default',
+    CBT_COUCHBASE_ADMIN_USER: process.env.COUCHBASE_USERNAME ?? 'Administrator',
+    CBT_COUCHBASE_ADMIN_PASSWORD:
+      process.env.COUCHBASE_PASSWORD ?? 'cbt-test-admin',
+    CBT_COUCHBASE_QUERY_USER: 'cbt_otel_query',
+    CBT_COUCHBASE_QUERY_PASSWORD: 'cbt-otel-query-password',
+    CBT_COUCHBASE_INGEST_USER: 'cbt_otel_ingest',
+    CBT_COUCHBASE_INGEST_PASSWORD: 'cbt-otel-ingest-password',
+    CBT_COUCHBASE_MONITOR_USER: 'cbt_otel_monitor',
+    CBT_COUCHBASE_MONITOR_PASSWORD: 'cbt-otel-monitor-password',
+  };
+  execSync(
+    'node packages/ingest/dist/setup/cli.js --create-bucket --create-users --bucket-ram-mb 1024 --index-replicas 0',
+    { cwd: repoRoot, env: setupEnv, stdio: 'inherit' },
+  );
+}
 
 /**
  * Seeded test data with predictable identifiers so E2E tests can look it up.
@@ -54,8 +110,7 @@ export const SEEDED_ERROR_ALERT = {
   // if the user record already exists (409 path).
   webhookUrlBase: 'https://example.com/e2e-error-webhook',
   errorType: 'QUERY_ERROR',
-  errorMessage:
-    'ClickHouse returned 500: DB::Exception: Timeout exceeded: elapsed 30s, maximum: 30s while executing query.',
+  errorMessage: 'Query error: timeout exceeded while executing SQL++.',
   // Message on the seeded ERROR-state AlertHistory row (evaluation history)
   historyErrorType: 'QUERY_TIMEOUT',
   historyErrorMessage:
@@ -86,15 +141,13 @@ function clearDatabase() {
 async function globalSetup(_config: FullConfig) {
   console.log('Setting up full-stack E2E environment');
   console.log('  MongoDB: local (auth, teams, persistence)');
-  console.log('  ClickHouse: local instance (telemetry data)');
+  console.log('  Couchbase: local instance (telemetry data)');
 
-  // Set timezone
   process.env.TZ = 'America/New_York';
 
-  // Seed ClickHouse with test data (skip when Couchbase store handles telemetry)
-  if (process.env.CBT_E2E_STORE !== 'couchbase') {
-    await seedClickHouse();
-  }
+  await waitForCouchbase();
+  runIngestSetup();
+  await seedCouchbase();
 
   // Clean up any existing auth state to ensure fresh setup
   if (fs.existsSync(AUTH_FILE)) {
@@ -293,7 +346,7 @@ async function globalSetup(_config: FullConfig) {
 
     console.log('Full-stack E2E setup complete');
     console.log(
-      '  Using local ClickHouse with seeded test data for logs, traces, metrics, and K8s',
+      '  Using local Couchbase with seeded test data for logs, traces, metrics, and K8s',
     );
   } catch (error) {
     console.error('Setup failed:', error);

@@ -57,10 +57,10 @@ rm -rf .volumes/couchbase_* .volumes/db_dev_*
 | --- | --- |
 | `make ci-unit` | Unit tests |
 | `make ci-lint` | Lint + TypeScript |
-| `make dev-int FILE=…` | API integration (ClickHouse CI compose until Phase 10) |
+| `make dev-int FILE=…` | API integration (Couchbase CI compose) |
 | `port/couchbase-test/run.sh` | Couchbase harness for SQL++ integration tests |
 | `make ci-e2e-couchbase` | Playwright against Couchbase e2e compose |
-| `make e2e` | Default ClickHouse e2e (until Phase 10) |
+| `make e2e` | Full-stack E2E (Couchbase + MongoDB + API) |
 
 ## All-in-one image (local)
 

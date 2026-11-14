@@ -49,10 +49,6 @@ if (useDebug) {
 if (useLocal) {
   playwrightCmd.push('--grep-invert', '@full-stack');
 }
-// The cluster spec runs in Phase 7's Couchbase e2e mode, not ClickHouse modes.
-if (process.env.CBT_E2E_STORE !== 'couchbase') {
-  playwrightCmd.push('--grep-invert', '@couchbase');
-}
 
 // Add any additional playwright arguments
 playwrightCmd.push(...playwrightArgs);
@@ -64,16 +60,10 @@ const env = {
   ...(useDev && { E2E_USE_DEV: 'true' }),
 };
 
-// Port configuration from HDX_E2E_* env vars (set by scripts/test-e2e.sh)
-const chPort = env.CBT_E2E_CH_PORT || '20500';
-
-// Ensure CLICKHOUSE_HOST is set for seed-clickhouse.ts (used by both modes)
-env.CLICKHOUSE_HOST = `http://localhost:${chPort}`;
-if (env.CBT_E2E_STORE === 'couchbase') {
-  env.COUCHBASE_URL =
-    env.COUCHBASE_URL ?? `http://127.0.0.1:${env.CBT_E2E_CB_QUERY_PORT ?? '18093'}`;
-  env.CBT_E2E_CB_MGMT_PORT = env.CBT_E2E_CB_MGMT_PORT ?? '18091';
-}
+env.COUCHBASE_URL =
+  env.COUCHBASE_URL ??
+  `http://127.0.0.1:${env.CBT_E2E_CB_QUERY_PORT ?? '28291'}`;
+env.CBT_E2E_CB_MGMT_PORT = env.CBT_E2E_CB_MGMT_PORT ?? '28091';
 
 // Full-stack: inject DEFAULT_CONNECTIONS/DEFAULT_SOURCES from fixture so the API gets them
 if (!useLocal) {
@@ -83,73 +73,57 @@ if (!useLocal) {
   );
   const fixture = JSON.parse(fs.readFileSync(fixturePath, 'utf8'));
 
-  if (env.CBT_E2E_STORE === 'couchbase') {
-    const cbKvPort = env.CBT_E2E_CB_KV_PORT ?? '28123';
-    // Remapped host ports require network=external (alternate-address in test-e2e.sh).
-    const connections = [
-      {
-        id: 'local',
-        name: 'local',
-        kind: 'couchbase',
-        host: `couchbase://127.0.0.1:${cbKvPort}?network=external`,
-        username: 'Administrator',
-        password: 'cbt-test-admin',
+  const cbKvPort = env.CBT_E2E_CB_KV_PORT ?? '28791';
+  const connections = [
+    {
+      id: 'local',
+      name: 'local',
+      kind: 'couchbase',
+      host: `couchbase://127.0.0.1:${cbKvPort}?network=external`,
+      username: 'Administrator',
+      password: 'cbt-test-admin',
+    },
+  ];
+  const tableToCollection = {
+    e2e_otel_logs: 'otel_logs',
+    e2e_otel_traces: 'otel_traces',
+    e2e_custom_service_name: 'e2e_custom_service_name',
+    e2e_hyperdx_sessions: 'hyperdx_sessions',
+  };
+  const sources = (fixture.sources ?? []).map(src => {
+    const table = src.from?.tableName ?? '';
+    const collection = tableToCollection[table] ?? table;
+    const metricTables =
+      src.kind === 'metric' && src.metricTables
+        ? Object.fromEntries(
+            Object.entries(src.metricTables).map(([k, v]) => [
+              k,
+              typeof v === 'string' && v.startsWith('e2e_')
+                ? v
+                : String(v).replace(/^e2e_/, ''),
+            ]),
+          )
+        : src.metricTables;
+    const isOtelLogs = collection === 'otel_logs';
+    const isOtelTraces = collection === 'otel_traces';
+    return {
+      ...src,
+      from: {
+        databaseName: 'otel',
+        scopeName: 'default',
+        tableName: collection,
       },
-    ];
-    const tableToCollection = {
-      e2e_otel_logs: 'otel_logs',
-      e2e_otel_traces: 'otel_traces',
-      e2e_custom_service_name: 'e2e_custom_service_name',
-      e2e_hyperdx_sessions: 'hyperdx_sessions',
+      ...(metricTables ? { metricTables } : {}),
+      ...(src.kind === 'log' && isOtelLogs
+        ? { searchIndexName: 'fts_otel_logs' }
+        : {}),
+      ...(src.kind === 'trace' && isOtelTraces
+        ? { searchIndexName: 'fts_otel_traces' }
+        : {}),
     };
-    const sources = (fixture.sources ?? []).map(src => {
-      const table = src.from?.tableName ?? '';
-      const collection = tableToCollection[table] ?? table;
-      const metricTables =
-        src.kind === 'metric' && src.metricTables
-          ? Object.fromEntries(
-              Object.entries(src.metricTables).map(([k, v]) => [
-                k,
-                // Keep e2e_* metric collections when seeded under that name;
-                // otherwise map to the Phase 5 otel_metrics_* collections.
-                typeof v === 'string' && v.startsWith('e2e_')
-                  ? v
-                  : String(v).replace(/^e2e_/, ''),
-              ]),
-            )
-          : src.metricTables;
-      const isOtelLogs = collection === 'otel_logs';
-      const isOtelTraces = collection === 'otel_traces';
-      return {
-        ...src,
-        from: {
-          databaseName: 'otel',
-          scopeName: 'default',
-          tableName: collection,
-        },
-        ...(metricTables ? { metricTables } : {}),
-        // Any log/trace source on the OTel collections needs the FTS index
-        // name for Lucene where clauses (not only the primary E2E sources).
-        ...(src.kind === 'log' && isOtelLogs
-          ? { searchIndexName: 'fts_otel_logs' }
-          : {}),
-        ...(src.kind === 'trace' && isOtelTraces
-          ? { searchIndexName: 'fts_otel_traces' }
-          : {}),
-      };
-    });
-    env.DEFAULT_CONNECTIONS = JSON.stringify(connections);
-    env.DEFAULT_SOURCES = JSON.stringify(sources);
-  } else {
-    // Patch connection hosts with dynamic ClickHouse port
-    const connections = (fixture.connections ?? []).map(conn => ({
-      ...conn,
-      host: conn.host?.replace(/localhost:\d+/, `localhost:${chPort}`),
-    }));
-
-    env.DEFAULT_CONNECTIONS = JSON.stringify(connections);
-    env.DEFAULT_SOURCES = JSON.stringify(fixture.sources ?? []);
-  }
+  });
+  env.DEFAULT_CONNECTIONS = JSON.stringify(connections);
+  env.DEFAULT_SOURCES = JSON.stringify(sources);
 }
 
 // Run playwright

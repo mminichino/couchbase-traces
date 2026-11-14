@@ -30,7 +30,7 @@ yarn dev        # or equivalently: make dev
 ## Environment Configuration
 
 - `.env.development`: Development environment variables
-- Docker Compose manages ClickHouse, MongoDB, OTel Collector
+- Docker Compose manages Couchbase, MongoDB, OTel Collector
 - Hot reload enabled for all services in development
 
 ## Worktree Isolation (Multi-Agent / Multi-Developer)
@@ -60,8 +60,8 @@ integration tests (14320-40098) and E2E tests (20320-21399).
 | App (Next.js)     | 30200     | 30200 - 30299 | `CBT_APP_PORT`            |
 | OpAMP             | 30300     | 30300 - 30399 | `CBT_OPAMP_PORT`          |
 | MongoDB           | 30400     | 30400 - 30499 | `CBT_DEV_MONGO_PORT`          |
-| ClickHouse HTTP   | 30500     | 30500 - 30599 | `CBT_DEV_CH_HTTP_PORT`        |
-| ClickHouse Native | 30600     | 30600 - 30699 | `CBT_DEV_CH_NATIVE_PORT`      |
+| Couchbase (mgmt)  | 30500     | 30500 - 30599 | `CBT_DEV_CB_MGMT_PORT`        |
+| Couchbase (query) | 30600     | 30600 - 30699 | `CBT_DEV_CB_QUERY_PORT`       |
 | OTel health       | 30700     | 30700 - 30799 | `CBT_DEV_OTEL_HEALTH_PORT`    |
 | OTel gRPC         | 30800     | 30800 - 30899 | `CBT_DEV_OTEL_GRPC_PORT`      |
 | OTel HTTP         | 30900     | 30900 - 30999 | `CBT_DEV_OTEL_HTTP_PORT`      |
@@ -172,7 +172,7 @@ Port mapping (base + slot):
 
 | Service         | Default port (slot 0) | Variable          |
 | --------------- | --------------------- | ----------------- |
-| ClickHouse HTTP | 18123                 | CBT_CI_CH_PORT    |
+| 
 | MongoDB         | 39999                 | CBT_CI_MONGO_PORT |
 | API test server | 19000                 | CBT_CI_API_PORT   |
 | OpAMP           | 14320                 | CBT_CI_OPAMP_PORT |
@@ -181,7 +181,7 @@ Port mapping (base + slot):
 
 - Uses separate Docker Compose configuration (`docker-compose.ci.yml`)
 - Isolated test environment with unique `-p int-<slot>` project name
-- Includes all necessary services (ClickHouse, MongoDB, OTel Collector)
+- Includes all necessary services Couchbase, MongoDB, OTel Collector)
 - Tests run against real database instances for accurate integration testing
 
 ### E2E Testing
@@ -195,8 +195,8 @@ E2E port mapping (base + slot):
 | Service           | Base Port | Range         | Env Variable             |
 | ----------------- | --------- | ------------- | ------------------------ |
 | OpAMP             | 20320     | 20320 - 20419 | `CBT_E2E_OPAMP_PORT`     |
-| ClickHouse HTTP   | 20500     | 20500 - 20599 | `CBT_E2E_CH_PORT`        |
-| ClickHouse Native | 20600     | 20600 - 20699 | `CBT_E2E_CH_NATIVE_PORT` |
+| 
+| 
 | API server        | 21000     | 21000 - 21099 | `CBT_E2E_API_PORT`       |
 | MongoDB           | 21100     | 21100 - 21199 | `CBT_E2E_MONGO_PORT`     |
 | App (local)       | 21200     | 21200 - 21299 | `CBT_E2E_APP_LOCAL_PORT` |
@@ -239,7 +239,7 @@ does not overlap with CI integration tests (14320-40098) or the dev stack
 ### Adding New Features
 
 1. **API First**: Define API endpoints and data models
-2. **Database Models**: Create/update Mongoose schemas and ClickHouse queries
+2. **Database Models**: Create/update Mongoose schemas and SQL++ queries
 3. **Frontend Integration**: Build UI components and integrate with API
 4. **Testing**: Add unit and integration tests
 5. **Documentation**: Update relevant docs

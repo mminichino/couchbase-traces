@@ -12,8 +12,6 @@ export OPAMP_PORT=${CBT_OPAMP_PORT:-4320}
 export MONGO_URI="${MONGO_URI:-mongodb://127.0.0.1:27017/hyperdx}"
 export OPAMP_SERVER_URL="http://127.0.0.1:${OPAMP_PORT}"
 
-export CBT_COUCHBASE_INGEST_ENABLED="${CBT_COUCHBASE_INGEST_ENABLED:-true}"
-export CBT_CLICKHOUSE_EXPORT_ENABLED="${CBT_CLICKHOUSE_EXPORT_ENABLED:-false}"
 export CBT_DEFAULT_SOURCES_PRESET="${CBT_DEFAULT_SOURCES_PRESET:-couchbase}"
 export CBT_COUCHBASE_BUCKET="${CBT_COUCHBASE_BUCKET:-otel}"
 export CBT_COUCHBASE_SCOPE="${CBT_COUCHBASE_SCOPE:-default}"
@@ -133,8 +131,6 @@ until curl -fsS "http://127.0.0.1:${CBT_INGEST_PORT}/health" >/dev/null 2>&1; do
   sleep 1
 done
 
-export CBT_COUCHBASE_INGEST_ENABLED=true
-export CBT_CLICKHOUSE_EXPORT_ENABLED=false
 
 /otel-entrypoint.sh /usr/local/bin/opampsupervisor > /var/log/otel-collector.log 2>&1 &
 

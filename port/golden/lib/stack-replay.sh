@@ -43,7 +43,7 @@ compose up -d couchbase
 
 CBT_PARITY_COUCHBASE_CONTAINER="$CBT_GOLDEN_COUCHBASE_CONTAINER" \
   CBT_COUCHBASE_ADMIN_PASSWORD=cbt-test-admin \
-  "$ROOT/port/ingest-parity/init.sh"
+  "$GOLDEN_LIB/couchbase-init.sh"
 
 setup_ok=0
 for _attempt in 1 2 3 4 5; do
@@ -85,10 +85,8 @@ done
 
 export CB_URL="http://127.0.0.1:${CB_QUERY_PORT}"
 export GOLDEN_DIR="$GOLDEN"
-STACK_INGEST="$ROOT/port/ingest-parity"
-
-# Ingest goldens use the small ingest-parity OTLP batch — load and compare first.
-payload=$(GOLDEN_ANCHOR_MS="$ANCHOR_MS" node "$STACK_INGEST/payloads.mjs")
+# Ingest goldens use the small OTLP batch — load and compare first.
+payload=$(GOLDEN_ANCHOR_MS="$ANCHOR_MS" node "$GOLDEN_LIB/ingest-payloads.mjs")
 post_parity() {
   node -e "
     const body = JSON.parse(process.argv[1])[process.argv[2]];

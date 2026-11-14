@@ -134,48 +134,6 @@ type CollectorConfig = {
       sampling_initial: number;
       sampling_thereafter: number;
     };
-    'clickhouse/rrweb'?: {
-      endpoint: string;
-      database: string;
-      username: string;
-      password: string;
-      ttl: string;
-      logs_table_name: string;
-      timeout: string;
-      create_schema: string;
-      json: string;
-      retry_on_failure: {
-        enabled: boolean;
-        initial_interval: string;
-        max_interval: string;
-        max_elapsed_time: string;
-      };
-    };
-    clickhouse?: {
-      endpoint: string;
-      database: string;
-      username: string;
-      password: string;
-      ttl: string;
-      timeout: string;
-      create_schema: string;
-      json: string;
-      retry_on_failure: {
-        enabled: boolean;
-        initial_interval: string;
-        max_interval: string;
-        max_elapsed_time: string;
-      };
-    };
-    prometheusremotewrite?: {
-      endpoint: string;
-      tls: {
-        insecure: string;
-      };
-      resource_to_telemetry_conversion: {
-        enabled: boolean;
-      };
-    };
     'otlphttp/couchbase'?: OtlpHttpCouchbaseExporter;
     'otlphttp/couchbase-rrweb'?: OtlpHttpCouchbaseExporter & {
       logs_endpoint: string;
@@ -203,29 +161,10 @@ export const bearerTokenVariants = (keys: string[]): string[] =>
 export const buildOtelCollectorConfig = (
   teams: Pick<ITeam, 'apiKey' | 'collectorAuthenticationEnforced'>[],
 ): CollectorConfig => {
-  if (!config.COUCHBASE_INGEST_ENABLED && !config.CLICKHOUSE_EXPORT_ENABLED) {
-    throw new Error(
-      'No telemetry destination: enable CBT_COUCHBASE_INGEST_ENABLED or CBT_CLICKHOUSE_EXPORT_ENABLED.',
-    );
-  }
-
-  const traceExporters: string[] = [];
-  const metricsExporters: string[] = [];
-  const logsDefaultExporters: string[] = [];
-  const logsRrwebExporters: string[] = [];
-
-  if (config.CLICKHOUSE_EXPORT_ENABLED) {
-    traceExporters.push('clickhouse');
-    metricsExporters.push('clickhouse');
-    logsDefaultExporters.push('clickhouse');
-    logsRrwebExporters.push('clickhouse/rrweb');
-  }
-  if (config.COUCHBASE_INGEST_ENABLED) {
-    traceExporters.push('otlphttp/couchbase');
-    metricsExporters.push('otlphttp/couchbase');
-    logsDefaultExporters.push('otlphttp/couchbase');
-    logsRrwebExporters.push('otlphttp/couchbase-rrweb');
-  }
+  const traceExporters = ['otlphttp/couchbase'];
+  const metricsExporters = ['otlphttp/couchbase'];
+  const logsDefaultExporters = ['otlphttp/couchbase'];
+  const logsRrwebExporters = ['otlphttp/couchbase-rrweb'];
 
   const apiKeys = teams.filter(team => team.apiKey).map(team => team.apiKey);
 
@@ -272,26 +211,6 @@ export const buildOtelCollectorConfig = (
               scrape_interval: '30s',
               static_configs: [{ targets: ['0.0.0.0:8888'] }],
             },
-            ...(config.CLICKHOUSE_EXPORT_ENABLED
-              ? [
-                  // Separate job because the collector's own endpoint is always
-                  // plain HTTP, while ClickHouse may be served over https. The
-                  // default keeps collector images that predate
-                  // CBT_PROMETHEUS_SCHEME on http.
-                  {
-                    job_name: 'clickhouse',
-                    scrape_interval: '30s',
-                    scheme: '${env:CBT_PROMETHEUS_SCHEME:-http}',
-                    static_configs: [
-                      {
-                        targets: [
-                          '${env:CLICKHOUSE_PROMETHEUS_METRICS_ENDPOINT}',
-                        ],
-                      },
-                    ],
-                  },
-                ]
-              : []),
           ],
         },
       },
@@ -320,45 +239,6 @@ export const buildOtelCollectorConfig = (
         sampling_initial: 5,
         sampling_thereafter: 200,
       },
-      ...(config.CLICKHOUSE_EXPORT_ENABLED
-        ? {
-            'clickhouse/rrweb': {
-              endpoint: '${env:CLICKHOUSE_ENDPOINT}',
-              database: '${env:CBT_OTEL_EXPORTER_CLICKHOUSE_DATABASE}',
-              username: '${env:CLICKHOUSE_USER}',
-              password: '${env:CLICKHOUSE_PASSWORD}',
-              ttl: '${env:CBT_OTEL_EXPORTER_TABLES_TTL:-720h}',
-              logs_table_name: 'hyperdx_sessions',
-              timeout: '${env:CBT_OTEL_EXPORTER_TIMEOUT:-5s}',
-              create_schema:
-                '${env:CBT_OTEL_EXPORTER_CREATE_LEGACY_SCHEMA:-false}',
-              json: '${env:CBT_OTEL_EXPORTER_CLICKHOUSE_JSON_ENABLE:-false}',
-              retry_on_failure: {
-                enabled: true,
-                initial_interval: '5s',
-                max_interval: '30s',
-                max_elapsed_time: '300s',
-              },
-            },
-            clickhouse: {
-              endpoint: '${env:CLICKHOUSE_ENDPOINT}',
-              database: '${env:CBT_OTEL_EXPORTER_CLICKHOUSE_DATABASE}',
-              username: '${env:CLICKHOUSE_USER}',
-              password: '${env:CLICKHOUSE_PASSWORD}',
-              ttl: '${env:CBT_OTEL_EXPORTER_TABLES_TTL:-720h}',
-              timeout: '${env:CBT_OTEL_EXPORTER_TIMEOUT:-5s}',
-              create_schema:
-                '${env:CBT_OTEL_EXPORTER_CREATE_LEGACY_SCHEMA:-false}',
-              json: '${env:CBT_OTEL_EXPORTER_CLICKHOUSE_JSON_ENABLE:-false}',
-              retry_on_failure: {
-                enabled: true,
-                initial_interval: '5s',
-                max_interval: '30s',
-                max_elapsed_time: '300s',
-              },
-            },
-          }
-        : {}),
     },
     service: {
       extensions: [],
@@ -430,7 +310,7 @@ export const buildOtelCollectorConfig = (
   // logs to HyperDX. The contrib `datadogreceiver` runs a single HTTP server
   // (the DD intake API on :8126) that serves all three signals and translates
   // them into OTLP, which then flow through the existing traces/metrics/logs
-  // pipelines to ClickHouse. It is gated behind ENABLE_DATADOG_RECEIVER
+  // pipelines to Couchbase ingest. It is gated behind ENABLE_DATADOG_RECEIVER
   // because it opens an extra ingest port (:8126).
   if (config.ENABLE_DATADOG_RECEIVER) {
     otelCollectorConfig.receivers.datadog = {
@@ -461,7 +341,7 @@ export const buildOtelCollectorConfig = (
     }
   }
 
-  if (config.COUCHBASE_INGEST_ENABLED && otelCollectorConfig.exporters) {
+  if (otelCollectorConfig.exporters) {
     const couchbase: OtlpHttpCouchbaseExporter = {
       endpoint: '${env:CBT_INGEST_ENDPOINT}',
       encoding: 'json',

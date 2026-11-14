@@ -24,7 +24,7 @@ import { anchorOffsetsToAbsolutes, anchorTime } from './anchor.mjs';
 const require = createRequire(import.meta.url);
 const here = dirname(fileURLToPath(import.meta.url));
 const root = join(here, '../../..');
-const queryParity = join(root, 'port/query-parity');
+const goldenRoot = join(root, 'port/golden');
 const dist = join(root, 'packages/common-utils/dist');
 
 const { renderChartConfigCouchbase } = require(join(dist, 'couchbase/render/index.js'));
@@ -41,7 +41,7 @@ const {
 } = require(join(dist, 'couchbase/defaultSources.js'));
 
 const divergences = JSON.parse(
-  readFileSync(join(queryParity, 'divergences.json'), 'utf8'),
+  readFileSync(join(goldenRoot, 'divergences.json'), 'utf8'),
 );
 
 const LOG_COLUMNS = [
@@ -318,7 +318,7 @@ export async function couchbaseChartRows(caseFile, cbUrl) {
  * @param {string} slice
  */
 export function loadChartCases(slice) {
-  const caseDir = join(queryParity, 'cases/charts', slice);
+  const caseDir = join(goldenRoot, 'cases/charts', slice);
   return readdirSync(caseDir)
     .filter(f => f.endsWith('.json'))
     .map(f => JSON.parse(readFileSync(join(caseDir, f), 'utf8')));

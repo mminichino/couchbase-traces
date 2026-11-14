@@ -1,8 +1,8 @@
 # Couchbase Traces Local (pending)
 
-The previous **no-auth local** image (`couchbase-traces-local`) bundled
-ClickHouse for keyless local debugging. That image is **not** rebuilt on
-Couchbase yet (see Phase 9 pending decisions in `docs/port-notes.md`).
+The previous **no-auth local** image (`couchbase-traces-local`) was a
+browser-only bundle for keyless debugging. It is **not** rebuilt on Couchbase
+(see `docs/port-notes.md`).
 
 ## What to use instead
 
@@ -10,7 +10,7 @@ Couchbase yet (see Phase 9 pending decisions in `docs/port-notes.md`).
 | --- | --- |
 | Full dev stack with Couchbase | `make dev` — [docs/development.md](docs/development.md) |
 | Single container (auth, local build) | `make build-all-in-one` then run with ≥ 4 GB RAM |
-| Browser-only ClickHouse UI | `yarn app:dev:local` (ClickHouse connections only) |
+| Frontend hot reload (no Docker) | `yarn app:dev:local` — API-backed features need `make dev` |
 
 ## All-in-one (local build)
 

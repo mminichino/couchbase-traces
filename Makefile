@@ -102,7 +102,7 @@ dev-couchbase-setup:
 
 .PHONY: ci-e2e-couchbase
 ci-e2e-couchbase:
-	CBT_E2E_STORE=couchbase ./scripts/test-e2e.sh
+	./scripts/test-e2e.sh
 
 .PHONY: dev-portal
 dev-portal:
@@ -252,8 +252,6 @@ dev-e2e:
 dev-migrate-db:
 	@echo "Migrating Mongo db...\n"
 	npx nx run @couchbase-traces/api:dev:migrate-db
-	@echo "Migrating ClickHouse db...\n"
-	npx nx run @couchbase-traces/api:dev:migrate-ch
 
 .PHONY: version
 version:

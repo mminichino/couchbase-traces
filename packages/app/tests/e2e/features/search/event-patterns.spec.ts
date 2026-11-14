@@ -1,5 +1,5 @@
 import { SearchPage } from '../../page-objects/SearchPage';
-import { CUSTOM_SERVICE_LOGS_APP_NAMES } from '../../seed-clickhouse';
+import { CUSTOM_SERVICE_LOGS_APP_NAMES } from '../../seed-data';
 import { expect, test } from '../../utils/base-test';
 import {
   CUSTOM_SERVICE_LOGS_SOURCE_NAME,

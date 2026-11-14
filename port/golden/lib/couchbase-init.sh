@@ -8,7 +8,7 @@ ADMIN_USER=${CBT_COUCHBASE_ADMIN_USER:-Administrator}
 ADMIN_PASSWORD=${CBT_COUCHBASE_ADMIN_PASSWORD:-cbt-test-admin}
 WAIT_SECONDS=${CBT_PARITY_WAIT_SECONDS:-180}
 
-log() { printf '[ingest-parity:init] %s\n' "$*"; }
+log() { printf '[golden:init] %s\n' "$*"; }
 
 deadline=$((SECONDS + WAIT_SECONDS))
 log "Waiting for Couchbase"

@@ -1,11 +1,11 @@
 #!/bin/bash
 # Run E2E tests in full-stack or local mode
-# Full-stack mode (default): MongoDB + API + local ClickHouse
-# Local mode: Frontend + local ClickHouse (no MongoDB/API)
+# Full-stack mode (default): MongoDB + API + local Couchbase
+# Local mode: Frontend only (no MongoDB/API/Couchbase)
 #
 # Usage:
 #   ./scripts/test-e2e.sh                      # Run all tests in fullstack mode
-#   ./scripts/test-e2e.sh --local              # Run in local mode (frontend + ClickHouse only)
+#   ./scripts/test-e2e.sh --local              # Run in local mode (frontend only)
 #   ./scripts/test-e2e.sh --keep-running       # Keep containers running after tests (fast iteration!)
 #   ./scripts/test-e2e.sh --ui                 # Run with Playwright UI
 #   ./scripts/test-e2e.sh --last-failed        # Run only failed tests
@@ -25,12 +25,7 @@ set -e
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPO_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
-E2E_STORE="${CBT_E2E_STORE:-clickhouse}"
-if [ "$E2E_STORE" = "couchbase" ]; then
-  DOCKER_COMPOSE_FILE="$REPO_ROOT/packages/app/tests/e2e/docker-compose.couchbase.yml"
-else
-  DOCKER_COMPOSE_FILE="$REPO_ROOT/packages/app/tests/e2e/docker-compose.yml"
-fi
+DOCKER_COMPOSE_FILE="$REPO_ROOT/packages/app/tests/e2e/docker-compose.yml"
 
 # Agent / minimal PATH shells often lack a yarn binary. Playwright webServer
 # commands also invoke `yarn`, so put a shim ahead of PATH when needed.
@@ -76,13 +71,11 @@ exec > >(tee "$CBT_E2E_LOGS_DIR/e2e.log") 2>&1
 # shellcheck source=./ensure-dev-portal.sh
 source "${REPO_ROOT}/scripts/ensure-dev-portal.sh"
 
-echo "Using E2E slot ${CBT_E2E_SLOT} (project=${E2E_PROJECT} ch=${CBT_E2E_CH_PORT} ch-native=${CBT_E2E_CH_NATIVE_PORT} mongo=${CBT_E2E_MONGO_PORT} api=${CBT_E2E_API_PORT} app=${CBT_E2E_APP_PORT} app-local=${CBT_E2E_APP_LOCAL_PORT} opamp=${CBT_E2E_OPAMP_PORT})"
+echo "Using E2E slot ${CBT_E2E_SLOT} (project=${E2E_PROJECT} cb-mgmt=${CBT_E2E_CB_MGMT_PORT} mongo=${CBT_E2E_MONGO_PORT} api=${CBT_E2E_API_PORT} app=${CBT_E2E_APP_PORT} app-local=${CBT_E2E_APP_LOCAL_PORT} opamp=${CBT_E2E_OPAMP_PORT})"
 
 # Configuration constants
 readonly MAX_MONGODB_WAIT_ATTEMPTS=15
 readonly MONGODB_WAIT_DELAY_SECONDS=1
-readonly MAX_CLICKHOUSE_WAIT_ATTEMPTS=30
-readonly CLICKHOUSE_WAIT_DELAY_SECONDS=1
 readonly MAX_COUCHBASE_WAIT_ATTEMPTS=60
 readonly COUCHBASE_WAIT_DELAY_SECONDS=2
 # CBT_E2E_CB_* ports come from hdx_e2e_ports (slot-based).
@@ -148,12 +141,6 @@ check_mongodb_health() {
   " 2>&1
 }
 
-check_clickhouse_health() {
-  # Health check from HOST perspective (not inside container)
-  # This ensures the port is actually accessible to Playwright
-  curl -sf "http://localhost:${CBT_E2E_CH_PORT}/ping" >/dev/null 2>&1 || wget --spider -q "http://localhost:${CBT_E2E_CH_PORT}/ping" 2>&1
-}
-
 check_couchbase_health() {
   # /pools is served on the management port (8091 inside the container).
   curl -sf "http://127.0.0.1:${CBT_E2E_CB_MGMT_PORT}/ui/index.html" >/dev/null 2>&1
@@ -195,7 +182,7 @@ setup_couchbase() {
   container=$(docker inspect -f '{{.Name}}' "$container" | sed 's#^/##')
   echo "Initializing Couchbase cluster in $container..."
   export CBT_PARITY_COUCHBASE_CONTAINER="$container"
-  bash "$REPO_ROOT/port/ingest-parity/init.sh" || {
+  bash "$REPO_ROOT/port/golden/lib/couchbase-init.sh" || {
     echo "Couchbase cluster-init failed"
     exit 1
   }
@@ -208,29 +195,6 @@ kv=${CBT_E2E_CB_KV_PORT},kvSSL=$((CBT_E2E_CB_KV_PORT + 1000)),\
 n1ql=${CBT_E2E_CB_QUERY_PORT},n1qlSSL=$((CBT_E2E_CB_QUERY_PORT + 1000)),\
 fts=${CBT_E2E_CB_FTS_PORT},ftsSSL=$((CBT_E2E_CB_FTS_PORT + 1000)) \
     || echo "Warning: alternate address not set (may already exist)"
-}
-
-wait_for_clickhouse() {
-  echo "Waiting for ClickHouse to be ready..."
-  local attempt=1
-
-  while [ $attempt -le $MAX_CLICKHOUSE_WAIT_ATTEMPTS ]; do
-    if check_clickhouse_health >/dev/null 2>&1; then
-      echo "ClickHouse is ready"
-      return 0
-    fi
-
-    if [ $attempt -eq $MAX_CLICKHOUSE_WAIT_ATTEMPTS ]; then
-      local total_wait=$((MAX_CLICKHOUSE_WAIT_ATTEMPTS * CLICKHOUSE_WAIT_DELAY_SECONDS))
-      echo "ClickHouse failed to become ready after $total_wait seconds"
-      echo "Try running: docker compose -p $E2E_PROJECT -f $DOCKER_COMPOSE_FILE logs ch-server"
-      return 1
-    fi
-
-    echo "Waiting for ClickHouse... ($attempt/$MAX_CLICKHOUSE_WAIT_ATTEMPTS)"
-    attempt=$((attempt + 1))
-    sleep $CLICKHOUSE_WAIT_DELAY_SECONDS
-  done
 }
 
 wait_for_mongodb() {
@@ -277,27 +241,14 @@ setup_cleanup_trap() {
   fi
 }
 
-setup_clickhouse() {
-  echo "Starting ClickHouse..."
-  docker compose -p "$E2E_PROJECT" -f "$DOCKER_COMPOSE_FILE" up -d ch-server
-
-  if ! wait_for_clickhouse; then
-    exit 1
-  fi
-  
-  # Note: ClickHouse seeding is handled by Playwright global setup
-  # - Fullstack mode: global-setup-fullstack.ts
-  # - Local mode: global-setup-local.ts
-}
-
 run_tests() {
   cd "$REPO_ROOT/packages/app"
   
   if [ "$LOCAL_MODE" = true ]; then
-    echo "Running tests in local mode (frontend + ClickHouse)..."
+    echo "Running tests in local mode (frontend only)..."
     yarn test:e2e --local "${PLAYWRIGHT_FLAGS[@]}"
   else
-    echo "Running tests in full-stack mode (MongoDB + API + ClickHouse)..."
+    echo "Running tests in full-stack mode (MongoDB + API + Couchbase)..."
     yarn test:e2e "${PLAYWRIGHT_FLAGS[@]}"
   fi
 }
@@ -308,11 +259,9 @@ setup_cleanup_trap
 # Clean up E2E Next.js build directory to avoid stale lock/cache issues
 rm -rf "$REPO_ROOT/packages/app/.next-e2e" 2>/dev/null || true
 
-# Start telemetry store (ClickHouse or Couchbase)
-if [ "$E2E_STORE" = "couchbase" ]; then
+# Start Couchbase telemetry store (full-stack mode only)
+if [ "$LOCAL_MODE" = false ]; then
   setup_couchbase
-else
-  setup_clickhouse
 fi
 
 # Conditionally start MongoDB for full-stack mode

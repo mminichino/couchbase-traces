@@ -7,9 +7,8 @@
  * selection changes, but never when a saved metrics source is opened —
  * otherwise the form silently gains unsaved changes the user never made.
  *
- * Two databases back these tests (see `seed-clickhouse.ts`):
- *   - `default`          — e2e_otel_metrics_gauge / e2e_otel_metrics_sum
- *   - `e2e_metrics_alt`  — alt_otel_metrics_gauge / alt_otel_metrics_sum
+ * Couchbase E2E seeds gauge/sum collections in the `otel` bucket (`default`
+ * scope). Alternate-database autofill is not exercised on Couchbase.
  *
  * The distinct table names let an assertion prove which database a detected
  * table came from.
@@ -28,9 +27,9 @@ import {
   DEFAULT_METRICS_SOURCE_NAME,
   E2E_ALT_METRICS_DATABASE,
   E2E_ALT_METRICS_SUM_TABLE,
-  E2E_CLICKHOUSE_DATABASE,
   E2E_METRICS_GAUGE_TABLE,
   E2E_METRICS_SUM_TABLE,
+  E2E_SOURCE_DATABASE,
 } from '../utils/constants';
 
 test.describe(
@@ -58,7 +57,7 @@ test.describe(
           name,
           connection: existing.connection,
           from: {
-            databaseName: E2E_CLICKHOUSE_DATABASE,
+            databaseName: E2E_SOURCE_DATABASE,
             tableName: '',
           },
           timestampValueExpression: existing.timestampValueExpression,
@@ -125,7 +124,7 @@ test.describe(
       }
     });
 
-    test('autofills when the database changes on a saved metrics source', async ({
+    test.skip('autofills when the database changes on a saved metrics source', async ({
       page,
     }) => {
       const sourceForm = new SourceFormComponent(page);

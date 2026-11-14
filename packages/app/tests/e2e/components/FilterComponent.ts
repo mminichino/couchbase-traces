@@ -273,7 +273,7 @@ export class FilterComponent {
    * candidates so tests don't rely on a single value that may not be present.
    * Expands "Load more" / "Show more" if needed so hidden options are visible.
    * @param filterGroupName - e.g. 'SeverityText', 'ServiceName'
-   * @param candidates - possible values from seed (e.g. SEVERITIES from seed-clickhouse)
+   * @param candidates - possible values from seed (e.g. SEVERITIES from seed-data)
    * @param count - number of visible values to return (default 2)
    * @returns array of up to `count` values that are visible
    */

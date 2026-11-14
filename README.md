@@ -4,7 +4,7 @@ Couchbase Traces is an observability UI for logs, traces, metrics, and sessions.
 
 ## Status
 
-The port is in progress. Feature-by-feature progress is tracked in [docs/parity.md](docs/parity.md). New development stacks target Couchbase; ClickHouse remains in CI until Phase 10 removes the legacy data layer.
+The port is in progress. Feature-by-feature progress is tracked in [docs/parity.md](docs/parity.md). Development, CI, and E2E stacks use Couchbase Server 8.x as the telemetry store.
 
 ## Development
 

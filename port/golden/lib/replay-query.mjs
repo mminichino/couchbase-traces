@@ -7,7 +7,7 @@ import { listGoldenCaseIds, readGoldenFile, slugCaseId } from './golden-io.mjs';
 
 const require = createRequire(import.meta.url);
 const root = join(dirname(fileURLToPath(import.meta.url)), '../../..');
-const queryParity = join(root, 'port/query-parity');
+const goldenRoot = join(root, 'port/golden');
 const dist = join(root, 'packages/common-utils/dist');
 const { CouchbaseSearchBuilder } = require(join(dist, 'couchbase/serializer.js'));
 const { parseGranularity, timeBucketExpr, timeRangePredicate } = require(
@@ -114,7 +114,7 @@ async function couchbaseWhere(query) {
 const errors = [];
 
 const functionCases = JSON.parse(
-  readFileSync(join(queryParity, 'cases/functions.json'), 'utf8'),
+  readFileSync(join(goldenRoot, 'cases/functions.json'), 'utf8'),
 );
 const range = timeRangePredicate('d.Timestamp', 'iso8601', from, to);
 
@@ -210,7 +210,7 @@ for (const caseId of listGoldenCaseIds(join(goldenDir, 'functions'))) {
 }
 
 const luceneQueries = JSON.parse(
-  readFileSync(join(queryParity, 'cases/lucene.json'), 'utf8'),
+  readFileSync(join(goldenRoot, 'cases/lucene.json'), 'utf8'),
 );
 for (const query of luceneQueries) {
   const caseId = slugCaseId(query);

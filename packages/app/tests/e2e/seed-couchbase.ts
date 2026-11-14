@@ -1,5 +1,5 @@
 /**
- * Seeds Couchbase collections for E2E when CBT_E2E_STORE=couchbase.
+ * Seeds Couchbase collections for full-stack E2E.
  */
 import { fromClickHouseRow } from '../../../ingest/src/model/fromClickHouseRow';
 
@@ -12,7 +12,7 @@ import {
   E2E_TRACES_TABLE,
 } from './utils/constants';
 import { parseValuesTuples } from './parseValuesTuples';
-import { getE2eSeedWindow } from './seed-clickhouse';
+import { getE2eSeedWindow } from './seed-data';
 
 const QUERY_URL =
   process.env.COUCHBASE_URL?.replace(/\/$/, '') ??
@@ -79,11 +79,6 @@ export async function ensureE2eCustomServiceCollection(): Promise<void> {
 }
 
 export async function seedCouchbase(): Promise<void> {
-  if (process.env.CBT_E2E_STORE !== 'couchbase') {
-    console.warn('seed-couchbase: skipped (CBT_E2E_STORE is not couchbase)');
-    return;
-  }
-
   console.log('Seeding Couchbase E2E documents...');
   await ensureE2eCustomServiceCollection();
 

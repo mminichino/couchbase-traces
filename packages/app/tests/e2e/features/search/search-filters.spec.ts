@@ -1,5 +1,5 @@
 import { SearchPage } from '../../page-objects/SearchPage';
-import { SERVICES } from '../../seed-clickhouse';
+import { SERVICES } from '../../seed-data';
 import { expect, test } from '../../utils/base-test';
 import {
   DEFAULT_LOGS_SOURCE_NAME,

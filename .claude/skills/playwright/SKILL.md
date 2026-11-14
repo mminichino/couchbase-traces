@@ -89,4 +89,4 @@ import { expect, test } from '../utils/base-test';
 
 ### Mock ClickHouse Data
 - E2E tests run against a local Docker environment with seeded ClickHouse data
-- Update `packages/app/tests/e2e/seed-clickhouse.ts` only if the scenario requires specific data not already seeded
+- Update `packages/app/tests/e2e/seed-data.ts` and `seed-couchbase.ts` only if the scenario requires specific data not already seeded

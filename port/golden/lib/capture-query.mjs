@@ -11,7 +11,7 @@ import { defaultCompareRules, slugCaseId, writeGoldenFile } from './golden-io.mj
 
 const require = createRequire(import.meta.url);
 const root = join(dirname(fileURLToPath(import.meta.url)), '../../..');
-const queryParity = join(root, 'port/query-parity');
+const goldenRoot = join(root, 'port/golden');
 const dist = join(root, 'packages/common-utils/dist');
 const { CustomSchemaSQLSerializerV2, SearchQueryBuilder } = require(
   join(dist, 'queryParser.js'),
@@ -137,7 +137,7 @@ function writeSuiteGolden(suite, caseId, result, compare = defaultCompareRules()
 }
 
 const luceneCases = JSON.parse(
-  readFileSync(join(queryParity, 'cases/lucene.json'), 'utf8'),
+  readFileSync(join(goldenRoot, 'cases/lucene.json'), 'utf8'),
 );
 for (const query of luceneCases) {
   const where = await couchbaseWhere(query);
@@ -152,7 +152,7 @@ for (const query of luceneCases) {
 }
 
 const functionCases = JSON.parse(
-  readFileSync(join(queryParity, 'cases/functions.json'), 'utf8'),
+  readFileSync(join(goldenRoot, 'cases/functions.json'), 'utf8'),
 );
 for (const item of functionCases) {
   let result;

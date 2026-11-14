@@ -17,10 +17,7 @@ export const SEED_PATHS = [
   'packages/common-utils/src/core/renderChartConfig.ts',
   'packages/common-utils/src/core/metadata.ts',
   'packages/common-utils/src/types.ts',
-  'packages/common-utils/src/clickhouse/',
-  'packages/common-utils/src/dataLayer/',
   'packages/common-utils/src/couchbase/',
-  'packages/api/src/routers/api/clickhouseProxy.ts',
 ];
 
 /**

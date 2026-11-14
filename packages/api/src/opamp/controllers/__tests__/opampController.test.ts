@@ -7,8 +7,6 @@ const configState = {
   INGESTION_API_KEY: '' as string,
   IS_PROMQL_ENABLED: false,
   ENABLE_DATADOG_RECEIVER: false,
-  COUCHBASE_INGEST_ENABLED: false,
-  CLICKHOUSE_EXPORT_ENABLED: true,
 };
 
 jest.mock('@/config', () => ({
@@ -30,12 +28,6 @@ jest.mock('@/config', () => ({
   get ENABLE_DATADOG_RECEIVER() {
     return configState.ENABLE_DATADOG_RECEIVER;
   },
-  get COUCHBASE_INGEST_ENABLED() {
-    return configState.COUCHBASE_INGEST_ENABLED;
-  },
-  get CLICKHOUSE_EXPORT_ENABLED() {
-    return configState.CLICKHOUSE_EXPORT_ENABLED;
-  },
 }));
 
 import {
@@ -50,8 +42,6 @@ const resetConfig = () => {
   configState.INGESTION_API_KEY = '';
   configState.IS_PROMQL_ENABLED = false;
   configState.ENABLE_DATADOG_RECEIVER = false;
-  configState.COUCHBASE_INGEST_ENABLED = false;
-  configState.CLICKHOUSE_EXPORT_ENABLED = true;
 };
 
 describe('opampController', () => {
@@ -59,67 +49,50 @@ describe('opampController', () => {
     resetConfig();
   });
 
-  describe('buildOtelCollectorConfig telemetry destinations', () => {
-    it('throws when both Couchbase ingest and ClickHouse export are disabled', () => {
-      configState.COUCHBASE_INGEST_ENABLED = false;
-      configState.CLICKHOUSE_EXPORT_ENABLED = false;
-
-      expect(() => buildOtelCollectorConfig([])).toThrow(
-        'No telemetry destination: enable CBT_COUCHBASE_INGEST_ENABLED or CBT_CLICKHOUSE_EXPORT_ENABLED.',
-      );
-    });
-  });
-
-  describe('buildOtelCollectorConfig ClickHouse exporters', () => {
-    it('allows both exporter timeouts to be configured from the collector environment', () => {
-      configState.CLICKHOUSE_EXPORT_ENABLED = true;
+  describe('buildOtelCollectorConfig Couchbase ingest', () => {
+    it('uses only Couchbase exporters', () => {
       const cfg = buildOtelCollectorConfig([]);
 
-      expect(cfg.exporters).toMatchObject({
-        clickhouse: {
-          timeout: '${env:CBT_OTEL_EXPORTER_TIMEOUT:-5s}',
+      expect(JSON.stringify(cfg)).not.toContain('clickhouse');
+      expect(cfg.service.pipelines.traces.exporters).toEqual([
+        'otlphttp/couchbase',
+      ]);
+      expect(cfg.service.pipelines.metrics.exporters).toEqual([
+        'otlphttp/couchbase',
+      ]);
+      expect(cfg.service.pipelines['logs/out-default'].exporters).toEqual([
+        'otlphttp/couchbase',
+      ]);
+      expect(cfg.service.pipelines['logs/out-rrweb'].exporters).toEqual([
+        'otlphttp/couchbase-rrweb',
+      ]);
+      expect(cfg.exporters?.['otlphttp/couchbase']).toEqual({
+        endpoint: '${env:CBT_INGEST_ENDPOINT}',
+        encoding: 'json',
+        compression: 'gzip',
+        headers: { Authorization: 'Bearer ${env:CBT_INGEST_TOKEN}' },
+        timeout: '30s',
+        retry_on_failure: {
+          enabled: true,
+          initial_interval: '5s',
+          max_interval: '30s',
+          max_elapsed_time: '300s',
         },
-        'clickhouse/rrweb': {
-          timeout: '${env:CBT_OTEL_EXPORTER_TIMEOUT:-5s}',
-        },
+        sending_queue: { enabled: true, num_consumers: 4, queue_size: 1000 },
       });
     });
   });
 
   describe('buildOtelCollectorConfig prometheus receiver', () => {
-    it('omits the ClickHouse scrape job when ClickHouse export is disabled', () => {
-      configState.CLICKHOUSE_EXPORT_ENABLED = false;
-      configState.COUCHBASE_INGEST_ENABLED = true;
-
+    it('scrapes only the collector own metrics endpoint', () => {
       const scrapeConfigs = buildOtelCollectorConfig([]).receivers.prometheus
         ?.config.scrape_configs;
 
       expect(scrapeConfigs).toHaveLength(1);
-      expect(scrapeConfigs?.[0]?.job_name).toBe('otelcol');
-    });
-
-    it('scrapes ClickHouse in its own job so the scheme follows the endpoint', () => {
-      configState.CLICKHOUSE_EXPORT_ENABLED = true;
-      const cfg = buildOtelCollectorConfig([
-        { apiKey: 'k1', collectorAuthenticationEnforced: false },
-      ]);
-
-      const scrapeConfigs = cfg.receivers.prometheus?.config.scrape_configs;
-      // The collector's own endpoint is always plain HTTP: no scheme here.
       expect(scrapeConfigs?.[0]).toEqual({
         job_name: 'otelcol',
         scrape_interval: '30s',
         static_configs: [{ targets: ['0.0.0.0:8888'] }],
-      });
-      // The default keeps collector images that predate
-      // CBT_PROMETHEUS_SCHEME on plain HTTP.
-      expect(scrapeConfigs?.[1]).toEqual({
-        job_name: 'clickhouse',
-        scrape_interval: '30s',
-        scheme: '${env:CBT_PROMETHEUS_SCHEME:-http}',
-        static_configs: [
-          { targets: ['${env:CLICKHOUSE_PROMETHEUS_METRICS_ENDPOINT}'] },
-        ],
       });
     });
   });
@@ -143,8 +116,6 @@ describe('opampController', () => {
         { apiKey: 'k2', collectorAuthenticationEnforced: true },
       ]);
 
-      // The extension matches the full header value exactly, so every
-      // accepted form must be listed explicitly (see bearerTokenVariants).
       expect(cfg.extensions['bearertokenauth/hyperdx']).toEqual({
         scheme: '',
         tokens: [
@@ -218,7 +189,6 @@ describe('opampController', () => {
         endpoint: '0.0.0.0:8126',
         read_timeout: '60s',
       });
-      // The single DD receiver serves all three signals; attach it to each.
       expect(cfg.service.pipelines.traces.receivers).toContain('datadog');
       expect(cfg.service.pipelines.metrics.receivers).toContain('datadog');
       expect(cfg.service.pipelines['logs/in'].receivers).toContain('datadog');
@@ -229,7 +199,6 @@ describe('opampController', () => {
 
       const cfg = buildOtelCollectorConfig([]);
 
-      // No API keys -> no auth wiring, mirroring otlp/hyperdx.
       expect(cfg.receivers.datadog?.auth).toBeUndefined();
       expect(cfg.extensions['bearertokenauth/datadog']).toBeUndefined();
       expect(cfg.service.extensions).not.toContain('bearertokenauth/datadog');
@@ -242,8 +211,6 @@ describe('opampController', () => {
         { apiKey: 'k1', collectorAuthenticationEnforced: false },
       ]);
 
-      // Keys exist but auth is not enforced -> no auth wiring, mirroring
-      // otlp/hyperdx.
       expect(cfg.receivers.datadog?.auth).toBeUndefined();
       expect(cfg.extensions['bearertokenauth/datadog']).toBeUndefined();
       expect(cfg.service.extensions).not.toContain('bearertokenauth/datadog');
@@ -257,102 +224,16 @@ describe('opampController', () => {
         { apiKey: 'k2', collectorAuthenticationEnforced: true },
       ]);
 
-      // Bearer-token extension keyed on DD-API-KEY with the team API keys.
       expect(cfg.extensions['bearertokenauth/datadog']).toEqual({
         header: 'DD-API-KEY',
         scheme: '',
         tokens: ['k1', 'k2'],
       });
-      // Receiver references the authenticator and the extension is enabled.
       expect(cfg.receivers.datadog?.auth).toEqual({
         authenticator: 'bearertokenauth/datadog',
       });
       expect(cfg.service.extensions).toContain('bearertokenauth/datadog');
-      // The otlp/hyperdx auth extension stays intact alongside it.
       expect(cfg.service.extensions).toContain('bearertokenauth/hyperdx');
-    });
-  });
-
-  describe('buildOtelCollectorConfig Couchbase ingest', () => {
-    it('uses only Couchbase exporters when ClickHouse export is off', () => {
-      configState.COUCHBASE_INGEST_ENABLED = true;
-      configState.CLICKHOUSE_EXPORT_ENABLED = false;
-
-      const cfg = buildOtelCollectorConfig([]);
-
-      expect(cfg.exporters?.clickhouse).toBeUndefined();
-      expect(JSON.stringify(cfg)).not.toContain('clickhouse/rrweb');
-      expect(cfg.service.pipelines.traces.exporters).toEqual([
-        'otlphttp/couchbase',
-      ]);
-      expect(cfg.service.pipelines.metrics.exporters).toEqual([
-        'otlphttp/couchbase',
-      ]);
-      expect(cfg.service.pipelines['logs/out-default'].exporters).toEqual([
-        'otlphttp/couchbase',
-      ]);
-      expect(cfg.service.pipelines['logs/out-rrweb'].exporters).toEqual([
-        'otlphttp/couchbase-rrweb',
-      ]);
-    });
-
-    it('leaves the config unchanged when the flag is off', () => {
-      configState.CLICKHOUSE_EXPORT_ENABLED = true;
-      const off = buildOtelCollectorConfig([]);
-      expect(JSON.stringify(off)).not.toContain('otlphttp/couchbase');
-      expect(off.service.pipelines.traces.exporters).toEqual(['clickhouse']);
-      expect(off.service.pipelines.metrics.exporters).toEqual(['clickhouse']);
-      expect(off.service.pipelines['logs/out-default'].exporters).toEqual([
-        'clickhouse',
-      ]);
-      expect(off.service.pipelines['logs/out-rrweb'].exporters).toEqual([
-        'clickhouse/rrweb',
-      ]);
-      expect(off.service.pipelines['metrics/promql']).toBeUndefined();
-    });
-
-    it('appends the Couchbase exporters without removing ClickHouse', () => {
-      configState.COUCHBASE_INGEST_ENABLED = true;
-      configState.CLICKHOUSE_EXPORT_ENABLED = true;
-      const cfg = buildOtelCollectorConfig([
-        { apiKey: 'k1', collectorAuthenticationEnforced: false },
-      ]);
-      expect(cfg.exporters?.['otlphttp/couchbase']).toEqual({
-        endpoint: '${env:CBT_INGEST_ENDPOINT}',
-        encoding: 'json',
-        compression: 'gzip',
-        headers: { Authorization: 'Bearer ${env:CBT_INGEST_TOKEN}' },
-        timeout: '30s',
-        retry_on_failure: {
-          enabled: true,
-          initial_interval: '5s',
-          max_interval: '30s',
-          max_elapsed_time: '300s',
-        },
-        sending_queue: { enabled: true, num_consumers: 4, queue_size: 1000 },
-      });
-      expect(cfg.exporters?.['otlphttp/couchbase-rrweb']).toMatchObject({
-        logs_endpoint: '${env:CBT_INGEST_ENDPOINT}/v1/sessions',
-        encoding: 'json',
-      });
-      expect(cfg.service.pipelines.traces.exporters).toEqual([
-        'clickhouse',
-        'otlphttp/couchbase',
-      ]);
-      expect(cfg.service.pipelines.metrics.exporters).toEqual([
-        'clickhouse',
-        'otlphttp/couchbase',
-      ]);
-      expect(cfg.service.pipelines['logs/out-default'].exporters).toEqual([
-        'clickhouse',
-        'otlphttp/couchbase',
-      ]);
-      expect(cfg.service.pipelines['logs/out-rrweb'].exporters).toEqual([
-        'clickhouse/rrweb',
-        'otlphttp/couchbase-rrweb',
-      ]);
-      expect(cfg.service.pipelines['metrics/promql']).toBeUndefined();
-      expect(JSON.stringify(cfg)).not.toContain('prometheusremotewrite');
     });
   });
 });

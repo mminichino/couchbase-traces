@@ -39,8 +39,7 @@ docker run -e MONGO_URI=mongodb://YOUR_MONGODB_URI -p 8080:8080 ghcr.io/mminichi
 ```
 
 You'll need to set the `MONGO_URI` environment variable to the URI of your
-MongoDB instance. Afterwards, you'll want to visit http://localhost:8080 to set
-up your connection with ClickHouse.
+MongoDB instance. Afterwards, visit http://localhost:8080 and add a Couchbase connection.
 
 Before deploying into production, set the `EXPRESS_SESSION_SECRET` environment
 variable to a random string (e.g. `openssl rand -hex 32`). Without it the API
@@ -66,8 +65,7 @@ environment variables tune it; each takes a positive integer.
 | `CBT_COUCHBASE_MAX_BUFFERED_BYTES` | `268435456` | Result size limit for formats that buffer the whole result |
 | `CBT_COUCHBASE_FRAME_ROWS`         | `500`       | Rows per streamed result frame                             |
 
-Browser-only local mode still supports ClickHouse connections only; full stacks
-use Couchbase through the API.
+Full stacks query Couchbase through the API (SQL++).
 
 ## All-in-one Docker Compose Stack
 

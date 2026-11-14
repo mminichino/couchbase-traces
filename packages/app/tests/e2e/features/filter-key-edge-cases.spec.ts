@@ -38,7 +38,7 @@ import {
   INTERESTING_FILTER_KEYS_ROWS,
   METADATA_MV_LOG_ATTR_KEY,
   METADATA_MV_ROWS,
-} from '../seed-clickhouse';
+} from '../seed-data';
 import { expect, test } from '../utils/base-test';
 import {
   INTERESTING_FILTER_KEYS_SOURCE_NAME,

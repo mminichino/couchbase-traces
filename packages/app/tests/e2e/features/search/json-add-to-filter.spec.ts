@@ -1,5 +1,5 @@
 import { SearchPage } from '../../page-objects/SearchPage';
-import { JSON_BODY_LOG } from '../../seed-clickhouse';
+import { JSON_BODY_LOG } from '../../seed-data';
 import { expect, test } from '../../utils/base-test';
 
 // Re-running the search query after a filter change can take longer than

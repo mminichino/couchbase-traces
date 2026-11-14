@@ -35,7 +35,7 @@ aligned with the
 5. **Use the shared helpers** in
    [`packages/api/src/utils/instrumentation.ts`](../packages/api/src/utils/instrumentation.ts).
    Don't hand-roll tracer/meter lifecycle.
-6. **A new surface that queries ClickHouse declares its query attribution.**
+6. **A new surface that runs telemetry queries declares its query attribution.**
    One provider or one `withQueryAttribution` scope at the entry point, not a
    change at each query. See [Query attribution](#query-attribution).
 

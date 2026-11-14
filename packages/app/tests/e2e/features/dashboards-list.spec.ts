@@ -27,7 +27,7 @@ test.describe('Dashboards Listing Page', { tag: ['@dashboard'] }, () => {
           dashboardsListPage.getPresetDashboardCard('Services'),
         ).toBeVisible();
         await expect(
-          dashboardsListPage.getPresetDashboardCard('ClickHouse'),
+          dashboardsListPage.getPresetDashboardCard('Cluster'),
         ).toBeVisible();
         await expect(
           dashboardsListPage.getPresetDashboardCard('Kubernetes'),

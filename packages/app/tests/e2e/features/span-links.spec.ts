@@ -1,5 +1,5 @@
 import { SearchPage } from '../page-objects/SearchPage';
-import { SPAN_LINK_SEED } from '../seed-clickhouse';
+import { SPAN_LINK_SEED } from '../seed-data';
 import { expect, test } from '../utils/base-test';
 import { DEFAULT_TRACES_SOURCE_NAME } from '../utils/constants';
 

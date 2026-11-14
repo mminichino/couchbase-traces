@@ -1,2 +1,0 @@
-"root-operation","trace-test-service",1,"GET",""
-"child-operation","trace-test-service",0,"","clickhouse"

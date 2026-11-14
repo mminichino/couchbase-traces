@@ -8,7 +8,7 @@ scoring formula, see [`packages/hdx-eval/README.md`](../packages/hdx-eval/README
 
 The eval framework spawns Claude Code as an SRE agent, gives it access to an
 MCP server, and asks it to solve observability scenarios (find a root cause,
-build a dashboard, etc.) against synthetic telemetry seeded into ClickHouse.
+build a dashboard, etc.) against synthetic telemetry seeded into Couchbase.
 Answers are graded with programmatic regex checks (40%) + an LLM judge (60%),
 minus a penalty for tool-call errors. The framework is MCP-agnostic — you can
 compare any two (or more) MCP servers side by side.
@@ -28,10 +28,10 @@ compare any two (or more) MCP servers side by side.
 
 | Requirement | Notes |
 |---|---|
-| `yarn dev` running | Each worktree needs `yarn dev` running with a fixed slot. This handles `yarn install`, `yarn build:common-utils`, Docker containers (ClickHouse, MongoDB), and the API server. See [Development Setup](development.md). |
+| `yarn dev` running | Each worktree needs `yarn dev` running with a fixed slot. This handles `yarn install`, `yarn build:common-utils`, Docker containers (Couchbase, MongoDB, collector), and the API server. See [Development Setup](development.md). |
 | `ANTHROPIC_API_KEY` or `AI_API_KEY` | Auto-loaded from `.env.local` at the monorepo root. Check `.env.local` in other worktrees for existing keys if missing. |
 | `claude` CLI | Installed globally (`which claude`). The harness spawns it in streaming JSON mode. |
-| `uv` | Only needed for `stdio`-type MCPs (e.g. raw ClickHouse MCP). Install via `curl -LsSf https://astral.sh/uv/install.sh \| sh`. |
+| `uv` | Only needed for `stdio`-type MCPs. Install via `curl -LsSf https://astral.sh/uv/install.sh \| sh`. |
 | Two git worktrees | One checked out to the branch under test, one to `main`. Use `git worktree list` to verify. |
 
 ## Dual-Slot A/B Comparison (Primary Workflow)
@@ -60,22 +60,21 @@ talks to **two separate Couchbase Traces API instances** running on different sl
    ┌─────────────────────┐                  ┌─────────────────────┐
    │  Slot 98 (main)     │                  │  Slot 99 (branch)   │
    │  API  :30198        │                  │  API  :30199        │
-   │  CH   :30598        │                  │  CH   :30599        │
+   │  CB   :30598        │                  │  CB   :30599        │
    │  Mongo:30498        │                  │  Mongo:30499        │
    │  MCP  :30198/mcp    │                  │  MCP  :30199/mcp    │
    └─────────────────────┘                  └─────────────────────┘
        main worktree                            branch worktree
 ```
 
-Each slot runs its own ClickHouse instance. `setup-hyperdx` (step 2) creates
-the Couchbase Traces account, Connection, and Sources on each instance, but does **not**
-seed telemetry data. The `run` command auto-seeds on first run, but only into
-the single ClickHouse specified in the top-level `clickhouse` config — so for
-dual-slot comparisons you must seed each instance explicitly (step 4b).
+Each slot runs its own Couchbase cluster (via `yarn dev`). `setup-hyperdx` (step 2)
+creates the Couchbase Traces account, Connection, and Sources on each instance,
+but does **not** seed telemetry data. The `run` command auto-seeds on first run;
+for dual-slot comparisons you must seed each instance explicitly (step 4b).
 
 ### 1. Start both dev stacks
 
-`yarn dev` starts Docker infra (ClickHouse, MongoDB, OTel Collector) **and**
+`yarn dev` starts Docker infra (Couchbase, MongoDB, OTel Collector) **and**
 the API + App servers in one command. Run it from each worktree with a fixed
 slot:
 
@@ -95,8 +94,8 @@ curl -s -o /dev/null -w "Slot 98 API: %{http_code}\n" http://localhost:30198/api
 curl -s -o /dev/null -w "Slot 99 API: %{http_code}\n" http://localhost:30199/api/v1/me
 # Expected: 404 (no auth token — but the server is responding)
 
-curl -s -o /dev/null -w "Slot 98 CH: %{http_code}\n" http://localhost:30598/
-curl -s -o /dev/null -w "Slot 99 CH: %{http_code}\n" http://localhost:30599/
+curl -s -o /dev/null -w "Slot 98 CB mgmt: %{http_code}\n" http://localhost:30598/ui/index.html
+curl -s -o /dev/null -w "Slot 99 CB mgmt: %{http_code}\n" http://localhost:30599/ui/index.html
 # Expected: 200
 ```
 
@@ -105,7 +104,7 @@ curl -s -o /dev/null -w "Slot 99 CH: %{http_code}\n" http://localhost:30599/
 > Run these commands from the worktree that has the eval framework code (the
 > branch under test).
 
-This registers an eval account, creates a ClickHouse Connection, and creates
+This registers an eval account, creates a Couchbase Connection, and creates
 per-scenario Sources on each Couchbase Traces instance. The command is **idempotent** —
 it skips anything that already exists, so it's safe to run every time.
 

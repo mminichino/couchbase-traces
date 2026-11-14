@@ -1,4 +1,4 @@
-import { SERVICES, SEVERITIES } from 'tests/e2e/seed-clickhouse';
+import { SERVICES, SEVERITIES } from 'tests/e2e/seed-data';
 import {
   DEFAULT_LOGS_SOURCE_NAME,
   DEFAULT_TRACES_SOURCE_NAME,

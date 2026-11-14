@@ -1,29 +1,15 @@
-# Couchbase Traces Technology Stack
+# Tech stack
 
-## Frontend (`packages/app`)
+| Layer | Choices |
+| --- | --- |
+| UI | Next.js, Mantine, TanStack Query, Jotai |
+| API | Express, Mongoose (MongoDB) |
+| Telemetry store | Couchbase Server 8.x / Capella (SQL++, Search, Analytics) |
+| Ingest | Node service (`packages/ingest`) |
+| Collector | Custom OTel build (`packages/otel-collector`) |
+| Shared logic | `packages/common-utils` (SQL++, chart rendering, Lucene) |
+| Tests | Jest (unit/int), Playwright (E2E) |
 
-- **Framework**: Next.js 16 with TypeScript
-- **UI Components**: Mantine UI library (`@mantine/core`, `@mantine/dates`, `@mantine/hooks`)
-- **State Management**: Jotai (global client state), TanStack Query (server state), URL params (filters)
-- **Charts/Visualization**: Recharts, uPlot
-- **Code Editor**: CodeMirror (for SQL/JSON editing)
-- **Styling**: Mantine's built-in system, SCSS modules when needed
-- **Icons**: Use `@tabler/icons-react`
-
-**UI Component Priority**: Mantine components first → Custom components on Mantine primitives → Custom SCSS modules as last resort
-
-## Backend (`packages/api`)
-
-- **Runtime**: Node.js 22+ with TypeScript
-- **Framework**: Express.js
-- **Database**: ClickHouse (telemetry data), MongoDB via Mongoose (metadata)
-- **Authentication**: Passport.js with local strategy
-- **Validation**: Zod schemas
-- **Telemetry**: Self-instrumented with `@clickhouse/clickstack-node` (API and Next.js server) and `@clickhouse/clickstack-browser` (frontend)
-
-## Common Utilities (`packages/common-utils`)
-
-- Shared TypeScript utilities for query parsing and ClickHouse operations
-- Zod schemas for data validation
-- SQL formatting and query building helpers
-
+Self-instrumentation uses ClickStack SDKs (`@clickhouse/clickstack-node` /
+`@clickhouse/clickstack-browser`) and `@clickhouse/click-ui` for theming — not
+part of the telemetry data path.
