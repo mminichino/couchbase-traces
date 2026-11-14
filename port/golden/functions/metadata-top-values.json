@@ -1,0 +1,28 @@
+{
+  "schemaVersion": 1,
+  "suite": "functions",
+  "caseId": "metadata-top-values",
+  "datasetSeed": 0,
+  "anchorSensitive": false,
+  "compare": {
+    "ordered": true,
+    "numericTolerance": 1e-9,
+    "ignoreColumns": []
+  },
+  "result": {
+    "rows": [
+      {
+        "k": "api",
+        "c": 3334
+      },
+      {
+        "k": "web",
+        "c": 3333
+      },
+      {
+        "k": "worker",
+        "c": 3333
+      }
+    ]
+  }
+}

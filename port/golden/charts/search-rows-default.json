@@ -1,0 +1,269 @@
+{
+  "schemaVersion": 1,
+  "suite": "charts",
+  "caseId": "search-rows-default",
+  "datasetSeed": 0,
+  "anchorSensitive": false,
+  "compare": {
+    "ordered": true,
+    "numericTolerance": 1e-9,
+    "ignoreColumns": [
+      "__cbt_id",
+      "Timestamp"
+    ]
+  },
+  "result": {
+    "rows": [
+      {
+        "ServiceName": "api",
+        "SeverityText": "WARN",
+        "Body": "log-000000"
+      },
+      {
+        "ServiceName": "web",
+        "SeverityText": "INFO",
+        "Body": "log-000001"
+      },
+      {
+        "ServiceName": "worker",
+        "SeverityText": "INFO",
+        "Body": "log-000002"
+      },
+      {
+        "ServiceName": "api",
+        "SeverityText": "INFO",
+        "Body": "log-000003"
+      },
+      {
+        "ServiceName": "web",
+        "SeverityText": "INFO",
+        "Body": "log-000004"
+      },
+      {
+        "ServiceName": "worker",
+        "SeverityText": "WARN",
+        "Body": "log-000005"
+      },
+      {
+        "ServiceName": "api",
+        "SeverityText": "INFO",
+        "Body": "log-000006"
+      },
+      {
+        "ServiceName": "web",
+        "SeverityText": "INFO",
+        "Body": "log-000007"
+      },
+      {
+        "ServiceName": "worker",
+        "SeverityText": "INFO",
+        "Body": "log-000008"
+      },
+      {
+        "ServiceName": "api",
+        "SeverityText": "INFO",
+        "Body": "log-000009"
+      },
+      {
+        "ServiceName": "web",
+        "SeverityText": "WARN",
+        "Body": "log-000010"
+      },
+      {
+        "ServiceName": "worker",
+        "SeverityText": "INFO",
+        "Body": "log-000011"
+      },
+      {
+        "ServiceName": "api",
+        "SeverityText": "INFO",
+        "Body": "log-000012"
+      },
+      {
+        "ServiceName": "web",
+        "SeverityText": "INFO",
+        "Body": "log-000013"
+      },
+      {
+        "ServiceName": "worker",
+        "SeverityText": "INFO",
+        "Body": "log-000014"
+      },
+      {
+        "ServiceName": "api",
+        "SeverityText": "WARN",
+        "Body": "log-000015"
+      },
+      {
+        "ServiceName": "web",
+        "SeverityText": "INFO",
+        "Body": "log-000016"
+      },
+      {
+        "ServiceName": "worker",
+        "SeverityText": "INFO",
+        "Body": "log-000017"
+      },
+      {
+        "ServiceName": "api",
+        "SeverityText": "INFO",
+        "Body": "log-000018"
+      },
+      {
+        "ServiceName": "web",
+        "SeverityText": "INFO",
+        "Body": "log-000019"
+      },
+      {
+        "ServiceName": "worker",
+        "SeverityText": "WARN",
+        "Body": "log-000020"
+      },
+      {
+        "ServiceName": "api",
+        "SeverityText": "INFO",
+        "Body": "log-000021"
+      },
+      {
+        "ServiceName": "web",
+        "SeverityText": "INFO",
+        "Body": "log-000022"
+      },
+      {
+        "ServiceName": "worker",
+        "SeverityText": "INFO",
+        "Body": "log-000023"
+      },
+      {
+        "ServiceName": "api",
+        "SeverityText": "INFO",
+        "Body": "log-000024"
+      },
+      {
+        "ServiceName": "web",
+        "SeverityText": "WARN",
+        "Body": "log-000025"
+      },
+      {
+        "ServiceName": "worker",
+        "SeverityText": "INFO",
+        "Body": "log-000026"
+      },
+      {
+        "ServiceName": "api",
+        "SeverityText": "INFO",
+        "Body": "log-000027"
+      },
+      {
+        "ServiceName": "web",
+        "SeverityText": "INFO",
+        "Body": "log-000028"
+      },
+      {
+        "ServiceName": "worker",
+        "SeverityText": "INFO",
+        "Body": "log-000029"
+      },
+      {
+        "ServiceName": "api",
+        "SeverityText": "WARN",
+        "Body": "log-000030"
+      },
+      {
+        "ServiceName": "web",
+        "SeverityText": "INFO",
+        "Body": "log-000031"
+      },
+      {
+        "ServiceName": "worker",
+        "SeverityText": "INFO",
+        "Body": "log-000032"
+      },
+      {
+        "ServiceName": "api",
+        "SeverityText": "INFO",
+        "Body": "log-000033"
+      },
+      {
+        "ServiceName": "web",
+        "SeverityText": "INFO",
+        "Body": "log-000034"
+      },
+      {
+        "ServiceName": "worker",
+        "SeverityText": "WARN",
+        "Body": "log-000035"
+      },
+      {
+        "ServiceName": "api",
+        "SeverityText": "INFO",
+        "Body": "log-000036"
+      },
+      {
+        "ServiceName": "web",
+        "SeverityText": "INFO",
+        "Body": "log-000037"
+      },
+      {
+        "ServiceName": "worker",
+        "SeverityText": "INFO",
+        "Body": "log-000038"
+      },
+      {
+        "ServiceName": "api",
+        "SeverityText": "INFO",
+        "Body": "log-000039"
+      },
+      {
+        "ServiceName": "web",
+        "SeverityText": "WARN",
+        "Body": "log-000040"
+      },
+      {
+        "ServiceName": "worker",
+        "SeverityText": "INFO",
+        "Body": "log-000041"
+      },
+      {
+        "ServiceName": "api",
+        "SeverityText": "INFO",
+        "Body": "log-000042"
+      },
+      {
+        "ServiceName": "web",
+        "SeverityText": "INFO",
+        "Body": "log-000043"
+      },
+      {
+        "ServiceName": "worker",
+        "SeverityText": "INFO",
+        "Body": "log-000044"
+      },
+      {
+        "ServiceName": "api",
+        "SeverityText": "WARN",
+        "Body": "log-000045"
+      },
+      {
+        "ServiceName": "web",
+        "SeverityText": "INFO",
+        "Body": "log-000046"
+      },
+      {
+        "ServiceName": "worker",
+        "SeverityText": "INFO",
+        "Body": "log-000047"
+      },
+      {
+        "ServiceName": "api",
+        "SeverityText": "INFO",
+        "Body": "log-000048"
+      },
+      {
+        "ServiceName": "web",
+        "SeverityText": "INFO",
+        "Body": "log-000049"
+      }
+    ]
+  }
+}

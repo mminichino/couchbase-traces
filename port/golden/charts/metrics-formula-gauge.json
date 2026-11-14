@@ -1,0 +1,22 @@
+{
+  "schemaVersion": 1,
+  "suite": "charts",
+  "caseId": "metrics-formula-gauge",
+  "datasetSeed": 0,
+  "anchorSensitive": false,
+  "compare": {
+    "ordered": false,
+    "numericTolerance": 0.05,
+    "ignoreColumns": [
+      "__cbt_id"
+    ]
+  },
+  "result": {
+    "rows": [
+      {
+        "A": 55.588235294117645,
+        "pct": 5558.823529411765
+      }
+    ]
+  }
+}

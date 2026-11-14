@@ -1,0 +1,24 @@
+{
+  "schemaVersion": 1,
+  "suite": "charts",
+  "caseId": "traces-waterfall-spans",
+  "datasetSeed": 0,
+  "anchorSensitive": false,
+  "compare": {
+    "ordered": true,
+    "numericTolerance": 1e-9,
+    "ignoreColumns": [
+      "__cbt_id"
+    ]
+  },
+  "result": {
+    "rows": [
+      {
+        "SpanId": 989680,
+        "ParentSpanId": null,
+        "ServiceName": "api",
+        "Duration": 1000000
+      }
+    ]
+  }
+}

@@ -1,0 +1,50 @@
+name: cbt-golden-replay
+
+services:
+  couchbase:
+    image: couchbase/server:enterprise-8.0.3
+    container_name: ${CBT_GOLDEN_COUCHBASE_CONTAINER:-cbt-golden-couchbase}
+    hostname: couchbase
+    mem_limit: 6g
+    ports:
+      - '127.0.0.1:${CB_QUERY_PORT:-8093}:8093'
+
+  ingest:
+    image: cbt-golden-ingest:local
+    environment:
+      CBT_INGEST_TOKEN: 0123456789abcdef0123456789abcdef
+      CBT_COUCHBASE_CONNSTR: couchbase://couchbase
+      CBT_COUCHBASE_INGEST_USER: cbt_ingest
+      CBT_COUCHBASE_INGEST_PASSWORD: cbt-ingest-password
+      CBT_COUCHBASE_BUCKET: otel
+      CBT_COUCHBASE_SCOPE: default
+      CBT_COUCHBASE_ADMIN_USER: Administrator
+      CBT_COUCHBASE_ADMIN_PASSWORD: cbt-test-admin
+      CBT_COUCHBASE_QUERY_USER: cbt_query
+      CBT_COUCHBASE_QUERY_PASSWORD: cbt-query-password
+      CBT_COUCHBASE_MONITOR_USER: cbt_monitor
+      CBT_COUCHBASE_MONITOR_PASSWORD: cbt-monitor-password
+    depends_on:
+      - couchbase
+
+  collector:
+    image: cbt-golden-collector:local
+    entrypoint: ['/otelcontribcol', '--config', '/etc/otel/collector.yaml']
+    volumes:
+      - ./collector-couchbase-only.yaml:/etc/otel/collector.yaml:ro
+    ports:
+      - '127.0.0.1:${OTLP_PORT:-4318}:4318'
+    depends_on:
+      - ingest
+
+  mongo:
+    image: mongo:7
+    ports:
+      - '127.0.0.1:${MONGO_PORT:-27017}:27017'
+
+  api:
+    image: cbt-golden-api:local
+    profiles: [full-stack]
+    depends_on:
+      - mongo
+      - couchbase

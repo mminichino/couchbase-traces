@@ -1,0 +1,22 @@
+{
+  "schemaVersion": 1,
+  "suite": "charts",
+  "caseId": "metrics-multi-gauge-sum",
+  "datasetSeed": 0,
+  "anchorSensitive": false,
+  "compare": {
+    "ordered": false,
+    "numericTolerance": 0.15,
+    "ignoreColumns": [
+      "__cbt_id"
+    ]
+  },
+  "result": {
+    "rows": [
+      {
+        "gauge_avg": 55.588235294117645,
+        "sum_avg": 55.714285714285715
+      }
+    ]
+  }
+}

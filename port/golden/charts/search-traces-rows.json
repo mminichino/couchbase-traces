@@ -1,0 +1,269 @@
+{
+  "schemaVersion": 1,
+  "suite": "charts",
+  "caseId": "search-traces-rows",
+  "datasetSeed": 0,
+  "anchorSensitive": false,
+  "compare": {
+    "ordered": true,
+    "numericTolerance": 1e-9,
+    "ignoreColumns": [
+      "__cbt_id",
+      "Timestamp"
+    ]
+  },
+  "result": {
+    "rows": [
+      {
+        "ServiceName": "api",
+        "SpanName": "span-0",
+        "StatusCode": "Unset"
+      },
+      {
+        "ServiceName": "api",
+        "SpanName": "span-1",
+        "StatusCode": "Unset"
+      },
+      {
+        "ServiceName": "api",
+        "SpanName": "span-10",
+        "StatusCode": "Unset"
+      },
+      {
+        "ServiceName": "api",
+        "SpanName": "span-100",
+        "StatusCode": "Unset"
+      },
+      {
+        "ServiceName": "api",
+        "SpanName": "span-1000",
+        "StatusCode": "Unset"
+      },
+      {
+        "ServiceName": "api",
+        "SpanName": "span-1001",
+        "StatusCode": "Unset"
+      },
+      {
+        "ServiceName": "api",
+        "SpanName": "span-1002",
+        "StatusCode": "Unset"
+      },
+      {
+        "ServiceName": "api",
+        "SpanName": "span-1003",
+        "StatusCode": "Unset"
+      },
+      {
+        "ServiceName": "api",
+        "SpanName": "span-1004",
+        "StatusCode": "Unset"
+      },
+      {
+        "ServiceName": "api",
+        "SpanName": "span-1005",
+        "StatusCode": "Unset"
+      },
+      {
+        "ServiceName": "api",
+        "SpanName": "span-1006",
+        "StatusCode": "Unset"
+      },
+      {
+        "ServiceName": "api",
+        "SpanName": "span-1007",
+        "StatusCode": "Unset"
+      },
+      {
+        "ServiceName": "api",
+        "SpanName": "span-1008",
+        "StatusCode": "Unset"
+      },
+      {
+        "ServiceName": "api",
+        "SpanName": "span-1009",
+        "StatusCode": "Unset"
+      },
+      {
+        "ServiceName": "api",
+        "SpanName": "span-101",
+        "StatusCode": "Unset"
+      },
+      {
+        "ServiceName": "api",
+        "SpanName": "span-1010",
+        "StatusCode": "Unset"
+      },
+      {
+        "ServiceName": "api",
+        "SpanName": "span-1011",
+        "StatusCode": "Unset"
+      },
+      {
+        "ServiceName": "api",
+        "SpanName": "span-1012",
+        "StatusCode": "Unset"
+      },
+      {
+        "ServiceName": "api",
+        "SpanName": "span-1013",
+        "StatusCode": "Unset"
+      },
+      {
+        "ServiceName": "api",
+        "SpanName": "span-1014",
+        "StatusCode": "Unset"
+      },
+      {
+        "ServiceName": "api",
+        "SpanName": "span-1015",
+        "StatusCode": "Unset"
+      },
+      {
+        "ServiceName": "api",
+        "SpanName": "span-1016",
+        "StatusCode": "Unset"
+      },
+      {
+        "ServiceName": "api",
+        "SpanName": "span-1017",
+        "StatusCode": "Unset"
+      },
+      {
+        "ServiceName": "api",
+        "SpanName": "span-1018",
+        "StatusCode": "Unset"
+      },
+      {
+        "ServiceName": "api",
+        "SpanName": "span-1019",
+        "StatusCode": "Unset"
+      },
+      {
+        "ServiceName": "api",
+        "SpanName": "span-102",
+        "StatusCode": "Unset"
+      },
+      {
+        "ServiceName": "api",
+        "SpanName": "span-1020",
+        "StatusCode": "Unset"
+      },
+      {
+        "ServiceName": "api",
+        "SpanName": "span-1021",
+        "StatusCode": "Unset"
+      },
+      {
+        "ServiceName": "api",
+        "SpanName": "span-1022",
+        "StatusCode": "Unset"
+      },
+      {
+        "ServiceName": "api",
+        "SpanName": "span-1023",
+        "StatusCode": "Unset"
+      },
+      {
+        "ServiceName": "api",
+        "SpanName": "span-1024",
+        "StatusCode": "Unset"
+      },
+      {
+        "ServiceName": "api",
+        "SpanName": "span-1025",
+        "StatusCode": "Unset"
+      },
+      {
+        "ServiceName": "api",
+        "SpanName": "span-1026",
+        "StatusCode": "Unset"
+      },
+      {
+        "ServiceName": "api",
+        "SpanName": "span-1027",
+        "StatusCode": "Unset"
+      },
+      {
+        "ServiceName": "api",
+        "SpanName": "span-1028",
+        "StatusCode": "Unset"
+      },
+      {
+        "ServiceName": "api",
+        "SpanName": "span-1029",
+        "StatusCode": "Unset"
+      },
+      {
+        "ServiceName": "api",
+        "SpanName": "span-103",
+        "StatusCode": "Unset"
+      },
+      {
+        "ServiceName": "api",
+        "SpanName": "span-1030",
+        "StatusCode": "Unset"
+      },
+      {
+        "ServiceName": "api",
+        "SpanName": "span-1031",
+        "StatusCode": "Unset"
+      },
+      {
+        "ServiceName": "api",
+        "SpanName": "span-1032",
+        "StatusCode": "Unset"
+      },
+      {
+        "ServiceName": "api",
+        "SpanName": "span-1033",
+        "StatusCode": "Unset"
+      },
+      {
+        "ServiceName": "api",
+        "SpanName": "span-1034",
+        "StatusCode": "Unset"
+      },
+      {
+        "ServiceName": "api",
+        "SpanName": "span-1035",
+        "StatusCode": "Unset"
+      },
+      {
+        "ServiceName": "api",
+        "SpanName": "span-1036",
+        "StatusCode": "Unset"
+      },
+      {
+        "ServiceName": "api",
+        "SpanName": "span-1037",
+        "StatusCode": "Unset"
+      },
+      {
+        "ServiceName": "api",
+        "SpanName": "span-1038",
+        "StatusCode": "Unset"
+      },
+      {
+        "ServiceName": "api",
+        "SpanName": "span-1039",
+        "StatusCode": "Unset"
+      },
+      {
+        "ServiceName": "api",
+        "SpanName": "span-104",
+        "StatusCode": "Unset"
+      },
+      {
+        "ServiceName": "api",
+        "SpanName": "span-1040",
+        "StatusCode": "Unset"
+      },
+      {
+        "ServiceName": "api",
+        "SpanName": "span-1041",
+        "StatusCode": "Unset"
+      }
+    ]
+  }
+}

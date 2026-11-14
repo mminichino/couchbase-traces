@@ -1,0 +1,21 @@
+{
+  "schemaVersion": 1,
+  "suite": "charts",
+  "caseId": "metrics-gauge-avg",
+  "datasetSeed": 0,
+  "anchorSensitive": false,
+  "compare": {
+    "ordered": false,
+    "numericTolerance": 0.05,
+    "ignoreColumns": [
+      "__cbt_id"
+    ]
+  },
+  "result": {
+    "rows": [
+      {
+        "value": 50
+      }
+    ]
+  }
+}

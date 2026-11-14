@@ -1,0 +1,819 @@
+{
+  "schemaVersion": 1,
+  "suite": "charts",
+  "caseId": "search-event-deltas-sample",
+  "datasetSeed": 0,
+  "anchorSensitive": false,
+  "compare": {
+    "ordered": false,
+    "numericTolerance": 1e-9,
+    "ignoreColumns": [
+      "__cbt_id"
+    ]
+  },
+  "result": {
+    "rows": [
+      {
+        "Body": "log-000202",
+        "ServiceName": "web"
+      },
+      {
+        "Body": "log-000218",
+        "ServiceName": "worker"
+      },
+      {
+        "Body": "log-000233",
+        "ServiceName": "worker"
+      },
+      {
+        "Body": "log-000265",
+        "ServiceName": "web"
+      },
+      {
+        "Body": "log-000308",
+        "ServiceName": "worker"
+      },
+      {
+        "Body": "log-000333",
+        "ServiceName": "api"
+      },
+      {
+        "Body": "log-000429",
+        "ServiceName": "api"
+      },
+      {
+        "Body": "log-000473",
+        "ServiceName": "worker"
+      },
+      {
+        "Body": "log-000624",
+        "ServiceName": "api"
+      },
+      {
+        "Body": "log-000638",
+        "ServiceName": "worker"
+      },
+      {
+        "Body": "log-000668",
+        "ServiceName": "worker"
+      },
+      {
+        "Body": "log-000672",
+        "ServiceName": "api"
+      },
+      {
+        "Body": "log-000751",
+        "ServiceName": "web"
+      },
+      {
+        "Body": "log-000777",
+        "ServiceName": "api"
+      },
+      {
+        "Body": "log-000804",
+        "ServiceName": "api"
+      },
+      {
+        "Body": "log-000862",
+        "ServiceName": "web"
+      },
+      {
+        "Body": "log-000887",
+        "ServiceName": "worker"
+      },
+      {
+        "Body": "log-000954",
+        "ServiceName": "api"
+      },
+      {
+        "Body": "log-001291",
+        "ServiceName": "web"
+      },
+      {
+        "Body": "log-001351",
+        "ServiceName": "web"
+      },
+      {
+        "Body": "log-001361",
+        "ServiceName": "worker"
+      },
+      {
+        "Body": "log-001581",
+        "ServiceName": "api"
+      },
+      {
+        "Body": "log-001689",
+        "ServiceName": "api"
+      },
+      {
+        "Body": "log-001697",
+        "ServiceName": "worker"
+      },
+      {
+        "Body": "log-001812",
+        "ServiceName": "api"
+      },
+      {
+        "Body": "log-001898",
+        "ServiceName": "worker"
+      },
+      {
+        "Body": "log-001923",
+        "ServiceName": "api"
+      },
+      {
+        "Body": "log-002030",
+        "ServiceName": "worker"
+      },
+      {
+        "Body": "log-002035",
+        "ServiceName": "web"
+      },
+      {
+        "Body": "log-002067",
+        "ServiceName": "api"
+      },
+      {
+        "Body": "log-002095",
+        "ServiceName": "web"
+      },
+      {
+        "Body": "log-002151",
+        "ServiceName": "api"
+      },
+      {
+        "Body": "log-002170",
+        "ServiceName": "web"
+      },
+      {
+        "Body": "log-002210",
+        "ServiceName": "worker"
+      },
+      {
+        "Body": "log-002335",
+        "ServiceName": "web"
+      },
+      {
+        "Body": "log-002413",
+        "ServiceName": "web"
+      },
+      {
+        "Body": "log-002435",
+        "ServiceName": "worker"
+      },
+      {
+        "Body": "log-002486",
+        "ServiceName": "worker"
+      },
+      {
+        "Body": "log-002535",
+        "ServiceName": "api"
+      },
+      {
+        "Body": "log-002553",
+        "ServiceName": "api"
+      },
+      {
+        "Body": "log-002614",
+        "ServiceName": "web"
+      },
+      {
+        "Body": "log-002656",
+        "ServiceName": "web"
+      },
+      {
+        "Body": "log-002680",
+        "ServiceName": "web"
+      },
+      {
+        "Body": "log-002742",
+        "ServiceName": "api"
+      },
+      {
+        "Body": "log-002779",
+        "ServiceName": "web"
+      },
+      {
+        "Body": "log-002813",
+        "ServiceName": "worker"
+      },
+      {
+        "Body": "log-002845",
+        "ServiceName": "web"
+      },
+      {
+        "Body": "log-002962",
+        "ServiceName": "web"
+      },
+      {
+        "Body": "log-003045",
+        "ServiceName": "api"
+      },
+      {
+        "Body": "log-003098",
+        "ServiceName": "worker"
+      },
+      {
+        "Body": "log-003111",
+        "ServiceName": "api"
+      },
+      {
+        "Body": "log-003213",
+        "ServiceName": "api"
+      },
+      {
+        "Body": "log-003225",
+        "ServiceName": "api"
+      },
+      {
+        "Body": "log-003227",
+        "ServiceName": "worker"
+      },
+      {
+        "Body": "log-003282",
+        "ServiceName": "api"
+      },
+      {
+        "Body": "log-003310",
+        "ServiceName": "web"
+      },
+      {
+        "Body": "log-003333",
+        "ServiceName": "api"
+      },
+      {
+        "Body": "log-003360",
+        "ServiceName": "api"
+      },
+      {
+        "Body": "log-003377",
+        "ServiceName": "worker"
+      },
+      {
+        "Body": "log-003401",
+        "ServiceName": "worker"
+      },
+      {
+        "Body": "log-003425",
+        "ServiceName": "worker"
+      },
+      {
+        "Body": "log-003456",
+        "ServiceName": "api"
+      },
+      {
+        "Body": "log-003509",
+        "ServiceName": "worker"
+      },
+      {
+        "Body": "log-003522",
+        "ServiceName": "api"
+      },
+      {
+        "Body": "log-003530",
+        "ServiceName": "worker"
+      },
+      {
+        "Body": "log-003548",
+        "ServiceName": "worker"
+      },
+      {
+        "Body": "log-003593",
+        "ServiceName": "worker"
+      },
+      {
+        "Body": "log-003601",
+        "ServiceName": "web"
+      },
+      {
+        "Body": "log-003608",
+        "ServiceName": "worker"
+      },
+      {
+        "Body": "log-003646",
+        "ServiceName": "web"
+      },
+      {
+        "Body": "log-003651",
+        "ServiceName": "api"
+      },
+      {
+        "Body": "log-003676",
+        "ServiceName": "web"
+      },
+      {
+        "Body": "log-003679",
+        "ServiceName": "web"
+      },
+      {
+        "Body": "log-003683",
+        "ServiceName": "worker"
+      },
+      {
+        "Body": "log-003786",
+        "ServiceName": "api"
+      },
+      {
+        "Body": "log-003831",
+        "ServiceName": "api"
+      },
+      {
+        "Body": "log-003862",
+        "ServiceName": "web"
+      },
+      {
+        "Body": "log-003869",
+        "ServiceName": "worker"
+      },
+      {
+        "Body": "log-003920",
+        "ServiceName": "worker"
+      },
+      {
+        "Body": "log-003946",
+        "ServiceName": "web"
+      },
+      {
+        "Body": "log-003990",
+        "ServiceName": "api"
+      },
+      {
+        "Body": "log-004040",
+        "ServiceName": "worker"
+      },
+      {
+        "Body": "log-004047",
+        "ServiceName": "api"
+      },
+      {
+        "Body": "log-004161",
+        "ServiceName": "api"
+      },
+      {
+        "Body": "log-004168",
+        "ServiceName": "web"
+      },
+      {
+        "Body": "log-004300",
+        "ServiceName": "web"
+      },
+      {
+        "Body": "log-004305",
+        "ServiceName": "api"
+      },
+      {
+        "Body": "log-004326",
+        "ServiceName": "api"
+      },
+      {
+        "Body": "log-004383",
+        "ServiceName": "api"
+      },
+      {
+        "Body": "log-004438",
+        "ServiceName": "web"
+      },
+      {
+        "Body": "log-004462",
+        "ServiceName": "web"
+      },
+      {
+        "Body": "log-004475",
+        "ServiceName": "worker"
+      },
+      {
+        "Body": "log-004483",
+        "ServiceName": "web"
+      },
+      {
+        "Body": "log-004497",
+        "ServiceName": "api"
+      },
+      {
+        "Body": "log-004560",
+        "ServiceName": "api"
+      },
+      {
+        "Body": "log-004770",
+        "ServiceName": "api"
+      },
+      {
+        "Body": "log-004804",
+        "ServiceName": "web"
+      },
+      {
+        "Body": "log-004809",
+        "ServiceName": "api"
+      },
+      {
+        "Body": "log-004855",
+        "ServiceName": "web"
+      },
+      {
+        "Body": "log-004957",
+        "ServiceName": "web"
+      },
+      {
+        "Body": "log-005049",
+        "ServiceName": "api"
+      },
+      {
+        "Body": "log-005189",
+        "ServiceName": "worker"
+      },
+      {
+        "Body": "log-005197",
+        "ServiceName": "web"
+      },
+      {
+        "Body": "log-005210",
+        "ServiceName": "worker"
+      },
+      {
+        "Body": "log-005247",
+        "ServiceName": "api"
+      },
+      {
+        "Body": "log-005289",
+        "ServiceName": "api"
+      },
+      {
+        "Body": "log-005342",
+        "ServiceName": "worker"
+      },
+      {
+        "Body": "log-005346",
+        "ServiceName": "api"
+      },
+      {
+        "Body": "log-005352",
+        "ServiceName": "api"
+      },
+      {
+        "Body": "log-005388",
+        "ServiceName": "api"
+      },
+      {
+        "Body": "log-005390",
+        "ServiceName": "worker"
+      },
+      {
+        "Body": "log-005481",
+        "ServiceName": "api"
+      },
+      {
+        "Body": "log-005498",
+        "ServiceName": "worker"
+      },
+      {
+        "Body": "log-005512",
+        "ServiceName": "web"
+      },
+      {
+        "Body": "log-005528",
+        "ServiceName": "worker"
+      },
+      {
+        "Body": "log-005530",
+        "ServiceName": "web"
+      },
+      {
+        "Body": "log-005568",
+        "ServiceName": "api"
+      },
+      {
+        "Body": "log-005569",
+        "ServiceName": "web"
+      },
+      {
+        "Body": "log-005643",
+        "ServiceName": "api"
+      },
+      {
+        "Body": "log-005844",
+        "ServiceName": "api"
+      },
+      {
+        "Body": "log-005848",
+        "ServiceName": "web"
+      },
+      {
+        "Body": "log-006072",
+        "ServiceName": "api"
+      },
+      {
+        "Body": "log-006101",
+        "ServiceName": "worker"
+      },
+      {
+        "Body": "log-006141",
+        "ServiceName": "api"
+      },
+      {
+        "Body": "log-006283",
+        "ServiceName": "web"
+      },
+      {
+        "Body": "log-006303",
+        "ServiceName": "api"
+      },
+      {
+        "Body": "log-006365",
+        "ServiceName": "worker"
+      },
+      {
+        "Body": "log-006431",
+        "ServiceName": "worker"
+      },
+      {
+        "Body": "log-006560",
+        "ServiceName": "worker"
+      },
+      {
+        "Body": "log-006607",
+        "ServiceName": "web"
+      },
+      {
+        "Body": "log-006660",
+        "ServiceName": "api"
+      },
+      {
+        "Body": "log-006752",
+        "ServiceName": "worker"
+      },
+      {
+        "Body": "log-006757",
+        "ServiceName": "web"
+      },
+      {
+        "Body": "log-006838",
+        "ServiceName": "web"
+      },
+      {
+        "Body": "log-006841",
+        "ServiceName": "web"
+      },
+      {
+        "Body": "log-006884",
+        "ServiceName": "worker"
+      },
+      {
+        "Body": "log-006887",
+        "ServiceName": "worker"
+      },
+      {
+        "Body": "log-006972",
+        "ServiceName": "api"
+      },
+      {
+        "Body": "log-006973",
+        "ServiceName": "web"
+      },
+      {
+        "Body": "log-007009",
+        "ServiceName": "web"
+      },
+      {
+        "Body": "log-007028",
+        "ServiceName": "worker"
+      },
+      {
+        "Body": "log-007042",
+        "ServiceName": "web"
+      },
+      {
+        "Body": "log-007125",
+        "ServiceName": "api"
+      },
+      {
+        "Body": "log-007263",
+        "ServiceName": "api"
+      },
+      {
+        "Body": "log-007271",
+        "ServiceName": "worker"
+      },
+      {
+        "Body": "log-007339",
+        "ServiceName": "web"
+      },
+      {
+        "Body": "log-007352",
+        "ServiceName": "worker"
+      },
+      {
+        "Body": "log-007389",
+        "ServiceName": "api"
+      },
+      {
+        "Body": "log-007462",
+        "ServiceName": "web"
+      },
+      {
+        "Body": "log-007557",
+        "ServiceName": "api"
+      },
+      {
+        "Body": "log-007567",
+        "ServiceName": "web"
+      },
+      {
+        "Body": "log-007624",
+        "ServiceName": "web"
+      },
+      {
+        "Body": "log-007811",
+        "ServiceName": "worker"
+      },
+      {
+        "Body": "log-007913",
+        "ServiceName": "worker"
+      },
+      {
+        "Body": "log-007924",
+        "ServiceName": "web"
+      },
+      {
+        "Body": "log-008019",
+        "ServiceName": "api"
+      },
+      {
+        "Body": "log-008048",
+        "ServiceName": "worker"
+      },
+      {
+        "Body": "log-008063",
+        "ServiceName": "worker"
+      },
+      {
+        "Body": "log-008116",
+        "ServiceName": "web"
+      },
+      {
+        "Body": "log-008148",
+        "ServiceName": "api"
+      },
+      {
+        "Body": "log-008280",
+        "ServiceName": "api"
+      },
+      {
+        "Body": "log-008376",
+        "ServiceName": "api"
+      },
+      {
+        "Body": "log-008381",
+        "ServiceName": "worker"
+      },
+      {
+        "Body": "log-008417",
+        "ServiceName": "worker"
+      },
+      {
+        "Body": "log-008530",
+        "ServiceName": "web"
+      },
+      {
+        "Body": "log-008537",
+        "ServiceName": "worker"
+      },
+      {
+        "Body": "log-008581",
+        "ServiceName": "web"
+      },
+      {
+        "Body": "log-008645",
+        "ServiceName": "worker"
+      },
+      {
+        "Body": "log-008752",
+        "ServiceName": "web"
+      },
+      {
+        "Body": "log-008943",
+        "ServiceName": "api"
+      },
+      {
+        "Body": "log-008946",
+        "ServiceName": "api"
+      },
+      {
+        "Body": "log-008967",
+        "ServiceName": "api"
+      },
+      {
+        "Body": "log-009029",
+        "ServiceName": "worker"
+      },
+      {
+        "Body": "log-009180",
+        "ServiceName": "api"
+      },
+      {
+        "Body": "log-009220",
+        "ServiceName": "web"
+      },
+      {
+        "Body": "log-009244",
+        "ServiceName": "web"
+      },
+      {
+        "Body": "log-009250",
+        "ServiceName": "web"
+      },
+      {
+        "Body": "log-009251",
+        "ServiceName": "worker"
+      },
+      {
+        "Body": "log-009259",
+        "ServiceName": "web"
+      },
+      {
+        "Body": "log-009349",
+        "ServiceName": "web"
+      },
+      {
+        "Body": "log-009350",
+        "ServiceName": "worker"
+      },
+      {
+        "Body": "log-009459",
+        "ServiceName": "api"
+      },
+      {
+        "Body": "log-009492",
+        "ServiceName": "api"
+      },
+      {
+        "Body": "log-009499",
+        "ServiceName": "web"
+      },
+      {
+        "Body": "log-009507",
+        "ServiceName": "api"
+      },
+      {
+        "Body": "log-009535",
+        "ServiceName": "web"
+      },
+      {
+        "Body": "log-009566",
+        "ServiceName": "worker"
+      },
+      {
+        "Body": "log-009592",
+        "ServiceName": "web"
+      },
+      {
+        "Body": "log-009597",
+        "ServiceName": "api"
+      },
+      {
+        "Body": "log-009599",
+        "ServiceName": "worker"
+      },
+      {
+        "Body": "log-009645",
+        "ServiceName": "api"
+      },
+      {
+        "Body": "log-009690",
+        "ServiceName": "api"
+      },
+      {
+        "Body": "log-009708",
+        "ServiceName": "api"
+      },
+      {
+        "Body": "log-009719",
+        "ServiceName": "worker"
+      },
+      {
+        "Body": "log-009767",
+        "ServiceName": "worker"
+      },
+      {
+        "Body": "log-009819",
+        "ServiceName": "api"
+      },
+      {
+        "Body": "log-009900",
+        "ServiceName": "api"
+      },
+      {
+        "Body": "log-009908",
+        "ServiceName": "worker"
+      },
+      {
+        "Body": "log-009929",
+        "ServiceName": "worker"
+      },
+      {
+        "Body": "log-009977",
+        "ServiceName": "worker"
+      }
+    ]
+  },
+  "divergence": "recorded-at-capture"
+}

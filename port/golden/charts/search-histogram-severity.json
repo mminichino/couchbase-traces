@@ -1,0 +1,136 @@
+{
+  "schemaVersion": 1,
+  "suite": "charts",
+  "caseId": "search-histogram-severity",
+  "datasetSeed": 0,
+  "anchorSensitive": false,
+  "compare": {
+    "ordered": false,
+    "numericTolerance": 1e-9,
+    "ignoreColumns": []
+  },
+  "result": {
+    "rows": [
+      {
+        "count()": 120,
+        "SeverityText": "WARN",
+        "__hdx_time_bucket": -600000
+      },
+      {
+        "count()": 120,
+        "SeverityText": "WARN",
+        "__hdx_time_bucket": -300000
+      },
+      {
+        "count()": 140,
+        "SeverityText": "WARN",
+        "__hdx_time_bucket": -900000
+      },
+      {
+        "count()": 180,
+        "SeverityText": "WARN",
+        "__hdx_time_bucket": -3600000
+      },
+      {
+        "count()": 180,
+        "SeverityText": "WARN",
+        "__hdx_time_bucket": -3300000
+      },
+      {
+        "count()": 180,
+        "SeverityText": "WARN",
+        "__hdx_time_bucket": -3000000
+      },
+      {
+        "count()": 180,
+        "SeverityText": "WARN",
+        "__hdx_time_bucket": -2700000
+      },
+      {
+        "count()": 180,
+        "SeverityText": "WARN",
+        "__hdx_time_bucket": -2400000
+      },
+      {
+        "count()": 180,
+        "SeverityText": "WARN",
+        "__hdx_time_bucket": -2100000
+      },
+      {
+        "count()": 180,
+        "SeverityText": "WARN",
+        "__hdx_time_bucket": -1800000
+      },
+      {
+        "count()": 180,
+        "SeverityText": "WARN",
+        "__hdx_time_bucket": -1500000
+      },
+      {
+        "count()": 180,
+        "SeverityText": "WARN",
+        "__hdx_time_bucket": -1200000
+      },
+      {
+        "count()": 480,
+        "SeverityText": "INFO",
+        "__hdx_time_bucket": -600000
+      },
+      {
+        "count()": 480,
+        "SeverityText": "INFO",
+        "__hdx_time_bucket": -300000
+      },
+      {
+        "count()": 560,
+        "SeverityText": "INFO",
+        "__hdx_time_bucket": -900000
+      },
+      {
+        "count()": 720,
+        "SeverityText": "INFO",
+        "__hdx_time_bucket": -3600000
+      },
+      {
+        "count()": 720,
+        "SeverityText": "INFO",
+        "__hdx_time_bucket": -3300000
+      },
+      {
+        "count()": 720,
+        "SeverityText": "INFO",
+        "__hdx_time_bucket": -3000000
+      },
+      {
+        "count()": 720,
+        "SeverityText": "INFO",
+        "__hdx_time_bucket": -2700000
+      },
+      {
+        "count()": 720,
+        "SeverityText": "INFO",
+        "__hdx_time_bucket": -2400000
+      },
+      {
+        "count()": 720,
+        "SeverityText": "INFO",
+        "__hdx_time_bucket": -2100000
+      },
+      {
+        "count()": 720,
+        "SeverityText": "INFO",
+        "__hdx_time_bucket": -1800000
+      },
+      {
+        "count()": 720,
+        "SeverityText": "INFO",
+        "__hdx_time_bucket": -1500000
+      },
+      {
+        "count()": 720,
+        "SeverityText": "INFO",
+        "__hdx_time_bucket": -1200000
+      }
+    ]
+  }
+}

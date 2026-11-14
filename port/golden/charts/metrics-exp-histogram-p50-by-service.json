@@ -1,0 +1,36 @@
+{
+  "schemaVersion": 1,
+  "suite": "charts",
+  "caseId": "metrics-exp-histogram-p50-by-service",
+  "datasetSeed": 0,
+  "anchorSensitive": false,
+  "compare": {
+    "ordered": false,
+    "numericTolerance": 1e-9,
+    "ignoreColumns": [
+      "__cbt_id"
+    ]
+  },
+  "result": {
+    "rows": [
+      {
+        "group": [
+          "api"
+        ],
+        "value": 4.412851594733452
+      },
+      {
+        "group": [
+          "web"
+        ],
+        "value": 4.201462229253771
+      },
+      {
+        "group": [
+          "worker"
+        ],
+        "value": 4.001489315170527
+      }
+    ]
+  }
+}

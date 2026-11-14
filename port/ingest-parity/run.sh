@@ -50,6 +50,10 @@ build_ingest() {
     mkdir -p "$stage/packages/$name"
     cp "$ROOT/packages/$name/package.json" "$stage/packages/$name/package.json"
   done
+  # Dockerfile builds common-utils before ingest; source must be in the context.
+  cp -R "$ROOT/packages/common-utils/." "$stage/packages/common-utils/"
+  rm -rf "$stage/packages/common-utils/node_modules" "$stage/packages/common-utils/dist" \
+    "$stage/packages/common-utils/coverage"
   cp -R "$ROOT/packages/ingest/." "$stage/packages/ingest/"
   rm -rf "$stage/packages/ingest/node_modules" "$stage/packages/ingest/dist" "$stage/packages/ingest/coverage"
   docker build -f "$ROOT/packages/ingest/Dockerfile" -t cbt-ingest-parity:local "$stage"

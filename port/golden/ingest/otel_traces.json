@@ -1,0 +1,23 @@
+{
+  "schemaVersion": 1,
+  "suite": "ingest",
+  "caseId": "otel_traces",
+  "datasetSeed": 0,
+  "anchorSensitive": false,
+  "compare": {
+    "ordered": true,
+    "numericTolerance": 1e-9,
+    "ignoreColumns": []
+  },
+  "result": {
+    "count": 6,
+    "keys": [
+      "|",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa|bbbbbbbbbbbbbbba",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaab|bbbbbbbbbbbbbbbb",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaac|bbbbbbbbbbbbbbbc",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaad|bbbbbbbbbbbbbbbd",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaae|bbbbbbbbbbbbbbbe"
+    ]
+  }
+}

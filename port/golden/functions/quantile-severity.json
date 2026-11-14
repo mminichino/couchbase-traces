@@ -1,0 +1,15 @@
+{
+  "schemaVersion": 1,
+  "suite": "functions",
+  "caseId": "quantile-severity",
+  "datasetSeed": 0,
+  "anchorSensitive": false,
+  "compare": {
+    "ordered": false,
+    "numericTolerance": 0.01,
+    "ignoreColumns": []
+  },
+  "result": {
+    "value": 5
+  }
+}

@@ -1,0 +1,118 @@
+{
+  "schemaVersion": 1,
+  "suite": "charts",
+  "caseId": "sessions-replay-ordered",
+  "datasetSeed": 0,
+  "anchorSensitive": false,
+  "compare": {
+    "ordered": true,
+    "numericTolerance": 1e-9,
+    "ignoreColumns": [
+      "__cbt_id"
+    ]
+  },
+  "result": {
+    "rows": [
+      {
+        "timestamp": -3600000,
+        "b": "{\"type\":2,\"data\":{\"i\":0}}",
+        "serviceName": "browser"
+      },
+      {
+        "timestamp": -3599000,
+        "b": "{\"type\":3,\"data\":{\"i\":1}}",
+        "serviceName": "browser"
+      },
+      {
+        "timestamp": -3598000,
+        "b": "{\"type\":3,\"data\":{\"i\":2}}",
+        "serviceName": "browser"
+      },
+      {
+        "timestamp": -3597000,
+        "b": "{\"type\":2,\"data\":{\"i\":3}}",
+        "serviceName": "browser"
+      },
+      {
+        "timestamp": -3596000,
+        "b": "{\"type\":3,\"data\":{\"i\":4}}",
+        "serviceName": "browser"
+      },
+      {
+        "timestamp": -3595000,
+        "b": "{\"type\":3,\"data\":{\"i\":5}}",
+        "serviceName": "browser"
+      },
+      {
+        "timestamp": -3594000,
+        "b": "{\"type\":2,\"data\":{\"i\":6}}",
+        "serviceName": "browser"
+      },
+      {
+        "timestamp": -3593000,
+        "b": "{\"type\":3,\"data\":{\"i\":7}}",
+        "serviceName": "browser"
+      },
+      {
+        "timestamp": -3592000,
+        "b": "{\"type\":3,\"data\":{\"i\":8}}",
+        "serviceName": "browser"
+      },
+      {
+        "timestamp": -3591000,
+        "b": "{\"type\":2,\"data\":{\"i\":9}}",
+        "serviceName": "browser"
+      },
+      {
+        "timestamp": -3590000,
+        "b": "{\"type\":3,\"data\":{\"i\":10}}",
+        "serviceName": "browser"
+      },
+      {
+        "timestamp": -3589000,
+        "b": "{\"type\":3,\"data\":{\"i\":11}}",
+        "serviceName": "browser"
+      },
+      {
+        "timestamp": -3588000,
+        "b": "{\"type\":2,\"data\":{\"i\":12}}",
+        "serviceName": "browser"
+      },
+      {
+        "timestamp": -3587000,
+        "b": "{\"type\":3,\"data\":{\"i\":13}}",
+        "serviceName": "browser"
+      },
+      {
+        "timestamp": -3586000,
+        "b": "{\"type\":3,\"data\":{\"i\":14}}",
+        "serviceName": "browser"
+      },
+      {
+        "timestamp": -3585000,
+        "b": "{\"type\":2,\"data\":{\"i\":15}}",
+        "serviceName": "browser"
+      },
+      {
+        "timestamp": -3584000,
+        "b": "{\"type\":3,\"data\":{\"i\":16}}",
+        "serviceName": "browser"
+      },
+      {
+        "timestamp": -3583000,
+        "b": "{\"type\":3,\"data\":{\"i\":17}}",
+        "serviceName": "browser"
+      },
+      {
+        "timestamp": -3582000,
+        "b": "{\"type\":2,\"data\":{\"i\":18}}",
+        "serviceName": "browser"
+      },
+      {
+        "timestamp": -3581000,
+        "b": "{\"type\":3,\"data\":{\"i\":19}}",
+        "serviceName": "browser"
+      }
+    ]
+  }
+}

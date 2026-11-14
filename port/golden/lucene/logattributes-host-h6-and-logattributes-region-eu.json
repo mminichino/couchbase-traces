@@ -1,0 +1,15 @@
+{
+  "schemaVersion": 1,
+  "suite": "lucene",
+  "caseId": "logattributes-host-h6-and-logattributes-region-eu",
+  "datasetSeed": 0,
+  "anchorSensitive": false,
+  "compare": {
+    "ordered": false,
+    "numericTolerance": 1e-9,
+    "ignoreColumns": []
+  },
+  "result": {
+    "ids": []
+  }
+}

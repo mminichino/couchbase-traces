@@ -4,7 +4,10 @@
  * Event times are exact seconds (metrics) or nanoseconds (logs and spans)
  * inside the last hour, so nothing expires and DateTime64 values match.
  */
-const base = Math.floor(Date.now() / 1000) - 600;
+// GOLDEN_ANCHOR_MS pins event times so capture/replay goldens match across runs.
+const base = process.env.GOLDEN_ANCHOR_MS
+  ? Math.floor(Number(process.env.GOLDEN_ANCHOR_MS) / 1000) - 600
+  : Math.floor(Date.now() / 1000) - 600;
 
 function ns(offset, frac = 0) {
   return (BigInt(base + offset) * 1_000_000_000n + BigInt(frac)).toString();

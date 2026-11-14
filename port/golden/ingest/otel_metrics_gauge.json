@@ -1,0 +1,18 @@
+{
+  "schemaVersion": 1,
+  "suite": "ingest",
+  "caseId": "otel_metrics_gauge",
+  "datasetSeed": 0,
+  "anchorSensitive": false,
+  "compare": {
+    "ordered": true,
+    "numericTolerance": 1e-9,
+    "ignoreColumns": []
+  },
+  "result": {
+    "count": 1,
+    "keys": [
+      "parity.gauge|2026-11-08T23:50:30.000000000Z|{}"
+    ]
+  }
+}

@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "suite": "charts",
+  "caseId": "charts-cte-with",
+  "datasetSeed": 0,
+  "anchorSensitive": false,
+  "compare": {
+    "ordered": true,
+    "numericTolerance": 1e-9,
+    "ignoreColumns": [
+      "__cbt_id"
+    ]
+  },
+  "result": {
+    "rows": [
+      {
+        "c": 3334
+      },
+      {
+        "c": 3333
+      },
+      {
+        "c": 3333
+      }
+    ]
+  }
+}

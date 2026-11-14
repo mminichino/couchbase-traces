@@ -1,0 +1,258 @@
+{
+  "schemaVersion": 1,
+  "suite": "charts",
+  "caseId": "charts-raw-sql-timefilter",
+  "datasetSeed": 0,
+  "anchorSensitive": false,
+  "compare": {
+    "ordered": true,
+    "numericTolerance": 1e-9,
+    "ignoreColumns": [
+      "__cbt_id"
+    ]
+  },
+  "result": {
+    "rows": [
+      {
+        "c": 180,
+        "__hdx_time_bucket": -3600000
+      },
+      {
+        "c": 180,
+        "__hdx_time_bucket": -3540000
+      },
+      {
+        "c": 180,
+        "__hdx_time_bucket": -3480000
+      },
+      {
+        "c": 180,
+        "__hdx_time_bucket": -3420000
+      },
+      {
+        "c": 180,
+        "__hdx_time_bucket": -3360000
+      },
+      {
+        "c": 180,
+        "__hdx_time_bucket": -3300000
+      },
+      {
+        "c": 180,
+        "__hdx_time_bucket": -3240000
+      },
+      {
+        "c": 180,
+        "__hdx_time_bucket": -3180000
+      },
+      {
+        "c": 180,
+        "__hdx_time_bucket": -3120000
+      },
+      {
+        "c": 180,
+        "__hdx_time_bucket": -3060000
+      },
+      {
+        "c": 180,
+        "__hdx_time_bucket": -3000000
+      },
+      {
+        "c": 180,
+        "__hdx_time_bucket": -2940000
+      },
+      {
+        "c": 180,
+        "__hdx_time_bucket": -2880000
+      },
+      {
+        "c": 180,
+        "__hdx_time_bucket": -2820000
+      },
+      {
+        "c": 180,
+        "__hdx_time_bucket": -2760000
+      },
+      {
+        "c": 180,
+        "__hdx_time_bucket": -2700000
+      },
+      {
+        "c": 180,
+        "__hdx_time_bucket": -2640000
+      },
+      {
+        "c": 180,
+        "__hdx_time_bucket": -2580000
+      },
+      {
+        "c": 180,
+        "__hdx_time_bucket": -2520000
+      },
+      {
+        "c": 180,
+        "__hdx_time_bucket": -2460000
+      },
+      {
+        "c": 180,
+        "__hdx_time_bucket": -2400000
+      },
+      {
+        "c": 180,
+        "__hdx_time_bucket": -2340000
+      },
+      {
+        "c": 180,
+        "__hdx_time_bucket": -2280000
+      },
+      {
+        "c": 180,
+        "__hdx_time_bucket": -2220000
+      },
+      {
+        "c": 180,
+        "__hdx_time_bucket": -2160000
+      },
+      {
+        "c": 180,
+        "__hdx_time_bucket": -2100000
+      },
+      {
+        "c": 180,
+        "__hdx_time_bucket": -2040000
+      },
+      {
+        "c": 180,
+        "__hdx_time_bucket": -1980000
+      },
+      {
+        "c": 180,
+        "__hdx_time_bucket": -1920000
+      },
+      {
+        "c": 180,
+        "__hdx_time_bucket": -1860000
+      },
+      {
+        "c": 180,
+        "__hdx_time_bucket": -1800000
+      },
+      {
+        "c": 180,
+        "__hdx_time_bucket": -1740000
+      },
+      {
+        "c": 180,
+        "__hdx_time_bucket": -1680000
+      },
+      {
+        "c": 180,
+        "__hdx_time_bucket": -1620000
+      },
+      {
+        "c": 180,
+        "__hdx_time_bucket": -1560000
+      },
+      {
+        "c": 180,
+        "__hdx_time_bucket": -1500000
+      },
+      {
+        "c": 180,
+        "__hdx_time_bucket": -1440000
+      },
+      {
+        "c": 180,
+        "__hdx_time_bucket": -1380000
+      },
+      {
+        "c": 180,
+        "__hdx_time_bucket": -1320000
+      },
+      {
+        "c": 180,
+        "__hdx_time_bucket": -1260000
+      },
+      {
+        "c": 180,
+        "__hdx_time_bucket": -1200000
+      },
+      {
+        "c": 180,
+        "__hdx_time_bucket": -1140000
+      },
+      {
+        "c": 180,
+        "__hdx_time_bucket": -1080000
+      },
+      {
+        "c": 180,
+        "__hdx_time_bucket": -1020000
+      },
+      {
+        "c": 180,
+        "__hdx_time_bucket": -960000
+      },
+      {
+        "c": 180,
+        "__hdx_time_bucket": -900000
+      },
+      {
+        "c": 160,
+        "__hdx_time_bucket": -840000
+      },
+      {
+        "c": 120,
+        "__hdx_time_bucket": -780000
+      },
+      {
+        "c": 120,
+        "__hdx_time_bucket": -720000
+      },
+      {
+        "c": 120,
+        "__hdx_time_bucket": -660000
+      },
+      {
+        "c": 120,
+        "__hdx_time_bucket": -600000
+      },
+      {
+        "c": 120,
+        "__hdx_time_bucket": -540000
+      },
+      {
+        "c": 120,
+        "__hdx_time_bucket": -480000
+      },
+      {
+        "c": 120,
+        "__hdx_time_bucket": -420000
+      },
+      {
+        "c": 120,
+        "__hdx_time_bucket": -360000
+      },
+      {
+        "c": 120,
+        "__hdx_time_bucket": -300000
+      },
+      {
+        "c": 120,
+        "__hdx_time_bucket": -240000
+      },
+      {
+        "c": 120,
+        "__hdx_time_bucket": -180000
+      },
+      {
+        "c": 120,
+        "__hdx_time_bucket": -120000
+      },
+      {
+        "c": 120,
+        "__hdx_time_bucket": -60000
+      }
+    ]
+  }
+}

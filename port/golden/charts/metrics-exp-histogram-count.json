@@ -1,0 +1,21 @@
+{
+  "schemaVersion": 1,
+  "suite": "charts",
+  "caseId": "metrics-exp-histogram-count",
+  "datasetSeed": 0,
+  "anchorSensitive": false,
+  "compare": {
+    "ordered": false,
+    "numericTolerance": 1e-9,
+    "ignoreColumns": [
+      "__cbt_id"
+    ]
+  },
+  "result": {
+    "rows": [
+      {
+        "value": 5196
+      }
+    ]
+  }
+}

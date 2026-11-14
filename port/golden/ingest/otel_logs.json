@@ -1,0 +1,21 @@
+{
+  "schemaVersion": 1,
+  "suite": "ingest",
+  "caseId": "otel_logs",
+  "datasetSeed": 0,
+  "anchorSensitive": false,
+  "compare": {
+    "ordered": true,
+    "numericTolerance": 1e-9,
+    "ignoreColumns": []
+  },
+  "result": {
+    "count": 4,
+    "keys": [
+      "2026-11-08T23:50:01.123456789Z|kinds",
+      "2026-11-08T23:50:02.000000000Z|{\"a\":true,\"b\":\"2\"}",
+      "2026-11-08T23:50:03.000000000Z|empty-ids",
+      "2026-11-08T23:50:04.000000005Z|observed"
+    ]
+  }
+}

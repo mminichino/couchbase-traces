@@ -1,0 +1,30 @@
+{
+  "schemaVersion": 1,
+  "suite": "charts",
+  "caseId": "charts-orderby-limit",
+  "datasetSeed": 0,
+  "anchorSensitive": false,
+  "compare": {
+    "ordered": true,
+    "numericTolerance": 1e-9,
+    "ignoreColumns": [
+      "__cbt_id"
+    ]
+  },
+  "result": {
+    "rows": [
+      {
+        "value": 3334,
+        "ServiceName": "api"
+      },
+      {
+        "value": 3333,
+        "ServiceName": "web"
+      },
+      {
+        "value": 3333,
+        "ServiceName": "worker"
+      }
+    ]
+  }
+}

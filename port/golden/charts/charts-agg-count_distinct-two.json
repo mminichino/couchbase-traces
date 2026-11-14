@@ -1,0 +1,450 @@
+{
+  "schemaVersion": 1,
+  "suite": "charts",
+  "caseId": "charts-agg-count_distinct-two",
+  "datasetSeed": 0,
+  "anchorSensitive": false,
+  "compare": {
+    "ordered": false,
+    "numericTolerance": 1e-9,
+    "ignoreColumns": [
+      "__cbt_id"
+    ]
+  },
+  "result": {
+    "rows": [
+      {
+        "value": 1,
+        "ServiceName": "api",
+        "SeverityText": "INFO",
+        "__hdx_time_bucket": -3600000
+      },
+      {
+        "value": 1,
+        "ServiceName": "api",
+        "SeverityText": "INFO",
+        "__hdx_time_bucket": -3300000
+      },
+      {
+        "value": 1,
+        "ServiceName": "api",
+        "SeverityText": "INFO",
+        "__hdx_time_bucket": -3000000
+      },
+      {
+        "value": 1,
+        "ServiceName": "api",
+        "SeverityText": "INFO",
+        "__hdx_time_bucket": -2700000
+      },
+      {
+        "value": 1,
+        "ServiceName": "api",
+        "SeverityText": "INFO",
+        "__hdx_time_bucket": -2400000
+      },
+      {
+        "value": 1,
+        "ServiceName": "api",
+        "SeverityText": "INFO",
+        "__hdx_time_bucket": -2100000
+      },
+      {
+        "value": 1,
+        "ServiceName": "api",
+        "SeverityText": "INFO",
+        "__hdx_time_bucket": -1800000
+      },
+      {
+        "value": 1,
+        "ServiceName": "api",
+        "SeverityText": "INFO",
+        "__hdx_time_bucket": -1500000
+      },
+      {
+        "value": 1,
+        "ServiceName": "api",
+        "SeverityText": "INFO",
+        "__hdx_time_bucket": -1200000
+      },
+      {
+        "value": 1,
+        "ServiceName": "api",
+        "SeverityText": "INFO",
+        "__hdx_time_bucket": -900000
+      },
+      {
+        "value": 1,
+        "ServiceName": "api",
+        "SeverityText": "INFO",
+        "__hdx_time_bucket": -600000
+      },
+      {
+        "value": 1,
+        "ServiceName": "api",
+        "SeverityText": "INFO",
+        "__hdx_time_bucket": -300000
+      },
+      {
+        "value": 1,
+        "ServiceName": "api",
+        "SeverityText": "WARN",
+        "__hdx_time_bucket": -3600000
+      },
+      {
+        "value": 1,
+        "ServiceName": "api",
+        "SeverityText": "WARN",
+        "__hdx_time_bucket": -3300000
+      },
+      {
+        "value": 1,
+        "ServiceName": "api",
+        "SeverityText": "WARN",
+        "__hdx_time_bucket": -3000000
+      },
+      {
+        "value": 1,
+        "ServiceName": "api",
+        "SeverityText": "WARN",
+        "__hdx_time_bucket": -2700000
+      },
+      {
+        "value": 1,
+        "ServiceName": "api",
+        "SeverityText": "WARN",
+        "__hdx_time_bucket": -2400000
+      },
+      {
+        "value": 1,
+        "ServiceName": "api",
+        "SeverityText": "WARN",
+        "__hdx_time_bucket": -2100000
+      },
+      {
+        "value": 1,
+        "ServiceName": "api",
+        "SeverityText": "WARN",
+        "__hdx_time_bucket": -1800000
+      },
+      {
+        "value": 1,
+        "ServiceName": "api",
+        "SeverityText": "WARN",
+        "__hdx_time_bucket": -1500000
+      },
+      {
+        "value": 1,
+        "ServiceName": "api",
+        "SeverityText": "WARN",
+        "__hdx_time_bucket": -1200000
+      },
+      {
+        "value": 1,
+        "ServiceName": "api",
+        "SeverityText": "WARN",
+        "__hdx_time_bucket": -900000
+      },
+      {
+        "value": 1,
+        "ServiceName": "api",
+        "SeverityText": "WARN",
+        "__hdx_time_bucket": -600000
+      },
+      {
+        "value": 1,
+        "ServiceName": "api",
+        "SeverityText": "WARN",
+        "__hdx_time_bucket": -300000
+      },
+      {
+        "value": 1,
+        "ServiceName": "web",
+        "SeverityText": "INFO",
+        "__hdx_time_bucket": -3600000
+      },
+      {
+        "value": 1,
+        "ServiceName": "web",
+        "SeverityText": "INFO",
+        "__hdx_time_bucket": -3300000
+      },
+      {
+        "value": 1,
+        "ServiceName": "web",
+        "SeverityText": "INFO",
+        "__hdx_time_bucket": -3000000
+      },
+      {
+        "value": 1,
+        "ServiceName": "web",
+        "SeverityText": "INFO",
+        "__hdx_time_bucket": -2700000
+      },
+      {
+        "value": 1,
+        "ServiceName": "web",
+        "SeverityText": "INFO",
+        "__hdx_time_bucket": -2400000
+      },
+      {
+        "value": 1,
+        "ServiceName": "web",
+        "SeverityText": "INFO",
+        "__hdx_time_bucket": -2100000
+      },
+      {
+        "value": 1,
+        "ServiceName": "web",
+        "SeverityText": "INFO",
+        "__hdx_time_bucket": -1800000
+      },
+      {
+        "value": 1,
+        "ServiceName": "web",
+        "SeverityText": "INFO",
+        "__hdx_time_bucket": -1500000
+      },
+      {
+        "value": 1,
+        "ServiceName": "web",
+        "SeverityText": "INFO",
+        "__hdx_time_bucket": -1200000
+      },
+      {
+        "value": 1,
+        "ServiceName": "web",
+        "SeverityText": "INFO",
+        "__hdx_time_bucket": -900000
+      },
+      {
+        "value": 1,
+        "ServiceName": "web",
+        "SeverityText": "INFO",
+        "__hdx_time_bucket": -600000
+      },
+      {
+        "value": 1,
+        "ServiceName": "web",
+        "SeverityText": "INFO",
+        "__hdx_time_bucket": -300000
+      },
+      {
+        "value": 1,
+        "ServiceName": "web",
+        "SeverityText": "WARN",
+        "__hdx_time_bucket": -3600000
+      },
+      {
+        "value": 1,
+        "ServiceName": "web",
+        "SeverityText": "WARN",
+        "__hdx_time_bucket": -3300000
+      },
+      {
+        "value": 1,
+        "ServiceName": "web",
+        "SeverityText": "WARN",
+        "__hdx_time_bucket": -3000000
+      },
+      {
+        "value": 1,
+        "ServiceName": "web",
+        "SeverityText": "WARN",
+        "__hdx_time_bucket": -2700000
+      },
+      {
+        "value": 1,
+        "ServiceName": "web",
+        "SeverityText": "WARN",
+        "__hdx_time_bucket": -2400000
+      },
+      {
+        "value": 1,
+        "ServiceName": "web",
+        "SeverityText": "WARN",
+        "__hdx_time_bucket": -2100000
+      },
+      {
+        "value": 1,
+        "ServiceName": "web",
+        "SeverityText": "WARN",
+        "__hdx_time_bucket": -1800000
+      },
+      {
+        "value": 1,
+        "ServiceName": "web",
+        "SeverityText": "WARN",
+        "__hdx_time_bucket": -1500000
+      },
+      {
+        "value": 1,
+        "ServiceName": "web",
+        "SeverityText": "WARN",
+        "__hdx_time_bucket": -1200000
+      },
+      {
+        "value": 1,
+        "ServiceName": "web",
+        "SeverityText": "WARN",
+        "__hdx_time_bucket": -900000
+      },
+      {
+        "value": 1,
+        "ServiceName": "web",
+        "SeverityText": "WARN",
+        "__hdx_time_bucket": -600000
+      },
+      {
+        "value": 1,
+        "ServiceName": "web",
+        "SeverityText": "WARN",
+        "__hdx_time_bucket": -300000
+      },
+      {
+        "value": 1,
+        "ServiceName": "worker",
+        "SeverityText": "INFO",
+        "__hdx_time_bucket": -3600000
+      },
+      {
+        "value": 1,
+        "ServiceName": "worker",
+        "SeverityText": "INFO",
+        "__hdx_time_bucket": -3300000
+      },
+      {
+        "value": 1,
+        "ServiceName": "worker",
+        "SeverityText": "INFO",
+        "__hdx_time_bucket": -3000000
+      },
+      {
+        "value": 1,
+        "ServiceName": "worker",
+        "SeverityText": "INFO",
+        "__hdx_time_bucket": -2700000
+      },
+      {
+        "value": 1,
+        "ServiceName": "worker",
+        "SeverityText": "INFO",
+        "__hdx_time_bucket": -2400000
+      },
+      {
+        "value": 1,
+        "ServiceName": "worker",
+        "SeverityText": "INFO",
+        "__hdx_time_bucket": -2100000
+      },
+      {
+        "value": 1,
+        "ServiceName": "worker",
+        "SeverityText": "INFO",
+        "__hdx_time_bucket": -1800000
+      },
+      {
+        "value": 1,
+        "ServiceName": "worker",
+        "SeverityText": "INFO",
+        "__hdx_time_bucket": -1500000
+      },
+      {
+        "value": 1,
+        "ServiceName": "worker",
+        "SeverityText": "INFO",
+        "__hdx_time_bucket": -1200000
+      },
+      {
+        "value": 1,
+        "ServiceName": "worker",
+        "SeverityText": "INFO",
+        "__hdx_time_bucket": -900000
+      },
+      {
+        "value": 1,
+        "ServiceName": "worker",
+        "SeverityText": "INFO",
+        "__hdx_time_bucket": -600000
+      },
+      {
+        "value": 1,
+        "ServiceName": "worker",
+        "SeverityText": "INFO",
+        "__hdx_time_bucket": -300000
+      },
+      {
+        "value": 1,
+        "ServiceName": "worker",
+        "SeverityText": "WARN",
+        "__hdx_time_bucket": -3600000
+      },
+      {
+        "value": 1,
+        "ServiceName": "worker",
+        "SeverityText": "WARN",
+        "__hdx_time_bucket": -3300000
+      },
+      {
+        "value": 1,
+        "ServiceName": "worker",
+        "SeverityText": "WARN",
+        "__hdx_time_bucket": -3000000
+      },
+      {
+        "value": 1,
+        "ServiceName": "worker",
+        "SeverityText": "WARN",
+        "__hdx_time_bucket": -2700000
+      },
+      {
+        "value": 1,
+        "ServiceName": "worker",
+        "SeverityText": "WARN",
+        "__hdx_time_bucket": -2400000
+      },
+      {
+        "value": 1,
+        "ServiceName": "worker",
+        "SeverityText": "WARN",
+        "__hdx_time_bucket": -2100000
+      },
+      {
+        "value": 1,
+        "ServiceName": "worker",
+        "SeverityText": "WARN",
+        "__hdx_time_bucket": -1800000
+      },
+      {
+        "value": 1,
+        "ServiceName": "worker",
+        "SeverityText": "WARN",
+        "__hdx_time_bucket": -1500000
+      },
+      {
+        "value": 1,
+        "ServiceName": "worker",
+        "SeverityText": "WARN",
+        "__hdx_time_bucket": -1200000
+      },
+      {
+        "value": 1,
+        "ServiceName": "worker",
+        "SeverityText": "WARN",
+        "__hdx_time_bucket": -900000
+      },
+      {
+        "value": 1,
+        "ServiceName": "worker",
+        "SeverityText": "WARN",
+        "__hdx_time_bucket": -600000
+      },
+      {
+        "value": 1,
+        "ServiceName": "worker",
+        "SeverityText": "WARN",
+        "__hdx_time_bucket": -300000
+      }
+    ]
+  }
+}

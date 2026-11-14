@@ -1,0 +1,20 @@
+{
+  "schemaVersion": 1,
+  "suite": "functions",
+  "caseId": "hour-buckets",
+  "datasetSeed": 0,
+  "anchorSensitive": false,
+  "compare": {
+    "ordered": true,
+    "numericTolerance": 1e-9,
+    "ignoreColumns": []
+  },
+  "result": {
+    "rows": [
+      {
+        "b": 1794178800000,
+        "c": 10000
+      }
+    ]
+  }
+}

@@ -1,0 +1,18 @@
+{
+  "schemaVersion": 1,
+  "suite": "functions",
+  "caseId": "metadata-map-keys",
+  "datasetSeed": 0,
+  "anchorSensitive": false,
+  "compare": {
+    "ordered": false,
+    "numericTolerance": 1e-9,
+    "ignoreColumns": []
+  },
+  "result": {
+    "keys": [
+      "host",
+      "region"
+    ]
+  }
+}

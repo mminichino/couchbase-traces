@@ -1,0 +1,23 @@
+{
+  "schemaVersion": 1,
+  "suite": "charts",
+  "caseId": "charts-formula-count-ratio",
+  "datasetSeed": 0,
+  "anchorSensitive": false,
+  "compare": {
+    "ordered": false,
+    "numericTolerance": 0.05,
+    "ignoreColumns": [
+      "__cbt_id"
+    ]
+  },
+  "result": {
+    "rows": [
+      {
+        "errors": 0,
+        "total": 10000,
+        "err rate": 0
+      }
+    ]
+  }
+}

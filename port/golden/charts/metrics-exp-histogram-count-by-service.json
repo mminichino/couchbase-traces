@@ -1,0 +1,36 @@
+{
+  "schemaVersion": 1,
+  "suite": "charts",
+  "caseId": "metrics-exp-histogram-count-by-service",
+  "datasetSeed": 0,
+  "anchorSensitive": false,
+  "compare": {
+    "ordered": false,
+    "numericTolerance": 1e-9,
+    "ignoreColumns": [
+      "__cbt_id"
+    ]
+  },
+  "result": {
+    "rows": [
+      {
+        "group": [
+          "api"
+        ],
+        "value": 1605
+      },
+      {
+        "group": [
+          "web"
+        ],
+        "value": 1730
+      },
+      {
+        "group": [
+          "worker"
+        ],
+        "value": 1861
+      }
+    ]
+  }
+}

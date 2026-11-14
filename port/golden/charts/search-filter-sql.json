@@ -1,0 +1,19 @@
+{
+  "schemaVersion": 1,
+  "suite": "charts",
+  "caseId": "search-filter-sql",
+  "datasetSeed": 0,
+  "anchorSensitive": false,
+  "compare": {
+    "ordered": false,
+    "numericTolerance": 1e-9,
+    "ignoreColumns": []
+  },
+  "result": {
+    "rows": [
+      {
+        "count()": 2000
+      }
+    ]
+  }
+}

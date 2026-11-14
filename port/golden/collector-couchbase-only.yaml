@@ -1,0 +1,75 @@
+receivers:
+  otlp:
+    protocols:
+      http:
+        endpoint: 0.0.0.0:4318
+
+processors:
+  batch: {}
+
+connectors:
+  routing/logs:
+    default_pipelines: [logs/out-default]
+    error_mode: ignore
+    table:
+      - context: log
+        statement: route() where IsMatch(attributes["rr-web.event"], ".*")
+        pipelines: [logs/out-rrweb]
+
+exporters:
+  otlphttp/couchbase:
+    endpoint: http://ingest:4320
+    encoding: json
+    compression: gzip
+    headers:
+      Authorization: Bearer 0123456789abcdef0123456789abcdef
+    timeout: 30s
+    retry_on_failure:
+      enabled: true
+      initial_interval: 5s
+      max_interval: 30s
+      max_elapsed_time: 300s
+    sending_queue:
+      enabled: true
+      num_consumers: 4
+      queue_size: 1000
+  otlphttp/couchbase-rrweb:
+    endpoint: http://ingest:4320
+    encoding: json
+    compression: gzip
+    headers:
+      Authorization: Bearer 0123456789abcdef0123456789abcdef
+    logs_endpoint: http://ingest:4320/v1/sessions
+    timeout: 30s
+    retry_on_failure:
+      enabled: true
+      initial_interval: 5s
+      max_interval: 30s
+      max_elapsed_time: 300s
+    sending_queue:
+      enabled: true
+      num_consumers: 4
+      queue_size: 1000
+
+service:
+  pipelines:
+    traces:
+      receivers: [otlp]
+      processors: [batch]
+      exporters: [otlphttp/couchbase]
+    metrics:
+      receivers: [otlp]
+      processors: [batch]
+      exporters: [otlphttp/couchbase]
+    logs/in:
+      receivers: [otlp]
+      processors: [batch]
+      exporters: [routing/logs]
+    logs/out-default:
+      receivers: [routing/logs]
+      processors: [batch]
+      exporters: [otlphttp/couchbase]
+    logs/out-rrweb:
+      receivers: [routing/logs]
+      processors: [batch]
+      exporters: [otlphttp/couchbase-rrweb]

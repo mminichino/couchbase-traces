@@ -1,0 +1,99 @@
+{
+  "schemaVersion": 1,
+  "suite": "charts",
+  "caseId": "search-live-tail-inclusive",
+  "datasetSeed": 0,
+  "anchorSensitive": false,
+  "compare": {
+    "ordered": true,
+    "numericTolerance": 1e-9,
+    "ignoreColumns": [
+      "__cbt_id",
+      "Timestamp"
+    ]
+  },
+  "result": {
+    "rows": [
+      {
+        "ServiceName": "worker",
+        "Body": "log-007199"
+      },
+      {
+        "ServiceName": "worker",
+        "Body": "log-003599"
+      },
+      {
+        "ServiceName": "web",
+        "Body": "log-007198"
+      },
+      {
+        "ServiceName": "web",
+        "Body": "log-003598"
+      },
+      {
+        "ServiceName": "api",
+        "Body": "log-007197"
+      },
+      {
+        "ServiceName": "api",
+        "Body": "log-003597"
+      },
+      {
+        "ServiceName": "worker",
+        "Body": "log-007196"
+      },
+      {
+        "ServiceName": "worker",
+        "Body": "log-003596"
+      },
+      {
+        "ServiceName": "web",
+        "Body": "log-007195"
+      },
+      {
+        "ServiceName": "web",
+        "Body": "log-003595"
+      },
+      {
+        "ServiceName": "api",
+        "Body": "log-007194"
+      },
+      {
+        "ServiceName": "api",
+        "Body": "log-003594"
+      },
+      {
+        "ServiceName": "worker",
+        "Body": "log-007193"
+      },
+      {
+        "ServiceName": "worker",
+        "Body": "log-003593"
+      },
+      {
+        "ServiceName": "web",
+        "Body": "log-007192"
+      },
+      {
+        "ServiceName": "web",
+        "Body": "log-003592"
+      },
+      {
+        "ServiceName": "api",
+        "Body": "log-007191"
+      },
+      {
+        "ServiceName": "api",
+        "Body": "log-003591"
+      },
+      {
+        "ServiceName": "worker",
+        "Body": "log-007190"
+      },
+      {
+        "ServiceName": "worker",
+        "Body": "log-003590"
+      }
+    ]
+  }
+}

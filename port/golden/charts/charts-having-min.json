@@ -1,0 +1,30 @@
+{
+  "schemaVersion": 1,
+  "suite": "charts",
+  "caseId": "charts-having-min",
+  "datasetSeed": 0,
+  "anchorSensitive": false,
+  "compare": {
+    "ordered": false,
+    "numericTolerance": 1e-9,
+    "ignoreColumns": [
+      "__cbt_id"
+    ]
+  },
+  "result": {
+    "rows": [
+      {
+        "c": 3333,
+        "ServiceName": "web"
+      },
+      {
+        "c": 3333,
+        "ServiceName": "worker"
+      },
+      {
+        "c": 3334,
+        "ServiceName": "api"
+      }
+    ]
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 1,
+  "gitSha": "a9a691f36cfac94aa9890ee85fc452fa5754b0fa",
+  "anchorIso": "2026-11-09T00:00:00.000Z",
+  "anchorMs": 1794182400000,
+  "capturedAtIso": "2026-11-14T00:29:27.376Z",
+  "suites": {
+    "ingest": 8,
+    "lucene": 62,
+    "functions": 7,
+    "charts": 75,
+    "alerts": 0,
+    "external_api": 0,
+    "mcp": 0,
+    "cli": 0
+  }
+}

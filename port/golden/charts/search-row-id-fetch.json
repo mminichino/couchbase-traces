@@ -1,0 +1,31 @@
+{
+  "schemaVersion": 1,
+  "suite": "charts",
+  "caseId": "search-row-id-fetch",
+  "datasetSeed": 0,
+  "anchorSensitive": false,
+  "compare": {
+    "ordered": true,
+    "numericTolerance": 1e-9,
+    "ignoreColumns": [
+      "__cbt_id",
+      "Timestamp"
+    ]
+  },
+  "result": {
+    "rows": [
+      {
+        "ServiceName": "api",
+        "Body": "log-000000"
+      },
+      {
+        "ServiceName": "api",
+        "Body": "log-000003"
+      },
+      {
+        "ServiceName": "api",
+        "Body": "log-000006"
+      }
+    ]
+  }
+}

@@ -1,0 +1,22 @@
+{
+  "schemaVersion": 1,
+  "suite": "charts",
+  "caseId": "traces-duration-p95-by-service",
+  "datasetSeed": 0,
+  "anchorSensitive": false,
+  "compare": {
+    "ordered": true,
+    "numericTolerance": 0.05,
+    "ignoreColumns": [
+      "__cbt_id"
+    ]
+  },
+  "result": {
+    "rows": [
+      {
+        "value": 1000000,
+        "ServiceName": "api"
+      }
+    ]
+  }
+}
