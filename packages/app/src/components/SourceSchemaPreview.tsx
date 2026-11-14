@@ -121,7 +121,7 @@ interface SourceSchemaPreviewSource {
   metricTables?: TMetricSource['metricTables'];
   kind?: TSource['kind'];
   name?: TSource['name'];
-  materializedViews?: TLogSource['materializedViews'];
+  metadataMaterializedViews?: TLogSource['metadataMaterializedViews'];
 }
 
 interface SourceSchemaPreviewProps {
@@ -184,16 +184,6 @@ function getSourceSchemaTables(
       title: source.name ?? source.from.tableName,
     });
   }
-
-  const mvConfigs = source.materializedViews ?? [];
-  tables.push(
-    ...mvConfigs.map(({ tableName, databaseName }) => ({
-      databaseName,
-      tableName,
-      connectionId: source.connection,
-      title: `${tableName} (MV)`,
-    })),
-  );
 
   return tables;
 }

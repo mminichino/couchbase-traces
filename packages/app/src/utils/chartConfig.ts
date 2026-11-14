@@ -1,4 +1,3 @@
-import { getPromqlSeries } from '@couchbase-traces/common-utils/dist/core/promql';
 import { isPromqlChartConfig } from '@couchbase-traces/common-utils/dist/guards';
 import { ChartConfigWithOptDateRange } from '@couchbase-traces/common-utils/dist/types';
 
@@ -9,11 +8,8 @@ import { ChartConfigWithOptDateRange } from '@couchbase-traces/common-utils/dist
 export function stripClientSideConfigFields(
   config: ChartConfigWithOptDateRange,
 ): ChartConfigWithOptDateRange {
-  if (!isPromqlChartConfig(config)) return config;
-  return {
-    ...config,
-    promqlExpression: getPromqlSeries(config).map(
-      ({ reducer: _reducer, ...series }) => series,
-    ),
-  };
+  if (isPromqlChartConfig(config)) {
+    return config;
+  }
+  return config;
 }

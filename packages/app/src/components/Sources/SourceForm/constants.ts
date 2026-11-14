@@ -3,12 +3,25 @@ import {
   UseTextIndex,
 } from '@couchbase-traces/common-utils/dist/types';
 
-import {
-  MV_AGGREGATE_FUNCTIONS,
-  MV_GRANULARITY_OPTIONS,
-} from '@/utils/materializedViews';
-
 export const DEFAULT_DATABASE = 'default';
+
+const MV_AGGREGATE_FUNCTIONS = [
+  'count',
+  'countDistinct',
+  'sum',
+  'avg',
+  'min',
+  'max',
+  'any',
+] as const;
+
+const MV_GRANULARITY_OPTIONS: { value: string; label: string }[] = [
+  { value: '1 minute', label: '1 minute' },
+  { value: '5 minute', label: '5 minute' },
+  { value: '15 minute', label: '15 minute' },
+  { value: '1 hour', label: '1 hour' },
+  { value: '1 day', label: '1 day' },
+];
 
 export const SOURCE_KIND_LABELS: Record<SourceKind, string> = {
   [SourceKind.Log]: 'Logs',

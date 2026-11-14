@@ -29,7 +29,6 @@ import {
 import {
   convertToDashboardTemplate,
   displayTypeSupportsBuilderAlerts,
-  displayTypeSupportsPromQLAlerts,
   displayTypeSupportsRawSqlAlerts,
   Granularity,
   isTimeSeriesDisplayType,
@@ -38,15 +37,11 @@ import {
   getAdhocFilterTargetsForTile,
   getBlockingRequiredFilterNames,
 } from '@couchbase-traces/common-utils/dist/dashboardFilterValues';
-import {
-  getPromqlFilters,
-  getSqlFilters,
-} from '@couchbase-traces/common-utils/dist/filters';
+import { getSqlFilters } from '@couchbase-traces/common-utils/dist/filters';
 import {
   displayTypeRequiresSource,
   isBuilderChartConfig,
   isBuilderSavedChartConfig,
-  isPromqlChartConfig,
   isPromqlSavedChartConfig,
   isRawSqlChartConfig,
   isRawSqlSavedChartConfig,
@@ -695,24 +690,9 @@ const Tile = ({
         : undefined,
     [onFilter, source],
   );
-  const promqlFilters = useMemo(
-    () => (filters ? getPromqlFilters(filters) : undefined),
-    [filters],
-  );
-
   useEffect(() => {
     if (isPromqlSavedChartConfig(chart.config)) {
-      if (source != null) {
-        setQueriedConfig({
-          ...chart.config,
-          from: source.from,
-          connection: source.connection,
-          dateRange,
-          granularity,
-          variables: tileVariables,
-          filters: promqlFilters,
-        });
-      }
+      setQueriedConfig(undefined);
       return;
     }
 
@@ -789,15 +769,7 @@ const Tile = ({
         });
       }
     }
-  }, [
-    source,
-    chart,
-    dateRange,
-    granularity,
-    sqlFilters,
-    promqlFilters,
-    tileVariables,
-  ]);
+  }, [source, chart, dateRange, granularity, sqlFilters, tileVariables]);
 
   const [hovered, setHovered] = useState(false);
 
@@ -933,11 +905,10 @@ const Tile = ({
     if (readOnly) return null;
 
     const isRawSql = isRawSqlSavedChartConfig(chart.config);
-    const isPromQL = isPromqlSavedChartConfig(chart.config);
-    const displayTypeSupportsAlerts = isRawSql
-      ? displayTypeSupportsRawSqlAlerts(chart.config.displayType)
-      : isPromQL
-        ? displayTypeSupportsPromQLAlerts(chart.config.displayType)
+    const displayTypeSupportsAlerts = isPromqlSavedChartConfig(chart.config)
+      ? false
+      : isRawSql
+        ? displayTypeSupportsRawSqlAlerts(chart.config.displayType)
         : displayTypeSupportsBuilderAlerts(chart.config.displayType);
     const canMoveToGroup =
       onMoveToGroup && moveTargets && moveTargets.length > 0;
@@ -1092,11 +1063,10 @@ const Tile = ({
     if (readOnly) return null;
 
     const isRawSql = isRawSqlSavedChartConfig(chart.config);
-    const isPromQL = isPromqlSavedChartConfig(chart.config);
-    const showAlerts = isRawSql
-      ? displayTypeSupportsRawSqlAlerts(chart.config.displayType)
-      : isPromQL
-        ? displayTypeSupportsPromQLAlerts(chart.config.displayType)
+    const showAlerts = isPromqlSavedChartConfig(chart.config)
+      ? false
+      : isRawSql
+        ? displayTypeSupportsRawSqlAlerts(chart.config.displayType)
         : displayTypeSupportsBuilderAlerts(chart.config.displayType);
     const canMoveToGroup =
       onMoveToGroup && moveTargets && moveTargets.length > 0;
@@ -1364,8 +1334,7 @@ const Tile = ({
                 />
               )}
               {effectiveQueriedConfig?.displayType === DisplayType.Heatmap &&
-                (isBuilderChartConfig(effectiveQueriedConfig) ||
-                  isPromqlChartConfig(effectiveQueriedConfig)) && (
+                isBuilderChartConfig(effectiveQueriedConfig) && (
                   <HeatmapTile
                     keyPrefix={keyPrefix}
                     chartId={chart.id}

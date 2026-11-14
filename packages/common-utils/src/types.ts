@@ -153,15 +153,11 @@ export const SQLIntervalSchema = z
   .string()
   .regex(/^\d+ (second|minute|hour|day)$/);
 export const SearchConditionSchema = z.string();
-const SearchConditionRequiredLanguageSchema = z.enum([
-  'sql',
-  'lucene',
-  'promql',
-]);
+const SearchConditionRequiredLanguageSchema = z.enum(['sql', 'lucene']);
 export const SearchConditionLanguageSchema =
   SearchConditionRequiredLanguageSchema.optional();
 export const SearchConditionTrimmedLanguageSchema =
-  SearchConditionRequiredLanguageSchema.exclude(['promql']).optional();
+  SearchConditionLanguageSchema;
 export const AggregateFunctionSchema = z.enum([
   'avg',
   'count',
@@ -1298,20 +1294,8 @@ export const FilterSchema = z.union([
 
 export type Filter = z.infer<typeof FilterSchema>;
 
-/**
- * A PromQL label matcher (e.g. `job="api"`) added to every selector of a
- * PromQL tile. Kept out of `FilterSchema` because saved searches, alerts and
- * the APIs only take SQL and Lucene conditions.
- */
-export const PromqlConditionFilterSchema = z.object({
-  type: z.literal('promql'),
-  condition: z.string(),
-});
-
-export type PromqlConditionFilter = z.infer<typeof PromqlConditionFilterSchema>;
-
 /** A dashboard filter condition broadcast to tiles, in the tile's query language. */
-export type BroadcastFilter = ConditionFilter | PromqlConditionFilter;
+export type BroadcastFilter = ConditionFilter;
 
 export const VariableFilterValueSchema = z.object({
   type: z.literal('variable'),
@@ -1322,7 +1306,7 @@ export const VariableFilterValueSchema = z.object({
 export type VariableFilterValue = z.infer<typeof VariableFilterValueSchema>;
 
 /** The kind of sources an ad hoc filter reads its keys from. */
-export const AdhocFilterSourceTypeSchema = z.enum(['sql', 'promql']);
+export const AdhocFilterSourceTypeSchema = z.enum(['sql']);
 
 export type AdhocFilterSourceType = z.infer<typeof AdhocFilterSourceTypeSchema>;
 
@@ -1344,13 +1328,6 @@ export type AdhocFilterOperator = z.infer<typeof AdhocFilterOperatorSchema>;
 
 export const SQL_ADHOC_FILTER_OPERATORS: readonly AdhocFilterOperator[] =
   AdhocFilterOperatorSchema.options;
-
-export const PROMQL_ADHOC_FILTER_OPERATORS: readonly AdhocFilterOperator[] = [
-  '=',
-  '!=',
-  '=~',
-  '!~',
-];
 
 /** One `key operator value` condition picked in an ad hoc filter. */
 export const AdhocFilterConditionSchema = z.object({
@@ -1816,13 +1793,6 @@ export type RatioMode = z.infer<typeof RatioModeSchema>;
 export const HeatmapModeSchema = z.enum(['distribution', 'series']);
 export type HeatmapMode = z.infer<typeof HeatmapModeSchema>;
 
-// PromQL heatmaps can also draw pre-bucketed Prometheus histograms (`le` buckets).
-export const PromqlHeatmapModeSchema = z.enum([
-  ...HeatmapModeSchema.options,
-  'histogram',
-]);
-export type PromqlHeatmapMode = z.infer<typeof PromqlHeatmapModeSchema>;
-
 export const HeatmapSettingsSchema = z.object({
   mode: HeatmapModeSchema.optional(),
 });
@@ -1956,17 +1926,6 @@ export type RawSqlChartConfig = z.infer<typeof RawSqlChartConfigSchema>;
 
 export const MAX_LEGEND_TEMPLATE_LENGTH = 1024;
 
-// Caps the number of expressions on one PromQL tile
-export const MAX_PROMQL_EXPRESSIONS = 10;
-
-/**
- * Whether a PromQL expression is evaluated at a single moment (`instant`)
- * or at intervals over a range of time (`range`).
- */
-export const PromqlQueryTypeSchema = z.enum(['instant', 'range']);
-
-export type PromqlQueryType = z.infer<typeof PromqlQueryTypeSchema>;
-
 /** A Prometheus series' label set, `__name__` included. */
 export type PrometheusMetric = Record<string, string>;
 
@@ -1985,78 +1944,9 @@ export type PrometheusVectorResult = {
   value: [number, string];
 };
 
-/** How a range query's samples are client-side aggregated to a single value. */
-export enum PromqlReducer {
-  LastNotNull = 'lastNotNull',
-  Min = 'min',
-  Max = 'max',
-  Mean = 'mean',
-  Sum = 'sum',
-  Count = 'count',
-}
-
-export const PromqlReducerSchema = z.nativeEnum(PromqlReducer);
-
-/** One of the expressions a PromQL chart plots. */
-export const PromqlSeriesSchema = z.object({
-  expression: z.string(),
-  /** Prefixed to every series name this expression produces. */
-  alias: z.string().optional(),
-  /** Whether to evaluate with query or query_range. Instant is not supported for timeseries charts */
-  queryType: PromqlQueryTypeSchema.optional(),
-  /** Only read when `queryType` is `range`. Defaults to last non-null. */
-  reducer: PromqlReducerSchema.optional(),
-});
-
-export type PromqlSeries = z.infer<typeof PromqlSeriesSchema>;
-
-/**
- * What a PromQL chart plots: a list of expressions, or a bare expression
- * string as tiles were saved before multi-expression support.
- */
-export const PromqlExpressionListSchema = z
-  .array(PromqlSeriesSchema)
-  .min(1)
-  .max(MAX_PROMQL_EXPRESSIONS)
-  .or(z.string());
-
-export type PromqlExpressionList = z.infer<typeof PromqlExpressionListSchema>;
-
-/** Base schema for PromQL chart configs (persisted fields) */
-const PromqlBaseChartConfigSchema = SharedChartSettingsSchema.extend({
-  configType: z.literal('promql'),
-  promqlExpression: PromqlExpressionListSchema,
-  source: z.string().min(1),
-  step: z.string().optional(),
-  legendTemplate: z.string().max(MAX_LEGEND_TEMPLATE_LENGTH).optional(),
-  heatmap: HeatmapSettingsSchema.extend({
-    mode: PromqlHeatmapModeSchema.optional(),
-    scaleType: HeatmapScaleTypeSchema.optional(),
-  }).optional(),
-});
-
-/** Schema describing PromQL chart configs with runtime-only fields */
-const PromqlChartConfigSchema = PromqlBaseChartConfigSchema.extend({
-  // Copied from the source at query time and never persisted, so it cannot go
-  // stale if the source moves to another connection.
-  connection: z.string(),
-  filters: z.array(PromqlConditionFilterSchema).optional(),
-  from: z
-    .object({
-      databaseName: z.string(),
-      scopeName: z.string().optional(),
-      tableName: z.string(),
-    })
-    .optional(),
-  variables: z.array(ChartVariableSchema).optional(),
-});
-
-export type PromqlChartConfig = z.infer<typeof PromqlChartConfigSchema>;
-
 export const ChartConfigSchema = z.union([
   BuilderChartConfigSchema,
   RawSqlChartConfigSchema,
-  PromqlChartConfigSchema,
 ]);
 
 export type ChartConfig = z.infer<typeof ChartConfigSchema>;
@@ -2081,7 +1971,6 @@ export type DateRange = {
 export type ChartConfigWithDateRange = ChartConfig & DateRange;
 export type BuilderChartConfigWithDateRange = BuilderChartConfig & DateRange;
 export type RawSqlConfigWithDateRange = RawSqlChartConfig & DateRange;
-export type PromqlConfigWithDateRange = PromqlChartConfig & DateRange;
 
 export type BuilderChartConfigWithOptTimestamp = Omit<
   BuilderChartConfigWithDateRange,
@@ -2092,8 +1981,7 @@ export type BuilderChartConfigWithOptTimestamp = Omit<
 
 export type ChartConfigWithOptTimestamp =
   | BuilderChartConfigWithOptTimestamp
-  | RawSqlConfigWithDateRange
-  | PromqlConfigWithDateRange;
+  | RawSqlConfigWithDateRange;
 
 // For non-time-based searches (ex. grab 1 row)
 export type BuilderChartConfigWithOptDateRange = Omit<
@@ -2105,8 +1993,7 @@ export type BuilderChartConfigWithOptDateRange = Omit<
 
 export type ChartConfigWithOptDateRange =
   | BuilderChartConfigWithOptDateRange
-  | (RawSqlChartConfig & Partial<DateRange>)
-  | (PromqlChartConfig & Partial<DateRange>);
+  | (RawSqlChartConfig & Partial<DateRange>);
 
 export const TILE_DESCRIPTION_MAX_LENGTH = 1024;
 
@@ -2162,24 +2049,9 @@ const RawSqlSavedChartConfigSchema =
     ]),
   });
 
-const PromqlSavedChartConfigWithoutAlertSchema =
-  PromqlBaseChartConfigSchema.extend({
-    name: z.string().optional(),
-    description: chartDescriptionSchema,
-  });
-
-const PromqlSavedChartConfigSchema =
-  PromqlSavedChartConfigWithoutAlertSchema.extend({
-    alert: z.union([
-      AlertBaseChannelCheckedSchema.optional(),
-      ChartAlertBaseChannelCheckedSchema.optional(),
-    ]),
-  });
-
 export const SavedChartConfigSchema = z.union([
   BuilderSavedChartConfigSchema,
   RawSqlSavedChartConfigSchema,
-  PromqlSavedChartConfigSchema,
 ]);
 
 /**
@@ -2197,10 +2069,6 @@ export type AlertChartConfig = z.infer<typeof AlertChartConfigSchema>;
 
 export type RawSqlSavedChartConfig = z.infer<
   typeof RawSqlSavedChartConfigSchema
->;
-
-export type PromqlSavedChartConfig = z.infer<
-  typeof PromqlSavedChartConfigSchema
 >;
 
 export type SavedChartConfig = z.infer<typeof SavedChartConfigSchema>;
@@ -2223,7 +2091,6 @@ export const TileTemplateSchema = TileSchema.extend({
   config: z.union([
     BuilderSavedChartConfigWithoutAlertSchema,
     RawSqlSavedChartConfigWithoutAlertSchema,
-    PromqlSavedChartConfigWithoutAlertSchema,
   ]),
 });
 
@@ -2761,42 +2628,10 @@ const HighlightedAttributeExpressionsSchema = z.array(
   }),
 );
 
-const AggregatedColumnConfigSchema = z
-  .object({
-    sourceColumn: z.string().optional(),
-    aggFn: InternalAggregateFunctionSchema,
-    mvColumn: z.string().min(1, 'Materialized View Column is required'),
-  })
-  .refine(
-    ({ sourceColumn, aggFn }) => aggFn === 'count' || !!sourceColumn?.length,
-    { message: 'Materialized View Source Column is required' },
-  );
-
-export type AggregatedColumnConfig = z.infer<
-  typeof AggregatedColumnConfigSchema
->;
-
-export const MaterializedViewConfigurationSchema = z.object({
-  databaseName: z.string().min(1, 'Materialized View Database is required'),
-  tableName: z.string().min(1, 'Materialized View Table is required'),
-  dimensionColumns: z.string(),
-  minGranularity: SQLIntervalSchema,
-  minDate: z.string().datetime().nullish(),
-  timestampColumn: z
-    .string()
-    .min(1, 'Materialized View Timestamp column is required'),
-  aggregatedColumns: z
-    .array(AggregatedColumnConfigSchema)
-    .min(1, 'At least one aggregated column is required'),
-});
-
-export type MaterializedViewConfiguration = z.infer<
-  typeof MaterializedViewConfigurationSchema
->;
-
+/** Legacy metadata rollups configured on older log/trace sources (read-only). */
 export const MetadataMaterializedViewsSchema = z.object({
   keyRollupTable: z.string().nullish(),
-  kvRollupTable: z.string().min(1, 'KV rollup table name is required'),
+  kvRollupTable: z.string().min(1),
   granularity: SQLIntervalSchema,
 });
 
@@ -2854,7 +2689,6 @@ export const LogSourceSchema = BaseSourceSchema.extend({
     HighlightedAttributeExpressionsSchema.optional(),
   highlightedRowAttributeExpressions:
     HighlightedAttributeExpressionsSchema.optional(),
-  materializedViews: z.array(MaterializedViewConfigurationSchema).optional(),
   metadataMaterializedViews: MetadataMaterializedViewsSchema.optional(),
   orderByExpression: z.string().optional(),
   useTextIndexForImplicitColumn: UseTextIndexSchema.optional(),
@@ -2899,7 +2733,6 @@ export const TraceSourceSchema = BaseSourceSchema.extend({
     HighlightedAttributeExpressionsSchema.optional(),
   highlightedRowAttributeExpressions:
     HighlightedAttributeExpressionsSchema.optional(),
-  materializedViews: z.array(MaterializedViewConfigurationSchema).optional(),
   metadataMaterializedViews: MetadataMaterializedViewsSchema.optional(),
   orderByExpression: z.string().optional(),
   useTextIndexForImplicitColumn: UseTextIndexSchema.optional(),
@@ -2960,7 +2793,7 @@ export const MetricSourceSchema = BaseSourceSchema.extend({
   minAutoGranularity: MinAutoGranularitySchema,
 });
 
-// PromQL source form schema
+/** @deprecated PromQL sources remain in Mongo; not creatable via SourceSchema. */
 export const PromqlSourceSchema = BaseSourceSchema.extend({
   kind: z.literal(SourceKind.Promql),
   minAutoGranularity: MinAutoGranularitySchema,
@@ -2972,7 +2805,6 @@ export const SourceSchema = z.discriminatedUnion('kind', [
   TraceSourceSchema,
   SessionSourceSchema,
   MetricSourceSchema,
-  PromqlSourceSchema,
 ]);
 export type TSource = z.infer<typeof SourceSchema>;
 
@@ -2981,7 +2813,6 @@ export const SourceSchemaNoId = z.discriminatedUnion('kind', [
   TraceSourceSchema.omit({ id: true }),
   SessionSourceSchema.omit({ id: true }),
   MetricSourceSchema.omit({ id: true }),
-  PromqlSourceSchema.omit({ id: true }),
 ]);
 export type TSourceNoId = z.infer<typeof SourceSchemaNoId>;
 
@@ -2990,7 +2821,6 @@ export type TLogSource = Extract<TSource, { kind: SourceKind.Log }>;
 export type TTraceSource = Extract<TSource, { kind: SourceKind.Trace }>;
 export type TSessionSource = Extract<TSource, { kind: SourceKind.Session }>;
 export type TMetricSource = Extract<TSource, { kind: SourceKind.Metric }>;
-export type TPromqlSource = Extract<TSource, { kind: SourceKind.Promql }>;
 
 // Type guards for narrowing TSource by kind
 export function isLogSource(source: TSource): source is TLogSource {
@@ -3005,11 +2835,13 @@ export function isSessionSource(source: TSource): source is TSessionSource {
 export function isMetricSource(source: TSource): source is TMetricSource {
   return source.kind === SourceKind.Metric;
 }
-export function isPromqlSource(source: TSource): source is TPromqlSource {
-  return source.kind === SourceKind.Promql;
-}
 export function isSearchableSource(source: TSource): boolean {
   return isLogSource(source) || isTraceSource(source);
+}
+
+/** Legacy PromQL sources may remain in Mongo; new ones cannot be created. */
+export function isPromqlSource(source: { kind: SourceKind | string }): boolean {
+  return source.kind === SourceKind.Promql || source.kind === 'promql';
 }
 
 type SourceLikeForSampleWeight = {
@@ -3615,3 +3447,54 @@ export const IacImportManifestSchema = z.object({
 });
 
 export type IacImportManifest = z.infer<typeof IacImportManifestSchema>;
+
+/** @deprecated PromQL was removed in Phase 10; MCP schema validation may still reference these. */
+export const MAX_PROMQL_EXPRESSIONS = 10;
+
+export const PromqlQueryTypeSchema = z.enum(['instant', 'range']);
+export type PromqlQueryType = z.infer<typeof PromqlQueryTypeSchema>;
+
+/** @deprecated */
+export enum PromqlReducer {
+  LastNotNull = 'lastNotNull',
+  Min = 'min',
+  Max = 'max',
+  Mean = 'mean',
+  Sum = 'sum',
+  Count = 'count',
+}
+
+export const PromqlReducerSchema = z.nativeEnum(PromqlReducer);
+
+export const PromqlHeatmapModeSchema = HeatmapModeSchema.or(
+  z.literal('histogram'),
+);
+export type PromqlHeatmapMode = z.infer<typeof PromqlHeatmapModeSchema>;
+
+/** @deprecated */
+export type PromqlSeries = {
+  expression: string;
+  alias?: string;
+  queryType?: PromqlQueryType;
+  reducer?: PromqlReducer;
+};
+
+/** @deprecated */
+export type PromqlExpressionList = string | PromqlSeries[];
+
+/** @deprecated */
+export type PromqlChartConfig = {
+  configType: 'promql';
+  promqlExpression: PromqlExpressionList;
+  source: string;
+  connection: string;
+  displayType?: DisplayType;
+  heatmap?: { mode?: PromqlHeatmapMode; scaleType?: string };
+  [key: string]: unknown;
+};
+
+/** @deprecated */
+export type PromqlSavedChartConfig = PromqlChartConfig & {
+  name?: string;
+  description?: string;
+};

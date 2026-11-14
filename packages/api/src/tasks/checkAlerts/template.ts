@@ -1,6 +1,5 @@
 import { ClickhouseClient } from '@couchbase-traces/common-utils/dist/clickhouse/node';
 import { Metadata } from '@couchbase-traces/common-utils/dist/core/metadata';
-import { getPromqlSeries } from '@couchbase-traces/common-utils/dist/core/promql';
 import { buildSearchChartConfig } from '@couchbase-traces/common-utils/dist/core/searchChartConfig';
 import {
   formatDate,
@@ -64,6 +63,7 @@ import { resolveAlertDisplayFields } from '@/utils/alerts';
 import { truncateString } from '@/utils/common';
 import { getCounter } from '@/utils/instrumentation';
 import logger from '@/utils/logger';
+import { toQueryableTSource } from '@/utils/queryableSource';
 
 const describeThresholdViolation = (
   thresholdType: AlertThresholdType,
@@ -147,7 +147,14 @@ const describeChartConfigQuery = (config: SavedChartConfig): string => {
   // because a tile's config is the full union, and this guard is what narrows
   // the builder case below.
   if (isPromqlSavedChartConfig(config)) {
-    return getPromqlSeries(config).at(-1)?.expression ?? '';
+    const expr = config.promqlExpression;
+    const series =
+      typeof expr === 'string'
+        ? [{ expression: expr }]
+        : Array.isArray(expr)
+          ? expr
+          : [];
+    return series.at(-1)?.expression ?? '';
   }
   const select = typeof config.select === 'string' ? [] : (config.select ?? []);
   // Only the last series drives the value -- parseAlertData keeps the last
@@ -548,8 +555,11 @@ export const fetchSampleLines = async ({
   source: ISource;
   startTime: Date;
 }): Promise<string> => {
+  if (source.kind === SourceKind.Promql) {
+    throw new Error('PromQL sources are not supported for saved-search alerts');
+  }
   const chartConfig: ChartConfigWithOptDateRange = {
-    ...buildSearchChartConfig(source, {
+    ...buildSearchChartConfig(toQueryableTSource(source), {
       connection: '', // no need for the connection id since clickhouse client is already initialized
       dateRange: [startTime, endTime],
       select: savedSearch.select,

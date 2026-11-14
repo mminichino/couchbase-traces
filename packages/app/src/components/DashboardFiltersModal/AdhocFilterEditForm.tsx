@@ -1,30 +1,20 @@
 import { useMemo } from 'react';
-import { Controller, UseFormSetValue, useWatch } from 'react-hook-form';
+import { UseFormSetValue, useWatch } from 'react-hook-form';
 import { Separator } from '@clickhouse/click-ui';
 import { tcFromSource } from '@couchbase-traces/common-utils/dist/core/metadata';
 import { getAdhocFilterSourceKinds } from '@couchbase-traces/common-utils/dist/filters';
-import {
-  AdhocFilterSourceType,
-  DashboardFilter,
-  SourceKind,
-} from '@couchbase-traces/common-utils/dist/types';
-import { Box, SegmentedControl } from '@mantine/core';
+import { DashboardFilter } from '@couchbase-traces/common-utils/dist/types';
+import { Box } from '@mantine/core';
 
 import { CheckBoxControlled } from '@/components/InputControlled';
 import SearchWhereInput from '@/components/SearchInput/SearchWhereInput';
 import { SourceMultiSelectControlled } from '@/components/SourceMultiSelect';
-import { IS_PROMQL_ENABLED } from '@/config';
 import { useSources } from '@/source';
 
 import { TOOLTIP_PORTAL_TARGET } from './constants';
 import { CustomInputWrapper } from './CustomInputWrapper';
 import { FilterFormControl, FilterFormValues } from './filterFormState';
 import { VariableNameInput } from './VariableNameInput';
-
-const SOURCE_TYPE_OPTIONS: { value: AdhocFilterSourceType; label: string }[] = [
-  { value: 'sql', label: 'ClickHouse' },
-  { value: 'promql', label: 'Prometheus' },
-];
 
 interface AdhocFilterEditFormProps {
   control: FilterFormControl;
@@ -36,7 +26,6 @@ interface AdhocFilterEditFormProps {
 /** Form describing an ad hoc dashboard filter */
 export const AdhocFilterEditForm = ({
   control,
-  setValue,
   otherFilters,
 }: AdhocFilterEditFormProps) => {
   const { data: allSources } = useSources();
@@ -52,12 +41,6 @@ export const AdhocFilterEditForm = ({
         .map(tcFromSource),
     [allSources, sourceIds],
   );
-  // Kept visible for a saved PromQL filter so its source type can be changed
-  const showSourceType =
-    sourceType === 'promql' ||
-    (IS_PROMQL_ENABLED &&
-      !!allSources?.some(s => s.kind === SourceKind.Promql));
-
   // The multi-selects hide sources of other kinds, which the form can still
   // hold after switching from another filter type.
   const validateSourceKinds = (ids: string[] | undefined) => {
@@ -65,41 +48,11 @@ export const AdhocFilterEditForm = ({
       const source = allSources?.find(s => s.id === id);
       return source && !allowedSourceKinds.includes(source.kind);
     });
-    return (
-      !hasOtherKind ||
-      (sourceType === 'promql'
-        ? 'Select only PromQL sources'
-        : 'Select only log, trace, or session sources')
-    );
+    return !hasOtherKind || 'Select only log, trace, or session sources';
   };
 
   return (
     <>
-      {showSourceType && (
-        <CustomInputWrapper
-          label="Source type"
-          tooltipText="Keys come from the columns and map keys of SQL sources, or from the labels of PromQL sources"
-        >
-          <Controller
-            control={control}
-            name="sourceType"
-            render={({ field: { value, onChange } }) => (
-              <SegmentedControl
-                size="xs"
-                value={value}
-                onChange={next => {
-                  onChange(next);
-                  // Sources of the previous type can't be kept
-                  setValue('sources', [], { shouldDirty: true });
-                  setValue('appliesToSourceIds', [], { shouldDirty: true });
-                }}
-                data={SOURCE_TYPE_OPTIONS}
-                data-testid="adhoc-filter-source-type"
-              />
-            )}
-          />
-        </CustomInputWrapper>
-      )}
       <CustomInputWrapper
         label="Data sources"
         tooltipText="The sources whose keys and values the filter offers"
@@ -144,11 +97,7 @@ export const AdhocFilterEditForm = ({
         name="isBroadcastEnabled"
         size="xs"
         label="Broadcast filter conditions"
-        description={
-          sourceType === 'promql'
-            ? 'Automatically add the selected conditions as label matchers to every selector in PromQL tiles. Optionally, specify which sources to broadcast to.'
-            : 'Automatically apply the selected conditions to every tile based on the selected data sources. Optionally, specify which sources to broadcast to.'
-        }
+        description="Automatically apply the selected conditions to every tile based on the selected data sources. Optionally, specify which sources to broadcast to."
         data-testid="filter-broadcast-checkbox"
       />
       {isBroadcastEnabled && (

@@ -10,19 +10,9 @@ import {
 } from '@tanstack/react-query';
 
 import { hdxServer, useInvalidateTags } from './api';
-import { IS_LOCAL_MODE } from './config';
-import { collectTags, localSavedSearches } from './localStore';
 
 async function fetchSavedSearches(): Promise<SavedSearchListApiResponse[]> {
-  if (IS_LOCAL_MODE) {
-    // Locally stored saved searches never have alert data (alerts are cloud-only)
-    return localSavedSearches.getAll() as SavedSearchListApiResponse[];
-  }
   return hdxServer('saved-search').json<SavedSearchListApiResponse[]>();
-}
-
-export function getLocalSavedSearchTags(): string[] {
-  return collectTags(localSavedSearches.getAll());
 }
 
 export function useSavedSearches() {
@@ -52,15 +42,11 @@ export function useCreateSavedSearch() {
   const invalidateTags = useInvalidateTags();
 
   return useMutation({
-    mutationFn: (data: Omit<SavedSearch, 'id'>) => {
-      if (IS_LOCAL_MODE) {
-        return Promise.resolve(localSavedSearches.create(data));
-      }
-      return hdxServer('saved-search', {
+    mutationFn: (data: Omit<SavedSearch, 'id'>) =>
+      hdxServer('saved-search', {
         method: 'POST',
         json: data,
-      }).json<SavedSearch>();
-    },
+      }).json<SavedSearch>(),
     onSuccess: () => {
       invalidateTags();
       return queryClient.invalidateQueries({ queryKey: ['saved-search'] });
@@ -73,16 +59,11 @@ export function useUpdateSavedSearch() {
   const invalidateTags = useInvalidateTags();
 
   return useMutation({
-    mutationFn: (data: Partial<SavedSearch> & { id: SavedSearch['id'] }) => {
-      if (IS_LOCAL_MODE) {
-        const { id, ...updates } = data;
-        return Promise.resolve(localSavedSearches.update(id, updates));
-      }
-      return hdxServer(`saved-search/${data.id}`, {
+    mutationFn: (data: Partial<SavedSearch> & { id: SavedSearch['id'] }) =>
+      hdxServer(`saved-search/${data.id}`, {
         method: 'PATCH',
         json: data,
-      }).json<SavedSearch>();
-    },
+      }).json<SavedSearch>(),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['saved-search'] });
       invalidateTags();
@@ -95,13 +76,8 @@ export function useDeleteSavedSearch() {
   const invalidateTags = useInvalidateTags();
 
   return useMutation({
-    mutationFn: (id: string) => {
-      if (IS_LOCAL_MODE) {
-        localSavedSearches.delete(id);
-        return Promise.resolve();
-      }
-      return hdxServer(`saved-search/${id}`, { method: 'DELETE' }).json<void>();
-    },
+    mutationFn: (id: string) =>
+      hdxServer(`saved-search/${id}`, { method: 'DELETE' }).json<void>(),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['saved-search'] });
       invalidateTags();

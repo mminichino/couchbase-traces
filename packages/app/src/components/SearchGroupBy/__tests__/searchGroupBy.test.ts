@@ -8,11 +8,11 @@ import {
 } from '@/components/SearchGroupBy/searchGroupBy';
 
 const logSource = {
-  kind: SourceKind.Log,
+  kind: SourceKind.Log as const,
   severityTextExpression: 'SeverityText',
 };
 const traceSource = {
-  kind: SourceKind.Trace,
+  kind: SourceKind.Trace as const,
   statusCodeExpression: 'StatusCode',
 };
 

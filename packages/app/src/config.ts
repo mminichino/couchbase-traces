@@ -3,13 +3,6 @@ import { env } from 'next-runtime-env';
 // eslint-disable-next-line no-restricted-imports -- package.json lives outside src, no @/ alias reaches it
 import packageJson from '../package.json';
 
-// ONLY USED IN LOCAL MODE
-export const HDX_LOCAL_DEFAULT_CONNECTIONS = env(
-  'NEXT_PUBLIC_CBT_LOCAL_DEFAULT_CONNECTIONS',
-);
-export const HDX_LOCAL_DEFAULT_SOURCES = env(
-  'NEXT_PUBLIC_CBT_LOCAL_DEFAULT_SOURCES',
-);
 const NODE_ENV = process.env.NODE_ENV as string;
 export const HDX_API_KEY = process.env.CBT_API_KEY as string; // for nextjs server
 export const HDX_SERVICE_NAME =
@@ -54,10 +47,10 @@ export const IS_DEV = NODE_ENV === 'development';
 export const APP_VERSION = packageJson.version ?? 'dev';
 
 export const IS_OSS = process.env.NEXT_PUBLIC_IS_OSS ?? 'true' === 'true';
-export const IS_LOCAL_MODE = //true;
-  (process.env.NEXT_PUBLIC_IS_LOCAL_MODE ?? 'false') === 'true';
-export const IS_CLICKHOUSE_BUILD =
-  process.env.NEXT_PUBLIC_CLICKHOUSE_BUILD === 'true';
+/** Local app mode was removed in Phase 10. */
+export const IS_LOCAL_MODE = false;
+/** ClickHouse Cloud embed build was removed in Phase 10. */
+export const IS_CLICKHOUSE_BUILD = false;
 // Deployment path prefix, mirroring `basePath` in next.config.mjs. Needed
 // anywhere an absolute URL is built for something outside the browser to call:
 // `window.location.origin` alone drops the prefix, and the API is served under
@@ -99,11 +92,5 @@ export const INSTANCE_TITLE_SUFFIX = INSTANCE_LABEL ? ` ${INSTANCE_LABEL}` : '';
 // dev (.env.development) and CI (e2e webserver) while the feature bakes.
 export const IS_ALERT_DETAILS_ENABLED =
   env('NEXT_PUBLIC_ENABLE_ALERT_DETAILS') === 'true';
-// Not exported: IS_IAC_EXPORT_ENABLED below is the only gate callers should
-// read. Leaving the raw flag importable re-opens the "forgot the local-mode
-// check" mistake that folding the two together was meant to close.
 const IS_IAC_HELPERS_ENABLED = true;
-// Local mode has no API server behind it, so there is nothing for the
-// Terraform provider to talk to. Single definition — the alerts, dashboard,
-// search, and team-settings surfaces all read this one constant.
-export const IS_IAC_EXPORT_ENABLED = IS_IAC_HELPERS_ENABLED && !IS_LOCAL_MODE;
+export const IS_IAC_EXPORT_ENABLED = IS_IAC_HELPERS_ENABLED;

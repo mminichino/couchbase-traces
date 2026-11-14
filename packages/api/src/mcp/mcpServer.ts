@@ -15,7 +15,6 @@ import savedSearchesTools from './tools/savedSearches/index';
 import sourcesTools from './tools/sources/index';
 import traceTools from './tools/trace/index';
 import { McpContext } from './tools/types';
-import { isPromqlEnabled } from './utils/promql';
 import { createRegisterTool } from './utils/registerTool';
 
 const SERVER_INSTRUCTIONS = [
@@ -37,16 +36,8 @@ const SERVER_INSTRUCTIONS = [
   'dashboard authoring.',
 ].join('\n');
 
-const PROMQL_INSTRUCTIONS =
-  'PromQL sources (kind "promql") hold Prometheus metrics: query them with\n' +
-  'cbt_promql. The builder tools do not read them; cbt_sql only\n' +
-  'inspects the raw tags and samples of a ClickHouse TimeSeries table.';
-
-/** The instructions a client sees. PromQL is mentioned only while it is enabled. */
-function serverInstructions(context: McpContext): string {
-  return isPromqlEnabled(context)
-    ? `${SERVER_INSTRUCTIONS}\n\n${PROMQL_INSTRUCTIONS}`
-    : SERVER_INSTRUCTIONS;
+function serverInstructions(_context: McpContext): string {
+  return SERVER_INSTRUCTIONS;
 }
 
 // Served by the app; omitted when FRONTEND_URL is unset because MCP icon

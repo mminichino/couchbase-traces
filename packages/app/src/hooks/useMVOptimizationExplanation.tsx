@@ -1,68 +1,19 @@
-import {
-  MVOptimizationExplanation,
-  tryOptimizeConfigWithMaterializedViewWithExplanations,
-} from '@couchbase-traces/common-utils/dist/core/materializedViews';
-import {
-  BuilderChartConfigWithOptDateRange,
-  SourceKind,
-} from '@couchbase-traces/common-utils/dist/types';
-import {
-  keepPreviousData,
-  useQuery,
-  UseQueryOptions,
-} from '@tanstack/react-query';
+import type { BuilderChartConfigWithOptDateRange } from '@couchbase-traces/common-utils/dist/types';
 
-import { useClickhouseClient } from '@/clickhouse';
-import { useSource } from '@/source';
+/** Materialized view configuration was removed in Phase 10. */
+export type MVOptimizationExplanationResult = {
+  optimizedConfig?: BuilderChartConfigWithOptDateRange;
+  explanation?: string;
+  explanations?: {
+    success?: boolean;
+    message: string;
+    mvConfig?: { minGranularity?: string };
+  }[];
+};
 
-import { useMetadataWithSettings } from './useMetadata';
-
-export interface MVOptimizationExplanationResult<
-  C extends
-    BuilderChartConfigWithOptDateRange = BuilderChartConfigWithOptDateRange,
-> {
-  optimizedConfig?: C;
-  explanations: MVOptimizationExplanation[];
-}
-
-export function useMVOptimizationExplanation<
-  C extends BuilderChartConfigWithOptDateRange,
->(
-  config: C | undefined,
-  options?: Partial<UseQueryOptions<MVOptimizationExplanationResult<C>>>,
-) {
-  const { enabled = true } = options || {};
-  const metadata = useMetadataWithSettings();
-  const clickhouseClient = useClickhouseClient();
-
-  const { data: source, isLoading: isLoadingSource } = useSource({
-    id: config?.source,
-  });
-
-  return useQuery<MVOptimizationExplanationResult<C>>({
-    queryKey: ['optimizationExplanation', config],
-    queryFn: async ({ signal }) => {
-      if (
-        !config ||
-        !source ||
-        (source.kind !== SourceKind.Log && source.kind !== SourceKind.Trace)
-      ) {
-        return {
-          explanations: [],
-        };
-      }
-
-      return await tryOptimizeConfigWithMaterializedViewWithExplanations(
-        config,
-        metadata,
-        clickhouseClient,
-        signal,
-        source,
-      );
-    },
-    placeholderData: keepPreviousData,
-    staleTime: 5000,
-    ...options,
-    enabled: enabled && !isLoadingSource && !!config && !!source,
-  });
+export function useMVOptimizationExplanation(
+  _config: BuilderChartConfigWithOptDateRange | undefined,
+  _options?: { enabled?: boolean },
+): { data: MVOptimizationExplanationResult | undefined; isLoading: boolean } {
+  return { data: undefined, isLoading: false };
 }

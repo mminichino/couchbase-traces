@@ -1,10 +1,5 @@
 import { useMemo } from 'react';
 import { pick } from 'lodash';
-import {
-  GetKeyValueCall,
-  optimizeFacetedKeyValuesConfig,
-  optimizeGetKeyValuesCalls,
-} from '@couchbase-traces/common-utils/dist/core/materializedViews';
 import { FilterSelection } from '@couchbase-traces/common-utils/dist/dashboardFilterValues';
 import {
   FilterState,
@@ -25,7 +20,6 @@ import {
   UseQueryResult,
 } from '@tanstack/react-query';
 
-import { useClickhouseClient } from '@/clickhouse';
 import { useSources } from '@/source';
 import { getMetricTableName, mapKeyBy } from '@/utils';
 
@@ -92,7 +86,9 @@ const intersectSelections = (
       : (a.range ?? b.range),
 });
 
-type EnrichedCall = GetKeyValueCall<BuilderChartConfigWithDateRange> & {
+type EnrichedCall = {
+  chartConfig: BuilderChartConfigWithDateRange;
+  keys: string[];
   /** filterIds[i] = array of filter IDs whose values come from keys[i] */
   filterIds: string[][];
   /** Per-key constraint for faceted lookups, aligned with `keys`. */
@@ -110,8 +106,6 @@ function useOptimizedKeyValuesCalls({
   selectionByFilterId: ReadonlyMap<string, FilterSelection>;
   variables?: ChartVariable[];
 }) {
-  const clickhouseClient = useClickhouseClient();
-  const metadata = useMetadataWithSettings();
   const { data: sources, isLoading: isLoadingSources } = useSources();
 
   // A filter's dropdown query may reference the dashboard's variables. Expand
@@ -260,42 +254,25 @@ function useOptimizedKeyValuesCalls({
           ],
           enabled: !isLoadingSources,
           staleTime: 1000 * 60 * 5, // Cache every 5 min
-          queryFn: async ({ signal }): Promise<EnrichedCall[]> => {
+          queryFn: async (): Promise<EnrichedCall[]> => {
             // Constrained: resolve every key in one faceted scan
             // (groupUniqArrayIf). A per-key condition can't be split across
             // single-key MVs, but it can run against one MV whose dimensions
             // cover every filter column (else the raw table).
             if (isFaceted) {
-              const facetedConfig = await optimizeFacetedKeyValuesConfig({
-                chartConfig,
-                keys: keyExpressions,
-                keyConditions,
-                source,
-                clickhouseClient,
-                metadata,
-                signal,
-              });
               return [
                 {
-                  chartConfig: facetedConfig,
+                  chartConfig,
                   keys: keyExpressions,
                   keyConditions,
                   filterIds: filterIdsForKeys(keyExpressions),
                 },
               ];
             }
-            // Unconstrained: let the MV optimizer batch / route to rollups.
-            const calls = await optimizeGetKeyValuesCalls({
+            return keyExpressions.map(key => ({
               chartConfig,
-              source,
-              clickhouseClient,
-              metadata,
-              keys: keyExpressions,
-              signal,
-            });
-            return calls.map(call => ({
-              ...call,
-              filterIds: filterIdsForKeys(call.keys),
+              keys: [key],
+              filterIds: filterIdsForKeys([key]),
             }));
           },
         };

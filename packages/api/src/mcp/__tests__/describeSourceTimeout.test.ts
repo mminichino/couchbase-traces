@@ -13,9 +13,6 @@ jest.mock('@/clickhouse', () => ({ ClickhouseClient: jest.fn() }));
 jest.mock('@couchbase-traces/common-utils/dist/core/metadata', () => ({
   getMetadata: () => mockMetadata,
 }));
-jest.mock('@/controllers/promql', () => ({
-  getPromqlLabelCatalog: jest.fn(),
-}));
 jest.mock('@/mcp/tools/sources/metricNames', () => ({
   sampleMetricNamesWithLookback: jest.fn(),
 }));

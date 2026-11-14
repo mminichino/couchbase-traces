@@ -157,7 +157,7 @@ export function RowOverviewPanel({
   );
 
   const _generateSearchUrl = useCallback(
-    (query?: string, queryLanguage?: 'sql' | 'lucene' | 'promql') => {
+    (query?: string, queryLanguage?: 'sql' | 'lucene') => {
       return (
         generateSearchUrl?.({
           where: query,

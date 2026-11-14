@@ -16,11 +16,9 @@ import { SortingState } from '@tanstack/react-table';
 
 import {
   buildMVDateRangeIndicator,
-  convertToPromqlTableChartConfig,
   convertToTableChartConfig,
 } from '@/ChartUtils';
 import { Table, TableVariant } from '@/HDXMultiSeriesTableChart';
-import { getMinGranularitySeconds } from '@/hooks/useChartConfig';
 import { useMVOptimizationExplanation } from '@/hooks/useMVOptimizationExplanation';
 import useOffsetPaginatedQuery from '@/hooks/useOffsetPaginatedQuery';
 import { useOnClickLinkBuilder } from '@/hooks/useOnClickLinkBuilder';
@@ -95,16 +93,8 @@ export default function DBTableChart({
     [onSortingChange],
   );
 
-  const minGranularitySeconds = getMinGranularitySeconds(source);
-
   const queriedConfig = useMemo(() => {
     if (isRawSqlChartConfig(config)) return config;
-    if (isPromqlChartConfig(config)) {
-      return convertToPromqlTableChartConfig({
-        ...config,
-        minGranularitySeconds,
-      });
-    }
 
     const _config = convertToTableChartConfig(config);
 
@@ -117,7 +107,7 @@ export default function DBTableChart({
       });
     }
     return _config;
-  }, [config, effectiveSort, minGranularitySeconds]);
+  }, [config, effectiveSort]);
 
   const { data: mvOptimizationData } = useMVOptimizationExplanation(
     isBuilderChartConfig(queriedConfig) ? queriedConfig : undefined,
@@ -141,7 +131,7 @@ export default function DBTableChart({
 
   // Returns an array of aliases, so we can check if something is using an alias
   const aliasMap = useMemo(() => {
-    if (isRawSqlChartConfig(config) || isPromqlChartConfig(config)) {
+    if (isRawSqlChartConfig(config)) {
       return [];
     }
 
@@ -353,9 +343,7 @@ export default function DBTableChart({
             isPlaceholderData || getRowAction ? undefined : getRowSearchLink
           }
           sorting={effectiveSort}
-          enableClientSideSorting={
-            isRawSqlChartConfig(config) || isPromqlChartConfig(config)
-          }
+          enableClientSideSorting={isRawSqlChartConfig(config)}
           onSortingChange={handleSortingChange}
           variant={variant}
           // Placeholder rows belong to the previous query's columns

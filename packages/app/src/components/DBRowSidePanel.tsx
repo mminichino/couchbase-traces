@@ -417,8 +417,6 @@ export const DBRowSidePanelInner = ({
       source.resourceAttributesExpression
     ) {
       return true;
-    } else if (source.kind === SourceKind.Promql) {
-      return false;
     }
     return false;
   }, [source]);

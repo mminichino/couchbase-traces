@@ -1,10 +1,6 @@
 import { useMemo } from 'react';
 import { ErrorBoundary } from 'react-error-boundary';
-import { isReducibleRangeQuery } from '@couchbase-traces/common-utils/dist/core/promql';
-import {
-  isBuilderChartConfig,
-  isPromqlChartConfig,
-} from '@couchbase-traces/common-utils/dist/guards';
+import { isBuilderChartConfig } from '@couchbase-traces/common-utils/dist/guards';
 import {
   BackgroundChart,
   ChartConfigWithDateRange,
@@ -14,7 +10,6 @@ import {
 } from '@couchbase-traces/common-utils/dist/types';
 
 import {
-  convertToPromqlSparklineChartConfig,
   convertToTimeChartConfig,
   formatResponseForTimeChart,
   shouldFillNullsWithZero,
@@ -68,9 +63,6 @@ export function buildSparklineQueryConfig(
 ): ChartConfigWithDateRange {
   // A PromQL tile shares the same (range) query as the number chart, without a reducer.
   // This ensures that the sparkline can re-use the same react-query cache entry.
-  if (isPromqlChartConfig(config)) {
-    return convertToPromqlSparklineChartConfig(config);
-  }
 
   // Display-only fields are dropped to avoid refetching identical time-series
   // data on every purely visual edit.
@@ -124,15 +116,11 @@ function NumberTileBackgroundChartInner({
     // A PromQL tile shares the cache entry its value is served from, so it has
     // to leave the key to the hook. A builder tile derives a query of its
     // own, and namespaces its own key.
-    ...(isPromqlChartConfig(config)
-      ? { queryKeyPrefix }
-      : {
-          queryKey: [
-            ...(queryKeyPrefix ? [queryKeyPrefix] : []),
-            'number-tile-background',
-            queriedConfig,
-          ],
-        }),
+    queryKey: [
+      ...(queryKeyPrefix ? [queryKeyPrefix] : []),
+      'number-tile-background',
+      queriedConfig,
+    ],
   });
 
   const points = useMemo(() => {
@@ -199,9 +187,7 @@ export default function NumberTileBackgroundChart({
   queryKeyPrefix?: string;
   enabled?: boolean;
 }) {
-  const canBucketQuery =
-    isBuilderChartConfig(config) ||
-    (isPromqlChartConfig(config) && isReducibleRangeQuery(config));
+  const canBucketQuery = isBuilderChartConfig(config);
   if (!canBucketQuery) return null;
   return (
     <ErrorBoundary fallback={<span />}>

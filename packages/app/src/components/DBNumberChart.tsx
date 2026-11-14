@@ -18,12 +18,8 @@ import { Flex, Text } from '@mantine/core';
 import {
   buildMVDateRangeIndicator,
   convertToNumberChartConfig,
-  convertToReducedPromqlChartConfig,
 } from '@/ChartUtils';
-import {
-  getMinGranularitySeconds,
-  useQueriedChartConfig,
-} from '@/hooks/useChartConfig';
+import { useQueriedChartConfig } from '@/hooks/useChartConfig';
 import { useMVOptimizationExplanation } from '@/hooks/useMVOptimizationExplanation';
 import { useSingleSeriesNumberFormat, useSource } from '@/source';
 import {
@@ -229,18 +225,10 @@ export default function DBNumberChart({
   const { data: source } = useSource({
     id: config.source,
   });
-  const minGranularitySeconds = getMinGranularitySeconds(source);
-
   const queriedConfig = useMemo(() => {
     if (isBuilderChartConfig(config)) return convertToNumberChartConfig(config);
-    if (isPromqlChartConfig(config)) {
-      return convertToReducedPromqlChartConfig({
-        ...config,
-        minGranularitySeconds,
-      });
-    }
     return config;
-  }, [config, minGranularitySeconds]);
+  }, [config]);
 
   const builderQueriedConfig = isBuilderChartConfig(queriedConfig)
     ? queriedConfig

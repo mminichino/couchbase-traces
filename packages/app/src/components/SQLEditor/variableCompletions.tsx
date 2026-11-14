@@ -1,12 +1,12 @@
 import { createContext, use, useCallback, useMemo } from 'react';
-import { PROMQL_MACROS } from '@couchbase-traces/common-utils/dist/core/promql';
 import {
   MacroSuggestion,
   VARIABLE_MACRO_SUGGESTIONS,
 } from '@couchbase-traces/common-utils/dist/macros';
+
+const PROMQL_MACROS: MacroSuggestion[] = [];
 import { ChartVariable } from '@couchbase-traces/common-utils/dist/types';
 import {
-  isFilterSingleSelect,
   substituteVariables,
   TemplateLanguage,
   VariableFormat,
@@ -29,13 +29,6 @@ const COMPLETION_FORMATS: Record<
     regex: 'A regex alternation. Regex escaped. e.g. (a|b|c)',
     lucene:
       'An OR of quoted terms, for Lucene inputs. e.g. ("a" OR "b" OR "c"). Quote the reference (field:"$var") for exact-match behavior. Leave unquoted (field:$var) for substring matching.',
-  },
-  promql: {
-    promql:
-      'The default format, written out. A single-select variable renders its value as written, for {label="$var"}; a multi-select variable renders a regex alternation, for {label=~"$var"}. Escaped for the double-quoted string literal it sits in.',
-    regex:
-      'A regex alternation, always regex escaped, and escaped for the double-quoted string literal it sits in. e.g. (a|b|c)',
-    csv: 'Comma-separated and unquoted, with no escaping.',
   },
   // Lucene inputs suggest only the bare `$name` reference.
   lucene: {},
@@ -179,38 +172,11 @@ export function buildSqlVariableCompletions(
   ];
 }
 
-/** Every reference form available in PromQL for the given variable, each with its current expansion. */
-function getPromqlVariableCompletions(
-  variable: ChartVariable,
-): SQLCompletion[] {
-  const { name } = variable;
-  const reference = variableCompletionFactory(variable, 'promql');
-
-  return [
-    reference(
-      `$${name}`,
-      isFilterSingleSelect(variable)
-        ? `The selected value of ${name} as written, for use inside an exact matcher such as {label="$${name}"}. An empty string when nothing is selected.`
-        : `The selected values of ${name} as a regex alternation, for use inside a matcher such as {label=~"$${name}"}. Matches everything when nothing is selected.`,
-    ),
-    reference(
-      `\${${name}}`,
-      `The same as $${name}, but delimited — use it when the reference runs into following word characters.`,
-    ),
-    ...formatCompletions(name, COMPLETION_FORMATS.promql, reference),
-  ];
-}
-
-/**
- * Auto-completions for the variables available to a PromQL expression: every
- * PromQL-valid reference form of each variable.
- */
+/** Legacy PromQL variable completions removed in Phase 10. */
 export function buildPromqlVariableCompletions(
-  variables: ChartVariable[] | undefined,
+  _variables: ChartVariable[] | undefined,
 ): SQLCompletion[] {
-  if (!variables?.length) return [];
-
-  return variables.flatMap(getPromqlVariableCompletions);
+  return [];
 }
 
 /** Completions for the macros a PromQL chart expression can use. */

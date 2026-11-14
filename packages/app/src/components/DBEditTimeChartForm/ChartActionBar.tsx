@@ -1,6 +1,5 @@
-import { Control, useWatch } from 'react-hook-form';
+import { Control } from 'react-hook-form';
 import { TableConnection } from '@couchbase-traces/common-utils/dist/core/metadata';
-import { isRangeQuery } from '@couchbase-traces/common-utils/dist/core/promql';
 import {
   ActionIcon,
   Box,
@@ -17,11 +16,9 @@ import {
 } from '@tabler/icons-react';
 
 import { ChartEditorFormState } from '@/components/ChartEditor/types';
-import { isPromqlDisplayType } from '@/components/ChartEditor/utils';
 import { EDITOR_INPUT_HEIGHTS } from '@/components/editorInputHeights';
 import { SQLInlineEditorControlled } from '@/components/SQLEditor/SQLInlineEditor';
 import { TimePicker } from '@/components/TimePicker';
-import { IS_LOCAL_MODE } from '@/config';
 import { GranularityPickerControlled } from '@/GranularityPicker';
 
 import { tabQueriesData } from './utils';
@@ -101,23 +98,7 @@ export function ChartActionBar({
   filtersToggle,
   setSaveToDashboardModalOpen,
 }: ChartActionBarProps) {
-  const configType = useWatch({ control, name: 'configType' });
-  const displayType = useWatch({ control, name: 'displayType' });
-  const promqlExpressions = useWatch({ control, name: 'promqlExpressions' });
-
-  // Time charts and heatmaps always bucket, and a PromQL tile that reduces a
-  // range query reads the same granularity even though it shows one value
-  // rather than a series. An all-instant PromQL tile has no resolution to
-  // choose.
-  const showGranularity =
-    activeTab === 'time' ||
-    activeTab === 'heatmap' ||
-    (configType === 'promql' &&
-      isPromqlDisplayType(displayType) &&
-      isRangeQuery({
-        promqlExpression: promqlExpressions,
-        displayType,
-      }));
+  const showGranularity = activeTab === 'time' || activeTab === 'heatmap';
 
   return (
     <Flex justify="flex-end" mt="sm">
@@ -130,8 +111,7 @@ export function ChartActionBar({
         {(activeTab === 'table' ||
           activeTab === 'pie' ||
           activeTab === 'bar') &&
-          !isRawSqlInput &&
-          configType !== 'promql' && (
+          !isRawSqlInput && (
             <div style={{ width: 400 }} data-testid="order-by-input">
               <SQLInlineEditorControlled
                 parentRef={parentRef}
@@ -179,7 +159,7 @@ export function ChartActionBar({
             Run
           </Button>
         )}
-        {!IS_LOCAL_MODE && (showSaveToDashboard ?? !dashboardId) && (
+        {(showSaveToDashboard ?? !dashboardId) && (
           <Menu width={250}>
             <Menu.Target>
               <ActionIcon variant="secondary" size="input-sm">

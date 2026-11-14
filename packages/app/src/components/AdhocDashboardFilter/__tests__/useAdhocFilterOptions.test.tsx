@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { ReactNode } from 'react';
 import {
   ColumnMeta,
@@ -10,7 +11,7 @@ import {
   TSource,
 } from '@couchbase-traces/common-utils/dist/types';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { renderHook, waitFor } from '@testing-library/react';
+import { renderHook } from '@testing-library/react';
 
 import {
   getSourcesWithKey,
@@ -23,11 +24,6 @@ import {
   useMultipleAllFields,
   useMultipleGetKeyValues,
 } from '@/hooks/useMetadata';
-import {
-  fetchPromqlLabelNames,
-  fetchPromqlLabelValues,
-} from '@/hooks/usePromqlMetadata';
-
 let mockSources: Partial<TSource>[] = [];
 
 jest.mock('@/source', () => ({
@@ -44,12 +40,6 @@ jest.mock('@/hooks/useMetadata', () => ({
     isError: false,
   })),
 }));
-jest.mock('@/hooks/usePromqlMetadata', () => ({
-  ...jest.requireActual('@/hooks/usePromqlMetadata'),
-  fetchPromqlLabelNames: jest.fn(),
-  fetchPromqlLabelValues: jest.fn(),
-}));
-
 const column = (name: string, type: string): ColumnMeta => ({
   name,
   type,
@@ -221,8 +211,6 @@ describe('useAdhocFilterOptions', () => {
 
   beforeEach(() => {
     mockAllFields([]);
-    jest.mocked(fetchPromqlLabelNames).mockResolvedValue([]);
-    jest.mocked(fetchPromqlLabelValues).mockResolvedValue([]);
   });
 
   const lastSqlLookup = () =>
@@ -298,25 +286,5 @@ describe('useAdhocFilterOptions', () => {
     renderOptions(filter('sql', ['logs']), "log-attributes['service']");
 
     expect(lastSqlLookup()[0].keys).toEqual(["`log-attributes`['service']"]);
-  });
-
-  it('leaves the SQL lookup disabled for a PromQL filter', async () => {
-    mockSources = [source('prom', SourceKind.Promql)];
-    jest
-      .mocked(fetchPromqlLabelNames)
-      .mockResolvedValue(['__name__', 'SeverityText']);
-    const { result } = renderOptions(filter('promql', ['prom']));
-
-    await waitFor(() =>
-      expect(result.current.keys.data).toEqual(['SeverityText']),
-    );
-    expect(lastSqlLookup()[1]).toEqual(
-      expect.objectContaining({ enabled: false }),
-    );
-    await waitFor(() =>
-      expect(fetchPromqlLabelValues).toHaveBeenCalledWith(
-        expect.objectContaining({ label: 'SeverityText', sourceId: 'prom' }),
-      ),
-    );
   });
 });

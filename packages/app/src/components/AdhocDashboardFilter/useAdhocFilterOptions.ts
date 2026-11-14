@@ -1,11 +1,10 @@
-import { useCallback, useMemo } from 'react';
+import { useMemo } from 'react';
 import {
   ColumnMeta,
   convertCHDataTypeToJSType,
   filterColumnMetaByType,
   isJSDataTypeScalar,
   JSDataType,
-  QueryAttribution,
 } from '@couchbase-traces/common-utils/dist/clickhouse';
 import {
   Field,
@@ -20,12 +19,6 @@ import {
   AdhocDashboardFilter,
   TSource,
 } from '@couchbase-traces/common-utils/dist/types';
-import {
-  keepPreviousData,
-  useQueries,
-  UseQueryOptions,
-  UseQueryResult,
-} from '@tanstack/react-query';
 
 import { toQuotedClickHouseKeyExpression } from '@/components/DBSearchPageFilters/utils';
 import {
@@ -34,19 +27,9 @@ import {
   useMultipleAllFields,
   useMultipleGetKeyValues,
 } from '@/hooks/useMetadata';
-import {
-  fetchPromqlLabelNames,
-  fetchPromqlLabelValues,
-  toPromqlSeconds,
-} from '@/hooks/usePromqlMetadata';
-import { useMetadataQueryAttribution } from '@/queryAttribution';
 import { pickSourceConfigFields } from '@/ServicesDashboardPage/helpers';
 import { useSources } from '@/source';
 import { mergePath } from '@/utils';
-
-const STALE_TIME_MS = 1000 * 60 * 5;
-const NO_SOURCES: TSource[] = [];
-const NO_COLUMNS: Set<string> = new Set();
 
 const unionSorted = (lists: (string[] | undefined)[]) =>
   Array.from(new Set(lists.flatMap(list => list ?? []))).sort();
@@ -220,66 +203,6 @@ function useSqlSourceKeys(
   ]);
 }
 
-const promqlLookupParams = (
-  source: TSource,
-  { start, end }: { start: number; end: number },
-  attribution: QueryAttribution,
-) => ({
-  sourceId: source.id,
-  start,
-  end,
-  attribution,
-});
-
-function usePromqlSourceKeys(
-  sources: TSource[],
-  dateRange: [Date, Date],
-): AdhocFilterKeys {
-  const attribution = useMetadataQueryAttribution();
-  const seconds = toPromqlSeconds(dateRange);
-
-  const combineKeys = useCallback(
-    (results: UseQueryResult<string[]>[]) => {
-      const keysBySourceId = new Map<string, string[]>();
-      sources.forEach((source, index) => {
-        const keys = results[index]?.data;
-        if (keys) keysBySourceId.set(source.id, keys);
-      });
-      return {
-        data: unionSorted([...keysBySourceId.values()]),
-        keysBySourceId,
-        columnNames: NO_COLUMNS,
-        isLoading: results.some(result => result.isLoading),
-        isError: results.some(result => result.isError),
-        error: results.find(result => result.error)?.error,
-      };
-    },
-    [sources],
-  );
-
-  return useQueries({
-    queries: sources.map(
-      (source): UseQueryOptions<string[]> => ({
-        queryKey: [
-          'adhoc-filter-promql-keys',
-          source.id,
-          seconds.start,
-          seconds.end,
-        ],
-        queryFn: async () => {
-          const labels = await fetchPromqlLabelNames(
-            promqlLookupParams(source, seconds, attribution),
-          );
-          return labels.filter(label => label !== '__name__');
-        },
-        staleTime: STALE_TIME_MS,
-        placeholderData: keepPreviousData,
-      }),
-    ),
-    combine: combineKeys,
-  });
-}
-
 function useSqlSourceValues(
   sources: TSource[],
   key: string,
@@ -317,47 +240,6 @@ function useSqlSourceValues(
   return { data: values, isLoading: !!key && isFetching, isError, error };
 }
 
-const combineValues = (
-  results: UseQueryResult<string[]>[],
-): AdhocFilterSuggestions => ({
-  data: unionSorted(results.map(result => result.data)),
-  isLoading: results.some(result => result.isFetching),
-  isError: results.some(result => result.isError),
-  error: results.find(result => result.error)?.error,
-});
-
-function usePromqlSourceValues(
-  sources: TSource[],
-  key: string,
-  dateRange: [Date, Date],
-): AdhocFilterSuggestions {
-  const attribution = useMetadataQueryAttribution();
-  const seconds = toPromqlSeconds(dateRange);
-
-  return useQueries({
-    queries: sources.map(
-      (source): UseQueryOptions<string[]> => ({
-        queryKey: [
-          'adhoc-filter-promql-values',
-          source.id,
-          key,
-          seconds.start,
-          seconds.end,
-        ],
-        queryFn: () =>
-          fetchPromqlLabelValues({
-            label: key,
-            ...promqlLookupParams(source, seconds, attribution),
-          }),
-        enabled: !!key,
-        staleTime: STALE_TIME_MS,
-        retry: false,
-      }),
-    ),
-    combine: combineValues,
-  });
-}
-
 /**
  * Suggestions for an ad hoc filter's condition editor, deduplicated across its
  * sources. Keys are the columns and map / JSON keys of its SQL sources, in the
@@ -372,17 +254,7 @@ export function useAdhocFilterOptions(
   suggestionsWhere?: ResolvedFilterValuesQuery,
 ): { keys: AdhocFilterSuggestions; values: AdhocFilterSuggestions } {
   const sources = useAdhocFilterSources(filter);
-  const isPromql = filter.sourceType === 'promql';
-  const sqlKeys = useSqlSourceKeys(
-    isPromql ? NO_SOURCES : sources,
-    dateRange,
-    suggestionsWhere,
-  );
-  const promqlKeys = usePromqlSourceKeys(
-    isPromql ? sources : NO_SOURCES,
-    dateRange,
-  );
-  const keys = isPromql ? promqlKeys : sqlKeys;
+  const keys = useSqlSourceKeys(sources, dateRange, suggestionsWhere);
 
   // Until keys load, every source would be queried, then the sources known to
   // have `key` queried again.
@@ -391,19 +263,13 @@ export function useAdhocFilterOptions(
     () => getSourcesWithKey(sources, keys.keysBySourceId, lookupKey),
     [sources, keys.keysBySourceId, lookupKey],
   );
-  const sqlValues = useSqlSourceValues(
-    isPromql ? NO_SOURCES : sourcesWithKey,
+  const values = useSqlSourceValues(
+    sourcesWithKey,
     lookupKey,
     dateRange,
     keys.columnNames,
     suggestionsWhere,
   );
-  const promqlValues = usePromqlSourceValues(
-    isPromql ? sourcesWithKey : NO_SOURCES,
-    lookupKey,
-    dateRange,
-  );
-  const values = isPromql ? promqlValues : sqlValues;
   return {
     keys,
     values: key && keys.isLoading ? { ...values, isLoading: true } : values,

@@ -3,7 +3,7 @@ import { z } from 'zod';
 import { READ_ONLY_TOOL } from '@/mcp/tools/annotations';
 import type { ToolRegistrar } from '@/mcp/tools/types';
 import { mcpUserError } from '@/mcp/utils/errors';
-import { isPromqlEnabled } from '@/mcp/utils/promql';
+import { isPromqlEnabled } from '@/mcp/utils/legacySourceKinds';
 import Dashboard from '@/models/dashboard';
 import { convertToExternalDashboard } from '@/routers/external-api/v2/utils/dashboards';
 import { objectIdSchema } from '@/utils/zod';

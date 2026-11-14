@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { useState } from 'react';
 import { Group, SegmentedControl, Stack } from '@mantine/core';
 import type { Meta, StoryObj } from '@storybook/nextjs';

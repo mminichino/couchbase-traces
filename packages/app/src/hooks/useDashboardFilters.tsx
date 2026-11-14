@@ -15,7 +15,6 @@ import {
   AdhocConditionAction,
   AdhocConditionEntry,
   adhocConditionsToFilters,
-  adhocConditionsToPromqlFilters,
   doesFilterApplyToSource,
   FilterState,
   filtersToQuery,
@@ -299,11 +298,7 @@ const useDashboardFilters = (filters: DashboardFilter[]) => {
         if (isAdhocFilter(filter)) {
           const conditions = adhocConditionsByFilterId.get(filter.id);
           if (!conditions) continue;
-          emit(
-            filter.sourceType === 'promql'
-              ? adhocConditionsToPromqlFilters(conditions)
-              : adhocConditionsToFilters(conditions),
-          );
+          emit(adhocConditionsToFilters(conditions));
           continue;
         }
         const expression = getFilterExpression(filter);

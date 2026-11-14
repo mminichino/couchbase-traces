@@ -12,7 +12,7 @@ import {
   isFilterVariableEnabled,
   parseQuery,
 } from '@/filters';
-import { isPromqlSavedChartConfig, isRawSqlSavedChartConfig } from '@/guards';
+import { isRawSqlSavedChartConfig } from '@/guards';
 import { hasMacro, isMissingFiltersMacro } from '@/macros';
 import {
   AdhocDashboardFilter,
@@ -227,7 +227,6 @@ export function configConsumesBroadcastFilters(
   sourceId: string | undefined,
 ): boolean {
   if (!('configType' in config)) return true;
-  if (config.configType === 'promql') return false;
   if (config.configType === 'sql') {
     return !!sourceId && !isMissingFiltersMacro(config.sqlTemplate);
   }
@@ -251,12 +250,11 @@ export function getAdhocFilterTargetsForTile(
   ) {
     return [];
   }
-  const isPromql = isPromqlSavedChartConfig(config);
   return filters
     .filter(isAdhocFilter)
     .filter(
       filter =>
-        filter.sourceType === (isPromql ? 'promql' : 'sql') &&
+        filter.sourceType === 'sql' &&
         doesFilterApplyToSource(filter, sourceId),
     );
 }

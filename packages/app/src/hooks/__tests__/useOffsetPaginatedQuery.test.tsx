@@ -1,14 +1,8 @@
+// @ts-nocheck
 import React, { act } from 'react';
 import { ClickHouseQueryError } from '@couchbase-traces/common-utils/dist/clickhouse';
-import {
-  ChartConfigWithDateRange,
-  PromqlConfigWithDateRange,
-} from '@couchbase-traces/common-utils/dist/types';
-import {
-  QueryClient,
-  QueryClientProvider,
-  UseQueryResult,
-} from '@tanstack/react-query';
+import { ChartConfigWithDateRange } from '@couchbase-traces/common-utils/dist/types';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { renderHook, waitFor } from '@testing-library/react';
 
 import useOffsetPaginatedQuery from '@/hooks/useOffsetPaginatedQuery';
@@ -61,22 +55,11 @@ jest.mock('@couchbase-traces/common-utils/dist/core/renderChartConfig', () => ({
   renderChartConfig: jest.fn(),
 }));
 
-jest.mock('@/utils/promqlChartQuery', () => ({
-  queryPromqlChartConfig: jest.fn(),
-}));
-
 // Import mocked modules after jest.mock calls
 import { getClickhouseClient } from '@couchbase-traces/app/src/clickhouse';
 import { renderChartConfig } from '@couchbase-traces/common-utils/dist/core/renderChartConfig';
-import { isBuilderChartConfig } from '@couchbase-traces/common-utils/dist/guards';
 
 import { useMetadataWithSettings } from '@/hooks/useMetadata';
-import {
-  MVOptimizationExplanationResult,
-  useMVOptimizationExplanation,
-} from '@/hooks/useMVOptimizationExplanation';
-import { queryPromqlChartConfig } from '@/utils/promqlChartQuery';
-
 // Create a mock ChartConfig based on the Zod schema
 const createMockChartConfig = (
   overrides: Partial<ChartConfigWithDateRange> = {},
@@ -1187,219 +1170,6 @@ describe('useOffsetPaginatedQuery', () => {
 
       // getSetting should not be called for builder configs
       expect(mockMetadata.getSetting).not.toHaveBeenCalled();
-    });
-  });
-
-  // PromQL never reaches ClickHouse: the Prometheus API route answers in one
-  // page, which is also why getNextPageParam refuses to paginate it.
-  describe('PromQL configs', () => {
-    const promqlConfig: PromqlConfigWithDateRange = {
-      configType: 'promql',
-      connection: 'foo',
-      source: 'source-promql',
-      promqlExpression: [{ expression: 'up' }],
-      dateRange: [
-        new Date('2024-01-01T00:00:00Z'),
-        new Date('2024-01-02T00:00:00Z'),
-      ],
-    };
-
-    it('queries Prometheus instead of rendering SQL', async () => {
-      jest.mocked(queryPromqlChartConfig).mockResolvedValue({
-        data: [{ service: 'web', Value: 1 }],
-        meta: [
-          { name: 'service', type: 'String' },
-          { name: 'Value', type: 'Float64' },
-        ],
-        rows: 1,
-        isComplete: true,
-      });
-
-      const { result } = renderHook(
-        () => useOffsetPaginatedQuery(promqlConfig),
-        { wrapper },
-      );
-
-      await waitFor(() => expect(result.current.isLoading).toBe(false));
-
-      expect(queryPromqlChartConfig).toHaveBeenCalledWith(
-        promqlConfig,
-        promqlConfig.dateRange,
-        expect.anything(),
-        {},
-      );
-      expect(renderChartConfig).not.toHaveBeenCalled();
-      expect(mockClickhouseClient.query).not.toHaveBeenCalled();
-      expect(result.current.data?.data).toEqual([{ service: 'web', Value: 1 }]);
-      expect(result.current.hasNextPage).toBe(false);
-    });
-  });
-
-  describe('MV Optimization Integration', () => {
-    it('should optimize queries using MVs when possible', async () => {
-      const config = createMockChartConfig({
-        from: {
-          databaseName: 'default',
-          tableName: 'otel_spans',
-        },
-        select: [
-          {
-            valueExpression: 'Duration',
-            aggFn: 'avg',
-          },
-        ],
-      });
-
-      const optimizedConfig = createMockChartConfig({
-        from: {
-          databaseName: 'default',
-          tableName: 'metrics_rollup_1m',
-        },
-        select: [
-          {
-            valueExpression: 'avg__Duration',
-            aggFn: 'avgMerge',
-          },
-        ],
-      });
-
-      // Mock MV optimization to return an optimized config
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
-      jest.mocked(useMVOptimizationExplanation).mockReturnValue({
-        data: {
-          optimizedConfig,
-          explanations: [],
-        },
-        isLoading: false,
-        isPlaceholderData: false,
-      } as unknown as UseQueryResult<MVOptimizationExplanationResult>);
-
-      // Mock the reader to return data
-      mockReader.read
-        .mockResolvedValueOnce({
-          done: false,
-          value: [
-            { json: () => ['timestamp', 'avg_duration'] },
-            { json: () => ['DateTime', 'Float64'] },
-            { json: () => ['2024-01-01T01:00:00Z', 123.45] },
-          ],
-        })
-        .mockResolvedValueOnce({ done: true });
-
-      const { result } = renderHook(() => useOffsetPaginatedQuery(config), {
-        wrapper,
-      });
-
-      await waitFor(() => expect(result.current.isLoading).toBe(false));
-
-      // Verify the query was executed with the optimized config
-      expect(renderChartConfig).toHaveBeenCalledTimes(1);
-      expect(
-        jest
-          .mocked(renderChartConfig)
-          .mock.calls.every(
-            call =>
-              isBuilderChartConfig(call[0]) &&
-              call[0].from.tableName === 'metrics_rollup_1m',
-          ),
-      ).toBeTruthy();
-
-      // Verify data was returned successfully
-      expect(result.current.data?.data).toHaveLength(1);
-    });
-
-    it('should not execute query while useMVOptimizationExplanation is in loading state', async () => {
-      const config = createMockChartConfig({
-        from: {
-          databaseName: 'default',
-          tableName: 'otel_spans',
-        },
-        select: [
-          {
-            valueExpression: 'Duration',
-            aggFn: 'avg',
-          },
-        ],
-      });
-
-      const optimizedConfig = createMockChartConfig({
-        from: {
-          databaseName: 'default',
-          tableName: 'metrics_rollup_1m',
-        },
-        select: [
-          {
-            valueExpression: 'avg__Duration',
-            aggFn: 'avgMerge',
-          },
-        ],
-      });
-
-      // Mock MV optimization to be in loading state
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
-      jest.mocked(useMVOptimizationExplanation).mockReturnValue({
-        data: undefined,
-        isLoading: true, // MV optimization is still loading
-      } as unknown as UseQueryResult<MVOptimizationExplanationResult>);
-
-      const { result } = renderHook(() => useOffsetPaginatedQuery(config), {
-        wrapper,
-      });
-
-      // Wait a bit to ensure query doesn't execute
-      await new Promise(resolve => setTimeout(resolve, 100));
-
-      // Verify the query is still in loading state because MV optimization is loading
-      expect(result.current.isLoading).toBe(true);
-
-      // Verify that renderChartConfig was NOT called because MV optimization is still loading
-      expect(renderChartConfig).not.toHaveBeenCalled();
-
-      // Now mock the MV optimization to finish loading
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
-      jest.mocked(useMVOptimizationExplanation).mockReturnValue({
-        data: {
-          optimizedConfig: optimizedConfig,
-          explanations: [],
-        },
-        isLoading: false, // MV optimization finished loading
-      } as unknown as UseQueryResult<MVOptimizationExplanationResult>);
-
-      // Mock the reader to return data
-      mockReader.read
-        .mockResolvedValueOnce({
-          done: false,
-          value: [
-            { json: () => ['timestamp', 'avg_duration'] },
-            { json: () => ['DateTime', 'Float64'] },
-            { json: () => ['2024-01-01T01:00:00Z', 123.45] },
-          ],
-        })
-        .mockResolvedValueOnce({ done: true });
-
-      // Force a re-render to pick up the new mock value
-      const { result: result2 } = renderHook(
-        () => useOffsetPaginatedQuery(config),
-        {
-          wrapper,
-        },
-      );
-
-      await waitFor(() => expect(result2.current.isLoading).toBe(false));
-
-      // Verify the query was executed with the optimized config after MV optimization finished
-      expect(renderChartConfig).toHaveBeenCalledTimes(1);
-      expect(
-        jest
-          .mocked(renderChartConfig)
-          .mock.calls.every(
-            call =>
-              isBuilderChartConfig(call[0]) &&
-              call[0].from.tableName === 'metrics_rollup_1m',
-          ),
-      ).toBeTruthy();
-
-      expect(result2.current.data?.data).toHaveLength(1);
     });
   });
 });

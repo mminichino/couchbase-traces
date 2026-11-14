@@ -20,10 +20,6 @@ import {
 import { ExpressionFormRow } from './ExpressionFormRow';
 import { FormRow } from './FormRow';
 import { HighlightedAttributeExpressionsFormRow } from './HighlightedAttributes';
-import {
-  MaterializedViewsFormSection,
-  MetadataMaterializedViewsFormSection,
-} from './MaterializedViews';
 import { OrderByFormRow } from './OrderByFormRow';
 import { TableModelProps } from './types';
 import { UseTextIndexFormRow } from './UseTextIndexFormRow';
@@ -299,10 +295,6 @@ export function LogTableModelForm(props: TableModelProps) {
           label="Highlighted Trace Attributes"
           helpText="Expressions defining trace-level attributes which are displayed in the trace view for the selected trace."
         />
-        <Separator size="xs" />
-        <MaterializedViewsFormSection {...props} />
-        <Separator size="xs" />
-        <MetadataMaterializedViewsFormSection {...props} />
         <Separator size="xs" />
         <OrderByFormRow
           control={control}

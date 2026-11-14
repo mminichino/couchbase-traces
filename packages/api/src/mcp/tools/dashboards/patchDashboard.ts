@@ -6,7 +6,7 @@ import { recordDashboardOnboardingIfHasTiles } from '@/controllers/dashboard';
 import { IDEMPOTENT_DESTRUCTIVE_TOOL } from '@/mcp/tools/annotations';
 import type { ToolRegistrar } from '@/mcp/tools/types';
 import { mcpUserError } from '@/mcp/utils/errors';
-import { isPromqlEnabled } from '@/mcp/utils/promql';
+import { isPromqlEnabled } from '@/mcp/utils/legacySourceKinds';
 import Dashboard from '@/models/dashboard';
 import {
   cleanupDashboardAlerts,

@@ -1,6 +1,4 @@
 import React, { useMemo } from 'react';
-import pick from 'lodash/pick';
-import objectHash from 'object-hash';
 import {
   ColumnMeta,
   ColumnMetaType,
@@ -10,7 +8,6 @@ import {
   isCHIntegerType,
   JSDataType,
 } from '@couchbase-traces/common-utils/dist/clickhouse';
-import { inferGranularityFromMVSelect } from '@couchbase-traces/common-utils/dist/core/materializedViews';
 import { Metadata } from '@couchbase-traces/common-utils/dist/core/metadata';
 import { isRatioChartConfig } from '@couchbase-traces/common-utils/dist/core/renderChartConfig';
 import { splitAndTrimWithBracket } from '@couchbase-traces/common-utils/dist/core/utils';
@@ -27,7 +24,6 @@ import {
   SourceSchema,
   TLogSource,
   TMetricSource,
-  TPromqlSource,
   TSessionSource,
   TSource,
   TSourceNoId,
@@ -42,8 +38,6 @@ import {
 } from '@tanstack/react-query';
 
 import { hdxServer } from '@/api';
-import { IS_LOCAL_MODE } from '@/config';
-import { localSources } from '@/localStore';
 
 // Columns for the sessions table as of OTEL Collector v0.129.1
 export const SESSION_TABLE_EXPRESSIONS = {
@@ -137,9 +131,6 @@ export function useSources() {
   return useQuery({
     queryKey: ['sources'],
     queryFn: async () => {
-      if (IS_LOCAL_MODE) {
-        return localSources.getAll();
-      }
       const rawSources = await hdxServer('sources').json<TSource[]>();
       const sources = rawSources.map(addDefaultsToSource);
 
@@ -191,9 +182,6 @@ export function useSource({
   return useQuery({
     queryKey: ['sources'],
     queryFn: async () => {
-      if (IS_LOCAL_MODE) {
-        return localSources.getAll();
-      }
       const rawSources = await hdxServer('sources').json<TSource[]>();
       return rawSources.map(addDefaultsToSource);
     },
@@ -220,10 +208,6 @@ export function useUpdateSource() {
 
   return useMutation({
     mutationFn: async ({ source }: { source: TSource }) => {
-      if (IS_LOCAL_MODE) {
-        localSources.update(source.id, source);
-        return;
-      }
       return hdxServer(`sources/${source.id}`, {
         method: 'PUT',
         json: source,
@@ -243,22 +227,6 @@ export function useCreateSource() {
 
   const mut = useMutation({
     mutationFn: async ({ source }: { source: TSourceNoId }) => {
-      if (IS_LOCAL_MODE) {
-        const existing = localSources
-          .getAll()
-          .find(
-            stored =>
-              objectHash(pick(stored, ['kind', 'name', 'connection'])) ===
-              objectHash(pick(source, ['kind', 'name', 'connection'])),
-          );
-        if (existing) {
-          // Replace the existing source in-place rather than duplicating
-          localSources.update(existing.id, source);
-          return { ...source, id: existing.id };
-        }
-        return localSources.create(source);
-      }
-
       return hdxServer(`sources`, {
         method: 'POST',
         json: source,
@@ -277,10 +245,6 @@ export function useDeleteSource() {
 
   return useMutation({
     mutationFn: async ({ id }: { id: string }) => {
-      if (IS_LOCAL_MODE) {
-        localSources.delete(id);
-        return;
-      }
       return hdxServer(`sources/${id}`, { method: 'DELETE' });
     },
     onSuccess: () => {
@@ -316,8 +280,7 @@ type InferredSourceConfig =
   | TStrippedSource<TLogSource>
   | TStrippedSource<TTraceSource>
   | TStrippedSource<TMetricSource>
-  | TStrippedSource<TSessionSource>
-  | TStrippedSource<TPromqlSource>;
+  | TStrippedSource<TSessionSource>;
 
 export async function inferTableSourceConfig({
   databaseName,
@@ -329,7 +292,7 @@ export async function inferTableSourceConfig({
   databaseName: string;
   tableName: string;
   connectionId: string;
-  kind: SourceKind;
+  kind: Exclude<SourceKind, SourceKind.Promql>;
   metadata: Metadata;
 }): Promise<InferredSourceConfig> {
   const columns = await metadata.getColumns({
@@ -360,10 +323,6 @@ export async function inferTableSourceConfig({
       : {}),
     kind,
   };
-
-  if (kind === SourceKind.Promql) {
-    return baseConfig as TStrippedSource<TPromqlSource>;
-  }
 
   if (kind === SourceKind.Session) {
     const isSessionSchema =
@@ -451,9 +410,7 @@ export async function inferTableSourceConfig({
           kvRollupTable: `${tableName}_kv_rollup_15m`,
           // Fall back to '15 minute' to preserve the prior default when the
           // MV's `as_select` doesn't contain a recognized bucketing function.
-          granularity:
-            inferGranularityFromMVSelect(rollupMeta.kvMeta.as_select) ??
-            '15 minute',
+          granularity: '15 minute',
         },
       }
     : {};
@@ -507,47 +464,6 @@ export async function inferTableSourceConfig({
         }
       : {}),
   };
-}
-
-// The TimeSeries table the ClickHouse Prometheus docs tell users to create,
-// which is what ClickHouse Cloud PromQL preview services will likely have.
-// https://clickhouse.com/docs/concepts/features/interfaces/prometheus#create-a-timeseries-table
-const DOCS_TIME_SERIES_TABLE = {
-  databaseName: 'prometheus',
-  tableName: 'metrics',
-};
-
-// The TimeSeries table name used by the collector's PromQL schema migration
-// and the dev ClickHouse remote-write handler.
-const COLLECTOR_TIME_SERIES_TABLE_NAME = 'metrics_ts';
-
-// The time column of a TimeSeries table's data inner table, which every PromQL
-// source uses.
-export const PROMQL_TIMESTAMP_EXPRESSION = 'timestamp';
-
-/**
- * Picks the TimeSeries table to back an auto-provisioned PromQL source. Prefers
- * the docs' `prometheus.metrics`, then the collector's `metrics_ts` in
- * `preferredDatabase` (the OTel tables' database), then `metrics_ts` anywhere.
- * Without either name, a sole TimeSeries table is still picked.
- */
-export function pickTimeSeriesTable(
-  tables: TPromqlSource['from'][],
-  preferredDatabase?: string,
-): TPromqlSource['from'] | undefined {
-  const collectorNamed = tables.filter(
-    t => t.tableName === COLLECTOR_TIME_SERIES_TABLE_NAME,
-  );
-  return (
-    tables.find(
-      t =>
-        t.databaseName === DOCS_TIME_SERIES_TABLE.databaseName &&
-        t.tableName === DOCS_TIME_SERIES_TABLE.tableName,
-    ) ??
-    collectorNamed.find(t => t.databaseName === preferredDatabase) ??
-    collectorNamed[0] ??
-    (tables.length === 1 ? tables[0] : undefined)
-  );
 }
 
 export function getDurationMsExpression(source: TTraceSource) {

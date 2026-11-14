@@ -9,12 +9,10 @@ import {
   DashboardFilterValueSchema,
   DashboardSchema,
   DerivedColumnSchema,
-  MAX_LEGEND_TEMPLATE_LENGTH,
   MetricFormulaSchema,
   MetricSourceSchema,
   PresetDashboard,
   PresetDashboardFilterSchema,
-  PromqlSourceSchema,
   SavedChartConfigSchema,
 } from '@/types';
 
@@ -916,41 +914,6 @@ describe('MetricSourceSchema.minAutoGranularity', () => {
   });
 });
 
-describe('PromqlSourceSchema.minAutoGranularity', () => {
-  const base = {
-    id: 'source-1',
-    kind: 'promql' as const,
-    name: 'Prometheus',
-    connection: 'conn-1',
-    from: { databaseName: 'default', tableName: 'metrics_ts' },
-    timestampValueExpression: 'timestamp',
-  };
-  const parse = (minAutoGranularity: unknown) =>
-    PromqlSourceSchema.safeParse({ ...base, minAutoGranularity });
-
-  it('accepts a valid interval or absent', () => {
-    const result = parse('1 minute');
-    expect(result.success).toBe(true);
-    if (result.success) {
-      expect(result.data.minAutoGranularity).toBe('1 minute');
-    }
-    expect(parse(undefined).success).toBe(true);
-  });
-
-  it("coerces the form's \"No minimum\" value ('') to undefined", () => {
-    const result = parse('');
-    expect(result.success).toBe(true);
-    if (result.success) {
-      expect(result.data.minAutoGranularity).toBeUndefined();
-    }
-  });
-
-  it('rejects a malformed interval', () => {
-    expect(parse('1 fortnight').success).toBe(false);
-    expect(parse('minute').success).toBe(false);
-  });
-});
-
 describe('MetricFormulaSchema', () => {
   it('parses an expression-only formula', () => {
     const result = MetricFormulaSchema.safeParse({
@@ -1025,60 +988,5 @@ describe('formulas on saved chart configs', () => {
     });
 
     expect(parsed).not.toHaveProperty('formulas');
-  });
-});
-
-describe('PromQL legend templates on saved chart configs', () => {
-  const promqlConfig = (legendTemplate: string) => ({
-    configType: 'promql' as const,
-    promqlExpression: 'up',
-    connection: 'conn-1',
-    source: 'source-1',
-    legendTemplate,
-  });
-
-  // The editor rejects an over-long template inline using the same constant;
-  // if these drift, a template the editor accepts fails the dashboard save.
-  it('caps legendTemplate at MAX_LEGEND_TEMPLATE_LENGTH', () => {
-    expect(
-      SavedChartConfigSchema.safeParse(
-        promqlConfig('a'.repeat(MAX_LEGEND_TEMPLATE_LENGTH)),
-      ).success,
-    ).toBe(true);
-    expect(
-      SavedChartConfigSchema.safeParse(
-        promqlConfig('a'.repeat(MAX_LEGEND_TEMPLATE_LENGTH + 1)),
-      ).success,
-    ).toBe(false);
-  });
-});
-
-describe('PromQL saved chart config source', () => {
-  const base = {
-    configType: 'promql' as const,
-    promqlExpression: 'up',
-  };
-
-  // The PromQL API resolves the table from the source, so a tile without one
-  // could never be queried.
-  it('requires a source', () => {
-    expect(SavedChartConfigSchema.safeParse(base).success).toBe(false);
-    expect(
-      SavedChartConfigSchema.safeParse({ ...base, source: '' }).success,
-    ).toBe(false);
-    expect(
-      SavedChartConfigSchema.safeParse({ ...base, source: 'source-1' }).success,
-    ).toBe(true);
-  });
-
-  // The connection comes from the source at query time, so a stored copy is
-  // dropped rather than kept around to go stale.
-  it('drops a persisted connection', () => {
-    const parsed = SavedChartConfigSchema.parse({
-      ...base,
-      source: 'source-1',
-      connection: 'conn-1',
-    });
-    expect(parsed).not.toHaveProperty('connection');
   });
 });

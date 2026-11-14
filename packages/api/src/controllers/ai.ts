@@ -14,6 +14,7 @@ import {
   AssistantLineTableConfigSchema,
   ChartConfigWithDateRange,
   pickSampleWeightExpressionProps,
+  SourceKind,
 } from '@couchbase-traces/common-utils/dist/types';
 import type { LanguageModel } from 'ai';
 import * as chrono from 'chrono-node';
@@ -78,6 +79,9 @@ export function getAIModel(): LanguageModel {
 }
 
 export async function getAIMetadata(source: ISource) {
+  if (source.kind === SourceKind.Promql) {
+    throw new Api500Error('PromQL sources are not supported');
+  }
   const connectionId = source.connection.toString();
 
   const connection = await getConnectionById(

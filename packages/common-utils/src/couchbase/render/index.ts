@@ -7,11 +7,7 @@ import {
 import { resolvePercentileAggFn } from '@/core/utils';
 import { concatSqlPP, sqlpp } from '@/couchbase/sqlpp';
 import { CouchbaseNotReadyError } from '@/dataLayer/errors';
-import {
-  isBuilderChartConfig,
-  isPromqlChartConfig,
-  isRawSqlChartConfig,
-} from '@/guards';
+import { isBuilderChartConfig, isRawSqlChartConfig } from '@/guards';
 import type {
   BuilderChartConfigWithOptDateRange,
   QuerySettings,
@@ -47,9 +43,6 @@ export async function renderChartConfigCouchbase(
   metadata: unknown,
   querySettings: QuerySettings | undefined,
 ): Promise<SqlppQuery> {
-  if (isPromqlChartConfig(rawChartConfig)) {
-    return { sql: '', params: {}, dialect: 'sqlpp' };
-  }
   if (isRawSqlChartConfig(rawChartConfig)) {
     return renderRawSqlChartConfigCouchbase(rawChartConfig, metadata);
   }

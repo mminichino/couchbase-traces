@@ -23,8 +23,11 @@ import {
 import { getSources } from '@/controllers/sources';
 import { READ_ONLY_TOOL } from '@/mcp/tools/annotations';
 import type { ToolRegistrar } from '@/mcp/tools/types';
+import {
+  isHiddenSource,
+  PROMQL_SOURCE_USAGE,
+} from '@/mcp/utils/legacySourceKinds';
 import { assertMcpSliceForConnection } from '@/mcp/utils/mcpSlice';
-import { isHiddenSource, PROMQL_SOURCE_USAGE } from '@/mcp/utils/promql';
 import { runWithTimeout } from '@/mcp/utils/timeout';
 import logger from '@/utils/logger';
 

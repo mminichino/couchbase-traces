@@ -4269,32 +4269,6 @@ describe('renderChartConfig', () => {
     });
   });
 
-  describe('PromQL chart config', () => {
-    it('should return empty SQL (PromQL is executed via Prometheus API)', async () => {
-      const promqlConfig: ChartConfigWithOptDateRange = {
-        configType: 'promql' as const,
-        promqlExpression: 'rate(http_requests_total[5m])',
-        connection: 'test-connection',
-        source: 'promql-source',
-        displayType: DisplayType.Line,
-        dateRange: [
-          new Date('2025-01-01T00:00:00Z'),
-          new Date('2025-01-01T01:00:00Z'),
-        ],
-      };
-
-      const generatedSql = await renderChartConfig(
-        promqlConfig,
-        mockMetadata,
-        undefined,
-      );
-
-      // PromQL configs return empty SQL; queries go through the Prometheus API route
-      expect(generatedSql.sql).toBe('');
-      expect(generatedSql.params).toEqual({});
-    });
-  });
-
   describe('dashboard variables', () => {
     const configWithVariables: ChartConfigWithOptDateRange = {
       displayType: DisplayType.Line,

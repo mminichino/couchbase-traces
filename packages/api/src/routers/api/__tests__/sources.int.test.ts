@@ -47,16 +47,17 @@ const MOCK_METRIC_SOURCE: Omit<Extract<TSource, { kind: 'metric' }>, 'id'> = {
   },
 };
 
-const MOCK_PROMQL_SOURCE: Omit<Extract<TSource, { kind: 'promql' }>, 'id'> = {
+const MOCK_PROMQL_SOURCE = {
   kind: SourceKind.Promql,
   name: 'Test PromQL Source',
+  team: new Types.ObjectId().toString(),
   connection: new Types.ObjectId().toString(),
   from: {
     databaseName: 'test_db',
     tableName: 'metrics_ts',
   },
   timestampValueExpression: 'timestamp',
-};
+} as import('@/models/source').ISourceInput;
 
 const createTestConnection = (team: Types.ObjectId, id: string) =>
   Connection.create({
@@ -870,8 +871,8 @@ describe('sources router', () => {
       const response = await agent
         .put(`/sources/${promqlSource._id}`)
         .send({
-          id: promqlSource._id.toString(),
           ...MOCK_PROMQL_SOURCE,
+          id: promqlSource._id.toString(),
         })
         .expect(400);
 

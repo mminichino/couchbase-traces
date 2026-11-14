@@ -6,16 +6,13 @@ import { z } from 'zod';
 
 export { default as objectHash } from 'object-hash';
 
+import { ChSql, chSql } from '@/clickhouse';
 import {
   isAdhocFilter,
   isQueryExpressionFilter,
   isStaticListFilter,
 } from '@/filters';
-import {
-  isBuilderSavedChartConfig,
-  isPromqlSavedChartConfig,
-  isRawSqlSavedChartConfig,
-} from '@/guards';
+import { isBuilderSavedChartConfig, isRawSqlSavedChartConfig } from '@/guards';
 import { MacroExpansionError, MalformedMacroArgsError } from '@/macroErrors';
 import {
   getSourceDependentMacrosUsed,
@@ -1713,14 +1710,6 @@ export const isFormulaSourceKind = (
   kind === SourceKind.Log ||
   kind === SourceKind.Trace;
 
-export function displayTypeSupportsPromQLAlerts(
-  displayType: DisplayType | undefined,
-): boolean {
-  // TODO: Support alerts for PromQL (HDX-4636)
-  // This looks funky, just doing it to satisfy knip
-  return displayType ? false : false;
-}
-
 /**
  * Whether the alert checker can evaluate an alert on a tile with this config.
  * Shared by every save path so alerts are never stored where they cannot run.
@@ -1728,9 +1717,6 @@ export function displayTypeSupportsPromQLAlerts(
 export function savedChartConfigSupportsAlerts(
   config: SavedChartConfig,
 ): boolean {
-  if (isPromqlSavedChartConfig(config)) {
-    return displayTypeSupportsPromQLAlerts(config.displayType);
-  }
   if (isRawSqlSavedChartConfig(config)) {
     return displayTypeSupportsRawSqlAlerts(config.displayType);
   }
@@ -1987,3 +1973,33 @@ export type MetadataMVQueryOptions = Map<
   string,
   Map<'NativeColumn' | string, string[]> // map from column name to keys
 >;
+
+const NAMED_BUCKET_FUNCTIONS: Record<string, SQLInterval> = {
+  toStartOfSecond: '1 second',
+  toStartOfMinute: '1 minute',
+  toStartOfFiveMinutes: '5 minute',
+  toStartOfTenMinutes: '10 minute',
+  toStartOfFifteenMinutes: '15 minute',
+  toStartOfHour: '1 hour',
+  toStartOfDay: '1 day',
+};
+
+function getNamedBucketFunction(granularity: SQLInterval): string | undefined {
+  for (const [fn, g] of Object.entries(NAMED_BUCKET_FUNCTIONS)) {
+    if (g === granularity) return fn;
+  }
+  return undefined;
+}
+
+/** Render a ClickHouse time bucketing expression for metadata rollup reads. */
+export function renderStartOfBucketExpr(
+  granularity: SQLInterval,
+  inner: ChSql,
+): ChSql {
+  const namedFn = getNamedBucketFunction(granularity);
+  if (namedFn) {
+    return chSql`${{ UNSAFE_RAW_SQL: namedFn }}(${inner})`;
+  }
+  const seconds = convertGranularityToSeconds(granularity);
+  return chSql`toStartOfInterval(${inner}, INTERVAL ${{ Int64: seconds }} SECOND)`;
+}

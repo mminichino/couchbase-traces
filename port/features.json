@@ -245,16 +245,7 @@
       "area": "metrics",
       "visibility": "api",
       "description": "Query metrics through Prometheus-style endpoints for use by Grafana and similar tools.",
-      "entryPoints": [
-        "api_route:GET /v1/prometheus/label/:name/values",
-        "api_route:GET /v1/prometheus/labels",
-        "api_route:GET /v1/prometheus/query",
-        "api_route:GET /v1/prometheus/query_exemplars",
-        "api_route:GET /v1/prometheus/query_range",
-        "api_route:POST /v1/prometheus/query",
-        "api_route:POST /v1/prometheus/query_exemplars",
-        "api_route:POST /v1/prometheus/query_range"
-      ],
+      "entryPoints": [],
       "status": "dropped",
       "decision": {
         "note": "PromQL dropped by the user. It required ClickHouse's TimeSeries table fed by Prometheus remote-write, with no Couchbase equivalent in scope. Disabled in Phase 5a; code deleted in Phase 10.",
@@ -375,9 +366,7 @@
       "area": "admin",
       "visibility": "admin",
       "description": "Monitor ClickHouse CPU, memory, disk, parts and query log from system tables.",
-      "entryPoints": [
-        "app_page:/clickhouse"
-      ],
+      "entryPoints": [],
       "status": "replaced",
       "decision": {
         "note": "Replaced by the Couchbase cluster page. The ClickHouse page is removed in Phase 10.",
@@ -422,11 +411,7 @@
       "area": "query_proxy",
       "visibility": "internal",
       "description": "Forward browser queries to the data store through the API using the saved connection.",
-      "entryPoints": [
-        "api_route:GET /clickhouse-proxy/*",
-        "api_route:POST /clickhouse-proxy/*",
-        "api_route:POST /clickhouse-proxy/test"
-      ],
+      "entryPoints": [],
       "status": "replaced",
       "decision": {
         "note": "Couchbase query route replaces the ClickHouse proxy.",
@@ -709,7 +694,6 @@
         "mcp_tool:cbt_emerging_signals",
         "mcp_tool:cbt_event_deltas",
         "mcp_tool:cbt_event_patterns",
-        "mcp_tool:cbt_promql",
         "mcp_tool:cbt_search",
         "mcp_tool:cbt_sql",
         "mcp_tool:cbt_table",

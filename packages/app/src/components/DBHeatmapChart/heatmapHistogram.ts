@@ -1,4 +1,9 @@
-import { parsePromqlLe } from '@couchbase-traces/common-utils/dist/core/promql';
+function parsePromqlLe(le: string): number {
+  if (le === '+Inf' || le === 'Inf') {
+    return Number.POSITIVE_INFINITY;
+  }
+  return Number(le);
+}
 
 import type { HeatmapGrid } from './heatmapGrid';
 import { makeTimeIndexer } from './heatmapSeriesGrid';

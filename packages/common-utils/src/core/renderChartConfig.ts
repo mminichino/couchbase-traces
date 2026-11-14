@@ -31,7 +31,7 @@ import {
   resolvePercentileAggFn,
   splitAndTrimWithBracket,
 } from '@/core/utils';
-import { isPromqlChartConfig, isRawSqlChartConfig } from '@/guards';
+import { isRawSqlChartConfig } from '@/guards';
 import { replaceMacros } from '@/macros';
 import {
   buildTextIndexInfoLookup,
@@ -52,7 +52,6 @@ import {
   DateRange,
   DisplayType,
   MetricsDataType,
-  PromqlChartConfig,
   QuerySettings,
   RawSqlChartConfig,
   SearchCondition,
@@ -1785,14 +1784,9 @@ type RawSqlChartConfigEx = RawSqlChartConfig &
   Partial<DateRange> &
   InternalChartFields;
 
-type PromqlChartConfigEx = PromqlChartConfig &
-  Partial<DateRange> &
-  InternalChartFields;
-
 export type ChartConfigWithOptDateRangeEx =
   | BuilderChartConfigWithOptDateRangeEx
-  | RawSqlChartConfigEx
-  | PromqlChartConfigEx;
+  | RawSqlChartConfigEx;
 
 async function renderWith(
   chartConfig: BuilderChartConfigWithOptDateRangeEx,
@@ -3302,11 +3296,6 @@ export async function renderChartConfig(
   metadata: Metadata,
   querySettings: QuerySettings | undefined,
 ): Promise<ChSql> {
-  if (isPromqlChartConfig(rawChartConfig)) {
-    // PromQL queries are executed server-side via the Prometheus API route,
-    // not via SQL generation. Return empty SQL as a no-op.
-    return { sql: '', params: {} };
-  }
   if (isRawSqlChartConfig(rawChartConfig)) {
     return renderRawSqlChartConfig(rawChartConfig, metadata);
   }

@@ -341,7 +341,7 @@ describe('DBRowSidePanelInner, span link "Open trace" push wiring (HDX-3191)', (
   it('does not push when the current row has no resolvable trace source', () => {
     // Root source with no traceSourceId: traceSourceData never resolves, so
     // the guard in handleOpenLinkedTrace should no-op instead of throwing.
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
+
     const sourceWithoutTrace = {
       ...ROOT_SOURCE,
       traceSourceId: undefined,

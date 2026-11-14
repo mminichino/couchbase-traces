@@ -237,7 +237,6 @@ describe('MetricTableModelForm metric table autofill', () => {
   // A saved source of another kind switched over to OTEL Metrics has no metric
   // tables to preserve, so it autofills like a new source.
   it('autofills for an existing source switched to the metrics kind', async () => {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
     savedSource = {
       ...SAVED_SOURCE,
       kind: SourceKind.Log,

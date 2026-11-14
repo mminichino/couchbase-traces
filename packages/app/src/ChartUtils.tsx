@@ -9,11 +9,6 @@ import {
   JSDataType,
   ResponseJSON,
 } from '@couchbase-traces/common-utils/dist/clickhouse';
-import {
-  DEFAULT_PROMQL_REDUCER,
-  getQueriedPromqlSeries,
-} from '@couchbase-traces/common-utils/dist/core/promql';
-import { getPromqlChartRange } from '@couchbase-traces/common-utils/dist/core/promqlChart';
 import { isMetricChartConfig } from '@couchbase-traces/common-utils/dist/core/renderChartConfig';
 import { SERIES_KEY_JOINER } from '@couchbase-traces/common-utils/dist/core/seriesNameTemplate';
 import {
@@ -35,12 +30,10 @@ import {
   BuilderSavedChartConfig,
   ChartConfigWithDateRange,
   ChartConfigWithOptDateRange,
-  DateRange,
   DisplayType,
   Filter,
   isSearchableSource,
   MetricsDataType as MetricsDataTypeV2,
-  PromqlChartConfig,
   SourceKind,
   SQLInterval,
   TMetricSource,
@@ -49,7 +42,6 @@ import {
 import { substituteChartConfigVariables } from '@couchbase-traces/common-utils/dist/variables';
 import { notifications } from '@mantine/notifications';
 
-import DateRangeIndicator from './components/charts/DateRangeIndicator';
 import { MVOptimizationExplanationResult } from './hooks/useMVOptimizationExplanation';
 import {
   encodeJsonUrlParamValue,
@@ -117,51 +109,6 @@ function getTimeChartDateRange(
 }
 
 export const MAX_TIME_CHART_SERIES = DEFAULT_SERIES_LIMIT;
-
-/**
- * Converts the given config into one that is suitable for a tile that shows
- * 1 value per series (number, pie, and bar tiles). The reducer defaults to
- * the last value.
- */
-export function convertToReducedPromqlChartConfig(
-  config: PromqlChartConfig & DateRange,
-): PromqlChartConfig & DateRange {
-  return {
-    ...config,
-    ...getPromqlChartRange(config),
-    promqlExpression: getQueriedPromqlSeries(config).map(series => ({
-      ...series,
-      reducer: series.reducer ?? DEFAULT_PROMQL_REDUCER,
-    })),
-  };
-}
-
-/**
- * The config for the sparkline behind a PromQL number tile: the tile's query
- * with no reducer, so the buckets are plotted rather than collapsed.
- *
- * Intentionally matches convertToReducedPromqlChartConfig except for the reducer,
- * so that react-query keys remain consistent between the reduced and sparkline versions.
- */
-export function convertToPromqlSparklineChartConfig(
-  config: PromqlChartConfig & DateRange,
-): PromqlChartConfig & DateRange {
-  const reduced = convertToReducedPromqlChartConfig(config);
-  return {
-    ...reduced,
-    promqlExpression: getQueriedPromqlSeries(reduced).map(series => ({
-      ...series,
-      reducer: undefined,
-    })),
-  };
-}
-
-/** A PromQL table tile's queried config. */
-export function convertToPromqlTableChartConfig(
-  config: PromqlChartConfig & DateRange,
-): PromqlChartConfig & DateRange {
-  return { ...config, ...getPromqlChartRange(config) };
-}
 
 export function convertToTimeChartConfig(
   config: ChartConfigWithDateRange,
@@ -1527,27 +1474,11 @@ export {
   convertToTableChartConfig,
 };
 
-export function buildMVDateRangeIndicator({
-  mvOptimizationData,
-  originalDateRange,
-}: {
+export function buildMVDateRangeIndicator(_args: {
   mvOptimizationData?: MVOptimizationExplanationResult;
   originalDateRange: [Date, Date];
 }) {
-  const mvDateRange = mvOptimizationData?.optimizedConfig?.dateRange;
-  if (!mvDateRange) return null;
-
-  const mvGranularity = mvOptimizationData?.explanations.find(e => e.success)
-    ?.mvConfig.minGranularity;
-
-  return (
-    <DateRangeIndicator
-      key="date-range-indicator"
-      originalDateRange={originalDateRange}
-      effectiveDateRange={mvDateRange}
-      mvGranularity={mvGranularity}
-    />
-  );
+  return null;
 }
 
 export function shouldFillNullsWithZero(

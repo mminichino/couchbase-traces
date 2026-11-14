@@ -267,12 +267,17 @@ export default [
     },
   },
   {
-    files: ['src/**/__tests__/**/*.{ts,tsx}', 'src/**/*.test.{ts,tsx}'],
+    files: [
+      'src/**/__tests__/**/*.{ts,tsx}',
+      'src/**/*.test.{ts,tsx}',
+      'src/**/*.stories.{ts,tsx}',
+    ],
     rules: {
       // Drop date rules — new Date() / Date.now() are fine in tests
       'no-restricted-syntax': ['error', ...UI_SYNTAX_RESTRICTIONS],
       '@eslint-react/component-hook-factories': 'off',
       '@eslint-react/no-unnecessary-use-prefix': 'off',
+      '@typescript-eslint/ban-ts-comment': 'off',
     },
   },
   {

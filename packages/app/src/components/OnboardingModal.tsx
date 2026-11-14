@@ -1,5 +1,4 @@
 import { memo, useCallback, useEffect, useState } from 'react';
-import { ClickhouseClient } from '@couchbase-traces/common-utils/dist/clickhouse/browser';
 import {
   MetricsDataType,
   MetricTable,
@@ -12,17 +11,10 @@ import { IconArrowLeft } from '@tabler/icons-react';
 
 import { useBrandDisplayName } from '@/brand';
 import { ConnectionForm } from '@/components/ConnectionForm';
-import {
-  IS_CLICKHOUSE_BUILD,
-  IS_LOCAL_MODE,
-  IS_PROMQL_ENABLED,
-} from '@/config';
-import { useConnections, useCreateConnection } from '@/connection';
+import { useConnections } from '@/connection';
 import { useMetadataWithSettings } from '@/hooks/useMetadata';
 import {
   inferTableSourceConfig,
-  pickTimeSeriesTable,
-  PROMQL_TIMESTAMP_EXPRESSION,
   useCreateSource,
   useSources,
   useUpdateSource,
@@ -72,7 +64,6 @@ function OnboardingModalComponent({
   }, [step, sources]);
 
   const createSourceMutation = useCreateSource();
-  const createConnectionMutation = useCreateConnection();
   const updateSourceMutation = useUpdateSource();
   const metadata = useMetadataWithSettings();
 
@@ -81,72 +72,15 @@ function OnboardingModalComponent({
   const [hasAutodetected, setHasAutodetected] = useState(false);
   const [autoDetectedSources, setAutoDetectedSources] = useState<TSource[]>([]);
 
-  // Auto-connect for clickstack build: test default credentials against origin
-  const [hasAttemptedAutoConnect, setHasAttemptedAutoConnect] = useState(false);
-  useEffect(() => {
-    if (!IS_CLICKHOUSE_BUILD) return;
-    if (step !== 'connection') return;
-    if (connections?.length !== 0) return;
-    if (hasAttemptedAutoConnect) return;
-    // lets try to auto connect to the origin clickhouse server
-    setHasAttemptedAutoConnect(true);
-    const host = window.location.origin;
-    const client = new ClickhouseClient({
-      host,
-      username: 'default',
-      password: '',
-    });
-    client
-      .query({ query: 'SELECT 1', shouldSkipApplySettings: true })
-      .then(result => {
-        result.json().then(() => {
-          createConnectionMutation.mutate(
-            {
-              connection: {
-                name: 'Default',
-                host,
-                username: 'default',
-                password: '',
-              },
-            },
-            {
-              onSuccess: () => {
-                setStep('auto-detect');
-              },
-            },
-          );
-        });
-      })
-      .catch(() => {
-        // Auto-connect failed, user will use the form manually
-      });
-  }, [step, connections, hasAttemptedAutoConnect, createConnectionMutation]);
-
   const handleAutoDetectSources = useCallback(
     async (connectionId: string) => {
       try {
         setIsAutoDetecting(true);
         setHasAutodetected(true);
 
-        const getTimeSeriesTables = IS_PROMQL_ENABLED
-          ? metadata.getTimeSeriesTables({ connectionId }).catch(err => {
-              console.error('Error detecting TimeSeries tables:', err);
-              return [];
-            })
-          : [];
+        const otelTables = await metadata.getOtelTables({ connectionId });
 
-        // Try to detect OTEL tables, and a TimeSeries table for PromQL
-        const [otelTables, timeSeriesTables] = await Promise.all([
-          metadata.getOtelTables({ connectionId }),
-          getTimeSeriesTables,
-        ]);
-
-        const timeSeriesTable = pickTimeSeriesTable(
-          timeSeriesTables,
-          otelTables?.database,
-        );
-
-        if (!otelTables && !timeSeriesTable) {
+        if (!otelTables) {
           // No tables detected, go to manual source setup
           setStep('source');
           return;
@@ -329,24 +263,6 @@ function OnboardingModalComponent({
           }
         }
 
-        // Create PromQL Source if a TimeSeries table is available
-        if (timeSeriesTable) {
-          try {
-            const promqlSource = await createSourceMutation.mutateAsync({
-              source: {
-                kind: SourceKind.Promql,
-                name: 'PromQL',
-                connection: connectionId,
-                from: timeSeriesTable,
-                timestampValueExpression: PROMQL_TIMESTAMP_EXPRESSION,
-              },
-            });
-            createdSources.push(promqlSource);
-          } catch (err) {
-            console.error('Error creating PromQL source:', err);
-          }
-        }
-
         if (createdSources.length === 0) {
           console.error('No sources created due to missing required fields');
           // No sources created, go to manual source setup
@@ -464,9 +380,7 @@ function OnboardingModalComponent({
               connection={{
                 id: '',
                 name: 'Default',
-                host: IS_CLICKHOUSE_BUILD
-                  ? window.location.origin
-                  : 'http://localhost:8123',
+                host: 'http://localhost:8123',
                 username: 'default',
                 password: '',
               }}
@@ -495,11 +409,9 @@ function OnboardingModalComponent({
               showDeleteButton={false}
             />
           )}
-          {!IS_LOCAL_MODE && (
-            <Text size="xs" mt="md">
-              You can always add and edit connections later.
-            </Text>
-          )}
+          <Text size="xs" mt="md">
+            You can always add and edit connections later.
+          </Text>
         </>
       )}
       {step === 'auto-detect' && (

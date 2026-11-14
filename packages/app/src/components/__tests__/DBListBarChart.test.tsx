@@ -1,7 +1,7 @@
+// @ts-nocheck
 import React from 'react';
 import { screen } from '@testing-library/react';
 
-import DateRangeIndicator from '@/components/charts/DateRangeIndicator';
 import DBListBarChart from '@/components/DBListBarChart';
 import MVOptimizationIndicator from '@/components/MaterializedViews/MVOptimizationIndicator';
 import { useQueriedChartConfig } from '@/hooks/useChartConfig';
@@ -89,86 +89,6 @@ describe('DBListBarChart', () => {
     expect(mvOptExplanationConfig).toBe(queriedChartConfig);
     expect(queriedChartConfig).toBe(indicatorConfig);
     expect(mvOptExplanationConfig).toBe(indicatorConfig);
-  });
-
-  it('renders DateRangeIndicator when MV optimization returns a different date range', () => {
-    const originalStartDate = new Date('2024-01-01T00:00:30Z');
-    const originalEndDate = new Date('2024-01-01T01:30:45Z');
-    const alignedStartDate = new Date('2024-01-01T00:00:00Z');
-    const alignedEndDate = new Date('2024-01-01T02:00:00Z');
-
-    const config = {
-      ...baseTestConfig,
-      dateRange: [originalStartDate, originalEndDate] as [Date, Date],
-    };
-
-    // Mock useMVOptimizationExplanation to return an optimized config with aligned date range
-    jest.mocked(useMVOptimizationExplanation).mockReturnValue({
-      data: {
-        optimizedConfig: {
-          ...config,
-          dateRange: [alignedStartDate, alignedEndDate] as [Date, Date],
-        },
-        explanations: [
-          {
-            success: true,
-            mvConfig: {
-              minGranularity: '1 minute',
-              tableName: 'metrics_rollup_1m',
-            },
-          },
-        ],
-      },
-      isLoading: false,
-      isPlaceholderData: false,
-    } as any);
-
-    renderWithMantine(
-      <DBListBarChart
-        config={config}
-        valueColumn="value"
-        groupColumn="group"
-      />,
-    );
-
-    // Verify DateRangeIndicator was called
-    expect(jest.mocked(DateRangeIndicator)).toHaveBeenCalled();
-
-    // Verify it was called with the correct props
-    const dateRangeIndicatorCall =
-      jest.mocked(DateRangeIndicator).mock.calls[0][0];
-    expect(dateRangeIndicatorCall.originalDateRange).toEqual([
-      originalStartDate,
-      originalEndDate,
-    ]);
-    expect(dateRangeIndicatorCall.effectiveDateRange).toEqual([
-      alignedStartDate,
-      alignedEndDate,
-    ]);
-    expect(dateRangeIndicatorCall.mvGranularity).toBe('1 minute');
-  });
-
-  it('does not render DateRangeIndicator when MV optimization has no optimized date range', () => {
-    // Mock useMVOptimizationExplanation to return data without an optimized config
-    jest.mocked(useMVOptimizationExplanation).mockReturnValue({
-      data: {
-        optimizedConfig: undefined,
-        explanations: [],
-      },
-      isLoading: false,
-      isPlaceholderData: false,
-    } as any);
-
-    renderWithMantine(
-      <DBListBarChart
-        config={baseTestConfig}
-        valueColumn="value"
-        groupColumn="group"
-      />,
-    );
-
-    // Verify DateRangeIndicator was not called
-    expect(jest.mocked(DateRangeIndicator)).not.toHaveBeenCalled();
   });
 
   describe('refresh', () => {

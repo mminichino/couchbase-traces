@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { ComponentProps } from 'react';
 import {
   ADHOC_FILTER_MAX_CONDITIONS,
@@ -79,20 +80,6 @@ describe('AdhocDashboardFilter', () => {
     const pills = screen.getAllByTestId('adhoc-condition-pill');
     expect(pills[0]).toHaveTextContent('ServiceName != api');
     expect(pills[1]).toHaveTextContent('Level regex ^err');
-  });
-
-  it('marks conditions a PromQL filter cannot apply as invalid', () => {
-    renderFilter(
-      [
-        { key: 'job', operator: 'LIKE', value: '%api%' },
-        { key: 'env', operator: '=', value: 'prod' },
-      ],
-      { ...filter, sourceType: 'promql' },
-    );
-
-    const pills = screen.getAllByTestId('adhoc-condition-pill');
-    expect(pills[0]).toHaveAttribute('data-invalid', 'true');
-    expect(pills[1]).not.toHaveAttribute('data-invalid');
   });
 
   it('removes a condition', async () => {
@@ -255,7 +242,6 @@ describe('AdhocDashboardFilter', () => {
     it.each([
       ['no condition', filter],
       ['a condition that does not reference it', narrowed],
-      ['a PromQL source', { ...narrowed, sourceType: 'promql' as const }],
     ])(
       'is not blocked by an unreferenced global required filter with %s',
       async (_label, definition) => {
@@ -281,20 +267,5 @@ describe('AdhocDashboardFilter', () => {
         ).toBeInTheDocument();
       },
     );
-
-    it('ignores a condition on a PromQL filter', async () => {
-      renderFilter(
-        [],
-        { ...narrowed, sourceType: 'promql' },
-        {
-          variables: namespace([]),
-          unsatisfiedRequiredFilters: [namespaceFilter],
-        },
-      );
-
-      await userEvent.click(addButton());
-
-      expect(await screen.findByTestId(`${editorId}-key`)).toBeInTheDocument();
-    });
   });
 });

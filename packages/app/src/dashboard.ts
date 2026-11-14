@@ -23,9 +23,6 @@ import api, {
   useInvalidateTags,
   useMarkOnboardingTaskComplete,
 } from './api';
-import { IS_LOCAL_MODE } from './config';
-import { collectTags, createEntityStore } from './localStore';
-
 // TODO: Move to types
 export type Tile = {
   id: string;
@@ -60,8 +57,6 @@ export type Dashboard = {
    *  contract. Unrelated to `Connection.platformProvisioned`. */
   provisioned?: boolean;
 };
-
-const localDashboards = createEntityStore<Dashboard>('hdx-local-dashboards');
 
 /**
  * Resolution policy shared by both the typed normalizer below and the
@@ -128,9 +123,6 @@ export function normalizeRawDashboardTileColors(input: unknown): unknown {
  * stays uniform.
  */
 export async function fetchDashboards(): Promise<Dashboard[]> {
-  if (IS_LOCAL_MODE) {
-    return localDashboards.getAll().map(normalizeDashboardTileColors);
-  }
   const dashboards = await hdxServer('dashboards').json<Dashboard[]>();
   return dashboards.map(normalizeDashboardTileColors);
 }
@@ -141,7 +133,7 @@ function markDashboardOnboarding(
   markOnboardingTaskComplete: (taskId: OnboardingTaskId) => void,
   tiles: Tile[] | undefined,
 ) {
-  if (IS_LOCAL_MODE || !tiles?.length) {
+  if (!tiles?.length) {
     return;
   }
   markOnboardingTaskComplete('dashboard');
@@ -160,11 +152,6 @@ export function useUpdateDashboard() {
       dashboard: Partial<Dashboard> & { id: Dashboard['id'] },
     ) => {
       const normalized = normalizeDashboardTileColors(dashboard);
-      if (IS_LOCAL_MODE) {
-        const { id, ...updates } = normalized;
-        localDashboards.update(id, updates);
-        return undefined;
-      }
       // Return the persisted dashboard so onboarding keys off saved tiles, not
       // the partial PATCH payload — a name/tag-only save omits `tiles`.
       return hdxServer(`dashboards/${normalized.id}`, {
@@ -188,9 +175,6 @@ export function useCreateDashboard() {
   return useMutation({
     mutationFn: async (dashboard: Omit<Dashboard, 'id'>) => {
       const normalized = normalizeDashboardTileColors(dashboard);
-      if (IS_LOCAL_MODE) {
-        return localDashboards.create(normalized);
-      }
       return hdxServer('dashboards', {
         method: 'POST',
         json: normalized,
@@ -284,11 +268,7 @@ export function useDashboard({
         setLocalDashboard(normalizeDashboardTileColors(newDashboard));
         // Temp dashboards never hit the backend, so record here. Guarded on
         // hasBuiltDashboard because setDashboard runs on every layout edit.
-        if (
-          !IS_LOCAL_MODE &&
-          !hasBuiltDashboard &&
-          (newDashboard.tiles?.length ?? 0) > 0
-        ) {
+        if (!hasBuiltDashboard && (newDashboard.tiles?.length ?? 0) > 0) {
           completeOnboardingTask.mutate('dashboard');
         }
         onSuccess?.();
@@ -336,24 +316,12 @@ export function useDashboard({
   };
 }
 
-export function fetchLocalDashboards(): Dashboard[] {
-  return localDashboards.getAll().map(normalizeDashboardTileColors);
-}
-
-export function getLocalDashboardTags(): string[] {
-  return collectTags(localDashboards.getAll());
-}
-
 export function useDeleteDashboard() {
   const queryClient = useQueryClient();
   const invalidateTags = useInvalidateTags();
 
   return useMutation({
     mutationFn: (id: string) => {
-      if (IS_LOCAL_MODE) {
-        localDashboards.delete(id);
-        return Promise.resolve();
-      }
       return hdxServer(`dashboards/${id}`, { method: 'DELETE' }).json<void>();
     },
     onSuccess: () => {

@@ -17,7 +17,6 @@ import type {
   ChartConfigWithOptDateRange,
   DashboardFilter,
   DashboardFilterValue,
-  PromqlLabelDashboardFilter,
   QueryExpressionDashboardFilter,
   SavedChartConfig,
   StaticListDashboardFilter,
@@ -44,20 +43,6 @@ const staticFilter = (
   isBroadcastEnabled: false,
   isVariableEnabled: true,
   variableName: 'env',
-  ...overrides,
-});
-
-const promqlFilter = (
-  overrides: Partial<PromqlLabelDashboardFilter> = {},
-): PromqlLabelDashboardFilter => ({
-  id: 'f1',
-  type: 'PROMETHEUS_LABEL',
-  name: 'Pod',
-  source: 'promql',
-  label: 'pod',
-  isBroadcastEnabled: false,
-  isVariableEnabled: true,
-  variableName: 'pod',
   ...overrides,
 });
 
@@ -411,13 +396,6 @@ describe('dashboardFilterValues', () => {
       });
     });
 
-    it('keys a promql-label filter by its variable name', () => {
-      expect(filterSelectionKey(promqlFilter())).toEqual({
-        kind: 'variable',
-        name: 'pod',
-      });
-    });
-
     // Unreachable through the write paths — a static filter is variable-only by
     // construction — but it has no expression to fall back to, so the key stays
     // variable-kind even when no name can be derived from it.
@@ -505,20 +483,7 @@ describe('dashboardFilterValues', () => {
       );
     });
 
-    it('resolves a promql-label filter from its variable entry', () => {
-      const parsed = parseDashboardFilterValues([
-        { type: 'variable', name: 'pod', values: ['api-0'] },
-      ]);
-
-      expect(resolveFilterSelection(promqlFilter(), parsed)).toEqual(
-        included('api-0'),
-      );
-    });
-
-    it.each([
-      ['static-list', staticFilter()],
-      ['promql-label', promqlFilter()],
-    ])(
+    it.each([['static-list', staticFilter()]])(
       'returns undefined for an expressionless %s filter with no variable entry',
       (_label, expressionless) => {
         const parsed = parseDashboardFilterValues([
@@ -841,19 +806,8 @@ describe('dashboardFilterValues', () => {
       connection: 'local',
     });
 
-    const promqlTile: ChartConfigWithOptDateRange = {
-      configType: 'promql',
-      promqlExpression: 'up',
-      connection: 'local',
-      source: 'promql-source',
-    };
-
     it('applies to a builder tile', () => {
       expect(configConsumesBroadcastFilters(builderTile, 'logs')).toBe(true);
-    });
-
-    it('never applies to a PromQL tile', () => {
-      expect(configConsumesBroadcastFilters(promqlTile, 'metrics')).toBe(false);
     });
 
     it('applies to a raw-SQL tile with a source and the filters macro', () => {
@@ -897,11 +851,6 @@ describe('dashboardFilterValues', () => {
       sqlTemplate,
       connection: 'local',
     });
-    const promqlTile: SavedChartConfig = {
-      configType: 'promql',
-      promqlExpression: 'up',
-      source: 'logs',
-    };
     const adhoc = (
       overrides: Partial<AdhocDashboardFilter> = {},
     ): AdhocDashboardFilter => ({
@@ -935,15 +884,6 @@ describe('dashboardFilterValues', () => {
       ).toEqual([]);
     });
 
-    it('matches the filter language to the tile', () => {
-      const filters = [
-        adhoc(),
-        adhoc({ id: 'p1', sourceType: 'promql', sources: ['logs'] }),
-      ];
-      expect(ids(filters, builderTile, 'logs')).toEqual(['a1']);
-      expect(ids(filters, promqlTile, 'logs')).toEqual(['p1']);
-    });
-
     it('requires $__filters and a source on raw SQL tiles', () => {
       const filters = [adhoc()];
       expect(
@@ -972,13 +912,6 @@ describe('dashboardFilterValues', () => {
       connection: 'local',
     };
 
-    const promqlTile: ChartConfigWithOptDateRange = {
-      configType: 'promql',
-      promqlExpression: 'up',
-      connection: 'local',
-      source: 'promql-source',
-    };
-
     const unsatisfied = [
       filter({ id: 'a', name: 'Broadcast', minSelections: 1 }),
       staticFilter({ id: 'b', minSelections: 1 }),
@@ -993,15 +926,6 @@ describe('dashboardFilterValues', () => {
           referencedVariables: [{ name: 'env' }],
         }),
       ).toEqual(['Broadcast', 'Environment']);
-
-      expect(
-        getBlockingRequiredFilterNames({
-          config: promqlTile,
-          sourceId: 'logs',
-          unsatisfiedRequiredFilters: unsatisfied,
-          referencedVariables: [{ name: 'env' }],
-        }),
-      ).toEqual(['Environment']);
     });
 
     it('treats missing filters and variables as none', () => {

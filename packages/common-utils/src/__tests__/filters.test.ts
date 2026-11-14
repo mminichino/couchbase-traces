@@ -1,6 +1,5 @@
 import {
   adhocConditionsToFilters,
-  adhocConditionsToPromqlFilters,
   deriveVariableName,
   doesFilterApplyToSource,
   FilterState,
@@ -13,7 +12,6 @@ import {
   getFilterExpression,
   getFilterVariableName,
   getPendingFilterValuesVariables,
-  getPromqlFilters,
   getSqlFilters,
   hasFilterEffect,
   isAdhocComparableDataType,
@@ -27,7 +25,6 @@ import {
   mergeAdhocConditions,
   parseQuery,
   resolveFilterValuesWhere,
-  resolvePromqlLabelFilterMatch,
   serializeFilterState,
   validateDashboardFilterQueries,
   validateSavedFilterValues,
@@ -38,11 +35,9 @@ import type {
   AdhocDashboardFilter,
   AdhocFilterCondition,
   AdhocFilterOperator,
-  AdhocFilterSourceType,
   ChartVariable,
   DashboardFilter,
   Filter,
-  PromqlConditionFilter,
   QueryExpressionDashboardFilter,
   StaticListDashboardFilter,
 } from '@/types';
@@ -658,10 +653,6 @@ describe('filters', () => {
       });
     });
 
-    it('treats promql as valid (not statically validated)', () => {
-      expect(validateSavedQuery('rate(foo[5m]', 'promql')).toBeNull();
-    });
-
     it('flags a malformed lucene query', () => {
       expect(validateSavedQuery('ServiceName:((("broken', 'lucene')).toEqual({
         language: 'lucene',
@@ -818,23 +809,6 @@ describe('filters', () => {
           where: 'ServiceName = =',
         },
       ]);
-    });
-
-    it('skips the unused where clause of a PromQL ad hoc filter', () => {
-      expect(
-        validateDashboardFilterQueries([
-          {
-            id: 'conds',
-            type: 'ADHOC',
-            name: 'Conditions',
-            sourceType: 'promql',
-            sources: ['metrics'],
-            isVariableEnabled: true,
-            where: 'ServiceName = =',
-            whereLanguage: 'sql',
-          },
-        ]),
-      ).toEqual([]);
     });
 
     it('only reports the invalid filters in a mixed list', () => {
@@ -1086,75 +1060,6 @@ describe('filters', () => {
     });
   });
 
-  describe('resolvePromqlLabelFilterMatch', () => {
-    const svc = (values: string[]): ChartVariable => ({
-      name: 'svc',
-      expression: 'ServiceName',
-      values,
-    });
-
-    it('reports no selector when there is none to send', () => {
-      expect(resolvePromqlLabelFilterMatch({}, [svc(['api'])])).toEqual({});
-      expect(
-        resolvePromqlLabelFilterMatch({ match: '   ' }, [svc(['api'])]),
-      ).toEqual({});
-    });
-
-    it('trims the selector', () => {
-      expect(
-        resolvePromqlLabelFilterMatch({ match: '  up{job="api"} ' }, undefined)
-          .match,
-      ).toBe('up{job="api"}');
-    });
-
-    it('returns the template as written when there is no variable context', () => {
-      expect(
-        resolvePromqlLabelFilterMatch({ match: 'up{job=~"$svc"}' }, undefined),
-      ).toEqual({ match: 'up{job=~"$svc"}' });
-    });
-
-    it('expands a reference as a regex alternation', () => {
-      expect(
-        resolvePromqlLabelFilterMatch({ match: 'up{job=~"$svc"}' }, [
-          svc(['api', 'ad']),
-        ]).match,
-      ).toBe('up{job=~"(api|ad)"}');
-    });
-
-    it('expands an empty selection to match everything', () => {
-      expect(
-        resolvePromqlLabelFilterMatch({ match: 'up{job=~"$svc"}' }, [svc([])])
-          .match,
-      ).toBe('up{job=~".*"}');
-    });
-
-    it('expands the csv format for a name rather than a matcher value', () => {
-      expect(
-        resolvePromqlLabelFilterMatch({ match: '${svc:csv}{code="200"}' }, [
-          svc(['up']),
-        ]).match,
-      ).toBe('up{code="200"}');
-    });
-
-    it('reports an unrecognized format without throwing', () => {
-      const resolved = resolvePromqlLabelFilterMatch(
-        { match: 'up{job=~"${svc:bogus}"}' },
-        [svc(['api'])],
-      );
-      expect(resolved.match).toBe('up{job=~"${svc:bogus}"}');
-      expect(resolved.error).toMatch(/Unknown variable format 'bogus'/);
-    });
-
-    it('leaves an undeclared bare reference alone', () => {
-      const resolved = resolvePromqlLabelFilterMatch(
-        { match: 'up{job=~"$nope"}' },
-        [svc(['api'])],
-      );
-      expect(resolved.match).toBe('up{job=~"$nope"}');
-      expect(resolved.error).toBeUndefined();
-    });
-  });
-
   describe('getPendingFilterValuesVariables', () => {
     const svc = (values: string[]): ChartVariable => ({
       name: 'svc',
@@ -1211,11 +1116,6 @@ describe('filters', () => {
       [
         'a regex-formatted reference',
         'match(ServiceName, ${svc:regex})',
-        'sql',
-      ],
-      [
-        'a promql-formatted reference',
-        "match(ServiceName, '${svc:promql}')",
         'sql',
       ],
     ] as const)('reports nothing for %s', (_label, where, whereLanguage) => {
@@ -1989,79 +1889,13 @@ describe('filters', () => {
     });
   });
 
-  describe('adhocConditionsToPromqlFilters', () => {
-    const matcherFor = (
-      operator: AdhocFilterOperator,
-      value = 'api',
-      key = 'service',
-    ) =>
-      adhocConditionsToPromqlFilters([{ key, operator, value }]).map(
-        filter => filter.condition,
-      );
-
-    it.each<[AdhocFilterOperator, string]>([
-      ['=', 'service="api"'],
-      ['!=', 'service!="api"'],
-      ['=~', 'service=~"api"'],
-      ['!~', 'service!~"api"'],
-    ])('renders %s', (operator, matcher) => {
-      expect(matcherFor(operator)).toEqual([matcher]);
-    });
-
-    it.each<AdhocFilterOperator>(['LIKE', 'NOT LIKE'])(
-      'skips %s rather than throwing',
-      operator => {
-        expect(
-          adhocConditionsToPromqlFilters([
-            { key: 'service', operator, value: 'api' },
-            { key: 'env', operator: '=', value: 'prod' },
-          ]),
-        ).toEqual([{ type: 'promql', condition: 'env="prod"' }]);
-      },
-    );
-
-    it('escapes quotes and backslashes in values', () => {
-      expect(matcherFor('=', 'say "hi" \\ here')).toEqual([
-        'service="say \\"hi\\" \\\\ here"',
-      ]);
-    });
-
-    it('escapes newlines in values and label names', () => {
-      expect(matcherFor('=', 'a\nb', 'odd\nlabel')).toEqual([
-        '"odd\\nlabel"="a\\nb"',
-      ]);
-    });
-
-    it('quotes label names outside the legacy charset', () => {
-      expect(matcherFor('=', 'api', 'service.name')).toEqual([
-        '"service.name"="api"',
-      ]);
-    });
-
-    it('renders one PromQL filter per condition', () => {
-      expect(
-        adhocConditionsToPromqlFilters([
-          { key: 'service', operator: '=', value: 'api' },
-          { key: 'service', operator: '!=', value: 'web' },
-        ]),
-      ).toEqual([
-        { type: 'promql', condition: 'service="api"' },
-        { type: 'promql', condition: 'service!="web"' },
-      ]);
-    });
-  });
-
   describe('isAdhocConditionSupported', () => {
-    it.each<[AdhocFilterSourceType, AdhocFilterOperator, boolean]>([
-      ['sql', 'LIKE', true],
-      ['sql', 'NOT LIKE', true],
-      ['promql', 'LIKE', false],
-      ['promql', 'NOT LIKE', false],
-      ['promql', '=~', true],
-      ['promql', '!=', true],
-    ])('%s supports %s: %s', (sourceType, operator, expected) => {
+    it.each<[AdhocFilterOperator, boolean]>([
+      ['LIKE', true],
+      ['NOT LIKE', true],
+    ])('sql supports %s: %s', (operator, expected) => {
       expect(
-        isAdhocConditionSupported(sourceType, {
+        isAdhocConditionSupported('sql', {
           key: 'service',
           operator,
           value: 'api',
@@ -2070,17 +1904,12 @@ describe('filters', () => {
     });
   });
 
-  describe('getSqlFilters / getPromqlFilters', () => {
+  describe('getSqlFilters', () => {
     const sql: Filter = { type: 'sql', condition: "env = 'prod'" };
     const lucene: Filter = { type: 'lucene', condition: 'level:error' };
-    const promql: PromqlConditionFilter = {
-      type: 'promql',
-      condition: 'job="api"',
-    };
 
-    it('splits broadcast filters by query language', () => {
-      expect(getSqlFilters([sql, promql, lucene])).toEqual([sql, lucene]);
-      expect(getPromqlFilters([sql, promql, lucene])).toEqual([promql]);
+    it('returns sql and lucene filters', () => {
+      expect(getSqlFilters([sql, lucene])).toEqual([sql, lucene]);
     });
   });
 

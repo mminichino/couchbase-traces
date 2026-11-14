@@ -1,46 +1,31 @@
-import { useMemo } from 'react';
-import { PromqlConfigWithDateRange } from '@couchbase-traces/common-utils/dist/types';
+import type { BuilderChartConfigWithDateRange } from '@couchbase-traces/common-utils/dist/types';
 
-import { gridFromHistogramSamples, HistogramSample } from './heatmapHistogram';
-import { HeatmapData, HeatmapView, useSettledView } from './useHeatmapView';
-import { useHeatmapSeriesQuery } from './useSeriesHeatmapData';
+import type { HeatmapData } from './useHeatmapView';
 
-/**
- * Query a histogram heatmap: a PromQL range query over histogram buckets,
- * drawn as one row per `le` bucket.
- */
-export function useHistogramHeatmapData({
-  config,
-  enabled,
-}: {
-  config: PromqlConfigWithDateRange;
+const EMPTY_GRID = {
+  times: [] as number[],
+  stepMs: 0,
+  yAxis: { type: 'numeric' as const, scale: 'linear' as const, edges: [0, 1] },
+  cells: [] as number[],
+};
+
+const EMPTY_HEATMAP: HeatmapData = {
+  view: {
+    grid: EMPTY_GRID,
+    generatedTsBuckets: [],
+    scaleType: 'linear',
+    effectiveMin: 0,
+    hiddenSeriesCount: 0,
+  },
+  isLoading: false,
+  isRefreshing: false,
+  error: new Error('PromQL histogram heatmaps are no longer supported'),
+};
+
+/** @deprecated PromQL histogram heatmaps removed in Phase 10. */
+export function useHistogramHeatmapData(_args: {
+  config: BuilderChartConfigWithDateRange;
   enabled: boolean;
 }): HeatmapData {
-  const { generatedTsBuckets, data, isLoading, isPlaceholderData, error } =
-    useHeatmapSeriesQuery({ config, enabled });
-
-  const currentView = useMemo<HeatmapView>(() => {
-    const samples: HistogramSample[] = (data?.data ?? []).map(row => ({
-      le: String(row.le),
-      t: new Date(row.__hdx_time_bucket).getTime(),
-      v: Number(row.value),
-    }));
-    return {
-      grid: gridFromHistogramSamples({
-        samples,
-        times: generatedTsBuckets.map(d => d.getTime()),
-      }),
-      generatedTsBuckets,
-      scaleType: 'linear',
-      effectiveMin: 0,
-      hiddenSeriesCount: 0,
-    };
-  }, [data, generatedTsBuckets]);
-
-  return {
-    view: useSettledView(currentView, isPlaceholderData),
-    isLoading,
-    isRefreshing: isPlaceholderData,
-    error,
-  };
+  return EMPTY_HEATMAP;
 }

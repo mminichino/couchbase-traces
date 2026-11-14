@@ -517,9 +517,7 @@ export function buildMappingFormSchema(
         if (isAdhocFilter(filter)) {
           const kinds = getAdhocFilterSourceKinds(filter.sourceType);
           const kindMessage =
-            filter.sourceType === 'promql'
-              ? 'Select only PromQL sources for this filter'
-              : 'Select only log, trace, or session sources for this filter';
+            'Select only log, trace, or session sources for this filter';
           const mappedSourceIds = data.filterAdhocSourceMappings?.[idx]?.filter(
             id => !!id,
           );

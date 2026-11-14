@@ -14,7 +14,7 @@ import { recordDashboardOnboardingIfHasTiles } from '@/controllers/dashboard';
 import { UPSERT_TOOL } from '@/mcp/tools/annotations';
 import type { ToolRegistrar } from '@/mcp/tools/types';
 import { formatZodIssues, mcpUserError } from '@/mcp/utils/errors';
-import { isPromqlEnabled } from '@/mcp/utils/promql';
+import { isPromqlEnabled } from '@/mcp/utils/legacySourceKinds';
 import Dashboard, { IDashboard } from '@/models/dashboard';
 import {
   cleanupDashboardAlerts,

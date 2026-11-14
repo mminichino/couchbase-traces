@@ -16,16 +16,10 @@ import {
   DashboardFilter,
   DashboardFilterValue,
   Filter,
-  PROMQL_ADHOC_FILTER_OPERATORS,
-  PromqlConditionFilter,
   SourceKind,
   SQL_ADHOC_FILTER_OPERATORS,
 } from '@/types';
-import {
-  escapePromqlStringValue,
-  getVariableReferences,
-  substituteVariables,
-} from '@/variables';
+import { getVariableReferences, substituteVariables } from '@/variables';
 
 export type FilterState = {
   [key: string]: {
@@ -690,11 +684,10 @@ const isParseableSql = (condition: string): boolean => {
 /**
  * Whether a condition string parses as the given query language. Empty /
  * whitespace-only conditions are considered valid (they're no-ops, not errors).
- * `promql` is not statically validated here and is treated as valid.
  */
 export function isValidFilterCondition(
   condition: string,
-  language: 'lucene' | 'sql' | 'promql',
+  language: 'lucene' | 'sql',
 ): boolean {
   if (!condition.trim()) return true;
   if (language === 'lucene') return isParseableLucene(condition);
@@ -754,7 +747,7 @@ export type SavedQueryIssue = {
  */
 export function validateSavedQuery(
   savedQuery: string | null | undefined,
-  language: 'lucene' | 'sql' | 'promql' | null | undefined,
+  language: 'lucene' | 'sql' | null | undefined,
 ): SavedQueryIssue | null {
   if (!savedQuery?.trim()) return null;
   const lang = language ?? 'lucene';
@@ -902,12 +895,11 @@ export const QUERY_EXPRESSION_FILTER_SOURCE_KINDS: SourceKind[] = [
 export function getAdhocFilterSourceKinds(
   sourceType: AdhocFilterSourceType,
 ): SourceKind[] {
-  switch (sourceType) {
-    case 'sql':
-      return [SourceKind.Log, SourceKind.Trace, SourceKind.Session];
-    case 'promql':
-      return [SourceKind.Promql];
+  if (sourceType === 'sql') {
+    return [SourceKind.Log, SourceKind.Trace, SourceKind.Session];
   }
+  sourceType satisfies never;
+  return [];
 }
 
 /** Type guard for QUERY_EXPRESSION type filters. */
@@ -1059,89 +1051,23 @@ export function mergeAdhocConditions(
   return [...kept, ...added];
 }
 
-const LEGACY_LABEL_NAME = /^[a-zA-Z_][a-zA-Z0-9_]*$/;
-
-const renderAdhocMatcherPromql = ({
-  key,
-  operator,
-  value,
-}: AdhocFilterCondition): string => {
-  // Label names outside the legacy charset must be quoted (Prometheus 3).
-  const label = LEGACY_LABEL_NAME.test(key)
-    ? key
-    : `"${escapePromqlStringValue(key)}"`;
-  switch (operator) {
-    case '=':
-    case '!=':
-    case '=~':
-    case '!~':
-      return `${label}${operator}"${escapePromqlStringValue(value)}"`;
-    case 'LIKE':
-    case 'NOT LIKE':
-      throw new Error(
-        `Ad hoc filter operator '${operator}' is not supported for PromQL`,
-      );
-    default:
-      operator satisfies never;
-      throw new Error(`Unknown ad hoc filter operator '${operator}'`);
-  }
-};
-
 /**
- * Whether an ad hoc filter of `sourceType` can apply `condition`. A filter
- * switched from SQL to PromQL keeps its conditions, and PromQL has no LIKE.
+ * Whether an ad hoc filter of `sourceType` can apply `condition`.
  */
 export function isAdhocConditionSupported(
   sourceType: AdhocFilterSourceType,
   { operator }: AdhocFilterCondition,
 ): boolean {
-  switch (sourceType) {
-    case 'sql':
-      return SQL_ADHOC_FILTER_OPERATORS.includes(operator);
-    case 'promql':
-      return PROMQL_ADHOC_FILTER_OPERATORS.includes(operator);
-    default:
-      sourceType satisfies never;
-      throw new Error(`Unknown ad hoc filter source type '${sourceType}'`);
+  if (sourceType === 'sql') {
+    return SQL_ADHOC_FILTER_OPERATORS.includes(operator);
   }
-}
-
-/**
- * Render the conditions of a PromQL ad hoc filter as label matchers, one per
- * condition. Conditions PromQL can't express are skipped; callers report them
- * using `isAdhocConditionSupported`.
- */
-export function adhocConditionsToPromqlFilters(
-  conditions: AdhocFilterCondition[],
-): PromqlConditionFilter[] {
-  return conditions
-    .filter(condition => isAdhocConditionSupported('promql', condition))
-    .map(
-      (condition): PromqlConditionFilter => ({
-        type: 'promql',
-        condition: renderAdhocMatcherPromql(condition),
-      }),
-    );
-}
-
-function isPromqlFilter(
-  filter: BroadcastFilter,
-): filter is PromqlConditionFilter {
-  return filter.type === 'promql';
+  sourceType satisfies never;
+  return false;
 }
 
 /** The broadcast filters a SQL, Lucene or builder query can apply. */
 export function getSqlFilters(filters: BroadcastFilter[]): ConditionFilter[] {
-  return filters.filter(
-    (filter): filter is ConditionFilter => !isPromqlFilter(filter),
-  );
-}
-
-/** The broadcast filters a PromQL query can apply. */
-export function getPromqlFilters(
-  filters: BroadcastFilter[],
-): PromqlConditionFilter[] {
-  return filters.filter(isPromqlFilter);
+  return filters;
 }
 
 /** The SQL expression associated with the filter, if any. */
@@ -1294,40 +1220,6 @@ export function resolveFilterValuesWhere(
   }
 }
 
-export type ResolvedPromqlLabelFilterMatch = {
-  /** The selector the values lookup actually sends, or undefined for none. */
-  match?: string;
-  /** Set when expansion failed; `match` is then the template as written. */
-  error?: string;
-};
-
-/**
- * Expand the dashboard variables a Prometheus label filter's series selector
- * references.
- *
- * Never throws. Failures (unknown variables, etc) leave the selector as
- * written and report an `error`.
- */
-export function resolvePromqlLabelFilterMatch(
-  filter: { match?: string },
-  variables: ChartVariable[] | undefined,
-): ResolvedPromqlLabelFilterMatch {
-  const match = filter.match?.trim();
-  if (!match) return {};
-  if (variables == null) return { match };
-
-  try {
-    return {
-      match: substituteVariables(match, {
-        variables,
-        inputLanguage: 'promql',
-      }),
-    };
-  } catch (e) {
-    return { match, error: e instanceof Error ? e.message : String(e) };
-  }
-}
-
 /**
  * Variables whose selection a filter's dropdown-values query needs before it can
  * match anything.
@@ -1358,8 +1250,8 @@ export function getPendingFilterValuesVariables(
         // A reference inside the macro that guards it is only emitted once the
         // variable has values, so it needs no empty-state rendering of its own.
         reference.guardedBy !== reference.name &&
-        // regex and promql have a valid empty-selection rendering.
-        !['regex', 'promql'].includes(reference.format ?? 'sqlstring') &&
+        // regex has a valid empty-selection rendering.
+        (reference.format ?? 'sqlstring') !== 'regex' &&
         emptyVariableNames.has(reference.name),
     )
     .map(reference => reference.name);

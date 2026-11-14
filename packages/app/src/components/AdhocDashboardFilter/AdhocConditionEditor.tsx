@@ -41,8 +41,6 @@ export function AdhocConditionEditor({
     dateRange,
     suggestionsWhere,
   );
-  const isPromql = filter.sourceType === 'promql';
-
   return (
     <FilterConditionEditor<FilterOperator>
       operators={getFilterOperators(filter.sourceType)}
@@ -56,10 +54,8 @@ export function AdhocConditionEditor({
       isValuesError={values.isError}
       valuesErrorMessage={values.error?.message}
       onKeyChange={setValueKey}
-      keyLabel={isPromql ? 'Label' : 'Key'}
-      keyPlaceholder={
-        isPromql ? 'Select a label' : 'Select a column or map key'
-      }
+      keyLabel="Key"
+      keyPlaceholder="Select a column or map key"
       onSubmit={onSubmit}
       data-testid={`adhoc-condition-editor-${filter.name}`}
     />

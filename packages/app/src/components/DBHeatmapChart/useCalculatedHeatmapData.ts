@@ -1,53 +1,33 @@
-import { useMemo } from 'react';
-import { PromqlConfigWithDateRange } from '@couchbase-traces/common-utils/dist/types';
+import type { BuilderChartConfigWithDateRange } from '@couchbase-traces/common-utils/dist/types';
 
-import { gridFromSamples } from './heatmapCalculate';
-import { HeatmapScaleType } from './heatmapGrid';
-import { HeatmapData, HeatmapView, useSettledView } from './useHeatmapView';
-import { useHeatmapSeriesPoints } from './useSeriesHeatmapData';
+import type { HeatmapScaleType } from './heatmapGrid';
+import type { HeatmapData } from './useHeatmapView';
 
-/**
- * Query a calculated (PromQL distribution) heatmap: the same range query as a
- * series heatmap, with every series' samples bucketed client-side into a
- * value distribution per time column.
- */
-export function useCalculatedHeatmapData({
-  config,
-  scaleType,
-  enabled,
-}: {
-  config: PromqlConfigWithDateRange;
+const EMPTY_GRID = {
+  times: [] as number[],
+  stepMs: 0,
+  yAxis: { type: 'numeric' as const, scale: 'linear' as const, edges: [0, 1] },
+  cells: [] as number[],
+};
+
+const EMPTY_HEATMAP: HeatmapData = {
+  view: {
+    grid: EMPTY_GRID,
+    generatedTsBuckets: [],
+    scaleType: 'linear',
+    effectiveMin: 0,
+    hiddenSeriesCount: 0,
+  },
+  isLoading: false,
+  isRefreshing: false,
+  error: new Error('PromQL calculated heatmaps are no longer supported'),
+};
+
+/** @deprecated PromQL calculated heatmaps removed in Phase 10. */
+export function useCalculatedHeatmapData(_args: {
+  config: BuilderChartConfigWithDateRange;
   scaleType: HeatmapScaleType;
   enabled: boolean;
 }): HeatmapData {
-  const { series, generatedTsBuckets, isLoading, isPlaceholderData, error } =
-    useHeatmapSeriesPoints({
-      config,
-      enabled,
-      // Every series counts towards the distribution, so none are dropped. This is a
-      // client-side limit, so capping it wouldn't affect how much data is in memory.
-      maxSeries: Number.POSITIVE_INFINITY,
-    });
-
-  const currentView = useMemo<HeatmapView>(() => {
-    const { grid, effectiveMin } = gridFromSamples({
-      series,
-      times: generatedTsBuckets.map(d => d.getTime()),
-      scaleType,
-    });
-    return {
-      grid,
-      generatedTsBuckets,
-      scaleType,
-      effectiveMin,
-      hiddenSeriesCount: 0,
-    };
-  }, [series, generatedTsBuckets, scaleType]);
-
-  return {
-    view: useSettledView(currentView, isPlaceholderData),
-    isLoading,
-    isRefreshing: isPlaceholderData,
-    error,
-  };
+  return EMPTY_HEATMAP;
 }

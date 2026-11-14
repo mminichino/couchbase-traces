@@ -1,4 +1,3 @@
-import { useCallback } from 'react';
 import {
   chSqlToAliasMap,
   ClickHouseQueryError,
@@ -6,10 +5,6 @@ import {
 } from '@couchbase-traces/common-utils/dist/clickhouse';
 import { ClickhouseClient } from '@couchbase-traces/common-utils/dist/clickhouse/browser';
 import { Metadata } from '@couchbase-traces/common-utils/dist/core/metadata';
-import {
-  appliesPromqlReducer,
-  getQueriedPromqlSeries,
-} from '@couchbase-traces/common-utils/dist/core/promql';
 import {
   isMetricChartConfig,
   isUsingGranularity,
@@ -25,7 +20,6 @@ import {
 } from '@couchbase-traces/common-utils/dist/dataLayer';
 import {
   isBuilderChartConfig,
-  isPromqlChartConfig,
   isRawSqlChartConfig,
 } from '@couchbase-traces/common-utils/dist/guards';
 import { format } from '@couchbase-traces/common-utils/dist/sqlFormatter';
@@ -34,7 +28,6 @@ import {
   ChartConfigWithDateRange,
   ChartConfigWithOptDateRange,
   isMetricSource,
-  isPromqlSource,
   QuerySettings,
   TSource,
 } from '@couchbase-traces/common-utils/dist/types';
@@ -49,14 +42,9 @@ import { useClickhouseClient } from '@/clickhouse';
 import { IS_MTVIEWS_ENABLED } from '@/config';
 import { buildMTViewSelectQuery } from '@/hdxMTViews';
 import { useMetadataWithSettings } from '@/hooks/useMetadata';
-import { useQueryAttribution } from '@/queryAttribution';
 import { useSource } from '@/source';
 import { ChartQueryResult } from '@/types';
 import { stripClientSideConfigFields } from '@/utils/chartConfig';
-import {
-  queryPromqlChartConfig,
-  reduceBucketRows,
-} from '@/utils/promqlChartQuery';
 import { generateTimeWindowsDescending } from '@/utils/searchWindows';
 
 import { useMVOptimizationExplanation } from './useMVOptimizationExplanation';
@@ -102,7 +90,7 @@ const shouldUseChunking = (
   granularity: string;
 } => {
   // Avoid chunking for raw SQL charts since they can include arbitrary window functions, etc.
-  if (isRawSqlChartConfig(config) || isPromqlChartConfig(config)) return false;
+  if (isRawSqlChartConfig(config)) return false;
 
   // Granularity is required for chunking, otherwise we could break other group-bys.
   if (!isUsingGranularity(config)) return false;
@@ -125,11 +113,7 @@ const shouldUseChunking = (
 export function getMinGranularitySeconds(
   source: TSource | undefined,
 ): number | undefined {
-  if (
-    !source ||
-    !(isMetricSource(source) || isPromqlSource(source)) ||
-    !source.minAutoGranularity
-  ) {
+  if (!source || !isMetricSource(source) || !source.minAutoGranularity) {
     return undefined;
   }
   return convertGranularityToSeconds(source.minAutoGranularity);
@@ -366,7 +350,6 @@ export function useQueriedChartConfig(
 ) {
   const { enabled = true } = options ?? {};
   const clickhouseClient = useClickhouseClient();
-  const attribution = useQueryAttribution();
   const queryClient = useQueryClient();
   const metadata = useMetadataWithSettings();
 
@@ -374,27 +357,12 @@ export function useQueriedChartConfig(
   const { data: mvOptimizationData, isLoading: isLoadingMVOptimization } =
     useMVOptimizationExplanation(builderConfig, {
       enabled: !!enabled && !!builderConfig,
-      placeholderData: undefined,
     });
 
   const { data: source, isLoading: isSourceLoading } = useSource({
     id: config.source,
   });
   const minGranularitySeconds = getMinGranularitySeconds(source);
-
-  // A PromQL query keeps every sample in the cache. An observer whose config
-  // names a reducer collapses them to a single value per series on read; the
-  // sparkline behind a number tile names none, so it plots them.
-  const appliesReducer =
-    isPromqlChartConfig(config) && appliesPromqlReducer(config);
-  const reducer = appliesReducer
-    ? getQueriedPromqlSeries(config)[0]?.reducer
-    : undefined;
-
-  const selectReduced = useCallback(
-    (result: TQueryFnData) => reduceBucketRows(result, reducer),
-    [reducer],
-  );
 
   const query = useQuery<TQueryFnData, ClickHouseQueryError | Error>({
     // Include enableQueryChunking in the query key to ensure that queries with the
@@ -415,18 +383,6 @@ export function useQueriedChartConfig(
     // TODO: Replace this with `streamedQuery` when it is no longer experimental. Use 'replace' refetch mode.
     // https://tanstack.com/query/latest/docs/reference/streamedQuery
     queryFn: async context => {
-      // PromQL queries go through the Prometheus API route, not ClickHouse proxy
-      if (isPromqlChartConfig(config) && config.dateRange) {
-        // Macros read the floor as the source's scrape interval, so it has to
-        // reach them even when the caller didn't put it on the config.
-        return queryPromqlChartConfig(
-          { ...config, minGranularitySeconds },
-          config.dateRange,
-          context.signal,
-          attribution,
-        );
-      }
-
       const optimizedConfig = {
         ...(mvOptimizationData?.optimizedConfig ?? config),
         minGranularitySeconds,
@@ -482,8 +438,6 @@ export function useQueriedChartConfig(
 
       return queryClient.getQueryData(context.queryKey)!;
     },
-    // PromQL reducer is applied as a client-side react-query select function
-    select: appliesReducer ? selectReduced : undefined,
     retry: 1,
     refetchOnWindowFocus: false,
     ...options,
@@ -514,7 +468,6 @@ export function useRenderedSqlChartConfig(
   const { data: mvOptimizationData, isLoading: isLoadingMVOptimization } =
     useMVOptimizationExplanation(builderConfig, {
       enabled: !!enabled && !!builderConfig,
-      placeholderData: undefined,
     });
 
   const { data: source, isLoading: isSourceLoading } = useSource({
@@ -537,17 +490,10 @@ export function useRenderedSqlChartConfig(
       );
       const sql = formatQueryForDisplay(query);
       // sql-formatter can't handle prometheusQuery() / CTE syntax in PromQL queries
-      if (isPromqlChartConfig(config)) {
-        return sql;
-      }
       return format(sql);
     },
     ...options,
-    enabled:
-      enabled &&
-      !isLoadingMVOptimization &&
-      !isSourceLoading &&
-      !isPromqlChartConfig(config),
+    enabled: enabled && !isLoadingMVOptimization && !isSourceLoading,
   });
 
   return {
@@ -589,17 +535,6 @@ export function useAliasMapFromChartConfig(
     queryFn: async () => {
       if (config == null) {
         return {};
-      }
-
-      // PromQL queries use prometheusQuery() which node-sql-parser can't parse.
-      // Return a fixed alias map since the column names are known.
-      // Check configType directly since the TS type may not include PromQL here.
-      if ('configType' in config && config.configType === 'promql') {
-        return {
-          __hdx_time_bucket: '__hdx_time_bucket',
-          value: 'value',
-          series_name: 'series_name',
-        };
       }
 
       const query = await renderChartConfig(

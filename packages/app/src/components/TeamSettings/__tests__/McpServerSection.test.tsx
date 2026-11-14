@@ -80,7 +80,7 @@ describe('McpServerSection', () => {
   });
 
   // Auth-gate parity with `ApiKeysSection`: when `me` resolves to
-  // `null` (user not signed in, or `IS_LOCAL_MODE` short-circuit),
+  // `null` (user not signed in, or `` short-circuit),
   // the section silently doesn't render. No "sign in" alert.
   it('renders nothing when me is null', () => {
     setMe(null);

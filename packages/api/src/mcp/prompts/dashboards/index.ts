@@ -3,7 +3,7 @@ import { z } from 'zod';
 import { getConnectionsByTeam } from '@/controllers/connection';
 import { getSources } from '@/controllers/sources';
 import type { PromptDefinition } from '@/mcp/tools/types';
-import { isHiddenSource, isPromqlEnabled } from '@/mcp/utils/promql';
+import { isHiddenSource, isPromqlEnabled } from '@/mcp/utils/legacySourceKinds';
 import logger from '@/utils/logger';
 
 import {

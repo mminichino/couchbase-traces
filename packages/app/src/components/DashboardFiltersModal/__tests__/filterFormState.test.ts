@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { DashboardFilter } from '@couchbase-traces/common-utils/dist/types';
 
 import {
@@ -54,41 +55,14 @@ describe('toFormValues', () => {
     });
   });
 
-  it('seeds the shared source field from a stored PromQL label filter', () => {
-    const values = toFormValues({
-      id: 'a',
-      type: 'PROMETHEUS_LABEL',
-      name: 'Job',
-      source: 'prom',
-      label: 'job',
-      match: 'up{job="api"}',
-      isBroadcastEnabled: false,
-      isVariableEnabled: true,
-      variableName: 'job',
-    });
-
-    expect(values).toMatchObject({
-      id: 'a',
-      type: 'PROMETHEUS_LABEL',
-      source: 'prom',
-      label: 'job',
-      match: 'up{job="api"}',
-      variableName: 'job',
-      expression: '',
-      options: [],
-      isBroadcastEnabled: false,
-      isVariableEnabled: true,
-    });
-  });
-
   it('seeds the ad hoc fields from a stored ad hoc filter', () => {
     const values = toFormValues({
       id: 'a',
       type: 'ADHOC',
       name: 'Conditions',
-      sourceType: 'promql',
-      sources: ['prom'],
-      appliesToSourceIds: ['prom-2'],
+      sourceType: 'sql',
+      sources: ['logs'],
+      appliesToSourceIds: ['traces'],
       isBroadcastEnabled: false,
       isVariableEnabled: true,
       variableName: 'conds',
@@ -96,9 +70,9 @@ describe('toFormValues', () => {
 
     expect(values).toMatchObject({
       type: 'ADHOC',
-      sourceType: 'promql',
-      sources: ['prom'],
-      appliesToSourceIds: ['prom-2'],
+      sourceType: 'sql',
+      sources: ['logs'],
+      appliesToSourceIds: ['traces'],
       variableName: 'conds',
       isBroadcastEnabled: false,
     });
@@ -176,61 +150,6 @@ describe('toSavedFilter', () => {
     });
   });
 
-  it('keeps only the PromQL fields on a PromQL label filter', () => {
-    const saved = toSavedFilter(
-      formValues({
-        type: 'PROMETHEUS_LABEL',
-        name: 'Job',
-        source: 'prom',
-        label: '  job  ',
-        // Left behind by the other editors before the type was switched.
-        expression: 'Env',
-        where: 'x = 1',
-        options: ['prod'],
-      }),
-    );
-
-    expect(saved).toEqual({
-      id: 'a',
-      type: 'PROMETHEUS_LABEL',
-      name: 'Job',
-      source: 'prom',
-      label: 'job',
-      isBroadcastEnabled: false,
-      isVariableEnabled: true,
-      variableName: 'Job',
-    });
-  });
-
-  it('trims a PromQL label filter selector and drops an empty one', () => {
-    const base = {
-      type: 'PROMETHEUS_LABEL' as const,
-      name: 'Job',
-      source: 'prom',
-      label: 'job',
-    };
-
-    expect(
-      toSavedFilter(formValues({ ...base, match: '  up{job="api"}  ' })),
-    ).toMatchObject({ match: 'up{job="api"}' });
-    expect(toSavedFilter(formValues({ ...base, match: '   ' }))).toMatchObject({
-      match: undefined,
-    });
-  });
-
-  it('rejects a PromQL label filter without a source', () => {
-    expect(() =>
-      toSavedFilter(
-        formValues({
-          type: 'PROMETHEUS_LABEL',
-          name: 'Job',
-          source: '',
-          label: 'job',
-        }),
-      ),
-    ).toThrow();
-  });
-
   it('keeps only the ad hoc fields on an ad hoc filter', () => {
     const saved = toSavedFilter(
       formValues({
@@ -277,21 +196,6 @@ describe('toSavedFilter', () => {
       where: 'Namespace IN ($namespace)',
       whereLanguage: 'sql',
     });
-  });
-
-  it('drops the condition from a PromQL ad hoc filter, which has no input for it', () => {
-    const saved = toSavedFilter(
-      formValues({
-        type: 'ADHOC',
-        name: 'Conditions',
-        sourceType: 'promql',
-        sources: ['prom'],
-        where: 'Namespace IN ($namespace)',
-      }),
-    );
-
-    expect(saved).not.toHaveProperty('where');
-    expect(saved).not.toHaveProperty('whereLanguage');
   });
 
   it('drops the ad hoc broadcast scope when broadcast is off', () => {

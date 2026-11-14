@@ -21,8 +21,8 @@ import { getSource } from '@/controllers/sources';
 import { READ_ONLY_TOOL } from '@/mcp/tools/annotations';
 import type { McpContext, ToolRegistrar, ToolResult } from '@/mcp/tools/types';
 import { mcpServerError, mcpUserError } from '@/mcp/utils/errors';
+import { isHiddenSource } from '@/mcp/utils/legacySourceKinds';
 import { assertMcpSliceForConnection } from '@/mcp/utils/mcpSlice';
-import { isHiddenSource } from '@/mcp/utils/promql';
 import {
   MCP_QUERY_MAX_EXECUTION_SEC,
   MCP_TIMEOUT_GRACE_MS,
@@ -33,7 +33,6 @@ import {
 import logger from '@/utils/logger';
 import { trimToolResponse } from '@/utils/trimToolResponse';
 
-import { describePromqlSource } from './describePromqlSource';
 import {
   DISCOVERABLE_METRIC_KINDS,
   QUERYABLE_METRIC_KINDS,
@@ -130,7 +129,19 @@ async function describeSourceSchema(
   }
 
   if (source.kind === SourceKind.Promql) {
-    return describePromqlSource({ teamId, source, meta, signal, progress });
+    return {
+      content: [
+        {
+          type: 'text' as const,
+          text: JSON.stringify({
+            ...meta,
+            deprecated: true,
+            message:
+              'PromQL sources were removed from Couchbase Traces. Delete or recreate this source as a metric source.',
+          }),
+        },
+      ],
+    };
   }
 
   if (

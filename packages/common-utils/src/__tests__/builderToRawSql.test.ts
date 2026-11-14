@@ -559,18 +559,6 @@ describe('renderBuilderConfigAsSqlTemplate', () => {
         mockMetadata,
       ),
     ).resolves.toBeNull();
-
-    await expect(
-      renderBuilderConfigAsSqlTemplate(
-        {
-          configType: 'promql',
-          promqlExpression: 'up',
-          connection: 'test-connection',
-          source: 'promql-source',
-        },
-        mockMetadata,
-      ),
-    ).resolves.toBeNull();
   });
 
   describe('error results', () => {

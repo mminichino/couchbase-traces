@@ -1,8 +1,5 @@
 import { useCallback, useMemo, useState } from 'react';
-import {
-  isBuilderChartConfig,
-  isPromqlChartConfig,
-} from '@couchbase-traces/common-utils/dist/guards';
+import { isBuilderChartConfig } from '@couchbase-traces/common-utils/dist/guards';
 import {
   BuilderChartConfigWithDateRange,
   BuilderChartConfigWithOptTimestamp,
@@ -12,7 +9,7 @@ import {
   SourceKind,
   TSource,
 } from '@couchbase-traces/common-utils/dist/types';
-import { Accordion, Box, Divider, Stack, Text } from '@mantine/core';
+import { Accordion, Divider, Stack, Text } from '@mantine/core';
 import { IconList } from '@tabler/icons-react';
 import { SortingState } from '@tanstack/react-table';
 
@@ -40,13 +37,10 @@ import DBTableChart from '@/components/DBTableChart';
 import { DBTimeChart } from '@/components/DBTimeChart';
 import EmptyState from '@/components/EmptyState';
 import PatternTable from '@/components/PatternTable';
-import PromQLPreview from '@/components/PromQLEditor/PromQLPreview';
-import { getMinGranularitySeconds } from '@/hooks/useChartConfig';
 import {
   getEventBody,
   getFirstTimestampValueExpression,
   isSingleExpression,
-  useSource,
 } from '@/source';
 import {
   orderByStringToSortingState,
@@ -54,12 +48,7 @@ import {
 } from '@/utils';
 
 import { QueryPreviewAccordion } from './QueryPreviewAccordion';
-import {
-  buildRenderedPromqlExpression,
-  buildSampleEventsConfig,
-  isQueryReady,
-  tabQueriesData,
-} from './utils';
+import { buildSampleEventsConfig, isQueryReady, tabQueriesData } from './utils';
 
 /** Why a preview accordion is empty before its tile has been run. */
 const RUN_TO_PREVIEW = 'Run the query to see the preview';
@@ -105,11 +94,6 @@ function HeatmapSQLPreview({
     timestampValueExpression,
   };
   const query = toHeatmapQuery(configWithTimestamp);
-
-  // Only PromQL heatmaps are calculated or histograms, and they have no SQL
-  if (query.mode === 'calculated' || query.mode === 'histogram') {
-    return null;
-  }
 
   if (query.mode === 'series') {
     const seriesConfig = { ...query.config, dateRange };
@@ -174,7 +158,6 @@ type ChartPreviewPanelProps = {
   chartConfigForExplanations?: ChartConfigWithOptTimestamp;
   showGeneratedSql: boolean;
   showSampleEvents: boolean;
-  showGeneratedPromql: boolean;
   dbTimeChartConfig?: ChartConfigWithDateRange;
   /** Required dashboard filters with nothing selected that block this tile. */
   missingRequiredFilterNames?: string[];
@@ -194,7 +177,6 @@ export function ChartPreviewPanel({
   chartConfigForExplanations,
   showGeneratedSql,
   showSampleEvents,
-  showGeneratedPromql,
   dbTimeChartConfig,
   missingRequiredFilterNames,
   setValue,
@@ -202,13 +184,6 @@ export function ChartPreviewPanel({
   onSubmit,
 }: ChartPreviewPanelProps) {
   const [isSampleEventsOpen, setIsSampleEventsOpen] = useState(false);
-
-  const { data: queriedSource } = useSource({ id: queriedConfig?.source });
-  const minGranularitySeconds = getMinGranularitySeconds(queriedSource);
-  const renderedPromql = useMemo(
-    () => buildRenderedPromqlExpression(queriedConfig, minGranularitySeconds),
-    [queriedConfig, minGranularitySeconds],
-  );
 
   const blockingFilterNames = missingRequiredFilterNames ?? [];
   const isBlockedByRequiredFilters =
@@ -356,12 +331,11 @@ export function ChartPreviewPanel({
       )}
       {queryReady &&
         queriedConfig != null &&
-        (isBuilderChartConfig(queriedConfig) ||
-          isPromqlChartConfig(queriedConfig)) &&
+        isBuilderChartConfig(queriedConfig) &&
         activeTab === 'heatmap' && (
           <HeatmapPreview
             config={queriedConfig}
-            minGranularitySeconds={minGranularitySeconds}
+            minGranularitySeconds={queriedConfig.minGranularitySeconds}
           />
         )}
       {queryReady &&
@@ -523,31 +497,6 @@ export function ChartPreviewPanel({
                   enableCopy
                 />
               ))}
-          </QueryPreviewAccordion>
-        </>
-      )}
-      {showGeneratedPromql && (
-        <>
-          <Divider mt="md" />
-          <QueryPreviewAccordion
-            value="promql"
-            label="Generated PromQL"
-            disabledReason={
-              renderedPromql == null ? RUN_TO_PREVIEW : renderedPromql.error
-            }
-          >
-            <Stack gap="xs">
-              {(renderedPromql?.expressions ?? []).map((entry, index, all) => (
-                <Box key={entry.id}>
-                  {all.length > 1 && (
-                    <Text size="xxs" c="dimmed" mb={2}>
-                      {entry.alias ?? `Expression ${index + 1}`}
-                    </Text>
-                  )}
-                  <PromQLPreview expression={entry.expression} />
-                </Box>
-              ))}
-            </Stack>
           </QueryPreviewAccordion>
         </>
       )}

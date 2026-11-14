@@ -1,5 +1,15 @@
 import { getHeatmapMode } from '@couchbase-traces/common-utils/dist/core/heatmap';
-import { getPromqlSeries } from '@couchbase-traces/common-utils/dist/core/promql';
+import type { PromqlSeries } from '@couchbase-traces/common-utils/dist/types';
+
+function getPromqlSeries(config: {
+  promqlExpression: string | PromqlSeries[];
+}): PromqlSeries[] {
+  const expr = config.promqlExpression;
+  if (typeof expr === 'string') {
+    return expr ? [{ expression: expr }] : [];
+  }
+  return expr ?? [];
+}
 import {
   isFormulaSourceKind,
   savedChartConfigSupportsAlerts,
@@ -32,17 +42,16 @@ import {
   DashboardContainerSchema,
   DisplayType,
   HeatmapMode,
-  isLogSource,
   isOnClickDashboardById,
   isOnClickSearchById,
   isPromqlSource,
-  isTraceSource,
   NumberTileColorCondition,
   NumberTileColorConditionSchema,
   PromqlSavedChartConfig,
   RawSqlSavedChartConfig,
   resolveChartPaletteToken,
   SavedChartConfig,
+  SourceKind,
 } from '@couchbase-traces/common-utils/dist/types';
 import { SearchConditionLanguageSchema as whereLanguageSchema } from '@couchbase-traces/common-utils/dist/types';
 import { pick } from 'lodash';
@@ -62,6 +71,7 @@ import {
   translateFilterToExternalFilter,
 } from '@/utils/externalApi';
 import logger from '@/utils/logger';
+import { toQueryableTSource } from '@/utils/queryableSource';
 import {
   ExternalDashboardBuilderTileConfig,
   ExternalDashboardFilter,
@@ -241,11 +251,16 @@ const toExternalColorRules = (
 const convertPromqlConfigToExternal = (
   config: PromqlSavedChartConfig,
 ): ExternalDashboardPromqlTileConfig => {
-  const base = {
+  const base: Pick<
+    ExternalDashboardPromqlTileConfig,
+    'configType' | 'sourceId' | 'granularity' | 'numberFormat'
+  > = {
     configType: 'promql' as const,
     sourceId: config.source,
-    granularity: config.granularity,
-    numberFormat: config.numberFormat,
+    granularity:
+      config.granularity as ExternalDashboardPromqlTileConfig['granularity'],
+    numberFormat:
+      config.numberFormat as ExternalDashboardPromqlTileConfig['numberFormat'],
   };
 
   const series = getPromqlSeries(config);
@@ -266,25 +281,44 @@ const convertPromqlConfigToExternal = (
 
   switch (config.displayType) {
     case DisplayType.StackedBar:
-      return { ...base, ...timeChartFields, displayType: 'stacked_bar' };
+      return {
+        ...base,
+        ...timeChartFields,
+        displayType: 'stacked_bar',
+      } as ExternalDashboardPromqlTileConfig;
     case DisplayType.StackedLine:
       return {
         ...base,
         ...timeChartFields,
         displayType: 'stacked_line',
-        lineInterpolation: config.lineInterpolation,
-      };
+        lineInterpolation: config.lineInterpolation as
+          | 'smooth'
+          | 'linear'
+          | 'step'
+          | undefined,
+      } as ExternalDashboardPromqlTileConfig;
     case DisplayType.Table:
-      return { ...base, displayType: 'table', expressions: instantExpressions };
+      return {
+        ...base,
+        displayType: 'table',
+        expressions: instantExpressions,
+      } as ExternalDashboardPromqlTileConfig;
     case DisplayType.Number:
       return {
         ...base,
         displayType: 'number',
         expressions: reducibleExpressions,
         color: resolveChartPaletteToken(config.color),
-        colorRules: toExternalColorRules(config.colorRules),
-        backgroundChart: config.backgroundChart,
-      };
+        colorRules: toExternalColorRules(
+          config.colorRules as Parameters<typeof toExternalColorRules>[0],
+        ),
+        backgroundChart:
+          config.backgroundChart as ExternalDashboardPromqlTileConfig extends {
+            backgroundChart?: infer B;
+          }
+            ? B
+            : never,
+      } as ExternalDashboardPromqlTileConfig;
     case DisplayType.Pie:
     case DisplayType.Bar:
       return {
@@ -292,17 +326,21 @@ const convertPromqlConfigToExternal = (
         displayType: config.displayType === DisplayType.Pie ? 'pie' : 'bar',
         expressions: reducibleExpressions,
         legendTemplate: config.legendTemplate,
-        limit: config.seriesLimit ?? undefined,
-      };
+        limit:
+          typeof config.seriesLimit === 'number'
+            ? config.seriesLimit
+            : undefined,
+      } as ExternalDashboardPromqlTileConfig;
     case DisplayType.Heatmap:
       return {
         ...base,
         displayType: 'heatmap',
         expressions: rangeExpressions,
         heatmapMode: config.heatmap?.mode,
-        heatmapScaleType: config.heatmap?.scaleType,
+        heatmapScaleType:
+          config.heatmap?.scaleType === 'log' ? 'log' : 'linear',
         legendTemplate: config.legendTemplate,
-      };
+      } as ExternalDashboardPromqlTileConfig;
     case DisplayType.Search:
     case DisplayType.Markdown:
     case DisplayType.EventPatterns:
@@ -323,9 +361,15 @@ const convertPromqlConfigToExternal = (
     ...base,
     ...timeChartFields,
     displayType: 'line',
-    compareToPreviousPeriod: config.compareToPreviousPeriod,
-    lineInterpolation: config.lineInterpolation,
-  };
+    compareToPreviousPeriod: config.compareToPreviousPeriod as
+      | boolean
+      | undefined,
+    lineInterpolation: config.lineInterpolation as
+      | 'smooth'
+      | 'linear'
+      | 'step'
+      | undefined,
+  } as ExternalDashboardPromqlTileConfig;
 };
 
 // Exported for the inline-alert converter (v2/utils/alertChartConfig.ts),
@@ -851,6 +895,7 @@ const convertExternalPromqlConfigToInternal = (
     name,
     description,
     source: config.sourceId,
+    connection: '',
     promqlExpression: config.expressions,
     granularity: config.granularity,
     numberFormat: config.numberFormat,
@@ -877,15 +922,18 @@ const convertExternalPromqlConfigToInternal = (
           config.displayType === 'stacked_bar'
             ? undefined
             : config.lineInterpolation,
-      };
+      } as PromqlSavedChartConfig;
     case 'table':
-      return { ...base, displayType: DisplayType.Table };
+      return {
+        ...base,
+        displayType: DisplayType.Table,
+      } as PromqlSavedChartConfig;
     case 'number':
       return {
         ...base,
         ...pick(config, ['color', 'colorRules', 'backgroundChart']),
         displayType: DisplayType.Number,
-      };
+      } as PromqlSavedChartConfig;
     case 'pie':
     case 'bar':
       return {
@@ -894,7 +942,7 @@ const convertExternalPromqlConfigToInternal = (
           config.displayType === 'pie' ? DisplayType.Pie : DisplayType.Bar,
         legendTemplate: config.legendTemplate,
         seriesLimit: config.limit,
-      };
+      } as PromqlSavedChartConfig;
     case 'heatmap':
       return {
         ...base,
@@ -910,7 +958,7 @@ const convertExternalPromqlConfigToInternal = (
               },
             }
           : {}),
-      };
+      } as PromqlSavedChartConfig;
   }
 };
 
@@ -928,7 +976,7 @@ export function convertToInternalTileConfig(
       externalConfig,
       name,
       description,
-    );
+    ) as unknown as SavedChartConfig;
   } else if (isRawSqlExternalTileConfig(externalConfig)) {
     switch (externalConfig.displayType) {
       case 'line':
@@ -1347,7 +1395,11 @@ function getHeatmapTilesWithIncompatibleSources(
     }
     const mode = getExternalHeatmapMode(tile.config);
     const source = sourceById.get(tile.config.sourceId);
-    if (source !== undefined && !isHeatmapCompatibleSource(source, mode)) {
+    if (
+      source !== undefined &&
+      source.kind !== SourceKind.Promql &&
+      !isHeatmapCompatibleSource(toQueryableTSource(source), mode)
+    ) {
       (mode === 'series' ? series : distribution).add(tile.config.sourceId);
     }
   }
@@ -1555,7 +1607,9 @@ async function getInvalidOnClickSearchSources(
   if (sourceIds.size === 0) return [];
 
   const sources = await getSources(team.toString());
-  const validSources = sources.filter(s => isLogSource(s) || isTraceSource(s));
+  const validSources = sources.filter(
+    s => s.kind === SourceKind.Log || s.kind === SourceKind.Trace,
+  );
   const validSourceIds = new Set(validSources.map(s => s._id.toString()));
   return [...sourceIds].filter(id => !validSourceIds.has(id));
 }

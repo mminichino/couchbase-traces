@@ -4,7 +4,7 @@ import { deleteSource, getSource } from '@/controllers/sources';
 import { IDEMPOTENT_DESTRUCTIVE_TOOL } from '@/mcp/tools/annotations';
 import type { ToolRegistrar } from '@/mcp/tools/types';
 import { mcpUserError } from '@/mcp/utils/errors';
-import { isHiddenSource } from '@/mcp/utils/promql';
+import { isHiddenSource } from '@/mcp/utils/legacySourceKinds';
 import { objectIdSchema } from '@/utils/zod';
 
 export function registerDeleteSource({

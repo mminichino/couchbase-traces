@@ -16,14 +16,19 @@ import {
   DisplayType,
   isLogSource,
   isTraceSource,
+  SourceKind,
 } from '@couchbase-traces/common-utils/dist/types';
 
 import { ClickhouseClient } from '@/clickhouse';
 import { getConnectionById } from '@/controllers/connection';
 import { getSource } from '@/controllers/sources';
+import { toQueryableTSource } from '@/utils/queryableSource';
 import type { ExternalDashboardSearchRequestConfig } from '@/utils/zod';
 
-export type SearchErrorCode = 'SOURCE_NOT_FOUND' | 'CONNECTION_NOT_FOUND';
+export type SearchErrorCode =
+  | 'SOURCE_NOT_FOUND'
+  | 'CONNECTION_NOT_FOUND'
+  | 'UNSUPPORTED_SOURCE';
 
 type SearchError = {
   isError: true;
@@ -139,12 +144,20 @@ export async function runSearchConfig({
     ...(requestTimeout != null ? { requestTimeout } : {}),
   });
 
-  const searchBase = buildSearchChartConfig(source, {
+  if (source.kind === SourceKind.Promql) {
+    return {
+      isError: true,
+      code: 'UNSUPPORTED_SOURCE',
+      message: 'PromQL sources are not supported for search.',
+    };
+  }
+  const queryableSource = toQueryableTSource(source);
+  const searchBase = buildSearchChartConfig(queryableSource, {
     where: typeof config.where === 'string' ? config.where : '',
     whereLanguage: config.whereLanguage ?? 'lucene',
     select: config.select ?? null,
     displayType: DisplayType.Search,
-    orderBy: config.orderBy?.trim() || resolveSearchOrderBy(source),
+    orderBy: config.orderBy?.trim() || resolveSearchOrderBy(queryableSource),
     dateRange: [startDate, endDate],
   });
 

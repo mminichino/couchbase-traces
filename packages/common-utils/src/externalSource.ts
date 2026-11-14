@@ -39,16 +39,9 @@ export function mapGranularityToInternalFormat(granularity: string): string {
 }
 
 function mapGranularitiesToExternalFormat(source: TSource): TSource {
-  if (!('materializedViews' in source)) return source;
+  if (!('metadataMaterializedViews' in source)) return source;
 
   const mapped = { ...source };
-
-  if (Array.isArray(source.materializedViews)) {
-    mapped.materializedViews = source.materializedViews.map(view => ({
-      ...view,
-      minGranularity: mapGranularityToExternalFormat(view.minGranularity),
-    }));
-  }
 
   if (
     'metadataMaterializedViews' in source &&

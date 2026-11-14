@@ -1,6 +1,5 @@
 import lucene from '@hyperdx/lucene';
 
-import { getPromqlSeries } from './core/promql';
 import {
   escapeSqlString,
   isQuoteEscapedByBackslash,
@@ -36,7 +35,6 @@ export const VARIABLE_FORMATS = [
   'csv',
   'lucene',
   'markdown',
-  'promql',
 ] as const;
 
 export type VariableFormat = (typeof VARIABLE_FORMATS)[number];
@@ -53,7 +51,7 @@ const isVariableFormat = (format: string): format is VariableFormat =>
 
 /** Formats whose expansion always sits inside a quoted string literal. */
 const isStringLiteralFormat = (format: string | undefined) =>
-  format === 'regex' || format === 'promql';
+  format === 'regex';
 
 const escapeRegexValue = (value: string) =>
   value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
@@ -99,12 +97,6 @@ export function formatVariableValues(
         : values.map(value => `'${escapeSqlString(value)}'`).join(', ');
     case 'regex':
       return formatRegexValues(values);
-    case 'promql':
-      // Keyed on configuration, not selection count, so the matcher's operator
-      // is fixed: `label="$var"` for single-select, `label=~"$var"` otherwise.
-      return isFilterSingleSelect(variable)
-        ? (values[0] ?? '')
-        : formatRegexValues(values);
     case 'csv':
       return values.join(',');
     case 'lucene':
@@ -488,11 +480,6 @@ const LANGUAGE_SETTINGS: Record<TemplateLanguage, LanguageSettings> = {
     escapeForStringLiteral: rendered => escapeSqlString(rendered),
   },
   lucene: { defaultFormat: 'lucene', disableMacros: true },
-  promql: {
-    defaultFormat: 'promql',
-    disableMacros: true,
-    escapeForStringLiteral: escapePromqlStringValue,
-  },
   markdown: {
     defaultFormat: 'markdown',
     disableMacros: true,
@@ -1268,11 +1255,9 @@ export function validateVariableReferencesInTemplate(
     const [{ name }] = macroReferences;
     const macros = formatReferenceList(macroReferences);
     warnings.push(
-      language === 'promql'
-        ? `${macros} has no meaning in a PromQL expression — it is left as written and sent to Prometheus verbatim. Reference the variable directly, as in {<label>=~"$${name}"}.`
-        : language === 'markdown'
-          ? `${macros} has no meaning in markdown — it is left as written. Reference the variable directly, as in $${name}.`
-          : `${macros} has no meaning in a Lucene expression — it is left as written and matched as literal text. Switch this input to SQL, or reference the variable directly, as in <field>:$${name}.`,
+      language === 'markdown'
+        ? `${macros} has no meaning in markdown — it is left as written. Reference the variable directly, as in $${name}.`
+        : `${macros} has no meaning in a Lucene expression — it is left as written and matched as literal text. Switch this input to SQL, or reference the variable directly, as in <field>:$${name}.`,
     );
   }
 
@@ -1327,35 +1312,6 @@ export function validateVariableReferencesInTemplate(
     }
   }
 
-  // A regex or promql expansion is only valid as a quoted matcher value: an
-  // alternation like `(api|web)`, `.*`, or an empty value is a syntax error
-  // anywhere else, so `up{service=~$svc}` and `${svc}_total` are mistakes.
-  if (language === 'promql') {
-    const unquoted = resolved.filter(
-      r =>
-        isStringLiteralFormat(r.format ?? settings.defaultFormat) &&
-        !r.inStringLiteral,
-    );
-    const isExactValue = (r: (typeof unquoted)[number]) =>
-      (r.format ?? settings.defaultFormat) === 'promql' &&
-      variables.some(v => v.name === r.name && isFilterSingleSelect(v));
-    const groups = [
-      { refs: unquoted.filter(isExactValue), kind: 'a string', op: '=' },
-      {
-        refs: unquoted.filter(r => !isExactValue(r)),
-        kind: 'a regular expression',
-        op: '=~',
-      },
-    ];
-    for (const { refs, kind, op } of groups) {
-      if (refs.length === 0) continue;
-      const [{ name }] = refs;
-      warnings.push(
-        `${formatReferenceList(refs)} expands to ${kind}, which is only valid inside a quoted matcher value. Wrap it as {<label>${op}"$${name}"}, or use \${${name}:csv} to interpolate the values as written.`,
-      );
-    }
-  }
-
   return { errors, warnings };
 }
 
@@ -1392,12 +1348,11 @@ export function filterReferencedVariables(
   variables: ChartVariable[],
 ): ChartVariable[] {
   let names: string[];
-  if ('configType' in config && config.configType === 'sql') {
-    names = getReferencedVariableNames(config.sqlTemplate);
-  } else if ('configType' in config && config.configType === 'promql') {
-    names = getPromqlSeries(config).flatMap(series =>
-      getReferencedVariableNames(series.expression),
-    );
+  if ('configType' in config) {
+    names =
+      config.configType === 'sql'
+        ? getReferencedVariableNames(config.sqlTemplate)
+        : [];
   } else {
     names = getBuilderVariableReferences(config).map(
       reference => reference.name,

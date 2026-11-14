@@ -86,7 +86,7 @@ export function useOnboardingCompletion(
     }),
     [firstConnectionSources, firstConnection],
   );
-  // `me == null` in IS_LOCAL_MODE, so the probe is skipped there.
+  // `me == null` in, so the probe is skipped there.
   const isWithinAnyOnboardingWindow =
     me != null &&
     teamAgeDays != null &&

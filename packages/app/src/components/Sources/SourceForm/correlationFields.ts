@@ -65,8 +65,6 @@ export function setCorrelationFieldValue(
         return { ...source, [field]: value };
       }
       return source;
-    case SourceKind.Promql:
-      return source;
   }
 }
 

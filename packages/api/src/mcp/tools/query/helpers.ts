@@ -3,7 +3,6 @@ import {
   type ClickHouseSettings,
 } from '@clickhouse/client-common';
 import { getHeatmapMode } from '@couchbase-traces/common-utils/dist/core/heatmap';
-import { PromqlChartError } from '@couchbase-traces/common-utils/dist/core/promqlChart';
 import {
   convertToCategoricalChartConfig,
   getFirstTimestampValueExpression,
@@ -14,10 +13,7 @@ import {
   getMetadata,
   queryLanguageForConnection,
 } from '@couchbase-traces/common-utils/dist/dataLayer';
-import {
-  isBuilderSavedChartConfig,
-  isPromqlSavedChartConfig,
-} from '@couchbase-traces/common-utils/dist/guards';
+import { isBuilderSavedChartConfig } from '@couchbase-traces/common-utils/dist/guards';
 import { UnknownVariableError } from '@couchbase-traces/common-utils/dist/macroErrors';
 import type {
   ChartConfigWithDateRange,
@@ -34,7 +30,6 @@ import ms from 'ms';
 
 import { ClickhouseClient } from '@/clickhouse';
 import { getConnectionById } from '@/controllers/connection';
-import { PromQLQueryError } from '@/controllers/promql';
 import { getSource } from '@/controllers/sources';
 import type { McpErrorResult } from '@/mcp/utils/errors';
 import { mcpServerError, mcpUserError } from '@/mcp/utils/errors';
@@ -57,7 +52,6 @@ import { trimToolResponse } from '@/utils/trimToolResponse';
 import type { ExternalDashboardTileWithId } from '@/utils/zod';
 import { externalDashboardTileSchemaWithId } from '@/utils/zod';
 
-import { runPromqlTile } from './promqlTile';
 import { runEventPatterns } from './runEventPatterns';
 
 // ─── Source body expression helpers ──────────────────────────────────────────
@@ -755,32 +749,6 @@ export async function runConfigTile(
       return mcpQueryErrorResult(e, {
         connectionId: source.connection.toString(),
       });
-    }
-  }
-
-  // PromQL is evaluated by the Prometheus API, not the SQL renderer.
-  if (isPromqlSavedChartConfig(savedConfig)) {
-    try {
-      return formatQueryResult(
-        await runPromqlTile({
-          teamId,
-          config: savedConfig,
-          dateRange: [startDate, endDate],
-          variables: options?.variables,
-          signal: options?.abortSignal,
-        }),
-      );
-    } catch (e) {
-      if (e instanceof PromQLQueryError) {
-        return e.category === 'user'
-          ? mcpUserError(e.message)
-          : mcpServerError(e.message);
-      }
-      if (e instanceof PromqlChartError) {
-        return mcpUserError(e.message);
-      }
-      // The table-function backend throws ClickHouse errors as they come.
-      return clickHouseErrorResult(e);
     }
   }
 

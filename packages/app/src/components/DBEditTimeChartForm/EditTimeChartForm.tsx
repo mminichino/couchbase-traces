@@ -10,7 +10,6 @@ import {
 } from 'react-hook-form';
 import { getHeatmapMode } from '@couchbase-traces/common-utils/dist/core/heatmap';
 import { tcFromSource } from '@couchbase-traces/common-utils/dist/core/metadata';
-import { isReducibleRangeQuery } from '@couchbase-traces/common-utils/dist/core/promql';
 import {
   displayTypeSupportsBuilderAlerts,
   displayTypeSupportsRawSqlAlerts,
@@ -26,7 +25,7 @@ import {
   ChartVariable,
   DashboardFilter,
   DisplayType,
-  PromqlHeatmapMode,
+  HeatmapMode,
   SavedChartConfig,
   SourceKind,
   TILE_DESCRIPTION_MAX_LENGTH,
@@ -61,7 +60,6 @@ import { AlertPanelLayout } from '@/components/AlertPanel';
 import ChartDisplaySettingsDrawer, {
   ChartConfigDisplaySettings,
 } from '@/components/ChartDisplaySettingsDrawer';
-import PromqlChartEditor from '@/components/ChartEditor/PromqlChartEditor';
 import RawSqlChartEditor from '@/components/ChartEditor/RawSqlChartEditor';
 import {
   ChartEditorFormState,
@@ -72,16 +70,12 @@ import {
   convertFormStateToSavedChartConfig,
   convertSavedChartConfigToFormState,
   getAllowedSourceKinds,
-  isPromqlDisplayType,
   isRawSqlDisplayType,
   isStringSelectDisplayType,
   toBuilderHeatmapMode,
   validateChartForm,
 } from '@/components/ChartEditor/utils';
-import {
-  HEATMAP_DURATION_NUMBER_FORMAT,
-  PROMQL_DEFAULT_HEATMAP_SCALE_TYPE,
-} from '@/components/DBHeatmapChart';
+import { HEATMAP_DURATION_NUMBER_FORMAT } from '@/components/DBHeatmapChart';
 import { ErrorBoundary } from '@/components/Error/ErrorBoundary';
 import { InputControlled } from '@/components/InputControlled';
 import SaveToDashboardModal from '@/components/SaveToDashboardModal';
@@ -90,7 +84,6 @@ import {
   firstSourceItemValue,
   useFilteredSortedSourceItems,
 } from '@/components/sourceSelectUtils';
-import { IS_PROMQL_ENABLED } from '@/config';
 import HDXMarkdownChart from '@/HDXMarkdownChart';
 import {
   getDurationMsExpression,
@@ -179,12 +172,10 @@ function applyHeatmapDefaults(
     mode,
     tableSource,
     fallbackValueExpression = '',
-    isPromql = false,
   }: {
-    mode: PromqlHeatmapMode;
+    mode: HeatmapMode;
     tableSource: TSource | undefined;
     fallbackValueExpression?: string;
-    isPromql?: boolean;
   },
 ) {
   const isTraceDuration =
@@ -205,7 +196,7 @@ function applyHeatmapDefaults(
   setValue('select', heatmapSeries);
   setValue('series', heatmapSeries);
 
-  if (mode === 'distribution' && !isPromql) {
+  if (mode === 'distribution') {
     setValue('series.0.countExpression', 'count()');
     setValue('numberFormat', { ...HEATMAP_DURATION_NUMBER_FORMAT });
   } else if (
@@ -321,7 +312,6 @@ export default function EditTimeChartForm({
   const granularity = useWatch({ control, name: 'granularity' });
   const configType = useWatch({ control, name: 'configType' });
   const connection = useWatch({ control, name: 'connection' });
-  const promqlExpressions = useWatch({ control, name: 'promqlExpressions' });
   const storedHeatmapMode = getHeatmapMode({
     heatmap: useWatch({ control, name: 'heatmap' }),
   });
@@ -329,15 +319,8 @@ export default function EditTimeChartForm({
   const chartConfigAlert = chartConfig.alert;
   const isRawSqlInput =
     configType === 'sql' && isRawSqlDisplayType(displayType);
-  const isPromqlInput =
-    configType === 'promql' && isPromqlDisplayType(displayType);
-  // Switching from PromQL to builder leaves the PromQL-only histogram mode in
-  // the form, which the builder treats as distribution.
-  const builderHeatmapMode =
+  const heatmapMode: HeatmapMode =
     toBuilderHeatmapMode(storedHeatmapMode) ?? 'distribution';
-  const heatmapMode: PromqlHeatmapMode = isPromqlInput
-    ? storedHeatmapMode
-    : builderHeatmapMode;
 
   const { data: sources } = useSources();
 
@@ -380,11 +363,10 @@ export default function EditTimeChartForm({
     }
   }, [configType, displayType, previousDisplayType, setValue]);
 
-  const showGeneratedSql =
-    TABS_WITH_GENERATED_SQL.has(activeTab) && !isPromqlInput;
+  const showGeneratedSql = TABS_WITH_GENERATED_SQL.has(activeTab);
 
   const showSampleEvents =
-    tableSource?.kind !== SourceKind.Metric && !isRawSqlInput && !isPromqlInput;
+    tableSource?.kind !== SourceKind.Metric && !isRawSqlInput;
 
   const [
     alignDateRangeToGranularity,
@@ -399,9 +381,7 @@ export default function EditTimeChartForm({
     color,
     colorRules,
     backgroundChart,
-    legendTemplate,
     builderHeatmapScaleType,
-    promqlHeatmapScaleType,
   ] = useWatch({
     control,
     name: [
@@ -417,14 +397,10 @@ export default function EditTimeChartForm({
       'color',
       'colorRules',
       'backgroundChart',
-      'legendTemplate',
       'series.0.heatmapScaleType',
-      'heatmap.scaleType',
     ],
   });
-  const heatmapScaleType = isPromqlInput
-    ? promqlHeatmapScaleType
-    : builderHeatmapScaleType;
+  const heatmapScaleType = builderHeatmapScaleType;
 
   // Format auto-detected purely from the datasource (e.g. duration for a trace
   // Duration column), used as the drawer's fallback when no explicit
@@ -454,7 +430,6 @@ export default function EditTimeChartForm({
       color,
       colorRules,
       backgroundChart,
-      legendTemplate,
       heatmapScaleType,
     }),
     [
@@ -470,7 +445,6 @@ export default function EditTimeChartForm({
       color,
       colorRules,
       backgroundChart,
-      legendTemplate,
       heatmapScaleType,
     ],
   );
@@ -875,7 +849,6 @@ export default function EditTimeChartForm({
           fallbackValueExpression: Array.isArray(select)
             ? (select[0]?.valueExpression ?? '')
             : '',
-          isPromql: isPromqlInput,
         });
       } else if (!Array.isArray(select)) {
         const defaultSeries: SavedChartConfigWithSelectArray['select'] = [
@@ -907,17 +880,15 @@ export default function EditTimeChartForm({
     configType,
     tableSource,
     heatmapMode,
-    isPromqlInput,
   ]);
 
   // Switching heatmap mode may trigger a source swap, and should apply new defaults.
   const onHeatmapModeChange = useCallback(
-    (mode: PromqlHeatmapMode) => {
+    (mode: HeatmapMode) => {
       setValue('heatmap.mode', mode);
       applyHeatmapDefaults(setValue, getValues, {
         mode,
         tableSource,
-        isPromql: isPromqlInput,
       });
       if (
         tableSource != null &&
@@ -930,15 +901,7 @@ export default function EditTimeChartForm({
         onSubmit(true);
       }
     },
-    [
-      setValue,
-      getValues,
-      tableSource,
-      onSubmit,
-      configType,
-      displayType,
-      isPromqlInput,
-    ],
+    [setValue, getValues, tableSource, onSubmit, configType, displayType],
   );
 
   // Handle auto-submitting and form state updates when the source changes.
@@ -1032,7 +995,6 @@ export default function EditTimeChartForm({
         color,
         colorRules,
         backgroundChart,
-        legendTemplate,
         heatmapScaleType,
       }: ChartConfigDisplaySettings,
       isDirty: boolean,
@@ -1058,18 +1020,11 @@ export default function EditTimeChartForm({
       setValue('colorRules', colorRules);
       setValue('backgroundChart', backgroundChart);
       // Empty string (not undefined) so the cleared state survives the URL round-trip.
-      if (configType === 'promql') {
-        setValue('legendTemplate', legendTemplate ?? '');
-      }
       if (
         displayType === DisplayType.Heatmap &&
         heatmapMode === 'distribution'
       ) {
-        if (isPromqlInput) {
-          setValue('heatmap.scaleType', heatmapScaleType);
-        } else {
-          setValue('series.0.heatmapScaleType', heatmapScaleType);
-        }
+        setValue('series.0.heatmapScaleType', heatmapScaleType);
       }
       // Display settings live in a separate drawer form, so RHF can't track
       // them. Latch dirty state only when the drawer reports actual changes.
@@ -1079,15 +1034,7 @@ export default function EditTimeChartForm({
       }
       onSubmit();
     },
-    [
-      setValue,
-      onDirtyChange,
-      onSubmit,
-      configType,
-      displayType,
-      heatmapMode,
-      isPromqlInput,
-    ],
+    [setValue, onDirtyChange, onSubmit, displayType, heatmapMode],
   );
 
   const tableConnection = useMemo(
@@ -1100,9 +1047,6 @@ export default function EditTimeChartForm({
       { label: 'Builder', value: 'builder' },
       ...(isRawSqlDisplayType(displayType)
         ? [{ label: 'SQL', value: 'sql' }]
-        : []),
-      ...(IS_PROMQL_ENABLED && isPromqlDisplayType(displayType)
-        ? [{ label: 'PromQL', value: 'promql' }]
         : []),
     ],
     [displayType],
@@ -1302,16 +1246,6 @@ export default function EditTimeChartForm({
                 />
               </Box>
             </div>
-          ) : isPromqlInput ? (
-            <PromqlChartEditor
-              control={control}
-              getValues={getValues}
-              allowedSourceKinds={allowedSourceKinds}
-              onSubmit={onSubmit}
-              onOpenDisplaySettings={openDisplaySettings}
-              heatmapMode={heatmapMode}
-              onHeatmapModeChange={onHeatmapModeChange}
-            />
           ) : isRawSqlInput ? (
             <RawSqlChartEditor
               control={control}
@@ -1359,7 +1293,7 @@ export default function EditTimeChartForm({
               chartConfigForExplanations={chartConfigForExplanations}
               onSubmit={onSubmit}
               openDisplaySettings={openDisplaySettings}
-              heatmapMode={builderHeatmapMode}
+              heatmapMode={heatmapMode}
               onHeatmapModeChange={onHeatmapModeChange}
             />
           )}
@@ -1393,7 +1327,6 @@ export default function EditTimeChartForm({
           chartConfigForExplanations={chartConfigForExplanations}
           showGeneratedSql={showGeneratedSql}
           showSampleEvents={showSampleEvents}
-          showGeneratedPromql={isPromqlInput}
           dbTimeChartConfig={dbTimeChartConfig}
           missingRequiredFilterNames={
             previewDashboardFilters?.missingRequiredFilterNames
@@ -1416,14 +1349,7 @@ export default function EditTimeChartForm({
           previousDateRange={!dashboardId ? previousDateRange : undefined}
           displayType={displayType}
           configType={configType}
-          promqlUsesRange={isReducibleRangeQuery({
-            promqlExpression: promqlExpressions,
-            displayType,
-          })}
           heatmapMode={heatmapMode}
-          defaultHeatmapScaleType={
-            isPromqlInput ? PROMQL_DEFAULT_HEATMAP_SCALE_TYPE : undefined
-          }
           onChange={handleUpdateDisplaySettings}
           onClose={closeDisplaySettings}
           // Heatmaps format with the chart-level number format only.

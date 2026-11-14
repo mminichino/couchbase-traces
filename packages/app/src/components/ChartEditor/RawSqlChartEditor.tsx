@@ -11,14 +11,10 @@ import {
 } from '@couchbase-traces/common-utils/dist/core/utils';
 import {
   ChartVariable,
+  DisplayType,
+  isMetricSource,
   RawSqlChartConfig,
   SourceKind,
-} from '@couchbase-traces/common-utils/dist/types';
-import {
-  DisplayType,
-  isLogSource,
-  isMetricSource,
-  isTraceSource,
 } from '@couchbase-traces/common-utils/dist/types';
 import {
   Alert,
@@ -233,19 +229,6 @@ export default function RawSqlChartEditor({
 
         if (!isMetricSource(source)) {
           tables.push(tcFromSource(source));
-        }
-
-        if (
-          (isLogSource(source) || isTraceSource(source)) &&
-          source.materializedViews
-        ) {
-          tables.push(
-            ...source.materializedViews.map(mv => ({
-              databaseName: mv.databaseName,
-              tableName: mv.tableName,
-              connectionId: source.connection,
-            })),
-          );
         }
 
         return tables;

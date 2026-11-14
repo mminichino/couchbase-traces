@@ -26,7 +26,7 @@ import { ErrorBoundary } from '@/components/Error/ErrorBoundary';
 import { CheckBoxControlled } from '@/components/InputControlled';
 import SelectControlled from '@/components/SelectControlled';
 import { SqlVariablesProvider } from '@/components/SQLEditor/variableCompletions';
-import { IS_ADHOC_FILTERS_ENABLED, IS_PROMQL_ENABLED } from '@/config';
+import { IS_ADHOC_FILTERS_ENABLED } from '@/config';
 import { useConfirm } from '@/useConfirm';
 import { useZIndex } from '@/zIndex';
 
@@ -38,7 +38,6 @@ import {
   toFormValues,
   toSavedFilter,
 } from './filterFormState';
-import { PromqlLabelFilterEditForm } from './PromqlLabelFilterEditForm';
 import { QueryExpressionFilterEditForm } from './QueryExpressionFilterEditForm';
 import { StaticListFilterEditForm } from './StaticListFilterEditForm';
 
@@ -48,14 +47,6 @@ const FILTER_TYPE_OPTIONS = [
     label: 'Queried values',
   },
   { value: DashboardFilterType.enum.STATIC_LIST, label: 'Static values' },
-  ...(IS_PROMQL_ENABLED
-    ? [
-        {
-          value: DashboardFilterType.enum.PROMETHEUS_LABEL,
-          label: 'PromQL label values',
-        },
-      ]
-    : []),
   ...(IS_ADHOC_FILTERS_ENABLED
     ? [
         {
@@ -250,12 +241,10 @@ export const DashboardFilterEditForm = ({
                 />
               </SqlVariablesProvider>
             ) : formFilterType === 'PROMETHEUS_LABEL' ? (
-              <SqlVariablesProvider variables={otherVariables}>
-                <PromqlLabelFilterEditForm
-                  control={control}
-                  otherFilters={otherFilters}
-                />
-              </SqlVariablesProvider>
+              <Alert color="yellow" icon={<IconAlertTriangle size={16} />}>
+                PromQL label filters are no longer supported. Remove this filter
+                or recreate it as a queried or static filter.
+              </Alert>
             ) : (
               <SqlVariablesProvider variables={otherVariables}>
                 <QueryExpressionFilterEditForm

@@ -50,10 +50,24 @@ export function isRawSqlChartConfig(
   return 'configType' in chartConfig && chartConfig.configType === 'sql';
 }
 
+/** Dropped PromQL charts may still exist in stored dashboards; never query them. */
 export function isPromqlChartConfig(
-  chartConfig: ChartConfig | ChartConfigWithOptDateRange,
+  chartConfig: ChartConfig | ChartConfigWithOptDateRange | PromqlChartConfig,
 ): chartConfig is PromqlChartConfig {
-  return 'configType' in chartConfig && chartConfig.configType === 'promql';
+  return (
+    'configType' in chartConfig &&
+    (chartConfig as { configType?: string }).configType === 'promql'
+  );
+}
+
+/** Dropped PromQL saved tiles may still exist in stored dashboards. */
+export function isPromqlSavedChartConfig(
+  chartConfig: SavedChartConfig | PromqlSavedChartConfig,
+): chartConfig is PromqlSavedChartConfig {
+  return (
+    'configType' in chartConfig &&
+    (chartConfig as { configType?: string }).configType === 'promql'
+  );
 }
 
 export function isBuilderChartConfig(
@@ -68,19 +82,10 @@ export function isRawSqlSavedChartConfig(
   return 'configType' in chartConfig && chartConfig.configType === 'sql';
 }
 
-export function isPromqlSavedChartConfig(
-  chartConfig: SavedChartConfig,
-): chartConfig is PromqlSavedChartConfig {
-  return 'configType' in chartConfig && chartConfig.configType === 'promql';
-}
-
 export function isBuilderSavedChartConfig(
   chartConfig: SavedChartConfig,
 ): chartConfig is BuilderSavedChartConfig {
-  return (
-    !isRawSqlSavedChartConfig(chartConfig) &&
-    !isPromqlSavedChartConfig(chartConfig)
-  );
+  return !isRawSqlSavedChartConfig(chartConfig);
 }
 
 /**

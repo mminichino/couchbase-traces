@@ -184,9 +184,6 @@ export const LogSource = Source.discriminator<ILogSource>(
     highlightedRowAttributeExpressions: {
       type: mongoose.Schema.Types.Array,
     },
-    materializedViews: {
-      type: mongoose.Schema.Types.Array,
-    },
     metadataMaterializedViews: {
       type: MetadataMaterializedViewsMongoSchema,
       default: undefined,
@@ -233,9 +230,6 @@ export const TraceSource = Source.discriminator<ITraceSource>(
       type: mongoose.Schema.Types.Array,
     },
     highlightedRowAttributeExpressions: {
-      type: mongoose.Schema.Types.Array,
-    },
-    materializedViews: {
       type: mongoose.Schema.Types.Array,
     },
     metadataMaterializedViews: {

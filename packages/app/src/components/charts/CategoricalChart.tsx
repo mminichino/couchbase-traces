@@ -1,25 +1,15 @@
 import { useMemo } from 'react';
-import {
-  hasNonEmptyOrderBy,
-  hasPositiveSeriesLimit,
-} from '@couchbase-traces/common-utils/dist/core/utils';
-import {
-  isBuilderChartConfig,
-  isPromqlChartConfig,
-} from '@couchbase-traces/common-utils/dist/guards';
+import { hasNonEmptyOrderBy } from '@couchbase-traces/common-utils/dist/core/utils';
+import { isBuilderChartConfig } from '@couchbase-traces/common-utils/dist/guards';
 import { ChartConfigWithOptTimestamp } from '@couchbase-traces/common-utils/dist/types';
 
 import {
   buildMVDateRangeIndicator,
   convertToCategoricalChartConfig,
-  convertToReducedPromqlChartConfig,
   formatResponseForCategoricalChart,
 } from '@/ChartUtils';
 import MVOptimizationIndicator from '@/components/MaterializedViews/MVOptimizationIndicator';
-import {
-  getMinGranularitySeconds,
-  useQueriedChartConfig,
-} from '@/hooks/useChartConfig';
+import { useQueriedChartConfig } from '@/hooks/useChartConfig';
 import { useMVOptimizationExplanation } from '@/hooks/useMVOptimizationExplanation';
 import { useSingleSeriesNumberFormat, useSource } from '@/source';
 import { getColorProps } from '@/utils';
@@ -52,20 +42,13 @@ export function useCategoricalChart({
   toolbarSuffix,
 }: CategoricalChartProps) {
   const { data: source } = useSource({ id: config.source });
-  const minGranularitySeconds = getMinGranularitySeconds(source);
 
   const queriedConfig = useMemo(() => {
     if (isBuilderChartConfig(config)) {
       return convertToCategoricalChartConfig(config);
     }
-    if (isPromqlChartConfig(config)) {
-      return convertToReducedPromqlChartConfig({
-        ...config,
-        minGranularitySeconds,
-      });
-    }
     return config;
-  }, [config, minGranularitySeconds]);
+  }, [config]);
 
   const resolvedNumberFormat = useSingleSeriesNumberFormat(queriedConfig);
 
@@ -135,11 +118,8 @@ export function useCategoricalChart({
 
       // Builder charts apply seriesLimit as a SQL LIMIT. Prometheus returns
       // every series, so a PromQL limit trims the largest-first rows here.
-      const maxGroups =
-        isPromqlChartConfig(queriedConfig) &&
-        hasPositiveSeriesLimit(queriedConfig.seriesLimit)
-          ? queriedConfig.seriesLimit
-          : undefined;
+      const rawLimit = queriedConfig.seriesLimit;
+      const maxGroups = rawLimit != null && rawLimit > 0 ? rawLimit : undefined;
 
       return [
         formatResponseForCategoricalChart(

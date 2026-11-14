@@ -38,7 +38,7 @@ import type {
   MetadataMaterializedViews,
   TSource,
 } from '@/types';
-import { isLogSource, isTraceSource, SourceKind } from '@/types';
+import { isLogSource, isTraceSource } from '@/types';
 
 import {
   ClickHouseVersion,
@@ -47,15 +47,11 @@ import {
   supportsMergeTreeTextIndex,
 } from './clickhouseVersion';
 import {
-  optimizeFacetedKeyValuesConfig,
-  optimizeGetKeyValuesCalls,
-  renderStartOfBucketExpr,
-} from './materializedViews';
-import {
   getAlignedDateRange,
   getDistributedTableArgs,
   MetadataMVQueryOptions,
   objectHash,
+  renderStartOfBucketExpr,
   splitAndTrimWithBracket,
   TextIndexColumnQueryOptions,
   TextIndexMapColumnQueryOptions,
@@ -3345,60 +3341,15 @@ export class Metadata {
       async () => {
         if (keys.length === 0) return [];
 
-        // Faceted lookups apply a different predicate per key, so they can't be
-        // split across single-key materialized views — but they can run as one
-        // scan against a materialized view whose dimensions cover every filter
-        // column (else fall back to the raw table).
-        if (keyConditions && keyConditions.some(c => c != null)) {
-          const facetedConfig = await optimizeFacetedKeyValuesConfig({
-            chartConfig,
-            keys,
-            keyConditions,
-            source,
-            clickhouseClient: this.clickhouseClient,
-            metadata: this,
-            signal,
-          });
-          return this.getKeyValues({
-            chartConfig: facetedConfig,
-            keys,
-            keyConditions,
-            limit,
-            disableRowLimit,
-            signal,
-            source,
-          });
-        }
-
-        const defaultKeyValueCall = { chartConfig, keys };
-        const canHaveMVs =
-          source &&
-          (source.kind === SourceKind.Log || source.kind === SourceKind.Trace);
-        const getKeyValueCalls = canHaveMVs
-          ? await optimizeGetKeyValuesCalls({
-              chartConfig,
-              keys,
-              source,
-              clickhouseClient: this.clickhouseClient,
-              metadata: this,
-              signal,
-            })
-          : [defaultKeyValueCall];
-
-        const allResults = await Promise.all(
-          getKeyValueCalls.map(async ({ chartConfig, keys }) =>
-            this.getKeyValues({
-              chartConfig,
-              keys,
-              limit,
-              disableRowLimit,
-              signal,
-              source,
-            }),
-          ),
-        );
-
-        return allResults.flat();
+        return this.getKeyValues({
+          chartConfig,
+          keys,
+          keyConditions,
+          limit,
+          disableRowLimit,
+          signal,
+          source,
+        });
       },
     );
   }

@@ -3,11 +3,6 @@ import { Path, UseFormSetError } from 'react-hook-form';
 import { validateFormula } from '@couchbase-traces/common-utils/dist/core/formula';
 import { getHeatmapMode } from '@couchbase-traces/common-utils/dist/core/heatmap';
 import {
-  displayTypeSupportsInstantQuery,
-  displayTypeSupportsReducer,
-  getPromqlSeries,
-} from '@couchbase-traces/common-utils/dist/core/promql';
-import {
   isFormulaDisplayType,
   isFormulaSourceKind,
   validateRawSqlForAlert,
@@ -31,10 +26,6 @@ import {
   isMetricSource,
   isRangeThresholdType,
   isTraceSource,
-  PromqlChartConfig,
-  PromqlHeatmapMode,
-  PromqlSavedChartConfig,
-  PromqlSeries,
   RawSqlChartConfig,
   RawSqlSavedChartConfig,
   SavedChartConfig,
@@ -188,26 +179,6 @@ export const isStringSelectDisplayType = (
   displayType === DisplayType.Search ||
   displayType === DisplayType.EventPatterns;
 
-export const isPromqlDisplayType = (
-  displayType: DisplayType | undefined,
-): displayType is
-  | DisplayType.Table
-  | DisplayType.Line
-  | DisplayType.StackedBar
-  | DisplayType.StackedLine
-  | DisplayType.Pie
-  | DisplayType.Bar
-  | DisplayType.Number
-  | DisplayType.Heatmap =>
-  displayType === DisplayType.Table ||
-  displayType === DisplayType.Line ||
-  displayType === DisplayType.StackedBar ||
-  displayType === DisplayType.StackedLine ||
-  displayType === DisplayType.Pie ||
-  displayType === DisplayType.Bar ||
-  displayType === DisplayType.Number ||
-  displayType === DisplayType.Heatmap;
-
 const NON_PROMQL_SOURCE_KINDS = Object.values(SourceKind).filter(
   kind => kind !== SourceKind.Promql,
 );
@@ -223,17 +194,13 @@ const ROW_LISTING_SOURCE_KINDS = NON_PROMQL_SOURCE_KINDS.filter(
 
 /** Source kinds the Data Source picker offers, given the editor mode and the display type. */
 export function getAllowedSourceKinds({
-  configType,
   displayType,
   heatmapMode,
 }: {
-  configType: ChartEditorFormState['configType'];
+  configType?: ChartEditorFormState['configType'];
   displayType: DisplayType | undefined;
-  heatmapMode?: PromqlHeatmapMode;
+  heatmapMode?: HeatmapMode;
 }): SourceKind[] {
-  if (configType === 'promql' && isPromqlDisplayType(displayType)) {
-    return [SourceKind.Promql];
-  }
   if (displayType === DisplayType.Heatmap) {
     return [...getHeatmapSourceKinds(toBuilderHeatmapMode(heatmapMode))];
   }
@@ -259,35 +226,6 @@ export function convertFormStateToSavedChartConfig(
   form: ChartEditorFormState,
   source: TSource | undefined,
 ): SavedChartConfig | undefined {
-  if (form.configType === 'promql' && isPromqlDisplayType(form.displayType)) {
-    const promqlConfig: PromqlSavedChartConfig = {
-      configType: 'promql',
-      ...pick(form, [
-        'name',
-        'description',
-        'displayType',
-        'numberFormat',
-        'color',
-        'colorRules',
-        'backgroundChart',
-        'granularity',
-        'compareToPreviousPeriod',
-        'fillNulls',
-        'alignDateRangeToGranularity',
-        'lineInterpolation',
-        'alternateRowBackground',
-        'seriesLimit',
-        // 'alert', // TODO: Support alerts on PromQL (HDX-4636)
-      ]),
-      promqlExpression: formPromqlExpressions(form),
-      source: source?.id ?? form.source ?? '',
-      legendTemplate: form.legendTemplate?.trim() || undefined,
-      heatmap: formPromqlHeatmap(form),
-    };
-
-    return promqlConfig;
-  }
-
   if (form.configType === 'sql' && isRawSqlDisplayType(form.displayType)) {
     const rawSqlConfig: RawSqlSavedChartConfig = {
       configType: 'sql',
@@ -366,34 +304,6 @@ export function convertFormStateToChartConfig(
   dateRange: ChartConfigWithDateRange['dateRange'],
   source: TSource | undefined,
 ): ChartConfigWithDateRange | undefined {
-  if (form.configType === 'promql' && isPromqlDisplayType(form.displayType)) {
-    const promqlConfig: PromqlChartConfig = {
-      configType: 'promql',
-      ...pick(form, [
-        'displayType',
-        'numberFormat',
-        'color',
-        'colorRules',
-        'backgroundChart',
-        'granularity',
-        'compareToPreviousPeriod',
-        'fillNulls',
-        'alignDateRangeToGranularity',
-        'lineInterpolation',
-        'alternateRowBackground',
-        'seriesLimit',
-      ]),
-      promqlExpression: formPromqlExpressions(form),
-      connection: source?.connection ?? form.connection ?? '',
-      source: source?.id ?? form.source ?? '',
-      from: source?.from,
-      legendTemplate: form.legendTemplate?.trim() || undefined,
-      heatmap: formPromqlHeatmap(form),
-    };
-
-    return { ...promqlConfig, dateRange };
-  }
-
   if (form.configType === 'sql' && isRawSqlDisplayType(form.displayType)) {
     const rawSqlConfig: RawSqlChartConfig = {
       configType: 'sql',
@@ -509,7 +419,7 @@ export function convertSavedChartConfigToFormState(
       },
     }),
     configType: isPromqlSavedChartConfig(config)
-      ? 'promql'
+      ? 'builder'
       : isRawSqlSavedChartConfig(config)
         ? 'sql'
         : 'builder',
@@ -521,46 +431,7 @@ export function convertSavedChartConfigToFormState(
               s.aggConditionLanguage ?? getStoredLanguage() ?? 'lucene',
           }))
         : [],
-    // The list of promQL expressions, with a default set if the chart has none.
-    // Normalized to a list, whereas the saved chart config might have a single
-    // (string) expression.
-    promqlExpressions: toPromqlFormRows(
-      isPromqlSavedChartConfig(config) ? getPromqlSeries(config) : [],
-    ),
   };
-}
-
-/**
- * The PromQL rows the editor renders: at least one, with every optional field
- * defined so its input starts controlled rather than switching from
- * uncontrolled on the first keystroke.
- */
-const toPromqlFormRows = (expressions: PromqlSeries[]): PromqlSeries[] =>
-  (expressions.length > 0 ? expressions : [{ expression: '' }]).map(series => ({
-    ...series,
-    expression: series.expression ?? '',
-    alias: series.alias ?? '',
-  }));
-
-/**
- * The expressions a PromQL form submits. Blank rows are kept: on the chart
- * explorer the submitted config round-trips through the URL back into the
- * form, so dropping a row here would delete an expression the user had just
- * added. `getQueriedPromqlSeries` skips them at query time instead.
- *
- * Fields the display type does not offer are dropped, so a tile never carries
- * a choice its editor cannot show.
- */
-function formPromqlExpressions(form: ChartEditorFormState): PromqlSeries[] {
-  const { displayType } = form;
-  const keepQueryType = displayTypeSupportsInstantQuery({ displayType });
-  const keepReducer = displayTypeSupportsReducer({ displayType });
-  return toPromqlFormRows(form.promqlExpressions ?? []).map(series => ({
-    ...series,
-    alias: series.alias?.trim() || undefined,
-    queryType: keepQueryType ? series.queryType : undefined,
-    reducer: keepReducer ? series.reducer : undefined,
-  }));
 }
 
 /** The form's heatmap settings, formatted for a builder tile */
@@ -574,36 +445,9 @@ function formBuilderHeatmap(
 
 /** A heatmap mode as a builder heatmap's, which has no histogram mode. */
 export function toBuilderHeatmapMode(
-  mode: PromqlHeatmapMode | undefined,
+  mode: HeatmapMode | 'histogram' | undefined,
 ): HeatmapMode | undefined {
   return mode === 'histogram' ? undefined : mode;
-}
-
-const DEFAULT_PROMQL_PLACEHOLDER =
-  "rate(http_requests_total{service='api'}[5m])";
-
-const PROMQL_HEATMAP_PLACEHOLDERS: Record<PromqlHeatmapMode, string> = {
-  distribution:
-    'rate(http_request_duration_seconds_sum[5m]) / rate(http_request_duration_seconds_count[5m])',
-  series: 'sum by (service) (rate(http_requests_total[5m]))',
-  histogram: 'sum by (le) (rate(http_request_duration_seconds_bucket[5m]))',
-};
-
-/** An example PromQL expression suited to the display type and heatmap mode. */
-export function promqlExpressionPlaceholder(
-  displayType: DisplayType | undefined,
-  heatmapMode: PromqlHeatmapMode,
-): string {
-  return displayType === DisplayType.Heatmap
-    ? PROMQL_HEATMAP_PLACEHOLDERS[heatmapMode]
-    : DEFAULT_PROMQL_PLACEHOLDER;
-}
-
-/** Heatmap settings are dropped from PromQL tiles that are not heatmaps. */
-function formPromqlHeatmap(
-  form: ChartEditorFormState,
-): PromqlSavedChartConfig['heatmap'] {
-  return form.displayType === DisplayType.Heatmap ? form.heatmap : undefined;
 }
 
 export const validateChartForm = (
@@ -625,8 +469,6 @@ export const validateChartForm = (
 
   const isRawSqlChart =
     form.configType === 'sql' && isRawSqlDisplayType(form.displayType);
-  const isPromqlChart =
-    form.configType === 'promql' && isPromqlDisplayType(form.displayType);
 
   // Validate connection is selected for raw SQL charts
   if (isRawSqlChart && !form.connection) {
@@ -805,7 +647,6 @@ export const validateChartForm = (
   // validated like any other builder series above.
   if (
     !isRawSqlChart &&
-    !isPromqlChart &&
     form.displayType === DisplayType.Heatmap &&
     getHeatmapMode({ heatmap: formBuilderHeatmap(form) }) === 'distribution' &&
     Array.isArray(form.series) &&

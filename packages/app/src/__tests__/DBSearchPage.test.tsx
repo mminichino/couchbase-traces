@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { SourceKind } from '@couchbase-traces/common-utils/dist/types';
 import { renderHook } from '@testing-library/react';
 

@@ -11,7 +11,10 @@ import type {
   ChartConfigWithDateRange,
   ChartVariable,
 } from '@couchbase-traces/common-utils/dist/types';
-import { DisplayType } from '@couchbase-traces/common-utils/dist/types';
+import {
+  DisplayType,
+  SourceKind,
+} from '@couchbase-traces/common-utils/dist/types';
 import { trace } from '@opentelemetry/api';
 
 import { ClickhouseClient } from '@/clickhouse';
@@ -114,6 +117,14 @@ export async function mineWindowPatterns(
     return {
       error: mcpUserError(
         `Connection not found for source: ${sourceId}. Call cbt_list_sources to discover available source IDs.`,
+      ),
+    };
+  }
+
+  if (source.kind === SourceKind.Promql) {
+    return {
+      error: mcpUserError(
+        'PromQL sources are not supported for pattern mining.',
       ),
     };
   }

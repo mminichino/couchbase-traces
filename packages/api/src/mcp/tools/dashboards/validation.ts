@@ -1,4 +1,3 @@
-import { getPromqlSeries } from '@couchbase-traces/common-utils/dist/core/promql';
 import { TIME_SERIES_DISPLAY_TYPE_BY_NAME } from '@couchbase-traces/common-utils/dist/core/utils';
 import type { FilterForVariableDeclaration } from '@couchbase-traces/common-utils/dist/filters';
 import {
@@ -283,8 +282,6 @@ function variableIssueSubject(language: TemplateLanguage): string {
       return 'SQL';
     case 'lucene':
       return 'The Lucene filter';
-    case 'promql':
-      return 'The PromQL expression';
     case 'markdown':
       return 'The markdown';
   }
@@ -330,9 +327,7 @@ export function getTileVariableWarnings(
     if (isRawSqlSavedChartConfig(config)) {
       validate(config.sqlTemplate, 'sql');
     } else if (isPromqlSavedChartConfig(config)) {
-      for (const { expression } of getPromqlSeries(config)) {
-        validate(expression, 'promql');
-      }
+      warnings.push(`${label}: PromQL tiles are no longer supported.`);
     } else if (
       isBuilderSavedChartConfig(config) &&
       config.displayType === DisplayType.Markdown

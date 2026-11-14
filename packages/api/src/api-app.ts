@@ -69,10 +69,8 @@ app.use(
 );
 app.use(session(sess));
 
-if (!config.IS_LOCAL_APP_MODE) {
-  app.use(passport.initialize());
-  app.use(passport.session());
-}
+app.use(passport.initialize());
+app.use(passport.session());
 
 if (!config.IS_CI) {
   app.use(expressLogger);
@@ -115,9 +113,6 @@ app.use('/clickhouse-proxy', isUserAuthenticated, clickhouseProxyRouter);
 app.use('/couchbase/cluster', isUserAuthenticated, couchbaseClusterRouter);
 app.use('/couchbase', isUserAuthenticated, couchbaseRouter);
 app.use('/iac', isUserAuthenticated, iacRouter);
-if (config.IS_PROMQL_ENABLED) {
-  app.use('/v1/prometheus', isUserAuthenticated, routers.prometheusRouter);
-}
 // ---------------------------------------------------------------------
 
 // TODO: Separate external API routers from internal routers

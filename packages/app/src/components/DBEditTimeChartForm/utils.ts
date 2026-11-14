@@ -4,25 +4,16 @@ import {
   TableConnectionChoice,
 } from '@couchbase-traces/common-utils/dist/core/metadata';
 import {
-  displayTypeSupportsReducer,
-  getQueriedPromqlSeries,
-} from '@couchbase-traces/common-utils/dist/core/promql';
-import { isTimeSeriesDisplayType } from '@couchbase-traces/common-utils/dist/core/utils';
-import {
   configConsumesBroadcastFilters,
   getBlockingRequiredFilterNames,
 } from '@couchbase-traces/common-utils/dist/dashboardFilterValues';
-import {
-  getPromqlFilters,
-  getSqlFilters,
-} from '@couchbase-traces/common-utils/dist/filters';
+import { getSqlFilters } from '@couchbase-traces/common-utils/dist/filters';
 import {
   isBuilderChartConfig,
   isPromqlChartConfig,
   isRawSqlChartConfig,
   isRawSqlSavedChartConfig,
 } from '@couchbase-traces/common-utils/dist/guards';
-import { substitutePromqlChartConfigTemplates } from '@couchbase-traces/common-utils/dist/macros';
 import {
   BroadcastFilter,
   BuilderChartConfigWithDateRange,
@@ -31,10 +22,8 @@ import {
   ChartConfigWithOptTimestamp,
   ChartVariable,
   DashboardFilter,
-  DateRange,
   DisplayType,
   Filter,
-  PromqlChartConfig,
   SavedChartConfig,
   SelectList,
   SourceKind,
@@ -46,17 +35,11 @@ import { filterReferencedVariables } from '@couchbase-traces/common-utils/dist/v
 import {
   convertToCategoricalChartConfig,
   convertToNumberChartConfig,
-  convertToPromqlTableChartConfig,
-  convertToReducedPromqlChartConfig,
   convertToTableChartConfig,
   convertToTimeChartConfig,
   tryExpandConfigVariables,
 } from '@/ChartUtils';
 import { ChartEditorFormState } from '@/components/ChartEditor/types';
-import {
-  buildHeatmapSeriesConfig,
-  resolveHeatmapGranularity,
-} from '@/components/DBHeatmapChart/heatmapQueries';
 import { getMinGranularitySeconds } from '@/hooks/useChartConfig';
 import { getFirstTimestampValueExpression } from '@/source';
 import { getMetricTableName } from '@/utils';
@@ -70,10 +53,7 @@ export const isQueryReady = (
 ) => {
   if (!queriedConfig) return false;
   if (isPromqlChartConfig(queriedConfig)) {
-    return !!(
-      getQueriedPromqlSeries(queriedConfig).length > 0 &&
-      queriedConfig.connection
-    );
+    return false;
   }
   if (isRawSqlChartConfig(queriedConfig)) {
     return !!(queriedConfig.sqlTemplate && queriedConfig.connection);
@@ -107,7 +87,7 @@ export function seriesToFilters(select: SelectList): Filter[] {
     .map(({ aggCondition, aggConditionLanguage }) => {
       if (
         aggConditionLanguage != null &&
-        aggConditionLanguage !== 'promql' &&
+        (aggConditionLanguage === 'sql' || aggConditionLanguage === 'lucene') &&
         aggCondition != null
       ) {
         return {
@@ -249,11 +229,10 @@ export function resolveTilePreviewFilters({
     };
   }
 
-  // PromQL tiles take only PromQL conditions; `configConsumesBroadcastFilters`
-  // stays false for them so that required SQL filters don't block them.
-  const previewFilters = isPromqlChartConfig(config)
-    ? filters && getPromqlFilters(filters)
-    : configConsumesBroadcastFilters(config, sourceId) && filters
+  const previewFilters =
+    !isPromqlChartConfig(config) &&
+    configConsumesBroadcastFilters(config, sourceId) &&
+    filters
       ? getSqlFilters(filters)
       : undefined;
 
@@ -275,86 +254,20 @@ export function withBroadcastFilters(
   filters: BroadcastFilter[] | undefined,
 ): ChartConfigWithDateRange {
   if (isPromqlChartConfig(config)) {
-    return { ...config, filters: filters && getPromqlFilters(filters) };
+    return config;
   }
   return { ...config, filters: filters && getSqlFilters(filters) };
 }
 
-/** One expression as a PromQL tile queries it. */
-type RenderedPromqlEntry = {
-  id: string;
-  expression: string;
-  alias?: string;
-};
-
-/** A PromQL tile's substituted expressions, or why there aren't any. */
-export type RenderedPromqlExpression =
-  | { expressions: RenderedPromqlEntry[]; error?: never }
-  | { expressions?: never; error: string };
-
-/**
- * The config a PromQL chart of this display type actually queries with. Macros
- * depend on the resolved granularity and date range, so the preview must
- * resolve them the same way the chart does.
- */
-function toQueriedPromqlConfig(
-  config: PromqlChartConfig & DateRange,
-): PromqlChartConfig & DateRange {
-  if (displayTypeSupportsReducer(config)) {
-    return convertToReducedPromqlChartConfig(config);
-  }
-  if (config.displayType === DisplayType.Table) {
-    return convertToPromqlTableChartConfig(config);
-  }
-  if (isTimeSeriesDisplayType(config.displayType)) {
-    const converted = convertToTimeChartConfig(config);
-    return isPromqlChartConfig(converted) ? converted : config;
-  }
-  if (config.displayType === DisplayType.Heatmap) {
-    const converted = buildHeatmapSeriesConfig(
-      config,
-      resolveHeatmapGranularity(config),
-    );
-    return isPromqlChartConfig(converted) ? converted : config;
-  }
-  return config;
-}
-
-/**
- * The expressions a PromQL tile is queried with, with macros and variables
- * substituted. `minGranularitySeconds` is the PromQL source's floor, which the
- * chart applies to `auto` granularity and `$__rate_interval`.
- */
+/** PromQL tiles were removed in Phase 10. */
 export function buildRenderedPromqlExpression(
   queriedConfig: ChartConfigWithDateRange | undefined,
-  minGranularitySeconds?: number,
-): RenderedPromqlExpression | undefined {
-  if (queriedConfig == null || !isPromqlChartConfig(queriedConfig)) {
+  _minGranularitySeconds?: number,
+): undefined {
+  if (queriedConfig != null && isPromqlChartConfig(queriedConfig)) {
     return undefined;
   }
-
-  try {
-    const substituted = substitutePromqlChartConfigTemplates(
-      toQueriedPromqlConfig({ ...queriedConfig, minGranularitySeconds }),
-    );
-    return {
-      expressions: getQueriedPromqlSeries(substituted).map((series, index) => ({
-        id: String(index),
-        expression: series.expression,
-        alias: series.alias?.trim() || undefined,
-      })),
-    };
-  } catch (e) {
-    // Substitution throws on an unrecognized format such as `${svc:json}`. The
-    // query path substitutes the same way, so nothing reached Prometheus —
-    // showing the template here would claim an expression that never ran.
-    return {
-      error:
-        e instanceof Error
-          ? `Expression could not be expanded: ${e.message}`
-          : 'Expression could not be expanded.',
-    };
-  }
+  return undefined;
 }
 
 export function buildSampleEventsConfig(

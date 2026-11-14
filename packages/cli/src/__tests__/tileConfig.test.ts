@@ -199,7 +199,7 @@ describe('resolveTileConfig', () => {
         promqlExpression: 'up',
         source: 'source-1',
         displayType: DisplayType.Line,
-      } as SavedChartConfig,
+      } as unknown as SavedChartConfig,
       source: undefined,
       dateRange,
     });

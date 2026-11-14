@@ -51,9 +51,6 @@ import {
   useQueryClient,
 } from '@tanstack/react-query';
 
-import { IS_LOCAL_MODE } from './config';
-import { getLocalDashboardTags } from './dashboard';
-import { getLocalSavedSearchTags } from './savedSearch';
 type ServicesResponse = {
   data: Record<
     string,
@@ -214,22 +211,6 @@ export function useInvalidateTags() {
   );
 }
 
-/**
- * Tags on locally persisted resources. Alerts are cloud-only, so local mode
- * never has alert tags.
- */
-function getLocalTags(resourceType?: TagResourceType): string[] {
-  const tags = [
-    ...(resourceType == null || resourceType === 'dashboard'
-      ? getLocalDashboardTags()
-      : []),
-    ...(resourceType == null || resourceType === 'savedSearch'
-      ? getLocalSavedSearchTags()
-      : []),
-  ];
-  return Array.from(new Set(tags));
-}
-
 const api = {
   useCreateAlert() {
     const markOnboardingTaskComplete = useMarkOnboardingTaskComplete();
@@ -243,9 +224,7 @@ const api = {
       // Backend records the task; just sync the cache.
       onSuccess: () => {
         invalidateTags();
-        if (!IS_LOCAL_MODE) {
-          markOnboardingTaskComplete('alert');
-        }
+        markOnboardingTaskComplete('alert');
       },
     });
   },
@@ -260,9 +239,7 @@ const api = {
         }).json(),
       onSuccess: () => {
         invalidateTags();
-        if (!IS_LOCAL_MODE) {
-          markOnboardingTaskComplete('alert');
-        }
+        markOnboardingTaskComplete('alert');
       },
     });
   },
@@ -594,9 +571,6 @@ const api = {
     return useQuery<InstallationApiResponse | undefined, Error>({
       queryKey: [`installation`],
       queryFn: () => {
-        if (IS_LOCAL_MODE) {
-          return;
-        }
         return hdxServer(`installation`).json<InstallationApiResponse>();
       },
     });
@@ -605,9 +579,6 @@ const api = {
     return useQuery<MeApiResponse | null>({
       queryKey: [`me`],
       queryFn: () => {
-        if (IS_LOCAL_MODE) {
-          return null;
-        }
         return hdxServer(`me`).json<MeApiResponse>();
       },
       staleTime: 1000 * 60,
@@ -618,9 +589,6 @@ const api = {
     return useQuery({
       queryKey: [`team`],
       queryFn: () => {
-        if (IS_LOCAL_MODE) {
-          return null;
-        }
         return hdxServer(`team`).json<TeamApiResponse>();
       },
       retry: 1,
@@ -666,12 +634,10 @@ const api = {
   useTags(resourceType?: TagResourceType) {
     return useQuery({
       queryKey: api.getTagsQueryKey(resourceType),
-      queryFn: IS_LOCAL_MODE
-        ? async () => ({ data: getLocalTags(resourceType) })
-        : () =>
-            hdxServer('team/tags', {
-              searchParams: resourceType ? { resourceType } : undefined,
-            }).json<TeamTagsApiResponse>(),
+      queryFn: () =>
+        hdxServer('team/tags', {
+          searchParams: resourceType ? { resourceType } : undefined,
+        }).json<TeamTagsApiResponse>(),
     });
   },
   useSaveWebhook() {

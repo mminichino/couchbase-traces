@@ -361,6 +361,8 @@ function codeToStatus(code: SearchErrorCode): number {
     case 'SOURCE_NOT_FOUND':
     case 'CONNECTION_NOT_FOUND':
       return 404;
+    case 'UNSUPPORTED_SOURCE':
+      return 400;
     default: {
       const _exhaustive: never = code;
       void _exhaustive;

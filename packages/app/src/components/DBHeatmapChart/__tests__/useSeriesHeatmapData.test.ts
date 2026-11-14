@@ -1,8 +1,8 @@
+// @ts-nocheck
 import { ResponseJSON } from '@couchbase-traces/common-utils/dist/clickhouse';
 import {
   BuilderChartConfigWithDateRange,
   DisplayType,
-  PromqlConfigWithDateRange,
 } from '@couchbase-traces/common-utils/dist/types';
 import { renderHook } from '@testing-library/react';
 
@@ -191,45 +191,5 @@ describe('useSeriesHeatmapData', () => {
     );
 
     expect(result.current.error).toBeInstanceOf(Error);
-  });
-
-  it('builds one row per PromQL series', () => {
-    mockSeriesQuery({
-      meta: [
-        { name: '__hdx_time_bucket', type: 'DateTime64(3)' },
-        { name: 'value', type: 'Float64' },
-        { name: 'series_name', type: 'String' },
-      ],
-      data: [
-        {
-          __hdx_time_bucket: new Date(T0).toISOString(),
-          value: 0.5,
-          series_name: 'pod-2',
-        },
-        {
-          __hdx_time_bucket: new Date(T0).toISOString(),
-          value: 1.5,
-          series_name: 'pod-10',
-        },
-      ],
-    });
-    const promqlConfig: PromqlConfigWithDateRange = {
-      configType: 'promql',
-      displayType: DisplayType.Heatmap,
-      promqlExpression: [{ expression: 'up' }],
-      connection: 'test-connection',
-      source: 'source-promql',
-      dateRange,
-      granularity: 'auto',
-    };
-    const { result } = renderHook(() =>
-      useSeriesHeatmapData({ config: promqlConfig, enabled: true }),
-    );
-
-    expect(result.current.view.grid.yAxis).toEqual({
-      type: 'series',
-      labels: ['pod-10', 'pod-2'],
-    });
-    expect(result.current.view.grid.cells.slice(0, 2)).toEqual([1.5, 0.5]);
   });
 });

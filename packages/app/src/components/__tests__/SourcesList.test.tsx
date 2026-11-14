@@ -75,20 +75,13 @@ describe('SourcesList section display', () => {
         makeSource('b', 'B', { kind: SourceKind.Trace }),
         makeSource('c', 'C', { kind: SourceKind.Metric }),
         makeSource('d', 'D', { kind: SourceKind.Session }),
-        makeSource('e', 'E', { kind: SourceKind.Promql }),
       ],
       isLoading: false,
       refetch: jest.fn(),
     });
     renderWithMantine(<SourcesList withCard={false} />);
 
-    for (const label of [
-      'Logs',
-      'Traces',
-      'OTel metrics',
-      'Sessions',
-      'PromQL',
-    ]) {
+    for (const label of ['Logs', 'Traces', 'OTel metrics', 'Sessions']) {
       expect(screen.getByText(label)).toBeInTheDocument();
     }
   });

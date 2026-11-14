@@ -16,8 +16,6 @@ import { ClickhouseClient } from '@couchbase-traces/common-utils/dist/clickhouse
 import { RoutingClickhouseClient } from '@couchbase-traces/common-utils/dist/dataLayer/browser';
 import { useQuery, UseQueryOptions } from '@tanstack/react-query';
 
-import { IS_LOCAL_MODE } from '@/config';
-import { getLocalConnections } from '@/connection';
 import {
   useMetadataQueryAttribution,
   useQueryAttribution,
@@ -37,22 +35,6 @@ const PROXY_CLICKHOUSE_HOST = '/api/clickhouse-proxy';
 export const getClickhouseClient = (
   options: ClickhouseClientOptions & { attribution: QueryAttribution },
 ): ClickhouseClient => {
-  if (IS_LOCAL_MODE) {
-    const localConnections = getLocalConnections();
-    if (localConnections.length === 0) {
-      console.warn('No local connection found');
-      return new ClickhouseClient({
-        host: '',
-        ...options,
-      });
-    }
-    return new ClickhouseClient({
-      host: localConnections[0].host,
-      username: localConnections[0].username,
-      password: localConnections[0].password,
-      ...options,
-    });
-  }
   return new RoutingClickhouseClient({
     host: PROXY_CLICKHOUSE_HOST,
     ...options,

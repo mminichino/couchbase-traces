@@ -1,11 +1,8 @@
-import {
-  AdhocFilterOperator,
-  PROMQL_ADHOC_FILTER_OPERATORS,
-} from '@couchbase-traces/common-utils/dist/types';
+import { AdhocFilterOperator } from '@couchbase-traces/common-utils/dist/types';
 
 import type { FilterOperatorOption } from './FilterConditionEditor';
 
-export type FilterLanguage = 'sql' | 'promql';
+export type FilterLanguage = 'sql';
 
 /** One spelling for both languages; each preset's labels show its own wording. */
 export type FilterOperator = AdhocFilterOperator;
@@ -25,17 +22,13 @@ export const SQL_FILTER_OPERATORS: FilterOperatorOption<FilterOperator>[] = [
   { value: 'NOT LIKE', label: 'not like', negated: true, ...LIKE_VALUE },
 ];
 
-// Derived so the editor never offers an operator the PromQL broadcast skips.
-// PromQL users know the operator syntax, so it doubles as the label.
-export const PROMQL_FILTER_OPERATORS: FilterOperatorOption<FilterOperator>[] =
-  SQL_FILTER_OPERATORS.filter(op =>
-    PROMQL_ADHOC_FILTER_OPERATORS.includes(op.value),
-  ).map(op => ({ ...op, label: op.value }));
+/** @deprecated PromQL filters removed; alias kept for tests and stories. */
+export const PROMQL_FILTER_OPERATORS = SQL_FILTER_OPERATORS;
 
 export function getFilterOperators(
-  language: FilterLanguage,
+  _language: FilterLanguage,
 ): FilterOperatorOption<FilterOperator>[] {
-  return language === 'promql' ? PROMQL_FILTER_OPERATORS : SQL_FILTER_OPERATORS;
+  return SQL_FILTER_OPERATORS;
 }
 
 /** How a pill shows `operator`: its label, and whether it excludes values. */

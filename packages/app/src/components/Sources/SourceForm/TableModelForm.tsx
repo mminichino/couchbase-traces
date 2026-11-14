@@ -10,7 +10,6 @@ import { SourceKind, TSource } from '@couchbase-traces/common-utils/dist/types';
 // custom always points towards the url param
 import { LogTableModelForm } from './LogTableModelForm';
 import { MetricTableModelForm } from './MetricTableModelForm';
-import { PromqlTableModelForm } from './PromqlTableModelForm';
 import { SessionTableModelForm } from './SessionTableModelForm';
 import { TraceTableModelForm } from './TraceTableModelForm';
 
@@ -41,6 +40,6 @@ export function TableModelForm({
         />
       );
     case SourceKind.Promql:
-      return <PromqlTableModelForm control={control} setValue={setValue} />;
+      return null;
   }
 }

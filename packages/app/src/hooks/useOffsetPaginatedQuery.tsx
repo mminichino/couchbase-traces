@@ -21,7 +21,6 @@ import {
 import { renderChartConfig } from '@couchbase-traces/common-utils/dist/dataLayer';
 import {
   isBuilderChartConfig,
-  isPromqlChartConfig,
   isRawSqlChartConfig,
 } from '@couchbase-traces/common-utils/dist/guards';
 import {
@@ -41,7 +40,6 @@ import { useMetadataWithSettings } from '@/hooks/useMetadata';
 import { useMVOptimizationExplanation } from '@/hooks/useMVOptimizationExplanation';
 import { useQueryAttribution } from '@/queryAttribution';
 import { useSource } from '@/source';
-import { queryPromqlChartConfig } from '@/utils/promqlChartQuery';
 import {
   DEFAULT_TIME_WINDOWS_SECONDS,
   generateTimeWindowsAscending,
@@ -136,11 +134,7 @@ function getNextPageParam(
   windowDurationsSeconds: number[],
 ): TPageParam | undefined {
   // Pagination is not supported for raw SQL or PromQL tables since they may not be ordered at all.
-  if (
-    lastPage == null ||
-    isRawSqlChartConfig(config) ||
-    isPromqlChartConfig(config)
-  ) {
+  if (lastPage == null || isRawSqlChartConfig(config)) {
     return undefined;
   }
 
@@ -227,20 +221,6 @@ const queryFn: QueryFunction<TQueryFnData, TQueryKey, TPageParam> = async ({
 
   // PromQL goes to the Prometheus API route rather than ClickHouse, and never
   // paginates (see getNextPageParam), so it answers in a single page.
-  if (isPromqlChartConfig(config)) {
-    const { data, meta } = await queryPromqlChartConfig(
-      config,
-      config.dateRange,
-      signal,
-      attribution,
-    );
-    return {
-      data,
-      meta: meta ?? [],
-      chSql: { sql: '', params: {} },
-      window: timeWindow,
-    };
-  }
 
   // Create config with windowed date range
   const windowedConfig = isBuilderChartConfig(config)
@@ -515,7 +495,6 @@ export default function useOffsetPaginatedQuery(
   const { data: mvOptimizationData, isLoading: isLoadingMVOptimization } =
     useMVOptimizationExplanation(builderConfig, {
       enabled: !!enabled && !!builderConfig,
-      placeholderData: undefined,
     });
 
   const { data: source, isLoading: isSourceLoading } = useSource({
@@ -567,7 +546,9 @@ export default function useOffsetPaginatedQuery(
       hasPreviousQueries,
       windowDurationsSeconds,
       metadata,
-      optimizedConfig: mvOptimizationData?.optimizedConfig,
+      optimizedConfig: mvOptimizationData?.optimizedConfig as
+        | ChartConfigWithOptTimestamp
+        | undefined,
       source,
       attribution,
     } satisfies QueryMeta,

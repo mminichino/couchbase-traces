@@ -7,7 +7,6 @@ import {
 } from '@/components/FilterPill/FilterConditionEditor';
 import {
   FilterOperator,
-  PROMQL_FILTER_OPERATORS,
   SQL_FILTER_OPERATORS,
 } from '@/components/FilterPill/filterOperators';
 
@@ -183,16 +182,23 @@ describe('FilterConditionEditor', () => {
   });
 
   it('offers only the given operators', async () => {
-    renderEditor({ operators: PROMQL_FILTER_OPERATORS });
+    renderEditor({ operators: SQL_FILTER_OPERATORS });
     await userEvent.click(screen.getByRole('combobox', { name: 'Operator' }));
     const options = await screen.findAllByRole('option', { hidden: true });
-    expect(options.map(o => o.textContent)).toEqual(['=', '!=', '=~', '!~']);
+    expect(options.map(o => o.textContent)).toEqual([
+      '=',
+      '!=',
+      'regex',
+      'not regex',
+      'like',
+      'not like',
+    ]);
   });
 
   it('disables Apply until a key is entered', async () => {
     const onSubmit = renderEditor({
       initial: { key: 'job', operator: '!=', value: 'api' },
-      operators: PROMQL_FILTER_OPERATORS,
+      operators: SQL_FILTER_OPERATORS,
     });
     expect(applyButton()).toBeEnabled();
     await userEvent.click(applyButton());

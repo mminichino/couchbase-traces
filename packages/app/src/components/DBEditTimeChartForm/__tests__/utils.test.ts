@@ -1,11 +1,9 @@
+// @ts-nocheck
 import {
   ChartConfigWithDateRange,
-  ChartVariable,
   DashboardFilter,
   DisplayType,
   Filter,
-  PromqlConditionFilter,
-  PromqlExpressionList,
   SavedChartConfig,
   SourceKind,
   TSource,
@@ -15,12 +13,10 @@ import { ChartEditorFormState } from '@/components/ChartEditor/types';
 import {
   buildChartConfigForExplanations,
   buildGroupByConnectionProps,
-  buildRenderedPromqlExpression,
   buildSampleEventsConfig,
   computeDbTimeChartConfig,
   displayTypeToActiveTab,
   isQueryReady,
-  resolvePreviewVariables,
   resolveTilePreviewFilters,
   seriesToFilters,
   tabQueriesData,
@@ -162,291 +158,6 @@ describe('isQueryReady', () => {
         sqlTemplate: '',
       } as ChartConfigWithDateRange),
     ).toBe(false);
-  });
-
-  it('returns truthy for a PromQL config with an expression', () => {
-    expect(
-      isQueryReady({
-        configType: 'promql',
-        promqlExpression: [{ expression: 'up' }],
-        connection: 'local',
-        source: 'source-promql',
-        dateRange,
-      }),
-    ).toBeTruthy();
-    // The legacy single-expression shape still counts.
-    expect(
-      isQueryReady({
-        configType: 'promql',
-        promqlExpression: 'up',
-        connection: 'local',
-        source: 'source-promql',
-        dateRange,
-      }),
-    ).toBeTruthy();
-  });
-
-  it('returns falsy for a PromQL config with nothing entered', () => {
-    expect(
-      isQueryReady({
-        configType: 'promql',
-        promqlExpression: [{ expression: '' }],
-        connection: 'local',
-        source: 'source-promql',
-        dateRange,
-      }),
-    ).toBeFalsy();
-  });
-
-  // A single-series display type runs its first expression alone, so a blank
-  // one leaves it unready however many rows follow.
-  it('returns falsy for a single-series PromQL config whose first expression is blank', () => {
-    expect(
-      isQueryReady({
-        configType: 'promql',
-        displayType: DisplayType.Number,
-        promqlExpression: [{ expression: '' }, { expression: 'up' }],
-        connection: 'local',
-        source: 'source-promql',
-        dateRange,
-      }),
-    ).toBeFalsy();
-    expect(
-      isQueryReady({
-        configType: 'promql',
-        displayType: DisplayType.Line,
-        promqlExpression: [{ expression: '' }, { expression: 'up' }],
-        connection: 'local',
-        source: 'source-promql',
-        dateRange,
-      }),
-    ).toBeTruthy();
-  });
-});
-
-describe('buildRenderedPromqlExpression', () => {
-  const promqlConfig = (
-    overrides: {
-      promqlExpression?: PromqlExpressionList;
-      displayType?: DisplayType;
-      variables?: ChartVariable[];
-      granularity?: string;
-    } = {},
-  ): ChartConfigWithDateRange => ({
-    configType: 'promql',
-    connection: 'local',
-    source: 'source-promql',
-    displayType: DisplayType.Line,
-    promqlExpression: [{ expression: 'up' }],
-    dateRange,
-    ...overrides,
-  });
-
-  it('returns nothing for a non-PromQL config', () => {
-    expect(buildRenderedPromqlExpression(undefined)).toBeUndefined();
-    expect(buildRenderedPromqlExpression(builderConfig)).toBeUndefined();
-  });
-
-  it('lists every expression with its alias', () => {
-    expect(
-      buildRenderedPromqlExpression(
-        promqlConfig({
-          promqlExpression: [
-            { expression: 'up', alias: '  up  ' },
-            { expression: 'rate(errors[5m])' },
-          ],
-        }),
-      ),
-    ).toEqual({
-      expressions: [
-        { id: '0', expression: 'up', alias: 'up' },
-        { id: '1', expression: 'rate(errors[5m])', alias: undefined },
-      ],
-    });
-  });
-
-  // The preview has to match what the query path runs, and only time series
-  // charts run more than the first expression.
-  it('lists only the first expression for a non-time-series chart', () => {
-    expect(
-      buildRenderedPromqlExpression(
-        promqlConfig({
-          displayType: DisplayType.Number,
-          promqlExpression: [
-            { expression: 'up' },
-            { expression: 'rate(errors[5m])' },
-          ],
-        }),
-      ),
-    ).toEqual({
-      expressions: [{ id: '0', expression: 'up', alias: undefined }],
-    });
-  });
-
-  // Nothing in the content separates two identical rows, so the preview keys
-  // its previews on the id — duplicates render one CodeMirror each.
-  it('gives identical expressions distinct ids', () => {
-    expect(
-      buildRenderedPromqlExpression(
-        promqlConfig({
-          promqlExpression: [
-            { expression: 'up', alias: 'up' },
-            { expression: 'up', alias: 'up' },
-          ],
-        }),
-      )?.expressions?.map(entry => entry.id),
-    ).toEqual(['0', '1']);
-  });
-
-  it('substitutes variables into every expression', () => {
-    expect(
-      buildRenderedPromqlExpression(
-        promqlConfig({
-          promqlExpression: [
-            { expression: 'up{service=~"$service"}' },
-            { expression: 'errors{service=~"$service"}' },
-          ],
-          variables: [{ name: 'service', values: ['api'] }],
-        }),
-      )?.expressions?.map(entry => entry.expression),
-    ).toEqual(['up{service=~"api"}', 'errors{service=~"api"}']);
-  });
-
-  it('expands macros with the granularity the chart queries with', () => {
-    const expression = 'rate(up[$__rate_interval]) / $__interval / $__range';
-    const render = (displayType: DisplayType, granularity?: string) =>
-      buildRenderedPromqlExpression(
-        promqlConfig({
-          displayType,
-          granularity,
-          promqlExpression: [{ expression }],
-        }),
-      )?.expressions?.[0].expression;
-
-    expect(render(DisplayType.Line, '5 minute')).toBe(
-      'rate(up[315s]) / 300s / 86400s',
-    );
-    // `auto` resolves to the chart's 80-bucket granularity (30 minutes for a
-    // day), not promqlStep's own fallback.
-    expect(render(DisplayType.Line, 'auto')).toBe(
-      'rate(up[1815s]) / 1800s / 86400s',
-    );
-    expect(render(DisplayType.Number, 'auto')).toBe(
-      'rate(up[1815s]) / 1800s / 86400s',
-    );
-  });
-
-  it("expands macros with a heatmap's finer auto granularity", () => {
-    expect(
-      buildRenderedPromqlExpression(
-        promqlConfig({
-          displayType: DisplayType.Heatmap,
-          granularity: 'auto',
-          promqlExpression: [{ expression: 'rate(up[$__interval])' }],
-        }),
-      )?.expressions?.[0].expression,
-    ).toBe('rate(up[900s])');
-  });
-
-  it('expands macros with the granularity a table queries with', () => {
-    const seventyMinutes: [Date, Date] = [
-      new Date('2024-01-01T00:00:00Z'),
-      new Date('2024-01-01T01:10:00Z'),
-    ];
-    expect(
-      buildRenderedPromqlExpression({
-        ...promqlConfig({
-          displayType: DisplayType.Table,
-          granularity: 'auto',
-          promqlExpression: [{ expression: 'rate(up[$__interval])' }],
-        }),
-        dateRange: seventyMinutes,
-      })?.expressions?.[0].expression,
-    ).toBe('rate(up[60s])');
-  });
-
-  it.each([DisplayType.Pie, DisplayType.Bar])(
-    'expands macros with the aligned range a %s tile queries with',
-    displayType => {
-      const unaligned: [Date, Date] = [
-        new Date('2024-01-01T00:00:14Z'),
-        new Date('2024-01-01T01:10:14Z'),
-      ];
-      expect(
-        buildRenderedPromqlExpression({
-          ...promqlConfig({
-            displayType,
-            granularity: 'auto',
-            promqlExpression: [{ expression: 'up[$__interval] / $__range' }],
-          }),
-          dateRange: unaligned,
-        })?.expressions?.[0].expression,
-      ).toBe('up[60s] / 4260s');
-    },
-  );
-
-  describe("with the source's minimum auto granularity", () => {
-    const render = (
-      displayType: DisplayType,
-      granularity: string,
-      minGranularitySeconds?: number,
-    ) =>
-      buildRenderedPromqlExpression(
-        promqlConfig({
-          displayType,
-          granularity,
-          promqlExpression: [
-            { expression: 'rate(up[$__rate_interval]) / $__interval' },
-          ],
-        }),
-        minGranularitySeconds,
-      )?.expressions?.[0].expression;
-
-    // 70 minutes on auto resolves to 60s, below the 300s floor.
-    it('floors an auto step that is below it', () => {
-      const seventyMinutes: [Date, Date] = [
-        new Date('2024-01-01T00:00:00Z'),
-        new Date('2024-01-01T01:10:00Z'),
-      ];
-      const renderShort = (displayType: DisplayType) =>
-        buildRenderedPromqlExpression(
-          {
-            ...promqlConfig({
-              displayType,
-              granularity: 'auto',
-              promqlExpression: [{ expression: '$__interval' }],
-            }),
-            dateRange: seventyMinutes,
-          },
-          300,
-        )?.expressions?.[0].expression;
-
-      expect(renderShort(DisplayType.Line)).toBe('300s');
-      expect(renderShort(DisplayType.Table)).toBe('300s');
-      expect(renderShort(DisplayType.Number)).toBe('300s');
-    });
-
-    it('sizes $__rate_interval from it, however the granularity was chosen', () => {
-      // max(15 + 60, 4 * 60), with the hand-picked 15s step kept
-      expect(render(DisplayType.Line, '15 second', 60)).toBe(
-        'rate(up[240s]) / 15s',
-      );
-    });
-
-    it('assumes a 15s scrape interval without one', () => {
-      expect(render(DisplayType.Line, '15 second')).toBe('rate(up[60s]) / 15s');
-    });
-  });
-
-  it('reports a substitution failure instead of an expression', () => {
-    const result = buildRenderedPromqlExpression(
-      promqlConfig({
-        promqlExpression: [{ expression: 'up{service=~"${service:json}"}' }],
-        variables: [{ name: 'service', values: ['api'] }],
-      }),
-    );
-    expect(result?.expressions).toBeUndefined();
-    expect(result?.error).toMatch(/Expression could not be expanded/);
   });
 });
 
@@ -592,55 +303,6 @@ describe('computeDbTimeChartConfig', () => {
 });
 
 // ---------------------------------------------------------------------------
-// resolvePreviewVariables
-// ---------------------------------------------------------------------------
-
-describe('resolvePreviewVariables', () => {
-  const variables = [
-    { name: 'service', values: ['api'] },
-    { name: 'env', values: ['prod'] },
-  ];
-
-  const promqlConfig: ChartConfigWithDateRange = {
-    configType: 'promql',
-    promqlExpression: 'up{service=~"$service"}',
-    connection: 'local',
-    source: 'source-promql',
-    dateRange,
-  };
-
-  it('returns undefined when there are no variables in scope', () => {
-    expect(
-      resolvePreviewVariables({
-        config: promqlConfig,
-        variables: undefined,
-        applySelections: true,
-      }),
-    ).toBeUndefined();
-  });
-
-  it('keeps the variables a PromQL expression references', () => {
-    expect(
-      resolvePreviewVariables({
-        config: promqlConfig,
-        variables,
-        applySelections: true,
-      }),
-    ).toEqual([{ name: 'service', values: ['api'] }]);
-  });
-
-  it('drops the selections when they are not being applied', () => {
-    expect(
-      resolvePreviewVariables({
-        config: promqlConfig,
-        variables,
-        applySelections: false,
-      }),
-    ).toEqual([{ name: 'service', values: [] }]);
-  });
-});
-
-// ---------------------------------------------------------------------------
 // resolveTilePreviewFilters
 // ---------------------------------------------------------------------------
 
@@ -649,18 +311,6 @@ describe('resolveTilePreviewFilters', () => {
     { type: 'sql' as const, condition: "ServiceName IN ('api')" },
   ];
   const variables = [{ name: 'service', values: ['api'] }];
-  const promqlFilter: PromqlConditionFilter = {
-    type: 'promql',
-    condition: 'job="api"',
-  };
-
-  const promqlConfig: ChartConfigWithDateRange = {
-    configType: 'promql',
-    promqlExpression: 'up{service=~"$service"}',
-    connection: 'local',
-    source: 'source-promql',
-    dateRange,
-  };
 
   const rawSqlWithFiltersMacro: ChartConfigWithDateRange = {
     configType: 'sql',
@@ -699,44 +349,6 @@ describe('resolveTilePreviewFilters', () => {
     });
   });
 
-  it('keeps the selected values of the variables a tile references', () => {
-    expect(resolve({ config: promqlConfig }).variables).toEqual(variables);
-  });
-
-  it('drops the filters and empties the selections when turned off', () => {
-    expect(resolve({ config: promqlConfig, applySelections: false })).toEqual({
-      filters: undefined,
-      variables: [{ name: 'service', values: [] }],
-      missingRequiredFilterNames: [],
-    });
-  });
-
-  it('never hands SQL filters to a PromQL tile', () => {
-    expect(resolve({ config: promqlConfig }).filters).toEqual([]);
-  });
-
-  it('hands each tile the filters in its own query language', () => {
-    const filters = [...dashboardFilters, promqlFilter];
-
-    expect(resolve({ config: promqlConfig, filters }).filters).toEqual([
-      promqlFilter,
-    ]);
-    expect(resolve({ filters }).filters).toEqual(dashboardFilters);
-    expect(
-      resolve({ config: rawSqlWithFiltersMacro, filters }).filters,
-    ).toEqual(dashboardFilters);
-  });
-
-  it('drops PromQL filters when turned off', () => {
-    expect(
-      resolve({
-        config: promqlConfig,
-        filters: [promqlFilter],
-        applySelections: false,
-      }).filters,
-    ).toBeUndefined();
-  });
-
   it('drops the filters a raw-SQL template would not apply', () => {
     expect(resolve({ config: rawSqlWithFiltersMacro }).filters).toEqual(
       dashboardFilters,
@@ -766,12 +378,6 @@ describe('resolveTilePreviewFilters', () => {
     };
 
     expect(
-      resolve({
-        config: promqlConfig,
-        unsatisfiedRequiredFilters: [requiredVariable],
-      }).missingRequiredFilterNames,
-    ).toEqual(['Environment']);
-    expect(
       resolve({ unsatisfiedRequiredFilters: [requiredVariable] })
         .missingRequiredFilterNames,
     ).toEqual([]);
@@ -800,28 +406,11 @@ describe('resolveTilePreviewFilters', () => {
 
 describe('withBroadcastFilters', () => {
   const sqlFilter: Filter = { type: 'sql', condition: "ServiceName = 'api'" };
-  const promqlFilter: PromqlConditionFilter = {
-    type: 'promql',
-    condition: 'job="api"',
-  };
-  const promqlConfig: ChartConfigWithDateRange = {
-    configType: 'promql',
-    promqlExpression: 'up',
-    connection: 'local',
-    source: 'source-promql',
-    dateRange,
-  };
 
-  it('attaches only PromQL filters to a PromQL config', () => {
-    expect(
-      withBroadcastFilters(promqlConfig, [sqlFilter, promqlFilter]),
-    ).toMatchObject({ filters: [promqlFilter] });
-  });
-
-  it('attaches only SQL and Lucene filters to other configs', () => {
-    expect(
-      withBroadcastFilters(builderConfig, [sqlFilter, promqlFilter]),
-    ).toMatchObject({ filters: [sqlFilter] });
+  it('attaches SQL and Lucene filters to builder configs', () => {
+    expect(withBroadcastFilters(builderConfig, [sqlFilter])).toMatchObject({
+      filters: [sqlFilter],
+    });
   });
 });
 

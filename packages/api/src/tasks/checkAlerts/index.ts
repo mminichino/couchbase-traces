@@ -11,7 +11,6 @@ import {
   ClickhouseClient,
   withQueryAttribution,
 } from '@couchbase-traces/common-utils/dist/clickhouse/node';
-import { tryOptimizeConfigWithMaterializedView } from '@couchbase-traces/common-utils/dist/core/materializedViews';
 import { Metadata } from '@couchbase-traces/common-utils/dist/core/metadata';
 import {
   ALERT_COUNT_DEFAULT_SELECT,
@@ -121,6 +120,7 @@ import {
   withSpan,
 } from '@/utils/instrumentation';
 import logger from '@/utils/logger';
+import { toQueryableTSource } from '@/utils/queryableSource';
 
 // Outcome of a single alert evaluation. Kept low-cardinality (a fixed enum) so
 // it is safe to use as a metric attribute (see agent_docs/observability.md).
@@ -821,7 +821,12 @@ const getChartConfigFromAlert = (
     // task, the alert preview chart, and the main app search page all
     // assemble saved-search chart configs identically — keeping source-level
     // fields like `tableFilterExpression` applied uniformly across paths.
-    return buildSearchChartConfig(source, {
+    if (source.kind === SourceKind.Promql) {
+      throw new Error(
+        'PromQL sources are not supported for saved-search alerts',
+      );
+    }
+    return buildSearchChartConfig(toQueryableTSource(source), {
       where: savedSearch.where,
       whereLanguage: savedSearch.whereLanguage,
       filters: savedSearch.filters?.map(f => ({ ...f })),
@@ -1210,22 +1215,7 @@ export const processAlert = async (
       }
     }
 
-    // Optimize chart config with materialized views, if available.
-    // materializedViews exists on Log and Trace sources.
-    const mvSource =
-      source?.kind === SourceKind.Log || source?.kind === SourceKind.Trace
-        ? source
-        : undefined;
-    const optimizedChartConfig =
-      isBuilderChartConfig(chartConfig) && mvSource?.materializedViews?.length
-        ? await tryOptimizeConfigWithMaterializedView(
-            chartConfig,
-            metadata,
-            clickhouseClient,
-            undefined,
-            mvSource,
-          )
-        : chartConfig;
+    const optimizedChartConfig = chartConfig;
 
     // Readonly = 2 means the query is readonly but can still specify query settings.
     // This is done only for Raw SQL configs because it carries a minor risk of conflict with

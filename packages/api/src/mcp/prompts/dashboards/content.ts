@@ -3,14 +3,9 @@
 // no AI hallmarks) so the prose-lint hook treats it like any other
 // reviewer-facing artifact.
 
-import {
-  PROMQL_DASHBOARD_SECTION,
-  PROMQL_QUERY_GUIDE_SECTION,
-} from './promqlContent';
-
 /** Which optional sections a prompt includes. */
 export type PromptOptions = {
-  /** Whether PromQL is enabled for this deployment. */
+  /** @deprecated PromQL removed in Phase 10; always ignored. */
   promql?: boolean;
 };
 
@@ -19,13 +14,11 @@ export function buildCreateDashboardPrompt(
   traceSourceId: string,
   logSourceId: string,
   description?: string,
-  options: PromptOptions = {},
+  _options: PromptOptions = {},
 ): string {
   const userContext = description
     ? `\nThe user wants to create a dashboard for: ${description}\nTailor the dashboard tiles to match this goal.\n`
     : '';
-  const promqlSection = options.promql ? `\n\n${PROMQL_DASHBOARD_SECTION}` : '';
-
   return `You are an expert at creating Couchbase Traces observability dashboards.
 ${userContext}
 ${sourceSummary}
@@ -85,7 +78,7 @@ Use RAW SQL tiles (with connectionId) only for queries the builder cannot expres
   Use when you need JOINs, sub-queries, CTEs, or expressions the builder does not generate.
   ALWAYS set sourceId on a raw SQL tile (in addition to connectionId) UNLESS the query reads
   from multiple tables (e.g. JOINs across sources). sourceId enables the $__filters and 
-  $__sourceTable macros. When you can set sourceId, include "AND $__filters" in the WHERE clause.${promqlSection}
+  $__sourceTable macros. When you can set sourceId, include "AND $__filters" in the WHERE clause.
 
 == COLUMN NAMING ==
 
@@ -817,12 +810,8 @@ SQL TEMPLATE REFERENCE:
   );
 }
 
-export function buildQueryGuidePrompt(options: PromptOptions = {}): string {
-  const promqlTool = options.promql ? 'cbt_promql, ' : '';
-  const promqlSection = options.promql
-    ? `${PROMQL_QUERY_GUIDE_SECTION}\n\n`
-    : '';
-  return `Reference guide for writing queries with Couchbase Traces MCP tools (cbt_timeseries, cbt_table, cbt_search, cbt_event_patterns, ${promqlTool}cbt_sql, and cbt_save_dashboard).
+export function buildQueryGuidePrompt(_options: PromptOptions = {}): string {
+  return `Reference guide for writing queries with Couchbase Traces MCP tools (cbt_timeseries, cbt_table, cbt_search, cbt_event_patterns, cbt_sql, and cbt_save_dashboard).
 
 == AGGREGATION FUNCTIONS (aggFn) ==
 
@@ -1057,7 +1046,7 @@ Examples:
   Exponential histogram p95 latency:
     { aggFn: "quantile", level: 0.95, metricType: "exponential histogram", metricName: "http.server.request.duration", alias: "P95 Latency" }, groupBy: "ServiceName"
 
-${promqlSection}== NUMBER FORMAT ==
+== NUMBER FORMAT ==
 
 numberFormat controls how a value renders. Two places to set it:
 

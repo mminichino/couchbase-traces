@@ -37,7 +37,6 @@ import SourceSchemaPreview, {
 } from '@/components/SourceSchemaPreview';
 import { SourceSelectControlled } from '@/components/SourceSelect';
 import { SQLInlineEditorControlled } from '@/components/SQLEditor/SQLInlineEditor';
-import { IS_LOCAL_MODE } from '@/config';
 import { useIsSourceAllowedForSlice } from '@/couchbase/sources';
 import { getEventBody, isSingleExpression } from '@/source';
 import { DEFAULT_TILE_ALERT } from '@/utils/alerts';
@@ -189,9 +188,7 @@ export function ChartEditorControls({
 
   const showAlertButton =
     (alert != null && !isRawSqlInput) ||
-    (displayTypeSupportsBuilderAlerts(displayType) &&
-      alertsEnabled &&
-      !IS_LOCAL_MODE);
+    (displayTypeSupportsBuilderAlerts(displayType) && alertsEnabled);
 
   const alertWarning = useMemo(
     () =>

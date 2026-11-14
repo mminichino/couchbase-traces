@@ -219,7 +219,9 @@ describe('External API v2 Sources CRUD', () => {
 
       // The database stores the internal SQL interval format
       const persisted = await TraceSource.findById(response.body.data.id);
-      expect(persisted!.materializedViews![0].minGranularity).toBe('5 minute');
+      expect(persisted!.metadataMaterializedViews?.granularity).toBe(
+        '5 minute',
+      );
     });
 
     it('should map metadataMaterializedViews granularity to internal format', async () => {

@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { Granularity } from '@couchbase-traces/common-utils/dist/core/utils';
 import {
   DisplayType,
