@@ -155,16 +155,16 @@ export async function upProductStack(root, opts) {
       ['up', '-d', '--build'],
       { envFile: opts.envFile },
     );
+    writeFileSync(
+      join(opts.evidenceDir, 'compose-up.log'),
+      `${up.stdout}\n${up.stderr}`,
+    );
+    // Compose may exit non-zero when a dependent service is still unhealthy;
+    // continue into the health wait so couchbase-init/app/ingest can recover.
     if (up.status !== 0) {
-      const logs = `${up.stdout}\n${up.stderr}`;
-      writeFileSync(join(opts.evidenceDir, 'compose-up.log'), logs);
-      writeFileSync(join(opts.evidenceDir, 'compose-ps.txt'), '');
-      writeFileSync(join(opts.evidenceDir, 'couchbase-init.log'), logs);
-      return {
-        ok: false,
-        logs,
-        ps: '',
-      };
+      opts.log(
+        `compose up exited ${up.status}; waiting for services to become healthy`,
+      );
     }
   }
   const deadline = Date.now() + 600_000;

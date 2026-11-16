@@ -1,9 +1,13 @@
+# Forward everything to Docker's embedded DNS (127.0.0.11) so compose service
+# names keep resolving, while the log plugin records every query for I2.
 . {
   log {
     class all
   }
   errors
-  forward . /etc/resolv.conf
+  forward . 127.0.0.11 {
+    max_concurrent 1000
+  }
   cache 30
   loop
   reload
