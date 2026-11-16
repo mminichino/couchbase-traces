@@ -82,6 +82,28 @@ export function extractLocalCiCommands(text) {
 }
 
 /**
+ * Env for local CI children: look like GitHub Actions, not a Cursor agent, so
+ * Next.js agentUpgrade nudges and detect-agent do not abort next dev/build.
+ * @returns {NodeJS.ProcessEnv}
+ */
+export function localCiEnv() {
+  const env = { ...process.env, CI: 'true' };
+  for (const key of Object.keys(env)) {
+    if (
+      key === 'CURSOR_AGENT' ||
+      key.startsWith('CURSOR_AGENT_') ||
+      key === 'CURSOR_INVOKED_AS' ||
+      key === '__NEXT_AGENT_UPGRADE' ||
+      key === '__NEXT_AGENT_UPGRADE_FORCE_TERMINAL_FOR_TESTING' ||
+      key === '__NEXT_AGENT_UPGRADE_FORCE_DEVTOOLS_FOR_TESTING'
+    ) {
+      delete env[key];
+    }
+  }
+  return env;
+}
+
+/**
  * @param {import('../run.mjs').RunContext} ctx
  */
 async function k1(ctx) {
@@ -92,6 +114,7 @@ async function k1(ctx) {
   const steps = [];
   /** @type {string[]} */
   const commands = [];
+  const ciEnv = localCiEnv();
 
   for (const f of files) {
     const text = readFileSync(join(dir, f), 'utf8');
@@ -115,6 +138,7 @@ async function k1(ctx) {
     ctx.log(`K1: ${cmd}`);
     const r = spawnSync('bash', ['-lc', cmd], {
       cwd: ctx.root,
+      env: ciEnv,
       encoding: 'utf8',
       timeout: 600_000,
       maxBuffer: 20 * 1024 * 1024,
@@ -158,6 +182,7 @@ async function k1(ctx) {
     ctx.log(`K1: ${buildCmd.join(' ')}`);
     const build = spawnSync(buildCmd[0], buildCmd.slice(1), {
       cwd: ctx.root,
+      env: ciEnv,
       encoding: 'utf8',
       timeout: 1_800_000,
       maxBuffer: 20 * 1024 * 1024,
@@ -174,6 +199,7 @@ async function k1(ctx) {
       ctx.log(`K1: ${smokeCmd}`);
       const r = spawnSync('bash', [smoke, smokeTag], {
         cwd: ctx.root,
+        env: ciEnv,
         encoding: 'utf8',
         timeout: 600_000,
         maxBuffer: 20 * 1024 * 1024,

@@ -2052,12 +2052,6 @@
       "pattern": "clickhouse|clickstack|chSql",
       "reason": "port_history",
       "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or \u00a712 messaging."
-    },
-    {
-      "path": "docs/acceptance.md",
-      "pattern": "clickhouse|clickstack|chSql",
-      "reason": "port_history",
-      "note": "Generated acceptance report may embed prior check failure text."
     }
   ]
 }

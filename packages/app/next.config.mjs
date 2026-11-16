@@ -94,6 +94,13 @@ const nextConfig = {
   // when running dev and E2E simultaneously (e.g. NEXT_DIST_DIR=.next-e2e)
   ...(process.env.NEXT_DIST_DIR ? { distDir: process.env.NEXT_DIST_DIR } : {}),
   reactCompiler: true,
+  // Next 16.4+ defaults experimental.agentUpgrade to 'security', which stops
+  // `next dev`/`next build` under coding agents (CURSOR_AGENT=1) with
+  // SecurityFatalError. Disable so Playwright webServer and CI keep running;
+  // upgrades stay a deliberate dependency change.
+  experimental: {
+    agentUpgrade: false,
+  },
   // click-ui ships per-component CSS imports from node_modules, which Next
   // rejects as global CSS unless the package is transpiled.
   transpilePackages: ['@clickhouse/click-ui'],
