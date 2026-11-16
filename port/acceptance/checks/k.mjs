@@ -17,7 +17,7 @@ const K2_REQUEST =
  * @param {string} cmd
  */
 export function expandGithubExpressions(cmd) {
-  return cmd
+  let out = cmd
     .replace(/\$\{\{\s*matrix\.shard\s*\}\}/g, '1')
     .replace(/\$\{\{\s*strategy\.job-total\s*\}\}/g, '4')
     .replace(/\$\{\{\s*matrix\.[^}]+\}\}/g, '1')
@@ -25,6 +25,11 @@ export function expandGithubExpressions(cmd) {
     .replace(/\$\{\{\s*env\.[^}]+\}\}/g, '')
     .replace(/\$\{\{\s*inputs\.[^}]+\}\}/g, '')
     .replace(/\$\{\{\s*[^}]+\}\}/g, '');
+  // CI shards e2e across matrix workers; locally run the same suite via make.
+  if (/^yarn\s+test:e2e\b/.test(out) && /--shard=/.test(out)) {
+    out = 'make e2e';
+  }
+  return out;
 }
 
 export function extractLocalCiCommands(text) {

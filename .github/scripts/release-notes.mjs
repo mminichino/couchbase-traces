@@ -11,11 +11,7 @@ import { pathToFileURL } from 'node:url';
 // produce a file that differs from the seed.
 const HEADER = `# Couchbase Traces Changelog
 
-Release-level highlights across all Couchbase Traces packages. Each entry is AI-generated
-during the release and reviewed (and freely editable) in the "Release Couchbase Traces"
-PR — keep the \`cbt-release-notes\` comment marker intact when editing so your
-edits survive regeneration. Per-package detail lives in each
-\`packages/*/CHANGELOG.md\`.
+Release-level highlights. Upstream history is in docs/upstream/CHANGELOG.md.
 `;
 
 const MARKER_RE =
