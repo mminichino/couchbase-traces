@@ -66,6 +66,18 @@ export class ApiClient {
     });
   }
 
+  /**
+   * Login/register redirects use 303. Success lands off `/login`; failure
+   * redirects to `/login?err=...`.
+   * @param {{ status: number, headers: Headers }} res
+   */
+  static isAuthRedirectSuccess(res) {
+    if (res.status === 200) return true;
+    if (res.status !== 302 && res.status !== 303) return false;
+    const loc = res.headers.get('location') || '';
+    return !/\/login(\?|$)/i.test(loc);
+  }
+
   async me() {
     return this.request('/me');
   }
@@ -90,34 +102,36 @@ export class ApiClient {
       // Register may fail because the user exists or because a team already
       // exists from a prior acceptance run; try logging in either way.
       const login = await this.login(email, password);
-      if (!login.ok && login.status !== 302) {
+      if (!ApiClient.isAuthRedirectSuccess(login) && !login.ok) {
+        const loc = login.headers.get('location') || '';
         return {
           ok: false,
           email,
           password,
           error: teamExists
-            ? `teamAlreadyExists and login failed for ${email}: ${login.text || reg.text}`
-            : reg.text || login.text,
+            ? `teamAlreadyExists and login failed for ${email}: status=${login.status} loc=${loc} ${login.text || reg.text}`
+            : reg.text || login.text || `login status ${login.status} loc=${loc}`,
         };
       }
     }
-    // Prefer /me accessKey as Bearer when cookie auth is flaky across redirects.
+    // User accessKey is the Bearer credential for API routes; team.apiKey is
+    // the collector ingest key used by sample-data.
     const me = await this.me();
     const accessKey = me.json?.accessKey ?? null;
     if (accessKey) this.apiKey = accessKey;
     const team = await this.team();
-    const apiKey =
-      accessKey ??
+    const teamApiKey =
       team.json?.apiKey ??
       team.json?.team?.apiKey ??
       team.json?.data?.apiKey ??
       null;
-    if (apiKey) this.apiKey = apiKey;
     return {
       ok: Boolean(this.cookie || this.apiKey),
       email,
       password,
-      apiKey,
+      apiKey: teamApiKey,
+      teamApiKey,
+      accessKey,
       team: team.json,
       me: me.json,
     };

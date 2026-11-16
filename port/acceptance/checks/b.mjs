@@ -7,6 +7,73 @@ import { result } from '../lib/report.mjs';
 /** @typedef {import('../lib/report.mjs').CheckResult} CheckResult */
 
 /**
+ * Poll until the logs collection reports at least `min` documents.
+ * @param {import('../lib/api.mjs').ApiClient} api
+ * @param {number} min
+ * @param {number} timeoutMs
+ */
+async function waitForLogRows(api, min, timeoutMs) {
+  const deadline = Date.now() + timeoutMs;
+  let last = { ok: false, count: 0, error: null, connectionId: null };
+  const sources = await api.sources();
+  const list = Array.isArray(sources.json)
+    ? sources.json
+    : sources.json?.data || sources.json?.sources || [];
+  const logSource =
+    list.find(s => /log/i.test(s?.kind || '') || /log/i.test(s?.name || '')) ||
+    list[0];
+  const connectionId =
+    logSource?.connection ??
+    logSource?.connectionId ??
+    logSource?.from?.connectionId ??
+    null;
+  const from = logSource?.from || {};
+  const collection =
+    from.databaseName && from.tableName
+      ? `\`${from.databaseName}\`.\`${from.scopeName || 'default'}\`.\`${from.tableName}\``
+      : '`otel`.`default`.`otel_logs`';
+  last.connectionId = connectionId;
+  if (!connectionId) {
+    return { ...last, error: 'No connectionId from /sources' };
+  }
+  while (Date.now() < deadline) {
+    try {
+      const res = await api.couchbaseQuery({
+        connectionId,
+        statement: `SELECT COUNT(*) AS c FROM ${collection}`,
+        format: 'JSON',
+      });
+      let count = 0;
+      if (res.json?.rows?.[0]?.c != null) count = Number(res.json.rows[0].c);
+      else if (Array.isArray(res.json) && res.json[0]?.c != null)
+        count = Number(res.json[0].c);
+      else if (res.text) {
+        for (const line of res.text.split('\n')) {
+          try {
+            const row = JSON.parse(line);
+            if (row.c != null) count = Number(row.c);
+            if (row.rows?.[0]?.c != null) count = Number(row.rows[0].c);
+          } catch {
+            // ignore
+          }
+        }
+      }
+      last = { ok: count >= min, count, error: null, connectionId };
+      if (last.ok) return last;
+    } catch (err) {
+      last = {
+        ok: false,
+        count: last.count,
+        error: err instanceof Error ? err.message : String(err),
+        connectionId,
+      };
+    }
+    await new Promise(r => setTimeout(r, 5000));
+  }
+  return last;
+}
+
+/**
  * @param {import('../run.mjs').RunContext} ctx
  * @returns {Promise<CheckResult>}
  */
@@ -91,12 +158,29 @@ async function b2(ctx) {
       email: session.email,
       password: session.password,
       apiKey: session.apiKey,
+      teamApiKey: session.teamApiKey ?? session.apiKey,
+      accessKey: session.accessKey,
     };
 
+    // Spec §6.5: use the team API key against the stack collector.
     const collectorApiKey =
-      ctx.stacks.product?.env?.CBT_API_KEY || process.env.CBT_API_KEY || '';
+      session.teamApiKey ||
+      session.apiKey ||
+      ctx.stacks.product?.env?.CBT_API_KEY ||
+      process.env.CBT_API_KEY ||
+      '';
     const endpoint =
       ctx.stacks.product?.otlpEndpoint || 'http://127.0.0.1:14318';
+
+    if (!collectorApiKey) {
+      return result({
+        id: 'B2',
+        title: 'Sample data views',
+        status: 'fail',
+        summary: 'No team API key available for sample-data',
+        durationMs: Date.now() - started,
+      });
+    }
 
     // Load sample data via documented ingest CLI when possible.
     const sample = spawnSync(
@@ -109,7 +193,8 @@ async function b2(ctx) {
         '2',
         '--endpoint',
         endpoint,
-        ...(collectorApiKey ? ['--api-key', collectorApiKey] : []),
+        '--api-key',
+        collectorApiKey,
       ],
       {
         cwd: ctx.root,
@@ -123,11 +208,44 @@ async function b2(ctx) {
     );
     writeFileSync(
       join(ctx.evidenceDir, 'b2-sample-data.log'),
-      `${sample.stdout}\n${sample.stderr}`,
+      `exit=${sample.status}\nendpoint=${endpoint}\n${sample.stdout}\n${sample.stderr}`,
     );
     evidence.push(join(ctx.evidenceDir, 'b2-sample-data.log'));
+    if (sample.status !== 0) {
+      return result({
+        id: 'B2',
+        title: 'Sample data views',
+        status: 'fail',
+        summary: `sample-data exited ${sample.status}: ${(sample.stderr || sample.stdout || '').slice(-500)}`,
+        evidence,
+        durationMs: Date.now() - started,
+      });
+    }
+
+    // Wait until logs source has ≥1000 rows (up to 180s).
+    const ready = await waitForLogRows(api, 1000, 180_000);
+    writeFileSync(
+      join(ctx.evidenceDir, 'b2-row-wait.json'),
+      `${JSON.stringify(ready, null, 2)}\n`,
+    );
+    evidence.push(join(ctx.evidenceDir, 'b2-row-wait.json'));
+    if (!ready.ok) {
+      return result({
+        id: 'B2',
+        title: 'Sample data views',
+        status: 'fail',
+        summary: `Logs source never reached 1000 rows within 180s (last=${ready.count})`,
+        details: ready,
+        evidence,
+        durationMs: Date.now() - started,
+      });
+    }
 
     const browser = await ctx.browser();
+    await browser.ensureLoggedIn({
+      email: session.email,
+      password: session.password,
+    });
     for (const view of views) {
       try {
         await browser.goto(view.route, view.id);

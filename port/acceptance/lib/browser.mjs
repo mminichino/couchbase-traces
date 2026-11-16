@@ -30,6 +30,38 @@ export class BrowserSession {
   }
 
   /**
+   * Establish an app-origin session via the Next.js `/api` proxy so cookies
+   * are scoped to the Playwright origin (not the raw API port).
+   * @param {{ email: string, password: string }} creds
+   */
+  async ensureLoggedIn(creds) {
+    const register = await this.page.request.post('/api/register/password', {
+      data: {
+        email: creds.email,
+        password: creds.password,
+        confirmPassword: creds.password,
+      },
+      failOnStatusCode: false,
+    });
+    if (!register.ok() && register.status() !== 409) {
+      // Fall through to login; 409 means team/user already exists.
+      const body = await register.text();
+      if (!/teamAlreadyExists/i.test(body)) {
+        // still try login
+      }
+    }
+    const login = await this.page.request.post('/api/login/password', {
+      data: { email: creds.email, password: creds.password },
+      failOnStatusCode: false,
+    });
+    if (login.status() >= 400) {
+      const body = await login.text();
+      throw new Error(`Browser login failed: ${login.status()} ${body}`);
+    }
+    await this.page.goto('/', { waitUntil: 'domcontentloaded', timeout: 120_000 });
+  }
+
+  /**
    * @param {string} path
    * @param {string} [label]
    */
