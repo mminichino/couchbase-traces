@@ -8,7 +8,8 @@ import {
 export { DataClient, getDataClient } from './browser';
 export type { DataClientLike, DataClientOptions } from './clientLike';
 export { getMetadata, type Metadata } from './metadata';
-export { NodeDataClient } from './node';
+// NodeDataClient stays on dist/dataLayer/node — do not re-export here; the
+// barrel is imported by the browser bundle and must not reach the native SDK.
 
 export type Query = {
   sql: string;

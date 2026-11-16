@@ -81,10 +81,11 @@ export function generateRouteSmokeSpec(root) {
         `  {\n    featureId: '${p.featureId}',\n    path: '${p.path}',\n    route: '${p.route}',\n  }`,
     )
     .join(',\n');
+  const q = s => `'${String(s).replace(/\\/g, '\\\\').replace(/'/g, "\\'")}'`;
   const allowLiteral = allowlist
     .map(
       a =>
-        `  {\n    pattern: ${JSON.stringify(a.pattern)},\n    reason: ${JSON.stringify(a.reason)},\n  }`,
+        `  {\n    pattern: ${q(a.pattern)},\n    reason: ${q(a.reason)},\n  }`,
     )
     .join(',\n');
   return `/**
