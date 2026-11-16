@@ -156,9 +156,13 @@ export async function upProductStack(root, opts) {
       { envFile: opts.envFile },
     );
     if (up.status !== 0) {
+      const logs = `${up.stdout}\n${up.stderr}`;
+      writeFileSync(join(opts.evidenceDir, 'compose-up.log'), logs);
+      writeFileSync(join(opts.evidenceDir, 'compose-ps.txt'), '');
+      writeFileSync(join(opts.evidenceDir, 'couchbase-init.log'), logs);
       return {
         ok: false,
-        logs: `${up.stdout}\n${up.stderr}`,
+        logs,
         ps: '',
       };
     }

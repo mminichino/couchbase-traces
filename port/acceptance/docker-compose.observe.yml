@@ -1,4 +1,7 @@
-# Acceptance observe override: CoreDNS logger, statement capture, webhook receiver.
+# Acceptance observe override: CoreDNS logger, statement capture, webhook receiver,
+# and local build contexts so `up -d --build` works without pulling private GHCR images.
+#
+# Paths are relative to the project directory (docker-compose.yml), not this file.
 # Used as: docker compose -p cbt-acceptance -f docker-compose.yml -f port/acceptance/docker-compose.observe.yml ...
 
 services:
@@ -6,8 +9,8 @@ services:
     image: coredns/coredns:1.11.3
     command: ['-conf', '/Corefile']
     volumes:
-      - ./coredns/Corefile:/Corefile:ro
-      - ../state/acceptance/evidence/coredns:/var/log/coredns
+      - ./port/acceptance/coredns/Corefile:/Corefile:ro
+      - ./port/state/acceptance/evidence/coredns:/var/log/coredns
     networks:
       internal:
         ipv4_address: 172.28.0.53
@@ -17,27 +20,51 @@ services:
     working_dir: /app
     command: ['node', 'server.mjs']
     volumes:
-      - ./webhook-receiver:/app:ro
-      - ../state/acceptance/evidence/webhooks:/data
+      - ./port/acceptance/webhook-receiver:/app:ro
+      - ./port/state/acceptance/evidence/webhooks:/data
     networks:
       - internal
     expose:
       - '8080'
 
-  app:
-    environment:
-      CBT_QUERY_CAPTURE_FILE: /capture/statements.ndjson
-      WEBHOOK_HOSTNAME_ALLOWLIST: webhook
-    volumes:
-      - ../state/acceptance/evidence:/capture
+  couchbase-init:
+    build:
+      context: .
+      dockerfile: packages/ingest/Dockerfile
     dns:
       - 172.28.0.53
 
   ingest:
+    build:
+      context: .
+      dockerfile: packages/ingest/Dockerfile
     dns:
       - 172.28.0.53
 
   otel-collector:
+    build:
+      context: .
+      dockerfile: docker/otel-collector/Dockerfile
+      target: prod
+    dns:
+      - 172.28.0.53
+
+  app:
+    build:
+      context: .
+      dockerfile: docker/hyperdx/Dockerfile
+      target: prod
+      additional_contexts:
+        hyperdx: ./docker/hyperdx
+        api: ./packages/api
+        app: ./packages/app
+      args:
+        CODE_VERSION: acceptance
+    environment:
+      CBT_QUERY_CAPTURE_FILE: /capture/statements.ndjson
+      WEBHOOK_HOSTNAME_ALLOWLIST: webhook
+    volumes:
+      - ./port/state/acceptance/evidence:/capture
     dns:
       - 172.28.0.53
 
@@ -46,10 +73,6 @@ services:
       - 172.28.0.53
 
   db:
-    dns:
-      - 172.28.0.53
-
-  couchbase-init:
     dns:
       - 172.28.0.53
 
