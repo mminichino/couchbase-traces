@@ -71,7 +71,8 @@ check_memory() {
 }
 
 memory_hosts() {
-  echo "127.0.0.1      db" >> /etc/hosts
+  # Official Couchbase images name the node *@cb.local; keep db for legacy aliases.
+  echo "127.0.0.1      db cb.local" >> /etc/hosts
 }
 
 set_default_connections() {
@@ -108,11 +109,26 @@ echo "Send OpenTelemetry data via:
 echo "Telemetry is stored in Couchbase bucket ${CBT_COUCHBASE_BUCKET}."
 echo ""
 
-if [ -x /opt/couchbase/bin/couchbase-server ]; then
-  /opt/couchbase/bin/couchbase-server -daemon > /var/log/couchbase.log 2>&1 || \
-    /entrypoint.sh couchbase-server > /var/log/couchbase.log 2>&1 &
-else
+# Couchbase Server 8 requires nofile ≥ 200000; Docker defaults are far lower.
+ulimit -n 200000 2>/dev/null || ulimit -n 65536 2>/dev/null || true
+
+# Always start via the official image entrypoint (runsvdir). Invoking
+# couchbase-server with invented flags like -daemon fails getopts and leaves
+# a half-started babysitter that never serves :8091.
+if [ -x /entrypoint.sh ]; then
   /entrypoint.sh couchbase-server > /var/log/couchbase.log 2>&1 &
+elif [ -x /opt/couchbase/bin/couchbase-server ]; then
+  if command -v runuser >/dev/null 2>&1; then
+    runuser -u couchbase -- /opt/couchbase/bin/couchbase-server -- \
+      -kernel global_enable_pid_names false > /var/log/couchbase.log 2>&1 &
+  else
+    su -s /bin/bash couchbase -c \
+      '/opt/couchbase/bin/couchbase-server -- -kernel global_enable_pid_names false' \
+      > /var/log/couchbase.log 2>&1 &
+  fi
+else
+  echo "ERROR: Couchbase Server binary / entrypoint not found" >&2
+  exit 1
 fi
 
 export CBT_COUCHBASE_HOST=127.0.0.1

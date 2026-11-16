@@ -46,8 +46,10 @@ else
 fi
 
 # Couchbase Server 8 + MongoDB + app needs more than 4 GiB on noble images.
+# Default Docker /dev/shm (64 MiB) is too small for CB beam/memcached.
 SMOKE_MEMORY="${SMOKE_MEMORY:-8g}"
-docker run -d --name "$NAME" --memory="${SMOKE_MEMORY}" \
+SMOKE_SHM_SIZE="${SMOKE_SHM_SIZE:-1g}"
+docker run -d --name "$NAME" --memory="${SMOKE_MEMORY}" --shm-size="${SMOKE_SHM_SIZE}" \
   -p "${APP_PORT}:8080" \
   $([ "$HEALTH_ONLY" = 0 ] && echo "-p ${OTLP_PORT}:4318") \
   "$IMAGE"
