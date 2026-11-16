@@ -92,6 +92,11 @@ export CBT_COUCHBASE_CONNSTR="${CBT_COUCHBASE_CONNSTR:-couchbase://127.0.0.1}"
 
 check_memory
 ensure_secrets
+# Secrets were sourced into this shell; export so child processes (init.sh) see them.
+export CBT_COUCHBASE_ADMIN_USER CBT_COUCHBASE_ADMIN_PASSWORD
+export CBT_COUCHBASE_QUERY_USER CBT_COUCHBASE_QUERY_PASSWORD
+export CBT_COUCHBASE_INGEST_USER CBT_COUCHBASE_INGEST_PASSWORD
+export CBT_INGEST_TOKEN EXPRESS_SESSION_SECRET
 set_default_connections
 memory_hosts
 
