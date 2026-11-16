@@ -257,7 +257,7 @@ const metrics = {
 
 const expected = {
   otel_logs: 4,
-  hyperdx_sessions: 1,
+  otel_sessions: 1,
   otel_traces: 6,
   otel_metrics_gauge: 1,
   otel_metrics_sum: 1,

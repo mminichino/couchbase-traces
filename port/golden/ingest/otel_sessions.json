@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "suite": "ingest",
-  "caseId": "hyperdx_sessions",
+  "caseId": "otel_sessions",
   "datasetSeed": 0,
   "anchorSensitive": false,
   "compare": {

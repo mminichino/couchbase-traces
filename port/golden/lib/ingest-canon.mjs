@@ -4,7 +4,7 @@
 
 export const INGEST_TABLES = [
   'otel_logs',
-  'hyperdx_sessions',
+  'otel_sessions',
   'otel_traces',
   'otel_metrics_gauge',
   'otel_metrics_sum',
@@ -67,7 +67,7 @@ export function nest(row) {
 
 export function keyOf(table, row) {
   if (table === 'otel_traces') return `${row.TraceId ?? ''}|${row.SpanId ?? ''}`;
-  if (table === 'otel_logs' || table === 'hyperdx_sessions') {
+  if (table === 'otel_logs' || table === 'otel_sessions') {
     return `${row.Timestamp}|${row.Body}`;
   }
   return `${row.MetricName}|${row.TimeUnix}|${JSON.stringify(canon(row.Attributes ?? {}))}`;
@@ -75,7 +75,7 @@ export function keyOf(table, row) {
 
 export function skipIngestField(table, field) {
   if (field.startsWith('__')) return true;
-  if (table === 'hyperdx_sessions' && field === 'EventName') return true;
+  if (table === 'otel_sessions' && field === 'EventName') return true;
   return false;
 }
 

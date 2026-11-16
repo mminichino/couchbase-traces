@@ -12,6 +12,21 @@ const K2_REQUEST =
  * @param {string} text
  * @returns {string[]}
  */
+/**
+ * Expand GitHub Actions ${{ }} expressions enough to run locally.
+ * @param {string} cmd
+ */
+export function expandGithubExpressions(cmd) {
+  return cmd
+    .replace(/\$\{\{\s*matrix\.shard\s*\}\}/g, '1')
+    .replace(/\$\{\{\s*strategy\.job-total\s*\}\}/g, '4')
+    .replace(/\$\{\{\s*matrix\.[^}]+\}\}/g, '1')
+    .replace(/\$\{\{\s*github\.[^}]+\}\}/g, 'local')
+    .replace(/\$\{\{\s*env\.[^}]+\}\}/g, '')
+    .replace(/\$\{\{\s*inputs\.[^}]+\}\}/g, '')
+    .replace(/\$\{\{\s*[^}]+\}\}/g, '');
+}
+
 export function extractLocalCiCommands(text) {
   /** @type {string[]} */
   const cmds = [];
@@ -25,7 +40,7 @@ export function extractLocalCiCommands(text) {
       continue;
     }
     if (/^\s+run:\s+\S/.test(line)) {
-      const cmd = line.replace(/^\s+run:\s+/, '').trim();
+      const cmd = expandGithubExpressions(line.replace(/^\s+run:\s+/, '').trim());
       if (/^(make|yarn)\b/.test(cmd)) cmds.push(cmd);
       inRun = false;
       continue;
@@ -37,7 +52,7 @@ export function extractLocalCiCommands(text) {
           const block = buf.join('\n');
           for (const part of block.split(/\n/)) {
             const t = part.trim();
-            if (/^(make|yarn)\b/.test(t)) cmds.push(t);
+            if (/^(make|yarn)\b/.test(t)) cmds.push(expandGithubExpressions(t));
           }
           inRun = false;
           buf = [];
@@ -54,7 +69,7 @@ export function extractLocalCiCommands(text) {
   }
   if (inRun && buf.length) {
     for (const part of buf) {
-      const t = part.trim();
+      const t = expandGithubExpressions(part.trim());
       if (/^(make|yarn)\b/.test(t)) cmds.push(t);
     }
   }

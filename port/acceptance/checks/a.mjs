@@ -95,6 +95,91 @@ function featuresForGoldenSource(source) {
 }
 
 /**
+ * Parity inventory omits some ported features that still have tests in-tree.
+ * Keep this list small and path-verified.
+ */
+const SUPPLEMENTAL_FEATURE_TESTS = {
+  'api-saved-search': [
+    'packages/api/src/mcp/__tests__/savedSearches.int.test.ts',
+  ],
+  'api-pinned-filters': [
+    'packages/api/src/routers/api/__tests__/pinnedFilters.int.test.ts',
+  ],
+  'api-favorites': [
+    'packages/api/src/routers/api/__tests__/favorites.int.test.ts',
+    'packages/app/tests/e2e/features/favorites.spec.ts',
+  ],
+  'api-webhooks': [
+    'packages/api/src/routers/api/__tests__/webhooks.int.test.ts',
+    'packages/api/src/mcp/__tests__/webhooks.int.test.ts',
+  ],
+  'app-login': ['packages/app/tests/e2e/features/route-smoke.spec.ts'],
+  'app-register': ['packages/app/tests/e2e/features/route-smoke.spec.ts'],
+  'app-join-team': [
+    'packages/api/src/routers/api/__tests__/team.int.test.ts',
+    'packages/app/tests/e2e/features/route-smoke.spec.ts',
+  ],
+  'api-me': ['packages/api/src/routers/api/__tests__/team.int.test.ts'],
+  'api-team-query-settings': [
+    'packages/api/src/routers/api/__tests__/teamSettings.test.ts',
+  ],
+  'api-health': ['packages/api/src/__tests__/sessionSecretStartup.test.ts'],
+  'app-api': ['packages/app/tests/e2e/features/route-smoke.spec.ts'],
+  'app-benchmark': ['packages/app/tests/e2e/features/route-smoke.spec.ts'],
+  'external-alerts': [
+    'packages/api/src/routers/external-api/__tests__/alerts.int.test.ts',
+  ],
+  'external-charts': [
+    'packages/api/src/routers/external-api/__tests__/v2.int.test.ts',
+  ],
+  'external-connections': [
+    'packages/api/src/routers/external-api/__tests__/v2.int.test.ts',
+  ],
+  'external-dashboards': [
+    'packages/api/src/routers/external-api/__tests__/v2.int.test.ts',
+  ],
+  'external-saved-searches': [
+    'packages/api/src/routers/external-api/__tests__/v2.int.test.ts',
+  ],
+  'external-search': [
+    'packages/api/src/routers/external-api/__tests__/v2.int.test.ts',
+  ],
+  'external-sources': [
+    'packages/api/src/routers/external-api/__tests__/v2.int.test.ts',
+  ],
+  'external-team': [
+    'packages/api/src/routers/external-api/__tests__/team.int.test.ts',
+  ],
+  'external-webhooks': [
+    'packages/api/src/routers/external-api/__tests__/v2.int.test.ts',
+  ],
+  'mcp-saved-searches': [
+    'packages/api/src/mcp/__tests__/savedSearches.int.test.ts',
+  ],
+  'mcp-trace': ['packages/api/src/mcp/__tests__/trace.int.test.ts'],
+  'task-ping-pong': ['packages/api/src/tasks/__tests__/index.test.ts'],
+};
+
+/**
+ * Which M1 suite command covers a mapped test path / golden id.
+ * @param {string} mapped
+ */
+export function suiteCommandForMappedTest(mapped) {
+  if (mapped.startsWith('golden:')) return 'port/golden/run.sh';
+  if (
+    mapped.includes('/tests/e2e/') ||
+    mapped.endsWith('.spec.ts') ||
+    mapped.includes('e2e/')
+  ) {
+    return 'make e2e';
+  }
+  if (mapped.includes('.int.test.') || mapped.includes('.int.')) {
+    return 'port/couchbase-test/run.sh';
+  }
+  return 'port/check.sh';
+}
+
+/**
  * @param {string} root
  * @returns {Map<string, string[]>} featureId -> test paths / golden ids
  */
@@ -112,6 +197,11 @@ function buildFeatureTestMap(root) {
       for (const t of f.tests?.unit ?? []) add(f.id, t);
       for (const t of f.tests?.int ?? []) add(f.id, t);
       for (const t of f.tests?.e2e ?? []) add(f.id, t);
+    }
+  }
+  for (const [id, tests] of Object.entries(SUPPLEMENTAL_FEATURE_TESTS)) {
+    for (const t of tests) {
+      if (existsSync(join(root, t))) add(id, t);
     }
   }
   const casesRoot = join(root, 'port/golden/cases');
@@ -168,19 +258,21 @@ async function a2(ctx) {
       continue;
     }
     if (stageResults) {
-      const anyPass = mapped.some(t => stageResults.passed?.has(t));
+      const anyPass = mapped.some(t => {
+        if (stageResults.passed?.has(t)) return true;
+        const suite = suiteCommandForMappedTest(t);
+        return stageResults.passed?.has(suite);
+      });
       if (!anyPass) {
-        // If we have stage results but none of the mapped tests ran/passed
-        const anyRan = mapped.some(
-          t => stageResults.passed?.has(t) || stageResults.failed?.has(t),
-        );
-        if (anyRan) {
+        const anyFailed = mapped.some(t => {
+          if (stageResults.failed?.has(t)) return true;
+          const suite = suiteCommandForMappedTest(t);
+          return stageResults.failed?.has(suite);
+        });
+        if (anyFailed) {
           missing.push({ id: f.id, reason: 'mapped tests failed' });
           continue;
         }
-        // Mapped but not executed in this run — treat as covered by mapping
-        // only when stage results omit them (e.g. filtered). Prefer pass if
-        // mapping exists and stage 6 reported overall success.
         if (stageResults.overallPass) {
           covered.push(f.id);
           continue;

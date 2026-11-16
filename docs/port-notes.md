@@ -1039,6 +1039,7 @@ Completed requests: `system:completed_requests` requires `query_system_catalog`.
 - App `DEFAULT_QUERY_TIMEOUT` / team `queryTimeout` are **seconds** (legacy ClickHouse `max_execution_time`). The browser `CouchbaseClient` `requestTimeout` is **milliseconds**. `queryTimeoutToRequestTimeoutMs` multiplies by 1000; passing the raw second value aborted every search after 60 ms (acceptance B2).
 - ClickHouse `EXPLAIN ESTIMATE` is not valid SQL++. `useExplainQuery` and the benchmark page use plain `EXPLAIN` (acceptance B2 search console errors).
 - Sessions collection renamed `hyperdx_sessions` → `otel_sessions` so rendered cluster/team UI no longer leaks the HyperDX brand (acceptance H2).
+- Golden ingest/table name `hyperdx_sessions` → `otel_sessions` to match the product collection rename (acceptance H2/M1).
 - Quantiles are exact. `quantile` sorts the group with `ARRAY_SORT(ARRAY_AGG(...))` and interpolates linearly. It is not a window function and not t-digest. Histogram quantiles use the same cumulative-bucket arithmetic as `core/histogram.ts`.
 - Unsupported on Couchbase: `getTimeSeriesTableColumns`, `getTimeSeriesTableVersion`, and `getTimeSeriesTables` (PromQL time-series tables were not ingested). `getSettings`, `getMergeTreeSettings`, and `getSkipIndices` return empty results.
 - `core/metadata.ts` and `clickhouse/index.ts` still import the ClickHouse `renderChartConfig`. The seam cannot import them and be imported by them. Call sites outside those modules and the tests go through `dataLayer`.
