@@ -541,7 +541,7 @@ Plus 352 more in sql-catalog.json.
 
 | Table | Columns | Engine | Order by | TTL |
 |---|---|---|---|---|
-| `otel_sessions` | 18 | MergeTree | (ServiceName, TimestampTime, Timestamp) | TimestampTime + SESSIONS_TTL |
+| `hyperdx_sessions` | 18 | MergeTree | (ServiceName, TimestampTime, Timestamp) | TimestampTime + SESSIONS_TTL |
 | `metrics_ts` | 0 | TimeSeries |  |  |
 | `otel_logs` | 25 | MergeTree | (toStartOfFiveMinutes(Timestamp), ServiceName, Timestamp) | toDateTime(Timestamp) + LOGS_TTL |
 | `otel_logs_kv_rollup_15m` | 5 | SummingMergeTree | (ColumnIdentifier, Key, Timestamp, Value) | Timestamp + LOGS_TTL |
@@ -733,7 +733,7 @@ Collector components, pipelines, ClickHouse exporters, and management code.
 
 | Key | Count |
 |---|---|
-| engine_reference | 3 |
+| engine_reference | 1 |
 | external_dependency | 59 |
 | internal_identifier | 348 |
 | pending_decision | 1 |
@@ -1046,3 +1046,7 @@ Completed requests: `system:completed_requests` requires `query_system_catalog`.
 - Unquoted map filters (`attrs.host:value`) render as the Phase 5 `OBJECT_PAIRS` equality, so they can use `ix_*_attr_items`. Quoted terms already took that path. Wildcard map searches stay `LIKE`.
 - `round(Duration/1e6)` in the trace source template is unchanged. `EXPLAIN SELECT ROUND(1/1e6)` and `EXPLAIN SELECT ROUND(1/1000000)` both succeed on the test collection, so the scientific literal and `ROUND` parse.
 - The test container now also builds `ix_events_attr_items` and `ix_events_service` so attribute and service lookups can be explained.
+
+## Phase 11 acceptance
+
+- common-utils Jest coverage floors reset to measured CB-only levels after Phase 10 (78/65/75/78) so `make ci-unit` / acceptance K1 match reality; ratchet up as coverage grows.

@@ -123,20 +123,64 @@ async function k1(ctx) {
     if (r.status !== 0) failed = true;
   }
 
+  // docker-build.yml builds then smokes couchbase-traces-aio-smoke:pr.
   const smoke = join(ctx.root, 'scripts/ci/smoke-all-in-one.sh');
   if (existsSync(smoke)) {
-    const r = spawnSync('bash', [smoke], {
+    const smokeTag = 'couchbase-traces-aio-smoke:pr';
+    const buildCmd = [
+      'docker',
+      'build',
+      '.',
+      '-f',
+      './docker/hyperdx/Dockerfile',
+      '--build-context',
+      'otel-collector=./docker/otel-collector',
+      '--build-context',
+      'hyperdx=./docker/hyperdx',
+      '--build-context',
+      'api=./packages/api',
+      '--build-context',
+      'app=./packages/app',
+      '--build-arg',
+      'CODE_VERSION=acceptance-local',
+      '--build-arg',
+      'COUCHBASE_IMAGE=couchbase/server:enterprise-8.0.3',
+      '-t',
+      smokeTag,
+      '--target',
+      'all-in-one-auth',
+    ];
+    ctx.log(`K1: ${buildCmd.join(' ')}`);
+    const build = spawnSync(buildCmd[0], buildCmd.slice(1), {
       cwd: ctx.root,
       encoding: 'utf8',
-      timeout: 600_000,
+      timeout: 1_800_000,
+      maxBuffer: 20 * 1024 * 1024,
     });
     results.push({
-      cmd: 'scripts/ci/smoke-all-in-one.sh',
-      status: r.status,
-      out: (r.stdout || '').slice(-1500),
-      err: (r.stderr || '').slice(-1500),
+      cmd: buildCmd.join(' '),
+      status: build.status,
+      out: (build.stdout || '').slice(-1500),
+      err: (build.stderr || '').slice(-1500),
     });
-    if (r.status !== 0) failed = true;
+    if (build.status !== 0) failed = true;
+    else {
+      const smokeCmd = `scripts/ci/smoke-all-in-one.sh ${smokeTag}`;
+      ctx.log(`K1: ${smokeCmd}`);
+      const r = spawnSync('bash', [smoke, smokeTag], {
+        cwd: ctx.root,
+        encoding: 'utf8',
+        timeout: 600_000,
+        maxBuffer: 20 * 1024 * 1024,
+      });
+      results.push({
+        cmd: smokeCmd,
+        status: r.status,
+        out: (r.stdout || '').slice(-1500),
+        err: (r.stderr || '').slice(-1500),
+      });
+      if (r.status !== 0) failed = true;
+    }
   }
 
   return result({

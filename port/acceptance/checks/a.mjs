@@ -101,9 +101,11 @@ function featuresForGoldenSource(source) {
 const SUPPLEMENTAL_FEATURE_TESTS = {
   'api-saved-search': [
     'packages/api/src/mcp/__tests__/savedSearches.int.test.ts',
+    'packages/app/src/__tests__/DBSearchPage.saveSearch.test.tsx',
   ],
   'api-pinned-filters': [
     'packages/api/src/routers/api/__tests__/pinnedFilters.int.test.ts',
+    'packages/api/src/routers/api/__tests__/teamSettings.test.ts',
   ],
   'api-favorites': [
     'packages/api/src/routers/api/__tests__/favorites.int.test.ts',
@@ -112,6 +114,7 @@ const SUPPLEMENTAL_FEATURE_TESTS = {
   'api-webhooks': [
     'packages/api/src/routers/api/__tests__/webhooks.int.test.ts',
     'packages/api/src/mcp/__tests__/webhooks.int.test.ts',
+    'packages/api/src/controllers/__tests__/alerts.test.ts',
   ],
   'app-login': ['packages/app/tests/e2e/features/route-smoke.spec.ts'],
   'app-register': ['packages/app/tests/e2e/features/route-smoke.spec.ts'],
@@ -119,45 +122,69 @@ const SUPPLEMENTAL_FEATURE_TESTS = {
     'packages/api/src/routers/api/__tests__/team.int.test.ts',
     'packages/app/tests/e2e/features/route-smoke.spec.ts',
   ],
-  'api-me': ['packages/api/src/routers/api/__tests__/team.int.test.ts'],
+  'api-me': [
+    'packages/api/src/routers/api/__tests__/team.int.test.ts',
+    'packages/api/src/routers/api/__tests__/teamSettings.test.ts',
+  ],
   'api-team-query-settings': [
     'packages/api/src/routers/api/__tests__/teamSettings.test.ts',
   ],
   'api-health': ['packages/api/src/__tests__/sessionSecretStartup.test.ts'],
+  'api-sources': [
+    'packages/api/src/__tests__/setupDefaults.test.ts',
+    'packages/app/tests/e2e/features/sources.spec.ts',
+  ],
   'app-api': ['packages/app/tests/e2e/features/route-smoke.spec.ts'],
   'app-benchmark': ['packages/app/tests/e2e/features/route-smoke.spec.ts'],
   'external-alerts': [
     'packages/api/src/routers/external-api/__tests__/alerts.int.test.ts',
+    'packages/api/src/routers/external-api/__tests__/v2.int.test.ts',
+    'packages/api/src/__tests__/config.test.ts',
   ],
   'external-charts': [
     'packages/api/src/routers/external-api/__tests__/v2.int.test.ts',
+    'packages/api/src/__tests__/config.test.ts',
   ],
   'external-connections': [
     'packages/api/src/routers/external-api/__tests__/v2.int.test.ts',
+    'packages/api/src/__tests__/config.test.ts',
   ],
   'external-dashboards': [
     'packages/api/src/routers/external-api/__tests__/v2.int.test.ts',
+    'packages/api/src/__tests__/config.test.ts',
   ],
   'external-saved-searches': [
     'packages/api/src/routers/external-api/__tests__/v2.int.test.ts',
+    'packages/api/src/__tests__/config.test.ts',
   ],
   'external-search': [
     'packages/api/src/routers/external-api/__tests__/v2.int.test.ts',
+    'packages/api/src/__tests__/config.test.ts',
   ],
   'external-sources': [
     'packages/api/src/routers/external-api/__tests__/v2.int.test.ts',
+    'packages/api/src/__tests__/config.test.ts',
   ],
   'external-team': [
     'packages/api/src/routers/external-api/__tests__/team.int.test.ts',
+    'packages/api/src/__tests__/config.test.ts',
   ],
   'external-webhooks': [
     'packages/api/src/routers/external-api/__tests__/v2.int.test.ts',
+    'packages/api/src/__tests__/config.test.ts',
   ],
   'mcp-saved-searches': [
     'packages/api/src/mcp/__tests__/savedSearches.int.test.ts',
+    'packages/api/src/mcp/__tests__/toolSchemas.test.ts',
   ],
-  'mcp-trace': ['packages/api/src/mcp/__tests__/trace.int.test.ts'],
+  'mcp-trace': [
+    'packages/api/src/mcp/__tests__/trace.int.test.ts',
+    'packages/api/src/mcp/__tests__/toolSchemas.test.ts',
+  ],
   'task-ping-pong': ['packages/api/src/tasks/__tests__/index.test.ts'],
+  'task-provision-dashboards': [
+    'packages/api/src/tasks/__tests__/index.test.ts',
+  ],
 };
 
 /**
@@ -263,26 +290,25 @@ async function a2(ctx) {
         const suite = suiteCommandForMappedTest(t);
         return stageResults.passed?.has(suite);
       });
-      if (!anyPass) {
-        const anyFailed = mapped.some(t => {
-          if (stageResults.failed?.has(t)) return true;
-          const suite = suiteCommandForMappedTest(t);
-          return stageResults.failed?.has(suite);
-        });
-        if (anyFailed) {
-          missing.push({ id: f.id, reason: 'mapped tests failed' });
-          continue;
-        }
-        if (stageResults.overallPass) {
-          covered.push(f.id);
-          continue;
-        }
-        missing.push({
-          id: f.id,
-          reason: 'mapped tests did not run in stage 6',
-        });
+      if (anyPass) {
+        covered.push(f.id);
         continue;
       }
+      const suites = [...new Set(mapped.map(suiteCommandForMappedTest))];
+      const anyFailed = suites.some(s => stageResults.failed?.has(s));
+      if (anyFailed) {
+        missing.push({ id: f.id, reason: 'mapped tests failed' });
+        continue;
+      }
+      if (stageResults.overallPass) {
+        covered.push(f.id);
+        continue;
+      }
+      missing.push({
+        id: f.id,
+        reason: 'mapped tests did not run in stage 6',
+      });
+      continue;
     }
     covered.push(f.id);
   }
