@@ -4,7 +4,13 @@ import { type TimeFormat, timeRangePredicate } from '@/couchbase/time';
 import type { Keyspace } from './types';
 
 export function inferStatement(ks: Keyspace, sampleSize: number): SqlPP {
-  return sqlpp`INFER ${{ Keyspace: ks }} WITH ${{ Param: { sample_size: sampleSize, num_sample_values: 5 } }}`;
+  // Couchbase requires INFER's WITH options to be a static object literal;
+  // a named parameter ($pN) fails with "WITH value must be static".
+  const n = Number.isFinite(sampleSize)
+    ? Math.max(1, Math.min(Math.trunc(sampleSize), 10000))
+    : 1000;
+  const opts = JSON.stringify({ sample_size: n, num_sample_values: 5 });
+  return sqlpp`INFER ${{ Keyspace: ks }} WITH ${{ Raw: opts }}`;
 }
 
 export function keyspaceList(): SqlPP {

@@ -42,23 +42,40 @@ export class BrowserSession {
         confirmPassword: creds.password,
       },
       failOnStatusCode: false,
+      maxRedirects: 0,
     });
-    if (!register.ok() && register.status() !== 409) {
-      // Fall through to login; 409 means team/user already exists.
-      const body = await register.text();
-      if (!/teamAlreadyExists/i.test(body)) {
-        // still try login
-      }
-    }
+    void register;
     const login = await this.page.request.post('/api/login/password', {
       data: { email: creds.email, password: creds.password },
       failOnStatusCode: false,
+      maxRedirects: 0,
     });
-    if (login.status() >= 400) {
+    const loc = login.headers()['location'] || '';
+    if (login.status() >= 400 || /\/login\?err=/i.test(loc)) {
       const body = await login.text();
-      throw new Error(`Browser login failed: ${login.status()} ${body}`);
+      throw new Error(
+        `Browser login failed: ${login.status()} loc=${loc} ${body.slice(0, 200)}`,
+      );
     }
-    await this.page.goto('/', { waitUntil: 'domcontentloaded', timeout: 120_000 });
+    // Land on the app so the session cookie is attached to subsequent navigations.
+    await this.page.goto('/', { waitUntil: 'networkidle', timeout: 120_000 });
+    if (/\/login/i.test(this.page.url())) {
+      // Fallback: fill the login form (covers cookie Domain mismatches).
+      await this.page.fill(
+        'input[type="email"], input[name="email"]',
+        creds.email,
+      );
+      await this.page.fill(
+        'input[type="password"], input[name="password"]',
+        creds.password,
+      );
+      await Promise.all([
+        this.page.waitForURL(u => !/\/login/i.test(u.toString()), {
+          timeout: 60_000,
+        }),
+        this.page.click('button[type="submit"], button:has-text("Login")'),
+      ]);
+    }
   }
 
   /**

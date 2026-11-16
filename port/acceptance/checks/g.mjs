@@ -113,44 +113,30 @@ async function g1(ctx) {
   // Create a saved search used by saved_search alerts.
   let savedSearchId = null;
   if (logSourceId) {
-    const ss = await api.request('/saved-searches', {
+    const ss = await api.request('/saved-search', {
       method: 'POST',
       json: {
-        name: 'accept-alert-search',
-        query: '',
-        sourceId: logSourceId,
+        name: `accept-alert-search-${Date.now()}`,
+        select: 'Timestamp, ServiceName, SeverityText, Body',
+        where: '',
+        whereLanguage: 'lucene',
+        source: String(logSourceId),
+        orderBy: 'Timestamp DESC',
+        tags: [],
       },
     });
     savedSearchId =
-      ss.json?.data?.id ??
-      ss.json?.data?._id ??
-      ss.json?.id ??
       ss.json?._id ??
+      ss.json?.id ??
+      ss.json?.data?._id ??
+      ss.json?.data?.id ??
       null;
     if (!savedSearchId) {
-      // Try alternate shape used by some builds.
-      const ss2 = await api.request('/saved-searches', {
-        method: 'POST',
-        json: {
-          name: 'accept-alert-search',
-          filter: '',
-          source: logSourceId,
-        },
+      problems.push({
+        step: 'create_saved_search',
+        status: ss.status,
+        body: ss.json ?? ss.text?.slice?.(0, 500),
       });
-      savedSearchId =
-        ss2.json?.data?.id ??
-        ss2.json?.data?._id ??
-        ss2.json?.id ??
-        ss2.json?._id ??
-        null;
-      if (!savedSearchId) {
-        problems.push({
-          step: 'create_saved_search',
-          status: ss.status,
-          body: ss.json ?? ss.text,
-          alt: ss2.json ?? ss2.text,
-        });
-      }
     }
   } else {
     problems.push({ step: 'sources', error: 'no log source' });

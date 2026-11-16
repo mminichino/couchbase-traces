@@ -67,9 +67,10 @@ async function waitForLogRows(api, min, timeoutMs) {
   }
   while (Date.now() < deadline) {
     try {
+      // Prefer an indexed predicate so D1 does not see a primary scan from the harness.
       const res = await api.couchbaseQuery({
         connectionId,
-        statement: `SELECT COUNT(*) AS c FROM ${collection}`,
+        statement: `SELECT COUNT(*) AS c FROM ${collection} AS l WHERE l.Timestamp IS NOT MISSING`,
         format: 'JSON',
       });
       let count = 0;

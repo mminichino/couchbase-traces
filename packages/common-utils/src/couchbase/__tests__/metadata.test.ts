@@ -1,6 +1,7 @@
 import { MetadataCache } from '@/core/metadata';
 import { inferredToColumnType, parseInfer } from '@/couchbase/infer';
 import { Metadata } from '@/couchbase/metadata';
+import { inferStatement } from '@/couchbase/metadataSql';
 import { renderChartConfigCouchbase } from '@/couchbase/render';
 
 const inferDoc = {
@@ -245,5 +246,19 @@ describe('render skeleton', () => {
       undefined,
     );
     expect(total.sql).toContain('COUNT(*)');
+  });
+});
+
+describe('inferStatement', () => {
+  it('embeds a static WITH object (Couchbase rejects parameterized WITH)', () => {
+    const q = inferStatement(
+      { bucket: 'otel', scope: 'default', collection: 'otel_logs' },
+      1000,
+    );
+    expect(q.statement).toContain(
+      'INFER `otel`.`default`.`otel_logs` WITH {"sample_size":1000,"num_sample_values":5}',
+    );
+    expect(q.statement).not.toMatch(/WITH \$p\d+/);
+    expect(q.parameters).toEqual({});
   });
 });
