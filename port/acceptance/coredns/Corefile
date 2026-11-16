@@ -1,0 +1,11 @@
+. {
+  log {
+    class all
+  }
+  errors
+  forward . /etc/resolv.conf
+  cache 30
+  loop
+  reload
+  loadbalance
+}

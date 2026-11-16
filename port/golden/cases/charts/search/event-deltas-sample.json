@@ -5,11 +5,27 @@
   "config": {
     "displayType": "search",
     "select": "Body, ServiceName",
-    "dateRange": { "fromMinutesAgo": 60, "toMinutesAgo": 0 },
-    "orderBy": [{ "valueExpression": "rand()", "ordering": "DESC" }],
-    "limit": { "limit": 200 }
+    "dateRange": {
+      "fromMinutesAgo": 60,
+      "toMinutesAgo": 0
+    },
+    "orderBy": [
+      {
+        "valueExpression": "rand()",
+        "ordering": "DESC"
+      }
+    ],
+    "limit": {
+      "limit": 200
+    }
   },
   "compare": {
-    "ignoreColumns": ["__cbt_id"]
-  }
+    "ignoreColumns": [
+      "__cbt_id"
+    ]
+  },
+  "features": [
+    "app-search",
+    "app-chart"
+  ]
 }

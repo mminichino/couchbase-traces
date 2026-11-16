@@ -1,0 +1,60 @@
+# Acceptance observe override: CoreDNS logger, statement capture, webhook receiver.
+# Used as: docker compose -p cbt-acceptance -f docker-compose.yml -f port/acceptance/docker-compose.observe.yml ...
+
+services:
+  dns:
+    image: coredns/coredns:1.11.3
+    command: ['-conf', '/Corefile']
+    volumes:
+      - ./coredns/Corefile:/Corefile:ro
+      - ../state/acceptance/evidence/coredns:/var/log/coredns
+    networks:
+      internal:
+        ipv4_address: 172.28.0.53
+
+  webhook:
+    image: node:22-alpine
+    working_dir: /app
+    command: ['node', 'server.mjs']
+    volumes:
+      - ./webhook-receiver:/app:ro
+      - ../state/acceptance/evidence/webhooks:/data
+    networks:
+      - internal
+    expose:
+      - '8080'
+
+  app:
+    environment:
+      CBT_QUERY_CAPTURE_FILE: /capture/statements.ndjson
+      WEBHOOK_HOSTNAME_ALLOWLIST: webhook
+    volumes:
+      - ../state/acceptance/evidence:/capture
+    dns:
+      - 172.28.0.53
+
+  ingest:
+    dns:
+      - 172.28.0.53
+
+  otel-collector:
+    dns:
+      - 172.28.0.53
+
+  couchbase:
+    dns:
+      - 172.28.0.53
+
+  db:
+    dns:
+      - 172.28.0.53
+
+  couchbase-init:
+    dns:
+      - 172.28.0.53
+
+networks:
+  internal:
+    ipam:
+      config:
+        - subnet: 172.28.0.0/16

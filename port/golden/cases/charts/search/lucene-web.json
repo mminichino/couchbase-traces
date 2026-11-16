@@ -3,9 +3,21 @@
   "description": "Lucene service web count",
   "source": "logs",
   "config": {
-    "select": [{ "aggFn": "count", "valueExpression": "" }],
+    "select": [
+      {
+        "aggFn": "count",
+        "valueExpression": ""
+      }
+    ],
     "where": "ServiceName:web",
     "whereLanguage": "lucene",
-    "dateRange": { "fromMinutesAgo": 60, "toMinutesAgo": 0 }
-  }
+    "dateRange": {
+      "fromMinutesAgo": 60,
+      "toMinutesAgo": 0
+    }
+  },
+  "features": [
+    "app-search",
+    "app-chart"
+  ]
 }

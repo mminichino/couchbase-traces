@@ -1,0 +1,158 @@
+[
+  {
+    "id": "log-search",
+    "route": "/search",
+    "assert": {
+      "kind": "min_rows",
+      "selector": "[data-testid=\"search-results-table\"] tbody tr",
+      "min": 50
+    }
+  },
+  {
+    "id": "trace-search",
+    "route": "/search?source=Traces",
+    "setup": [
+      {
+        "action": "click",
+        "selector": "[data-testid=\"source-selector\"]"
+      }
+    ],
+    "assert": {
+      "kind": "min_rows",
+      "selector": "[data-testid=\"search-results-table\"] tbody tr",
+      "min": 50
+    }
+  },
+  {
+    "id": "log-histogram",
+    "route": "/search",
+    "assert": {
+      "kind": "chart_has_series",
+      "selector": "[data-testid=\"search-histogram\"] .recharts-line, [data-testid=\"search-histogram\"] .recharts-bar, [data-testid=\"search-histogram\"] svg path",
+      "min": 1
+    }
+  },
+  {
+    "id": "chart-explorer-count-by-service",
+    "route": "/chart",
+    "assert": {
+      "kind": "chart_has_series",
+      "selector": ".recharts-line, .recharts-bar, [data-testid=\"chart-series\"]",
+      "min": 3
+    }
+  },
+  {
+    "id": "dashboard-template",
+    "route": "/dashboards",
+    "assert": {
+      "kind": "element_count",
+      "selector": "[data-testid=\"dashboard-tile\"], [data-testid=\"tile\"]",
+      "min": 1
+    }
+  },
+  {
+    "id": "trace-waterfall",
+    "route": "/trace/00000000000000000000000000000001",
+    "assert": {
+      "kind": "element_count",
+      "selector": "[data-testid=\"span-row\"], [data-testid=\"waterfall-span\"]",
+      "min": 3
+    }
+  },
+  {
+    "id": "service-map",
+    "route": "/service-map",
+    "assert": {
+      "kind": "element_count",
+      "selector": "[data-testid=\"service-map-node\"], .react-flow__node",
+      "min": 4
+    }
+  },
+  {
+    "id": "metrics-chart",
+    "route": "/chart",
+    "assert": {
+      "kind": "chart_has_series",
+      "selector": ".recharts-line, .recharts-area, [data-testid=\"chart-series\"]",
+      "min": 1
+    }
+  },
+  {
+    "id": "sessions-list",
+    "route": "/sessions",
+    "assert": {
+      "kind": "min_rows",
+      "selector": "[data-testid=\"sessions-table\"] tbody tr, table tbody tr",
+      "min": 1
+    }
+  },
+  {
+    "id": "session-replay",
+    "route": "/sessions",
+    "assert": {
+      "kind": "element_count",
+      "selector": "[data-testid=\"session-player\"], [data-testid=\"rrweb-player\"]",
+      "min": 1
+    }
+  },
+  {
+    "id": "kubernetes-dashboard",
+    "route": "/kubernetes",
+    "assert": {
+      "kind": "element_count",
+      "selector": "[data-testid=\"dashboard-tile\"], [data-testid=\"tile\"]",
+      "min": 1
+    }
+  },
+  {
+    "id": "services-dashboard",
+    "route": "/services",
+    "assert": {
+      "kind": "element_count",
+      "selector": "[data-testid=\"dashboard-tile\"], [data-testid=\"tile\"]",
+      "min": 1
+    }
+  },
+  {
+    "id": "event-patterns",
+    "route": "/search",
+    "setup": [
+      {
+        "action": "click",
+        "selector": "[data-testid=\"event-patterns-tab\"], button:has-text(\"Patterns\")"
+      }
+    ],
+    "assert": {
+      "kind": "element_count",
+      "selector": "[data-testid=\"event-pattern-row\"], [data-testid=\"pattern-row\"]",
+      "min": 1
+    }
+  },
+  {
+    "id": "event-deltas",
+    "route": "/search",
+    "assert": {
+      "kind": "element_count",
+      "selector": "[data-testid=\"event-delta-property\"], [data-testid=\"delta-property\"]",
+      "min": 1
+    }
+  },
+  {
+    "id": "alerts-list",
+    "route": "/alerts",
+    "assert": {
+      "kind": "text_present",
+      "selector": "body",
+      "text": "Alert"
+    }
+  },
+  {
+    "id": "couchbase-cluster",
+    "route": "/cluster",
+    "assert": {
+      "kind": "text_present",
+      "selector": "body",
+      "text": "Queries"
+    }
+  }
+]

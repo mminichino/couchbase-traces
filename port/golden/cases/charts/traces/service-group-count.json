@@ -12,14 +12,32 @@
     ],
     "groupBy": "ServiceName",
     "orderBy": [
-      { "valueExpression": "value", "ordering": "DESC" },
-      { "valueExpression": "ServiceName", "ordering": "ASC" }
+      {
+        "valueExpression": "value",
+        "ordering": "DESC"
+      },
+      {
+        "valueExpression": "ServiceName",
+        "ordering": "ASC"
+      }
     ],
-    "limit": { "limit": 10 },
-    "dateRange": { "fromMinutesAgo": 60, "toMinutesAgo": 0 }
+    "limit": {
+      "limit": 10
+    },
+    "dateRange": {
+      "fromMinutesAgo": 60,
+      "toMinutesAgo": 0
+    }
   },
   "compare": {
     "ordered": true,
-    "ignoreColumns": ["__cbt_id"]
-  }
+    "ignoreColumns": [
+      "__cbt_id"
+    ]
+  },
+  "features": [
+    "app-trace",
+    "app-search",
+    "app-service-map"
+  ]
 }

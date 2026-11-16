@@ -4,18 +4,43 @@
   "source": "sessions",
   "config": {
     "select": [
-      { "valueExpression": "ServiceName", "alias": "serviceName" },
-      { "aggFn": "count", "valueExpression": "", "alias": "eventCount" },
-      { "valueExpression": "MAX(Timestamp)", "alias": "maxTimestamp" },
-      { "valueExpression": "MIN(Timestamp)", "alias": "minTimestamp" }
+      {
+        "valueExpression": "ServiceName",
+        "alias": "serviceName"
+      },
+      {
+        "aggFn": "count",
+        "valueExpression": "",
+        "alias": "eventCount"
+      },
+      {
+        "valueExpression": "MAX(Timestamp)",
+        "alias": "maxTimestamp"
+      },
+      {
+        "valueExpression": "MIN(Timestamp)",
+        "alias": "minTimestamp"
+      }
     ],
-    "groupBy": [{ "valueExpression": "ServiceName" }],
+    "groupBy": [
+      {
+        "valueExpression": "ServiceName"
+      }
+    ],
     "selectGroupBy": false,
     "orderBy": "eventCount DESC",
-    "dateRange": { "fromMinutesAgo": 60, "toMinutesAgo": 0 }
+    "dateRange": {
+      "fromMinutesAgo": 60,
+      "toMinutesAgo": 0
+    }
   },
   "compare": {
     "ordered": true,
-    "ignoreColumns": ["__cbt_id"]
-  }
+    "ignoreColumns": [
+      "__cbt_id"
+    ]
+  },
+  "features": [
+    "app-sessions"
+  ]
 }

@@ -4,20 +4,55 @@
   "source": "traces",
   "config": {
     "select": [
-      { "aggFn": "none", "valueExpression": "SpanId", "alias": "SpanId" },
-      { "aggFn": "none", "valueExpression": "ParentSpanId", "alias": "ParentSpanId" },
-      { "aggFn": "none", "valueExpression": "ServiceName", "alias": "ServiceName" },
-      { "aggFn": "none", "valueExpression": "Duration", "alias": "Duration" }
+      {
+        "aggFn": "none",
+        "valueExpression": "SpanId",
+        "alias": "SpanId"
+      },
+      {
+        "aggFn": "none",
+        "valueExpression": "ParentSpanId",
+        "alias": "ParentSpanId"
+      },
+      {
+        "aggFn": "none",
+        "valueExpression": "ServiceName",
+        "alias": "ServiceName"
+      },
+      {
+        "aggFn": "none",
+        "valueExpression": "Duration",
+        "alias": "Duration"
+      }
     ],
     "where": "TraceId:00000000000000000000000000000001",
     "whereLanguage": "lucene",
-    "orderBy": [{ "valueExpression": "Timestamp", "ordering": "ASC" }],
-    "limit": { "limit": 50 },
-    "dateRange": { "fromMinutesAgo": 60, "toMinutesAgo": 0 }
+    "orderBy": [
+      {
+        "valueExpression": "Timestamp",
+        "ordering": "ASC"
+      }
+    ],
+    "limit": {
+      "limit": 50
+    },
+    "dateRange": {
+      "fromMinutesAgo": 60,
+      "toMinutesAgo": 0
+    }
   },
   "compare": {
     "ordered": true,
-    "ignoreColumns": ["__cbt_id"],
-    "defaultsEqual": ["ParentSpanId"]
-  }
+    "ignoreColumns": [
+      "__cbt_id"
+    ],
+    "defaultsEqual": [
+      "ParentSpanId"
+    ]
+  },
+  "features": [
+    "app-trace",
+    "app-search",
+    "app-service-map"
+  ]
 }

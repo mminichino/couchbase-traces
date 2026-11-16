@@ -3,8 +3,25 @@
   "description": "Lucene filter chip",
   "source": "logs",
   "config": {
-    "select": [{ "aggFn": "count", "valueExpression": "" }],
-    "filters": [{ "type": "lucene", "condition": "SeverityText:\"WARN\"" }],
-    "dateRange": { "fromMinutesAgo": 60, "toMinutesAgo": 0 }
-  }
+    "select": [
+      {
+        "aggFn": "count",
+        "valueExpression": ""
+      }
+    ],
+    "filters": [
+      {
+        "type": "lucene",
+        "condition": "SeverityText:\"WARN\""
+      }
+    ],
+    "dateRange": {
+      "fromMinutesAgo": 60,
+      "toMinutesAgo": 0
+    }
+  },
+  "features": [
+    "app-search",
+    "app-chart"
+  ]
 }

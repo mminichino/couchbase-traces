@@ -12,10 +12,18 @@
     ],
     "groupBy": "ServiceName",
     "orderBy": [
-      { "valueExpression": "value", "ordering": "DESC" },
-      { "valueExpression": "ServiceName", "ordering": "ASC" }
+      {
+        "valueExpression": "value",
+        "ordering": "DESC"
+      },
+      {
+        "valueExpression": "ServiceName",
+        "ordering": "ASC"
+      }
     ],
-    "limit": { "limit": 3 },
+    "limit": {
+      "limit": 3
+    },
     "dateRange": {
       "fromMinutesAgo": 60,
       "toMinutesAgo": 0
@@ -23,6 +31,12 @@
   },
   "compare": {
     "ordered": true,
-    "ignoreColumns": ["__cbt_id"]
-  }
+    "ignoreColumns": [
+      "__cbt_id"
+    ]
+  },
+  "features": [
+    "app-search",
+    "app-chart"
+  ]
 }

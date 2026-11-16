@@ -1,0 +1,27 @@
+title = "Couchbase Traces acceptance allowlist"
+
+# Documented development defaults from Phase 9 and test fixtures only.
+# Each rule needs a comment giving the reason.
+
+[[allowlists]]
+description = "Phase 9 documented development passwords (dev-*-password)"
+regexTarget = "match"
+regexes = [
+  '''dev-[a-z0-9-]*-password''',
+]
+
+[[allowlists]]
+description = "Phase 9 documented development ingest tokens (dev-ingest-token-*)"
+regexTarget = "match"
+regexes = [
+  '''dev-ingest-token-[a-zA-Z0-9_-]+''',
+]
+
+[[allowlists]]
+description = "Test fixture secrets under packages/**/__tests__ and e2e fixtures"
+paths = [
+  '''(^|/)(__tests__|fixtures|test|tests)/''',
+  '''\.test\.[jt]sx?$''',
+  '''\.int\.test\.[jt]sx?$''',
+  '''\.spec\.[jt]sx?$''',
+]

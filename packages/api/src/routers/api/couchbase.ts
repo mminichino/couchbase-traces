@@ -14,6 +14,7 @@ import {
   testConnection,
   testKeyspace,
 } from '@couchbase-traces/common-utils/dist/couchbase/node';
+import { appendQueryCapture } from '@couchbase-traces/common-utils/dist/couchbase/queryCapture';
 import { assertAllowedStatement } from '@couchbase-traces/common-utils/dist/couchbase/statement';
 import {
   COUCHBASE_FORMATS,
@@ -331,6 +332,13 @@ router.post('/query', async (req, res, next) => {
 
       attribution: body.attribution as CouchbaseQueryInputs['attribution'],
     };
+    // Acceptance: append NDJSON when CBT_QUERY_CAPTURE_FILE is set (disabled by default).
+    appendQueryCapture({
+      statement: body.statement,
+      parameters: body.parameters ?? null,
+      connectionId: body.connectionId,
+      queryContext: body.queryContext ?? null,
+    });
     const team = await getTeamSettings(teamId);
     iterator = executeQuery({
       conn,

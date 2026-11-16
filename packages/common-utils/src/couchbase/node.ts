@@ -10,6 +10,7 @@ import {
   type Logger,
 } from './nodeCluster';
 import { executeQuery } from './nodeExecute';
+import { appendQueryCapture } from './queryCapture';
 import { fromFrames } from './resultset';
 import { buildClientContextId } from './settings';
 import type {
@@ -86,6 +87,13 @@ export class CouchbaseNodeClient implements DataClient {
       attribution,
       queryId: buildClientContextId(inputs.queryId, attribution),
     };
+    // Acceptance: append NDJSON when CBT_QUERY_CAPTURE_FILE is set (disabled by default).
+    appendQueryCapture({
+      statement: inputs.query,
+      parameters: inputs.query_params ?? null,
+      connectionId: inputs.connectionId ?? null,
+      queryContext: inputs.queryContext ?? null,
+    });
     const frames = executeQuery({
       conn: this.conn,
       inputs: merged,

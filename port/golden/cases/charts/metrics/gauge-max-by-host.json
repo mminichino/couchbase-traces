@@ -19,9 +19,18 @@
       "summary": "otel_metrics_summary",
       "exponential histogram": "otel_metrics_exponential_histogram"
     },
-    "dateRange": { "fromMinutesAgo": 60, "toMinutesAgo": 0 }
+    "dateRange": {
+      "fromMinutesAgo": 60,
+      "toMinutesAgo": 0
+    }
   },
   "compare": {
-    "ignoreColumns": ["__cbt_id"]
-  }
+    "ignoreColumns": [
+      "__cbt_id"
+    ]
+  },
+  "features": [
+    "app-chart",
+    "app-services"
+  ]
 }

@@ -3,8 +3,25 @@
   "description": "SQL filter on severity",
   "source": "logs",
   "config": {
-    "select": [{ "aggFn": "count", "valueExpression": "" }],
-    "filters": [{ "type": "sql", "condition": "SeverityText = 'WARN'" }],
-    "dateRange": { "fromMinutesAgo": 60, "toMinutesAgo": 0 }
-  }
+    "select": [
+      {
+        "aggFn": "count",
+        "valueExpression": ""
+      }
+    ],
+    "filters": [
+      {
+        "type": "sql",
+        "condition": "SeverityText = 'WARN'"
+      }
+    ],
+    "dateRange": {
+      "fromMinutesAgo": 60,
+      "toMinutesAgo": 0
+    }
+  },
+  "features": [
+    "app-search",
+    "app-chart"
+  ]
 }

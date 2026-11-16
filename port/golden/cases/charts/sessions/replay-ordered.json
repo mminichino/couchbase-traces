@@ -4,18 +4,37 @@
   "source": "sessions",
   "config": {
     "select": [
-      { "valueExpression": "Timestamp", "alias": "timestamp" },
-      { "valueExpression": "Body", "alias": "b" },
-      { "valueExpression": "ServiceName", "alias": "serviceName" }
+      {
+        "valueExpression": "Timestamp",
+        "alias": "timestamp"
+      },
+      {
+        "valueExpression": "Body",
+        "alias": "b"
+      },
+      {
+        "valueExpression": "ServiceName",
+        "alias": "serviceName"
+      }
     ],
     "where": "ServiceName:\"browser\"",
     "whereLanguage": "lucene",
     "orderBy": "Timestamp ASC",
-    "limit": { "limit": 20 },
-    "dateRange": { "fromMinutesAgo": 60, "toMinutesAgo": 0 }
+    "limit": {
+      "limit": 20
+    },
+    "dateRange": {
+      "fromMinutesAgo": 60,
+      "toMinutesAgo": 0
+    }
   },
   "compare": {
     "ordered": true,
-    "ignoreColumns": ["__cbt_id"]
-  }
+    "ignoreColumns": [
+      "__cbt_id"
+    ]
+  },
+  "features": [
+    "app-sessions"
+  ]
 }

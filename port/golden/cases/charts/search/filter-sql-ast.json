@@ -3,7 +3,12 @@
   "description": "SQL AST filter on severity",
   "source": "logs",
   "config": {
-    "select": [{ "aggFn": "count", "valueExpression": "" }],
+    "select": [
+      {
+        "aggFn": "count",
+        "valueExpression": ""
+      }
+    ],
     "filters": [
       {
         "type": "sql_ast",
@@ -12,6 +17,13 @@
         "right": "'INFO'"
       }
     ],
-    "dateRange": { "fromMinutesAgo": 60, "toMinutesAgo": 0 }
-  }
+    "dateRange": {
+      "fromMinutesAgo": 60,
+      "toMinutesAgo": 0
+    }
+  },
+  "features": [
+    "app-search",
+    "app-chart"
+  ]
 }

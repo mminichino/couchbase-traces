@@ -1,0 +1,163 @@
+import { spawnSync } from 'node:child_process';
+import { readFileSync } from 'node:fs';
+import { join } from 'node:path';
+
+import { findBrandLeaks } from '../lib/browser.mjs';
+import { result } from '../lib/report.mjs';
+import { PROJECT_NAME } from '../lib/stack.mjs';
+
+/**
+ * @param {import('../run.mjs').RunContext} ctx
+ */
+async function h1(ctx) {
+  const started = Date.now();
+  const branding = spawnSync('bash', ['port/rebrand.sh', 'verify', 'branding'], {
+    cwd: ctx.root,
+    encoding: 'utf8',
+  });
+  const removeCh = spawnSync('node', ['port/remove-ch/verify.mjs'], {
+    cwd: ctx.root,
+    encoding: 'utf8',
+  });
+  const ok = branding.status === 0 && removeCh.status === 0;
+  return result({
+    id: 'H1',
+    title: 'Static branding',
+    status: ok ? 'pass' : 'fail',
+    summary: ok
+      ? 'rebrand verify branding and remove-ch verify passed'
+      : 'Static branding verification failed',
+    details: {
+      branding: {
+        status: branding.status,
+        out: branding.stdout.slice(-2000),
+        err: branding.stderr.slice(-2000),
+      },
+      removeCh: {
+        status: removeCh.status,
+        out: removeCh.stdout.slice(-2000),
+        err: removeCh.stderr.slice(-2000),
+      },
+    },
+    durationMs: Date.now() - started,
+  });
+}
+
+/**
+ * @param {import('../run.mjs').RunContext} ctx
+ */
+async function h2(ctx) {
+  const started = Date.now();
+  const allowlist = JSON.parse(
+    readFileSync(join(ctx.root, 'port/acceptance/brand-allowlist.json'), 'utf8'),
+  );
+  const pageTexts = ctx.shared?.pageTexts ?? [];
+  if (!pageTexts.length) {
+    return result({
+      id: 'H2',
+      title: 'Rendered branding',
+      status: 'fail',
+      summary: 'No page text collected from A3/B2 to scan for brand terms',
+      durationMs: Date.now() - started,
+    });
+  }
+  const leaks = findBrandLeaks(pageTexts, allowlist);
+  if (leaks.length) {
+    return result({
+      id: 'H2',
+      title: 'Rendered branding',
+      status: 'fail',
+      summary: `${leaks.length} brand term leak(s) in rendered text`,
+      details: { leaks },
+      durationMs: Date.now() - started,
+    });
+  }
+  return result({
+    id: 'H2',
+    title: 'Rendered branding',
+    status: 'pass',
+    summary: `No brand terms in ${pageTexts.length} rendered page(s)`,
+    details: { pages: pageTexts.length },
+    durationMs: Date.now() - started,
+  });
+}
+
+const BRAND_RE = /hyperdx|clickstack|clickhouse|deploysentinel|(^|[^a-z])hdx([^a-z]|$)/i;
+const THIRD_PARTY_BASE = /otel\/opentelemetry-collector|opentelemetry-collector/i;
+
+/**
+ * @param {import('../run.mjs').RunContext} ctx
+ */
+async function h3(ctx) {
+  const started = Date.now();
+  if (!ctx.stacks?.product?.ready) {
+    return result({
+      id: 'H3',
+      title: 'Runtime branding',
+      status: 'fail',
+      summary: 'Product stack not ready',
+      durationMs: Date.now() - started,
+    });
+  }
+  const ps = spawnSync(
+    'docker',
+    ['compose', '-p', PROJECT_NAME, 'ps', '-a', '--format', 'json'],
+    { cwd: ctx.root, encoding: 'utf8' },
+  );
+  /** @type {object[]} */
+  const leaks = [];
+  const lines = (ps.stdout || '')
+    .split('\n')
+    .map(l => l.trim())
+    .filter(Boolean);
+  for (const line of lines) {
+    let row;
+    try {
+      row = JSON.parse(line);
+    } catch {
+      continue;
+    }
+    const name = row.Name || row.Service || '';
+    const image = row.Image || '';
+    if (THIRD_PARTY_BASE.test(image)) continue;
+    if (BRAND_RE.test(name)) leaks.push({ kind: 'container_name', value: name });
+    if (BRAND_RE.test(image)) leaks.push({ kind: 'image', value: image });
+  }
+
+  // Inspect env var names on app container
+  const inspect = spawnSync(
+    'docker',
+    ['compose', '-p', PROJECT_NAME, 'exec', '-T', 'app', 'env'],
+    { cwd: ctx.root, encoding: 'utf8' },
+  );
+  for (const line of (inspect.stdout || '').split('\n')) {
+    const key = line.split('=')[0];
+    if (key && BRAND_RE.test(key)) {
+      leaks.push({ kind: 'env_name', value: key });
+    }
+  }
+
+  if (leaks.length) {
+    return result({
+      id: 'H3',
+      title: 'Runtime branding',
+      status: 'fail',
+      summary: `${leaks.length} runtime brand term leak(s)`,
+      details: { leaks },
+      durationMs: Date.now() - started,
+    });
+  }
+  return result({
+    id: 'H3',
+    title: 'Runtime branding',
+    status: 'pass',
+    summary: 'No brand terms in image/container/env names',
+    durationMs: Date.now() - started,
+  });
+}
+
+export const checks = [
+  { id: 'H1', title: 'Static branding', needs: ['static'], run: h1 },
+  { id: 'H2', title: 'Rendered branding', needs: ['product_stack'], run: h2 },
+  { id: 'H3', title: 'Runtime branding', needs: ['product_stack'], run: h3 },
+];

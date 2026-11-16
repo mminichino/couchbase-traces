@@ -1,3 +1,5 @@
 state/logs/
 state/bin/
 state/check.json
+state/acceptance/evidence/*
+!state/acceptance/evidence/summary.json

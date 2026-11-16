@@ -17,11 +17,25 @@
         "alias": "total"
       }
     ],
-    "formulas": [{ "expression": "A / B", "alias": "err rate" }],
-    "dateRange": { "fromMinutesAgo": 60, "toMinutesAgo": 0 }
+    "formulas": [
+      {
+        "expression": "A / B",
+        "alias": "err rate"
+      }
+    ],
+    "dateRange": {
+      "fromMinutesAgo": 60,
+      "toMinutesAgo": 0
+    }
   },
   "compare": {
-    "ignoreColumns": ["__cbt_id"],
+    "ignoreColumns": [
+      "__cbt_id"
+    ],
     "numericTolerance": 0.05
-  }
+  },
+  "features": [
+    "app-search",
+    "app-chart"
+  ]
 }

@@ -12,10 +12,19 @@
     ],
     "where": "MetricName:\"parity.gauge\"",
     "whereLanguage": "lucene",
-    "dateRange": { "fromMinutesAgo": 60, "toMinutesAgo": 0 }
+    "dateRange": {
+      "fromMinutesAgo": 60,
+      "toMinutesAgo": 0
+    }
   },
   "compare": {
     "numericTolerance": 0.05,
-    "ignoreColumns": ["__cbt_id"]
-  }
+    "ignoreColumns": [
+      "__cbt_id"
+    ]
+  },
+  "features": [
+    "app-chart",
+    "app-services"
+  ]
 }

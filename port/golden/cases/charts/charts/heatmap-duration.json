@@ -19,6 +19,12 @@
     }
   },
   "compare": {
-    "ignoreColumns": ["__cbt_id"]
-  }
+    "ignoreColumns": [
+      "__cbt_id"
+    ]
+  },
+  "features": [
+    "app-search",
+    "app-chart"
+  ]
 }

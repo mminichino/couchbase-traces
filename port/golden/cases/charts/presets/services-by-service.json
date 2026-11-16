@@ -4,13 +4,37 @@
   "source": "traces",
   "config": {
     "select": [
-      { "valueExpression": "ServiceName", "alias": "service" },
-      { "aggFn": "count", "valueExpression": "", "alias": "requests" }
+      {
+        "valueExpression": "ServiceName",
+        "alias": "service"
+      },
+      {
+        "aggFn": "count",
+        "valueExpression": "",
+        "alias": "requests"
+      }
     ],
-    "groupBy": [{ "valueExpression": "ServiceName" }],
+    "groupBy": [
+      {
+        "valueExpression": "ServiceName"
+      }
+    ],
     "selectGroupBy": false,
     "orderBy": "requests DESC",
-    "dateRange": { "fromMinutesAgo": 60, "toMinutesAgo": 0 }
+    "dateRange": {
+      "fromMinutesAgo": 60,
+      "toMinutesAgo": 0
+    }
   },
-  "compare": { "ordered": true, "ignoreColumns": ["__cbt_id"] }
+  "compare": {
+    "ordered": true,
+    "ignoreColumns": [
+      "__cbt_id"
+    ]
+  },
+  "features": [
+    "app-trace",
+    "app-search",
+    "app-service-map"
+  ]
 }

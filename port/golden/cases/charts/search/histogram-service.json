@@ -3,11 +3,23 @@
   "description": "Histogram by service",
   "source": "logs",
   "config": {
-    "select": [{ "aggFn": "count", "valueExpression": "" }],
+    "select": [
+      {
+        "aggFn": "count",
+        "valueExpression": ""
+      }
+    ],
     "groupBy": "ServiceName",
     "granularity": "5 minute",
     "where": "SeverityText:INFO",
     "whereLanguage": "lucene",
-    "dateRange": { "fromMinutesAgo": 120, "toMinutesAgo": 0 }
-  }
+    "dateRange": {
+      "fromMinutesAgo": 120,
+      "toMinutesAgo": 0
+    }
+  },
+  "features": [
+    "app-search",
+    "app-chart"
+  ]
 }

@@ -1,0 +1,10 @@
+[
+  {
+    "pattern": "derived from HyperDX",
+    "reason": "NOTICE attribution wording allowed on About/legal surfaces"
+  },
+  {
+    "pattern": "Copyright \\(c\\) 2023 DeploySentinel, Inc\\.",
+    "reason": "Upstream copyright line from NOTICE"
+  }
+]

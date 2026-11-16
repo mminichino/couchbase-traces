@@ -4,9 +4,25 @@
   "source": "traces",
   "config": {
     "select": [
-      { "aggFn": "count", "valueExpression": "", "alias": "count" }
+      {
+        "aggFn": "count",
+        "valueExpression": "",
+        "alias": "count"
+      }
     ],
-    "dateRange": { "fromMinutesAgo": 60, "toMinutesAgo": 0 }
+    "dateRange": {
+      "fromMinutesAgo": 60,
+      "toMinutesAgo": 0
+    }
   },
-  "compare": { "ignoreColumns": ["__cbt_id"] }
+  "compare": {
+    "ignoreColumns": [
+      "__cbt_id"
+    ]
+  },
+  "features": [
+    "app-trace",
+    "app-search",
+    "app-service-map"
+  ]
 }

@@ -1,0 +1,10 @@
+[
+  {
+    "pattern": "Download the React DevTools",
+    "reason": "React development hint in some builds"
+  },
+  {
+    "pattern": "third-party cookie",
+    "reason": "Browser privacy warning unrelated to the app"
+  }
+]

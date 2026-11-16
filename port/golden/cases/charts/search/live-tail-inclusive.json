@@ -5,14 +5,31 @@
   "config": {
     "displayType": "search",
     "select": "Timestamp, ServiceName, Body",
-    "dateRange": { "fromMinutesAgo": 45, "toMinutesAgo": 5 },
+    "dateRange": {
+      "fromMinutesAgo": 45,
+      "toMinutesAgo": 5
+    },
     "dateRangeStartInclusive": true,
     "dateRangeEndInclusive": true,
-    "limit": { "limit": 20 },
-    "orderBy": [{ "valueExpression": "Timestamp", "ordering": "DESC" }]
+    "limit": {
+      "limit": 20
+    },
+    "orderBy": [
+      {
+        "valueExpression": "Timestamp",
+        "ordering": "DESC"
+      }
+    ]
   },
   "compare": {
     "ordered": true,
-    "ignoreColumns": ["__cbt_id", "Timestamp"]
-  }
+    "ignoreColumns": [
+      "__cbt_id",
+      "Timestamp"
+    ]
+  },
+  "features": [
+    "app-search",
+    "app-chart"
+  ]
 }

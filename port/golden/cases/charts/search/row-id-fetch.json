@@ -7,12 +7,29 @@
     "select": "Timestamp, ServiceName, Body",
     "where": "ServiceName:api",
     "whereLanguage": "lucene",
-    "dateRange": { "fromMinutesAgo": 60, "toMinutesAgo": 0 },
-    "limit": { "limit": 3 },
-    "orderBy": [{ "valueExpression": "Body", "ordering": "ASC" }]
+    "dateRange": {
+      "fromMinutesAgo": 60,
+      "toMinutesAgo": 0
+    },
+    "limit": {
+      "limit": 3
+    },
+    "orderBy": [
+      {
+        "valueExpression": "Body",
+        "ordering": "ASC"
+      }
+    ]
   },
   "compare": {
     "ordered": true,
-    "ignoreColumns": ["__cbt_id", "Timestamp"]
-  }
+    "ignoreColumns": [
+      "__cbt_id",
+      "Timestamp"
+    ]
+  },
+  "features": [
+    "app-search",
+    "app-chart"
+  ]
 }

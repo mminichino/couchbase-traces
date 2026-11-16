@@ -3,9 +3,21 @@
   "description": "Lucene service and attribute filter",
   "source": "logs",
   "config": {
-    "select": [{ "aggFn": "count", "valueExpression": "" }],
+    "select": [
+      {
+        "aggFn": "count",
+        "valueExpression": ""
+      }
+    ],
     "where": "ServiceName:\"api\" AND LogAttributes.host:\"h0\"",
     "whereLanguage": "lucene",
-    "dateRange": { "fromMinutesAgo": 60, "toMinutesAgo": 0 }
-  }
+    "dateRange": {
+      "fromMinutesAgo": 60,
+      "toMinutesAgo": 0
+    }
+  },
+  "features": [
+    "app-search",
+    "app-chart"
+  ]
 }

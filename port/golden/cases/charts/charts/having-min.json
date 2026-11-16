@@ -29,5 +29,9 @@
     "ignoreColumns": [
       "__cbt_id"
     ]
-  }
+  },
+  "features": [
+    "app-search",
+    "app-chart"
+  ]
 }

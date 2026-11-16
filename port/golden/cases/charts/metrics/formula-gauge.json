@@ -12,7 +12,12 @@
         "alias": "A"
       }
     ],
-    "formulas": [{ "expression": "A * 100", "alias": "pct" }],
+    "formulas": [
+      {
+        "expression": "A * 100",
+        "alias": "pct"
+      }
+    ],
     "metricTables": {
       "gauge": "otel_metrics_gauge",
       "sum": "otel_metrics_sum",
@@ -20,10 +25,19 @@
       "summary": "otel_metrics_summary",
       "exponential histogram": "otel_metrics_exponential_histogram"
     },
-    "dateRange": { "fromMinutesAgo": 60, "toMinutesAgo": 0 }
+    "dateRange": {
+      "fromMinutesAgo": 60,
+      "toMinutesAgo": 0
+    }
   },
   "compare": {
-    "ignoreColumns": ["__cbt_id"],
+    "ignoreColumns": [
+      "__cbt_id"
+    ],
     "numericTolerance": 0.05
-  }
+  },
+  "features": [
+    "app-chart",
+    "app-services"
+  ]
 }
