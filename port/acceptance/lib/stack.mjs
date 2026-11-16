@@ -60,13 +60,20 @@ export function prepareProductEnv(root) {
   env.EXPRESS_SESSION_SECRET = randomSecret(48);
   env.TOKEN_ENCRYPTION_KEY = randomBytes(32).toString('base64');
 
-  const apiPort = Number(env.CBT_API_PORT || 8000) + PORT_OFFSET;
-  const appPort = Number(env.CBT_APP_PORT || 8080) + PORT_OFFSET;
-  const opampPort = Number(env.CBT_OPAMP_PORT || 4320) + PORT_OFFSET;
-  env.CBT_API_PORT = String(apiPort);
-  env.CBT_APP_PORT = String(appPort);
-  env.CBT_OPAMP_PORT = String(opampPort);
+  // Keep in-container listen ports at product defaults (8000/8080/4320) so
+  // image HEALTHCHECKs and OpAMP wiring stay valid. Host publishes are remapped
+  // in docker-compose.observe.yml (+PORT_OFFSET).
+  env.CBT_API_PORT = String(env.CBT_API_PORT || 8000);
+  env.CBT_APP_PORT = String(env.CBT_APP_PORT || 8080);
+  env.CBT_OPAMP_PORT = String(env.CBT_OPAMP_PORT || 4320);
   env.CBT_APP_URL = env.CBT_APP_URL || 'http://localhost';
+  // Browser-facing URL uses the host-mapped app port.
+  env.CBT_ACCEPT_HOST_APP_PORT = String(
+    Number(env.CBT_APP_PORT) + PORT_OFFSET,
+  );
+  env.CBT_ACCEPT_HOST_API_PORT = String(
+    Number(env.CBT_API_PORT) + PORT_OFFSET,
+  );
   env.WEBHOOK_HOSTNAME_ALLOWLIST = 'webhook';
 
   const dir = mkdtempSync(join(tmpdir(), 'cbt-accept-env-'));

@@ -182,14 +182,14 @@ async function main() {
       const handle = stacks[stack] || stacks.product;
       const base =
         handle?.apiOrigin ||
-        `http://127.0.0.1:${productEnv?.env.CBT_API_PORT || 18000}`;
+        `http://127.0.0.1:${productEnv?.env.CBT_ACCEPT_HOST_API_PORT || 18000}`;
       return createApiClient(base);
     },
     async browser() {
       if (browserSession) return browserSession;
       const origin =
         stacks.product?.appOrigin ||
-        `http://127.0.0.1:${productEnv?.env.CBT_APP_PORT || 18080}`;
+        `http://127.0.0.1:${productEnv?.env.CBT_ACCEPT_HOST_APP_PORT || 18080}`;
       ctx.shared.appOrigin = origin;
       browserSession = await openBrowserSession({
         origin,
@@ -245,8 +245,8 @@ async function main() {
           ready: up.ok,
           envFile: productEnv.envFile,
           env: productEnv.env,
-          apiOrigin: `http://127.0.0.1:${productEnv.env.CBT_API_PORT}`,
-          appOrigin: `http://127.0.0.1:${productEnv.env.CBT_APP_PORT}`,
+          apiOrigin: `http://127.0.0.1:${productEnv.env.CBT_ACCEPT_HOST_API_PORT || 18000}`,
+          appOrigin: `http://127.0.0.1:${productEnv.env.CBT_ACCEPT_HOST_APP_PORT || 18080}`,
           otlpEndpoint: `http://127.0.0.1:14318`,
           webhookPort: 18080,
         };

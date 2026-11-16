@@ -79,9 +79,17 @@ services:
         app: ./packages/app
       args:
         CODE_VERSION: acceptance
+    # Host +10000 → container defaults (8000/8080) for HEALTHCHECK/OpAMP.
+    ports: !override
+      - '${CBT_ACCEPT_HOST_API_PORT:-18000}:8000'
+      - '${CBT_ACCEPT_HOST_APP_PORT:-18080}:8080'
     environment:
       CBT_QUERY_CAPTURE_FILE: /capture/statements.ndjson
       WEBHOOK_HOSTNAME_ALLOWLIST: webhook
+      FRONTEND_URL: http://localhost:${CBT_ACCEPT_HOST_APP_PORT:-18080}
+      CBT_API_PORT: '8000'
+      CBT_APP_PORT: '8080'
+      OPAMP_PORT: '4320'
     volumes:
       - ./port/state/acceptance/evidence:/capture
     dns:
