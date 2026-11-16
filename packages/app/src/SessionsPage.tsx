@@ -583,8 +583,8 @@ function SessionSetupInstructions() {
             }
             description={
               <>
-                Select the <Code>otel_sessions</Code> table from the
-                dropdown, and select the corresponding trace source.
+                Select the <Code>otel_sessions</Code> table from the dropdown,
+                and select the corresponding trace source.
               </>
             }
           />

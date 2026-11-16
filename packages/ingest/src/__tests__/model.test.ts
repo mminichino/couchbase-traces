@@ -43,7 +43,11 @@ function schemaColumns(): Map<string, Column[]> {
   };
   const out = new Map<string, Column[]>();
   for (const table of data.tables) {
-    if (TABLES.has(table.name)) out.set(table.name, table.columns);
+    // Inventory still names the ClickHouse seed hyperdx_sessions; product
+    // collection is otel_sessions (acceptance H2).
+    const name =
+      table.name === 'hyperdx_sessions' ? 'otel_sessions' : table.name;
+    if (TABLES.has(name)) out.set(name, table.columns);
   }
   return out;
 }
@@ -119,10 +123,7 @@ describe('collections', () => {
     const expected = new Map<string, Set<string>>([
       ['otel_logs', new Set(LOG_MATERIALIZED.map(field => field.name))],
       ['otel_traces', new Set(TRACE_MATERIALIZED.map(field => field.name))],
-      [
-        'otel_sessions',
-        new Set(SESSION_MATERIALIZED.map(field => field.name)),
-      ],
+      ['otel_sessions', new Set(SESSION_MATERIALIZED.map(field => field.name))],
     ]);
     for (const [table, cols] of columns) {
       const materialized = cols

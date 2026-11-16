@@ -1192,13 +1192,6 @@
       "note": "Token \"__hyperdx_\" allowed in the token map"
     },
     {
-      "path": "packages/app/tests/e2e/fixtures/e2e-fixtures.json",
-      "term": "hyperdx",
-      "snippet": "\"tableName\": \"e2e_hyperdx_sessions\"",
-      "reason": "engine_reference",
-      "note": "Token \"e2e_hyperdx_sessions\" allowed in the token map"
-    },
-    {
       "path": "packages/app/tests/e2e/global-setup-fullstack.ts",
       "term": "hyperdx",
       "snippet": "runMongoshScript(\"use('hyperdx-e2e'); db.dropDatabase();\");",
@@ -1211,13 +1204,6 @@
       "snippet": "use('hyperdx-e2e');",
       "reason": "internal_identifier",
       "note": "Token \"hyperdx-e2e\" allowed in the token map"
-    },
-    {
-      "path": "packages/app/tests/e2e/utils/constants.ts",
-      "term": "hyperdx",
-      "snippet": "export const E2E_SESSIONS_TABLE = 'e2e_hyperdx_sessions';",
-      "reason": "engine_reference",
-      "note": "Token \"e2e_hyperdx_sessions\" allowed in the token map"
     },
     {
       "path": "packages/app/tests/e2e/utils/db-helpers.ts",
