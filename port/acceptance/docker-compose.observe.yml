@@ -76,16 +76,10 @@ services:
       - 172.28.0.53
 
   couchbase:
-    # Replace published ports (+10000) so a developer stack can keep 8091–11210.
-    ports: !override
-      - '127.0.0.1:18091:8091'
-      - '127.0.0.1:18092:8092'
-      - '127.0.0.1:18093:8093'
-      - '127.0.0.1:18094:8094'
-      - '127.0.0.1:18095:8095'
-      - '127.0.0.1:18096:8096'
-      - '127.0.0.1:18097:8097'
-      - '127.0.0.1:21210:11210'
+    # Do not publish Couchbase ports to the host. Acceptance talks to
+    # Couchbase only on the compose network; publishing would collide with
+    # developer stacks (including ones that already bind 18091–18097).
+    ports: !override []
     dns:
       - 172.28.0.53
 
