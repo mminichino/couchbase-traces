@@ -92,10 +92,14 @@ services:
     # Couchbase only on the compose network; publishing would collide with
     # developer stacks (including ones that already bind 18091–18097).
     ports: !override []
+    volumes: !override
+      - ./.volumes/cbt-acceptance/couchbase:/opt/couchbase/var
     dns:
       - 172.28.0.53
 
   db:
+    volumes: !override
+      - ./.volumes/cbt-acceptance/db:/data/db
     dns:
       - 172.28.0.53
 
