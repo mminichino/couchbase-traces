@@ -190,6 +190,12 @@ const WORKFLOW = fileURLToPath(
 const DEEP_REVIEW = fileURLToPath(
   new URL('../../../workflows/deep-review.yml', import.meta.url),
 );
+// Phase 3 branding removed the upstream Claude review workflows; keep the
+// helper tests for when those files return, but skip them when absent.
+const HAS_REVIEW_WORKFLOWS =
+  existsSync(WORKFLOW) && existsSync(DEEP_REVIEW);
+const wfTest = (name, fn) =>
+  test(name, { skip: !HAS_REVIEW_WORKFLOWS }, fn);
 
 function gateParse(body) {
   const line = readFileSync(WORKFLOW, 'utf8')
@@ -207,7 +213,7 @@ function gateParse(body) {
 
 const HASH = 'a'.repeat(64);
 
-test('a healthy run stamps a marker the gate can parse', () => {
+wfTest('a healthy run stamps a marker the gate can parse', () => {
   const body = helpers.renderSummary({
     findings: [
       { file: 'src/a.ts', line: 11, severity: 'major', title: 't', body: 'b' },
@@ -231,7 +237,7 @@ test('a healthy run stamps a marker the gate can parse', () => {
   );
 });
 
-test('an unhealthy run stamps NO parseable marker, so the gate fails open', () => {
+wfTest('an unhealthy run stamps NO parseable marker, so the gate fails open', () => {
   // This is the whole safety property: without it, one broken run caches a zero-finding
   // review against this diff hash and the diff is never reviewed again.
   const body = helpers.renderSummary({
@@ -275,7 +281,7 @@ test('minor findings are folded, not dropped', () => {
   );
 });
 
-test('a clean diff produces an explicit all-clear', () => {
+wfTest('a clean diff produces an explicit all-clear', () => {
   const body = helpers.renderSummary({
     findings: [],
     unanchored: [],
@@ -387,7 +393,7 @@ test('the summary counts both delivered and listed findings when it does both', 
   assert.match(body, /1 listed below/);
 });
 
-test("the sticky marker matches the workflow's body-includes", () => {
+wfTest("the sticky marker matches the workflow's body-includes", () => {
   // find-comment locates the comment to update by substring. If this marker and the
   // workflow's `body-includes` drift apart, every push posts a NEW sticky comment instead
   // of updating the old one, and the gate stops finding prior state. Same class of silent
@@ -451,7 +457,7 @@ test('every inline comment carries the advisory footer, with the dedup marker la
   );
 });
 
-test('the guide link points at a heading that exists in AGENTS.md, in both bots', () => {
+wfTest('the guide link points at a heading that exists in AGENTS.md, in both bots', () => {
   // Every posted comment links here. Renaming the heading would dead-link all of them
   // with no failing check anywhere else, so derive the anchor from the heading text.
   const root = p => fileURLToPath(new URL(p, import.meta.url));
@@ -493,7 +499,7 @@ test('the guide link points at a heading that exists in AGENTS.md, in both bots'
   );
 });
 
-test("deep-review's footer gate fires on findings of any shape and not on a clean review", () => {
+wfTest("deep-review's footer gate fires on findings of any shape and not on a clean review", () => {
   // Same rule as gateParse: lift the pattern out of the workflow and run real grep, or a
   // drift between the prompt's finding format and the gate silently drops every footer.
   const line = readFileSync(DEEP_REVIEW, 'utf8')
@@ -529,7 +535,7 @@ test("deep-review's footer gate fires on findings of any shape and not on a clea
   );
 });
 
-test("deep-review's prior-comments filter recognizes our own inline comments", () => {
+wfTest("deep-review's prior-comments filter recognizes our own inline comments", () => {
   // deep-review.yml drops our output from prior-comments.md by marker. Inline comments
   // carry only the dedup marker, so OURS must match what commentBody emits, or every
   // finding flows back to the previous-comments persona as "unaddressed feedback".
@@ -741,7 +747,7 @@ test('a same-run duplicate is not reported as unchanged from an earlier push', (
   assert.equal(duplicates.length, 1);
 });
 
-test('the reviewer schema and the renderer agree on the severity enum', () => {
+wfTest('the reviewer schema and the renderer agree on the severity enum', () => {
   // The finding shape is declared in the workflow's --json-schema and independently
   // assumed here; renaming an enum value would pass every test while severityOf silently
   // degraded every finding to minor.
@@ -765,7 +771,7 @@ test('the reviewer schema and the renderer agree on the severity enum', () => {
   }
 });
 
-test('the workflow contains no empty Actions expression', () => {
+wfTest('the workflow contains no empty Actions expression', () => {
   // `${'$'}{{ }}` is parsed by Actions wherever it appears in a scalar -- including inside
   // what looks like a JS comment -- and an empty one fails the whole workflow to parse
   // with "An expression was expected". Nothing in the YAML linting or the test suite
@@ -838,7 +844,7 @@ test('severity tallies sum to the headline total when duplicates collapse', () =
   assert.equal(crit + major + minor, total, 'severities must sum to the total');
 });
 
-test('an over-long summary is truncated but keeps the state marker', () => {
+wfTest('an over-long summary is truncated but keeps the state marker', () => {
   // The marker lives inside the body. Without a cap the post 422s, no marker is written,
   // and the gate re-reviews and re-pays on every push without converging.
   const big = Array.from({ length: 4000 }, (_, i) => ({

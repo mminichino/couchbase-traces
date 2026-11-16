@@ -198,6 +198,9 @@ COPY --chmod=755 ./docker/couchbase/init.sh /opt/cbt/bin/init.sh
 
 RUN apt-get update && \
     apt-get install -y --no-install-recommends ca-certificates curl gnupg openssl && \
+    # Couchbase Server 8 images are Ubuntu 24.04 (no libssl1.1); MongoDB 5.0 still needs it.
+    curl -fsSL http://archive.ubuntu.com/ubuntu/pool/main/o/openssl/libssl1.1_1.1.1f-1ubuntu2.24_amd64.deb -o /tmp/libssl1.1.deb && \
+    dpkg -i /tmp/libssl1.1.deb && rm -f /tmp/libssl1.1.deb && \
     curl -fsSL https://www.mongodb.org/static/pgp/server-5.0.asc | gpg --dearmor -o /usr/share/keyrings/mongodb-server-5.0.gpg && \
     echo "deb [ signed-by=/usr/share/keyrings/mongodb-server-5.0.gpg ] https://repo.mongodb.org/apt/ubuntu focal/mongodb-org/5.0 multiverse" > /etc/apt/sources.list.d/mongodb-org-5.0.list && \
     apt-get update && \

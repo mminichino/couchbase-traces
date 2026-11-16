@@ -1049,6 +1049,7 @@ Completed requests: `system:completed_requests` requires `query_system_catalog`.
 
 ## Phase 11 acceptance
 
+- All-in-one MongoDB install on Couchbase Server 8 (Ubuntu 24.04) installs `libssl1.1` from Ubuntu focal before `mongodb-org` 5.0.x.
 - All-in-one Dockerfile pins `MONGODB_VERSION=5.0.35` (5.0.32 removed from MongoDB apt); needed for acceptance K1 smoke image build.
 - Golden `functions/hour-buckets` stores bucket epoch as an anchor offset (`anchorSensitive`) so Monday drift no longer fails replay.
 - Golden ingest replay aligns absolute ISO timestamps in expected row keys to the current Monday anchor (week drift); no re-capture.
