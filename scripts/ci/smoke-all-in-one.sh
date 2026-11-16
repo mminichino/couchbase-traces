@@ -45,7 +45,9 @@ else
   done
 fi
 
-docker run -d --name "$NAME" --memory=4g \
+# Couchbase Server 8 + MongoDB + app needs more than 4 GiB on noble images.
+SMOKE_MEMORY="${SMOKE_MEMORY:-8g}"
+docker run -d --name "$NAME" --memory="${SMOKE_MEMORY}" \
   -p "${APP_PORT}:8080" \
   $([ "$HEALTH_ONLY" = 0 ] && echo "-p ${OTLP_PORT}:4318") \
   "$IMAGE"
