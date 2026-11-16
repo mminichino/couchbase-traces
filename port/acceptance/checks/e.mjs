@@ -52,43 +52,38 @@ async function e1(ctx) {
       let code = null;
       let ok = false;
       try {
-        if (!connectionId) {
-          // Still exercise rejection via statement check by posting without connection
-          const res = await api.couchbaseQuery({
-            connectionId: connectionId || '000000000000000000000000',
-            statement,
-          });
-          code =
-            res.json?.error?.code ??
-            res.json?.code ??
-            (res.ok ? null : 'HTTP_ERROR');
-          // Parse NDJSON error frames
-          if (!code && res.text) {
+        const res = await api.couchbaseQuery({
+          connectionId: connectionId || '000000000000000000000000',
+          statement,
+        });
+        code =
+          res.json?.error?.code ??
+          res.json?.code ??
+          null;
+        if (!code && res.text) {
+          // JSON error body or NDJSON frames
+          try {
+            const parsed = JSON.parse(res.text);
+            code = parsed?.error?.code ?? parsed?.code ?? code;
+          } catch {
             for (const line of res.text.split('\n')) {
               try {
                 const f = JSON.parse(line);
-                if (f.type === 'error') code = f.error?.code;
-              } catch {
-                // ignore
-              }
-            }
-          }
-        } else {
-          const res = await api.couchbaseQuery({ connectionId, statement });
-          code = res.json?.error?.code ?? null;
-          if (!code && res.text) {
-            for (const line of res.text.split('\n')) {
-              try {
-                const f = JSON.parse(line);
-                if (f.type === 'error') code = f.error?.code;
+                if (f.type === 'error') code = f.error?.code ?? code;
                 if (f.success === false) code = f.error?.code ?? code;
               } catch {
                 // ignore
               }
             }
           }
-          if (!code && !res.ok) code = 'HTTP_ERROR';
         }
+        if (!code && /STATEMENT_NOT_ALLOWED|MULTIPLE_STATEMENTS/i.test(res.text || '')) {
+          const m = String(res.text).match(
+            /STATEMENT_NOT_ALLOWED|MULTIPLE_STATEMENTS/,
+          );
+          code = m?.[0] ?? code;
+        }
+        if (!code && !res.ok) code = `HTTP_${res.status}`;
         ok = ALLOWED_CODES.has(code);
       } catch (err) {
         code = err instanceof Error ? err.message : String(err);

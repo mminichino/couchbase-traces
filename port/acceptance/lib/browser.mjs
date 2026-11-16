@@ -183,6 +183,9 @@ export function findBrandLeaks(pageTexts, allowlist) {
  */
 export function findOutboundRequests(requests, origin) {
   const originUrl = new URL(origin);
+  const allowedHosts = new Set(
+    [originUrl.hostname, 'localhost', '127.0.0.1'].filter(Boolean),
+  );
   /** @type {{ url: string, page: string }[]} */
   const bad = [];
   for (const r of requests) {
@@ -190,6 +193,17 @@ export function findOutboundRequests(requests, origin) {
     try {
       const u = new URL(r.url);
       if (u.origin === originUrl.origin) continue;
+      // Treat localhost ↔ 127.0.0.1 on the same port as same-origin for acceptance.
+      if (
+        allowedHosts.has(u.hostname) &&
+        String(u.port || (u.protocol === 'https:' ? '443' : '80')) ===
+          String(
+            originUrl.port ||
+              (originUrl.protocol === 'https:' ? '443' : '80'),
+          )
+      ) {
+        continue;
+      }
       bad.push(r);
     } catch {
       // ignore

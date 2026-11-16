@@ -63,10 +63,15 @@ export function isAllowedDnsName(name, allowlist, composeServices = []) {
   const n = name.replace(/\.$/, '').toLowerCase();
   // Reverse lookups
   if (n.endsWith('.in-addr.arpa') || n.endsWith('.ip6.arpa')) return true;
+  // Numeric CoreDNS noise / empty labels
+  if (/^\d+(\.\d+)*$/.test(n)) return true;
+  const services = composeServices.map(s => s.toLowerCase());
   // Compose service names (single label or service.network)
-  const short = n.split('.')[0];
-  if (composeServices.map(s => s.toLowerCase()).includes(short)) return true;
-  if (composeServices.map(s => s.toLowerCase()).includes(n)) return true;
+  const short = n.split('.').filter(Boolean).pop();
+  if (short && services.includes(short)) return true;
+  if (services.includes(n)) return true;
+  // SDK SRV lookups like _couchbase._tcp.couchbase
+  if (services.some(s => n === s || n.endsWith(`.${s}`))) return true;
   const allowed = (allowlist.names ?? []).map(x => x.toLowerCase());
   if (allowed.includes(n)) return true;
   return false;

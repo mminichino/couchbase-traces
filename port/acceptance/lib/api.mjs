@@ -55,7 +55,7 @@ export class ApiClient {
   async register(email, password) {
     return this.request('/register/password', {
       method: 'POST',
-      json: { email, password },
+      json: { email, password, confirmPassword: password },
     });
   }
 

@@ -90,6 +90,9 @@ services:
       CBT_API_PORT: '8000'
       CBT_APP_PORT: '8080'
       OPAMP_PORT: '4320'
+      # Keep the browser on the app origin during acceptance (I1).
+      CBT_EXPORTER_ENABLED: 'false'
+      OTEL_EXPORTER_OTLP_ENDPOINT: ''
     volumes:
       - ./port/state/acceptance/evidence:/capture
     dns:
