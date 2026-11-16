@@ -1,6 +1,122 @@
 {
-  "status": "pending",
-  "generatedAt": null,
-  "gitSha": null,
-  "checks": []
+  "status": "fail",
+  "generatedAt": "2026-11-16T17:59:59.177Z",
+  "gitSha": "9636f44514dbf985e7b2f34d9323b14cb72e8db6",
+  "checks": [
+    {
+      "id": "A1",
+      "status": "pass",
+      "summary": "All 55 features are ported, replaced, or dropped with sign-off"
+    },
+    {
+      "id": "A2",
+      "status": "fail",
+      "summary": "51 ported feature(s) lack a passing mapped test"
+    },
+    {
+      "id": "A3",
+      "status": "fail",
+      "summary": "Product stack is not ready; cannot run route smoke"
+    },
+    {
+      "id": "B1",
+      "status": "fail",
+      "summary": "Stack did not become healthy within 600s"
+    },
+    {
+      "id": "B2",
+      "status": "fail",
+      "summary": "Product stack not ready"
+    },
+    {
+      "id": "C1",
+      "status": "blocked",
+      "summary": "Capella checks require --capella"
+    },
+    {
+      "id": "C2",
+      "status": "blocked",
+      "summary": "Capella checks require --capella"
+    },
+    {
+      "id": "D1",
+      "status": "fail",
+      "summary": "No captured statements from B2/G1; cannot verify index use"
+    },
+    {
+      "id": "E1",
+      "status": "fail",
+      "summary": "Product stack not ready"
+    },
+    {
+      "id": "F1",
+      "status": "fail",
+      "summary": "Dev/product stack not ready for latency measurement"
+    },
+    {
+      "id": "G1",
+      "status": "fail",
+      "summary": "Product stack not ready"
+    },
+    {
+      "id": "H1",
+      "status": "fail",
+      "summary": "Static branding verification failed"
+    },
+    {
+      "id": "H2",
+      "status": "fail",
+      "summary": "No page text collected from A3/B2 to scan for brand terms"
+    },
+    {
+      "id": "H3",
+      "status": "fail",
+      "summary": "Product stack not ready"
+    },
+    {
+      "id": "I1",
+      "status": "fail",
+      "summary": "No browser requests recorded during view runs"
+    },
+    {
+      "id": "I2",
+      "status": "pass",
+      "summary": "All 21 DNS queries allowed"
+    },
+    {
+      "id": "J1",
+      "status": "pass",
+      "summary": "LICENSE, NOTICE, and UPSTREAM.md are correct"
+    },
+    {
+      "id": "J2",
+      "status": "pass",
+      "summary": "docs/licenses.md matches a fresh scan"
+    },
+    {
+      "id": "K1",
+      "status": "fail",
+      "summary": "One or more local CI commands failed"
+    },
+    {
+      "id": "K2",
+      "status": "blocked",
+      "summary": "Pending push and --record-ci"
+    },
+    {
+      "id": "L1",
+      "status": "pass",
+      "summary": "gitleaks found no secrets"
+    },
+    {
+      "id": "M1",
+      "status": "fail",
+      "summary": "Regression failures: port/check.sh, port/golden/run.sh, port/couchbase-test/run.sh"
+    },
+    {
+      "id": "M2",
+      "status": "pass",
+      "summary": "All required docs exist; hand-written docs have no TODO/TBD"
+    }
+  ]
 }

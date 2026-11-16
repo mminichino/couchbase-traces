@@ -188,13 +188,28 @@ export function useBrowserTraceEvents<T extends LogRow>({
     if (picked == null) {
       return undefined;
     }
-    // useRowWhere throws on a column without meta, which must not take down
-    // the waterfall.
+    // Incomplete column meta used to throw from useRowWhere. Missing types are
+    // skipped now, so require every primary-key column present on the row to
+    // also appear in meta before accepting the WHERE as a row id.
+    const metaNames = new Set((triggerResult?.meta ?? []).map(m => m.name));
+    for (const col of SESSION_LOG_EVENT_KEY_COLUMNS) {
+      if (col in picked.row && !metaNames.has(col)) {
+        console.error(
+          new Error(
+            `Column type not found for ${col}, incomplete trigger meta`,
+          ),
+        );
+        return undefined;
+      }
+    }
     let id: string;
     try {
       id = getRowWhere(picked.row).where;
     } catch (e) {
       console.error(e);
+      return undefined;
+    }
+    if (!id || id.trim() === '') {
       return undefined;
     }
     const { timelineText } = getBrowserEventLabel({

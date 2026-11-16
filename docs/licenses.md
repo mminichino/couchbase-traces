@@ -1,10 +1,10 @@
 # Dependency license report
 
-Generated: 2026-11-14 (`node port/remove-ch/licenses.mjs`).
+Generated: 2026-11-16 (`node port/remove-ch/licenses.mjs`).
 
 ## Summary
 
-- npm production packages (external): **1017** (via `yarn dlx license-checker-rseidelsohn@5.0.1` at repo root; production closure from workspace `dependencies`).
+- npm production packages (external): **1011** (via `yarn dlx license-checker-rseidelsohn@5.0.1` at repo root; production closure from workspace `dependencies`).
 - Go modules: **485** (via `go run github.com/google/go-licenses@v1.6.0 report` on `packages/otel-collector` and the OCB `builder-config.yaml` module list).
 - Review-list entries: **15** (copyleft / network copyleft / unknown — informational only).
 
@@ -12,8 +12,8 @@ Generated: 2026-11-14 (`node port/remove-ch/licenses.mjs`).
 
 | License | Count |
 | --- | --- |
-| MIT | 810 |
-| Apache-2.0 | 456 |
+| MIT | 809 |
+| Apache-2.0 | 451 |
 | ISC | 89 |
 | BSD-3-Clause | 86 |
 | MPL-2.0 | 14 |
@@ -53,9 +53,6 @@ Packages reachable from workspace `dependencies` (private workspaces are omitted
 | @clickhouse/click-ui | 0.12.0 | Apache-2.0 | https://github.com/ClickHouse/click-ui | @couchbase-traces/app |
 | @clickhouse/clickstack-browser | 1.2.1 | Apache-2.0 | https://github.com/ClickHouse/clickstack-browser | @couchbase-traces/app |
 | @clickhouse/clickstack-node | 1.0.2 | Apache-2.0 | https://github.com/ClickHouse/clickstack-node | @couchbase-traces/api, @couchbase-traces/app |
-| @clickhouse/client | 1.23.0-head.fae5998.1 | Apache-2.0 | https://github.com/ClickHouse/clickhouse-js | @couchbase-traces/common-utils, @couchbase-traces/hdx-eval |
-| @clickhouse/client-common | 1.23.0-head.fae5998.1 | Apache-2.0 | https://github.com/ClickHouse/clickhouse-js | @couchbase-traces/api, @couchbase-traces/common-utils |
-| @clickhouse/client-web | 1.23.0-head.fae5998.1 | Apache-2.0 | https://github.com/ClickHouse/clickhouse-js | @couchbase-traces/common-utils |
 | @codemirror/autocomplete | 6.13.0 | MIT | https://github.com/codemirror/autocomplete | @couchbase-traces/app |
 | @codemirror/commands | 6.3.3 | MIT | https://github.com/codemirror/commands | @couchbase-traces/app |
 | @codemirror/lang-json | 6.0.1 | MIT | https://github.com/codemirror/lang-json | @couchbase-traces/app |
@@ -91,10 +88,10 @@ Packages reachable from workspace `dependencies` (private workspaces are omitted
 | @hyperdx/lucene | 3.1.1 | MIT | https://github.com/bripkens/lucene | @couchbase-traces/common-utils |
 | @hyperdx/passport-local-mongoose | 9.0.1 | MIT | https://github.com/hyperdxio/passport-local-mongoose | @couchbase-traces/api |
 | @js-sdsl/ordered-map | 4.4.2 | MIT | https://github.com/js-sdsl/js-sdsl | @couchbase-traces/api |
-| @lezer/common | 1.5.3 | MIT | git+https://code.haverbeke.berlin/lezer/common | @couchbase-traces/app, @couchbase-traces/common-utils |
-| @lezer/highlight | 1.2.5 | MIT | git+https://code.haverbeke.berlin/lezer/highlight | @couchbase-traces/app, @couchbase-traces/common-utils |
+| @lezer/common | 1.5.3 | MIT | git+https://code.haverbeke.berlin/lezer/common | @couchbase-traces/app |
+| @lezer/highlight | 1.2.5 | MIT | git+https://code.haverbeke.berlin/lezer/highlight | @couchbase-traces/app |
 | @lezer/json | 1.0.2 | MIT | https://github.com/lezer-parser/json | @couchbase-traces/app |
-| @lezer/lr | 1.4.11 | MIT | git+https://code.haverbeke.berlin/lezer/lr | @couchbase-traces/app, @couchbase-traces/common-utils |
+| @lezer/lr | 1.4.11 | MIT | git+https://code.haverbeke.berlin/lezer/lr | @couchbase-traces/app |
 | @mantine/core | 9.0.0 | MIT | https://github.com/mantinedev/mantine | @couchbase-traces/app |
 | @mantine/dates | 9.0.0 | MIT | https://github.com/mantinedev/mantine | @couchbase-traces/app |
 | @mantine/dropzone | 9.0.0 | MIT | https://github.com/mantinedev/mantine | @couchbase-traces/app |
@@ -195,8 +192,6 @@ Packages reachable from workspace `dependencies` (private workspaces are omitted
 | @opentelemetry/semantic-conventions | 1.28.0 | Apache-2.0 | https://github.com/open-telemetry/opentelemetry-js | @couchbase-traces/api, @couchbase-traces/app |
 | @opentelemetry/semantic-conventions | 1.44.0 | Apache-2.0 | https://github.com/open-telemetry/opentelemetry-js | @couchbase-traces/api, @couchbase-traces/app |
 | @opentelemetry/sql-common | 0.42.0 | Apache-2.0 | https://github.com/open-telemetry/opentelemetry-js-contrib | @couchbase-traces/api |
-| @prometheus-io/codemirror-promql | 0.311.3 | Apache-2.0 | https://github.com/prometheus/prometheus | @couchbase-traces/app |
-| @prometheus-io/lezer-promql | 0.311.3 | Apache-2.0 | https://github.com/prometheus/prometheus | @couchbase-traces/app, @couchbase-traces/common-utils |
 | @protobufjs/aspromise | 1.1.2 | BSD-3-Clause | https://github.com/dcodeIO/protobuf.js | @couchbase-traces/api |
 | @protobufjs/base64 | 1.1.2 | BSD-3-Clause | https://github.com/dcodeIO/protobuf.js | @couchbase-traces/api |
 | @protobufjs/codegen | 2.0.5 | BSD-3-Clause | https://github.com/dcodeIO/protobuf.js | @couchbase-traces/api |
@@ -648,13 +643,13 @@ Packages reachable from workspace `dependencies` (private workspaces are omitted
 | longest-streak | 3.1.0 | MIT | https://github.com/wooorm/longest-streak | @couchbase-traces/app |
 | loose-envify | 1.4.0 | MIT | https://github.com/zertosh/loose-envify | @couchbase-traces/app |
 | lowlight | 1.20.0 | MIT | https://github.com/wooorm/lowlight | @couchbase-traces/app |
-| lru-cache | 10.2.2 | ISC | https://github.com/isaacs/node-lru-cache | @couchbase-traces/api, @couchbase-traces/app |
-| lru-cache | 10.4.3 | ISC | https://github.com/isaacs/node-lru-cache | @couchbase-traces/api, @couchbase-traces/app |
-| lru-cache | 11.2.7 | BlueOak-1.0.0 | https://github.com/isaacs/node-lru-cache | @couchbase-traces/api, @couchbase-traces/app |
-| lru-cache | 11.3.5 | BlueOak-1.0.0 | https://github.com/isaacs/node-lru-cache | @couchbase-traces/api, @couchbase-traces/app |
-| lru-cache | 4.1.5 | ISC | https://github.com/isaacs/node-lru-cache | @couchbase-traces/api, @couchbase-traces/app |
-| lru-cache | 5.1.1 | ISC | https://github.com/isaacs/node-lru-cache | @couchbase-traces/api, @couchbase-traces/app |
-| lru-cache | 6.0.0 | ISC | https://github.com/isaacs/node-lru-cache | @couchbase-traces/api, @couchbase-traces/app |
+| lru-cache | 10.2.2 | ISC | https://github.com/isaacs/node-lru-cache | @couchbase-traces/api |
+| lru-cache | 10.4.3 | ISC | https://github.com/isaacs/node-lru-cache | @couchbase-traces/api |
+| lru-cache | 11.2.7 | BlueOak-1.0.0 | https://github.com/isaacs/node-lru-cache | @couchbase-traces/api |
+| lru-cache | 11.3.5 | BlueOak-1.0.0 | https://github.com/isaacs/node-lru-cache | @couchbase-traces/api |
+| lru-cache | 4.1.5 | ISC | https://github.com/isaacs/node-lru-cache | @couchbase-traces/api |
+| lru-cache | 5.1.1 | ISC | https://github.com/isaacs/node-lru-cache | @couchbase-traces/api |
+| lru-cache | 6.0.0 | ISC | https://github.com/isaacs/node-lru-cache | @couchbase-traces/api |
 | luxon | 3.7.2 | MIT | https://github.com/moment/luxon | @couchbase-traces/api |
 | markdown-table | 3.0.4 | MIT | https://github.com/wooorm/markdown-table | @couchbase-traces/app |
 | math-intrinsics | 1.1.0 | MIT | https://github.com/es-shims/math-intrinsics | @couchbase-traces/api |
@@ -933,7 +928,6 @@ Packages reachable from workspace `dependencies` (private workspaces are omitted
 | sqlstring | 2.3.3 | MIT | https://github.com/mysqljs/sqlstring | @couchbase-traces/api, @couchbase-traces/app, @couchbase-traces/common-utils |
 | statuses | 2.0.1 | MIT | https://github.com/jshttp/statuses | @couchbase-traces/api |
 | statuses | 2.0.2 | MIT | https://github.com/jshttp/statuses | @couchbase-traces/api |
-| store2 | 2.14.4 | MIT | https://github.com/nbubna/store | @couchbase-traces/app |
 | string-width | 4.2.3 | MIT | https://github.com/sindresorhus/string-width | @couchbase-traces/api |
 | string-width | 5.1.2 | MIT | https://github.com/sindresorhus/string-width | @couchbase-traces/api |
 | string-width | 7.2.0 | MIT | https://github.com/sindresorhus/string-width | @couchbase-traces/api |
@@ -1113,9 +1107,6 @@ Packages reachable from workspace `dependencies` (private workspaces are omitted
 | @clickhouse/click-ui | 0.12.0 | https://github.com/ClickHouse/click-ui |
 | @clickhouse/clickstack-browser | 1.2.1 | https://github.com/ClickHouse/clickstack-browser |
 | @clickhouse/clickstack-node | 1.0.2 | https://github.com/ClickHouse/clickstack-node |
-| @clickhouse/client | 1.23.0-head.fae5998.1 | https://github.com/ClickHouse/clickhouse-js |
-| @clickhouse/client-common | 1.23.0-head.fae5998.1 | https://github.com/ClickHouse/clickhouse-js |
-| @clickhouse/client-web | 1.23.0-head.fae5998.1 | https://github.com/ClickHouse/clickhouse-js |
 | @grpc/grpc-js | 1.14.7 | https://github.com/grpc/grpc-node.git#master |
 | @grpc/proto-loader | 0.8.1 | https://github.com/grpc/grpc-node |
 | @opentelemetry/api | 1.9.0 | https://github.com/open-telemetry/opentelemetry-js |
@@ -1207,8 +1198,6 @@ Packages reachable from workspace `dependencies` (private workspaces are omitted
 | @opentelemetry/semantic-conventions | 1.28.0 | https://github.com/open-telemetry/opentelemetry-js |
 | @opentelemetry/semantic-conventions | 1.44.0 | https://github.com/open-telemetry/opentelemetry-js |
 | @opentelemetry/sql-common | 0.42.0 | https://github.com/open-telemetry/opentelemetry-js-contrib |
-| @prometheus-io/codemirror-promql | 0.311.3 | https://github.com/prometheus/prometheus |
-| @prometheus-io/lezer-promql | 0.311.3 | https://github.com/prometheus/prometheus |
 | @swc/helpers | 0.5.23 | https://github.com/swc-project/swc |
 | @vercel/oidc | 3.2.0 | https://github.com/vercel/vercel |
 | @workflow/serde | 4.1.0 | https://github.com/vercel/workflow |
@@ -2050,7 +2039,6 @@ Packages reachable from workspace `dependencies` (private workspaces are omitted
 | sqlstring | 2.3.3 | https://github.com/mysqljs/sqlstring |
 | statuses | 2.0.1 | https://github.com/jshttp/statuses |
 | statuses | 2.0.2 | https://github.com/jshttp/statuses |
-| store2 | 2.14.4 | https://github.com/nbubna/store |
 | string-width | 4.2.3 | https://github.com/sindresorhus/string-width |
 | string-width | 5.1.2 | https://github.com/sindresorhus/string-width |
 | string-width | 7.2.0 | https://github.com/sindresorhus/string-width |

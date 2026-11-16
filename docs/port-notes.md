@@ -734,7 +734,7 @@ Collector components, pipelines, ClickHouse exporters, and management code.
 | Key | Count |
 |---|---|
 | engine_reference | 3 |
-| external_dependency | 60 |
+| external_dependency | 59 |
 | internal_identifier | 348 |
 | pending_decision | 1 |
 | test_fixture | 14 |
@@ -747,7 +747,7 @@ Collector components, pipelines, ClickHouse exporters, and management code.
 | rule 1 keep | 13 |
 | rule 5 keep | 3 |
 | rule 6 review | 21 |
-| rule 7 review | 17 |
+| rule 7 review | 11 |
 
 ### Outbound hits by context
 

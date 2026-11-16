@@ -555,13 +555,6 @@
       "note": "Package repository URL in license report."
     },
     {
-      "path": "docs/licenses.md",
-      "term": "url",
-      "snippet": "https://github.com/ClickHouse/clickhouse-js",
-      "reason": "external_dependency",
-      "note": "Package repository URL in license report."
-    },
-    {
       "path": "docs/upstream-AGENTS.md",
       "term": "hyperdx",
       "snippet": "[play.hyperdx.io](https://play.hyperdx.io) when the bug shows there, or from",
