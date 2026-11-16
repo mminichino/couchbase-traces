@@ -342,6 +342,43 @@ async function b2(ctx) {
       }
     }
 
+    // Resolve a real trace id for the waterfall view when possible.
+    try {
+      const conn = logSrc?.connection;
+      if (conn) {
+        const tr = await api.couchbaseQuery({
+          connectionId: conn,
+          statement:
+            'SELECT RAW TraceId FROM `otel`.`default`.`otel_traces` AS d WHERE d.TraceId IS NOT MISSING LIMIT 1',
+          format: 'JSON',
+        });
+        let traceId = null;
+        if (tr.text) {
+          for (const line of tr.text.split('\n')) {
+            try {
+              const f = JSON.parse(line);
+              if (Array.isArray(f.rows) && f.rows[0]) traceId = f.rows[0];
+              if (typeof f === 'string') traceId = f;
+            } catch {
+              // ignore
+            }
+          }
+        }
+        if (traceId) {
+          for (const view of views) {
+            if (view.id === 'trace-waterfall') {
+              view.route = `/search?${new URLSearchParams({
+                // Open search then rely on first row "view trace"; direct /trace/:id is fine.
+              })}`;
+              view.route = `/trace/${traceId}`;
+            }
+          }
+        }
+      }
+    } catch {
+      // keep placeholder route
+    }
+
     const browser = await ctx.browser();
     await browser.ensureLoggedIn({
       email: session.email,

@@ -162,6 +162,49 @@ async function g1(ctx) {
     problems.push({ step: 'sources', error: 'no log source' });
   }
 
+  // Spec §6.10: measure the last complete 5-minute window, then choose thresholds.
+  let measured = 10;
+  if (logSourceId) {
+    const end = Date.now();
+    const windowEnd = end - (end % (5 * 60 * 1000));
+    const windowStart = windowEnd - 5 * 60 * 1000;
+    const sourcesNow = await api.sources();
+    const listNow = Array.isArray(sourcesNow.json)
+      ? sourcesNow.json
+      : sourcesNow.json?.data || [];
+    const log = listNow.find(s => s.kind === 'log') || listNow[0];
+    const connectionId = log?.connection;
+    const from = log?.from || {};
+    const collection =
+      from.databaseName && from.tableName
+        ? `\`${from.databaseName}\`.\`${from.scopeName || 'default'}\`.\`${from.tableName}\``
+        : '`otel`.`default`.`otel_logs`';
+    if (connectionId) {
+      const countRes = await api.couchbaseQuery({
+        connectionId,
+        statement: `SELECT COUNT(*) AS c FROM ${collection} AS l WHERE l.Timestamp >= $p0 AND l.Timestamp < $p1`,
+        parameters: {
+          p0: new Date(windowStart).toISOString().replace('Z', '000000Z'),
+          p1: new Date(windowEnd).toISOString().replace('Z', '000000Z'),
+        },
+        format: 'JSON',
+      });
+      let c = null;
+      if (countRes.text) {
+        for (const line of countRes.text.split('\n')) {
+          try {
+            const f = JSON.parse(line);
+            if (f.rows?.[0]?.c != null) c = Number(f.rows[0].c);
+            if (f.c != null) c = Number(f.c);
+          } catch {
+            // ignore
+          }
+        }
+      }
+      if (Number.isFinite(c) && c > 0) measured = c;
+    }
+  }
+
   /** @type {object[]} */
   const matrix = [];
   /** @type {object[]} */
@@ -170,7 +213,6 @@ async function g1(ctx) {
 
   for (const source of SOURCES) {
     for (const type of THRESHOLDS) {
-      const measured = 10;
       const firing = chooseThreshold(type, measured);
       const control = chooseControlThreshold(type, measured);
       const webhook = webhooks[wi % webhooks.length];
@@ -355,9 +397,7 @@ async function g1(ctx) {
     });
   }
 
-  const fireOk = matrix.filter(
-    r => r.fireId && (r.firingState === 'ALERT' || r.payloadSeen),
-  ).length;
+  const fireOk = matrix.filter(r => r.fireId && r.firingState === 'ALERT').length;
   const controlOk = matrix.filter(
     r => r.ctrlId && r.controlState && r.controlState !== 'ALERT',
   ).length;
