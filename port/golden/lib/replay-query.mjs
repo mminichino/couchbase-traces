@@ -3,6 +3,7 @@ import { createRequire } from 'node:module';
 import { readFileSync, existsSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { anchorTime } from './anchor.mjs';
 import { listGoldenCaseIds, readGoldenFile, slugCaseId } from './golden-io.mjs';
 
 const require = createRequire(import.meta.url);
@@ -20,6 +21,29 @@ const goldenDir = process.env.GOLDEN_DIR;
 if (!cbUrl || !goldenDir) {
   console.error('[replay-query] set CB_URL and GOLDEN_DIR');
   process.exit(1);
+}
+const anchorMs = Number(process.env.GOLDEN_ANCHOR_MS || anchorTime().getTime());
+
+/**
+ * Function goldens may store epoch-ms bucket values as offsets from the Monday
+ * anchor (`anchorSensitive`). Restore them before compare.
+ * @param {any} result
+ * @param {boolean} anchorSensitive
+ */
+function expectedFunctionResult(result, anchorSensitive) {
+  if (!anchorSensitive || result == null) return result;
+  if (Array.isArray(result.rows)) {
+    return {
+      ...result,
+      rows: result.rows.map(row => {
+        if (row && typeof row === 'object' && typeof row.b === 'number') {
+          return { ...row, b: row.b + anchorMs };
+        }
+        return row;
+      }),
+    };
+  }
+  return result;
 }
 
 const span = JSON.parse(process.env.PARITY_WINDOW || '{}');
@@ -202,9 +226,13 @@ for (const caseId of listGoldenCaseIds(join(goldenDir, 'functions'))) {
       };
     }
   }
-  if (actual && JSON.stringify(golden.result) !== JSON.stringify(actual)) {
+  const expected = expectedFunctionResult(
+    golden.result,
+    Boolean(golden.anchorSensitive),
+  );
+  if (actual && JSON.stringify(expected) !== JSON.stringify(actual)) {
     errors.push(
-      `functions ${caseId}: mismatch expected=${JSON.stringify(golden.result)} actual=${JSON.stringify(actual)}`,
+      `functions ${caseId}: mismatch expected=${JSON.stringify(expected)} actual=${JSON.stringify(actual)}`,
     );
   }
 }

@@ -3,7 +3,7 @@
   "suite": "functions",
   "caseId": "hour-buckets",
   "datasetSeed": 0,
-  "anchorSensitive": false,
+  "anchorSensitive": true,
   "compare": {
     "ordered": true,
     "numericTolerance": 1e-9,
@@ -12,7 +12,7 @@
   "result": {
     "rows": [
       {
-        "b": 1794178800000,
+        "b": -3600000,
         "c": 10000
       }
     ]

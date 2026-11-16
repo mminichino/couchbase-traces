@@ -1049,4 +1049,6 @@ Completed requests: `system:completed_requests` requires `query_system_catalog`.
 
 ## Phase 11 acceptance
 
+- Golden `functions/hour-buckets` stores bucket epoch as an anchor offset (`anchorSensitive`) so Monday drift no longer fails replay.
+- Golden ingest replay aligns absolute ISO timestamps in expected row keys to the current Monday anchor (week drift); no re-capture.
 - common-utils Jest coverage floors reset to measured CB-only levels after Phase 10 (78/65/75/78) so `make ci-unit` / acceptance K1 match reality; ratchet up as coverage grows.
