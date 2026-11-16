@@ -1049,6 +1049,7 @@ Completed requests: `system:completed_requests` requires `query_system_catalog`.
 
 ## Phase 11 acceptance
 
+- All-in-one-auth ENTRYPOINT uses `bash` so `entry.cbt.sh` can set `pipefail` (dash rejects it).
 - All-in-one image installs MongoDB 8.0.38 from the Ubuntu noble apt repo (Couchbase Server 8 bases are 24.04; MongoDB 5.0/focal is incompatible).
 - Golden `functions/hour-buckets` stores bucket epoch as an anchor offset (`anchorSensitive`) so Monday drift no longer fails replay.
 - Golden ingest replay aligns absolute ISO timestamps in expected row keys to the current Monday anchor (week drift); no re-capture.

@@ -252,5 +252,6 @@ COPY --from=hyperdx --chmod=755 ./entry.cbt.sh /etc/local/entry.sh
 HEALTHCHECK --interval=30s --timeout=5s --start-period=120s --retries=3 \
     CMD curl -f http://localhost:8080/api/health || exit 1
 
-ENTRYPOINT ["sh", "/etc/local/entry.sh"]
+# entry.cbt.sh requires bash (pipefail / arrays); do not run under dash.
+ENTRYPOINT ["bash", "/etc/local/entry.sh"]
 
