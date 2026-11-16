@@ -34,7 +34,8 @@ export function useExplainQuery(
         source?.querySettings,
       );
       const response = await dataClient.query<'JSONEachRow'>({
-        query: `EXPLAIN ESTIMATE ${query.sql}`,
+        // Couchbase SQL++ has EXPLAIN, not ClickHouse's EXPLAIN ESTIMATE.
+        query: `EXPLAIN ${query.sql}`,
         query_params: query.params,
         format: 'JSONEachRow',
         abort_signal: signal,

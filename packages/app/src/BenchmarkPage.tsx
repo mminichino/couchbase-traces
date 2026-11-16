@@ -89,7 +89,7 @@ function useEstimates(
         queries.map((query, i) =>
           dataClient
             .query({
-              query: `EXPLAIN ESTIMATE ${query}`,
+              query: `EXPLAIN ${query}`,
               format: 'JSON',
               connectionId: connections[i],
             })

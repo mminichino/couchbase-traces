@@ -70,12 +70,32 @@ async function g1(ctx) {
   /** @type {object[]} */
   const problems = [];
 
+  const existingWh = await api.request('/webhooks');
+  const existingList = Array.isArray(existingWh.json)
+    ? existingWh.json
+    : existingWh.json?.data || [];
+
   const webhooks = [];
   for (const service of WEBHOOK_SERVICES) {
+    const found = existingList.find(
+      w =>
+        w.service === service &&
+        String(w.name || '').startsWith(`accept-${service}`),
+    );
+    if (found) {
+      webhooks.push({
+        service,
+        id: found._id ?? found.id,
+        status: 200,
+        body: found,
+        reused: true,
+      });
+      continue;
+    }
     const res = await api.request('/webhooks', {
       method: 'POST',
       json: {
-        name: `accept-${service}`,
+        name: `accept-${service}-${Date.now()}`,
         service,
         url: WEBHOOK_URLS[service],
       },
