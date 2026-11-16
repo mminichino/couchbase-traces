@@ -46,6 +46,13 @@ services:
       context: .
       dockerfile: docker/otel-collector/Dockerfile
       target: prod
+    # Replace published ports (+10000) so a developer stack can keep 4317/4318.
+    ports: !override
+      - '23133:13133'
+      - '34225:24225'
+      - '14317:4317'
+      - '14318:4318'
+      - '18888:8888'
     dns:
       - 172.28.0.53
 
@@ -69,6 +76,16 @@ services:
       - 172.28.0.53
 
   couchbase:
+    # Replace published ports (+10000) so a developer stack can keep 8091–11210.
+    ports: !override
+      - '127.0.0.1:18091:8091'
+      - '127.0.0.1:18092:8092'
+      - '127.0.0.1:18093:8093'
+      - '127.0.0.1:18094:8094'
+      - '127.0.0.1:18095:8095'
+      - '127.0.0.1:18096:8096'
+      - '127.0.0.1:18097:8097'
+      - '127.0.0.1:21210:11210'
     dns:
       - 172.28.0.53
 
