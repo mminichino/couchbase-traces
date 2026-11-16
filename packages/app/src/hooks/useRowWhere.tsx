@@ -55,16 +55,11 @@ export function processRowToWhereClause(
       const jsType = cm?.jsType;
       const valueExpr = cm?.valueExpr;
 
-      if (chType == null) {
-        throw new Error(
-          `Column type not found for ${column}, ${JSON.stringify(columnMap)}`,
-        );
-      }
-
-      if (valueExpr == null) {
-        throw new Error(
-          `valueExpr not found for ${column}, ${JSON.stringify(columnMap)}`,
-        );
+      // Metadata can lag behind the first search page paint (INFER still
+      // running). Skip unknown columns instead of crashing the page with
+      // "Column type not found" — filters for those columns simply omit them.
+      if (chType == null || valueExpr == null) {
+        return null;
       }
 
       // Handle nullish values for all types uniformly
@@ -137,6 +132,7 @@ export function processRowToWhereClause(
           ]);
       }
     })
+    .filter((clause): clause is string => clause != null)
     .join(' AND ');
 
   return res;

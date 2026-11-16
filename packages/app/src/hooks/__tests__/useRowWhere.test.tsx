@@ -479,17 +479,13 @@ describe('processRowToWhereClause', () => {
     expect(result).toBe('isNull(description)');
   });
 
-  it('should throw error when column type not found', () => {
+  it('skips columns whose type is not yet in metadata', () => {
     const columnMap = new Map();
-
     const row = { unknown_column: 'test' };
-
-    expect(() => processRowToWhereClause(row, columnMap)).toThrow(
-      'Column type not found for unknown_column',
-    );
+    expect(processRowToWhereClause(row, columnMap)).toBe('');
   });
 
-  it('should throw error when valueExpr not found', () => {
+  it('skips columns whose valueExpr is missing', () => {
     const columnMap = new Map([
       [
         'test',
@@ -501,12 +497,8 @@ describe('processRowToWhereClause', () => {
         },
       ],
     ]);
-
     const row = { test: 'value' };
-
-    expect(() => processRowToWhereClause(row, columnMap)).toThrow(
-      'valueExpr not found for test',
-    );
+    expect(processRowToWhereClause(row, columnMap)).toBe('');
   });
 });
 
@@ -708,7 +700,7 @@ describe('useRowWhere', () => {
 
     const row = { id: '123' };
 
-    expect(() => result.current(row)).toThrow('Column type not found for id');
+    expect(result.current(row)).toBe('');
   });
 
   it('should handle undefined meta', () => {
@@ -716,7 +708,7 @@ describe('useRowWhere', () => {
 
     const row = { id: '123' };
 
-    expect(() => result.current(row)).toThrow('Column type not found for id');
+    expect(result.current(row)).toBe('');
   });
 
   it('should filter to only primaryKeyColumns when provided', () => {
