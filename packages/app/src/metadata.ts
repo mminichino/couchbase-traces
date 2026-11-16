@@ -3,6 +3,7 @@ import { getMetadata as _getMetadata } from '@couchbase-traces/common-utils/dist
 
 import { getDataClient } from '@/query';
 
+import { queryTimeoutToRequestTimeoutMs } from './dataClient';
 import { DEFAULT_QUERY_TIMEOUT } from './defaults';
 
 // TODO: Get rid of this function and convert to singleton
@@ -13,7 +14,7 @@ import { DEFAULT_QUERY_TIMEOUT } from './defaults';
 export const getMetadata = (): Metadata =>
   _getMetadata(
     getDataClient({
-      requestTimeout: DEFAULT_QUERY_TIMEOUT,
+      requestTimeout: queryTimeoutToRequestTimeoutMs(DEFAULT_QUERY_TIMEOUT),
       attribution: { surface: 'metadata' },
     }),
   );

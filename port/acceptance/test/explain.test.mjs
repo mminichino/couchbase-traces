@@ -70,4 +70,17 @@ describe('EXPLAIN plan walker', () => {
     assert.equal(evaluateExplainPlan('INFER `otel`.`default`.`otel_logs`', null), 'exempt');
     assert.equal(evaluateExplainPlan('EXPLAIN SELECT 1', null), 'exempt');
   });
+
+  it('reads IndexScan3 from an EXPLAIN row wrapper { plan, text }', () => {
+    const row = {
+      plan: {
+        '#operator': 'Sequence',
+        '~children': [{ '#operator': 'IndexScan3', index: 'ix_logs_ts' }],
+      },
+      text: 'SELECT 1',
+    };
+    const plan = row.plan;
+    assert.equal(evaluateExplainPlan('SELECT 1 FROM otel_logs', plan), 'pass');
+    assert.deepEqual(collectScanOperators(plan).allowed, ['IndexScan3']);
+  });
 });

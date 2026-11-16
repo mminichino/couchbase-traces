@@ -69,10 +69,14 @@ async function d1(ctx) {
         parameters: row.parameters ?? undefined,
         queryContext: row.queryContext ?? undefined,
       });
-      // NDJSON or JSON body
+      // NDJSON or JSON body. EXPLAIN rows are `{ plan, text }`.
       let plan = null;
+      const unwrap = row =>
+        row?.plan ??
+        row?.['~plan'] ??
+        (row?.['#operator'] ? row : null);
       if (res.json?.plan) plan = res.json.plan;
-      else if (Array.isArray(res.json)) plan = res.json;
+      else if (Array.isArray(res.json)) plan = unwrap(res.json[0]) ?? res.json;
       else if (typeof res.text === 'string' && res.text.includes('{')) {
         const lines = res.text
           .split('\n')
@@ -86,7 +90,15 @@ async function d1(ctx) {
           })
           .filter(Boolean);
         const rowsFrame = lines.find(f => f.type === 'rows');
-        plan = rowsFrame?.rows?.[0] ?? lines[0];
+        const first = rowsFrame?.rows?.[0] ?? lines[0];
+        plan = unwrap(first) ?? first;
+      }
+      if (!res.ok && plan == null) {
+        failing.push({
+          statement: row.statement.slice(0, 300),
+          reason: `EXPLAIN HTTP ${res.status}: ${(res.text || '').slice(0, 200)}`,
+        });
+        continue;
       }
       const outcome = evaluateExplainPlan(row.statement, plan);
       const scans = collectScanOperators(plan);

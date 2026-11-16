@@ -23,6 +23,15 @@ export const getDataClient = (
   options: DataClientOptions & { attribution: QueryAttribution },
 ): DataClient => createDataClient(options);
 
+/** Team / default queryTimeout is seconds; the data client expects ms. */
+export function queryTimeoutToRequestTimeoutMs(
+  queryTimeoutSec: number | null | undefined,
+): number | undefined {
+  if (queryTimeoutSec == null) return undefined;
+  if (queryTimeoutSec <= 0) return 0; // unlimited (client treats 0 as no AbortSignal cap when wired)
+  return queryTimeoutSec * 1000;
+}
+
 export const useDataClient = (options: DataClientOptions = {}): DataClient => {
   const { data: me } = api.useMe();
   const queryTimeout = me?.team?.queryTimeout ?? DEFAULT_QUERY_TIMEOUT;
@@ -33,7 +42,7 @@ export const useDataClient = (options: DataClientOptions = {}): DataClient => {
   );
   return getDataClient({
     ...options,
-    requestTimeout: queryTimeout,
+    requestTimeout: queryTimeoutToRequestTimeoutMs(queryTimeout),
     attribution,
   });
 };

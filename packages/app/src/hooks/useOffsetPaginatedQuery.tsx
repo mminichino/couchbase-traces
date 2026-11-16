@@ -190,7 +190,13 @@ const queryFn: QueryFunction<TQueryFnData, TQueryKey, TPageParam> = async ({
 
   const queryTimeout = queryKey[2];
   const dataClient = getDataClient({
-    requestTimeout: queryTimeout,
+    // queryTimeout is seconds (team setting / DEFAULT_QUERY_TIMEOUT); client wants ms.
+    requestTimeout:
+      queryTimeout == null
+        ? undefined
+        : queryTimeout <= 0
+          ? 0
+          : queryTimeout * 1000,
     attribution,
   });
 

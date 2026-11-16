@@ -129,23 +129,31 @@ export class BrowserSession {
    */
   async evaluateAssert(assert) {
     const loc = this.page.locator(assert.selector);
+    const min = assert.min ?? 1;
+    const deadline = Date.now() + 90_000;
     switch (assert.kind) {
-      case 'min_rows': {
-        const n = await loc.count();
-        return { ok: n >= (assert.min ?? 1), actual: n };
-      }
-      case 'element_count': {
-        const n = await loc.count();
-        return { ok: n >= (assert.min ?? 1), actual: n };
-      }
+      case 'min_rows':
+      case 'element_count':
       case 'chart_has_series': {
-        const n = await loc.count();
-        return { ok: n >= (assert.min ?? 1), actual: n };
+        let n = 0;
+        while (Date.now() < deadline) {
+          n = await loc.count();
+          if (n >= min) break;
+          await this.page.waitForTimeout(1000);
+        }
+        return { ok: n >= min, actual: n };
       }
       case 'text_present': {
-        const t = await this.page.locator('body').innerText();
-        const ok = t.toLowerCase().includes((assert.text ?? '').toLowerCase());
-        return { ok, actual: ok ? assert.text : null };
+        let ok = false;
+        let actual = null;
+        while (Date.now() < deadline) {
+          const t = await this.page.locator('body').innerText();
+          ok = t.toLowerCase().includes((assert.text ?? '').toLowerCase());
+          actual = ok ? assert.text : null;
+          if (ok) break;
+          await this.page.waitForTimeout(1000);
+        }
+        return { ok, actual };
       }
       default:
         return { ok: false, actual: `unknown assert kind ${assert.kind}` };
