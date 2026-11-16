@@ -130,7 +130,7 @@ export class BrowserSession {
   async evaluateAssert(assert) {
     const loc = this.page.locator(assert.selector);
     const min = assert.min ?? 1;
-    const deadline = Date.now() + 90_000;
+    const deadline = Date.now() + 45_000;
     switch (assert.kind) {
       case 'min_rows':
       case 'element_count':

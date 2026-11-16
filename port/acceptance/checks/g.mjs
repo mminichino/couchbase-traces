@@ -165,11 +165,14 @@ async function g1(ctx) {
         name: `accept-${source}-${type}`,
       };
 
+      const dash = ctx.shared?.dashboard || {};
       const firingBody = buildAlertBody(source, {
         ...base,
         ...firing,
         savedSearchId,
         logSourceId,
+        dashboardId: dash.id,
+        tileId: dash.tileId,
       });
       const controlBody = buildAlertBody(source, {
         ...base,
@@ -177,6 +180,8 @@ async function g1(ctx) {
         name: `accept-control-${source}-${type}`,
         savedSearchId,
         logSourceId,
+        dashboardId: dash.id,
+        tileId: dash.tileId,
       });
 
       const fireRes = firingBody
@@ -407,9 +412,19 @@ function buildAlertBody(source, opts) {
       },
     };
   }
-  // tile alerts need a dashboard tile id — create path not wired yet.
   if (source === 'tile') {
-    return null;
+    if (!opts.dashboardId || !opts.tileId) return null;
+    return {
+      source: 'tile',
+      dashboardId: String(opts.dashboardId),
+      tileId: String(opts.tileId),
+      interval: opts.interval,
+      threshold: opts.threshold,
+      thresholdType: opts.thresholdType,
+      thresholdMax: opts.thresholdMax,
+      channel,
+      name: opts.name,
+    };
   }
   return null;
 }

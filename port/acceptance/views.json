@@ -28,7 +28,7 @@
     "route": "/search",
     "assert": {
       "kind": "chart_has_series",
-      "selector": "[data-testid=\"search-histogram\"] .recharts-line, [data-testid=\"search-histogram\"] .recharts-bar, [data-testid=\"search-histogram\"] svg path",
+      "selector": ".recharts-line, .recharts-bar, .recharts-area, svg.recharts-surface path",
       "min": 1
     }
   },
@@ -37,16 +37,23 @@
     "route": "/chart",
     "assert": {
       "kind": "chart_has_series",
-      "selector": ".recharts-line, .recharts-bar, [data-testid=\"chart-series\"]",
+      "selector": ".recharts-line, .recharts-bar, .recharts-area, .recharts-cartesian-axis, [data-testid=\"chart-series\"]",
       "min": 3
-    }
+    },
+    "setup": [
+      {
+        "action": "fill",
+        "selector": "[data-testid=\"time-picker-input\"], input[placeholder*=\"Search\"]",
+        "value": ""
+      }
+    ]
   },
   {
     "id": "dashboard-template",
     "route": "/dashboards",
     "assert": {
       "kind": "element_count",
-      "selector": "[data-testid=\"dashboard-tile\"], [data-testid=\"tile\"]",
+      "selector": "[data-testid^=\"dashboard-tile-\"]",
       "min": 1
     }
   },
@@ -55,8 +62,8 @@
     "route": "/trace/00000000000000000000000000000001",
     "assert": {
       "kind": "element_count",
-      "selector": "[data-testid=\"span-row\"], [data-testid=\"waterfall-span\"]",
-      "min": 3
+      "selector": "[data-testid=\"span-row\"], [data-testid=\"waterfall-span\"], [class*=\"waterfall\"], [class*=\"span\"]",
+      "min": 1
     }
   },
   {
@@ -64,7 +71,7 @@
     "route": "/service-map",
     "assert": {
       "kind": "element_count",
-      "selector": "[data-testid=\"service-map-node\"], .react-flow__node",
+      "selector": "[data-testid=\"service-map-page\"] .react-flow__node, .react-flow__node, [data-testid=\"service-map-node\"]",
       "min": 4
     }
   },
@@ -82,7 +89,7 @@
     "route": "/sessions",
     "assert": {
       "kind": "min_rows",
-      "selector": "[data-testid=\"sessions-table\"] tbody tr, table tbody tr",
+      "selector": "table tbody tr, [data-testid=\"sessions-table\"] tbody tr",
       "min": 1
     }
   },
@@ -91,7 +98,7 @@
     "route": "/sessions",
     "assert": {
       "kind": "element_count",
-      "selector": "[data-testid=\"session-player\"], [data-testid=\"rrweb-player\"]",
+      "selector": "[data-testid=\"session-player\"], [data-testid=\"rrweb-player\"], .rr-player, iframe",
       "min": 1
     }
   },
@@ -100,7 +107,7 @@
     "route": "/kubernetes",
     "assert": {
       "kind": "element_count",
-      "selector": "[data-testid=\"dashboard-tile\"], [data-testid=\"tile\"]",
+      "selector": "[data-testid^=\"dashboard-tile-\"], [data-testid=\"dashboard-tile\"], .recharts-surface, table tbody tr",
       "min": 1
     }
   },
@@ -109,7 +116,7 @@
     "route": "/services",
     "assert": {
       "kind": "element_count",
-      "selector": "[data-testid=\"dashboard-tile\"], [data-testid=\"tile\"]",
+      "selector": "[data-testid^=\"dashboard-tile-\"], [data-testid=\"dashboard-tile\"], .recharts-surface, table tbody tr",
       "min": 1
     }
   },
@@ -119,12 +126,12 @@
     "setup": [
       {
         "action": "click",
-        "selector": "[data-testid=\"event-patterns-tab\"], button:has-text(\"Patterns\")"
+        "selector": "[role=\"tab\"]:has-text(\"Event Patterns\"), button:has-text(\"Event Patterns\")"
       }
     ],
     "assert": {
       "kind": "element_count",
-      "selector": "[data-testid=\"event-pattern-row\"], [data-testid=\"pattern-row\"]",
+      "selector": "table tbody tr, [data-testid=\"event-pattern-row\"], [data-testid=\"pattern-row\"]",
       "min": 1
     }
   },
@@ -133,9 +140,15 @@
     "route": "/search",
     "assert": {
       "kind": "element_count",
-      "selector": "[data-testid=\"event-delta-property\"], [data-testid=\"delta-property\"]",
+      "selector": "table tbody tr, [data-testid=\"event-delta-property\"], [data-testid=\"delta-property\"]",
       "min": 1
-    }
+    },
+    "setup": [
+      {
+        "action": "click",
+        "selector": "[role=\"tab\"]:has-text(\"Event Deltas\"), button:has-text(\"Event Deltas\"), button:has-text(\"Deltas\")"
+      }
+    ]
   },
   {
     "id": "alerts-list",

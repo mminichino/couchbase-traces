@@ -291,6 +291,57 @@ async function b2(ctx) {
       });
     }
 
+    // Create a dashboard with a tile so dashboard-template / tile alerts have a target.
+    const sourcesList = await api.sources();
+    const srcList = Array.isArray(sourcesList.json)
+      ? sourcesList.json
+      : sourcesList.json?.data || [];
+    const logSrc = srcList.find(s => s.kind === 'log') || srcList[0];
+    let dashboardId = null;
+    let tileId = null;
+    if (logSrc?.id) {
+      const tile = {
+        id: 'accept-tile-1',
+        x: 0,
+        y: 0,
+        w: 6,
+        h: 3,
+        config: {
+          name: 'accept count',
+          displayType: 'line',
+          source: String(logSrc.id),
+          select: [{ aggFn: 'count', valueExpression: '' }],
+          where: '',
+          whereLanguage: 'lucene',
+          granularity: 'auto',
+        },
+      };
+      const dash = await api.request('/dashboards', {
+        method: 'POST',
+        json: {
+          name: `accept-dashboard-${Date.now()}`,
+          tiles: [tile],
+          tags: ['acceptance'],
+        },
+      });
+      dashboardId = dash.json?.id ?? dash.json?._id ?? null;
+      tileId = dash.json?.tiles?.[0]?.id ?? tile.id;
+      writeFileSync(
+        join(ctx.evidenceDir, 'b2-dashboard.json'),
+        `${JSON.stringify({ status: dash.status, body: dash.json }, null, 2)}\n`,
+      );
+      evidence.push(join(ctx.evidenceDir, 'b2-dashboard.json'));
+      if (dashboardId) {
+        // Point the dashboard-template view at the created dashboard.
+        for (const view of views) {
+          if (view.id === 'dashboard-template') {
+            view.route = `/dashboards/${dashboardId}`;
+          }
+        }
+        ctx.shared.dashboard = { id: dashboardId, tileId };
+      }
+    }
+
     const browser = await ctx.browser();
     await browser.ensureLoggedIn({
       email: session.email,

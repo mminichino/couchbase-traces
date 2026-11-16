@@ -36,6 +36,30 @@ async function d1(ctx) {
   const exempt = [];
 
   const api = ctx.stacks?.product?.ready ? ctx.api('product') : null;
+  if (api) {
+    const prior = ctx.shared?.session;
+    const session = await api.ensureSession(
+      prior ? { email: prior.email, password: prior.password } : {},
+    );
+    if (!session.ok) {
+      return result({
+        id: 'D1',
+        title: 'Index use',
+        status: 'fail',
+        summary: `Auth failed for EXPLAIN: ${session.error}`,
+        details: { capturePath },
+        evidence: [capturePath],
+        durationMs: Date.now() - started,
+      });
+    }
+    ctx.shared = ctx.shared || {};
+    ctx.shared.session = {
+      email: session.email,
+      password: session.password,
+      apiKey: session.apiKey,
+      teamApiKey: session.teamApiKey ?? session.apiKey,
+    };
+  }
 
   for (const row of rows) {
     const verdict = evaluateExplainPlan(row.statement, null);
