@@ -33,7 +33,7 @@ function config(partial: Partial<IngestConfig> = {}): IngestConfig {
       otel_metrics_histogram: 1,
       otel_metrics_exponential_histogram: 1,
       otel_metrics_summary: 1,
-      hyperdx_sessions: 1,
+      otel_sessions: 1,
     },
     ...partial,
   };

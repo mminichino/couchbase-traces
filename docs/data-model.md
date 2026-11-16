@@ -271,7 +271,7 @@ Materialized values:
 
 - none
 
-## `hyperdx_sessions`
+## `otel_sessions`
 
 | Field | legacy store | Document |
 |---|---|---|

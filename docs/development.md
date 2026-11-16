@@ -39,7 +39,7 @@ make dev-couchbase-setup
 
 | Data | Location |
 | --- | --- |
-| Telemetry | Couchbase bucket `otel`, scope `default` (collections `otel_*`, `hyperdx_sessions`) |
+| Telemetry | Couchbase bucket `otel`, scope `default` (collections `otel_*`, including `otel_sessions`) |
 | App metadata | MongoDB (`MONGO_URI`; database name defaults match the compose stack) |
 | Dev volumes | `.volumes/` under the repo (Couchbase data in `.volumes/couchbase_*`) |
 

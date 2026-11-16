@@ -6,5 +6,5 @@ export function transformSessions(
   req: ExportLogsServiceRequest,
   now: Date,
 ): TransformResult {
-  return transformLogRecords(req, now, 'hyperdx_sessions');
+  return transformLogRecords(req, now, 'otel_sessions');
 }

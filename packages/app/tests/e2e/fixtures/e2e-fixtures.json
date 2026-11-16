@@ -156,7 +156,7 @@
       "connection": "local",
       "from": {
         "databaseName": "default",
-        "tableName": "e2e_hyperdx_sessions"
+        "tableName": "e2e_otel_sessions"
       },
       "timestampValueExpression": "TimestampTime",
       "defaultTableSelectExpression": "Timestamp, ServiceName, Body",

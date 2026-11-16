@@ -55,7 +55,7 @@ export const InlineCode = () => (
     </div>
     <Text size="sm">
       Create a source with <Code>Session</Code> type, then select the{' '}
-      <Code>hyperdx_sessions</Code> table.
+      <Code>otel_sessions</Code> table.
     </Text>
     <CopySnippet snippet={INLINE_EXAMPLE} />
   </Stack>

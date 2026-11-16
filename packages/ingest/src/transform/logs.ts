@@ -21,7 +21,7 @@ export function transformLogs(
 export function transformLogRecords(
   req: ExportLogsServiceRequest,
   now: Date,
-  collection: 'otel_logs' | 'hyperdx_sessions',
+  collection: 'otel_logs' | 'otel_sessions',
 ): TransformResult {
   const docs: Doc[] = [];
   const reasons = new Map<string, number>();

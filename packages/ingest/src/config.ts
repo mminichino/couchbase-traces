@@ -74,7 +74,7 @@ export function loadConfig(env: NodeJS.ProcessEnv = process.env): IngestConfig {
       otel_metrics_histogram: resolveTtlMs(env, 'CBT_METRICS_TTL'),
       otel_metrics_exponential_histogram: resolveTtlMs(env, 'CBT_METRICS_TTL'),
       otel_metrics_summary: resolveTtlMs(env, 'CBT_METRICS_TTL'),
-      hyperdx_sessions: resolveTtlMs(env, 'CBT_SESSIONS_TTL'),
+      otel_sessions: resolveTtlMs(env, 'CBT_SESSIONS_TTL'),
     },
   };
 }

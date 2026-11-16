@@ -102,7 +102,7 @@ export function orEpoch(
 }
 
 export function finishLog(
-  collection: 'otel_logs' | 'hyperdx_sessions',
+  collection: 'otel_logs' | 'otel_sessions',
   doc: Record<string, unknown>,
 ): Doc {
   if (collection === 'otel_logs') applyLogMaterialized(doc);

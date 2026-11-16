@@ -541,7 +541,7 @@ Plus 352 more in sql-catalog.json.
 
 | Table | Columns | Engine | Order by | TTL |
 |---|---|---|---|---|
-| `hyperdx_sessions` | 18 | MergeTree | (ServiceName, TimestampTime, Timestamp) | TimestampTime + SESSIONS_TTL |
+| `otel_sessions` | 18 | MergeTree | (ServiceName, TimestampTime, Timestamp) | TimestampTime + SESSIONS_TTL |
 | `metrics_ts` | 0 | TimeSeries |  |  |
 | `otel_logs` | 25 | MergeTree | (toStartOfFiveMinutes(Timestamp), ServiceName, Timestamp) | toDateTime(Timestamp) + LOGS_TTL |
 | `otel_logs_kv_rollup_15m` | 5 | SummingMergeTree | (ColumnIdentifier, Key, Timestamp, Value) | Timestamp + LOGS_TTL |
@@ -1038,6 +1038,7 @@ Completed requests: `system:completed_requests` requires `query_system_catalog`.
 - Metadata is sampling-based. There are no rollup collections. `INFER` uses the team sample size capped at 10,000, and value lists read the newest sample of rows. A missing scope name defaults to `default`, the Phase 5 OTel scope. Couchbase requires `INFER ... WITH {…}` to be a static object literal (`WITH value must be static`), so `inferStatement` embeds the options JSON via `Raw` instead of a named parameter.
 - App `DEFAULT_QUERY_TIMEOUT` / team `queryTimeout` are **seconds** (legacy ClickHouse `max_execution_time`). The browser `CouchbaseClient` `requestTimeout` is **milliseconds**. `queryTimeoutToRequestTimeoutMs` multiplies by 1000; passing the raw second value aborted every search after 60 ms (acceptance B2).
 - ClickHouse `EXPLAIN ESTIMATE` is not valid SQL++. `useExplainQuery` and the benchmark page use plain `EXPLAIN` (acceptance B2 search console errors).
+- Sessions collection renamed `hyperdx_sessions` → `otel_sessions` so rendered cluster/team UI no longer leaks the HyperDX brand (acceptance H2).
 - Quantiles are exact. `quantile` sorts the group with `ARRAY_SORT(ARRAY_AGG(...))` and interpolates linearly. It is not a window function and not t-digest. Histogram quantiles use the same cumulative-bucket arithmetic as `core/histogram.ts`.
 - Unsupported on Couchbase: `getTimeSeriesTableColumns`, `getTimeSeriesTableVersion`, and `getTimeSeriesTables` (PromQL time-series tables were not ingested). `getSettings`, `getMergeTreeSettings`, and `getSkipIndices` return empty results.
 - `core/metadata.ts` and `clickhouse/index.ts` still import the ClickHouse `renderChartConfig`. The seam cannot import them and be imported by them. Call sites outside those modules and the tests go through `dataLayer`.

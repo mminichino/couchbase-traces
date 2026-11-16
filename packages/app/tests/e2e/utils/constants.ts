@@ -54,7 +54,7 @@ export const E2E_TRACES_TABLE = 'e2e_otel_traces';
 // AggregatingMergeTree rollup of e2e_otel_traces populated by the
 // e2e_otel_traces_1m_mv materialized view.
 export const E2E_TRACES_MV_TABLE = 'e2e_otel_traces_1m';
-export const E2E_SESSIONS_TABLE = 'e2e_hyperdx_sessions';
+export const E2E_SESSIONS_TABLE = 'e2e_otel_sessions';
 export const E2E_METRICS_GAUGE_TABLE = 'e2e_otel_metrics_gauge';
 export const E2E_METRICS_SUM_TABLE = 'e2e_otel_metrics_sum';
 export const E2E_METRICS_EXP_HISTOGRAM_TABLE =

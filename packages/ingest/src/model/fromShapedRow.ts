@@ -13,7 +13,7 @@ export type CouchbaseSeedCollection =
   | 'sessions'
   | 'otel_logs'
   | 'otel_traces'
-  | 'hyperdx_sessions'
+  | 'otel_sessions'
   | 'e2e_custom_service_name';
 
 export type CouchbaseSeedDocument = {
@@ -27,7 +27,7 @@ export type CouchbaseSeedDocument = {
 function collectionForTable(table: string): CouchbaseSeedCollection {
   const lower = table.toLowerCase();
   if (lower.includes('custom_service')) return 'e2e_custom_service_name';
-  if (lower.includes('session')) return 'hyperdx_sessions';
+  if (lower.includes('session')) return 'otel_sessions';
   if (lower.includes('trace') || lower.includes('span')) return 'otel_traces';
   if (lower.includes('log')) return 'otel_logs';
   return 'otel_logs';

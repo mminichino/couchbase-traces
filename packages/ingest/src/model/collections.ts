@@ -14,7 +14,7 @@ export type CollectionName =
   | 'otel_metrics_histogram'
   | 'otel_metrics_exponential_histogram'
   | 'otel_metrics_summary'
-  | 'hyperdx_sessions';
+  | 'otel_sessions';
 
 export type FieldEncoding =
   | 'timestamp_ns'
@@ -429,9 +429,9 @@ export const COLLECTIONS: readonly CollectionSpec[] = [
   metricCollection('otel_metrics_exponential_histogram', EXP_FIELDS),
   metricCollection('otel_metrics_summary', SUMMARY_FIELDS),
   {
-    name: 'hyperdx_sessions',
+    name: 'otel_sessions',
     signal: 'sessions',
-    sourceTable: 'hyperdx_sessions',
+    sourceTable: 'otel_sessions',
     timestampField: 'Timestamp',
     ttlEnv: 'CBT_SESSIONS_TTL',
     fields: SESSION_FIELDS,

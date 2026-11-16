@@ -36,7 +36,7 @@ const mockSources = [
     name: 'Sessions',
     kind: SourceKind.Session,
     connection: 'conn-1',
-    from: { databaseName: 'default', tableName: 'hyperdx_sessions' },
+    from: { databaseName: 'default', tableName: 'otel_sessions' },
     timestampValueExpression: 'Timestamp',
   },
   {

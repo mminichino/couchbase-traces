@@ -341,21 +341,21 @@ CREATE INDEX ix_metrics_summary_svc_name_ts IF NOT EXISTS ON `otel`.`default`.`o
 CREATE INDEX ix_metrics_summary_attr_items IF NOT EXISTS ON `otel`.`default`.`otel_metrics_summary`(DISTINCT ARRAY (p.`name` || "=" || p.`val`) FOR p IN OBJECT_PAIRS(`Attributes`) END) WITH {"defer_build": true, "num_replica": 0}
 ```
 
-## `hyperdx_sessions`
+## `otel_sessions`
 
 ```sql
-CREATE INDEX ix_sessions_ts IF NOT EXISTS ON `otel`.`default`.`hyperdx_sessions`(`Timestamp` DESC) WITH {"defer_build": true, "num_replica": 0}
+CREATE INDEX ix_sessions_ts IF NOT EXISTS ON `otel`.`default`.`otel_sessions`(`Timestamp` DESC) WITH {"defer_build": true, "num_replica": 0}
 ```
 
 ```sql
-CREATE INDEX ix_sessions_svc_ts IF NOT EXISTS ON `otel`.`default`.`hyperdx_sessions`(`ServiceName`, `Timestamp` DESC) WITH {"defer_build": true, "num_replica": 0}
+CREATE INDEX ix_sessions_svc_ts IF NOT EXISTS ON `otel`.`default`.`otel_sessions`(`ServiceName`, `Timestamp` DESC) WITH {"defer_build": true, "num_replica": 0}
 ```
 
 ```sql
-CREATE INDEX ix_sessions_session IF NOT EXISTS ON `otel`.`default`.`hyperdx_sessions`(`__hdx_materialized_session.id`, `Timestamp`) WITH {"defer_build": true, "num_replica": 0}
+CREATE INDEX ix_sessions_session IF NOT EXISTS ON `otel`.`default`.`otel_sessions`(`__hdx_materialized_session.id`, `Timestamp`) WITH {"defer_build": true, "num_replica": 0}
 ```
 
 ```sql
-CREATE INDEX ix_sessions_rum_session IF NOT EXISTS ON `otel`.`default`.`hyperdx_sessions`(`__hdx_materialized_rum.sessionId`, `Timestamp`) WITH {"defer_build": true, "num_replica": 0}
+CREATE INDEX ix_sessions_rum_session IF NOT EXISTS ON `otel`.`default`.`otel_sessions`(`__hdx_materialized_rum.sessionId`, `Timestamp`) WITH {"defer_build": true, "num_replica": 0}
 ```
 

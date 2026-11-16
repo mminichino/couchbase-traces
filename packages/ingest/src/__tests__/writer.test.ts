@@ -11,7 +11,7 @@ const ttl = {
   otel_metrics_histogram: TTL,
   otel_metrics_exponential_histogram: TTL,
   otel_metrics_summary: TTL,
-  hyperdx_sessions: TTL,
+  otel_sessions: TTL,
 } satisfies Record<CollectionName, number>;
 
 function doc(partial: Partial<Doc> = {}): Doc {

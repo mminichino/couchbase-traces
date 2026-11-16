@@ -578,12 +578,12 @@ function SessionSetupInstructions() {
           <Stepper.Step
             label={
               <>
-                Choose the <Code>hyperdx_sessions</Code> table
+                Choose the <Code>otel_sessions</Code> table
               </>
             }
             description={
               <>
-                Select the <Code>hyperdx_sessions</Code> table from the
+                Select the <Code>otel_sessions</Code> table from the
                 dropdown, and select the corresponding trace source.
               </>
             }

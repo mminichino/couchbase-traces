@@ -77,7 +77,7 @@ export const COUCHBASE_SESSION_SOURCE = {
   from: {
     databaseName: 'otel',
     scopeName: 'default',
-    tableName: 'hyperdx_sessions',
+    tableName: 'otel_sessions',
   },
   kind: 'session',
   timestampValueExpression: 'TimestampTime',

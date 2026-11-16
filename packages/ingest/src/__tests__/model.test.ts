@@ -28,7 +28,7 @@ const TABLES = new Set([
   'otel_metrics_histogram',
   'otel_metrics_exponential_histogram',
   'otel_metrics_summary',
-  'hyperdx_sessions',
+  'otel_sessions',
 ]);
 
 type Column = { name: string; type: string; kind: string };
@@ -120,7 +120,7 @@ describe('collections', () => {
       ['otel_logs', new Set(LOG_MATERIALIZED.map(field => field.name))],
       ['otel_traces', new Set(TRACE_MATERIALIZED.map(field => field.name))],
       [
-        'hyperdx_sessions',
+        'otel_sessions',
         new Set(SESSION_MATERIALIZED.map(field => field.name)),
       ],
     ]);

@@ -88,7 +88,7 @@ if (!useLocal) {
     e2e_otel_logs: 'otel_logs',
     e2e_otel_traces: 'otel_traces',
     e2e_custom_service_name: 'e2e_custom_service_name',
-    e2e_hyperdx_sessions: 'hyperdx_sessions',
+    e2e_otel_sessions: 'otel_sessions',
   };
   const sources = (fixture.sources ?? []).map(src => {
     const table = src.from?.tableName ?? '';

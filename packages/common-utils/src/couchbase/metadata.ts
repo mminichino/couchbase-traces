@@ -325,7 +325,7 @@ export class Metadata {
     const names = new Set([
       'otel_logs',
       'otel_traces',
-      'hyperdx_sessions',
+      'otel_sessions',
       'otel_metrics_gauge',
       'otel_metrics_sum',
       'otel_metrics_summary',
@@ -350,7 +350,7 @@ export class Metadata {
       tables: {
         logs: has('otel_logs') ? 'otel_logs' : undefined,
         traces: has('otel_traces') ? 'otel_traces' : undefined,
-        sessions: has('hyperdx_sessions') ? 'hyperdx_sessions' : undefined,
+        sessions: has('otel_sessions') ? 'otel_sessions' : undefined,
         metrics: {
           gauge: has('otel_metrics_gauge') ? 'otel_metrics_gauge' : undefined,
           sum: has('otel_metrics_sum') ? 'otel_metrics_sum' : undefined,
