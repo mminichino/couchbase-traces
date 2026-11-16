@@ -36,7 +36,25 @@ async function g1(ctx) {
   }
 
   const api = ctx.api('product');
-  await api.ensureSession();
+  const prior = ctx.shared?.session;
+  const session = await api.ensureSession(
+    prior ? { email: prior.email, password: prior.password } : {},
+  );
+  if (!session.ok) {
+    return result({
+      id: 'G1',
+      title: 'Alerts',
+      status: 'fail',
+      summary: `Auth failed: ${session.error}`,
+      durationMs: Date.now() - started,
+    });
+  }
+  ctx.shared = ctx.shared || {};
+  ctx.shared.session = {
+    email: session.email,
+    password: session.password,
+    apiKey: session.apiKey,
+  };
 
   /** @type {object[]} */
   const matrix = [];

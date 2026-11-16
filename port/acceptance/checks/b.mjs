@@ -73,7 +73,10 @@ async function b2(ctx) {
 
   try {
     const api = ctx.api('product');
-    const session = await api.ensureSession();
+    const prior = ctx.shared?.session;
+    const session = await api.ensureSession(
+      prior ? { email: prior.email, password: prior.password } : {},
+    );
     if (!session.ok) {
       return result({
         id: 'B2',
@@ -83,6 +86,17 @@ async function b2(ctx) {
         durationMs: Date.now() - started,
       });
     }
+    ctx.shared = ctx.shared || {};
+    ctx.shared.session = {
+      email: session.email,
+      password: session.password,
+      apiKey: session.apiKey,
+    };
+
+    const collectorApiKey =
+      ctx.stacks.product?.env?.CBT_API_KEY || process.env.CBT_API_KEY || '';
+    const endpoint =
+      ctx.stacks.product?.otlpEndpoint || 'http://127.0.0.1:14318';
 
     // Load sample data via documented ingest CLI when possible.
     const sample = spawnSync(
@@ -93,14 +107,16 @@ async function b2(ctx) {
         'sample-data',
         '--hours',
         '2',
-        ...(session.apiKey ? ['--api-key', session.apiKey] : []),
+        '--endpoint',
+        endpoint,
+        ...(collectorApiKey ? ['--api-key', collectorApiKey] : []),
       ],
       {
         cwd: ctx.root,
         encoding: 'utf8',
         env: {
           ...process.env,
-          OTEL_EXPORTER_OTLP_ENDPOINT: ctx.stacks.product.otlpEndpoint,
+          CBT_API_KEY: collectorApiKey,
         },
         timeout: 300_000,
       },

@@ -34,7 +34,25 @@ async function e1(ctx) {
   }
 
   const api = ctx.api('product');
-  await api.ensureSession();
+  const prior = ctx.shared?.session;
+  const session = await api.ensureSession(
+    prior ? { email: prior.email, password: prior.password } : {},
+  );
+  if (!session.ok) {
+    return result({
+      id: 'E1',
+      title: 'Mutations rejected',
+      status: 'fail',
+      summary: `Auth failed: ${session.error}`,
+      durationMs: Date.now() - started,
+    });
+  }
+  ctx.shared = ctx.shared || {};
+  ctx.shared.session = {
+    email: session.email,
+    password: session.password,
+    apiKey: session.apiKey,
+  };
   const sources = await api.sources();
   const connectionId =
     sources.json?.data?.[0]?.connectionId ??

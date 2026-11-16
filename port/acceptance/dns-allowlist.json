@@ -1,4 +1,10 @@
 {
-  "names": [],
-  "entries": []
+  "names": ["couchbase.fleetmanager.internal"],
+  "entries": [
+    {
+      "name": "couchbase.fleetmanager.internal",
+      "service": "couchbase",
+      "reason": "Couchbase Server Enterprise internal fleet manager name used by the SDK/cluster"
+    }
+  ]
 }

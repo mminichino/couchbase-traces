@@ -83,24 +83,60 @@ export class ApiClient {
       creds.email ??
       `accept-${Date.now()}-${Math.random().toString(36).slice(2, 8)}@example.com`;
     const password = creds.password ?? `Accept-${randomPassword()}`;
-    let reg = await this.register(email, password);
-    if (!reg.ok && reg.status !== 409) {
-      // try login if register failed for other reasons after first user
-      const login = await this.login(email, password);
-      if (!login.ok) {
-        return { ok: false, email, password, error: reg.text || login.text };
+    const reg = await this.register(email, password);
+    const teamExists =
+      reg.status === 409 ||
+      /teamAlreadyExists/i.test(reg.text || '') ||
+      reg.json?.error === 'teamAlreadyExists';
+    if (!reg.ok) {
+      if (!teamExists && reg.status !== 200) {
+        const login = await this.login(email, password);
+        if (!login.ok && login.status !== 302) {
+          return {
+            ok: false,
+            email,
+            password,
+            error: reg.text || login.text,
+          };
+        }
+      } else if (teamExists) {
+        // Only the first registration creates the team; subsequent checks must
+        // reuse known credentials passed via creds.
+        if (!creds.email) {
+          return {
+            ok: false,
+            email,
+            password,
+            error:
+              'teamAlreadyExists: pass the first registered credentials via ctx.shared.session',
+          };
+        }
+        const login = await this.login(email, password);
+        if (!login.ok && login.status !== 302) {
+          return { ok: false, email, password, error: login.text };
+        }
       }
-    } else if (!reg.ok) {
-      await this.login(email, password);
     }
+    // Prefer /me accessKey as Bearer when cookie auth is flaky across redirects.
+    const me = await this.me();
+    const accessKey = me.json?.accessKey ?? null;
+    if (accessKey) this.apiKey = accessKey;
     const team = await this.team();
     const apiKey =
+      accessKey ??
       team.json?.apiKey ??
       team.json?.team?.apiKey ??
       team.json?.data?.apiKey ??
       null;
     if (apiKey) this.apiKey = apiKey;
-    return { ok: true, email, password, apiKey, team: team.json };
+    return {
+      ok: Boolean(this.cookie || this.apiKey),
+      email,
+      password,
+      apiKey,
+      team: team.json,
+      me: me.json,
+    };
   }
 
   async couchbaseTest(body) {
