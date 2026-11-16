@@ -79,42 +79,26 @@ export class ApiClient {
    * @param {{ email?: string, password?: string }} [creds]
    */
   async ensureSession(creds = {}) {
-    const email =
-      creds.email ??
-      `accept-${Date.now()}-${Math.random().toString(36).slice(2, 8)}@example.com`;
-    const password = creds.password ?? `Accept-${randomPassword()}`;
+    const email = creds.email ?? ACCEPTANCE_USER.email;
+    const password = creds.password ?? ACCEPTANCE_USER.password;
     const reg = await this.register(email, password);
     const teamExists =
       reg.status === 409 ||
       /teamAlreadyExists/i.test(reg.text || '') ||
       reg.json?.error === 'teamAlreadyExists';
     if (!reg.ok) {
-      if (!teamExists && reg.status !== 200) {
-        const login = await this.login(email, password);
-        if (!login.ok && login.status !== 302) {
-          return {
-            ok: false,
-            email,
-            password,
-            error: reg.text || login.text,
-          };
-        }
-      } else if (teamExists) {
-        // Only the first registration creates the team; subsequent checks must
-        // reuse known credentials passed via creds.
-        if (!creds.email) {
-          return {
-            ok: false,
-            email,
-            password,
-            error:
-              'teamAlreadyExists: pass the first registered credentials via ctx.shared.session',
-          };
-        }
-        const login = await this.login(email, password);
-        if (!login.ok && login.status !== 302) {
-          return { ok: false, email, password, error: login.text };
-        }
+      // Register may fail because the user exists or because a team already
+      // exists from a prior acceptance run; try logging in either way.
+      const login = await this.login(email, password);
+      if (!login.ok && login.status !== 302) {
+        return {
+          ok: false,
+          email,
+          password,
+          error: teamExists
+            ? `teamAlreadyExists and login failed for ${email}: ${login.text || reg.text}`
+            : reg.text || login.text,
+        };
       }
     }
     // Prefer /me accessKey as Bearer when cookie auth is flaky across redirects.
@@ -155,6 +139,12 @@ export class ApiClient {
 function randomPassword() {
   return `Aa1!${Date.now().toString(36)}${Math.random().toString(36).slice(2, 10)}`;
 }
+
+/** Stable credentials for the acceptance team (one team per stack volume). */
+export const ACCEPTANCE_USER = {
+  email: 'accept@couchbase-traces.local',
+  password: 'Accept-cbt-password-24chars',
+};
 
 /**
  * @param {string} baseUrl
