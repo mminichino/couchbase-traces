@@ -357,8 +357,10 @@ async function b2(ctx) {
           for (const line of tr.text.split('\n')) {
             try {
               const f = JSON.parse(line);
-              if (Array.isArray(f.rows) && f.rows[0]) traceId = f.rows[0];
-              if (typeof f === 'string') traceId = f;
+              const row = Array.isArray(f.rows) ? f.rows[0] : null;
+              if (typeof row === 'string') traceId = row;
+              else if (row && typeof row.value === 'string') traceId = row.value;
+              else if (typeof f === 'string') traceId = f;
             } catch {
               // ignore
             }

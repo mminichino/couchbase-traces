@@ -700,7 +700,7 @@ describe('useRowWhere', () => {
 
     const row = { id: '123' };
 
-    expect(result.current(row)).toBe('');
+    expect(result.current(row)).toEqual({ where: '', aliasWith: [] });
   });
 
   it('should handle undefined meta', () => {
@@ -708,7 +708,7 @@ describe('useRowWhere', () => {
 
     const row = { id: '123' };
 
-    expect(result.current(row)).toBe('');
+    expect(result.current(row)).toEqual({ where: '', aliasWith: [] });
   });
 
   it('should filter to only primaryKeyColumns when provided', () => {
