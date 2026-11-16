@@ -43,8 +43,8 @@ function schemaColumns(): Map<string, Column[]> {
   };
   const out = new Map<string, Column[]>();
   for (const table of data.tables) {
-    // Inventory still names the ClickHouse seed hyperdx_sessions; product
-    // collection is otel_sessions (acceptance H2).
+    // Inventory schema seed still uses hyperdx_sessions; product collection
+    // is otel_sessions (acceptance H2).
     const name =
       table.name === 'hyperdx_sessions' ? 'otel_sessions' : table.name;
     if (TABLES.has(name)) out.set(name, table.columns);
