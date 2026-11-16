@@ -9,7 +9,7 @@
 
 ARG NODE_VERSION=22.23.4
 ARG COUCHBASE_IMAGE=couchbase/server:enterprise-8.0.3
-ARG MONGODB_VERSION=5.0.35
+ARG MONGODB_VERSION=8.0.38
 ARG EVAL_STORE_VERSION=26.8.36.3
 ARG OTEL_COLLECTOR_VERSION=0.155.0
 ARG OTEL_COLLECTOR_CORE_VERSION=1.61.0
@@ -198,11 +198,9 @@ COPY --chmod=755 ./docker/couchbase/init.sh /opt/cbt/bin/init.sh
 
 RUN apt-get update && \
     apt-get install -y --no-install-recommends ca-certificates curl gnupg openssl && \
-    # Couchbase Server 8 images are Ubuntu 24.04 (no libssl1.1); MongoDB 5.0 still needs it.
-    curl -fsSL http://archive.ubuntu.com/ubuntu/pool/main/o/openssl/libssl1.1_1.1.1f-1ubuntu2.24_amd64.deb -o /tmp/libssl1.1.deb && \
-    dpkg -i /tmp/libssl1.1.deb && rm -f /tmp/libssl1.1.deb && \
-    curl -fsSL https://www.mongodb.org/static/pgp/server-5.0.asc | gpg --dearmor -o /usr/share/keyrings/mongodb-server-5.0.gpg && \
-    echo "deb [ signed-by=/usr/share/keyrings/mongodb-server-5.0.gpg ] https://repo.mongodb.org/apt/ubuntu focal/mongodb-org/5.0 multiverse" > /etc/apt/sources.list.d/mongodb-org-5.0.list && \
+    # Couchbase Server 8 images are Ubuntu 24.04 (noble); use MongoDB 8.0 noble packages.
+    curl -fsSL https://www.mongodb.org/static/pgp/server-8.0.asc | gpg --dearmor -o /usr/share/keyrings/mongodb-server-8.0.gpg && \
+    echo "deb [ signed-by=/usr/share/keyrings/mongodb-server-8.0.gpg ] https://repo.mongodb.org/apt/ubuntu noble/mongodb-org/8.0 multiverse" > /etc/apt/sources.list.d/mongodb-org-8.0.list && \
     apt-get update && \
     apt-get install -y --no-install-recommends mongodb-org=${MONGODB_VERSION} mongodb-org-server=${MONGODB_VERSION} mongodb-org-shell=${MONGODB_VERSION} && \
     apt-get clean && rm -rf /var/lib/apt/lists/* && \
