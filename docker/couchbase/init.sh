@@ -190,12 +190,44 @@ if [ "${CBT_EXTERNAL_COUCHBASE:-}" = "true" ]; then
   exit $?
 fi
 
+admin_auth_ready() {
+  # Soft probe used after clusterInit: never exit on 401 — the new password
+  # can take a few seconds to become usable by both REST and the SDK.
+  local status
+  status=$(node -e "
+    const auth = process.argv[1];
+    fetch(process.argv[2], {
+      headers: { Authorization: 'Basic ' + Buffer.from(auth).toString('base64') },
+    })
+      .then(r => process.stdout.write(String(r.status)))
+      .catch(() => process.stdout.write('0'));
+  " "${ADMIN_USER}:${ADMIN_PASSWORD}" "$POOLS_URL")
+  [ "$status" = "200" ]
+}
+
+wait_for_admin() {
+  local deadline=$((SECONDS + WAIT_SECONDS))
+  log "Waiting for admin credentials on ${POOLS_URL}"
+  while true; do
+    if admin_auth_ready; then
+      return 0
+    fi
+    if [ "$SECONDS" -ge "$deadline" ]; then
+      log "Admin credentials did not become usable within ${WAIT_SECONDS}s"
+      exit 1
+    fi
+    sleep 2
+  done
+}
+
 wait_for_ui
 
 if cluster_initialized; then
   log "Cluster already initialized"
 else
   init_cluster
+  # clusterInit returns before the SDK accepts the new admin password.
+  wait_for_admin
 fi
 
 set_alternate_addresses

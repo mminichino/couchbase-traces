@@ -39,6 +39,8 @@ ensure_secrets() {
   CBT_COUCHBASE_QUERY_PASSWORD="${CBT_COUCHBASE_QUERY_PASSWORD:-$(rand_secret)}"
   CBT_COUCHBASE_INGEST_USER="${CBT_COUCHBASE_INGEST_USER:-cbt_ingest}"
   CBT_COUCHBASE_INGEST_PASSWORD="${CBT_COUCHBASE_INGEST_PASSWORD:-$(rand_secret)}"
+  CBT_COUCHBASE_MONITOR_USER="${CBT_COUCHBASE_MONITOR_USER:-cbt_monitor}"
+  CBT_COUCHBASE_MONITOR_PASSWORD="${CBT_COUCHBASE_MONITOR_PASSWORD:-$(rand_secret)}"
   CBT_INGEST_TOKEN="${CBT_INGEST_TOKEN:-$(rand_token)}"
   EXPRESS_SESSION_SECRET="${EXPRESS_SESSION_SECRET:-$(rand_secret)}"
   umask 077
@@ -49,6 +51,8 @@ CBT_COUCHBASE_QUERY_USER=${CBT_COUCHBASE_QUERY_USER}
 CBT_COUCHBASE_QUERY_PASSWORD=${CBT_COUCHBASE_QUERY_PASSWORD}
 CBT_COUCHBASE_INGEST_USER=${CBT_COUCHBASE_INGEST_USER}
 CBT_COUCHBASE_INGEST_PASSWORD=${CBT_COUCHBASE_INGEST_PASSWORD}
+CBT_COUCHBASE_MONITOR_USER=${CBT_COUCHBASE_MONITOR_USER}
+CBT_COUCHBASE_MONITOR_PASSWORD=${CBT_COUCHBASE_MONITOR_PASSWORD}
 CBT_INGEST_TOKEN=${CBT_INGEST_TOKEN}
 EXPRESS_SESSION_SECRET=${EXPRESS_SESSION_SECRET}
 EOF
@@ -77,17 +81,16 @@ memory_hosts() {
 
 set_default_connections() {
   if [ -z "${DEFAULT_CONNECTIONS:-}" ]; then
-    local monitor_json=""
-    if [ -n "${CBT_COUCHBASE_MONITOR_USER:-}" ]; then
-      monitor_json=",\"monitorUsername\":\"${CBT_COUCHBASE_MONITOR_USER}\",\"monitorPassword\":\"${CBT_COUCHBASE_MONITOR_PASSWORD}\""
-    fi
-    DEFAULT_CONNECTIONS="[{\"name\":\"Local Couchbase\",\"kind\":\"couchbase\",\"host\":\"couchbase://127.0.0.1\",\"username\":\"${CBT_COUCHBASE_QUERY_USER}\",\"password\":\"${CBT_COUCHBASE_QUERY_PASSWORD}\"${monitor_json}}]"
+    DEFAULT_CONNECTIONS="[{\"name\":\"Local Couchbase\",\"kind\":\"couchbase\",\"host\":\"couchbase://127.0.0.1\",\"username\":\"${CBT_COUCHBASE_QUERY_USER}\",\"password\":\"${CBT_COUCHBASE_QUERY_PASSWORD}\",\"monitorUsername\":\"${CBT_COUCHBASE_MONITOR_USER}\",\"monitorPassword\":\"${CBT_COUCHBASE_MONITOR_PASSWORD}\"}]"
   fi
   export DEFAULT_CONNECTIONS
 }
 
 export CBT_INGEST_HOST="127.0.0.1"
-export CBT_INGEST_PORT="${CBT_INGEST_PORT:-4320}"
+# Ingest and the API OpAMP server cannot share a port in all-in-one (same
+# network namespace). Compose runs them in separate containers, both on 4320;
+# here OpAMP keeps 4320 and ingest moves to 4321 unless overridden.
+export CBT_INGEST_PORT="${CBT_INGEST_PORT:-4321}"
 export CBT_INGEST_ENDPOINT="http://127.0.0.1:${CBT_INGEST_PORT}"
 export CBT_COUCHBASE_CONNSTR="${CBT_COUCHBASE_CONNSTR:-couchbase://127.0.0.1}"
 
@@ -97,6 +100,7 @@ ensure_secrets
 export CBT_COUCHBASE_ADMIN_USER CBT_COUCHBASE_ADMIN_PASSWORD
 export CBT_COUCHBASE_QUERY_USER CBT_COUCHBASE_QUERY_PASSWORD
 export CBT_COUCHBASE_INGEST_USER CBT_COUCHBASE_INGEST_PASSWORD
+export CBT_COUCHBASE_MONITOR_USER CBT_COUCHBASE_MONITOR_PASSWORD
 export CBT_INGEST_TOKEN EXPRESS_SESSION_SECRET
 set_default_connections
 memory_hosts
@@ -148,7 +152,9 @@ mongod --quiet --dbpath /data/db > /var/log/mongod.log 2>&1 &
 export CBT_COUCHBASE_INGEST_USER CBT_COUCHBASE_INGEST_PASSWORD CBT_INGEST_TOKEN
 export CBT_COUCHBASE_BUCKET CBT_COUCHBASE_SCOPE
 
-until curl -fsS "http://127.0.0.1:${CBT_INGEST_PORT}/health" >/dev/null 2>&1; do
+until curl -fsS \
+  -H "Authorization: Bearer ${CBT_INGEST_TOKEN}" \
+  "http://127.0.0.1:${CBT_INGEST_PORT}/health" >/dev/null 2>&1; do
   sleep 1
 done
 

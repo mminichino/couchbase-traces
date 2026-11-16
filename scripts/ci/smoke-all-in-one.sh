@@ -25,7 +25,9 @@ OTLP_PORT="${SMOKE_OTLP_PORT:-14318}"
 API_BASE="http://localhost:${APP_PORT}/api"
 COOKIE_JAR="$(mktemp)"
 EMAIL="smoke-$(date +%s)-$$@couchbase-traces.test"
-PASSWORD="smoke-password-$$"
+# Password policy requires mixed case (and the register Zod schema rejects
+# lowercase-only strings like "smoke-password-…").
+PASSWORD="Smoke-password-$$"
 
 cleanup() {
   rm -f "$COOKIE_JAR"
@@ -137,12 +139,29 @@ for i in $(seq 1 45); do
   sleep 2
 done
 
-STATEMENT="SELECT RAW Body FROM \\\`otel\\\`.\\\`default\\\`.\\\`otel_logs\\\` WHERE Body LIKE \"%${CANARY}%\" LIMIT 1"
+# Build the request with python so string literals are JSON-escaped.
+# Predicate includes Timestamp so the query user can use ix_logs_ts instead of
+# a sequential scan (query_use_sequential_scans is not granted to cbt_query).
+QUERY_BODY="$(CANARY="$CANARY" CONN_ID="$CONN_ID" python3 - <<'PY'
+import json, os
+canary = os.environ["CANARY"]
+statement = (
+    "SELECT RAW Body FROM `otel`.`default`.`otel_logs` "
+    'WHERE Timestamp >= "2020-01-01T00:00:00.000Z" '
+    f'AND Body = "{canary}" LIMIT 1'
+)
+print(json.dumps({
+    "connectionId": os.environ["CONN_ID"],
+    "statement": statement,
+    "format": "JSON",
+}))
+PY
+)"
 echo "waiting for canary via Couchbase query API (up to 120s)..."
 for i in $(seq 1 60); do
   if RESP="$(curl -fsS -b "$COOKIE_JAR" -X POST "${API_BASE}/couchbase/query" \
        -H 'Content-Type: application/json' \
-       -d "{\"connectionId\":\"${CONN_ID}\",\"statement\":\"${STATEMENT}\",\"format\":\"json\"}" 2>/dev/null)" && \
+       -d "$QUERY_BODY" 2>/dev/null)" && \
      printf '%s' "$RESP" | grep -q "$CANARY"; then
     echo "canary ingested end-to-end: collector -> ingest -> couchbase -> API"
     exit 0
