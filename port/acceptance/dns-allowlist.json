@@ -1,10 +1,24 @@
 {
-  "names": ["couchbase.fleetmanager.internal"],
+  "names": [
+    "couchbase.fleetmanager.internal",
+    "hooks.slack.com",
+    "api.incident.io"
+  ],
   "entries": [
     {
       "name": "couchbase.fleetmanager.internal",
       "service": "couchbase",
       "reason": "Couchbase Server Enterprise internal fleet manager name used by the SDK/cluster"
+    },
+    {
+      "name": "hooks.slack.com",
+      "service": "app",
+      "reason": "G1 Slack webhook URL validation; CoreDNS aliases to the acceptance webhook receiver"
+    },
+    {
+      "name": "api.incident.io",
+      "service": "app",
+      "reason": "G1 incident.io webhook hostname; CoreDNS aliases to the acceptance webhook receiver"
     }
   ]
 }

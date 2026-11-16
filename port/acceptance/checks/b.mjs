@@ -7,6 +7,35 @@ import { result } from '../lib/report.mjs';
 /** @typedef {import('../lib/report.mjs').CheckResult} CheckResult */
 
 /**
+ * @param {string} endpoint e.g. http://127.0.0.1:14318
+ * @param {number} timeoutMs
+ */
+async function waitForOtlp(endpoint, timeoutMs) {
+  const deadline = Date.now() + timeoutMs;
+  let last = { ok: false, status: 0, error: null };
+  while (Date.now() < deadline) {
+    try {
+      const res = await fetch(`${endpoint.replace(/\/$/, '')}/v1/logs`, {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: '{}',
+      });
+      last = { ok: true, status: res.status, error: null };
+      // Any HTTP response means the port is accepting connections.
+      return last;
+    } catch (err) {
+      last = {
+        ok: false,
+        status: 0,
+        error: err instanceof Error ? err.message : String(err),
+      };
+      await new Promise(r => setTimeout(r, 2000));
+    }
+  }
+  return last;
+}
+
+/**
  * Poll until the logs collection reports at least `min` documents.
  * @param {import('../lib/api.mjs').ApiClient} api
  * @param {number} min
@@ -178,6 +207,26 @@ async function b2(ctx) {
         title: 'Sample data views',
         status: 'fail',
         summary: 'No team API key available for sample-data',
+        durationMs: Date.now() - started,
+      });
+    }
+
+    // Collector health can race the published OTLP port; wait until HTTP
+    // responds (any status including 401) before sample-data.
+    const otlpReady = await waitForOtlp(endpoint, 120_000);
+    writeFileSync(
+      join(ctx.evidenceDir, 'b2-otlp-wait.json'),
+      `${JSON.stringify(otlpReady, null, 2)}\n`,
+    );
+    evidence.push(join(ctx.evidenceDir, 'b2-otlp-wait.json'));
+    if (!otlpReady.ok) {
+      return result({
+        id: 'B2',
+        title: 'Sample data views',
+        status: 'fail',
+        summary: `OTLP endpoint ${endpoint} not reachable within 120s`,
+        details: otlpReady,
+        evidence,
         durationMs: Date.now() - started,
       });
     }
