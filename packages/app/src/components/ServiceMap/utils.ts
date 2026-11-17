@@ -17,7 +17,7 @@ export function buildServiceMapErrorWhere({
   statusCodeExpression: string;
 }): string {
   return SqlString.format(
-    `? = ? AND ? IN ('Server', 'Consumer') AND ${errorStatusPredicateSql('?')}`,
+    `? = ? AND ? IN ['Server', 'Consumer'] AND ${errorStatusPredicateSql('?')}`,
     [
       SqlString.raw(serviceNameExpression),
       serviceName,

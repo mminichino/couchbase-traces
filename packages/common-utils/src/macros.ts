@@ -1,3 +1,5 @@
+import { rewriteSqlInValueLists } from '@/couchbase/sqlInLists';
+
 import { splitAndTrimWithBracket } from './core/utils';
 import { MacroExpansionError, MalformedMacroArgsError } from './macroErrors';
 import { RawSqlQueryParam, renderQueryParam } from './rawSqlParams';
@@ -488,16 +490,22 @@ export function replaceMacros(
     ...(variableContext ? VARIABLE_MACRO_NAMES : []),
   ];
 
-  return expandTemplate(chartConfig.sqlTemplate, {
-    macroNames,
-    expandMacro: token => {
-      const macro = macrosByName.get(token.name);
-      return macro
-        ? macro.replace(token.args) // Non-variable-referencing macro
-        : expandVariableToken(token, variableContext!); // Variable-referencing macro
-    },
-    // Braced and bare variable references ($var, ${var}, or ${var:format})
-    expandReference: token =>
-      variableContext ? expandVariableToken(token, variableContext) : token.raw,
-  });
+  // Rewrite parenthesized IN value lists to SQL++ array form so bare
+  // expansions like `svc IN ($service)` → `svc IN ['a', 'b']` stay valid.
+  return rewriteSqlInValueLists(
+    expandTemplate(chartConfig.sqlTemplate, {
+      macroNames,
+      expandMacro: token => {
+        const macro = macrosByName.get(token.name);
+        return macro
+          ? macro.replace(token.args) // Non-variable-referencing macro
+          : expandVariableToken(token, variableContext!); // Variable-referencing macro
+      },
+      // Braced and bare variable references ($var, ${var}, or ${var:format})
+      expandReference: token =>
+        variableContext
+          ? expandVariableToken(token, variableContext)
+          : token.raw,
+    }),
+  );
 }

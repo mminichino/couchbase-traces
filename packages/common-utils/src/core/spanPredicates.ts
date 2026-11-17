@@ -14,7 +14,8 @@ const ERROR_STATUS_CODES = ['error', 'status_code_error'] as const;
 export function errorStatusPredicateSql(statusCodeExpression: string): string {
   const quoted = ERROR_STATUS_CODES.map(code => `'${code}'`).join(', ');
   // LOWER works in legacy store and SQL++; keep one predicate for both engines.
-  return `LOWER(${statusCodeExpression}) IN (${quoted})`;
+  // SQL++ requires array form for IN value lists.
+  return `LOWER(${statusCodeExpression}) IN [${quoted}]`;
 }
 
 /** Same match as {@link errorStatusPredicateSql}, for rows already fetched. */
@@ -30,5 +31,6 @@ export function isErrorStatusCode(
 
 /** Server (request entry-point) spans, in both short and legacy enum forms. */
 export function serverSpanKindPredicateSql(spanKindExpression: string): string {
-  return `${spanKindExpression} IN ('Server', 'SPAN_KIND_SERVER')`;
+  // SQL++ requires array form for IN value lists.
+  return `${spanKindExpression} IN ['Server', 'SPAN_KIND_SERVER']`;
 }

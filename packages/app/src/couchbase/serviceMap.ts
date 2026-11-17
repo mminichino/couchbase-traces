@@ -117,7 +117,7 @@ export async function getServiceMapQueryCouchbase({
           ...baseCTEConfig.filters,
           {
             type: 'sql',
-            condition: `${source.spanKindExpression} IN ('Server', 'Consumer', 'SPAN_KIND_SERVER', 'SPAN_KIND_CONSUMER')`,
+            condition: `${source.spanKindExpression} IN ['Server', 'Consumer', 'SPAN_KIND_SERVER', 'SPAN_KIND_CONSUMER']`,
           },
         ],
       },
@@ -131,7 +131,7 @@ export async function getServiceMapQueryCouchbase({
           ...baseCTEConfig.filters,
           {
             type: 'sql',
-            condition: `${source.spanKindExpression} IN ('Client', 'Producer', 'SPAN_KIND_CLIENT', 'SPAN_KIND_PRODUCER')`,
+            condition: `${source.spanKindExpression} IN ['Client', 'Producer', 'SPAN_KIND_CLIENT', 'SPAN_KIND_PRODUCER']`,
           },
         ],
       },

@@ -1,6 +1,7 @@
 import type { ChartConfigWithOptDateRangeEx } from '@/core/chartConfig';
 import { CouchbaseUnsupportedError } from '@/couchbase/errors';
 import { ensureOutermostSelectLimit } from '@/couchbase/rawSqlLimit';
+import { rewriteSqlInValueLists } from '@/couchbase/sqlInLists';
 import { keyspace, type SqlPP, sqlpp } from '@/couchbase/sqlpp';
 import { isRawSqlChartConfig } from '@/guards';
 import { QUERY_PARAMS_BY_DISPLAY_TYPE } from '@/rawSqlParams';
@@ -146,7 +147,7 @@ export async function renderRawSqlChartConfigCouchbase(
   });
 
   return {
-    sql: ensureOutermostSelectLimit(expanded.sql),
+    sql: ensureOutermostSelectLimit(rewriteSqlInValueLists(expanded.sql)),
     params: { ...paramValues, ...filters.params, ...expanded.params },
     dialect: 'sqlpp',
   };

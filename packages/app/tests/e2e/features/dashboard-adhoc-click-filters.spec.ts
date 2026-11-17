@@ -227,7 +227,8 @@ test.describe(
       page,
     }) => {
       const tile = dashboardPage.getTile(0);
-      const sql = `SELECT ServiceName AS svc, LENGTH(ServiceName) AS len, MIN(SeverityText) AS sev, COUNT(*) AS count FROM $__sourceTable WHERE ${TIME_FILTER} AND $__filters GROUP BY svc, len LIMIT 200`;
+      // SQL++ cannot GROUP BY select aliases; group by the expressions.
+      const sql = `SELECT ServiceName AS svc, LENGTH(ServiceName) AS len, MIN(SeverityText) AS sev, COUNT(*) AS count FROM $__sourceTable WHERE ${TIME_FILTER} AND $__filters GROUP BY ServiceName, LENGTH(ServiceName) LIMIT 200`;
 
       await test.step('Add a raw SQL table and an ad hoc filter', async () => {
         await dashboardPage.createNewDashboard();
@@ -374,7 +375,8 @@ test.describe(
     test('raw SQL line chart series filter on the expression behind the alias', async ({
       page,
     }) => {
-      const sql = `SELECT $__timeInterval(Timestamp) AS ts, ServiceName AS svc, COUNT(*) AS count FROM $__sourceTable WHERE ${TIME_FILTER} AND $__filters GROUP BY ts, svc ORDER BY ts ASC`;
+      // SQL++ cannot GROUP BY select aliases; group by the expressions.
+      const sql = `SELECT $__timeInterval(Timestamp) AS ts, ServiceName AS svc, COUNT(*) AS count FROM $__sourceTable WHERE ${TIME_FILTER} AND $__filters GROUP BY $__timeInterval(Timestamp), ServiceName ORDER BY ts ASC`;
 
       await dashboardPage.createNewDashboard();
       await dashboardPage.changeGranularity('30 Minutes Granularity');

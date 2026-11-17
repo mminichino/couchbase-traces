@@ -21,7 +21,7 @@ describe('searchFilters', () => {
 
     it('parses one filter', () => {
       const result = parseQuery([
-        { type: 'sql', condition: `service IN ('z')` },
+        { type: 'sql', condition: `service IN ['z']` },
       ]);
       expect(result.filters).toEqual({
         service: { included: new Set(['z']), excluded: new Set() },
@@ -30,7 +30,7 @@ describe('searchFilters', () => {
 
     it('parses 1 group, multiple values', () => {
       const result = parseQuery([
-        { type: 'sql', condition: `service IN ('z', 'y', 'x')` },
+        { type: 'sql', condition: `service IN ['z', 'y', 'x']` },
       ]);
       expect(result.filters).toEqual({
         service: { included: new Set(['z', 'y', 'x']), excluded: new Set() },
@@ -39,9 +39,9 @@ describe('searchFilters', () => {
 
     it('parses 3 groups, multiple values', () => {
       const result = parseQuery([
-        { type: 'sql', condition: `service IN ('z', 'y', 'x')` },
-        { type: 'sql', condition: `level IN ('info', 'error')` },
-        { type: 'sql', condition: `type IN ('event')` },
+        { type: 'sql', condition: `service IN ['z', 'y', 'x']` },
+        { type: 'sql', condition: `level IN ['info', 'error']` },
+        { type: 'sql', condition: `type IN ['event']` },
       ]);
       expect(result.filters).toEqual({
         service: { included: new Set(['z', 'y', 'x']), excluded: new Set() },
@@ -52,8 +52,8 @@ describe('searchFilters', () => {
 
     it('parses excluded values', () => {
       const result = parseQuery([
-        { type: 'sql', condition: `service IN ('z')` },
-        { type: 'sql', condition: `service NOT IN ('y')` },
+        { type: 'sql', condition: `service IN ['z']` },
+        { type: 'sql', condition: `service NOT IN ['y']` },
       ]);
       expect(result.filters).toEqual({
         service: { included: new Set(['z']), excluded: new Set(['y']) },
@@ -69,7 +69,7 @@ describe('searchFilters', () => {
       const result = parseQuery([
         {
           type: 'sql',
-          condition: `SpanName = 'flagd.evaluation.v1.Service/EventStream' AND SpanKind IN ('Server', 'SPAN_KIND_SERVER')`,
+          condition: `SpanName = 'flagd.evaluation.v1.Service/EventStream' AND SpanKind IN ['Server', 'SPAN_KIND_SERVER']`,
         },
       ]);
       expect(result.filters).toEqual({
@@ -84,7 +84,7 @@ describe('searchFilters', () => {
       const result = parseQuery([
         {
           type: 'sql',
-          condition: `level IN ('error') OR severity IN ('high')`,
+          condition: `level IN ['error'] OR severity IN ['high']`,
         },
       ]);
       // OR is not supported, so it just tries to parse as-is and should fail cleanly
@@ -113,12 +113,12 @@ describe('searchFilters', () => {
 
     it('parses simple IN conditions alongside extracting from complex conditions', () => {
       const result = parseQuery([
-        { type: 'sql', condition: `service IN ('app', 'api')` },
+        { type: 'sql', condition: `service IN ['app', 'api']` },
         {
           type: 'sql',
-          condition: `SpanName = 'test' AND SpanKind IN ('Server')`,
+          condition: `SpanName = 'test' AND SpanKind IN ['Server']`,
         },
-        { type: 'sql', condition: `level IN ('error')` },
+        { type: 'sql', condition: `level IN ['error']` },
       ]);
       expect(result.filters).toEqual({
         service: { included: new Set(['app', 'api']), excluded: new Set() },
@@ -131,7 +131,7 @@ describe('searchFilters', () => {
       const result = parseQuery([
         {
           type: 'sql',
-          condition: `service IN ('app') AND level IN ('error', 'warn')`,
+          condition: `service IN ['app'] AND level IN ['error', 'warn']`,
         },
       ]);
       expect(result.filters).toEqual({
@@ -144,7 +144,7 @@ describe('searchFilters', () => {
       const result = parseQuery([
         {
           type: 'sql',
-          condition: `status = 'active' AND level NOT IN ('debug')`,
+          condition: `status = 'active' AND level NOT IN ['debug']`,
         },
       ]);
       expect(result.filters).toEqual({
@@ -156,7 +156,7 @@ describe('searchFilters', () => {
       const result = parseQuery([
         {
           type: 'sql',
-          condition: `SpanName = 'flagd.evaluation.v1.Service/EventStream' AND SpanKind IN ('Server', 'SPAN_KIND_SERVER')`,
+          condition: `SpanName = 'flagd.evaluation.v1.Service/EventStream' AND SpanKind IN ['Server', 'SPAN_KIND_SERVER']`,
         },
       ]);
       expect(result.filters).toEqual({
@@ -171,7 +171,7 @@ describe('searchFilters', () => {
       const result = parseQuery([
         {
           type: 'sql',
-          condition: `Body IN ('{"orderId": "123", "total": 100}')`,
+          condition: `Body IN ['{"orderId": "123", "total": 100}']`,
         },
       ]);
       expect(result.filters).toEqual({
@@ -186,7 +186,7 @@ describe('searchFilters', () => {
       const result = parseQuery([
         {
           type: 'sql',
-          condition: `Body IN ('Order details: { "orderId": "7b54ad99", "items": [{"id": 1}, {"id": 2}] }')`,
+          condition: `Body IN ['Order details: { "orderId": "7b54ad99", "items": [{"id": 1}, {"id": 2}] }']`,
         },
       ]);
       expect(result.filters).toEqual({
@@ -203,11 +203,11 @@ describe('searchFilters', () => {
       const result = parseQuery([
         {
           type: 'sql',
-          condition: `status IN ('active', 'pending')`,
+          condition: `status IN ['active', 'pending']`,
         },
         {
           type: 'sql',
-          condition: `data IN ('{"key": "value", "nested": {"a": 1}}')`,
+          condition: `data IN ['{"key": "value", "nested": {"a": 1}}']`,
         },
       ]);
       expect(result.filters).toEqual({
@@ -226,11 +226,11 @@ describe('searchFilters', () => {
       const result = parseQuery([
         {
           type: 'sql',
-          condition: `isRootSpan IN (true)`,
+          condition: `isRootSpan IN [true]`,
         },
         {
           type: 'sql',
-          condition: `another_boolean NOT IN (TRUE, FALSE)`,
+          condition: `another_boolean NOT IN [TRUE, FALSE]`,
         },
       ]);
       expect(result.filters).toEqual({
@@ -249,7 +249,7 @@ describe('searchFilters', () => {
       const result = parseQuery([
         {
           type: 'sql',
-          condition: `Body IN ('key=value')`,
+          condition: `Body IN ['key=value']`,
         },
       ]);
       expect(result.filters).toEqual({
@@ -264,7 +264,7 @@ describe('searchFilters', () => {
       const result = parseQuery([
         {
           type: 'sql',
-          condition: `Body IN ('x > y')`,
+          condition: `Body IN ['x > y']`,
         },
       ]);
       expect(result.filters).toEqual({
@@ -279,7 +279,7 @@ describe('searchFilters', () => {
       const result = parseQuery([
         {
           type: 'sql',
-          condition: `Body IN ('<html>')`,
+          condition: `Body IN ['<html>']`,
         },
       ]);
       expect(result.filters).toEqual({
@@ -294,7 +294,7 @@ describe('searchFilters', () => {
       const result = parseQuery([
         {
           type: 'sql',
-          condition: `Body IN ('true OR false')`,
+          condition: `Body IN ['true OR false']`,
         },
       ]);
       expect(result.filters).toEqual({
@@ -312,7 +312,7 @@ describe('searchFilters', () => {
         { type: 'sql', condition: `count < 5` },
         {
           type: 'sql',
-          condition: `level IN ('error') OR severity IN ('high')`,
+          condition: `level IN ['error'] OR severity IN ['high']`,
         },
       ]);
       expect(result.filters).toEqual({});
@@ -322,7 +322,7 @@ describe('searchFilters', () => {
       const result = parseQuery([
         {
           type: 'sql',
-          condition: `SpanName = 'test=value' AND SpanKind IN ('Server')`,
+          condition: `SpanName = 'test=value' AND SpanKind IN ['Server']`,
         },
       ]);
       expect(result.filters).toEqual({
@@ -337,7 +337,7 @@ describe('searchFilters', () => {
       const result = parseQuery([
         {
           type: 'sql',
-          condition: `Body IN ('I AM BETWEEN THE HEDGES AND I LOVE IT HERE')`,
+          condition: `Body IN ['I AM BETWEEN THE HEDGES AND I LOVE IT HERE']`,
         },
       ]);
       expect(result.filters).toEqual({
@@ -368,7 +368,7 @@ describe('searchFilters', () => {
       const result = parseQuery([
         {
           type: 'sql',
-          condition: `Body IN ('this is NOT IN scope')`,
+          condition: `Body IN ['this is NOT IN scope']`,
         },
       ]);
       expect(result.filters).toEqual({
@@ -383,7 +383,7 @@ describe('searchFilters', () => {
       const result = parseQuery([
         {
           type: 'sql',
-          condition: `message IN ('my ''filter'' key')`,
+          condition: `message IN ['my ''filter'' key']`,
         },
       ]);
       expect(result.filters).toEqual({
@@ -398,7 +398,7 @@ describe('searchFilters', () => {
       const result = parseQuery([
         {
           type: 'sql',
-          condition: `message NOT IN ('it''s a test')`,
+          condition: `message NOT IN ['it''s a test']`,
         },
       ]);
       expect(result.filters).toEqual({
@@ -413,7 +413,7 @@ describe('searchFilters', () => {
       const result = parseQuery([
         {
           type: 'sql',
-          condition: `message IN ('normal value', 'it''s quoted', 'another ''one''')`,
+          condition: `message IN ['normal value', 'it''s quoted', 'another ''one''']`,
         },
       ]);
       expect(result.filters).toEqual({
@@ -428,7 +428,7 @@ describe('searchFilters', () => {
       const result = parseQuery([
         {
           type: 'sql',
-          condition: `Body IN ('value with '' = special')`,
+          condition: `Body IN ['value with '' = special']`,
         },
       ]);
       expect(result.filters).toEqual({
@@ -443,7 +443,7 @@ describe('searchFilters', () => {
       const result = parseQuery([
         {
           type: 'sql',
-          condition: `status = 'active' AND message IN ('it''s here')`,
+          condition: `status = 'active' AND message IN ['it''s here']`,
         },
       ]);
       expect(result.filters).toEqual({
@@ -458,7 +458,7 @@ describe('searchFilters', () => {
       const result = parseQuery([
         {
           type: 'sql',
-          condition: `Body IN ('foo AND bar') AND level IN ('info')`,
+          condition: `Body IN ['foo AND bar'] AND level IN ['info']`,
         },
       ]);
       expect(result.filters).toEqual({
@@ -478,11 +478,11 @@ describe('searchFilters', () => {
     // ignore operators/keywords nested inside its parentheses.
     describe('complex expression keys', () => {
       const ifExpr = `if(SeverityText = 'error' or SeverityText = 'fatal', 'Errors', 'Non-errors')`;
-      const ifWithInExpr = `if(SeverityText IN ('error', 'fatal'), 'Errors', 'Non-errors')`;
+      const ifWithInExpr = `if(SeverityText IN ['error', 'fatal'], 'Errors', 'Non-errors')`;
 
       it('keeps the whole expression as the key when it contains OR and = inside parens', () => {
         const result = parseQuery([
-          { type: 'sql', condition: `${ifExpr} IN ('Errors')` },
+          { type: 'sql', condition: `${ifExpr} IN ['Errors']` },
         ]);
         expect(result.filters).toEqual({
           [ifExpr]: {
@@ -494,7 +494,7 @@ describe('searchFilters', () => {
 
       it('splits on the outer IN, not the IN nested inside the expression', () => {
         const result = parseQuery([
-          { type: 'sql', condition: `${ifWithInExpr} IN ('Errors')` },
+          { type: 'sql', condition: `${ifWithInExpr} IN ['Errors']` },
         ]);
         expect(result.filters).toEqual({
           [ifWithInExpr]: {
@@ -508,7 +508,7 @@ describe('searchFilters', () => {
         const result = parseQuery([
           {
             type: 'sql',
-            condition: `${ifExpr} IN ('Errors', 'Non-errors')`,
+            condition: `${ifExpr} IN ['Errors', 'Non-errors']`,
           },
         ]);
         expect(result.filters).toEqual({
@@ -521,7 +521,7 @@ describe('searchFilters', () => {
 
       it('parses NOT IN on an expression key without splitting on nested IN', () => {
         const result = parseQuery([
-          { type: 'sql', condition: `${ifWithInExpr} NOT IN ('Errors')` },
+          { type: 'sql', condition: `${ifWithInExpr} NOT IN ['Errors']` },
         ]);
         expect(result.filters).toEqual({
           [ifWithInExpr]: {
@@ -533,8 +533,8 @@ describe('searchFilters', () => {
 
       it('parses included and excluded selections on the same expression key', () => {
         const result = parseQuery([
-          { type: 'sql', condition: `${ifExpr} IN ('Errors')` },
-          { type: 'sql', condition: `${ifExpr} NOT IN ('Non-errors')` },
+          { type: 'sql', condition: `${ifExpr} IN ['Errors']` },
+          { type: 'sql', condition: `${ifExpr} NOT IN ['Non-errors']` },
         ]);
         expect(result.filters).toEqual({
           [ifExpr]: {
@@ -548,7 +548,7 @@ describe('searchFilters', () => {
         const result = parseQuery([
           {
             type: 'sql',
-            condition: `ServiceName IN ('api') AND ${ifExpr} IN ('Errors')`,
+            condition: `ServiceName IN ['api'] AND ${ifExpr} IN ['Errors']`,
           },
         ]);
         expect(result.filters).toEqual({
@@ -566,7 +566,7 @@ describe('searchFilters', () => {
       it('does not split on AND nested inside an expression key', () => {
         const betweenExpr = `if(Duration BETWEEN 1 AND 2, 'fast', 'slow')`;
         const result = parseQuery([
-          { type: 'sql', condition: `${betweenExpr} IN ('fast')` },
+          { type: 'sql', condition: `${betweenExpr} IN ['fast']` },
         ]);
         expect(result.filters).toEqual({
           [betweenExpr]: {
@@ -579,7 +579,7 @@ describe('searchFilters', () => {
       it('does not treat a BETWEEN nested inside an expression key as a range', () => {
         const betweenExpr = `if(Duration BETWEEN 1 AND 2, 'fast', 'slow')`;
         const result = parseQuery([
-          { type: 'sql', condition: `${betweenExpr} NOT IN ('slow')` },
+          { type: 'sql', condition: `${betweenExpr} NOT IN ['slow']` },
         ]);
         expect(result.filters).toEqual({
           [betweenExpr]: {
@@ -592,7 +592,7 @@ describe('searchFilters', () => {
       it('handles a nested function expression key', () => {
         const key = `toString(multiIf(Status >= 500, 'error', Status >= 400, 'warn', 'ok'))`;
         const result = parseQuery([
-          { type: 'sql', condition: `${key} IN ('error', 'warn')` },
+          { type: 'sql', condition: `${key} IN ['error', 'warn']` },
         ]);
         expect(result.filters).toEqual({
           [key]: {
@@ -841,7 +841,7 @@ describe('searchFilters', () => {
         {
           type: 'sql',
           condition:
-            "ServiceName IN ('api') AND Timestamp NOT IN (parseDateTime64BestEffort('2026-06-16', 9))",
+            "ServiceName IN ['api'] AND Timestamp NOT IN (parseDateTime64BestEffort('2026-06-16', 9))",
         },
       ]);
 
@@ -981,11 +981,11 @@ describe('searchFilters', () => {
       expect(onFilterChange).toHaveBeenLastCalledWith([
         {
           type: 'sql',
-          condition: "service IN ('app')",
+          condition: "service IN ['app']",
         },
         {
           type: 'sql',
-          condition: "level IN ('error')",
+          condition: "level IN ['error']",
         },
       ]);
     });
@@ -1010,8 +1010,8 @@ describe('searchFilters', () => {
       // Batched: a single re-query, not one per property.
       expect(onFilterChange).toHaveBeenCalledTimes(1);
       expect(onFilterChange).toHaveBeenLastCalledWith([
-        { type: 'sql', condition: "service IN ('app')" },
-        { type: 'sql', condition: "level IN ('error')" },
+        { type: 'sql', condition: "service IN ['app']" },
+        { type: 'sql', condition: "level IN ['error']" },
       ]);
     });
 
@@ -1019,7 +1019,7 @@ describe('searchFilters', () => {
       onFilterChange.mockClear();
       const { result } = renderHook(() =>
         useSearchPageFilterState({
-          searchQuery: [{ type: 'sql', condition: `level IN ('info', 'ok')` }],
+          searchQuery: [{ type: 'sql', condition: `level IN ['info', 'ok']` }],
           onFilterChange,
           knownColumns: new Set(),
         }),
@@ -1030,7 +1030,7 @@ describe('searchFilters', () => {
       });
 
       expect(onFilterChange).toHaveBeenLastCalledWith([
-        { type: 'sql', condition: "level IN ('error')" },
+        { type: 'sql', condition: "level IN ['error']" },
       ]);
     });
 
@@ -1038,9 +1038,9 @@ describe('searchFilters', () => {
       const { result } = renderHook(() =>
         useSearchPageFilterState({
           searchQuery: [
-            { type: 'sql', condition: `service IN ('hdx-oss-dev-app')` },
-            { type: 'sql', condition: `hyperdx_event_type IN ('span')` },
-            { type: 'sql', condition: `level IN ('info', 'ok')` },
+            { type: 'sql', condition: `service IN ['hdx-oss-dev-app']` },
+            { type: 'sql', condition: `hyperdx_event_type IN ['span']` },
+            { type: 'sql', condition: `level IN ['info', 'ok']` },
           ],
           onFilterChange,
           knownColumns: new Set(),
@@ -1053,9 +1053,9 @@ describe('searchFilters', () => {
       });
 
       expect(onFilterChange).toHaveBeenLastCalledWith([
-        { type: 'sql', condition: `hyperdx_event_type IN ('span')` },
-        { type: 'sql', condition: `level IN ('info', 'ok')` },
-        { type: 'sql', condition: `another_facet IN ('some_value')` },
+        { type: 'sql', condition: `hyperdx_event_type IN ['span']` },
+        { type: 'sql', condition: `level IN ['info', 'ok']` },
+        { type: 'sql', condition: `another_facet IN ['some_value']` },
       ]);
     });
 
@@ -1063,9 +1063,9 @@ describe('searchFilters', () => {
       const { result } = renderHook(() =>
         useSearchPageFilterState({
           searchQuery: [
-            { type: 'sql', condition: `service IN ('hdx-oss-dev-app')` },
-            { type: 'sql', condition: `hyperdx_event_type IN ('span')` },
-            { type: 'sql', condition: `level IN ('info', 'ok')` },
+            { type: 'sql', condition: `service IN ['hdx-oss-dev-app']` },
+            { type: 'sql', condition: `hyperdx_event_type IN ['span']` },
+            { type: 'sql', condition: `level IN ['info', 'ok']` },
           ],
           onFilterChange,
           knownColumns: new Set(),
@@ -1077,8 +1077,8 @@ describe('searchFilters', () => {
       });
 
       expect(onFilterChange).toHaveBeenLastCalledWith([
-        { type: 'sql', condition: `service IN ('hdx-oss-dev-app')` },
-        { type: 'sql', condition: `hyperdx_event_type IN ('span')` },
+        { type: 'sql', condition: `service IN ['hdx-oss-dev-app']` },
+        { type: 'sql', condition: `hyperdx_event_type IN ['span']` },
       ]);
     });
 
@@ -1086,9 +1086,9 @@ describe('searchFilters', () => {
       const { result } = renderHook(() =>
         useSearchPageFilterState({
           searchQuery: [
-            { type: 'sql', condition: `service IN ('hdx-oss-dev-app')` },
-            { type: 'sql', condition: `hyperdx_event_type IN ('span')` },
-            { type: 'sql', condition: `level IN ('info', 'ok')` },
+            { type: 'sql', condition: `service IN ['hdx-oss-dev-app']` },
+            { type: 'sql', condition: `hyperdx_event_type IN ['span']` },
+            { type: 'sql', condition: `level IN ['info', 'ok']` },
           ],
           onFilterChange,
           knownColumns: new Set(),
@@ -1112,8 +1112,8 @@ describe('searchFilters', () => {
       const { result } = renderHook(() =>
         useSearchPageFilterState({
           searchQuery: [
-            { type: 'sql', condition: `service IN ('app')` },
-            { type: 'sql', condition: `level NOT IN ('error')` },
+            { type: 'sql', condition: `service IN ['app']` },
+            { type: 'sql', condition: `level NOT IN ['error']` },
           ],
           onFilterChange,
           knownColumns: new Set(),
@@ -1125,8 +1125,8 @@ describe('searchFilters', () => {
       });
 
       expect(onFilterChange).toHaveBeenCalledWith([
-        { type: 'sql', condition: `service IN ('app')` },
-        { type: 'sql', condition: `level IN ('info')` }, // Should only have the included value, no excluded values
+        { type: 'sql', condition: `service IN ['app']` },
+        { type: 'sql', condition: `level IN ['info']` }, // Should only have the included value, no excluded values
       ]);
     });
 
@@ -1208,8 +1208,8 @@ describe('searchFilters', () => {
         const { result } = renderHook(() =>
           useSearchPageFilterState({
             searchQuery: [
-              { type: 'sql', condition: `OldColumn IN ('x')` },
-              { type: 'sql', condition: `AnotherGone IN ('y')` },
+              { type: 'sql', condition: `OldColumn IN ['x']` },
+              { type: 'sql', condition: `AnotherGone IN ['y']` },
             ],
             onFilterChange: onFilterChangeLocal,
             knownColumns: new Set(),
@@ -1232,8 +1232,8 @@ describe('searchFilters', () => {
         const { result } = renderHook(() =>
           useSearchPageFilterState({
             searchQuery: [
-              { type: 'sql', condition: `ServiceName IN ('app')` },
-              { type: 'sql', condition: `Body IN ('oops')` },
+              { type: 'sql', condition: `ServiceName IN ['app']` },
+              { type: 'sql', condition: `Body IN ['oops']` },
             ],
             onFilterChange: onFilterChangeLocal,
             knownColumns: new Set(),
@@ -1249,7 +1249,7 @@ describe('searchFilters', () => {
 
         expect(dropped).toEqual(['Body']);
         expect(onFilterChangeLocal).toHaveBeenLastCalledWith([
-          { type: 'sql', condition: `ServiceName IN ('app')` },
+          { type: 'sql', condition: `ServiceName IN ['app']` },
         ]);
       });
     });

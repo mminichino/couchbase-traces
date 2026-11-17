@@ -125,7 +125,7 @@ describe('useDashboardFilters', () => {
     );
 
     expect(conditionsFor(result2.current.broadcastedFilters)).toEqual([
-      "toString(environment) IN ('production', 'staging')",
+      "toString(environment) IN ['production', 'staging']",
     ]);
   });
 
@@ -233,20 +233,20 @@ describe('useDashboardFilters', () => {
 
   describe('getFilterQueriesForSource', () => {
     it('applies an unscoped filter to every tile', () => {
-      mockState = [{ type: 'sql', condition: "environment IN ('production')" }];
+      mockState = [{ type: 'sql', condition: "environment IN ['production']" }];
 
       const { result } = renderHook(() => useDashboardFilters(mockFilters));
 
       expect(
         conditionsFor(result.current.getFilterQueriesForSource('logs')),
-      ).toEqual(["toString(environment) IN ('production')"]);
+      ).toEqual(["toString(environment) IN ['production']"]);
       expect(
         conditionsFor(result.current.getFilterQueriesForSource('traces')),
-      ).toEqual(["toString(environment) IN ('production')"]);
+      ).toEqual(["toString(environment) IN ['production']"]);
     });
 
     it('applies a scoped filter only to tiles on a listed source', () => {
-      mockState = [{ type: 'sql', condition: "environment IN ('production')" }];
+      mockState = [{ type: 'sql', condition: "environment IN ['production']" }];
       const filters: DashboardFilter[] = [
         { ...mockFilters[0], appliesToSourceIds: ['logs'] },
       ];
@@ -258,7 +258,7 @@ describe('useDashboardFilters', () => {
     });
 
     it('applies a broadcast-disabled filter to no tile', () => {
-      mockState = [{ type: 'sql', condition: "environment IN ('production')" }];
+      mockState = [{ type: 'sql', condition: "environment IN ['production']" }];
       const filters: DashboardFilter[] = [
         { ...mockFilters[0], isBroadcastEnabled: false },
       ];
@@ -275,7 +275,7 @@ describe('useDashboardFilters', () => {
     });
 
     it('applies a broadcast-disabled filter to no tile even when it is scoped', () => {
-      mockState = [{ type: 'sql', condition: "environment IN ('production')" }];
+      mockState = [{ type: 'sql', condition: "environment IN ['production']" }];
       const filters: DashboardFilter[] = [
         {
           ...mockFilters[0],
@@ -290,7 +290,7 @@ describe('useDashboardFilters', () => {
     });
 
     it('keeps broadcasting when the field is absent or explicitly true', () => {
-      mockState = [{ type: 'sql', condition: "environment IN ('production')" }];
+      mockState = [{ type: 'sql', condition: "environment IN ['production']" }];
       const filters: DashboardFilter[] = [
         { ...mockFilters[0], isBroadcastEnabled: true },
       ];
@@ -311,7 +311,7 @@ describe('useDashboardFilters', () => {
     });
 
     it('broadcasts when a sibling definition on the same expression still broadcasts', () => {
-      mockState = [{ type: 'sql', condition: "environment IN ('production')" }];
+      mockState = [{ type: 'sql', condition: "environment IN ['production']" }];
       const filters: DashboardFilter[] = [
         { ...mockFilters[0], id: 'a', isBroadcastEnabled: false },
         {
@@ -345,7 +345,7 @@ describe('useDashboardFilters', () => {
 
       expect(
         conditionsFor(result.current.getFilterQueriesForSource('logs')),
-      ).toEqual(["toString(environment) IN ('production')"]);
+      ).toEqual(["toString(environment) IN ['production']"]);
       expect(result.current.getFilterQueriesForSource('traces')).toEqual([]);
     });
   });
@@ -353,8 +353,8 @@ describe('useDashboardFilters', () => {
   describe('filterQueries', () => {
     it('omits broadcast-disabled filters', () => {
       mockState = [
-        { type: 'sql', condition: "environment IN ('production')" },
-        { type: 'sql', condition: "service.name IN ('api')" },
+        { type: 'sql', condition: "environment IN ['production']" },
+        { type: 'sql', condition: "service.name IN ['api']" },
       ];
       const filters: DashboardFilter[] = [
         { ...mockFilters[0], isBroadcastEnabled: false },
@@ -364,7 +364,7 @@ describe('useDashboardFilters', () => {
       const { result } = renderHook(() => useDashboardFilters(filters));
 
       expect(conditionsFor(result.current.broadcastedFilters)).toEqual([
-        "toString(service.name) IN ('api')",
+        "toString(service.name) IN ['api']",
       ]);
       // Preset dashboards never persist the field, so they keep broadcasting.
       expect(Array.from(result.current.selectionByFilterId.keys())).toEqual([
@@ -376,7 +376,7 @@ describe('useDashboardFilters', () => {
 
   describe('variables', () => {
     it('is empty when no filter is variable-enabled', () => {
-      mockState = [{ type: 'sql', condition: "environment IN ('production')" }];
+      mockState = [{ type: 'sql', condition: "environment IN ['production']" }];
 
       const { result } = renderHook(() => useDashboardFilters(mockFilters));
 
@@ -384,7 +384,7 @@ describe('useDashboardFilters', () => {
     });
 
     it('exposes a variable-enabled filter with its expression and selection', () => {
-      mockState = [{ type: 'sql', condition: "environment IN ('production')" }];
+      mockState = [{ type: 'sql', condition: "environment IN ['production']" }];
       const filters: DashboardFilter[] = [
         { ...mockFilters[0], isVariableEnabled: true, variableName: 'env' },
       ];
@@ -410,8 +410,8 @@ describe('useDashboardFilters', () => {
 
     it('excludes filters that are not variable-enabled', () => {
       mockState = [
-        { type: 'sql', condition: "environment IN ('production')" },
-        { type: 'sql', condition: "service.name IN ('api')" },
+        { type: 'sql', condition: "environment IN ['production']" },
+        { type: 'sql', condition: "service.name IN ['api']" },
       ];
       const filters: DashboardFilter[] = [
         mockFilters[0],
@@ -424,7 +424,7 @@ describe('useDashboardFilters', () => {
     });
 
     it('exposes a broadcast-disabled filter as a variable', () => {
-      mockState = [{ type: 'sql', condition: "environment IN ('production')" }];
+      mockState = [{ type: 'sql', condition: "environment IN ['production']" }];
       const filters: DashboardFilter[] = [
         {
           ...mockFilters[0],
@@ -481,8 +481,8 @@ describe('useDashboardFilters', () => {
 
     it('keeps the first definition when two share a variable name', () => {
       mockState = [
-        { type: 'sql', condition: "environment IN ('production')" },
-        { type: 'sql', condition: "service.name IN ('api')" },
+        { type: 'sql', condition: "environment IN ['production']" },
+        { type: 'sql', condition: "service.name IN ['api']" },
       ];
       const filters: DashboardFilter[] = [
         { ...mockFilters[0], isVariableEnabled: true, variableName: 'dupe' },
@@ -506,8 +506,8 @@ describe('useDashboardFilters', () => {
 
     it('is empty when URL filters only reference declared expressions', () => {
       mockState = [
-        { type: 'sql', condition: "environment IN ('production')" },
-        { type: 'sql', condition: "service.name IN ('api')" },
+        { type: 'sql', condition: "environment IN ['production']" },
+        { type: 'sql', condition: "service.name IN ['api']" },
       ];
 
       const { result } = renderHook(() => useDashboardFilters(mockFilters));
@@ -517,8 +517,8 @@ describe('useDashboardFilters', () => {
 
     it('lists a single ignored expression not declared by the dashboard', () => {
       mockState = [
-        { type: 'sql', condition: "environment IN ('production')" },
-        { type: 'sql', condition: "team IN ('platform')" },
+        { type: 'sql', condition: "environment IN ['production']" },
+        { type: 'sql', condition: "team IN ['platform']" },
       ];
 
       const { result } = renderHook(() => useDashboardFilters(mockFilters));
@@ -532,10 +532,10 @@ describe('useDashboardFilters', () => {
 
     it('lists multiple ignored expressions in URL-encounter order', () => {
       mockState = [
-        { type: 'sql', condition: "team IN ('platform')" },
-        { type: 'sql', condition: "environment IN ('production')" },
-        { type: 'sql', condition: "region IN ('us-east-1')" },
-        { type: 'sql', condition: "owner IN ('drew')" },
+        { type: 'sql', condition: "team IN ['platform']" },
+        { type: 'sql', condition: "environment IN ['production']" },
+        { type: 'sql', condition: "region IN ['us-east-1']" },
+        { type: 'sql', condition: "owner IN ['drew']" },
       ];
 
       const { result } = renderHook(() => useDashboardFilters(mockFilters));
@@ -565,7 +565,7 @@ describe('useDashboardFilters', () => {
     it('does not flag an expression owned only by variable-enabled filters', () => {
       // A legacy expression-keyed entry aimed at a variable-enabled filter is a
       // valid back-compat entry that just applied — not an ignored one.
-      mockState = [{ type: 'sql', condition: "environment IN ('production')" }];
+      mockState = [{ type: 'sql', condition: "environment IN ['production']" }];
       const filters: DashboardFilter[] = [
         { ...mockFilters[0], isVariableEnabled: true, variableName: 'env' },
       ];
@@ -672,7 +672,7 @@ describe('useDashboardFilters', () => {
       });
 
       expect(mockState).toEqual([
-        { type: 'sql', condition: "environment IN ('production')" },
+        { type: 'sql', condition: "environment IN ['production']" },
       ]);
     });
 
@@ -687,12 +687,12 @@ describe('useDashboardFilters', () => {
       });
 
       expect(mockState).toEqual([
-        { type: 'sql', condition: "service.name IN ('api')" },
+        { type: 'sql', condition: "service.name IN ['api']" },
       ]);
     });
 
     it('reads a legacy entry for a variable-enabled filter and migrates it on the next write', () => {
-      mockState = [{ type: 'sql', condition: "environment IN ('production')" }];
+      mockState = [{ type: 'sql', condition: "environment IN ['production']" }];
       const filters = [envVariableFilter, mockFilters[1]];
 
       const { result } = renderHook(() => useDashboardFilters(filters));
@@ -706,13 +706,13 @@ describe('useDashboardFilters', () => {
       });
 
       expect(mockState).toEqual([
-        { type: 'sql', condition: "service.name IN ('api')" },
+        { type: 'sql', condition: "service.name IN ['api']" },
         { type: 'variable', name: 'env', values: ['production'] },
       ]);
     });
 
     it('clears a variable-keyed selection without resurrecting the legacy entry', () => {
-      mockState = [{ type: 'sql', condition: "environment IN ('production')" }];
+      mockState = [{ type: 'sql', condition: "environment IN ['production']" }];
 
       const { result } = renderHook(() =>
         useDashboardFilters([envVariableFilter]),
@@ -728,7 +728,7 @@ describe('useDashboardFilters', () => {
     it('does not migrate a legacy exclusion, and does not lose it', () => {
       // `NOT IN` has no representation in the variable-keyed format.
       mockState = [
-        { type: 'sql', condition: "environment NOT IN ('production')" },
+        { type: 'sql', condition: "environment NOT IN ['production']" },
       ];
       const filters = [envVariableFilter, mockFilters[1]];
 
@@ -739,8 +739,8 @@ describe('useDashboardFilters', () => {
       });
 
       expect(mockState).toEqual([
-        { type: 'sql', condition: "environment NOT IN ('production')" },
-        { type: 'sql', condition: "service.name IN ('api')" },
+        { type: 'sql', condition: "environment NOT IN ['production']" },
+        { type: 'sql', condition: "service.name IN ['api']" },
       ]);
     });
 
@@ -756,14 +756,14 @@ describe('useDashboardFilters', () => {
 
       expect(mockState).toEqual([
         { type: 'sql', condition: 'environment BETWEEN 1 AND 2' },
-        { type: 'sql', condition: "service.name IN ('api')" },
+        { type: 'sql', condition: "service.name IN ['api']" },
       ]);
     });
 
     it('carries an entry no scheme can represent through a write', () => {
       mockState = [
         { type: 'lucene', condition: 'level:error' },
-        { type: 'sql', condition: "environment IN ('production')" },
+        { type: 'sql', condition: "environment IN ['production']" },
       ];
 
       const { result } = renderHook(() => useDashboardFilters(mockFilters));
@@ -773,15 +773,15 @@ describe('useDashboardFilters', () => {
       });
 
       expect(mockState).toEqual([
-        { type: 'sql', condition: "environment IN ('production')" },
-        { type: 'sql', condition: "service.name IN ('api')" },
+        { type: 'sql', condition: "environment IN ['production']" },
+        { type: 'sql', condition: "service.name IN ['api']" },
         { type: 'lucene', condition: 'level:error' },
       ]);
     });
 
     it('does not grow the param when a filter expression cannot round-trip', () => {
       // `parseQuery` rejects a clause whose key carries a top-level comparison
-      // operator, so `Duration > 1000000 IN ('v')` reads back as nothing. The
+      // operator, so `Duration > 1000000 IN ['v']` reads back as nothing. The
       // selection can't persist for such a filter (true before this format too),
       // but each write must still replace the dead entry rather than append to
       // it — carrying it as passthrough grew the URL by one entry per click.
@@ -803,7 +803,7 @@ describe('useDashboardFilters', () => {
       }
 
       expect(mockState).toEqual([
-        { type: 'sql', condition: "Duration > 1000000 IN ('v3')" },
+        { type: 'sql', condition: "Duration > 1000000 IN ['v3']" },
       ]);
     });
 
@@ -824,7 +824,7 @@ describe('useDashboardFilters', () => {
         { type: 'variable', name: 'env', values: ['true'] },
       ]);
       expect(conditionsFor(result2.current.broadcastedFilters)).toEqual([
-        "toString(environment) IN ('true')",
+        "toString(environment) IN ['true']",
       ]);
     });
 
@@ -832,12 +832,12 @@ describe('useDashboardFilters', () => {
       // Documents the known lossiness of expression keying: an unquoted `true`
       // in the URL parses back as a JS boolean and re-renders unquoted, which
       // is a type error against a String column.
-      mockState = [{ type: 'sql', condition: 'environment IN (true)' }];
+      mockState = [{ type: 'sql', condition: 'environment IN [true]' }];
 
       const { result } = renderHook(() => useDashboardFilters(mockFilters));
 
       expect(conditionsFor(result.current.broadcastedFilters)).toEqual([
-        'toString(environment) IN (true)',
+        'toString(environment) IN [true]',
       ]);
     });
   });
@@ -865,7 +865,7 @@ describe('useDashboardFilters', () => {
     it('holds independent selections and emits one predicate per definition', () => {
       mockState = [
         { type: 'variable', name: 'svcA', values: ['accounting'] },
-        { type: 'sql', condition: "ServiceName IN ('frontend')" },
+        { type: 'sql', condition: "ServiceName IN ['frontend']" },
       ];
 
       const { result } = renderHook(() =>
@@ -880,13 +880,13 @@ describe('useDashboardFilters', () => {
       );
       // Two independent constraints on one column AND together.
       expect(conditionsFor(result.current.broadcastedFilters)).toEqual([
-        "toString(ServiceName) IN ('accounting')",
-        "toString(ServiceName) IN ('frontend')",
+        "toString(ServiceName) IN ['accounting']",
+        "toString(ServiceName) IN ['frontend']",
       ]);
     });
 
     it('de-duplicates identical predicates from two definitions', () => {
-      mockState = [{ type: 'sql', condition: "ServiceName IN ('frontend')" }];
+      mockState = [{ type: 'sql', condition: "ServiceName IN ['frontend']" }];
       const filters: DashboardFilter[] = [
         { ...sharedExpressionFilters[1], id: 'a' },
         { ...sharedExpressionFilters[1], id: 'b' },
@@ -895,7 +895,7 @@ describe('useDashboardFilters', () => {
       const { result } = renderHook(() => useDashboardFilters(filters));
 
       expect(conditionsFor(result.current.broadcastedFilters)).toEqual([
-        "toString(ServiceName) IN ('frontend')",
+        "toString(ServiceName) IN ['frontend']",
       ]);
     });
 
@@ -912,7 +912,7 @@ describe('useDashboardFilters', () => {
       });
 
       expect(mockState).toEqual([
-        { type: 'sql', condition: "ServiceName IN ('frontend')" },
+        { type: 'sql', condition: "ServiceName IN ['frontend']" },
         { type: 'variable', name: 'svcA', values: ['accounting'] },
       ]);
     });
@@ -985,7 +985,7 @@ describe('useDashboardFilters', () => {
       });
 
       expect(mockState).toEqual([
-        { type: 'sql', condition: "service.name IN ('api')" },
+        { type: 'sql', condition: "service.name IN ['api']" },
         { type: 'variable', name: 'env', values: ['staging'] },
       ]);
     });
@@ -1019,7 +1019,7 @@ describe('useDashboardFilters', () => {
     });
 
     it('writes and clears conditions without touching other entries', () => {
-      mockState = [{ type: 'sql', condition: "environment IN ('prod')" }];
+      mockState = [{ type: 'sql', condition: "environment IN ['prod']" }];
       const filters = [mockFilters[0], adhocFilter];
       const { result } = renderHook(() => useDashboardFilters(filters));
 
@@ -1027,7 +1027,7 @@ describe('useDashboardFilters', () => {
         result.current.setAdhocConditions('adhoc1', [condition]);
       });
       expect(mockState).toEqual([
-        { type: 'sql', condition: "environment IN ('prod')" },
+        { type: 'sql', condition: "environment IN ['prod']" },
         { type: 'adhoc', name: 'conds', conditions: [condition] },
       ]);
 
@@ -1035,7 +1035,7 @@ describe('useDashboardFilters', () => {
         result.current.setAdhocConditions('adhoc1', []);
       });
       expect(mockState).toEqual([
-        { type: 'sql', condition: "environment IN ('prod')" },
+        { type: 'sql', condition: "environment IN ['prod']" },
       ]);
     });
 
@@ -1181,7 +1181,7 @@ describe('useDashboardFilters', () => {
       });
 
       expect(mockState).toEqual([
-        { type: 'sql', condition: "environment IN ('prod')" },
+        { type: 'sql', condition: "environment IN ['prod']" },
         { type: 'adhoc', name: 'conds', conditions: [condition] },
       ]);
     });
@@ -1233,7 +1233,7 @@ describe('useDashboardFilters', () => {
 
       it('combines conditions with other filters, deduplicated', () => {
         mockState = [
-          { type: 'sql', condition: "environment IN ('production')" },
+          { type: 'sql', condition: "environment IN ['production']" },
           { type: 'adhoc', name: 'conds', conditions: [condition] },
           { type: 'adhoc', name: 'conds2', conditions: [condition] },
         ];
@@ -1247,7 +1247,7 @@ describe('useDashboardFilters', () => {
 
         expect(
           conditionsFor(result.current.getFilterQueriesForSource('logs')),
-        ).toEqual(["toString(environment) IN ('production')", conditionSql]);
+        ).toEqual(["toString(environment) IN ['production']", conditionSql]);
       });
     });
 
@@ -1322,7 +1322,7 @@ describe('useDashboardFilters', () => {
     // An exclusion narrows the data but chooses nothing, so it cannot satisfy
     // "at least one value selected".
     it('still reports a filter whose only value is an exclusion', () => {
-      mockState = [{ type: 'sql', condition: "environment NOT IN ('dev')" }];
+      mockState = [{ type: 'sql', condition: "environment NOT IN ['dev']" }];
 
       const { result } = renderHook(() => useDashboardFilters([required()]));
 

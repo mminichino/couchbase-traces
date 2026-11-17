@@ -179,7 +179,7 @@ describe('substituteVariables', () => {
     it('substitutes with the sqlstring format by default', () => {
       expect(
         substituteVariablesSql('WHERE ServiceName IN ($service)', [SERVICE]),
-      ).toBe("WHERE ServiceName IN ('api', 'web')");
+      ).toBe("WHERE ServiceName IN ['api', 'web']");
     });
 
     it('substitutes NULL when nothing is selected', () => {
@@ -187,7 +187,7 @@ describe('substituteVariables', () => {
         substituteVariablesSql('WHERE ServiceName IN ($service)', [
           EMPTY_SERVICE,
         ]),
-      ).toBe('WHERE ServiceName IN (NULL)');
+      ).toBe('WHERE ServiceName IN [NULL]');
     });
 
     it('leaves an unknown name verbatim', () => {
@@ -287,13 +287,13 @@ describe('substituteVariables', () => {
         substituteVariablesSql('WHERE $__filter(ServiceName, $service)', [
           SERVICE,
         ]),
-      ).toBe("WHERE (ServiceName IN ('api', 'web'))");
+      ).toBe("WHERE (ServiceName IN ['api', 'web'])");
     });
 
     it('expands the one-argument form using the variable expression', () => {
       expect(
         substituteVariablesSql('WHERE $__filter($service)', [SERVICE]),
-      ).toBe("WHERE (toString(ServiceName) IN ('api', 'web'))");
+      ).toBe("WHERE (toString(ServiceName) IN ['api', 'web'])");
     });
 
     it('rejects a name argument written without its $', () => {
@@ -335,7 +335,7 @@ describe('substituteVariables', () => {
           "WHERE $__filter(concat(col, '$env'), $service)",
           [SERVICE, variable('env', ['prod'])],
         ),
-      ).toBe("WHERE (concat(col, ''prod'') IN ('api', 'web'))");
+      ).toBe("WHERE (concat(col, ''prod'') IN ['api', 'web'])");
     });
 
     it('throws when the named variable does not exist', () => {
@@ -419,7 +419,7 @@ describe('substituteVariables', () => {
           'WHERE $__conditionalAll(ServiceName IN ($service), $service)',
           [SERVICE],
         ),
-      ).toBe("WHERE (ServiceName IN ('api', 'web'))");
+      ).toBe("WHERE (ServiceName IN ['api', 'web'])");
     });
 
     it('rejects a name argument written without its $', () => {
@@ -440,7 +440,7 @@ describe('substituteVariables', () => {
           'WHERE $__conditionalAll(NOT $__filter(ServiceName, $service), $env)',
           [SERVICE, variable('env', ['prod'])],
         ),
-      ).toBe("WHERE (NOT (ServiceName IN ('api', 'web')))");
+      ).toBe("WHERE (NOT (ServiceName IN ['api', 'web']))");
     });
 
     it('expands a nested reference exactly once', () => {
@@ -535,7 +535,7 @@ describe('substituteVariables per language', () => {
         'ServiceName IN ($service) AND $__filter(ServiceName, $service)',
         { variables: [SERVICE], inputLanguage: 'sql' },
       ),
-    ).toBe("ServiceName IN ('api', 'web') AND (ServiceName IN ('api', 'web'))");
+    ).toBe("ServiceName IN ['api', 'web'] AND (ServiceName IN ['api', 'web'])");
   });
 
   it('expands references in the lucene format for lucene', () => {
@@ -562,7 +562,7 @@ describe('substituteVariables per language', () => {
         variables: [EMPTY_SERVICE],
         inputLanguage: 'sql',
       }),
-    ).toBe('ServiceName IN (NULL)');
+    ).toBe('ServiceName IN [NULL]');
     expect(
       substituteVariables('ServiceName:$service', {
         variables: [EMPTY_SERVICE],
@@ -1073,7 +1073,7 @@ describe('getVariableReferences', () => {
           variables: [SERVICE],
           inputLanguage: 'sql',
         }),
-      ).toBe("-- see $service\nWHERE a IN ('api', 'web')");
+      ).toBe("-- see $service\nWHERE a IN ['api', 'web']");
     });
   });
 
@@ -1404,7 +1404,7 @@ describe('substituteChartConfigVariables', () => {
         }),
       ),
     ).toMatchObject({
-      where: "ServiceName IN ('api', 'web')",
+      where: "ServiceName IN ['api', 'web']",
       having: "anyLast(Env) = 'prod'",
       variables: undefined,
     });
@@ -1461,7 +1461,7 @@ describe('substituteChartConfigVariables', () => {
           variables: [SERVICE],
         }),
       ).having,
-    ).toBe("(ServiceName IN ('api', 'web'))");
+    ).toBe("(ServiceName IN ['api', 'web'])");
   });
 
   it('expands select value expressions and agg conditions', () => {
@@ -1488,7 +1488,7 @@ describe('substituteChartConfigVariables', () => {
         valueExpression: '',
         aggCondition: 'ServiceName:("api" OR "web")',
       },
-      { valueExpression: "countIf(ServiceName IN ('api', 'web'))" },
+      { valueExpression: "countIf(ServiceName IN ['api', 'web'])" },
     ]);
   });
 
@@ -1515,7 +1515,7 @@ describe('substituteChartConfigVariables', () => {
           variables: [SERVICE],
         }),
       ).where,
-    ).toBe("$__timeFilter(Timestamp) AND ServiceName IN ('api', 'web')");
+    ).toBe("$__timeFilter(Timestamp) AND ServiceName IN ['api', 'web']");
   });
 
   it('never re-scans an expansion, so a selected value cannot inject a reference', () => {
@@ -1526,7 +1526,7 @@ describe('substituteChartConfigVariables', () => {
           variables: [variable('service', ['$env']), variable('env', ['prod'])],
         }),
       ).where,
-    ).toBe("ServiceName IN ('$env')");
+    ).toBe("ServiceName IN ['$env']");
   });
 
   it('renders an empty selection so the query stays valid', () => {
@@ -1835,7 +1835,7 @@ describe('a variable with no expression', () => {
   it('expands the two-argument $__filter form', () => {
     expect(
       substituteVariablesSql('WHERE $__filter(ServiceName, $env)', [ENV]),
-    ).toBe("WHERE (ServiceName IN ('prod'))");
+    ).toBe("WHERE (ServiceName IN ['prod'])");
   });
 
   it('expands $__conditionalAll', () => {
@@ -1844,7 +1844,7 @@ describe('a variable with no expression', () => {
         'WHERE $__conditionalAll(ServiceName IN ($env), $env)',
         [ENV],
       ),
-    ).toBe("WHERE (ServiceName IN ('prod'))");
+    ).toBe("WHERE (ServiceName IN ['prod'])");
     expect(
       substituteVariablesSql(
         'WHERE $__conditionalAll(ServiceName IN ($env), $env)',
@@ -1859,7 +1859,7 @@ describe('a variable with no expression', () => {
     ).toBe(
       reference === '${env:csv}'
         ? 'WHERE ServiceName IN (prod)'
-        : "WHERE ServiceName IN ('prod')",
+        : "WHERE ServiceName IN ['prod']",
     );
   });
 

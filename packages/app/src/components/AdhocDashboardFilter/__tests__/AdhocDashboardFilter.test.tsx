@@ -211,7 +211,7 @@ describe('AdhocDashboardFilter', () => {
         narrowed,
         expect.any(String),
         dateRange,
-        { where: "Namespace IN ('ns-a')", whereLanguage: 'sql' },
+        { where: "Namespace IN ['ns-a']", whereLanguage: 'sql' },
       );
     });
 

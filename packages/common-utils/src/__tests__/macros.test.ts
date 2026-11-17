@@ -347,7 +347,7 @@ describe('replaceMacros', () => {
         { sqlTemplate: 'WHERE $__filters' },
         "(msg IN ('$__fromTime', '$service'))",
       ),
-    ).toBe("WHERE (msg IN ('$__fromTime', '$service'))");
+    ).toBe("WHERE (msg IN ['$__fromTime', '$service'])");
   });
 });
 
@@ -392,7 +392,7 @@ describe('replaceMacros with variables', () => {
           from: { databaseName: 'otel', tableName: 'otel_logs' },
           variables,
         },
-        "(toString(Env) IN ('prod'))",
+        "(toString(Env) IN ['prod'])",
       );
 
       expect(result).toBe(
@@ -400,9 +400,9 @@ describe('replaceMacros with variables', () => {
           'FROM `otel`.`otel_logs` ' +
           'WHERE ts >= toDateTime(fromUnixTimestamp64Milli({startDateMilliseconds:Int64})) ' +
           'AND ts <= toDateTime(fromUnixTimestamp64Milli({endDateMilliseconds:Int64})) ' +
-          "AND (toString(Env) IN ('prod')) " +
-          "AND (toString(ServiceName) IN ('api', 'web')) " +
-          "AND svc IN ('api', 'web') " +
+          "AND (toString(Env) IN ['prod']) " +
+          "AND (toString(ServiceName) IN ['api', 'web']) " +
+          "AND svc IN ['api', 'web'] " +
           "AND (Env != 'api', 'web')",
       );
     });
@@ -417,7 +417,7 @@ describe('replaceMacros with variables', () => {
           },
           '(1=2)',
         ),
-      ).toBe("WHERE (1=2) AND (ServiceName IN ('api', 'web'))");
+      ).toBe("WHERE (1=2) AND (ServiceName IN ['api', 'web'])");
     });
 
     it('expands an unselected variable to a no-op predicate', () => {
@@ -435,7 +435,7 @@ describe('replaceMacros with variables', () => {
           { sqlTemplate: 'WHERE $__filters', variables },
           "(msg IN ('$service'))",
         ),
-      ).toBe("WHERE (msg IN ('$service'))");
+      ).toBe("WHERE (msg IN ['$service'])");
     });
 
     it('does not re-expand a selected value that looks like a macro', () => {
@@ -568,7 +568,7 @@ describe('replaceMacros with variables', () => {
           variables: nested,
         }),
       ).toBe(
-        `WHERE (if((${timeFilterOn('Timestamp')}), a, b) IN ('api', 'web'))`,
+        `WHERE (if((${timeFilterOn('Timestamp')}), a, b) IN ['api', 'web'])`,
       );
     });
 
@@ -581,7 +581,7 @@ describe('replaceMacros with variables', () => {
             'WHERE $__filter(ServiceName, $service) AND $__conditionalAll(1=1, $service)',
           variables: nested,
         }),
-      ).toBe("WHERE (ServiceName IN ('api', 'web')) AND (1=1)");
+      ).toBe("WHERE (ServiceName IN ['api', 'web']) AND (1=1)");
     });
 
     it('does not re-expand a value that lands in an argument', () => {

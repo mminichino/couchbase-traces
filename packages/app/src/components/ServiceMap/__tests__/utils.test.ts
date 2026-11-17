@@ -39,7 +39,7 @@ describe('buildServiceMapErrorWhere', () => {
         statusCodeExpression: 'StatusCode',
       }),
     ).toBe(
-      "ServiceName = 'api' AND SpanKind IN ('Server', 'Consumer') AND LOWER(StatusCode) IN ('error', 'status_code_error')",
+      "ServiceName = 'api' AND SpanKind IN ['Server', 'Consumer'] AND LOWER(StatusCode) IN ['error', 'status_code_error']",
     );
   });
 });

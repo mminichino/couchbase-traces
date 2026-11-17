@@ -78,7 +78,7 @@ describe('buildEventsSearchUrl variable expansion', () => {
       variables: svc(['api']),
     });
 
-    expect(searchParams(url).get('where')).toBe("(ServiceName IN ('api'))");
+    expect(searchParams(url).get('where')).toBe("(ServiceName IN ['api'])");
     expect(url).not.toContain('$');
   });
 
@@ -90,7 +90,7 @@ describe('buildEventsSearchUrl variable expansion', () => {
           variables: svc(['api']),
         }),
       ).get('where'),
-    ).toBe("(toString(ServiceName) IN ('api'))");
+    ).toBe("(toString(ServiceName) IN ['api'])");
   });
 
   it('expands bare and braced references in a SQL where clause', () => {
@@ -101,7 +101,7 @@ describe('buildEventsSearchUrl variable expansion', () => {
           variables: svc(['api', 'web']),
         }),
       ).get('where'),
-    ).toBe("ServiceName IN ('api', 'web')");
+    ).toBe("ServiceName IN ['api', 'web']");
 
     expect(
       searchParams(
@@ -160,7 +160,7 @@ describe('buildEventsSearchUrl variable expansion', () => {
         variables: svc(['api']),
       }),
     );
-    expect(sqlSeries.get('where')).toBe("(ServiceName IN ('api'))");
+    expect(sqlSeries.get('where')).toBe("(ServiceName IN ['api'])");
     expect(sqlSeries.get('whereLanguage')).toBe('sql');
 
     const luceneSeries = searchParams(
@@ -234,7 +234,7 @@ describe('buildTableRowSearchUrl variable expansion', () => {
     );
 
     expect(JSON.parse(params.get('filters') ?? '')).toEqual([
-      { type: 'sql', condition: "ServiceName IN ('api')" },
+      { type: 'sql', condition: "ServiceName IN ['api']" },
       { type: 'sql', condition: 'Duration BETWEEN 95 AND 105' },
     ]);
   });

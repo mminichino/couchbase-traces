@@ -59,7 +59,7 @@ describe('filters', () => {
         a: { included: new Set<string>(['b']), excluded: new Set<string>() },
       };
       expect(filtersToQuery(filters)).toEqual([
-        { type: 'sql', condition: "a IN ('b')" },
+        { type: 'sql', condition: "a IN ['b']" },
       ]);
     });
 
@@ -72,8 +72,8 @@ describe('filters', () => {
         },
       };
       expect(filtersToQuery(filters)).toEqual([
-        { type: 'sql', condition: "a IN ('b')" },
-        { type: 'sql', condition: "c IN ('d', 'x')" },
+        { type: 'sql', condition: "a IN ['b']" },
+        { type: 'sql', condition: "c IN ['d', 'x']" },
       ]);
     });
 
@@ -85,8 +85,8 @@ describe('filters', () => {
         },
       };
       expect(filtersToQuery(filters)).toEqual([
-        { type: 'sql', condition: "a IN ('b')" },
-        { type: 'sql', condition: "a NOT IN ('c')" },
+        { type: 'sql', condition: "a IN ['b']" },
+        { type: 'sql', condition: "a NOT IN ['c']" },
       ]);
     });
 
@@ -98,8 +98,8 @@ describe('filters', () => {
         },
       };
       expect(filtersToQuery(filters, { stringifyKeys: true })).toEqual([
-        { type: 'sql', condition: "toString(json.key) IN ('value')" },
-        { type: 'sql', condition: "toString(json.key) NOT IN ('other value')" },
+        { type: 'sql', condition: "toString(json.key) IN ['value']" },
+        { type: 'sql', condition: "toString(json.key) NOT IN ['other value']" },
       ]);
     });
 
@@ -115,8 +115,8 @@ describe('filters', () => {
         },
       };
       expect(filtersToQuery(filters)).toEqual([
-        { type: 'sql', condition: 'isRootSpan IN (true)' },
-        { type: 'sql', condition: 'another_column NOT IN (true, false)' },
+        { type: 'sql', condition: 'isRootSpan IN [true]' },
+        { type: 'sql', condition: 'another_column NOT IN [true, false]' },
       ]);
     });
 
@@ -130,7 +130,7 @@ describe('filters', () => {
       expect(filtersToQuery(filters)).toEqual([
         {
           type: 'sql',
-          condition: "message IN ('my ''filter'' key')",
+          condition: "message IN ['my ''filter'' key']",
         },
       ]);
     });
@@ -145,7 +145,7 @@ describe('filters', () => {
       expect(filtersToQuery(filters)).toEqual([
         {
           type: 'sql',
-          condition: "message NOT IN ('it''s a test')",
+          condition: "message NOT IN ['it''s a test']",
         },
       ]);
     });
@@ -160,7 +160,7 @@ describe('filters', () => {
       expect(filtersToQuery(filters, { stringifyKeys: true })).toEqual([
         {
           type: 'sql',
-          condition: "toString(json.key) IN ('value with ''quotes''')",
+          condition: "toString(json.key) IN ['value with ''quotes''']",
         },
       ]);
     });
@@ -175,7 +175,7 @@ describe('filters', () => {
       expect(filtersToQuery(filters)).toEqual([
         {
           type: 'sql',
-          condition: "FilePath IN ('C:\\\\path\\\\to\\\\file')",
+          condition: "FilePath IN ['C:\\\\path\\\\to\\\\file']",
         },
       ]);
     });
@@ -190,7 +190,7 @@ describe('filters', () => {
       expect(filtersToQuery(filters)).toEqual([
         {
           type: 'sql',
-          condition: "FilePath NOT IN ('C:\\\\path\\\\to\\\\file')",
+          condition: "FilePath NOT IN ['C:\\\\path\\\\to\\\\file']",
         },
       ]);
     });
@@ -205,7 +205,7 @@ describe('filters', () => {
       expect(filtersToQuery(filters)).toEqual([
         {
           type: 'sql',
-          condition: "message IN ('a\\\\''b')",
+          condition: "message IN ['a\\\\''b']",
         },
       ]);
     });
@@ -353,7 +353,7 @@ describe('filters', () => {
         ).toEqual([
           {
             type: 'sql',
-            condition: "toString(Timestamp) NOT IN ('2026-06-16')",
+            condition: "toString(Timestamp) NOT IN ['2026-06-16']",
           },
         ]);
       });
@@ -366,7 +366,7 @@ describe('filters', () => {
           },
         };
         expect(filtersToQuery(filters, { dateTimeColumns })).toEqual([
-          { type: 'sql', condition: "ServiceName IN ('api')" },
+          { type: 'sql', condition: "ServiceName IN ['api']" },
         ]);
       });
 
@@ -390,7 +390,7 @@ describe('filters', () => {
           },
         };
         expect(filtersToQuery(filters)).toEqual([
-          { type: 'sql', condition: "Timestamp NOT IN ('2026-06-16')" },
+          { type: 'sql', condition: "Timestamp NOT IN ['2026-06-16']" },
         ]);
       });
     });
@@ -415,7 +415,7 @@ describe('filters', () => {
           { colA: { included: new Set(['x']), excluded: new Set() } },
           identity,
         ),
-      ).toBe("(colA IN ('x'))");
+      ).toBe("(colA IN ['x'])");
     });
 
     it('AND-joins conditions across keys and across include/exclude', () => {
@@ -427,7 +427,7 @@ describe('filters', () => {
         identity,
       );
       expect(predicate).toBe(
-        "(colA IN ('x')) AND (colA NOT IN ('y')) AND (colB IN ('z'))",
+        "(colA IN ['x']) AND (colA NOT IN ['y']) AND (colB IN ['z'])",
       );
     });
 
@@ -444,7 +444,7 @@ describe('filters', () => {
           },
           () => '`Attributes`.`cluster`.:String',
         ),
-      ).toBe("(`Attributes`.`cluster`.:String IN ('prod'))");
+      ).toBe("(`Attributes`.`cluster`.:String IN ['prod'])");
     });
   });
 
@@ -964,7 +964,7 @@ describe('filters', () => {
           [svc(['accounting'])],
         ),
       ).toEqual({
-        where: "(ServiceName IN ('accounting'))",
+        where: "(ServiceName IN ['accounting'])",
         whereLanguage: 'sql',
       });
     });
@@ -982,7 +982,7 @@ describe('filters', () => {
         resolveFilterValuesWhere({ where: '$__filter($svc)' }, [
           svc(['accounting']),
         ]).where,
-      ).toBe("(toString(ServiceName) IN ('accounting'))");
+      ).toBe("(toString(ServiceName) IN ['accounting'])");
     });
 
     it('expands a bare sql reference, including its empty state', () => {
@@ -990,11 +990,11 @@ describe('filters', () => {
         resolveFilterValuesWhere({ where: 'ServiceName IN ($svc)' }, [
           svc(['accounting', 'ad']),
         ]).where,
-      ).toBe("ServiceName IN ('accounting', 'ad')");
+      ).toBe("ServiceName IN ['accounting', 'ad']");
       expect(
         resolveFilterValuesWhere({ where: 'ServiceName IN ($svc)' }, [svc([])])
           .where,
-      ).toBe('ServiceName IN (NULL)');
+      ).toBe('ServiceName IN [NULL]');
     });
 
     it('expands a lucene reference in the lucene format', () => {
@@ -1029,7 +1029,7 @@ describe('filters', () => {
           { where: '$__filter(ServiceName, $svc)', whereLanguage: 'sql' },
           [svc(['accounting'])],
         ).where,
-      ).toBe("(ServiceName IN ('accounting'))");
+      ).toBe("(ServiceName IN ['accounting'])");
     });
 
     it('reports a macro naming an unknown variable without throwing', () => {
@@ -1181,13 +1181,13 @@ describe('filters', () => {
     });
 
     it('drops a compound BETWEEN whose trailing clause the regex would swallow', () => {
-      // The greedy regex would capture `2 AND other IN ('x')` as the upper
+      // The greedy regex would capture `2 AND other IN ['x']` as the upper
       // bound; `Number` rejects it as non-numeric so nothing is emitted.
       expect(
         parseQuery([
           {
             type: 'sql',
-            condition: "col BETWEEN 1 AND 2 AND other IN ('x')",
+            condition: "col BETWEEN 1 AND 2 AND other IN ['x']",
           },
         ]).filters,
       ).toEqual({});
@@ -1198,11 +1198,11 @@ describe('filters', () => {
     const sql = (condition: string): Filter => ({ type: 'sql', condition });
 
     it.each([
-      ["ServiceName IN ('checkout', 'payments')", 'IN'],
-      ["SeverityText NOT IN ('debug', 'trace')", 'NOT IN'],
+      ["ServiceName IN ['checkout', 'payments']", 'IN'],
+      ["SeverityText NOT IN ['debug', 'trace']", 'NOT IN'],
       ['Duration BETWEEN 100 AND 5000', 'BETWEEN (numeric)'],
-      ["LogAttributes['x'] IN ('y')", 'map-access column'],
-      ["Body IN ('a AND b')", 'value containing AND'],
+      ["LogAttributes['x'] IN ['y']", 'map-access column'],
+      ["Body IN ['a AND b']", 'value containing AND'],
     ])('accepts a single renderable predicate: %s (%s)', condition => {
       expect(isRenderablePinnedFilter(sql(condition))).toBe(true);
     });
@@ -1210,17 +1210,17 @@ describe('filters', () => {
     it.each([
       ["ServiceName = 'checkout'", 'plain equality (never renders)'],
       [
-        "ServiceName IN ('x') AND foo = 1",
+        "ServiceName IN ['x'] AND foo = 1",
         'IN + dropped conjunct (divergence)',
       ],
-      ["A IN ('x') AND B IN ('y')", 'compound over two columns'],
+      ["A IN ['x'] AND B IN ['y']", 'compound over two columns'],
       ["ts BETWEEN '2024-01-01' AND '2024-02-01'", 'non-numeric BETWEEN'],
-      ["col BETWEEN 1 AND 2 AND other IN ('x')", 'BETWEEN swallowing a clause'],
+      ["col BETWEEN 1 AND 2 AND other IN ['x']", 'BETWEEN swallowing a clause'],
       [
         'ServiceName NOT BETWEEN 1 AND 2',
         'NOT folded into the key (renders inverted)',
       ],
-      ["NOT (ServiceName IN ('x'))", 'leading NOT folded into the key'],
+      ["NOT (ServiceName IN ['x'])", 'leading NOT folded into the key'],
       ['', 'empty condition'],
     ])('rejects %s (%s)', condition => {
       expect(isRenderablePinnedFilter(sql(condition))).toBe(false);
@@ -1269,13 +1269,13 @@ describe('filters', () => {
   // countTopLevelAnd via isRenderablePinnedFilter).
   describe('complex expression keys (nested parentheses)', () => {
     const ifOrExpr = `if(SeverityText = 'error' or SeverityText = 'fatal', 'Errors', 'Non-errors')`;
-    const ifInExpr = `if(SeverityText IN ('error', 'fatal'), 'Errors', 'Non-errors')`;
+    const ifInExpr = `if(SeverityText IN ['error', 'fatal'], 'Errors', 'Non-errors')`;
     const ifBetweenExpr = `if(Duration BETWEEN 1 AND 2, 'fast', 'slow')`;
 
     describe('parseQuery', () => {
       it('keeps the whole expression as the key when it nests OR and = inside parens', () => {
         expect(
-          parseQuery([{ type: 'sql', condition: `${ifOrExpr} IN ('Errors')` }])
+          parseQuery([{ type: 'sql', condition: `${ifOrExpr} IN ['Errors']` }])
             .filters,
         ).toEqual({
           [ifOrExpr]: { included: new Set(['Errors']), excluded: new Set() },
@@ -1284,7 +1284,7 @@ describe('filters', () => {
 
       it('splits on the outer IN, not the IN nested inside the expression', () => {
         expect(
-          parseQuery([{ type: 'sql', condition: `${ifInExpr} IN ('Errors')` }])
+          parseQuery([{ type: 'sql', condition: `${ifInExpr} IN ['Errors']` }])
             .filters,
         ).toEqual({
           [ifInExpr]: { included: new Set(['Errors']), excluded: new Set() },
@@ -1296,7 +1296,7 @@ describe('filters', () => {
           parseQuery([
             {
               type: 'sql',
-              condition: `${ifOrExpr} IN ('Errors', 'Non-errors')`,
+              condition: `${ifOrExpr} IN ['Errors', 'Non-errors']`,
             },
           ]).filters,
         ).toEqual({
@@ -1310,7 +1310,7 @@ describe('filters', () => {
       it('parses NOT IN on an expression key without splitting on nested IN', () => {
         expect(
           parseQuery([
-            { type: 'sql', condition: `${ifInExpr} NOT IN ('Errors')` },
+            { type: 'sql', condition: `${ifInExpr} NOT IN ['Errors']` },
           ]).filters,
         ).toEqual({
           [ifInExpr]: { included: new Set(), excluded: new Set(['Errors']) },
@@ -1320,8 +1320,8 @@ describe('filters', () => {
       it('merges included and excluded selections on the same expression key', () => {
         expect(
           parseQuery([
-            { type: 'sql', condition: `${ifOrExpr} IN ('Errors')` },
-            { type: 'sql', condition: `${ifOrExpr} NOT IN ('Non-errors')` },
+            { type: 'sql', condition: `${ifOrExpr} IN ['Errors']` },
+            { type: 'sql', condition: `${ifOrExpr} NOT IN ['Non-errors']` },
           ]).filters,
         ).toEqual({
           [ifOrExpr]: {
@@ -1336,7 +1336,7 @@ describe('filters', () => {
           parseQuery([
             {
               type: 'sql',
-              condition: `ServiceName IN ('api') AND ${ifOrExpr} IN ('Errors')`,
+              condition: `ServiceName IN ['api'] AND ${ifOrExpr} IN ['Errors']`,
             },
           ]).filters,
         ).toEqual({
@@ -1348,7 +1348,7 @@ describe('filters', () => {
       it('does not split on AND nested inside an expression key', () => {
         expect(
           parseQuery([
-            { type: 'sql', condition: `${ifBetweenExpr} IN ('fast')` },
+            { type: 'sql', condition: `${ifBetweenExpr} IN ['fast']` },
           ]).filters,
         ).toEqual({
           [ifBetweenExpr]: { included: new Set(['fast']), excluded: new Set() },
@@ -1360,7 +1360,7 @@ describe('filters', () => {
         // this, so it doubles as the "no range was extracted" check.
         expect(
           parseQuery([
-            { type: 'sql', condition: `${ifBetweenExpr} NOT IN ('slow')` },
+            { type: 'sql', condition: `${ifBetweenExpr} NOT IN ['slow']` },
           ]).filters,
         ).toEqual({
           [ifBetweenExpr]: { included: new Set(), excluded: new Set(['slow']) },
@@ -1371,7 +1371,7 @@ describe('filters', () => {
         const key = `toString(multiIf(Status >= 500, 'error', Status >= 400, 'warn', 'ok'))`;
         expect(
           parseQuery([
-            { type: 'sql', condition: `${key} IN ('error', 'warn')` },
+            { type: 'sql', condition: `${key} IN ['error', 'warn']` },
           ]).filters,
         ).toEqual({
           [key]: { included: new Set(['error', 'warn']), excluded: new Set() },
@@ -1400,28 +1400,28 @@ describe('filters', () => {
       // key `if(SeverityText` — accepted for the wrong reason; now it is
       // accepted with the correct, whole-expression key.
       it('accepts an expression key whose only nested keyword is IN', () => {
-        expect(isRenderablePinnedFilter(sql(`${ifInExpr} IN ('Errors')`))).toBe(
+        expect(isRenderablePinnedFilter(sql(`${ifInExpr} IN ['Errors']`))).toBe(
           true,
         );
       });
 
       it('accepts a nested-function expression key', () => {
         const key = `toString(multiIf(Status >= 500, 'error', 'ok'))`;
-        expect(isRenderablePinnedFilter(sql(`${key} IN ('error')`))).toBe(true);
+        expect(isRenderablePinnedFilter(sql(`${key} IN ['error']`))).toBe(true);
       });
 
       // A key that nests OR/AND (including the AND of a nested BETWEEN) still
       // carries that keyword as bare text, so it is rejected: the sidebar can't
       // render it as a plain column facet even though the value list parses.
       it('rejects an expression key that nests OR', () => {
-        expect(isRenderablePinnedFilter(sql(`${ifOrExpr} IN ('Errors')`))).toBe(
+        expect(isRenderablePinnedFilter(sql(`${ifOrExpr} IN ['Errors']`))).toBe(
           false,
         );
       });
 
       it('rejects an expression key that nests a BETWEEN ... AND', () => {
         expect(
-          isRenderablePinnedFilter(sql(`${ifBetweenExpr} IN ('fast')`)),
+          isRenderablePinnedFilter(sql(`${ifBetweenExpr} IN ['fast']`)),
         ).toBe(false);
       });
 

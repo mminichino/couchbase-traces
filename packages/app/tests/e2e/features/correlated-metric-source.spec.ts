@@ -14,11 +14,12 @@ test.describe('Correlated Metric Source', { tag: ['@full-stack'] }, () => {
     // Navigate to search page
     await searchPage.goto();
 
-    // Select the source without metricSourceId
+    // Select the source without metricSourceId (same otel_logs rows as E2E Logs)
     await searchPage.selectSource('E2E K8s Logs No Metrics');
 
-    // Search for K8s events that have k8s.pod.uid resource attribute
-    await searchPage.performSearch('ResourceAttributes.k8s.pod.uid:*');
+    // Any matching row is enough: this test asserts the infrastructure-tab
+    // alert when metricSourceId is unset, not K8s-specific attributes.
+    await searchPage.performSearch('ServiceName:*');
 
     // Click on first row to open side panel
     await searchPage.table.clickFirstRow();

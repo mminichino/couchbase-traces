@@ -87,20 +87,25 @@ export const filtersToQuery = (
             ? dateTimeValueExpr(chType, `'${escapeSqlString(v)}'`)
             : `'${escapeSqlString(v)}'`;
 
+      // SQL++ needs array form for literal value lists (`IN ['a']`). DateTime
+      // columns wrap each value in a parse/convert expression; keep those in
+      // parenthesized `IN (...)` so the expression list stays valid SQL.
+      const inOpen = chType != null ? '(' : '[';
+      const inClose = chType != null ? ')' : ']';
       if (values.included.size > 0) {
         conditions.push({
           type: 'sql' as const,
-          condition: `${actualKey} IN (${Array.from(values.included)
+          condition: `${actualKey} IN ${inOpen}${Array.from(values.included)
             .map(formatValue)
-            .join(', ')})`,
+            .join(', ')}${inClose}`,
         });
       }
       if (values.excluded.size > 0) {
         conditions.push({
           type: 'sql' as const,
-          condition: `${actualKey} NOT IN (${Array.from(values.excluded)
+          condition: `${actualKey} NOT IN ${inOpen}${Array.from(values.excluded)
             .map(formatValue)
-            .join(', ')})`,
+            .join(', ')}${inClose}`,
         });
       }
       if (values.range != null) {
@@ -454,8 +459,10 @@ function extractInClauses(condition: string): Array<{
 
       const keyStr = key.trim();
       const trimmedValues = values.trim();
+      // Accept both SQL `IN (...)` and SQL++ `IN [...]` value lists.
       const withoutParens =
-        trimmedValues.startsWith('(') && trimmedValues.endsWith(')')
+        (trimmedValues.startsWith('(') && trimmedValues.endsWith(')')) ||
+        (trimmedValues.startsWith('[') && trimmedValues.endsWith(']'))
           ? trimmedValues.slice(1, -1)
           : trimmedValues;
 
@@ -665,13 +672,20 @@ const isParseableLucene = (condition: string): boolean => {
 // before parsing — we only care whether the predicate is structurally valid.
 const MAP_OR_ARRAY_ACCESS_REGEX = /\b[a-zA-Z0-9_]+\[([0-9]+|'[^']*')\]/g;
 
+/** SQL++ `IN ['a']` → Postgres-shaped `IN ('a')` for node-sql-parser only. */
+const SQLPP_IN_ARRAY_REGEX = /\b(NOT\s+)?IN\s*\[((?:[^[\]]|'[^']*')*)\]/gi;
+
 const isParseableSql = (condition: string): boolean => {
   try {
     const { sqlWithReplacements } = replaceJsonExpressions(condition);
-    const sanitized = sqlWithReplacements.replace(
-      MAP_OR_ARRAY_ACCESS_REGEX,
-      "''",
-    );
+    const sanitized = sqlWithReplacements
+      .replace(MAP_OR_ARRAY_ACCESS_REGEX, "''")
+      // node-sql-parser (Postgres) does not accept SQL++ array IN lists.
+      .replace(
+        SQLPP_IN_ARRAY_REGEX,
+        (_full, notPrefix: string, inner: string) =>
+          `${notPrefix ?? ''}IN (${inner})`,
+      );
     new SQLParser.Parser().astify(`SELECT 1 FROM t WHERE ${sanitized}`, {
       database: 'Postgresql',
     });

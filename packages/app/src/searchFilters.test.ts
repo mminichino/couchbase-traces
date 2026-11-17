@@ -86,7 +86,7 @@ describe('canonical key escaping at the persistence boundary', () => {
   describe('parseQuery stays verbatim (no key transformation)', () => {
     it('keeps an already-quoted leading key as-is', () => {
       const result = parseQuery([
-        { type: 'sql', condition: "`service-name` IN ('a')" },
+        { type: 'sql', condition: "`service-name` IN ['a']" },
       ]);
       expect(result.filters).toEqual({
         '`service-name`': { included: new Set(['a']), excluded: new Set() },
@@ -95,7 +95,7 @@ describe('canonical key escaping at the persistence boundary', () => {
 
     it('keeps a dot-form key as-is (dashboards rely on verbatim keys)', () => {
       const result = parseQuery([
-        { type: 'sql', condition: "service.name IN ('a')" },
+        { type: 'sql', condition: "service.name IN ['a']" },
       ]);
       expect(result.filters).toEqual({
         'service.name': { included: new Set(['a']), excluded: new Set() },
@@ -128,7 +128,7 @@ describe('canonical key escaping at the persistence boundary', () => {
       expect(Object.keys(result.current.filters)).toEqual(['service-name']);
       // persisted: canonical/escaped
       expect(onFilterChange).toHaveBeenLastCalledWith([
-        { type: 'sql', condition: "`service-name` IN ('a')" },
+        { type: 'sql', condition: "`service-name` IN ['a']" },
       ]);
     });
 
@@ -148,7 +148,7 @@ describe('canonical key escaping at the persistence boundary', () => {
 
       expect(Object.keys(result.current.filters)).toEqual(["my-map['k']"]);
       expect(onFilterChange).toHaveBeenLastCalledWith([
-        { type: 'sql', condition: "`my-map`['k'] IN ('v')" },
+        { type: 'sql', condition: "`my-map`['k'] IN ['v']" },
       ]);
     });
 
@@ -168,14 +168,14 @@ describe('canonical key escaping at the persistence boundary', () => {
 
       expect(Object.keys(result.current.filters)).toEqual(['ServiceName']);
       expect(onFilterChange).toHaveBeenLastCalledWith([
-        { type: 'sql', condition: "ServiceName IN ('a')" },
+        { type: 'sql', condition: "ServiceName IN ['a']" },
       ]);
     });
 
     it('unescapes a quoted key loaded from the URL back into clean FilterState', () => {
       const onFilterChange = jest.fn();
       const searchQuery: Filter[] = [
-        { type: 'sql', condition: "`service-name` IN ('a')" },
+        { type: 'sql', condition: "`service-name` IN ['a']" },
       ];
       const { result } = renderHook(() =>
         useSearchPageFilterState({

@@ -1055,3 +1055,13 @@ Completed requests: `system:completed_requests` requires `query_system_catalog`.
 - Golden ingest replay aligns absolute ISO timestamps in expected row keys to the current Monday anchor (week drift); no re-capture.
 - common-utils Jest coverage floors reset to measured CB-only levels after Phase 10, then again after SQL++ `$N` result-name remapping (76/63/72/77) so `make ci-unit` / acceptance K1 match reality; ratchet up as coverage grows.
 - SQL++ auto-names unaliased select items `$1`, `$2`, …. Builder selects now emit ClickHouse-shaped aliases (`AS \`count()\``), query rows remap remaining `$N` keys via postprocess hints, and `sqlExprToAliasMap` maps `$N` back to expressions for ad hoc click-to-filter.
+
+## Phase 11 — SQL++ `IN` value lists (acceptance K1/M1)
+
+SQL++ treats `IN ('a')` as a scalar/subquery form that matches nothing (and
+`IN ('a', 'b')` is a syntax error). Value lists must use array form
+`IN ['a', 'b']`. `$__filter` now emits array form; `filtersToQuery` /
+`filterStateToPredicate` do the same; `rewriteSqlInValueLists` rewrites
+remaining `IN ('…')` lists at SQL++ emission (raw SQL + SQL where compile)
+while leaving `IN (SELECT …)` alone. E2E seed now includes interesting-filter
+key rows and minimal `otel_sessions` documents.

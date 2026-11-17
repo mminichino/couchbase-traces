@@ -146,7 +146,7 @@ describe('buildRawSqlCompletions', () => {
     it.each([
       [
         '$__filter($service)',
-        "Expands to: (toString(ServiceName) IN ('api', 'web'))",
+        "Expands to: (toString(ServiceName) IN ['api', 'web'])",
       ],
       ['$service', "Expands to: 'api', 'web'"],
       ['${service}', "Expands to: 'api', 'web'"],

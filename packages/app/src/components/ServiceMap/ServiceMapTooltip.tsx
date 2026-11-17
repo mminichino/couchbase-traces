@@ -67,7 +67,7 @@ export default function ServiceMapTooltip({
     navigateToTraceSearch({
       dateRange,
       source,
-      where: SqlString.format("? = ? AND ? IN ('Server', 'Consumer')", [
+      where: SqlString.format("? = ? AND ? IN ['Server', 'Consumer']", [
         SqlString.raw(source.serviceNameExpression ?? 'ServiceName'),
         serviceName,
         SqlString.raw(source.spanKindExpression ?? 'SpanKind'),

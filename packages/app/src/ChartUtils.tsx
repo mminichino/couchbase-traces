@@ -1266,7 +1266,8 @@ export function buildEventsSearchUrl({
     groupFilters.forEach(({ column, value }) => {
       if (column && value != null) {
         // Can't use SQLString.escape here because the search endpoint relies on exist match for UI
-        const condition = `${column} IN (${SqlString.escape(value)})`;
+        // SQL++ requires array form for IN value lists.
+        const condition = `${column} IN [${SqlString.escape(value)}]`;
         additionalFilters.push({ type: 'sql', condition });
       }
     });

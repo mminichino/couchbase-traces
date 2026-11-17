@@ -70,7 +70,7 @@ describe('buildSqlVariableCompletions', () => {
   it('shows what each form expands to against the current selection', () => {
     expect(footnoteOf([SERVICE], '$service')).toBe("Expands to: 'api', 'web'");
     expect(footnoteOf([SERVICE], '$__filter($service)')).toBe(
-      "Expands to: (toString(ServiceName) IN ('api', 'web'))",
+      "Expands to: (toString(ServiceName) IN ['api', 'web'])",
     );
   });
 

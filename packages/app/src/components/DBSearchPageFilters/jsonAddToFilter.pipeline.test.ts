@@ -133,7 +133,7 @@ describe('parsed-JSON "Add to Filters" -> valid SQL pipeline (HDX-4427)', () => 
     expect(runAddToFilter(key, { included: ['USD'] })).toEqual([
       {
         type: 'sql',
-        condition: "JSONExtractString(Body, 'app.user.currency') IN ('USD')",
+        condition: "JSONExtractString(Body, 'app.user.currency') IN ['USD']",
       },
     ]);
   });

@@ -1,5 +1,7 @@
 import lucene from '@hyperdx/lucene';
 
+import { rewriteSqlInValueLists } from '@/couchbase/sqlInLists';
+
 import {
   escapeSqlString,
   isQuoteEscapedByBackslash,
@@ -600,7 +602,9 @@ function expandFilterMacro(args: string[], ctx: VariableContext): string {
 
   if (variable.values.length === 0) return sqlNoOp(variableName);
 
-  return `(${expression} IN (${formatVariableValues(variable, 'sqlstring')}))`;
+  // SQL++ requires array form (`IN ['a', 'b']`); parenthesized `IN ('a')`
+  // is a scalar/subquery and matches nothing.
+  return `(${expression} IN [${formatVariableValues(variable, 'sqlstring')}])`;
 }
 
 function expandConditionalAllMacro(
@@ -905,20 +909,24 @@ export function substituteVariables(
   }
 
   const settings = languageSettings(ctx.inputLanguage);
-  if (settings.disableMacros) {
-    return scanTemplateTokens(input, VARIABLE_MACRO_NAMES, {
-      onMalformed: 'skip',
-      skipSqlComments: settings.skipSqlComments,
-    })
-      .map(token => expandVariableOnly(token, ctx))
-      .join('');
-  }
+  const expanded = settings.disableMacros
+    ? scanTemplateTokens(input, VARIABLE_MACRO_NAMES, {
+        onMalformed: 'skip',
+        skipSqlComments: settings.skipSqlComments,
+      })
+        .map(token => expandVariableOnly(token, ctx))
+        .join('')
+    : expandTemplate(input, {
+        macroNames: VARIABLE_MACRO_NAMES,
+        expandMacro: token => expandVariableToken(token, ctx),
+        expandReference: token => expandVariableToken(token, ctx),
+      });
 
-  return expandTemplate(input, {
-    macroNames: VARIABLE_MACRO_NAMES,
-    expandMacro: token => expandVariableToken(token, ctx),
-    expandReference: token => expandVariableToken(token, ctx),
-  });
+  // SQL++ `IN` takes arrays; rewrite value lists left as `IN ('a')` by bare
+  // `$var` expansion inside `IN (...)` templates.
+  return ctx.inputLanguage === 'sql'
+    ? rewriteSqlInValueLists(expanded)
+    : expanded;
 }
 
 // -- Chart builder configs --------------------------------------------------

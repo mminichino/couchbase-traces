@@ -2,7 +2,7 @@
  * Dashboard filter selections are persisted in the `filters=` URL param (and in
  * `savedFilterValues`) in one of two shapes:
  *
- *   legacy, keyed by SQL expression: { type: 'sql', condition: "E IN ('a')" }
+ *   legacy, keyed by SQL expression: { type: 'sql', condition: "E IN ['a']" }
  *   variable-keyed:                  { type: 'variable', name: 'svc', values: ['a'] }
  *
  * A variable-enabled filter reads both and writes the variable-keyed form. These
@@ -75,7 +75,7 @@ test.describe(
 
       await test.step('An old-format link still applies, with no banner', async () => {
         await gotoWithFilters(page, dashboardId, [
-          { type: 'sql', condition: "ServiceName IN ('accounting')" },
+          { type: 'sql', condition: "ServiceName IN ['accounting']" },
         ]);
         await dashboardPage.waitForLoaded();
 
@@ -161,7 +161,7 @@ test.describe(
 
       await test.step('The URL carries one variable entry and one sql entry', async () => {
         await expectFiltersParam(page, [
-          { type: 'sql', condition: "ServiceName IN ('frontend')" },
+          { type: 'sql', condition: "ServiceName IN ['frontend']" },
           { type: 'variable', name: 'svcA', values: ['accounting'] },
         ]);
       });
@@ -296,7 +296,7 @@ test.describe(
         await dashboardPage.toggleFilterValue('Severity', 'error');
 
         await expectFiltersParam(page, [
-          { type: 'sql', condition: "SeverityText IN ('error')" },
+          { type: 'sql', condition: "SeverityText IN ['error']" },
           { type: 'variable', name: 'svc', values: awkwardValues },
         ]);
         await expect(dashboardPage.getTileError()).toHaveCount(0);

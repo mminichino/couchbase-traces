@@ -6,13 +6,19 @@ import { fromShapedRow } from '../../../ingest/src/model/fromShapedRow';
 import {
   E2E_CUSTOM_SERVICE_LOGS_TABLE,
   E2E_EXP_HISTOGRAM_METRIC_NAME,
+  E2E_INTERESTING_FILTER_KEYS_TABLE,
   E2E_LOGS_TABLE,
   E2E_METRICS_EXP_HISTOGRAM_TABLE,
   E2E_METRICS_GAUGE_TABLE,
   E2E_TRACES_TABLE,
 } from './utils/constants';
 import { parseValuesTuples } from './parseValuesTuples';
-import { getE2eSeedWindow } from './seed-data';
+import {
+  getE2eSeedWindow,
+  INTERESTING_FILTER_KEYS_JSON_AT_KEY,
+  INTERESTING_FILTER_KEYS_ROWS,
+} from './seed-data';
+import { OTEL_SESSIONS } from './seed-otel-sessions';
 
 const QUERY_URL =
   process.env.COUCHBASE_URL?.replace(/\/$/, '') ??
@@ -202,5 +208,65 @@ export async function seedCouchbase(): Promise<void> {
   }
   console.log(
     `  ✓ Upserted 40 ${E2E_EXP_HISTOGRAM_METRIC_NAME} exponential histogram points`,
+  );
+
+  await ensureMetricCollection(E2E_INTERESTING_FILTER_KEYS_TABLE);
+  const { startMs: interestingStart } = getE2eSeedWindow();
+  for (const [i, row] of INTERESTING_FILTER_KEYS_ROWS.entries()) {
+    const t = new Date(interestingStart + i * 60_000).toISOString();
+    await upsertDoc(E2E_INTERESTING_FILTER_KEYS_TABLE, `interesting::${i}`, {
+      Timestamp: t,
+      TraceId: '',
+      SpanId: '',
+      TraceFlags: 0,
+      SeverityText: 'info',
+      SeverityNumber: 9,
+      ServiceName: row.serviceName,
+      Body: row.body,
+      ResourceAttributes: {
+        'key.subKey.subSubKey': row.resourceAttrValue,
+      },
+      ResourceAttributesJSON: {
+        key: { subKey: { subSubKey: row.jsonValue } },
+        [INTERESTING_FILTER_KEYS_JSON_AT_KEY]: row.jsonAtKeyValue,
+      },
+      '__hdx_materialized_k8s.cluster.name': row.clusterName,
+      'service-name': row.serviceNameHyphen,
+      'Map-Attributes': { 'pod-name': row.mapHyphenValue },
+      'JSON-Attributes': { 'key-1': { 'key-2': row.jsonHyphenValue } },
+      ScopeAttributes: {},
+      LogAttributes: {},
+    });
+  }
+  console.log(
+    `  ✓ Upserted ${INTERESTING_FILTER_KEYS_ROWS.length} interesting-filter-key documents`,
+  );
+
+  // Minimal session rows so dashboard session search tiles have ServiceName=browser.
+  const { startMs: sessionStart } = getE2eSeedWindow();
+  for (const [i, sessionId] of Object.values(OTEL_SESSIONS).entries()) {
+    const t = new Date(sessionStart + i * 60_000).toISOString();
+    await upsertDoc('otel_sessions', `session::${sessionId}::${i}`, {
+      Timestamp: t,
+      TraceId: '',
+      SpanId: '',
+      TraceFlags: 0,
+      SeverityText: '',
+      SeverityNumber: 9,
+      ServiceName: 'browser',
+      Body: 'browser.user_action.click',
+      ResourceAttributes: { 'service.name': 'browser' },
+      ScopeAttributes: {},
+      LogAttributes: {
+        'session.id': sessionId,
+        'rum.sessionId': sessionId,
+        'browser.document.url.full': 'http://localhost:8080/',
+      },
+      '__hdx_materialized_session.id': sessionId,
+      '__hdx_materialized_rum.sessionId': sessionId,
+    });
+  }
+  console.log(
+    `  ✓ Upserted ${Object.keys(OTEL_SESSIONS).length} session documents`,
   );
 }

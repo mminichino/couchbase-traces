@@ -2,6 +2,7 @@ import { isNonEmptyWhereExpr } from '@/core/chartConfig';
 import { CouchbaseUnsupportedError } from '@/couchbase/errors';
 import type { SerializerMetadata } from '@/couchbase/serializer';
 import { CouchbaseSearchBuilder } from '@/couchbase/serializer';
+import { rewriteSqlInValueLists } from '@/couchbase/sqlInLists';
 import { type SqlPP, sqlpp } from '@/couchbase/sqlpp';
 import { timeRangePredicate, toIso30 } from '@/couchbase/time';
 import type {
@@ -51,7 +52,10 @@ export async function compileWhereExpressionCouchbase({
   if (!condition.trim()) return sqlpp``;
   if (language === 'promql')
     throw new CouchbaseUnsupportedError('charts: promql');
-  if (language === 'sql') return sqlpp`(${{ Raw: condition }})`;
+  if (language === 'sql') {
+    // SQL++ needs `IN ['a']`; keep `IN (SELECT …)` intact.
+    return sqlpp`(${{ Raw: rewriteSqlInValueLists(condition) }})`;
+  }
   const from = chartConfig.from;
   const scope = from.scopeName ?? 'default';
   return new CouchbaseSearchBuilder(condition, {

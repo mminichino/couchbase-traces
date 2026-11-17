@@ -75,7 +75,7 @@ describe('dashboardFilterValues', () => {
 
     it('splits a mixed array into both addressing schemes', () => {
       const parsed = parseDashboardFilterValues([
-        { type: 'sql', condition: "Env IN ('prod')" },
+        { type: 'sql', condition: "Env IN ['prod']" },
         { type: 'variable', name: 'svc', values: ['accounting'] },
       ]);
 
@@ -101,8 +101,8 @@ describe('dashboardFilterValues', () => {
 
     it('handles a sql-only array, merging entries on one expression', () => {
       const parsed = parseDashboardFilterValues([
-        { type: 'sql', condition: "ServiceName IN ('a')" },
-        { type: 'sql', condition: "ServiceName NOT IN ('b')" },
+        { type: 'sql', condition: "ServiceName IN ['a']" },
+        { type: 'sql', condition: "ServiceName NOT IN ['b']" },
       ]);
 
       expect(parsed.byExpression).toEqual({
@@ -137,7 +137,7 @@ describe('dashboardFilterValues', () => {
       const parsed = parseDashboardFilterValues([
         lucene,
         sqlAst,
-        { type: 'sql', condition: "Env IN ('prod')" },
+        { type: 'sql', condition: "Env IN ['prod']" },
       ]);
 
       expect(parsed.passthrough).toEqual([lucene, sqlAst]);
@@ -176,7 +176,7 @@ describe('dashboardFilterValues', () => {
       const parsed = parseDashboardFilterValues([
         { type: 'sql', condition: "ServiceName = 'api'" },
         { type: 'sql', condition: '  ' },
-        { type: 'sql', condition: "Env IN ('prod')" },
+        { type: 'sql', condition: "Env IN ['prod']" },
       ]);
 
       expect(parsed.passthrough).toEqual([]);
@@ -205,8 +205,8 @@ describe('dashboardFilterValues', () => {
           passthrough: [passthrough],
         }),
       ).toEqual([
-        { type: 'sql', condition: "Env IN ('prod')" },
-        { type: 'sql', condition: "Region IN ('us')" },
+        { type: 'sql', condition: "Env IN ['prod']" },
+        { type: 'sql', condition: "Region IN ['us']" },
         { type: 'variable', name: 'svc', values: ['accounting'] },
         { type: 'variable', name: 'team', values: ['platform'] },
         passthrough,
@@ -227,7 +227,7 @@ describe('dashboardFilterValues', () => {
           ]),
         }),
       ).toEqual([
-        { type: 'sql', condition: "Region IN ('us')" },
+        { type: 'sql', condition: "Region IN ['us']" },
         { type: 'variable', name: 'team', values: ['platform'] },
       ]);
     });
@@ -318,15 +318,15 @@ describe('dashboardFilterValues', () => {
     // app's own writes are always quoted.
     it('documents an unquoted true in a legacy entry becoming a boolean', () => {
       const parsed = parseDashboardFilterValues([
-        { type: 'sql', condition: 'ServiceName IN (true)' },
+        { type: 'sql', condition: 'ServiceName IN [true]' },
       ]);
       expect(parsed.byExpression.ServiceName.included).toEqual(new Set([true]));
 
-      // Re-emitted unquoted, so `toString(ServiceName) IN (true)` is a type
+      // Re-emitted unquoted, so `toString(ServiceName) IN [true]` is a type
       // error against a String column. The variable format has no coercion step
       // at all, so the same selection stays the string 'true'.
       expect(serializeDashboardFilterValues(parsed)).toEqual([
-        { type: 'sql', condition: 'ServiceName IN (true)' },
+        { type: 'sql', condition: 'ServiceName IN [true]' },
       ]);
       expect(
         serializeDashboardFilterValues({
@@ -346,7 +346,7 @@ describe('dashboardFilterValues', () => {
       ]);
       expect(parsed.byExpression.Timestamp.included).toEqual(new Set(['x']));
       expect(serializeDashboardFilterValues(parsed)).toEqual([
-        { type: 'sql', condition: "Timestamp IN ('x')" },
+        { type: 'sql', condition: "Timestamp IN ['x']" },
       ]);
     });
   });
@@ -414,7 +414,7 @@ describe('dashboardFilterValues', () => {
 
     it('prefers a variable entry over a legacy one for the same filter', () => {
       const parsed = parseDashboardFilterValues([
-        { type: 'sql', condition: "ServiceName IN ('legacy')" },
+        { type: 'sql', condition: "ServiceName IN ['legacy']" },
         { type: 'variable', name: 'svc', values: ['new'] },
       ]);
 
@@ -425,7 +425,7 @@ describe('dashboardFilterValues', () => {
 
     it('treats an explicitly empty variable entry as a selection', () => {
       const parsed = parseDashboardFilterValues([
-        { type: 'sql', condition: "ServiceName IN ('legacy')" },
+        { type: 'sql', condition: "ServiceName IN ['legacy']" },
         { type: 'variable', name: 'svc', values: [] },
       ]);
 
@@ -444,7 +444,7 @@ describe('dashboardFilterValues', () => {
 
     it('falls back to the expression entry for back-compat', () => {
       const parsed = parseDashboardFilterValues([
-        { type: 'sql', condition: "ServiceName IN ('legacy')" },
+        { type: 'sql', condition: "ServiceName IN ['legacy']" },
       ]);
 
       expect(resolveFilterSelection(variableFilter, parsed)).toEqual(
@@ -455,7 +455,7 @@ describe('dashboardFilterValues', () => {
     it('reads a non-variable filter by expression only', () => {
       const parsed = parseDashboardFilterValues([
         { type: 'variable', name: 'svc', values: ['new'] },
-        { type: 'sql', condition: "ServiceName IN ('legacy')" },
+        { type: 'sql', condition: "ServiceName IN ['legacy']" },
       ]);
 
       expect(resolveFilterSelection(filter(), parsed)).toEqual(
@@ -466,7 +466,7 @@ describe('dashboardFilterValues', () => {
     it('returns undefined when nothing addresses the filter', () => {
       const parsed = parseDashboardFilterValues([
         { type: 'variable', name: 'other', values: ['x'] },
-        { type: 'sql', condition: "Env IN ('prod')" },
+        { type: 'sql', condition: "Env IN ['prod']" },
       ]);
 
       expect(resolveFilterSelection(variableFilter, parsed)).toBeUndefined();
@@ -487,7 +487,7 @@ describe('dashboardFilterValues', () => {
       'returns undefined for an expressionless %s filter with no variable entry',
       (_label, expressionless) => {
         const parsed = parseDashboardFilterValues([
-          { type: 'sql', condition: "ServiceName IN ('legacy')" },
+          { type: 'sql', condition: "ServiceName IN ['legacy']" },
         ]);
 
         expect(resolveFilterSelection(expressionless, parsed)).toBeUndefined();
@@ -496,7 +496,7 @@ describe('dashboardFilterValues', () => {
 
     it('resolves two filters sharing an expression independently', () => {
       const parsed = parseDashboardFilterValues([
-        { type: 'sql', condition: "ServiceName IN ('plain')" },
+        { type: 'sql', condition: "ServiceName IN ['plain']" },
         { type: 'variable', name: 'svc', values: ['variable'] },
       ]);
 
@@ -522,7 +522,7 @@ describe('dashboardFilterValues', () => {
 
     it('keeps only the first value of an expression entry', () => {
       const parsed = parseDashboardFilterValues([
-        { type: 'sql', condition: "ServiceName IN ('b', 'a')" },
+        { type: 'sql', condition: "ServiceName IN ['b', 'a']" },
       ]);
 
       expect(

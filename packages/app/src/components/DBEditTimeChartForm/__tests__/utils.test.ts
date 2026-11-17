@@ -308,7 +308,7 @@ describe('computeDbTimeChartConfig', () => {
 
 describe('resolveTilePreviewFilters', () => {
   const dashboardFilters = [
-    { type: 'sql' as const, condition: "ServiceName IN ('api')" },
+    { type: 'sql' as const, condition: "ServiceName IN ['api']" },
   ];
   const variables = [{ name: 'service', values: ['api'] }];
 
@@ -539,7 +539,7 @@ describe('buildSampleEventsConfig', () => {
       );
 
       expect(result!.filters).toEqual([
-        { type: 'sql', condition: "(ServiceName IN ('accounting'))" },
+        { type: 'sql', condition: "(ServiceName IN ['accounting'])" },
       ]);
     });
 
@@ -572,7 +572,7 @@ describe('buildSampleEventsConfig', () => {
         true,
       );
 
-      expect(result!.where).toBe("ServiceName IN ('accounting')");
+      expect(result!.where).toBe("ServiceName IN ['accounting']");
       // Cleared so the renderer doesn't substitute a second time
       expect(result!.variables).toBeUndefined();
     });
