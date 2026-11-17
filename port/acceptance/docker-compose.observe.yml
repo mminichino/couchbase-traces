@@ -40,14 +40,14 @@ services:
     build:
       context: .
       dockerfile: packages/ingest/Dockerfile
-    # Product /health requires auth; acceptance only needs process liveness.
+    # Product /health requires the ingest bearer token (same as compose).
     healthcheck:
       test:
         [
           'CMD',
           'node',
           '-e',
-          "fetch('http://127.0.0.1:4320/health').then(r=>process.exit(r.status===401||r.ok?0:1)).catch(()=>process.exit(1))",
+          "fetch('http://127.0.0.1:4320/health',{headers:{Authorization:'Bearer '+process.env.CBT_INGEST_TOKEN}}).then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))",
         ]
       interval: 5s
       timeout: 5s
