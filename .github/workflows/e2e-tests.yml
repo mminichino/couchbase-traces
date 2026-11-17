@@ -5,11 +5,13 @@ on:
 jobs:
   e2e-tests:
     name: E2E Tests - Shard ${{ matrix.shard }}
+    # Prefer a configured larger runner, but fall back to ubuntu-24.04 so Main
+    # is not stuck queued when the custom label is unavailable.
     runs-on:
       ${{ github.event.pull_request.head.repo.fork && 'ubuntu-24.04' ||
       startsWith(vars.RUNNER_E2E, '[') && fromJSON(vars.RUNNER_E2E) ||
-      vars.RUNNER_E2E || '8-core-playwright' }}
-    timeout-minutes: ${{ github.event.pull_request.head.repo.fork && 25 || 15 }}
+      vars.RUNNER_E2E || 'ubuntu-24.04' }}
+    timeout-minutes: ${{ github.event.pull_request.head.repo.fork && 25 || 25 }}
     permissions:
       contents: read
     strategy:
