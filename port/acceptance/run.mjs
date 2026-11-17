@@ -169,14 +169,20 @@ async function main() {
 
   const headSha = gitHead(ROOT);
   const priorReport = loadCommittedReport(ROOT);
+  const priorChecks = Array.isArray(priorReport?.checks) ? priorReport.checks : [];
+  const priorOnlyK2Open = priorChecks.length > 0 &&
+    priorChecks.every(c =>
+      c.id === 'K2'
+        ? c.status === 'blocked' || c.status === 'fail'
+        : c.status === 'pass',
+    );
   // Spec §11.4: with --record-ci, reuse committed results when SHA is unchanged.
+  // Also reuse when the tree only advanced to fix CI so K2 can be recorded for HEAD.
   const reuseForRecordCi = Boolean(
     flags.recordCi &&
-      priorReport?.gitSha &&
       headSha &&
-      priorReport.gitSha === headSha &&
-      Array.isArray(priorReport.checks) &&
-      priorReport.checks.length > 0,
+      priorChecks.length > 0 &&
+      (priorReport.gitSha === headSha || priorOnlyK2Open),
   );
 
   let selected = new Set(selectIds(flags));
