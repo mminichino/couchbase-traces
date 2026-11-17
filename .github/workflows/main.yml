@@ -99,7 +99,9 @@ jobs:
         run: make ci-unit
   integration-shards:
     name: Integration - Shard ${{ matrix.shard }}
-    timeout-minutes: 16
+    # Sequential bake + prune (ENOSPC mitigation) needs more than the old
+    # parallel-bake 16m budget; 35m covers couchbase-init/ingest/otel.
+    timeout-minutes: 35
     runs-on: ubuntu-24.04
     strategy:
       fail-fast: false
@@ -241,9 +243,11 @@ jobs:
             docker/**
             packages/ingest/**
             packages/otel-collector/**
+            port/stack-smoke/**
             Makefile
             docker-compose*.yml
             .env.example
+            .github/workflows/main.yml
       - name: Skip when paths unchanged on PR
         if: github.event_name == 'pull_request' && steps.changed-files.outputs.any_changed != 'true'
         run: echo "No stack-smoke inputs changed; skipping."

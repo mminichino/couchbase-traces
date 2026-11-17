@@ -80,13 +80,15 @@ if [ "${CI:-}" = "true" ] || [ "${CBT_STACK_SMOKE_PRUNE:-}" = "1" ]; then
   docker system prune -af --volumes || true
   df -h / || true
 fi
-# --pull never: image: lines still name GHCR tags; without this, compose
-# probes the registry before build and fails when packages are private.
+# `compose build --pull` is boolean; `--pull never` is only valid on `up`.
+# build-local.yml replaces GHCR image tags with local build contexts, so
+# build does not need a pull policy. Keep --pull never on up so compose
+# does not probe private GHCR tags for services that still name them.
 # Build one image at a time so peak disk stays under the runner limit.
 export BUILDKIT_MAX_PARALLELISM="${BUILDKIT_MAX_PARALLELISM:-1}"
 for svc in couchbase-init ingest otel-collector app; do
   echo "[stack-smoke] building ${svc}..."
-  compose build --pull never "$svc"
+  compose build "$svc"
   docker builder prune -af || true
   df -h / || true
 done
