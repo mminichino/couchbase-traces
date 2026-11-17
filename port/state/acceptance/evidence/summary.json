@@ -1,7 +1,7 @@
 {
-  "status": "fail",
-  "generatedAt": "2026-11-17T01:35:02.388135+00:00",
-  "gitSha": "aee6c49cbc3f1e0590a9a2a75370f0b01ebc0856",
+  "status": "blocked",
+  "generatedAt": "2026-11-17T09:15:44.669Z",
+  "gitSha": "ec2da3709b37501ff511510be1cb639387f77969",
   "checks": [
     {
       "id": "A1",
@@ -10,8 +10,8 @@
     },
     {
       "id": "A2",
-      "status": "fail",
-      "summary": "5 ported feature(s) lack a passing mapped test"
+      "status": "pass",
+      "summary": "All 51 ported features have at least one mapped test"
     },
     {
       "id": "A3",
@@ -41,7 +41,7 @@
     {
       "id": "D1",
       "status": "pass",
-      "summary": "45 statements use indexes/key lookups (6 exempt)"
+      "summary": "50 statements use indexes/key lookups (6 exempt)"
     },
     {
       "id": "E1",
@@ -76,7 +76,7 @@
     {
       "id": "I1",
       "status": "pass",
-      "summary": "All 6660 browser requests stayed on origin"
+      "summary": "All 6740 browser requests stayed on origin"
     },
     {
       "id": "I2",
@@ -95,8 +95,8 @@
     },
     {
       "id": "K1",
-      "status": "fail",
-      "summary": "One or more local CI commands failed"
+      "status": "pass",
+      "summary": "All 6 local CI commands passed"
     },
     {
       "id": "K2",
@@ -110,8 +110,8 @@
     },
     {
       "id": "M1",
-      "status": "fail",
-      "summary": "Regression failures: ./scripts/test-e2e.sh --shard=1/4"
+      "status": "pass",
+      "summary": "Golden, check.sh, couchbase-test, and e2e shard 1/4 passed"
     },
     {
       "id": "M2",

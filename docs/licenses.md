@@ -1,10 +1,10 @@
 # Dependency license report
 
-Generated: 2026-11-16 (`node port/remove-ch/licenses.mjs`).
+Generated: 2026-11-17 (`node port/remove-ch/licenses.mjs`).
 
 ## Summary
 
-- npm production packages (external): **1011** (via `yarn dlx license-checker-rseidelsohn@5.0.1` at repo root; production closure from workspace `dependencies`).
+- npm production packages (external): **1010** (via `yarn dlx license-checker-rseidelsohn@5.0.1` at repo root; production closure from workspace `dependencies`).
 - Go modules: **485** (via `go run github.com/google/go-licenses@v1.6.0 report` on `packages/otel-collector` and the OCB `builder-config.yaml` module list).
 - Review-list entries: **15** (copyleft / network copyleft / unknown — informational only).
 
@@ -17,7 +17,7 @@ Generated: 2026-11-16 (`node port/remove-ch/licenses.mjs`).
 | ISC | 89 |
 | BSD-3-Clause | 86 |
 | MPL-2.0 | 14 |
-| BlueOak-1.0.0 | 13 |
+| BlueOak-1.0.0 | 12 |
 | (MIT OR CC0-1.0) | 9 |
 | BSD-2-Clause | 9 |
 | 0BSD | 4 |
@@ -646,7 +646,6 @@ Packages reachable from workspace `dependencies` (private workspaces are omitted
 | lru-cache | 10.2.2 | ISC | https://github.com/isaacs/node-lru-cache | @couchbase-traces/api |
 | lru-cache | 10.4.3 | ISC | https://github.com/isaacs/node-lru-cache | @couchbase-traces/api |
 | lru-cache | 11.2.7 | BlueOak-1.0.0 | https://github.com/isaacs/node-lru-cache | @couchbase-traces/api |
-| lru-cache | 11.3.5 | BlueOak-1.0.0 | https://github.com/isaacs/node-lru-cache | @couchbase-traces/api |
 | lru-cache | 4.1.5 | ISC | https://github.com/isaacs/node-lru-cache | @couchbase-traces/api |
 | lru-cache | 5.1.1 | ISC | https://github.com/isaacs/node-lru-cache | @couchbase-traces/api |
 | lru-cache | 6.0.0 | ISC | https://github.com/isaacs/node-lru-cache | @couchbase-traces/api |
@@ -1235,7 +1234,6 @@ Packages reachable from workspace `dependencies` (private workspaces are omitted
 | glob | 14.0.2 | https://github.com/isaacs/node-glob |
 | isexe | 4.0.0 | https://github.com/isaacs/isexe |
 | lru-cache | 11.2.7 | https://github.com/isaacs/node-lru-cache |
-| lru-cache | 11.3.5 | https://github.com/isaacs/node-lru-cache |
 | minimatch | 10.2.4 | https://github.com/isaacs/minimatch |
 | minimatch | 10.2.5 | https://github.com/isaacs/minimatch |
 | minimatch | 11.0.3 | https://github.com/isaacs/minimatch |
