@@ -201,7 +201,13 @@ export function buildE2eMainLogRows(
       ServiceName: service,
       Body: message,
       ResourceSchemaUrl: '',
-      ResourceAttributes: { 'service.name': service, environment: 'test' },
+      ResourceAttributes: {
+        'service.name': service,
+        environment: 'test',
+        // Enough for the Infrastructure tab gate (k8s.pod.uid).
+        'k8s.pod.uid': `pod-uid-${i}`,
+        'k8s.pod.name': `pod-${service}`,
+      },
       ScopeSchemaUrl: '',
       ScopeName: '',
       ScopeVersion: '',
@@ -292,7 +298,13 @@ export function buildE2eTraceRows(
         SpanName: spanName,
         SpanKind: spanKind,
         ServiceName: service,
-        ResourceAttributes: { 'service.name': service, environment: 'test' },
+        ResourceAttributes: {
+          'service.name': service,
+          environment: 'test',
+          // Enough for the Infrastructure tab gate (k8s.pod.uid).
+          'k8s.pod.uid': `pod-uid-${rows.length}`,
+          'k8s.pod.name': `pod-${service}`,
+        },
         ScopeName: '',
         ScopeVersion: '',
         SpanAttributes: {

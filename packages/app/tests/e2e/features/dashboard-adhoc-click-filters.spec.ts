@@ -478,8 +478,10 @@ test.describe(
         await dashboardPage.addSearchTile({
           chartName: 'Logs',
           sourceName: INTERESTING_FILTER_KEYS_SOURCE_NAME,
+          // SQL++ reserves `key`; quote that path segment. Alias keeps the
+          // ad hoc filter expression matching the ClickHouse-era column name.
           select:
-            'Timestamp, ResourceAttributes, ResourceAttributesJSON.key.subKey.subSubKey, `service-name`',
+            'Timestamp, ResourceAttributes, ResourceAttributesJSON.`key`.subKey.subSubKey AS `ResourceAttributesJSON.key.subKey.subSubKey`, `service-name`',
         });
         await expect(dashboardPage.getTiles()).toHaveCount(1);
         await addAdhocFilters([
@@ -504,7 +506,8 @@ test.describe(
       });
 
       await test.step('A JSON path filters on its unwrapped value', async () => {
-        await dashboardPage.filterTileCell(tile, '"value2"', 'include');
+        // SQL++ projects the path as a bare string cell (no JSON quotes).
+        await dashboardPage.filterTileCell(tile, 'value2', 'include');
         await expectFiltersParam(
           page,
           conditionsIn([
@@ -519,7 +522,7 @@ test.describe(
         await expect(
           tile.getByText('svc-two', { exact: true }).first(),
         ).toBeVisible();
-        await dashboardPage.filterTileCell(tile, '"value2"', 'include');
+        await dashboardPage.filterTileCell(tile, 'value2', 'include');
         await expect.poll(() => filtersParam(page) ?? []).toEqual([]);
       });
 

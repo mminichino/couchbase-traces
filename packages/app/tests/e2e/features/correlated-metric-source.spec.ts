@@ -18,8 +18,13 @@ test.describe('Correlated Metric Source', { tag: ['@full-stack'] }, () => {
     await searchPage.selectSource('E2E K8s Logs No Metrics');
 
     // Any matching row is enough: this test asserts the infrastructure-tab
-    // alert when metricSourceId is unset, not K8s-specific attributes.
-    await searchPage.performSearch('ServiceName:*');
+    // alert when metricSourceId is unset. Use SQL so the lookup does not depend
+    // on FTS wildcards / Lucene field queries against the Couchbase index.
+    await searchPage.whereInput.selectLanguage('SQL');
+    await searchPage.whereInput.fillSql("ServiceName = 'accounting'");
+    await searchPage.submitButton.click();
+    await page.waitForLoadState('networkidle');
+    await searchPage.table.waitForRowsToPopulate();
 
     // Click on first row to open side panel
     await searchPage.table.clickFirstRow();

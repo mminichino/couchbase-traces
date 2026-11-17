@@ -17,6 +17,7 @@ import {
   ColumnMetaType,
   type QueryAttribution,
   QueryError,
+  sqlExprToResultColumnNames,
   SqlFrag,
 } from '@couchbase-traces/common-utils/dist/query';
 import {
@@ -245,9 +246,16 @@ const queryFn: QueryFunction<TQueryFnData, TQueryKey, TPageParam> = async ({
 
   // Table charts order columns via Object.keys(firstRow). Pass select-list
   // hints so the API remaps/reorders SQL++ `$N` / JSON key order to match.
+  // Raw SQL needs the same treatment: without ordered hints, Couchbase JSON
+  // key order (often alphabetical) mis-aligns filter keys with aliases.
+  const rawSqlColumns = isRawSqlChartConfig(windowedConfig)
+    ? sqlExprToResultColumnNames(query)
+    : undefined;
   const hints = isBuilderChartConfig(windowedConfig)
     ? couchbasePostprocessHints(windowedConfig)
-    : {};
+    : rawSqlColumns?.length
+      ? { columns: rawSqlColumns }
+      : {};
 
   const resultSet = await dataClient.query<'JSON'>({
     query: query.sql,

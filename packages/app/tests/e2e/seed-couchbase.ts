@@ -1,7 +1,10 @@
 /**
  * Seeds Couchbase collections for full-stack E2E.
  */
-import { fromShapedRow } from '../../../ingest/src/model/fromShapedRow';
+import {
+  fromShapedRow,
+  toIso30,
+} from '../../../ingest/src/model/fromShapedRow';
 
 import {
   E2E_CUSTOM_SERVICE_LOGS_TABLE,
@@ -211,11 +214,15 @@ export async function seedCouchbase(): Promise<void> {
   );
 
   await ensureMetricCollection(E2E_INTERESTING_FILTER_KEYS_TABLE);
-  const { startMs: interestingStart } = getE2eSeedWindow();
+  // Place rows near "now" so default dashboard windows (e.g. Last 15 minutes)
+  // still include them; startMs alone sits an hour back and misses short ranges.
+  const { seedRef: interestingRef } = getE2eSeedWindow();
   for (const [i, row] of INTERESTING_FILTER_KEYS_ROWS.entries()) {
-    const t = new Date(interestingStart + i * 60_000).toISOString();
+    // Match Phase 5 Timestamp shape (30-char ISO) so time filters compare.
+    const t = toIso30(new Date(interestingRef - i * 60_000));
     await upsertDoc(E2E_INTERESTING_FILTER_KEYS_TABLE, `interesting::${i}`, {
       Timestamp: t,
+      TimestampTime: t.slice(0, 19) + 'Z',
       TraceId: '',
       SpanId: '',
       TraceFlags: 0,
@@ -242,29 +249,35 @@ export async function seedCouchbase(): Promise<void> {
     `  ✓ Upserted ${INTERESTING_FILTER_KEYS_ROWS.length} interesting-filter-key documents`,
   );
 
-  // Minimal session rows so dashboard session search tiles have ServiceName=browser.
-  const { startMs: sessionStart } = getE2eSeedWindow();
+  // Session source filters on TimestampTime; fromShapedRow fills that field.
+  const { seedRef: sessionRef } = getE2eSeedWindow();
   for (const [i, sessionId] of Object.values(OTEL_SESSIONS).entries()) {
-    const t = new Date(sessionStart + i * 60_000).toISOString();
-    await upsertDoc('otel_sessions', `session::${sessionId}::${i}`, {
-      Timestamp: t,
-      TraceId: '',
-      SpanId: '',
-      TraceFlags: 0,
-      SeverityText: '',
-      SeverityNumber: 9,
-      ServiceName: 'browser',
-      Body: 'browser.user_action.click',
-      ResourceAttributes: { 'service.name': 'browser' },
-      ScopeAttributes: {},
-      LogAttributes: {
-        'session.id': sessionId,
-        'rum.sessionId': sessionId,
-        'browser.document.url.full': 'http://localhost:8080/',
+    const t = toIso30(new Date(sessionRef - i * 60_000));
+    const doc = fromShapedRow(
+      'e2e_otel_sessions',
+      {
+        Timestamp: t,
+        TraceId: '',
+        SpanId: '',
+        TraceFlags: 0,
+        SeverityText: '',
+        SeverityNumber: 9,
+        ServiceName: 'browser',
+        Body: 'browser.user_action.click',
+        ResourceAttributes: {
+          'service.name': 'browser',
+          'rum.sessionId': sessionId,
+        },
+        ScopeAttributes: {},
+        LogAttributes: {
+          'session.id': sessionId,
+          'rum.sessionId': sessionId,
+          'browser.document.url.full': 'http://localhost:8080/',
+        },
       },
-      '__hdx_materialized_session.id': sessionId,
-      '__hdx_materialized_rum.sessionId': sessionId,
-    });
+      { collection: 'otel_sessions' },
+    );
+    await upsertDoc(doc.collection, doc.key, doc.value);
   }
   console.log(
     `  ✓ Upserted ${Object.keys(OTEL_SESSIONS).length} session documents`,

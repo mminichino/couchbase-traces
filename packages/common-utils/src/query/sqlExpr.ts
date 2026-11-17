@@ -523,6 +523,8 @@ export type SelectColumn = {
   expression: string;
   /** Whether the outer GROUP BY lists the item (by expression, alias, or position). */
   isGroupBy: boolean;
+  /** Result column name: alias when present, otherwise the expression text. */
+  name: string;
 };
 
 /**
@@ -605,8 +607,14 @@ export function sqlExprToSelectColumns(
       const alias =
         typeof column.as === 'string' ? column.as : column.as?.value;
       const name = columnRefName(expr);
+      const expression = restore(text);
+      const resultName =
+        alias != null && String(alias).trim() !== ''
+          ? bareName(String(alias))
+          : expression;
       selectColumns.push({
-        expression: restore(text),
+        expression,
+        name: resultName,
         isGroupBy:
           groupByPositions.has(index) ||
           (alias != null && groupByNames.has(bareName(alias))) ||
@@ -615,6 +623,59 @@ export function sqlExprToSelectColumns(
       });
     }
     return selectColumns;
+  } catch {
+    return undefined;
+  }
+}
+
+/**
+ * Outer SELECT result column names in projection order (alias, else expression).
+ * Used as Couchbase postprocess `columns` hints so JSON key order matches the
+ * select list for raw SQL table charts. Undefined when the query has no
+ * parseable SELECT list (same limits as {@link sqlExprToSelectColumns}, except
+ * GROUP BY is not required).
+ */
+export function sqlExprToResultColumnNames(
+  sqlExpr: SqlFrag | undefined,
+): string[] | undefined {
+  if (sqlExpr == null || !sqlExpr.sql) return undefined;
+  try {
+    const { sql, restore, identifierReplacements } =
+      prepareSqlFragForParser(sqlExpr);
+    const parser = new SQLParser.Parser();
+    const options = {
+      database: 'Postgresql',
+      parseOptions: { includeLocations: true },
+    };
+    const ast = parser.astify(sql, options);
+    if (Array.isArray(ast) || ast.type !== 'select') return undefined;
+    const columns = ast.columns;
+    if (!Array.isArray(columns)) return undefined;
+
+    const bareName = (name: string) =>
+      identifierReplacements.names.get(name) ?? name;
+    const names: string[] = [];
+    for (const column of columns) {
+      const { expr } = column;
+      if (
+        expr.type === 'column_ref' &&
+        parser.exprToSQL(expr, options) === '*'
+      ) {
+        return undefined;
+      }
+      const text =
+        expr.loc != null
+          ? sql.slice(expr.loc.start.offset, expr.loc.end.offset).trim()
+          : parser.exprToSQL(expr, options);
+      const alias =
+        typeof column.as === 'string' ? column.as : column.as?.value;
+      if (alias != null && String(alias).trim() !== '') {
+        names.push(bareName(String(alias)));
+      } else {
+        names.push(restore(text));
+      }
+    }
+    return names.length ? names : undefined;
   } catch {
     return undefined;
   }

@@ -267,7 +267,10 @@ export function useRowData({
         : []),
       ...selectHighlightedRowAttributes,
     ],
+    // Row ids are SQL predicates (`META(d).id = "..."` on Couchbase); Lucene
+    // rejects the colon in that form.
     where: rowId ?? '0=1',
+    whereLanguage: 'sql' as const,
     from: source.from,
     limit: { limit: 1 },
     ...(aliasWith && aliasWith.length > 0 ? { with: aliasWith } : {}),

@@ -29,6 +29,7 @@ export {
   parameterizedQueryToSql,
   sqlExpr,
   sqlExprToAliasMap,
+  sqlExprToResultColumnNames,
   sqlExprToSelectColumns,
   type SqlFrag,
   tableExpr,

@@ -1,4 +1,18 @@
-import { sqlExprToAliasMap } from '@/query';
+import { sqlExprToAliasMap, sqlExprToResultColumnNames } from '@/query';
+
+describe('sqlExprToResultColumnNames', () => {
+  it('returns aliases in select-list order without requiring GROUP BY', () => {
+    expect(
+      sqlExprToResultColumnNames({
+        sql:
+          'SELECT ServiceName AS svc, LENGTH(ServiceName) AS len, ' +
+          'MIN(SeverityText) AS sev, COUNT(*) AS count ' +
+          'FROM t WHERE 1=1',
+        params: {},
+      }),
+    ).toEqual(['svc', 'len', 'sev', 'count']);
+  });
+});
 
 describe('sqlExprToAliasMap META', () => {
   it('parses aliases when META(d).id is present', () => {
