@@ -64,26 +64,22 @@ export class TableComponent {
    * Click on the first row
    */
   async clickFirstRow() {
-    // Match clickRowContaining: the leading cell is the selection checkbox,
-    // and an open side panel can cover the row. Click the row's content button
-    // (or dispatch a DOM click when the drawer covers it).
+    // Pointer clicks on the row content button are often intercepted by the
+    // table/virtualizer layer (and by an open side panel). Dispatch a DOM
+    // click so the side panel opens reliably in e2e.
     const row = this.firstRow;
     const button = row.getByRole('button', {
       name: /^(View details for log entry|Expand log row|Collapse log row)$/,
     });
     if ((await button.count()) === 0) {
-      await row.click();
+      await row.click({ force: true });
       return;
     }
-    if (await this.isCoveredBySidePanel(button)) {
-      await button.evaluate(el => {
-        if (el instanceof HTMLElement) {
-          el.click();
-        }
-      });
-      return;
-    }
-    await button.click({ position: { x: 4, y: 8 } });
+    await button.evaluate(el => {
+      if (el instanceof HTMLElement) {
+        el.click();
+      }
+    });
   }
 
   async clickRowContaining(text: string) {

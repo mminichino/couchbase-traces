@@ -114,15 +114,21 @@ test.describe('Chart Explorer Functionality', { tag: ['@charts'] }, () => {
     });
 
     await test.step('Order by ServiceName ascending and capture the bar order', async () => {
+      // Cap series so every category fits on the x-axis; dense ticks hide
+      // intermediate labels and make ORDER BY unverifiable from the axis.
+      await chartExplorerPage.chartEditor.setSeriesLimit(5);
       await chartExplorerPage.chartEditor.setOrderBy('ServiceName ASC');
       await chartExplorerPage.chartEditor.runQuery();
       await expect(chartExplorerPage.getBars().first()).toBeVisible({
         timeout: 15000,
       });
 
+      await expect
+        .poll(async () => (await chartExplorerPage.getBarLabels()).length, {
+          timeout: 15000,
+        })
+        .toBeGreaterThan(1);
       ascendingLabels = await chartExplorerPage.getBarLabels();
-      // Need at least two distinct bars for the ordering to be observable.
-      expect(ascendingLabels.length).toBeGreaterThan(1);
     });
 
     await test.step('Order by ServiceName descending and verify the order is reversed', async () => {
@@ -138,7 +144,7 @@ test.describe('Chart Explorer Functionality', { tag: ['@charts'] }, () => {
       descendingLabels = await chartExplorerPage.getBarLabels();
     });
 
-    await test.step('Apply a series limit and confirm the custom order still drives which bars are kept', async () => {
+    await test.step('Tighten the series limit and confirm the custom order still drives which bars are kept', async () => {
       const seriesLimit = 3;
       await chartExplorerPage.chartEditor.setSeriesLimit(seriesLimit);
       await chartExplorerPage.chartEditor.runQuery();
