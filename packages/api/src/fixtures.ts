@@ -60,7 +60,10 @@ const healthCheck = async () => {
   const client = await getTestFixtureDataClient();
   const result = await client.ping();
   if (!result.success) {
-    logger.error({ error: result.error }, 'Couchbase fixture health check failed');
+    logger.error(
+      { error: result.error },
+      'Couchbase fixture health check failed',
+    );
     throw result.error;
   }
 };

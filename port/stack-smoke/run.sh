@@ -58,6 +58,12 @@ fi
 
 gen_secret() { openssl rand -hex 16; }
 
+# Meets packages/api passwordSchema (upper + lower + digit + special, ≥12).
+# openssl rand -hex is lowercase hex only and fails registration with HTTP 400.
+gen_user_password() {
+  printf 'Smk!%sA1' "$(openssl rand -hex 12)"
+}
+
 {
   cat .env.example
   echo "CBT_COUCHBASE_ADMIN_PASSWORD=$(gen_secret)"
@@ -143,11 +149,30 @@ APP_PORT="${APP_PORT:-8080}"
 API_BASE="http://127.0.0.1:${APP_PORT}/api"
 COOKIE_JAR="$(mktemp)"
 EMAIL="stack-smoke-$(date +%s)@couchbase-traces.test"
-PASSWORD="$(gen_secret)"
+PASSWORD="$(gen_user_password)"
 
-curl -fsS -c "$COOKIE_JAR" -b "$COOKIE_JAR" -X POST "${API_BASE}/register/password" \
-  -H 'Content-Type: application/json' \
-  -d "{\"email\":\"${EMAIL}\",\"password\":\"${PASSWORD}\",\"confirmPassword\":\"${PASSWORD}\"}" >/dev/null
+# App may report "running" before Express listens; retry register briefly.
+register_ok=0
+for _ in $(seq 1 30); do
+  code="$(curl -sS -o /tmp/cbt-smoke-register.json -w '%{http_code}' \
+    -c "$COOKIE_JAR" -b "$COOKIE_JAR" -X POST "${API_BASE}/register/password" \
+    -H 'Content-Type: application/json' \
+    -d "{\"email\":\"${EMAIL}\",\"password\":\"${PASSWORD}\",\"confirmPassword\":\"${PASSWORD}\"}" || echo 000)"
+  if [ "$code" = "200" ] || [ "$code" = "201" ]; then
+    register_ok=1
+    break
+  fi
+  # 409 = team already exists from a prior partial run — try login instead.
+  if [ "$code" = "409" ]; then
+    register_ok=1
+    break
+  fi
+  sleep 2
+done
+if [ "$register_ok" != 1 ]; then
+  echo "[stack-smoke] register failed (last HTTP ${code:-?}): $(cat /tmp/cbt-smoke-register.json 2>/dev/null || true)"
+  exit 1
+fi
 curl -fsS -c "$COOKIE_JAR" -b "$COOKIE_JAR" -X POST "${API_BASE}/login/password" \
   -H 'Content-Type: application/json' \
   -d "{\"email\":\"${EMAIL}\",\"password\":\"${PASSWORD}\"}" >/dev/null

@@ -162,6 +162,9 @@ jobs:
       # Actions streams stdout.
       - name: Run integration tests
         env:
+          # FixtureDataClient (api int) talks to the CI compose cluster.
+          # Leave CBT_TEST_COUCHBASE_* unset so *.couchbase.int.test.ts skip
+          # here (they need the `test` bucket from port/couchbase-test).
           CBT_COUCHBASE_CONNSTR: couchbase://127.0.0.1
           CBT_COUCHBASE_BUCKET: otel
           CBT_COUCHBASE_SCOPE: default
@@ -169,11 +172,6 @@ jobs:
           CBT_COUCHBASE_ADMIN_PASSWORD: dev-admin-password
           CBT_COUCHBASE_QUERY_USER: cbt_query
           CBT_COUCHBASE_QUERY_PASSWORD: dev-query-password
-          CBT_TEST_COUCHBASE_CONNSTR: couchbase://127.0.0.1
-          CBT_TEST_COUCHBASE_ADMIN_USER: Administrator
-          CBT_TEST_COUCHBASE_ADMIN_PASSWORD: dev-admin-password
-          CBT_TEST_COUCHBASE_USER: cbt_query
-          CBT_TEST_COUCHBASE_PASSWORD: dev-query-password
           CBT_TEST_COUCHBASE_REQUIRED: '0'
         run: |
           set +e

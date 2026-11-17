@@ -2,6 +2,10 @@
  * CI fixture store client: ClickHouse-shaped helpers (ping / command / insert /
  * query) backed by the Couchbase query HTTP API so packages/api int tests keep
  * working after the DataClient ClickHouse surface was removed.
+ *
+ * Uses `globalThis.realFetch` when present — jest.setup.ts mocks `global.fetch`
+ * to a stub that returns `{}`, which would make every fixture query look like a
+ * silent failure.
  */
 import { createHash, randomUUID } from 'node:crypto';
 
@@ -21,6 +25,16 @@ const QUERY_PORT = Number(
     8093,
 );
 
+type RealFetchHolder = { realFetch?: typeof fetch };
+
+function liveFetch(): typeof fetch {
+  const fromSetup = (globalThis as RealFetchHolder).realFetch;
+  if (typeof fromSetup === 'function') {
+    return fromSetup.bind(globalThis);
+  }
+  return globalThis.fetch.bind(globalThis);
+}
+
 function quoteIdent(name: string): string {
   if (name.includes('`')) {
     throw new Error(`identifier must not contain backticks: ${name}`);
@@ -28,7 +42,11 @@ function quoteIdent(name: string): string {
   return `\`${name}\``;
 }
 
-function parseTableRef(table: string): { bucket: string; scope: string; collection: string } {
+function parseTableRef(table: string): {
+  bucket: string;
+  scope: string;
+  collection: string;
+} {
   // Legacy "database.table" → scope.collection in the otel bucket.
   const parts = table.split('.').filter(Boolean);
   if (parts.length === 1) {
@@ -58,7 +76,9 @@ function translateCommand(sql: string): string {
     const ref = truncate[1].replace(/`/g, '');
     return `DELETE FROM ${keyspace(ref)}`;
   }
-  const drop = trimmed.match(/^DROP\s+TABLE\s+IF\s+EXISTS\s+([`\w.]+)\s*;?\s*$/i);
+  const drop = trimmed.match(
+    /^DROP\s+TABLE\s+IF\s+EXISTS\s+([`\w.]+)\s*;?\s*$/i,
+  );
   if (drop) {
     // No-op for Couchbase collections in fixtures; schema is managed by ingest setup.
     return 'SELECT RAW 1';
@@ -66,7 +86,7 @@ function translateCommand(sql: string): string {
   // Rewrite bare `default.otel_*` refs in other DDL/DML to full keyspaces when
   // they appear as a single table token after FROM/INTO/TABLE.
   return trimmed.replace(
-    /\b(FROM|INTO|TABLE|UPDATE)\s+(`?default`?\.\`?[A-Za-z0-9_]+`?)/gi,
+    /\b(FROM|INTO|TABLE|UPDATE)\s+(`?default`?\.`?[A-Za-z0-9_]+`?)/gi,
     (_m, kw: string, ref: string) => `${kw} ${keyspace(ref.replace(/`/g, ''))}`,
   );
 }
@@ -81,6 +101,9 @@ async function queryHttp(
   statement: string,
   named?: Record<string, unknown>,
 ): Promise<QueryBody> {
+  if (!Number.isFinite(QUERY_PORT) || QUERY_PORT <= 0) {
+    throw new Error(`invalid Couchbase query port: ${QUERY_PORT}`);
+  }
   const payload: Record<string, unknown> = {
     statement,
     timeout: '60s',
@@ -90,8 +113,11 @@ async function queryHttp(
       payload[`$${k}`] = v;
     }
   }
-  const auth = Buffer.from(`${ADMIN_USER}:${ADMIN_PASSWORD}`).toString('base64');
-  const res = await fetch(`http://127.0.0.1:${QUERY_PORT}/query/service`, {
+  const auth = Buffer.from(`${ADMIN_USER}:${ADMIN_PASSWORD}`).toString(
+    'base64',
+  );
+  const url = `http://127.0.0.1:${QUERY_PORT}/query/service`;
+  const res = await liveFetch()(url, {
     method: 'POST',
     headers: {
       authorization: `Basic ${auth}`,
@@ -99,10 +125,20 @@ async function queryHttp(
     },
     body: JSON.stringify(payload),
   });
-  const body = (await res.json()) as QueryBody;
-  if (body.status !== 'success') {
+  const text = await res.text();
+  let body: QueryBody;
+  try {
+    body = text ? (JSON.parse(text) as QueryBody) : {};
+  } catch {
     throw new Error(
-      `fixture query failed: ${JSON.stringify(body.errors || body)}`,
+      `fixture query non-JSON (HTTP ${res.status}): ${text.slice(0, 200)}`,
+    );
+  }
+  if (!res.ok || body.status !== 'success') {
+    throw new Error(
+      `fixture query failed (HTTP ${res.status}): ${JSON.stringify(
+        body.errors || body,
+      )}`,
     );
   }
   return body;
