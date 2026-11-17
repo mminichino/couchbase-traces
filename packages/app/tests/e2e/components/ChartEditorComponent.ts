@@ -448,9 +448,13 @@ export class ChartEditorComponent {
       await option.waitFor({ state: 'visible', timeout: 10000 });
     }
     await option.click();
-    await expect(this.webhookSelector).toHaveAttribute('aria-invalid', 'false', {
-      timeout: 5000,
-    });
+    await expect(this.webhookSelector).toHaveAttribute(
+      'aria-invalid',
+      'false',
+      {
+        timeout: 5000,
+      },
+    );
   }
 
   /**
