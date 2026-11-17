@@ -147,7 +147,7 @@ test.describe(
       // The options double as real ServiceName values so the selection can be
       // seen to narrow a query, in an order that is not their sorted order.
       const services = ['frontend', 'accounting', 'ad'];
-      const sql = `SELECT ServiceName, COUNT(*) AS count FROM $__sourceTable WHERE Timestamp >= $__fromTime_ms AND Timestamp <= $__toTime_ms AND $__conditionalAll(ServiceName IN $svc, $svc) GROUP BY ServiceName LIMIT 200`;
+      const sql = `SELECT ServiceName, COUNT(*) AS count FROM $__sourceTable WHERE Timestamp >= $__fromTime_ms AND Timestamp <= $__toTime_ms AND $__conditionalAll(ServiceName IN ($svc), $svc) GROUP BY ServiceName LIMIT 200`;
 
       await test.step('Create a static Service filter and select one value', async () => {
         await dashboardPage.createNewDashboard();
