@@ -63,7 +63,8 @@ services:
         ]
       interval: 5s
       timeout: 5s
-      retries: 30
+      # Init + first query-plan warm-up can exceed 150s on github runners.
+      retries: 60
     depends_on:
       couchbase-init:
         condition: service_completed_successfully
