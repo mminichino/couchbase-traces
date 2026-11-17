@@ -124,8 +124,5 @@ runs:
         docker exec "$container" /opt/couchbase/bin/couchbase-cli setting-alternate-address \
           -c 127.0.0.1:8091 -u Administrator -p cbt-test-admin \
           --set --node 127.0.0.1 --hostname localhost \
-          --ports mgmt=${CBT_E2E_CB_MGMT_PORT},mgmtSSL=$((CBT_E2E_CB_MGMT_PORT + 1000)),\
-kv=${CBT_E2E_CB_KV_PORT},kvSSL=$((CBT_E2E_CB_KV_PORT + 1000)),\
-n1ql=${CBT_E2E_CB_QUERY_PORT},n1qlSSL=$((CBT_E2E_CB_QUERY_PORT + 1000)),\
-fts=${CBT_E2E_CB_FTS_PORT},ftsSSL=$((CBT_E2E_CB_FTS_PORT + 1000)) \
+          --ports "mgmt=${CBT_E2E_CB_MGMT_PORT},mgmtSSL=$((CBT_E2E_CB_MGMT_PORT + 1000)),kv=${CBT_E2E_CB_KV_PORT},kvSSL=$((CBT_E2E_CB_KV_PORT + 1000)),n1ql=${CBT_E2E_CB_QUERY_PORT},n1qlSSL=$((CBT_E2E_CB_QUERY_PORT + 1000)),fts=${CBT_E2E_CB_FTS_PORT},ftsSSL=$((CBT_E2E_CB_FTS_PORT + 1000))" \
           || echo "Warning: alternate address not set (may already exist)"

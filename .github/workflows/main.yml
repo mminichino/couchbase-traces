@@ -120,8 +120,27 @@ jobs:
         uses: crazy-max/ghaction-github-runtime@v4
       - name: Spin up docker services
         run: |
-          docker buildx create --use --driver=docker-container
-          docker buildx bake -f ./docker-compose.ci.yml --set *.cache-to="type=gha,mode=max,scope=ci-integration" --set *.cache-from="type=gha,scope=ci-integration" --load
+          # Parallel bake of ingest (yarn) + otel (Go) fills the ~14 GiB
+          # runner disk (ENOSPC). Free hosted-tool caches, prune Docker,
+          # and bake one target at a time.
+          df -h / || true
+          sudo rm -rf /usr/share/dotnet /usr/local/lib/android /opt/ghc \
+            /opt/hostedtoolcache/CodeQL /usr/local/share/boost || true
+          docker builder prune -af || true
+          docker system prune -af --volumes || true
+          df -h / || true
+          docker buildx create --use --driver=docker-container --name cbt-ci || docker buildx use cbt-ci
+          export BUILDKIT_MAX_PARALLELISM=1
+          # Bake one buildable target at a time; couchbase/db are pull-only.
+          for target in couchbase-init ingest otel-collector; do
+            echo "Baking ${target}..."
+            docker buildx bake -f ./docker-compose.ci.yml "${target}" \
+              --set "*.cache-to=type=gha,mode=max,scope=ci-integration" \
+              --set "*.cache-from=type=gha,scope=ci-integration" \
+              --load
+            docker builder prune -af || true
+            df -h / || true
+          done
       - name: Build dependencies
         run: make ci-build
       # Integration tests boot a MockServer on fixed ports and share a single
@@ -240,6 +259,9 @@ jobs:
         run: yarn install --immutable
       - name: Run stack smoke
         if: github.event_name == 'push' || steps.changed-files.outputs.any_changed == 'true'
+        env:
+          CBT_STACK_SMOKE_PRUNE: '1'
+          BUILDKIT_MAX_PARALLELISM: '1'
         run: bash port/stack-smoke/run.sh
   e2e-tests:
     uses: ./.github/workflows/e2e-tests.yml

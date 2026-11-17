@@ -69,9 +69,28 @@ gen_secret() { openssl rand -hex 16; }
 } >"$ENV_FILE"
 
 echo "[stack-smoke] starting stack..."
+# GitHub-hosted runners (~14 GiB free) run out of disk when yarn install
+# for ingest + app and the otel Go build run in parallel BuildKit jobs.
+if [ "${CI:-}" = "true" ] || [ "${CBT_STACK_SMOKE_PRUNE:-}" = "1" ]; then
+  echo "[stack-smoke] freeing disk before build"
+  df -h / || true
+  sudo rm -rf /usr/share/dotnet /usr/local/lib/android /opt/ghc \
+    /opt/hostedtoolcache/CodeQL /usr/local/share/boost 2>/dev/null || true
+  docker builder prune -af || true
+  docker system prune -af --volumes || true
+  df -h / || true
+fi
 # --pull never: image: lines still name GHCR tags; without this, compose
 # probes the registry before build and fails when packages are private.
-compose up -d --build --pull never
+# Build one image at a time so peak disk stays under the runner limit.
+export BUILDKIT_MAX_PARALLELISM="${BUILDKIT_MAX_PARALLELISM:-1}"
+for svc in couchbase-init ingest otel-collector app; do
+  echo "[stack-smoke] building ${svc}..."
+  compose build --pull never "$svc"
+  docker builder prune -af || true
+  df -h / || true
+done
+compose up -d --pull never
 
 wait_for_init() {
   local deadline=$((SECONDS + 600))

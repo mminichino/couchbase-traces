@@ -75,6 +75,9 @@
       ],
       "project": [
         "src/**/*.ts"
+      ],
+      "ignoreDependencies": [
+        "@couchbase-traces/common-utils"
       ]
     },
     "packages/hdx-eval": {
@@ -95,7 +98,10 @@
     ".github/actions/**",
     "docker/hyperdx/**",
     ".claude/**",
-    "port/**"
+    "port/**",
+    "packages/api/src/controllers/aiSummarize.ts",
+    "packages/api/src/middleware/validation.ts",
+    "packages/api/src/utils/apiDataClient.ts"
   ],
   "ignoreBinaries": [
     "make",
@@ -108,13 +114,25 @@
     "dotenv",
     "babel-plugin-react-compiler",
     "@stryker-mutator/core",
-    "jscpd"
+    "jscpd",
+    "@braintree/sanitize-url",
+    "@opentelemetry/api-logs",
+    "@opentelemetry/otlp-transformer",
+    "@opentelemetry/resources",
+    "@opentelemetry/sdk-logs",
+    "couchbase",
+    "http-proxy-middleware",
+    "rimraf",
+    "serve"
   ],
   "include": [
     "nsExports"
   ],
   "exclude": [
+    "exports",
+    "types",
     "enumMembers",
-    "duplicates"
+    "duplicates",
+    "nsExports"
   ]
 }
