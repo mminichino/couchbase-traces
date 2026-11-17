@@ -33,6 +33,8 @@ export class WebhookAlertModalComponent {
     await this.webhookNameInput.fill(name);
     await this.webhookUrlInput.fill(url);
     await this.addWebhookButton.click();
-    await this.modal.isHidden();
+    // Wait for full unmount — `hidden` alone can leave the overlay blocking
+    // the parent alert panel (and the webhook Select may still be refetching).
+    await this.webhookNameInput.waitFor({ state: 'detached', timeout: 10000 });
   }
 }

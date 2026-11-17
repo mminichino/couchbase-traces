@@ -422,14 +422,35 @@ export class ChartEditorComponent {
     });
   }
 
+  /**
+   * Wait for handleWebhookCreated to land the new webhook id on the channel
+   * field (aria-invalid clears). Only open the dropdown and pick by label if
+   * auto-select did not stick — clicking the Select while a value is set can
+   * clear it.
+   */
   async selectWebhook(webhookName: string) {
-    if ((await this.webhookSelector.inputValue()) === webhookName) {
+    try {
+      await expect(this.webhookSelector).toHaveAttribute(
+        'aria-invalid',
+        'false',
+        { timeout: 5000 },
+      );
       return;
+    } catch {
+      // fall through and select manually
     }
+    const option = this.page.getByRole('option', { name: webhookName });
     await this.webhookSelector.click();
-    await this.page
-      .getByRole('option', { name: webhookName })
-      .click({ timeout: 5000 });
+    try {
+      await option.waitFor({ state: 'visible', timeout: 5000 });
+    } catch {
+      await this.webhookSelector.click();
+      await option.waitFor({ state: 'visible', timeout: 10000 });
+    }
+    await option.click();
+    await expect(this.webhookSelector).toHaveAttribute('aria-invalid', 'false', {
+      timeout: 5000,
+    });
   }
 
   /**

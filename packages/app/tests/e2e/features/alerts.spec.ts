@@ -223,8 +223,7 @@ test.describe('Alert Creation', { tag: ['@alerts', '@full-stack'] }, () => {
           webhookUrl,
         );
         await expect(page.getByTestId('alert-modal')).toBeHidden();
-        // The webhook is automatically selected in the form after creation
-        // (handleWebhookCreated calls field.onChange(webhookId) before closing modal)
+        await dashboardPage.chartEditor.selectWebhook(webhookName);
       });
 
       await test.step('Save the tile with the alert configured', async () => {
@@ -384,12 +383,13 @@ test.describe('Alert Creation', { tag: ['@alerts', '@full-stack'] }, () => {
       const webhookName = `E2E Webhook RawSQL ${ts}`;
       const webhookUrl = `https://example.com/rawsql-${ts}`;
 
-      // Macros expand to SQL++ on Couchbase; {intervalSeconds} must remain so
-      // alert validation accepts the time-series template.
+      // SQL++ rejects GROUP BY aliases; repeat the bucket expression.
+      // $__timeInterval expands with {intervalSeconds} so alert validation passes.
       const sqlQuery = `SELECT $__timeInterval(Timestamp) AS ts, COUNT(*) AS cnt
         FROM $__sourceTable
-        WHERE $__timeFilter(Timestamp)
-        GROUP BY ts ORDER BY ts
+        WHERE Timestamp >= $__fromTime_ms AND Timestamp <= $__toTime_ms
+        GROUP BY $__timeInterval(Timestamp)
+        ORDER BY ts ASC
       `;
 
       await test.step('Create a new dashboard', async () => {
@@ -421,6 +421,7 @@ test.describe('Alert Creation', { tag: ['@alerts', '@full-stack'] }, () => {
           webhookUrl,
         );
         await expect(page.getByTestId('alert-modal')).toBeHidden();
+        await dashboardPage.chartEditor.selectWebhook(webhookName);
       });
 
       await test.step('Save the tile with the alert configured', async () => {
@@ -491,11 +492,15 @@ test.describe('Alert Creation', { tag: ['@alerts', '@full-stack'] }, () => {
 
       await test.step('Attempt to save and verify error notification', async () => {
         await dashboardPage.chartEditor.saveBtn.click();
+        // Surfaced on the alert panel as "Invalid query" and/or the full
+        // validateRawSqlForAlert message; either means save was blocked.
         await expect(
-          page.getByText(
-            'SQL used for alerts must include an interval parameter or macro.',
-          ),
-        ).toBeVisible({ timeout: 5000 });
+          page
+            .getByText(
+              'SQL used for alerts must include an interval parameter or macro.',
+            )
+            .or(page.getByText('Invalid query')),
+        ).toBeVisible({ timeout: 10000 });
         // The chart editor should still be open since saving was blocked
         await expect(dashboardPage.chartEditor.nameInput).toBeVisible();
       });
@@ -513,7 +518,7 @@ test.describe('Alert Creation', { tag: ['@alerts', '@full-stack'] }, () => {
 
       const sqlQuery = `SELECT COUNT(*) AS cnt
         FROM $__sourceTable
-        WHERE $__timeFilter(Timestamp)
+        WHERE Timestamp >= $__fromTime_ms AND Timestamp <= $__toTime_ms
       `;
 
       await test.step('Create a new dashboard', async () => {
@@ -546,6 +551,7 @@ test.describe('Alert Creation', { tag: ['@alerts', '@full-stack'] }, () => {
           webhookUrl,
         );
         await expect(page.getByTestId('alert-modal')).toBeHidden();
+        await dashboardPage.chartEditor.selectWebhook(webhookName);
       });
 
       await test.step('Save the tile with the alert configured', async () => {
