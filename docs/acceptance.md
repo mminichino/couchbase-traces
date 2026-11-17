@@ -6,8 +6,8 @@ Status: **blocked**
 
 | Field | Value |
 |---|---|
-| Generated | 2026-11-17T09:15:44.669Z |
-| Git SHA | `ec2da3709b37501ff511510be1cb639387f77969` |
+| Generated | 2026-11-17T09:49:30.751Z |
+| Git SHA | `01e50f5c3e85819757adc682fdf8a50384adf529` |
 | Dirty | true |
 | Final | false |
 
@@ -29,7 +29,7 @@ Status: **blocked**
 | H1 | Static branding | pass | rebrand verify branding and remove-ch verify passed |
 | H2 | Rendered branding | pass | No brand terms in 56 rendered page(s) |
 | H3 | Runtime branding | pass | No brand terms in image/container/env names |
-| I1 | Outbound browser | pass | All 6740 browser requests stayed on origin |
+| I1 | Outbound browser | pass | All 6714 browser requests stayed on origin |
 | I2 | Outbound server DNS | pass | All 21 DNS queries allowed |
 | J1 | Legal files | pass | LICENSE, NOTICE, and UPSTREAM.md are correct |
 | J2 | License report current | pass | docs/licenses.md matches a fresh scan |
@@ -83,7 +83,7 @@ Push this commit to origin (ORIGIN_URL) and run the acceptance runner with --rec
 
 - Status: pass
 - Summary: All 51 ported features have at least one mapped test
-- Duration: 13 ms
+- Duration: 19 ms
 
 ```json
 {
@@ -95,7 +95,7 @@ Push this commit to origin (ORIGIN_URL) and run the acceptance runner with --rec
 
 - Status: pass
 - Summary: 24 app page routes loaded
-- Duration: 18312 ms
+- Duration: 18345 ms
 - Evidence: /Users/michael/IdeaProjects/couchbase-traces/port/state/acceptance/evidence/a3-app-home-_.png, /Users/michael/IdeaProjects/couchbase-traces/port/state/acceptance/evidence/a3-app-search-_search.png, /Users/michael/IdeaProjects/couchbase-traces/port/state/acceptance/evidence/a3-app-search-_search_savedSearchId_.png, /Users/michael/IdeaProjects/couchbase-traces/port/state/acceptance/evidence/a3-app-search-_search_list.png, /Users/michael/IdeaProjects/couchbase-traces/port/state/acceptance/evidence/a3-app-chart-_chart.png, /Users/michael/IdeaProjects/couchbase-traces/port/state/acceptance/evidence/a3-app-dashboards-_dashboards.png, /Users/michael/IdeaProjects/couchbase-traces/port/state/acceptance/evidence/a3-app-dashboards-_dashboards_dashboardId_.png, /Users/michael/IdeaProjects/couchbase-traces/port/state/acceptance/evidence/a3-app-dashboards-_dashboards_import.png, /Users/michael/IdeaProjects/couchbase-traces/port/state/acceptance/evidence/a3-app-dashboards-_dashboards_list.png, /Users/michael/IdeaProjects/couchbase-traces/port/state/acceptance/evidence/a3-app-dashboards-_dashboards_templates.png, /Users/michael/IdeaProjects/couchbase-traces/port/state/acceptance/evidence/a3-app-alerts-_alerts.png, /Users/michael/IdeaProjects/couchbase-traces/port/state/acceptance/evidence/a3-app-alerts-_alerts_alertId_.png, /Users/michael/IdeaProjects/couchbase-traces/port/state/acceptance/evidence/a3-app-trace-_trace_traceId_.png, /Users/michael/IdeaProjects/couchbase-traces/port/state/acceptance/evidence/a3-app-service-map-_service_map.png, /Users/michael/IdeaProjects/couchbase-traces/port/state/acceptance/evidence/a3-app-sessions-_sessions.png, /Users/michael/IdeaProjects/couchbase-traces/port/state/acceptance/evidence/a3-app-kubernetes-_kubernetes.png, /Users/michael/IdeaProjects/couchbase-traces/port/state/acceptance/evidence/a3-app-services-_services.png, /Users/michael/IdeaProjects/couchbase-traces/port/state/acceptance/evidence/a3-app-llm-_llm.png, /Users/michael/IdeaProjects/couchbase-traces/port/state/acceptance/evidence/a3-app-login-_login.png, /Users/michael/IdeaProjects/couchbase-traces/port/state/acceptance/evidence/a3-app-register-_register.png, /Users/michael/IdeaProjects/couchbase-traces/port/state/acceptance/evidence/a3-app-join-team-_join_team.png, /Users/michael/IdeaProjects/couchbase-traces/port/state/acceptance/evidence/a3-app-team-_team.png, /Users/michael/IdeaProjects/couchbase-traces/port/state/acceptance/evidence/a3-couchbase-cluster-_cluster.png, /Users/michael/IdeaProjects/couchbase-traces/port/state/acceptance/evidence/a3-app-benchmark-_benchmark.png
 
 ```json
@@ -146,7 +146,7 @@ Push this commit to origin (ORIGIN_URL) and run the acceptance runner with --rec
 
 - Status: pass
 - Summary: All 16 primary views show data
-- Duration: 53619 ms
+- Duration: 59159 ms
 - Evidence: /Users/michael/IdeaProjects/couchbase-traces/port/state/acceptance/evidence/b2-otlp-wait.json, /Users/michael/IdeaProjects/couchbase-traces/port/state/acceptance/evidence/b2-sample-data.log, /Users/michael/IdeaProjects/couchbase-traces/port/state/acceptance/evidence/b2-row-wait.json, /Users/michael/IdeaProjects/couchbase-traces/port/state/acceptance/evidence/b2-dashboard.json, /Users/michael/IdeaProjects/couchbase-traces/port/state/acceptance/evidence/b2-log-search.png, /Users/michael/IdeaProjects/couchbase-traces/port/state/acceptance/evidence/b2-trace-search.png, /Users/michael/IdeaProjects/couchbase-traces/port/state/acceptance/evidence/b2-log-histogram.png, /Users/michael/IdeaProjects/couchbase-traces/port/state/acceptance/evidence/b2-chart-explorer-count-by-service.png, /Users/michael/IdeaProjects/couchbase-traces/port/state/acceptance/evidence/b2-dashboard-template.png, /Users/michael/IdeaProjects/couchbase-traces/port/state/acceptance/evidence/b2-trace-waterfall.png, /Users/michael/IdeaProjects/couchbase-traces/port/state/acceptance/evidence/b2-service-map.png, /Users/michael/IdeaProjects/couchbase-traces/port/state/acceptance/evidence/b2-metrics-chart.png, /Users/michael/IdeaProjects/couchbase-traces/port/state/acceptance/evidence/b2-sessions-list.png, /Users/michael/IdeaProjects/couchbase-traces/port/state/acceptance/evidence/b2-session-replay.png, /Users/michael/IdeaProjects/couchbase-traces/port/state/acceptance/evidence/b2-kubernetes-dashboard.png, /Users/michael/IdeaProjects/couchbase-traces/port/state/acceptance/evidence/b2-services-dashboard.png, /Users/michael/IdeaProjects/couchbase-traces/port/state/acceptance/evidence/b2-event-patterns.png, /Users/michael/IdeaProjects/couchbase-traces/port/state/acceptance/evidence/b2-event-deltas.png, /Users/michael/IdeaProjects/couchbase-traces/port/state/acceptance/evidence/b2-alerts-list.png, /Users/michael/IdeaProjects/couchbase-traces/port/state/acceptance/evidence/b2-couchbase-cluster.png
 
 ```json
@@ -254,7 +254,7 @@ Push this commit to origin (ORIGIN_URL) and run the acceptance runner with --rec
 
 - Status: pass
 - Summary: 50 statements use indexes/key lookups (6 exempt)
-- Duration: 329 ms
+- Duration: 336 ms
 - Evidence: /Users/michael/IdeaProjects/couchbase-traces/port/state/acceptance/evidence/statements.ndjson
 
 ```json
@@ -268,7 +268,7 @@ Push this commit to origin (ORIGIN_URL) and run the acceptance runner with --rec
 
 - Status: pass
 - Summary: All 13 mutation cases rejected via query route
-- Duration: 101 ms
+- Duration: 107 ms
 
 ```json
 {
@@ -369,7 +369,7 @@ Push this commit to origin (ORIGIN_URL) and run the acceptance runner with --rec
 
 - Status: pass
 - Summary: p95 first-page request under 2000ms for all query shapes
-- Duration: 156395 ms
+- Duration: 156122 ms
 - Evidence: /Users/michael/IdeaProjects/couchbase-traces/port/state/acceptance/evidence/f1-latency.json
 
 ```json
@@ -439,7 +439,7 @@ Push this commit to origin (ORIGIN_URL) and run the acceptance runner with --rec
 
 - Status: pass
 - Summary: All 24 source×threshold pairs fired with controls quiet
-- Duration: 6972 ms
+- Duration: 7040 ms
 - Evidence: /Users/michael/IdeaProjects/couchbase-traces/port/state/acceptance/evidence/g1-alerts.json
 
 ```json
@@ -456,8 +456,8 @@ Push this commit to origin (ORIGIN_URL) and run the acceptance runner with --rec
         "threshold": 1731.4
       },
       "webhook": "generic",
-      "fireId": "6afc170ab5c2c0d193c2dcfe",
-      "ctrlId": "6afc170ab5c2c0d193c2dd04",
+      "fireId": "6afc1f08114ec710327a372b",
+      "ctrlId": "6afc1f08114ec710327a3731",
       "firingState": "ALERT",
       "controlState": "OK",
       "payloadSeen": false
@@ -473,8 +473,8 @@ Push this commit to origin (ORIGIN_URL) and run the acceptance runner with --rec
         "threshold": 1416.6
       },
       "webhook": "slack",
-      "fireId": "6afc170ab5c2c0d193c2dd0a",
-      "ctrlId": "6afc170ab5c2c0d193c2dd10",
+      "fireId": "6afc1f08114ec710327a3737",
+      "ctrlId": "6afc1f08114ec710327a373d",
       "firingState": "ALERT",
       "controlState": "OK",
       "payloadSeen": false
@@ -490,8 +490,8 @@ Push this commit to origin (ORIGIN_URL) and run the acceptance runner with --rec
         "threshold": 1731.4
       },
       "webhook": "incidentio",
-      "fireId": "6afc170ab5c2c0d193c2dd16",
-      "ctrlId": "6afc170ab5c2c0d193c2dd1c",
+      "fireId": "6afc1f08114ec710327a3743",
+      "ctrlId": "6afc1f08114ec710327a3749",
       "firingState": "ALERT",
       "controlState": "OK",
       "payloadSeen": false
@@ -507,8 +507,8 @@ Push this commit to origin (ORIGIN_URL) and run the acceptance runner with --rec
         "threshold": 1416.6
       },
       "webhook": "generic",
-      "fireId": "6afc170ab5c2c0d193c2dd22",
-      "ctrlId": "6afc170ab5c2c0d193c2dd28",
+      "fireId": "6afc1f08114ec710327a374f",
+      "ctrlId": "6afc1f08114ec710327a3755",
       "firingState": "ALERT",
       "controlState": "OK",
       "payloadSeen": false
@@ -524,8 +524,8 @@ Push this commit to origin (ORIGIN_URL) and run the acceptance runner with --rec
         "threshold": 1575
       },
       "webhook": "slack",
-      "fireId": "6afc170ab5c2c0d193c2dd2e",
-      "ctrlId": "6afc170ab5c2c0d193c2dd34",
+      "fireId": "6afc1f08114ec710327a375b",
+      "ctrlId": "6afc1f08114ec710327a3761",
       "firingState": "ALERT",
       "controlState": "OK",
       "payloadSeen": false
@@ -541,8 +541,8 @@ Push this commit to origin (ORIGIN_URL) and run the acceptance runner with --rec
         "threshold": 1574
       },
       "webhook": "incidentio",
-      "fireId": "6afc170ab5c2c0d193c2dd3a",
-      "ctrlId": "6afc170ab5c2c0d193c2dd40",
+      "fireId": "6afc1f08114ec710327a3767",
+      "ctrlId": "6afc1f08114ec710327a376d",
       "firingState": "ALERT",
       "controlState": "OK",
       "payloadSeen": false
@@ -560,8 +560,8 @@ Push this commit to origin (ORIGIN_URL) and run the acceptance runner with --rec
         "thresholdMax": 1888.8
       },
       "webhook": "generic",
-      "fireId": "6afc170ab5c2c0d193c2dd46",
-      "ctrlId": "6afc170ab5c2c0d193c2dd4c",
+      "fireId": "6afc1f08114ec710327a3773",
+      "ctrlId": "6afc1f08114ec710327a3779",
       "firingState": "ALERT",
       "controlState": "OK",
       "payloadSeen": false
@@ -579,8 +579,8 @@ Push this commit to origin (ORIGIN_URL) and run the acceptance runner with --rec
         "thresholdMax": 1731.4
       },
       "webhook": "slack",
-      "fireId": "6afc170ab5c2c0d193c2dd52",
-      "ctrlId": "6afc170ab5c2c0d193c2dd58",
+      "fireId": "6afc1f08114ec710327a377f",
+      "ctrlId": "6afc1f08114ec710327a3785",
       "firingState": "ALERT",
       "controlState": "OK",
       "payloadSeen": false
@@ -596,8 +596,8 @@ Push this commit to origin (ORIGIN_URL) and run the acceptance runner with --rec
         "threshold": 1731.4
       },
       "webhook": "incidentio",
-      "fireId": "6afc170ab5c2c0d193c2dd5e",
-      "ctrlId": "6afc170ab5c2c0d193c2dd64",
+      "fireId": "6afc1f08114ec710327a378b",
+      "ctrlId": "6afc1f08114ec710327a3791",
       "firingState": "ALERT",
       "controlState": "OK",
       "payloadSeen": false
@@ -613,8 +613,8 @@ Push this commit to origin (ORIGIN_URL) and run the acceptance runner with --rec
         "threshold": 1416.6
       },
       "webhook": "generic",
-      "fireId": "6afc170ab5c2c0d193c2dd6a",
-      "ctrlId": "6afc170ab5c2c0d193c2dd70",
+      "fireId": "6afc1f08114ec710327a3797",
+      "ctrlId": "6afc1f08114ec710327a379d",
       "firingState": "ALERT",
       "controlState": "OK",
       "payloadSeen": false
@@ -630,8 +630,8 @@ Push this commit to origin (ORIGIN_URL) and run the acceptance runner with --rec
         "threshold": 1731.4
       },
       "webhook": "slack",
-      "fireId": "6afc170ab5c2c0d193c2dd76",
-      "ctrlId": "6afc170ab5c2c0d193c2dd7c",
+      "fireId": "6afc1f08114ec710327a37a3",
+      "ctrlId": "6afc1f08114ec710327a37a9",
       "firingState": "ALERT",
       "controlState": "OK",
       "payloadSeen": false
@@ -647,8 +647,8 @@ Push this commit to origin (ORIGIN_URL) and run the acceptance runner with --rec
         "threshold": 1416.6
       },
       "webhook": "incidentio",
-      "fireId": "6afc170ab5c2c0d193c2dd82",
-      "ctrlId": "6afc170ab5c2c0d193c2dd88",
+      "fireId": "6afc1f08114ec710327a37af",
+      "ctrlId": "6afc1f08114ec710327a37b5",
       "firingState": "ALERT",
       "controlState": "OK",
       "payloadSeen": false
@@ -664,8 +664,8 @@ Push this commit to origin (ORIGIN_URL) and run the acceptance runner with --rec
         "threshold": 1575
       },
       "webhook": "generic",
-      "fireId": "6afc170ab5c2c0d193c2dd8e",
-      "ctrlId": "6afc170ab5c2c0d193c2dd94",
+      "fireId": "6afc1f08114ec710327a37bb",
+      "ctrlId": "6afc1f08114ec710327a37c1",
       "firingState": "ALERT",
       "controlState": "OK",
       "payloadSeen": false
@@ -681,8 +681,8 @@ Push this commit to origin (ORIGIN_URL) and run the acceptance runner with --rec
         "threshold": 1574
       },
       "webhook": "slack",
-      "fireId": "6afc170ab5c2c0d193c2dd9a",
-      "ctrlId": "6afc170ab5c2c0d193c2dda0",
+      "fireId": "6afc1f08114ec710327a37c7",
+      "ctrlId": "6afc1f08114ec710327a37cd",
       "firingState": "ALERT",
       "controlState": "OK",
       "payloadSeen": false
@@ -700,8 +700,8 @@ Push this commit to origin (ORIGIN_URL) and run the acceptance runner with --rec
         "thresholdMax": 1888.8
       },
       "webhook": "incidentio",
-      "fireId": "6afc170ab5c2c0d193c2dda6",
-      "ctrlId": "6afc170ab5c2c0d193c2ddac",
+      "fireId": "6afc1f08114ec710327a37d3",
+      "ctrlId": "6afc1f08114ec710327a37d9",
       "firingState": "ALERT",
       "controlState": "OK",
       "payloadSeen": false
@@ -719,8 +719,8 @@ Push this commit to origin (ORIGIN_URL) and run the acceptance runner with --rec
         "thresholdMax": 1731.4
       },
       "webhook": "generic",
-      "fireId": "6afc170ab5c2c0d193c2ddb2",
-      "ctrlId": "6afc170ab5c2c0d193c2ddb8",
+      "fireId": "6afc1f08114ec710327a37df",
+      "ctrlId": "6afc1f08114ec710327a37e5",
       "firingState": "ALERT",
       "controlState": "OK",
       "payloadSeen": false
@@ -736,8 +736,8 @@ Push this commit to origin (ORIGIN_URL) and run the acceptance runner with --rec
         "threshold": 1731.4
       },
       "webhook": "slack",
-      "fireId": "6afc170ab5c2c0d193c2ddbe",
-      "ctrlId": "6afc170ab5c2c0d193c2ddc4",
+      "fireId": "6afc1f08114ec710327a37eb",
+      "ctrlId": "6afc1f08114ec710327a37f1",
       "firingState": "ALERT",
       "controlState": "OK",
       "payloadSeen": false
@@ -753,8 +753,8 @@ Push this commit to origin (ORIGIN_URL) and run the acceptance runner with --rec
         "threshold": 1416.6
       },
       "webhook": "incidentio",
-      "fireId": "6afc170ab5c2c0d193c2ddca",
-      "ctrlId": "6afc170ab5c2c0d193c2ddd0",
+      "fireId": "6afc1f08114ec710327a37f7",
+      "ctrlId": "6afc1f08114ec710327a37fd",
       "firingState": "ALERT",
       "controlState": "OK",
       "payloadSeen": false
@@ -770,8 +770,8 @@ Push this commit to origin (ORIGIN_URL) and run the acceptance runner with --rec
         "threshold": 1731.4
       },
       "webhook": "generic",
-      "fireId": "6afc170ab5c2c0d193c2ddd6",
-      "ctrlId": "6afc170ab5c2c0d193c2dddc",
+      "fireId": "6afc1f08114ec710327a3803",
+      "ctrlId": "6afc1f08114ec710327a3809",
       "firingState": "ALERT",
       "controlState": "OK",
       "payloadSeen": false
@@ -787,8 +787,8 @@ Push this commit to origin (ORIGIN_URL) and run the acceptance runner with --rec
         "threshold": 1416.6
       },
       "webhook": "slack",
-      "fireId": "6afc170ab5c2c0d193c2dde2",
-      "ctrlId": "6afc170ab5c2c0d193c2dde8",
+      "fireId": "6afc1f08114ec710327a380f",
+      "ctrlId": "6afc1f08114ec710327a3815",
       "firingState": "ALERT",
       "controlState": "OK",
       "payloadSeen": false
@@ -804,8 +804,8 @@ Push this commit to origin (ORIGIN_URL) and run the acceptance runner with --rec
         "threshold": 1575
       },
       "webhook": "incidentio",
-      "fireId": "6afc170ab5c2c0d193c2ddee",
-      "ctrlId": "6afc170ab5c2c0d193c2ddf4",
+      "fireId": "6afc1f08114ec710327a381b",
+      "ctrlId": "6afc1f08114ec710327a3821",
       "firingState": "ALERT",
       "controlState": "OK",
       "payloadSeen": false
@@ -821,8 +821,8 @@ Push this commit to origin (ORIGIN_URL) and run the acceptance runner with --rec
         "threshold": 1574
       },
       "webhook": "generic",
-      "fireId": "6afc170ab5c2c0d193c2ddfa",
-      "ctrlId": "6afc170ab5c2c0d193c2de00",
+      "fireId": "6afc1f08114ec710327a3827",
+      "ctrlId": "6afc1f08114ec710327a382d",
       "firingState": "ALERT",
       "controlState": "OK",
       "payloadSeen": false
@@ -840,8 +840,8 @@ Push this commit to origin (ORIGIN_URL) and run the acceptance runner with --rec
         "thresholdMax": 1888.8
       },
       "webhook": "slack",
-      "fireId": "6afc170ab5c2c0d193c2de06",
-      "ctrlId": "6afc170ab5c2c0d193c2de0c",
+      "fireId": "6afc1f08114ec710327a3833",
+      "ctrlId": "6afc1f08114ec710327a3839",
       "firingState": "ALERT",
       "controlState": "OK",
       "payloadSeen": false
@@ -859,8 +859,8 @@ Push this commit to origin (ORIGIN_URL) and run the acceptance runner with --rec
         "thresholdMax": 1731.4
       },
       "webhook": "incidentio",
-      "fireId": "6afc170ab5c2c0d193c2de12",
-      "ctrlId": "6afc170ab5c2c0d193c2de18",
+      "fireId": "6afc1f08114ec710327a383f",
+      "ctrlId": "6afc1f08114ec710327a3845",
       "firingState": "ALERT",
       "controlState": "OK",
       "payloadSeen": false
@@ -869,51 +869,51 @@ Push this commit to origin (ORIGIN_URL) and run the acceptance runner with --rec
   "webhooks": [
     {
       "service": "generic",
-      "id": "6afc170ab5c2c0d193c2dce7",
+      "id": "6afc1f08114ec710327a3714",
       "status": 200,
       "body": {
         "data": {
           "service": "generic",
-          "name": "accept-generic-1794905866537",
+          "name": "accept-generic-1794907912097",
           "url": "http://webhook:8080/****",
-          "_id": "6afc170ab5c2c0d193c2dce7",
-          "createdAt": "2026-11-17T08:57:46.540Z",
-          "updatedAt": "2026-11-17T08:57:46.540Z"
+          "_id": "6afc1f08114ec710327a3714",
+          "createdAt": "2026-11-17T09:31:52.100Z",
+          "updatedAt": "2026-11-17T09:31:52.100Z"
         }
       },
-      "text": "{\"data\":{\"service\":\"generic\",\"name\":\"accept-generic-1794905866537\",\"url\":\"http://webhook:8080/****\",\"_id\":\"6afc170ab5c2c0d193c2dce7\",\"createdAt\":\"2026-11-17T08:57:46.540Z\",\"updatedAt\":\"2026-11-17T08:57:46.540Z\"}}"
+      "text": "{\"data\":{\"service\":\"generic\",\"name\":\"accept-generic-1794907912097\",\"url\":\"http://webhook:8080/****\",\"_id\":\"6afc1f08114ec710327a3714\",\"createdAt\":\"2026-11-17T09:31:52.100Z\",\"updatedAt\":\"2026-11-17T09:31:52.100Z\"}}"
     },
     {
       "service": "slack",
-      "id": "6afc170ab5c2c0d193c2dceb",
+      "id": "6afc1f08114ec710327a3718",
       "status": 200,
       "body": {
         "data": {
           "service": "slack",
-          "name": "accept-slack-1794905866542",
+          "name": "accept-slack-1794907912102",
           "url": "http://hooks.slack.com:8080/****",
-          "_id": "6afc170ab5c2c0d193c2dceb",
-          "createdAt": "2026-11-17T08:57:46.544Z",
-          "updatedAt": "2026-11-17T08:57:46.544Z"
+          "_id": "6afc1f08114ec710327a3718",
+          "createdAt": "2026-11-17T09:31:52.108Z",
+          "updatedAt": "2026-11-17T09:31:52.108Z"
         }
       },
-      "text": "{\"data\":{\"service\":\"slack\",\"name\":\"accept-slack-1794905866542\",\"url\":\"http://hooks.slack.com:8080/****\",\"_id\":\"6afc170ab5c2c0d193c2dceb\",\"createdAt\":\"2026-11-17T08:57:46.544Z\",\"updatedAt\":\"2026-11-17T08:57:46.544Z\"}}"
+      "text": "{\"data\":{\"service\":\"slack\",\"name\":\"accept-slack-1794907912102\",\"url\":\"http://hooks.slack.com:8080/****\",\"_id\":\"6afc1f08114ec710327a3718\",\"createdAt\":\"2026-11-17T09:31:52.108Z\",\"updatedAt\":\"2026-11-17T09:31:52.108Z\"}}"
     },
     {
       "service": "incidentio",
-      "id": "6afc170ab5c2c0d193c2dcef",
+      "id": "6afc1f08114ec710327a371c",
       "status": 200,
       "body": {
         "data": {
           "service": "incidentio",
-          "name": "accept-incidentio-1794905866546",
+          "name": "accept-incidentio-1794907912110",
           "url": "http://api.incident.io:8080/****",
-          "_id": "6afc170ab5c2c0d193c2dcef",
-          "createdAt": "2026-11-17T08:57:46.548Z",
-          "updatedAt": "2026-11-17T08:57:46.548Z"
+          "_id": "6afc1f08114ec710327a371c",
+          "createdAt": "2026-11-17T09:31:52.112Z",
+          "updatedAt": "2026-11-17T09:31:52.112Z"
         }
       },
-      "text": "{\"data\":{\"service\":\"incidentio\",\"name\":\"accept-incidentio-1794905866546\",\"url\":\"http://api.incident.io:8080/****\",\"_id\":\"6afc170ab5c2c0d193c2dcef\",\"createdAt\":\"2026-11-17T08:57:46.548Z\",\"updatedAt\":\"2026-11-17T08:57:46.548Z\"}}"
+      "text": "{\"data\":{\"service\":\"incidentio\",\"name\":\"accept-incidentio-1794907912110\",\"url\":\"http://api.incident.io:8080/****\",\"_id\":\"6afc1f08114ec710327a371c\",\"createdAt\":\"2026-11-17T09:31:52.112Z\",\"updatedAt\":\"2026-11-17T09:31:52.112Z\"}}"
     }
   ],
   "payloadCount": 0
@@ -924,7 +924,7 @@ Push this commit to origin (ORIGIN_URL) and run the acceptance runner with --rec
 
 - Status: pass
 - Summary: rebrand verify branding and remove-ch verify passed
-- Duration: 7822 ms
+- Duration: 10812 ms
 
 ```json
 {
@@ -957,18 +957,18 @@ Push this commit to origin (ORIGIN_URL) and run the acceptance runner with --rec
 
 - Status: pass
 - Summary: No brand terms in image/container/env names
-- Duration: 247 ms
+- Duration: 255 ms
 
 ### I1: Outbound browser
 
 - Status: pass
-- Summary: All 6740 browser requests stayed on origin
-- Duration: 5 ms
+- Summary: All 6714 browser requests stayed on origin
+- Duration: 4 ms
 
 ```json
 {
   "origin": "http://localhost:18080",
-  "count": 6740
+  "count": 6714
 }
 ```
 
@@ -976,7 +976,7 @@ Push this commit to origin (ORIGIN_URL) and run the acceptance runner with --rec
 
 - Status: pass
 - Summary: All 21 DNS queries allowed
-- Duration: 1 ms
+- Duration: 2 ms
 - Evidence: /Users/michael/IdeaProjects/couchbase-traces/port/state/acceptance/evidence/coredns/query.log
 
 ```json
@@ -989,7 +989,7 @@ Push this commit to origin (ORIGIN_URL) and run the acceptance runner with --rec
 
 - Status: pass
 - Summary: LICENSE, NOTICE, and UPSTREAM.md are correct
-- Duration: 14 ms
+- Duration: 13 ms
 
 ```json
 {
@@ -1001,7 +1001,7 @@ Push this commit to origin (ORIGIN_URL) and run the acceptance runner with --rec
 
 - Status: pass
 - Summary: docs/licenses.md matches a fresh scan
-- Duration: 486590 ms
+- Duration: 499178 ms
 
 ```json
 {
@@ -1013,7 +1013,7 @@ Push this commit to origin (ORIGIN_URL) and run the acceptance runner with --rec
 
 - Status: pass
 - Summary: All 6 local CI commands passed
-- Duration: 465283 ms
+- Duration: 438083 ms
 
 ```json
 {
@@ -1048,40 +1048,40 @@ Push this commit to origin (ORIGIN_URL) and run the acceptance runner with --rec
       "cmd": "./scripts/test-e2e.sh --shard=1/4",
       "status": 0,
       "signal": null,
-      "out": "g unknown column shows Link error @dashboard @full-stack (3.4s)\n  ✓  107 [chromium] › tests/e2e/features/dashboard-table-linking.spec.ts:173:9 › Dashboard Table Linking › Default mode: row click filters search by the row group-by value @dashboard @full-stack (2.5s)\n  ✓  109 [chromium] › tests/e2e/features/dashboard-table-linking.spec.ts:310:9 › Dashboard Table Linking › Dashboard mode: unknown dashboard name shows Link error notification @dashboard @full-stack (2.9s)\n  ✓  108 [chromium] › tests/e2e/features/dashboard-table-linking.spec.ts:233:9 › Dashboard Table Linking › Dashboard mode: valid link navigates to target dashboard with rendered WHERE @dashboard @full-stack (4.7s)\n  ✓  110 [chromium] › tests/e2e/features/dashboard-table-linking.spec.ts:339:9 › Dashboard Table Linking › Dashboard mode: WHERE template referencing unknown column shows Link error @dashboard @full-stack (4.4s)\n  ✓  111 [chromium] › tests/e2e/features/dashboard-table-linking.spec.ts:384:9 › Dashboard Table Linking › Search mode (ID): selecting a source from dropdown navigates to /search using that source id @dashboard @full-stack (5.4s)\n  ✓  112 [chromium] › tests/e2e/features/dashboard-table-linking.spec.ts:446:9 › Dashboard Table Linking › Dashboard mode (ID): selecting a dashboard from dropdown navigates to that dashboard id @dashboard @full-stack (4.8s)\n  ✓  113 [chromium] › tests/e2e/features/dashboard-table-linking.spec.ts:520:9 › Dashboard Table Linking › Search mode: filter templates render into the /search URL filters param @dashboard @full-stack (5.2s)\n  ✓  114 [chromium] › tests/e2e/features/dashboard-table-linking.spec.ts:583:9 › Dashboard Table Linking › Dashboard mode: filter templates render into the destination dashboard URL filters param @dashboard @full-stack (5.2s)\n  ✓  115 [chromium] › tests/e2e/features/dashboard-table-linking.spec.ts:676:9 › Dashboard Table Linking › Dashboard mode: a variable-enabled target filter still receives an expression-keyed link @dashboard @full-stack (5.0s)\n::notice title=🎭 Playwright Run Summary::  115 passed (3.1m)\n\n  115 passed (3.1m)\nStopping E2E services and removing volumes...\n Container e2e-47-db-1 Stopping \n Container e2e-47-couchbase-1 Stopping \n Container e2e-47-db-1 Stopped \n Container e2e-47-db-1 Removing \n Container e2e-47-db-1 Removed \n Container e2e-47-couchbase-1 Stopped \n Container e2e-47-couchbase-1 Removing \n Container e2e-47-couchbase-1 Removed \n Network e2e-47_internal Removing \n Network e2e-47_internal Removed \n",
+      "out": "g unknown column shows Link error @dashboard @full-stack (3.0s)\n  ✓  107 [chromium] › tests/e2e/features/dashboard-table-linking.spec.ts:173:9 › Dashboard Table Linking › Default mode: row click filters search by the row group-by value @dashboard @full-stack (2.7s)\n  ✓  109 [chromium] › tests/e2e/features/dashboard-table-linking.spec.ts:310:9 › Dashboard Table Linking › Dashboard mode: unknown dashboard name shows Link error notification @dashboard @full-stack (3.3s)\n  ✓  108 [chromium] › tests/e2e/features/dashboard-table-linking.spec.ts:233:9 › Dashboard Table Linking › Dashboard mode: valid link navigates to target dashboard with rendered WHERE @dashboard @full-stack (4.8s)\n  ✓  111 [chromium] › tests/e2e/features/dashboard-table-linking.spec.ts:384:9 › Dashboard Table Linking › Search mode (ID): selecting a source from dropdown navigates to /search using that source id @dashboard @full-stack (3.5s)\n  ✓  110 [chromium] › tests/e2e/features/dashboard-table-linking.spec.ts:339:9 › Dashboard Table Linking › Dashboard mode: WHERE template referencing unknown column shows Link error @dashboard @full-stack (4.9s)\n  ✓  113 [chromium] › tests/e2e/features/dashboard-table-linking.spec.ts:520:9 › Dashboard Table Linking › Search mode: filter templates render into the /search URL filters param @dashboard @full-stack (3.2s)\n  ✓  112 [chromium] › tests/e2e/features/dashboard-table-linking.spec.ts:446:9 › Dashboard Table Linking › Dashboard mode (ID): selecting a dashboard from dropdown navigates to that dashboard id @dashboard @full-stack (4.9s)\n  ✓  114 [chromium] › tests/e2e/features/dashboard-table-linking.spec.ts:583:9 › Dashboard Table Linking › Dashboard mode: filter templates render into the destination dashboard URL filters param @dashboard @full-stack (5.3s)\n  ✓  115 [chromium] › tests/e2e/features/dashboard-table-linking.spec.ts:676:9 › Dashboard Table Linking › Dashboard mode: a variable-enabled target filter still receives an expression-keyed link @dashboard @full-stack (5.2s)\n::notice title=🎭 Playwright Run Summary::  115 passed (3.1m)\n\n  115 passed (3.1m)\nStopping E2E services and removing volumes...\n Container e2e-47-db-1 Stopping \n Container e2e-47-couchbase-1 Stopping \n Container e2e-47-db-1 Stopped \n Container e2e-47-db-1 Removing \n Container e2e-47-db-1 Removed \n Container e2e-47-couchbase-1 Stopped \n Container e2e-47-couchbase-1 Removing \n Container e2e-47-couchbase-1 Removed \n Network e2e-47_internal Removing \n Network e2e-47_internal Removed \n",
       "err": ""
     },
     {
       "cmd": "yarn install --immutable",
       "status": 0,
       "signal": null,
-      "out": "\n➤ YN0000: ┌ Resolution step\n➤ YN0000: └ Completed\n➤ YN0000: ┌ Post-resolution validation\n➤ YN0060: │ mongodb is listed by your project with version 6.16.0 (pf088ad), which doesn't satisfy what connect-mongo and other dependencies request (^4.4.1).\n➤ YN0060: │ next is listed by your project with version 16.4.3 (p3136ed), which doesn't satisfy what nuqs and other dependencies request (^14.1.0).\n➤ YN0060: │ react is listed by your project with version 19.2.3 (p3f853f), which doesn't satisfy what @tanstack/react-virtual and other dependencies request (but they have non-overlapping ranges!).\n➤ YN0060: │ react-dom is listed by your project with version 19.2.3 (pab2548), which doesn't satisfy what @tanstack/react-virtual and other dependencies request (but they have non-overlapping ranges!).\n➤ YN0060: │ typescript is listed by your project with version 6.0.3 (p94b729), which doesn't satisfy what @typescript-eslint/type-utils (via @eslint-react/eslint-plugin) and other dependencies request (>=4.9.5 <6.0.0).\n➤ YN0060: │ typescript is listed by your project with version 6.0.3 (p9d1ffc), which doesn't satisfy what typescript-eslint and other dependencies request (>=4.8.4 <6.0.0).\n➤ YN0002: │ @couchbase-traces/app@workspace:packages/app doesn't provide @codemirror/language (pf661ef), requested by @codemirror/autocomplete.\n➤ YN0002: │ @couchbase-traces/app@workspace:packages/app doesn't provide @codemirror/view (pccec3f), requested by @uiw/react-codemirror.\n➤ YN0002: │ @couchbase-traces/app@workspace:packages/app doesn't provide @lezer/common (p378570), requested by @codemirror/autocomplete.\n➤ YN0002: │ @couchbase-traces/app@workspace:packages/app doesn't provide eslint (p6bc99f), requested by @eslint-react/eslint-plugin and other dependencies.\n➤ YN0002: │ @couchbase-traces/app@workspace:packages/app doesn't provide webpack (p2359d5), requested by @storybook/addon-styling-webpack and other dependencies.\n➤ YN0002: │ [upstream]@workspace:. doesn't provide typescript (p4698d0), requested by typescript-eslint.\n➤ YN0086: │ Some peer dependencies are incorrectly met by your project; run yarn explain peer-requirements <hash> for details, where <hash> is the six-letter p-prefixed code.\n➤ YN0086: │ Some peer dependencies are incorrectly met by dependencies; run yarn explain peer-requirements for details.\n➤ YN0000: └ Completed\n➤ YN0000: ┌ Fetch step\n➤ YN0000: └ Completed in 0s 906ms\n➤ YN0000: ┌ Link step\n➤ YN0000: └ Completed in 0s 322ms\n➤ YN0000: · Done with warnings in 1s 443ms\n",
+      "out": "\n➤ YN0000: ┌ Resolution step\n➤ YN0000: └ Completed\n➤ YN0000: ┌ Post-resolution validation\n➤ YN0060: │ mongodb is listed by your project with version 6.16.0 (pf088ad), which doesn't satisfy what connect-mongo and other dependencies request (^4.4.1).\n➤ YN0060: │ next is listed by your project with version 16.4.3 (p3136ed), which doesn't satisfy what nuqs and other dependencies request (^14.1.0).\n➤ YN0060: │ react is listed by your project with version 19.2.3 (p3f853f), which doesn't satisfy what @tanstack/react-virtual and other dependencies request (but they have non-overlapping ranges!).\n➤ YN0060: │ react-dom is listed by your project with version 19.2.3 (pab2548), which doesn't satisfy what @tanstack/react-virtual and other dependencies request (but they have non-overlapping ranges!).\n➤ YN0060: │ typescript is listed by your project with version 6.0.3 (p94b729), which doesn't satisfy what @typescript-eslint/type-utils (via @eslint-react/eslint-plugin) and other dependencies request (>=4.9.5 <6.0.0).\n➤ YN0060: │ typescript is listed by your project with version 6.0.3 (p9d1ffc), which doesn't satisfy what typescript-eslint and other dependencies request (>=4.8.4 <6.0.0).\n➤ YN0002: │ @couchbase-traces/app@workspace:packages/app doesn't provide @codemirror/language (pf661ef), requested by @codemirror/autocomplete.\n➤ YN0002: │ @couchbase-traces/app@workspace:packages/app doesn't provide @codemirror/view (pccec3f), requested by @uiw/react-codemirror.\n➤ YN0002: │ @couchbase-traces/app@workspace:packages/app doesn't provide @lezer/common (p378570), requested by @codemirror/autocomplete.\n➤ YN0002: │ @couchbase-traces/app@workspace:packages/app doesn't provide eslint (p6bc99f), requested by @eslint-react/eslint-plugin and other dependencies.\n➤ YN0002: │ @couchbase-traces/app@workspace:packages/app doesn't provide webpack (p2359d5), requested by @storybook/addon-styling-webpack and other dependencies.\n➤ YN0002: │ [upstream]@workspace:. doesn't provide typescript (p4698d0), requested by typescript-eslint.\n➤ YN0086: │ Some peer dependencies are incorrectly met by your project; run yarn explain peer-requirements <hash> for details, where <hash> is the six-letter p-prefixed code.\n➤ YN0086: │ Some peer dependencies are incorrectly met by dependencies; run yarn explain peer-requirements for details.\n➤ YN0000: └ Completed\n➤ YN0000: ┌ Fetch step\n➤ YN0000: └ Completed in 0s 911ms\n➤ YN0000: ┌ Link step\n➤ YN0000: └ Completed in 0s 304ms\n➤ YN0000: · Done with warnings in 1s 432ms\n",
       "err": ""
     },
     {
       "cmd": "make ci-build",
       "status": 0,
       "signal": null,
-      "out": "                    467.00 B\nCJS dist/core/histogram.js                        170.00 B\nCJS dist/chunk-MZEI2YWT.js                        2.70 KB\nCJS dist/core/heatmap.js                          859.00 B\nCJS dist/chunk-B2S6X7OI.js                        102.00 B\nCJS dist/macroErrors.js                           282.00 B\nCJS dist/macros.js                                788.00 B\nCJS dist/queryParser.js                           614.00 B\nCJS dist/rawSqlParams.js                          588.00 B\nCJS dist/selfTelemetry.js                         1.10 KB\nCJS dist/sqlFormatter.js                          164.00 B\nCJS dist/core/chartConfig.js                      696.00 B\nCJS dist/validation.js                            888.00 B\nCJS dist/chunk-DTAQPK3V.js                        645.00 B\nCJS dist/alerts.js                                1.03 KB\nCJS dist/dashboardFilterValues.js                 3.95 KB\nCJS dist/dashboardValidation.js                   5.47 KB\nCJS dist/chunk-5UIQNMF7.js                        6.18 KB\nCJS dist/filters.js                               2.23 KB\nCJS dist/chunk-6UJNKUVU.js                        414.00 B\nCJS dist/chunk-ZWWNKFPO.js                        4.35 KB\nCJS dist/externalSource.js                        1.27 KB\nCJS dist/chunk-LFWMX4EG.js                        61.29 KB\nCJS dist/iac.js                                   8.33 KB\nCJS dist/types.js                                 11.48 KB\nCJS dist/chunk-4F2FGPBX.js                        743.00 B\nCJS dist/iacEligibility.js                        550.00 B\nCJS dist/chunk-FPZE3IWW.js                        1.73 KB\nCJS dist/guards.js                                792.00 B\nCJS dist/chunk-D44GSP73.js                        2.65 KB\nCJS dist/chunk-NWEKVJGO.js                        45.35 KB\nCJS dist/chunk-YQ4HQSDK.js                        487.00 B\nCJS ⚡️ Build success in 132ms\n\n> nx run @couchbase-traces/cli:\"ci:build\"  [local cache]\n\nCLI Building entry: src/cli.tsx\nCLI Using tsconfig: tsconfig.json\nCLI tsup v8.4.0\nCLI Using tsup config: /Users/michael/IdeaProjects/couchbase-traces/packages/cli/tsup.config.ts\nCLI Target: es2022\nCLI Cleaning output folder\nESM Build start\nESM dist/cli.js 8.53 MB\nESM ⚡️ Build success in 269ms\n\n\n\n NX   Successfully ran target ci:build for 2 projects\n\nNx read the output from the cache instead of running the command for 2 out of 2 tasks.\n\n  Run duration:      141ms\n  Cache:             2/2 hit (100%)\n  Critical path:     97ms (2 tasks)\n  Recoverable time:  <1ms\n",
+      "out": "                   467.00 B\nCJS dist/core/histogram.js                        170.00 B\nCJS dist/chunk-MZEI2YWT.js                        2.70 KB\nCJS dist/core/heatmap.js                          859.00 B\nCJS dist/chunk-B2S6X7OI.js                        102.00 B\nCJS dist/macroErrors.js                           282.00 B\nCJS dist/macros.js                                788.00 B\nCJS dist/queryParser.js                           614.00 B\nCJS dist/rawSqlParams.js                          588.00 B\nCJS dist/selfTelemetry.js                         1.10 KB\nCJS dist/sqlFormatter.js                          164.00 B\nCJS dist/core/chartConfig.js                      696.00 B\nCJS dist/validation.js                            888.00 B\nCJS dist/chunk-DTAQPK3V.js                        645.00 B\nCJS dist/alerts.js                                1.03 KB\nCJS dist/dashboardFilterValues.js                 3.95 KB\nCJS dist/dashboardValidation.js                   5.47 KB\nCJS dist/chunk-5UIQNMF7.js                        6.18 KB\nCJS dist/filters.js                               2.23 KB\nCJS dist/chunk-6UJNKUVU.js                        414.00 B\nCJS dist/chunk-ZWWNKFPO.js                        4.35 KB\nCJS dist/externalSource.js                        1.27 KB\nCJS dist/chunk-LFWMX4EG.js                        61.29 KB\nCJS dist/iac.js                                   8.33 KB\nCJS dist/types.js                                 11.48 KB\nCJS dist/chunk-4F2FGPBX.js                        743.00 B\nCJS dist/iacEligibility.js                        550.00 B\nCJS dist/chunk-FPZE3IWW.js                        1.73 KB\nCJS dist/guards.js                                792.00 B\nCJS dist/chunk-D44GSP73.js                        2.65 KB\nCJS dist/chunk-NWEKVJGO.js                        45.35 KB\nCJS dist/chunk-YQ4HQSDK.js                        487.00 B\nCJS ⚡️ Build success in 132ms\n\n> nx run @couchbase-traces/cli:\"ci:build\"  [local cache]\n\nCLI Building entry: src/cli.tsx\nCLI Using tsconfig: tsconfig.json\nCLI tsup v8.4.0\nCLI Using tsup config: /Users/michael/IdeaProjects/couchbase-traces/packages/cli/tsup.config.ts\nCLI Target: es2022\nCLI Cleaning output folder\nESM Build start\nESM dist/cli.js 8.53 MB\nESM ⚡️ Build success in 269ms\n\n\n\n NX   Successfully ran target ci:build for 2 projects\n\nNx read the output from the cache instead of running the command for 2 out of 2 tasks.\n\n  Run duration:      152ms\n  Cache:             2/2 hit (100%)\n  Critical path:     111ms (2 tasks)\n  Recoverable time:  <1ms\n",
       "err": ""
     },
     {
       "cmd": "make ci-unit",
       "status": 0,
       "signal": null,
-      "out": "the integration test ports\nok 2 - exports the integration test ports\n  ---\n  duration_ms: 20.895583\n  type: 'test'\n  ...\n# Subtest: exports the E2E test ports\nok 3 - exports the E2E test ports\n  ---\n  duration_ms: 21.161625\n  type: 'test'\n  ...\n# Subtest: derives the slot from the worktree folder name\nok 4 - derives the slot from the worktree folder name\n  ---\n  duration_ms: 34.0295\n  type: 'test'\n  ...\n# Subtest: gives the same slot from a subdirectory or a directory argument\nok 5 - gives the same slot from a subdirectory or a directory argument\n  ---\n  duration_ms: 40.930875\n  type: 'test'\n  ...\n# Subtest: CBT_SLOT_FROM=path gives same-named worktrees their own slots\nok 6 - CBT_SLOT_FROM=path gives same-named worktrees their own slots\n  ---\n  duration_ms: 109.030416\n  type: 'test'\n  ...\n# Subtest: warns about an unknown CBT_SLOT_FROM and uses the folder name\nok 7 - warns about an unknown CBT_SLOT_FROM and uses the folder name\n  ---\n  duration_ms: 19.326833\n  type: 'test'\n  ...\n# Subtest: overrides each slot independently\nok 8 - overrides each slot independently\n  ---\n  duration_ms: 32.473917\n  type: 'test'\n  ...\n# Subtest: keeps E2E ports that are already set, as CI pins them\nok 9 - keeps E2E ports that are already set, as CI pins them\n  ---\n  duration_ms: 19.796375\n  type: 'test'\n  ...\n# Subtest: writes, deletes, and prints nothing\nok 10 - writes, deletes, and prints nothing\n  ---\n  duration_ms: 47.117375\n  type: 'test'\n  ...\n# Subtest: with-slots.sh runs a command with the dev ports of its own worktree\nok 11 - with-slots.sh runs a command with the dev ports of its own worktree\n  ---\n  duration_ms: 64.253083\n  type: 'test'\n  ...\n# Subtest: no other code derives a slot\nok 12 - no other code derives a slot\n  ---\n  duration_ms: 36.619125\n  type: 'test'\n  ...\n1..12\n# tests 12\n# suites 0\n# pass 12\n# fail 0\n# cancelled 0\n# skipped 0\n# todo 0\n# duration_ms 721.750334\nnode --test scripts/__tests__/compose-config.test.mjs\nTAP version 13\n# check-compose-config: product stack with .env\n# check-compose-config: product stack with .env.example plus generated secrets\n# check-compose-config: dev stack with .env\n# check-compose-config: missing required secrets are rejected\n# check-compose-config: ok\n# Subtest: docker compose files parse (PHASE_9_SPEC §15 \\#5)\nok 1 - docker compose files parse (PHASE_9_SPEC §15 \\#5)\n  ---\n  duration_ms: 468.428209\n  type: 'test'\n  ...\n1..1\n# tests 1\n# suites 0\n# pass 1\n# fail 0\n# cancelled 0\n# skipped 0\n# todo 0\n# duration_ms 501.438959\n",
+      "out": "e integration test ports\nok 2 - exports the integration test ports\n  ---\n  duration_ms: 20.092916\n  type: 'test'\n  ...\n# Subtest: exports the E2E test ports\nok 3 - exports the E2E test ports\n  ---\n  duration_ms: 18.953125\n  type: 'test'\n  ...\n# Subtest: derives the slot from the worktree folder name\nok 4 - derives the slot from the worktree folder name\n  ---\n  duration_ms: 31.750542\n  type: 'test'\n  ...\n# Subtest: gives the same slot from a subdirectory or a directory argument\nok 5 - gives the same slot from a subdirectory or a directory argument\n  ---\n  duration_ms: 39.664708\n  type: 'test'\n  ...\n# Subtest: CBT_SLOT_FROM=path gives same-named worktrees their own slots\nok 6 - CBT_SLOT_FROM=path gives same-named worktrees their own slots\n  ---\n  duration_ms: 101.137375\n  type: 'test'\n  ...\n# Subtest: warns about an unknown CBT_SLOT_FROM and uses the folder name\nok 7 - warns about an unknown CBT_SLOT_FROM and uses the folder name\n  ---\n  duration_ms: 17.249625\n  type: 'test'\n  ...\n# Subtest: overrides each slot independently\nok 8 - overrides each slot independently\n  ---\n  duration_ms: 29.902292\n  type: 'test'\n  ...\n# Subtest: keeps E2E ports that are already set, as CI pins them\nok 9 - keeps E2E ports that are already set, as CI pins them\n  ---\n  duration_ms: 18.981625\n  type: 'test'\n  ...\n# Subtest: writes, deletes, and prints nothing\nok 10 - writes, deletes, and prints nothing\n  ---\n  duration_ms: 45.900917\n  type: 'test'\n  ...\n# Subtest: with-slots.sh runs a command with the dev ports of its own worktree\nok 11 - with-slots.sh runs a command with the dev ports of its own worktree\n  ---\n  duration_ms: 75.825875\n  type: 'test'\n  ...\n# Subtest: no other code derives a slot\nok 12 - no other code derives a slot\n  ---\n  duration_ms: 37.537084\n  type: 'test'\n  ...\n1..12\n# tests 12\n# suites 0\n# pass 12\n# fail 0\n# cancelled 0\n# skipped 0\n# todo 0\n# duration_ms 710.547208\nnode --test scripts/__tests__/compose-config.test.mjs\nTAP version 13\n# check-compose-config: product stack with .env\n# check-compose-config: product stack with .env.example plus generated secrets\n# check-compose-config: dev stack with .env\n# check-compose-config: missing required secrets are rejected\n# check-compose-config: ok\n# Subtest: docker compose files parse (PHASE_9_SPEC §15 \\#5)\nok 1 - docker compose files parse (PHASE_9_SPEC §15 \\#5)\n  ---\n  duration_ms: 267.727833\n  type: 'test'\n  ...\n1..1\n# tests 1\n# suites 0\n# pass 1\n# fail 0\n# cancelled 0\n# skipped 0\n# todo 0\n# duration_ms 299.254417\n",
       "err": ""
     },
     {
       "cmd": "docker build . -f ./docker/cbt-aio/Dockerfile --build-context otel-collector=./docker/otel-collector --build-context [upstream]=./docker/cbt-aio --build-context api=./packages/api --build-context app=./packages/app --build-arg CODE_VERSION=acceptance-local --build-arg COUCHBASE_IMAGE=couchbase/server:enterprise-8.0.3 -t couchbase-traces-aio-smoke:pr --target all-in-one-auth",
       "status": 0,
       "out": "",
-      "err": "blic\n#101 DONE 0.0s\n\n#102 [prod 12/13] COPY --chown=node:node --from=[upstream] ./refresh-env.js /etc/local/refresh-env.js\n#102 DONE 0.0s\n\n#103 [prod 13/13] COPY --chown=node:node --from=[upstream] ./entry.prod.sh /etc/local/entry.sh\n#103 DONE 0.0s\n\n#104 [all-in-one-base 14/17] COPY --from=prod /app /app\n#104 DONE 2.9s\n\n#105 [all-in-one-base 15/17] COPY --from=[upstream] ./refresh-env.js /etc/local/refresh-env.js\n#105 DONE 0.2s\n\n#106 [all-in-one-base 16/17] COPY .vex/*.vex.json /etc/vex/\n#106 DONE 0.0s\n\n#107 [all-in-one-base 17/17] WORKDIR /app\n#107 DONE 0.0s\n\n#108 [all-in-one-auth 1/1] COPY --from=[upstream] --chmod=755 ./entry.cbt.sh /etc/local/entry.sh\n#108 DONE 0.0s\n\n#109 exporting to image\n#109 exporting layers\n#109 exporting layers 12.9s done\n#109 exporting manifest sha256:11ba282d27419935864196660acedbd9b5e68fb0a08f7fe61d3b94f512e5dcb6 done\n#109 exporting config sha256:a4c96d15cd41e8af8646acc0b6f6785e957033c14244df51229bbf662156d133 done\n#109 exporting attestation manifest sha256:7a6fd3a092eca545e82f69f384f6c974b72f35232a643015e48cd48cd4f1e877 done\n#109 exporting manifest list sha256:3aa6b1e8668161263673a120c0faed852863dd6a59e3c065d5c844cfef79637f done\n#109 naming to docker.io/library/couchbase-traces-aio-smoke:pr done\n#109 unpacking to docker.io/library/couchbase-traces-aio-smoke:pr\n#109 unpacking to docker.io/library/couchbase-traces-aio-smoke:pr 8.1s done\n#109 DONE 21.0s\n\nView build details: docker-desktop://dashboard/build/desktop-linux/desktop-linux/rspwu40zvovz2s3lnvwgydwah\n"
+      "err": "blic\n#101 DONE 0.0s\n\n#102 [prod 12/13] COPY --chown=node:node --from=[upstream] ./refresh-env.js /etc/local/refresh-env.js\n#102 DONE 0.0s\n\n#103 [prod 13/13] COPY --chown=node:node --from=[upstream] ./entry.prod.sh /etc/local/entry.sh\n#103 DONE 0.0s\n\n#104 [all-in-one-base 14/17] COPY --from=prod /app /app\n#104 DONE 2.9s\n\n#105 [all-in-one-base 15/17] COPY --from=[upstream] ./refresh-env.js /etc/local/refresh-env.js\n#105 DONE 0.2s\n\n#106 [all-in-one-base 16/17] COPY .vex/*.vex.json /etc/vex/\n#106 DONE 0.0s\n\n#107 [all-in-one-base 17/17] WORKDIR /app\n#107 DONE 0.0s\n\n#108 [all-in-one-auth 1/1] COPY --from=[upstream] --chmod=755 ./entry.cbt.sh /etc/local/entry.sh\n#108 DONE 0.0s\n\n#109 exporting to image\n#109 exporting layers\n#109 exporting layers 12.8s done\n#109 exporting manifest sha256:cb7813c62b81aac30cfe9664a0b7f7ec17cac82782543aaf2a92ecb503ebcbcd done\n#109 exporting config sha256:40b8e35d12967f146a54bd5e48aaf76794e9db44beca69e452d0a95a2a6935a4 done\n#109 exporting attestation manifest sha256:3a22d0664832b4cf0f543bee34c0578eef815b931a0f1b79cafb3cf0208e1c9b done\n#109 exporting manifest list sha256:4d36f3cc47fc37b028e32d14025bb35f5b516d7e6256681bc03700633f97573a done\n#109 naming to docker.io/library/couchbase-traces-aio-smoke:pr done\n#109 unpacking to docker.io/library/couchbase-traces-aio-smoke:pr\n#109 unpacking to docker.io/library/couchbase-traces-aio-smoke:pr 7.2s done\n#109 DONE 20.0s\n\nView build details: docker-desktop://dashboard/build/desktop-linux/desktop-linux/28iqf395s7pzazbh7jhcwqyfc\n"
     },
     {
       "cmd": "scripts/ci/smoke-all-in-one.sh couchbase-traces-aio-smoke:pr",
       "status": 0,
-      "out": "using locally-loaded image couchbase-traces-aio-smoke:pr (skipping pull)\n63a6080c433d006de027f5cb5aa8912fc156e0de2f0aeacf217ec984bfc89245\nwaiting for app health (up to 300s)...\napp healthy\nregistering smoke user...\nsending canary (collector may still be starting)...\ncanary sent\nwaiting for canary via Couchbase query API (up to 120s)...\ncanary ingested end-to-end: collector -> ingest -> couchbase -> API\n",
+      "out": "using locally-loaded image couchbase-traces-aio-smoke:pr (skipping pull)\ne0195b80a59f94bc35f20d9a85770fe2a898194a801690ca3e78f81c24399fa0\nwaiting for app health (up to 300s)...\napp healthy\nregistering smoke user...\nsending canary (collector may still be starting)...\ncanary sent\nwaiting for canary via Couchbase query API (up to 120s)...\ncanary ingested end-to-end: collector -> ingest -> couchbase -> API\n",
       "err": ""
     }
   ]
@@ -1099,14 +1099,14 @@ Push this commit to origin (ORIGIN_URL) and run the acceptance runner with --rec
 
 - Status: pass
 - Summary: gitleaks found no secrets
-- Duration: 3574 ms
+- Duration: 3545 ms
 - Evidence: /Users/michael/IdeaProjects/couchbase-traces/port/state/acceptance/evidence/gitleaks.json
 
 ### M1: Regression
 
 - Status: pass
 - Summary: Golden, check.sh, couchbase-test, and e2e shard 1/4 passed
-- Duration: 443425 ms
+- Duration: 451166 ms
 
 ```json
 {
@@ -1121,18 +1121,18 @@ Push this commit to origin (ORIGIN_URL) and run the acceptance runner with --rec
       "name": "port/golden/run.sh",
       "status": 0,
       "out": "ated collection otel_metrics_gauge\ncreated collection otel_metrics_sum\ncreated collection otel_metrics_histogram\ncreated collection otel_metrics_exponential_histogram\ncreated collection otel_metrics_summary\ncreated collection otel_sessions\ncreated index ix_logs_ts\ncreated index ix_logs_svc_ts\ncreated index ix_logs_sev_ts\ncreated index ix_logs_trace\ncreated index ix_logs_session\ncreated index ix_logs_logattr_keys\ncreated index ix_logs_logattr_items\ncreated index ix_logs_resattr_keys\ncreated index ix_logs_resattr_items\ncreated index ix_traces_ts\ncreated index ix_traces_svc_ts\ncreated index ix_traces_svc_span_ts\ncreated index ix_traces_trace\ncreated index ix_traces_session\ncreated index ix_traces_duration\ncreated index ix_traces_spanattr_keys\ncreated index ix_traces_spanattr_items\ncreated index ix_traces_resattr_keys\ncreated index ix_traces_resattr_items\ncreated index ix_metrics_gauge_ts\ncreated index ix_metrics_gauge_name_ts\ncreated index ix_metrics_gauge_svc_name_ts\ncreated index ix_metrics_gauge_attr_items\ncreated index ix_metrics_sum_ts\ncreated index ix_metrics_sum_name_ts\ncreated index ix_metrics_sum_svc_name_ts\ncreated index ix_metrics_sum_attr_items\ncreated index ix_metrics_histogram_ts\ncreated index ix_metrics_histogram_name_ts\ncreated index ix_metrics_histogram_svc_name_ts\ncreated index ix_metrics_histogram_attr_items\ncreated index ix_metrics_exponential_histogram_ts\ncreated index ix_metrics_exponential_histogram_name_ts\ncreated index ix_metrics_exponential_histogram_svc_name_ts\ncreated index ix_metrics_exponential_histogram_attr_items\ncreated index ix_metrics_summary_ts\ncreated index ix_metrics_summary_name_ts\ncreated index ix_metrics_summary_svc_name_ts\ncreated index ix_metrics_summary_attr_items\ncreated index ix_sessions_ts\ncreated index ix_sessions_svc_ts\ncreated index ix_sessions_session\ncreated index ix_sessions_rum_session\ncreated search fts_otel_logs\ncreated search fts_otel_traces\ncreated user cbt_query\ncreated user cbt_ingest\ncreated user cbt_monitor\n",
-      "err": "70 done\n#32 exporting config sha256:c23c70722cd4728403347606ef38b11743a6c1db7755abe479dc6a820c68b050 done\n#32 exporting attestation manifest sha256:170d5e1ba1e500542be6a5f4e48f2fc19b50879a94049843ab59143d20ea24a5 done\n#32 exporting manifest list sha256:67f88fddf9a8d3173ed2f51bd8be5b36fffefdc6f6e702309ac37c3bddfc4a3f done\n#32 naming to docker.io/library/cbt-golden-collector:local done\n#32 unpacking to docker.io/library/cbt-golden-collector:local done\n#32 naming to docker.io/library/cbt-ingest-parity-collector:local done\n#32 unpacking to docker.io/library/cbt-ingest-parity-collector:local done\n#32 DONE 0.0s\n\nView build details: docker-desktop://dashboard/build/desktop-linux/desktop-linux/m1h3uouaa6qg5kn6v247jd81x\n Network cbt-golden-replay_default Creating \n Network cbt-golden-replay_default Creating \n Network cbt-golden-replay_default Created \n Network cbt-golden-replay_default Created \n Container cbt-golden-replay-couchbase Creating \n Container cbt-golden-replay-couchbase Created \n Container cbt-golden-replay-couchbase Starting \n Container cbt-golden-replay-couchbase Started \n Container cbt-golden-replay-ingest-run-2633266c24ae Creating \n Container cbt-golden-replay-ingest-run-2633266c24ae Created \n Container cbt-golden-replay-couchbase Running \n Container cbt-golden-replay-ingest-1 Creating \n Container cbt-golden-replay-ingest-1 Created \n Container cbt-golden-replay-collector-1 Creating \n Container cbt-golden-replay-collector-1 Created \n Container cbt-golden-replay-ingest-1 Starting \n Container cbt-golden-replay-ingest-1 Started \n Container cbt-golden-replay-collector-1 Starting \n Container cbt-golden-replay-collector-1 Started \n[replay-ingest] ok\n[golden-replay] Clearing collections after ingest suite\n[replay-query] ok\n[replay-charts] search ok (17 cases)\n[replay-charts] traces ok (5 cases)\n[replay-charts] sessions ok (3 cases)\n[replay-charts] metrics ok (13 cases)\n[replay-charts] charts ok (34 cases)\n[replay-charts] presets ok (3 cases)\n[golden-replay] replay ok\n"
+      "err": "6ef38b11743a6c1db7755abe479dc6a820c68b050 done\n#32 exporting attestation manifest sha256:5a650f9842c7e6df857a1fcf326d769b40bcb41a41aeb218b9e91f83f6ead4c6 done\n#32 exporting manifest list sha256:9b584e64ec5d8c164a1c95f8e99b6558d324115b31392d2c1b0b7a5079012fa3 done\n#32 naming to docker.io/library/cbt-golden-collector:local\n#32 naming to docker.io/library/cbt-golden-collector:local done\n#32 unpacking to docker.io/library/cbt-golden-collector:local done\n#32 naming to docker.io/library/cbt-ingest-parity-collector:local done\n#32 unpacking to docker.io/library/cbt-ingest-parity-collector:local done\n#32 DONE 0.0s\n\nView build details: docker-desktop://dashboard/build/desktop-linux/desktop-linux/8t9z0kstb5z7z41zkyvjgnws7\n Network cbt-golden-replay_default Creating \n Network cbt-golden-replay_default Creating \n Network cbt-golden-replay_default Created \n Network cbt-golden-replay_default Created \n Container cbt-golden-replay-couchbase Creating \n Container cbt-golden-replay-couchbase Created \n Container cbt-golden-replay-couchbase Starting \n Container cbt-golden-replay-couchbase Started \n Container cbt-golden-replay-ingest-run-d0a59ef7e4a5 Creating \n Container cbt-golden-replay-ingest-run-d0a59ef7e4a5 Created \n Container cbt-golden-replay-couchbase Running \n Container cbt-golden-replay-ingest-1 Creating \n Container cbt-golden-replay-ingest-1 Created \n Container cbt-golden-replay-collector-1 Creating \n Container cbt-golden-replay-collector-1 Created \n Container cbt-golden-replay-ingest-1 Starting \n Container cbt-golden-replay-ingest-1 Started \n Container cbt-golden-replay-collector-1 Starting \n Container cbt-golden-replay-collector-1 Started \n[replay-ingest] ok\n[golden-replay] Clearing collections after ingest suite\n[replay-query] ok\n[replay-charts] search ok (17 cases)\n[replay-charts] traces ok (5 cases)\n[replay-charts] sessions ok (3 cases)\n[replay-charts] metrics ok (13 cases)\n[replay-charts] charts ok (34 cases)\n[replay-charts] presets ok (3 cases)\n[golden-replay] replay ok\n"
     },
     {
       "name": "port/couchbase-test/run.sh",
       "status": 0,
-      "out": "CESS: Bucket created\n[couchbase-test:init] Ensuring scope test.app and its collections\n[couchbase-test:init] Upserting users cbt_query, cbt_monitor, and cbt_admin\nSUCCESS: User cbt_query set\nSUCCESS: User cbt_admin set\nSUCCESS: User cbt_monitor set\nSUCCESS: User cbt_query_limited set\n\"\"[couchbase-test:init] Loading 1,000 fixture documents\n[couchbase-test:init] Creating index idx_events_ts\n[couchbase-test:init] Creating index ix_events_attr_items\n[couchbase-test:init] Creating index ix_events_service\n[couchbase-test:init] Waiting for idx_events_ts and collection scans\n[couchbase-test:init] Ready\n[couchbase-test] Running common-utils Couchbase integration tests\n[couchbase-test] Running api Couchbase integration tests\n  console.log\n    CPU utilization per node available=true points=4  \n    Free memory per node available=true points=10  \n    Data service operations available=true points=240  \n    Bucket memory used available=true points=20  \n    Disk write queue available=true points=20  \n    Query requests available=true points=8  \n    Query errors available=true points=8  \n    Query average request time available=true points=9  \n    Index service requests available=true points=6  \n    Search service queries available=true points=6\n\n      at Object.<anonymous> (routers/api/__tests__/couchbase.int.test.ts:269:13)\n\n  console.log\n    completed-requests recent=4 users=[\"local:cbt_query\",\"builtin:Administrator\"] buckets=3 indexes=4\n\n      at Object.<anonymous> (routers/api/__tests__/couchbase.int.test.ts:290:13)\n\n  console.log\n    limited-query indexes available=true rows=0  recent available=false rows=0 User does not have credentials to run queries accessing the system tables. Add role query_system_catalog to allow the statement to run.\n\n      at Object.<anonymous> (routers/api/__tests__/couchbase.int.test.ts:365:13)\n\n[couchbase-test] Running ingest integration tests\n[couchbase-test] Integration tests finished with status 0\n[couchbase-test] Removing containers and volumes\n",
-      "err": "reams 1,000 rows as 10 frames of 100 (16 ms)\n    ✓ the cluster cache reuses a cluster and reconnects after an update (22 ms)\n\nTest Suites: 3 passed, 3 total\nTests:       21 passed, 21 total\nSnapshots:   0 total\nTime:        6.667 s, estimated 7 s\nRan all test suites matching couchbase\\.int\\.test.\n(node:77506) [MONGOOSE] Warning: `errors` is a reserved schema pathname and may break some functionality. You are allowed to use it, but use at your own risk. To disable this warning pass `supressReservedKeysWarning` as a schema option.\n(Use `node --trace-warnings ...` to show where the warning was created)\nPASS src/routers/api/__tests__/couchbase.int.test.ts\n  Couchbase API integration\n    ✓ creates a connection, queries it, and reads it with CouchbaseClient (61 ms)\n    ✓ serves cluster status, infrastructure, and queries (93 ms)\n    ✓ restricts status and infrastructure for a monitor user with no roles (23 ms)\n    ✓ restricts system queries for a user without query_system_catalog (26 ms)\n\nTest Suites: 1 passed, 1 total\nTests:       4 passed, 4 total\nSnapshots:   0 total\nTime:        1.609 s, estimated 2 s\nRan all test suites matching couchbase\\.int\\.test.\nForce exiting Jest: Have you considered using `--detectOpenHandles` to detect async operations that kept running after all tests finished?\nPASS src/__tests__/ingest.int.test.ts (19.674 s)\n  ingest integration\n    ✓ brings GSI online and creates both search indexes (16 ms)\n    ✓ writes a log, uses ix_logs_ts, finds the body, and sets expiry (675 ms)\n    ✓ refuses query access to the ingest user and writes to the query user (34 ms)\n    ✓ returns 503 while Couchbase is down and accepts the batch after restart (13150 ms)\n\nTest Suites: 1 passed, 1 total\nTests:       4 passed, 4 total\nSnapshots:   0 total\nTime:        19.696 s, estimated 21 s\nRan all test suites matching ingest\\.int\\.test.\nForce exiting Jest: Have you considered using `--detectOpenHandles` to detect async operations that kept running after all tests finished?\n"
+      "out": "ESS: Bucket created\n[couchbase-test:init] Ensuring scope test.app and its collections\n[couchbase-test:init] Upserting users cbt_query, cbt_monitor, and cbt_admin\nSUCCESS: User cbt_query set\nSUCCESS: User cbt_admin set\nSUCCESS: User cbt_monitor set\nSUCCESS: User cbt_query_limited set\n\"\"[couchbase-test:init] Loading 1,000 fixture documents\n[couchbase-test:init] Creating index idx_events_ts\n[couchbase-test:init] Creating index ix_events_attr_items\n[couchbase-test:init] Creating index ix_events_service\n[couchbase-test:init] Waiting for idx_events_ts and collection scans\n[couchbase-test:init] Ready\n[couchbase-test] Running common-utils Couchbase integration tests\n[couchbase-test] Running api Couchbase integration tests\n  console.log\n    CPU utilization per node available=true points=7  \n    Free memory per node available=true points=12  \n    Data service operations available=true points=280  \n    Bucket memory used available=true points=22  \n    Disk write queue available=true points=22  \n    Query requests available=true points=7  \n    Query errors available=true points=7  \n    Query average request time available=true points=11  \n    Index service requests available=true points=9  \n    Search service queries available=true points=6\n\n      at Object.<anonymous> (routers/api/__tests__/couchbase.int.test.ts:269:13)\n\n  console.log\n    completed-requests recent=4 users=[\"local:cbt_query\",\"builtin:Administrator\"] buckets=4 indexes=4\n\n      at Object.<anonymous> (routers/api/__tests__/couchbase.int.test.ts:290:13)\n\n  console.log\n    limited-query indexes available=true rows=0  recent available=false rows=0 User does not have credentials to run queries accessing the system tables. Add role query_system_catalog to allow the statement to run.\n\n      at Object.<anonymous> (routers/api/__tests__/couchbase.int.test.ts:365:13)\n\n[couchbase-test] Running ingest integration tests\n[couchbase-test] Integration tests finished with status 0\n[couchbase-test] Removing containers and volumes\n",
+      "err": " (2 ms)\n    ✓ streams 1,000 rows as 10 frames of 100 (16 ms)\n    ✓ the cluster cache reuses a cluster and reconnects after an update (22 ms)\n\nTest Suites: 3 passed, 3 total\nTests:       21 passed, 21 total\nSnapshots:   0 total\nTime:        6.699 s, estimated 7 s\nRan all test suites matching couchbase\\.int\\.test.\n(node:2769) [MONGOOSE] Warning: `errors` is a reserved schema pathname and may break some functionality. You are allowed to use it, but use at your own risk. To disable this warning pass `supressReservedKeysWarning` as a schema option.\n(Use `node --trace-warnings ...` to show where the warning was created)\nPASS src/routers/api/__tests__/couchbase.int.test.ts\n  Couchbase API integration\n    ✓ creates a connection, queries it, and reads it with CouchbaseClient (51 ms)\n    ✓ serves cluster status, infrastructure, and queries (80 ms)\n    ✓ restricts status and infrastructure for a monitor user with no roles (20 ms)\n    ✓ restricts system queries for a user without query_system_catalog (24 ms)\n\nTest Suites: 1 passed, 1 total\nTests:       4 passed, 4 total\nSnapshots:   0 total\nTime:        2.603 s\nRan all test suites matching couchbase\\.int\\.test.\nForce exiting Jest: Have you considered using `--detectOpenHandles` to detect async operations that kept running after all tests finished?\nPASS src/__tests__/ingest.int.test.ts (19.896 s)\n  ingest integration\n    ✓ brings GSI online and creates both search indexes (16 ms)\n    ✓ writes a log, uses ix_logs_ts, finds the body, and sets expiry (658 ms)\n    ✓ refuses query access to the ingest user and writes to the query user (37 ms)\n    ✓ returns 503 while Couchbase is down and accepts the batch after restart (13171 ms)\n\nTest Suites: 1 passed, 1 total\nTests:       4 passed, 4 total\nSnapshots:   0 total\nTime:        19.917 s, estimated 20 s\nRan all test suites matching ingest\\.int\\.test.\nForce exiting Jest: Have you considered using `--detectOpenHandles` to detect async operations that kept running after all tests finished?\n"
     },
     {
       "name": "./scripts/test-e2e.sh --shard=1/4",
       "status": 0,
-      "out": "les @dashboard @full-stack (8.8s)\n  ✓  111 [chromium] › tests/e2e/features/dashboard-table-linking.spec.ts:384:9 › Dashboard Table Linking › Search mode (ID): selecting a source from dropdown navigates to /search using that source id @dashboard @full-stack (4.1s)\n  ✓  108 [chromium] › tests/e2e/features/dashboard-table-linking.spec.ts:233:9 › Dashboard Table Linking › Dashboard mode: valid link navigates to target dashboard with rendered WHERE @dashboard @full-stack (9.0s)\n  ✓  113 [chromium] › tests/e2e/features/dashboard-table-linking.spec.ts:520:9 › Dashboard Table Linking › Search mode: filter templates render into the /search URL filters param @dashboard @full-stack (5.3s)\n  ✓  110 [chromium] › tests/e2e/features/dashboard-table-linking.spec.ts:339:9 › Dashboard Table Linking › Dashboard mode: WHERE template referencing unknown column shows Link error @dashboard @full-stack (7.1s)\n  ✓  112 [chromium] › tests/e2e/features/dashboard-table-linking.spec.ts:446:9 › Dashboard Table Linking › Dashboard mode (ID): selecting a dashboard from dropdown navigates to that dashboard id @dashboard @full-stack (6.3s)\n  ✓  114 [chromium] › tests/e2e/features/dashboard-table-linking.spec.ts:583:9 › Dashboard Table Linking › Dashboard mode: filter templates render into the destination dashboard URL filters param @dashboard @full-stack (7.4s)\n  ✓  115 [chromium] › tests/e2e/features/dashboard-table-linking.spec.ts:676:9 › Dashboard Table Linking › Dashboard mode: a variable-enabled target filter still receives an expression-keyed link @dashboard @full-stack (7.5s)\n\n  115 passed (2.8m)\nStopping E2E services and removing volumes...\n Container e2e-47-couchbase-1 Stopping \n Container e2e-47-db-1 Stopping \n Container e2e-47-db-1 Stopped \n Container e2e-47-db-1 Removing \n Container e2e-47-db-1 Removed \n Container e2e-47-couchbase-1 Stopped \n Container e2e-47-couchbase-1 Removing \n Container e2e-47-couchbase-1 Removed \n Network e2e-47_internal Removing \n Network e2e-47_internal Removed \n",
+      "out": "les @dashboard @full-stack (8.5s)\n  ✓  108 [chromium] › tests/e2e/features/dashboard-table-linking.spec.ts:233:9 › Dashboard Table Linking › Dashboard mode: valid link navigates to target dashboard with rendered WHERE @dashboard @full-stack (7.5s)\n  ✓  110 [chromium] › tests/e2e/features/dashboard-table-linking.spec.ts:339:9 › Dashboard Table Linking › Dashboard mode: WHERE template referencing unknown column shows Link error @dashboard @full-stack (6.6s)\n  ✓  113 [chromium] › tests/e2e/features/dashboard-table-linking.spec.ts:520:9 › Dashboard Table Linking › Search mode: filter templates render into the /search URL filters param @dashboard @full-stack (5.1s)\n  ✓  111 [chromium] › tests/e2e/features/dashboard-table-linking.spec.ts:384:9 › Dashboard Table Linking › Search mode (ID): selecting a source from dropdown navigates to /search using that source id @dashboard @full-stack (6.6s)\n  ✓  115 [chromium] › tests/e2e/features/dashboard-table-linking.spec.ts:676:9 › Dashboard Table Linking › Dashboard mode: a variable-enabled target filter still receives an expression-keyed link @dashboard @full-stack (7.0s)\n  ✓  114 [chromium] › tests/e2e/features/dashboard-table-linking.spec.ts:583:9 › Dashboard Table Linking › Dashboard mode: filter templates render into the destination dashboard URL filters param @dashboard @full-stack (7.7s)\n  ✓  112 [chromium] › tests/e2e/features/dashboard-table-linking.spec.ts:446:9 › Dashboard Table Linking › Dashboard mode (ID): selecting a dashboard from dropdown navigates to that dashboard id @dashboard @full-stack (9.1s)\n\n  115 passed (2.8m)\nStopping E2E services and removing volumes...\n Container e2e-47-couchbase-1 Stopping \n Container e2e-47-db-1 Stopping \n Container e2e-47-db-1 Stopped \n Container e2e-47-db-1 Removing \n Container e2e-47-db-1 Removed \n Container e2e-47-couchbase-1 Stopped \n Container e2e-47-couchbase-1 Removing \n Container e2e-47-couchbase-1 Removed \n Network e2e-47_internal Removing \n Network e2e-47_internal Removed \n",
       "err": ""
     }
   ]
