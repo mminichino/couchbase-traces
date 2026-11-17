@@ -161,6 +161,20 @@ jobs:
       # log-archival are omitted intentionally — the runner is ephemeral and
       # Actions streams stdout.
       - name: Run integration tests
+        env:
+          CBT_COUCHBASE_CONNSTR: couchbase://127.0.0.1
+          CBT_COUCHBASE_BUCKET: otel
+          CBT_COUCHBASE_SCOPE: default
+          CBT_COUCHBASE_ADMIN_USER: Administrator
+          CBT_COUCHBASE_ADMIN_PASSWORD: dev-admin-password
+          CBT_COUCHBASE_QUERY_USER: cbt_query
+          CBT_COUCHBASE_QUERY_PASSWORD: dev-query-password
+          CBT_TEST_COUCHBASE_CONNSTR: couchbase://127.0.0.1
+          CBT_TEST_COUCHBASE_ADMIN_USER: Administrator
+          CBT_TEST_COUCHBASE_ADMIN_PASSWORD: dev-admin-password
+          CBT_TEST_COUCHBASE_USER: cbt_query
+          CBT_TEST_COUCHBASE_PASSWORD: dev-query-password
+          CBT_TEST_COUCHBASE_REQUIRED: '0'
         run: |
           set +e
           docker compose -f ./docker-compose.ci.yml up -d --no-build --pull missing

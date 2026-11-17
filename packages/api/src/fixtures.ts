@@ -9,14 +9,13 @@ import {
   Tile,
 } from '@couchbase-traces/common-utils/dist/types';
 import mongoose from 'mongoose';
-import ms from 'ms';
 import request from 'supertest';
 
 import * as config from '@/config';
 import { AlertInput } from '@/controllers/alerts';
 import { getTeam } from '@/controllers/team';
 import { findUserByEmail } from '@/controllers/user';
-import { DataClient } from '@/dataClient';
+import { FixtureDataClient } from '@/fixtureStore';
 import { mongooseConnection } from '@/models';
 import { AlertInterval, AlertSource } from '@/models/alert';
 import Server from '@/server';
@@ -41,11 +40,11 @@ export const DEFAULT_METRICS_TABLE = {
   EXPONENTIAL_HISTOGRAM: 'otel_metrics_exponential_histogram',
 };
 
-let dataClient: any;
+let dataClient: FixtureDataClient | null = null;
 
 export const getTestFixtureDataClient = async () => {
   if (!dataClient) {
-    dataClient = new DataClient({ requestTimeout: ms('1m') });
+    dataClient = new FixtureDataClient();
   }
   return dataClient;
 };
@@ -61,7 +60,7 @@ const healthCheck = async () => {
   const client = await getTestFixtureDataClient();
   const result = await client.ping();
   if (!result.success) {
-    logger.error({ error: result.error }, 'legacy store health check failed');
+    logger.error({ error: result.error }, 'Couchbase fixture health check failed');
     throw result.error;
   }
 };
@@ -96,18 +95,18 @@ const waitForFixtureSchema = async () => {
     const missing = REQUIRED_TABLES.filter(t => !existingTables.has(t));
 
     if (missing.length === 0) {
-      logger.info('All required legacy store tables are ready');
+      logger.info('All required Couchbase collections are ready');
       return;
     }
 
     logger.info(
-      `Waiting for legacy store tables: ${missing.join(', ')} (${Math.round((Date.now() - start) / 1000)}s elapsed)`,
+      `Waiting for Couchbase collections: ${missing.join(', ')} (${Math.round((Date.now() - start) / 1000)}s elapsed)`,
     );
     await new Promise(resolve => setTimeout(resolve, pollIntervalMs));
   }
 
   throw new Error(
-    `Timed out waiting for legacy store tables after ${maxWaitMs / 1000}s`,
+    `Timed out waiting for Couchbase collections after ${maxWaitMs / 1000}s`,
   );
 };
 
@@ -413,7 +412,8 @@ export const selectAllLogs = async () => {
   if (!config.IS_CI) {
     throw new Error('ONLY execute this in CI env 😈 !!!');
   }
-  return dataClient
+  const client = await getTestFixtureDataClient();
+  return client
     .query({
       query: `SELECT * FROM ${DEFAULT_DATABASE}.${DEFAULT_LOGS_TABLE}`,
       format: 'JSONEachRow',
