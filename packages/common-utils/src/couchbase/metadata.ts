@@ -507,9 +507,18 @@ export class Metadata {
     const hasWhere = isNonEmptyWhereExpr(chartConfig.where);
     const hasFilters = (chartConfig.filters?.length ?? 0) > 0;
     if (!hasWhere && !hasFilters) return undefined;
+    // Unexpanded macros cannot be applied as SQL++ predicates.
+    if (
+      hasWhere &&
+      /\$__(?:filter|conditionalAll|filters|sourceTable)\b/.test(
+        chartConfig.where ?? '',
+      )
+    ) {
+      return undefined;
+    }
     // Omit dateRange so renderWhereCouchbase does not duplicate the time
     // predicate already applied inside sampledValues.
-    return renderWhereCouchbase(
+    const rendered = await renderWhereCouchbase(
       {
         connection: chartConfig.connection,
         from: chartConfig.from,
@@ -527,6 +536,16 @@ export class Metadata {
       },
       { metadata: this },
     );
+    if (rendered == null) return undefined;
+    // Empty $__filter expansions become `(1=1 /** … */)`; treat as no-op so
+    // unconstrained dropdowns still list every value.
+    const normalized = rendered.statement
+      .replace(/\/\*[\s\S]*?\*\//g, '')
+      .replace(/\s+/g, '');
+    if (normalized === '' || /^\(+1=1\)+$/.test(normalized)) {
+      return undefined;
+    }
+    return rendered;
   }
 
   private async valueCounts(

@@ -18,6 +18,7 @@ import {
   getSqlSourceColumnKeys,
   getSqlSourceKeys,
   getValueSuggestions,
+  unionPreferScalars,
   useAdhocFilterOptions,
 } from '@/components/AdhocDashboardFilter/useAdhocFilterOptions';
 import {
@@ -105,6 +106,26 @@ describe('getSqlSourceKeys', () => {
         () => true,
       ),
     ).toEqual(['Timestamp']);
+  });
+});
+
+describe('unionPreferScalars', () => {
+  it('lists scalar columns before nested map or JSON keys', () => {
+    expect(
+      unionPreferScalars([
+        [
+          "LogAttributes['zzz']",
+          'ServiceName',
+          "LogAttributes['aaa']",
+          'SeverityText',
+        ],
+      ]),
+    ).toEqual([
+      'ServiceName',
+      'SeverityText',
+      "LogAttributes['aaa']",
+      "LogAttributes['zzz']",
+    ]);
   });
 });
 

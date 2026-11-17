@@ -205,6 +205,18 @@ describe('couchbase metadata', () => {
     expect(valuesQuery).not.toMatch(
       /IS VALUED\s+ORDER BY d\.`Timestamp` DESC LIMIT/,
     );
+    fake.queries.length = 0;
+    await m.getKeyValues({
+      chartConfig: {
+        ...chart,
+        where: "(1=1 /** no values selected for variable 'svc' */)",
+        whereLanguage: 'sql',
+      },
+      keys: ['SeverityText'],
+      disableRowLimit: true,
+    });
+    expect(fake.queries.every(q => !q.includes('1=1'))).toBe(true);
+
     expect(
       (await m.getAllTableMetadata({ connectionId: 'c', databaseName: 'otel' }))
         .length,

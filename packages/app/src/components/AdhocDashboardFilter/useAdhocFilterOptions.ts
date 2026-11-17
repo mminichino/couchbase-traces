@@ -35,6 +35,20 @@ const unionSorted = (lists: (string[] | undefined)[]) =>
   Array.from(new Set(lists.flatMap(list => list ?? []))).sort();
 
 /**
+ * Deduplicate suggestion keys with scalar columns first. Autocomplete only
+ * shows the first 200 options when the query is empty; map/JSON keys like
+ * `LogAttributes['…']` would otherwise crowd out `ServiceName`.
+ */
+export const unionPreferScalars = (lists: (string[] | undefined)[]) => {
+  const all = Array.from(new Set(lists.flatMap(list => list ?? [])));
+  const isNested = (key: string) => /[[.]/.test(key);
+  return [
+    ...all.filter(key => !isNested(key)).sort(),
+    ...all.filter(key => isNested(key)).sort(),
+  ];
+};
+
+/**
  * Quote a column name that isn't a bare identifier (e.g. `log-attributes`), so
  * the stored key is SQL that broadcasting can use verbatim.
  */
@@ -185,7 +199,7 @@ function useSqlSourceKeys(
       );
     });
     return {
-      data: unionSorted([...keysBySourceId.values()]),
+      data: unionPreferScalars([...keysBySourceId.values()]),
       keysBySourceId,
       columnNames,
       isLoading,
