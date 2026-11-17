@@ -251,7 +251,7 @@ test.describe('Chart Explorer Functionality', { tag: ['@charts'] }, () => {
         await expect(sqlEditor).toContainText('$__toTime_ms');
         await expect(sqlEditor).toContainText('$__timeInterval(');
         await expect(sqlEditor).toContainText('$__filters');
-        await expect(sqlEditor).toContainText('count()');
+        await expect(sqlEditor).toContainText('COUNT(*)');
         // Macros, not hardcoded values
         await expect(sqlEditor).not.toContainText(E2E_LOGS_TABLE);
         await expect(sqlEditor).not.toContainText('INTERVAL 1');

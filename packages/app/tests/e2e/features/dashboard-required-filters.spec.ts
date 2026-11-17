@@ -13,8 +13,6 @@ import { expect, test } from '../utils/base-test';
 import {
   DEFAULT_LOGS_SOURCE_NAME,
   DEFAULT_TRACES_SOURCE_NAME,
-  E2E_PROMQL_METRIC_NAME,
-  PROMQL_SOURCE_NAME,
 } from '../utils/constants';
 
 const ENVIRONMENTS = ['prod', 'staging', 'dev'];
@@ -173,14 +171,13 @@ test.describe(
     });
 
     // Being in a broadcast's source scope is not the same as reading it: a
-    // PromQL tile is handed no filters, and a raw-SQL tile without the
-    // $__filters macro drops them.
+    // raw-SQL tile without the $__filters macro drops broadcast filters.
     test('does not block a tile that ignores broadcast filters', async () => {
       test.setTimeout(240000);
 
-      const rawSql = `SELECT ServiceName, count() AS count FROM default.e2e_otel_logs WHERE Timestamp >= fromUnixTimestamp64Milli({startDateMilliseconds:Int64}) AND Timestamp <= fromUnixTimestamp64Milli({endDateMilliseconds:Int64}) GROUP BY ServiceName LIMIT 200`;
+      const rawSql = `SELECT ServiceName, COUNT(*) AS count FROM $__sourceTable WHERE Timestamp >= $__fromTime_ms AND Timestamp <= $__toTime_ms GROUP BY ServiceName LIMIT 200`;
 
-      await test.step('Add a builder tile, a PromQL tile, and a macro-less raw SQL tile', async () => {
+      await test.step('Add a builder tile and a macro-less raw SQL tile', async () => {
         await dashboardPage.createNewDashboard();
         await dashboardPage.addNumberTile(
           'Logs count',
@@ -190,26 +187,16 @@ test.describe(
         await dashboardPage.addTile();
         await expect(dashboardPage.chartEditor.nameInput).toBeVisible();
         await dashboardPage.chartEditor.waitForDataToLoad();
-        await dashboardPage.chartEditor.switchToPromqlMode();
-        await dashboardPage.chartEditor.selectSource(PROMQL_SOURCE_NAME);
-        await dashboardPage.chartEditor.setChartName('PromQL tile');
-        await dashboardPage.chartEditor.replacePromqlExpression(
-          E2E_PROMQL_METRIC_NAME,
-        );
-        await dashboardPage.chartEditor.save();
-        await expect(dashboardPage.getTiles()).toHaveCount(2, {
-          timeout: 10000,
-        });
-
-        await dashboardPage.addTile();
-        await expect(dashboardPage.chartEditor.nameInput).toBeVisible();
-        await dashboardPage.chartEditor.waitForDataToLoad();
         await dashboardPage.chartEditor.setChartType(DisplayType.Table);
         await dashboardPage.chartEditor.setChartName('Raw SQL tile');
         await dashboardPage.chartEditor.switchToSqlMode();
+        await dashboardPage.chartEditor.selectSource(DEFAULT_LOGS_SOURCE_NAME);
         await dashboardPage.chartEditor.typeSqlQuery(rawSql);
         await dashboardPage.chartEditor.runQuery(false);
         await dashboardPage.saveTile();
+        await expect(dashboardPage.getTiles()).toHaveCount(2, {
+          timeout: 10000,
+        });
       });
 
       await test.step('Add an unscoped required filter', async () => {
@@ -232,14 +219,7 @@ test.describe(
           dashboardPage.getTileMissingRequiredFilters(1),
         ).toHaveCount(0);
         await expect(
-          dashboardPage.getTile(1).locator('.recharts-responsive-container'),
-        ).toBeVisible({ timeout: 30000 });
-
-        await expect(
-          dashboardPage.getTileMissingRequiredFilters(2),
-        ).toHaveCount(0);
-        await expect(
-          dashboardPage.getTile(2).getByTitle('frontend', { exact: true }),
+          dashboardPage.getTile(1).getByTitle('frontend', { exact: true }),
         ).toBeVisible({ timeout: 30000 });
       });
 

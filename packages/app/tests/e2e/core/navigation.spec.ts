@@ -271,7 +271,7 @@ test.describe('Navigation', { tag: ['@core'] }, () => {
       );
       await expect(drawer.getByTestId('drawer-github-link')).toHaveAttribute(
         'href',
-        /github\.com\/ClickHouse\/Couchbase Traces.*CHANGELOG\.md/,
+        /github\.com\/mminichino\/couchbase-traces.*CHANGELOG\.md/,
       );
 
       // Opening the drawer closes the menu.
@@ -442,7 +442,7 @@ test.describe('Navigation', { tag: ['@core'] }, () => {
     ).toBeVisible();
     await expect(drawer.getByRole('link')).toHaveAttribute(
       'href',
-      /github\.com\/ClickHouse\/Couchbase Traces.*CHANGELOG\.md/,
+      /github\.com\/mminichino\/couchbase-traces.*CHANGELOG\.md/,
     );
   });
 

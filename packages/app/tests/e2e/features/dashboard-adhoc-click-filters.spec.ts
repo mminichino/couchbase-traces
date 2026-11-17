@@ -14,9 +14,7 @@ import {
   DEFAULT_LOGS_SOURCE_NAME,
   DEFAULT_SESSIONS_SOURCE_NAME,
   DEFAULT_TRACES_SOURCE_NAME,
-  E2E_PROMQL_METRIC_NAME,
   INTERESTING_FILTER_KEYS_SOURCE_NAME,
-  PROMQL_SOURCE_NAME,
 } from '../utils/constants';
 import {
   adhocConditionsParam,
@@ -123,7 +121,7 @@ test.describe(
     });
 
     const TIME_FILTER =
-      'Timestamp >= fromUnixTimestamp64Milli({startDateMilliseconds:Int64}) AND Timestamp <= fromUnixTimestamp64Milli({endDateMilliseconds:Int64})';
+      'Timestamp >= $__fromTime_ms AND Timestamp <= $__toTime_ms';
 
     /**
      * Hover the text of a cell in the first tile's first row, which opens its
@@ -229,7 +227,7 @@ test.describe(
       page,
     }) => {
       const tile = dashboardPage.getTile(0);
-      const sql = `SELECT ServiceName AS svc, length(ServiceName) AS len, any(SeverityText) AS sev, count() AS count FROM default.e2e_otel_logs WHERE ${TIME_FILTER} AND $__filters GROUP BY svc, len LIMIT 200`;
+      const sql = `SELECT ServiceName AS svc, LENGTH(ServiceName) AS len, MIN(SeverityText) AS sev, COUNT(*) AS count FROM $__sourceTable WHERE ${TIME_FILTER} AND $__filters GROUP BY svc, len LIMIT 200`;
 
       await test.step('Add a raw SQL table and an ad hoc filter', async () => {
         await dashboardPage.createNewDashboard();
@@ -289,54 +287,10 @@ test.describe(
             name: 'Conditions',
             conditions: [
               { key: 'ServiceName', operator: '=', value: 'frontend' },
-              { key: 'length(ServiceName)', operator: '=', value: '8' },
+              { key: 'LENGTH(ServiceName)', operator: '=', value: '8' },
             ],
           },
         ]);
-      });
-    });
-
-    test('PromQL table label cells add label matchers', async ({ page }) => {
-      const tile = dashboardPage.getTile(0);
-
-      await test.step('Add a PromQL table and an ad hoc filter on its source', async () => {
-        await dashboardPage.createNewDashboard();
-        await dashboardPage.addTile();
-        await expect(dashboardPage.chartEditor.nameInput).toBeVisible();
-        await dashboardPage.chartEditor.waitForDataToLoad();
-        await dashboardPage.chartEditor.setChartType(DisplayType.Table);
-        await dashboardPage.chartEditor.switchToPromqlMode();
-        await dashboardPage.chartEditor.selectSource(PROMQL_SOURCE_NAME);
-        await dashboardPage.chartEditor.setChartName('PromQL table');
-        await dashboardPage.chartEditor.replacePromqlExpression(
-          `${E2E_PROMQL_METRIC_NAME}{}`,
-        );
-        await dashboardPage.chartEditor.save();
-        await expect(dashboardPage.getTiles()).toHaveCount(1);
-        await dashboardPage.openEditFiltersModal();
-        await dashboardPage.addAdhocFilterToDashboard(
-          'Labels',
-          [PROMQL_SOURCE_NAME],
-          { sourceType: 'Prometheus' },
-        );
-        await dashboardPage.closeFiltersModal();
-        await dashboardPage.waitForTableTileRows();
-      });
-
-      await test.step('Excluding a label value adds a != matcher', async () => {
-        // Columns: timestamp, __name__, service, value
-        const service = await hoverFirstRowCell(2);
-        await dashboardPage.getTileCellActionButton(tile, 'exclude').click();
-        await expectFiltersParam(page, [
-          {
-            type: 'adhoc',
-            name: 'Labels',
-            conditions: [{ key: 'service', operator: '!=', value: service }],
-          },
-        ]);
-        await expect(tile.getByTitle(service, { exact: true })).toHaveCount(0, {
-          timeout: 20000,
-        });
       });
     });
 
@@ -420,7 +374,7 @@ test.describe(
     test('raw SQL line chart series filter on the expression behind the alias', async ({
       page,
     }) => {
-      const sql = `SELECT toStartOfInterval(Timestamp, INTERVAL {intervalSeconds:Int64} SECOND) AS ts, ServiceName AS svc, count() AS count FROM default.e2e_otel_logs WHERE ${TIME_FILTER} AND $__filters GROUP BY ts, svc ORDER BY ts ASC`;
+      const sql = `SELECT $__timeInterval(Timestamp) AS ts, ServiceName AS svc, COUNT(*) AS count FROM $__sourceTable WHERE ${TIME_FILTER} AND $__filters GROUP BY ts, svc ORDER BY ts ASC`;
 
       await dashboardPage.createNewDashboard();
       await dashboardPage.changeGranularity('30 Minutes Granularity');
@@ -450,56 +404,6 @@ test.describe(
           { key: 'ServiceName', operator: '=', value: expect.any(String) },
         ]);
       await expect(seriesAreasOf(dashboardPage.getTile(0))).toHaveCount(1);
-    });
-
-    test('PromQL line chart series filter on their labels', async ({
-      page,
-    }) => {
-      const tile = dashboardPage.getTile(0);
-      const seriesAreas = seriesAreasOf(tile);
-
-      await test.step('Add a PromQL chart and an ad hoc filter on its source', async () => {
-        await dashboardPage.createNewDashboard();
-        await dashboardPage.addTile();
-        await expect(dashboardPage.chartEditor.nameInput).toBeVisible();
-        await dashboardPage.chartEditor.waitForDataToLoad();
-        await dashboardPage.chartEditor.switchToPromqlMode();
-        await dashboardPage.chartEditor.selectSource(PROMQL_SOURCE_NAME);
-        await dashboardPage.chartEditor.setChartName('PromQL chart');
-        await dashboardPage.chartEditor.replacePromqlExpression(
-          E2E_PROMQL_METRIC_NAME,
-        );
-        await dashboardPage.chartEditor.save();
-        await expect(dashboardPage.getTiles()).toHaveCount(1);
-        await dashboardPage.openEditFiltersModal();
-        await dashboardPage.addAdhocFilterToDashboard(
-          'Labels',
-          [PROMQL_SOURCE_NAME],
-          { sourceType: 'Prometheus' },
-        );
-        await dashboardPage.closeFiltersModal();
-        await expect(seriesAreas.nth(1)).toBeAttached({ timeout: 20000 });
-      });
-
-      await test.step('Filtering on a series adds its labels and narrows the chart', async () => {
-        await dashboardPage.pinTimeChart(tile);
-        await dashboardPage
-          .getPinnedSeriesFilterActions('include')
-          .first()
-          .click();
-        await expect
-          .poll(() => filtersParam(page))
-          .toEqual([
-            {
-              type: 'adhoc',
-              name: 'Labels',
-              conditions: [
-                { key: 'service', operator: '=', value: expect.any(String) },
-              ],
-            },
-          ]);
-        await expect(seriesAreas).toHaveCount(1);
-      });
     });
 
     test('search tile cells filter on the expressions behind complex columns', async ({
