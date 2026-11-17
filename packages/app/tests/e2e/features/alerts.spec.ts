@@ -492,14 +492,16 @@ test.describe('Alert Creation', { tag: ['@alerts', '@full-stack'] }, () => {
 
       await test.step('Attempt to save and verify error notification', async () => {
         await dashboardPage.chartEditor.saveBtn.click();
-        // Surfaced on the alert panel as "Invalid query" and/or the full
-        // validateRawSqlForAlert message; either means save was blocked.
+        // Surfaced on the alert panel as "Invalid query" and the full
+        // validateRawSqlForAlert message together — use .first() so Playwright
+        // strict mode does not fail when both are visible.
         await expect(
           page
             .getByText(
               'SQL used for alerts must include an interval parameter or macro.',
             )
-            .or(page.getByText('Invalid query')),
+            .or(page.getByText('Invalid query'))
+            .first(),
         ).toBeVisible({ timeout: 10000 });
         // The chart editor should still be open since saving was blocked
         await expect(dashboardPage.chartEditor.nameInput).toBeVisible();
