@@ -93,20 +93,45 @@ export function remapCouchbaseAutoResultNames(
       (a, b) =>
         Number.parseInt(a.slice(1), 10) - Number.parseInt(b.slice(1), 10),
     );
-  if (autoKeys.length === 0) return row;
 
-  const present = new Set(
-    Object.keys(row).filter(k => !AUTO_RESULT_NAME.test(k)),
-  );
-  const targets = hintedColumns.filter(name => !present.has(name));
-  if (targets.length === 0) return row;
+  let remapped = row;
+  if (autoKeys.length > 0) {
+    const present = new Set(
+      Object.keys(row).filter(k => !AUTO_RESULT_NAME.test(k)),
+    );
+    const targets = hintedColumns.filter(name => !present.has(name));
+    if (targets.length > 0) {
+      const out: Record<string, unknown> = { ...row };
+      for (let i = 0; i < autoKeys.length && i < targets.length; i++) {
+        const from = autoKeys[i];
+        const to = targets[i];
+        out[to] = out[from];
+        delete out[from];
+      }
+      remapped = out;
+    }
+  }
 
-  const out: Record<string, unknown> = { ...row };
-  for (let i = 0; i < autoKeys.length && i < targets.length; i++) {
-    const from = autoKeys[i];
-    const to = targets[i];
-    out[to] = out[from];
-    delete out[from];
+  // DBTableChart orders columns via Object.keys(firstRow). Couchbase JSON may
+  // not preserve select-list order, so rebuild the row in hint order.
+  return orderRowByHintedColumns(remapped, hintedColumns);
+}
+
+/** Rebuild `row` so Object.keys follow `hintedColumns`, then any extras. */
+export function orderRowByHintedColumns(
+  row: Record<string, unknown>,
+  hintedColumns: string[],
+): Record<string, unknown> {
+  const out: Record<string, unknown> = {};
+  const seen = new Set<string>();
+  for (const name of hintedColumns) {
+    if (Object.prototype.hasOwnProperty.call(row, name)) {
+      out[name] = row[name];
+      seen.add(name);
+    }
+  }
+  for (const [key, value] of Object.entries(row)) {
+    if (!seen.has(key)) out[key] = value;
   }
   return out;
 }
