@@ -226,10 +226,11 @@ router.post('/test-source', async (req, res, next) => {
       connectionId,
     );
     if (conn == null) return;
+    // Capella / WAN clusters often need longer than the connection probe.
     const result = await testKeyspace(
       conn,
       { bucket, scope, collection },
-      CONNECTION_TEST_TIMEOUT_MS,
+      Math.max(CONNECTION_TEST_TIMEOUT_MS, 30_000),
     );
     return res.json(result);
   } catch (e) {

@@ -74,16 +74,33 @@ export async function testConnection(
 export const NO_INDEX_MESSAGE =
   'No index can serve this collection yet; create the indexes from docs/indexes.md.';
 
+function isIndexUnavailable(err: CouchbaseQueryError): boolean {
+  return (
+    err.code === 'INDEX_NOT_FOUND' ||
+    err.sqlppCode === 4000 ||
+    /no index available/i.test(err.message)
+  );
+}
+
+/**
+ * Sample document ids from a keyspace. Prefer a bare LIMIT scan when a primary
+ * (or covering) index exists; on INDEX_NOT_FOUND, fall back to a Timestamp
+ * predicate so Capella / secondary-only deployments still pass test-source.
+ */
 export async function testKeyspace(
   conn: CouchbaseConnectionConfig,
   k: Keyspace,
   timeoutMs: number,
   cache: ClusterCache = clusterCache,
 ): Promise<TestResult<{ sampleKeys: string[] }>> {
-  let statement = '';
+  const ks = keyspace(k);
+  const statements = [
+    `SELECT RAW META(d).id FROM ${ks} AS d LIMIT 3`,
+    `SELECT RAW META(d).id FROM ${ks} AS d WHERE d.\`Timestamp\` IS NOT MISSING LIMIT 3`,
+  ];
+  let statement = statements[0];
   let lease: ClusterLease | null = null;
   try {
-    statement = `SELECT RAW META(d).id FROM ${keyspace(k)} AS d LIMIT 3`;
     lease = await withTimeout(
       cache.lease(conn),
       timeoutMs,
@@ -94,19 +111,36 @@ export async function testKeyspace(
           statement,
         ),
     );
-    const result = await lease.cluster.query<string>(statement, {
-      timeout: timeoutMs,
-      readOnly: true,
-      adhoc: true,
-    });
-    return { success: true, sampleKeys: result.rows };
+    let lastIndexErr: CouchbaseQueryError | null = null;
+    for (const candidate of statements) {
+      statement = candidate;
+      try {
+        const result = await lease.cluster.query<string>(statement, {
+          timeout: timeoutMs,
+          readOnly: true,
+          adhoc: true,
+        });
+        return { success: true, sampleKeys: result.rows };
+      } catch (e) {
+        const err = fromSdkError(e, statement, { secrets: secretsOf(conn) });
+        if (isIndexUnavailable(err)) {
+          lastIndexErr = err;
+          continue;
+        }
+        return { success: false, error: serialize(err) };
+      }
+    }
+    return {
+      success: false,
+      error: {
+        code: 'INDEX_NOT_FOUND',
+        message: NO_INDEX_MESSAGE,
+        sqlppCode: lastIndexErr?.sqlppCode ?? null,
+      },
+    };
   } catch (e) {
     const err = fromSdkError(e, statement, { secrets: secretsOf(conn) });
-    if (
-      err.code === 'INDEX_NOT_FOUND' ||
-      err.sqlppCode === 4000 ||
-      /no index available/i.test(err.message)
-    ) {
+    if (isIndexUnavailable(err)) {
       return {
         success: false,
         error: {
