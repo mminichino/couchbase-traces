@@ -1,3 +1,4 @@
+import { isNonEmptyWhereExpr } from '@/core/chartConfig';
 import {
   COLUMNS_CACHE_TTL_MS,
   defaultFieldMetadataDateRange,
@@ -8,8 +9,10 @@ import {
   type TableMetadata,
 } from '@/core/metadata';
 import { parseServerVersion, type ServerVersion } from '@/core/serverVersion';
+import { type FilterState, filterStateToPredicate } from '@/filters';
 import { columnTypeToJSType, JSDataType } from '@/query/columnTypes';
 import type { ColumnMeta } from '@/query/types';
+import type { Filter, UseTextIndex } from '@/types';
 
 import { isAccessDeniedError } from './errors';
 import { type InferredField, inferredToColumnType, parseInfer } from './infer';
@@ -22,7 +25,8 @@ import {
   validateStatement,
   versionStatement,
 } from './metadataSql';
-import type { SqlPP } from './sqlpp';
+import { renderWhereCouchbase } from './render/where';
+import { type SqlPP, sqlpp } from './sqlpp';
 import type { TimeFormat } from './time';
 import type { DataClient, Keyspace } from './types';
 
@@ -191,13 +195,40 @@ export class Metadata {
       };
       dateRange: [Date, Date];
       timestampValueExpression?: string;
+      where?: string;
+      whereLanguage?: 'sql' | 'lucene';
+      filters?: Filter[];
+      filtersLogicalOperator?: 'AND' | 'OR';
+      implicitColumnExpression?: string;
+      bodyExpression?: string;
+      useTextIndexForImplicitColumn?: UseTextIndex;
     };
     keys: string[];
+    /** Per-key faceted constraints; see upstream Metadata.getKeyValues. */
+    keyConditions?: (FilterState | undefined)[];
     limit?: number;
+    /** When true, skip the recent-row sample cap and scan the full range. */
+    disableRowLimit?: boolean;
+    signal?: AbortSignal;
+    source?: unknown;
   }): Promise<KeyValues[]> {
     const tc = tcFrom(args.chartConfig);
+    const baseWhere = await this.userWhere(args.chartConfig);
     const out: KeyValues[] = [];
-    for (const key of args.keys) {
+    for (const [i, key] of args.keys.entries()) {
+      const facet = args.keyConditions?.at(i);
+      const facetPred =
+        facet != null
+          ? filterStateToPredicate(facet, k => qualifyValue(k))
+          : undefined;
+      let extraWhere = baseWhere;
+      if (facetPred) {
+        const facetSql = sqlpp`${{ Raw: facetPred }}`;
+        extraWhere =
+          extraWhere != null
+            ? sqlpp`(${extraWhere}) AND (${facetSql})`
+            : facetSql;
+      }
       const values = await this.valueCounts(
         {
           ...tc,
@@ -206,6 +237,8 @@ export class Metadata {
         },
         qualifyValue(key),
         args.limit ?? 20,
+        extraWhere,
+        args.disableRowLimit === true,
       );
       out.push({ key, value: values.map(v => v.value) });
     }
@@ -450,10 +483,58 @@ export class Metadata {
     return { from, to, ts, format };
   }
 
+  /**
+   * Compile chartConfig.where / filters without the time range (sampledValues
+   * already applies the date window). Used so filter-variable and ad hoc
+   * suggestion queries honor `$__filter` / Lucene / SQL dropdown clauses.
+   */
+  private async userWhere(chartConfig: {
+    connection: string;
+    from: {
+      databaseName: string;
+      tableName: string;
+      scopeName?: string;
+    };
+    timestampValueExpression?: string;
+    where?: string;
+    whereLanguage?: 'sql' | 'lucene';
+    filters?: Filter[];
+    filtersLogicalOperator?: 'AND' | 'OR';
+    implicitColumnExpression?: string;
+    bodyExpression?: string;
+    useTextIndexForImplicitColumn?: UseTextIndex;
+  }): Promise<SqlPP | undefined> {
+    const hasWhere = isNonEmptyWhereExpr(chartConfig.where);
+    const hasFilters = (chartConfig.filters?.length ?? 0) > 0;
+    if (!hasWhere && !hasFilters) return undefined;
+    // Omit dateRange so renderWhereCouchbase does not duplicate the time
+    // predicate already applied inside sampledValues.
+    return renderWhereCouchbase(
+      {
+        connection: chartConfig.connection,
+        from: chartConfig.from,
+        select: '',
+        where: chartConfig.where ?? '',
+        whereLanguage: chartConfig.whereLanguage,
+        filters: chartConfig.filters,
+        filtersLogicalOperator: chartConfig.filtersLogicalOperator,
+        timestampValueExpression:
+          chartConfig.timestampValueExpression ?? 'Timestamp',
+        implicitColumnExpression: chartConfig.implicitColumnExpression,
+        bodyExpression: chartConfig.bodyExpression,
+        useTextIndexForImplicitColumn:
+          chartConfig.useTextIndexForImplicitColumn,
+      },
+      { metadata: this },
+    );
+  }
+
   private async valueCounts(
     args: Tc & { dateRange?: [Date, Date]; timestampValueExpression?: string },
     valueExpr: string,
     max: number,
+    extraWhere?: SqlPP,
+    disableRowLimit = false,
   ): Promise<{ value: string; count: number }[]> {
     const { from, to, ts, format } = await this.time(args);
     const q = sampledValues(
@@ -463,8 +544,9 @@ export class Metadata {
       format,
       from,
       to,
-      this.rowSample(),
+      disableRowLimit ? 0 : this.rowSample(),
       max,
+      extraWhere,
     );
     const rows = await this.rows(args, q);
     return rows.map(rowCount);

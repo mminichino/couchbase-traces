@@ -21,7 +21,7 @@ import {
 } from '@tanstack/react-query';
 
 import { useSources } from '@/source';
-import { getMetricTableName } from '@/utils';
+import { getMetricTableName, mapKeyBy } from '@/utils';
 
 import { useMetadataWithSettings } from './useMetadata';
 
@@ -322,7 +322,8 @@ export function useQueriedDashboardFilterValues({
     variables,
   });
 
-  const { isLoading: isSourcesLoading } = useSources();
+  const { data: sources, isLoading: isSourcesLoading } = useSources();
+  const sourcesLookup = useMemo(() => mapKeyBy(sources ?? [], 'id'), [sources]);
 
   const queryClient = useQueryClient();
   type TQueryData = { key: string; value: string[] }[];
@@ -335,6 +336,8 @@ export function useQueriedDashboardFilterValues({
         chartConfig.from,
         keys,
       ];
+
+      const source = sourcesLookup.get(chartConfig.source);
 
       return {
         queryKey: [
@@ -361,11 +364,15 @@ export function useQueriedDashboardFilterValues({
         },
         enabled: !isLoadingOptimizedCalls && !isSourcesLoading,
         staleTime: 1000 * 60 * 5, // Cache every 5 min
-        queryFn: async () =>
+        queryFn: async ({ signal }) =>
           metadata.getKeyValues({
             chartConfig,
             keys,
+            keyConditions,
             limit: 10000,
+            disableRowLimit: true,
+            signal,
+            source,
           }),
       };
     }),

@@ -187,6 +187,24 @@ describe('couchbase metadata', () => {
         keys: ['ServiceName'],
       }),
     ).toHaveLength(1);
+    fake.queries.length = 0;
+    await m.getKeyValues({
+      chartConfig: {
+        ...chart,
+        where: "ServiceName = 'accounting'",
+        whereLanguage: 'sql',
+      },
+      keys: ['SeverityText'],
+      disableRowLimit: true,
+    });
+    const valuesQuery = fake.queries.find(q =>
+      q.includes("ServiceName = 'accounting'"),
+    );
+    expect(valuesQuery).toBeDefined();
+    // disableRowLimit skips the inner recent-row sample (ORDER BY ts LIMIT n).
+    expect(valuesQuery).not.toMatch(
+      /IS VALUED\s+ORDER BY d\.`Timestamp` DESC LIMIT/,
+    );
     expect(
       (await m.getAllTableMetadata({ connectionId: 'c', databaseName: 'otel' }))
         .length,

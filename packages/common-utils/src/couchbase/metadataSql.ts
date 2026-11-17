@@ -57,9 +57,18 @@ export function sampledValues(
   to: Date,
   sample: number,
   max: number,
+  extraWhere?: SqlPP,
 ): SqlPP {
   const range = timeRangePredicate(`d.${quoteIdent(tsExpr)}`, format, from, to);
-  return sqlpp`SELECT v AS \`value\`, COUNT(*) AS \`count\` FROM (SELECT ${{ Raw: valueExpr }} AS v FROM ${{ Keyspace: ks }} AS d WHERE ${range} AND ${{ Raw: valueExpr }} IS VALUED ORDER BY d.${{ Identifier: tsExpr }} DESC LIMIT ${{ Param: sample }}) AS s GROUP BY v ORDER BY \`count\` DESC LIMIT ${{ Param: max }}`;
+  const extra =
+    extraWhere != null && extraWhere.statement.trim() !== ''
+      ? sqlpp` AND (${extraWhere})`
+      : sqlpp``;
+  const sampleLimit =
+    sample > 0
+      ? sqlpp` ORDER BY d.${{ Identifier: tsExpr }} DESC LIMIT ${{ Param: sample }}`
+      : sqlpp``;
+  return sqlpp`SELECT v AS \`value\`, COUNT(*) AS \`count\` FROM (SELECT ${{ Raw: valueExpr }} AS v FROM ${{ Keyspace: ks }} AS d WHERE ${range}${extra} AND ${{ Raw: valueExpr }} IS VALUED${sampleLimit}) AS s GROUP BY v ORDER BY \`count\` DESC LIMIT ${{ Param: max }}`;
 }
 
 export function validateStatement(ks: Keyspace, expression: string): SqlPP {
