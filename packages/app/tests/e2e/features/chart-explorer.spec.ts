@@ -102,6 +102,10 @@ test.describe('Chart Explorer Functionality', { tag: ['@charts'] }, () => {
   test('should apply a custom ORDER BY on a categorical bar chart', async () => {
     let ascendingLabels: string[] = [];
     let descendingLabels: string[] = [];
+    // Four services so every x-axis tick stays visible and ASC/DESC reverse
+    // over the same set (series LIMIT would otherwise pick different tails).
+    const serviceFilter =
+      "ServiceName IN ['accounting', 'frontend', 'worker', 'database']";
 
     await test.step('Verify chart configuration form is accessible', async () => {
       await expect(chartExplorerPage.form).toBeVisible();
@@ -111,12 +115,10 @@ test.describe('Chart Explorer Functionality', { tag: ['@charts'] }, () => {
     await test.step('Select the Bar chart type and group by ServiceName', async () => {
       await chartExplorerPage.chartEditor.setChartType(DisplayType.Bar);
       await chartExplorerPage.chartEditor.setGroupBy('ServiceName');
+      await chartExplorerPage.chartEditor.setSqlWhere(serviceFilter);
     });
 
     await test.step('Order by ServiceName ascending and capture the bar order', async () => {
-      // Cap series so every category fits on the x-axis; dense ticks hide
-      // intermediate labels and make ORDER BY unverifiable from the axis.
-      await chartExplorerPage.chartEditor.setSeriesLimit(5);
       await chartExplorerPage.chartEditor.setOrderBy('ServiceName ASC');
       await chartExplorerPage.chartEditor.runQuery();
       await expect(chartExplorerPage.getBars().first()).toBeVisible({
@@ -144,7 +146,7 @@ test.describe('Chart Explorer Functionality', { tag: ['@charts'] }, () => {
       descendingLabels = await chartExplorerPage.getBarLabels();
     });
 
-    await test.step('Tighten the series limit and confirm the custom order still drives which bars are kept', async () => {
+    await test.step('Apply a series limit and confirm the custom order still drives which bars are kept', async () => {
       const seriesLimit = 3;
       await chartExplorerPage.chartEditor.setSeriesLimit(seriesLimit);
       await chartExplorerPage.chartEditor.runQuery();
