@@ -6,6 +6,7 @@ import {
   isFirstOrderByAscending,
   isTimestampExpressionInFirstOrderBy,
 } from '@couchbase-traces/common-utils/dist/core/utils';
+import { couchbasePostprocessHints } from '@couchbase-traces/common-utils/dist/couchbase/render/postprocess';
 import { renderChartConfig } from '@couchbase-traces/common-utils/dist/dataLayer';
 import {
   isBuilderChartConfig,
@@ -242,12 +243,19 @@ const queryFn: QueryFunction<TQueryFnData, TQueryKey, TPageParam> = async ({
     setTimeout(() => abortController.abort(), queryTimeout * 1000);
   }
 
+  // Table charts order columns via Object.keys(firstRow). Pass select-list
+  // hints so the API remaps/reorders SQL++ `$N` / JSON key order to match.
+  const hints = isBuilderChartConfig(windowedConfig)
+    ? couchbasePostprocessHints(windowedConfig)
+    : {};
+
   const resultSet = await dataClient.query<'JSON'>({
     query: query.sql,
     query_params: query.params,
     format: 'JSON',
     abort_signal: abortController?.signal || signal,
     connectionId: config.connection,
+    ...hints,
   });
 
   const json = await resultSet.json<ResponseJSON<Record<string, unknown>>>();
