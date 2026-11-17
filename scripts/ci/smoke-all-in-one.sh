@@ -20,8 +20,25 @@ case "$MODE" in
 esac
 
 NAME="cbt-smoke-$$"
-APP_PORT="${SMOKE_APP_PORT:-18080}"
-OTLP_PORT="${SMOKE_OTLP_PORT:-14318}"
+
+# Prefer an free host port so concurrent acceptance/e2e stacks do not collide.
+free_port() {
+  local preferred=$1
+  if ! (echo >/dev/tcp/127.0.0.1/"$preferred") >/dev/null 2>&1; then
+    echo "$preferred"
+    return
+  fi
+  python3 - <<'PY'
+import socket
+s = socket.socket()
+s.bind(("127.0.0.1", 0))
+print(s.getsockname()[1])
+s.close()
+PY
+}
+
+APP_PORT="${SMOKE_APP_PORT:-$(free_port 18080)}"
+OTLP_PORT="${SMOKE_OTLP_PORT:-$(free_port 14318)}"
 API_BASE="http://localhost:${APP_PORT}/api"
 COOKIE_JAR="$(mktemp)"
 EMAIL="smoke-$(date +%s)-$$@couchbase-traces.test"

@@ -136,18 +136,22 @@ async function k1(ctx) {
     if (seen.has(cmd)) continue;
     seen.add(cmd);
     ctx.log(`K1: ${cmd}`);
+    // Full Playwright e2e regularly exceeds 10 minutes on a loaded machine.
+    const timeoutMs = /^make\s+e2e\b/.test(cmd) ? 2_700_000 : 900_000;
     const r = spawnSync('bash', ['-lc', cmd], {
       cwd: ctx.root,
       env: ciEnv,
       encoding: 'utf8',
-      timeout: 600_000,
+      timeout: timeoutMs,
       maxBuffer: 20 * 1024 * 1024,
     });
     results.push({
       cmd,
       status: r.status,
-      out: (r.stdout || '').slice(-1500),
-      err: (r.stderr || '').slice(-1500),
+      signal: r.signal,
+      error: r.error ? String(r.error.message || r.error) : undefined,
+      out: (r.stdout || '').slice(-2500),
+      err: (r.stderr || '').slice(-2500),
     });
     if (r.status !== 0) failed = true;
   }
