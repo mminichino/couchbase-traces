@@ -991,7 +991,7 @@
     {
       "path": "packages/app/src/__tests__/searchFilters.test.ts",
       "term": "hyperdx",
-      "snippet": "{ type: 'sql', condition: `hyperdx_event_type IN ('span')` },",
+      "snippet": "{ type: 'sql', condition: `hyperdx_event_type IN ['span']` },",
       "reason": "engine_reference",
       "note": "Token \"hyperdx_event_type\" allowed in the token map"
     },
