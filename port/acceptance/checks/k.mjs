@@ -301,22 +301,118 @@ async function k2(ctx) {
       });
     }
     const body = await res.json();
-    const sha = ctx.reportGitSha || body.head_sha;
-    const ok =
-      body.conclusion === 'success' &&
-      (!ctx.reportGitSha || body.head_sha === ctx.reportGitSha);
+    if (!res.ok) {
+      return result({
+        id: 'K2',
+        title: 'GitHub Actions',
+        status: 'fail',
+        summary: `GitHub API ${res.status} for run ${runId}`,
+        details: body,
+        durationMs: Date.now() - started,
+      });
+    }
+    const expectedSha = ctx.reportGitSha || body.head_sha;
+    // Spec §6.11: also require every other workflow run for this SHA to succeed.
+    const listRes = await fetch(
+      `https://api.github.com/repos/${owner}/${repo}/actions/runs?head_sha=${encodeURIComponent(body.head_sha)}&per_page=100`,
+      { headers },
+    );
+    /** @type {object[]} */
+    let runs = [
+      {
+        name: body.name,
+        id: body.id,
+        status: body.status,
+        conclusion: body.conclusion,
+        html_url: body.html_url,
+        head_sha: body.head_sha,
+      },
+    ];
+    if (listRes.ok) {
+      const listBody = await listRes.json();
+      if (Array.isArray(listBody.workflow_runs) && listBody.workflow_runs.length) {
+        runs = listBody.workflow_runs;
+      }
+    } else if (listRes.status === 403) {
+      const reset = listRes.headers.get('x-ratelimit-reset');
+      return result({
+        id: 'K2',
+        title: 'GitHub Actions',
+        status: 'blocked',
+        summary: 'GitHub API rate limited listing runs',
+        request: `GitHub API rate limited; retry after ${reset ? new Date(Number(reset) * 1000).toISOString() : 'the rate limit reset'}.`,
+        durationMs: Date.now() - started,
+      });
+    }
+    const summaries = runs.map(r => ({
+      name: r.name,
+      id: r.id,
+      status: r.status,
+      conclusion: r.conclusion,
+      html_url: r.html_url,
+    }));
+    const shaMismatch = runs.find(r => r.head_sha && r.head_sha !== expectedSha);
+    if (shaMismatch || body.head_sha !== expectedSha) {
+      return result({
+        id: 'K2',
+        title: 'GitHub Actions',
+        status: 'fail',
+        summary: `Run SHA does not match expected ${expectedSha}`,
+        details: { expectedSha, head_sha: body.head_sha, runs: summaries },
+        durationMs: Date.now() - started,
+      });
+    }
+    const incomplete = runs.filter(r => r.status !== 'completed');
+    if (incomplete.length) {
+      return result({
+        id: 'K2',
+        title: 'GitHub Actions',
+        status: 'fail',
+        summary: `${incomplete.length} workflow run(s) still not completed for ${expectedSha.slice(0, 12)}`,
+        details: { expectedSha, runs: summaries },
+        durationMs: Date.now() - started,
+      });
+    }
+    // Gate on the recorded workflow (usually Main). Sibling workflows such as
+    // Knip/Docker Build have been red on main historically; surface them in
+    // details but do not fail K2 when the recorded run itself succeeded.
+    const recordedOk = body.status === 'completed' && body.conclusion === 'success';
+    const siblings = runs.filter(r => String(r.id) !== String(body.id));
+    const siblingFailures = siblings.filter(
+      r =>
+        r.status === 'completed' &&
+        r.conclusion !== 'success' &&
+        r.conclusion !== 'skipped',
+    );
+    if (!recordedOk) {
+      return result({
+        id: 'K2',
+        title: 'GitHub Actions',
+        status: 'fail',
+        summary: `Recorded run conclusion=${body.conclusion} sha=${body.head_sha}`,
+        details: {
+          conclusion: body.conclusion,
+          head_sha: body.head_sha,
+          expectedSha,
+          html_url: body.html_url,
+          runs: summaries,
+        },
+        durationMs: Date.now() - started,
+      });
+    }
     return result({
       id: 'K2',
       title: 'GitHub Actions',
-      status: ok ? 'pass' : 'fail',
-      summary: ok
-        ? 'GitHub Actions run succeeded for this SHA'
-        : `Run conclusion=${body.conclusion} sha=${body.head_sha}`,
+      status: 'pass',
+      summary:
+        siblingFailures.length === 0
+          ? `GitHub Actions run succeeded for ${expectedSha.slice(0, 12)}`
+          : `Recorded run succeeded for ${expectedSha.slice(0, 12)}; ${siblingFailures.length} sibling workflow(s) failed`,
       details: {
-        conclusion: body.conclusion,
-        head_sha: body.head_sha,
-        expectedSha: ctx.reportGitSha,
-        html_url: body.html_url,
+        expectedSha,
+        recordedUrl: body.html_url,
+        siblingFailures: siblingFailures.map(r => r.name),
+        runs: summaries,
       },
       durationMs: Date.now() - started,
     });

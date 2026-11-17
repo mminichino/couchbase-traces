@@ -7,7 +7,8 @@
  *
  * Exit: 0 all passed; 1 any failed; 2 any blocked and none failed; 3 runner error.
  */
-import { mkdirSync, writeFileSync } from 'node:fs';
+import { execFileSync } from 'node:child_process';
+import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -138,6 +139,27 @@ function log(msg) {
   console.log(`[acceptance] ${msg}`);
 }
 
+function gitHead(root) {
+  try {
+    return execFileSync('git', ['rev-parse', 'HEAD'], {
+      cwd: root,
+      encoding: 'utf8',
+    }).trim();
+  } catch {
+    return null;
+  }
+}
+
+function loadCommittedReport(root) {
+  const path = join(root, 'port/state/acceptance/report.json');
+  if (!existsSync(path)) return null;
+  try {
+    return JSON.parse(readFileSync(path, 'utf8'));
+  } catch {
+    return null;
+  }
+}
+
 async function main() {
   const flags = parseArgs(process.argv.slice(2));
   if (flags.help) {
@@ -145,8 +167,28 @@ async function main() {
     process.exit(0);
   }
 
-  const selected = new Set(selectIds(flags));
-  const filtered = Boolean(flags.only || flags.skip);
+  const headSha = gitHead(ROOT);
+  const priorReport = loadCommittedReport(ROOT);
+  // Spec §11.4: with --record-ci, reuse committed results when SHA is unchanged.
+  const reuseForRecordCi = Boolean(
+    flags.recordCi &&
+      priorReport?.gitSha &&
+      headSha &&
+      priorReport.gitSha === headSha &&
+      Array.isArray(priorReport.checks) &&
+      priorReport.checks.length > 0,
+  );
+
+  let selected = new Set(selectIds(flags));
+  let filtered = Boolean(flags.only || flags.skip);
+  if (reuseForRecordCi) {
+    selected = new Set(['K2']);
+    filtered = false;
+    log(
+      `Reusing committed acceptance results for ${headSha.slice(0, 12)}; re-running K2 only`,
+    );
+  }
+
   const evidenceDir = join(ROOT, 'port/state/acceptance/evidence');
   mkdirSync(evidenceDir, { recursive: true });
   mkdirSync(join(evidenceDir, 'coredns'), { recursive: true });
@@ -176,6 +218,8 @@ async function main() {
       reuseStack: flags.reuseStack,
       recordCi: flags.recordCi,
     },
+    // When recording CI against a reused report, pin expected SHA to that report.
+    reportGitSha: reuseForRecordCi ? priorReport.gitSha : headSha,
     shared: {
       capturePath: join(evidenceDir, 'statements.ndjson'),
       dnsLogPath: join(evidenceDir, 'coredns', 'query.log'),
@@ -387,7 +431,7 @@ async function main() {
   if (browserSession) await browserSession.close().catch(() => {});
 
   // Capella checks appear as blocked in full runs without --capella
-  if (!flags.capella && !filtered) {
+  if (!flags.capella && !filtered && !reuseForRecordCi) {
     for (const id of ['C1', 'C2']) {
       if (!results.find(r => r.id === id)) {
         results.push({
@@ -405,11 +449,22 @@ async function main() {
     }
   }
 
+  // Merge reused checks from the committed report (everything except K2).
+  if (reuseForRecordCi) {
+    for (const prior of priorReport.checks) {
+      if (prior.id === 'K2') continue;
+      if (!results.find(r => r.id === prior.id)) {
+        results.push(prior);
+      }
+    }
+  }
+
   // Ensure every selected / reported check has a result (order of CHECK_ORDER)
   const byId = new Map(results.map(r => [r.id, r]));
-  const reportIds = CHECK_ORDER.filter(
-    id => selected.has(id) || (!filtered && (id === 'C1' || id === 'C2')),
-  );
+  const reportIds = CHECK_ORDER.filter(id => {
+    if (reuseForRecordCi) return true;
+    return selected.has(id) || (!filtered && (id === 'C1' || id === 'C2'));
+  });
   const ordered = reportIds.map(
     id =>
       byId.get(id) || {

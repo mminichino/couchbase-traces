@@ -1,0 +1,42 @@
+# Local/CI build override: build product images from the repo instead of
+# pulling private GHCR tags (which CI cannot read without package credentials).
+#
+# Usage:
+#   docker compose -f docker-compose.yml -f docker-compose.build-local.yml up -d --build --pull never
+
+services:
+  couchbase-init:
+    build:
+      context: .
+      dockerfile: packages/ingest/Dockerfile
+    image: couchbase-traces-ingest:local
+    pull_policy: never
+
+  ingest:
+    build:
+      context: .
+      dockerfile: packages/ingest/Dockerfile
+    image: couchbase-traces-ingest:local
+    pull_policy: never
+
+  otel-collector:
+    build:
+      context: .
+      dockerfile: docker/otel-collector/Dockerfile
+      target: prod
+    image: couchbase-traces-otel-collector:local
+    pull_policy: never
+
+  app:
+    build:
+      context: .
+      dockerfile: docker/hyperdx/Dockerfile
+      target: prod
+      additional_contexts:
+        hyperdx: ./docker/hyperdx
+        api: ./packages/api
+        app: ./packages/app
+      args:
+        CODE_VERSION: local
+    image: couchbase-traces-app:local
+    pull_policy: never

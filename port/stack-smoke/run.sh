@@ -22,6 +22,9 @@ ENV_FILE="$(mktemp)"
 COMPOSE_FILES=(-f docker-compose.yml)
 if [ "$USE_CAPELLA" = 1 ]; then
   COMPOSE_FILES+=(-f docker-compose.capella.yml)
+else
+  # Build from the repo in CI/dev; do not pull private GHCR tags.
+  COMPOSE_FILES+=(-f docker-compose.build-local.yml)
 fi
 
 compose() {
@@ -66,7 +69,9 @@ gen_secret() { openssl rand -hex 16; }
 } >"$ENV_FILE"
 
 echo "[stack-smoke] starting stack..."
-compose up -d --build
+# --pull never: image: lines still name GHCR tags; without this, compose
+# probes the registry before build and fails when packages are private.
+compose up -d --build --pull never
 
 wait_for_init() {
   local deadline=$((SECONDS + 600))
