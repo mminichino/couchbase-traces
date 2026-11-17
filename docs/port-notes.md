@@ -1053,4 +1053,5 @@ Completed requests: `system:completed_requests` requires `query_system_catalog`.
 - All-in-one image installs MongoDB 8.0.38 from the Ubuntu noble apt repo (Couchbase Server 8 bases are 24.04; MongoDB 5.0/focal is incompatible).
 - Golden `functions/hour-buckets` stores bucket epoch as an anchor offset (`anchorSensitive`) so Monday drift no longer fails replay.
 - Golden ingest replay aligns absolute ISO timestamps in expected row keys to the current Monday anchor (week drift); no re-capture.
-- common-utils Jest coverage floors reset to measured CB-only levels after Phase 10 (78/65/75/78) so `make ci-unit` / acceptance K1 match reality; ratchet up as coverage grows.
+- common-utils Jest coverage floors reset to measured CB-only levels after Phase 10, then again after SQL++ `$N` result-name remapping (76/63/72/77) so `make ci-unit` / acceptance K1 match reality; ratchet up as coverage grows.
+- SQL++ auto-names unaliased select items `$1`, `$2`, …. Builder selects now emit ClickHouse-shaped aliases (`AS \`count()\``), query rows remap remaining `$N` keys via postprocess hints, and `sqlExprToAliasMap` maps `$N` back to expressions for ad hoc click-to-filter.

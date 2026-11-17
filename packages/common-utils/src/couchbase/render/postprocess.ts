@@ -9,7 +9,8 @@ import type { BuilderChartConfigWithOptDateRange } from '@/types';
 
 const COUNT_LIKE = new Set(['count', 'count_distinct', 'increase']);
 
-function selectItemAlias(
+/** ClickHouse-shaped result name for one select list item (e.g. `count()`). */
+export function couchbaseSelectItemAlias(
   item: { alias?: string; aggFn?: string | null; valueExpression?: string },
   index: number,
 ): string {
@@ -46,7 +47,7 @@ export function couchbaseResultColumnNames(
     cols.push(a.alias?.trim() || b.alias?.trim() || 'ratio');
   } else {
     config.select.forEach((item, i) => {
-      cols.push(selectItemAlias(item, i));
+      cols.push(couchbaseSelectItemAlias(item, i));
     });
   }
   if (isUsingGroupBy(config) && config.selectGroupBy !== false) {
@@ -86,7 +87,7 @@ export function couchbaseColumnTypesForConfig(
     return types;
   }
   config.select.forEach((item, i) => {
-    const name = selectItemAlias(item, i);
+    const name = couchbaseSelectItemAlias(item, i);
     const fn = item.aggFn?.replace(/If(State|Merge)?$/i, '') ?? '';
     if (fn && COUNT_LIKE.has(fn)) {
       types[name] = 'UInt64';

@@ -260,8 +260,21 @@ function selectColumnsToAliasMap(
     parseOptions: { includeLocations: true },
   }) as SQLParser.Select;
 
+  // SQL++ assigns `$1`, `$2`, … to select items without an AS alias. Map those
+  // result names back to the expression so ad hoc click-to-filter keys match
+  // ClickHouse (where the unaliased expression itself was the column name).
+  let autoResultIndex = 0;
+
   if (ast.columns != null) {
     ast.columns.forEach(column => {
+      const expressionFromLoc =
+        column.expr.loc != null
+          ? parsedSql.slice(
+              column.expr.loc.start.offset,
+              column.expr.loc.end.offset,
+            )
+          : undefined;
+
       if (column.as != null) {
         if (column.type === 'expr' && column.expr.type === 'column_ref') {
           const escapedColumnName = quoteIdentifierIfNeeded(
@@ -273,14 +286,16 @@ function selectColumnsToAliasMap(
                 `${escapedColumnName}['${column.expr.array_index[0].index.value}']`
               : // normal alias
                 escapedColumnName;
-        } else if (column.expr.loc != null) {
-          aliasMap[column.as] = parsedSql.slice(
-            column.expr.loc.start.offset,
-            column.expr.loc.end.offset,
-          );
+        } else if (expressionFromLoc != null) {
+          aliasMap[column.as] = expressionFromLoc;
         } else {
           console.error('Unknown alias column type', column);
         }
+        // Bare column refs keep their name in SQL++; only computed expressions
+        // without AS are auto-named `$1`, `$2`, …
+      } else if (expressionFromLoc != null) {
+        autoResultIndex += 1;
+        aliasMap[`$${autoResultIndex}`] = expressionFromLoc;
       }
     });
   }

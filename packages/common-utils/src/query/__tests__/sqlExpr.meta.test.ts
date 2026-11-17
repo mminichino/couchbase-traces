@@ -8,4 +8,15 @@ describe('sqlExprToAliasMap META', () => {
     });
     expect(map.svc).toBe('ServiceName');
   });
+
+  it('maps SQL++ auto result names for unaliased expressions', () => {
+    const map = sqlExprToAliasMap({
+      sql: 'SELECT Timestamp, upper(ServiceName) AS svc, lower(ServiceName), Body FROM t',
+      params: {},
+    });
+    expect(map.svc).toBe('upper(ServiceName)');
+    // Bare column refs keep their names; only computed expressions get `$N`.
+    expect(map.$1).toBe('lower(ServiceName)');
+    expect(map.$2).toBeUndefined();
+  });
 });

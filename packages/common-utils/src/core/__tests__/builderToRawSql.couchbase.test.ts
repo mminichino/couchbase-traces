@@ -29,6 +29,7 @@ describe('renderBuilderConfigAsSqlTemplate (Couchbase)', () => {
     expect(result.sql).toContain('$__timeInterval(');
     expect(result.sql).toContain('$__filters');
     expect(result.sql).toContain('COUNT(*)');
+    expect(result.sql).toContain('AS `count()`');
     expect(result.sql).not.toContain('e2e_otel_logs');
   });
 });

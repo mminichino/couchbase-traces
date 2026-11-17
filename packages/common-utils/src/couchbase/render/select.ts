@@ -22,6 +22,7 @@ import {
 } from '@/couchbase/time';
 import type { BuilderChartConfigWithOptDateRange, SelectList } from '@/types';
 
+import { couchbaseSelectItemAlias } from './postprocess';
 import { ratioExprCouchbase } from './ratio';
 import { rowIdSelect } from './rowId';
 import { includeRowIdInSelect } from './search';
@@ -208,7 +209,9 @@ async function renderSelectListCouchbase(
   selectList: SelectList,
   chartConfig: BuilderChartConfigWithOptDateRange,
   ctx: RenderFilterContext,
+  opts?: { autoAlias?: boolean },
 ): Promise<SqlPP[]> {
+  const autoAlias = opts?.autoAlias !== false;
   if (typeof selectList === 'string') {
     const trimmed = selectList.trim();
     if (trimmed === '' || trimmed === '*') {
@@ -259,10 +262,14 @@ async function renderSelectListCouchbase(
       );
     }
 
-    // Match upstream: only emit AS when an alias is set. Bare expressions are
-    // required for ratio nesting (AS inside CASE/divide is a syntax error).
+    // SQL++ auto-names bare expressions `$1`, `$2`, … which breaks charts that
+    // expect ClickHouse-shaped names (`count()`, …). Alias top-level series;
+    // formula/ratio nesting must stay bare (AS inside CASE/divide is invalid).
     if (select.alias != null && select.alias.trim() !== '') {
-      out.push(sqlpp`${expr} AS ${{ Identifier: select.alias }}`);
+      out.push(sqlpp`${expr} AS ${{ Identifier: select.alias.trim() }}`);
+    } else if (autoAlias) {
+      const alias = couchbaseSelectItemAlias(select, out.length);
+      out.push(sqlpp`${expr} AS ${{ Identifier: alias }}`);
     } else {
       out.push(expr);
     }
@@ -293,6 +300,7 @@ async function renderSelectListWithFormulasCouchbase(
     select.map(col => ({ ...col, alias: undefined })),
     chartConfig,
     ctx,
+    { autoAlias: false },
   );
   const operandAt = (index: number): SqlPP => {
     const operand = operandParts.at(index);
@@ -378,11 +386,13 @@ export async function renderSelectCouchbase(
       [{ ...a, alias: undefined }],
       chartConfig,
       ctx,
+      { autoAlias: false },
     );
     const denParts = await renderSelectListCouchbase(
       [{ ...b, alias: undefined }],
       chartConfig,
       ctx,
+      { autoAlias: false },
     );
     const ratio = ratioExprCouchbase(numParts[0], denParts[0]);
     // SQL++ needs an alias; parity remaps CH's unaliased divide(...) to this name.

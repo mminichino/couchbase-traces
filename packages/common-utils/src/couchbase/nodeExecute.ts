@@ -75,6 +75,42 @@ function toRow(row: unknown): Record<string, unknown> {
   return isRecord(row) ? row : { value: row };
 }
 
+const AUTO_RESULT_NAME = /^\$\d+$/;
+
+/**
+ * SQL++ names unaliased select items `$1`, `$2`, …. Chart postprocess hints
+ * expect ClickHouse-shaped names (`count()`, group expressions, …). Rename
+ * auto keys onto unused hint names by position so meta/rows agree.
+ */
+export function remapCouchbaseAutoResultNames(
+  row: Record<string, unknown>,
+  hintedColumns: string[] | undefined,
+): Record<string, unknown> {
+  if (hintedColumns == null || hintedColumns.length === 0) return row;
+  const autoKeys = Object.keys(row)
+    .filter(k => AUTO_RESULT_NAME.test(k))
+    .sort(
+      (a, b) =>
+        Number.parseInt(a.slice(1), 10) - Number.parseInt(b.slice(1), 10),
+    );
+  if (autoKeys.length === 0) return row;
+
+  const present = new Set(
+    Object.keys(row).filter(k => !AUTO_RESULT_NAME.test(k)),
+  );
+  const targets = hintedColumns.filter(name => !present.has(name));
+  if (targets.length === 0) return row;
+
+  const out: Record<string, unknown> = { ...row };
+  for (let i = 0; i < autoKeys.length && i < targets.length; i++) {
+    const from = autoKeys[i];
+    const to = targets[i];
+    out[to] = out[from];
+    delete out[from];
+  }
+  return out;
+}
+
 /** Widens `current` with `batch`; null when nothing changed. */
 function mergeMeta(
   current: ColumnMeta[],
@@ -216,7 +252,9 @@ export async function* executeQuery(args: {
       const ev = await events.next();
       if (ev.kind === 'abort') throw canceled();
       if (ev.kind === 'row') {
-        batch.push(toRow(ev.row));
+        batch.push(
+          remapCouchbaseAutoResultNames(toRow(ev.row), inputs.columns),
+        );
         total++;
         if (batch.length >= frameRows) {
           for (const f of flush()) {
