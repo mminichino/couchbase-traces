@@ -34,8 +34,11 @@ import {
 import {
   dockerAvailable,
   dockerResources,
+  downCapellaStack,
   downProductStack,
+  prepareCapellaEnv,
   prepareProductEnv,
+  upCapellaStack,
   upProductStack,
 } from './lib/stack.mjs';
 
@@ -152,6 +155,8 @@ async function main() {
   let browserSession = null;
   /** @type {ReturnType<typeof prepareProductEnv>|null} */
   let productEnv = null;
+  /** @type {ReturnType<typeof prepareCapellaEnv>|null} */
+  let capellaEnv = null;
 
   /** @type {any} */
   const stacks = {
@@ -179,17 +184,28 @@ async function main() {
     },
     testResults: null,
     api(stack) {
-      const handle = stacks[stack] || stacks.product;
+      const handle =
+        (stack && stacks[stack]) || stacks.capella || stacks.product;
+      const env = handle?.env || capellaEnv?.env || productEnv?.env;
       const base =
         handle?.apiOrigin ||
-        `http://localhost:${productEnv?.env.CBT_ACCEPT_HOST_API_PORT || 18000}`;
+        `http://localhost:${env?.CBT_ACCEPT_HOST_API_PORT || 18000}`;
       return createApiClient(base);
     },
-    async browser() {
-      if (browserSession) return browserSession;
+    async browser(stack) {
+      const handle =
+        (stack && stacks[stack]) || stacks.capella || stacks.product;
+      const env = handle?.env || capellaEnv?.env || productEnv?.env;
       const origin =
-        stacks.product?.appOrigin ||
-        `http://localhost:${productEnv?.env.CBT_ACCEPT_HOST_APP_PORT || 18080}`;
+        handle?.appOrigin ||
+        `http://localhost:${env?.CBT_ACCEPT_HOST_APP_PORT || 18080}`;
+      if (browserSession && ctx.shared.appOrigin === origin) {
+        return browserSession;
+      }
+      if (browserSession) {
+        await browserSession.close().catch(() => {});
+        browserSession = null;
+      }
       ctx.shared.appOrigin = origin;
       browserSession = await openBrowserSession({
         origin,
@@ -260,6 +276,54 @@ async function main() {
         stacks.dev = stacks.product;
       }
 
+      if (stage.stack === 'capella') {
+        if (!dockerAvailable()) {
+          const err = new Error('Docker is not running or compose is missing');
+          /** @type {any} */ (err).runnerError = true;
+          throw err;
+        }
+        // Capella overrides the local Couchbase service; tear down the product
+        // stack first so ports/volumes do not collide.
+        if (stacks.product && !flags.keepStack) {
+          log('Tearing down product stack before Capella override');
+          downProductStack(ROOT, {
+            envFile: stacks.product.envFile,
+            keepStack: false,
+          });
+          productEnv?.cleanup?.();
+          stacks.product = null;
+          productEnv = null;
+        }
+        if (browserSession) {
+          await browserSession.close().catch(() => {});
+          browserSession = null;
+        }
+        capellaEnv = prepareCapellaEnv(ROOT);
+        if (capellaEnv.missing.length) {
+          log(
+            `Capella env missing: ${capellaEnv.missing.join(', ')} (checks will block)`,
+          );
+        } else {
+          const up = await upCapellaStack(ROOT, {
+            envFile: capellaEnv.envFile,
+            keepStack: flags.keepStack,
+            reuseStack: flags.reuseStack,
+            evidenceDir,
+            log,
+          });
+          stacks.capella = {
+            ...up,
+            ready: up.ok,
+            envFile: capellaEnv.envFile,
+            env: capellaEnv.env,
+            apiOrigin: `http://localhost:${capellaEnv.env.CBT_ACCEPT_HOST_API_PORT || 18000}`,
+            appOrigin: `http://localhost:${capellaEnv.env.CBT_ACCEPT_HOST_APP_PORT || 18080}`,
+            otlpEndpoint: `http://127.0.0.1:14318`,
+          };
+          ctx.shared.appOrigin = stacks.capella.appOrigin;
+        }
+      }
+
       for (const id of stageIds) {
         const check = BY_ID.get(id);
         if (!check) continue;
@@ -289,16 +353,29 @@ async function main() {
       }
     }
 
-    // Tear down product stack at end unless keep-stack
+    // Tear down stacks at end unless keep-stack
+    if (stacks.capella && !flags.keepStack) {
+      log('Tearing down Capella stack');
+      downCapellaStack(ROOT, {
+        envFile: stacks.capella.envFile,
+        keepStack: false,
+      });
+      capellaEnv?.cleanup?.();
+    }
     if (stacks.product && !flags.keepStack) {
       log('Tearing down product stack');
       downProductStack(ROOT, {
         envFile: stacks.product.envFile,
         keepStack: false,
       });
+      productEnv?.cleanup?.();
     }
   } catch (err) {
     if (browserSession) await browserSession.close().catch(() => {});
+    if (stacks.capella && !flags.keepStack) {
+      downCapellaStack(ROOT, { envFile: stacks.capella.envFile });
+      capellaEnv?.cleanup?.();
+    }
     if (productEnv && !flags.keepStack) {
       downProductStack(ROOT, { envFile: productEnv.envFile });
       productEnv.cleanup?.();
@@ -363,6 +440,7 @@ async function main() {
 
   writeReportArtifacts(ROOT, report);
   productEnv?.cleanup?.();
+  capellaEnv?.cleanup?.();
 
   const status = computeReportStatus(report.checks);
   log(`Report status=${status} final=${report.final}`);

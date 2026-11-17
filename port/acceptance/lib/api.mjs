@@ -141,8 +141,20 @@ export class ApiClient {
     return this.request('/couchbase/test', { method: 'POST', json: body });
   }
 
+  async couchbaseTestSource(body) {
+    return this.request('/couchbase/test-source', { method: 'POST', json: body });
+  }
+
   async couchbaseQuery(body) {
     return this.request('/couchbase/query', { method: 'POST', json: body });
+  }
+
+  async connections() {
+    return this.request('/connections');
+  }
+
+  async createConnection(body) {
+    return this.request('/connections', { method: 'POST', json: body });
   }
 
   async sources() {
