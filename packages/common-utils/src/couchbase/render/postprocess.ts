@@ -9,7 +9,7 @@ import type { BuilderChartConfigWithOptDateRange } from '@/types';
 
 const COUNT_LIKE = new Set(['count', 'count_distinct', 'increase']);
 
-/** ClickHouse-shaped result name for one select list item (e.g. `count()`). */
+/** Upstream-shaped result name for one select list item (e.g. `count()`). */
 export function couchbaseSelectItemAlias(
   item: { alias?: string; aggFn?: string | null; valueExpression?: string },
   index: number,

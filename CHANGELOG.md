@@ -8,8 +8,8 @@ Release-level highlights. Upstream history is in docs/upstream/CHANGELOG.md.
 
 **Couchbase Traces acceptance baseline**
 
-Phase 11 acceptance runs against Couchbase Server Enterprise 8.x with SQL++ in
-place of ClickHouse. PromQL was dropped with sign-off in docs/parity.md.
+Phase 11 acceptance runs against Couchbase Server Enterprise 8.x with SQL++.
+PromQL was dropped with sign-off in docs/parity.md.
 
 ### 💥 Breaking Changes
 

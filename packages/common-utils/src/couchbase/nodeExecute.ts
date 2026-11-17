@@ -79,7 +79,7 @@ const AUTO_RESULT_NAME = /^\$\d+$/;
 
 /**
  * SQL++ names unaliased select items `$1`, `$2`, …. Chart postprocess hints
- * expect ClickHouse-shaped names (`count()`, group expressions, …). Rename
+ * expect upstream-shaped names (`count()`, group expressions, …). Rename
  * auto keys onto unused hint names by position so meta/rows agree.
  */
 export function remapCouchbaseAutoResultNames(

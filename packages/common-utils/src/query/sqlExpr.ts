@@ -262,7 +262,7 @@ function selectColumnsToAliasMap(
 
   // SQL++ assigns `$1`, `$2`, … to select items without an AS alias. Map those
   // result names back to the expression so ad hoc click-to-filter keys match
-  // ClickHouse (where the unaliased expression itself was the column name).
+  // the upstream column naming (unaliased expression as the result name).
   let autoResultIndex = 0;
 
   if (ast.columns != null) {

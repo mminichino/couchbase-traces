@@ -263,7 +263,7 @@ async function renderSelectListCouchbase(
     }
 
     // SQL++ auto-names bare expressions `$1`, `$2`, … which breaks charts that
-    // expect ClickHouse-shaped names (`count()`, …). Alias top-level series;
+    // expect upstream-shaped names (`count()`, …). Alias top-level series;
     // formula/ratio nesting must stay bare (AS inside CASE/divide is invalid).
     if (select.alias != null && select.alias.trim() !== '') {
       out.push(sqlpp`${expr} AS ${{ Identifier: select.alias.trim() }}`);
