@@ -451,10 +451,51 @@ export class Metadata {
         args,
         inferStatement(keyspaceOf(args), this.inferSample()),
       );
-      return parseInfer(rows.map(raw));
+      const fields = parseInfer(rows.map(raw));
+      if (fields.length > 0) return fields;
+    } catch (err) {
+      if (!isAccessDeniedError(err)) throw err;
+      console.warn('INFER failed for permissions', err);
+    }
+    // INFER can return nothing (empty collection sample or denied). Fall back
+    // to field names from a few real documents so ad hoc key pickers still work.
+    return this.inferFieldsFromSample(args);
+  }
+
+  private async inferFieldsFromSample(args: Tc): Promise<InferredField[]> {
+    const ks = keyspaceOf(args);
+    const q = sqlpp`SELECT d FROM ${{ Keyspace: ks }} AS d LIMIT ${{ Param: 5 }}`;
+    try {
+      const rows = await this.rows(args, q);
+      const props = new Map<string, { type: string; samples: unknown[] }>();
+      for (const row of rows) {
+        const doc = sampleDoc(row);
+        if (doc == null) continue;
+        for (const [name, value] of Object.entries(doc)) {
+          if (name.startsWith('_')) continue;
+          const type =
+            typeof value === 'number'
+              ? 'number'
+              : typeof value === 'boolean'
+                ? 'boolean'
+                : Array.isArray(value)
+                  ? 'array'
+                  : value != null && typeof value === 'object'
+                    ? 'object'
+                    : 'string';
+          const existing = props.get(name);
+          if (existing == null) {
+            props.set(name, { type, samples: [value] });
+          } else if (existing.samples.length < 3) {
+            existing.samples.push(value);
+          }
+        }
+      }
+      if (props.size === 0) return [];
+      return parseInfer([{ properties: Object.fromEntries(props.entries()) }]);
     } catch (err) {
       if (isAccessDeniedError(err)) {
-        console.warn('INFER failed for permissions', err);
+        console.warn('Sample infer failed for permissions', err);
         return [];
       }
       throw err;
@@ -507,12 +548,20 @@ export class Metadata {
     const hasWhere = isNonEmptyWhereExpr(chartConfig.where);
     const hasFilters = (chartConfig.filters?.length ?? 0) > 0;
     if (!hasWhere && !hasFilters) return undefined;
+    const whereText = chartConfig.where ?? '';
     // Unexpanded macros cannot be applied as SQL++ predicates.
     if (
       hasWhere &&
-      /\$__(?:filter|conditionalAll|filters|sourceTable)\b/.test(
-        chartConfig.where ?? '',
-      )
+      /\$__(?:filter|conditionalAll|filters|sourceTable)\b/.test(whereText)
+    ) {
+      return undefined;
+    }
+    // Lucene empty-variable rendering (`ServiceName:("")`) is a match-all; the
+    // SQL++ search builder would otherwise return no rows for dropdown lists.
+    if (
+      hasWhere &&
+      chartConfig.whereLanguage === 'lucene' &&
+      /:\(\s*""\s*\)/.test(whereText)
     ) {
       return undefined;
     }
@@ -640,6 +689,23 @@ function raw(row: unknown): unknown {
     return (row as { value: unknown }).value;
   }
   return row;
+}
+
+/** Unwrap `SELECT d FROM … AS d` rows into the document object. */
+function sampleDoc(row: unknown): Record<string, unknown> | null {
+  if (row == null || typeof row !== 'object' || Array.isArray(row)) {
+    return null;
+  }
+  const record: object = row;
+  if (
+    'd' in record &&
+    record.d != null &&
+    typeof record.d === 'object' &&
+    !Array.isArray(record.d)
+  ) {
+    return { ...record.d };
+  }
+  return { ...record };
 }
 
 function mapValueExpr(column: string, key?: string): string {
