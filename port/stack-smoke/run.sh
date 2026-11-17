@@ -98,8 +98,10 @@ compose up -d --pull missing
 wait_for_init() {
   local deadline=$((SECONDS + 600))
   while [ "$SECONDS" -lt "$deadline" ]; do
+    # -a: one-shot init is already exited after `compose up` waited on it;
+    # without -a, `ps -q` returns empty and this loop times out.
     local cid
-    cid="$(compose ps -q couchbase-init 2>/dev/null || true)"
+    cid="$(compose ps -aq couchbase-init 2>/dev/null || true)"
     if [ -n "$cid" ]; then
       local state exit_code
       state="$(docker inspect -f '{{.State.Status}}' "$cid")"

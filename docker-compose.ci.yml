@@ -21,6 +21,14 @@ services:
   couchbase:
     image: couchbase/server:enterprise-8.0.3
     mem_limit: 4g
+    # Host ports so API/common-utils Jest on the runner can reach the cluster
+    # (fixtures + couchbase.*.int.test.ts). Defaults match scripts/slots.sh CI.
+    ports:
+      - '${CBT_CI_CB_MGMT_PORT:-8091}:8091'
+      - '${CBT_CI_CB_VIEW_PORT:-8092}:8092'
+      - '${CBT_CI_CB_QUERY_PORT:-8093}:8093'
+      - '${CBT_CI_CB_FTS_PORT:-8094}:8094'
+      - '${CBT_CI_CB_KV_PORT:-11210}:11210'
     healthcheck:
       test:
         ['CMD', 'curl', '-fs', 'http://localhost:8091/ui/index.html']
@@ -36,6 +44,13 @@ services:
       dockerfile: packages/ingest/Dockerfile
     environment:
       <<: *cbt-couchbase-env
+      # Publish alternate address when CI remaps host ports (non-default slots).
+      CBT_COUCHBASE_ALT_HOSTNAME: localhost
+      CBT_COUCHBASE_ALT_MGMT_PORT: ${CBT_CI_CB_MGMT_PORT:-8091}
+      CBT_COUCHBASE_ALT_VIEW_PORT: ${CBT_CI_CB_VIEW_PORT:-8092}
+      CBT_COUCHBASE_ALT_QUERY_PORT: ${CBT_CI_CB_QUERY_PORT:-8093}
+      CBT_COUCHBASE_ALT_FTS_PORT: ${CBT_CI_CB_FTS_PORT:-8094}
+      CBT_COUCHBASE_ALT_KV_PORT: ${CBT_CI_CB_KV_PORT:-11210}
     entrypoint: ['/bin/bash', '/docker/couchbase/init.sh']
     volumes:
       - ./docker/couchbase/init.sh:/docker/couchbase/init.sh:ro
