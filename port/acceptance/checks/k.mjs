@@ -25,11 +25,18 @@ export function expandGithubExpressions(cmd) {
     .replace(/\$\{\{\s*env\.[^}]+\}\}/g, '')
     .replace(/\$\{\{\s*inputs\.[^}]+\}\}/g, '')
     .replace(/\$\{\{\s*[^}]+\}\}/g, '');
-  // CI shards e2e across matrix workers; locally run the same suite via make.
+  // CI shards e2e across matrix workers. Map to the local fullstack runner with
+  // the expanded shard (matrix.shard → 1 above) instead of the entire suite —
+  // `make e2e` runs all shards and routinely exceeds local timeouts.
   if (/^yarn\s+test:e2e\b/.test(out) && /--shard=/.test(out)) {
-    out = 'make e2e';
+    const shard = out.match(/--shard=\S+/)?.[0] ?? '--shard=1/4';
+    out = `./scripts/test-e2e.sh ${shard}`;
   }
   return out;
+}
+
+function isLocalCiCommand(cmd) {
+  return /^(make|yarn)\b/.test(cmd) || /^\.\/scripts\/test-e2e\.sh\b/.test(cmd);
 }
 
 export function extractLocalCiCommands(text) {
@@ -45,8 +52,12 @@ export function extractLocalCiCommands(text) {
       continue;
     }
     if (/^\s+run:\s+\S/.test(line)) {
-      const cmd = expandGithubExpressions(line.replace(/^\s+run:\s+/, '').trim());
-      if (/^(make|yarn)\b/.test(cmd)) cmds.push(cmd);
+      const raw = line.replace(/^\s+run:\s+/, '').trim();
+      const cmd = expandGithubExpressions(raw);
+      // Accept make/yarn, or the mapped e2e runner from yarn test:e2e --shard.
+      if (isLocalCiCommand(cmd) || /^(make|yarn)\b/.test(raw)) {
+        if (isLocalCiCommand(cmd)) cmds.push(cmd);
+      }
       inRun = false;
       continue;
     }
@@ -56,8 +67,11 @@ export function extractLocalCiCommands(text) {
           // end of block
           const block = buf.join('\n');
           for (const part of block.split(/\n/)) {
-            const t = part.trim();
-            if (/^(make|yarn)\b/.test(t)) cmds.push(expandGithubExpressions(t));
+            const raw = part.trim();
+            const t = expandGithubExpressions(raw);
+            if (isLocalCiCommand(t) || /^(make|yarn)\b/.test(raw)) {
+              if (isLocalCiCommand(t)) cmds.push(t);
+            }
           }
           inRun = false;
           buf = [];
@@ -74,8 +88,11 @@ export function extractLocalCiCommands(text) {
   }
   if (inRun && buf.length) {
     for (const part of buf) {
-      const t = expandGithubExpressions(part.trim());
-      if (/^(make|yarn)\b/.test(t)) cmds.push(t);
+      const raw = part.trim();
+      const t = expandGithubExpressions(raw);
+      if (isLocalCiCommand(t) || /^(make|yarn)\b/.test(raw)) {
+        if (isLocalCiCommand(t)) cmds.push(t);
+      }
     }
   }
   return [...new Set(cmds)];
@@ -136,8 +153,8 @@ async function k1(ctx) {
     if (seen.has(cmd)) continue;
     seen.add(cmd);
     ctx.log(`K1: ${cmd}`);
-    // Full Playwright e2e regularly exceeds 10 minutes on a loaded machine.
-    const timeoutMs = /^make\s+e2e\b/.test(cmd) ? 2_700_000 : 900_000;
+    // One Playwright e2e shard is budgeted like the workflow's 15–25m job.
+    const timeoutMs = /test-e2e\.sh|\be2e\b/.test(cmd) ? 2_700_000 : 900_000;
     const r = spawnSync('bash', ['-lc', cmd], {
       cwd: ctx.root,
       env: ciEnv,

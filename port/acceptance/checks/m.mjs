@@ -63,22 +63,26 @@ async function m1(ctx) {
     }
   }
 
-  // Full e2e as in workflow — may be heavy; attempt documented make target.
-  const e2e = spawnSync('bash', ['-lc', 'make e2e 2>&1 | tail -n 80'], {
+  // Match e2e-tests.yml: fullstack Playwright with one matrix shard. Pipefail
+  // so a failing shard is not masked by `tail` exiting 0.
+  const e2eCmd =
+    'set -o pipefail; ./scripts/test-e2e.sh --shard=1/4 2>&1 | tee /tmp/cbt-m1-e2e.log | tail -n 120';
+  const e2e = spawnSync('bash', ['-lc', e2eCmd], {
     cwd: ctx.root,
     encoding: 'utf8',
-    timeout: 1_800_000,
+    timeout: 2_700_000,
   });
   results.push({
-    name: 'make e2e',
+    name: './scripts/test-e2e.sh --shard=1/4',
     status: e2e.status,
     out: (e2e.stdout || '').slice(-2000),
+    err: (e2e.stderr || '').slice(-1000),
   });
   if (e2e.status !== 0) {
     failed = true;
-    failedSet.add('make e2e');
+    failedSet.add('./scripts/test-e2e.sh --shard=1/4');
   } else {
-    passed.add('make e2e');
+    passed.add('./scripts/test-e2e.sh --shard=1/4');
   }
 
   ctx.testResults = {
@@ -93,7 +97,7 @@ async function m1(ctx) {
     status: failed ? 'fail' : 'pass',
     summary: failed
       ? `Regression failures: ${[...failedSet].join(', ')}`
-      : 'Golden, check.sh, couchbase-test, and e2e passed',
+      : 'Golden, check.sh, couchbase-test, and e2e shard 1/4 passed',
     details: { results },
     durationMs: Date.now() - started,
   });
