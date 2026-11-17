@@ -16,7 +16,7 @@ export function filterVisibleRowMeta(
 /**
  * Drop display-only hidden columns from a result row. Keeps
  * {@link ROW_ID_ALIAS} so `useRowWhere` can build `META(d).id = …` instead of
- * falling back to ClickHouse-shaped column predicates.
+ * falling back to multi-column equality predicates.
  */
 export function stripHiddenRowFields<T extends Record<string, unknown>>(
   row: T,

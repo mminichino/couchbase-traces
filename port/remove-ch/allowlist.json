@@ -1694,6 +1694,12 @@
       "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or \u00a712 messaging."
     },
     {
+      "path": "packages/app/tests/e2e/features/dashboard-adhoc-click-filters.spec.ts",
+      "pattern": "clickhouse|clickstack|chSql",
+      "reason": "port_history",
+      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or \u00a712 messaging."
+    },
+    {
       "path": "packages/app/tests/e2e/features/dashboard-filter-value-format.spec.ts",
       "pattern": "clickhouse|clickstack|chSql",
       "reason": "port_history",
