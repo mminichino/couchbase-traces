@@ -512,7 +512,7 @@ test.describe(
           page,
           conditionsIn([
             {
-              key: 'ResourceAttributesJSON.key.subKey.subSubKey',
+              key: 'ResourceAttributesJSON.`key`.subKey.subSubKey',
               operator: '=',
               value: 'value2',
             },

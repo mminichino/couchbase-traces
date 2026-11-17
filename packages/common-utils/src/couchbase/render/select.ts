@@ -265,7 +265,12 @@ async function renderSelectListCouchbase(
     // SQL++ auto-names bare expressions `$1`, `$2`, … which breaks charts that
     // expect upstream-shaped names (`count()`, …). Alias top-level series;
     // formula/ratio nesting must stay bare (AS inside CASE/divide is invalid).
-    if (select.alias != null && select.alias.trim() !== '') {
+    // `*` must stay unaliased (`d.*`); `* AS \`*\`` is a syntax error.
+    const isStar =
+      select.aggFn == null && select.valueExpression?.trim() === '*';
+    if (isStar) {
+      out.push(sqlpp`${{ Raw: `${ALIAS}.*` }}`);
+    } else if (select.alias != null && select.alias.trim() !== '') {
       out.push(sqlpp`${expr} AS ${{ Identifier: select.alias.trim() }}`);
     } else if (autoAlias) {
       const alias = couchbaseSelectItemAlias(select, out.length);

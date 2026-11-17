@@ -171,9 +171,15 @@ export default function useRowWhere({
     [meta, aliasMap],
   );
 
-  // Memoize the aliasWith array since it only depends on aliasMap
+  // Memoize the aliasWith array since it only depends on aliasMap.
+  // Never lift the Couchbase row-id alias into WITH — sqlExprToAliasMap
+  // rewrites `META(d).id` to `__cbt_meta_id` for the parser, which is not
+  // valid SQL++ in a WITH clause.
   const aliasWith = useMemo(
-    () => aliasMapToWithClauses(aliasMap) ?? [],
+    () =>
+      (aliasMapToWithClauses(aliasMap) ?? []).filter(
+        clause => clause.name !== ROW_ID_ALIAS,
+      ),
     [aliasMap],
   );
 
