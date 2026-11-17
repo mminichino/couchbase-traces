@@ -1,5 +1,5 @@
-import type { ColumnMetaType } from '@couchbase-traces/common-utils/dist/query';
 import { ROW_ID_ALIAS } from '@couchbase-traces/common-utils/dist/couchbase/render';
+import type { ColumnMetaType } from '@couchbase-traces/common-utils/dist/query';
 
 import { HIDDEN_ROW_COLUMNS } from '@/couchbase/dialect';
 
