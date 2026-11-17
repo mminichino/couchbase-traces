@@ -80,10 +80,9 @@ if [ "${CI:-}" = "true" ] || [ "${CBT_STACK_SMOKE_PRUNE:-}" = "1" ]; then
   docker system prune -af --volumes || true
   df -h / || true
 fi
-# `compose build --pull` is boolean; `--pull never` is only valid on `up`.
-# build-local.yml replaces GHCR image tags with local build contexts, so
-# build does not need a pull policy. Keep --pull never on up so compose
-# does not probe private GHCR tags for services that still name them.
+# build-local.yml sets pull_policy: never on locally built images so compose
+# does not probe private GHCR tags. Public images (mongo, couchbase) still
+# need a pull when missing — use --pull missing on up, not --pull never.
 # Build one image at a time so peak disk stays under the runner limit.
 export BUILDKIT_MAX_PARALLELISM="${BUILDKIT_MAX_PARALLELISM:-1}"
 for svc in couchbase-init ingest otel-collector app; do
@@ -92,7 +91,9 @@ for svc in couchbase-init ingest otel-collector app; do
   docker builder prune -af || true
   df -h / || true
 done
-compose up -d --pull never
+echo "[stack-smoke] pulling public images (mongo/couchbase) if missing"
+compose pull db couchbase || true
+compose up -d --pull missing
 
 wait_for_init() {
   local deadline=$((SECONDS + 600))

@@ -47,9 +47,24 @@ beforeAll(async () => {
     console.warn(msg);
     return;
   }
-  await adminMutate(
-    `CREATE COLLECTION \`test\`.\`app\`.\`${COLLECTION}\` IF NOT EXISTS`,
-  );
+  // DDL against a just-initialized cluster can 12003 until the query
+  // service sees the scope; retry before failing the suite.
+  let created = false;
+  for (let i = 0; i < 30; i++) {
+    try {
+      await adminMutate(
+        `CREATE COLLECTION \`test\`.\`app\`.\`${COLLECTION}\` IF NOT EXISTS`,
+      );
+      created = true;
+      break;
+    } catch (err) {
+      if (i === 29) throw err;
+      await new Promise(r => setTimeout(r, 1000));
+    }
+  }
+  if (!created) {
+    throw new Error(`failed to ensure collection ${COLLECTION}`);
+  }
   await adminMutate(`CREATE PRIMARY INDEX IF NOT EXISTS ON ${KS}`);
   for (let i = 0; i < 30; i++) {
     try {
@@ -59,7 +74,7 @@ beforeAll(async () => {
       await new Promise(r => setTimeout(r, 500));
     }
   }
-}, 60000);
+}, 90000);
 
 afterAll(async () => {
   await clusterCache.closeAll();

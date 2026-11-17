@@ -127,7 +127,10 @@ cli_create() {
 create_scope_and_collections() {
   log "Ensuring scope $BUCKET.$SCOPE and its collections"
   retry 10 cli_create collection-manage --bucket "$BUCKET" --create-scope "$SCOPE"
-  for collection in events metrics_gauge; do
+  # otel_metrics_exponential_histogram is required by
+  # expHistogram.couchbase.int.test.ts (CREATE COLLECTION via SQL++ races a
+  # cold query service on fresh clusters).
+  for collection in events metrics_gauge otel_metrics_exponential_histogram; do
     retry 10 cli_create collection-manage --bucket "$BUCKET" \
       --create-collection "$SCOPE.$collection"
   done
@@ -178,10 +181,31 @@ load_fixtures() {
     FROM ARRAY_RANGE(0, 1000) AS i"
 }
 
+wait_for_rebalance() {
+  log "Waiting for rebalance to finish"
+  local i
+  for ((i = 1; i <= 60; i++)); do
+    if ! cli server-list 2>/dev/null | grep -qi rebalance; then
+      # couchbase-cli recovery/rebalance status via REST
+      local status
+      status=$(docker exec "$CONTAINER" curl -sf -u "$ADMIN_USER:$ADMIN_PASSWORD" \
+        http://127.0.0.1:8091/pools/default/rebalanceProgress 2>/dev/null || true)
+      case "$status" in
+        *'"status":"none"'*|*'"status": "none"'*|'') return 0 ;;
+      esac
+    fi
+    sleep 2
+  done
+  log "Rebalance still reported after wait; continuing"
+}
+
 create_index() {
+  wait_for_rebalance
+  # Avoid DESC: fresh EE clusters often reject descending indexes until the
+  # index service reports fully upgraded (flakes CI for ~30s of retries).
   log "Creating index idx_events_ts"
   retry 30 query_ok "CREATE INDEX idx_events_ts IF NOT EXISTS
-    ON \`$BUCKET\`.\`$SCOPE\`.\`events\`(ts DESC)"
+    ON \`$BUCKET\`.\`$SCOPE\`.\`events\`(ts)"
   log "Creating index ix_events_attr_items"
   retry 30 query_ok "CREATE INDEX ix_events_attr_items IF NOT EXISTS
     ON \`$BUCKET\`.\`$SCOPE\`.\`events\`(DISTINCT ARRAY (p.\`name\` || \"=\" || p.\`val\`) FOR p IN OBJECT_PAIRS(\`attrs\`) END)"

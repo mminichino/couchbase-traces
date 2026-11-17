@@ -131,15 +131,14 @@ jobs:
           docker builder prune -af || true
           docker system prune -af --volumes || true
           df -h / || true
-          docker buildx create --use --driver=docker-container --name cbt-ci || docker buildx use cbt-ci
           export BUILDKIT_MAX_PARALLELISM=1
-          # Bake one buildable target at a time; couchbase/db are pull-only.
+          # Compose build (not bake): bake --load + a later plain `compose up`
+          # often rebuilds anyway and left ingest unhealthy. Sequential compose
+          # build keeps project image tags aligned with `up --no-build`.
+          docker compose -f ./docker-compose.ci.yml pull couchbase db
           for target in couchbase-init ingest otel-collector; do
-            echo "Baking ${target}..."
-            docker buildx bake -f ./docker-compose.ci.yml "${target}" \
-              --set "*.cache-to=type=gha,mode=max,scope=ci-integration" \
-              --set "*.cache-from=type=gha,scope=ci-integration" \
-              --load
+            echo "Building ${target}..."
+            docker compose -f ./docker-compose.ci.yml build "$target"
             docker builder prune -af || true
             df -h / || true
           done
@@ -157,14 +156,22 @@ jobs:
       # so one failure doesn't hide the other.
       #
       # Runs inline (not `make ci-int`) so the compose project stays `hdx-ci`
-      # (matching the bake step above); make ci-int's `-p int-<slot>` is local
-      # multi-worktree isolation that CI doesn't need, and routing through it
-      # would reintroduce a project-name mismatch against bake. Teardown and
+      # (matching the build step above); make ci-int's `-p int-<slot>` is local
+      # multi-worktree isolation that CI doesn't need. Teardown and
       # log-archival are omitted intentionally — the runner is ephemeral and
       # Actions streams stdout.
       - name: Run integration tests
         run: |
-          docker compose -f ./docker-compose.ci.yml up -d --quiet-pull
+          set +e
+          docker compose -f ./docker-compose.ci.yml up -d --no-build --pull missing
+          up_status=$?
+          if [ "$up_status" -ne 0 ]; then
+            echo "::error::compose up failed ($up_status); dumping service logs"
+            docker compose -f ./docker-compose.ci.yml ps -a || true
+            docker compose -f ./docker-compose.ci.yml logs --no-color --tail=200 \
+              couchbase couchbase-init ingest otel-collector db || true
+            exit "$up_status"
+          fi
           status=0
           yarn workspace @couchbase-traces/common-utils ci:int --shard=${{ matrix.shard }}/${{ strategy.job-total }} || status=1
           yarn workspace @couchbase-traces/api ci:int --shard=${{ matrix.shard }}/${{ strategy.job-total }} || status=1
