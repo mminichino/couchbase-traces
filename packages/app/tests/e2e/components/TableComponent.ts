@@ -64,10 +64,11 @@ export class TableComponent {
    * Click on the first row
    */
   async clickFirstRow() {
-    // Prefer a real pointer click (dashboard search tiles need it to open the
-    // row side panel). Fall back to a DOM click when the table/virtualizer or
-    // an open drawer intercepts the pointer (search page correlated-metric).
+    // Prefer a real pointer click so dashboard search tiles open the row side
+    // panel. Fall back to a DOM click when the table/virtualizer or an open
+    // drawer intercepts the pointer (search page correlated-metric).
     const row = this.firstRow;
+    await row.waitFor({ state: 'visible', timeout: 10000 });
     const button = row.getByRole('button', {
       name: /^(View details for log entry|Expand log row|Collapse log row)$/,
     });
@@ -75,8 +76,18 @@ export class TableComponent {
       await row.click({ force: true });
       return;
     }
+    if (await this.isCoveredBySidePanel(button)) {
+      await button.evaluate(el => {
+        if (el instanceof HTMLElement) {
+          el.click();
+        }
+      });
+      return;
+    }
     try {
-      await button.click({ position: { x: 4, y: 8 }, timeout: 3000 });
+      // Full-button click (not a left-edge offset): dashboard tiles nest cell
+      // chrome that can swallow a {x:4,y:8} hit without firing onClick.
+      await button.click({ timeout: 3000 });
     } catch {
       await button.evaluate(el => {
         if (el instanceof HTMLElement) {

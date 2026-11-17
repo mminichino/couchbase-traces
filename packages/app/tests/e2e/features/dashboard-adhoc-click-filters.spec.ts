@@ -570,10 +570,17 @@ test.describe(
           ]);
 
       await test.step('Add to filters adds a condition', async () => {
-        await new TableComponent(page).clickFirstRow();
-        await expect(page.getByTestId('row-side-panel')).toBeVisible({
-          timeout: 10000,
-        });
+        const table = new TableComponent(page);
+        await table.waitForRowsToPopulate();
+        await table.clickFirstRow();
+        const panel = page.getByTestId('row-side-panel');
+        try {
+          await expect(panel).toBeVisible({ timeout: 5000 });
+        } catch {
+          // Retry once — virtualizer / hover chrome can swallow the first click.
+          await table.clickFirstRow();
+          await expect(panel).toBeVisible({ timeout: 10000 });
+        }
         await expect(page.getByTestId('tab-parsed')).toBeVisible({
           timeout: 15000,
         });
