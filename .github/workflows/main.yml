@@ -99,7 +99,9 @@ jobs:
         run: make ci-unit
   integration-shards:
     name: Integration - Shard ${{ matrix.shard }}
-    timeout-minutes: 16
+    # Sequential bake + prune (ENOSPC mitigation) needs more than the old
+    # parallel-bake 16m budget; 35m covers couchbase-init/ingest/otel.
+    timeout-minutes: 35
     runs-on: ubuntu-24.04
     strategy:
       fail-fast: false
