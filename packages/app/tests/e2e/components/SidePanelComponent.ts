@@ -129,7 +129,19 @@ export class SidePanelComponent {
       .filter({ has: this.page.getByText(field, { exact: true }) })
       .first();
     await line.hover();
-    await line.getByTitle(/add to filters/i).click();
+    const action = line.getByTitle(/add to filters/i);
+    // Bottom-right toasts (filter applied, etc.) can cover the line action.
+    try {
+      await action.click({ timeout: 3000 });
+    } catch {
+      await this.page
+        .locator('.mantine-Notifications-root [role="alert"]')
+        .first()
+        .waitFor({ state: 'hidden', timeout: 5000 })
+        .catch(() => undefined);
+      await line.hover();
+      await action.click({ force: true });
+    }
   }
 
   /**
