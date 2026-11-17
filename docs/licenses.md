@@ -2300,7 +2300,7 @@ Packages reachable from workspace `dependencies` (private workspaces are omitted
 | github.com/google/s2a-go | v0.1.9 | Apache-2.0 | https://github.com/google/s2a-go/blob/v0.1.9/LICENSE.md | collector builder manifest (OTel 0.155.0) |
 | github.com/google/uuid | v1.6.0 | BSD-3-Clause | https://github.com/google/uuid/blob/v1.6.0/LICENSE | collector builder manifest (OTel 0.155.0) |
 | github.com/googleapis/enterprise-certificate-proxy/client |  | Apache-2.0 | https://github.com/googleapis/enterprise-certificate-proxy/blob/v0.3.15/LICENSE | collector builder manifest (OTel 0.155.0) |
-| github.com/googleapis/gax-go/v2 | v2.22.0 | BSD-3-Clause | https://github.com/googleapis/gax-go/blob/v2.22.0/v2/LICENSE | collector builder manifest (OTel 0.155.0) |
+| github.com/googleapis/gax-go/v2 | v2.22.0 | BSD-3-Clause | https://github.com/googleapis/gax-go/blob/v2.22.0/LICENSE | collector builder manifest (OTel 0.155.0) |
 | github.com/GoogleCloudPlatform/opentelemetry-operations-go/detectors/gcp | v1.33.0 | Apache-2.0 | https://github.com/GoogleCloudPlatform/opentelemetry-operations-go/blob/detectors/gcp/v1.33.0/detectors/gcp/LICENSE | collector builder manifest (OTel 0.155.0) |
 | github.com/gophercloud/gophercloud/v2 | v2.12.0 | Apache-2.0 | https://github.com/gophercloud/gophercloud/blob/v2.12.0/LICENSE | collector builder manifest (OTel 0.155.0) |
 | github.com/gorilla/websocket | v1.5.4-0.20250319132907-e064f32e3674 | BSD-2-Clause | https://github.com/gorilla/websocket/blob/e064f32e3674/LICENSE | collector builder manifest (OTel 0.155.0) |
