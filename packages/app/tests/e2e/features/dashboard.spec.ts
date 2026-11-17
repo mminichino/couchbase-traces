@@ -1734,9 +1734,9 @@ test.describe('Dashboard', { tag: ['@dashboard'] }, () => {
           await dashboardPage.chartEditor.openGeneratedSql();
           await expect(async () => {
             const sql = await dashboardPage.chartEditor.getGeneratedSqlText();
-            // $__filter(ServiceName, $svc) -> (ServiceName IN ('accounting'))
-            expect(sql).toContain("(ServiceName IN ('accounting'))");
-            // ServiceName IN ($svc) -> ServiceName IN ('accounting')
+            // $__filter(ServiceName, $svc) -> (ServiceName IN ['accounting'])
+            expect(sql).toContain("(ServiceName IN ['accounting'])");
+            // ServiceName IN ($svc) -> ServiceName IN ['accounting']
             expect(sql).toMatch(
               /ServiceName IN \('accounting'\)[\s\S]*ServiceName IN \('accounting'\)/,
             );
@@ -1857,7 +1857,7 @@ test.describe('Dashboard', { tag: ['@dashboard'] }, () => {
           await dashboardPage.chartEditor.openGeneratedSql();
           await expect(async () => {
             const sql = await dashboardPage.chartEditor.getGeneratedSqlText();
-            expect(sql).toContain("ServiceName IN ('accounting')");
+            expect(sql).toContain("ServiceName IN ['accounting']");
           }).toPass({ timeout: 15000 });
         });
 
@@ -1884,7 +1884,7 @@ test.describe('Dashboard', { tag: ['@dashboard'] }, () => {
           await dashboardPage.chartEditor.clickRemoveAlert();
           await expect(async () => {
             const sql = await dashboardPage.chartEditor.getGeneratedSqlText();
-            expect(sql).toContain("ServiceName IN ('accounting')");
+            expect(sql).toContain("ServiceName IN ['accounting']");
           }).toPass({ timeout: 15000 });
         });
       },
@@ -2139,7 +2139,7 @@ test.describe('Dashboard', { tag: ['@dashboard'] }, () => {
           await dashboardPage.chartEditor.openGeneratedSql();
           await expect(async () => {
             const sql = await dashboardPage.chartEditor.getGeneratedSqlText();
-            expect(sql).toContain("ServiceName IN ('accounting')");
+            expect(sql).toContain("ServiceName IN ['accounting']");
             expect(sql).not.toContain('$svc');
           }).toPass({ timeout: 15000 });
         });
@@ -2213,7 +2213,7 @@ test.describe('Dashboard', { tag: ['@dashboard'] }, () => {
           await dashboardPage.chartEditor.openGeneratedSql();
           await expect(async () => {
             const sql = await dashboardPage.chartEditor.getGeneratedSqlText();
-            expect(sql).toContain("IN ('accounting')");
+            expect(sql).toContain("IN ['accounting']");
           }).toPass({ timeout: 15000 });
         });
 
@@ -2281,7 +2281,7 @@ test.describe('Dashboard', { tag: ['@dashboard'] }, () => {
           await dashboardPage.chartEditor.openGeneratedSql();
           await expect(async () => {
             const sql = await dashboardPage.chartEditor.getGeneratedSqlText();
-            expect(sql).toContain("IN ('accounting')");
+            expect(sql).toContain("IN ['accounting']");
             expect(sql).not.toContain('$__filter');
           }).toPass({ timeout: 15000 });
         });
@@ -2382,7 +2382,7 @@ test.describe('Dashboard', { tag: ['@dashboard'] }, () => {
           // The search page reads `where` with nuqs (double-encoded), so decode
           // the extra layer before asserting on the expanded predicate.
           expect(decodeURIComponent(params.get('where') ?? '')).toBe(
-            "(ServiceName IN ('accounting'))",
+            "(ServiceName IN ['accounting'])",
           );
           expect(decodeURIComponent(href)).not.toContain('$svc');
         });
@@ -2402,7 +2402,7 @@ test.describe('Dashboard', { tag: ['@dashboard'] }, () => {
             decodeURIComponent(
               new URL(searchTab.url()).searchParams.get('where') ?? '',
             ),
-          ).toBe("(ServiceName IN ('accounting'))");
+          ).toBe("(ServiceName IN ['accounting'])");
 
           await expect(searchPage.table.firstRow).toBeVisible({
             timeout: 30000,

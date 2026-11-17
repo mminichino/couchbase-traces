@@ -384,9 +384,11 @@ test.describe('Alert Creation', { tag: ['@alerts', '@full-stack'] }, () => {
       const webhookName = `E2E Webhook RawSQL ${ts}`;
       const webhookUrl = `https://example.com/rawsql-${ts}`;
 
-      const sqlQuery = `SELECT toStartOfInterval(Timestamp, INTERVAL {intervalSeconds:Int64} second) AS ts, count() AS cnt
+      // Macros expand to SQL++ on Couchbase; {intervalSeconds} must remain so
+      // alert validation accepts the time-series template.
+      const sqlQuery = `SELECT $__timeInterval(Timestamp) AS ts, COUNT(*) AS cnt
         FROM $__sourceTable
-        WHERE Timestamp >= fromUnixTimestamp64Milli({startDateMilliseconds:Int64}) AND Timestamp < fromUnixTimestamp64Milli({endDateMilliseconds:Int64})
+        WHERE $__timeFilter(Timestamp)
         GROUP BY ts ORDER BY ts
       `;
 
@@ -450,8 +452,8 @@ test.describe('Alert Creation', { tag: ['@alerts', '@full-stack'] }, () => {
       const webhookName = `E2E Webhook Invalid ${ts}`;
       const webhookUrl = `https://example.com/invalid-${ts}`;
 
-      // SQL query missing intervalSeconds, startDateMilliseconds / endDateMilliseconds
-      const invalidSqlQuery = `SELECT now() as ts, count() AS cnt
+      // SQL query missing intervalSeconds / time-range macros (alert validation)
+      const invalidSqlQuery = `SELECT CLOCK_UTC() AS ts, COUNT(*) AS cnt
         FROM $__sourceTable
         GROUP BY ts ORDER BY ts
       `;
@@ -509,9 +511,9 @@ test.describe('Alert Creation', { tag: ['@alerts', '@full-stack'] }, () => {
       const webhookName = `E2E Webhook Number ${ts}`;
       const webhookUrl = `https://example.com/number-${ts}`;
 
-      const sqlQuery = `SELECT count() AS cnt
+      const sqlQuery = `SELECT COUNT(*) AS cnt
         FROM $__sourceTable
-        WHERE Timestamp >= fromUnixTimestamp64Milli({startDateMilliseconds:Int64}) AND Timestamp < fromUnixTimestamp64Milli({endDateMilliseconds:Int64})
+        WHERE $__timeFilter(Timestamp)
       `;
 
       await test.step('Create a new dashboard', async () => {

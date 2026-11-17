@@ -211,7 +211,7 @@ test.describe(
         const filters = decodeURIComponent(
           url.searchParams.get('filters') ?? '[]',
         );
-        expect(filters).toContain(`ServiceName IN ('${serviceName}')`);
+        expect(filters).toContain(`ServiceName IN ['${serviceName}']`);
         const from = Number(url.searchParams.get('from'));
         const to = Number(url.searchParams.get('to'));
         expect(from).toBeGreaterThan(0);
@@ -567,7 +567,7 @@ test.describe(
         expect(filters).toEqual([
           {
             type: 'sql',
-            condition: `ServiceName IN ('${serviceName}')`,
+            condition: `ServiceName IN ['${serviceName}']`,
           },
         ]);
       });
@@ -653,7 +653,7 @@ test.describe(
         expect(filters).toEqual([
           {
             type: 'sql',
-            condition: `ServiceName IN ('${serviceName}')`,
+            condition: `ServiceName IN ['${serviceName}']`,
           },
         ]);
       });
@@ -747,7 +747,7 @@ test.describe(
         expect(filters).toEqual([
           {
             type: 'sql',
-            condition: `ServiceName IN ('${serviceName}')`,
+            condition: `ServiceName IN ['${serviceName}']`,
           },
         ]);
       });

@@ -64,7 +64,26 @@ export class TableComponent {
    * Click on the first row
    */
   async clickFirstRow() {
-    await this.firstRow.click();
+    // Match clickRowContaining: the leading cell is the selection checkbox,
+    // and an open side panel can cover the row. Click the row's content button
+    // (or dispatch a DOM click when the drawer covers it).
+    const row = this.firstRow;
+    const button = row.getByRole('button', {
+      name: /^(View details for log entry|Expand log row|Collapse log row)$/,
+    });
+    if ((await button.count()) === 0) {
+      await row.click();
+      return;
+    }
+    if (await this.isCoveredBySidePanel(button)) {
+      await button.evaluate(el => {
+        if (el instanceof HTMLElement) {
+          el.click();
+        }
+      });
+      return;
+    }
+    await button.click({ position: { x: 4, y: 8 } });
   }
 
   async clickRowContaining(text: string) {

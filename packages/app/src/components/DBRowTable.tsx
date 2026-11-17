@@ -1224,7 +1224,9 @@ export const RawLogTable = memo(
                     ref={rowVirtualizer.measureElement}
                   >
                     <tr
-                      data-testid={`table-row-${rowId}`}
+                      // Row ids are SQL WHERE literals (`META(d).id = "…"`);
+                      // quotes would terminate the HTML attribute early.
+                      data-testid={`table-row-${rowId.replace(/"/g, "'")}`}
                       className={cx(styles.tableRow, {
                         [styles.tableRow__selected]:
                           highlightedLineId && highlightedLineId === rowId,
