@@ -4,12 +4,19 @@ import type { BuilderChartConfigWithOptDateRange } from '@/types';
 const ALIAS = 'd';
 
 export function renderFromCouchbase(
-  chartConfig: Pick<BuilderChartConfigWithOptDateRange, 'from'>,
+  chartConfig: Pick<BuilderChartConfigWithOptDateRange, 'from'> & {
+    isRenderingRawSqlTemplate?: boolean;
+  },
 ): SqlPP {
   const from = chartConfig.from;
   // CTE / subquery alias: empty databaseName means tableName is a WITH name.
+  // Keep CTE references literal even when emitting a raw-SQL template — the
+  // $__sourceTable macro only stands in for a real source keyspace.
   if (!from.databaseName && from.tableName) {
     return sqlpp`FROM ${{ Identifier: from.tableName }} AS ${{ Raw: ALIAS }}`;
+  }
+  if (chartConfig.isRenderingRawSqlTemplate && from.databaseName) {
+    return sqlpp`FROM ${{ Raw: '$__sourceTable' }} AS ${{ Raw: ALIAS }}`;
   }
   if (!from.databaseName || !from.tableName) {
     return sqlpp`FROM ${{ Raw: ALIAS }}`;

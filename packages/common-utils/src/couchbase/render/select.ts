@@ -57,11 +57,20 @@ export function getFirstTimestampColumn(
 export type TimeBucketParts = { expr: SqlPP; aliased: SqlPP };
 
 export function renderTimeBucketPartsCouchbase(
-  chartConfig: BuilderChartConfigWithOptDateRange,
+  chartConfig: BuilderChartConfigWithOptDateRange & {
+    isRenderingRawSqlTemplate?: boolean;
+  },
 ): TimeBucketParts | undefined {
   if (!isUsingGranularity(chartConfig)) return undefined;
   const tsCol = getFirstTimestampColumn(chartConfig);
   const tsExpr = `${ALIAS}.${tsCol}`;
+  if (chartConfig.isRenderingRawSqlTemplate) {
+    const bucketExpr = sqlpp`${{ Raw: `$__timeInterval(${tsExpr})` }}`;
+    return {
+      expr: bucketExpr,
+      aliased: sqlpp`${bucketExpr} AS ${{ Identifier: FIXED_TIME_BUCKET_EXPR_ALIAS }}`,
+    };
+  }
   const format = timestampFormatOf(chartConfig);
   const interval =
     chartConfig.granularity === 'auto' && chartConfig.dateRange

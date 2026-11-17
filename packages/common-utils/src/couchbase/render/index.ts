@@ -42,6 +42,10 @@ export async function renderChartConfigCouchbase(
   metadata: unknown,
   querySettings: QuerySettings | undefined,
 ): Promise<SqlppQuery> {
+  // Read before builder/raw narrowing: guards return the public chart types,
+  // which omit InternalChartFields such as isRenderingRawSqlTemplate.
+  const isRenderingRawSqlTemplate = rawChartConfig.isRenderingRawSqlTemplate;
+
   if (isRawSqlChartConfig(rawChartConfig)) {
     return renderRawSqlChartConfigCouchbase(rawChartConfig, metadata);
   }
@@ -79,8 +83,11 @@ export async function renderChartConfigCouchbase(
     ? await translateMetricChartConfigCouchbase(substituted)
     : substituted;
 
-  const chartConfig: BuilderChartConfigWithOptDateRange = {
+  const chartConfig: BuilderChartConfigWithOptDateRange & {
+    isRenderingRawSqlTemplate?: boolean;
+  } = {
     ...translated,
+    isRenderingRawSqlTemplate,
   };
 
   const ctx = {

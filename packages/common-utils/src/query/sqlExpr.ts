@@ -406,18 +406,30 @@ function extractOuterSelectProjection(sql: string): string | null {
  * SETTINGS clause, backtick-quoted identifiers, JSON paths) for parseable
  * tokens. `restore` puts the originals back into text sliced from `sql`.
  */
+/**
+ * SQL++ `META(alias).id` is not valid Postgresql; node-sql-parser stops at the
+ * `.id`. Replace with a plain identifier so alias-map parsing of the rest of
+ * the SELECT projection can succeed. The original is not restored into filter
+ * keys — row-id columns are never ad hoc filter targets.
+ */
+function stripMetaIdExpressions(sql: string): string {
+  return sql.replace(/\bMETA\s*\([^)]*\)\s*\.\s*id\b/gi, '__cbt_meta_id');
+}
+
 function prepareSqlFragForParser(sqlExpr: SqlFrag) {
   const sql = parameterizedQueryToSql(sqlExpr);
 
   // Remove the SETTINGS clause because `SQLParser` doesn't understand it.
   const [sqlWithoutSettingsClause] = extractSettingsClauseFromEnd(sql);
 
+  const sqlWithoutMetaId = stripMetaIdExpressions(sqlWithoutSettingsClause);
+
   // Replace backtick-quoted identifiers with placeholder tokens so that a
   // quoted alias doesn't fail the parse
   const {
     sqlWithReplacements: sqlWithoutBackticks,
     replacements: identifierReplacements,
-  } = replaceBacktickedIdentifiers(sqlWithoutSettingsClause);
+  } = replaceBacktickedIdentifiers(sqlWithoutMetaId);
 
   // Replace JSON expressions with replacement tokens so that node-sql-parser can parse the SQL
   const { sqlWithReplacements, replacements: jsonReplacements } =

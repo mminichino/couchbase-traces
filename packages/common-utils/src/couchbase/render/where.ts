@@ -96,13 +96,20 @@ async function compileFilter(
 }
 
 function timeFilterForConfig(
-  chartConfig: BuilderChartConfigWithOptDateRange,
+  chartConfig: BuilderChartConfigWithOptDateRange & {
+    isRenderingRawSqlTemplate?: boolean;
+  },
 ): SqlPP | undefined {
   if (chartConfig.dateRange == null || !chartConfig.timestampValueExpression) {
     return undefined;
   }
   const tsCol = getFirstTimestampColumn(chartConfig);
   const tsExpr = `${ALIAS}.${tsCol}`;
+  if (chartConfig.isRenderingRawSqlTemplate) {
+    const startOp = chartConfig.dateRangeStartInclusive !== false ? '>=' : '>';
+    const endOp = chartConfig.dateRangeEndInclusive === true ? '<=' : '<';
+    return sqlpp`${{ Raw: `${tsExpr} ${startOp} $__fromTime_ms AND ${tsExpr} ${endOp} $__toTime_ms` }}`;
+  }
   const format = timestampFormatOf(chartConfig);
   return timeRangePredicate(
     tsExpr,
@@ -117,7 +124,9 @@ function timeFilterForConfig(
 }
 
 export async function renderWhereCouchbase(
-  chartConfig: BuilderChartConfigWithOptDateRange,
+  chartConfig: BuilderChartConfigWithOptDateRange & {
+    isRenderingRawSqlTemplate?: boolean;
+  },
   ctx: RenderFilterContext,
 ): Promise<SqlPP | undefined> {
   const parts: SqlPP[] = [];
@@ -156,6 +165,13 @@ export async function renderWhereCouchbase(
     }
     const orExpr = joinOr(orParts);
     if (orExpr) parts.push(sqlpp`(${orExpr})`);
+  }
+
+  if (chartConfig.isRenderingRawSqlTemplate) {
+    // Editable templates apply dashboard filters through $__filters rather than
+    // inlining the current selection.
+    parts.push(sqlpp`${{ Raw: '$__filters' }}`);
+    return joinAnd(parts);
   }
 
   const filterParts: SqlPP[] = [];
