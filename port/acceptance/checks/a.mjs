@@ -116,8 +116,18 @@ const SUPPLEMENTAL_FEATURE_TESTS = {
     'packages/api/src/mcp/__tests__/webhooks.int.test.ts',
     'packages/api/src/controllers/__tests__/alerts.test.ts',
   ],
-  'app-login': ['packages/app/tests/e2e/features/route-smoke.spec.ts'],
-  'app-register': ['packages/app/tests/e2e/features/route-smoke.spec.ts'],
+  'app-home': [
+    'packages/app/src/__tests__/LandingPage.test.tsx',
+    'packages/app/src/__tests__/OnboardingChecklist.test.tsx',
+  ],
+  'app-login': [
+    'packages/app/src/__tests__/AuthPage.test.tsx',
+    'packages/app/tests/e2e/features/route-smoke.spec.ts',
+  ],
+  'app-register': [
+    'packages/app/src/__tests__/AuthPage.test.tsx',
+    'packages/app/tests/e2e/features/route-smoke.spec.ts',
+  ],
   'app-join-team': [
     'packages/api/src/routers/api/__tests__/team.int.test.ts',
     'packages/app/tests/e2e/features/route-smoke.spec.ts',
@@ -134,8 +144,14 @@ const SUPPLEMENTAL_FEATURE_TESTS = {
     'packages/api/src/__tests__/setupDefaults.test.ts',
     'packages/app/tests/e2e/features/sources.spec.ts',
   ],
-  'app-api': ['packages/app/tests/e2e/features/route-smoke.spec.ts'],
-  'app-benchmark': ['packages/app/tests/e2e/features/route-smoke.spec.ts'],
+  'app-api': [
+    'packages/app/src/components/TeamSettings/__tests__/ApiKeysSection.test.tsx',
+    'packages/app/tests/e2e/features/route-smoke.spec.ts',
+  ],
+  'app-benchmark': [
+    'packages/app/src/__tests__/BenchmarkPage.test.tsx',
+    'packages/app/tests/e2e/features/route-smoke.spec.ts',
+  ],
   'external-alerts': [
     'packages/api/src/routers/external-api/__tests__/alerts.int.test.ts',
     'packages/api/src/routers/external-api/__tests__/v2.int.test.ts',
@@ -198,7 +214,8 @@ export function suiteCommandForMappedTest(mapped) {
     mapped.endsWith('.spec.ts') ||
     mapped.includes('e2e/')
   ) {
-    return 'make e2e';
+    // K1/M1 run the local shard rather than full `make e2e`.
+    return './scripts/test-e2e.sh --shard=1/4';
   }
   if (mapped.includes('.int.test.') || mapped.includes('.int.')) {
     return 'port/couchbase-test/run.sh';
