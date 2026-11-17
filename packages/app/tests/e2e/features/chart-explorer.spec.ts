@@ -75,8 +75,14 @@ test.describe('Chart Explorer Functionality', { tag: ['@charts'] }, () => {
     });
 
     await test.step('Verify the unrestricted chart renders more bars than the limit we will apply', async () => {
+      // Seed data has many ServiceName values; poll in case the first paint
+      // lands before the full categorical series arrives.
+      await expect
+        .poll(async () => chartExplorerPage.getBars().count(), {
+          timeout: 15000,
+        })
+        .toBeGreaterThan(3);
       totalBars = await chartExplorerPage.getBars().count();
-      expect(totalBars).toBeGreaterThan(3);
     });
 
     await test.step('Apply a series limit of 3', async () => {
