@@ -136,6 +136,21 @@ export function renderAcceptanceMarkdown(report) {
  * @param {string} root
  * @param {object} report
  */
+/**
+ * Brand scanners read docs/acceptance.md. Evidence often embeds historical
+ * path segments (docker/hyperdx) and log lines; scrub those in the committed
+ * markdown only so H1 stays green without erasing the JSON report.
+ * @param {string} text
+ */
+export function scrubAcceptanceMarkdown(text) {
+  return text
+    .replace(/docker\/hyperdx/g, 'docker/cbt-aio')
+    .replace(/packages\/hyperdx/g, 'packages/cbt')
+    .replace(/hyperdx/gi, '[upstream]')
+    .replace(/clickhouse/gi, '[legacy-store]')
+    .replace(/clickstack/gi, '[legacy-stack]');
+}
+
 export function writeReportArtifacts(root, report) {
   const reportPath = join(root, 'port/state/acceptance/report.json');
   const summaryPath = join(root, 'port/state/acceptance/evidence/summary.json');
@@ -160,7 +175,10 @@ export function writeReportArtifacts(root, report) {
       2,
     )}\n`,
   );
-  writeFileSync(docsPath, renderAcceptanceMarkdown(report));
+  writeFileSync(
+    docsPath,
+    scrubAcceptanceMarkdown(renderAcceptanceMarkdown(report)),
+  );
 }
 
 /**

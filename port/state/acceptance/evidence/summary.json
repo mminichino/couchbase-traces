@@ -1,7 +1,7 @@
 {
   "status": "fail",
-  "generatedAt": "2026-11-16T17:59:59.177Z",
-  "gitSha": "9636f44514dbf985e7b2f34d9323b14cb72e8db6",
+  "generatedAt": "2026-11-17T01:35:02.388135+00:00",
+  "gitSha": "aee6c49cbc3f1e0590a9a2a75370f0b01ebc0856",
   "checks": [
     {
       "id": "A1",
@@ -11,22 +11,22 @@
     {
       "id": "A2",
       "status": "fail",
-      "summary": "51 ported feature(s) lack a passing mapped test"
+      "summary": "5 ported feature(s) lack a passing mapped test"
     },
     {
       "id": "A3",
-      "status": "fail",
-      "summary": "Product stack is not ready; cannot run route smoke"
+      "status": "pass",
+      "summary": "24 app page routes loaded"
     },
     {
       "id": "B1",
-      "status": "fail",
-      "summary": "Stack did not become healthy within 600s"
+      "status": "pass",
+      "summary": "Product stack healthy (couchbase-init, app, ingest, otel-collector)"
     },
     {
       "id": "B2",
-      "status": "fail",
-      "summary": "Product stack not ready"
+      "status": "pass",
+      "summary": "All 16 primary views show data"
     },
     {
       "id": "C1",
@@ -40,43 +40,43 @@
     },
     {
       "id": "D1",
-      "status": "fail",
-      "summary": "No captured statements from B2/G1; cannot verify index use"
+      "status": "pass",
+      "summary": "45 statements use indexes/key lookups (6 exempt)"
     },
     {
       "id": "E1",
-      "status": "fail",
-      "summary": "Product stack not ready"
+      "status": "pass",
+      "summary": "All 13 mutation cases rejected via query route"
     },
     {
       "id": "F1",
-      "status": "fail",
-      "summary": "Dev/product stack not ready for latency measurement"
+      "status": "pass",
+      "summary": "p95 first-page request under 2000ms for all query shapes"
     },
     {
       "id": "G1",
-      "status": "fail",
-      "summary": "Product stack not ready"
+      "status": "pass",
+      "summary": "All 24 source×threshold pairs fired with controls quiet"
     },
     {
       "id": "H1",
-      "status": "fail",
-      "summary": "Static branding verification failed"
+      "status": "pass",
+      "summary": "rebrand verify branding and remove-ch verify passed"
     },
     {
       "id": "H2",
-      "status": "fail",
-      "summary": "No page text collected from A3/B2 to scan for brand terms"
+      "status": "pass",
+      "summary": "No brand terms in 56 rendered page(s)"
     },
     {
       "id": "H3",
-      "status": "fail",
-      "summary": "Product stack not ready"
+      "status": "pass",
+      "summary": "No brand terms in image/container/env names"
     },
     {
       "id": "I1",
-      "status": "fail",
-      "summary": "No browser requests recorded during view runs"
+      "status": "pass",
+      "summary": "All 6660 browser requests stayed on origin"
     },
     {
       "id": "I2",
@@ -111,7 +111,7 @@
     {
       "id": "M1",
       "status": "fail",
-      "summary": "Regression failures: port/check.sh, port/golden/run.sh, port/couchbase-test/run.sh"
+      "summary": "Regression failures: ./scripts/test-e2e.sh --shard=1/4"
     },
     {
       "id": "M2",
