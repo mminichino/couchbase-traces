@@ -571,6 +571,12 @@ test.describe(
 
       await test.step('Add to filters adds a condition', async () => {
         await new TableComponent(page).clickFirstRow();
+        await expect(page.getByTestId('row-side-panel')).toBeVisible({
+          timeout: 10000,
+        });
+        await expect(page.getByTestId('tab-parsed')).toBeVisible({
+          timeout: 15000,
+        });
         await sidePanel.addParsedFieldToFilter('ServiceName');
         await expectServiceCondition();
       });

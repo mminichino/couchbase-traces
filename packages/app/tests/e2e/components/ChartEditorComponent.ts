@@ -423,18 +423,17 @@ export class ChartEditorComponent {
   }
 
   /**
-   * Wait for handleWebhookCreated to land the new webhook id on the channel
-   * field (aria-invalid clears). Only open the dropdown and pick by label if
-   * auto-select did not stick — clicking the Select while a value is set can
-   * clear it.
+   * Ensure the webhook channel Select holds a webhook id. Prefer the
+   * handleWebhookCreated auto-select (non-empty input value — Mantine stores
+   * the option value/id, not the label, on the input). Only open the dropdown
+   * when that did not land — clicking a Select that already has a value can
+   * clear it in Mantine.
    */
   async selectWebhook(webhookName: string) {
     try {
-      await expect(this.webhookSelector).toHaveAttribute(
-        'aria-invalid',
-        'false',
-        { timeout: 5000 },
-      );
+      await expect(this.webhookSelector).not.toHaveValue('', {
+        timeout: 8000,
+      });
       return;
     } catch {
       // fall through and select manually
@@ -448,13 +447,20 @@ export class ChartEditorComponent {
       await option.waitFor({ state: 'visible', timeout: 10000 });
     }
     await option.click();
-    await expect(this.webhookSelector).toHaveAttribute(
-      'aria-invalid',
-      'false',
-      {
-        timeout: 5000,
-      },
-    );
+    await expect(this.webhookSelector).not.toHaveValue('', {
+      timeout: 5000,
+    });
+  }
+
+  /**
+   * Confirm a draft tile alert so Save includes a validated channel list.
+   */
+  async confirmTileAlert() {
+    const confirm = this.page.getByTestId('alert-panel-confirm-button');
+    await confirm.click();
+    await expect(this.addAlertButton).toHaveText('Edit alert', {
+      timeout: 10000,
+    });
   }
 
   /**

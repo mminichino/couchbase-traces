@@ -134,9 +134,10 @@ console.info(
   `Mode: ${useLocal ? 'Local (frontend only)' : 'Full-stack'}${useDev ? ' + dev (hot reload)' : ''}`,
 );
 
+// shell:false so --grep patterns with `|` / spaces are not re-parsed by sh.
 const child = spawn('npx', playwrightCmd, {
   stdio: 'inherit',
-  shell: true,
+  shell: false,
   env,
   cwd: path.join(__dirname, '..'),
 });

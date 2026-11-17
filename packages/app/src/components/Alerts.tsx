@@ -71,6 +71,12 @@ export const AlertChannelForm = <T extends FieldValues>({
   const handleWebhookCreated = async (webhookId?: string) => {
     await refetchWebhooks();
     if (webhookId) {
+      // Mantine Select clears a value that is not yet in `data`. Wait one
+      // frame so WebhookChannelForm recomputes options from the refetch
+      // before we write the new id.
+      await new Promise<void>(resolve => {
+        requestAnimationFrame(() => resolve());
+      });
       const emptyIndex = selectedWebhookIds.findIndex(id => !id);
       const value = makeWebhookChannel<T>(webhookId);
       if (emptyIndex >= 0) {

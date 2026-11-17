@@ -103,7 +103,7 @@ export function WebhookForm({
 }: {
   webhook?: WebhookApiData;
   onClose: VoidFunction;
-  onSuccess: (webhookId?: string) => void;
+  onSuccess: (webhookId?: string) => void | Promise<void>;
 }) {
   const brandName = useBrandDisplayName();
   const saveWebhook = api.useSaveWebhook();
@@ -268,7 +268,10 @@ export function WebhookForm({
         color: 'green',
         message: `Webhook ${isEditing ? 'updated' : 'created'} successfully`,
       });
-      onSuccess(response.data?._id);
+      // Await so AlertChannelForm's handleWebhookCreated can refetch and
+      // write the new id onto the channel before the modal unmounts — otherwise
+      // the tile Save can race and reject with an empty webhookId.
+      await onSuccess(response.data?._id);
       onClose();
     } catch (e) {
       console.error(e);

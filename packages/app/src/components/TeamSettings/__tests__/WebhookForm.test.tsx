@@ -9,6 +9,7 @@ import {
   act,
   render,
   screen,
+  waitFor,
   waitForElementToBeRemoved,
 } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
@@ -55,6 +56,13 @@ jest.mock('@uiw/react-codemirror', () => ({
 
 function renderForm(
   webhook?: React.ComponentProps<typeof WebhookForm>['webhook'],
+  {
+    onClose = jest.fn(),
+    onSuccess = jest.fn(),
+  }: {
+    onClose?: () => void;
+    onSuccess?: (webhookId?: string) => void | Promise<void>;
+  } = {},
 ) {
   const queryClient = new QueryClient({
     defaultOptions: { queries: { retry: false } },
@@ -64,8 +72,8 @@ function renderForm(
       <MantineProvider>
         <WebhookForm
           webhook={webhook}
-          onClose={jest.fn()}
-          onSuccess={jest.fn()}
+          onClose={onClose}
+          onSuccess={onSuccess}
         />
       </MantineProvider>
     </QueryClientProvider>,
@@ -108,6 +116,34 @@ describe('WebhookForm', () => {
     expect(mockSaveWebhook).toHaveBeenCalledWith(
       expect.objectContaining({ body: DEFAULT_INCIDENT_IO_WEBHOOK_BODY }),
     );
+  });
+
+  it('awaits onSuccess before closing so channel auto-select can finish', async () => {
+    const user = userEvent.setup();
+    let resolveSuccess!: () => void;
+    const onSuccess = jest.fn(
+      () =>
+        new Promise<void>(resolve => {
+          resolveSuccess = resolve;
+        }),
+    );
+    const onClose = jest.fn();
+    renderForm(undefined, { onSuccess, onClose });
+
+    await user.click(screen.getByRole('radio', { name: 'Generic' }));
+    await user.type(screen.getByTestId('webhook-name-input'), 'hook');
+    await user.type(
+      screen.getByTestId('webhook-url-input'),
+      'https://example.com/hook',
+    );
+    await user.click(screen.getByTestId('add-webhook-button'));
+
+    await waitFor(() => expect(onSuccess).toHaveBeenCalledWith('wh-1'));
+    expect(onClose).not.toHaveBeenCalled();
+    await act(async () => {
+      resolveSuccess();
+    });
+    await waitFor(() => expect(onClose).toHaveBeenCalled());
   });
 
   it('re-defaults an untouched body when the service changes', async () => {

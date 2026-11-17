@@ -64,9 +64,9 @@ export class TableComponent {
    * Click on the first row
    */
   async clickFirstRow() {
-    // Pointer clicks on the row content button are often intercepted by the
-    // table/virtualizer layer (and by an open side panel). Dispatch a DOM
-    // click so the side panel opens reliably in e2e.
+    // Prefer a real pointer click (dashboard search tiles need it to open the
+    // row side panel). Fall back to a DOM click when the table/virtualizer or
+    // an open drawer intercepts the pointer (search page correlated-metric).
     const row = this.firstRow;
     const button = row.getByRole('button', {
       name: /^(View details for log entry|Expand log row|Collapse log row)$/,
@@ -75,11 +75,15 @@ export class TableComponent {
       await row.click({ force: true });
       return;
     }
-    await button.evaluate(el => {
-      if (el instanceof HTMLElement) {
-        el.click();
-      }
-    });
+    try {
+      await button.click({ position: { x: 4, y: 8 }, timeout: 3000 });
+    } catch {
+      await button.evaluate(el => {
+        if (el instanceof HTMLElement) {
+          el.click();
+        }
+      });
+    }
   }
 
   async clickRowContaining(text: string) {

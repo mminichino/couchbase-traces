@@ -530,11 +530,12 @@ test.describe('Alert Creation', { tag: ['@alerts', '@full-stack'] }, () => {
         await dashboardPage.addTile();
         await expect(dashboardPage.chartEditor.nameInput).toBeVisible();
         await dashboardPage.chartEditor.waitForDataToLoad();
-        await dashboardPage.chartEditor.setChartName(tileName);
+        // Chart type / SQL mode can reset the inline name — set it after.
         await dashboardPage.chartEditor.setChartType(DisplayType.Number);
         await dashboardPage.chartEditor.switchToSqlMode();
         await dashboardPage.chartEditor.typeSqlQuery(sqlQuery);
         await dashboardPage.chartEditor.runQuery(false);
+        await dashboardPage.chartEditor.setChartName(tileName);
       });
 
       await test.step('Enable and configure an alert on the raw SQL Number tile', async () => {
@@ -552,12 +553,17 @@ test.describe('Alert Creation', { tag: ['@alerts', '@full-stack'] }, () => {
         );
         await expect(page.getByTestId('alert-modal')).toBeHidden();
         await dashboardPage.chartEditor.selectWebhook(webhookName);
+        await dashboardPage.chartEditor.confirmTileAlert();
       });
 
       await test.step('Save the tile with the alert configured', async () => {
-        await dashboardPage.chartEditor.save();
+        // Number tiles have no recharts container; wait on the dashboard
+        // mutation instead of a short modal-hide race.
+        const patch = dashboardPage.waitForDashboardPatch();
+        await dashboardPage.chartEditor.saveBtn.click();
+        await patch;
         await expect(dashboardPage.getTiles()).toHaveCount(1, {
-          timeout: 10000,
+          timeout: 15000,
         });
       });
 
