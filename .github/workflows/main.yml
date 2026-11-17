@@ -243,9 +243,11 @@ jobs:
             docker/**
             packages/ingest/**
             packages/otel-collector/**
+            port/stack-smoke/**
             Makefile
             docker-compose*.yml
             .env.example
+            .github/workflows/main.yml
       - name: Skip when paths unchanged on PR
         if: github.event_name == 'pull_request' && steps.changed-files.outputs.any_changed != 'true'
         run: echo "No stack-smoke inputs changed; skipping."
