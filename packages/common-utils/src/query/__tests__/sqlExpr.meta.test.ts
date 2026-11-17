@@ -21,6 +21,10 @@ describe('sqlExprToAliasMap META', () => {
       params: {},
     });
     expect(map.svc).toBe('ServiceName');
+    // Parser placeholder for META — must not be treated as a real expr for WITH.
+    expect(map.__cbt_id === undefined || map.__cbt_id === '__cbt_meta_id').toBe(
+      true,
+    );
   });
 
   it('maps SQL++ auto result names for unaliased expressions', () => {

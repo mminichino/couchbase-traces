@@ -1608,6 +1608,16 @@ export function parseTokenizerFromTextIndex({
 }
 
 /**
+ * Placeholder sqlExprToAliasMap substitutes for SQL++ `META(d).id` so
+ * node-sql-parser can read the rest of the SELECT. It is not a real
+ * expression and must never become a WITH clause (`WITH (__cbt_meta_id) AS
+ * \`__cbt_id\`` is invalid SQL++ and breaks search histograms and
+ * saved-search alert checks).
+ */
+const CBT_META_ID_PLACEHOLDER = '__cbt_meta_id';
+const CBT_ROW_ID_ALIAS = '__cbt_id';
+
+/**
  * Converts an aliasMap (e.g. from sqlExprToAliasMap) to an array of WITH clause entries.
  * These WITH clauses define aliases as expressions (isSubquery: false),
  * making them available in WHERE and other clauses.
@@ -1623,6 +1633,12 @@ export function aliasMapToWithClauses(
     .filter(
       (entry): entry is [string, string] =>
         entry[1] != null && entry[1].trim() !== '',
+    )
+    .filter(
+      ([name, value]) =>
+        name !== CBT_ROW_ID_ALIAS &&
+        value.trim() !== CBT_META_ID_PLACEHOLDER &&
+        !/\bMETA\s*\(/i.test(value),
     )
     .map(([name, value]) => ({
       name,

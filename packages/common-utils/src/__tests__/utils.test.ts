@@ -3206,6 +3206,24 @@ describe('utils', () => {
       ]);
     });
 
+    it('omits Couchbase row-id META placeholders from WITH clauses', () => {
+      // sqlExprToAliasMap rewrites META(d).id → __cbt_meta_id for the parser.
+      // Emitting that as WITH breaks SQL++ histogram and saved-search alerts.
+      expect(
+        aliasMapToWithClauses({
+          body: 'toString(Body)',
+          __cbt_id: '__cbt_meta_id',
+          other: 'META(d).id',
+        }),
+      ).toEqual([
+        {
+          name: 'body',
+          sql: { sql: 'toString(Body)', params: {} },
+          isSubquery: false,
+        },
+      ]);
+    });
+
     it('should convert multiple aliases to WITH clauses', () => {
       const result = aliasMapToWithClauses({
         body: 'toString(Body)',
