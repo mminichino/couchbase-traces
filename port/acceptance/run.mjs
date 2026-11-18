@@ -224,8 +224,13 @@ async function main() {
       reuseStack: flags.reuseStack,
       recordCi: flags.recordCi,
     },
-    // When recording CI against a reused report, pin expected SHA to that report.
-    reportGitSha: reuseForRecordCi ? priorReport.gitSha : headSha,
+    // K2 must match the Main tip being recorded. When reuse is only because
+    // prior checks passed and K2 was still open (CI-fix commit after the
+    // acceptance report SHA), expect HEAD — not the stale prior report SHA.
+    reportGitSha:
+      reuseForRecordCi && priorReport.gitSha === headSha
+        ? priorReport.gitSha
+        : headSha,
     shared: {
       capturePath: join(evidenceDir, 'statements.ndjson'),
       dnsLogPath: join(evidenceDir, 'coredns', 'query.log'),
