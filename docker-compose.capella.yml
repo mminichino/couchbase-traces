@@ -24,6 +24,9 @@ services:
 
   app:
     environment:
+      CBT_COUCHBASE_CONNSTR: ${CBT_COUCHBASE_CONNSTR:?set CBT_COUCHBASE_CONNSTR in .env}
+      CBT_COUCHBASE_WAN_PROFILE: ${CBT_COUCHBASE_WAN_PROFILE:-}
+      CBT_COUCHBASE_CA_CERT_PATH: ${CBT_COUCHBASE_CA_CERT_PATH:-}
       DEFAULT_CONNECTIONS: >-
         [{"name":"Capella Couchbase","kind":"couchbase","host":"${CBT_COUCHBASE_CONNSTR}","username":"${CBT_COUCHBASE_QUERY_USER}","password":"${CBT_COUCHBASE_QUERY_PASSWORD}","monitorUsername":"${CBT_COUCHBASE_MONITOR_USER:-}","monitorPassword":"${CBT_COUCHBASE_MONITOR_PASSWORD:-}"}]
     depends_on:

@@ -14,6 +14,16 @@ ADMIN_PASSWORD=${CBT_COUCHBASE_ADMIN_PASSWORD:?set CBT_COUCHBASE_ADMIN_PASSWORD}
 DATA_RAM_MB=${CBT_COUCHBASE_RAM_MB:-2048}
 INDEX_RAM_MB=${CBT_COUCHBASE_INDEX_RAM_MB:-512}
 SEARCH_RAM_MB=${CBT_COUCHBASE_SEARCH_RAM_MB:-512}
+# The app metadata bucket (cbt_meta) is carved out of the data quota so the
+# cluster quota, and the container memory it needs, stay the same.
+META_RAM_MB=${CBT_METADATA_RAM_MB:-256}
+export CBT_METADATA_RAM_MB=$META_RAM_MB
+TELEMETRY_RAM_MB=$((DATA_RAM_MB - META_RAM_MB))
+if [ "$TELEMETRY_RAM_MB" -lt 100 ]; then
+  printf '[couchbase-init] CBT_COUCHBASE_RAM_MB (%s) must exceed CBT_METADATA_RAM_MB (%s) by at least 100\n' \
+    "$DATA_RAM_MB" "$META_RAM_MB" >&2
+  exit 1
+fi
 
 log() { printf '[couchbase-init] %s\n' "$*" >&2; }
 
@@ -148,8 +158,11 @@ init_cluster() {
 run_setup() {
   local setup_args=()
   local root="${CBT_INGEST_ROOT:-/app}"
+  if [ "${CBT_METADATA_SETUP:-true}" = "false" ]; then
+    setup_args+=(--no-metadata)
+  fi
   if [ "${CBT_EXTERNAL_COUCHBASE:-}" != "true" ]; then
-    setup_args+=(--create-bucket --create-users --bucket-ram-mb "$DATA_RAM_MB")
+    setup_args+=(--create-bucket --create-users --bucket-ram-mb "$TELEMETRY_RAM_MB")
   fi
   log "Running ingest setup (${setup_args[*]:-schema only})"
   cd "$root"

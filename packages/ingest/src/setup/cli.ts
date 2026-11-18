@@ -6,6 +6,11 @@ import { writeDocs } from '@/setup/docs';
 import { exitCodeOf, SetupError } from '@/setup/errors';
 import { ensureIndexes, indexStatements } from '@/setup/indexes';
 import { ensureBucket, ensureCollections } from '@/setup/keyspace';
+import {
+  metadataDryRun,
+  metadataSetupConfig,
+  runMetadataSetup,
+} from '@/setup/metadata';
 import { ensureSearchIndexes } from '@/setup/search';
 import { ensureUsers } from '@/setup/users';
 
@@ -19,6 +24,8 @@ export type SetupOptions = {
   waitTimeoutS: number;
   dryRun: boolean;
   docs: boolean;
+  /** App metadata bucket (MongoDB elimination plan D7); on unless --no-metadata. */
+  metadata: boolean;
 };
 
 export function parseArgs(argv: string[]): SetupOptions {
@@ -32,6 +39,7 @@ export function parseArgs(argv: string[]): SetupOptions {
     waitTimeoutS: 900,
     dryRun: false,
     docs: false,
+    metadata: true,
   };
   for (let i = 0; i < argv.length; i++) {
     const arg = argv[i];
@@ -41,6 +49,7 @@ export function parseArgs(argv: string[]): SetupOptions {
     else if (arg === '--recreate-drifted') opts.recreateDrifted = true;
     else if (arg === '--dry-run') opts.dryRun = true;
     else if (arg === '--docs') opts.docs = true;
+    else if (arg === '--no-metadata') opts.metadata = false;
     else if (arg === '--bucket-ram-mb')
       opts.bucketRamMb = numberArg(argv, ++i, arg);
     else if (arg === '--index-replicas')
@@ -97,6 +106,15 @@ export async function runSetup(
         log('skipped search');
       }
       log(opts.createUsers ? 'created users' : 'skipped users');
+      if (opts.metadata) {
+        metadataDryRun(
+          metadataSetupConfig(env, replicas),
+          opts.createBucket,
+          log,
+        );
+      } else {
+        log('skipped metadata');
+      }
       return 0;
     }
     required(env, 'CBT_COUCHBASE_ADMIN_USER');
@@ -132,6 +150,11 @@ export async function runSetup(
       } else {
         log('skipped users');
       }
+      if (opts.metadata) {
+        await provisionMetadata(env, connstr, cluster, opts, replicas, log);
+      } else {
+        log('skipped metadata');
+      }
     } finally {
       await cluster.close().catch(() => undefined);
     }
@@ -139,6 +162,37 @@ export async function runSetup(
   } catch (err) {
     log(describeError(err));
     return exitCodeOf(err);
+  }
+}
+
+async function provisionMetadata(
+  env: NodeJS.ProcessEnv,
+  connstr: string,
+  telemetryCluster: Awaited<ReturnType<typeof connectAdmin>>,
+  opts: SetupOptions,
+  replicas: number,
+  log: (line: string) => void,
+): Promise<void> {
+  // Same cluster by default; CBT_METADATA_CONNSTR may point elsewhere.
+  const metaConnstr = env.CBT_METADATA_CONNSTR || connstr;
+  const cluster =
+    metaConnstr === connstr
+      ? telemetryCluster
+      : await connectAdmin(env, metaConnstr);
+  try {
+    await runMetadataSetup(cluster, {
+      cfg: metadataSetupConfig(env, replicas),
+      createBucket: opts.createBucket,
+      createUsers: opts.createUsers,
+      capella: isCapella(metaConnstr),
+      waitTimeoutS: opts.waitTimeoutS,
+      appVersion: env.CODE_VERSION,
+      log,
+    });
+  } finally {
+    if (cluster !== telemetryCluster) {
+      await cluster.close().catch(() => undefined);
+    }
   }
 }
 
