@@ -16,6 +16,11 @@ import {
   getTeamDashboardAlertsByDashboardAndTile,
 } from '@/controllers/alerts';
 import { recordOnboardingTaskCompletion } from '@/controllers/user';
+import {
+  applyUserDisplays,
+  loadUserDisplays,
+  type UserDisplays,
+} from '@/controllers/userDisplay';
 import type { ObjectId } from '@/models';
 import type { AlertDocument, IAlert } from '@/models/alert';
 import Dashboard, { IDashboard } from '@/models/dashboard';
@@ -93,10 +98,10 @@ function extractTileAlertData(tiles: TileForAlertSync[]): {
 
 async function syncDashboardAlerts(
   dashboard: Pick<IDashboard, '_id' | 'name' | 'tags' | 'tiles'>,
-  teamId: ObjectId,
+  teamId: string | ObjectId,
   oldTiles: TileForAlertSync[],
   newTiles: Tile[],
-  userId?: ObjectId,
+  userId?: string | ObjectId,
 ): Promise<void> {
   const dashboardId = dashboard._id.toString();
   const { tileIds: oldTileIds, tileIdsWithAlerts: oldTileIdsWithAlerts } =
@@ -147,28 +152,31 @@ async function syncDashboardAlerts(
 function withResolvedDisplayFields(
   alert: AlertDocument | undefined,
   dashboard: Pick<IDashboard, 'name' | 'tags' | 'tiles'>,
+  users: UserDisplays,
 ) {
   if (alert == null) {
     return undefined;
   }
   return {
-    ...alert.toJSON(),
+    ...applyUserDisplays(users, alert.toJSON(), ['createdBy']),
     ...resolveAlertDisplayFields(alert, { dashboard }),
   };
 }
 
-export async function getDashboards(teamId: ObjectId) {
+export async function getDashboards(teamId: string | ObjectId) {
   const [_dashboards, alerts] = await Promise.all([
-    Dashboard.find({ team: teamId })
-      .populate('createdBy', 'email name')
-      .populate('updatedBy', 'email name'),
+    Dashboard.find({ team: teamId }),
     getTeamDashboardAlertsByDashboardAndTile(teamId),
+  ]);
+  const users = await loadUserDisplays([
+    ..._dashboards.flatMap(d => [d.createdBy, d.updatedBy]),
+    ...Object.values(alerts).flatMap(a => a.map(x => x.createdBy)),
   ]);
 
   const dashboards = _dashboards
     .map(d => d.toJSON())
     .map(d => ({
-      ...d,
+      ...applyUserDisplays(users, d, ['createdBy', 'updatedBy']),
       tiles: d.tiles.map(t => ({
         ...t,
         config: {
@@ -176,6 +184,7 @@ export async function getDashboards(teamId: ObjectId) {
           alert: withResolvedDisplayFields(
             alerts[`${d._id.toString()}:${t.id}`]?.[0],
             d,
+            users,
           ),
         },
       })),
@@ -185,34 +194,43 @@ export async function getDashboards(teamId: ObjectId) {
   return dashboards;
 }
 
-export async function getDashboard(dashboardId: string, teamId: ObjectId) {
+export async function getDashboard(
+  dashboardId: string,
+  teamId: string | ObjectId,
+) {
   const [_dashboard, alerts] = await Promise.all([
-    Dashboard.findOne({ _id: dashboardId, team: teamId })
-      .populate('createdBy', 'email name')
-      .populate('updatedBy', 'email name'),
+    Dashboard.findOne({ _id: dashboardId, team: teamId }),
     getDashboardAlertsByTile(teamId, dashboardId),
   ]);
 
   if (_dashboard == null) {
     return null;
   }
+  const users = await loadUserDisplays([
+    _dashboard.createdBy,
+    _dashboard.updatedBy,
+    ...Object.values(alerts).flatMap(a => a.map(x => x.createdBy)),
+  ]);
 
   return healLegacyDashboardTileColors({
-    ..._dashboard.toJSON(),
+    ...applyUserDisplays(users, _dashboard.toJSON(), [
+      'createdBy',
+      'updatedBy',
+    ]),
     tiles: _dashboard.tiles.map(t => ({
       ...t,
       config: {
         ...t.config,
-        alert: withResolvedDisplayFields(alerts[t.id]?.[0], _dashboard),
+        alert: withResolvedDisplayFields(alerts[t.id]?.[0], _dashboard, users),
       },
     })),
   });
 }
 
 export async function createDashboard(
-  teamId: ObjectId,
+  teamId: string | ObjectId,
   dashboard: z.infer<typeof DashboardWithoutIdSchema>,
-  userId?: ObjectId,
+  userId?: string | ObjectId,
 ) {
   const newDashboard = await new Dashboard({
     ...dashboard,
@@ -233,7 +251,10 @@ export async function createDashboard(
   return newDashboard;
 }
 
-export async function deleteDashboard(dashboardId: string, teamId: ObjectId) {
+export async function deleteDashboard(
+  dashboardId: string,
+  teamId: string | ObjectId,
+) {
   const dashboard = await Dashboard.findOneAndDelete({
     _id: dashboardId,
     team: teamId,
@@ -245,9 +266,9 @@ export async function deleteDashboard(dashboardId: string, teamId: ObjectId) {
 
 export async function updateDashboard(
   dashboardId: string,
-  teamId: ObjectId,
+  teamId: string | ObjectId,
   updates: Partial<z.infer<typeof DashboardWithoutIdSchema>>,
-  userId?: ObjectId,
+  userId?: string | ObjectId,
 ) {
   // Defense-in-depth: callers pass spread objects into the update doc below.
   // A smuggled `team`/`createdBy` here would move the document between

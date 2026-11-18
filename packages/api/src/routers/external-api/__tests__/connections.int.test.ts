@@ -2,9 +2,9 @@ import { ObjectId } from 'mongodb';
 import request, { SuperAgentTest } from 'supertest';
 
 import { getLoggedInAgent, getServer } from '@/fixtures';
+import type { ITeam } from '@/metadata/schemas/team';
+import type { IUser } from '@/metadata/schemas/user';
 import Connection from '@/models/connection';
-import { ITeam } from '@/models/team';
-import { IUser } from '@/models/user';
 
 const CONNECTIONS_BASE_URL = '/api/v2/connections';
 

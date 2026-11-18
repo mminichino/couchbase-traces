@@ -2,7 +2,7 @@ import { Request, Response } from 'express';
 
 import * as config from '@/config';
 import { getAllTeams } from '@/controllers/team';
-import type { ITeam } from '@/models/team';
+import type { ITeam } from '@/metadata/schemas/team';
 import { agentService } from '@/opamp/services/agentService';
 import {
   decodeAgentCapabilities,
@@ -533,10 +533,7 @@ export class OpampController {
 
           // Check if we should send a remote configuration
           if (acceptsRemoteConfig) {
-            const teams = await getAllTeams([
-              'apiKey',
-              'collectorAuthenticationEnforced',
-            ]);
+            const teams = await getAllTeams();
             span.setAttribute('opamp.teams.count', teams.length);
             const otelCollectorConfig = buildOtelCollectorConfig(teams);
 

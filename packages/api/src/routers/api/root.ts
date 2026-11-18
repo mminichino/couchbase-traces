@@ -5,10 +5,14 @@ import { z } from 'zod';
 import { validateRequest } from 'zod-express-middleware';
 
 import * as config from '@/config';
-import { createTeam, isTeamExisting } from '@/controllers/team';
+import { createTeam, isTeamExisting, removeTeam } from '@/controllers/team';
+import {
+  consumeTeamInvite,
+  findTeamInviteByToken,
+} from '@/controllers/teamInvite';
+import { registerUser } from '@/controllers/user';
+import { DuplicateKeyError } from '@/metadata';
 import { handleAuthError, redirectToDashboard } from '@/middleware/auth';
-import TeamInvite from '@/models/teamInvite';
-import User from '@/models/user'; // TODO -> do not import model directly
 import { setupTeamDefaults } from '@/setupDefaults';
 import logger from '@/utils/logger';
 import passport from '@/utils/passport';
@@ -91,50 +95,53 @@ router.post(
         return res.status(409).json({ error: 'teamAlreadyExists' });
       }
 
-      (User as any).register(
-        new User({ email }),
-        password,
-        async (err: Error, user: any) => {
-          if (err) {
-            logger.error(
-              { err: serializeError(err) },
-              'User registration error',
-            );
-            return res.status(400).json({ error: 'invalid' });
-          }
+      // A user doc needs its team, so the team comes first (upstream created
+      // the user first) and is removed again if registration fails; a team
+      // without members would lock the deployment out of registration.
+      let team;
+      try {
+        team = await createTeam({
+          name: `${email}'s Team`,
+          collectorAuthenticationEnforced: true,
+        });
+      } catch (err) {
+        // Lost a race with a concurrent registration.
+        if (err instanceof DuplicateKeyError) {
+          return res.status(409).json({ error: 'teamAlreadyExists' });
+        }
+        throw err;
+      }
 
-          const team = await createTeam({
-            name: `${email}'s Team`,
-            collectorAuthenticationEnforced: true,
-          });
-          user.team = team._id;
-          user.name = email;
-          await user.save();
+      try {
+        await registerUser({ email, name: email, team: team._id }, password);
+      } catch (err) {
+        logger.error({ err: serializeError(err) }, 'User registration error');
+        await removeTeam(team._id);
+        return res.status(400).json({ error: 'invalid' });
+      }
 
-          // Set up default connections and sources for this new team
-          try {
-            await setupTeamDefaults(team._id.toString());
-          } catch (error) {
-            logger.error(
-              { err: serializeError(error) },
-              'Failed to setup team defaults',
-            );
-            // Continue with registration even if setup defaults fails
-          }
+      // Set up default connections and sources for this new team
+      try {
+        await setupTeamDefaults(team._id);
+      } catch (error) {
+        logger.error(
+          { err: serializeError(error) },
+          'Failed to setup team defaults',
+        );
+        // Continue with registration even if setup defaults fails
+      }
 
-          return passport.authenticate('local')(req, res, () => {
-            if (req?.user?.team) {
-              return res.status(200).json({ status: 'success' });
-            }
+      return passport.authenticate('local')(req, res, () => {
+        if (req?.user?.team) {
+          return res.status(200).json({ status: 'success' });
+        }
 
-            logger.error(
-              { userId: req?.user?._id },
-              'Password login for user failed, user or team not found',
-            );
-            return res.status(400).json({ error: 'invalid' });
-          });
-        },
-      );
+        logger.error(
+          { userId: req?.user?._id },
+          'Password login for user failed, user or team not found',
+        );
+        return res.status(400).json({ error: 'invalid' });
+      });
     } catch (e) {
       next(e);
     }
@@ -168,38 +175,36 @@ router.post('/team/setup/:token', async (req, res, next) => {
       );
     }
 
-    const teamInvite = await TeamInvite.findOne({
-      token: req.params.token,
-    });
+    const teamInvite = await findTeamInviteByToken(token);
     if (!teamInvite) {
       return res.status(401).send('Invalid token');
     }
 
-    (User as any).register(
-      new User({
-        email: teamInvite.email,
-        name: teamInvite.email,
-        team: teamInvite.teamId,
-      }),
-      password,
-      async (err: Error, user: any) => {
-        if (err) {
-          logger.error({ err: serializeError(err) }, 'Team setup error');
-          return res.redirect(
-            `${config.FRONTEND_REDIRECT_BASE}/join-team?token=${token}&err=500`,
-          );
-        }
+    let user;
+    try {
+      user = await registerUser(
+        {
+          email: teamInvite.email,
+          name: teamInvite.email,
+          team: teamInvite.teamId,
+        },
+        password,
+      );
+    } catch (err) {
+      logger.error({ err: serializeError(err) }, 'Team setup error');
+      return res.redirect(
+        `${config.FRONTEND_REDIRECT_BASE}/join-team?token=${token}&err=500`,
+      );
+    }
 
-        await TeamInvite.findByIdAndRemove(teamInvite._id);
+    await consumeTeamInvite(teamInvite._id);
 
-        req.login(user, err => {
-          if (err) {
-            return next(err);
-          }
-          redirectToDashboard(req, res);
-        });
-      },
-    );
+    req.login(user, err => {
+      if (err) {
+        return next(err);
+      }
+      redirectToDashboard(req, res);
+    });
   } catch (e) {
     next(e);
   }

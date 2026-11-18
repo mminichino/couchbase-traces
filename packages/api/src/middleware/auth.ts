@@ -6,7 +6,7 @@ import { serializeError } from 'serialize-error';
 import * as config from '@/config';
 import { touchOrgApiKeyLastUsed } from '@/controllers/orgApiKey';
 import { findUserByAccessKey, ORG_API_KEY_PREFIX } from '@/controllers/user';
-import type { UserDocument } from '@/models/user';
+import type { IUser } from '@/metadata/schemas/user';
 import {
   getActiveTraceId,
   getCounter,
@@ -21,7 +21,7 @@ declare global {
   // eslint-disable-next-line @typescript-eslint/no-namespace
   namespace Express {
     // eslint-disable-next-line @typescript-eslint/no-empty-object-type
-    interface User extends UserDocument {}
+    interface User extends IUser {}
     interface Request {
       _hdx_connection?: Connection;
     }
@@ -150,6 +150,21 @@ function nextWithQueryAttribution(req: Request, next: NextFunction): void {
   );
 }
 
+// Synthetic ids on purpose: isPersistableUserId rejects them, so local mode
+// never writes user state.
+const LOCAL_APP_USER: IUser = {
+  _id: '_local_user_',
+  email: 'local-user@hyperdx.io',
+  team: '_local_team_',
+  name: '',
+  accessKey: '',
+  isVirtual: false,
+  hasPasswordAuth: false,
+  onboardingData: { completedTasks: [], isDismissed: false },
+  createdAt: new Date(0),
+  updatedAt: new Date(0),
+};
+
 export function isUserAuthenticated(
   req: Request,
   res: Response,
@@ -158,13 +173,7 @@ export function isUserAuthenticated(
   if (config.IS_LOCAL_APP_MODE) {
     // If local app mode is enabled, skip authentication
     logger.warn('Skipping authentication in local app mode');
-    req.user = {
-      // @ts-expect-error local app mode uses a synthetic string id, not an ObjectId
-      _id: '_local_user_',
-      email: 'local-user@hyperdx.io',
-      // @ts-expect-error local app mode uses a synthetic string team, not an ObjectId
-      team: '_local_team_',
-    };
+    req.user = LOCAL_APP_USER;
     setBusinessContext({
       teamId: '_local_team_',
       userId: '_local_user_',

@@ -2,44 +2,52 @@ import {
   TagResourceType,
   TeamQuerySettingsUpdate,
 } from '@couchbase-traces/common-utils/dist/types';
+import pick from 'lodash/pick';
 import mongoose from 'mongoose';
 import { v4 as uuidv4 } from 'uuid';
 
 import * as config from '@/config';
-import type { ObjectId } from '@/models';
+import { getMetadataStore } from '@/metadata';
+import type { ITeam } from '@/metadata/schemas/team';
 import Alert from '@/models/alert';
 import Dashboard from '@/models/dashboard';
 import { SavedSearch } from '@/models/savedSearch';
-import Team, { type ITeam, type TeamDocument } from '@/models/team';
+
+export type { ITeam } from '@/metadata/schemas/team';
+
+type IdLike = string | { toString(): string };
+
+const teams = () => getMetadataStore().teams;
 
 export function getTeamInviteUrl(token: string) {
   return `${config.FRONTEND_URL}/join-team?token=${token}`;
 }
 
 const LOCAL_APP_TEAM_ID = '_local_team_';
-export const LOCAL_APP_TEAM = {
-  _id: new mongoose.Types.ObjectId(LOCAL_APP_TEAM_ID),
+// The hex of the 12 bytes Mongoose made an ObjectId from before C1.
+const LOCAL_APP_TEAM_HEX = Buffer.from(LOCAL_APP_TEAM_ID).toString('hex');
+export const LOCAL_APP_TEAM: ITeam = {
+  _id: LOCAL_APP_TEAM_HEX,
   id: LOCAL_APP_TEAM_ID,
   name: 'Local App Team',
+  allowedAuthMethods: [],
   // Placeholder keys
   hookId: uuidv4(),
   apiKey: uuidv4(),
   collectorAuthenticationEnforced: false,
   isMetricsSeriesTableEnabled: false,
-  toJSON() {
-    return this;
-  },
+  createdAt: new Date(0),
+  updatedAt: new Date(0),
 };
 
 export async function isTeamExisting() {
   if (config.IS_LOCAL_APP_MODE) {
     return true;
   }
-
-  const teamCount = await Team.countDocuments({});
-  return teamCount > 0;
+  return teams().exists();
 }
 
+/** Throws DuplicateKeyError('team_singleton') when a team already exists. */
 export async function createTeam({
   name,
   collectorAuthenticationEnforced = true,
@@ -47,80 +55,60 @@ export async function createTeam({
   name: string;
   collectorAuthenticationEnforced?: boolean;
 }) {
-  if (await isTeamExisting()) {
-    throw new Error('Team already exists');
-  }
-
-  const team = new Team({ name, collectorAuthenticationEnforced });
-
-  await team.save();
-
-  return team;
+  return teams().createFirst({ name, collectorAuthenticationEnforced });
 }
 
-export function getAllTeams(fields?: string[]) {
+/** Undoes createTeam when the first user can't be registered. */
+export function removeTeam(teamId: IdLike) {
+  return teams().remove(teamId.toString());
+}
+
+export async function getAllTeams(): Promise<ITeam[]> {
   if (config.IS_LOCAL_APP_MODE) {
     return [LOCAL_APP_TEAM];
   }
-
-  return Team.find({}, fields);
+  return teams().listAll();
 }
 
-export function getTeam<const F extends readonly (keyof ITeam)[]>(
-  id: string | ObjectId,
+/**
+ * The deployment's team. The id is not consulted (single team, as upstream's
+ * `findOne({})`); `fields` narrows the result like a Mongoose projection,
+ * which always kept `_id` and the `id` virtual.
+ */
+export async function getTeam<const F extends readonly (keyof ITeam)[]>(
+  id: IdLike,
   fields: F,
-): mongoose.Query<
-  mongoose.HydratedDocument<Pick<ITeam, F[number]>> | null,
-  any
->;
-export function getTeam(
-  id: string | ObjectId,
-): mongoose.Query<TeamDocument | null, any>;
-export function getTeam(id: string | ObjectId, fields?: readonly string[]) {
-  if (config.IS_LOCAL_APP_MODE) {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
-    return LOCAL_APP_TEAM as any;
-  }
-
-  return Team.findOne({}, fields);
+): Promise<Pick<ITeam, F[number] | '_id' | 'id'> | null>;
+export async function getTeam(id: IdLike): Promise<ITeam | null>;
+export async function getTeam(_id: IdLike, fields?: readonly (keyof ITeam)[]) {
+  const team = config.IS_LOCAL_APP_MODE
+    ? LOCAL_APP_TEAM
+    : await teams().getOnly();
+  if (team == null || fields == null) return team;
+  return pick(team, ['_id', 'id', ...fields]);
 }
 
-export function getTeamByApiKey(apiKey: string) {
+export async function getTeamByApiKey(apiKey: string) {
   if (config.IS_LOCAL_APP_MODE) {
     return LOCAL_APP_TEAM;
   }
-
-  return Team.findOne({ apiKey });
+  return teams().getByApiKey(apiKey);
 }
 
-export function rotateTeamApiKey(teamId: ObjectId) {
-  return Team.findByIdAndUpdate(teamId, { apiKey: uuidv4() }, { new: true });
+export function rotateTeamApiKey(teamId: IdLike) {
+  return teams().rotateApiKey(teamId.toString());
 }
 
-export function setTeamName(teamId: ObjectId, name: string) {
-  return Team.findByIdAndUpdate(teamId, { name }, { new: true });
+export function setTeamName(teamId: IdLike, name: string) {
+  return teams().setName(teamId.toString(), name);
 }
 
+/** null removes a setting, undefined leaves it unchanged. */
 export function updateTeamQuerySettings(
-  teamId: ObjectId,
+  teamId: IdLike,
   settings: TeamQuerySettingsUpdate,
 ) {
-  const $set: Record<string, any> = {};
-  const $unset: Record<string, any> = {};
-
-  for (const [key, value] of Object.entries(settings)) {
-    if (value === null) {
-      $unset[key] = '';
-    } else if (value !== undefined) {
-      $set[key] = value;
-    }
-  }
-
-  const update: Record<string, any> = {};
-  if (Object.keys($set).length > 0) update.$set = $set;
-  if (Object.keys($unset).length > 0) update.$unset = $unset;
-
-  return Team.findByIdAndUpdate(teamId, update, { new: true });
+  return teams().updateQuerySettings(teamId.toString(), settings);
 }
 
 function getCollectionsWithTags(
@@ -147,12 +135,10 @@ function getCollectionsWithTags(
  * Distinct tags applied to the team's entities. Scoped to one kind of entity
  * when `resourceType` is given.
  */
-export async function getTags(
-  teamId: ObjectId,
-  resourceType?: TagResourceType,
-) {
+export async function getTags(teamId: IdLike, resourceType?: TagResourceType) {
   const distinctTagsPipeline: mongoose.PipelineStage[] = [
-    { $match: { team: teamId } },
+    // Aggregation does not cast like queries do.
+    { $match: { team: new mongoose.Types.ObjectId(teamId.toString()) } },
     { $unwind: '$tags' },
     { $group: { _id: '$tags' } },
   ];

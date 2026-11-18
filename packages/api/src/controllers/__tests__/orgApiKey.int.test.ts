@@ -16,7 +16,8 @@ import {
   hashOrgApiKey,
 } from '@/controllers/user';
 import { clearDBCollections, closeDB, connectDB } from '@/fixtures';
-import User from '@/models/user';
+import { getMetadataStore } from '@/metadata';
+import { findUser, getUserDoc, seedUser } from '@/metadata/testing/seed';
 
 const DAY_MS = 24 * 60 * 60 * 1000;
 
@@ -36,7 +37,7 @@ describe('orgApiKey controller', () => {
   });
 
   const create = async (
-    teamId: mongoose.Types.ObjectId,
+    teamId: string,
     expiry: '30d' | '1y' | 'never' = '30d',
   ) =>
     createOrgApiKey(teamId, creator, {
@@ -49,7 +50,7 @@ describe('orgApiKey controller', () => {
     const { doc, key } = await create(team._id);
 
     expect(key).toMatch(/^hdx_org_[A-Za-z0-9_-]{43}$/);
-    const stored = await User.findById(doc._id).lean();
+    const stored = await getUserDoc(doc._id);
     expect(stored?.accessKey).toBe(hashOrgApiKey(key));
     expect(Object.values(stored ?? {})).not.toContain(key);
   });
@@ -90,7 +91,7 @@ describe('orgApiKey controller', () => {
   it('scopes list and delete to the team', async () => {
     const teamA = await createTeam({ name: 'A' });
     // OSS allows a single team, so team B only needs to be a distinct id.
-    const teamB = new mongoose.Types.ObjectId();
+    const teamB = new mongoose.Types.ObjectId().toString();
     const { doc } = await create(teamA._id);
 
     expect(await listOrgApiKeys(teamB)).toHaveLength(0);
@@ -118,13 +119,13 @@ describe('orgApiKey controller', () => {
     const lastUsed = async () => {
       // Writes are fire-and-forget; give them a moment to land.
       await new Promise(r => setTimeout(r, 100));
-      return (await User.findById(doc._id))?.lastUsedAt?.getTime();
+      return (await findUser(doc._id))?.lastUsedAt?.getTime();
     };
 
     touchOrgApiKeyLastUsed(doc, t0);
     expect(await lastUsed()).toBe(t0.getTime());
 
-    const fresh = (await User.findById(doc._id))!;
+    const fresh = (await findUser(doc._id))!;
     touchOrgApiKeyLastUsed(fresh, new Date(t0.getTime() + 60_000));
     expect(await lastUsed()).toBe(t0.getTime());
 
@@ -145,7 +146,7 @@ describe('orgApiKey controller', () => {
     it('creates a service account user for each key', async () => {
       const team = await createTeam({ name: 'A' });
       const { doc } = await create(team._id);
-      const account = await User.findById(doc._id);
+      const account = await findUser(doc._id);
 
       expect(account).toMatchObject({
         isVirtual: true,
@@ -167,7 +168,7 @@ describe('orgApiKey controller', () => {
       const team = await createTeam({ name: 'A' });
       const { doc } = await create(team._id);
       await updateOrgApiKeyDescription(team._id, doc._id.toString(), 'ci');
-      expect((await User.findById(doc._id))?.name).toBe('ci');
+      expect((await findUser(doc._id))?.name).toBe('ci');
     });
 
     it('keeps the service account when the key is revoked', async () => {
@@ -176,7 +177,7 @@ describe('orgApiKey controller', () => {
       await revokeOrgApiKey(team._id, doc._id.toString());
       expect(await findUserByAccessKey(key)).toBeNull();
       expect(await listOrgApiKeys(team._id)).toHaveLength(0);
-      expect(await User.findById(doc._id)).not.toBeNull();
+      expect(await findUser(doc._id)).not.toBeNull();
     });
   });
 
@@ -186,7 +187,7 @@ describe('orgApiKey controller', () => {
       const { doc } = await create(team._id);
       const users = await Promise.all(
         Array.from({ length: people }, (_, i) =>
-          User.create({ email: `p${i}@example.com`, team: team._id }),
+          seedUser({ email: `p${i}@example.com`, team: team._id }),
         ),
       );
       return { team, serviceAccount: doc._id, users };
@@ -196,7 +197,7 @@ describe('orgApiKey controller', () => {
 
     it('refuses the last person without deleting them', async () => {
       const { team, serviceAccount, users } = await setupTeam(1);
-      const deleteSpy = jest.spyOn(User, 'findOneAndDelete');
+      const deleteSpy = jest.spyOn(getMetadataStore().users, 'removeMember');
 
       const result = await deleteTeamMember(
         team._id,
@@ -210,10 +211,11 @@ describe('orgApiKey controller', () => {
     it('retries putting a member back when the first insert fails', async () => {
       const { team, serviceAccount, users } = await setupTeam(2);
       // Simulate a concurrent removal: two people before the delete, none after.
-      // Widened to SpyInstance: the Mongoose overloads type these mocks as never.
-      const count: jest.SpyInstance = jest.spyOn(User, 'countDocuments');
-      count.mockResolvedValueOnce(2).mockResolvedValueOnce(0);
-      const insert: jest.SpyInstance = jest.spyOn(User.collection, 'insertOne');
+      jest
+        .spyOn(getMetadataStore().users, 'countPeople')
+        .mockResolvedValueOnce(2)
+        .mockResolvedValueOnce(0);
+      const insert = jest.spyOn(getMetadataStore().kv, 'insert');
       insert.mockRejectedValueOnce(new Error('transient'));
 
       const result = await deleteTeamMember(
@@ -222,20 +224,23 @@ describe('orgApiKey controller', () => {
         serviceAccount,
       );
       expect(result).toBe('last_member');
-      expect(await User.findById(users[0]._id)).not.toBeNull();
+      expect(await findUser(users[0]._id)).not.toBeNull();
     });
 
     it('treats a duplicate _id on restore as already restored', async () => {
       const { team, serviceAccount, users } = await setupTeam(2);
-      const count: jest.SpyInstance = jest.spyOn(User, 'countDocuments');
-      count.mockResolvedValueOnce(2).mockResolvedValueOnce(0);
-      const insert: jest.SpyInstance = jest.spyOn(User.collection, 'insertOne');
-      insert.mockRejectedValueOnce(
-        Object.assign(new Error('E11000'), {
-          code: 11000,
-          keyPattern: { _id: 1 },
-        }),
-      );
+      const repo = getMetadataStore().users;
+      jest
+        .spyOn(repo, 'countPeople')
+        .mockResolvedValueOnce(2)
+        .mockResolvedValueOnce(0);
+      // Another restore already put the member back: the removal reports
+      // success but the document is still there.
+      const stored = (await getUserDoc(users[0]._id))!;
+      jest
+        .spyOn(repo, 'removeMember')
+        .mockResolvedValueOnce({ id: users[0]._id, doc: stored });
+      const insert = jest.spyOn(getMetadataStore().kv, 'insert');
 
       const result = await deleteTeamMember(
         team._id,
@@ -243,7 +248,8 @@ describe('orgApiKey controller', () => {
         serviceAccount,
       );
       expect(result).toBe('last_member');
-      expect(insert).toHaveBeenCalledTimes(1);
+      expect(insert).not.toHaveBeenCalled();
+      expect(await findUser(users[0]._id)).not.toBeNull();
     });
   });
 });

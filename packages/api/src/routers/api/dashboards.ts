@@ -90,7 +90,7 @@ function getFilterSourceRefs(
  * reject.
  */
 async function validateFilterSources(
-  teamId: ObjectId,
+  teamId: ObjectId | string,
   filters: DashboardFilter[] = [],
   existingFilters: DashboardFilter[] = [],
 ): Promise<string | null> {

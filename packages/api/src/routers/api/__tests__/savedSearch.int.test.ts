@@ -3,9 +3,10 @@ import {
   getServer,
   makeSavedSearchAlertInput,
 } from '@/fixtures';
+import { seedUser } from '@/metadata/testing/seed';
+import { toObjectId } from '@/models';
 import Alert from '@/models/alert';
 import { SavedSearch } from '@/models/savedSearch';
-import User from '@/models/user';
 import Webhook, { WebhookDocument, WebhookService } from '@/models/webhook';
 
 const MOCK_SAVED_SEARCH = {
@@ -151,7 +152,7 @@ describe('savedSearch router', () => {
       .expect(200);
 
     // Create a second user on the same team
-    const secondUser = await User.create({
+    const secondUser = await seedUser({
       email: 'second@test.com',
       name: 'Second User',
       team: team._id,
@@ -190,9 +191,10 @@ describe('savedSearch router', () => {
   });
 
   it('ignores smuggled team and createdBy on PATCH', async () => {
-    const otherUser = await User.create({
+    const otherUser = await seedUser({
       email: 'other@test.com',
       name: 'Other User',
+      team: '679b12d6cf282580fc63aad5',
     });
     const otherTeamId = '679b12d6cf282580fc63aad5';
     const created = await agent
@@ -240,7 +242,7 @@ describe('savedSearch router', () => {
     // Verify createdBy was set on the alert document
     const alertFromDb = await Alert.findById(alert.body.data._id);
     expect(alertFromDb).toBeDefined();
-    expect(alertFromDb!.createdBy).toEqual(user._id);
+    expect(alertFromDb!.createdBy).toEqual(toObjectId(user._id));
 
     // Verify GET /saved-search returns alerts with createdBy populated
     const savedSearches = await agent.get('/saved-search').expect(200);

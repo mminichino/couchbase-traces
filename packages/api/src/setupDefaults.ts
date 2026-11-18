@@ -17,7 +17,7 @@ import {
 import { createConnection, getConnections } from '@/controllers/connection';
 import { createSource, getSources, updateSource } from '@/controllers/sources';
 import { getTeam } from '@/controllers/team';
-import type { ITeam } from '@/models/team';
+import type { ITeam } from '@/metadata/schemas/team';
 import logger from '@/utils/logger';
 
 function tryParseJSON(str: string | undefined) {

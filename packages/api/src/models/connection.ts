@@ -56,7 +56,6 @@ export default mongoose.model<IConnection>(
       team: {
         type: mongoose.Schema.Types.ObjectId,
         required: true,
-        ref: 'Team',
       },
       name: String,
       host: String,

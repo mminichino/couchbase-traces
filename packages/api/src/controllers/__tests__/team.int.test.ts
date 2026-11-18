@@ -33,11 +33,8 @@ describe('team controller', () => {
 
     expect(team.name).toBe('My Team');
 
-    team.apiKey = 'apiKey';
-
-    await team.save();
-
     expect(await getTeam(team._id)).toBeTruthy();
-    expect(await getTeamByApiKey('apiKey')).toBeTruthy();
+    expect(await getTeamByApiKey(team.apiKey)).toBeTruthy();
+    expect(await getTeamByApiKey('apiKey')).toBeNull();
   });
 });

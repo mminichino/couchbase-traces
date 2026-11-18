@@ -271,7 +271,6 @@ exports[`metadata wire contracts: internal API GET /me 1`] = `
     "isDismissed": false,
   },
   "team": {
-    "__v": 0,
     "_id": "<id:1>",
     "allowedAuthMethods": [],
     "apiKey": "<secret>",

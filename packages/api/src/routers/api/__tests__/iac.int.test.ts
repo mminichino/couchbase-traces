@@ -6,6 +6,7 @@ import {
   getServer,
   randomMongoId,
 } from '@/fixtures';
+import { toObjectId } from '@/models';
 import Alert, { AlertSource, AlertState } from '@/models/alert';
 import Connection from '@/models/connection';
 import Dashboard from '@/models/dashboard';
@@ -157,7 +158,7 @@ describe('iac router', () => {
     });
     await Dashboard.collection.insertOne({
       name: 'Corrupt',
-      team: team._id,
+      team: toObjectId(team._id),
       tiles: [{ id: 'bad', x: 0, y: 0, w: 4, h: 2 }],
     });
 
@@ -177,7 +178,7 @@ describe('iac router', () => {
 
     const connection = await Connection.create({
       kind: 'couchbase',
-      team: team._id,
+      team: toObjectId(team._id),
       name: 'Local ClickHouse',
       host: 'http://localhost:8123',
       username: 'default',
@@ -186,7 +187,7 @@ describe('iac router', () => {
     const source = await Source.create({
       kind: SourceKind.Log,
       name: 'Logs',
-      team: team._id,
+      team: toObjectId(team._id),
       connection: connection._id,
       from: { databaseName: 'otel', tableName: 'otel_logs' },
       timestampValueExpression: 'Timestamp',
@@ -194,7 +195,7 @@ describe('iac router', () => {
     });
 
     const savedSearch = await SavedSearch.create({
-      team: team._id,
+      team: toObjectId(team._id),
       name: 'Production errors',
       select: '',
       where: 'level:error',

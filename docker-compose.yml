@@ -15,11 +15,11 @@ x-cbt-couchbase-env: &cbt-couchbase-env
   CBT_COUCHBASE_RAM_MB: ${CBT_COUCHBASE_RAM_MB:-2048}
   CBT_COUCHBASE_INDEX_RAM_MB: ${CBT_COUCHBASE_INDEX_RAM_MB:-512}
   CBT_COUCHBASE_SEARCH_RAM_MB: ${CBT_COUCHBASE_SEARCH_RAM_MB:-512}
-  # App metadata bucket (cbt_meta). Optional until the first entity leaves
-  # Mongo; when set, couchbase-init creates the user and the API connects.
+  # App metadata bucket (cbt_meta). Required since C1: teams, users, invites,
+  # and sessions live there; couchbase-init creates the user.
   CBT_METADATA_BUCKET: ${CBT_METADATA_BUCKET:-cbt_meta}
-  CBT_METADATA_USER: ${CBT_METADATA_USER:-}
-  CBT_METADATA_PASSWORD: ${CBT_METADATA_PASSWORD:-}
+  CBT_METADATA_USER: ${CBT_METADATA_USER:?set CBT_METADATA_USER in .env}
+  CBT_METADATA_PASSWORD: ${CBT_METADATA_PASSWORD:?set CBT_METADATA_PASSWORD in .env}
   CBT_METADATA_RAM_MB: ${CBT_METADATA_RAM_MB:-256}
 
 services:
@@ -131,8 +131,8 @@ services:
       MONGO_URI: 'mongodb://db:27017/hyperdx'
       CBT_COUCHBASE_CONNSTR: couchbase://couchbase
       CBT_METADATA_BUCKET: ${CBT_METADATA_BUCKET:-cbt_meta}
-      CBT_METADATA_USER: ${CBT_METADATA_USER:-}
-      CBT_METADATA_PASSWORD: ${CBT_METADATA_PASSWORD:-}
+      CBT_METADATA_USER: ${CBT_METADATA_USER:?set CBT_METADATA_USER in .env}
+      CBT_METADATA_PASSWORD: ${CBT_METADATA_PASSWORD:?set CBT_METADATA_PASSWORD in .env}
       SERVER_URL: http://127.0.0.1:${CBT_API_PORT}
       OPAMP_PORT: ${CBT_OPAMP_PORT}
       OTEL_EXPORTER_OTLP_ENDPOINT: 'http://otel-collector:4318'

@@ -183,7 +183,7 @@ function applyCursor(
 }
 
 export async function getAlertsPage(
-  teamId: ObjectId,
+  teamId: ObjectId | string,
   params: AlertsPageParams,
 ) {
   const { limit } = params;

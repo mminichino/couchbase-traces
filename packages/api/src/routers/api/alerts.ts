@@ -27,6 +27,12 @@ import {
   validateAlertInput,
 } from '@/controllers/alerts';
 import { alertsPageQuerySchema, getAlertsPage } from '@/controllers/alertsPage';
+import {
+  loadUserDisplays,
+  userDisplay,
+  type UserDisplays,
+} from '@/controllers/userDisplay';
+import { toObjectId } from '@/models';
 import { AlertSource, getAlertChannels } from '@/models/alert';
 import { IAlertHistory } from '@/models/alertHistory';
 import { resolveAlertDisplayFields } from '@/utils/alerts';
@@ -38,11 +44,16 @@ const router = express.Router();
 
 type EnhancedAlert = NonNullable<Awaited<ReturnType<typeof getAlertEnhanced>>>;
 
+const alertUserRefs = (alerts: EnhancedAlert[]) =>
+  loadUserDisplays(alerts.flatMap(a => [a.createdBy, a.silenced?.by]));
+
 const formatAlertResponse = (
   alert: EnhancedAlert,
   history: Omit<IAlertHistory, 'alert'>[],
+  users: UserDisplays,
   { includeChartConfig = false }: { includeChartConfig?: boolean } = {},
 ): PreSerialized<AlertsPageItem> => {
+  const createdBy = userDisplay(users, alert.createdBy);
   return {
     history,
     // Resolved (stored ?? derived) so alerts written before the fields existed
@@ -54,14 +65,13 @@ const formatAlertResponse = (
     }),
     silenced: alert.silenced
       ? {
-          by: alert.silenced.by?.email,
+          // Undefined for a deleted user, as the populated ref was.
+          by: userDisplay(users, alert.silenced.by)?.email as string,
           at: alert.silenced.at,
           until: alert.silenced.until,
         }
       : undefined,
-    createdBy: alert.createdBy
-      ? pick(alert.createdBy, ['email', 'name'])
-      : undefined,
+    createdBy: createdBy ? pick(createdBy, ['email', 'name']) : undefined,
     // webhookId is included so edit surfaces (e.g. the alert detail page) can
     // prefill the notification channel; webhook ids are already visible to
     // team members via GET /webhooks.
@@ -154,9 +164,10 @@ router.get(
         20,
       );
 
+      const users = await alertUserRefs(alerts);
       const data = alerts.map(alert => {
         const history = historyMap.get(alert._id.toString()) ?? [];
-        return formatAlertResponse(alert, history);
+        return formatAlertResponse(alert, history, users);
       });
 
       sendJson(res, { data, hasMore, ...(nextCursor && { nextCursor }) });
@@ -192,9 +203,12 @@ router.get(
         limit: 20,
       });
 
-      const data = formatAlertResponse(alert, history, {
-        includeChartConfig: true,
-      });
+      const data = formatAlertResponse(
+        alert,
+        history,
+        await alertUserRefs([alert]),
+        { includeChartConfig: true },
+      );
 
       sendJson(res, { data });
     } catch (e) {
@@ -421,7 +435,7 @@ router.post(
         return res.status(404).json({ error: 'Alert not found' });
       }
       alert.silenced = {
-        by: req.user._id,
+        by: toObjectId(req.user._id),
         at: new Date(),
         until: new Date(req.body.mutedUntil),
       };

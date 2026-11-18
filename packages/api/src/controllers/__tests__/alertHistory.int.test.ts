@@ -9,9 +9,9 @@ import {
   getRecentAlertHistoriesBatch,
 } from '@/controllers/alertHistory';
 import { clearDBCollections, closeDB, connectDB } from '@/fixtures';
+import { seedTeam } from '@/metadata/testing/seed';
 import Alert, { AlertState } from '@/models/alert';
 import AlertHistory from '@/models/alertHistory';
-import Team from '@/models/team';
 
 describe('alertHistory controller', () => {
   beforeAll(async () => {
@@ -39,7 +39,7 @@ describe('alertHistory controller', () => {
     });
 
     it('should return recent alert histories for a given alert', async () => {
-      const team = await Team.create({ name: 'Test Team' });
+      const team = await seedTeam({ name: 'Test Team' });
       const alert = await Alert.create({
         team: team._id,
         threshold: 100,
@@ -82,7 +82,7 @@ describe('alertHistory controller', () => {
     });
 
     it('should respect the limit parameter', async () => {
-      const team = await Team.create({ name: 'Test Team' });
+      const team = await seedTeam({ name: 'Test Team' });
       const alert = await Alert.create({
         team: team._id,
         threshold: 100,
@@ -113,7 +113,7 @@ describe('alertHistory controller', () => {
     });
 
     it('should group histories by createdAt timestamp', async () => {
-      const team = await Team.create({ name: 'Test Team' });
+      const team = await seedTeam({ name: 'Test Team' });
       const alert = await Alert.create({
         team: team._id,
         threshold: 100,
@@ -153,7 +153,7 @@ describe('alertHistory controller', () => {
     });
 
     it('should set state to ALERT if any grouped history has ALERT state', async () => {
-      const team = await Team.create({ name: 'Test Team' });
+      const team = await seedTeam({ name: 'Test Team' });
       const alert = await Alert.create({
         team: team._id,
         threshold: 100,
@@ -200,7 +200,7 @@ describe('alertHistory controller', () => {
     });
 
     it('should set state to OK when all grouped histories are OK', async () => {
-      const team = await Team.create({ name: 'Test Team' });
+      const team = await seedTeam({ name: 'Test Team' });
       const alert = await Alert.create({
         team: team._id,
         threshold: 100,
@@ -237,7 +237,7 @@ describe('alertHistory controller', () => {
     });
 
     it('should sort histories by createdAt in descending order', async () => {
-      const team = await Team.create({ name: 'Test Team' });
+      const team = await seedTeam({ name: 'Test Team' });
       const alert = await Alert.create({
         team: team._id,
         threshold: 100,
@@ -287,7 +287,7 @@ describe('alertHistory controller', () => {
     });
 
     it('should sort lastValues by startTime in ascending order', async () => {
-      const team = await Team.create({ name: 'Test Team' });
+      const team = await seedTeam({ name: 'Test Team' });
       const alert = await Alert.create({
         team: team._id,
         threshold: 100,
@@ -328,7 +328,7 @@ describe('alertHistory controller', () => {
     });
 
     it('should only return histories for the specified alert', async () => {
-      const team = await Team.create({ name: 'Test Team' });
+      const team = await seedTeam({ name: 'Test Team' });
       const alert1 = await Alert.create({
         team: team._id,
         threshold: 100,
@@ -373,7 +373,7 @@ describe('alertHistory controller', () => {
     });
 
     it('surfaces ERROR windows with their recorded errors', async () => {
-      const team = await Team.create({ name: 'Test Team' });
+      const team = await seedTeam({ name: 'Test Team' });
       const alert = await Alert.create({
         team: team._id,
         threshold: 100,
@@ -423,7 +423,7 @@ describe('alertHistory controller', () => {
     });
 
     it('lets ALERT/PENDING outrank ERROR within a grouped window, but ERROR outrank OK', async () => {
-      const team = await Team.create({ name: 'Test Team' });
+      const team = await seedTeam({ name: 'Test Team' });
       const alert = await Alert.create({
         team: team._id,
         threshold: 100,
@@ -490,7 +490,7 @@ describe('alertHistory controller', () => {
 
   describe('getAlertEvaluations', () => {
     const createAlert = async () => {
-      const team = await Team.create({ name: 'Test Team' });
+      const team = await seedTeam({ name: 'Test Team' });
       return Alert.create({
         team: team._id,
         threshold: 100,
@@ -894,7 +894,7 @@ describe('alertHistory controller', () => {
     });
 
     it('should return histories for multiple alerts in a single batch call', async () => {
-      const team = await Team.create({ name: 'Test Team' });
+      const team = await seedTeam({ name: 'Test Team' });
       const alert1 = await Alert.create({
         team: team._id,
         threshold: 100,
@@ -969,7 +969,7 @@ describe('alertHistory controller', () => {
     });
 
     it('should respect the limit parameter per alert', async () => {
-      const team = await Team.create({ name: 'Test Team' });
+      const team = await seedTeam({ name: 'Test Team' });
       const alert = await Alert.create({
         team: team._id,
         threshold: 100,
@@ -999,7 +999,7 @@ describe('alertHistory controller', () => {
     });
 
     it('should detect ALERT state when any grouped history has ALERT state', async () => {
-      const team = await Team.create({ name: 'Test Team' });
+      const team = await seedTeam({ name: 'Test Team' });
       const alert = await Alert.create({
         team: team._id,
         threshold: 100,
@@ -1043,7 +1043,7 @@ describe('alertHistory controller', () => {
     const t = (minsAgo: number) => new Date(now - minsAgo * 60_000);
 
     const createAlert = async () => {
-      const team = await Team.create({ name: 'Test Team' });
+      const team = await seedTeam({ name: 'Test Team' });
       return Alert.create({
         team: team._id,
         threshold: 100,

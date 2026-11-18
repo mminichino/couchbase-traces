@@ -1,15 +1,18 @@
-import crypto from 'crypto';
 import express from 'express';
 import { z } from 'zod';
 import { validateRequest } from 'zod-express-middleware';
 
 import { getTeam, getTeamInviteUrl } from '@/controllers/team';
 import {
+  deleteTeamInvite,
+  getOrCreateTeamInvite,
+  listTeamInvites,
+} from '@/controllers/teamInvite';
+import {
   deleteTeamMember,
   findUserByEmail,
   findUsersByTeam,
 } from '@/controllers/user';
-import TeamInvite from '@/models/teamInvite';
 import { objectIdSchema } from '@/utils/zod';
 
 const router = express.Router();
@@ -74,10 +77,10 @@ router.get('/members', async (req, res, next) => {
     const teamUsers = await findUsersByTeam(teamId.toString());
     return res.json({
       data: teamUsers.map(user => ({
-        id: user._id.toString(),
+        id: user._id,
         email: user.email,
         name: user.name,
-        isCurrentUser: !!userId && user._id.equals(userId),
+        isCurrentUser: !!userId && user._id === userId,
       })),
     });
   } catch (e) {
@@ -133,38 +136,16 @@ router.post(
         });
       }
 
-      let teamInvite = await TeamInvite.findOne({
-        teamId: teamId.toString(),
+      // Idempotent: a concurrent create returns the winner's invite.
+      const teamInvite = await getOrCreateTeamInvite(teamId, {
         email: normalizedEmail,
+        name,
       });
-
-      if (!teamInvite) {
-        try {
-          teamInvite = await new TeamInvite({
-            teamId: teamId.toString(),
-            name,
-            email: normalizedEmail,
-            token: crypto.randomBytes(32).toString('hex'),
-          }).save();
-        } catch (err: any) {
-          // ponytail: concurrent insert lost the race on the {teamId, email}
-          // unique index — re-fetch the winner's doc to stay idempotent.
-          if (err?.code === 11000) {
-            teamInvite = await TeamInvite.findOne({
-              teamId: teamId.toString(),
-              email: normalizedEmail,
-            });
-          }
-          if (!teamInvite) {
-            throw err;
-          }
-        }
-      }
 
       return res.json({
         data: {
           email: normalizedEmail,
-          invitationId: teamInvite._id.toString(),
+          invitationId: teamInvite._id,
           status: 'pending',
           url: getTeamInviteUrl(teamInvite.token),
         },
@@ -194,14 +175,11 @@ router.get('/invitations', async (req, res, next) => {
       return res.sendStatus(403);
     }
 
-    const teamInvites = await TeamInvite.find(
-      { teamId: teamId.toString() },
-      { createdAt: 1, email: 1, name: 1, token: 1 },
-    );
+    const teamInvites = await listTeamInvites(teamId);
 
     return res.json({
       data: teamInvites.map(ti => ({
-        id: ti._id.toString(),
+        id: ti._id,
         createdAt: ti.createdAt,
         email: ti.email,
         name: ti.name,
@@ -243,12 +221,9 @@ router.delete(
         return res.sendStatus(403);
       }
 
-      const teamInvite = await TeamInvite.findOneAndDelete({
-        _id: req.params.id,
-        teamId: teamId.toString(),
-      });
+      const deleted = await deleteTeamInvite(teamId, req.params.id);
 
-      if (!teamInvite) {
+      if (!deleted) {
         return res.sendStatus(404);
       }
 

@@ -7,9 +7,9 @@ import {
   makeTile,
   randomMongoId,
 } from '@/fixtures';
+import { seedUser } from '@/metadata/testing/seed';
 import Alert, { AlertSource, AlertState } from '@/models/alert';
 import { SavedSearch } from '@/models/savedSearch';
-import User from '@/models/user';
 import Webhook, { WebhookDocument, WebhookService } from '@/models/webhook';
 
 const MOCK_TILES = [makeTile()];
@@ -232,7 +232,7 @@ describe('alerts list paging and filtering', () => {
 
   describe('filters', () => {
     it('filters by createdBy', async () => {
-      const other = await User.create({
+      const other = await seedUser({
         email: 'other@example.test',
         name: 'Other',
         team: team._id,

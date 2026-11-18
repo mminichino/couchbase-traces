@@ -7,6 +7,7 @@ import express from 'express';
 import { validateRequest } from 'zod-express-middleware';
 
 import {
+  buildCouchbaseConnectionUpdate,
   createConnection,
   deleteConnection,
   getConnectionById,
@@ -14,6 +15,7 @@ import {
   updateConnection,
 } from '@/controllers/connection';
 import { getNonNullUserWithTeam } from '@/middleware/auth';
+import { toObjectId } from '@/models';
 import logger from '@/utils/logger';
 import { rejectPromqlBody } from '@/utils/rejectPromql';
 
@@ -85,7 +87,7 @@ router.post(
       const connection = await createConnection(teamId.toString(), {
         ...body,
         password: body.password ?? '',
-        team: teamId,
+        team: toObjectId(teamId),
         kind: 'couchbase',
         managementPort:
           typeof body.managementPort === 'number'
@@ -133,20 +135,12 @@ router.put(
         return;
       }
 
-      const password = body.password || connection.password;
-      const { tlsCaCertificate, monitorPassword, managementPort, ...rest } =
-        body;
-      const unsetFields: string[] = [];
-      const newConnection = {
-        ...rest,
-        team: teamId,
-        kind: 'couchbase' as const,
-        password,
-        ...(tlsCaCertificate ? { tlsCaCertificate } : {}),
-        ...(monitorPassword ? { monitorPassword } : {}),
-        ...(typeof managementPort === 'number' ? { managementPort } : {}),
-      };
-      if (managementPort === null) unsetFields.push('managementPort');
+      const { update: newConnection, unsetFields } =
+        buildCouchbaseConnectionUpdate(
+          teamId.toString(),
+          body,
+          connection.password,
+        );
 
       const updatedConnection = await updateConnection(
         teamId.toString(),

@@ -6,6 +6,7 @@ import { groupBy } from 'lodash';
 import { z } from 'zod';
 
 import { deleteSavedSearchAlerts } from '@/controllers/alerts';
+import { applyUserDisplays, loadUserDisplays } from '@/controllers/userDisplay';
 import Alert from '@/models/alert';
 import { SavedSearch } from '@/models/savedSearch';
 import { resolveAlertDisplayFields } from '@/utils/alerts';
@@ -16,29 +17,34 @@ type SavedSearchWithoutId = Omit<z.infer<typeof SavedSearchSchema>, 'id'>;
 export async function getSavedSearches(
   teamId: string,
 ): Promise<SavedSearchListApiResponse[]> {
-  const savedSearches = await SavedSearch.find({ team: teamId })
-    .populate('createdBy', 'email name')
-    .populate('updatedBy', 'email name');
+  const savedSearches = await SavedSearch.find({ team: teamId });
   const alerts = await Alert.find(
     { team: teamId, savedSearch: { $exists: true, $ne: null } },
     { __v: 0 },
-  ).populate('createdBy', 'email name');
+  );
+  const users = await loadUserDisplays([
+    ...savedSearches.flatMap(s => [s.createdBy, s.updatedBy]),
+    ...alerts.map(a => a.createdBy),
+  ]);
 
   const alertsBySavedSearchId = groupBy(alerts, 'savedSearch');
 
   return savedSearches.map(savedSearch => ({
-    ...savedSearch.toJSON(),
+    ...applyUserDisplays(users, savedSearch.toJSON(), [
+      'createdBy',
+      'updatedBy',
+    ]),
     alerts: alertsBySavedSearchId[savedSearch._id.toString()]?.map(alert => ({
-      ...alert.toJSON(),
+      ...applyUserDisplays(users, alert.toJSON(), ['createdBy']),
       ...resolveAlertDisplayFields(alert, { savedSearch }),
     })),
   }));
 }
 
 export function getSavedSearch(teamId: string, savedSearchId: string) {
-  return SavedSearch.findOne({ _id: savedSearchId, team: teamId })
-    .populate('createdBy', 'email name')
-    .populate('updatedBy', 'email name');
+  // No user display: callers read the doc or its external JSON, neither of
+  // which renders the creator.
+  return SavedSearch.findOne({ _id: savedSearchId, team: teamId });
 }
 
 export function createSavedSearch(

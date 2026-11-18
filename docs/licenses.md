@@ -1,10 +1,10 @@
 # Dependency license report
 
-Generated: 2026-11-17 (`node port/remove-ch/licenses.mjs`).
+Generated: 2026-11-18 (`node port/remove-ch/licenses.mjs`).
 
 ## Summary
 
-- npm production packages (external): **1010** (via `yarn dlx license-checker-rseidelsohn@5.0.1` at repo root; production closure from workspace `dependencies`).
+- npm production packages (external): **1001** (via `yarn dlx license-checker-rseidelsohn@5.0.1` at repo root; production closure from workspace `dependencies`).
 - Go modules: **485** (via `go run github.com/google/go-licenses@v1.6.0 report` on `packages/otel-collector` and the OCB `builder-config.yaml` module list).
 - Review-list entries: **15** (copyleft / network copyleft / unknown — informational only).
 
@@ -12,10 +12,10 @@ Generated: 2026-11-17 (`node port/remove-ch/licenses.mjs`).
 
 | License | Count |
 | --- | --- |
-| MIT | 809 |
+| MIT | 802 |
 | Apache-2.0 | 451 |
-| ISC | 89 |
-| BSD-3-Clause | 86 |
+| ISC | 88 |
+| BSD-3-Clause | 85 |
 | MPL-2.0 | 14 |
 | BlueOak-1.0.0 | 12 |
 | (MIT OR CC0-1.0) | 9 |
@@ -86,7 +86,6 @@ Packages reachable from workspace `dependencies` (private workspaces are omitted
 | @hono/node-server | 1.19.17 | MIT | https://github.com/honojs/node-server | @couchbase-traces/api |
 | @hookform/resolvers | 3.9.0 | MIT | https://github.com/react-hook-form/resolvers | @couchbase-traces/app |
 | @hyperdx/lucene | 3.1.1 | MIT | https://github.com/bripkens/lucene | @couchbase-traces/common-utils |
-| @hyperdx/passport-local-mongoose | 9.0.1 | MIT | https://github.com/hyperdxio/passport-local-mongoose | @couchbase-traces/api |
 | @js-sdsl/ordered-map | 4.4.2 | MIT | https://github.com/js-sdsl/js-sdsl | @couchbase-traces/api |
 | @lezer/common | 1.5.3 | MIT | git+https://code.haverbeke.berlin/lezer/common | @couchbase-traces/app |
 | @lezer/highlight | 1.2.5 | MIT | git+https://code.haverbeke.berlin/lezer/highlight | @couchbase-traces/app |
@@ -340,8 +339,6 @@ Packages reachable from workspace `dependencies` (private workspaces are omitted
 | argparse | 2.0.1 | Python-2.0 | https://github.com/nodeca/argparse | @couchbase-traces/app |
 | aria-hidden | 1.2.6 | MIT | https://github.com/theKashey/aria-hidden | @couchbase-traces/app |
 | array-flatten | 1.1.1 | MIT | https://github.com/blakeembrey/array-flatten | @couchbase-traces/api |
-| asn1.js | 4.10.1 | MIT | https://github.com/indutny/asn1.js | @couchbase-traces/api |
-| asn1.js | 5.4.1 | MIT | https://github.com/indutny/asn1.js | @couchbase-traces/api |
 | asynckit | 0.4.0 | MIT | https://github.com/alexindigo/asynckit | @couchbase-traces/api |
 | atomic-sleep | 1.0.0 | MIT | https://github.com/davidmarkclements/atomic-sleep | @couchbase-traces/api |
 | attr-accept | 2.2.5 | MIT | https://github.com/react-dropzone/attr-accept | @couchbase-traces/app |
@@ -361,8 +358,6 @@ Packages reachable from workspace `dependencies` (private workspaces are omitted
 | bignumber.js | 9.1.1 | MIT | https://github.com/MikeMcl/bignumber.js | @couchbase-traces/api, @couchbase-traces/app |
 | bignumber.js | 9.1.2 | MIT | https://github.com/MikeMcl/bignumber.js | @couchbase-traces/api, @couchbase-traces/app |
 | binary-extensions | 2.2.0 | MIT | https://github.com/sindresorhus/binary-extensions | @couchbase-traces/app |
-| bn.js | 4.12.3 | MIT | https://github.com/indutny/bn.js | @couchbase-traces/api |
-| bn.js | 5.2.1 | MIT | https://github.com/indutny/bn.js | @couchbase-traces/api |
 | body-parser | 1.20.6 | MIT | https://github.com/expressjs/body-parser | @couchbase-traces/api |
 | brace-expansion | 1.1.17 | MIT | https://github.com/juliangruber/brace-expansion | @couchbase-traces/api |
 | brace-expansion | 2.1.3 | MIT | https://github.com/juliangruber/brace-expansion | @couchbase-traces/api |
@@ -429,7 +424,6 @@ Packages reachable from workspace `dependencies` (private workspaces are omitted
 | compression | 1.8.1 | MIT | https://github.com/expressjs/compression | @couchbase-traces/api |
 | compression | 1.8.2 | MIT | https://github.com/expressjs/compression | @couchbase-traces/api |
 | concurrently | 9.1.2 | MIT | https://github.com/open-cli-tools/concurrently | @couchbase-traces/api |
-| connect-mongo | 4.6.0 | MIT | https://github.com/jdesboeufs/connect-mongo | @couchbase-traces/api |
 | content-disposition | 0.5.2 | MIT | https://github.com/jshttp/content-disposition | @couchbase-traces/api |
 | content-disposition | 0.5.4 | MIT | https://github.com/jshttp/content-disposition | @couchbase-traces/api |
 | content-type | 1.0.5 | MIT | https://github.com/jshttp/content-type | @couchbase-traces/api |
@@ -629,7 +623,6 @@ Packages reachable from workspace `dependencies` (private workspaces are omitted
 | jsonfile | 6.1.0 | MIT | https://github.com/jprichardson/node-jsonfile | @couchbase-traces/api |
 | kareem | 2.5.1 | Apache-2.0 | https://github.com/vkarpov15/kareem | @couchbase-traces/api |
 | klona | 2.0.6 | MIT | https://github.com/lukeed/klona | @couchbase-traces/app |
-| kruptein | 3.0.6 | MIT | https://github.com/jas-/kruptein | @couchbase-traces/api |
 | ky | 0.30.0 | MIT | https://github.com/sindresorhus/ky | @couchbase-traces/app |
 | ky-universal | 0.10.1 | MIT | https://github.com/sindresorhus/ky-universal | @couchbase-traces/app |
 | lodash | 4.17.23 | MIT | https://github.com/lodash/lodash | @couchbase-traces/api, @couchbase-traces/app, @couchbase-traces/common-utils |
@@ -707,7 +700,6 @@ Packages reachable from workspace `dependencies` (private workspaces are omitted
 | mime-db | 1.52.0 | MIT | https://github.com/jshttp/mime-db | @couchbase-traces/api |
 | mime-types | 2.1.18 | MIT | https://github.com/jshttp/mime-types | @couchbase-traces/api |
 | mime-types | 2.1.35 | MIT | https://github.com/jshttp/mime-types | @couchbase-traces/api |
-| minimalistic-assert | 1.0.1 | ISC | https://github.com/calvinmetcalf/minimalistic-assert | @couchbase-traces/api |
 | minimatch | 10.2.4 | BlueOak-1.0.0 | https://github.com/isaacs/minimatch | @couchbase-traces/api |
 | minimatch | 10.2.5 | BlueOak-1.0.0 | https://github.com/isaacs/minimatch | @couchbase-traces/api |
 | minimatch | 11.0.3 | BlueOak-1.0.0 | https://github.com/isaacs/minimatch | @couchbase-traces/api |
@@ -884,7 +876,6 @@ Packages reachable from workspace `dependencies` (private workspaces are omitted
 | safer-buffer | 2.1.2 | MIT | https://github.com/ChALkeR/safer-buffer | @couchbase-traces/api |
 | sass | 1.58.3 | MIT | https://github.com/sass/dart-sass | @couchbase-traces/app |
 | scheduler | 0.27.0 | MIT | https://github.com/facebook/react | @couchbase-traces/app |
-| scmp | 2.1.0 | BSD-3-Clause | https://github.com/freewil/scmp | @couchbase-traces/api |
 | semver | 5.7.1 | ISC | https://github.com/npm/node-semver | @couchbase-traces/api |
 | semver | 6.3.1 | ISC | https://github.com/npm/node-semver | @couchbase-traces/api |
 | semver | 7.0.0 | ISC | https://github.com/npm/node-semver | @couchbase-traces/api |
@@ -1278,7 +1269,6 @@ Packages reachable from workspace `dependencies` (private workspaces are omitted
 | qs | 6.15.1 | https://github.com/ljharb/qs |
 | qs | 6.15.3 | https://github.com/ljharb/qs |
 | react-transition-group | 4.4.5 | https://github.com/reactjs/react-transition-group |
-| scmp | 2.1.0 | https://github.com/freewil/scmp |
 | source-map | 0.6.1 | https://github.com/mozilla/source-map |
 | source-map | 0.7.4 | https://github.com/mozilla/source-map |
 | source-map | 0.7.6 | https://github.com/mozilla/source-map |
@@ -1345,7 +1335,6 @@ Packages reachable from workspace `dependencies` (private workspaces are omitted
 | lru-cache | 4.1.5 | https://github.com/isaacs/node-lru-cache |
 | lru-cache | 5.1.1 | https://github.com/isaacs/node-lru-cache |
 | lru-cache | 6.0.0 | https://github.com/isaacs/node-lru-cache |
-| minimalistic-assert | 1.0.1 | https://github.com/calvinmetcalf/minimalistic-assert |
 | minimatch | 3.1.2 | https://github.com/isaacs/minimatch |
 | minimatch | 3.1.5 | https://github.com/isaacs/minimatch |
 | minimatch | 8.0.4 | https://github.com/isaacs/minimatch |
@@ -1431,7 +1420,6 @@ Packages reachable from workspace `dependencies` (private workspaces are omitted
 | @hono/node-server | 1.19.17 | https://github.com/honojs/node-server |
 | @hookform/resolvers | 3.9.0 | https://github.com/react-hook-form/resolvers |
 | @hyperdx/lucene | 3.1.1 | https://github.com/bripkens/lucene |
-| @hyperdx/passport-local-mongoose | 9.0.1 | https://github.com/hyperdxio/passport-local-mongoose |
 | @js-sdsl/ordered-map | 4.4.2 | https://github.com/js-sdsl/js-sdsl |
 | @lezer/common | 1.5.3 | git+https://code.haverbeke.berlin/lezer/common |
 | @lezer/highlight | 1.2.5 | git+https://code.haverbeke.berlin/lezer/highlight |
@@ -1580,8 +1568,6 @@ Packages reachable from workspace `dependencies` (private workspaces are omitted
 | argparse | 1.0.10 | https://github.com/nodeca/argparse |
 | aria-hidden | 1.2.6 | https://github.com/theKashey/aria-hidden |
 | array-flatten | 1.1.1 | https://github.com/blakeembrey/array-flatten |
-| asn1.js | 4.10.1 | https://github.com/indutny/asn1.js |
-| asn1.js | 5.4.1 | https://github.com/indutny/asn1.js |
 | asynckit | 0.4.0 | https://github.com/alexindigo/asynckit |
 | atomic-sleep | 1.0.0 | https://github.com/davidmarkclements/atomic-sleep |
 | attr-accept | 2.2.5 | https://github.com/react-dropzone/attr-accept |
@@ -1597,8 +1583,6 @@ Packages reachable from workspace `dependencies` (private workspaces are omitted
 | bignumber.js | 9.1.1 | https://github.com/MikeMcl/bignumber.js |
 | bignumber.js | 9.1.2 | https://github.com/MikeMcl/bignumber.js |
 | binary-extensions | 2.2.0 | https://github.com/sindresorhus/binary-extensions |
-| bn.js | 4.12.3 | https://github.com/indutny/bn.js |
-| bn.js | 5.2.1 | https://github.com/indutny/bn.js |
 | body-parser | 1.20.6 | https://github.com/expressjs/body-parser |
 | brace-expansion | 1.1.17 | https://github.com/juliangruber/brace-expansion |
 | brace-expansion | 2.1.3 | https://github.com/juliangruber/brace-expansion |
@@ -1655,7 +1639,6 @@ Packages reachable from workspace `dependencies` (private workspaces are omitted
 | compression | 1.8.1 | https://github.com/expressjs/compression |
 | compression | 1.8.2 | https://github.com/expressjs/compression |
 | concurrently | 9.1.2 | https://github.com/open-cli-tools/concurrently |
-| connect-mongo | 4.6.0 | https://github.com/jdesboeufs/connect-mongo |
 | content-disposition | 0.5.2 | https://github.com/jshttp/content-disposition |
 | content-disposition | 0.5.4 | https://github.com/jshttp/content-disposition |
 | content-type | 1.0.5 | https://github.com/jshttp/content-type |
@@ -1805,7 +1788,6 @@ Packages reachable from workspace `dependencies` (private workspaces are omitted
 | jsonfile | 4.0.0 | https://github.com/jprichardson/node-jsonfile |
 | jsonfile | 6.1.0 | https://github.com/jprichardson/node-jsonfile |
 | klona | 2.0.6 | https://github.com/lukeed/klona |
-| kruptein | 3.0.6 | https://github.com/jas-/kruptein |
 | ky | 0.30.0 | https://github.com/sindresorhus/ky |
 | ky-universal | 0.10.1 | https://github.com/sindresorhus/ky-universal |
 | lodash | 4.17.23 | https://github.com/lodash/lodash |
@@ -2300,7 +2282,7 @@ Packages reachable from workspace `dependencies` (private workspaces are omitted
 | github.com/google/s2a-go | v0.1.9 | Apache-2.0 | https://github.com/google/s2a-go/blob/v0.1.9/LICENSE.md | collector builder manifest (OTel 0.155.0) |
 | github.com/google/uuid | v1.6.0 | BSD-3-Clause | https://github.com/google/uuid/blob/v1.6.0/LICENSE | collector builder manifest (OTel 0.155.0) |
 | github.com/googleapis/enterprise-certificate-proxy/client |  | Apache-2.0 | https://github.com/googleapis/enterprise-certificate-proxy/blob/v0.3.15/LICENSE | collector builder manifest (OTel 0.155.0) |
-| github.com/googleapis/gax-go/v2 | v2.22.0 | BSD-3-Clause | https://github.com/googleapis/gax-go/blob/v2.22.0/LICENSE | collector builder manifest (OTel 0.155.0) |
+| github.com/googleapis/gax-go/v2 | v2.22.0 | BSD-3-Clause | https://github.com/googleapis/gax-go/blob/v2.22.0/v2/LICENSE | collector builder manifest (OTel 0.155.0) |
 | github.com/GoogleCloudPlatform/opentelemetry-operations-go/detectors/gcp | v1.33.0 | Apache-2.0 | https://github.com/GoogleCloudPlatform/opentelemetry-operations-go/blob/detectors/gcp/v1.33.0/detectors/gcp/LICENSE | collector builder manifest (OTel 0.155.0) |
 | github.com/gophercloud/gophercloud/v2 | v2.12.0 | Apache-2.0 | https://github.com/gophercloud/gophercloud/blob/v2.12.0/LICENSE | collector builder manifest (OTel 0.155.0) |
 | github.com/gorilla/websocket | v1.5.4-0.20250319132907-e064f32e3674 | BSD-2-Clause | https://github.com/gorilla/websocket/blob/e064f32e3674/LICENSE | collector builder manifest (OTel 0.155.0) |

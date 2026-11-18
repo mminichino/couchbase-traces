@@ -3,6 +3,7 @@ import mongoose from 'mongoose';
 import { createTeam } from '@/controllers/team';
 import { clearDBCollections, closeDB, connectDB } from '@/fixtures';
 import { backfillAlertDisplayFields } from '@/migrations';
+import { toObjectId } from '@/models';
 import Alert, { AlertSource, AlertThresholdType } from '@/models/alert';
 import Dashboard from '@/models/dashboard';
 import { SavedSearch } from '@/models/savedSearch';
@@ -15,7 +16,7 @@ const baseAlert = {
 } as const;
 
 const makeSavedSearch = (
-  team: mongoose.Types.ObjectId,
+  team: string,
   fields: { name: string; tags?: string[] },
 ) =>
   new SavedSearch({
@@ -131,7 +132,7 @@ describe('backfillAlertDisplayFields', () => {
 
     const { insertedId: legacyAlertId } = await Alert.collection.insertOne({
       ...baseAlert,
-      team: team._id,
+      team: toObjectId(team._id),
       savedSearch: savedSearch._id,
     });
 

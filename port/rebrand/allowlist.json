@@ -535,20 +535,6 @@
     },
     {
       "path": "docs/licenses.md",
-      "term": "hyperdx",
-      "snippet": "| @hyperdx/passport-local-mongoose | 9.0.1 | MIT | https://github.com/hyperdxio/passport-local-mongoose | @couchbase-traces/api |",
-      "reason": "external_dependency",
-      "note": "Upstream scoped package in license report."
-    },
-    {
-      "path": "docs/licenses.md",
-      "term": "hyperdx",
-      "snippet": "| @hyperdx/passport-local-mongoose | 9.0.1 | https://github.com/hyperdxio/passport-local-mongoose |",
-      "reason": "external_dependency",
-      "note": "Upstream scoped package in license report."
-    },
-    {
-      "path": "docs/licenses.md",
       "term": "url",
       "snippet": "https://github.com/ClickHouse/click-ui",
       "reason": "external_dependency",

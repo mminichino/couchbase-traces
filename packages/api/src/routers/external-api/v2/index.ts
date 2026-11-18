@@ -25,7 +25,7 @@ const defaultRateLimiter = rateLimiter({
 });
 
 router.get('/', validateUserAccessKey, (req, res) => {
-  const user = req.user?.toJSON();
+  const user = req.user;
   res.json({
     version: 'v2',
     // A service account's accessKey is its org key hash; don't hand it out.

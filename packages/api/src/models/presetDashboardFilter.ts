@@ -22,7 +22,6 @@ const PresetDashboardFilterSchema = new Schema<IPresetDashboardFilter>(
     team: {
       type: mongoose.Schema.Types.ObjectId,
       required: true,
-      ref: 'Team',
     },
     source: {
       type: mongoose.Schema.Types.ObjectId,

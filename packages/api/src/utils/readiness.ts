@@ -1,6 +1,6 @@
 import mongoose from 'mongoose';
 
-import { isMetadataReadyOrDisabled, metadataReadiness } from '@/metadata';
+import { isMetadataReady, metadataReadiness } from '@/metadata';
 import type { MetadataState } from '@/metadata/types';
 import { mongooseConnection } from '@/models';
 
@@ -13,7 +13,7 @@ import { mongooseConnection } from '@/models';
  *     a dependency outage, so `/health` deliberately checks nothing external.
  *   - `/ready`: readiness — 503 unless MongoDB is connected, since almost
  *     every request (including OpAMP config handling) is Mongo-backed, and
- *     unless the Couchbase metadata store (when configured) is ready. The
+ *     unless the Couchbase metadata store is ready. The
  *     body names both states while either is down.
  *     Kubernetes readiness failures take the pod out of Service endpoints
  *     without restarting it (https://github.com/mminichino/couchbase-traces/issues/2966).
@@ -32,7 +32,7 @@ export type ReadinessReport = {
 };
 
 export const readinessReport = (): ReadinessReport => ({
-  ready: isMongoConnected() && isMetadataReadyOrDisabled(),
+  ready: isMongoConnected() && isMetadataReady(),
   mongo: mongoReadyStateName(),
   metadata: metadataReadiness().state,
 });

@@ -9,12 +9,14 @@ import express from 'express';
 import { z } from 'zod';
 
 import {
+  buildCouchbaseConnectionUpdate,
   createConnection,
   deleteConnection,
   getConnectionById,
   getConnectionsByTeam,
   updateConnection,
 } from '@/controllers/connection';
+import { toObjectId } from '@/models';
 import { ConnectionDocument } from '@/models/connection';
 import { processRequestWithEnhancedErrors as validateRequest } from '@/utils/enhancedErrors';
 import logger from '@/utils/logger';
@@ -502,7 +504,7 @@ router.post(
         ...body,
         kind: 'couchbase',
         password: body.password ?? '',
-        team: teamId,
+        team: toObjectId(teamId),
         managementPort:
           typeof body.managementPort === 'number'
             ? body.managementPort
@@ -614,20 +616,11 @@ router.put(
         });
       }
 
-      const password = body.password || existingConnection.password;
-      const { tlsCaCertificate, monitorPassword, managementPort, ...restBody } =
-        body;
-      const unsetFields: string[] = [];
-      const update = {
-        ...restBody,
-        team: teamId,
-        kind: 'couchbase' as const,
-        password,
-        ...(tlsCaCertificate ? { tlsCaCertificate } : {}),
-        ...(monitorPassword ? { monitorPassword } : {}),
-        ...(typeof managementPort === 'number' ? { managementPort } : {}),
-      };
-      if (managementPort === null) unsetFields.push('managementPort');
+      const { update, unsetFields } = buildCouchbaseConnectionUpdate(
+        teamId.toString(),
+        body,
+        existingConnection.password,
+      );
 
       const updatedConnection = await updateConnection(
         teamId.toString(),

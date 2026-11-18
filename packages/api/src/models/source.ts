@@ -86,7 +86,6 @@ const sourceBaseSchema = new Schema<MongooseSourceBase>(
     team: {
       type: mongoose.Schema.Types.ObjectId,
       required: true,
-      ref: 'Team',
     },
     connection: {
       type: mongoose.Schema.Types.ObjectId,

@@ -147,6 +147,14 @@ export class MemoryKv implements MetaKv {
       .filter(key => this.live(c, key));
   }
 
+  /** Live documents in a collection, as copies (MemoryFind scans these). */
+  entries<T>(c: MetaCollection): { key: string; value: T }[] {
+    return this.keys(c).flatMap(key => {
+      const entry = this.live(c, key);
+      return entry ? [{ key, value: structuredClone(entry.value) as T }] : [];
+    });
+  }
+
   clear(): void {
     this.data.clear();
   }

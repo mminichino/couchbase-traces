@@ -7,6 +7,7 @@ jest.mock('@/controllers/team', () => ({
 }));
 jest.mock('@/migrations', () => ({ runStartupMigrations: jest.fn() }));
 jest.mock('@/metadata', () => ({
+  assertMetadataConfig: jest.fn(),
   startMetadataStore: jest.fn(),
   closeMetadataStore: jest.fn(),
 }));

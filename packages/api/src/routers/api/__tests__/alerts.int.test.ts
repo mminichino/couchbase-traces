@@ -20,6 +20,7 @@ import {
   randomMongoId,
   RAW_SQL_ALERT_TEMPLATE,
 } from '@/fixtures';
+import { toObjectId } from '@/models';
 import Alert, { AlertSource, AlertState } from '@/models/alert';
 import AlertHistory from '@/models/alertHistory';
 import Connection from '@/models/connection';
@@ -816,7 +817,7 @@ describe('alerts router', () => {
     // Get the alert directly from database to verify createdBy was set
     const alertFromDb = await Alert.findById(alert.body.data._id);
     expect(alertFromDb).toBeDefined();
-    expect(alertFromDb!.createdBy).toEqual(user._id);
+    expect(alertFromDb!.createdBy).toEqual(toObjectId(user._id));
     expect(alertFromDb!.threshold).toBe(5);
 
     // Update the alert with a different threshold
@@ -834,7 +835,7 @@ describe('alerts router', () => {
     // Get the alert from database again to verify createdBy is preserved
     const alertFromDbAfterUpdate = await Alert.findById(alert.body.data._id);
     expect(alertFromDbAfterUpdate).toBeDefined();
-    expect(alertFromDbAfterUpdate!.createdBy).toEqual(user._id); // ✅ createdBy should still be the original user
+    expect(alertFromDbAfterUpdate!.createdBy).toEqual(toObjectId(user._id)); // ✅ createdBy should still be the original user
     expect(alertFromDbAfterUpdate!.threshold).toBe(15); // ✅ threshold should be updated
   });
 
@@ -974,7 +975,7 @@ describe('alerts router', () => {
     const alertFromDb = await Alert.findById(alert.body.data._id);
     expect(alertFromDb).toBeDefined();
     expect(alertFromDb!.silenced).toBeDefined();
-    expect(alertFromDb!.silenced!.by).toEqual(user._id);
+    expect(alertFromDb!.silenced!.by).toEqual(toObjectId(user._id));
     expect(alertFromDb!.silenced!.at).toBeDefined();
     expect(new Date(alertFromDb!.silenced!.until).toISOString()).toBe(
       mutedUntil,

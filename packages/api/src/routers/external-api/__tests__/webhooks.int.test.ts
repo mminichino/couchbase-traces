@@ -3,9 +3,10 @@ import { ObjectId } from 'mongodb';
 import request, { SuperAgentTest } from 'supertest';
 
 import { getLoggedInAgent, getServer } from '@/fixtures';
+import type { ITeam } from '@/metadata/schemas/team';
+import type { IUser } from '@/metadata/schemas/user';
+import { toObjectId } from '@/models';
 import Alert, { AlertSource, AlertState } from '@/models/alert';
-import { ITeam } from '@/models/team';
-import { IUser } from '@/models/user';
 import Webhook from '@/models/webhook';
 
 const WEBHOOKS_BASE_URL = '/api/v2/webhooks';
@@ -306,7 +307,7 @@ describe('External API v2 Webhooks', () => {
       // stored row (countDocuments) while data drops the unparseable one, so
       // data.length can be less than meta.total — this documents that skew.
       await Webhook.collection.insertOne({
-        team: team._id,
+        team: toObjectId(team._id),
         name: 'Broken Webhook',
         service: 'not-a-real-service',
       } as any);

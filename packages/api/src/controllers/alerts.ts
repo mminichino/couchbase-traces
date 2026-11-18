@@ -15,7 +15,7 @@ import { type FilterQuery, Types } from 'mongoose';
 import { z } from 'zod';
 
 import { recordOnboardingTaskCompletion } from '@/controllers/user';
-import type { ObjectId } from '@/models';
+import { type ObjectId, toObjectId } from '@/models';
 import Alert, {
   AlertChannel,
   AlertSource,
@@ -26,7 +26,6 @@ import Connection from '@/models/connection';
 import Dashboard, { IDashboard } from '@/models/dashboard';
 import { ISavedSearch, SavedSearch } from '@/models/savedSearch';
 import { Source } from '@/models/source';
-import { IUser } from '@/models/user';
 import Webhook from '@/models/webhook';
 import { type AlertRefs, deriveAlertDisplayFields } from '@/utils/alerts';
 import { Api400Error } from '@/utils/errors';
@@ -62,7 +61,7 @@ const validateObjectId = (id: string | undefined, message: string) => {
 };
 
 export const validateAlertInput = async (
-  teamId: ObjectId,
+  teamId: string | ObjectId,
   alertInput: Pick<
     AlertInput,
     | 'source'
@@ -250,7 +249,7 @@ export const validateAlertInput = async (
 // controllers/__tests__/alerts.test.ts) -- otherwise only used internally.
 export const makeAlert = (
   alert: AlertInput,
-  userId?: ObjectId,
+  userId?: string | ObjectId,
   refs: AlertRefs = {},
 ): Partial<IAlert> => {
   // Preserve existing DB value when scheduleStartAt is omitted from updates
@@ -301,7 +300,7 @@ export const makeAlert = (
       thresholdMax: alert.thresholdMax,
     }),
     thresholdType: alert.thresholdType,
-    ...(userId && { createdBy: userId }),
+    ...(userId && { createdBy: toObjectId(userId) }),
 
     // Message template
     // Coerce undefined to null so Mongoose clears the field on update.
@@ -339,7 +338,7 @@ export const makeAlert = (
 // $unset is ignored on an upsert insert, so it is safe there too.
 const makeAlertUpdate = (
   alertInput: AlertInput,
-  userId?: ObjectId,
+  userId?: string | ObjectId,
   refs: AlertRefs = {},
 ) => ({
   $set: makeAlert(alertInput, userId, refs),
@@ -349,9 +348,9 @@ const makeAlertUpdate = (
 });
 
 export const createAlert = async (
-  teamId: ObjectId,
+  teamId: string | ObjectId,
   alertInput: z.infer<typeof internalAlertSchema>,
-  userId: ObjectId,
+  userId: string | ObjectId,
   refs: AlertRefs = {},
 ) => {
   const alert = await new Alert({
@@ -365,10 +364,10 @@ export const createAlert = async (
 // create an update alert function based off of the above create alert function
 export const updateAlert = async (
   id: string,
-  teamId: ObjectId,
+  teamId: string | ObjectId,
   alertInput: AlertInput,
   refs: AlertRefs = {},
-  userId?: ObjectId,
+  userId?: string | ObjectId,
 ) => {
   // should consider clearing AlertHistory when updating an alert?
   const alert = await Alert.findOneAndUpdate(
@@ -389,7 +388,7 @@ export const updateAlert = async (
 };
 
 export const countAlerts = async (
-  teamId: ObjectId,
+  teamId: string | ObjectId,
   filter: FilterQuery<IAlert> = {},
 ) => {
   return Alert.countDocuments({ ...filter, team: teamId });
@@ -406,32 +405,32 @@ export const getAlertById = async (
 };
 
 export const getTeamDashboardAlertsByDashboardAndTile = async (
-  teamId: ObjectId,
+  teamId: string | ObjectId,
 ) => {
   const alerts = await Alert.find({
     source: AlertSource.TILE,
     team: teamId,
-  }).populate('createdBy', 'email name');
+  });
   return groupBy(alerts, a => `${a.dashboard?.toString()}:${a.tileId}`);
 };
 
 export const getDashboardAlertsByTile = async (
-  teamId: ObjectId,
+  teamId: string | ObjectId,
   dashboardId: ObjectId | string,
 ) => {
   const alerts = await Alert.find({
     dashboard: dashboardId,
     source: AlertSource.TILE,
     team: teamId,
-  }).populate('createdBy', 'email name');
+  });
   return groupBy(alerts, 'tileId');
 };
 
 export const createOrUpdateDashboardAlerts = async (
   dashboard: Pick<IDashboard, '_id' | 'name' | 'tags' | 'tiles'>,
-  teamId: ObjectId,
+  teamId: string | ObjectId,
   alertsByTile: Record<string, AlertInput>,
-  userId?: ObjectId,
+  userId?: string | ObjectId,
 ) => {
   const dashboardId = dashboard._id;
   const result = await Promise.all(
@@ -471,7 +470,7 @@ export const createOrUpdateDashboardAlerts = async (
 
 export const deleteDashboardAlerts = async (
   dashboardId: ObjectId | string,
-  teamId: ObjectId,
+  teamId: string | ObjectId,
   tileIds?: string[],
 ) => {
   return Alert.deleteMany({
@@ -506,7 +505,7 @@ const DISPLAY_REF_POPULATE = [
 
 /** Get alerts, with a populated (and projected) search or dashboard reference */
 export const getAlertsWithDisplayRefs = async (
-  teamId: ObjectId,
+  teamId: string | ObjectId,
   { limit, offset }: { limit: number; offset: number },
   filter: FilterQuery<IAlert> = {},
 ) => {
@@ -537,15 +536,12 @@ export type AlertPageRefs = {
         tiles: { id: string; config?: { name?: string } }[];
       })
     | null;
-  createdBy?: Pick<IUser, 'email' | 'name'>;
-  silenced?: IAlert['silenced'] & {
-    by: Pick<IUser, 'email'>;
-  };
 };
 
 /**
  * Projections for the internal alerts surfaces (the alerts page and the alert
- * detail endpoint), kept to what the response actually renders.
+ * detail endpoint), kept to what the response actually renders. `createdBy`
+ * and `silenced.by` are users in the metadata store; see loadUserDisplays.
  */
 export const ALERT_PAGE_POPULATE = [
   { path: 'savedSearch', select: 'name tags' },
@@ -553,20 +549,18 @@ export const ALERT_PAGE_POPULATE = [
     path: 'dashboard',
     select: 'name provisioned tags tiles.id tiles.config.name',
   },
-  { path: 'createdBy', select: 'email name' },
-  { path: 'silenced.by', select: 'email' },
 ];
 
 export const getAlertEnhanced = async (
   alertId: ObjectId | string,
-  teamId: ObjectId,
+  teamId: string | ObjectId,
 ) => {
   return Alert.findOne({ _id: alertId, team: teamId }).populate<AlertPageRefs>(
     ALERT_PAGE_POPULATE,
   );
 };
 
-export const deleteAlert = async (id: string, teamId: ObjectId) => {
+export const deleteAlert = async (id: string, teamId: string | ObjectId) => {
   return Alert.deleteOne({
     _id: id,
     team: teamId,

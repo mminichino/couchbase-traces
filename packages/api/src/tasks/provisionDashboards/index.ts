@@ -8,9 +8,13 @@ import {
 import fs from 'fs';
 import path from 'path';
 
+import {
+  closeMetadataStore,
+  getMetadataStore,
+  startMetadataStore,
+} from '@/metadata';
 import { connectDB, mongooseConnection } from '@/models';
 import Dashboard from '@/models/dashboard';
-import Team from '@/models/team';
 import type { HdxTask } from '@/tasks/types';
 import { ProvisionDashboardsTaskArgs } from '@/tasks/types';
 import logger from '@/utils/logger';
@@ -128,6 +132,7 @@ export default class ProvisionDashboardsTask implements HdxTask {
 
   async execute(): Promise<void> {
     await connectDB();
+    await startMetadataStore({ logger });
 
     const dir = process.env.DASHBOARD_PROVISIONER_DIR;
     if (!dir) {
@@ -165,8 +170,8 @@ export default class ProvisionDashboardsTask implements HdxTask {
 
     let teamIds: string[];
     if (teamId) {
-      const teamExists = await Team.exists({ _id: teamId });
-      if (!teamExists) {
+      const team = await getMetadataStore().teams.getById(teamId);
+      if (!team) {
         logger.warn(
           { teamId },
           'Configured team does not exist, skipping sync',
@@ -175,8 +180,8 @@ export default class ProvisionDashboardsTask implements HdxTask {
       }
       teamIds = [teamId];
     } else {
-      const teams = await Team.find().select('_id').lean();
-      teamIds = teams.map(t => t._id.toString());
+      const teams = await getMetadataStore().teams.listAll();
+      teamIds = teams.map(t => t._id);
     }
 
     for (const id of teamIds) {
@@ -185,6 +190,6 @@ export default class ProvisionDashboardsTask implements HdxTask {
   }
 
   async asyncDispose(): Promise<void> {
-    await mongooseConnection.close();
+    await Promise.all([mongooseConnection.close(), closeMetadataStore()]);
   }
 }

@@ -23,9 +23,9 @@ import {
 import * as denoise from '@/mcp/tools/query/denoise';
 import * as patternDrilldown from '@/mcp/tools/query/patternDrilldown';
 import { McpContext } from '@/mcp/tools/types';
+import { seedTeam } from '@/metadata/testing/seed';
 import Connection from '@/models/connection';
 import { LogSource, Source, type SourceDocument } from '@/models/source';
-import Team from '@/models/team';
 
 import { callTool, createTestClient, getFirstText } from './mcpTestUtils';
 
@@ -1588,7 +1588,7 @@ describe('MCP Query Tools', () => {
       });
 
       it("rejects another team's sourceId as not found", async () => {
-        const otherTeam = await Team.create({ name: 'Other Team' });
+        const otherTeam = await seedTeam({ name: 'Other Team' });
         const otherSource = await Source.create({
           kind: SourceKind.Log,
           team: otherTeam._id,

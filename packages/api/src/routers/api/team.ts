@@ -10,7 +10,6 @@ import {
   TagResourceTypeSchema,
   TeamQuerySettingsUpdateSchema,
 } from '@couchbase-traces/common-utils/dist/types';
-import crypto from 'crypto';
 import express from 'express';
 import pick from 'lodash/pick';
 import { z } from 'zod';
@@ -25,12 +24,16 @@ import {
   updateTeamQuerySettings,
 } from '@/controllers/team';
 import {
+  deleteTeamInvite,
+  getOrCreateTeamInvite,
+  listTeamInvites,
+} from '@/controllers/teamInvite';
+import {
   deleteTeamMember,
   findUserByEmail,
   findUsersByTeam,
 } from '@/controllers/user';
 import { getNonNullUserWithTeam } from '@/middleware/auth';
-import TeamInvite from '@/models/teamInvite';
 import orgApiKeysRouter from '@/routers/api/orgApiKeys';
 import { sendJson } from '@/utils/serialization';
 import { objectIdSchema } from '@/utils/zod';
@@ -163,23 +166,11 @@ router.post(
         });
       }
 
-      // Normalize email to lowercase for consistency
-      const normalizedEmail = toEmail.toLowerCase();
-
-      // Check for existing invitation with normalized email
-      let teamInvite = await TeamInvite.findOne({
-        teamId,
-        email: normalizedEmail,
+      // Reuses a pending invite for the (lowercased) email.
+      const teamInvite = await getOrCreateTeamInvite(teamId, {
+        email: toEmail,
+        name,
       });
-
-      if (!teamInvite) {
-        teamInvite = await new TeamInvite({
-          teamId,
-          name,
-          email: normalizedEmail,
-          token: crypto.randomBytes(32).toString('hex'),
-        }).save();
-      }
 
       res.json({
         url: getTeamInviteUrl(teamInvite.token),
@@ -197,18 +188,10 @@ router.get('/invitations', async (req, res: TeamInviteExpressRes, next) => {
     if (teamId == null) {
       throw new Error(`User ${req.user?._id} not associated with a team`);
     }
-    const teamInvites = await TeamInvite.find(
-      { teamId },
-      {
-        createdAt: 1,
-        email: 1,
-        name: 1,
-        token: 1,
-      },
-    );
+    const teamInvites = await listTeamInvites(teamId);
     res.json({
       data: teamInvites.map(ti => ({
-        _id: ti._id.toString(),
+        _id: ti._id,
         createdAt: ti.createdAt.toISOString(),
         email: ti.email,
         name: ti.name,
@@ -237,8 +220,8 @@ router.delete(
       // pending invitation given its id.
       const { teamId } = getNonNullUserWithTeam(req);
 
-      const deleted = await TeamInvite.findOneAndDelete({ _id: id, teamId });
-      if (deleted == null) {
+      const deleted = await deleteTeamInvite(teamId, id);
+      if (!deleted) {
         return res.sendStatus(404);
       }
 
@@ -263,13 +246,8 @@ router.get('/members', async (req, res: TeamMembersExpRes, next) => {
     const teamUsers = await findUsersByTeam(teamId);
     res.json({
       data: teamUsers.map(user => ({
-        ...pick(user.toJSON({ virtuals: true }), [
-          '_id',
-          'email',
-          'name',
-          'hasPasswordAuth',
-        ]),
-        isCurrentUser: user._id.equals(userId),
+        ...pick(user, ['_id', 'email', 'name', 'hasPasswordAuth']),
+        isCurrentUser: user._id === userId,
       })),
     });
   } catch (e) {
