@@ -65,7 +65,7 @@ describe('DefaultAlertProvider', () => {
 
       // Create connection
       const connection = await Connection.create({
-      kind: 'couchbase',
+        kind: 'couchbase',
         team: team._id,
         name: 'Test Connection',
         host: 'http://localhost:8123',
@@ -134,7 +134,7 @@ describe('DefaultAlertProvider', () => {
 
       // Create connection
       const connection = await Connection.create({
-      kind: 'couchbase',
+        kind: 'couchbase',
         team: team._id,
         name: 'Test Connection',
         host: 'http://localhost:8123',
@@ -263,7 +263,7 @@ describe('DefaultAlertProvider', () => {
 
       // Create single connection
       const connection = await Connection.create({
-      kind: 'couchbase',
+        kind: 'couchbase',
         team: team._id,
         name: 'Shared Connection',
         host: 'http://localhost:8123',
@@ -356,7 +356,7 @@ describe('DefaultAlertProvider', () => {
 
       // Create two different connections
       const connection1 = await Connection.create({
-      kind: 'couchbase',
+        kind: 'couchbase',
         team: team._id,
         name: 'Connection 1',
         host: 'http://localhost:8123',
@@ -365,7 +365,7 @@ describe('DefaultAlertProvider', () => {
       });
 
       const connection2 = await Connection.create({
-      kind: 'couchbase',
+        kind: 'couchbase',
         team: team._id,
         name: 'Connection 2',
         host: 'http://localhost:8124',
@@ -619,7 +619,7 @@ describe('DefaultAlertProvider', () => {
 
       // Create connection with specific password
       const connection = await Connection.create({
-      kind: 'couchbase',
+        kind: 'couchbase',
         team: team._id,
         name: 'Test Connection',
         host: 'http://localhost:8123',
@@ -682,7 +682,7 @@ describe('DefaultAlertProvider', () => {
 
       // Create connection with specific password
       const connection = await Connection.create({
-      kind: 'couchbase',
+        kind: 'couchbase',
         team: team._id,
         name: 'Test Connection',
         host: 'http://localhost:8124',
@@ -746,7 +746,7 @@ describe('DefaultAlertProvider', () => {
       const team = await createTeam({ name: 'Test Team' });
 
       const connection = await Connection.create({
-      kind: 'couchbase',
+        kind: 'couchbase',
         team: team._id,
         name: 'Test Connection',
         host: 'http://localhost:8123',
@@ -811,7 +811,7 @@ describe('DefaultAlertProvider', () => {
     const setupRawSqlSourceMove = async () => {
       const team = await createTeam({ name: 'Test Team' });
       const connection = await Connection.create({
-      kind: 'couchbase',
+        kind: 'couchbase',
         team: team._id,
         name: 'Original Connection',
         host: 'http://localhost:8123',
@@ -819,7 +819,7 @@ describe('DefaultAlertProvider', () => {
         password: 'test',
       });
       const otherConnection = await Connection.create({
-      kind: 'couchbase',
+        kind: 'couchbase',
         team: team._id,
         name: 'Other Connection',
         host: 'http://localhost:8124',

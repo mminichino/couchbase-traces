@@ -42,6 +42,13 @@ const externalConnectionSchema = z.discriminatedUnion('kind', [
 const createConnectionBodySchema = ConnectionSchemaNoId;
 const updateConnectionBodySchema = ConnectionSchema;
 
+function toIsoTimestamp(value: unknown): string | undefined {
+  if (value == null) return undefined;
+  if (value instanceof Date) return value.toISOString();
+  if (typeof value === 'string') return value;
+  return undefined;
+}
+
 function formatExternalConnection(connection: ConnectionDocument) {
   const json = connection.toJSON({ virtuals: true }) as Record<string, unknown>;
   const kind = (json.kind as string | undefined) ?? 'clickhouse';
@@ -55,7 +62,11 @@ function formatExternalConnection(connection: ConnectionDocument) {
       }
     : externalCouchbaseConnectionSchema.parse({
         ...json,
+        // Mongoose virtual `id` / Date timestamps need plain JSON shapes for Zod.
+        id: String(json.id ?? json._id),
         kind: 'couchbase',
+        createdAt: toIsoTimestamp(json.createdAt),
+        updatedAt: toIsoTimestamp(json.updatedAt),
       });
 
   const parseResult = externalConnectionSchema.safeParse(payload);

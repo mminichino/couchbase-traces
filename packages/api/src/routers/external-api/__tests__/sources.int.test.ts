@@ -446,7 +446,7 @@ describe('External API v2 Sources', () => {
       // Create another team and source
       const otherTeamId = new mongoose.Types.ObjectId();
       const otherConnection = await Connection.create({
-      kind: 'couchbase',
+        kind: 'couchbase',
         team: otherTeamId,
         name: 'Other Team Connection',
         host: config.CLICKHOUSE_HOST,

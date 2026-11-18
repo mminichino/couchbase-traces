@@ -45,8 +45,8 @@ export const setupAlertFixtures = async (
 ) => {
   const team = await createTeam({ name: 'Test Team' });
   const connection = await Connection.create({
-      host: config.CLICKHOUSE_HOST,
-      kind: 'couchbase',
+    host: config.CLICKHOUSE_HOST,
+    kind: 'couchbase',
     team: team._id,
     name: 'Test Connection',
     username: config.CLICKHOUSE_USER,

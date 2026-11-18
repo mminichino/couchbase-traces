@@ -61,7 +61,7 @@ const MOCK_PROMQL_SOURCE = {
 
 const createTestConnection = (team: Types.ObjectId, id: string) =>
   Connection.create({
-      kind: 'couchbase',
+    kind: 'couchbase',
     _id: id,
     team,
     name: 'Test Connection',

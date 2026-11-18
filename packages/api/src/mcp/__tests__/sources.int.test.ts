@@ -776,7 +776,7 @@ describe('MCP Source Tools', () => {
     it('should not allow access to another team source', async () => {
       const otherTeam = await Team.create({ name: 'Other Team' });
       const otherConnection = await Connection.create({
-      kind: 'couchbase',
+        kind: 'couchbase',
         team: otherTeam._id,
         name: 'Other Connection',
         host: config.CLICKHOUSE_HOST,
@@ -1560,7 +1560,7 @@ describe('MCP Source Tools', () => {
     it('rejects a connection owned by another team', async () => {
       const otherTeam = await Team.create({ name: 'Other Team' });
       const otherConnection = await Connection.create({
-      kind: 'couchbase',
+        kind: 'couchbase',
         team: otherTeam._id,
         name: 'Other',
         host: config.CLICKHOUSE_HOST,
@@ -1793,7 +1793,7 @@ describe('MCP Source Tools', () => {
 
       const otherTeam = await Team.create({ name: 'Other Team 3' });
       const otherConnection = await Connection.create({
-      kind: 'couchbase',
+        kind: 'couchbase',
         team: otherTeam._id,
         name: 'Other 3',
         host: config.CLICKHOUSE_HOST,
@@ -1871,7 +1871,7 @@ describe('MCP Source Tools', () => {
     it('does not delete a source owned by another team', async () => {
       const otherTeam = await Team.create({ name: 'Other Team 2' });
       const otherConnection = await Connection.create({
-      kind: 'couchbase',
+        kind: 'couchbase',
         team: otherTeam._id,
         name: 'Other 2',
         host: config.CLICKHOUSE_HOST,

@@ -110,6 +110,7 @@ describe('connections router', () => {
       .send({
         id: created._id.toString(),
         name: 'Prom',
+        kind: 'couchbase',
         host: config.CLICKHOUSE_HOST,
         username: 'default',
         password: '',

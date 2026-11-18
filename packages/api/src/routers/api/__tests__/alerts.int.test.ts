@@ -1969,7 +1969,7 @@ describe('alerts router', () => {
   describe('inline alerts', () => {
     const makeSource = async () => {
       const connection = await Connection.create({
-      kind: 'couchbase',
+        kind: 'couchbase',
         team: team._id,
         name: 'Default',
         host: 'http://localhost:8123',
@@ -2208,7 +2208,7 @@ describe('alerts router', () => {
     it('rejects a raw SQL inline alert whose source is on a different connection', async () => {
       const { connection, source } = await makeSource();
       const otherConnection = await Connection.create({
-      kind: 'couchbase',
+        kind: 'couchbase',
         team: team._id,
         name: 'Other',
         host: 'http://localhost:8124',

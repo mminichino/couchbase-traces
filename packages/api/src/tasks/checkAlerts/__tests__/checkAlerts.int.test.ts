@@ -2053,8 +2053,8 @@ describe('checkAlerts', () => {
       ]);
 
       const connection = await Connection.create({
-      host: config.CLICKHOUSE_HOST,
-      kind: 'couchbase',
+        host: config.CLICKHOUSE_HOST,
+        kind: 'couchbase',
         team: team._id,
         name: 'Default',
         username: config.CLICKHOUSE_USER,
@@ -10073,8 +10073,8 @@ describe('checkAlerts', () => {
       ]);
 
       const connection = await Connection.create({
-      host: config.CLICKHOUSE_HOST,
-      kind: 'couchbase',
+        host: config.CLICKHOUSE_HOST,
+        kind: 'couchbase',
         team: team._id,
         name: 'Default',
         username: config.CLICKHOUSE_USER,
@@ -10178,8 +10178,8 @@ describe('checkAlerts', () => {
       ]);
 
       const connection = await Connection.create({
-      host: config.CLICKHOUSE_HOST,
-      kind: 'couchbase',
+        host: config.CLICKHOUSE_HOST,
+        kind: 'couchbase',
         team: team._id,
         name: 'Default',
         username: config.CLICKHOUSE_USER,
@@ -10274,8 +10274,8 @@ describe('checkAlerts', () => {
       ]);
 
       const connection = await Connection.create({
-      host: config.CLICKHOUSE_HOST,
-      kind: 'couchbase',
+        host: config.CLICKHOUSE_HOST,
+        kind: 'couchbase',
         team: team._id,
         name: 'Default',
         username: config.CLICKHOUSE_USER,
@@ -11729,8 +11729,8 @@ describe('checkAlerts', () => {
       ]);
 
       const connection = await Connection.create({
-      host: config.CLICKHOUSE_HOST,
-      kind: 'couchbase',
+        host: config.CLICKHOUSE_HOST,
+        kind: 'couchbase',
         team: team._id,
         name: 'Default',
         username: config.CLICKHOUSE_USER,

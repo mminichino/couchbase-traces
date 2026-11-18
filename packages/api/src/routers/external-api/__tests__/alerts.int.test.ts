@@ -1152,7 +1152,7 @@ describe('External API Alerts', () => {
     // Team-scoped connection + source the inline chart configs reference.
     const makeSource = async () => {
       const connection = await Connection.create({
-      kind: 'couchbase',
+        kind: 'couchbase',
         team: team._id,
         name: 'Default',
         host: 'http://localhost:8123',
@@ -1691,7 +1691,7 @@ describe('External API Alerts', () => {
       const { connection, source } = await makeSource();
       const webhook = await createTestWebhook();
       const otherConnection = await Connection.create({
-      kind: 'couchbase',
+        kind: 'couchbase',
         team: team._id,
         name: 'Other',
         host: 'http://localhost:8124',

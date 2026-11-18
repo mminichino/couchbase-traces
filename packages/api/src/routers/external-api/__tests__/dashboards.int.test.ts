@@ -3734,7 +3734,7 @@ describe('External API v2 Dashboards - new format', () => {
 
     it('should return 400 when connection ID does not belong to the team', async () => {
       const otherTeamConnection = await Connection.create({
-      kind: 'couchbase',
+        kind: 'couchbase',
         team: new ObjectId(),
         name: 'Other Team Connection',
         host: config.CLICKHOUSE_HOST,
@@ -3772,7 +3772,7 @@ describe('External API v2 Dashboards - new format', () => {
 
     it('should return 400 when source connection does not match tile connection', async () => {
       const otherConnection = await Connection.create({
-      kind: 'couchbase',
+        kind: 'couchbase',
         team: team._id,
         name: 'Other Connection',
         host: config.CLICKHOUSE_HOST,
@@ -5379,7 +5379,7 @@ describe('External API v2 Dashboards - new format', () => {
     it('should return 400 when connection ID does not belong to the team', async () => {
       const dashboard = await createTestDashboard();
       const otherTeamConnection = await Connection.create({
-      kind: 'couchbase',
+        kind: 'couchbase',
         team: new ObjectId(),
         name: 'Other Team Connection',
         host: config.CLICKHOUSE_HOST,
@@ -5419,7 +5419,7 @@ describe('External API v2 Dashboards - new format', () => {
     it('should return 400 when source connection does not match tile connection', async () => {
       const dashboard = await createTestDashboard();
       const otherConnection = await Connection.create({
-      kind: 'couchbase',
+        kind: 'couchbase',
         team: team._id,
         name: 'Other Connection',
         host: config.CLICKHOUSE_HOST,
