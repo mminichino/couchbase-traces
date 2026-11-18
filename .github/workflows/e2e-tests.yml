@@ -11,7 +11,10 @@ jobs:
       ${{ github.event.pull_request.head.repo.fork && 'ubuntu-24.04' ||
       startsWith(vars.RUNNER_E2E, '[') && fromJSON(vars.RUNNER_E2E) ||
       vars.RUNNER_E2E || 'ubuntu-24.04' }}
-    timeout-minutes: ${{ github.event.pull_request.head.repo.fork && 25 || 25 }}
+    # 25m cancelled Main tip 56046c8 mid-Playwright (~23m into the test step);
+    # GitHub marks job timeout as cancelled, which makes the Main workflow
+    # conclusion cancelled even when e2e-report succeeds.
+    timeout-minutes: 45
     permissions:
       contents: read
     strategy:
