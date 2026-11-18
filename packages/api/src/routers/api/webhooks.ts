@@ -15,6 +15,7 @@ import { validateRequest } from 'zod-express-middleware';
 
 import { FRONTEND_URL } from '@/config';
 import { createWebhook, deleteWebhook } from '@/controllers/webhook';
+import { isValidId } from '@/metadata/ids';
 import { AlertSource, AlertState } from '@/models/alert';
 import Webhook, { WebhookService } from '@/models/webhook';
 import {
@@ -237,9 +238,7 @@ router.put(
   '/:id',
   validateRequest({
     params: z.object({
-      id: z.string().refine(val => {
-        return mongoose.Types.ObjectId.isValid(val);
-      }),
+      id: z.string().refine(val => isValidId(val)),
     }),
     body: z.object({
       body: z.string().optional(),
@@ -399,9 +398,7 @@ router.delete(
   '/:id',
   validateRequest({
     params: z.object({
-      id: z.string().refine(val => {
-        return mongoose.Types.ObjectId.isValid(val);
-      }),
+      id: z.string().refine(val => isValidId(val)),
     }),
   }),
   async (req, res, next) => {
@@ -440,7 +437,7 @@ router.post(
       url: z.string().url(),
       webhookId: z
         .string()
-        .refine(val => mongoose.Types.ObjectId.isValid(val))
+        .refine(val => isValidId(val))
         .optional(),
     }),
   }),

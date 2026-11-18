@@ -6,6 +6,10 @@ jest.mock('@/controllers/team', () => ({
   LOCAL_APP_TEAM: { _id: { toString: () => 'local-team' } },
 }));
 jest.mock('@/migrations', () => ({ runStartupMigrations: jest.fn() }));
+jest.mock('@/metadata', () => ({
+  startMetadataStore: jest.fn(),
+  closeMetadataStore: jest.fn(),
+}));
 jest.mock('@/models', () => ({
   connectDB: jest.fn().mockResolvedValue(undefined),
   connectDBWithRetry: jest.fn().mockResolvedValue(undefined),

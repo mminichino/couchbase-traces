@@ -6,7 +6,6 @@ import {
 import { isPromqlSavedChartConfig } from '@couchbase-traces/common-utils/dist/guards';
 import type { DashboardContainer } from '@couchbase-traces/common-utils/dist/types';
 import { uniq } from 'lodash';
-import mongoose from 'mongoose';
 import { z } from 'zod';
 
 import * as config from '@/config';
@@ -15,6 +14,7 @@ import { UPSERT_TOOL } from '@/mcp/tools/annotations';
 import type { ToolRegistrar } from '@/mcp/tools/types';
 import { formatZodIssues, mcpUserError } from '@/mcp/utils/errors';
 import { isPromqlEnabled } from '@/mcp/utils/legacySourceKinds';
+import { newId } from '@/metadata/ids';
 import Dashboard, { IDashboard } from '@/models/dashboard';
 import {
   cleanupDashboardAlerts,
@@ -149,7 +149,7 @@ function assignFilterIds(
   return filters.map(filter =>
     typeof filter.id === 'string' && filter.id.length > 0
       ? filter
-      : { ...filter, id: new mongoose.Types.ObjectId().toString() },
+      : { ...filter, id: newId() },
   );
 }
 

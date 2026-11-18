@@ -41,14 +41,14 @@ import {
   zAlertChannel,
   zAlertChannels,
 } from '@couchbase-traces/common-utils/dist/types';
-import { Types } from 'mongoose';
 import { z } from 'zod';
 
+import { isValidId } from '@/metadata/ids';
 import { AlertSource } from '@/models/alert';
 
-export const objectIdSchema = z.string().refine(val => {
-  return Types.ObjectId.isValid(val);
-}, 'Invalid ObjectId');
+export const objectIdSchema = z
+  .string()
+  .refine(val => isValidId(val), 'Invalid ObjectId');
 
 /**
  * A repeatable query param. Express's parser yields a bare string for a single

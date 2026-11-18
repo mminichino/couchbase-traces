@@ -12,7 +12,7 @@ import User from '@/models/user'; // TODO -> do not import model directly
 import { setupTeamDefaults } from '@/setupDefaults';
 import logger from '@/utils/logger';
 import passport from '@/utils/passport';
-import { isMongoConnected, mongoReadyStateName } from '@/utils/readiness';
+import { readinessReport } from '@/utils/readiness';
 import { passwordSchema } from '@/utils/validators';
 
 const registrationSchema = z
@@ -39,11 +39,12 @@ router.get('/health', async (req, res) => {
   });
 });
 
-// Readiness: 503 unless MongoDB is connected. Nearly every route is
-// Mongo-backed, so a pod without a Mongo connection cannot serve traffic and
-// should be removed from Service endpoints (see utils/readiness.ts).
+// Readiness: 503 unless MongoDB is connected and the metadata store (when
+// configured) is ready. A pod without them cannot serve traffic and should be
+// removed from Service endpoints (see utils/readiness.ts).
 router.get('/ready', async (req, res) => {
-  if (isMongoConnected()) {
+  const report = readinessReport();
+  if (report.ready) {
     return res.send({
       data: 'OK',
       version: config.CODE_VERSION,
@@ -52,7 +53,8 @@ router.get('/ready', async (req, res) => {
   }
   res.status(503).send({
     status: 'unavailable',
-    mongo: mongoReadyStateName(),
+    mongo: report.mongo,
+    metadata: report.metadata,
   });
 });
 
