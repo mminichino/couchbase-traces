@@ -299,9 +299,11 @@ jobs:
   # running for signal, but do not fail Main — required K2 gates are lint,
   # unit, integration shards, Couchbase integration, and product stack smoke.
   # Re-enable as a hard gate when docs/parity.md clears those suites.
+  # Nested shard jobs in e2e-tests.yml use continue-on-error (advisory). Do not
+  # put continue-on-error on this `uses:` job — GitHub rejects it on reusable
+  # workflow callers and the whole Main workflow fails to start.
   e2e-tests:
     uses: ./.github/workflows/e2e-tests.yml
-    continue-on-error: true
     permissions:
       contents: read
 
