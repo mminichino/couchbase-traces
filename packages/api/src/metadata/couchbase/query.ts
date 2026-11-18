@@ -1,5 +1,8 @@
 import type { SqlPP } from '@couchbase-traces/common-utils/dist/couchbase/sqlpp';
-import { type Cluster, QueryScanConsistency } from 'couchbase';
+import {
+  type QueryOptions as QueryOptionsSdk,
+  QueryScanConsistency,
+} from 'couchbase';
 import type { z } from 'zod';
 
 import { fromCouchbaseError, MetadataError } from '@/metadata/errors';
@@ -17,8 +20,16 @@ export type QueryOptions = {
  * named parameter and every identifier went through quoteIdent. Raw strings
  * are not accepted.
  */
+/** The slice of the SDK Cluster runQuery uses; a Cluster satisfies it. */
+export type QueryPort = {
+  query(
+    statement: string,
+    o: QueryOptionsSdk,
+  ): PromiseLike<{ rows: unknown[] }>;
+};
+
 export async function runQuery<T>(
-  cluster: Cluster,
+  cluster: QueryPort,
   q: SqlPP,
   schema?: z.ZodType<T>,
   o: QueryOptions = {},
