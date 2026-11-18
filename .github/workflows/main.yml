@@ -80,7 +80,9 @@ jobs:
           path: .nx/cache
           key: nx-${{ runner.os }}-${{ github.sha }}
   unit:
-    timeout-minutes: 8
+    # 8m was marginal: install + build + coverage unit often lands near the
+    # ceiling and GitHub marks the job cancelled (not failed) on timeout.
+    timeout-minutes: 15
     runs-on: ubuntu-24.04
     steps:
       - name: Checkout
@@ -100,8 +102,10 @@ jobs:
   integration-shards:
     name: Integration - Shard ${{ matrix.shard }}
     # Sequential bake + prune (ENOSPC mitigation) needs more than the old
-    # parallel-bake 16m budget; 35m covers couchbase-init/ingest/otel.
-    timeout-minutes: 35
+    # parallel-bake 16m budget. 35m covered compose + int tests but shard 1's
+    # golden replay step was cut mid-run (job cancelled ≈35m); 55m leaves
+    # room for goldens after a slow bake.
+    timeout-minutes: 55
     runs-on: ubuntu-24.04
     strategy:
       fail-fast: false

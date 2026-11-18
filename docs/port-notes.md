@@ -1090,3 +1090,7 @@ key rows and minimal `otel_sessions` documents.
   files as each SQL++ port lands.
 - common-utils unit coverage floor for lines set to 76 (measured 76.99% after
   PromQL/alert contract shims; prior floor 77 failed CI).
+- Main CI timeouts: unit 8→15m; integration-shards 35→55m. On timeout GitHub
+  marks the job **cancelled** (not failed); the `integration` aggregator then
+  fails because `needs.integration-shards.result != 'success'`. Shard 1 on
+  2b88577 had green int tests; cancel hit during `Replay parity goldens`.
