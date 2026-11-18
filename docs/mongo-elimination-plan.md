@@ -144,7 +144,7 @@ packages/ingest/src/setup/
   cli.ts                   # CHANGED: --metadata (default on) / --no-metadata; reuses ensureBucket/ensureUsers helpers
 ```
 
-Why provisioning lives in `packages/ingest/src/setup`: the `couchbase-init` one-shot container in every compose file, CI, and the all-in-one entrypoint already runs that CLI with the admin credentials (`docker/couchbase/init.sh` → `node dist/setup/cli.js --create-bucket --create-users`). Putting the metadata DDL there means one init step and no admin credentials in the API. The API only verifies (`verify.ts`) unless `CBT_METADATA_AUTO_PROVISION=true`, in which case it calls the same ensure code. That code is exported from `@couchbase-traces/ingest`'s setup module, or moved to `common-utils/src/couchbase/node` if the API cannot depend on ingest; decide when C0 starts by checking the workspace dependency graph.
+Why provisioning lives in `packages/ingest/src/setup`: the `couchbase-init` one-shot container in every compose file, CI, and the all-in-one entrypoint already runs that CLI with the admin credentials (`docker/couchbase/init.sh` → `node dist/setup/cli.js --create-bucket --create-users`). Putting the metadata DDL there means one init step and no admin credentials in the API. The API only verifies (`verify.ts`) unless `CBT_METADATA_AUTO_PROVISION=true`, in which case it calls the same ensure code. **Decided in C0:** `packages/api` does not depend on `@couchbase-traces/ingest` (and ingest is a private service package with no library entry point), so the definitions and the ensure/verify code live in `common-utils`: `couchbase/metadataKeyspace.ts` (pure definitions, browser-safe), `couchbase/nodeMetadataIndexes.ts` and `couchbase/nodeMetadataProvision.ts` (server-only, import `couchbase`). `packages/ingest/src/setup/metadata.ts` is a thin CLI adapter over them. See `docs/port-notes.md`, "Mongo elimination: C0".
 
 Changed files (grouped by phase in section 7):
 
@@ -153,7 +153,7 @@ Changed files (grouped by phase in section 7):
 - `utils/zod.ts#objectIdSchema` and every `mongoose.isValidObjectId` / `ObjectId.isValid` guard → `isValidId` (C0). `fixtures.ts#randomMongoId` → `newId` (C0).
 - `utils/errors.ts#isDuplicateKeyError` recognizes `DuplicateKeyError` as well as code 11000 during the transition. The 11000 branch is removed in C5.
 - `api-app.ts` (session store, C1), `utils/passport.ts` (C1), `middleware/auth.ts` (C1), `dataLayerSetup.ts` + `fixtures.ts` loader (C2), `utils/readiness.ts` + `routers/api/root.ts` (C0 adds `metadata`; C5 removes `mongo`), `server.ts` / `serverless.ts` (C0 connect; C5 remove Mongo connect).
-- `docker/couchbase/init.sh`: the cluster data quota becomes `CBT_COUCHBASE_RAM_MB + CBT_METADATA_RAM_MB`. Today the `otel` bucket takes the whole `DATA_RAM_MB`, so the second bucket needs headroom (C0).
+- `docker/couchbase/init.sh`: `cbt_meta` is carved out of `CBT_COUCHBASE_RAM_MB` (the `otel` bucket gets `CBT_COUCHBASE_RAM_MB - CBT_METADATA_RAM_MB`), so the cluster quota and container memory limits stay the same (C0; changed from the original "quota grows" idea, see port-notes).
 - Infrastructure in section 0.4 (C0 adds metadata provisioning; C5 removes Mongo).
 
 Module relations:
@@ -167,8 +167,8 @@ routers / controllers / mcp / opamp / tasks / scripts
           └─ testing/memoryStore (unit tests)
   auth/localStrategy ──► store.users     CouchbaseSessionStore ──► couchbase/kv
   dataLayerSetup ──► store.connections.getWithSecrets()   (telemetry Connection docs; metadata cluster from env)
-  ingest setup cli ──► setup/metadata.ts ──► common-utils metadataKeyspace (definitions)
-  api startup     ──► couchbase/verify.ts ──► common-utils metadataKeyspace (same definitions)
+  ingest setup cli ──► setup/metadata.ts ──► common-utils nodeMetadataProvision ──► metadataKeyspace (definitions)
+  api startup     ──► couchbase/verify.ts ──► common-utils nodeMetadataIndexes  ──► metadataKeyspace (same definitions)
 ```
 
 ### 1.1 Metadata bucket layout (D1)
@@ -603,8 +603,8 @@ Per-slice recipe (C1–C4), the same for every entity:
 
 ### C0: Foundation, separate bucket, ids (L)
 
-- Wire-contract snapshots (`src/__tests__/metadataContracts.int.test.ts`): JSON snapshots, with `_id`/`id`/date normalization, of every metadata-returning route (internal API, external API v2, MCP outputs). They are captured on the current stack and used as the spec in every later phase.
-- `metadata/{types,ids,errors,serialize,index}.ts`, `couchbase/{config,cluster,keyspace,kv,query,tx,unique,lock,schemaVersion,verify}.ts`, `testing/{memoryStore,contract,seed}.ts`, `common-utils/src/couchbase/metadataKeyspace.ts`, `packages/ingest/src/setup/metadata.ts` + `cli.ts` flags.
+- Wire-contract snapshots (`src/__tests__/metadataContracts.int.test.ts` for the internal API, `metadataContractsExternal.int.test.ts` for external API v2 + MCP, shared seed in `metadataContractsWorld.ts`): JSON snapshots, with `_id`/`id`/date normalization, of every metadata-returning route (internal API, external API v2, MCP outputs). They are captured on the current stack and used as the spec in every later phase.
+- `metadata/{types,ids,errors,serialize,index,unique,lock,schemaVersion}.ts`, `couchbase/{config,cluster,keyspace,kv,query,tx,verify,store}.ts`, `testing/{memoryKv,memoryStore,contract,seed,wire}.ts`, `common-utils/src/couchbase/{metadataKeyspace,nodeMetadataIndexes,nodeMetadataProvision}.ts`, `packages/ingest/src/setup/metadata.ts` + `cli.ts` flags. (As built: `unique`, `lock`, `schemaVersion` sit in `metadata/` because they only need `MetaKv`, so the memory store runs them too.)
 - `isValidId` / `newId` replace every `isValidObjectId`, `ObjectId.isValid`, `new ObjectId()`, and `randomMongoId` (Mongoose still casts the hex strings). Check the tests for reliance on 12-character ids.
 - Infrastructure: `docker/couchbase/init.sh` provisions `cbt_meta` (+ quota math), `CBT_METADATA_*` in `.env.{development,test,e2e}` and compose anchors, `port/couchbase-test/init.sh`, the all-in-one entry, and CI. Mongo stays.
 - API connects to both stores; `/ready` reports `metadata` alongside `mongo`.
