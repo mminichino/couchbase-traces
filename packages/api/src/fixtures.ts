@@ -13,11 +13,14 @@ import request from 'supertest';
 
 import * as config from '@/config';
 import { AlertInput } from '@/controllers/alerts';
+import { toCouchbaseConnectionConfig } from '@/controllers/connection';
 import { getTeam } from '@/controllers/team';
 import { findUserByEmail } from '@/controllers/user';
+import { setCouchbaseConnectionLoader } from '@/dataClient';
 import { FixtureDataClient } from '@/fixtureStore';
 import { mongooseConnection } from '@/models';
 import { AlertInterval, AlertSource } from '@/models/alert';
+import Connection from '@/models/connection';
 import Server from '@/server';
 import logger from '@/utils/logger';
 import { MetricModel } from '@/utils/logParser';
@@ -28,6 +31,34 @@ const MOCK_USER = {
   email: 'fake@example.com',
   password: 'TacoCat!2#4X',
 };
+
+// Server imports dataLayerSetup (Mongo Connection.findById). Int tests often
+// use placeholder ids like "test-connection" or freshly minted ObjectIds with
+// no Connection doc — fall back to the CI compose cluster credentials.
+if (config.IS_CI) {
+  setCouchbaseConnectionLoader(async id => {
+    try {
+      const doc = await Connection.findById(id).select(
+        '+password +tlsCaCertificate',
+      );
+      if (doc != null) {
+        return toCouchbaseConnectionConfig(doc);
+      }
+    } catch {
+      // non-ObjectId ids (e.g. "test-connection") throw from findById
+    }
+    return {
+      id: String(id),
+      host: process.env.CBT_COUCHBASE_CONNSTR || 'couchbase://127.0.0.1',
+      username: process.env.CBT_COUCHBASE_QUERY_USER || 'cbt_query',
+      password:
+        process.env.CBT_COUCHBASE_QUERY_PASSWORD || 'dev-query-password',
+      wanProfile: undefined,
+      tlsCaCertificate: undefined,
+      updatedAt: '',
+    };
+  });
+}
 
 export const DEFAULT_DATABASE = 'default';
 export const DEFAULT_LOGS_TABLE = 'otel_logs';

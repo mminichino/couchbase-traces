@@ -1,3 +1,5 @@
+import '@/dataLayerSetup'; // registers Couchbase connection loader (MockServer + prod)
+
 import { shutdown as shutdownTelemetry } from '@clickhouse/clickstack-node';
 import { clusterCache } from '@couchbase-traces/common-utils/dist/couchbase/node';
 import http from 'http';

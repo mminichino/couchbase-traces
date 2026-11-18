@@ -144,12 +144,13 @@ wait_for_init
 wait_healthy ingest
 wait_healthy app
 
-# Hit the Express API directly (CBT_API_PORT). Going through Next on
-# CBT_APP_PORT proxies /api and can drop/rewrite Set-Cookie, which left
-# /team returning 401 after a "successful" register/login.
+# Hit Express on CBT_API_PORT (not Next /api — the proxy can mangle cookies).
+# Use hostname "localhost", not 127.0.0.1: api-app sets cookie.domain from
+# FRONTEND_URL (http://localhost:8080), and Domain=localhost cookies are not
+# sent to 127.0.0.1 → /team 401 after register.
 API_PORT="$(grep -E '^CBT_API_PORT=' "$ENV_FILE" | tail -1 | cut -d= -f2-)"
 API_PORT="${API_PORT:-8000}"
-API_BASE="http://127.0.0.1:${API_PORT}"
+API_BASE="http://localhost:${API_PORT}"
 COOKIE_JAR="$(mktemp)"
 EMAIL="stack-smoke-$(date +%s)@couchbase-traces.test"
 PASSWORD="$(gen_user_password)"
