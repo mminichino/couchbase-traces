@@ -12,6 +12,7 @@ import {
   getServer,
 } from '@/fixtures';
 import { appErrorHandler } from '@/middleware/error';
+import { toObjectId } from '@/models';
 import Connection from '@/models/connection';
 import { Source } from '@/models/source';
 import sourcesRouter from '@/routers/api/sources';
@@ -920,7 +921,7 @@ describe('sources router', () => {
       await Source.collection.insertOne({
         kind: SourceKind.Session,
         name: 'Legacy Session',
-        team: team._id,
+        team: toObjectId(team._id),
         connection: new Types.ObjectId(),
         from: { databaseName: 'otel', tableName: 'otel_sessions' },
         traceSourceId: new Types.ObjectId().toString(),
@@ -942,7 +943,7 @@ describe('sources router', () => {
       await Source.collection.insertOne({
         kind: SourceKind.Trace,
         name: 'Legacy Trace',
-        team: team._id,
+        team: toObjectId(team._id),
         connection: new Types.ObjectId(),
         from: { databaseName: 'otel', tableName: 'otel_traces' },
         timestampValueExpression: 'Timestamp',
@@ -969,7 +970,7 @@ describe('sources router', () => {
       await Source.collection.insertOne({
         kind: SourceKind.Trace,
         name: 'Trace with null logSourceId',
-        team: team._id,
+        team: toObjectId(team._id),
         connection: new Types.ObjectId(),
         from: { databaseName: 'otel', tableName: 'otel_traces' },
         timestampValueExpression: 'Timestamp',
@@ -1004,7 +1005,7 @@ describe('sources router', () => {
       await Source.collection.insertOne({
         kind: SourceKind.Log,
         name: 'Flat Model Log',
-        team: team._id,
+        team: toObjectId(team._id),
         connection: new Types.ObjectId(),
         from: { databaseName: 'otel', tableName: 'otel_logs' },
         timestampValueExpression: 'Timestamp',
@@ -1034,7 +1035,7 @@ describe('sources router', () => {
       const result = await Source.collection.insertOne({
         kind: SourceKind.Session,
         name: 'Legacy Session',
-        team: team._id,
+        team: toObjectId(team._id),
         connection: new Types.ObjectId(),
         from: { databaseName: 'otel', tableName: 'otel_sessions' },
         traceSourceId: 'some-trace-source-id',
@@ -1062,7 +1063,7 @@ describe('sources router', () => {
       const result = await Source.collection.insertOne({
         kind: SourceKind.Session,
         name: 'Legacy Session',
-        team: team._id,
+        team: toObjectId(team._id),
         connection: connectionId,
         from: { databaseName: 'otel', tableName: 'otel_sessions' },
         traceSourceId: 'some-trace-source-id',
@@ -1093,7 +1094,7 @@ describe('sources router', () => {
       const result = await Source.collection.insertOne({
         kind: SourceKind.Log,
         name: 'Flat Log',
-        team: team._id,
+        team: toObjectId(team._id),
         connection: new Types.ObjectId(),
         from: { databaseName: 'otel', tableName: 'otel_logs' },
         timestampValueExpression: 'Timestamp',
@@ -1123,7 +1124,7 @@ describe('sources router', () => {
         {
           kind: SourceKind.Log,
           name: 'Log',
-          team: team._id,
+          team: toObjectId(team._id),
           connection: connectionId,
           from: { databaseName: 'otel', tableName: 'otel_logs' },
           timestampValueExpression: 'Timestamp',
@@ -1132,7 +1133,7 @@ describe('sources router', () => {
         {
           kind: SourceKind.Trace,
           name: 'Trace',
-          team: team._id,
+          team: toObjectId(team._id),
           connection: connectionId,
           from: { databaseName: 'otel', tableName: 'otel_traces' },
           timestampValueExpression: 'Timestamp',
@@ -1148,7 +1149,7 @@ describe('sources router', () => {
         {
           kind: SourceKind.Session,
           name: 'Session',
-          team: team._id,
+          team: toObjectId(team._id),
           connection: connectionId,
           from: { databaseName: 'otel', tableName: 'otel_sessions' },
           timestampValueExpression: 'TimestampTime',
@@ -1157,7 +1158,7 @@ describe('sources router', () => {
         {
           kind: SourceKind.Metric,
           name: 'Metric',
-          team: team._id,
+          team: toObjectId(team._id),
           connection: connectionId,
           from: { databaseName: 'otel', tableName: '' },
           timestampValueExpression: 'TimeUnix',

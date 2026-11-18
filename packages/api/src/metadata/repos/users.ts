@@ -43,7 +43,6 @@ function toUser(id: Id, d: UserDoc): UserWithSecret {
   return {
     ...d,
     _id: id,
-    name: d.name ?? '',
     team: d.team,
     createdAt: toDate(d.createdAt),
     updatedAt: toDate(d.updatedAt),
@@ -136,7 +135,10 @@ export class UserRepository {
       team: input.teamId,
       isVirtual: true,
       ...(input.accessKey ? { accessKey: input.accessKey } : {}),
-      ...(input.expiresAt ? { expiresAt: iso(input.expiresAt) } : {}),
+      // null (never expires) is stored as null, as the Mongo model did.
+      ...(input.expiresAt !== undefined
+        ? { expiresAt: input.expiresAt && iso(input.expiresAt) }
+        : {}),
       ...(input.createdBy ? { createdBy: input.createdBy } : {}),
     });
     await this.insert(id, doc);
@@ -226,7 +228,7 @@ export class UserRepository {
       out.set(id, {
         _id: id,
         email: parsed.data.email,
-        name: parsed.data.name ?? '',
+        ...(parsed.data.name === undefined ? {} : { name: parsed.data.name }),
       });
     }
     return out;

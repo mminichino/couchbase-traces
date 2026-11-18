@@ -49,7 +49,8 @@ router.get('/', async (req, res: express.Response<MeApiResponse>, next) => {
       createdAt,
       email,
       id,
-      name,
+      // Registration always sets a name; only seeded test users lack one.
+      name: name ?? '',
       // Defaults for users predating the field.
       onboardingData: OnboardingDataSchema.parse(onboardingData ?? {}),
       team,

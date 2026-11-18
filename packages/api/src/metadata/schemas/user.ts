@@ -41,7 +41,8 @@ export interface IUser {
   createdAt: Date;
   updatedAt: Date;
   email: string;
-  name: string;
+  // Optional, as on the Mongoose model: seeded and invited users may have none.
+  name?: string;
   onboardingData: OnboardingData;
   // A service account: no sign-in, not listed as a team member.
   isVirtual: boolean;
@@ -58,7 +59,7 @@ export interface IUser {
 export type UserWithSecret = IUser & { hash?: string };
 
 /** The fields `populate('createdBy', 'email name')` used to embed. */
-export type UserDisplay = { _id: Id; email: string; name: string };
+export type UserDisplay = { _id: Id; email: string; name?: string };
 
 export type VirtualUserInput = {
   teamId: Id;

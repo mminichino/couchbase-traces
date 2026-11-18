@@ -13,6 +13,7 @@ import {
   RAW_SQL_ALERT_TEMPLATE,
   RAW_SQL_NUMBER_ALERT_TEMPLATE,
 } from '@/fixtures';
+import { toObjectId } from '@/models';
 import { AlertSource, AlertState, AlertThresholdType } from '@/models/alert';
 import Alert from '@/models/alert';
 import Connection from '@/models/connection';
@@ -218,7 +219,7 @@ describe('External API Alerts', () => {
         .expect(200);
 
       const stored = await Alert.findById(response.body.data.id).lean();
-      expect(stored?.createdBy).toEqual(doc._id);
+      expect(stored?.createdBy).toEqual(toObjectId(doc._id));
     });
   });
 
@@ -969,7 +970,7 @@ describe('External API Alerts', () => {
 
       it('should treat a legacy alert without a source as saved_search', async () => {
         await Alert.collection.insertOne({
-          team: team._id,
+          team: toObjectId(team._id),
           displayName: 'Legacy alert',
           threshold: 100,
           interval: '1h',
@@ -1021,7 +1022,7 @@ describe('External API Alerts', () => {
 
       it('should treat a legacy alert without state or tags as OK and untagged', async () => {
         await Alert.collection.insertOne({
-          team: team._id,
+          team: toObjectId(team._id),
           displayName: 'Legacy alert',
           threshold: 100,
           interval: '1h',

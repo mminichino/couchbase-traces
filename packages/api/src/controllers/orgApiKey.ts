@@ -116,7 +116,7 @@ export function formatOrgApiKey(
 ): OrgApiKeyApiResponse {
   return {
     id: doc._id,
-    description: doc.name,
+    description: doc.name ?? '',
     createdAt: doc.createdAt.toISOString(),
     expiresAt: doc.expiresAt?.toISOString() ?? null,
     lastUsedAt: doc.lastUsedAt?.toISOString() ?? null,

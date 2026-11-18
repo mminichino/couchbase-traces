@@ -18,6 +18,7 @@ import {
 } from '@/fixtures';
 import type { ITeam } from '@/metadata/schemas/team';
 import type { IUser } from '@/metadata/schemas/user';
+import { toObjectId } from '@/models';
 import Connection, { IConnection } from '@/models/connection';
 import {
   ISource,
@@ -525,7 +526,7 @@ describe('External API v2 Sources', () => {
       // match the SourceSchema (e.g., due to schema evolution)
       await Source.collection.insertOne({
         kind: 'invalid-kind', // Invalid kind
-        team: team._id,
+        team: toObjectId(team._id),
         name: 'Invalid Source',
         from: {
           databaseName: DEFAULT_DATABASE,
@@ -547,7 +548,7 @@ describe('External API v2 Sources', () => {
       it('returns the section on a source that has one', async () => {
         const logSource = await LogSource.create({
           kind: SourceKind.Log,
-          team: team._id,
+          team: toObjectId(team._id),
           name: 'Sectioned Log Source',
           section: SECTION,
           from: {
@@ -600,7 +601,7 @@ describe('External API v2 Sources', () => {
       await Source.collection.insertOne({
         kind: SourceKind.Session,
         name: 'Legacy Session',
-        team: team._id,
+        team: toObjectId(team._id),
         connection: connection._id,
         from: { databaseName: DEFAULT_DATABASE, tableName: 'otel_sessions' },
         traceSourceId: 'some-trace-source-id',
@@ -625,7 +626,7 @@ describe('External API v2 Sources', () => {
       await Source.collection.insertOne({
         kind: SourceKind.Trace,
         name: 'Trace with null logSourceId',
-        team: team._id,
+        team: toObjectId(team._id),
         connection: connection._id,
         from: { databaseName: DEFAULT_DATABASE, tableName: 'otel_traces' },
         timestampValueExpression: 'Timestamp',
@@ -655,7 +656,7 @@ describe('External API v2 Sources', () => {
       await Source.collection.insertOne({
         kind: SourceKind.Log,
         name: 'Flat Model Log',
-        team: team._id,
+        team: toObjectId(team._id),
         connection: connection._id,
         from: { databaseName: DEFAULT_DATABASE, tableName: DEFAULT_LOGS_TABLE },
         timestampValueExpression: 'Timestamp',

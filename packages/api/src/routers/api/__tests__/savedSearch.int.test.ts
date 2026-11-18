@@ -4,6 +4,7 @@ import {
   makeSavedSearchAlertInput,
 } from '@/fixtures';
 import { seedUser } from '@/metadata/testing/seed';
+import { toObjectId } from '@/models';
 import Alert from '@/models/alert';
 import { SavedSearch } from '@/models/savedSearch';
 import Webhook, { WebhookDocument, WebhookService } from '@/models/webhook';
@@ -241,7 +242,7 @@ describe('savedSearch router', () => {
     // Verify createdBy was set on the alert document
     const alertFromDb = await Alert.findById(alert.body.data._id);
     expect(alertFromDb).toBeDefined();
-    expect(alertFromDb!.createdBy).toEqual(user._id);
+    expect(alertFromDb!.createdBy).toEqual(toObjectId(user._id));
 
     // Verify GET /saved-search returns alerts with createdBy populated
     const savedSearches = await agent.get('/saved-search').expect(200);

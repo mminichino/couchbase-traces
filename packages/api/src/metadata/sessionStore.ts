@@ -15,7 +15,8 @@ type Callback<T = void> = (err?: unknown, value?: T) => void;
 /**
  * express-session Store over `sessions` (plan D3). One document per session
  * id with KV expiry from `cookie.expires`, so the Data service drops expired
- * sessions; `touch` (rolling cookies) moves the expiry without a rewrite.
+ * sessions; `touch` (rolling cookies) moves the expiry with a CAS replace of
+ * the stored body, so it never overwrites a concurrent `set`.
  * `kv` is resolved per call because the app module loads before the store
  * connects.
  */
