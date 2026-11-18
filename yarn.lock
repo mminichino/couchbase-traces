@@ -3471,7 +3471,6 @@ __metadata:
     "@clickhouse/clickstack-node": "npm:^1.0.2"
     "@couchbase-traces/common-utils": "workspace:*"
     "@esm2cjs/p-queue": "npm:^7.3.0"
-    "@hyperdx/passport-local-mongoose": "npm:^9.0.1"
     "@modelcontextprotocol/sdk": "npm:^1.27.1"
     "@opentelemetry/api": "npm:~1.9.1"
     "@opentelemetry/api-logs": "npm:^0.223.0"
@@ -3502,7 +3501,6 @@ __metadata:
     chrono-node: "npm:^2.9.0"
     compression: "npm:^1.8.2"
     concurrently: "npm:^9.1.2"
-    connect-mongo: "npm:^4.6.0"
     cors: "npm:^2.8.5"
     couchbase: "npm:4.7.2"
     cron: "npm:^4.3.1"
@@ -5134,16 +5132,6 @@ __metadata:
   version: 3.1.1
   resolution: "@hyperdx/lucene@npm:3.1.1"
   checksum: 10c0/29fc43f5496aac67eb614aa0fb9ed98eb1ccead76051ddb11615408151edf668d1c655a767f3e7c2d33c2ccf06a48049f2f4daa0ee44671e95928d61641b3437
-  languageName: node
-  linkType: hard
-
-"@hyperdx/passport-local-mongoose@npm:^9.0.1":
-  version: 9.0.1
-  resolution: "@hyperdx/passport-local-mongoose@npm:9.0.1"
-  dependencies:
-    passport-local: "npm:^1.0.0"
-    scmp: "npm:^2.1.0"
-  checksum: 10c0/beba3eae1c827609ad2318f5660e6e91d9195430ed00d807570a63eca82cc1bf123d19ad5526d9855ecdf2c376348f28f0bda411f1dc33eb1b56316e3699c3d3
   languageName: node
   linkType: hard
 
@@ -13282,18 +13270,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"asn1.js@npm:^5.4.1":
-  version: 5.4.1
-  resolution: "asn1.js@npm:5.4.1"
-  dependencies:
-    bn.js: "npm:^4.0.0"
-    inherits: "npm:^2.0.1"
-    minimalistic-assert: "npm:^1.0.0"
-    safer-buffer: "npm:^2.1.0"
-  checksum: 10c0/b577232fa6069cc52bb128e564002c62b2b1fe47f7137bdcd709c0b8495aa79cee0f8cc458a831b2d8675900eea0d05781b006be5e1aa4f0ae3577a73ec20324
-  languageName: node
-  linkType: hard
-
 "assert@npm:^2.0.0":
   version: 2.1.0
   resolution: "assert@npm:2.1.0"
@@ -14997,18 +14973,6 @@ __metadata:
     conc: dist/bin/concurrently.js
     concurrently: dist/bin/concurrently.js
   checksum: 10c0/88e00269366aa885ca2b97fd53b04e7af2b0f31774d991bfc0e88c0de61cdebdf115ddacc9c897fbd1f1b90369014637fa77045a171d072a75693332b36dcc70
-  languageName: node
-  linkType: hard
-
-"connect-mongo@npm:^4.6.0":
-  version: 4.6.0
-  resolution: "connect-mongo@npm:4.6.0"
-  dependencies:
-    debug: "npm:^4.3.1"
-    kruptein: "npm:^3.0.0"
-  peerDependencies:
-    mongodb: ^4.1.0
-  checksum: 10c0/0f3cf4cbf404112da0df624cbf9bf8d7f1a83c6c9b05fa3d9c547af0943c3ef4cd7025750231a15ba3556fcc03b8e17f63560fcc93a88dc74a6c36dc05936209
   languageName: node
   linkType: hard
 
@@ -21918,15 +21882,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"kruptein@npm:^3.0.0":
-  version: 3.0.6
-  resolution: "kruptein@npm:3.0.6"
-  dependencies:
-    asn1.js: "npm:^5.4.1"
-  checksum: 10c0/71f0a38416a37956aaa699f1374de2e57c442d658a823216e2fd83749aab6d83a3e6608812388188e694266e738147947c496de91471bdd577a4063133f698f4
-  languageName: node
-  linkType: hard
-
 "ky-universal@npm:^0.10.1":
   version: 0.10.1
   resolution: "ky-universal@npm:0.10.1"
@@ -27698,7 +27653,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"safer-buffer@npm:>= 2.1.2 < 3, safer-buffer@npm:>= 2.1.2 < 3.0.0, safer-buffer@npm:^2.1.0":
+"safer-buffer@npm:>= 2.1.2 < 3, safer-buffer@npm:>= 2.1.2 < 3.0.0":
   version: 2.1.2
   resolution: "safer-buffer@npm:2.1.2"
   checksum: 10c0/7e3c8b2e88a1841c9671094bbaeebd94448111dd90a81a1f606f3f67708a6ec57763b3b47f06da09fc6054193e0e6709e77325415dc8422b04497a8070fa02d4
@@ -27780,13 +27735,6 @@ __metadata:
     ajv-formats: "npm:^2.1.1"
     ajv-keywords: "npm:^5.1.0"
   checksum: 10c0/1c8d2c480a026d7c02ab2ecbe5919133a096d6a721a3f201fa50663e4f30f6d6ba020dfddd93cb828b66b922e76b342e103edd19a62c95c8f60e9079cc403202
-  languageName: node
-  linkType: hard
-
-"scmp@npm:^2.1.0":
-  version: 2.1.0
-  resolution: "scmp@npm:2.1.0"
-  checksum: 10c0/2128efa993cd2e3e10e3ab6d574cc9993ac7aa30430527e5da830ab509ba15eae49d8ca918d6aa934915bbd5b863778b04178227be005b49d801c0ca6063d2e4
   languageName: node
   linkType: hard
 

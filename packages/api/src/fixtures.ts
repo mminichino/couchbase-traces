@@ -18,6 +18,12 @@ import { getTeam } from '@/controllers/team';
 import { findUserByEmail } from '@/controllers/user';
 import { setCouchbaseConnectionLoader } from '@/dataClient';
 import { FixtureDataClient } from '@/fixtureStore';
+import {
+  clearMetadataForTests,
+  closeMetadataStore,
+  metadataReadiness,
+  startMetadataStore,
+} from '@/metadata';
 import { newId } from '@/metadata/ids';
 import { mongooseConnection } from '@/models';
 import { AlertInterval, AlertSource } from '@/models/alert';
@@ -163,6 +169,9 @@ export const connectDB = async () => {
     throw new Error('MONGO_URI is not set');
   }
   await mongoose.connect(config.MONGO_URI);
+  // Identity lives in the metadata bucket since C1. MockServer.start()
+  // starts it too; only start it here for suites that skip the server.
+  if (metadataReadiness().state === 'disabled') await startMetadataStore();
 };
 
 export const closeDB = async () => {
@@ -171,6 +180,8 @@ export const closeDB = async () => {
   }
   await mongooseConnection.dropDatabase();
   await mongoose.disconnect();
+  await clearMetadataForTests();
+  await closeMetadataStore();
 };
 
 export const clearDBCollections = async () => {
@@ -183,6 +194,7 @@ export const clearDBCollections = async () => {
       await collection.deleteMany({}); // an empty mongodb selector object ({}) must be passed as the filter argument
     }),
   );
+  await clearMetadataForTests();
 };
 
 // after connectDB
@@ -231,6 +243,7 @@ class MockServer extends Server {
       });
     });
     await closeTestFixtureDataClient();
+    await clearMetadataForTests();
     await super.shutdown();
   }
 
@@ -257,7 +270,7 @@ export const getLoggedInAgent = async (
     .expect(200);
 
   const user = await findUserByEmail(creds.email);
-  const team = await getTeam(user?.team as any);
+  const team = user === null ? null : await getTeam(user.team);
 
   if (team === null || user === null) {
     throw Error('team or user not found');

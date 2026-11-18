@@ -20,9 +20,9 @@ import {
   seedExponentialHistogramMetric,
 } from '@/fixtures';
 import { McpContext } from '@/mcp/tools/types';
+import { seedTeam } from '@/metadata/testing/seed';
 import Connection from '@/models/connection';
 import { Source } from '@/models/source';
-import Team from '@/models/team';
 
 import { callTool, createTestClient, getFirstText } from './mcpTestUtils';
 
@@ -774,7 +774,7 @@ describe('MCP Source Tools', () => {
     });
 
     it('should not allow access to another team source', async () => {
-      const otherTeam = await Team.create({ name: 'Other Team' });
+      const otherTeam = await seedTeam({ name: 'Other Team' });
       const otherConnection = await Connection.create({
         kind: 'couchbase',
         team: otherTeam._id,
@@ -1558,7 +1558,7 @@ describe('MCP Source Tools', () => {
     });
 
     it('rejects a connection owned by another team', async () => {
-      const otherTeam = await Team.create({ name: 'Other Team' });
+      const otherTeam = await seedTeam({ name: 'Other Team' });
       const otherConnection = await Connection.create({
         kind: 'couchbase',
         team: otherTeam._id,
@@ -1791,7 +1791,7 @@ describe('MCP Source Tools', () => {
         name: 'Trace With Bad Link',
       });
 
-      const otherTeam = await Team.create({ name: 'Other Team 3' });
+      const otherTeam = await seedTeam({ name: 'Other Team 3' });
       const otherConnection = await Connection.create({
         kind: 'couchbase',
         team: otherTeam._id,
@@ -1869,7 +1869,7 @@ describe('MCP Source Tools', () => {
     });
 
     it('does not delete a source owned by another team', async () => {
-      const otherTeam = await Team.create({ name: 'Other Team 2' });
+      const otherTeam = await seedTeam({ name: 'Other Team 2' });
       const otherConnection = await Connection.create({
         kind: 'couchbase',
         team: otherTeam._id,

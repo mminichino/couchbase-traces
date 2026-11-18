@@ -45,7 +45,6 @@ const savedSearchSchema = new Schema<
     team: {
       type: mongoose.Schema.Types.ObjectId,
       required: true,
-      ref: 'Team',
       immutable: true,
     },
 
@@ -64,13 +63,11 @@ const savedSearchSchema = new Schema<
     // Immutable: ownership attribution is set once at creation.
     createdBy: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: 'User',
       required: false,
       immutable: true,
     },
     updatedBy: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: 'User',
       required: false,
     },
   },

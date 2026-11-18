@@ -9,12 +9,12 @@ import {
   getLoggedInAgent,
   getServer,
 } from '@/fixtures';
+import type { ITeam } from '@/metadata/schemas/team';
+import type { IUser } from '@/metadata/schemas/user';
 import Alert, { AlertSource, AlertState } from '@/models/alert';
 import Connection from '@/models/connection';
 import { SavedSearch } from '@/models/savedSearch';
 import { LogSource } from '@/models/source';
-import { ITeam } from '@/models/team';
-import { IUser } from '@/models/user';
 
 const BASE_URL = '/api/v2/saved-searches';
 

@@ -26,13 +26,13 @@ import {
   RAW_SQL_ALERT_TEMPLATE,
   RAW_SQL_NUMBER_ALERT_TEMPLATE,
 } from '@/fixtures';
+import type { ITeam } from '@/metadata/schemas/team';
 import Alert, { AlertSource, IAlert } from '@/models/alert';
 import AlertHistory from '@/models/alertHistory';
 import Connection, { IConnection } from '@/models/connection';
 import Dashboard, { IDashboard } from '@/models/dashboard';
 import { ISavedSearch, SavedSearch } from '@/models/savedSearch';
 import { ISource, LogSource, Source } from '@/models/source';
-import { ITeam } from '@/models/team';
 import Webhook, { IWebhook } from '@/models/webhook';
 import { DataClient } from '@/query';
 import * as checkAlert from '@/tasks/checkAlerts';

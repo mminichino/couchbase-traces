@@ -3,10 +3,17 @@ import { ObjectId } from 'mongodb';
 import mongoose from 'mongoose';
 
 import { getAgent, getLoggedInAgent, getServer } from '@/fixtures';
+import { getMetadataStore } from '@/metadata';
+import {
+  findUser,
+  getUserDoc,
+  patchTeam,
+  patchUser,
+  seedUser,
+} from '@/metadata/testing/seed';
 import Alert, { AlertSource, AlertThresholdType } from '@/models/alert';
-import Team from '@/models/team';
-import TeamInvite from '@/models/teamInvite';
-import User from '@/models/user';
+
+const invites = () => getMetadataStore().teamInvites;
 
 describe('team router', () => {
   const server = getServer();
@@ -43,9 +50,7 @@ describe('team router', () => {
   it('GET /team reflects isMetricsSeriesTableEnabled when set', async () => {
     const { agent, team } = await getLoggedInAgent(server);
 
-    await Team.findByIdAndUpdate(team._id, {
-      isMetricsSeriesTableEnabled: true,
-    });
+    await patchTeam(team._id, { isMetricsSeriesTableEnabled: true });
 
     const resp = await agent.get('/team').expect(200);
 
@@ -158,11 +163,11 @@ describe('team router', () => {
 
   it('GET /team/members', async () => {
     const { agent, team } = await getLoggedInAgent(server);
-    await User.create({
+    await seedUser({
       email: 'user1@example.com',
       team: team.id,
     });
-    await User.create({
+    await seedUser({
       email: 'user2@example.com',
       team: team.id,
     });
@@ -192,7 +197,7 @@ describe('team router', () => {
   });
 
   it('POST /team/invitation', async () => {
-    const { agent } = await getLoggedInAgent(server);
+    const { agent, team } = await getLoggedInAgent(server);
     const resp = await agent
       .post('/team/invitation')
       .send({
@@ -200,9 +205,10 @@ describe('team router', () => {
         name: 'User 3',
       })
       .expect(200);
-    const teamInvite = await TeamInvite.findOne({
-      email: 'user3@example.com',
-    });
+    const teamInvite = await invites().getByTeamEmail(
+      team._id,
+      'user3@example.com',
+    );
     if (teamInvite == null) {
       throw new Error('TeamInvite not found');
     }
@@ -210,7 +216,7 @@ describe('team router', () => {
   });
 
   it('POST /team/invitation with different case reuses existing invitation', async () => {
-    const { agent } = await getLoggedInAgent(server);
+    const { agent, team } = await getLoggedInAgent(server);
 
     // Create invitation with lowercase email
     await agent
@@ -221,9 +227,10 @@ describe('team router', () => {
       })
       .expect(200);
 
-    const firstInvite = await TeamInvite.findOne({
-      email: 'casesensitive@example.com',
-    });
+    const firstInvite = await invites().getByTeamEmail(
+      team._id,
+      'casesensitive@example.com',
+    );
     expect(firstInvite).not.toBeNull();
     const firstToken = firstInvite!.token;
 
@@ -237,16 +244,17 @@ describe('team router', () => {
       .expect(200);
 
     // Should reuse the same invitation (same token)
-    const secondInvite = await TeamInvite.findOne({
-      email: 'casesensitive@example.com',
-    });
+    const secondInvite = await invites().getByTeamEmail(
+      team._id,
+      'casesensitive@example.com',
+    );
     expect(secondInvite).not.toBeNull();
     expect(secondInvite!.token).toBe(firstToken);
 
     // Should only have one invitation in the database
-    const allInvites = await TeamInvite.find({
-      email: 'casesensitive@example.com',
-    });
+    const allInvites = (await invites().listByTeam(team._id)).filter(
+      i => i.email === 'casesensitive@example.com',
+    );
     expect(allInvites).toHaveLength(1);
   });
 
@@ -254,7 +262,7 @@ describe('team router', () => {
     const { agent, team } = await getLoggedInAgent(server);
 
     // Create a user with lowercase email
-    await User.create({
+    await seedUser({
       email: 'existinguser@example.com',
       team: team.id,
     });
@@ -320,7 +328,7 @@ describe('team router', () => {
   it('DELETE /team/member/:userId removes a user', async () => {
     const { agent, team } = await getLoggedInAgent(server);
 
-    const user1 = await User.create({
+    const user1 = await seedUser({
       email: 'user1@example.com',
       team: team.id,
     });
@@ -338,13 +346,13 @@ describe('team router', () => {
     const res = await agent.delete(`/team/member/${user._id}`).expect(400);
 
     expect(res.body.message).toBe('Cannot remove the last team member');
-    expect(await User.findById(user._id)).not.toBeNull();
+    expect(await findUser(user._id)).not.toBeNull();
   });
 
   it('DELETE /team/member/:userId updates alerts created by the removed user', async () => {
     const { agent, team, user } = await getLoggedInAgent(server);
 
-    const user1 = await User.create({
+    const user1 = await seedUser({
       email: 'user1@example.com',
       team: team.id,
     });
@@ -382,7 +390,7 @@ describe('team router', () => {
     const alertAfterUserDeletion = await Alert.findById(alert._id);
     expect(alertAfterUserDeletion).not.toBeNull();
     expect(alertAfterUserDeletion?.createdBy?.toString()).toEqual(
-      user.id.toString(),
+      user._id.toString(),
     );
 
     // Ensure alert in another team is not modified
@@ -398,11 +406,9 @@ describe('team router', () => {
   it('DELETE /team/invitation/:teamInviteId', async () => {
     const { agent, team } = await getLoggedInAgent(server);
 
-    const invite = await TeamInvite.create({
+    const invite = await invites().getOrCreate(team._id, {
       email: 'fake_invite@example.com',
       name: 'Fake Invite',
-      teamId: team.id,
-      token: 'fake_token',
     });
 
     await agent.delete(`/team/invitation/${invite._id}`).expect(200);
@@ -417,16 +423,14 @@ describe('team router', () => {
   it('DELETE /team/invitation/:teamInviteId will not touch another team', async () => {
     const { agent } = await getLoggedInAgent(server);
 
-    const otherTeamInvite = await TeamInvite.create({
-      email: 'other_team@example.com',
-      name: 'Other Team Invite',
-      teamId: new ObjectId(),
-      token: 'other_team_token',
-    });
+    const otherTeamInvite = await invites().getOrCreate(
+      new ObjectId().toString(),
+      { email: 'other_team@example.com', name: 'Other Team Invite' },
+    );
 
     await agent.delete(`/team/invitation/${otherTeamInvite._id}`).expect(404);
 
-    expect(await TeamInvite.findById(otherTeamInvite._id)).not.toBeNull();
+    expect(await invites().getById(otherTeamInvite._id)).not.toBeNull();
   });
 
   it('PATCH /team/apiKey', async () => {
@@ -503,12 +507,12 @@ describe('team router', () => {
     it('hides other teams keys', async () => {
       const { agent } = await getLoggedInAgent(server);
       // OSS allows a single team, so plant a key under a different team id.
-      const other = await User.create({
+      const other = await seedUser({
         team: new mongoose.Types.ObjectId(),
         email: 'sa@service-accounts.hyperdx.invalid',
         name: 'other team',
         isVirtual: true,
-        createdBy: new mongoose.Types.ObjectId(),
+        createdBy: new mongoose.Types.ObjectId().toString(),
       });
       const list = await agent.get('/team/api-keys').expect(200);
       expect(list.body.data).toHaveLength(0);
@@ -517,7 +521,7 @@ describe('team router', () => {
         .send({ description: 'mine now' })
         .expect(404);
       await agent.delete(`/team/api-keys/${other._id}`).expect(404);
-      expect((await User.findById(other._id))?.revokedAt).toBeUndefined();
+      expect((await findUser(other._id))?.revokedAt).toBeUndefined();
     });
 
     it('keeps working after the creator is deleted', async () => {
@@ -526,10 +530,13 @@ describe('team router', () => {
         .post('/team/api-keys')
         .send(body)
         .expect(200);
-      await User.deleteOne({ _id: user._id });
+      await getMetadataStore().users.remove(user._id);
 
-      const key = await User.findById(created.id).populate('createdBy');
-      expect(key?.createdBy).toBeNull();
+      const key = await findUser(created.id);
+      const displays = await getMetadataStore().users.getDisplay([
+        key?.createdBy,
+      ]);
+      expect(displays.size).toBe(0);
       await getAgent(server)
         .get('/api/v2')
         .set('Authorization', `Bearer ${created.key}`)
@@ -556,12 +563,9 @@ describe('team router', () => {
         .expect(200);
       // Give the service account the signed-in user's password hash, so a
       // correct password is presented and only the service-account check stops it.
-      const human = await User.findById(user._id).select('+hash +salt');
-      const account = await User.findByIdAndUpdate(
-        created.id,
-        { hash: human?.get('hash'), salt: human?.get('salt') },
-        { new: true },
-      );
+      const human = await getUserDoc(user._id);
+      await patchUser(created.id, { hash: human?.hash });
+      const account = await findUser(created.id);
 
       const res = await getAgent(server)
         .post('/login/password')

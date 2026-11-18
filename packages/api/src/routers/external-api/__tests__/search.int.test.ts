@@ -10,10 +10,10 @@ import {
   getLoggedInAgent,
   getServer,
 } from '@/fixtures';
+import type { IUser } from '@/metadata/schemas/user';
 import Connection from '@/models/connection';
 import type { ISource } from '@/models/source';
 import { Source } from '@/models/source';
-import type { IUser } from '@/models/user';
 
 const DEFAULT_END_TIME = Math.floor(Date.now() / 60000) * 60000;
 const DEFAULT_START_TIME = DEFAULT_END_TIME - 3600 * 1000;

@@ -1,13 +1,14 @@
-import {
-  isMetadataConfigured,
-  loadMetadataConfig,
-} from '@/metadata/couchbase/config';
+import { loadMetadataConfig } from '@/metadata/couchbase/config';
 import {
   CouchbaseMetadataStore,
   type StoreLogger,
 } from '@/metadata/couchbase/store';
 import { MetadataUnavailableError } from '@/metadata/errors';
-import type { MetadataReadiness, MetadataStore } from '@/metadata/types';
+import type {
+  MetaCollection,
+  MetadataReadiness,
+  MetadataStore,
+} from '@/metadata/types';
 
 export * from '@/metadata/errors';
 export * from '@/metadata/ids';
@@ -35,14 +36,19 @@ export function metadataReadiness(): MetadataReadiness {
   return store?.readiness() ?? DISABLED;
 }
 
+/** True when /ready may pass: identity lives here since C1. */
+export function isMetadataReady(): boolean {
+  return metadataReadiness().ready;
+}
+
 /**
- * True when /ready may pass. Until C1 moves the first entity, an API without
- * CBT_METADATA_* credentials runs with the store disabled and is not held
- * back by it; a configured store must be ready.
+ * Throws MetadataConfigError naming the missing or malformed CBT_METADATA_*
+ * variable. Called at startup before anything else connects (fail fast).
  */
-export function isMetadataReadyOrDisabled(): boolean {
-  const r = metadataReadiness();
-  return r.ready || r.state === 'disabled';
+export function assertMetadataConfig(
+  env: Record<string, string | undefined> = process.env,
+): void {
+  loadMetadataConfig(env);
 }
 
 export async function startMetadataStore(
@@ -53,19 +59,35 @@ export async function startMetadataStore(
   } = {},
 ): Promise<void> {
   const env = o.env ?? process.env;
-  if (!isMetadataConfigured(env)) {
-    o.logger?.warn(
-      {},
-      'Metadata store disabled: set CBT_METADATA_USER and CBT_METADATA_PASSWORD',
-    );
-    return;
-  }
-  const next = new CouchbaseMetadataStore(loadMetadataConfig(env), {
+  // Throws MetadataConfigError naming the missing variable (fail fast, C1).
+  const cfg = loadMetadataConfig(env);
+  // Integration fixtures may have started one already; never leak it.
+  await store?.close();
+  const next = new CouchbaseMetadataStore(cfg, {
     logger: o.logger,
     appVersion: o.appVersion,
   });
   store = next;
   await next.start();
+}
+
+/** Collections migrated off Mongo so far; integration tests empty these. */
+export const MIGRATED_COLLECTIONS = [
+  'teams',
+  'users',
+  'team_invites',
+  'unique_keys',
+  'sessions',
+] as const satisfies readonly MetaCollection[];
+
+/** Integration tests only: empties the migrated collections. */
+export async function clearMetadataForTests(): Promise<void> {
+  if (!store) return;
+  if (store instanceof CouchbaseMetadataStore) {
+    await store.clearForTests(MIGRATED_COLLECTIONS);
+  } else if ('reset' in store && typeof store.reset === 'function') {
+    store.reset();
+  }
 }
 
 export async function closeMetadataStore(): Promise<void> {

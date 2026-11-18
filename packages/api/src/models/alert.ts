@@ -8,7 +8,6 @@ export { AlertThresholdType } from '@couchbase-traces/common-utils/dist/types';
 import mongoose, { Schema } from 'mongoose';
 
 import type { ObjectId } from '.';
-import Team from './team';
 
 export enum AlertState {
   ALERT = 'ALERT',
@@ -194,11 +193,9 @@ const AlertSchema = new Schema<IAlert>(
     },
     team: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: Team.modelName,
     },
     createdBy: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: 'User',
       required: false,
     },
 
@@ -261,7 +258,6 @@ const AlertSchema = new Schema<IAlert>(
       type: {
         by: {
           type: mongoose.Schema.Types.ObjectId,
-          ref: 'User',
           required: false,
         },
         at: {

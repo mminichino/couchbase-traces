@@ -7,6 +7,17 @@ import logger from '@/utils/logger';
 
 export type ObjectId = mongoose.Types.ObjectId;
 
+/**
+ * Teams and users live in the metadata store under 24-hex string ids (D2);
+ * Mongo-resident documents keep referencing them as ObjectIds until their own
+ * entity moves. Those ref paths carry no Mongoose `ref`, so they can't be
+ * populated; read users through loadUserDisplays instead.
+ */
+export type IdRef = string | ObjectId;
+
+export const toObjectId = (id: IdRef): ObjectId =>
+  typeof id === 'string' ? new mongoose.Types.ObjectId(id) : id;
+
 // Connection-lifecycle events were log-only. A counter keyed by the (bounded)
 // event name makes flapping/reconnect storms visible on a dashboard and
 // alertable (see agent_docs/observability.md).

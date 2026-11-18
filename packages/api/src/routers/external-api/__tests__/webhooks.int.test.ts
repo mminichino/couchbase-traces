@@ -3,9 +3,9 @@ import { ObjectId } from 'mongodb';
 import request, { SuperAgentTest } from 'supertest';
 
 import { getLoggedInAgent, getServer } from '@/fixtures';
+import type { ITeam } from '@/metadata/schemas/team';
+import type { IUser } from '@/metadata/schemas/user';
 import Alert, { AlertSource, AlertState } from '@/models/alert';
-import { ITeam } from '@/models/team';
-import { IUser } from '@/models/user';
 import Webhook from '@/models/webhook';
 
 const WEBHOOKS_BASE_URL = '/api/v2/webhooks';

@@ -2,10 +2,11 @@ import request, { SuperAgentTest } from 'supertest';
 
 import { createOrgApiKey } from '@/controllers/orgApiKey';
 import { getLoggedInAgent, getServer } from '@/fixtures';
+import { getMetadataStore } from '@/metadata';
+import type { ITeam } from '@/metadata/schemas/team';
+import type { IUser } from '@/metadata/schemas/user';
+import { findUser, getUserDoc, seedUser } from '@/metadata/testing/seed';
 import Alert from '@/models/alert';
-import { ITeam } from '@/models/team';
-import User from '@/models/user';
-import { IUser } from '@/models/user';
 
 const TEAM_BASE_URL = '/api/v2/team';
 
@@ -136,8 +137,11 @@ describe('External API v2 Team', () => {
     const withKey = (key: string, req: request.Test) =>
       req.set('Authorization', `Bearer ${key}`);
 
+    const serviceAccounts = () =>
+      getMetadataStore().users.listOrgKeys(team._id);
+
     const createMember = () =>
-      User.create({ email: 'member@example.com', team: team._id });
+      seedUser({ email: 'member@example.com', team: team._id });
 
     it('lists members without the key or anyone marked as the caller', async () => {
       const key = await createKey();
@@ -185,10 +189,10 @@ describe('External API v2 Team', () => {
         key,
         agent.delete(`${TEAM_BASE_URL}/member/${member._id}`),
       ).expect(200);
-      expect(await User.findById(member._id)).toBeNull();
+      expect(await findUser(member._id)).toBeNull();
       const stored = await Alert.findById(alert._id).lean();
-      const account = await User.findOne({ isVirtual: true });
-      expect(stored?.createdBy).toEqual(account?._id);
+      const [account] = await serviceAccounts();
+      expect(stored?.createdBy?.toString()).toEqual(account?._id);
     });
 
     it('stops a key removing the last member', async () => {
@@ -199,8 +203,8 @@ describe('External API v2 Team', () => {
       ).expect(400);
       expect(res.body.message).toBe('Cannot remove the last team member');
       // The member is deleted then put back, and must keep their credentials.
-      const restored = await User.findById(user._id).select('+hash +salt');
-      expect(restored?.get('hash')).toBeTruthy();
+      const restored = await getUserDoc(user._id);
+      expect(restored?.hash).toBeTruthy();
       expect(restored?.accessKey).toBe(user.accessKey);
     });
 
@@ -214,10 +218,7 @@ describe('External API v2 Team', () => {
       );
       expect(results.map(r => r.status).sort()).not.toEqual([200, 200]);
       expect(
-        await User.countDocuments({
-          team: team._id,
-          isVirtual: { $ne: true },
-        }),
+        await getMetadataStore().users.countPeople(team._id),
       ).toBeGreaterThan(0);
     });
 
@@ -231,7 +232,7 @@ describe('External API v2 Team', () => {
 
     it('hides service accounts from members and member removal', async () => {
       await createKey();
-      const account = await User.findOne({ isVirtual: true });
+      const [account] = await serviceAccounts();
 
       const list = await authRequest('get', `${TEAM_BASE_URL}/members`).expect(
         200,
@@ -254,8 +255,8 @@ describe('External API v2 Team', () => {
         'delete',
         `${TEAM_BASE_URL}/member/${account?._id}`,
       ).expect(404);
-      expect(await User.findById(account?._id)).not.toBeNull();
-      expect((await Alert.findById(alert._id))?.createdBy).toEqual(
+      expect(await findUser(account?._id)).not.toBeNull();
+      expect((await Alert.findById(alert._id))?.createdBy?.toString()).toEqual(
         account?._id,
       );
     });

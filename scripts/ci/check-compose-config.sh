@@ -25,6 +25,7 @@ trap 'rm -f "$tmp"' EXIT
   echo "CBT_COUCHBASE_QUERY_PASSWORD=$(openssl rand -hex 12)"
   echo "CBT_COUCHBASE_INGEST_PASSWORD=$(openssl rand -hex 12)"
   echo "CBT_COUCHBASE_MONITOR_PASSWORD=$(openssl rand -hex 12)"
+  echo "CBT_METADATA_PASSWORD=$(openssl rand -hex 12)"
   echo "CBT_INGEST_TOKEN=$(openssl rand -hex 24)"
   echo "CBT_API_KEY=$(openssl rand -hex 24)"
 } >"$tmp"

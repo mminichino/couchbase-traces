@@ -33,7 +33,6 @@ export default mongoose.model<IDashboard>(
       // permits.
       team: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'Team',
         immutable: true,
       },
       tags: {
@@ -53,13 +52,11 @@ export default mongoose.model<IDashboard>(
       // may only change `updatedBy`.
       createdBy: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'User',
         required: false,
         immutable: true,
       },
       updatedBy: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'User',
         required: false,
       },
       provisioned: { type: Boolean, default: false },

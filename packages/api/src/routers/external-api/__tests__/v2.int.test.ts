@@ -1,8 +1,8 @@
 import { createOrgApiKey } from '@/controllers/orgApiKey';
 import * as userController from '@/controllers/user';
 import { getLoggedInAgent, getServer } from '@/fixtures';
+import { findUser, patchUser } from '@/metadata/testing/seed';
 import Dashboard from '@/models/dashboard';
-import User from '@/models/user';
 
 describe('external api v2', () => {
   const server = getServer();
@@ -83,16 +83,13 @@ describe('external api v2', () => {
 
     it('rejects expired and revoked keys', async () => {
       const { agent, doc, key } = await setup();
-      await User.updateOne(
-        { _id: doc._id },
-        { expiresAt: new Date(Date.now() - 1000) },
-      );
+      await patchUser(doc._id, { expiresAt: new Date(Date.now() - 1000) });
       await agent
         .get('/api/v2')
         .set('Authorization', `Bearer ${key}`)
         .expect(401);
 
-      await User.updateOne({ _id: doc._id }, { revokedAt: new Date() });
+      await patchUser(doc._id, { revokedAt: new Date() });
       await agent
         .get('/api/v2')
         .set('Authorization', `Bearer ${key}`)
@@ -108,7 +105,7 @@ describe('external api v2', () => {
       let lastUsedAt: Date | null | undefined = null;
       for (let i = 0; i < 20 && lastUsedAt == null; i++) {
         await new Promise(r => setTimeout(r, 50));
-        lastUsedAt = (await User.findById(doc._id))?.lastUsedAt;
+        lastUsedAt = (await findUser(doc._id))?.lastUsedAt;
       }
       expect(lastUsedAt).toBeInstanceOf(Date);
     });
@@ -126,7 +123,7 @@ describe('external api v2', () => {
       expect(ok.status).toBe(200);
       expect(ok.text).toContain('cbt_save_alert');
 
-      await User.updateOne({ _id: doc._id }, { revokedAt: new Date() });
+      await patchUser(doc._id, { revokedAt: new Date() });
       expect((await listTools()).status).toBe(401);
     });
 

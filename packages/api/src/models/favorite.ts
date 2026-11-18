@@ -17,12 +17,10 @@ const favoriteSchema = new Schema<IFavorite>(
     user: {
       type: mongoose.Schema.Types.ObjectId,
       required: true,
-      ref: 'User',
     },
     team: {
       type: mongoose.Schema.Types.ObjectId,
       required: true,
-      ref: 'Team',
     },
     resourceType: {
       type: String,

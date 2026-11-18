@@ -59,7 +59,7 @@ const MOCK_PROMQL_SOURCE = {
   timestampValueExpression: 'timestamp',
 } as import('@/models/source').ISourceInput;
 
-const createTestConnection = (team: Types.ObjectId, id: string) =>
+const createTestConnection = (team: string | Types.ObjectId, id: string) =>
   Connection.create({
     kind: 'couchbase',
     _id: id,

@@ -13,16 +13,21 @@
  * The Mongo URI defaults to the dev slot of the current git worktree, from
  * scripts/slots.sh. Override with --mongo-uri, MONGO_URI, or CBT_DEV_SLOT.
  * The dev stack must be up (`yarn dev`) and registered once, since
- * the script attaches everything to the existing team and log source.
+ * the script attaches everything to the existing team and log source. The
+ * team is read from the metadata store, so CBT_METADATA_* must be set too.
  */
 import { formatTileAlertDisplayName } from '@couchbase-traces/common-utils/dist/alerts';
 import { DisplayType } from '@couchbase-traces/common-utils/dist/types';
 import mongoose from 'mongoose';
 
+import {
+  closeMetadataStore,
+  getMetadataStore,
+  startMetadataStore,
+} from '@/metadata';
 import Alert, { AlertSource, AlertState } from '@/models/alert';
 import Dashboard from '@/models/dashboard';
 import { SavedSearch } from '@/models/savedSearch';
-import Team from '@/models/team';
 import Webhook, { WebhookService } from '@/models/webhook';
 
 // Several schemas rely on empty strings satisfying `required` (an empty
@@ -276,13 +281,13 @@ async function purge(tag: string) {
 }
 
 async function seed(count: number, tag: string) {
-  const team = await Team.findOne({}).lean();
+  const team = await getMetadataStore().teams.getOnly();
   if (team == null) {
     throw new Error(
       'No team found — register an account in the dev app first, then re-run.',
     );
   }
-  const teamId = team._id;
+  const teamId = new mongoose.Types.ObjectId(team._id);
 
   const source = await mongoose.connection
     .collection('sources')
@@ -456,6 +461,8 @@ async function main() {
 
   console.log(`Connecting to ${mongoUri}`);
   await mongoose.connect(mongoUri, { serverSelectionTimeoutMS: 5000 });
+  // Teams live in the metadata store; reads CBT_METADATA_* from the env.
+  await startMetadataStore();
   try {
     if (args.purge) {
       await purge(args.tag);
@@ -463,6 +470,7 @@ async function main() {
       await seed(args.count, args.tag);
     }
   } finally {
+    await closeMetadataStore();
     await mongoose.disconnect();
   }
 }

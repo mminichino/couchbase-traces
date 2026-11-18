@@ -14,7 +14,7 @@ import {
 } from '@/metadata/errors';
 import {
   getMetadataStore,
-  isMetadataReadyOrDisabled,
+  isMetadataReady,
   metadataReadiness,
   setMetadataStoreForTests,
   startMetadataStore,
@@ -101,10 +101,12 @@ describe('CouchbaseMetadataStore', () => {
 describe('metadata index', () => {
   afterEach(() => setMetadataStoreForTests(null));
 
-  it('is disabled without credentials and does not hold back /ready', async () => {
-    await startMetadataStore({ env: {} });
+  it('fails fast without credentials and holds back /ready', async () => {
+    await expect(
+      startMetadataStore({ env: { CBT_COUCHBASE_CONNSTR: 'couchbase://cb' } }),
+    ).rejects.toThrow('CBT_METADATA_USER is required');
     expect(metadataReadiness()).toEqual({ ready: false, state: 'disabled' });
-    expect(isMetadataReadyOrDisabled()).toBe(true);
+    expect(isMetadataReady()).toBe(false);
     expect(() => getMetadataStore()).toThrow(MetadataUnavailableError);
   });
 
@@ -112,7 +114,7 @@ describe('metadata index', () => {
     const memory = createMemoryStore();
     setMetadataStoreForTests(memory);
     expect(getMetadataStore()).toBe(memory);
-    expect(isMetadataReadyOrDisabled()).toBe(true);
+    expect(isMetadataReady()).toBe(true);
   });
 });
 

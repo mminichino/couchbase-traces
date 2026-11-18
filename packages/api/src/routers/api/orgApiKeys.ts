@@ -13,7 +13,7 @@ import { processRequest, validateRequest } from 'zod-express-middleware';
 
 import {
   createOrgApiKey,
-  formatOrgApiKey,
+  formatOrgApiKeys,
   listOrgApiKeys,
   revokeOrgApiKey,
   updateOrgApiKeyDescription,
@@ -43,7 +43,7 @@ router.get(
   async (req, res: express.Response<OrgApiKeysApiResponse>, next) => {
     try {
       const keys = await listOrgApiKeys(getNonNullUserWithTeam(req).teamId);
-      res.json({ data: keys.map(formatOrgApiKey) });
+      res.json({ data: await formatOrgApiKeys(keys) });
     } catch (e) {
       next(e);
     }
@@ -57,9 +57,9 @@ router.post(
     try {
       const { teamId, userId } = getNonNullUserWithTeam(req);
       const { doc, key } = await createOrgApiKey(teamId, userId, req.body);
-      await doc.populate('createdBy', 'name email');
+      const [formatted] = await formatOrgApiKeys([doc]);
       orgApiKeyOperations.add(1, { operation: 'create' });
-      res.json({ ...formatOrgApiKey(doc), key });
+      res.json({ ...formatted, key });
     } catch (e) {
       next(e);
     }
@@ -83,7 +83,8 @@ router.patch(
         return res.sendStatus(404);
       }
       orgApiKeyOperations.add(1, { operation: 'update' });
-      res.json(formatOrgApiKey(doc));
+      const [formatted] = await formatOrgApiKeys([doc]);
+      res.json(formatted);
     } catch (e) {
       next(e);
     }

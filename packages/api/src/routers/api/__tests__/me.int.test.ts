@@ -12,8 +12,7 @@ import {
   makeTile,
   randomMongoId,
 } from '@/fixtures';
-import type { ObjectId } from '@/models';
-import User from '@/models/user';
+import { findUser, patchUser, seedUser } from '@/metadata/testing/seed';
 import Webhook, { WebhookService } from '@/models/webhook';
 
 describe('me router', () => {
@@ -46,10 +45,7 @@ describe('me router', () => {
     it('defaults onboardingData for users created before the field existed', async () => {
       const { agent, user } = await getLoggedInAgent(server);
       // Simulate a legacy document with no onboardingData subdocument.
-      await User.updateOne(
-        { _id: user._id },
-        { $unset: { onboardingData: '' } },
-      );
+      await patchUser(user._id, { onboardingData: undefined });
 
       const resp = await agent.get('/me').expect(200);
 
@@ -97,7 +93,7 @@ describe('me router', () => {
       expect(second.body.onboardingData.completedTasks).toEqual(['dashboard']);
 
       expect(
-        (await User.findById(user._id))?.onboardingData?.completedTasks,
+        (await findUser(user._id))?.onboardingData?.completedTasks,
       ).toEqual(['dashboard']);
     });
   });
@@ -109,10 +105,10 @@ describe('me router', () => {
   describe('onboarding task recording via product actions', () => {
     // Recording is fire-and-forget (not awaited by the handler), so the write
     // can land after the response. Poll rather than reading GET /me once.
-    const completedTasksFor = async (userId: ObjectId) =>
-      (await User.findById(userId))?.onboardingData?.completedTasks ?? [];
+    const completedTasksFor = async (userId: string) =>
+      (await findUser(userId))?.onboardingData?.completedTasks ?? [];
 
-    const waitForTask = async (userId: ObjectId, task: OnboardingTaskId) => {
+    const waitForTask = async (userId: string, task: OnboardingTaskId) => {
       for (let i = 0; i < 20; i++) {
         if ((await completedTasksFor(userId)).includes(task)) return true;
         await new Promise(r => setTimeout(r, 25));
@@ -212,10 +208,9 @@ describe('me router', () => {
 
       // Clear the task recorded by create so the update is the only thing that
       // could re-record it.
-      await User.updateOne(
-        { _id: user._id },
-        { $set: { 'onboardingData.completedTasks': [] } },
-      );
+      await patchUser(user._id, {
+        onboardingData: { completedTasks: [], isDismissed: false },
+      });
 
       await agent
         .put(`/alerts/${created.body.data._id}`)
@@ -280,7 +275,7 @@ describe('me router', () => {
         .expect(200);
       expect(resp.body.onboardingData.isDismissed).toBe(true);
 
-      expect((await User.findById(user._id))?.onboardingData?.isDismissed).toBe(
+      expect((await findUser(user._id))?.onboardingData?.isDismissed).toBe(
         true,
       );
 
@@ -289,7 +284,7 @@ describe('me router', () => {
         .patch('/me/onboarding/dismiss')
         .send({ isDismissed: false })
         .expect(200);
-      expect((await User.findById(user._id))?.onboardingData?.isDismissed).toBe(
+      expect((await findUser(user._id))?.onboardingData?.isDismissed).toBe(
         false,
       );
     });
@@ -309,7 +304,7 @@ describe('me router', () => {
 
       expect(resp.body.newAccessKey).toEqual(expect.any(String));
       expect(resp.body.newAccessKey).not.toEqual(user.accessKey);
-      expect((await User.findById(user._id))?.accessKey).toEqual(
+      expect((await findUser(user._id))?.accessKey).toEqual(
         resp.body.newAccessKey,
       );
     });
@@ -352,16 +347,14 @@ describe('me router', () => {
       const { agent, user } = await getLoggedInAgent(server);
       // Created directly rather than via /register/password, which is gated to
       // the first user. We only read the schema-defaulted accessKey off it.
-      const other = await User.create({
+      const other = await seedUser({
         email: 'other@example.com',
         team: user.team,
       });
 
       await agent.patch('/me/accessKey').expect(200);
 
-      expect((await User.findById(other._id))?.accessKey).toEqual(
-        other.accessKey,
-      );
+      expect((await findUser(other._id))?.accessKey).toEqual(other.accessKey);
     });
   });
 });

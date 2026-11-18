@@ -1,6 +1,7 @@
 import type { MetaCollection } from '@couchbase-traces/common-utils/dist/couchbase/metadataKeyspace';
 
 import type { Id } from './ids';
+import type { Repositories } from './repos';
 
 export type { Id, MetaCollection };
 export type TeamId = Id;
@@ -68,6 +69,35 @@ export interface MetaKv {
   touch(c: MetaCollection, key: string, expiry: Date): Promise<boolean>;
 }
 
+export type FindScalar = string | number | boolean;
+
+/**
+ * One equality-filtered read over a collection. Repositories build these
+ * from fixed shapes (never from request input), and each shape is served by
+ * an index in METADATA_INDEXES. `present` lets an index on a field serve a
+ * query that has no equality filter on it.
+ */
+export type FindSpec = {
+  where?: Record<string, FindScalar>;
+  present?: string[];
+  orderBy?: { field: string; dir: 'asc' | 'desc' }[];
+  /** Hard cap 1000. */
+  limit?: number;
+};
+
+export type Found<T> = { key: string; value: T };
+
+/**
+ * Secondary reads both backends implement: SQL++ over GSI on Couchbase
+ * (couchbase/find.ts, request_plus), a scan in memory (testing/memoryFind.ts).
+ */
+export interface MetaFind {
+  find<T>(c: MetaCollection, spec: FindSpec): Promise<Found<T>[]>;
+  count(c: MetaCollection, spec: Omit<FindSpec, 'orderBy'>): Promise<number>;
+}
+
+export const FIND_LIMIT_MAX = 1000;
+
 export type Lease = {
   name: string;
   owner: string;
@@ -100,11 +130,12 @@ export type MetadataReadiness = {
 };
 
 /**
- * Grows by one entity slice per phase (C1–C4); C0 exposes the shared
- * primitives only, so an unswitched entity cannot be half-used.
+ * Grows by one entity slice per phase (C1–C4), so an unswitched entity
+ * cannot be half-used. C1: teams, users, team invites.
  */
-export interface MetadataStore {
+export interface MetadataStore extends Repositories {
   kv: MetaKv;
+  find: MetaFind;
   locks: LockService;
   readiness(): MetadataReadiness;
   close(): Promise<void>;

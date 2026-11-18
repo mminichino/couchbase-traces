@@ -1,18 +1,19 @@
 import passport from 'passport';
-import { Strategy as LocalStrategy } from 'passport-local';
 
 import { findUserById } from '@/controllers/user';
-import type { UserDocument } from '@/models/user';
-import User from '@/models/user';
+import { getMetadataStore } from '@/metadata';
+import { createLocalStrategy } from '@/metadata/auth/localStrategy';
 
 import logger from './logger';
 
 passport.serializeUser(function (user, done) {
-  done(null, (user as any)._id);
+  done(null, user._id);
 });
 
 passport.deserializeUser(function (id: string, done) {
-  findUserById(id)
+  // Deferred so an unavailable store reaches `done` instead of throwing.
+  Promise.resolve()
+    .then(() => findUserById(id))
     .then(user => {
       // A session can never belong to a service account.
       if (user == null || user.isVirtual) {
@@ -23,47 +24,11 @@ passport.deserializeUser(function (id: string, done) {
         // "no such user" signal: the request continues unauthenticated.
         return done(null, false);
       }
-      done(null, user as UserDocument);
+      done(null, user);
     })
     .catch(done);
 });
 
-// Use local passport strategy via passport-local-mongoose plugin
-const passportLocalMongooseAuthenticate = (User as any).authenticate();
-
-passport.use(
-  new LocalStrategy(
-    {
-      usernameField: 'email',
-    },
-    async function (username, password, done) {
-      try {
-        const { user, error } = await passportLocalMongooseAuthenticate(
-          username,
-          password,
-        );
-        if (user?.isVirtual) {
-          logger.info({
-            message: `Login for "${username}" rejected, service account`,
-            type: 'user_login',
-            authType: 'password',
-          });
-          return done(null, false);
-        }
-        if (error) {
-          logger.info({
-            message: `Login for "${username}" failed, ${error}"`,
-            type: 'user_login',
-            authType: 'password',
-          });
-        }
-        return done(null, user, error);
-      } catch (err) {
-        logger.error({ err, username }, 'Login failed with error');
-        return done(err);
-      }
-    },
-  ),
-);
+passport.use(createLocalStrategy(() => getMetadataStore().users, logger));
 
 export default passport;

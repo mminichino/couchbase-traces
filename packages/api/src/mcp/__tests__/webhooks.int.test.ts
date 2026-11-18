@@ -2,8 +2,8 @@ import { Client } from '@modelcontextprotocol/sdk/client/index.js';
 
 import { getLoggedInAgent, getServer } from '@/fixtures';
 import { McpContext } from '@/mcp/tools/types';
+import { seedTeam } from '@/metadata/testing/seed';
 import Alert from '@/models/alert';
-import Team from '@/models/team';
 import Webhook, { WebhookService } from '@/models/webhook';
 
 import { callTool, createTestClient, getFirstText } from './mcpTestUtils';
@@ -349,7 +349,7 @@ describe('MCP Webhook Tools', () => {
     });
 
     it('does not delete a webhook owned by another team', async () => {
-      const otherTeam = await Team.create({ name: 'Other Team' });
+      const otherTeam = await seedTeam({ name: 'Other Team' });
       const otherWebhook = await Webhook.create({
         team: otherTeam._id,
         name: 'Other Team Hook',

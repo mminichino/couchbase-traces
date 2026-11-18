@@ -44,14 +44,6 @@ function bool(env: Env, name: string, fallback: boolean): boolean {
   throw new MetadataConfigError(`${name} must be true or false`);
 }
 
-/**
- * True when the metadata store has credentials. Until C1 moves the first
- * entity, an API without them runs with the store disabled.
- */
-export function isMetadataConfigured(env: Env = process.env): boolean {
-  return Boolean(env.CBT_METADATA_USER && env.CBT_METADATA_PASSWORD);
-}
-
 export function loadMetadataConfig(env: Env = process.env): MetadataConfig {
   const connstr = env.CBT_METADATA_CONNSTR || env.CBT_COUCHBASE_CONNSTR;
   if (!connstr) {

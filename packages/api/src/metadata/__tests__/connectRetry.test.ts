@@ -1,8 +1,5 @@
 import { connectOptions, connectWithRetry } from '@/metadata/couchbase/cluster';
-import {
-  isMetadataConfigured,
-  loadMetadataConfig,
-} from '@/metadata/couchbase/config';
+import { loadMetadataConfig } from '@/metadata/couchbase/config';
 import {
   MetadataConfigError,
   MetadataUnavailableError,
@@ -55,11 +52,6 @@ describe('loadMetadataConfig', () => {
   ])('rejects bad config %#', (env, message) => {
     expect(() => loadMetadataConfig(env)).toThrow(MetadataConfigError);
     expect(() => loadMetadataConfig(env)).toThrow(message);
-  });
-
-  it('is configured only with both credentials', () => {
-    expect(isMetadataConfigured(base)).toBe(true);
-    expect(isMetadataConfigured({ CBT_METADATA_USER: 'u' })).toBe(false);
   });
 
   it('keeps transaction records in txn_meta', () => {

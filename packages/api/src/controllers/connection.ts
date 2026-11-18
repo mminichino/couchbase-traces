@@ -1,6 +1,8 @@
 import type { CouchbaseConnectionConfig } from '@couchbase-traces/common-utils/dist/couchbase/node';
+import type { ConnectionSchema } from '@couchbase-traces/common-utils/dist/types';
+import type { z } from 'zod';
 
-import type { ObjectId } from '@/models';
+import { type ObjectId, toObjectId } from '@/models';
 import Connection, { IConnection } from '@/models/connection';
 import { objectIdSchema } from '@/utils/zod';
 
@@ -117,6 +119,30 @@ export function updateConnection(
       new: true,
     },
   );
+}
+
+/**
+ * Shared by the internal and external PUT handlers. An empty password keeps
+ * the stored one; optional secrets are only written when set; a null
+ * `managementPort` clears the stored port.
+ */
+export function buildCouchbaseConnectionUpdate(
+  team: string,
+  body: z.infer<typeof ConnectionSchema>,
+  storedPassword: string,
+) {
+  const { tlsCaCertificate, monitorPassword, managementPort, ...rest } = body;
+  const update = {
+    ...rest,
+    team: toObjectId(team),
+    kind: 'couchbase' as const,
+    password: body.password || storedPassword,
+    ...(tlsCaCertificate ? { tlsCaCertificate } : {}),
+    ...(monitorPassword ? { monitorPassword } : {}),
+    ...(typeof managementPort === 'number' ? { managementPort } : {}),
+  };
+  const unsetFields = managementPort === null ? ['managementPort'] : [];
+  return { update, unsetFields };
 }
 
 export function deleteConnection(team: string, connectionId: string) {

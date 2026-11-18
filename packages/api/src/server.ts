@@ -9,7 +9,11 @@ import { serializeError } from 'serialize-error';
 import app from '@/api-app';
 import * as config from '@/config';
 import { LOCAL_APP_TEAM } from '@/controllers/team';
-import { closeMetadataStore, startMetadataStore } from '@/metadata';
+import {
+  assertMetadataConfig,
+  closeMetadataStore,
+  startMetadataStore,
+} from '@/metadata';
 import { runStartupMigrations } from '@/migrations';
 import { connectDBWithRetry, mongooseConnection } from '@/models';
 import opampApp from '@/opamp/app';
@@ -133,6 +137,8 @@ export default class Server {
     // even while the Mongo connect below is still retrying.
     await verifyTokenEncryption();
     verifySessionSecret();
+    // Sessions, users, and teams live in the metadata bucket since C1.
+    assertMetadataConfig();
 
     // The HTTP servers above are already listening so that `/health`
     // (liveness) responds while we connect; `/ready` (readiness) stays 503
@@ -142,8 +148,8 @@ export default class Server {
     await connectDBWithRetry();
 
     // Both stores during the Mongo elimination (plan C0–C4). Retries the
-    // connection forever like Mongo; rejects only on bad config or a schema
-    // written by a newer release. Disabled without CBT_METADATA_* credentials.
+    // connection forever like Mongo; rejects on bad config (including missing
+    // CBT_METADATA_USER / CBT_METADATA_PASSWORD) or a newer schema.
     await startMetadataStore({ logger, appVersion: config.CODE_VERSION });
 
     await runStartupMigrations();

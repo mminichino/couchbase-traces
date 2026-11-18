@@ -26,6 +26,7 @@ import { serializeError } from 'serialize-error';
 
 import app from './api-app';
 import * as config from './config';
+import { closeMetadataStore, startMetadataStore } from './metadata';
 import { connectDB } from './models';
 import logger from './utils/logger';
 import { verifySessionSecret } from './utils/sessionSecret';
@@ -48,16 +49,23 @@ let dbReady: Promise<void> | null = null;
 
 function ensureDb(): Promise<void> {
   if (dbReady == null) {
-    dbReady = connectDB().catch(err => {
-      // Reset the cache so the next invocation re-attempts the connection
-      // rather than permanently rejecting with a stale error.
-      dbReady = null;
-      logger.error(
-        { err: serializeError(err) },
-        'Serverless API failed to connect to MongoDB',
-      );
-      throw err;
-    });
+    dbReady = Promise.all([
+      connectDB(),
+      startMetadataStore({ logger, appVersion: config.CODE_VERSION }),
+    ]).then(
+      () => undefined,
+      async err => {
+        // Reset the cache so the next invocation re-attempts the connection
+        // rather than permanently rejecting with a stale error.
+        dbReady = null;
+        await closeMetadataStore();
+        logger.error(
+          { err: serializeError(err) },
+          'Serverless API failed to connect to MongoDB or the metadata store',
+        );
+        throw err;
+      },
+    );
   }
   return dbReady;
 }

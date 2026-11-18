@@ -16,11 +16,11 @@ import {
   makeRawSqlTile,
   makeTile,
 } from '@/fixtures';
+import { seedUser } from '@/metadata/testing/seed';
 import Alert, { AlertSource } from '@/models/alert';
 import Dashboard from '@/models/dashboard';
 import PresetDashboardFilter from '@/models/presetDashboardFilter';
 import { Source } from '@/models/source';
-import User from '@/models/user';
 import Webhook, { WebhookDocument, WebhookService } from '@/models/webhook';
 
 const MOCK_DASHBOARD = {
@@ -184,7 +184,7 @@ describe('dashboard router', () => {
       .expect(200);
 
     // Create a second user on the same team
-    const secondUser = await User.create({
+    const secondUser = await seedUser({
       email: 'second@test.com',
       name: 'Second User',
       team: team._id,
@@ -2092,7 +2092,7 @@ describe('dashboard router', () => {
       it("rejects another team's source", async () => {
         const otherTeamSource = await createSource(
           SourceKind.Log,
-          new Types.ObjectId(),
+          new Types.ObjectId().toString(),
         );
 
         await agent

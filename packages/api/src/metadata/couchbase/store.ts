@@ -1,7 +1,8 @@
-import type { Cluster } from 'couchbase';
+import { type Cluster, DocumentNotFoundError, RangeScan } from 'couchbase';
 
-import { connectWithRetry } from '@/metadata/couchbase/cluster';
+import { collectionOf, connectWithRetry } from '@/metadata/couchbase/cluster';
 import type { MetadataConfig } from '@/metadata/couchbase/config';
+import { CouchbaseFind } from '@/metadata/couchbase/find';
 import { CouchbaseKv } from '@/metadata/couchbase/kv';
 import { probeTransactions } from '@/metadata/couchbase/tx';
 import {
@@ -11,11 +12,14 @@ import {
 } from '@/metadata/couchbase/verify';
 import { MetadataUnavailableError } from '@/metadata/errors';
 import { KvLockService } from '@/metadata/lock';
+import { createRepositories, type Repositories } from '@/metadata/repos';
 import { assertSchemaVersion } from '@/metadata/schemaVersion';
 import type {
   LockService,
+  MetaCollection,
   MetadataReadiness,
   MetadataStore,
+  MetaFind,
   MetaKv,
 } from '@/metadata/types';
 
@@ -44,20 +48,47 @@ const silent: StoreLogger = { info: () => {}, warn: () => {}, error: () => {} };
 export class CouchbaseMetadataStore implements MetadataStore {
   private cluster?: Cluster;
   private kvImpl?: CouchbaseKv;
+  private findImpl?: CouchbaseFind;
   private lockImpl?: LockService;
   private state: MetadataReadiness = { ready: false, state: 'connecting' };
   private readonly abort = new AbortController();
   private poll?: NodeJS.Timeout;
 
+  readonly teams: Repositories['teams'];
+  readonly users: Repositories['users'];
+  readonly teamInvites: Repositories['teamInvites'];
+
   constructor(
     private readonly cfg: MetadataConfig,
     private readonly deps: CouchbaseStoreDeps = {},
-  ) {}
+  ) {
+    // Getters, so a repository used before start() fails as unavailable.
+    // eslint-disable-next-line @typescript-eslint/no-this-alias
+    const self = this;
+    const repos = createRepositories({
+      get kv() {
+        return self.kv;
+      },
+      get find() {
+        return self.find;
+      },
+    });
+    this.teams = repos.teams;
+    this.users = repos.users;
+    this.teamInvites = repos.teamInvites;
+  }
 
   get kv(): MetaKv {
     if (!this.kvImpl)
       throw new MetadataUnavailableError('metadata not connected');
     return this.kvImpl;
+  }
+
+  get find(): MetaFind {
+    if (!this.findImpl) {
+      throw new MetadataUnavailableError('metadata not connected');
+    }
+    return this.findImpl;
   }
 
   get locks(): LockService {
@@ -95,6 +126,7 @@ export class CouchbaseMetadataStore implements MetadataStore {
         ),
     });
     this.kvImpl = new CouchbaseKv(this.cluster, this.cfg);
+    this.findImpl = new CouchbaseFind(this.cluster, this.cfg);
     this.lockImpl = new KvLockService(this.kvImpl);
     await assertSchemaVersion(this.kvImpl);
     await this.check();
@@ -144,6 +176,28 @@ export class CouchbaseMetadataStore implements MetadataStore {
       );
     }, this.deps.pollMs ?? 5000);
     this.poll.unref();
+  }
+
+  /**
+   * Integration-test reset. A KV range scan needs no primary index, which
+   * the metadata keyspace deliberately does not have.
+   */
+  async clearForTests(collections: readonly MetaCollection[]): Promise<void> {
+    const cluster = this.cluster;
+    if (!cluster) throw new MetadataUnavailableError('metadata not connected');
+    await Promise.all(
+      collections.map(async name => {
+        const coll = collectionOf(cluster, this.cfg, name);
+        const found = await coll.scan(new RangeScan(), { idsOnly: true });
+        await Promise.all(
+          found.map(r =>
+            coll.remove(r.id).catch(err => {
+              if (!(err instanceof DocumentNotFoundError)) throw err;
+            }),
+          ),
+        );
+      }),
+    );
   }
 
   async close(): Promise<void> {

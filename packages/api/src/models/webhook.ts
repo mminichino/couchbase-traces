@@ -34,7 +34,7 @@ export interface IWebhook {
 
 const WebhookSchema = new Schema<IWebhook>(
   {
-    team: { type: Schema.Types.ObjectId, ref: 'Team' },
+    team: { type: Schema.Types.ObjectId },
     service: {
       type: String,
       enum: Object.values(WebhookService),

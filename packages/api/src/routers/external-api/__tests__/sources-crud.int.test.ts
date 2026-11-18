@@ -10,10 +10,10 @@ import {
   getLoggedInAgent,
   getServer,
 } from '@/fixtures';
+import type { ITeam } from '@/metadata/schemas/team';
+import type { IUser } from '@/metadata/schemas/user';
 import Connection, { IConnection } from '@/models/connection';
 import { LogSource, Source, TraceSource } from '@/models/source';
-import { ITeam } from '@/models/team';
-import { IUser } from '@/models/user';
 
 describe('External API v2 Sources CRUD', () => {
   const server = getServer();
