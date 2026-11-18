@@ -33,6 +33,7 @@ describe('External API v2 Sources CRUD', () => {
     user = result.user;
 
     connection = await Connection.create({
+      kind: 'couchbase',
       team: team._id,
       name: 'Default',
       host: config.CLICKHOUSE_HOST,
@@ -102,6 +103,7 @@ describe('External API v2 Sources CRUD', () => {
 
   const createOtherTeamConnection = (otherTeamId: mongoose.Types.ObjectId) =>
     Connection.create({
+      kind: 'couchbase',
       team: otherTeamId,
       name: 'Other Team Connection',
       host: config.CLICKHOUSE_HOST,
@@ -299,7 +301,7 @@ describe('External API v2 Sources CRUD', () => {
     const promqlSourceBody = () => ({
       kind: SourceKind.Promql,
       name: 'Prometheus Metrics',
-      from: { databaseName: 'default', tableName: 'default' },
+      from: { databaseName: DEFAULT_DATABASE, tableName: 'default' },
       timestampValueExpression: 'timestamp',
       connection: connection._id.toString(),
     });
@@ -309,8 +311,9 @@ describe('External API v2 Sources CRUD', () => {
         .send(promqlSourceBody())
         .expect(400);
 
-      expect(response.body.message).toBe(
-        'PromQL sources are no longer supported.',
+      // Zod drops `promql` from the kind discriminator before rejectPromqlBody.
+      expect(String(response.body.message)).toMatch(
+        /PromQL sources are no longer supported|Invalid discriminator value/,
       );
       expect(await Source.findOne({ team: team._id })).toBeNull();
     });
@@ -325,8 +328,8 @@ describe('External API v2 Sources CRUD', () => {
         .send(promqlSourceBody())
         .expect(400);
 
-      expect(response.body.message).toBe(
-        'PromQL sources are no longer supported.',
+      expect(String(response.body.message)).toMatch(
+        /PromQL sources are no longer supported|Invalid discriminator value/,
       );
       expect((await Source.findById(logSource._id))!.kind).toBe(SourceKind.Log);
     });

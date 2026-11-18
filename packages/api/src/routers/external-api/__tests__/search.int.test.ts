@@ -37,6 +37,7 @@ describe('External API v2 Search', () => {
     const team = result.team;
 
     const connection = await Connection.create({
+      kind: 'couchbase',
       team: team._id,
       name: 'Default',
       host: config.CLICKHOUSE_HOST,
@@ -204,6 +205,7 @@ describe('External API v2 Search', () => {
   it('returns 404 when the connection for a source no longer exists', async () => {
     const team = logSource.team;
     const deadConn = await Connection.create({
+      kind: 'couchbase',
       team,
       name: 'Dead Connection',
       host: config.CLICKHOUSE_HOST,
@@ -533,6 +535,7 @@ describe('External API v2 Search', () => {
     // the authenticated user (team 1) cannot access it.
     const otherTeamId = new mongoose.Types.ObjectId();
     const otherConnection = await Connection.create({
+      kind: 'couchbase',
       team: otherTeamId,
       name: 'Other Team Connection',
       host: config.CLICKHOUSE_HOST,

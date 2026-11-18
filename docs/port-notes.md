@@ -1065,3 +1065,16 @@ SQL++ treats `IN ('a')` as a scalar/subquery form that matches nothing (and
 remaining `IN ('…')` lists at SQL++ emission (raw SQL + SQL where compile)
 while leaving `IN (SELECT …)` alone. E2E seed now includes interesting-filter
 key rows and minimal `otel_sessions` documents.
+
+## Phase 11 — Main CI int shards (K2)
+
+- Source `from.databaseName` is the Couchbase **bucket**; fixtures
+  `DEFAULT_DATABASE` is `CBT_COUCHBASE_BUCKET` (`otel`), not ClickHouse
+  `default`. Int tests that still hard-coded `databaseName: 'default'` were
+  remapped so builder/MCP/alert queries stop hitting `No bucket named default`.
+- Fixture `CREATE TABLE` translates to `CREATE COLLECTION … IF NOT EXISTS`
+  under the otel bucket so ephemeral alert/MCP tables exist.
+- `CLICKHOUSE_*` in `.env.test` / Main shard env alias the CI compose cluster
+  for Connection seeds that still use those config keys.
+- `savedChartConfigSupportsAlerts` returns false for PromQL configs so alerts
+  cannot be stored on unsupported tiles.

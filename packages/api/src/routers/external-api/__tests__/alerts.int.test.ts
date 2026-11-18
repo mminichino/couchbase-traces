@@ -1152,6 +1152,7 @@ describe('External API Alerts', () => {
     // Team-scoped connection + source the inline chart configs reference.
     const makeSource = async () => {
       const connection = await Connection.create({
+      kind: 'couchbase',
         team: team._id,
         name: 'Default',
         host: 'http://localhost:8123',
@@ -1161,7 +1162,7 @@ describe('External API Alerts', () => {
       const source = await Source.create({
         kind: SourceKind.Log,
         team: team._id,
-        from: { databaseName: 'default', tableName: 'otel_logs' },
+        from: { databaseName: 'otel', tableName: 'otel_logs' },
         timestampValueExpression: 'Timestamp',
         connection: connection._id,
         name: 'Logs',
@@ -1690,6 +1691,7 @@ describe('External API Alerts', () => {
       const { connection, source } = await makeSource();
       const webhook = await createTestWebhook();
       const otherConnection = await Connection.create({
+      kind: 'couchbase',
         team: team._id,
         name: 'Other',
         host: 'http://localhost:8124',
@@ -1804,7 +1806,7 @@ describe('External API Alerts', () => {
       const sessionSource = await Source.create({
         kind: SourceKind.Session,
         team: team._id,
-        from: { databaseName: 'default', tableName: 'rrweb_events' },
+        from: { databaseName: 'otel', tableName: 'rrweb_events' },
         timestampValueExpression: 'Timestamp',
         traceSourceId: source._id.toString(),
         connection: connection._id,

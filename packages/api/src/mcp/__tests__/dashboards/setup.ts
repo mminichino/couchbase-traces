@@ -50,6 +50,7 @@ export function setupDashboardTests() {
     ctx.user = result.user;
 
     ctx.connection = await Connection.create({
+      kind: 'couchbase',
       team: ctx.team._id,
       name: 'Default',
       host: config.CLICKHOUSE_HOST,

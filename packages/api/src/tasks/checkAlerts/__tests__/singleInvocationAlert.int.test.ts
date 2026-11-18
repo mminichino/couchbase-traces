@@ -100,6 +100,8 @@ describe('Single Invocation Alert Test', () => {
 
     // Create connection to ClickHouse
     const connection = await Connection.create({
+      host: config.CLICKHOUSE_HOST,
+      kind: 'couchbase',
       team: team._id,
       name: 'Test Connection',
       username: config.CLICKHOUSE_USER,
@@ -111,7 +113,7 @@ describe('Single Invocation Alert Test', () => {
       kind: 'log',
       team: team._id,
       from: {
-        databaseName: 'default',
+        databaseName: 'otel',
         tableName: 'otel_logs',
       },
       timestampValueExpression: 'Timestamp',
@@ -256,6 +258,8 @@ describe('Single Invocation Alert Test', () => {
     const team = await createTeam({ name: 'Test Team' });
 
     const connection = await Connection.create({
+      host: config.CLICKHOUSE_HOST,
+      kind: 'couchbase',
       team: team._id,
       name: 'Test Connection',
       username: config.CLICKHOUSE_USER,
@@ -266,7 +270,7 @@ describe('Single Invocation Alert Test', () => {
       kind: 'log',
       team: team._id,
       from: {
-        databaseName: 'default',
+        databaseName: 'otel',
         tableName: 'otel_logs',
       },
       timestampValueExpression: 'Timestamp',
@@ -392,6 +396,8 @@ describe('Single Invocation Alert Test', () => {
     const team = await createTeam({ name: 'Test Team' });
 
     const connection = await Connection.create({
+      host: config.CLICKHOUSE_HOST,
+      kind: 'couchbase',
       team: team._id,
       name: 'Test Connection',
       username: config.CLICKHOUSE_USER,
@@ -402,7 +408,7 @@ describe('Single Invocation Alert Test', () => {
       kind: 'log',
       team: team._id,
       from: {
-        databaseName: 'default',
+        databaseName: 'otel',
         tableName: 'otel_logs',
       },
       timestampValueExpression: 'Timestamp',
@@ -509,6 +515,8 @@ describe('Single Invocation Alert Test', () => {
     const team = await createTeam({ name: 'Test Team' });
 
     const connection = await Connection.create({
+      host: config.CLICKHOUSE_HOST,
+      kind: 'couchbase',
       team: team._id,
       name: 'Test Connection',
       username: config.CLICKHOUSE_USER,
@@ -519,7 +527,7 @@ describe('Single Invocation Alert Test', () => {
       kind: 'log',
       team: team._id,
       from: {
-        databaseName: 'default',
+        databaseName: 'otel',
         tableName: 'otel_logs',
       },
       timestampValueExpression: 'Timestamp',
@@ -670,6 +678,8 @@ describe('Single Invocation Alert Test', () => {
 
     // Create connection
     const connection = await Connection.create({
+      host: config.CLICKHOUSE_HOST,
+      kind: 'couchbase',
       team: team._id,
       name: 'Test Connection',
       username: config.CLICKHOUSE_USER,
@@ -681,7 +691,7 @@ describe('Single Invocation Alert Test', () => {
       kind: 'log',
       team: team._id,
       from: {
-        databaseName: 'default',
+        databaseName: 'otel',
         tableName: 'otel_logs',
       },
       timestampValueExpression: 'Timestamp',
@@ -846,6 +856,8 @@ describe('Single Invocation Alert Test', () => {
     const team = await createTeam({ name: 'Test Team' });
 
     const connection = await Connection.create({
+      host: config.CLICKHOUSE_HOST,
+      kind: 'couchbase',
       team: team._id,
       name: 'Test Connection',
       username: config.CLICKHOUSE_USER,

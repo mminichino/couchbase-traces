@@ -33,6 +33,7 @@ describe('MCP Saved Search Tools', () => {
     user = result.user;
 
     connection = await Connection.create({
+      kind: 'couchbase',
       team: team._id,
       name: 'Default',
       host: config.CLICKHOUSE_HOST,

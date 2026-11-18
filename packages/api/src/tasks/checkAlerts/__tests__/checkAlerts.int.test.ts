@@ -1264,7 +1264,7 @@ describe('checkAlerts', () => {
         kind: SourceKind.Log,
         team: 'team-123',
         from: {
-          databaseName: 'default',
+          databaseName: DEFAULT_DATABASE,
           tableName: 'otel_logs',
         },
         timestampValueExpression: 'Timestamp',
@@ -2053,6 +2053,8 @@ describe('checkAlerts', () => {
       ]);
 
       const connection = await Connection.create({
+      host: config.CLICKHOUSE_HOST,
+      kind: 'couchbase',
         team: team._id,
         name: 'Default',
         username: config.CLICKHOUSE_USER,
@@ -2063,7 +2065,7 @@ describe('checkAlerts', () => {
         kind: 'log',
         team: team._id,
         from: {
-          databaseName: 'default',
+          databaseName: DEFAULT_DATABASE,
           tableName: 'otel_logs',
         },
         timestampValueExpression: 'Timestamp',
@@ -10071,6 +10073,8 @@ describe('checkAlerts', () => {
       ]);
 
       const connection = await Connection.create({
+      host: config.CLICKHOUSE_HOST,
+      kind: 'couchbase',
         team: team._id,
         name: 'Default',
         username: config.CLICKHOUSE_USER,
@@ -10081,7 +10085,7 @@ describe('checkAlerts', () => {
         kind: 'log',
         team: team._id,
         from: {
-          databaseName: 'default',
+          databaseName: DEFAULT_DATABASE,
           tableName: 'otel_logs',
         },
         timestampValueExpression: 'Timestamp',
@@ -10174,6 +10178,8 @@ describe('checkAlerts', () => {
       ]);
 
       const connection = await Connection.create({
+      host: config.CLICKHOUSE_HOST,
+      kind: 'couchbase',
         team: team._id,
         name: 'Default',
         username: config.CLICKHOUSE_USER,
@@ -10184,7 +10190,7 @@ describe('checkAlerts', () => {
         kind: 'log',
         team: team._id,
         from: {
-          databaseName: 'default',
+          databaseName: DEFAULT_DATABASE,
           tableName: 'otel_logs',
         },
         timestampValueExpression: 'Timestamp',
@@ -10268,6 +10274,8 @@ describe('checkAlerts', () => {
       ]);
 
       const connection = await Connection.create({
+      host: config.CLICKHOUSE_HOST,
+      kind: 'couchbase',
         team: team._id,
         name: 'Default',
         username: config.CLICKHOUSE_USER,
@@ -10278,7 +10286,7 @@ describe('checkAlerts', () => {
         kind: 'log',
         team: team._id,
         from: {
-          databaseName: 'default',
+          databaseName: DEFAULT_DATABASE,
           tableName: 'otel_logs',
         },
         timestampValueExpression: 'Timestamp',
@@ -11721,6 +11729,8 @@ describe('checkAlerts', () => {
       ]);
 
       const connection = await Connection.create({
+      host: config.CLICKHOUSE_HOST,
+      kind: 'couchbase',
         team: team._id,
         name: 'Default',
         username: config.CLICKHOUSE_USER,
@@ -11731,7 +11741,7 @@ describe('checkAlerts', () => {
         kind: 'log',
         team: team._id,
         from: {
-          databaseName: 'default',
+          databaseName: DEFAULT_DATABASE,
           tableName: 'otel_logs',
         },
         timestampValueExpression: 'Timestamp',

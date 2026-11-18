@@ -8,7 +8,7 @@ describe('fetchMetricNames', () => {
 
     const names = await fetchMetricNames({
       dataClient: { query },
-      databaseName: 'default',
+      databaseName: 'otel',
       tableName: 'otel_metrics_gauge',
       connectionId: 'conn',
       startDate: new Date(0),

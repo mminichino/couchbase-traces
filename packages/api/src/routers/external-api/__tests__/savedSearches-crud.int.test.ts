@@ -36,6 +36,7 @@ describe('External API v2 Saved Searches CRUD', () => {
     user = result.user;
 
     const connection = await Connection.create({
+      kind: 'couchbase',
       team: team._id,
       name: 'Default',
       host: config.CLICKHOUSE_HOST,

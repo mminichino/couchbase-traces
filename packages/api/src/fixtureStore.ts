@@ -88,9 +88,17 @@ function translateCommand(sql: string): string {
     // No-op for Couchbase collections in fixtures; schema is managed by ingest setup.
     return 'SELECT RAW 1';
   }
-  // ClickHouse DDL from unported fixtures — collections already exist via ingest.
+  // ClickHouse CREATE TABLE → SQL++ CREATE COLLECTION so alert/MCP fixtures that
+  // spin up ephemeral tables get a real keyspace under the otel bucket.
+  const createTable = trimmed.match(
+    /^CREATE(?:\s+OR\s+REPLACE)?\s+TABLE(?:\s+IF\s+NOT\s+EXISTS)?\s+([`\w.]+)\b/i,
+  );
+  if (createTable) {
+    const ref = createTable[1].replace(/`/g, '');
+    return `CREATE COLLECTION ${keyspace(ref)} IF NOT EXISTS`;
+  }
   if (
-    /^(CREATE(?:\s+OR\s+REPLACE)?\s+TABLE|CREATE\s+DATABASE|ALTER\s+TABLE|CREATE\s+VIEW|CREATE\s+MATERIALIZED\s+VIEW)\b/i.test(
+    /^(CREATE\s+DATABASE|ALTER\s+TABLE|CREATE\s+VIEW|CREATE\s+MATERIALIZED\s+VIEW)\b/i.test(
       trimmed,
     )
   ) {

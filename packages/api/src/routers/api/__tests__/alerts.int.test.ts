@@ -490,7 +490,7 @@ describe('alerts router', () => {
     const source = await Source.create({
       kind: SourceKind.Log,
       team: team._id,
-      from: { databaseName: 'default', tableName: 'otel_logs' },
+      from: { databaseName: 'otel', tableName: 'otel_logs' },
       timestampValueExpression: 'Timestamp',
       connection: new mongoose.Types.ObjectId(),
       name: 'Logs',
@@ -1969,6 +1969,7 @@ describe('alerts router', () => {
   describe('inline alerts', () => {
     const makeSource = async () => {
       const connection = await Connection.create({
+      kind: 'couchbase',
         team: team._id,
         name: 'Default',
         host: 'http://localhost:8123',
@@ -1978,7 +1979,7 @@ describe('alerts router', () => {
       const source = await Source.create({
         kind: SourceKind.Log,
         team: team._id,
-        from: { databaseName: 'default', tableName: 'otel_logs' },
+        from: { databaseName: 'otel', tableName: 'otel_logs' },
         timestampValueExpression: 'Timestamp',
         connection: connection._id,
         name: 'Logs',
@@ -2207,6 +2208,7 @@ describe('alerts router', () => {
     it('rejects a raw SQL inline alert whose source is on a different connection', async () => {
       const { connection, source } = await makeSource();
       const otherConnection = await Connection.create({
+      kind: 'couchbase',
         team: team._id,
         name: 'Other',
         host: 'http://localhost:8124',
