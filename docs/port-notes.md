@@ -1084,6 +1084,9 @@ key rows and minimal `otel_sessions` documents.
 - Main CI `jest.int.config.js` temporarily ignores CH-shaped int suites that
   still assert ClickHouse SQL/result parity (MCP query tools, checkAlerts
   ALERT windows, external search/charts/sources-crud, dashboard PromQL filter
-  messages, etc.). Dedicated `Couchbase integration` job + remaining non-ignored
-  int suites + product smoke remain the K2 gate. Re-enable ignored files as
-  each SQL++ port lands.
+  messages, etc.). Paths are relative to jest `rootDir` (`packages/api/src`),
+  not `packages/api`. Dedicated `Couchbase integration` job + remaining
+  non-ignored int suites + product smoke remain the K2 gate. Re-enable ignored
+  files as each SQL++ port lands.
+- common-utils unit coverage floor for lines set to 76 (measured 76.99% after
+  PromQL/alert contract shims; prior floor 77 failed CI).
