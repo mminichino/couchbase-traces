@@ -131,7 +131,7 @@ const makeSearchView = (
     id: 'fake-source-id',
     kind: SourceKind.Log,
     team: 'team-123',
-    from: { databaseName: 'default', tableName: 'otel_logs' },
+    from: { databaseName: 'otel', tableName: 'otel_logs' },
     timestampValueExpression: 'Timestamp',
     connection: 'connection-123',
     name: 'Logs',

@@ -176,6 +176,7 @@ describe('iac router', () => {
     const { agent, team } = await getLoggedInAgent(server);
 
     const connection = await Connection.create({
+      kind: 'couchbase',
       team: team._id,
       name: 'Local ClickHouse',
       host: 'http://localhost:8123',
@@ -187,7 +188,7 @@ describe('iac router', () => {
       name: 'Logs',
       team: team._id,
       connection: connection._id,
-      from: { databaseName: 'default', tableName: 'otel_logs' },
+      from: { databaseName: 'otel', tableName: 'otel_logs' },
       timestampValueExpression: 'Timestamp',
       defaultTableSelectExpression: 'Body',
     });
@@ -395,6 +396,7 @@ describe('iac router', () => {
     const { agent, team } = await getLoggedInAgent(server);
 
     await Connection.create({
+      kind: 'couchbase',
       team: team._id,
       name: 'Cloud ClickHouse',
       host: 'https://abc.clickhouse.cloud:8443',
@@ -443,6 +445,7 @@ describe('iac router', () => {
     const { agent, team } = await getLoggedInAgent(server);
 
     const connection = await Connection.create({
+      kind: 'couchbase',
       team: team._id,
       name: 'Cloud ClickHouse',
       host: 'https://abc.clickhouse.cloud:8443',
@@ -486,6 +489,7 @@ describe('iac router', () => {
       channel: { type: null },
     });
     await Connection.create({
+      kind: 'couchbase',
       team: otherTeam,
       name: "Other team's connection",
       host: 'http://elsewhere:8123',

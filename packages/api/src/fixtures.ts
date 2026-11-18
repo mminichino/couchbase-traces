@@ -13,11 +13,14 @@ import request from 'supertest';
 
 import * as config from '@/config';
 import { AlertInput } from '@/controllers/alerts';
+import { toCouchbaseConnectionConfig } from '@/controllers/connection';
 import { getTeam } from '@/controllers/team';
 import { findUserByEmail } from '@/controllers/user';
+import { setCouchbaseConnectionLoader } from '@/dataClient';
 import { FixtureDataClient } from '@/fixtureStore';
 import { mongooseConnection } from '@/models';
 import { AlertInterval, AlertSource } from '@/models/alert';
+import Connection from '@/models/connection';
 import Server from '@/server';
 import logger from '@/utils/logger';
 import { MetricModel } from '@/utils/logParser';
@@ -29,7 +32,45 @@ const MOCK_USER = {
   password: 'TacoCat!2#4X',
 };
 
-export const DEFAULT_DATABASE = 'default';
+// Server imports dataLayerSetup (Mongo Connection.findById). Int tests often
+// use placeholder ids like "test-connection" or freshly minted ObjectIds with
+// no Connection doc — fall back to the CI compose cluster credentials.
+// When a Connection doc exists, still force CI compose host/user/password:
+// tests seed docs with config.CLICKHOUSE_* (or empty) which is not a working
+// Couchbase login against docker-compose.ci.yml.
+if (config.IS_CI) {
+  const ciCreds = () => ({
+    host: process.env.CBT_COUCHBASE_CONNSTR || 'couchbase://127.0.0.1',
+    username: process.env.CBT_COUCHBASE_QUERY_USER || 'cbt_query',
+    password: process.env.CBT_COUCHBASE_QUERY_PASSWORD || 'dev-query-password',
+  });
+  setCouchbaseConnectionLoader(async id => {
+    const creds = ciCreds();
+    try {
+      const doc = await Connection.findById(id).select(
+        '+password +tlsCaCertificate',
+      );
+      if (doc != null) {
+        return {
+          ...toCouchbaseConnectionConfig(doc),
+          ...creds,
+        };
+      }
+    } catch {
+      // non-ObjectId ids (e.g. "test-connection") throw from findById
+    }
+    return {
+      id: String(id),
+      ...creds,
+      wanProfile: undefined,
+      tlsCaCertificate: undefined,
+      updatedAt: '',
+    };
+  });
+}
+
+// Source.from.databaseName is the Couchbase bucket (see renderFromCouchbase).
+export const DEFAULT_DATABASE = process.env.CBT_COUCHBASE_BUCKET || 'otel';
 export const DEFAULT_LOGS_TABLE = 'otel_logs';
 export const DEFAULT_TRACES_TABLE = 'otel_traces';
 export const DEFAULT_METRICS_TABLE = {
@@ -60,7 +101,10 @@ const healthCheck = async () => {
   const client = await getTestFixtureDataClient();
   const result = await client.ping();
   if (!result.success) {
-    logger.error({ error: result.error }, 'Couchbase fixture health check failed');
+    logger.error(
+      { error: result.error },
+      'Couchbase fixture health check failed',
+    );
     throw result.error;
   }
 };
@@ -801,7 +845,9 @@ export const makeRawSqlTile = (opts?: {
 export const RAW_SQL_ALERT_TEMPLATE = [
   'SELECT toStartOfInterval(Timestamp, INTERVAL {intervalSeconds:Int64} second) AS ts,',
   ' count() AS cnt',
-  ' FROM default.otel_logs',
+  // databaseName == Couchbase bucket; keep CH interval helpers until raw-SQL
+  // templates are rewritten to SQL++ (alerts still exercise connection/auth).
+  ` FROM ${DEFAULT_DATABASE}.default.${DEFAULT_LOGS_TABLE}`,
   ' WHERE Timestamp >= fromUnixTimestamp64Milli({startDateMilliseconds:Int64})',
   ' AND Timestamp < fromUnixTimestamp64Milli({endDateMilliseconds:Int64})',
   ' GROUP BY ts ORDER BY ts',
@@ -835,7 +881,7 @@ export const makeRawSqlAlertTile = (opts?: {
 
 export const RAW_SQL_NUMBER_ALERT_TEMPLATE = [
   'SELECT count() AS cnt',
-  ' FROM default.otel_logs',
+  ` FROM ${DEFAULT_DATABASE}.default.${DEFAULT_LOGS_TABLE}`,
   ' WHERE Timestamp >= fromUnixTimestamp64Milli({startDateMilliseconds:Int64})',
   ' AND Timestamp < fromUnixTimestamp64Milli({endDateMilliseconds:Int64})',
 ].join('');

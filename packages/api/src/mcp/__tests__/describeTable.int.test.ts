@@ -66,6 +66,7 @@ describe('cbt_describe_table', () => {
   beforeEach(async () => {
     const { team, user } = await getLoggedInAgent(server);
     connection = await Connection.create({
+      kind: 'couchbase',
       team: team._id,
       name: 'Default',
       host: config.CLICKHOUSE_HOST,
@@ -236,6 +237,7 @@ describe('cbt_describe_table', () => {
 
   it('does not match a source on another connection', async () => {
     const otherConnection = await Connection.create({
+      kind: 'couchbase',
       team: connection.team,
       name: 'Other',
       host: config.CLICKHOUSE_HOST,
@@ -320,6 +322,7 @@ describe('cbt_describe_table', () => {
 
   it("does not use another team's connection", async () => {
     const otherConnection = await Connection.create({
+      kind: 'couchbase',
       team: new mongoose.Types.ObjectId(),
       name: 'Other',
       host: config.CLICKHOUSE_HOST,

@@ -115,7 +115,7 @@ describe('CheckAlertTask', () => {
 
       const mockSource = {
         id: 'source-123',
-        from: { databaseName: 'default', tableName: 'otel_logs' },
+        from: { databaseName: 'otel', tableName: 'otel_logs' },
         timestampValueExpression: 'Timestamp',
       } as ISource;
 
@@ -200,7 +200,7 @@ describe('CheckAlertTask', () => {
 
       const mockSource = {
         id: 'source-123',
-        from: { databaseName: 'default', tableName: 'otel_logs' },
+        from: { databaseName: 'otel', tableName: 'otel_logs' },
         timestampValueExpression: 'Timestamp',
       } as ISource;
 
@@ -354,7 +354,7 @@ describe('CheckAlertTask', () => {
               },
               source: {
                 id: 'source-123',
-                from: { databaseName: 'default', tableName: 'otel_logs' },
+                from: { databaseName: 'otel', tableName: 'otel_logs' },
                 timestampValueExpression: 'Timestamp',
               },
               taskType: AlertTaskType.SAVED_SEARCH,

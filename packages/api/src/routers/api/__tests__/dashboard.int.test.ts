@@ -518,8 +518,8 @@ describe('dashboard router', () => {
     expect(alerts.body.data).toEqual([]);
   });
 
-  it('does not create alerts on PromQL tiles when creating a dashboard', async () => {
-    await agent
+  it('rejects creating a dashboard with a PromQL tile', async () => {
+    const res = await agent
       .post('/dashboards')
       .send({
         name: 'Test Dashboard',
@@ -531,12 +531,15 @@ describe('dashboard router', () => {
         ],
         tags: [],
       })
-      .expect(200);
+      .expect(400);
 
+    expect(JSON.stringify(res.body)).toContain(
+      'PromQL sources are no longer supported.',
+    );
     expect(await Alert.countDocuments({ team: team._id })).toBe(0);
   });
 
-  it('deletes the alert when a tile is switched to PromQL', async () => {
+  it('rejects switching a tile to PromQL', async () => {
     const mockAlert = makeMockAlert(webhook._id.toString());
     const dashboard = await agent
       .post('/dashboards')
@@ -548,7 +551,7 @@ describe('dashboard router', () => {
       .expect(200);
     expect(await Alert.countDocuments({ team: team._id })).toBe(1);
 
-    await agent
+    const res = await agent
       .patch(`/dashboards/${dashboard.body.id}`)
       .send({
         ...dashboard.body,
@@ -556,9 +559,13 @@ describe('dashboard router', () => {
           { ...dashboard.body.tiles[0], config: makePromqlConfig(mockAlert) },
         ],
       })
-      .expect(200);
+      .expect(400);
 
-    expect(await Alert.countDocuments({ team: team._id })).toBe(0);
+    expect(JSON.stringify(res.body)).toContain(
+      'PromQL sources are no longer supported.',
+    );
+    // PromQL write rejected — existing builder alert stays.
+    expect(await Alert.countDocuments({ team: team._id })).toBe(1);
   });
 
   it('alerts are updated when updating dashboard (updating tile alert settings)', async () => {
@@ -1927,19 +1934,20 @@ describe('dashboard router', () => {
       expect(listed.savedFilterValues).toEqual([adhocValue]);
     });
 
-    it('persists a PromQL ad hoc filter', async () => {
+    it('rejects a PromQL ad hoc filter', async () => {
       const filter = makeAdhocFilter({
         sourceType: 'promql',
         sources: [promqlSourceId],
       });
 
-      const created = await agent
+      const res = await agent
         .post('/dashboards')
         .send({ ...MOCK_DASHBOARD, filters: [filter] })
-        .expect(200);
+        .expect(400);
 
-      const stored = await Dashboard.findById(created.body.id).lean();
-      expect(stored?.filters).toEqual([filter]);
+      expect(JSON.stringify(res.body)).toContain(
+        'PromQL sources are no longer supported.',
+      );
     });
 
     it('persists saved conditions alongside other filter values on PATCH', async () => {

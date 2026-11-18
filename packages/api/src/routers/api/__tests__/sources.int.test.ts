@@ -61,6 +61,7 @@ const MOCK_PROMQL_SOURCE = {
 
 const createTestConnection = (team: Types.ObjectId, id: string) =>
   Connection.create({
+    kind: 'couchbase',
     _id: id,
     team,
     name: 'Test Connection',
@@ -921,7 +922,7 @@ describe('sources router', () => {
         name: 'Legacy Session',
         team: team._id,
         connection: new Types.ObjectId(),
-        from: { databaseName: 'default', tableName: 'otel_sessions' },
+        from: { databaseName: 'otel', tableName: 'otel_sessions' },
         traceSourceId: new Types.ObjectId().toString(),
         // timestampValueExpression intentionally omitted
       });
@@ -943,7 +944,7 @@ describe('sources router', () => {
         name: 'Legacy Trace',
         team: team._id,
         connection: new Types.ObjectId(),
-        from: { databaseName: 'default', tableName: 'otel_traces' },
+        from: { databaseName: 'otel', tableName: 'otel_traces' },
         timestampValueExpression: 'Timestamp',
         durationExpression: 'Duration',
         durationPrecision: 9,
@@ -970,7 +971,7 @@ describe('sources router', () => {
         name: 'Trace with null logSourceId',
         team: team._id,
         connection: new Types.ObjectId(),
-        from: { databaseName: 'default', tableName: 'otel_traces' },
+        from: { databaseName: 'otel', tableName: 'otel_traces' },
         timestampValueExpression: 'Timestamp',
         defaultTableSelectExpression: '*',
         durationExpression: 'Duration',
@@ -1005,7 +1006,7 @@ describe('sources router', () => {
         name: 'Flat Model Log',
         team: team._id,
         connection: new Types.ObjectId(),
-        from: { databaseName: 'default', tableName: 'otel_logs' },
+        from: { databaseName: 'otel', tableName: 'otel_logs' },
         timestampValueExpression: 'Timestamp',
         defaultTableSelectExpression: 'Body',
         bodyExpression: 'Body',
@@ -1035,7 +1036,7 @@ describe('sources router', () => {
         name: 'Legacy Session',
         team: team._id,
         connection: new Types.ObjectId(),
-        from: { databaseName: 'default', tableName: 'otel_sessions' },
+        from: { databaseName: 'otel', tableName: 'otel_sessions' },
         traceSourceId: 'some-trace-source-id',
       });
 
@@ -1047,7 +1048,7 @@ describe('sources router', () => {
           id: result.insertedId.toString(),
           name: 'Updated Session',
           connection: new Types.ObjectId().toString(),
-          from: { databaseName: 'default', tableName: 'otel_sessions' },
+          from: { databaseName: 'otel', tableName: 'otel_sessions' },
           traceSourceId: 'some-trace-source-id',
           // timestampValueExpression intentionally omitted
         })
@@ -1063,7 +1064,7 @@ describe('sources router', () => {
         name: 'Legacy Session',
         team: team._id,
         connection: connectionId,
-        from: { databaseName: 'default', tableName: 'otel_sessions' },
+        from: { databaseName: 'otel', tableName: 'otel_sessions' },
         traceSourceId: 'some-trace-source-id',
       });
 
@@ -1074,7 +1075,7 @@ describe('sources router', () => {
           id: result.insertedId.toString(),
           name: 'Updated Session',
           connection: connectionId.toString(),
-          from: { databaseName: 'default', tableName: 'otel_sessions' },
+          from: { databaseName: 'otel', tableName: 'otel_sessions' },
           traceSourceId: 'some-trace-source-id',
           timestampValueExpression: 'TimestampTime',
         })
@@ -1094,7 +1095,7 @@ describe('sources router', () => {
         name: 'Flat Log',
         team: team._id,
         connection: new Types.ObjectId(),
-        from: { databaseName: 'default', tableName: 'otel_logs' },
+        from: { databaseName: 'otel', tableName: 'otel_logs' },
         timestampValueExpression: 'Timestamp',
         defaultTableSelectExpression: 'Body',
         metricTables: { gauge: 'otel_metrics_gauge' },
@@ -1124,7 +1125,7 @@ describe('sources router', () => {
           name: 'Log',
           team: team._id,
           connection: connectionId,
-          from: { databaseName: 'default', tableName: 'otel_logs' },
+          from: { databaseName: 'otel', tableName: 'otel_logs' },
           timestampValueExpression: 'Timestamp',
           defaultTableSelectExpression: 'Body',
         },
@@ -1133,7 +1134,7 @@ describe('sources router', () => {
           name: 'Trace',
           team: team._id,
           connection: connectionId,
-          from: { databaseName: 'default', tableName: 'otel_traces' },
+          from: { databaseName: 'otel', tableName: 'otel_traces' },
           timestampValueExpression: 'Timestamp',
           defaultTableSelectExpression: '*',
           durationExpression: 'Duration',
@@ -1149,7 +1150,7 @@ describe('sources router', () => {
           name: 'Session',
           team: team._id,
           connection: connectionId,
-          from: { databaseName: 'default', tableName: 'otel_sessions' },
+          from: { databaseName: 'otel', tableName: 'otel_sessions' },
           timestampValueExpression: 'TimestampTime',
           traceSourceId: 'some-id',
         },
@@ -1158,7 +1159,7 @@ describe('sources router', () => {
           name: 'Metric',
           team: team._id,
           connection: connectionId,
-          from: { databaseName: 'default', tableName: '' },
+          from: { databaseName: 'otel', tableName: '' },
           timestampValueExpression: 'TimeUnix',
           resourceAttributesExpression: 'ResourceAttributes',
           metricTables: { gauge: 'otel_metrics_gauge' },

@@ -48,6 +48,8 @@ describe('MCP Query Tools', () => {
     user = result.user;
 
     connection = await Connection.create({
+      host: config.CLICKHOUSE_HOST,
+      kind: 'couchbase',
       team: team._id,
       name: 'Default',
       username: config.CLICKHOUSE_USER,
@@ -1612,6 +1614,8 @@ describe('MCP Query Tools', () => {
       // $__sourceTable would otherwise expand to a table on another server.
       it('rejects a sourceId whose connection differs from connectionId', async () => {
         const otherConnection = await Connection.create({
+          host: config.CLICKHOUSE_HOST,
+          kind: 'couchbase',
           team: team._id,
           name: 'Other',
           username: config.CLICKHOUSE_USER,
@@ -1869,6 +1873,8 @@ describe('MCP Query Tools', () => {
 
       beforeEach(async () => {
         deadConnection = await Connection.create({
+          host: config.CLICKHOUSE_HOST,
+          kind: 'couchbase',
           team: team._id,
           name: 'Dead',
           username: 'default',

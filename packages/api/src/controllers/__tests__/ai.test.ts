@@ -265,7 +265,7 @@ describe('getChartConfigFromResolvedConfig', () => {
     id: 'source-id',
     kind: SourceKind.Trace,
     connection: 'connection-id',
-    from: { databaseName: 'default', tableName: 'otel_traces' },
+    from: { databaseName: 'otel', tableName: 'otel_traces' },
     timestampValueExpression: 'Timestamp',
   };
 

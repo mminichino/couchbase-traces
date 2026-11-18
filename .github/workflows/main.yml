@@ -80,7 +80,9 @@ jobs:
           path: .nx/cache
           key: nx-${{ runner.os }}-${{ github.sha }}
   unit:
-    timeout-minutes: 8
+    # 8m was marginal: install + build + coverage unit often lands near the
+    # ceiling and GitHub marks the job cancelled (not failed) on timeout.
+    timeout-minutes: 15
     runs-on: ubuntu-24.04
     steps:
       - name: Checkout
@@ -100,8 +102,10 @@ jobs:
   integration-shards:
     name: Integration - Shard ${{ matrix.shard }}
     # Sequential bake + prune (ENOSPC mitigation) needs more than the old
-    # parallel-bake 16m budget; 35m covers couchbase-init/ingest/otel.
-    timeout-minutes: 35
+    # parallel-bake 16m budget. 35m covered compose + int tests but shard 1's
+    # golden replay step was cut mid-run (job cancelled ≈35m); 55m leaves
+    # room for goldens after a slow bake.
+    timeout-minutes: 55
     runs-on: ubuntu-24.04
     strategy:
       fail-fast: false
@@ -162,6 +166,9 @@ jobs:
       # Actions streams stdout.
       - name: Run integration tests
         env:
+          # FixtureDataClient (api int) talks to the CI compose cluster.
+          # Leave CBT_TEST_COUCHBASE_* unset so *.couchbase.int.test.ts skip
+          # here (they need the `test` bucket from port/couchbase-test).
           CBT_COUCHBASE_CONNSTR: couchbase://127.0.0.1
           CBT_COUCHBASE_BUCKET: otel
           CBT_COUCHBASE_SCOPE: default
@@ -169,11 +176,10 @@ jobs:
           CBT_COUCHBASE_ADMIN_PASSWORD: dev-admin-password
           CBT_COUCHBASE_QUERY_USER: cbt_query
           CBT_COUCHBASE_QUERY_PASSWORD: dev-query-password
-          CBT_TEST_COUCHBASE_CONNSTR: couchbase://127.0.0.1
-          CBT_TEST_COUCHBASE_ADMIN_USER: Administrator
-          CBT_TEST_COUCHBASE_ADMIN_PASSWORD: dev-admin-password
-          CBT_TEST_COUCHBASE_USER: cbt_query
-          CBT_TEST_COUCHBASE_PASSWORD: dev-query-password
+          # Compat for int tests that still seed Connection via CLICKHOUSE_*.
+          CLICKHOUSE_HOST: couchbase://127.0.0.1
+          CLICKHOUSE_USER: cbt_query
+          CLICKHOUSE_PASSWORD: dev-query-password
           CBT_TEST_COUCHBASE_REQUIRED: '0'
         run: |
           set +e

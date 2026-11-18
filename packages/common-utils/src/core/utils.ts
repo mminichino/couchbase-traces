@@ -11,7 +11,11 @@ import {
   isQueryExpressionFilter,
   isStaticListFilter,
 } from '@/filters';
-import { isBuilderSavedChartConfig, isRawSqlSavedChartConfig } from '@/guards';
+import {
+  isBuilderSavedChartConfig,
+  isPromqlSavedChartConfig,
+  isRawSqlSavedChartConfig,
+} from '@/guards';
 import { MacroExpansionError, MalformedMacroArgsError } from '@/macroErrors';
 import {
   getSourceDependentMacrosUsed,
@@ -1732,6 +1736,10 @@ export const isFormulaSourceKind = (
 export function savedChartConfigSupportsAlerts(
   config: SavedChartConfig,
 ): boolean {
+  // PromQL tiles are no longer queryable; never store alerts against them.
+  if (isPromqlSavedChartConfig(config)) {
+    return false;
+  }
   if (isRawSqlSavedChartConfig(config)) {
     return displayTypeSupportsRawSqlAlerts(config.displayType);
   }

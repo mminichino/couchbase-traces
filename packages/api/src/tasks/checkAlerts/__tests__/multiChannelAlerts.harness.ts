@@ -45,6 +45,8 @@ export const setupAlertFixtures = async (
 ) => {
   const team = await createTeam({ name: 'Test Team' });
   const connection = await Connection.create({
+    host: config.CLICKHOUSE_HOST,
+    kind: 'couchbase',
     team: team._id,
     name: 'Test Connection',
     username: config.CLICKHOUSE_USER,
@@ -53,7 +55,7 @@ export const setupAlertFixtures = async (
   const source = await Source.create({
     kind: 'log',
     team: team._id,
-    from: { databaseName: 'default', tableName: 'otel_logs' },
+    from: { databaseName: 'otel', tableName: 'otel_logs' },
     timestampValueExpression: 'Timestamp',
     connection: connection.id,
     name: 'Test Logs',

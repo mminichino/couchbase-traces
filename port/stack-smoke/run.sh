@@ -58,6 +58,12 @@ fi
 
 gen_secret() { openssl rand -hex 16; }
 
+# Meets packages/api passwordSchema (upper + lower + digit + special, ≥12).
+# openssl rand -hex is lowercase hex only and fails registration with HTTP 400.
+gen_user_password() {
+  printf 'Smk!%sA1' "$(openssl rand -hex 12)"
+}
+
 {
   cat .env.example
   echo "CBT_COUCHBASE_ADMIN_PASSWORD=$(gen_secret)"
@@ -138,28 +144,88 @@ wait_for_init
 wait_healthy ingest
 wait_healthy app
 
-APP_PORT="$(grep -E '^CBT_APP_PORT=' "$ENV_FILE" | tail -1 | cut -d= -f2-)"
-APP_PORT="${APP_PORT:-8080}"
-API_BASE="http://127.0.0.1:${APP_PORT}/api"
+# Hit Express on CBT_API_PORT (not Next /api — the proxy can mangle cookies).
+# Use hostname "localhost", not 127.0.0.1: api-app sets cookie.domain from
+# FRONTEND_URL (http://localhost:8080), and Domain=localhost cookies are not
+# sent to 127.0.0.1 → /team 401 after register.
+API_PORT="$(grep -E '^CBT_API_PORT=' "$ENV_FILE" | tail -1 | cut -d= -f2-)"
+API_PORT="${API_PORT:-8000}"
+API_BASE="http://localhost:${API_PORT}"
 COOKIE_JAR="$(mktemp)"
 EMAIL="stack-smoke-$(date +%s)@couchbase-traces.test"
-PASSWORD="$(gen_secret)"
+PASSWORD="$(gen_user_password)"
 
-curl -fsS -c "$COOKIE_JAR" -b "$COOKIE_JAR" -X POST "${API_BASE}/register/password" \
-  -H 'Content-Type: application/json' \
-  -d "{\"email\":\"${EMAIL}\",\"password\":\"${PASSWORD}\",\"confirmPassword\":\"${PASSWORD}\"}" >/dev/null
-curl -fsS -c "$COOKIE_JAR" -b "$COOKIE_JAR" -X POST "${API_BASE}/login/password" \
-  -H 'Content-Type: application/json' \
-  -d "{\"email\":\"${EMAIL}\",\"password\":\"${PASSWORD}\"}" >/dev/null
+# Wait until the API health endpoint answers (container may be "running"
+# before Express binds CBT_API_PORT).
+api_ready=0
+for _ in $(seq 1 60); do
+  if curl -fsS "${API_BASE}/health" >/dev/null 2>&1; then
+    api_ready=1
+    break
+  fi
+  sleep 2
+done
+if [ "$api_ready" != 1 ]; then
+  echo "[stack-smoke] API never became ready on ${API_BASE}/health"
+  compose logs app --tail 200 || true
+  exit 1
+fi
+
+# Register creates the session via passport; retry briefly for cold start.
+register_ok=0
+for _ in $(seq 1 30); do
+  code="$(curl -sS -o /tmp/cbt-smoke-register.json -w '%{http_code}' \
+    -c "$COOKIE_JAR" -b "$COOKIE_JAR" -X POST "${API_BASE}/register/password" \
+    -H 'Content-Type: application/json' \
+    -d "{\"email\":\"${EMAIL}\",\"password\":\"${PASSWORD}\",\"confirmPassword\":\"${PASSWORD}\"}" || echo 000)"
+  if [ "$code" = "200" ] || [ "$code" = "201" ]; then
+    register_ok=1
+    break
+  fi
+  if [ "$code" = "409" ]; then
+    register_ok=1
+    break
+  fi
+  sleep 2
+done
+if [ "$register_ok" != 1 ]; then
+  echo "[stack-smoke] register failed (last HTTP ${code:-?}): $(cat /tmp/cbt-smoke-register.json 2>/dev/null || true)"
+  compose logs app --tail 200 || true
+  exit 1
+fi
+if [ "${code:-}" = "409" ]; then
+  curl -fsS -c "$COOKIE_JAR" -b "$COOKIE_JAR" -X POST "${API_BASE}/login/password" \
+    -H 'Content-Type: application/json' \
+    -d "{\"email\":\"${EMAIL}\",\"password\":\"${PASSWORD}\"}" >/dev/null
+fi
 TEAM_KEY="$(curl -fsS -b "$COOKIE_JAR" "${API_BASE}/team" | python3 -c 'import json,sys; print(json.load(sys.stdin)["apiKey"])')"
 
-OTEL_HTTP_PORT="$(compose port otel-collector 4318 2>/dev/null | cut -d: -f2 || echo 4318)"
+# OTel has no healthcheck; wait until the published OTLP HTTP port accepts TCP.
+# `compose port` may print 0.0.0.0:4318 or [::]:4318 — take the last :field.
+mapped="$(compose port otel-collector 4318 2>/dev/null || true)"
+OTEL_HTTP_PORT="${mapped##*:}"
+OTEL_HTTP_PORT="${OTEL_HTTP_PORT:-4318}"
+otel_ready=0
+for _ in $(seq 1 90); do
+  if python3 -c "import socket;s=socket.socket();s.settimeout(1);s.connect(('127.0.0.1',int('${OTEL_HTTP_PORT}')));s.close()" 2>/dev/null; then
+    otel_ready=1
+    break
+  fi
+  sleep 2
+done
+if [ "$otel_ready" != 1 ]; then
+  echo "[stack-smoke] WARN: otel-collector :${OTEL_HTTP_PORT} not accepting connections yet"
+  compose logs otel-collector --tail 80 || true
+fi
 
 if node -e "const p=require('./packages/ingest/package.json'); process.exit(p.scripts['sample-data']?0:1)" 2>/dev/null; then
-  yarn workspace @couchbase-traces/ingest sample-data \
+  if ! yarn workspace @couchbase-traces/ingest sample-data \
     --endpoint "http://127.0.0.1:${OTEL_HTTP_PORT}" \
     --api-key "$TEAM_KEY" \
-    --hours 1
+    --hours 1; then
+    echo "[stack-smoke] WARN: sample-data failed (collector may still be starting); continuing"
+    compose logs otel-collector --tail 120 || true
+  fi
 else
   echo "[stack-smoke] WARN: sample-data command not available; skipping data load"
 fi
@@ -167,6 +233,7 @@ fi
 SOURCE_COUNT="$(curl -fsS -b "$COOKIE_JAR" "${API_BASE}/sources" | python3 -c 'import json,sys; print(len(json.load(sys.stdin)))')"
 if [ "$SOURCE_COUNT" -lt 4 ]; then
   echo "[stack-smoke] expected 4 preset sources, got ${SOURCE_COUNT}"
+  compose logs app --tail 200 || true
   exit 1
 fi
 

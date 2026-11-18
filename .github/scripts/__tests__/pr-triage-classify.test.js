@@ -55,11 +55,11 @@ describe('isTestFile', () => {
     assert.ok(isTestFile('packages/app/src/HDXMultiSeriesTable.stories.ts'));
   });
 
-  it('matches the E2E-only ClickHouse fixture, but not its shipped siblings', () => {
-    assert.ok(isTestFile('docker/clickhouse/local/init-db-e2e.sh'));
+  it('matches the E2E-only evalstore fixture, but not its shipped siblings', () => {
+    assert.ok(isTestFile('docker/evalstore/local/init-db-e2e.sh'));
     // config.xml / users.xml are copied into the all-in-one image — production config
-    assert.ok(!isTestFile('docker/clickhouse/local/config.xml'));
-    assert.ok(!isTestFile('docker/clickhouse/local/users.xml'));
+    assert.ok(!isTestFile('docker/evalstore/local/config.xml'));
+    assert.ok(!isTestFile('docker/evalstore/local/users.xml'));
   });
 
   it('does not match regular source files', () => {
@@ -131,11 +131,11 @@ describe('isCriticalFile', () => {
     assert.ok(isCriticalFile('packages/api/src/models/teamInvite.ts'));
   });
 
-  it('matches config, tasks, otel, clickhouse, and core CI workflows', () => {
+  it('matches config, tasks, otel, evalstore, and core CI workflows', () => {
     assert.ok(isCriticalFile('packages/api/src/config.ts'));
     assert.ok(isCriticalFile('packages/api/src/tasks/alertChecker.ts'));
     assert.ok(isCriticalFile('packages/otel-collector/config.yaml'));
-    assert.ok(isCriticalFile('docker/clickhouse/config.xml'));
+    assert.ok(isCriticalFile('docker/evalstore/config.xml'));
     assert.ok(isCriticalFile('.github/workflows/main.yml'));
     assert.ok(isCriticalFile('.github/workflows/release.yml'));
   });
@@ -185,7 +185,7 @@ describe('critical-path bands', () => {
       'packages/api/src/routers/external-api/v2/dashboards.ts',
       'packages/api/src/models/user.ts',
       'packages/api/src/config.ts',
-      'docker/clickhouse/local/users.xml',
+      'docker/evalstore/local/users.xml',
     ]) {
       assert.ok(isCoreCriticalFile(f), `expected core-critical: ${f}`);
       assert.ok(!isSecurityCriticalFile(f), `expected not security-critical: ${f}`);
@@ -211,7 +211,7 @@ describe('critical-path bands', () => {
     for (const f of [
       'packages/common-utils/src/core/renderChartConfig.ts',
       'packages/common-utils/src/core/builderToRawSql.ts',
-      'packages/common-utils/src/clickhouse/index.ts',
+      'packages/common-utils/src/evalstore/index.ts',
     ]) {
       assert.ok(isQueryEngineCriticalFile(f), `expected query-engine-critical: ${f}`);
       assert.ok(!isSecurityCriticalFile(f), `expected not security-critical: ${f}`);
@@ -457,9 +457,9 @@ describe('determineTier', () => {
       ]), 4);
     });
 
-    it('touches ClickHouse docker config', () => {
-      assert.equal(classify('alice', 'infra/clickhouse-update', [
-        makeFile('docker/clickhouse/config.xml', 10, 2),
+    it('touches evalstore docker config', () => {
+      assert.equal(classify('alice', 'infra/evalstore-update', [
+        makeFile('docker/evalstore/config.xml', 10, 2),
       ]), 4);
     });
 
@@ -565,11 +565,11 @@ describe('determineTier', () => {
     });
 
     it('substantial query-engine rewrite escalates (PR #2859 pattern)', () => {
-      // Multi-series metric merge moved into ClickHouse: 664 prod lines across
+      // Multi-series metric merge moved into the query engine: 664 prod lines across
       // the rendering + execution pipeline. Tests and snapshots don't count.
       assert.equal(classify('alice', 'feat/metrics-ch-side-merge', [
         makeFile('packages/common-utils/src/core/renderChartConfig.ts', 313, 36),
-        makeFile('packages/common-utils/src/clickhouse/index.ts', 19, 289),
+        makeFile('packages/common-utils/src/evalstore/index.ts', 19, 289),
         makeFile('packages/common-utils/src/core/builderToRawSql.ts', 5, 2),
         makeFile('packages/common-utils/src/__tests__/renderChartConfig.test.ts', 174, 0),
         makeFile('packages/common-utils/src/__tests__/__snapshots__/renderChartConfig.test.ts.snap', 245, 0),
@@ -600,7 +600,7 @@ describe('determineTier', () => {
       // No single file clears the bar, but the pipeline change as a whole does
       assert.equal(classify('alice', 'refactor/query-exec', [
         makeFile('packages/common-utils/src/core/renderChartConfig.ts', 60, 20),
-        makeFile('packages/common-utils/src/clickhouse/index.ts', 50, 15),
+        makeFile('packages/common-utils/src/evalstore/index.ts', 50, 15),
         makeFile('packages/common-utils/src/core/builderToRawSql.ts', 5, 0),
       ]), 4);
     });
@@ -619,16 +619,16 @@ describe('determineTier', () => {
       ]), 1);
     });
 
-    it('the E2E ClickHouse fixture does not escalate (PR #2771 pattern)', () => {
+    it('the E2E evalstore fixture does not escalate (PR #2771 pattern)', () => {
       assert.equal(classify('alice', 'fix/distributed-table-errors', [
-        makeFile('docker/clickhouse/local/init-db-e2e.sh', 20, 11),
+        makeFile('docker/evalstore/local/init-db-e2e.sh', 20, 11),
         makeFile('packages/app/src/SourceForm.tsx', 40, 18),
       ]), 2);
     });
 
-    it('but shipped ClickHouse config escalates once past the graze bounds', () => {
-      assert.equal(classify('alice', 'infra/ch-users', [
-        makeFile('docker/clickhouse/local/users.xml', 15, 8),  // 23 lines, over the graze line
+    it('but shipped evalstore config escalates once past the graze bounds', () => {
+      assert.equal(classify('alice', 'infra/evalstore-users', [
+        makeFile('docker/evalstore/local/users.xml', 15, 8),  // 23 lines, over the graze line
       ]), 4);
     });
   });
@@ -699,8 +699,8 @@ describe('determineTier', () => {
       // Workflows, Actions scripts and hdx-eval are excluded from prodLines for
       // tiering, but they are still code a reviewer has to read — they must not
       // let a large PR pass itself off as a graze.
-      assert.equal(classify('alice', 'infra/ch-and-ci', [
-        makeFile('docker/clickhouse/local/users.xml', 3, 2),
+      assert.equal(classify('alice', 'infra/evalstore-and-ci', [
+        makeFile('docker/evalstore/local/users.xml', 3, 2),
         makeFile('.github/workflows/deploy-staging.yml', 700, 0),
       ]), 4);
       assert.equal(classify('alice', 'feat/evals-and-config', [
@@ -897,7 +897,7 @@ describe('buildTierComment', () => {
   it('explains a substantial query-engine change as the Tier 4 trigger', () => {
     const queryEngineCriticalFiles = [
       makeFile('packages/common-utils/src/core/renderChartConfig.ts', 313, 36),
-      makeFile('packages/common-utils/src/clickhouse/index.ts', 19, 289),
+      makeFile('packages/common-utils/src/evalstore/index.ts', 19, 289),
     ];
     const body = buildTierComment(4, makeSignals({
       criticalFiles: queryEngineCriticalFiles,

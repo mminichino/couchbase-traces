@@ -8,7 +8,10 @@ export function findPromqlWrite(value: unknown): boolean {
   if (Array.isArray(value)) return value.some(findPromqlWrite);
   if (value == null || typeof value !== 'object') return false;
   for (const [key, child] of Object.entries(value)) {
-    if ((key === 'kind' || key === 'configType') && child === 'promql') {
+    if (
+      (key === 'kind' || key === 'configType' || key === 'sourceType') &&
+      child === 'promql'
+    ) {
       return true;
     }
     if (key === 'isPrometheusEndpoint' && child === true) return true;

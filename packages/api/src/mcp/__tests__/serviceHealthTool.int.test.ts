@@ -88,6 +88,7 @@ describe('MCP Service Health Tool', () => {
   beforeEach(async () => {
     const { team, user } = await getLoggedInAgent(server);
     const connection = await Connection.create({
+      kind: 'couchbase',
       team: team._id,
       name: 'Default',
       host: config.CLICKHOUSE_HOST,

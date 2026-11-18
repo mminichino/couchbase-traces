@@ -23,6 +23,7 @@ describe('connections router', () => {
     const { agent, team } = await getLoggedInAgent(server);
 
     await Connection.create({
+      kind: 'couchbase',
       team: team._id,
       name: 'My Team Connection',
       host: config.CLICKHOUSE_HOST,
@@ -30,6 +31,7 @@ describe('connections router', () => {
       password: '',
     });
     await Connection.create({
+      kind: 'couchbase',
       team: new ObjectId(),
       name: 'Other Team Connection',
       host: config.CLICKHOUSE_HOST,
@@ -65,6 +67,7 @@ describe('connections router', () => {
     const { agent, team } = await getLoggedInAgent(server);
 
     const created = await Connection.create({
+      kind: 'couchbase',
       team: team._id,
       name: 'No-prom',
       host: config.CLICKHOUSE_HOST,
@@ -93,6 +96,7 @@ describe('connections router', () => {
     const { agent, team } = await getLoggedInAgent(server);
 
     const created = await Connection.create({
+      kind: 'couchbase',
       team: team._id,
       name: 'Prom',
       host: 'http://thanos:10902',
@@ -106,6 +110,7 @@ describe('connections router', () => {
       .send({
         id: created._id.toString(),
         name: 'Prom',
+        kind: 'couchbase',
         host: config.CLICKHOUSE_HOST,
         username: 'default',
         password: '',

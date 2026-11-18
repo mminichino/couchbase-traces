@@ -114,6 +114,7 @@ describe('request query attribution', () => {
   it('tags queries from an authenticated route with the api surface', async () => {
     const { agent, team } = await getLoggedInAgent(server);
     const conn = await Connection.create({
+      kind: 'couchbase',
       team: team._id,
       name: 'CH',
       host: config.CLICKHOUSE_HOST,
@@ -153,6 +154,7 @@ describe('request query attribution', () => {
       .mockResolvedValue([26, 5, 0, 0]);
     const { agent, team } = await getLoggedInAgent(server);
     const conn = await Connection.create({
+      kind: 'couchbase',
       team: team._id,
       name: 'CH',
       host: config.CLICKHOUSE_HOST,
@@ -208,6 +210,7 @@ describe('request query attribution', () => {
     jest.mocked(global.fetch).mockImplementation(globalThis.realFetch);
     const { agent, team } = await getLoggedInAgent(server);
     const conn = await Connection.create({
+      kind: 'couchbase',
       team: team._id,
       name: 'CH',
       host: config.CLICKHOUSE_HOST,

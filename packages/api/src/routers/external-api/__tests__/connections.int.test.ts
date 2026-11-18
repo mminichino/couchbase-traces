@@ -10,9 +10,10 @@ const CONNECTIONS_BASE_URL = '/api/v2/connections';
 
 const MOCK_CONNECTION = {
   name: 'Test Connection',
-  host: 'https://clickhouse.example.com:8443',
-  username: 'default',
-  password: 'test-password',
+  host: 'couchbase://127.0.0.1',
+  username: 'cbt_query',
+  password: 'dev-query-password',
+  kind: 'couchbase' as const,
 };
 
 describe('External API v2 Connections', () => {
