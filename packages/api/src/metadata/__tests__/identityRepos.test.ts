@@ -199,7 +199,8 @@ describe('UserRepository', () => {
     ]);
     const displays = await store.users.getDisplay([user._id, null, 'bad']);
     expect([...displays.values()]).toEqual([
-      { _id: user._id, email: 'fake@example.com', name: '' },
+      // The user has no name, so the field is omitted (populate parity).
+      { _id: user._id, email: 'fake@example.com' },
     ]);
   });
 
