@@ -2,7 +2,7 @@ import express from 'express';
 
 import { appErrorHandler } from '@/middleware/error';
 import { opampController } from '@/opamp/controllers/opampController';
-import { isMongoConnected, mongoReadyStateName } from '@/utils/readiness';
+import { readinessReport } from '@/utils/readiness';
 
 // Create Express application
 const app = express();
@@ -31,12 +31,14 @@ app.get('/health', (req, res) => {
 // need a remote config at startup (see utils/readiness.ts and
 // https://github.com/mminichino/couchbase-traces/issues/2966).
 app.get('/ready', (req, res) => {
-  if (isMongoConnected()) {
+  const report = readinessReport();
+  if (report.ready) {
     return res.status(200).json({ status: 'OK' });
   }
   res.status(503).json({
     status: 'unavailable',
-    mongo: mongoReadyStateName(),
+    mongo: report.mongo,
+    metadata: report.metadata,
   });
 });
 

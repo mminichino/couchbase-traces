@@ -18,6 +18,7 @@ import { getTeam } from '@/controllers/team';
 import { findUserByEmail } from '@/controllers/user';
 import { setCouchbaseConnectionLoader } from '@/dataClient';
 import { FixtureDataClient } from '@/fixtureStore';
+import { newId } from '@/metadata/ids';
 import { mongooseConnection } from '@/models';
 import { AlertInterval, AlertSource } from '@/models/alert';
 import Connection from '@/models/connection';
@@ -738,7 +739,8 @@ export function buildMetricSeries({
   }));
 }
 
-export const randomMongoId = () => new mongoose.Types.ObjectId().toHexString();
+/** Kept under the upstream name so ported tests read unchanged. */
+export const randomMongoId = () => newId();
 
 export const makeTile = (opts?: {
   id?: string;

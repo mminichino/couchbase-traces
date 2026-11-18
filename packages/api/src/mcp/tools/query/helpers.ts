@@ -22,7 +22,6 @@ import {
   SourceKind,
   UseTextIndex,
 } from '@couchbase-traces/common-utils/dist/types';
-import { ObjectId } from 'mongodb';
 import ms from 'ms';
 
 import { getConnectionById } from '@/controllers/connection';
@@ -31,6 +30,7 @@ import type { McpErrorResult } from '@/mcp/utils/errors';
 import { mcpServerError, mcpUserError } from '@/mcp/utils/errors';
 import { assertMcpSliceForConnection } from '@/mcp/utils/mcpSlice';
 import { MCP_TIMEOUT_GRACE_MS, MCP_TOOL_TIMEOUT_MS } from '@/mcp/utils/timeout';
+import { newId } from '@/metadata/ids';
 import { DataClient } from '@/query';
 import {
   convertToInternalTileConfig,
@@ -302,7 +302,7 @@ export function buildTile(
   config: Record<string, unknown>,
 ): ExternalDashboardTileWithId {
   return externalDashboardTileSchemaWithId.parse({
-    id: new ObjectId().toString(),
+    id: newId(),
     name,
     x: 0,
     y: 0,

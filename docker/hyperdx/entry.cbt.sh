@@ -31,6 +31,7 @@ ensure_secrets() {
   if [ -f "$SECRETS_FILE" ]; then
     # shellcheck source=/dev/null
     . "$SECRETS_FILE"
+    ensure_metadata_secrets
     return
   fi
   CBT_COUCHBASE_ADMIN_USER="${CBT_COUCHBASE_ADMIN_USER:-Administrator}"
@@ -59,6 +60,20 @@ EOF
   chmod 600 "$SECRETS_FILE"
   # shellcheck source=/dev/null
   . "$SECRETS_FILE"
+  ensure_metadata_secrets
+}
+
+# Secrets files written before the cbt_meta bucket existed lack the metadata
+# user; append it so upgraded volumes keep their other credentials.
+ensure_metadata_secrets() {
+  if [ -n "${CBT_METADATA_PASSWORD:-}" ] && grep -q '^CBT_METADATA_PASSWORD=' "$SECRETS_FILE"; then
+    return
+  fi
+  CBT_METADATA_USER="${CBT_METADATA_USER:-cbt_meta}"
+  CBT_METADATA_PASSWORD="${CBT_METADATA_PASSWORD:-$(rand_secret)}"
+  umask 077
+  printf 'CBT_METADATA_USER=%s\nCBT_METADATA_PASSWORD=%s\n' \
+    "$CBT_METADATA_USER" "$CBT_METADATA_PASSWORD" >>"$SECRETS_FILE"
 }
 
 check_memory() {
@@ -102,6 +117,7 @@ export CBT_COUCHBASE_QUERY_USER CBT_COUCHBASE_QUERY_PASSWORD
 export CBT_COUCHBASE_INGEST_USER CBT_COUCHBASE_INGEST_PASSWORD
 export CBT_COUCHBASE_MONITOR_USER CBT_COUCHBASE_MONITOR_PASSWORD
 export CBT_INGEST_TOKEN EXPRESS_SESSION_SECRET
+export CBT_METADATA_USER CBT_METADATA_PASSWORD
 set_default_connections
 memory_hosts
 

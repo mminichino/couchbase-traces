@@ -4,6 +4,7 @@ import {
 } from '@couchbase-traces/common-utils/dist/types';
 import mongoose from 'mongoose';
 
+import { isValidId } from '@/metadata/ids';
 import {
   ISourceInput,
   LogSource,
@@ -43,7 +44,7 @@ export async function getSource(team: string, sourceId: string) {
   // Pre-check the sourceId shape so a non-ObjectId input returns null
   // (the caller's "not found" branch) instead of bubbling a Mongoose
   // CastError.
-  if (!mongoose.Types.ObjectId.isValid(sourceId)) {
+  if (!isValidId(sourceId)) {
     return null;
   }
   try {
@@ -105,7 +106,7 @@ export async function updateSource(
   // The raw write below bypasses Mongoose casting, so validate and cast
   // connection explicitly — otherwise a garbage string is persisted verbatim
   // and the stored BSON type diverges from documents written via Mongoose.
-  if (!mongoose.Types.ObjectId.isValid(parseResult.data.connection)) {
+  if (!isValidId(parseResult.data.connection)) {
     throw new Error('Invalid source data: connection must be a valid id');
   }
 

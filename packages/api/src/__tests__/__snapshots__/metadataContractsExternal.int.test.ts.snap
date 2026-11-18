@@ -1,0 +1,695 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`metadata wire contracts: external API v2 and MCP GET /api/v2/alerts 1`] = `
+{
+  "data": [
+    {
+      "channel": {
+        "type": "webhook",
+        "webhookId": "<id:5>",
+      },
+      "channels": [
+        {
+          "type": "webhook",
+          "webhookId": "<id:5>",
+        },
+      ],
+      "createdAt": "<date>",
+      "dashboardId": "<id:7>",
+      "displayName": "Contract tile alert",
+      "id": "<id:9>",
+      "interval": "15m",
+      "message": null,
+      "name": null,
+      "note": null,
+      "numConsecutiveWindows": null,
+      "source": "tile",
+      "state": "OK",
+      "tags": [
+        "contract",
+      ],
+      "teamId": "<id:1>",
+      "threshold": 8,
+      "thresholdType": "above",
+      "tileId": "<id:8>",
+      "updatedAt": "<date>",
+    },
+    {
+      "channel": {
+        "type": "webhook",
+        "webhookId": "<id:5>",
+      },
+      "channels": [
+        {
+          "type": "webhook",
+          "webhookId": "<id:5>",
+        },
+      ],
+      "createdAt": "<date>",
+      "displayName": "Contract errors",
+      "id": "<id:10>",
+      "interval": "15m",
+      "message": null,
+      "name": null,
+      "note": null,
+      "numConsecutiveWindows": null,
+      "savedSearchId": "<id:6>",
+      "source": "saved_search",
+      "state": "OK",
+      "tags": [
+        "contract",
+      ],
+      "teamId": "<id:1>",
+      "threshold": 8,
+      "thresholdType": "above",
+      "updatedAt": "<date>",
+    },
+  ],
+  "meta": {
+    "limit": 1000,
+    "offset": 0,
+    "total": 2,
+  },
+}
+`;
+
+exports[`metadata wire contracts: external API v2 and MCP GET /api/v2/alerts/:id 1`] = `
+{
+  "data": {
+    "channel": {
+      "type": "webhook",
+      "webhookId": "<id:5>",
+    },
+    "channels": [
+      {
+        "type": "webhook",
+        "webhookId": "<id:5>",
+      },
+    ],
+    "createdAt": "<date>",
+    "dashboardId": "<id:7>",
+    "displayName": "Contract tile alert",
+    "id": "<id:9>",
+    "interval": "15m",
+    "message": null,
+    "name": null,
+    "note": null,
+    "numConsecutiveWindows": null,
+    "source": "tile",
+    "state": "OK",
+    "tags": [
+      "contract",
+    ],
+    "teamId": "<id:1>",
+    "threshold": 8,
+    "thresholdType": "above",
+    "tileId": "<id:8>",
+    "updatedAt": "<date>",
+  },
+}
+`;
+
+exports[`metadata wire contracts: external API v2 and MCP GET /api/v2/connections 1`] = `
+{
+  "data": [
+    {
+      "createdAt": "<date>",
+      "host": "couchbase://127.0.0.1",
+      "id": "<id:3>",
+      "kind": "couchbase",
+      "name": "Contract connection",
+      "updatedAt": "<date>",
+      "username": "cbt_query",
+    },
+  ],
+}
+`;
+
+exports[`metadata wire contracts: external API v2 and MCP GET /api/v2/connections/:id 1`] = `
+{
+  "data": {
+    "createdAt": "<date>",
+    "host": "couchbase://127.0.0.1",
+    "id": "<id:3>",
+    "kind": "couchbase",
+    "name": "Contract connection",
+    "updatedAt": "<date>",
+    "username": "cbt_query",
+  },
+}
+`;
+
+exports[`metadata wire contracts: external API v2 and MCP GET /api/v2/dashboards 1`] = `
+{
+  "data": [
+    {
+      "filters": [],
+      "id": "<id:7>",
+      "name": "Contract dashboard",
+      "savedFilterValues": [],
+      "savedQuery": null,
+      "savedQueryLanguage": null,
+      "tags": [
+        "contract",
+      ],
+      "tiles": [
+        {
+          "config": {
+            "asRatio": false,
+            "displayType": "line",
+            "fillNulls": true,
+            "numberFormat": {
+              "output": "number",
+            },
+            "select": [
+              {
+                "aggFn": "count",
+                "valueExpression": "",
+                "where": "",
+                "whereLanguage": "lucene",
+              },
+            ],
+            "sourceId": "<id:4>",
+          },
+          "h": 1,
+          "id": "<id:8>",
+          "name": "Test Chart",
+          "w": 1,
+          "x": 1,
+          "y": 1,
+        },
+        {
+          "config": {
+            "asRatio": false,
+            "displayType": "line",
+            "fillNulls": true,
+            "numberFormat": {
+              "output": "number",
+            },
+            "select": [
+              {
+                "aggFn": "count",
+                "valueExpression": "",
+                "where": "",
+                "whereLanguage": "lucene",
+              },
+            ],
+            "sourceId": "test-source",
+          },
+          "h": 1,
+          "id": "<id:11>",
+          "name": "Test Chart",
+          "w": 1,
+          "x": 1,
+          "y": 1,
+        },
+      ],
+    },
+  ],
+}
+`;
+
+exports[`metadata wire contracts: external API v2 and MCP GET /api/v2/dashboards/:id 1`] = `
+{
+  "data": {
+    "filters": [],
+    "id": "<id:7>",
+    "name": "Contract dashboard",
+    "savedFilterValues": [],
+    "savedQuery": null,
+    "savedQueryLanguage": null,
+    "tags": [
+      "contract",
+    ],
+    "tiles": [
+      {
+        "config": {
+          "asRatio": false,
+          "displayType": "line",
+          "fillNulls": true,
+          "numberFormat": {
+            "output": "number",
+          },
+          "select": [
+            {
+              "aggFn": "count",
+              "valueExpression": "",
+              "where": "",
+              "whereLanguage": "lucene",
+            },
+          ],
+          "sourceId": "<id:4>",
+        },
+        "h": 1,
+        "id": "<id:8>",
+        "name": "Test Chart",
+        "w": 1,
+        "x": 1,
+        "y": 1,
+      },
+      {
+        "config": {
+          "asRatio": false,
+          "displayType": "line",
+          "fillNulls": true,
+          "numberFormat": {
+            "output": "number",
+          },
+          "select": [
+            {
+              "aggFn": "count",
+              "valueExpression": "",
+              "where": "",
+              "whereLanguage": "lucene",
+            },
+          ],
+          "sourceId": "test-source",
+        },
+        "h": 1,
+        "id": "<id:11>",
+        "name": "Test Chart",
+        "w": 1,
+        "x": 1,
+        "y": 1,
+      },
+    ],
+  },
+}
+`;
+
+exports[`metadata wire contracts: external API v2 and MCP GET /api/v2/saved-searches 1`] = `
+{
+  "data": [
+    {
+      "createdAt": "<date>",
+      "filters": [],
+      "id": "<id:6>",
+      "name": "Contract errors",
+      "orderBy": "Timestamp DESC",
+      "select": "Timestamp, ServiceName, Body",
+      "sourceId": "<id:4>",
+      "tags": [
+        "contract",
+      ],
+      "teamId": "<id:1>",
+      "updatedAt": "<date>",
+      "where": "SeverityText:error",
+      "whereLanguage": "lucene",
+    },
+  ],
+  "meta": {
+    "limit": 1000,
+    "offset": 0,
+    "total": 1,
+  },
+}
+`;
+
+exports[`metadata wire contracts: external API v2 and MCP GET /api/v2/saved-searches/:id 1`] = `
+{
+  "data": {
+    "createdAt": "<date>",
+    "filters": [],
+    "id": "<id:6>",
+    "name": "Contract errors",
+    "orderBy": "Timestamp DESC",
+    "select": "Timestamp, ServiceName, Body",
+    "sourceId": "<id:4>",
+    "tags": [
+      "contract",
+    ],
+    "teamId": "<id:1>",
+    "updatedAt": "<date>",
+    "where": "SeverityText:error",
+    "whereLanguage": "lucene",
+  },
+}
+`;
+
+exports[`metadata wire contracts: external API v2 and MCP GET /api/v2/sources 1`] = `
+{
+  "data": [
+    {
+      "bodyExpression": "Body",
+      "connection": "<id:3>",
+      "defaultTableSelectExpression": "Timestamp,ServiceName,SeverityText,Body",
+      "disabled": false,
+      "displayedTimestampValueExpression": "Timestamp",
+      "eventAttributesExpression": "LogAttributes",
+      "eventNameExpression": "EventName",
+      "from": {
+        "databaseName": "otel",
+        "scopeName": "default",
+        "tableName": "otel_logs",
+      },
+      "highlightedRowAttributeExpressions": [],
+      "highlightedTraceAttributeExpressions": [],
+      "id": "<id:4>",
+      "implicitColumnExpression": "Body",
+      "kind": "log",
+      "metricSourceId": "Metrics",
+      "name": "Contract logs",
+      "querySettings": [],
+      "resourceAttributesExpression": "ResourceAttributes",
+      "searchIndexName": "fts_otel_logs",
+      "serviceNameExpression": "ServiceName",
+      "severityNumberExpression": "SeverityNumber",
+      "severityTextExpression": "SeverityText",
+      "spanIdExpression": "SpanId",
+      "timestampFormat": "iso8601",
+      "timestampValueExpression": "Timestamp",
+      "traceIdExpression": "TraceId",
+      "traceSourceId": "Traces",
+    },
+  ],
+}
+`;
+
+exports[`metadata wire contracts: external API v2 and MCP GET /api/v2/sources/:id 1`] = `
+{
+  "data": {
+    "bodyExpression": "Body",
+    "connection": "<id:3>",
+    "defaultTableSelectExpression": "Timestamp,ServiceName,SeverityText,Body",
+    "disabled": false,
+    "displayedTimestampValueExpression": "Timestamp",
+    "eventAttributesExpression": "LogAttributes",
+    "eventNameExpression": "EventName",
+    "from": {
+      "databaseName": "otel",
+      "scopeName": "default",
+      "tableName": "otel_logs",
+    },
+    "highlightedRowAttributeExpressions": [],
+    "highlightedTraceAttributeExpressions": [],
+    "id": "<id:4>",
+    "implicitColumnExpression": "Body",
+    "kind": "log",
+    "metricSourceId": "Metrics",
+    "name": "Contract logs",
+    "querySettings": [],
+    "resourceAttributesExpression": "ResourceAttributes",
+    "searchIndexName": "fts_otel_logs",
+    "serviceNameExpression": "ServiceName",
+    "severityNumberExpression": "SeverityNumber",
+    "severityTextExpression": "SeverityText",
+    "spanIdExpression": "SpanId",
+    "timestampFormat": "iso8601",
+    "timestampValueExpression": "Timestamp",
+    "traceIdExpression": "TraceId",
+    "traceSourceId": "Traces",
+  },
+}
+`;
+
+exports[`metadata wire contracts: external API v2 and MCP GET /api/v2/team 1`] = `
+{
+  "data": {
+    "id": "<id:1>",
+    "name": "fake@example.com's Team",
+  },
+}
+`;
+
+exports[`metadata wire contracts: external API v2 and MCP GET /api/v2/team/invitations 1`] = `
+{
+  "data": [
+    {
+      "createdAt": "<date>",
+      "email": "invitee@example.com",
+      "id": "<id:11>",
+      "name": "Invitee",
+      "url": "http://app:8080/join-team?token=<token>",
+    },
+  ],
+}
+`;
+
+exports[`metadata wire contracts: external API v2 and MCP GET /api/v2/team/members 1`] = `
+{
+  "data": [
+    {
+      "email": "fake@example.com",
+      "id": "<id:2>",
+      "isCurrentUser": true,
+      "name": "fake@example.com",
+    },
+  ],
+}
+`;
+
+exports[`metadata wire contracts: external API v2 and MCP GET /api/v2/webhooks 1`] = `
+{
+  "data": [
+    {
+      "createdAt": "<date>",
+      "description": "Contract snapshot webhook",
+      "id": "<id:5>",
+      "name": "Contract webhook",
+      "service": "slack",
+      "updatedAt": "<date>",
+      "url": "https://hooks.slack.com/services/T00000000/B00000000/XXXXXXXXXXXXXXXXXXXXXXXX",
+    },
+  ],
+  "meta": {
+    "limit": 1000,
+    "offset": 0,
+    "total": 1,
+  },
+}
+`;
+
+exports[`metadata wire contracts: external API v2 and MCP MCP cbt_get_alert 1`] = `
+[
+  {
+    "displayName": "Contract tile alert",
+    "id": "<id:9>",
+    "interval": "15m",
+    "name": null,
+    "source": "tile",
+    "state": "OK",
+    "tags": [
+      "contract",
+    ],
+    "url": "http://app:8080/alerts",
+  },
+  {
+    "displayName": "Contract errors",
+    "id": "<id:10>",
+    "interval": "15m",
+    "name": null,
+    "source": "saved_search",
+    "state": "OK",
+    "tags": [
+      "contract",
+    ],
+    "url": "http://app:8080/alerts",
+  },
+]
+`;
+
+exports[`metadata wire contracts: external API v2 and MCP MCP cbt_get_alert by id 1`] = `
+{
+  "channel": {
+    "type": "webhook",
+    "webhookId": "<id:5>",
+  },
+  "channels": [
+    {
+      "type": "webhook",
+      "webhookId": "<id:5>",
+    },
+  ],
+  "createdAt": "<date>",
+  "dashboardId": "<id:7>",
+  "displayName": "Contract tile alert",
+  "history": [],
+  "id": "<id:9>",
+  "interval": "15m",
+  "message": null,
+  "name": null,
+  "note": null,
+  "numConsecutiveWindows": null,
+  "source": "tile",
+  "state": "OK",
+  "tags": [
+    "contract",
+  ],
+  "teamId": "<id:1>",
+  "threshold": 8,
+  "thresholdType": "above",
+  "tileId": "<id:8>",
+  "updatedAt": "<date>",
+  "url": "http://app:8080/alerts",
+}
+`;
+
+exports[`metadata wire contracts: external API v2 and MCP MCP cbt_get_dashboard 1`] = `
+[
+  {
+    "id": "<id:7>",
+    "name": "Contract dashboard",
+    "tags": [
+      "contract",
+    ],
+    "url": "http://app:8080/dashboards/<id:7>",
+  },
+]
+`;
+
+exports[`metadata wire contracts: external API v2 and MCP MCP cbt_get_dashboard by id 1`] = `
+{
+  "filters": [],
+  "id": "<id:7>",
+  "name": "Contract dashboard",
+  "savedFilterValues": [],
+  "savedQuery": null,
+  "savedQueryLanguage": null,
+  "tags": [
+    "contract",
+  ],
+  "tiles": [
+    {
+      "config": {
+        "asRatio": false,
+        "displayType": "line",
+        "fillNulls": true,
+        "numberFormat": {
+          "output": "number",
+        },
+        "select": [
+          {
+            "aggFn": "count",
+            "valueExpression": "",
+            "where": "",
+            "whereLanguage": "lucene",
+          },
+        ],
+        "sourceId": "<id:4>",
+      },
+      "h": 1,
+      "id": "<id:8>",
+      "name": "Test Chart",
+      "w": 1,
+      "x": 1,
+      "y": 1,
+    },
+    {
+      "config": {
+        "asRatio": false,
+        "displayType": "line",
+        "fillNulls": true,
+        "numberFormat": {
+          "output": "number",
+        },
+        "select": [
+          {
+            "aggFn": "count",
+            "valueExpression": "",
+            "where": "",
+            "whereLanguage": "lucene",
+          },
+        ],
+        "sourceId": "test-source",
+      },
+      "h": 1,
+      "id": "<id:11>",
+      "name": "Test Chart",
+      "w": 1,
+      "x": 1,
+      "y": 1,
+    },
+  ],
+  "url": "http://app:8080/dashboards/<id:7>",
+}
+`;
+
+exports[`metadata wire contracts: external API v2 and MCP MCP cbt_get_saved_search 1`] = `
+[
+  {
+    "id": "<id:6>",
+    "name": "Contract errors",
+    "tags": [
+      "contract",
+    ],
+    "url": "http://app:8080/search/<id:6>",
+  },
+]
+`;
+
+exports[`metadata wire contracts: external API v2 and MCP MCP cbt_get_saved_search by id 1`] = `
+{
+  "createdAt": "<date>",
+  "filters": [],
+  "id": "<id:6>",
+  "name": "Contract errors",
+  "orderBy": "Timestamp DESC",
+  "select": "Timestamp, ServiceName, Body",
+  "sourceId": "<id:4>",
+  "tags": [
+    "contract",
+  ],
+  "teamId": "<id:1>",
+  "updatedAt": "<date>",
+  "url": "http://app:8080/search/<id:6>",
+  "where": "SeverityText:error",
+  "whereLanguage": "lucene",
+}
+`;
+
+exports[`metadata wire contracts: external API v2 and MCP MCP cbt_get_webhook 1`] = `
+[
+  {
+    "id": "<id:5>",
+    "name": "Contract webhook",
+    "service": "slack",
+  },
+]
+`;
+
+exports[`metadata wire contracts: external API v2 and MCP MCP cbt_list_sources 1`] = `
+{
+  "connections": [
+    {
+      "id": "<id:3>",
+      "name": "Contract connection",
+      "queryLanguage": "sqlpp",
+    },
+  ],
+  "nextStep": "Call cbt_describe_source with a sourceId above to get the full column schema, attribute keys, and sampled low-cardinality values before writing queries. connectionId is only needed for cbt_sql.",
+  "sources": [
+    {
+      "connectionId": "<id:3>",
+      "eventAttributesColumn": "LogAttributes",
+      "id": "<id:4>",
+      "keyColumns": {
+        "body": "Body",
+        "eventName": "EventName",
+        "serviceName": "ServiceName",
+        "severityNumber": "SeverityNumber",
+        "severityText": "SeverityText",
+        "traceId": "TraceId",
+      },
+      "kind": "log",
+      "name": "Contract logs",
+      "queryLanguage": "sqlpp",
+      "resourceAttributesColumn": "ResourceAttributes",
+      "table": "otel.otel_logs",
+      "timestampColumn": "Timestamp",
+    },
+  ],
+}
+`;
+
+exports[`metadata wire contracts: external API v2 and MCP MCP cbt_search_dashboards 1`] = `
+[
+  {
+    "id": "<id:7>",
+    "name": "Contract dashboard",
+    "tags": [
+      "contract",
+    ],
+    "url": "http://app:8080/dashboards/<id:7>",
+  },
+]
+`;

@@ -256,4 +256,23 @@ wait_until_queryable() {
 }
 
 wait_until_queryable
+
+# App metadata bucket (MongoDB elimination plan C0), via the shared
+# provisioning code in common-utils so the harness cannot drift from setup.
+provision_metadata() {
+  local here connstr
+  here=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
+  if [ "$OFFSET" = "0" ]; then
+    connstr=couchbase://localhost
+  else
+    connstr="couchbase://localhost:$((11210 + OFFSET))?network=external"
+  fi
+  log "Provisioning metadata bucket cbt_meta"
+  CBT_TEST_COUCHBASE_CONNSTR=${CBT_TEST_COUCHBASE_CONNSTR:-$connstr} \
+    CBT_TEST_COUCHBASE_ADMIN_USER=$ADMIN_USER \
+    CBT_TEST_COUCHBASE_ADMIN_PASSWORD=$ADMIN_PASSWORD \
+    node "$here/provision-metadata.js"
+}
+
+provision_metadata
 log "Ready"

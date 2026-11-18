@@ -177,10 +177,9 @@ export const validateAlertInput = async (
         // wrong database — silently wrong values when the table also exists
         // there, repeated query failures when it does not.
         //
-        // Compare as ObjectIds, not strings: objectIdSchema admits every
-        // representation ObjectId.isValid does (uppercase hex, 12-byte
-        // strings), and the Mongo lookups above cast them — a lexical
-        // comparison would reject an equivalent non-canonical ID.
+        // Compare as ObjectIds, not strings: objectIdSchema admits uppercase
+        // hex, and the Mongo lookups above cast it — a lexical comparison
+        // would reject an equivalent non-canonical ID.
         if (
           !new Types.ObjectId(String(source.connection)).equals(
             chartConfig.connection,

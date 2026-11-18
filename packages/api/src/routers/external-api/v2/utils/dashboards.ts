@@ -62,6 +62,7 @@ import { z } from 'zod';
 import { deleteDashboardAlerts } from '@/controllers/alerts';
 import { getConnectionsByTeam } from '@/controllers/connection';
 import { getSources } from '@/controllers/sources';
+import { newId } from '@/metadata/ids';
 import Dashboard, { DashboardDocument } from '@/models/dashboard';
 import {
   getExternalCompatibleFilters,
@@ -1717,7 +1718,7 @@ export function convertExternalTilesToInternal(
     const tileId =
       existingTileIds && tile.id && existingTileIds.has(tile.id)
         ? tile.id
-        : new mongoose.Types.ObjectId().toString();
+        : newId();
     const tileWithId = { ...tile, id: tileId };
     if (isConfigTile(tileWithId)) {
       return convertToInternalTileConfig(tileWithId);
@@ -1743,7 +1744,7 @@ export function convertExternalFiltersToInternal(
     const filterId =
       existingFilterIds && 'id' in filter && existingFilterIds.has(filter.id)
         ? filter.id
-        : new mongoose.Types.ObjectId().toString();
+        : newId();
     return translateExternalFilterToFilter({ ...filter, id: filterId });
   });
 }

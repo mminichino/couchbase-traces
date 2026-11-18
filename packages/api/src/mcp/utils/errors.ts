@@ -1,5 +1,6 @@
-import mongoose from 'mongoose';
 import { z } from 'zod';
+
+import { isValidId } from '@/metadata/ids';
 
 /**
  * Error category for MCP tool failures.
@@ -69,7 +70,7 @@ export function validateObjectId(
   id: string,
   label: string,
 ): McpErrorResult | null {
-  if (!mongoose.Types.ObjectId.isValid(id)) {
+  if (!isValidId(id)) {
     return mcpUserError(`Invalid ${label}`);
   }
   return null;

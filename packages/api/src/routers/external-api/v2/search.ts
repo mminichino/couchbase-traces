@@ -1,6 +1,5 @@
 import { QueryError } from '@couchbase-traces/common-utils/dist/query';
 import express from 'express';
-import { ObjectId } from 'mongodb';
 import { z } from 'zod';
 
 import {
@@ -8,6 +7,7 @@ import {
   EXTERNAL_API_SEARCH_MAX_RESULTS,
 } from '@/config';
 import { parseTimeRange } from '@/mcp/tools/query/helpers';
+import { isValidId } from '@/metadata/ids';
 import { getNonNullUserWithTeam } from '@/middleware/auth';
 import { couchbaseConsumerHttpResponse } from '@/utils/couchbaseConsumerErrors';
 import { processRequestWithEnhancedErrors as validateRequest } from '@/utils/enhancedErrors';
@@ -174,7 +174,7 @@ const searchRequestSchema = z.object({
   sourceId: z
     .string()
     .min(1, { message: 'sourceId is required' })
-    .refine(val => ObjectId.isValid(val), {
+    .refine(val => isValidId(val), {
       message: 'sourceId must be a valid ObjectId',
     })
     .describe(

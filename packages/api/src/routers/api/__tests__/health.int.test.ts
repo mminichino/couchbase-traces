@@ -44,11 +44,13 @@ describe('health and readiness endpoints', () => {
       expect(apiNotReady.body).toEqual({
         status: 'unavailable',
         mongo: 'disconnected',
+        metadata: expect.any(String),
       });
       const opampNotReady = await request(opampApp).get('/ready').expect(503);
       expect(opampNotReady.body).toEqual({
         status: 'unavailable',
         mongo: 'disconnected',
+        metadata: expect.any(String),
       });
 
       // ... while liveness stays green — restarting would not fix Mongo.

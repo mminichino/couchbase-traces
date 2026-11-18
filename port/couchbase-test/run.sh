@@ -116,7 +116,8 @@ log "Running common-utils Couchbase integration tests"
   --runInBand --testPathPatterns 'couchbase\.int\.test' || status=$?
 
 log "Running api Couchbase integration tests"
-CBT_CI_MONGO_PORT=$MONGO_PORT DOTENV_CONFIG_PATH=.env.test DOTENV_CONFIG_OVERRIDE=true \
+CBT_CI_MONGO_PORT=$MONGO_PORT CBT_METADATA_CONNSTR=$CBT_TEST_COUCHBASE_CONNSTR \
+  DOTENV_CONFIG_PATH=.env.test DOTENV_CONFIG_OVERRIDE=true \
   "${YARN[@]}" workspace @couchbase-traces/api jest -c jest.int.config.js \
   --runInBand --forceExit --testPathPatterns 'couchbase\.int\.test' || status=$?
 

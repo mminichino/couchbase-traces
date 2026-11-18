@@ -92,6 +92,8 @@ function runIngestSetup(): void {
     CBT_COUCHBASE_INGEST_PASSWORD: 'cbt-otel-ingest-password',
     CBT_COUCHBASE_MONITOR_USER: 'cbt_otel_monitor',
     CBT_COUCHBASE_MONITOR_PASSWORD: 'cbt-otel-monitor-password',
+    CBT_METADATA_USER: 'cbt_meta',
+    CBT_METADATA_PASSWORD: 'cbt-e2e-metadata-password',
   };
   execSync(
     'node packages/ingest/dist/setup/cli.js --create-bucket --create-users --bucket-ram-mb 1024 --index-replicas 0',

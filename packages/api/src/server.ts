@@ -9,6 +9,7 @@ import { serializeError } from 'serialize-error';
 import app from '@/api-app';
 import * as config from '@/config';
 import { LOCAL_APP_TEAM } from '@/controllers/team';
+import { closeMetadataStore, startMetadataStore } from '@/metadata';
 import { runStartupMigrations } from '@/migrations';
 import { connectDBWithRetry, mongooseConnection } from '@/models';
 import opampApp from '@/opamp/app';
@@ -35,10 +36,20 @@ export default class Server {
   protected async shutdown(_signal?: string) {
     let hasError = false;
     logger.info('Closing all db clients...');
-    const [mongoCloseResult, couchbaseCloseResult] = await Promise.allSettled([
-      mongooseConnection.close(false),
-      clusterCache.closeAll(),
-    ]);
+    const [mongoCloseResult, couchbaseCloseResult, metadataCloseResult] =
+      await Promise.allSettled([
+        mongooseConnection.close(false),
+        clusterCache.closeAll(),
+        closeMetadataStore(),
+      ]);
+
+    if (metadataCloseResult.status === 'rejected') {
+      hasError = true;
+      logger.error(
+        { err: serializeError(metadataCloseResult.reason) },
+        'Metadata cluster close failed',
+      );
+    }
 
     if (couchbaseCloseResult.status === 'rejected') {
       hasError = true;
@@ -129,6 +140,11 @@ export default class Server {
     // connectDBWithRetry for why a single failed initial connect must not be
     // allowed to leave the process running but permanently unable to serve.
     await connectDBWithRetry();
+
+    // Both stores during the Mongo elimination (plan C0–C4). Retries the
+    // connection forever like Mongo; rejects only on bad config or a schema
+    // written by a newer release. Disabled without CBT_METADATA_* credentials.
+    await startMetadataStore({ logger, appVersion: config.CODE_VERSION });
 
     await runStartupMigrations();
 
