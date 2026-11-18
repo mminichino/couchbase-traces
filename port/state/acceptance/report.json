@@ -1,16 +1,16 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-11-17T17:00:19.693Z",
-  "gitSha": "9d3732561b0e6fa5679eee59c961e6eee36787a3",
-  "dirty": true,
-  "final": false,
+  "generatedAt": "2026-11-18T08:53:39.878Z",
+  "gitSha": "65996288823fd6e097811098f4aea9711f453404",
+  "dirty": false,
+  "final": true,
   "environment": {
     "os": "darwin arm64",
     "dockerVersion": "29.9.3",
     "dockerCpus": 10,
     "dockerMemoryBytes": 16745758720,
     "node": "v22.23.4",
-    "couchbaseImage": "couchbase/server:enterprise-8.0.3"
+    "couchbaseImage": "unknown"
   },
   "checks": [
     {
@@ -1201,14 +1201,40 @@
       "status": "pass"
     },
     {
-      "summary": "Pending push and --record-ci",
-      "details": null,
+      "summary": "GitHub Actions run succeeded for 65996288823f",
+      "details": {
+        "expectedSha": "65996288823fd6e097811098f4aea9711f453404",
+        "recordedUrl": "https://github.com/mminichino/couchbase-traces/actions/runs/44263375672",
+        "siblingFailures": [],
+        "runs": [
+          {
+            "name": "Main",
+            "id": 44263375672,
+            "status": "completed",
+            "conclusion": "success",
+            "html_url": "https://github.com/mminichino/couchbase-traces/actions/runs/44263375672"
+          },
+          {
+            "name": "Knip - Unused Code Analysis",
+            "id": 44263375597,
+            "status": "completed",
+            "conclusion": "success",
+            "html_url": "https://github.com/mminichino/couchbase-traces/actions/runs/44263375597"
+          },
+          {
+            "name": "Docker Build",
+            "id": 44263375435,
+            "status": "completed",
+            "conclusion": "success",
+            "html_url": "https://github.com/mminichino/couchbase-traces/actions/runs/44263375435"
+          }
+        ]
+      },
       "evidence": [],
-      "durationMs": 1,
+      "durationMs": 713,
       "id": "K2",
       "title": "GitHub Actions",
-      "status": "blocked",
-      "request": "Push this commit to origin (ORIGIN_URL) and run the acceptance runner with --record-ci <workflow run URL>."
+      "status": "pass"
     },
     {
       "summary": "gitleaks found no secrets",
@@ -1278,5 +1304,5 @@
       "status": "pass"
     }
   ],
-  "status": "blocked"
+  "status": "pass"
 }
