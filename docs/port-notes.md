@@ -1101,3 +1101,7 @@ key rows and minimal `otel_sessions` documents.
   kubernetes dashboard, chart explorer SQL-mode toggles, some ad-hoc dashboard
   click filters. Restore the workflow_call + report aggregator when those
   pass; track in docs/parity.md.
+
+## Mongo elimination (planned)
+
+- Plan: [`docs/mongo-elimination-plan.md`](mongo-elimination-plan.md). It moves app metadata from MongoDB to a Couchbase `cbt_meta` scope through a repository seam (phases M0–M8). Open questions Q1–Q10 need user decisions before M3.
