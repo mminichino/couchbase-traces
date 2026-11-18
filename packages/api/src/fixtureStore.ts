@@ -48,11 +48,16 @@ function parseTableRef(table: string): {
   collection: string;
 } {
   // Legacy "database.table" → scope.collection in the otel bucket.
+  // When the first segment is the bucket name (sources use databaseName=bucket),
+  // treat two-part refs as bucket.collection with the default scope.
   const parts = table.split('.').filter(Boolean);
   if (parts.length === 1) {
     return { bucket: BUCKET, scope: SCOPE, collection: parts[0] };
   }
   if (parts.length === 2) {
+    if (parts[0] === BUCKET) {
+      return { bucket: BUCKET, scope: SCOPE, collection: parts[1] };
+    }
     return { bucket: BUCKET, scope: parts[0], collection: parts[1] };
   }
   return {
@@ -83,10 +88,18 @@ function translateCommand(sql: string): string {
     // No-op for Couchbase collections in fixtures; schema is managed by ingest setup.
     return 'SELECT RAW 1';
   }
-  // Rewrite bare `default.otel_*` refs in other DDL/DML to full keyspaces when
-  // they appear as a single table token after FROM/INTO/TABLE.
+  // ClickHouse DDL from unported fixtures — collections already exist via ingest.
+  if (
+    /^(CREATE(?:\s+OR\s+REPLACE)?\s+TABLE|CREATE\s+DATABASE|ALTER\s+TABLE|CREATE\s+VIEW|CREATE\s+MATERIALIZED\s+VIEW)\b/i.test(
+      trimmed,
+    )
+  ) {
+    return 'SELECT RAW 1';
+  }
+  // Rewrite bare `default.otel_*` / `otel.otel_*` refs in other DDL/DML to full
+  // keyspaces when they appear as a single table token after FROM/INTO/TABLE.
   return trimmed.replace(
-    /\b(FROM|INTO|TABLE|UPDATE)\s+(`?default`?\.`?[A-Za-z0-9_]+`?)/gi,
+    /\b(FROM|INTO|TABLE|UPDATE)\s+(`?(?:default|otel)`?\.`?[A-Za-z0-9_]+`?)/gi,
     (_m, kw: string, ref: string) => `${kw} ${keyspace(ref.replace(/`/g, ''))}`,
   );
 }

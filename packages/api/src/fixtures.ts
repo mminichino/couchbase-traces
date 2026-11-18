@@ -35,24 +35,33 @@ const MOCK_USER = {
 // Server imports dataLayerSetup (Mongo Connection.findById). Int tests often
 // use placeholder ids like "test-connection" or freshly minted ObjectIds with
 // no Connection doc — fall back to the CI compose cluster credentials.
+// When a Connection doc exists, still force CI compose host/user/password:
+// tests seed docs with config.CLICKHOUSE_* (or empty) which is not a working
+// Couchbase login against docker-compose.ci.yml.
 if (config.IS_CI) {
+  const ciCreds = () => ({
+    host: process.env.CBT_COUCHBASE_CONNSTR || 'couchbase://127.0.0.1',
+    username: process.env.CBT_COUCHBASE_QUERY_USER || 'cbt_query',
+    password: process.env.CBT_COUCHBASE_QUERY_PASSWORD || 'dev-query-password',
+  });
   setCouchbaseConnectionLoader(async id => {
+    const creds = ciCreds();
     try {
       const doc = await Connection.findById(id).select(
         '+password +tlsCaCertificate',
       );
       if (doc != null) {
-        return toCouchbaseConnectionConfig(doc);
+        return {
+          ...toCouchbaseConnectionConfig(doc),
+          ...creds,
+        };
       }
     } catch {
       // non-ObjectId ids (e.g. "test-connection") throw from findById
     }
     return {
       id: String(id),
-      host: process.env.CBT_COUCHBASE_CONNSTR || 'couchbase://127.0.0.1',
-      username: process.env.CBT_COUCHBASE_QUERY_USER || 'cbt_query',
-      password:
-        process.env.CBT_COUCHBASE_QUERY_PASSWORD || 'dev-query-password',
+      ...creds,
       wanProfile: undefined,
       tlsCaCertificate: undefined,
       updatedAt: '',
@@ -60,7 +69,8 @@ if (config.IS_CI) {
   });
 }
 
-export const DEFAULT_DATABASE = 'default';
+// Source.from.databaseName is the Couchbase bucket (see renderFromCouchbase).
+export const DEFAULT_DATABASE = process.env.CBT_COUCHBASE_BUCKET || 'otel';
 export const DEFAULT_LOGS_TABLE = 'otel_logs';
 export const DEFAULT_TRACES_TABLE = 'otel_traces';
 export const DEFAULT_METRICS_TABLE = {
@@ -835,7 +845,9 @@ export const makeRawSqlTile = (opts?: {
 export const RAW_SQL_ALERT_TEMPLATE = [
   'SELECT toStartOfInterval(Timestamp, INTERVAL {intervalSeconds:Int64} second) AS ts,',
   ' count() AS cnt',
-  ' FROM default.otel_logs',
+  // databaseName == Couchbase bucket; keep CH interval helpers until raw-SQL
+  // templates are rewritten to SQL++ (alerts still exercise connection/auth).
+  ` FROM ${DEFAULT_DATABASE}.default.${DEFAULT_LOGS_TABLE}`,
   ' WHERE Timestamp >= fromUnixTimestamp64Milli({startDateMilliseconds:Int64})',
   ' AND Timestamp < fromUnixTimestamp64Milli({endDateMilliseconds:Int64})',
   ' GROUP BY ts ORDER BY ts',
@@ -869,7 +881,7 @@ export const makeRawSqlAlertTile = (opts?: {
 
 export const RAW_SQL_NUMBER_ALERT_TEMPLATE = [
   'SELECT count() AS cnt',
-  ' FROM default.otel_logs',
+  ` FROM ${DEFAULT_DATABASE}.default.${DEFAULT_LOGS_TABLE}`,
   ' WHERE Timestamp >= fromUnixTimestamp64Milli({startDateMilliseconds:Int64})',
   ' AND Timestamp < fromUnixTimestamp64Milli({endDateMilliseconds:Int64})',
 ].join('');

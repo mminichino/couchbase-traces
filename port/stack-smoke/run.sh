@@ -200,13 +200,32 @@ if [ "${code:-}" = "409" ]; then
 fi
 TEAM_KEY="$(curl -fsS -b "$COOKIE_JAR" "${API_BASE}/team" | python3 -c 'import json,sys; print(json.load(sys.stdin)["apiKey"])')"
 
-OTEL_HTTP_PORT="$(compose port otel-collector 4318 2>/dev/null | cut -d: -f2 || echo 4318)"
+# OTel has no healthcheck; wait until the published OTLP HTTP port accepts TCP.
+# `compose port` may print 0.0.0.0:4318 or [::]:4318 — take the last :field.
+mapped="$(compose port otel-collector 4318 2>/dev/null || true)"
+OTEL_HTTP_PORT="${mapped##*:}"
+OTEL_HTTP_PORT="${OTEL_HTTP_PORT:-4318}"
+otel_ready=0
+for _ in $(seq 1 90); do
+  if python3 -c "import socket;s=socket.socket();s.settimeout(1);s.connect(('127.0.0.1',int('${OTEL_HTTP_PORT}')));s.close()" 2>/dev/null; then
+    otel_ready=1
+    break
+  fi
+  sleep 2
+done
+if [ "$otel_ready" != 1 ]; then
+  echo "[stack-smoke] WARN: otel-collector :${OTEL_HTTP_PORT} not accepting connections yet"
+  compose logs otel-collector --tail 80 || true
+fi
 
 if node -e "const p=require('./packages/ingest/package.json'); process.exit(p.scripts['sample-data']?0:1)" 2>/dev/null; then
-  yarn workspace @couchbase-traces/ingest sample-data \
+  if ! yarn workspace @couchbase-traces/ingest sample-data \
     --endpoint "http://127.0.0.1:${OTEL_HTTP_PORT}" \
     --api-key "$TEAM_KEY" \
-    --hours 1
+    --hours 1; then
+    echo "[stack-smoke] WARN: sample-data failed (collector may still be starting); continuing"
+    compose logs otel-collector --tail 120 || true
+  fi
 else
   echo "[stack-smoke] WARN: sample-data command not available; skipping data load"
 fi

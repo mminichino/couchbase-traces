@@ -172,6 +172,10 @@ jobs:
           CBT_COUCHBASE_ADMIN_PASSWORD: dev-admin-password
           CBT_COUCHBASE_QUERY_USER: cbt_query
           CBT_COUCHBASE_QUERY_PASSWORD: dev-query-password
+          # Compat for int tests that still seed Connection via CLICKHOUSE_*.
+          CLICKHOUSE_HOST: couchbase://127.0.0.1
+          CLICKHOUSE_USER: cbt_query
+          CLICKHOUSE_PASSWORD: dev-query-password
           CBT_TEST_COUCHBASE_REQUIRED: '0'
         run: |
           set +e

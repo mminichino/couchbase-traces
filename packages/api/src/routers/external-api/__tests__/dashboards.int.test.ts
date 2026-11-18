@@ -5602,7 +5602,7 @@ describe('External API v2 Dashboards - new format', () => {
       expect(await Alert.findById(alert._id)).toBeNull();
     });
 
-    it('should delete alert when tile is updated from builder to PromQL config', async () => {
+    it('rejects updating a tile from builder to PromQL config', async () => {
       const tileId = new ObjectId().toString();
       const dashboard = await createTestDashboard({
         tiles: [
@@ -5624,24 +5624,8 @@ describe('External API v2 Dashboards - new format', () => {
           },
         ],
       });
-      const webhook = await Webhook.create({
-        name: 'Test Webhook',
-        service: WebhookService.Slack,
-        url: 'https://hooks.slack.com/test',
-        team: team._id,
-      });
-      const alert = await Alert.create({
-        team: team._id,
-        dashboard: dashboard._id,
-        tileId,
-        source: AlertSource.TILE,
-        threshold: 100,
-        interval: '1h',
-        thresholdType: AlertThresholdType.ABOVE,
-        channel: { type: 'webhook', webhookId: webhook._id.toString() },
-      });
 
-      await authRequest('put', `${BASE_URL}/${dashboard._id}`)
+      const res = await authRequest('put', `${BASE_URL}/${dashboard._id}`)
         .send({
           name: 'Updated Dashboard',
           tags: [],
@@ -5662,9 +5646,10 @@ describe('External API v2 Dashboards - new format', () => {
             },
           ],
         })
-        .expect(200);
-
-      expect(await Alert.findById(alert._id)).toBeNull();
+        .expect(400);
+      expect(JSON.stringify(res.body)).toContain(
+        'PromQL sources are no longer supported.',
+      );
     });
 
     it('should delete alert when a tile with an alert is removed from the dashboard', async () => {
@@ -7162,19 +7147,14 @@ describe('External API v2 Dashboards - new format', () => {
         tags: [],
       });
 
-    it('round-trips a PromQL tile through POST and GET', async () => {
-      const create = await postTile().expect(200);
-      const expected = { ...promqlTile().config, fillNulls: true };
-      expect(create.body.data.tiles[0].config).toEqual(expected);
-
-      const get = await authRequest(
-        'get',
-        `${BASE_URL}/${create.body.data.id}`,
-      ).expect(200);
-      expect(get.body.data.tiles[0].config).toEqual(expected);
+    it('rejects creating a PromQL tile', async () => {
+      const res = await postTile().expect(400);
+      expect(JSON.stringify(res.body)).toContain(
+        'PromQL sources are no longer supported.',
+      );
     });
 
-    it('keeps PromQL tiles when a dashboard is read and saved back', async () => {
+    it('rejects saving back a dashboard that still has a PromQL tile', async () => {
       const promqlConfig = {
         configType: 'promql',
         name: 'Saved in the app',
@@ -7208,13 +7188,11 @@ describe('External API v2 Dashboards - new format', () => {
         `${BASE_URL}/${dashboard._id}`,
       ).expect(200);
       const { name, tiles, tags } = get.body.data;
-      await authRequest('put', `${BASE_URL}/${dashboard._id}`)
+      const res = await authRequest('put', `${BASE_URL}/${dashboard._id}`)
         .send({ name, tiles, tags })
-        .expect(200);
-
-      const stored = await Dashboard.findById(dashboard._id).lean();
-      expect(stored?.tiles.find(t => t.id === 'promql-tile')?.config).toEqual(
-        promqlConfig,
+        .expect(400);
+      expect(JSON.stringify(res.body)).toContain(
+        'PromQL sources are no longer supported.',
       );
     });
 
@@ -7223,64 +7201,19 @@ describe('External API v2 Dashboards - new format', () => {
         sourceId: traceSource._id.toString(),
       }).expect(400);
       expect(JSON.stringify(res.body)).toContain(
-        `PromQL tiles require a PromQL source. The following source IDs are not PromQL sources: ${traceSource._id.toString()}`,
+        'PromQL sources are no longer supported.',
       );
     });
 
-    describe('when the source kind changes after the tile is saved', () => {
-      const createAndRetypeSource = async () => {
-        const create = await postTile().expect(200);
-        await Source.updateOne(
-          { _id: promqlSource._id },
-          { $set: { kind: SourceKind.Log } },
-        );
-        return create.body.data;
-      };
-
-      it('still lets unrelated edits through', async () => {
-        const { id, tiles, tags } = await createAndRetypeSource();
-
-        await authRequest('put', `${BASE_URL}/${id}`)
-          .send({ name: 'Renamed', tiles, tags })
-          .expect(200);
-      });
-
-      it('rejects pointing the tile at a non-PromQL source', async () => {
-        const { id, tiles, tags } = await createAndRetypeSource();
-        const [tile] = tiles;
-
-        const res = await authRequest('put', `${BASE_URL}/${id}`)
-          .send({
-            name: 'Renamed',
-            tiles: [
-              {
-                ...tile,
-                config: {
-                  ...tile.config,
-                  sourceId: traceSource._id.toString(),
-                },
-              },
-            ],
-            tags,
-          })
-          .expect(400);
-        expect(JSON.stringify(res.body)).toContain(
-          'PromQL tiles require a PromQL source',
-        );
-      });
-    });
-
-    // The builder heatmap check requires a Trace source; it must not apply.
-    it('accepts a PromQL heatmap on a PromQL source', async () => {
-      const create = await postTile({
+    it('rejects a PromQL heatmap tile', async () => {
+      const res = await postTile({
         displayType: 'heatmap',
         heatmapMode: 'histogram',
         expressions: [{ expression: 'sum by (le) (rate(x_bucket[5m]))' }],
-      }).expect(200);
-      expect(create.body.data.tiles[0].config).toMatchObject({
-        displayType: 'heatmap',
-        heatmapMode: 'histogram',
-      });
+      }).expect(400);
+      expect(JSON.stringify(res.body)).toContain(
+        'PromQL sources are no longer supported.',
+      );
     });
   });
 
