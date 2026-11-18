@@ -144,14 +144,33 @@ wait_for_init
 wait_healthy ingest
 wait_healthy app
 
-APP_PORT="$(grep -E '^CBT_APP_PORT=' "$ENV_FILE" | tail -1 | cut -d= -f2-)"
-APP_PORT="${APP_PORT:-8080}"
-API_BASE="http://127.0.0.1:${APP_PORT}/api"
+# Hit the Express API directly (CBT_API_PORT). Going through Next on
+# CBT_APP_PORT proxies /api and can drop/rewrite Set-Cookie, which left
+# /team returning 401 after a "successful" register/login.
+API_PORT="$(grep -E '^CBT_API_PORT=' "$ENV_FILE" | tail -1 | cut -d= -f2-)"
+API_PORT="${API_PORT:-8000}"
+API_BASE="http://127.0.0.1:${API_PORT}"
 COOKIE_JAR="$(mktemp)"
 EMAIL="stack-smoke-$(date +%s)@couchbase-traces.test"
 PASSWORD="$(gen_user_password)"
 
-# App may report "running" before Express listens; retry register briefly.
+# Wait until the API health endpoint answers (container may be "running"
+# before Express binds CBT_API_PORT).
+api_ready=0
+for _ in $(seq 1 60); do
+  if curl -fsS "${API_BASE}/health" >/dev/null 2>&1; then
+    api_ready=1
+    break
+  fi
+  sleep 2
+done
+if [ "$api_ready" != 1 ]; then
+  echo "[stack-smoke] API never became ready on ${API_BASE}/health"
+  compose logs app --tail 200 || true
+  exit 1
+fi
+
+# Register creates the session via passport; retry briefly for cold start.
 register_ok=0
 for _ in $(seq 1 30); do
   code="$(curl -sS -o /tmp/cbt-smoke-register.json -w '%{http_code}' \
@@ -162,7 +181,6 @@ for _ in $(seq 1 30); do
     register_ok=1
     break
   fi
-  # 409 = team already exists from a prior partial run — try login instead.
   if [ "$code" = "409" ]; then
     register_ok=1
     break
@@ -171,11 +189,14 @@ for _ in $(seq 1 30); do
 done
 if [ "$register_ok" != 1 ]; then
   echo "[stack-smoke] register failed (last HTTP ${code:-?}): $(cat /tmp/cbt-smoke-register.json 2>/dev/null || true)"
+  compose logs app --tail 200 || true
   exit 1
 fi
-curl -fsS -c "$COOKIE_JAR" -b "$COOKIE_JAR" -X POST "${API_BASE}/login/password" \
-  -H 'Content-Type: application/json' \
-  -d "{\"email\":\"${EMAIL}\",\"password\":\"${PASSWORD}\"}" >/dev/null
+if [ "${code:-}" = "409" ]; then
+  curl -fsS -c "$COOKIE_JAR" -b "$COOKIE_JAR" -X POST "${API_BASE}/login/password" \
+    -H 'Content-Type: application/json' \
+    -d "{\"email\":\"${EMAIL}\",\"password\":\"${PASSWORD}\"}" >/dev/null
+fi
 TEAM_KEY="$(curl -fsS -b "$COOKIE_JAR" "${API_BASE}/team" | python3 -c 'import json,sys; print(json.load(sys.stdin)["apiKey"])')"
 
 OTEL_HTTP_PORT="$(compose port otel-collector 4318 2>/dev/null | cut -d: -f2 || echo 4318)"
@@ -192,6 +213,7 @@ fi
 SOURCE_COUNT="$(curl -fsS -b "$COOKIE_JAR" "${API_BASE}/sources" | python3 -c 'import json,sys; print(len(json.load(sys.stdin)))')"
 if [ "$SOURCE_COUNT" -lt 4 ]; then
   echo "[stack-smoke] expected 4 preset sources, got ${SOURCE_COUNT}"
+  compose logs app --tail 200 || true
   exit 1
 fi
 

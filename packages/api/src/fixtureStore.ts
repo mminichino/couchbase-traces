@@ -181,7 +181,8 @@ export class FixtureDataClient {
           v instanceof Date ? v.toISOString() : v,
         ),
       );
-      await queryHttp(`UPSERT INTO ${ks} (KEY $k, VALUE $v)`, {
+      // Same shape as packages/common-utils couchbase int helpers.
+      await queryHttp(`UPSERT INTO ${ks} (KEY, VALUE) VALUES ($k, $v)`, {
         k: id,
         v: value,
       });
