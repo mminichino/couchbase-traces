@@ -1,10 +1,12 @@
 # MongoDB elimination plan
 
-Status: proposal, not started. Owner decisions needed: see [Open questions](#open-questions).
+Status: approved direction (revision 2, 2026-11-18). Owner decisions are recorded in [Decisions](#decisions). Remaining questions are in [Open questions](#10-open-questions).
 
-Goal: store all Couchbase Traces app metadata (teams, users, sessions, connections, sources, saved searches, dashboards, alerts, alert history, webhooks, favorites, pinned filters, preset dashboard filters, invites, migration state) in Couchbase Server Enterprise 8.x / Capella. After this plan, no Mongo containers, Mongo drivers, or Mongo env vars are left. Every feature keeps working, and ids, URLs, and API/MCP/CLI wire shapes stay the same.
+Goal: store all Couchbase Traces app metadata (teams, users, sessions, connections, sources, saved searches, dashboards, alerts, alert history, webhooks, favorites, pinned filters, preset dashboard filters, invites) in a dedicated Couchbase Server Enterprise 8.x / Capella metadata bucket. After this plan, no Mongo containers, Mongo drivers, or Mongo env vars are left. Every feature keeps working, and the URL/API/MCP/CLI wire shapes stay the same.
 
-This plan follows `AGENTS.md`. Work one phase at a time. Each phase ends with `make ci-lint` and `make ci-unit` green, plus the integration suites named in that phase, and then one commit. Build the Couchbase metadata layer next to Mongoose and switch through a seam (rule 5 pattern). The upstream tests are the specification (rule 6). Mongo code is deleted last. Anything dropped needs written sign-off recorded via `port/features.json` and then `port/inventory.sh render` (`docs/parity.md` is generated, so do not edit it by hand).
+Couchbase Traces is a new utility with **no existing Mongo installs**. Nothing is imported, migrated, or kept backward-compatible with stored Mongo data. MongoDB is only a development-time dependency inherited from upstream HyperDX, and this plan removes it.
+
+This plan follows `AGENTS.md`. Work one phase at a time. Each phase ends with `make ci-lint` and `make ci-unit` green, plus the integration suites named in that phase, and then one commit. The upstream tests are the specification (rule 6): each entity's tests move with the entity. Mongo code is deleted in the last phase. Anything dropped needs written sign-off recorded via `port/features.json` and then `port/inventory.sh render` (`docs/parity.md` is generated, so do not edit it by hand).
 
 ## 0. Verified current state (inventory)
 
@@ -37,6 +39,7 @@ Other Mongo state:
 - Sessions: `connect-mongo` `sessions` collection, created in `packages/api/src/api-app.ts`. Cookie maxAge is 30 days, `rolling: true`.
 - `migrate-mongo` `changelog` collection, configured in `packages/api/migrate-mongo-config.ts`. Migrations live in `packages/api/migrations/mongo/`: `20231130053610-add_accessKey_field_to_user_collection.ts`, `20261112220000-add_kind_to_connections.ts`, `20261113200000-disable_legacy_connections.ts`. `packages/api/migrations/ch/` holds ClickHouse leftovers and is out of scope.
 - Startup backfill: `packages/api/src/migrations.ts` (`backfillAlertDisplayFields`, which uses `bulkWrite` with `timestamps:false`).
+- Under D2/D7 none of these are ported. They exist only to transform data from earlier upstream releases, and Couchbase Traces has none.
 
 ### 0.2 Mongo-specific constructs in use (non-test)
 
@@ -70,100 +73,117 @@ Other Mongo state:
 | `ORDER BY … NULLS FIRST/LAST`; MISSING sorts before NULL in ASC; strings use raw UTF-8 byte collation | server/8.0/n1ql/n1ql-language-reference/orderby.html | Alerts keyset cursor parity |
 | Sub-document `arrayAddUnique` (`PathExistsError`), `upsert`/`remove`, CAS | nodejs-sdk/current/howtos/subdocument-operations.html | `$addToSet`, `$set`/`$unset`, concurrent partial updates |
 | RBAC roles `data_reader`, `data_writer`, `query_select`, `query_insert`, `query_update`, `query_delete`, `query_manage_index`, `scope_admin` | server/8.0/learn/security/roles.html | Metadata service user |
+| Magma with 128 vBuckets is the 8.0 default and has a 100 MiB per-node minimum quota (1024 vBuckets: 1 GiB) | server/8.0/learn/buckets-memory-and-storage/storage-engines.html | Small dedicated metadata bucket |
 | No unique GSI | (GSI has no unique constraint) | Lookup documents |
 
 Enterprise-only items we use: window functions (`ROW_NUMBER() OVER`), index replicas, and transactions on Capella and EE.
 
+## Decisions
+
+| # | Decision | Rationale |
+|---|---|---|
+| D1 | **Separate metadata bucket** `CBT_METADATA_BUCKET` (default `cbt_meta`), scope `CBT_METADATA_SCOPE` (default `app`), on the same cluster by default (`CBT_METADATA_CONNSTR` falls back to `CBT_COUCHBASE_CONNSTR`). | User decision. It also gives an independent RAM quota, no interaction with the telemetry collections' TTLs, independent backup/restore, and an RBAC boundary: connection passwords live in metadata, and the telemetry query user that powers raw SQL++ in the UI must never be able to read them. |
+| D2 | **No import tool, no data migration, no Mongo compatibility.** | User decision: new utility with no existing installs. |
+| D3 | **Custom Couchbase KV session store.** | User decision. KV only, per-document expiry, `touch` for `rolling: true`. No session-cutover handling. |
+| D4 | **Password hashing: Node `crypto.scrypt`**, async (runs on the libuv threadpool), N=2^15, r=8, p=3, 64-byte key, 16-byte random salt, `maxmem` 64 MiB. Stored as one self-describing string `scrypt$1$N=32768,r=8,p=3$<salt b64url>$<hash b64url>`; verified with `crypto.timingSafeEqual`. | Memory-hard, so it is far more resistant to GPU cracking than pbkdf2-sha256. Built into Node 22, so no native addon and no new dependency. The parameters are one of the OWASP Password Storage Cheat Sheet's equivalent scrypt configurations (32 MiB per hash), affordable at login rates. The encoded parameters let a future release raise the cost and rehash on the next successful login. No passport-local-mongoose compatibility is needed (D2). |
+| D5 | **Keep 24-hex ObjectId-format ids**, generated in-repo (`metadata/ids.ts`: 4-byte big-endian seconds + 5-byte per-process random + 3-byte counter, hex). **No `bson` dependency.** | Existing data is not the reason; the code is. Several places hard-depend on the shape: `common-utils/src/iac.ts#IAC_RESOURCE_ID_RE` (Terraform emit sink), the IaC manifest Zod `id` regex in `common-utils/src/types.ts`, `isPersistableUserId` (app onboarding, `DBSearchPage.tsx`, `dashboard.ts`), `api/src/utils/zod.ts#objectIdSchema` (external API v2 validators and OpenAPI docs), `mongoose.isValidObjectId` guards in `controllers/{alerts,alertsPage,connection}.ts`, `routers/api/{alerts,dashboards,ai}.ts`, `setupDefaults.ts`, and nine `mcp/tools/**` files (these become `isValidId` from `metadata/ids.ts`: exactly 24 hex chars, which is slightly stricter than `isValidObjectId`, since that also accepts any 12-character string; no caller is known to rely on that quirk, and C0 checks the tests for it), and 43 upstream test files that use `randomMongoId()` or literal hex ids such as `68dd82484f54641b08667897`. Keeping the shape leaves all of them unchanged, and timestamp-prefixed ids keep `_id` sort == creation order, which the keyset cursors rely on. A 20-line generator is cheaper than adding a package and removes any Mongo-origin dependency. |
+| D6 | **No dual Mongo/Couchbase implementation.** Repository interfaces with exactly two implementations: Couchbase (production) and in-memory (unit tests). Callers switch **entity by entity**: each slice replaces the Mongoose model with its repository, ports that entity's upstream tests, and deletes the model file in the same phase. Mongo stays running only for entities not yet switched. | There is no data to carry across, so a Mongo adapter would only re-implement Mongoose behind a second interface and then be deleted. AGENTS.md rule 5 applies to ClickHouse modules, not Mongo. Every phase still ends green, because unswitched entities keep using Mongoose unchanged and cross-entity references are plain id strings. |
+| D7 | **Provisioning, not migrations.** An idempotent `ensureMetadataKeyspace` creates the bucket (self-managed), scope, collections, indexes, and the metadata RBAC user. It runs from the existing `couchbase-init` setup command, and at API startup when `CBT_METADATA_AUTO_PROVISION=true`. The three `migrations/mongo/*` scripts, `migrate-mongo`, and the startup `backfillAlertDisplayFields` are deleted, not ported. | No stored data to transform. Every alert written through current code already gets `displayName`/`tags` derived at write time (`controllers/alerts.ts` → `deriveAlertDisplayFields`). Defaults the migrations set (`kind`, `accessKey`) are applied at write time and by the Zod read schema. |
+| D8 | **Minimal schema version marker only**: `meta::schema` `{ schemaVersion: 1, appVersion, provisionedAt }`, written by provisioning. The API refuses to start if the stored `schemaVersion` is newer than the code's `METADATA_SCHEMA_VERSION` (downgrade protection) and raises it after a successful `ensure`. No migration runner is built now. | A deployed instance will eventually meet a release whose document shape is not additive (upstream ships such data migrations regularly, and three exist in-tree today). The version marker is about 40 lines and gives that future migration an anchor and a downgrade guard. Additive changes need nothing: Zod read defaults handle them lazily. A runner is added only when the first non-additive change arrives, so we don't build it speculatively. |
+| D9 | **Alert scheduler lease on by default** (`lock::check-alerts`, TTL 2× tick, renewed; `CBT_ALERT_SCHEDULER_LEASE=false` disables it). | New deployments on Kubernetes or Capella commonly run more than one task replica. Duplicate alert notifications are worse than skipping one tick while another runner holds the lease. The cost is one KV op per tick. The lease lives in the task runner wrapper (`tasks/index.ts`), so the upstream `checkAlerts` unit/int specs are unaffected. |
+| D10 | **Last-write-wins for user edits** (no ETag/`If-Match`); CAS used internally for read-modify-write. | Upstream UI, CLI, and tests send no version, so 409s would diverge from the spec. CAS prevents lost updates between the scheduler and internal merges. |
+| D11 | **`/ready` reports `metadata: <state>`** instead of `mongo`. `routers/api/__tests__/health.int.test.ts` is ported with the new key. | No existing consumers (D2); keeping a `mongo` key that describes Couchbase would mislead. |
+| D12 | **Dedicated metadata DB user** `CBT_METADATA_USER` / `CBT_METADATA_PASSWORD` with `data_reader`, `data_writer`, `query_select`, `query_insert`, `query_update`, `query_delete` on `[cbt_meta]` only. Index, scope, and bucket management is done by the setup command with the admin credentials. | Least privilege. The telemetry users (`cbt_query`, ingest) get no access to the metadata bucket, and the metadata user gets none to `otel`. |
+| D13 | **Update `AGENTS.md`'s repository-layout line** ("MongoDB for metadata" → "Couchbase metadata bucket") and `docs/development.md` "Where data lives" in the final phase. | Factual description of the stack, not a policy rule. |
+
 ## Key design decisions
 
-1. **Repository seam, not a Mongoose look-alike.** Each entity gets a typed repository interface. Two implementations of the interfaces exist during the switch-over: a Mongo one that wraps the existing models unchanged, and a Couchbase one. A single env flag, `CBT_METADATA_STORE=mongo|couchbase`, selects the implementation per process, and every caller is migrated to the interfaces first. We do not try to emulate the Mongo query language.
-2. **Ids are preserved.** New ids remain 24-hex ObjectId-format strings, generated with the `bson` package's `ObjectId` (pure JS, no native code, no network driver; pinned directly; `bson@4.7.2` is already in the root `node_modules`). The id is the KV document key, so `GET /dashboards/:id` becomes a KV `get`. The wire shape keeps `_id` and `id` as identical strings. Migrated documents keep their original hex. Time-ordered ids keep `_id` sort and cursor semantics.
-3. **Metadata bootstrap comes from env, never from a stored connection.** `CBT_METADATA_*` variables define the metadata cluster connection. They default to the telemetry `CBT_COUCHBASE_*` connstr, which removes the chicken-and-egg problem: user-defined Connection documents are data, and the metadata cluster connection is configuration.
-4. **Uniqueness via lookup documents written in the same transaction.** Unique keys (email, accessKey, (team,service,name), …) become `uniq::<kind>::<hash>` documents written in the same transaction as the entity, or written with a KV `insert` first when no transaction is needed. Insert failing with `DocumentExistsError` maps to the existing `DuplicateKeyError` path (formerly code 11000).
-5. **TTL becomes per-document expiry.** AlertHistory and TeamInvite get a 30-day collection `maxTTL`, plus an explicit expiry computed from `createdAt`. Sessions use per-document expiry equal to the cookie maxAge, refreshed by `touch`.
-6. **Read-your-writes.** Every SQL++ metadata query defaults to `request_plus`. Single-document reads use KV (always consistent). `not_bounded` is an explicit opt-in, only for the scheduler's history prefetch where staleness is tolerated by design, and only after measurement.
-7. **CAS optimistic locking** on every read-modify-write. A bounded retry (3 attempts) handles internal merges. User-facing edit conflicts keep the current last-write-wins semantics, because the API has no version field today. Adding ETags or `If-Match` is out of scope and listed as an open question.
-8. **Passwords stay compatible.** A local strategy replacement re-implements the `passport-local-mongoose` pbkdf2 scheme exactly (sha256, 25,000 iterations, keylen 512, 32-byte hex salt, hex hash, `scmp`-equivalent `crypto.timingSafeEqual`) and keeps the same error messages, which `handleAuthError` string-matches. Existing hashes verify unchanged.
-9. **Mongo export/import tool** (`cbt-metadata migrate-from-mongo`) for existing deployments. It is idempotent (keys are the ObjectId hex), has `--dry-run` and `--verify`, and is the only module after Phase M8 that may import `mongodb`. It ships as a separate optional script so the API image carries no Mongo dependency (depends on open question Q2).
+1. **Repositories, not a Mongoose look-alike**: one typed repository per entity, with one method per distinct query shape. There is no free-form filter API.
+2. **The id is the KV key**: `GET /dashboards/:id` is a KV `get`. The wire shape keeps `_id` and `id` as the same string (the Mongoose `toJSON` virtuals behavior).
+3. **The metadata connection comes from env**: `CBT_METADATA_*`, never a stored Connection document. User-defined Connection documents describe telemetry clusters and are data. The metadata cluster connection is configuration.
+4. **Uniqueness via lookup documents**: unique keys become `uniq::<kind>::<sha256(parts)>` documents written in the same transaction as the entity (or, when no transaction is needed, a KV `insert` first). `DocumentExistsError` maps to the existing duplicate-key paths (formerly Mongo code 11000).
+5. **TTL becomes per-document expiry**: AlertHistory and TeamInvite expire 30 days after `createdAt` (collection `maxTTL` as a backstop). Sessions expire at the cookie expiry and are refreshed by `touch`.
+6. **Read-your-writes**: SQL++ metadata queries use `request_plus`. Single-document reads use KV. Hot auth paths (session user, bearer access key, team API key, invite token, login email) use lookup document → KV only, with no query.
 
 ## 1. File and module structure
 
-All new modules are server-only and live under `packages/api/src/metadata/`. Nothing here is reachable from `packages/app` (rule 3). ESLint `no-restricted-imports` already blocks `couchbase` in app. Extend it to block `@/metadata/**` imports from any `common-utils` browser entry.
+All new modules are server-only and live under `packages/api/src/metadata/`. Nothing here is reachable from `packages/app` (rule 3). ESLint `no-restricted-imports` already blocks `couchbase` in app. Extend it to block `@/metadata/**` from any browser entry. The only shared piece is a pure-data keyspace definition in `common-utils` (no `couchbase` import), so the API and the setup command agree on collections and indexes.
 
 ```
+packages/common-utils/src/couchbase/
+  metadataKeyspace.ts      # NEW, pure data: METADATA_COLLECTIONS, METADATA_INDEXES, METADATA_SCHEMA_VERSION,
+                           # METADATA_ROLES; no SDK import (safe for any entry)
 packages/api/src/metadata/
-  index.ts                 # getMetadataStore(): MetadataStore; selects mongo|couchbase by CBT_METADATA_STORE
-  types.ts                 # MetadataStore, Repository<T>, Page<T>, ListOptions, WriteOptions, error classes
-  ids.ts                   # newId(), isId(), toIdString(); bson ObjectId hex
+  index.ts                 # getMetadataStore() / setMetadataStoreForTests(); Couchbase in prod, memory in unit tests
+  types.ts                 # MetadataStore, repository interfaces, Page<T>, ListOptions, WriteOptions
+  ids.ts                   # newId(), isValidId(), LOCAL_APP_TEAM_ID; in-repo ObjectId-format generator (D5)
   errors.ts                # DuplicateKeyError, NotFoundError, CasConflictError, MetadataUnavailableError,
-                           # IndexNotReadyError, TransactionFailedError; fromCouchbaseError()
-  schemas/                 # Zod schemas per entity document (persisted shape), reusing common-utils types
+                           # IndexNotReadyError, SchemaVersionError, TransactionFailedError; fromCouchbaseError()
+  schemas/                 # Zod doc + input schemas per entity, reusing common-utils types
     team.ts user.ts teamInvite.ts connection.ts source.ts savedSearch.ts dashboard.ts
-    alert.ts alertHistory.ts webhook.ts favorite.ts pinnedFilter.ts presetDashboardFilter.ts
-    session.ts migration.ts
-  serialize.ts             # toWire(doc): adds _id/id, ISO dates; select:false field stripping
-  mongo/                   # Phase M1 adapter: wraps existing models, deleted in M8
-    index.ts  <entity>Repo.ts ...
+    alert.ts alertHistory.ts webhook.ts favorite.ts pinnedFilter.ts presetDashboardFilter.ts session.ts
+  serialize.ts             # toWire(doc, key): adds _id (+ id where Mongoose emitted it), ISO dates, strips secrets
   couchbase/
-    config.ts              # reads CBT_METADATA_* env; MetadataClusterConfig
-    cluster.ts             # connect/lease using common-utils clusterCache; health; close
-    keyspace.ts            # metaKeyspace(collection): uses common-utils keyspace()/quoteIdent()
-    kv.ts                  # typed get/insert/replace/upsert/remove/mutateIn with CAS + expiry
-    query.ts               # runQuery(sqlpp: SqlPP, opts): uses common-utils sqlpp`` tag (named params)
-    tx.ts                  # withTransaction(fn), retries + error mapping
-    unique.ts              # claimUnique/releaseUnique lookup documents
-    provision/
-      collections.ts       # ensureMetadataScope(): scope + collections + maxTTL
-      indexes.ts           # METADATA_INDEXES list; ensureIndexes(); waitForIndexesOnline()
-      users.ts             # metadata RBAC user (self-managed only; Capella prints instructions)
-    repos/
-      teamRepo.ts userRepo.ts teamInviteRepo.ts connectionRepo.ts sourceRepo.ts
-      savedSearchRepo.ts dashboardRepo.ts alertRepo.ts alertHistoryRepo.ts webhookRepo.ts
-      favoriteRepo.ts pinnedFilterRepo.ts presetDashboardFilterRepo.ts
-    sessionStore.ts        # express-session Store implementation
-    lock.ts                # lease documents for the alert scheduler / provisioner
+    config.ts              # loadMetadataConfig(): CBT_METADATA_* env
+    cluster.ts             # connect with retry (via common-utils clusterCache), health, close
+    keyspace.ts            # metaKeyspace(collection) via common-utils keyspace()/quoteIdent()
+    kv.ts query.ts tx.ts unique.ts lock.ts
+    schemaVersion.ts       # read/assert/raise meta::schema (D8)
+    verify.ts              # verifyMetadataKeyspace(): collections + indexes online (no DDL rights needed)
+    sessionStore.ts        # CouchbaseSessionStore extends express-session Store (D3)
+    repos/                 # one file per entity (13) + tags.ts
   auth/
-    pbkdf2.ts              # hashPassword/verifyPassword compatible with passport-local-mongoose
-    localStrategy.ts       # passport-local Strategy using UserRepository
-  migrate/
-    runner.ts              # metadata migration runner (replaces migrate-mongo)
-    registry.ts            # ordered list of MetadataMigration
-    migrations/            # 0001_…ts (ported from migrations/mongo + startup backfill)
+    password.ts            # scrypt hashPassword / verifyPassword / needsRehash (D4)
+    localStrategy.ts       # passport-local Strategy over UserRepository; same error strings
   testing/
-    memoryStore.ts         # in-memory MetadataStore for unit tests (replaces Mongo stand-ins)
-    contract.ts            # shared repository contract suite run against memory + couchbase
-packages/api/scripts/
-  metadata-setup.ts        # CLI: provision scope/collections/indexes/user (used by init containers)
-  migrate-from-mongo.ts    # one-time export/import tool (optional `mongodb` dependency)
+    memoryStore.ts         # in-memory MetadataStore (unit tests; replaces jest.mock('@/models/...'))
+    contract.ts            # repository contract suite, run against memory and Couchbase
+    seed.ts                # int-test seed helpers (replaces Model.create in tests)
+packages/ingest/src/setup/
+  metadata.ts              # NEW: ensureMetadataKeyspace() (bucket, scope, collections, indexes, RBAC user, schema doc)
+  cli.ts                   # CHANGED: --metadata (default on) / --no-metadata; reuses ensureBucket/ensureUsers helpers
 ```
+
+Why provisioning lives in `packages/ingest/src/setup`: the `couchbase-init` one-shot container in every compose file, CI, and the all-in-one entrypoint already runs that CLI with the admin credentials (`docker/couchbase/init.sh` → `node dist/setup/cli.js --create-bucket --create-users`). Putting the metadata DDL there means one init step and no admin credentials in the API. The API only verifies (`verify.ts`) unless `CBT_METADATA_AUTO_PROVISION=true`, in which case it calls the same ensure code. That code is exported from `@couchbase-traces/ingest`'s setup module, or moved to `common-utils/src/couchbase/node` if the API cannot depend on ingest; decide when C0 starts by checking the workspace dependency graph.
 
 Changed files (grouped by phase in section 7):
 
-- `packages/api/src/config.ts`: adds `METADATA_STORE` and the `CBT_METADATA_*` variables; `MONGO_URI` is removed in M8.
-- `server.ts`, `serverless.ts`, `api-app.ts`, `utils/readiness.ts`, `routers/api/root.ts`, `utils/passport.ts`, `middleware/auth.ts`, `dataLayerSetup.ts`, `fixtures.ts`, `migrations.ts`.
-- Every caller in section 0.1/0.2 (40 non-test files), changed from `Model.x()` to `store.<entity>.y()`.
-- `utils/zod.ts#objectIdSchema` and the `mcp/utils/errors.ts`, `routers/api/webhooks.ts`, and `routers/external-api/v2/search.ts` validators move to `metadata/ids.ts#isId` (strict 24-hex, which also fixes the 12-character-string quirk of `ObjectId.isValid`; the behavior change is recorded in port-notes).
-- `utils/errors.ts#isDuplicateKeyError` recognizes `DuplicateKeyError`. `routers/external-api/v2/team.ts` stops checking `code === 11000`.
-- `packages/ingest/src/setup/*`: the existing `ensureBucket`/`ensureCollections`/`ensureUsers` patterns are reused by `provision/*`. Code is extracted into shared helpers only if duplication exceeds the jscpd threshold.
-- Infrastructure files in section 0.4 (Phase M7).
+- `packages/api/src/config.ts`: adds `CBT_METADATA_*`. `MONGO_URI` is removed in C5.
+- Per slice: every caller in section 0.1/0.2 moves from `Model.x()` to `getMetadataStore().<entity>.y()`. The Mongoose model file and its test helpers are deleted in the same phase.
+- `utils/zod.ts#objectIdSchema` and every `mongoose.isValidObjectId` / `ObjectId.isValid` guard → `isValidId` (C0). `fixtures.ts#randomMongoId` → `newId` (C0).
+- `utils/errors.ts#isDuplicateKeyError` recognizes `DuplicateKeyError` as well as code 11000 during the transition. The 11000 branch is removed in C5.
+- `api-app.ts` (session store, C1), `utils/passport.ts` (C1), `middleware/auth.ts` (C1), `dataLayerSetup.ts` + `fixtures.ts` loader (C2), `utils/readiness.ts` + `routers/api/root.ts` (C0 adds `metadata`; C5 removes `mongo`), `server.ts` / `serverless.ts` (C0 connect; C5 remove Mongo connect).
+- `docker/couchbase/init.sh`: the cluster data quota becomes `CBT_COUCHBASE_RAM_MB + CBT_METADATA_RAM_MB`. Today the `otel` bucket takes the whole `DATA_RAM_MB`, so the second bucket needs headroom (C0).
+- Infrastructure in section 0.4 (C0 adds metadata provisioning; C5 removes Mongo).
 
 Module relations:
 
 ```
 routers / controllers / mcp / opamp / tasks / scripts
-          │  (only through)
-          ▼
-  metadata/index.ts ── getMetadataStore() ──► MetadataStore (types.ts)
-          │                                     ├─ mongo/*      (M1–M7, removed M8)
-          │                                     ├─ couchbase/*  ──► common-utils couchbase/node (clusterCache, sqlpp, keyspace)
-          │                                     └─ testing/memoryStore (unit tests)
-  auth/localStrategy ──► store.users        sessionStore ──► couchbase/kv
-  dataLayerSetup ──► store.connections.getWithSecrets()  (telemetry Connection docs; metadata cluster from env)
+          │ (entity already switched)          │ (entity not yet switched; shrinks every phase)
+          ▼                                    ▼
+  metadata/index.ts ── MetadataStore     @/models/* (Mongoose)   ── deleted by C5
+          ├─ couchbase/repos/* ──► couchbase/{kv,query,tx,unique} ──► common-utils couchbase/node
+          └─ testing/memoryStore (unit tests)
+  auth/localStrategy ──► store.users     CouchbaseSessionStore ──► couchbase/kv
+  dataLayerSetup ──► store.connections.getWithSecrets()   (telemetry Connection docs; metadata cluster from env)
+  ingest setup cli ──► setup/metadata.ts ──► common-utils metadataKeyspace (definitions)
+  api startup     ──► couchbase/verify.ts ──► common-utils metadataKeyspace (same definitions)
 ```
 
-### 1.1 Metadata keyspace layout
+### 1.1 Metadata bucket layout (D1)
 
-The default layout is bucket `CBT_METADATA_BUCKET` (default: the telemetry bucket `otel`), scope `CBT_METADATA_SCOPE` (default `cbt_meta`). Q1 asks whether to use a separate bucket instead. All names go through `keyspace({bucket, scope, collection})` / `quoteIdent` in `packages/common-utils/src/couchbase/sqlpp.ts`, which rejects backticks, NUL, newlines, and names longer than 251 characters (rule 4).
+| Setting | Default | Env | Notes |
+|---|---|---|---|
+| Bucket | `cbt_meta` | `CBT_METADATA_BUCKET` | Magma, 128 vBuckets (8.0 default), so the 100 MiB per-node minimum applies |
+| RAM quota | 256 MiB | `CBT_METADATA_RAM_MB` | Metadata is small; ejection `fullEviction` |
+| Replicas | 0 (dev, CI, all-in-one); docs recommend 1 for multi-node | `CBT_METADATA_REPLICAS` | Transactions need replicas ≤ nodes − 1 |
+| Durability for transactions | `majority` | `CBT_METADATA_TX_DURABILITY` | `none` allowed for single-node dev only (logged warning) |
+| Scope | `app` | `CBT_METADATA_SCOPE` | |
+| Connection | `CBT_COUCHBASE_CONNSTR` | `CBT_METADATA_CONNSTR` | Same cluster by default; can point to a different cluster |
+| Service user | `cbt_meta` | `CBT_METADATA_USER` / `CBT_METADATA_PASSWORD` | Roles in D12 |
+
+All names go through `keyspace({bucket, scope, collection})` / `quoteIdent` in `packages/common-utils/src/couchbase/sqlpp.ts` (rejects backticks, NUL, newlines, and names longer than 251 characters; rule 4).
 
 | Collection | Contents | maxTTL |
 |---|---|---|
@@ -182,26 +202,29 @@ The default layout is bucket `CBT_METADATA_BUCKET` (default: the telemetry bucke
 | `preset_dashboard_filters` | PresetDashboardFilter | 0 |
 | `unique_keys` | uniqueness lookup docs | 0 |
 | `sessions` | express-session docs | 0 (per-doc expiry) |
-| `locks` | scheduler/provisioner leases | 0 (per-doc expiry) |
-| `migrations` | applied-migration records + schema version doc | 0 |
-| `txn_meta` | custom transactions metadata collection (ATRs) | 0 |
+| `system` | `meta::schema` version marker, `lock::*` leases | 0 (leases use per-doc expiry) |
+| `txn_meta` | transactions metadata collection (ATRs) | 0 |
 
-With a dedicated `txn_meta` collection, transactions never need the `_default` collection, and RBAC can be scoped to `cbt_meta`.
+The previous revision's `migrations` collection is gone (D7). The schema marker and leases share one small `system` collection.
 
 ## 2. Interfaces and function signatures
 
-### 2.1 Core types (`metadata/types.ts`)
+### 2.1 Core types (`metadata/types.ts`, `metadata/ids.ts`)
 
 ```ts
-export type Id = string; // 24 lowercase hex
+export type Id = string; // 24 lowercase hex (D5)
 export type TeamId = Id;
+
+export function newId(now?: Date): Id;        // 4B seconds | 5B per-process random | 3B counter (wraps), hex
+export function isValidId(v: unknown): v is Id; // /^[0-9a-f]{24}$/i, normalized to lowercase by callers
+export const LOCAL_APP_TEAM_ID: Id = '5f6c6f63616c5f7465616d5f'; // hex of '_local_team_', same value as today
 
 export type WriteOptions = { cas?: Cas; tx?: TxContext };
 export type Consistency = 'request_plus' | 'not_bounded';
 export type ListOptions<S extends string> = {
   sort?: { field: S; dir: 'asc' | 'desc' }[];
-  limit?: number;          // hard cap 1000 unless noted
-  after?: string;          // opaque keyset cursor
+  limit?: number;            // hard cap 1000 unless noted
+  after?: string;            // opaque keyset cursor
   consistency?: Consistency; // default 'request_plus'
 };
 export type Page<T> = { items: T[]; next?: string };
@@ -209,138 +232,146 @@ export type Versioned<T> = { doc: T; cas: Cas };
 
 export interface TeamScopedRepository<T, In, Patch, S extends string = 'id'> {
   create(teamId: TeamId, input: In, opts?: WriteOptions): Promise<T>;
-  get(teamId: TeamId, id: Id): Promise<T | null>;           // KV, verifies doc.team === teamId
+  get(teamId: TeamId, id: Id): Promise<T | null>;         // KV; doc.team !== teamId → null
   getVersioned(teamId: TeamId, id: Id): Promise<Versioned<T> | null>;
   list(teamId: TeamId, opts?: ListOptions<S>): Promise<T[]>;
   page(teamId: TeamId, opts: ListOptions<S>): Promise<Page<T>>;
   count(teamId: TeamId): Promise<number>;
-  update(teamId: TeamId, id: Id, patch: Patch, opts?: WriteOptions): Promise<T | null>; // CAS retry loop
+  update(teamId: TeamId, id: Id, patch: Patch, opts?: WriteOptions): Promise<T | null>; // CAS retry loop, last-write-wins (D10)
   delete(teamId: TeamId, id: Id, opts?: WriteOptions): Promise<boolean>;
 }
 
 export interface MetadataStore {
-  teams: TeamRepository;
-  users: UserRepository;
-  teamInvites: TeamInviteRepository;
-  connections: ConnectionRepository;
-  sources: SourceRepository;
-  savedSearches: SavedSearchRepository;
-  dashboards: DashboardRepository;
-  alerts: AlertRepository;
-  alertHistory: AlertHistoryRepository;
-  webhooks: WebhookRepository;
-  favorites: FavoriteRepository;
-  pinnedFilters: PinnedFilterRepository;
+  teams: TeamRepository;            users: UserRepository;           teamInvites: TeamInviteRepository;
+  connections: ConnectionRepository; sources: SourceRepository;
+  savedSearches: SavedSearchRepository; dashboards: DashboardRepository;
+  alerts: AlertRepository;          alertHistory: AlertHistoryRepository; webhooks: WebhookRepository;
+  favorites: FavoriteRepository;    pinnedFilters: PinnedFilterRepository;
   presetDashboardFilters: PresetDashboardFilterRepository;
-  sessions: SessionStoreFactory;
   locks: LockService;
   tags: { distinct(teamId: TeamId, type?: TagResourceType): Promise<string[]> };
   withTransaction<R>(fn: (tx: TxContext) => Promise<R>): Promise<R>;
   connect(opts?: { retry?: ConnectRetryOptions }): Promise<void>;
-  isReady(): MetadataReadiness; // { ready: boolean; state: 'connecting'|'ready'|'degraded'|'closed' }
+  readiness(): MetadataReadiness; // { ready: boolean; state: 'connecting'|'provisioning'|'indexing'|'ready'|'degraded'|'closed' }
   close(): Promise<void>;
 }
 
 export function getMetadataStore(): MetadataStore;
 export function setMetadataStoreForTests(store: MetadataStore): void;
+export function createMemoryStore(seed?: Partial<MemorySeed>): MetadataStore; // testing/memoryStore.ts
 ```
+
+During C1–C4, `MetadataStore` only exposes the entities switched so far. It grows by one slice per phase, so an unswitched entity cannot be half-used.
 
 ### 2.2 Entity-specific methods (beyond the generic interface)
 
-Each method replaces the call sites named in section 0.2.
+Each method replaces call sites named in section 0.2. The rule is one method per distinct query shape, and no method accepts a free-form filter. Exact lists are finalized per slice by reading each caller (rule 2).
 
 ```ts
 interface TeamRepository {
   exists(): Promise<boolean>;                         // isTeamExisting
-  createFirst(input: TeamInput): Promise<Team>;       // claims uniq::team::singleton
+  createFirst(input: TeamInput): Promise<Team>;       // claims uniq::team.singleton in a tx
   getOnly(): Promise<Team | null>;                    // getTeam() == findOne({})
   getById(id: Id): Promise<Team | null>;
-  getByApiKey(apiKey: string): Promise<Team | null>;  // uniq lookup doc → KV
+  getByApiKey(apiKey: string): Promise<Team | null>;  // lookup doc → KV
   listAll(fields?: (keyof Team)[]): Promise<Team[]>;
   rotateApiKey(id: Id): Promise<Team>;
   setName(id: Id, name: string): Promise<Team>;
-  updateQuerySettings(id: Id, s: TeamQuerySettingsUpdate): Promise<Team>; // null → unset
+  updateQuerySettings(id: Id, s: TeamQuerySettingsUpdate): Promise<Team>; // null → field removed
 }
 
 interface UserRepository {
-  register(input: { email: string; name?: string; team?: Id }, password: string): Promise<User>; // DuplicateKeyError → 'UserExistsError'
+  register(input: { email: string; name?: string; team?: Id }, password: string): Promise<User>; // DuplicateKeyError(user.email) → existing 'UserExistsError' path
   getById(id: Id): Promise<User | null>;
-  getByEmail(email: string): Promise<UserWithSecrets | null>;  // lowercased, uniq lookup
-  getByAccessKey(key: string, now?: Date): Promise<User | null>; // handles hdx_org_ hashing
-  listByTeam(teamId: Id): Promise<User[]>;                     // NOT_VIRTUAL, createdAt asc
+  getByEmailWithSecret(email: string): Promise<UserWithSecret | null>; // lowercased; lookup doc → KV; auth only
+  getByAccessKey(key: string, now?: Date): Promise<User | null>;       // incl. hdx_org_ sha256 path
+  listByTeam(teamId: Id): Promise<User[]>;                            // non-virtual, createdAt asc
   createVirtual(input: VirtualUserInput): Promise<User>;
   rotateAccessKey(id: Id): Promise<User>;
-  setPassword(id: Id, password: string): Promise<void>;
-  addOnboardingTask(id: Id, task: OnboardingTaskId): Promise<User | null>;   // subdoc arrayAddUnique
+  setPassword(id: Id, password: string): Promise<void>;               // scrypt (D4)
+  replacePasswordHash(id: Id, encoded: string, cas: Cas): Promise<void>; // rehash-on-login when params change
+  addOnboardingTask(id: Id, task: OnboardingTaskId): Promise<User | null>; // subdoc arrayAddUnique
   setOnboardingDismissed(id: Id, v: boolean): Promise<User | null>;
-  touchLastUsed(id: Id, at: Date): Promise<void>;              // fire-and-forget
+  touchLastUsed(id: Id, at: Date): Promise<void>;                     // fire-and-forget
   revokeOrgKey(teamId: Id, id: Id, at: Date): Promise<User | null>;
   listOrgKeys(teamId: Id): Promise<User[]>;
-  deleteTeamMember(teamId: Id, targetId: Id, requesterId: Id): Promise<'deleted'|'not_found'|'last_member'>; // one transaction
+  deleteTeamMember(teamId: Id, targetId: Id, requesterId: Id): Promise<'deleted'|'not_found'|'last_member'>;
   getDisplay(ids: Id[]): Promise<Map<Id, { _id: Id; email: string; name: string }>>; // populate() replacement
 }
 
+interface TeamInviteRepository {
+  create(teamId: Id, input: { email: string; name?: string }): Promise<TeamInvite>; // DuplicateKeyError(invite.member)
+  getByToken(token: string): Promise<TeamInvite | null>;                           // lookup doc → KV
+  list(teamId: Id): Promise<TeamInvite[]>;
+  delete(teamId: Id, id: Id): Promise<boolean>;
+  consume(token: string, tx?: TxContext): Promise<TeamInvite | null>;              // findByIdAndRemove parity
+}
+
+interface ConnectionRepository extends TeamScopedRepository<Connection, ConnectionInput, ConnectionPatch> {
+  getWithSecrets(id: Id, teamId?: Id): Promise<ConnectionWithSecrets | null>; // replaces select('+password +tlsCaCertificate +monitorPassword')
+}
+interface SourceRepository extends TeamScopedRepository<Source, SourceInput, SourcePatch> {
+  listByConnection(teamId: Id, connectionId: Id): Promise<Source[]>;
+}
+interface SavedSearchRepository extends TeamScopedRepository<SavedSearch, SavedSearchInput, SavedSearchPatch> {
+  listWithUsers(teamId: Id): Promise<SavedSearchWithUsers[]>; // createdBy/updatedBy via users.getDisplay
+}
+interface DashboardRepository extends TeamScopedRepository<Dashboard, DashboardInput, DashboardPatch> {
+  search(teamId: Id, q: { nameContains?: string; tagsAll?: string[]; limit: number }): Promise<Dashboard[]>;
+  upsertProvisioned(teamId: Id, name: string, insert: DashboardInput, update?: DashboardPatch): Promise<{ created: boolean; doc: Dashboard }>;
+  deleteProvisionedNotIn(teamId: Id, names: string[]): Promise<number>;
+}
 interface AlertRepository extends TeamScopedRepository<Alert, AlertInput, AlertPatch, 'displayName'|'id'> {
-  listAll(): Promise<Alert[]>;                               // scheduler: Alert.find({})
-  pageForAlertsPage(teamId: Id, f: AlertsPageFilter, cursor?: AlertsPageCursor, limit: number): Promise<Page<Alert>>;
+  listAll(): Promise<Alert[]>;                                  // scheduler
+  pageForAlertsPage(teamId: Id, f: AlertsPageFilter, cursor: AlertsPageCursor | undefined, limit: number): Promise<Page<Alert>>;
   countForAlertsPage(teamId: Id, f: AlertsFilterParams): Promise<number>;
   findBySavedSearch(teamId: Id, savedSearchId: Id): Promise<Alert[]>;
   findByDashboard(teamId: Id, dashboardId: Id, tileIds?: string[]): Promise<Alert[]>;
-  deleteBySavedSearch(teamId: Id, savedSearchId: Id): Promise<number>;
-  deleteByDashboardTiles(teamId: Id, dashboardId: Id, tileIdsToKeep?: string[]): Promise<number>;
-  setState(id: Id, state: AlertState, errors: IAlertError[]): Promise<void>; // subdoc, no updatedAt bump (parity)
+  deleteBySavedSearch(teamId: Id, savedSearchId: Id, tx?: TxContext): Promise<number>;
+  deleteByDashboardTiles(teamId: Id, dashboardId: Id, tileIdsToKeep?: string[], tx?: TxContext): Promise<number>;
+  setState(id: Id, state: AlertState, errors: IAlertError[]): Promise<void>;   // subdoc, disjoint paths
   setExecutionErrors(id: Id, errors: IAlertError[]): Promise<void>;
   reassignCreatedBy(teamId: Id, from: Id, to: Id, tx?: TxContext): Promise<number>;
-  backfillDisplayFields(batch: number): Promise<{ scanned: number; updated: number }>;
 }
-
 interface AlertHistoryRepository {
   createMany(rows: AlertHistoryInput[]): Promise<PromiseSettledResult<void>[]>;
-  upsertErrorRow(alertId: Id, windowStart: Date, errors: IAlertError[], analytics?: IAlertHistoryAnalytics): Promise<void>; // deterministic key
+  upsertErrorRow(alertId: Id, windowStart: Date, errors: IAlertError[], analytics?: IAlertHistoryAnalytics): Promise<void>; // deterministic key, preserveExpiry
   deleteErrorRows(alertId: Id, range: { gt?: Date; lte: Date } | Date): Promise<number>;
   latestPerGroup(alertId: Id, now: Date, lookback: Date): Promise<AggregatedAlertHistory[]>;   // getPreviousAlertHistories
   rangeExcludingErrors(alertId: Id, gte: Date, lt: Date): Promise<AggregatedAlertHistory[]>;    // getConsecutiveWindowHistories
   groupedByWindow(alertId: Id, createdAt: DateRange, limit: number): Promise<GroupedAlertHistory[]>;
   structuredWindows(alertId: Id, createdAt: DateRange, limit: number): Promise<StructuredWindow[]>;
-  transitionWindows(alertId: Id, gte: Date, lte: Date): Promise<{ createdAt: Date; states: string[]; bucketStarts: Date[][] }[]>;
-  deleteByAlert(alertId: Id): Promise<number>;
+  transitionWindows(alertId: Id, gte: Date, lte: Date): Promise<TransitionWindow[]>;
+  deleteByAlert(alertId: Id, tx?: TxContext): Promise<number>;
 }
-
-interface ConnectionRepository extends TeamScopedRepository<Connection, ConnectionInput, ConnectionPatch> {
-  getWithSecrets(id: Id, teamId?: Id): Promise<ConnectionWithSecrets | null>; // replaces select('+password +tlsCaCertificate')
-}
-
-interface SourceRepository extends TeamScopedRepository<Source, SourceInput, SourcePatch> {
-  listByConnection(teamId: Id, connectionId: Id): Promise<Source[]>;
-}
-
-interface DashboardRepository extends TeamScopedRepository<Dashboard, DashboardInput, DashboardPatch> {
-  search(teamId: Id, q: { nameContains?: string; tagsAll?: string[]; limit: number }): Promise<Dashboard[]>; // MCP searchDashboards
-  upsertProvisioned(teamId: Id, name: string, insert: DashboardInput, update?: DashboardPatch): Promise<{ created: boolean; doc: Dashboard }>;
-  deleteProvisionedNotIn(teamId: Id, names: string[]): Promise<number>;
-}
-
 interface WebhookRepository extends TeamScopedRepository<Webhook, WebhookInput, WebhookPatch> {
   listByService(teamId: Id, service?: WebhookService): Promise<Webhook[]>;
-  getMany(teamId: Id, ids: Id[]): Promise<Map<Id, Webhook>>;   // scheduler getWebhooks
+  getMany(teamId: Id, ids: Id[]): Promise<Map<Id, Webhook>>;    // scheduler getWebhooks (KV multi-get)
 }
-
-interface FavoriteRepository { list(teamId: Id, userId: Id): Promise<Favorite[]>; add(…): Promise<Favorite>; remove(…): Promise<boolean>; removeForResource(teamId: Id, type: FavoriteType, resourceId: string): Promise<number>; }
-interface PinnedFilterRepository { get(teamId: Id, sourceId: Id): Promise<PinnedFilter | null>; put(teamId: Id, sourceId: Id, v: PinnedFilterInput): Promise<PinnedFilter>; } // key = deterministic
-interface TeamInviteRepository { create(teamId: Id, input: { email: string; name?: string }): Promise<TeamInvite>; getByToken(token: string): Promise<TeamInvite | null>; list(teamId: Id): Promise<TeamInvite[]>; delete(teamId: Id, id: Id): Promise<boolean>; consume(token: string, tx?: TxContext): Promise<TeamInvite | null>; }
-interface PresetDashboardFilterRepository extends TeamScopedRepository<PresetDashboardFilter, PresetDashboardFilterInput, PresetDashboardFilterPatch> { listForSource(teamId: Id, sourceId: Id, preset: PresetDashboard): Promise<PresetDashboardFilter[]>; }
+interface FavoriteRepository {
+  list(teamId: Id, userId: Id): Promise<Favorite[]>;
+  add(teamId: Id, userId: Id, type: FavoriteType, resourceId: string): Promise<Favorite>; // idempotent on duplicate
+  remove(teamId: Id, userId: Id, type: FavoriteType, resourceId: string): Promise<boolean>;
+  removeForResource(teamId: Id, type: FavoriteType, resourceId: string): Promise<number>;
+}
+interface PinnedFilterRepository {
+  get(teamId: Id, sourceId: Id): Promise<PinnedFilter | null>;
+  put(teamId: Id, sourceId: Id, v: PinnedFilterInput): Promise<PinnedFilter>;  // deterministic key pin::<team>::<source>
+}
+interface PresetDashboardFilterRepository extends TeamScopedRepository<PresetDashboardFilter, PresetDashboardFilterInput, PresetDashboardFilterPatch> {
+  listForSource(teamId: Id, sourceId: Id, preset: PresetDashboard): Promise<PresetDashboardFilter[]>;
+}
 ```
-
-Exact method lists are finalized per entity in M2–M5, by reading each caller. The rule is one repository method per distinct query shape. No method accepts a free-form filter object.
 
 ### 2.3 Couchbase primitives (`metadata/couchbase/*`)
 
 ```ts
 // config.ts
 export type MetadataClusterConfig = {
-  connstr: string; username: string; password: string;
-  bucket: string; scope: string; wanProfile?: boolean; caCertPath?: string;
-  kvTimeoutMs: number; queryTimeoutMs: number; txTimeoutMs: number; txDurability: 'majority'|'none';
+  connstr: string; username: string; password: string; bucket: string; scope: string;
+  wanProfile?: boolean; caCertPath?: string;
+  kvTimeoutMs: number; queryTimeoutMs: number; txTimeoutMs: number; txDurability: 'majority' | 'none';
+  autoProvision: boolean; indexWaitMs: number;
 };
 export function loadMetadataConfig(env?: NodeJS.ProcessEnv): MetadataClusterConfig; // throws MetadataConfigError (non-retryable)
 
@@ -350,36 +381,35 @@ export function metaCollection(name: MetaCollection): Collection;
 export function closeMetadataCluster(): Promise<void>;
 
 // keyspace.ts
-export type MetaCollection = 'teams'|'users'|…|'txn_meta';
+export type MetaCollection = (typeof METADATA_COLLECTIONS)[number]['name'];
 export function metaKeyspace(c: MetaCollection): string; // keyspace({bucket, scope, collection: c})
 
 // kv.ts
 export function getDoc<T>(c: MetaCollection, key: string, schema: z.ZodType<T>): Promise<Versioned<T> | null>;
-export function insertDoc<T>(c: MetaCollection, key: string, doc: T, o?: { expiry?: number; tx?: TxContext }): Promise<Cas>; // DocumentExists → DuplicateKeyError
-export function replaceDoc<T>(c: MetaCollection, key: string, doc: T, o: { cas: Cas; expiry?: number; preserveExpiry?: boolean; tx?: TxContext }): Promise<Cas>; // CasMismatch → CasConflictError
-export function mutateDoc<T>(c: MetaCollection, key: string, fn: (cur: T) => T | null, o?: { maxRetries?: number }): Promise<T | null>; // get→fn→replace(CAS) loop
+export function getMany<T>(c: MetaCollection, keys: string[], schema: z.ZodType<T>): Promise<Map<string, T>>;
+export function insertDoc<T>(c: MetaCollection, key: string, doc: T, o?: { expiry?: Date; tx?: TxContext }): Promise<Cas>; // DocumentExists → DuplicateKeyError
+export function replaceDoc<T>(c: MetaCollection, key: string, doc: T, o: { cas: Cas; preserveExpiry?: boolean; tx?: TxContext }): Promise<Cas>; // CasMismatch → CasConflictError
+export function mutateDoc<T>(c: MetaCollection, key: string, schema: z.ZodType<T>, fn: (cur: T) => T | null, o?: { maxRetries?: number /* 3 */ }): Promise<T | null>;
 export function removeDoc(c: MetaCollection, key: string, o?: { cas?: Cas; tx?: TxContext }): Promise<boolean>;
 export function subdoc(c: MetaCollection, key: string, specs: MutateInSpec[], o?: { cas?: Cas; preserveExpiry?: boolean }): Promise<Cas>;
 
-// query.ts
+// query.ts — q is built with the common-utils `sqlpp` tag; values only as named params, identifiers only via metaKeyspace/quoteIdent (rule 4)
 export function runQuery<T>(q: SqlPP, schema: z.ZodType<T>, o?: { consistency?: Consistency; tx?: TxContext; timeoutMs?: number }): Promise<T[]>;
-// q is built with common-utils `sqlpp` tag; values ONLY as {Param}; identifiers ONLY via metaKeyspace/quoteIdent.
 
-// tx.ts
+// tx.ts — cluster.transactions().run with metadataCollection = txn_meta; maps TransactionFailed / CommitAmbiguous
 export function withTransaction<R>(fn: (tx: TxContext) => Promise<R>, o?: { timeoutMs?: number }): Promise<R>;
-// wraps cluster.transactions().run; metadataCollection = txn_meta; maps TransactionFailedError/CommitAmbiguous.
 
-// unique.ts
-export function uniqueKey(kind: UniqueKind, ...parts: string[]): string; // 'uniq::'+kind+'::'+sha256(JSON.stringify(parts))
-export function claimUnique(kind: UniqueKind, parts: string[], ownerId: Id, tx?: TxContext): Promise<void>; // DuplicateKeyError(kind)
+// unique.ts — key 'uniq::' + kind + '::' + sha256(JSON.stringify(parts))
+export type UniqueKind = 'team.singleton'|'team.apiKey'|'team.hookId'|'user.email'|'user.accessKey'|'invite.member'|'invite.token'|'dashboard.provisioned'|'webhook.name'|'favorite';
+export function claimUnique(kind: UniqueKind, parts: string[], ownerId: Id, o?: { tx?: TxContext; expiry?: Date }): Promise<void>; // DuplicateKeyError(kind)
 export function releaseUnique(kind: UniqueKind, parts: string[], ownerId: Id, tx?: TxContext): Promise<void>; // only if owner matches
 export function resolveUnique(kind: UniqueKind, parts: string[]): Promise<Id | null>;
 
-// lock.ts
+// lock.ts — lease docs in `system`, key lock::<name>
 export interface LockService {
-  acquire(name: string, ttlMs: number, owner: string): Promise<Lease | null>; // KV insert w/ expiry; null if held
-  renew(lease: Lease, ttlMs: number): Promise<boolean>;                         // CAS replace
-  release(lease: Lease): Promise<void>;                                          // CAS remove
+  acquire(name: string, ttlMs: number, owner: string): Promise<Lease | null>; // KV insert with expiry; null if held
+  renew(lease: Lease, ttlMs: number): Promise<boolean>;                         // CAS replace with new expiry
+  release(lease: Lease): Promise<void>;                                          // CAS remove; ignore not-found
 }
 ```
 
@@ -387,331 +417,292 @@ export interface LockService {
 
 ```ts
 export class CouchbaseSessionStore extends session.Store {
-  constructor(o: { collection?: 'sessions'; ttlSeconds?: number /* default cookie maxAge 30d */; prefix?: 'sess::' });
-  get(sid: string, cb: (err: unknown, s?: SessionData | null) => void): void;    // KV get; expired → null
-  set(sid: string, s: SessionData, cb?: (err?: unknown) => void): void;          // KV upsert, expiry = cookie.expires || ttl
-  touch(sid: string, s: SessionData, cb?: () => void): void;                     // collection.touch(key, expiry) — rolling:true
-  destroy(sid: string, cb?: (err?: unknown) => void): void;                      // KV remove; DocumentNotFound ignored
-  clear?(cb?): void;  length?(cb?): void;  all?(cb?): void;                      // SQL++ over sessions (tests/admin only)
+  constructor(o: { collection?: 'sessions'; defaultTtlSeconds?: number /* 30d, = cookie maxAge */ });
+  get(sid: string, cb: (err: unknown, s?: SessionData | null) => void): void;  // KV get; not found → cb(null, null)
+  set(sid: string, s: SessionData, cb?: (err?: unknown) => void): void;        // KV upsert, expiry = s.cookie.expires ?? now + ttl
+  touch(sid: string, s: SessionData, cb?: (err?: unknown) => void): void;      // collection.touch(key, expiry) for rolling: true
+  destroy(sid: string, cb?: (err?: unknown) => void): void;                    // KV remove; DocumentNotFound ignored
+  clear(cb?: (err?: unknown) => void): void;                                   // tests only: DELETE FROM sessions
 }
 ```
 
-Keys are `sess::<sid>` and the document stores the serialized `SessionData` (`{ cookie, passport: { user: Id }, messages? }`). `passport.serializeUser` keeps storing the user id string, so sessions stay compatible once ids are strings.
+Keys are `sess::<sid>` (express-session sids are 32 url-safe chars, well under the 250-byte key limit), and the body is `{ session: SessionData, expiresAt }`. `passport.serializeUser` stores the user id string. `length`/`all` are not implemented, because express-session does not call them and no caller uses them. Logout `destroy` and `req.session.regenerate` on login keep today's fixation protection.
 
 ### 2.5 Password auth (`metadata/auth/*`)
 
 ```ts
-export const PBKDF2 = { iterations: 25000, keylen: 512, digest: 'sha256', saltlen: 32, encoding: 'hex' } as const;
-export function hashPassword(password: string): Promise<{ salt: string; hash: string }>;
-export function verifyPassword(password: string, salt: string, hash: string): Promise<boolean>; // timingSafeEqual; false on length mismatch
+export const SCRYPT_PARAMS = { N: 32768, r: 8, p: 3, keylen: 64, saltlen: 16, maxmem: 64 * 1024 * 1024 } as const;
+export function hashPassword(password: string): Promise<string>;  // 'scrypt$1$N=32768,r=8,p=3$<salt>$<hash>' (base64url)
+export function verifyPassword(password: string, encoded: string): Promise<boolean>; // parse; unknown scheme → false; timingSafeEqual
+export function needsRehash(encoded: string): boolean;             // params below SCRYPT_PARAMS
 export const AUTH_ERRORS = {
   incorrect: 'Password or username is incorrect',
   missingPassword: 'No password was given',
   missingUsername: 'No username was given',
-  noSalt: 'Authentication not possible. No salt value stored',
   userExists: 'A user with the given username is already registered',
 } as const;
+export class UserExistsError extends Error { name = 'UserExistsError' } // same name the register routes branch on
 export function createLocalStrategy(users: UserRepository): passport.Strategy; // usernameField 'email', lowercases
 ```
 
-The behavior matches `@hyperdx/passport-local-mongoose@9.0.1` (`index.js`, `lib/authenticate.js`, `lib/pbkdf2.js`, verified in `node_modules`): `limitAttempts` is unset, so there is no lockout. The username is matched case-insensitively, which in practice means lowercased, because `usernameLowerCase` lowercases on save. Virtual users are rejected before verification, as today in `utils/passport.ts`.
+These are the strings and the error name that `middleware/auth.ts`, `routers/api/root.ts`, the register/login int tests, and the app's login form match on today (verified in C1 against the tests, rule 2). The legacy `noSalt` message goes away: every user created through the app has a hash, virtual users are rejected before verification (as in `utils/passport.ts` today), and an absent hash returns `incorrect`. There is no lockout, matching `limitAttempts` unset today. The password is length-checked (1–1024 bytes) before hashing to bound CPU. The minimum-strength checks already in the register Zod schema stay. The stored `hash` field replaces the plugin's `hash` + `salt` pair, is `select:false`-equivalent (stripped by `toWire`), and `hasPasswordAuth` = `hash` is present.
 
-### 2.6 Migration runner (`metadata/migrate/*`)
-
-```ts
-export type MetadataMigration = {
-  id: string;                       // '0001_add_access_key' — sortable, immutable
-  description: string;
-  up(ctx: MigrationContext): Promise<void>;   // MUST be idempotent
-  down?(ctx: MigrationContext): Promise<void>;
-};
-export type MigrationContext = { store: MetadataStore; query: typeof runQuery; kv: typeof import('../couchbase/kv'); log: Logger };
-export function runPendingMigrations(o?: { dryRun?: boolean; to?: string }): Promise<{ applied: string[]; skipped: string[] }>;
-export function migrationStatus(): Promise<{ id: string; appliedAt?: string; checksum: string }[]>;
-```
-
-A run takes a `locks` lease named `migrations` (TTL 5 min, renewed). Each migration then writes `migrations::<id>` `{ appliedAt, checksum, durationMs }` after `up` succeeds. A migration whose record exists is skipped. A checksum mismatch logs a warning and does not re-run the migration.
-
-### 2.7 Provisioning (`metadata/couchbase/provision/*`, `scripts/metadata-setup.ts`)
+### 2.6 Provisioning and schema version (`packages/ingest/src/setup/metadata.ts`, `metadata/couchbase/{verify,schemaVersion}.ts`)
 
 ```ts
-export function ensureMetadataScope(cluster: Cluster, cfg: MetadataClusterConfig, log): Promise<void>; // scope + METADATA_COLLECTIONS w/ maxTTL
-export const METADATA_INDEXES: { name: string; collection: MetaCollection; keys: string[]; where?: string }[];
-export function ensureMetadataIndexes(cluster: Cluster, cfg, log, o?: { deferBuild?: boolean; numReplica?: number }): Promise<void>;
-export function waitForMetadataIndexesOnline(cluster: Cluster, cfg, timeoutMs: number): Promise<void>; // system:indexes state='online'
-export function ensureMetadataUser(cluster: Cluster, cfg, env, log): Promise<void>;                    // self-managed only
+// common-utils/src/couchbase/metadataKeyspace.ts (pure data)
+export const METADATA_SCHEMA_VERSION = 1;
+export const METADATA_COLLECTIONS: readonly { name: string; maxTTL: number }[];
+export const METADATA_INDEXES: readonly { name: string; collection: string; keys: string[]; where?: string }[];
+export const METADATA_ROLES: (bucket: string) => { role: string; bucket_name: string }[]; // D12
+
+// ingest setup (admin credentials)
+export function ensureMetadataKeyspace(cluster: Cluster, o: {
+  bucket: string; scope: string; ramMb: number; replicas: number;
+  createBucket: boolean;      // false on Capella: bucket must exist (prints required settings)
+  createUser: boolean;        // false on Capella: prints METADATA_ROLES for the Capella UI/API
+  indexReplicas: number;      // CBT_METADATA_INDEX_REPLICAS, default 0
+  log: SetupLogger;
+}): Promise<{ created: string[]; existing: string[] }>; // idempotent; writes/raises meta::schema last
+
+// api
+export function verifyMetadataKeyspace(cluster: Cluster, cfg: MetadataClusterConfig): Promise<VerifyResult>; // collections exist, indexes online
+export function assertSchemaVersion(stored: number | null, code = METADATA_SCHEMA_VERSION): void;            // throws SchemaVersionError if stored > code
 ```
 
-The CLI is `yarn workspace @couchbase-traces/api metadata-setup [--capella] [--create-bucket]`, with exit codes matching `packages/ingest/src/setup/errors.ts` (`SetupError`). The API calls `ensureMetadataScope` and `ensureMetadataIndexes` at startup only when `CBT_METADATA_AUTO_PROVISION=true` (the default in dev, CI, and all-in-one). Production and Capella run the CLI from an init container, so the API user needs no `query_manage_index` or `scope_admin`.
+Order inside `ensureMetadataKeyspace`: bucket (`createBucket`; wait for the bucket to be ready) → scope → collections with `maxTTL` → `CREATE INDEX IF NOT EXISTS … WITH {"defer_build": true, "num_replica": $n}` → one `BUILD INDEX` per collection for deferred indexes → wait for online → RBAC user (self-managed) → upsert `meta::schema` with `schemaVersion = max(stored, METADATA_SCHEMA_VERSION)`. Every step tolerates "already exists". There is no `DROP`, and indexes that are no longer listed are reported, not removed. Exit codes reuse `packages/ingest/src/setup/errors.ts` (`SetupError`).
 
-Index creation uses `CREATE INDEX IF NOT EXISTS … WITH {"defer_build": true}` followed by one `BUILD INDEX` per collection. On EE, `num_replica` comes from `CBT_METADATA_INDEX_REPLICAS` (default 0).
+API startup: connect → `assertSchemaVersion` → `verifyMetadataKeyspace`. If verification fails and `CBT_METADATA_AUTO_PROVISION=true` (default in dev, CI, all-in-one, and the API int-test harness), the API runs `ensureMetadataKeyspace` with `createBucket: false, createUser: false` using its own credentials. That requires the extra roles `scope_admin` + `query_manage_index`, which are granted only in those environments. Otherwise `/ready` stays 503 with the missing items listed.
+
+Schema change policy (D8): additive fields get Zod read defaults and no version bump. A non-additive change bumps `METADATA_SCHEMA_VERSION` and ships the first migration step with its own idempotent test. That PR also adds the runner, which is not built now.
 
 ## 3. Data models
 
 ### 3.1 Conventions for every metadata document
 
-- **Key**: the 24-hex id (for example `65f0c3…`). The body does not repeat `_id`. Repositories read the id from the key (or `META().id`) and add both `_id` and `id` in `serialize.ts#toWire`. Exceptions with deterministic keys: `uniq::…`, `sess::…`, `lock::…`, `migrations::…`, alert-history ERROR rows (see AlertHistory), and pinned filters (see PinnedFilter).
-- **References** (`team`, `source`, `connection`, `createdBy`, …) are stored as 24-hex strings, not objects.
-- **Dates** are stored as ISO-8601 UTC strings with millisecond precision (`Date#toISOString()`, always 24 characters), so lexicographic order equals chronological order for range scans and `ORDER BY`. Repositories convert them to `Date` on read, so callers that compare `Date`s keep working. JSON output is unchanged, because `Date` serializes to the same ISO string.
-- **Timestamps**: `createdAt`/`updatedAt` are set by repositories. A `{ touchUpdatedAt: false }` option covers the `timestamps:false` backfill, and the scheduler's `setState` has the same behavior: Mongo `updateOne` with `$set` does bump `updatedAt` under `timestamps: true`. That is verified in an M5 contract test, and whichever behavior Mongo exhibits is kept.
-- **Optional fields**: an absent value is *missing*, never `null`, unless the Mongo model persisted `null` explicitly. Defaults Mongoose applied on read (`state: OK`, `source: saved_search`, `kind: clickhouse`, `disabled: false`, `provisioned: false`, `isVirtual: false`, `onboardingData` default) are applied by the Zod read schema (`.default()`), so old and imported documents behave as before. Filters that rely on "missing equals default" (`inOrMissing` in `controllers/alertsPage.ts`) use `IFMISSINGORNULL(field, <default>)` in SQL++ and in the index key expression.
-- **`__v`** is not stored and not emitted. Two server paths already strip it, and a contract snapshot confirms that no client reads it. The `Spotlights.test.tsx` fixture field is test data only.
-- **Validation**: each collection has a Zod `XxxDocSchema` (persisted shape) and `XxxInputSchema` (create/patch). Both reuse `common-utils` schemas (`DashboardSchema`, `SavedSearchSchema`, `LogSourceSchema`…`PromqlSourceSchema`, `Team`, `WebhookService`, `AlertThresholdType`, `AlertErrorType`, `ONBOARDING_TASK_IDS`, `MetricsDataType`, `PresetDashboard`, `zAlertChannel(s)`). Mongoose validators are ported one-to-one: `scheduleOffsetMinutes` in `[0,1439]` and less than the interval in minutes, `numConsecutiveWindows ≥ 1`, `querySettings` length ≤ 10 with `setting`/`value` minlength 1, `queryMaxParallelism` 1–64, enums, `minAutoGranularity '' → undefined`, required fields (and "empty string satisfies required", per `models/index.ts` `checkRequired(v => v != null)`). Reads parse leniently (`.passthrough()` for Mixed fields such as `tiles`, `chartConfig`, `channel`, `filters`), and writes parse strictly.
-- **Immutability**: `team` on every entity, and `createdBy` on Dashboard and SavedSearch, are dropped from patches before they reach the repository (`Patch` types omit them). That matches Mongoose `immutable: true`.
-- **Secrets** (`select:false`): `Connection.password`, `tlsCaCertificate`, `monitorPassword`, and `User.hash`, `salt` are stored in the same document. The default `get`/`list` strips them, and only `getWithSecrets`/`getByEmail` (used by auth) return them. List queries project an explicit column list that excludes them.
-- **Multi-tenancy**: one team per deployment today, but every team-scoped query filters on `team = $team`, and every KV `get(teamId, id)` checks `doc.team === teamId`. A cross-team id behaves exactly like a missing document (404), which preserves the current `findOne({_id, team})` semantics. Every index leads with `team`.
-- **Local app mode**: `LOCAL_APP_TEAM` uses the stable hex `5f6c6f63616c5f7465616d5f`, the ObjectId Mongoose derived from `'_local_team_'`. `alert.team` in `providers/default.ts` then needs no cast, and documents created in local mode stay addressable. Synthetic user `_local_user_` stays non-persistable (`isPersistableUserId` is unchanged).
+- **Key**: the 24-hex id from `newId()`. The body does not repeat `_id`. Repositories read the id from the key (`META().id` in SQL++) and `serialize.ts#toWire` adds `_id`, plus `id` where Mongoose emitted the virtual (not for Webhook, TeamInvite, or User; see 0.3). Deterministic-key exceptions: `uniq::…`, `sess::…`, `lock::…`, `meta::schema`, alert-history ERROR rows `err::<alertId>::<windowStartMs>`, and pinned filters `pin::<team>::<source>`.
+- **References** (`team`, `source`, `connection`, `createdBy`, …) are stored as 24-hex strings. During C1–C4, Mongo-resident entities keep their `ObjectId` ref fields, and Mongoose casts the hex strings both ways, so references work across the two stores.
+- **Dates** are ISO-8601 UTC strings with millisecond precision (`toISOString()`, always 24 characters), so lexicographic order equals chronological order. Repositories return `Date` objects, and JSON output is unchanged.
+- **Timestamps**: `createdAt`/`updatedAt` are set by repositories. Whether the scheduler's `setState` bumps `updatedAt` follows what Mongo `updateOne` + `$set` does with `timestamps: true`. That is pinned by a test written in C4 *before* the Mongo alert model is deleted, so the spec is captured from the real behavior.
+- **Optional fields**: absent means *missing*, not `null`. Mongoose defaults (`state: OK`, `source: saved_search`, `disabled: false`, `provisioned: false`, `isVirtual: false`, `tags: []` on dashboards, `onboardingData`) are applied on write by the input schema, and again on read by the doc schema, so a doc written by an older release still reads correctly. `Connection.kind` is required on write. The `clickhouse` read default goes away with the legacy-data migrations (D7), and connection creation already sets `kind`. Filters that treat "missing equals default" (`inOrMissing` in `controllers/alertsPage.ts`) use `IFMISSINGORNULL(field, <default>)` in SQL++ and in the index key.
+- **`__v`** is neither stored nor emitted. A C0 contract snapshot confirms that no client reads it (two server paths strip it already).
+- **Validation**: per collection, a Zod `XxxDocSchema` (persisted, lenient read: `.passthrough()` on Mixed fields such as `tiles`, `chartConfig`, `channel`, and `filters`) and `XxxInputSchema` / `XxxPatchSchema` (strict write). Both reuse `common-utils` schemas (`DashboardSchema`, `SavedSearchSchema`, `LogSourceSchema`…`PromqlSourceSchema`, `WebhookService`, `AlertThresholdType`, `AlertErrorType`, `ONBOARDING_TASK_IDS`, `MetricsDataType`, `PresetDashboard`, `zAlertChannel(s)`). Mongoose validators are ported one-to-one: `scheduleOffsetMinutes` in `[0,1439]` and less than the interval in minutes, `numConsecutiveWindows ≥ 1`, `querySettings` length ≤ 10 with `setting`/`value` minlength 1, `queryMaxParallelism` 1–64, enums, `minAutoGranularity '' → undefined`, and "empty string satisfies required" (`models/index.ts` `checkRequired`). Error messages that tests assert are kept verbatim.
+- **Immutability**: `team` on every entity, and `createdBy` on Dashboard and SavedSearch, are omitted from `Patch` types (Mongoose `immutable: true` parity).
+- **Secrets**: `Connection.password`, `tlsCaCertificate`, `monitorPassword`, and `User.hash` live in the same document. They are stripped by `toWire` and by every list projection. Only `getWithSecrets` and `getByEmailWithSecret` return them. They are never logged (`scrubMessage`).
+- **Multi-tenancy**: every team-scoped SQL++ filters `team = $team`, and every KV `get(teamId, id)` checks `doc.team === teamId`. A cross-team id behaves exactly like a missing document (404). Every index leads with `team` (or `alert` for history, which is team-checked via the parent alert).
+- **Local app mode**: `LOCAL_APP_TEAM_ID` keeps the same hex so `alert.team` comparisons in `providers/default.ts` need no cast. Synthetic user `_local_user_` stays non-persistable (`isPersistableUserId` unchanged).
 
 ### 3.2 Per-entity documents
 
 Fields not listed are carried over verbatim from section 0.1.
 
-| Collection / key | Document shape (persisted) | Uniqueness (lookup doc kind → parts) | GSI indexes (`ix_<coll>_<purpose>`) |
+| Collection / key | Document shape (persisted) | Uniqueness (lookup kind → parts) | GSI indexes (`ix_<coll>_<purpose>`) |
 |---|---|---|---|
-| `teams` / id | `{ name, allowedAuthMethods?, hookId, apiKey, collectorAuthenticationEnforced, isMetricsSeriesTableEnabled, metadataMaxRowsToRead?, searchRowLimit?, queryTimeout?, fieldMetadataDisabled?, parallelizeWhenPossible?, filterKeysFetchLimit?, queryScanConsistency?, queryMaxParallelism?, createdAt, updatedAt }` | `team.singleton → []` (enforces single team); `team.apiKey → [apiKey]`; `team.hookId → [hookId]` | `ix_teams_created (createdAt)` (for `getOnly`/`listAll`) |
-| `users` / id | `{ email (lowercase), name?, team?, accessKey, isVirtual, expiresAt?, lastUsedAt?, revokedAt?, createdBy?, onboardingData, hash?, salt?, createdAt, updatedAt }` | `user.email → [email]`; `user.accessKey → [accessKey]` | `ix_users_team (team, isVirtual, createdAt)`; `ix_users_orgkeys (team, createdBy) WHERE isVirtual = true` |
-| `team_invites` / id | `{ teamId, name?, email, token, createdAt, updatedAt }`; expiry = createdAt + 30d | `invite.member → [teamId, email]`; `invite.token → [token]` (same expiry) | `ix_invites_team (teamId, createdAt)` |
-| `connections` / id | as §0.1 incl. secrets, `kind` default `clickhouse` on read | none | `ix_connections_team (team)` |
-| `sources` / id | discriminated union on `kind`; `{ team, connection, name, … kind-specific }`; `metricTables`/`metadataMaterializedViews` with no `_id` | none | `ix_sources_team (team, kind)`; `ix_sources_connection (team, connection)` |
+| `teams` / id | `{ name, allowedAuthMethods?, hookId, apiKey, collectorAuthenticationEnforced, isMetricsSeriesTableEnabled, metadataMaxRowsToRead?, searchRowLimit?, queryTimeout?, fieldMetadataDisabled?, parallelizeWhenPossible?, filterKeysFetchLimit?, queryScanConsistency?, queryMaxParallelism?, createdAt, updatedAt }` | `team.singleton → []`; `team.apiKey → [apiKey]`; `team.hookId → [hookId]` | `ix_teams_created (createdAt)` |
+| `users` / id | `{ email (lowercase), name?, team?, accessKey, isVirtual, expiresAt?, lastUsedAt?, revokedAt?, createdBy?, onboardingData, hash?, createdAt, updatedAt }` | `user.email → [email]`; `user.accessKey → [accessKey]` | `ix_users_team (team, isVirtual, createdAt)`; `ix_users_orgkeys (team, createdBy) WHERE isVirtual = true` |
+| `team_invites` / id | `{ teamId, name?, email, token, createdAt, updatedAt }`; expiry = createdAt + 30d | `invite.member → [teamId, email]`; `invite.token → [token]` (both with the invite's expiry) | `ix_invites_team (teamId, createdAt)` |
+| `connections` / id | as §0.1, incl. secrets; `kind` required | none | `ix_connections_team (team)` |
+| `sources` / id | discriminated union on `kind`; `{ team, connection, name, …kind-specific }`; `metricTables` / `metadataMaterializedViews` without `_id` | none | `ix_sources_team (team, kind)`; `ix_sources_connection (team, connection)` |
 | `saved_searches` / id | `{ team, name?, select?, where?, whereLanguage?, orderBy?, source, tags?, filters?, createdBy?, updatedBy?, createdAt, updatedAt }` | none | `ix_saved_searches_team (team)`; `ix_saved_searches_tags (team, DISTINCT ARRAY t FOR t IN tags END)` |
-| `dashboards` / id | `{ name, tiles, team, tags (default []), filters (default []), savedQuery?, savedQueryLanguage?, savedFilterValues?, savedDateRange?, containers?, createdBy?, updatedBy?, provisioned (default false), createdAt, updatedAt }` | `dashboard.provisioned → [team, name]`, only when `provisioned: true` (partial-unique parity) | `ix_dashboards_team (team)`; `ix_dashboards_tags (team, DISTINCT ARRAY t FOR t IN tags END)`; `ix_dashboards_provisioned (team, name) WHERE provisioned = true` |
-| `alerts` / id | as §0.1; `channels` absent unless set; `tags` absent unless set | none | `ix_alerts_team (team)`; `ix_alerts_page (team, IFMISSINGORNULL(displayName, NULL), META().id)`; `ix_alerts_tags (team, DISTINCT ARRAY t FOR t IN tags END)`; `ix_alerts_saved_search (team, savedSearch)`; `ix_alerts_dashboard (team, dashboard, tileId)`; `ix_alerts_created_by (team, createdBy)` |
-| `alert_history` / id, or `err::<alertId>::<createdAtMs>` for ERROR rows | `{ alert, counts, createdAt, state, lastValues[], group?, fired?, groupValues?, errors?, analytics? }`; expiry = createdAt + 30d | ERROR row identity is the deterministic key (replaces the upsert filter `{alert, createdAt, state: ERROR}`) | `ix_alert_history_alert (alert, createdAt DESC, state)`; `ix_alert_history_group (alert, IFMISSINGORNULL(\`group\`, ""), createdAt DESC, state)` |
-| `webhooks` / id | `{ team, service, name, url?, description?, titleEmoji?, queryParams?: Record<string,string>, headers?: Record<string,string>, body?, createdAt, updatedAt }` (Mongoose `Map` becomes a plain object, which `toJSON({flattenMaps:true})` already produced) | `webhook.name → [team, service, name]` | `ix_webhooks_team (team, service)` |
+| `dashboards` / id | `{ name, tiles, team, tags, filters, savedQuery?, savedQueryLanguage?, savedFilterValues?, savedDateRange?, containers?, createdBy?, updatedBy?, provisioned, createdAt, updatedAt }` | `dashboard.provisioned → [team, name]`, claimed only when `provisioned: true` | `ix_dashboards_team (team)`; `ix_dashboards_tags (team, DISTINCT ARRAY t FOR t IN tags END)`; `ix_dashboards_provisioned (team, name) WHERE provisioned = true` |
+| `alerts` / id | as §0.1; `channels` and `tags` missing unless set | none | `ix_alerts_team (team)`; `ix_alerts_page (team, IFMISSINGORNULL(displayName, NULL), META().id)`; `ix_alerts_tags (team, DISTINCT ARRAY t FOR t IN tags END)`; `ix_alerts_saved_search (team, savedSearch)`; `ix_alerts_dashboard (team, dashboard, tileId)`; `ix_alerts_created_by (team, createdBy)` |
+| `alert_history` / id, or `err::<alertId>::<ms>` | `{ alert, counts, createdAt, state, lastValues[], group?, fired?, groupValues?, errors?, analytics? }`; expiry = createdAt + 30d | ERROR-row identity = deterministic key | `ix_alert_history_alert (alert, createdAt DESC, state)`; ``ix_alert_history_group (alert, IFMISSINGORNULL(`group`, ""), createdAt DESC, state)`` |
+| `webhooks` / id | `{ team, service, name, url?, description?, titleEmoji?, queryParams?: Record<string,string>, headers?: Record<string,string>, body?, createdAt, updatedAt }` | `webhook.name → [team, service, name]` | `ix_webhooks_team (team, service)` |
 | `favorites` / id | `{ user, team, resourceType, resourceId, createdAt, updatedAt }` | `favorite → [team, user, resourceType, resourceId]` | `ix_favorites_user (team, user)`; `ix_favorites_resource (team, resourceType, resourceId)` |
-| `pinned_filters` / id | `{ team, source, fields (default []), filters (default {}), createdAt, updatedAt }` | `pinned.source → [team, source]` | `ix_pinned_filters_team (team)` |
+| `pinned_filters` / `pin::<team>::<source>` | `{ team, source, fields, filters, createdAt, updatedAt }` | key is the constraint | `ix_pinned_filters_team (team)` |
 | `preset_dashboard_filters` / id | as §0.1 | none | `ix_preset_filters (team, presetDashboard, source)` |
 | `unique_keys` / `uniq::<kind>::<sha256>` | `{ kind, owner: Id, parts: string[], createdAt }` | (is the constraint) | none (KV only) |
 | `sessions` / `sess::<sid>` | `{ session: SessionData, expiresAt }`; doc expiry | n/a | none |
-| `locks` / `lock::<name>` | `{ owner, acquiredAt, expiresAt }`; doc expiry | n/a | none |
-| `migrations` / `migrations::<id>` | `{ appliedAt, checksum, durationMs }` | n/a | `ix_migrations_all (META().id)` |
+| `system` / `lock::<name>`, `meta::schema` | lease `{ owner, acquiredAt, expiresAt }` (doc expiry); schema `{ schemaVersion, appVersion, provisionedAt, updatedAt }` | n/a | none |
 
-Every collection also gets `ix_<coll>_ids (META().id)` for admin, backfill, and import verification scans. Primary indexes are created only in test setups (the `port/couchbase-test` pattern) and never in production.
-
-Hashing `parts` with sha256 keeps lookup keys under the 250-byte key limit and keeps user-controlled text (names, emails) out of keys. The original parts are stored in the body for diagnostics.
+There are no `META().id` scan indexes and no primary indexes in production: no import or backfill needs them now. Test setups (`port/couchbase-test`) may create primary indexes for `DELETE FROM` resets. Hashing `parts` keeps lookup keys under the 250-byte limit and keeps user text out of keys. The parts stay in the body for diagnostics.
 
 ### 3.3 Mongo operation to Couchbase mapping
 
 | Mongo construct | Couchbase replacement |
 |---|---|
 | `findById`, `findOne({_id, team})` | KV `get` + team check |
-| `findOne({email})`, `findOne({accessKey})`, `findOne({apiKey})`, `findOne({token})` | KV `get` on `uniq::` doc, then KV `get` on the entity. No query on hot auth paths, so bearer and `/login` lookups stay fast. |
+| `findOne({email})`, `({accessKey})`, `({apiKey})`, `({token})` | KV `get` on the `uniq::` doc, then KV `get` on the entity (no query on hot auth paths) |
 | `find({team, …}).sort({_id:1})` | `SELECT … FROM ks AS d WHERE d.team = $team … ORDER BY META(d).id`, `request_plus` |
-| `$set` / `$unset` partial update | sub-doc `mutateIn` (`upsert` / `remove`) for scheduler hot paths; `mutateDoc` CAS loop elsewhere |
+| `$set` / `$unset` | sub-doc `mutateIn` `upsert`/`remove` on scheduler hot paths; `mutateDoc` CAS loop elsewhere |
 | `$addToSet` | `MutateInSpec.arrayAddUnique(path, v, {createPath:true})`; `PathExistsError` → no-op |
-| `$in`, `$ne`, `$exists`, `$or`, ranges | SQL++ `IN $arr` (array form, see port-notes Phase 11), `!=`, `IS NOT MISSING`/`IS VALUED`, `OR`, `>=`/`<` |
-| `$regex` (escaped, `i`) | `CONTAINS(LOWER(d.displayName), LOWER($q))` (same literal-substring semantics; no regex needed) |
+| `$in`, `$ne`, `$exists`, `$or`, ranges | `IN $arr`, `!=`, `IS NOT MISSING` / `IS VALUED`, `OR`, `>=` / `<` |
+| `$regex` (escaped, `i`) | `CONTAINS(LOWER(d.displayName), LOWER($q))` (same literal-substring semantics) |
 | `tags: {$all: arr}` | `EVERY t IN $tags SATISFIES t IN d.tags END` |
 | `$unwind` + `$group` distinct tags | `SELECT DISTINCT RAW t FROM ks d UNNEST d.tags t WHERE d.team = $team` per collection, unioned in TS |
-| alert-history `$group` by `createdAt` with `$push`/`$sum` | `SELECT h.createdAt, ARRAY_AGG(h.state) …, SUM(h.counts) … GROUP BY h.createdAt ORDER BY h.createdAt DESC LIMIT $limit` |
-| latest per (alert, group) `$sort` + `$group $first` | `SELECT … FROM (SELECT h.*, ROW_NUMBER() OVER (PARTITION BY IFMISSINGORNULL(h.\`group\`,"") ORDER BY h.createdAt DESC) rn FROM ks h WHERE h.alert = $alert AND h.createdAt BETWEEN $lb AND $now AND h.state != "ERROR") x WHERE x.rn = 1` (EE window function) |
-| `populate('createdBy','email name')` | `users.getDisplay(ids)` multi-get (KV), merged in the repo; output shape `{_id, email, name}` |
-| `updateMany` / `deleteMany` | SQL++ `UPDATE`/`DELETE … WHERE team = $team AND …` (`request_plus`); inside `tx` when part of a multi-step change |
-| `findOneAndUpdate(..., {upsert, $setOnInsert})` (provisioner) | claim `dashboard.provisioned` lookup in a transaction; on success insert, on duplicate apply update |
-| `bulkWrite` backfill | batched CAS `mutateDoc` per document (500 per batch); the "inputs unchanged" filter becomes a CAS + field re-check |
-| TTL index | collection `maxTTL` + explicit absolute expiry; every mutation of a TTL document passes `preserveExpiry: true` |
-| `insertOne` restore (member delete) | not needed: `deleteTeamMember` runs in one transaction (count + delete + reassign alerts) |
-| ObjectId generation / validation | `ids.ts#newId()` (bson) / `isId()` |
+| alert-history `$group` by `createdAt` with `$push`/`$sum` | `SELECT h.createdAt, ARRAY_AGG(h.state), SUM(h.counts) … GROUP BY h.createdAt ORDER BY h.createdAt DESC LIMIT $limit` |
+| latest per (alert, group) `$sort` + `$group $first` | ``ROW_NUMBER() OVER (PARTITION BY IFMISSINGORNULL(h.`group`,"") ORDER BY h.createdAt DESC)`` subquery, `rn = 1` (EE window function) |
+| `populate('createdBy','email name')` | `users.getDisplay(ids)` KV multi-get; same `{_id, email, name}` shape |
+| `updateMany` / `deleteMany` | SQL++ `UPDATE` / `DELETE … WHERE team = $team AND …` (`request_plus`), inside `tx` when part of a multi-step change |
+| `findOneAndUpdate(…, {upsert, $setOnInsert})` (provisioner) | claim `dashboard.provisioned` in a tx: success → insert, duplicate → update the owner |
+| TTL index | collection `maxTTL` + explicit absolute expiry; every mutation of a TTL doc passes `preserveExpiry: true` |
+| member delete + `insertOne` restore | one transaction (count + delete + reassign alerts) once alerts are switched (C4); until then the existing sequence |
+| `new ObjectId()` / `isValidObjectId` | `newId()` / `isValidId()` |
 
 ## 4. Error handling
 
 | Failure | Detection | Surfaced as | Recovery |
 |---|---|---|---|
-| Metadata config missing or malformed (`CBT_METADATA_CONNSTR` unparsable, bucket name empty) | `loadMetadataConfig` + `common-utils` `parseConnStr` (`ConnStrError`) | `MetadataConfigError`; process exits non-zero (parity with `MongoParseError` fast-fail in `connectDBWithRetry`) | fix env |
-| Cluster unreachable or auth failure at startup | SDK `connect` throws `UnambiguousTimeoutError` / `AuthenticationFailureError` / `RequestCanceledError` | logged with attempt + backoff; `/health` 200, `/ready` 503 `{ metadata: 'connecting' }`; counter `cbt.metadata.connection_events{event=initial_connect_retry}` | capped exponential backoff (1s→30s, forever), same as `connectDBWithRetry` |
-| Bucket, scope, or collection missing | `BucketNotFoundError`, `ScopeNotFoundError`, `CollectionNotFoundError` on the first `waitUntilReady` / KV op | retryable while an init container may still be provisioning (logged as `metadata keyspace not provisioned`); with `AUTO_PROVISION=true`, provisioning is attempted | provision, then the retry loop continues |
-| Indexes building or missing | `system:indexes` state ≠ `online`, or query error 12003/12004 (no index / index not found), or 4000-range plan errors | `IndexNotReadyError` → HTTP 503 with `Retry-After: 5`; `/ready` 503 `{ metadata: 'indexing' }` until `waitForMetadataIndexesOnline` passes | startup waits up to `CBT_METADATA_INDEX_WAIT_MS` (default 120s), then keeps serving KV-only routes and reports degraded |
-| Runtime transient (KV/query timeout, temporary failure, node failover) | `TimeoutError`, `TemporaryFailureError`, `ServiceNotAvailableError` | `MetadataUnavailableError` → 503 (routes) / logged + retried next tick (scheduler) | SDK built-in retry strategy; no extra app-level retry on non-idempotent writes |
-| Duplicate key | `DocumentExistsError` on lookup-doc insert | `DuplicateKeyError { kind, parts }`; `utils/errors.ts#isDuplicateKeyError` returns true, so existing 409 / `UserExistsError` / webhook-name messages are unchanged | none needed |
-| CAS conflict | `CasMismatchError` | internal: re-read + reapply patch (≤3 tries); then `CasConflictError` → 409 `{ error: 'conflict' }` | caller retries |
-| Document vanished during update | `DocumentNotFoundError` | `null` from repo → existing 404 paths | none |
-| Transaction failure | `TransactionFailedError` (rolled back) | `TransactionFailedError` → 500 with logged cause; uniqueness causes are re-mapped to `DuplicateKeyError` | the SDK retries internally until `txTimeoutMs` |
-| Transaction commit ambiguous | `TransactionCommitAmbiguousError` | logged at error with tx id; the repo re-reads the affected keys to decide success | idempotent re-read; on undecidable → 503 |
-| Durability impossible (single-node bucket with replicas ≥ 1) | `DurabilityImpossibleError` on first transaction | startup self-check (`withTransaction` no-op probe) fails readiness with a clear message | set bucket replicas 0 on single-node dev, or set `CBT_METADATA_TX_DURABILITY=none` (dev only; logged as warning) |
-| Orphaned lookup doc (entity write failed after non-tx claim) | `claimUnique` finds `owner` whose entity is missing | treated as free: the claim is overwritten via CAS | self-healing; a migration `0xxx_verify_unique_keys` also sweeps |
-| Schema-invalid stored doc | Zod read parse failure | logged with key + issues; item skipped in lists (as Mongoose cast errors effectively did), 500 for a single get | data fix via migration |
-| Partial migration (runner) | missing `migrations::<id>` record after crash | next start re-runs `up` (idempotent by contract) | lease expiry (5 min) frees the lock |
-| Partial import (Mongo → Couchbase tool) | checkpoint doc `migrations::import-from-mongo` with per-collection offsets | tool exits non-zero and prints a resume command | re-run: upserts are idempotent; `--verify` reports diffs |
-| Session store errors | KV errors in `get`/`set` | `get` errors → passed to express-session `cb(err)` → 500 (connect-mongo parity); `touch` errors swallowed + counted | none |
+| Metadata config missing or malformed | `loadMetadataConfig` + common-utils `parseConnStr` (`ConnStrError`) | `MetadataConfigError`; process exits non-zero (same fast-fail as `MongoParseError` in `connectDBWithRetry` today) | fix env |
+| Cluster unreachable or auth failure at startup | SDK `connect` → `UnambiguousTimeoutError` / `AuthenticationFailureError` / `RequestCanceledError` | logged with attempt + backoff; `/health` 200, `/ready` 503 `{ metadata: 'connecting' }`; counter `cbt.metadata.connection_events{event}` | capped exponential backoff (1s→30s, forever), ported from `connectDBWithRetry` with its test |
+| Metadata bucket, scope, or collection missing | `BucketNotFoundError` / `ScopeNotFoundError` / `CollectionNotFoundError`, or `verifyMetadataKeyspace` reports missing items | `/ready` 503 `{ metadata: 'provisioning', missing: [...] }`; one log line per missing item | auto-provision when enabled; otherwise run the setup command. The verify loop retries every 5s, so an init container that is still running is handled |
+| Stored schema newer than code (downgrade) | `assertSchemaVersion` | `SchemaVersionError`; process exits non-zero with both versions in the message | deploy the newer release |
+| Indexes building or missing | `system:indexes` state ≠ `online`; query errors 12003/12004/4000-range | `IndexNotReadyError` → 503 + `Retry-After: 5`; `/ready` 503 `{ metadata: 'indexing' }` | startup waits `CBT_METADATA_INDEX_WAIT_MS` (120s), then serves KV-only routes and stays degraded until online |
+| Runtime transient (timeouts, temporary failure, failover) | `TimeoutError`, `TemporaryFailureError`, `ServiceNotAvailableError` | `MetadataUnavailableError` → 503 for routes; scheduler logs and retries next tick | SDK retry strategy; no app-level retry of non-idempotent writes |
+| Duplicate key | `DocumentExistsError` on lookup-doc insert | `DuplicateKeyError { kind }`; `isDuplicateKeyError` true, so the existing 409 / `UserExistsError` / webhook-name / invite messages are unchanged | none needed |
+| CAS conflict | `CasMismatchError` | internal re-read + reapply (≤3), then `CasConflictError` → 409 `{ error: 'conflict' }` (internal paths only; D10) | caller retries |
+| Document vanished during update | `DocumentNotFoundError` | `null` → existing 404 paths | none |
+| Transaction failure | `TransactionFailedError` (rolled back) | 500 with logged cause; uniqueness causes re-mapped to `DuplicateKeyError` | SDK retries within `txTimeoutMs` |
+| Transaction commit ambiguous | `TransactionCommitAmbiguousError` | logged with tx id; repo re-reads affected keys to decide | undecidable → 503; client retry is safe because every multi-doc write is idempotent by key |
+| Durability impossible (replicas > nodes − 1) | `DurabilityImpossibleError` on the startup no-op tx probe | `/ready` 503 with a message naming `CBT_METADATA_REPLICAS` / `CBT_METADATA_TX_DURABILITY` | fix the bucket replicas, or set durability `none` for single-node dev only |
+| Orphaned lookup doc (entity write failed after a non-tx claim) | `claimUnique` finds an owner whose entity is missing | treated as free; overwritten via CAS | self-healing |
+| Schema-invalid stored doc | Zod read failure | logged with key + issues; skipped in lists, 500 for a single get | fix the code that wrote it; no stored data predates the schema (D2) |
+| Session store errors | KV errors in `get` / `set` | `cb(err)` → express-session → 500 (connect-mongo parity); `touch` errors are swallowed and counted | none |
+| Password hash unparseable or unknown scheme | `verifyPassword` parse failure | `false` → `AUTH_ERRORS.incorrect` (no oracle), logged once per user id | admin resets the password |
+| Setup command fails partway | `SetupError` with step name; non-zero exit | init container fails, so compose `depends_on: service_completed_successfully` blocks the API | re-run: every step is idempotent |
 
-Every SDK error is converted once in `metadata/errors.ts#fromCouchbaseError`, which reuses `common-utils/src/couchbase/errors.ts#scrubMessage` so credentials never reach logs. HTTP mapping lives in the existing `middleware/error.ts#appErrorHandler`, extended for the new error classes.
+Every SDK error is converted once in `metadata/errors.ts#fromCouchbaseError`, which reuses `common-utils/src/couchbase/errors.ts#scrubMessage` so credentials never reach logs. HTTP mapping lives in `middleware/error.ts#appErrorHandler`, extended for the new classes.
 
 ## 5. Edge cases
 
-- **Empty or invalid input**: `isId` rejects non-24-hex before KV access, so callers get 400 or 404 exactly where `ObjectId.isValid`/`CastError` did. The 12-character-string case that Mongoose accepted now returns 400 (recorded as a behavior change). Empty strings stay valid for "required" string fields. An empty `tags` array is kept distinct from missing (alerts `tags: default undefined`). Max document size is 20 MB on Couchbase vs 16 MB on Mongo, so no new limit is introduced. The `express.json` 32 MB limit stays the effective cap.
-- **Email case**: emails are lowercased on write and lookup. The plugin's unescaped `RegExp('^'+email+'$','i')` lookup is replaced by an exact lowercase key, which fixes regex metacharacters in emails. The import tool reports emails that collide after lowercasing.
-- **Null vs missing ordering**: Mongo sorts null and missing together, while SQL++ ASC puts MISSING before NULL. The alerts-page index and `ORDER BY` use `IFMISSINGORNULL(displayName, NULL)` so the cursor's "null block" logic in `controllers/alertsPage.ts#applyCursor` stays correct. String order is raw UTF-8 bytes in both systems, so it is unchanged.
-- **`group` field**: `group` is a SQL++ reserved word, so it is always backtick-quoted via `quoteIdent`. Missing and null group are normalized to `""` in the history index and `PARTITION BY`, matching `computeHistoryMapKey(id, history.group || '')`.
-- **Concurrent edits**: last write wins for user PATCH/PUT, the same as today. Internal read-modify-write uses CAS. The scheduler's `setState`/`setExecutionErrors` use sub-document mutations on disjoint paths, so a concurrent user edit of `threshold` is not clobbered by the scheduler (Mongo `$set` parity) and vice versa.
-- **Alert scheduler concurrency**: there is no distributed lock today; one task process is assumed. The plan adds an optional lease `lock::check-alerts` (TTL = 2× tick, renewed). With `CBT_ALERT_SCHEDULER_LEASE=true` (default false for parity), a second runner skips the tick. History ERROR rows use deterministic keys, so concurrent runners cannot duplicate them.
-- **Duplicate history rows**: normal history rows keep random ids. `AlertHistory.create` failures are tolerated individually (`Promise.allSettled`), as today.
-- **TTL documents mutated later**: `upsertErrorRow` and invite updates pass `preserveExpiry: true`. Without it Couchbase would clear the expiry and the document would live forever (doc-verified). A contract test asserts the expiry survives an update.
-- **Expiry vs `createdAt` in the past** (imported history): expiry = `createdAt + 30d`. If that is already past, the importer skips the document and counts it as `expired`.
-- **Index lag**: everything goes through `request_plus` or KV. Create-then-list in one request (for example create dashboard, then the list page) is consistent. Unit/int tests that seed then query need no sleeps.
-- **Transactions + `request_plus`**: inside a transaction, `ctx.query` reads its own writes. Repositories never mix `cluster.query` inside a transaction callback.
-- **Large lists**: the IaC manifest (`routers/api/iac.ts#bounded`) and external API pagination keep their limits. `page()` uses keyset on `META().id`. `LIMIT`/`OFFSET` are named parameters.
-- **Partial failure in multi-entity deletes** (delete a dashboard together with its alerts, or a saved search together with its alerts): wrap in `withTransaction`. Today these are sequential non-atomic Mongo calls, so this is strictly safer, and the visible result is the same.
-- **Single-team invariant race**: two concurrent `/register/password` requests on an empty install both pass `isTeamExisting()` today. With the `team.singleton` lookup doc, one gets `DuplicateKeyError` → 409 `teamAlreadyExists`, and the other request's orphan user is rolled back in the same transaction.
-- **Last team member**: `deleteTeamMember` in a single transaction (count non-virtual members, delete target, reassign `Alert.createdBy`) removes the restore-after-delete race and keeps the `'last_member'` result.
-- **Local app mode**: no auth and no users, but sources, connections, and dashboards still persist. The all-in-one-noauth image still needs the metadata scope (Couchbase is already in the image).
-- **Serverless (`serverless.ts`)**: lazy `connect()` on first invocation, with a cached promise reset on failure (same as now). A cold start must not run provisioning (`AUTO_PROVISION` is forced false).
-- **Sessions after cutover**: the cookie name and secret are unchanged. If sessions are not imported, every user is signed out once (Q4).
-- **Tests sharing a cluster**: integration suites reset with `DELETE FROM <coll>` on the test scope (`request_plus`), not by dropping the scope. They run `--runInBand`, as today (`main.yml` comment).
-- **Rule 3**: E2E helpers in `packages/app/tests/e2e/utils/db-helpers.ts` must not import `couchbase`. They call the Query REST service (`POST :8093/query/service` with named `$params`) via `fetch`, or shell out to `cbq` in the container, replacing `mongosh`.
+- **Empty or invalid input**: `isValidId` rejects non-24-hex before KV access, so callers get 400 or 404 where `isValidObjectId` / `CastError` did. The 12-character-string quirk now returns 400 (behavior change recorded in port-notes). Empty strings stay valid for "required" strings. An empty `tags` array stays distinct from missing (alerts `tags: default undefined`). Couchbase's 20 MB doc limit is above Mongo's 16 MB, and the `express.json` 32 MB limit remains the effective cap.
+- **Email case and regex**: emails are lowercased on write and lookup. The plugin's unescaped `RegExp('^'+email+'$','i')` lookup becomes an exact lowercase key, which fixes regex metacharacters in emails.
+- **Password edge cases**: empty password → `AUTH_ERRORS.missingPassword` (Passport rejects before verify). Over-long passwords are rejected before hashing. Unicode is normalized with NFC before hashing, so the same visible password hashes the same on every platform. The comparison is constant-time. A burst of logins is bounded by the libuv threadpool (default 4), which serializes scrypt and caps memory at 4 × 32 MiB. `UV_THREADPOOL_SIZE` is documented, not changed.
+- **Null vs missing ordering**: SQL++ ASC puts MISSING before NULL, while Mongo groups them. The alerts-page index and `ORDER BY` use `IFMISSINGORNULL(displayName, NULL)`, so the null-block logic in `controllers/alertsPage.ts#applyCursor` holds. String order is raw UTF-8 bytes in both systems.
+- **`group` field**: a reserved word in SQL++, so it is always quoted via `quoteIdent`. Missing and null are normalized to `""` in the index and `PARTITION BY`, matching `computeHistoryMapKey(id, history.group || '')`.
+- **Concurrent edits**: last write wins for user PATCH/PUT (D10). The scheduler's `setState` / `setExecutionErrors` mutate disjoint sub-document paths, so a concurrent user edit of `threshold` survives (Mongo `$set` parity).
+- **Alert scheduler concurrency** (D9): the lease is taken per tick with a TTL of 2× the tick and renewed halfway. A second runner skips the tick and logs at debug. A crashed holder frees the lease at expiry, so at most one tick is skipped. ERROR history rows use deterministic keys, so even with the lease disabled, concurrent runners cannot duplicate them.
+- **TTL docs mutated later**: `upsertErrorRow`, invite updates, and lookup docs for invites pass `preserveExpiry: true`, because without it Couchbase clears the expiry (doc-verified). A contract test asserts the expiry survives an update.
+- **Index lag**: everything goes through `request_plus` or KV, so create-then-list in one request is consistent and tests need no sleeps.
+- **Transactions + queries**: inside a transaction, only `ctx.query` is used, never `cluster.query`, so reads see the transaction's own writes.
+- **Large lists**: the IaC manifest (`routers/api/iac.ts#bounded`) and external API pagination keep their limits. `page()` uses keyset on `META().id`. `LIMIT` and `OFFSET` are named parameters.
+- **Multi-entity deletes** (dashboard + its alerts, saved search + its alerts, team member + alert reassignment): a single transaction once both entities are switched. That is strictly safer than today's sequential calls, with the same visible result. During C1–C3, while one side is still Mongo, the existing sequential code stays (no cross-store transaction is attempted).
+- **Single-team invariant race**: two concurrent first registrations both pass `isTeamExisting()` today. With `team.singleton`, one gets `DuplicateKeyError` → existing 409 `teamAlreadyExists`, and its user insert rolls back in the same transaction.
+- **Transition window (C1–C4)**: an unswitched Mongoose model can still hold a ref to a switched entity (for example `Alert.createdBy` → a user in Couchbase), so every `populate` of a switched entity is replaced in the same phase (C1 replaces all four `populate('createdBy'|'updatedBy')` sites with `users.getDisplay`). The ESLint rule from C0 forbids `populate(` on any path whose target model was deleted. Developer databases from before a phase are simply reset (D2). `make dev-reset-metadata` drops the dev bucket.
+- **Local app mode**: no auth and no users, but sources, connections, and dashboards persist, so the all-in-one-noauth image also provisions `cbt_meta`.
+- **Serverless (`serverless.ts`)**: lazy `connect()` with a cached promise reset on failure. Auto-provision is forced off, and verification is cached per container.
+- **Memory headroom**: the all-in-one and compose cluster data quota grows by `CBT_METADATA_RAM_MB` (256 MiB). The `scripts/ci/smoke-all-in-one.sh` memory note and docs are updated.
+- **Capella**: the bucket cannot be created by `ensureMetadataKeyspace` with database credentials, so `--capella` checks for it, prints the required bucket settings and `METADATA_ROLES`, and creates scope, collections, and indexes if the supplied credentials allow it (same pattern as the ingest `capellaAccess` output).
+- **Tests sharing a cluster**: int suites reset with `DELETE FROM` per collection (`request_plus`) on a per-run scope (`app_test_<slot>`), not by dropping the bucket. They run `--runInBand`, as today.
+- **Rule 3**: E2E helpers (`packages/app/tests/e2e/utils/db-helpers.ts`) must not import `couchbase`. They call the Query REST service with named `$params` via `fetch`, replacing `mongosh`.
 
-## 6. Data migration from existing Mongo deployments
+## 6. Data migration
 
-The tool is `packages/api/scripts/migrate-from-mongo.ts` (Q2 decides whether it ships).
-
-```ts
-type ImportOptions = {
-  mongoUri?: string;            // read directly (needs optional `mongodb` dep) …
-  fromExport?: string;          // … or a directory of `mongoexport --jsonFormat=canonical` NDJSON files (no Mongo dep)
-  collections?: MongoCollection[]; // default all 14 incl. sessions
-  dryRun?: boolean; verify?: boolean; includeSessions?: boolean; batchSize?: number; // default 500
-};
-export function importFromMongo(o: ImportOptions): Promise<ImportReport>;
-type ImportReport = Record<MongoCollection, { read: number; written: number; skipped: number; expired: number; invalid: { id: string; issues: string[] }[]; uniqueCollisions: string[] }>;
-```
-
-How it works:
-
-- **Preconditions**: the source Mongo `changelog` must have all three `migrations/mongo` entries applied (the tool checks and refuses otherwise). The target scope must be provisioned and empty, or the run must pass `--resume`.
-- **Mapping**: `$oid` becomes hex and `$date` becomes ISO. Mongoose discriminator `kind` is kept. `Map` fields become objects. `__v` is dropped. Each document is parsed with the M1 `DocSchema` (strict). Invalid documents are reported and skipped, and `--allow-invalid` imports them raw with a flag.
-- **Write order**: teams → users → invites → connections → sources → saved searches → dashboards → webhooks → alerts → alert history → favorites → pinned filters → preset filters → sessions. Each document is an `upsert` keyed by the original id, followed by its lookup docs (`upsert` with the same owner). Re-running is idempotent. A lookup doc owned by a *different* id is a collision: it is reported and not overwritten.
-- **Sessions**: connect-mongo stores `{ _id: sid, expires, session: <JSON string> }`. The importer parses that to `sess::<sid>` with expiry = `expires`, and skips expired sessions.
-- **Verification (`--verify`)**: per-collection counts (Mongo vs `SELECT COUNT(*) … request_plus`), a per-document canonical-JSON sha256 comparison of `toWire()` output from the Mongo adapter vs the Couchbase repo, uniqueness lookup-doc count = entity count per unique kind, and a sample login with a known test user in CI. A non-zero diff exits with code 3.
-- **Checkpointing**: `migrations::import-from-mongo` stores the last id per collection. `--resume` continues from it.
-- After a successful import, the tool writes `migrations::<id>` records for the ported migration set, so the runner does not re-apply them.
+None (D2). No Mongo installs exist, so there is no import tool, export format, verification, checkpoint/resume, session import, or hash compatibility. The three `migrations/mongo/*` scripts, `migrate-mongo`, its `changelog`, and the startup backfill are deleted in C5 (and become unreachable earlier as their entities switch). Their upstream tests (`src/__tests__/addKindMigration.test.ts`, `src/__tests__/migrations.int.test.ts`) are deleted together with the code they test. That is a removal of migration code, not of a user-facing feature, so `port/features.json` has no `dropped` entry. Port-notes record the deletion and point to D7. Future schema changes follow the policy in 2.6.
 
 ## 7. Phases
 
-Every phase: verify the named paths and symbols again before editing (rule 2) and record corrections in `docs/port-notes.md` under `## Mongo elimination: Mx`. Finish with `yarn lint:fix`, `make ci-lint`, `make ci-unit`, plus the listed integration targets, then make one commit. Do not start the next phase while the build is red. Size: S ≤ 1 day, M 2–3 days, L 4–6 days, XL > 1 week (single engineer with agent help).
+Every phase: re-verify named paths and symbols before editing (rule 2) and record corrections in `docs/port-notes.md` under `## Mongo elimination: Cx`. Finish with `yarn lint:fix`, `make ci-lint`, `make ci-unit`, plus the listed integration targets, then make one commit. Do not start the next phase while the build is red. Size: S ≤ 1 day, M 2–3 days, L 4–6 days (single engineer with agent help).
 
-### M0: Baseline and wire contracts (S)
+Per-slice recipe (C1–C4), the same for every entity:
+1. Before deleting the Mongoose model, add any missing characterization test against it (only where the upstream suite does not already pin a behavior the port depends on, for example `updatedAt` on `$set`).
+2. Add the doc/input schemas, the Couchbase repo, the memory-store implementation, and contract tests (both backends).
+3. Move every non-test caller to `getMetadataStore()`; replace `populate` of the entity.
+4. Port the entity's upstream tests: `jest.mock('@/models/x')` → `setMetadataStoreForTests(createMemoryStore())`; int-test seeding `X.create(...)` → `seed.x(...)` (codemod `port/codemods/models-to-store.mjs`, extended per slice). Expected outputs do not change except for documented `__v` removal.
+5. Delete `models/x.ts` and its test helpers. The ESLint `no-restricted-imports` rule lists deleted models, so a stray import fails lint.
 
-- Add `packages/api/src/__tests__/metadataContracts.int.test.ts`. It records JSON snapshots, with `_id`/`id`/date normalization, for every metadata-returning route: internal API, external API v2, and MCP tool outputs for dashboards, saved searches, alerts, webhooks, sources, connections, team, me, favorites, pinned filters, and alert history/evaluations. Snapshots are captured against the current Mongo stack and are the cutover spec.
-- Inventory script `port/inventory.sh` gains a `mongo` scan category (import counts) for progress tracking.
-- **Done when**: the snapshots are committed and green on Mongo; the counts are recorded in port-notes.
+### C0: Foundation, separate bucket, ids (L)
 
-### M1: Seam, ids, schemas, Mongo adapter (L)
+- Wire-contract snapshots (`src/__tests__/metadataContracts.int.test.ts`): JSON snapshots, with `_id`/`id`/date normalization, of every metadata-returning route (internal API, external API v2, MCP outputs). They are captured on the current stack and used as the spec in every later phase.
+- `metadata/{types,ids,errors,serialize,index}.ts`, `couchbase/{config,cluster,keyspace,kv,query,tx,unique,lock,schemaVersion,verify}.ts`, `testing/{memoryStore,contract,seed}.ts`, `common-utils/src/couchbase/metadataKeyspace.ts`, `packages/ingest/src/setup/metadata.ts` + `cli.ts` flags.
+- `isValidId` / `newId` replace every `isValidObjectId`, `ObjectId.isValid`, `new ObjectId()`, and `randomMongoId` (Mongoose still casts the hex strings). Check the tests for reliance on 12-character ids.
+- Infrastructure: `docker/couchbase/init.sh` provisions `cbt_meta` (+ quota math), `CBT_METADATA_*` in `.env.{development,test,e2e}` and compose anchors, `port/couchbase-test/init.sh`, the all-in-one entry, and CI. Mongo stays.
+- API connects to both stores; `/ready` reports `metadata` alongside `mongo`.
+- Tests: contract suite (memory + Couchbase), `ids` unit tests (format, monotonic within a process, timestamp prefix), `connectRetry` ported, provisioning idempotency (run twice → second creates nothing), tx probe on single-node CI, lease tests, schema-version guard.
+- **Done when**: snapshots green; contract suite green on both backends; `couchbase-init` creates `cbt_meta` idempotently in compose, CI, and all-in-one; nothing switched yet, all existing suites green.
 
-- Add `metadata/types.ts`, `ids.ts`, `errors.ts`, `schemas/*`, `serialize.ts`, `mongo/*` (adapters delegating to the existing models), `testing/memoryStore.ts`, `testing/contract.ts`, and `index.ts` with `CBT_METADATA_STORE` (default `mongo`).
-- Replace `objectIdSchema`/`ObjectId.isValid` uses with `isId`, and `randomMongoId` with `newId`.
-- **Done when**: the contract suite passes on memory + mongo; no behavior change; M0 snapshots green.
+### C1: Identity, auth, sessions (L)
 
-### M2: Move callers to the seam (XL; split into commits M2a–M2e, each green)
+- Team, user (incl. org API keys, onboarding, virtual users), and invite repos; `auth/password.ts` (scrypt), `auth/localStrategy.ts`; `CouchbaseSessionStore` in `api-app.ts`; `utils/passport.ts`, `middleware/auth.ts` (`Express.User` becomes the `User` type), `routers/api/{root,team,orgApiKeys}.ts`, `routers/external-api/v2/team.ts`, `controllers/{team,user,orgApiKey}.ts`, `opamp/controllers/opampController.ts` (team by API key).
+- Replace all four `populate('createdBy'|'updatedBy')` sites with `users.getDisplay`. `deleteTeamMember` keeps its sequential delete-then-restore shape against the Mongo `Alert` model until C4.
+- Remove `connect-mongo` and `@hyperdx/passport-local-mongoose` from `package.json`, since nothing uses them after this phase.
+- Tests: password unit tests (round-trip, wrong password, unknown scheme, params encoding, `needsRehash`, timing-safe path), session store unit tests (express-session store semantics: get/set/touch/destroy, expiry from `cookie.expires`) + int test (login → cookie → `/me` → logout → 401), uniqueness race tests (20 parallel registrations / invites / API keys).
+- **Done when**: `routers/api/__tests__/team.int.test.ts`, `controllers/__tests__/{team,orgApiKey}.int.test.ts`, the login/register/join-team/invite suites, the external v2 team suite, and opamp auth tests are green on Couchbase; the `team`, `user`, and `teamInvite` models are deleted; C0 snapshots are green.
 
-- M2a: identity (`controllers/team.ts`, `controllers/user.ts`, `controllers/orgApiKey.ts`, `routers/api/{root,team,orgApiKeys}.ts`, `routers/external-api/v2/team.ts`, `middleware/auth.ts`, `utils/passport.ts`, `opamp/controllers/opampController.ts`).
-- M2b: connections/sources (`controllers/{connection,sources}.ts`, `dataLayerSetup.ts`, `utils/queryableSource.ts`, routers, MCP sources).
-- M2c: content (`controllers/{savedSearch,dashboard,favorite,pinnedFilter,presetDashboardFilters,webhook}.ts`, `routers/api/{dashboards,webhooks,iac}.ts`, external v2 dashboards/savedSearches/webhooks + `utils/dashboards.ts`, MCP dashboards/savedSearches/webhooks, `tasks/provisionDashboards`).
-- M2d: alerts (`controllers/{alerts,alertsPage,alertHistory}.ts`, `routers/api/alerts.ts`, external v2 alerts + `utils/alertChartConfig.ts`, `utils/{alerts,iacTileAlerts,externalApi}.ts`, `tasks/checkAlerts/**`, `migrations.ts`, `scripts/seed-alerts.ts`).
-- M2e: AI controllers (`controllers/ai*.ts`) and the remaining stragglers. Add an ESLint `no-restricted-imports` rule: `@/models/*` may be imported only from `metadata/mongo/**` and `scripts/migrate-from-mongo.ts`.
-- Tests: unit tests that `jest.mock('@/models/…')` switch to `setMetadataStoreForTests(memoryStore())`. Int tests seed through `getMetadataStore()` (a mechanical rewrite of about 1,150 call sites; a codemod in `port/codemods/models-to-store.mjs`).
-- **Done when**: no `@/models` import exists outside the allowlist, all int suites are green on Mongo, and the M0 snapshots are green.
+### C2: Connections and sources (M)
 
-### M3: Couchbase foundation + identity and auth (L)
+- Connection and source repos (discriminated union, secrets projection). `dataLayerSetup.ts` loader → `connections.getWithSecrets`. The `fixtures.ts` CI loader is rewritten without `Connection.findById`. `controllers/{connection,sources}.ts`, `utils/queryableSource.ts`, routers, external v2, MCP sources, and `setupDefaults.ts`.
+- **Done when**: `routers/api/__tests__/{connections,sources}.int.test.ts`, external v2 connections/sources, `controllers/__tests__/sources.int.test.ts`, and the MCP sources suites are green on Couchbase (the deferred list in `jest.int.config.js` stays as is); the models are deleted; snapshots are green.
 
-- Add `couchbase/{config,cluster,keyspace,kv,query,tx,unique,lock}.ts`, `provision/*`, and `scripts/metadata-setup.ts`.
-- Add the team, user, and invite repositories, `auth/pbkdf2.ts`, `auth/localStrategy.ts`, and `sessionStore.ts`.
-- `api-app.ts` picks `CouchbaseSessionStore` when `CBT_METADATA_STORE=couchbase`. `utils/passport.ts` uses `createLocalStrategy`. `/ready` reports `metadata` (and keeps `mongo` while the flag is `mongo`).
-- Add `CBT_METADATA_*` to `.env.test`. Add provisioning to `docker-compose.ci.yml` `couchbase-init` and to `port/couchbase-test/init.sh`.
-- Tests: the contract suite runs on Couchbase (`*.couchbase.int.test.ts`). A pbkdf2 golden test hashes with the real plugin and verifies with the new module, and the reverse. Session-store tests use express-session's store compliance cases. A transaction probe test runs on the single-node CI cluster (replicas 0).
-- **Done when**: `routers/api/__tests__/team.int.test.ts`, `controllers/__tests__/{team,orgApiKey}.int.test.ts`, and the login/register/join-team suites are green with `CBT_METADATA_STORE=couchbase`, and still green on Mongo.
+### C3: Content (L)
 
-### M4: Connections and sources (M)
+- Saved searches, dashboards (incl. provisioner upsert and `tasks/provisionDashboards`), favorites, pinned filters, preset dashboard filters, webhooks, and `tags` (unions the switched collections with Mongo `Alert` until C4). Callers: `controllers/{savedSearch,dashboard,favorite,pinnedFilter,presetDashboardFilters,webhook}.ts`, `routers/api/{dashboards,webhooks,iac}.ts`, external v2 dashboards/savedSearches/webhooks + `utils/dashboards.ts`, MCP dashboards/savedSearches/webhooks, and `controllers/ai*.ts` reads.
+- Deleting a dashboard or saved search still removes its alerts through the Mongo `Alert` model (sequential) until C4.
+- **Done when**: all content int suites (incl. `provisionDashboards.int.test.ts`, IaC export/import, favorites, pinned filters, webhooks name-uniqueness 409) are green on Couchbase; the six models are deleted; snapshots are green.
 
-- Add the connection and source repositories (discriminated union, secrets projection).
-- `dataLayerSetup.ts` loader → `store.connections.getWithSecrets`. The `fixtures.ts` CI loader is rewritten without `Connection.findById`.
-- **Done when**: the connections/sources int suites (`routers/api/__tests__/{connections,sources}.int.test.ts`, external v2 connections/sources, `controllers/__tests__/sources.int.test.ts`, MCP sources) are green on both stores (the deferred CH-shaped ones stay deferred as listed in `jest.int.config.js`), and the M0 snapshots are green on Couchbase.
+### C4: Alerts, alert history, scheduler (L)
 
-### M5: Content and alerts (L)
+- Before deleting the Mongo alert models, capture characterization tests for `setState` / `updatedAt` and ERROR-row upsert behavior (recipe step 1).
+- Alert and alert-history repos, incl. the window-function history queries and the alerts-page keyset. Callers: `controllers/{alerts,alertsPage,alertHistory}.ts`, `routers/api/alerts.ts`, external v2 alerts + `utils/alertChartConfig.ts`, `utils/{alerts,iacTileAlerts,externalApi}.ts`, `tasks/checkAlerts/**`, `scripts/seed-alerts.ts`.
+- Upgrade the cross-entity paths to transactions: `deleteTeamMember`, dashboard/saved-search delete + alerts, and `tags` fully on Couchbase. Add the scheduler lease (D9) in `tasks/index.ts`.
+- Delete `migrations.ts#runStartupMigrations` and its call in `server.ts` (D7).
+- **Done when**: `checkAlertsTask.test.ts`, `evaluators.test.ts`, `alertHistory.int.test.ts`, `alertsPagination.int.test.ts`, the external v2 and MCP alerts suites, and lease tests (two runners → one evaluation per tick; crashed holder → next tick proceeds) are green on Couchbase; no `@/models/*` import is left except `models/index.ts` (connection only); snapshots are green.
 
-- Add the saved-search, dashboard, favorite, pinned-filter, preset-filter, webhook, tags, alert, and alert-history repositories, including the window-function history queries, alerts-page keyset, the provisioner upsert, and the startup backfill.
-- Contract tests pin the subtle parity points: null/missing ordering, `$addToSet`, `preserveExpiry`, ERROR-row upsert, `updatedAt` bump behavior, and populate shape.
-- **Done when**: all remaining non-deferred int suites are green on both stores; `checkAlertsTask.test.ts`, `evaluators.test.ts`, `alertHistory.int.test.ts`, `alertsPagination.int.test.ts`, and `provisionDashboards.int.test.ts` are green on Couchbase; the M0 snapshots are green on Couchbase.
+### C5: Remove Mongo (L)
 
-### M6: Migration runner + import tool (M)
-
-- Add `migrate/runner.ts`, `registry.ts`, and migrations `0001_add_access_key`, `0002_add_kind_to_connections`, `0003_disable_legacy_connections`, `0004_backfill_alert_display_fields` (moved from `migrations.ts#runStartupMigrations`).
-- Port `src/__tests__/addKindMigration.test.ts` and `migrations.int.test.ts` to the runner (same inputs, same expected documents).
-- Add `scripts/migrate-from-mongo.ts` + `--verify`, an int test that seeds Mongo via the M1 adapter, imports, and verifies, and docs `docs/metadata-migration.md`.
-- **Done when**: the runner is idempotent (two runs → second applies 0); the import round-trip diff is 0; resume works after a killed run (test kills mid-collection).
-
-### M7: Cutover: default to Couchbase, infrastructure, E2E (L)
-
-- `CBT_METADATA_STORE` defaults to `couchbase`.
-- Remove the `db` service and `MONGO_URI` from `docker-compose.yml`, `docker-compose.dev.yml`, `docker-compose.ci.yml`, `packages/app/tests/e2e/docker-compose.yml`, and `port/golden/docker-compose.yml`. Add `metadata-setup` to each `couchbase-init`.
-- All-in-one: drop the MongoDB apt install, `MONGODB_VERSION`, and `mongod` from `docker/hyperdx/Dockerfile`, `entry.cbt.sh`, and `entry.local.base.sh`, and update the image labels and the `scripts/ci/smoke-all-in-one.sh` memory note.
-- Scripts: `port/couchbase-test/run.sh` (no Mongo container), `port/stack-smoke/run.sh`, `scripts/test-e2e.sh` (Couchbase readiness instead of mongosh), `scripts/slots.sh` / `Makefile` / `scripts/dev-env.sh` / `scripts/dev-portal/*` (drop the `*_MONGO_PORT` variables and `dev-migrate-db` → `dev-metadata-migrate`), `.github/actions/e2e-setup/action.yml`, `packages/app/playwright.config.ts`, `packages/app/tests/e2e/global-setup-fullstack.ts` + `utils/db-helpers.ts` (Query REST helpers), `docker/hostmetrics/config.dev.yaml` (drop the `mongodb` receiver), and `.env.{development,test,e2e}`.
-- **Done when**: `make dev` starts with no Mongo, `make dev-int`, `port/couchbase-test/run.sh`, `make e2e` (full-stack Couchbase), `make build-all-in-one` + smoke, and `port/stack-smoke/run.sh` are all green.
-
-### M8: Delete Mongo (M)
-
-- Delete `packages/api/src/models/**` (keep pure types/enums such as `AlertState`, `AlertSource`, `getAlertChannels`, `attributesToGroupValues` by moving them to `metadata/schemas/*` or common-utils), `metadata/mongo/**`, `migrate-mongo-config.ts`, `migrations/mongo/**`, `models/__tests__/connectRetry.test.ts` (ported as `metadata/couchbase/__tests__/connectRetry.test.ts` in M3), `utils/readiness.ts` Mongo bits, `fixtures.ts` Mongo helpers, and the `MONGO_URI` config.
-- Remove the dependencies `mongoose`, `mongodb`, `connect-mongo`, `@hyperdx/passport-local-mongoose`, `migrate-mongo`, and update `yarn.lock`, `knip.json`, the `eslint.config.mjs` (`allowModules`) entries, `docs/licenses.md` (regenerate), and the `next.config.mjs` comment.
-- If Q2 chooses the standalone importer, move it to `tools/metadata-import/` with its own `package.json` outside the workspaces that ship images.
-- Docs: update `DEPLOY.md`, `CONTRIBUTING.md`, `docs/{development,self-managed,capella}.md`, `agent_docs/*`, and the `AGENTS.md` repository-layout line ("MongoDB for metadata" → "Couchbase for metadata"; requires user OK since AGENTS.md is project policy). Record in port-notes and update `port/features.json` (no feature dropped).
-- **Done when**: the section 8 acceptance criteria all pass.
+- Code: delete `models/**` (move the remaining pure types/enums such as `AlertState`, `AlertSource`, `getAlertChannels`, `attributesToGroupValues` to `metadata/schemas/*`), `migrate-mongo-config.ts`, `migrations/mongo/**`, `src/__tests__/{addKindMigration.test.ts,migrations.int.test.ts}`, the Mongo bits of `utils/readiness.ts` / `server.ts` / `serverless.ts` / `fixtures.ts`, the `MONGO_URI` config, any Mongo instrumentation config (there is no explicit package today; the auto-instrumentation simply goes idle once no driver is loaded), and the 11000 branch in `isDuplicateKeyError`. `/ready` → `metadata` only (D11; port `health.int.test.ts`).
+- Dependencies: remove `mongoose`, `mongodb`, `migrate-mongo`, and any `mongodb-memory-server`; update `yarn.lock`, `knip.json`, `eslint.config.mjs` (`allowModules`), `docs/licenses.md` (regenerate), and the `next.config.mjs` comment.
+- Infrastructure: remove the `db` service and `MONGO_URI` from `docker-compose.yml`, `docker-compose.dev.yml`, `docker-compose.ci.yml`, `packages/app/tests/e2e/docker-compose.yml`, and `port/golden/docker-compose.yml`. All-in-one: drop the MongoDB apt install, `MONGODB_VERSION`, and `mongod` from `docker/hyperdx/Dockerfile`, `entry.cbt.sh`, and `entry.local.base.sh`, and update the image labels and smoke memory note. Scripts: `port/couchbase-test/run.sh`, `port/stack-smoke/run.sh`, `scripts/test-e2e.sh` (Couchbase readiness instead of `mongosh`), `scripts/slots.sh` / `Makefile` / `scripts/dev-env.sh` / `scripts/dev-portal/*` (drop `*_MONGO_PORT`, `dev-migrate-db`), `.github/actions/e2e-setup/action.yml`, `packages/app/playwright.config.ts`, `packages/app/tests/e2e/global-setup-fullstack.ts` + `utils/db-helpers.ts` (Query REST), `docker/hostmetrics/config.dev.yaml` (drop the `mongodb` receiver), and `.env.*`.
+- Docs: `DEPLOY.md`, `CONTRIBUTING.md`, `docs/{development,self-managed,capella}.md` (metadata bucket, user, RAM, Capella steps), `agent_docs/*`, and the `AGENTS.md` repository-layout line (D13). Port-notes; `port/features.json` unchanged (nothing dropped).
+- **Done when**: every section 8 criterion passes, including `make dev` with no Mongo, `make dev-int`, `port/couchbase-test/run.sh`, `make e2e`, `make build-all-in-one` + smoke, and `port/stack-smoke/run.sh`.
 
 ## 8. Acceptance criteria
 
-1. `rg -n "mongoose|mongodb|connect-mongo|migrate-mongo|passport-local-mongoose|mongosh|mongod\b|MONGO_URI|_MONGO_PORT"` over the repo, excluding `docs/upstream/**`, CHANGELOGs, `docs/port-notes.md`, this plan, and the optional `tools/metadata-import/**`, returns no matches.
-2. `packages/*/package.json` and `yarn.lock` list none of `mongoose`, `mongodb`, `connect-mongo`, `migrate-mongo`, `@hyperdx/passport-local-mongoose`, `mongodb-memory-server`.
-3. No compose file (`docker-compose*.yml`, `packages/app/tests/e2e/docker-compose.yml`, `port/**/docker-compose.yml`), workflow, action, or Dockerfile defines a Mongo image or service. The all-in-one image contains no `mongod` binary (`docker run … which mongod` fails in `smoke-all-in-one.sh`).
+1. `rg -n "mongoose|mongodb|connect-mongo|migrate-mongo|passport-local-mongoose|mongosh|mongod\b|MONGO_URI|_MONGO_PORT"` over the repo, excluding `docs/upstream/**`, CHANGELOGs, `docs/port-notes.md`, and this plan, returns no matches. No source file imports an `ObjectId` type or class.
+2. No `packages/*/package.json` or `yarn.lock` entry for `mongoose`, `mongodb`, `connect-mongo`, `migrate-mongo`, `@hyperdx/passport-local-mongoose`, `mongodb-memory-server`, or `bson`.
+3. No compose file, workflow, action, or Dockerfile defines a Mongo image or service. In the all-in-one image `which mongod` fails (asserted in `smoke-all-in-one.sh`).
 4. `make ci-lint` and `make ci-unit` are green. Coverage floors are unchanged or raised.
-5. Every integration suite that was green on Mongo at M0 is green on Couchbase. The deferred list in `jest.int.config.js` is not extended. `port/couchbase-test/run.sh` exits 0 without a Mongo container.
-6. The M0 wire-contract snapshots pass unchanged against Couchbase, apart from the documented `__v` removal and the `/ready` key rename.
-7. Playwright: `make e2e` (full-stack Couchbase) is green for the specs green at M0. Login, register, join-team, dashboards, saved searches, alerts, webhooks, and sources pass.
-8. A user created on Mongo, imported with the tool, signs in with the original password. An existing session cookie stays valid after import with `--include-sessions`.
-9. The import tool on the int fixture dataset reports `--verify` diff 0. A second run writes 0 changes (idempotent), and `--resume` after a forced kill completes.
-10. Uniqueness: concurrent duplicate creates (20 parallel, same webhook name / same email / same favorite) yield exactly one success and the rest `DuplicateKeyError`, mapped to the current HTTP codes.
-11. TTL: alert history and invites have expiry ≈ createdAt + 30d (±1 min), and the expiry is unchanged after an ERROR-row update (`lookupIn` `$document.exptime`).
-12. Rule 4 check: a unit test scans `metadata/couchbase/**` for template literals passed to `runQuery` / `cluster.query`. Every statement is built with the `sqlpp` tag, and an ESLint rule forbids string-concatenated statements.
-13. Rule 3 check: `packages/app` and its bundle graph contain no `couchbase` or `@/metadata` import (existing lint rule + `next build` bundle analysis).
-14. `/ready` returns 503 while the metadata cluster is down and 200 within 5s of it returning. The API survives a 60s Couchbase restart without a process restart.
-15. `docs/port-notes.md` has a "Mongo elimination" section per phase, and `port/features.json` shows no feature newly `dropped`.
+5. Every integration suite that was green at C0 is green on Couchbase, apart from the deleted migration tests (section 6). The deferred list in `jest.int.config.js` is not extended. `port/couchbase-test/run.sh` exits 0 with no Mongo container.
+6. The C0 wire-contract snapshots pass unchanged, apart from the documented `__v` removal and the `/ready` key (D11).
+7. `make e2e` (full-stack Couchbase) is green for the specs green at C0: login, register, join team, dashboards, saved searches, alerts, webhooks, and sources.
+8. Fresh install: `docker compose up` on an empty volume yields a `cbt_meta` bucket (Magma), the `app` scope, all section 1.1 collections with their `maxTTL`, all section 3.2 indexes online, the `cbt_meta` user with exactly the D12 roles, and `meta::schema.schemaVersion = 1`. Re-running `couchbase-init` creates nothing and exits 0.
+9. Isolation: the telemetry query user gets an authorization error on `SELECT * FROM cbt_meta.app.connections`, and the metadata user gets one on `otel`.
+10. Auth: register → login → `/me` → logout works. A wrong password returns the same status and `Password or username is incorrect`. Stored `hash` matches `^scrypt\$1\$N=32768,r=8,p=3\$`. Sessions survive an API restart and expire per cookie expiry (doc expiry within ±1 min).
+11. Uniqueness: 20 parallel duplicate creates (same email, webhook name, favorite, provisioned dashboard name, first-team registration) yield exactly one success, and the rest map to the current HTTP codes.
+12. TTL: alert history and invites expire ≈ createdAt + 30d (±1 min), and the expiry is unchanged after an ERROR-row update (`lookupIn` `$document.exptime`).
+13. Ids: every created entity id matches `/^[0-9a-f]{24}$/`, sorting by id within a process equals creation order, and the Terraform/IaC export round-trips.
+14. Scheduler: two concurrent task runners produce one evaluation and one notification per alert per tick (lease on), and with the lease disabled the ERROR rows are still not duplicated.
+15. Rule 4: a unit test scans `metadata/couchbase/**` and `packages/ingest/src/setup/metadata.ts` for statements not built with the `sqlpp` tag, and an ESLint rule forbids string-concatenated statements.
+16. Rule 3: `packages/app` and its bundle graph contain no `couchbase` or `@/metadata` import (lint + `next build` bundle check).
+17. `/ready` returns 503 while the metadata cluster is down and 200 within 5s of it returning. The API survives a 60s Couchbase restart without a process restart. Starting the API against a bucket with `schemaVersion` 2 exits non-zero.
+18. `docs/port-notes.md` has a "Mongo elimination" section per phase, and `port/features.json` shows no feature newly `dropped`.
 
 ## 9. Risks
 
 | Risk | Impact | Mitigation |
 |---|---|---|
-| Hidden reliance on Mongoose document behavior (`.save()`, getters, `toObject()`, `.id` virtual, `Map.toJSON`, default materialization) in about 45 `toJSON`/`toObject` sites | subtle wire or logic regressions | M0 snapshots + M1 adapter returns the *same* plain objects the Couchbase repo will return, so regressions show up on Mongo before cutover |
-| Test rewrite volume (~1,150 model calls in 72 files) | schedule | codemod + seed helpers on `getMetadataStore()`; M2 split into five commits |
-| Transactions on single-node dev buckets (`DurabilityImpossibleError`) | dev/CI failures | metadata collections in a bucket with replicas 0 on single node (the ingest setup already creates `numReplicas: 0`); startup probe |
-| Index build time on large Capella clusters | slow first start | `defer_build` + init-container provisioning; KV-only hot paths |
-| Query service latency vs Mongo for list endpoints | UI latency | covering indexes per §3.2; KV multi-get for populate; measure p95 in `port/stack-smoke` before/after |
-| Same bucket as telemetry (if Q1 = same) shares RAM quota and bucket-level `maxTTL` | metadata eviction/expiry | collections set `maxTTL: -1` where 0 is intended (doc-verified override); recommend separate bucket |
-| The bucket the user configures for metadata is on Capella with restricted management | provisioning fails | `metadata-setup --capella` prints the required collections, indexes, and roles, like the ingest setup's `capellaAccess` |
-| ObjectId validator tightening (12-char strings) | some existing client passing odd ids gets 400 | logged as a behavior change; only the local-mode synthetic ids were affected, and they are handled |
-| `bson` package considered "a Mongo dependency" | acceptance dispute | Q6; fallback is a 20-line in-repo generator with the same layout (4-byte seconds + 5 random + 3 counter) |
+| Hidden reliance on Mongoose document behavior (`.save()`, getters, `toObject()`, `.id` virtual, `Map.toJSON`, default materialization) in about 45 `toJSON`/`toObject` sites | subtle wire or logic regressions | C0 snapshots; repos return plain objects matching `toJSON` output; characterization tests before each model is deleted |
+| No adapter phase means each slice changes behavior and storage at once | a red slice is larger to debug | slices are small and ordered by dependency; snapshots + contract suite on both backends catch storage vs logic issues separately; a slice can be split into two commits (callers, then tests) if it runs long |
+| Transition window with two stores (C1–C4) | cross-store refs, populate, multi-entity deletes | refs are hex strings Mongoose casts; populate replaced in C1; cross-store deletes keep today's sequential code until C4 |
+| Test rewrite volume (~1,150 model calls in 72 files) | schedule | codemod + `testing/seed.ts`, applied per slice |
+| scrypt cost under login bursts | latency / memory | 32 MiB × threadpool size bound; parameters encoded for later tuning; load check in `port/stack-smoke` |
+| Transactions on single-node buckets | `DurabilityImpossibleError` in dev/CI | replicas 0 by default on single node; startup tx probe |
+| Second bucket RAM on small hosts / all-in-one | init fails on quota | 256 MiB default (Magma 128 vBuckets minimum is 100 MiB); quota math in `init.sh`; documented |
+| Capella restricts bucket/user creation | setup can't finish alone | `--capella` prints exact bucket settings and roles, verifies, and creates what it can |
+| Query latency vs Mongo for list endpoints | UI latency | covering indexes (section 3.2); KV multi-get for populate; p95 compared in `port/stack-smoke` at C0 and C5 |
 
 ## 10. Open questions
 
-- **Q1. Bucket placement**: (a) a separate metadata bucket (`cbt_meta`, recommended: independent RAM quota, no telemetry TTL interaction, separate RBAC and backup), or (b) a `cbt_meta` scope in the telemetry bucket `otel` (fewer resources: no second bucket RAM quota on small dev/all-in-one installs). Defaults in this plan follow (b) for dev/all-in-one and allow (a) via env. Which is the product default?
-- **Q2. Migration tool**: ship the Mongo→Couchbase importer? If yes: (a) read live Mongo (needs `mongodb` as an isolated dependency in `tools/metadata-import`), or (b) read `mongoexport` canonical EJSON only (zero Mongo dependency; the user runs `mongoexport`). Recommended: (b), with (a) only if you want one-command migration.
-- **Q3. Session store**: (a) the custom Couchbase KV store in this plan (recommended), (b) a signed stateless cookie session (no server store; changes logout/revocation semantics), or (c) an external store such as Redis (adds a dependency).
-- **Q4. Session continuity at cutover**: import sessions (users stay signed in) or accept a one-time sign-out?
-- **Q5. Scheduler lease**: enable the `lock::check-alerts` lease by default (safe for multiple task replicas, slight behavior change) or keep it off for parity?
-- **Q6. Id generator**: keep the `bson` package for `ObjectId` hex, or use an in-repo generator so no package of Mongo origin remains?
-- **Q7. Conflict semantics**: keep last-write-wins for user edits (parity, the default here), or add ETag/`If-Match` → 409 on dashboards/alerts (new feature, out of parity scope)?
-- **Q8. `/ready` payload**: rename `mongo` to `metadata` (breaking for anyone scraping the key) or keep the `mongo` key name with the Couchbase state for one release?
-- **Q9. Metadata credentials**: reuse `CBT_COUCHBASE_QUERY_USER` with added write roles, or a dedicated `CBT_METADATA_USER` (recommended: least privilege; the query user stays read-only for telemetry)?
-- **Q10. `AGENTS.md` edit**: OK to update the repository-layout line ("MongoDB for metadata") in M8?
+None block C0. All earlier questions are resolved in [Decisions](#decisions) (Q1 → D1, Q2/Q4 → D2, Q3 → D3, Q5 → D9, Q6 → D5, Q7 → D10, Q8 → D11, Q9 → D12, Q10 → D13). Defaults the user may want to override, with no impact on phase order:
+
+- Metadata bucket defaults: `cbt_meta` / scope `app` / 256 MiB / replicas 0 in single-node environments.
+- Scheduler lease on by default (D9).
 
 ## 11. Phase size summary
 
 | Phase | Scope | Size |
 |---|---|---|
-| M0 | Wire-contract snapshots, inventory counts | S |
-| M1 | Seam, ids, Zod doc schemas, Mongo adapter, memory store, contract suite | L |
-| M2 | Move ~167 call sites + ~1,150 test call sites to the seam (M2a–M2e) | XL |
-| M3 | Couchbase foundation, provisioning, identity repos, pbkdf2 auth, session store | L |
-| M4 | Connections and sources repos, data-layer loader | M |
-| M5 | Content + alerts + alert-history repos, scheduler queries | L |
-| M6 | Migration runner, ported migrations, Mongo import tool + verify | M |
-| M7 | Default to Couchbase; compose, CI, E2E, all-in-one, scripts | L |
-| M8 | Delete Mongo code, dependencies, docs | M |
+| C0 | Foundation: primitives, separate bucket provisioning (setup + auto), ids, memory store, contract suite, snapshots | L |
+| C1 | Identity, scrypt auth, Couchbase session store, populate replacement | L |
+| C2 | Connections and sources, data-layer loader | M |
+| C3 | Saved searches, dashboards + provisioner, favorites, pinned/preset filters, webhooks, tags | L |
+| C4 | Alerts, alert history, scheduler + lease, cross-entity transactions, delete backfill | L |
+| C5 | Remove Mongo: code, deps, compose/CI/E2E/all-in-one, docs | L |
 
-Total is roughly 5–7 weeks for one engineer.
+The total is roughly 4–5 weeks for one engineer (revision 1: 5–7 weeks).
 
+### Changes from revision 1
+
+- Removed: the Mongo import tool (old section 6 and M6), import verification/checkpoint/resume, session import, the migrate-mongo port and migration runner, the startup backfill port, passport-local-mongoose pbkdf2 compatibility and golden tests, the Mongo adapter (`metadata/mongo/*`) and the `CBT_METADATA_STORE` flag, the dual-store "green on both" requirement, the XL "move callers to the seam" phase, the `migrations` collection, `META().id` scan indexes, and the `bson` question.
+- Simplified: 9 phases → 6; each entity is switched once, directly to Couchbase; provisioning is idempotent DDL plus a version marker; one setup entry point (`couchbase-init`).
+- Changed: separate `cbt_meta` bucket (was a scope in `otel`); scrypt (was pbkdf2-compatible); `/ready` key renamed; scheduler lease on by default; dedicated metadata user.
