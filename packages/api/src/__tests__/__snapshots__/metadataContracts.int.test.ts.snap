@@ -1,0 +1,897 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`metadata wire contracts: internal API GET /alerts 1`] = `
+{
+  "data": [
+    {
+      "_id": "<id:10>",
+      "channel": {
+        "type": "webhook",
+        "webhookId": "<id:5>",
+      },
+      "channels": [
+        {
+          "type": "webhook",
+          "webhookId": "<id:5>",
+        },
+      ],
+      "createdAt": "<date>",
+      "createdBy": {
+        "email": "fake@example.com",
+        "name": "fake@example.com",
+      },
+      "displayName": "Contract errors",
+      "history": [],
+      "interval": "15m",
+      "message": null,
+      "name": null,
+      "note": null,
+      "numConsecutiveWindows": null,
+      "savedSearch": {
+        "name": "Contract errors",
+      },
+      "savedSearchId": "<id:6>",
+      "source": "saved_search",
+      "state": "OK",
+      "tags": [
+        "contract",
+      ],
+      "threshold": 8,
+      "thresholdType": "above",
+      "updatedAt": "<date>",
+    },
+    {
+      "_id": "<id:9>",
+      "channel": {
+        "type": "webhook",
+        "webhookId": "<id:5>",
+      },
+      "channels": [
+        {
+          "type": "webhook",
+          "webhookId": "<id:5>",
+        },
+      ],
+      "createdAt": "<date>",
+      "createdBy": {
+        "email": "fake@example.com",
+        "name": "fake@example.com",
+      },
+      "dashboard": {
+        "name": "Contract dashboard",
+        "tiles": [
+          {
+            "config": {
+              "name": "Test Chart",
+            },
+            "id": "<id:8>",
+          },
+        ],
+      },
+      "dashboardId": "<id:7>",
+      "displayName": "Contract tile alert",
+      "history": [],
+      "interval": "15m",
+      "message": null,
+      "name": null,
+      "note": null,
+      "numConsecutiveWindows": null,
+      "source": "tile",
+      "state": "OK",
+      "tags": [
+        "contract",
+      ],
+      "threshold": 8,
+      "thresholdType": "above",
+      "tileId": "<id:8>",
+      "unaddressableTile": true,
+      "updatedAt": "<date>",
+    },
+  ],
+  "hasMore": false,
+}
+`;
+
+exports[`metadata wire contracts: internal API GET /connections 1`] = `
+[
+  {
+    "__v": 0,
+    "_id": "<id:3>",
+    "createdAt": "<date>",
+    "host": "couchbase://127.0.0.1",
+    "id": "<id:3>",
+    "kind": "couchbase",
+    "name": "Contract connection",
+    "team": "<id:1>",
+    "updatedAt": "<date>",
+    "username": "cbt_query",
+  },
+]
+`;
+
+exports[`metadata wire contracts: internal API GET /dashboards 1`] = `
+[
+  {
+    "__v": 0,
+    "_id": "<id:7>",
+    "containers": [],
+    "createdAt": "<date>",
+    "createdBy": {
+      "_id": "<id:2>",
+      "email": "fake@example.com",
+      "name": "fake@example.com",
+    },
+    "filters": [],
+    "id": "<id:7>",
+    "name": "Contract dashboard",
+    "provisioned": false,
+    "savedFilterValues": [],
+    "tags": [
+      "contract",
+    ],
+    "team": "<id:1>",
+    "tiles": [
+      {
+        "config": {
+          "alert": {
+            "__v": 0,
+            "_id": "<id:9>",
+            "channel": {
+              "type": "webhook",
+              "webhookId": "<id:5>",
+            },
+            "channels": [
+              {
+                "type": "webhook",
+                "webhookId": "<id:5>",
+              },
+            ],
+            "chartConfig": null,
+            "createdAt": "<date>",
+            "createdBy": {
+              "_id": "<id:2>",
+              "email": "fake@example.com",
+              "name": "fake@example.com",
+            },
+            "dashboard": "<id:7>",
+            "displayName": "Contract tile alert",
+            "groupBy": null,
+            "id": "<id:9>",
+            "interval": "15m",
+            "message": null,
+            "name": null,
+            "note": null,
+            "numConsecutiveWindows": null,
+            "savedSearch": null,
+            "source": "tile",
+            "state": "OK",
+            "tags": [
+              "contract",
+            ],
+            "team": "<id:1>",
+            "threshold": 8,
+            "thresholdType": "above",
+            "tileId": "<id:8>",
+            "updatedAt": "<date>",
+          },
+          "displayType": "line",
+          "filters": [],
+          "granularity": "auto",
+          "implicitColumnExpression": "Body",
+          "name": "Test Chart",
+          "numberFormat": {
+            "output": "number",
+          },
+          "select": [
+            {
+              "aggCondition": "",
+              "aggConditionLanguage": "lucene",
+              "aggFn": "count",
+              "valueExpression": "",
+            },
+          ],
+          "source": "<id:4>",
+          "where": "",
+          "whereLanguage": "lucene",
+        },
+        "h": 1,
+        "id": "<id:8>",
+        "w": 1,
+        "x": 1,
+        "y": 1,
+      },
+      {
+        "config": {
+          "displayType": "line",
+          "filters": [],
+          "granularity": "auto",
+          "implicitColumnExpression": "Body",
+          "name": "Test Chart",
+          "numberFormat": {
+            "output": "number",
+          },
+          "select": [
+            {
+              "aggCondition": "",
+              "aggConditionLanguage": "lucene",
+              "aggFn": "count",
+              "valueExpression": "",
+            },
+          ],
+          "source": "test-source",
+          "where": "",
+          "whereLanguage": "lucene",
+        },
+        "h": 1,
+        "id": "<id:11>",
+        "w": 1,
+        "x": 1,
+        "y": 1,
+      },
+    ],
+    "updatedAt": "<date>",
+    "updatedBy": {
+      "_id": "<id:2>",
+      "email": "fake@example.com",
+      "name": "fake@example.com",
+    },
+  },
+]
+`;
+
+exports[`metadata wire contracts: internal API GET /favorites 1`] = `
+[
+  {
+    "__v": 0,
+    "_id": "<id:11>",
+    "createdAt": "<date>",
+    "id": "<id:11>",
+    "resourceId": "<id:7>",
+    "resourceType": "dashboard",
+    "team": "<id:1>",
+    "updatedAt": "<date>",
+    "user": "<id:2>",
+  },
+]
+`;
+
+exports[`metadata wire contracts: internal API GET /me 1`] = `
+{
+  "accessKey": "<secret>",
+  "aiAssistantEnabled": false,
+  "createdAt": "<date>",
+  "email": "fake@example.com",
+  "id": "<id:2>",
+  "name": "fake@example.com",
+  "onboardingData": {
+    "completedTasks": [
+      "dashboard",
+      "alert",
+    ],
+    "isDismissed": false,
+  },
+  "team": {
+    "__v": 0,
+    "_id": "<id:1>",
+    "allowedAuthMethods": [],
+    "apiKey": "<secret>",
+    "collectorAuthenticationEnforced": true,
+    "createdAt": "<date>",
+    "hookId": "<uuid>",
+    "id": "<id:1>",
+    "isMetricsSeriesTableEnabled": false,
+    "name": "fake@example.com's Team",
+    "updatedAt": "<date>",
+  },
+}
+`;
+
+exports[`metadata wire contracts: internal API GET /pinned-filters 1`] = `
+{
+  "team": {
+    "fields": [
+      "ServiceName",
+    ],
+    "filters": {
+      "ServiceName": [
+        "web",
+      ],
+    },
+    "id": "<id:11>",
+  },
+}
+`;
+
+exports[`metadata wire contracts: internal API GET /saved-search 1`] = `
+[
+  {
+    "__v": 0,
+    "_id": "<id:6>",
+    "alerts": [
+      {
+        "_id": "<id:10>",
+        "channel": {
+          "type": "webhook",
+          "webhookId": "<id:5>",
+        },
+        "channels": [
+          {
+            "type": "webhook",
+            "webhookId": "<id:5>",
+          },
+        ],
+        "chartConfig": null,
+        "createdAt": "<date>",
+        "createdBy": {
+          "_id": "<id:2>",
+          "email": "fake@example.com",
+          "name": "fake@example.com",
+        },
+        "dashboard": null,
+        "displayName": "Contract errors",
+        "groupBy": null,
+        "id": "<id:10>",
+        "interval": "15m",
+        "message": null,
+        "name": null,
+        "note": null,
+        "numConsecutiveWindows": null,
+        "savedSearch": "<id:6>",
+        "source": "saved_search",
+        "state": "OK",
+        "tags": [
+          "contract",
+        ],
+        "team": "<id:1>",
+        "threshold": 8,
+        "thresholdType": "above",
+        "tileId": null,
+        "updatedAt": "<date>",
+      },
+    ],
+    "createdAt": "<date>",
+    "createdBy": {
+      "_id": "<id:2>",
+      "email": "fake@example.com",
+      "name": "fake@example.com",
+    },
+    "filters": [],
+    "id": "<id:6>",
+    "name": "Contract errors",
+    "orderBy": "Timestamp DESC",
+    "select": "Timestamp, ServiceName, Body",
+    "source": "<id:4>",
+    "tags": [
+      "contract",
+    ],
+    "team": "<id:1>",
+    "updatedAt": "<date>",
+    "updatedBy": {
+      "_id": "<id:2>",
+      "email": "fake@example.com",
+      "name": "fake@example.com",
+    },
+    "where": "SeverityText:error",
+    "whereLanguage": "lucene",
+  },
+]
+`;
+
+exports[`metadata wire contracts: internal API GET /sources 1`] = `
+[
+  {
+    "__v": 0,
+    "_id": "<id:4>",
+    "bodyExpression": "Body",
+    "connection": "<id:3>",
+    "createdAt": "<date>",
+    "defaultTableSelectExpression": "Timestamp,ServiceName,SeverityText,Body",
+    "disabled": false,
+    "displayedTimestampValueExpression": "Timestamp",
+    "eventAttributesExpression": "LogAttributes",
+    "eventNameExpression": "EventName",
+    "from": {
+      "databaseName": "otel",
+      "scopeName": "default",
+      "tableName": "otel_logs",
+    },
+    "highlightedRowAttributeExpressions": [],
+    "highlightedTraceAttributeExpressions": [],
+    "id": "<id:4>",
+    "implicitColumnExpression": "Body",
+    "kind": "log",
+    "metricSourceId": "Metrics",
+    "name": "Contract logs",
+    "querySettings": [],
+    "resourceAttributesExpression": "ResourceAttributes",
+    "searchIndexName": "fts_otel_logs",
+    "serviceNameExpression": "ServiceName",
+    "severityNumberExpression": "SeverityNumber",
+    "severityTextExpression": "SeverityText",
+    "spanIdExpression": "SpanId",
+    "team": "<id:1>",
+    "timestampFormat": "iso8601",
+    "timestampValueExpression": "Timestamp",
+    "traceIdExpression": "TraceId",
+    "traceSourceId": "Traces",
+    "updatedAt": "<date>",
+  },
+]
+`;
+
+exports[`metadata wire contracts: internal API GET /team 1`] = `
+{
+  "_id": "<id:1>",
+  "allowedAuthMethods": [],
+  "apiKey": "<secret>",
+  "createdAt": "<date>",
+  "id": "<id:1>",
+  "isMetricsSeriesTableEnabled": false,
+  "name": "fake@example.com's Team",
+}
+`;
+
+exports[`metadata wire contracts: internal API GET /team/invitations 1`] = `
+{
+  "data": [
+    {
+      "_id": "<id:11>",
+      "createdAt": "<date>",
+      "email": "invitee@example.com",
+      "name": "Invitee",
+      "url": "http://app:8080/join-team?token=<token>",
+    },
+  ],
+}
+`;
+
+exports[`metadata wire contracts: internal API GET /team/members 1`] = `
+{
+  "data": [
+    {
+      "_id": "<id:2>",
+      "email": "fake@example.com",
+      "hasPasswordAuth": true,
+      "isCurrentUser": true,
+      "name": "fake@example.com",
+    },
+  ],
+}
+`;
+
+exports[`metadata wire contracts: internal API GET /team/tags 1`] = `
+{
+  "data": [
+    "contract",
+  ],
+}
+`;
+
+exports[`metadata wire contracts: internal API GET /webhooks?service=slack 1`] = `
+{
+  "data": [
+    {
+      "_id": "<id:5>",
+      "body": "{"text": "Contract message"}",
+      "createdAt": "<date>",
+      "description": "Contract snapshot webhook",
+      "headers": {
+        "X-Custom-Header": "****",
+      },
+      "name": "Contract webhook",
+      "queryParams": {
+        "param1": "****",
+      },
+      "service": "slack",
+      "updatedAt": "<date>",
+      "url": "https://hooks.slack.com/****",
+    },
+  ],
+}
+`;
+
+exports[`metadata wire contracts: internal API PATCH /dashboards/:id 1`] = `
+{
+  "__v": 0,
+  "_id": "<id:7>",
+  "containers": [],
+  "createdAt": "<date>",
+  "createdBy": "<id:2>",
+  "filters": [],
+  "id": "<id:7>",
+  "name": "Contract dashboard renamed",
+  "provisioned": false,
+  "savedFilterValues": [],
+  "tags": [
+    "contract",
+  ],
+  "team": "<id:1>",
+  "tiles": [
+    {
+      "config": {
+        "displayType": "line",
+        "filters": [],
+        "granularity": "auto",
+        "implicitColumnExpression": "Body",
+        "name": "Test Chart",
+        "numberFormat": {
+          "output": "number",
+        },
+        "select": [
+          {
+            "aggCondition": "",
+            "aggConditionLanguage": "lucene",
+            "aggFn": "count",
+            "valueExpression": "",
+          },
+        ],
+        "source": "<id:4>",
+        "where": "",
+        "whereLanguage": "lucene",
+      },
+      "h": 1,
+      "id": "<id:8>",
+      "w": 1,
+      "x": 1,
+      "y": 1,
+    },
+    {
+      "config": {
+        "displayType": "line",
+        "filters": [],
+        "granularity": "auto",
+        "implicitColumnExpression": "Body",
+        "name": "Test Chart",
+        "numberFormat": {
+          "output": "number",
+        },
+        "select": [
+          {
+            "aggCondition": "",
+            "aggConditionLanguage": "lucene",
+            "aggFn": "count",
+            "valueExpression": "",
+          },
+        ],
+        "source": "test-source",
+        "where": "",
+        "whereLanguage": "lucene",
+      },
+      "h": 1,
+      "id": "<id:11>",
+      "w": 1,
+      "x": 1,
+      "y": 1,
+    },
+  ],
+  "updatedAt": "<date>",
+  "updatedBy": "<id:2>",
+}
+`;
+
+exports[`metadata wire contracts: internal API PATCH /saved-search/:id 1`] = `
+{
+  "__v": 0,
+  "_id": "<id:6>",
+  "createdAt": "<date>",
+  "createdBy": "<id:2>",
+  "filters": [],
+  "id": "<id:6>",
+  "name": "Contract warnings",
+  "orderBy": "Timestamp DESC",
+  "select": "Timestamp, ServiceName, Body",
+  "source": "<id:4>",
+  "tags": [
+    "contract",
+  ],
+  "team": "<id:1>",
+  "updatedAt": "<date>",
+  "updatedBy": "<id:2>",
+  "where": "SeverityText:error",
+  "whereLanguage": "lucene",
+}
+`;
+
+exports[`metadata wire contracts: internal API PUT /alerts/:id 1`] = `
+{
+  "data": {
+    "__v": 0,
+    "_id": "<id:10>",
+    "channel": {
+      "type": "webhook",
+      "webhookId": "<id:5>",
+    },
+    "channels": [
+      {
+        "type": "webhook",
+        "webhookId": "<id:5>",
+      },
+    ],
+    "chartConfig": null,
+    "createdAt": "<date>",
+    "createdBy": "<id:2>",
+    "dashboard": null,
+    "displayName": "Contract errors",
+    "groupBy": null,
+    "id": "<id:10>",
+    "interval": "1h",
+    "message": null,
+    "name": null,
+    "note": null,
+    "numConsecutiveWindows": null,
+    "savedSearch": "<id:6>",
+    "source": "saved_search",
+    "state": "OK",
+    "tags": [
+      "contract",
+    ],
+    "team": "<id:1>",
+    "threshold": 3,
+    "thresholdType": "above",
+    "tileId": null,
+    "updatedAt": "<date>",
+  },
+}
+`;
+
+exports[`metadata wire contracts: internal API create responses 1`] = `
+{
+  "POST /alerts (saved search)": {
+    "data": {
+      "__v": 0,
+      "_id": "<id:10>",
+      "channel": {
+        "type": "webhook",
+        "webhookId": "<id:5>",
+      },
+      "channels": [
+        {
+          "type": "webhook",
+          "webhookId": "<id:5>",
+        },
+      ],
+      "chartConfig": null,
+      "createdAt": "<date>",
+      "createdBy": "<id:2>",
+      "dashboard": null,
+      "displayName": "Contract errors",
+      "groupBy": null,
+      "id": "<id:10>",
+      "interval": "15m",
+      "message": null,
+      "name": null,
+      "note": null,
+      "numConsecutiveWindows": null,
+      "savedSearch": "<id:6>",
+      "source": "saved_search",
+      "state": "OK",
+      "tags": [
+        "contract",
+      ],
+      "team": "<id:1>",
+      "threshold": 8,
+      "thresholdType": "above",
+      "tileId": null,
+      "updatedAt": "<date>",
+    },
+  },
+  "POST /alerts (tile)": {
+    "data": {
+      "__v": 0,
+      "_id": "<id:9>",
+      "channel": {
+        "type": "webhook",
+        "webhookId": "<id:5>",
+      },
+      "channels": [
+        {
+          "type": "webhook",
+          "webhookId": "<id:5>",
+        },
+      ],
+      "chartConfig": null,
+      "createdAt": "<date>",
+      "createdBy": "<id:2>",
+      "dashboard": "<id:7>",
+      "displayName": "Contract tile alert",
+      "groupBy": null,
+      "id": "<id:9>",
+      "interval": "15m",
+      "message": null,
+      "name": null,
+      "note": null,
+      "numConsecutiveWindows": null,
+      "savedSearch": null,
+      "source": "tile",
+      "state": "OK",
+      "tags": [
+        "contract",
+      ],
+      "team": "<id:1>",
+      "threshold": 8,
+      "thresholdType": "above",
+      "tileId": "<id:8>",
+      "updatedAt": "<date>",
+    },
+  },
+  "POST /connections": {
+    "id": "<id:3>",
+  },
+  "POST /dashboards": {
+    "__v": 0,
+    "_id": "<id:7>",
+    "containers": [],
+    "createdAt": "<date>",
+    "createdBy": "<id:2>",
+    "filters": [],
+    "id": "<id:7>",
+    "name": "Contract dashboard",
+    "provisioned": false,
+    "savedFilterValues": [],
+    "tags": [
+      "contract",
+    ],
+    "team": "<id:1>",
+    "tiles": [
+      {
+        "config": {
+          "displayType": "line",
+          "filters": [],
+          "granularity": "auto",
+          "implicitColumnExpression": "Body",
+          "name": "Test Chart",
+          "numberFormat": {
+            "output": "number",
+          },
+          "select": [
+            {
+              "aggCondition": "",
+              "aggConditionLanguage": "lucene",
+              "aggFn": "count",
+              "valueExpression": "",
+            },
+          ],
+          "source": "<id:4>",
+          "where": "",
+          "whereLanguage": "lucene",
+        },
+        "h": 1,
+        "id": "<id:8>",
+        "w": 1,
+        "x": 1,
+        "y": 1,
+      },
+      {
+        "config": {
+          "displayType": "line",
+          "filters": [],
+          "granularity": "auto",
+          "implicitColumnExpression": "Body",
+          "name": "Test Chart",
+          "numberFormat": {
+            "output": "number",
+          },
+          "select": [
+            {
+              "aggCondition": "",
+              "aggConditionLanguage": "lucene",
+              "aggFn": "count",
+              "valueExpression": "",
+            },
+          ],
+          "source": "test-source",
+          "where": "",
+          "whereLanguage": "lucene",
+        },
+        "h": 1,
+        "id": "<id:11>",
+        "w": 1,
+        "x": 1,
+        "y": 1,
+      },
+    ],
+    "updatedAt": "<date>",
+    "updatedBy": "<id:2>",
+  },
+  "POST /saved-search": {
+    "__v": 0,
+    "_id": "<id:6>",
+    "createdAt": "<date>",
+    "createdBy": "<id:2>",
+    "filters": [],
+    "id": "<id:6>",
+    "name": "Contract errors",
+    "orderBy": "Timestamp DESC",
+    "select": "Timestamp, ServiceName, Body",
+    "source": "<id:4>",
+    "tags": [
+      "contract",
+    ],
+    "team": "<id:1>",
+    "updatedAt": "<date>",
+    "updatedBy": "<id:2>",
+    "where": "SeverityText:error",
+    "whereLanguage": "lucene",
+  },
+  "POST /sources": {
+    "__v": 0,
+    "_id": "<id:4>",
+    "bodyExpression": "Body",
+    "connection": "<id:3>",
+    "createdAt": "<date>",
+    "defaultTableSelectExpression": "Timestamp,ServiceName,SeverityText,Body",
+    "disabled": false,
+    "displayedTimestampValueExpression": "Timestamp",
+    "eventAttributesExpression": "LogAttributes",
+    "eventNameExpression": "EventName",
+    "from": {
+      "databaseName": "otel",
+      "scopeName": "default",
+      "tableName": "otel_logs",
+    },
+    "highlightedRowAttributeExpressions": [],
+    "highlightedTraceAttributeExpressions": [],
+    "id": "<id:4>",
+    "implicitColumnExpression": "Body",
+    "kind": "log",
+    "metricSourceId": "Metrics",
+    "name": "Contract logs",
+    "querySettings": [],
+    "resourceAttributesExpression": "ResourceAttributes",
+    "searchIndexName": "fts_otel_logs",
+    "serviceNameExpression": "ServiceName",
+    "severityNumberExpression": "SeverityNumber",
+    "severityTextExpression": "SeverityText",
+    "spanIdExpression": "SpanId",
+    "team": "<id:1>",
+    "timestampFormat": "iso8601",
+    "timestampValueExpression": "Timestamp",
+    "traceIdExpression": "TraceId",
+    "traceSourceId": "Traces",
+    "updatedAt": "<date>",
+  },
+  "POST /team/invitation": {
+    "url": "http://app:8080/join-team?token=<token>",
+  },
+  "POST /webhooks": {
+    "data": {
+      "_id": "<id:5>",
+      "body": "{"text": "Contract message"}",
+      "createdAt": "<date>",
+      "description": "Contract snapshot webhook",
+      "headers": {
+        "X-Custom-Header": "****",
+      },
+      "name": "Contract webhook",
+      "queryParams": {
+        "param1": "****",
+      },
+      "service": "slack",
+      "updatedAt": "<date>",
+      "url": "https://hooks.slack.com/****",
+    },
+  },
+  "PUT /favorites": {
+    "__v": 0,
+    "_id": "<id:12>",
+    "createdAt": "<date>",
+    "id": "<id:12>",
+    "resourceId": "<id:7>",
+    "resourceType": "dashboard",
+    "team": "<id:1>",
+    "updatedAt": "<date>",
+    "user": "<id:2>",
+  },
+  "PUT /pinned-filters": {
+    "fields": [
+      "ServiceName",
+    ],
+    "filters": {
+      "ServiceName": [
+        "web",
+      ],
+    },
+    "id": "<id:13>",
+  },
+}
+`;
