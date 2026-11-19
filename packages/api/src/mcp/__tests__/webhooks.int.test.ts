@@ -3,6 +3,7 @@ import { Client } from '@modelcontextprotocol/sdk/client/index.js';
 import { getLoggedInAgent, getServer } from '@/fixtures';
 import { McpContext } from '@/mcp/tools/types';
 import { WebhookService } from '@/metadata/schemas/webhook';
+import { seedAlert } from '@/metadata/testing/alertFixtures';
 import {
   countWebhooks,
   findWebhook,
@@ -10,7 +11,6 @@ import {
   seedTeam,
   seedWebhook,
 } from '@/metadata/testing/seed';
-import { alertDocs } from '@/metadata/testing/seedAlerts';
 
 import { callTool, createTestClient, getFirstText } from './mcpTestUtils';
 
@@ -326,7 +326,7 @@ describe('MCP Webhook Tools', () => {
         service: WebhookService.Generic,
         url: 'https://example.com/webhook',
       });
-      await alertDocs.create({
+      await seedAlert({
         team: team._id,
         source: 'saved_search',
         threshold: 1,

@@ -66,7 +66,6 @@ jest.mock('@/controllers/sources', () => ({
   getSources: jest.fn().mockResolvedValue([]),
   createSource: jest.fn(async (_teamId: string, source: { name: string }) => ({
     _id: `${source.name}-id`,
-    toObject: () => source,
   })),
   updateSource: jest.fn(),
 }));

@@ -66,7 +66,7 @@ export class MetadataSessionStore extends Store {
   set(sid: string, session: SessionData, cb?: Callback): void {
     this.run(cb, async () => {
       const expiry = this.expiryOf(session);
-      // JSON form, as connect-mongo stored it: Cookie's getters become fields.
+      // JSON form, as the session middleware serializes it: Cookie's getters become fields.
       const doc: SessionDoc = {
         session: JSON.parse(JSON.stringify(session)),
         expiresAt: expiry.toISOString(),

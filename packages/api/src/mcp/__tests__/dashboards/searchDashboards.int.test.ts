@@ -1,6 +1,5 @@
-import mongoose from 'mongoose';
-
 import { callTool, getFirstText } from '@/mcp/__tests__/mcpTestUtils';
+import { newId } from '@/metadata/ids';
 import { seedDashboard } from '@/metadata/testing/seed';
 
 import { setupDashboardTests } from './setup';
@@ -158,7 +157,7 @@ describe('MCP Dashboard Tools - cbt_search_dashboards', () => {
       team: ctx.team._id,
     });
 
-    // An unescaped "[" would throw a MongoDB BadValue error
+    // An unescaped "[" would throw a BadValue error
     const result = await callTool(ctx.client!, 'cbt_search_dashboards', {
       query: '[invalid',
     });
@@ -239,7 +238,7 @@ describe('MCP Dashboard Tools - cbt_search_dashboards', () => {
       team: ctx.team._id,
     });
     // Create a dashboard for a different team
-    const otherTeamId = new mongoose.Types.ObjectId();
+    const otherTeamId = newId();
     await seedDashboard({
       name: 'My Dashboard',
       tiles: [],

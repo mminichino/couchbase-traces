@@ -40,13 +40,13 @@ describe('metadata ids', () => {
     expect(isValidId('68dd82484f54641b0866789')).toBe(false);
     expect(isValidId('68dd82484f54641b08667897a')).toBe(false);
     expect(isValidId('zzdd82484f54641b08667897')).toBe(false);
-    // Mongoose accepts any 12-character string; we do not.
+    // the model layer accepts any 12-character string; we do not.
     expect(isValidId('abcdefghijkl')).toBe(false);
     expect(isValidId(undefined)).toBe(false);
     expect(isValidId(123)).toBe(false);
   });
 
-  it('keeps the local app team id Mongoose derived from _local_team_', () => {
+  it('keeps the local app team id derived from _local_team_', () => {
     expect(LOCAL_APP_TEAM_ID).toBe('5f6c6f63616c5f7465616d5f');
   });
 

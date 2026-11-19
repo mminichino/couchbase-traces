@@ -22,7 +22,7 @@ export function getTeamInviteUrl(token: string) {
 }
 
 const LOCAL_APP_TEAM_ID = '_local_team_';
-// The hex of the 12 bytes Mongoose made an ObjectId from before C1.
+// Hex of the local-app team id bytes: a stable 24-hex id for local app mode.
 const LOCAL_APP_TEAM_HEX = Buffer.from(LOCAL_APP_TEAM_ID).toString('hex');
 export const LOCAL_APP_TEAM: ITeam = {
   _id: LOCAL_APP_TEAM_HEX,
@@ -70,8 +70,7 @@ export async function getAllTeams(): Promise<ITeam[]> {
 
 /**
  * The deployment's team. The id is not consulted (single team, as upstream's
- * `findOne({})`); `fields` narrows the result like a Mongoose projection,
- * which always kept `_id` and the `id` virtual.
+ * `findOne({})`); `fields` narrows the result like a projection, which always kept `_id` and the `id` virtual.
  */
 export async function getTeam<const F extends readonly (keyof ITeam)[]>(
   id: IdLike,

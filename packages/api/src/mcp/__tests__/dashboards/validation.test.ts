@@ -1,5 +1,4 @@
 import { DASHBOARD_VARIABLE_NAME_MAX_LENGTH } from '@couchbase-traces/common-utils/dist/types';
-import mongoose from 'mongoose';
 
 import {
   buildMcpFiltersParam,
@@ -13,13 +12,14 @@ import {
   getRawSqlTilesMissingRequiredSource,
   getTileVariableWarnings,
 } from '@/mcp/tools/dashboards/validation';
+import { newId } from '@/metadata/ids';
 import type {
   ExternalDashboardTileWithId,
   ExternalQueryExpressionFilterWithId,
 } from '@/utils/zod';
 
-const connectionId = new mongoose.Types.ObjectId().toString();
-const sourceId = new mongoose.Types.ObjectId().toString();
+const connectionId = newId();
+const sourceId = newId();
 
 const mcpTilesParam = buildMcpTilesParam(false);
 const mcpFiltersParam = buildMcpFiltersParam(false);
@@ -131,7 +131,7 @@ describe('tile-level where rejection (builder tiles)', () => {
 
   it('rejects a tile-level where on the patch schema too', () => {
     const result = mcpPatchDashboardSchema.safeParse({
-      dashboardId: new mongoose.Types.ObjectId().toString(),
+      dashboardId: newId(),
       tileId: 'tile-1',
       tile: {
         config: {
@@ -463,7 +463,7 @@ function makeFilter(
   overrides: Partial<ExternalQueryExpressionFilterWithId> = {},
 ): ExternalQueryExpressionFilterWithId {
   return {
-    id: new mongoose.Types.ObjectId().toString(),
+    id: newId(),
     type: 'QUERY_EXPRESSION',
     name: 'Service',
     expression: 'ServiceName',

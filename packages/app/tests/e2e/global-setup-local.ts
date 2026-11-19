@@ -1,7 +1,7 @@
 /**
  * Global setup for local E2E mode (no full product stack).
  *
- * Seeds Couchbase telemetry only — no MongoDB auth bootstrap.
+ * Seeds Couchbase telemetry only.
  */
 
 import { FullConfig } from '@playwright/test';

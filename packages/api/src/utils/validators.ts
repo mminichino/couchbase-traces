@@ -106,7 +106,6 @@ const BLOCKED_WEBHOOK_HOSTS = (() => {
   const hosts = new Map<string, string>();
   const configuredHosts = {
     CLICKHOUSE_HOST: config.CLICKHOUSE_HOST,
-    MONGO_URI: config.MONGO_URI,
   };
 
   for (const [configKey, configuredUrl] of Object.entries(configuredHosts)) {

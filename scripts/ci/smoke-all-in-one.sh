@@ -64,7 +64,7 @@ else
   done
 fi
 
-# Couchbase Server 8 + MongoDB + app needs more than 4 GiB on noble images.
+# Couchbase Server 8 + app needs more than 4 GiB on noble images.
 # Default Docker /dev/shm (64 MiB) is too small for CB beam/memcached.
 SMOKE_MEMORY="${SMOKE_MEMORY:-8g}"
 SMOKE_SHM_SIZE="${SMOKE_SHM_SIZE:-1g}"
@@ -87,6 +87,12 @@ for i in $(seq 1 150); do
   sleep 2
 done
 echo "app healthy"
+
+# App metadata lives in Couchbase (cbt_meta); the image must not carry MongoDB.
+if docker exec "$NAME" sh -c 'command -v mongod' >/dev/null 2>&1; then
+  echo "::error::mongod found in the all-in-one image"; exit 1
+fi
+echo "no mongod in image"
 
 if [ "$HEALTH_ONLY" = 1 ]; then
   echo "waiting for Couchbase..."

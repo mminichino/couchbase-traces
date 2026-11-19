@@ -28,7 +28,7 @@ import {
   validateDashboardTiles,
 } from '@/routers/external-api/v2/utils/dashboards';
 import type { ExternalDashboardTileWithId } from '@/utils/zod';
-import { objectIdSchema, tagsSchema } from '@/utils/zod';
+import { idSchema, tagsSchema } from '@/utils/zod';
 
 import type { McpDashboardFilter, McpSavedFilterValues } from './schemas';
 import {
@@ -68,7 +68,7 @@ export function registerSaveDashboard({
         'due to incorrect filter syntax, missing attributes, or wrong column names. ' +
         'TIP: To update a single tile without resubmitting all tiles, use cbt_patch_dashboard instead.',
       inputSchema: z.object({
-        id: objectIdSchema
+        id: idSchema
           .optional()
           .describe(
             'Dashboard ID. Omit to create a new dashboard, provide to update an existing one.',

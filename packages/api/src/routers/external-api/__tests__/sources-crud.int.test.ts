@@ -1,5 +1,4 @@
 import { SourceKind } from '@couchbase-traces/common-utils/dist/types';
-import mongoose from 'mongoose';
 import request, { SuperAgentTest } from 'supertest';
 
 import * as config from '@/config';
@@ -11,6 +10,7 @@ import {
   getServer,
 } from '@/fixtures';
 import { getMetadataStore } from '@/metadata';
+import { newId } from '@/metadata/ids';
 import { IConnection } from '@/metadata/schemas/connection';
 import type { ITeam } from '@/metadata/schemas/team';
 import type { IUser } from '@/metadata/schemas/user';
@@ -110,7 +110,7 @@ describe('External API v2 Sources CRUD', () => {
     connection: connection._id.toString(),
   });
 
-  const createOtherTeamConnection = (otherTeamId: mongoose.Types.ObjectId) =>
+  const createOtherTeamConnection = (otherTeamId: string) =>
     seedConnection({
       kind: 'couchbase',
       team: otherTeamId,
@@ -121,7 +121,7 @@ describe('External API v2 Sources CRUD', () => {
     });
 
   const createOtherTeamSource = async () => {
-    const otherTeamId = new mongoose.Types.ObjectId();
+    const otherTeamId = newId();
     const otherConnection = await createOtherTeamConnection(otherTeamId);
     return seedSource({
       kind: SourceKind.Log,
@@ -140,7 +140,7 @@ describe('External API v2 Sources CRUD', () => {
   describe('GET /api/v2/sources/:id', () => {
     it('should return 401 when user is not authenticated', async () => {
       await request(server.getHttpServer())
-        .get(`${BASE_URL}/${new mongoose.Types.ObjectId()}`)
+        .get(`${BASE_URL}/${newId()}`)
         .expect(401);
     });
 
@@ -163,10 +163,7 @@ describe('External API v2 Sources CRUD', () => {
     });
 
     it('should return 404 for a non-existent source', async () => {
-      await authRequest(
-        'get',
-        `${BASE_URL}/${new mongoose.Types.ObjectId()}`,
-      ).expect(404);
+      await authRequest('get', `${BASE_URL}/${newId()}`).expect(404);
     });
 
     it("should return 404 for another team's source", async () => {
@@ -285,9 +282,7 @@ describe('External API v2 Sources CRUD', () => {
     });
 
     it('should return 400 when connection belongs to another team', async () => {
-      const otherConnection = await createOtherTeamConnection(
-        new mongoose.Types.ObjectId(),
-      );
+      const otherConnection = await createOtherTeamConnection(newId());
 
       await authRequest('post', BASE_URL)
         .send({
@@ -351,7 +346,7 @@ describe('External API v2 Sources CRUD', () => {
   describe('PUT /api/v2/sources/:id', () => {
     it('should return 401 when user is not authenticated', async () => {
       await request(server.getHttpServer())
-        .put(`${BASE_URL}/${new mongoose.Types.ObjectId()}`)
+        .put(`${BASE_URL}/${newId()}`)
         .send(logSourceBody())
         .expect(401);
     });
@@ -376,7 +371,7 @@ describe('External API v2 Sources CRUD', () => {
     });
 
     it('should return 404 for a non-existent source', async () => {
-      await authRequest('put', `${BASE_URL}/${new mongoose.Types.ObjectId()}`)
+      await authRequest('put', `${BASE_URL}/${newId()}`)
         .send(logSourceBody())
         .expect(404);
     });
@@ -419,9 +414,7 @@ describe('External API v2 Sources CRUD', () => {
         ...logSourceBody(),
         team: team._id,
       });
-      const otherConnection = await createOtherTeamConnection(
-        new mongoose.Types.ObjectId(),
-      );
+      const otherConnection = await createOtherTeamConnection(newId());
 
       await authRequest('put', `${BASE_URL}/${logSource._id}`)
         .send({
@@ -513,7 +506,7 @@ describe('External API v2 Sources CRUD', () => {
   describe('DELETE /api/v2/sources/:id', () => {
     it('should return 401 when user is not authenticated', async () => {
       await request(server.getHttpServer())
-        .delete(`${BASE_URL}/${new mongoose.Types.ObjectId()}`)
+        .delete(`${BASE_URL}/${newId()}`)
         .expect(401);
     });
 
@@ -529,10 +522,7 @@ describe('External API v2 Sources CRUD', () => {
     });
 
     it('should return 404 for a non-existent source', async () => {
-      await authRequest(
-        'delete',
-        `${BASE_URL}/${new mongoose.Types.ObjectId()}`,
-      ).expect(404);
+      await authRequest('delete', `${BASE_URL}/${newId()}`).expect(404);
     });
 
     it("should return 404 for another team's source and leave it intact", async () => {
@@ -547,7 +537,7 @@ describe('External API v2 Sources CRUD', () => {
   });
 
   describe('validateConnectionId', () => {
-    it('rejects a non-ObjectId connection with a 400', async () => {
+    it('rejects a malformed connection with a 400', async () => {
       expect(
         await validateConnectionId('my-connection-name', team._id),
       ).toEqual({
@@ -564,9 +554,7 @@ describe('External API v2 Sources CRUD', () => {
     });
 
     it('rejects a connection belonging to another team with a 400', async () => {
-      const otherConnection = await createOtherTeamConnection(
-        new mongoose.Types.ObjectId(),
-      );
+      const otherConnection = await createOtherTeamConnection(newId());
 
       expect(
         await validateConnectionId(otherConnection._id.toString(), team._id),

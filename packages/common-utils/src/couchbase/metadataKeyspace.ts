@@ -1,4 +1,4 @@
-// App metadata keyspace (MongoDB elimination plan, D1/D7/D8). Pure data and
+// App metadata keyspace (metadata plan, D1/D7/D8). Pure data and
 // string builders only: no SDK import, so any entry point may use it. The
 // ingest setup command and the API both read these definitions, so the
 // provisioned layout and the startup verification cannot drift apart.

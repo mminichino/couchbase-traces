@@ -2,7 +2,7 @@ import { SourceKind } from '@couchbase-traces/common-utils/dist/types';
 
 import type { McpContext } from '@/mcp/tools/types';
 
-/** Dropped source kinds still stored in Mongo but hidden from MCP agents. */
+/** Dropped source kinds still stored in the metadata bucket but hidden from MCP agents. */
 export function isHiddenSource(
   _context: McpContext,
   source: { kind: SourceKind | string },

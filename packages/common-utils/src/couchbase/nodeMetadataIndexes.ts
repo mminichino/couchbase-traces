@@ -1,5 +1,5 @@
 // Server only: imports the Couchbase SDK. Index DDL, build, and status checks
-// for the app metadata bucket (MongoDB elimination plan §2.6).
+// for the app metadata bucket (metadata plan §2.6).
 import type { Cluster } from 'couchbase';
 
 import {

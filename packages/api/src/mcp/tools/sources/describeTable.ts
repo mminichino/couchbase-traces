@@ -4,11 +4,7 @@ import { getConnectionById } from '@/controllers/connection';
 import { READ_ONLY_TOOL } from '@/mcp/tools/annotations';
 import { MCP_REQUEST_TIMEOUT } from '@/mcp/tools/query/helpers';
 import type { ToolRegistrar } from '@/mcp/tools/types';
-import {
-  mcpServerError,
-  mcpUserError,
-  validateObjectId,
-} from '@/mcp/utils/errors';
+import { mcpServerError, mcpUserError, validateId } from '@/mcp/utils/errors';
 import { assertMcpSliceForConnection } from '@/mcp/utils/mcpSlice';
 import { MCP_TOOL_TIMEOUT_MS, runWithTimeout } from '@/mcp/utils/timeout';
 import { DataClient } from '@/query';
@@ -47,7 +43,7 @@ export function registerDescribeTable({
 
       const invalid = validateDescribeTableInput(input);
       if (invalid) return mcpUserError(invalid);
-      const invalidId = validateObjectId(input.connectionId, 'connectionId');
+      const invalidId = validateId(input.connectionId, 'connectionId');
       if (invalidId) return invalidId;
 
       trace.getActiveSpan()?.setAttributes({

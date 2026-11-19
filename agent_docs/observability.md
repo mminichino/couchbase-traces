@@ -58,7 +58,7 @@ types, so a single import is usually enough.
 ### Tracing
 
 Rely on the Couchbase Traces SDK (`@clickhouse/clickstack-node`) auto-instrumentation
-(HTTP, Express, Mongo, etc.) for the common path. Add a **manual span only for a
+(HTTP, Express, Couchbase, etc.) for the common path. Add a **manual span only for a
 meaningful unit of work** that auto-instrumentation can't see - a background job
 step, a fan-out, an expensive computation, an external tool invocation.
 

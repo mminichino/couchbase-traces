@@ -1,5 +1,5 @@
 // Server only: imports the Couchbase SDK. Idempotent provisioning of the app
-// metadata bucket (MongoDB elimination plan D1/D7/D8, §2.6). Shared by the
+// metadata bucket (metadata plan D1/D7/D8, §2.6). Shared by the
 // ingest setup command (admin credentials) and API auto-provisioning.
 import type { Cluster } from 'couchbase';
 

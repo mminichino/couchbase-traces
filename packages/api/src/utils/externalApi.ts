@@ -99,7 +99,7 @@ export function translateExternalChartToTileConfig(
         }
 
         return {
-          // Avoid including undefined values in the object, so that they are not saved as "null" in Mongo
+          // Avoid including undefined values in the object, so that they are not saved as "null"
           ...pickIfTruthy(s, ['alias', 'aggFn', 'level', 'metricName']),
           ...(s.metricDataType ? { metricType: s.metricDataType } : {}),
           valueExpression: s.field ?? '',
@@ -127,7 +127,7 @@ export function translateExternalChartToTileConfig(
         }
 
         return {
-          // Avoid including undefined values in the object, so that they are not saved as "null" in Mongo
+          // Avoid including undefined values in the object, so that they are not saved as "null"
           ...pickIfTruthy(s, ['alias', 'aggFn', 'level', 'metricName']),
           ...(s.metricDataType ? { metricType: s.metricDataType } : {}),
           valueExpression: s.field ?? '',
@@ -157,7 +157,7 @@ export function translateExternalChartToTileConfig(
       // Number chart uses only the first series
       select = [
         {
-          // Avoid including undefined values in the object, so that they are not saved as "null" in Mongo
+          // Avoid including undefined values in the object, so that they are not saved as "null"
           ...pickIfTruthy(firstSeries, [
             'alias',
             'aggFn',
@@ -202,7 +202,7 @@ export function translateExternalChartToTileConfig(
   const seriesReturnType = asRatio ? 'ratio' : 'column';
 
   const config: SavedChartConfig = {
-    // Avoid including undefined values in the object, so that they are not saved as "null" in Mongo
+    // Avoid including undefined values in the object, so that they are not saved as "null"
     ...pickIfTruthy(
       {
         groupBy,

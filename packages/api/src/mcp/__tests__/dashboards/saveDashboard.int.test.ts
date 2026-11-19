@@ -2,10 +2,10 @@ import {
   MetricsDataType,
   SourceKind,
 } from '@couchbase-traces/common-utils/dist/types';
-import mongoose from 'mongoose';
 
 import { DEFAULT_DATABASE } from '@/fixtures';
 import { callTool, getFirstText } from '@/mcp/__tests__/mcpTestUtils';
+import { newId } from '@/metadata/ids';
 import {
   countDashboards,
   findDashboard,
@@ -3088,7 +3088,7 @@ describe('MCP Dashboard Tools - cbt_save_dashboard', () => {
 
     it('should reject a table tile onClick referencing a non-existent dashboard', async () => {
       const sourceId = ctx.traceSource._id.toString();
-      const ghostDashboardId = new mongoose.Types.ObjectId().toString();
+      const ghostDashboardId = newId();
       const result = await callTool(ctx.client!, 'cbt_save_dashboard', {
         name: 'OnClick missing dashboard',
         tiles: [
@@ -3166,7 +3166,7 @@ describe('MCP Dashboard Tools - cbt_save_dashboard', () => {
     });
 
     it('should reject a table tile onClick with an invalid target.id', async () => {
-      // target.id must be a valid ObjectId. Bad shape is caught by the
+      // target.id must be a valid id. Bad shape is caught by the
       // input schema and surfaces as the SDK's "Input validation error"
       // envelope rather than a custom 400 message.
       const sourceId = ctx.traceSource._id.toString();
@@ -3273,7 +3273,7 @@ describe('MCP Dashboard Tools - cbt_save_dashboard', () => {
       expect(createResult.isError).toBeFalsy();
       const created = JSON.parse(getFirstText(createResult));
 
-      const ghostDashboardId = new mongoose.Types.ObjectId().toString();
+      const ghostDashboardId = newId();
       const updateResult = await callTool(ctx.client!, 'cbt_save_dashboard', {
         id: created.id,
         name: 'OnClick update validation',

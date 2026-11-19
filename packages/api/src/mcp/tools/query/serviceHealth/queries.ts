@@ -23,8 +23,8 @@ import type { ServiceHealthInput, Window } from './schema';
 export const SERVICE_ALIAS = '__hdx_service';
 
 /**
- * Plain copies of the trace source fields the queries read. The Mongoose
- * document's subdocuments (e.g. `from`) don't belong in a chart config, which
+ * Plain copies of the trace source fields the queries read, so nothing
+ * extra from the stored source (e.g. `from`) ends up in a chart config, which
  * the renderer may clone.
  */
 export type HealthSource = Pick<

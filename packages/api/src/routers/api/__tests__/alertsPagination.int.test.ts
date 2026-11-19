@@ -1,23 +1,18 @@
 import { AlertThresholdType } from '@couchbase-traces/common-utils/dist/types';
-import mongoose from 'mongoose';
 
-import {
-  getLoggedInAgent,
-  getServer,
-  makeTile,
-  randomMongoId,
-} from '@/fixtures';
+import { getLoggedInAgent, getServer, makeTile, randomId } from '@/fixtures';
+import { newId } from '@/metadata/ids';
 import { AlertSource, AlertState } from '@/metadata/schemas/alert';
 import {
   IWebhook as WebhookDocument,
   WebhookService,
 } from '@/metadata/schemas/webhook';
+import { patchAlerts, seedAlert } from '@/metadata/testing/alertFixtures';
 import {
   seedSavedSearch,
   seedUser,
   seedWebhook,
 } from '@/metadata/testing/seed';
-import { alertDocs } from '@/metadata/testing/seedAlerts';
 
 const MOCK_TILES = [makeTile()];
 
@@ -59,11 +54,11 @@ describe('alerts list paging and filtering', () => {
     await server.stop();
   });
 
-  // Written straight to Mongo rather than through POST /alerts: the create
+  // Written straight to the store rather than through POST /alerts: the create
   // endpoint derives displayName/tags when they're absent, and these tests need
   // documents that genuinely have none.
   const createAlert = (overrides: Record<string, unknown> = {}) =>
-    alertDocs.create({
+    seedAlert({
       team: team._id,
       channel: { type: 'webhook', webhookId: webhook._id.toString() },
       interval: '15m',
@@ -118,7 +113,7 @@ describe('alerts list paging and filtering', () => {
     it('still populates the referenced dashboard, saved search and creator', async () => {
       const savedSearch = await seedSavedSearch({
         name: 'Checkout errors',
-        source: new mongoose.Types.ObjectId(),
+        source: newId(),
         team: team._id,
         tags: ['checkout'],
       });
@@ -289,7 +284,7 @@ describe('alerts list paging and filtering', () => {
       // written before the field existed. It renders as OK, so the OK filter
       // has to return it.
       const legacy = await createAlert({ displayName: 'Legacy' });
-      await alertDocs.updateOne({ _id: legacy._id }, { $unset: { state: 1 } });
+      await patchAlerts(legacy._id, { state: undefined });
       const firing = await createAlert({
         displayName: 'Firing',
         state: AlertState.ALERT,
@@ -303,7 +298,7 @@ describe('alerts list paging and filtering', () => {
     it('matches documents with no source field when filtering by saved_search', async () => {
       const savedSearch = await seedSavedSearch({
         name: 'Legacy search',
-        source: new mongoose.Types.ObjectId(),
+        source: newId(),
         team: team._id,
       });
       // The model defaults `source` to saved_search, so unset it to reproduce a
@@ -314,7 +309,7 @@ describe('alerts list paging and filtering', () => {
         tileId: undefined,
         savedSearch: savedSearch._id,
       });
-      await alertDocs.updateOne({ _id: legacy._id }, { $unset: { source: 1 } });
+      await patchAlerts(legacy._id, { source: undefined });
       const tile = await createAlert({ displayName: 'Tile' });
 
       expect(await listIds('?source=saved_search')).toEqual([
@@ -338,7 +333,7 @@ describe('alerts list paging and filtering', () => {
     });
 
     // The next two cases pin the residual gap: the row renders the value
-    // derived from the referenced dashboard, but filters run against what Mongo
+    // derived from the referenced dashboard, but filters run against what the store
     // holds, so an alert the startup backfill missed can be read yet not found.
     it('cannot match an alert whose tags were never stored', async () => {
       const untagged = await createAlert({ displayName: 'Untagged' });
@@ -395,12 +390,12 @@ describe('alerts list paging and filtering', () => {
     it.each([
       ['a malformed cursor', '/alerts?limit=2&cursor=not-a-cursor'],
       [
-        'a cursor whose id is not an ObjectId',
+        'a cursor whose id is malformed',
         `/alerts?limit=2&cursor=${Buffer.from(
           JSON.stringify({ n: 'a', id: 'nope' }),
         ).toString('base64url')}`,
       ],
-      ['a non-ObjectId createdBy', '/alerts?createdBy=nope'],
+      ['a malformed createdBy', '/alerts?createdBy=nope'],
       ['limit=0', '/alerts?limit=0'],
       ['limit above the cap', '/alerts?limit=501'],
       ['an unknown source', '/alerts?source=nope'],
@@ -413,7 +408,7 @@ describe('alerts list paging and filtering', () => {
 
   it('does not leak another team’s alerts', async () => {
     await createAlert({ displayName: 'Mine' });
-    await createAlert({ displayName: 'Theirs', team: randomMongoId() });
+    await createAlert({ displayName: 'Theirs', team: randomId() });
 
     expect(await listIds()).toHaveLength(1);
     expect(await listIds('?limit=10')).toHaveLength(1);

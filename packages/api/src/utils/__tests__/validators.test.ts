@@ -142,7 +142,6 @@ describe('validators', () => {
     jest.isolateModules(() => {
       jest.doMock('@/config', () => ({
         CLICKHOUSE_HOST: config.clickhouseHost,
-        MONGO_URI: undefined,
         WEBHOOK_HOSTNAME_ALLOWLIST: config.hostnameAllowlist ?? '',
       }));
 

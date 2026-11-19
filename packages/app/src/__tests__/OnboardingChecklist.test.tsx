@@ -48,7 +48,7 @@ function setTeamAgeDays(ageDays: number) {
   } as unknown as ReturnType<typeof api.useTeam>);
 }
 
-// A real authenticated user carries a 24-hex ObjectId; the all-in-one-noauth
+// A real authenticated user carries a 24-hex ids; the all-in-one-noauth
 // image instead injects the synthetic `_local_user_` id (see isPersistableUserId).
 const REAL_USER_ID = '507f1f77bcf86cd799439011';
 

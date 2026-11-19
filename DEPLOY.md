@@ -28,18 +28,18 @@ Images are built locally (`make build-app`, `make build-ingest`, `make build-all
 ## Bring Your Own Couchbase
 
 If you already run Couchbase Server 8.x or Capella, deploy the API/UI container
-with `MONGO_URI` and a Couchbase connection configured in the UI (or via
+with `CBT_METADATA_CONNSTR` (plus `CBT_METADATA_USER` / `CBT_METADATA_PASSWORD`) and a Couchbase connection configured in the UI (or via
 `DEFAULT_CONNECTIONS`). See [docs/self-managed.md](docs/self-managed.md) and
 [docs/capella.md](docs/capella.md).
 
 To get started, you can run the following image:
 
 ```bash
-docker run -e MONGO_URI=mongodb://YOUR_MONGODB_URI -p 8080:8080 ghcr.io/mminichino/couchbase-traces:2
+docker run -e CBT_METADATA_CONNSTR=couchbase://YOUR_COUCHBASE_HOST -e CBT_METADATA_USER=YOUR_USER -e CBT_METADATA_PASSWORD=YOUR_PASSWORD -p 8080:8080 ghcr.io/mminichino/couchbase-traces:2
 ```
 
-You'll need to set the `MONGO_URI` environment variable to the URI of your
-MongoDB instance. Afterwards, visit http://localhost:8080 and add a Couchbase connection.
+The `CBT_METADATA_*` variables point the API at the Couchbase cluster that
+holds the `cbt_meta` app metadata bucket. Afterwards, visit http://localhost:8080 and add a Couchbase connection.
 
 Before deploying into production, set the `EXPRESS_SESSION_SECRET` environment
 variable to a random string (e.g. `openssl rand -hex 32`). Without it the API
@@ -70,7 +70,7 @@ Full stacks query Couchbase through the API (SQL++).
 ## All-in-one Docker Compose Stack
 
 The easiest way to get started from scratch is the product Docker Compose stack
-(Couchbase, ingest, OpenTelemetry collector, API, UI, and MongoDB). Copy
+(Couchbase, ingest, OpenTelemetry collector, API, and UI). Copy
 `.env.example` to `.env`, set required secrets, then:
 
 To get started, clone this repository and run the following command:

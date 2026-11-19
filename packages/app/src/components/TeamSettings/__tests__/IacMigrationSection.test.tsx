@@ -256,8 +256,8 @@ describe('IacMigrationSection', () => {
   // unhandled rejection with the user seeing nothing happen at all.
   it('surfaces a failure to build the file instead of failing silently', async () => {
     refetch.mockResolvedValue({
-      // A non-ObjectId id makes buildImportFile throw by design.
-      data: { ...MANIFEST, dashboards: [{ id: 'not-an-objectid', name: 'X' }] },
+      // A non-hex id makes buildImportFile throw by design.
+      data: { ...MANIFEST, dashboards: [{ id: 'not-a-valid-id', name: 'X' }] },
       isSuccess: true,
     });
 

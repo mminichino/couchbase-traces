@@ -1210,7 +1210,7 @@ describe('ChartUtils', () => {
     });
 
     it('falls back to the default cap for malformed values (never disables the guard)', () => {
-      // Zod blocks these on persist, but Mixed Mongo storage + unvalidated form
+      // Zod blocks these on persist, but untyped storage + unvalidated form
       // state can still reach here. None must resolve to Infinity (unlimited).
       expect(resolveRenderedSeriesCap(NaN)).toBe(
         MAX_RENDERED_TIME_CHART_SERIES,

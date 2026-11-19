@@ -7,11 +7,7 @@ import {
 import { getSource } from '@/controllers/sources';
 import { UPSERT_TOOL } from '@/mcp/tools/annotations';
 import type { ToolRegistrar } from '@/mcp/tools/types';
-import {
-  mcpServerError,
-  mcpUserError,
-  validateObjectId,
-} from '@/mcp/utils/errors';
+import { mcpServerError, mcpUserError, validateId } from '@/mcp/utils/errors';
 import { toExternalSavedSearch } from '@/metadata/schemas/savedSearch';
 
 import { mcpSaveSavedSearchSchema } from './schemas';
@@ -46,7 +42,7 @@ export function registerSaveSavedSearch({
 
       // ── Validate ID for updates ──
       if (isUpdate) {
-        const idError = validateObjectId(input.id!, 'saved search ID');
+        const idError = validateId(input.id!, 'saved search ID');
         if (idError) return idError;
       }
 

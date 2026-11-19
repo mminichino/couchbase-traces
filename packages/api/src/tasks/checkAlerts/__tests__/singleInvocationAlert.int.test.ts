@@ -12,13 +12,17 @@ import {
 import { newId } from '@/metadata/ids';
 import { AlertSource, AlertThresholdType } from '@/metadata/schemas/alert';
 import {
+  getAlert,
+  getAlertHydrated,
+  listHistory,
+} from '@/metadata/testing/alertFixtures';
+import {
   seedConnection,
   seedDashboard,
   seedSavedSearch,
   seedSource,
   seedWebhook,
 } from '@/metadata/testing/seed';
-import { alertDocs, alertHistoryDocs } from '@/metadata/testing/seedAlerts';
 import { DataClient } from '@/query';
 import { processAlert } from '@/tasks/checkAlerts';
 import {
@@ -182,9 +186,7 @@ describe('Single Invocation Alert Test', () => {
     ]);
 
     // Get the alert with populated references
-    const enhancedAlert: any = await alertDocs
-      .findById(alert.id)
-      .populate(['team', 'savedSearch']);
+    const enhancedAlert: any = await getAlertHydrated(alert.id);
 
     // Process the alert - this should trigger the webhook
     const details: any = {
@@ -206,14 +208,10 @@ describe('Single Invocation Alert Test', () => {
     );
 
     // Verify alert state changed to ALERT (from DB)
-    expect((await alertDocs.findById(enhancedAlert.id))!.state).toBe('ALERT');
+    expect((await getAlert(enhancedAlert.id))!.state).toBe('ALERT');
 
     // Verify alert history was created
-    const alertHistories = await alertHistoryDocs
-      .find({
-        alert: alert.id,
-      })
-      .sort({ createdAt: 1 });
+    const alertHistories = await listHistory(alert.id);
 
     expect(alertHistories.length).toBe(1);
     expect(alertHistories[0].state).toBe('ALERT');
@@ -356,9 +354,7 @@ describe('Single Invocation Alert Test', () => {
       },
     ]);
 
-    const enhancedAlert: any = await alertDocs
-      .findById(alert.id)
-      .populate(['team', 'savedSearch']);
+    const enhancedAlert: any = await getAlertHydrated(alert.id);
 
     const details: any = {
       alert: enhancedAlert,
@@ -380,13 +376,9 @@ describe('Single Invocation Alert Test', () => {
     );
 
     // Alert should fire because 2 "web" logs exceed threshold of 1
-    expect((await alertDocs.findById(enhancedAlert.id))!.state).toBe('ALERT');
+    expect((await getAlert(enhancedAlert.id))!.state).toBe('ALERT');
 
-    const alertHistories = await alertHistoryDocs
-      .find({
-        alert: alert.id,
-      })
-      .sort({ createdAt: 1 });
+    const alertHistories = await listHistory(alert.id);
 
     expect(alertHistories.length).toBe(1);
     expect(alertHistories[0].state).toBe('ALERT');
@@ -482,9 +474,7 @@ describe('Single Invocation Alert Test', () => {
       },
     ]);
 
-    const enhancedAlert: any = await alertDocs
-      .findById(alert.id)
-      .populate(['team', 'savedSearch']);
+    const enhancedAlert: any = await getAlertHydrated(alert.id);
 
     const details: any = {
       alert: enhancedAlert,
@@ -506,7 +496,7 @@ describe('Single Invocation Alert Test', () => {
     );
 
     // Alert should NOT fire because filter excludes all logs
-    expect((await alertDocs.findById(enhancedAlert.id))!.state).toBe('OK');
+    expect((await getAlert(enhancedAlert.id))!.state).toBe('OK');
 
     // No webhook notification should be sent
     expect(slack.postMessageToWebhook).not.toHaveBeenCalled();
@@ -617,9 +607,7 @@ describe('Single Invocation Alert Test', () => {
       },
     ]);
 
-    const enhancedAlert: any = await alertDocs
-      .findById(alert.id)
-      .populate(['team', 'savedSearch']);
+    const enhancedAlert: any = await getAlertHydrated(alert.id);
 
     const details: any = {
       alert: enhancedAlert,
@@ -642,7 +630,7 @@ describe('Single Invocation Alert Test', () => {
 
     // Alert should NOT fire: only 1 web error matches both conditions,
     // which is below threshold of 2 (ABOVE uses >=)
-    expect((await alertDocs.findById(enhancedAlert.id))!.state).toBe('OK');
+    expect((await getAlert(enhancedAlert.id))!.state).toBe('OK');
     expect(slack.postMessageToWebhook).not.toHaveBeenCalled();
   });
 
@@ -783,9 +771,7 @@ describe('Single Invocation Alert Test', () => {
     );
 
     // Get enhanced alert with populated relations
-    const enhancedAlert: any = await alertDocs
-      .findById(alert.id)
-      .populate(['team', 'dashboard']);
+    const enhancedAlert: any = await getAlertHydrated(alert.id);
 
     // Find the tile we're alerting on (should be the second tile)
     const tile = dashboard.tiles?.find((t: any) => t.id === 'second-tile-id');
@@ -936,9 +922,7 @@ describe('Single Invocation Alert Test', () => {
       },
     ]);
 
-    const enhancedAlert: any = await alertDocs
-      .findById(alert.id)
-      .populate(['team', 'savedSearch']);
+    const enhancedAlert: any = await getAlertHydrated(alert.id);
 
     const tile = dashboard.tiles?.find((t: any) => t.id === 'number-tile-1');
 
@@ -963,14 +947,10 @@ describe('Single Invocation Alert Test', () => {
     );
 
     // Verify alert state changed to ALERT
-    expect((await alertDocs.findById(enhancedAlert.id))!.state).toBe('ALERT');
+    expect((await getAlert(enhancedAlert.id))!.state).toBe('ALERT');
 
     // Verify alert history was created
-    const alertHistories = await alertHistoryDocs
-      .find({
-        alert: alert.id,
-      })
-      .sort({ createdAt: 1 });
+    const alertHistories = await listHistory(alert.id);
 
     expect(alertHistories.length).toBe(1);
     expect(alertHistories[0].state).toBe('ALERT');

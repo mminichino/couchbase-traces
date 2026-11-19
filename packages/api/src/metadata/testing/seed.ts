@@ -114,7 +114,7 @@ export async function getUserDoc(id: Id): Promise<UserDoc | null> {
 
 type IdLike = Id | { toString(): string } | null | undefined;
 
-/** `User.findById(id)`; accepts an ObjectId the way Mongoose did. */
+/** Reads a user by id; accepts anything with a `toString()` id. */
 export function findUser(id: IdLike): Promise<IUser | null> {
   if (id == null) return Promise.resolve(null);
   return getMetadataStore().users.getById(id.toString());
@@ -126,6 +126,6 @@ export function findTeam(id: IdLike): Promise<ITeam | null> {
   return getMetadataStore().teams.getById(id.toString());
 }
 
-export * from '@/metadata/testing/seedAlerts';
+export * from '@/metadata/testing/alertFixtures';
 export * from '@/metadata/testing/seedContent';
 export * from '@/metadata/testing/seedSources';

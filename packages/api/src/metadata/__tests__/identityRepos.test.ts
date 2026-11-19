@@ -98,7 +98,7 @@ describe('UserRepository', () => {
     );
   });
 
-  it('keeps the passport-local-mongoose errors', async () => {
+  it('keeps the legacy auth errors', async () => {
     const { store } = setup();
     const team = await store.teams.createFirst({ name: 'A' });
     await register(store, team._id);

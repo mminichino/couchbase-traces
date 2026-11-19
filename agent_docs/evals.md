@@ -28,7 +28,7 @@ compare any two (or more) MCP servers side by side.
 
 | Requirement | Notes |
 |---|---|
-| `yarn dev` running | Each worktree needs `yarn dev` running with a fixed slot. This handles `yarn install`, `yarn build:common-utils`, Docker containers (Couchbase, MongoDB, collector), and the API server. See [Development Setup](development.md). |
+| `yarn dev` running | Each worktree needs `yarn dev` running with a fixed slot. This handles `yarn install`, `yarn build:common-utils`, Docker containers (Couchbase, collector), and the API server. See [Development Setup](development.md). |
 | `ANTHROPIC_API_KEY` or `AI_API_KEY` | Auto-loaded from `.env.local` at the monorepo root. Check `.env.local` in other worktrees for existing keys if missing. |
 | `claude` CLI | Installed globally (`which claude`). The harness spawns it in streaming JSON mode. |
 | `uv` | Only needed for `stdio`-type MCPs. Install via `curl -LsSf https://astral.sh/uv/install.sh \| sh`. |
@@ -61,8 +61,7 @@ talks to **two separate Couchbase Traces API instances** running on different sl
    │  Slot 98 (main)     │                  │  Slot 99 (branch)   │
    │  API  :30198        │                  │  API  :30199        │
    │  CB   :30598        │                  │  CB   :30599        │
-   │  Mongo:30498        │                  │  Mongo:30499        │
-   │  MCP  :30198/mcp    │                  │  MCP  :30199/mcp    │
+    │  MCP  :30198/mcp    │                  │  MCP  :30199/mcp    │
    └─────────────────────┘                  └─────────────────────┘
        main worktree                            branch worktree
 ```
@@ -74,7 +73,7 @@ for dual-slot comparisons you must seed each instance explicitly (step 4b).
 
 ### 1. Start both dev stacks
 
-`yarn dev` starts Docker infra (Couchbase, MongoDB, OTel Collector) **and**
+`yarn dev` starts Docker infra (Couchbase, OTel Collector) **and**
 the API + App servers in one command. Run it from each worktree with a fixed
 slot:
 
@@ -325,7 +324,7 @@ Always use the `bash -c 'export CBT_DEV_SLOT=... && source scripts/dev-env.sh
 
 ### Access keys go stale after container restarts
 
-When MongoDB is recreated, the eval account's access key changes. Re-run
+When the metadata bucket is recreated, the eval account's access key changes. Re-run
 `setup-eval` against the affected instance and rebuild the combined config.
 
 ### False timeouts

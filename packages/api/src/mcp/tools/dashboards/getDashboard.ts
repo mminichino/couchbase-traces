@@ -4,7 +4,7 @@ import * as config from '@/config';
 import { getDashboards } from '@/controllers/dashboard';
 import { READ_ONLY_TOOL } from '@/mcp/tools/annotations';
 import type { ToolRegistrar } from '@/mcp/tools/types';
-import { mcpUserError, validateObjectId } from '@/mcp/utils/errors';
+import { mcpUserError, validateId } from '@/mcp/utils/errors';
 import { isPromqlEnabled } from '@/mcp/utils/legacySourceKinds';
 import { getMetadataStore } from '@/metadata';
 import { convertToExternalDashboard } from '@/routers/external-api/v2/utils/dashboards';
@@ -51,7 +51,7 @@ export function registerGetDashboard({
         };
       }
 
-      const idError = validateObjectId(id, 'dashboard ID');
+      const idError = validateId(id, 'dashboard ID');
       if (idError) return idError;
 
       const dashboard = await getMetadataStore().dashboards.get(teamId, id);

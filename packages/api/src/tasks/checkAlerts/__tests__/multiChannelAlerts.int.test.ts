@@ -9,7 +9,7 @@ import {
   AlertState,
   AlertThresholdType,
 } from '@/metadata/schemas/alert';
-import { alertDocs, alertHistoryDocs } from '@/metadata/testing/seedAlerts';
+import { listHistory, seedAlert } from '@/metadata/testing/alertFixtures';
 import { loadProvider } from '@/tasks/checkAlerts/providers';
 
 import {
@@ -141,10 +141,10 @@ describe('Multi-channel alert dispatch', () => {
       AlertErrorType.WEBHOOK_ERROR,
     );
 
-    const errorHistories = await alertHistoryDocs.find({
-      alert: alert.id,
-      state: AlertState.ERROR,
-    });
+    const errorHistories = await listHistory(
+      alert.id,
+      r => r.state === AlertState.ERROR,
+    );
     expect(errorHistories).toHaveLength(1);
     expect(errorHistories[0].errors).toHaveLength(1);
     expect(errorHistories[0].errors![0].type).toBe(
@@ -189,10 +189,10 @@ describe('Multi-channel alert dispatch', () => {
     );
     expect(updated!.executionErrors![0].message).toContain('Hook Bad');
 
-    const errorHistories = await alertHistoryDocs.find({
-      alert: alert.id,
-      state: AlertState.ERROR,
-    });
+    const errorHistories = await listHistory(
+      alert.id,
+      r => r.state === AlertState.ERROR,
+    );
     expect(errorHistories).toHaveLength(1);
     expect(errorHistories[0].errors).toHaveLength(1);
     expect(errorHistories[0].errors![0].type).toBe(
@@ -206,7 +206,7 @@ describe('Multi-channel alert dispatch', () => {
 
     // Written directly, bypassing makeAlert, to simulate a document stored
     // before `channels` existed.
-    const alert = await alertDocs.create({
+    const alert = await seedAlert({
       team: team._id,
       source: AlertSource.SAVED_SEARCH,
       channel: { type: 'webhook', webhookId: webhook._id.toString() },

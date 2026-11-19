@@ -562,7 +562,7 @@ describe('MCP Source Tools', () => {
       expect(output.source.metricTables).toBeDefined();
       expect(output.source.metricTables).toHaveProperty('gauge');
       // metricTables should only contain valid kind keys — not a stray
-      // Mongoose `_id` from the embedded subdoc.
+      // `_id` from the embedded object.
       expect(output.source.metricTables).not.toHaveProperty('_id');
       expect(Object.keys(output.source.metricTables).sort()).toEqual(
         ['gauge', 'histogram', 'sum'].sort(),
@@ -1488,7 +1488,7 @@ describe('MCP Source Tools', () => {
       expect(config.highlightedTraceAttributeExpressions).toEqual([
         { sqlExpression: "SpanAttributes['http.method']", alias: 'method' },
       ]);
-      // Nested subdoc config must NOT leak the Mongoose-injected _id.
+      // Nested subdoc config must NOT leak the model layer-injected _id.
       expect(config.metadataMaterializedViews).toEqual({
         kvRollupTable: 'otel_traces_kv_rollup_15m',
         keyRollupTable: 'otel_traces_key_rollup_15m',
@@ -1553,7 +1553,7 @@ describe('MCP Source Tools', () => {
       expect(getFirstText(result)).toContain('defaultTableSelectExpression');
     });
 
-    it('rejects a non-ObjectId connection', async () => {
+    it('rejects a malformed connection', async () => {
       const result = await callTool(client, 'cbt_save_source', {
         kind: 'log',
         name: 'Bad Conn',

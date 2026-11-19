@@ -69,7 +69,7 @@ export type DashboardInspectionResult = {
 
 // ─── Tool call analysis ──────────────────────────────────────────────────────
 
-/** Matches ObjectIds (24 hex), UUIDs, and other alphanumeric IDs. */
+/** Matches 24-hex ids, UUIDs, and other alphanumeric IDs. */
 const ID_REGEX = /"id"\s*:\s*"([a-f0-9-]{24,36})"/;
 
 const SAVE_DASHBOARD_PATTERN = /cbt_save_dashboard|cbt_save_dashboard/;

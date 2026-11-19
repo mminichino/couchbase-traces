@@ -37,7 +37,7 @@ import { IAlertHistory } from '@/metadata/schemas/alertHistory';
 import { resolveAlertDisplayFields } from '@/utils/alerts';
 import { setBusinessContext } from '@/utils/instrumentation';
 import { PreSerialized, sendJson } from '@/utils/serialization';
-import { internalAlertSchema, objectIdSchema } from '@/utils/zod';
+import { idSchema, internalAlertSchema } from '@/utils/zod';
 
 const router = express.Router();
 
@@ -183,7 +183,7 @@ router.get(
   '/:id',
   validateRequest({
     params: z.object({
-      id: objectIdSchema,
+      id: idSchema,
     }),
   }),
   async (req, res: AlertExpRes, next) => {
@@ -234,7 +234,7 @@ type AlertEvaluationsExpRes = express.Response<AlertEvaluationsApiResponse>;
 router.get(
   '/:id/evaluations',
   processRequest({
-    params: z.object({ id: objectIdSchema }),
+    params: z.object({ id: idSchema }),
     query: z
       .object({
         limit: z.coerce
@@ -309,7 +309,7 @@ type AlertHistoryRangeExpRes = express.Response<AlertHistoryRangeApiResponse>;
 router.get(
   '/:id/history',
   processRequest({
-    params: z.object({ id: objectIdSchema }),
+    params: z.object({ id: idSchema }),
     query: z
       .object({
         startTime: z.coerce.number().int(),
@@ -380,7 +380,7 @@ router.put(
   processRequest({
     body: internalAlertSchema,
     params: z.object({
-      id: objectIdSchema,
+      id: idSchema,
     }),
   }),
   async (req, res, next) => {
@@ -421,7 +421,7 @@ router.post(
         }),
     }),
     params: z.object({
-      id: objectIdSchema,
+      id: idSchema,
     }),
   }),
   async (req, res, next) => {
@@ -455,7 +455,7 @@ router.delete(
   '/:id/silenced',
   validateRequest({
     params: z.object({
-      id: objectIdSchema,
+      id: idSchema,
     }),
   }),
   async (req, res, next) => {
@@ -485,7 +485,7 @@ router.delete(
   '/:id',
   validateRequest({
     params: z.object({
-      id: objectIdSchema,
+      id: idSchema,
     }),
   }),
   async (req, res, next) => {

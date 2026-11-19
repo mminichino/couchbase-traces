@@ -187,7 +187,7 @@ export default function IacMigrationSection({
     // The whole body is guarded: this is an async click handler, so anything
     // that throws past it becomes an unhandled rejection the user never sees —
     // they click Download and nothing happens. buildImportFile in particular
-    // throws by design on a non-ObjectId id.
+    // throws by design on a non-hex id.
     setDownloadError(false);
     try {
       // Built from a refetch, not from the 60s-stale cache. A resource deleted

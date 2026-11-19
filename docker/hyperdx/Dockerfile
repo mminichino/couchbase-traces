@@ -4,12 +4,10 @@
 # - App (Frontend)
 # For all-in-one build:
 # - Couchbase (external)
-# - Mongo
 # - Otel Collector (otelcol)
 
 ARG NODE_VERSION=22.23.4
 ARG COUCHBASE_IMAGE=couchbase/server:enterprise-8.0.3
-ARG MONGODB_VERSION=8.0.38
 ARG EVAL_STORE_VERSION=26.8.36.3
 ARG OTEL_COLLECTOR_VERSION=0.155.0
 ARG OTEL_COLLECTOR_CORE_VERSION=1.61.0
@@ -172,7 +170,6 @@ FROM ${COUCHBASE_IMAGE} AS all-in-one-base
 
 ARG CODE_VERSION
 ARG COUCHBASE_IMAGE
-ARG MONGODB_VERSION
 ARG USER_UID=10001
 ARG USER_GID=10001
 
@@ -197,16 +194,11 @@ COPY --from=node_bookworm /ingest /opt/cbt/ingest
 COPY --chmod=755 ./docker/couchbase/init.sh /opt/cbt/bin/init.sh
 
 RUN apt-get update && \
-    apt-get install -y --no-install-recommends ca-certificates curl gnupg openssl && \
-    # Couchbase Server 8 images are Ubuntu 24.04 (noble); use MongoDB 8.0 noble packages.
-    curl -fsSL https://www.mongodb.org/static/pgp/server-8.0.asc | gpg --dearmor -o /usr/share/keyrings/mongodb-server-8.0.gpg && \
-    echo "deb [ signed-by=/usr/share/keyrings/mongodb-server-8.0.gpg ] https://repo.mongodb.org/apt/ubuntu noble/mongodb-org/8.0 multiverse" > /etc/apt/sources.list.d/mongodb-org-8.0.list && \
-    apt-get update && \
-    apt-get install -y --no-install-recommends mongodb-org=${MONGODB_VERSION} mongodb-org-server=${MONGODB_VERSION} mongodb-org-shell=${MONGODB_VERSION} && \
+    apt-get install -y --no-install-recommends ca-certificates curl openssl && \
     apt-get clean && rm -rf /var/lib/apt/lists/* && \
     groupadd --gid ${USER_GID} otel && \
     useradd --uid ${USER_UID} --gid otel --shell /usr/sbin/nologin otel && \
-    mkdir -p /data/db /data/cbt && \
+    mkdir -p /data/cbt && \
     install -d -m 0777 -o ${USER_UID} -g ${USER_GID} /etc/otel/supervisor-data && \
     rm -rf /usr/local/lib/node_modules/npm /usr/local/lib/node_modules/corepack \
       /usr/local/bin/npm /usr/local/bin/npx /usr/local/bin/corepack \
@@ -216,7 +208,6 @@ ENV NODE_ENV=production
 
 COPY --from=prod /app /app
 COPY --from=hyperdx ./refresh-env.js /etc/local/refresh-env.js
-COPY .vex/*.vex.json /etc/vex/
 
 WORKDIR /app
 
@@ -227,7 +218,7 @@ FROM all-in-one-base AS all-in-one-noauth
 
 LABEL org.opencontainers.image.vendor="Couchbase Traces" \
       org.opencontainers.image.title="Couchbase Traces All-in-One (No Auth)" \
-      org.opencontainers.image.description="Couchbase Traces all-in-one image with Couchbase, MongoDB, and OTel Collector (no authentication)" \
+      org.opencontainers.image.description="Couchbase Traces all-in-one image with Couchbase and OTel Collector (no authentication)" \
       org.opencontainers.image.source="https://github.com/mminichino/couchbase-traces" \
       org.opencontainers.image.licenses="MIT"
 
@@ -243,7 +234,7 @@ FROM all-in-one-base AS all-in-one-auth
 
 LABEL org.opencontainers.image.vendor="Couchbase Traces" \
       org.opencontainers.image.title="Couchbase Traces All-in-One (With Auth)" \
-      org.opencontainers.image.description="Couchbase Traces all-in-one image with Couchbase Server, MongoDB, and OTel Collector (with authentication)" \
+      org.opencontainers.image.description="Couchbase Traces all-in-one image with Couchbase Server and OTel Collector (with authentication)" \
       org.opencontainers.image.source="https://github.com/mminichino/couchbase-traces" \
       org.opencontainers.image.licenses="MIT"
 

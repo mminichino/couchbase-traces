@@ -4,7 +4,6 @@ import {
   DisplayType,
   SourceKind,
 } from '@couchbase-traces/common-utils/dist/types';
-import mongoose from 'mongoose';
 
 import {
   getLoggedInAgent,
@@ -17,14 +16,22 @@ import {
   makeRawSqlTile,
   makeSavedSearchAlertInput,
   makeTile,
-  randomMongoId,
+  randomId,
   RAW_SQL_ALERT_TEMPLATE,
 } from '@/fixtures';
+import { newId } from '@/metadata/ids';
 import { AlertSource, AlertState } from '@/metadata/schemas/alert';
 import {
   IWebhook as WebhookDocument,
   WebhookService,
 } from '@/metadata/schemas/webhook';
+import {
+  getAlert,
+  listAlerts,
+  patchAlerts,
+  seedAlert,
+  seedHistory,
+} from '@/metadata/testing/alertFixtures';
 import {
   seedConnection,
   seedDashboard,
@@ -32,12 +39,11 @@ import {
   seedSource,
   seedWebhook,
 } from '@/metadata/testing/seed';
-import { alertDocs, alertHistoryDocs } from '@/metadata/testing/seedAlerts';
 
 const MOCK_TILES = [makeTile(), makeTile(), makeTile(), makeTile(), makeTile()];
 
 const MOCK_DASHBOARD = {
-  id: randomMongoId(),
+  id: randomId(),
   name: 'Test Dashboard',
   tiles: MOCK_TILES,
   tags: ['test'],
@@ -224,7 +230,7 @@ describe('alerts router', () => {
       .expect(200);
 
     await agent
-      .put(`/alerts/${randomMongoId()}`)
+      .put(`/alerts/${randomId()}`)
       .send(
         makeAlertInput({
           dashboardId: dashboard.body.id,
@@ -240,8 +246,8 @@ describe('alerts router', () => {
       .post('/dashboards')
       .send(MOCK_DASHBOARD)
       .expect(200);
-    const otherTeamAlert = await alertDocs.create({
-      team: randomMongoId(),
+    const otherTeamAlert = await seedAlert({
+      team: randomId(),
       channel: {
         type: 'webhook',
         webhookId: webhook._id.toString(),
@@ -269,7 +275,7 @@ describe('alerts router', () => {
   it('can update an ungrouped saved-search alert returned with null groupBy', async () => {
     const savedSearch = await seedSavedSearch({
       name: 'Test Saved Search',
-      source: new mongoose.Types.ObjectId(),
+      source: newId(),
       team: team._id,
     });
     const created = await agent
@@ -308,10 +314,10 @@ describe('alerts router', () => {
     const tileId = dashboard.body.tiles[0].id;
     const savedSearch = await seedSavedSearch({
       name: 'Test Saved Search',
-      source: new mongoose.Types.ObjectId(),
+      source: newId(),
       team: team._id,
     });
-    const staleAlert = await alertDocs.create({
+    const staleAlert = await seedAlert({
       team: team._id,
       channel: {
         type: 'webhook',
@@ -321,7 +327,7 @@ describe('alerts router', () => {
       threshold: 8,
       thresholdType: AlertThresholdType.ABOVE,
       source: AlertSource.TILE,
-      savedSearch: new mongoose.Types.ObjectId(),
+      savedSearch: newId(),
       groupBy: 'service.name',
       dashboard: dashboard.body.id,
       tileId,
@@ -339,7 +345,7 @@ describe('alerts router', () => {
       })
       .expect(200);
 
-    let updatedAlert = await alertDocs.findById(staleAlert._id);
+    let updatedAlert = await getAlert(staleAlert._id);
     expect(updatedAlert?.savedSearch?.toString()).toBe(
       savedSearch._id.toString(),
     );
@@ -360,7 +366,7 @@ describe('alerts router', () => {
       })
       .expect(200);
 
-    updatedAlert = await alertDocs.findById(staleAlert._id);
+    updatedAlert = await getAlert(staleAlert._id);
     expect(updatedAlert?.savedSearch).toBeNull();
     expect(updatedAlert?.groupBy).toBeNull();
     expect(updatedAlert?.dashboard?.toString()).toBe(dashboard.body.id);
@@ -489,7 +495,7 @@ describe('alerts router', () => {
 
     const emptied = await agent.get(`/alerts/${alertId}`).expect(200);
     expect(emptied.body.data.tags).toEqual([]);
-    expect((await alertDocs.findById(alertId))?.tags).toEqual([]);
+    expect((await getAlert(alertId))?.tags).toEqual([]);
   });
 
   it('derives displayName from the chart config for inline alerts', async () => {
@@ -498,7 +504,7 @@ describe('alerts router', () => {
       team: team._id,
       from: { databaseName: 'otel', tableName: 'otel_logs' },
       timestampValueExpression: 'Timestamp',
-      connection: new mongoose.Types.ObjectId(),
+      connection: newId(),
       name: 'Logs',
     });
 
@@ -527,11 +533,11 @@ describe('alerts router', () => {
   it('Derives name and tags from the saved search for a document stored without them', async () => {
     const savedSearch = await seedSavedSearch({
       name: 'Legacy search',
-      source: new mongoose.Types.ObjectId(),
+      source: newId(),
       team: team._id,
       tags: ['legacy'],
     });
-    const alert = await alertDocs.create({
+    const alert = await seedAlert({
       team: team._id,
       channel: { type: 'webhook', webhookId: webhook._id.toString() },
       interval: '15m',
@@ -592,7 +598,7 @@ describe('alerts router', () => {
       .send(updatePayload)
       .expect(200);
 
-    const alertAfterOmittedScheduleStartAt = await alertDocs.findById(
+    const alertAfterOmittedScheduleStartAt = await getAlert(
       createdAlert.body.data._id,
     );
     expect(
@@ -607,7 +613,7 @@ describe('alerts router', () => {
       })
       .expect(200);
 
-    const alertAfterNullScheduleStartAt = await alertDocs.findById(
+    const alertAfterNullScheduleStartAt = await getAlert(
       createdAlert.body.data._id,
     );
     expect(alertAfterNullScheduleStartAt?.scheduleStartAt).toBeNull();
@@ -645,7 +651,7 @@ describe('alerts router', () => {
       })
       .expect(200);
 
-    const updatedAlert = await alertDocs.findById(createdAlert.body.data._id);
+    const updatedAlert = await getAlert(createdAlert.body.data._id);
     expect(updatedAlert?.scheduleOffsetMinutes).toBe(2);
     expect(updatedAlert?.scheduleStartAt).toBeUndefined();
   });
@@ -686,7 +692,7 @@ describe('alerts router', () => {
       })
       .expect(200);
 
-    const updatedAlert = await alertDocs.findById(createdAlert.body.data._id);
+    const updatedAlert = await getAlert(createdAlert.body.data._id);
     expect(updatedAlert?.scheduleOffsetMinutes).toBe(0);
     expect(updatedAlert?.scheduleStartAt?.toISOString()).toBe(scheduleStartAt);
   });
@@ -697,7 +703,7 @@ describe('alerts router', () => {
       .send(MOCK_DASHBOARD)
       .expect(200);
 
-    const staleAlert = await alertDocs.create({
+    const staleAlert = await seedAlert({
       team: team._id,
       channel: {
         type: 'webhook',
@@ -726,7 +732,7 @@ describe('alerts router', () => {
       })
       .expect(200);
 
-    const updatedAlert = await alertDocs.findById(staleAlert._id);
+    const updatedAlert = await getAlert(staleAlert._id);
     expect(updatedAlert?.scheduleOffsetMinutes).toBe(0);
     expect(updatedAlert?.scheduleStartAt).toBeNull();
   });
@@ -820,7 +826,7 @@ describe('alerts router', () => {
     expect(alert.body.data.threshold).toBe(5);
 
     // Get the alert directly from database to verify createdBy was set
-    const alertFromDb = await alertDocs.findById(alert.body.data._id);
+    const alertFromDb = await getAlert(alert.body.data._id);
     expect(alertFromDb).toBeDefined();
     expect(alertFromDb!.createdBy).toEqual(user._id);
     expect(alertFromDb!.threshold).toBe(5);
@@ -838,9 +844,7 @@ describe('alerts router', () => {
     expect(updatedAlert.body.data.threshold).toBe(15);
 
     // Get the alert from database again to verify createdBy is preserved
-    const alertFromDbAfterUpdate = await alertDocs.findById(
-      alert.body.data._id,
-    );
+    const alertFromDbAfterUpdate = await getAlert(alert.body.data._id);
     expect(alertFromDbAfterUpdate).toBeDefined();
     expect(alertFromDbAfterUpdate!.createdBy).toEqual(user._id); // ✅ createdBy should still be the original user
     expect(alertFromDbAfterUpdate!.threshold).toBe(15); // ✅ threshold should be updated
@@ -887,7 +891,7 @@ describe('alerts router', () => {
     const unique = await agent
       .post('/dashboards')
       .send({
-        id: randomMongoId(),
+        id: randomId(),
         name: 'Unique tiles',
         tags: [],
         tiles: [makeTile()],
@@ -934,7 +938,7 @@ describe('alerts router', () => {
     });
 
     const tileAlert = async (dashboardId: unknown, tileId: string) =>
-      alertDocs.create({
+      seedAlert({
         team: team._id,
         channel: { type: 'webhook', webhookId: webhook._id.toString() },
         interval: '15m',
@@ -946,7 +950,7 @@ describe('alerts router', () => {
       });
 
     await tileAlert(provisioned._id, tile.id);
-    await tileAlert(randomMongoId(), tile.id);
+    await tileAlert(randomId(), tile.id);
 
     const resp = await agent.get('/alerts').expect(200);
 
@@ -979,7 +983,7 @@ describe('alerts router', () => {
       .expect(200);
 
     // Verify the alert was silenced
-    const alertFromDb = await alertDocs.findById(alert.body.data._id);
+    const alertFromDb = await getAlert(alert.body.data._id);
     expect(alertFromDb).toBeDefined();
     expect(alertFromDb!.silenced).toBeDefined();
     expect(alertFromDb!.silenced!.by).toEqual(user._id);
@@ -1013,14 +1017,14 @@ describe('alerts router', () => {
       .expect(200);
 
     // Verify it was silenced
-    let alertFromDb = await alertDocs.findById(alert.body.data._id);
+    let alertFromDb = await getAlert(alert.body.data._id);
     expect(alertFromDb!.silenced).toBeDefined();
 
     // Now unsilence it
     await agent.delete(`/alerts/${alert.body.data._id}/silenced`).expect(200);
 
     // Verify it was unsilenced
-    alertFromDb = await alertDocs.findById(alert.body.data._id);
+    alertFromDb = await getAlert(alert.body.data._id);
     expect(alertFromDb).toBeDefined();
     expect(alertFromDb!.silenced).toBeUndefined();
   });
@@ -1059,7 +1063,7 @@ describe('alerts router', () => {
   });
 
   it('prevents silencing an alert that does not exist', async () => {
-    const fakeId = randomMongoId();
+    const fakeId = randomId();
     const mutedUntil = new Date(Date.now() + 3600000).toISOString();
 
     await agent
@@ -1069,7 +1073,7 @@ describe('alerts router', () => {
   });
 
   it('prevents unsilencing an alert that does not exist', async () => {
-    const fakeId = randomMongoId();
+    const fakeId = randomId();
 
     await agent.delete(`/alerts/${fakeId}/silenced`).expect(404); // Should fail
   });
@@ -1174,7 +1178,7 @@ describe('alerts router', () => {
   });
 
   it('rejects creating an alert on a PromQL tile', async () => {
-    const promqlTileId = randomMongoId();
+    const promqlTileId = randomId();
     const dashboard = await seedDashboard({
       name: 'PromQL Dashboard',
       team: team._id,
@@ -1189,7 +1193,7 @@ describe('alerts router', () => {
             configType: 'promql',
             name: 'Up',
             displayType: DisplayType.Line,
-            source: randomMongoId(),
+            source: randomId(),
             promqlExpression: [{ expression: 'up' }],
           },
         },
@@ -1209,7 +1213,7 @@ describe('alerts router', () => {
     expect(JSON.stringify(res.body)).toContain(
       'Alerts are not supported on PromQL tiles',
     );
-    expect(await alertDocs.countDocuments({ team: team._id })).toBe(0);
+    expect(await (await listAlerts(a => a.team === team._id)).length).toBe(0);
   });
 
   it('rejects creating an alert on a raw SQL tile without interval params', async () => {
@@ -1312,7 +1316,7 @@ describe('alerts router', () => {
 
   describe('GET /alerts/:id', () => {
     it('returns 404 for non-existent alert', async () => {
-      const fakeId = randomMongoId();
+      const fakeId = randomId();
       await agent.get(`/alerts/${fakeId}`).expect(404);
     });
 
@@ -1363,7 +1367,7 @@ describe('alerts router', () => {
       const now = new Date(Date.now() - 60000);
       const earlier = new Date(Date.now() - 120000);
 
-      await alertHistoryDocs.create({
+      await seedHistory({
         alert: alert.body.data._id,
         createdAt: now,
         state: AlertState.ALERT,
@@ -1371,7 +1375,7 @@ describe('alerts router', () => {
         lastValues: [{ startTime: now, count: 5 }],
       });
 
-      await alertHistoryDocs.create({
+      await seedHistory({
         alert: alert.body.data._id,
         createdAt: earlier,
         state: AlertState.OK,
@@ -1414,21 +1418,21 @@ describe('alerts router', () => {
       const now = Date.now();
       const at = (minsAgo: number) => new Date(now - minsAgo * 60_000);
 
-      await alertHistoryDocs.create({
+      await seedHistory({
         alert: alertId,
         createdAt: at(25),
         state: AlertState.OK,
         counts: 0,
         lastValues: [{ startTime: at(25), count: 0 }],
       });
-      await alertHistoryDocs.create({
+      await seedHistory({
         alert: alertId,
         createdAt: at(20),
         state: AlertState.ALERT,
         counts: 5,
         lastValues: [{ startTime: at(20), count: 5 }],
       });
-      await alertHistoryDocs.create({
+      await seedHistory({
         alert: alertId,
         createdAt: at(10),
         state: AlertState.OK,
@@ -1449,7 +1453,7 @@ describe('alerts router', () => {
     });
 
     it('returns 404 for an unknown alert id', async () => {
-      const fakeId = randomMongoId();
+      const fakeId = randomId();
       await agent
         .get(`/alerts/${fakeId}/history`)
         .query({ startTime: 0, endTime: Date.now() })
@@ -1457,8 +1461,8 @@ describe('alerts router', () => {
     });
 
     it("returns 404 for another team's alert", async () => {
-      const otherTeamAlert = await alertDocs.create({
-        team: randomMongoId(),
+      const otherTeamAlert = await seedAlert({
+        team: randomId(),
         threshold: 1,
         interval: '5m',
         channel: { type: null },
@@ -1516,14 +1520,14 @@ describe('alerts router', () => {
       const now = Date.now();
       const at = (minsAgo: number) => new Date(now - minsAgo * 60_000);
 
-      await alertHistoryDocs.create({
+      await seedHistory({
         alert: alertId,
         createdAt: at(10),
         state: AlertState.OK,
         counts: 0,
         lastValues: [{ startTime: at(10), count: 0 }],
       });
-      await alertHistoryDocs.create({
+      await seedHistory({
         alert: alertId,
         createdAt: at(5),
         state: AlertState.ERROR,
@@ -1562,7 +1566,7 @@ describe('alerts router', () => {
         minsAgo => new Date(now - minsAgo * 60_000),
       );
       for (const createdAt of windows) {
-        await alertHistoryDocs.create({
+        await seedHistory({
           alert: alertId,
           createdAt,
           state: AlertState.OK,
@@ -1606,7 +1610,7 @@ describe('alerts router', () => {
       const windowStart = new Date(now - 5 * 60_000);
       const bucket = new Date(now - 10 * 60_000);
 
-      await alertHistoryDocs.create({
+      await seedHistory({
         alert: alertId,
         createdAt: windowStart,
         state: AlertState.ALERT,
@@ -1615,7 +1619,7 @@ describe('alerts router', () => {
         group: 'ServiceName:api',
         fired: true,
       });
-      await alertHistoryDocs.create({
+      await seedHistory({
         alert: alertId,
         createdAt: windowStart,
         state: AlertState.OK,
@@ -1653,14 +1657,14 @@ describe('alerts router', () => {
       const now = Date.now();
       const at = (minsAgo: number) => new Date(now - minsAgo * 60_000);
 
-      await alertHistoryDocs.create({
+      await seedHistory({
         alert: alertId,
         createdAt: at(5),
         state: AlertState.OK,
         counts: 0,
         lastValues: [{ startTime: at(5), count: 0 }],
       });
-      await alertHistoryDocs.create({
+      await seedHistory({
         alert: alertId,
         createdAt: at(45),
         state: AlertState.OK,
@@ -1704,12 +1708,12 @@ describe('alerts router', () => {
     });
 
     it('returns 404 for an unknown alert id', async () => {
-      await agent.get(`/alerts/${randomMongoId()}/evaluations`).expect(404);
+      await agent.get(`/alerts/${randomId()}/evaluations`).expect(404);
     });
 
     it("returns 404 for another team's alert", async () => {
-      const otherTeamAlert = await alertDocs.create({
-        team: randomMongoId(),
+      const otherTeamAlert = await seedAlert({
+        team: randomId(),
         threshold: 1,
         interval: '5m',
         channel: { type: null },
@@ -1737,20 +1741,15 @@ describe('alerts router', () => {
         .expect(200);
 
       const errorTimestamp = new Date('2026-04-17T12:00:00.000Z');
-      await alertDocs.updateOne(
-        { _id: alert.body.data._id },
-        {
-          $set: {
-            executionErrors: [
-              {
-                timestamp: errorTimestamp,
-                type: AlertErrorType.QUERY_ERROR,
-                message: 'ClickHouse returned 500',
-              },
-            ],
+      await patchAlerts(alert.body.data._id, {
+        executionErrors: [
+          {
+            timestamp: errorTimestamp,
+            type: AlertErrorType.QUERY_ERROR,
+            message: 'ClickHouse returned 500',
           },
-        },
-      );
+        ],
+      });
 
       const res = await agent.get(`/alerts/${alert.body.data._id}`).expect(200);
       expect(res.body.data.executionErrors).toHaveLength(1);
@@ -1782,20 +1781,15 @@ describe('alerts router', () => {
         )
         .expect(200);
 
-      await alertDocs.updateOne(
-        { _id: alert.body.data._id },
-        {
-          $set: {
-            executionErrors: [
-              {
-                timestamp: new Date('2026-04-17T12:00:00.000Z'),
-                type: AlertErrorType.WEBHOOK_ERROR,
-                message: 'webhook delivery failed',
-              },
-            ],
+      await patchAlerts(alert.body.data._id, {
+        executionErrors: [
+          {
+            timestamp: new Date('2026-04-17T12:00:00.000Z'),
+            type: AlertErrorType.WEBHOOK_ERROR,
+            message: 'webhook delivery failed',
           },
-        },
-      );
+        ],
+      });
 
       const list = await agent.get('/alerts').expect(200);
       expect(list.body.data).toHaveLength(1);
@@ -1812,7 +1806,7 @@ describe('alerts router', () => {
     const makeSavedSearch = () =>
       seedSavedSearch({
         name: 'Test Saved Search',
-        source: new mongoose.Types.ObjectId(),
+        source: newId(),
         team: team._id,
       });
 
@@ -1853,7 +1847,7 @@ describe('alerts router', () => {
         { type: 'webhook', webhookId: other._id.toString() },
       ]);
 
-      const stored = await alertDocs.findById(created.body.data._id);
+      const stored = await getAlert(created.body.data._id);
       expect(stored!.channels).toEqual([
         { type: 'webhook', webhookId: webhook._id.toString() },
         { type: 'webhook', webhookId: other._id.toString() },
@@ -1910,7 +1904,7 @@ describe('alerts router', () => {
         })
         .expect(200);
 
-      const stored = await alertDocs.findById(created.body.data._id);
+      const stored = await getAlert(created.body.data._id);
       expect(stored!.channels).toHaveLength(2);
       expect(stored!.threshold).toBe(42);
     });
@@ -1949,7 +1943,7 @@ describe('alerts router', () => {
           ...base,
           channels: Array.from({ length: 11 }, () => ({
             type: 'webhook',
-            webhookId: randomMongoId(),
+            webhookId: randomId(),
           })),
         })
         .expect(400);
@@ -1959,7 +1953,7 @@ describe('alerts router', () => {
         name: 'Foreign Webhook',
         service: WebhookService.Slack,
         url: 'https://hooks.slack.com/foreign',
-        team: new mongoose.Types.ObjectId(),
+        team: newId(),
       });
       await agent
         .post('/alerts')
@@ -2064,7 +2058,7 @@ describe('alerts router', () => {
         )
         .expect(200);
 
-      const stored = await alertDocs.findById(created.body.data._id);
+      const stored = await getAlert(created.body.data._id);
       expect(stored!.threshold).toBe(42);
       expect(stored!.chartConfig).toMatchObject({ groupBy: 'ServiceName' });
     });
@@ -2100,7 +2094,7 @@ describe('alerts router', () => {
         )
         .expect(200);
 
-      let stored = await alertDocs.findById(created.body.data._id);
+      let stored = await getAlert(created.body.data._id);
       expect(stored!.chartConfig).toBeNull();
       expect(stored!.dashboard?.toString()).toBe(dashboard.body.id);
       expect(stored!.tileId).toBe(tileId);
@@ -2117,7 +2111,7 @@ describe('alerts router', () => {
         )
         .expect(200);
 
-      stored = await alertDocs.findById(created.body.data._id);
+      stored = await getAlert(created.body.data._id);
       expect(stored!.chartConfig).toMatchObject({
         source: source._id.toString(),
       });
@@ -2130,7 +2124,7 @@ describe('alerts router', () => {
         .post('/alerts')
         .send(
           makeInlineAlertInput({
-            chartConfig: makeAlertChartConfig({ sourceId: randomMongoId() }),
+            chartConfig: makeAlertChartConfig({ sourceId: randomId() }),
             webhookId: webhook._id.toString(),
           }),
         )
@@ -2261,7 +2255,7 @@ describe('alerts router', () => {
 
       // Equivalent non-canonical representations (uppercase hex) of the same
       // connection ID must be accepted — the consistency check compares
-      // ObjectIds, not strings.
+      // ids, not strings.
       await agent
         .post('/alerts')
         .send(
@@ -2281,13 +2275,13 @@ describe('alerts router', () => {
         .post('/alerts')
         .send({
           ...makeInlineAlertInput({
-            chartConfig: makeAlertChartConfig({ sourceId: randomMongoId() }),
+            chartConfig: makeAlertChartConfig({ sourceId: randomId() }),
             webhookId: webhook._id.toString(),
           }),
           chartConfig: {
             configType: 'promql',
             promqlQuery: 'up',
-            source: randomMongoId(),
+            source: randomId(),
           },
         })
         .expect(400);
@@ -2321,7 +2315,7 @@ describe('alerts router', () => {
               configType: 'sql',
               displayType: DisplayType.Line,
               sqlTemplate: RAW_SQL_ALERT_TEMPLATE,
-              connection: randomMongoId(),
+              connection: randomId(),
             },
             webhookId: webhook._id.toString(),
           }),

@@ -1,10 +1,10 @@
 # Dependency license report
 
-Generated: 2026-11-18 (`node port/remove-ch/licenses.mjs`).
+Generated: 2026-11-19 (`node port/remove-ch/licenses.mjs`).
 
 ## Summary
 
-- npm production packages (external): **1001** (via `yarn dlx license-checker-rseidelsohn@5.0.1` at repo root; production closure from workspace `dependencies`).
+- npm production packages (external): **977** (via `yarn dlx license-checker-rseidelsohn@5.0.1` at repo root; production closure from workspace `dependencies`).
 - Go modules: **485** (via `go run github.com/google/go-licenses@v1.6.0 report` on `packages/otel-collector` and the OCB `builder-config.yaml` module list).
 - Review-list entries: **15** (copyleft / network copyleft / unknown — informational only).
 
@@ -12,10 +12,10 @@ Generated: 2026-11-18 (`node port/remove-ch/licenses.mjs`).
 
 | License | Count |
 | --- | --- |
-| MIT | 802 |
-| Apache-2.0 | 451 |
+| MIT | 786 |
+| Apache-2.0 | 444 |
 | ISC | 88 |
-| BSD-3-Clause | 85 |
+| BSD-3-Clause | 84 |
 | MPL-2.0 | 14 |
 | BlueOak-1.0.0 | 12 |
 | (MIT OR CC0-1.0) | 9 |
@@ -100,7 +100,6 @@ Packages reachable from workspace `dependencies` (private workspaces are omitted
 | @mantine/spotlight | 9.0.0 | MIT | https://github.com/mantinedev/mantine | @couchbase-traces/app |
 | @mantine/store | 9.0.0 | MIT | https://github.com/mantinedev/mantine | @couchbase-traces/app |
 | @modelcontextprotocol/sdk | 1.29.0 | MIT | https://github.com/modelcontextprotocol/typescript-sdk | @couchbase-traces/api |
-| @mongodb-js/saslprep | 1.2.2 | MIT | https://github.com/mongodb-js/devtools-shared | @couchbase-traces/api |
 | @next/env | 16.4.3 | MIT | https://github.com/vercel/next.js | @couchbase-traces/app |
 | @opentelemetry/api | 1.9.0 | Apache-2.0 | https://github.com/open-telemetry/opentelemetry-js | @couchbase-traces/api, @couchbase-traces/app |
 | @opentelemetry/api | 1.9.1 | Apache-2.0 | https://github.com/open-telemetry/opentelemetry-js | @couchbase-traces/api, @couchbase-traces/app |
@@ -305,9 +304,6 @@ Packages reachable from workspace `dependencies` (private workspaces are omitted
 | @types/unist | 2.0.6 | MIT | https://github.com/DefinitelyTyped/DefinitelyTyped | @couchbase-traces/app |
 | @types/unist | 3.0.2 | MIT | https://github.com/DefinitelyTyped/DefinitelyTyped | @couchbase-traces/app |
 | @types/use-sync-external-store | 0.0.6 | MIT | https://github.com/DefinitelyTyped/DefinitelyTyped | @couchbase-traces/app |
-| @types/webidl-conversions | 7.0.0 | MIT | https://github.com/DefinitelyTyped/DefinitelyTyped | @couchbase-traces/api |
-| @types/whatwg-url | 11.0.3 | MIT | https://github.com/DefinitelyTyped/DefinitelyTyped | @couchbase-traces/api |
-| @types/whatwg-url | 8.2.2 | MIT | https://github.com/DefinitelyTyped/DefinitelyTyped | @couchbase-traces/api |
 | @uiw/codemirror-extensions-basic-setup | 4.23.3 | MIT | https://github.com/uiwjs/react-codemirror | @couchbase-traces/app |
 | @uiw/react-codemirror | 4.23.3 | MIT | https://github.com/uiwjs/react-codemirror | @couchbase-traces/app |
 | @ungap/structured-clone | 1.3.0 | ISC | https://github.com/ungap/structured-clone | @couchbase-traces/app |
@@ -365,10 +361,6 @@ Packages reachable from workspace `dependencies` (private workspaces are omitted
 | brace-expansion | 5.0.12 | MIT | https://github.com/juliangruber/brace-expansion | @couchbase-traces/api |
 | brace-expansion | 5.0.8 | MIT | https://github.com/juliangruber/brace-expansion | @couchbase-traces/api |
 | braces | 3.0.3 | MIT | https://github.com/micromatch/braces | @couchbase-traces/api, @couchbase-traces/app |
-| bson | 4.7.2 | Apache-2.0 | https://github.com/mongodb/js-bson | @couchbase-traces/api |
-| bson | 6.10.3 | Apache-2.0 | https://github.com/mongodb/js-bson | @couchbase-traces/api |
-| buffer | 5.7.1 | MIT | https://github.com/feross/buffer | @couchbase-traces/api |
-| buffer | 6.0.3 | MIT | https://github.com/feross/buffer | @couchbase-traces/api |
 | bytes | 3.0.0 | MIT | https://github.com/visionmedia/bytes.js | @couchbase-traces/api |
 | bytes | 3.1.2 | MIT | https://github.com/visionmedia/bytes.js | @couchbase-traces/api |
 | call-bind-apply-helpers | 1.0.2 | MIT | https://github.com/ljharb/call-bind-apply-helpers | @couchbase-traces/api |
@@ -580,7 +572,6 @@ Packages reachable from workspace `dependencies` (private workspaces are omitted
 | iconv-lite | 0.6.3 | MIT | https://github.com/ashtuchkin/iconv-lite | @couchbase-traces/api |
 | iconv-lite | 0.7.2 | MIT | https://github.com/pillarjs/iconv-lite | @couchbase-traces/api |
 | iconv-lite | 0.7.3 | MIT | https://github.com/pillarjs/iconv-lite | @couchbase-traces/api |
-| ieee754 | 1.2.1 | BSD-3-Clause | https://github.com/feross/ieee754 | @couchbase-traces/api |
 | immer | 11.1.9 | MIT | https://github.com/immerjs/immer | @couchbase-traces/app |
 | immer | 9.0.21 | MIT | https://github.com/immerjs/immer | @couchbase-traces/app |
 | immutable | 4.3.9 | MIT | https://github.com/immutable-js/immutable-js | @couchbase-traces/app |
@@ -621,7 +612,6 @@ Packages reachable from workspace `dependencies` (private workspaces are omitted
 | json-schema-typed | 8.0.2 | BSD-2-Clause | https://github.com/RemyRylan/json-schema-typed | @couchbase-traces/api |
 | jsonfile | 4.0.0 | MIT | https://github.com/jprichardson/node-jsonfile | @couchbase-traces/api |
 | jsonfile | 6.1.0 | MIT | https://github.com/jprichardson/node-jsonfile | @couchbase-traces/api |
-| kareem | 2.5.1 | Apache-2.0 | https://github.com/vkarpov15/kareem | @couchbase-traces/api |
 | klona | 2.0.6 | MIT | https://github.com/lukeed/klona | @couchbase-traces/app |
 | ky | 0.30.0 | MIT | https://github.com/sindresorhus/ky | @couchbase-traces/app |
 | ky-universal | 0.10.1 | MIT | https://github.com/sindresorhus/ky-universal | @couchbase-traces/app |
@@ -662,7 +652,6 @@ Packages reachable from workspace `dependencies` (private workspaces are omitted
 | mdast-util-to-string | 4.0.0 | MIT | https://github.com/syntax-tree/mdast-util-to-string | @couchbase-traces/app |
 | media-typer | 0.3.0 | MIT | https://github.com/jshttp/media-typer | @couchbase-traces/api |
 | memoize-one | 5.2.1 | MIT | https://github.com/alexreardon/memoize-one | @couchbase-traces/app |
-| memory-pager | 1.5.0 | MIT | https://github.com/mafintosh/memory-pager | @couchbase-traces/api |
 | merge-descriptors | 1.0.3 | MIT | https://github.com/sindresorhus/merge-descriptors | @couchbase-traces/api |
 | methods | 1.1.2 | MIT | https://github.com/jshttp/methods | @couchbase-traces/api |
 | micromark | 4.0.2 | MIT | https://github.com/micromark/micromark.git#main | @couchbase-traces/app |
@@ -720,14 +709,7 @@ Packages reachable from workspace `dependencies` (private workspaces are omitted
 | mkdirp | 1.0.4 | MIT | https://github.com/isaacs/node-mkdirp | @couchbase-traces/api |
 | module-details-from-path | 1.0.3 | MIT | https://github.com/watson/module-details-from-path | @couchbase-traces/api |
 | module-details-from-path | 1.0.4 | MIT | https://github.com/watson/module-details-from-path | @couchbase-traces/api |
-| mongodb | 4.17.2 | Apache-2.0 | https://github.com/mongodb/node-mongodb-native | @couchbase-traces/api |
-| mongodb | 6.16.0 | Apache-2.0 | https://github.com/mongodb/node-mongodb-native | @couchbase-traces/api |
-| mongodb-connection-string-url | 2.6.0 | Apache-2.0 | https://github.com/mongodb-js/mongodb-connection-string-url | @couchbase-traces/api |
-| mongodb-connection-string-url | 3.0.0 | Apache-2.0 | https://github.com/mongodb-js/mongodb-connection-string-url | @couchbase-traces/api |
-| mongoose | 6.13.12 | MIT | https://github.com/Automattic/mongoose | @couchbase-traces/api |
 | moo | 0.5.2 | BSD-3-Clause | https://github.com/tjvr/moo | @couchbase-traces/app |
-| mpath | 0.9.0 | MIT | https://github.com/aheckmann/mpath | @couchbase-traces/api |
-| mquery | 4.0.4 | MIT | https://github.com/aheckmann/mquery | @couchbase-traces/api |
 | ms | 2.0.0 | MIT | https://github.com/zeit/ms | @couchbase-traces/api, @couchbase-traces/app, @couchbase-traces/hdx-eval |
 | ms | 2.1.3 | MIT | https://github.com/vercel/ms | @couchbase-traces/api, @couchbase-traces/app, @couchbase-traces/hdx-eval |
 | nanoid | 3.3.17 | MIT | https://github.com/ai/nanoid | @couchbase-traces/app |
@@ -901,7 +883,6 @@ Packages reachable from workspace `dependencies` (private workspaces are omitted
 | side-channel-list | 1.0.1 | MIT | https://github.com/ljharb/side-channel-list | @couchbase-traces/api |
 | side-channel-map | 1.0.1 | MIT | https://github.com/ljharb/side-channel-map | @couchbase-traces/api |
 | side-channel-weakmap | 1.0.2 | MIT | https://github.com/ljharb/side-channel-weakmap | @couchbase-traces/api |
-| sift | 16.0.1 | MIT | https://github.com/crcn/sift.js | @couchbase-traces/api |
 | simple-swizzle | 0.2.2 | MIT | https://github.com/qix-/node-simple-swizzle | @couchbase-traces/app |
 | slow-redact | 0.3.1 | MIT | https://github.com/pinojs/slow-redact | @couchbase-traces/api |
 | sonic-boom | 4.2.0 | MIT | https://github.com/pinojs/sonic-boom | @couchbase-traces/api |
@@ -912,7 +893,6 @@ Packages reachable from workspace `dependencies` (private workspaces are omitted
 | source-map | 0.8.0-beta.0 | BSD-3-Clause | https://github.com/mozilla/source-map | @couchbase-traces/api |
 | source-map-js | 1.2.2 | BSD-3-Clause | https://github.com/7rulnik/source-map-js | @couchbase-traces/app |
 | space-separated-tokens | 2.0.2 | MIT | https://github.com/wooorm/space-separated-tokens | @couchbase-traces/app |
-| sparse-bitfield | 3.0.3 | MIT | https://github.com/mafintosh/sparse-bitfield | @couchbase-traces/api |
 | split2 | 4.2.0 | ISC | https://github.com/mcollina/split2 | @couchbase-traces/api |
 | sql-formatter | 15.7.2 | MIT | https://github.com/sql-formatter-org/sql-formatter | @couchbase-traces/app, @couchbase-traces/common-utils |
 | sqlstring | 2.3.3 | MIT | https://github.com/mysqljs/sqlstring | @couchbase-traces/api, @couchbase-traces/app, @couchbase-traces/common-utils |
@@ -948,11 +928,9 @@ Packages reachable from workspace `dependencies` (private workspaces are omitted
 | to-regex-range | 5.0.1 | MIT | https://github.com/micromatch/to-regex-range | @couchbase-traces/api |
 | toggle-selection | 1.0.6 | MIT | https://github.com/sudodoki/toggle-selection | @couchbase-traces/app |
 | toidentifier | 1.0.1 | MIT | https://github.com/component/toidentifier | @couchbase-traces/api |
-| tr46 | 0.0.3 | MIT | https://github.com/Sebmaster/tr46.js | @couchbase-traces/api |
-| tr46 | 1.0.1 | MIT | https://github.com/Sebmaster/tr46.js | @couchbase-traces/api |
-| tr46 | 3.0.0 | MIT | https://github.com/jsdom/tr46 | @couchbase-traces/api |
-| tr46 | 4.1.1 | MIT | https://github.com/jsdom/tr46 | @couchbase-traces/api |
-| tr46 | 5.1.1 | MIT | https://github.com/jsdom/tr46 | @couchbase-traces/api |
+| tr46 | 0.0.3 | MIT | https://github.com/Sebmaster/tr46.js | @couchbase-traces/app |
+| tr46 | 1.0.1 | MIT | https://github.com/Sebmaster/tr46.js | @couchbase-traces/app |
+| tr46 | 5.1.1 | MIT | https://github.com/jsdom/tr46 | @couchbase-traces/app |
 | tree-kill | 1.2.2 | MIT | https://github.com/pkrumins/node-tree-kill | @couchbase-traces/api |
 | trim-lines | 3.0.1 | MIT | https://github.com/wooorm/trim-lines | @couchbase-traces/app |
 | trough | 2.1.0 | MIT | https://github.com/wooorm/trough | @couchbase-traces/app |
@@ -998,14 +976,12 @@ Packages reachable from workspace `dependencies` (private workspaces are omitted
 | victory-vendor | 37.3.6 | MIT AND ISC | https://github.com/FormidableLabs/victory | @couchbase-traces/app |
 | w3c-keyname | 2.2.8 | MIT | https://github.com/marijnh/w3c-keyname | @couchbase-traces/app |
 | web-vitals | 6.2.3 | Apache-2.0 | https://github.com/GoogleChrome/web-vitals | @couchbase-traces/app |
-| webidl-conversions | 3.0.1 | BSD-2-Clause | https://github.com/jsdom/webidl-conversions | @couchbase-traces/api |
-| webidl-conversions | 4.0.2 | BSD-2-Clause | https://github.com/jsdom/webidl-conversions | @couchbase-traces/api |
-| webidl-conversions | 7.0.0 | BSD-2-Clause | https://github.com/jsdom/webidl-conversions | @couchbase-traces/api |
-| whatwg-url | 11.0.0 | MIT | https://github.com/jsdom/whatwg-url | @couchbase-traces/api, @couchbase-traces/app |
-| whatwg-url | 13.0.0 | MIT | https://github.com/jsdom/whatwg-url | @couchbase-traces/api, @couchbase-traces/app |
-| whatwg-url | 14.2.0 | MIT | https://github.com/jsdom/whatwg-url | @couchbase-traces/api, @couchbase-traces/app |
-| whatwg-url | 5.0.0 | MIT | https://github.com/jsdom/whatwg-url | @couchbase-traces/api, @couchbase-traces/app |
-| whatwg-url | 7.1.0 | MIT | https://github.com/jsdom/whatwg-url | @couchbase-traces/api, @couchbase-traces/app |
+| webidl-conversions | 3.0.1 | BSD-2-Clause | https://github.com/jsdom/webidl-conversions | @couchbase-traces/app |
+| webidl-conversions | 4.0.2 | BSD-2-Clause | https://github.com/jsdom/webidl-conversions | @couchbase-traces/app |
+| webidl-conversions | 7.0.0 | BSD-2-Clause | https://github.com/jsdom/webidl-conversions | @couchbase-traces/app |
+| whatwg-url | 14.2.0 | MIT | https://github.com/jsdom/whatwg-url | @couchbase-traces/app |
+| whatwg-url | 5.0.0 | MIT | https://github.com/jsdom/whatwg-url | @couchbase-traces/app |
+| whatwg-url | 7.1.0 | MIT | https://github.com/jsdom/whatwg-url | @couchbase-traces/app |
 | which | 1.3.1 | ISC | https://github.com/isaacs/node-which | @couchbase-traces/api |
 | which | 2.0.2 | ISC | https://github.com/isaacs/node-which | @couchbase-traces/api |
 | which | 3.0.1 | ISC | https://github.com/npm/node-which | @couchbase-traces/api |
@@ -1195,8 +1171,6 @@ Packages reachable from workspace `dependencies` (private workspaces are omitted
 | baseline-browser-mapping | 2.10.0 | https://github.com/web-platform-dx/baseline-browser-mapping |
 | baseline-browser-mapping | 2.10.8 | https://github.com/web-platform-dx/baseline-browser-mapping |
 | baseline-browser-mapping | 2.8.30 | https://github.com/web-platform-dx/baseline-browser-mapping |
-| bson | 4.7.2 | https://github.com/mongodb/js-bson |
-| bson | 6.10.3 | https://github.com/mongodb/js-bson |
 | class-variance-authority | 0.7.1 | https://github.com/joe-bell/cva |
 | couchbase | 4.7.2 | https://github.com/couchbase/couchnode |
 | detect-libc | 2.1.2 | https://github.com/lovell/detect-libc |
@@ -1205,13 +1179,8 @@ Packages reachable from workspace `dependencies` (private workspaces are omitted
 | gcp-metadata | 8.1.4 | https://github.com/googleapis/google-cloud-node |
 | google-logging-utils | 1.1.3 | https://github.com/googleapis/google-cloud-node-core |
 | import-in-the-middle | 3.5.3 | https://github.com/nodejs/import-in-the-middle |
-| kareem | 2.5.1 | https://github.com/vkarpov15/kareem |
 | long | 5.2.3 | https://github.com/dcodeIO/long.js |
 | long | 5.3.2 | https://github.com/dcodeIO/long.js |
-| mongodb | 4.17.2 | https://github.com/mongodb/node-mongodb-native |
-| mongodb | 6.16.0 | https://github.com/mongodb/node-mongodb-native |
-| mongodb-connection-string-url | 2.6.0 | https://github.com/mongodb-js/mongodb-connection-string-url |
-| mongodb-connection-string-url | 3.0.0 | https://github.com/mongodb-js/mongodb-connection-string-url |
 | node-sql-parser | 5.3.5 | https://github.com/taozhi8833998/node-sql-parser |
 | rxjs | 7.8.1 | https://github.com/reactivex/rxjs |
 | rxjs | 7.8.2 | https://github.com/reactivex/rxjs |
@@ -1261,7 +1230,6 @@ Packages reachable from workspace `dependencies` (private workspaces are omitted
 | fast-uri | 3.1.9 | https://github.com/fastify/fast-uri |
 | flat | 5.0.2 | https://github.com/hughsk/flat |
 | highlight.js | 10.7.3 | https://github.com/highlightjs/highlight.js |
-| ieee754 | 1.2.1 | https://github.com/feross/ieee754 |
 | moo | 0.5.2 | https://github.com/tjvr/moo |
 | protobufjs | 7.6.2 | https://github.com/protobufjs/protobuf.js |
 | protobufjs | 7.6.5 | https://github.com/protobufjs/protobuf.js |
@@ -1434,7 +1402,6 @@ Packages reachable from workspace `dependencies` (private workspaces are omitted
 | @mantine/spotlight | 9.0.0 | https://github.com/mantinedev/mantine |
 | @mantine/store | 9.0.0 | https://github.com/mantinedev/mantine |
 | @modelcontextprotocol/sdk | 1.29.0 | https://github.com/modelcontextprotocol/typescript-sdk |
-| @mongodb-js/saslprep | 1.2.2 | https://github.com/mongodb-js/devtools-shared |
 | @next/env | 16.4.3 | https://github.com/vercel/next.js |
 | @radix-ui/primitive | 1.1.7 | https://github.com/radix-ui/primitives |
 | @radix-ui/react-accordion | 1.2.20 | https://github.com/radix-ui/primitives |
@@ -1540,9 +1507,6 @@ Packages reachable from workspace `dependencies` (private workspaces are omitted
 | @types/unist | 2.0.6 | https://github.com/DefinitelyTyped/DefinitelyTyped |
 | @types/unist | 3.0.2 | https://github.com/DefinitelyTyped/DefinitelyTyped |
 | @types/use-sync-external-store | 0.0.6 | https://github.com/DefinitelyTyped/DefinitelyTyped |
-| @types/webidl-conversions | 7.0.0 | https://github.com/DefinitelyTyped/DefinitelyTyped |
-| @types/whatwg-url | 11.0.3 | https://github.com/DefinitelyTyped/DefinitelyTyped |
-| @types/whatwg-url | 8.2.2 | https://github.com/DefinitelyTyped/DefinitelyTyped |
 | @uiw/codemirror-extensions-basic-setup | 4.23.3 | https://github.com/uiwjs/react-codemirror |
 | @uiw/react-codemirror | 4.23.3 | https://github.com/uiwjs/react-codemirror |
 | @xstate/fsm | 1.6.5 | https://github.com/statelyai/xstate |
@@ -1590,8 +1554,6 @@ Packages reachable from workspace `dependencies` (private workspaces are omitted
 | brace-expansion | 5.0.12 | https://github.com/juliangruber/brace-expansion |
 | brace-expansion | 5.0.8 | https://github.com/juliangruber/brace-expansion |
 | braces | 3.0.3 | https://github.com/micromatch/braces |
-| buffer | 5.7.1 | https://github.com/feross/buffer |
-| buffer | 6.0.3 | https://github.com/feross/buffer |
 | bytes | 3.0.0 | https://github.com/visionmedia/bytes.js |
 | bytes | 3.1.2 | https://github.com/visionmedia/bytes.js |
 | call-bind-apply-helpers | 1.0.2 | https://github.com/ljharb/call-bind-apply-helpers |
@@ -1819,7 +1781,6 @@ Packages reachable from workspace `dependencies` (private workspaces are omitted
 | mdast-util-to-string | 4.0.0 | https://github.com/syntax-tree/mdast-util-to-string |
 | media-typer | 0.3.0 | https://github.com/jshttp/media-typer |
 | memoize-one | 5.2.1 | https://github.com/alexreardon/memoize-one |
-| memory-pager | 1.5.0 | https://github.com/mafintosh/memory-pager |
 | merge-descriptors | 1.0.3 | https://github.com/sindresorhus/merge-descriptors |
 | methods | 1.1.2 | https://github.com/jshttp/methods |
 | micromark | 4.0.2 | https://github.com/micromark/micromark.git#main |
@@ -1864,9 +1825,6 @@ Packages reachable from workspace `dependencies` (private workspaces are omitted
 | mkdirp | 1.0.4 | https://github.com/isaacs/node-mkdirp |
 | module-details-from-path | 1.0.3 | https://github.com/watson/module-details-from-path |
 | module-details-from-path | 1.0.4 | https://github.com/watson/module-details-from-path |
-| mongoose | 6.13.12 | https://github.com/Automattic/mongoose |
-| mpath | 0.9.0 | https://github.com/aheckmann/mpath |
-| mquery | 4.0.4 | https://github.com/aheckmann/mquery |
 | ms | 2.0.0 | https://github.com/zeit/ms |
 | ms | 2.1.3 | https://github.com/vercel/ms |
 | nanoid | 3.3.17 | https://github.com/ai/nanoid |
@@ -2008,13 +1966,11 @@ Packages reachable from workspace `dependencies` (private workspaces are omitted
 | side-channel-list | 1.0.1 | https://github.com/ljharb/side-channel-list |
 | side-channel-map | 1.0.1 | https://github.com/ljharb/side-channel-map |
 | side-channel-weakmap | 1.0.2 | https://github.com/ljharb/side-channel-weakmap |
-| sift | 16.0.1 | https://github.com/crcn/sift.js |
 | simple-swizzle | 0.2.2 | https://github.com/qix-/node-simple-swizzle |
 | slow-redact | 0.3.1 | https://github.com/pinojs/slow-redact |
 | sonic-boom | 4.2.0 | https://github.com/pinojs/sonic-boom |
 | sortablejs | 1.15.7 | https://github.com/SortableJS/Sortable |
 | space-separated-tokens | 2.0.2 | https://github.com/wooorm/space-separated-tokens |
-| sparse-bitfield | 3.0.3 | https://github.com/mafintosh/sparse-bitfield |
 | sql-formatter | 15.7.2 | https://github.com/sql-formatter-org/sql-formatter |
 | sqlstring | 2.3.3 | https://github.com/mysqljs/sqlstring |
 | statuses | 2.0.1 | https://github.com/jshttp/statuses |
@@ -2049,8 +2005,6 @@ Packages reachable from workspace `dependencies` (private workspaces are omitted
 | toidentifier | 1.0.1 | https://github.com/component/toidentifier |
 | tr46 | 0.0.3 | https://github.com/Sebmaster/tr46.js |
 | tr46 | 1.0.1 | https://github.com/Sebmaster/tr46.js |
-| tr46 | 3.0.0 | https://github.com/jsdom/tr46 |
-| tr46 | 4.1.1 | https://github.com/jsdom/tr46 |
 | tr46 | 5.1.1 | https://github.com/jsdom/tr46 |
 | tree-kill | 1.2.2 | https://github.com/pkrumins/node-tree-kill |
 | trim-lines | 3.0.1 | https://github.com/wooorm/trim-lines |
@@ -2082,8 +2036,6 @@ Packages reachable from workspace `dependencies` (private workspaces are omitted
 | vfile | 6.0.3 | https://github.com/vfile/vfile |
 | vfile-message | 4.0.3 | https://github.com/vfile/vfile-message |
 | w3c-keyname | 2.2.8 | https://github.com/marijnh/w3c-keyname |
-| whatwg-url | 11.0.0 | https://github.com/jsdom/whatwg-url |
-| whatwg-url | 13.0.0 | https://github.com/jsdom/whatwg-url |
 | whatwg-url | 14.2.0 | https://github.com/jsdom/whatwg-url |
 | whatwg-url | 5.0.0 | https://github.com/jsdom/whatwg-url |
 | whatwg-url | 7.1.0 | https://github.com/jsdom/whatwg-url |

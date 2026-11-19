@@ -24,7 +24,7 @@ import {
 import { SourceDocument } from '@/metadata/schemas/source';
 import { processRequestWithEnhancedErrors as validateRequest } from '@/utils/enhancedErrors';
 import logger from '@/utils/logger';
-import { objectIdSchema } from '@/utils/zod';
+import { idSchema } from '@/utils/zod';
 
 // Maps external short-form granularities (e.g. "5m") in the request body to
 // the internal SQL interval format (e.g. "5 minute") expected by SourceSchema.
@@ -1039,7 +1039,7 @@ router.get(
   '/:id',
   validateRequest({
     params: z.object({
-      id: objectIdSchema,
+      id: idSchema,
     }),
   }),
   async (req, res, next) => {
@@ -1231,7 +1231,7 @@ router.put(
   mapRequestGranularitiesToInternalFormat,
   validateRequest({
     params: z.object({
-      id: objectIdSchema,
+      id: idSchema,
     }),
     body: SourceSchemaNoId,
   }),
@@ -1319,7 +1319,7 @@ router.delete(
   '/:id',
   validateRequest({
     params: z.object({
-      id: objectIdSchema,
+      id: idSchema,
     }),
   }),
   async (req, res, next) => {

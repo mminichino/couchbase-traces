@@ -47,7 +47,7 @@ function toUser(id: Id, d: UserDoc): UserWithSecret {
     expiresAt: toDate(d.expiresAt),
     lastUsedAt: toDate(d.lastUsedAt),
     revokedAt: toDate(d.revokedAt),
-    // The Mongoose virtual was always true; kept for the wire shape.
+    // Always true; kept for the wire shape.
     hasPasswordAuth: true,
   };
 }
@@ -111,7 +111,7 @@ export class UserRepository {
     };
   }
 
-  /** passport-local-mongoose `register`: same errors, scrypt hash (D4). */
+  /** Registers a user: legacy error names, scrypt hash (D4). */
   async register(
     input: { email: string; name?: string; team: Id },
     password: string,
@@ -133,7 +133,7 @@ export class UserRepository {
       team: input.teamId,
       isVirtual: true,
       ...(input.accessKey ? { accessKey: input.accessKey } : {}),
-      // null (never expires) is stored as null, as the Mongo model did.
+      // null (never expires) is stored as null.
       ...(input.expiresAt !== undefined
         ? { expiresAt: input.expiresAt && iso(input.expiresAt) }
         : {}),

@@ -19,7 +19,7 @@ import {
 } from '@/controllers/sources';
 import { getNonNullUserWithTeam } from '@/middleware/auth';
 import { rejectPromqlBody } from '@/utils/rejectPromql';
-import { objectIdSchema } from '@/utils/zod';
+import { idSchema } from '@/utils/zod';
 
 const router = express.Router();
 
@@ -95,7 +95,7 @@ router.put(
   validateRequest({
     body: SourceSchema,
     params: z.object({
-      id: objectIdSchema,
+      id: idSchema,
     }),
   }),
   async (req, res, next) => {
@@ -141,7 +141,7 @@ router.delete(
   '/:id',
   validateRequest({
     params: z.object({
-      id: objectIdSchema,
+      id: idSchema,
     }),
   }),
   async (req, res, next) => {

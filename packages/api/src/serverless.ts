@@ -9,9 +9,9 @@
  * Differences vs `./server.ts`:
  *   - Does NOT call `app.listen()` or set up graceful shutdown — the platform
  *     manages the lifecycle.
- *   - Lazily connects to MongoDB on the first invocation. The connection
- *     promise is cached at module scope so subsequent warm invocations reuse
- *     the same Mongoose connection pool. On failure, the cache is reset so a
+ *   - Lazily connects to the Couchbase metadata store on the first
+ *     invocation. The connection promise is cached at module scope so
+ *     subsequent warm invocations reuse the same cluster connection. On failure, the cache is reset so a
  *     transient error does not pin the process to a broken state.
  *   - Optionally strips a URL prefix (default `/api`) from `req.url` before
  *     dispatching, so the catch-all Next.js route `/api/[...all]` lines up
@@ -27,7 +27,6 @@ import { serializeError } from 'serialize-error';
 import app from './api-app';
 import * as config from './config';
 import { closeMetadataStore, startMetadataStore } from './metadata';
-import { connectDB } from './models';
 import logger from './utils/logger';
 import { verifySessionSecret } from './utils/sessionSecret';
 
@@ -49,10 +48,10 @@ let dbReady: Promise<void> | null = null;
 
 function ensureDb(): Promise<void> {
   if (dbReady == null) {
-    dbReady = Promise.all([
-      connectDB(),
-      startMetadataStore({ logger, appVersion: config.CODE_VERSION }),
-    ]).then(
+    dbReady = startMetadataStore({
+      logger,
+      appVersion: config.CODE_VERSION,
+    }).then(
       () => undefined,
       async err => {
         // Reset the cache so the next invocation re-attempts the connection
@@ -61,7 +60,7 @@ function ensureDb(): Promise<void> {
         await closeMetadataStore();
         logger.error(
           { err: serializeError(err) },
-          'Serverless API failed to connect to MongoDB or the metadata store',
+          'Serverless API failed to connect to the metadata store',
         );
         throw err;
       },

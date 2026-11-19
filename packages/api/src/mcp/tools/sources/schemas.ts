@@ -488,17 +488,6 @@ export function buildSourceInput(
   };
 }
 
-// Drop the Mongoose-injected `_id` from a nested subdocument so it doesn't leak
-// into the config or get re-submitted to save_source.
-function stripMongooseId(value: unknown): unknown {
-  if (value == null || typeof value !== 'object' || Array.isArray(value)) {
-    return value;
-  }
-  const { _id, ...rest } = value as Record<string, unknown>;
-  void _id;
-  return rest;
-}
-
 /**
  * Inverse of buildSourceInput: produce the flat clickstack_save_source shape
  * from a stored source so describe_source can emit a round-trippable `config`
@@ -514,8 +503,7 @@ export function extractSourceConfig(
   };
 
   // Most keys are a same-named copy; these have a different read shape
-  // (id from _id, connection ObjectId -> string, from.* nested) or need their
-  // stray Mongoose `_id` stripped from nested subdocs.
+  // (id from _id, connection -> string, from.* nested).
   const resolve = (key: string): unknown => {
     switch (key) {
       case 'id':
@@ -530,12 +518,6 @@ export function extractSourceConfig(
         return sanitizeMetricTables(
           source.metricTables as Record<string, unknown> | undefined,
         );
-      case 'metadataMaterializedViews':
-        return stripMongooseId(source.metadataMaterializedViews);
-      case 'materializedViews':
-        return Array.isArray(source.materializedViews)
-          ? source.materializedViews.map(stripMongooseId)
-          : source.materializedViews;
       default:
         return source[key];
     }

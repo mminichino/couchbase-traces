@@ -15,7 +15,7 @@ export type SourceLookup = (sourceId: string) => ReturnType<typeof getSource>;
 
 /**
  * Source lookup memoized for one tool call, so a batch of queries against the
- * same source reads it from Mongo once.
+ * same source reads it from the metadata store once.
  */
 export function createSourceLookup(teamId: string): SourceLookup {
   const cache = new Map<string, ReturnType<typeof getSource>>();

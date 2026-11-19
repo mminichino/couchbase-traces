@@ -587,7 +587,7 @@ const fireChannelEvent = async ({
 };
 
 // Use a delimiter that's unlikely to appear in alert IDs or group names
-// MongoDB ObjectIds are hex strings (0-9, a-f), so pipes are safe
+// Ids are hex strings (0-9, a-f), so pipes are safe
 const ALERT_GROUP_DELIMITER = '||';
 
 /**
@@ -602,7 +602,7 @@ const getAlertKeyPrefix = (alertId: string): string => {
  * Compute a composite map key for tracking alert history per group.
  * For non-grouped alerts, returns just the alertId.
  * For grouped alerts, returns "alertId||groupKey" to track per-group state.
- * Uses || as delimiter since it's unlikely to appear in alert IDs (MongoDB ObjectIds)
+ * Uses || as delimiter since it's unlikely to appear in alert IDs (hex strings)
  * or in typical group key values.
  */
 const computeHistoryMapKey = (alertId: string, groupKey: string): string => {

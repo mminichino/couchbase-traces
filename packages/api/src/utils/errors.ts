@@ -59,11 +59,7 @@ export const isOperationalError = (error: Error) => {
   return false;
 };
 
-// A unique-key violation: the metadata store's DuplicateKeyError, or the
-// MongoDB 11000 error from the collections still on Mongo. Used to translate
-// a racing or colliding write into a 400 instead of a generic 500.
+// A unique-key violation from the metadata store. Used to translate a racing
+// or colliding write into a 400 instead of a generic 500.
 export const isDuplicateKeyError = (e: unknown): boolean =>
-  e instanceof DuplicateKeyError ||
-  (e != null &&
-    typeof e === 'object' &&
-    (e as { code?: unknown }).code === 11000);
+  e instanceof DuplicateKeyError;

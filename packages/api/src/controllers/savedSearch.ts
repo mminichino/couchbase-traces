@@ -73,7 +73,7 @@ export function createSavedSearch(
 ) {
   return getMetadataStore().savedSearches.create(
     teamId,
-    // `source` was an ObjectId in Mongo; it is the string id now.
+    // `source` is the string id.
     { ...savedSearch, source: savedSearch.source.toString() },
     userId,
   );

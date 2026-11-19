@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-import { objectIdSchema, tagsSchema } from '@/utils/zod';
+import { idSchema, tagsSchema } from '@/utils/zod';
 
 // ---------------------------------------------------------------------------
 // MCP-compatible Zod schemas for saved search tools.
@@ -78,7 +78,7 @@ export const mcpSaveSavedSearchSchema = z.object({
     .string()
     .optional()
     .describe('Sort expression. Example: "Timestamp DESC"'),
-  sourceId: objectIdSchema.describe(
+  sourceId: idSchema.describe(
     'Source ID — call cbt_list_sources to find available sources.',
   ),
   tags: tagsSchema.describe(

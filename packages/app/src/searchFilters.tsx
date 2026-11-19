@@ -20,7 +20,7 @@ export const IS_ROOT_SPAN_COLUMN_NAME = 'isRootSpan';
 // 1. In-memory `FilterState`: use the clean/unquoted forms of each key. This is what
 // the UI renders, what test ids are built from, and what every key comparison expects.
 // 2. The persisted `Filter[]`: Uses the quoted/bracketed legacy store form so it emits
-// valid SQL verbatim. Persisted in URL params, local storage, and MongoDB for saved searches.
+// valid SQL verbatim. Persisted in URL params, local storage, and the metadata store for saved searches.
 
 // Convert the clean FilterState keys to valid SQL (quoted/bracket) keys.
 export const escapeFilterStateKeys = (
@@ -499,7 +499,7 @@ export function usePinnedFilters(sourceId: string | null) {
   // Personal pins: localStorage (per-user, per-browser)
   const personal = usePersonalPinnedFilters(sourceId);
 
-  // Team/shared pins: MongoDB via API (shared across team)
+  // Team/shared pins: metadata store via API (shared across team)
   const { data: teamApiData } = usePinnedFiltersApi(sourceId);
   const updateTeamMutation = useUpdatePinnedFilters();
 
@@ -618,7 +618,7 @@ export function usePinnedFilters(sourceId: string | null) {
     return pinnedFields;
   }, [pinnedFields]);
 
-  // Team pin: field-level (MongoDB via API, debounced)
+  // Team pin: field-level (metadata store via API, debounced)
   const toggleSharedFieldPin = useCallback(
     (field: string) => {
       const currentFields = [...effectiveTeam.fields];
@@ -650,7 +650,7 @@ export function usePinnedFilters(sourceId: string | null) {
     [effectiveTeam],
   );
 
-  // Team pin: value-level (MongoDB via API, debounced)
+  // Team pin: value-level (metadata store via API, debounced)
   const toggleSharedFilterPin = useCallback(
     (property: string, value: string | boolean) => {
       const newFilters = toggleValueInFilters(

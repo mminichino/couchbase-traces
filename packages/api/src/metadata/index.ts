@@ -36,7 +36,7 @@ export function metadataReadiness(): MetadataReadiness {
   return store?.readiness() ?? DISABLED;
 }
 
-/** True when /ready may pass: identity lives here since C1. */
+/** True when /ready may pass: all app metadata lives in this store. */
 export function isMetadataReady(): boolean {
   return metadataReadiness().ready;
 }
@@ -71,8 +71,8 @@ export async function startMetadataStore(
   await next.start();
 }
 
-/** Collections migrated off Mongo so far; integration tests empty these. */
-export const MIGRATED_COLLECTIONS = [
+/** Every app collection a test run writes to; integration tests empty these. */
+export const APP_COLLECTIONS = [
   'teams',
   'users',
   'team_invites',
@@ -90,11 +90,11 @@ export const MIGRATED_COLLECTIONS = [
   'sessions',
 ] as const satisfies readonly MetaCollection[];
 
-/** Integration tests only: empties the migrated collections. */
+/** Integration tests only: empties the app collections. */
 export async function clearMetadataForTests(): Promise<void> {
   if (!store) return;
   if (store instanceof CouchbaseMetadataStore) {
-    await store.clearForTests(MIGRATED_COLLECTIONS);
+    await store.clearForTests(APP_COLLECTIONS);
   } else if ('reset' in store && typeof store.reset === 'function') {
     store.reset();
   }

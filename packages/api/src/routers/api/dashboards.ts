@@ -38,9 +38,8 @@ import {
 } from '@/controllers/presetDashboardFilters';
 import { getSources } from '@/controllers/sources';
 import { getNonNullUserWithTeam } from '@/middleware/auth';
-import type { ObjectId } from '@/models';
 import { rejectPromqlBody } from '@/utils/rejectPromql';
-import { objectIdSchema } from '@/utils/zod';
+import { idSchema } from '@/utils/zod';
 
 // create routes that will get and update dashboards
 const router = express.Router();
@@ -90,7 +89,7 @@ function getFilterSourceRefs(
  * reject.
  */
 async function validateFilterSources(
-  teamId: ObjectId | string,
+  teamId: string,
   filters: DashboardFilter[] = [],
   existingFilters: DashboardFilter[] = [],
 ): Promise<string | null> {
@@ -200,7 +199,7 @@ router.patch(
   migrateLegacyDashboardTileColors,
   validateRequest({
     params: z.object({
-      id: objectIdSchema,
+      id: idSchema,
     }),
     body: DashboardSchema.partial().superRefine(addFilterIssues),
   }),
@@ -252,7 +251,7 @@ router.patch(
 router.delete(
   '/:id',
   validateRequest({
-    params: z.object({ id: objectIdSchema }),
+    params: z.object({ id: idSchema }),
   }),
   async (req, res, next) => {
     try {
@@ -275,7 +274,7 @@ router.get(
       presetDashboard: z.nativeEnum(PresetDashboard),
     }),
     query: z.object({
-      sourceId: objectIdSchema,
+      sourceId: idSchema,
     }),
   }),
   async (req, res, next) => {
@@ -372,7 +371,7 @@ router.delete(
   validateRequest({
     params: z.object({
       presetDashboard: z.nativeEnum(PresetDashboard),
-      id: objectIdSchema,
+      id: idSchema,
     }),
   }),
   async (req, res, next) => {

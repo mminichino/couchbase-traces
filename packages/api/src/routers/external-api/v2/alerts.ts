@@ -24,8 +24,8 @@ import { paginationMeta, paginationQuerySchema } from '@/utils/pagination';
 import {
   alertSchema,
   ExternalAlertInput,
+  idSchema,
   InternalAlertInput,
-  objectIdSchema,
 } from '@/utils/zod';
 
 /**
@@ -510,7 +510,7 @@ router.get(
   '/:id',
   validateRequest({
     params: z.object({
-      id: objectIdSchema,
+      id: idSchema,
     }),
   }),
   async (req, res, next) => {
@@ -892,7 +892,7 @@ router.put(
   processRequest({
     body: alertSchema,
     params: z.object({
-      id: objectIdSchema,
+      id: idSchema,
     }),
   }),
   async (req, res, next) => {
@@ -975,7 +975,7 @@ router.delete(
   '/:id',
   validateRequest({
     params: z.object({
-      id: objectIdSchema,
+      id: idSchema,
     }),
   }),
   async (req, res, next) => {

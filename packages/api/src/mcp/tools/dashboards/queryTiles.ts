@@ -13,7 +13,7 @@ import {
   isConfigTile,
 } from '@/routers/external-api/v2/utils/dashboards';
 import type { ExternalDashboardTileWithId } from '@/utils/zod';
-import { objectIdSchema } from '@/utils/zod';
+import { idSchema } from '@/utils/zod';
 
 import {
   getRawSqlTileMacroWarnings,
@@ -141,7 +141,7 @@ export function registerQueryTiles({
         'unrunTileIds — call again with those as tileIds to run the remainder. ' +
         'Drill into a specific failing tile with cbt_query_tile.',
       inputSchema: z.object({
-        dashboardId: objectIdSchema.describe(
+        dashboardId: idSchema.describe(
           'Dashboard ID, from cbt_get_dashboard (no id lists dashboards) ' +
             'or cbt_search_dashboards.',
         ),

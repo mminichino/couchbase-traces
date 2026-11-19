@@ -14,11 +14,11 @@ feature-specific test suites.
 
 ### Default: Full-Stack Mode
 
-By default, `make e2e` runs tests in **full-stack mode** with MongoDB + API +
+By default, `make e2e` runs tests in **full-stack mode** with API +
 Couchbase for maximum consistency and real backend features:
 
 ```bash
-# Run all tests (full-stack with MongoDB + API + Couchbase)
+# Run all tests (full-stack with API + Couchbase)
 make e2e
 
 # For UI, specific tests, or other options, use the script from repo root:
@@ -31,10 +31,10 @@ make e2e
 ### Optional: Local Mode (Frontend Only)
 
 For faster iteration during development, use the script with `--local` to skip
-MongoDB and run frontend-only tests:
+the API and run frontend-only tests:
 
 ```bash
-# From repo root - run local tests (no MongoDB, frontend only)
+# From repo root - run local tests (no API, frontend only)
 ./scripts/test-e2e.sh --local
 ./scripts/test-e2e.sh --local --ui
 ./scripts/test-e2e.sh --local --grep "@search"
@@ -95,12 +95,12 @@ In the Playwright UI sidebar, click the **eye icon** next to a test (or file/des
 
 #### Full-Stack Mode (Default)
 
-**Default behavior** - runs with real backend (MongoDB + API) and demo
+**Default behavior** - runs with real backend (API) and demo
 Couchbase data.
 
 **What it includes:**
 
-- MongoDB (slot-based Mongo port) - authentication, teams, users, persistence
+- Couchbase `cbt_meta` bucket - authentication, teams, users, persistence (same Couchbase instance as the telemetry data)
 - API Server (port 29000) - full backend logic
 - App Server (port 28081) - frontend
 - **Local Docker Couchbase** (Couchbase Query (see dev portal ports)) - seeded E2E test data (logs/traces/metrics/K8s). Seeded timestamps span a past+future window (~1h past, ~2h future from seed time) so relative ranges like "last 5 minutes" keep finding data. If you run tests more than ~2 hours after the last seed, re-run the global setup (or full test run) to re-seed.
@@ -121,7 +121,7 @@ make e2e
 
 #### Local Mode (for testing frontend-only features)
 
-**Frontend + Couchbase mode** - skips MongoDB/API, uses Couchbase
+**Frontend + Couchbase mode** - skips the API, uses Couchbase
 with seeded test data.
 
 **Use for:**
@@ -394,21 +394,13 @@ Tests use the extended base test from `utils/base-test.ts` which provides:
 
 **Local Environment (make e2e):**
 
-- MongoDB: 29998 (custom port to avoid conflicts)
 - API Server: 29000
 - App Server: 28081
 
 **CI Environment (GitHub Actions):**
 
-- MongoDB: 27017 (default, accessed via service name `mongodb`)
 - API Server: 29000
 - App Server: 28081
-
-The MongoDB port differs between local and CI to:
-
-- Avoid conflicts with existing MongoDB instances locally (port 27017)
-- Use standard ports in isolated CI containers (port 27017)
-- CI accesses MongoDB via hostname `mongodb` instead of `localhost`
 
 ### Playwright Configuration
 
@@ -428,13 +420,11 @@ multiple servers:
 - Check development server started successfully
 - Verify environment variables in `.env.e2e`
 
-**MongoDB connection issues (full-stack mode):**
+**Metadata connection issues (full-stack mode):**
 
-- Check slot-based Mongo port is available locally: `lsof -i :29998`
-- View MongoDB logs:
-  `docker compose -p e2e -f tests/e2e/docker-compose.yml logs`
-- MongoDB is auto-managed by `make e2e` (default)
-- Note: CI uses port 27017 internally (accessed via service name)
+- The API stores teams, users, and saved content in the Couchbase `cbt_meta`
+  bucket; check the API log for `Metadata keyspace not ready`
+- Couchbase is auto-managed by `make e2e` (default)
 
 **Sources don't appear in UI:**
 
@@ -462,7 +452,6 @@ For intermittent failures:
 
 Tests run in **full-stack mode** on CI (GitHub Actions) with:
 
-- MongoDB service container for authentication and persistence
 - Local Docker Couchbase for telemetry data (same as local mode)
 - 60-second test timeout (same as local)
 - Multiple retry attempts (2 retries on CI vs 1 locally)

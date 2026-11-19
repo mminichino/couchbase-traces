@@ -8,7 +8,7 @@ import type {
   ConnectionPatch,
   IConnection,
 } from '@/metadata/schemas/connection';
-import { objectIdSchema } from '@/utils/zod';
+import { idSchema } from '@/utils/zod';
 
 export type ConnectionValidation =
   | { ok: true }
@@ -18,7 +18,7 @@ export async function validateConnectionId(
   connection: unknown,
   teamId: string | { toString(): string } | undefined,
 ): Promise<ConnectionValidation> {
-  const parsed = objectIdSchema.safeParse(connection);
+  const parsed = idSchema.safeParse(connection);
   if (!parsed.success) {
     return {
       ok: false,

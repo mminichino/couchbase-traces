@@ -10,7 +10,7 @@ import {
   getServer,
   makeAlertInput,
   makeTile,
-  randomMongoId,
+  randomId,
 } from '@/fixtures';
 import { WebhookService } from '@/metadata/schemas/webhook';
 import {
@@ -240,7 +240,7 @@ describe('me router', () => {
         url: 'https://hooks.slack.com/test',
         team: team._id,
       });
-      const tileId = randomMongoId();
+      const tileId = randomId();
       const tile = makeTile({
         id: tileId,
         alert: {

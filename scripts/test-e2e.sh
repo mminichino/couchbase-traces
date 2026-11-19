@@ -1,7 +1,7 @@
 #!/bin/bash
 # Run E2E tests in full-stack or local mode
-# Full-stack mode (default): MongoDB + API + local Couchbase
-# Local mode: Frontend only (no MongoDB/API/Couchbase)
+# Full-stack mode (default): API + local Couchbase
+# Local mode: Frontend only (no API/Couchbase)
 #
 # Usage:
 #   ./scripts/test-e2e.sh                      # Run all tests in fullstack mode
@@ -71,11 +71,9 @@ exec > >(tee "$CBT_E2E_LOGS_DIR/e2e.log") 2>&1
 # shellcheck source=./ensure-dev-portal.sh
 source "${REPO_ROOT}/scripts/ensure-dev-portal.sh"
 
-echo "Using E2E slot ${CBT_E2E_SLOT} (project=${E2E_PROJECT} cb-mgmt=${CBT_E2E_CB_MGMT_PORT} mongo=${CBT_E2E_MONGO_PORT} api=${CBT_E2E_API_PORT} app=${CBT_E2E_APP_PORT} app-local=${CBT_E2E_APP_LOCAL_PORT} opamp=${CBT_E2E_OPAMP_PORT})"
+echo "Using E2E slot ${CBT_E2E_SLOT} (project=${E2E_PROJECT} cb-mgmt=${CBT_E2E_CB_MGMT_PORT} api=${CBT_E2E_API_PORT} app=${CBT_E2E_APP_PORT} app-local=${CBT_E2E_APP_LOCAL_PORT} opamp=${CBT_E2E_OPAMP_PORT})"
 
 # Configuration constants
-readonly MAX_MONGODB_WAIT_ATTEMPTS=15
-readonly MONGODB_WAIT_DELAY_SECONDS=1
 readonly MAX_COUCHBASE_WAIT_ATTEMPTS=60
 readonly COUCHBASE_WAIT_DELAY_SECONDS=2
 # CBT_E2E_CB_* ports come from hdx_e2e_ports (slot-based).
@@ -123,22 +121,6 @@ cleanup_services() {
 METAEOF
   fi
   rm -rf "$CBT_E2E_LOGS_DIR" 2>/dev/null || true
-}
-
-check_mongodb_health() {
-  # Health check script that tests ping, insert, and delete operations
-  # Note: MongoDB runs on port 27017 inside the container (default)
-  docker compose -p "$E2E_PROJECT" -f "$DOCKER_COMPOSE_FILE" exec -T db mongosh --quiet --eval "
-    try {
-      db.adminCommand('ping');
-      db.getSiblingDB('test').test.insertOne({_id: 'healthcheck', ts: new Date()});
-      db.getSiblingDB('test').test.deleteOne({_id: 'healthcheck'});
-      print('ready');
-    } catch(e) {
-      print('not ready: ' + e);
-      quit(1);
-    }
-  " 2>&1
 }
 
 check_couchbase_health() {
@@ -197,40 +179,6 @@ fts=${CBT_E2E_CB_FTS_PORT},ftsSSL=$((CBT_E2E_CB_FTS_PORT + 1000)) \
     || echo "Warning: alternate address not set (may already exist)"
 }
 
-wait_for_mongodb() {
-  echo "Waiting for MongoDB to be ready..."
-  local attempt=1
-
-  # Verify mongosh is available in the container
-  if ! docker compose -p "$E2E_PROJECT" -f "$DOCKER_COMPOSE_FILE" exec -T db which mongosh >/dev/null 2>&1; then
-    echo "ERROR: mongosh not found in MongoDB container"
-    echo "Container may not be running or using incompatible image"
-    echo "Try running: docker compose -p $E2E_PROJECT -f $DOCKER_COMPOSE_FILE logs db"
-    return 1
-  fi
-
-  while [ $attempt -le $MAX_MONGODB_WAIT_ATTEMPTS ]; do
-    local result
-    result=$(check_mongodb_health)
-
-    if echo "$result" | grep -q "ready"; then
-      echo "MongoDB is ready and accepting writes"
-      return 0
-    fi
-
-    if [ $attempt -eq $MAX_MONGODB_WAIT_ATTEMPTS ]; then
-      local total_wait=$((MAX_MONGODB_WAIT_ATTEMPTS * MONGODB_WAIT_DELAY_SECONDS))
-      echo "MongoDB failed to become ready after $total_wait seconds"
-      echo "Last error: $result"
-      return 1
-    fi
-
-    echo "Waiting for MongoDB... ($attempt/$MAX_MONGODB_WAIT_ATTEMPTS)"
-    attempt=$((attempt + 1))
-    sleep $MONGODB_WAIT_DELAY_SECONDS
-  done
-}
-
 # Main execution
 setup_cleanup_trap() {
   if [ "$SKIP_CLEANUP" = false ]; then
@@ -248,7 +196,7 @@ run_tests() {
     echo "Running tests in local mode (frontend only)..."
     yarn test:e2e --local "${PLAYWRIGHT_FLAGS[@]}"
   else
-    echo "Running tests in full-stack mode (MongoDB + API + Couchbase)..."
+    echo "Running tests in full-stack mode (API + Couchbase)..."
     yarn test:e2e "${PLAYWRIGHT_FLAGS[@]}"
   fi
 }
@@ -262,16 +210,6 @@ rm -rf "$REPO_ROOT/packages/app/.next-e2e" 2>/dev/null || true
 # Start Couchbase telemetry store (full-stack mode only)
 if [ "$LOCAL_MODE" = false ]; then
   setup_couchbase
-fi
-
-# Conditionally start MongoDB for full-stack mode
-if [ "$LOCAL_MODE" = false ]; then
-  echo "Starting MongoDB for full-stack mode..."
-  docker compose -p "$E2E_PROJECT" -f "$DOCKER_COMPOSE_FILE" up -d db
-  
-  if ! wait_for_mongodb; then
-    exit 1
-  fi
 fi
 
 # Run tests

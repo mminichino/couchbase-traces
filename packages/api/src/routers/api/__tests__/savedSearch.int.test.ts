@@ -7,13 +7,13 @@ import {
   IWebhook as WebhookDocument,
   WebhookService,
 } from '@/metadata/schemas/webhook';
+import { getAlert, patchAlerts } from '@/metadata/testing/alertFixtures';
 import {
   findSavedSearch,
   patchSavedSearch,
   seedUser,
   seedWebhook,
 } from '@/metadata/testing/seed';
-import { alertDocs } from '@/metadata/testing/seedAlerts';
 
 const MOCK_SAVED_SEARCH = {
   name: 'error',
@@ -133,7 +133,7 @@ describe('savedSearch router', () => {
     await agent.delete(`/saved-search/${savedSearch.body._id}`).expect(204);
     const savedSearches = await agent.get('/saved-search').expect(200);
     expect(savedSearches.body.length).toBe(0);
-    expect(await alertDocs.findById(alert.body.data._id)).toBeNull();
+    expect(await getAlert(alert.body.data._id)).toBeNull();
   });
 
   it('sets createdBy and updatedBy on create and populates them in GET', async () => {
@@ -246,7 +246,7 @@ describe('savedSearch router', () => {
       .expect(200);
 
     // Verify createdBy was set on the alert document
-    const alertFromDb = await alertDocs.findById(alert.body.data._id);
+    const alertFromDb = await getAlert(alert.body.data._id);
     expect(alertFromDb).toBeDefined();
     expect(alertFromDb!.createdBy).toEqual(user._id);
 
@@ -275,10 +275,7 @@ describe('savedSearch router', () => {
       )
       .expect(200);
     // Alerts written before the fields existed.
-    await alertDocs.updateOne(
-      { _id: alert.body.data._id },
-      { $set: { displayName: null, tags: null } },
-    );
+    await patchAlerts(alert.body.data._id, { displayName: null, tags: null });
 
     const savedSearches = await agent.get('/saved-search').expect(200);
     expect(savedSearches.body[0].alerts[0]).toMatchObject({

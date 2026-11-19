@@ -32,8 +32,8 @@ process.on('unhandledRejection', (err: any) => {
 });
 
 server.start().catch(e => {
-  // start() only rejects on non-retryable failures (e.g. MONGO_URI unset) —
-  // transient MongoDB connection errors are retried internally. Exit so the
+  // start() only rejects on non-retryable failures (e.g. CBT_METADATA_USER
+  // unset) — transient metadata connection errors are retried internally. Exit so the
   // orchestrator restarts us instead of lingering as a zombie that listens
   // but can never serve (https://github.com/mminichino/couchbase-traces/issues/2966).
   logger.error({ err: serializeError(e) }, 'Server start failed, exiting');

@@ -36,7 +36,7 @@ import { QUERYABLE_METRIC_KINDS } from '@/mcp/tools/sources/metricKinds';
 import {
   externalSqlSavedFilterValueSchema,
   externalVariableSavedFilterValueSchema,
-  objectIdSchema,
+  idSchema,
   tagsSchema,
 } from '@/utils/zod';
 
@@ -1596,7 +1596,7 @@ const mcpDashboardFilterBaseShape = {
         'On UPDATE of an existing dashboard, every filter in the array MUST carry ' +
         'an id: pass the exact id returned by cbt_get_dashboard for any filter ' +
         'you are keeping (so saved values bound to it stay attached), and generate ' +
-        'a fresh random hex/ObjectId string for any filter you are adding in this ' +
+        'a fresh random hex id string for any filter you are adding in this ' +
         'update. Omitting `id` on an existing filter would orphan its saved values; ' +
         'reusing an existing id for a new filter would silently overwrite the old ' +
         'one. On CREATE (no top-level `id` on the dashboard call), filter `id` may ' +
@@ -1665,7 +1665,7 @@ const mcpQueryExpressionFilterSchema = z
           "not declared in any of this dashboard's filters is silently dropped at click time. " +
           'Declare an expression here for every column you plan to drive via row-click.',
       ),
-    sourceId: objectIdSchema.describe(
+    sourceId: idSchema.describe(
       'Source the filter values are pulled from (for the dropdown). ' +
         'Get IDs from cbt_list_sources.',
     ),
@@ -1696,7 +1696,7 @@ const mcpQueryExpressionFilterSchema = z
       'Query language of `where`. Set it explicitly.',
     ),
     appliesToSourceIds: z
-      .array(objectIdSchema)
+      .array(idSchema)
       .optional()
       .describe(
         'Source IDs (from cbt_list_sources) that this filter is applied to. ' +
@@ -1773,7 +1773,7 @@ const mcpPromqlLabelFilterSchema = z
       .describe(
         "Filter type discriminator for a filter whose dropdown lists a Prometheus label's values.",
       ),
-    sourceId: objectIdSchema.describe(
+    sourceId: idSchema.describe(
       'ID of a source whose kind is "promql". Get IDs from cbt_list_sources.',
     ),
     label: PromqlLabelDashboardFilterSchema.shape.label.describe(
@@ -1943,7 +1943,7 @@ export const mcpSavedFilterValuesParam = z
 export type McpSavedFilterValues = z.infer<typeof mcpSavedFilterValuesParam>;
 
 const mcpPatchDashboardSchema = z.object({
-  dashboardId: objectIdSchema.describe(
+  dashboardId: idSchema.describe(
     'ID of the dashboard to patch, from cbt_get_dashboard (no id lists ' +
       'dashboards) or cbt_search_dashboards.',
   ),

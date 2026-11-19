@@ -56,7 +56,6 @@ import {
 import { SearchConditionLanguageSchema as whereLanguageSchema } from '@couchbase-traces/common-utils/dist/types';
 import { pick } from 'lodash';
 import _ from 'lodash';
-import mongoose from 'mongoose';
 import { z } from 'zod';
 
 import { deleteDashboardAlerts } from '@/controllers/alerts';
@@ -570,7 +569,7 @@ export const convertToExternalTileChartConfig = (
         ...externalFormulaFields,
         // Normalize stored palette tokens on the way out. A static `color`
         // saved before the hue rename holds a legacy `chart-1`..`chart-10`
-        // token in Mongo (the `tiles` field is `Mixed`), so map it to the
+        // token in the store (the `tiles` field is `Mixed`), so map it to the
         // hue name via `resolveChartPaletteToken`, matching the app's
         // fetch-time `normalizeDashboardTileColors`. `colorRules` colors go
         // through the same path (see `toExternalColorRules`). An absent or
@@ -665,13 +664,13 @@ export const convertToExternalTileChartConfig = (
         ? { heatmapMode: 'distribution' as const }
         : {};
       // The internal heatmap schema requires `select[0]` to be a builder
-      // item with a non-empty `valueExpression`. Legacy/corrupted Mongo
+      // item with a non-empty `valueExpression`. Legacy/corrupted stored
       // docs that lack one would otherwise produce a tile that violates
       // the external schema's `min(1)` rule. Returning undefined here
       // would let the caller fall through to `defaultTileConfig`, which
       // emits `displayType: 'line'`. A subsequent GET -> PUT round-trip
       // through the API would then silently overwrite the heatmap with
-      // a line chart in Mongo (data loss). Instead, emit a
+      // a line chart in the store (data loss). Instead, emit a
       // heatmap-shaped placeholder with an empty valueExpression so the
       // response preserves displayType, and a re-PUT surfaces the
       // breakage as a clear validation error from the input schema's
@@ -749,7 +748,7 @@ function convertTileToExternalChart(
           select: [DEFAULT_SELECT_ITEM],
         };
 
-  // Treat empty-string container/tab refs as absent so legacy Mongo docs
+  // Treat empty-string container/tab refs as absent so legacy docs
   // (the underlying `tiles` field is `Mixed`, so older entries may carry
   // `containerId: ""`) round-trip through the external schema, which now
   // enforces `min(1)`. Without this, a GET that hit a legacy doc would
@@ -828,7 +827,7 @@ export function convertToExternalDashboard(
   const containers = dashboard.containers ?? [];
   // Dedupe by id when building the lookup map: a doc with duplicate
   // container ids can only resolve tile refs against one of them, and
-  // last-write-wins is consistent with how Mongo would have persisted
+  // last-write-wins is consistent with how the store would have persisted
   // the array. Tile-resolution ambiguity in this case is logged when
   // the tile ref turns out to point at a missing container.
   const containerById = new Map<string, DashboardContainer>(
@@ -852,7 +851,7 @@ export function convertToExternalDashboard(
     savedFilterValues: getExternalCompatibleFilterValues(
       dashboard.savedFilterValues,
     ),
-    // Mongoose persists missing arrays as []. Only emit containers when
+    // Missing arrays may persist as []. Only emit containers when
     // the user actually saved one or more, so dashboards without the
     // organization layer round-trip with the field absent.
     ...(containers.length > 0 ? { containers } : {}),
@@ -1270,7 +1269,7 @@ export function convertToInternalTileConfig(
     }
   }
 
-  // Omit keys that are null/undefined, so that they're not saved as null in Mongo.
+  // Omit keys that are null/undefined, so that they're not saved as null.
   // We know that the resulting object will conform to SavedChartConfig since we're just
   // removing null properties and anything that is null will just be undefined instead.
 
@@ -1279,7 +1278,7 @@ export function convertToInternalTileConfig(
   // Mirror the spread-conditional pattern used in `convertTileToExternalChart`:
   // destructure statically (compile-time narrowing) and include the optional
   // refs only when set, so a tile without a containerId never persists
-  // `containerId: undefined` to Mongo. The previous `pick(...)` over the
+  // `containerId: undefined` to the store. The previous `pick(...)` over the
   // external tile included `name`, but the internal `Tile` type stores the
   // name on `config`, not at the top level (`strippedConfig` carries it).
   // Stripping the top-level `name` brings the runtime shape back in line
@@ -1314,7 +1313,7 @@ type SourceForValidation = Awaited<ReturnType<typeof getSources>>[number];
  * validation flow. The return type is the awaited shape of `getSources`
  * (an array of Source documents) so callers can `await` it directly. */
 async function fetchSourcesForValidation(
-  team: string | mongoose.Types.ObjectId,
+  team: string,
 ): Promise<SourceForValidation[]> {
   return getSources(team.toString());
 }
@@ -1594,7 +1593,7 @@ function getChangedPromqlTileSourceIds(
  * case separately with a clearer error message.
  */
 async function getInvalidOnClickSearchSources(
-  team: string | mongoose.Types.ObjectId,
+  team: string,
   tiles: ExternalDashboardTileWithId[],
 ): Promise<string[]> {
   const sourceIds = new Set<string>();
@@ -1621,7 +1620,7 @@ async function getInvalidOnClickSearchSources(
  * type=dashboard) that do not exist for the team.
  */
 async function getMissingOnClickDashboards(
-  team: string | mongoose.Types.ObjectId,
+  team: string,
   tiles: ExternalDashboardTileWithId[],
 ): Promise<string[]> {
   const dashboardIds = new Set<string>();
@@ -1647,7 +1646,7 @@ async function getMissingOnClickDashboards(
 
 /** Returns connection IDs referenced in tiles that do not belong to the team */
 async function getMissingConnections(
-  team: string | mongoose.Types.ObjectId,
+  team: string,
   tiles: ExternalDashboardTileWithId[],
 ): Promise<string[]> {
   const connectionIds = new Set<string>();
@@ -1707,8 +1706,8 @@ const dashboardBodyBaseShape = {
 // --------------------------------------------------------------------------------
 
 /**
- * Convert external tile definitions to internal Mongoose-compatible format.
- * Generates new ObjectIds for tiles that don't already have a matching ID in
+ * Convert external tile definitions to internal plain format.
+ * Generates new ids for tiles that don't already have a matching ID in
  * `existingTileIds` (update path) or for all tiles (create path).
  */
 export function convertExternalTilesToInternal(

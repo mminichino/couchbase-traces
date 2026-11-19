@@ -180,7 +180,7 @@ router.get('/import-manifest', async (req, res, next) => {
       }
 
       // `name` is `?? undefined` on every listing, not just alerts: these are
-      // plain non-required Strings in Mongoose, so a stored null is legal, and
+      // plain non-required Strings in the stored document, so a stored null is legal, and
       // the wire contract is `.optional()` which rejects null. One null name
       // would fail the client's all-or-nothing parse for the whole manifest.
       const body: IacImportManifest = {

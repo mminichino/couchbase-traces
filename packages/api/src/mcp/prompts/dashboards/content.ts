@@ -44,7 +44,7 @@ the \`filters\` array must be fully self-describing: every filter needs an \`id\
     cbt_get_dashboard response. The same applies if you are renaming
     or tweaking it. This preserves any savedFilterValues bound to that id.
   - New filter you are ADDING in this update: generate a fresh random
-    24-character hex string (a Mongo-style ObjectId) and set it as \`id\`.
+    24-character hex string (a hex id) and set it as \`id\`.
     Do not reuse an existing filter's id and do not leave \`id\` blank.
     omitting it would force the server to generate one and obscure the
     new filter's identity from your own bookkeeping.
@@ -1383,7 +1383,7 @@ Example, link out to an external tool:
   }
 
 Validation rules the server enforces:
-  - target.id (mode="id") must be a valid ObjectId.
+  - target.id (mode="id") must be a valid id.
   - For type="search", target.id must reference an existing source whose kind is "log" or "trace". Metric and session sources are rejected with: "The following onClick search source IDs are not log or trace sources: ..."
   - For type="dashboard", target.id must reference an existing dashboard owned by the same team. Missing dashboards are rejected with: "Could not find the following onClick dashboard IDs: ..."
 

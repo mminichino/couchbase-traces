@@ -3,7 +3,6 @@ import {
   SourceKind,
 } from '@couchbase-traces/common-utils/dist/types';
 import _ from 'lodash';
-import { ObjectId } from 'mongodb';
 import request from 'supertest';
 
 import { createOrgApiKey } from '@/controllers/orgApiKey';
@@ -14,12 +13,19 @@ import {
   RAW_SQL_NUMBER_ALERT_TEMPLATE,
 } from '@/fixtures';
 import { getMetadataStore } from '@/metadata';
+import { newId } from '@/metadata/ids';
 import {
   AlertSource,
   AlertState,
   AlertThresholdType,
 } from '@/metadata/schemas/alert';
 import { WebhookService } from '@/metadata/schemas/webhook';
+import {
+  getAlert,
+  patchAlerts,
+  seedAlert,
+  seedAlertRaw,
+} from '@/metadata/testing/alertFixtures';
 import {
   removeDashboard,
   removeSavedSearch,
@@ -29,7 +35,6 @@ import {
   seedSource,
   seedWebhook,
 } from '@/metadata/testing/seed';
-import { alertDocs } from '@/metadata/testing/seedAlerts';
 
 // Constants
 const ALERTS_BASE_URL = '/api/v2/alerts';
@@ -96,7 +101,7 @@ describe('External API Alerts', () => {
     const { numTiles = 1, name = 'Test Dashboard' } = options;
 
     const tiles = Array.from({ length: numTiles }, (_, i) => ({
-      id: new ObjectId().toString(),
+      id: newId(),
       name: `Chart ${i + 1}`,
       x: i * 6,
       y: Math.floor(i / 2) * 3,
@@ -121,7 +126,7 @@ describe('External API Alerts', () => {
       sqlTemplate?: string;
     } = {},
   ) => {
-    const tileId = new ObjectId().toString();
+    const tileId = newId();
     const tiles = [
       {
         id: tileId,
@@ -154,7 +159,7 @@ describe('External API Alerts', () => {
       name: 'Test Saved Search',
       where: 'error',
       whereLanguage: 'lucene',
-      source: new ObjectId(),
+      source: newId(),
       team: options.teamId ?? team._id,
     });
   };
@@ -194,17 +199,17 @@ describe('External API Alerts', () => {
 
   // Helper to create a test alert directly in the database (bypasses validation)
   const createTestAlertDirectly = async (overrides = {}) => {
-    return alertDocs.create({
+    return seedAlert({
       team: team._id,
-      dashboardId: new ObjectId().toString(),
-      tileId: new ObjectId().toString(),
+      dashboardId: newId(),
+      tileId: newId(),
       threshold: 100,
       interval: '1h',
       source: AlertSource.TILE,
       thresholdType: AlertThresholdType.ABOVE,
       channel: {
         type: 'webhook',
-        webhookId: new ObjectId().toString(),
+        webhookId: newId(),
       },
       name: 'Direct DB Alert',
       message: 'Created directly in DB',
@@ -235,7 +240,7 @@ describe('External API Alerts', () => {
         })
         .expect(200);
 
-      const stored = await alertDocs.findById(response.body.data.id).lean();
+      const stored = await getAlert(response.body.data.id);
       expect(stored?.createdBy).toEqual(doc._id);
     });
   });
@@ -245,7 +250,7 @@ describe('External API Alerts', () => {
   // tile's full chart config. These cases fail if the projection drops one.
   describe('display refs are projected, not fetched whole', () => {
     const createNamedTileDashboard = async () => {
-      const tileId = new ObjectId().toString();
+      const tileId = newId();
       const dashboard = await seedDashboard({
         name: 'Projected Dashboard',
         tags: ['projected'],
@@ -259,7 +264,7 @@ describe('External API Alerts', () => {
             config: {
               name: 'Projected Tile',
               displayType: 'line',
-              source: new ObjectId().toString(),
+              source: newId(),
               select: [
                 {
                   aggFn: 'count',
@@ -316,7 +321,7 @@ describe('External API Alerts', () => {
 
   describe('displayName and tags', () => {
     const createTaggedDashboard = async () => {
-      const tileId = new ObjectId().toString();
+      const tileId = newId();
       const dashboard = await seedDashboard({
         name: 'Tagged Dashboard',
         tags: ['dashboard-tag'],
@@ -330,7 +335,7 @@ describe('External API Alerts', () => {
             config: {
               name: 'Error Rate',
               displayType: 'line',
-              source: new ObjectId().toString(),
+              source: newId(),
               select: [
                 {
                   aggFn: 'count',
@@ -677,7 +682,7 @@ describe('External API Alerts', () => {
           thresholdType: AlertThresholdType.ABOVE,
           channel: {
             type: 'webhook',
-            webhookId: new ObjectId().toString(),
+            webhookId: newId(),
           },
           scheduleOffsetMinutes: 2,
           scheduleStartAt: new Date().toISOString(),
@@ -700,7 +705,7 @@ describe('External API Alerts', () => {
           thresholdType: AlertThresholdType.ABOVE,
           channel: {
             type: 'webhook',
-            webhookId: new ObjectId().toString(),
+            webhookId: newId(),
           },
           scheduleStartAt: new Date(
             Date.now() + 366 * 24 * 60 * 60 * 1000,
@@ -791,7 +796,7 @@ describe('External API Alerts', () => {
     });
 
     it('should return 404 for non-existent alert', async () => {
-      const nonExistentId = new ObjectId().toString();
+      const nonExistentId = newId();
       await authRequest('get', `${ALERTS_BASE_URL}/${nonExistentId}`).expect(
         404,
       );
@@ -986,7 +991,7 @@ describe('External API Alerts', () => {
       });
 
       it('should treat a legacy alert without a source as saved_search', async () => {
-        await alertDocs.insertRaw({
+        await seedAlertRaw({
           team: team._id,
           displayName: 'Legacy alert',
           threshold: 100,
@@ -994,7 +999,7 @@ describe('External API Alerts', () => {
           thresholdType: AlertThresholdType.ABOVE,
           channel: {
             type: 'webhook',
-            webhookId: new ObjectId().toString(),
+            webhookId: newId(),
           },
         });
 
@@ -1038,7 +1043,7 @@ describe('External API Alerts', () => {
       });
 
       it('should treat a legacy alert without state or tags as OK and untagged', async () => {
-        await alertDocs.insertRaw({
+        await seedAlertRaw({
           team: team._id,
           displayName: 'Legacy alert',
           threshold: 100,
@@ -1046,7 +1051,7 @@ describe('External API Alerts', () => {
           thresholdType: AlertThresholdType.ABOVE,
           channel: {
             type: 'webhook',
-            webhookId: new ObjectId().toString(),
+            webhookId: newId(),
           },
         });
 
@@ -1157,7 +1162,7 @@ describe('External API Alerts', () => {
     });
 
     it('should return 404 with a JSON body when deleting a non-existent alert', async () => {
-      const nonExistentId = new ObjectId().toString();
+      const nonExistentId = newId();
       const response = await authRequest(
         'delete',
         `${ALERTS_BASE_URL}/${nonExistentId}`,
@@ -1252,8 +1257,8 @@ describe('External API Alerts', () => {
         ],
       });
 
-      // Mongo persists the internal dialect the check-alerts task evaluates.
-      const stored = await alertDocs.findById(created.body.data.id);
+      // the store persists the internal dialect the check-alerts task evaluates.
+      const stored = await getAlert(created.body.data.id);
       expect(stored!.chartConfig).toMatchObject({
         displayType: 'line',
         source: source._id.toString(),
@@ -1436,7 +1441,7 @@ describe('External API Alerts', () => {
         asRatio: true,
       });
 
-      const stored = await alertDocs.findById(created.body.data.id);
+      const stored = await getAlert(created.body.data.id);
       expect(stored!.threshold).toBe(42);
       expect(stored!.chartConfig).toMatchObject({
         groupBy: 'ServiceName',
@@ -1471,7 +1476,7 @@ describe('External API Alerts', () => {
         })
         .expect(200);
 
-      let stored = await alertDocs.findById(created.body.data.id);
+      let stored = await getAlert(created.body.data.id);
       expect(stored!.chartConfig).toBeNull();
       expect(stored!.dashboard?.toString()).toBe(dashboard._id.toString());
       expect(stored!.tileId).toBe(tileId);
@@ -1485,7 +1490,7 @@ describe('External API Alerts', () => {
         )
         .expect(200);
 
-      stored = await alertDocs.findById(created.body.data.id);
+      stored = await getAlert(created.body.data.id);
       expect(stored!.chartConfig).toMatchObject({
         source: source._id.toString(),
       });
@@ -1498,7 +1503,7 @@ describe('External API Alerts', () => {
       await authRequest('post', ALERTS_BASE_URL)
         .send(
           makeInlineAlertInput(
-            makeBuilderChartConfig(new ObjectId().toString()),
+            makeBuilderChartConfig(newId()),
             webhook._id.toString(),
           ),
         )
@@ -1528,7 +1533,7 @@ describe('External API Alerts', () => {
             {
               configType: 'promql',
               promqlQuery: 'up',
-              sourceId: new ObjectId().toString(),
+              sourceId: newId(),
             },
             webhook._id.toString(),
           ),
@@ -1670,7 +1675,7 @@ describe('External API Alerts', () => {
               configType: 'sql',
               displayType: 'line',
               sqlTemplate: RAW_SQL_ALERT_TEMPLATE,
-              connectionId: new ObjectId().toString(),
+              connectionId: newId(),
             },
             webhook._id.toString(),
           ),
@@ -1698,7 +1703,7 @@ describe('External API Alerts', () => {
       });
 
       // Stored internally with the internal field names
-      const stored = await alertDocs.findById(created.body.data.id);
+      const stored = await getAlert(created.body.data.id);
       expect(stored!.chartConfig).toMatchObject({
         configType: 'sql',
         connection: connection._id.toString(),
@@ -1890,7 +1895,7 @@ describe('External API Alerts', () => {
           ),
         )
         .expect(200);
-      const storedBefore = await alertDocs.findById(created.body.data.id);
+      const storedBefore = await getAlert(created.body.data.id);
 
       const single = await authRequest(
         'get',
@@ -1907,7 +1912,7 @@ describe('External API Alerts', () => {
         single.body.data.chartConfig,
       );
 
-      const storedAfter = await alertDocs.findById(created.body.data.id);
+      const storedAfter = await getAlert(created.body.data.id);
       expect(storedAfter!.chartConfig).toEqual(storedBefore!.chartConfig);
     });
 
@@ -1928,7 +1933,7 @@ describe('External API Alerts', () => {
         .expect(200);
 
       expect(created.body.data.chartConfig).not.toHaveProperty('unknownField');
-      const stored = await alertDocs.findById(created.body.data.id);
+      const stored = await getAlert(created.body.data.id);
       expect(stored!.chartConfig).not.toHaveProperty('unknownField');
     });
 
@@ -2010,7 +2015,7 @@ describe('External API Alerts', () => {
       });
 
       // Persisted on the internal shape the evaluator reads.
-      const stored = await alertDocs.findById(created.body.data.id);
+      const stored = await getAlert(created.body.data.id);
       expect(stored!.chartConfig).toMatchObject({
         name: 'Error Rate Query',
         where: 'ServiceName:api',
@@ -2032,7 +2037,7 @@ describe('External API Alerts', () => {
       await authRequest('put', `${ALERTS_BASE_URL}/${created.body.data.id}`)
         .send(single.body.data)
         .expect(200);
-      const storedAfter = await alertDocs.findById(created.body.data.id);
+      const storedAfter = await getAlert(created.body.data.id);
       expect(storedAfter!.chartConfig).toEqual(stored!.chartConfig);
     });
 
@@ -2100,7 +2105,7 @@ describe('External API Alerts', () => {
         .expect(400);
 
       // The stored config is untouched by the failed write.
-      const stored = await alertDocs.findById(alert._id);
+      const stored = await getAlert(alert._id);
       expect(stored!.chartConfig).toMatchObject({
         filters: [{ type: 'sql', condition: "ServiceName = 'api'" }],
       });
@@ -2172,7 +2177,7 @@ describe('External API Alerts', () => {
           .send(single.body.data)
           .expect(400);
 
-        const stored = await alertDocs.findById(alert._id);
+        const stored = await getAlert(alert._id);
         expect(stored!.chartConfig).toEqual(chartConfig);
       }
     });
@@ -2234,7 +2239,7 @@ describe('External API Alerts', () => {
           thresholdType: AlertThresholdType.ABOVE,
           channel: {
             type: 'webhook',
-            webhookId: new ObjectId().toString(), // does not exist
+            webhookId: newId(), // does not exist
           },
         };
 
@@ -2244,7 +2249,7 @@ describe('External API Alerts', () => {
       it('should reject a webhook belonging to another team', async () => {
         const dashboard = await createTestDashboard();
         const otherTeamWebhook = await createTestWebhook({
-          teamId: new ObjectId(),
+          teamId: newId(),
         });
 
         const alertInput = {
@@ -2266,7 +2271,7 @@ describe('External API Alerts', () => {
       it('should reject an update with a webhook belonging to another team', async () => {
         const { alert, dashboard } = await createTestAlert();
         const otherTeamWebhook = await createTestWebhook({
-          teamId: new ObjectId(),
+          teamId: newId(),
         });
 
         const updatePayload = {
@@ -2293,8 +2298,8 @@ describe('External API Alerts', () => {
         const webhook = await createTestWebhook();
 
         const alertInput = {
-          dashboardId: new ObjectId().toString(), // does not exist
-          tileId: new ObjectId().toString(),
+          dashboardId: newId(), // does not exist
+          tileId: newId(),
           threshold: 100,
           interval: '1h',
           source: AlertSource.TILE,
@@ -2311,7 +2316,7 @@ describe('External API Alerts', () => {
       it('should reject a dashboard belonging to another team', async () => {
         const webhook = await createTestWebhook();
         const otherTeamDashboard = await createTestDashboard({
-          teamId: new ObjectId(),
+          teamId: newId(),
         });
 
         const alertInput = {
@@ -2333,7 +2338,7 @@ describe('External API Alerts', () => {
       it('should reject an update with a dashboard belonging to another team', async () => {
         const { alert, webhook } = await createTestAlert();
         const otherTeamDashboard = await createTestDashboard({
-          teamId: new ObjectId(),
+          teamId: newId(),
         });
 
         const updatePayload = {
@@ -2486,7 +2491,7 @@ describe('External API Alerts', () => {
         const webhook = await createTestWebhook();
 
         const alertInput = {
-          savedSearchId: new ObjectId().toString(), // does not exist
+          savedSearchId: newId(), // does not exist
           threshold: 100,
           interval: '1h',
           source: AlertSource.SAVED_SEARCH,
@@ -2503,7 +2508,7 @@ describe('External API Alerts', () => {
       it('should reject a saved search belonging to another team', async () => {
         const webhook = await createTestWebhook();
         const otherTeamSavedSearch = await createTestSavedSearch({
-          teamId: new ObjectId(),
+          teamId: newId(),
         });
 
         const alertInput = {
@@ -2568,7 +2573,7 @@ describe('External API Alerts', () => {
           .expect(200);
 
         const otherTeamSavedSearch = await createTestSavedSearch({
-          teamId: new ObjectId(),
+          teamId: newId(),
         });
 
         const updatePayload = {
@@ -2789,7 +2794,7 @@ describe('External API Alerts', () => {
       // Create an unauthenticated agent
       const unauthenticatedAgent = request(server.getHttpServer());
 
-      const testId = new ObjectId().toString();
+      const testId = newId();
       await unauthenticatedAgent
         .get(`${ALERTS_BASE_URL}/${testId}`)
         .expect(401);
@@ -2801,20 +2806,15 @@ describe('External API Alerts', () => {
       const { alert } = await createTestAlert();
 
       const errorTimestamp = new Date('2026-04-17T12:00:00.000Z');
-      await alertDocs.updateOne(
-        { _id: alert.id },
-        {
-          $set: {
-            executionErrors: [
-              {
-                timestamp: errorTimestamp,
-                type: AlertErrorType.QUERY_ERROR,
-                message: 'ClickHouse returned 500',
-              },
-            ],
+      await patchAlerts(alert.id, {
+        executionErrors: [
+          {
+            timestamp: errorTimestamp,
+            type: AlertErrorType.QUERY_ERROR,
+            message: 'ClickHouse returned 500',
           },
-        },
-      );
+        ],
+      });
 
       const res = await authRequest(
         'get',
@@ -2835,20 +2835,15 @@ describe('External API Alerts', () => {
     it('returns recorded execution errors on the list endpoint', async () => {
       const { alert } = await createTestAlert();
 
-      await alertDocs.updateOne(
-        { _id: alert.id },
-        {
-          $set: {
-            executionErrors: [
-              {
-                timestamp: new Date('2026-04-17T12:00:00.000Z'),
-                type: AlertErrorType.WEBHOOK_ERROR,
-                message: 'webhook delivery failed',
-              },
-            ],
+      await patchAlerts(alert.id, {
+        executionErrors: [
+          {
+            timestamp: new Date('2026-04-17T12:00:00.000Z'),
+            type: AlertErrorType.WEBHOOK_ERROR,
+            message: 'webhook delivery failed',
           },
-        },
-      );
+        ],
+      });
 
       const res = await authRequest('get', ALERTS_BASE_URL).expect(200);
       const match = res.body.data.find((a: any) => a.id === alert.id);
@@ -3101,14 +3096,14 @@ describe('External API Alerts', () => {
       // over the cap
       const many = Array.from({ length: 11 }, () => ({
         type: 'webhook',
-        webhookId: new ObjectId().toString(),
+        webhookId: newId(),
       }));
       await authRequest('post', ALERTS_BASE_URL)
         .send({ ...base, channels: many })
         .expect(400);
       // cross-team webhook hidden among valid ones
       const otherTeamWebhook = await createTestWebhook({
-        teamId: new ObjectId(),
+        teamId: newId(),
       });
       await authRequest('post', ALERTS_BASE_URL)
         .send({

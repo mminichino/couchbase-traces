@@ -100,7 +100,7 @@ Merged from docs/upstream-AGENTS.md, .cursor/rules/playwright.mdc, .cursor/rules
 ### Repository layout
 - Monorepo with Yarn 4.13.0 workspaces.
 - `packages/app` — Next.js frontend (TypeScript, Mantine UI, TanStack Query).
-- `packages/api` — Express backend (Node.js 22+, MongoDB for metadata); also hosts MCP, External API v2, and OpAMP as sub-applications.
+- `packages/api` — Express backend (Node.js 22+, app metadata in the Couchbase `cbt_meta` bucket); also hosts MCP, External API v2, and OpAMP as sub-applications.
 - `packages/common-utils` — shared TypeScript utilities for query parsing and validation.
 - `packages/cli` — terminal CLI and interactive TUI (`hdx`) with its own `packages/cli/AGENTS.md`.
 - `packages/otel-collector` — custom OpenTelemetry Collector (Go, OCB).

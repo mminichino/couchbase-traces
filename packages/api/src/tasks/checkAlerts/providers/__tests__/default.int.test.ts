@@ -10,6 +10,7 @@ import {
 } from '@/fixtures';
 import { newId } from '@/metadata/ids';
 import { AlertSource, AlertThresholdType } from '@/metadata/schemas/alert';
+import { seedAlert } from '@/metadata/testing/alertFixtures';
 import {
   patchSource,
   seedConnection,
@@ -17,7 +18,6 @@ import {
   seedSavedSearch,
   seedSource,
 } from '@/metadata/testing/seed';
-import { alertDocs } from '@/metadata/testing/seedAlerts';
 import {
   AlertProvider,
   AlertTaskType,
@@ -206,7 +206,7 @@ describe('DefaultAlertProvider', () => {
         // Validate source is proper ISource object
         const alertSource = result[0].alerts[0].source;
         expect(alertSource).toBeDefined();
-        expect(alertSource!.connection).toBe(connection.id); // Should be ObjectId, not populated IConnection
+        expect(alertSource!.connection).toBe(connection.id); // Should be an id string, not populated IConnection
         expect(alertSource!.name).toBe('Test Source');
         expect(alertSource!.kind).toBe('log');
         expect(alertSource!.team).toBeDefined();
@@ -214,9 +214,9 @@ describe('DefaultAlertProvider', () => {
         expect(alertSource!.from?.tableName).toBe('logs');
         expect(alertSource!.timestampValueExpression).toBe('timestamp');
 
-        // Ensure it's a plain object, not a mongoose document
-        expect((alertSource as any).toObject).toBeUndefined(); // mongoose documents have toObject method
-        expect((alertSource as any).save).toBeUndefined(); // mongoose documents have save method
+        // Ensure it's a plain object, not a store document wrapper
+        expect((alertSource as any).toObject).toBeUndefined();
+        expect((alertSource as any).save).toBeUndefined();
       }
     });
 
@@ -225,7 +225,7 @@ describe('DefaultAlertProvider', () => {
 
       // Create alert directly in database with non-existent saved search
       // This simulates an alert that exists but references a deleted saved search
-      await alertDocs.create({
+      await seedAlert({
         team: team._id,
         source: AlertSource.SAVED_SEARCH,
         savedSearch: newId(), // Non-existent ID
@@ -246,7 +246,7 @@ describe('DefaultAlertProvider', () => {
       const team = await createTeam({ name: 'Test Team' });
 
       // Create alert directly without source
-      await alertDocs.create({
+      await seedAlert({
         team: team._id,
         threshold: 10,
         thresholdType: AlertThresholdType.ABOVE,
@@ -474,7 +474,7 @@ describe('DefaultAlertProvider', () => {
 
       // Create alert directly in database with non-existent dashboard
       // This simulates an alert that exists but references a deleted dashboard
-      await alertDocs.create({
+      await seedAlert({
         team: team._id,
         source: AlertSource.TILE,
         dashboard: newId(), // Non-existent ID
@@ -502,7 +502,7 @@ describe('DefaultAlertProvider', () => {
       });
 
       // Create alert directly in database with non-existent tile ID
-      await alertDocs.create({
+      await seedAlert({
         team: team._id,
         source: AlertSource.TILE,
         dashboard: dashboard._id,
@@ -535,7 +535,7 @@ describe('DefaultAlertProvider', () => {
       });
 
       // Create alert directly in database
-      await alertDocs.create({
+      await seedAlert({
         team: team._id,
         source: AlertSource.TILE,
         dashboard: dashboard._id,
@@ -581,7 +581,7 @@ describe('DefaultAlertProvider', () => {
       });
 
       // Create alert directly in database
-      await alertDocs.create({
+      await seedAlert({
         team: team._id,
         source: AlertSource.SAVED_SEARCH,
         savedSearch: savedSearch._id,
@@ -602,7 +602,7 @@ describe('DefaultAlertProvider', () => {
       const team = await createTeam({ name: 'Test Team' });
 
       // Create alert with invalid source
-      await alertDocs.create({
+      await seedAlert({
         team: team._id,
         source: 'UNSUPPORTED_SOURCE' as any,
         threshold: 10,

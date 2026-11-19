@@ -1,6 +1,6 @@
 // Runs against the containers started by port/couchbase-test/run.sh: Couchbase
-// for queries and the metadata store (users, teams, sessions), and Mongo for
-// connections. It does not need ClickHouse, so it builds its own server
+// for queries and the metadata store (users, teams, sessions, connections).
+// It does not need ClickHouse, so it builds its own server
 // instead of using MockServer.
 import { CouchbaseClient } from '@couchbase-traces/common-utils/dist/couchbase/browser';
 import {
@@ -8,10 +8,8 @@ import {
   testConnection,
 } from '@couchbase-traces/common-utils/dist/couchbase/node';
 import http from 'http';
-import mongoose from 'mongoose';
 
 import app from '@/api-app';
-import * as config from '@/config';
 import {
   clearMetadataForTests,
   closeMetadataStore,
@@ -70,10 +68,6 @@ describe('Couchbase API integration', () => {
       console.warn(msg);
       return;
     }
-    if (config.MONGO_URI == null) throw new Error('MONGO_URI is not set');
-    await mongoose.connect(config.MONGO_URI);
-    await mongoose.connection.dropDatabase();
-    // Teams, users, and sessions live in the metadata store since C1.
     await startMetadataStore();
     await clearMetadataForTests();
 
@@ -106,8 +100,6 @@ describe('Couchbase API integration', () => {
     await clusterCache.closeAll();
     if (!available) return;
     await new Promise<void>(resolve => server.close(() => resolve()));
-    await mongoose.connection.dropDatabase();
-    await mongoose.disconnect();
     await clearMetadataForTests();
     await closeMetadataStore();
   });

@@ -17,16 +17,16 @@ jest.mock('@/controllers/sources', () => ({}));
 jest.mock('@/controllers/connection', () => ({}));
 
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
-import mongoose from 'mongoose';
 
 import { registerSql } from '@/mcp/tools/query/sql';
 import type { McpContext, RegisterToolFn, ToolResult } from '@/mcp/tools/types';
+import { newId } from '@/metadata/ids';
 
 type Handler = Parameters<RegisterToolFn>[2];
 
 // The accepted cases run on past the guard into buildTile, which parses this
-// through objectIdSchema.
-const connectionId = new mongoose.Types.ObjectId().toString();
+// through idSchema.
+const connectionId = newId();
 
 function buildHandler(): Handler {
   let captured: Handler | undefined;

@@ -6,7 +6,6 @@ import {
   SourceKind,
 } from '@couchbase-traces/common-utils/dist/types';
 import { omit } from 'lodash';
-import { ObjectId } from 'mongodb';
 import request from 'supertest';
 
 import * as config from '@/config';
@@ -18,8 +17,10 @@ import {
   makeExternalChart,
   makeExternalTile,
 } from '@/fixtures';
+import { newId } from '@/metadata/ids';
 import { AlertSource, AlertThresholdType } from '@/metadata/schemas/alert';
 import { WebhookService } from '@/metadata/schemas/webhook';
+import { getAlert, seedAlert } from '@/metadata/testing/alertFixtures';
 import {
   countDashboards,
   findDashboard,
@@ -32,7 +33,6 @@ import {
   seedWebhook,
   setDashboardPaths,
 } from '@/metadata/testing/seed';
-import { alertDocs } from '@/metadata/testing/seedAlerts';
 import {
   ExternalDashboardTile,
   ExternalDashboardTileWithId,
@@ -68,11 +68,11 @@ describe('External API v2 Dashboards - old format', () => {
     tiles: [
       {
         ...makeExternalChart({ sourceId }),
-        id: new ObjectId().toString(),
+        id: newId(),
       },
       {
         ...makeExternalChart({ sourceId }),
-        id: new ObjectId().toString(),
+        id: newId(),
       },
     ],
     tags: TEST_TAGS,
@@ -90,7 +90,7 @@ describe('External API v2 Dashboards - old format', () => {
     y: 0,
     w: 6,
     h: 3,
-    id: new ObjectId().toString(),
+    id: newId(),
     seriesReturnType: 'column',
     series: [
       {
@@ -109,7 +109,7 @@ describe('External API v2 Dashboards - old format', () => {
     y: 0,
     w: 6,
     h: 3,
-    id: new ObjectId().toString(),
+    id: newId(),
     seriesReturnType: 'column',
     series: [
       {
@@ -129,7 +129,7 @@ describe('External API v2 Dashboards - old format', () => {
     y: 3,
     w: 3,
     h: 3,
-    id: new ObjectId().toString(),
+    id: newId(),
     seriesReturnType: 'column',
     series: [
       {
@@ -147,7 +147,7 @@ describe('External API v2 Dashboards - old format', () => {
     y: 3,
     w: 3,
     h: 3,
-    id: new ObjectId().toString(),
+    id: newId(),
     seriesReturnType: 'column',
     series: [
       {
@@ -866,7 +866,7 @@ describe('External API v2 Dashboards - old format', () => {
     });
 
     it('should return 400 when source IDs do not exist', async () => {
-      const nonExistentSourceId = new ObjectId().toString();
+      const nonExistentSourceId = newId();
       const mockDashboard = createMockDashboard(nonExistentSourceId);
 
       const response = await authRequest('post', BASE_URL)
@@ -971,7 +971,7 @@ describe('External API v2 Dashboards - old format', () => {
     });
 
     it('should return 400 when filter source ID does not exist', async () => {
-      const nonExistentSourceId = new ObjectId().toString();
+      const nonExistentSourceId = newId();
       const dashboardPayload = {
         name: 'Dashboard with Bad Filter Source',
         tiles: [makeExternalChart({ sourceId: traceSource._id.toString() })],
@@ -1002,7 +1002,7 @@ describe('External API v2 Dashboards - old format', () => {
         tags: TEST_TAGS,
         filters: [
           {
-            id: new ObjectId().toString(),
+            id: newId(),
             type: 'QUERY_EXPRESSION' as const,
             name: 'Filter with ID',
             expression: 'environment',
@@ -1096,8 +1096,8 @@ describe('External API v2 Dashboards - old format', () => {
 
     it('should update dashboard filters when provided', async () => {
       const dashboard = await createTestDashboard();
-      const filterId1 = new ObjectId().toString();
-      const filterId2 = new ObjectId().toString();
+      const filterId1 = newId();
+      const filterId2 = newId();
       const updatedPayload = createMockDashboardWithIds(
         traceSource._id.toString(),
         {
@@ -1162,8 +1162,8 @@ describe('External API v2 Dashboards - old format', () => {
     });
 
     it('should preserve existing dashboard filters when filters are not provided', async () => {
-      const existingFilterId1 = new ObjectId().toString();
-      const existingFilterId2 = new ObjectId().toString();
+      const existingFilterId1 = newId();
+      const existingFilterId2 = newId();
       const existingFilters = [
         {
           id: existingFilterId1,
@@ -1221,8 +1221,8 @@ describe('External API v2 Dashboards - old format', () => {
     });
 
     it('should clear existing dashboard filters when provided an empty filters array', async () => {
-      const existingFilterId1 = new ObjectId().toString();
-      const existingFilterId2 = new ObjectId().toString();
+      const existingFilterId1 = newId();
+      const existingFilterId2 = newId();
       const existingFilters = [
         {
           id: existingFilterId1,
@@ -1272,14 +1272,14 @@ describe('External API v2 Dashboards - old format', () => {
 
     it('should return 400 when filter source ID does not exist on update', async () => {
       const dashboard = await createTestDashboard();
-      const nonExistentSourceId = new ObjectId().toString();
+      const nonExistentSourceId = newId();
       const updatedPayload = createMockDashboardWithIds(
         traceSource._id.toString(),
         {
           name: 'Updated Name',
           filters: [
             {
-              id: new ObjectId().toString(),
+              id: newId(),
               type: 'QUERY_EXPRESSION' as const,
               name: 'Bad Source Filter',
               expression: 'environment',
@@ -1299,7 +1299,7 @@ describe('External API v2 Dashboards - old format', () => {
     });
 
     it('should return 404 when dashboard does not exist', async () => {
-      const nonExistentId = new ObjectId().toString();
+      const nonExistentId = newId();
       const mockDashboard = createMockDashboardWithIds(
         traceSource._id.toString(),
       );
@@ -1328,7 +1328,7 @@ describe('External API v2 Dashboards - old format', () => {
 
       // Second PUT: one tile with the existing ID (should be preserved),
       // one tile with an unrecognized ID (should be replaced)
-      const unknownTileId = new ObjectId().toString();
+      const unknownTileId = newId();
       const response = await authRequest('put', `${BASE_URL}/${dashboard._id}`)
         .send({
           name: 'Updated',
@@ -1361,7 +1361,7 @@ describe('External API v2 Dashboards - old format', () => {
           tags: [],
           filters: [
             {
-              id: new ObjectId().toString(),
+              id: newId(),
               type: 'QUERY_EXPRESSION' as const,
               name: 'Environment',
               expression: 'environment',
@@ -1374,7 +1374,7 @@ describe('External API v2 Dashboards - old format', () => {
 
       // Second PUT: one filter with the existing ID (should be preserved),
       // one filter with an unrecognized ID (should be replaced)
-      const unknownFilterId = new ObjectId().toString();
+      const unknownFilterId = newId();
       const response = await authRequest('put', `${BASE_URL}/${dashboard._id}`)
         .send({
           name: 'Updated',
@@ -1408,7 +1408,7 @@ describe('External API v2 Dashboards - old format', () => {
     it('can update all supported chart types and all supported fields on each chart type', async () => {
       // Arrange
       const lineChart = {
-        id: new ObjectId().toString(),
+        id: newId(),
         name: 'Line Chart',
         x: 0,
         y: 0,
@@ -1454,7 +1454,7 @@ describe('External API v2 Dashboards - old format', () => {
       };
 
       const barChart = {
-        id: new ObjectId().toString(),
+        id: newId(),
         name: 'Bar Chart',
         x: 6,
         y: 0,
@@ -1485,7 +1485,7 @@ describe('External API v2 Dashboards - old format', () => {
       };
 
       const tableChart = {
-        id: new ObjectId().toString(),
+        id: newId(),
         name: 'Table Chart',
         x: 12,
         y: 0,
@@ -1533,7 +1533,7 @@ describe('External API v2 Dashboards - old format', () => {
       };
 
       const numberChart = {
-        id: new ObjectId().toString(),
+        id: newId(),
         name: 'Number Chart',
         x: 18,
         y: 0,
@@ -1561,7 +1561,7 @@ describe('External API v2 Dashboards - old format', () => {
       };
 
       const markdownChart = {
-        id: new ObjectId().toString(),
+        id: newId(),
         name: 'Markdown Chart',
         x: 0,
         y: 3,
@@ -1759,7 +1759,7 @@ describe('External API v2 Dashboards - old format', () => {
 
     it('should return 400 when source IDs do not exist', async () => {
       const dashboard = await createTestDashboard();
-      const nonExistentSourceId = new ObjectId().toString();
+      const nonExistentSourceId = newId();
       const updatedDashboard = createMockDashboardWithIds(nonExistentSourceId, {
         name: 'Updated Dashboard Name',
       });
@@ -1789,11 +1789,11 @@ describe('External API v2 Dashboards - new format', () => {
     tiles: [
       {
         ...makeExternalTile({ sourceId }),
-        id: new ObjectId().toString(),
+        id: newId(),
       },
       {
         ...makeExternalTile({ sourceId }),
-        id: new ObjectId().toString(),
+        id: newId(),
       },
     ],
     tags: TEST_TAGS,
@@ -1805,7 +1805,7 @@ describe('External API v2 Dashboards - new format', () => {
   const createTimeSeriesChart = (
     sourceId: string,
   ): ExternalDashboardTileWithId => ({
-    id: new ObjectId().toString(),
+    id: newId(),
     name: 'Time Series Chart',
     x: 0,
     y: 0,
@@ -1829,7 +1829,7 @@ describe('External API v2 Dashboards - new format', () => {
     y: 0,
     w: 6,
     h: 3,
-    id: new ObjectId().toString(),
+    id: newId(),
     config: {
       displayType: 'table',
       sourceId,
@@ -1850,7 +1850,7 @@ describe('External API v2 Dashboards - new format', () => {
     y: 3,
     w: 3,
     h: 3,
-    id: new ObjectId().toString(),
+    id: newId(),
     config: {
       displayType: 'number',
       sourceId,
@@ -1869,7 +1869,7 @@ describe('External API v2 Dashboards - new format', () => {
     y: 3,
     w: 3,
     h: 3,
-    id: new ObjectId().toString(),
+    id: newId(),
     config: {
       displayType: 'markdown',
       markdown: '# Test Markdown\nThis is a test',
@@ -1882,7 +1882,7 @@ describe('External API v2 Dashboards - new format', () => {
     y: 3,
     w: 3,
     h: 3,
-    id: new ObjectId().toString(),
+    id: newId(),
     config: {
       displayType: 'pie',
       sourceId,
@@ -1902,7 +1902,7 @@ describe('External API v2 Dashboards - new format', () => {
     y: 3,
     w: 3,
     h: 3,
-    id: new ObjectId().toString(),
+    id: newId(),
     config: {
       displayType: 'bar',
       sourceId,
@@ -2157,7 +2157,7 @@ describe('External API v2 Dashboards - new format', () => {
     });
 
     it('should return 404 when dashboard does not exist', async () => {
-      const nonExistentId = new ObjectId().toString();
+      const nonExistentId = newId();
       await authRequest('get', `${BASE_URL}/${nonExistentId}`).expect(404);
     });
   });
@@ -2959,7 +2959,7 @@ describe('External API v2 Dashboards - new format', () => {
     });
 
     it('returns series-mode heatmap tiles on GET', async () => {
-      const tileId = new ObjectId().toString();
+      const tileId = newId();
       const dashboard = await createTestDashboard({
         tiles: [
           {
@@ -3163,7 +3163,7 @@ describe('External API v2 Dashboards - new format', () => {
         connection: connection._id,
         name: 'Logs',
       });
-      const tileId = new ObjectId().toString();
+      const tileId = newId();
       const dashboard = await createTestDashboard({
         tiles: [
           {
@@ -3269,7 +3269,7 @@ describe('External API v2 Dashboards - new format', () => {
       // Persistence applies two normalizations:
       //   `where: z.string().optional().default('')` (Zod schema), and
       //   the deserializer at v2/utils/dashboards.ts:514 fills
-      //   `whereLanguage` with 'lucene' when omitted so the Mongo doc
+      //   `whereLanguage` with 'lucene' when omitted so the store doc
       //   stays consistent across heatmap and non-heatmap chart types.
       // Both surface on read-back. The optional select-item fields stay
       // undefined.
@@ -3358,7 +3358,7 @@ describe('External API v2 Dashboards - new format', () => {
     });
 
     it('does not silently downgrade a corrupted heatmap to line on GET', async () => {
-      // Seed a Dashboard directly via Mongo with a heatmap tile whose
+      // Seed a Dashboard directly via the store with a heatmap tile whose
       // select[0] lacks a non-empty valueExpression. The current API
       // reject path enforces the constraint on writes, but legacy or
       // direct-DB-edit data can still produce this state. The GET
@@ -3371,7 +3371,7 @@ describe('External API v2 Dashboards - new format', () => {
         team: team._id,
         tiles: [
           {
-            id: new ObjectId().toString(),
+            id: newId(),
             x: 0,
             y: 0,
             w: 6,
@@ -3715,7 +3715,7 @@ describe('External API v2 Dashboards - new format', () => {
     });
 
     it('should return 400 when source IDs do not exist', async () => {
-      const nonExistentSourceId = new ObjectId().toString();
+      const nonExistentSourceId = newId();
       const mockDashboard = createMockDashboard(nonExistentSourceId);
 
       const response = await authRequest('post', BASE_URL)
@@ -3730,7 +3730,7 @@ describe('External API v2 Dashboards - new format', () => {
     it('should return 400 when connection ID does not belong to the team', async () => {
       const otherTeamConnection = await seedConnection({
         kind: 'couchbase',
-        team: new ObjectId(),
+        team: newId(),
         name: 'Other Team Connection',
         host: config.CLICKHOUSE_HOST,
         username: config.CLICKHOUSE_USER,
@@ -3804,7 +3804,7 @@ describe('External API v2 Dashboards - new format', () => {
     });
 
     it('should return 400 when a table tile onClick references a non-existent source', async () => {
-      const nonExistentSourceId = new ObjectId().toString();
+      const nonExistentSourceId = newId();
 
       const response = await authRequest('post', BASE_URL)
         .send({
@@ -3872,7 +3872,7 @@ describe('External API v2 Dashboards - new format', () => {
     });
 
     it('should return 400 when a table tile onClick references a non-existent dashboard', async () => {
-      const nonExistentDashboardId = new ObjectId().toString();
+      const nonExistentDashboardId = newId();
 
       const response = await authRequest('post', BASE_URL)
         .send({
@@ -3908,7 +3908,7 @@ describe('External API v2 Dashboards - new format', () => {
       const otherTeamDashboard = await seedDashboard({
         name: 'Other Team Dashboard',
         tiles: [],
-        team: new ObjectId(),
+        team: newId(),
       });
 
       const response = await authRequest('post', BASE_URL)
@@ -4039,7 +4039,7 @@ describe('External API v2 Dashboards - new format', () => {
       });
     });
 
-    it('should return 400 when a table tile onClick target.id is not a valid ObjectId', async () => {
+    it('should return 400 when a table tile onClick target.id is not a valid id', async () => {
       const response = await authRequest('post', BASE_URL)
         .send({
           name: 'Dashboard with invalid onClick id',
@@ -4250,7 +4250,7 @@ describe('External API v2 Dashboards - new format', () => {
     });
 
     it('should return 400 when filter source ID does not exist', async () => {
-      const nonExistentSourceId = new ObjectId().toString();
+      const nonExistentSourceId = newId();
       const dashboardPayload = {
         name: 'Dashboard with Bad Filter Source',
         tiles: [makeExternalTile({ sourceId: traceSource._id.toString() })],
@@ -4281,7 +4281,7 @@ describe('External API v2 Dashboards - new format', () => {
         tags: TEST_TAGS,
         filters: [
           {
-            id: new ObjectId().toString(),
+            id: newId(),
             type: 'QUERY_EXPRESSION' as const,
             name: 'Filter with ID',
             expression: 'environment',
@@ -4349,7 +4349,7 @@ describe('External API v2 Dashboards - new format', () => {
       // seriesLimit on line/stacked_bar tiles.
       const dashboard = await createTestDashboard();
       const lineChart: ExternalDashboardTileWithId = {
-        id: new ObjectId().toString(),
+        id: newId(),
         name: 'Line with series limit',
         x: 0,
         y: 0,
@@ -4371,7 +4371,7 @@ describe('External API v2 Dashboards - new format', () => {
         },
       };
       const stackedBarChart: ExternalDashboardTileWithId = {
-        id: new ObjectId().toString(),
+        id: newId(),
         name: 'Stacked bar with series limit',
         x: 6,
         y: 0,
@@ -4413,8 +4413,8 @@ describe('External API v2 Dashboards - new format', () => {
 
     it('should update dashboard filters when provided', async () => {
       const dashboard = await createTestDashboard();
-      const filterId1 = new ObjectId().toString();
-      const filterId2 = new ObjectId().toString();
+      const filterId1 = newId();
+      const filterId2 = newId();
       const updatedPayload = createMockDashboardWithIds(
         traceSource._id.toString(),
         {
@@ -4479,8 +4479,8 @@ describe('External API v2 Dashboards - new format', () => {
     });
 
     it('should preserve existing dashboard filters when filters are not provided', async () => {
-      const existingFilterId1 = new ObjectId().toString();
-      const existingFilterId2 = new ObjectId().toString();
+      const existingFilterId1 = newId();
+      const existingFilterId2 = newId();
       const existingFilters = [
         {
           id: existingFilterId1,
@@ -4538,7 +4538,7 @@ describe('External API v2 Dashboards - new format', () => {
     });
 
     it('should round-trip the filter variable settings', async () => {
-      const filterId = new ObjectId().toString();
+      const filterId = newId();
       const storedFilter = {
         id: filterId,
         type: 'QUERY_EXPRESSION' as const,
@@ -4586,7 +4586,7 @@ describe('External API v2 Dashboards - new format', () => {
     });
 
     it('should clear the filter variable settings when an update omits them', async () => {
-      const filterId = new ObjectId().toString();
+      const filterId = newId();
       const storedFilter = {
         id: filterId,
         type: 'QUERY_EXPRESSION' as const,
@@ -4642,8 +4642,8 @@ describe('External API v2 Dashboards - new format', () => {
     // combination the write schema now rejects. Reads drop the ignored fields
     // so such a dashboard still survives a GET -> PUT.
     it('omits the ignored fields on read so a stored filter round-trips', async () => {
-      const variableOnlyId = new ObjectId().toString();
-      const broadcastOnlyId = new ObjectId().toString();
+      const variableOnlyId = newId();
+      const broadcastOnlyId = newId();
       const dashboard = await createTestDashboard({
         filters: [
           {
@@ -4713,8 +4713,8 @@ describe('External API v2 Dashboards - new format', () => {
     });
 
     it('should clear existing dashboard filters when provided an empty filters array', async () => {
-      const existingFilterId1 = new ObjectId().toString();
-      const existingFilterId2 = new ObjectId().toString();
+      const existingFilterId1 = newId();
+      const existingFilterId2 = newId();
       const existingFilters = [
         {
           id: existingFilterId1,
@@ -4764,14 +4764,14 @@ describe('External API v2 Dashboards - new format', () => {
 
     it('should return 400 when filter source ID does not exist on update', async () => {
       const dashboard = await createTestDashboard();
-      const nonExistentSourceId = new ObjectId().toString();
+      const nonExistentSourceId = newId();
       const updatedPayload = createMockDashboardWithIds(
         traceSource._id.toString(),
         {
           name: 'Updated Name',
           filters: [
             {
-              id: new ObjectId().toString(),
+              id: newId(),
               type: 'QUERY_EXPRESSION' as const,
               name: 'Bad Source Filter',
               expression: 'environment',
@@ -4791,7 +4791,7 @@ describe('External API v2 Dashboards - new format', () => {
     });
 
     it('should return 404 when dashboard does not exist', async () => {
-      const nonExistentId = new ObjectId().toString();
+      const nonExistentId = newId();
       const mockDashboard = createMockDashboardWithIds(
         traceSource._id.toString(),
       );
@@ -4820,7 +4820,7 @@ describe('External API v2 Dashboards - new format', () => {
 
       // Second PUT: one tile with the existing ID (should be preserved),
       // one tile with an unrecognized ID (should be replaced)
-      const unknownTileId = new ObjectId().toString();
+      const unknownTileId = newId();
       const response = await authRequest('put', `${BASE_URL}/${dashboard._id}`)
         .send({
           name: 'Updated',
@@ -4853,7 +4853,7 @@ describe('External API v2 Dashboards - new format', () => {
           tags: [],
           filters: [
             {
-              id: new ObjectId().toString(),
+              id: newId(),
               type: 'QUERY_EXPRESSION' as const,
               name: 'Environment',
               expression: 'environment',
@@ -4866,7 +4866,7 @@ describe('External API v2 Dashboards - new format', () => {
 
       // Second PUT: one filter with the existing ID (should be preserved),
       // one filter with an unrecognized ID (should be replaced)
-      const unknownFilterId = new ObjectId().toString();
+      const unknownFilterId = newId();
       const response = await authRequest('put', `${BASE_URL}/${dashboard._id}`)
         .send({
           name: 'Updated',
@@ -4900,7 +4900,7 @@ describe('External API v2 Dashboards - new format', () => {
     it('can round-trip all supported chart types and all supported fields on each chart type', async () => {
       // Arrange
       const lineChart: ExternalDashboardTileWithId = {
-        id: new ObjectId().toString(),
+        id: newId(),
         name: 'Line Chart',
         x: 0,
         y: 0,
@@ -4949,7 +4949,7 @@ describe('External API v2 Dashboards - new format', () => {
       };
 
       const barChart: ExternalDashboardTileWithId = {
-        id: new ObjectId().toString(),
+        id: newId(),
         name: 'Bar Chart',
         x: 6,
         y: 0,
@@ -4981,7 +4981,7 @@ describe('External API v2 Dashboards - new format', () => {
       };
 
       const tableChart: ExternalDashboardTileWithId = {
-        id: new ObjectId().toString(),
+        id: newId(),
         name: 'Table Chart',
         x: 12,
         y: 0,
@@ -5036,7 +5036,7 @@ describe('External API v2 Dashboards - new format', () => {
       };
 
       const numberChart: ExternalDashboardTileWithId = {
-        id: new ObjectId().toString(),
+        id: newId(),
         name: 'Number Chart',
         x: 18,
         y: 0,
@@ -5090,7 +5090,7 @@ describe('External API v2 Dashboards - new format', () => {
       };
 
       const markdownChart: ExternalDashboardTileWithId = {
-        id: new ObjectId().toString(),
+        id: newId(),
         name: 'Markdown Chart',
         x: 0,
         y: 3,
@@ -5103,7 +5103,7 @@ describe('External API v2 Dashboards - new format', () => {
       };
 
       const heatmapChart: ExternalDashboardTileWithId = {
-        id: new ObjectId().toString(),
+        id: newId(),
         name: 'Heatmap Chart',
         x: 6,
         y: 3,
@@ -5130,7 +5130,7 @@ describe('External API v2 Dashboards - new format', () => {
       };
 
       const eventPatternsChart: ExternalDashboardTileWithId = {
-        id: new ObjectId().toString(),
+        id: newId(),
         name: 'Event Patterns',
         x: 12,
         y: 3,
@@ -5198,7 +5198,7 @@ describe('External API v2 Dashboards - new format', () => {
       const sqlTemplate = 'SELECT count() FROM otel_logs WHERE {timeFilter}';
 
       const lineRawSql: ExternalDashboardTileWithId = {
-        id: new ObjectId().toString(),
+        id: newId(),
         name: 'Line Raw SQL',
         x: 0,
         y: 0,
@@ -5219,7 +5219,7 @@ describe('External API v2 Dashboards - new format', () => {
       };
 
       const barRawSql: ExternalDashboardTileWithId = {
-        id: new ObjectId().toString(),
+        id: newId(),
         name: 'Bar Raw SQL',
         x: 6,
         y: 0,
@@ -5238,7 +5238,7 @@ describe('External API v2 Dashboards - new format', () => {
       };
 
       const tableRawSql: ExternalDashboardTileWithId = {
-        id: new ObjectId().toString(),
+        id: newId(),
         name: 'Table Raw SQL',
         x: 0,
         y: 3,
@@ -5263,7 +5263,7 @@ describe('External API v2 Dashboards - new format', () => {
       };
 
       const numberRawSql: ExternalDashboardTileWithId = {
-        id: new ObjectId().toString(),
+        id: newId(),
         name: 'Number Raw SQL',
         x: 6,
         y: 3,
@@ -5282,7 +5282,7 @@ describe('External API v2 Dashboards - new format', () => {
       };
 
       const pieRawSql: ExternalDashboardTileWithId = {
-        id: new ObjectId().toString(),
+        id: newId(),
         name: 'Pie Raw SQL',
         x: 12,
         y: 3,
@@ -5298,7 +5298,7 @@ describe('External API v2 Dashboards - new format', () => {
       };
 
       const categoricalBarRawSql: ExternalDashboardTileWithId = {
-        id: new ObjectId().toString(),
+        id: newId(),
         name: 'Categorical Bar Raw SQL',
         x: 18,
         y: 3,
@@ -5355,7 +5355,7 @@ describe('External API v2 Dashboards - new format', () => {
 
     it('should return 400 when source IDs do not exist', async () => {
       const dashboard = await createTestDashboard();
-      const nonExistentSourceId = new ObjectId().toString();
+      const nonExistentSourceId = newId();
       const updatedDashboard = createMockDashboardWithIds(nonExistentSourceId, {
         name: 'Updated Dashboard Name',
       });
@@ -5373,7 +5373,7 @@ describe('External API v2 Dashboards - new format', () => {
       const dashboard = await createTestDashboard();
       const otherTeamConnection = await seedConnection({
         kind: 'couchbase',
-        team: new ObjectId(),
+        team: newId(),
         name: 'Other Team Connection',
         host: config.CLICKHOUSE_HOST,
         username: config.CLICKHOUSE_USER,
@@ -5386,7 +5386,7 @@ describe('External API v2 Dashboards - new format', () => {
           name: 'Updated Dashboard with Foreign Connection',
           tiles: [
             {
-              id: new ObjectId().toString(),
+              id: newId(),
               name: 'Raw SQL Tile',
               x: 0,
               y: 0,
@@ -5425,7 +5425,7 @@ describe('External API v2 Dashboards - new format', () => {
           name: 'Updated Dashboard with Mismatched Source Connection',
           tiles: [
             {
-              id: new ObjectId().toString(),
+              id: newId(),
               name: 'Raw SQL Tile',
               x: 0,
               y: 0,
@@ -5451,14 +5451,14 @@ describe('External API v2 Dashboards - new format', () => {
 
     it('should return 400 on update when a table tile onClick references a non-existent dashboard', async () => {
       const dashboard = await createTestDashboard();
-      const nonExistentDashboardId = new ObjectId().toString();
+      const nonExistentDashboardId = newId();
 
       const response = await authRequest('put', `${BASE_URL}/${dashboard._id}`)
         .send({
           name: 'Updated Dashboard',
           tiles: [
             {
-              id: new ObjectId().toString(),
+              id: newId(),
               name: 'Table Chart',
               x: 0,
               y: 0,
@@ -5487,14 +5487,14 @@ describe('External API v2 Dashboards - new format', () => {
 
     it('should return 400 on update when a table tile onClick references a non-existent source', async () => {
       const dashboard = await createTestDashboard();
-      const nonExistentSourceId = new ObjectId().toString();
+      const nonExistentSourceId = newId();
 
       const response = await authRequest('put', `${BASE_URL}/${dashboard._id}`)
         .send({
           name: 'Updated Dashboard',
           tiles: [
             {
-              id: new ObjectId().toString(),
+              id: newId(),
               name: 'Table Chart',
               x: 0,
               y: 0,
@@ -5522,7 +5522,7 @@ describe('External API v2 Dashboards - new format', () => {
     });
 
     it('should delete alert when tile is updated from builder to raw SQL config and the display type does not support alerts', async () => {
-      const tileId = new ObjectId().toString();
+      const tileId = newId();
       const dashboard = await createTestDashboard({
         tiles: [
           {
@@ -5561,7 +5561,7 @@ describe('External API v2 Dashboards - new format', () => {
       });
 
       // Create a standalone alert for the builder tile
-      const alert = await alertDocs.create({
+      const alert = await seedAlert({
         team: team._id,
         dashboard: dashboard._id,
         tileId,
@@ -5572,7 +5572,7 @@ describe('External API v2 Dashboards - new format', () => {
         channel: { type: 'webhook', webhookId: webhook._id.toString() },
       });
 
-      expect(await alertDocs.findById(alert._id)).not.toBeNull();
+      expect(await getAlert(alert._id)).not.toBeNull();
 
       // Update the tile to raw SQL config (same tile ID)
       await authRequest('put', `${BASE_URL}/${dashboard._id}`)
@@ -5598,11 +5598,11 @@ describe('External API v2 Dashboards - new format', () => {
         })
         .expect(200);
 
-      expect(await alertDocs.findById(alert._id)).toBeNull();
+      expect(await getAlert(alert._id)).toBeNull();
     });
 
     it('rejects updating a tile from builder to PromQL config', async () => {
-      const tileId = new ObjectId().toString();
+      const tileId = newId();
       const dashboard = await createTestDashboard({
         tiles: [
           {
@@ -5652,8 +5652,8 @@ describe('External API v2 Dashboards - new format', () => {
     });
 
     it('should delete alert when a tile with an alert is removed from the dashboard', async () => {
-      const keepTileId = new ObjectId().toString();
-      const removeTileId = new ObjectId().toString();
+      const keepTileId = newId();
+      const removeTileId = newId();
       const dashboard = await createTestDashboard({
         tiles: [
           {
@@ -5716,7 +5716,7 @@ describe('External API v2 Dashboards - new format', () => {
         team: team._id,
       });
 
-      const alert = await alertDocs.create({
+      const alert = await seedAlert({
         team: team._id,
         dashboard: dashboard._id,
         tileId: removeTileId,
@@ -5727,7 +5727,7 @@ describe('External API v2 Dashboards - new format', () => {
         channel: { type: 'webhook', webhookId: webhook._id.toString() },
       });
 
-      expect(await alertDocs.findById(alert._id)).not.toBeNull();
+      expect(await getAlert(alert._id)).not.toBeNull();
 
       // Update the dashboard, omitting the tile that had an alert
       await authRequest('put', `${BASE_URL}/${dashboard._id}`)
@@ -5752,13 +5752,13 @@ describe('External API v2 Dashboards - new format', () => {
         })
         .expect(200);
 
-      expect(await alertDocs.findById(alert._id)).toBeNull();
+      expect(await getAlert(alert._id)).toBeNull();
     });
 
     it('does not re-validate heatmap source-kind for unchanged heatmap tiles', async () => {
       // Create a dashboard with a heatmap on a valid Trace source.
-      const heatmapTileId = new ObjectId().toString();
-      const otherTileId = new ObjectId().toString();
+      const heatmapTileId = newId();
+      const otherTileId = newId();
       const createResponse = await authRequest('post', BASE_URL)
         .send({
           name: 'Heatmap PUT scoping test',
@@ -5866,7 +5866,7 @@ describe('External API v2 Dashboards - new format', () => {
   // rule runs against both request paths.
   describe.each(['post', 'put'] as const)('filter validation (%s)', method => {
     const filterInput = (overrides = {}) => ({
-      id: new ObjectId().toString(),
+      id: newId(),
       type: 'QUERY_EXPRESSION' as const,
       name: 'Service Name',
       expression: 'ServiceName',
@@ -5875,7 +5875,7 @@ describe('External API v2 Dashboards - new format', () => {
     });
 
     const staticFilterInput = (overrides = {}) => ({
-      id: new ObjectId().toString(),
+      id: newId(),
       type: 'STATIC_LIST' as const,
       name: 'Environment',
       options: ['prod', 'staging', 'dev'],
@@ -5886,7 +5886,7 @@ describe('External API v2 Dashboards - new format', () => {
     });
 
     const promqlFilterInput = (overrides = {}) => ({
-      id: new ObjectId().toString(),
+      id: newId(),
       type: 'PROMETHEUS_LABEL' as const,
       name: 'Pod',
       sourceId: promqlSource._id.toString(),
@@ -6478,7 +6478,7 @@ describe('External API v2 Dashboards - new format', () => {
       });
 
       it('rejects a source that does not exist for the team', async () => {
-        const sourceId = new ObjectId().toString();
+        const sourceId = newId();
         const response = await sendFilters([promqlFilterInput({ sourceId })]);
 
         expect(response.status).toBe(400);
@@ -6836,7 +6836,7 @@ describe('External API v2 Dashboards - new format', () => {
       const dashboardId = create.body.data.id;
 
       // Simulate a tile saved during the #2265 window by writing a legacy
-      // numeric token directly to Mongo (the `tiles` field is `Mixed`, so
+      // numeric token directly to the store (the `tiles` field is untyped, so
       // this bypasses the create-path enum).
       await setDashboardPaths(dashboardId, {
         'tiles.0.config.color': 'chart-1',
@@ -6855,7 +6855,7 @@ describe('External API v2 Dashboards - new format', () => {
       }).expect(200);
       const dashboardId = create.body.data.id;
 
-      // Direct Mongo write: a legacy numeric token (normalized to its hue
+      // Direct the store write: a legacy numeric token (normalized to its hue
       // name on read) and an unrecognized token (dropped on read so the
       // response stays within the palette-token enum). Neither is reachable
       // through the validated create path.
@@ -6881,7 +6881,7 @@ describe('External API v2 Dashboards - new format', () => {
       }).expect(200);
       const dashboardId = create.body.data.id;
 
-      // Direct Mongo write of an unresolvable token (not reachable via the
+      // Direct the store write of an unresolvable token (not reachable via the
       // validated create path); the only rule drops, so the field is omitted
       // rather than returned as an empty array.
       await setDashboardPaths(dashboardId, {
@@ -7449,7 +7449,7 @@ describe('External API v2 Dashboards - new format', () => {
       const dashboardId = created.body.data.id;
       const tile = created.body.data.tiles[0];
 
-      // `kind` is the Mongoose discriminator key, which updateOne silently
+      // `kind` is the kind discriminator key, which updateOne silently
       // strips from $set — write through the raw collection instead, the
       // same way a source-replace API call would leave the doc.
       await patchSource(metricSource._id, { kind: SourceKind.Session });
@@ -7496,7 +7496,7 @@ describe('External API v2 Dashboards - new format', () => {
       sourceId: string,
       overrides: Partial<ExternalDashboardTileWithId> = {},
     ): ExternalDashboardTileWithId => ({
-      id: new ObjectId().toString(),
+      id: newId(),
       name: 'Tile',
       x: 0,
       y: 0,
@@ -8029,10 +8029,10 @@ describe('External API v2 Dashboards - new format', () => {
       expect(resp.body.message).toContain('tiles');
     });
 
-    // Older Mongo docs predate the containers feature and `tiles: Mixed`
+    // Older the store docs predate the containers feature and untyped
     // doesn't enforce `min(1)`. A doc with `containerId: ""` left over
     // from earlier code paths must round-trip on read as if absent so
-    // a subsequent PUT can validate. Insert directly into Mongo so we
+    // a subsequent PUT can validate. Insert directly into the store so we
     // bypass the create-path schema (which now rejects empty strings).
     it('treats an empty-string containerId on a legacy doc as absent on read', async () => {
       const sourceId = traceSource._id.toString();
@@ -8046,7 +8046,7 @@ describe('External API v2 Dashboards - new format', () => {
         .expect(200);
       const dashboardId = created.body.data.id;
 
-      // Mutate Mongo directly to simulate the legacy state.
+      // Mutate the store directly to simulate the legacy state.
       await setDashboardPaths(dashboardId, {
         'tiles.0.containerId': '',
         'tiles.0.tabId': '',
@@ -8150,7 +8150,7 @@ describe('External API v2 Dashboards - new format', () => {
       );
     });
 
-    // Critical P2-4 regression: a Mongo doc with a tile.containerId
+    // Critical P2-4 regression: a the store doc with a tile.containerId
     // that no longer matches any container in the doc (a container
     // got removed without re-homing the tile, or the doc predates
     // the containers feature) must round-trip as if the ref were
@@ -8176,8 +8176,8 @@ describe('External API v2 Dashboards - new format', () => {
         .expect(200);
       const dashboardId = created.body.data.id;
 
-      // Mutate Mongo directly to plant an orphan ref. `tiles` is
-      // `Mixed`, so the model layer doesn't enforce ref consistency;
+      // Mutate the store directly to plant an orphan ref. `tiles` is
+      // untyped, so the model layer doesn't enforce ref consistency;
       // historical writes (or future bugs) can leave the doc in this
       // shape.
       await setDashboardPaths(dashboardId, {
@@ -8340,7 +8340,7 @@ describe('External API v2 Dashboards - new format', () => {
 
   describe('ad hoc filters', () => {
     const adhocFilter = () => ({
-      id: new ObjectId().toString(),
+      id: newId(),
       type: 'ADHOC' as const,
       name: 'Ad hoc',
       sourceType: 'sql' as const,

@@ -63,13 +63,10 @@ export function mcpServerError(text: string): McpErrorResult {
 }
 
 /**
- * Validate that a string is a valid MongoDB ObjectId.
+ * Validate that a string is a valid 24-hex metadata id.
  * Returns an MCP error result if invalid, or `null` if valid.
  */
-export function validateObjectId(
-  id: string,
-  label: string,
-): McpErrorResult | null {
+export function validateId(id: string, label: string): McpErrorResult | null {
   if (!isValidId(id)) {
     return mcpUserError(`Invalid ${label}`);
   }

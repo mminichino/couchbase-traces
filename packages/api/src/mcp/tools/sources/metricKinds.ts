@@ -67,17 +67,11 @@ const ALLOWED_METRIC_TABLE_KINDS: readonly string[] =
  * Filter source.metricTables to the known kind keys before emitting it
  * in a clickstack_list_sources / clickstack_describe_source response.
  *
- * Belt-and-braces defense: even after the model schema declares
- * `_id: false` on the metricTables subdoc, existing documents persisted
- * before the schema fix may still carry a stray `_id` value that
- * Mongoose serialises alongside the legitimate kind keys. Filtering at
- * the response boundary keeps the agent-facing payload free of
- * implementation-detail keys.
+ * Belt-and-braces defense: a stored document may carry a stray `_id` or other
+ * implementation-detail key next to the legitimate kind keys. Filtering at
+ * the response boundary keeps the agent-facing payload free of them.
  *
- * Accepts both plain objects and Mongoose subdocuments — we look up
- * each allowed kind via property access rather than enumerating keys,
- * because Mongoose subdoc instances expose field values through getters
- * (not as own enumerable properties).
+ * Kinds are looked up by property access rather than by enumerating keys.
  */
 export function sanitizeMetricTables(
   metricTables: Record<string, unknown> | undefined | null,

@@ -6,7 +6,6 @@ import {
   MetricsDataType,
   SourceKind,
 } from '@couchbase-traces/common-utils/dist/types';
-import mongoose from 'mongoose';
 import request, { SuperAgentTest } from 'supertest';
 
 import * as config from '@/config';
@@ -16,6 +15,7 @@ import {
   getLoggedInAgent,
   getServer,
 } from '@/fixtures';
+import { newId } from '@/metadata/ids';
 import { IConnection } from '@/metadata/schemas/connection';
 import { ISource } from '@/metadata/schemas/source';
 import type { ITeam } from '@/metadata/schemas/team';
@@ -25,7 +25,6 @@ import {
   seedRawSource,
   seedSource,
 } from '@/metadata/testing/seed';
-import { toObjectId } from '@/models';
 
 describe('External API v2 Sources', () => {
   const server = getServer();
@@ -443,7 +442,7 @@ describe('External API v2 Sources', () => {
       });
 
       // Create another team and source
-      const otherTeamId = new mongoose.Types.ObjectId();
+      const otherTeamId = newId();
       const otherConnection = await seedConnection({
         kind: 'couchbase',
         team: otherTeamId,
@@ -492,12 +491,12 @@ describe('External API v2 Sources', () => {
 
       expect(response.body.data).toHaveLength(1);
 
-      // Verify that MongoDB _id is converted to string id
+      // Verify that the store _id is converted to string id
       expect(response.body.data[0]).toHaveProperty('id');
       expect(response.body.data[0]).not.toHaveProperty('_id');
       expect(typeof response.body.data[0].id).toBe('string');
 
-      // Verify connection ObjectId is converted to string
+      // Verify connection ids is converted to string
       expect(typeof response.body.data[0].connection).toBe('string');
 
       // Verify team field is not included (internal field)
@@ -519,12 +518,12 @@ describe('External API v2 Sources', () => {
         connection: connection._id,
       });
 
-      // Create an invalid source by bypassing Mongoose validation
+      // Create an invalid source by bypassing the model layer
       // This simulates a source that might exist in the database but doesn't
       // match the SourceSchema (e.g., due to schema evolution)
       await seedRawSource({
         kind: 'invalid-kind', // Invalid kind
-        team: toObjectId(team._id),
+        team: team._id,
         name: 'Invalid Source',
         from: {
           databaseName: DEFAULT_DATABASE,
@@ -546,7 +545,7 @@ describe('External API v2 Sources', () => {
       it('returns the section on a source that has one', async () => {
         const logSource = await seedSource({
           kind: SourceKind.Log,
-          team: toObjectId(team._id),
+          team: team._id,
           name: 'Sectioned Log Source',
           section: SECTION,
           from: {
@@ -599,7 +598,7 @@ describe('External API v2 Sources', () => {
       await seedRawSource({
         kind: SourceKind.Session,
         name: 'Legacy Session',
-        team: toObjectId(team._id),
+        team: team._id,
         connection: connection._id,
         from: { databaseName: DEFAULT_DATABASE, tableName: 'otel_sessions' },
         traceSourceId: 'some-trace-source-id',
@@ -624,7 +623,7 @@ describe('External API v2 Sources', () => {
       await seedRawSource({
         kind: SourceKind.Trace,
         name: 'Trace with null logSourceId',
-        team: toObjectId(team._id),
+        team: team._id,
         connection: connection._id,
         from: { databaseName: DEFAULT_DATABASE, tableName: 'otel_traces' },
         timestampValueExpression: 'Timestamp',
@@ -649,12 +648,12 @@ describe('External API v2 Sources', () => {
 
     it('strips cross-kind fields from legacy flat-model Log source via SourceSchema.safeParse', async () => {
       // The external API runs SourceSchema.safeParse() which DOES strip
-      // unknown/cross-kind fields (unlike Mongoose toJSON which keeps them).
+      // unknown/cross-kind fields (unlike the model layer toJSON which keeps them).
       // This is the key difference between internal and external APIs.
       await seedRawSource({
         kind: SourceKind.Log,
         name: 'Flat Model Log',
-        team: toObjectId(team._id),
+        team: team._id,
         connection: connection._id,
         from: { databaseName: DEFAULT_DATABASE, tableName: DEFAULT_LOGS_TABLE },
         timestampValueExpression: 'Timestamp',

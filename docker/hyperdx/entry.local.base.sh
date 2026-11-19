@@ -13,7 +13,6 @@ export OPAMP_PORT=${CBT_OPAMP_PORT:-4320}
 
 # Internal Services
 export EVAL_STORE_ENDPOINT="${EVAL_STORE_ENDPOINT:-tcp://ch-server:9000?dial_timeout=10s}"
-export MONGO_URI="mongodb://db:27017/hyperdx"
 export OPAMP_SERVER_URL="http://127.0.0.1:${OPAMP_PORT}"
 export EVAL_STORE_PROMETHEUS_METRICS_ENDPOINT="${EVAL_STORE_PROMETHEUS_METRICS_ENDPOINT:-ch-server:9363}"
 
@@ -43,7 +42,6 @@ fi
 
 # Simulate Docker Service DNS
 echo "127.0.0.1      ch-server" >> /etc/hosts
-echo "127.0.0.1      db" >> /etc/hosts
 
 echo ""
 echo "Send OpenTelemetry data via:
@@ -55,9 +53,6 @@ echo "Exporting data to legacy store:
 "
 
 /entrypoint.sh > /var/log/evalstore.log 2>&1 &
-
-# Start Mongo Server
-mongod --quiet --dbpath /data/db > /var/log/mongod.log 2>&1 &
 
 # Wait for Cluster to be ready
 while ! curl -s "http://ch-server:8123" > /dev/null; do

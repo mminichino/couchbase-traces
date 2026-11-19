@@ -1,5 +1,4 @@
 import { SourceKind } from '@couchbase-traces/common-utils/dist/types';
-import mongoose from 'mongoose';
 import request, { SuperAgentTest } from 'supertest';
 
 import * as config from '@/config';
@@ -10,16 +9,17 @@ import {
   getServer,
 } from '@/fixtures';
 import { getMetadataStore } from '@/metadata';
+import { newId } from '@/metadata/ids';
 import { AlertSource, AlertState } from '@/metadata/schemas/alert';
 import type { ITeam } from '@/metadata/schemas/team';
 import type { IUser } from '@/metadata/schemas/user';
+import { listAlerts, seedAlert } from '@/metadata/testing/alertFixtures';
 import {
   findSavedSearch,
   seedConnection,
   seedSavedSearch,
   seedSource,
 } from '@/metadata/testing/seed';
-import { alertDocs } from '@/metadata/testing/seedAlerts';
 
 const BASE_URL = '/api/v2/saved-searches';
 
@@ -85,9 +85,9 @@ describe('External API v2 Saved Searches CRUD', () => {
 
   const createOtherTeamSavedSearch = () =>
     seedSavedSearch({
-      team: new mongoose.Types.ObjectId(),
+      team: newId(),
       name: 'Other Team Search',
-      source: new mongoose.Types.ObjectId(),
+      source: newId(),
       whereLanguage: 'lucene',
     });
 
@@ -119,7 +119,7 @@ describe('External API v2 Saved Searches CRUD', () => {
     });
 
     it('should reject a sourceId that does not belong to the team', async () => {
-      const otherSourceId = new mongoose.Types.ObjectId().toString();
+      const otherSourceId = newId();
       const response = await authRequest('post', BASE_URL)
         .send({ ...savedSearchBody(), sourceId: otherSourceId })
         .expect(400);
@@ -132,12 +132,12 @@ describe('External API v2 Saved Searches CRUD', () => {
       // the lookup to the caller's team, preventing cross-team references.
       const otherTeamSource = await seedSource({
         kind: SourceKind.Log,
-        team: new mongoose.Types.ObjectId(),
+        team: newId(),
         name: 'Other Team Logs',
         from: { databaseName: DEFAULT_DATABASE, tableName: DEFAULT_LOGS_TABLE },
         timestampValueExpression: 'Timestamp',
         defaultTableSelectExpression: 'Timestamp, Body',
-        connection: new mongoose.Types.ObjectId(),
+        connection: newId(),
       });
       const response = await authRequest('post', BASE_URL)
         .send({
@@ -511,7 +511,7 @@ describe('External API v2 Saved Searches CRUD', () => {
         .send(savedSearchBody())
         .expect(200);
 
-      const otherSourceId = new mongoose.Types.ObjectId().toString();
+      const otherSourceId = newId();
       const response = await authRequest(
         'put',
         `${BASE_URL}/${created.body.data.id}`,
@@ -547,7 +547,7 @@ describe('External API v2 Saved Searches CRUD', () => {
         .expect(200);
       const savedSearchId = created.body.data.id;
 
-      await alertDocs.create({
+      await seedAlert({
         team: team._id,
         savedSearch: savedSearchId,
         source: AlertSource.SAVED_SEARCH,
@@ -562,7 +562,9 @@ describe('External API v2 Saved Searches CRUD', () => {
       expect(await findSavedSearch(savedSearchId)).toBeNull();
       // Dependent alerts must not be orphaned.
       expect(
-        await alertDocs.countDocuments({ savedSearch: savedSearchId }),
+        await (
+          await listAlerts(a => a.savedSearch === savedSearchId)
+        ).length,
       ).toBe(0);
     });
 
@@ -574,7 +576,7 @@ describe('External API v2 Saved Searches CRUD', () => {
         .expect(200);
       const savedSearchId = created.body.data.id;
 
-      await alertDocs.create({
+      await seedAlert({
         team: team._id,
         savedSearch: savedSearchId,
         source: AlertSource.SAVED_SEARCH,
@@ -601,7 +603,9 @@ describe('External API v2 Saved Searches CRUD', () => {
       }
 
       expect(
-        await alertDocs.countDocuments({ savedSearch: savedSearchId }),
+        await (
+          await listAlerts(a => a.savedSearch === savedSearchId)
+        ).length,
       ).toBe(1);
       expect(await findSavedSearch(savedSearchId)).not.toBeNull();
     });

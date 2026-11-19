@@ -8,7 +8,7 @@ import {
   removeFavorite,
 } from '@/controllers/favorite';
 import { getNonNullUserWithTeam } from '@/middleware/auth';
-import { objectIdSchema } from '@/utils/zod';
+import { idSchema } from '@/utils/zod';
 
 const router = express.Router();
 
@@ -31,7 +31,7 @@ router.put(
   validateRequest({
     body: z.object({
       resourceType: resourceTypeSchema,
-      resourceId: objectIdSchema,
+      resourceId: idSchema,
     }),
   }),
   async (req, res, next) => {
@@ -57,7 +57,7 @@ router.delete(
   validateRequest({
     params: z.object({
       resourceType: resourceTypeSchema,
-      resourceId: objectIdSchema,
+      resourceId: idSchema,
     }),
   }),
   async (req, res, next) => {

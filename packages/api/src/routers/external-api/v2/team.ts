@@ -13,7 +13,7 @@ import {
   findUserByEmail,
   findUsersByTeam,
 } from '@/controllers/user';
-import { objectIdSchema } from '@/utils/zod';
+import { idSchema } from '@/utils/zod';
 
 const router = express.Router();
 
@@ -213,7 +213,7 @@ router.get('/invitations', async (req, res, next) => {
  */
 router.delete(
   '/invitation/:id',
-  validateRequest({ params: z.object({ id: objectIdSchema }) }),
+  validateRequest({ params: z.object({ id: idSchema }) }),
   async (req, res, next) => {
     try {
       const teamId = req.user?.team;
@@ -258,7 +258,7 @@ router.delete(
  */
 router.delete(
   '/member/:id',
-  validateRequest({ params: z.object({ id: objectIdSchema }) }),
+  validateRequest({ params: z.object({ id: idSchema }) }),
   async (req, res, next) => {
     try {
       const teamId = req.user?.team;

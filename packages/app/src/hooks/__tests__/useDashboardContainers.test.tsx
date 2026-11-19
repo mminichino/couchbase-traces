@@ -202,7 +202,7 @@ describe('useDashboardContainers', () => {
   });
 
   describe('legacy dashboard upgrade path', () => {
-    // Simulates a dashboard stored in MongoDB before the unified-group changes:
+    // Simulates a dashboard stored in the store before the unified-group changes:
     // containers have `type: 'section'`, no tabs/tabId fields, no collapsible/bordered.
     const legacyDashboard = makeDashboard({
       containers: [

@@ -6,7 +6,7 @@ import { getMetadataStore } from '@/metadata';
 import type { AlertsCursor, AlertsPageFilter } from '@/metadata/repos/alerts';
 import { AlertSource, AlertState, type IAlert } from '@/metadata/schemas/alert';
 import { decodeCursor, encodeCursor } from '@/utils/pagination';
-import { objectIdSchema, stringListQueryParam, tagsSchema } from '@/utils/zod';
+import { idSchema, stringListQueryParam, tagsSchema } from '@/utils/zod';
 
 const MAX_PAGE_LIMIT = 500;
 
@@ -22,7 +22,7 @@ const ALERT_FILTER_STATES = [
 /** The page cursor's payload: the sort key of the last item on the page. */
 const alertsPageCursorSchema = z.object({
   n: z.string().nullable(),
-  id: objectIdSchema,
+  id: idSchema,
 });
 
 /** Filter parameters shared by the internal alerts page and the v2 list endpoint. */
@@ -61,7 +61,7 @@ export const alertsPageQuerySchema = z
     /** The cursor pointing to the last item of the previous page, if there was a previous page */
     cursor: z.string().optional(),
     /** A user ID, to filter for alerts created by a specific user */
-    createdBy: objectIdSchema.optional(),
+    createdBy: idSchema.optional(),
     ...alertsFilterShape,
   })
   .superRefine((query, ctx) => {

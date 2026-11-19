@@ -52,7 +52,7 @@ import {
   statsWindow,
   type TaskStatus,
 } from '@/utils/couchbaseStats';
-import { objectIdSchema } from '@/utils/zod';
+import { idSchema } from '@/utils/zod';
 
 const router = express.Router();
 
@@ -174,7 +174,7 @@ async function loadConnection(
   const { teamId } = getNonNullUserWithTeam(req);
   const connectionId =
     typeof req.params.connectionId === 'string' ? req.params.connectionId : '';
-  if (!objectIdSchema.safeParse(connectionId).success) {
+  if (!idSchema.safeParse(connectionId).success) {
     res.status(404).send();
     return null;
   }

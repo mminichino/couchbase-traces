@@ -24,7 +24,7 @@ export type SetupOptions = {
   waitTimeoutS: number;
   dryRun: boolean;
   docs: boolean;
-  /** App metadata bucket (MongoDB elimination plan D7); on unless --no-metadata. */
+  /** App metadata bucket (metadata plan D7); on unless --no-metadata. */
   metadata: boolean;
 };
 

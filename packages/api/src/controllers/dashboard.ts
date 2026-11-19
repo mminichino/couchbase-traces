@@ -62,7 +62,7 @@ export function recordDashboardOnboardingIfHasTiles(
  * canonical vocabulary so non-React HTTP clients (CI scripts, stale
  * bundle tabs during a rolling deploy, the upcoming external API
  * surface) never have to know about the legacy values, and so a
- * GET → unmodified PATCH round-trip on a Mongo-seeded legacy doc can
+ * GET → unmodified PATCH round-trip on a legacy doc can
  * never resurrect the legacy tokens through the strict server-side
  * `ChartPaletteTokenSchema`. The React-side
  * `normalizeDashboardTileColors` becomes redundant for the wire path

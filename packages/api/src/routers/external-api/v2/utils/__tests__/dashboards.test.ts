@@ -8,9 +8,9 @@ import {
   DisplayType,
   MetricsDataType,
 } from '@couchbase-traces/common-utils/dist/types';
-import mongoose from 'mongoose';
 import { z } from 'zod';
 
+import { newId } from '@/metadata/ids';
 import { IDashboard as DashboardDocument } from '@/metadata/schemas/dashboard';
 import {
   collectTileContainerRefIssues,
@@ -95,7 +95,7 @@ describe('convertToInternalTileConfig', () => {
       if (!isBuilderSavedChartConfig(result.config)) {
         throw new Error('Expected BuilderSavedChartConfig for markdown tile');
       }
-      expect(result.config.source).not.toMatch(/^[a-f0-9]{24}$/); // not a real ObjectId
+      expect(result.config.source).not.toMatch(/^[a-f0-9]{24}$/); // not a real id
     });
   });
 });
@@ -132,7 +132,7 @@ describe('tile description', () => {
               series: [
                 {
                   type: 'time',
-                  sourceId: new mongoose.Types.ObjectId().toString(),
+                  sourceId: newId(),
                   aggFn: 'count',
                   where: '',
                   groupBy: [],
@@ -357,14 +357,14 @@ describe('collectTileContainerRefIssues', () => {
   });
 });
 
-// `tiles` is `Mixed` in Mongoose, so the model layer enforces nothing and a
+// `tiles` is untyped, so the model layer enforces nothing and a
 // stored doc can hold shapes the TS types do not describe — an orphan container
 // ref, a select entry carrying a field its aggregation cannot use. Overrides are
 // loosely typed so a fixture can model that; the read-path heal is what these
 // tests are about.
 function makeDoc(overrides: Record<string, unknown> = {}): DashboardDocument {
   return {
-    _id: new mongoose.Types.ObjectId(),
+    _id: newId(),
     name: 'Test',
     tiles: [],
     tags: [],
@@ -473,7 +473,7 @@ describe('convertToExternalDashboard orphan-ref heal', () => {
             id: 'series-limit-tile',
             config: {
               displayType,
-              source: new mongoose.Types.ObjectId().toString(),
+              source: newId(),
               name: 'Series limit tile',
               select: [{ aggFn: 'count', valueExpression: '' }],
               where: '',
@@ -515,7 +515,7 @@ describe('convertToExternalDashboard stale aggregation params', () => {
         makeTile({
           config: {
             displayType: DisplayType.Line,
-            source: new mongoose.Types.ObjectId().toString(),
+            source: newId(),
             where: '',
             select,
             name: 'Tile',
@@ -641,7 +641,7 @@ describe('externalDashboardSelectItemSchema metric selects', () => {
         makeTile({
           config: {
             displayType: DisplayType.Line,
-            source: new mongoose.Types.ObjectId().toString(),
+            source: newId(),
             where: '',
             name: 'Metric tile',
             select: [

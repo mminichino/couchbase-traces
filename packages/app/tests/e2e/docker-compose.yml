@@ -1,4 +1,4 @@
-# Couchbase + Mongo for full-stack E2E. Host ports come from the E2E slot
+# Couchbase for full-stack E2E. Host ports come from the E2E slot
 # (see scripts/test-e2e.sh).
 name: hdx-e2e
 
@@ -24,20 +24,6 @@ services:
           cpus: '2.0'
         reservations:
           memory: 1G
-          cpus: '0.5'
-  db:
-    image: mongo:5.0.32-focal
-    ports:
-      - '${CBT_E2E_MONGO_PORT:-21100}:27017'
-    networks:
-      - internal
-    deploy:
-      resources:
-        limits:
-          memory: 1G
-          cpus: '2.0'
-        reservations:
-          memory: 512M
           cpus: '0.5'
 
 networks:

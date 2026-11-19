@@ -36,7 +36,7 @@ import { getNonNullUserWithTeam } from '@/middleware/auth';
 import { recordOperationOutcome } from '@/utils/instrumentation';
 import logger from '@/utils/logger';
 import { IPV6_BRACKET_RE, isPrivateIp } from '@/utils/validators';
-import { objectIdSchema } from '@/utils/zod';
+import { idSchema } from '@/utils/zod';
 
 // Both operations report their own SLIs because errors are returned as JSON
 // or NDJSON frames and never reach the API error middleware.
@@ -123,7 +123,7 @@ const testBodySchema = z.object({
   password: z.string().optional(),
   wanProfile: z.boolean().optional(),
   tlsCaCertificate: z.string().optional(),
-  connectionId: objectIdSchema.optional(),
+  connectionId: idSchema.optional(),
 });
 
 router.post('/test', async (req, res, next) => {
@@ -184,7 +184,7 @@ router.post('/test', async (req, res, next) => {
 });
 
 const testSourceBodySchema = z.object({
-  connectionId: objectIdSchema,
+  connectionId: idSchema,
   bucket: z.string().min(1),
   scope: z.string().min(1),
   collection: z.string().min(1),
@@ -241,7 +241,7 @@ router.post('/test-source', async (req, res, next) => {
 const settingSchema = z.object({ setting: z.string(), value: z.string() });
 
 const queryBodySchema = z.object({
-  connectionId: objectIdSchema,
+  connectionId: idSchema,
   statement: z
     .string()
     .min(1)

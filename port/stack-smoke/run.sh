@@ -42,7 +42,11 @@ teardown() {
 trap teardown EXIT
 
 require_service() {
-  if ! docker compose -f docker-compose.yml config --services 2>/dev/null | grep -qx "$1"; then
+  # Capture first: with pipefail, `grep -q` exiting early can SIGPIPE compose
+  # and make a present service look missing.
+  local services
+  services="$(docker compose -f docker-compose.yml config --services 2>/dev/null || true)"
+  if ! grep -qx "$1" <<<"$services"; then
     echo "[stack-smoke] SKIP: docker-compose.yml has no '$1' service (Couchbase product stack not merged yet)."
     exit 0
   fi
@@ -87,7 +91,7 @@ if [ "${CI:-}" = "true" ] || [ "${CBT_STACK_SMOKE_PRUNE:-}" = "1" ]; then
   df -h / || true
 fi
 # build-local.yml sets pull_policy: never on locally built images so compose
-# does not probe private GHCR tags. Public images (mongo, couchbase) still
+# does not probe private GHCR tags. Public images (couchbase) still
 # need a pull when missing — use --pull missing on up, not --pull never.
 # Build one image at a time so peak disk stays under the runner limit.
 export BUILDKIT_MAX_PARALLELISM="${BUILDKIT_MAX_PARALLELISM:-1}"
@@ -97,8 +101,8 @@ for svc in couchbase-init ingest otel-collector app; do
   docker builder prune -af || true
   df -h / || true
 done
-echo "[stack-smoke] pulling public images (mongo/couchbase) if missing"
-compose pull db couchbase || true
+echo "[stack-smoke] pulling public images (couchbase) if missing"
+compose pull couchbase || true
 compose up -d --pull missing
 
 wait_for_init() {

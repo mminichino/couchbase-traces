@@ -1,6 +1,5 @@
-import mongoose from 'mongoose';
-
 import { getLoggedInAgent, getServer } from '@/fixtures';
+import { newId } from '@/metadata/ids';
 
 describe('favorites router', () => {
   const server = getServer();
@@ -24,7 +23,7 @@ describe('favorites router', () => {
   });
 
   it('can add a dashboard favorite', async () => {
-    const resourceId = new mongoose.Types.ObjectId().toString();
+    const resourceId = newId();
     const res = await agent
       .put('/favorites')
       .send({ resourceType: 'dashboard', resourceId })
@@ -34,7 +33,7 @@ describe('favorites router', () => {
   });
 
   it('can add a savedSearch favorite', async () => {
-    const resourceId = new mongoose.Types.ObjectId().toString();
+    const resourceId = newId();
     const res = await agent
       .put('/favorites')
       .send({ resourceType: 'savedSearch', resourceId })
@@ -44,8 +43,8 @@ describe('favorites router', () => {
   });
 
   it('can list favorites', async () => {
-    const id1 = new mongoose.Types.ObjectId().toString();
-    const id2 = new mongoose.Types.ObjectId().toString();
+    const id1 = newId();
+    const id2 = newId();
     await agent
       .put('/favorites')
       .send({ resourceType: 'dashboard', resourceId: id1 })
@@ -63,7 +62,7 @@ describe('favorites router', () => {
   });
 
   it('can remove a favorite', async () => {
-    const resourceId = new mongoose.Types.ObjectId().toString();
+    const resourceId = newId();
     await agent
       .put('/favorites')
       .send({ resourceType: 'dashboard', resourceId })
@@ -76,7 +75,7 @@ describe('favorites router', () => {
   });
 
   it('adding duplicate favorite is idempotent', async () => {
-    const resourceId = new mongoose.Types.ObjectId().toString();
+    const resourceId = newId();
     await agent
       .put('/favorites')
       .send({ resourceType: 'dashboard', resourceId })
@@ -91,12 +90,12 @@ describe('favorites router', () => {
   });
 
   it('removing non-existent favorite returns 204', async () => {
-    const resourceId = new mongoose.Types.ObjectId().toString();
+    const resourceId = newId();
     await agent.delete(`/favorites/dashboard/${resourceId}`).expect(204);
   });
 
   it('rejects invalid resourceType', async () => {
-    const resourceId = new mongoose.Types.ObjectId().toString();
+    const resourceId = newId();
     await agent
       .put('/favorites')
       .send({ resourceType: 'invalid', resourceId })
@@ -106,7 +105,7 @@ describe('favorites router', () => {
   it('rejects invalid resourceId', async () => {
     await agent
       .put('/favorites')
-      .send({ resourceType: 'dashboard', resourceId: 'not-an-objectid' })
+      .send({ resourceType: 'dashboard', resourceId: 'not-a-valid-id' })
       .expect(400);
   });
 });

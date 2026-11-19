@@ -1,12 +1,8 @@
 import { SourceKind } from '@couchbase-traces/common-utils/dist/types';
 
-import {
-  getAgent,
-  getLoggedInAgent,
-  getServer,
-  randomMongoId,
-} from '@/fixtures';
+import { getAgent, getLoggedInAgent, getServer, randomId } from '@/fixtures';
 import { AlertSource, AlertState } from '@/metadata/schemas/alert';
+import { seedAlert } from '@/metadata/testing/alertFixtures';
 import {
   seedConnection,
   seedDashboard,
@@ -15,8 +11,6 @@ import {
   seedSource,
   seedWebhook,
 } from '@/metadata/testing/seed';
-import { alertDocs } from '@/metadata/testing/seedAlerts';
-import { toObjectId } from '@/models';
 
 describe('iac router', () => {
   const server = getServer();
@@ -102,7 +96,7 @@ describe('iac router', () => {
           config: {
             configType: 'promql',
             promqlExpression: 'up',
-            source: randomMongoId(),
+            source: randomId(),
             displayType: 'line',
           },
         },
@@ -139,7 +133,7 @@ describe('iac router', () => {
           config: {
             configType: 'sql',
             displayType: 'search',
-            connection: randomMongoId(),
+            connection: randomId(),
             sqlTemplate: 'SELECT 1',
           },
         },
@@ -182,7 +176,7 @@ describe('iac router', () => {
 
     const connection = await seedConnection({
       kind: 'couchbase',
-      team: toObjectId(team._id),
+      team: team._id,
       name: 'Local ClickHouse',
       host: 'http://localhost:8123',
       username: 'default',
@@ -191,7 +185,7 @@ describe('iac router', () => {
     const source = await seedSource({
       kind: SourceKind.Log,
       name: 'Logs',
-      team: toObjectId(team._id),
+      team: team._id,
       connection: connection._id,
       from: { databaseName: 'otel', tableName: 'otel_logs' },
       timestampValueExpression: 'Timestamp',
@@ -199,14 +193,14 @@ describe('iac router', () => {
     });
 
     const savedSearch = await seedSavedSearch({
-      team: toObjectId(team._id),
+      team: team._id,
       name: 'Production errors',
       select: '',
       where: 'level:error',
       source: source._id,
     });
 
-    await alertDocs.create({
+    await seedAlert({
       team: team._id,
       name: 'Too many errors',
       source: AlertSource.SAVED_SEARCH,
@@ -240,7 +234,7 @@ describe('iac router', () => {
     ]);
     expect(resp.body.sources).toHaveLength(1);
     expect(resp.body.sources[0].name).toBe('Logs');
-    // The ObjectId -> string mapping on savedSearchId is the arm most likely
+    // The ids -> string mapping on savedSearchId is the arm most likely
     // to regress silently, so pin it explicitly.
     expect(resp.body.alerts).toEqual([
       {
@@ -280,7 +274,7 @@ describe('iac router', () => {
     });
 
     const tileAlert = async (name: string, tileId: string) =>
-      alertDocs.create({
+      seedAlert({
         team: team._id,
         name,
         source: AlertSource.TILE,
@@ -334,7 +328,7 @@ describe('iac router', () => {
         },
       ],
     });
-    await alertDocs.create({
+    await seedAlert({
       team: team._id,
       name: 'On provisioned',
       source: AlertSource.TILE,
@@ -360,7 +354,7 @@ describe('iac router', () => {
     const { agent, team } = await getLoggedInAgent(server);
     const otherTeamDashboard = await seedDashboard({
       name: 'Someone else',
-      team: randomMongoId(),
+      team: randomId(),
       tiles: [
         {
           id: 'tile-1',
@@ -374,7 +368,7 @@ describe('iac router', () => {
     });
 
     const alert = async (name: string, dashboardId: unknown) =>
-      alertDocs.create({
+      seedAlert({
         team: team._id,
         name,
         source: AlertSource.TILE,
@@ -386,7 +380,7 @@ describe('iac router', () => {
         channel: { type: null },
       });
 
-    await alert('Deleted dashboard', randomMongoId());
+    await alert('Deleted dashboard', randomId());
     await alert('Other team', otherTeamDashboard._id);
 
     const resp = await agent.get('/iac/import-manifest').expect(200);
@@ -421,7 +415,7 @@ describe('iac router', () => {
   });
 
   // `provisioned` decides whether IaC export treats a connection as safe to
-  // `terraform import`, so it must be server-owned. Adding it to the Mongoose
+  // `terraform import`, so it must be server-owned. Adding it to the model layer
   // schema is what made a client-supplied value persistable at all — strict
   // mode used to drop it — so this pins the explicit strip in the router.
   it('ignores a client-supplied platformProvisioned flag on connection create', async () => {
@@ -479,14 +473,14 @@ describe('iac router', () => {
 
   it("excludes every other team's resources", async () => {
     const { agent } = await getLoggedInAgent(server);
-    const otherTeam = randomMongoId();
+    const otherTeam = randomId();
 
     await seedDashboard({
       name: "Other team's dashboard",
       tiles: [],
       team: otherTeam,
     });
-    await alertDocs.create({
+    await seedAlert({
       team: otherTeam,
       threshold: 1,
       interval: '5m',

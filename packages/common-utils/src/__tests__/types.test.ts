@@ -659,7 +659,7 @@ describe('DashboardFilterSchema static-list variant', () => {
     expect(result.error?.issues[0].path).toEqual([Object.keys(overrides)[0]]);
   });
 
-  // Not strict, on purpose: these variants parse unvalidated Mongo documents,
+  // Not strict, on purpose: these variants parse unvalidated the store documents,
   // where a key left behind by an older version must not make template export
   // throw. The external API's variants *are* strict and reject it — see
   // `dashboards.int.test.ts`.
@@ -774,7 +774,7 @@ describe('PresetDashboardFilterSchema', () => {
     expect(result.error?.issues[0].path).toEqual(['type']);
   });
 
-  // The Mongoose model requires both, so the schema has to as well.
+  // The model layer requires both, so the schema has to as well.
   it.each(['expression', 'source'] as const)('requires %s', field => {
     expect(
       PresetDashboardFilterSchema.safeParse({

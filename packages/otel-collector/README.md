@@ -33,7 +33,7 @@ Dockerfile:
 | Dockerfile                         | Description                                                          |
 | ---------------------------------- | -------------------------------------------------------------------- |
 | `docker/otel-collector/Dockerfile` | Standalone collector image (dev + prod targets)                      |
-| `docker/hyperdx/Dockerfile`        | All-in-one image (Couchbase, MongoDB, API, App, collector)           |
+| `docker/hyperdx/Dockerfile`        | All-in-one image (Couchbase, API, App, collector)           |
 
 ### Version configuration
 

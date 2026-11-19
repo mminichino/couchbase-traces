@@ -1,11 +1,11 @@
 /* eslint-disable security/detect-non-literal-fs-filename */
 import fs from 'fs';
-import mongoose from 'mongoose';
 import os from 'os';
 import path from 'path';
 
 import { createTeam } from '@/controllers/team';
 import { clearDBCollections, closeDB, connectDB, makeTile } from '@/fixtures';
+import { newId } from '@/metadata/ids';
 import {
   countDashboards,
   listDashboards,
@@ -346,11 +346,11 @@ describe('provisionDashboards', () => {
       const task = new ProvisionDashboardsTask({
         taskName: TaskName.PROVISION_DASHBOARDS,
       });
-      await expect(task.execute()).rejects.toThrow('not a valid ObjectId');
+      await expect(task.execute()).rejects.toThrow('not a valid id');
     });
 
     it('skips provisioning when team ID is valid but does not exist', async () => {
-      const nonExistentId = new mongoose.Types.ObjectId().toHexString();
+      const nonExistentId = newId();
       fs.writeFileSync(
         path.join(tmpDir, 'test.json'),
         JSON.stringify({

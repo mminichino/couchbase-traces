@@ -257,7 +257,7 @@ wait_until_queryable() {
 
 wait_until_queryable
 
-# App metadata bucket (MongoDB elimination plan C0), via the shared
+# App metadata bucket (cbt_meta), via the shared
 # provisioning code in common-utils so the harness cannot drift from setup.
 provision_metadata() {
   local here connstr

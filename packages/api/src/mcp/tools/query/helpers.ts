@@ -445,24 +445,6 @@ export function assertSourceKindMatchesSelect(
 
 // ─── Tile execution ──────────────────────────────────────────────────────────
 
-/**
- * `getSource` returns a hydrated Mongoose document, so `source.metricTables`
- * is a live subdocument rather than a plain object. Downstream render paths
- * may clone the chart config — notably `convertToCategoricalChartConfig`
- * (pie/bar) runs it through `structuredClone`, which cannot clone a Mongoose
- * subdocument and throws `DataCloneError: [object Array] could not be cloned`.
- * Materialize a plain object so the chart config is always structured-cloneable.
- */
-function toPlainMetricTables(
-  metricTables: MetricTable | undefined,
-): MetricTable | undefined {
-  if (metricTables == null) return undefined;
-  return 'toObject' in metricTables &&
-    typeof metricTables.toObject === 'function'
-    ? metricTables.toObject()
-    : metricTables;
-}
-
 export async function mcpQueryErrorResult(
   e: unknown,
   context?:
@@ -699,7 +681,7 @@ export async function runConfigTile(
         tableName: isMetricSource ? '' : source.from.tableName,
       },
       ...(isMetricSource && {
-        metricTables: toPlainMetricTables(source.metricTables),
+        metricTables: source.metricTables,
       }),
       connection: source.connection.toString(),
       timestampValueExpression: source.timestampValueExpression,
@@ -758,9 +740,7 @@ export async function runConfigTile(
             ? source.useTextIndexForImplicitColumn
             : undefined,
         metricTables:
-          source.kind === SourceKind.Metric
-            ? toPlainMetricTables(source.metricTables)
-            : undefined,
+          source.kind === SourceKind.Metric ? source.metricTables : undefined,
       };
     }
   }

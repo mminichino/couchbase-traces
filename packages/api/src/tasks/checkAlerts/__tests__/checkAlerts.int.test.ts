@@ -35,6 +35,15 @@ import { ISource } from '@/metadata/schemas/source';
 import type { ITeam } from '@/metadata/schemas/team';
 import { IWebhook } from '@/metadata/schemas/webhook';
 import {
+  countHistory,
+  getAlert,
+  getAlertHydrated,
+  listHistory,
+  patchAlerts,
+  patchHistory,
+  seedHistory,
+} from '@/metadata/testing/alertFixtures';
+import {
   findSource,
   patchSource,
   patchWebhook,
@@ -44,7 +53,6 @@ import {
   seedSource,
   seedWebhook,
 } from '@/metadata/testing/seed';
-import { alertDocs, alertHistoryDocs } from '@/metadata/testing/seedAlerts';
 import { DataClient } from '@/query';
 import * as checkAlert from '@/tasks/checkAlerts';
 import {
@@ -2131,9 +2139,7 @@ describe('checkAlerts', () => {
       const mockUserId = newId();
       const alert = await createAlert(team._id, alertConfig, mockUserId);
 
-      const enhancedAlert: any = await alertDocs
-        .findById(alert.id)
-        .populate(['team', 'savedSearch']);
+      const enhancedAlert: any = await getAlertHydrated(alert.id);
 
       return additionalDetails.taskType === AlertTaskType.SAVED_SEARCH
         ? {
@@ -2220,9 +2226,7 @@ describe('checkAlerts', () => {
       );
 
       expect(querySpy).not.toHaveBeenCalled();
-      expect(
-        await alertHistoryDocs.countDocuments({ alert: details.alert.id }),
-      ).toBe(0);
+      expect(await countHistory(details.alert.id)).toBe(0);
     });
 
     it('should skip processing until the first anchored window fully elapses', async () => {
@@ -2268,9 +2272,7 @@ describe('checkAlerts', () => {
         teamWebhooksById,
       );
       expect(querySpy).not.toHaveBeenCalled();
-      expect(
-        await alertHistoryDocs.countDocuments({ alert: details.alert.id }),
-      ).toBe(0);
+      expect(await countHistory(details.alert.id)).toBe(0);
 
       await processAlertAtTime(
         new Date('2023-11-16T22:18:31.000Z'),
@@ -2281,9 +2283,7 @@ describe('checkAlerts', () => {
         teamWebhooksById,
       );
       expect(querySpy).toHaveBeenCalledTimes(1);
-      expect(
-        await alertHistoryDocs.countDocuments({ alert: details.alert.id }),
-      ).toBe(1);
+      expect(await countHistory(details.alert.id)).toBe(1);
     });
 
     it('SAVED_SEARCH alert - slack webhook', async () => {
@@ -2359,7 +2359,7 @@ describe('checkAlerts', () => {
         alertProvider,
         teamWebhooksById,
       );
-      expect((await alertDocs.findById(details.alert.id))!.state).toBe('ALERT');
+      expect((await getAlert(details.alert.id))!.state).toBe('ALERT');
 
       // skip since time diff is less than 1 window size
       const later = new Date('2023-11-16T22:14:00.000Z');
@@ -2372,7 +2372,7 @@ describe('checkAlerts', () => {
         teamWebhooksById,
       );
       // alert should still be in alert state
-      expect((await alertDocs.findById(details.alert.id))!.state).toBe('ALERT');
+      expect((await getAlert(details.alert.id))!.state).toBe('ALERT');
 
       const nextWindow = new Date('2023-11-16T22:16:00.000Z');
       await processAlertAtTime(
@@ -2384,7 +2384,7 @@ describe('checkAlerts', () => {
         teamWebhooksById,
       );
       // alert should be in ok state
-      expect((await alertDocs.findById(details.alert.id))!.state).toBe('ALERT');
+      expect((await getAlert(details.alert.id))!.state).toBe('ALERT');
 
       const nextNextWindow = new Date('2023-11-16T22:20:00.000Z');
       await processAlertAtTime(
@@ -2396,16 +2396,10 @@ describe('checkAlerts', () => {
         teamWebhooksById,
       );
       // alert should be in ok state
-      expect((await alertDocs.findById(details.alert.id))!.state).toBe('OK');
+      expect((await getAlert(details.alert.id))!.state).toBe('OK');
 
       // check alert history
-      const alertHistories = await alertHistoryDocs
-        .find({
-          alert: details.alert.id,
-        })
-        .sort({
-          createdAt: 1,
-        });
+      const alertHistories = await listHistory(details.alert.id);
       expect(alertHistories.length).toBe(3);
       expect(alertHistories[0].state).toBe('ALERT');
       expect(alertHistories[0].counts).toBe(1);
@@ -2513,7 +2507,7 @@ describe('checkAlerts', () => {
         alertProvider,
         teamWebhooksById,
       );
-      expect((await alertDocs.findById(details.alert.id))!.state).toBe('ALERT');
+      expect((await getAlert(details.alert.id))!.state).toBe('ALERT');
 
       await processAlertAtTime(
         new Date('2023-11-16T22:20:00.000Z'),
@@ -2523,7 +2517,7 @@ describe('checkAlerts', () => {
         alertProvider,
         teamWebhooksById,
       );
-      expect((await alertDocs.findById(details.alert.id))!.state).toBe('OK');
+      expect((await getAlert(details.alert.id))!.state).toBe('OK');
 
       const textsFor = (url: string) =>
         jest
@@ -2565,7 +2559,7 @@ describe('checkAlerts', () => {
       // semantics of a Log source whose UI view filters it out.
       // `tableFilterExpression` is declared on the Log discriminator schema
       // (not the base Source schema), so we must update through `LogSource`
-      // — `Source.updateOne` would silently drop the field under Mongoose's
+      // — `Source.updateOne` would silently drop the field under the model layer's
       // default strict mode.
       await patchSource(source._id, {
         tableFilterExpression: "ServiceName != 'excluded'",
@@ -2630,14 +2624,10 @@ describe('checkAlerts', () => {
       // Threshold is `> 1`, so with the fix (1 row counted) the alert stays
       // OK. Without the fix (2 rows counted — including the excluded one),
       // the alert would transition to ALERT and fire the webhook.
-      const alert = await alertDocs.findById(details.alert.id);
+      const alert = await getAlert(details.alert.id);
       expect(alert!.state).toBe('OK');
 
-      const alertHistories = await alertHistoryDocs
-        .find({
-          alert: details.alert.id,
-        })
-        .sort({ createdAt: 1 });
+      const alertHistories = await listHistory(details.alert.id);
       expect(alertHistories.length).toBe(1);
       expect(alertHistories[0].state).toBe('OK');
       // Exactly one row counted — the 'excluded' row is filtered out.
@@ -2678,7 +2668,7 @@ describe('checkAlerts', () => {
           name: 'Escaped Filter Logs',
         });
 
-        // The condition is in the exact shape the UI saves to Mongo: the
+        // The condition is in the exact shape the UI saves to the store: the
         // special-char column key is backtick-quoted in the persisted SQL.
         const savedSearch = await seedSavedSearch({
           team: team._id,
@@ -2743,14 +2733,8 @@ describe('checkAlerts', () => {
 
         // ... and counted exactly the one matching row — not two (filter
         // dropped) and not zero (filter over-matched / errored).
-        expect((await alertDocs.findById(details.alert.id))!.state).toBe(
-          'ALERT',
-        );
-        const alertHistories = await alertHistoryDocs
-          .find({
-            alert: details.alert.id,
-          })
-          .sort({ createdAt: 1 });
+        expect((await getAlert(details.alert.id))!.state).toBe('ALERT');
+        const alertHistories = await listHistory(details.alert.id);
         expect(alertHistories.length).toBe(1);
         expect(alertHistories[0].state).toBe('ALERT');
         expect(alertHistories[0].lastValues).toEqual([
@@ -2862,7 +2846,7 @@ describe('checkAlerts', () => {
         alertProvider,
         teamWebhooksById,
       );
-      expect((await alertDocs.findById(details.alert.id))!.state).toBe('ALERT');
+      expect((await getAlert(details.alert.id))!.state).toBe('ALERT');
 
       // skip since time diff is less than 1 window size
       const later = new Date('2023-11-16T22:14:00.000Z');
@@ -2875,7 +2859,7 @@ describe('checkAlerts', () => {
         teamWebhooksById,
       );
       // alert should still be in alert state
-      expect((await alertDocs.findById(details.alert.id))!.state).toBe('ALERT');
+      expect((await getAlert(details.alert.id))!.state).toBe('ALERT');
 
       const nextWindow = new Date('2023-11-16T22:16:00.000Z');
       await processAlertAtTime(
@@ -2887,16 +2871,10 @@ describe('checkAlerts', () => {
         teamWebhooksById,
       );
       // alert should be in ok state
-      expect((await alertDocs.findById(details.alert.id))!.state).toBe('OK');
+      expect((await getAlert(details.alert.id))!.state).toBe('OK');
 
       // check alert history
-      const alertHistories = await alertHistoryDocs
-        .find({
-          alert: details.alert.id,
-        })
-        .sort({
-          createdAt: 1,
-        });
+      const alertHistories = await listHistory(details.alert.id);
 
       expect(alertHistories.length).toBe(2);
       const [history1, history2] = alertHistories;
@@ -2994,7 +2972,7 @@ describe('checkAlerts', () => {
         alertProvider,
         teamWebhooksById,
       );
-      expect((await alertDocs.findById(details.alert.id))!.state).toBe('ALERT');
+      expect((await getAlert(details.alert.id))!.state).toBe('ALERT');
 
       // skip since time diff is less than 1 window size
       const later = new Date('2023-11-16T22:14:00.000Z');
@@ -3006,7 +2984,7 @@ describe('checkAlerts', () => {
         alertProvider,
         teamWebhooksById,
       );
-      expect((await alertDocs.findById(details.alert.id))!.state).toBe('ALERT');
+      expect((await getAlert(details.alert.id))!.state).toBe('ALERT');
 
       const nextWindow = new Date('2023-11-16T22:16:00.000Z');
       await processAlertAtTime(
@@ -3018,16 +2996,10 @@ describe('checkAlerts', () => {
         teamWebhooksById,
       );
       // alert should be in ok state
-      expect((await alertDocs.findById(details.alert.id))!.state).toBe('OK');
+      expect((await getAlert(details.alert.id))!.state).toBe('OK');
 
       // check alert history
-      const alertHistories = await alertHistoryDocs
-        .find({
-          alert: details.alert.id,
-        })
-        .sort({
-          createdAt: 1,
-        });
+      const alertHistories = await listHistory(details.alert.id);
 
       expect(alertHistories.length).toBe(2);
       const [history1, history2] = alertHistories;
@@ -3041,9 +3013,7 @@ describe('checkAlerts', () => {
       // config, padded by 7x granularity on both sides of the window.
       const expectedUrl = new URL('http://app:8080/chart');
       expectedUrl.search = new URLSearchParams({
-        config: JSON.stringify(
-          (await alertDocs.findById(details.alert.id))!.chartConfig,
-        ),
+        config: JSON.stringify((await getAlert(details.alert.id))!.chartConfig),
         from: String(
           new Date('2023-11-16T22:05:00.000Z').getTime() - ms('5m') * 7,
         ),
@@ -3142,14 +3112,10 @@ describe('checkAlerts', () => {
         alertProvider,
         teamWebhooksById,
       );
-      expect((await alertDocs.findById(details.alert.id))!.state).toBe('ALERT');
+      expect((await getAlert(details.alert.id))!.state).toBe('ALERT');
 
       // One firing history per group (the config's groupBy drives grouping)
-      const alertHistories = await alertHistoryDocs
-        .find({
-          alert: details.alert.id,
-        })
-        .sort({ group: 1 });
+      const alertHistories = await listHistory(details.alert.id);
       expect(alertHistories.length).toBe(2);
       expect(alertHistories.map(h => h.group)).toEqual([
         'ServiceName:api',
@@ -3217,18 +3183,18 @@ describe('checkAlerts', () => {
         // Alert should remain in its default OK state and no normal
         // history/webhooks should be emitted. The failure is recorded as an
         // ERROR-state history row for the window.
-        const updated = await alertDocs.findById(details.alert.id);
+        const updated = await getAlert(details.alert.id);
         expect(updated!.state).toBe('OK');
         expect(
-          await alertHistoryDocs.countDocuments({
-            alert: details.alert.id,
-            state: { $ne: AlertState.ERROR },
-          }),
+          await countHistory(
+            details.alert.id,
+            r => r.state !== AlertState.ERROR,
+          ),
         ).toBe(0);
-        const errorHistories = await alertHistoryDocs.find({
-          alert: details.alert.id,
-          state: AlertState.ERROR,
-        });
+        const errorHistories = await listHistory(
+          details.alert.id,
+          r => r.state === AlertState.ERROR,
+        );
         expect(errorHistories).toHaveLength(1);
         expect(errorHistories[0].errors).toHaveLength(1);
         expect(errorHistories[0].errors![0].type).toBe(
@@ -3324,10 +3290,7 @@ describe('checkAlerts', () => {
 
         // Seed the alert document with an existing ALERT state to prove the
         // query-failure branch does NOT modify state.
-        await alertDocs.updateOne(
-          { _id: details.alert.id },
-          { $set: { state: AlertState.ALERT } },
-        );
+        await patchAlerts(details.alert.id, { state: AlertState.ALERT });
 
         jest
           .spyOn(dataClient, 'queryChartConfig')
@@ -3342,15 +3305,15 @@ describe('checkAlerts', () => {
           teamWebhooksById,
         );
 
-        const updated = await alertDocs.findById(details.alert.id);
+        const updated = await getAlert(details.alert.id);
         // State must be untouched — still ALERT
         expect(updated!.state).toBe(AlertState.ALERT);
         // No normal AlertHistory created
         expect(
-          await alertHistoryDocs.countDocuments({
-            alert: details.alert.id,
-            state: { $ne: AlertState.ERROR },
-          }),
+          await countHistory(
+            details.alert.id,
+            r => r.state !== AlertState.ERROR,
+          ),
         ).toBe(0);
         // No webhook fired
         expect(slack.postMessageToWebhook).not.toHaveBeenCalled();
@@ -3365,10 +3328,10 @@ describe('checkAlerts', () => {
         );
         // ...and persisted as an ERROR history row for the evaluation window
         // (5m interval at 22:12 → window start 22:10)
-        const errorHistories = await alertHistoryDocs.find({
-          alert: details.alert.id,
-          state: AlertState.ERROR,
-        });
+        const errorHistories = await listHistory(
+          details.alert.id,
+          r => r.state === AlertState.ERROR,
+        );
         expect(errorHistories).toHaveLength(1);
         expect(errorHistories[0].createdAt.toISOString()).toBe(
           '2023-11-16T22:10:00.000Z',
@@ -3428,14 +3391,14 @@ describe('checkAlerts', () => {
           teamWebhooksById,
         );
 
-        const updated = await alertDocs.findById(details.alert.id);
+        const updated = await getAlert(details.alert.id);
         // Default state is OK — must stay OK (not flipped to ALERT or anything else)
         expect(updated!.state).toBe(AlertState.OK);
         expect(
-          await alertHistoryDocs.countDocuments({
-            alert: details.alert.id,
-            state: { $ne: AlertState.ERROR },
-          }),
+          await countHistory(
+            details.alert.id,
+            r => r.state !== AlertState.ERROR,
+          ),
         ).toBe(0);
         expect(updated!.executionErrors![0].type).toBe(
           AlertErrorType.QUERY_ERROR,
@@ -3488,7 +3451,7 @@ describe('checkAlerts', () => {
           teamWebhooksById,
         );
 
-        const updated = await alertDocs.findById(details.alert.id);
+        const updated = await getAlert(details.alert.id);
         expect(updated!.executionErrors).toHaveLength(1);
         expect(updated!.executionErrors![0].type).toBe(
           AlertErrorType.QUERY_TIMEOUT,
@@ -3500,10 +3463,10 @@ describe('checkAlerts', () => {
           'the alert will not fire until the query completes in time',
         );
 
-        const errorHistories = await alertHistoryDocs.find({
-          alert: details.alert.id,
-          state: AlertState.ERROR,
-        });
+        const errorHistories = await listHistory(
+          details.alert.id,
+          r => r.state === AlertState.ERROR,
+        );
         expect(errorHistories).toHaveLength(1);
         expect(errorHistories[0].errors![0].type).toBe(
           AlertErrorType.QUERY_TIMEOUT,
@@ -3572,10 +3535,10 @@ describe('checkAlerts', () => {
         );
 
         expect(querySpy).toHaveBeenCalledTimes(2);
-        let errorHistories = await alertHistoryDocs.find({
-          alert: details.alert.id,
-          state: AlertState.ERROR,
-        });
+        let errorHistories = await listHistory(
+          details.alert.id,
+          r => r.state === AlertState.ERROR,
+        );
         expect(errorHistories).toHaveLength(1);
         expect(errorHistories[0].createdAt.toISOString()).toBe(
           '2023-11-16T22:10:00.000Z',
@@ -3593,12 +3556,10 @@ describe('checkAlerts', () => {
           alertProvider,
           teamWebhooksById,
         );
-        errorHistories = await alertHistoryDocs
-          .find({
-            alert: details.alert.id,
-            state: AlertState.ERROR,
-          })
-          .sort({ createdAt: 1 });
+        errorHistories = await listHistory(
+          details.alert.id,
+          r => r.state === AlertState.ERROR,
+        );
         expect(errorHistories).toHaveLength(2);
         expect(errorHistories[1].createdAt.toISOString()).toBe(
           '2023-11-16T22:15:00.000Z',
@@ -3606,10 +3567,10 @@ describe('checkAlerts', () => {
 
         // No normal history was ever written
         expect(
-          await alertHistoryDocs.countDocuments({
-            alert: details.alert.id,
-            state: { $ne: AlertState.ERROR },
-          }),
+          await countHistory(
+            details.alert.id,
+            r => r.state !== AlertState.ERROR,
+          ),
         ).toBe(0);
       });
 
@@ -3673,9 +3634,7 @@ describe('checkAlerts', () => {
           alertProvider,
           teamWebhooksById,
         );
-        expect((await alertDocs.findById(details.alert.id))!.state).toBe(
-          AlertState.OK,
-        );
+        expect((await getAlert(details.alert.id))!.state).toBe(AlertState.OK);
 
         // Next tick (same window): the real query runs and the alert fires.
         // If the ERROR row counted as "window evaluated", this tick would be
@@ -3689,7 +3648,7 @@ describe('checkAlerts', () => {
           teamWebhooksById,
         );
 
-        const updated = await alertDocs.findById(details.alert.id);
+        const updated = await getAlert(details.alert.id);
         expect(updated!.state).toBe(AlertState.ALERT);
         // Errors on the alert are cleared by the successful execution
         expect(updated!.executionErrors ?? []).toHaveLength(0);
@@ -3698,20 +3657,20 @@ describe('checkAlerts', () => {
         // failed attempt's ERROR row was removed — otherwise the window
         // would render as ERROR forever (the evaluations view ranks ERROR
         // above OK/ALERT) even though the retry succeeded.
-        const normalHistories = await alertHistoryDocs.find({
-          alert: details.alert.id,
-          state: { $ne: AlertState.ERROR },
-        });
+        const normalHistories = await listHistory(
+          details.alert.id,
+          r => r.state !== AlertState.ERROR,
+        );
         expect(normalHistories).toHaveLength(1);
         expect(normalHistories[0].state).toBe(AlertState.ALERT);
         expect(normalHistories[0].createdAt.toISOString()).toBe(
           '2023-11-16T22:10:00.000Z',
         );
         expect(
-          await alertHistoryDocs.countDocuments({
-            alert: details.alert.id,
-            state: AlertState.ERROR,
-          }),
+          await countHistory(
+            details.alert.id,
+            r => r.state === AlertState.ERROR,
+          ),
         ).toBe(0);
         // Evaluation analytics: single-window evaluation → no backfill;
         // query duration recorded; notification sent → delivery time recorded
@@ -3725,7 +3684,7 @@ describe('checkAlerts', () => {
         );
         // Per-target breakdown of that total: one entry for the alert's single
         // configured webhook, named so the UI can attribute the time. Read
-        // field by field — these come back as Mongoose subdocuments, which
+        // field by field — these come back as the model layer subdocuments, which
         // don't deep-equal a plain object literal.
         const targets = normalHistories[0].analytics!.notificationTargets;
         expect(targets).toHaveLength(1);
@@ -3798,10 +3757,10 @@ describe('checkAlerts', () => {
           new Map(),
         );
 
-        const normalHistories = await alertHistoryDocs.find({
-          alert: details.alert.id,
-          state: { $ne: AlertState.ERROR },
-        });
+        const normalHistories = await listHistory(
+          details.alert.id,
+          r => r.state !== AlertState.ERROR,
+        );
         expect(normalHistories).toHaveLength(1);
         const { webhookDurationMs, notificationTargets } =
           normalHistories[0].analytics!;
@@ -3866,10 +3825,10 @@ describe('checkAlerts', () => {
           teamWebhooksById,
         );
 
-        const errorHistories = await alertHistoryDocs.find({
-          alert: details.alert.id,
-          state: AlertState.ERROR,
-        });
+        const errorHistories = await listHistory(
+          details.alert.id,
+          r => r.state === AlertState.ERROR,
+        );
         expect(errorHistories).toHaveLength(1);
         expect(errorHistories[0].errors![0].type).toBe(
           AlertErrorType.WEBHOOK_ERROR,
@@ -3950,19 +3909,19 @@ describe('checkAlerts', () => {
           teamWebhooksById,
         );
 
-        const normalHistories = await alertHistoryDocs.find({
-          alert: details.alert.id,
-          state: { $ne: AlertState.ERROR },
-        });
+        const normalHistories = await listHistory(
+          details.alert.id,
+          r => r.state !== AlertState.ERROR,
+        );
         expect(normalHistories).toHaveLength(1);
         expect(normalHistories[0].createdAt.toISOString()).toBe(
           '2023-11-16T22:15:00.000Z',
         );
 
-        const errorHistories = await alertHistoryDocs.find({
-          alert: details.alert.id,
-          state: AlertState.ERROR,
-        });
+        const errorHistories = await listHistory(
+          details.alert.id,
+          r => r.state === AlertState.ERROR,
+        );
         expect(errorHistories).toHaveLength(1);
         expect(errorHistories[0].createdAt.toISOString()).toBe(
           '2023-11-16T22:10:00.000Z',
@@ -4013,7 +3972,7 @@ describe('checkAlerts', () => {
         // A webhook-failure-style ERROR row recorded alongside tick 1's
         // normal rows (same createdAt). Its window WAS evaluated — it is
         // never retried, so the cleanup below must not delete it.
-        await alertHistoryDocs.create({
+        await seedHistory({
           alert: details.alert.id,
           createdAt: new Date('2023-11-16T22:05:00.000Z'),
           state: AlertState.ERROR,
@@ -4042,10 +4001,10 @@ describe('checkAlerts', () => {
           teamWebhooksById,
         );
         expect(
-          await alertHistoryDocs.countDocuments({
-            alert: details.alert.id,
-            state: AlertState.ERROR,
-          }),
+          await countHistory(
+            details.alert.id,
+            r => r.state === AlertState.ERROR,
+          ),
         ).toBe(2);
 
         // Tick 3 (window 22:15) evaluates cleanly. Its anchor is tick 1's
@@ -4062,12 +4021,10 @@ describe('checkAlerts', () => {
           teamWebhooksById,
         );
 
-        const normalHistories = await alertHistoryDocs
-          .find({
-            alert: details.alert.id,
-            state: { $ne: AlertState.ERROR },
-          })
-          .sort({ createdAt: 1 });
+        const normalHistories = await listHistory(
+          details.alert.id,
+          r => r.state !== AlertState.ERROR,
+        );
         expect(normalHistories.map(h => h.createdAt.toISOString())).toEqual([
           '2023-11-16T22:05:00.000Z',
           '2023-11-16T22:15:00.000Z',
@@ -4076,10 +4033,10 @@ describe('checkAlerts', () => {
 
         // The backfilled window's ERROR row is gone; the webhook-failure
         // row at the (already-evaluated) anchor window survives.
-        const errorHistories = await alertHistoryDocs.find({
-          alert: details.alert.id,
-          state: AlertState.ERROR,
-        });
+        const errorHistories = await listHistory(
+          details.alert.id,
+          r => r.state === AlertState.ERROR,
+        );
         expect(errorHistories).toHaveLength(1);
         expect(errorHistories[0].createdAt.toISOString()).toBe(
           '2023-11-16T22:05:00.000Z',
@@ -4129,10 +4086,15 @@ describe('checkAlerts', () => {
           alertProvider,
           teamWebhooksById,
         );
-        const first = await alertHistoryDocs.findOne({
-          alert: details.alert.id,
-          createdAt: new Date('2023-11-16T22:10:00.000Z'),
-        });
+        const first =
+          (await (
+            await listHistory(
+              details.alert.id,
+              r =>
+                r.createdAt.getTime() ===
+                new Date('2023-11-16T22:10:00.000Z').getTime(),
+            )
+          )[0]) ?? null;
         expect(first!.analytics!.backfilledBuckets).toBe(0);
 
         // Next evaluation runs 15 minutes late (missed the 22:15 and 22:20
@@ -4145,10 +4107,15 @@ describe('checkAlerts', () => {
           alertProvider,
           teamWebhooksById,
         );
-        const second = await alertHistoryDocs.findOne({
-          alert: details.alert.id,
-          createdAt: new Date('2023-11-16T22:25:00.000Z'),
-        });
+        const second =
+          (await (
+            await listHistory(
+              details.alert.id,
+              r =>
+                r.createdAt.getTime() ===
+                new Date('2023-11-16T22:25:00.000Z').getTime(),
+            )
+          )[0]) ?? null;
         expect(second).toBeDefined();
         expect(second!.analytics!.backfilledBuckets).toBe(2);
         expect(second!.analytics!.queryDurationMs).toEqual(expect.any(Number));
@@ -4259,20 +4226,20 @@ describe('checkAlerts', () => {
             teamWebhooksById,
           );
 
-          const updated = await alertDocs.findById(details.alert.id);
+          const updated = await getAlert(details.alert.id);
           expect(updated!.state).toBe(AlertState.ALERT);
           // Query succeeded, so normal AlertHistory should have been written
           expect(
-            await alertHistoryDocs.countDocuments({
-              alert: details.alert.id,
-              state: { $ne: AlertState.ERROR },
-            }),
+            await countHistory(
+              details.alert.id,
+              r => r.state !== AlertState.ERROR,
+            ),
           ).toBe(1);
           // The webhook failure is also persisted as an ERROR history row
-          const errorHistories = await alertHistoryDocs.find({
-            alert: details.alert.id,
-            state: AlertState.ERROR,
-          });
+          const errorHistories = await listHistory(
+            details.alert.id,
+            r => r.state === AlertState.ERROR,
+          );
           expect(errorHistories).toHaveLength(1);
           expect(errorHistories[0].errors).toHaveLength(1);
           expect(errorHistories[0].errors![0].type).toBe(
@@ -4381,7 +4348,7 @@ describe('checkAlerts', () => {
           teamWebhooksById,
         );
 
-        const updated = await alertDocs.findById(details.alert.id);
+        const updated = await getAlert(details.alert.id);
         expect(updated!.executionErrors).toHaveLength(1);
         expect(updated!.executionErrors![0].type).toBe(
           AlertErrorType.WEBHOOK_ERROR,
@@ -4473,7 +4440,7 @@ describe('checkAlerts', () => {
           alertProvider,
           teamWebhooksById,
         );
-        expect((await alertDocs.findById(details.alert.id))!.state).toBe(
+        expect((await getAlert(details.alert.id))!.state).toBe(
           AlertState.ALERT,
         );
 
@@ -4487,7 +4454,7 @@ describe('checkAlerts', () => {
           teamWebhooksById,
         );
 
-        const updated = await alertDocs.findById(details.alert.id);
+        const updated = await getAlert(details.alert.id);
         expect(updated!.state).toBe(AlertState.OK);
         expect(updated!.executionErrors).toBeDefined();
         expect(updated!.executionErrors!.length).toBe(1);
@@ -4531,20 +4498,15 @@ describe('checkAlerts', () => {
         );
 
         // Seed a stale error so we can verify it gets cleared
-        await alertDocs.updateOne(
-          { _id: details.alert.id },
-          {
-            $set: {
-              executionErrors: [
-                {
-                  timestamp: new Date('2023-11-16T22:00:00.000Z'),
-                  type: AlertErrorType.QUERY_ERROR,
-                  message: 'old error',
-                },
-              ],
+        await patchAlerts(details.alert.id, {
+          executionErrors: [
+            {
+              timestamp: new Date('2023-11-16T22:00:00.000Z'),
+              type: AlertErrorType.QUERY_ERROR,
+              message: 'old error',
             },
-          },
-        );
+          ],
+        });
 
         const now = new Date('2023-11-16T22:12:00.000Z');
         await bulkInsertLogs([
@@ -4565,7 +4527,7 @@ describe('checkAlerts', () => {
           teamWebhooksById,
         );
 
-        const updated = await alertDocs.findById(details.alert.id);
+        const updated = await getAlert(details.alert.id);
         // Slack webhook (default) succeeded (mocked) → errors should be cleared
         expect((updated!.executionErrors ?? []).length).toBe(0);
       });
@@ -4658,25 +4620,25 @@ describe('checkAlerts', () => {
           teamWebhooksById,
         );
 
-        const updated = await alertDocs.findById(details.alert.id);
+        const updated = await getAlert(details.alert.id);
 
         // Query succeeded → alert state should reflect the query result (ALERT,
         // since both groups exceeded the threshold) and per-group histories
         // should have been written.
         expect(updated!.state).toBe(AlertState.ALERT);
-        const histories = await alertHistoryDocs.find({
-          alert: details.alert.id,
-          state: { $ne: AlertState.ERROR },
-        });
+        const histories = await listHistory(
+          details.alert.id,
+          r => r.state !== AlertState.ERROR,
+        );
         expect(histories.length).toBe(2);
         expect(histories.every(h => h.state === AlertState.ALERT)).toBe(true);
 
         // Both groups' webhook failures land on a single ERROR history row
         // for the evaluation window.
-        const errorHistories = await alertHistoryDocs.find({
-          alert: details.alert.id,
-          state: AlertState.ERROR,
-        });
+        const errorHistories = await listHistory(
+          details.alert.id,
+          r => r.state === AlertState.ERROR,
+        );
         expect(errorHistories).toHaveLength(1);
         expect(errorHistories[0].errors).toHaveLength(2);
         expect(
@@ -4767,22 +4729,22 @@ describe('checkAlerts', () => {
           emptyWebhooksById,
         );
 
-        const updated = await alertDocs.findById(details.alert.id);
+        const updated = await getAlert(details.alert.id);
 
         // Query succeeded, state should flip to ALERT, history written
         // (plus an ERROR row recording the webhook failure)
         expect(updated!.state).toBe(AlertState.ALERT);
         expect(
-          await alertHistoryDocs.countDocuments({
-            alert: details.alert.id,
-            state: { $ne: AlertState.ERROR },
-          }),
+          await countHistory(
+            details.alert.id,
+            r => r.state !== AlertState.ERROR,
+          ),
         ).toBe(1);
         expect(
-          await alertHistoryDocs.countDocuments({
-            alert: details.alert.id,
-            state: AlertState.ERROR,
-          }),
+          await countHistory(
+            details.alert.id,
+            r => r.state === AlertState.ERROR,
+          ),
         ).toBe(1);
 
         // A WEBHOOK_ERROR should be recorded. The message is hardcoded for
@@ -4852,7 +4814,7 @@ describe('checkAlerts', () => {
           teamWebhooksById,
         );
 
-        const updated = await alertDocs.findById(details.alert.id);
+        const updated = await getAlert(details.alert.id);
         expect(updated!.executionErrors).toBeDefined();
         expect(updated!.executionErrors!.length).toBe(1);
         expect(updated!.executionErrors![0].type).toBe(AlertErrorType.UNKNOWN);
@@ -4985,7 +4947,7 @@ describe('checkAlerts', () => {
         alertProvider,
         teamWebhooksById,
       );
-      expect((await alertDocs.findById(details.alert.id))!.state).toBe('ALERT');
+      expect((await getAlert(details.alert.id))!.state).toBe('ALERT');
 
       // skip since time diff is less than 1 window size
       const later = new Date('2023-11-16T22:14:00.000Z');
@@ -4998,7 +4960,7 @@ describe('checkAlerts', () => {
         teamWebhooksById,
       );
       // alert should still be in alert state
-      expect((await alertDocs.findById(details.alert.id))!.state).toBe('ALERT');
+      expect((await getAlert(details.alert.id))!.state).toBe('ALERT');
 
       const nextWindow = new Date('2023-11-16T22:16:00.000Z');
       await processAlertAtTime(
@@ -5010,16 +4972,10 @@ describe('checkAlerts', () => {
         teamWebhooksById,
       );
       // alert should be in ok state
-      expect((await alertDocs.findById(details.alert.id))!.state).toBe('OK');
+      expect((await getAlert(details.alert.id))!.state).toBe('OK');
 
       // check alert history
-      const alertHistories = await alertHistoryDocs
-        .find({
-          alert: details.alert.id,
-        })
-        .sort({
-          createdAt: 1,
-        });
+      const alertHistories = await listHistory(details.alert.id);
 
       expect(alertHistories.length).toBe(2);
       const [history1, history2] = alertHistories;
@@ -5118,7 +5074,7 @@ describe('checkAlerts', () => {
         teamWebhooksById,
       );
 
-      const updated = await alertDocs.findById(details.alert.id);
+      const updated = await getAlert(details.alert.id);
       // The alert fires successfully — no WEBHOOK_ERROR from a compile crash.
       expect(updated!.state).toBe(AlertState.ALERT);
       expect(updated!.executionErrors ?? []).toHaveLength(0);
@@ -5213,7 +5169,7 @@ describe('checkAlerts', () => {
         alertProvider,
         teamWebhooksById,
       );
-      expect((await alertDocs.findById(details.alert.id))!.state).toBe('ALERT');
+      expect((await getAlert(details.alert.id))!.state).toBe('ALERT');
 
       // Next window with no data should resolve
       const nextWindow = new Date('2023-11-16T22:16:00.000Z');
@@ -5225,14 +5181,10 @@ describe('checkAlerts', () => {
         alertProvider,
         teamWebhooksById,
       );
-      expect((await alertDocs.findById(details.alert.id))!.state).toBe('OK');
+      expect((await getAlert(details.alert.id))!.state).toBe('OK');
 
       // Check alert history
-      const alertHistories = await alertHistoryDocs
-        .find({
-          alert: details.alert.id,
-        })
-        .sort({ createdAt: 1 });
+      const alertHistories = await listHistory(details.alert.id);
 
       expect(alertHistories.length).toBe(2);
       expect(alertHistories[0].state).toBe('ALERT');
@@ -5284,9 +5236,9 @@ describe('checkAlerts', () => {
       });
 
       const lastValue = async (alertId: string) => {
-        const histories = await alertHistoryDocs.find({ alert: alertId }).sort({
-          createdAt: 1,
-        });
+        const histories = (await listHistory(alertId)).sort(
+          (a, b) => +new Date(a.createdAt) - +new Date(b.createdAt),
+        );
         expect(histories.length).toBe(1);
         return histories[0].lastValues[0]?.count;
       };
@@ -5364,12 +5316,10 @@ describe('checkAlerts', () => {
         // The empty Lucene selection renders as `("")`, which drops out of the
         // predicate — so both rows are counted. Left unsubstituted, the literal
         // `$svc` would match nothing and the alert would stay OK.
-        expect((await alertDocs.findById(details.alert.id))!.state).toBe(
-          'ALERT',
-        );
+        expect((await getAlert(details.alert.id))!.state).toBe('ALERT');
         expect(await lastValue(details.alert.id)).toBe(2);
         expect(
-          (await alertDocs.findById(details.alert.id))!.executionErrors ?? [],
+          (await getAlert(details.alert.id))!.executionErrors ?? [],
         ).toHaveLength(0);
       });
 
@@ -5439,9 +5389,7 @@ describe('checkAlerts', () => {
         // Nothing is selected, so the guarded condition drops out and both rows
         // are counted. Left unexpanded, `$__conditionalAll(...)` is not valid
         // SQL and the query would fail outright.
-        expect((await alertDocs.findById(details.alert.id))!.state).toBe(
-          'ALERT',
-        );
+        expect((await getAlert(details.alert.id))!.state).toBe('ALERT');
         expect(await lastValue(details.alert.id)).toBe(2);
       });
 
@@ -5521,9 +5469,7 @@ describe('checkAlerts', () => {
 
         // Both literals survived substitution and matched their rows; the
         // `api` row did not.
-        expect((await alertDocs.findById(details.alert.id))!.state).toBe(
-          'ALERT',
-        );
+        expect((await getAlert(details.alert.id))!.state).toBe('ALERT');
         expect(await lastValue(details.alert.id)).toBe(2);
       });
 
@@ -5586,9 +5532,7 @@ describe('checkAlerts', () => {
 
         // `$__filter($svc)` expanded to its empty-selection no-op, so it matched
         // everything; `'$abc'` was left as a literal and excluded its own row.
-        expect((await alertDocs.findById(details.alert.id))!.state).toBe(
-          'ALERT',
-        );
+        expect((await getAlert(details.alert.id))!.state).toBe('ALERT');
         expect(await lastValue(details.alert.id)).toBe(2);
       });
     });
@@ -5690,13 +5634,11 @@ describe('checkAlerts', () => {
         teamWebhooksById,
       );
 
-      expect((await alertDocs.findById(details.alert.id))!.state).toBe('ALERT');
+      expect((await getAlert(details.alert.id))!.state).toBe('ALERT');
 
       // Raw SQL alerts with GROUP BY produce separate history records per group.
       // web=2 (meets threshold 2), worker=1 (below threshold 2).
-      const alertHistories = await alertHistoryDocs.find({
-        alert: details.alert.id,
-      });
+      const alertHistories = await listHistory(details.alert.id);
 
       expect(alertHistories.length).toBe(2);
 
@@ -5809,7 +5751,7 @@ describe('checkAlerts', () => {
         teamWebhooksById,
       );
 
-      expect((await alertDocs.findById(details.alert.id))!.state).toBe('ALERT');
+      expect((await getAlert(details.alert.id))!.state).toBe('ALERT');
 
       // The webhook payload is captured via the mocked slack sender. Its
       // rendered title/body must resolve {{attributes.ServiceName}} to the
@@ -5922,23 +5864,22 @@ describe('checkAlerts', () => {
         );
 
       await evaluateAt(firedAt);
-      expect((await alertDocs.findById(details.alert.id))!.state).toBe('ALERT');
+      expect((await getAlert(details.alert.id))!.state).toBe('ALERT');
 
-      const firedRow = await alertHistoryDocs
-        .findOne({
-          alert: details.alert.id,
-          group: `${alias}:${serviceName}`,
-        })
-        .lean();
+      const firedRow =
+        (await (
+          await listHistory(
+            details.alert.id,
+            r => r.group === `${alias}:${serviceName}`,
+          )
+        )[0]) ?? null;
 
       return {
         details,
         firedRow,
         resolve: async () => {
           await evaluateAt(new Date(firedAt.getTime() + ms('10m')));
-          expect((await alertDocs.findById(details.alert.id))!.state).toBe(
-            'OK',
-          );
+          expect((await getAlert(details.alert.id))!.state).toBe('OK');
         },
       };
     };
@@ -6017,10 +5958,7 @@ describe('checkAlerts', () => {
         alias: 'ServiceName',
         name: 'Errors for {{attributes.ServiceName}}',
       });
-      await alertHistoryDocs.updateMany(
-        { alert: details.alert.id },
-        { $unset: { groupValues: 1 } },
-      );
+      await patchHistory(details.alert.id, { groupValues: undefined });
 
       await resolve();
 
@@ -6131,11 +6069,9 @@ describe('checkAlerts', () => {
         teamWebhooksById,
       );
 
-      expect((await alertDocs.findById(details.alert.id))!.state).toBe('ALERT');
+      expect((await getAlert(details.alert.id))!.state).toBe('ALERT');
 
-      const alertHistories = await alertHistoryDocs.find({
-        alert: details.alert.id,
-      });
+      const alertHistories = await listHistory(details.alert.id);
 
       expect(alertHistories.length).toBe(1);
       expect(alertHistories[0].state).toBe('ALERT');
@@ -6241,11 +6177,9 @@ describe('checkAlerts', () => {
         teamWebhooksById,
       );
 
-      expect((await alertDocs.findById(details.alert.id))!.state).toBe('ALERT');
+      expect((await getAlert(details.alert.id))!.state).toBe('ALERT');
 
-      const alertHistories = await alertHistoryDocs.find({
-        alert: details.alert.id,
-      });
+      const alertHistories = await listHistory(details.alert.id);
 
       expect(alertHistories.length).toBe(1);
       expect(alertHistories[0].state).toBe('ALERT');
@@ -6341,10 +6275,8 @@ describe('checkAlerts', () => {
         teamWebhooksById,
       );
 
-      expect((await alertDocs.findById(details.alert.id))!.state).toBe('OK');
-      const firstRunHistories = await alertHistoryDocs.find({
-        alert: details.alert.id,
-      });
+      expect((await getAlert(details.alert.id))!.state).toBe('OK');
+      const firstRunHistories = await listHistory(details.alert.id);
       expect(firstRunHistories.length).toBe(1);
       expect(firstRunHistories[0].state).toBe('OK');
 
@@ -6359,12 +6291,12 @@ describe('checkAlerts', () => {
         teamWebhooksById,
       );
 
-      expect((await alertDocs.findById(details.alert.id))!.state).toBe('ALERT');
+      expect((await getAlert(details.alert.id))!.state).toBe('ALERT');
 
-      const catchupHistories = await alertHistoryDocs.find({
-        alert: details.alert.id,
-        createdAt: { $gt: new Date('2023-11-16T22:00:00.000Z') },
-      });
+      const catchupHistories = await listHistory(
+        details.alert.id,
+        r => r.createdAt > new Date('2023-11-16T22:00:00.000Z'),
+      );
 
       expect(catchupHistories.length).toBe(1);
       expect(catchupHistories[0].state).toBe('ALERT');
@@ -6453,14 +6385,10 @@ describe('checkAlerts', () => {
         alertProvider,
         teamWebhooksById,
       );
-      expect((await alertDocs.findById(details.alert.id))!.state).toBe('ALERT');
+      expect((await getAlert(details.alert.id))!.state).toBe('ALERT');
 
       // Check alert history
-      const alertHistories = await alertHistoryDocs
-        .find({
-          alert: details.alert.id,
-        })
-        .sort({ createdAt: 1 });
+      const alertHistories = await listHistory(details.alert.id);
 
       expect(alertHistories.length).toBe(1);
       expect(alertHistories[0].state).toBe('ALERT');
@@ -6477,13 +6405,9 @@ describe('checkAlerts', () => {
         alertProvider,
         teamWebhooksById,
       );
-      expect((await alertDocs.findById(details.alert.id))!.state).toBe('OK');
+      expect((await getAlert(details.alert.id))!.state).toBe('OK');
 
-      const allHistories = await alertHistoryDocs
-        .find({
-          alert: details.alert.id,
-        })
-        .sort({ createdAt: 1 });
+      const allHistories = await listHistory(details.alert.id);
       expect(allHistories.length).toBe(2);
       expect(allHistories[1].state).toBe('OK');
     });
@@ -6551,11 +6475,9 @@ describe('checkAlerts', () => {
       );
 
       // count() returns 0 for no matching rows, which is below threshold of 1
-      expect((await alertDocs.findById(details.alert.id))!.state).toBe('OK');
+      expect((await getAlert(details.alert.id))!.state).toBe('OK');
 
-      const alertHistories = await alertHistoryDocs.find({
-        alert: details.alert.id,
-      });
+      const alertHistories = await listHistory(details.alert.id);
       expect(alertHistories.length).toBe(1);
       expect(alertHistories[0].state).toBe('OK');
       expect(alertHistories[0].lastValues[0].count).toBe(0);
@@ -6661,11 +6583,9 @@ describe('checkAlerts', () => {
         teamWebhooksById,
       );
 
-      expect((await alertDocs.findById(details.alert.id))!.state).toBe('ALERT');
+      expect((await getAlert(details.alert.id))!.state).toBe('ALERT');
 
-      const alertHistories = await alertHistoryDocs.find({
-        alert: details.alert.id,
-      });
+      const alertHistories = await listHistory(details.alert.id);
 
       expect(alertHistories.length).toBe(1);
       expect(alertHistories[0].state).toBe('ALERT');
@@ -6779,11 +6699,9 @@ describe('checkAlerts', () => {
         teamWebhooksById,
       );
 
-      expect((await alertDocs.findById(details.alert.id))!.state).toBe('ALERT');
+      expect((await getAlert(details.alert.id))!.state).toBe('ALERT');
 
-      const alertHistories = await alertHistoryDocs.find({
-        alert: details.alert.id,
-      });
+      const alertHistories = await listHistory(details.alert.id);
 
       // Number charts produce a single history (no per-group splitting)
       expect(alertHistories.length).toBe(1);
@@ -6882,14 +6800,10 @@ describe('checkAlerts', () => {
       );
 
       // Overall alert should be in ALERT state (because at least one group is alerting)
-      expect((await alertDocs.findById(details.alert.id))!.state).toBe('ALERT');
+      expect((await getAlert(details.alert.id))!.state).toBe('ALERT');
 
       // Check that we have 2 alert histories (one for each group)
-      let alertHistories = await alertHistoryDocs
-        .find({
-          alert: details.alert.id,
-        })
-        .sort({ createdAt: 1, group: 1 });
+      let alertHistories = await listHistory(details.alert.id);
       expect(alertHistories.length).toBe(2);
 
       // Groups can include multiple fields, check that both groups exist
@@ -6911,14 +6825,10 @@ describe('checkAlerts', () => {
       );
 
       // Overall alert should still be in ALERT state (service-a is still alerting)
-      expect((await alertDocs.findById(details.alert.id))!.state).toBe('ALERT');
+      expect((await getAlert(details.alert.id))!.state).toBe('ALERT');
 
       // Check alert histories
-      alertHistories = await alertHistoryDocs
-        .find({
-          alert: details.alert.id,
-        })
-        .sort({ createdAt: 1, group: 1 });
+      alertHistories = await listHistory(details.alert.id);
       expect(alertHistories.length).toBe(4); // 2 from first run + 2 from second run
 
       // Find the latest histories for each group (groups include multiple fields)
@@ -7033,9 +6943,7 @@ describe('checkAlerts', () => {
         teamWebhooksById,
       );
 
-      const histories = await alertHistoryDocs.find({
-        alert: details.alert.id,
-      });
+      const histories = await listHistory(details.alert.id);
       expect(histories).toHaveLength(2);
       expect(histories.every(h => h.state === AlertState.ALERT)).toBe(true);
       const sampleQueries = querySpy.mock.calls.filter(
@@ -7118,11 +7026,7 @@ describe('checkAlerts', () => {
       );
 
       // Verify histories were created for both groups
-      let alertHistories = await alertHistoryDocs
-        .find({
-          alert: details.alert.id,
-        })
-        .sort({ createdAt: 1, group: 1 });
+      let alertHistories = await listHistory(details.alert.id);
       expect(alertHistories.length).toBe(2);
       expect(alertHistories[0].state).toBe('ALERT');
       expect(alertHistories[1].state).toBe('ALERT');
@@ -7142,11 +7046,7 @@ describe('checkAlerts', () => {
       );
 
       // Verify NO new histories were created (still only 2 from first run)
-      alertHistories = await alertHistoryDocs
-        .find({
-          alert: details.alert.id,
-        })
-        .sort({ createdAt: 1, group: 1 });
+      alertHistories = await listHistory(details.alert.id);
       expect(alertHistories.length).toBe(2); // Still only 2 histories
 
       // Verify webhooks were only called twice (once per group in first run, not again in second run)
@@ -7165,11 +7065,7 @@ describe('checkAlerts', () => {
       );
 
       // Verify new histories were created (should have 4 now)
-      alertHistories = await alertHistoryDocs
-        .find({
-          alert: details.alert.id,
-        })
-        .sort({ createdAt: 1, group: 1 });
+      alertHistories = await listHistory(details.alert.id);
       expect(alertHistories.length).toBe(4); // 2 from first run + 2 from third run
 
       // Verify webhooks were called for the third run
@@ -7237,9 +7133,7 @@ describe('checkAlerts', () => {
       );
 
       // Verify history was created
-      const alertHistories = await alertHistoryDocs.find({
-        alert: details.alert.id,
-      });
+      const alertHistories = await listHistory(details.alert.id);
       expect(alertHistories.length).toBe(1);
       expect(alertHistories[0].state).toBe('ALERT');
       expect(alertHistories[0].createdAt).toEqual(
@@ -7311,9 +7205,7 @@ describe('checkAlerts', () => {
         teamWebhooksById,
       );
 
-      let alertHistories = await alertHistoryDocs.find({
-        alert: details.alert.id,
-      });
+      let alertHistories = await listHistory(details.alert.id);
       expect(alertHistories.length).toBe(1);
       expect(alertHistories[0].state).toBe('ALERT');
       expect(alertHistories[0].createdAt).toEqual(firstRun);
@@ -7348,9 +7240,7 @@ describe('checkAlerts', () => {
       );
 
       // Verify NO new histories were created
-      alertHistories = await alertHistoryDocs.find({
-        alert: details.alert.id,
-      });
+      alertHistories = await listHistory(details.alert.id);
       expect(alertHistories.length).toBe(1); // Still only 1 history from first run
 
       // Verify webhook was only called once (in first run)
@@ -7453,14 +7343,10 @@ describe('checkAlerts', () => {
       );
 
       // Overall alert should be in ALERT state (because at least one group is alerting)
-      expect((await alertDocs.findById(details.alert.id))!.state).toBe('ALERT');
+      expect((await getAlert(details.alert.id))!.state).toBe('ALERT');
 
       // Check that we have 2 alert histories (one for each group)
-      let alertHistories = await alertHistoryDocs
-        .find({
-          alert: details.alert.id,
-        })
-        .sort({ createdAt: 1, group: 1 });
+      let alertHistories = await listHistory(details.alert.id);
       expect(alertHistories.length).toBe(2);
 
       // Groups can include multiple fields, check that both groups exist
@@ -7482,14 +7368,10 @@ describe('checkAlerts', () => {
       );
 
       // Overall alert should still be in ALERT state (service-a is still alerting)
-      expect((await alertDocs.findById(details.alert.id))!.state).toBe('ALERT');
+      expect((await getAlert(details.alert.id))!.state).toBe('ALERT');
 
       // Check alert histories
-      alertHistories = await alertHistoryDocs
-        .find({
-          alert: details.alert.id,
-        })
-        .sort({ createdAt: 1, group: 1 });
+      alertHistories = await listHistory(details.alert.id);
       expect(alertHistories.length).toBe(4); // 2 from first run + 2 from second run
 
       // Find the latest histories for each group (groups include multiple fields)
@@ -7697,7 +7579,7 @@ describe('checkAlerts', () => {
         alertProvider,
         teamWebhooksById,
       );
-      expect((await alertDocs.findById(details.alert.id))!.state).toBe('ALERT');
+      expect((await getAlert(details.alert.id))!.state).toBe('ALERT');
 
       // skip since time diff is less than 1 window size
       const later = new Date('2023-11-16T22:14:00.000Z');
@@ -7710,7 +7592,7 @@ describe('checkAlerts', () => {
         teamWebhooksById,
       );
       // alert should still be in alert state
-      expect((await alertDocs.findById(details.alert.id))!.state).toBe('ALERT');
+      expect((await getAlert(details.alert.id))!.state).toBe('ALERT');
 
       const nextWindow = new Date('2023-11-16T22:16:00.000Z');
       await processAlertAtTime(
@@ -7722,16 +7604,10 @@ describe('checkAlerts', () => {
         teamWebhooksById,
       );
       // alert should be in ok state
-      expect((await alertDocs.findById(details.alert.id))!.state).toBe('OK');
+      expect((await getAlert(details.alert.id))!.state).toBe('OK');
 
       // check alert history
-      const alertHistories = await alertHistoryDocs
-        .find({
-          alert: details.alert.id,
-        })
-        .sort({
-          createdAt: 1,
-        });
+      const alertHistories = await listHistory(details.alert.id);
 
       expect(alertHistories.length).toBe(2);
       const [history1, history2] = alertHistories;
@@ -7898,14 +7774,10 @@ describe('checkAlerts', () => {
         teamWebhooksById,
       );
 
-      expect((await alertDocs.findById(details.alert.id))!.state).toBe('ALERT');
+      expect((await getAlert(details.alert.id))!.state).toBe('ALERT');
 
       // Check that we have 2 alert histories (one per group)
-      const alertHistories = await alertHistoryDocs
-        .find({
-          alert: details.alert.id,
-        })
-        .sort({ createdAt: 1, group: 1 });
+      const alertHistories = await listHistory(details.alert.id);
 
       expect(alertHistories.length).toBe(2);
 
@@ -8113,14 +7985,10 @@ describe('checkAlerts', () => {
         teamWebhooksById,
       );
 
-      expect((await alertDocs.findById(details.alert.id))!.state).toBe('ALERT');
+      expect((await getAlert(details.alert.id))!.state).toBe('ALERT');
 
       // The evaluated value is the last series' 6, not the first series' 100.
-      const [history] = await alertHistoryDocs
-        .find({
-          alert: details.alert.id,
-        })
-        .sort({ createdAt: 1 });
+      const [history] = await listHistory(details.alert.id);
       expect(history.state).toBe('ALERT');
       expect(history.lastValues.length).toBe(1);
       expect(history.lastValues[0].count).toBe(6);
@@ -8140,7 +8008,7 @@ describe('checkAlerts', () => {
         alertProvider,
         teamWebhooksById,
       );
-      expect((await alertDocs.findById(details.alert.id))!.state).toBe('OK');
+      expect((await getAlert(details.alert.id))!.state).toBe('OK');
     });
 
     it('TILE alert (metrics, multi-series) - a gap in the last series is skipped, not backfilled from an earlier series', async () => {
@@ -8186,11 +8054,9 @@ describe('checkAlerts', () => {
       // The last series is NULL for the bucket, so the row is skipped: no
       // alert fires from the first series' 100, and the run records a single
       // default OK history with no values.
-      expect((await alertDocs.findById(details.alert.id))!.state).toBe('OK');
+      expect((await getAlert(details.alert.id))!.state).toBe('OK');
 
-      const histories = await alertHistoryDocs.find({
-        alert: details.alert.id,
-      });
+      const histories = await listHistory(details.alert.id);
       expect(histories.length).toBe(1);
       expect(histories[0].state).toBe('OK');
       expect(histories[0].counts).toBe(0);
@@ -8239,11 +8105,9 @@ describe('checkAlerts', () => {
         teamWebhooksById,
       );
 
-      expect((await alertDocs.findById(details.alert.id))!.state).toBe('OK');
+      expect((await getAlert(details.alert.id))!.state).toBe('OK');
 
-      const histories = await alertHistoryDocs.find({
-        alert: details.alert.id,
-      });
+      const histories = await listHistory(details.alert.id);
       expect(histories.length).toBe(1);
       expect(histories[0].state).toBe('OK');
       expect(histories[0].counts).toBe(0);
@@ -8303,13 +8167,9 @@ describe('checkAlerts', () => {
         teamWebhooksById,
       );
 
-      expect((await alertDocs.findById(details.alert.id))!.state).toBe('ALERT');
+      expect((await getAlert(details.alert.id))!.state).toBe('ALERT');
 
-      const [history] = await alertHistoryDocs
-        .find({
-          alert: details.alert.id,
-        })
-        .sort({ createdAt: 1 });
+      const [history] = await listHistory(details.alert.id);
       expect(history.state).toBe('ALERT');
       expect(history.lastValues.length).toBe(1);
       // The formula value (5) — not operand A (200) or operand B (10).
@@ -8363,13 +8223,9 @@ describe('checkAlerts', () => {
         teamWebhooksById,
       );
 
-      expect((await alertDocs.findById(details.alert.id))!.state).toBe('ALERT');
+      expect((await getAlert(details.alert.id))!.state).toBe('ALERT');
 
-      const [history] = await alertHistoryDocs
-        .find({
-          alert: details.alert.id,
-        })
-        .sort({ createdAt: 1 });
+      const [history] = await listHistory(details.alert.id);
       expect(history.lastValues.length).toBe(1);
       expect(history.lastValues[0].count).toBe(5);
 
@@ -8420,11 +8276,9 @@ describe('checkAlerts', () => {
         teamWebhooksById,
       );
 
-      expect((await alertDocs.findById(details.alert.id))!.state).toBe('OK');
+      expect((await getAlert(details.alert.id))!.state).toBe('OK');
 
-      const histories = await alertHistoryDocs.find({
-        alert: details.alert.id,
-      });
+      const histories = await listHistory(details.alert.id);
       expect(histories.length).toBe(1);
       expect(histories[0].state).toBe('OK');
       expect(histories[0].counts).toBe(0);
@@ -8551,13 +8405,9 @@ describe('checkAlerts', () => {
         teamWebhooksById,
       );
 
-      expect((await alertDocs.findById(details.alert.id))!.state).toBe('ALERT');
+      expect((await getAlert(details.alert.id))!.state).toBe('ALERT');
 
-      const [history] = await alertHistoryDocs
-        .find({
-          alert: details.alert.id,
-        })
-        .sort({ createdAt: 1 });
+      const [history] = await listHistory(details.alert.id);
       expect(history.state).toBe('ALERT');
       expect(history.lastValues.length).toBe(1);
       // The formula value (25) — not operand A (1) or operand B (4).
@@ -8578,7 +8428,7 @@ describe('checkAlerts', () => {
         alertProvider,
         teamWebhooksById,
       );
-      expect((await alertDocs.findById(details.alert.id))!.state).toBe('OK');
+      expect((await getAlert(details.alert.id))!.state).toBe('OK');
     });
 
     it('TILE alert (metrics, grouped ratio) - honors ratioMode share_of_total', async () => {
@@ -8632,12 +8482,12 @@ describe('checkAlerts', () => {
         teamWebhooksById,
       );
 
-      expect((await alertDocs.findById(details.alert.id))!.state).toBe('ALERT');
+      expect((await getAlert(details.alert.id))!.state).toBe('ALERT');
 
-      const alertingHistories = await alertHistoryDocs.find({
-        alert: details.alert.id,
-        state: 'ALERT',
-      });
+      const alertingHistories = await listHistory(
+        details.alert.id,
+        r => r.state === 'ALERT',
+      );
       expect(alertingHistories.length).toBe(1);
       expect(alertingHistories[0].group).toContain('service-a');
       expect(alertingHistories[0].lastValues.length).toBe(1);
@@ -8731,7 +8581,7 @@ describe('checkAlerts', () => {
 
       // Create a previous alert history at 22:00 so the alert job will check data from 22:00 onwards
       // This simulates that the alert was last checked at 22:00
-      await alertHistoryDocs.create({
+      await seedHistory({
         alert: details.alert.id,
         createdAt: new Date('2023-11-16T22:00:00.000Z'),
         state: 'OK',
@@ -8751,15 +8601,11 @@ describe('checkAlerts', () => {
       );
 
       // Alert should be in OK state because the final bucket (bucket 3) dropped below the threshold and auto-resolved.
-      const updatedAlert = await alertDocs.findById(details.alert.id);
+      const updatedAlert = await getAlert(details.alert.id);
       expect(updatedAlert!.state).toBe('OK');
 
       // Check alert history
-      const alertHistories = await alertHistoryDocs
-        .find({
-          alert: details.alert.id,
-        })
-        .sort({ createdAt: 1 });
+      const alertHistories = await listHistory(details.alert.id);
 
       // Should have 2 alert history entries (1 previous + 1 new)
       expect(alertHistories.length).toBe(2);
@@ -8817,15 +8663,11 @@ describe('checkAlerts', () => {
       );
 
       // Alert should be auto-resolved to OK state
-      const resolvedAlert = await alertDocs.findById(details.alert.id);
+      const resolvedAlert = await getAlert(details.alert.id);
       expect(resolvedAlert!.state).toBe('OK');
 
       // Check alert histories
-      const allHistories = await alertHistoryDocs
-        .find({
-          alert: details.alert.id,
-        })
-        .sort({ createdAt: -1 });
+      const allHistories = await listHistory(details.alert.id);
 
       // Should have 3 alert history entries total (1 previous + 1 ALERT + 1 OK)
       expect(allHistories.length).toBe(3);
@@ -8951,7 +8793,7 @@ describe('checkAlerts', () => {
       ]);
 
       // Create previous alert histories at 22:00 for initial baseline (one per service)
-      await alertHistoryDocs.create([
+      await seedHistory([
         {
           alert: details.alert.id,
           createdAt: new Date('2023-11-16T22:00:00.000Z'),
@@ -8982,15 +8824,11 @@ describe('checkAlerts', () => {
       );
 
       // Alert should be in ALERT state (service-b still alerting)
-      const updatedAlert = await alertDocs.findById(details.alert.id);
+      const updatedAlert = await getAlert(details.alert.id);
       expect(updatedAlert!.state).toBe('ALERT');
 
       // Check alert histories after first run
-      const firstRunHistories = await alertHistoryDocs
-        .find({
-          alert: details.alert.id,
-        })
-        .sort({ createdAt: 1 });
+      const firstRunHistories = await listHistory(details.alert.id);
 
       // Should have histories: 1 previous + 2 groups (service-a, service-b)
       // service-a should resolve, service-b should alert
@@ -9042,11 +8880,7 @@ describe('checkAlerts', () => {
       );
 
       // Check all alert histories after second run
-      const allHistories = await alertHistoryDocs
-        .find({
-          alert: details.alert.id,
-        })
-        .sort({ createdAt: 1 });
+      const allHistories = await listHistory(details.alert.id);
 
       // Verify no histories were created for old timeframes (22:00-22:05)
       // All new histories should have createdAt >= 22:15
@@ -9130,14 +8964,10 @@ describe('checkAlerts', () => {
       );
 
       // Alert should be in OK state because there are two logs in the first period
-      expect((await alertDocs.findById(details.alert.id))!.state).toBe('OK');
+      expect((await getAlert(details.alert.id))!.state).toBe('OK');
 
       // Alert history should reflect 2 logs
-      const alertHistoriesPeriod1 = await alertHistoryDocs
-        .find({
-          alert: details.alert.id,
-        })
-        .sort({ createdAt: 1 });
+      const alertHistoriesPeriod1 = await listHistory(details.alert.id);
       expect(alertHistoriesPeriod1.length).toBe(1);
       expect(alertHistoriesPeriod1[0].state).toBe('OK');
       expect(alertHistoriesPeriod1[0].counts).toBe(0);
@@ -9164,14 +8994,10 @@ describe('checkAlerts', () => {
       );
 
       // Alert should be in ALERT state because there are no logs in the second period
-      expect((await alertDocs.findById(details.alert.id))!.state).toBe('ALERT');
+      expect((await getAlert(details.alert.id))!.state).toBe('ALERT');
 
       // Alert history should reflect 0 logs, which is an ALERT
-      const alertHistoriesPeriod2 = await alertHistoryDocs
-        .find({
-          alert: details.alert.id,
-        })
-        .sort({ createdAt: 1 });
+      const alertHistoriesPeriod2 = await listHistory(details.alert.id);
       expect(alertHistoriesPeriod2.length).toBe(2);
       expect(alertHistoriesPeriod2[1].state).toBe('ALERT');
       expect(alertHistoriesPeriod2[1].counts).toBe(1);
@@ -9260,14 +9086,10 @@ describe('checkAlerts', () => {
       );
 
       // Alert should be in OK state because there are two logs in the first period
-      expect((await alertDocs.findById(details.alert.id))!.state).toBe('OK');
+      expect((await getAlert(details.alert.id))!.state).toBe('OK');
 
       // Alert history should reflect 2 logs
-      const alertHistoriesPeriod1 = await alertHistoryDocs
-        .find({
-          alert: details.alert.id,
-        })
-        .sort({ createdAt: 1 });
+      const alertHistoriesPeriod1 = await listHistory(details.alert.id);
       expect(alertHistoriesPeriod1.length).toBe(1);
       expect(alertHistoriesPeriod1[0].state).toBe('OK');
       expect(alertHistoriesPeriod1[0].counts).toBe(0);
@@ -9292,14 +9114,10 @@ describe('checkAlerts', () => {
       );
 
       // Period 3 has 1 log, which doesn't satisfy BELOW threshold (count < 1), so it auto-resolves to OK.
-      expect((await alertDocs.findById(details.alert.id))!.state).toBe('OK');
+      expect((await getAlert(details.alert.id))!.state).toBe('OK');
 
       // Period 3 didn't exceed threshold, so auto-resolve reset state to OK.
-      const alertHistoriesPeriod2 = await alertHistoryDocs
-        .find({
-          alert: details.alert.id,
-        })
-        .sort({ createdAt: 1 });
+      const alertHistoriesPeriod2 = await listHistory(details.alert.id);
       expect(alertHistoriesPeriod2).toHaveLength(2);
 
       expect(alertHistoriesPeriod2[1].state).toBe('OK');
@@ -9386,14 +9204,10 @@ describe('checkAlerts', () => {
       );
 
       // Alert should be in OK state because there are two logs in the first period
-      expect((await alertDocs.findById(details.alert.id))!.state).toBe('ALERT');
+      expect((await getAlert(details.alert.id))!.state).toBe('ALERT');
 
       // Alert history should reflect 2 logs
-      const alertHistoriesPeriod1 = await alertHistoryDocs
-        .find({
-          alert: details.alert.id,
-        })
-        .sort({ createdAt: 1 });
+      const alertHistoriesPeriod1 = await listHistory(details.alert.id);
       expect(alertHistoriesPeriod1.length).toBe(1);
       expect(alertHistoriesPeriod1[0].state).toBe('ALERT');
       expect(alertHistoriesPeriod1[0].counts).toBe(1);
@@ -9418,14 +9232,10 @@ describe('checkAlerts', () => {
       );
 
       // Alert should be in OK state because there are no logs in the second period
-      expect((await alertDocs.findById(details.alert.id))!.state).toBe('OK');
+      expect((await getAlert(details.alert.id))!.state).toBe('OK');
 
       // Alert histories should reflect OK state for period 2
-      const alertHistoriesPeriod2 = await alertHistoryDocs
-        .find({
-          alert: details.alert.id,
-        })
-        .sort({ createdAt: 1 });
+      const alertHistoriesPeriod2 = await listHistory(details.alert.id);
       expect(alertHistoriesPeriod2).toHaveLength(2);
 
       expect(alertHistoriesPeriod2[1].state).toBe('OK');
@@ -9530,14 +9340,10 @@ describe('checkAlerts', () => {
       );
 
       // Alert should be in ALERT state because the api service has 2 error logs
-      expect((await alertDocs.findById(details.alert.id))!.state).toBe('ALERT');
+      expect((await getAlert(details.alert.id))!.state).toBe('ALERT');
 
       // 2 alert histories, one for api (ALERT) and one for app (OK)
-      const alertHistoriesPeriod1 = await alertHistoryDocs
-        .find({
-          alert: details.alert.id,
-        })
-        .sort({ createdAt: 1 });
+      const alertHistoriesPeriod1 = await listHistory(details.alert.id);
       expect(alertHistoriesPeriod1).toHaveLength(2);
 
       // api
@@ -9579,14 +9385,10 @@ describe('checkAlerts', () => {
       );
 
       // Alert should be in ALERT state because now the app service is in alarm
-      expect((await alertDocs.findById(details.alert.id))!.state).toBe('ALERT');
+      expect((await getAlert(details.alert.id))!.state).toBe('ALERT');
 
       // 4 alert histories, 2 for api (ALERT, OK) and 2 for app (OK, ALERT)
-      const alertHistoriesPeriod2 = await alertHistoryDocs
-        .find({
-          alert: details.alert.id,
-        })
-        .sort({ createdAt: 1 });
+      const alertHistoriesPeriod2 = await listHistory(details.alert.id);
       expect(alertHistoriesPeriod2).toHaveLength(4);
 
       // api - should be zero-filled
@@ -9627,14 +9429,10 @@ describe('checkAlerts', () => {
       );
 
       // Alert should be in OK state since app should have been resolved
-      expect((await alertDocs.findById(details.alert.id))!.state).toBe('OK');
+      expect((await getAlert(details.alert.id))!.state).toBe('OK');
 
       // 5 alert histories, 2 for api (ALERT, OK, <nothing for period 3>) and 3 for app (OK, ALERT, OK)
-      const alertHistoriesPeriod3 = await alertHistoryDocs
-        .find({
-          alert: details.alert.id,
-        })
-        .sort({ createdAt: 1 });
+      const alertHistoriesPeriod3 = await listHistory(details.alert.id);
       expect(alertHistoriesPeriod3).toHaveLength(5);
 
       // api - should not have any new alert histories in this period
@@ -9732,14 +9530,10 @@ describe('checkAlerts', () => {
       );
 
       // Alert should be in ALERT state because the api service has 2 error logs
-      expect((await alertDocs.findById(details.alert.id))!.state).toBe('OK');
+      expect((await getAlert(details.alert.id))!.state).toBe('OK');
 
       // 2 alert histories, one for api (OK) and one for app (OK)
-      const alertHistoriesPeriod1 = await alertHistoryDocs
-        .find({
-          alert: details.alert.id,
-        })
-        .sort({ createdAt: 1 });
+      const alertHistoriesPeriod1 = await listHistory(details.alert.id);
       expect(alertHistoriesPeriod1).toHaveLength(2);
 
       // api
@@ -9780,14 +9574,10 @@ describe('checkAlerts', () => {
       );
 
       // Alert should be in OK state because grouped alerts do not alert due to zero-fill
-      expect((await alertDocs.findById(details.alert.id))!.state).toBe('OK');
+      expect((await getAlert(details.alert.id))!.state).toBe('OK');
 
       // 3 alert histories. 2 for api (OK, OK) and 1 for app (OK)
-      const alertHistoriesPeriod2 = await alertHistoryDocs
-        .find({
-          alert: details.alert.id,
-        })
-        .sort({ createdAt: 1 });
+      const alertHistoriesPeriod2 = await listHistory(details.alert.id);
       expect(alertHistoriesPeriod2).toHaveLength(3);
 
       expect(alertHistoriesPeriod2[2].state).toBe('OK');
@@ -9865,14 +9655,10 @@ describe('checkAlerts', () => {
       );
 
       // Alert should be in ALERT state because the api service has 2 error logs
-      expect((await alertDocs.findById(details.alert.id))!.state).toBe('OK');
+      expect((await getAlert(details.alert.id))!.state).toBe('OK');
 
       // 2 alert histories, one for api (OK) and one for app (OK)
-      const alertHistoriesPeriod1 = await alertHistoryDocs
-        .find({
-          alert: details.alert.id,
-        })
-        .sort({ createdAt: 1 });
+      const alertHistoriesPeriod1 = await listHistory(details.alert.id);
       expect(alertHistoriesPeriod1).toHaveLength(2);
 
       // api
@@ -9913,14 +9699,10 @@ describe('checkAlerts', () => {
       );
 
       // Alert should be in ALERT state because there is no data and the period is zero-filled
-      expect((await alertDocs.findById(details.alert.id))!.state).toBe('ALERT');
+      expect((await getAlert(details.alert.id))!.state).toBe('ALERT');
 
       // 3 alert histories. The newest one should have an empty group and be in ALERT state
-      const alertHistoriesPeriod2 = await alertHistoryDocs
-        .find({
-          alert: details.alert.id,
-        })
-        .sort({ createdAt: 1 });
+      const alertHistoriesPeriod2 = await listHistory(details.alert.id);
       expect(alertHistoriesPeriod2).toHaveLength(3);
 
       expect(alertHistoriesPeriod2[2].state).toBe('ALERT');
@@ -9986,23 +9768,16 @@ describe('checkAlerts', () => {
       );
 
       // Silence the alert until 1 hour from now
-      await alertDocs.updateOne(
-        { _id: details.alert.id },
-        {
-          $set: {
-            silenced: {
-              at: new Date(),
-              until: new Date(Date.now() + 3600000), // 1 hour from now
-            },
-          },
+      await patchAlerts(details.alert.id, {
+        silenced: {
+          at: new Date(),
+          until: new Date(Date.now() + 3600000), // 1 hour from now
         },
-      );
+      });
 
       // Update the details.alert object to reflect the silenced state
       // (simulates what would happen if the alert was silenced before task queuing)
-      details.alert.silenced = (
-        await alertDocs.findById(details.alert.id)
-      )?.silenced;
+      details.alert.silenced = (await getAlert(details.alert.id))?.silenced;
 
       // Process the alert - should skip firing because it's silenced
       await processAlertAtTime(
@@ -10018,7 +9793,7 @@ describe('checkAlerts', () => {
       expect(slack.postMessageToWebhook).not.toHaveBeenCalled();
 
       // Verify alert state was still updated
-      expect((await alertDocs.findById(details.alert.id))!.state).toBe('ALERT');
+      expect((await getAlert(details.alert.id))!.state).toBe('ALERT');
     });
 
     it('should fire notifications when silenced period has expired', async () => {
@@ -10077,22 +9852,15 @@ describe('checkAlerts', () => {
       );
 
       // Silence the alert but set expiry to the past
-      await alertDocs.updateOne(
-        { _id: details.alert.id },
-        {
-          $set: {
-            silenced: {
-              at: new Date(Date.now() - 7200000), // 2 hours ago
-              until: new Date(Date.now() - 3600000), // 1 hour ago (expired)
-            },
-          },
+      await patchAlerts(details.alert.id, {
+        silenced: {
+          at: new Date(Date.now() - 7200000), // 2 hours ago
+          until: new Date(Date.now() - 3600000), // 1 hour ago (expired)
         },
-      );
+      });
 
       // Update the details.alert object to reflect the expired silenced state
-      details.alert.silenced = (
-        await alertDocs.findById(details.alert.id)
-      )?.silenced;
+      details.alert.silenced = (await getAlert(details.alert.id))?.silenced;
 
       // Process the alert - should fire because silence has expired
       await processAlertAtTime(
@@ -10106,7 +9874,7 @@ describe('checkAlerts', () => {
 
       // Verify webhook WAS called
       expect(slack.postMessageToWebhook).toHaveBeenCalledTimes(1);
-      expect((await alertDocs.findById(details.alert.id))!.state).toBe('ALERT');
+      expect((await getAlert(details.alert.id))!.state).toBe('ALERT');
     });
 
     it('should fire notifications when alert is unsilenced', async () => {
@@ -10165,10 +9933,7 @@ describe('checkAlerts', () => {
       );
 
       // Alert is unsilenced (no silenced field)
-      await alertDocs.updateOne(
-        { _id: details.alert.id },
-        { $unset: { silenced: 1 } },
-      );
+      await patchAlerts(details.alert.id, { silenced: undefined });
 
       // Update the details.alert object to reflect the unsilenced state
       details.alert.silenced = undefined;
@@ -10185,7 +9950,7 @@ describe('checkAlerts', () => {
 
       // Verify webhook WAS called
       expect(slack.postMessageToWebhook).toHaveBeenCalledTimes(1);
-      expect((await alertDocs.findById(details.alert.id))!.state).toBe('ALERT');
+      expect((await getAlert(details.alert.id))!.state).toBe('ALERT');
     });
 
     it('SAVED_SEARCH alert with alias in select and where should trigger', async () => {
@@ -10289,7 +10054,7 @@ describe('checkAlerts', () => {
         teamWebhooksById,
       );
 
-      expect((await alertDocs.findById(details.alert.id))!.state).toBe('ALERT');
+      expect((await getAlert(details.alert.id))!.state).toBe('ALERT');
       expect(slack.postMessageToWebhook).toHaveBeenCalledTimes(1);
     });
 
@@ -10384,7 +10149,7 @@ describe('checkAlerts', () => {
       );
 
       // No matching rows, so alert should remain in OK/INSUFFICIENT_DATA state
-      const alertState = (await alertDocs.findById(details.alert.id))!.state;
+      const alertState = (await getAlert(details.alert.id))!.state;
       expect(alertState).not.toBe('ALERT');
       expect(slack.postMessageToWebhook).not.toHaveBeenCalled();
     });
@@ -10486,7 +10251,7 @@ describe('checkAlerts', () => {
       );
 
       // Only 1 log matches svc:"api", which meets threshold > 1
-      expect((await alertDocs.findById(details.alert.id))!.state).toBe('ALERT');
+      expect((await getAlert(details.alert.id))!.state).toBe('ALERT');
       expect(slack.postMessageToWebhook).toHaveBeenCalledTimes(1);
     });
 
@@ -10576,7 +10341,7 @@ describe('checkAlerts', () => {
         alertProvider,
         teamWebhooksById,
       );
-      expect((await alertDocs.findById(details.alert.id))!.state).toBe('ALERT');
+      expect((await getAlert(details.alert.id))!.state).toBe('ALERT');
 
       // Period 2: 2 logs, threshold is > 2, 2 is NOT > 2 so should resolve to OK
       const secondRunTime = new Date(period2Start.getTime() + ms('5m'));
@@ -10588,7 +10353,7 @@ describe('checkAlerts', () => {
         alertProvider,
         teamWebhooksById,
       );
-      expect((await alertDocs.findById(details.alert.id))!.state).toBe('OK');
+      expect((await getAlert(details.alert.id))!.state).toBe('OK');
     });
 
     it('TILE alert with ABOVE_EXCLUSIVE threshold - should alert then resolve at boundary', async () => {
@@ -10707,7 +10472,7 @@ describe('checkAlerts', () => {
         alertProvider,
         teamWebhooksById,
       );
-      expect((await alertDocs.findById(details.alert.id))!.state).toBe('ALERT');
+      expect((await getAlert(details.alert.id))!.state).toBe('ALERT');
 
       // Period 2: 2 logs, 2 is NOT > 2 (boundary) → resolve to OK
       const secondRunTime = new Date(period2Start.getTime() + ms('5m'));
@@ -10719,7 +10484,7 @@ describe('checkAlerts', () => {
         alertProvider,
         teamWebhooksById,
       );
-      expect((await alertDocs.findById(details.alert.id))!.state).toBe('OK');
+      expect((await getAlert(details.alert.id))!.state).toBe('OK');
     });
 
     it('SAVED_SEARCH alert with BELOW_OR_EQUAL threshold - should alert then resolve', async () => {
@@ -10802,7 +10567,7 @@ describe('checkAlerts', () => {
         alertProvider,
         teamWebhooksById,
       );
-      expect((await alertDocs.findById(details.alert.id))!.state).toBe('ALERT');
+      expect((await getAlert(details.alert.id))!.state).toBe('ALERT');
 
       // Period 2: 3 logs, threshold is <= 2, should resolve to OK
       const secondRunTime = new Date(period2Start.getTime() + ms('5m'));
@@ -10814,7 +10579,7 @@ describe('checkAlerts', () => {
         alertProvider,
         teamWebhooksById,
       );
-      expect((await alertDocs.findById(details.alert.id))!.state).toBe('OK');
+      expect((await getAlert(details.alert.id))!.state).toBe('OK');
     });
 
     it('TILE alert with BELOW_OR_EQUAL threshold - should alert then resolve at boundary', async () => {
@@ -10918,7 +10683,7 @@ describe('checkAlerts', () => {
         alertProvider,
         teamWebhooksById,
       );
-      expect((await alertDocs.findById(details.alert.id))!.state).toBe('ALERT');
+      expect((await getAlert(details.alert.id))!.state).toBe('ALERT');
 
       // Period 2: 2 logs, 2 is NOT <= 1 (near-boundary) → resolve to OK
       const secondRunTime = new Date(period2Start.getTime() + ms('5m'));
@@ -10930,7 +10695,7 @@ describe('checkAlerts', () => {
         alertProvider,
         teamWebhooksById,
       );
-      expect((await alertDocs.findById(details.alert.id))!.state).toBe('OK');
+      expect((await getAlert(details.alert.id))!.state).toBe('OK');
     });
 
     it('SAVED_SEARCH alert with EQUAL threshold - should alert then resolve', async () => {
@@ -11013,7 +10778,7 @@ describe('checkAlerts', () => {
         alertProvider,
         teamWebhooksById,
       );
-      expect((await alertDocs.findById(details.alert.id))!.state).toBe('ALERT');
+      expect((await getAlert(details.alert.id))!.state).toBe('ALERT');
 
       // Period 2: 3 logs, threshold is == 2, 3 != 2 so should resolve to OK
       const secondRunTime = new Date(period2Start.getTime() + ms('5m'));
@@ -11025,7 +10790,7 @@ describe('checkAlerts', () => {
         alertProvider,
         teamWebhooksById,
       );
-      expect((await alertDocs.findById(details.alert.id))!.state).toBe('OK');
+      expect((await getAlert(details.alert.id))!.state).toBe('OK');
     });
 
     it('TILE alert with EQUAL threshold - should alert then resolve at near-boundary', async () => {
@@ -11141,7 +10906,7 @@ describe('checkAlerts', () => {
         alertProvider,
         teamWebhooksById,
       );
-      expect((await alertDocs.findById(details.alert.id))!.state).toBe('ALERT');
+      expect((await getAlert(details.alert.id))!.state).toBe('ALERT');
 
       // Period 2: 2 logs, 2 != 3 (near-boundary) → resolve to OK
       const secondRunTime = new Date(period2Start.getTime() + ms('5m'));
@@ -11153,7 +10918,7 @@ describe('checkAlerts', () => {
         alertProvider,
         teamWebhooksById,
       );
-      expect((await alertDocs.findById(details.alert.id))!.state).toBe('OK');
+      expect((await getAlert(details.alert.id))!.state).toBe('OK');
     });
 
     it('SAVED_SEARCH alert with NOT_EQUAL threshold - should alert then resolve at boundary', async () => {
@@ -11236,7 +11001,7 @@ describe('checkAlerts', () => {
         alertProvider,
         teamWebhooksById,
       );
-      expect((await alertDocs.findById(details.alert.id))!.state).toBe('ALERT');
+      expect((await getAlert(details.alert.id))!.state).toBe('ALERT');
 
       // Period 2: 2 logs, threshold is != 2, 2 == 2 so should resolve to OK
       const secondRunTime = new Date(period2Start.getTime() + ms('5m'));
@@ -11248,7 +11013,7 @@ describe('checkAlerts', () => {
         alertProvider,
         teamWebhooksById,
       );
-      expect((await alertDocs.findById(details.alert.id))!.state).toBe('OK');
+      expect((await getAlert(details.alert.id))!.state).toBe('OK');
     });
 
     it('TILE alert with NOT_EQUAL threshold - should alert then resolve at boundary', async () => {
@@ -11365,7 +11130,7 @@ describe('checkAlerts', () => {
         alertProvider,
         teamWebhooksById,
       );
-      expect((await alertDocs.findById(details.alert.id))!.state).toBe('ALERT');
+      expect((await getAlert(details.alert.id))!.state).toBe('ALERT');
 
       // Period 2: 3 logs, 3 == 3 (boundary) → resolve to OK
       const secondRunTime = new Date(period2Start.getTime() + ms('5m'));
@@ -11377,7 +11142,7 @@ describe('checkAlerts', () => {
         alertProvider,
         teamWebhooksById,
       );
-      expect((await alertDocs.findById(details.alert.id))!.state).toBe('OK');
+      expect((await getAlert(details.alert.id))!.state).toBe('OK');
     });
 
     it('same-tick breach-then-recover sends an alert followed by a resolved notification', async () => {
@@ -11412,13 +11177,13 @@ describe('checkAlerts', () => {
       );
 
       // Prior OK history
-      await alertHistoryDocs.create({
+      await seedHistory({
         alert: details.alert.id,
         state: 'OK',
         createdAt: new Date('2024-03-01T22:05:00Z'),
         counts: 0,
       });
-      await alertDocs.findByIdAndUpdate(details.alert.id, { state: 'OK' });
+      await patchAlerts(details.alert.id, { state: 'OK' });
 
       // Buckets:
       // (3 errors, breach)
@@ -11460,7 +11225,7 @@ describe('checkAlerts', () => {
         teamWebhooksById,
       );
 
-      expect((await alertDocs.findById(details.alert.id))!.state).toBe('OK');
+      expect((await getAlert(details.alert.id))!.state).toBe('OK');
       expect(slack.postMessageToWebhook).toHaveBeenCalledTimes(2);
 
       const calls = (slack.postMessageToWebhook as jest.Mock).mock.calls;
@@ -11515,9 +11280,7 @@ describe('checkAlerts', () => {
           teamWebhooksById,
         );
 
-        const histories = await alertHistoryDocs.find({
-          alert: details.alert.id,
-        });
+        const histories = await listHistory(details.alert.id);
         expect(histories).toHaveLength(1);
         expect(histories[0].state).toBe('ALERT');
         expect(histories[0].fired).toBe(true);
@@ -11585,11 +11348,7 @@ describe('checkAlerts', () => {
           teamWebhooksById,
         );
         expect(slack.postMessageToWebhook).toHaveBeenCalledTimes(0);
-        let histories = await alertHistoryDocs
-          .find({
-            alert: details.alert.id,
-          })
-          .sort({ createdAt: 1 });
+        let histories = await listHistory(details.alert.id);
         expect(histories).toHaveLength(1);
         expect(histories[0].state).toBe('PENDING');
         expect(histories[0].fired).toBeFalsy(); // shouldn't fire yet
@@ -11603,11 +11362,7 @@ describe('checkAlerts', () => {
           teamWebhooksById,
         );
         expect(slack.postMessageToWebhook).toHaveBeenCalledTimes(0);
-        histories = await alertHistoryDocs
-          .find({ alert: details.alert.id })
-          .sort({
-            createdAt: 1,
-          });
+        histories = await listHistory(details.alert.id);
         expect(histories).toHaveLength(2);
         expect(histories[1].state).toBe('PENDING');
         expect(histories[1].fired).toBeFalsy(); // shouldn't fire yet
@@ -11621,11 +11376,7 @@ describe('checkAlerts', () => {
           teamWebhooksById,
         );
         expect(slack.postMessageToWebhook).toHaveBeenCalledTimes(1);
-        histories = await alertHistoryDocs
-          .find({ alert: details.alert.id })
-          .sort({
-            createdAt: 1,
-          });
+        histories = await listHistory(details.alert.id);
         expect(histories).toHaveLength(3);
         expect(histories[2].state).toBe('ALERT');
         expect(histories[2].fired).toBe(true); // fires here b/c it's the third consecutive violation
@@ -11707,11 +11458,7 @@ describe('checkAlerts', () => {
         );
         expect(slack.postMessageToWebhook).toHaveBeenCalledTimes(0); // webhook should never fire in this case
 
-        const histories = await alertHistoryDocs
-          .find({
-            alert: details.alert.id,
-          })
-          .sort({ createdAt: 1 });
+        const histories = await listHistory(details.alert.id);
         expect(histories).toHaveLength(3);
         expect(histories[0].state).toBe('PENDING');
         expect(histories[0].fired).toBeFalsy();
@@ -11799,11 +11546,7 @@ describe('checkAlerts', () => {
         // Exactly one notification: service-a's transition to ALERT.
         expect(slack.postMessageToWebhook).toHaveBeenCalledTimes(1);
 
-        const histories = await alertHistoryDocs
-          .find({
-            alert: details.alert.id,
-          })
-          .sort({ createdAt: 1 });
+        const histories = await listHistory(details.alert.id);
 
         const serviceAHistories = histories
           .filter(h => h.group === 'ServiceName:service-a')
@@ -11986,9 +11729,7 @@ describe('checkAlerts', () => {
         newId(),
       );
 
-      const enhancedAlert: any = await alertDocs
-        .findById(alert.id)
-        .populate(['team', 'savedSearch']);
+      const enhancedAlert: any = await getAlertHydrated(alert.id);
 
       const details = {
         alert: enhancedAlert,
@@ -12058,15 +11799,9 @@ describe('checkAlerts', () => {
       );
 
       // Assert - Alert ran and has a state consistent with the data in the MV
-      expect((await alertDocs.findById(details.alert.id))!.state).toBe('ALERT');
+      expect((await getAlert(details.alert.id))!.state).toBe('ALERT');
 
-      const alertHistories = await alertHistoryDocs
-        .find({
-          alert: details.alert.id,
-        })
-        .sort({
-          createdAt: 1,
-        });
+      const alertHistories = await listHistory(details.alert.id);
       expect(alertHistories.length).toBe(2);
 
       expect(alertHistories[0].state).toBe('ALERT');
@@ -12113,9 +11848,7 @@ describe('checkAlerts', () => {
         mockUserId,
       );
 
-      const enhancedAlert: any = await alertDocs
-        .findById(alert.id)
-        .populate(['team', 'savedSearch']);
+      const enhancedAlert: any = await getAlertHydrated(alert.id);
 
       const details = {
         alert: enhancedAlert,
@@ -12203,15 +11936,9 @@ describe('checkAlerts', () => {
       );
 
       // Assert - Alert ran and has a state consistent with the data in the base table
-      expect((await alertDocs.findById(details.alert.id))!.state).toBe('ALERT');
+      expect((await getAlert(details.alert.id))!.state).toBe('ALERT');
 
-      const alertHistories = await alertHistoryDocs
-        .find({
-          alert: details.alert.id,
-        })
-        .sort({
-          createdAt: 1,
-        });
+      const alertHistories = await listHistory(details.alert.id);
       expect(alertHistories.length).toBe(2);
 
       expect(alertHistories[0].state).toBe('ALERT');
@@ -12247,7 +11974,7 @@ describe('checkAlerts', () => {
     });
 
     const saveAlert = (id: string, createdAt: Date) => {
-      return alertHistoryDocs.create({
+      return seedHistory({
         alert: id,
         createdAt,
         state: AlertState.OK,
@@ -12415,7 +12142,7 @@ describe('checkAlerts', () => {
       createdAt: Date,
       opts: { group?: string; state?: AlertState } = {},
     ) =>
-      alertHistoryDocs.create({
+      seedHistory({
         alert: alertId,
         createdAt,
         state: opts.state ?? AlertState.ALERT,

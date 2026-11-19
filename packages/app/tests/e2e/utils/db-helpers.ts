@@ -1,78 +1,50 @@
 /**
- * Direct MongoDB and Couchbase access helpers for full-stack E2E tests. Only
- * usable in full-stack mode (real Mongo and Couchbase via docker-compose) — there
- * is no database in local mode, so callers must gate on `{ tag: ['@full-stack'] }`.
+ * Direct Couchbase access helpers for full-stack E2E tests. Only usable in
+ * full-stack mode (real Couchbase via docker-compose) — there is no database
+ * in local mode, so callers must gate on `{ tag: ['@full-stack'] }`.
+ *
+ * The app metadata lives in the `cbt_meta` bucket (scope `app`), keyed by
+ * document id. Writes go through the query service with the admin account, the
+ * same one the E2E setup provisions the cluster with.
  */
-import { execFileSync } from 'child_process';
-import fs from 'fs';
-import path from 'path';
-
 import { fromShapedRow } from '../../../../ingest/src/model/fromShapedRow';
 
 import { E2E_LOGS_TABLE } from './constants';
 
-/**
- * Run a mongosh script against the e2e MongoDB container by piping the script
- * through stdin. Using stdin (rather than `--eval "<...>"`) avoids having to
- * escape quotes in the script body, so callers can pass multi-line JavaScript
- * with string literals verbatim.
- *
- * `execFileSync` with an argument array rather than a shell string: the project
- * slug comes from an env var, and with no shell nothing in it can be read as a
- * metacharacter.
- *
- * Throws if the docker-compose file can't be found (meaning we're not running
- * in the expected Docker-backed e2e environment).
- */
-export function runMongoshScript(script: string): string {
-  const dockerComposeFile = path.join(__dirname, '..', 'docker-compose.yml');
-  if (!fs.existsSync(dockerComposeFile)) {
-    throw new Error(
-      `docker-compose.yml not found at ${dockerComposeFile} — e2e Docker stack unavailable`,
-    );
-  }
+const META_BUCKET = 'cbt_meta';
+const META_SCOPE = 'app';
 
-  const e2eSlot = process.env.CBT_E2E_SLOT || '0';
+/** Collections the E2E reset empties. `system` (schema marker) is kept. */
+const RESET_COLLECTIONS = [
+  'teams',
+  'users',
+  'team_invites',
+  'connections',
+  'sources',
+  'saved_searches',
+  'dashboards',
+  'alerts',
+  'alert_history',
+  'webhooks',
+  'favorites',
+  'pinned_filters',
+  'preset_dashboard_filters',
+  'unique_keys',
+  'sessions',
+] as const;
 
-  return execFileSync(
-    'docker',
-    [
-      'compose',
-      '-p',
-      `e2e-${e2eSlot}`,
-      '-f',
-      dockerComposeFile,
-      'exec',
-      '-T',
-      'db',
-      'mongosh',
-      '--quiet',
-    ],
-    {
-      encoding: 'utf-8',
-      stdio: ['pipe', 'pipe', 'pipe'],
-      input: script,
-    },
-  );
+type MetaCollection = (typeof RESET_COLLECTIONS)[number];
+
+const IDENT = /^[A-Za-z0-9_]+$/;
+
+/** Backtick-quote a SQL++ identifier; rejects anything outside [A-Za-z0-9_]. */
+function ident(name: string): string {
+  if (!IDENT.test(name)) throw new Error(`Invalid identifier: ${name}`);
+  return `\`${name}\``;
 }
 
-/**
- * Sets a boolean field directly on the (single, seeded) e2e team document.
- * There's no settings UI or API endpoint for team feature flags yet, so
- * direct DB writes are the only way to toggle them for a test.
- *
- * This app only ever has one team per deployment (`/register/password`
- * 409s with `teamAlreadyExists` once any team exists — see
- * `isTeamExisting` in packages/api/src/controllers/team.ts), so there's
- * nothing to scope by. Tests that toggle a flag here should still avoid
- * racing each other — e.g. via `test.describe.serial(...)` — since
- * `fullyParallel: true` lets tests in the same file run concurrently.
- */
-export function setTeamFlag(flagName: string, value: boolean): void {
-  runMongoshScript(`
-use('hyperdx-e2e');
-db.teams.updateOne({}, { $set: { [${JSON.stringify(flagName)}]: ${JSON.stringify(value)} } });
-`);
+function metaKeyspace(collection: MetaCollection): string {
+  return `${ident(META_BUCKET)}.${ident(META_SCOPE)}.${ident(collection)}`;
 }
 
 const QUERY_URL =
@@ -85,11 +57,16 @@ function couchbaseAuthHeader(): string {
   return `Basic ${Buffer.from(`${user}:${pass}`).toString('base64')}`;
 }
 
-async function runCouchbaseStatement(
+type QueryResult = { results: unknown[]; mutationCount: number };
+
+async function runCouchbaseQuery(
   statement: string,
   parameters?: Record<string, unknown>,
-): Promise<void> {
-  const args: Record<string, unknown> = { statement };
+): Promise<QueryResult> {
+  const args: Record<string, unknown> = {
+    statement,
+    scan_consistency: 'request_plus',
+  };
   if (parameters) {
     for (const [k, v] of Object.entries(parameters)) {
       args[`$${k}`] = v;
@@ -107,6 +84,17 @@ async function runCouchbaseStatement(
   if (body.status !== 'success') {
     throw new Error(JSON.stringify(body.errors ?? body));
   }
+  return {
+    results: body.results ?? [],
+    mutationCount: Number(body.metrics?.mutationCount ?? 0),
+  };
+}
+
+async function runCouchbaseStatement(
+  statement: string,
+  parameters?: Record<string, unknown>,
+): Promise<void> {
+  await runCouchbaseQuery(statement, parameters);
 }
 
 /** Upsert one log document into the default E2E logs collection. */
@@ -120,4 +108,89 @@ export async function upsertE2eLogRow(
     `UPSERT INTO \`otel\`.\`default\`.\`${doc.collection}\` (KEY, VALUE) VALUES ($key, $value)`,
     { key: doc.key, value: doc.value },
   );
+}
+
+/**
+ * Empties the app metadata collections for a fresh test run. The metadata
+ * keyspace has no primary index, so one is created per collection for the
+ * delete and dropped again.
+ */
+export async function clearMetadata(): Promise<void> {
+  for (const name of RESET_COLLECTIONS) {
+    const ks = metaKeyspace(name);
+    const index = ident('ix_e2e_reset_primary');
+    await runCouchbaseStatement(
+      `CREATE PRIMARY INDEX ${index} IF NOT EXISTS ON ${ks}`,
+    );
+    try {
+      await runCouchbaseStatement(`DELETE FROM ${ks}`);
+    } finally {
+      await runCouchbaseStatement(
+        `DROP PRIMARY INDEX IF EXISTS ${index} ON ${ks}`,
+      );
+    }
+  }
+}
+
+/**
+ * Sets a boolean field directly on the (single, seeded) e2e team document.
+ * There's no settings UI or API endpoint for team feature flags yet, so
+ * direct DB writes are the only way to toggle them for a test.
+ *
+ * This app only ever has one team per deployment (`/register/password`
+ * 409s with `teamAlreadyExists` once any team exists — see
+ * `isTeamExisting` in packages/api/src/controllers/team.ts), so there's
+ * nothing to scope by. Tests that toggle a flag here should still avoid
+ * racing each other — e.g. via `test.describe.serial(...)` — since
+ * `fullyParallel: true` lets tests in the same file run concurrently.
+ */
+export async function setTeamFlag(
+  flagName: string,
+  value: boolean,
+): Promise<void> {
+  // `createdAt` is the leading key of ix_teams_created, so this scan needs no
+  // primary index.
+  await runCouchbaseStatement(
+    `UPDATE ${metaKeyspace('teams')} AS t SET t.${ident(flagName)} = $value WHERE t.createdAt IS NOT MISSING`,
+    { value },
+  );
+}
+
+/**
+ * Applies a SQL++ SET clause to one document by id and asserts it matched, so
+ * a zero-match write cannot make a later assertion pass for the wrong reason.
+ * `setClause` is trusted test code, never user input; values go in `params`.
+ */
+export async function updateMetadataDoc(
+  collection: MetaCollection,
+  id: string,
+  setClause: string,
+  params: Record<string, unknown> = {},
+): Promise<void> {
+  const { mutationCount } = await runCouchbaseQuery(
+    `UPDATE ${metaKeyspace(collection)} AS d USE KEYS $id SET ${setClause}`,
+    { ...params, id },
+  );
+  if (mutationCount !== 1) {
+    throw new Error(
+      `Expected to update 1 ${collection} document (${id}), updated ${mutationCount}`,
+    );
+  }
+}
+
+/** Replace an alert's recorded evaluation history with the given rows. */
+export async function replaceAlertHistory(
+  alertId: string,
+  rows: Array<Record<string, unknown>>,
+): Promise<void> {
+  const ks = metaKeyspace('alert_history');
+  await runCouchbaseStatement(`DELETE FROM ${ks} WHERE alert = $alert`, {
+    alert: alertId,
+  });
+  for (const [i, row] of rows.entries()) {
+    await runCouchbaseStatement(
+      `INSERT INTO ${ks} (KEY, VALUE) VALUES ($key, $value)`,
+      { key: `e2e::${alertId}::${i}`, value: { alert: alertId, ...row } },
+    );
+  }
 }

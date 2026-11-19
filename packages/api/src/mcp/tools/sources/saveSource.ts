@@ -1,16 +1,12 @@
 import { SourceSchemaNoId } from '@couchbase-traces/common-utils/dist/types';
-import mongoose from 'mongoose';
 
 import * as config from '@/config';
 import { validateConnectionId } from '@/controllers/connection';
 import { createSource, getSource, updateSource } from '@/controllers/sources';
 import { UPSERT_TOOL } from '@/mcp/tools/annotations';
 import type { ToolRegistrar } from '@/mcp/tools/types';
-import {
-  mcpServerError,
-  mcpUserError,
-  validateObjectId,
-} from '@/mcp/utils/errors';
+import { mcpServerError, mcpUserError, validateId } from '@/mcp/utils/errors';
+import { ValidationError as MetadataValidationError } from '@/metadata/errors';
 import type { SourceDocument } from '@/metadata/schemas/source';
 import { isDuplicateKeyError } from '@/utils/errors';
 
@@ -46,16 +42,16 @@ export function registerSaveSource({
     async input => {
       const sourceId = input.id;
       if (sourceId != null) {
-        const idError = validateObjectId(sourceId, 'source ID');
+        const idError = validateId(sourceId, 'source ID');
         if (idError) return idError;
       }
 
-      // Reject a connection that isn't a valid ObjectId owned by this team
-      // (createSource/updateSource don't check, so this avoids a 500 CastError
-      // or a cross-team credential reference).
+      // Reject a connection that isn't a valid id owned by this team
+      // (createSource/updateSource don't check, so this avoids a 500 or a
+      // cross-team credential reference).
       const connectionCheck = await validateConnectionId(
         input.connection,
-        new mongoose.Types.ObjectId(teamId),
+        teamId,
       );
       if (!connectionCheck.ok) {
         return mcpUserError(connectionCheck.message);
@@ -94,13 +90,12 @@ export function registerSaveSource({
         const created = await createSource(teamId, sourceData);
         return sourceResult(created, frontendUrl);
       } catch (e) {
-        // Caller-payload errors (validation/cast/duplicate-key, and
+        // Caller-payload errors (validation/duplicate-key, and
         // updateSource's kind-change throw) are user errors; anything else is a
         // server error returned without leaking raw internal detail.
         const message = e instanceof Error ? e.message : String(e);
         if (
-          e instanceof mongoose.Error.ValidationError ||
-          e instanceof mongoose.Error.CastError ||
+          e instanceof MetadataValidationError ||
           isDuplicateKeyError(e) ||
           message.startsWith('Invalid source data')
         ) {

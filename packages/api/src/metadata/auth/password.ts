@@ -104,7 +104,7 @@ export function needsRehash(encoded: string): boolean {
 }
 
 /**
- * The messages passport-local-mongoose produced; middleware/auth.ts and the
+ * The legacy auth messages; middleware/auth.ts and the
  * app's login form match on `incorrect`.
  */
 export const AUTH_ERRORS = {

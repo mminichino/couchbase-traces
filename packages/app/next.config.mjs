@@ -124,7 +124,7 @@ const nextConfig = {
     // `@couchbase-traces/api` package at runtime. Mark it (and its subpaths) as a
     // CommonJS external so production app builds (Docker fullstack image,
     // standalone Next output) stay byte-for-byte equivalent to today and
-    // do not pull in passport-saml, mongoose, AWS SDK, etc.
+    // do not pull in passport-saml, AWS SDK, etc.
     ...(process.env.CBT_PREVIEW_INLINE_API !== 'true' ? ['@couchbase-traces/api'] : []),
   ],
   typescript: {

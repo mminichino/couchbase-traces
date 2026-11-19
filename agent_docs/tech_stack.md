@@ -3,7 +3,7 @@
 | Layer | Choices |
 | --- | --- |
 | UI | Next.js, Mantine, TanStack Query, Jotai |
-| API | Express, Mongoose (MongoDB) |
+| API | Express, Couchbase metadata store (`cbt_meta`) |
 | Telemetry store | Couchbase Server 8.x / Capella (SQL++, Search, Analytics) |
 | Ingest | Node service (`packages/ingest`) |
 | Collector | Custom OTel build (`packages/otel-collector`) |

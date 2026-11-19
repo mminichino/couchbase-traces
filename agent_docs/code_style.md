@@ -69,7 +69,7 @@ Package-local homes, searched second: `packages/app/src/utils.ts`,
 | Exists, but you want a local name | Alias-shim it — `packages/app/src/types.ts:9`, `export type NumberFormat = _NumberFormat;`. Never retype the definition. |
 | Exists, but the shape is _almost_ right | Derive from it (`Pick`, `Omit`, `.extend()`, `Alert & { … }`) or parameterize the canonical one. One source of truth. |
 | Shared logic between two components | Factor it into a sibling module — `packages/app/src/components/sourceSelectUtils.tsx:51` (`useFilteredSortedSourceItems`, shared by `SourceSelect` and `SourceMultiSelect`). |
-| Two genuinely must coexist | Doc-comment _why_, and name the twin. `packages/common-utils/src/types.ts:571-582` does this for the Mongoose `IWebhook` (`packages/api/src/models/webhook.ts:17`) vs the JSON-serialized `WebhookSchema`. |
+| Two genuinely must coexist | Doc-comment _why_, and name the twin. `packages/common-utils/src/types.ts:571-582` does this for the stored `IWebhook` (`packages/api/src/metadata/`) vs the JSON-serialized `WebhookSchema`. |
 
 Not acceptable: a second definition with no alias, no doc comment explaining the
 twin, and no test pinning the two together.

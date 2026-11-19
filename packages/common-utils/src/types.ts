@@ -2099,7 +2099,7 @@ export type Tile = z.infer<typeof TileSchema>;
 // Reasonable bounds on identifiers and titles. The UI never asks the
 // user to type either an id or a title longer than ~64 chars; capping
 // at 256 leaves room for slugified or composed ids without inviting
-// Mongo-doc bloat. Exported so the external-API tile schema can apply
+// stored-document bloat. Exported so the external-API tile schema can apply
 // the same cap to tile.containerId / tile.tabId.
 export const DASHBOARD_CONTAINER_ID_MAX = 256;
 const DASHBOARD_CONTAINER_TITLE_MAX = 256;
@@ -2112,7 +2112,7 @@ export const DASHBOARD_MAX_CONTAINERS = 50;
 // Caps the per-dashboard tile fan-out. The dashboard editor's add-tile
 // affordance is one-at-a-time, but external-API callers can POST a list
 // in one request; without a cap a payload could push tens of MB into
-// Mongo and run out of memory rendering it.
+// the metadata store and run out of memory rendering it.
 export const DASHBOARD_MAX_TILES = 500;
 
 export const DashboardContainerTabSchema = z.object({
@@ -2768,7 +2768,7 @@ export const MetricSourceSchema = BaseSourceSchema.extend({
   minAutoGranularity: MinAutoGranularitySchema,
 });
 
-/** @deprecated PromQL sources remain in Mongo; not creatable via SourceSchema. */
+/** @deprecated PromQL sources remain in the metadata store; not creatable via SourceSchema. */
 export const PromqlSourceSchema = BaseSourceSchema.extend({
   kind: z.literal(SourceKind.Promql),
   minAutoGranularity: MinAutoGranularitySchema,
@@ -2814,7 +2814,7 @@ export function isSearchableSource(source: TSource): boolean {
   return isLogSource(source) || isTraceSource(source);
 }
 
-/** Legacy PromQL sources may remain in Mongo; new ones cannot be created. */
+/** Legacy PromQL sources may remain in the metadata store; new ones cannot be created. */
 export function isPromqlSource(source: { kind: SourceKind | string }): boolean {
   return source.kind === SourceKind.Promql || source.kind === 'promql';
 }
@@ -3220,11 +3220,9 @@ export const ONBOARDING_TASK_IDS = [
 
 export type OnboardingTaskId = (typeof ONBOARDING_TASK_IDS)[number];
 
-// True only for a real 24-hex Mongo ObjectId. The all-in-one-noauth image
-// injects a synthetic `_local_user_` id server-side, which mongoose casts to an
-// ObjectId matching no document — and which mongoose.isValidObjectId() wrongly
-// accepts (any 12-char string passes) — so this string check is the guard both
-// packages use to skip onboarding writes/rendering for that non-persistable user.
+// True only for a real 24-hex id. The all-in-one-noauth image injects a
+// synthetic `_local_user_` id server-side that matches no stored user, so this
+// string check is the guard both packages use to skip onboarding writes/rendering for that non-persistable user.
 export function isPersistableUserId(id: string | null | undefined): boolean {
   return id != null && /^[0-9a-fA-F]{24}$/.test(id);
 }

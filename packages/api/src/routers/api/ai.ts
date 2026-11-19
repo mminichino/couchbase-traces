@@ -29,7 +29,7 @@ import {
 } from '@/utils/errors';
 import { withOperationMetrics } from '@/utils/instrumentation';
 import logger from '@/utils/logger';
-import { objectIdSchema } from '@/utils/zod';
+import { idSchema } from '@/utils/zod';
 
 const router = express.Router();
 
@@ -46,7 +46,7 @@ router.post(
   validateRequest({
     body: z.object({
       text: z.string().min(1).max(10000),
-      sourceId: objectIdSchema,
+      sourceId: idSchema,
     }),
   }),
   async (req, res, next) => {

@@ -5,7 +5,7 @@ import { IDEMPOTENT_DESTRUCTIVE_TOOL } from '@/mcp/tools/annotations';
 import type { ToolRegistrar } from '@/mcp/tools/types';
 import { mcpUserError } from '@/mcp/utils/errors';
 import { getMetadataStore } from '@/metadata';
-import { objectIdSchema } from '@/utils/zod';
+import { idSchema } from '@/utils/zod';
 
 export function registerDeleteDashboard({
   context,
@@ -22,7 +22,7 @@ export function registerDeleteDashboard({
         'Permanently delete a dashboard by ID. Also removes any alerts attached to its tiles. ' +
         'Use cbt_get_dashboard (without an ID) to list available dashboard IDs.',
       inputSchema: z.object({
-        id: objectIdSchema.describe(
+        id: idSchema.describe(
           'ID of the dashboard to delete, from cbt_get_dashboard (no id ' +
             'lists dashboards) or cbt_search_dashboards.',
         ),

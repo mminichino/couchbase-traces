@@ -1,5 +1,5 @@
-// C0 wire-contract snapshots, internal API (docs/mongo-elimination-plan.md,
-// C0). Captured on the Mongo stack; every later phase must keep them green,
+// C0 wire-contract snapshots, internal API (docs/the store-elimination-plan.md,
+// C0). Captured on the store stack; every later phase must keep them green,
 // apart from the documented `__v` removal. Ids, dates, and secrets are
 // normalized (metadata/testing/wire.ts), so snapshots are backend neutral.
 import { getServer } from '@/fixtures';

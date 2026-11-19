@@ -1,6 +1,5 @@
 import { SourceKind } from '@couchbase-traces/common-utils/dist/types';
 import { MetricsDataType } from '@couchbase-traces/common-utils/dist/types';
-import { ObjectId } from 'mongodb';
 import request from 'supertest';
 
 import * as config from '@/config';
@@ -14,6 +13,7 @@ import {
   getLoggedInAgent,
   getServer,
 } from '@/fixtures';
+import { newId } from '@/metadata/ids';
 import { ISource } from '@/metadata/schemas/source';
 import { seedConnection, seedSource } from '@/metadata/testing/seed';
 
@@ -290,7 +290,7 @@ describe('External API v2 Charts', () => {
 
     it('should return 404 if sourceId is invalid or not found', async () => {
       // Create payload with invalid sourceId in the series
-      const invalidSourceId = new ObjectId().toString();
+      const invalidSourceId = newId();
       const payload = {
         startTime: DEFAULT_START_TIME,
         endTime: DEFAULT_END_TIME,

@@ -856,7 +856,7 @@ export function deriveVariableName(filterName: string): string {
  *
  * Missing means enabled: filters that predate the field must keep broadcasting.
  * Compared against `false` rather than defaulted with `??` because filters are
- * stored in an untyped Mongo array, so `null` is reachable.
+ * stored in an untyped stored array, so `null` is reachable.
  */
 export function isFilterBroadcastEnabled(filter: {
   isBroadcastEnabled?: boolean;

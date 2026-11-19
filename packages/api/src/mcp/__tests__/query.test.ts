@@ -1,4 +1,4 @@
-// Mock heavy dependencies that break in unit-test context (no ClickHouse/Mongo)
+// Mock heavy dependencies that break in unit-test context (no ClickHouse/the store)
 jest.mock('@/controllers/sources', () => ({}));
 jest.mock('@/controllers/connection', () => ({}));
 jest.mock('@/utils/trimToolResponse', () => ({

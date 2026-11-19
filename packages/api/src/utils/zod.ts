@@ -46,9 +46,7 @@ import { z } from 'zod';
 import { isValidId } from '@/metadata/ids';
 import { AlertSource } from '@/metadata/schemas/alert';
 
-export const objectIdSchema = z
-  .string()
-  .refine(val => isValidId(val), 'Invalid ObjectId');
+export const idSchema = z.string().refine(val => isValidId(val), 'Invalid id');
 
 /**
  * A repeatable query param. Express's parser yields a bare string for a single
@@ -72,7 +70,7 @@ const percentileLevelSchema = z.number().min(0).max(1).optional();
 
 const timeChartSeriesSchema = z.object({
   type: z.literal('time'),
-  sourceId: objectIdSchema,
+  sourceId: idSchema,
   aggFn: AggregateFunctionSchema,
   level: percentileLevelSchema,
   field: z.string().optional(),
@@ -96,7 +94,7 @@ export type TimeChartSeries = z.infer<typeof timeChartSeriesSchema>;
 
 const tableChartSeriesSchema = z.object({
   type: z.literal('table'),
-  sourceId: objectIdSchema,
+  sourceId: idSchema,
   aggFn: AggregateFunctionSchema,
   level: percentileLevelSchema,
   field: z.string().optional(),
@@ -114,7 +112,7 @@ export type TableChartSeries = z.infer<typeof tableChartSeriesSchema>;
 
 const numberChartSeriesSchema = z.object({
   type: z.literal('number'),
-  sourceId: objectIdSchema,
+  sourceId: idSchema,
   aggFn: AggregateFunctionSchema,
   level: percentileLevelSchema,
   field: z.string().optional(),
@@ -130,7 +128,7 @@ export type NumberChartSeries = z.infer<typeof numberChartSeriesSchema>;
 
 const searchChartSeriesSchema = z.object({
   type: z.literal('search'),
-  sourceId: objectIdSchema,
+  sourceId: idSchema,
   fields: z.array(z.string()),
   where: z.string(),
   whereLanguage: whereLanguageSchema,
@@ -144,7 +142,7 @@ const markdownChartSeriesSchema = z.object({
 export type MarkdownChartSeries = z.infer<typeof markdownChartSeriesSchema>;
 
 export const externalQueryChartSeriesSchema = z.object({
-  sourceId: objectIdSchema,
+  sourceId: idSchema,
   dataSource: z.enum(['events', 'metrics']).optional(),
   aggFn: AggregateFunctionSchema,
   level: percentileLevelSchema,
@@ -171,7 +169,7 @@ export { tagsSchema };
 
 const externalQueryExpressionFilterShape =
   QueryExpressionDashboardFilterSchema.omit({ source: true }).extend({
-    sourceId: objectIdSchema,
+    sourceId: idSchema,
   });
 
 // A static filter's mode flags each accept exactly one value, so callers may
@@ -184,7 +182,7 @@ const externalStaticListFilterShape = StaticListDashboardFilterSchema.extend({
 const externalPromqlLabelFilterShape = PromqlLabelDashboardFilterSchema.omit({
   source: true,
 }).extend({
-  sourceId: objectIdSchema,
+  sourceId: idSchema,
   isBroadcastEnabled: z.literal(false).default(false),
   isVariableEnabled: z.literal(true).default(true),
 });
@@ -250,7 +248,7 @@ export const externalQuantileLevelSchema = z.union([
 // -----------------------------------------------------
 
 const externalOnClickTargetSchema = z.discriminatedUnion('mode', [
-  z.object({ mode: z.literal('id'), id: objectIdSchema }),
+  z.object({ mode: z.literal('id'), id: idSchema }),
   z.object({
     mode: z.literal('template'),
     template: z.string().min(1).max(10000),
@@ -326,9 +324,9 @@ export type ExternalDashboardSelectItem = z.infer<
 
 const externalDashboardRawSqlChartConfigBaseSchema = z.object({
   configType: z.literal('sql'),
-  connectionId: objectIdSchema,
+  connectionId: idSchema,
   sqlTemplate: z.string().max(100000),
-  sourceId: objectIdSchema.optional(),
+  sourceId: idSchema.optional(),
   numberFormat: NumberFormatSchema.optional(),
 });
 
@@ -351,7 +349,7 @@ const externalFormulasSchema = z.array(MetricFormulaSchema).max(10).optional();
 const externalShowOperandSeriesSchema = z.boolean().optional();
 
 const externalDashboardTimeChartConfigSchema = z.object({
-  sourceId: objectIdSchema,
+  sourceId: idSchema,
   select: z.array(externalDashboardSelectItemSchema).min(1).max(20),
   groupBy: z.string().max(10000).optional(),
   asRatio: z.boolean().optional(),
@@ -422,7 +420,7 @@ const externalDashboardStackedLineRawSqlChartConfigSchema =
 
 const externalDashboardTableChartConfigSchema = z.object({
   displayType: z.literal('table'),
-  sourceId: objectIdSchema,
+  sourceId: idSchema,
   select: z.array(externalDashboardSelectItemSchema).min(1).max(20),
   groupBy: z.string().max(10000).optional(),
   having: z.string().max(10000).optional(),
@@ -462,7 +460,7 @@ const externalDashboardCategoricalBarRawSqlChartConfigSchema =
 
 const externalDashboardNumberChartConfigSchema = z.object({
   displayType: z.literal('number'),
-  sourceId: objectIdSchema,
+  sourceId: idSchema,
   // Exactly one select item unless `formulas` is set: a formula number tile
   // displays the (single) formula value and its select entries are the
   // formula's operands (e.g. A / (A + B)). The one-item rule for
@@ -502,7 +500,7 @@ const externalDashboardNumberChartConfigSchema = z.object({
 
 const externalDashboardPieChartConfigSchema = z.object({
   displayType: z.literal('pie'),
-  sourceId: objectIdSchema,
+  sourceId: idSchema,
   select: z.array(externalDashboardSelectItemSchema).length(1),
   groupBy: z.string().max(10000).optional(),
   orderBy: z.string().max(10000).optional(),
@@ -513,7 +511,7 @@ const externalDashboardPieChartConfigSchema = z.object({
 
 const externalDashboardCategoricalBarChartConfigSchema = z.object({
   displayType: z.literal('bar'),
-  sourceId: objectIdSchema,
+  sourceId: idSchema,
   select: z.array(externalDashboardSelectItemSchema).length(1),
   groupBy: z.string().max(10000).optional(),
   orderBy: z.string().max(10000).optional(),
@@ -550,7 +548,7 @@ export type ExternalDashboardHeatmapSelectItem = z.infer<
 const externalDashboardHeatmapChartConfigSchema = z.object({
   displayType: z.literal('heatmap'),
   heatmapMode: z.literal('distribution').optional(),
-  sourceId: objectIdSchema,
+  sourceId: idSchema,
   select: z.array(externalDashboardHeatmapSelectItemSchema).length(1),
   where: z.string().max(10000).optional().default(''),
   // `whereLanguageSchema` (an alias for `SearchConditionLanguageSchema`)
@@ -564,7 +562,7 @@ const externalDashboardHeatmapChartConfigSchema = z.object({
 const externalDashboardHeatmapSeriesChartConfigSchema = z.object({
   displayType: z.literal('heatmap'),
   heatmapMode: z.literal('series'),
-  sourceId: objectIdSchema,
+  sourceId: idSchema,
   select: z.array(externalDashboardSelectItemSchema).length(1),
   groupBy: z.string().max(10000).optional(),
   numberFormat: NumberFormatSchema.optional(),
@@ -572,7 +570,7 @@ const externalDashboardHeatmapSeriesChartConfigSchema = z.object({
 
 const externalDashboardSearchChartConfigSchema = z.object({
   displayType: z.literal('search'),
-  sourceId: objectIdSchema,
+  sourceId: idSchema,
   select: z.string().max(10000),
   where: z.string().max(10000).optional().default(''),
   whereLanguage: whereLanguageSchema,
@@ -596,7 +594,7 @@ const externalDashboardMarkdownChartConfigSchema = z.object({
 
 const externalDashboardEventPatternsChartConfigSchema = z.object({
   displayType: z.literal('event_patterns'),
-  sourceId: objectIdSchema,
+  sourceId: idSchema,
   select: z.string().max(10000).optional().default(''),
   where: z.string().max(10000).optional().default(''),
   whereLanguage: whereLanguageSchema,
@@ -690,7 +688,7 @@ const externalPromqlLegendTemplateSchema = z
 
 const externalPromqlChartConfigBaseSchema = z.object({
   configType: z.literal('promql'),
-  sourceId: objectIdSchema,
+  sourceId: idSchema,
   // Sets the Prometheus step and `$__interval` of range queries.
   granularity: z.union([SQLIntervalSchema, z.literal('auto')]).optional(),
   numberFormat: NumberFormatSchema.optional(),
@@ -1003,7 +1001,7 @@ export type ExternalDashboardTileWithId = z.infer<
 export const externalDashboardTileListSchema = z
   .array(externalDashboardTileSchemaWithOptionalId)
   // Cap the per-dashboard tile fan-out so an external-API caller can't push
-  // a payload tens of MB into Mongo in one request. The 500 limit sits well
+  // a payload tens of MB into the metadata store in one request. The 500 limit sits well
   // above any real dashboard; the dashboard editor's add-tile affordance
   // is one-at-a-time.
   .max(DASHBOARD_MAX_TILES)
@@ -1316,7 +1314,7 @@ export type ExternalWebhook = z.infer<typeof externalWebhookSchema>;
 // source of truth prevents the CRLF/control-char hardening from drifting between
 // the internal and external APIs.
 // Length caps for webhook write fields. These bound the stored document size so
-// a webhook write can't approach Mongo's 16MB document limit as an unhandled
+// a webhook write can't approach Couchbase's 20MB document limit as an unhandled
 // error, mirroring the per-field caps on the saved-search schema.
 const MAX_WEBHOOK_NAME_LENGTH = 1024;
 const MAX_WEBHOOK_URL_LENGTH = 2048;

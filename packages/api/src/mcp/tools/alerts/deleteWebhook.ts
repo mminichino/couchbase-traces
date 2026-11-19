@@ -4,7 +4,7 @@ import { deleteWebhook } from '@/controllers/webhook';
 import { IDEMPOTENT_DESTRUCTIVE_TOOL } from '@/mcp/tools/annotations';
 import type { ToolRegistrar } from '@/mcp/tools/types';
 import { mcpUserError } from '@/mcp/utils/errors';
-import { objectIdSchema } from '@/utils/zod';
+import { idSchema } from '@/utils/zod';
 
 export function registerDeleteWebhook({
   context,
@@ -22,7 +22,7 @@ export function registerDeleteWebhook({
         'references it — reassign or delete those alerts first. Use ' +
         'cbt_get_webhook to list available webhook IDs.',
       inputSchema: z.object({
-        id: objectIdSchema.describe(
+        id: idSchema.describe(
           'ID of the webhook to delete, from cbt_get_webhook.',
         ),
       }),

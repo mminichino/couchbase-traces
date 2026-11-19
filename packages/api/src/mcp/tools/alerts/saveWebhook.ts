@@ -1,15 +1,10 @@
 import { WebhookService } from '@couchbase-traces/common-utils/dist/types';
-import mongoose from 'mongoose';
 import { z } from 'zod';
 
 import { createWebhook, updateWebhook } from '@/controllers/webhook';
 import { UPSERT_TOOL } from '@/mcp/tools/annotations';
 import type { ToolRegistrar } from '@/mcp/tools/types';
-import {
-  mcpServerError,
-  mcpUserError,
-  validateObjectId,
-} from '@/mcp/utils/errors';
+import { mcpServerError, mcpUserError, validateId } from '@/mcp/utils/errors';
 import { isDuplicateKeyError } from '@/utils/errors';
 import { isWebhookValidationError } from '@/utils/validators';
 import { externalWebhookCreateSchema } from '@/utils/zod';
@@ -123,7 +118,7 @@ export function registerSaveWebhook({
     async input => {
       const webhookId = input.id;
       if (webhookId != null) {
-        const idError = validateObjectId(webhookId, 'webhook ID');
+        const idError = validateId(webhookId, 'webhook ID');
         if (idError) return idError;
       }
 
@@ -137,15 +132,9 @@ export function registerSaveWebhook({
         );
       }
 
-      const mongoTeamId = new mongoose.Types.ObjectId(teamId);
-
       try {
         if (webhookId != null) {
-          const result = await updateWebhook(
-            mongoTeamId,
-            webhookId,
-            parsed.data,
-          );
+          const result = await updateWebhook(teamId, webhookId, parsed.data);
           if (result.status === 'not_found') {
             return mcpUserError('Webhook not found');
           }
@@ -157,7 +146,7 @@ export function registerSaveWebhook({
           return webhookResult(result.webhook);
         }
 
-        const webhook = await createWebhook(mongoTeamId, parsed.data);
+        const webhook = await createWebhook(teamId, parsed.data);
         return webhookResult(webhook);
       } catch (e) {
         if (isWebhookValidationError(e)) {

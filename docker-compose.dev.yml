@@ -21,25 +21,12 @@ x-cbt-couchbase-env: &cbt-couchbase-env
   CBT_COUCHBASE_RAM_MB: '2048'
   CBT_COUCHBASE_INDEX_RAM_MB: '512'
   CBT_COUCHBASE_SEARCH_RAM_MB: '512'
-  # App metadata bucket (MongoDB elimination plan C0); carved from RAM_MB.
+  # App metadata bucket (cbt_meta); carved from RAM_MB.
   CBT_METADATA_USER: cbt_meta
   CBT_METADATA_PASSWORD: dev-metadata-password
   CBT_METADATA_RAM_MB: '256'
 
 services:
-  db:
-    labels:
-      <<: *hdx-labels
-      cbt.dev.service: mongodb
-      cbt.dev.port: '${CBT_DEV_MONGO_PORT:-27017}'
-    image: mongo:5.0.32-focal
-    volumes:
-      - .volumes/db_dev_${CBT_DEV_SLOT:-0}:/data/db
-    ports:
-      - '${CBT_DEV_MONGO_PORT:-27017}:27017'
-    networks:
-      - internal
-
   couchbase:
     labels:
       <<: *hdx-labels
