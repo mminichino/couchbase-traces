@@ -14,8 +14,8 @@ import {
   makeTile,
   RAW_SQL_ALERT_TEMPLATE,
 } from '@/fixtures';
+import { IWebhook } from '@/metadata/schemas/webhook';
 import { AlertSource } from '@/models/alert';
-import type { IWebhook } from '@/models/webhook';
 import {
   NotificationDispatcher,
   NotificationJob,
@@ -175,12 +175,13 @@ const makeTileView = (
     tileId: (overrides.tile ?? testTile).id,
   },
   dashboard: {
-    _id: new mongoose.Types.ObjectId(),
+    _id: new mongoose.Types.ObjectId().toString(),
     id: 'id-123',
     name: 'My Dashboard',
     tiles: [overrides.tile ?? testTile],
     team: 'team-123' as any,
     tags: ['test'],
+    provisioned: false,
     createdAt: new Date(),
     updatedAt: new Date(),
   },

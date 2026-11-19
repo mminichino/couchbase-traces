@@ -6,8 +6,12 @@ import mongoose from 'mongoose';
 
 import { DEFAULT_DATABASE } from '@/fixtures';
 import { callTool, getFirstText } from '@/mcp/__tests__/mcpTestUtils';
-import { seedSource } from '@/metadata/testing/seed';
-import Dashboard from '@/models/dashboard';
+import {
+  countDashboards,
+  findDashboard,
+  seedDashboard,
+  seedSource,
+} from '@/metadata/testing/seed';
 import type { ExternalDashboardTileWithId } from '@/utils/zod';
 
 import { setupDashboardTests } from './setup';
@@ -46,7 +50,7 @@ describe('MCP Dashboard Tools - cbt_save_dashboard', () => {
       expect(output.tags).toEqual(['mcp-test']);
 
       // Verify in database
-      const dashboard = await Dashboard.findById(output.id);
+      const dashboard = await findDashboard(output.id);
       expect(dashboard).not.toBeNull();
       expect(dashboard?.name).toBe('New MCP Dashboard');
     });
@@ -296,7 +300,7 @@ describe('MCP Dashboard Tools - cbt_save_dashboard', () => {
       // sourceId must round-trip so the $__filters macro can resolve.
       expect(output.tiles[0].config.sourceId).toBe(sourceId);
 
-      const dashboard = await Dashboard.findById(output.id);
+      const dashboard = await findDashboard(output.id);
       expect(dashboard?.tiles?.[0]?.config?.source?.toString()).toBe(sourceId);
     });
 
@@ -325,7 +329,7 @@ describe('MCP Dashboard Tools - cbt_save_dashboard', () => {
       expect(text).toContain('Filtered SQL');
 
       // Nothing should have been persisted.
-      expect(await Dashboard.countDocuments({})).toBe(0);
+      expect(await countDashboards()).toBe(0);
     });
 
     it('should reject a raw SQL tile that uses $__sourceTable without a sourceId', async () => {
@@ -353,7 +357,7 @@ describe('MCP Dashboard Tools - cbt_save_dashboard', () => {
       expect(text).toContain('Source Table SQL');
 
       // Nothing should have been persisted.
-      expect(await Dashboard.countDocuments({})).toBe(0);
+      expect(await countDashboards()).toBe(0);
     });
 
     it('should allow a raw SQL tile without a sourceId when it does not use $__filters', async () => {
@@ -1265,7 +1269,7 @@ describe('MCP Dashboard Tools - cbt_save_dashboard', () => {
       const output = JSON.parse(getFirstText(result));
       expect(output.id).toBeDefined();
       expect(output.tiles).toHaveLength(1);
-      const dashboard = await Dashboard.findById(output.id);
+      const dashboard = await findDashboard(output.id);
       expect(dashboard).not.toBeNull();
 
       // The advisory names the tile and recommends the missing macros.
@@ -2891,11 +2895,11 @@ describe('MCP Dashboard Tools - cbt_save_dashboard', () => {
       const sourceId = ctx.traceSource._id.toString();
       // Create the target dashboard the onClick will link to so the
       // server-side `getMissingOnClickDashboards` check resolves.
-      const targetDashboard = await new Dashboard({
+      const targetDashboard = await seedDashboard({
         name: 'Service Detail',
         tiles: [],
         team: ctx.team._id,
-      }).save();
+      });
 
       const result = await callTool(ctx.client!, 'cbt_save_dashboard', {
         name: 'OnClick dashboard by id',
@@ -3354,7 +3358,7 @@ describe('MCP Dashboard Tools - cbt_save_dashboard', () => {
         expect(result.isError).toBeFalsy();
         const output = JSON.parse(getFirstText(result));
 
-        const stored = await Dashboard.findById(output.id);
+        const stored = await findDashboard(output.id);
         expect(stored!.tiles[0].config).toMatchObject({
           select: [{ isDelta: true }],
         });
@@ -3423,7 +3427,7 @@ describe('MCP Dashboard Tools - cbt_save_dashboard', () => {
         { type: 'variable', name: 'service', values: ['api', 'web'] },
       ]);
 
-      const stored = await Dashboard.findById(created.id);
+      const stored = await findDashboard(created.id);
       expect(stored?.savedFilterValues).toEqual([
         { type: 'sql', condition: "ServiceName IN ('api')" },
         { type: 'variable', name: 'service', values: ['api', 'web'] },
@@ -3507,7 +3511,7 @@ describe('MCP Dashboard Tools - cbt_save_dashboard', () => {
       const updated = JSON.parse(getFirstText(updateResult));
       expect(updated.savedFilterValues).toEqual([]);
 
-      const stored = await Dashboard.findById(created.id);
+      const stored = await findDashboard(created.id);
       expect(stored?.savedFilterValues).toEqual([]);
     });
 
@@ -3532,7 +3536,7 @@ describe('MCP Dashboard Tools - cbt_save_dashboard', () => {
         { type: 'sql', condition: "ServiceName IN ('api')" },
       ]);
 
-      const stored = await Dashboard.findById(created.id);
+      const stored = await findDashboard(created.id);
       expect(stored?.savedFilterValues).toEqual([
         { type: 'sql', condition: "ServiceName IN ('api')" },
       ]);
@@ -3573,7 +3577,7 @@ describe('MCP Dashboard Tools - cbt_save_dashboard', () => {
       expect(patched.patchedTile.config.displayType).toBe('table');
 
       // Both the tile and the saved values changed in the database.
-      const stored = await Dashboard.findById(created.id);
+      const stored = await findDashboard(created.id);
       expect(stored?.tiles).toHaveLength(1);
       expect(stored?.tiles[0].id).toBe(tileId);
       expect(stored?.tiles[0].config.displayType).toBe('table');

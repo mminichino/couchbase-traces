@@ -111,7 +111,6 @@ exports[`metadata wire contracts: internal API GET /connections 1`] = `
 exports[`metadata wire contracts: internal API GET /dashboards 1`] = `
 [
   {
-    "__v": 0,
     "_id": "<id:7>",
     "containers": [],
     "createdAt": "<date>",
@@ -241,7 +240,6 @@ exports[`metadata wire contracts: internal API GET /dashboards 1`] = `
 exports[`metadata wire contracts: internal API GET /favorites 1`] = `
 [
   {
-    "__v": 0,
     "_id": "<id:11>",
     "createdAt": "<date>",
     "id": "<id:11>",
@@ -303,7 +301,6 @@ exports[`metadata wire contracts: internal API GET /pinned-filters 1`] = `
 exports[`metadata wire contracts: internal API GET /saved-search 1`] = `
 [
   {
-    "__v": 0,
     "_id": "<id:6>",
     "alerts": [
       {
@@ -489,7 +486,6 @@ exports[`metadata wire contracts: internal API GET /webhooks?service=slack 1`] =
 
 exports[`metadata wire contracts: internal API PATCH /dashboards/:id 1`] = `
 {
-  "__v": 0,
   "_id": "<id:7>",
   "containers": [],
   "createdAt": "<date>",
@@ -568,7 +564,6 @@ exports[`metadata wire contracts: internal API PATCH /dashboards/:id 1`] = `
 
 exports[`metadata wire contracts: internal API PATCH /saved-search/:id 1`] = `
 {
-  "__v": 0,
   "_id": "<id:6>",
   "createdAt": "<date>",
   "createdBy": "<id:2>",
@@ -715,7 +710,6 @@ exports[`metadata wire contracts: internal API create responses 1`] = `
     "id": "<id:3>",
   },
   "POST /dashboards": {
-    "__v": 0,
     "_id": "<id:7>",
     "containers": [],
     "createdAt": "<date>",
@@ -791,7 +785,6 @@ exports[`metadata wire contracts: internal API create responses 1`] = `
     "updatedBy": "<id:2>",
   },
   "POST /saved-search": {
-    "__v": 0,
     "_id": "<id:6>",
     "createdAt": "<date>",
     "createdBy": "<id:2>",
@@ -868,7 +861,6 @@ exports[`metadata wire contracts: internal API create responses 1`] = `
     },
   },
   "PUT /favorites": {
-    "__v": 0,
     "_id": "<id:12>",
     "createdAt": "<date>",
     "id": "<id:12>",

@@ -10,9 +10,6 @@ import type { Query } from 'mongoose';
 import { getMetadataStore } from '@/metadata';
 import { getNonNullUserWithTeam } from '@/middleware/auth';
 import Alert from '@/models/alert';
-import Dashboard from '@/models/dashboard';
-import { SavedSearch } from '@/models/savedSearch';
-import Webhook from '@/models/webhook';
 import { unaddressableTileAlertIds } from '@/utils/iacTileAlerts';
 import { getCounter, withSpan } from '@/utils/instrumentation';
 
@@ -70,12 +67,20 @@ const bounded = <T extends Query<unknown, unknown>>(query: T): T =>
 
 async function listBounded<T>(
   repo: {
-    list(team: string): Promise<T[]>;
-    count(team: string): Promise<number>;
+    list(
+      team: string,
+      where?: Record<string, boolean>,
+      o?: { limit?: number },
+    ): Promise<T[]>;
+    count(team: string, where?: Record<string, boolean>): Promise<number>;
   },
   team: string,
+  where: Record<string, boolean> = {},
 ): Promise<{ items: T[]; truncated: boolean }> {
-  const [rows, total] = await Promise.all([repo.list(team), repo.count(team)]);
+  const [rows, total] = await Promise.all([
+    repo.list(team, where, { limit: IAC_MANIFEST_LIMIT + 1 }),
+    repo.count(team, where),
+  ]);
   return {
     items: rows.slice(0, IAC_MANIFEST_LIMIT),
     truncated: total > IAC_MANIFEST_LIMIT,
@@ -125,23 +130,13 @@ router.get('/import-manifest', async (req, res, next) => {
         webhookRows,
       ] = await Promise.all([
         // Provisioned dashboards are machine-managed (ProvisionDashboardsTask)
-        // and would conflict with Terraform-managed state.
-        // Only the two discriminators `isUnexportableTile` reads, not whole
-        // tile configs: a dashboard containing a tile the import round trip
+        // and would conflict with Terraform-managed state. Tile configs are
+        // read whole: a dashboard containing a tile the import round trip
         // would destroy must not be offered, and that is only knowable from
-        // the configs — but SQL templates, select lists and filters have no
-        // business leaving Mongo for a boolean. Keep this projection in step
-        // with what that predicate inspects.
-        bounded(
-          Dashboard.find(
-            { team: teamId, provisioned: { $ne: true } },
-            {
-              name: 1,
-              'tiles.config.configType': 1,
-              'tiles.config.displayType': 1,
-            },
-          ),
-        ).lean(),
+        // the configs.
+        listBounded(store.dashboards, teamId.toString(), {
+          provisioned: false,
+        }),
         bounded(
           Alert.find(
             { team: teamId },
@@ -150,21 +145,21 @@ router.get('/import-manifest', async (req, res, next) => {
             { name: 1, source: 1, savedSearch: 1, dashboard: 1, tileId: 1 },
           ),
         ).lean(),
-        bounded(SavedSearch.find({ team: teamId }, { name: 1 })).lean(),
+        listBounded(store.savedSearches, teamId.toString()),
         // Sources and connections moved to the metadata store (C2): ids sort
         // by creation, the find cap is IAC_MANIFEST_LIMIT, and the count says
         // whether the cap cut anything off.
         listBounded(store.sources, teamId.toString()),
         listBounded(store.connections, teamId.toString()),
-        bounded(Webhook.find({ team: teamId }, { name: 1 })).lean(),
+        listBounded(store.webhooks, teamId.toString()),
       ]);
 
-      const dashboards = capListing(dashboardRows);
+      const dashboards = dashboardRows;
       const alerts = capListing(alertRows);
-      const savedSearches = capListing(savedSearchRows);
+      const savedSearches = savedSearchRows;
       const sources = sourceRows;
       const connections = connectionRows;
-      const webhooks = capListing(webhookRows);
+      const webhooks = webhookRows;
 
       const unaddressableTileAlerts = await unaddressableTileAlertIds({
         teamId,

@@ -1,5 +1,6 @@
 import {
   TagResourceType,
+  TagResourceTypeSchema,
   TeamQuerySettingsUpdate,
 } from '@couchbase-traces/common-utils/dist/types';
 import pick from 'lodash/pick';
@@ -8,10 +9,9 @@ import { v4 as uuidv4 } from 'uuid';
 
 import * as config from '@/config';
 import { getMetadataStore } from '@/metadata';
+import type { CouchbaseTagKind } from '@/metadata/repos/tags';
 import type { ITeam } from '@/metadata/schemas/team';
 import Alert from '@/models/alert';
-import Dashboard from '@/models/dashboard';
-import { SavedSearch } from '@/models/savedSearch';
 
 export type { ITeam } from '@/metadata/schemas/team';
 
@@ -111,43 +111,38 @@ export function updateTeamQuerySettings(
   return teams().updateQuerySettings(teamId.toString(), settings);
 }
 
-function getCollectionsWithTags(
-  resourceType?: TagResourceType,
-): Pick<mongoose.Model<unknown>, 'aggregate'>[] {
-  if (resourceType == null) {
-    return [Alert, Dashboard, SavedSearch];
-  }
-
-  switch (resourceType) {
-    case 'alert':
-      return [Alert];
-    case 'dashboard':
-      return [Dashboard];
-    case 'savedSearch':
-      return [SavedSearch];
-    default:
-      resourceType satisfies never;
-      throw new Error(`${resourceType} is not a valid TagResourceType`);
-  }
-}
-
 /**
  * Distinct tags applied to the team's entities. Scoped to one kind of entity
- * when `resourceType` is given.
+ * when `resourceType` is given. Dashboards and saved searches come from the
+ * metadata store; alerts stay on Mongo until C4.
  */
 export async function getTags(teamId: IdLike, resourceType?: TagResourceType) {
-  const distinctTagsPipeline: mongoose.PipelineStage[] = [
-    // Aggregation does not cast like queries do.
-    { $match: { team: new mongoose.Types.ObjectId(teamId.toString()) } },
-    { $unwind: '$tags' },
-    { $group: { _id: '$tags' } },
-  ];
+  const team = teamId.toString();
+  if (
+    resourceType != null &&
+    !TagResourceTypeSchema.safeParse(resourceType).success
+  ) {
+    throw new Error(`${resourceType} is not a valid TagResourceType`);
+  }
 
-  const tagGroups = await Promise.all(
-    getCollectionsWithTags(resourceType).map(collection =>
-      collection.aggregate<{ _id: string }>(distinctTagsPipeline),
-    ),
-  );
+  const wantsAlerts = resourceType == null || resourceType === 'alert';
+  const kinds: CouchbaseTagKind[] =
+    resourceType == null ? ['dashboard', 'savedSearch'] : [];
+  if (resourceType === 'dashboard' || resourceType === 'savedSearch') {
+    kinds.push(resourceType);
+  }
 
-  return [...new Set(tagGroups.flat().map(t => t._id))];
+  const [stored, alertTags] = await Promise.all([
+    kinds.length > 0 ? getMetadataStore().tags.distinct(team, kinds) : [],
+    wantsAlerts
+      ? Alert.aggregate<{ _id: string }>([
+          // Aggregation does not cast like queries do.
+          { $match: { team: new mongoose.Types.ObjectId(team) } },
+          { $unwind: '$tags' },
+          { $group: { _id: '$tags' } },
+        ])
+      : [],
+  ]);
+
+  return [...new Set([...stored, ...alertTags.map(t => t._id)])];
 }

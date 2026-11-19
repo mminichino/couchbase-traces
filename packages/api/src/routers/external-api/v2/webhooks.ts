@@ -6,8 +6,8 @@ import {
   deleteWebhook,
   updateWebhook,
 } from '@/controllers/webhook';
-import { WebhookDocument } from '@/models/webhook';
-import Webhook from '@/models/webhook';
+import { getMetadataStore } from '@/metadata';
+import type { IWebhook } from '@/metadata/schemas/webhook';
 import { processRequestWithEnhancedErrors as validateRequest } from '@/utils/enhancedErrors';
 import { isDuplicateKeyError } from '@/utils/errors';
 import { getCounter } from '@/utils/instrumentation';
@@ -59,7 +59,7 @@ const webhookSerializationErrorCounter = getCounter(
 // reconcile rather than assuming the create/update failed.
 function respondPersistedButUnserializable(
   res: express.Response,
-  webhook: WebhookDocument,
+  webhook: IWebhook,
 ) {
   logger.error({
     message:
@@ -74,14 +74,13 @@ function respondPersistedButUnserializable(
   });
 }
 
-function formatExternalWebhook(
-  webhook: WebhookDocument,
-): ExternalWebhook | undefined {
-  // Convert to JSON so that any ObjectIds are converted to strings ("_id" is also converted to "id")
-  const json = JSON.stringify(webhook.toJSON({ getters: true }));
+function formatExternalWebhook(webhook: IWebhook): ExternalWebhook | undefined {
+  // Round-trip through JSON so dates become strings, as on the wire.
 
   // Parse using the externalWebhookSchema to strip out any fields not defined in the schema
-  const parseResult = externalWebhookSchema.safeParse(JSON.parse(json));
+  const parseResult = externalWebhookSchema.safeParse(
+    JSON.parse(JSON.stringify(webhook)),
+  );
   if (parseResult.success) {
     return parseResult.data;
   }
@@ -352,11 +351,11 @@ router.get(
       }
 
       const { limit, offset } = getPagination(req.query);
-      const filter = { team: teamId.toString() };
-      // Sort by _id so skip/offset paging is stable across requests.
+      const team = teamId.toString();
+      // Creation order (id order) keeps offset paging stable across requests.
       const [webhooks, total] = await Promise.all([
-        Webhook.find(filter).sort({ _id: 1 }).skip(offset).limit(limit),
-        Webhook.countDocuments(filter),
+        getMetadataStore().webhooks.list(team, {}, { limit, offset }),
+        getMetadataStore().webhooks.count(team),
       ]);
 
       // Surface the full count at the HTTP layer too, so a client that reads

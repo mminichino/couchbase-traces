@@ -7,17 +7,16 @@ import type {
 } from '@couchbase-traces/common-utils/dist/types';
 import { AlertThresholdType } from '@couchbase-traces/common-utils/dist/types';
 import express from 'express';
-import { ObjectId } from 'mongodb';
-import mongoose from 'mongoose';
 import ms from 'ms';
 import { z } from 'zod';
 import { validateRequest } from 'zod-express-middleware';
 
 import { FRONTEND_URL } from '@/config';
 import { createWebhook, deleteWebhook } from '@/controllers/webhook';
+import { getMetadataStore } from '@/metadata';
 import { isValidId } from '@/metadata/ids';
+import { type IWebhook, WebhookService } from '@/metadata/schemas/webhook';
 import { AlertSource, AlertState } from '@/models/alert';
-import Webhook, { WebhookService } from '@/models/webhook';
 import {
   ALERT_STATUS_BY_STATE,
   ALERT_TYPE_BY_SOURCE,
@@ -84,12 +83,16 @@ type WebhookPlain = Pick<
   'url' | 'headers' | 'queryParams' | 'service'
 >;
 
-const toWebhookPlain = (doc: mongoose.Document): WebhookPlain =>
-  doc.toJSON({ flattenMaps: true }) as WebhookPlain;
+const toWebhookPlain = (doc: IWebhook): WebhookPlain => doc;
 
-const serializeWebhook = (doc: mongoose.Document): WebhookApiData => {
-  const { team: _team, __v, ...data } = doc.toJSON({ flattenMaps: true });
-  return data as WebhookApiData;
+// `team` and the internal `id` never went out on the wire.
+const serializeWebhook = (doc: IWebhook): WebhookApiData => {
+  const { team: _team, id: _id, ...data } = doc;
+  return {
+    ...data,
+    createdAt: doc.createdAt.toISOString(),
+    updatedAt: doc.updatedAt.toISOString(),
+  };
 };
 
 const mergeRedactedMap = (
@@ -150,9 +153,9 @@ router.get(
         return res.sendStatus(403);
       }
       const { service } = req.query;
-      const webhooks = await Webhook.find(
-        { team: teamId, service },
-        { __v: 0, team: 0 },
+      const webhooks = await getMetadataStore().webhooks.listByService(
+        teamId.toString(),
+        service,
       );
       res.json({
         data: webhooks.map(w => sanitizeWebhook(serializeWebhook(w))),
@@ -204,7 +207,13 @@ router.post(
       // The unique index is on (team, service, name), so the pre-flight check
       // must query the same fields — otherwise a name+service collision slips
       // past this guard and surfaces as an uncaught duplicate-key 500 below.
-      if (await Webhook.findOne({ team: teamId, service, name })) {
+      if (
+        await getMetadataStore().webhooks.findByName(
+          teamId.toString(),
+          service,
+          name,
+        )
+      ) {
         return res.status(400).json({
           message: 'Webhook already exists',
         });
@@ -277,10 +286,10 @@ router.put(
       } = req.body;
       const { id } = req.params;
 
-      const existingWebhook = await Webhook.findOne({
-        _id: id,
-        team: teamId,
-      });
+      const existingWebhook = await getMetadataStore().webhooks.get(
+        teamId.toString(),
+        id,
+      );
       if (!existingWebhook) {
         return res.status(404).json({
           message: 'Webhook not found',
@@ -323,62 +332,56 @@ router.put(
 
       // Match the unique index (team, service, name) so a rename onto an
       // existing (service, name) is caught here rather than as a 500 below.
-      const duplicateWebhook = await Webhook.findOne({
-        team: teamId,
+      const duplicateWebhook = await getMetadataStore().webhooks.findByName(
+        teamId.toString(),
         service,
         name,
-        _id: { $ne: id },
-      });
-      if (duplicateWebhook) {
+      );
+      if (duplicateWebhook && duplicateWebhook._id !== id.toLowerCase()) {
         return res.status(400).json({
           message: 'A webhook with this service and name already exists',
         });
       }
 
-      // $unset is required for Mongoose Map fields — $set with undefined
-      // does not remove a Map field from the document.
-      const $set: Record<string, unknown> = {
-        name,
-        service,
-        url: resolvedUrl,
-        description,
-        titleEmoji,
-        body,
-      };
-      const $unset: Record<string, 1> = {};
+      // Omitted maps are removed, never carried over (see above). Undefined
+      // `description`/`titleEmoji`/`body` leave the stored value alone, as
+      // `$set` with undefined always did.
+      const unset: ('headers' | 'queryParams')[] = [];
+      if (resolvedHeaders === undefined) unset.push('headers');
+      if (resolvedQueryParams === undefined) unset.push('queryParams');
 
-      if (resolvedHeaders !== undefined) {
-        $set.headers = resolvedHeaders;
-      } else {
-        $unset.headers = 1;
-      }
-      if (resolvedQueryParams !== undefined) {
-        $set.queryParams = resolvedQueryParams;
-      } else {
-        $unset.queryParams = 1;
-      }
-
-      const updateOp: Record<string, unknown> = { $set };
-      if (Object.keys($unset).length > 0) {
-        updateOp.$unset = $unset;
-      }
-
-      // Condition on stored URL so a concurrent PUT that changes the
-      // destination between read and write is detected (TOCTOU guard).
-      const updatedWebhook = await Webhook.findOneAndUpdate(
-        { _id: id, team: teamId, url: existingPlain.url },
-        updateOp,
-        { new: true, select: { __v: 0, team: 0 } },
+      // Conditioned on the stored destination so a concurrent PUT that moves
+      // it between read and write is detected (TOCTOU guard).
+      const updated = await getMetadataStore().webhooks.update(
+        teamId.toString(),
+        id,
+        {
+          set: {
+            name,
+            service,
+            url: resolvedUrl,
+            description,
+            titleEmoji,
+            body,
+            headers: resolvedHeaders,
+            queryParams: resolvedQueryParams,
+          },
+          unset,
+          ifDestination: {
+            url: existingWebhook.url,
+            service: existingWebhook.service,
+          },
+        },
       );
 
-      if (!updatedWebhook) {
+      if (updated.status !== 'ok') {
         return res.status(409).json({
           message: 'Webhook was modified concurrently. Please retry.',
         });
       }
 
       res.json({
-        data: sanitizeWebhook(serializeWebhook(updatedWebhook)),
+        data: sanitizeWebhook(serializeWebhook(updated.webhook)),
       });
     } catch (err) {
       if (handleWebhookValidationError(err, res)) return;
@@ -455,10 +458,10 @@ router.post(
       // only when the submitted URL still points at the stored destination.
       // This prevents exfiltrating stored secrets to an attacker-controlled URL.
       if (webhookId) {
-        const existing = await Webhook.findOne({
-          _id: webhookId,
-          team: teamId,
-        });
+        const existing = await getMetadataStore().webhooks.get(
+          teamId.toString(),
+          webhookId,
+        );
         if (!existing) {
           return res.status(404).json({ message: 'Webhook not found' });
         }
@@ -476,14 +479,19 @@ router.post(
       validateWebhookConfig({ service, url, body });
 
       // Create a temporary webhook object for testing
-      const testWebhook = new Webhook({
-        team: new ObjectId(teamId),
+      const testWebhook: IWebhook = {
+        _id: '',
+        id: '',
+        team: teamId.toString(),
         service,
+        name: 'Test webhook',
         url,
         queryParams,
         headers,
         body,
-      });
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      };
 
       // Every field a real firing sends, so a body written against the
       // documented variables renders here exactly as it will in production.

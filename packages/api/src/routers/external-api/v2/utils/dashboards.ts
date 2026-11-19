@@ -62,8 +62,9 @@ import { z } from 'zod';
 import { deleteDashboardAlerts } from '@/controllers/alerts';
 import { getConnectionsByTeam } from '@/controllers/connection';
 import { getSources } from '@/controllers/sources';
+import { getMetadataStore } from '@/metadata';
 import { newId } from '@/metadata/ids';
-import Dashboard, { DashboardDocument } from '@/models/dashboard';
+import type { IDashboard as DashboardDocument } from '@/metadata/schemas/dashboard';
 import {
   getExternalCompatibleFilters,
   getExternalCompatibleFilterValues,
@@ -1634,12 +1635,12 @@ async function getMissingOnClickDashboards(
 
   if (dashboardIds.size === 0) return [];
 
-  const existingDashboards = await Dashboard.find(
-    { team, _id: { $in: [...dashboardIds] } },
-    { _id: 1 },
-  ).lean();
   const existingDashboardIds = new Set(
-    existingDashboards.map(d => d._id.toString()),
+    (
+      await getMetadataStore().dashboards.getMany(team.toString(), [
+        ...dashboardIds,
+      ])
+    ).keys(),
   );
   return [...dashboardIds].filter(id => !existingDashboardIds.has(id));
 }
@@ -1927,15 +1928,7 @@ export async function cleanupDashboardAlerts({
       { dashboardId, teamId, tileIds: tileIdsToDeleteAlerts },
       'Deleting alerts for tiles with unsupported config or removed tiles',
     );
-    const teamObjectId =
-      teamId instanceof mongoose.Types.ObjectId
-        ? teamId
-        : new mongoose.Types.ObjectId(teamId);
-    await deleteDashboardAlerts(
-      dashboardId,
-      teamObjectId,
-      tileIdsToDeleteAlerts,
-    );
+    await deleteDashboardAlerts(dashboardId, teamId, tileIdsToDeleteAlerts);
   }
 }
 

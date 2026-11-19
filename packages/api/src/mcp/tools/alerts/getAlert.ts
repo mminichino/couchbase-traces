@@ -5,13 +5,12 @@ import { z } from 'zod';
 
 import * as config from '@/config';
 import { getRecentAlertHistories } from '@/controllers/alertHistory';
+import { hydrateAlertRefs } from '@/controllers/alertRefs';
 import { getAlertById } from '@/controllers/alerts';
 import { READ_ONLY_TOOL } from '@/mcp/tools/annotations';
 import type { ToolRegistrar } from '@/mcp/tools/types';
 import { mcpUserError, validateObjectId } from '@/mcp/utils/errors';
 import Alert from '@/models/alert';
-import type { IDashboard } from '@/models/dashboard';
-import type { ISavedSearch } from '@/models/savedSearch';
 import { translateAlertDocumentToExternalAlertWithChartConfig } from '@/routers/external-api/v2/utils/alertChartConfig';
 import { resolveAlertDisplayFields } from '@/utils/alerts';
 
@@ -60,10 +59,7 @@ export function registerGetAlert({
         if (state) {
           query.state = state;
         }
-        const alerts = await Alert.find(query).populate<{
-          savedSearch: ISavedSearch | null;
-          dashboard: IDashboard | null;
-        }>(['savedSearch', 'dashboard']);
+        const alerts = await hydrateAlertRefs(teamId, await Alert.find(query));
 
         const output = alerts.map(alert => {
           const { displayName, tags } = resolveAlertDisplayFields(alert, {
@@ -99,10 +95,7 @@ export function registerGetAlert({
 
       // Populate the refs the display name/tags derive from, so alerts written
       // before those fields existed still resolve to something meaningful.
-      const populated = await alert.populate<{
-        savedSearch: ISavedSearch | null;
-        dashboard: IDashboard | null;
-      }>(['savedSearch', 'dashboard']);
+      const [populated] = await hydrateAlertRefs(teamId, [alert]);
 
       const external =
         translateAlertDocumentToExternalAlertWithChartConfig(populated);

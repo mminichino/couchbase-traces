@@ -28,16 +28,16 @@ import { serializeError } from 'serialize-error';
 import { z } from 'zod';
 
 import { AlertInput } from '@/controllers/alerts';
+import type { IDashboard } from '@/metadata/schemas/dashboard';
+import type { ISavedSearch } from '@/metadata/schemas/savedSearch';
 import { ISource } from '@/metadata/schemas/source';
+import type { IWebhook } from '@/metadata/schemas/webhook';
 import {
   AlertChannel,
   AlertSource,
   AlertState,
   getAlertChannels,
 } from '@/models/alert';
-import { IDashboard } from '@/models/dashboard';
-import { ISavedSearch } from '@/models/savedSearch';
-import { IWebhook } from '@/models/webhook';
 import { DataClient } from '@/query';
 import {
   computeAliasWithClauses,

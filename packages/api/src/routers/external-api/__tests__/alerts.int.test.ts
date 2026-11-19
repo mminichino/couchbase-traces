@@ -13,16 +13,44 @@ import {
   RAW_SQL_ALERT_TEMPLATE,
   RAW_SQL_NUMBER_ALERT_TEMPLATE,
 } from '@/fixtures';
-import { seedConnection, seedSource } from '@/metadata/testing/seed';
+import { getMetadataStore } from '@/metadata';
+import { WebhookService } from '@/metadata/schemas/webhook';
+import {
+  removeDashboard,
+  removeSavedSearch,
+  seedConnection,
+  seedDashboard,
+  seedSavedSearch,
+  seedSource,
+  seedWebhook,
+} from '@/metadata/testing/seed';
 import { toObjectId } from '@/models';
 import { AlertSource, AlertState, AlertThresholdType } from '@/models/alert';
 import Alert from '@/models/alert';
-import Dashboard from '@/models/dashboard';
-import { SavedSearch } from '@/models/savedSearch';
-import Webhook, { WebhookService } from '@/models/webhook';
 
 // Constants
 const ALERTS_BASE_URL = '/api/v2/alerts';
+
+/** `Webhook.findOneAndUpdate(..., { upsert: true })`: one Slack hook per name. */
+async function upsertSlackWebhook(
+  name: string,
+  teamId: { toString(): string },
+) {
+  const team = teamId.toString();
+  return (
+    (await getMetadataStore().webhooks.findByName(
+      team,
+      WebhookService.Slack,
+      name,
+    )) ??
+    (await seedWebhook({
+      name,
+      service: WebhookService.Slack,
+      url: 'https://hooks.slack.com/test',
+      team,
+    }))
+  );
+}
 
 describe('External API Alerts', () => {
   const server = getServer();
@@ -55,20 +83,7 @@ describe('External API Alerts', () => {
 
   // Helper to create a webhook for testing
   const createTestWebhook = async (options: { teamId?: any } = {}) => {
-    return await Webhook.findOneAndUpdate(
-      {
-        name: 'Test Webhook',
-        service: WebhookService.Slack,
-        team: options.teamId ?? team._id,
-      },
-      {
-        name: 'Test Webhook',
-        service: WebhookService.Slack,
-        url: 'https://hooks.slack.com/test',
-        team: options.teamId ?? team._id,
-      },
-      { upsert: true, new: true },
-    );
+    return await upsertSlackWebhook('Test Webhook', options.teamId ?? team._id);
   };
 
   // Helper to create a dashboard for testing
@@ -87,11 +102,11 @@ describe('External API Alerts', () => {
       seriesReturnType: 'column',
     }));
 
-    return new Dashboard({
+    return seedDashboard({
       name,
       tiles,
       team: options.teamId ?? team._id,
-    }).save();
+    });
   };
 
   // Helper to create a dashboard with a raw SQL tile for testing
@@ -121,24 +136,24 @@ describe('External API Alerts', () => {
       },
     ];
 
-    const dashboard = await new Dashboard({
+    const dashboard = await seedDashboard({
       name: 'Raw SQL Dashboard',
       tiles,
       team: options.teamId ?? team._id,
-    }).save();
+    });
 
     return { dashboard, tileId };
   };
 
   // Helper to create a saved search for testing
   const createTestSavedSearch = async (options: { teamId?: any } = {}) => {
-    return new SavedSearch({
+    return seedSavedSearch({
       name: 'Test Saved Search',
       where: 'error',
       whereLanguage: 'lucene',
       source: new ObjectId(),
       team: options.teamId ?? team._id,
-    }).save();
+    });
   };
 
   // Helper to create a test alert via API
@@ -228,7 +243,7 @@ describe('External API Alerts', () => {
   describe('display refs are projected, not fetched whole', () => {
     const createNamedTileDashboard = async () => {
       const tileId = new ObjectId().toString();
-      const dashboard = await new Dashboard({
+      const dashboard = await seedDashboard({
         name: 'Projected Dashboard',
         tags: ['projected'],
         tiles: [
@@ -256,7 +271,7 @@ describe('External API Alerts', () => {
           },
         ],
         team: team._id,
-      }).save();
+      });
       await createTestAlertDirectly({ dashboard: dashboard._id, tileId });
       return dashboard;
     };
@@ -299,7 +314,7 @@ describe('External API Alerts', () => {
   describe('displayName and tags', () => {
     const createTaggedDashboard = async () => {
       const tileId = new ObjectId().toString();
-      const dashboard = await new Dashboard({
+      const dashboard = await seedDashboard({
         name: 'Tagged Dashboard',
         tags: ['dashboard-tag'],
         tiles: [
@@ -327,7 +342,7 @@ describe('External API Alerts', () => {
           },
         ],
         team: team._id,
-      }).save();
+      });
       return { dashboard, tileId };
     };
 
@@ -439,7 +454,7 @@ describe('External API Alerts', () => {
       const created = await authRequest('post', ALERTS_BASE_URL)
         .send(input)
         .expect(200);
-      await Dashboard.deleteOne({ _id: input.dashboardId });
+      await removeDashboard(input.dashboardId);
 
       const fetched = await authRequest(
         'get',
@@ -464,7 +479,7 @@ describe('External API Alerts', () => {
           channel: { type: 'webhook', webhookId: webhook._id.toString() },
         })
         .expect(200);
-      await SavedSearch.deleteOne({ _id: savedSearch._id });
+      await removeSavedSearch(savedSearch._id);
 
       const fetched = await authRequest(
         'get',
@@ -2942,16 +2957,7 @@ describe('External API Alerts', () => {
   });
   describe('Multiple notification channels', () => {
     const makeWebhookNamed = async (name: string) =>
-      await Webhook.findOneAndUpdate(
-        { name, service: WebhookService.Slack, team: team._id },
-        {
-          name,
-          service: WebhookService.Slack,
-          url: 'https://hooks.slack.com/test',
-          team: team._id,
-        },
-        { upsert: true, new: true },
-      );
+      await upsertSlackWebhook(name, team._id);
 
     const baseSavedSearchAlert = async () => {
       const savedSearch = await createTestSavedSearch();

@@ -11,6 +11,12 @@ import type { Consistency } from '@/metadata/types';
 export type QueryOptions = {
   /** Read-your-writes by default (plan D11). */
   consistency?: Consistency;
+  /**
+   * Bound for this statement. Sent as the SQL++ `timeout` query option, so the
+   * Query service cancels the work as well as the client giving up. Callers
+   * pass the configured default (`CBT_METADATA_QUERY_TIMEOUT_MS`); this is
+   * what replaced Mongo's `maxTimeMS` on list queries.
+   */
   timeoutMs?: number;
   secrets?: string[];
 };

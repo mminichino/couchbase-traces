@@ -20,7 +20,9 @@ import {
   startMetadataStore,
 } from '@/metadata';
 import type { IConnection } from '@/metadata/schemas/connection';
+import type { ISavedSearch } from '@/metadata/schemas/savedSearch';
 import type { ISource } from '@/metadata/schemas/source';
+import type { IWebhook } from '@/metadata/schemas/webhook';
 import { connectDB, mongooseConnection, ObjectId } from '@/models';
 import Alert, {
   AlertSource,
@@ -32,9 +34,6 @@ import AlertHistory, {
   IAlertHistory,
   IAlertHistoryAnalytics,
 } from '@/models/alertHistory';
-import Dashboard from '@/models/dashboard';
-import { type ISavedSearch, SavedSearch } from '@/models/savedSearch';
-import Webhook, { IWebhook } from '@/models/webhook';
 import { DataClient } from '@/query';
 import {
   AggregatedAlertHistory,
@@ -57,10 +56,10 @@ async function getSavedSearchDetails(
   alert: IAlert,
 ): Promise<[IConnection, PartialAlertDetails] | []> {
   const savedSearchId = alert.savedSearch;
-  const savedSearch = await SavedSearch.findOne({
-    _id: savedSearchId,
-    team: alert.team,
-  });
+  const savedSearch = await getMetadataStore().savedSearches.get(
+    alert.team.toString(),
+    `${savedSearchId}`,
+  );
 
   if (!savedSearch) {
     logger.error({
@@ -71,9 +70,8 @@ async function getSavedSearchDetails(
     return [];
   }
 
-  // SavedSearch is still in Mongo and only holds the source id; the source
-  // and its connection live in the metadata store, so they are loaded here
-  // instead of through Mongoose populate.
+  // The saved search holds only the source id; the source and its connection
+  // are loaded from the metadata store here.
   const source = await getMetadataStore().sources.get(
     alert.team.toString(),
     savedSearch.source.toString(),
@@ -162,10 +160,10 @@ async function getTileDetails(
   const dashboardId = alert.dashboard;
   const tileId = alert.tileId;
 
-  const dashboard = await Dashboard.findOne({
-    _id: dashboardId,
-    team: alert.team,
-  });
+  const dashboard = await getMetadataStore().dashboards.get(
+    alert.team.toString(),
+    `${dashboardId}`,
+  );
   if (!dashboard) {
     logger.error({
       message: 'dashboard not found',
@@ -696,10 +694,8 @@ export default class DefaultAlertProvider implements AlertProvider {
   }
 
   async getWebhooks(teamId: string | ObjectId) {
-    const webhooks = await Webhook.find({
-      team: new mongoose.Types.ObjectId(teamId),
-    });
-    return new Map<string, IWebhook>(webhooks.map(w => [w.id, w]));
+    const webhooks = await getMetadataStore().webhooks.list(teamId.toString());
+    return new Map<string, IWebhook>(webhooks.map(w => [w._id, w]));
   }
 
   async getDataClient(

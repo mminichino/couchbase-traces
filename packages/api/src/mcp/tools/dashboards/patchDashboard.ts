@@ -7,7 +7,8 @@ import { IDEMPOTENT_DESTRUCTIVE_TOOL } from '@/mcp/tools/annotations';
 import type { ToolRegistrar } from '@/mcp/tools/types';
 import { mcpUserError } from '@/mcp/utils/errors';
 import { isPromqlEnabled } from '@/mcp/utils/legacySourceKinds';
-import Dashboard from '@/models/dashboard';
+import { getMetadataStore } from '@/metadata';
+import type { DashboardPatch } from '@/metadata/schemas/dashboard';
 import {
   cleanupDashboardAlerts,
   convertToExternalDashboard,
@@ -79,22 +80,16 @@ export function registerPatchDashboard({
         );
       }
 
-      const existingDashboard = await Dashboard.findOne({
-        _id: dashboardId,
-        team: teamId,
-      });
+      const store = getMetadataStore();
+      const existingDashboard = await store.dashboards.get(teamId, dashboardId);
       if (!existingDashboard) {
         return mcpUserError('Dashboard not found');
       }
 
-      // Build the $set payload and the query filter. Metadata fields
-      // are simple top-level $set entries; the tile patch uses the
-      // positional $ operator matched by 'tiles.id' in the filter.
-      const setPayload: Record<string, unknown> = {};
-      const queryFilter: Record<string, unknown> = {
-        _id: dashboardId,
-        team: teamId,
-      };
+      // Metadata fields are plain top-level updates; the tile patch is
+      // matched by tile id inside the repository's single write.
+      const setPayload: DashboardPatch = {};
+      let tilePatch: { id: string; tile: unknown } | undefined;
 
       if (name !== undefined) {
         setPayload.name = name;
@@ -214,21 +209,23 @@ export function registerPatchDashboard({
         }
         const internalTile = convertToInternalTileConfig(mergedTile);
 
-        // Use the positional $ operator matched by 'tiles.id' in the
-        // query filter. This targets the tile by its id field rather
-        // than a captured numeric index, so a concurrent save_dashboard
-        // that replaces the whole tiles array can't cause us to
-        // overwrite an unrelated tile at a stale index.
-        queryFilter['tiles.id'] = tileId;
-        setPayload['tiles.$'] = internalTile;
+        // The repository matches the tile by its id field rather than a
+        // captured numeric index, so a concurrent save_dashboard that
+        // replaces the whole tiles array can't cause us to overwrite an
+        // unrelated tile at a stale index.
+        tilePatch = { id: tileId, tile: internalTile };
         patchedTile = mergedTile;
       }
 
-      const updatedDashboard = await Dashboard.findOneAndUpdate(
-        queryFilter,
-        { $set: setPayload },
-        { new: true },
-      );
+      const updatedDashboard = tilePatch
+        ? await store.dashboards.patchTile(
+            teamId,
+            dashboardId,
+            tilePatch.id,
+            tilePatch.tile,
+            setPayload,
+          )
+        : await store.dashboards.update(teamId, dashboardId, setPayload);
 
       if (!updatedDashboard) {
         // When a tile patch is in flight, a null result means the tile

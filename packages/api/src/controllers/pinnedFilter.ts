@@ -1,42 +1,31 @@
 import type { PinnedFiltersValue } from '@couchbase-traces/common-utils/dist/types';
-import mongoose from 'mongoose';
 
-import type { ObjectId } from '@/models';
-import PinnedFilterModel from '@/models/pinnedFilter';
+import { getMetadataStore } from '@/metadata';
 
 /**
  * Get team-level pinned filters for a team+source combination.
  */
 export async function getPinnedFilters(
-  teamId: string | ObjectId,
-  sourceId: string | ObjectId,
+  teamId: string | { toString(): string },
+  sourceId: string | { toString(): string },
 ) {
-  return PinnedFilterModel.findOne({
-    team: new mongoose.Types.ObjectId(teamId),
-    source: new mongoose.Types.ObjectId(sourceId),
-  });
+  return getMetadataStore().pinnedFilters.get(
+    teamId.toString(),
+    sourceId.toString(),
+  );
 }
 
 /**
  * Upsert team-level pinned filters for a team+source.
  */
 export async function updatePinnedFilters(
-  teamId: string | ObjectId,
-  sourceId: string | ObjectId,
+  teamId: string | { toString(): string },
+  sourceId: string | { toString(): string },
   data: { fields: string[]; filters: PinnedFiltersValue },
 ) {
-  const filter = {
-    team: new mongoose.Types.ObjectId(teamId),
-    source: new mongoose.Types.ObjectId(sourceId),
-  };
-
-  return PinnedFilterModel.findOneAndUpdate(
-    filter,
-    {
-      ...filter,
-      fields: data.fields,
-      filters: data.filters,
-    },
-    { upsert: true, new: true },
+  return getMetadataStore().pinnedFilters.put(
+    teamId.toString(),
+    sourceId.toString(),
+    data,
   );
 }

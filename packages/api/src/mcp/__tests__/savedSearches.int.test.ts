@@ -9,8 +9,12 @@ import {
   getServer,
 } from '@/fixtures';
 import { McpContext } from '@/mcp/tools/types';
-import { seedConnection, seedSource } from '@/metadata/testing/seed';
-import { SavedSearch } from '@/models/savedSearch';
+import {
+  findSavedSearch,
+  seedConnection,
+  seedSavedSearch,
+  seedSource,
+} from '@/metadata/testing/seed';
 
 import { callTool, createTestClient, getFirstText } from './mcpTestUtils';
 
@@ -73,7 +77,7 @@ describe('MCP Saved Search Tools', () => {
   async function createTestSavedSearch(
     overrides: Record<string, unknown> = {},
   ) {
-    return SavedSearch.create({
+    return seedSavedSearch({
       team: team._id,
       name: 'Test Saved Search',
       source: traceSource._id,
@@ -210,7 +214,7 @@ describe('MCP Saved Search Tools', () => {
         expect(output.tags).toEqual(['errors']);
 
         // Verify in database
-        const savedSearch = await SavedSearch.findById(output.id);
+        const savedSearch = await findSavedSearch(output.id);
         expect(savedSearch).not.toBeNull();
         expect(savedSearch?.name).toBe('Error Traces');
       });
@@ -362,7 +366,7 @@ describe('MCP Saved Search Tools', () => {
         expect(output.tags).toEqual(['updated']);
 
         // Verify in database
-        const updated = await SavedSearch.findById(savedSearch._id);
+        const updated = await findSavedSearch(savedSearch._id);
         expect(updated?.name).toBe('Updated Name');
         expect(updated?.where).toBe('StatusCode:Ok');
       });
@@ -381,7 +385,7 @@ describe('MCP Saved Search Tools', () => {
         });
 
         expect(result.isError).toBeFalsy();
-        const updated = await SavedSearch.findById(savedSearch._id);
+        const updated = await findSavedSearch(savedSearch._id);
         expect(updated?.whereLanguage).toBe('sql');
       });
 

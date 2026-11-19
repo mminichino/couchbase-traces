@@ -7,7 +7,7 @@ import type { ToolRegistrar } from '@/mcp/tools/types';
 import { mcpUserError } from '@/mcp/utils/errors';
 import { isPromqlEnabled } from '@/mcp/utils/legacySourceKinds';
 import { withDeadline } from '@/mcp/utils/timeout';
-import Dashboard from '@/models/dashboard';
+import { getMetadataStore } from '@/metadata';
 import {
   convertToExternalDashboard,
   isConfigTile,
@@ -174,10 +174,10 @@ export function registerQueryTiles({
       }
       const { startDate, endDate } = timeRange;
 
-      const dashboard = await Dashboard.findOne({
-        _id: dashboardId,
-        team: teamId,
-      });
+      const dashboard = await getMetadataStore().dashboards.get(
+        teamId,
+        dashboardId,
+      );
       if (!dashboard) {
         return mcpUserError('Dashboard not found');
       }

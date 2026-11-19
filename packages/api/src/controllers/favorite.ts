@@ -1,7 +1,8 @@
-import Favorite, { IFavorite } from '@/models/favorite';
+import { getMetadataStore } from '@/metadata';
+import type { IFavorite } from '@/metadata/schemas/favorite';
 
 export function getFavorites(userId: string, teamId: string) {
-  return Favorite.find({ user: userId, team: teamId });
+  return getMetadataStore().favorites.listForUser(teamId, userId);
 }
 
 export function addFavorite(
@@ -10,10 +11,11 @@ export function addFavorite(
   resourceType: IFavorite['resourceType'],
   resourceId: string,
 ) {
-  return Favorite.findOneAndUpdate(
-    { user: userId, team: teamId, resourceType, resourceId },
-    { user: userId, team: teamId, resourceType, resourceId },
-    { upsert: true, new: true },
+  return getMetadataStore().favorites.add(
+    teamId,
+    userId,
+    resourceType,
+    resourceId,
   );
 }
 
@@ -23,10 +25,10 @@ export function removeFavorite(
   resourceType: IFavorite['resourceType'],
   resourceId: string,
 ) {
-  return Favorite.deleteOne({
-    user: userId,
-    team: teamId,
+  return getMetadataStore().favorites.remove(
+    teamId,
+    userId,
     resourceType,
     resourceId,
-  });
+  );
 }

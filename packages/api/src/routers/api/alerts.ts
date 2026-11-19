@@ -22,7 +22,7 @@ import {
   createAlert,
   deleteAlert,
   getAlertById,
-  getAlertEnhanced,
+  getAlertWithDisplayRefs,
   updateAlert,
   validateAlertInput,
 } from '@/controllers/alerts';
@@ -42,7 +42,9 @@ import { internalAlertSchema, objectIdSchema } from '@/utils/zod';
 
 const router = express.Router();
 
-type EnhancedAlert = NonNullable<Awaited<ReturnType<typeof getAlertEnhanced>>>;
+type EnhancedAlert = NonNullable<
+  Awaited<ReturnType<typeof getAlertWithDisplayRefs>>
+>;
 
 const alertUserRefs = (alerts: EnhancedAlert[]) =>
   loadUserDisplays(alerts.flatMap(a => [a.createdBy, a.silenced?.by]));
@@ -192,7 +194,7 @@ router.get(
         return res.sendStatus(403);
       }
 
-      const alert = await getAlertEnhanced(req.params.id, teamId);
+      const alert = await getAlertWithDisplayRefs(req.params.id, teamId);
       if (!alert) {
         return res.sendStatus(404);
       }

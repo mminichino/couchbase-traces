@@ -80,10 +80,22 @@ export type FindScalar = string | number | boolean;
 export type FindSpec = {
   where?: Record<string, FindScalar>;
   present?: string[];
+  /** Case-insensitive substring match on a string field (literal, no regex). */
+  contains?: { field: string; value: string };
+  /** The array field holds every value (Mongo `$all`). */
+  hasAll?: { field: string; values: readonly string[] };
+  /** `KEY_FIELD` orders by document key, which is also creation order. */
   orderBy?: { field: string; dir: 'asc' | 'desc' }[];
   /** Hard cap 1000. */
   limit?: number;
+  /** Rows to skip after ordering; pair it with a stable `orderBy`. */
+  offset?: number;
+  /** Overrides CBT_METADATA_QUERY_TIMEOUT_MS for this read (SQL++ backends). */
+  timeoutMs?: number;
 };
+
+/** Pseudo field for `orderBy`: the document key (`META().id`). */
+export const KEY_FIELD = '$key';
 
 export type Found<T> = { key: string; value: T };
 
@@ -93,7 +105,16 @@ export type Found<T> = { key: string; value: T };
  */
 export interface MetaFind {
   find<T>(c: MetaCollection, spec: FindSpec): Promise<Found<T>[]>;
-  count(c: MetaCollection, spec: Omit<FindSpec, 'orderBy'>): Promise<number>;
+  count(
+    c: MetaCollection,
+    spec: Omit<FindSpec, 'orderBy' | 'offset'>,
+  ): Promise<number>;
+  /** Distinct elements of an array field across the matching documents. */
+  distinct(
+    c: MetaCollection,
+    field: string,
+    spec: Omit<FindSpec, 'orderBy' | 'offset' | 'limit'>,
+  ): Promise<string[]>;
 }
 
 export const FIND_LIMIT_MAX = 1000;

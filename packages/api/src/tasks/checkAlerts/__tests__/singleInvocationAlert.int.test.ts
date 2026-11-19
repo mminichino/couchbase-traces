@@ -10,12 +10,15 @@ import {
   getServer,
   RAW_SQL_NUMBER_ALERT_TEMPLATE,
 } from '@/fixtures';
-import { seedConnection, seedSource } from '@/metadata/testing/seed';
+import {
+  seedConnection,
+  seedDashboard,
+  seedSavedSearch,
+  seedSource,
+  seedWebhook,
+} from '@/metadata/testing/seed';
 import Alert, { AlertSource, AlertThresholdType } from '@/models/alert';
 import AlertHistory from '@/models/alertHistory';
-import Dashboard from '@/models/dashboard';
-import { SavedSearch } from '@/models/savedSearch';
-import Webhook from '@/models/webhook';
 import { DataClient } from '@/query';
 import { processAlert } from '@/tasks/checkAlerts';
 import {
@@ -121,7 +124,7 @@ describe('Single Invocation Alert Test', () => {
     });
 
     // Create saved search
-    const savedSearch = await new SavedSearch({
+    const savedSearch = await seedSavedSearch({
       team: team._id,
       name: 'Error Logs Search',
       select: 'Body',
@@ -130,15 +133,15 @@ describe('Single Invocation Alert Test', () => {
       orderBy: 'Timestamp',
       source: source.id,
       tags: ['test'],
-    }).save();
+    });
 
     // Create webhook
-    const webhook = await new Webhook({
+    const webhook = await seedWebhook({
       team: team._id,
       service: 'slack',
       url: 'https://hooks.slack.com/services/test123',
       name: 'Test Webhook',
-    }).save();
+    });
 
     // Create alert
     const mockUserId = new mongoose.Types.ObjectId();
@@ -278,7 +281,7 @@ describe('Single Invocation Alert Test', () => {
     });
 
     // Create saved search with a lucene filter that restricts to ServiceName = "web"
-    const savedSearch = await new SavedSearch({
+    const savedSearch = await seedSavedSearch({
       team: team._id,
       name: 'Filtered Error Logs',
       select: 'Body',
@@ -293,14 +296,14 @@ describe('Single Invocation Alert Test', () => {
           condition: 'ServiceName:"web"',
         },
       ],
-    }).save();
+    });
 
-    const webhook = await new Webhook({
+    const webhook = await seedWebhook({
       team: team._id,
       service: 'slack',
       url: 'https://hooks.slack.com/services/test-filters',
       name: 'Test Webhook',
-    }).save();
+    });
 
     const mockUserId = new mongoose.Types.ObjectId();
     const alert = await createAlert(
@@ -416,7 +419,7 @@ describe('Single Invocation Alert Test', () => {
     });
 
     // Create saved search with a filter for a service that has no logs
-    const savedSearch = await new SavedSearch({
+    const savedSearch = await seedSavedSearch({
       team: team._id,
       name: 'No Match Filter',
       select: 'Body',
@@ -431,14 +434,14 @@ describe('Single Invocation Alert Test', () => {
           condition: 'ServiceName:"nonexistent-service"',
         },
       ],
-    }).save();
+    });
 
-    const webhook = await new Webhook({
+    const webhook = await seedWebhook({
       team: team._id,
       service: 'slack',
       url: 'https://hooks.slack.com/services/test-no-match',
       name: 'Test Webhook',
-    }).save();
+    });
 
     const mockUserId = new mongoose.Types.ObjectId();
     const alert = await createAlert(
@@ -536,7 +539,7 @@ describe('Single Invocation Alert Test', () => {
 
     // Create saved search with BOTH a where clause and a filter
     // where: only errors, filter: only "web" service
-    const savedSearch = await new SavedSearch({
+    const savedSearch = await seedSavedSearch({
       team: team._id,
       name: 'Where + Filter Search',
       select: 'Body',
@@ -551,14 +554,14 @@ describe('Single Invocation Alert Test', () => {
           condition: 'ServiceName:"web"',
         },
       ],
-    }).save();
+    });
 
-    const webhook = await new Webhook({
+    const webhook = await seedWebhook({
       team: team._id,
       service: 'slack',
       url: 'https://hooks.slack.com/services/test-combined',
       name: 'Test Webhook',
-    }).save();
+    });
 
     const mockUserId = new mongoose.Types.ObjectId();
     const alert = await createAlert(
@@ -699,7 +702,7 @@ describe('Single Invocation Alert Test', () => {
     });
 
     // Create dashboard with multiple tiles - the alerting tile is NOT the first one
-    const dashboard = await new Dashboard({
+    const dashboard = await seedDashboard({
       name: 'Multi-Tile Dashboard',
       team: team._id,
       tiles: [
@@ -750,15 +753,15 @@ describe('Single Invocation Alert Test', () => {
           },
         },
       ],
-    }).save();
+    });
 
     // Create webhook
-    const webhook = await new Webhook({
+    const webhook = await seedWebhook({
       team: team._id,
       service: 'slack',
       url: 'https://hooks.slack.com/services/test123',
       name: 'Test Webhook',
-    }).save();
+    });
 
     // Create alert that references the SECOND tile (not the first)
     const mockUserId = new mongoose.Types.ObjectId();
@@ -863,14 +866,14 @@ describe('Single Invocation Alert Test', () => {
       password: config.CLICKHOUSE_PASSWORD,
     });
 
-    const webhook = await new Webhook({
+    const webhook = await seedWebhook({
       team: team._id,
       service: 'slack',
       url: 'https://hooks.slack.com/services/test-number',
       name: 'Test Webhook',
-    }).save();
+    });
 
-    const dashboard = await new Dashboard({
+    const dashboard = await seedDashboard({
       name: 'Number Chart Alert Dashboard',
       team: team._id,
       tiles: [
@@ -888,7 +891,7 @@ describe('Single Invocation Alert Test', () => {
           },
         },
       ],
-    }).save();
+    });
 
     const mockUserId = new mongoose.Types.ObjectId();
     const alert = await createAlert(

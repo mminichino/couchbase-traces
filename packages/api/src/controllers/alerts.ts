@@ -14,8 +14,10 @@ import { groupBy } from 'lodash';
 import { type FilterQuery } from 'mongoose';
 import { z } from 'zod';
 
+import { hydrateAlertRefs } from '@/controllers/alertRefs';
 import { recordOnboardingTaskCompletion } from '@/controllers/user';
 import { getMetadataStore } from '@/metadata';
+import type { IDashboard } from '@/metadata/schemas/dashboard';
 import { type ObjectId, toObjectId } from '@/models';
 import Alert, {
   AlertChannel,
@@ -23,9 +25,6 @@ import Alert, {
   getAlertChannels,
   IAlert,
 } from '@/models/alert';
-import Dashboard, { IDashboard } from '@/models/dashboard';
-import { ISavedSearch, SavedSearch } from '@/models/savedSearch';
-import Webhook from '@/models/webhook';
 import { type AlertRefs, deriveAlertDisplayFields } from '@/utils/alerts';
 import { Api400Error } from '@/utils/errors';
 import { internalAlertSchema, objectIdSchema } from '@/utils/zod';
@@ -80,10 +79,10 @@ export const validateAlertInput = async (
   if (alertInput.source === AlertSource.TILE) {
     validateObjectId(alertInput.dashboardId, 'Invalid dashboard ID');
 
-    const dashboard = await Dashboard.findOne({
-      _id: alertInput.dashboardId,
-      team: teamId,
-    });
+    const dashboard = await getMetadataStore().dashboards.get(
+      teamId.toString(),
+      alertInput.dashboardId,
+    );
 
     if (dashboard == null) {
       throw new Api400Error('Dashboard not found');
@@ -122,10 +121,10 @@ export const validateAlertInput = async (
   if (alertInput.source === AlertSource.SAVED_SEARCH) {
     validateObjectId(alertInput.savedSearchId, 'Invalid saved search ID');
 
-    const savedSearch = await SavedSearch.findOne({
-      _id: alertInput.savedSearchId,
-      team: teamId,
-    });
+    const savedSearch = await getMetadataStore().savedSearches.get(
+      teamId.toString(),
+      alertInput.savedSearchId,
+    );
 
     if (savedSearch == null) {
       throw new Api400Error('Saved search not found');
@@ -234,11 +233,11 @@ export const validateAlertInput = async (
     validateObjectId(webhookId, 'Invalid webhook ID');
   }
   const uniqueIds = [...new Set(webhookIds)];
-  const found = await Webhook.countDocuments({
-    _id: { $in: uniqueIds },
-    team: teamId,
-  });
-  if (found !== uniqueIds.length) {
+  const found = await getMetadataStore().webhooks.getMany(
+    teamId.toString(),
+    uniqueIds,
+  );
+  if (found.size !== uniqueIds.length) {
     throw new Api400Error('Webhook not found');
   }
 
@@ -491,73 +490,26 @@ export const deleteSavedSearchAlerts = async (
   });
 };
 
-/** Represents the documents populated and projected by getAlert[s]WithDisplayRefs */
-type AlertWithDisplayRefs = {
-  savedSearch: Pick<ISavedSearch, '_id' | 'name' | 'tags'> | null;
-  dashboard: Pick<IDashboard, '_id' | 'name' | 'tags' | 'tiles'> | null;
-};
-
-/** Minimal projections to support deriving alert names from referenced searches and dashboard tiles  */
-const DISPLAY_REF_POPULATE = [
-  { path: 'savedSearch', select: 'name tags' },
-  { path: 'dashboard', select: 'name tags tiles.id tiles.config.name' },
-];
-
-/** Get alerts, with a populated (and projected) search or dashboard reference */
+/** Get alerts, with the search or dashboard reference resolved */
 export const getAlertsWithDisplayRefs = async (
   teamId: string | ObjectId,
   { limit, offset }: { limit: number; offset: number },
   filter: FilterQuery<IAlert> = {},
 ) => {
-  return Alert.find({ ...filter, team: teamId })
+  const alerts = await Alert.find({ ...filter, team: teamId })
     .sort({ _id: 1 })
     .skip(offset)
-    .limit(limit)
-    .populate<AlertWithDisplayRefs>(DISPLAY_REF_POPULATE);
+    .limit(limit);
+  return hydrateAlertRefs(teamId, alerts);
 };
 
-/** Get alert, with a populated (and projected) search or dashboard reference */
+/** Get alert, with the search or dashboard reference resolved */
 export const getAlertWithDisplayRefs = async (
   alertId: ObjectId | string,
   teamId: ObjectId | string,
 ) => {
-  return Alert.findOne({
-    _id: alertId,
-    team: teamId,
-  }).populate<AlertWithDisplayRefs>(DISPLAY_REF_POPULATE);
-};
-
-/** Represents the documents populated and projected by ALERT_PAGE_POPULATE */
-export type AlertPageRefs = {
-  // `_id` is not in the select below but Mongo returns it anyway
-  savedSearch: Pick<ISavedSearch, '_id' | 'name' | 'tags'> | null;
-  dashboard:
-    | (Pick<IDashboard, '_id' | 'name' | 'provisioned' | 'tags'> & {
-        tiles: { id: string; config?: { name?: string } }[];
-      })
-    | null;
-};
-
-/**
- * Projections for the internal alerts surfaces (the alerts page and the alert
- * detail endpoint), kept to what the response actually renders. `createdBy`
- * and `silenced.by` are users in the metadata store; see loadUserDisplays.
- */
-export const ALERT_PAGE_POPULATE = [
-  { path: 'savedSearch', select: 'name tags' },
-  {
-    path: 'dashboard',
-    select: 'name provisioned tags tiles.id tiles.config.name',
-  },
-];
-
-export const getAlertEnhanced = async (
-  alertId: ObjectId | string,
-  teamId: string | ObjectId,
-) => {
-  return Alert.findOne({ _id: alertId, team: teamId }).populate<AlertPageRefs>(
-    ALERT_PAGE_POPULATE,
-  );
+  const alert = await Alert.findOne({ _id: alertId, team: teamId });
+  return alert ? (await hydrateAlertRefs(teamId, [alert]))[0] : null;
 };
 
 export const deleteAlert = async (id: string, teamId: string | ObjectId) => {

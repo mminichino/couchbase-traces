@@ -1,11 +1,10 @@
-import mongoose from 'mongoose';
 import { z } from 'zod';
 
 import { deleteDashboard } from '@/controllers/dashboard';
 import { IDEMPOTENT_DESTRUCTIVE_TOOL } from '@/mcp/tools/annotations';
 import type { ToolRegistrar } from '@/mcp/tools/types';
 import { mcpUserError } from '@/mcp/utils/errors';
-import Dashboard from '@/models/dashboard';
+import { getMetadataStore } from '@/metadata';
 import { objectIdSchema } from '@/utils/zod';
 
 export function registerDeleteDashboard({
@@ -30,15 +29,15 @@ export function registerDeleteDashboard({
       }),
     },
     async ({ id: dashboardId }) => {
-      const existing = await Dashboard.findOne({
-        _id: dashboardId,
-        team: teamId,
-      }).lean();
+      const existing = await getMetadataStore().dashboards.get(
+        teamId,
+        dashboardId,
+      );
       if (!existing) {
         return mcpUserError('Dashboard not found');
       }
 
-      await deleteDashboard(dashboardId, new mongoose.Types.ObjectId(teamId));
+      await deleteDashboard(dashboardId, teamId);
 
       return {
         content: [

@@ -10,7 +10,7 @@ import { performance } from 'perf_hooks';
 import { serializeError } from 'serialize-error';
 import { Agent, fetch } from 'undici';
 
-import { IWebhook } from '@/models/webhook';
+import type { IWebhook } from '@/metadata/schemas/webhook';
 import {
   WebhookRedirectError,
   WebhookResponseError,
@@ -163,13 +163,8 @@ export const handleSendGenericWebhook = async (
   }
 };
 
-// `webhook.headers` is a Mongoose map; `.toJSON()` types as a plain object or
-// a `Map` depending on how it's called (see IWebhook), and the schema
-// restricts values to strings, but nothing enforces that at the type level.
-// Narrow explicitly instead of asserting so a stray non-string value is
-// dropped rather than sent as `[object Object]`. A real `Map` yields no
-// entries here, matching how `Object.entries`/spread already treat one (its
-// data lives outside its own enumerable properties).
+// Stored headers are validated as strings on read. The narrowing stays so a
+// stray non-string value is dropped rather than sent as `[object Object]`.
 const toStringHeaderRecord = (value: unknown): Record<string, string> => {
   if (!value || typeof value !== 'object') {
     return {};
@@ -194,7 +189,7 @@ const sendGenericWebhook = async (
     // user may have included params in both the url and the query params
     // so they should be merged
     const tmpURL = new URL(webhook.url);
-    for (const [key, value] of Object.entries(webhook.queryParams.toJSON())) {
+    for (const [key, value] of Object.entries(webhook.queryParams)) {
       tmpURL.searchParams.append(key, value);
     }
 
@@ -210,7 +205,7 @@ const sendGenericWebhook = async (
 
   const headers: Record<string, string> = {
     'Content-Type': 'application/json', // default, will be overwritten if user has set otherwise
-    ...toStringHeaderRecord(webhook.headers?.toJSON()),
+    ...toStringHeaderRecord(webhook.headers),
     // Stable per-alert key for receivers that honour Idempotency-Key; delivery is at-least-once.
     'Idempotency-Key': objectHash({
       eventId: message.eventId,

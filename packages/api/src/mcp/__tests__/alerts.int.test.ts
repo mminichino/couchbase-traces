@@ -14,11 +14,15 @@ import {
   RAW_SQL_ALERT_TEMPLATE,
 } from '@/fixtures';
 import { McpContext } from '@/mcp/tools/types';
-import { seedConnection, seedSource } from '@/metadata/testing/seed';
+import { WebhookService } from '@/metadata/schemas/webhook';
+import {
+  seedConnection,
+  seedDashboard,
+  seedSavedSearch,
+  seedSource,
+  seedWebhook,
+} from '@/metadata/testing/seed';
 import Alert, { AlertSource, AlertState } from '@/models/alert';
-import Dashboard from '@/models/dashboard';
-import { SavedSearch } from '@/models/savedSearch';
-import Webhook, { WebhookService } from '@/models/webhook';
 
 import { callTool, createTestClient, getFirstText } from './mcpTestUtils';
 
@@ -79,7 +83,7 @@ describe('MCP Alert Tools', () => {
   // ─── helpers ──────────────────────────────────────────────────────────────
 
   async function createTestSavedSearch() {
-    return SavedSearch.create({
+    return seedSavedSearch({
       team: team._id,
       name: 'Test Saved Search',
       source: traceSource._id,
@@ -87,7 +91,7 @@ describe('MCP Alert Tools', () => {
   }
 
   async function createTestDashboardWithTile() {
-    return new Dashboard({
+    return seedDashboard({
       name: 'Test Dashboard',
       team: team._id,
       tiles: [
@@ -101,11 +105,11 @@ describe('MCP Alert Tools', () => {
           },
         },
       ],
-    }).save();
+    });
   }
 
   async function createTestWebhook() {
-    return Webhook.create({
+    return seedWebhook({
       team: team._id,
       name: 'Test Webhook',
       service: WebhookService.Generic,
@@ -375,7 +379,7 @@ describe('MCP Alert Tools', () => {
       });
 
       it('derives displayName and tags from the saved search when omitted', async () => {
-        const savedSearch = await SavedSearch.create({
+        const savedSearch = await seedSavedSearch({
           team: team._id,
           name: 'Payments errors',
           source: traceSource._id,
@@ -995,7 +999,7 @@ describe('MCP Alert Tools', () => {
 
     describe('multiple channels', () => {
       const namedWebhook = (name: string) =>
-        Webhook.create({
+        seedWebhook({
           team: team._id,
           name,
           service: WebhookService.Generic,
@@ -1165,25 +1169,25 @@ describe('MCP Alert Tools', () => {
       it('replaces the full channels array on update, keeping the legacy channel mirror in sync', async () => {
         const savedSearch = await createTestSavedSearch();
         const [w1, w2, w3, w4] = await Promise.all([
-          Webhook.create({
+          seedWebhook({
             team: team._id,
             name: 'mcp-update-1',
             service: WebhookService.Generic,
             url: 'https://example.com/webhook',
           }),
-          Webhook.create({
+          seedWebhook({
             team: team._id,
             name: 'mcp-update-2',
             service: WebhookService.Generic,
             url: 'https://example.com/webhook',
           }),
-          Webhook.create({
+          seedWebhook({
             team: team._id,
             name: 'mcp-update-3',
             service: WebhookService.Generic,
             url: 'https://example.com/webhook',
           }),
-          Webhook.create({
+          seedWebhook({
             team: team._id,
             name: 'mcp-update-4',
             service: WebhookService.Generic,
@@ -1342,13 +1346,13 @@ describe('MCP Alert Tools', () => {
 
   describe('cbt_get_webhook', () => {
     it('should list all webhooks with slim fields', async () => {
-      await Webhook.create({
+      await seedWebhook({
         team: team._id,
         name: 'Generic Hook',
         service: WebhookService.Generic,
         url: 'https://example.com/hook1',
       });
-      await Webhook.create({
+      await seedWebhook({
         team: team._id,
         name: 'Incident Hook',
         service: WebhookService.IncidentIO,
@@ -1382,7 +1386,7 @@ describe('MCP Alert Tools', () => {
     });
 
     it('should scope webhooks to the team', async () => {
-      await Webhook.create({
+      await seedWebhook({
         team: team._id,
         name: 'Team Webhook',
         service: WebhookService.Generic,

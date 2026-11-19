@@ -1,5 +1,5 @@
 // Unit test for the clickstack_query_tiles handler's per-tile failure
-// isolation. Mocks the heavy collaborators (Mongo model, dashboard
+// isolation. Mocks the heavy collaborators (metadata store, dashboard
 // conversion, ClickHouse-backed runConfigTile) so we can drive the batch loop
 // deterministically without any live services, then assert that a hanging /
 // throwing tile becomes a status:'error' entry while the rest of the batch
@@ -17,9 +17,10 @@ jest.mock('@/mcp/tools/query/helpers', () => {
   };
 });
 
-jest.mock('@/models/dashboard', () => ({
-  __esModule: true,
-  default: { findOne: (...args: unknown[]) => mockFindOne(...args) },
+jest.mock('@/metadata', () => ({
+  getMetadataStore: () => ({
+    dashboards: { get: (...args: unknown[]) => mockFindOne(...args) },
+  }),
 }));
 
 jest.mock('@/routers/external-api/v2/utils/dashboards', () => {

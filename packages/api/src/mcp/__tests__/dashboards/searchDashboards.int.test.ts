@@ -1,7 +1,7 @@
 import mongoose from 'mongoose';
 
 import { callTool, getFirstText } from '@/mcp/__tests__/mcpTestUtils';
-import Dashboard from '@/models/dashboard';
+import { seedDashboard } from '@/metadata/testing/seed';
 
 import { setupDashboardTests } from './setup';
 
@@ -9,24 +9,24 @@ describe('MCP Dashboard Tools - cbt_search_dashboards', () => {
   const ctx = setupDashboardTests();
 
   it('should find dashboards by name (case-insensitive)', async () => {
-    await new Dashboard({
+    await seedDashboard({
       name: 'Service Overview',
       tiles: [],
       team: ctx.team._id,
       tags: [],
-    }).save();
-    await new Dashboard({
+    });
+    await seedDashboard({
       name: 'Error Dashboard',
       tiles: [],
       team: ctx.team._id,
       tags: [],
-    }).save();
-    await new Dashboard({
+    });
+    await seedDashboard({
       name: 'service metrics',
       tiles: [],
       team: ctx.team._id,
       tags: [],
-    }).save();
+    });
 
     const result = await callTool(ctx.client!, 'cbt_search_dashboards', {
       query: 'service',
@@ -42,24 +42,24 @@ describe('MCP Dashboard Tools - cbt_search_dashboards', () => {
   });
 
   it('should find dashboards by tags', async () => {
-    await new Dashboard({
+    await seedDashboard({
       name: 'Dashboard A',
       tiles: [],
       team: ctx.team._id,
       tags: ['production', 'backend'],
-    }).save();
-    await new Dashboard({
+    });
+    await seedDashboard({
       name: 'Dashboard B',
       tiles: [],
       team: ctx.team._id,
       tags: ['production', 'frontend'],
-    }).save();
-    await new Dashboard({
+    });
+    await seedDashboard({
       name: 'Dashboard C',
       tiles: [],
       team: ctx.team._id,
       tags: ['staging'],
-    }).save();
+    });
 
     const result = await callTool(ctx.client!, 'cbt_search_dashboards', {
       tags: ['production'],
@@ -80,24 +80,24 @@ describe('MCP Dashboard Tools - cbt_search_dashboards', () => {
   });
 
   it('should combine name and tags filters', async () => {
-    await new Dashboard({
+    await seedDashboard({
       name: 'API Service',
       tiles: [],
       team: ctx.team._id,
       tags: ['production'],
-    }).save();
-    await new Dashboard({
+    });
+    await seedDashboard({
       name: 'API Errors',
       tiles: [],
       team: ctx.team._id,
       tags: ['staging'],
-    }).save();
-    await new Dashboard({
+    });
+    await seedDashboard({
       name: 'Web Service',
       tiles: [],
       team: ctx.team._id,
       tags: ['production'],
-    }).save();
+    });
 
     const result = await callTool(ctx.client!, 'cbt_search_dashboards', {
       query: 'API',
@@ -111,11 +111,11 @@ describe('MCP Dashboard Tools - cbt_search_dashboards', () => {
   });
 
   it('should return empty array when no dashboards match', async () => {
-    await new Dashboard({
+    await seedDashboard({
       name: 'Unrelated',
       tiles: [],
       team: ctx.team._id,
-    }).save();
+    });
 
     const result = await callTool(ctx.client!, 'cbt_search_dashboards', {
       query: 'nonexistent-dashboard-name',
@@ -127,16 +127,16 @@ describe('MCP Dashboard Tools - cbt_search_dashboards', () => {
   });
 
   it('should treat regex metacharacters as literal substrings', async () => {
-    await new Dashboard({
+    await seedDashboard({
       name: 'API (v2) Service',
       tiles: [],
       team: ctx.team._id,
-    }).save();
-    await new Dashboard({
+    });
+    await seedDashboard({
       name: 'API v2 Service',
       tiles: [],
       team: ctx.team._id,
-    }).save();
+    });
 
     // Parentheses are regex metacharacters — without escaping, "(v2)"
     // would be treated as a capture group and match "v2" anywhere.
@@ -152,11 +152,11 @@ describe('MCP Dashboard Tools - cbt_search_dashboards', () => {
   });
 
   it('should not throw on regex-invalid characters like [', async () => {
-    await new Dashboard({
+    await seedDashboard({
       name: 'Test Dashboard',
       tiles: [],
       team: ctx.team._id,
-    }).save();
+    });
 
     // An unescaped "[" would throw a MongoDB BadValue error
     const result = await callTool(ctx.client!, 'cbt_search_dashboards', {
@@ -169,16 +169,16 @@ describe('MCP Dashboard Tools - cbt_search_dashboards', () => {
   });
 
   it('should match literal dots, not arbitrary characters', async () => {
-    await new Dashboard({
+    await seedDashboard({
       name: 'api.v2.service',
       tiles: [],
       team: ctx.team._id,
-    }).save();
-    await new Dashboard({
+    });
+    await seedDashboard({
       name: 'apiXv2Xservice',
       tiles: [],
       team: ctx.team._id,
-    }).save();
+    });
 
     // Unescaped "." in regex matches any character, so ".v2." would
     // match "Xv2X". With escaping, only the literal dot matches.
@@ -193,11 +193,11 @@ describe('MCP Dashboard Tools - cbt_search_dashboards', () => {
   });
 
   it('should reject empty query string', async () => {
-    await new Dashboard({
+    await seedDashboard({
       name: 'Should Not Appear',
       tiles: [],
       team: ctx.team._id,
-    }).save();
+    });
 
     const result = await callTool(ctx.client!, 'cbt_search_dashboards', {
       query: '',
@@ -208,11 +208,11 @@ describe('MCP Dashboard Tools - cbt_search_dashboards', () => {
   });
 
   it('should reject empty tags array', async () => {
-    await new Dashboard({
+    await seedDashboard({
       name: 'Should Not Appear',
       tiles: [],
       team: ctx.team._id,
-    }).save();
+    });
 
     const result = await callTool(ctx.client!, 'cbt_search_dashboards', {
       tags: [],
@@ -233,18 +233,18 @@ describe('MCP Dashboard Tools - cbt_search_dashboards', () => {
   });
 
   it('should only return dashboards for the current team', async () => {
-    await new Dashboard({
+    await seedDashboard({
       name: 'My Dashboard',
       tiles: [],
       team: ctx.team._id,
-    }).save();
+    });
     // Create a dashboard for a different team
     const otherTeamId = new mongoose.Types.ObjectId();
-    await new Dashboard({
+    await seedDashboard({
       name: 'My Dashboard',
       tiles: [],
       team: otherTeamId,
-    }).save();
+    });
 
     const result = await callTool(ctx.client!, 'cbt_search_dashboards', {
       query: 'My Dashboard',

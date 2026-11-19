@@ -3,7 +3,7 @@ import { escapeRegExp } from 'lodash';
 import type { FilterQuery } from 'mongoose';
 import { z } from 'zod';
 
-import { ALERT_PAGE_POPULATE, type AlertPageRefs } from '@/controllers/alerts';
+import { hydrateAlertRefs } from '@/controllers/alertRefs';
 import type { ObjectId } from '@/models';
 import Alert, { AlertSource, AlertState, IAlert } from '@/models/alert';
 import { decodeCursor, encodeCursor } from '@/utils/pagination';
@@ -187,13 +187,15 @@ export async function getAlertsPage(
   params: AlertsPageParams,
 ) {
   const { limit } = params;
-  const query = Alert.find(buildAlertsPageFilter(teamId, params))
-    .sort({ displayName: 1, _id: 1 })
-    .populate<AlertPageRefs>(ALERT_PAGE_POPULATE);
+  const query = Alert.find(buildAlertsPageFilter(teamId, params)).sort({
+    displayName: 1,
+    _id: 1,
+  });
 
   // One row past the page answers "is there more?" without a second count
   // query. Omitting limit keeps the legacy unpaginated response.
-  const docs = limit == null ? await query : await query.limit(limit + 1);
+  const found = limit == null ? await query : await query.limit(limit + 1);
+  const docs = await hydrateAlertRefs(teamId, found);
   const hasMore = limit != null && docs.length > limit;
   const data = hasMore ? docs.slice(0, limit) : docs;
   const last = data.at(-1);
