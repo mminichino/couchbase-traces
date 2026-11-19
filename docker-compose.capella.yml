@@ -30,7 +30,5 @@ services:
       DEFAULT_CONNECTIONS: >-
         [{"name":"Capella Couchbase","kind":"couchbase","host":"${CBT_COUCHBASE_CONNSTR}","username":"${CBT_COUCHBASE_QUERY_USER}","password":"${CBT_COUCHBASE_QUERY_PASSWORD}","monitorUsername":"${CBT_COUCHBASE_MONITOR_USER:-}","monitorPassword":"${CBT_COUCHBASE_MONITOR_PASSWORD:-}"}]
     depends_on:
-      db:
-        condition: service_started
       couchbase-init:
         condition: service_completed_successfully
