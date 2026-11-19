@@ -7,6 +7,7 @@ import {
   makeTile,
   randomMongoId,
 } from '@/fixtures';
+import { AlertSource, AlertState } from '@/metadata/schemas/alert';
 import {
   IWebhook as WebhookDocument,
   WebhookService,
@@ -16,7 +17,7 @@ import {
   seedUser,
   seedWebhook,
 } from '@/metadata/testing/seed';
-import Alert, { AlertSource, AlertState } from '@/models/alert';
+import { alertDocs } from '@/metadata/testing/seedAlerts';
 
 const MOCK_TILES = [makeTile()];
 
@@ -62,7 +63,7 @@ describe('alerts list paging and filtering', () => {
   // endpoint derives displayName/tags when they're absent, and these tests need
   // documents that genuinely have none.
   const createAlert = (overrides: Record<string, unknown> = {}) =>
-    Alert.create({
+    alertDocs.create({
       team: team._id,
       channel: { type: 'webhook', webhookId: webhook._id.toString() },
       interval: '15m',
@@ -288,7 +289,7 @@ describe('alerts list paging and filtering', () => {
       // written before the field existed. It renders as OK, so the OK filter
       // has to return it.
       const legacy = await createAlert({ displayName: 'Legacy' });
-      await Alert.updateOne({ _id: legacy._id }, { $unset: { state: 1 } });
+      await alertDocs.updateOne({ _id: legacy._id }, { $unset: { state: 1 } });
       const firing = await createAlert({
         displayName: 'Firing',
         state: AlertState.ALERT,
@@ -313,7 +314,7 @@ describe('alerts list paging and filtering', () => {
         tileId: undefined,
         savedSearch: savedSearch._id,
       });
-      await Alert.updateOne({ _id: legacy._id }, { $unset: { source: 1 } });
+      await alertDocs.updateOne({ _id: legacy._id }, { $unset: { source: 1 } });
       const tile = await createAlert({ displayName: 'Tile' });
 
       expect(await listIds('?source=saved_search')).toEqual([

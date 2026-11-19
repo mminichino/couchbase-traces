@@ -1,10 +1,14 @@
 import { type Cluster, DocumentNotFoundError, RangeScan } from 'couchbase';
 
+import { CouchbaseAlertQueries } from '@/metadata/couchbase/alertQueries';
 import { collectionOf, connectWithRetry } from '@/metadata/couchbase/cluster';
 import type { MetadataConfig } from '@/metadata/couchbase/config';
 import { CouchbaseFind } from '@/metadata/couchbase/find';
 import { CouchbaseKv } from '@/metadata/couchbase/kv';
-import { probeTransactions } from '@/metadata/couchbase/tx';
+import {
+  CouchbaseTransactions,
+  probeTransactions,
+} from '@/metadata/couchbase/tx';
 import {
   describeVerify,
   type VerifyDeps,
@@ -16,11 +20,13 @@ import { createRepositories, type Repositories } from '@/metadata/repos';
 import { assertSchemaVersion } from '@/metadata/schemaVersion';
 import type {
   LockService,
+  MetaAlertQueries,
   MetaCollection,
   MetadataReadiness,
   MetadataStore,
   MetaFind,
   MetaKv,
+  MetaTransactions,
 } from '@/metadata/types';
 
 export type StoreLogger = {
@@ -50,6 +56,8 @@ export class CouchbaseMetadataStore implements MetadataStore {
   private kvImpl?: CouchbaseKv;
   private findImpl?: CouchbaseFind;
   private lockImpl?: LockService;
+  private txImpl?: MetaTransactions;
+  private queriesImpl?: MetaAlertQueries;
   private state: MetadataReadiness = { ready: false, state: 'connecting' };
   private readonly abort = new AbortController();
   private poll?: NodeJS.Timeout;
@@ -66,6 +74,8 @@ export class CouchbaseMetadataStore implements MetadataStore {
   readonly presetDashboardFilters: Repositories['presetDashboardFilters'];
   readonly webhooks: Repositories['webhooks'];
   readonly tags: Repositories['tags'];
+  readonly alerts: Repositories['alerts'];
+  readonly alertHistory: Repositories['alertHistory'];
 
   constructor(
     private readonly cfg: MetadataConfig,
@@ -81,6 +91,12 @@ export class CouchbaseMetadataStore implements MetadataStore {
       get find() {
         return self.find;
       },
+      get tx() {
+        return self.tx;
+      },
+      get queries() {
+        return self.alertQueries;
+      },
     });
     this.teams = repos.teams;
     this.users = repos.users;
@@ -94,6 +110,8 @@ export class CouchbaseMetadataStore implements MetadataStore {
     this.presetDashboardFilters = repos.presetDashboardFilters;
     this.webhooks = repos.webhooks;
     this.tags = repos.tags;
+    this.alerts = repos.alerts;
+    this.alertHistory = repos.alertHistory;
   }
 
   get kv(): MetaKv {
@@ -107,6 +125,20 @@ export class CouchbaseMetadataStore implements MetadataStore {
       throw new MetadataUnavailableError('metadata not connected');
     }
     return this.findImpl;
+  }
+
+  get tx(): MetaTransactions {
+    if (!this.txImpl) {
+      throw new MetadataUnavailableError('metadata not connected');
+    }
+    return this.txImpl;
+  }
+
+  get alertQueries(): MetaAlertQueries {
+    if (!this.queriesImpl) {
+      throw new MetadataUnavailableError('metadata not connected');
+    }
+    return this.queriesImpl;
   }
 
   get locks(): LockService {
@@ -146,6 +178,8 @@ export class CouchbaseMetadataStore implements MetadataStore {
     this.kvImpl = new CouchbaseKv(this.cluster, this.cfg);
     this.findImpl = new CouchbaseFind(this.cluster, this.cfg);
     this.lockImpl = new KvLockService(this.kvImpl);
+    this.txImpl = new CouchbaseTransactions(this.cluster, this.cfg);
+    this.queriesImpl = new CouchbaseAlertQueries(this.cluster, this.cfg);
     await assertSchemaVersion(this.kvImpl);
     await this.check();
   }

@@ -1,4 +1,4 @@
-import { AlertState } from '@/models/alert';
+import { AlertState } from '@/metadata/schemas/alert';
 import type { PopulatedAlertChannel } from '@/tasks/checkAlerts/providers';
 
 // Re-exported so consumers import channel types from one place.

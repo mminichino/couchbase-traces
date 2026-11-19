@@ -1,6 +1,4 @@
 import { type AlertInterval } from '@couchbase-traces/common-utils/dist/types';
-import { ObjectId } from 'mongodb';
-import mongoose from 'mongoose';
 import { z } from 'zod';
 
 import * as config from '@/config';
@@ -10,7 +8,7 @@ import { getAlertById } from '@/controllers/alerts';
 import { READ_ONLY_TOOL } from '@/mcp/tools/annotations';
 import type { ToolRegistrar } from '@/mcp/tools/types';
 import { mcpUserError, validateObjectId } from '@/mcp/utils/errors';
-import Alert from '@/models/alert';
+import { getMetadataStore } from '@/metadata';
 import { translateAlertDocumentToExternalAlertWithChartConfig } from '@/routers/external-api/v2/utils/alertChartConfig';
 import { resolveAlertDisplayFields } from '@/utils/alerts';
 
@@ -53,13 +51,11 @@ export function registerGetAlert({
     async ({ id, state }) => {
       // ── List all alerts (slim summary) ──
       if (!id) {
-        const query: Record<string, unknown> = {
-          team: new mongoose.Types.ObjectId(teamId),
-        };
-        if (state) {
-          query.state = state;
-        }
-        const alerts = await hydrateAlertRefs(teamId, await Alert.find(query));
+        const found = await getMetadataStore().alerts.listEvery(
+          teamId,
+          state ? { state } : {},
+        );
+        const alerts = await hydrateAlertRefs(teamId, found);
 
         const output = alerts.map(alert => {
           const { displayName, tags } = resolveAlertDisplayFields(alert, {
@@ -67,7 +63,7 @@ export function registerGetAlert({
             dashboard: alert.dashboard,
           });
           return {
-            id: alert._id.toString(),
+            id: alert._id,
             name: alert.name,
             displayName,
             tags,
@@ -101,7 +97,7 @@ export function registerGetAlert({
         translateAlertDocumentToExternalAlertWithChartConfig(populated);
 
       const history = await getRecentAlertHistories({
-        alertId: new ObjectId(alert._id),
+        alertId: alert._id,
         interval: alert.interval as AlertInterval,
         limit: 20,
       });

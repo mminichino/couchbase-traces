@@ -2,7 +2,6 @@ import { getMetadataStore } from '@/metadata';
 import type { WebhookChange } from '@/metadata/repos/webhooks';
 import type { IWebhook, WebhookService } from '@/metadata/schemas/webhook';
 import type { ObjectId } from '@/models';
-import Alert from '@/models/alert';
 import { validateWebhookConfig } from '@/utils/validators';
 
 export interface WebhookInput {
@@ -131,15 +130,15 @@ export type DeleteWebhookResult =
  * so we never orphan an alert onto a missing destination.
  */
 export async function deleteWebhook(
-  team: ObjectId | string,
+  team: string,
   webhookId: string,
 ): Promise<DeleteWebhookResult> {
   // Match on webhookId alone (not channel.type) so a legacy/skewed alert that
   // still references this webhook also blocks deletion.
-  const alertCount = await Alert.countDocuments({
-    'channel.webhookId': webhookId,
-    team,
-  });
+  const alertCount = await getMetadataStore().alerts.countByWebhook(
+    team.toString(),
+    webhookId,
+  );
   if (alertCount > 0) {
     return { status: 'referenced', alertCount };
   }

@@ -1,23 +1,21 @@
 import { getMetadataStore } from '@/metadata';
+import type { Id } from '@/metadata/ids';
+import type { IAlert } from '@/metadata/schemas/alert';
 import type { IDashboard } from '@/metadata/schemas/dashboard';
 import type { ISavedSearch } from '@/metadata/schemas/savedSearch';
-import type { ObjectId } from '@/models';
-import type { AlertDocument, IAlert } from '@/models/alert';
 
 type RefPath = 'savedSearch' | 'dashboard';
 
 /**
  * An alert whose `savedSearch` / `dashboard` refs are resolved to their
- * documents (null when the target is gone), as `populate` left them. Saved
- * searches and dashboards live in the metadata store, so Mongoose cannot
- * populate them; this is a plain object, not a Mongoose document.
+ * documents (null when the target is gone). A plain object: the metadata
+ * store has no populate, so this joins the two reads.
  */
 export type HydratedAlert = Omit<IAlert, RefPath> & {
-  _id: ObjectId;
   savedSearch?: ISavedSearch | null;
   dashboard?: IDashboard | null;
-  /** The original ref id of a resolved ref (Mongoose `populated()` parity). */
-  populated(path: RefPath): ObjectId | undefined;
+  /** The original ref id of a resolved ref, kept when its target is gone. */
+  populated(path: RefPath): Id | undefined;
 };
 
 /**
@@ -26,12 +24,12 @@ export type HydratedAlert = Omit<IAlert, RefPath> & {
  */
 export async function hydrateAlertRefs(
   teamId: { toString(): string },
-  alerts: AlertDocument[],
+  alerts: IAlert[],
 ): Promise<HydratedAlert[]> {
   const store = getMetadataStore();
   const team = teamId.toString();
   const idsOf = (path: RefPath) => [
-    ...new Set(alerts.flatMap(a => (a[path] == null ? [] : [`${a[path]}`]))),
+    ...new Set(alerts.flatMap(a => (a[path] == null ? [] : [a[path]]))),
   ];
   const [searches, dashboards] = await Promise.all([
     store.savedSearches.getMany(team, idsOf('savedSearch')),
@@ -39,12 +37,8 @@ export async function hydrateAlertRefs(
   ]);
 
   return alerts.map(alert => {
-    const plain = alert.toObject({ flattenMaps: false });
-    const { savedSearch: searchRef, dashboard: dashboardRef, ...rest } = plain;
-    const out: HydratedAlert = {
-      ...rest,
-      populated: () => undefined,
-    };
+    const { savedSearch: searchRef, dashboard: dashboardRef, ...rest } = alert;
+    const out: HydratedAlert = { ...rest, populated: () => undefined };
     // Non-enumerable so spreading or serializing the alert never carries it.
     Object.defineProperty(out, 'populated', {
       enumerable: false,
@@ -52,10 +46,10 @@ export async function hydrateAlertRefs(
         (path === 'savedSearch' ? searchRef : dashboardRef) ?? undefined,
     });
     if (searchRef != null) {
-      out.savedSearch = searches.get(`${searchRef}`) ?? null;
+      out.savedSearch = searches.get(searchRef) ?? null;
     }
     if (dashboardRef != null) {
-      out.dashboard = dashboards.get(`${dashboardRef}`) ?? null;
+      out.dashboard = dashboards.get(dashboardRef) ?? null;
     }
     return out;
   });

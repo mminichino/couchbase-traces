@@ -17,9 +17,18 @@ import {
 } from '@/controllers/user';
 import { clearDBCollections, closeDB, connectDB } from '@/fixtures';
 import { getMetadataStore } from '@/metadata';
+import { AlertSource, AlertThresholdType } from '@/metadata/schemas/alert';
 import { findUser, getUserDoc, seedUser } from '@/metadata/testing/seed';
 
 const DAY_MS = 24 * 60 * 60 * 1000;
+
+const ALERT_FIELDS = {
+  channel: { type: 'webhook' as const, webhookId: 'w' },
+  interval: '5m' as const,
+  threshold: 1,
+  thresholdType: AlertThresholdType.ABOVE,
+  source: AlertSource.SAVED_SEARCH,
+};
 
 describe('orgApiKey controller', () => {
   const creator = new mongoose.Types.ObjectId();
@@ -195,60 +204,33 @@ describe('orgApiKey controller', () => {
 
     afterEach(() => jest.restoreAllMocks());
 
-    it('refuses the last person without deleting them', async () => {
+    it('removes a member and hands their alerts to the requester', async () => {
+      const { team, serviceAccount, users } = await setupTeam(2);
+      const alert = await getMetadataStore().alerts.create(team._id, {
+        ...ALERT_FIELDS,
+        createdBy: users[0]._id.toString(),
+      });
+
+      const result = await deleteTeamMember(
+        team._id,
+        users[0]._id.toString(),
+        serviceAccount,
+      );
+      expect(result).toBe('deleted');
+      expect(await findUser(users[0]._id)).toBeNull();
+      expect(
+        (await getMetadataStore().alerts.get(team._id, alert._id))?.createdBy,
+      ).toBe(serviceAccount.toString());
+    });
+
+    it('keeps the member when the team would be left empty', async () => {
       const { team, serviceAccount, users } = await setupTeam(1);
-      const deleteSpy = jest.spyOn(getMetadataStore().users, 'removeMember');
-
       const result = await deleteTeamMember(
         team._id,
         users[0]._id.toString(),
         serviceAccount,
       );
       expect(result).toBe('last_member');
-      expect(deleteSpy).not.toHaveBeenCalled();
-    });
-
-    it('retries putting a member back when the first insert fails', async () => {
-      const { team, serviceAccount, users } = await setupTeam(2);
-      // Simulate a concurrent removal: two people before the delete, none after.
-      jest
-        .spyOn(getMetadataStore().users, 'countPeople')
-        .mockResolvedValueOnce(2)
-        .mockResolvedValueOnce(0);
-      const insert = jest.spyOn(getMetadataStore().kv, 'insert');
-      insert.mockRejectedValueOnce(new Error('transient'));
-
-      const result = await deleteTeamMember(
-        team._id,
-        users[0]._id.toString(),
-        serviceAccount,
-      );
-      expect(result).toBe('last_member');
-      expect(await findUser(users[0]._id)).not.toBeNull();
-    });
-
-    it('treats a duplicate _id on restore as already restored', async () => {
-      const { team, serviceAccount, users } = await setupTeam(2);
-      const repo = getMetadataStore().users;
-      jest
-        .spyOn(repo, 'countPeople')
-        .mockResolvedValueOnce(2)
-        .mockResolvedValueOnce(0);
-      // Another restore already put the member back: the removal reports
-      // success but the document is still there.
-      const stored = (await getUserDoc(users[0]._id))!;
-      jest
-        .spyOn(repo, 'removeMember')
-        .mockResolvedValueOnce({ id: users[0]._id, doc: stored });
-      const insert = jest.spyOn(getMetadataStore().kv, 'insert');
-
-      const result = await deleteTeamMember(
-        team._id,
-        users[0]._id.toString(),
-        serviceAccount,
-      );
-      expect(result).toBe('last_member');
-      expect(insert).not.toHaveBeenCalled();
       expect(await findUser(users[0]._id)).not.toBeNull();
     });
   });

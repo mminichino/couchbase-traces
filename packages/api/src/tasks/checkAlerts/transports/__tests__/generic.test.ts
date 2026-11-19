@@ -5,7 +5,7 @@ import {
 import dns from 'dns';
 import { ObjectId } from 'mongodb';
 
-import { AlertState } from '@/models/alert';
+import { AlertState } from '@/metadata/schemas/alert';
 import {
   buildWebhookTemplateVariables,
   createHandlebarsWithHelpers,

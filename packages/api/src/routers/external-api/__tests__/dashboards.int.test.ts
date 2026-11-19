@@ -18,6 +18,7 @@ import {
   makeExternalChart,
   makeExternalTile,
 } from '@/fixtures';
+import { AlertSource, AlertThresholdType } from '@/metadata/schemas/alert';
 import { WebhookService } from '@/metadata/schemas/webhook';
 import {
   countDashboards,
@@ -31,7 +32,7 @@ import {
   seedWebhook,
   setDashboardPaths,
 } from '@/metadata/testing/seed';
-import Alert, { AlertSource, AlertThresholdType } from '@/models/alert';
+import { alertDocs } from '@/metadata/testing/seedAlerts';
 import {
   ExternalDashboardTile,
   ExternalDashboardTileWithId,
@@ -5560,7 +5561,7 @@ describe('External API v2 Dashboards - new format', () => {
       });
 
       // Create a standalone alert for the builder tile
-      const alert = await Alert.create({
+      const alert = await alertDocs.create({
         team: team._id,
         dashboard: dashboard._id,
         tileId,
@@ -5571,7 +5572,7 @@ describe('External API v2 Dashboards - new format', () => {
         channel: { type: 'webhook', webhookId: webhook._id.toString() },
       });
 
-      expect(await Alert.findById(alert._id)).not.toBeNull();
+      expect(await alertDocs.findById(alert._id)).not.toBeNull();
 
       // Update the tile to raw SQL config (same tile ID)
       await authRequest('put', `${BASE_URL}/${dashboard._id}`)
@@ -5597,7 +5598,7 @@ describe('External API v2 Dashboards - new format', () => {
         })
         .expect(200);
 
-      expect(await Alert.findById(alert._id)).toBeNull();
+      expect(await alertDocs.findById(alert._id)).toBeNull();
     });
 
     it('rejects updating a tile from builder to PromQL config', async () => {
@@ -5715,7 +5716,7 @@ describe('External API v2 Dashboards - new format', () => {
         team: team._id,
       });
 
-      const alert = await Alert.create({
+      const alert = await alertDocs.create({
         team: team._id,
         dashboard: dashboard._id,
         tileId: removeTileId,
@@ -5726,7 +5727,7 @@ describe('External API v2 Dashboards - new format', () => {
         channel: { type: 'webhook', webhookId: webhook._id.toString() },
       });
 
-      expect(await Alert.findById(alert._id)).not.toBeNull();
+      expect(await alertDocs.findById(alert._id)).not.toBeNull();
 
       // Update the dashboard, omitting the tile that had an alert
       await authRequest('put', `${BASE_URL}/${dashboard._id}`)
@@ -5751,7 +5752,7 @@ describe('External API v2 Dashboards - new format', () => {
         })
         .expect(200);
 
-      expect(await Alert.findById(alert._id)).toBeNull();
+      expect(await alertDocs.findById(alert._id)).toBeNull();
     });
 
     it('does not re-validate heatmap source-kind for unchanged heatmap tiles', async () => {

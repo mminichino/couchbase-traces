@@ -4,16 +4,18 @@ import {
 } from '@couchbase-traces/common-utils/dist/types';
 import _ from 'lodash';
 
+import { IAlert, IAlertError } from '@/metadata/schemas/alert';
+import type { AggregatedAlertHistory } from '@/metadata/schemas/alertHistory';
+import {
+  IAlertHistory,
+  IAlertHistoryAnalytics,
+} from '@/metadata/schemas/alertHistory';
 import { IConnection } from '@/metadata/schemas/connection';
 import type { IDashboard } from '@/metadata/schemas/dashboard';
 import type { ISavedSearch } from '@/metadata/schemas/savedSearch';
 import { ISource } from '@/metadata/schemas/source';
 import type { IWebhook } from '@/metadata/schemas/webhook';
-import { ObjectId } from '@/models';
-import { IAlert, IAlertError } from '@/models/alert';
-import { IAlertHistory, IAlertHistoryAnalytics } from '@/models/alertHistory';
 import { DataClient } from '@/query';
-import { AggregatedAlertHistory } from '@/tasks/checkAlerts';
 import DefaultAlertProvider from '@/tasks/checkAlerts/providers/default';
 import logger from '@/utils/logger';
 
@@ -146,7 +148,7 @@ export interface AlertProvider {
   ): Promise<void>;
 
   /** Fetch all webhooks for the given team, returning a map of webhook ID to webhook */
-  getWebhooks(teamId: string | ObjectId): Promise<Map<string, IWebhook>>;
+  getWebhooks(teamId: string): Promise<Map<string, IWebhook>>;
 
   /** Create and return an authenticated data client */
   getDataClient(

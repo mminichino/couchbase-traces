@@ -10,6 +10,7 @@ import {
   getServer,
 } from '@/fixtures';
 import { getMetadataStore } from '@/metadata';
+import { AlertSource, AlertState } from '@/metadata/schemas/alert';
 import type { ITeam } from '@/metadata/schemas/team';
 import type { IUser } from '@/metadata/schemas/user';
 import {
@@ -18,7 +19,7 @@ import {
   seedSavedSearch,
   seedSource,
 } from '@/metadata/testing/seed';
-import Alert, { AlertSource, AlertState } from '@/models/alert';
+import { alertDocs } from '@/metadata/testing/seedAlerts';
 
 const BASE_URL = '/api/v2/saved-searches';
 
@@ -546,7 +547,7 @@ describe('External API v2 Saved Searches CRUD', () => {
         .expect(200);
       const savedSearchId = created.body.data.id;
 
-      await Alert.create({
+      await alertDocs.create({
         team: team._id,
         savedSearch: savedSearchId,
         source: AlertSource.SAVED_SEARCH,
@@ -560,22 +561,20 @@ describe('External API v2 Saved Searches CRUD', () => {
 
       expect(await findSavedSearch(savedSearchId)).toBeNull();
       // Dependent alerts must not be orphaned.
-      expect(await Alert.countDocuments({ savedSearch: savedSearchId })).toBe(
-        0,
-      );
+      expect(
+        await alertDocs.countDocuments({ savedSearch: savedSearchId }),
+      ).toBe(0);
     });
 
-    it('should delete dependent alerts before the saved search (partial-failure ordering)', async () => {
-      // Verifies the documented least-bad partial-failure ordering: alerts are
-      // deleted before the parent, so if the final SavedSearch.deleteOne throws,
-      // the search survives without its alerts (recoverable) rather than
-      // leaving orphaned alerts pointing at a deleted saved search.
+    it('should keep both the saved search and its alerts when the delete transaction fails', async () => {
+      // The saved search and its alerts are removed in one transaction, so a
+      // failure leaves everything in place instead of orphaning alerts.
       const created = await authRequest('post', BASE_URL)
         .send(savedSearchBody())
         .expect(200);
       const savedSearchId = created.body.data.id;
 
-      await Alert.create({
+      await alertDocs.create({
         team: team._id,
         savedSearch: savedSearchId,
         source: AlertSource.SAVED_SEARCH,
@@ -589,10 +588,10 @@ describe('External API v2 Saved Searches CRUD', () => {
         .spyOn(console, 'error')
         .mockImplementation(() => {});
       const deleteSpy = jest
-        .spyOn(getMetadataStore().savedSearches, 'delete')
-        .mockImplementationOnce((async () => {
+        .spyOn(getMetadataStore().savedSearches, 'deleteWithAlerts')
+        .mockImplementationOnce(async () => {
           throw new Error('simulated delete failure');
-        }) as any);
+        });
 
       try {
         await authRequest('delete', `${BASE_URL}/${savedSearchId}`).expect(500);
@@ -601,11 +600,9 @@ describe('External API v2 Saved Searches CRUD', () => {
         consoleErrorSpy.mockRestore();
       }
 
-      // Alerts were deleted first, before the failure...
-      expect(await Alert.countDocuments({ savedSearch: savedSearchId })).toBe(
-        0,
-      );
-      // ...and the saved search survives its own failed delete (recoverable).
+      expect(
+        await alertDocs.countDocuments({ savedSearch: savedSearchId }),
+      ).toBe(1);
       expect(await findSavedSearch(savedSearchId)).not.toBeNull();
     });
   });

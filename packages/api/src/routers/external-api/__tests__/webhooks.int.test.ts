@@ -4,6 +4,7 @@ import request, { SuperAgentTest } from 'supertest';
 
 import { getLoggedInAgent, getServer } from '@/fixtures';
 import { getMetadataStore } from '@/metadata';
+import { AlertSource, AlertState } from '@/metadata/schemas/alert';
 import type { ITeam } from '@/metadata/schemas/team';
 import type { IUser } from '@/metadata/schemas/user';
 import {
@@ -15,7 +16,7 @@ import {
   seedRawWebhook,
   seedWebhook,
 } from '@/metadata/testing/seed';
-import Alert, { AlertSource, AlertState } from '@/models/alert';
+import { alertDocs } from '@/metadata/testing/seedAlerts';
 
 const WEBHOOKS_BASE_URL = '/api/v2/webhooks';
 
@@ -1038,7 +1039,7 @@ describe('External API v2 Webhooks', () => {
         ...MOCK_SLACK_WEBHOOK,
         team: team._id,
       });
-      await Alert.create({
+      await alertDocs.create({
         team: team._id,
         source: AlertSource.SAVED_SEARCH,
         savedSearch: new ObjectId(),

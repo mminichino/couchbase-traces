@@ -2,6 +2,13 @@ import type { MetaCollection } from '@couchbase-traces/common-utils/dist/couchba
 
 import type { Id } from './ids';
 import type { Repositories } from './repos';
+import type {
+  AggregatedAlertHistory,
+  DateRange,
+  GroupedAlertHistory,
+  StructuredWindow,
+  TransitionWindow,
+} from './schemas/alertHistory';
 
 export type { Id, MetaCollection };
 export type TeamId = Id;
@@ -117,6 +124,87 @@ export interface MetaFind {
   ): Promise<string[]>;
 }
 
+/**
+ * Reads and writes that commit together or not at all (plan D9, §5). The
+ * Couchbase implementation runs `find` through the transaction's own query
+ * context, so it sees writes made earlier in the same attempt.
+ */
+export interface MetaTx {
+  get<T>(c: MetaCollection, key: string): Promise<T | null>;
+  find<T>(c: MetaCollection, spec: FindSpec): Promise<Found<T>[]>;
+  /** Throws NotFoundError when the key does not exist. */
+  replace<T>(c: MetaCollection, key: string, value: T): Promise<void>;
+  /** Throws NotFoundError when the key does not exist. */
+  remove(c: MetaCollection, key: string): Promise<void>;
+}
+
+export interface MetaTransactions {
+  /**
+   * The callback may run more than once (the SDK retries conflicts), so it
+   * must be idempotent apart from its transaction writes.
+   */
+  run<R>(fn: (tx: MetaTx) => Promise<R>): Promise<R>;
+}
+
+/** Filter and keyset position of one alerts-page read; `team` is required. */
+export type AlertsPageQuery = {
+  team: string;
+  /** Alerts with any of these tags. */
+  tags?: readonly string[];
+  /** A missing state counts as `OK` (the schema default). */
+  states?: readonly string[];
+  /** A missing source counts as `saved_search`. */
+  sources?: readonly string[];
+  /** Case-insensitive substring of the display name. */
+  search?: string;
+  createdBy?: string;
+  /** Strictly after this `(displayName, id)`; null name is the null block. */
+  after?: { name: string | null; id: string };
+  /** Returns at most this many rows; omitted means all (hard cap 1000). */
+  limit?: number;
+};
+
+/**
+ * The alert reads FindSpec cannot express: the alerts-page filter and
+ * keyset, and the alert-history grouping and window functions. SQL++ on
+ * Couchbase (couchbase/alertQueries.ts), a scan in memory
+ * (testing/memoryAlertQueries.ts); both run testing/alertsContract.ts.
+ * History reads cover non-ERROR rows unless the name says otherwise.
+ */
+export interface MetaAlertQueries {
+  /** Alerts ordered by `(displayName, id)` with null and missing first. */
+  alertsPage(q: AlertsPageQuery): Promise<Found<unknown>[]>;
+  alertsCount(q: Omit<AlertsPageQuery, 'after' | 'limit'>): Promise<number>;
+  /** Newest row per group with `createdAt` in range. */
+  latestPerGroup(
+    alert: Id,
+    range: DateRange,
+  ): Promise<AggregatedAlertHistory[]>;
+  /** Rows in range, ordered by group then newest first. */
+  rangeExcludingErrors(
+    alert: Id,
+    range: DateRange,
+  ): Promise<AggregatedAlertHistory[]>;
+  /** One entry per `createdAt` (ERROR rows included), newest first. */
+  groupedByWindow(
+    alert: Id,
+    range: DateRange,
+    limit: number,
+  ): Promise<GroupedAlertHistory[]>;
+  /** As groupedByWindow, keeping every row with its group identity. */
+  structuredWindows(
+    alert: Id,
+    range: DateRange,
+    limit: number,
+  ): Promise<StructuredWindow[]>;
+  /** One entry per `createdAt`, oldest first. */
+  transitionWindows(alert: Id, range: DateRange): Promise<TransitionWindow[]>;
+  /** Keys of the alert's ERROR rows with `createdAt` in range. */
+  errorRowKeys(alert: Id, range: DateRange): Promise<string[]>;
+  /** Every stored row, ERROR rows included, oldest first. */
+  historyRows(alert: Id, range: DateRange): Promise<Found<unknown>[]>;
+}
+
 export const FIND_LIMIT_MAX = 1000;
 
 export type Lease = {
@@ -158,6 +246,8 @@ export interface MetadataStore extends Repositories {
   kv: MetaKv;
   find: MetaFind;
   locks: LockService;
+  tx: MetaTransactions;
+  alertQueries: MetaAlertQueries;
   readiness(): MetadataReadiness;
   close(): Promise<void>;
 }

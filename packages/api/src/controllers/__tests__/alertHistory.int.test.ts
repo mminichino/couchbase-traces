@@ -1,6 +1,3 @@
-import { ObjectId } from 'mongodb';
-import { Types } from 'mongoose';
-
 import {
   ALERT_EVALUATION_GROUPS_LIMIT,
   getAlertEvaluations,
@@ -9,9 +6,10 @@ import {
   getRecentAlertHistoriesBatch,
 } from '@/controllers/alertHistory';
 import { clearDBCollections, closeDB, connectDB } from '@/fixtures';
+import { newId } from '@/metadata/ids';
+import { AlertState } from '@/metadata/schemas/alert';
 import { seedTeam } from '@/metadata/testing/seed';
-import Alert, { AlertState } from '@/models/alert';
-import AlertHistory from '@/models/alertHistory';
+import { alertDocs, alertHistoryDocs } from '@/metadata/testing/seedAlerts';
 
 describe('alertHistory controller', () => {
   beforeAll(async () => {
@@ -28,7 +26,7 @@ describe('alertHistory controller', () => {
 
   describe('getRecentAlertHistories', () => {
     it('should return empty array when no histories exist', async () => {
-      const alertId = new ObjectId();
+      const alertId = newId();
       const histories = await getRecentAlertHistories({
         alertId,
         interval: '5m',
@@ -40,7 +38,7 @@ describe('alertHistory controller', () => {
 
     it('should return recent alert histories for a given alert', async () => {
       const team = await seedTeam({ name: 'Test Team' });
-      const alert = await Alert.create({
+      const alert = await alertDocs.create({
         team: team._id,
         threshold: 100,
         interval: '5m',
@@ -50,7 +48,7 @@ describe('alertHistory controller', () => {
       const now = new Date(Date.now() - 60000);
       const earlier = new Date(Date.now() - 120000);
 
-      await AlertHistory.create({
+      await alertHistoryDocs.create({
         alert: alert._id,
         createdAt: now,
         state: AlertState.ALERT,
@@ -58,7 +56,7 @@ describe('alertHistory controller', () => {
         lastValues: [{ startTime: now, count: 5 }],
       });
 
-      await AlertHistory.create({
+      await alertHistoryDocs.create({
         alert: alert._id,
         createdAt: earlier,
         state: AlertState.OK,
@@ -67,7 +65,7 @@ describe('alertHistory controller', () => {
       });
 
       const histories = await getRecentAlertHistories({
-        alertId: new ObjectId(alert._id),
+        alertId: alert._id,
         interval: '5m',
         limit: 10,
       });
@@ -83,7 +81,7 @@ describe('alertHistory controller', () => {
 
     it('should respect the limit parameter', async () => {
       const team = await seedTeam({ name: 'Test Team' });
-      const alert = await Alert.create({
+      const alert = await alertDocs.create({
         team: team._id,
         threshold: 100,
         interval: '5m',
@@ -92,7 +90,7 @@ describe('alertHistory controller', () => {
 
       // Create 5 histories
       for (let i = 0; i < 5; i++) {
-        await AlertHistory.create({
+        await alertHistoryDocs.create({
           alert: alert._id,
           createdAt: new Date(Date.now() - i * 60000),
           state: AlertState.OK,
@@ -104,7 +102,7 @@ describe('alertHistory controller', () => {
       }
 
       const histories = await getRecentAlertHistories({
-        alertId: new ObjectId(alert._id),
+        alertId: alert._id,
         interval: '5m',
         limit: 3,
       });
@@ -114,7 +112,7 @@ describe('alertHistory controller', () => {
 
     it('should group histories by createdAt timestamp', async () => {
       const team = await seedTeam({ name: 'Test Team' });
-      const alert = await Alert.create({
+      const alert = await alertDocs.create({
         team: team._id,
         threshold: 100,
         interval: '5m',
@@ -124,7 +122,7 @@ describe('alertHistory controller', () => {
       const timestamp = new Date(Date.now() - 60000);
 
       // Create multiple histories with the same timestamp
-      await AlertHistory.create({
+      await alertHistoryDocs.create({
         alert: alert._id,
         createdAt: timestamp,
         state: AlertState.OK,
@@ -132,7 +130,7 @@ describe('alertHistory controller', () => {
         lastValues: [{ startTime: timestamp, count: 0 }],
       });
 
-      await AlertHistory.create({
+      await alertHistoryDocs.create({
         alert: alert._id,
         createdAt: timestamp,
         state: AlertState.OK,
@@ -141,7 +139,7 @@ describe('alertHistory controller', () => {
       });
 
       const histories = await getRecentAlertHistories({
-        alertId: new ObjectId(alert._id),
+        alertId: alert._id,
         interval: '5m',
         limit: 10,
       });
@@ -154,7 +152,7 @@ describe('alertHistory controller', () => {
 
     it('should set state to ALERT if any grouped history has ALERT state', async () => {
       const team = await seedTeam({ name: 'Test Team' });
-      const alert = await Alert.create({
+      const alert = await alertDocs.create({
         team: team._id,
         threshold: 100,
         interval: '5m',
@@ -164,7 +162,7 @@ describe('alertHistory controller', () => {
       const timestamp = new Date(Date.now() - 60000);
 
       // Create histories with mixed states at the same timestamp
-      await AlertHistory.create({
+      await alertHistoryDocs.create({
         alert: alert._id,
         createdAt: timestamp,
         state: AlertState.OK,
@@ -172,7 +170,7 @@ describe('alertHistory controller', () => {
         lastValues: [{ startTime: timestamp, count: 0 }],
       });
 
-      await AlertHistory.create({
+      await alertHistoryDocs.create({
         alert: alert._id,
         createdAt: timestamp,
         state: AlertState.ALERT,
@@ -180,7 +178,7 @@ describe('alertHistory controller', () => {
         lastValues: [{ startTime: timestamp, count: 3 }],
       });
 
-      await AlertHistory.create({
+      await alertHistoryDocs.create({
         alert: alert._id,
         createdAt: timestamp,
         state: AlertState.OK,
@@ -189,7 +187,7 @@ describe('alertHistory controller', () => {
       });
 
       const histories = await getRecentAlertHistories({
-        alertId: new ObjectId(alert._id),
+        alertId: alert._id,
         interval: '5m',
         limit: 10,
       });
@@ -201,7 +199,7 @@ describe('alertHistory controller', () => {
 
     it('should set state to OK when all grouped histories are OK', async () => {
       const team = await seedTeam({ name: 'Test Team' });
-      const alert = await Alert.create({
+      const alert = await alertDocs.create({
         team: team._id,
         threshold: 100,
         interval: '5m',
@@ -210,7 +208,7 @@ describe('alertHistory controller', () => {
 
       const timestamp = new Date(Date.now() - 60000);
 
-      await AlertHistory.create({
+      await alertHistoryDocs.create({
         alert: alert._id,
         createdAt: timestamp,
         state: AlertState.OK,
@@ -218,7 +216,7 @@ describe('alertHistory controller', () => {
         lastValues: [{ startTime: timestamp, count: 0 }],
       });
 
-      await AlertHistory.create({
+      await alertHistoryDocs.create({
         alert: alert._id,
         createdAt: timestamp,
         state: AlertState.OK,
@@ -227,7 +225,7 @@ describe('alertHistory controller', () => {
       });
 
       const histories = await getRecentAlertHistories({
-        alertId: new ObjectId(alert._id),
+        alertId: alert._id,
         interval: '5m',
         limit: 10,
       });
@@ -238,7 +236,7 @@ describe('alertHistory controller', () => {
 
     it('should sort histories by createdAt in descending order', async () => {
       const team = await seedTeam({ name: 'Test Team' });
-      const alert = await Alert.create({
+      const alert = await alertDocs.create({
         team: team._id,
         threshold: 100,
         interval: '5m',
@@ -250,7 +248,7 @@ describe('alertHistory controller', () => {
       const newest = new Date(Date.now() - 60000);
 
       // Create in random order
-      await AlertHistory.create({
+      await alertHistoryDocs.create({
         alert: alert._id,
         createdAt: middle,
         state: AlertState.OK,
@@ -258,7 +256,7 @@ describe('alertHistory controller', () => {
         lastValues: [{ startTime: middle, count: 0 }],
       });
 
-      await AlertHistory.create({
+      await alertHistoryDocs.create({
         alert: alert._id,
         createdAt: newest,
         state: AlertState.ALERT,
@@ -266,7 +264,7 @@ describe('alertHistory controller', () => {
         lastValues: [{ startTime: newest, count: 3 }],
       });
 
-      await AlertHistory.create({
+      await alertHistoryDocs.create({
         alert: alert._id,
         createdAt: oldest,
         state: AlertState.OK,
@@ -275,7 +273,7 @@ describe('alertHistory controller', () => {
       });
 
       const histories = await getRecentAlertHistories({
-        alertId: new ObjectId(alert._id),
+        alertId: alert._id,
         interval: '5m',
         limit: 10,
       });
@@ -288,7 +286,7 @@ describe('alertHistory controller', () => {
 
     it('should sort lastValues by startTime in ascending order', async () => {
       const team = await seedTeam({ name: 'Test Team' });
-      const alert = await Alert.create({
+      const alert = await alertDocs.create({
         team: team._id,
         threshold: 100,
         interval: '5m',
@@ -299,7 +297,7 @@ describe('alertHistory controller', () => {
       const older = new Date(Date.now() - 120000);
       const newer = new Date(Date.now() - 30000);
 
-      await AlertHistory.create({
+      await alertHistoryDocs.create({
         alert: alert._id,
         createdAt: timestamp,
         state: AlertState.OK,
@@ -307,7 +305,7 @@ describe('alertHistory controller', () => {
         lastValues: [{ startTime: older, count: 0 }],
       });
 
-      await AlertHistory.create({
+      await alertHistoryDocs.create({
         alert: alert._id,
         createdAt: timestamp,
         state: AlertState.OK,
@@ -316,7 +314,7 @@ describe('alertHistory controller', () => {
       });
 
       const histories = await getRecentAlertHistories({
-        alertId: new ObjectId(alert._id),
+        alertId: alert._id,
         interval: '5m',
         limit: 10,
       });
@@ -329,14 +327,14 @@ describe('alertHistory controller', () => {
 
     it('should only return histories for the specified alert', async () => {
       const team = await seedTeam({ name: 'Test Team' });
-      const alert1 = await Alert.create({
+      const alert1 = await alertDocs.create({
         team: team._id,
         threshold: 100,
         interval: '5m',
         channel: { type: null },
       });
 
-      const alert2 = await Alert.create({
+      const alert2 = await alertDocs.create({
         team: team._id,
         threshold: 200,
         interval: '5m',
@@ -345,7 +343,7 @@ describe('alertHistory controller', () => {
 
       const timestamp = new Date(Date.now() - 60000);
 
-      await AlertHistory.create({
+      await alertHistoryDocs.create({
         alert: alert1._id,
         createdAt: timestamp,
         state: AlertState.ALERT,
@@ -353,7 +351,7 @@ describe('alertHistory controller', () => {
         lastValues: [{ startTime: timestamp, count: 5 }],
       });
 
-      await AlertHistory.create({
+      await alertHistoryDocs.create({
         alert: alert2._id,
         createdAt: timestamp,
         state: AlertState.OK,
@@ -362,7 +360,7 @@ describe('alertHistory controller', () => {
       });
 
       const histories = await getRecentAlertHistories({
-        alertId: new ObjectId(alert1._id),
+        alertId: alert1._id,
         interval: '5m',
         limit: 10,
       });
@@ -374,7 +372,7 @@ describe('alertHistory controller', () => {
 
     it('surfaces ERROR windows with their recorded errors', async () => {
       const team = await seedTeam({ name: 'Test Team' });
-      const alert = await Alert.create({
+      const alert = await alertDocs.create({
         team: team._id,
         threshold: 100,
         interval: '5m',
@@ -385,7 +383,7 @@ describe('alertHistory controller', () => {
       const okWindow = new Date(Date.now() - 120000);
       const errorTimestamp = new Date(Date.now() - 55000);
 
-      await AlertHistory.create({
+      await alertHistoryDocs.create({
         alert: alert._id,
         createdAt: errorWindow,
         state: AlertState.ERROR,
@@ -399,7 +397,7 @@ describe('alertHistory controller', () => {
           },
         ],
       });
-      await AlertHistory.create({
+      await alertHistoryDocs.create({
         alert: alert._id,
         createdAt: okWindow,
         state: AlertState.OK,
@@ -408,7 +406,7 @@ describe('alertHistory controller', () => {
       });
 
       const histories = await getRecentAlertHistories({
-        alertId: new ObjectId(alert._id),
+        alertId: alert._id,
         interval: '5m',
         limit: 10,
       });
@@ -424,7 +422,7 @@ describe('alertHistory controller', () => {
 
     it('lets ALERT/PENDING outrank ERROR within a grouped window, but ERROR outrank OK', async () => {
       const team = await seedTeam({ name: 'Test Team' });
-      const alert = await Alert.create({
+      const alert = await alertDocs.create({
         team: team._id,
         threshold: 100,
         interval: '5m',
@@ -440,14 +438,14 @@ describe('alertHistory controller', () => {
       });
 
       // Window that fired AND recorded a notification error → shows ALERT
-      await AlertHistory.create({
+      await alertHistoryDocs.create({
         alert: alert._id,
         createdAt: alertWindow,
         state: AlertState.ALERT,
         counts: 2,
         lastValues: [{ startTime: alertWindow, count: 2 }],
       });
-      await AlertHistory.create({
+      await alertHistoryDocs.create({
         alert: alert._id,
         createdAt: alertWindow,
         state: AlertState.ERROR,
@@ -457,14 +455,14 @@ describe('alertHistory controller', () => {
       });
 
       // Window that was OK but the resolve notification failed → shows ERROR
-      await AlertHistory.create({
+      await alertHistoryDocs.create({
         alert: alert._id,
         createdAt: okWindow,
         state: AlertState.OK,
         counts: 0,
         lastValues: [{ startTime: okWindow, count: 0 }],
       });
-      await AlertHistory.create({
+      await alertHistoryDocs.create({
         alert: alert._id,
         createdAt: okWindow,
         state: AlertState.ERROR,
@@ -474,7 +472,7 @@ describe('alertHistory controller', () => {
       });
 
       const histories = await getRecentAlertHistories({
-        alertId: new ObjectId(alert._id),
+        alertId: alert._id,
         interval: '5m',
         limit: 10,
       });
@@ -491,7 +489,7 @@ describe('alertHistory controller', () => {
   describe('getAlertEvaluations', () => {
     const createAlert = async () => {
       const team = await seedTeam({ name: 'Test Team' });
-      return Alert.create({
+      return alertDocs.create({
         team: team._id,
         threshold: 100,
         interval: '5m',
@@ -499,8 +497,8 @@ describe('alertHistory controller', () => {
       });
     };
 
-    const createOkWindow = (alertId: Types.ObjectId, createdAt: Date) =>
-      AlertHistory.create({
+    const createOkWindow = (alertId: string, createdAt: Date) =>
+      alertHistoryDocs.create({
         alert: alertId,
         createdAt,
         state: AlertState.OK,
@@ -519,7 +517,7 @@ describe('alertHistory controller', () => {
       await createOkWindow(alert._id, at(40)); // before startTime
 
       const page = await getAlertEvaluations({
-        alertId: new ObjectId(alert._id),
+        alertId: alert._id,
         interval: '5m',
         limit: 10,
         startTime: at(30),
@@ -545,7 +543,7 @@ describe('alertHistory controller', () => {
       const endTime = new Date(now);
 
       const firstPage = await getAlertEvaluations({
-        alertId: new ObjectId(alert._id),
+        alertId: alert._id,
         interval: '5m',
         limit: 2,
         startTime,
@@ -558,7 +556,7 @@ describe('alertHistory controller', () => {
       expect(firstPage.nextBefore).toEqual(windows[1]);
 
       const secondPage = await getAlertEvaluations({
-        alertId: new ObjectId(alert._id),
+        alertId: alert._id,
         interval: '5m',
         limit: 2,
         startTime,
@@ -587,7 +585,7 @@ describe('alertHistory controller', () => {
       // First page: finds the recent window; the scan bound stops long
       // before startTime, so more may exist.
       const firstPage = await getAlertEvaluations({
-        alertId: new ObjectId(alert._id),
+        alertId: alert._id,
         interval: '1m',
         limit: 2,
         startTime,
@@ -605,7 +603,7 @@ describe('alertHistory controller', () => {
       let found: Date | undefined;
       for (let i = 0; i < 20 && before != null; i++) {
         const page = await getAlertEvaluations({
-          alertId: new ObjectId(alert._id),
+          alertId: alert._id,
           interval: '1m',
           limit: 2,
           startTime,
@@ -632,7 +630,7 @@ describe('alertHistory controller', () => {
       await createOkWindow(alert._id, at(5));
 
       const page = await getAlertEvaluations({
-        alertId: new ObjectId(alert._id),
+        alertId: alert._id,
         interval: '5m',
         limit: 10,
         startTime: at(20),
@@ -659,7 +657,7 @@ describe('alertHistory controller', () => {
         count: number,
         fired?: boolean,
       ) =>
-        AlertHistory.create({
+        alertHistoryDocs.create({
           alert: alert._id,
           createdAt: windowStart,
           state,
@@ -674,7 +672,7 @@ describe('alertHistory controller', () => {
       await createGroupRow('ServiceName:worker', AlertState.PENDING, 9);
       // A notification failure recorded for the window: contributes errors,
       // never a group entry.
-      await AlertHistory.create({
+      await alertHistoryDocs.create({
         alert: alert._id,
         createdAt: windowStart,
         state: AlertState.ERROR,
@@ -690,7 +688,7 @@ describe('alertHistory controller', () => {
       });
 
       const page = await getAlertEvaluations({
-        alertId: new ObjectId(alert._id),
+        alertId: alert._id,
         interval: '5m',
         limit: 10,
         startTime: new Date(now - 60 * 60_000),
@@ -735,7 +733,7 @@ describe('alertHistory controller', () => {
       const bucket = new Date(now - 10 * 60_000);
 
       // Failed first attempt for this window (its query ran 300s)
-      await AlertHistory.create({
+      await alertHistoryDocs.create({
         alert: alert._id,
         createdAt: windowStart,
         state: AlertState.ERROR,
@@ -751,7 +749,7 @@ describe('alertHistory controller', () => {
         analytics: { queryDurationMs: 300_000 },
       });
       // Successful retry
-      await AlertHistory.create({
+      await alertHistoryDocs.create({
         alert: alert._id,
         createdAt: windowStart,
         state: AlertState.OK,
@@ -765,7 +763,7 @@ describe('alertHistory controller', () => {
       });
 
       const page = await getAlertEvaluations({
-        alertId: new ObjectId(alert._id),
+        alertId: alert._id,
         interval: '5m',
         limit: 10,
         startTime: new Date(now - 60 * 60_000),
@@ -785,7 +783,7 @@ describe('alertHistory controller', () => {
       const now = Date.now();
       const windowStart = new Date(now - 5 * 60_000);
 
-      await AlertHistory.create({
+      await alertHistoryDocs.create({
         alert: alert._id,
         createdAt: windowStart,
         state: AlertState.ERROR,
@@ -802,7 +800,7 @@ describe('alertHistory controller', () => {
       });
 
       const page = await getAlertEvaluations({
-        alertId: new ObjectId(alert._id),
+        alertId: alert._id,
         interval: '5m',
         limit: 10,
         startTime: new Date(now - 60 * 60_000),
@@ -825,7 +823,7 @@ describe('alertHistory controller', () => {
 
       // Legacy backfill row: one evaluation covering three buckets, no
       // analytics field.
-      await AlertHistory.create({
+      await alertHistoryDocs.create({
         alert: alert._id,
         createdAt: windowStart,
         state: AlertState.OK,
@@ -838,7 +836,7 @@ describe('alertHistory controller', () => {
       });
 
       const page = await getAlertEvaluations({
-        alertId: new ObjectId(alert._id),
+        alertId: alert._id,
         interval: '5m',
         limit: 10,
         startTime: new Date(now - 60 * 60_000),
@@ -866,10 +864,10 @@ describe('alertHistory controller', () => {
         lastValues: [{ startTime: bucket, count: i }],
         group: `ServiceName:svc-${String(i).padStart(3, '0')}`,
       }));
-      await AlertHistory.insertMany(rows);
+      await alertHistoryDocs.insertMany(rows);
 
       const page = await getAlertEvaluations({
-        alertId: new ObjectId(alert._id),
+        alertId: alert._id,
         interval: '5m',
         limit: 10,
         startTime: new Date(now - 60 * 60_000),
@@ -895,13 +893,13 @@ describe('alertHistory controller', () => {
 
     it('should return histories for multiple alerts in a single batch call', async () => {
       const team = await seedTeam({ name: 'Test Team' });
-      const alert1 = await Alert.create({
+      const alert1 = await alertDocs.create({
         team: team._id,
         threshold: 100,
         interval: '5m',
         channel: { type: null },
       });
-      const alert2 = await Alert.create({
+      const alert2 = await alertDocs.create({
         team: team._id,
         threshold: 200,
         interval: '5m',
@@ -911,21 +909,21 @@ describe('alertHistory controller', () => {
       const now = new Date(Date.now() - 60000);
       const earlier = new Date(Date.now() - 120000);
 
-      await AlertHistory.create({
+      await alertHistoryDocs.create({
         alert: alert1._id,
         createdAt: now,
         state: AlertState.ALERT,
         counts: 5,
         lastValues: [{ startTime: now, count: 5 }],
       });
-      await AlertHistory.create({
+      await alertHistoryDocs.create({
         alert: alert1._id,
         createdAt: earlier,
         state: AlertState.OK,
         counts: 0,
         lastValues: [{ startTime: earlier, count: 0 }],
       });
-      await AlertHistory.create({
+      await alertHistoryDocs.create({
         alert: alert2._id,
         createdAt: now,
         state: AlertState.OK,
@@ -935,8 +933,8 @@ describe('alertHistory controller', () => {
 
       const result = await getRecentAlertHistoriesBatch(
         [
-          { alertId: new ObjectId(alert1._id), interval: '5m' },
-          { alertId: new ObjectId(alert2._id), interval: '5m' },
+          { alertId: alert1._id, interval: '5m' },
+          { alertId: alert2._id, interval: '5m' },
         ],
         20,
       );
@@ -957,7 +955,7 @@ describe('alertHistory controller', () => {
     });
 
     it('should return empty array for alerts with no history', async () => {
-      const alertId = new ObjectId();
+      const alertId = newId();
 
       const result = await getRecentAlertHistoriesBatch(
         [{ alertId, interval: '5m' }],
@@ -970,7 +968,7 @@ describe('alertHistory controller', () => {
 
     it('should respect the limit parameter per alert', async () => {
       const team = await seedTeam({ name: 'Test Team' });
-      const alert = await Alert.create({
+      const alert = await alertDocs.create({
         team: team._id,
         threshold: 100,
         interval: '5m',
@@ -979,7 +977,7 @@ describe('alertHistory controller', () => {
 
       // Create 5 histories
       for (let i = 0; i < 5; i++) {
-        await AlertHistory.create({
+        await alertHistoryDocs.create({
           alert: alert._id,
           createdAt: new Date(Date.now() - i * 60000),
           state: AlertState.OK,
@@ -991,7 +989,7 @@ describe('alertHistory controller', () => {
       }
 
       const result = await getRecentAlertHistoriesBatch(
-        [{ alertId: new ObjectId(alert._id), interval: '5m' }],
+        [{ alertId: alert._id, interval: '5m' }],
         3,
       );
 
@@ -1000,7 +998,7 @@ describe('alertHistory controller', () => {
 
     it('should detect ALERT state when any grouped history has ALERT state', async () => {
       const team = await seedTeam({ name: 'Test Team' });
-      const alert = await Alert.create({
+      const alert = await alertDocs.create({
         team: team._id,
         threshold: 100,
         interval: '5m',
@@ -1010,14 +1008,14 @@ describe('alertHistory controller', () => {
       const timestamp = new Date(Date.now() - 60000);
 
       // Create histories with mixed states at the same timestamp
-      await AlertHistory.create({
+      await alertHistoryDocs.create({
         alert: alert._id,
         createdAt: timestamp,
         state: AlertState.OK,
         counts: 0,
         lastValues: [{ startTime: timestamp, count: 0 }],
       });
-      await AlertHistory.create({
+      await alertHistoryDocs.create({
         alert: alert._id,
         createdAt: timestamp,
         state: AlertState.ALERT,
@@ -1026,7 +1024,7 @@ describe('alertHistory controller', () => {
       });
 
       const result = await getRecentAlertHistoriesBatch(
-        [{ alertId: new ObjectId(alert._id), interval: '5m' }],
+        [{ alertId: alert._id, interval: '5m' }],
         20,
       );
 
@@ -1044,7 +1042,7 @@ describe('alertHistory controller', () => {
 
     const createAlert = async () => {
       const team = await seedTeam({ name: 'Test Team' });
-      return Alert.create({
+      return alertDocs.create({
         team: team._id,
         threshold: 100,
         interval: '5m',
@@ -1053,12 +1051,12 @@ describe('alertHistory controller', () => {
     };
 
     const createHistory = (
-      alertId: Types.ObjectId,
+      alertId: string,
       createdAt: Date,
       state: AlertState,
       counts: number,
     ) =>
-      AlertHistory.create({
+      alertHistoryDocs.create({
         alert: alertId,
         createdAt,
         state,
@@ -1068,7 +1066,7 @@ describe('alertHistory controller', () => {
 
     it('returns empty array when no history exists', async () => {
       const transitions = await getAlertTransitionsInRange({
-        alertId: new ObjectId(),
+        alertId: newId(),
         interval: '5m',
         startTime: t(60),
         endTime: t(0),
@@ -1084,7 +1082,7 @@ describe('alertHistory controller', () => {
       await createHistory(alert._id, t(10), AlertState.OK, 0);
 
       const transitions = await getAlertTransitionsInRange({
-        alertId: new ObjectId(alert._id),
+        alertId: alert._id,
         interval: '5m',
         startTime: t(28),
         endTime: t(5),
@@ -1105,7 +1103,7 @@ describe('alertHistory controller', () => {
       await createHistory(alert._id, t(20), AlertState.ALERT, 5);
 
       const transitions = await getAlertTransitionsInRange({
-        alertId: new ObjectId(alert._id),
+        alertId: alert._id,
         interval: '5m',
         startTime: t(27),
         endTime: t(5),
@@ -1124,7 +1122,7 @@ describe('alertHistory controller', () => {
       await createHistory(alert._id, t(15), AlertState.ALERT, 1);
 
       const transitions = await getAlertTransitionsInRange({
-        alertId: new ObjectId(alert._id),
+        alertId: alert._id,
         interval: '5m',
         startTime: t(25),
         endTime: t(5),
@@ -1145,7 +1143,7 @@ describe('alertHistory controller', () => {
 
       const startTime = t(27);
       const transitions = await getAlertTransitionsInRange({
-        alertId: new ObjectId(alert._id),
+        alertId: alert._id,
         interval: '5m',
         startTime,
         endTime: t(5),
@@ -1164,7 +1162,7 @@ describe('alertHistory controller', () => {
 
       const startTime = t(20);
       const transitions = await getAlertTransitionsInRange({
-        alertId: new ObjectId(alert._id),
+        alertId: alert._id,
         interval: '1h', // lookback reaches back past the t(30) window
         startTime,
         endTime: t(5),
@@ -1185,7 +1183,7 @@ describe('alertHistory controller', () => {
 
       const startTime = t(27);
       const transitions = await getAlertTransitionsInRange({
-        alertId: new ObjectId(alert._id),
+        alertId: alert._id,
         interval: '5m',
         startTime,
         endTime: t(5),
@@ -1206,7 +1204,7 @@ describe('alertHistory controller', () => {
       await createHistory(alert._id, t(15), AlertState.PENDING, 1);
 
       const transitions = await getAlertTransitionsInRange({
-        alertId: new ObjectId(alert._id),
+        alertId: alert._id,
         interval: '5m',
         startTime: t(27),
         endTime: t(5),
@@ -1230,7 +1228,7 @@ describe('alertHistory controller', () => {
       await createHistory(alert._id, t(10), AlertState.OK, 0);
 
       const transitions = await getAlertTransitionsInRange({
-        alertId: new ObjectId(alert._id),
+        alertId: alert._id,
         interval: '5m',
         startTime: t(40),
         endTime: t(0),
@@ -1254,7 +1252,7 @@ describe('alertHistory controller', () => {
       await createHistory(alert2._id, t(20), AlertState.ALERT, 9);
 
       const transitions = await getAlertTransitionsInRange({
-        alertId: new ObjectId(alert1._id),
+        alertId: alert1._id,
         interval: '5m',
         startTime: t(27),
         endTime: t(5),
@@ -1266,13 +1264,13 @@ describe('alertHistory controller', () => {
 
     describe('bucketStart', () => {
       const createHistoryWithBuckets = (
-        alertId: Types.ObjectId,
+        alertId: string,
         createdAt: Date,
         state: AlertState,
         bucketStarts: Date[],
         group?: string,
       ) =>
-        AlertHistory.create({
+        alertHistoryDocs.create({
           alert: alertId,
           createdAt,
           state,
@@ -1299,7 +1297,7 @@ describe('alertHistory controller', () => {
         ]);
 
         const transitions = await getAlertTransitionsInRange({
-          alertId: new ObjectId(alert._id),
+          alertId: alert._id,
           interval: '5m',
           startTime: t(22),
           endTime: t(5),
@@ -1316,7 +1314,7 @@ describe('alertHistory controller', () => {
         await createHistoryWithBuckets(alert._id, t(20), AlertState.ALERT, []);
 
         const transitions = await getAlertTransitionsInRange({
-          alertId: new ObjectId(alert._id),
+          alertId: alert._id,
           interval: '5m',
           startTime: t(28),
           endTime: t(5),
@@ -1339,7 +1337,7 @@ describe('alertHistory controller', () => {
         ]);
 
         const transitions = await getAlertTransitionsInRange({
-          alertId: new ObjectId(alert._id),
+          alertId: alert._id,
           interval: '5m',
           startTime: t(26),
           endTime: t(5),
@@ -1363,7 +1361,7 @@ describe('alertHistory controller', () => {
 
         const startTime = t(25); // crossing evaluated exactly at range start
         const transitions = await getAlertTransitionsInRange({
-          alertId: new ObjectId(alert._id),
+          alertId: alert._id,
           interval: '5m',
           startTime,
           endTime: t(5),
@@ -1386,7 +1384,7 @@ describe('alertHistory controller', () => {
 
         const startTime = t(25);
         const transitions = await getAlertTransitionsInRange({
-          alertId: new ObjectId(alert._id),
+          alertId: alert._id,
           interval: '5m',
           startTime,
           endTime: t(5),
@@ -1424,7 +1422,7 @@ describe('alertHistory controller', () => {
         );
 
         const transitions = await getAlertTransitionsInRange({
-          alertId: new ObjectId(alert._id),
+          alertId: alert._id,
           interval: '5m',
           startTime: t(22),
           endTime: t(5),
@@ -1442,7 +1440,7 @@ describe('alertHistory controller', () => {
 
         const startTime = t(27);
         const transitions = await getAlertTransitionsInRange({
-          alertId: new ObjectId(alert._id),
+          alertId: alert._id,
           interval: '5m',
           startTime,
           endTime: t(5),

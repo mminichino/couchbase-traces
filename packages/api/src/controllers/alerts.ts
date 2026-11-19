@@ -11,26 +11,27 @@ import {
 } from '@couchbase-traces/common-utils/dist/guards';
 import { isRangeThresholdType } from '@couchbase-traces/common-utils/dist/types';
 import { groupBy } from 'lodash';
-import { type FilterQuery } from 'mongoose';
 import { z } from 'zod';
 
 import { hydrateAlertRefs } from '@/controllers/alertRefs';
 import { recordOnboardingTaskCompletion } from '@/controllers/user';
 import { getMetadataStore } from '@/metadata';
-import type { IDashboard } from '@/metadata/schemas/dashboard';
-import { type ObjectId, toObjectId } from '@/models';
-import Alert, {
+import type { Id } from '@/metadata/ids';
+import {
   AlertChannel,
+  AlertFields,
   AlertSource,
   getAlertChannels,
   IAlert,
-} from '@/models/alert';
+} from '@/metadata/schemas/alert';
+import type { IDashboard } from '@/metadata/schemas/dashboard';
 import { type AlertRefs, deriveAlertDisplayFields } from '@/utils/alerts';
 import { Api400Error } from '@/utils/errors';
 import { internalAlertSchema, objectIdSchema } from '@/utils/zod';
 
 export type AlertInput = Omit<
   IAlert,
+  | '_id'
   | 'id'
   | 'channel'
   | 'scheduleStartAt'
@@ -62,7 +63,7 @@ function validateObjectId(
 }
 
 export const validateAlertInput = async (
-  teamId: string | ObjectId,
+  teamId: string,
   alertInput: Pick<
     AlertInput,
     | 'source'
@@ -248,9 +249,9 @@ export const validateAlertInput = async (
 // controllers/__tests__/alerts.test.ts) -- otherwise only used internally.
 export const makeAlert = (
   alert: AlertInput,
-  userId?: string | ObjectId,
+  userId?: string,
   refs: AlertRefs = {},
-): Partial<IAlert> => {
+): AlertFields => {
   // Preserve existing DB value when scheduleStartAt is omitted from updates
   // (undefined), while still allowing explicit clears via null.
   const hasScheduleStartAt = alert.scheduleStartAt !== undefined;
@@ -291,19 +292,18 @@ export const makeAlert = (
     }),
     source: alert.source,
     threshold: alert.threshold,
-    // Omitted rather than set to undefined for a non-range comparator, so
-    // updateAlert can $unset the path. Writing null instead would surface on
-    // the create/update responses, which return the document directly, and a
+    // Omitted for a non-range comparator; the repository clears the bound on
+    // update (clearThresholdMax). Writing null instead would surface on the
+    // create/update responses, which return the document directly, and a
     // client round-tripping one back into an update would fail validation.
     ...(isRangeThresholdType(alert.thresholdType) && {
       thresholdMax: alert.thresholdMax,
     }),
     thresholdType: alert.thresholdType,
-    ...(userId && { createdBy: toObjectId(userId) }),
+    ...(userId && { createdBy: userId }),
 
     // Message template
-    // Coerce undefined to null so Mongoose clears the field on update.
-    // https://mongoosejs.com/docs/migrating_to_6.html#removed-omitundefined
+    // Coerce undefined to null so the field is cleared on update.
     name: alert.name ?? null,
     message: alert.message ?? null,
     note: alert.note ?? null,
@@ -312,14 +312,10 @@ export const makeAlert = (
     tags,
 
     // Log alerts
-    savedSearch: isSavedSearch
-      ? ((alert.savedSearchId ?? null) as unknown as ObjectId)
-      : null,
+    savedSearch: isSavedSearch ? (alert.savedSearchId ?? null) : null,
     groupBy: isSavedSearch ? (alert.groupBy ?? null) : null,
     // Tile alerts
-    dashboard: isTile
-      ? ((alert.dashboardId ?? null) as unknown as ObjectId)
-      : null,
+    dashboard: isTile ? (alert.dashboardId ?? null) : null,
     tileId: isTile ? (alert.tileId ?? null) : null,
 
     // Inline alerts
@@ -330,54 +326,36 @@ export const makeAlert = (
   };
 };
 
-// makeAlert omits thresholdMax for a non-range comparator, and Mongoose drops
-// an omitted key from an update rather than clearing the path, so the bound has
-// to be unset explicitly or an alert edited off `between` keeps a stale one and
-// reports a range condition it no longer has. Every update path needs this;
-// $unset is ignored on an upsert insert, so it is safe there too.
-const makeAlertUpdate = (
-  alertInput: AlertInput,
-  userId?: string | ObjectId,
-  refs: AlertRefs = {},
-) => ({
-  $set: makeAlert(alertInput, userId, refs),
-  ...(!isRangeThresholdType(alertInput.thresholdType) && {
-    $unset: { thresholdMax: 1 },
-  }),
+const clearsThresholdMax = (alertInput: AlertInput) => ({
+  clearThresholdMax: !isRangeThresholdType(alertInput.thresholdType),
 });
 
 export const createAlert = async (
-  teamId: string | ObjectId,
+  teamId: string,
   alertInput: z.infer<typeof internalAlertSchema>,
-  userId: string | ObjectId,
+  userId: string,
   refs: AlertRefs = {},
 ) => {
-  const alert = await new Alert({
-    ...makeAlert(alertInput, userId, refs),
-    team: teamId,
-  }).save();
+  const alert = await getMetadataStore().alerts.create(
+    teamId,
+    makeAlert(alertInput, userId, refs),
+  );
   recordOnboardingTaskCompletion(userId, 'alert');
   return alert;
 };
 
-// create an update alert function based off of the above create alert function
 export const updateAlert = async (
   id: string,
-  teamId: string | ObjectId,
+  teamId: string,
   alertInput: AlertInput,
   refs: AlertRefs = {},
-  userId?: string | ObjectId,
+  userId?: string,
 ) => {
-  // should consider clearing AlertHistory when updating an alert?
-  const alert = await Alert.findOneAndUpdate(
-    {
-      _id: id,
-      team: teamId,
-    },
-    makeAlertUpdate(alertInput, undefined, refs),
-    {
-      returnDocument: 'after',
-    },
+  const alert = await getMetadataStore().alerts.update(
+    teamId,
+    id,
+    makeAlert(alertInput, undefined, refs),
+    clearsThresholdMax(alertInput),
   );
   // Editing an alert also completes "set up an alert", not just creating one.
   if (alert != null) {
@@ -386,76 +364,48 @@ export const updateAlert = async (
   return alert;
 };
 
-export const countAlerts = async (
-  teamId: string | ObjectId,
-  filter: FilterQuery<IAlert> = {},
-) => {
-  return Alert.countDocuments({ ...filter, team: teamId });
-};
-
-export const getAlertById = async (
-  alertId: ObjectId | string,
-  teamId: ObjectId | string,
-) => {
-  return Alert.findOne({
-    _id: alertId,
-    team: teamId,
-  });
-};
+export const getAlertById = async (alertId: string, teamId: string) =>
+  getMetadataStore().alerts.get(teamId, alertId);
 
 export const getTeamDashboardAlertsByDashboardAndTile = async (
-  teamId: string | ObjectId,
+  teamId: string,
 ) => {
-  const alerts = await Alert.find({
-    source: AlertSource.TILE,
-    team: teamId,
-  });
-  return groupBy(alerts, a => `${a.dashboard?.toString()}:${a.tileId}`);
+  const alerts = await getMetadataStore().alerts.findTileAlerts(teamId);
+  return groupBy(alerts, a => `${a.dashboard}:${a.tileId}`);
 };
 
 export const getDashboardAlertsByTile = async (
-  teamId: string | ObjectId,
-  dashboardId: ObjectId | string,
+  teamId: string,
+  dashboardId: string,
 ) => {
-  const alerts = await Alert.find({
+  const alerts = await getMetadataStore().alerts.findByDashboard(teamId, {
     dashboard: dashboardId,
-    source: AlertSource.TILE,
-    team: teamId,
   });
   return groupBy(alerts, 'tileId');
 };
 
 export const createOrUpdateDashboardAlerts = async (
   dashboard: Pick<IDashboard, '_id' | 'name' | 'tags' | 'tiles'>,
-  teamId: string | ObjectId,
+  teamId: string,
   alertsByTile: Record<string, AlertInput>,
-  userId?: string | ObjectId,
+  userId?: string,
 ) => {
-  const dashboardId = dashboard._id;
+  const dashboardId: Id = dashboard._id;
+  const alerts = getMetadataStore().alerts;
   const result = await Promise.all(
     Object.entries(alertsByTile).map(async ([tileId, alert]) => {
-      const filter = {
-        dashboard: dashboardId,
-        tileId,
-        source: AlertSource.TILE,
-        team: teamId,
-      };
       const alertInput = {
         ...alert,
         source: AlertSource.TILE,
-        dashboardId: dashboardId.toString(),
+        dashboardId,
         tileId,
       };
-      const oldAlert = await Alert.findOne(filter);
-      const alertUpdate =
-        oldAlert && oldAlert.createdBy
-          ? makeAlertUpdate(alertInput, undefined, { dashboard })
-          : makeAlertUpdate(alertInput, userId, { dashboard });
-
-      return await Alert.findOneAndUpdate(filter, alertUpdate, {
-        new: true,
-        upsert: true,
-      });
+      return alerts.upsertTile(
+        teamId,
+        { dashboard: dashboardId, tileId },
+        makeAlert(alertInput, undefined, { dashboard }),
+        { userId, ...clearsThresholdMax(alertInput) },
+      );
     }),
   );
 
@@ -468,53 +418,19 @@ export const createOrUpdateDashboardAlerts = async (
 };
 
 export const deleteDashboardAlerts = async (
-  dashboardId: ObjectId | string,
-  teamId: string | ObjectId,
-  tileIds?: string[],
-) => {
-  return Alert.deleteMany({
-    dashboard: dashboardId,
-    team: teamId,
-    source: AlertSource.TILE,
-    ...(tileIds && { tileId: { $in: tileIds } }),
-  });
-};
-
-export const deleteSavedSearchAlerts = async (
-  savedSearchId: string,
+  dashboardId: string,
   teamId: string,
-) => {
-  return Alert.deleteMany({
-    savedSearch: savedSearchId,
-    team: teamId,
-  });
-};
-
-/** Get alerts, with the search or dashboard reference resolved */
-export const getAlertsWithDisplayRefs = async (
-  teamId: string | ObjectId,
-  { limit, offset }: { limit: number; offset: number },
-  filter: FilterQuery<IAlert> = {},
-) => {
-  const alerts = await Alert.find({ ...filter, team: teamId })
-    .sort({ _id: 1 })
-    .skip(offset)
-    .limit(limit);
-  return hydrateAlertRefs(teamId, alerts);
-};
+  tileIds?: string[],
+) => getMetadataStore().alerts.deleteByDashboard(teamId, dashboardId, tileIds);
 
 /** Get alert, with the search or dashboard reference resolved */
 export const getAlertWithDisplayRefs = async (
-  alertId: ObjectId | string,
-  teamId: ObjectId | string,
+  alertId: string,
+  teamId: string,
 ) => {
-  const alert = await Alert.findOne({ _id: alertId, team: teamId });
+  const alert = await getMetadataStore().alerts.get(teamId, alertId);
   return alert ? (await hydrateAlertRefs(teamId, [alert]))[0] : null;
 };
 
-export const deleteAlert = async (id: string, teamId: string | ObjectId) => {
-  return Alert.deleteOne({
-    _id: id,
-    team: teamId,
-  });
-};
+export const deleteAlert = async (id: string, teamId: string) =>
+  getMetadataStore().alerts.delete(teamId, id);

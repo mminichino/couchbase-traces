@@ -1,3 +1,5 @@
+import { AlertHistoryRepository } from '@/metadata/repos/alertHistories';
+import { AlertRepository } from '@/metadata/repos/alerts';
 import { ConnectionRepository } from '@/metadata/repos/connections';
 import { DashboardRepository } from '@/metadata/repos/dashboards';
 import type { RepoDeps } from '@/metadata/repos/docs';
@@ -15,7 +17,7 @@ import { WebhookRepository } from '@/metadata/repos/webhooks';
 /**
  * The entity repositories switched so far (C1: identity, C2: connections and
  * sources, C3: saved searches, dashboards, favorites, pinned and preset
- * filters, webhooks, tags).
+ * filters, webhooks, tags, C4: alerts and their history).
  */
 export type Repositories = {
   teams: TeamRepository;
@@ -30,6 +32,8 @@ export type Repositories = {
   presetDashboardFilters: PresetDashboardFilterRepository;
   webhooks: WebhookRepository;
   tags: TagRepository;
+  alerts: AlertRepository;
+  alertHistory: AlertHistoryRepository;
 };
 
 export function createRepositories(deps: RepoDeps): Repositories {
@@ -46,5 +50,7 @@ export function createRepositories(deps: RepoDeps): Repositories {
     presetDashboardFilters: new PresetDashboardFilterRepository(deps),
     webhooks: new WebhookRepository(deps),
     tags: new TagRepository(deps),
+    alerts: new AlertRepository(deps),
+    alertHistory: new AlertHistoryRepository(deps),
   };
 }

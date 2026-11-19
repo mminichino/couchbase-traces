@@ -6,11 +6,10 @@ import {
   tagsSchema,
 } from '@couchbase-traces/common-utils/dist/types';
 
-import { AlertSource } from '@/models/alert';
+import { AlertSource } from '@/metadata/schemas/alert';
 import {
   alertConfigHasGroupBy,
   deriveAlertDisplayFields,
-  isPopulatedRef,
   resolveAlertDisplayFields,
 } from '@/utils/alerts';
 
@@ -278,17 +277,5 @@ describe('alertConfigHasGroupBy', () => {
         displayType: DisplayType.Number,
       }),
     ).toBe(false);
-  });
-});
-
-describe('isPopulatedRef', () => {
-  it.each([
-    [{ _id: 'abc' }, true],
-    [{}, false],
-    [null, false],
-    [undefined, false],
-    ['abc', false],
-  ])('%p -> %p', (value, expected) => {
-    expect(isPopulatedRef(value)).toBe(expected);
   });
 });

@@ -11,7 +11,7 @@ import type {
   Versioned,
 } from '@/metadata/types';
 
-type Entry = { value: unknown; cas: Cas; expiry?: Date };
+export type Entry = { value: unknown; cas: Cas; expiry?: Date };
 
 /**
  * MetaKv in process memory with the Couchbase semantics the contract suite
@@ -153,6 +153,16 @@ export class MemoryKv implements MetaKv {
       const entry = this.live(c, key);
       return entry ? [{ key, value: structuredClone(entry.value) as T }] : [];
     });
+  }
+
+  /** Copy of the stored state, for transaction rollback. */
+  snapshot(): Map<string, Entry> {
+    return new Map([...this.data].map(([k, e]) => [k, { ...e }]));
+  }
+
+  restore(snapshot: Map<string, Entry>): void {
+    this.data.clear();
+    for (const [k, e] of snapshot) this.data.set(k, e);
   }
 
   clear(): void {

@@ -8,7 +8,6 @@ import type {
 } from '@couchbase-traces/common-utils/dist/types';
 import express from 'express';
 import { pick } from 'lodash';
-import { ObjectId } from 'mongodb';
 import { z } from 'zod';
 import { processRequest, validateRequest } from 'zod-express-middleware';
 
@@ -32,9 +31,9 @@ import {
   userDisplay,
   type UserDisplays,
 } from '@/controllers/userDisplay';
-import { toObjectId } from '@/models';
-import { AlertSource, getAlertChannels } from '@/models/alert';
-import { IAlertHistory } from '@/models/alertHistory';
+import { getMetadataStore } from '@/metadata';
+import { AlertSource, getAlertChannels } from '@/metadata/schemas/alert';
+import { IAlertHistory } from '@/metadata/schemas/alertHistory';
 import { resolveAlertDisplayFields } from '@/utils/alerts';
 import { setBusinessContext } from '@/utils/instrumentation';
 import { PreSerialized, sendJson } from '@/utils/serialization';
@@ -160,7 +159,7 @@ router.get(
 
       const historyMap = await getRecentAlertHistoriesBatch(
         alerts.map(alert => ({
-          alertId: new ObjectId(alert._id),
+          alertId: alert._id,
           interval: alert.interval,
         })),
         20,
@@ -168,7 +167,7 @@ router.get(
 
       const users = await alertUserRefs(alerts);
       const data = alerts.map(alert => {
-        const history = historyMap.get(alert._id.toString()) ?? [];
+        const history = historyMap.get(alert._id) ?? [];
         return formatAlertResponse(alert, history, users);
       });
 
@@ -200,7 +199,7 @@ router.get(
       }
 
       const history = await getRecentAlertHistories({
-        alertId: new ObjectId(alert._id),
+        alertId: alert._id,
         interval: alert.interval,
         limit: 20,
       });
@@ -283,7 +282,7 @@ router.get(
       );
 
       const page = await getAlertEvaluations({
-        alertId: new ObjectId(alert._id),
+        alertId: alert._id,
         interval: alert.interval,
         limit,
         startTime,
@@ -342,7 +341,7 @@ router.get(
       );
 
       const data = await getAlertTransitionsInRange({
-        alertId: new ObjectId(alert._id),
+        alertId: alert._id,
         interval: alert.interval,
         startTime: new Date(startTime),
         endTime: new Date(req.query.endTime),
@@ -432,16 +431,18 @@ router.post(
         return res.sendStatus(403);
       }
 
-      const alert = await getAlertById(req.params.id, teamId);
+      const alert = await getMetadataStore().alerts.setSilenced(
+        teamId,
+        req.params.id,
+        {
+          by: req.user._id,
+          at: new Date(),
+          until: new Date(req.body.mutedUntil),
+        },
+      );
       if (!alert) {
         return res.status(404).json({ error: 'Alert not found' });
       }
-      alert.silenced = {
-        by: toObjectId(req.user._id),
-        at: new Date(),
-        until: new Date(req.body.mutedUntil),
-      };
-      await alert.save();
 
       res.sendStatus(200);
     } catch (e) {
@@ -464,12 +465,14 @@ router.delete(
         return res.sendStatus(403);
       }
 
-      const alert = await getAlertById(req.params.id, teamId);
+      const alert = await getMetadataStore().alerts.setSilenced(
+        teamId,
+        req.params.id,
+        null,
+      );
       if (!alert) {
         return res.status(404).json({ error: 'Alert not found' });
       }
-      alert.silenced = undefined;
-      await alert.save();
 
       res.sendStatus(200);
     } catch (e) {

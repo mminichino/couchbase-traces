@@ -7,7 +7,7 @@ import {
   TSource,
 } from '@couchbase-traces/common-utils/dist/types';
 import { omit } from 'lodash';
-import mongoose, { Types } from 'mongoose';
+import { Types } from 'mongoose';
 
 import {
   getLoggedInAgent,
@@ -16,6 +16,8 @@ import {
   makeRawSqlTile,
   makeTile,
 } from '@/fixtures';
+import { newId } from '@/metadata/ids';
+import { AlertSource } from '@/metadata/schemas/alert';
 import {
   IWebhook as WebhookDocument,
   WebhookService,
@@ -29,12 +31,12 @@ import {
   seedUser,
   seedWebhook,
 } from '@/metadata/testing/seed';
+import { alertDocs } from '@/metadata/testing/seedAlerts';
 import {
   findPresetFilter,
   listPresetFilters,
   seedPresetFilter,
 } from '@/metadata/testing/seedContent';
-import Alert, { AlertSource } from '@/models/alert';
 
 const MOCK_DASHBOARD = {
   name: 'Test Dashboard',
@@ -241,7 +243,7 @@ describe('dashboard router', () => {
 
   it('returns 404 when patching a missing dashboard', async () => {
     await agent
-      .patch(`/dashboards/${new mongoose.Types.ObjectId()}`)
+      .patch(`/dashboards/${newId()}`)
       .send({ name: 'Missing Dashboard' })
       .expect(404);
   });
@@ -275,7 +277,7 @@ describe('dashboard router', () => {
       },
     ]);
 
-    const storedAlert = await Alert.findOne({
+    const storedAlert = await alertDocs.findOne({
       team: team._id,
       dashboard: dashboard.body.id,
       tileId: dashboard.body.tiles[0].id,
@@ -300,7 +302,7 @@ describe('dashboard router', () => {
       })
       .expect(200);
     // Alerts written before the fields existed.
-    await Alert.updateMany(
+    await alertDocs.updateMany(
       { dashboard: dashboard.body.id },
       { $set: { displayName: null, tags: null } },
     );
@@ -339,7 +341,7 @@ describe('dashboard router', () => {
       })
       .expect(200);
 
-    const storedAlert = await Alert.findOne({
+    const storedAlert = await alertDocs.findOne({
       team: team._id,
       dashboard: dashboard.body.id,
       tileId: dashboard.body.tiles[0].id,
@@ -372,7 +374,7 @@ describe('dashboard router', () => {
       })
       .expect(200);
 
-    const storedAlert = await Alert.findOne({
+    const storedAlert = await alertDocs.findOne({
       team: team._id,
       dashboard: dashboard.body.id,
       source: AlertSource.TILE,
@@ -549,7 +551,7 @@ describe('dashboard router', () => {
     expect(JSON.stringify(res.body)).toContain(
       'PromQL sources are no longer supported.',
     );
-    expect(await Alert.countDocuments({ team: team._id })).toBe(0);
+    expect(await alertDocs.countDocuments({ team: team._id })).toBe(0);
   });
 
   it('rejects switching a tile to PromQL', async () => {
@@ -562,7 +564,7 @@ describe('dashboard router', () => {
         tags: [],
       })
       .expect(200);
-    expect(await Alert.countDocuments({ team: team._id })).toBe(1);
+    expect(await alertDocs.countDocuments({ team: team._id })).toBe(1);
 
     const res = await agent
       .patch(`/dashboards/${dashboard.body.id}`)
@@ -578,7 +580,7 @@ describe('dashboard router', () => {
       'PromQL sources are no longer supported.',
     );
     // PromQL write rejected — existing builder alert stays.
-    expect(await Alert.countDocuments({ team: team._id })).toBe(1);
+    expect(await alertDocs.countDocuments({ team: team._id })).toBe(1);
   });
 
   it('alerts are updated when updating dashboard (updating tile alert settings)', async () => {
@@ -621,7 +623,7 @@ describe('dashboard router', () => {
       },
     ]);
 
-    const storedAlerts = await Alert.find({
+    const storedAlerts = await alertDocs.find({
       team: team._id,
       dashboard: dashboard.body.id,
       tileId: dashboard.body.tiles[0].id,
@@ -722,7 +724,7 @@ describe('dashboard router', () => {
   });
 
   it('alert on a tile only appears on the dashboard that owns it, not on another dashboard with the same tile ID', async () => {
-    const sharedTileId = new mongoose.Types.ObjectId().toHexString();
+    const sharedTileId = newId();
     const mockAlert = makeMockAlert(webhook._id.toString());
 
     // Create dashboard A with an alert on the tile
@@ -781,16 +783,18 @@ describe('dashboard router', () => {
     const tileId = dashboard.tiles[0].id;
 
     // Setup: Simulate alert created by different user
-    const originalAlert = await Alert.findOne({ tileId });
+    const originalAlert = await alertDocs.findOne({ tileId });
 
     if (!originalAlert) {
       throw new Error('Original alert not found');
     }
 
     // Set the original creator to a different user
-    const originalCreatorId = new mongoose.Types.ObjectId();
-    originalAlert.createdBy = originalCreatorId;
-    await originalAlert.save({ validateBeforeSave: false });
+    const originalCreatorId = newId();
+    await alertDocs.updateOne(
+      { _id: originalAlert._id },
+      { $set: { createdBy: originalCreatorId } },
+    );
 
     // Act: Current user updates the dashboard (modifies alert threshold)
     const updatedThreshold = 5;
@@ -816,7 +820,7 @@ describe('dashboard router', () => {
       .expect(200);
 
     // Assert: Verify alert preserves original creator and updates threshold
-    const updatedAlertRecord = await Alert.findOne({ tileId });
+    const updatedAlertRecord = await alertDocs.findOne({ tileId });
     expect(updatedAlertRecord).toBeTruthy();
 
     if (!updatedAlertRecord) {
@@ -2259,7 +2263,7 @@ describe('dashboard router', () => {
       });
 
       it('does not return filters from other teams in GET', async () => {
-        const team2 = new mongoose.Types.ObjectId();
+        const team2 = newId();
 
         const source1 = await seedSource({
           ...MOCK_SOURCE,
@@ -2629,7 +2633,7 @@ describe('dashboard router', () => {
       });
 
       it('does not delete filters from other teams', async () => {
-        const team2Id = new mongoose.Types.ObjectId();
+        const team2Id = newId();
 
         const source = await seedSource({
           ...MOCK_SOURCE,
@@ -2665,8 +2669,8 @@ describe('dashboard router', () => {
     // Now the handler re-parses the body against
     // DashboardWithoutIdSchema.partial(), which declares neither field.
     it('ignores smuggled team and createdBy on PATCH', async () => {
-      const victimTeamId = new mongoose.Types.ObjectId();
-      const victimUserId = new mongoose.Types.ObjectId();
+      const victimTeamId = newId();
+      const victimUserId = newId();
 
       const created = await agent
         .post('/dashboards')

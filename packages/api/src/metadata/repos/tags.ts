@@ -1,17 +1,15 @@
 import type { Id } from '@/metadata/ids';
 import type { RepoDeps } from '@/metadata/repos/docs';
 
-export type CouchbaseTagKind = 'dashboard' | 'savedSearch';
+export type CouchbaseTagKind = 'dashboard' | 'savedSearch' | 'alert';
 
 const COLLECTION = {
   dashboard: 'dashboards',
   savedSearch: 'saved_searches',
+  alert: 'alerts',
 } as const;
 
-/**
- * Distinct tags across the content collections already on Couchbase. Alerts
- * stay on Mongo until C4, so the caller unions their tags in.
- */
+/** Distinct tags across the dashboard, saved search, and alert collections. */
 export class TagRepository {
   constructor(private readonly deps: RepoDeps) {}
 

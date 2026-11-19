@@ -1,6 +1,7 @@
 import type { z } from 'zod';
 
 import { type Id, isValidId, newId } from '@/metadata/ids';
+import { removeAlertsInTx } from '@/metadata/repos/alertTx';
 import {
   getDoc,
   mutateDoc,
@@ -151,6 +152,29 @@ export abstract class TeamDocs<D extends TeamDoc, Out> {
     if (!result || foreign) return null;
     // A skipped write (fn returned null) comes back as after === before.
     return { id, before: result.before, after: result.after };
+  }
+
+  /**
+   * Deletes the document and every alert matching `alertWhere` in one
+   * transaction, so a failure leaves neither half behind. Null (nothing
+   * deleted) when the document is absent or another team's.
+   */
+  protected async deleteCascading(
+    team: Id,
+    rawId: unknown,
+    alertWhere: Record<string, FindScalar>,
+  ): Promise<{ id: Id; doc: D } | null> {
+    const id = this.idOf(rawId);
+    if (!id) return null;
+    return this.deps.tx.run(async tx => {
+      const raw = await tx.get<unknown>(this.collection, id);
+      const doc =
+        raw == null ? null : parseDoc(this.schema, this.collection, id, raw);
+      if (!doc || doc.team !== team) return null;
+      await tx.remove(this.collection, id);
+      await removeAlertsInTx(tx, { ...alertWhere, team });
+      return { id, doc };
+    });
   }
 
   /** The deleted document, or null when absent or another team's. */

@@ -44,7 +44,7 @@ import {
 import { z } from 'zod';
 
 import { isValidId } from '@/metadata/ids';
-import { AlertSource } from '@/models/alert';
+import { AlertSource } from '@/metadata/schemas/alert';
 
 export const objectIdSchema = z
   .string()

@@ -20,6 +20,7 @@ import {
   randomMongoId,
   RAW_SQL_ALERT_TEMPLATE,
 } from '@/fixtures';
+import { AlertSource, AlertState } from '@/metadata/schemas/alert';
 import {
   IWebhook as WebhookDocument,
   WebhookService,
@@ -31,9 +32,7 @@ import {
   seedSource,
   seedWebhook,
 } from '@/metadata/testing/seed';
-import { toObjectId } from '@/models';
-import Alert, { AlertSource, AlertState } from '@/models/alert';
-import AlertHistory from '@/models/alertHistory';
+import { alertDocs, alertHistoryDocs } from '@/metadata/testing/seedAlerts';
 
 const MOCK_TILES = [makeTile(), makeTile(), makeTile(), makeTile(), makeTile()];
 
@@ -241,7 +240,7 @@ describe('alerts router', () => {
       .post('/dashboards')
       .send(MOCK_DASHBOARD)
       .expect(200);
-    const otherTeamAlert = await Alert.create({
+    const otherTeamAlert = await alertDocs.create({
       team: randomMongoId(),
       channel: {
         type: 'webhook',
@@ -312,7 +311,7 @@ describe('alerts router', () => {
       source: new mongoose.Types.ObjectId(),
       team: team._id,
     });
-    const staleAlert = await Alert.create({
+    const staleAlert = await alertDocs.create({
       team: team._id,
       channel: {
         type: 'webhook',
@@ -340,7 +339,7 @@ describe('alerts router', () => {
       })
       .expect(200);
 
-    let updatedAlert = await Alert.findById(staleAlert._id);
+    let updatedAlert = await alertDocs.findById(staleAlert._id);
     expect(updatedAlert?.savedSearch?.toString()).toBe(
       savedSearch._id.toString(),
     );
@@ -361,7 +360,7 @@ describe('alerts router', () => {
       })
       .expect(200);
 
-    updatedAlert = await Alert.findById(staleAlert._id);
+    updatedAlert = await alertDocs.findById(staleAlert._id);
     expect(updatedAlert?.savedSearch).toBeNull();
     expect(updatedAlert?.groupBy).toBeNull();
     expect(updatedAlert?.dashboard?.toString()).toBe(dashboard.body.id);
@@ -490,7 +489,7 @@ describe('alerts router', () => {
 
     const emptied = await agent.get(`/alerts/${alertId}`).expect(200);
     expect(emptied.body.data.tags).toEqual([]);
-    expect((await Alert.findById(alertId))?.tags).toEqual([]);
+    expect((await alertDocs.findById(alertId))?.tags).toEqual([]);
   });
 
   it('derives displayName from the chart config for inline alerts', async () => {
@@ -532,7 +531,7 @@ describe('alerts router', () => {
       team: team._id,
       tags: ['legacy'],
     });
-    const alert = await Alert.create({
+    const alert = await alertDocs.create({
       team: team._id,
       channel: { type: 'webhook', webhookId: webhook._id.toString() },
       interval: '15m',
@@ -593,7 +592,7 @@ describe('alerts router', () => {
       .send(updatePayload)
       .expect(200);
 
-    const alertAfterOmittedScheduleStartAt = await Alert.findById(
+    const alertAfterOmittedScheduleStartAt = await alertDocs.findById(
       createdAlert.body.data._id,
     );
     expect(
@@ -608,7 +607,7 @@ describe('alerts router', () => {
       })
       .expect(200);
 
-    const alertAfterNullScheduleStartAt = await Alert.findById(
+    const alertAfterNullScheduleStartAt = await alertDocs.findById(
       createdAlert.body.data._id,
     );
     expect(alertAfterNullScheduleStartAt?.scheduleStartAt).toBeNull();
@@ -646,7 +645,7 @@ describe('alerts router', () => {
       })
       .expect(200);
 
-    const updatedAlert = await Alert.findById(createdAlert.body.data._id);
+    const updatedAlert = await alertDocs.findById(createdAlert.body.data._id);
     expect(updatedAlert?.scheduleOffsetMinutes).toBe(2);
     expect(updatedAlert?.scheduleStartAt).toBeUndefined();
   });
@@ -687,7 +686,7 @@ describe('alerts router', () => {
       })
       .expect(200);
 
-    const updatedAlert = await Alert.findById(createdAlert.body.data._id);
+    const updatedAlert = await alertDocs.findById(createdAlert.body.data._id);
     expect(updatedAlert?.scheduleOffsetMinutes).toBe(0);
     expect(updatedAlert?.scheduleStartAt?.toISOString()).toBe(scheduleStartAt);
   });
@@ -698,7 +697,7 @@ describe('alerts router', () => {
       .send(MOCK_DASHBOARD)
       .expect(200);
 
-    const staleAlert = await Alert.create({
+    const staleAlert = await alertDocs.create({
       team: team._id,
       channel: {
         type: 'webhook',
@@ -727,7 +726,7 @@ describe('alerts router', () => {
       })
       .expect(200);
 
-    const updatedAlert = await Alert.findById(staleAlert._id);
+    const updatedAlert = await alertDocs.findById(staleAlert._id);
     expect(updatedAlert?.scheduleOffsetMinutes).toBe(0);
     expect(updatedAlert?.scheduleStartAt).toBeNull();
   });
@@ -821,9 +820,9 @@ describe('alerts router', () => {
     expect(alert.body.data.threshold).toBe(5);
 
     // Get the alert directly from database to verify createdBy was set
-    const alertFromDb = await Alert.findById(alert.body.data._id);
+    const alertFromDb = await alertDocs.findById(alert.body.data._id);
     expect(alertFromDb).toBeDefined();
-    expect(alertFromDb!.createdBy).toEqual(toObjectId(user._id));
+    expect(alertFromDb!.createdBy).toEqual(user._id);
     expect(alertFromDb!.threshold).toBe(5);
 
     // Update the alert with a different threshold
@@ -839,9 +838,11 @@ describe('alerts router', () => {
     expect(updatedAlert.body.data.threshold).toBe(15);
 
     // Get the alert from database again to verify createdBy is preserved
-    const alertFromDbAfterUpdate = await Alert.findById(alert.body.data._id);
+    const alertFromDbAfterUpdate = await alertDocs.findById(
+      alert.body.data._id,
+    );
     expect(alertFromDbAfterUpdate).toBeDefined();
-    expect(alertFromDbAfterUpdate!.createdBy).toEqual(toObjectId(user._id)); // ✅ createdBy should still be the original user
+    expect(alertFromDbAfterUpdate!.createdBy).toEqual(user._id); // ✅ createdBy should still be the original user
     expect(alertFromDbAfterUpdate!.threshold).toBe(15); // ✅ threshold should be updated
   });
 
@@ -933,7 +934,7 @@ describe('alerts router', () => {
     });
 
     const tileAlert = async (dashboardId: unknown, tileId: string) =>
-      Alert.create({
+      alertDocs.create({
         team: team._id,
         channel: { type: 'webhook', webhookId: webhook._id.toString() },
         interval: '15m',
@@ -978,10 +979,10 @@ describe('alerts router', () => {
       .expect(200);
 
     // Verify the alert was silenced
-    const alertFromDb = await Alert.findById(alert.body.data._id);
+    const alertFromDb = await alertDocs.findById(alert.body.data._id);
     expect(alertFromDb).toBeDefined();
     expect(alertFromDb!.silenced).toBeDefined();
-    expect(alertFromDb!.silenced!.by).toEqual(toObjectId(user._id));
+    expect(alertFromDb!.silenced!.by).toEqual(user._id);
     expect(alertFromDb!.silenced!.at).toBeDefined();
     expect(new Date(alertFromDb!.silenced!.until).toISOString()).toBe(
       mutedUntil,
@@ -1012,14 +1013,14 @@ describe('alerts router', () => {
       .expect(200);
 
     // Verify it was silenced
-    let alertFromDb = await Alert.findById(alert.body.data._id);
+    let alertFromDb = await alertDocs.findById(alert.body.data._id);
     expect(alertFromDb!.silenced).toBeDefined();
 
     // Now unsilence it
     await agent.delete(`/alerts/${alert.body.data._id}/silenced`).expect(200);
 
     // Verify it was unsilenced
-    alertFromDb = await Alert.findById(alert.body.data._id);
+    alertFromDb = await alertDocs.findById(alert.body.data._id);
     expect(alertFromDb).toBeDefined();
     expect(alertFromDb!.silenced).toBeUndefined();
   });
@@ -1208,7 +1209,7 @@ describe('alerts router', () => {
     expect(JSON.stringify(res.body)).toContain(
       'Alerts are not supported on PromQL tiles',
     );
-    expect(await Alert.countDocuments({ team: team._id })).toBe(0);
+    expect(await alertDocs.countDocuments({ team: team._id })).toBe(0);
   });
 
   it('rejects creating an alert on a raw SQL tile without interval params', async () => {
@@ -1362,7 +1363,7 @@ describe('alerts router', () => {
       const now = new Date(Date.now() - 60000);
       const earlier = new Date(Date.now() - 120000);
 
-      await AlertHistory.create({
+      await alertHistoryDocs.create({
         alert: alert.body.data._id,
         createdAt: now,
         state: AlertState.ALERT,
@@ -1370,7 +1371,7 @@ describe('alerts router', () => {
         lastValues: [{ startTime: now, count: 5 }],
       });
 
-      await AlertHistory.create({
+      await alertHistoryDocs.create({
         alert: alert.body.data._id,
         createdAt: earlier,
         state: AlertState.OK,
@@ -1413,21 +1414,21 @@ describe('alerts router', () => {
       const now = Date.now();
       const at = (minsAgo: number) => new Date(now - minsAgo * 60_000);
 
-      await AlertHistory.create({
+      await alertHistoryDocs.create({
         alert: alertId,
         createdAt: at(25),
         state: AlertState.OK,
         counts: 0,
         lastValues: [{ startTime: at(25), count: 0 }],
       });
-      await AlertHistory.create({
+      await alertHistoryDocs.create({
         alert: alertId,
         createdAt: at(20),
         state: AlertState.ALERT,
         counts: 5,
         lastValues: [{ startTime: at(20), count: 5 }],
       });
-      await AlertHistory.create({
+      await alertHistoryDocs.create({
         alert: alertId,
         createdAt: at(10),
         state: AlertState.OK,
@@ -1456,7 +1457,7 @@ describe('alerts router', () => {
     });
 
     it("returns 404 for another team's alert", async () => {
-      const otherTeamAlert = await Alert.create({
+      const otherTeamAlert = await alertDocs.create({
         team: randomMongoId(),
         threshold: 1,
         interval: '5m',
@@ -1515,14 +1516,14 @@ describe('alerts router', () => {
       const now = Date.now();
       const at = (minsAgo: number) => new Date(now - minsAgo * 60_000);
 
-      await AlertHistory.create({
+      await alertHistoryDocs.create({
         alert: alertId,
         createdAt: at(10),
         state: AlertState.OK,
         counts: 0,
         lastValues: [{ startTime: at(10), count: 0 }],
       });
-      await AlertHistory.create({
+      await alertHistoryDocs.create({
         alert: alertId,
         createdAt: at(5),
         state: AlertState.ERROR,
@@ -1561,7 +1562,7 @@ describe('alerts router', () => {
         minsAgo => new Date(now - minsAgo * 60_000),
       );
       for (const createdAt of windows) {
-        await AlertHistory.create({
+        await alertHistoryDocs.create({
           alert: alertId,
           createdAt,
           state: AlertState.OK,
@@ -1605,7 +1606,7 @@ describe('alerts router', () => {
       const windowStart = new Date(now - 5 * 60_000);
       const bucket = new Date(now - 10 * 60_000);
 
-      await AlertHistory.create({
+      await alertHistoryDocs.create({
         alert: alertId,
         createdAt: windowStart,
         state: AlertState.ALERT,
@@ -1614,7 +1615,7 @@ describe('alerts router', () => {
         group: 'ServiceName:api',
         fired: true,
       });
-      await AlertHistory.create({
+      await alertHistoryDocs.create({
         alert: alertId,
         createdAt: windowStart,
         state: AlertState.OK,
@@ -1652,14 +1653,14 @@ describe('alerts router', () => {
       const now = Date.now();
       const at = (minsAgo: number) => new Date(now - minsAgo * 60_000);
 
-      await AlertHistory.create({
+      await alertHistoryDocs.create({
         alert: alertId,
         createdAt: at(5),
         state: AlertState.OK,
         counts: 0,
         lastValues: [{ startTime: at(5), count: 0 }],
       });
-      await AlertHistory.create({
+      await alertHistoryDocs.create({
         alert: alertId,
         createdAt: at(45),
         state: AlertState.OK,
@@ -1707,7 +1708,7 @@ describe('alerts router', () => {
     });
 
     it("returns 404 for another team's alert", async () => {
-      const otherTeamAlert = await Alert.create({
+      const otherTeamAlert = await alertDocs.create({
         team: randomMongoId(),
         threshold: 1,
         interval: '5m',
@@ -1736,7 +1737,7 @@ describe('alerts router', () => {
         .expect(200);
 
       const errorTimestamp = new Date('2026-04-17T12:00:00.000Z');
-      await Alert.updateOne(
+      await alertDocs.updateOne(
         { _id: alert.body.data._id },
         {
           $set: {
@@ -1781,7 +1782,7 @@ describe('alerts router', () => {
         )
         .expect(200);
 
-      await Alert.updateOne(
+      await alertDocs.updateOne(
         { _id: alert.body.data._id },
         {
           $set: {
@@ -1852,7 +1853,7 @@ describe('alerts router', () => {
         { type: 'webhook', webhookId: other._id.toString() },
       ]);
 
-      const stored = await Alert.findById(created.body.data._id);
+      const stored = await alertDocs.findById(created.body.data._id);
       expect(stored!.channels).toEqual([
         { type: 'webhook', webhookId: webhook._id.toString() },
         { type: 'webhook', webhookId: other._id.toString() },
@@ -1909,7 +1910,7 @@ describe('alerts router', () => {
         })
         .expect(200);
 
-      const stored = await Alert.findById(created.body.data._id);
+      const stored = await alertDocs.findById(created.body.data._id);
       expect(stored!.channels).toHaveLength(2);
       expect(stored!.threshold).toBe(42);
     });
@@ -2063,7 +2064,7 @@ describe('alerts router', () => {
         )
         .expect(200);
 
-      const stored = await Alert.findById(created.body.data._id);
+      const stored = await alertDocs.findById(created.body.data._id);
       expect(stored!.threshold).toBe(42);
       expect(stored!.chartConfig).toMatchObject({ groupBy: 'ServiceName' });
     });
@@ -2099,7 +2100,7 @@ describe('alerts router', () => {
         )
         .expect(200);
 
-      let stored = await Alert.findById(created.body.data._id);
+      let stored = await alertDocs.findById(created.body.data._id);
       expect(stored!.chartConfig).toBeNull();
       expect(stored!.dashboard?.toString()).toBe(dashboard.body.id);
       expect(stored!.tileId).toBe(tileId);
@@ -2116,7 +2117,7 @@ describe('alerts router', () => {
         )
         .expect(200);
 
-      stored = await Alert.findById(created.body.data._id);
+      stored = await alertDocs.findById(created.body.data._id);
       expect(stored!.chartConfig).toMatchObject({
         source: source._id.toString(),
       });

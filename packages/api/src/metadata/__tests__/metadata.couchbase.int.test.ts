@@ -6,6 +6,7 @@ import { type Cluster, connect } from 'couchbase';
 
 import { loadMetadataConfig } from '@/metadata/couchbase/config';
 import { CouchbaseMetadataStore } from '@/metadata/couchbase/store';
+import { describeAlertRepos } from '@/metadata/testing/alertsContract';
 import { describeContentRepos } from '@/metadata/testing/contentContract';
 import { describeMetadataContract } from '@/metadata/testing/contract';
 
@@ -85,4 +86,5 @@ maybe('metadata on Couchbase', () => {
   }));
 
   describeContentRepos('couchbase', async () => store!);
+  describeAlertRepos('couchbase', async () => store!);
 });

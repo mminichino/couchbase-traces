@@ -11,17 +11,15 @@ import {
   DisplayType,
   SavedChartConfig,
 } from '@couchbase-traces/common-utils/dist/types';
-import { Types } from 'mongoose';
 
-import type { ObjectId } from '@/models';
-import { AlertSource } from '@/models/alert';
+import { AlertSource } from '@/metadata/schemas/alert';
 
 import logger from './logger';
 
 /**
  * Documents that an alert may reference. Structural rather than
  * `Pick<IDashboard | ISavedSearch, ...>` because derivation reads
- * the data as untrusted from old Mongo documents.
+ * the data as untrusted.
  */
 export type AlertRefs = {
   savedSearch?: { name?: unknown; tags?: unknown } | null;
@@ -89,8 +87,8 @@ export function alertConfigHasGroupBy(
 }
 
 /**
- * Referenced entities are read straight from Mongo and predate any of these
- * fields, so treat their values as untrusted: anything that isn't a non-blank
+ * Referenced entities may predate any of these fields (or hold hand-edited
+ * values), so treat their values as untrusted: anything that isn't a non-blank
  * string is "no name".
  */
 function normalizeName(value: unknown): string | null {
@@ -101,7 +99,7 @@ function normalizeName(value: unknown): string | null {
   return trimmed === '' ? null : trimmed;
 }
 
-/** Untrusted Mongo value -> tags that satisfy `alertTagsSchema`. */
+/** Untrusted value -> tags that satisfy `alertTagsSchema`. */
 function normalizeTags(value: unknown): string[] {
   if (!Array.isArray(value)) {
     return [];
@@ -109,28 +107,6 @@ function normalizeTags(value: unknown): string[] {
   return clampAlertTags(
     value.filter((tag): tag is string => typeof tag === 'string'),
   );
-}
-
-/**
- * A Mongoose ref field is either a bare ObjectId or, when the query populated
- * it, the referenced document. Documents don't override toString(), so an
- * unguarded `.toString()` on a populated ref silently yields "[object Object]".
- */
-export function isPopulatedRef(
-  ref: unknown,
-): ref is { _id: ObjectId | string } {
-  return typeof ref === 'object' && ref !== null && '_id' in ref;
-}
-
-/**
- * The populated document when the ref field was populated, null otherwise.
- * The instanceof check is for the type system: the predicate alone can't
- * remove the bare-ObjectId branch from the union.
- */
-export function populatedRefOrNull<T extends { _id: ObjectId | string }>(
-  ref: ObjectId | T | null | undefined,
-): T | null {
-  return isPopulatedRef(ref) && !(ref instanceof Types.ObjectId) ? ref : null;
 }
 
 /**

@@ -2,8 +2,7 @@ import { isTileAlertUnaddressable } from '@couchbase-traces/common-utils/dist/ia
 import { serializeError } from 'serialize-error';
 
 import { getMetadataStore } from '@/metadata';
-import type { ObjectId } from '@/models';
-import { AlertSource } from '@/models/alert';
+import { AlertSource } from '@/metadata/schemas/alert';
 import { getCounter } from '@/utils/instrumentation';
 import logger from '@/utils/logger';
 
@@ -13,9 +12,9 @@ const tileAlertLookupFailures = getCounter('cbt.iac.tile_alert_lookup_failed', {
 });
 
 type TileAlertRow = {
-  _id: ObjectId;
+  _id: string;
   source?: AlertSource;
-  dashboard?: ObjectId | string | null;
+  dashboard?: string | null;
   tileId?: string | null;
 };
 
@@ -42,7 +41,7 @@ export async function unaddressableTileAlertIds({
   alerts,
   maxTimeMS,
 }: {
-  teamId: ObjectId | string;
+  teamId: string;
   alerts: readonly TileAlertRow[];
   maxTimeMS: number;
 }): Promise<Set<string>> {

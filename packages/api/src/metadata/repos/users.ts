@@ -10,6 +10,7 @@ import {
 } from '@/metadata/auth/password';
 import { DuplicateKeyError } from '@/metadata/errors';
 import { type Id, isValidId, newId } from '@/metadata/ids';
+import { reassignAlertsInTx } from '@/metadata/repos/alertTx';
 import {
   getDoc,
   mutateDoc,
@@ -35,9 +36,6 @@ export function hashOrgApiKey(key: string) {
 
 const EMAIL = 'user_email';
 const ACCESS_KEY = 'user_access_key';
-
-/** A removed member, kept whole so restore can put it back as it was. */
-export type RemovedUser = { id: Id; doc: UserDoc };
 
 function toUser(id: Id, d: UserDoc): UserWithSecret {
   return {
@@ -342,24 +340,39 @@ export class UserRepository {
     }));
   }
 
-  /** Deletes a non-virtual member of `teamId` and frees its claims. */
-  async removeMember(teamId: Id, id: Id): Promise<RemovedUser | null> {
-    if (!isValidId(id)) return null;
-    const got = await this.kv.get<unknown>('users', id);
-    if (!got) return null;
-    const doc = UserDocSchema.parse(got.value);
-    if (doc.team !== teamId || doc.isVirtual) return null;
-    const removed = await this.kv.remove('users', id, { cas: got.cas });
-    if (!removed) return null;
-    await releaseUnique(this.kv, ACCESS_KEY, [doc.accessKey], id);
-    await releaseUnique(this.kv, EMAIL, [doc.email], id);
-    return { id, doc };
-  }
-
-  /** Puts a removed member back; a repeat after success is a no-op. */
-  async restore({ id, doc }: RemovedUser): Promise<void> {
-    if (await this.userExists(id)) return;
-    await this.insert(id, doc);
+  /**
+   * Deletes a non-virtual member of `teamId`, hands the alerts they created to
+   * `heir`, and frees their claims. One transaction: the member count, the
+   * delete, and the reassignment commit together, and the team document is
+   * rewritten unchanged so two removals racing past the "last person" check
+   * conflict and the loser re-reads the count.
+   */
+  async removeMember(
+    teamId: Id,
+    id: Id,
+    heir: Id,
+  ): Promise<'deleted' | 'not_found' | 'last_member'> {
+    if (!isValidId(id)) return 'not_found';
+    const outcome = await this.deps.tx.run(async tx => {
+      const raw = await tx.get<unknown>('users', id);
+      const doc = raw == null ? null : UserDocSchema.parse(raw);
+      if (!doc || doc.team !== teamId || doc.isVirtual) return null;
+      const team = await tx.get<unknown>('teams', teamId);
+      if (team != null) await tx.replace('teams', teamId, team);
+      const people = await tx.find('users', {
+        where: { team: teamId, isVirtual: false },
+        limit: 2,
+      });
+      if (people.length <= 1) return 'last_member' as const;
+      await tx.remove('users', id);
+      await reassignAlertsInTx(tx, teamId, id, heir, this.now());
+      return doc;
+    });
+    if (outcome == null) return 'not_found';
+    if (outcome === 'last_member') return outcome;
+    await releaseUnique(this.kv, ACCESS_KEY, [outcome.accessKey], id);
+    await releaseUnique(this.kv, EMAIL, [outcome.email], id);
+    return 'deleted';
   }
 
   /** Tests and failed registrations only. */

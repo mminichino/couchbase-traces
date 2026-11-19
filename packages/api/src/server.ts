@@ -14,7 +14,6 @@ import {
   closeMetadataStore,
   startMetadataStore,
 } from '@/metadata';
-import { runStartupMigrations } from '@/migrations';
 import { connectDBWithRetry, mongooseConnection } from '@/models';
 import opampApp from '@/opamp/app';
 import { setupTeamDefaults } from '@/setupDefaults';
@@ -147,12 +146,9 @@ export default class Server {
     // allowed to leave the process running but permanently unable to serve.
     await connectDBWithRetry();
 
-    // Both stores during the Mongo elimination (plan C0–C4). Retries the
-    // connection forever like Mongo; rejects on bad config (including missing
+    // Retries the connection forever like Mongo; rejects on bad config (including missing
     // CBT_METADATA_USER / CBT_METADATA_PASSWORD) or a newer schema.
     await startMetadataStore({ logger, appVersion: config.CODE_VERSION });
-
-    await runStartupMigrations();
 
     // Initialize default connections and sources for local app mode
     if (config.IS_LOCAL_APP_MODE) {

@@ -65,4 +65,11 @@ export class SavedSearchRepository extends TeamDocs<
     }));
     return r ? toSavedSearch(r.id, r.after) : null;
   }
+
+  /** Deletes the saved search together with its alerts, atomically. */
+  async deleteWithAlerts(team: Id, rawId: Id): Promise<ISavedSearch | null> {
+    const id = this.idOf(rawId);
+    const r = await this.deleteCascading(team, id, { savedSearch: id ?? '' });
+    return r && toSavedSearch(r.id, r.doc);
+  }
 }

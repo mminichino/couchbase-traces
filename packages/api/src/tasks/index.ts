@@ -6,7 +6,12 @@ import { CronJob } from 'cron';
 import minimist from 'minimist';
 import { serializeError } from 'serialize-error';
 
-import { RUN_SCHEDULED_TASKS_EXTERNALLY } from '@/config';
+import {
+  ALERT_SCHEDULER_LEASE,
+  ALERT_TICK_MS,
+  CODE_VERSION,
+  RUN_SCHEDULED_TASKS_EXTERNALLY,
+} from '@/config';
 import CheckAlertTask from '@/tasks/checkAlerts';
 import {
   taskExecutionDurationGauge,
@@ -16,6 +21,7 @@ import {
 } from '@/tasks/metrics';
 import PingPongTask from '@/tasks/pingPongTask';
 import ProvisionDashboardsTask from '@/tasks/provisionDashboards';
+import { runWithSchedulerLease } from '@/tasks/schedulerLease';
 import { asTaskArgs, HdxTask, TaskArgs, TaskName } from '@/tasks/types';
 import logger from '@/utils/logger';
 
@@ -40,7 +46,18 @@ async function main(argv: TaskArgs): Promise<void> {
     const task: HdxTask = createTask(argv);
     try {
       logger.info(`${task.name()} started at ${new Date()}`);
-      await task.execute();
+      if (argv.taskName === TaskName.CHECK_ALERTS) {
+        await runWithSchedulerLease(
+          {
+            enabled: ALERT_SCHEDULER_LEASE,
+            tickMs: ALERT_TICK_MS,
+            appVersion: CODE_VERSION,
+          },
+          () => task.execute(),
+        );
+      } else {
+        await task.execute();
+      }
       taskExecutionSuccessCounter.get(argv.taskName)?.add(1);
     } catch (e: unknown) {
       logger.error(

@@ -2,10 +2,11 @@ import {
   AlertErrorType,
   DisplayType,
 } from '@couchbase-traces/common-utils/dist/types';
-import { Types } from 'mongoose';
 
-import { AlertState, IAlertError } from '@/models/alert';
-import AlertHistory from '@/models/alertHistory';
+import { getMetadataStore, setMetadataStoreForTests } from '@/metadata';
+import { newId } from '@/metadata/ids';
+import { AlertState, IAlertError } from '@/metadata/schemas/alert';
+import { createMemoryStore } from '@/metadata/testing/memoryStore';
 import {
   getAlertWindowStart,
   getConsecutiveWindowHistories,
@@ -21,7 +22,7 @@ import {
 import { AlertTaskType } from '@/tasks/checkAlerts/providers';
 
 const makeAlert = (overrides: Record<string, unknown> = {}): any => ({
-  id: new Types.ObjectId().toString(),
+  id: newId(),
   interval: '5m',
   threshold: 1,
   thresholdType: 'above',
@@ -44,7 +45,7 @@ const makeDetails = (alert: any): any => ({
 });
 
 const makeFiredHistory = (): any => ({
-  _id: new Types.ObjectId(),
+  _id: newId(),
   createdAt: new Date(),
   state: AlertState.ALERT,
   fired: true,
@@ -319,10 +320,16 @@ describe('alert evaluators', () => {
     });
     const healthy = makeAlert({ numConsecutiveWindows: 2 });
     const broken = makeAlert({ numConsecutiveWindows: 2, threshold: 42 });
+    setMetadataStoreForTests(createMemoryStore());
     const aggregate = jest
-      .spyOn(AlertHistory, 'aggregate')
+      .spyOn(getMetadataStore().alertHistory, 'rangeExcludingErrors')
       .mockResolvedValue([
-        { createdAt: new Date(), state: AlertState.ALERT, group: '' },
+        {
+          _id: healthy.id,
+          createdAt: new Date(),
+          state: AlertState.ALERT,
+          group: '',
+        },
       ]);
 
     try {
@@ -336,6 +343,7 @@ describe('alert evaluators', () => {
       expect(map.has(broken.id)).toBe(false);
     } finally {
       aggregate.mockRestore();
+      setMetadataStoreForTests(null);
     }
   });
 

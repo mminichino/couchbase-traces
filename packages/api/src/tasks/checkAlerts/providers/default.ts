@@ -6,7 +6,6 @@ import {
   Tile,
 } from '@couchbase-traces/common-utils/dist/types';
 import PQueue from '@esm2cjs/p-queue';
-import mongoose from 'mongoose';
 import ms from 'ms';
 import { URLSearchParams } from 'url';
 
@@ -19,24 +18,23 @@ import {
   metadataReadiness,
   startMetadataStore,
 } from '@/metadata';
-import type { IConnection } from '@/metadata/schemas/connection';
-import type { ISavedSearch } from '@/metadata/schemas/savedSearch';
-import type { ISource } from '@/metadata/schemas/source';
-import type { IWebhook } from '@/metadata/schemas/webhook';
-import { connectDB, mongooseConnection, ObjectId } from '@/models';
-import Alert, {
+import {
   AlertSource,
   AlertState,
   type IAlert,
   type IAlertError,
-} from '@/models/alert';
-import AlertHistory, {
-  IAlertHistory,
-  IAlertHistoryAnalytics,
-} from '@/models/alertHistory';
-import { DataClient } from '@/query';
+} from '@/metadata/schemas/alert';
 import {
   AggregatedAlertHistory,
+  IAlertHistory,
+  IAlertHistoryAnalytics,
+} from '@/metadata/schemas/alertHistory';
+import type { IConnection } from '@/metadata/schemas/connection';
+import type { ISavedSearch } from '@/metadata/schemas/savedSearch';
+import type { ISource } from '@/metadata/schemas/source';
+import type { IWebhook } from '@/metadata/schemas/webhook';
+import { DataClient } from '@/query';
+import {
   getConsecutiveWindowHistories,
   getPreviousAlertHistories,
 } from '@/tasks/checkAlerts';
@@ -370,9 +368,7 @@ async function loadAlert(
   }
 
   if (config.IS_LOCAL_APP_MODE) {
-    // The id is the 12 character string `_local_team_', which will become an ObjectId
-    // as the ASCII hex values, so 5f6c6f63616c5f7465616d5f.
-    alert.team = new mongoose.Types.ObjectId(LOCAL_APP_TEAM.id);
+    alert.team = LOCAL_APP_TEAM.id;
   }
 
   let conn: IConnection | undefined;
@@ -422,29 +418,18 @@ export default class DefaultAlertProvider implements AlertProvider {
   private ownsMetadataStore = false;
 
   async init() {
-    // The check-alerts worker only reads from MongoDB and never needs to
-    // ensure indexes exist (the API service owns that). Disabling autoIndex
-    // prevents background createIndexes calls from racing the short-lived
-    // connection close (which sends endSessions), surfaced as
-    // MongoExpiredSessionError on mongodb.createIndexes spans.
-    const startMetadata = async () => {
-      if (metadataReadiness().state !== 'disabled') return;
-      await startMetadataStore({ logger, appVersion: config.CODE_VERSION });
-      this.ownsMetadataStore = true;
-    };
-    await Promise.all([connectDB({ autoIndex: false }), startMetadata()]);
+    if (metadataReadiness().state !== 'disabled') return;
+    await startMetadataStore({ logger, appVersion: config.CODE_VERSION });
+    this.ownsMetadataStore = true;
   }
 
   async asyncDispose() {
-    await Promise.all([
-      mongooseConnection.close(),
-      this.ownsMetadataStore ? closeMetadataStore() : Promise.resolve(),
-    ]);
+    if (this.ownsMetadataStore) await closeMetadataStore();
   }
 
   async getAlertTasks(): Promise<AlertTask[]> {
     const groupedTasks = new Map<string, AlertTask>();
-    const alerts = await Alert.find({});
+    const alerts = await getMetadataStore().alerts.listAll();
 
     const now = new Date();
     const alertIds = alerts.map(({ id }) => id);
@@ -564,9 +549,8 @@ export default class DefaultAlertProvider implements AlertProvider {
   ) {
     // Save history records first (in parallel), then update alert state
     // Use Promise.allSettled to handle partial failures gracefully
-    const historyResults = await Promise.allSettled(
-      histories.map(history => AlertHistory.create(history)),
-    );
+    const store = getMetadataStore();
+    const historyResults = await store.alertHistory.createMany(histories);
 
     // Log any failed history saves but continue with alert state update
     const failedHistories = historyResults.filter(
@@ -600,10 +584,7 @@ export default class DefaultAlertProvider implements AlertProvider {
         : AlertState.OK;
 
     // Update alert state + errors based on this execution
-    await Alert.updateOne(
-      { _id: new mongoose.Types.ObjectId(alertId) },
-      { $set: { state: finalState, executionErrors: errors } },
-    );
+    await store.alerts.setState(alertId, finalState, errors);
 
     // All histories in one execution share the same createdAt (the current
     // evaluation window start) and the same evaluation-level analytics.
@@ -623,13 +604,12 @@ export default class DefaultAlertProvider implements AlertProvider {
     // (e.g. a webhook failure recorded alongside its normal rows) that is
     // never retried, so it is a truthful record that must survive.
     if (evaluationWindowStart != null && successfulHistories.length > 0) {
-      await AlertHistory.deleteMany({
-        alert: new mongoose.Types.ObjectId(alertId),
-        state: AlertState.ERROR,
-        createdAt: evaluatedDateRange
-          ? { $gt: evaluatedDateRange[0], $lte: evaluationWindowStart }
+      await store.alertHistory.deleteErrorRows(
+        alertId,
+        evaluatedDateRange
+          ? { gt: evaluatedDateRange[0], lte: evaluationWindowStart }
           : evaluationWindowStart,
-      });
+      );
     }
 
     // Notification (e.g. webhook) failures happened during this evaluation:
@@ -651,10 +631,7 @@ export default class DefaultAlertProvider implements AlertProvider {
     evaluationWindowStart?: Date,
     analytics?: IAlertHistoryAnalytics,
   ) {
-    await Alert.updateOne(
-      { _id: new mongoose.Types.ObjectId(alertId) },
-      { $set: { executionErrors: errors } },
-    );
+    await getMetadataStore().alerts.setExecutionErrors(alertId, errors);
 
     if (evaluationWindowStart != null) {
       await this.upsertErrorHistory(
@@ -668,10 +645,10 @@ export default class DefaultAlertProvider implements AlertProvider {
 
   /**
    * Upsert the ERROR-state history row for the given evaluation window.
-   * Keyed on {alert, createdAt, state} so retries within the same window
-   * update a single row instead of accumulating one row per tick — a
-   * permanently failing 1d alert produces one error row per day, not one per
-   * minute. Rows expire with the collection's existing TTL index.
+   * Keyed on (alert, window start) so retries within the same window update
+   * a single row instead of accumulating one row per tick — a permanently
+   * failing 1d alert produces one error row per day, not one per minute. Rows
+   * keep the document expiry set when they were created.
    */
   private async upsertErrorHistory(
     alertId: string,
@@ -679,21 +656,15 @@ export default class DefaultAlertProvider implements AlertProvider {
     errors: IAlertError[],
     analytics?: IAlertHistoryAnalytics,
   ) {
-    await AlertHistory.updateOne(
-      {
-        alert: new mongoose.Types.ObjectId(alertId),
-        createdAt: evaluationWindowStart,
-        state: AlertState.ERROR,
-      },
-      {
-        $set: { errors, ...(analytics != null && { analytics }) },
-        $setOnInsert: { counts: 0, lastValues: [] },
-      },
-      { upsert: true },
+    await getMetadataStore().alertHistory.upsertErrorRow(
+      alertId,
+      evaluationWindowStart,
+      errors,
+      analytics,
     );
   }
 
-  async getWebhooks(teamId: string | ObjectId) {
+  async getWebhooks(teamId: string) {
     const webhooks = await getMetadataStore().webhooks.list(teamId.toString());
     return new Map<string, IWebhook>(webhooks.map(w => [w._id, w]));
   }

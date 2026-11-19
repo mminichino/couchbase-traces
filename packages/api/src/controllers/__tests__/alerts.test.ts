@@ -4,7 +4,11 @@ import {
 } from '@couchbase-traces/common-utils/dist/types';
 
 import { makeAlert } from '@/controllers/alerts';
-import { AlertChannel, AlertSource, AlertThresholdType } from '@/models/alert';
+import {
+  AlertChannel,
+  AlertSource,
+  AlertThresholdType,
+} from '@/metadata/schemas/alert';
 
 // A channel type this repo doesn't define -- see
 // models/__tests__/alert.test.ts for why. `value: any` (rather than an `as`

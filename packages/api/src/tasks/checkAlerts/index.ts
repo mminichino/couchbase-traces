@@ -51,25 +51,24 @@ import {
 import PQueue from '@esm2cjs/p-queue';
 import * as fns from 'date-fns';
 import { isString, pick } from 'lodash';
-import { ObjectId } from 'mongoose';
-import mongoose from 'mongoose';
 import ms from 'ms';
 import { performance } from 'perf_hooks';
 import { serializeError } from 'serialize-error';
 
 import { ALERT_HISTORY_QUERY_CONCURRENCY } from '@/controllers/alertHistory';
+import { getMetadataStore } from '@/metadata';
+import { AlertState, IAlert, IAlertError } from '@/metadata/schemas/alert';
+import {
+  AggregatedAlertHistory,
+  attributesToGroupValues,
+  groupValuesToAttributes,
+  IAlertHistory,
+  IAlertHistoryAnalytics,
+} from '@/metadata/schemas/alertHistory';
 import type { IDashboard } from '@/metadata/schemas/dashboard';
 import type { ISavedSearch } from '@/metadata/schemas/savedSearch';
 import { ISource } from '@/metadata/schemas/source';
 import type { IWebhook } from '@/metadata/schemas/webhook';
-import { AlertState, IAlert, IAlertError } from '@/models/alert';
-import AlertHistory, {
-  attributesToGroupValues,
-  GroupValue,
-  groupValuesToAttributes,
-  IAlertHistory,
-  IAlertHistoryAnalytics,
-} from '@/models/alertHistory';
 import {
   isClientTimeoutOrAbortError,
   isQueryTimeoutError,
@@ -109,7 +108,7 @@ import {
   roundDownToXMinutes,
   unflattenObject,
 } from '@/tasks/util';
-import { alertConfigHasGroupBy, isPopulatedRef } from '@/utils/alerts';
+import { alertConfigHasGroupBy } from '@/utils/alerts';
 import {
   getActiveTraceId,
   getCounter,
@@ -527,10 +526,7 @@ const fireChannelEvent = async ({
   if (team == null) {
     throw new Error('Team not found');
   }
-  // alert.team is typed as a bare ObjectId, but a caller that populated it
-  // (int-test setups do `.populate(['team', ...])`; the production path never
-  // does) hands us a full Team document instead. Prefer its own _id.
-  const teamId = (isPopulatedRef(team) ? team._id : team).toString();
+  const teamId = team;
 
   const attributesNested = unflattenObject(attributes);
   const templateView: AlertMessageTemplateDefaultView = {
@@ -975,11 +971,6 @@ export const parseAlertData = (
  * queries. Per evaluation rather than per client, because one client is shared
  * by every alert on a connection.
  */
-const sourceId = (source: AlertDetails['source']): string | undefined => {
-  if (typeof source?.id === 'string') return source.id;
-  return isPopulatedRef(source) ? source._id.toString() : undefined;
-};
-
 export const alertQueryAttribution = (
   details: AlertDetails,
 ): QueryAttribution => ({
@@ -988,11 +979,7 @@ export const alertQueryAttribution = (
   surface: 'alert',
   alert: details.alert?.id,
   trace: getActiveTraceId(),
-  // `id` is a mongoose virtual and the tile path goes through `toObject()`,
-  // which leaves virtuals out, so that source only has `_id`. Try both, and
-  // check the type: a bare ObjectId has an `id` of its own that is a byte
-  // array, which would satisfy `??` and then be discarded.
-  source: 'source' in details ? sourceId(details.source) : undefined,
+  source: 'source' in details ? details.source?.id : undefined,
   ...(details.taskType === AlertTaskType.SAVED_SEARCH
     ? { search: details.savedSearch?.id }
     : {}),
@@ -1227,7 +1214,7 @@ export const processAlert = async (
     const getOrCreateHistory = (groupKey: string): IAlertHistory => {
       if (!histories.has(groupKey)) {
         histories.set(groupKey, {
-          alert: new mongoose.Types.ObjectId(alert.id),
+          alert: alert.id,
           createdAt: nowInMinsRoundDown,
           state: AlertState.OK,
           counts: 0,
@@ -1880,23 +1867,12 @@ export const processAlert = async (
 /** @public */
 export { handleSendGenericWebhook };
 
-export interface AggregatedAlertHistory {
-  _id: ObjectId;
-  createdAt: Date;
-  state: AlertState;
-  group?: string;
-  fired?: boolean;
-  groupValues?: GroupValue[] | null;
-}
-
 /**
  * Fetch the most recent AlertHistory value for each of the given alert IDs.
  * For group-by alerts, returns the latest history for each group within each alert.
  *
- * Uses per-alert queries instead of batched $in to leverage the compound index
- * {alert: 1, group: 1, createdAt: -1} for index-backed sorting. With a single
- * alert value, the index delivers results already sorted by {group, createdAt desc},
- * so the $sort is a no-op and $group + $first can short-circuit per group.
+ * Uses per-alert queries (a window-function SQL++ read per alert) rather than
+ * one batched query, so each is a single-range scan on (alert, createdAt).
  *
  * @param alertIds The list of alert IDs to query the latest history for.
  * @param now The current date and time. AlertHistory documents that have a createdAt > now are ignored.
@@ -1919,49 +1895,12 @@ export const getPreviousAlertHistories = async (
   const results = await Promise.all(
     alertIds.map(alertId =>
       queue.add(async () => {
-        const id = new mongoose.Types.ObjectId(alertId);
-        return AlertHistory.aggregate<AggregatedAlertHistory>([
-          {
-            $match: {
-              alert: id,
-              createdAt: { $lte: now, $gte: lookbackDate },
-              // ERROR rows record failed evaluations; they must not count as
-              // "window evaluated" or the failed window would never be
-              // retried/backfilled.
-              state: { $ne: AlertState.ERROR },
-            },
-          },
-          // With a single alert value, the compound index {alert: 1, group: 1, createdAt: -1}
-          // delivers results already in this sort order — this is an index-backed no-op sort.
-          {
-            $sort: { alert: 1, group: 1, createdAt: -1 },
-          },
-          // Group by {alert, group}, taking the first (latest) document's fields.
-          // Using $first on individual fields instead of $first: '$$ROOT' allows
-          // DocumentDB to avoid fetching full documents when not needed.
-          {
-            $group: {
-              _id: {
-                alert: '$alert',
-                group: '$group',
-              },
-              createdAt: { $first: '$createdAt' },
-              state: { $first: '$state' },
-              fired: { $first: '$fired' },
-              groupValues: { $first: '$groupValues' },
-            },
-          },
-          {
-            $project: {
-              _id: '$_id.alert',
-              createdAt: 1,
-              state: 1,
-              group: '$_id.group',
-              fired: 1,
-              groupValues: 1,
-            },
-          },
-        ]);
+        // ERROR rows record failed evaluations; the store leaves them out so
+        // a failed window is retried/backfilled rather than counted done.
+        return getMetadataStore().alertHistory.latestPerGroup(alertId, {
+          gte: lookbackDate,
+          lte: now,
+        });
       }),
     ),
   );
@@ -1972,10 +1911,7 @@ export const getPreviousAlertHistories = async (
       .flat()
       .filter((h): h is AggregatedAlertHistory => h !== undefined)
       .map(history => {
-        const key = computeHistoryMapKey(
-          history._id.toString(),
-          history.group || '',
-        );
+        const key = computeHistoryMapKey(history._id, history.group || '');
         return [key, history];
       }),
   );
@@ -2036,28 +1972,13 @@ export const getConsecutiveWindowHistories = async (
           windowStart.getTime() -
             (numWindowsToLookBack - 1) * windowSizeInMins * 60_000,
         );
-        const id = new mongoose.Types.ObjectId(alert.id);
-        const histories = await AlertHistory.aggregate<AggregatedAlertHistory>([
-          {
-            $match: {
-              alert: id,
-              createdAt: { $gte: earliestAllowedTime, $lt: windowStart },
-              // Failed evaluations (ERROR rows) are not evaluated windows and
-              // must not affect consecutive-window counting.
-              state: { $ne: AlertState.ERROR },
-            },
-          },
-          { $sort: { alert: 1, group: 1, createdAt: -1 } },
-          {
-            $project: {
-              _id: '$alert',
-              createdAt: 1,
-              state: 1,
-              group: 1,
-              fired: 1,
-            },
-          },
-        ]);
+        // Failed evaluations (ERROR rows) are not evaluated windows and
+        // must not affect consecutive-window counting.
+        const histories =
+          await getMetadataStore().alertHistory.rangeExcludingErrors(alert.id, {
+            gte: earliestAllowedTime,
+            lt: windowStart,
+          });
         return { alertId: alert.id, histories };
       }),
     ),
