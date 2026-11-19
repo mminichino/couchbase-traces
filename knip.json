@@ -105,7 +105,6 @@
   ],
   "ignoreBinaries": [
     "make",
-    "migrate",
     "stryker"
   ],
   "ignoreDependencies": [

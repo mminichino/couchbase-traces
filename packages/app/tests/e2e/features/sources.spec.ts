@@ -251,7 +251,7 @@ test.describe('Sources Functionality', { tag: ['@sources'] }, () => {
       // Pins the contract that updateSource relies on: saving from the
       // source form must not drop any populated field. The controller
       // uses findOneAndReplace, so any field omitted from the PUT body
-      // is silently deleted from MongoDB. If the frontend ever moves
+      // is silently deleted from the metadata store. If the frontend ever moves
       // to a partial/PATCH-style payload, this test will fail because
       // the before/after diff will show fields disappearing.
       //
@@ -298,8 +298,8 @@ test.describe('Sources Functionality', { tag: ['@sources'] }, () => {
 
       // Specific regression: metadataMaterializedViews survived the
       // form roundtrip with its user-meaningful fields intact. The
-      // embedded sub-document gets a fresh Mongoose-minted _id on
-      // each findOneAndReplace, which is fine — we only care that
+      // embedded sub-document may be re-minted on each
+      // save, which is fine — we only care that
       // the rollup config the user configured is preserved.
       expect(sourceAfter.metadataMaterializedViews).toMatchObject({
         keyRollupTable: sourceBefore.metadataMaterializedViews.keyRollupTable,
@@ -328,7 +328,7 @@ test.describe('Sources Functionality', { tag: ['@sources'] }, () => {
 
   // These two tests both flip the shared team's `isMetricsSeriesTableEnabled`
   // flag. There's no settings UI or API endpoint for team feature flags yet,
-  // so it's toggled directly in Mongo (see utils/db-helpers.ts) — and this
+  // so it's toggled directly in the metadata bucket (see utils/db-helpers.ts) — and this
   // app only ever supports a single team per deployment (`/register/
   // password` 409s with `teamAlreadyExists` once any team exists, even in
   // full-stack mode — see `isTeamExisting` in
@@ -343,7 +343,7 @@ test.describe('Sources Functionality', { tag: ['@sources'] }, () => {
       'should show series Table field when isMetricsSeriesTableEnabled is on',
       { tag: ['@full-stack'] },
       async () => {
-        setTeamFlag('isMetricsSeriesTableEnabled', true);
+        await setTeamFlag('isMetricsSeriesTableEnabled', true);
         try {
           await searchPage.goto();
           await searchPage.sourceActionsMenu.click();
@@ -360,7 +360,7 @@ test.describe('Sources Functionality', { tag: ['@sources'] }, () => {
 
           await searchPage.page.keyboard.press('Escape');
         } finally {
-          setTeamFlag('isMetricsSeriesTableEnabled', false);
+          await setTeamFlag('isMetricsSeriesTableEnabled', false);
         }
       },
     );
@@ -369,7 +369,7 @@ test.describe('Sources Functionality', { tag: ['@sources'] }, () => {
       'should warn when the configured series table does not match the series table schema',
       { tag: ['@full-stack'] },
       async ({ page }) => {
-        setTeamFlag('isMetricsSeriesTableEnabled', true);
+        await setTeamFlag('isMetricsSeriesTableEnabled', true);
 
         const API_URL = getApiUrl();
         const metricSources = await getSources(page, 'metric');
@@ -417,7 +417,7 @@ test.describe('Sources Functionality', { tag: ['@sources'] }, () => {
           ).toBeVisible({ timeout: 20000 });
         } finally {
           await page.request.delete(`${API_URL}/sources/${createdSourceId}`);
-          setTeamFlag('isMetricsSeriesTableEnabled', false);
+          await setTeamFlag('isMetricsSeriesTableEnabled', false);
         }
       },
     );

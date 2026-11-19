@@ -3,7 +3,7 @@ description: |
   Shared setup for E2E test workflows: sets the CBT_E2E_* port env vars and
   common Playwright env vars, then runs Node.js setup, dependency install,
   build, Playwright browser install, and starts the E2E Docker Compose stack
-  (MongoDB + Couchbase) with health checks. The caller is responsible for
+  (Couchbase) with health checks. The caller is responsible for
   `actions/checkout`, running Playwright, uploading artifacts, and tearing
   down the Docker stack.
 runs:
@@ -13,11 +13,9 @@ runs:
     - name: Set E2E environment variables
       shell: bash
       run: |
-        MONGO_PORT=21100
         echo "CBT_E2E_SLOT=0" >> $GITHUB_ENV
         echo "CBT_E2E_OPAMP_PORT=20320" >> $GITHUB_ENV
         echo "CBT_E2E_API_PORT=21000" >> $GITHUB_ENV
-        echo "CBT_E2E_MONGO_PORT=$MONGO_PORT" >> $GITHUB_ENV
         echo "CBT_E2E_APP_LOCAL_PORT=21200" >> $GITHUB_ENV
         echo "CBT_E2E_APP_PORT=21300" >> $GITHUB_ENV
         echo "CBT_E2E_CB_MGMT_PORT=28091" >> $GITHUB_ENV
@@ -28,7 +26,6 @@ runs:
         echo "CBT_E2E_CB_EVENTING_PORT=28096" >> $GITHUB_ENV
         echo "CBT_E2E_CB_BACKUP_PORT=28097" >> $GITHUB_ENV
         echo "CBT_E2E_CB_KV_PORT=28123" >> $GITHUB_ENV
-        echo "MONGO_URI=mongodb://localhost:$MONGO_PORT/hyperdx-e2e" >> $GITHUB_ENV
         echo "E2E_FULLSTACK=true" >> $GITHUB_ENV
         echo "E2E_UNIQUE_USER=true" >> $GITHUB_ENV
         echo "E2E_API_HEALTH_CHECK_MAX_RETRIES=60" >> $GITHUB_ENV
@@ -91,19 +88,6 @@ runs:
           sleep 10
         done
         docker compose -p e2e-0 -f packages/app/tests/e2e/docker-compose.yml up -d
-        echo "Waiting for MongoDB..."
-        for i in $(seq 1 30); do
-          if docker compose -p e2e-0 -f packages/app/tests/e2e/docker-compose.yml exec -T db mongosh --quiet --eval "db.adminCommand({ping:1})" >/dev/null 2>&1; then
-            echo "MongoDB is ready"
-            break
-          fi
-          if [ "$i" -eq 30 ]; then
-            echo "MongoDB failed to become ready after 30 seconds"
-            exit 1
-          fi
-          echo "Waiting for MongoDB... ($i/30)"
-          sleep 1
-        done
         echo "Waiting for Couchbase..."
         for i in $(seq 1 60); do
           if curl -sf "http://127.0.0.1:${CBT_E2E_CB_MGMT_PORT}/ui/index.html" >/dev/null 2>&1; then

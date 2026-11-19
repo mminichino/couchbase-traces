@@ -17,8 +17,6 @@ export default [
       'dist/**',
       'coverage/**',
       'src/coverage/**',
-      'migrations/**',
-      'migrate-mongo-config.ts',
       '**/*.config.js',
       '**/*.config.mjs',
       'jest.config.js',
@@ -26,7 +24,7 @@ export default [
     ],
   },
   {
-    files: ['src/**/*.ts', '!migrations/**'],
+    files: ['src/**/*.ts'],
     plugins: {
       '@typescript-eslint': tseslint.plugin,
       'simple-import-sort': simpleImportSort,
@@ -37,6 +35,20 @@ export default [
     rules: {
       ...nodePlugin.configs.recommended.rules,
       ...securityPlugin.configs['recommended-legacy'].rules,
+      // App metadata lives in Couchbase; scripts/ci/check-no-mongo.sh is the
+      // repo-wide guard, this reports it at the import site.
+      'no-restricted-imports': [
+        'error',
+        {
+          patterns: [
+            {
+              group: ['mongoose', 'mongodb', 'bson', 'migrate-mongo'],
+              message:
+                'MongoDB was removed; use the metadata store (@/metadata).',
+            },
+          ],
+        },
+      ],
       '@typescript-eslint/ban-ts-comment': 'error',
       '@typescript-eslint/no-empty-interface': 'off',
       '@typescript-eslint/no-empty-object-type': 'error',
@@ -62,7 +74,7 @@ export default [
       'n/no-unpublished-import': [
         'error',
         {
-          allowModules: ['mongodb', 'supertest'],
+          allowModules: ['supertest'],
         },
       ],
       'n/no-unsupported-features/es-syntax': [

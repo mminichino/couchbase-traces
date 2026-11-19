@@ -56,7 +56,7 @@ describe('terraformResourceLabel', () => {
     ).toBe(terraformResourceLabel({ type: 'alert', id: ID, name: 'After' }));
   });
 
-  // ObjectIds can start with a digit, which Terraform rejects as an
+  // Ids can start with a digit, which Terraform rejects as an
   // identifier; the type prefix is what makes the label legal.
   it('produces a valid Terraform identifier for a digit-leading id', () => {
     expect(
@@ -98,7 +98,7 @@ describe('isImportableAlert', () => {
 
   // Reachable, not hypothetical: converting a saved-search alert to a tile
   // alert leaves the old savedSearch behind, because `makeAlert` passes
-  // `savedSearch: undefined` and Mongoose 6 strips undefined from the `$set`.
+  // `savedSearch: undefined` and the model layer strips undefined from the `$set`.
   // The stale reference must not promote it back to the saved-search rule,
   // which would offer an unaddressable tile alert for import.
   it('judges a tile alert by its tile even when it carries a stale savedSearchId', () => {
@@ -175,7 +175,7 @@ describe('isAddressableTile', () => {
     expect(isAddressableTile(undefined, 'tile-1')).toBe(false);
   });
 
-  // `tiles` is a Mongoose Mixed array, so a legacy row can carry anything.
+  // `tiles` is a untyped array, so a legacy row can carry anything.
   it('survives tiles with no config, a non-string name and a non-array tiles value', () => {
     expect(isAddressableTile([{ id: 'tile-1' }], 'tile-1')).toBe(false);
     expect(
@@ -317,7 +317,7 @@ describe('dashboard tile exportability', () => {
     ).toBe(false);
   });
 
-  // Dashboard.tiles is a Mongoose Mixed array, so the database enforces
+  // Dashboard.tiles is a untyped array, so the database enforces
   // nothing. One legacy row must not take down the whole team's manifest.
   it('survives a malformed tile instead of throwing', () => {
     expect(() =>
@@ -486,7 +486,7 @@ describe('resource id validation', () => {
   ])('refuses to emit an import block for id %p', badId => {
     expect(() =>
       buildImportBlock({ type: 'alert', id: badId }, TEAM_ID),
-    ).toThrow(/non-ObjectId resource id/);
+    ).toThrow(/non-hex resource id/);
   });
 
   // The team id is now the other half of the same sink.
@@ -495,7 +495,7 @@ describe('resource id validation', () => {
       () =>
         buildImportBlock({ type: 'alert', id: ID }, 'a"; provider "null" {} #'),
       // Labelled, so the thrown error says which half of the id was wrong.
-    ).toThrow(/non-ObjectId team id/);
+    ).toThrow(/non-hex team id/);
   });
 
   it('refuses to emit a connection local for a bad id', () => {
@@ -504,12 +504,12 @@ describe('resource id validation', () => {
         endpoint: 'https://couchbase-traces.example.com/api',
         teamId: TEAM_ID,
         resources: [],
-        connectionLocals: [{ id: 'not-an-objectid', name: 'Sneaky' }],
+        connectionLocals: [{ id: 'not-a-valid-id', name: 'Sneaky' }],
       }),
-    ).toThrow(/non-ObjectId id/);
+    ).toThrow(/non-hex id/);
   });
 
-  it('accepts ObjectId hex in either case', () => {
+  it('accepts hex ids in either case', () => {
     expect(() =>
       buildImportBlock({ type: 'alert', id: ID.toUpperCase() }, TEAM_ID),
     ).not.toThrow();

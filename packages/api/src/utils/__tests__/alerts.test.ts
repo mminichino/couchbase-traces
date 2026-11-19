@@ -141,7 +141,7 @@ describe('deriveAlertDisplayFields', () => {
   });
 
   // Referenced documents predate these fields and are read straight from
-  // Mongo, so anything non-string has to survive derivation.
+  // the store, so anything non-string has to survive derivation.
   it('drops malformed tags', () => {
     expect(
       deriveAlertDisplayFields(

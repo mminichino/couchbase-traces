@@ -20,6 +20,6 @@
       "rootDir": "./src"
     }
   },
-  "include": ["src", "migrations", "scripts"],
+  "include": ["src", "scripts"],
   "exclude": ["node_modules"]
 }

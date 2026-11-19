@@ -49,7 +49,7 @@ jest.mock('@/brand', () => ({
   useBrandDisplayName: () => 'Couchbase Traces',
 }));
 
-// ObjectId hex: buildImportBlock refuses to emit Terraform for anything else,
+// ids hex: buildImportBlock refuses to emit Terraform for anything else,
 // so a placeholder id would throw the moment the export panel opens.
 const TILE_ALERT_ID = '655b1b7d9143aa1b1b73f4f4';
 

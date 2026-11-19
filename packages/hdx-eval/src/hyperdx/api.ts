@@ -209,7 +209,7 @@ export class HyperdxApiClient {
   /**
    * Fetch a dashboard via the External API v2 which returns a cleaner shape:
    * - tile `name` is promoted to a top-level field (not buried in config)
-   * - config uses `sourceId` (not `source` ObjectId)
+   * - config uses `sourceId` (not `source` id)
    * - select items are restructured with clear field names
    * Uses Bearer auth (accessKey), not cookie auth.
    */

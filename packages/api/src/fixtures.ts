@@ -8,7 +8,6 @@ import {
   SavedChartConfig,
   Tile,
 } from '@couchbase-traces/common-utils/dist/types';
-import mongoose from 'mongoose';
 import request from 'supertest';
 
 import * as config from '@/config';
@@ -27,7 +26,6 @@ import {
 } from '@/metadata';
 import { newId } from '@/metadata/ids';
 import { AlertInterval, AlertSource } from '@/metadata/schemas/alert';
-import { mongooseConnection } from '@/models';
 import Server from '@/server';
 import logger from '@/utils/logger';
 import { MetricModel } from '@/utils/logParser';
@@ -40,7 +38,7 @@ const MOCK_USER = {
 };
 
 // Server imports dataLayerSetup (metadata connections.getWithSecrets). Int tests often
-// use placeholder ids like "test-connection" or freshly minted ObjectIds with
+// use placeholder ids like "test-connection" or freshly minted ids with
 // no Connection doc — fall back to the CI compose cluster credentials.
 // When a Connection doc exists, still force CI compose host/user/password:
 // tests seed docs with config.CLICKHOUSE_* (or empty) which is not a working
@@ -163,12 +161,8 @@ export const connectDB = async () => {
   if (!config.IS_CI) {
     throw new Error('ONLY execute this in CI env 😈 !!!');
   }
-  if (config.MONGO_URI == null) {
-    throw new Error('MONGO_URI is not set');
-  }
-  await mongoose.connect(config.MONGO_URI);
-  // Identity lives in the metadata bucket since C1. MockServer.start()
-  // starts it too; only start it here for suites that skip the server.
+  // MockServer.start() starts the metadata store too; only start it here for
+  // suites that skip the server.
   if (metadataReadiness().state === 'disabled') await startMetadataStore();
 };
 
@@ -176,8 +170,6 @@ export const closeDB = async () => {
   if (!config.IS_CI) {
     throw new Error('ONLY execute this in CI env 😈 !!!');
   }
-  await mongooseConnection.dropDatabase();
-  await mongoose.disconnect();
   await clearMetadataForTests();
   await closeMetadataStore();
 };
@@ -186,12 +178,6 @@ export const clearDBCollections = async () => {
   if (!config.IS_CI) {
     throw new Error('ONLY execute this in CI env 😈 !!!');
   }
-  const collections = mongooseConnection.collections;
-  await Promise.all(
-    Object.values(collections).map(async collection => {
-      await collection.deleteMany({}); // an empty mongodb selector object ({}) must be passed as the filter argument
-    }),
-  );
   await clearMetadataForTests();
 };
 
@@ -751,7 +737,7 @@ export function buildMetricSeries({
 }
 
 /** Kept under the upstream name so ported tests read unchanged. */
-export const randomMongoId = () => newId();
+export const randomId = () => newId();
 
 export const makeTile = (opts?: {
   id?: string;
@@ -759,7 +745,7 @@ export const makeTile = (opts?: {
   sourceId?: string;
   where?: string;
 }): Tile => ({
-  id: opts?.id ?? randomMongoId(),
+  id: opts?.id ?? randomId(),
   x: 1,
   y: 1,
   w: 1,
@@ -842,7 +828,7 @@ export const makeRawSqlTile = (opts?: {
   sqlTemplate?: string;
   connectionId?: string;
 }): Tile => ({
-  id: opts?.id ?? randomMongoId(),
+  id: opts?.id ?? randomId(),
   x: 1,
   y: 1,
   w: 1,
@@ -884,7 +870,7 @@ export const makeRawSqlAlertTile = (opts?: {
   connectionId?: string;
   sqlTemplate?: string;
 }): Tile => ({
-  id: opts?.id ?? randomMongoId(),
+  id: opts?.id ?? randomId(),
   x: 1,
   y: 1,
   w: 1,
@@ -904,7 +890,7 @@ export const makeRawSqlNumberAlertTile = (opts?: {
   connectionId?: string;
   sqlTemplate?: string;
 }): Tile => ({
-  id: opts?.id ?? randomMongoId(),
+  id: opts?.id ?? randomId(),
   x: 1,
   y: 1,
   w: 1,

@@ -300,9 +300,9 @@ export function registerListSources({
             traceId: s.traceIdExpression,
           };
         } else if (s.kind === SourceKind.Metric) {
-          // Filter out implementation-detail keys (e.g. a stray Mongoose
-          // `_id` on the metricTables subdoc) so the agent only sees
-          // valid metric kinds.
+          // Filter out implementation-detail keys (e.g. a stray `_id` on
+          // the metricTables object) so the agent only sees valid metric
+          // kinds.
           const tables = sanitizeMetricTables(
             s.metricTables as Record<string, unknown> | undefined,
           );

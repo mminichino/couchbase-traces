@@ -1,5 +1,4 @@
 import { SourceKind } from '@couchbase-traces/common-utils/dist/types';
-import mongoose from 'mongoose';
 import request from 'supertest';
 
 import * as config from '@/config';
@@ -10,6 +9,7 @@ import {
   getLoggedInAgent,
   getServer,
 } from '@/fixtures';
+import { newId } from '@/metadata/ids';
 import { ISource } from '@/metadata/schemas/source';
 import type { IUser } from '@/metadata/schemas/user';
 import {
@@ -112,9 +112,9 @@ describe('External API v2 Search', () => {
     expect(res.body).toHaveProperty('message');
   });
 
-  it('returns 400 when sourceId is not a valid ObjectId', async () => {
+  it('returns 400 when sourceId is not a valid id', async () => {
     const res = await search({
-      sourceId: 'not-an-objectid',
+      sourceId: 'not-a-valid-id',
       startTime: iso(DEFAULT_START_TIME),
       endTime: iso(DEFAULT_END_TIME),
     });
@@ -428,7 +428,7 @@ describe('External API v2 Search', () => {
   // -------------------------------------------------------------------------
 
   it('uses { message } envelope for 4xx errors', async () => {
-    const res = await search({ sourceId: 'not-an-objectid' });
+    const res = await search({ sourceId: 'not-a-valid-id' });
     expect(res.status).toBe(400);
     expect(res.body).toHaveProperty('message');
     expect(typeof res.body.message).toBe('string');
@@ -534,9 +534,9 @@ describe('External API v2 Search', () => {
 
   it('returns 404 when sourceId belongs to a different team', async () => {
     // The /register/password endpoint only allows one team to register, so
-    // create a synthetic "other team" source directly in Mongo and verify
+    // create a synthetic "other team" source directly in the store and verify
     // the authenticated user (team 1) cannot access it.
-    const otherTeamId = new mongoose.Types.ObjectId();
+    const otherTeamId = newId();
     const otherConnection = await seedConnection({
       kind: 'couchbase',
       team: otherTeamId,

@@ -19,7 +19,7 @@ let dummyHash: Promise<string> | undefined;
 
 /**
  * Email + password login over UserRepository with the messages
- * passport-local-mongoose gave (plan D4). Virtual users never sign in.
+ * the previous auth stack gave (plan D4). Virtual users never sign in.
  */
 export async function authenticate(
   users: UserRepository,

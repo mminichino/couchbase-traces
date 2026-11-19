@@ -54,10 +54,9 @@ describe('sanitizeMetricTables', () => {
     });
   });
 
-  it('strips Mongoose _id leaking from the metricTables subdoc', () => {
-    // Existing documents persisted before the schema fix may still
-    // carry a stray ObjectId in the embedded metricTables subdoc.
-    // The sanitizer keeps only valid kind keys.
+  it('strips a stray _id from the metricTables object', () => {
+    // A stored document may carry a stray id in the embedded metricTables
+    // object. The sanitizer keeps only valid kind keys.
     const result = sanitizeMetricTables({
       gauge: 'otel_metrics_gauge',
       sum: 'otel_metrics_sum',

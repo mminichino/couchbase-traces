@@ -23,13 +23,6 @@ x-cbt-couchbase-env: &cbt-couchbase-env
   CBT_METADATA_RAM_MB: ${CBT_METADATA_RAM_MB:-256}
 
 services:
-  db:
-    image: mongo:5.0.32-focal
-    volumes:
-      - .volumes/db:/data/db
-    networks:
-      - internal
-
   couchbase:
     image: ${COUCHBASE_IMAGE:?set COUCHBASE_IMAGE in .env}
     volumes:
@@ -128,7 +121,6 @@ services:
       CBT_APP_PORT: ${CBT_APP_PORT}
       CBT_APP_URL: ${CBT_APP_URL}
       CBT_LOG_LEVEL: ${CBT_LOG_LEVEL}
-      MONGO_URI: 'mongodb://db:27017/hyperdx'
       CBT_COUCHBASE_CONNSTR: couchbase://couchbase
       CBT_METADATA_BUCKET: ${CBT_METADATA_BUCKET:-cbt_meta}
       CBT_METADATA_USER: ${CBT_METADATA_USER:?set CBT_METADATA_USER in .env}
@@ -148,8 +140,6 @@ services:
     networks:
       - internal
     depends_on:
-      db:
-        condition: service_started
       couchbase-init:
         condition: service_completed_successfully
 

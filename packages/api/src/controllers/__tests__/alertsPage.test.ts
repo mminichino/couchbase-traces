@@ -56,7 +56,7 @@ describe('alertsPageQuerySchema', () => {
     expect(() => parse({ state: 'nope' })).toThrow();
   });
 
-  it('rejects a non-ObjectId createdBy', () => {
+  it('rejects a malformed createdBy', () => {
     expect(() => parse({ createdBy: 'not-an-id' })).toThrow();
   });
 
@@ -82,7 +82,7 @@ describe('alertsPageQuerySchema', () => {
 
   it.each([
     ['garbage', 'not a cursor!'],
-    ['a non-ObjectId id', encodeCursor({ n: 'a', id: 'nope' })],
+    ['a malformed id', encodeCursor({ n: 'a', id: 'nope' })],
     // JSON.stringify drops an undefined value, so a writer that doesn't
     // normalize a missing displayName to null issues a cursor like this.
     ['a missing name', encodeCursor({ id: ALERT_ID })],
@@ -91,7 +91,7 @@ describe('alertsPageQuerySchema', () => {
   });
 });
 
-// The Mongo filter-shape assertions that lived here (`$in: [..., null]`,
+// The store filter-shape assertions that lived here (`$in: [..., null]`,
 // `$regex`, the `$or` tie-break) move to the repository: the
 // missing-means-default rules and the (displayName, id) keyset are SQL++ and
 // are covered by metadata/testing/alertsContract.ts on both backends. What is

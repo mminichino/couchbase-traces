@@ -1,5 +1,3 @@
-import mongoose from 'mongoose';
-
 import {
   createOrgApiKey,
   listOrgApiKeys,
@@ -17,6 +15,7 @@ import {
 } from '@/controllers/user';
 import { clearDBCollections, closeDB, connectDB } from '@/fixtures';
 import { getMetadataStore } from '@/metadata';
+import { newId } from '@/metadata/ids';
 import { AlertSource, AlertThresholdType } from '@/metadata/schemas/alert';
 import { findUser, getUserDoc, seedUser } from '@/metadata/testing/seed';
 
@@ -31,7 +30,7 @@ const ALERT_FIELDS = {
 };
 
 describe('orgApiKey controller', () => {
-  const creator = new mongoose.Types.ObjectId();
+  const creator = newId();
 
   beforeAll(async () => {
     await connectDB();
@@ -100,7 +99,7 @@ describe('orgApiKey controller', () => {
   it('scopes list and delete to the team', async () => {
     const teamA = await createTeam({ name: 'A' });
     // OSS allows a single team, so team B only needs to be a distinct id.
-    const teamB = new mongoose.Types.ObjectId().toString();
+    const teamB = newId();
     const { doc } = await create(teamA._id);
 
     expect(await listOrgApiKeys(teamB)).toHaveLength(0);

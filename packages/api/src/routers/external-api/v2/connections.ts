@@ -20,7 +20,7 @@ import type { IConnection } from '@/metadata/schemas/connection';
 import { processRequestWithEnhancedErrors as validateRequest } from '@/utils/enhancedErrors';
 import logger from '@/utils/logger';
 import { rejectPromqlBody } from '@/utils/rejectPromql';
-import { objectIdSchema } from '@/utils/zod';
+import { idSchema } from '@/utils/zod';
 
 const timestampFields = {
   createdAt: z.string().optional(),
@@ -63,7 +63,7 @@ function formatExternalConnection(connection: IConnection) {
       }
     : externalCouchbaseConnectionSchema.parse({
         ...json,
-        // Mongoose virtual `id` / Date timestamps need plain JSON shapes for Zod.
+        // `id` and Date timestamps need plain JSON shapes for Zod.
         id: String(json.id ?? json._id),
         kind: 'couchbase',
         createdAt: toIsoTimestamp(json.createdAt),
@@ -419,7 +419,7 @@ router.get(
   '/:id',
   validateRequest({
     params: z.object({
-      id: objectIdSchema,
+      id: idSchema,
     }),
   }),
   async (req, res, next) => {
@@ -584,7 +584,7 @@ router.put(
   rejectPromqlBody,
   validateRequest({
     params: z.object({
-      id: objectIdSchema,
+      id: idSchema,
     }),
     body: updateConnectionBodySchema,
   }),
@@ -688,7 +688,7 @@ router.delete(
   '/:id',
   validateRequest({
     params: z.object({
-      id: objectIdSchema,
+      id: idSchema,
     }),
   }),
   async (req, res, next) => {

@@ -175,7 +175,7 @@ const searchRequestSchema = z.object({
     .string()
     .min(1, { message: 'sourceId is required' })
     .refine(val => isValidId(val), {
-      message: 'sourceId must be a valid ObjectId',
+      message: 'sourceId must be a valid id',
     })
     .describe(
       'Source ID to query. Call GET /api/v2/sources to list available sources.',

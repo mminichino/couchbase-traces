@@ -14,7 +14,7 @@ let meData: {
   onboardingData: { completedTasks: string[]; isDismissed: boolean };
 } | null = null;
 
-// A real 24-hex ObjectId: recording is gated on the user id being persistable.
+// A real 24-hex ids: recording is gated on the user id being persistable.
 const REAL_USER_ID = 'a1b2c3d4e5f6a1b2c3d4e5f6';
 
 jest.mock('../config', () => ({ IS_LOCAL_MODE: false }));
@@ -92,7 +92,7 @@ describe('useDashboard local-dashboard onboarding', () => {
     expect(mutate).not.toHaveBeenCalled();
   });
 
-  it('does not record when the user id is not a real ObjectId (noauth image)', () => {
+  it('does not record when the user id is not a real id (noauth image)', () => {
     meData = {
       id: '_local_user_',
       onboardingData: { completedTasks: [], isDismissed: false },

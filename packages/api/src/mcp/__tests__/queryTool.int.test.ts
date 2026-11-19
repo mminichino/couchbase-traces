@@ -3,7 +3,6 @@ import {
   SourceKind,
 } from '@couchbase-traces/common-utils/dist/types';
 import { Client } from '@modelcontextprotocol/sdk/client/index.js';
-import { ObjectId } from 'mongodb';
 
 import * as config from '@/config';
 import {
@@ -23,6 +22,7 @@ import {
 import * as denoise from '@/mcp/tools/query/denoise';
 import * as patternDrilldown from '@/mcp/tools/query/patternDrilldown';
 import { McpContext } from '@/mcp/tools/types';
+import { newId } from '@/metadata/ids';
 import { SourceDocument } from '@/metadata/schemas/source';
 import {
   patchSource,
@@ -1581,7 +1581,7 @@ describe('MCP Query Tools', () => {
       it('rejects a sourceId that does not exist', async () => {
         const result = await callTool(client, 'cbt_sql', {
           connectionId: connection._id.toString(),
-          sourceId: new ObjectId().toString(),
+          sourceId: newId(),
           sql: countSql,
         });
 

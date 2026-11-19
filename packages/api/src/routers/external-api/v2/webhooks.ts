@@ -25,7 +25,7 @@ import {
   ExternalWebhook,
   externalWebhookCreateSchema,
   externalWebhookSchema,
-  objectIdSchema,
+  idSchema,
 } from '@/utils/zod';
 
 const DUPLICATE_WEBHOOK_MESSAGE =
@@ -735,7 +735,7 @@ router.post(
 router.put(
   '/:id',
   validateRequest({
-    params: z.object({ id: objectIdSchema }),
+    params: z.object({ id: idSchema }),
     body: externalWebhookCreateSchema,
   }),
   async (req, res, next) => {
@@ -848,7 +848,7 @@ router.put(
  */
 router.delete(
   '/:id',
-  validateRequest({ params: z.object({ id: objectIdSchema }) }),
+  validateRequest({ params: z.object({ id: idSchema }) }),
   async (req, res, next) => {
     try {
       const teamId = req.user?.team;

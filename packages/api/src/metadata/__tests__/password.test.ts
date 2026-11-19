@@ -53,7 +53,7 @@ describe('scrypt password hashing', () => {
     expect(needsRehash('garbage')).toBe(true);
   });
 
-  it('keeps the passport-local-mongoose messages and error name', () => {
+  it('keeps the legacy password messages and error name', () => {
     const err = new UserExistsError();
     expect(err.name).toBe('UserExistsError');
     expect(err.message).toBe(

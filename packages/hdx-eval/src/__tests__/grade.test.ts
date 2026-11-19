@@ -130,7 +130,7 @@ describe('gradeBatch tool-error penalty', () => {
           {
             name: 'mcp__hyperdx__hyperdx_query',
             isError: true,
-            output: 'sourceId must be a 24-char hex ObjectId',
+            output: 'sourceId must be a 24-char hex id',
           },
           { name: 'mcp__hyperdx__hyperdx_query', isError: false },
         ],

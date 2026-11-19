@@ -7,7 +7,7 @@ import { hydrateAlertRefs } from '@/controllers/alertRefs';
 import { getAlertById } from '@/controllers/alerts';
 import { READ_ONLY_TOOL } from '@/mcp/tools/annotations';
 import type { ToolRegistrar } from '@/mcp/tools/types';
-import { mcpUserError, validateObjectId } from '@/mcp/utils/errors';
+import { mcpUserError, validateId } from '@/mcp/utils/errors';
 import { getMetadataStore } from '@/metadata';
 import { translateAlertDocumentToExternalAlertWithChartConfig } from '@/routers/external-api/v2/utils/alertChartConfig';
 import { resolveAlertDisplayFields } from '@/utils/alerts';
@@ -81,7 +81,7 @@ export function registerGetAlert({
       }
 
       // ── Get single alert (full detail) ──
-      const idError = validateObjectId(id, 'alert ID');
+      const idError = validateId(id, 'alert ID');
       if (idError) return idError;
 
       const alert = await getAlertById(id, teamId);

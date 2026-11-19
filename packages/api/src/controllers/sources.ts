@@ -20,7 +20,7 @@ export function createSource(team: string, source: SourceInput) {
  * Swaps the whole source, keeping `_id`, `team`, and `createdAt`. A kind
  * change is the one path validated through Zod here (callers identify the
  * source by `sourceId`, so any id in the body is ignored); it throws
- * `Invalid source data: …` like the Mongoose version did.
+ * `Invalid source data: …` like the previous implementation did.
  */
 export async function updateSource(
   team: string,

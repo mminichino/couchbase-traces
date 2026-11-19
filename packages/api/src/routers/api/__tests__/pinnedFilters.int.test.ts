@@ -1,13 +1,13 @@
 import { SourceKind, TSource } from '@couchbase-traces/common-utils/dist/types';
-import { Types } from 'mongoose';
 
 import { getLoggedInAgent, getServer } from '@/fixtures';
+import { newId } from '@/metadata/ids';
 import { seedSource } from '@/metadata/testing/seed';
 
 const MOCK_SOURCE: Omit<Extract<TSource, { kind: 'log' }>, 'id'> = {
   kind: SourceKind.Log,
   name: 'Test Source',
-  connection: new Types.ObjectId().toString(),
+  connection: newId(),
   from: { databaseName: 'test_db', tableName: 'test_table' },
   timestampValueExpression: 'timestamp',
   defaultTableSelectExpression: 'body',
@@ -51,7 +51,7 @@ describe('pinnedFilters router', () => {
     });
 
     it('rejects invalid source id', async () => {
-      await agent.get('/pinned-filters?source=not-an-objectid').expect(400);
+      await agent.get('/pinned-filters?source=not-a-valid-id').expect(400);
     });
 
     it('rejects missing source param', async () => {
@@ -59,7 +59,7 @@ describe('pinnedFilters router', () => {
     });
 
     it('returns 404 for a source not owned by the team', async () => {
-      const foreignSourceId = new Types.ObjectId().toString();
+      const foreignSourceId = newId();
       await agent.get(`/pinned-filters?source=${foreignSourceId}`).expect(404);
     });
   });
@@ -114,7 +114,7 @@ describe('pinnedFilters router', () => {
     });
 
     it('returns 404 for a source not owned by the team', async () => {
-      const foreignSourceId = new Types.ObjectId().toString();
+      const foreignSourceId = newId();
       await agent
         .put('/pinned-filters')
         .send({ source: foreignSourceId, fields: [], filters: {} })
@@ -189,7 +189,7 @@ describe('pinnedFilters router', () => {
   });
 
   // Note: cross-team isolation (Team B cannot read Team A's pins) is enforced
-  // by the MongoDB query filtering on teamId AND the source ownership check
+  // by the store query filtering on teamId AND the source ownership check
   // (getSource validates source.team === teamId). Multi-team integration tests
   // are not possible in this single-team environment (register returns 409).
 

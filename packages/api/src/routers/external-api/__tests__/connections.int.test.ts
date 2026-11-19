@@ -1,7 +1,7 @@
-import { ObjectId } from 'mongodb';
 import request, { SuperAgentTest } from 'supertest';
 
 import { getLoggedInAgent, getServer } from '@/fixtures';
+import { newId } from '@/metadata/ids';
 import type { ITeam } from '@/metadata/schemas/team';
 import type { IUser } from '@/metadata/schemas/user';
 import { findConnection, seedConnection } from '@/metadata/testing/seed';
@@ -81,7 +81,7 @@ describe('External API v2 Connections', () => {
     it('should not return connections belonging to another team', async () => {
       await seedConnection({ ...MOCK_CONNECTION, team: team._id });
 
-      const otherTeamId = new ObjectId();
+      const otherTeamId = newId();
       await seedConnection({
         ...MOCK_CONNECTION,
         name: 'Other Team Connection',
@@ -125,16 +125,15 @@ describe('External API v2 Connections', () => {
     });
 
     it('should return 404 for a non-existent connection', async () => {
-      await authRequest(
-        'get',
-        `${CONNECTIONS_BASE_URL}/${new ObjectId()}`,
-      ).expect(404);
+      await authRequest('get', `${CONNECTIONS_BASE_URL}/${newId()}`).expect(
+        404,
+      );
     });
 
     it('should return 404 for a connection belonging to another team', async () => {
       const otherTeamConnection = await seedConnection({
         ...MOCK_CONNECTION,
-        team: new ObjectId(),
+        team: newId(),
       });
 
       await authRequest(
@@ -149,7 +148,7 @@ describe('External API v2 Connections', () => {
 
     it('should require authentication', async () => {
       await request(server.getHttpServer())
-        .get(`${CONNECTIONS_BASE_URL}/${new ObjectId()}`)
+        .get(`${CONNECTIONS_BASE_URL}/${newId()}`)
         .expect(401);
     });
   });
@@ -362,7 +361,7 @@ describe('External API v2 Connections', () => {
     });
 
     it('should return 404 for a non-existent connection', async () => {
-      await authRequest('put', `${CONNECTIONS_BASE_URL}/${new ObjectId()}`)
+      await authRequest('put', `${CONNECTIONS_BASE_URL}/${newId()}`)
         .send(MOCK_CONNECTION)
         .expect(404);
     });
@@ -370,7 +369,7 @@ describe('External API v2 Connections', () => {
     it('should return 404 for a connection belonging to another team', async () => {
       const otherTeamConnection = await seedConnection({
         ...MOCK_CONNECTION,
-        team: new ObjectId(),
+        team: newId(),
       });
 
       await authRequest(
@@ -394,7 +393,7 @@ describe('External API v2 Connections', () => {
 
     it('should require authentication', async () => {
       await request(server.getHttpServer())
-        .put(`${CONNECTIONS_BASE_URL}/${new ObjectId()}`)
+        .put(`${CONNECTIONS_BASE_URL}/${newId()}`)
         .send(MOCK_CONNECTION)
         .expect(401);
     });
@@ -416,16 +415,15 @@ describe('External API v2 Connections', () => {
     });
 
     it('should return 404 for a non-existent connection', async () => {
-      await authRequest(
-        'delete',
-        `${CONNECTIONS_BASE_URL}/${new ObjectId()}`,
-      ).expect(404);
+      await authRequest('delete', `${CONNECTIONS_BASE_URL}/${newId()}`).expect(
+        404,
+      );
     });
 
     it('should not delete a connection belonging to another team', async () => {
       const otherTeamConnection = await seedConnection({
         ...MOCK_CONNECTION,
-        team: new ObjectId(),
+        team: newId(),
       });
 
       await authRequest(
@@ -438,7 +436,7 @@ describe('External API v2 Connections', () => {
 
     it('should require authentication', async () => {
       await request(server.getHttpServer())
-        .delete(`${CONNECTIONS_BASE_URL}/${new ObjectId()}`)
+        .delete(`${CONNECTIONS_BASE_URL}/${newId()}`)
         .expect(401);
     });
   });

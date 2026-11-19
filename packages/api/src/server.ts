@@ -14,7 +14,6 @@ import {
   closeMetadataStore,
   startMetadataStore,
 } from '@/metadata';
-import { connectDBWithRetry, mongooseConnection } from '@/models';
 import opampApp from '@/opamp/app';
 import { setupTeamDefaults } from '@/setupDefaults';
 import logger from '@/utils/logger';
@@ -39,12 +38,8 @@ export default class Server {
   protected async shutdown(_signal?: string) {
     let hasError = false;
     logger.info('Closing all db clients...');
-    const [mongoCloseResult, couchbaseCloseResult, metadataCloseResult] =
-      await Promise.allSettled([
-        mongooseConnection.close(false),
-        clusterCache.closeAll(),
-        closeMetadataStore(),
-      ]);
+    const [couchbaseCloseResult, metadataCloseResult] =
+      await Promise.allSettled([clusterCache.closeAll(), closeMetadataStore()]);
 
     if (metadataCloseResult.status === 'rejected') {
       hasError = true;
@@ -60,16 +55,6 @@ export default class Server {
         { err: serializeError(couchbaseCloseResult.reason) },
         'Couchbase cluster close failed',
       );
-    }
-
-    if (mongoCloseResult.status === 'rejected') {
-      hasError = true;
-      logger.error(
-        { err: serializeError(mongoCloseResult.reason) },
-        'MongoDB client close failed',
-      );
-    } else {
-      logger.info('MongoDB client closed.');
     }
 
     if (hasError) {
@@ -132,22 +117,20 @@ export default class Server {
       });
     }
 
-    // Checked before Mongo so a bad encryption key or KMS policy is reported
-    // even while the Mongo connect below is still retrying.
+    // Checked before the metadata connect so a bad encryption key or KMS
+    // policy is reported even while that connect is still retrying.
     await verifyTokenEncryption();
     verifySessionSecret();
-    // Sessions, users, and teams live in the metadata bucket since C1.
+    // All app metadata (sessions, users, teams, ...) lives in the metadata
+    // bucket; fail fast on missing or malformed CBT_METADATA_* settings.
     assertMetadataConfig();
 
     // The HTTP servers above are already listening so that `/health`
     // (liveness) responds while we connect; `/ready` (readiness) stays 503
-    // until the connection below succeeds. Retries forever — see
-    // connectDBWithRetry for why a single failed initial connect must not be
-    // allowed to leave the process running but permanently unable to serve.
-    await connectDBWithRetry();
-
-    // Retries the connection forever like Mongo; rejects on bad config (including missing
-    // CBT_METADATA_USER / CBT_METADATA_PASSWORD) or a newer schema.
+    // until the metadata store is ready. Retries the connection forever, so a
+    // Couchbase that comes up after the API does not leave the process running
+    // but permanently unable to serve; rejects on bad config (including
+    // missing CBT_METADATA_USER / CBT_METADATA_PASSWORD) or a newer schema.
     await startMetadataStore({ logger, appVersion: config.CODE_VERSION });
 
     // Initialize default connections and sources for local app mode

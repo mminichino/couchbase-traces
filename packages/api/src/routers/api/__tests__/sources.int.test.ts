@@ -4,13 +4,14 @@ import {
   UseTextIndex,
 } from '@couchbase-traces/common-utils/dist/types';
 import express from 'express';
-import { Types } from 'mongoose';
 import request from 'supertest';
 
+import { LOCAL_APP_TEAM } from '@/controllers/team';
 import {
   getLoggedInAgent as getFixtureLoggedInAgent,
   getServer,
 } from '@/fixtures';
+import { newId } from '@/metadata/ids';
 import {
   findSource,
   getSourceDoc,
@@ -20,13 +21,12 @@ import {
   seedSource,
 } from '@/metadata/testing/seed';
 import { appErrorHandler } from '@/middleware/error';
-import { toObjectId } from '@/models';
 import sourcesRouter from '@/routers/api/sources';
 
 const MOCK_SOURCE: Omit<Extract<TSource, { kind: 'log' }>, 'id'> = {
   kind: SourceKind.Log,
   name: 'Test Source',
-  connection: new Types.ObjectId().toString(),
+  connection: newId(),
   from: {
     databaseName: 'test_db',
     tableName: 'test_table',
@@ -38,7 +38,7 @@ const MOCK_SOURCE: Omit<Extract<TSource, { kind: 'log' }>, 'id'> = {
 const MOCK_METRIC_SOURCE: Omit<Extract<TSource, { kind: 'metric' }>, 'id'> = {
   kind: SourceKind.Metric,
   name: 'Test Metric Source',
-  connection: new Types.ObjectId().toString(),
+  connection: newId(),
   from: {
     databaseName: 'test_db',
     tableName: '',
@@ -57,8 +57,8 @@ const MOCK_METRIC_SOURCE: Omit<Extract<TSource, { kind: 'metric' }>, 'id'> = {
 const MOCK_PROMQL_SOURCE = {
   kind: SourceKind.Promql,
   name: 'Test PromQL Source',
-  team: new Types.ObjectId().toString(),
-  connection: new Types.ObjectId().toString(),
+  team: newId(),
+  connection: newId(),
   from: {
     databaseName: 'test_db',
     tableName: 'metrics_ts',
@@ -66,7 +66,7 @@ const MOCK_PROMQL_SOURCE = {
   timestampValueExpression: 'timestamp',
 } as import('@/metadata/schemas/source').ISourceInput;
 
-const createTestConnection = (team: string | Types.ObjectId, id: string) =>
+const createTestConnection = (team: string, id: string) =>
   seedConnection({
     kind: 'couchbase',
     _id: id,
@@ -166,17 +166,14 @@ describe('sources router', () => {
         .post('/sources')
         .send({
           ...MOCK_SOURCE,
-          connection: new Types.ObjectId().toString(),
+          connection: newId(),
         })
         .expect(400);
     });
 
     it('POST / - returns 400 for another team connection', async () => {
       const { agent } = await getLoggedInAgent(server);
-      const otherConnection = await createTestConnection(
-        new Types.ObjectId(),
-        new Types.ObjectId().toString(),
-      );
+      const otherConnection = await createTestConnection(newId(), newId());
 
       await agent
         .post('/sources')
@@ -193,10 +190,7 @@ describe('sources router', () => {
         ...MOCK_SOURCE,
         team: team._id,
       });
-      const otherConnection = await createTestConnection(
-        new Types.ObjectId(),
-        new Types.ObjectId().toString(),
-      );
+      const otherConnection = await createTestConnection(newId(), newId());
 
       await agent
         .put(`/sources/${source._id}`)
@@ -224,7 +218,7 @@ describe('sources router', () => {
         .send({
           ...MOCK_SOURCE,
           id: source._id.toString(),
-          connection: new Types.ObjectId().toString(),
+          connection: newId(),
         })
         .expect(400);
     });
@@ -393,7 +387,7 @@ describe('sources router', () => {
   it('PUT /:id - returns 404 when source does not exist', async () => {
     const { agent } = await getLoggedInAgent(server);
 
-    const nonExistentId = new Types.ObjectId().toString();
+    const nonExistentId = newId();
 
     await agent
       .put(`/sources/${nonExistentId}`)
@@ -548,7 +542,7 @@ describe('sources router', () => {
   });
 
   // Regression guard: a field present in the Zod schema but missing from the
-  // Mongoose discriminator is silently dropped on write, with no error. Only a
+  // the kind discriminator is silently dropped on write, with no error. Only a
   // round-trip through the database catches that.
   describe('serviceVersionExpression', () => {
     const VERSION_EXPR = "ResourceAttributes['container.image.tag']";
@@ -909,14 +903,14 @@ describe('sources router', () => {
   it('DELETE /:id - returns 200 when source does not exist', async () => {
     const { agent } = await getLoggedInAgent(server);
 
-    const nonExistentId = new Types.ObjectId().toString();
+    const nonExistentId = newId();
 
     // This will succeed even if the ID doesn't exist, consistent with the implementation
     await agent.delete(`/sources/${nonExistentId}`).expect(200);
   });
 
   describe('backward compatibility with legacy flat-model documents', () => {
-    // These tests insert documents directly into MongoDB (bypassing Mongoose
+    // These tests insert documents directly into the store (bypassing the model layer
     // validation) to simulate documents created by the old flat Source model,
     // which stored ALL fields from all source kinds in a single schema.
 
@@ -927,10 +921,10 @@ describe('sources router', () => {
       await seedRawSource({
         kind: SourceKind.Session,
         name: 'Legacy Session',
-        team: toObjectId(team._id),
-        connection: new Types.ObjectId(),
+        team: team._id,
+        connection: newId(),
         from: { databaseName: 'otel', tableName: 'otel_sessions' },
-        traceSourceId: new Types.ObjectId().toString(),
+        traceSourceId: newId(),
         // timestampValueExpression intentionally omitted
       });
 
@@ -949,8 +943,8 @@ describe('sources router', () => {
       await seedRawSource({
         kind: SourceKind.Trace,
         name: 'Legacy Trace',
-        team: toObjectId(team._id),
-        connection: new Types.ObjectId(),
+        team: team._id,
+        connection: newId(),
         from: { databaseName: 'otel', tableName: 'otel_traces' },
         timestampValueExpression: 'Timestamp',
         durationExpression: 'Duration',
@@ -976,8 +970,8 @@ describe('sources router', () => {
       await seedRawSource({
         kind: SourceKind.Trace,
         name: 'Trace with null logSourceId',
-        team: toObjectId(team._id),
-        connection: new Types.ObjectId(),
+        team: team._id,
+        connection: newId(),
         from: { databaseName: 'otel', tableName: 'otel_traces' },
         timestampValueExpression: 'Timestamp',
         defaultTableSelectExpression: '*',
@@ -995,7 +989,7 @@ describe('sources router', () => {
 
       expect(response.body).toHaveLength(1);
       expect(response.body[0].kind).toBe(SourceKind.Trace);
-      // logSourceId: null should be readable (Mongoose doesn't reject it)
+      // logSourceId: null should be readable (the model layer doesn't reject it)
       expect(response.body[0].logSourceId).toBeNull();
     });
 
@@ -1003,16 +997,16 @@ describe('sources router', () => {
       const { agent, team } = await getLoggedInAgent(server);
 
       // Old flat model stored ALL fields regardless of kind.
-      // NOTE: Mongoose discriminators do NOT strip unknown/cross-kind fields
+      // NOTE: the kind discriminator do NOT strip unknown/cross-kind fields
       // from toJSON() output. The discriminator only controls validation on
-      // write — unknown fields stored in MongoDB are still returned on read.
+      // write — unknown fields stored in the store are still returned on read.
       // This means the internal API response shape may differ from the external
       // API (which runs SourceSchema.safeParse() to strip extra fields).
       await seedRawSource({
         kind: SourceKind.Log,
         name: 'Flat Model Log',
-        team: toObjectId(team._id),
-        connection: new Types.ObjectId(),
+        team: team._id,
+        connection: newId(),
         from: { databaseName: 'otel', tableName: 'otel_logs' },
         timestampValueExpression: 'Timestamp',
         defaultTableSelectExpression: 'Body',
@@ -1041,8 +1035,8 @@ describe('sources router', () => {
       const result = await seedRawSource({
         kind: SourceKind.Session,
         name: 'Legacy Session',
-        team: toObjectId(team._id),
-        connection: new Types.ObjectId(),
+        team: team._id,
+        connection: newId(),
         from: { databaseName: 'otel', tableName: 'otel_sessions' },
         traceSourceId: 'some-trace-source-id',
       });
@@ -1054,7 +1048,7 @@ describe('sources router', () => {
           kind: SourceKind.Session,
           id: result,
           name: 'Updated Session',
-          connection: new Types.ObjectId().toString(),
+          connection: newId(),
           from: { databaseName: 'otel', tableName: 'otel_sessions' },
           traceSourceId: 'some-trace-source-id',
           // timestampValueExpression intentionally omitted
@@ -1065,11 +1059,11 @@ describe('sources router', () => {
     it('successfully updates a legacy Session source when timestampValueExpression is provided', async () => {
       const { agent, team } = await getLoggedInAgent(server);
 
-      const connectionId = new Types.ObjectId(MOCK_SOURCE.connection);
+      const connectionId = MOCK_SOURCE.connection;
       const result = await seedRawSource({
         kind: SourceKind.Session,
         name: 'Legacy Session',
-        team: toObjectId(team._id),
+        team: team._id,
         connection: connectionId,
         from: { databaseName: 'otel', tableName: 'otel_sessions' },
         traceSourceId: 'some-trace-source-id',
@@ -1100,8 +1094,8 @@ describe('sources router', () => {
       const result = await seedRawSource({
         kind: SourceKind.Log,
         name: 'Flat Log',
-        team: toObjectId(team._id),
-        connection: new Types.ObjectId(),
+        team: team._id,
+        connection: newId(),
         from: { databaseName: 'otel', tableName: 'otel_logs' },
         timestampValueExpression: 'Timestamp',
         defaultTableSelectExpression: 'Body',
@@ -1119,14 +1113,14 @@ describe('sources router', () => {
 
     it('sources.list() returns correctly typed documents for all kinds', async () => {
       const { team } = await getLoggedInAgent(server);
-      const connectionId = new Types.ObjectId();
+      const connectionId = newId();
 
       await Promise.all(
         [
           {
             kind: SourceKind.Log,
             name: 'Log',
-            team: toObjectId(team._id),
+            team: team._id,
             connection: connectionId,
             from: { databaseName: 'otel', tableName: 'otel_logs' },
             timestampValueExpression: 'Timestamp',
@@ -1135,7 +1129,7 @@ describe('sources router', () => {
           {
             kind: SourceKind.Trace,
             name: 'Trace',
-            team: toObjectId(team._id),
+            team: team._id,
             connection: connectionId,
             from: { databaseName: 'otel', tableName: 'otel_traces' },
             timestampValueExpression: 'Timestamp',
@@ -1151,7 +1145,7 @@ describe('sources router', () => {
           {
             kind: SourceKind.Session,
             name: 'Session',
-            team: toObjectId(team._id),
+            team: team._id,
             connection: connectionId,
             from: { databaseName: 'otel', tableName: 'otel_sessions' },
             timestampValueExpression: 'TimestampTime',
@@ -1160,7 +1154,7 @@ describe('sources router', () => {
           {
             kind: SourceKind.Metric,
             name: 'Metric',
-            team: toObjectId(team._id),
+            team: team._id,
             connection: connectionId,
             from: { databaseName: 'otel', tableName: '' },
             timestampValueExpression: 'TimeUnix',
@@ -1184,10 +1178,9 @@ describe('sources router', () => {
 
   describe('local app mode (string team id)', () => {
     // In Local App Mode (IS_LOCAL_APP_MODE) the auth middleware injects a
-    // plain string team id ("_local_team_") onto req.user instead of a
-    // Mongoose ObjectId. Regression test for HDX-4713 where the POST/PUT
-    // handlers called teamId.toJSON() — a method that only exists on
-    // ObjectId, not on strings — producing an HTTP 500
+    // plain string team id ("_local_team_") onto req.user. Regression test
+    // for HDX-4713 where the POST/PUT handlers called teamId.toJSON() — a
+    // method that does not exist on strings — producing an HTTP 500
     // "TypeError: teamId.toJSON is not a function".
     const LOCAL_APP_TEAM_ID = '_local_team_';
 
@@ -1212,10 +1205,7 @@ describe('sources router', () => {
 
     it('POST / - creates a source when team id is a string', async () => {
       const app = getLocalAppModeApp();
-      await createTestConnection(
-        new Types.ObjectId('_local_team_'),
-        MOCK_SOURCE.connection,
-      );
+      await createTestConnection(LOCAL_APP_TEAM._id, MOCK_SOURCE.connection);
 
       const response = await request(app)
         .post('/sources')
@@ -1233,10 +1223,7 @@ describe('sources router', () => {
 
     it('PUT /:id - updates a source when team id is a string', async () => {
       const app = getLocalAppModeApp();
-      await createTestConnection(
-        new Types.ObjectId('_local_team_'),
-        MOCK_SOURCE.connection,
-      );
+      await createTestConnection(LOCAL_APP_TEAM._id, MOCK_SOURCE.connection);
 
       const source = await seedSource({
         ...MOCK_SOURCE,

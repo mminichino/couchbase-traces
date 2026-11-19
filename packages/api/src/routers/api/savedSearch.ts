@@ -15,7 +15,7 @@ import {
   updateSavedSearch,
 } from '@/controllers/savedSearch';
 import { getNonNullUserWithTeam } from '@/middleware/auth';
-import { objectIdSchema } from '@/utils/zod';
+import { idSchema } from '@/utils/zod';
 
 const router = express.Router();
 
@@ -66,7 +66,7 @@ router.patch(
   validateRequest({
     body: updateSavedSearchBodySchema,
     params: z.object({
-      id: objectIdSchema,
+      id: idSchema,
     }),
   }),
   async (req, res, next) => {
@@ -116,7 +116,7 @@ router.patch(
 
 router.delete(
   '/:id',
-  validateRequest({ params: z.object({ id: objectIdSchema }) }),
+  validateRequest({ params: z.object({ id: idSchema }) }),
   async (req, res, next) => {
     try {
       const { teamId } = getNonNullUserWithTeam(req);

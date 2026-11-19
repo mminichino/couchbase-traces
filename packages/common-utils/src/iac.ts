@@ -103,9 +103,9 @@ export type IacConnectionRef = IacImportManifest['connections'][number];
  * between two same-type resources that share a name. The human-readable name
  * goes in a comment above each block instead.
  *
- * ObjectIds are 24 hex characters and can start with a digit, which Terraform
+ * Ids are 24 hex characters and can start with a digit, which Terraform
  * rejects as an identifier; the type prefix covers that. The character filter
- * is belt-and-braces — ids reaching here are always ObjectId hex.
+ * is belt-and-braces — ids reaching here are always 24-hex.
  */
 export function terraformResourceLabel({ type, id }: IacResourceRef): string {
   return `${type}_${id.toLowerCase().replace(/[^a-z0-9]/g, '')}`;
@@ -124,7 +124,7 @@ function commentSafeName(name: string | undefined): string | undefined {
   return safe ? safe.slice(0, 120) : undefined;
 }
 
-/** ObjectId hex — the only id shape any HyperDX resource has. */
+/** 24-hex id — the only id shape any HyperDX resource has. */
 export const IAC_RESOURCE_ID_RE = /^[0-9a-fA-F]{24}$/;
 
 /**
@@ -133,14 +133,12 @@ export const IAC_RESOURCE_ID_RE = /^[0-9a-fA-F]{24}$/;
  * confined to a comment and the label is filtered to `[a-z0-9_]`, so this is
  * the remaining sink — and `IacManifestEntrySchema` types it as a plain string,
  * which is not a constraint. Throwing rather than sanitising: an id that is not
- * ObjectId hex means the caller is wrong about what it is holding, and a
+ * 24-hex means the caller is wrong about what it is holding, and a
  * silently rewritten id would import the wrong resource.
  */
 function assertResourceId(id: string, label = 'id'): string {
   if (!IAC_RESOURCE_ID_RE.test(id)) {
-    throw new Error(
-      `Refusing to emit Terraform for a non-ObjectId ${label}: ${id}`,
-    );
+    throw new Error(`Refusing to emit Terraform for a non-hex ${label}: ${id}`);
   }
   return id;
 }

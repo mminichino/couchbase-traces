@@ -9,7 +9,6 @@ export NEXT_TELEMETRY_DISABLED=1
 export SERVER_URL="http://127.0.0.1:${CBT_API_PORT:-8000}"
 export FRONTEND_URL="${FRONTEND_URL:-${CBT_APP_URL:-http://localhost}:${CBT_APP_PORT:-8080}}"
 export OPAMP_PORT=${CBT_OPAMP_PORT:-4320}
-export MONGO_URI="${MONGO_URI:-mongodb://127.0.0.1:27017/hyperdx}"
 export OPAMP_SERVER_URL="http://127.0.0.1:${OPAMP_PORT}"
 
 export CBT_DEFAULT_SOURCES_PRESET="${CBT_DEFAULT_SOURCES_PRESET:-couchbase}"
@@ -157,8 +156,6 @@ export CBT_COUCHBASE_RAM_MB="${DATA_RAM_MB}"
 export CBT_COUCHBASE_INDEX_RAM_MB="${INDEX_RAM_MB}"
 export CBT_COUCHBASE_SEARCH_RAM_MB="${SEARCH_RAM_MB}"
 /opt/cbt/bin/init.sh
-
-mongod --quiet --dbpath /data/db > /var/log/mongod.log 2>&1 &
 
 (
   cd /opt/cbt/ingest

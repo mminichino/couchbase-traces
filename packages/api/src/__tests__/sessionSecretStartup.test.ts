@@ -10,10 +10,6 @@ jest.mock('@/metadata', () => ({
   startMetadataStore: jest.fn(),
   closeMetadataStore: jest.fn(),
 }));
-jest.mock('@/models', () => ({
-  connectDB: jest.fn().mockResolvedValue(undefined),
-  connectDBWithRetry: jest.fn().mockResolvedValue(undefined),
-}));
 jest.mock('@/opamp/app', () => ({ __esModule: true, default: jest.fn() }));
 jest.mock('@/setupDefaults', () => ({ setupTeamDefaults: jest.fn() }));
 jest.mock('@/utils/tokenEncryption', () => ({

@@ -9,7 +9,7 @@ import {
 } from '@/controllers/pinnedFilter';
 import { getSource } from '@/controllers/sources';
 import { getNonNullUserWithTeam } from '@/middleware/auth';
-import { objectIdSchema } from '@/utils/zod';
+import { idSchema } from '@/utils/zod';
 
 const router = express.Router();
 
@@ -21,7 +21,7 @@ router.get(
   '/',
   validateRequest({
     query: z.object({
-      source: objectIdSchema,
+      source: idSchema,
     }),
   }),
   async (req, res, next) => {
@@ -53,7 +53,7 @@ router.get(
 );
 
 const updateBodySchema = z.object({
-  source: objectIdSchema,
+  source: idSchema,
   fields: z.array(z.string().max(1024)).max(100),
   filters: PinnedFiltersValueSchema,
 });

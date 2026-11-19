@@ -6,8 +6,8 @@ import { getMetadataStore } from '@/metadata';
 import { newId } from '@/metadata/ids';
 import type { ITeam } from '@/metadata/schemas/team';
 import type { IUser } from '@/metadata/schemas/user';
+import { getAlert, seedAlert } from '@/metadata/testing/alertFixtures';
 import { findUser, getUserDoc, seedUser } from '@/metadata/testing/seed';
-import { alertDocs } from '@/metadata/testing/seedAlerts';
 
 const TEAM_BASE_URL = '/api/v2/team';
 
@@ -176,7 +176,7 @@ describe('External API v2 Team', () => {
     it('can remove members', async () => {
       const key = await createKey();
       const member = await createMember();
-      const alert = await alertDocs.create({
+      const alert = await seedAlert({
         team: team._id,
         threshold: 1,
         interval: '5m',
@@ -191,7 +191,7 @@ describe('External API v2 Team', () => {
         agent.delete(`${TEAM_BASE_URL}/member/${member._id}`),
       ).expect(200);
       expect(await findUser(member._id)).toBeNull();
-      const stored = await alertDocs.findById(alert._id).lean();
+      const stored = await getAlert(alert._id);
       const [account] = await serviceAccounts();
       expect(stored?.createdBy?.toString()).toEqual(account?._id);
     });
@@ -242,7 +242,7 @@ describe('External API v2 Team', () => {
         account?._id.toString(),
       );
 
-      const alert = await alertDocs.create({
+      const alert = await seedAlert({
         team: team._id,
         threshold: 1,
         interval: '5m',
@@ -257,9 +257,9 @@ describe('External API v2 Team', () => {
         `${TEAM_BASE_URL}/member/${account?._id}`,
       ).expect(404);
       expect(await findUser(account?._id)).not.toBeNull();
-      expect(
-        (await alertDocs.findById(alert._id))?.createdBy?.toString(),
-      ).toEqual(account?._id);
+      expect((await getAlert(alert._id))?.createdBy?.toString()).toEqual(
+        account?._id,
+      );
     });
   });
 });

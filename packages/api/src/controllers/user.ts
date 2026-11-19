@@ -32,8 +32,7 @@ export function findUserById(id: string) {
 }
 
 /**
- * passport-local-mongoose `register`: same error messages, UserExistsError
- * for a taken email, scrypt instead of pbkdf2 (D4).
+ * Registers a user: UserExistsError for a taken email, scrypt instead of pbkdf2 (D4).
  */
 export function registerUser(
   input: { email: string; name?: string; team: string },

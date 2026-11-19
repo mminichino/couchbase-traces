@@ -1,6 +1,6 @@
 # Development
 
-Couchbase Traces stores telemetry in **Couchbase Server Enterprise 8.x** (or Capella) and keeps users, dashboards, and alerts in MongoDB.
+Couchbase Traces stores telemetry in **Couchbase Server Enterprise 8.x** (or Capella) and keeps users, dashboards, and alerts in the Couchbase `cbt_meta` bucket.
 
 ## Prerequisites
 
@@ -12,7 +12,7 @@ Couchbase Traces stores telemetry in **Couchbase Server Enterprise 8.x** (or Cap
 
 ```bash
 yarn setup
-make dev          # same as yarn dev — API, UI, collector, Couchbase, ingest, MongoDB
+make dev          # same as yarn dev — API, UI, collector, Couchbase, ingest
 ```
 
 Worktree isolation (`scripts/dev-env.sh`) assigns ports automatically when multiple clones run at once.
@@ -40,7 +40,7 @@ make dev-couchbase-setup
 | Data | Location |
 | --- | --- |
 | Telemetry | Couchbase bucket `otel`, scope `default` (collections `otel_*`, including `otel_sessions`) |
-| App metadata | MongoDB (`MONGO_URI`; database name defaults match the compose stack) |
+| App metadata | Couchbase bucket `cbt_meta`, scope `app` (`CBT_METADATA_*` variables) |
 | Dev volumes | `.volumes/` under the repo (Couchbase data in `.volumes/couchbase_*`) |
 
 ## Reset
@@ -60,7 +60,7 @@ rm -rf .volumes/couchbase_* .volumes/db_dev_*
 | `make dev-int FILE=…` | API integration (Couchbase CI compose) |
 | `port/couchbase-test/run.sh` | Couchbase harness for SQL++ integration tests |
 | `make ci-e2e-couchbase` | Playwright against Couchbase e2e compose |
-| `make e2e` | Full-stack E2E (Couchbase + MongoDB + API) |
+| `make e2e` | Full-stack E2E (Couchbase + API) |
 
 ## All-in-one image (local)
 

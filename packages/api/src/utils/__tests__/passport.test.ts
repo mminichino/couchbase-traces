@@ -43,7 +43,7 @@ describe('utils/passport', () => {
   });
 
   it('still surfaces lookup failures', async () => {
-    const err = new Error('mongo is down');
+    const err = new Error('metadata is down');
     mockFindUserById.mockRejectedValue(err);
 
     expect(await deserializeSession('user-id')).toEqual({

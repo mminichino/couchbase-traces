@@ -169,7 +169,7 @@ describe('MCP Saved Search Tools', () => {
         expect(output).toHaveProperty('createdAt');
       });
 
-      it('should return error for invalid ObjectId format', async () => {
+      it('should return error for invalid id format', async () => {
         const result = await callTool(client, 'cbt_get_saved_search', {
           id: 'not-a-valid-id',
         });
@@ -325,7 +325,7 @@ describe('MCP Saved Search Tools', () => {
 
         expect(result.isError).toBe(true);
         const text = getFirstText(result);
-        expect(text).toContain('Invalid ObjectId');
+        expect(text).toContain('Invalid id');
         expect(text).toContain('sourceId');
       });
 
@@ -401,7 +401,7 @@ describe('MCP Saved Search Tools', () => {
         expect(getFirstText(result)).toContain('Saved search not found');
       });
 
-      it('should return error for invalid ObjectId format on update', async () => {
+      it('should return error for invalid id format on update', async () => {
         const result = await callTool(client, 'cbt_save_saved_search', {
           id: '!!!',
           name: 'Bad ID',

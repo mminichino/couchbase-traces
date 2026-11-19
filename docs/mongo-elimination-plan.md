@@ -1,6 +1,6 @@
 # MongoDB elimination plan
 
-Status: approved direction (revision 2, 2026-11-18). Owner decisions are recorded in [Decisions](#decisions). Remaining questions are in [Open questions](#10-open-questions).
+Status: **complete** (phases C0–C5 shipped; final state in [Final state](#12-final-state-c5)). Approved direction revision 2, 2026-11-18. Owner decisions are recorded in [Decisions](#decisions). Remaining questions are in [Open questions](#10-open-questions).
 
 Goal: store all Couchbase Traces app metadata (teams, users, sessions, connections, sources, saved searches, dashboards, alerts, alert history, webhooks, favorites, pinned filters, preset dashboard filters, invites) in a dedicated Couchbase Server Enterprise 8.x / Capella metadata bucket. After this plan, no Mongo containers, Mongo drivers, or Mongo env vars are left. Every feature keeps working, and the URL/API/MCP/CLI wire shapes stay the same.
 
@@ -601,7 +601,7 @@ Per-slice recipe (C1–C4), the same for every entity:
 4. Port the entity's upstream tests: `jest.mock('@/models/x')` → `setMetadataStoreForTests(createMemoryStore())`; int-test seeding `X.create(...)` → `seed.x(...)` (codemod `port/codemods/models-to-store.mjs`, extended per slice). Expected outputs do not change except for documented `__v` removal.
 5. Delete `models/x.ts` and its test helpers. The ESLint `no-restricted-imports` rule lists deleted models, so a stray import fails lint.
 
-### C0: Foundation, separate bucket, ids (L)
+### C0: Foundation, separate bucket, ids (L) — done
 
 - Wire-contract snapshots (`src/__tests__/metadataContracts.int.test.ts` for the internal API, `metadataContractsExternal.int.test.ts` for external API v2 + MCP, shared seed in `metadataContractsWorld.ts`): JSON snapshots, with `_id`/`id`/date normalization, of every metadata-returning route (internal API, external API v2, MCP outputs). They are captured on the current stack and used as the spec in every later phase.
 - `metadata/{types,ids,errors,serialize,index,unique,lock,schemaVersion}.ts`, `couchbase/{config,cluster,keyspace,kv,query,tx,verify,store}.ts`, `testing/{memoryKv,memoryStore,contract,seed,wire}.ts`, `common-utils/src/couchbase/{metadataKeyspace,nodeMetadataIndexes,nodeMetadataProvision}.ts`, `packages/ingest/src/setup/metadata.ts` + `cli.ts` flags. (As built: `unique`, `lock`, `schemaVersion` sit in `metadata/` because they only need `MetaKv`, so the memory store runs them too.)
@@ -611,7 +611,7 @@ Per-slice recipe (C1–C4), the same for every entity:
 - Tests: contract suite (memory + Couchbase), `ids` unit tests (format, monotonic within a process, timestamp prefix), `connectRetry` ported, provisioning idempotency (run twice → second creates nothing), tx probe on single-node CI, lease tests, schema-version guard.
 - **Done when**: snapshots green; contract suite green on both backends; `couchbase-init` creates `cbt_meta` idempotently in compose, CI, and all-in-one; nothing switched yet, all existing suites green.
 
-### C1: Identity, auth, sessions (L)
+### C1: Identity, auth, sessions (L) — done
 
 - Team, user (incl. org API keys, onboarding, virtual users), and invite repos; `auth/password.ts` (scrypt), `auth/localStrategy.ts`; `CouchbaseSessionStore` in `api-app.ts`; `utils/passport.ts`, `middleware/auth.ts` (`Express.User` becomes the `User` type), `routers/api/{root,team,orgApiKeys}.ts`, `routers/external-api/v2/team.ts`, `controllers/{team,user,orgApiKey}.ts`, `opamp/controllers/opampController.ts` (team by API key).
 - Replace all four `populate('createdBy'|'updatedBy')` sites with `users.getDisplay`. `deleteTeamMember` keeps its sequential delete-then-restore shape against the Mongo `Alert` model until C4.
@@ -619,18 +619,18 @@ Per-slice recipe (C1–C4), the same for every entity:
 - Tests: password unit tests (round-trip, wrong password, unknown scheme, params encoding, `needsRehash`, timing-safe path), session store unit tests (express-session store semantics: get/set/touch/destroy, expiry from `cookie.expires`) + int test (login → cookie → `/me` → logout → 401), uniqueness race tests (20 parallel registrations / invites / API keys).
 - **Done when**: `routers/api/__tests__/team.int.test.ts`, `controllers/__tests__/{team,orgApiKey}.int.test.ts`, the login/register/join-team/invite suites, the external v2 team suite, and opamp auth tests are green on Couchbase; the `team`, `user`, and `teamInvite` models are deleted; C0 snapshots are green.
 
-### C2: Connections and sources (M)
+### C2: Connections and sources (M) — done
 
 - Connection and source repos (discriminated union, secrets projection). `dataLayerSetup.ts` loader → `connections.getWithSecrets`. The `fixtures.ts` CI loader is rewritten without `Connection.findById`. `controllers/{connection,sources}.ts`, `utils/queryableSource.ts`, routers, external v2, MCP sources, and `setupDefaults.ts`.
 - **Done when**: `routers/api/__tests__/{connections,sources}.int.test.ts`, external v2 connections/sources, `controllers/__tests__/sources.int.test.ts`, and the MCP sources suites are green on Couchbase (the deferred list in `jest.int.config.js` stays as is); the models are deleted; snapshots are green.
 
-### C3: Content (L)
+### C3: Content (L) — done
 
 - Saved searches, dashboards (incl. provisioner upsert and `tasks/provisionDashboards`), favorites, pinned filters, preset dashboard filters, webhooks, and `tags` (unions the switched collections with Mongo `Alert` until C4). Callers: `controllers/{savedSearch,dashboard,favorite,pinnedFilter,presetDashboardFilters,webhook}.ts`, `routers/api/{dashboards,webhooks,iac}.ts`, external v2 dashboards/savedSearches/webhooks + `utils/dashboards.ts`, MCP dashboards/savedSearches/webhooks, and `controllers/ai*.ts` reads.
 - Deleting a dashboard or saved search still removes its alerts through the Mongo `Alert` model (sequential) until C4.
 - **Done when**: all content int suites (incl. `provisionDashboards.int.test.ts`, IaC export/import, favorites, pinned filters, webhooks name-uniqueness 409) are green on Couchbase; the six models are deleted; snapshots are green.
 
-### C4: Alerts, alert history, scheduler (L)
+### C4: Alerts, alert history, scheduler (L) — done
 
 - Before deleting the Mongo alert models, capture characterization tests for `setState` / `updatedAt` and ERROR-row upsert behavior (recipe step 1).
 - Alert and alert-history repos, incl. the window-function history queries and the alerts-page keyset. Callers: `controllers/{alerts,alertsPage,alertHistory}.ts`, `routers/api/alerts.ts`, external v2 alerts + `utils/alertChartConfig.ts`, `utils/{alerts,iacTileAlerts,externalApi}.ts`, `tasks/checkAlerts/**`, `scripts/seed-alerts.ts`.
@@ -638,7 +638,7 @@ Per-slice recipe (C1–C4), the same for every entity:
 - Delete `migrations.ts#runStartupMigrations` and its call in `server.ts` (D7).
 - **Done when**: `checkAlertsTask.test.ts`, `evaluators.test.ts`, `alertHistory.int.test.ts`, `alertsPagination.int.test.ts`, the external v2 and MCP alerts suites, and lease tests (two runners → one evaluation per tick; crashed holder → next tick proceeds) are green on Couchbase; no `@/models/*` import is left except `models/index.ts` (connection only); snapshots are green.
 
-### C5: Remove Mongo (L)
+### C5: Remove Mongo (L) — done
 
 - Code: delete `models/**` (move the remaining pure types/enums such as `AlertState`, `AlertSource`, `getAlertChannels`, `attributesToGroupValues` to `metadata/schemas/*`), `migrate-mongo-config.ts`, `migrations/mongo/**`, `src/__tests__/{addKindMigration.test.ts,migrations.int.test.ts}`, the Mongo bits of `utils/readiness.ts` / `server.ts` / `serverless.ts` / `fixtures.ts`, the `MONGO_URI` config, any Mongo instrumentation config (there is no explicit package today; the auto-instrumentation simply goes idle once no driver is loaded), and the 11000 branch in `isDuplicateKeyError`. `/ready` → `metadata` only (D11; port `health.int.test.ts`).
 - Dependencies: remove `mongoose`, `mongodb`, `migrate-mongo`, and any `mongodb-memory-server`; update `yarn.lock`, `knip.json`, `eslint.config.mjs` (`allowModules`), `docs/licenses.md` (regenerate), and the `next.config.mjs` comment.
@@ -706,3 +706,12 @@ The total is roughly 4–5 weeks for one engineer (revision 1: 5–7 weeks).
 - Removed: the Mongo import tool (old section 6 and M6), import verification/checkpoint/resume, session import, the migrate-mongo port and migration runner, the startup backfill port, passport-local-mongoose pbkdf2 compatibility and golden tests, the Mongo adapter (`metadata/mongo/*`) and the `CBT_METADATA_STORE` flag, the dual-store "green on both" requirement, the XL "move callers to the seam" phase, the `migrations` collection, `META().id` scan indexes, and the `bson` question.
 - Simplified: 9 phases → 6; each entity is switched once, directly to Couchbase; provisioning is idempotent DDL plus a version marker; one setup entry point (`couchbase-init`).
 - Changed: separate `cbt_meta` bucket (was a scope in `otel`); scrypt (was pbkdf2-compatible); `/ready` key renamed; scheduler lease on by default; dedicated metadata user.
+
+## 12. Final state (C5)
+
+All phases are complete. MongoDB is gone from the product: no driver, container, env var, or instrumentation remains, and a guard keeps it that way.
+
+- **Guard.** `scripts/ci/check-no-mongo.sh` (run by `make ci-lint`) fails on Mongo packages in any `package.json` or `yarn.lock`, imports of `mongoose`/`mongodb`/`bson`/`migrate-mongo`/`connect-mongo`, and Mongo services, env vars, or tooling in code and config. `packages/api/eslint.config.mjs` adds `no-restricted-imports` for the same packages.
+- **Intentional leftovers.** Historical mentions in this plan, `docs/port-notes.md`, `docs/upstream/**`, `docs/acceptance.md` and `port/state/**` (generated evidence), `port/rebrand/**` (rebrand inventory), and the `docs/upstream-AGENTS.md` attribution; the `mongodb` connection-string scheme in `utils/redactSecrets.ts` (it redacts credentials and is test-covered); `db.system:mongodb` span-attribute examples in the MCP dashboard prompts; the string `mongodb` as sample span data in app search tests; and the `@opentelemetry/instrumentation-mongodb` / `-mongoose` entries in `docs/licenses.md`, which ship inside `@opentelemetry/auto-instrumentations-node` and stay idle because no driver is loaded.
+- **Kept on purpose.** `hydrateAlertRefs` (`controllers/alertRefs.ts`) is the replacement for Mongoose `populate` (batched, team-scoped reads), not a type conversion, so it stays. `toObjectId` is gone.
+- **Acceptance results** are recorded under `## Mongo elimination: C5` in `docs/port-notes.md`.

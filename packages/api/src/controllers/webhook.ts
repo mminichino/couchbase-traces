@@ -1,7 +1,6 @@
 import { getMetadataStore } from '@/metadata';
 import type { WebhookChange } from '@/metadata/repos/webhooks';
 import type { IWebhook, WebhookService } from '@/metadata/schemas/webhook';
-import type { ObjectId } from '@/models';
 import { validateWebhookConfig } from '@/utils/validators';
 
 export interface WebhookInput {
@@ -20,7 +19,7 @@ export interface WebhookInput {
  * MCP; callers handle their own duplicate-key errors and secret redaction.
  */
 export async function createWebhook(
-  team: ObjectId | string,
+  team: string,
   {
     name,
     service,
@@ -59,7 +58,7 @@ export type UpdateWebhookResult =
  * to a new destination. Shared by External API v2 and MCP.
  */
 export async function updateWebhook(
-  team: ObjectId | string,
+  team: string,
   webhookId: string,
   {
     name,

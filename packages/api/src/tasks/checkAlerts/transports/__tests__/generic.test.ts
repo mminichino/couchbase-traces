@@ -3,8 +3,8 @@ import {
   WebhookService,
 } from '@couchbase-traces/common-utils/dist/types';
 import dns from 'dns';
-import { ObjectId } from 'mongodb';
 
+import { newId } from '@/metadata/ids';
 import { AlertState } from '@/metadata/schemas/alert';
 import {
   buildWebhookTemplateVariables,
@@ -26,8 +26,8 @@ const message: Message = {
 };
 
 const webhook: any = {
-  _id: new ObjectId(),
-  team: new ObjectId(),
+  _id: newId(),
+  team: newId(),
   service: WebhookService.Generic,
   name: 'hanging-receiver',
   url: 'https://webhook.site/hang',

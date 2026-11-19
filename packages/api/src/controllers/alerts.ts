@@ -27,7 +27,7 @@ import {
 import type { IDashboard } from '@/metadata/schemas/dashboard';
 import { type AlertRefs, deriveAlertDisplayFields } from '@/utils/alerts';
 import { Api400Error } from '@/utils/errors';
-import { internalAlertSchema, objectIdSchema } from '@/utils/zod';
+import { idSchema, internalAlertSchema } from '@/utils/zod';
 
 export type AlertInput = Omit<
   IAlert,
@@ -48,16 +48,16 @@ export type AlertInput = Omit<
   channel?: AlertChannel;
   // Replace the Date-type fields from IAlert
   scheduleStartAt?: string | null;
-  // Replace the ObjectId-type fields from IAlert
+  // Replace the id fields from IAlert
   savedSearchId?: string;
   dashboardId?: string;
 };
 
-function validateObjectId(
+function validateId(
   id: string | undefined,
   message: string,
 ): asserts id is string {
-  if (objectIdSchema.safeParse(id).success === false) {
+  if (idSchema.safeParse(id).success === false) {
     throw new Api400Error(message);
   }
 }
@@ -78,7 +78,7 @@ export const validateAlertInput = async (
   const refs: AlertRefs = {};
 
   if (alertInput.source === AlertSource.TILE) {
-    validateObjectId(alertInput.dashboardId, 'Invalid dashboard ID');
+    validateId(alertInput.dashboardId, 'Invalid dashboard ID');
 
     const dashboard = await getMetadataStore().dashboards.get(
       teamId.toString(),
@@ -120,7 +120,7 @@ export const validateAlertInput = async (
   }
 
   if (alertInput.source === AlertSource.SAVED_SEARCH) {
-    validateObjectId(alertInput.savedSearchId, 'Invalid saved search ID');
+    validateId(alertInput.savedSearchId, 'Invalid saved search ID');
 
     const savedSearch = await getMetadataStore().savedSearches.get(
       teamId.toString(),
@@ -155,7 +155,7 @@ export const validateAlertInput = async (
 
       // Raw SQL configs carry the connection directly; the source reference
       // is optional metadata for macro expansion ($__sourceTable).
-      validateObjectId(chartConfig.connection, 'Invalid connection ID');
+      validateId(chartConfig.connection, 'Invalid connection ID');
       const connection = await getMetadataStore().connections.get(
         teamId.toString(),
         chartConfig.connection,
@@ -164,7 +164,7 @@ export const validateAlertInput = async (
         throw new Api400Error('Connection not found');
       }
       if (chartConfig.source) {
-        validateObjectId(chartConfig.source, 'Invalid source ID');
+        validateId(chartConfig.source, 'Invalid source ID');
         const source = await getMetadataStore().sources.get(
           teamId.toString(),
           chartConfig.source,
@@ -178,7 +178,7 @@ export const validateAlertInput = async (
         // wrong database — silently wrong values when the table also exists
         // there, repeated query failures when it does not.
         //
-        // Compare case-insensitively: objectIdSchema admits uppercase hex,
+        // Compare case-insensitively: idSchema admits uppercase hex,
         // and ids are stored lowercase.
         if (
           source.connection.toLowerCase() !==
@@ -198,7 +198,7 @@ export const validateAlertInput = async (
         );
       }
 
-      validateObjectId(chartConfig.source, 'Invalid source ID');
+      validateId(chartConfig.source, 'Invalid source ID');
       const source = await getMetadataStore().sources.get(
         teamId.toString(),
         chartConfig.source,
@@ -231,7 +231,7 @@ export const validateAlertInput = async (
     .filter(c => c.type === 'webhook')
     .map(c => c.webhookId);
   for (const webhookId of webhookIds) {
-    validateObjectId(webhookId, 'Invalid webhook ID');
+    validateId(webhookId, 'Invalid webhook ID');
   }
   const uniqueIds = [...new Set(webhookIds)];
   const found = await getMetadataStore().webhooks.getMany(

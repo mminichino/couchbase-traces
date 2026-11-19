@@ -20,7 +20,7 @@ import {
 } from '@/controllers/orgApiKey';
 import { getNonNullUserWithTeam } from '@/middleware/auth';
 import { getCounter } from '@/utils/instrumentation';
-import { objectIdSchema } from '@/utils/zod';
+import { idSchema } from '@/utils/zod';
 
 const orgApiKeyOperations = getCounter('cbt.org_api_key.operations', {
   description: 'Org API key changes made in Team Settings, by operation.',
@@ -69,7 +69,7 @@ router.post(
 router.patch(
   '/:id',
   processRequest({
-    params: z.object({ id: objectIdSchema }),
+    params: z.object({ id: idSchema }),
     body: UpdateOrgApiKeyRequestSchema,
   }),
   async (req, res: express.Response<OrgApiKeyApiResponse>, next) => {
@@ -93,7 +93,7 @@ router.patch(
 
 router.delete(
   '/:id',
-  validateRequest({ params: z.object({ id: objectIdSchema }) }),
+  validateRequest({ params: z.object({ id: idSchema }) }),
   async (req, res, next) => {
     try {
       const doc = await revokeOrgApiKey(

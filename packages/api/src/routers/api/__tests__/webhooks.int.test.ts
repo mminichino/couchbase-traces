@@ -1,14 +1,13 @@
-import { Types } from 'mongoose';
-
 import { getLoggedInAgent, getServer } from '@/fixtures';
+import { newId } from '@/metadata/ids';
 import { WebhookService } from '@/metadata/schemas/webhook';
+import { removeAlert, seedAlert } from '@/metadata/testing/alertFixtures';
 import {
   countWebhooks,
   findWebhook,
   listWebhooks,
   seedWebhook,
 } from '@/metadata/testing/seed';
-import { alertDocs } from '@/metadata/testing/seedAlerts';
 import * as transports from '@/tasks/checkAlerts/transports';
 import { buildWebhookTemplateVariables } from '@/tasks/checkAlerts/transports/generic';
 import type { Message } from '@/tasks/checkAlerts/transports/types';
@@ -279,7 +278,7 @@ describe('webhooks router', () => {
     });
 
     // 2. Create an alert pointing to that webhook
-    await alertDocs.create({
+    await seedAlert({
       team: team._id,
       name: 'Test Alert',
       channel: {
@@ -311,7 +310,7 @@ describe('webhooks router', () => {
       team: team._id,
     });
 
-    const alert = await alertDocs.create({
+    const alert = await seedAlert({
       team: team._id,
       name: 'Test Alert',
       channel: {
@@ -329,7 +328,7 @@ describe('webhooks router', () => {
     await agent.delete(`/webhooks/${webhook._id}`).expect(409);
 
     // Remove the alert
-    await alertDocs.findByIdAndDelete(alert._id);
+    await removeAlert(alert._id);
 
     // Now deletion should succeed
     await agent.delete(`/webhooks/${webhook._id}`).expect(200);
@@ -341,7 +340,7 @@ describe('webhooks router', () => {
   it('DELETE /:id - returns 200 when webhook does not exist', async () => {
     const { agent } = await getLoggedInAgent(server);
 
-    const nonExistentId = new Types.ObjectId().toString();
+    const nonExistentId = newId();
 
     // This will succeed even if the ID doesn't exist, consistent with the implementation
     await agent.delete(`/webhooks/${nonExistentId}`).expect(200);
@@ -849,7 +848,7 @@ describe('webhooks router', () => {
     it('returns 404 when webhook does not exist', async () => {
       const { agent } = await getLoggedInAgent(server);
 
-      const nonExistentId = new Types.ObjectId().toString();
+      const nonExistentId = newId();
 
       const response = await agent
         .put(`/webhooks/${nonExistentId}`)
@@ -1549,7 +1548,7 @@ describe('webhooks router', () => {
         .send({
           service: WebhookService.Generic,
           url: 'https://example.com/****',
-          webhookId: new Types.ObjectId().toString(),
+          webhookId: newId(),
         })
         .expect(404);
 
@@ -1562,7 +1561,7 @@ describe('webhooks router', () => {
       const { agent } = await getLoggedInAgent(server);
 
       // Create a webhook belonging to a different team
-      const otherTeamId = new Types.ObjectId();
+      const otherTeamId = newId();
       const webhook = await seedWebhook({
         ...MOCK_WEBHOOK,
         service: WebhookService.Generic,

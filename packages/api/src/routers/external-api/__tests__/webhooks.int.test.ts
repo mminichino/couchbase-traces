@@ -1,12 +1,13 @@
 import { WebhookService } from '@couchbase-traces/common-utils/dist/types';
-import { ObjectId } from 'mongodb';
 import request, { SuperAgentTest } from 'supertest';
 
 import { getLoggedInAgent, getServer } from '@/fixtures';
 import { getMetadataStore } from '@/metadata';
+import { newId } from '@/metadata/ids';
 import { AlertSource, AlertState } from '@/metadata/schemas/alert';
 import type { ITeam } from '@/metadata/schemas/team';
 import type { IUser } from '@/metadata/schemas/user';
+import { seedAlert } from '@/metadata/testing/alertFixtures';
 import {
   countWebhooks,
   findWebhook,
@@ -16,7 +17,6 @@ import {
   seedRawWebhook,
   seedWebhook,
 } from '@/metadata/testing/seed';
-import { alertDocs } from '@/metadata/testing/seedAlerts';
 
 const WEBHOOKS_BASE_URL = '/api/v2/webhooks';
 
@@ -250,7 +250,7 @@ describe('External API v2 Webhooks', () => {
     it('should not return webhooks belonging to another team', async () => {
       await seedWebhook({ ...MOCK_SLACK_WEBHOOK, team: team._id });
 
-      const otherTeamId = new ObjectId();
+      const otherTeamId = newId();
       await seedWebhook({
         ...MOCK_SLACK_WEBHOOK,
         name: 'Other Team Webhook',
@@ -311,7 +311,7 @@ describe('External API v2 Webhooks', () => {
 
     it('should count a row that fails schema parse in total but omit it from data', async () => {
       await seedWebhook({ ...MOCK_SLACK_WEBHOOK, team: team._id });
-      // Insert a malformed row directly, bypassing Mongoose validation, so it
+      // Insert a malformed row directly, bypassing the model layer, so it
       // fails externalWebhookSchema parsing on read. meta.total counts every
       // stored row (countDocuments) while data drops the unparseable one, so
       // data.length can be less than meta.total — this documents that skew.
@@ -818,7 +818,7 @@ describe('External API v2 Webhooks', () => {
     });
 
     it('should return 404 for a webhook belonging to another team', async () => {
-      const otherTeamId = new ObjectId();
+      const otherTeamId = newId();
       const created = await seedWebhook({
         ...MOCK_SLACK_WEBHOOK,
         team: otherTeamId,
@@ -830,7 +830,7 @@ describe('External API v2 Webhooks', () => {
     });
 
     it('should return 404 for a non-existent webhook', async () => {
-      await authRequest('put', `${WEBHOOKS_BASE_URL}/${new ObjectId()}`)
+      await authRequest('put', `${WEBHOOKS_BASE_URL}/${newId()}`)
         .send(MOCK_SLACK_WEBHOOK)
         .expect(404);
     });
@@ -1020,7 +1020,7 @@ describe('External API v2 Webhooks', () => {
     });
 
     it('should return 404 for a webhook belonging to another team', async () => {
-      const otherTeamId = new ObjectId();
+      const otherTeamId = newId();
       const created = await seedWebhook({
         ...MOCK_SLACK_WEBHOOK,
         team: otherTeamId,
@@ -1039,10 +1039,10 @@ describe('External API v2 Webhooks', () => {
         ...MOCK_SLACK_WEBHOOK,
         team: team._id,
       });
-      await alertDocs.create({
+      await seedAlert({
         team: team._id,
         source: AlertSource.SAVED_SEARCH,
-        savedSearch: new ObjectId(),
+        savedSearch: newId(),
         threshold: 1,
         interval: '5m',
         state: AlertState.OK,

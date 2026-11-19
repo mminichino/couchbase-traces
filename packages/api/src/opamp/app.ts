@@ -26,9 +26,9 @@ app.get('/health', (req, res) => {
   res.status(200).json({ status: 'OK' });
 });
 
-// Readiness: the OpAMP handler is entirely Mongo-backed — without a Mongo
-// connection every /v1/opamp request 500s, which crash-loops collectors that
-// need a remote config at startup (see utils/readiness.ts and
+// Readiness: the OpAMP handler is entirely metadata-backed — without the
+// Couchbase metadata store every /v1/opamp request 500s, which crash-loops
+// collectors that need a remote config at startup (see utils/readiness.ts and
 // https://github.com/mminichino/couchbase-traces/issues/2966).
 app.get('/ready', (req, res) => {
   const report = readinessReport();
@@ -37,7 +37,6 @@ app.get('/ready', (req, res) => {
   }
   res.status(503).json({
     status: 'unavailable',
-    mongo: report.mongo,
     metadata: report.metadata,
   });
 });

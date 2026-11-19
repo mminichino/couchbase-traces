@@ -7,7 +7,7 @@ export type UserDisplays = Map<string, UserDisplay>;
 
 /**
  * One batched read for every referenced user. Users live in the metadata
- * store, so Mongoose `populate('createdBy', 'email name')` can't reach them.
+ * store, so a join on `createdBy` can't reach them.
  */
 export function loadUserDisplays(refs: Ref[]): Promise<UserDisplays> {
   return getMetadataStore().users.getDisplay(

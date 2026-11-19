@@ -6,7 +6,7 @@ import { mcpUserError } from '@/mcp/utils/errors';
 import { isPromqlEnabled } from '@/mcp/utils/legacySourceKinds';
 import { getMetadataStore } from '@/metadata';
 import { convertToExternalDashboard } from '@/routers/external-api/v2/utils/dashboards';
-import { objectIdSchema } from '@/utils/zod';
+import { idSchema } from '@/utils/zod';
 
 export function registerGetDashboardTile({
   context,
@@ -28,7 +28,7 @@ export function registerGetDashboardTile({
         'Use cbt_get_dashboard (without an ID) to list dashboards, ' +
         'then cbt_get_dashboard (with an ID) to see all tile IDs.',
       inputSchema: z.object({
-        dashboardId: objectIdSchema.describe(
+        dashboardId: idSchema.describe(
           'Dashboard ID, from cbt_get_dashboard (no id lists dashboards) ' +
             'or cbt_search_dashboards.',
         ),

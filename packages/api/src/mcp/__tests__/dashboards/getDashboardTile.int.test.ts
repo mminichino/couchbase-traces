@@ -79,7 +79,7 @@ describe('MCP Dashboard Tools - cbt_get_dashboard_tile', () => {
 
     expect(result.isError).toBe(true);
     const text = getFirstText(result);
-    expect(text).toContain('Invalid ObjectId');
+    expect(text).toContain('Invalid id');
     expect(text).toContain('dashboardId');
   });
 });

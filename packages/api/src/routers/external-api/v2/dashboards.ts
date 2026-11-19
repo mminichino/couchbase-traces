@@ -10,7 +10,7 @@ import { getMetadataStore } from '@/metadata';
 import type { DashboardPatch } from '@/metadata/schemas/dashboard';
 import { processRequestWithEnhancedErrors as validateRequest } from '@/utils/enhancedErrors';
 import { rejectPromqlBody } from '@/utils/rejectPromql';
-import { ExternalDashboardTileWithId, objectIdSchema } from '@/utils/zod';
+import { ExternalDashboardTileWithId, idSchema } from '@/utils/zod';
 
 import {
   cleanupDashboardAlerts,
@@ -3045,7 +3045,7 @@ router.get(
   '/:id',
   validateRequest({
     params: z.object({
-      id: objectIdSchema,
+      id: idSchema,
     }),
   }),
   async (req, res, next) => {
@@ -3548,7 +3548,7 @@ router.put(
   rejectPromqlBody,
   validateRequest({
     params: z.object({
-      id: objectIdSchema,
+      id: idSchema,
     }),
     body: updateDashboardBodySchema,
   }),
@@ -3715,7 +3715,7 @@ router.delete(
   '/:id',
   validateRequest({
     params: z.object({
-      id: objectIdSchema,
+      id: idSchema,
     }),
   }),
   async (req, res, next) => {

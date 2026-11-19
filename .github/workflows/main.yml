@@ -139,7 +139,7 @@ jobs:
           # Compose build (not bake): bake --load + a later plain `compose up`
           # often rebuilds anyway and left ingest unhealthy. Sequential compose
           # build keeps project image tags aligned with `up --no-build`.
-          docker compose -f ./docker-compose.ci.yml pull couchbase db
+          docker compose -f ./docker-compose.ci.yml pull couchbase
           for target in couchbase-init ingest otel-collector; do
             echo "Building ${target}..."
             docker compose -f ./docker-compose.ci.yml build "$target"
@@ -149,7 +149,7 @@ jobs:
       - name: Build dependencies
         run: make ci-build
       # Integration tests boot a MockServer on fixed ports and share a single
-      # MongoDB database, so they must stay serial (--runInBand)
+      # metadata bucket, so they must stay serial (--runInBand)
       # within a runner. We shard ACROSS runners instead: each shard is its own
       # VM with its own Docker stack, and jest's --shard splits the test files
       # so the shards run in parallel.
@@ -189,7 +189,7 @@ jobs:
             echo "::error::compose up failed ($up_status); dumping service logs"
             docker compose -f ./docker-compose.ci.yml ps -a || true
             docker compose -f ./docker-compose.ci.yml logs --no-color --tail=200 \
-              couchbase couchbase-init ingest otel-collector db || true
+              couchbase couchbase-init ingest otel-collector || true
             exit "$up_status"
           fi
           status=0

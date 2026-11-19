@@ -1,4 +1,4 @@
-import { getServer, randomMongoId } from '@/fixtures';
+import { getServer, randomId } from '@/fixtures';
 import { getMetadataStore } from '@/metadata';
 import { newId } from '@/metadata/ids';
 import { AlertSource } from '@/metadata/schemas/alert';
@@ -40,7 +40,7 @@ describe('unaddressableTileAlertIds', () => {
   });
 
   it('withholds every tile alert when the dashboard read fails', async () => {
-    const teamId = randomMongoId();
+    const teamId = randomId();
     const dashboard = await seedDashboard({
       name: 'Ops',
       team: teamId,
@@ -77,7 +77,7 @@ describe('unaddressableTileAlertIds', () => {
   // A floor under the remaining budget was the alternative, and it would have
   // let a request that already spent the ceiling run past it.
   it('withholds every tile alert without reading when the budget is spent', async () => {
-    const teamId = randomMongoId();
+    const teamId = randomId();
     const dashboard = await seedDashboard({
       name: 'Ops',
       team: teamId,
@@ -101,10 +101,10 @@ describe('unaddressableTileAlertIds', () => {
     }
   });
 
-  // maxTimeMS only caps mongo's own execution, so a read stuck waiting on a
+  // maxTimeMS only caps the store's own execution, so a read stuck waiting on a
   // pool connection or a socket would otherwise run past the request ceiling.
   it('withholds every tile alert when the read outlasts the budget', async () => {
-    const teamId = randomMongoId();
+    const teamId = randomId();
     const dashboard = await seedDashboard({
       name: 'Ops',
       team: teamId,
@@ -134,7 +134,7 @@ describe('unaddressableTileAlertIds', () => {
   // request withholds one export, so that is one counter tick — but two logs,
   // because the late error names the failure the timeout could only guess at.
   it('logs the late read failure but counts the request once', async () => {
-    const teamId = randomMongoId();
+    const teamId = randomId();
     const dashboard = await seedDashboard({
       name: 'Ops',
       team: teamId,
@@ -181,7 +181,7 @@ describe('unaddressableTileAlertIds', () => {
   });
 
   it('withholds nothing addressable once the read succeeds', async () => {
-    const teamId = randomMongoId();
+    const teamId = randomId();
     const dashboard = await seedDashboard({
       name: 'Ops',
       team: teamId,

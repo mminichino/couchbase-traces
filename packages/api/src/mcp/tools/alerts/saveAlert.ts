@@ -13,7 +13,7 @@ import {
   formatZodIssues,
   mcpServerError,
   mcpUserError,
-  validateObjectId,
+  validateId,
 } from '@/mcp/utils/errors';
 import { AlertSource } from '@/metadata/schemas/alert';
 import {
@@ -71,7 +71,7 @@ export function registerSaveAlert({
       // ── Validate ID for updates (early return narrows input.id to string) ──
       const alertId = input.id;
       if (alertId != null) {
-        const idError = validateObjectId(alertId, 'alert ID');
+        const idError = validateId(alertId, 'alert ID');
         if (idError) return idError;
       }
 

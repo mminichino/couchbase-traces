@@ -131,7 +131,7 @@ describe('external api v2', () => {
       const { agent, key } = await setup();
       jest
         .spyOn(userController, 'findUserByAccessKey')
-        .mockRejectedValueOnce(new Error('mongo unavailable'));
+        .mockRejectedValueOnce(new Error('metadata unavailable'));
       await agent
         .get('/api/v2')
         .set('Authorization', `Bearer ${key}`)

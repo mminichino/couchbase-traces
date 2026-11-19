@@ -2,7 +2,7 @@ import { SearchPage } from '../../page-objects/SearchPage';
 import { getApiUrl, getSources } from '../../utils/api-helpers';
 import { expect, test } from '../../utils/base-test';
 
-// Serial: all tests write to the same MongoDB document (team pinned filters).
+// Serial: all tests write to the same metadata document (team pinned filters).
 // Parallel execution causes beforeEach resets to race with ongoing mutations.
 test.describe.serial(
   'Shared Filters',

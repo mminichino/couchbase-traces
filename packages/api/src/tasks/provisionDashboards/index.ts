@@ -145,7 +145,7 @@ export default class ProvisionDashboardsTask implements HdxTask {
 
     if (teamId && !/^[0-9a-fA-F]{24}$/.test(teamId)) {
       throw new Error(
-        `DASHBOARD_PROVISIONER_TEAM_ID is not a valid ObjectId: ${teamId}`,
+        `DASHBOARD_PROVISIONER_TEAM_ID is not a valid id: ${teamId}`,
       );
     }
 

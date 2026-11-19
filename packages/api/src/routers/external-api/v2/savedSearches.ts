@@ -18,7 +18,7 @@ import {
   paginationMeta,
   paginationQuerySchema,
 } from '@/utils/pagination';
-import { objectIdSchema, tagsSchema } from '@/utils/zod';
+import { idSchema, tagsSchema } from '@/utils/zod';
 
 // Cap the number of pinned filters a single saved search can carry. Filters are
 // applied per query, so an unbounded array is both a storage and a query-cost
@@ -86,7 +86,7 @@ const nonRenderableFilterMessage = (index: number) =>
 // (see search.ts, dashboards) and to bound request/storage size.
 const savedSearchRequestSchema = z.object({
   name: z.string().trim().min(1).max(1024),
-  sourceId: objectIdSchema,
+  sourceId: idSchema,
   select: z
     .string()
     .max(4 * 1024)
@@ -116,7 +116,7 @@ function toSavedSearchInput(
 }
 
 // Runs after body validation. Ensures sourceId references a source owned by the
-// team; the Mongoose model would otherwise accept any ObjectId and let a saved
+// team; the store would otherwise accept any id and let a saved
 // search point at another team's source.
 async function requireValidSourceId(
   req: express.Request,
@@ -444,7 +444,7 @@ router.get(
  */
 router.get(
   '/:id',
-  validateRequest({ params: z.object({ id: objectIdSchema }) }),
+  validateRequest({ params: z.object({ id: idSchema }) }),
   async (req, res, next) => {
     try {
       const teamId = req.user?.team;
@@ -603,7 +603,7 @@ router.post(
 router.put(
   '/:id',
   validateRequest({
-    params: z.object({ id: objectIdSchema }),
+    params: z.object({ id: idSchema }),
     body: savedSearchRequestSchema,
   }),
   requireValidSourceId,
@@ -698,7 +698,7 @@ router.put(
  */
 router.delete(
   '/:id',
-  validateRequest({ params: z.object({ id: objectIdSchema }) }),
+  validateRequest({ params: z.object({ id: idSchema }) }),
   async (req, res, next) => {
     try {
       const teamId = req.user?.team;

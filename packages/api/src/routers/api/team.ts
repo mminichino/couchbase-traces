@@ -36,7 +36,7 @@ import {
 import { getNonNullUserWithTeam } from '@/middleware/auth';
 import orgApiKeysRouter from '@/routers/api/orgApiKeys';
 import { sendJson } from '@/utils/serialization';
-import { objectIdSchema } from '@/utils/zod';
+import { idSchema } from '@/utils/zod';
 
 const router = express.Router();
 
@@ -207,14 +207,14 @@ router.delete(
   '/invitation/:id',
   validateRequest({
     params: z.object({
-      id: objectIdSchema,
+      id: idSchema,
     }),
   }),
   async (req, res, next) => {
     try {
       const id = req.params.id;
-      // Throws rather than reading `req.user?.team` directly. BSON drops an
-      // undefined value from the filter entirely, so a teamless caller would
+      // Throws rather than reading `req.user?.team` directly. A filter drops an
+      // undefined value entirely, so a teamless caller would
       // turn the scoped delete below back into the unscoped one this guard
       // exists to prevent — any authenticated user revoking any team's
       // pending invitation given its id.
@@ -259,7 +259,7 @@ router.delete(
   '/member/:id',
   validateRequest({
     params: z.object({
-      id: objectIdSchema,
+      id: idSchema,
     }),
   }),
   async (req, res, next) => {

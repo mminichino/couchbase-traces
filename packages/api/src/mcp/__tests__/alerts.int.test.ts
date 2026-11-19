@@ -3,7 +3,6 @@ import {
   SourceKind,
 } from '@couchbase-traces/common-utils/dist/types';
 import { Client } from '@modelcontextprotocol/sdk/client/index.js';
-import mongoose from 'mongoose';
 
 import * as config from '@/config';
 import {
@@ -14,8 +13,14 @@ import {
   RAW_SQL_ALERT_TEMPLATE,
 } from '@/fixtures';
 import { McpContext } from '@/mcp/tools/types';
+import { newId } from '@/metadata/ids';
 import { AlertSource, AlertState } from '@/metadata/schemas/alert';
 import { WebhookService } from '@/metadata/schemas/webhook';
+import {
+  getAlert,
+  patchAlerts,
+  seedAlert,
+} from '@/metadata/testing/alertFixtures';
 import {
   seedConnection,
   seedDashboard,
@@ -23,7 +28,6 @@ import {
   seedSource,
   seedWebhook,
 } from '@/metadata/testing/seed';
-import { alertDocs } from '@/metadata/testing/seedAlerts';
 
 import { callTool, createTestClient, getFirstText } from './mcpTestUtils';
 
@@ -120,7 +124,7 @@ describe('MCP Alert Tools', () => {
 
   async function createTestAlert(overrides: Record<string, unknown> = {}) {
     const savedSearch = await createTestSavedSearch();
-    return alertDocs.create({
+    return seedAlert({
       team: team._id,
       source: 'saved_search',
       savedSearch: savedSearch._id,
@@ -219,7 +223,7 @@ describe('MCP Alert Tools', () => {
 
       it('derives displayName from the saved search and leaves name unset', async () => {
         const savedSearch = await createTestSavedSearch(); // name: 'Test Saved Search'
-        await alertDocs.create({
+        await seedAlert({
           team: team._id,
           source: 'saved_search',
           savedSearch: savedSearch._id,
@@ -245,7 +249,7 @@ describe('MCP Alert Tools', () => {
 
       it('derives displayName from the dashboard tile and leaves name unset', async () => {
         const dashboard = await createTestDashboardWithTile(); // tile name: 'Error Count'
-        await alertDocs.create({
+        await seedAlert({
           team: team._id,
           source: 'tile',
           dashboard: dashboard._id,
@@ -289,7 +293,7 @@ describe('MCP Alert Tools', () => {
         expect(output).toHaveProperty('teamId');
       });
 
-      it('should return error for invalid ObjectId format', async () => {
+      it('should return error for invalid id format', async () => {
         const result = await callTool(client, 'cbt_get_alert', {
           id: 'not-a-valid-id',
         });
@@ -626,8 +630,8 @@ describe('MCP Alert Tools', () => {
           ],
         });
 
-        // Mongo persists the internal dialect the check-alerts task reads.
-        const stored = await alertDocs.findById(output.id);
+        // the store persists the internal dialect the check-alerts task reads.
+        const stored = await getAlert(output.id);
         expect(stored!.source).toBe(AlertSource.INLINE);
         expect(stored!.chartConfig).toMatchObject({
           source: traceSource._id.toString(),
@@ -664,7 +668,7 @@ describe('MCP Alert Tools', () => {
         expect(updated.threshold).toBe(42);
         expect(updated.chartConfig).toMatchObject({ groupBy: 'ServiceName' });
 
-        const stored = await alertDocs.findById(created.id);
+        const stored = await getAlert(created.id);
         expect(stored!.threshold).toBe(42);
         expect(stored!.chartConfig).toMatchObject({ groupBy: 'ServiceName' });
       });
@@ -727,7 +731,7 @@ describe('MCP Alert Tools', () => {
           'cbt_save_alert',
           makeInlineInput(webhook._id.toString(), {
             chartConfig: makeChartConfig({
-              sourceId: new mongoose.Types.ObjectId().toString(),
+              sourceId: newId(),
             }),
           }),
         );
@@ -780,7 +784,7 @@ describe('MCP Alert Tools', () => {
         });
 
         // Stored with the internal field names.
-        const stored = await alertDocs.findById(output.id);
+        const stored = await getAlert(output.id);
         expect(stored!.chartConfig).toMatchObject({
           configType: 'sql',
           connection: connection._id.toString(),
@@ -815,7 +819,7 @@ describe('MCP Alert Tools', () => {
           periodAggFn: 'delta',
         });
 
-        const stored = await alertDocs.findById(created.id);
+        const stored = await getAlert(created.id);
         expect(stored!.chartConfig).toMatchObject({
           select: [{ isDelta: true }],
         });
@@ -837,7 +841,7 @@ describe('MCP Alert Tools', () => {
           id: created.id,
         });
         expect(resent.isError).toBeFalsy();
-        const storedAfter = await alertDocs.findById(created.id);
+        const storedAfter = await getAlert(created.id);
         expect(storedAfter!.chartConfig).toMatchObject({
           select: [{ isDelta: true }],
         });
@@ -865,7 +869,7 @@ describe('MCP Alert Tools', () => {
           where: 'ServiceName:api',
         });
 
-        const stored = await alertDocs.findById(output.id);
+        const stored = await getAlert(output.id);
         expect(stored!.chartConfig).toMatchObject({
           name: 'Error Rate Query',
           where: 'ServiceName:api',
@@ -904,8 +908,8 @@ describe('MCP Alert Tools', () => {
 
         // Seed a chartConfig name directly (as the internal UI flow would)
         // to exercise the name fallback.
-        await alertDocs.findByIdAndUpdate(created.id, {
-          $set: { 'chartConfig.name': 'Error Rate Query' },
+        await patchAlerts(created.id, {
+          'chartConfig.name': 'Error Rate Query',
         });
 
         const detail = await callTool(client, 'cbt_get_alert', {
@@ -940,7 +944,7 @@ describe('MCP Alert Tools', () => {
         // Inline alerts have no parent entity to inherit tags from.
         expect(output.tags).toEqual([]);
 
-        const stored = await alertDocs.findById(output.id);
+        const stored = await getAlert(output.id);
         expect(stored!.displayName).toBe('Trace error rate');
         expect(stored!.tags).toEqual([]);
       });
@@ -1127,7 +1131,7 @@ describe('MCP Alert Tools', () => {
         const webhook = await createTestWebhook();
 
         // Create the alert first
-        const alert = await alertDocs.create({
+        const alert = await seedAlert({
           team: team._id,
           source: 'saved_search',
           savedSearch: savedSearch._id,
@@ -1231,7 +1235,7 @@ describe('MCP Alert Tools', () => {
         expect(output.channels).toEqual(newChannels);
         expect(output.channel).toEqual(newChannels[0]);
 
-        const persisted = await alertDocs.findById(createdOutput.id);
+        const persisted = await getAlert(createdOutput.id);
         expect(persisted?.channels).toEqual(newChannels);
         expect(persisted?.channel).toEqual(newChannels[0]);
       });
@@ -1262,7 +1266,7 @@ describe('MCP Alert Tools', () => {
         });
         expect(tileResult.isError).toBeFalsy();
 
-        let updatedAlert = await alertDocs.findById(alert._id);
+        let updatedAlert = await getAlert(alert._id);
         expect(updatedAlert?.source).toBe(AlertSource.TILE);
         expect(updatedAlert?.dashboard?.toString()).toBe(
           dashboard._id.toString(),
@@ -1288,7 +1292,7 @@ describe('MCP Alert Tools', () => {
         });
         expect(savedSearchResult.isError).toBeFalsy();
 
-        updatedAlert = await alertDocs.findById(alert._id);
+        updatedAlert = await getAlert(alert._id);
         expect(updatedAlert?.source).toBe(AlertSource.SAVED_SEARCH);
         expect(updatedAlert?.savedSearch?.toString()).toBe(
           savedSearch._id.toString(),
@@ -1320,7 +1324,7 @@ describe('MCP Alert Tools', () => {
         expect(getFirstText(result)).toContain('not found');
       });
 
-      it('should return error for invalid ObjectId format on update', async () => {
+      it('should return error for invalid id format on update', async () => {
         const savedSearch = await createTestSavedSearch();
         const webhook = await createTestWebhook();
 

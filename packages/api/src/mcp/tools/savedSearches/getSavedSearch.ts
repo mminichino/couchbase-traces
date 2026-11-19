@@ -4,7 +4,7 @@ import * as config from '@/config';
 import { getSavedSearch } from '@/controllers/savedSearch';
 import { READ_ONLY_TOOL } from '@/mcp/tools/annotations';
 import type { ToolRegistrar } from '@/mcp/tools/types';
-import { mcpUserError, validateObjectId } from '@/mcp/utils/errors';
+import { mcpUserError, validateId } from '@/mcp/utils/errors';
 import { getMetadataStore } from '@/metadata';
 import { toExternalSavedSearch } from '@/metadata/schemas/savedSearch';
 
@@ -53,7 +53,7 @@ export function registerGetSavedSearch({
       }
 
       // ── Get single saved search ──
-      const idError = validateObjectId(id, 'saved search ID');
+      const idError = validateId(id, 'saved search ID');
       if (idError) return idError;
 
       const savedSearch = await getSavedSearch(teamId, id);

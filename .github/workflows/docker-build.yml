@@ -157,7 +157,7 @@ jobs:
             type=gha,scope=docker-build-pr-app
           cache-to: type=gha,mode=max,scope=docker-build-pr-app
 
-  # All-in-one image (Couchbase Server + MongoDB + ingest + OTel Collector).
+  # All-in-one image (Couchbase Server + ingest + OTel Collector).
   all-in-one-image:
     name: Build All-in-One Image
     runs-on: ubuntu-24.04
@@ -183,7 +183,6 @@ jobs:
             docker/hyperdx/**
             docker/couchbase/**
             docker/otel-collector/**
-            .vex/**
       - name: Setup Docker Buildx
         if:
           github.event_name != 'pull_request' ||

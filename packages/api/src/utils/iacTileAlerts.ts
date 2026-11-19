@@ -87,8 +87,9 @@ export async function unaddressableTileAlertIds({
     return allTileAlertIds();
   }
 
-  // maxTimeMS caps what mongo spends executing, not the wait for a pool
-  // connection, server selection or the socket, so on its own it cannot hold
+  // The metadata store's query timeout caps what the query service spends
+  // executing, not the wait for a connection or the socket, so on its own it
+  // cannot hold
   // this leg inside the request's ceiling. The timer is the wall-clock half of
   // the same bound.
   let timer: NodeJS.Timeout | undefined;

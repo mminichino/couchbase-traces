@@ -1,6 +1,5 @@
 import { SourceKind } from '@couchbase-traces/common-utils/dist/types';
 import { Client } from '@modelcontextprotocol/sdk/client/index.js';
-import mongoose from 'mongoose';
 
 import * as config from '@/config';
 import {
@@ -9,6 +8,7 @@ import {
   getTestFixtureDataClient,
 } from '@/fixtures';
 import { McpContext } from '@/mcp/tools/types';
+import { newId } from '@/metadata/ids';
 import { seedConnection, seedSource } from '@/metadata/testing/seed';
 
 import { callTool, createTestClient, getFirstText } from './mcpTestUtils';
@@ -322,7 +322,7 @@ describe('cbt_describe_table', () => {
   it("does not use another team's connection", async () => {
     const otherConnection = await seedConnection({
       kind: 'couchbase',
-      team: new mongoose.Types.ObjectId(),
+      team: newId(),
       name: 'Other',
       host: config.CLICKHOUSE_HOST,
       username: config.CLICKHOUSE_USER,

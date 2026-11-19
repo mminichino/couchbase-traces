@@ -7,10 +7,10 @@
 2. **Ingest** normalizes signals and writes documents to **Couchbase** (logs,
    traces, metrics, sessions).
 3. **API** runs SQL++ on Couchbase for searches, charts, and alerts.
-4. **UI** talks to the API; **MongoDB** stores users, teams, dashboards, and
+4. **UI** talks to the API; the Couchbase **`cbt_meta`** bucket stores users, teams, dashboards, and
    saved searches.
 
-## Core models (MongoDB)
+## Core models (`cbt_meta` bucket)
 
 - `Connection`: Couchbase cluster connection (connstr, credentials, kind).
 - `Source`: telemetry source (collection, timestamp expression, fields).

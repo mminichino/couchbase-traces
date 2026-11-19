@@ -16,7 +16,7 @@ x-cbt-couchbase-env: &cbt-couchbase-env
   CBT_COUCHBASE_RAM_MB: '2048'
   CBT_COUCHBASE_INDEX_RAM_MB: '512'
   CBT_COUCHBASE_SEARCH_RAM_MB: '512'
-  # App metadata bucket (MongoDB elimination plan C0); carved from RAM_MB.
+  # App metadata bucket (cbt_meta); carved from RAM_MB.
   CBT_METADATA_USER: cbt_meta
   CBT_METADATA_PASSWORD: dev-metadata-password
   CBT_METADATA_RAM_MB: '256'
@@ -112,14 +112,6 @@ services:
     depends_on:
       ingest:
         condition: service_healthy
-
-  db:
-    image: mongo:5.0.32-focal
-    command: --port 29999
-    ports:
-      - '${CBT_CI_MONGO_PORT:-39999}:29999'
-    networks:
-      - internal
 
 networks:
   internal:

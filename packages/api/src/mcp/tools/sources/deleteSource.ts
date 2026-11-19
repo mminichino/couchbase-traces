@@ -5,7 +5,7 @@ import { IDEMPOTENT_DESTRUCTIVE_TOOL } from '@/mcp/tools/annotations';
 import type { ToolRegistrar } from '@/mcp/tools/types';
 import { mcpUserError } from '@/mcp/utils/errors';
 import { isHiddenSource } from '@/mcp/utils/legacySourceKinds';
-import { objectIdSchema } from '@/utils/zod';
+import { idSchema } from '@/utils/zod';
 
 export function registerDeleteSource({
   context,
@@ -24,7 +24,7 @@ export function registerDeleteSource({
         'left dangling, so check dependencies first. Use cbt_list_sources ' +
         'to find available source IDs.',
       inputSchema: z.object({
-        id: objectIdSchema.describe(
+        id: idSchema.describe(
           'ID of the source to delete. Get it from cbt_list_sources.',
         ),
       }),

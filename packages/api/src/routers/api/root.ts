@@ -33,7 +33,7 @@ const registrationSchema = z
 const router = express.Router();
 
 // Liveness: 200 whenever the process can serve HTTP. Deliberately checks no
-// external dependencies — restarting the pod does not fix a Mongo outage.
+// external dependencies — restarting the pod does not fix a Couchbase outage.
 router.get('/health', async (req, res) => {
   res.send({
     data: 'OK',
@@ -43,9 +43,9 @@ router.get('/health', async (req, res) => {
   });
 });
 
-// Readiness: 503 unless MongoDB is connected and the metadata store (when
-// configured) is ready. A pod without them cannot serve traffic and should be
-// removed from Service endpoints (see utils/readiness.ts).
+// Readiness: 503 unless the Couchbase metadata store is ready. A pod without
+// it cannot serve traffic and should be removed from Service endpoints (see
+// utils/readiness.ts).
 router.get('/ready', async (req, res) => {
   const report = readinessReport();
   if (report.ready) {
@@ -57,7 +57,6 @@ router.get('/ready', async (req, res) => {
   }
   res.status(503).send({
     status: 'unavailable',
-    mongo: report.mongo,
     metadata: report.metadata,
   });
 });

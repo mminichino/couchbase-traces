@@ -10,18 +10,17 @@ include .env
 # parallel. scripts/slots.sh computes them; override the slot with
 # `make dev-int CBT_CI_SLOT=5`.
 # ---------------------------------------------------------------------------
-# One shell for all six values: this runs on every make invocation, and each
+# One shell for all five values: this runs on every make invocation, and each
 # shell costs ~20ms.
-_hdx_ci := $(shell CBT_CI_SLOT='$(CBT_CI_SLOT)' sh -c '. ./scripts/slots.sh && hdx_ci_ports && echo "$$CBT_CI_SLOT $$CBT_CI_PROJECT $$CBT_CI_CH_PORT $$CBT_CI_MONGO_PORT $$CBT_CI_API_PORT $$CBT_CI_OPAMP_PORT"')
+_hdx_ci := $(shell CBT_CI_SLOT='$(CBT_CI_SLOT)' sh -c '. ./scripts/slots.sh && hdx_ci_ports && echo "$$CBT_CI_SLOT $$CBT_CI_PROJECT $$CBT_CI_CH_PORT $$CBT_CI_API_PORT $$CBT_CI_OPAMP_PORT"')
 
 CBT_CI_SLOT      := $(word 1,$(_hdx_ci))
 CBT_CI_PROJECT   := $(word 2,$(_hdx_ci))
 CBT_CI_CH_PORT   := $(word 3,$(_hdx_ci))
-CBT_CI_MONGO_PORT:= $(word 4,$(_hdx_ci))
-CBT_CI_API_PORT  := $(word 5,$(_hdx_ci))
-CBT_CI_OPAMP_PORT:= $(word 6,$(_hdx_ci))
+CBT_CI_API_PORT  := $(word 4,$(_hdx_ci))
+CBT_CI_OPAMP_PORT:= $(word 5,$(_hdx_ci))
 
-export CBT_CI_CH_PORT CBT_CI_MONGO_PORT CBT_CI_API_PORT CBT_CI_OPAMP_PORT
+export CBT_CI_CH_PORT CBT_CI_API_PORT CBT_CI_OPAMP_PORT
 
 # Log directory for dev-portal visibility (integration tests)
 CBT_CI_LOGS_DIR := $(HOME)/.config/hyperdx/dev-slots/$(CBT_CI_SLOT)/logs-int
@@ -60,7 +59,6 @@ install-tools:
 #   API server        : 30100 + slot
 #   App (Next.js)     : 30200 + slot
 #   OpAMP             : 30300 + slot
-#   MongoDB           : 30400 + slot
 #   query HTTP   : 30500 + slot
 #   legacy store Native : 30600 + slot
 #   OTel health       : 30700 + slot
@@ -132,6 +130,7 @@ ci-lint:
 	node scripts/ci/ratchet.mjs
 	-yarn dupes
 	scripts/ci/check-openapi-sync.sh
+	scripts/ci/check-no-mongo.sh
 
 .PHONY: ci-openapi
 ci-openapi:
@@ -173,7 +172,7 @@ dev-int-build:
 
 .PHONY: dev-int
 dev-int:
-	@echo "Using CI slot $(CBT_CI_SLOT) (project=$(CBT_CI_PROJECT) ch=$(CBT_CI_CH_PORT) mongo=$(CBT_CI_MONGO_PORT) api=$(CBT_CI_API_PORT))"
+	@echo "Using CI slot $(CBT_CI_SLOT) (project=$(CBT_CI_PROJECT) ch=$(CBT_CI_CH_PORT) api=$(CBT_CI_API_PORT))"
 	@mkdir -p $(CBT_CI_LOGS_DIR)
 	@bash scripts/ensure-dev-portal.sh
 	docker compose -p $(CBT_CI_PROJECT) -f ./docker-compose.ci.yml up -d
@@ -184,7 +183,7 @@ dev-int:
 
 .PHONY: dev-int-common-utils
 dev-int-common-utils:
-	@echo "Using CI slot $(CBT_CI_SLOT) (project=$(CBT_CI_PROJECT) ch=$(CBT_CI_CH_PORT) mongo=$(CBT_CI_MONGO_PORT))"
+	@echo "Using CI slot $(CBT_CI_SLOT) (project=$(CBT_CI_PROJECT) ch=$(CBT_CI_CH_PORT))"
 	@mkdir -p $(CBT_CI_LOGS_DIR)
 	@bash scripts/ensure-dev-portal.sh
 	docker compose -p $(CBT_CI_PROJECT) -f ./docker-compose.ci.yml up -d
@@ -246,12 +245,6 @@ dev-e2e:
 	exit $$ret
 
 
-
-# TODO: check db connections before running the migration CLIs
-.PHONY: dev-migrate-db
-dev-migrate-db:
-	@echo "Migrating Mongo db...\n"
-	npx nx run @couchbase-traces/api:dev:migrate-db
 
 .PHONY: version
 version:

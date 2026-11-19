@@ -57,7 +57,6 @@ cat > "${CBT_DEV_SLOTS_DIR}/${CBT_DEV_SLOT}.json" <<EOF
   "apiPort": ${CBT_API_PORT},
   "appPort": ${CBT_APP_PORT},
   "opampPort": ${CBT_OPAMP_PORT},
-  "mongoPort": ${CBT_DEV_MONGO_PORT},
   "chHttpPort": ${CBT_DEV_CH_HTTP_PORT},
   "chNativePort": ${CBT_DEV_CH_NATIVE_PORT},
   "otelHttpPort": ${CBT_DEV_OTEL_HTTP_PORT},
@@ -104,7 +103,6 @@ echo "║  App (Next.js)     http://localhost:${CBT_APP_PORT}$(printf '%*s' $((2
 echo "║  API               http://localhost:${CBT_API_PORT}$(printf '%*s' $((22 - ${#CBT_API_PORT})) '')║"
 echo "║  Couchbase UI      http://localhost:${CBT_DEV_CB_MGMT_PORT}$(printf '%*s' $((22 - ${#CBT_DEV_CB_MGMT_PORT})) '')║"
 echo "║  Ingest            http://localhost:${CBT_DEV_INGEST_PORT}$(printf '%*s' $((22 - ${#CBT_DEV_INGEST_PORT})) '')║"
-echo "║  MongoDB           localhost:${CBT_DEV_MONGO_PORT}$(printf '%*s' $((29 - ${#CBT_DEV_MONGO_PORT})) '')║"
 echo "║  OTel HTTP         http://localhost:${CBT_DEV_OTEL_HTTP_PORT}$(printf '%*s' $((22 - ${#CBT_DEV_OTEL_HTTP_PORT})) '')║"
 echo "║  OTel gRPC         localhost:${CBT_DEV_OTEL_GRPC_PORT}$(printf '%*s' $((29 - ${#CBT_DEV_OTEL_GRPC_PORT})) '')║"
 echo "║  OpAMP             localhost:${CBT_OPAMP_PORT}$(printf '%*s' $((29 - ${#CBT_OPAMP_PORT})) '')║"

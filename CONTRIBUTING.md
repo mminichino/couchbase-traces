@@ -89,7 +89,8 @@ Service Descriptions:
   Includes OpAMP supervisor that pulls configuration from the API.
 - Couchbase: Telemetry storage (logs, traces, metrics, sessions).
 - Ingest: Normalizes OTLP and writes to Couchbase.
-- MongoDB (db): Stores users, saved searches, alerts, and dashboards.
+- Couchbase metadata bucket (`cbt_meta`): Stores users, saved searches, alerts,
+  and dashboards.
 - Couchbase Traces API (api): Executes SQL++ on behalf of the frontend and runs
   alert checks.
 - Couchbase Traces UI (app): Next.js frontend, serves the UI.
@@ -108,7 +109,7 @@ You can get started by deploying a complete development stack in dev mode.
 yarn dev
 ```
 
-This starts the API, Next.js frontend, OpenTelemetry collector, MongoDB, and
+This starts the API, Next.js frontend, OpenTelemetry collector, and
 Couchbase (see [docs/development.md](docs/development.md)).
 
 Each worktree automatically gets unique ports so multiple developers (or agents)
@@ -147,7 +148,7 @@ see them reflected in real-time.
 The development stack mounts volumes locally for persisting storage under
 `.volumes`. Each worktree gets its own volume directory (e.g.
 `.volumes/couchbase_dev_89`). Clear the `.volumes` directory to reset Couchbase
-and MongoDB storage.
+storage.
 
 ### Windows
 
@@ -167,7 +168,7 @@ simultaneously with the dev stack and across multiple worktrees.
 
 ### E2E Tests
 
-E2E tests run against a full local stack (MongoDB + Couchbase + API). Docker must
+E2E tests run against a full local stack (Couchbase + API). Docker must
 be running.
 
 ```bash

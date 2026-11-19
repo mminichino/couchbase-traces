@@ -1,10 +1,10 @@
 import _ from 'lodash';
-import { ObjectId } from 'mongodb';
-import mongoose from 'mongoose';
 
 import { getAgent, getLoggedInAgent, getServer } from '@/fixtures';
 import { getMetadataStore } from '@/metadata';
+import { newId } from '@/metadata/ids';
 import { AlertSource, AlertThresholdType } from '@/metadata/schemas/alert';
+import { getAlert, seedAlert } from '@/metadata/testing/alertFixtures';
 import {
   findUser,
   getUserDoc,
@@ -12,7 +12,6 @@ import {
   patchUser,
   seedUser,
 } from '@/metadata/testing/seed';
-import { alertDocs } from '@/metadata/testing/seedAlerts';
 
 const invites = () => getMetadataStore().teamInvites;
 
@@ -81,7 +80,7 @@ describe('team router', () => {
       team: team.id,
       kind: 'log',
       name: 'My New Source',
-      connection: new ObjectId().toString(),
+      connection: newId(),
       from: {
         databaseName: 'system',
         tableName: 'query_log',
@@ -103,30 +102,30 @@ describe('team router', () => {
       })
       .expect(200);
 
-    await alertDocs.create({
+    await seedAlert({
       team: team.id,
       source: AlertSource.SAVED_SEARCH,
-      savedSearch: new mongoose.Types.ObjectId(),
+      savedSearch: newId(),
       threshold: 10,
       thresholdType: AlertThresholdType.ABOVE,
       interval: '5m',
       channel: {
         type: 'webhook',
-        webhookId: new mongoose.Types.ObjectId().toString(),
+        webhookId: newId(),
       },
       tags: ['test2', 'test3'],
     });
 
-    await alertDocs.create({
-      team: new mongoose.Types.ObjectId(),
+    await seedAlert({
+      team: newId(),
       source: AlertSource.SAVED_SEARCH,
-      savedSearch: new mongoose.Types.ObjectId(),
+      savedSearch: newId(),
       threshold: 10,
       thresholdType: AlertThresholdType.ABOVE,
       interval: '5m',
       channel: {
         type: 'webhook',
-        webhookId: new mongoose.Types.ObjectId().toString(),
+        webhookId: newId(),
       },
       tags: ['other-team'],
     });
@@ -358,44 +357,44 @@ describe('team router', () => {
       team: team.id,
     });
 
-    const alert = await alertDocs.create({
+    const alert = await seedAlert({
       createdBy: user1._id,
       team: team.id,
       source: AlertSource.SAVED_SEARCH,
-      savedSearch: new mongoose.Types.ObjectId(),
+      savedSearch: newId(),
       threshold: 10,
       thresholdType: AlertThresholdType.ABOVE,
       interval: '5m',
       channel: {
         type: 'webhook',
-        webhookId: new mongoose.Types.ObjectId().toString(),
+        webhookId: newId(),
       },
     });
 
-    const alertInAnotherTeam = await alertDocs.create({
+    const alertInAnotherTeam = await seedAlert({
       createdBy: user1._id,
-      team: new mongoose.Types.ObjectId(), // Different team ID
+      team: newId(), // Different team ID
       source: AlertSource.SAVED_SEARCH,
-      savedSearch: new mongoose.Types.ObjectId(),
+      savedSearch: newId(),
       threshold: 10,
       thresholdType: AlertThresholdType.ABOVE,
       interval: '5m',
       channel: {
         type: 'webhook',
-        webhookId: new mongoose.Types.ObjectId().toString(),
+        webhookId: newId(),
       },
     });
 
     await agent.delete(`/team/member/${user1._id}`).expect(200);
 
-    const alertAfterUserDeletion = await alertDocs.findById(alert._id);
+    const alertAfterUserDeletion = await getAlert(alert._id);
     expect(alertAfterUserDeletion).not.toBeNull();
     expect(alertAfterUserDeletion?.createdBy?.toString()).toEqual(
       user._id.toString(),
     );
 
     // Ensure alert in another team is not modified
-    const alertInAnotherTeamAfterDeletion = await alertDocs.findById(
+    const alertInAnotherTeamAfterDeletion = await getAlert(
       alertInAnotherTeam._id,
     );
     expect(alertInAnotherTeamAfterDeletion).not.toBeNull();
@@ -424,10 +423,10 @@ describe('team router', () => {
   it('DELETE /team/invitation/:teamInviteId will not touch another team', async () => {
     const { agent } = await getLoggedInAgent(server);
 
-    const otherTeamInvite = await invites().getOrCreate(
-      new ObjectId().toString(),
-      { email: 'other_team@example.com', name: 'Other Team Invite' },
-    );
+    const otherTeamInvite = await invites().getOrCreate(newId(), {
+      email: 'other_team@example.com',
+      name: 'Other Team Invite',
+    });
 
     await agent.delete(`/team/invitation/${otherTeamInvite._id}`).expect(404);
 
@@ -509,11 +508,11 @@ describe('team router', () => {
       const { agent } = await getLoggedInAgent(server);
       // OSS allows a single team, so plant a key under a different team id.
       const other = await seedUser({
-        team: new mongoose.Types.ObjectId(),
+        team: newId(),
         email: 'sa@service-accounts.hyperdx.invalid',
         name: 'other team',
         isVirtual: true,
-        createdBy: new mongoose.Types.ObjectId().toString(),
+        createdBy: newId(),
       });
       const list = await agent.get('/team/api-keys').expect(200);
       expect(list.body.data).toHaveLength(0);

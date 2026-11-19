@@ -3,7 +3,7 @@
  *
  * This setup:
  * 1. Initializes Couchbase and seeds telemetry documents
- * 2. Clears MongoDB database to ensure clean state
+ * 2. Clears the app metadata bucket to ensure clean state
  * 3. Creates a test user and team
  * 4. Applies DEFAULT_SOURCES from .env.e2e
  * 5. Saves authentication state for tests
@@ -14,7 +14,11 @@ import { execSync } from 'node:child_process';
 import path from 'path';
 import { chromium, FullConfig } from '@playwright/test';
 
-import { runMongoshScript } from './utils/db-helpers';
+import {
+  clearMetadata,
+  replaceAlertHistory,
+  updateMetadataDoc,
+} from './utils/db-helpers';
 import { seedCouchbase } from './seed-couchbase';
 
 // Configuration constants
@@ -120,16 +124,16 @@ export const SEEDED_ERROR_ALERT = {
 };
 
 /**
- * Clears the MongoDB database to ensure a clean slate for tests
+ * Clears the app metadata bucket to ensure a clean slate for tests
  */
-function clearDatabase() {
-  console.log('Clearing MongoDB database for fresh test run...');
+async function clearDatabase() {
+  console.log('Clearing app metadata for fresh test run...');
 
   try {
-    runMongoshScript("use('hyperdx-e2e'); db.dropDatabase();");
-    console.log('  ✓ Database cleared successfully (via Docker)');
+    await clearMetadata();
+    console.log('  ✓ Metadata cleared successfully');
   } catch (error) {
-    console.warn('  ⚠ Warning: Could not clear database');
+    console.warn('  ⚠ Warning: Could not clear metadata');
     console.warn(`  ${error instanceof Error ? error.message : String(error)}`);
     console.warn(
       '  This may cause issues if old data exists from previous test runs',
@@ -142,7 +146,9 @@ function clearDatabase() {
 
 async function globalSetup(_config: FullConfig) {
   console.log('Setting up full-stack E2E environment');
-  console.log('  MongoDB: local (auth, teams, persistence)');
+  console.log(
+    '  Metadata: Couchbase cbt_meta bucket (auth, teams, persistence)',
+  );
   console.log('  Couchbase: local instance (telemetry data)');
 
   process.env.TZ = 'America/New_York';
@@ -195,8 +201,8 @@ async function globalSetup(_config: FullConfig) {
     );
   }
 
-  // Clear MongoDB database to ensure DEFAULT_SOURCES is applied
-  clearDatabase();
+  // Clear app metadata to ensure DEFAULT_SOURCES is applied
+  await clearDatabase();
 
   // Create test user and save auth state
   console.log('Creating test user and logging in');
@@ -363,7 +369,7 @@ async function globalSetup(_config: FullConfig) {
  * Seeds an alert with a recorded execution error. The alert is created via the
  * API (so all referenced documents — saved search, webhook — exist and the
  * alerts list endpoint populates correctly), then the `errors` array is
- * patched in directly via mongosh since it's only ever set by the check-alerts
+ * patched in directly in the metadata bucket since it's only ever set by the check-alerts
  * background job in normal operation.
  */
 async function seedAlertWithErrors(
@@ -440,7 +446,7 @@ async function seedAlertWithErrors(
   const alert = (await alertRes.json()).data;
   const alertId: string = alert._id ?? alert.id;
 
-  // 4) Patch the `executionErrors` array directly via mongosh. The
+  // 4) Patch the `executionErrors` array directly in the metadata bucket. The
   // check-alerts job is the only code that writes this field in normal
   // operation, so we write it here to avoid having to run that job during
   // setup.
@@ -451,51 +457,47 @@ async function seedAlertWithErrors(
   const errorWindowStart = Math.floor(Date.now() / windowMs) * windowMs;
   const okWindowStart = errorWindowStart - windowMs;
 
-  const patchScript = `
-use('hyperdx-e2e');
-db.alerts.updateOne(
-  { _id: ObjectId(${JSON.stringify(alertId)}) },
-  {
-    $set: {
-      executionErrors: [
-        {
-          timestamp: new Date(),
-          type: ${JSON.stringify(SEEDED_ERROR_ALERT.errorType)},
-          message: ${JSON.stringify(SEEDED_ERROR_ALERT.errorMessage)}
-        }
-      ],
-      state: 'OK'
-    }
-  }
-);
-db.alerthistories.deleteMany({ alert: ObjectId(${JSON.stringify(alertId)}) });
-db.alerthistories.insertMany([
-  {
-    alert: ObjectId(${JSON.stringify(alertId)}),
-    createdAt: new Date(${okWindowStart}),
-    state: 'OK',
-    counts: 0,
-    lastValues: [{ startTime: new Date(${okWindowStart - windowMs}), count: 0 }]
-  },
-  {
-    alert: ObjectId(${JSON.stringify(alertId)}),
-    createdAt: new Date(${errorWindowStart}),
-    state: 'ERROR',
-    counts: 0,
-    lastValues: [],
-    errors: [
-      {
-        timestamp: new Date(),
-        type: ${JSON.stringify(SEEDED_ERROR_ALERT.historyErrorType)},
-        message: ${JSON.stringify(SEEDED_ERROR_ALERT.historyErrorMessage)}
-      }
-    ]
-  }
-]);
-`;
-
   try {
-    runMongoshScript(patchScript);
+    await updateMetadataDoc(
+      'alerts',
+      alertId,
+      "d.executionErrors = $errors, d.state = 'OK'",
+      {
+        errors: [
+          {
+            timestamp: new Date().toISOString(),
+            type: SEEDED_ERROR_ALERT.errorType,
+            message: SEEDED_ERROR_ALERT.errorMessage,
+          },
+        ],
+      },
+    );
+    await replaceAlertHistory(alertId, [
+      {
+        createdAt: new Date(okWindowStart).toISOString(),
+        state: 'OK',
+        counts: 0,
+        lastValues: [
+          {
+            startTime: new Date(okWindowStart - windowMs).toISOString(),
+            count: 0,
+          },
+        ],
+      },
+      {
+        createdAt: new Date(errorWindowStart).toISOString(),
+        state: 'ERROR',
+        counts: 0,
+        lastValues: [],
+        errors: [
+          {
+            timestamp: new Date().toISOString(),
+            type: SEEDED_ERROR_ALERT.historyErrorType,
+            message: SEEDED_ERROR_ALERT.historyErrorMessage,
+          },
+        ],
+      },
+    ]);
     console.log(
       `  ✓ Seeded alert "${alert.name}" (${alertId}) with a ${SEEDED_ERROR_ALERT.errorType}`,
     );

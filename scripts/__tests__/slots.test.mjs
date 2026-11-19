@@ -56,7 +56,6 @@ test('exports the dev stack ports', () => {
     CBT_API_PORT: '30144',
     CBT_APP_PORT: '30244',
     CBT_OPAMP_PORT: '30344',
-    CBT_DEV_MONGO_PORT: '30444',
     CBT_DEV_CH_HTTP_PORT: '30544',
     CBT_DEV_CH_NATIVE_PORT: '30644',
     CBT_DEV_OTEL_HEALTH_PORT: '30744',
@@ -81,7 +80,6 @@ test('exports the integration test ports', () => {
   assert.deepEqual(ports('hdx_ci_ports', { cwd: hyperdxEe }), {
     CBT_CI_SLOT: '44',
     CBT_CI_CH_PORT: '18167',
-    CBT_CI_MONGO_PORT: '40043',
     CBT_CI_API_PORT: '19044',
     CBT_CI_OPAMP_PORT: '14364',
     CBT_CI_PROJECT: 'int-44',
@@ -95,7 +93,6 @@ test('exports the E2E test ports', () => {
     CBT_E2E_CH_PORT: '20544',
     CBT_E2E_CH_NATIVE_PORT: '20644',
     CBT_E2E_API_PORT: '21044',
-    CBT_E2E_MONGO_PORT: '21144',
     CBT_E2E_APP_LOCAL_PORT: '21244',
     CBT_E2E_APP_PORT: '21344',
     CBT_E2E_REPORT_PORT: '9367',

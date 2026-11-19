@@ -23,14 +23,14 @@ yarn dev        # or equivalently: make dev
   Always scope it with `--mutate`; a whole-package run takes tens of minutes.
   See [CONTRIBUTING.md](../CONTRIBUTING.md#mutation-tests)
 - `yarn seed:alerts --count N` (in `packages/api`): Fill this worktree's
-  dev-slot Mongo with N alerts for testing the alerts page at scale: half on
+  dev-slot metadata bucket with N alerts for testing the alerts page at scale: half on
   saved searches, half on dashboard tiles. Seeded dashboards and saved searches
   are tagged `seeded`; `yarn seed:alerts --purge` removes them.
 
 ## Environment Configuration
 
 - `.env.development`: Development environment variables
-- Docker Compose manages Couchbase, MongoDB, OTel Collector
+- Docker Compose manages Couchbase, OTel Collector
 - Hot reload enabled for all services in development
 
 ## Worktree Isolation (Multi-Agent / Multi-Developer)
@@ -59,7 +59,6 @@ integration tests (14320-40098) and E2E tests (20320-21399).
 | API server        | 30100     | 30100 - 30199 | `CBT_API_PORT`            |
 | App (Next.js)     | 30200     | 30200 - 30299 | `CBT_APP_PORT`            |
 | OpAMP             | 30300     | 30300 - 30399 | `CBT_OPAMP_PORT`          |
-| MongoDB           | 30400     | 30400 - 30499 | `CBT_DEV_MONGO_PORT`          |
 | Couchbase (mgmt)  | 30500     | 30500 - 30599 | `CBT_DEV_CB_MGMT_PORT`        |
 | Couchbase (query) | 30600     | 30600 - 30699 | `CBT_DEV_CB_QUERY_PORT`       |
 | OTel health       | 30700     | 30700 - 30799 | `CBT_DEV_OTEL_HEALTH_PORT`    |
@@ -173,7 +172,6 @@ Port mapping (base + slot):
 | Service         | Default port (slot 0) | Variable          |
 | --------------- | --------------------- | ----------------- |
 | 
-| MongoDB         | 39999                 | CBT_CI_MONGO_PORT |
 | API test server | 19000                 | CBT_CI_API_PORT   |
 | OpAMP           | 14320                 | CBT_CI_OPAMP_PORT |
 
@@ -181,7 +179,7 @@ Port mapping (base + slot):
 
 - Uses separate Docker Compose configuration (`docker-compose.ci.yml`)
 - Isolated test environment with unique `-p int-<slot>` project name
-- Includes all necessary services Couchbase, MongoDB, OTel Collector)
+- Includes all necessary services Couchbase, OTel Collector)
 - Tests run against real database instances for accurate integration testing
 
 ### E2E Testing
@@ -198,7 +196,6 @@ E2E port mapping (base + slot):
 | 
 | 
 | API server        | 21000     | 21000 - 21099 | `CBT_E2E_API_PORT`       |
-| MongoDB           | 21100     | 21100 - 21199 | `CBT_E2E_MONGO_PORT`     |
 | App (local)       | 21200     | 21200 - 21299 | `CBT_E2E_APP_LOCAL_PORT` |
 | App (fullstack)   | 21300     | 21300 - 21399 | `CBT_E2E_APP_PORT`       |
 
@@ -239,7 +236,7 @@ does not overlap with CI integration tests (14320-40098) or the dev stack
 ### Adding New Features
 
 1. **API First**: Define API endpoints and data models
-2. **Database Models**: Create/update Mongoose schemas and SQL++ queries
+2. **Database Models**: Create/update metadata store repositories (`packages/api/src/metadata`) and SQL++ queries
 3. **Frontend Integration**: Build UI components and integrate with API
 4. **Testing**: Add unit and integration tests
 5. **Documentation**: Update relevant docs
@@ -303,7 +300,7 @@ serves both the app and the API.
 
 1. `packages/api/src/serverless.ts` exposes the Express app from `api-app.ts` as
    a stateless `(req, res) => Promise<void>` handler. It lazily connects to
-   MongoDB on the first invocation and caches the connection across warm
+   the Couchbase metadata store on the first invocation and caches the connection across warm
    invocations.
 2. `packages/app/pages/api/[...all].ts` branches on the `CBT_PREVIEW_INLINE_API`
    env var. When `true`, it `require()`s the compiled serverless handler and
@@ -313,7 +310,7 @@ serves both the app and the API.
    `@couchbase-traces/api` as a CommonJS external **unless** `CBT_PREVIEW_INLINE_API` is
    `true`. This keeps production app builds (Docker fullstack image, standalone
    Next output) byte-for-byte equivalent to before — they never bundle
-   passport-saml, mongoose, AWS SDK, etc.
+   passport-saml, AWS SDK, etc.
 4. `vercel.json` declares the repo-root build commands so Vercel builds
    `common-utils` → `api` → `app` in order.
 
@@ -322,7 +319,7 @@ serves both the app and the API.
 | Key                                          | Notes                                                             |
 | -------------------------------------------- | ----------------------------------------------------------------- |
 | `CBT_PREVIEW_INLINE_API`                     | `true` — turns on the inline path                                 |
-| `MONGO_URI`                                  | Preview MongoDB connection string                                 |
+| `CBT_METADATA_CONNSTR`, `CBT_METADATA_USER`, `CBT_METADATA_PASSWORD` | Preview Couchbase metadata cluster connection |
 | `EXPRESS_SESSION_SECRET`                     | Random 32+ char string shared by all instances; unset generates one per process, invalidating sessions on restart and between instances |
 | `DISABLED_AUTH_METHODS`                      | `google,saml` (avoids per-preview OAuth callback URL config)      |
 | `AI_PROVIDER`, `AI_API_KEY`, `AI_MODEL_NAME` | Optional, only if AI features should work                         |
@@ -344,6 +341,6 @@ unset (or `false`) so production deployments keep using the proxy path.
   `@node-saml/passport-saml`, AI SDKs) as `serverExternalPackages` in
   `next.config.mjs`.
 - **Cold-start latency.** First request after idle pays ~500–1500 ms for the
-  initial Mongo connection.
-- **Shared preview MongoDB.** Unless you partition by database name, all preview
-  deployments share the same Mongo state.
+  initial metadata store connection.
+- **Shared preview metadata bucket.** Unless you partition by bucket name
+  (`CBT_METADATA_BUCKET`), all preview deployments share the same metadata state.

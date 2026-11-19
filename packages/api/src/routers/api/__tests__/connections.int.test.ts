@@ -1,7 +1,6 @@
-import { ObjectId } from 'mongodb';
-
 import * as config from '@/config';
 import { getLoggedInAgent, getServer } from '@/fixtures';
+import { newId } from '@/metadata/ids';
 import {
   countConnections,
   findConnection,
@@ -36,7 +35,7 @@ describe('connections router', () => {
     });
     await seedConnection({
       kind: 'couchbase',
-      team: new ObjectId(),
+      team: newId(),
       name: 'Other Team Connection',
       host: config.CLICKHOUSE_HOST,
       username: 'default',

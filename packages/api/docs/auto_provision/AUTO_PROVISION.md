@@ -167,7 +167,7 @@ to manage these values.
 
 Couchbase Traces supports file-based dashboard provisioning, similar to Grafana's
 provisioning system. A scheduled task reads `.json` files from a directory
-and upserts dashboards into MongoDB, matched by name for idempotency.
+and upserts dashboards into the metadata store, matched by name for idempotency.
 The task runs on the same schedule as other Couchbase Traces tasks (every minute
 when using the built-in scheduler, or on your own schedule when running
 tasks externally).
@@ -216,7 +216,7 @@ with at minimum a `name` and `tiles` array:
 - Provisioned dashboards are flagged with `provisioned: true` so they never
   overwrite user-created dashboards with the same name
 - Removing a file from the directory does **not** delete the dashboard from
-  MongoDB (safe by default)
+  the metadata store (safe by default)
 - Files are validated against the `DashboardWithoutIdSchema` Zod schema; invalid
   files are skipped with a warning
 

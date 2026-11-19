@@ -31,8 +31,8 @@ export function isImportableAlert(alert: {
   // covers only legacy rows that predate the discriminator — it must NOT be an
   // unconditional `||`, because converting a saved-search alert to a tile alert
   // leaves the old savedSearch reference behind: `makeAlert` passes
-  // `savedSearch: undefined` and Mongoose 6 deletes undefined keys from the
-  // `$set` instead of clearing the field. A tile alert can therefore still
+  // `savedSearch: undefined` and an update that drops undefined keys leaves
+  // the old field in place instead of clearing it. A tile alert can therefore still
   // report a savedSearchId, and it must be judged by the tile rule above, not
   // waved through as a saved-search alert.
   return (
@@ -44,7 +44,7 @@ export function isImportableAlert(alert: {
 /**
  * `config.name` trimmed, or undefined when the tile has no usable one. Total
  * over `config?: unknown` for the same reason isUnexportableTile is — `tiles`
- * is a Mongoose `Mixed` array, so nothing guarantees a config, let alone a
+ * is an untyped array, so nothing guarantees a config, let alone a
  * name.
  *
  * Trimmed rather than raw so `"Errors"` and `"Errors "` count as the same key.
@@ -150,7 +150,7 @@ const RAW_SQL_EXPORTABLE_DISPLAY_TYPES: ReadonlySet<string> = new Set([
  * input schema loudly instead of downgrading silently.
  *
  * Total over untrusted input on purpose, and typed `config?: unknown` to say
- * so: `Dashboard.tiles` is a Mongoose `Mixed` array, so the database enforces
+ * so: `Dashboard.tiles` is an untyped array, so the database enforces
  * nothing and a legacy row can carry a tile with no `config` at all. Claiming a
  * well-formed `SavedChartConfig` here would be a lie that pushed casts onto
  * every caller. Throwing would take down the manifest for the whole team over
@@ -167,7 +167,7 @@ export function isUnexportableTile(tile: { config?: unknown }): boolean {
 
   // Narrowed with `in` rather than handed to isPromqlSavedChartConfig /
   // isRawSqlSavedChartConfig from ./guards: those take an already-typed
-  // SavedChartConfig, and asserting one out of a Mongoose Mixed value is
+  // SavedChartConfig, and asserting one out of an untyped value is
   // exactly the unchecked cast this function exists to avoid. The discriminator
   // literals are duplicated from those guards on purpose.
   const configType = 'configType' in config ? config.configType : undefined;

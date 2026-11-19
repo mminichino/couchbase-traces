@@ -7,7 +7,6 @@ import {
   TSource,
 } from '@couchbase-traces/common-utils/dist/types';
 import { omit } from 'lodash';
-import { Types } from 'mongoose';
 
 import {
   getLoggedInAgent,
@@ -22,6 +21,7 @@ import {
   IWebhook as WebhookDocument,
   WebhookService,
 } from '@/metadata/schemas/webhook';
+import { listAlerts, patchAlerts } from '@/metadata/testing/alertFixtures';
 import {
   findDashboard,
   patchDashboard,
@@ -31,7 +31,6 @@ import {
   seedUser,
   seedWebhook,
 } from '@/metadata/testing/seed';
-import { alertDocs } from '@/metadata/testing/seedAlerts';
 import {
   findPresetFilter,
   listPresetFilters,
@@ -150,11 +149,11 @@ describe('dashboard router', () => {
 
   // Wire-format guarantee: GET emits canonical hue-named tokens even for
   // dashboards that pre-date the rename and still hold `chart-1`..`chart-10`
-  // in Mongo. Without this, a non-React client (or a stale React bundle
+  // in the store. Without this, a non-React client (or a stale React bundle
   // that bypasses `normalizeDashboardTileColors`) could GET a legacy
   // color and round-trip it back through PATCH where the strict schema
   // would 400. Bypasses the API to seed the legacy value directly into
-  // Mongo because the POST/PATCH middleware would otherwise rewrite it
+  // the store because the POST/PATCH middleware would otherwise rewrite it
   // before it ever reached the DB.
   //
   // The dashboards router currently only exposes a list GET (no
@@ -163,7 +162,7 @@ describe('dashboard router', () => {
   // controller's `getDashboard` healer is still exercised in the same
   // process: `updateDashboard` calls `getDashboard` internally before
   // PATCH, so a follow-up no-op PATCH would surface a regression.
-  it('returns hue-named tokens on GET (list) for a Mongo-seeded legacy chart-N tile', async () => {
+  it('returns hue-named tokens on GET (list) for a seeded legacy chart-N tile', async () => {
     const tileWithLegacy = makeTile();
     (tileWithLegacy.config as any).color = 'chart-1';
     const seeded = await seedDashboard({
@@ -277,12 +276,16 @@ describe('dashboard router', () => {
       },
     ]);
 
-    const storedAlert = await alertDocs.findOne({
-      team: team._id,
-      dashboard: dashboard.body.id,
-      tileId: dashboard.body.tiles[0].id,
-      source: AlertSource.TILE,
-    });
+    const storedAlert =
+      (await (
+        await listAlerts(
+          r =>
+            r.team === team._id &&
+            r.dashboard === dashboard.body.id &&
+            r.tileId === dashboard.body.tiles[0].id &&
+            r.source === AlertSource.TILE,
+        )
+      )[0]) ?? null;
     expect(storedAlert).not.toBeNull();
     expect(storedAlert?.savedSearch).toBeNull();
     expect(storedAlert?.groupBy).toBeNull();
@@ -302,9 +305,11 @@ describe('dashboard router', () => {
       })
       .expect(200);
     // Alerts written before the fields existed.
-    await alertDocs.updateMany(
-      { dashboard: dashboard.body.id },
-      { $set: { displayName: null, tags: null } },
+    await patchAlerts(
+      (await listAlerts(a => a.dashboard === dashboard.body.id)).map(
+        a => a._id,
+      ),
+      { displayName: null, tags: null },
     );
 
     const list = await agent.get('/dashboards').expect(200);
@@ -341,12 +346,16 @@ describe('dashboard router', () => {
       })
       .expect(200);
 
-    const storedAlert = await alertDocs.findOne({
-      team: team._id,
-      dashboard: dashboard.body.id,
-      tileId: dashboard.body.tiles[0].id,
-      source: AlertSource.TILE,
-    });
+    const storedAlert =
+      (await (
+        await listAlerts(
+          r =>
+            r.team === team._id &&
+            r.dashboard === dashboard.body.id &&
+            r.tileId === dashboard.body.tiles[0].id &&
+            r.source === AlertSource.TILE,
+        )
+      )[0]) ?? null;
     expect(storedAlert?.displayName).toBe('Checkout errors');
   });
 
@@ -374,11 +383,15 @@ describe('dashboard router', () => {
       })
       .expect(200);
 
-    const storedAlert = await alertDocs.findOne({
-      team: team._id,
-      dashboard: dashboard.body.id,
-      source: AlertSource.TILE,
-    });
+    const storedAlert =
+      (await (
+        await listAlerts(
+          r =>
+            r.team === team._id &&
+            r.dashboard === dashboard.body.id &&
+            r.source === AlertSource.TILE,
+        )
+      )[0]) ?? null;
     expect(storedAlert).not.toBeNull();
     expect(storedAlert?.channels).toEqual([
       { type: 'webhook', webhookId: webhook._id.toString() },
@@ -551,7 +564,7 @@ describe('dashboard router', () => {
     expect(JSON.stringify(res.body)).toContain(
       'PromQL sources are no longer supported.',
     );
-    expect(await alertDocs.countDocuments({ team: team._id })).toBe(0);
+    expect(await (await listAlerts(a => a.team === team._id)).length).toBe(0);
   });
 
   it('rejects switching a tile to PromQL', async () => {
@@ -564,7 +577,7 @@ describe('dashboard router', () => {
         tags: [],
       })
       .expect(200);
-    expect(await alertDocs.countDocuments({ team: team._id })).toBe(1);
+    expect(await (await listAlerts(a => a.team === team._id)).length).toBe(1);
 
     const res = await agent
       .patch(`/dashboards/${dashboard.body.id}`)
@@ -580,7 +593,7 @@ describe('dashboard router', () => {
       'PromQL sources are no longer supported.',
     );
     // PromQL write rejected — existing builder alert stays.
-    expect(await alertDocs.countDocuments({ team: team._id })).toBe(1);
+    expect(await (await listAlerts(a => a.team === team._id)).length).toBe(1);
   });
 
   it('alerts are updated when updating dashboard (updating tile alert settings)', async () => {
@@ -623,12 +636,13 @@ describe('dashboard router', () => {
       },
     ]);
 
-    const storedAlerts = await alertDocs.find({
-      team: team._id,
-      dashboard: dashboard.body.id,
-      tileId: dashboard.body.tiles[0].id,
-      source: AlertSource.TILE,
-    });
+    const storedAlerts = await listAlerts(
+      r =>
+        r.team === team._id &&
+        r.dashboard === dashboard.body.id &&
+        r.tileId === dashboard.body.tiles[0].id &&
+        r.source === AlertSource.TILE,
+    );
     expect(storedAlerts).toHaveLength(1);
     expect(storedAlerts[0].threshold).toBe(updatedAlert.threshold);
   });
@@ -783,7 +797,8 @@ describe('dashboard router', () => {
     const tileId = dashboard.tiles[0].id;
 
     // Setup: Simulate alert created by different user
-    const originalAlert = await alertDocs.findOne({ tileId });
+    const originalAlert =
+      (await (await listAlerts(r => r.tileId === tileId))[0]) ?? null;
 
     if (!originalAlert) {
       throw new Error('Original alert not found');
@@ -791,10 +806,7 @@ describe('dashboard router', () => {
 
     // Set the original creator to a different user
     const originalCreatorId = newId();
-    await alertDocs.updateOne(
-      { _id: originalAlert._id },
-      { $set: { createdBy: originalCreatorId } },
-    );
+    await patchAlerts(originalAlert._id, { createdBy: originalCreatorId });
 
     // Act: Current user updates the dashboard (modifies alert threshold)
     const updatedThreshold = 5;
@@ -820,7 +832,8 @@ describe('dashboard router', () => {
       .expect(200);
 
     // Assert: Verify alert preserves original creator and updates threshold
-    const updatedAlertRecord = await alertDocs.findOne({ tileId });
+    const updatedAlertRecord =
+      (await (await listAlerts(r => r.tileId === tileId))[0]) ?? null;
     expect(updatedAlertRecord).toBeTruthy();
 
     if (!updatedAlertRecord) {
@@ -845,11 +858,11 @@ describe('dashboard router', () => {
 
   describe('dashboard filter variable fields', () => {
     const makeVariableFilter = (overrides = {}) => ({
-      id: new Types.ObjectId().toString(),
+      id: newId(),
       type: 'QUERY_EXPRESSION' as const,
       name: 'Service Name',
       expression: 'ServiceName',
-      source: new Types.ObjectId().toString(),
+      source: newId(),
       isBroadcastEnabled: false,
       isVariableEnabled: true,
       variableName: 'Service_Name',
@@ -874,11 +887,11 @@ describe('dashboard router', () => {
       // Absence is meaningful: `isBroadcastEnabled` is read as enabled when
       // missing, so the server must not materialize a value on the way in.
       const filter = {
-        id: new Types.ObjectId().toString(),
+        id: newId(),
         type: 'QUERY_EXPRESSION' as const,
         name: 'Service Name',
         expression: 'ServiceName',
-        source: new Types.ObjectId().toString(),
+        source: newId(),
       };
 
       const created = await agent
@@ -1036,21 +1049,18 @@ describe('dashboard router', () => {
       // two filters that legitimately share a display name on different sources.
       it('accepts identically named filters that carry no variable fields', async () => {
         const legacyFilter = {
-          id: new Types.ObjectId().toString(),
+          id: newId(),
           type: 'QUERY_EXPRESSION' as const,
           name: 'Service Name',
           expression: 'ServiceName',
-          source: new Types.ObjectId().toString(),
+          source: newId(),
         };
 
         await agent
           .post('/dashboards')
           .send({
             ...MOCK_DASHBOARD,
-            filters: [
-              legacyFilter,
-              { ...legacyFilter, id: new Types.ObjectId().toString() },
-            ],
+            filters: [legacyFilter, { ...legacyFilter, id: newId() }],
           })
           .expect(200);
       });
@@ -1224,11 +1234,11 @@ describe('dashboard router', () => {
 
   describe('required filters', () => {
     const makeFilter = (overrides = {}) => ({
-      id: new Types.ObjectId().toString(),
+      id: newId(),
       type: 'QUERY_EXPRESSION' as const,
       name: 'Service Name',
       expression: 'ServiceName',
-      source: new Types.ObjectId().toString(),
+      source: newId(),
       ...overrides,
     });
 
@@ -1355,7 +1365,7 @@ describe('dashboard router', () => {
 
   describe('static-list filters', () => {
     const makeStaticFilter = (overrides = {}) => ({
-      id: new Types.ObjectId().toString(),
+      id: newId(),
       type: 'STATIC_LIST' as const,
       name: 'Environment',
       options: ['prod', 'staging', 'dev'],
@@ -1431,11 +1441,11 @@ describe('dashboard router', () => {
           filters: [
             makeStaticFilter(),
             {
-              id: new Types.ObjectId().toString(),
+              id: newId(),
               type: 'QUERY_EXPRESSION' as const,
               name: 'Service',
               expression: 'ServiceName',
-              source: new Types.ObjectId().toString(),
+              source: newId(),
             },
           ],
         })
@@ -1466,7 +1476,7 @@ describe('dashboard router', () => {
     // A query-expression field on a static filter is accepted and persisted
     // verbatim, exactly like any other unknown key on this route: the internal
     // filter variants are not strict (a strict variant would turn a stray key
-    // left in Mongo by an older version into a failed save, since the edit form
+    // left in the store by an older version into a failed save, since the edit form
     // spreads the stored filter back into its payload), and `validateRequest`
     // validates without replacing `req.body`, so nothing is stripped either.
     // The extra fields are inert — every reader narrows on `type` — and the
@@ -1524,11 +1534,11 @@ describe('dashboard router', () => {
             ...MOCK_DASHBOARD,
             filters: [
               {
-                id: new Types.ObjectId().toString(),
+                id: newId(),
                 type: 'QUERY_EXPRESSION' as const,
                 name: 'Service',
                 expression: 'ServiceName',
-                source: new Types.ObjectId().toString(),
+                source: newId(),
                 [field]: undefined,
               },
             ],
@@ -1548,7 +1558,7 @@ describe('dashboard router', () => {
         kind: SourceKind.Promql,
         name: 'Test PromQL Source',
         team: team._id,
-        connection: new Types.ObjectId().toString(),
+        connection: newId(),
         from: { databaseName: 'test_db', tableName: 'timeseries_table' },
         timestampValueExpression: 'timestamp',
       });
@@ -1561,7 +1571,7 @@ describe('dashboard router', () => {
     });
 
     const makePromqlFilter = (overrides = {}) => ({
-      id: new Types.ObjectId().toString(),
+      id: newId(),
       type: 'PROMETHEUS_LABEL' as const,
       name: 'Pod',
       source: promqlSourceId,
@@ -1660,7 +1670,7 @@ describe('dashboard router', () => {
     // this route, a bad id is rejected rather than saved.
     describe('source validation', () => {
       it('rejects a filter naming a source that does not exist', async () => {
-        const source = new Types.ObjectId().toString();
+        const source = newId();
 
         const response = await agent
           .post('/dashboards')
@@ -1675,7 +1685,7 @@ describe('dashboard router', () => {
           kind: SourceKind.Log,
           name: 'Test Log Source',
           team: team._id,
-          connection: new Types.ObjectId().toString(),
+          connection: newId(),
           from: { databaseName: 'test_db', tableName: 'logs_table' },
           timestampValueExpression: 'timestamp',
           defaultTableSelectExpression: 'body',
@@ -1698,8 +1708,8 @@ describe('dashboard router', () => {
         const otherTeamSource = await seedSource({
           kind: SourceKind.Promql,
           name: 'Other Team PromQL Source',
-          team: new Types.ObjectId(),
-          connection: new Types.ObjectId().toString(),
+          team: newId(),
+          connection: newId(),
           from: { databaseName: 'test_db', tableName: 'timeseries_table' },
           timestampValueExpression: 'timestamp',
         });
@@ -1725,7 +1735,7 @@ describe('dashboard router', () => {
         await agent
           .patch(`/dashboards/${created.body.id}`)
           .send({
-            filters: [{ ...filter, source: new Types.ObjectId().toString() }],
+            filters: [{ ...filter, source: newId() }],
           })
           .expect(400);
 
@@ -1779,7 +1789,7 @@ describe('dashboard router', () => {
           .send(MOCK_DASHBOARD)
           .expect(200);
 
-        const source = new Types.ObjectId().toString();
+        const source = newId();
         const response = await agent
           .patch(`/dashboards/${created.body.id}`)
           .send({ filters: [makePromqlFilter({ source })] })
@@ -1791,7 +1801,7 @@ describe('dashboard router', () => {
       // Converting a filter to this type is the same as adding one, as far as
       // the gate is concerned: its source has never been through it.
       it('still rejects a filter PATCHed over from another type', async () => {
-        const id = new Types.ObjectId().toString();
+        const id = newId();
         const created = await agent
           .post('/dashboards')
           .send({
@@ -1812,7 +1822,7 @@ describe('dashboard router', () => {
           kind: SourceKind.Log,
           name: 'Converted Log Source',
           team: team._id,
-          connection: new Types.ObjectId().toString(),
+          connection: newId(),
           from: { databaseName: 'test_db', tableName: 'logs_table' },
           timestampValueExpression: 'timestamp',
           defaultTableSelectExpression: 'body',
@@ -1837,11 +1847,11 @@ describe('dashboard router', () => {
             ...MOCK_DASHBOARD,
             filters: [
               {
-                id: new Types.ObjectId().toString(),
+                id: newId(),
                 type: 'QUERY_EXPRESSION' as const,
                 name: 'Service',
                 expression: 'ServiceName',
-                source: new Types.ObjectId().toString(),
+                source: newId(),
               },
             ],
           })
@@ -1857,11 +1867,11 @@ describe('dashboard router', () => {
           filters: [
             makePromqlFilter({ variableName: 'pod' }),
             {
-              id: new Types.ObjectId().toString(),
+              id: newId(),
               type: 'QUERY_EXPRESSION' as const,
               name: 'Pod (logs)',
               expression: 'PodName',
-              source: new Types.ObjectId().toString(),
+              source: newId(),
               isVariableEnabled: true,
               variableName: 'pod',
             },
@@ -1877,7 +1887,7 @@ describe('dashboard router', () => {
         kind,
         name: `Test ${kind} source`,
         team: teamId,
-        connection: new Types.ObjectId().toString(),
+        connection: newId(),
         from: { databaseName: 'test_db', tableName: `${kind}_table` },
         timestampValueExpression: 'timestamp',
         defaultTableSelectExpression: 'body',
@@ -1897,7 +1907,7 @@ describe('dashboard router', () => {
     });
 
     const makeAdhocFilter = (overrides = {}) => ({
-      id: new Types.ObjectId().toString(),
+      id: newId(),
       type: 'ADHOC' as const,
       name: 'Ad hoc',
       sourceType: 'sql' as const,
@@ -2045,7 +2055,7 @@ describe('dashboard router', () => {
           filters: [
             makeAdhocFilter({ variableName: 'service' }),
             {
-              id: new Types.ObjectId().toString(),
+              id: newId(),
               type: 'QUERY_EXPRESSION' as const,
               name: 'Service',
               expression: 'ServiceName',
@@ -2060,7 +2070,7 @@ describe('dashboard router', () => {
 
     describe('source validation', () => {
       it('rejects a source that does not exist', async () => {
-        const source = new Types.ObjectId().toString();
+        const source = newId();
 
         const response = await agent
           .post('/dashboards')
@@ -2107,10 +2117,7 @@ describe('dashboard router', () => {
       });
 
       it("rejects another team's source", async () => {
-        const otherTeamSource = await createSource(
-          SourceKind.Log,
-          new Types.ObjectId().toString(),
-        );
+        const otherTeamSource = await createSource(SourceKind.Log, newId());
 
         await agent
           .post('/dashboards')
@@ -2176,7 +2183,7 @@ describe('dashboard router', () => {
     const MOCK_SOURCE: Omit<Extract<TSource, { kind: 'log' }>, 'id'> = {
       kind: SourceKind.Log,
       name: 'Test Source',
-      connection: new Types.ObjectId().toString(),
+      connection: newId(),
       from: {
         databaseName: 'test_db',
         tableName: 'test_table',
@@ -2306,7 +2313,7 @@ describe('dashboard router', () => {
 
         const filterInput = {
           ...MOCK_PRESET_DASHBOARD_FILTER,
-          id: new Types.ObjectId().toString(),
+          id: newId(),
           source: source._id.toString(),
         };
 
@@ -2346,7 +2353,7 @@ describe('dashboard router', () => {
 
         const filterInput = {
           ...MOCK_PRESET_DASHBOARD_FILTER,
-          id: new Types.ObjectId().toString(),
+          id: newId(),
           source: source._id.toString(),
           sourceMetricType: MetricsDataType.Gauge,
         };
@@ -2367,7 +2374,7 @@ describe('dashboard router', () => {
 
         const filterInput = {
           ...MOCK_PRESET_DASHBOARD_FILTER,
-          id: new Types.ObjectId().toString(),
+          id: newId(),
           source: source._id.toString(),
           presetDashboard: PresetDashboard.Services,
         };
@@ -2386,7 +2393,7 @@ describe('dashboard router', () => {
           .post(`/dashboards/preset/${PresetDashboard.Services}/filter`)
           .send({
             filter: {
-              id: new Types.ObjectId().toString(),
+              id: newId(),
               type: 'STATIC_LIST',
               name: 'Environment',
               options: ['prod', 'staging', 'dev'],
@@ -2418,7 +2425,7 @@ describe('dashboard router', () => {
             .send({
               filter: {
                 ...MOCK_PRESET_DASHBOARD_FILTER,
-                id: new Types.ObjectId().toString(),
+                id: newId(),
                 source: source._id.toString(),
                 [field]: undefined,
               },
@@ -2499,7 +2506,7 @@ describe('dashboard router', () => {
         });
 
         const newFilterInput = {
-          id: new Types.ObjectId().toString(),
+          id: newId(),
           name: 'New Filter',
           type: MOCK_PRESET_DASHBOARD_FILTER.type,
           expression: 'service.name:new-service',
@@ -2550,7 +2557,7 @@ describe('dashboard router', () => {
         });
 
         const filterInput = {
-          id: new Types.ObjectId().toString(),
+          id: newId(),
           name: 'Test Filter',
           type: MOCK_PRESET_DASHBOARD_FILTER.type,
           expression: 'test',
@@ -2567,7 +2574,7 @@ describe('dashboard router', () => {
 
       it('returns 400 when filter is missing required fields', async () => {
         const incompleteFilter = {
-          id: new Types.ObjectId().toString(),
+          id: newId(),
           name: 'Test Filter',
           // Missing type, expression, presetDashboard, source
         };
@@ -2609,7 +2616,7 @@ describe('dashboard router', () => {
       });
 
       it('returns 404 when filter does not exist', async () => {
-        const nonExistentId = new Types.ObjectId().toString();
+        const nonExistentId = newId();
 
         await agent
           .delete(
@@ -2625,7 +2632,7 @@ describe('dashboard router', () => {
       });
 
       it('returns 400 for invalid preset dashboard type', async () => {
-        const filterId = new Types.ObjectId().toString();
+        const filterId = newId();
 
         await agent
           .delete(`/dashboards/preset/invalid-dashboard/filter/${filterId}`)

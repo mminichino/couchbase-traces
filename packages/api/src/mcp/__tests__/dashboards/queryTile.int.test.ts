@@ -480,8 +480,8 @@ describe('MCP Dashboard Tools - cbt_query_tile', () => {
 
   // Regression: a metric source rendered as a categorical (bar/pie) tile with a
   // groupBy runs the chart config through convertToCategoricalChartConfig, which
-  // structuredClones it. `source.metricTables` is a live Mongoose subdocument
-  // that structuredClone cannot copy, so the tile used to fail with
+  // structuredClones it. `source.metricTables` must stay a plain object
+  // that structuredClone can copy, so the tile used to fail with
   // "DataCloneError: [object Array] could not be cloned". These cover the
   // grouped bar/pie histogram paths that surface a group-array column.
   describe('metric histogram categorical (bar/pie) tiles with groupBy', () => {
