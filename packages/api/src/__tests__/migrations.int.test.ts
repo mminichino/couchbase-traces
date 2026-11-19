@@ -2,11 +2,14 @@ import mongoose from 'mongoose';
 
 import { createTeam } from '@/controllers/team';
 import { clearDBCollections, closeDB, connectDB } from '@/fixtures';
+import {
+  patchSavedSearch,
+  seedDashboard,
+  seedSavedSearch,
+} from '@/metadata/testing/seed';
 import { backfillAlertDisplayFields } from '@/migrations';
 import { toObjectId } from '@/models';
 import Alert, { AlertSource, AlertThresholdType } from '@/models/alert';
-import Dashboard from '@/models/dashboard';
-import { SavedSearch } from '@/models/savedSearch';
 
 const baseAlert = {
   threshold: 1,
@@ -19,7 +22,7 @@ const makeSavedSearch = (
   team: string,
   fields: { name: string; tags?: string[] },
 ) =>
-  new SavedSearch({
+  seedSavedSearch({
     team,
     source: new mongoose.Types.ObjectId(),
     select: '',
@@ -27,7 +30,7 @@ const makeSavedSearch = (
     whereLanguage: 'lucene',
     orderBy: '',
     ...fields,
-  }).save();
+  });
 
 describe('backfillAlertDisplayFields', () => {
   beforeAll(async () => {
@@ -51,12 +54,12 @@ describe('backfillAlertDisplayFields', () => {
     const untaggedSearch = await makeSavedSearch(team._id, {
       name: 'Untagged search',
     });
-    const dashboard = await new Dashboard({
+    const dashboard = await seedDashboard({
       team: team._id,
       name: 'Service health',
       tags: ['infra'],
       tiles: [{ id: 'tile-1', config: { name: 'P95 latency' } }],
-    }).save();
+    });
 
     const [
       searchAlert,
@@ -133,7 +136,8 @@ describe('backfillAlertDisplayFields', () => {
     const { insertedId: legacyAlertId } = await Alert.collection.insertOne({
       ...baseAlert,
       team: toObjectId(team._id),
-      savedSearch: savedSearch._id,
+      // Raw inserts skip Mongoose's casting, and alerts keep ObjectId refs.
+      savedSearch: toObjectId(savedSearch._id),
     });
 
     await backfillAlertDisplayFields();
@@ -208,10 +212,7 @@ describe('backfillAlertDisplayFields', () => {
       'First name',
     );
 
-    await SavedSearch.updateOne(
-      { _id: savedSearch._id },
-      { name: 'Second name' },
-    );
+    await patchSavedSearch(savedSearch._id, { name: 'Second name' });
     await Alert.updateOne(
       { _id: otherAlert._id },
       { $unset: { displayName: '' } },

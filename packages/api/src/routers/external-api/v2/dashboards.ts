@@ -6,7 +6,8 @@ import {
   deleteDashboard,
   recordDashboardOnboardingIfHasTiles,
 } from '@/controllers/dashboard';
-import Dashboard, { IDashboard } from '@/models/dashboard';
+import { getMetadataStore } from '@/metadata';
+import type { DashboardPatch } from '@/metadata/schemas/dashboard';
 import { processRequestWithEnhancedErrors as validateRequest } from '@/utils/enhancedErrors';
 import { rejectPromqlBody } from '@/utils/rejectPromql';
 import { ExternalDashboardTileWithId, objectIdSchema } from '@/utils/zod';
@@ -21,23 +22,6 @@ import {
   updateDashboardBodySchema,
   validateDashboardTiles,
 } from './utils/dashboards';
-
-/**
- * Projection used by the GET-list and GET-by-id Dashboard endpoints, kept in
- * one place so adding a new field doesn't need touching both call sites.
- * Mirrors the shape consumed by `convertToExternalDashboard`.
- */
-const EXTERNAL_DASHBOARD_PROJECTION = {
-  _id: 1,
-  name: 1,
-  tiles: 1,
-  tags: 1,
-  filters: 1,
-  savedQuery: 1,
-  savedQueryLanguage: 1,
-  savedFilterValues: 1,
-  containers: 1,
-} as const;
 
 /**
  * @openapi
@@ -2963,10 +2947,10 @@ router.get('/', async (req, res, next) => {
       return res.sendStatus(403);
     }
 
-    const dashboards = await Dashboard.find(
-      { team: teamId },
-      EXTERNAL_DASHBOARD_PROJECTION,
-    ).sort({ name: -1 });
+    const dashboards = await getMetadataStore().dashboards.listByName(
+      teamId.toString(),
+      'desc',
+    );
 
     res.json({
       data: dashboards.map(d => convertToExternalDashboard(d)),
@@ -3071,9 +3055,9 @@ router.get(
         return res.sendStatus(403);
       }
 
-      const dashboard = await Dashboard.findOne(
-        { team: teamId, _id: req.params.id },
-        EXTERNAL_DASHBOARD_PROJECTION,
+      const dashboard = await getMetadataStore().dashboards.get(
+        teamId.toString(),
+        req.params.id,
       );
 
       if (dashboard == null) {
@@ -3389,17 +3373,19 @@ router.post(
         savedQueryLanguage,
       });
 
-      const newDashboard = await new Dashboard({
-        name,
-        tiles: internalTiles,
-        tags: tags && uniq(tags),
-        filters: filtersWithIds,
-        savedQuery,
-        savedQueryLanguage: normalizedSavedQueryLanguage,
-        savedFilterValues,
-        team: teamId,
-        ...(containers !== undefined ? { containers } : {}),
-      }).save();
+      const newDashboard = await getMetadataStore().dashboards.create(
+        teamId.toString(),
+        {
+          name,
+          tiles: internalTiles,
+          tags: (tags && uniq(tags)) ?? [],
+          filters: filtersWithIds,
+          savedQuery,
+          savedQueryLanguage: normalizedSavedQueryLanguage,
+          savedFilterValues,
+          ...(containers !== undefined ? { containers } : {}),
+        },
+      );
 
       recordDashboardOnboardingIfHasTiles(req.user?._id, newDashboard.tiles);
 
@@ -3588,10 +3574,10 @@ router.put(
         containers,
       } = req.body ?? {};
 
-      const existingDashboard = await Dashboard.findOne(
-        { _id: dashboardId, team: teamId },
-        { tiles: 1, filters: 1, containers: 1 },
-      ).lean();
+      const existingDashboard = await getMetadataStore().dashboards.get(
+        teamId.toString(),
+        dashboardId,
+      );
 
       if (existingDashboard == null) {
         return res.sendStatus(404);
@@ -3622,10 +3608,10 @@ router.put(
         existingTileIds,
       );
 
-      // Typed as `Partial<IDashboard>` (the canonical Mongo doc shape) so
-      // that misnamed or wrong-shape fields fail at compile time. The
-      // legacy `Record<string, unknown>` accepted anything.
-      const setPayload: Partial<IDashboard> = {
+      // Typed as `DashboardPatch` so that misnamed or wrong-shape fields
+      // fail at compile time. The legacy `Record<string, unknown>` accepted
+      // anything.
+      const setPayload: DashboardPatch = {
         name,
         tiles: internalTiles,
         tags: tags && uniq(tags),
@@ -3653,10 +3639,10 @@ router.put(
         setPayload.containers = containers;
       }
 
-      const updatedDashboard = await Dashboard.findOneAndUpdate(
-        { _id: dashboardId, team: teamId },
-        { $set: setPayload },
-        { new: true },
+      const updatedDashboard = await getMetadataStore().dashboards.update(
+        teamId.toString(),
+        dashboardId,
+        setPayload,
       );
 
       if (updatedDashboard == null) {

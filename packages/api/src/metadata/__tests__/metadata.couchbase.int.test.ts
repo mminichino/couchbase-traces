@@ -6,6 +6,7 @@ import { type Cluster, connect } from 'couchbase';
 
 import { loadMetadataConfig } from '@/metadata/couchbase/config';
 import { CouchbaseMetadataStore } from '@/metadata/couchbase/store';
+import { describeContentRepos } from '@/metadata/testing/contentContract';
 import { describeMetadataContract } from '@/metadata/testing/contract';
 
 const REQUIRED = process.env.CBT_TEST_COUCHBASE_REQUIRED === '1';
@@ -82,4 +83,6 @@ maybe('metadata on Couchbase', () => {
     now: () => new Date(),
     sleep: ms => new Promise(resolve => setTimeout(resolve, ms)),
   }));
+
+  describeContentRepos('couchbase', async () => store!);
 });

@@ -1,5 +1,5 @@
 import { callTool, getFirstText } from '@/mcp/__tests__/mcpTestUtils';
-import Dashboard from '@/models/dashboard';
+import { findDashboard, seedDashboard } from '@/metadata/testing/seed';
 
 import { setupDashboardTests } from './setup';
 
@@ -7,11 +7,11 @@ describe('MCP Dashboard Tools - cbt_delete_dashboard', () => {
   const ctx = setupDashboardTests();
 
   it('should delete an existing dashboard', async () => {
-    const dashboard = await new Dashboard({
+    const dashboard = await seedDashboard({
       name: 'To Delete',
       tiles: [],
       team: ctx.team._id,
-    }).save();
+    });
 
     const result = await callTool(ctx.client!, 'cbt_delete_dashboard', {
       id: dashboard._id.toString(),
@@ -23,7 +23,7 @@ describe('MCP Dashboard Tools - cbt_delete_dashboard', () => {
     expect(output.id).toBe(dashboard._id.toString());
 
     // Verify deleted from database
-    const found = await Dashboard.findById(dashboard._id);
+    const found = await findDashboard(dashboard._id);
     expect(found).toBeNull();
   });
 

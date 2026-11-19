@@ -16,11 +16,25 @@ import {
   makeRawSqlTile,
   makeTile,
 } from '@/fixtures';
-import { removeSource, seedSource, seedUser } from '@/metadata/testing/seed';
+import {
+  IWebhook as WebhookDocument,
+  WebhookService,
+} from '@/metadata/schemas/webhook';
+import {
+  findDashboard,
+  patchDashboard,
+  removeSource,
+  seedDashboard,
+  seedSource,
+  seedUser,
+  seedWebhook,
+} from '@/metadata/testing/seed';
+import {
+  findPresetFilter,
+  listPresetFilters,
+  seedPresetFilter,
+} from '@/metadata/testing/seedContent';
 import Alert, { AlertSource } from '@/models/alert';
-import Dashboard from '@/models/dashboard';
-import PresetDashboardFilter from '@/models/presetDashboardFilter';
-import Webhook, { WebhookDocument, WebhookService } from '@/models/webhook';
 
 const MOCK_DASHBOARD = {
   name: 'Test Dashboard',
@@ -60,7 +74,7 @@ describe('dashboard router', () => {
     agent = result.agent;
     team = result.team;
     user = result.user;
-    webhook = await Webhook.create({
+    webhook = await seedWebhook({
       name: 'Test Webhook',
       service: WebhookService.Slack,
       url: 'https://hooks.slack.com/test',
@@ -150,7 +164,7 @@ describe('dashboard router', () => {
   it('returns hue-named tokens on GET (list) for a Mongo-seeded legacy chart-N tile', async () => {
     const tileWithLegacy = makeTile();
     (tileWithLegacy.config as any).color = 'chart-1';
-    const seeded = await Dashboard.create({
+    const seeded = await seedDashboard({
       name: 'Pre-rename Dashboard',
       team: team._id,
       tiles: [tileWithLegacy],
@@ -190,8 +204,8 @@ describe('dashboard router', () => {
     });
 
     // Simulate a different user updating the dashboard
-    await Dashboard.findByIdAndUpdate(created.body.id, {
-      updatedBy: secondUser._id,
+    await patchDashboard(created.body.id, {
+      updatedBy: secondUser._id.toString(),
     });
 
     const allDashboards = await agent.get('/dashboards').expect(200);
@@ -848,7 +862,7 @@ describe('dashboard router', () => {
 
       expect(created.body.filters).toEqual([filter]);
 
-      const stored = await Dashboard.findById(created.body.id).lean();
+      const stored = await findDashboard(created.body.id);
       expect(stored?.filters).toEqual([filter]);
     });
 
@@ -868,7 +882,7 @@ describe('dashboard router', () => {
         .send({ ...MOCK_DASHBOARD, filters: [filter] })
         .expect(200);
 
-      const stored = await Dashboard.findById(created.body.id).lean();
+      const stored = await findDashboard(created.body.id);
       expect(stored?.filters?.[0]).not.toHaveProperty('isBroadcastEnabled');
       expect(stored?.filters?.[0]).not.toHaveProperty('isVariableEnabled');
       expect(stored?.filters?.[0]).not.toHaveProperty('variableName');
@@ -891,7 +905,7 @@ describe('dashboard router', () => {
         .send({ filters: [updatedFilter] })
         .expect(200);
 
-      const stored = await Dashboard.findById(created.body.id).lean();
+      const stored = await findDashboard(created.body.id);
       expect(stored?.filters).toEqual([updatedFilter]);
     });
 
@@ -907,7 +921,7 @@ describe('dashboard router', () => {
         .send({ name: 'Renamed Dashboard' })
         .expect(200);
 
-      const stored = await Dashboard.findById(created.body.id).lean();
+      const stored = await findDashboard(created.body.id);
       expect(stored?.name).toBe('Renamed Dashboard');
       expect(stored?.filters).toEqual([filter]);
     });
@@ -1128,7 +1142,7 @@ describe('dashboard router', () => {
           .expect(400);
 
         // The stored filter is untouched by the rejected PATCH.
-        const stored = await Dashboard.findById(created.body.id).lean();
+        const stored = await findDashboard(created.body.id);
         expect(stored?.filters).toEqual([filter]);
       });
 
@@ -1171,7 +1185,7 @@ describe('dashboard router', () => {
           })
           .expect(200);
 
-        const stored = await Dashboard.findById(created.body.id).lean();
+        const stored = await findDashboard(created.body.id);
         expect(stored?.filters?.[0]).not.toHaveProperty('isBroadcastEnabled');
       });
 
@@ -1224,7 +1238,7 @@ describe('dashboard router', () => {
 
       expect(created.body.filters).toEqual([filter]);
 
-      const stored = await Dashboard.findById(created.body.id).lean();
+      const stored = await findDashboard(created.body.id);
       expect(stored?.filters).toEqual([filter]);
     });
 
@@ -1243,7 +1257,7 @@ describe('dashboard router', () => {
         .send({ filters: [filter] })
         .expect(200);
 
-      const stored = await Dashboard.findById(created.body.id).lean();
+      const stored = await findDashboard(created.body.id);
       expect(stored?.filters?.[0]).toMatchObject({ minSelections: 1 });
     });
 
@@ -1255,7 +1269,7 @@ describe('dashboard router', () => {
         .send({ ...MOCK_DASHBOARD, filters: [makeFilter()] })
         .expect(200);
 
-      const stored = await Dashboard.findById(created.body.id).lean();
+      const stored = await findDashboard(created.body.id);
       expect(stored?.filters?.[0]).not.toHaveProperty('minSelections');
     });
 
@@ -1303,7 +1317,7 @@ describe('dashboard router', () => {
 
       expect(created.body.filters).toEqual([filter]);
 
-      const stored = await Dashboard.findById(created.body.id).lean();
+      const stored = await findDashboard(created.body.id);
       expect(stored?.filters).toEqual([filter]);
     });
 
@@ -1318,7 +1332,7 @@ describe('dashboard router', () => {
         })
         .expect(200);
 
-      const stored = await Dashboard.findById(created.body.id).lean();
+      const stored = await findDashboard(created.body.id);
       expect(stored?.filters?.[0]).not.toHaveProperty('isGlobalRequirement');
     });
 
@@ -1364,7 +1378,7 @@ describe('dashboard router', () => {
         )?.filters,
       ).toEqual([filter]);
 
-      const stored = await Dashboard.findById(created.body.id).lean();
+      const stored = await findDashboard(created.body.id);
       expect(stored?.filters).toEqual([filter]);
       // The queried-filter fields have to stay absent, not be materialized as
       // null: `expression` falsiness is what makes `$__filter($env)` report
@@ -1401,7 +1415,7 @@ describe('dashboard router', () => {
         .send({ filters: [updatedFilter] })
         .expect(200);
 
-      const stored = await Dashboard.findById(created.body.id).lean();
+      const stored = await findDashboard(created.body.id);
       expect(stored?.filters).toEqual([updatedFilter]);
     });
 
@@ -1470,7 +1484,7 @@ describe('dashboard router', () => {
 
       // Still reads back as a valid static filter, and template export drops
       // the stray keys (see `convertToDashboardTemplate` in common-utils).
-      const stored = await Dashboard.findById(created.body.id).lean();
+      const stored = await findDashboard(created.body.id);
       expect(stored?.filters?.[0]).toMatchObject({
         type: 'STATIC_LIST',
         options: ['prod', 'staging', 'dev'],
@@ -1491,7 +1505,7 @@ describe('dashboard router', () => {
         .send({ filters: [{ ...filter, options: [] }] })
         .expect(400);
 
-      const stored = await Dashboard.findById(created.body.id).lean();
+      const stored = await findDashboard(created.body.id);
       expect(stored?.filters).toEqual([filter]);
     });
 
@@ -1564,7 +1578,7 @@ describe('dashboard router', () => {
 
       expect(created.body.filters).toEqual([filter]);
 
-      const stored = await Dashboard.findById(created.body.id).lean();
+      const stored = await findDashboard(created.body.id);
       expect(stored?.filters).toEqual([filter]);
       // Same reason as the static variant: an absent `expression` is what makes
       // `$__filter($pod)` report that the expression must be passed explicitly.
@@ -1618,7 +1632,7 @@ describe('dashboard router', () => {
         .send({ filters: [updatedFilter] })
         .expect(200);
 
-      const stored = await Dashboard.findById(created.body.id).lean();
+      const stored = await findDashboard(created.body.id);
       expect(stored?.filters).toEqual([updatedFilter]);
     });
 
@@ -1711,7 +1725,7 @@ describe('dashboard router', () => {
           })
           .expect(400);
 
-        const stored = await Dashboard.findById(created.body.id).lean();
+        const stored = await findDashboard(created.body.id);
         expect(stored?.filters).toEqual([filter]);
       });
 
@@ -1733,7 +1747,7 @@ describe('dashboard router', () => {
           .send({ name: 'Renamed', filters: [filter] })
           .expect(200);
 
-        const stored = await Dashboard.findById(created.body.id).lean();
+        const stored = await findDashboard(created.body.id);
         expect(stored?.name).toBe('Renamed');
         expect(stored?.filters).toEqual([filter]);
       });
@@ -1921,7 +1935,7 @@ describe('dashboard router', () => {
       expect(created.body.filters).toEqual([filter]);
       expect(created.body.savedFilterValues).toEqual([adhocValue]);
 
-      const stored = await Dashboard.findById(created.body.id).lean();
+      const stored = await findDashboard(created.body.id);
       expect(stored?.filters).toEqual([filter]);
       expect(stored?.savedFilterValues).toEqual([adhocValue]);
 
@@ -1966,7 +1980,7 @@ describe('dashboard router', () => {
         .send({ savedFilterValues })
         .expect(200);
 
-      const stored = await Dashboard.findById(created.body.id).lean();
+      const stored = await findDashboard(created.body.id);
       expect(stored?.savedFilterValues).toEqual(savedFilterValues);
     });
 
@@ -2119,7 +2133,7 @@ describe('dashboard router', () => {
           })
           .expect(400);
 
-        const stored = await Dashboard.findById(created.body.id).lean();
+        const stored = await findDashboard(created.body.id);
         expect(stored?.filters).toEqual([filter]);
       });
 
@@ -2183,7 +2197,7 @@ describe('dashboard router', () => {
         });
 
         // Create a preset dashboard filter
-        const filter = await PresetDashboardFilter.create({
+        const filter = await seedPresetFilter({
           ...MOCK_PRESET_DASHBOARD_FILTER,
           team: team._id,
           source: source._id,
@@ -2257,13 +2271,13 @@ describe('dashboard router', () => {
           team: team2,
         });
 
-        await PresetDashboardFilter.create({
+        await seedPresetFilter({
           ...MOCK_PRESET_DASHBOARD_FILTER,
           team: team._id,
           source: source1._id,
         });
 
-        await PresetDashboardFilter.create({
+        await seedPresetFilter({
           ...MOCK_PRESET_DASHBOARD_FILTER,
           team: team2,
           source: source2._id,
@@ -2305,7 +2319,7 @@ describe('dashboard router', () => {
         });
 
         // Verify filter was created in database
-        const filters = await PresetDashboardFilter.find({ team: team._id });
+        const filters = await listPresetFilters(team._id);
         expect(filters).toHaveLength(1);
         expect(filters[0]._id.toString()).toBe(response.body.id);
         expect(filters[0].source.toString()).toBe(source._id.toString());
@@ -2443,7 +2457,7 @@ describe('dashboard router', () => {
         });
 
         // Create initial filter
-        const existingFilter = await PresetDashboardFilter.create({
+        const existingFilter = await seedPresetFilter({
           ...MOCK_PRESET_DASHBOARD_FILTER,
           team: team._id,
           source: source._id,
@@ -2469,9 +2483,7 @@ describe('dashboard router', () => {
         });
 
         // Verify filter was updated in database
-        const updatedFilter = await PresetDashboardFilter.findById(
-          existingFilter._id,
-        );
+        const updatedFilter = await findPresetFilter(existingFilter._id);
         expect(updatedFilter?.name).toBe('Updated Filter Name');
         expect(updatedFilter?.expression).toBe('service.name:updated-service');
       });
@@ -2503,7 +2515,7 @@ describe('dashboard router', () => {
           team: team._id,
         });
 
-        const existingFilter = await PresetDashboardFilter.create({
+        const existingFilter = await seedPresetFilter({
           ...MOCK_PRESET_DASHBOARD_FILTER,
           team: team._id,
           source: source._id,
@@ -2571,7 +2583,7 @@ describe('dashboard router', () => {
         });
 
         // Create a filter to delete
-        const filter = await PresetDashboardFilter.create({
+        const filter = await seedPresetFilter({
           ...MOCK_PRESET_DASHBOARD_FILTER,
           team: team._id,
           source: source._id,
@@ -2588,7 +2600,7 @@ describe('dashboard router', () => {
         });
 
         // Verify filter was deleted from database
-        const deletedFilter = await PresetDashboardFilter.findById(filter._id);
+        const deletedFilter = await findPresetFilter(filter._id);
         expect(deletedFilter).toBeNull();
       });
 
@@ -2624,7 +2636,7 @@ describe('dashboard router', () => {
           team: team2Id,
         });
 
-        const filter = await PresetDashboardFilter.create({
+        const filter = await seedPresetFilter({
           ...MOCK_PRESET_DASHBOARD_FILTER,
           team: team2Id,
           source: source._id,
@@ -2638,9 +2650,7 @@ describe('dashboard router', () => {
           .expect(404);
 
         // Verify filter still exists for team2
-        const stillExistingFilter = await PresetDashboardFilter.findById(
-          filter._id,
-        );
+        const stillExistingFilter = await findPresetFilter(filter._id);
         expect(stillExistingFilter).toBeTruthy();
       });
     });
@@ -2676,7 +2686,7 @@ describe('dashboard router', () => {
       expect(updated.body.team).toBe(team._id.toString());
 
       // Ground truth: the persisted document stays in the owning team
-      const stored = await Dashboard.findById(created.body.id).lean();
+      const stored = await findDashboard(created.body.id);
       expect(String(stored?.team)).toBe(team._id.toString());
       expect(String(stored?.createdBy)).toBe(user._id.toString());
 
@@ -2703,7 +2713,7 @@ describe('dashboard router', () => {
         .send({ ...full, name: 'Updated Name' })
         .expect(200);
 
-      const stored = await Dashboard.findById(created.body.id).lean();
+      const stored = await findDashboard(created.body.id);
       expect(String(stored?.team)).toBe(team._id.toString());
       expect(String(stored?.createdBy)).toBe(user._id.toString());
     });

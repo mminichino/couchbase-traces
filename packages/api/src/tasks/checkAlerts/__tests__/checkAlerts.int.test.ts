@@ -27,19 +27,23 @@ import {
   RAW_SQL_NUMBER_ALERT_TEMPLATE,
 } from '@/fixtures';
 import { IConnection } from '@/metadata/schemas/connection';
+import { IDashboard } from '@/metadata/schemas/dashboard';
+import { ISavedSearch } from '@/metadata/schemas/savedSearch';
 import { ISource } from '@/metadata/schemas/source';
 import type { ITeam } from '@/metadata/schemas/team';
+import { IWebhook } from '@/metadata/schemas/webhook';
 import {
   findSource,
   patchSource,
+  patchWebhook,
   seedConnection,
+  seedDashboard,
+  seedSavedSearch,
   seedSource,
+  seedWebhook,
 } from '@/metadata/testing/seed';
 import Alert, { AlertSource, IAlert } from '@/models/alert';
 import AlertHistory from '@/models/alertHistory';
-import Dashboard, { IDashboard } from '@/models/dashboard';
-import { ISavedSearch, SavedSearch } from '@/models/savedSearch';
-import Webhook, { IWebhook } from '@/models/webhook';
 import { DataClient } from '@/query';
 import * as checkAlert from '@/tasks/checkAlerts';
 import {
@@ -1315,12 +1319,13 @@ describe('checkAlerts', () => {
         tileId: 'test-tile-id',
       },
       dashboard: {
-        _id: new mongoose.Types.ObjectId(),
+        _id: new mongoose.Types.ObjectId().toString(),
         id: 'id-123',
         name: 'My Dashboard',
         tiles: [testTile],
         team: 'team-123' as any,
         tags: ['test'],
+        provisioned: false,
         createdAt: new Date(),
         updatedAt: new Date(),
       },
@@ -1640,12 +1645,12 @@ describe('checkAlerts', () => {
 
     it('renderAlertTemplate - with existing channel', async () => {
       const team = await createTeam({ name: 'My Team' });
-      const webhook = await new Webhook({
+      const webhook = await seedWebhook({
         team: team._id,
         service: 'slack',
         url: 'https://hooks.slack.com/services/123',
         name: 'My_Webhook',
-      }).save();
+      });
 
       await renderAlertTemplate({
         alertProvider,
@@ -1678,12 +1683,12 @@ describe('checkAlerts', () => {
 
     it('renderAlertTemplate - custom body with single action', async () => {
       const team = await createTeam({ name: 'My Team' });
-      const webhook = await new Webhook({
+      const webhook = await seedWebhook({
         team: team._id,
         service: 'slack',
         url: 'https://hooks.slack.com/services/123',
         name: 'My_Webhook',
-      }).save();
+      });
 
       await renderAlertTemplate({
         alertProvider,
@@ -1736,12 +1741,12 @@ describe('checkAlerts', () => {
 
     it('renderAlertTemplate - single action with custom action id', async () => {
       const team = await createTeam({ name: 'My Team' });
-      const webhook = await new Webhook({
+      const webhook = await seedWebhook({
         team: team._id,
         service: 'slack',
         url: 'https://hooks.slack.com/services/123',
         name: 'My_Webhook',
-      }).save();
+      });
 
       await renderAlertTemplate({
         alertProvider,
@@ -1797,18 +1802,18 @@ describe('checkAlerts', () => {
 
     it('renderAlertTemplate - #is_match with single action', async () => {
       const team = await createTeam({ name: 'My Team' });
-      const myWebhook = await new Webhook({
+      const myWebhook = await seedWebhook({
         team: team._id,
         service: 'slack',
         url: 'https://hooks.slack.com/services/123',
         name: 'My_Webhook',
-      }).save();
-      const anotherWebhook = await new Webhook({
+      });
+      const anotherWebhook = await seedWebhook({
         team: team._id,
         service: 'slack',
         url: 'https://hooks.slack.com/services/456',
         name: 'Another_Webhook',
-      }).save();
+      });
       const teamWebhooksById = new Map<string, typeof anotherWebhook>([
         [anotherWebhook._id.toString(), anotherWebhook],
         [myWebhook._id.toString(), myWebhook],
@@ -1938,12 +1943,12 @@ describe('checkAlerts', () => {
 
     it('renderAlertTemplate - resolved alert with simplified message', async () => {
       const team = await createTeam({ name: 'My Team' });
-      const webhook = await new Webhook({
+      const webhook = await seedWebhook({
         team: team._id,
         service: 'slack',
         url: 'https://hooks.slack.com/services/123',
         name: 'My_Webhook',
-      }).save();
+      });
 
       await renderAlertTemplate({
         alertProvider,
@@ -2046,13 +2051,13 @@ describe('checkAlerts', () => {
     }> = {}) => {
       const team = await createTeam({ name: 'My Team' });
 
-      const webhook = await new Webhook({
+      const webhook = await seedWebhook({
         team: team._id,
         service: 'slack',
         url: 'https://hooks.slack.com/services/123',
         name: 'My Webhook',
         ...webhookSettings,
-      }).save();
+      });
 
       const teamWebhooksById = new Map<string, typeof webhook>([
         [webhook._id.toString(), webhook],
@@ -2079,7 +2084,7 @@ describe('checkAlerts', () => {
         name: 'Logs',
       });
 
-      const savedSearch = await new SavedSearch({
+      const savedSearch = await seedSavedSearch({
         team: team._id,
         name: 'My Search',
         select: 'Body',
@@ -2088,7 +2093,7 @@ describe('checkAlerts', () => {
         orderBy: 'Timestamp',
         source: source.id,
         tags: ['test'],
-      }).save();
+      });
 
       const dataClient = new DataClient({});
 
@@ -2450,13 +2455,13 @@ describe('checkAlerts', () => {
       const { team, webhook, connection, source, savedSearch, dataClient } =
         await setupSavedSearchAlertTest();
       webhook.titleEmoji = false;
-      await webhook.save();
-      const emojiWebhook = await new Webhook({
+      await patchWebhook(webhook._id, { titleEmoji: false });
+      const emojiWebhook = await seedWebhook({
         team: team._id,
         service: 'slack',
         url: 'https://hooks.slack.com/services/456',
         name: 'Emoji_Webhook',
-      }).save();
+      });
       const teamWebhooksById = new Map<string, typeof webhook>([
         [webhook._id.toString(), webhook],
         [emojiWebhook._id.toString(), emojiWebhook],
@@ -2671,7 +2676,7 @@ describe('checkAlerts', () => {
 
         // The condition is in the exact shape the UI saves to Mongo: the
         // special-char column key is backtick-quoted in the persisted SQL.
-        const savedSearch = await new SavedSearch({
+        const savedSearch = await seedSavedSearch({
           team: team._id,
           name: 'Escaped Filter Search',
           select: 'Body',
@@ -2681,7 +2686,7 @@ describe('checkAlerts', () => {
           source: source.id,
           tags: ['test'],
           filters: [{ type: 'sql', condition: "`service-name` IN ('svc-a')" }],
-        }).save();
+        });
 
         const details = await createAlertDetails(
           team,
@@ -2785,7 +2790,7 @@ describe('checkAlerts', () => {
         },
       ]);
 
-      const dashboard = await new Dashboard({
+      const dashboard = await seedDashboard({
         name: 'My Dashboard',
         team: team._id,
         tiles: [
@@ -2813,7 +2818,7 @@ describe('checkAlerts', () => {
             },
           },
         ],
-      }).save();
+      });
 
       const tile = dashboard.tiles?.find((t: any) => t.id === '17quud');
       if (!tile) throw new Error('tile not found for dashboard test case');
@@ -3238,7 +3243,7 @@ describe('checkAlerts', () => {
         const fixture = await setupSavedSearchAlertTest({
           webhookSettings: webhookSettings as IWebhook,
         });
-        const dashboard = await new Dashboard({
+        const dashboard = await seedDashboard({
           name: 'Errors Dashboard',
           team: fixture.team._id,
           tiles: [
@@ -3266,7 +3271,7 @@ describe('checkAlerts', () => {
               },
             },
           ],
-        }).save();
+        });
         const tile = dashboard.tiles?.find((t: any) => t.id === 'tile-err');
         if (!tile) throw new Error('tile not found');
         return { ...fixture, dashboard, tile };
@@ -4865,7 +4870,6 @@ describe('checkAlerts', () => {
             text: '{{link}} | {{title}}',
           }),
           headers: {
-            // @ts-expect-error type mismatch due to mongoose typing
             'Content-Type': 'application/json',
             'X-Custom-Header': 'custom-value',
             Authorization: 'Bearer test-token',
@@ -4898,7 +4902,7 @@ describe('checkAlerts', () => {
         },
       ]);
 
-      const dashboard = await new Dashboard({
+      const dashboard = await seedDashboard({
         name: 'My Dashboard',
         team: team._id,
         tiles: [
@@ -4926,7 +4930,7 @@ describe('checkAlerts', () => {
             },
           },
         ],
-      }).save();
+      });
 
       const tile = dashboard.tiles?.find((t: any) => t.id === '17quud');
       if (!tile)
@@ -5135,7 +5139,7 @@ describe('checkAlerts', () => {
         },
       ]);
 
-      const dashboard = await new Dashboard({
+      const dashboard = await seedDashboard({
         name: 'Raw SQL Dashboard',
         team: team._id,
         tiles: [
@@ -5153,7 +5157,7 @@ describe('checkAlerts', () => {
             },
           },
         ],
-      }).save();
+      });
 
       const tile = dashboard.tiles?.find((t: any) => t.id === 'rawsql1');
       if (!tile) throw new Error('tile not found for raw SQL test');
@@ -5277,7 +5281,7 @@ describe('checkAlerts', () => {
 
         await seedLogs(['api', 'web']);
 
-        const dashboard = await new Dashboard({
+        const dashboard = await seedDashboard({
           name: 'Variables Dashboard',
           team: team._id,
           // The filter's own `where` would exclude every row if it were
@@ -5314,7 +5318,7 @@ describe('checkAlerts', () => {
               },
             },
           ],
-        }).save();
+        });
 
         const tile = dashboard.tiles?.find((t: any) => t.id === 'lucene-var');
         if (!tile) throw new Error('tile not found');
@@ -5357,7 +5361,7 @@ describe('checkAlerts', () => {
 
         await seedLogs(['api', 'web']);
 
-        const dashboard = await new Dashboard({
+        const dashboard = await seedDashboard({
           name: 'Variables Dashboard',
           team: team._id,
           filters: [serviceFilter({ source: source.id })],
@@ -5387,7 +5391,7 @@ describe('checkAlerts', () => {
               },
             },
           ],
-        }).save();
+        });
 
         const tile = dashboard.tiles?.find((t: any) => t.id === 'macro-var');
         if (!tile) throw new Error('tile not found');
@@ -5427,7 +5431,7 @@ describe('checkAlerts', () => {
 
         await seedLogs(['$abc', '$hidden', 'api']);
 
-        const dashboard = await new Dashboard({
+        const dashboard = await seedDashboard({
           name: 'Variables Dashboard',
           team: team._id,
           filters: [
@@ -5468,7 +5472,7 @@ describe('checkAlerts', () => {
               },
             },
           ],
-        }).save();
+        });
 
         const tile = dashboard.tiles?.find((t: any) => t.id === 'unknown-var');
         if (!tile) throw new Error('tile not found');
@@ -5512,7 +5516,7 @@ describe('checkAlerts', () => {
           ' GROUP BY ts ORDER BY ts',
         ].join('');
 
-        const dashboard = await new Dashboard({
+        const dashboard = await seedDashboard({
           name: 'Raw SQL Variables Dashboard',
           team: team._id,
           filters: [serviceFilter()],
@@ -5531,7 +5535,7 @@ describe('checkAlerts', () => {
               },
             },
           ],
-        }).save();
+        });
 
         const tile = dashboard.tiles?.find((t: any) => t.id === 'rawsql-var');
         if (!tile) throw new Error('tile not found');
@@ -5602,7 +5606,7 @@ describe('checkAlerts', () => {
         GROUP BY ts, ServiceName
         ORDER BY ts`;
 
-      const dashboard = await new Dashboard({
+      const dashboard = await seedDashboard({
         name: 'Raw SQL Grouped Dashboard',
         team: team._id,
         tiles: [
@@ -5620,7 +5624,7 @@ describe('checkAlerts', () => {
             },
           },
         ],
-      }).save();
+      });
 
       const tile = dashboard.tiles?.find((t: any) => t.id === 'rawsql-grouped');
       if (!tile) throw new Error('tile not found');
@@ -5716,7 +5720,7 @@ describe('checkAlerts', () => {
         GROUP BY ts, ServiceName
         ORDER BY ts`;
 
-      const dashboard = await new Dashboard({
+      const dashboard = await seedDashboard({
         name: 'Raw SQL Grouped Attributes Dashboard',
         team: team._id,
         tiles: [
@@ -5734,7 +5738,7 @@ describe('checkAlerts', () => {
             },
           },
         ],
-      }).save();
+      });
 
       const tile = dashboard.tiles?.find(
         (t: any) => t.id === 'rawsql-grouped-attrs',
@@ -5821,7 +5825,7 @@ describe('checkAlerts', () => {
         })),
       );
 
-      const dashboard = await new Dashboard({
+      const dashboard = await seedDashboard({
         name: 'Raw SQL Vanished Group Dashboard',
         team: team._id,
         tiles: [
@@ -5848,7 +5852,7 @@ describe('checkAlerts', () => {
             },
           },
         ],
-      }).save();
+      });
 
       const tile = dashboard.tiles?.find(t => t.id === 'rawsql-vanished');
       if (!tile) throw new Error('tile not found');
@@ -6036,7 +6040,7 @@ describe('checkAlerts', () => {
         GROUP BY ts
         ORDER BY ts`;
 
-      const dashboard = await new Dashboard({
+      const dashboard = await seedDashboard({
         name: 'Raw SQL Multi-Series Dashboard',
         team: team._id,
         tiles: [
@@ -6054,7 +6058,7 @@ describe('checkAlerts', () => {
             },
           },
         ],
-      }).save();
+      });
 
       const tile = dashboard.tiles?.find((t: any) => t.id === 'rawsql-multi');
       if (!tile) throw new Error('tile not found');
@@ -6147,7 +6151,7 @@ describe('checkAlerts', () => {
         ' ORDER BY ts',
       ].join('\n');
 
-      const dashboard = await new Dashboard({
+      const dashboard = await seedDashboard({
         name: 'Raw SQL Macro Dashboard',
         team: team._id,
         tiles: [
@@ -6166,7 +6170,7 @@ describe('checkAlerts', () => {
             },
           },
         ],
-      }).save();
+      });
 
       const tile = dashboard.tiles?.find((t: any) => t.id === 'rawsql-macros');
       if (!tile) throw new Error('tile not found');
@@ -6248,7 +6252,7 @@ describe('checkAlerts', () => {
         },
       ]);
 
-      const dashboard = await new Dashboard({
+      const dashboard = await seedDashboard({
         name: 'Raw SQL Catchup Dashboard',
         team: team._id,
         tiles: [
@@ -6266,7 +6270,7 @@ describe('checkAlerts', () => {
             },
           },
         ],
-      }).save();
+      });
 
       const tile = dashboard.tiles?.find((t: any) => t.id === 'rawsql-catchup');
       if (!tile) throw new Error('tile not found');
@@ -6361,7 +6365,7 @@ describe('checkAlerts', () => {
         },
       ]);
 
-      const dashboard = await new Dashboard({
+      const dashboard = await seedDashboard({
         name: 'Number Chart Dashboard',
         team: team._id,
         tiles: [
@@ -6379,7 +6383,7 @@ describe('checkAlerts', () => {
             },
           },
         ],
-      }).save();
+      });
 
       const tile = dashboard.tiles?.find((t: any) => t.id === 'number1');
       if (!tile) throw new Error('tile not found for Number chart test');
@@ -6454,7 +6458,7 @@ describe('checkAlerts', () => {
 
       // No logs inserted — empty table for this time range
 
-      const dashboard = await new Dashboard({
+      const dashboard = await seedDashboard({
         name: 'Empty Number Chart Dashboard',
         team: team._id,
         tiles: [
@@ -6472,7 +6476,7 @@ describe('checkAlerts', () => {
             },
           },
         ],
-      }).save();
+      });
 
       const tile = dashboard.tiles?.find((t: any) => t.id === 'number-empty');
       if (!tile) throw new Error('tile not found');
@@ -6560,7 +6564,7 @@ describe('checkAlerts', () => {
         ' AND Timestamp < fromUnixTimestamp64Milli({endDateMilliseconds:Int64})',
       ].join('');
 
-      const dashboard = await new Dashboard({
+      const dashboard = await seedDashboard({
         name: 'Multi-Numeric Number Chart Dashboard',
         team: team._id,
         tiles: [
@@ -6578,7 +6582,7 @@ describe('checkAlerts', () => {
             },
           },
         ],
-      }).save();
+      });
 
       const tile = dashboard.tiles?.find(
         (t: any) => t.id === 'number-multi-numeric',
@@ -6679,7 +6683,7 @@ describe('checkAlerts', () => {
         ' ORDER BY cnt DESC',
       ].join('');
 
-      const dashboard = await new Dashboard({
+      const dashboard = await seedDashboard({
         name: 'Number Chart First Row Dashboard',
         team: team._id,
         tiles: [
@@ -6697,7 +6701,7 @@ describe('checkAlerts', () => {
             },
           },
         ],
-      }).save();
+      });
 
       const tile = dashboard.tiles?.find(
         (t: any) => t.id === 'number-first-row',
@@ -7575,7 +7579,7 @@ describe('checkAlerts', () => {
         connection: connection.id,
         name: 'Metrics',
       });
-      const dashboard = await new Dashboard({
+      const dashboard = await seedDashboard({
         name: 'My Dashboard',
         team: team._id,
         tiles: [
@@ -7602,7 +7606,7 @@ describe('checkAlerts', () => {
             },
           },
         ],
-      }).save();
+      });
 
       const tile = dashboard.tiles?.find((t: any) => t.id === '17quud');
       if (!tile)
@@ -7774,7 +7778,7 @@ describe('checkAlerts', () => {
         name: 'Metrics',
       });
 
-      const dashboard = await new Dashboard({
+      const dashboard = await seedDashboard({
         name: 'My Dashboard',
         team: team._id,
         tiles: [
@@ -7801,7 +7805,7 @@ describe('checkAlerts', () => {
             },
           },
         ],
-      }).save();
+      });
 
       const tile = dashboard.tiles?.find((t: any) => t.id === '17quud');
       if (!tile) throw new Error('tile not found');
@@ -7955,7 +7959,7 @@ describe('checkAlerts', () => {
         name: 'Metrics',
       });
 
-      const dashboard = await new Dashboard({
+      const dashboard = await seedDashboard({
         name: 'My Dashboard',
         team: team._id,
         tiles: [
@@ -7979,7 +7983,7 @@ describe('checkAlerts', () => {
             },
           },
         ],
-      }).save();
+      });
 
       const tile = dashboard.tiles?.find((t: any) => t.id === 'multi1');
       if (!tile) {
@@ -8404,7 +8408,7 @@ describe('checkAlerts', () => {
         })),
       ]);
 
-      const dashboard = await new Dashboard({
+      const dashboard = await seedDashboard({
         name: 'My Dashboard',
         team: team._id,
         tiles: [
@@ -8441,7 +8445,7 @@ describe('checkAlerts', () => {
             },
           },
         ],
-      }).save();
+      });
 
       const tile = dashboard.tiles?.find((t: any) => t.id === 'evtformula1');
       if (!tile) throw new Error('tile not found for event formula test');
@@ -10066,12 +10070,12 @@ describe('checkAlerts', () => {
     it('SAVED_SEARCH alert with alias in select and where should trigger', async () => {
       const team = await createTeam({ name: 'My Team' });
 
-      const webhook = await new Webhook({
+      const webhook = await seedWebhook({
         team: team._id,
         service: 'slack',
         url: 'https://hooks.slack.com/services/123',
         name: 'My Webhook',
-      }).save();
+      });
 
       const teamWebhooksById = new Map<string, typeof webhook>([
         [webhook._id.toString(), webhook],
@@ -10101,7 +10105,7 @@ describe('checkAlerts', () => {
       // Saved search uses an alias in select and references it in where (Lucene).
       // Note: Lucene `field:"value"` on alias columns (unknown type) generates
       // an exact-match query, so use unquoted syntax for substring matching.
-      const savedSearch = await new SavedSearch({
+      const savedSearch = await seedSavedSearch({
         team: team._id,
         name: 'Aliased Search',
         select: 'toString(Body) AS body',
@@ -10110,7 +10114,7 @@ describe('checkAlerts', () => {
         orderBy: 'Timestamp',
         source: source.id,
         tags: ['test'],
-      }).save();
+      });
 
       const dataClient = new DataClient({});
 
@@ -10171,12 +10175,12 @@ describe('checkAlerts', () => {
     it('SAVED_SEARCH alert with alias in where should not trigger when no rows match', async () => {
       const team = await createTeam({ name: 'My Team' });
 
-      const webhook = await new Webhook({
+      const webhook = await seedWebhook({
         team: team._id,
         service: 'slack',
         url: 'https://hooks.slack.com/services/123',
         name: 'My Webhook',
-      }).save();
+      });
 
       const teamWebhooksById = new Map<string, typeof webhook>([
         [webhook._id.toString(), webhook],
@@ -10204,7 +10208,7 @@ describe('checkAlerts', () => {
       });
 
       // Alias in select, where references alias with a value that won't match
-      const savedSearch = await new SavedSearch({
+      const savedSearch = await seedSavedSearch({
         team: team._id,
         name: 'Aliased Search No Match',
         select: 'toString(Body) AS body',
@@ -10213,7 +10217,7 @@ describe('checkAlerts', () => {
         orderBy: 'Timestamp',
         source: source.id,
         tags: ['test'],
-      }).save();
+      });
 
       const dataClient = new DataClient({});
 
@@ -10267,12 +10271,12 @@ describe('checkAlerts', () => {
     it('SAVED_SEARCH alert with multiple aliases in select and where should trigger', async () => {
       const team = await createTeam({ name: 'My Team' });
 
-      const webhook = await new Webhook({
+      const webhook = await seedWebhook({
         team: team._id,
         service: 'slack',
         url: 'https://hooks.slack.com/services/123',
         name: 'My Webhook',
-      }).save();
+      });
 
       const teamWebhooksById = new Map<string, typeof webhook>([
         [webhook._id.toString(), webhook],
@@ -10300,7 +10304,7 @@ describe('checkAlerts', () => {
       });
 
       // Multiple aliases in select, where references one of them
-      const savedSearch = await new SavedSearch({
+      const savedSearch = await seedSavedSearch({
         team: team._id,
         name: 'Multi Alias Search',
         select: 'toString(Body) AS body, ServiceName AS svc',
@@ -10309,7 +10313,7 @@ describe('checkAlerts', () => {
         orderBy: 'Timestamp',
         source: source.id,
         tags: ['test'],
-      }).save();
+      });
 
       const dataClient = new DataClient({});
 
@@ -10514,7 +10518,7 @@ describe('checkAlerts', () => {
         },
       ]);
 
-      const dashboard = await new Dashboard({
+      const dashboard = await seedDashboard({
         name: 'Test Dashboard',
         team: team._id,
         tiles: [
@@ -10542,7 +10546,7 @@ describe('checkAlerts', () => {
             },
           },
         ],
-      }).save();
+      });
 
       const tile = dashboard.tiles?.find(
         (t: any) => t.id === 'tile-above-excl',
@@ -10728,7 +10732,7 @@ describe('checkAlerts', () => {
         },
       ]);
 
-      const dashboard = await new Dashboard({
+      const dashboard = await seedDashboard({
         name: 'Test Dashboard',
         team: team._id,
         tiles: [
@@ -10756,7 +10760,7 @@ describe('checkAlerts', () => {
             },
           },
         ],
-      }).save();
+      });
 
       const tile = dashboard.tiles?.find((t: any) => t.id === 'tile-below-eq');
       if (!tile) throw new Error('tile not found');
@@ -10951,7 +10955,7 @@ describe('checkAlerts', () => {
         },
       ]);
 
-      const dashboard = await new Dashboard({
+      const dashboard = await seedDashboard({
         name: 'Test Dashboard',
         team: team._id,
         tiles: [
@@ -10979,7 +10983,7 @@ describe('checkAlerts', () => {
             },
           },
         ],
-      }).save();
+      });
 
       const tile = dashboard.tiles?.find((t: any) => t.id === 'tile-equal');
       if (!tile) throw new Error('tile not found');
@@ -11174,7 +11178,7 @@ describe('checkAlerts', () => {
         },
       ]);
 
-      const dashboard = await new Dashboard({
+      const dashboard = await seedDashboard({
         name: 'Test Dashboard',
         team: team._id,
         tiles: [
@@ -11202,7 +11206,7 @@ describe('checkAlerts', () => {
             },
           },
         ],
-      }).save();
+      });
 
       const tile = dashboard.tiles?.find((t: any) => t.id === 'tile-not-equal');
       if (!tile) throw new Error('tile not found');
@@ -11723,12 +11727,12 @@ describe('checkAlerts', () => {
 
     const createSavedSearchWithMVSource = async (savedSearchWhere: string) => {
       const team = await createTeam({ name: 'My Team' });
-      const webhook = await new Webhook({
+      const webhook = await seedWebhook({
         team: team._id,
         service: 'slack',
         url: 'https://hooks.slack.com/services/123',
         name: 'My Webhook',
-      }).save();
+      });
       const teamWebhooksById = new Map<string, typeof webhook>([
         [webhook._id.toString(), webhook],
       ]);
@@ -11770,7 +11774,7 @@ describe('checkAlerts', () => {
         ],
       });
 
-      const savedSearch = await new SavedSearch({
+      const savedSearch = await seedSavedSearch({
         team: team._id,
         name: 'My Search',
         select: 'Body',
@@ -11779,7 +11783,7 @@ describe('checkAlerts', () => {
         orderBy: 'Timestamp',
         source: source.id,
         tags: ['test'],
-      }).save();
+      });
 
       const dataClient = new DataClient({});
 

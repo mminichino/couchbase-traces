@@ -9,11 +9,16 @@ import {
   getLoggedInAgent,
   getServer,
 } from '@/fixtures';
+import { getMetadataStore } from '@/metadata';
 import type { ITeam } from '@/metadata/schemas/team';
 import type { IUser } from '@/metadata/schemas/user';
-import { seedConnection, seedSource } from '@/metadata/testing/seed';
+import {
+  findSavedSearch,
+  seedConnection,
+  seedSavedSearch,
+  seedSource,
+} from '@/metadata/testing/seed';
 import Alert, { AlertSource, AlertState } from '@/models/alert';
-import { SavedSearch } from '@/models/savedSearch';
 
 const BASE_URL = '/api/v2/saved-searches';
 
@@ -78,7 +83,7 @@ describe('External API v2 Saved Searches CRUD', () => {
   });
 
   const createOtherTeamSavedSearch = () =>
-    SavedSearch.create({
+    seedSavedSearch({
       team: new mongoose.Types.ObjectId(),
       name: 'Other Team Search',
       source: new mongoose.Types.ObjectId(),
@@ -417,7 +422,7 @@ describe('External API v2 Saved Searches CRUD', () => {
       // parser does not render (e.g. a lucene condition). GET returns it
       // verbatim, so a read-modify-write that echoes it back unchanged must
       // succeed — otherwise the API would 400 on data it just served.
-      const legacy = await SavedSearch.create({
+      const legacy = await seedSavedSearch({
         team: team._id,
         name: 'Legacy',
         source: sourceId,
@@ -526,13 +531,13 @@ describe('External API v2 Saved Searches CRUD', () => {
         200,
       );
 
-      expect(await SavedSearch.findById(created.body.data.id)).toBeNull();
+      expect(await findSavedSearch(created.body.data.id)).toBeNull();
     });
 
     it('should return 404 for another team saved search', async () => {
       const other = await createOtherTeamSavedSearch();
       await authRequest('delete', `${BASE_URL}/${other._id}`).expect(404);
-      expect(await SavedSearch.findById(other._id)).not.toBeNull();
+      expect(await findSavedSearch(other._id)).not.toBeNull();
     });
 
     it('should delete alerts attached to the saved search', async () => {
@@ -553,7 +558,7 @@ describe('External API v2 Saved Searches CRUD', () => {
 
       await authRequest('delete', `${BASE_URL}/${savedSearchId}`).expect(200);
 
-      expect(await SavedSearch.findById(savedSearchId)).toBeNull();
+      expect(await findSavedSearch(savedSearchId)).toBeNull();
       // Dependent alerts must not be orphaned.
       expect(await Alert.countDocuments({ savedSearch: savedSearchId })).toBe(
         0,
@@ -584,9 +589,9 @@ describe('External API v2 Saved Searches CRUD', () => {
         .spyOn(console, 'error')
         .mockImplementation(() => {});
       const deleteSpy = jest
-        .spyOn(SavedSearch, 'deleteOne')
-        .mockImplementationOnce((() => {
-          throw new Error('simulated deleteOne failure');
+        .spyOn(getMetadataStore().savedSearches, 'delete')
+        .mockImplementationOnce((async () => {
+          throw new Error('simulated delete failure');
         }) as any);
 
       try {
@@ -601,7 +606,7 @@ describe('External API v2 Saved Searches CRUD', () => {
         0,
       );
       // ...and the saved search survives its own failed delete (recoverable).
-      expect(await SavedSearch.findById(savedSearchId)).not.toBeNull();
+      expect(await findSavedSearch(savedSearchId)).not.toBeNull();
     });
   });
 });

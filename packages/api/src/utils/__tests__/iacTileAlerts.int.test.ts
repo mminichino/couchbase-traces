@@ -1,8 +1,9 @@
 import mongoose from 'mongoose';
 
 import { getServer, randomMongoId } from '@/fixtures';
+import { getMetadataStore } from '@/metadata';
+import { seedDashboard } from '@/metadata/testing/seed';
 import { AlertSource } from '@/models/alert';
-import Dashboard from '@/models/dashboard';
 import { unaddressableTileAlertIds } from '@/utils/iacTileAlerts';
 import { getCounter } from '@/utils/instrumentation';
 import logger from '@/utils/logger';
@@ -32,7 +33,7 @@ describe('unaddressableTileAlertIds', () => {
   });
 
   // Shaped like the lean rows the manifest router passes in.
-  const alert = (dashboard: mongoose.Types.ObjectId, tileId: string) => ({
+  const alert = (dashboard: string, tileId: string) => ({
     _id: new mongoose.Types.ObjectId(),
     source: AlertSource.TILE,
     dashboard,
@@ -41,7 +42,7 @@ describe('unaddressableTileAlertIds', () => {
 
   it('withholds every tile alert when the dashboard read fails', async () => {
     const teamId = randomMongoId();
-    const dashboard = await Dashboard.create({
+    const dashboard = await seedDashboard({
       name: 'Ops',
       team: teamId,
       tiles: [tile('tile-1', 'Errors')],
@@ -51,14 +52,12 @@ describe('unaddressableTileAlertIds', () => {
       alert(dashboard._id, 'tile-1'),
     ];
 
-    // The failure this guards is MaxTimeMSExpired on a read sequenced last on
+    // The failure this guards is a query timeout on a read sequenced last on
     // a shared budget. Reproducing that needs a slow collection, so the read
     // itself is made to reject instead.
-    const find = jest.spyOn(Dashboard, 'find').mockReturnValue({
-      maxTimeMS: () => ({
-        lean: () => Promise.reject(new Error('MaxTimeMSExpired')),
-      }),
-    } as never);
+    const find = jest
+      .spyOn(getMetadataStore().dashboards, 'getMany')
+      .mockReturnValue(Promise.reject(new Error('QueryTimeout')));
 
     try {
       const withheld = await unaddressableTileAlertIds({
@@ -80,13 +79,13 @@ describe('unaddressableTileAlertIds', () => {
   // let a request that already spent the ceiling run past it.
   it('withholds every tile alert without reading when the budget is spent', async () => {
     const teamId = randomMongoId();
-    const dashboard = await Dashboard.create({
+    const dashboard = await seedDashboard({
       name: 'Ops',
       team: teamId,
       tiles: [tile('tile-1', 'Errors')],
     });
     const alerts = [alert(dashboard._id, 'tile-1')];
-    const find = jest.spyOn(Dashboard, 'find');
+    const find = jest.spyOn(getMetadataStore().dashboards, 'getMany');
 
     try {
       const withheld = await unaddressableTileAlertIds({
@@ -96,7 +95,7 @@ describe('unaddressableTileAlertIds', () => {
       });
 
       expect([...withheld]).toEqual([alerts[0]._id.toString()]);
-      // The point of skipping: mongo reads maxTimeMS 0 as "no limit".
+      // The point of skipping: a spent budget must not run an unbounded read.
       expect(find).not.toHaveBeenCalled();
     } finally {
       find.mockRestore();
@@ -107,7 +106,7 @@ describe('unaddressableTileAlertIds', () => {
   // pool connection or a socket would otherwise run past the request ceiling.
   it('withholds every tile alert when the read outlasts the budget', async () => {
     const teamId = randomMongoId();
-    const dashboard = await Dashboard.create({
+    const dashboard = await seedDashboard({
       name: 'Ops',
       team: teamId,
       tiles: [tile('tile-1', 'Errors')],
@@ -115,9 +114,9 @@ describe('unaddressableTileAlertIds', () => {
     const alerts = [alert(dashboard._id, 'tile-1')];
 
     // Never settles, which is the shape of a wait maxTimeMS cannot see.
-    const find = jest.spyOn(Dashboard, 'find').mockReturnValue({
-      maxTimeMS: () => ({ lean: () => new Promise(() => {}) }),
-    } as never);
+    const find = jest
+      .spyOn(getMetadataStore().dashboards, 'getMany')
+      .mockReturnValue(new Promise(() => {}));
 
     try {
       const withheld = await unaddressableTileAlertIds({
@@ -137,21 +136,20 @@ describe('unaddressableTileAlertIds', () => {
   // because the late error names the failure the timeout could only guess at.
   it('logs the late read failure but counts the request once', async () => {
     const teamId = randomMongoId();
-    const dashboard = await Dashboard.create({
+    const dashboard = await seedDashboard({
       name: 'Ops',
       team: teamId,
       tiles: [tile('tile-1', 'Errors')],
     });
     const alerts = [alert(dashboard._id, 'tile-1')];
 
-    const find = jest.spyOn(Dashboard, 'find').mockReturnValue({
-      maxTimeMS: () => ({
-        lean: () =>
-          new Promise((_, reject) =>
-            setTimeout(() => reject(new Error('MongoNetworkError')), 100),
-          ),
-      }),
-    } as never);
+    const find = jest
+      .spyOn(getMetadataStore().dashboards, 'getMany')
+      .mockReturnValue(
+        new Promise((_, reject) =>
+          setTimeout(() => reject(new Error('NetworkError')), 100),
+        ),
+      );
     // getCounter memoizes by name, so this is the instrument the module under
     // test captured at import — no options, or it would warn about a mismatch.
     const add = jest.spyOn(
@@ -185,7 +183,7 @@ describe('unaddressableTileAlertIds', () => {
 
   it('withholds nothing addressable once the read succeeds', async () => {
     const teamId = randomMongoId();
-    const dashboard = await Dashboard.create({
+    const dashboard = await seedDashboard({
       name: 'Ops',
       team: teamId,
       tiles: [tile('tile-1', 'Errors')],

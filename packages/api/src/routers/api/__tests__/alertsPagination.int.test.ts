@@ -7,10 +7,16 @@ import {
   makeTile,
   randomMongoId,
 } from '@/fixtures';
-import { seedUser } from '@/metadata/testing/seed';
+import {
+  IWebhook as WebhookDocument,
+  WebhookService,
+} from '@/metadata/schemas/webhook';
+import {
+  seedSavedSearch,
+  seedUser,
+  seedWebhook,
+} from '@/metadata/testing/seed';
 import Alert, { AlertSource, AlertState } from '@/models/alert';
-import { SavedSearch } from '@/models/savedSearch';
-import Webhook, { WebhookDocument, WebhookService } from '@/models/webhook';
 
 const MOCK_TILES = [makeTile()];
 
@@ -31,7 +37,7 @@ describe('alerts list paging and filtering', () => {
     agent = result.agent;
     team = result.team;
     user = result.user;
-    webhook = await Webhook.create({
+    webhook = await seedWebhook({
       name: 'Test Webhook',
       service: WebhookService.Slack,
       url: 'https://hooks.slack.com/test',
@@ -109,7 +115,7 @@ describe('alerts list paging and filtering', () => {
     });
 
     it('still populates the referenced dashboard, saved search and creator', async () => {
-      const savedSearch = await SavedSearch.create({
+      const savedSearch = await seedSavedSearch({
         name: 'Checkout errors',
         source: new mongoose.Types.ObjectId(),
         team: team._id,
@@ -294,7 +300,7 @@ describe('alerts list paging and filtering', () => {
     });
 
     it('matches documents with no source field when filtering by saved_search', async () => {
-      const savedSearch = await SavedSearch.create({
+      const savedSearch = await seedSavedSearch({
         name: 'Legacy search',
         source: new mongoose.Types.ObjectId(),
         team: team._id,

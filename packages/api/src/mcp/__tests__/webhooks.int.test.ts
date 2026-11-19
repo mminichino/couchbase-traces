@@ -2,9 +2,15 @@ import { Client } from '@modelcontextprotocol/sdk/client/index.js';
 
 import { getLoggedInAgent, getServer } from '@/fixtures';
 import { McpContext } from '@/mcp/tools/types';
-import { seedTeam } from '@/metadata/testing/seed';
+import { WebhookService } from '@/metadata/schemas/webhook';
+import {
+  countWebhooks,
+  findWebhook,
+  listWebhooks,
+  seedTeam,
+  seedWebhook,
+} from '@/metadata/testing/seed';
 import Alert from '@/models/alert';
-import Webhook, { WebhookService } from '@/models/webhook';
 
 import { callTool, createTestClient, getFirstText } from './mcpTestUtils';
 
@@ -58,7 +64,7 @@ describe('MCP Webhook Tools', () => {
       // Never echo the URL back (write-only posture, mirrors get_webhook).
       expect(output.url).toBeUndefined();
 
-      const stored = await Webhook.findById(output.id);
+      const stored = await findWebhook(output.id);
       expect(stored).not.toBeNull();
       expect(stored?.team.toString()).toBe(team._id.toString());
       expect(stored?.url).toBe('https://example.com/webhook');
@@ -118,7 +124,7 @@ describe('MCP Webhook Tools', () => {
 
       expect(result.isError).toBe(true);
       expect(getFirstText(result)).toContain('Invalid webhook body template');
-      expect(await Webhook.countDocuments({ team: team._id })).toBe(0);
+      expect(await countWebhooks(team._id)).toBe(0);
     });
 
     it('accepts a body template that compiles but is not JSON as written', async () => {
@@ -132,11 +138,11 @@ describe('MCP Webhook Tools', () => {
       });
 
       expect(result.isError).toBeFalsy();
-      expect((await Webhook.findOne({ team: team._id }))?.body).toBe(body);
+      expect((await listWebhooks(team._id))[0]?.body).toBe(body);
     });
 
     it('rejects a duplicate (team, service, name)', async () => {
-      await Webhook.create({
+      await seedWebhook({
         team: team._id,
         name: 'Dup Hook',
         service: WebhookService.Generic,
@@ -156,7 +162,7 @@ describe('MCP Webhook Tools', () => {
 
   describe('cbt_save_webhook (update)', () => {
     async function createGenericWebhook() {
-      return Webhook.create({
+      return seedWebhook({
         team: team._id,
         name: 'Original',
         service: WebhookService.Generic,
@@ -181,12 +187,12 @@ describe('MCP Webhook Tools', () => {
       expect(output.id).toBe(wh._id.toString());
       expect(output.name).toBe('Renamed');
 
-      const stored = await Webhook.findById(wh._id);
+      const stored = await findWebhook(wh._id);
       expect(stored?.name).toBe('Renamed');
       // description omitted -> cleared (full replace of readable fields)
       expect(stored?.description == null).toBe(true);
       // headers omitted + destination unchanged -> preserved
-      expect(stored?.headers?.get('X-Token')).toBe('secret');
+      expect(stored?.headers?.['X-Token']).toBe('secret');
     });
 
     it('rejects a body template that does not compile on update', async () => {
@@ -202,7 +208,7 @@ describe('MCP Webhook Tools', () => {
 
       expect(result.isError).toBe(true);
       expect(getFirstText(result)).toContain('Invalid webhook body template');
-      expect((await Webhook.findById(wh._id))?.body).toBeUndefined();
+      expect((await findWebhook(wh._id))?.body).toBeUndefined();
     });
 
     it('clears omitted write-only secrets when the destination changes', async () => {
@@ -216,11 +222,11 @@ describe('MCP Webhook Tools', () => {
       });
 
       expect(result.isError).toBeFalsy();
-      const stored = await Webhook.findById(wh._id);
+      const stored = await findWebhook(wh._id);
       expect(stored?.url).toBe('https://example.com/NEW-destination');
       // headers omitted + destination changed -> cleared (no secret forwarding)
       const headers = stored?.headers;
-      expect(headers == null || headers.size === 0).toBe(true);
+      expect(headers == null || Object.keys(headers).length === 0).toBe(true);
     });
 
     // NOTE: the 'conflict' branch of updateWebhook fires only when url/service
@@ -231,13 +237,13 @@ describe('MCP Webhook Tools', () => {
     // unit test that injects a write between the two awaits.
 
     it('rejects renaming a webhook onto an existing (service, name)', async () => {
-      await Webhook.create({
+      await seedWebhook({
         team: team._id,
         name: 'Existing Name',
         service: WebhookService.Generic,
         url: 'https://example.com/a',
       });
-      const target = await Webhook.create({
+      const target = await seedWebhook({
         team: team._id,
         name: 'Other Name',
         service: WebhookService.Generic,
@@ -295,7 +301,7 @@ describe('MCP Webhook Tools', () => {
 
   describe('cbt_delete_webhook', () => {
     it('deletes a webhook', async () => {
-      const wh = await Webhook.create({
+      const wh = await seedWebhook({
         team: team._id,
         name: 'To Delete',
         service: WebhookService.Generic,
@@ -310,11 +316,11 @@ describe('MCP Webhook Tools', () => {
       const output = JSON.parse(getFirstText(result));
       expect(output).toMatchObject({ deleted: true, id: wh._id.toString() });
 
-      expect(await Webhook.findById(wh._id)).toBeNull();
+      expect(await findWebhook(wh._id)).toBeNull();
     });
 
     it('blocks deletion when an alert references the webhook', async () => {
-      const wh = await Webhook.create({
+      const wh = await seedWebhook({
         team: team._id,
         name: 'Referenced',
         service: WebhookService.Generic,
@@ -336,7 +342,7 @@ describe('MCP Webhook Tools', () => {
       expect(result.isError).toBe(true);
       expect(getFirstText(result)).toContain('still reference it');
       // Not deleted.
-      expect(await Webhook.findById(wh._id)).not.toBeNull();
+      expect(await findWebhook(wh._id)).not.toBeNull();
     });
 
     it('returns a user error for a non-existent id', async () => {
@@ -350,7 +356,7 @@ describe('MCP Webhook Tools', () => {
 
     it('does not delete a webhook owned by another team', async () => {
       const otherTeam = await seedTeam({ name: 'Other Team' });
-      const otherWebhook = await Webhook.create({
+      const otherWebhook = await seedWebhook({
         team: otherTeam._id,
         name: 'Other Team Hook',
         service: WebhookService.Generic,
@@ -364,7 +370,7 @@ describe('MCP Webhook Tools', () => {
       expect(result.isError).toBe(true);
       expect(getFirstText(result)).toContain('not found');
       // Still present.
-      expect(await Webhook.findById(otherWebhook._id)).not.toBeNull();
+      expect(await findWebhook(otherWebhook._id)).not.toBeNull();
     });
   });
 });

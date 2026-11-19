@@ -1,5 +1,5 @@
 import { callTool, getFirstText } from '@/mcp/__tests__/mcpTestUtils';
-import Dashboard from '@/models/dashboard';
+import { seedDashboard } from '@/metadata/testing/seed';
 
 import { setupDashboardTests } from './setup';
 
@@ -46,11 +46,11 @@ describe('MCP Dashboard Tools - cbt_get_dashboard_tile', () => {
   });
 
   it('should return error for non-existent tileId', async () => {
-    const dashboard = await new Dashboard({
+    const dashboard = await seedDashboard({
       name: 'Empty Dashboard',
       tiles: [],
       team: ctx.team._id,
-    }).save();
+    });
 
     const result = await callTool(ctx.client!, 'cbt_get_dashboard_tile', {
       dashboardId: dashboard._id.toString(),

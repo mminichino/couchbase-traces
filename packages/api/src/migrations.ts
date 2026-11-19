@@ -1,8 +1,8 @@
 import mongoose from 'mongoose';
 
+import { getMetadataStore } from '@/metadata';
+import type { IDashboard } from '@/metadata/schemas/dashboard';
 import Alert, { IAlert } from '@/models/alert';
-import Dashboard from '@/models/dashboard';
-import { SavedSearch } from '@/models/savedSearch';
 import { deriveAlertDisplayFields } from '@/utils/alerts';
 import logger from '@/utils/logger';
 
@@ -28,6 +28,7 @@ export async function backfillAlertDisplayFields() {
     const batch = await Alert.find(
       { _id: { $in: ids.slice(i, i + BACKFILL_BATCH_SIZE) } },
       {
+        team: 1,
         displayName: 1,
         tags: 1,
         source: 1,
@@ -38,30 +39,35 @@ export async function backfillAlertDisplayFields() {
       },
     ).lean();
 
-    const savedSearchIds = batch
-      .map(a => a.savedSearch)
-      .filter(id => id != null);
-    const dashboardIds = batch.map(a => a.dashboard).filter(id => id != null);
-    const [savedSearches, dashboards] = await Promise.all([
-      savedSearchIds.length > 0
-        ? SavedSearch.find(
-            { _id: { $in: savedSearchIds } },
-            { name: 1, tags: 1 },
-          ).lean()
-        : [],
-      dashboardIds.length > 0
-        ? Dashboard.find(
-            { _id: { $in: dashboardIds } },
-            { name: 1, tags: 1, 'tiles.id': 1, 'tiles.config.name': 1 },
-          ).lean()
-        : [],
-    ]);
-    const savedSearchById = new Map(
-      savedSearches.map(d => [String(d._id), d] as const),
-    );
-    const dashboardById = new Map(
-      dashboards.map(d => [String(d._id), d] as const),
-    );
+    // Saved searches and dashboards live in the metadata store, which is
+    // team-scoped, so the lookups run once per team in the batch.
+    const store = getMetadataStore();
+    const savedSearchById = new Map<string, { name: string; tags: string[] }>();
+    const dashboardById = new Map<string, IDashboard>();
+    const teams = new Set(batch.map(a => String(a.team)));
+    for (const team of teams) {
+      const mine = batch.filter(a => String(a.team) === team);
+      const ids = (pick: (a: (typeof batch)[number]) => unknown) => [
+        ...new Set(
+          mine
+            .map(pick)
+            .filter(id => id != null)
+            .map(String),
+        ),
+      ];
+      const [searches, dashboards] = await Promise.all([
+        store.savedSearches.getMany(
+          team,
+          ids(a => a.savedSearch),
+        ),
+        store.dashboards.getMany(
+          team,
+          ids(a => a.dashboard),
+        ),
+      ]);
+      searches.forEach((v, k) => savedSearchById.set(k, v));
+      dashboards.forEach((v, k) => dashboardById.set(k, v));
+    }
 
     const ops: {
       filter: mongoose.FilterQuery<IAlert>;

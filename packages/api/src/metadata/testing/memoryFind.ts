@@ -3,6 +3,7 @@ import {
   FIND_LIMIT_MAX,
   type FindSpec,
   type Found,
+  KEY_FIELD,
   type MetaCollection,
   type MetaFind,
 } from '@/metadata/types';
@@ -37,10 +38,22 @@ function field(value: unknown, name: string): unknown {
   return new Map(Object.entries(value)).get(name);
 }
 
-function matches(value: unknown, spec: Omit<FindSpec, 'orderBy'>): boolean {
+type Filter = Omit<FindSpec, 'orderBy' | 'offset' | 'limit'>;
+
+function matches(value: unknown, spec: Filter): boolean {
+  const { contains, hasAll } = spec;
   return (
     Object.entries(spec.where ?? {}).every(([f, v]) => field(value, f) === v) &&
-    (spec.present ?? []).every(f => field(value, f) !== undefined)
+    (spec.present ?? []).every(f => field(value, f) !== undefined) &&
+    (!contains ||
+      String(field(value, contains.field) ?? '')
+        .toLowerCase()
+        .includes(contains.value.toLowerCase())) &&
+    (!hasAll ||
+      hasAll.values.every(v => {
+        const arr = field(value, hasAll.field);
+        return Array.isArray(arr) && arr.includes(v);
+      }))
   );
 }
 
@@ -54,21 +67,37 @@ export class MemoryFind implements MetaFind {
       .filter(r => matches(r.value, spec))
       .sort((a, b) => {
         for (const o of spec.orderBy ?? []) {
-          const d = compare(field(a.value, o.field), field(b.value, o.field));
+          const d =
+            o.field === KEY_FIELD
+              ? compare(a.key, b.key)
+              : compare(field(a.value, o.field), field(b.value, o.field));
           if (d !== 0) return o.dir === 'asc' ? d : -d;
         }
         return 0;
       });
+    const start = spec.offset ?? 0;
     return rows.slice(
-      0,
-      Math.min(spec.limit ?? FIND_LIMIT_MAX, FIND_LIMIT_MAX),
+      start,
+      start + Math.min(spec.limit ?? FIND_LIMIT_MAX, FIND_LIMIT_MAX),
     );
   }
 
-  async count(
-    c: MetaCollection,
-    spec: Omit<FindSpec, 'orderBy'>,
-  ): Promise<number> {
+  async count(c: MetaCollection, spec: Filter): Promise<number> {
     return this.kv.entries(c).filter(r => matches(r.value, spec)).length;
+  }
+
+  async distinct(
+    c: MetaCollection,
+    fieldName: string,
+    spec: Filter,
+  ): Promise<string[]> {
+    const seen = new Set<string>();
+    for (const r of this.kv.entries(c)) {
+      if (!matches(r.value, spec)) continue;
+      const arr = field(r.value, fieldName);
+      if (!Array.isArray(arr)) continue;
+      for (const v of arr) if (typeof v === 'string') seen.add(v);
+    }
+    return [...seen];
   }
 }

@@ -1,8 +1,8 @@
 import { createOrgApiKey } from '@/controllers/orgApiKey';
 import * as userController from '@/controllers/user';
 import { getLoggedInAgent, getServer } from '@/fixtures';
-import { findUser, patchUser } from '@/metadata/testing/seed';
-import Dashboard from '@/models/dashboard';
+import { newId } from '@/metadata/ids';
+import { findUser, patchUser, seedDashboard } from '@/metadata/testing/seed';
 
 describe('external api v2', () => {
   const server = getServer();
@@ -66,10 +66,10 @@ describe('external api v2', () => {
 
     it('lists only its own team data', async () => {
       const { agent, team, key } = await setup();
-      await Dashboard.create({ name: 'mine', team: team._id, tiles: [] });
-      await Dashboard.create({
+      await seedDashboard({ name: 'mine', team: team._id, tiles: [] });
+      await seedDashboard({
         name: 'other',
-        team: new Dashboard()._id,
+        team: newId(),
         tiles: [],
       });
       const resp = await agent

@@ -14,8 +14,9 @@ import { UPSERT_TOOL } from '@/mcp/tools/annotations';
 import type { ToolRegistrar } from '@/mcp/tools/types';
 import { formatZodIssues, mcpUserError } from '@/mcp/utils/errors';
 import { isPromqlEnabled } from '@/mcp/utils/legacySourceKinds';
+import { getMetadataStore } from '@/metadata';
 import { newId } from '@/metadata/ids';
-import Dashboard, { IDashboard } from '@/models/dashboard';
+import type { DashboardPatch } from '@/metadata/schemas/dashboard';
 import {
   cleanupDashboardAlerts,
   convertExternalFiltersToInternal,
@@ -221,16 +222,15 @@ async function createDashboard({
     savedQueryLanguage: undefined,
   });
 
-  const newDashboard = await new Dashboard({
+  const newDashboard = await getMetadataStore().dashboards.create(teamId, {
     name: parsed.data.name,
     tiles: internalTiles,
-    tags: tags && uniq(tags),
+    tags: (tags && uniq(tags)) ?? [],
     filters: filtersWithIds,
     savedQueryLanguage: normalizedSavedQueryLanguage,
     savedFilterValues: parsed.data.savedFilterValues,
-    team: teamId,
     ...(parsedContainers !== undefined ? { containers: parsedContainers } : {}),
-  }).save();
+  });
 
   recordDashboardOnboardingIfHasTiles(userId, newDashboard.tiles);
 
@@ -308,10 +308,10 @@ async function updateDashboard({
     return mcpUserError(sqlFilterSourceError);
   }
 
-  const existingDashboard = await Dashboard.findOne(
-    { _id: dashboardId, team: teamId },
-    { tiles: 1, filters: 1, containers: 1 },
-  ).lean();
+  const existingDashboard = await getMetadataStore().dashboards.get(
+    teamId,
+    dashboardId,
+  );
 
   if (!existingDashboard) {
     return mcpUserError('Dashboard not found');
@@ -373,11 +373,11 @@ async function updateDashboard({
         ),
       ];
 
-  // Typed as `Partial<IDashboard>` (the canonical Mongo doc shape) so
+  // Typed as `DashboardPatch` so
   // misnamed or wrong-shape fields fail at compile time, mirroring the
   // v2 PUT handler's tightening at
   // `routers/external-api/v2/dashboards.ts:2015`.
-  const setPayload: Partial<IDashboard> = {
+  const setPayload: DashboardPatch = {
     name,
     tiles: internalTiles,
     tags: tags && uniq(tags),
@@ -431,10 +431,10 @@ async function updateDashboard({
     setPayload.containers = parsedContainers;
   }
 
-  const updatedDashboard = await Dashboard.findOneAndUpdate(
-    { _id: dashboardId, team: teamId },
-    { $set: setPayload },
-    { new: true },
+  const updatedDashboard = await getMetadataStore().dashboards.update(
+    teamId,
+    dashboardId,
+    setPayload,
   );
 
   if (!updatedDashboard) {

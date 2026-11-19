@@ -21,9 +21,10 @@ import {
   loadUserDisplays,
   type UserDisplays,
 } from '@/controllers/userDisplay';
+import { getMetadataStore } from '@/metadata';
+import type { IDashboard } from '@/metadata/schemas/dashboard';
 import type { ObjectId } from '@/models';
 import type { AlertDocument, IAlert } from '@/models/alert';
-import Dashboard, { IDashboard } from '@/models/dashboard';
 import { resolveAlertDisplayFields } from '@/utils/alerts';
 
 // Drop alerts on tiles the alert checker cannot evaluate (e.g. PromQL), so
@@ -165,7 +166,7 @@ function withResolvedDisplayFields(
 
 export async function getDashboards(teamId: string | ObjectId) {
   const [_dashboards, alerts] = await Promise.all([
-    Dashboard.find({ team: teamId }),
+    getMetadataStore().dashboards.list(teamId.toString()),
     getTeamDashboardAlertsByDashboardAndTile(teamId),
   ]);
   const users = await loadUserDisplays([
@@ -174,7 +175,6 @@ export async function getDashboards(teamId: string | ObjectId) {
   ]);
 
   const dashboards = _dashboards
-    .map(d => d.toJSON())
     .map(d => ({
       ...applyUserDisplays(users, d, ['createdBy', 'updatedBy']),
       tiles: d.tiles.map(t => ({
@@ -199,7 +199,7 @@ export async function getDashboard(
   teamId: string | ObjectId,
 ) {
   const [_dashboard, alerts] = await Promise.all([
-    Dashboard.findOne({ _id: dashboardId, team: teamId }),
+    getMetadataStore().dashboards.get(teamId.toString(), dashboardId),
     getDashboardAlertsByTile(teamId, dashboardId),
   ]);
 
@@ -213,10 +213,7 @@ export async function getDashboard(
   ]);
 
   return healLegacyDashboardTileColors({
-    ...applyUserDisplays(users, _dashboard.toJSON(), [
-      'createdBy',
-      'updatedBy',
-    ]),
+    ...applyUserDisplays(users, _dashboard, ['createdBy', 'updatedBy']),
     tiles: _dashboard.tiles.map(t => ({
       ...t,
       config: {
@@ -232,12 +229,11 @@ export async function createDashboard(
   dashboard: z.infer<typeof DashboardWithoutIdSchema>,
   userId?: string | ObjectId,
 ) {
-  const newDashboard = await new Dashboard({
-    ...dashboard,
-    team: teamId,
-    createdBy: userId,
-    updatedBy: userId,
-  }).save();
+  const newDashboard = await getMetadataStore().dashboards.create(
+    teamId.toString(),
+    dashboard,
+    userId?.toString(),
+  );
 
   await createOrUpdateDashboardAlerts(
     newDashboard,
@@ -255,10 +251,10 @@ export async function deleteDashboard(
   dashboardId: string,
   teamId: string | ObjectId,
 ) {
-  const dashboard = await Dashboard.findOneAndDelete({
-    _id: dashboardId,
-    team: teamId,
-  });
+  const dashboard = await getMetadataStore().dashboards.delete(
+    teamId.toString(),
+    dashboardId,
+  );
   if (dashboard) {
     await deleteDashboardAlerts(dashboardId, teamId);
   }
@@ -270,10 +266,10 @@ export async function updateDashboard(
   updates: Partial<z.infer<typeof DashboardWithoutIdSchema>>,
   userId?: string | ObjectId,
 ) {
-  // Defense-in-depth: callers pass spread objects into the update doc below.
-  // A smuggled `team`/`createdBy` here would move the document between
-  // tenants / forge ownership (the model marks them immutable, but the
-  // write below reaches Mongo directly).
+  // Defense-in-depth: callers pass spread objects into the update below.
+  // A smuggled `team`/`createdBy` would move the document between tenants or
+  // forge ownership, so it is refused outright (the repository also pins
+  // both).
   const {
     team: _ignoredTeam,
     createdBy: _ignoredCreatedBy,
@@ -289,17 +285,14 @@ export async function updateDashboard(
     throw new Error('Dashboard not found');
   }
 
-  const updatedDashboard = await Dashboard.findOneAndUpdate(
-    {
-      _id: dashboardId,
-      team: teamId,
-    },
+  const updatedDashboard = await getMetadataStore().dashboards.update(
+    teamId.toString(),
+    dashboardId,
     {
       ...safeUpdates,
       tags: updates.tags && uniq(updates.tags),
-      updatedBy: userId,
     },
-    { new: true },
+    userId?.toString(),
   );
   if (updatedDashboard == null) {
     throw new Error('Could not update dashboard');

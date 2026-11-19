@@ -20,13 +20,20 @@ import {
   randomMongoId,
   RAW_SQL_ALERT_TEMPLATE,
 } from '@/fixtures';
-import { seedConnection, seedSource } from '@/metadata/testing/seed';
+import {
+  IWebhook as WebhookDocument,
+  WebhookService,
+} from '@/metadata/schemas/webhook';
+import {
+  seedConnection,
+  seedDashboard,
+  seedSavedSearch,
+  seedSource,
+  seedWebhook,
+} from '@/metadata/testing/seed';
 import { toObjectId } from '@/models';
 import Alert, { AlertSource, AlertState } from '@/models/alert';
 import AlertHistory from '@/models/alertHistory';
-import Dashboard from '@/models/dashboard';
-import { SavedSearch } from '@/models/savedSearch';
-import Webhook, { WebhookDocument, WebhookService } from '@/models/webhook';
 
 const MOCK_TILES = [makeTile(), makeTile(), makeTile(), makeTile(), makeTile()];
 
@@ -53,7 +60,7 @@ describe('alerts router', () => {
     agent = result.agent;
     team = result.team;
     user = result.user;
-    webhook = await Webhook.create({
+    webhook = await seedWebhook({
       name: 'Test Webhook',
       service: WebhookService.Slack,
       url: 'https://hooks.slack.com/test',
@@ -261,7 +268,7 @@ describe('alerts router', () => {
   });
 
   it('can update an ungrouped saved-search alert returned with null groupBy', async () => {
-    const savedSearch = await SavedSearch.create({
+    const savedSearch = await seedSavedSearch({
       name: 'Test Saved Search',
       source: new mongoose.Types.ObjectId(),
       team: team._id,
@@ -300,7 +307,7 @@ describe('alerts router', () => {
       .send(MOCK_DASHBOARD)
       .expect(200);
     const tileId = dashboard.body.tiles[0].id;
-    const savedSearch = await SavedSearch.create({
+    const savedSearch = await seedSavedSearch({
       name: 'Test Saved Search',
       source: new mongoose.Types.ObjectId(),
       team: team._id,
@@ -519,7 +526,7 @@ describe('alerts router', () => {
   });
 
   it('Derives name and tags from the saved search for a document stored without them', async () => {
-    const savedSearch = await SavedSearch.create({
+    const savedSearch = await seedSavedSearch({
       name: 'Legacy search',
       source: new mongoose.Types.ObjectId(),
       team: team._id,
@@ -918,7 +925,7 @@ describe('alerts router', () => {
   // only because the marker sits outside the `alert.dashboard` spread.
   it('marks a tile alert on a provisioned dashboard, and one whose dashboard is gone', async () => {
     const tile = makeTile();
-    const provisioned = await Dashboard.create({
+    const provisioned = await seedDashboard({
       name: 'Provisioned',
       team: team._id,
       provisioned: true,
@@ -1167,7 +1174,7 @@ describe('alerts router', () => {
 
   it('rejects creating an alert on a PromQL tile', async () => {
     const promqlTileId = randomMongoId();
-    const dashboard = await Dashboard.create({
+    const dashboard = await seedDashboard({
       name: 'PromQL Dashboard',
       team: team._id,
       tiles: [
@@ -1802,14 +1809,14 @@ describe('alerts router', () => {
   });
   describe('multiple notification channels', () => {
     const makeSavedSearch = () =>
-      SavedSearch.create({
+      seedSavedSearch({
         name: 'Test Saved Search',
         source: new mongoose.Types.ObjectId(),
         team: team._id,
       });
 
     const secondWebhook = () =>
-      Webhook.create({
+      seedWebhook({
         name: 'Second Webhook',
         service: WebhookService.Slack,
         url: 'https://hooks.slack.com/second',
@@ -1947,7 +1954,7 @@ describe('alerts router', () => {
         .expect(400);
 
       // a webhook belonging to another team, hidden among valid ones
-      const foreign = await Webhook.create({
+      const foreign = await seedWebhook({
         name: 'Foreign Webhook',
         service: WebhookService.Slack,
         url: 'https://hooks.slack.com/foreign',

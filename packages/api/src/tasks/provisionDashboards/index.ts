@@ -13,8 +13,6 @@ import {
   getMetadataStore,
   startMetadataStore,
 } from '@/metadata';
-import { connectDB, mongooseConnection } from '@/models';
-import Dashboard from '@/models/dashboard';
 import type { HdxTask } from '@/tasks/types';
 import { ProvisionDashboardsTaskArgs } from '@/tasks/types';
 import logger from '@/utils/logger';
@@ -78,40 +76,29 @@ export async function syncDashboards(teamId: string, dir: string) {
 
   for (const dashboard of dashboards) {
     try {
-      const userDashboard = await Dashboard.exists({
-        name: dashboard.name,
-        team: teamId,
-        provisioned: { $ne: true },
-      });
-      if (userDashboard) {
+      const store = getMetadataStore();
+      if (await store.dashboards.hasUserNamed(teamId, dashboard.name)) {
         logger.warn(
           { name: dashboard.name },
           'A user-created dashboard with this name already exists, provisioned copy will coexist',
         );
       }
 
-      const result = await Dashboard.findOneAndUpdate(
-        { name: dashboard.name, team: teamId, provisioned: true },
+      const { created } = await store.dashboards.upsertProvisioned(
+        teamId,
+        dashboard.name,
         {
-          $set: {
-            tiles: dashboard.tiles || [],
-            tags: dashboard.tags || [],
-            filters: dashboard.filters || [],
-            savedQuery: dashboard.savedQuery ?? null,
-            savedQueryLanguage: dashboard.savedQueryLanguage ?? null,
-            savedFilterValues: dashboard.savedFilterValues || [],
-            containers: dashboard.containers || [],
-          },
-          $setOnInsert: {
-            name: dashboard.name,
-            team: teamId,
-            provisioned: true,
-          },
+          tiles: dashboard.tiles || [],
+          tags: dashboard.tags || [],
+          filters: dashboard.filters || [],
+          savedQuery: dashboard.savedQuery ?? null,
+          savedQueryLanguage: dashboard.savedQueryLanguage ?? null,
+          savedFilterValues: dashboard.savedFilterValues || [],
+          containers: dashboard.containers || [],
         },
-        { upsert: true, new: false },
       );
 
-      if (result === null) {
+      if (created) {
         logger.info({ name: dashboard.name }, 'Created provisioned dashboard');
       }
     } catch (err) {
@@ -131,7 +118,6 @@ export default class ProvisionDashboardsTask implements HdxTask {
   }
 
   async execute(): Promise<void> {
-    await connectDB();
     await startMetadataStore({ logger });
 
     const dir = process.env.DASHBOARD_PROVISIONER_DIR;
@@ -190,6 +176,6 @@ export default class ProvisionDashboardsTask implements HdxTask {
   }
 
   async asyncDispose(): Promise<void> {
-    await Promise.all([mongooseConnection.close(), closeMetadataStore()]);
+    await closeMetadataStore();
   }
 }

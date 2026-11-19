@@ -17,6 +17,9 @@ import {
 import { omit } from 'lodash';
 import { Types } from 'mongoose';
 
+import type { HydratedAlert } from '@/controllers/alertRefs';
+import type { IDashboard } from '@/metadata/schemas/dashboard';
+import type { ISavedSearch } from '@/metadata/schemas/savedSearch';
 import type { ObjectId } from '@/models';
 import {
   AlertChannel,
@@ -26,8 +29,6 @@ import {
   getAlertChannels,
   IAlert,
 } from '@/models/alert';
-import type { DashboardDocument, IDashboard } from '@/models/dashboard';
-import type { ISavedSearch } from '@/models/savedSearch';
 import { SeriesTile } from '@/routers/external-api/v2/utils/dashboards';
 import {
   isPopulatedRef,
@@ -52,7 +53,7 @@ const pickIfTruthy = <T, K extends keyof T>(obj: T, keys: K[]): Partial<T> => {
 
 export function translateExternalChartToTileConfig(
   chart: SeriesTile,
-): DashboardDocument['tiles'][number] {
+): IDashboard['tiles'][number] {
   const {
     id,
     name,
@@ -370,7 +371,7 @@ export type ExternalAlert = {
 // An alert's savedSearch/dashboard ref as this module receives it: a bare
 // ObjectId, or — when the caller used a populating reader — the referenced
 // document, possibly projected down to the display fields.
-type AlertRef<T> = ObjectId | (Partial<T> & { _id: ObjectId }) | null;
+type AlertRef<T> = ObjectId | (Partial<T> & { _id: ObjectId | string }) | null;
 
 type AlertRefFields = {
   savedSearch?: AlertRef<ISavedSearch>;
@@ -381,11 +382,9 @@ type AlertDocumentObject = Omit<IAlert, keyof AlertRefFields> & {
   _id: ObjectId;
 } & AlertRefFields;
 
-export type TranslatableAlertDocument = Omit<
-  AlertDocument,
-  keyof AlertRefFields
-> &
-  AlertRefFields;
+export type TranslatableAlertDocument =
+  | (Omit<AlertDocument, keyof AlertRefFields> & AlertRefFields)
+  | HydratedAlert;
 
 /**
  * A populated ref whose target was deleted resolves to `null` in `toJSON()`,
@@ -484,9 +483,8 @@ export function translateAlertDocumentToExternalAlert(
   // picks the toJSON overload that doesn't wrap every field in FlattenMaps<>
   // (which breaks ObjectId); the alert schema has no Map fields, so the
   // runtime output is identical.
-  const alertObj: AlertDocumentObject = alert.toJSON
-    ? alert.toJSON({ flattenMaps: false })
-    : { ...alert };
+  const alertObj: AlertDocumentObject =
+    'toJSON' in alert ? alert.toJSON({ flattenMaps: false }) : { ...alert };
 
   const channels = getAlertChannels(alertObj);
 

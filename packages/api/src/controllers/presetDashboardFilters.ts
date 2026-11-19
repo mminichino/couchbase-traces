@@ -2,61 +2,54 @@ import {
   PresetDashboard,
   PresetDashboardFilter,
 } from '@couchbase-traces/common-utils/dist/types';
-import mongoose from 'mongoose';
 
-import { ObjectId } from '@/models';
-import PresetDashboardFilterModel from '@/models/presetDashboardFilter';
+import { getMetadataStore } from '@/metadata';
+
+type IdLike = string | { toString(): string };
 
 export async function getPresetDashboardFilters(
-  teamId: string | ObjectId,
-  source: string | ObjectId,
+  teamId: IdLike,
+  source: IdLike,
   presetDashboard: PresetDashboard,
 ) {
-  return await PresetDashboardFilterModel.find({
-    team: new mongoose.Types.ObjectId(teamId),
-    source: new mongoose.Types.ObjectId(source),
+  return getMetadataStore().presetDashboardFilters.listFor(
+    teamId.toString(),
+    source.toString(),
     presetDashboard,
-  });
+  );
 }
 
 export const createPresetDashboardFilter = async (
-  teamId: string | ObjectId,
+  teamId: IdLike,
   presetDashboardFilter: PresetDashboardFilter,
 ) => {
-  const newPresetDashboardFilter = new PresetDashboardFilterModel({
-    ...presetDashboardFilter,
-    team: new mongoose.Types.ObjectId(teamId),
-  });
-
-  return newPresetDashboardFilter.save();
+  const { id: _id, ...input } = presetDashboardFilter;
+  return getMetadataStore().presetDashboardFilters.create(
+    teamId.toString(),
+    input,
+  );
 };
 
 export const updatePresetDashboardFilter = async (
-  teamId: string | ObjectId,
+  teamId: IdLike,
   presetDashboardFilter: PresetDashboardFilter,
 ) => {
-  return await PresetDashboardFilterModel.findOneAndUpdate(
-    {
-      _id: new mongoose.Types.ObjectId(presetDashboardFilter.id),
-      team: new mongoose.Types.ObjectId(teamId),
-    },
-    {
-      ...presetDashboardFilter,
-      _id: new mongoose.Types.ObjectId(presetDashboardFilter.id),
-      team: new mongoose.Types.ObjectId(teamId),
-    },
-    { new: true },
+  const { id, ...input } = presetDashboardFilter;
+  return getMetadataStore().presetDashboardFilters.update(
+    teamId.toString(),
+    id,
+    input,
   );
 };
 
 export const deletePresetDashboardFilter = async (
-  teamId: string | ObjectId,
+  teamId: IdLike,
   presetDashboard: PresetDashboard,
-  presetDashboardFilterId: string | ObjectId,
+  presetDashboardFilterId: IdLike,
 ) => {
-  return await PresetDashboardFilterModel.findOneAndDelete({
-    _id: new mongoose.Types.ObjectId(presetDashboardFilterId),
-    team: new mongoose.Types.ObjectId(teamId),
+  return getMetadataStore().presetDashboardFilters.deleteFor(
+    teamId.toString(),
     presetDashboard,
-  });
+    presetDashboardFilterId.toString(),
+  );
 };

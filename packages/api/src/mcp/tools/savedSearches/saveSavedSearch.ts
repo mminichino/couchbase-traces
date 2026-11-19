@@ -12,6 +12,7 @@ import {
   mcpUserError,
   validateObjectId,
 } from '@/mcp/utils/errors';
+import { toExternalSavedSearch } from '@/metadata/schemas/savedSearch';
 
 import { mcpSaveSavedSearchSchema } from './schemas';
 
@@ -93,7 +94,7 @@ export function registerSaveSavedSearch({
               type: 'text' as const,
               text: JSON.stringify(
                 {
-                  ...updated.toExternalJSON(),
+                  ...toExternalSavedSearch(updated),
                   ...(frontendUrl
                     ? { url: `${frontendUrl}/search/${updated._id}` }
                     : {}),
@@ -115,7 +116,7 @@ export function registerSaveSavedSearch({
             type: 'text' as const,
             text: JSON.stringify(
               {
-                ...created.toExternalJSON(),
+                ...toExternalSavedSearch(created),
                 ...(frontendUrl
                   ? { url: `${frontendUrl}/search/${created._id}` }
                   : {}),

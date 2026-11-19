@@ -1,4 +1,3 @@
-import mongoose from 'mongoose';
 import { z } from 'zod';
 
 import * as config from '@/config';
@@ -7,7 +6,7 @@ import { READ_ONLY_TOOL } from '@/mcp/tools/annotations';
 import type { ToolRegistrar } from '@/mcp/tools/types';
 import { mcpUserError, validateObjectId } from '@/mcp/utils/errors';
 import { isPromqlEnabled } from '@/mcp/utils/legacySourceKinds';
-import Dashboard from '@/models/dashboard';
+import { getMetadataStore } from '@/metadata';
 import { convertToExternalDashboard } from '@/routers/external-api/v2/utils/dashboards';
 
 import { withResolvedFilterVariableNames } from './variables';
@@ -38,9 +37,7 @@ export function registerGetDashboard({
     },
     async ({ id }) => {
       if (!id) {
-        const dashboards = await getDashboards(
-          new mongoose.Types.ObjectId(teamId),
-        );
+        const dashboards = await getDashboards(teamId);
         const output = dashboards.map(d => ({
           id: d._id.toString(),
           name: d.name,
@@ -57,7 +54,7 @@ export function registerGetDashboard({
       const idError = validateObjectId(id, 'dashboard ID');
       if (idError) return idError;
 
-      const dashboard = await Dashboard.findOne({ _id: id, team: teamId });
+      const dashboard = await getMetadataStore().dashboards.get(teamId, id);
       if (!dashboard) {
         return mcpUserError('Dashboard not found');
       }

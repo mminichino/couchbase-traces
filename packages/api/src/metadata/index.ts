@@ -78,6 +78,12 @@ export const MIGRATED_COLLECTIONS = [
   'team_invites',
   'connections',
   'sources',
+  'saved_searches',
+  'dashboards',
+  'webhooks',
+  'favorites',
+  'pinned_filters',
+  'preset_dashboard_filters',
   'unique_keys',
   'sessions',
 ] as const satisfies readonly MetaCollection[];

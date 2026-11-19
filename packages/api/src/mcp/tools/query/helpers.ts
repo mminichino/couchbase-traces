@@ -82,8 +82,7 @@ export function resolveBodyExpression(
  * Accepts: `Body`, `SpanAttributes['http.url']`
  * Rejects: `Body) OR (1=1`, `lower(Body)`
  */
-// eslint-disable-next-line no-useless-escape
-const SAFE_BODY_EXPR_CHARS = /^[\w.':\[\]\-]+$/;
+const SAFE_BODY_EXPR_CHARS = /^[\w.':[\]-]+$/;
 
 /**
  * The column argument of JSONExtractString: an identifier (letters, digits,

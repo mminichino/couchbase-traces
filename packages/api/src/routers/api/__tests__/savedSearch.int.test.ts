@@ -3,11 +3,18 @@ import {
   getServer,
   makeSavedSearchAlertInput,
 } from '@/fixtures';
-import { seedUser } from '@/metadata/testing/seed';
+import {
+  IWebhook as WebhookDocument,
+  WebhookService,
+} from '@/metadata/schemas/webhook';
+import {
+  findSavedSearch,
+  patchSavedSearch,
+  seedUser,
+  seedWebhook,
+} from '@/metadata/testing/seed';
 import { toObjectId } from '@/models';
 import Alert from '@/models/alert';
-import { SavedSearch } from '@/models/savedSearch';
-import Webhook, { WebhookDocument, WebhookService } from '@/models/webhook';
 
 const MOCK_SAVED_SEARCH = {
   name: 'error',
@@ -35,7 +42,7 @@ describe('savedSearch router', () => {
     agent = result.agent;
     team = result.team;
     user = result.user;
-    webhook = await Webhook.create({
+    webhook = await seedWebhook({
       name: 'Test Webhook',
       service: WebhookService.Slack,
       url: 'https://hooks.slack.com/test',
@@ -159,8 +166,8 @@ describe('savedSearch router', () => {
     });
 
     // Simulate a different user updating the saved search
-    await SavedSearch.findByIdAndUpdate(created.body._id, {
-      updatedBy: secondUser._id,
+    await patchSavedSearch(created.body._id, {
+      updatedBy: secondUser._id.toString(),
     });
 
     const savedSearches = await agent.get('/saved-search').expect(200);
@@ -185,7 +192,7 @@ describe('savedSearch router', () => {
       .expect(200);
 
     // Verify updatedBy is still set in the DB
-    const dbRecord = await SavedSearch.findById(created.body._id);
+    const dbRecord = await findSavedSearch(created.body._id);
     expect(dbRecord?.updatedBy?.toString()).toBe(user._id.toString());
     expect(dbRecord?.createdBy?.toString()).toBe(user._id.toString());
   });
@@ -211,7 +218,7 @@ describe('savedSearch router', () => {
       })
       .expect(200);
 
-    const dbRecord = await SavedSearch.findById(created.body._id);
+    const dbRecord = await findSavedSearch(created.body._id);
     expect(dbRecord?.name).toBe('updated name');
     expect(dbRecord?.team.toString()).toBe(team._id.toString());
     expect(dbRecord?.createdBy?.toString()).toBe(user._id.toString());

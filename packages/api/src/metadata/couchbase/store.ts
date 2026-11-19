@@ -59,6 +59,13 @@ export class CouchbaseMetadataStore implements MetadataStore {
   readonly teamInvites: Repositories['teamInvites'];
   readonly connections: Repositories['connections'];
   readonly sources: Repositories['sources'];
+  readonly savedSearches: Repositories['savedSearches'];
+  readonly dashboards: Repositories['dashboards'];
+  readonly favorites: Repositories['favorites'];
+  readonly pinnedFilters: Repositories['pinnedFilters'];
+  readonly presetDashboardFilters: Repositories['presetDashboardFilters'];
+  readonly webhooks: Repositories['webhooks'];
+  readonly tags: Repositories['tags'];
 
   constructor(
     private readonly cfg: MetadataConfig,
@@ -80,6 +87,13 @@ export class CouchbaseMetadataStore implements MetadataStore {
     this.teamInvites = repos.teamInvites;
     this.connections = repos.connections;
     this.sources = repos.sources;
+    this.savedSearches = repos.savedSearches;
+    this.dashboards = repos.dashboards;
+    this.favorites = repos.favorites;
+    this.pinnedFilters = repos.pinnedFilters;
+    this.presetDashboardFilters = repos.presetDashboardFilters;
+    this.webhooks = repos.webhooks;
+    this.tags = repos.tags;
   }
 
   get kv(): MetaKv {

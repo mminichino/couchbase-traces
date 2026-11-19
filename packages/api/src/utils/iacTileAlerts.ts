@@ -1,9 +1,9 @@
 import { isTileAlertUnaddressable } from '@couchbase-traces/common-utils/dist/iac';
 import { serializeError } from 'serialize-error';
 
+import { getMetadataStore } from '@/metadata';
 import type { ObjectId } from '@/models';
 import { AlertSource } from '@/models/alert';
-import Dashboard from '@/models/dashboard';
 import { getCounter } from '@/utils/instrumentation';
 import logger from '@/utils/logger';
 
@@ -15,7 +15,7 @@ const tileAlertLookupFailures = getCounter('cbt.iac.tile_alert_lookup_failed', {
 type TileAlertRow = {
   _id: ObjectId;
   source?: AlertSource;
-  dashboard?: ObjectId | null;
+  dashboard?: ObjectId | string | null;
   tileId?: string | null;
 };
 
@@ -29,7 +29,7 @@ type TileAlertRow = {
  * IAC_MANIFEST_LIMIT. Hence this separate, narrower read, keyed on the
  * dashboards the tile alerts actually point at.
  *
- * Bounded by its own `$in`, which is why it needs no `limit`: the ids come
+ * Bounded by its own id list, which is why it needs no `limit`: the ids come
  * from the alerts listing, itself capped at IAC_MANIFEST_LIMIT. `maxTimeMS` is
  * the caller's remaining budget, not a fresh one — this read is sequenced
  * after the manifest's six concurrent listings, and the ceiling is meant to
@@ -79,10 +79,8 @@ export async function unaddressableTileAlertIds({
     tileAlertLookupFailures.add(1);
   };
 
-  // Mongo reads `maxTimeMS: 0` as "no limit", so a spent budget cannot be
-  // passed through — and a floor under it would push the request past the
-  // ceiling this read is meant to stay inside. Skipped rather than run
-  // unbounded, which lands on the same answer an expired read gives.
+  // A spent budget skips the read rather than running it unbounded, which
+  // lands on the same answer an expired read gives.
   if (maxTimeMS <= 0) {
     withhold(
       'No budget left to resolve tile-alert addressability; withholding all',
@@ -104,22 +102,16 @@ export async function unaddressableTileAlertIds({
     }, maxTimeMS);
   });
 
-  // A read the timer gave up on is left to finish into the void: mongoose 6
-  // predates the driver's cancellable timeout, and maxTimeMS caps it only once
-  // it holds a connection — not the pool wait the timer is here for.
+  // A read the timer gave up on is left to finish into the void; the metadata
+  // store's own query timeout (CBT_METADATA_QUERY_TIMEOUT_MS) caps it once it
+  // runs, and the timer is the wall-clock half of the same bound.
   //
   // Handled with `then(ok, err)` rather than try/catch so the row type stays
-  // inferred from the query — a `let` declared ahead of a try block widens to
-  // any and the predicate below stops type-checking against the projection.
-  const read = Dashboard.find(
-    { team: teamId, _id: { $in: dashboardIds } },
-    // Only what isTileAlertUnaddressable reads. Keep in step with it.
-    { provisioned: 1, 'tiles.id': 1, 'tiles.config.name': 1 },
-  )
-    .maxTimeMS(maxTimeMS)
-    .lean()
+  // inferred from the query.
+  const read = getMetadataStore()
+    .dashboards.getMany(teamId.toString(), dashboardIds)
     .then(
-      rows => rows,
+      rows => [...rows.values()],
       (e: unknown) => {
         withhold(
           'Failed to resolve tile-alert addressability; withholding all',

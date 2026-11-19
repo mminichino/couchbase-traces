@@ -12,8 +12,13 @@ import {
   makeTile,
   randomMongoId,
 } from '@/fixtures';
-import { findUser, patchUser, seedUser } from '@/metadata/testing/seed';
-import Webhook, { WebhookService } from '@/models/webhook';
+import { WebhookService } from '@/metadata/schemas/webhook';
+import {
+  findUser,
+  patchUser,
+  seedUser,
+  seedWebhook,
+} from '@/metadata/testing/seed';
 
 describe('me router', () => {
   const server = getServer();
@@ -157,7 +162,7 @@ describe('me router', () => {
 
     it('records the alert task when a saved-search alert is created', async () => {
       const { agent, team, user } = await getLoggedInAgent(server);
-      const webhook = await Webhook.create({
+      const webhook = await seedWebhook({
         name: 'Test Webhook',
         service: WebhookService.Slack,
         url: 'https://hooks.slack.com/test',
@@ -184,7 +189,7 @@ describe('me router', () => {
 
     it('records the alert task when an existing alert is edited (PUT /alerts/:id)', async () => {
       const { agent, team, user } = await getLoggedInAgent(server);
-      const webhook = await Webhook.create({
+      const webhook = await seedWebhook({
         name: 'Test Webhook',
         service: WebhookService.Slack,
         url: 'https://hooks.slack.com/test',
@@ -229,7 +234,7 @@ describe('me router', () => {
 
     it('records the alert task for a dashboard-tile alert (never hits /alerts)', async () => {
       const { agent, team, user } = await getLoggedInAgent(server);
-      const webhook = await Webhook.create({
+      const webhook = await seedWebhook({
         name: 'Test Webhook',
         service: WebhookService.Slack,
         url: 'https://hooks.slack.com/test',

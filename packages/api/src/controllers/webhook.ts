@@ -1,9 +1,8 @@
+import { getMetadataStore } from '@/metadata';
+import type { WebhookChange } from '@/metadata/repos/webhooks';
+import type { IWebhook, WebhookService } from '@/metadata/schemas/webhook';
 import type { ObjectId } from '@/models';
 import Alert from '@/models/alert';
-import Webhook, {
-  type WebhookDocument,
-  WebhookService,
-} from '@/models/webhook';
 import { validateWebhookConfig } from '@/utils/validators';
 
 export interface WebhookInput {
@@ -36,8 +35,7 @@ export async function createWebhook(
 ) {
   validateWebhookConfig({ service, url, body });
 
-  return Webhook.create({
-    team,
+  return getMetadataStore().webhooks.create(team.toString(), {
     name,
     service,
     url,
@@ -50,7 +48,7 @@ export async function createWebhook(
 }
 
 export type UpdateWebhookResult =
-  | { status: 'ok'; webhook: WebhookDocument }
+  | { status: 'ok'; webhook: IWebhook }
   | { status: 'not_found' }
   | { status: 'conflict' };
 
@@ -75,7 +73,8 @@ export async function updateWebhook(
     body,
   }: WebhookInput,
 ): Promise<UpdateWebhookResult> {
-  const existing = await Webhook.findOne({ _id: webhookId, team });
+  const teamId = team.toString();
+  const existing = await getMetadataStore().webhooks.get(teamId, webhookId);
   if (existing == null) {
     return { status: 'not_found' };
   }
@@ -85,59 +84,45 @@ export async function updateWebhook(
   const destinationChanged =
     url !== existing.url || service !== existing.service;
 
-  const setFields: Record<string, unknown> = { name, service, url };
-  const unsetFields: Record<string, 1> = {};
+  const set: WebhookChange['set'] = { name, service, url };
+  const unset: NonNullable<WebhookChange['unset']>[number][] = [];
 
-  if (description === undefined) unsetFields.description = 1;
-  else setFields.description = description;
+  if (description === undefined) unset.push('description');
+  else set.description = description;
 
-  if (titleEmoji === undefined) unsetFields.titleEmoji = 1;
-  else setFields.titleEmoji = titleEmoji;
+  if (titleEmoji === undefined) unset.push('titleEmoji');
+  else set.titleEmoji = titleEmoji;
 
-  if (body === undefined) unsetFields.body = 1;
-  else setFields.body = body;
+  if (body === undefined) unset.push('body');
+  else set.body = body;
 
   if (headers === undefined) {
-    if (destinationChanged) unsetFields.headers = 1;
+    if (destinationChanged) unset.push('headers');
   } else if (Object.keys(headers).length === 0) {
-    unsetFields.headers = 1;
+    unset.push('headers');
   } else {
-    setFields.headers = headers;
+    set.headers = headers;
   }
 
   if (queryParams === undefined) {
-    if (destinationChanged) unsetFields.queryParams = 1;
+    if (destinationChanged) unset.push('queryParams');
   } else if (Object.keys(queryParams).length === 0) {
-    unsetFields.queryParams = 1;
+    unset.push('queryParams');
   } else {
-    setFields.queryParams = queryParams;
+    set.queryParams = queryParams;
   }
 
-  const updateOp: Record<string, unknown> =
-    Object.keys(unsetFields).length > 0
-      ? { $set: setFields, $unset: unsetFields }
-      : { $set: setFields };
-
-  // Pin to the snapshotted url/service so a concurrent destination change
+  // Pinned to the snapshotted url/service so a concurrent destination change
   // yields a conflict rather than attaching a secret to the wrong destination.
-  const webhook = await Webhook.findOneAndUpdate(
-    { _id: webhookId, team, url: existing.url, service: existing.service },
-    updateOp,
-    { new: true },
-  );
-
-  if (webhook == null) {
-    const stillExists = await Webhook.exists({ _id: webhookId, team });
-    return stillExists != null
-      ? { status: 'conflict' }
-      : { status: 'not_found' };
-  }
-
-  return { status: 'ok', webhook };
+  return getMetadataStore().webhooks.update(teamId, webhookId, {
+    set,
+    unset,
+    ifDestination: { url: existing.url, service: existing.service },
+  });
 }
 
 export type DeleteWebhookResult =
-  | { status: 'ok'; webhook: WebhookDocument }
+  | { status: 'ok'; webhook: IWebhook }
   | { status: 'not_found' }
   | { status: 'referenced'; alertCount: number };
 
@@ -159,7 +144,10 @@ export async function deleteWebhook(
     return { status: 'referenced', alertCount };
   }
 
-  const deleted = await Webhook.findOneAndDelete({ _id: webhookId, team });
+  const deleted = await getMetadataStore().webhooks.delete(
+    team.toString(),
+    webhookId,
+  );
   if (deleted == null) {
     return { status: 'not_found' };
   }

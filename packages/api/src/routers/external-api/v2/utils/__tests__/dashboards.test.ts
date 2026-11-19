@@ -11,7 +11,7 @@ import {
 import mongoose from 'mongoose';
 import { z } from 'zod';
 
-import { DashboardDocument } from '@/models/dashboard';
+import { IDashboard as DashboardDocument } from '@/metadata/schemas/dashboard';
 import {
   collectTileContainerRefIssues,
   ConfigTile,

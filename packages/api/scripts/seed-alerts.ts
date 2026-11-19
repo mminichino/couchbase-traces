@@ -25,10 +25,10 @@ import {
   getMetadataStore,
   startMetadataStore,
 } from '@/metadata';
+import type { DashboardInput } from '@/metadata/schemas/dashboard';
+import type { SavedSearchInput } from '@/metadata/schemas/savedSearch';
+import { WebhookService } from '@/metadata/schemas/webhook';
 import Alert, { AlertSource, AlertState } from '@/models/alert';
-import Dashboard from '@/models/dashboard';
-import { SavedSearch } from '@/models/savedSearch';
-import Webhook, { WebhookService } from '@/models/webhook';
 
 // Several schemas rely on empty strings satisfying `required` (an empty
 // `where` is a valid search). src/models/index.ts installs this for the API;
@@ -217,7 +217,11 @@ function makeAlertDoc({
   };
 }
 
-function makeTile(dashboardIndex: number, tileIndex: number, sourceId: string) {
+function makeTile(
+  dashboardIndex: number,
+  tileIndex: number,
+  sourceId: string,
+): DashboardInput['tiles'][number] {
   return {
     id: `seeded-tile-${dashboardIndex}-${tileIndex}`,
     x: (tileIndex % 2) * 6,
@@ -251,9 +255,16 @@ function seededWebhookName(tag: string): string {
 }
 
 async function purge(tag: string) {
+  const store = getMetadataStore();
+  const team = await store.teams.getOnly();
+  if (team == null) {
+    throw new Error('No team found — nothing to purge.');
+  }
   const [dashboards, savedSearches] = await Promise.all([
-    Dashboard.find({ tags: tag }, { _id: 1 }).lean(),
-    SavedSearch.find({ tags: tag }, { _id: 1 }).lean(),
+    store.dashboards.search(team._id, { tags: [tag] }),
+    store.savedSearches
+      .list(team._id)
+      .then(all => all.filter(s => s.tags.includes(tag))),
   ]);
   const dashboardIds = dashboards.map(d => d._id);
   const savedSearchIds = savedSearches.map(s => s._id);
@@ -266,12 +277,18 @@ async function purge(tag: string) {
       { savedSearch: { $in: savedSearchIds } },
     ],
   });
-  await Dashboard.deleteMany({ _id: { $in: dashboardIds } });
-  await SavedSearch.deleteMany({ _id: { $in: savedSearchIds } });
-  const { deletedCount: webhooksDeleted } = await Webhook.deleteMany({
-    service: WebhookService.Generic,
-    name: seededWebhookName(tag),
-  });
+  await Promise.all([
+    ...dashboardIds.map(id => store.dashboards.delete(team._id, id)),
+    ...savedSearchIds.map(id => store.savedSearches.delete(team._id, id)),
+  ]);
+  const seededWebhook = await store.webhooks.findByName(
+    team._id,
+    WebhookService.Generic,
+    seededWebhookName(tag),
+  );
+  const webhooksDeleted = seededWebhook
+    ? Number(await store.webhooks.delete(team._id, seededWebhook._id))
+    : 0;
 
   console.log(
     `Purged ${alertsDeleted} alerts, ${dashboardIds.length} dashboards, ` +
@@ -287,32 +304,33 @@ async function seed(count: number, tag: string) {
       'No team found — register an account in the dev app first, then re-run.',
     );
   }
+  const store = getMetadataStore();
+  // Alerts stay on Mongo until C4, which casts the hex string to an ObjectId.
   const teamId = new mongoose.Types.ObjectId(team._id);
 
-  const source = await mongoose.connection
-    .collection('sources')
-    .findOne({ team: teamId, kind: 'log' });
+  const source = (await store.sources.list(team._id)).find(
+    s => s.kind === 'log',
+  );
   if (source == null) {
-    throw new Error(`No log source found for team ${String(teamId)}.`);
+    throw new Error(`No log source found for team ${team._id}.`);
   }
-  const sourceId = source._id as mongoose.Types.ObjectId;
+  const sourceId = source._id;
 
   const webhookName = seededWebhookName(tag);
-  const webhook = await Webhook.findOneAndUpdate(
-    { team: teamId, service: WebhookService.Generic, name: webhookName },
-    {
-      $setOnInsert: {
-        team: teamId,
-        service: WebhookService.Generic,
-        name: webhookName,
-        url: 'https://example.com/seeded-webhook',
-      },
-    },
-    { new: true, upsert: true },
-  );
+  const webhook =
+    (await store.webhooks.findByName(
+      team._id,
+      WebhookService.Generic,
+      webhookName,
+    )) ??
+    (await store.webhooks.create(team._id, {
+      service: WebhookService.Generic,
+      name: webhookName,
+      url: 'https://example.com/seeded-webhook',
+    }));
   const channel = {
     type: 'webhook' as const,
-    webhookId: String(webhook._id),
+    webhookId: webhook._id,
   };
 
   const savedSearchAlertTotal = Math.ceil(count / 2);
@@ -325,7 +343,7 @@ async function seed(count: number, tag: string) {
 
   // --- Saved searches: up to MAX_ALERTS_PER_SAVED_SEARCH alerts each --------
   const savedSearchPlans: {
-    doc: Record<string, unknown>;
+    doc: SavedSearchInput;
     alerts: number;
     name: string;
     tags: string[];
@@ -343,7 +361,6 @@ async function seed(count: number, tag: string) {
       name,
       tags,
       doc: {
-        team: teamId,
         name,
         select: '',
         where: '',
@@ -354,9 +371,11 @@ async function seed(count: number, tag: string) {
     });
     remaining -= alerts;
   }
-  const savedSearchIds = await insertInChunks(
-    chunk => SavedSearch.insertMany(chunk),
-    savedSearchPlans.map(plan => plan.doc),
+  const savedSearchIds = await Promise.all(
+    savedSearchPlans.map(async plan => {
+      const created = await store.savedSearches.create(team._id, plan.doc);
+      return created._id;
+    }),
   );
 
   const alertDocs: Record<string, unknown>[] = [];
@@ -377,7 +396,7 @@ async function seed(count: number, tag: string) {
 
   // --- Dashboards: up to MAX_TILES_PER_DASHBOARD tiles, <=1 alert per tile --
   const dashboardPlans: {
-    doc: Record<string, unknown>;
+    doc: DashboardInput;
     alertedTiles: { id: string; displayName: string }[];
     tags: string[];
   }[] = [];
@@ -385,7 +404,7 @@ async function seed(count: number, tag: string) {
     const index = dashboardPlans.length;
     const tileCount = randomInt(1, MAX_TILES_PER_DASHBOARD);
     const tiles = Array.from({ length: tileCount }, (_, tileIndex) =>
-      makeTile(index, tileIndex, String(sourceId)),
+      makeTile(index, tileIndex, sourceId),
     );
     // Some tiles are left un-alerted, which is the normal case on a dashboard.
     const alertedCount = Math.min(remaining, randomInt(1, tileCount));
@@ -398,7 +417,6 @@ async function seed(count: number, tag: string) {
       })),
       tags,
       doc: {
-        team: teamId,
         name,
         tiles,
         tags,
@@ -407,9 +425,11 @@ async function seed(count: number, tag: string) {
     });
     remaining -= alertedCount;
   }
-  const dashboardIds = await insertInChunks(
-    chunk => Dashboard.insertMany(chunk),
-    dashboardPlans.map(plan => plan.doc),
+  const dashboardIds = await Promise.all(
+    dashboardPlans.map(async plan => {
+      const created = await store.dashboards.create(team._id, plan.doc);
+      return created._id;
+    }),
   );
 
   for (const [plan, dashboardId] of zip(dashboardPlans, dashboardIds)) {

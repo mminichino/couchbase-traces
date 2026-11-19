@@ -5,13 +5,13 @@ import {
 import _ from 'lodash';
 
 import { IConnection } from '@/metadata/schemas/connection';
+import type { IDashboard } from '@/metadata/schemas/dashboard';
+import type { ISavedSearch } from '@/metadata/schemas/savedSearch';
 import { ISource } from '@/metadata/schemas/source';
+import type { IWebhook } from '@/metadata/schemas/webhook';
 import { ObjectId } from '@/models';
 import { IAlert, IAlertError } from '@/models/alert';
 import { IAlertHistory, IAlertHistoryAnalytics } from '@/models/alertHistory';
-import { IDashboard } from '@/models/dashboard';
-import { ISavedSearch } from '@/models/savedSearch';
-import { IWebhook } from '@/models/webhook';
 import { DataClient } from '@/query';
 import { AggregatedAlertHistory } from '@/tasks/checkAlerts';
 import DefaultAlertProvider from '@/tasks/checkAlerts/providers/default';
