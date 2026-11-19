@@ -4,14 +4,12 @@ import {
   TeamQuerySettingsUpdate,
 } from '@couchbase-traces/common-utils/dist/types';
 import pick from 'lodash/pick';
-import mongoose from 'mongoose';
 import { v4 as uuidv4 } from 'uuid';
 
 import * as config from '@/config';
 import { getMetadataStore } from '@/metadata';
 import type { CouchbaseTagKind } from '@/metadata/repos/tags';
 import type { ITeam } from '@/metadata/schemas/team';
-import Alert from '@/models/alert';
 
 export type { ITeam } from '@/metadata/schemas/team';
 
@@ -113,11 +111,9 @@ export function updateTeamQuerySettings(
 
 /**
  * Distinct tags applied to the team's entities. Scoped to one kind of entity
- * when `resourceType` is given. Dashboards and saved searches come from the
- * metadata store; alerts stay on Mongo until C4.
+ * when `resourceType` is given.
  */
 export async function getTags(teamId: IdLike, resourceType?: TagResourceType) {
-  const team = teamId.toString();
   if (
     resourceType != null &&
     !TagResourceTypeSchema.safeParse(resourceType).success
@@ -125,24 +121,7 @@ export async function getTags(teamId: IdLike, resourceType?: TagResourceType) {
     throw new Error(`${resourceType} is not a valid TagResourceType`);
   }
 
-  const wantsAlerts = resourceType == null || resourceType === 'alert';
   const kinds: CouchbaseTagKind[] =
-    resourceType == null ? ['dashboard', 'savedSearch'] : [];
-  if (resourceType === 'dashboard' || resourceType === 'savedSearch') {
-    kinds.push(resourceType);
-  }
-
-  const [stored, alertTags] = await Promise.all([
-    kinds.length > 0 ? getMetadataStore().tags.distinct(team, kinds) : [],
-    wantsAlerts
-      ? Alert.aggregate<{ _id: string }>([
-          // Aggregation does not cast like queries do.
-          { $match: { team: new mongoose.Types.ObjectId(team) } },
-          { $unwind: '$tags' },
-          { $group: { _id: '$tags' } },
-        ])
-      : [],
-  ]);
-
-  return [...new Set([...stored, ...alertTags.map(t => t._id)])];
+    resourceType == null ? ['dashboard', 'savedSearch', 'alert'] : [resourceType];
+  return getMetadataStore().tags.distinct(teamId.toString(), kinds);
 }

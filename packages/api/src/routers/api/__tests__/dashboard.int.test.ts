@@ -34,7 +34,7 @@ import {
   listPresetFilters,
   seedPresetFilter,
 } from '@/metadata/testing/seedContent';
-import Alert, { AlertSource } from '@/models/alert';
+import Alert, { AlertSource } from '@/metadata/schemas/alert';
 
 const MOCK_DASHBOARD = {
   name: 'Test Dashboard',

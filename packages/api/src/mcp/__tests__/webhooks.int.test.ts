@@ -10,7 +10,7 @@ import {
   seedTeam,
   seedWebhook,
 } from '@/metadata/testing/seed';
-import Alert from '@/models/alert';
+import Alert from '@/metadata/schemas/alert';
 
 import { callTool, createTestClient, getFirstText } from './mcpTestUtils';
 

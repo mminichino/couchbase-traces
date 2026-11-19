@@ -10,8 +10,8 @@ import {
 } from '@/controllers/alertHistory';
 import { clearDBCollections, closeDB, connectDB } from '@/fixtures';
 import { seedTeam } from '@/metadata/testing/seed';
-import Alert, { AlertState } from '@/models/alert';
-import AlertHistory from '@/models/alertHistory';
+import Alert, { AlertState } from '@/metadata/schemas/alert';
+import AlertHistory from '@/metadata/schemas/alertHistory';
 
 describe('alertHistory controller', () => {
   beforeAll(async () => {

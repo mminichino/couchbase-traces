@@ -80,8 +80,11 @@ describe('TeamRepository', () => {
 });
 
 describe('UserRepository', () => {
-  const register = (store: ReturnType<typeof setup>['store'], team: string) =>
-    store.users.register({ email: 'Fake@Example.com', team }, PASSWORD);
+  const register = (
+    store: ReturnType<typeof setup>['store'],
+    team: string,
+    email = 'Fake@Example.com',
+  ) => store.users.register({ email, team }, PASSWORD);
 
   it('registers with a lowercased email and no secret on the result', async () => {
     const { store } = setup();
@@ -238,19 +241,26 @@ describe('UserRepository', () => {
     expect((await store.users.getById(sa._id))?.lastUsedAt).toEqual(t0);
   });
 
-  it('removes and restores a member, freeing then reclaiming the email', async () => {
+  it('removes a member, freeing the email, and refuses the last person', async () => {
     const { store } = setup();
     const team = await store.teams.createFirst({ name: 'A' });
-    const user = await register(store, team._id);
-    expect(await store.users.removeMember('0'.repeat(24), user._id)).toBeNull();
-    const removed = await store.users.removeMember(team._id, user._id);
-    expect(removed?.id).toBe(user._id);
-    expect(await store.users.getByEmail(user.email)).toBeNull();
-    await store.users.restore(removed!);
-    await store.users.restore(removed!);
-    const back = await store.users.getByEmailWithSecret(user.email);
-    expect(back?._id).toBe(user._id);
-    expect(back?.hash).toBeTruthy();
+    const first = await register(store, team._id);
+    const second = await register(store, team._id, 'second@example.com');
+    const other = '0'.repeat(24);
+    expect(await store.users.removeMember(other, second._id, first._id)).toBe(
+      'not_found',
+    );
+    expect(
+      await store.users.removeMember(team._id, second._id, first._id),
+    ).toBe('deleted');
+    expect(await store.users.getByEmail(second.email)).toBeNull();
+    expect(
+      await store.users.removeMember(team._id, second._id, first._id),
+    ).toBe('not_found');
+    expect(await store.users.removeMember(team._id, first._id, first._id)).toBe(
+      'last_member',
+    );
+    expect(await store.users.getById(first._id)).not.toBeNull();
   });
 });
 

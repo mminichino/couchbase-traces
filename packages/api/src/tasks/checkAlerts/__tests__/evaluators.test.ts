@@ -4,8 +4,8 @@ import {
 } from '@couchbase-traces/common-utils/dist/types';
 import { Types } from 'mongoose';
 
-import { AlertState, IAlertError } from '@/models/alert';
-import AlertHistory from '@/models/alertHistory';
+import { AlertState, IAlertError } from '@/metadata/schemas/alert';
+import AlertHistory from '@/metadata/schemas/alertHistory';
 import {
   getAlertWindowStart,
   getConsecutiveWindowHistories,

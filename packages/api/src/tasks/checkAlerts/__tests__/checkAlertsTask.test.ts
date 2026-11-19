@@ -5,7 +5,7 @@ import { newId } from '@/metadata/ids';
 import { ISource } from '@/metadata/schemas/source';
 import { IWebhook } from '@/metadata/schemas/webhook';
 import { ObjectId } from '@/models';
-import { AlertSource, AlertThresholdType, IAlert } from '@/models/alert';
+import { AlertSource, AlertThresholdType, IAlert } from '@/metadata/schemas/alert';
 import { DataClient } from '@/query';
 import * as checkAlerts from '@/tasks/checkAlerts';
 import CheckAlertTask from '@/tasks/checkAlerts';

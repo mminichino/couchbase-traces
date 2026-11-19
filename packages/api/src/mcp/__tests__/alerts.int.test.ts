@@ -22,7 +22,7 @@ import {
   seedSource,
   seedWebhook,
 } from '@/metadata/testing/seed';
-import Alert, { AlertSource, AlertState } from '@/models/alert';
+import Alert, { AlertSource, AlertState } from '@/metadata/schemas/alert';
 
 import { callTool, createTestClient, getFirstText } from './mcpTestUtils';
 

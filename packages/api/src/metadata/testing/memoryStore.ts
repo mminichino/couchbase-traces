@@ -1,7 +1,9 @@
 import { KvLockService } from '@/metadata/lock';
 import { createRepositories } from '@/metadata/repos';
 import { MemoryFind } from '@/metadata/testing/memoryFind';
+import { MemoryAlertQueries } from '@/metadata/testing/memoryAlertQueries';
 import { MemoryKv } from '@/metadata/testing/memoryKv';
+import { MemoryTransactions } from '@/metadata/testing/memoryTx';
 import type { MetadataReadiness, MetadataStore } from '@/metadata/types';
 
 export type MemoryStore = MetadataStore & { kv: MemoryKv; reset(): void };
@@ -14,11 +16,15 @@ export type MemoryStore = MetadataStore & { kv: MemoryKv; reset(): void };
 export function createMemoryStore(o: { now?: () => Date } = {}): MemoryStore {
   const kv = new MemoryKv(o.now);
   const find = new MemoryFind(kv);
+  const tx = new MemoryTransactions(kv, find);
+  const alertQueries = new MemoryAlertQueries(kv);
   let state: MetadataReadiness = { ready: true, state: 'ready' };
   return {
     kv,
     find,
-    ...createRepositories({ kv, find, now: o.now }),
+    tx,
+    alertQueries,
+    ...createRepositories({ kv, find, tx, queries: alertQueries, now: o.now }),
     locks: new KvLockService(kv, o.now),
     readiness: () => state,
     close: async () => {

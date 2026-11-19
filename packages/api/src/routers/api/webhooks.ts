@@ -16,7 +16,7 @@ import { createWebhook, deleteWebhook } from '@/controllers/webhook';
 import { getMetadataStore } from '@/metadata';
 import { isValidId } from '@/metadata/ids';
 import { type IWebhook, WebhookService } from '@/metadata/schemas/webhook';
-import { AlertSource, AlertState } from '@/models/alert';
+import { AlertSource, AlertState } from '@/metadata/schemas/alert';
 import {
   ALERT_STATUS_BY_STATE,
   ALERT_TYPE_BY_SOURCE,

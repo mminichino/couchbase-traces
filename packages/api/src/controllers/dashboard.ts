@@ -23,8 +23,7 @@ import {
 } from '@/controllers/userDisplay';
 import { getMetadataStore } from '@/metadata';
 import type { IDashboard } from '@/metadata/schemas/dashboard';
-import type { ObjectId } from '@/models';
-import type { AlertDocument, IAlert } from '@/models/alert';
+import type { IAlert } from '@/metadata/schemas/alert';
 import { resolveAlertDisplayFields } from '@/utils/alerts';
 
 // Drop alerts on tiles the alert checker cannot evaluate (e.g. PromQL), so
@@ -48,7 +47,7 @@ function pickAlertsByTile(tiles: Tile[]) {
 // Completes only when a dashboard has a tile (an empty shell isn't charting).
 // Shared by every dashboard write path (controllers, external REST v2, MCP).
 export function recordDashboardOnboardingIfHasTiles(
-  userId: string | ObjectId | undefined | null,
+  userId: string | undefined | null,
   tiles: { length: number } | null | undefined,
 ) {
   if ((tiles?.length ?? 0) > 0) {
@@ -83,7 +82,7 @@ function healLegacyDashboardTileColors<T>(dashboard: T): T {
 }
 
 type TileForAlertSync = Pick<Tile, 'id'> & {
-  config?: Pick<SavedChartConfig, 'alert'> | { alert?: IAlert | AlertDocument };
+  config?: Pick<SavedChartConfig, 'alert'> | { alert?: IAlert };
 };
 
 function extractTileAlertData(tiles: TileForAlertSync[]): {
@@ -99,10 +98,10 @@ function extractTileAlertData(tiles: TileForAlertSync[]): {
 
 async function syncDashboardAlerts(
   dashboard: Pick<IDashboard, '_id' | 'name' | 'tags' | 'tiles'>,
-  teamId: string | ObjectId,
+  teamId: string,
   oldTiles: TileForAlertSync[],
   newTiles: Tile[],
-  userId?: string | ObjectId,
+  userId?: string,
 ): Promise<void> {
   const dashboardId = dashboard._id.toString();
   const { tileIds: oldTileIds, tileIdsWithAlerts: oldTileIdsWithAlerts } =
@@ -151,7 +150,7 @@ async function syncDashboardAlerts(
  * values for alerts written before the fields existed.
  */
 function withResolvedDisplayFields(
-  alert: AlertDocument | undefined,
+  alert: IAlert | undefined,
   dashboard: Pick<IDashboard, 'name' | 'tags' | 'tiles'>,
   users: UserDisplays,
 ) {
@@ -159,12 +158,12 @@ function withResolvedDisplayFields(
     return undefined;
   }
   return {
-    ...applyUserDisplays(users, alert.toJSON(), ['createdBy']),
+    ...applyUserDisplays(users, alert, ['createdBy']),
     ...resolveAlertDisplayFields(alert, { dashboard }),
   };
 }
 
-export async function getDashboards(teamId: string | ObjectId) {
+export async function getDashboards(teamId: string) {
   const [_dashboards, alerts] = await Promise.all([
     getMetadataStore().dashboards.list(teamId.toString()),
     getTeamDashboardAlertsByDashboardAndTile(teamId),
@@ -196,7 +195,7 @@ export async function getDashboards(teamId: string | ObjectId) {
 
 export async function getDashboard(
   dashboardId: string,
-  teamId: string | ObjectId,
+  teamId: string,
 ) {
   const [_dashboard, alerts] = await Promise.all([
     getMetadataStore().dashboards.get(teamId.toString(), dashboardId),
@@ -225,9 +224,9 @@ export async function getDashboard(
 }
 
 export async function createDashboard(
-  teamId: string | ObjectId,
+  teamId: string,
   dashboard: z.infer<typeof DashboardWithoutIdSchema>,
-  userId?: string | ObjectId,
+  userId?: string,
 ) {
   const newDashboard = await getMetadataStore().dashboards.create(
     teamId.toString(),
@@ -249,22 +248,20 @@ export async function createDashboard(
 
 export async function deleteDashboard(
   dashboardId: string,
-  teamId: string | ObjectId,
+  teamId: string,
 ) {
-  const dashboard = await getMetadataStore().dashboards.delete(
+  // One transaction removes the dashboard and every alert on its tiles.
+  await getMetadataStore().dashboards.deleteWithAlerts(
     teamId.toString(),
     dashboardId,
   );
-  if (dashboard) {
-    await deleteDashboardAlerts(dashboardId, teamId);
-  }
 }
 
 export async function updateDashboard(
   dashboardId: string,
-  teamId: string | ObjectId,
+  teamId: string,
   updates: Partial<z.infer<typeof DashboardWithoutIdSchema>>,
-  userId?: string | ObjectId,
+  userId?: string,
 ) {
   // Defense-in-depth: callers pass spread objects into the update below.
   // A smuggled `team`/`createdBy` would move the document between tenants or

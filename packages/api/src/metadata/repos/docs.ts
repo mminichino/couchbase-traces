@@ -8,12 +8,22 @@ import {
 import type {
   ExpiryOptions,
   MetaCollection,
+  MetaAlertQueries,
   MetaFind,
   MetaKv,
+  MetaTransactions,
 } from '@/metadata/types';
 import logger from '@/utils/logger';
 
-export type RepoDeps = { kv: MetaKv; find: MetaFind; now?: () => Date };
+export type RepoDeps = {
+  kv: MetaKv;
+  find: MetaFind;
+  /** Multi-document atomic writes (alerts with their parents, member delete). */
+  tx: MetaTransactions;
+  /** Grouping and window-function reads over alerts and their history. */
+  queries: MetaAlertQueries;
+  now?: () => Date;
+};
 
 const MUTATE_ATTEMPTS = 3;
 

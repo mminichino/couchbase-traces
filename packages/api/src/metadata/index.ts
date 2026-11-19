@@ -81,6 +81,8 @@ export const MIGRATED_COLLECTIONS = [
   'saved_searches',
   'dashboards',
   'webhooks',
+  'alerts',
+  'alert_history',
   'favorites',
   'pinned_filters',
   'preset_dashboard_filters',

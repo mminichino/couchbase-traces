@@ -59,6 +59,12 @@ export const WEBHOOK_HOSTNAME_ALLOWLIST = env.WEBHOOK_HOSTNAME_ALLOWLIST ?? '';
 export const RUN_SCHEDULED_TASKS_EXTERNALLY =
   env.RUN_SCHEDULED_TASKS_EXTERNALLY === 'true';
 
+// Alert scheduler lease (D9): on unless explicitly disabled. The tick is the
+// interval between scheduled runs; the lease TTL is twice that.
+export const ALERT_SCHEDULER_LEASE =
+  env.CBT_ALERT_SCHEDULER_LEASE !== 'false';
+export const ALERT_TICK_MS = Number.parseInt(env.CBT_ALERT_TICK_MS ?? '60000');
+
 // 32-byte key (base64 or hex). Setting it is what turns on encryption of
 // stored third-party tokens; unset means they are stored in plain text. See
 // utils/tokenEncryption.ts.

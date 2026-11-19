@@ -1,4 +1,4 @@
-import { AlertChannel, getAlertChannels } from '@/models/alert';
+import { AlertChannel, getAlertChannels } from '@/metadata/schemas/alert';
 
 // A channel type this repo doesn't define -- e.g. a downstream fork's email
 // channel carrying an `emailRecipients` array. `value: any` (rather than an

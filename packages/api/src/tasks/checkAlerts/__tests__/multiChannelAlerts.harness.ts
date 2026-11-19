@@ -9,7 +9,7 @@ import {
   seedSource,
   seedWebhook,
 } from '@/metadata/testing/seed';
-import Alert from '@/models/alert';
+import Alert from '@/metadata/schemas/alert';
 import { DataClient } from '@/query';
 import { processAlert } from '@/tasks/checkAlerts';
 import { AlertTaskType } from '@/tasks/checkAlerts/providers';

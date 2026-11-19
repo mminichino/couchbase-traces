@@ -25,8 +25,8 @@ import {
   seedWebhook,
 } from '@/metadata/testing/seed';
 import { toObjectId } from '@/models';
-import { AlertSource, AlertState, AlertThresholdType } from '@/models/alert';
-import Alert from '@/models/alert';
+import { AlertSource, AlertState, AlertThresholdType } from '@/metadata/schemas/alert';
+import Alert from '@/metadata/schemas/alert';
 
 // Constants
 const ALERTS_BASE_URL = '/api/v2/alerts';

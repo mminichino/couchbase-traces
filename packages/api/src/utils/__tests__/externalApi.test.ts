@@ -6,7 +6,7 @@ import {
   AlertSource,
   AlertState,
   AlertThresholdType,
-} from '@/models/alert';
+} from '@/metadata/schemas/alert';
 import { translateAlertDocumentToExternalAlertWithChartConfig } from '@/routers/external-api/v2/utils/alertChartConfig';
 import { translateAlertDocumentToExternalAlert } from '@/utils/externalApi';
 

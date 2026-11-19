@@ -1,11 +1,10 @@
 import { MAX_ALERT_DISPLAY_NAME_LENGTH } from '@couchbase-traces/common-utils/dist/types';
-import { escapeRegExp } from 'lodash';
-import type { FilterQuery } from 'mongoose';
 import { z } from 'zod';
 
 import { hydrateAlertRefs } from '@/controllers/alertRefs';
-import type { ObjectId } from '@/models';
-import Alert, { AlertSource, AlertState, IAlert } from '@/models/alert';
+import { getMetadataStore } from '@/metadata';
+import type { AlertsCursor, AlertsPageFilter } from '@/metadata/repos/alerts';
+import { AlertSource, AlertState, type IAlert } from '@/metadata/schemas/alert';
 import { decodeCursor, encodeCursor } from '@/utils/pagination';
 import { objectIdSchema, stringListQueryParam, tagsSchema } from '@/utils/zod';
 
@@ -90,119 +89,84 @@ export const alertsPageQuerySchema = z
 
 export type AlertsPageParams = z.infer<typeof alertsPageQuerySchema>;
 
-/** Mongo filter for the shared filter parameters, scoped to the team. */
-export function buildAlertsFilter(
-  teamId: ObjectId | string,
-  params: AlertsFilterParams,
-): FilterQuery<IAlert> {
-  const filter: FilterQuery<IAlert> = { team: teamId };
-
-  if (params.tag != null) {
-    filter.tags = { $in: params.tag };
-  }
-
-  if (params.state != null) {
-    // OK is the default value when state is missing from the document, so we include
-    // documents without the field as well when filtering for OK state alerts.
-    filter.state = inOrMissing(params.state, AlertState.OK);
-  }
-
-  if (params.source != null) {
-    // SAVED_SEARCH is the default value when source is missing from the document, so we include
-    // documents without the field as well when filtering for saved-search alerts.
-    filter.source = inOrMissing(params.source, AlertSource.SAVED_SEARCH);
-  }
-
-  if (params.search) {
-    // Case-insensitive substring.
-    filter.displayName = {
-      $regex: escapeRegExp(params.search),
-      $options: 'i',
-    };
-  }
-
-  return filter;
-}
-
 /**
- * Mongo filters for a single page.
+ * Repository filter for the shared filter parameters. A missing state counts
+ * as OK and a missing source as saved-search (the schema defaults); the
+ * query layer applies both.
  */
-export function buildAlertsPageFilter(
-  teamId: ObjectId | string,
-  params: AlertsPageParams,
-): FilterQuery<IAlert> {
-  const filter = buildAlertsFilter(teamId, params);
-
-  if (params.createdBy != null) {
-    filter.createdBy = params.createdBy;
-  }
-
-  const cursor = params.cursor
-    ? decodeCursor(params.cursor, alertsPageCursorSchema)
-    : null;
-  if (cursor != null) {
-    applyCursor(filter, cursor);
-  }
-
-  return filter;
-}
-
-function inOrMissing<T extends string>(values: T[], schemaDefault: T) {
+export function buildAlertsFilter(params: AlertsFilterParams): AlertsPageFilter {
   return {
-    $in: values.includes(schemaDefault) ? [...values, null] : values,
+    ...(params.tag != null && { tags: params.tag }),
+    ...(params.state != null && { states: params.state }),
+    ...(params.source != null && { sources: params.source }),
+    ...(params.search && { search: params.search }),
   };
 }
 
-/**
- * Filters for documents strictly after `cursor` in `{displayName: 1, _id: 1}` order.
- *
- * Null and missing displayNames sort first as one block, so which predicate applies
- * depends on whether the page ended inside that block.
- */
-function applyCursor(
-  filter: FilterQuery<IAlert>,
-  cursor: AlertsPageCursor,
-): void {
-  // When the previous page ended inside the null block of displayNames,
-  // the next row may be another null displayName or a named one.
-  if (cursor.n === null) {
-    filter.$or = [
-      { displayName: null, _id: { $gt: cursor.id } },
-      { displayName: { $gte: '' } },
-    ];
-    return;
-  }
-
-  // Otherwise all remaining displayNames are non-null strings, so we find documents
-  // with displayNames after the cursor, or displayName equal to the cursor but with
-  // a higher _id.
-  filter.$or = [
-    { displayName: { $gt: cursor.n } },
-    { displayName: cursor.n, _id: { $gt: cursor.id } },
-  ];
+/** Filter plus keyset position for a single page. */
+export function buildAlertsPageFilter(params: AlertsPageParams): {
+  filter: AlertsPageFilter;
+  after?: AlertsCursor;
+} {
+  const filter: AlertsPageFilter = {
+    ...buildAlertsFilter(params),
+    ...(params.createdBy != null && { createdBy: params.createdBy }),
+  };
+  const cursor = params.cursor
+    ? decodeCursor(params.cursor, alertsPageCursorSchema)
+    : null;
+  return cursor == null ? { filter } : { filter, after: { name: cursor.n, id: cursor.id } };
 }
 
-export async function getAlertsPage(
-  teamId: ObjectId | string,
-  params: AlertsPageParams,
-) {
+export async function getAlertsPage(teamId: string, params: AlertsPageParams) {
   const { limit } = params;
-  const query = Alert.find(buildAlertsPageFilter(teamId, params)).sort({
-    displayName: 1,
-    _id: 1,
-  });
-
+  const { filter, after } = buildAlertsPageFilter(params);
   // One row past the page answers "is there more?" without a second count
   // query. Omitting limit keeps the legacy unpaginated response.
-  const found = limit == null ? await query : await query.limit(limit + 1);
-  const docs = await hydrateAlertRefs(teamId, found);
-  const hasMore = limit != null && docs.length > limit;
-  const data = hasMore ? docs.slice(0, limit) : docs;
+  const { items, hasMore } = await getMetadataStore().alerts.page(
+    teamId,
+    filter,
+    { after, limit },
+  );
+  const data = await hydrateAlertRefs(teamId, items);
   const last = data.at(-1);
   const nextCursor =
     hasMore && last != null
-      ? encodeCursor({ n: last.displayName ?? null, id: last._id.toString() })
+      ? encodeCursor({ n: last.displayName ?? null, id: last._id })
       : undefined;
 
   return { data, hasMore, nextCursor };
+}
+
+/** Rows fetched per keyset step when draining a filtered list. */
+const DRAIN_PAGE_SIZE = 500;
+
+/**
+ * Offset/limit window over the filtered alerts in id order (the v2 list), with
+ * the total match count. Drains the keyset pages rather than paging by offset.
+ */
+export async function listAlertsWindow(
+  teamId: string,
+  params: AlertsFilterParams,
+  { limit, offset }: { limit: number; offset: number },
+) {
+  const alerts = getMetadataStore().alerts;
+  const filter = buildAlertsFilter(params);
+  const all: IAlert[] = [];
+  let after: AlertsCursor | undefined;
+  for (;;) {
+    const page = await alerts.page(teamId, filter, {
+      after,
+      limit: DRAIN_PAGE_SIZE,
+    });
+    all.push(...page.items);
+    const last = page.items.at(-1);
+    if (!page.hasMore || last == null) break;
+    after = { name: last.displayName ?? null, id: last._id };
+  }
+  all.sort((a, b) => a._id.localeCompare(b._id));
+  return {
+    total: all.length,
+    data: await hydrateAlertRefs(teamId, all.slice(offset, offset + limit)),
+  };
 }

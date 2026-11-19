@@ -4,6 +4,7 @@ import { DuplicateKeyError } from '@/metadata/errors';
 import { type Id, newId } from '@/metadata/ids';
 import { type RepoDeps } from '@/metadata/repos/docs';
 import { definedOnly, TeamDocs } from '@/metadata/repos/teamDocs';
+import { AlertSource } from '@/metadata/schemas/alert';
 import { toDate } from '@/metadata/schemas/common';
 import {
   type DashboardDoc,
@@ -102,7 +103,20 @@ export class DashboardRepository extends TeamDocs<DashboardDoc, IDashboard> {
   }
 
   async delete(team: Id, rawId: Id): Promise<IDashboard | null> {
-    const removed = await super.delete(team, rawId);
+    return this.release(team, await super.delete(team, rawId));
+  }
+
+  /** Deletes the dashboard together with its tile alerts, atomically. */
+  async deleteWithAlerts(team: Id, rawId: Id): Promise<IDashboard | null> {
+    const id = this.idOf(rawId);
+    const r = await this.deleteCascading(team, id, {
+      dashboard: id ?? '',
+      source: AlertSource.TILE,
+    });
+    return this.release(team, r && toDashboard(r.id, r.doc));
+  }
+
+  private async release(team: Id, removed: IDashboard | null) {
     if (removed?.provisioned) {
       await releaseUnique(
         this.kv,

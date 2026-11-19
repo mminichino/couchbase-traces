@@ -31,7 +31,7 @@ import {
   seedWebhook,
   setDashboardPaths,
 } from '@/metadata/testing/seed';
-import Alert, { AlertSource, AlertThresholdType } from '@/models/alert';
+import Alert, { AlertSource, AlertThresholdType } from '@/metadata/schemas/alert';
 import {
   ExternalDashboardTile,
   ExternalDashboardTileWithId,

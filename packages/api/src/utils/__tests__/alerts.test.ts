@@ -6,7 +6,7 @@ import {
   tagsSchema,
 } from '@couchbase-traces/common-utils/dist/types';
 
-import { AlertSource } from '@/models/alert';
+import { AlertSource } from '@/metadata/schemas/alert';
 import {
   alertConfigHasGroupBy,
   deriveAlertDisplayFields,

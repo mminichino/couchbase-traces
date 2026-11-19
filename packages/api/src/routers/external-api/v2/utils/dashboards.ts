@@ -1910,7 +1910,7 @@ export async function cleanupDashboardAlerts({
   existingTileIds,
 }: {
   dashboardId: string;
-  teamId: string | mongoose.Types.ObjectId;
+  teamId: string;
   internalTiles: DashboardDocument['tiles'];
   existingTileIds: Set<string>;
 }) {

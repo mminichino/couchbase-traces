@@ -27,7 +27,7 @@ import {
 } from '@/metadata';
 import { newId } from '@/metadata/ids';
 import { mongooseConnection } from '@/models';
-import { AlertInterval, AlertSource } from '@/models/alert';
+import { AlertInterval, AlertSource } from '@/metadata/schemas/alert';
 import Server from '@/server';
 import logger from '@/utils/logger';
 import { MetricModel } from '@/utils/logParser';

@@ -5,7 +5,6 @@ jest.mock('@/api-app', () => ({ __esModule: true, default: jest.fn() }));
 jest.mock('@/controllers/team', () => ({
   LOCAL_APP_TEAM: { _id: { toString: () => 'local-team' } },
 }));
-jest.mock('@/migrations', () => ({ runStartupMigrations: jest.fn() }));
 jest.mock('@/metadata', () => ({
   assertMetadataConfig: jest.fn(),
   startMetadataStore: jest.fn(),

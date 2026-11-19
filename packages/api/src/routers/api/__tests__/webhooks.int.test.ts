@@ -8,7 +8,7 @@ import {
   listWebhooks,
   seedWebhook,
 } from '@/metadata/testing/seed';
-import Alert from '@/models/alert';
+import Alert from '@/metadata/schemas/alert';
 import * as transports from '@/tasks/checkAlerts/transports';
 import { buildWebhookTemplateVariables } from '@/tasks/checkAlerts/transports/generic';
 import type { Message } from '@/tasks/checkAlerts/transports/types';

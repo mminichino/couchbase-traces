@@ -15,7 +15,7 @@ import {
   seedWebhook,
 } from '@/metadata/testing/seed';
 import { toObjectId } from '@/models';
-import Alert, { AlertSource, AlertState } from '@/models/alert';
+import Alert, { AlertSource, AlertState } from '@/metadata/schemas/alert';
 
 describe('iac router', () => {
   const server = getServer();

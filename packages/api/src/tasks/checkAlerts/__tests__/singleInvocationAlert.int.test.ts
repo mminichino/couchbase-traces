@@ -17,8 +17,8 @@ import {
   seedSource,
   seedWebhook,
 } from '@/metadata/testing/seed';
-import Alert, { AlertSource, AlertThresholdType } from '@/models/alert';
-import AlertHistory from '@/models/alertHistory';
+import Alert, { AlertSource, AlertThresholdType } from '@/metadata/schemas/alert';
+import AlertHistory from '@/metadata/schemas/alertHistory';
 import { DataClient } from '@/query';
 import { processAlert } from '@/tasks/checkAlerts';
 import {

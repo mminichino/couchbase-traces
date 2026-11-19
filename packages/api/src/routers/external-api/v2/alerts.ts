@@ -3,16 +3,14 @@ import _ from 'lodash';
 import { z } from 'zod';
 
 import {
-  countAlerts,
   createAlert,
   deleteAlert,
-  getAlertsWithDisplayRefs,
   getAlertWithDisplayRefs,
   updateAlert,
   validateAlertInput,
 } from '@/controllers/alerts';
-import { alertsFilterShape, buildAlertsFilter } from '@/controllers/alertsPage';
-import { AlertSource } from '@/models/alert';
+import { alertsFilterShape, listAlertsWindow } from '@/controllers/alertsPage';
+import { AlertSource } from '@/metadata/schemas/alert';
 import {
   convertExternalAlertChartConfigToInternal,
   translateAlertDocumentToExternalAlertWithChartConfig,
@@ -681,11 +679,11 @@ router.get(
       const { limit, offset, ...filterParams } = listAlertsQuerySchema.parse(
         req.query ?? {},
       );
-      const filter = buildAlertsFilter(teamId, filterParams);
-      const [alerts, total] = await Promise.all([
-        getAlertsWithDisplayRefs(teamId, { limit, offset }, filter),
-        countAlerts(teamId, filter),
-      ]);
+      const { data: alerts, total } = await listAlertsWindow(
+        teamId,
+        filterParams,
+        { limit, offset },
+      );
 
       // Surface the full count at the HTTP layer too, so a client that reads
       // headers but not the `meta` body can still detect truncation.
@@ -988,8 +986,8 @@ router.delete(
         return res.status(403).json({ message: 'Forbidden' });
       }
 
-      const { deletedCount } = await deleteAlert(alertId, teamId);
-      if (deletedCount === 0) {
+      const deleted = await deleteAlert(alertId, teamId);
+      if (deleted == null) {
         return res.status(404).json({ message: 'Alert not found' });
       }
       res.json({});

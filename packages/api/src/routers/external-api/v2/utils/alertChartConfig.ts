@@ -5,7 +5,7 @@ import {
 } from '@couchbase-traces/common-utils/dist/types';
 import { omit } from 'lodash';
 
-import { AlertSource, IAlert } from '@/models/alert';
+import { AlertSource, IAlert } from '@/metadata/schemas/alert';
 import {
   ExternalAlert,
   TranslatableAlertDocument,
@@ -399,8 +399,7 @@ export function translateAlertDocumentToExternalAlertWithChartConfig(
   alert: TranslatableAlertDocument,
 ): ExternalAlert {
   const external = translateAlertDocumentToExternalAlert(alert);
-  const alertObj: Pick<IAlert, 'source' | 'chartConfig'> =
-    'toJSON' in alert ? alert.toJSON() : alert;
+  const alertObj: Pick<IAlert, 'source' | 'chartConfig'> = alert;
   const chartConfig =
     alertObj.source === AlertSource.INLINE && alertObj.chartConfig != null
       ? convertAlertChartConfigToExternal(alertObj.chartConfig)

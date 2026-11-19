@@ -18,7 +18,7 @@ function rank(v: unknown): number {
   return 5;
 }
 
-function compare(a: unknown, b: unknown): number {
+export function compare(a: unknown, b: unknown): number {
   const r = rank(a) - rank(b);
   if (r !== 0) return r;
   if (typeof a === 'number' && typeof b === 'number') return a - b;
@@ -33,7 +33,7 @@ function compare(a: unknown, b: unknown): number {
   return 0;
 }
 
-function field(value: unknown, name: string): unknown {
+export function field(value: unknown, name: string): unknown {
   if (typeof value !== 'object' || value === null) return undefined;
   return new Map(Object.entries(value)).get(name);
 }

@@ -5,13 +5,18 @@ import {
   AlertTransition,
 } from '@couchbase-traces/common-utils/dist/types';
 import PQueue from '@esm2cjs/p-queue';
-import { ObjectId } from 'mongodb';
 
-import { AlertState, IAlertError } from '@/models/alert';
-import AlertHistory, {
+import { getMetadataStore } from '@/metadata';
+import type { Id } from '@/metadata/ids';
+import { AlertState, IAlertError } from '@/metadata/schemas/alert';
+import type {
+  DateRange,
+  EvaluationWindowRow,
+  GroupedAlertHistory,
   IAlertHistory,
   IAlertHistoryAnalytics,
-} from '@/models/alertHistory';
+  StructuredWindow,
+} from '@/metadata/schemas/alertHistory';
 
 // Re-exported for API-side consumers/tests; the app imports it from
 // common-utils to explain the cap in the UI.
@@ -23,14 +28,6 @@ export const ALERT_HISTORY_QUERY_CONCURRENCY = 20;
 /** Alert evaluation interval in milliseconds. */
 const intervalToMs = (interval: AlertInterval): number =>
   ALERT_INTERVAL_TO_MINUTES[interval] * 60 * 1000;
-
-type GroupedAlertHistory = {
-  _id: Date;
-  states: string[];
-  counts: number;
-  lastValues: IAlertHistory['lastValues'][];
-  errors: IAlertError[][];
-};
 
 function groupStateToOverallState(states: string[]): AlertState {
   if (states.includes(AlertState.ALERT)) {
@@ -70,13 +67,11 @@ function mapGroupedHistories(
   groupedHistories: GroupedAlertHistory[],
 ): Omit<IAlertHistory, 'alert'>[] {
   return groupedHistories.map(group => {
-    // $push skips documents where the field is missing, but be defensive
-    // about nulls in case of engine differences (e.g. DocumentDB).
     const errors = dedupeErrors(
       (group.errors ?? []).flat().filter((e): e is IAlertError => e != null),
     );
     return {
-      createdAt: group._id,
+      createdAt: group.createdAt,
       state: groupStateToOverallState(group.states),
       counts: group.counts,
       lastValues: group.lastValues
@@ -92,45 +87,15 @@ function mapGroupedHistories(
  * for the given alert within the createdAt bounds, capped at `limit` groups.
  */
 async function fetchGroupedWindows(
-  alertId: ObjectId,
-  createdAt: Record<string, Date>,
+  alertId: Id,
+  range: DateRange,
   limit: number,
 ): Promise<Omit<IAlertHistory, 'alert'>[]> {
-  const groupedHistories = await AlertHistory.aggregate<GroupedAlertHistory>([
-    {
-      $match: {
-        alert: new ObjectId(alertId),
-        createdAt,
-      },
-    },
-    { $sort: { createdAt: -1 } },
-    {
-      $group: {
-        _id: '$createdAt',
-        states: {
-          $push: '$state',
-        },
-        counts: {
-          $sum: '$counts',
-        },
-        lastValues: {
-          $push: '$lastValues',
-        },
-        errors: {
-          $push: '$errors',
-        },
-      },
-    },
-    {
-      $sort: {
-        _id: -1,
-      },
-    },
-    {
-      $limit: limit,
-    },
-  ]);
-
+  const groupedHistories = await getMetadataStore().alertHistory.groupedByWindow(
+    alertId,
+    range,
+    limit,
+  );
   return mapGroupedHistories(groupedHistories);
 }
 
@@ -144,7 +109,7 @@ export async function getRecentAlertHistories({
   interval,
   limit,
 }: {
-  alertId: ObjectId;
+  alertId: Id;
   interval: AlertInterval;
   limit: number;
 }): Promise<Omit<IAlertHistory, 'alert'>[]> {
@@ -154,7 +119,7 @@ export async function getRecentAlertHistories({
   const lookbackMs = (limit + 1) * intervalToMs(interval);
   return fetchGroupedWindows(
     alertId,
-    { $gte: new Date(Date.now() - lookbackMs) },
+    { gte: new Date(Date.now() - lookbackMs) },
     limit,
   );
 }
@@ -185,24 +150,6 @@ export type AlertEvaluationsPage = {
   hasMore: boolean;
   /** Cursor for the next-older page (pass as `before`). Set when hasMore. */
   nextBefore?: Date;
-};
-
-// One AlertHistory row's fields, as pushed into a per-window sub-array by the
-// evaluations aggregation (unlike the alerts-page pipeline, group identity is
-// preserved so windows can be broken down per group).
-type EvaluationWindowRow = {
-  group?: string;
-  state: AlertState;
-  counts?: number;
-  lastValues?: IAlertHistory['lastValues'];
-  fired?: boolean;
-  errors?: IAlertError[];
-  analytics?: IAlertHistoryAnalytics;
-};
-
-type StructuredWindow = {
-  _id: Date;
-  rows: EvaluationWindowRow[];
 };
 
 // Firing-first ordering for the per-group breakdown.
@@ -287,7 +234,7 @@ function mapStructuredWindow(window: StructuredWindow): AlertEvaluationEntry {
     );
 
   return {
-    createdAt: window._id,
+    createdAt: window.createdAt,
     state: groupStateToOverallState(rows.map(r => r.state)),
     counts: rows.reduce((sum, r) => sum + (r.counts ?? 0), 0),
     lastValues,
@@ -306,44 +253,15 @@ function mapStructuredWindow(window: StructuredWindow): AlertEvaluationEntry {
  * grouped alerts can be broken down per group.
  */
 async function fetchStructuredWindows(
-  alertId: ObjectId,
-  createdAt: Record<string, Date>,
+  alertId: Id,
+  range: DateRange,
   limit: number,
 ): Promise<AlertEvaluationEntry[]> {
-  const windows = await AlertHistory.aggregate<StructuredWindow>([
-    {
-      $match: {
-        alert: new ObjectId(alertId),
-        createdAt,
-      },
-    },
-    { $sort: { createdAt: -1 } },
-    {
-      $group: {
-        _id: '$createdAt',
-        rows: {
-          $push: {
-            group: '$group',
-            state: '$state',
-            counts: '$counts',
-            lastValues: '$lastValues',
-            fired: '$fired',
-            errors: '$errors',
-            analytics: '$analytics',
-          },
-        },
-      },
-    },
-    {
-      $sort: {
-        _id: -1,
-      },
-    },
-    {
-      $limit: limit,
-    },
-  ]);
-
+  const windows = await getMetadataStore().alertHistory.structuredWindows(
+    alertId,
+    range,
+    limit,
+  );
   return windows.map(mapStructuredWindow);
 }
 
@@ -369,7 +287,7 @@ export async function getAlertEvaluations({
   endTime,
   before,
 }: {
-  alertId: ObjectId;
+  alertId: Id;
   interval: AlertInterval;
   limit: number;
   startTime: Date;
@@ -392,14 +310,10 @@ export async function getAlertEvaluations({
   // Lower bound: the scan bound, clamped to the requested range start.
   const scanFloorMs = Math.max(startTime.getTime(), pageEndMs - scanMs);
 
-  const createdAt: Record<string, Date> = {
-    $gte: new Date(scanFloorMs),
+  const createdAt: DateRange = {
+    gte: new Date(scanFloorMs),
+    ...(usableBefore != null ? { lt: usableBefore } : { lte: endTime }),
   };
-  if (usableBefore != null) {
-    createdAt.$lt = usableBefore;
-  } else {
-    createdAt.$lte = endTime;
-  }
 
   // Fetch one extra window to detect count truncation.
   const windows = await fetchStructuredWindows(alertId, createdAt, limit + 1);
@@ -426,16 +340,11 @@ export async function getAlertEvaluations({
 /**
  * Batch-fetch recent alert histories for multiple alerts in parallel.
  *
- * Uses per-alert queries with concurrency control instead of a single
- * $in-based aggregation. This avoids the $in + $sort anti-pattern that
- * breaks index-backed sorting in DocumentDB, while eliminating the N+1
- * query pattern from the caller.
- *
- * Each per-alert query uses the compound index {alert: 1, createdAt: -1}
- * for an efficient single-range index scan.
+ * Uses per-alert queries with concurrency control, each a single-range scan
+ * on the (alert, createdAt) index.
  */
 export async function getRecentAlertHistoriesBatch(
-  alerts: { alertId: ObjectId; interval: AlertInterval }[],
+  alerts: { alertId: Id; interval: AlertInterval }[],
   limit: number,
 ): Promise<Map<string, Omit<IAlertHistory, 'alert'>[]>> {
   const queue = new PQueue({ concurrency: ALERT_HISTORY_QUERY_CONCURRENCY });
@@ -448,7 +357,7 @@ export async function getRecentAlertHistoriesBatch(
           interval,
           limit,
         });
-        return [alertId.toString(), histories] as const;
+        return [alertId, histories] as const;
       }),
     ),
   );
@@ -478,7 +387,7 @@ export async function getAlertTransitionsInRange({
   startTime,
   endTime,
 }: {
-  alertId: ObjectId;
+  alertId: Id;
   interval: AlertInterval;
   startTime: Date;
   endTime: Date;
@@ -490,37 +399,13 @@ export async function getAlertTransitionsInRange({
   // positions the marker where the chart plots that bucket's value. ERROR rows
   // are failed evaluations, not state observations — excluding them prevents a
   // query failure mid-firing from drawing a false recovery annotation.
-  const windows = await AlertHistory.aggregate<{
-    _id: Date;
-    states: string[];
-    // One array of bucket-start dates per row in the window (one row per
-    // group for group-by alerts). Push only the dates via a plain field path
-    // and derive the newest in JS — the file's DocumentDB-safe pattern (see
-    // mapGroupedHistories) avoids expression operators inside accumulators,
-    // and pushing dates instead of whole lastValues rows keeps the buffered
-    // payload small. The router caps the scanned span (MAX_HISTORY_SPAN_MS).
-    bucketStarts: Date[][];
-  }>([
-    {
-      $match: {
-        alert: new ObjectId(alertId),
-        createdAt: { $gte: lookbackStart, $lte: endTime },
-        state: { $ne: AlertState.ERROR },
-      },
-    },
-    {
-      $group: {
-        _id: '$createdAt',
-        states: { $push: '$state' },
-        bucketStarts: { $push: '$lastValues.startTime' },
-      },
-    },
-    { $sort: { _id: 1 } },
-  ]);
+  const windows = await getMetadataStore().alertHistory.transitionWindows(
+    alertId,
+    { gte: lookbackStart, lte: endTime },
+  );
 
   // Newest bucket start across the window's rows; null when no row carries
-  // lastValues. Be defensive about missing arrays/fields in case of engine
-  // differences (e.g. DocumentDB).
+  // lastValues.
   const newestBucketStart = (bucketStarts: Date[][] | undefined): Date | null =>
     (bucketStarts ?? [])
       .flat()
@@ -554,7 +439,7 @@ export async function getAlertTransitionsInRange({
   for (const evalWindow of windows) {
     const isAlert =
       groupStateToOverallState(evalWindow.states) === AlertState.ALERT;
-    const inRange = evalWindow._id >= startTime;
+    const inRange = evalWindow.createdAt >= startTime;
 
     if (inRange && !enteredRange) {
       enteredRange = true;
@@ -566,14 +451,14 @@ export async function getAlertTransitionsInRange({
       // (mirrors the evaluation table's fallback for failed evaluations).
       const derived =
         newestBucketStart(evalWindow.bucketStarts) ??
-        new Date(evalWindow._id.getTime() - intervalMs);
+        new Date(evalWindow.createdAt.getTime() - intervalMs);
       // Floor at startTime: a derived bucket start one bucket earlier than an
       // edge crossing's createdAt can precede the range start, and a marker
       // before startTime would render at or left of a carry-in pin (which is
       // pinned to startTime) — inverting the firing→recovery order.
       const bucketStart = derived >= startTime ? derived : startTime;
       transitions.push({
-        createdAt: evalWindow._id.toISOString(),
+        createdAt: evalWindow.createdAt.toISOString(),
         state: isAlert ? AlertState.ALERT : AlertState.OK,
         bucketStart: bucketStart.toISOString(),
       });

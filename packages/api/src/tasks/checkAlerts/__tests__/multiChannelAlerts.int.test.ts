@@ -8,8 +8,8 @@ import Alert, {
   AlertSource,
   AlertState,
   AlertThresholdType,
-} from '@/models/alert';
-import AlertHistory from '@/models/alertHistory';
+} from '@/metadata/schemas/alert';
+import AlertHistory from '@/metadata/schemas/alertHistory';
 import { loadProvider } from '@/tasks/checkAlerts/providers';
 
 import {

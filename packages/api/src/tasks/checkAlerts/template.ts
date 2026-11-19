@@ -37,7 +37,7 @@ import {
   AlertSource,
   AlertState,
   getAlertChannels,
-} from '@/models/alert';
+} from '@/metadata/schemas/alert';
 import { DataClient } from '@/query';
 import {
   computeAliasWithClauses,

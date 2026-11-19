@@ -15,7 +15,7 @@ import {
   seedRawWebhook,
   seedWebhook,
 } from '@/metadata/testing/seed';
-import Alert, { AlertSource, AlertState } from '@/models/alert';
+import Alert, { AlertSource, AlertState } from '@/metadata/schemas/alert';
 
 const WEBHOOKS_BASE_URL = '/api/v2/webhooks';
 

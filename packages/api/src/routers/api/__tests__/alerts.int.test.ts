@@ -32,8 +32,8 @@ import {
   seedWebhook,
 } from '@/metadata/testing/seed';
 import { toObjectId } from '@/models';
-import Alert, { AlertSource, AlertState } from '@/models/alert';
-import AlertHistory from '@/models/alertHistory';
+import Alert, { AlertSource, AlertState } from '@/metadata/schemas/alert';
+import AlertHistory from '@/metadata/schemas/alertHistory';
 
 const MOCK_TILES = [makeTile(), makeTile(), makeTile(), makeTile(), makeTile()];
 

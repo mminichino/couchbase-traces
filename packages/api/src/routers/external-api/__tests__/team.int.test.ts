@@ -6,7 +6,7 @@ import { getMetadataStore } from '@/metadata';
 import type { ITeam } from '@/metadata/schemas/team';
 import type { IUser } from '@/metadata/schemas/user';
 import { findUser, getUserDoc, seedUser } from '@/metadata/testing/seed';
-import Alert from '@/models/alert';
+import Alert from '@/metadata/schemas/alert';
 
 const TEAM_BASE_URL = '/api/v2/team';
 

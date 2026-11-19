@@ -14,7 +14,7 @@ import {
   seedWebhook,
 } from '@/metadata/testing/seed';
 import { toObjectId } from '@/models';
-import Alert from '@/models/alert';
+import Alert from '@/metadata/schemas/alert';
 
 const MOCK_SAVED_SEARCH = {
   name: 'error',

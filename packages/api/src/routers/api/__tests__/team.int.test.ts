@@ -11,7 +11,7 @@ import {
   patchUser,
   seedUser,
 } from '@/metadata/testing/seed';
-import Alert, { AlertSource, AlertThresholdType } from '@/models/alert';
+import Alert, { AlertSource, AlertThresholdType } from '@/metadata/schemas/alert';
 
 const invites = () => getMetadataStore().teamInvites;
 

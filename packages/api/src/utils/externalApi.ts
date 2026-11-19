@@ -15,26 +15,19 @@ import {
   SavedChartConfig,
 } from '@couchbase-traces/common-utils/dist/types';
 import { omit } from 'lodash';
-import { Types } from 'mongoose';
 
 import type { HydratedAlert } from '@/controllers/alertRefs';
 import type { IDashboard } from '@/metadata/schemas/dashboard';
 import type { ISavedSearch } from '@/metadata/schemas/savedSearch';
-import type { ObjectId } from '@/models';
 import {
   AlertChannel,
-  AlertDocument,
   AlertInterval,
   AlertState,
   getAlertChannels,
   IAlert,
-} from '@/models/alert';
+} from '@/metadata/schemas/alert';
 import { SeriesTile } from '@/routers/external-api/v2/utils/dashboards';
-import {
-  isPopulatedRef,
-  populatedRefOrNull,
-  resolveAlertDisplayFields,
-} from '@/utils/alerts';
+import { resolveAlertDisplayFields } from '@/utils/alerts';
 import {
   ExternalAlertChartConfig,
   ExternalDashboardFilterWithId,
@@ -369,62 +362,43 @@ export type ExternalAlert = {
 };
 
 // An alert's savedSearch/dashboard ref as this module receives it: a bare
-// ObjectId, or — when the caller used a populating reader — the referenced
-// document, possibly projected down to the display fields.
-type AlertRef<T> = ObjectId | (Partial<T> & { _id: ObjectId | string }) | null;
+// id, or — when the caller hydrated refs — the referenced document, possibly
+// projected down to the display fields, or null when the target is gone.
+type AlertRef<T> = string | (Partial<T> & { _id: string }) | null;
 
 type AlertRefFields = {
   savedSearch?: AlertRef<ISavedSearch>;
   dashboard?: AlertRef<IDashboard>;
 };
 
-type AlertDocumentObject = Omit<IAlert, keyof AlertRefFields> & {
-  _id: ObjectId;
-} & AlertRefFields;
+type AlertDocumentObject = Omit<IAlert, keyof AlertRefFields> & AlertRefFields;
 
-export type TranslatableAlertDocument =
-  | (Omit<AlertDocument, keyof AlertRefFields> & AlertRefFields)
-  | HydratedAlert;
+export type TranslatableAlertDocument = IAlert | HydratedAlert;
+
+const isRefDocument = (
+  ref: AlertRef<object> | undefined,
+): ref is { _id: string } => typeof ref === 'object' && ref !== null;
 
 /**
- * A populated ref whose target was deleted resolves to `null` in `toJSON()`,
- * but Mongoose still holds the original id in `populated()`. Prefer that so the
- * response keeps pointing at the (now dangling) dashboard/saved search instead
- * of silently dropping the field.
+ * A hydrated ref whose target was deleted is null, but the alert still holds
+ * the original id. Prefer that so the response keeps pointing at the (now
+ * dangling) dashboard/saved search instead of silently dropping the field.
  */
 function refIdToString(
   ref: AlertRef<object> | undefined,
-  populatedId: ObjectId | undefined,
+  originalId: string | undefined,
 ): string | undefined {
   if (ref == null) {
-    return populatedId?.toString();
+    return originalId;
   }
-  return (isPopulatedRef(ref) ? ref._id : ref).toString();
+  return isRefDocument(ref) ? ref._id : ref;
 }
 
-/**
- * Mongoose types `populated()` as `any`; it returns the original ObjectId for
- * a populated single ref, and undefined when the path was never populated.
- */
-function populatedRefId(
+function originalRefId(
   alert: TranslatableAlertDocument,
   path: keyof AlertRefFields,
-): ObjectId | undefined {
-  const id: unknown =
-    typeof alert.populated === 'function' ? alert.populated(path) : undefined;
-  return id instanceof Types.ObjectId ? id : undefined;
-}
-
-function hasCreatedAt(
-  alert: AlertDocumentObject,
-): alert is AlertDocument & { createdAt: Date } {
-  return 'createdAt' in alert && alert.createdAt instanceof Date;
-}
-
-function hasUpdatedAt(
-  alert: AlertDocumentObject,
-): alert is AlertDocument & { updatedAt: Date } {
-  return 'updatedAt' in alert && alert.updatedAt instanceof Date;
+): string | undefined {
+  return 'populated' in alert ? alert.populated(path) : undefined;
 }
 
 function transformScheduleStartAt(
@@ -450,7 +424,7 @@ function transformSilencedToExternalSilenced(
 ): ExternalAlert['silenced'] {
   return silenced
     ? {
-        by: silenced.by?.toString(),
+        by: silenced.by,
         at: silenced.at.toISOString(),
         until: silenced.until.toISOString(),
       }
@@ -479,23 +453,20 @@ function transformErrorsToExternalErrors(
 export function translateAlertDocumentToExternalAlert(
   alert: TranslatableAlertDocument,
 ): ExternalAlert {
-  // Convert to plain object if it's a Mongoose document. `flattenMaps: false`
-  // picks the toJSON overload that doesn't wrap every field in FlattenMaps<>
-  // (which breaks ObjectId); the alert schema has no Map fields, so the
-  // runtime output is identical.
-  const alertObj: AlertDocumentObject =
-    'toJSON' in alert ? alert.toJSON({ flattenMaps: false }) : { ...alert };
+  const alertObj: AlertDocumentObject = { ...alert };
 
   const channels = getAlertChannels(alertObj);
 
-  // The ref fields are populated documents when the caller used one of the
-  // `*WithDisplayRefs` readers and bare ObjectIds otherwise.
-  const dashboard = populatedRefOrNull(alertObj.dashboard);
-  const savedSearch = populatedRefOrNull(alertObj.savedSearch);
+  // The ref fields are documents when the caller used one of the
+  // `*WithDisplayRefs` readers and bare ids otherwise.
+  const dashboard = isRefDocument(alertObj.dashboard) ? alertObj.dashboard : null;
+  const savedSearch = isRefDocument(alertObj.savedSearch)
+    ? alertObj.savedSearch
+    : null;
 
-  // Copy all fields, renaming _id to id, ensuring ObjectId's are strings
+  // Copy all fields, renaming _id to id
   const result = {
-    id: alertObj._id.toString(),
+    id: alertObj._id,
     name: alertObj.name,
     ...resolveAlertDisplayFields(alertObj, { dashboard, savedSearch }),
     message: alertObj.message,
@@ -517,25 +488,21 @@ export function translateAlertDocumentToExternalAlert(
     // (`AlertChannels` requires minItems: 1, and `AlertChannel`'s oneOf has no
     // branch for `{type: null}`).
     ...(channels.length > 0 && { channel: channels[0], channels }),
-    teamId: alertObj.team.toString(),
+    teamId: alertObj.team,
     tileId: alertObj.tileId ?? undefined,
     dashboardId: refIdToString(
       alertObj.dashboard,
-      populatedRefId(alert, 'dashboard'),
+      originalRefId(alert, 'dashboard'),
     ),
     savedSearchId: refIdToString(
       alertObj.savedSearch,
-      populatedRefId(alert, 'savedSearch'),
+      originalRefId(alert, 'savedSearch'),
     ),
     groupBy: alertObj.groupBy ?? undefined,
     silenced: transformSilencedToExternalSilenced(alertObj.silenced),
     executionErrors: transformErrorsToExternalErrors(alertObj.executionErrors),
-    createdAt: hasCreatedAt(alertObj)
-      ? alertObj.createdAt.toISOString()
-      : undefined,
-    updatedAt: hasUpdatedAt(alertObj)
-      ? alertObj.updatedAt.toISOString()
-      : undefined,
+    createdAt: alertObj.createdAt.toISOString(),
+    updatedAt: alertObj.updatedAt.toISOString(),
   };
 
   return result;

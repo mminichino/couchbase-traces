@@ -15,7 +15,7 @@ import {
   RAW_SQL_ALERT_TEMPLATE,
 } from '@/fixtures';
 import { IWebhook } from '@/metadata/schemas/webhook';
-import { AlertSource } from '@/models/alert';
+import { AlertSource } from '@/metadata/schemas/alert';
 import {
   NotificationDispatcher,
   NotificationJob,

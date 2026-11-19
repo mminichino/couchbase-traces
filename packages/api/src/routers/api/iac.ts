@@ -5,18 +5,16 @@ import {
   isImportableSource,
 } from '@couchbase-traces/common-utils/dist/iac';
 import express from 'express';
-import type { Query } from 'mongoose';
 
 import { getMetadataStore } from '@/metadata';
 import { getNonNullUserWithTeam } from '@/middleware/auth';
-import Alert from '@/models/alert';
 import { unaddressableTileAlertIds } from '@/utils/iacTileAlerts';
 import { getCounter, withSpan } from '@/utils/instrumentation';
 
 const router = express.Router();
 
 // IAC_MANIFEST_LIMIT is the per-type ceiling on the fan-out below (shared with
-// the UI copy via common-utils). Six team-scoped finds run concurrently on
+// the UI copy via common-utils). Six team-scoped reads run concurrently on
 // every Team Settings visit and the browser's ky client is configured with
 // `timeout: false`, so without a bound a large team can hang the page.
 const IAC_MANIFEST_MAX_TIME_MS = 10_000;
@@ -50,21 +48,6 @@ const manifestUnexportableSources = getCounter(
   },
 );
 
-// Bounds a find without touching its result type. Only sort/limit/maxTimeMS
-// are wrapped — all three return the same Query — so `.lean()` stays on the
-// concrete model. Typing the whole chain instead collapses Source's
-// discriminated union into its first member.
-//
-// The sort is what makes a capped listing meaningful: without it, *which*
-// IAC_MANIFEST_LIMIT rows come back is planner-dependent and can differ
-// between two calls, so a large team could get a different arbitrary subset
-// each export. `{ team: 1, _id: 1 }` covers this ordering on every model here.
-const bounded = <T extends Query<unknown, unknown>>(query: T): T =>
-  query
-    .sort({ _id: 1 })
-    .limit(IAC_MANIFEST_LIMIT + 1)
-    .maxTimeMS(IAC_MANIFEST_MAX_TIME_MS) as T;
-
 async function listBounded<T>(
   repo: {
     list(
@@ -84,28 +67,6 @@ async function listBounded<T>(
   return {
     items: rows.slice(0, IAC_MANIFEST_LIMIT),
     truncated: total > IAC_MANIFEST_LIMIT,
-  };
-}
-
-/**
- * Each find asks for one row more than the ceiling, so a full page is
- * distinguishable from a result that happens to be exactly IAC_MANIFEST_LIMIT
- * long. Exported for the boundary test — an inverted comparison here turns a
- * partial export into one that looks complete.
- */
-// Generic over the array, not its element: Source.find() returns a union of
-// per-discriminator arrays, and inferring an element type collapses that union
-// into its first member.
-export function capListing<T extends readonly unknown[]>(
-  rows: T,
-): { items: T; truncated: boolean } {
-  return {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
-    items: (rows as readonly unknown[]).slice(
-      0,
-      IAC_MANIFEST_LIMIT,
-    ) as unknown as T,
-    truncated: rows.length > IAC_MANIFEST_LIMIT,
   };
 }
 
@@ -137,14 +98,7 @@ router.get('/import-manifest', async (req, res, next) => {
         listBounded(store.dashboards, teamId.toString(), {
           provisioned: false,
         }),
-        bounded(
-          Alert.find(
-            { team: teamId },
-            // dashboard/tileId are read only to resolve the tile's name below,
-            // and stay out of the response — the import id is the alert's own.
-            { name: 1, source: 1, savedSearch: 1, dashboard: 1, tileId: 1 },
-          ),
-        ).lean(),
+        listBounded(store.alerts, teamId.toString()),
         listBounded(store.savedSearches, teamId.toString()),
         // Sources and connections moved to the metadata store (C2): ids sort
         // by creation, the find cap is IAC_MANIFEST_LIMIT, and the count says
@@ -155,7 +109,7 @@ router.get('/import-manifest', async (req, res, next) => {
       ]);
 
       const dashboards = dashboardRows;
-      const alerts = capListing(alertRows);
+      const alerts = alertRows;
       const savedSearches = savedSearchRows;
       const sources = sourceRows;
       const connections = connectionRows;

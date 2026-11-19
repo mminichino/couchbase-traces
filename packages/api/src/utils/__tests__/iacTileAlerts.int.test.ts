@@ -3,7 +3,7 @@ import mongoose from 'mongoose';
 import { getServer, randomMongoId } from '@/fixtures';
 import { getMetadataStore } from '@/metadata';
 import { seedDashboard } from '@/metadata/testing/seed';
-import { AlertSource } from '@/models/alert';
+import { AlertSource } from '@/metadata/schemas/alert';
 import { unaddressableTileAlertIds } from '@/utils/iacTileAlerts';
 import { getCounter } from '@/utils/instrumentation';
 import logger from '@/utils/logger';

@@ -4,7 +4,7 @@ import {
   alertsPageQuerySchema,
   buildAlertsPageFilter,
 } from '@/controllers/alertsPage';
-import { AlertSource, AlertState } from '@/models/alert';
+import { AlertSource, AlertState } from '@/metadata/schemas/alert';
 import { encodeCursor } from '@/utils/pagination';
 
 const TEAM_ID = '6500000000000000000000aa';

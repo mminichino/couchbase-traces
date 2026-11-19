@@ -18,7 +18,7 @@ import {
   seedSavedSearch,
   seedSource,
 } from '@/metadata/testing/seed';
-import Alert, { AlertSource, AlertState } from '@/models/alert';
+import Alert, { AlertSource, AlertState } from '@/metadata/schemas/alert';
 
 const BASE_URL = '/api/v2/saved-searches';
 
