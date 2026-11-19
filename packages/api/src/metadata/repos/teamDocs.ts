@@ -1,6 +1,7 @@
 import type { z } from 'zod';
 
 import { type Id, isValidId, newId } from '@/metadata/ids';
+import { removeAlertsInTx } from '@/metadata/repos/alertTx';
 import {
   getDoc,
   mutateDoc,
@@ -8,7 +9,6 @@ import {
   parseRows,
   type RepoDeps,
 } from '@/metadata/repos/docs';
-import { removeAlertsInTx } from '@/metadata/repos/alertTx';
 import { iso } from '@/metadata/schemas/common';
 import {
   type FindScalar,

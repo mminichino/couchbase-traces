@@ -1,11 +1,15 @@
-import { AlertThresholdType } from '@couchbase-traces/common-utils/dist/types';
+import {
+  AlertErrorType,
+  AlertThresholdType,
+} from '@couchbase-traces/common-utils/dist/types';
 
 import { ValidationError } from '@/metadata/errors';
 import { newId } from '@/metadata/ids';
 import {
+  type AlertFields,
   AlertSource,
   AlertState,
-  type AlertFields,
+  type IAlertError,
 } from '@/metadata/schemas/alert';
 import type { IAlertHistory } from '@/metadata/schemas/alertHistory';
 import { loose } from '@/metadata/testing/loose';
@@ -15,6 +19,12 @@ const MINUTE = 60_000;
 const DAY = 24 * 60 * MINUTE;
 const T0 = Date.parse('2026-11-01T00:00:00.000Z');
 const at = (n: number) => new Date(T0 + n * MINUTE);
+
+const queryError = (timestamp: Date, message: string): IAlertError => ({
+  timestamp,
+  type: AlertErrorType.QUERY_ERROR,
+  message,
+});
 
 const base: AlertFields = {
   channel: { type: 'webhook', webhookId: 'w1' },
@@ -263,22 +273,42 @@ export function describeAlertRepos(
     describe('alert history', () => {
       it('expires rows 30 days after createdAt and keeps the expiry on update', async () => {
         const alert = newId();
-        const window = at(10);
+        // Recent, so the 30-day expiry is still in the future whenever this runs.
+        const window = new Date(Date.now() - 60 * MINUTE);
         await store.alertHistory.upsertErrorRow(alert, window, [
-          { timestamp: window, type: 'QUERY_ERROR', message: 'one' },
-        ] as never);
+          queryError(window, 'one'),
+        ]);
         const key = `err::${alert}::${window.getTime()}`;
+        // Couchbase keeps expiry in whole seconds, so allow one second.
+        const expectedExpiry = window.getTime() + 30 * DAY;
+        const within1s = (d?: Date) =>
+          Math.abs((d?.getTime() ?? 0) - expectedExpiry) < 1000;
         const first = await store.kv.get('alert_history', key);
-        expect(first?.expiry?.getTime()).toBe(window.getTime() + 30 * DAY);
+        expect(within1s(first?.expiry)).toBe(true);
         await store.alertHistory.upsertErrorRow(alert, window, [
-          { timestamp: window, type: 'QUERY_ERROR', message: 'two' },
-        ] as never);
+          queryError(window, 'two'),
+        ]);
         const second = await store.kv.get<{ errors: { message: string }[] }>(
           'alert_history',
           key,
         );
         expect(second?.value.errors[0].message).toBe('two');
-        expect(second?.expiry?.getTime()).toBe(window.getTime() + 30 * DAY);
+        expect(within1s(second?.expiry)).toBe(true);
+      });
+
+      it('keeps rows for windows older than the retention for a day', async () => {
+        const alert = newId();
+        const old = new Date(Date.now() - 60 * DAY);
+        await store.alertHistory.upsertErrorRow(alert, old, [
+          queryError(old, 'old'),
+        ]);
+        const got = await store.kv.get(
+          'alert_history',
+          `err::${alert}::${old.getTime()}`,
+        );
+        const left = (got?.expiry?.getTime() ?? 0) - Date.now();
+        expect(left).toBeGreaterThan(DAY - 60_000);
+        expect(left).toBeLessThanOrEqual(DAY + 60_000);
       });
 
       it('writes rows independently', async () => {
@@ -318,9 +348,7 @@ export function describeAlertRepos(
             state: AlertState.ERROR,
             counts: 0,
             lastValues: [],
-            errors: [
-              { timestamp: at(10), type: 'QUERY_ERROR', message: 'x' },
-            ] as never,
+            errors: [queryError(at(10), 'x')],
           }),
         ]);
         const grouped = await store.alertHistory.groupedByWindow(
@@ -332,6 +360,8 @@ export function describeAlertRepos(
         expect(grouped[1]).toMatchObject({ counts: 5 });
         expect(grouped[1].states.sort()).toEqual(['ALERT', 'OK']);
         expect(grouped[0].errors).toHaveLength(1);
+        // A window with no error rows reads as [], not null.
+        expect(grouped[1].errors).toEqual([]);
         expect(
           await store.alertHistory.groupedByWindow(alert, { lte: at(20) }, 1),
         ).toHaveLength(1);

@@ -18,10 +18,6 @@ import {
   metadataReadiness,
   startMetadataStore,
 } from '@/metadata';
-import type { IConnection } from '@/metadata/schemas/connection';
-import type { ISavedSearch } from '@/metadata/schemas/savedSearch';
-import type { ISource } from '@/metadata/schemas/source';
-import type { IWebhook } from '@/metadata/schemas/webhook';
 import {
   AlertSource,
   AlertState,
@@ -33,6 +29,10 @@ import {
   IAlertHistory,
   IAlertHistoryAnalytics,
 } from '@/metadata/schemas/alertHistory';
+import type { IConnection } from '@/metadata/schemas/connection';
+import type { ISavedSearch } from '@/metadata/schemas/savedSearch';
+import type { ISource } from '@/metadata/schemas/source';
+import type { IWebhook } from '@/metadata/schemas/webhook';
 import { DataClient } from '@/query';
 import {
   getConsecutiveWindowHistories,

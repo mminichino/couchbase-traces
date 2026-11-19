@@ -1,13 +1,3 @@
-import type { AlertState, IAlertError } from '@/metadata/schemas/alert';
-import type {
-  AggregatedAlertHistory,
-  DateRange,
-  EvaluationWindowRow,
-  GroupedAlertHistory,
-  GroupValue,
-  StructuredWindow,
-  TransitionWindow,
-} from '@/metadata/schemas/alertHistory';
 import {
   buildAlertsCount,
   buildAlertsPage,
@@ -24,6 +14,16 @@ import {
 } from '@/metadata/couchbase/historySql';
 import { type QueryPort, runQuery } from '@/metadata/couchbase/query';
 import type { Id } from '@/metadata/ids';
+import type { AlertState, IAlertError } from '@/metadata/schemas/alert';
+import type {
+  AggregatedAlertHistory,
+  DateRange,
+  EvaluationWindowRow,
+  GroupedAlertHistory,
+  GroupValue,
+  StructuredWindow,
+  TransitionWindow,
+} from '@/metadata/schemas/alertHistory';
 import type {
   AlertsPageQuery,
   Found,
@@ -138,8 +138,9 @@ export class CouchbaseAlertQueries implements MetaAlertQueries {
       createdAt: asDate(r.createdAt),
       states: r.states,
       counts: r.counts,
-      lastValues: r.lastValues.map(lastValues),
-      errors: r.errors.map(errors),
+      // ARRAY_AGG over only-MISSING values yields null, not [].
+      lastValues: (r.lastValues ?? []).map(lastValues),
+      errors: (r.errors ?? []).map(errors),
     }));
   }
 

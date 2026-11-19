@@ -1,11 +1,12 @@
-import mongoose from 'mongoose';
-
 import * as config from '@/config';
 import { newId } from '@/metadata/ids';
+import {
+  AlertSource,
+  AlertThresholdType,
+  IAlert,
+} from '@/metadata/schemas/alert';
 import { ISource } from '@/metadata/schemas/source';
 import { IWebhook } from '@/metadata/schemas/webhook';
-import { ObjectId } from '@/models';
-import { AlertSource, AlertThresholdType, IAlert } from '@/metadata/schemas/alert';
 import { DataClient } from '@/query';
 import * as checkAlerts from '@/tasks/checkAlerts';
 import CheckAlertTask from '@/tasks/checkAlerts';
@@ -106,7 +107,7 @@ describe('CheckAlertTask', () => {
 
       const mockAlert = {
         id: 'alert-123',
-        team: { _id: new mongoose.Types.ObjectId() },
+        team: newId(),
         source: AlertSource.SAVED_SEARCH,
         threshold: 10,
         thresholdType: AlertThresholdType.ABOVE,
@@ -178,12 +179,12 @@ describe('CheckAlertTask', () => {
       const task = new CheckAlertTask(args);
 
       // Create two teams
-      const team1Id = new mongoose.Types.ObjectId();
-      const team2Id = new mongoose.Types.ObjectId();
+      const team1Id = newId();
+      const team2Id = newId();
 
       const mockAlert1 = {
         id: 'alert-123',
-        team: { _id: team1Id },
+        team: team1Id,
         source: AlertSource.SAVED_SEARCH,
         threshold: 10,
         thresholdType: AlertThresholdType.ABOVE,
@@ -193,7 +194,7 @@ describe('CheckAlertTask', () => {
 
       const mockAlert2 = {
         id: 'alert-456',
-        team: { _id: team2Id },
+        team: team2Id,
         source: AlertSource.SAVED_SEARCH,
         threshold: 5,
         thresholdType: AlertThresholdType.BELOW,
@@ -289,7 +290,7 @@ describe('CheckAlertTask', () => {
 
       // Mock getWebhooks to return team-specific webhooks
       mockAlertProvider.getWebhooks.mockImplementation(
-        (teamId: string | ObjectId): Promise<Map<string, IWebhook>> => {
+        (teamId: string): Promise<Map<string, IWebhook>> => {
           if (teamId === team1Id.toString()) {
             return Promise.resolve(team1WebhooksById);
           } else if (teamId === team2Id.toString()) {
@@ -345,14 +346,14 @@ describe('CheckAlertTask', () => {
       const buildAlertTask = (
         connId: string,
         alertId: string,
-        teamId: mongoose.Types.ObjectId,
+        teamId: string,
       ) =>
         ({
           alerts: [
             {
               alert: {
                 id: alertId,
-                team: { _id: teamId },
+                team: teamId,
                 source: AlertSource.SAVED_SEARCH,
                 threshold: 10,
                 thresholdType: AlertThresholdType.ABOVE,
@@ -370,7 +371,7 @@ describe('CheckAlertTask', () => {
           ],
           conn: {
             id: connId,
-            _id: new mongoose.Types.ObjectId(),
+            _id: newId(),
             host: 'couchbase://localhost',
             kind: 'couchbase' as const,
             username: config.CLICKHOUSE_USER,
@@ -386,7 +387,7 @@ describe('CheckAlertTask', () => {
         onUnhandledRejection = reason => unhandledRejections.push(reason);
         process.on('unhandledRejection', onUnhandledRejection);
 
-        const teamId = new mongoose.Types.ObjectId();
+        const teamId = newId();
         mockAlertProvider.getAlertTasks.mockResolvedValue([
           buildAlertTask('conn-broken', 'alert-broken', teamId),
           buildAlertTask('conn-healthy', 'alert-healthy', teamId),

@@ -14,8 +14,8 @@ import {
   makeTile,
   RAW_SQL_ALERT_TEMPLATE,
 } from '@/fixtures';
-import { IWebhook } from '@/metadata/schemas/webhook';
 import { AlertSource } from '@/metadata/schemas/alert';
+import { IWebhook } from '@/metadata/schemas/webhook';
 import {
   NotificationDispatcher,
   NotificationJob,

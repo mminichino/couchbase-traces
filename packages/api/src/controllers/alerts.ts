@@ -16,7 +16,6 @@ import { z } from 'zod';
 import { hydrateAlertRefs } from '@/controllers/alertRefs';
 import { recordOnboardingTaskCompletion } from '@/controllers/user';
 import { getMetadataStore } from '@/metadata';
-import type { IDashboard } from '@/metadata/schemas/dashboard';
 import type { Id } from '@/metadata/ids';
 import {
   AlertChannel,
@@ -25,6 +24,7 @@ import {
   getAlertChannels,
   IAlert,
 } from '@/metadata/schemas/alert';
+import type { IDashboard } from '@/metadata/schemas/dashboard';
 import { type AlertRefs, deriveAlertDisplayFields } from '@/utils/alerts';
 import { Api400Error } from '@/utils/errors';
 import { internalAlertSchema, objectIdSchema } from '@/utils/zod';
@@ -421,8 +421,7 @@ export const deleteDashboardAlerts = async (
   dashboardId: string,
   teamId: string,
   tileIds?: string[],
-) =>
-  getMetadataStore().alerts.deleteByDashboard(teamId, dashboardId, tileIds);
+) => getMetadataStore().alerts.deleteByDashboard(teamId, dashboardId, tileIds);
 
 /** Get alert, with the search or dashboard reference resolved */
 export const getAlertWithDisplayRefs = async (

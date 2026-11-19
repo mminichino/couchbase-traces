@@ -13,7 +13,6 @@ import {
 import { getMetadataStore } from '@/metadata';
 import type { ISavedSearch } from '@/metadata/schemas/savedSearch';
 import { resolveAlertDisplayFields } from '@/utils/alerts';
-import logger from '@/utils/logger';
 
 type SavedSearchWithoutId = Omit<z.infer<typeof SavedSearchSchema>, 'id'>;
 
@@ -54,7 +53,6 @@ export async function getSavedSearches(
     // The wire shape carries dates as ISO strings (the JSON layer converts
     // the Date instants) and the creator as a display, which the id-typed
     // alert cannot express.
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
     alerts: alertsBySavedSearchId[savedSearch._id]?.map(alert => ({
       ...applyUserDisplays(users, alert, ['createdBy']),
       ...resolveAlertDisplayFields(alert, { savedSearch }),

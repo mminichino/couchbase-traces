@@ -19,9 +19,9 @@ import {
   taskExecutionSuccessCounter,
   timeExec,
 } from '@/tasks/metrics';
-import { runWithSchedulerLease } from '@/tasks/schedulerLease';
 import PingPongTask from '@/tasks/pingPongTask';
 import ProvisionDashboardsTask from '@/tasks/provisionDashboards';
+import { runWithSchedulerLease } from '@/tasks/schedulerLease';
 import { asTaskArgs, HdxTask, TaskArgs, TaskName } from '@/tasks/types';
 import logger from '@/utils/logger';
 

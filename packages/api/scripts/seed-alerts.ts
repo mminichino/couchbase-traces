@@ -1,5 +1,5 @@
 /**
- * Seeds this worktree's dev-slot Mongo with N alerts, for exercising the alerts
+ * Seeds the metadata store with N alerts, for exercising the alerts
  * page at scale.
  *
  * Half the alerts reference saved searches (up to 2 per search), half reference
@@ -10,32 +10,27 @@
  *   yarn seed:alerts --count 2000
  *   yarn seed:alerts --purge
  *
- * The Mongo URI defaults to the dev slot of the current git worktree, from
- * scripts/slots.sh. Override with --mongo-uri, MONGO_URI, or CBT_DEV_SLOT.
  * The dev stack must be up (`yarn dev`) and registered once, since
  * the script attaches everything to the existing team and log source. The
  * team is read from the metadata store, so CBT_METADATA_* must be set too.
  */
 import { formatTileAlertDisplayName } from '@couchbase-traces/common-utils/dist/alerts';
 import { DisplayType } from '@couchbase-traces/common-utils/dist/types';
-import mongoose from 'mongoose';
 
 import {
   closeMetadataStore,
   getMetadataStore,
   startMetadataStore,
 } from '@/metadata';
+import {
+  type AlertFields,
+  AlertSource,
+  AlertState,
+  AlertThresholdType,
+} from '@/metadata/schemas/alert';
 import type { DashboardInput } from '@/metadata/schemas/dashboard';
 import type { SavedSearchInput } from '@/metadata/schemas/savedSearch';
 import { WebhookService } from '@/metadata/schemas/webhook';
-import Alert, { AlertSource, AlertState } from '@/models/alert';
-
-// Several schemas rely on empty strings satisfying `required` (an empty
-// `where` is a valid search). src/models/index.ts installs this for the API;
-// this script deliberately does not import it, to stay clear of config and
-// telemetry bootstrapping.
-mongoose.Schema.Types.String.checkRequired(v => v != null);
-mongoose.set('strictQuery', false);
 
 const DEFAULT_COUNT = 1000;
 const DEFAULT_TAG = 'seeded';
@@ -64,7 +59,6 @@ const NOTE_TEXT = [
 type Args = {
   count: number;
   tag: string;
-  mongoUri: string | null;
   purge: boolean;
   help: boolean;
 };
@@ -75,7 +69,6 @@ const USAGE = [
   '  -n, --count N       number of alerts to create (default 1000)',
   '      --tag TAG       tag applied to seeded dashboards and saved searches',
   '                      (default "seeded")',
-  '      --mongo-uri URI override the dev-slot Mongo URI',
   '      --purge         delete everything carrying --tag instead of seeding',
 ].join('\n');
 
@@ -83,7 +76,6 @@ function parseArgs(argv: string[]): Args {
   const args: Args = {
     count: DEFAULT_COUNT,
     tag: DEFAULT_TAG,
-    mongoUri: null,
     purge: false,
     help: false,
   };
@@ -106,9 +98,6 @@ function parseArgs(argv: string[]): Args {
       case '--tag':
         args.tag = next();
         break;
-      case '--mongo-uri':
-        args.mongoUri = next();
-        break;
       case '--purge':
         args.purge = true;
         break;
@@ -122,20 +111,6 @@ function parseArgs(argv: string[]): Args {
   }
 
   return args;
-}
-
-/**
- * Mongo URI of this worktree's dev stack. `yarn seed:alerts` runs through
- * scripts/with-slots.sh, which sets CBT_DEV_MONGO_PORT.
- */
-function devSlotMongoUri(): string {
-  const port = process.env.CBT_DEV_MONGO_PORT;
-  if (!port) {
-    throw new Error(
-      'CBT_DEV_MONGO_PORT is not set. Run this with `yarn seed:alerts`, or pass --mongo-uri.',
-    );
-  }
-  return `mongodb://localhost:${port}/hyperdx`;
 }
 
 function randomInt(minInclusive: number, maxInclusive: number): number {
@@ -162,21 +137,18 @@ function* zip<A, B>(as: A[], bs: B[]): Generator<[A, B]> {
   }
 }
 
-/** Returns the inserted ids as strings; Mongoose casts them back on write. */
-async function insertInChunks<T extends { _id?: unknown }>(
-  insertMany: (docs: Record<string, unknown>[]) => Promise<T[]>,
-  docs: Record<string, unknown>[],
-): Promise<string[]> {
-  const ids: string[] = [];
+type SeedAlert = { fields: AlertFields; state: AlertState };
+
+async function insertInChunks(
+  insert: (doc: SeedAlert) => Promise<unknown>,
+  docs: SeedAlert[],
+): Promise<void> {
   for (let i = 0; i < docs.length; i += INSERT_CHUNK_SIZE) {
-    const inserted = await insertMany(docs.slice(i, i + INSERT_CHUNK_SIZE));
-    ids.push(...inserted.map(doc => String(doc._id)));
+    await Promise.all(docs.slice(i, i + INSERT_CHUNK_SIZE).map(insert));
   }
-  return ids;
 }
 
 function makeAlertDoc({
-  teamId,
   channel,
   index,
   displayName,
@@ -185,7 +157,6 @@ function makeAlertDoc({
   dashboardId,
   tileId,
 }: {
-  teamId: unknown;
   channel: { type: 'webhook'; webhookId: string };
   index: number;
   displayName: string;
@@ -193,28 +164,26 @@ function makeAlertDoc({
   savedSearchId?: string;
   dashboardId?: string;
   tileId?: string;
-}) {
-  return {
-    team: teamId,
+}): SeedAlert {
+  const fields: AlertFields = {
     source: savedSearchId ? AlertSource.SAVED_SEARCH : AlertSource.TILE,
     // Stored on the alert rather than left to derive from the referenced
     // saved search or dashboard tile, matching what writers persist now.
     displayName,
     tags,
-    savedSearch: savedSearchId ?? null,
-    groupBy: null,
-    dashboard: dashboardId ?? null,
-    tileId: tileId ?? null,
+    savedSearch: savedSearchId,
+    dashboard: dashboardId,
+    tileId,
     interval: pick(INTERVALS),
     threshold: randomInt(1, 500),
-    thresholdType: 'above',
+    thresholdType: AlertThresholdType.ABOVE,
     channel,
     channels: [channel],
-    state: pick(weightedStates),
     // Notes make rows taller and collapsible, which is what the virtualized
     // list has to measure rather than assume.
-    note: index % 5 === 0 ? pick(NOTE_TEXT) : null,
+    note: index % 5 === 0 ? pick(NOTE_TEXT) : undefined,
   };
+  return { fields, state: pick(weightedStates) };
 }
 
 function makeTile(
@@ -271,15 +240,18 @@ async function purge(tag: string) {
 
   // Alerts first: an alert whose dashboard or saved search is gone renders as
   // a nameless row rather than disappearing.
-  const { deletedCount: alertsDeleted } = await Alert.deleteMany({
-    $or: [
-      { dashboard: { $in: dashboardIds } },
-      { savedSearch: { $in: savedSearchIds } },
-    ],
-  });
+  const owned = await Promise.all([
+    ...dashboardIds.map(dashboard =>
+      store.alerts.findByDashboard(team._id, { dashboard }),
+    ),
+    ...savedSearchIds.map(id => store.alerts.findBySavedSearch(team._id, id)),
+  ]);
+  const alertsDeleted = owned.reduce((n, rows) => n + rows.length, 0);
   await Promise.all([
-    ...dashboardIds.map(id => store.dashboards.delete(team._id, id)),
-    ...savedSearchIds.map(id => store.savedSearches.delete(team._id, id)),
+    ...dashboardIds.map(id => store.dashboards.deleteWithAlerts(team._id, id)),
+    ...savedSearchIds.map(id =>
+      store.savedSearches.deleteWithAlerts(team._id, id),
+    ),
   ]);
   const seededWebhook = await store.webhooks.findByName(
     team._id,
@@ -305,8 +277,6 @@ async function seed(count: number, tag: string) {
     );
   }
   const store = getMetadataStore();
-  // Alerts stay on Mongo until C4, which casts the hex string to an ObjectId.
-  const teamId = new mongoose.Types.ObjectId(team._id);
 
   const source = (await store.sources.list(team._id)).find(
     s => s.kind === 'log',
@@ -378,12 +348,11 @@ async function seed(count: number, tag: string) {
     }),
   );
 
-  const alertDocs: Record<string, unknown>[] = [];
+  const alertDocs: SeedAlert[] = [];
   for (const [plan, savedSearchId] of zip(savedSearchPlans, savedSearchIds)) {
     for (let i = 0; i < plan.alerts; i++) {
       alertDocs.push(
         makeAlertDoc({
-          teamId,
           channel,
           index: alertDocs.length,
           displayName: plan.name,
@@ -436,7 +405,6 @@ async function seed(count: number, tag: string) {
     for (const tile of plan.alertedTiles) {
       alertDocs.push(
         makeAlertDoc({
-          teamId,
           channel,
           index: alertDocs.length,
           displayName: tile.displayName,
@@ -448,17 +416,20 @@ async function seed(count: number, tag: string) {
     }
   }
 
-  await insertInChunks(chunk => Alert.insertMany(chunk), alertDocs);
+  await insertInChunks(async ({ fields, state }) => {
+    const alert = await store.alerts.create(team._id, fields);
+    await store.alerts.setState(alert._id, state, []);
+  }, alertDocs);
 
   const byState = new Map<string, number>();
-  for (const alert of alertDocs) {
-    const state = String(alert.state);
+  for (const { state: alertState } of alertDocs) {
+    const state = String(alertState);
     byState.set(state, (byState.get(state) ?? 0) + 1);
   }
 
   console.log(
     [
-      `Seeded ${alertDocs.length} alerts for team ${String(teamId)}:`,
+      `Seeded ${alertDocs.length} alerts for team ${team._id}:`,
       `  ${savedSearchAlertTotal} on ${savedSearchIds.length} saved searches ` +
         `(<=${MAX_ALERTS_PER_SAVED_SEARCH} each)`,
       `  ${tileAlertTotal} on tiles across ${dashboardIds.length} dashboards ` +
@@ -477,11 +448,7 @@ async function main() {
     console.log(USAGE);
     return;
   }
-  const mongoUri = args.mongoUri ?? process.env.MONGO_URI ?? devSlotMongoUri();
-
-  console.log(`Connecting to ${mongoUri}`);
-  await mongoose.connect(mongoUri, { serverSelectionTimeoutMS: 5000 });
-  // Teams live in the metadata store; reads CBT_METADATA_* from the env.
+  // Reads CBT_METADATA_* from the env.
   await startMetadataStore();
   try {
     if (args.purge) {
@@ -491,7 +458,6 @@ async function main() {
     }
   } finally {
     await closeMetadataStore();
-    await mongoose.disconnect();
   }
 }
 

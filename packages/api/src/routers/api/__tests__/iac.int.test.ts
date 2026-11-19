@@ -6,6 +6,7 @@ import {
   getServer,
   randomMongoId,
 } from '@/fixtures';
+import { AlertSource, AlertState } from '@/metadata/schemas/alert';
 import {
   seedConnection,
   seedDashboard,
@@ -14,8 +15,8 @@ import {
   seedSource,
   seedWebhook,
 } from '@/metadata/testing/seed';
+import { alertDocs } from '@/metadata/testing/seedAlerts';
 import { toObjectId } from '@/models';
-import Alert, { AlertSource, AlertState } from '@/metadata/schemas/alert';
 
 describe('iac router', () => {
   const server = getServer();
@@ -205,7 +206,7 @@ describe('iac router', () => {
       source: source._id,
     });
 
-    await Alert.create({
+    await alertDocs.create({
       team: team._id,
       name: 'Too many errors',
       source: AlertSource.SAVED_SEARCH,
@@ -279,7 +280,7 @@ describe('iac router', () => {
     });
 
     const tileAlert = async (name: string, tileId: string) =>
-      Alert.create({
+      alertDocs.create({
         team: team._id,
         name,
         source: AlertSource.TILE,
@@ -333,7 +334,7 @@ describe('iac router', () => {
         },
       ],
     });
-    await Alert.create({
+    await alertDocs.create({
       team: team._id,
       name: 'On provisioned',
       source: AlertSource.TILE,
@@ -373,7 +374,7 @@ describe('iac router', () => {
     });
 
     const alert = async (name: string, dashboardId: unknown) =>
-      Alert.create({
+      alertDocs.create({
         team: team._id,
         name,
         source: AlertSource.TILE,
@@ -485,7 +486,7 @@ describe('iac router', () => {
       tiles: [],
       team: otherTeam,
     });
-    await Alert.create({
+    await alertDocs.create({
       team: otherTeam,
       threshold: 1,
       interval: '5m',

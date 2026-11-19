@@ -1,8 +1,8 @@
 import { type Cluster, DocumentNotFoundError, RangeScan } from 'couchbase';
 
+import { CouchbaseAlertQueries } from '@/metadata/couchbase/alertQueries';
 import { collectionOf, connectWithRetry } from '@/metadata/couchbase/cluster';
 import type { MetadataConfig } from '@/metadata/couchbase/config';
-import { CouchbaseAlertQueries } from '@/metadata/couchbase/alertQueries';
 import { CouchbaseFind } from '@/metadata/couchbase/find';
 import { CouchbaseKv } from '@/metadata/couchbase/kv';
 import {
@@ -20,10 +20,10 @@ import { createRepositories, type Repositories } from '@/metadata/repos';
 import { assertSchemaVersion } from '@/metadata/schemaVersion';
 import type {
   LockService,
+  MetaAlertQueries,
   MetaCollection,
   MetadataReadiness,
   MetadataStore,
-  MetaAlertQueries,
   MetaFind,
   MetaKv,
   MetaTransactions,

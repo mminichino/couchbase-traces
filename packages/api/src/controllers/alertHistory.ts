@@ -91,11 +91,12 @@ async function fetchGroupedWindows(
   range: DateRange,
   limit: number,
 ): Promise<Omit<IAlertHistory, 'alert'>[]> {
-  const groupedHistories = await getMetadataStore().alertHistory.groupedByWindow(
-    alertId,
-    range,
-    limit,
-  );
+  const groupedHistories =
+    await getMetadataStore().alertHistory.groupedByWindow(
+      alertId,
+      range,
+      limit,
+    );
   return mapGroupedHistories(groupedHistories);
 }
 

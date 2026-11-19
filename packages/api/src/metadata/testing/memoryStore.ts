@@ -1,7 +1,7 @@
 import { KvLockService } from '@/metadata/lock';
 import { createRepositories } from '@/metadata/repos';
-import { MemoryFind } from '@/metadata/testing/memoryFind';
 import { MemoryAlertQueries } from '@/metadata/testing/memoryAlertQueries';
+import { MemoryFind } from '@/metadata/testing/memoryFind';
 import { MemoryKv } from '@/metadata/testing/memoryKv';
 import { MemoryTransactions } from '@/metadata/testing/memoryTx';
 import type { MetadataReadiness, MetadataStore } from '@/metadata/types';

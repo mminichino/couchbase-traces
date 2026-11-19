@@ -26,8 +26,8 @@ import {
   startMetadataStore,
 } from '@/metadata';
 import { newId } from '@/metadata/ids';
-import { mongooseConnection } from '@/models';
 import { AlertInterval, AlertSource } from '@/metadata/schemas/alert';
+import { mongooseConnection } from '@/models';
 import Server from '@/server';
 import logger from '@/utils/logger';
 import { MetricModel } from '@/utils/logParser';

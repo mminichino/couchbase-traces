@@ -1,35 +1,36 @@
-import { Types } from 'mongoose';
-
+import { newId } from '@/metadata/ids';
 import {
   type AlertChannel,
-  type AlertDocument,
   AlertSource,
   AlertState,
   AlertThresholdType,
+  type IAlert,
 } from '@/metadata/schemas/alert';
 import { translateAlertDocumentToExternalAlertWithChartConfig } from '@/routers/external-api/v2/utils/alertChartConfig';
 import { translateAlertDocumentToExternalAlert } from '@/utils/externalApi';
 
 // A channel type this repo doesn't define -- see
-// models/__tests__/alert.test.ts for why. `value: any` (rather than an `as`
+// metadata/__tests__/alertChannels.test.ts for why. `value: any` (rather than an `as`
 // cast) keeps this off the no-unsafe-type-assertion budget while still
 // producing a value typed as AlertChannel for the call below.
 const foreignChannel = (value: any): AlertChannel => value;
 
 const createAlertDocument = (
   overrides: Partial<Record<string, unknown>> = {},
-): AlertDocument =>
+): IAlert =>
   ({
-    _id: new Types.ObjectId(),
-    team: new Types.ObjectId(),
+    _id: newId(),
+    team: newId(),
     threshold: 5,
     interval: '5m',
     thresholdType: AlertThresholdType.ABOVE,
     source: AlertSource.SAVED_SEARCH,
     state: AlertState.OK,
     channel: { type: null },
+    createdAt: new Date('2026-01-01T00:00:00Z'),
+    updatedAt: new Date('2026-01-01T00:00:00Z'),
     ...overrides,
-  }) as unknown as AlertDocument;
+  }) as unknown as IAlert;
 
 describe('utils/externalApi', () => {
   describe('translateAlertDocumentToExternalAlert', () => {
@@ -70,7 +71,7 @@ describe('utils/externalApi', () => {
     it('derives from a populated saved search when unset', () => {
       const alert = createAlertDocument({
         savedSearch: {
-          _id: new Types.ObjectId(),
+          _id: newId(),
           name: 'Payment 5xx',
           tags: ['payments'],
         },
@@ -88,7 +89,7 @@ describe('utils/externalApi', () => {
         tileId: 'tile-1',
         savedSearch: undefined,
         dashboard: {
-          _id: new Types.ObjectId(),
+          _id: newId(),
           name: 'Checkout',
           tags: ['team-checkout'],
           tiles: [{ id: 'tile-1', config: { name: 'Error rate' } }],
@@ -102,7 +103,7 @@ describe('utils/externalApi', () => {
     });
 
     it('falls back when the refs are unpopulated and the fields are unset', () => {
-      const alert = createAlertDocument({ savedSearch: new Types.ObjectId() });
+      const alert = createAlertDocument({ savedSearch: newId() });
 
       const translated = translateAlertDocumentToExternalAlert(alert);
 
@@ -141,8 +142,8 @@ describe('utils/externalApi', () => {
     // A populated ref is a document, and documents don't override toString();
     // stringifying one directly yields "[object Object]".
     it('stringifies ids from populated refs', () => {
-      const savedSearchId = new Types.ObjectId();
-      const dashboardId = new Types.ObjectId();
+      const savedSearchId = newId();
+      const dashboardId = newId();
       const alert = createAlertDocument({
         savedSearch: { _id: savedSearchId, name: 'S', tags: [] },
         dashboard: { _id: dashboardId, name: 'D', tags: [], tiles: [] },

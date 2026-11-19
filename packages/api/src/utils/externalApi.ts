@@ -17,8 +17,6 @@ import {
 import { omit } from 'lodash';
 
 import type { HydratedAlert } from '@/controllers/alertRefs';
-import type { IDashboard } from '@/metadata/schemas/dashboard';
-import type { ISavedSearch } from '@/metadata/schemas/savedSearch';
 import {
   AlertChannel,
   AlertInterval,
@@ -26,6 +24,8 @@ import {
   getAlertChannels,
   IAlert,
 } from '@/metadata/schemas/alert';
+import type { IDashboard } from '@/metadata/schemas/dashboard';
+import type { ISavedSearch } from '@/metadata/schemas/savedSearch';
 import { SeriesTile } from '@/routers/external-api/v2/utils/dashboards';
 import { resolveAlertDisplayFields } from '@/utils/alerts';
 import {
@@ -459,7 +459,9 @@ export function translateAlertDocumentToExternalAlert(
 
   // The ref fields are documents when the caller used one of the
   // `*WithDisplayRefs` readers and bare ids otherwise.
-  const dashboard = isRefDocument(alertObj.dashboard) ? alertObj.dashboard : null;
+  const dashboard = isRefDocument(alertObj.dashboard)
+    ? alertObj.dashboard
+    : null;
   const savedSearch = isRefDocument(alertObj.savedSearch)
     ? alertObj.savedSearch
     : null;

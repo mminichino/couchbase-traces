@@ -7,8 +7,8 @@ import {
 } from '@/metadata/errors';
 import type {
   ExpiryOptions,
-  MetaCollection,
   MetaAlertQueries,
+  MetaCollection,
   MetaFind,
   MetaKv,
   MetaTransactions,

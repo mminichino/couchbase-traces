@@ -25,8 +25,6 @@ const alertsPageCursorSchema = z.object({
   id: objectIdSchema,
 });
 
-type AlertsPageCursor = z.infer<typeof alertsPageCursorSchema>;
-
 /** Filter parameters shared by the internal alerts page and the v2 list endpoint. */
 export const alertsFilterShape = {
   /** A list of tags to filter alerts by. Returns alerts that have any of the specified tags */
@@ -94,7 +92,9 @@ export type AlertsPageParams = z.infer<typeof alertsPageQuerySchema>;
  * as OK and a missing source as saved-search (the schema defaults); the
  * query layer applies both.
  */
-export function buildAlertsFilter(params: AlertsFilterParams): AlertsPageFilter {
+export function buildAlertsFilter(
+  params: AlertsFilterParams,
+): AlertsPageFilter {
   return {
     ...(params.tag != null && { tags: params.tag }),
     ...(params.state != null && { states: params.state }),
@@ -115,7 +115,9 @@ export function buildAlertsPageFilter(params: AlertsPageParams): {
   const cursor = params.cursor
     ? decodeCursor(params.cursor, alertsPageCursorSchema)
     : null;
-  return cursor == null ? { filter } : { filter, after: { name: cursor.n, id: cursor.id } };
+  return cursor == null
+    ? { filter }
+    : { filter, after: { name: cursor.n, id: cursor.id } };
 }
 
 export async function getAlertsPage(teamId: string, params: AlertsPageParams) {

@@ -57,19 +57,18 @@ import { serializeError } from 'serialize-error';
 
 import { ALERT_HISTORY_QUERY_CONCURRENCY } from '@/controllers/alertHistory';
 import { getMetadataStore } from '@/metadata';
-import type { IDashboard } from '@/metadata/schemas/dashboard';
-import type { ISavedSearch } from '@/metadata/schemas/savedSearch';
-import { ISource } from '@/metadata/schemas/source';
-import type { IWebhook } from '@/metadata/schemas/webhook';
 import { AlertState, IAlert, IAlertError } from '@/metadata/schemas/alert';
 import {
   AggregatedAlertHistory,
   attributesToGroupValues,
-  GroupValue,
   groupValuesToAttributes,
   IAlertHistory,
   IAlertHistoryAnalytics,
 } from '@/metadata/schemas/alertHistory';
+import type { IDashboard } from '@/metadata/schemas/dashboard';
+import type { ISavedSearch } from '@/metadata/schemas/savedSearch';
+import { ISource } from '@/metadata/schemas/source';
+import type { IWebhook } from '@/metadata/schemas/webhook';
 import {
   isClientTimeoutOrAbortError,
   isQueryTimeoutError,
@@ -1912,10 +1911,7 @@ export const getPreviousAlertHistories = async (
       .flat()
       .filter((h): h is AggregatedAlertHistory => h !== undefined)
       .map(history => {
-        const key = computeHistoryMapKey(
-          history._id,
-          history.group || '',
-        );
+        const key = computeHistoryMapKey(history._id, history.group || '');
         return [key, history];
       }),
   );
@@ -1978,10 +1974,11 @@ export const getConsecutiveWindowHistories = async (
         );
         // Failed evaluations (ERROR rows) are not evaluated windows and
         // must not affect consecutive-window counting.
-        const histories = await getMetadataStore().alertHistory.rangeExcludingErrors(
-          alert.id,
-          { gte: earliestAllowedTime, lt: windowStart },
-        );
+        const histories =
+          await getMetadataStore().alertHistory.rangeExcludingErrors(alert.id, {
+            gte: earliestAllowedTime,
+            lt: windowStart,
+          });
         return { alertId: alert.id, histories };
       }),
     ),

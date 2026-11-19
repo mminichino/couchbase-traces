@@ -14,6 +14,7 @@ import {
   RAW_SQL_ALERT_TEMPLATE,
 } from '@/fixtures';
 import { McpContext } from '@/mcp/tools/types';
+import { AlertSource, AlertState } from '@/metadata/schemas/alert';
 import { WebhookService } from '@/metadata/schemas/webhook';
 import {
   seedConnection,
@@ -22,7 +23,7 @@ import {
   seedSource,
   seedWebhook,
 } from '@/metadata/testing/seed';
-import Alert, { AlertSource, AlertState } from '@/metadata/schemas/alert';
+import { alertDocs } from '@/metadata/testing/seedAlerts';
 
 import { callTool, createTestClient, getFirstText } from './mcpTestUtils';
 
@@ -119,7 +120,7 @@ describe('MCP Alert Tools', () => {
 
   async function createTestAlert(overrides: Record<string, unknown> = {}) {
     const savedSearch = await createTestSavedSearch();
-    return new Alert({
+    return alertDocs.create({
       team: team._id,
       source: 'saved_search',
       savedSearch: savedSearch._id,
@@ -130,7 +131,7 @@ describe('MCP Alert Tools', () => {
       state: AlertState.OK,
       createdBy: user._id,
       ...overrides,
-    }).save();
+    });
   }
 
   // ─── clickstack_get_alert ────────────────────────────────────────────────────
@@ -218,7 +219,7 @@ describe('MCP Alert Tools', () => {
 
       it('derives displayName from the saved search and leaves name unset', async () => {
         const savedSearch = await createTestSavedSearch(); // name: 'Test Saved Search'
-        await new Alert({
+        await alertDocs.create({
           team: team._id,
           source: 'saved_search',
           savedSearch: savedSearch._id,
@@ -229,7 +230,7 @@ describe('MCP Alert Tools', () => {
           state: AlertState.OK,
           createdBy: user._id,
           // no name set
-        }).save();
+        });
 
         const result = await callTool(client, 'cbt_get_alert', {});
 
@@ -244,7 +245,7 @@ describe('MCP Alert Tools', () => {
 
       it('derives displayName from the dashboard tile and leaves name unset', async () => {
         const dashboard = await createTestDashboardWithTile(); // tile name: 'Error Count'
-        await new Alert({
+        await alertDocs.create({
           team: team._id,
           source: 'tile',
           dashboard: dashboard._id,
@@ -256,7 +257,7 @@ describe('MCP Alert Tools', () => {
           state: AlertState.OK,
           createdBy: user._id,
           // no name set
-        }).save();
+        });
 
         const result = await callTool(client, 'cbt_get_alert', {});
 
@@ -626,7 +627,7 @@ describe('MCP Alert Tools', () => {
         });
 
         // Mongo persists the internal dialect the check-alerts task reads.
-        const stored = await Alert.findById(output.id);
+        const stored = await alertDocs.findById(output.id);
         expect(stored!.source).toBe(AlertSource.INLINE);
         expect(stored!.chartConfig).toMatchObject({
           source: traceSource._id.toString(),
@@ -663,7 +664,7 @@ describe('MCP Alert Tools', () => {
         expect(updated.threshold).toBe(42);
         expect(updated.chartConfig).toMatchObject({ groupBy: 'ServiceName' });
 
-        const stored = await Alert.findById(created.id);
+        const stored = await alertDocs.findById(created.id);
         expect(stored!.threshold).toBe(42);
         expect(stored!.chartConfig).toMatchObject({ groupBy: 'ServiceName' });
       });
@@ -779,7 +780,7 @@ describe('MCP Alert Tools', () => {
         });
 
         // Stored with the internal field names.
-        const stored = await Alert.findById(output.id);
+        const stored = await alertDocs.findById(output.id);
         expect(stored!.chartConfig).toMatchObject({
           configType: 'sql',
           connection: connection._id.toString(),
@@ -814,7 +815,7 @@ describe('MCP Alert Tools', () => {
           periodAggFn: 'delta',
         });
 
-        const stored = await Alert.findById(created.id);
+        const stored = await alertDocs.findById(created.id);
         expect(stored!.chartConfig).toMatchObject({
           select: [{ isDelta: true }],
         });
@@ -836,7 +837,7 @@ describe('MCP Alert Tools', () => {
           id: created.id,
         });
         expect(resent.isError).toBeFalsy();
-        const storedAfter = await Alert.findById(created.id);
+        const storedAfter = await alertDocs.findById(created.id);
         expect(storedAfter!.chartConfig).toMatchObject({
           select: [{ isDelta: true }],
         });
@@ -864,7 +865,7 @@ describe('MCP Alert Tools', () => {
           where: 'ServiceName:api',
         });
 
-        const stored = await Alert.findById(output.id);
+        const stored = await alertDocs.findById(output.id);
         expect(stored!.chartConfig).toMatchObject({
           name: 'Error Rate Query',
           where: 'ServiceName:api',
@@ -903,7 +904,7 @@ describe('MCP Alert Tools', () => {
 
         // Seed a chartConfig name directly (as the internal UI flow would)
         // to exercise the name fallback.
-        await Alert.findByIdAndUpdate(created.id, {
+        await alertDocs.findByIdAndUpdate(created.id, {
           $set: { 'chartConfig.name': 'Error Rate Query' },
         });
 
@@ -939,7 +940,7 @@ describe('MCP Alert Tools', () => {
         // Inline alerts have no parent entity to inherit tags from.
         expect(output.tags).toEqual([]);
 
-        const stored = await Alert.findById(output.id);
+        const stored = await alertDocs.findById(output.id);
         expect(stored!.displayName).toBe('Trace error rate');
         expect(stored!.tags).toEqual([]);
       });
@@ -1126,7 +1127,7 @@ describe('MCP Alert Tools', () => {
         const webhook = await createTestWebhook();
 
         // Create the alert first
-        const alert = await new Alert({
+        const alert = await alertDocs.create({
           team: team._id,
           source: 'saved_search',
           savedSearch: savedSearch._id,
@@ -1140,7 +1141,7 @@ describe('MCP Alert Tools', () => {
           state: AlertState.OK,
           createdBy: user._id,
           name: 'Original Name',
-        }).save();
+        });
 
         const result = await callTool(client, 'cbt_save_alert', {
           id: alert._id.toString(),
@@ -1230,7 +1231,7 @@ describe('MCP Alert Tools', () => {
         expect(output.channels).toEqual(newChannels);
         expect(output.channel).toEqual(newChannels[0]);
 
-        const persisted = await Alert.findById(createdOutput.id);
+        const persisted = await alertDocs.findById(createdOutput.id);
         expect(persisted?.channels).toEqual(newChannels);
         expect(persisted?.channel).toEqual(newChannels[0]);
       });
@@ -1261,7 +1262,7 @@ describe('MCP Alert Tools', () => {
         });
         expect(tileResult.isError).toBeFalsy();
 
-        let updatedAlert = await Alert.findById(alert._id);
+        let updatedAlert = await alertDocs.findById(alert._id);
         expect(updatedAlert?.source).toBe(AlertSource.TILE);
         expect(updatedAlert?.dashboard?.toString()).toBe(
           dashboard._id.toString(),
@@ -1287,7 +1288,7 @@ describe('MCP Alert Tools', () => {
         });
         expect(savedSearchResult.isError).toBeFalsy();
 
-        updatedAlert = await Alert.findById(alert._id);
+        updatedAlert = await alertDocs.findById(alert._id);
         expect(updatedAlert?.source).toBe(AlertSource.SAVED_SEARCH);
         expect(updatedAlert?.savedSearch?.toString()).toBe(
           savedSearch._id.toString(),

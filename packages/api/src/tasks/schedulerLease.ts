@@ -43,11 +43,7 @@ export async function runWithSchedulerLease(
     const locks = getMetadataStore().locks;
     const ttlMs = opts.tickMs * 2;
     const owner = `${os.hostname()}:${process.pid}:${newId()}`;
-    const lease = await locks.acquire(
-      CHECK_ALERTS_LOCK,
-      ttlMs,
-      owner,
-    );
+    const lease = await locks.acquire(CHECK_ALERTS_LOCK, ttlMs, owner);
     if (lease == null) {
       logger.debug(
         'Another runner holds the check-alerts lease; skipping this tick',

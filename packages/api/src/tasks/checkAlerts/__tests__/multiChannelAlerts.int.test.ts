@@ -1,15 +1,15 @@
 import { AlertErrorType } from '@couchbase-traces/common-utils/dist/types';
-import mongoose from 'mongoose';
 
 import { createAlert } from '@/controllers/alerts';
 import { createTeam } from '@/controllers/team';
 import { getServer } from '@/fixtures';
-import Alert, {
+import { newId } from '@/metadata/ids';
+import {
   AlertSource,
   AlertState,
   AlertThresholdType,
 } from '@/metadata/schemas/alert';
-import AlertHistory from '@/metadata/schemas/alertHistory';
+import { alertDocs, alertHistoryDocs } from '@/metadata/testing/seedAlerts';
 import { loadProvider } from '@/tasks/checkAlerts/providers';
 
 import {
@@ -77,7 +77,7 @@ describe('Multi-channel alert dispatch', () => {
         savedSearchId: savedSearch.id,
         name: 'Multi Channel Alert',
       },
-      new mongoose.Types.ObjectId(),
+      newId(),
     );
 
     await seedTriggeringLogs();
@@ -115,7 +115,7 @@ describe('Multi-channel alert dispatch', () => {
         savedSearchId: savedSearch.id,
         name: 'Partial Failure Alert',
       },
-      new mongoose.Types.ObjectId(),
+      newId(),
     );
 
     await seedTriggeringLogs();
@@ -141,7 +141,7 @@ describe('Multi-channel alert dispatch', () => {
       AlertErrorType.WEBHOOK_ERROR,
     );
 
-    const errorHistories = await AlertHistory.find({
+    const errorHistories = await alertHistoryDocs.find({
       alert: alert.id,
       state: AlertState.ERROR,
     });
@@ -167,7 +167,7 @@ describe('Multi-channel alert dispatch', () => {
         savedSearchId: savedSearch.id,
         name: 'Single Failing Channel Alert',
       },
-      new mongoose.Types.ObjectId(),
+      newId(),
     );
 
     await seedTriggeringLogs();
@@ -189,7 +189,7 @@ describe('Multi-channel alert dispatch', () => {
     );
     expect(updated!.executionErrors![0].message).toContain('Hook Bad');
 
-    const errorHistories = await AlertHistory.find({
+    const errorHistories = await alertHistoryDocs.find({
       alert: alert.id,
       state: AlertState.ERROR,
     });
@@ -206,7 +206,7 @@ describe('Multi-channel alert dispatch', () => {
 
     // Written directly, bypassing makeAlert, to simulate a document stored
     // before `channels` existed.
-    const alert = await new Alert({
+    const alert = await alertDocs.create({
       team: team._id,
       source: AlertSource.SAVED_SEARCH,
       channel: { type: 'webhook', webhookId: webhook._id.toString() },
@@ -216,7 +216,7 @@ describe('Multi-channel alert dispatch', () => {
       savedSearch: savedSearch._id,
       name: 'Legacy Alert',
       state: 'OK',
-    }).save();
+    });
 
     expect(alert.channels).toBeUndefined();
 

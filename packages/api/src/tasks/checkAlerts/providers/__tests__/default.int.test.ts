@@ -1,5 +1,4 @@
 import { DisplayType } from '@couchbase-traces/common-utils/dist/types';
-import mongoose from 'mongoose';
 
 import { createAlert } from '@/controllers/alerts';
 import { createTeam } from '@/controllers/team';
@@ -9,6 +8,8 @@ import {
   makeTile,
   RAW_SQL_ALERT_TEMPLATE,
 } from '@/fixtures';
+import { newId } from '@/metadata/ids';
+import { AlertSource, AlertThresholdType } from '@/metadata/schemas/alert';
 import {
   patchSource,
   seedConnection,
@@ -16,7 +17,7 @@ import {
   seedSavedSearch,
   seedSource,
 } from '@/metadata/testing/seed';
-import Alert, { AlertSource, AlertThresholdType } from '@/metadata/schemas/alert';
+import { alertDocs } from '@/metadata/testing/seedAlerts';
 import {
   AlertProvider,
   AlertTaskType,
@@ -112,10 +113,10 @@ describe('DefaultAlertProvider', () => {
           interval: '5m',
           channel: {
             type: 'webhook',
-            webhookId: new mongoose.Types.ObjectId().toString(),
+            webhookId: newId().toString(),
           },
         },
-        new mongoose.Types.ObjectId(),
+        newId(),
       );
 
       const result = await provider.getAlertTasks();
@@ -183,10 +184,10 @@ describe('DefaultAlertProvider', () => {
           interval: '5m',
           channel: {
             type: 'webhook',
-            webhookId: new mongoose.Types.ObjectId().toString(),
+            webhookId: newId().toString(),
           },
         },
-        new mongoose.Types.ObjectId(),
+        newId(),
       );
 
       const result = await provider.getAlertTasks();
@@ -224,16 +225,16 @@ describe('DefaultAlertProvider', () => {
 
       // Create alert directly in database with non-existent saved search
       // This simulates an alert that exists but references a deleted saved search
-      await Alert.create({
+      await alertDocs.create({
         team: team._id,
         source: AlertSource.SAVED_SEARCH,
-        savedSearch: new mongoose.Types.ObjectId(), // Non-existent ID
+        savedSearch: newId(), // Non-existent ID
         threshold: 10,
         thresholdType: AlertThresholdType.ABOVE,
         interval: '5m',
         channel: {
           type: 'webhook',
-          webhookId: new mongoose.Types.ObjectId().toString(),
+          webhookId: newId().toString(),
         },
       });
 
@@ -245,14 +246,14 @@ describe('DefaultAlertProvider', () => {
       const team = await createTeam({ name: 'Test Team' });
 
       // Create alert directly without source
-      await Alert.create({
+      await alertDocs.create({
         team: team._id,
         threshold: 10,
         thresholdType: AlertThresholdType.ABOVE,
         interval: '5m',
         channel: {
           type: 'webhook',
-          webhookId: new mongoose.Types.ObjectId().toString(),
+          webhookId: newId().toString(),
         },
         // Missing source field
       });
@@ -309,10 +310,10 @@ describe('DefaultAlertProvider', () => {
           interval: '5m',
           channel: {
             type: 'webhook',
-            webhookId: new mongoose.Types.ObjectId().toString(),
+            webhookId: newId().toString(),
           },
         },
-        new mongoose.Types.ObjectId(),
+        newId(),
       );
 
       // Create tile and alert
@@ -338,10 +339,10 @@ describe('DefaultAlertProvider', () => {
           interval: '15m',
           channel: {
             type: 'webhook',
-            webhookId: new mongoose.Types.ObjectId().toString(),
+            webhookId: newId().toString(),
           },
         },
-        new mongoose.Types.ObjectId(),
+        newId(),
       );
 
       const result = await provider.getAlertTasks();
@@ -434,10 +435,10 @@ describe('DefaultAlertProvider', () => {
           interval: '5m',
           channel: {
             type: 'webhook',
-            webhookId: new mongoose.Types.ObjectId().toString(),
+            webhookId: newId().toString(),
           },
         },
-        new mongoose.Types.ObjectId(),
+        newId(),
       );
 
       await createAlert(
@@ -450,10 +451,10 @@ describe('DefaultAlertProvider', () => {
           interval: '15m',
           channel: {
             type: 'webhook',
-            webhookId: new mongoose.Types.ObjectId().toString(),
+            webhookId: newId().toString(),
           },
         },
-        new mongoose.Types.ObjectId(),
+        newId(),
       );
 
       const result = await provider.getAlertTasks();
@@ -473,17 +474,17 @@ describe('DefaultAlertProvider', () => {
 
       // Create alert directly in database with non-existent dashboard
       // This simulates an alert that exists but references a deleted dashboard
-      await Alert.create({
+      await alertDocs.create({
         team: team._id,
         source: AlertSource.TILE,
-        dashboard: new mongoose.Types.ObjectId(), // Non-existent ID
+        dashboard: newId(), // Non-existent ID
         tileId: 'some-tile-id',
         threshold: 10,
         thresholdType: AlertThresholdType.ABOVE,
         interval: '5m',
         channel: {
           type: 'webhook',
-          webhookId: new mongoose.Types.ObjectId().toString(),
+          webhookId: newId().toString(),
         },
       });
 
@@ -501,7 +502,7 @@ describe('DefaultAlertProvider', () => {
       });
 
       // Create alert directly in database with non-existent tile ID
-      await Alert.create({
+      await alertDocs.create({
         team: team._id,
         source: AlertSource.TILE,
         dashboard: dashboard._id,
@@ -511,7 +512,7 @@ describe('DefaultAlertProvider', () => {
         interval: '5m',
         channel: {
           type: 'webhook',
-          webhookId: new mongoose.Types.ObjectId().toString(),
+          webhookId: newId().toString(),
         },
       });
 
@@ -524,7 +525,7 @@ describe('DefaultAlertProvider', () => {
 
       const tile = makeTile({
         id: 'test-tile',
-        sourceId: new mongoose.Types.ObjectId().toString(), // Non-existent source
+        sourceId: newId().toString(), // Non-existent source
       });
 
       const dashboard = await seedDashboard({
@@ -534,7 +535,7 @@ describe('DefaultAlertProvider', () => {
       });
 
       // Create alert directly in database
-      await Alert.create({
+      await alertDocs.create({
         team: team._id,
         source: AlertSource.TILE,
         dashboard: dashboard._id,
@@ -544,7 +545,7 @@ describe('DefaultAlertProvider', () => {
         interval: '5m',
         channel: {
           type: 'webhook',
-          webhookId: new mongoose.Types.ObjectId().toString(),
+          webhookId: newId().toString(),
         },
       });
 
@@ -565,7 +566,7 @@ describe('DefaultAlertProvider', () => {
           tableName: 'logs',
         },
         timestampValueExpression: 'timestamp',
-        connection: new mongoose.Types.ObjectId(), // Non-existent connection
+        connection: newId(), // Non-existent connection
       });
 
       const savedSearch = await seedSavedSearch({
@@ -580,7 +581,7 @@ describe('DefaultAlertProvider', () => {
       });
 
       // Create alert directly in database
-      await Alert.create({
+      await alertDocs.create({
         team: team._id,
         source: AlertSource.SAVED_SEARCH,
         savedSearch: savedSearch._id,
@@ -589,7 +590,7 @@ describe('DefaultAlertProvider', () => {
         interval: '5m',
         channel: {
           type: 'webhook',
-          webhookId: new mongoose.Types.ObjectId().toString(),
+          webhookId: newId().toString(),
         },
       });
 
@@ -601,7 +602,7 @@ describe('DefaultAlertProvider', () => {
       const team = await createTeam({ name: 'Test Team' });
 
       // Create alert with invalid source
-      await Alert.create({
+      await alertDocs.create({
         team: team._id,
         source: 'UNSUPPORTED_SOURCE' as any,
         threshold: 10,
@@ -609,7 +610,7 @@ describe('DefaultAlertProvider', () => {
         interval: '5m',
         channel: {
           type: 'webhook',
-          webhookId: new mongoose.Types.ObjectId().toString(),
+          webhookId: newId().toString(),
         },
       });
 
@@ -666,10 +667,10 @@ describe('DefaultAlertProvider', () => {
           interval: '5m',
           channel: {
             type: 'webhook',
-            webhookId: new mongoose.Types.ObjectId().toString(),
+            webhookId: newId().toString(),
           },
         },
-        new mongoose.Types.ObjectId(),
+        newId(),
       );
 
       const result = await provider.getAlertTasks();
@@ -731,10 +732,10 @@ describe('DefaultAlertProvider', () => {
           interval: '5m',
           channel: {
             type: 'webhook',
-            webhookId: new mongoose.Types.ObjectId().toString(),
+            webhookId: newId().toString(),
           },
         },
-        new mongoose.Types.ObjectId(),
+        newId(),
       );
 
       const result = await provider.getAlertTasks();
@@ -783,10 +784,10 @@ describe('DefaultAlertProvider', () => {
           interval: '5m',
           channel: {
             type: 'webhook',
-            webhookId: new mongoose.Types.ObjectId().toString(),
+            webhookId: newId().toString(),
           },
         },
-        new mongoose.Types.ObjectId(),
+        newId(),
       );
 
       const result = await provider.getAlertTasks();
@@ -863,10 +864,10 @@ describe('DefaultAlertProvider', () => {
           interval: '5m',
           channel: {
             type: 'webhook',
-            webhookId: new mongoose.Types.ObjectId().toString(),
+            webhookId: newId().toString(),
           },
         },
-        new mongoose.Types.ObjectId(),
+        newId(),
       );
 
       let result = await provider.getAlertTasks();
@@ -923,10 +924,10 @@ describe('DefaultAlertProvider', () => {
           interval: '5m',
           channel: {
             type: 'webhook',
-            webhookId: new mongoose.Types.ObjectId().toString(),
+            webhookId: newId().toString(),
           },
         },
-        new mongoose.Types.ObjectId(),
+        newId(),
       );
 
       let result = await provider.getAlertTasks();
@@ -963,8 +964,8 @@ describe('DefaultAlertProvider', () => {
     it('should handle different saved search IDs', () => {
       const customSavedSearch: any = {
         id: 'custom-search-123',
-        team: new mongoose.Types.ObjectId(),
-        source: new mongoose.Types.ObjectId(),
+        team: newId(),
+        source: newId(),
         select: 'Body',
         where: 'Body: "error"',
         whereLanguage: 'lucene',
@@ -1028,8 +1029,8 @@ describe('DefaultAlertProvider', () => {
     it('should handle saved search ID with special characters', () => {
       const specialSavedSearch: any = {
         id: 'search-with-special-chars-123_456',
-        team: new mongoose.Types.ObjectId(),
-        source: new mongoose.Types.ObjectId(),
+        team: newId(),
+        source: newId(),
         select: 'Body',
         where: 'Body: "error"',
         whereLanguage: 'lucene',

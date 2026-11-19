@@ -9,7 +9,7 @@ import {
   seedSource,
   seedWebhook,
 } from '@/metadata/testing/seed';
-import Alert from '@/metadata/schemas/alert';
+import { alertDocs } from '@/metadata/testing/seedAlerts';
 import { DataClient } from '@/query';
 import { processAlert } from '@/tasks/checkAlerts';
 import { AlertTaskType } from '@/tasks/checkAlerts/providers';
@@ -118,10 +118,9 @@ export const runAlert = async ({
   savedSearch: any;
   webhooks: IWebhook[];
 }) => {
-  const enhancedAlert: any = await Alert.findById(alertId).populate([
-    'team',
-    'savedSearch',
-  ]);
+  const enhancedAlert: any = await alertDocs
+    .findById(alertId)
+    .populate(['team', 'savedSearch']);
   const details: any = {
     alert: enhancedAlert,
     source,
@@ -139,5 +138,5 @@ export const runAlert = async ({
     alertProvider,
     new Map(webhooks.map(w => [w._id.toString(), w])),
   );
-  return Alert.findById(alertId);
+  return alertDocs.findById(alertId);
 };

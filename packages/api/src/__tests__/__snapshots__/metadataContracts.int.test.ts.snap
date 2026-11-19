@@ -132,7 +132,6 @@ exports[`metadata wire contracts: internal API GET /dashboards 1`] = `
       {
         "config": {
           "alert": {
-            "__v": 0,
             "_id": "<id:9>",
             "channel": {
               "type": "webhook",
@@ -587,7 +586,6 @@ exports[`metadata wire contracts: internal API PATCH /saved-search/:id 1`] = `
 exports[`metadata wire contracts: internal API PUT /alerts/:id 1`] = `
 {
   "data": {
-    "__v": 0,
     "_id": "<id:10>",
     "channel": {
       "type": "webhook",
@@ -630,7 +628,6 @@ exports[`metadata wire contracts: internal API create responses 1`] = `
 {
   "POST /alerts (saved search)": {
     "data": {
-      "__v": 0,
       "_id": "<id:10>",
       "channel": {
         "type": "webhook",
@@ -669,7 +666,6 @@ exports[`metadata wire contracts: internal API create responses 1`] = `
   },
   "POST /alerts (tile)": {
     "data": {
-      "__v": 0,
       "_id": "<id:9>",
       "channel": {
         "type": "webhook",

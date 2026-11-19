@@ -8,7 +8,7 @@ import {
   listWebhooks,
   seedWebhook,
 } from '@/metadata/testing/seed';
-import Alert from '@/metadata/schemas/alert';
+import { alertDocs } from '@/metadata/testing/seedAlerts';
 import * as transports from '@/tasks/checkAlerts/transports';
 import { buildWebhookTemplateVariables } from '@/tasks/checkAlerts/transports/generic';
 import type { Message } from '@/tasks/checkAlerts/transports/types';
@@ -279,14 +279,14 @@ describe('webhooks router', () => {
     });
 
     // 2. Create an alert pointing to that webhook
-    await Alert.create({
+    await alertDocs.create({
       team: team._id,
       name: 'Test Alert',
       channel: {
         type: 'webhook',
         webhookId: webhook._id.toString(),
       },
-      source: 'logs',
+      source: 'saved_search',
       groupBy: 'test',
       interval: '5m',
       threshold: 1,
@@ -311,14 +311,14 @@ describe('webhooks router', () => {
       team: team._id,
     });
 
-    const alert = await Alert.create({
+    const alert = await alertDocs.create({
       team: team._id,
       name: 'Test Alert',
       channel: {
         type: 'webhook',
         webhookId: webhook._id.toString(),
       },
-      source: 'logs',
+      source: 'saved_search',
       groupBy: 'test',
       interval: '5m',
       threshold: 1,
@@ -329,7 +329,7 @@ describe('webhooks router', () => {
     await agent.delete(`/webhooks/${webhook._id}`).expect(409);
 
     // Remove the alert
-    await Alert.findByIdAndDelete(alert._id);
+    await alertDocs.findByIdAndDelete(alert._id);
 
     // Now deletion should succeed
     await agent.delete(`/webhooks/${webhook._id}`).expect(200);

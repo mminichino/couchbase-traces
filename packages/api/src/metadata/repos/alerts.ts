@@ -5,8 +5,8 @@ import { definedOnly, TeamDocs } from '@/metadata/repos/teamDocs';
 import {
   type AlertDoc,
   AlertDocSchema,
-  alertFieldsViolation,
   type AlertFields,
+  alertFieldsViolation,
   AlertSource,
   type AlertState,
   type IAlert,

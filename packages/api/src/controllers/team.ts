@@ -122,6 +122,8 @@ export async function getTags(teamId: IdLike, resourceType?: TagResourceType) {
   }
 
   const kinds: CouchbaseTagKind[] =
-    resourceType == null ? ['dashboard', 'savedSearch', 'alert'] : [resourceType];
+    resourceType == null
+      ? ['dashboard', 'savedSearch', 'alert']
+      : [resourceType];
   return getMetadataStore().tags.distinct(teamId.toString(), kinds);
 }

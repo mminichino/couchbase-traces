@@ -2,14 +2,14 @@ import type { Metadata } from '@couchbase-traces/common-utils/dist/core/metadata
 import type { ChartConfigWithOptDateRange } from '@couchbase-traces/common-utils/dist/types';
 
 import { registerExtensions } from '@/extensions';
-import type { ISource } from '@/metadata/schemas/source';
 import type { AlertState, IAlert, IAlertError } from '@/metadata/schemas/alert';
 import type {
   IAlertHistory,
   IAlertHistoryAnalytics,
 } from '@/metadata/schemas/alertHistory';
-import type { DataClient } from '@/query';
 import type { AggregatedAlertHistory } from '@/metadata/schemas/alertHistory';
+import type { ISource } from '@/metadata/schemas/source';
+import type { DataClient } from '@/query';
 import type {
   AlertDetails,
   AlertProvider,

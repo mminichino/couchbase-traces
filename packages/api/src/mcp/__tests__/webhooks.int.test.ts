@@ -10,7 +10,7 @@ import {
   seedTeam,
   seedWebhook,
 } from '@/metadata/testing/seed';
-import Alert from '@/metadata/schemas/alert';
+import { alertDocs } from '@/metadata/testing/seedAlerts';
 
 import { callTool, createTestClient, getFirstText } from './mcpTestUtils';
 
@@ -326,7 +326,7 @@ describe('MCP Webhook Tools', () => {
         service: WebhookService.Generic,
         url: 'https://example.com/webhook',
       });
-      await Alert.create({
+      await alertDocs.create({
         team: team._id,
         source: 'saved_search',
         threshold: 1,

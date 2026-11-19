@@ -4,6 +4,7 @@ import mongoose from 'mongoose';
 
 import { getAgent, getLoggedInAgent, getServer } from '@/fixtures';
 import { getMetadataStore } from '@/metadata';
+import { AlertSource, AlertThresholdType } from '@/metadata/schemas/alert';
 import {
   findUser,
   getUserDoc,
@@ -11,7 +12,7 @@ import {
   patchUser,
   seedUser,
 } from '@/metadata/testing/seed';
-import Alert, { AlertSource, AlertThresholdType } from '@/metadata/schemas/alert';
+import { alertDocs } from '@/metadata/testing/seedAlerts';
 
 const invites = () => getMetadataStore().teamInvites;
 
@@ -102,7 +103,7 @@ describe('team router', () => {
       })
       .expect(200);
 
-    await Alert.create({
+    await alertDocs.create({
       team: team.id,
       source: AlertSource.SAVED_SEARCH,
       savedSearch: new mongoose.Types.ObjectId(),
@@ -116,7 +117,7 @@ describe('team router', () => {
       tags: ['test2', 'test3'],
     });
 
-    await Alert.create({
+    await alertDocs.create({
       team: new mongoose.Types.ObjectId(),
       source: AlertSource.SAVED_SEARCH,
       savedSearch: new mongoose.Types.ObjectId(),
@@ -357,7 +358,7 @@ describe('team router', () => {
       team: team.id,
     });
 
-    const alert = await Alert.create({
+    const alert = await alertDocs.create({
       createdBy: user1._id,
       team: team.id,
       source: AlertSource.SAVED_SEARCH,
@@ -371,7 +372,7 @@ describe('team router', () => {
       },
     });
 
-    const alertInAnotherTeam = await Alert.create({
+    const alertInAnotherTeam = await alertDocs.create({
       createdBy: user1._id,
       team: new mongoose.Types.ObjectId(), // Different team ID
       source: AlertSource.SAVED_SEARCH,
@@ -387,14 +388,14 @@ describe('team router', () => {
 
     await agent.delete(`/team/member/${user1._id}`).expect(200);
 
-    const alertAfterUserDeletion = await Alert.findById(alert._id);
+    const alertAfterUserDeletion = await alertDocs.findById(alert._id);
     expect(alertAfterUserDeletion).not.toBeNull();
     expect(alertAfterUserDeletion?.createdBy?.toString()).toEqual(
       user._id.toString(),
     );
 
     // Ensure alert in another team is not modified
-    const alertInAnotherTeamAfterDeletion = await Alert.findById(
+    const alertInAnotherTeamAfterDeletion = await alertDocs.findById(
       alertInAnotherTeam._id,
     );
     expect(alertInAnotherTeamAfterDeletion).not.toBeNull();

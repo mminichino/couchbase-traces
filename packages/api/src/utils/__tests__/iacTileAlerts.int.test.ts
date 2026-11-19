@@ -1,9 +1,8 @@
-import mongoose from 'mongoose';
-
 import { getServer, randomMongoId } from '@/fixtures';
 import { getMetadataStore } from '@/metadata';
-import { seedDashboard } from '@/metadata/testing/seed';
+import { newId } from '@/metadata/ids';
 import { AlertSource } from '@/metadata/schemas/alert';
+import { seedDashboard } from '@/metadata/testing/seed';
 import { unaddressableTileAlertIds } from '@/utils/iacTileAlerts';
 import { getCounter } from '@/utils/instrumentation';
 import logger from '@/utils/logger';
@@ -34,7 +33,7 @@ describe('unaddressableTileAlertIds', () => {
 
   // Shaped like the lean rows the manifest router passes in.
   const alert = (dashboard: string, tileId: string) => ({
-    _id: new mongoose.Types.ObjectId(),
+    _id: newId(),
     source: AlertSource.TILE,
     dashboard,
     tileId,

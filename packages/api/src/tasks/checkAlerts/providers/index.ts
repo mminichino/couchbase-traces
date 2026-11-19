@@ -4,15 +4,18 @@ import {
 } from '@couchbase-traces/common-utils/dist/types';
 import _ from 'lodash';
 
+import { IAlert, IAlertError } from '@/metadata/schemas/alert';
+import type { AggregatedAlertHistory } from '@/metadata/schemas/alertHistory';
+import {
+  IAlertHistory,
+  IAlertHistoryAnalytics,
+} from '@/metadata/schemas/alertHistory';
 import { IConnection } from '@/metadata/schemas/connection';
 import type { IDashboard } from '@/metadata/schemas/dashboard';
 import type { ISavedSearch } from '@/metadata/schemas/savedSearch';
 import { ISource } from '@/metadata/schemas/source';
 import type { IWebhook } from '@/metadata/schemas/webhook';
-import { IAlert, IAlertError } from '@/metadata/schemas/alert';
-import { IAlertHistory, IAlertHistoryAnalytics } from '@/metadata/schemas/alertHistory';
 import { DataClient } from '@/query';
-import type { AggregatedAlertHistory } from '@/metadata/schemas/alertHistory';
 import DefaultAlertProvider from '@/tasks/checkAlerts/providers/default';
 import logger from '@/utils/logger';
 

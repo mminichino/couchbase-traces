@@ -3,8 +3,8 @@ import { type Id, newId } from '@/metadata/ids';
 import { mutateDoc, type RepoDeps } from '@/metadata/repos/docs';
 import { AlertState, type IAlertError } from '@/metadata/schemas/alert';
 import {
-  ALERT_HISTORY_TTL_MS,
   type AggregatedAlertHistory,
+  ALERT_HISTORY_TTL_MS,
   type AlertHistoryDoc,
   AlertHistoryDocSchema,
   type DateRange,
@@ -20,9 +20,21 @@ import { iso } from '@/metadata/schemas/common';
 export const errorRowKey = (alert: Id, windowStart: Date) =>
   `err::${alert}::${windowStart.getTime()}`;
 
-/** Rows expire 30 days after `createdAt`, as the Mongo TTL index did. */
-const expiryOf = (createdAt: Date) =>
-  new Date(createdAt.getTime() + ALERT_HISTORY_TTL_MS);
+const MIN_RETENTION_MS = 24 * 60 * 60 * 1000;
+
+/**
+ * Rows expire 30 days after `createdAt`, as the Mongo TTL index did. A row
+ * for a window older than the retention (a long backfill, a replayed clock)
+ * would otherwise get an expiry in the past, which Couchbase treats as
+ * already expired, so such rows are kept for a day instead of vanishing.
+ */
+const expiryOf = (createdAt: Date, now: Date) =>
+  new Date(
+    Math.max(
+      createdAt.getTime() + ALERT_HISTORY_TTL_MS,
+      now.getTime() + MIN_RETENTION_MS,
+    ),
+  );
 
 function toDoc(h: IAlertHistory): AlertHistoryDoc {
   return AlertHistoryDocSchema.parse({
@@ -62,7 +74,7 @@ export class AlertHistoryRepository {
     return Promise.allSettled(
       rows.map(async row => {
         await this.kv.insert('alert_history', newId(this.now()), toDoc(row), {
-          expiry: expiryOf(row.createdAt),
+          expiry: expiryOf(row.createdAt, this.now()),
         });
       }),
     );
@@ -106,7 +118,7 @@ export class AlertHistoryRepository {
       if (updated) return;
       try {
         await this.kv.insert('alert_history', key, created, {
-          expiry: expiryOf(windowStart),
+          expiry: expiryOf(windowStart, this.now()),
         });
         return;
       } catch (err) {

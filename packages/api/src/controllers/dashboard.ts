@@ -22,8 +22,8 @@ import {
   type UserDisplays,
 } from '@/controllers/userDisplay';
 import { getMetadataStore } from '@/metadata';
-import type { IDashboard } from '@/metadata/schemas/dashboard';
 import type { IAlert } from '@/metadata/schemas/alert';
+import type { IDashboard } from '@/metadata/schemas/dashboard';
 import { resolveAlertDisplayFields } from '@/utils/alerts';
 
 // Drop alerts on tiles the alert checker cannot evaluate (e.g. PromQL), so
@@ -193,10 +193,7 @@ export async function getDashboards(teamId: string) {
   return dashboards;
 }
 
-export async function getDashboard(
-  dashboardId: string,
-  teamId: string,
-) {
+export async function getDashboard(dashboardId: string, teamId: string) {
   const [_dashboard, alerts] = await Promise.all([
     getMetadataStore().dashboards.get(teamId.toString(), dashboardId),
     getDashboardAlertsByTile(teamId, dashboardId),
@@ -246,10 +243,7 @@ export async function createDashboard(
   return newDashboard;
 }
 
-export async function deleteDashboard(
-  dashboardId: string,
-  teamId: string,
-) {
+export async function deleteDashboard(dashboardId: string, teamId: string) {
   // One transaction removes the dashboard and every alert on its tiles.
   await getMetadataStore().dashboards.deleteWithAlerts(
     teamId.toString(),
