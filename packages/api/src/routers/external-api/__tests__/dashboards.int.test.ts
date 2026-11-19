@@ -18,11 +18,14 @@ import {
   makeExternalChart,
   makeExternalTile,
 } from '@/fixtures';
-import { findUser } from '@/metadata/testing/seed';
+import {
+  findUser,
+  patchSource,
+  seedConnection,
+  seedSource,
+} from '@/metadata/testing/seed';
 import Alert, { AlertSource, AlertThresholdType } from '@/models/alert';
-import Connection from '@/models/connection';
 import Dashboard from '@/models/dashboard';
-import { Source } from '@/models/source';
 import Webhook, { WebhookService } from '@/models/webhook';
 import {
   ExternalDashboardTile,
@@ -162,7 +165,7 @@ describe('External API v2 Dashboards - old format', () => {
     team = result.team;
     user = result.user;
 
-    const connection = await Connection.create({
+    const connection = await seedConnection({
       kind: 'couchbase',
       team: team._id,
       name: 'Default',
@@ -171,7 +174,7 @@ describe('External API v2 Dashboards - old format', () => {
       password: config.CLICKHOUSE_PASSWORD,
     });
 
-    traceSource = await Source.create({
+    traceSource = await seedSource({
       kind: SourceKind.Trace,
       team: team._id,
       from: {
@@ -183,7 +186,7 @@ describe('External API v2 Dashboards - old format', () => {
       name: 'Traces',
     });
 
-    metricSource = await Source.create({
+    metricSource = await seedSource({
       kind: SourceKind.Metric,
       team: team._id,
       from: {
@@ -1929,7 +1932,7 @@ describe('External API v2 Dashboards - new format', () => {
     team = result.team;
     user = result.user;
 
-    connection = await Connection.create({
+    connection = await seedConnection({
       kind: 'couchbase',
       team: team._id,
       name: 'Default',
@@ -1938,7 +1941,7 @@ describe('External API v2 Dashboards - new format', () => {
       password: config.CLICKHOUSE_PASSWORD,
     });
 
-    traceSource = await Source.create({
+    traceSource = await seedSource({
       kind: SourceKind.Trace,
       team: team._id,
       from: {
@@ -1950,7 +1953,7 @@ describe('External API v2 Dashboards - new format', () => {
       name: 'Traces',
     });
 
-    metricSource = await Source.create({
+    metricSource = await seedSource({
       kind: SourceKind.Metric,
       team: team._id,
       from: {
@@ -1967,7 +1970,7 @@ describe('External API v2 Dashboards - new format', () => {
       name: 'Metrics',
     });
 
-    promqlSource = await Source.create({
+    promqlSource = await seedSource({
       kind: SourceKind.Promql,
       team: team._id,
       from: {
@@ -3018,7 +3021,7 @@ describe('External API v2 Dashboards - new format', () => {
     });
 
     it('round-trips a series-mode heatmap tile on a Log source', async () => {
-      const logSource = await Source.create({
+      const logSource = await seedSource({
         kind: SourceKind.Log,
         team: team._id,
         from: { databaseName: DEFAULT_DATABASE, tableName: 'otel_logs' },
@@ -3118,7 +3121,7 @@ describe('External API v2 Dashboards - new format', () => {
     });
 
     it('rejects a series-mode heatmap tile on a Session source', async () => {
-      const sessionSource = await Source.create({
+      const sessionSource = await seedSource({
         kind: SourceKind.Session,
         team: team._id,
         from: { databaseName: DEFAULT_DATABASE, tableName: 'rrweb_events' },
@@ -3156,7 +3159,7 @@ describe('External API v2 Dashboards - new format', () => {
     });
 
     it('re-checks the source when an existing heatmap changes mode', async () => {
-      const logSource = await Source.create({
+      const logSource = await seedSource({
         kind: SourceKind.Log,
         team: team._id,
         from: { databaseName: DEFAULT_DATABASE, tableName: 'otel_logs' },
@@ -3733,7 +3736,7 @@ describe('External API v2 Dashboards - new format', () => {
     });
 
     it('should return 400 when connection ID does not belong to the team', async () => {
-      const otherTeamConnection = await Connection.create({
+      const otherTeamConnection = await seedConnection({
         kind: 'couchbase',
         team: new ObjectId(),
         name: 'Other Team Connection',
@@ -3771,7 +3774,7 @@ describe('External API v2 Dashboards - new format', () => {
     });
 
     it('should return 400 when source connection does not match tile connection', async () => {
-      const otherConnection = await Connection.create({
+      const otherConnection = await seedConnection({
         kind: 'couchbase',
         team: team._id,
         name: 'Other Connection',
@@ -5378,7 +5381,7 @@ describe('External API v2 Dashboards - new format', () => {
 
     it('should return 400 when connection ID does not belong to the team', async () => {
       const dashboard = await createTestDashboard();
-      const otherTeamConnection = await Connection.create({
+      const otherTeamConnection = await seedConnection({
         kind: 'couchbase',
         team: new ObjectId(),
         name: 'Other Team Connection',
@@ -5418,7 +5421,7 @@ describe('External API v2 Dashboards - new format', () => {
 
     it('should return 400 when source connection does not match tile connection', async () => {
       const dashboard = await createTestDashboard();
-      const otherConnection = await Connection.create({
+      const otherConnection = await seedConnection({
         kind: 'couchbase',
         team: team._id,
         name: 'Other Connection',
@@ -5823,10 +5826,7 @@ describe('External API v2 Dashboards - new format', () => {
       // schema diffs. The behaviour we care about is that subsequent
       // PUTs on the dashboard don't wedge on the now-incompatible
       // source as long as the heatmap tile itself was not changed.
-      await Source.collection.updateOne(
-        { _id: traceSource._id },
-        { $set: { kind: SourceKind.Log } },
-      );
+      await patchSource(traceSource._id, { kind: SourceKind.Log });
 
       // PUT the dashboard back with the heatmap tile unchanged but a
       // different non-heatmap tile edit. Should still succeed.
@@ -7438,7 +7438,7 @@ describe('External API v2 Dashboards - new format', () => {
     });
 
     it('rejects formulas on a formula-incapable source kind (session)', async () => {
-      const sessionSource = await Source.create({
+      const sessionSource = await seedSource({
         kind: SourceKind.Session,
         team: team._id,
         from: {
@@ -7479,10 +7479,7 @@ describe('External API v2 Dashboards - new format', () => {
       // `kind` is the Mongoose discriminator key, which updateOne silently
       // strips from $set — write through the raw collection instead, the
       // same way a source-replace API call would leave the doc.
-      await Source.collection.updateOne(
-        { _id: metricSource._id },
-        { $set: { kind: SourceKind.Session } },
-      );
+      await patchSource(metricSource._id, { kind: SourceKind.Session });
 
       // Unrelated edit (rename) resubmitting the unchanged tile: accepted.
       await authRequest('put', `${BASE_URL}/${dashboardId}`)

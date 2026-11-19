@@ -20,13 +20,12 @@ import {
   randomMongoId,
   RAW_SQL_ALERT_TEMPLATE,
 } from '@/fixtures';
+import { seedConnection, seedSource } from '@/metadata/testing/seed';
 import { toObjectId } from '@/models';
 import Alert, { AlertSource, AlertState } from '@/models/alert';
 import AlertHistory from '@/models/alertHistory';
-import Connection from '@/models/connection';
 import Dashboard from '@/models/dashboard';
 import { SavedSearch } from '@/models/savedSearch';
-import { Source } from '@/models/source';
 import Webhook, { WebhookDocument, WebhookService } from '@/models/webhook';
 
 const MOCK_TILES = [makeTile(), makeTile(), makeTile(), makeTile(), makeTile()];
@@ -488,7 +487,7 @@ describe('alerts router', () => {
   });
 
   it('derives displayName from the chart config for inline alerts', async () => {
-    const source = await Source.create({
+    const source = await seedSource({
       kind: SourceKind.Log,
       team: team._id,
       from: { databaseName: 'otel', tableName: 'otel_logs' },
@@ -1969,7 +1968,7 @@ describe('alerts router', () => {
 
   describe('inline alerts', () => {
     const makeSource = async () => {
-      const connection = await Connection.create({
+      const connection = await seedConnection({
         kind: 'couchbase',
         team: team._id,
         name: 'Default',
@@ -1977,7 +1976,7 @@ describe('alerts router', () => {
         username: 'default',
         password: '',
       });
-      const source = await Source.create({
+      const source = await seedSource({
         kind: SourceKind.Log,
         team: team._id,
         from: { databaseName: 'otel', tableName: 'otel_logs' },
@@ -2208,7 +2207,7 @@ describe('alerts router', () => {
 
     it('rejects a raw SQL inline alert whose source is on a different connection', async () => {
       const { connection, source } = await makeSource();
-      const otherConnection = await Connection.create({
+      const otherConnection = await seedConnection({
         kind: 'couchbase',
         team: team._id,
         name: 'Other',

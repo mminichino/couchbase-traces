@@ -12,8 +12,12 @@ import {
   getServer,
 } from '@/fixtures';
 import { McpContext } from '@/mcp/tools/types';
-import Connection from '@/models/connection';
-import { Source, type SourceDocument } from '@/models/source';
+import { SourceDocument } from '@/metadata/schemas/source';
+import {
+  patchSource,
+  seedConnection,
+  seedSource,
+} from '@/metadata/testing/seed';
 import { DataClient } from '@/query';
 
 import { callTool, createTestClient, getFirstText } from './mcpTestUtils';
@@ -90,7 +94,7 @@ describe('MCP Trace Tools', () => {
     team = result.team;
     user = result.user;
 
-    connection = await Connection.create({
+    connection = await seedConnection({
       kind: 'couchbase',
       team: team._id,
       name: 'Default',
@@ -99,7 +103,7 @@ describe('MCP Trace Tools', () => {
       password: config.CLICKHOUSE_PASSWORD,
     });
 
-    logSource = await Source.create({
+    logSource = await seedSource({
       kind: SourceKind.Log,
       team: team._id,
       from: {
@@ -116,7 +120,7 @@ describe('MCP Trace Tools', () => {
       spanIdExpression: 'SpanId',
     });
 
-    traceSource = await Source.create({
+    traceSource = await seedSource({
       kind: SourceKind.Trace,
       team: team._id,
       from: {
@@ -928,7 +932,7 @@ describe('MCP Trace Tools', () => {
     describe('logSource edge cases', () => {
       it('should handle missing logSourceId gracefully (no logs section)', async () => {
         // Create a trace source WITHOUT logSourceId
-        const noLogTraceSource = await Source.create({
+        const noLogTraceSource = await seedSource({
           kind: SourceKind.Trace,
           team: team._id,
           from: {
@@ -968,7 +972,7 @@ describe('MCP Trace Tools', () => {
       });
 
       it('should note when logSourceId points to a non-existent source', async () => {
-        const badLogTraceSource = await Source.create({
+        const badLogTraceSource = await seedSource({
           kind: SourceKind.Trace,
           team: team._id,
           from: {
@@ -1009,7 +1013,7 @@ describe('MCP Trace Tools', () => {
 
       it('should note when logSourceId points to a non-log source', async () => {
         // Point logSourceId at the trace source itself (wrong kind)
-        const wrongKindTraceSource = await Source.create({
+        const wrongKindTraceSource = await seedSource({
           kind: SourceKind.Trace,
           team: team._id,
           from: {
@@ -1313,10 +1317,9 @@ describe('MCP Trace Tools', () => {
       });
 
       it('handles a multi-column timestampValueExpression with a leading Date column', async () => {
-        await Source.updateOne(
-          { _id: traceSource._id },
-          { timestampValueExpression: 'toDate(Timestamp), Timestamp' },
-        );
+        await patchSource(traceSource._id, {
+          timestampValueExpression: 'toDate(Timestamp), Timestamp',
+        });
 
         const result = await callTool(
           client,

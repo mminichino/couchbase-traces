@@ -11,8 +11,8 @@ import {
   getServer,
 } from '@/fixtures';
 import { McpContext } from '@/mcp/tools/types';
-import Connection from '@/models/connection';
-import { Source, type SourceDocument } from '@/models/source';
+import { SourceDocument } from '@/metadata/schemas/source';
+import { seedConnection, seedSource } from '@/metadata/testing/seed';
 
 import { callTool, createTestClient, getFirstText } from './mcpTestUtils';
 
@@ -87,7 +87,7 @@ describe('MCP Service Health Tool', () => {
 
   beforeEach(async () => {
     const { team, user } = await getLoggedInAgent(server);
-    const connection = await Connection.create({
+    const connection = await seedConnection({
       kind: 'couchbase',
       team: team._id,
       name: 'Default',
@@ -95,7 +95,7 @@ describe('MCP Service Health Tool', () => {
       username: config.CLICKHOUSE_USER,
       password: config.CLICKHOUSE_PASSWORD,
     });
-    logSource = await Source.create({
+    logSource = await seedSource({
       kind: SourceKind.Log,
       team: team._id,
       from: { databaseName: DEFAULT_DATABASE, tableName: DEFAULT_LOGS_TABLE },
@@ -103,7 +103,7 @@ describe('MCP Service Health Tool', () => {
       connection: connection._id,
       name: 'Logs',
     });
-    traceSource = await Source.create({
+    traceSource = await seedSource({
       kind: SourceKind.Trace,
       team: team._id,
       from: { databaseName: DEFAULT_DATABASE, tableName: DEFAULT_TRACES_TABLE },

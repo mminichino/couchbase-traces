@@ -21,7 +21,7 @@ import {
   getSources,
   updateSource,
 } from '@/controllers/sources';
-import { SourceDocument } from '@/models/source';
+import { SourceDocument } from '@/metadata/schemas/source';
 import { processRequestWithEnhancedErrors as validateRequest } from '@/utils/enhancedErrors';
 import logger from '@/utils/logger';
 import { objectIdSchema } from '@/utils/zod';
@@ -118,26 +118,8 @@ function rejectPromqlSourceWhenDisabled(
 }
 
 function formatExternalSource(source: SourceDocument) {
-  // Convert to JSON so that any ObjectIds are converted to strings
-  const json = JSON.stringify(
-    (() => {
-      switch (source.kind) {
-        case SourceKind.Log:
-          return source.toJSON({ getters: true });
-        case SourceKind.Trace:
-          return source.toJSON({ getters: true });
-        case SourceKind.Metric:
-          return source.toJSON({ getters: true });
-        case SourceKind.Session:
-          return source.toJSON({ getters: true });
-        case SourceKind.Promql:
-          return source.toJSON({ getters: true });
-        default:
-          source satisfies never;
-          return {};
-      }
-    })(),
-  );
+  // Round-trip through JSON so dates become ISO strings, as on the wire.
+  const json = JSON.stringify(source);
 
   const parseResult = toExternalSource(JSON.parse(json));
   if (parseResult.success) return parseResult.data;

@@ -4,7 +4,7 @@ import request, { SuperAgentTest } from 'supertest';
 import { getLoggedInAgent, getServer } from '@/fixtures';
 import type { ITeam } from '@/metadata/schemas/team';
 import type { IUser } from '@/metadata/schemas/user';
-import Connection from '@/models/connection';
+import { findConnection, seedConnection } from '@/metadata/testing/seed';
 
 const CONNECTIONS_BASE_URL = '/api/v2/connections';
 
@@ -59,7 +59,7 @@ describe('External API v2 Connections', () => {
     });
 
     it('should list connections without exposing passwords', async () => {
-      await Connection.create({ ...MOCK_CONNECTION, team: team._id });
+      await seedConnection({ ...MOCK_CONNECTION, team: team._id });
 
       const response = await authRequest('get', CONNECTIONS_BASE_URL).expect(
         200,
@@ -79,10 +79,10 @@ describe('External API v2 Connections', () => {
     });
 
     it('should not return connections belonging to another team', async () => {
-      await Connection.create({ ...MOCK_CONNECTION, team: team._id });
+      await seedConnection({ ...MOCK_CONNECTION, team: team._id });
 
       const otherTeamId = new ObjectId();
-      await Connection.create({
+      await seedConnection({
         ...MOCK_CONNECTION,
         name: 'Other Team Connection',
         team: otherTeamId,
@@ -105,7 +105,7 @@ describe('External API v2 Connections', () => {
 
   describe('GET /api/v2/connections/:id', () => {
     it('should return a connection by id without the password', async () => {
-      const connection = await Connection.create({
+      const connection = await seedConnection({
         ...MOCK_CONNECTION,
         team: team._id,
       });
@@ -132,7 +132,7 @@ describe('External API v2 Connections', () => {
     });
 
     it('should return 404 for a connection belonging to another team', async () => {
-      const otherTeamConnection = await Connection.create({
+      const otherTeamConnection = await seedConnection({
         ...MOCK_CONNECTION,
         team: new ObjectId(),
       });
@@ -168,9 +168,7 @@ describe('External API v2 Connections', () => {
       });
       expect(response.body.data).not.toHaveProperty('password');
 
-      const stored = await Connection.findById(response.body.data.id).select(
-        '+password',
-      );
+      const stored = await findConnection(response.body.data.id);
       expect(stored).not.toBeNull();
       expect(stored?.password).toBe(MOCK_CONNECTION.password);
       expect(stored?.team.toString()).toBe(team._id.toString());
@@ -184,9 +182,7 @@ describe('External API v2 Connections', () => {
         .send(connectionWithoutPassword)
         .expect(200);
 
-      const stored = await Connection.findById(response.body.data.id).select(
-        '+password',
-      );
+      const stored = await findConnection(response.body.data.id);
       expect(stored?.password).toBe('');
     });
 
@@ -235,7 +231,7 @@ describe('External API v2 Connections', () => {
 
   describe('PUT /api/v2/connections/:id', () => {
     it('should update a connection', async () => {
-      const connection = await Connection.create({
+      const connection = await seedConnection({
         ...MOCK_CONNECTION,
         team: team._id,
       });
@@ -261,7 +257,7 @@ describe('External API v2 Connections', () => {
     });
 
     it('should keep the existing password when omitted', async () => {
-      const connection = await Connection.create({
+      const connection = await seedConnection({
         ...MOCK_CONNECTION,
         team: team._id,
       });
@@ -274,14 +270,12 @@ describe('External API v2 Connections', () => {
         })
         .expect(200);
 
-      const stored = await Connection.findById(connection._id).select(
-        '+password',
-      );
+      const stored = await findConnection(connection._id);
       expect(stored?.password).toBe(MOCK_CONNECTION.password);
     });
 
     it('should update the password when provided', async () => {
-      const connection = await Connection.create({
+      const connection = await seedConnection({
         ...MOCK_CONNECTION,
         team: team._id,
       });
@@ -290,14 +284,12 @@ describe('External API v2 Connections', () => {
         .send({ ...MOCK_CONNECTION, password: 'new-password' })
         .expect(200);
 
-      const stored = await Connection.findById(connection._id).select(
-        '+password',
-      );
+      const stored = await findConnection(connection._id);
       expect(stored?.password).toBe('new-password');
     });
 
     it('should clear hyperdxSettingPrefix when set to an empty string', async () => {
-      const connection = await Connection.create({
+      const connection = await seedConnection({
         ...MOCK_CONNECTION,
         hyperdxSettingPrefix: 'hyperdx_',
         team: team._id,
@@ -307,12 +299,12 @@ describe('External API v2 Connections', () => {
         .send({ ...MOCK_CONNECTION, hyperdxSettingPrefix: '' })
         .expect(200);
 
-      const stored = await Connection.findById(connection._id);
+      const stored = await findConnection(connection._id);
       expect(stored?.hyperdxSettingPrefix).toBeUndefined();
     });
 
     it('should clear hyperdxSettingPrefix when set to null', async () => {
-      const connection = await Connection.create({
+      const connection = await seedConnection({
         ...MOCK_CONNECTION,
         hyperdxSettingPrefix: 'hyperdx_',
         team: team._id,
@@ -322,12 +314,12 @@ describe('External API v2 Connections', () => {
         .send({ ...MOCK_CONNECTION, hyperdxSettingPrefix: null })
         .expect(200);
 
-      const stored = await Connection.findById(connection._id);
+      const stored = await findConnection(connection._id);
       expect(stored?.hyperdxSettingPrefix).toBeUndefined();
     });
 
     it('should reject turning on isPrometheusEndpoint', async () => {
-      const connection = await Connection.create({
+      const connection = await seedConnection({
         ...MOCK_CONNECTION,
         team: team._id,
       });
@@ -346,12 +338,12 @@ describe('External API v2 Connections', () => {
       expect(response.body.message).toBe(
         'PromQL sources are no longer supported.',
       );
-      const stored = await Connection.findById(connection._id);
+      const stored = await findConnection(connection._id);
       expect(stored?.isPrometheusEndpoint).not.toBe(true);
     });
 
     it('should keep hyperdxSettingPrefix unchanged when omitted', async () => {
-      const connection = await Connection.create({
+      const connection = await seedConnection({
         ...MOCK_CONNECTION,
         hyperdxSettingPrefix: 'hyperdx_',
         team: team._id,
@@ -365,7 +357,7 @@ describe('External API v2 Connections', () => {
         })
         .expect(200);
 
-      const stored = await Connection.findById(connection._id);
+      const stored = await findConnection(connection._id);
       expect(stored?.hyperdxSettingPrefix).toBe('hyperdx_');
     });
 
@@ -376,7 +368,7 @@ describe('External API v2 Connections', () => {
     });
 
     it('should return 404 for a connection belonging to another team', async () => {
-      const otherTeamConnection = await Connection.create({
+      const otherTeamConnection = await seedConnection({
         ...MOCK_CONNECTION,
         team: new ObjectId(),
       });
@@ -390,7 +382,7 @@ describe('External API v2 Connections', () => {
     });
 
     it('should reject a request with missing required fields', async () => {
-      const connection = await Connection.create({
+      const connection = await seedConnection({
         ...MOCK_CONNECTION,
         team: team._id,
       });
@@ -410,7 +402,7 @@ describe('External API v2 Connections', () => {
 
   describe('DELETE /api/v2/connections/:id', () => {
     it('should delete a connection', async () => {
-      const connection = await Connection.create({
+      const connection = await seedConnection({
         ...MOCK_CONNECTION,
         team: team._id,
       });
@@ -420,7 +412,7 @@ describe('External API v2 Connections', () => {
         `${CONNECTIONS_BASE_URL}/${connection._id}`,
       ).expect(200);
 
-      expect(await Connection.findById(connection._id)).toBeNull();
+      expect(await findConnection(connection._id)).toBeNull();
     });
 
     it('should return 404 for a non-existent connection', async () => {
@@ -431,7 +423,7 @@ describe('External API v2 Connections', () => {
     });
 
     it('should not delete a connection belonging to another team', async () => {
-      const otherTeamConnection = await Connection.create({
+      const otherTeamConnection = await seedConnection({
         ...MOCK_CONNECTION,
         team: new ObjectId(),
       });
@@ -441,7 +433,7 @@ describe('External API v2 Connections', () => {
         `${CONNECTIONS_BASE_URL}/${otherTeamConnection._id}`,
       ).expect(404);
 
-      expect(await Connection.findById(otherTeamConnection._id)).not.toBeNull();
+      expect(await findConnection(otherTeamConnection._id)).not.toBeNull();
     });
 
     it('should require authentication', async () => {

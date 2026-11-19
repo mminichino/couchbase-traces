@@ -56,7 +56,6 @@ const savedSearchSchema = new Schema<
     source: {
       type: mongoose.Schema.Types.ObjectId,
       required: true,
-      ref: 'Source',
     },
     tags: [String],
     filters: [{ type: mongoose.Schema.Types.Mixed }],

@@ -29,8 +29,8 @@ import {
   toCouchbaseConnectionConfig,
 } from '@/controllers/connection';
 import { getTeam } from '@/controllers/team';
+import type { IConnection } from '@/metadata/schemas/connection';
 import { getNonNullUserWithTeam } from '@/middleware/auth';
-import type { IConnection } from '@/models/connection';
 import {
   managementCall,
   managementHostProblem,

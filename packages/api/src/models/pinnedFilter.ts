@@ -22,7 +22,6 @@ const PinnedFilterSchema = new Schema<IPinnedFilter>(
     source: {
       type: mongoose.Schema.Types.ObjectId,
       required: true,
-      ref: 'Source',
     },
     fields: {
       type: [String],

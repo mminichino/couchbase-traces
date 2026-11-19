@@ -76,6 +76,8 @@ export const MIGRATED_COLLECTIONS = [
   'teams',
   'users',
   'team_invites',
+  'connections',
+  'sources',
   'unique_keys',
   'sessions',
 ] as const satisfies readonly MetaCollection[];

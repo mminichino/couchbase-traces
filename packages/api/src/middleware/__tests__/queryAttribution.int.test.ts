@@ -11,8 +11,7 @@ import {
   getTestFixtureDataClient,
   seedTimeSeriesTagsTable,
 } from '@/fixtures';
-import Connection from '@/models/connection';
-import { Source } from '@/models/source';
+import { seedConnection, seedSource } from '@/metadata/testing/seed';
 
 declare global {
   // Set by jest.setup.ts before it stubs `fetch`.
@@ -113,7 +112,7 @@ describe('request query attribution', () => {
 
   it('tags queries from an authenticated route with the api surface', async () => {
     const { agent, team } = await getLoggedInAgent(server);
-    const conn = await Connection.create({
+    const conn = await seedConnection({
       kind: 'couchbase',
       team: team._id,
       name: 'CH',
@@ -121,7 +120,7 @@ describe('request query attribution', () => {
       username: config.CLICKHOUSE_USER,
       password: config.CLICKHOUSE_PASSWORD,
     });
-    const source = await Source.create({
+    const source = await seedSource({
       kind: SourceKind.Promql,
       team: team._id,
       connection: conn._id,
@@ -153,7 +152,7 @@ describe('request query attribution', () => {
       .spyOn(Metadata.prototype, 'getServerVersion')
       .mockResolvedValue([26, 5, 0, 0]);
     const { agent, team } = await getLoggedInAgent(server);
-    const conn = await Connection.create({
+    const conn = await seedConnection({
       kind: 'couchbase',
       team: team._id,
       name: 'CH',
@@ -161,7 +160,7 @@ describe('request query attribution', () => {
       username: config.CLICKHOUSE_USER,
       password: config.CLICKHOUSE_PASSWORD,
     });
-    const source = await Source.create({
+    const source = await seedSource({
       kind: SourceKind.Promql,
       team: team._id,
       connection: conn._id,
@@ -209,7 +208,7 @@ describe('request query attribution', () => {
   it('tags PromQL proxied to the prometheus_api_v1 handler', async () => {
     jest.mocked(global.fetch).mockImplementation(globalThis.realFetch);
     const { agent, team } = await getLoggedInAgent(server);
-    const conn = await Connection.create({
+    const conn = await seedConnection({
       kind: 'couchbase',
       team: team._id,
       name: 'CH',
@@ -217,7 +216,7 @@ describe('request query attribution', () => {
       username: config.CLICKHOUSE_USER,
       password: config.CLICKHOUSE_PASSWORD,
     });
-    const source = await Source.create({
+    const source = await seedSource({
       kind: SourceKind.Promql,
       team: team._id,
       connection: conn._id,

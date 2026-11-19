@@ -15,7 +15,6 @@ import {
   updateConnection,
 } from '@/controllers/connection';
 import { getNonNullUserWithTeam } from '@/middleware/auth';
-import { toObjectId } from '@/models';
 import logger from '@/utils/logger';
 import { rejectPromqlBody } from '@/utils/rejectPromql';
 
@@ -24,7 +23,7 @@ const router = express.Router();
 function connectionForClient(
   doc: Awaited<ReturnType<typeof getConnectionsByTeam>>[number],
 ) {
-  const json = doc.toJSON({ virtuals: true }) as Record<string, unknown>;
+  const json: Record<string, unknown> = { ...doc };
   const kind = (json.kind as string | undefined) ?? 'clickhouse';
   const unsupported = Boolean(json.unsupported) || kind === 'clickhouse';
   if (unsupported) {
@@ -87,7 +86,6 @@ router.post(
       const connection = await createConnection(teamId.toString(), {
         ...body,
         password: body.password ?? '',
-        team: toObjectId(teamId),
         kind: 'couchbase',
         managementPort:
           typeof body.managementPort === 'number'
@@ -136,11 +134,7 @@ router.put(
       }
 
       const { update: newConnection, unsetFields } =
-        buildCouchbaseConnectionUpdate(
-          teamId.toString(),
-          body,
-          connection.password,
-        );
+        buildCouchbaseConnectionUpdate(body, connection.password);
 
       const updatedConnection = await updateConnection(
         teamId.toString(),

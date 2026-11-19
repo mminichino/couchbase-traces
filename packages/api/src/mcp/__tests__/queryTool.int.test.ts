@@ -23,9 +23,13 @@ import {
 import * as denoise from '@/mcp/tools/query/denoise';
 import * as patternDrilldown from '@/mcp/tools/query/patternDrilldown';
 import { McpContext } from '@/mcp/tools/types';
-import { seedTeam } from '@/metadata/testing/seed';
-import Connection from '@/models/connection';
-import { LogSource, Source, type SourceDocument } from '@/models/source';
+import { SourceDocument } from '@/metadata/schemas/source';
+import {
+  patchSource,
+  seedConnection,
+  seedSource,
+  seedTeam,
+} from '@/metadata/testing/seed';
 
 import { callTool, createTestClient, getFirstText } from './mcpTestUtils';
 
@@ -47,7 +51,7 @@ describe('MCP Query Tools', () => {
     team = result.team;
     user = result.user;
 
-    connection = await Connection.create({
+    connection = await seedConnection({
       host: config.CLICKHOUSE_HOST,
       kind: 'couchbase',
       team: team._id,
@@ -56,7 +60,7 @@ describe('MCP Query Tools', () => {
       password: config.CLICKHOUSE_PASSWORD,
     });
 
-    traceSource = await Source.create({
+    traceSource = await seedSource({
       kind: SourceKind.Trace,
       team: team._id,
       from: {
@@ -68,7 +72,7 @@ describe('MCP Query Tools', () => {
       name: 'Traces',
     });
 
-    logSource = await Source.create({
+    logSource = await seedSource({
       kind: SourceKind.Log,
       team: team._id,
       from: {
@@ -1224,10 +1228,9 @@ describe('MCP Query Tools', () => {
 
       it('applies the source table filter to mining and to the drill-down', async () => {
         // The field lives on the Log discriminator; Source.updateOne drops it.
-        await LogSource.updateOne(
-          { _id: logSource._id },
-          { $set: { tableFilterExpression: "ServiceName != 'svc-b'" } },
-        );
+        await patchSource(logSource._id, {
+          tableFilterExpression: "ServiceName != 'svc-b'",
+        });
         const output = await mine({});
         const p = findPattern(output, 'Sending <*> rows');
         expect(p.sampleCount).toBe(6);
@@ -1240,10 +1243,9 @@ describe('MCP Query Tools', () => {
       });
 
       it('keeps the table filter and warns when the where filter cannot be rendered as SQL', async () => {
-        await LogSource.updateOne(
-          { _id: logSource._id },
-          { $set: { tableFilterExpression: "ServiceName != 'svc-b'" } },
-        );
+        await patchSource(logSource._id, {
+          tableFilterExpression: "ServiceName != 'svc-b'",
+        });
         const spy = jest
           .spyOn(patternDrilldown, 'userWhereAsSql')
           .mockRejectedValueOnce(new Error('cannot render'));
@@ -1589,7 +1591,7 @@ describe('MCP Query Tools', () => {
 
       it("rejects another team's sourceId as not found", async () => {
         const otherTeam = await seedTeam({ name: 'Other Team' });
-        const otherSource = await Source.create({
+        const otherSource = await seedSource({
           kind: SourceKind.Log,
           team: otherTeam._id,
           from: {
@@ -1613,7 +1615,7 @@ describe('MCP Query Tools', () => {
 
       // $__sourceTable would otherwise expand to a table on another server.
       it('rejects a sourceId whose connection differs from connectionId', async () => {
-        const otherConnection = await Connection.create({
+        const otherConnection = await seedConnection({
           host: config.CLICKHOUSE_HOST,
           kind: 'couchbase',
           team: team._id,
@@ -1818,7 +1820,7 @@ describe('MCP Query Tools', () => {
       });
 
       it('does not send a source whose table is missing back to cbt_list_sources', async () => {
-        const missing = await Source.create({
+        const missing = await seedSource({
           kind: SourceKind.Log,
           team: team._id,
           from: {
@@ -1872,7 +1874,7 @@ describe('MCP Query Tools', () => {
       let deadSource: SourceDocument;
 
       beforeEach(async () => {
-        deadConnection = await Connection.create({
+        deadConnection = await seedConnection({
           host: config.CLICKHOUSE_HOST,
           kind: 'couchbase',
           team: team._id,
@@ -1881,7 +1883,7 @@ describe('MCP Query Tools', () => {
           password: '',
         });
 
-        deadSource = await Source.create({
+        deadSource = await seedSource({
           kind: SourceKind.Trace,
           team: team._id,
           from: {
@@ -2021,7 +2023,7 @@ describe('MCP Query Tools', () => {
 
   describe('Metric sources (timeseries + table)', () => {
     const createMetricSource = () =>
-      Source.create({
+      seedSource({
         kind: SourceKind.Metric,
         team: team._id,
         from: { databaseName: DEFAULT_DATABASE, tableName: '' },

@@ -6,12 +6,11 @@ import {
   getServer,
   randomMongoId,
 } from '@/fixtures';
+import { seedConnection, seedSource } from '@/metadata/testing/seed';
 import { toObjectId } from '@/models';
 import Alert, { AlertSource, AlertState } from '@/models/alert';
-import Connection from '@/models/connection';
 import Dashboard from '@/models/dashboard';
 import { SavedSearch } from '@/models/savedSearch';
-import { Source } from '@/models/source';
 import Webhook from '@/models/webhook';
 
 describe('iac router', () => {
@@ -176,7 +175,7 @@ describe('iac router', () => {
   it('maps every resource type, not just dashboards', async () => {
     const { agent, team } = await getLoggedInAgent(server);
 
-    const connection = await Connection.create({
+    const connection = await seedConnection({
       kind: 'couchbase',
       team: toObjectId(team._id),
       name: 'Local ClickHouse',
@@ -184,7 +183,7 @@ describe('iac router', () => {
       username: 'default',
     });
 
-    const source = await Source.create({
+    const source = await seedSource({
       kind: SourceKind.Log,
       name: 'Logs',
       team: toObjectId(team._id),
@@ -396,7 +395,7 @@ describe('iac router', () => {
   it('surfaces an explicit platformProvisioned marker on a connection', async () => {
     const { agent, team } = await getLoggedInAgent(server);
 
-    await Connection.create({
+    await seedConnection({
       kind: 'couchbase',
       team: team._id,
       name: 'Cloud ClickHouse',
@@ -445,7 +444,7 @@ describe('iac router', () => {
   it('ignores a client-supplied platformProvisioned flag on connection update', async () => {
     const { agent, team } = await getLoggedInAgent(server);
 
-    const connection = await Connection.create({
+    const connection = await seedConnection({
       kind: 'couchbase',
       team: team._id,
       name: 'Cloud ClickHouse',
@@ -489,7 +488,7 @@ describe('iac router', () => {
       state: AlertState.OK,
       channel: { type: null },
     });
-    await Connection.create({
+    await seedConnection({
       kind: 'couchbase',
       team: otherTeam,
       name: "Other team's connection",

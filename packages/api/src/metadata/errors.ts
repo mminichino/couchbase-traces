@@ -23,6 +23,9 @@ export class DuplicateKeyError extends MetadataError {
 
 export class NotFoundError extends MetadataError {}
 
+/** A write was refused because the input breaks a stored-schema rule. */
+export class ValidationError extends MetadataError {}
+
 /** The document changed since it was read (CAS mismatch). */
 export class CasConflictError extends MetadataError {}
 

@@ -54,7 +54,7 @@ import {
 } from '@couchbase-traces/common-utils/dist/types';
 
 import { getAIModel, getChartConfigFromResolvedConfig } from '@/controllers/ai';
-import type { ISource } from '@/models/source';
+import type { ISource } from '@/metadata/schemas/source';
 
 beforeEach(() => {
   setConfig({});

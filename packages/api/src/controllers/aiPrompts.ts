@@ -7,7 +7,7 @@ import {
 } from '@couchbase-traces/common-utils/dist/types';
 import { z as zod } from 'zod';
 
-import type { ISource } from '@/models/source';
+import type { ISource } from '@/metadata/schemas/source';
 
 type AIMetadataFields = {
   allFieldsWithKeys: { key: string; type: string }[];

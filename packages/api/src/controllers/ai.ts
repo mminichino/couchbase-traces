@@ -20,7 +20,7 @@ import z from 'zod';
 
 import * as config from '@/config';
 import { MCP_REQUEST_TIMEOUT } from '@/mcp/tools/query/helpers';
-import { ISource } from '@/models/source';
+import { ISource } from '@/metadata/schemas/source';
 import { DataClient } from '@/query';
 import { parseJSON } from '@/utils/common';
 import { Api500Error } from '@/utils/errors';

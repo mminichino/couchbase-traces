@@ -26,7 +26,6 @@ const PresetDashboardFilterSchema = new Schema<IPresetDashboardFilter>(
     source: {
       type: mongoose.Schema.Types.ObjectId,
       required: true,
-      ref: 'Source',
     },
     sourceMetricType: {
       type: String,

@@ -10,10 +10,13 @@ import {
   getLoggedInAgent,
   getServer,
 } from '@/fixtures';
+import { ISource } from '@/metadata/schemas/source';
 import type { IUser } from '@/metadata/schemas/user';
-import Connection from '@/models/connection';
-import type { ISource } from '@/models/source';
-import { Source } from '@/models/source';
+import {
+  removeConnection,
+  seedConnection,
+  seedSource,
+} from '@/metadata/testing/seed';
 
 const DEFAULT_END_TIME = Math.floor(Date.now() / 60000) * 60000;
 const DEFAULT_START_TIME = DEFAULT_END_TIME - 3600 * 1000;
@@ -36,7 +39,7 @@ describe('External API v2 Search', () => {
     user = result.user;
     const team = result.team;
 
-    const connection = await Connection.create({
+    const connection = await seedConnection({
       kind: 'couchbase',
       team: team._id,
       name: 'Default',
@@ -45,7 +48,7 @@ describe('External API v2 Search', () => {
       password: config.CLICKHOUSE_PASSWORD,
     });
 
-    logSource = await Source.create({
+    logSource = await seedSource({
       kind: SourceKind.Log,
       team: team._id,
       from: {
@@ -204,7 +207,7 @@ describe('External API v2 Search', () => {
 
   it('returns 404 when the connection for a source no longer exists', async () => {
     const team = logSource.team;
-    const deadConn = await Connection.create({
+    const deadConn = await seedConnection({
       kind: 'couchbase',
       team,
       name: 'Dead Connection',
@@ -212,7 +215,7 @@ describe('External API v2 Search', () => {
       username: config.CLICKHOUSE_USER,
       password: config.CLICKHOUSE_PASSWORD,
     });
-    const orphanSource = await Source.create({
+    const orphanSource = await seedSource({
       kind: SourceKind.Log,
       team,
       from: { databaseName: DEFAULT_DATABASE, tableName: DEFAULT_LOGS_TABLE },
@@ -220,7 +223,7 @@ describe('External API v2 Search', () => {
       connection: deadConn._id,
       name: 'Orphan',
     });
-    await Connection.deleteOne({ _id: deadConn._id });
+    await removeConnection(deadConn._id);
 
     const res = await search({
       sourceId: orphanSource.id.toString(),
@@ -534,7 +537,7 @@ describe('External API v2 Search', () => {
     // create a synthetic "other team" source directly in Mongo and verify
     // the authenticated user (team 1) cannot access it.
     const otherTeamId = new mongoose.Types.ObjectId();
-    const otherConnection = await Connection.create({
+    const otherConnection = await seedConnection({
       kind: 'couchbase',
       team: otherTeamId,
       name: 'Other Team Connection',
@@ -542,7 +545,7 @@ describe('External API v2 Search', () => {
       username: config.CLICKHOUSE_USER,
       password: config.CLICKHOUSE_PASSWORD,
     });
-    const otherSource = await Source.create({
+    const otherSource = await seedSource({
       kind: SourceKind.Log,
       team: otherTeamId,
       from: { databaseName: DEFAULT_DATABASE, tableName: DEFAULT_LOGS_TABLE },

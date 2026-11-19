@@ -1,11 +1,9 @@
 import { toCouchbaseConnectionConfig } from '@/controllers/connection';
 import { setCouchbaseConnectionLoader } from '@/dataClient';
-import Connection from '@/models/connection';
+import { getMetadataStore } from '@/metadata';
 
 setCouchbaseConnectionLoader(async id => {
-  const doc = await Connection.findById(id).select(
-    '+password +tlsCaCertificate',
-  );
+  const doc = await getMetadataStore().connections.getWithSecrets(id);
   if (doc == null) {
     throw new Error(`Couchbase connection ${id} was not found`);
   }

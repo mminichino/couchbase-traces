@@ -16,8 +16,7 @@ import {
   getConnectionsByTeam,
   updateConnection,
 } from '@/controllers/connection';
-import { toObjectId } from '@/models';
-import { ConnectionDocument } from '@/models/connection';
+import type { IConnection } from '@/metadata/schemas/connection';
 import { processRequestWithEnhancedErrors as validateRequest } from '@/utils/enhancedErrors';
 import logger from '@/utils/logger';
 import { rejectPromqlBody } from '@/utils/rejectPromql';
@@ -51,8 +50,8 @@ function toIsoTimestamp(value: unknown): string | undefined {
   return undefined;
 }
 
-function formatExternalConnection(connection: ConnectionDocument) {
-  const json = connection.toJSON({ virtuals: true }) as Record<string, unknown>;
+function formatExternalConnection(connection: IConnection) {
+  const json: Record<string, unknown> = { ...connection };
   const kind = (json.kind as string | undefined) ?? 'clickhouse';
   const unsupported = Boolean(json.unsupported) || kind === 'clickhouse';
   const payload = unsupported
@@ -504,7 +503,6 @@ router.post(
         ...body,
         kind: 'couchbase',
         password: body.password ?? '',
-        team: toObjectId(teamId),
         managementPort:
           typeof body.managementPort === 'number'
             ? body.managementPort
@@ -617,7 +615,6 @@ router.put(
       }
 
       const { update, unsetFields } = buildCouchbaseConnectionUpdate(
-        teamId.toString(),
         body,
         existingConnection.password,
       );

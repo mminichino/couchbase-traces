@@ -7,12 +7,11 @@ import {
 import express from 'express';
 import type { Query } from 'mongoose';
 
+import { getMetadataStore } from '@/metadata';
 import { getNonNullUserWithTeam } from '@/middleware/auth';
 import Alert from '@/models/alert';
-import Connection from '@/models/connection';
 import Dashboard from '@/models/dashboard';
 import { SavedSearch } from '@/models/savedSearch';
-import { Source } from '@/models/source';
 import Webhook from '@/models/webhook';
 import { unaddressableTileAlertIds } from '@/utils/iacTileAlerts';
 import { getCounter, withSpan } from '@/utils/instrumentation';
@@ -69,6 +68,20 @@ const bounded = <T extends Query<unknown, unknown>>(query: T): T =>
     .limit(IAC_MANIFEST_LIMIT + 1)
     .maxTimeMS(IAC_MANIFEST_MAX_TIME_MS) as T;
 
+async function listBounded<T>(
+  repo: {
+    list(team: string): Promise<T[]>;
+    count(team: string): Promise<number>;
+  },
+  team: string,
+): Promise<{ items: T[]; truncated: boolean }> {
+  const [rows, total] = await Promise.all([repo.list(team), repo.count(team)]);
+  return {
+    items: rows.slice(0, IAC_MANIFEST_LIMIT),
+    truncated: total > IAC_MANIFEST_LIMIT,
+  };
+}
+
 /**
  * Each find asks for one row more than the ceiling, so a full page is
  * distinguishable from a result that happens to be exactly IAC_MANIFEST_LIMIT
@@ -100,6 +113,7 @@ router.get('/import-manifest', async (req, res, next) => {
   try {
     const { teamId } = getNonNullUserWithTeam(req);
 
+    const store = getMetadataStore();
     const manifest = await withSpan('iac.import_manifest', async span => {
       const startedAt = Date.now();
       const [
@@ -137,21 +151,19 @@ router.get('/import-manifest', async (req, res, next) => {
           ),
         ).lean(),
         bounded(SavedSearch.find({ team: teamId }, { name: 1 })).lean(),
-        bounded(Source.find({ team: teamId }, { name: 1, kind: 1 })).lean(),
-        bounded(
-          Connection.find(
-            { team: teamId },
-            { name: 1, platformProvisioned: 1 },
-          ),
-        ).lean(),
+        // Sources and connections moved to the metadata store (C2): ids sort
+        // by creation, the find cap is IAC_MANIFEST_LIMIT, and the count says
+        // whether the cap cut anything off.
+        listBounded(store.sources, teamId.toString()),
+        listBounded(store.connections, teamId.toString()),
         bounded(Webhook.find({ team: teamId }, { name: 1 })).lean(),
       ]);
 
       const dashboards = capListing(dashboardRows);
       const alerts = capListing(alertRows);
       const savedSearches = capListing(savedSearchRows);
-      const sources = capListing(sourceRows);
-      const connections = capListing(connectionRows);
+      const sources = sourceRows;
+      const connections = connectionRows;
       const webhooks = capListing(webhookRows);
 
       const unaddressableTileAlerts = await unaddressableTileAlertIds({

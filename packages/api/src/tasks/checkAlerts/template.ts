@@ -28,6 +28,7 @@ import { serializeError } from 'serialize-error';
 import { z } from 'zod';
 
 import { AlertInput } from '@/controllers/alerts';
+import { ISource } from '@/metadata/schemas/source';
 import {
   AlertChannel,
   AlertSource,
@@ -36,7 +37,6 @@ import {
 } from '@/models/alert';
 import { IDashboard } from '@/models/dashboard';
 import { ISavedSearch } from '@/models/savedSearch';
-import { ISource } from '@/models/source';
 import { IWebhook } from '@/models/webhook';
 import { DataClient } from '@/query';
 import {

@@ -58,6 +58,7 @@ import { performance } from 'perf_hooks';
 import { serializeError } from 'serialize-error';
 
 import { ALERT_HISTORY_QUERY_CONCURRENCY } from '@/controllers/alertHistory';
+import { ISource } from '@/metadata/schemas/source';
 import { AlertState, IAlert, IAlertError } from '@/models/alert';
 import AlertHistory, {
   attributesToGroupValues,
@@ -68,7 +69,6 @@ import AlertHistory, {
 } from '@/models/alertHistory';
 import { IDashboard } from '@/models/dashboard';
 import { ISavedSearch } from '@/models/savedSearch';
-import { ISource } from '@/models/source';
 import { IWebhook } from '@/models/webhook';
 import {
   isClientTimeoutOrAbortError,

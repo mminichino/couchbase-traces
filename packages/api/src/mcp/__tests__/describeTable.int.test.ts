@@ -9,8 +9,7 @@ import {
   getTestFixtureDataClient,
 } from '@/fixtures';
 import { McpContext } from '@/mcp/tools/types';
-import Connection from '@/models/connection';
-import { Source } from '@/models/source';
+import { seedConnection, seedSource } from '@/metadata/testing/seed';
 
 import { callTool, createTestClient, getFirstText } from './mcpTestUtils';
 
@@ -65,7 +64,7 @@ describe('cbt_describe_table', () => {
 
   beforeEach(async () => {
     const { team, user } = await getLoggedInAgent(server);
-    connection = await Connection.create({
+    connection = await seedConnection({
       kind: 'couchbase',
       team: team._id,
       name: 'Default',
@@ -198,7 +197,7 @@ describe('cbt_describe_table', () => {
   });
 
   it('points to cbt_describe_source when the table backs a source', async () => {
-    const source = await Source.create({
+    const source = await seedSource({
       kind: SourceKind.Log,
       team: connection.team,
       from: { databaseName: DATABASE, tableName: 'events' },
@@ -206,7 +205,7 @@ describe('cbt_describe_table', () => {
       connection: connection._id,
       name: 'Events',
     });
-    const metricSource = await Source.create({
+    const metricSource = await seedSource({
       kind: SourceKind.Metric,
       team: connection.team,
       from: { databaseName: DATABASE, tableName: '' },
@@ -236,7 +235,7 @@ describe('cbt_describe_table', () => {
   });
 
   it('does not match a source on another connection', async () => {
-    const otherConnection = await Connection.create({
+    const otherConnection = await seedConnection({
       kind: 'couchbase',
       team: connection.team,
       name: 'Other',
@@ -244,7 +243,7 @@ describe('cbt_describe_table', () => {
       username: config.CLICKHOUSE_USER,
       password: config.CLICKHOUSE_PASSWORD,
     });
-    await Source.create({
+    await seedSource({
       kind: SourceKind.Log,
       team: connection.team,
       from: { databaseName: DATABASE, tableName: 'events' },
@@ -321,7 +320,7 @@ describe('cbt_describe_table', () => {
   });
 
   it("does not use another team's connection", async () => {
-    const otherConnection = await Connection.create({
+    const otherConnection = await seedConnection({
       kind: 'couchbase',
       team: new mongoose.Types.ObjectId(),
       name: 'Other',
