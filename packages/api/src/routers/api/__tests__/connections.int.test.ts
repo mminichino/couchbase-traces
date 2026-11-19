@@ -2,7 +2,11 @@ import { ObjectId } from 'mongodb';
 
 import * as config from '@/config';
 import { getLoggedInAgent, getServer } from '@/fixtures';
-import Connection from '@/models/connection';
+import {
+  countConnections,
+  findConnection,
+  seedConnection,
+} from '@/metadata/testing/seed';
 
 describe('connections router', () => {
   const server = getServer();
@@ -22,7 +26,7 @@ describe('connections router', () => {
   it('only returns connections belonging to the current team through GET /connections', async () => {
     const { agent, team } = await getLoggedInAgent(server);
 
-    await Connection.create({
+    await seedConnection({
       kind: 'couchbase',
       team: team._id,
       name: 'My Team Connection',
@@ -30,7 +34,7 @@ describe('connections router', () => {
       username: 'default',
       password: '',
     });
-    await Connection.create({
+    await seedConnection({
       kind: 'couchbase',
       team: new ObjectId(),
       name: 'Other Team Connection',
@@ -60,13 +64,13 @@ describe('connections router', () => {
       .expect(400);
 
     expect(res.body.message).toBe('PromQL sources are no longer supported.');
-    expect(await Connection.countDocuments()).toBe(0);
+    expect(await countConnections()).toBe(0);
   });
 
   it('rejects isPrometheusEndpoint through PUT /connections/:id', async () => {
     const { agent, team } = await getLoggedInAgent(server);
 
-    const created = await Connection.create({
+    const created = await seedConnection({
       kind: 'couchbase',
       team: team._id,
       name: 'No-prom',
@@ -88,14 +92,14 @@ describe('connections router', () => {
       .expect(400);
 
     expect(res.body.message).toBe('PromQL sources are no longer supported.');
-    const stored = await Connection.findById(created._id);
+    const stored = await findConnection(created._id);
     expect(stored?.isPrometheusEndpoint).not.toBe(true);
   });
 
   it('toggles isPrometheusEndpoint back to false through PUT', async () => {
     const { agent, team } = await getLoggedInAgent(server);
 
-    const created = await Connection.create({
+    const created = await seedConnection({
       kind: 'couchbase',
       team: team._id,
       name: 'Prom',
@@ -118,7 +122,7 @@ describe('connections router', () => {
       })
       .expect(200);
 
-    const stored = await Connection.findById(created._id);
+    const stored = await findConnection(created._id);
     expect(stored?.host).toBe(config.CLICKHOUSE_HOST);
     expect(stored?.isPrometheusEndpoint).toBe(false);
   });

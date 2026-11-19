@@ -125,3 +125,5 @@ export function findTeam(id: IdLike): Promise<ITeam | null> {
   if (id == null) return Promise.resolve(null);
   return getMetadataStore().teams.getById(id.toString());
 }
+
+export * from '@/metadata/testing/seedSources';

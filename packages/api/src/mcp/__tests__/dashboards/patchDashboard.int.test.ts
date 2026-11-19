@@ -5,8 +5,8 @@ import {
 
 import { DEFAULT_DATABASE, DEFAULT_METRICS_TABLE } from '@/fixtures';
 import { callTool, getFirstText } from '@/mcp/__tests__/mcpTestUtils';
+import { seedSource } from '@/metadata/testing/seed';
 import Dashboard from '@/models/dashboard';
-import { Source } from '@/models/source';
 import type { ExternalDashboardTileWithId } from '@/utils/zod';
 
 import { setupDashboardTests } from './setup';
@@ -737,7 +737,7 @@ describe('MCP Dashboard Tools - cbt_patch_dashboard', () => {
   });
 
   it('should patch a series heatmap tile without losing its mode', async () => {
-    const logSource = await Source.create({
+    const logSource = await seedSource({
       kind: SourceKind.Log,
       team: ctx.team._id,
       from: { databaseName: DEFAULT_DATABASE, tableName: 'otel_logs' },
@@ -1111,7 +1111,7 @@ describe('MCP Dashboard Tools - cbt_patch_dashboard', () => {
     ];
 
     const createMetricSource = () =>
-      Source.create({
+      seedSource({
         kind: SourceKind.Metric,
         team: ctx.team._id,
         from: { databaseName: DEFAULT_DATABASE, tableName: '' },

@@ -26,13 +26,19 @@ import {
   RAW_SQL_ALERT_TEMPLATE,
   RAW_SQL_NUMBER_ALERT_TEMPLATE,
 } from '@/fixtures';
+import { IConnection } from '@/metadata/schemas/connection';
+import { ISource } from '@/metadata/schemas/source';
 import type { ITeam } from '@/metadata/schemas/team';
+import {
+  findSource,
+  patchSource,
+  seedConnection,
+  seedSource,
+} from '@/metadata/testing/seed';
 import Alert, { AlertSource, IAlert } from '@/models/alert';
 import AlertHistory from '@/models/alertHistory';
-import Connection, { IConnection } from '@/models/connection';
 import Dashboard, { IDashboard } from '@/models/dashboard';
 import { ISavedSearch, SavedSearch } from '@/models/savedSearch';
-import { ISource, LogSource, Source } from '@/models/source';
 import Webhook, { IWebhook } from '@/models/webhook';
 import { DataClient } from '@/query';
 import * as checkAlert from '@/tasks/checkAlerts';
@@ -2052,7 +2058,7 @@ describe('checkAlerts', () => {
         [webhook._id.toString(), webhook],
       ]);
 
-      const connection = await Connection.create({
+      const connection = await seedConnection({
         host: config.CLICKHOUSE_HOST,
         kind: 'couchbase',
         team: team._id,
@@ -2061,7 +2067,7 @@ describe('checkAlerts', () => {
         password: config.CLICKHOUSE_PASSWORD,
       });
 
-      const source = await Source.create({
+      const source = await seedSource({
         kind: 'log',
         team: team._id,
         from: {
@@ -2143,7 +2149,7 @@ describe('checkAlerts', () => {
       now: Date,
       details: AlertDetails,
       dataClient: DataClient,
-      connection: IConnection,
+      connection: IConnection | string,
       alertProvider: AlertProvider,
       teamWebhooksById: Map<string, IWebhook>,
     ) => {
@@ -2159,7 +2165,7 @@ describe('checkAlerts', () => {
           recentHistoryMap,
         },
         dataClient,
-        connection.id,
+        typeof connection === 'string' ? connection : connection.id,
         alertProvider,
         teamWebhooksById,
       );
@@ -2554,11 +2560,10 @@ describe('checkAlerts', () => {
       // (not the base Source schema), so we must update through `LogSource`
       // — `Source.updateOne` would silently drop the field under Mongoose's
       // default strict mode.
-      await LogSource.updateOne(
-        { _id: source._id },
-        { $set: { tableFilterExpression: "ServiceName != 'excluded'" } },
-      );
-      const filteredSource = await Source.findById(source._id);
+      await patchSource(source._id, {
+        tableFilterExpression: "ServiceName != 'excluded'",
+      });
+      const filteredSource = await findSource(source._id);
 
       const details = await createAlertDetails(
         team,
@@ -2652,7 +2657,7 @@ describe('checkAlerts', () => {
       });
 
       try {
-        const source = await Source.create({
+        const source = await seedSource({
           kind: 'log',
           team: team._id,
           from: {
@@ -7554,7 +7559,7 @@ describe('checkAlerts', () => {
 
       await bulkInsertMetricsGauge(gaugePointsA);
 
-      const source = await Source.create({
+      const source = await seedSource({
         kind: 'metric',
         team: team._id,
         from: {
@@ -7752,7 +7757,7 @@ describe('checkAlerts', () => {
 
       await bulkInsertMetricsGauge(gaugePoints);
 
-      const source = await Source.create({
+      const source = await seedSource({
         kind: 'metric',
         team: team._id,
         from: {
@@ -7933,7 +7938,7 @@ describe('checkAlerts', () => {
         .spyOn(slack, 'postMessageToWebhook')
         .mockResolvedValue({ text: 'ok' });
 
-      const source = await Source.create({
+      const source = await seedSource({
         kind: 'metric',
         team: team._id,
         from: {
@@ -10072,7 +10077,7 @@ describe('checkAlerts', () => {
         [webhook._id.toString(), webhook],
       ]);
 
-      const connection = await Connection.create({
+      const connection = await seedConnection({
         host: config.CLICKHOUSE_HOST,
         kind: 'couchbase',
         team: team._id,
@@ -10081,7 +10086,7 @@ describe('checkAlerts', () => {
         password: config.CLICKHOUSE_PASSWORD,
       });
 
-      const source = await Source.create({
+      const source = await seedSource({
         kind: 'log',
         team: team._id,
         from: {
@@ -10177,7 +10182,7 @@ describe('checkAlerts', () => {
         [webhook._id.toString(), webhook],
       ]);
 
-      const connection = await Connection.create({
+      const connection = await seedConnection({
         host: config.CLICKHOUSE_HOST,
         kind: 'couchbase',
         team: team._id,
@@ -10186,7 +10191,7 @@ describe('checkAlerts', () => {
         password: config.CLICKHOUSE_PASSWORD,
       });
 
-      const source = await Source.create({
+      const source = await seedSource({
         kind: 'log',
         team: team._id,
         from: {
@@ -10273,7 +10278,7 @@ describe('checkAlerts', () => {
         [webhook._id.toString(), webhook],
       ]);
 
-      const connection = await Connection.create({
+      const connection = await seedConnection({
         host: config.CLICKHOUSE_HOST,
         kind: 'couchbase',
         team: team._id,
@@ -10282,7 +10287,7 @@ describe('checkAlerts', () => {
         password: config.CLICKHOUSE_PASSWORD,
       });
 
-      const source = await Source.create({
+      const source = await seedSource({
         kind: 'log',
         team: team._id,
         from: {
@@ -11728,7 +11733,7 @@ describe('checkAlerts', () => {
         [webhook._id.toString(), webhook],
       ]);
 
-      const connection = await Connection.create({
+      const connection = await seedConnection({
         host: config.CLICKHOUSE_HOST,
         kind: 'couchbase',
         team: team._id,
@@ -11737,7 +11742,7 @@ describe('checkAlerts', () => {
         password: config.CLICKHOUSE_PASSWORD,
       });
 
-      const source = await Source.create({
+      const source = await seedSource({
         kind: 'log',
         team: team._id,
         from: {

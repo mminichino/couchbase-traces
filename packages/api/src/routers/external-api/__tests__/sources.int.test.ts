@@ -16,18 +16,16 @@ import {
   getLoggedInAgent,
   getServer,
 } from '@/fixtures';
+import { IConnection } from '@/metadata/schemas/connection';
+import { ISource } from '@/metadata/schemas/source';
 import type { ITeam } from '@/metadata/schemas/team';
 import type { IUser } from '@/metadata/schemas/user';
-import { toObjectId } from '@/models';
-import Connection, { IConnection } from '@/models/connection';
 import {
-  ISource,
-  LogSource,
-  MetricSource,
-  SessionSource,
-  Source,
-  TraceSource,
-} from '@/models/source';
+  seedConnection,
+  seedRawSource,
+  seedSource,
+} from '@/metadata/testing/seed';
+import { toObjectId } from '@/models';
 
 describe('External API v2 Sources', () => {
   const server = getServer();
@@ -46,7 +44,7 @@ describe('External API v2 Sources', () => {
     team = result.team;
     user = result.user;
 
-    connection = await Connection.create({
+    connection = await seedConnection({
       kind: 'couchbase',
       team: team._id,
       name: 'Default',
@@ -87,7 +85,7 @@ describe('External API v2 Sources', () => {
     });
 
     it('should return a single log source', async () => {
-      const logSource = await LogSource.create({
+      const logSource = await seedSource({
         kind: SourceKind.Log,
         team: team._id,
         name: 'Test Log Source',
@@ -123,7 +121,7 @@ describe('External API v2 Sources', () => {
     });
 
     it('should return a single trace source', async () => {
-      const traceSource = await TraceSource.create({
+      const traceSource = await seedSource({
         kind: SourceKind.Trace,
         team: team._id,
         name: 'Test Trace Source',
@@ -265,7 +263,7 @@ describe('External API v2 Sources', () => {
     });
 
     it('should return a single metric source', async () => {
-      const metricSource = await MetricSource.create({
+      const metricSource = await seedSource({
         kind: SourceKind.Metric,
         team: team._id,
         name: 'Test Metric Source',
@@ -308,7 +306,7 @@ describe('External API v2 Sources', () => {
     });
 
     it('should return a single session source', async () => {
-      const traceSource = await TraceSource.create({
+      const traceSource = await seedSource({
         kind: SourceKind.Trace,
         team: team._id,
         name: 'Trace Source for Session',
@@ -328,7 +326,7 @@ describe('External API v2 Sources', () => {
         connection: connection._id,
       });
 
-      const sessionSource = await SessionSource.create({
+      const sessionSource = await seedSource({
         kind: SourceKind.Session,
         team: team._id.toString(),
         name: 'Test Session Source',
@@ -365,7 +363,7 @@ describe('External API v2 Sources', () => {
     });
 
     it('should return multiple sources of different kinds', async () => {
-      const logSource = await LogSource.create({
+      const logSource = await seedSource({
         kind: SourceKind.Log,
         team: team._id,
         name: 'Logs',
@@ -378,7 +376,7 @@ describe('External API v2 Sources', () => {
         connection: connection._id,
       });
 
-      const traceSource = await TraceSource.create({
+      const traceSource = await seedSource({
         kind: SourceKind.Trace,
         team: team._id,
         name: 'Traces',
@@ -398,7 +396,7 @@ describe('External API v2 Sources', () => {
         connection: connection._id,
       });
 
-      const metricSource = await MetricSource.create({
+      const metricSource = await seedSource({
         kind: SourceKind.Metric,
         team: team._id,
         name: 'Metrics',
@@ -431,7 +429,7 @@ describe('External API v2 Sources', () => {
 
     it("should only return sources for the authenticated user's team", async () => {
       // Create a source for the current team
-      const currentTeamSource = await LogSource.create({
+      const currentTeamSource = await seedSource({
         kind: SourceKind.Log,
         team: team._id,
         name: 'Current Team Source',
@@ -446,7 +444,7 @@ describe('External API v2 Sources', () => {
 
       // Create another team and source
       const otherTeamId = new mongoose.Types.ObjectId();
-      const otherConnection = await Connection.create({
+      const otherConnection = await seedConnection({
         kind: 'couchbase',
         team: otherTeamId,
         name: 'Other Team Connection',
@@ -455,7 +453,7 @@ describe('External API v2 Sources', () => {
         password: config.CLICKHOUSE_PASSWORD,
       });
 
-      await LogSource.create({
+      await seedSource({
         kind: SourceKind.Log,
         team: otherTeamId,
         name: 'Other Team Source',
@@ -477,7 +475,7 @@ describe('External API v2 Sources', () => {
     });
 
     it('should format sources according to SourceSchema', async () => {
-      await LogSource.create({
+      await seedSource({
         kind: SourceKind.Log,
         team: team._id,
         name: 'Test Source',
@@ -508,7 +506,7 @@ describe('External API v2 Sources', () => {
 
     it('should filter out sources that fail schema validation', async () => {
       // Create a valid source
-      const validSource = await LogSource.create({
+      const validSource = await seedSource({
         kind: SourceKind.Log,
         team: team._id,
         name: 'Valid Source',
@@ -524,7 +522,7 @@ describe('External API v2 Sources', () => {
       // Create an invalid source by bypassing Mongoose validation
       // This simulates a source that might exist in the database but doesn't
       // match the SourceSchema (e.g., due to schema evolution)
-      await Source.collection.insertOne({
+      await seedRawSource({
         kind: 'invalid-kind', // Invalid kind
         team: toObjectId(team._id),
         name: 'Invalid Source',
@@ -546,7 +544,7 @@ describe('External API v2 Sources', () => {
       const SECTION = 'Control Plane Prod';
 
       it('returns the section on a source that has one', async () => {
-        const logSource = await LogSource.create({
+        const logSource = await seedSource({
           kind: SourceKind.Log,
           team: toObjectId(team._id),
           name: 'Sectioned Log Source',
@@ -570,7 +568,7 @@ describe('External API v2 Sources', () => {
       });
 
       it('omits the section on a source that has none', async () => {
-        await LogSource.create({
+        await seedSource({
           kind: SourceKind.Log,
           team: team._id,
           name: 'Unsectioned Log Source',
@@ -598,7 +596,7 @@ describe('External API v2 Sources', () => {
       // Legacy Session sources were created before timestampValueExpression was
       // required. applyLegacyDefaults() backfills 'TimestampTime' before
       // SourceSchema.safeParse(), so these sources still appear in the response.
-      await Source.collection.insertOne({
+      await seedRawSource({
         kind: SourceKind.Session,
         name: 'Legacy Session',
         team: toObjectId(team._id),
@@ -623,7 +621,7 @@ describe('External API v2 Sources', () => {
       // New schema removed .nullable() — however, Zod's optional() in
       // discriminatedUnion context still accepts null values (they pass
       // safeParse). This means logSourceId: null is NOT a breaking change.
-      await Source.collection.insertOne({
+      await seedRawSource({
         kind: SourceKind.Trace,
         name: 'Trace with null logSourceId',
         team: toObjectId(team._id),
@@ -653,7 +651,7 @@ describe('External API v2 Sources', () => {
       // The external API runs SourceSchema.safeParse() which DOES strip
       // unknown/cross-kind fields (unlike Mongoose toJSON which keeps them).
       // This is the key difference between internal and external APIs.
-      await Source.collection.insertOne({
+      await seedRawSource({
         kind: SourceKind.Log,
         name: 'Flat Model Log',
         team: toObjectId(team._id),

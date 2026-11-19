@@ -14,8 +14,8 @@ import {
   getLoggedInAgent,
   getServer,
 } from '@/fixtures';
-import Connection from '@/models/connection';
-import { ISource, Source } from '@/models/source';
+import { ISource } from '@/metadata/schemas/source';
+import { seedConnection, seedSource } from '@/metadata/testing/seed';
 
 // Default time range for tests (1 hour)
 // Floor to minute so all derived timestamps (including test data inserted at
@@ -92,7 +92,7 @@ describe('External API v2 Charts', () => {
     team = result.team;
     user = result.user;
 
-    connection = await Connection.create({
+    connection = await seedConnection({
       kind: 'couchbase',
       team: team._id,
       name: 'Default',
@@ -101,7 +101,7 @@ describe('External API v2 Charts', () => {
       password: config.CLICKHOUSE_PASSWORD,
     });
 
-    logSource = await Source.create({
+    logSource = await seedSource({
       kind: SourceKind.Log,
       team: team._id,
       from: {
@@ -113,7 +113,7 @@ describe('External API v2 Charts', () => {
       name: 'Logs',
     });
 
-    metricSource = await Source.create({
+    metricSource = await seedSource({
       kind: SourceKind.Metric,
       team: team._id,
       from: {

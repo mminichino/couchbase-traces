@@ -2,8 +2,12 @@ import type { CouchbaseConnectionConfig } from '@couchbase-traces/common-utils/d
 import type { ConnectionSchema } from '@couchbase-traces/common-utils/dist/types';
 import type { z } from 'zod';
 
-import { type ObjectId, toObjectId } from '@/models';
-import Connection, { IConnection } from '@/models/connection';
+import { getMetadataStore } from '@/metadata';
+import type {
+  ConnectionInput,
+  ConnectionPatch,
+  IConnection,
+} from '@/metadata/schemas/connection';
 import { objectIdSchema } from '@/utils/zod';
 
 export type ConnectionValidation =
@@ -12,7 +16,7 @@ export type ConnectionValidation =
 
 export async function validateConnectionId(
   connection: unknown,
-  teamId: string | ObjectId | undefined,
+  teamId: string | { toString(): string } | undefined,
 ): Promise<ConnectionValidation> {
   const parsed = objectIdSchema.safeParse(connection);
   if (!parsed.success) {
@@ -25,11 +29,11 @@ export async function validateConnectionId(
   if (teamId == null) {
     return { ok: false, status: 403, message: 'Forbidden' };
   }
-  const connectionExists = await Connection.exists({
-    _id: parsed.data,
-    team: teamId,
-  });
-  if (connectionExists == null) {
+  const connectionExists = await getMetadataStore().connections.exists(
+    teamId.toString(),
+    parsed.data.toString(),
+  );
+  if (!connectionExists) {
     return {
       ok: false,
       status: 400,
@@ -42,13 +46,17 @@ export async function validateConnectionId(
 // Returns all connections across all teams. Only intended for instance-level
 // operations (e.g. startup auto-provisioning); user-facing routes must use
 // the team-scoped variants below.
-export function getConnections() {
-  // Never return password back to the user
-  return Connection.find({});
+export async function getConnections() {
+  const store = getMetadataStore();
+  const teams = await store.teams.listAll();
+  // Never returns the password back to the user.
+  return (
+    await Promise.all(teams.map(team => store.connections.list(team._id)))
+  ).flat();
 }
 
 export function getConnectionsByTeam(team: string) {
-  return Connection.find({ team });
+  return getMetadataStore().connections.list(team);
 }
 
 export function getConnectionById(
@@ -56,9 +64,9 @@ export function getConnectionById(
   connectionId: string,
   selectPassword = false,
 ) {
-  return Connection.findOne({ _id: connectionId, team }).select(
-    selectPassword ? '+password +tlsCaCertificate +monitorPassword' : '',
-  );
+  return getMetadataStore().connections.get(team, connectionId, {
+    secrets: selectPassword,
+  });
 }
 
 /** Builds the config the Couchbase cluster cache keys on; `updatedAt` versions it. */
@@ -87,37 +95,21 @@ export function toCouchbaseConnectionConfig(
   };
 }
 
-export function createConnection(
-  team: string,
-  connection: Omit<IConnection, 'id' | '_id'>,
-) {
-  return Connection.create({ ...connection, team });
+export function createConnection(team: string, connection: ConnectionInput) {
+  return getMetadataStore().connections.create(team, connection);
 }
 
 export function updateConnection(
   team: string,
   connectionId: string,
-  connection: Omit<IConnection, 'id' | '_id'>,
+  connection: ConnectionPatch,
   unsetFields: string[] = [],
 ) {
-  const updateOperation: Record<string, unknown> = { $set: connection };
-
-  if (unsetFields.length > 0) {
-    updateOperation.$unset = unsetFields.reduce(
-      (acc, field) => {
-        acc[field] = '';
-        return acc;
-      },
-      {} as Record<string, string>,
-    );
-  }
-
-  return Connection.findOneAndUpdate(
-    { _id: connectionId, team },
-    updateOperation,
-    {
-      new: true,
-    },
+  return getMetadataStore().connections.update(
+    team,
+    connectionId,
+    connection,
+    unsetFields,
   );
 }
 
@@ -127,14 +119,12 @@ export function updateConnection(
  * `managementPort` clears the stored port.
  */
 export function buildCouchbaseConnectionUpdate(
-  team: string,
   body: z.infer<typeof ConnectionSchema>,
-  storedPassword: string,
+  storedPassword: string | undefined,
 ) {
   const { tlsCaCertificate, monitorPassword, managementPort, ...rest } = body;
   const update = {
     ...rest,
-    team: toObjectId(team),
     kind: 'couchbase' as const,
     password: body.password || storedPassword,
     ...(tlsCaCertificate ? { tlsCaCertificate } : {}),
@@ -146,5 +136,5 @@ export function buildCouchbaseConnectionUpdate(
 }
 
 export function deleteConnection(team: string, connectionId: string) {
-  return Connection.findOneAndDelete({ _id: connectionId, team });
+  return getMetadataStore().connections.delete(team, connectionId);
 }

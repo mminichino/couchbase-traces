@@ -5,7 +5,7 @@ import {
   buildChartAssistantPrompt,
   sqlConditionSchemaDescription,
 } from '@/controllers/aiPrompts';
-import type { ISource } from '@/models/source';
+import type { ISource } from '@/metadata/schemas/source';
 
 const baseSource = {
   id: 'source-id',

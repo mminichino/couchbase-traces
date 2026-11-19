@@ -11,6 +11,7 @@ import {
   mcpUserError,
   validateObjectId,
 } from '@/mcp/utils/errors';
+import type { SourceDocument } from '@/metadata/schemas/source';
 import { isDuplicateKeyError } from '@/utils/errors';
 
 import { buildMcpSaveSourceSchema, buildSourceInput } from './schemas';
@@ -141,7 +142,7 @@ async function validateCorrelatedSourceIds(
 }
 
 function sourceResult(
-  source: { toJSON(opts: { getters: boolean }): unknown } | null | undefined,
+  source: SourceDocument | null | undefined,
   frontendUrl: string | undefined,
 ) {
   return {
@@ -150,7 +151,7 @@ function sourceResult(
         type: 'text' as const,
         text: JSON.stringify(
           {
-            ...(source?.toJSON({ getters: true }) as Record<string, unknown>),
+            ...source,
             ...(frontendUrl ? { url: `${frontendUrl}/team#sources` } : {}),
           },
           null,

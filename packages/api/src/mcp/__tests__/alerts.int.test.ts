@@ -14,11 +14,10 @@ import {
   RAW_SQL_ALERT_TEMPLATE,
 } from '@/fixtures';
 import { McpContext } from '@/mcp/tools/types';
+import { seedConnection, seedSource } from '@/metadata/testing/seed';
 import Alert, { AlertSource, AlertState } from '@/models/alert';
-import Connection from '@/models/connection';
 import Dashboard from '@/models/dashboard';
 import { SavedSearch } from '@/models/savedSearch';
-import { Source } from '@/models/source';
 import Webhook, { WebhookService } from '@/models/webhook';
 
 import { callTool, createTestClient, getFirstText } from './mcpTestUtils';
@@ -40,7 +39,7 @@ describe('MCP Alert Tools', () => {
     team = result.team;
     user = result.user;
 
-    connection = await Connection.create({
+    connection = await seedConnection({
       kind: 'couchbase',
       team: team._id,
       name: 'Default',
@@ -49,7 +48,7 @@ describe('MCP Alert Tools', () => {
       password: config.CLICKHOUSE_PASSWORD,
     });
 
-    traceSource = await Source.create({
+    traceSource = await seedSource({
       kind: SourceKind.Trace,
       team: team._id,
       from: {

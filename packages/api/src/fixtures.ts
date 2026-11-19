@@ -21,13 +21,13 @@ import { FixtureDataClient } from '@/fixtureStore';
 import {
   clearMetadataForTests,
   closeMetadataStore,
+  getMetadataStore,
   metadataReadiness,
   startMetadataStore,
 } from '@/metadata';
 import { newId } from '@/metadata/ids';
 import { mongooseConnection } from '@/models';
 import { AlertInterval, AlertSource } from '@/models/alert';
-import Connection from '@/models/connection';
 import Server from '@/server';
 import logger from '@/utils/logger';
 import { MetricModel } from '@/utils/logParser';
@@ -39,7 +39,7 @@ const MOCK_USER = {
   password: 'TacoCat!2#4X',
 };
 
-// Server imports dataLayerSetup (Mongo Connection.findById). Int tests often
+// Server imports dataLayerSetup (metadata connections.getWithSecrets). Int tests often
 // use placeholder ids like "test-connection" or freshly minted ObjectIds with
 // no Connection doc — fall back to the CI compose cluster credentials.
 // When a Connection doc exists, still force CI compose host/user/password:
@@ -54,9 +54,7 @@ if (config.IS_CI) {
   setCouchbaseConnectionLoader(async id => {
     const creds = ciCreds();
     try {
-      const doc = await Connection.findById(id).select(
-        '+password +tlsCaCertificate',
-      );
+      const doc = await getMetadataStore().connections.getWithSecrets(id);
       if (doc != null) {
         return {
           ...toCouchbaseConnectionConfig(doc),
@@ -64,7 +62,7 @@ if (config.IS_CI) {
         };
       }
     } catch {
-      // non-ObjectId ids (e.g. "test-connection") throw from findById
+      // the metadata store may be down or disabled in a unit test
     }
     return {
       id: String(id),

@@ -16,11 +16,10 @@ import {
   makeRawSqlTile,
   makeTile,
 } from '@/fixtures';
-import { seedUser } from '@/metadata/testing/seed';
+import { removeSource, seedSource, seedUser } from '@/metadata/testing/seed';
 import Alert, { AlertSource } from '@/models/alert';
 import Dashboard from '@/models/dashboard';
 import PresetDashboardFilter from '@/models/presetDashboardFilter';
-import { Source } from '@/models/source';
 import Webhook, { WebhookDocument, WebhookService } from '@/models/webhook';
 
 const MOCK_DASHBOARD = {
@@ -1527,7 +1526,7 @@ describe('dashboard router', () => {
 
   describe('promql-label filters', () => {
     const createPromqlSource = () =>
-      Source.create({
+      seedSource({
         kind: SourceKind.Promql,
         name: 'Test PromQL Source',
         team: team._id,
@@ -1654,7 +1653,7 @@ describe('dashboard router', () => {
       });
 
       it('rejects a filter naming a source of the wrong kind', async () => {
-        const logSource = await Source.create({
+        const logSource = await seedSource({
           kind: SourceKind.Log,
           name: 'Test Log Source',
           team: team._id,
@@ -1678,7 +1677,7 @@ describe('dashboard router', () => {
       // The lookup is team-scoped, so another team's PromQL source is as good
       // as absent.
       it("rejects another team's PromQL source", async () => {
-        const otherTeamSource = await Source.create({
+        const otherTeamSource = await seedSource({
           kind: SourceKind.Promql,
           name: 'Other Team PromQL Source',
           team: new Types.ObjectId(),
@@ -1727,7 +1726,7 @@ describe('dashboard router', () => {
           .send({ ...MOCK_DASHBOARD, filters: [filter] })
           .expect(200);
 
-        await Source.findByIdAndDelete(promqlSourceId);
+        await removeSource(promqlSourceId);
 
         await agent
           .patch(`/dashboards/${created.body.id}`)
@@ -1748,7 +1747,7 @@ describe('dashboard router', () => {
           .send({ ...MOCK_DASHBOARD, filters: [filter] })
           .expect(200);
 
-        await Source.findByIdAndDelete(promqlSourceId);
+        await removeSource(promqlSourceId);
 
         await agent
           .patch(`/dashboards/${created.body.id}`)
@@ -1791,7 +1790,7 @@ describe('dashboard router', () => {
           })
           .expect(200);
 
-        const logSource = await Source.create({
+        const logSource = await seedSource({
           kind: SourceKind.Log,
           name: 'Converted Log Source',
           team: team._id,
@@ -1856,7 +1855,7 @@ describe('dashboard router', () => {
 
   describe('ad hoc filters', () => {
     const createSource = (kind: SourceKind, teamId = team._id) =>
-      Source.create({
+      seedSource({
         kind,
         name: `Test ${kind} source`,
         team: teamId,
@@ -2131,8 +2130,8 @@ describe('dashboard router', () => {
           .send({ ...MOCK_DASHBOARD, filters: [filter] })
           .expect(200);
 
-        await Source.findByIdAndDelete(logSourceId);
-        await Source.findByIdAndDelete(traceSourceId);
+        await removeSource(logSourceId);
+        await removeSource(traceSourceId);
 
         await agent
           .patch(`/dashboards/${created.body.id}`)
@@ -2178,7 +2177,7 @@ describe('dashboard router', () => {
     describe('GET /preset/:presetDashboard/filters', () => {
       it('returns preset dashboard filters for a given source', async () => {
         // Create a test source
-        const source = await Source.create({
+        const source = await seedSource({
           ...MOCK_SOURCE,
           team: team._id,
         });
@@ -2207,7 +2206,7 @@ describe('dashboard router', () => {
       });
 
       it('returns empty array when no filters exist for source', async () => {
-        const source = await Source.create({
+        const source = await seedSource({
           ...MOCK_SOURCE,
           team: team._id,
         });
@@ -2234,7 +2233,7 @@ describe('dashboard router', () => {
       });
 
       it('returns 400 for invalid preset dashboard type', async () => {
-        const source = await Source.create({
+        const source = await seedSource({
           ...MOCK_SOURCE,
           team: team._id,
         });
@@ -2248,12 +2247,12 @@ describe('dashboard router', () => {
       it('does not return filters from other teams in GET', async () => {
         const team2 = new mongoose.Types.ObjectId();
 
-        const source1 = await Source.create({
+        const source1 = await seedSource({
           ...MOCK_SOURCE,
           team: team._id,
         });
 
-        const source2 = await Source.create({
+        const source2 = await seedSource({
           ...MOCK_SOURCE,
           team: team2,
         });
@@ -2282,7 +2281,7 @@ describe('dashboard router', () => {
 
     describe('POST /preset/:presetDashboard/filter', () => {
       it('creates a new preset dashboard filter', async () => {
-        const source = await Source.create({
+        const source = await seedSource({
           ...MOCK_SOURCE,
           team: team._id,
         });
@@ -2322,7 +2321,7 @@ describe('dashboard router', () => {
       });
 
       it('creates filter with optional sourceMetricType', async () => {
-        const source = await Source.create({
+        const source = await seedSource({
           ...MOCK_SOURCE,
           team: team._id,
         });
@@ -2343,7 +2342,7 @@ describe('dashboard router', () => {
       });
 
       it('returns 400 when filter preset dashboard does not match params', async () => {
-        const source = await Source.create({
+        const source = await seedSource({
           ...MOCK_SOURCE,
           team: team._id,
         });
@@ -2391,7 +2390,7 @@ describe('dashboard router', () => {
       it.each(['expression', 'source'])(
         'returns 400 for a preset filter with no %s',
         async field => {
-          const source = await Source.create({
+          const source = await seedSource({
             ...MOCK_SOURCE,
             team: team._id,
           });
@@ -2411,7 +2410,7 @@ describe('dashboard router', () => {
       );
 
       it('returns 400 when filter is missing required fields', async () => {
-        const source = await Source.create({
+        const source = await seedSource({
           ...MOCK_SOURCE,
           team: team._id,
         });
@@ -2438,7 +2437,7 @@ describe('dashboard router', () => {
 
     describe('PUT /preset/:presetDashboard/filter', () => {
       it('updates an existing preset dashboard filter', async () => {
-        const source = await Source.create({
+        const source = await seedSource({
           ...MOCK_SOURCE,
           team: team._id,
         });
@@ -2478,7 +2477,7 @@ describe('dashboard router', () => {
       });
 
       it('returns an error when the filter does not exist', async () => {
-        const source = await Source.create({
+        const source = await seedSource({
           ...MOCK_SOURCE,
           team: team._id,
         });
@@ -2499,7 +2498,7 @@ describe('dashboard router', () => {
       });
 
       it('updates filter with sourceMetricType', async () => {
-        const source = await Source.create({
+        const source = await seedSource({
           ...MOCK_SOURCE,
           team: team._id,
         });
@@ -2529,7 +2528,7 @@ describe('dashboard router', () => {
       });
 
       it('returns 400 when filter preset dashboard does not match params', async () => {
-        const source = await Source.create({
+        const source = await seedSource({
           ...MOCK_SOURCE,
           team: team._id,
         });
@@ -2566,7 +2565,7 @@ describe('dashboard router', () => {
 
     describe('DELETE /preset/:presetDashboard/filter/:id', () => {
       it('deletes a preset dashboard filter', async () => {
-        const source = await Source.create({
+        const source = await seedSource({
           ...MOCK_SOURCE,
           team: team._id,
         });
@@ -2620,7 +2619,7 @@ describe('dashboard router', () => {
       it('does not delete filters from other teams', async () => {
         const team2Id = new mongoose.Types.ObjectId();
 
-        const source = await Source.create({
+        const source = await seedSource({
           ...MOCK_SOURCE,
           team: team2Id,
         });

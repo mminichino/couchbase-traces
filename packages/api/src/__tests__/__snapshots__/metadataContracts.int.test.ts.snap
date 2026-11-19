@@ -95,7 +95,6 @@ exports[`metadata wire contracts: internal API GET /alerts 1`] = `
 exports[`metadata wire contracts: internal API GET /connections 1`] = `
 [
   {
-    "__v": 0,
     "_id": "<id:3>",
     "createdAt": "<date>",
     "host": "couchbase://127.0.0.1",
@@ -379,7 +378,6 @@ exports[`metadata wire contracts: internal API GET /saved-search 1`] = `
 exports[`metadata wire contracts: internal API GET /sources 1`] = `
 [
   {
-    "__v": 0,
     "_id": "<id:4>",
     "bodyExpression": "Body",
     "connection": "<id:3>",
@@ -813,7 +811,6 @@ exports[`metadata wire contracts: internal API create responses 1`] = `
     "whereLanguage": "lucene",
   },
   "POST /sources": {
-    "__v": 0,
     "_id": "<id:4>",
     "bodyExpression": "Body",
     "connection": "<id:3>",

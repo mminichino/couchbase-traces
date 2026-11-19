@@ -11,10 +11,9 @@ import {
 } from '@/fixtures';
 import type { ITeam } from '@/metadata/schemas/team';
 import type { IUser } from '@/metadata/schemas/user';
+import { seedConnection, seedSource } from '@/metadata/testing/seed';
 import Alert, { AlertSource, AlertState } from '@/models/alert';
-import Connection from '@/models/connection';
 import { SavedSearch } from '@/models/savedSearch';
-import { LogSource } from '@/models/source';
 
 const BASE_URL = '/api/v2/saved-searches';
 
@@ -35,7 +34,7 @@ describe('External API v2 Saved Searches CRUD', () => {
     team = result.team;
     user = result.user;
 
-    const connection = await Connection.create({
+    const connection = await seedConnection({
       kind: 'couchbase',
       team: team._id,
       name: 'Default',
@@ -43,7 +42,7 @@ describe('External API v2 Saved Searches CRUD', () => {
       username: config.CLICKHOUSE_USER,
       password: config.CLICKHOUSE_PASSWORD,
     });
-    const source = await LogSource.create({
+    const source = await seedSource({
       kind: SourceKind.Log,
       team: team._id,
       name: 'Logs',
@@ -125,7 +124,7 @@ describe('External API v2 Saved Searches CRUD', () => {
       // A source that genuinely exists but belongs to a different team must be
       // rejected the same as a non-existent one — requireValidSourceId scopes
       // the lookup to the caller's team, preventing cross-team references.
-      const otherTeamSource = await LogSource.create({
+      const otherTeamSource = await seedSource({
         kind: SourceKind.Log,
         team: new mongoose.Types.ObjectId(),
         name: 'Other Team Logs',

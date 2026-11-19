@@ -1,9 +1,10 @@
 import mongoose from 'mongoose';
 
 import * as config from '@/config';
+import { newId } from '@/metadata/ids';
+import { ISource } from '@/metadata/schemas/source';
 import { ObjectId } from '@/models';
 import { AlertSource, AlertThresholdType, IAlert } from '@/models/alert';
-import { ISource } from '@/models/source';
 import { IWebhook } from '@/models/webhook';
 import { DataClient } from '@/query';
 import * as checkAlerts from '@/tasks/checkAlerts';
@@ -130,13 +131,15 @@ describe('CheckAlertTask', () => {
         ],
         conn: {
           id: 'conn-123',
-          _id: new mongoose.Types.ObjectId(),
+          _id: 'c'.repeat(24),
           host: 'couchbase://localhost',
           kind: 'couchbase' as const,
           username: config.CLICKHOUSE_USER,
           password: config.CLICKHOUSE_PASSWORD,
           name: '',
-          team: new mongoose.Types.ObjectId(),
+          team: newId(),
+          createdAt: new Date(),
+          updatedAt: new Date(),
         },
         now: new Date(),
       };
@@ -215,13 +218,15 @@ describe('CheckAlertTask', () => {
         ],
         conn: {
           id: 'conn-123',
-          _id: new mongoose.Types.ObjectId(),
+          _id: 'c'.repeat(24),
           host: 'couchbase://localhost',
           kind: 'couchbase' as const,
           username: config.CLICKHOUSE_USER,
           password: config.CLICKHOUSE_PASSWORD,
           name: 'Team1 Connection',
-          team: team1Id,
+          team: team1Id.toString(),
+          createdAt: new Date(),
+          updatedAt: new Date(),
         },
         now: new Date(),
       };
@@ -237,13 +242,15 @@ describe('CheckAlertTask', () => {
         ],
         conn: {
           id: 'conn-456',
-          _id: new mongoose.Types.ObjectId(),
+          _id: 'c'.repeat(24),
           host: 'couchbase://localhost',
           kind: 'couchbase' as const,
           username: config.CLICKHOUSE_USER,
           password: config.CLICKHOUSE_PASSWORD,
           name: 'Team2 Connection',
-          team: team2Id,
+          team: team2Id.toString(),
+          createdAt: new Date(),
+          updatedAt: new Date(),
         },
         now: new Date(),
       };

@@ -57,6 +57,8 @@ export class CouchbaseMetadataStore implements MetadataStore {
   readonly teams: Repositories['teams'];
   readonly users: Repositories['users'];
   readonly teamInvites: Repositories['teamInvites'];
+  readonly connections: Repositories['connections'];
+  readonly sources: Repositories['sources'];
 
   constructor(
     private readonly cfg: MetadataConfig,
@@ -76,6 +78,8 @@ export class CouchbaseMetadataStore implements MetadataStore {
     this.teams = repos.teams;
     this.users = repos.users;
     this.teamInvites = repos.teamInvites;
+    this.connections = repos.connections;
+    this.sources = repos.sources;
   }
 
   get kv(): MetaKv {

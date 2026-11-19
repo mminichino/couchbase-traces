@@ -2,7 +2,7 @@ import { SourceKind, TSource } from '@couchbase-traces/common-utils/dist/types';
 import { Types } from 'mongoose';
 
 import { getLoggedInAgent, getServer } from '@/fixtures';
-import { Source } from '@/models/source';
+import { seedSource } from '@/metadata/testing/seed';
 
 const MOCK_SOURCE: Omit<Extract<TSource, { kind: 'log' }>, 'id'> = {
   kind: SourceKind.Log,
@@ -29,7 +29,7 @@ describe('pinnedFilters router', () => {
     team = result.team;
 
     // Create a real source owned by this team
-    const source = await Source.create({ ...MOCK_SOURCE, team: team._id });
+    const source = await seedSource({ ...MOCK_SOURCE, team: team._id });
     sourceId = source._id.toString();
   });
 
@@ -169,7 +169,7 @@ describe('pinnedFilters router', () => {
 
   describe('source scoping', () => {
     it('pins are scoped to their source', async () => {
-      const source2 = await Source.create({ ...MOCK_SOURCE, team: team._id });
+      const source2 = await seedSource({ ...MOCK_SOURCE, team: team._id });
 
       await agent
         .put('/pinned-filters')

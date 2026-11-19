@@ -2,10 +2,9 @@ import ms from 'ms';
 
 import * as config from '@/config';
 import { bulkInsertLogs } from '@/fixtures';
+import { seedConnection, seedSource } from '@/metadata/testing/seed';
 import Alert from '@/models/alert';
-import Connection from '@/models/connection';
 import { SavedSearch } from '@/models/savedSearch';
-import { Source } from '@/models/source';
 import Webhook, { IWebhook } from '@/models/webhook';
 import { DataClient } from '@/query';
 import { processAlert } from '@/tasks/checkAlerts';
@@ -44,7 +43,7 @@ export const setupAlertFixtures = async (
   createTeam: (args: { name: string }) => Promise<any>,
 ) => {
   const team = await createTeam({ name: 'Test Team' });
-  const connection = await Connection.create({
+  const connection = await seedConnection({
     host: config.CLICKHOUSE_HOST,
     kind: 'couchbase',
     team: team._id,
@@ -52,7 +51,7 @@ export const setupAlertFixtures = async (
     username: config.CLICKHOUSE_USER,
     password: config.CLICKHOUSE_PASSWORD,
   });
-  const source = await Source.create({
+  const source = await seedSource({
     kind: 'log',
     team: team._id,
     from: { databaseName: 'otel', tableName: 'otel_logs' },

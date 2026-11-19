@@ -4,17 +4,23 @@ import {
   UseTextIndex,
 } from '@couchbase-traces/common-utils/dist/types';
 import express from 'express';
-import mongoose, { Types } from 'mongoose';
+import { Types } from 'mongoose';
 import request from 'supertest';
 
 import {
   getLoggedInAgent as getFixtureLoggedInAgent,
   getServer,
 } from '@/fixtures';
+import {
+  findSource,
+  getSourceDoc,
+  listSources,
+  seedConnection,
+  seedRawSource,
+  seedSource,
+} from '@/metadata/testing/seed';
 import { appErrorHandler } from '@/middleware/error';
 import { toObjectId } from '@/models';
-import Connection from '@/models/connection';
-import { Source } from '@/models/source';
 import sourcesRouter from '@/routers/api/sources';
 
 const MOCK_SOURCE: Omit<Extract<TSource, { kind: 'log' }>, 'id'> = {
@@ -58,10 +64,10 @@ const MOCK_PROMQL_SOURCE = {
     tableName: 'metrics_ts',
   },
   timestampValueExpression: 'timestamp',
-} as import('@/models/source').ISourceInput;
+} as import('@/metadata/schemas/source').ISourceInput;
 
 const createTestConnection = (team: string | Types.ObjectId, id: string) =>
-  Connection.create({
+  seedConnection({
     kind: 'couchbase',
     _id: id,
     team,
@@ -102,7 +108,7 @@ describe('sources router', () => {
     const { agent, team } = await getLoggedInAgent(server);
 
     // Create test source
-    await Source.create({
+    await seedSource({
       ...MOCK_SOURCE,
       team: team._id,
     });
@@ -139,7 +145,7 @@ describe('sources router', () => {
     });
 
     // Verify source was created in database
-    const sources = await Source.find({});
+    const sources = await listSources();
     expect(sources).toHaveLength(1);
   });
 
@@ -183,7 +189,7 @@ describe('sources router', () => {
 
     it('PUT /:id - rejects an inaccessible connection without changing the source', async () => {
       const { agent, team } = await getLoggedInAgent(server);
-      const source = await Source.create({
+      const source = await seedSource({
         ...MOCK_SOURCE,
         team: team._id,
       });
@@ -201,14 +207,14 @@ describe('sources router', () => {
         })
         .expect(400);
 
-      const unchanged = await Source.findById(source._id);
+      const unchanged = await findSource(source._id);
       expect(unchanged?.name).toBe(MOCK_SOURCE.name);
       expect(unchanged?.connection.toString()).toBe(MOCK_SOURCE.connection);
     });
 
     it('PUT /:id - returns 400 for a nonexistent connection id', async () => {
       const { agent, team } = await getLoggedInAgent(server);
-      const source = await Source.create({
+      const source = await seedSource({
         ...MOCK_SOURCE,
         team: team._id,
       });
@@ -253,7 +259,7 @@ describe('sources router', () => {
 
       expect(response.body.querySettings).toEqual(querySettings);
 
-      const sources = await Source.find({}).lean();
+      const sources = await listSources();
       expect(sources).toHaveLength(1);
       expect(sources[0]?.querySettings).toEqual(querySettings);
     });
@@ -273,7 +279,7 @@ describe('sources router', () => {
 
       expect(response.body.querySettings).toHaveLength(10);
 
-      const sources = await Source.find({}).lean();
+      const sources = await listSources();
       expect(sources[0]?.querySettings).toHaveLength(10);
     });
 
@@ -290,7 +296,7 @@ describe('sources router', () => {
         .send({ ...MOCK_SOURCE, querySettings });
 
       expect(response.status).toBe(400);
-      const sources = await Source.find({}).lean();
+      const sources = await listSources();
       expect(sources).toHaveLength(0);
     });
 
@@ -317,7 +323,7 @@ describe('sources router', () => {
     it('PUT /:id - accepts and persists valid querySettings', async () => {
       const { agent, team } = await getLoggedInAgent(server);
 
-      const source = await Source.create({
+      const source = await seedSource({
         ...MOCK_SOURCE,
         team: team._id,
       });
@@ -333,14 +339,14 @@ describe('sources router', () => {
         })
         .expect(200);
 
-      const updated = await Source.findById(source._id).lean();
+      const updated = await findSource(source._id);
       expect(updated?.querySettings).toEqual(querySettings);
     });
 
     it('PUT /:id - rejects querySettings exceeding the limit of 10', async () => {
       const { agent, team } = await getLoggedInAgent(server);
 
-      const source = await Source.create({
+      const source = await seedSource({
         ...MOCK_SOURCE,
         team: team._id,
       });
@@ -357,7 +363,7 @@ describe('sources router', () => {
       });
 
       expect(response.status).toBe(400);
-      const updated = await Source.findById(source._id).lean();
+      const updated = await findSource(source._id);
       expect(updated?.querySettings).toEqual([]); // defaults to [] when source created
     });
   });
@@ -366,7 +372,7 @@ describe('sources router', () => {
     const { agent, team } = await getLoggedInAgent(server);
 
     // Create test source
-    const source = await Source.create({
+    const source = await seedSource({
       ...MOCK_SOURCE,
       team: team._id,
     });
@@ -380,7 +386,7 @@ describe('sources router', () => {
     await agent.put(`/sources/${source._id}`).send(updatedSource).expect(200);
 
     // Verify source was updated
-    const updatedSourceFromDB = await Source.findById(source._id);
+    const updatedSourceFromDB = await findSource(source._id);
     expect(updatedSourceFromDB?.name).toBe('Updated Name');
   });
 
@@ -402,7 +408,7 @@ describe('sources router', () => {
     const { agent, team } = await getLoggedInAgent(server);
 
     // Create a metric source with metricTables property
-    const metricSource = await Source.create({
+    const metricSource = await seedSource({
       kind: SourceKind.Metric,
       name: 'Test Metric Source',
       connection: MOCK_METRIC_SOURCE.connection,
@@ -420,7 +426,7 @@ describe('sources router', () => {
     });
 
     // Verify the metric source has metricTables
-    const createdSource = await Source.findById(metricSource._id).lean();
+    const createdSource = await findSource(metricSource._id);
     expect(createdSource).toHaveProperty('metricTables');
 
     // Update the source to a trace source
@@ -450,7 +456,7 @@ describe('sources router', () => {
       .expect(200);
 
     // Verify the trace source does NOT have metricTables property
-    const updatedSource = await Source.findById(metricSource._id).lean();
+    const updatedSource = await findSource(metricSource._id);
     if (updatedSource?.kind !== SourceKind.Trace) {
       expect(updatedSource?.kind).toBe(SourceKind.Trace);
       throw new Error('Source did not update to trace');
@@ -464,7 +470,7 @@ describe('sources router', () => {
     const { agent, team } = await getLoggedInAgent(server);
 
     // Create a metric source with metricTables property
-    const metricSource = await Source.create({
+    const metricSource = await seedSource({
       kind: SourceKind.Metric,
       name: 'Test Metric Source',
       connection: MOCK_METRIC_SOURCE.connection,
@@ -501,7 +507,7 @@ describe('sources router', () => {
       .send(updatedMetricSource)
       .expect(200);
 
-    let updatedSource = await Source.findById(metricSource._id).lean();
+    let updatedSource = await findSource(metricSource._id);
 
     // Verify the metric source still has metricTables with updated values
     if (updatedSource?.kind !== SourceKind.Metric) {
@@ -530,7 +536,7 @@ describe('sources router', () => {
 
     await agent.put(`/sources/${metricSource._id}`).send(logSource).expect(200);
 
-    updatedSource = await Source.findById(metricSource._id).lean();
+    updatedSource = await findSource(metricSource._id);
 
     // Verify the source is now a Log and metricTables is removed
     if (updatedSource?.kind !== SourceKind.Log) {
@@ -549,7 +555,7 @@ describe('sources router', () => {
 
     /** The single persisted source, narrowed to a kind that carries the field. */
     const persisted = async (kind: SourceKind.Log | SourceKind.Trace) => {
-      const [source] = await Source.find({}).lean();
+      const [source] = await listSources();
       if (source?.kind !== kind) {
         throw new Error(`Expected a ${kind} source, got ${source?.kind}`);
       }
@@ -690,7 +696,7 @@ describe('sources router', () => {
 
       expect(response.body.seriesTable).toBe('otel_metrics_series');
 
-      const sources = await Source.find({}).lean();
+      const sources = await listSources();
       expect(sources).toHaveLength(1);
       const persisted = sources[0];
       if (persisted?.kind !== SourceKind.Metric) {
@@ -703,7 +709,7 @@ describe('sources router', () => {
     it('PUT /:id - updates seriesTable', async () => {
       const { agent, team } = await getLoggedInAgent(server);
 
-      const metricSource = await Source.create({
+      const metricSource = await seedSource({
         ...MOCK_METRIC_SOURCE,
         team: team._id,
       });
@@ -717,7 +723,7 @@ describe('sources router', () => {
         })
         .expect(200);
 
-      const updatedSource = await Source.findById(metricSource._id).lean();
+      const updatedSource = await findSource(metricSource._id);
       if (updatedSource?.kind !== SourceKind.Metric) {
         expect(updatedSource?.kind).toBe(SourceKind.Metric);
         throw new Error('Source is not a metric');
@@ -728,13 +734,13 @@ describe('sources router', () => {
     it('PUT /:id - removes seriesTable when omitted from the update payload', async () => {
       const { agent, team } = await getLoggedInAgent(server);
 
-      const metricSource = await Source.create({
+      const metricSource = await seedSource({
         ...MOCK_METRIC_SOURCE,
         seriesTable: 'otel_metrics_series',
         team: team._id,
       });
 
-      const createdSource = await Source.findById(metricSource._id).lean();
+      const createdSource = await findSource(metricSource._id);
       if (createdSource?.kind !== SourceKind.Metric) {
         expect(createdSource?.kind).toBe(SourceKind.Metric);
         throw new Error('Source is not a metric');
@@ -749,7 +755,7 @@ describe('sources router', () => {
         })
         .expect(200);
 
-      const updatedSource = await Source.findById(metricSource._id).lean();
+      const updatedSource = await findSource(metricSource._id);
       if (updatedSource?.kind !== SourceKind.Metric) {
         expect(updatedSource?.kind).toBe(SourceKind.Metric);
         throw new Error('Source is not a metric');
@@ -760,12 +766,12 @@ describe('sources router', () => {
     it('a metric source created without seriesTable has no seriesTable field (undefined for existing sources)', async () => {
       const { team } = await getLoggedInAgent(server);
 
-      const metricSource = await Source.create({
+      const metricSource = await seedSource({
         ...MOCK_METRIC_SOURCE,
         team: team._id,
       });
 
-      const createdSource = await Source.findById(metricSource._id).lean();
+      const createdSource = await findSource(metricSource._id);
       if (createdSource?.kind !== SourceKind.Metric) {
         expect(createdSource?.kind).toBe(SourceKind.Metric);
         throw new Error('Source is not a metric');
@@ -788,7 +794,7 @@ describe('sources router', () => {
 
       expect(response.body.minAutoGranularity).toBe('1 minute');
 
-      const sources = await Source.find({}).lean();
+      const sources = await listSources();
       expect(sources).toHaveLength(1);
       const persisted = sources[0];
       if (persisted?.kind !== SourceKind.Metric) {
@@ -811,7 +817,7 @@ describe('sources router', () => {
 
       expect(response.body).not.toHaveProperty('minAutoGranularity');
 
-      const sources = await Source.find({}).lean();
+      const sources = await listSources();
       expect(sources).toHaveLength(1);
       const persisted = sources[0];
       if (persisted?.kind !== SourceKind.Metric) {
@@ -824,7 +830,7 @@ describe('sources router', () => {
     it('PUT /:id - removes minAutoGranularity when omitted from the update payload', async () => {
       const { agent, team } = await getLoggedInAgent(server);
 
-      const metricSource = await Source.create({
+      const metricSource = await seedSource({
         ...MOCK_METRIC_SOURCE,
         minAutoGranularity: '1 minute',
         team: team._id,
@@ -838,7 +844,7 @@ describe('sources router', () => {
         })
         .expect(200);
 
-      const updatedSource = await Source.findById(metricSource._id).lean();
+      const updatedSource = await findSource(metricSource._id);
       if (updatedSource?.kind !== SourceKind.Metric) {
         expect(updatedSource?.kind).toBe(SourceKind.Metric);
         throw new Error('Source is not a metric');
@@ -859,13 +865,13 @@ describe('sources router', () => {
       expect(response.body.message).toBe(
         'PromQL sources are no longer supported.',
       );
-      expect(await Source.find({})).toHaveLength(0);
+      expect(await listSources()).toHaveLength(0);
     });
 
     it('PUT /:id rejects an update that keeps a PromQL source', async () => {
       const { agent, team } = await getLoggedInAgent(server);
 
-      const promqlSource = await Source.create({
+      const promqlSource = await seedSource({
         ...MOCK_PROMQL_SOURCE,
         team: team._id,
       });
@@ -888,7 +894,7 @@ describe('sources router', () => {
     const { agent, team } = await getLoggedInAgent(server);
 
     // Create test source
-    const source = await Source.create({
+    const source = await seedSource({
       ...MOCK_SOURCE,
       team: team._id,
     });
@@ -896,7 +902,7 @@ describe('sources router', () => {
     await agent.delete(`/sources/${source._id}`).expect(200);
 
     // Verify source was deleted
-    const deletedSource = await Source.findById(source._id);
+    const deletedSource = await findSource(source._id);
     expect(deletedSource).toBeNull();
   });
 
@@ -918,7 +924,7 @@ describe('sources router', () => {
       const { agent, team } = await getLoggedInAgent(server);
 
       // Old flat model allowed Session sources without timestampValueExpression
-      await Source.collection.insertOne({
+      await seedRawSource({
         kind: SourceKind.Session,
         name: 'Legacy Session',
         team: toObjectId(team._id),
@@ -940,7 +946,7 @@ describe('sources router', () => {
       const { agent, team } = await getLoggedInAgent(server);
 
       // Old flat model allowed Trace sources without defaultTableSelectExpression
-      await Source.collection.insertOne({
+      await seedRawSource({
         kind: SourceKind.Trace,
         name: 'Legacy Trace',
         team: toObjectId(team._id),
@@ -967,7 +973,7 @@ describe('sources router', () => {
     it('reads a legacy Trace source with logSourceId: null', async () => {
       const { agent, team } = await getLoggedInAgent(server);
 
-      await Source.collection.insertOne({
+      await seedRawSource({
         kind: SourceKind.Trace,
         name: 'Trace with null logSourceId',
         team: toObjectId(team._id),
@@ -1002,7 +1008,7 @@ describe('sources router', () => {
       // write — unknown fields stored in MongoDB are still returned on read.
       // This means the internal API response shape may differ from the external
       // API (which runs SourceSchema.safeParse() to strip extra fields).
-      await Source.collection.insertOne({
+      await seedRawSource({
         kind: SourceKind.Log,
         name: 'Flat Model Log',
         team: toObjectId(team._id),
@@ -1032,7 +1038,7 @@ describe('sources router', () => {
     it('fails to update a legacy Session source without providing timestampValueExpression', async () => {
       const { agent, team } = await getLoggedInAgent(server);
 
-      const result = await Source.collection.insertOne({
+      const result = await seedRawSource({
         kind: SourceKind.Session,
         name: 'Legacy Session',
         team: toObjectId(team._id),
@@ -1043,10 +1049,10 @@ describe('sources router', () => {
 
       // PUT validation (SourceSchema) requires timestampValueExpression
       await agent
-        .put(`/sources/${result.insertedId}`)
+        .put(`/sources/${result}`)
         .send({
           kind: SourceKind.Session,
-          id: result.insertedId.toString(),
+          id: result,
           name: 'Updated Session',
           connection: new Types.ObjectId().toString(),
           from: { databaseName: 'otel', tableName: 'otel_sessions' },
@@ -1060,7 +1066,7 @@ describe('sources router', () => {
       const { agent, team } = await getLoggedInAgent(server);
 
       const connectionId = new Types.ObjectId(MOCK_SOURCE.connection);
-      const result = await Source.collection.insertOne({
+      const result = await seedRawSource({
         kind: SourceKind.Session,
         name: 'Legacy Session',
         team: toObjectId(team._id),
@@ -1070,10 +1076,10 @@ describe('sources router', () => {
       });
 
       await agent
-        .put(`/sources/${result.insertedId}`)
+        .put(`/sources/${result}`)
         .send({
           kind: SourceKind.Session,
-          id: result.insertedId.toString(),
+          id: result,
           name: 'Updated Session',
           connection: connectionId.toString(),
           from: { databaseName: 'otel', tableName: 'otel_sessions' },
@@ -1082,16 +1088,16 @@ describe('sources router', () => {
         })
         .expect(200);
 
-      const updated = await Source.findById(result.insertedId);
+      const updated = await findSource(result);
       expect(updated?.name).toBe('Updated Session');
       expect(updated?.timestampValueExpression).toBe('TimestampTime');
     });
 
-    it('cross-kind fields persist in both raw MongoDB and discriminator toJSON', async () => {
+    it('cross-kind fields persist in both the stored document and the repository read', async () => {
       const { team } = await getLoggedInAgent(server);
 
       // Insert a flat-model doc with cross-kind fields
-      const result = await Source.collection.insertOne({
+      const result = await seedRawSource({
         kind: SourceKind.Log,
         name: 'Flat Log',
         team: toObjectId(team._id),
@@ -1103,71 +1109,70 @@ describe('sources router', () => {
       });
 
       // Raw query shows fields as stored
-      const rawDoc = await Source.collection.findOne({
-        _id: result.insertedId,
-      });
+      const rawDoc = await getSourceDoc(result);
       expect(rawDoc).toHaveProperty('metricTables');
 
-      // NOTE: Mongoose discriminator toJSON does NOT strip cross-kind fields.
-      // Unknown fields stored in MongoDB are still included in toJSON() output.
-      const hydrated = await Source.findById(result.insertedId);
-      // @ts-expect-error toJSON has differing type signatures depending on the source, but it's fine at runtime
-      const json = hydrated?.toJSON({ getters: true });
-      expect(json).toHaveProperty('metricTables');
+      // Cross-kind fields already stored are still returned on read.
+      const hydrated = await findSource(result);
+      expect(hydrated).toHaveProperty('metricTables');
     });
 
-    it('Source.find() returns correctly typed discriminators for all kinds', async () => {
+    it('sources.list() returns correctly typed documents for all kinds', async () => {
       const { team } = await getLoggedInAgent(server);
       const connectionId = new Types.ObjectId();
 
-      await Source.collection.insertMany([
-        {
-          kind: SourceKind.Log,
-          name: 'Log',
-          team: toObjectId(team._id),
-          connection: connectionId,
-          from: { databaseName: 'otel', tableName: 'otel_logs' },
-          timestampValueExpression: 'Timestamp',
-          defaultTableSelectExpression: 'Body',
-        },
-        {
-          kind: SourceKind.Trace,
-          name: 'Trace',
-          team: toObjectId(team._id),
-          connection: connectionId,
-          from: { databaseName: 'otel', tableName: 'otel_traces' },
-          timestampValueExpression: 'Timestamp',
-          defaultTableSelectExpression: '*',
-          durationExpression: 'Duration',
-          durationPrecision: 3,
-          traceIdExpression: 'TraceId',
-          spanIdExpression: 'SpanId',
-          parentSpanIdExpression: 'ParentSpanId',
-          spanNameExpression: 'SpanName',
-          spanKindExpression: 'SpanKind',
-        },
-        {
-          kind: SourceKind.Session,
-          name: 'Session',
-          team: toObjectId(team._id),
-          connection: connectionId,
-          from: { databaseName: 'otel', tableName: 'otel_sessions' },
-          timestampValueExpression: 'TimestampTime',
-          traceSourceId: 'some-id',
-        },
-        {
-          kind: SourceKind.Metric,
-          name: 'Metric',
-          team: toObjectId(team._id),
-          connection: connectionId,
-          from: { databaseName: 'otel', tableName: '' },
-          timestampValueExpression: 'TimeUnix',
-          resourceAttributesExpression: 'ResourceAttributes',
-          metricTables: { gauge: 'otel_metrics_gauge' },
-        },
-      ]);
+      await Promise.all(
+        [
+          {
+            kind: SourceKind.Log,
+            name: 'Log',
+            team: toObjectId(team._id),
+            connection: connectionId,
+            from: { databaseName: 'otel', tableName: 'otel_logs' },
+            timestampValueExpression: 'Timestamp',
+            defaultTableSelectExpression: 'Body',
+          },
+          {
+            kind: SourceKind.Trace,
+            name: 'Trace',
+            team: toObjectId(team._id),
+            connection: connectionId,
+            from: { databaseName: 'otel', tableName: 'otel_traces' },
+            timestampValueExpression: 'Timestamp',
+            defaultTableSelectExpression: '*',
+            durationExpression: 'Duration',
+            durationPrecision: 3,
+            traceIdExpression: 'TraceId',
+            spanIdExpression: 'SpanId',
+            parentSpanIdExpression: 'ParentSpanId',
+            spanNameExpression: 'SpanName',
+            spanKindExpression: 'SpanKind',
+          },
+          {
+            kind: SourceKind.Session,
+            name: 'Session',
+            team: toObjectId(team._id),
+            connection: connectionId,
+            from: { databaseName: 'otel', tableName: 'otel_sessions' },
+            timestampValueExpression: 'TimestampTime',
+            traceSourceId: 'some-id',
+          },
+          {
+            kind: SourceKind.Metric,
+            name: 'Metric',
+            team: toObjectId(team._id),
+            connection: connectionId,
+            from: { databaseName: 'otel', tableName: '' },
+            timestampValueExpression: 'TimeUnix',
+            resourceAttributesExpression: 'ResourceAttributes',
+            metricTables: { gauge: 'otel_metrics_gauge' },
+          },
+        ].map(seedRawSource),
+      );
 
-      const sources = await Source.find({ team: team._id }).sort({ name: 1 });
+      const sources = (await listSources(team._id)).sort((a, b) =>
+        a.name < b.name ? -1 : 1,
+      );
       expect(sources).toHaveLength(4);
 
       expect(sources[0].kind).toBe(SourceKind.Log);
@@ -1222,7 +1227,7 @@ describe('sources router', () => {
         name: MOCK_SOURCE.name,
       });
 
-      const sources = await Source.find({ team: LOCAL_APP_TEAM_ID });
+      const sources = await listSources(LOCAL_APP_TEAM_ID);
       expect(sources).toHaveLength(1);
     });
 
@@ -1233,7 +1238,7 @@ describe('sources router', () => {
         MOCK_SOURCE.connection,
       );
 
-      const source = await Source.create({
+      const source = await seedSource({
         ...MOCK_SOURCE,
         team: LOCAL_APP_TEAM_ID,
       });
@@ -1247,7 +1252,7 @@ describe('sources router', () => {
         })
         .expect(200);
 
-      const updated = await Source.findById(source._id);
+      const updated = await findSource(source._id);
       expect(updated?.name).toBe('Updated In Local App Mode');
     });
   });
@@ -1261,7 +1266,7 @@ describe('sources router', () => {
     it('PUT /:id - removes metadataMaterializedViews when omitted from the payload', async () => {
       const { agent, team } = await getLoggedInAgent(server);
 
-      const source = await Source.create({
+      const source = await seedSource({
         ...MOCK_SOURCE,
         team: team._id,
         metadataMaterializedViews: {
@@ -1271,7 +1276,7 @@ describe('sources router', () => {
         },
       });
 
-      const created = await Source.findById(source._id).lean();
+      const created = await findSource(source._id);
       if (created?.kind !== SourceKind.Log) {
         throw new Error(`expected Log source, got ${created?.kind}`);
       }
@@ -1289,7 +1294,7 @@ describe('sources router', () => {
         })
         .expect(200);
 
-      const updated = await Source.findById(source._id).lean();
+      const updated = await findSource(source._id);
       if (updated?.kind !== SourceKind.Log) {
         throw new Error(`expected Log source, got ${updated?.kind}`);
       }
@@ -1299,7 +1304,7 @@ describe('sources router', () => {
     it('PUT /:id - updates metadataMaterializedViews when included in the payload', async () => {
       const { agent, team } = await getLoggedInAgent(server);
 
-      const source = await Source.create({
+      const source = await seedSource({
         ...MOCK_SOURCE,
         team: team._id,
         metadataMaterializedViews: {
@@ -1322,7 +1327,7 @@ describe('sources router', () => {
         })
         .expect(200);
 
-      const updated = await Source.findById(source._id).lean();
+      const updated = await findSource(source._id);
       if (updated?.kind !== SourceKind.Log) {
         throw new Error(`expected Log source, got ${updated?.kind}`);
       }
@@ -1336,9 +1341,8 @@ describe('sources router', () => {
     it('GET / - is stable across requests for a source stored without a nested _id', async () => {
       const { agent, team } = await getLoggedInAgent(server);
 
-      await mongoose.connection.collection('sources').insertOne({
+      await seedRawSource({
         ...MOCK_SOURCE,
-        connection: new Types.ObjectId(MOCK_SOURCE.connection),
         team: team._id,
         metadataMaterializedViews: {
           keyRollupTable: 'test_table_key_rollup_15m',
@@ -1362,7 +1366,7 @@ describe('sources router', () => {
     it('does not persist a nested _id', async () => {
       const { team } = await getLoggedInAgent(server);
 
-      const source = await Source.create({
+      const source = await seedSource({
         ...MOCK_SOURCE,
         team: team._id,
         metadataMaterializedViews: {
@@ -1372,9 +1376,7 @@ describe('sources router', () => {
         },
       });
 
-      const stored = await mongoose.connection
-        .collection('sources')
-        .findOne({ _id: source._id });
+      const stored = await getSourceDoc(source._id);
 
       expect(stored?.metadataMaterializedViews).not.toHaveProperty('_id');
     });
@@ -1382,7 +1384,7 @@ describe('sources router', () => {
     it('GET / - is stable across requests after a source kind change', async () => {
       const { agent, team } = await getLoggedInAgent(server);
 
-      const source = await Source.create({
+      const source = await seedSource({
         ...MOCK_SOURCE,
         team: team._id,
       });
@@ -1436,7 +1438,7 @@ describe('sources router', () => {
         UseTextIndex.Enabled,
       );
 
-      const sources = await Source.find({}).lean();
+      const sources = await listSources();
       expect(sources).toHaveLength(1);
       const stored = sources[0];
       if (stored?.kind !== SourceKind.Log) {
@@ -1474,7 +1476,7 @@ describe('sources router', () => {
         UseTextIndex.Disabled,
       );
 
-      const stored = await Source.findById(response.body.id).lean();
+      const stored = await findSource(response.body.id);
       if (stored?.kind !== SourceKind.Trace) {
         throw new Error(`expected Trace source, got ${stored?.kind}`);
       }
@@ -1484,7 +1486,7 @@ describe('sources router', () => {
     it('PUT /:id - updates useTextIndexForImplicitColumn on an existing Log source', async () => {
       const { agent, team } = await getLoggedInAgent(server);
 
-      const source = await Source.create({
+      const source = await seedSource({
         ...MOCK_SOURCE,
         team: team._id,
         useTextIndexForImplicitColumn: UseTextIndex.Auto,
@@ -1499,7 +1501,7 @@ describe('sources router', () => {
         })
         .expect(200);
 
-      const updated = await Source.findById(source._id).lean();
+      const updated = await findSource(source._id);
       if (updated?.kind !== SourceKind.Log) {
         throw new Error(`expected Log source, got ${updated?.kind}`);
       }
@@ -1509,7 +1511,7 @@ describe('sources router', () => {
     it('GET / - returns useTextIndexForImplicitColumn when set', async () => {
       const { agent, team } = await getLoggedInAgent(server);
 
-      await Source.create({
+      await seedSource({
         ...MOCK_SOURCE,
         team: team._id,
         useTextIndexForImplicitColumn: UseTextIndex.Disabled,
@@ -1526,7 +1528,7 @@ describe('sources router', () => {
     it('GET / - omits useTextIndexForImplicitColumn when not set', async () => {
       const { agent, team } = await getLoggedInAgent(server);
 
-      await Source.create({ ...MOCK_SOURCE, team: team._id });
+      await seedSource({ ...MOCK_SOURCE, team: team._id });
 
       const response = await agent.get('/sources').expect(200);
 
@@ -1542,7 +1544,7 @@ describe('sources router', () => {
         .send({ ...MOCK_SOURCE, useTextIndexForImplicitColumn: 'maybe' })
         .expect(400);
 
-      const sources = await Source.find({}).lean();
+      const sources = await listSources();
       expect(sources).toHaveLength(0);
     });
   });

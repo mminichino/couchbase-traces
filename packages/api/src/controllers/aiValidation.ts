@@ -3,7 +3,7 @@ import type { QueryLanguage } from '@couchbase-traces/common-utils/dist/dataLaye
 import { getMetadata } from '@couchbase-traces/common-utils/dist/dataLayer';
 import type { AILineTableResponse } from '@couchbase-traces/common-utils/dist/types';
 
-import type { ISource } from '@/models/source';
+import type { ISource } from '@/metadata/schemas/source';
 import type { DataClient } from '@/query';
 import { Api400Error } from '@/utils/errors';
 

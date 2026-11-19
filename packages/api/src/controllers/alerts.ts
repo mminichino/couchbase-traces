@@ -11,10 +11,11 @@ import {
 } from '@couchbase-traces/common-utils/dist/guards';
 import { isRangeThresholdType } from '@couchbase-traces/common-utils/dist/types';
 import { groupBy } from 'lodash';
-import { type FilterQuery, Types } from 'mongoose';
+import { type FilterQuery } from 'mongoose';
 import { z } from 'zod';
 
 import { recordOnboardingTaskCompletion } from '@/controllers/user';
+import { getMetadataStore } from '@/metadata';
 import { type ObjectId, toObjectId } from '@/models';
 import Alert, {
   AlertChannel,
@@ -22,10 +23,8 @@ import Alert, {
   getAlertChannels,
   IAlert,
 } from '@/models/alert';
-import Connection from '@/models/connection';
 import Dashboard, { IDashboard } from '@/models/dashboard';
 import { ISavedSearch, SavedSearch } from '@/models/savedSearch';
-import { Source } from '@/models/source';
 import Webhook from '@/models/webhook';
 import { type AlertRefs, deriveAlertDisplayFields } from '@/utils/alerts';
 import { Api400Error } from '@/utils/errors';
@@ -54,11 +53,14 @@ export type AlertInput = Omit<
   dashboardId?: string;
 };
 
-const validateObjectId = (id: string | undefined, message: string) => {
+function validateObjectId(
+  id: string | undefined,
+  message: string,
+): asserts id is string {
   if (objectIdSchema.safeParse(id).success === false) {
     throw new Api400Error(message);
   }
-};
+}
 
 export const validateAlertInput = async (
   teamId: string | ObjectId,
@@ -154,19 +156,19 @@ export const validateAlertInput = async (
       // Raw SQL configs carry the connection directly; the source reference
       // is optional metadata for macro expansion ($__sourceTable).
       validateObjectId(chartConfig.connection, 'Invalid connection ID');
-      const connection = await Connection.findOne({
-        _id: chartConfig.connection,
-        team: teamId,
-      });
+      const connection = await getMetadataStore().connections.get(
+        teamId.toString(),
+        chartConfig.connection,
+      );
       if (connection == null) {
         throw new Api400Error('Connection not found');
       }
       if (chartConfig.source) {
         validateObjectId(chartConfig.source, 'Invalid source ID');
-        const source = await Source.findOne({
-          _id: chartConfig.source,
-          team: teamId,
-        });
+        const source = await getMetadataStore().sources.get(
+          teamId.toString(),
+          chartConfig.source,
+        );
         if (source == null) {
           throw new Api400Error('Source not found');
         }
@@ -176,13 +178,11 @@ export const validateAlertInput = async (
         // wrong database — silently wrong values when the table also exists
         // there, repeated query failures when it does not.
         //
-        // Compare as ObjectIds, not strings: objectIdSchema admits uppercase
-        // hex, and the Mongo lookups above cast it — a lexical comparison
-        // would reject an equivalent non-canonical ID.
+        // Compare case-insensitively: objectIdSchema admits uppercase hex,
+        // and ids are stored lowercase.
         if (
-          !new Types.ObjectId(String(source.connection)).equals(
-            chartConfig.connection,
-          )
+          source.connection.toLowerCase() !==
+          chartConfig.connection.toLowerCase()
         ) {
           throw new Api400Error(
             'Source does not belong to the specified connection',
@@ -199,10 +199,10 @@ export const validateAlertInput = async (
       }
 
       validateObjectId(chartConfig.source, 'Invalid source ID');
-      const source = await Source.findOne({
-        _id: chartConfig.source,
-        team: teamId,
-      });
+      const source = await getMetadataStore().sources.get(
+        teamId.toString(),
+        chartConfig.source,
+      );
       if (source == null) {
         throw new Api400Error('Source not found');
       }

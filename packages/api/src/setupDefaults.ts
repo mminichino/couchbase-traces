@@ -144,7 +144,7 @@ async function seedSourcesFromConfigs(
 
       if (Object.keys(updateFields).length > 0) {
         await updateSource(teamId, createdSource._id.toString(), {
-          ...createdSource.toObject(),
+          ...createdSource,
           ...updateFields,
         });
 

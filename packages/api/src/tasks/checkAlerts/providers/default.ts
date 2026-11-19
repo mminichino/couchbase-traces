@@ -13,6 +13,14 @@ import { URLSearchParams } from 'url';
 import * as config from '@/config';
 import { ALERT_HISTORY_QUERY_CONCURRENCY } from '@/controllers/alertHistory';
 import { LOCAL_APP_TEAM } from '@/controllers/team';
+import {
+  closeMetadataStore,
+  getMetadataStore,
+  metadataReadiness,
+  startMetadataStore,
+} from '@/metadata';
+import type { IConnection } from '@/metadata/schemas/connection';
+import type { ISource } from '@/metadata/schemas/source';
 import { connectDB, mongooseConnection, ObjectId } from '@/models';
 import Alert, {
   AlertSource,
@@ -24,10 +32,8 @@ import AlertHistory, {
   IAlertHistory,
   IAlertHistoryAnalytics,
 } from '@/models/alertHistory';
-import Connection, { IConnection } from '@/models/connection';
 import Dashboard from '@/models/dashboard';
 import { type ISavedSearch, SavedSearch } from '@/models/savedSearch';
-import { type ISource, Source } from '@/models/source';
 import Webhook, { IWebhook } from '@/models/webhook';
 import { DataClient } from '@/query';
 import {
@@ -54,9 +60,6 @@ async function getSavedSearchDetails(
   const savedSearch = await SavedSearch.findOne({
     _id: savedSearchId,
     team: alert.team,
-  }).populate<Omit<ISavedSearch, 'source'> & { source: ISource }>({
-    path: 'source',
-    match: { team: alert.team },
   });
 
   if (!savedSearch) {
@@ -68,12 +71,27 @@ async function getSavedSearchDetails(
     return [];
   }
 
-  const { source } = savedSearch;
+  // SavedSearch is still in Mongo and only holds the source id; the source
+  // and its connection live in the metadata store, so they are loaded here
+  // instead of through Mongoose populate.
+  const source = await getMetadataStore().sources.get(
+    alert.team.toString(),
+    savedSearch.source.toString(),
+  );
+  if (!source) {
+    logger.error({
+      message: 'source not found',
+      sourceId: savedSearch.source,
+      alertId: alert.id,
+      savedSearchId,
+    });
+    return [];
+  }
   const connId = source.connection;
-  const conn = await Connection.findOne({
-    _id: connId,
-    team: alert.team,
-  }).select('+password');
+  const conn = await getMetadataStore().connections.getWithSecrets(
+    connId,
+    alert.team.toString(),
+  );
   if (!conn) {
     logger.error({
       message: 'connection not found',
@@ -113,20 +131,17 @@ async function getRawSqlSourceMetadata(
   if (!chartConfig.source) {
     return undefined;
   }
-  const sourceDoc = await Source.findOne({
-    _id: chartConfig.source,
-    team: alert.team,
-  });
+  const sourceDoc = await getMetadataStore().sources.get(
+    alert.team.toString(),
+    chartConfig.source,
+  );
   if (!sourceDoc) {
     return undefined;
   }
-  // Compare as ObjectIds: stored configs may hold non-canonical but valid
-  // representations (e.g. uppercase hex), which a lexical compare would
-  // misjudge as a mismatch.
+  // Compare case-insensitively: stored configs may hold non-canonical but
+  // valid representations (e.g. uppercase hex), and ids are stored lowercase.
   if (
-    !new mongoose.Types.ObjectId(String(sourceDoc.connection)).equals(
-      chartConfig.connection,
-    )
+    sourceDoc.connection.toLowerCase() !== chartConfig.connection.toLowerCase()
   ) {
     logger.warn({
       message:
@@ -138,7 +153,7 @@ async function getRawSqlSourceMetadata(
     });
     return undefined;
   }
-  return sourceDoc.toObject();
+  return sourceDoc;
 }
 
 async function getTileDetails(
@@ -184,10 +199,10 @@ async function getTileDetails(
     }
 
     // Raw SQL tiles store connection ID directly on the config
-    const connection = await Connection.findOne({
-      _id: tile.config.connection,
-      team: alert.team,
-    }).select('+password');
+    const connection = await getMetadataStore().connections.getWithSecrets(
+      tile.config.connection,
+      alert.team.toString(),
+    );
 
     if (!connection) {
       logger.error({
@@ -215,14 +230,10 @@ async function getTileDetails(
     ];
   }
 
-  const source = await Source.findOne({
-    _id: tile.config.source,
-    team: alert.team,
-  }).populate<Omit<ISource, 'connection'> & { connection: IConnection }>({
-    path: 'connection',
-    match: { team: alert.team },
-    select: '+password',
-  });
+  const source = await getMetadataStore().sources.get(
+    alert.team.toString(),
+    tile.config.source,
+  );
   if (!source) {
     logger.error({
       message: 'source not found',
@@ -234,7 +245,11 @@ async function getTileDetails(
     return [];
   }
 
-  if (!source.connection) {
+  const connection = await getMetadataStore().connections.getWithSecrets(
+    source.connection,
+    alert.team.toString(),
+  );
+  if (!connection) {
     logger.error({
       message: 'connection not found',
       alertId: alert.id,
@@ -245,13 +260,11 @@ async function getTileDetails(
     return [];
   }
 
-  const connection = source.connection;
-  const sourceProps = source.toObject();
   return [
     connection,
     {
       alert,
-      source: { ...sourceProps, connection: connection.id },
+      source: { ...source, connection: connection.id },
       taskType: AlertTaskType.TILE,
       tile,
       dashboard,
@@ -282,10 +295,10 @@ async function getInlineAlertDetails(
     }
 
     // Raw SQL configs store the connection ID directly
-    const connection = await Connection.findOne({
-      _id: chartConfig.connection,
-      team: alert.team,
-    }).select('+password');
+    const connection = await getMetadataStore().connections.getWithSecrets(
+      chartConfig.connection,
+      alert.team.toString(),
+    );
 
     if (!connection) {
       logger.error({
@@ -310,14 +323,10 @@ async function getInlineAlertDetails(
     ];
   }
 
-  const source = await Source.findOne({
-    _id: chartConfig.source,
-    team: alert.team,
-  }).populate<Omit<ISource, 'connection'> & { connection: IConnection }>({
-    path: 'connection',
-    match: { team: alert.team },
-    select: '+password',
-  });
+  const source = await getMetadataStore().sources.get(
+    alert.team.toString(),
+    chartConfig.source ?? '',
+  );
   if (!source) {
     logger.error({
       message: 'source not found',
@@ -327,7 +336,11 @@ async function getInlineAlertDetails(
     return [];
   }
 
-  if (!source.connection) {
+  const connection = await getMetadataStore().connections.getWithSecrets(
+    source.connection,
+    alert.team.toString(),
+  );
+  if (!connection) {
     logger.error({
       message: 'connection not found',
       alertId: alert.id,
@@ -336,13 +349,11 @@ async function getInlineAlertDetails(
     return [];
   }
 
-  const connection = source.connection;
-  const sourceProps = source.toObject();
   return [
     connection,
     {
       alert,
-      source: { ...sourceProps, connection: connection.id },
+      source: { ...source, connection: connection.id },
       taskType: AlertTaskType.INLINE,
       chartConfig,
     },
@@ -408,17 +419,29 @@ async function loadAlert(
 }
 
 export default class DefaultAlertProvider implements AlertProvider {
+  // The worker runs as its own process, so it owns the metadata store it
+  // starts; in tests the fixtures' store is already up and stays theirs.
+  private ownsMetadataStore = false;
+
   async init() {
     // The check-alerts worker only reads from MongoDB and never needs to
     // ensure indexes exist (the API service owns that). Disabling autoIndex
     // prevents background createIndexes calls from racing the short-lived
     // connection close (which sends endSessions), surfaced as
     // MongoExpiredSessionError on mongodb.createIndexes spans.
-    await Promise.all([connectDB({ autoIndex: false })]);
+    const startMetadata = async () => {
+      if (metadataReadiness().state !== 'disabled') return;
+      await startMetadataStore({ logger, appVersion: config.CODE_VERSION });
+      this.ownsMetadataStore = true;
+    };
+    await Promise.all([connectDB({ autoIndex: false }), startMetadata()]);
   }
 
   async asyncDispose() {
-    await Promise.all([mongooseConnection.close()]);
+    await Promise.all([
+      mongooseConnection.close(),
+      this.ownsMetadataStore ? closeMetadataStore() : Promise.resolve(),
+    ]);
   }
 
   async getAlertTasks(): Promise<AlertTask[]> {

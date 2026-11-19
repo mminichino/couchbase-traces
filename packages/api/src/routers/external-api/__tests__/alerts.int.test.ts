@@ -13,13 +13,12 @@ import {
   RAW_SQL_ALERT_TEMPLATE,
   RAW_SQL_NUMBER_ALERT_TEMPLATE,
 } from '@/fixtures';
+import { seedConnection, seedSource } from '@/metadata/testing/seed';
 import { toObjectId } from '@/models';
 import { AlertSource, AlertState, AlertThresholdType } from '@/models/alert';
 import Alert from '@/models/alert';
-import Connection from '@/models/connection';
 import Dashboard from '@/models/dashboard';
 import { SavedSearch } from '@/models/savedSearch';
-import { Source } from '@/models/source';
 import Webhook, { WebhookService } from '@/models/webhook';
 
 // Constants
@@ -1152,7 +1151,7 @@ describe('External API Alerts', () => {
   describe('Inline alerts', () => {
     // Team-scoped connection + source the inline chart configs reference.
     const makeSource = async () => {
-      const connection = await Connection.create({
+      const connection = await seedConnection({
         kind: 'couchbase',
         team: team._id,
         name: 'Default',
@@ -1160,7 +1159,7 @@ describe('External API Alerts', () => {
         username: 'default',
         password: '',
       });
-      const source = await Source.create({
+      const source = await seedSource({
         kind: SourceKind.Log,
         team: team._id,
         from: { databaseName: 'otel', tableName: 'otel_logs' },
@@ -1691,7 +1690,7 @@ describe('External API Alerts', () => {
     it('rejects a raw SQL inline alert whose source is on a different connection', async () => {
       const { connection, source } = await makeSource();
       const webhook = await createTestWebhook();
-      const otherConnection = await Connection.create({
+      const otherConnection = await seedConnection({
         kind: 'couchbase',
         team: team._id,
         name: 'Other',
@@ -1804,7 +1803,7 @@ describe('External API Alerts', () => {
       const { connection, source } = await makeSource();
       const webhook = await createTestWebhook();
 
-      const sessionSource = await Source.create({
+      const sessionSource = await seedSource({
         kind: SourceKind.Session,
         team: team._id,
         from: { databaseName: 'otel', tableName: 'rrweb_events' },

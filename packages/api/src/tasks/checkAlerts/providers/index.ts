@@ -4,13 +4,13 @@ import {
 } from '@couchbase-traces/common-utils/dist/types';
 import _ from 'lodash';
 
+import { IConnection } from '@/metadata/schemas/connection';
+import { ISource } from '@/metadata/schemas/source';
 import { ObjectId } from '@/models';
 import { IAlert, IAlertError } from '@/models/alert';
 import { IAlertHistory, IAlertHistoryAnalytics } from '@/models/alertHistory';
-import { IConnection } from '@/models/connection';
 import { IDashboard } from '@/models/dashboard';
 import { ISavedSearch } from '@/models/savedSearch';
-import { ISource } from '@/models/source';
 import { IWebhook } from '@/models/webhook';
 import { DataClient } from '@/query';
 import { AggregatedAlertHistory } from '@/tasks/checkAlerts';
