@@ -41,6 +41,11 @@ EOF
   echo "Using bundled Yarn shim at $_CBT_YARN_SHIM_DIR/yarn"
 fi
 
+# Ignore CBT_* exported by the caller's shell (see scripts/e2e-env.sh).
+# shellcheck source=./e2e-env.sh
+. "$SCRIPT_DIR/e2e-env.sh"
+cbt_e2e_isolate_env
+
 # ---------------------------------------------------------------------------
 # Multi-agent / worktree isolation
 # ---------------------------------------------------------------------------
@@ -170,7 +175,7 @@ setup_couchbase() {
   }
   # Publish remapped host ports for SDK clients using ?network=external.
   docker exec "$container" /opt/couchbase/bin/couchbase-cli setting-alternate-address \
-    -c 127.0.0.1:8091 -u Administrator -p cbt-test-admin \
+    -c 127.0.0.1:8091 -u "$CBT_E2E_ADMIN_USER" -p "$CBT_E2E_ADMIN_PASSWORD" \
     --set --node 127.0.0.1 --hostname localhost \
     --ports mgmt=${CBT_E2E_CB_MGMT_PORT},mgmtSSL=$((CBT_E2E_CB_MGMT_PORT + 1000)),\
 kv=${CBT_E2E_CB_KV_PORT},kvSSL=$((CBT_E2E_CB_KV_PORT + 1000)),\

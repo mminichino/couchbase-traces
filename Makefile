@@ -213,6 +213,7 @@ ci-unit:
 	node --test .github/scripts/code-review/__tests__/review-comments.test.mjs
 	node --test scripts/__tests__/slots.test.mjs
 	node --test scripts/__tests__/compose-config.test.mjs
+	node --test scripts/__tests__/e2e-env.test.mjs
 
 .PHONY: ci-triage
 ci-triage:

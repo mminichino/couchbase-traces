@@ -113,6 +113,9 @@ if (!useLocal) {
         scopeName: 'default',
         tableName: collection,
       },
+      // Required for Couchbase sources (validateSourceForConnectionKind); the
+      // seeded documents use ISO-8601 timestamps, like the Couchbase presets.
+      timestampFormat: 'iso8601',
       ...(metricTables ? { metricTables } : {}),
       ...(src.kind === 'log' && isOtelLogs
         ? { searchIndexName: 'fts_otel_logs' }

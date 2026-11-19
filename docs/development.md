@@ -62,6 +62,8 @@ rm -rf .volumes/couchbase_* .volumes/db_dev_*
 | `make ci-e2e-couchbase` | Playwright against Couchbase e2e compose |
 | `make e2e` | Full-stack E2E (Couchbase + API) |
 
+`scripts/test-e2e.sh` (behind `make e2e` and `make dev-e2e`) owns its Couchbase node and admin login (`Administrator` / `cbt-test-admin`). It unsets every inherited `CBT_*` variable except the `CBT_E2E_*` slot and port overrides, `CBT_SLOT_FROM`, and `CBT_PORTAL_*`, so dev-stack credentials exported in your shell (for example `CBT_COUCHBASE_ADMIN_PASSWORD`) cannot leak into cluster init or the API. It prints the names it ignored.
+
 ## All-in-one image (local)
 
 Build and smoke-test the single-container distribution (not published; bundles Couchbase Server Enterprise):

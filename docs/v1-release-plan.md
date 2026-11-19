@@ -378,8 +378,8 @@ pushes to `main` directly.
 | R0    | Triage and quick fixes                              | B3, B4, B16, B14 (local-mode half), P5 (lower caps to measured)                                                                                                           | M    | —                             |
 | R1    | Correctness and branding fixes                      | B5, B9, B11, B12, P2                                                                                                                                                      | M    | —                             |
 | R2a   | Port deferred int suites: internal and external API | B1 (10 suites: `routers/api/{dashboard,iac,sources,connections}`, `routers/external-api/{charts,search,sources,sources-crud,connections}`, `middleware/queryAttribution`) | L    | R0                            |
-| R2b   | Port deferred int suites: alerts                    | B1 (5 suites: `checkAlerts`, `multiChannelAlerts`, `renderAlertTemplate`, `singleInvocationAlert`, `providers/default`; ~274 cases)                                       | L    | R0                            |
-| R2c   | Port deferred int suites: MCP                       | B1 (8 suites under `mcp/__tests__/`; ~278 cases)                                                                                                                          | L    | R0                            |
+| R2b   | Port deferred int suites: alerts                    | B1 (5 suites: `checkAlerts`, `multiChannelAlerts`, `renderAlertTemplate`, `singleInvocationAlert`, `providers/default`; 335 tests, 93 failing per R0)                     | L    | R0                            |
+| R2c   | Port deferred int suites: MCP                       | B1 (8 suites under `mcp/__tests__/`; 287 tests, 139 failing per R0)                                                                                                       | L    | R0                            |
 | R3    | Service map node latency                            | B6                                                                                                                                                                        | M    | —                             |
 | R4    | Fix failing Playwright specs on the Couchbase stack | B2 (spec and app fixes)                                                                                                                                                   | L    | R0, R2a                       |
 | R5    | Re-enable full-stack E2E on Main                    | B2 (restore `e2e-tests` `workflow_call` and report aggregator in `main.yml`)                                                                                              | S    | R4                            |
@@ -408,6 +408,15 @@ pushes to `main` directly.
 
 Acceptance: `sources.spec.ts` 6/6 green; E2E passes with
 `CBT_COUCHBASE_ADMIN_PASSWORD=wrong` exported; triage tables committed.
+
+R0 result: done on `mm--v1-r0-triage`. See section 14 for the triage tables.
+`sources.spec.ts` passes all 6 runnable specs (the seventh, the modal form
+check, is skipped by design in full-stack mode) with
+`CBT_COUCHBASE_ADMIN_PASSWORD=wrong` exported. B3 needed one harness fix besides
+the spec: `run-e2e.js` now sets `timestampFormat: 'iso8601'` on the fixture
+sources, because the Couchbase source validator rejects every save without one.
+B16: `enterprise-8.0.3` is still the newest 8.0.x tag on Docker Hub
+(2026-11-19), so no pin changed.
 
 ### R1: Correctness and branding fixes
 
@@ -448,13 +457,11 @@ of the reference.
 
 ### R4: Playwright specs on Couchbase
 
-Fix the spec or the product for each failure recorded in R0: saved-search alert
-`table-row`, heatmap and event deltas, Kubernetes dashboard, chart explorer SQL
-mode, ad hoc dashboard click filters, search side-panel tabs, time-picker
-search, metrics specs (`metric-name-streaming`, `metric-table-autofill`,
-`correlated-metric-source`). Follow `.claude/skills/playwright/SKILL.md`.
-Acceptance: `make e2e` (all four shards) green twice in a row locally on a clean
-stack.
+Fix the spec or the product for each failure recorded in R0 (section 14.2: 115
+failures and 8 flaky tests across 29 specs; start with the onboarding
+checklist's ClickHouse `system.tables` query, which breaks `route-smoke`).
+Follow `.claude/skills/playwright/SKILL.md`. Acceptance: `make e2e` (all four
+shards) green twice in a row locally on a clean stack.
 
 ### R5: Re-enable E2E on Main
 
@@ -575,31 +582,174 @@ remain for the release as a whole; per-phase questions are raised in that phase.
 
 ## 12. Risks
 
-| Risk                                                                        | Impact                        | Mitigation                                                                                       |
-| --------------------------------------------------------------------------- | ----------------------------- | ------------------------------------------------------------------------------------------------ |
-| R2 volume (~880 cases, `checkAlerts.int.test.ts` alone is 12,222 lines)     | schedule; the largest unknown | R0 triage first; split R2b further (alert windows vs templates) if a single PR gets unreviewable |
-| Ported suites expose real SQL++ bugs in alerts or external API              | slip, but this is the point   | fix in the same phase; anything that cannot keep the result shape goes to the user (rule 9)      |
-| E2E runtime on GitHub runners (shards already hit 25 minute timeouts)       | flaky or cancelled Main       | keep the 45 minute timeout, add shards rather than retries                                       |
-| Couchbase Enterprise redistribution in the all-in-one image                 | legal exposure                | Q1: not published for 1.0                                                                        |
-| ghcr package visibility defaults to private                                 | users cannot pull             | set each package public in ghcr settings once, after the first push (manual, on instruction)     |
-| Version decrease confuses tooling (changesets, nx cache, Renovate if added) | wrong versions                | `set-version.mjs` is the single writer; `--check` in CI                                          |
-| Shell env leaks into make/E2E                                               | false failures                | explicit env in scripts (B4)                                                                     |
+| Risk                                                                                        | Impact                        | Mitigation                                                                                       |
+| ------------------------------------------------------------------------------------------- | ----------------------------- | ------------------------------------------------------------------------------------------------ |
+| R2 volume (1,002 tests, 312 failing in R0; `checkAlerts.int.test.ts` alone is 12,222 lines) | schedule; the largest unknown | R0 triage first; split R2b further (alert windows vs templates) if a single PR gets unreviewable |
+| Ported suites expose real SQL++ bugs in alerts or external API                              | slip, but this is the point   | fix in the same phase; anything that cannot keep the result shape goes to the user (rule 9)      |
+| E2E runtime on GitHub runners (shards already hit 25 minute timeouts)                       | flaky or cancelled Main       | keep the 45 minute timeout, add shards rather than retries                                       |
+| Couchbase Enterprise redistribution in the all-in-one image                                 | legal exposure                | Q1: not published for 1.0                                                                        |
+| ghcr package visibility defaults to private                                                 | users cannot pull             | set each package public in ghcr settings once, after the first push (manual, on instruction)     |
+| Version decrease confuses tooling (changesets, nx cache, Renovate if added)                 | wrong versions                | `set-version.mjs` is the single writer; `--check` in CI                                          |
+| Shell env leaks into make/E2E                                                               | false failures                | explicit env in scripts (B4)                                                                     |
 
 ## 13. Size summary
 
-| Phase                                                | Size |
-| ---------------------------------------------------- | ---- |
-| R0 Triage and quick fixes                            | M    |
-| R1 Correctness and branding fixes                    | M    |
-| R2a Deferred API int suites (10 suites, ~327 cases)  | L    |
-| R2b Deferred alert int suites (5 suites, ~274 cases) | L    |
-| R2c Deferred MCP int suites (8 suites, ~278 cases)   | L    |
-| R3 Service map node latency                          | M    |
-| R4 Playwright specs on Couchbase                     | L    |
-| R5 Re-enable E2E on Main                             | S    |
-| R6 Release tooling                                   | M    |
-| R7 Docs and acceptance                               | M    |
-| R8 Release v1.0.0                                    | S    |
+| Phase                                                           | Size |
+| --------------------------------------------------------------- | ---- |
+| R0 Triage and quick fixes                                       | M    |
+| R1 Correctness and branding fixes                               | M    |
+| R2a Deferred API int suites (10 suites, 380 tests, 80 failing)  | L    |
+| R2b Deferred alert int suites (5 suites, 335 tests, 93 failing) | L    |
+| R2c Deferred MCP int suites (8 suites, 287 tests, 139 failing)  | L    |
+| R3 Service map node latency                                     | M    |
+| R4 Playwright specs on Couchbase                                | L    |
+| R5 Re-enable E2E on Main                                        | S    |
+| R6 Release tooling                                              | M    |
+| R7 Docs and acceptance                                          | M    |
+| R8 Release v1.0.0                                               | S    |
 
 Roughly four to six weeks for one engineer, dominated by R2 and R4. Every phase
 in the table blocks 1.0 (Q8).
+
+## 14. R0 triage results
+
+### 14.1 Deferred API integration suites (B1)
+
+Method: each suite in `deferredChIntSuites` ran alone on the CI compose stack
+(`docker-compose.ci.yml`, `couchbase/server:enterprise-8.0.3`) with
+`DOTENV_CONFIG_PATH=.env.test` and `cbt_meta` emptied between suites. Run date
+2026-11-19 on `mm--v1-r0-triage`. Two full runs gave the same counts. During the
+second run, temporary hooks in `fixtures.ts` and `mcpTestUtils.ts` logged every
+MCP tool error and every API response with status 400 or above. The hooks were
+reverted before commit.
+
+Totals: 23 suites, **1,002 tests, 690 pass, 312 fail**. The "~880" in the
+inventory was a static estimate; `it.each` expansions account for the
+difference.
+
+Failure classes:
+
+- **T: test input or assertion is ClickHouse-shaped.** Port the test (rule 6:
+  same inputs, SQL++ expected output). Examples: sources with no `scopeName` or
+  `timestampFormat`, `kind: 'clickhouse'` connections, ClickHouse SQL as a tool
+  argument, SQL text snapshots, fixtures in a scope that does not exist.
+- **P: product defect on Couchbase.** Fix the product in the same phase. The
+  captured SQL++ error shows the cause.
+- **U: assertion-only failure.** The test fails on a value (for example, alert
+  state `OK` instead of `ALERT`) with no captured error. Find the root cause
+  while porting; most come from alert fixtures inserting ClickHouse rows or
+  queries.
+
+| Phase | Suite                                               | Tests | Pass | Fail |   T |   P |   U | Main causes                                                                                                                                                                                                                                            |
+| ----- | --------------------------------------------------- | ----: | ---: | ---: | --: | --: | --: | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| R2a   | `routers/api/__tests__/sources`                     |    58 |   28 |   30 |  28 |   0 |   2 | fixtures lack `from.scopeName` / `timestampFormat` ("Scope is required")                                                                                                                                                                               |
+| R2a   | `routers/api/__tests__/dashboard`                   |   150 |  149 |    1 |   0 |   0 |   1 | one `toContain` on a filter error message                                                                                                                                                                                                              |
+| R2a   | `routers/api/__tests__/iac`                         |    14 |   11 |    3 |   2 |   0 |   1 | `kind: 'clickhouse'` connection bodies                                                                                                                                                                                                                 |
+| R2a   | `routers/api/__tests__/connections`                 |     4 |    3 |    1 |   0 |   0 |   1 | one value assertion                                                                                                                                                                                                                                    |
+| R2a   | `routers/external-api/__tests__/charts`             |    28 |   10 |   18 |   0 |   9 |   9 | **P:** `granularity: 'auto'` throws "Unsupported granularity: auto" (500); ambiguous `__hdx_time_bucket` alias                                                                                                                                         |
+| R2a   | `routers/external-api/__tests__/search`             |    29 |   27 |    2 |   0 |   0 |   2 | row-count assertions                                                                                                                                                                                                                                   |
+| R2a   | `routers/external-api/__tests__/sources`            |    29 |   27 |    2 |   0 |   0 |   2 | response shape                                                                                                                                                                                                                                         |
+| R2a   | `routers/external-api/__tests__/sources-crud`       |    35 |   24 |   11 |  11 |   0 |   0 | fixtures lack `scopeName` / `timestampFormat`                                                                                                                                                                                                          |
+| R2a   | `routers/external-api/__tests__/connections`        |    30 |   21 |    9 |   8 |   0 |   1 | PUT bodies omit `id`, use `kind: 'clickhouse'` or an `http://` host                                                                                                                                                                                    |
+| R2a   | `middleware/__tests__/queryAttribution`             |     3 |    0 |    3 |   3 |   0 |   0 | fixture uses ClickHouse `INSERT INTO TABLE FUNCTION`                                                                                                                                                                                                   |
+| R2a   | **subtotal (10 suites)**                            |   380 |  300 |   80 |  52 |   9 |  19 |                                                                                                                                                                                                                                                        |
+| R2b   | `tasks/checkAlerts/__tests__/checkAlerts`           |   185 |  112 |   73 |   0 |   0 |  73 | logged: raw-SQL alert queries are ClickHouse (`toStartOfInterval(... INTERVAL {x:Int64} ...)`, `count()`); "A connection id is required for Couchbase queries" (21); INFER on empty collections (16)                                                   |
+| R2b   | `tasks/checkAlerts/__tests__/renderAlertTemplate`   |   104 |   94 |   10 |   9 |   0 |   1 | 9 snapshots contain ClickHouse SQL text                                                                                                                                                                                                                |
+| R2b   | `tasks/checkAlerts/__tests__/multiChannelAlerts`    |     4 |    0 |    4 |   0 |   0 |   4 | alert never fires (same causes as `checkAlerts`)                                                                                                                                                                                                       |
+| R2b   | `tasks/checkAlerts/__tests__/singleInvocationAlert` |     6 |    2 |    4 |   0 |   0 |   4 | `count()` in raw SQL                                                                                                                                                                                                                                   |
+| R2b   | `tasks/checkAlerts/providers/__tests__/default`     |    36 |   34 |    2 |   0 |   0 |   2 | one fixture writes an alert `source` value the metadata schema rejects                                                                                                                                                                                 |
+| R2b   | **subtotal (5 suites)**                             |   335 |  242 |   93 |   9 |   0 |  84 |                                                                                                                                                                                                                                                        |
+| R2c   | `mcp/__tests__/queryTool`                           |   113 |   56 |   57 |  24 |  22 |  11 | **P:** `cbt_event_patterns` emits `count()` (34 calls); `having` on an alias fails ("must depend only on group keys"); ambiguous `__hdx_time_bucket`. **T:** ClickHouse SQL passed to `cbt_sql` (`getSetting`, `toUnixTimestamp`, `SELECT 1 AS value`) |
+| R2c   | `mcp/__tests__/trace`                               |    40 |   11 |   29 |   0 |  21 |   8 | **P:** `waterfall.ts` keeps ClickHouse `{db:Identifier}` parameters; breakdown uses ClickHouse `{name:String}` and `toDate`                                                                                                                            |
+| R2c   | `mcp/__tests__/sources`                             |    61 |   44 |   17 |   0 |   7 |  10 | **P:** `cbt_describe_source` / `cbt_describe_metric` fail on an empty collection (INFER "No documents found")                                                                                                                                          |
+| R2c   | `mcp/__tests__/describeTable`                       |    11 |    0 |   11 |  11 |   0 |   0 | fixture scope `mcp_describe_table_test` does not exist                                                                                                                                                                                                 |
+| R2c   | `mcp/__tests__/serviceHealthTool`                   |    10 |    4 |    6 |   0 |   6 |   0 | **P:** generated SQL calls ClickHouse `startsWith`                                                                                                                                                                                                     |
+| R2c   | `mcp/__tests__/dashboards/queryTile`                |    31 |   18 |   13 |   6 |   5 |   2 | **P:** `count()`, `granularity: auto`, ambiguous `group` alias. **T:** ClickHouse tile SQL                                                                                                                                                             |
+| R2c   | `mcp/__tests__/dashboards/queryTiles`               |    16 |   12 |    4 |   0 |   0 |   4 | result values                                                                                                                                                                                                                                          |
+| R2c   | `mcp/__tests__/emergingSignalsTool`                 |     5 |    3 |    2 |   0 |   2 |   0 | **P:** `count()` in generated SQL                                                                                                                                                                                                                      |
+| R2c   | **subtotal (8 suites)**                             |   287 |  148 |  139 |  41 |  63 |  35 |                                                                                                                                                                                                                                                        |
+|       | **total (23 suites)**                               | 1,002 |  690 |  312 | 102 |  72 | 138 |                                                                                                                                                                                                                                                        |
+
+Implications:
+
+1. **R2c is the largest product-fix phase.** 63 of its 139 failures are real
+   defects in MCP tools that a user can hit today (`cbt_event_patterns`,
+   `cbt_trace_waterfall`, `cbt_trace_top_time_consuming_operations`,
+   `cbt_service_health`, `cbt_emerging_signals`, `cbt_describe_*` on empty
+   collections). Treat these as bugs, not test debt.
+2. **R2a has one shared product defect.** `granularity: 'auto'` throws in
+   `packages/common-utils/src/couchbase/time.ts` (`parseGranularity`). The
+   external charts API and `cbt_query_tile` both reach it. The duplicate
+   `__hdx_time_bucket` alias in multi-series charts is the second defect.
+   Everything else in R2a is fixture work: about 40 tests need only
+   `from.scopeName` and `timestampFormat` on the mock sources.
+3. **R2b is mostly fixture work but needs care.** The alert fixtures write raw
+   ClickHouse SQL and ClickHouse rows. Port each to SQL++ (`$__timeInterval`
+   macro, `COUNT(*)`) and to the Couchbase fixture helpers. The 21 "connection
+   id is required" errors come from alerts whose source has no connection on the
+   Couchbase path; find out whether that is a test gap or a scheduler bug before
+   closing R2b.
+4. Fix order: R2a, then R2c (shared `granularity: auto` and `count()` renderer
+   fixes land first), then R2b. This changes the section 9 order (R2a, R2b,
+   R2c); the phases stay independent PRs.
+
+### 14.2 Playwright full-stack E2E (B2, R4 worklist)
+
+Method: `./scripts/test-e2e.sh --quiet` (all specs, one local run, 8 workers,
+`retries: 1`) on `mm--v1-r0-triage` with the B3/B4 fixes in, 2026-11-19, 21.1
+minutes. Totals: **457 tests: 325 passed, 115 failed, 8 flaky, 9 skipped or did
+not run.** 29 of the 62 spec files have a failure or a flaky test; the other 33
+pass cleanly.
+
+Failing or flaky specs (R4 worklist, ordered by failure count):
+
+| Spec (`packages/app/tests/e2e/features/`) | Tests | Pass | Fail | Flaky | Main symptom (first error)                                                                                                                                                                                                    |
+| ----------------------------------------- | ----: | ---: | ---: | ----: | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `route-smoke.spec.ts`                     |    24 |    2 |   22 |     0 | **Product:** console errors on every page. `OnboardingChecklist/useOnboardingCompletion.ts:83` sends a ClickHouse `system.tables` condition (`table = '…' AND database = '…'`) to Couchbase, which returns a 400 syntax error |
+| `filter-key-edge-cases.spec.ts`           |    19 |    0 |   19 |     0 | search table never renders rows for the interesting-filter-keys source; facet options missing                                                                                                                                 |
+| `kubernetes.spec.ts`                      |    13 |    1 |   12 |     0 | pod and node CPU charts never render; timeouts                                                                                                                                                                                |
+| `dashboard.spec.ts`                       |    51 |   41 |    9 |     1 | raw SQL tiles not rendered, timeouts                                                                                                                                                                                          |
+| `search/search-filters.spec.ts`           |     8 |    0 |    8 |     0 | `beforeEach` times out waiting for the `info` facet value                                                                                                                                                                     |
+| `sessions.spec.ts`                        |     7 |    1 |    6 |     0 | no session cards                                                                                                                                                                                                              |
+| `heatmap-series.spec.ts`                  |     6 |    3 |    3 |     0 | asserts ClickHouse `INTERVAL 1 hour` in generated SQL (spec), heatmap canvas missing                                                                                                                                          |
+| `release-markers.spec.ts`                 |     4 |    1 |    3 |     0 | no `recharts-reference-line` on tiles                                                                                                                                                                                         |
+| `search/search.spec.ts`                   |    10 |    7 |    3 |     0 | no table rows / histogram                                                                                                                                                                                                     |
+| `traces-workflow.spec.ts`                 |     3 |    0 |    3 |     0 | trace tab never appears in the side panel                                                                                                                                                                                     |
+| `heatmap.spec.ts`                         |     2 |    0 |    2 |     0 | heatmap canvas missing                                                                                                                                                                                                        |
+| `metric-table-autofill.spec.ts`           |     3 |    0 |    2 |     0 | "Auto-detected metric tables" notification never shows                                                                                                                                                                        |
+| `search/event-patterns.spec.ts`           |     2 |    0 |    2 |     0 | no table rows (event patterns; see R2c `count()` defect)                                                                                                                                                                      |
+| `search/saved-search.spec.ts`             |    20 |   17 |    2 |     1 | timeouts                                                                                                                                                                                                                      |
+| `search/select-star-error-state.spec.ts`  |     2 |    0 |    2 |     0 | no table rows                                                                                                                                                                                                                 |
+| `search/side-panel-navigation.spec.ts`    |     3 |    1 |    2 |     0 | `side-panel-tab-trace` missing                                                                                                                                                                                                |
+| `services-dashboard.spec.ts`              |     3 |    1 |    2 |     0 | error-rate chart and top-endpoints link missing                                                                                                                                                                               |
+| `span-links.spec.ts`                      |     2 |    0 |    2 |     0 | no table rows                                                                                                                                                                                                                 |
+| `team.spec.ts`                            |    10 |    8 |    2 |     0 | connection card has no `Host:` text; timeout                                                                                                                                                                                  |
+| `alerts.spec.ts`                          |    25 |   20 |    1 |     4 | saved-search alert `table-row` never visible                                                                                                                                                                                  |
+| `dashboards-list.spec.ts`                 |     7 |    6 |    1 |     0 | preset `Cluster` dashboard link missing                                                                                                                                                                                       |
+| `search/histogram-group-by.spec.ts`       |    10 |    9 |    1 |     0 | group-by series values differ                                                                                                                                                                                                 |
+| `search/json-add-to-filter.spec.ts`       |     1 |    0 |    1 |     0 | no table rows                                                                                                                                                                                                                 |
+| `search/json-viewer-key-order.spec.ts`    |     1 |    0 |    1 |     0 | key order equals the alphabetical order the spec rejects                                                                                                                                                                      |
+| `search/relative-time.spec.ts`            |    13 |   11 |    1 |     1 | timeout                                                                                                                                                                                                                       |
+| `search/row-multi-select.spec.ts`         |    13 |   12 |    1 |     0 | selection count                                                                                                                                                                                                               |
+| `search/shared-filters.spec.ts`           |     8 |    0 |    1 |     0 | `beforeEach` timeout; the other 7 did not run (serial block)                                                                                                                                                                  |
+| `shared/multiline.spec.ts`                |     6 |    5 |    1 |     0 | `tab-trace` missing                                                                                                                                                                                                           |
+| `dashboard-static-filters.spec.ts`        |     7 |    6 |    0 |     1 | flaky only                                                                                                                                                                                                                    |
+
+Implications for R4:
+
+1. Fix `useOnboardingCompletion.ts` first: one product fix should clear most of
+   `route-smoke` (22) and the console-error noise in other specs.
+2. "Table rows never render" is the most common symptom (search, span links,
+   JSON, event patterns, select-star, filter keys, alerts). Find the shared
+   cause (seeded collection, source, or query) before working spec by spec.
+3. Trace side-panel tab missing (`traces-workflow`, `side-panel-navigation`,
+   `multiline`) is probably one defect in log-to-trace correlation.
+4. Kubernetes, sessions, heatmap, release markers, and services dashboard are
+   separate feature slices; each may need seed data or a product fix.
+5. The R4 list in section 9 (saved-search alert, heatmap and event deltas,
+   Kubernetes, chart explorer SQL mode, ad hoc click filters, side-panel tabs,
+   time-picker search, metrics specs) is superseded by this table.
+   `chart-explorer`, `dashboard-adhoc-click-filters`,
+   `correlated-metric-source`, and `metric-name-streaming` now pass.
+6. R4 acceptance stays: `make e2e` green twice in a row on a clean stack. Size
+   stays L; 115 failures across 28 specs, with about 6 shared root causes.
