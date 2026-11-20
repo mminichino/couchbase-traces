@@ -7,7 +7,6 @@ import {
 } from '@/core/chartConfig';
 import { compileFormulaAst, validateFormula } from '@/core/formula';
 import {
-  convertDateRangeToGranularityString,
   getFirstTimestampValueExpression,
   resolvePercentileAggFn,
 } from '@/core/utils';
@@ -16,12 +15,12 @@ import { quantile as quantileAgg } from '@/couchbase/fn/quantile';
 import { anyValue, argMax, count, uniq } from '@/couchbase/fn/scalar';
 import { quoteIdent, type SqlPP, sqlpp } from '@/couchbase/sqlpp';
 import {
-  parseGranularity,
   timeBucketExpr as cbTimeBucketExpr,
   type TimeFormat,
 } from '@/couchbase/time';
 import type { BuilderChartConfigWithOptDateRange, SelectList } from '@/types';
 
+import { resolveGranularity } from './granularity';
 import { couchbaseSelectItemAlias } from './postprocess';
 import { ratioExprCouchbase } from './ratio';
 import { rowIdSelect } from './rowId';
@@ -73,15 +72,7 @@ export function renderTimeBucketPartsCouchbase(
     };
   }
   const format = timestampFormatOf(chartConfig);
-  const interval =
-    chartConfig.granularity === 'auto' && chartConfig.dateRange
-      ? convertDateRangeToGranularityString(
-          chartConfig.dateRange,
-          undefined,
-          chartConfig.minGranularitySeconds,
-        )
-      : (chartConfig.granularity ?? '1 minute');
-  const gran = parseGranularity(String(interval));
+  const gran = resolveGranularity(chartConfig, '1 minute');
   const bucketExpr = cbTimeBucketExpr(tsExpr, format, gran);
   return {
     expr: bucketExpr,
@@ -205,7 +196,7 @@ function groupByExprForSelect(expr: string): SqlPP {
   return sqlpp`IFNULL(${{ Raw: expr }}, "") AS ${{ Identifier: expr }}`;
 }
 
-async function renderSelectListCouchbase(
+export async function renderSelectListCouchbase(
   selectList: SelectList,
   chartConfig: BuilderChartConfigWithOptDateRange,
   ctx: RenderFilterContext,

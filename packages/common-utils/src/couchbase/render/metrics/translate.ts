@@ -2,6 +2,7 @@ import { FIXED_TIME_BUCKET_EXPR_ALIAS } from '@/core/chartConfig';
 import { GROUP_ALIAS } from '@/core/histogram';
 import { CouchbaseUnsupportedError } from '@/couchbase/errors';
 import { argMax, lag } from '@/couchbase/fn/scalar';
+import { resolveGranularityInterval } from '@/couchbase/render/granularity';
 import { keyspace, quoteIdent } from '@/couchbase/sqlpp';
 import type { BuilderChartConfigWithOptDateRange } from '@/types';
 import { MetricsDataType } from '@/types';
@@ -26,6 +27,37 @@ type MetricSelect = {
   aggCondition?: string;
   aggConditionLanguage?: string;
 };
+
+/**
+ * Gauge and sum always bucket their CTE (granularity || 'auto', as upstream
+ * renderChartConfig does). 'auto' is sized here, while dateRange is known.
+ */
+function withResolvedGranularity(
+  chartConfig: BuilderChartConfigWithOptDateRange,
+) {
+  return {
+    ...chartConfig,
+    granularity: asInterval(
+      resolveGranularityInterval({
+        ...chartConfig,
+        granularity: chartConfig.granularity || 'auto',
+      }),
+    ),
+  };
+}
+
+/** The outer query's granularity: the caller's, with 'auto' resolved. */
+function outerGranularity(
+  chartConfig: BuilderChartConfigWithOptDateRange,
+): BuilderChartConfigWithOptDateRange['granularity'] {
+  return asInterval(resolveGranularityInterval(chartConfig));
+}
+
+function asInterval(
+  interval: string | undefined,
+): BuilderChartConfigWithOptDateRange['granularity'] {
+  return interval as BuilderChartConfigWithOptDateRange['granularity'];
+}
 
 function asMetricsDataType(
   value: string | undefined,
@@ -103,10 +135,7 @@ export async function translateMetricChartConfigCouchbase(
     // (series, time bucket) → outer agg over LastValue. Always bucket
     // (granularity || 'auto'), same as core/renderChartConfig.ts.
     const timeBucketCol = '__hdx_time_bucket2';
-    const bucketedConfig = {
-      ...chartConfig,
-      granularity: chartConfig.granularity || ('auto' as const),
-    };
+    const bucketedConfig = withResolvedGranularity(chartConfig);
     const bucketExpr = timeBucketSql(bucketedConfig);
     if (!bucketExpr) {
       throw new CouchbaseUnsupportedError('metrics: gauge time bucket');
@@ -141,6 +170,8 @@ export async function translateMetricChartConfigCouchbase(
       // Date range already applied in Source. Keep the caller's granularity
       // (do not force 'auto') so a non-timeseries formula/agg averages
       // LastValue across buckets instead of re-bucketing — same as upstream.
+      // Resolved here: with dateRange gone, 'auto' could not be sized later.
+      granularity: outerGranularity(chartConfig),
       timestampValueExpression: timeBucketCol,
       dateRange: undefined,
     };
@@ -151,10 +182,7 @@ export async function translateMetricChartConfigCouchbase(
     // clamp), Sum cumulative, then per-(series, bucket) sum(Rate) and
     // argMax(Sum). Outer agg uses Rate when aggFn is set, else last Sum.
     const timeBucketCol = '__hdx_time_bucket2';
-    const bucketedConfig = {
-      ...chartConfig,
-      granularity: chartConfig.granularity || ('auto' as const),
-    };
+    const bucketedConfig = withResolvedGranularity(chartConfig);
     const bucketExpr = timeBucketSql(bucketedConfig);
     if (!bucketExpr) {
       throw new CouchbaseUnsupportedError('metrics: sum time bucket');
@@ -192,6 +220,7 @@ export async function translateMetricChartConfigCouchbase(
         }),
       ],
       where: '',
+      granularity: outerGranularity(chartConfig),
       timestampValueExpression: timeBucketCol,
       dateRange: undefined,
     };
