@@ -7,6 +7,8 @@ import {
 import { isBuilderChartConfig } from '@/guards';
 import type { BuilderChartConfigWithOptDateRange } from '@/types';
 
+import { groupByItemName, groupByItems } from './groupBy';
+
 const COUNT_LIKE = new Set(['count', 'count_distinct', 'increase']);
 
 /** Upstream-shaped result name for one select list item (e.g. `count()`). */
@@ -51,25 +53,7 @@ export function couchbaseResultColumnNames(
     });
   }
   if (isUsingGroupBy(config) && config.selectGroupBy !== false) {
-    if (typeof config.groupBy === 'string') {
-      for (const col of config.groupBy.split(',')) {
-        const trimmed = col.trim();
-        if (trimmed) {
-          const alias = trimmed.includes(' as ')
-            ? trimmed
-                .split(/\s+as\s+/i)
-                .pop()
-                ?.trim()
-            : trimmed;
-          if (alias) cols.push(alias);
-        }
-      }
-    } else {
-      for (const g of config.groupBy ?? []) {
-        const alias = g.alias?.trim() || g.valueExpression?.trim();
-        if (alias) cols.push(alias);
-      }
-    }
+    cols.push(...groupByItems(config).map(groupByItemName));
   }
   if (isUsingGranularity(config)) {
     cols.push(FIXED_TIME_BUCKET_EXPR_ALIAS);

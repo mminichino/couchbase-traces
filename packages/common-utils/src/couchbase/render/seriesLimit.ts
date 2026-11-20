@@ -4,30 +4,12 @@ import {
   isUsingGroupBy,
 } from '@/core/chartConfig';
 import { hasPositiveSeriesLimit } from '@/core/utils';
+import { rewriteMapSubscripts } from '@/couchbase/mapAccess';
 import { type SqlPP, sqlpp } from '@/couchbase/sqlpp';
 import type { BuilderChartConfigWithOptDateRange } from '@/types';
 
+import { groupByClauseExpr, groupByItems } from './groupBy';
 import { ratioExprCouchbase } from './ratio';
-
-function groupExpressionList(
-  chartConfig: BuilderChartConfigWithOptDateRange,
-): string[] {
-  if (typeof chartConfig.groupBy === 'string') {
-    return chartConfig.groupBy
-      .split(',')
-      .map(c => c.trim())
-      .filter(Boolean);
-  }
-  return (chartConfig.groupBy ?? [])
-    .map(c => c.valueExpression?.trim() ?? '')
-    .filter(Boolean);
-}
-
-function maybeIfNull(expr: string): string {
-  return /\[|'\w+'/.test(expr) || expr.includes('.')
-    ? `IFNULL(${expr}, "")`
-    : expr;
-}
 
 /**
  * Top-N series CTE per Phase 7 §5.5 — mirrors upstream: per-(group, bucket)
@@ -53,7 +35,9 @@ export async function renderSeriesLimitCteCouchbase(
     return undefined;
   }
 
-  const groupExprs = groupExpressionList(chartConfig).map(maybeIfNull);
+  const groupExprs = groupByItems(chartConfig).map(
+    item => groupByClauseExpr(item).statement,
+  );
   if (groupExprs.length === 0) return undefined;
 
   const groupTuple = `[${groupExprs.join(', ')}]`;
@@ -61,8 +45,8 @@ export async function renderSeriesLimitCteCouchbase(
   let rankExpr: SqlPP;
   if (isRatioChartConfig(chartConfig.select, chartConfig)) {
     const [a, b] = chartConfig.select;
-    const num = sqlpp`${{ Raw: `SUM(TONUMBER(${a.valueExpression || '1'}))` }}`;
-    const den = sqlpp`${{ Raw: `SUM(TONUMBER(${b.valueExpression || '1'}))` }}`;
+    const num = sqlpp`${{ Raw: `SUM(TONUMBER(${rewriteMapSubscripts(a.valueExpression || '1')}))` }}`;
+    const den = sqlpp`${{ Raw: `SUM(TONUMBER(${rewriteMapSubscripts(b.valueExpression || '1')}))` }}`;
     rankExpr = ratioExprCouchbase(num, den);
   } else {
     const first = chartConfig.select[0];
@@ -70,7 +54,7 @@ export async function renderSeriesLimitCteCouchbase(
     rankExpr =
       fn === 'count'
         ? sqlpp`COUNT(*)`
-        : sqlpp`${{ Raw: `SUM(TONUMBER(${first.valueExpression || '1'}))` }}`;
+        : sqlpp`${{ Raw: `SUM(TONUMBER(${rewriteMapSubscripts(first.valueExpression || '1')}))` }}`;
   }
 
   const whereSql = parts.where?.statement

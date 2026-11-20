@@ -102,7 +102,7 @@ Apply these before calling cbt_save_dashboard. Each rule is enforced by the rend
    Number tile, wrong:      select: [{ aggFn: "count" }]
    Quantile (number/table): select: [{ aggFn: "quantile", level: 0.95, valueExpression: "Duration", alias: "P95 Duration" }]
 
-3. GROUP BY HAS NO ALIAS HOOK. The chart config's groupBy is a single expression string and the renderer uses it verbatim as the column header (tables) and as the raw column name everywhere else (CSV export, tooltips, orderBy references, onClick template references). Grouping a table by SpanAttributes['http.route'] produces a column header that reads literally as arrayElement(SpanAttributes, 'http.route'). When a top-level column carries the same semantic, prefer it: SpanName for operation, ServiceName for service, SeverityText for log severity. When the dimension exists only as a Map attribute and the column header matters, drop to a raw SQL tile (configType: "sql") and write the column with AS alias. Line, stacked_bar, and pie tiles legend by the value not the column name, so the issue is invisible on the chart itself but still bites CSV export and onClick template references.
+3. GROUP BY HAS NO ALIAS HOOK. The chart config's groupBy is a single expression string and the renderer uses it verbatim as the column header (tables) and as the raw column name everywhere else (CSV export, tooltips, orderBy references, onClick template references). Grouping a table by SpanAttributes['http.route'] produces a column header that reads literally as SpanAttributes['http.route']. When a top-level column carries the same semantic, prefer it: SpanName for operation, ServiceName for service, SeverityText for log severity. When the dimension exists only as a Map attribute and the column header matters, drop to a raw SQL tile (configType: "sql") and write the column with AS alias. Line, stacked_bar, and pie tiles legend by the value not the column name, so the issue is invisible on the chart itself but still bites CSV export and onClick template references.
 
 4. INVENTORY-STYLE TABLES PUT THE GROUP BY ON THE LEFT. Set groupByColumnsOnLeft: true on tables that read like a list of things (one row per service, per endpoint, per tenant).
 
@@ -1396,7 +1396,7 @@ When pairing a service-inventory table with a service-detail dashboard, use targ
 
 Builder table tiles do NOT currently expose a groupBy alias / "AS" field. When the groupBy expression is a plain column (ServiceName, SpanName, StatusCode, SeverityText), the result column comes back with that same name, so {{ServiceName}} in an onClick template just works.
 
-When the groupBy expression is a map attribute (SpanAttributes['http.route'], ResourceAttributes['deployment.environment']), the result column name is the raw expression (arrayElement(SpanAttributes, 'http.route') or similar), which is not a valid Handlebars identifier and cannot be referenced as {{Route}} or {{http.route}}.
+When the groupBy expression is a map attribute (SpanAttributes['http.route'], ResourceAttributes['deployment.environment']), the result column name is the raw expression text (SpanAttributes['http.route']), which is not a valid Handlebars identifier and cannot be referenced as {{Route}} or {{http.route}}.
 
 Workaround: when you need a row-click drill-down from a map-attribute groupBy, author the tile as raw SQL (configType: "sql", displayType: "table") with an explicit AS alias on the groupBy column. Reference that alias from the onClick template.
 

@@ -235,6 +235,22 @@ describe('couchbase metadata', () => {
     });
     expect(fake.queries.every(q => !q.includes('1=1'))).toBe(true);
 
+    // D9: Kubernetes filters ask for values of `ResourceAttributes['k8s.…']`.
+    fake.queries.length = 0;
+    await m.getKeyValues({
+      chartConfig: chart,
+      keys: [
+        "ResourceAttributes['k8s.pod.name']",
+        'ResourceAttributes.service.name',
+      ],
+    });
+    expect(fake.queries.join('\n')).toContain(
+      'SELECT d.`ResourceAttributes`.`k8s.pod.name` AS v',
+    );
+    expect(fake.queries.join('\n')).toContain(
+      'SELECT d.`ResourceAttributes`.`service.name` AS v',
+    );
+
     expect(
       (await m.getAllTableMetadata({ connectionId: 'c', databaseName: 'otel' }))
         .length,

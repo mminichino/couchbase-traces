@@ -355,7 +355,7 @@ describe('MCP Dashboard Prompts', () => {
       expect(checklistBody).toMatch(/ALIAS EVERY SELECT ITEM/);
       // Rule 3 calls out the schema gap on groupBy: the chart config takes
       // a single expression string with no alias field, so a table grouped
-      // by SpanAttributes['http.route'] renders arrayElement(...) as the
+      // by SpanAttributes['http.route'] renders that raw expression as the
       // column header. Naming the limit explicitly lets Claude pick a
       // top-level column (SpanName, ServiceName) instead of grouping on
       // the raw Map expression.

@@ -11,6 +11,7 @@ import {
 } from '@/core/formula';
 import { GROUP_ALIAS } from '@/core/histogram';
 import { CouchbaseUnsupportedError } from '@/couchbase/errors';
+import { groupByItems, groupByOutputRef } from '@/couchbase/render/groupBy';
 import { quoteIdent } from '@/couchbase/sqlpp';
 import type {
   BuilderChartConfigWithOptDateRange,
@@ -36,21 +37,6 @@ function isHistogramClassSelect(select: { metricType?: string }): boolean {
     select.metricType === MetricsDataType.Histogram ||
     select.metricType === MetricsDataType.ExponentialHistogram
   );
-}
-
-function groupExpressions(
-  chartConfig: BuilderChartConfigWithOptDateRange,
-): string[] {
-  if (!chartConfig.groupBy) return [];
-  if (typeof chartConfig.groupBy === 'string') {
-    return chartConfig.groupBy
-      .split(',')
-      .map(s => s.trim())
-      .filter(Boolean);
-  }
-  return chartConfig.groupBy
-    .map(c => c.valueExpression?.trim())
-    .filter((x): x is string => !!x);
 }
 
 type RenderChartFn = (
@@ -109,7 +95,9 @@ export async function renderMultiSeriesMetricChartConfigCouchbase(
   const hasGranularity = isUsingGranularity(chartConfig);
   const includeGroupBy =
     isUsingGroupBy(chartConfig) && chartConfig.selectGroupBy !== false;
-  const groupExprs = includeGroupBy ? groupExpressions(chartConfig) : [];
+  const groupExprs = includeGroupBy
+    ? groupByItems(chartConfig).map(groupByOutputRef)
+    : [];
   const anyHistogram = select.some(isHistogramClassSelect);
   const hasFormulas = formulaColumns.length > 0;
   const isRatio =
