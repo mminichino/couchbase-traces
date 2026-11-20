@@ -87,7 +87,7 @@ src/
 │                        #   peak-preserving resampling + nice y-axis ticks. No Couchbase Traces
 │                        #   imports; candidate for open-sourcing. See termchart/README.md
 └── utils/
-    ├── config.ts        # Session persistence (~/.config/hyperdx/cli/session.json)
+    ├── config.ts        # Session persistence (~/.config/couchbase-traces/cli/session.json)
     ├── editor.ts        # $EDITOR integration for time range and select clause editing
     └── silenceLogs.ts   # Suppresses console.debug/warn/error from common-utils
 ```
@@ -292,7 +292,7 @@ yarn compile:linux        # Linux x64
 
 ### Session Management
 
-Session is stored at `~/.config/hyperdx/cli/session.json` with mode `0o600`.
+Session is stored at `~/.config/couchbase-traces/cli/session.json` with mode `0o600`.
 Contains `apiUrl` and `cookies[]`. The `ApiClient` constructor loads the saved
 session and checks if the stored `apiUrl` matches the requested one.
 

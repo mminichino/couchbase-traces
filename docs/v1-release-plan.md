@@ -76,6 +76,7 @@ no releases, and no git tags exist on `origin`).
 | B14 | Stale "pending user decisions" in port-notes                                                 | `docs/port-notes.md:876-879`: local mode was removed in Phase 10 (`packages/app/src/config.ts` comment), and publishing the all-in-one image is undecided                                                                                                                                                                                                                                                                                                                   | Close the local-mode item; record the all-in-one decision (Q1: not published for 1.0)                                                                                                                                                                                                                                                                                                            | S                        | none              |
 | B15 | Acceptance report predates Mongo elimination                                                 | `docs/acceptance.md` generated 2026-11-18 at `6599628`, 8 commits behind `main`; its K1 output still logs a Mongoose warning                                                                                                                                                                                                                                                                                                                                                | Re-run `port/acceptance/run.mjs` (all checks A1–M2) at the release-candidate commit with `--final`, record the CI run                                                                                                                                                                                                                                                                            | M                        | R1–R6             |
 | B16 | Pinned Couchbase image may not be the latest 8.0.x maintenance release                       | `couchbase/server:enterprise-8.0.3` in `.env:22`, `Makefile`, `port/couchbase-test/docker-compose.yml`; AGENTS.md requires the latest 8.0.x on Docker Hub                                                                                                                                                                                                                                                                                                                   | Check Docker Hub in R0; bump if newer, record in port-notes                                                                                                                                                                                                                                                                                                                                      | S                        | none              |
+| B17 | User-visible "legacy store" text (a mechanical rebrand of "ClickHouse")                      | Found in R1: 367 hits in 156 non-test files, e.g. CLI help `cbt connections` "List legacy store connections" (`packages/cli/src/cli.tsx:959`), `packages/api/openapi.json` (23), MCP tool and prompt text (`mcp/tools/query/table.ts`, `mcp/prompts/dashboards/content.ts:974` "legacy store parameterized syntax")                                                                                                                                                         | Rewrite user-facing strings to "Couchbase" or "data store"; where the text teaches ClickHouse syntax, fix it with D2. Leave code comments to P4. Needs a decision: blocker, or post-1.0                                                                                                                                                                                                          | M                        | user decision     |
 
 ### 2.2 Post-1.0
 
@@ -551,11 +552,15 @@ P2 (delete `packages/api/migrations/ch/`). Unit tests: `blockedHosts.test.ts`
 (each env var, malformed connstr, IPv6, port expansion), `config.test.ts` for
 the CLI migration, an updated `useWhatsNew` test, the MCP server version test.
 
-Acceptance: `rg -n "CLICKHOUSE_(HOST|USER|PASSWORD)" packages .github` empty;
-webhook to `http://<metadata host>:8091` rejected in a unit test;
+Acceptance:
+`rg -n "CLICKHOUSE_(HOST|USER|PASSWORD)" packages .github -g '!packages/hdx-eval/**'`
+empty (hdx-eval passes those names to the third-party ClickHouse MCP server it
+benchmarks against, which reads exactly them); webhook to
+`http://<metadata host>:8091` rejected in a unit test;
 `rg -n "hyperdx" packages/cli/src/utils/config.ts` shows only
-`LEGACY_CONFIG_DIR`; `port/rebrand` verify and `port/remove-ch` verify still
-pass.
+`LEGACY_CONFIG_DIR`; `port/rebrand verify branding` and `port/remove-ch` verify
+report no problem that `main` does not already have (both fail on `main` today;
+see `docs/port-notes.md` R1).
 
 ### R2a / R2b / R2c: Deferred integration suites
 

@@ -49,7 +49,7 @@ export async function createOrgApiKey(
   const doc = await createVirtualUser({
     teamId: teamId.toString(),
     name: description,
-    email: `sa-${crypto.randomBytes(12).toString('hex')}@service-accounts.hyperdx.invalid`,
+    email: `sa-${crypto.randomBytes(12).toString('hex')}@service-accounts.couchbase-traces.invalid`,
     accessKey: hashOrgApiKey(key),
     expiresAt: expiresAtFor(expiry, Date.now()),
     createdBy: createdBy.toString(),

@@ -2,7 +2,7 @@
 # produced by buildOtelCollectorConfig() in opampController.ts.
 
 receivers:
-  otlp/hyperdx:
+  otlp/cbt:
     protocols:
       grpc:
         include_metadata: true
@@ -64,13 +64,13 @@ service:
   # swap them via CUSTOM_OTELCOL_CONFIG_FILE.
   pipelines:
     traces:
-      receivers: [otlp/hyperdx]
+      receivers: [otlp/cbt]
       exporters: [otlphttp/couchbase]
     metrics:
-      receivers: [otlp/hyperdx]
+      receivers: [otlp/cbt]
       exporters: [otlphttp/couchbase]
     logs/in:
-      receivers: [otlp/hyperdx]
+      receivers: [otlp/cbt]
       exporters: [routing/logs]
     logs/out-default:
       receivers: [routing/logs]

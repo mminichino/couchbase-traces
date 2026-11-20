@@ -8,7 +8,6 @@ import {
 } from '@couchbase-traces/common-utils/dist/types';
 import request, { SuperAgentTest } from 'supertest';
 
-import * as config from '@/config';
 import {
   DEFAULT_DATABASE,
   DEFAULT_LOGS_TABLE,
@@ -25,6 +24,7 @@ import {
   seedRawSource,
   seedSource,
 } from '@/metadata/testing/seed';
+import { TEST_COUCHBASE_CONNECTION } from '@/testCouchbaseConnection';
 
 describe('External API v2 Sources', () => {
   const server = getServer();
@@ -47,9 +47,9 @@ describe('External API v2 Sources', () => {
       kind: 'couchbase',
       team: team._id,
       name: 'Default',
-      host: config.CLICKHOUSE_HOST,
-      username: config.CLICKHOUSE_USER,
-      password: config.CLICKHOUSE_PASSWORD,
+      host: TEST_COUCHBASE_CONNECTION.host,
+      username: TEST_COUCHBASE_CONNECTION.username,
+      password: TEST_COUCHBASE_CONNECTION.password,
     });
   });
 
@@ -447,9 +447,9 @@ describe('External API v2 Sources', () => {
         kind: 'couchbase',
         team: otherTeamId,
         name: 'Other Team Connection',
-        host: config.CLICKHOUSE_HOST,
-        username: config.CLICKHOUSE_USER,
-        password: config.CLICKHOUSE_PASSWORD,
+        host: TEST_COUCHBASE_CONNECTION.host,
+        username: TEST_COUCHBASE_CONNECTION.username,
+        password: TEST_COUCHBASE_CONNECTION.password,
       });
 
       await seedSource({

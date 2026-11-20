@@ -4,7 +4,6 @@ import {
 } from '@couchbase-traces/common-utils/dist/types';
 import { Client } from '@modelcontextprotocol/sdk/client/index.js';
 
-import * as config from '@/config';
 import {
   bucketExponentialHistogramObservations,
   bulkInsertLogs,
@@ -30,6 +29,7 @@ import {
   seedSource,
   seedTeam,
 } from '@/metadata/testing/seed';
+import { TEST_COUCHBASE_CONNECTION } from '@/testCouchbaseConnection';
 
 import { callTool, createTestClient, getFirstText } from './mcpTestUtils';
 
@@ -52,12 +52,12 @@ describe('MCP Query Tools', () => {
     user = result.user;
 
     connection = await seedConnection({
-      host: config.CLICKHOUSE_HOST,
+      host: TEST_COUCHBASE_CONNECTION.host,
       kind: 'couchbase',
       team: team._id,
       name: 'Default',
-      username: config.CLICKHOUSE_USER,
-      password: config.CLICKHOUSE_PASSWORD,
+      username: TEST_COUCHBASE_CONNECTION.username,
+      password: TEST_COUCHBASE_CONNECTION.password,
     });
 
     traceSource = await seedSource({
@@ -1616,12 +1616,12 @@ describe('MCP Query Tools', () => {
       // $__sourceTable would otherwise expand to a table on another server.
       it('rejects a sourceId whose connection differs from connectionId', async () => {
         const otherConnection = await seedConnection({
-          host: config.CLICKHOUSE_HOST,
+          host: TEST_COUCHBASE_CONNECTION.host,
           kind: 'couchbase',
           team: team._id,
           name: 'Other',
-          username: config.CLICKHOUSE_USER,
-          password: config.CLICKHOUSE_PASSWORD,
+          username: TEST_COUCHBASE_CONNECTION.username,
+          password: TEST_COUCHBASE_CONNECTION.password,
         });
 
         const result = await callTool(client, 'cbt_sql', {
@@ -1875,7 +1875,7 @@ describe('MCP Query Tools', () => {
 
       beforeEach(async () => {
         deadConnection = await seedConnection({
-          host: config.CLICKHOUSE_HOST,
+          host: TEST_COUCHBASE_CONNECTION.host,
           kind: 'couchbase',
           team: team._id,
           name: 'Dead',

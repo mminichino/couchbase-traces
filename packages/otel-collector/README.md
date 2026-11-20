@@ -154,7 +154,7 @@ config for logs).
 ### Authentication
 
 In OpAMP supervisor mode, when collector authentication is enforced the
-receiver authenticates against the team API keys (same as `otlp/hyperdx`) via
+receiver authenticates against the team API keys (same as `otlp/cbt`) via
 the `DD-API-KEY` header. Set the Datadog Agent's `DD_API_KEY` to a Couchbase Traces
 team ingestion API key.
 
@@ -162,7 +162,7 @@ team ingestion API key.
 
 `spanmetricsconnector` is compiled in so span-derived RED metrics (call
 counts, a duration histogram) can be computed from any traces the collector
-ingests — works with `otlp/hyperdx` directly, and is most useful alongside
+ingests — works with `otlp/cbt` directly, and is most useful alongside
 [`datadogreceiver`](#ingesting-datadog-traces-metrics-and-logs) above, since
 Datadog Agent traces otherwise only get RED metrics the same way any other
 trace source does today: computed at query time from the traces table
@@ -266,10 +266,10 @@ service:
       # Add `datadog` here too if (and only if) you configured it per the
       # Datadog section above - this list replaces the base one rather
       # than adding to it.
-      receivers: [otlp/hyperdx]
+      receivers: [otlp/cbt]
       exporters: [evalstore, span_metrics]
     metrics:
-      receivers: [otlp/hyperdx, span_metrics]
+      receivers: [otlp/cbt, span_metrics]
 ```
 
 **In OpAMP supervisor mode, editing the default `traces`/`metrics` pipelines
@@ -305,7 +305,7 @@ service:
       # means (ENABLE_DATADOG_RECEIVER=true, or your own definition via
       # CUSTOM_OTELCOL_CONFIG_FILE) - an undefined receiver fails the
       # whole config (every pipeline, not just this one).
-      receivers: [otlp/hyperdx]
+      receivers: [otlp/cbt]
       exporters: [span_metrics]
       processors: [memory_limiter]
     metrics/spanmetrics:
@@ -369,7 +369,7 @@ receivers:
 service:
   pipelines:
     metrics:
-      receivers: [otlp/hyperdx, statsd]
+      receivers: [otlp/cbt, statsd]
 ```
 
 **In OpAMP supervisor mode** (Couchbase Traces's default), editing the `metrics`

@@ -8,7 +8,6 @@ import {
 import { omit } from 'lodash';
 import request from 'supertest';
 
-import * as config from '@/config';
 import {
   DEFAULT_DATABASE,
   DEFAULT_TRACES_TABLE,
@@ -33,6 +32,7 @@ import {
   seedWebhook,
   setDashboardPaths,
 } from '@/metadata/testing/seed';
+import { TEST_COUCHBASE_CONNECTION } from '@/testCouchbaseConnection';
 import {
   ExternalDashboardTile,
   ExternalDashboardTileWithId,
@@ -175,9 +175,9 @@ describe('External API v2 Dashboards - old format', () => {
       kind: 'couchbase',
       team: team._id,
       name: 'Default',
-      host: config.CLICKHOUSE_HOST,
-      username: config.CLICKHOUSE_USER,
-      password: config.CLICKHOUSE_PASSWORD,
+      host: TEST_COUCHBASE_CONNECTION.host,
+      username: TEST_COUCHBASE_CONNECTION.username,
+      password: TEST_COUCHBASE_CONNECTION.password,
     });
 
     traceSource = await seedSource({
@@ -1934,9 +1934,9 @@ describe('External API v2 Dashboards - new format', () => {
       kind: 'couchbase',
       team: team._id,
       name: 'Default',
-      host: config.CLICKHOUSE_HOST,
-      username: config.CLICKHOUSE_USER,
-      password: config.CLICKHOUSE_PASSWORD,
+      host: TEST_COUCHBASE_CONNECTION.host,
+      username: TEST_COUCHBASE_CONNECTION.username,
+      password: TEST_COUCHBASE_CONNECTION.password,
     });
 
     traceSource = await seedSource({
@@ -3732,9 +3732,9 @@ describe('External API v2 Dashboards - new format', () => {
         kind: 'couchbase',
         team: newId(),
         name: 'Other Team Connection',
-        host: config.CLICKHOUSE_HOST,
-        username: config.CLICKHOUSE_USER,
-        password: config.CLICKHOUSE_PASSWORD,
+        host: TEST_COUCHBASE_CONNECTION.host,
+        username: TEST_COUCHBASE_CONNECTION.username,
+        password: TEST_COUCHBASE_CONNECTION.password,
       });
       const otherConnectionId = otherTeamConnection._id.toString();
 
@@ -3770,9 +3770,9 @@ describe('External API v2 Dashboards - new format', () => {
         kind: 'couchbase',
         team: team._id,
         name: 'Other Connection',
-        host: config.CLICKHOUSE_HOST,
-        username: config.CLICKHOUSE_USER,
-        password: config.CLICKHOUSE_PASSWORD,
+        host: TEST_COUCHBASE_CONNECTION.host,
+        username: TEST_COUCHBASE_CONNECTION.username,
+        password: TEST_COUCHBASE_CONNECTION.password,
       });
 
       const response = await authRequest('post', BASE_URL)
@@ -5375,9 +5375,9 @@ describe('External API v2 Dashboards - new format', () => {
         kind: 'couchbase',
         team: newId(),
         name: 'Other Team Connection',
-        host: config.CLICKHOUSE_HOST,
-        username: config.CLICKHOUSE_USER,
-        password: config.CLICKHOUSE_PASSWORD,
+        host: TEST_COUCHBASE_CONNECTION.host,
+        username: TEST_COUCHBASE_CONNECTION.username,
+        password: TEST_COUCHBASE_CONNECTION.password,
       });
       const otherConnectionId = otherTeamConnection._id.toString();
 
@@ -5415,9 +5415,9 @@ describe('External API v2 Dashboards - new format', () => {
         kind: 'couchbase',
         team: team._id,
         name: 'Other Connection',
-        host: config.CLICKHOUSE_HOST,
-        username: config.CLICKHOUSE_USER,
-        password: config.CLICKHOUSE_PASSWORD,
+        host: TEST_COUCHBASE_CONNECTION.host,
+        username: TEST_COUCHBASE_CONNECTION.username,
+        password: TEST_COUCHBASE_CONNECTION.password,
       });
 
       const response = await authRequest('put', `${BASE_URL}/${dashboard._id}`)

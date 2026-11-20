@@ -162,7 +162,7 @@ describe('orgApiKey controller', () => {
       });
       expect(account?.team).toEqual(team._id);
       expect(account?.email).toMatch(
-        /^sa-[0-9a-f]{24}@service-accounts\.hyperdx\.invalid$/,
+        /^sa-[0-9a-f]{24}@service-accounts\.couchbase-traces\.invalid$/,
       );
     });
 

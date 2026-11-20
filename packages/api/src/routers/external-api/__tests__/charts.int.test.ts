@@ -2,7 +2,6 @@ import { SourceKind } from '@couchbase-traces/common-utils/dist/types';
 import { MetricsDataType } from '@couchbase-traces/common-utils/dist/types';
 import request from 'supertest';
 
-import * as config from '@/config';
 import {
   bulkInsertLogs,
   bulkInsertMetricsGauge,
@@ -16,6 +15,7 @@ import {
 import { newId } from '@/metadata/ids';
 import { ISource } from '@/metadata/schemas/source';
 import { seedConnection, seedSource } from '@/metadata/testing/seed';
+import { TEST_COUCHBASE_CONNECTION } from '@/testCouchbaseConnection';
 
 // Default time range for tests (1 hour)
 // Floor to minute so all derived timestamps (including test data inserted at
@@ -96,9 +96,9 @@ describe('External API v2 Charts', () => {
       kind: 'couchbase',
       team: team._id,
       name: 'Default',
-      host: config.CLICKHOUSE_HOST,
-      username: config.CLICKHOUSE_USER,
-      password: config.CLICKHOUSE_PASSWORD,
+      host: TEST_COUCHBASE_CONNECTION.host,
+      username: TEST_COUCHBASE_CONNECTION.username,
+      password: TEST_COUCHBASE_CONNECTION.password,
     });
 
     logSource = await seedSource({

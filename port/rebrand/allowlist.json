@@ -436,76 +436,6 @@
       "note": "Token \"hyperdx\" allowed in the token map"
     },
     {
-      "path": "docker/otel-collector/config.standalone.auth.yaml",
-      "term": "hyperdx",
-      "snippet": "authenticator: bearertokenauth/hyperdx",
-      "reason": "internal_identifier",
-      "note": "Token \"hyperdx\" allowed in the token map"
-    },
-    {
-      "path": "docker/otel-collector/config.standalone.auth.yaml",
-      "term": "hyperdx",
-      "snippet": "bearertokenauth/hyperdx:",
-      "reason": "internal_identifier",
-      "note": "Token \"hyperdx\" allowed in the token map"
-    },
-    {
-      "path": "docker/otel-collector/config.standalone.auth.yaml",
-      "term": "hyperdx",
-      "snippet": "extensions: [health_check, bearertokenauth/hyperdx]",
-      "reason": "internal_identifier",
-      "note": "Token \"hyperdx\" allowed in the token map"
-    },
-    {
-      "path": "docker/otel-collector/config.standalone.auth.yaml",
-      "term": "hyperdx",
-      "snippet": "otlp/hyperdx:",
-      "reason": "internal_identifier",
-      "note": "Token \"hyperdx\" allowed in the token map"
-    },
-    {
-      "path": "docker/otel-collector/config.standalone.oidc.yaml",
-      "term": "hyperdx",
-      "snippet": "authenticator: oidc/hyperdx",
-      "reason": "internal_identifier",
-      "note": "Token \"hyperdx\" allowed in the token map"
-    },
-    {
-      "path": "docker/otel-collector/config.standalone.oidc.yaml",
-      "term": "hyperdx",
-      "snippet": "extensions: [health_check, oidc/hyperdx]",
-      "reason": "internal_identifier",
-      "note": "Token \"hyperdx\" allowed in the token map"
-    },
-    {
-      "path": "docker/otel-collector/config.standalone.oidc.yaml",
-      "term": "hyperdx",
-      "snippet": "oidc/hyperdx:",
-      "reason": "internal_identifier",
-      "note": "Token \"hyperdx\" allowed in the token map"
-    },
-    {
-      "path": "docker/otel-collector/config.standalone.oidc.yaml",
-      "term": "hyperdx",
-      "snippet": "otlp/hyperdx:",
-      "reason": "internal_identifier",
-      "note": "Token \"hyperdx\" allowed in the token map"
-    },
-    {
-      "path": "docker/otel-collector/config.standalone.yaml",
-      "term": "hyperdx",
-      "snippet": "otlp/hyperdx:",
-      "reason": "internal_identifier",
-      "note": "Token \"hyperdx\" allowed in the token map"
-    },
-    {
-      "path": "docker/otel-collector/config.standalone.yaml",
-      "term": "hyperdx",
-      "snippet": "receivers: [otlp/hyperdx]",
-      "reason": "internal_identifier",
-      "note": "Token \"hyperdx\" allowed in the token map"
-    },
-    {
       "path": "docs/licenses.md",
       "term": "clickstack",
       "snippet": "| @clickhouse/clickstack-browser | 1.2.1 | Apache-2.0 | https://github.com/ClickHouse/clickstack-browser | @couchbase-traces/app |",
@@ -551,13 +481,6 @@
       "path": "knip.json",
       "term": "hyperdx",
       "snippet": "\"docker/hyperdx/**\",",
-      "reason": "internal_identifier",
-      "note": "Token \"hyperdx\" allowed in the token map"
-    },
-    {
-      "path": "package.json",
-      "term": "hyperdx",
-      "snippet": "\"name\": \"hyperdx\",",
       "reason": "internal_identifier",
       "note": "Token \"hyperdx\" allowed in the token map"
     },
@@ -695,34 +618,6 @@
       "note": "Token \"hyperdx\" allowed in the token map"
     },
     {
-      "path": "packages/api/src/controllers/__tests__/orgApiKey.int.test.ts",
-      "term": "hyperdx",
-      "snippet": "/^sa-[0-9a-f]{24}@service-accounts\\.hyperdx\\.invalid$/,",
-      "reason": "internal_identifier",
-      "note": "Token \"hyperdx\" allowed in the token map"
-    },
-    {
-      "path": "packages/api/src/controllers/orgApiKey.ts",
-      "term": "hyperdx",
-      "snippet": "email: `sa-${crypto.randomBytes(12).toString('hex')}@service-accounts.hyperdx.invalid`,",
-      "reason": "internal_identifier",
-      "note": "Token \"@service-accounts.hyperdx.invalid\" allowed in the token map"
-    },
-    {
-      "path": "packages/api/src/mcp/__tests__/serverMetadata.test.ts",
-      "term": "hyperdx",
-      "snippet": "/hyperdx",
-      "reason": "test_fixture",
-      "note": "Base-path and MCP icon path fixtures; the icon path matches the source, which keeps the upstream favicons/hyperdx path."
-    },
-    {
-      "path": "packages/api/src/mcp/mcpServer.ts",
-      "term": "hyperdx",
-      "snippet": "? `${FRONTEND_URL.replace(/\\/+$/, '')}/favicons/hyperdx/favicon.svg`",
-      "reason": "internal_identifier",
-      "note": "Token \"hyperdx\" allowed in the token map"
-    },
-    {
       "path": "packages/api/src/middleware/__tests__/queryAttribution.int.test.ts",
       "term": "hyperdx",
       "snippet": "'x-hyperdx-query-attribution',",
@@ -751,146 +646,6 @@
       "note": "Token \"hyperdx-test\" allowed in the token map"
     },
     {
-      "path": "packages/api/src/opamp/controllers/__tests__/opampController.test.ts",
-      "term": "hyperdx",
-      "snippet": "authenticator: 'bearertokenauth/hyperdx',",
-      "reason": "internal_identifier",
-      "note": "Token \"hyperdx\" allowed in the token map"
-    },
-    {
-      "path": "packages/api/src/opamp/controllers/__tests__/opampController.test.ts",
-      "term": "hyperdx",
-      "snippet": "const tokens = cfg.extensions['bearertokenauth/hyperdx'].tokens;",
-      "reason": "internal_identifier",
-      "note": "Token \"hyperdx\" allowed in the token map"
-    },
-    {
-      "path": "packages/api/src/opamp/controllers/__tests__/opampController.test.ts",
-      "term": "hyperdx",
-      "snippet": "describe('buildOtelCollectorConfig otlp/hyperdx CORS', () => {",
-      "reason": "internal_identifier",
-      "note": "Token \"hyperdx\" allowed in the token map"
-    },
-    {
-      "path": "packages/api/src/opamp/controllers/__tests__/opampController.test.ts",
-      "term": "hyperdx",
-      "snippet": "describe('buildOtelCollectorConfig otlp/hyperdx authentication', () => {",
-      "reason": "internal_identifier",
-      "note": "Token \"hyperdx\" allowed in the token map"
-    },
-    {
-      "path": "packages/api/src/opamp/controllers/__tests__/opampController.test.ts",
-      "term": "hyperdx",
-      "snippet": "expect(cfg.extensions['bearertokenauth/hyperdx']).toEqual({",
-      "reason": "internal_identifier",
-      "note": "Token \"hyperdx\" allowed in the token map"
-    },
-    {
-      "path": "packages/api/src/opamp/controllers/__tests__/opampController.test.ts",
-      "term": "hyperdx",
-      "snippet": "expect(cfg.receivers['otlp/hyperdx']?.protocols.grpc.auth).toEqual({",
-      "reason": "internal_identifier",
-      "note": "Token \"hyperdx\" allowed in the token map"
-    },
-    {
-      "path": "packages/api/src/opamp/controllers/__tests__/opampController.test.ts",
-      "term": "hyperdx",
-      "snippet": "expect(cfg.receivers['otlp/hyperdx']?.protocols.http.auth).toEqual({",
-      "reason": "internal_identifier",
-      "note": "Token \"hyperdx\" allowed in the token map"
-    },
-    {
-      "path": "packages/api/src/opamp/controllers/__tests__/opampController.test.ts",
-      "term": "hyperdx",
-      "snippet": "expect(cfg.receivers['otlp/hyperdx']?.protocols.http.cors).toEqual({",
-      "reason": "internal_identifier",
-      "note": "Token \"hyperdx\" allowed in the token map"
-    },
-    {
-      "path": "packages/api/src/opamp/controllers/__tests__/opampController.test.ts",
-      "term": "hyperdx",
-      "snippet": "expect(cfg.service.extensions).toContain('bearertokenauth/hyperdx');",
-      "reason": "internal_identifier",
-      "note": "Token \"hyperdx\" allowed in the token map"
-    },
-    {
-      "path": "packages/api/src/opamp/controllers/opampController.ts",
-      "term": "hyperdx",
-      "snippet": "'otlp/hyperdx',",
-      "reason": "internal_identifier",
-      "note": "Token \"hyperdx\" allowed in the token map"
-    },
-    {
-      "path": "packages/api/src/opamp/controllers/opampController.ts",
-      "term": "hyperdx",
-      "snippet": "'otlp/hyperdx': {",
-      "reason": "internal_identifier",
-      "note": "Token \"hyperdx\" allowed in the token map"
-    },
-    {
-      "path": "packages/api/src/opamp/controllers/opampController.ts",
-      "term": "hyperdx",
-      "snippet": "'otlp/hyperdx'?: {",
-      "reason": "internal_identifier",
-      "note": "Token \"hyperdx\" allowed in the token map"
-    },
-    {
-      "path": "packages/api/src/opamp/controllers/opampController.ts",
-      "term": "hyperdx",
-      "snippet": "authenticator: 'bearertokenauth/hyperdx',",
-      "reason": "internal_identifier",
-      "note": "Token \"hyperdx\" allowed in the token map"
-    },
-    {
-      "path": "packages/api/src/opamp/controllers/opampController.ts",
-      "term": "hyperdx",
-      "snippet": "if (otelCollectorConfig.receivers['otlp/hyperdx'] == null) {",
-      "reason": "internal_identifier",
-      "note": "Token \"hyperdx\" allowed in the token map"
-    },
-    {
-      "path": "packages/api/src/opamp/controllers/opampController.ts",
-      "term": "hyperdx",
-      "snippet": "otelCollectorConfig.extensions['bearertokenauth/hyperdx'] = {",
-      "reason": "internal_identifier",
-      "note": "Token \"hyperdx\" allowed in the token map"
-    },
-    {
-      "path": "packages/api/src/opamp/controllers/opampController.ts",
-      "term": "hyperdx",
-      "snippet": "otelCollectorConfig.receivers['otlp/hyperdx'].protocols.grpc.auth = {",
-      "reason": "internal_identifier",
-      "note": "Token \"hyperdx\" allowed in the token map"
-    },
-    {
-      "path": "packages/api/src/opamp/controllers/opampController.ts",
-      "term": "hyperdx",
-      "snippet": "otelCollectorConfig.receivers['otlp/hyperdx'].protocols.http.auth = {",
-      "reason": "internal_identifier",
-      "note": "Token \"hyperdx\" allowed in the token map"
-    },
-    {
-      "path": "packages/api/src/opamp/controllers/opampController.ts",
-      "term": "hyperdx",
-      "snippet": "otelCollectorConfig.service.extensions = ['bearertokenauth/hyperdx'];",
-      "reason": "internal_identifier",
-      "note": "Token \"hyperdx\" allowed in the token map"
-    },
-    {
-      "path": "packages/api/src/opamp/controllers/opampController.ts",
-      "term": "hyperdx",
-      "snippet": "otelCollectorConfig.service.pipelines.traces.receivers.push('otlp/hyperdx');",
-      "reason": "internal_identifier",
-      "note": "Token \"hyperdx\" allowed in the token map"
-    },
-    {
-      "path": "packages/api/src/opamp/controllers/opampController.ts",
-      "term": "hyperdx",
-      "snippet": "throw new Error('otlp/hyperdx receiver not found');",
-      "reason": "internal_identifier",
-      "note": "Token \"hyperdx\" allowed in the token map"
-    },
-    {
       "path": "packages/api/src/routers/api/__tests__/iac.int.test.ts",
       "term": "url",
       "snippet": "https://abc.clickhouse.cloud:8443",
@@ -903,13 +658,6 @@
       "snippet": "email: 'local-user@hyperdx.io',",
       "reason": "internal_identifier",
       "note": "Token \"local-user@hyperdx.io\" allowed in the token map"
-    },
-    {
-      "path": "packages/api/src/routers/api/__tests__/team.int.test.ts",
-      "term": "hyperdx",
-      "snippet": "email: 'sa@service-accounts.hyperdx.invalid',",
-      "reason": "internal_identifier",
-      "note": "Token \"sa@service-accounts.hyperdx.invalid\" allowed in the token map"
     },
     {
       "path": "packages/api/src/routers/external-api/__tests__/connections.int.test.ts",
@@ -1206,20 +954,6 @@
       "note": "Token \"x-hyperdx-connection-id\" allowed in the token map"
     },
     {
-      "path": "packages/cli/AGENTS.md",
-      "term": "hyperdx",
-      "snippet": "Session is stored at `~/.config/hyperdx/cli/session.json` with mode `0o600`.",
-      "reason": "internal_identifier",
-      "note": "Token \"hyperdx\" allowed in the token map"
-    },
-    {
-      "path": "packages/cli/AGENTS.md",
-      "term": "hyperdx",
-      "snippet": "\u251c\u2500\u2500 config.ts        # Session persistence (~/.config/hyperdx/cli/session.json)",
-      "reason": "internal_identifier",
-      "note": "Token \"hyperdx\" allowed in the token map"
-    },
-    {
       "path": "packages/cli/CONTRIBUTING.md",
       "term": "hyperdx",
       "snippet": "# Session is saved to ~/.config/hyperdx/cli/session.json",
@@ -1248,20 +982,6 @@
       "note": "Token \"hyperdx\" allowed in the token map"
     },
     {
-      "path": "packages/cli/README.md",
-      "term": "hyperdx",
-      "snippet": "The session is saved to `~/.config/hyperdx/cli/session.json` (mode `0600`) and",
-      "reason": "internal_identifier",
-      "note": "Token \"hyperdx\" allowed in the token map"
-    },
-    {
-      "path": "packages/cli/src/cli.tsx",
-      "term": "hyperdx",
-      "snippet": "persisted in ${chalk.bold('~/.config/hyperdx/cli/session.json')} so it",
-      "reason": "internal_identifier",
-      "note": "Token \"hyperdx\" allowed in the token map"
-    },
-    {
       "path": "packages/cli/src/shared/useRowWhere.ts",
       "term": "hyperdx",
       "snippet": "ALIAS_WITH: '__hyperdx_alias_with',",
@@ -1278,9 +998,9 @@
     {
       "path": "packages/cli/src/utils/config.ts",
       "term": "hyperdx",
-      "snippet": "const CONFIG_DIR = path.join(os.homedir(), '.config', 'hyperdx', 'cli');",
+      "snippet": "const LEGACY_CONFIG_DIR = ['.config', 'hyperdx', 'cli'];",
       "reason": "internal_identifier",
-      "note": "Token \"hyperdx\" allowed in the token map"
+      "note": "Pre-1.0 CLI session path, read once to migrate the session (R1 B12)"
     },
     {
       "path": "packages/common-utils/package.json",
@@ -2842,41 +2562,6 @@
       "snippet": "docker/hyperdx/Dockerfile",
       "reason": "internal_identifier",
       "note": "Historical docker image directory name."
-    },
-    {
-      "path": "packages/otel-collector/README.md",
-      "term": "hyperdx",
-      "snippet": "ingests \u2014 works with `otlp/hyperdx` directly, and is most useful alongside",
-      "reason": "internal_identifier",
-      "note": "Token \"hyperdx\" allowed in the token map"
-    },
-    {
-      "path": "packages/otel-collector/README.md",
-      "term": "hyperdx",
-      "snippet": "receiver authenticates against the team API keys (same as `otlp/hyperdx`) via",
-      "reason": "internal_identifier",
-      "note": "Token \"hyperdx\" allowed in the token map"
-    },
-    {
-      "path": "packages/otel-collector/README.md",
-      "term": "hyperdx",
-      "snippet": "receivers: [otlp/hyperdx, span_metrics]",
-      "reason": "internal_identifier",
-      "note": "Token \"hyperdx\" allowed in the token map"
-    },
-    {
-      "path": "packages/otel-collector/README.md",
-      "term": "hyperdx",
-      "snippet": "receivers: [otlp/hyperdx, statsd]",
-      "reason": "internal_identifier",
-      "note": "Token \"hyperdx\" allowed in the token map"
-    },
-    {
-      "path": "packages/otel-collector/README.md",
-      "term": "hyperdx",
-      "snippet": "receivers: [otlp/hyperdx]",
-      "reason": "internal_identifier",
-      "note": "Token \"hyperdx\" allowed in the token map"
     },
     {
       "path": "scripts/__tests__/slots.test.mjs",

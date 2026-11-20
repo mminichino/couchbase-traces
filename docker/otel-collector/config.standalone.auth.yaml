@@ -2,7 +2,7 @@
 # Only included when OTLP_AUTH_TOKEN environment variable is set
 
 extensions:
-  bearertokenauth/hyperdx:
+  bearertokenauth/cbt:
     scheme: ""
     # The extension matches the full Authorization header value exactly, so
     # list the `Bearer `-prefixed forms that RFC 6750 clients send alongside
@@ -14,14 +14,14 @@ extensions:
       - BEARER ${env:OTLP_AUTH_TOKEN}
 
 receivers:
-  otlp/hyperdx:
+  otlp/cbt:
     protocols:
       grpc:
         auth:
-          authenticator: bearertokenauth/hyperdx
+          authenticator: bearertokenauth/cbt
       http:
         auth:
-          authenticator: bearertokenauth/hyperdx
+          authenticator: bearertokenauth/cbt
 
 service:
-  extensions: [health_check, bearertokenauth/hyperdx]
+  extensions: [health_check, bearertokenauth/cbt]

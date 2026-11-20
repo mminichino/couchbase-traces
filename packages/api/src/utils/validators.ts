@@ -12,6 +12,7 @@ import type { LookupFunction } from 'net';
 import { z } from 'zod';
 
 import * as config from '@/config';
+import { blockedBy, buildBlockedHosts } from '@/utils/blockedHosts';
 import {
   validateWebhookBodyTemplate,
   WebhookBodyValidationError,
@@ -99,26 +100,12 @@ const isAllowlistedWebhookHostname = (hostname: string): boolean =>
         hostname.endsWith(`.${allowedHostname}`)),
   );
 
-const getWebhookHostKey = (url: URL): string =>
-  `${normalizeWebhookHostname(url.hostname)}:${url.port}`;
-
-const BLOCKED_WEBHOOK_HOSTS = (() => {
-  const hosts = new Map<string, string>();
-  const configuredHosts = {
-    CLICKHOUSE_HOST: config.CLICKHOUSE_HOST,
-  };
-
-  for (const [configKey, configuredUrl] of Object.entries(configuredHosts)) {
-    if (!configuredUrl) continue;
-    try {
-      hosts.set(getWebhookHostKey(new URL(configuredUrl)), configKey);
-    } catch {
-      // Invalid service configuration is handled by the service that owns it.
-    }
-  }
-
-  return hosts;
-})();
+const BLOCKED_WEBHOOK_HOSTS = buildBlockedHosts({
+  CBT_METADATA_CONNSTR: config.CBT_METADATA_CONNSTR,
+  CBT_COUCHBASE_CONNSTR: config.CBT_COUCHBASE_CONNSTR,
+  DEFAULT_CONNECTIONS: config.DEFAULT_CONNECTIONS,
+  OTEL_EXPORTER_OTLP_ENDPOINT: config.OTEL_EXPORTER_OTLP_ENDPOINT,
+});
 
 export class WebhookUrlValidationError extends Error {
   // A 4xx status makes withRetry give up instead of retrying a blocked URL.
@@ -162,7 +149,7 @@ export function validateWebhookUrl(
     );
   }
 
-  if (BLOCKED_WEBHOOK_HOSTS.has(getWebhookHostKey(url))) {
+  if (blockedBy(BLOCKED_WEBHOOK_HOSTS, url)) {
     throw new WebhookUrlValidationError(
       `Webhook attempting to query disallowed route.`,
     );
