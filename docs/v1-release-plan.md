@@ -386,6 +386,8 @@ pushes to `main` directly.
 | D5    | Defects: onboarding checklist                             | ClickHouse `system.tables` row-count probe sent to Couchbase on every page (section 9.1)                                                                                  | S    | R1                            |
 | D6    | Defects: alert connection resolution (investigate)        | 21 alert runs fail with "A connection id is required for Couchbase queries" (section 9.1)                                                                                 | S    | R1                            |
 | D7    | Defects: hidden formula operands returned as null columns | Found in D1 (section 9.1)                                                                                                                                                 | S    | D1                            |
+| D8    | Defects: MCP reads miss freshly written rows (flaky)      | Found in D2 (section 9.1)                                                                                                                                                 | S    | D2                            |
+| D9    | Defects: builder expressions with `Map['k']` syntax       | Found in D2 (section 9.1)                                                                                                                                                 | M    | D2                            |
 | R2a   | Port deferred int suites: internal and external API       | B1 (10 suites: `routers/api/{dashboard,iac,sources,connections}`, `routers/external-api/{charts,search,sources,sources-crud,connections}`, `middleware/queryAttribution`) | L    | D1                            |
 | R2b   | Port deferred int suites: alerts                          | B1 (5 suites: `checkAlerts`, `multiChannelAlerts`, `renderAlertTemplate`, `singleInvocationAlert`, `providers/default`; 335 tests, 93 failing per R0)                     | L    | R2c, D1, D4, D6               |
 | R2c   | Port deferred int suites: MCP                             | B1 (8 suites under `mcp/__tests__/`; 287 tests, 139 failing per R0)                                                                                                       | L    | R2a, D1–D4                    |
@@ -575,6 +577,38 @@ Placement (Q12): after D6, not pulled forward.
 Defects R2 finds while porting suites. Each gets its own PR, merged before the
 R2 sub-phase that found it.
 
+#### D8: MCP query reads can miss freshly written rows (found in D2, size S)
+
+Evidence: `mcp/__tests__/queryTool` `cbt_table` "applies having to the groups"
+and "applies having on shape \"pie\"" each failed once in D2's runs and passed
+on re-run with the same code: group `c` (3 rows) was missing. The rendered SQL++
+is correct. The suite's seed helpers return before the index has the rows, and
+MCP chart queries run with the default `not_bounded` scan consistency.
+
+Fix: decide whether the seed helpers wait (request_plus probe, as the
+common-utils live suites do) or the MCP tools use `request_plus`
+(`MCP_QUERY_SCAN_CONSISTENCY` exists in `helpers.ts` but chart queries do not
+pass it). Acceptance: the `cbt_table` having group passes 10 runs in a row.
+Depends on: D2. Size: S. Placement: before R2c.
+
+#### D9: Builder expressions with ClickHouse map syntax (found in D2, size M)
+
+Evidence: the builder renderer passes `SpanAttributes['k']` through unchanged in
+select `valueExpression`, `groupBy` and SQL `where`, and SQL++ reads `['k']` as
+an array index (NULL on an object), so those tiles return empty groups or no
+rows. The column alias for a map groupBy is built by splitting on dots
+(`` `SpanAttributes['http`.`route']` ``). D2 rewrites the form only in
+`cbt_event_patterns` bodyExpression and its where. The app, dashboard presets
+and upstream tests generate the bracket form, so the MCP builder docs still
+teach it.
+
+Fix: translate `Map['k']` to `` Map.`k` `` in the SQL++ renderer (one helper for
+select, groupBy, where, having and orderBy; string literals untouched) and alias
+map groupBy columns by the original expression. Then switch the MCP builder docs
+to whatever form the renderer documents. Acceptance: a live test groups and
+filters by `SpanAttributes['http.route']` and gets the seeded groups. Depends
+on: D2. Size: M. Placement: decide (Q14).
+
 ### R0: Triage and quick fixes
 
 1. Run each of the 23 deferred suites alone on the CI compose stack
@@ -721,9 +755,9 @@ Acceptance: section 11 items 9–14.
 
 ## 10. Decisions
 
-Q1–Q10 were answered by the user on 2026-11-19, Q11–Q13 on 2026-11-20. No open
-questions remain for the release as a whole; per-phase questions are raised in
-that phase.
+Q1–Q10 were answered by the user on 2026-11-19, Q11–Q13 on 2026-11-20. Q14–Q15
+are open. No other open questions remain for the release as a whole; per-phase
+questions are raised in that phase.
 
 | ID  | Question                                                                                                 | Decision                                                                                                                                                           | Affects        |
 | --- | -------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------ | -------------- |
@@ -740,6 +774,13 @@ that phase.
 | Q11 | B17 "legacy store" text (2026-11-20)                                                                     | Blocks 1.0 as its own phase D2b, after D2                                                                                                                          | D2b            |
 | Q12 | Where D7 runs (2026-11-20)                                                                               | After D6, as section 9 orders it; not pulled forward                                                                                                               | D7             |
 | Q13 | External charts "process series from different sources" and the 8 empty log-series failures (2026-11-20) | Stay in R2a; no separate defect phase. R2a finds the cause, and if it is a product defect fixes it there                                                           | R2a            |
+
+Open (raised in D2, 2026-11-20):
+
+| #   | Question                                                                            | Options                                                                                                        | Affects |
+| --- | ----------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------- | ------- |
+| Q14 | Where D9 (builder `Map['k']` syntax) runs                                           | Before D2b (D2b then rewrites the builder docs once), or with D3–D7                                            | D9, D2b |
+| Q15 | D8 fix: wait in the test seed helpers, or run MCP chart queries with `request_plus` | Seed helpers only (no product change), or `request_plus` for MCP (read-your-writes for agents, slower queries) | D8      |
 
 ## 11. Acceptance criteria (v1.0.0 is done when)
 
