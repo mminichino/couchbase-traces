@@ -8,6 +8,7 @@ import type { BuilderChartConfigWithOptDateRange } from '@/types';
 import {
   dimGroupBy,
   dimProject,
+  dimProjectFrom,
   dimSelect,
   groupBySql,
   type HistInput,
@@ -162,13 +163,7 @@ function expHistogramQuantile(
   const deltasSql = `${cumBranch} UNION ALL ${deltaBranch}`;
 
   // Qualify dim columns as nd.* — UNNEST makes bare `group` ambiguous.
-  const dimFromNd = [
-    bucket ? `nd.${quoteIdent(FIXED_TIME_BUCKET_EXPR_ALIAS)}` : null,
-    group ? `nd.${quoteIdent(GROUP_ALIAS)}` : null,
-  ]
-    .filter(Boolean)
-    .map(c => `${c}, `)
-    .join('');
+  const dimFromNd = dimProjectFrom('nd', bucket, group);
   const bucketRows = `SELECT ${dimFromNd}nd.Scale AS Scale, 0 AS side, 0 AS idx, nd.ZeroCount AS c FROM normalized_deltas AS nd UNION ALL SELECT ${dimFromNd}nd.Scale AS Scale, 1 AS side, p[0] AS idx, p[1] AS c FROM normalized_deltas AS nd UNNEST nd.pos AS p UNION ALL SELECT ${dimFromNd}nd.Scale AS Scale, -1 AS side, p[0] AS idx, p[1] AS c FROM normalized_deltas AS nd UNNEST nd.neg AS p`;
   const summedInner = `SELECT ${dimOut}MIN(Scale) AS Scale, side, idx, SUM(c) AS c FROM bucket_rows GROUP BY ${[
     bucket ? quoteIdent(FIXED_TIME_BUCKET_EXPR_ALIAS) : null,

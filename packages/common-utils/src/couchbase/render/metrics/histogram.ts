@@ -1,12 +1,10 @@
 import { FIXED_TIME_BUCKET_EXPR_ALIAS } from '@/core/chartConfig';
 import { GROUP_ALIAS } from '@/core/histogram';
-import {
-  convertDateRangeToGranularityString,
-  getFirstTimestampValueExpression,
-} from '@/core/utils';
+import { getFirstTimestampValueExpression } from '@/core/utils';
 import { CouchbaseUnsupportedError } from '@/couchbase/errors';
 import { histogramQuantile } from '@/couchbase/fn/quantile';
 import { lag } from '@/couchbase/fn/scalar';
+import { resolveGranularityInterval } from '@/couchbase/render/granularity';
 import { timestampFormatOf } from '@/couchbase/render/select';
 import { keyspace, quoteIdent } from '@/couchbase/sqlpp';
 import {
@@ -44,19 +42,12 @@ export function seriesKeyExpr(): string {
 export function timeBucketSql(
   chartConfig: BuilderChartConfigWithOptDateRange,
 ): string | undefined {
-  if (chartConfig.granularity == null) return undefined;
   const tsCol = getFirstTimestampValueExpression(
     chartConfig.timestampValueExpression || 'TimeUnix',
   );
-  const interval =
-    chartConfig.granularity === 'auto' && chartConfig.dateRange
-      ? convertDateRangeToGranularityString(
-          chartConfig.dateRange,
-          undefined,
-          chartConfig.minGranularitySeconds,
-        )
-      : chartConfig.granularity;
-  const gran = parseGranularity(String(interval));
+  const interval = resolveGranularityInterval(chartConfig);
+  if (interval == null) return undefined;
+  const gran = parseGranularity(interval);
   const format = timestampFormatOf(chartConfig);
   // Bucket over the bare column (CTE rows are not aliased as d).
   return cbTimeBucketExpr(tsCol, format, gran).statement;
@@ -109,6 +100,26 @@ export function dimProject(
   const parts: string[] = [];
   if (bucket) parts.push(quoteIdent(FIXED_TIME_BUCKET_EXPR_ALIAS));
   if (group) parts.push(quoteIdent(GROUP_ALIAS));
+  return parts.length ? `${parts.join(', ')}, ` : '';
+}
+
+/**
+ * `dimProject` read through `from` (`s.\`group\` AS \`group\``). Required
+ * whenever the FROM clause has an UNNEST: with two FROM terms SQL++ rejects
+ * a bare column as an ambiguous reference.
+ */
+export function dimProjectFrom(
+  from: string,
+  bucket: string | undefined,
+  group: string | undefined,
+): string {
+  const parts: string[] = [];
+  for (const [on, name] of [
+    [bucket, FIXED_TIME_BUCKET_EXPR_ALIAS],
+    [group, GROUP_ALIAS],
+  ] as const) {
+    if (on) parts.push(`${from}.${quoteIdent(name)} AS ${quoteIdent(name)}`);
+  }
   return parts.length ? `${parts.join(', ')}, ` : '';
 }
 
@@ -212,11 +223,12 @@ function translateHistogramQuantileCouchbase(
   const where = sourceWhereClause(chartConfig, nameFilter);
 
   const sourceSql = `SELECT ${dimSelect(bucket, group)}${sk} AS AttributesHash, d.ExplicitBounds AS ExplicitBounds, ${rates} AS rates FROM ${ks} AS d WHERE ${where.sql}`;
-  // Alias source as s so ExplicitBounds/rates are not ambiguous under UNNEST.
+  // Alias source as s: under UNNEST every source column, the time bucket
+  // and group included, must be read through it.
   // OTel histograms have N+1 bucket counts for N explicit bounds; the last
   // bucket's upper bound is +Inf. Use a large sentinel so quantile math can
   // interpolate into that bucket (NULL breaks histogramQuantile).
-  const flatSql = `SELECT ${dimProject(bucket, group)}i, IFMISSINGORNULL(s.ExplicitBounds[i], 1e12) AS bound, TONUMBER(IFNULL(s.rates[i], 0)) AS rate FROM source AS s UNNEST ARRAY_RANGE(0, ARRAY_LENGTH(s.rates)) AS i`;
+  const flatSql = `SELECT ${dimProjectFrom('s', bucket, group)}i, IFMISSINGORNULL(s.ExplicitBounds[i], 1e12) AS bound, TONUMBER(IFNULL(s.rates[i], 0)) AS rate FROM source AS s UNNEST ARRAY_RANGE(0, ARRAY_LENGTH(s.rates)) AS i`;
   const dimKeys = [
     bucket ? quoteIdent(FIXED_TIME_BUCKET_EXPR_ALIAS) : null,
     group ? quoteIdent(GROUP_ALIAS) : null,
