@@ -14194,6 +14194,37 @@ __metadata:
   languageName: node
   linkType: hard
 
+"couchbase-traces@workspace:.":
+  version: 0.0.0-use.local
+  resolution: "couchbase-traces@workspace:."
+  dependencies:
+    "@changesets/cli": "npm:^2.26.2"
+    "@dotenvx/dotenvx": "npm:^1.51.1"
+    "@eslint/js": "npm:^9.39.1"
+    "@types/ungap__structured-clone": "npm:^1.2.0"
+    "@ungap/structured-clone": "npm:^1.3.0"
+    babel-plugin-react-compiler: "npm:^1.0.0"
+    concurrently: "npm:^9.1.2"
+    dotenv: "npm:^16.4.7"
+    dotenv-cli: "npm:^8.0.0"
+    dotenv-expand: "npm:^12.0.1"
+    eslint: "npm:^9.39.1"
+    eslint-config-prettier: "npm:^9.1.0"
+    eslint-plugin-n: "npm:^16.4.0"
+    eslint-plugin-prettier: "npm:^5.2.1"
+    eslint-plugin-security: "npm:^3.0.1"
+    eslint-plugin-simple-import-sort: "npm:^12.1.1"
+    husky: "npm:^8.0.3"
+    jscpd: "npm:5.1.2"
+    knip: "npm:^6.19.0"
+    lint-staged: "npm:^13.1.2"
+    nx: "npm:23.1.1"
+    prettier: "npm:3.3.3"
+    tslib: "npm:^2.6.0"
+    typescript-eslint: "npm:^8.46.0"
+  languageName: unknown
+  linkType: soft
+
 "couchbase@npm:4.7.2":
   version: 4.7.2
   resolution: "couchbase@npm:4.7.2"
@@ -18635,37 +18666,6 @@ __metadata:
   checksum: 10c0/6722591771c657b91a1abb082e07f6547eca79144d678e586828ae806499d90dce2a6aee08b66183fd8b085f19d20e0990a2ad396961746b4c8bd5bdb619d668
   languageName: node
   linkType: hard
-
-"hyperdx@workspace:.":
-  version: 0.0.0-use.local
-  resolution: "hyperdx@workspace:."
-  dependencies:
-    "@changesets/cli": "npm:^2.26.2"
-    "@dotenvx/dotenvx": "npm:^1.51.1"
-    "@eslint/js": "npm:^9.39.1"
-    "@types/ungap__structured-clone": "npm:^1.2.0"
-    "@ungap/structured-clone": "npm:^1.3.0"
-    babel-plugin-react-compiler: "npm:^1.0.0"
-    concurrently: "npm:^9.1.2"
-    dotenv: "npm:^16.4.7"
-    dotenv-cli: "npm:^8.0.0"
-    dotenv-expand: "npm:^12.0.1"
-    eslint: "npm:^9.39.1"
-    eslint-config-prettier: "npm:^9.1.0"
-    eslint-plugin-n: "npm:^16.4.0"
-    eslint-plugin-prettier: "npm:^5.2.1"
-    eslint-plugin-security: "npm:^3.0.1"
-    eslint-plugin-simple-import-sort: "npm:^12.1.1"
-    husky: "npm:^8.0.3"
-    jscpd: "npm:5.1.2"
-    knip: "npm:^6.19.0"
-    lint-staged: "npm:^13.1.2"
-    nx: "npm:23.1.1"
-    prettier: "npm:3.3.3"
-    tslib: "npm:^2.6.0"
-    typescript-eslint: "npm:^8.46.0"
-  languageName: unknown
-  linkType: soft
 
 "iconv-lite@npm:0.6.3, iconv-lite@npm:^0.6.2":
   version: 0.6.3

@@ -134,14 +134,14 @@ describe('validators', () => {
   });
 
   const loadValidatorsWithConfig = (config: {
-    clickhouseHost?: string;
+    couchbaseConnstr?: string;
     hostnameAllowlist?: string;
   }): typeof validators => {
     let isolatedValidators: typeof validators | undefined;
 
     jest.isolateModules(() => {
       jest.doMock('@/config', () => ({
-        CLICKHOUSE_HOST: config.clickhouseHost,
+        CBT_COUCHBASE_CONNSTR: config.couchbaseConnstr,
         WEBHOOK_HOSTNAME_ALLOWLIST: config.hostnameAllowlist ?? '',
       }));
 
@@ -229,18 +229,23 @@ describe('validators', () => {
       );
     });
 
-    it('blocks an exact configured host, including its port', () => {
+    it('blocks Couchbase service ports on a configured data-store host, even when allowlisted', () => {
       const isolatedValidators = loadValidatorsWithConfig({
-        clickhouseHost: 'http://localhost:8123',
+        couchbaseConnstr: 'couchbase://localhost',
         hostnameAllowlist: 'localhost',
       });
 
-      expect(() =>
-        isolatedValidators.validateWebhookUrl({
-          service: WebhookService.Generic,
-          url: 'http://localhost:8123/webhook',
-        }),
-      ).toThrow('Webhook attempting to query disallowed route.');
+      for (const url of [
+        'http://localhost:8091/pools',
+        'https://localhost:18093/query/service',
+      ]) {
+        expect(() =>
+          isolatedValidators.validateWebhookUrl({
+            service: WebhookService.Generic,
+            url,
+          }),
+        ).toThrow('Webhook attempting to query disallowed route.');
+      }
 
       expect(() =>
         isolatedValidators.validateWebhookUrl({

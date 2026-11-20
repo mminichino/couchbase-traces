@@ -1,7 +1,6 @@
 import { SourceKind } from '@couchbase-traces/common-utils/dist/types';
 import { Client } from '@modelcontextprotocol/sdk/client/index.js';
 
-import * as config from '@/config';
 import {
   DEFAULT_DATABASE,
   DEFAULT_TRACES_TABLE,
@@ -11,6 +10,7 @@ import {
 import { createTestClient } from '@/mcp/__tests__/mcpTestUtils';
 import { McpContext } from '@/mcp/tools/types';
 import { seedConnection, seedSource } from '@/metadata/testing/seed';
+import { TEST_COUCHBASE_CONNECTION } from '@/testCouchbaseConnection';
 
 /**
  * Shared setup/teardown for all dashboard MCP tool tests.
@@ -52,9 +52,9 @@ export function setupDashboardTests() {
       kind: 'couchbase',
       team: ctx.team._id,
       name: 'Default',
-      host: config.CLICKHOUSE_HOST,
-      username: config.CLICKHOUSE_USER,
-      password: config.CLICKHOUSE_PASSWORD,
+      host: TEST_COUCHBASE_CONNECTION.host,
+      username: TEST_COUCHBASE_CONNECTION.username,
+      password: TEST_COUCHBASE_CONNECTION.password,
     });
 
     ctx.traceSource = await seedSource({

@@ -509,7 +509,7 @@ describe('team router', () => {
       // OSS allows a single team, so plant a key under a different team id.
       const other = await seedUser({
         team: newId(),
-        email: 'sa@service-accounts.hyperdx.invalid',
+        email: 'sa@service-accounts.couchbase-traces.invalid',
         name: 'other team',
         isVirtual: true,
         createdBy: newId(),

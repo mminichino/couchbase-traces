@@ -68,7 +68,7 @@ type OtlpHttpCouchbaseExporter = {
 type CollectorConfig = {
   extensions: Record<string, any>;
   receivers: {
-    'otlp/hyperdx'?: {
+    'otlp/cbt'?: {
       protocols: {
         grpc: {
           endpoint: string;
@@ -182,7 +182,7 @@ export const buildOtelCollectorConfig = (
     extensions: {},
     receivers: {
       nop: null,
-      'otlp/hyperdx': {
+      'otlp/cbt': {
         protocols: {
           grpc: {
             endpoint: '0.0.0.0:4317',
@@ -277,32 +277,28 @@ export const buildOtelCollectorConfig = (
     },
   };
   if (apiKeys && apiKeys.length > 0) {
-    // attach otlp/hyperdx receiver
-    otelCollectorConfig.service.pipelines.traces.receivers.push('otlp/hyperdx');
-    otelCollectorConfig.service.pipelines.metrics.receivers.push(
-      'otlp/hyperdx',
-    );
-    otelCollectorConfig.service.pipelines['logs/in'].receivers.push(
-      'otlp/hyperdx',
-    );
+    // attach otlp/cbt receiver
+    otelCollectorConfig.service.pipelines.traces.receivers.push('otlp/cbt');
+    otelCollectorConfig.service.pipelines.metrics.receivers.push('otlp/cbt');
+    otelCollectorConfig.service.pipelines['logs/in'].receivers.push('otlp/cbt');
 
     if (collectorAuthenticationEnforced) {
-      if (otelCollectorConfig.receivers['otlp/hyperdx'] == null) {
+      if (otelCollectorConfig.receivers['otlp/cbt'] == null) {
         // should never happen
-        throw new Error('otlp/hyperdx receiver not found');
+        throw new Error('otlp/cbt receiver not found');
       }
 
-      otelCollectorConfig.extensions['bearertokenauth/hyperdx'] = {
+      otelCollectorConfig.extensions['bearertokenauth/cbt'] = {
         scheme: '',
         tokens: bearerTokenVariants(apiKeys),
       };
-      otelCollectorConfig.receivers['otlp/hyperdx'].protocols.grpc.auth = {
-        authenticator: 'bearertokenauth/hyperdx',
+      otelCollectorConfig.receivers['otlp/cbt'].protocols.grpc.auth = {
+        authenticator: 'bearertokenauth/cbt',
       };
-      otelCollectorConfig.receivers['otlp/hyperdx'].protocols.http.auth = {
-        authenticator: 'bearertokenauth/hyperdx',
+      otelCollectorConfig.receivers['otlp/cbt'].protocols.http.auth = {
+        authenticator: 'bearertokenauth/cbt',
       };
-      otelCollectorConfig.service.extensions = ['bearertokenauth/hyperdx'];
+      otelCollectorConfig.service.extensions = ['bearertokenauth/cbt'];
     }
   }
 
@@ -322,11 +318,11 @@ export const buildOtelCollectorConfig = (
     otelCollectorConfig.service.pipelines['logs/in'].receivers.push('datadog');
 
     // Authenticate Datadog agents with the same per-team API keys as
-    // otlp/hyperdx. DD agents send their key in the `DD-API-KEY` header
+    // otlp/cbt. DD agents send their key in the `DD-API-KEY` header
     // (set via DD_API_KEY on the agent), so the bearer-token extension is
     // configured to validate that header instead of `Authorization`. Only
     // attached when team API keys exist and collector authentication is
-    // enforced, mirroring otlp/hyperdx — otherwise the receiver stays
+    // enforced, mirroring otlp/cbt — otherwise the receiver stays
     // unauthenticated.
     if (apiKeys && apiKeys.length > 0 && collectorAuthenticationEnforced) {
       otelCollectorConfig.extensions['bearertokenauth/datadog'] = {

@@ -745,7 +745,7 @@ team
     `
 About:
   Sets the active team for subsequent CLI commands. The choice is
-  persisted in ${chalk.bold('~/.config/hyperdx/cli/session.json')} so it
+  persisted in ${chalk.bold('~/.config/couchbase-traces/cli/session.json')} so it
   survives across CLI invocations.
 
   The CLI sends the chosen team ID as an ${chalk.bold('x-hdx-team')} HTTP

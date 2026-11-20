@@ -9,19 +9,19 @@
 # to) a long-lived static token -- see config.standalone.auth.yaml.
 
 extensions:
-  oidc/hyperdx:
+  oidc/cbt:
     issuer_url: ${env:OIDC_ISSUER_URL}
     audience: ${env:OIDC_AUDIENCE}
 
 receivers:
-  otlp/hyperdx:
+  otlp/cbt:
     protocols:
       grpc:
         auth:
-          authenticator: oidc/hyperdx
+          authenticator: oidc/cbt
       http:
         auth:
-          authenticator: oidc/hyperdx
+          authenticator: oidc/cbt
 
 service:
-  extensions: [health_check, oidc/hyperdx]
+  extensions: [health_check, oidc/cbt]

@@ -1,4 +1,3 @@
-import * as config from '@/config';
 import { getLoggedInAgent, getServer } from '@/fixtures';
 import { newId } from '@/metadata/ids';
 import {
@@ -6,6 +5,7 @@ import {
   findConnection,
   seedConnection,
 } from '@/metadata/testing/seed';
+import { TEST_COUCHBASE_CONNECTION } from '@/testCouchbaseConnection';
 
 describe('connections router', () => {
   const server = getServer();
@@ -29,7 +29,7 @@ describe('connections router', () => {
       kind: 'couchbase',
       team: team._id,
       name: 'My Team Connection',
-      host: config.CLICKHOUSE_HOST,
+      host: TEST_COUCHBASE_CONNECTION.host,
       username: 'default',
       password: '',
     });
@@ -37,7 +37,7 @@ describe('connections router', () => {
       kind: 'couchbase',
       team: newId(),
       name: 'Other Team Connection',
-      host: config.CLICKHOUSE_HOST,
+      host: TEST_COUCHBASE_CONNECTION.host,
       username: 'default',
       password: '',
     });
@@ -73,7 +73,7 @@ describe('connections router', () => {
       kind: 'couchbase',
       team: team._id,
       name: 'No-prom',
-      host: config.CLICKHOUSE_HOST,
+      host: TEST_COUCHBASE_CONNECTION.host,
       username: 'default',
       password: '',
     });
@@ -114,7 +114,7 @@ describe('connections router', () => {
         id: created._id.toString(),
         name: 'Prom',
         kind: 'couchbase',
-        host: config.CLICKHOUSE_HOST,
+        host: TEST_COUCHBASE_CONNECTION.host,
         username: 'default',
         password: '',
         isPrometheusEndpoint: false,
@@ -122,7 +122,7 @@ describe('connections router', () => {
       .expect(200);
 
     const stored = await findConnection(created._id);
-    expect(stored?.host).toBe(config.CLICKHOUSE_HOST);
+    expect(stored?.host).toBe(TEST_COUCHBASE_CONNECTION.host);
     expect(stored?.isPrometheusEndpoint).toBe(false);
   });
 });

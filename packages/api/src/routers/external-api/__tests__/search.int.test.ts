@@ -1,7 +1,6 @@
 import { SourceKind } from '@couchbase-traces/common-utils/dist/types';
 import request from 'supertest';
 
-import * as config from '@/config';
 import {
   bulkInsertLogs,
   DEFAULT_DATABASE,
@@ -17,6 +16,7 @@ import {
   seedConnection,
   seedSource,
 } from '@/metadata/testing/seed';
+import { TEST_COUCHBASE_CONNECTION } from '@/testCouchbaseConnection';
 
 const DEFAULT_END_TIME = Math.floor(Date.now() / 60000) * 60000;
 const DEFAULT_START_TIME = DEFAULT_END_TIME - 3600 * 1000;
@@ -43,9 +43,9 @@ describe('External API v2 Search', () => {
       kind: 'couchbase',
       team: team._id,
       name: 'Default',
-      host: config.CLICKHOUSE_HOST,
-      username: config.CLICKHOUSE_USER,
-      password: config.CLICKHOUSE_PASSWORD,
+      host: TEST_COUCHBASE_CONNECTION.host,
+      username: TEST_COUCHBASE_CONNECTION.username,
+      password: TEST_COUCHBASE_CONNECTION.password,
     });
 
     logSource = await seedSource({
@@ -211,9 +211,9 @@ describe('External API v2 Search', () => {
       kind: 'couchbase',
       team,
       name: 'Dead Connection',
-      host: config.CLICKHOUSE_HOST,
-      username: config.CLICKHOUSE_USER,
-      password: config.CLICKHOUSE_PASSWORD,
+      host: TEST_COUCHBASE_CONNECTION.host,
+      username: TEST_COUCHBASE_CONNECTION.username,
+      password: TEST_COUCHBASE_CONNECTION.password,
     });
     const orphanSource = await seedSource({
       kind: SourceKind.Log,
@@ -541,9 +541,9 @@ describe('External API v2 Search', () => {
       kind: 'couchbase',
       team: otherTeamId,
       name: 'Other Team Connection',
-      host: config.CLICKHOUSE_HOST,
-      username: config.CLICKHOUSE_USER,
-      password: config.CLICKHOUSE_PASSWORD,
+      host: TEST_COUCHBASE_CONNECTION.host,
+      username: TEST_COUCHBASE_CONNECTION.username,
+      password: TEST_COUCHBASE_CONNECTION.password,
     });
     const otherSource = await seedSource({
       kind: SourceKind.Log,

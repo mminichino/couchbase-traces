@@ -76,6 +76,7 @@ no releases, and no git tags exist on `origin`).
 | B14 | Stale "pending user decisions" in port-notes                                                 | `docs/port-notes.md:876-879`: local mode was removed in Phase 10 (`packages/app/src/config.ts` comment), and publishing the all-in-one image is undecided                                                                                                                                                                                                                                                                                                                   | Close the local-mode item; record the all-in-one decision (Q1: not published for 1.0)                                                                                                                                                                                                                                                                                                            | S                        | none              |
 | B15 | Acceptance report predates Mongo elimination                                                 | `docs/acceptance.md` generated 2026-11-18 at `6599628`, 8 commits behind `main`; its K1 output still logs a Mongoose warning                                                                                                                                                                                                                                                                                                                                                | Re-run `port/acceptance/run.mjs` (all checks A1–M2) at the release-candidate commit with `--final`, record the CI run                                                                                                                                                                                                                                                                            | M                        | R1–R6             |
 | B16 | Pinned Couchbase image may not be the latest 8.0.x maintenance release                       | `couchbase/server:enterprise-8.0.3` in `.env:22`, `Makefile`, `port/couchbase-test/docker-compose.yml`; AGENTS.md requires the latest 8.0.x on Docker Hub                                                                                                                                                                                                                                                                                                                   | Check Docker Hub in R0; bump if newer, record in port-notes                                                                                                                                                                                                                                                                                                                                      | S                        | none              |
+| B17 | User-visible "legacy store" text (a mechanical rebrand of "ClickHouse")                      | Found in R1: 367 hits in 156 non-test files, e.g. CLI help `cbt connections` "List legacy store connections" (`packages/cli/src/cli.tsx:959`), `packages/api/openapi.json` (23), MCP tool and prompt text (`mcp/tools/query/table.ts`, `mcp/prompts/dashboards/content.ts:974` "legacy store parameterized syntax")                                                                                                                                                         | Rewrite user-facing strings to "Couchbase" or "data store"; where the text teaches ClickHouse syntax, fix it with D2. Leave code comments to P4. Needs a decision: blocker, or post-1.0                                                                                                                                                                                                          | M                        | user decision     |
 
 ### 2.2 Post-1.0
 
@@ -377,15 +378,139 @@ pushes to `main` directly.
 | ----- | --------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---- | ----------------------------- |
 | R0    | Triage and quick fixes                              | B3, B4, B16, B14 (local-mode half), P5 (lower caps to measured)                                                                                                           | M    | —                             |
 | R1    | Correctness and branding fixes                      | B5, B9, B11, B12, P2                                                                                                                                                      | M    | —                             |
-| R2a   | Port deferred int suites: internal and external API | B1 (10 suites: `routers/api/{dashboard,iac,sources,connections}`, `routers/external-api/{charts,search,sources,sources-crud,connections}`, `middleware/queryAttribution`) | L    | R0                            |
-| R2b   | Port deferred int suites: alerts                    | B1 (5 suites: `checkAlerts`, `multiChannelAlerts`, `renderAlertTemplate`, `singleInvocationAlert`, `providers/default`; 335 tests, 93 failing per R0)                     | L    | R0                            |
-| R2c   | Port deferred int suites: MCP                       | B1 (8 suites under `mcp/__tests__/`; 287 tests, 139 failing per R0)                                                                                                       | L    | R0                            |
+| D1    | Defects: SQL++ chart renderer                       | `granularity: 'auto'` throw; duplicate `__hdx_time_bucket` alias; `HAVING` on a select alias; ambiguous `group` alias (section 9.1)                                       | M    | R1                            |
+| D2    | Defects: MCP query and analysis tools               | `count()`, `startsWith`, `toUnixTimestamp64Milli` in event patterns, denoise, emerging signals, service health; ClickHouse examples in tool descriptions (section 9.1)    | M    | D1                            |
+| D3    | Defects: MCP trace tools                            | ClickHouse `{x:Type}` params, `toDateTime64`, `count()`, `toDate` in `waterfall.ts` and `breakdown.ts` (section 9.1)                                                      | M    | D1                            |
+| D4    | Defects: schema inference on empty collections      | INFER "No documents found" fails describe tools and alert column lookups (section 9.1)                                                                                    | S    | R1                            |
+| D5    | Defects: onboarding checklist                       | ClickHouse `system.tables` row-count probe sent to Couchbase on every page (section 9.1)                                                                                  | S    | R1                            |
+| D6    | Defects: alert connection resolution (investigate)  | 21 alert runs fail with "A connection id is required for Couchbase queries" (section 9.1)                                                                                 | S    | R1                            |
+| R2a   | Port deferred int suites: internal and external API | B1 (10 suites: `routers/api/{dashboard,iac,sources,connections}`, `routers/external-api/{charts,search,sources,sources-crud,connections}`, `middleware/queryAttribution`) | L    | D1                            |
+| R2b   | Port deferred int suites: alerts                    | B1 (5 suites: `checkAlerts`, `multiChannelAlerts`, `renderAlertTemplate`, `singleInvocationAlert`, `providers/default`; 335 tests, 93 failing per R0)                     | L    | R2c, D1, D4, D6               |
+| R2c   | Port deferred int suites: MCP                       | B1 (8 suites under `mcp/__tests__/`; 287 tests, 139 failing per R0)                                                                                                       | L    | R2a, D1–D4                    |
 | R3    | Service map node latency                            | B6                                                                                                                                                                        | M    | —                             |
-| R4    | Fix failing Playwright specs on the Couchbase stack | B2 (spec and app fixes)                                                                                                                                                   | L    | R0, R2a                       |
+| R4    | Fix failing Playwright specs on the Couchbase stack | B2 (spec and app fixes)                                                                                                                                                   | L    | R2a, D5                       |
 | R5    | Re-enable full-stack E2E on Main                    | B2 (restore `e2e-tests` `workflow_call` and report aggregator in `main.yml`)                                                                                              | S    | R4                            |
 | R6    | Release tooling                                     | B7, B8, B10; delete `version.sh`; add `ingest` to changesets `fixed`                                                                                                      | M    | —                             |
-| R7    | Docs and acceptance re-run                          | B13, B14, B15; `docs/release.md`                                                                                                                                          | M    | R1–R6                         |
+| R7    | Docs and acceptance re-run                          | B13, B14, B15; `docs/release.md`                                                                                                                                          | M    | R1–R6, D1–D6                  |
 | R8    | Release v1.0.0                                      | version bump, changelog, tag, images, GitHub release                                                                                                                      | S    | R7, explicit user instruction |
+
+Order (user decision 2026-11-19, after R0): R1, then the defect-fix phases
+D1–D6, then R2a, R2c, R2b. R3 and R6 are independent and can land at any point.
+Product defects found in R0 get their own PRs ahead of the test-porting phases.
+R2 no longer fixes product bugs; a defect R2 finds while porting gets its own PR
+first (D7 onward).
+
+### 9.1 Defect-fix phases (D1–D6)
+
+Each D phase is one PR on an `mm--v1-dN-…` branch. Evidence is from the R0 runs
+(section 14). In every D phase:
+
+- **Proof.** Locally remove the affected suites from `deferredChIntSuites`, run
+  them, and list in the PR which previously failing tests now pass and which
+  still fail. Remaining failures must be class T or U, not this defect. The
+  suites stay on the deferred list until their R2 phase.
+- **Tests.** Add unit tests (renderer output or tool SQL) that fail before the
+  fix and pass after. They run in `make ci-unit`, so each fix is guarded before
+  R2 re-enables the integration suites.
+- **Result shape.** Keep the upstream result shape (rule 6). If SQL++ cannot
+  produce it, stop and ask (rule 9).
+
+#### D1: SQL++ chart renderer (size M)
+
+Scope: `packages/common-utils/src/couchbase/render/*` and
+`packages/common-utils/src/couchbase/time.ts`.
+
+| Defect                        | Evidence (R0)                                                                                                                                                                                    | Fix                                                                                                                                                                |
+| ----------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `granularity: 'auto'` throws  | `parseGranularity` (`couchbase/time.ts:31`) only accepts `"<n> <unit>"`. `POST /api/v2/charts/series` returned 500 "Unsupported granularity: auto" 14 times; `cbt_query_tile` fails the same way | Resolve `auto` from the date range before rendering, the way upstream `convertDateRangeToGranularityString` does. `parseGranularity` keeps rejecting anything else |
+| Duplicate `__hdx_time_bucket` | "Ambiguous reference to field '\_\_hdx_time_bucket'" in multi-series external charts (4) and `cbt_timeseries` (2)                                                                                | Emit the bucket expression once: alias it in the inner select and reference the alias outside                                                                      |
+| `HAVING` on a select alias    | `cbt_table` with `having: 'n > 1'` fails with "Expression (1 < (`d`.`n`)) must depend only on group keys or aggregates" (pie and bar shapes)                                                     | Rewrite alias references in `having` to their aggregate expressions, or wrap the grouped query and filter outside                                                  |
+| Ambiguous `group` alias       | "Ambiguous reference to field 'group'" in `cbt_query_tile` (2)                                                                                                                                   | Same alias rule as the time bucket                                                                                                                                 |
+
+Acceptance: a renderer unit test per row; the 9 P failures in
+`routers/external-api/__tests__/charts` pass locally; the `having` and time
+bucket cases in `mcp/__tests__/queryTool` pass locally.
+
+#### D2: MCP query and analysis tools (size M)
+
+Scope: `packages/api/src/mcp/tools/query/*`.
+
+| Defect                                 | Evidence (R0)                                                                                                                                                                         | Fix                                                                                                                                                        |
+| -------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `count()` in tool-built selects        | `runEventPatterns.ts:218` and `denoise.ts:132` pass `select: 'count() as total'`. "Number of arguments to function count must be 1": 34 event-pattern calls, 4 emerging-signals calls | Use the builder aggregate (`aggFn: 'count'`) or `COUNT(*)` so the SQL++ renderer owns it                                                                   |
+| ClickHouse functions in service health | "Invalid function startsWith" (12 calls); `serviceHealth/errorGroups.ts:70` builds `toUnixTimestamp64Milli(toDateTime64(…))`; more in `serviceHealth/queries.ts`                      | SQL++ equivalents through `common-utils/src/couchbase/fn/*` (for example `POSITION(s, p) = 0`, `STR_TO_MILLIS`)                                            |
+| Tool descriptions teach ClickHouse SQL | `sqlDescriptions.ts:10,30,33` show `toDateTime64` and `count()`                                                                                                                       | Rewrite the examples in SQL++ with the `$__timeInterval` and `$__timeFilter` macros. Agents copy these examples, so wrong ones turn into failed tool calls |
+
+Acceptance: `mcp/__tests__/emergingSignalsTool` and `serviceHealthTool` pass
+locally; the `cbt_event_patterns` cases in `queryTool` pass locally; a unit test
+asserts that SQL built by these tools contains no ClickHouse-only function (the
+list lives in `common-utils/src/couchbase/functions.ts`).
+
+#### D3: MCP trace tools (size M)
+
+Scope: `packages/api/src/mcp/tools/trace/*`.
+
+| Defect                      | Evidence (R0)                                                                                                                                                                                 | Fix                                                                         |
+| --------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------- |
+| ClickHouse query parameters | `waterfall.ts` uses `{db:Identifier}` and `{tid:String}`: "syntax error … near 'ROM {db:Identifier}.'" (26 calls). `breakdown.ts` uses `{name:String}`: "… String (reserved word)" (10 calls) | SQL++ named parameters (`$tid`) and the backtick identifier helper (rule 4) |
+| ClickHouse functions        | `waterfall.ts:254-255` `toUnixTimestamp64Milli(toDateTime64(…))`; `breakdown.ts:162` `count()`; "Invalid function toDate" (2 calls)                                                           | SQL++ equivalents through `common-utils/src/couchbase/fn/*`                 |
+
+Acceptance: the 21 P failures in `mcp/__tests__/trace` pass locally; a unit test
+renders the waterfall and breakdown SQL and checks it uses named parameters and
+quoted identifiers.
+
+#### D4: Schema inference on empty collections (size S)
+
+Evidence: `INFER` on an empty collection fails with error 7014 "No documents
+found, unable to infer schema". In R0 it broke `cbt_describe_source` 10 times
+and `cbt_describe_metric` 4 times, and alert evaluation logged it 16 times
+(before the threshold check). Upstream `DESCRIBE TABLE` on an empty table
+returns columns, so an empty collection must not be an error.
+
+Fix: treat 7014 as "no inferred fields" in the column-metadata path
+(`inferFields` / `getColumns` in `common-utils`). Callers fall back to the
+source's configured expressions. An alert on an empty window evaluates with zero
+rows, as upstream does.
+
+Acceptance: unit test with a mocked 7014 response; the 7 P failures in
+`mcp/__tests__/sources` pass locally; an alert on an empty collection ends in
+`OK`, not an error.
+
+#### D5: Onboarding checklist probe (size S)
+
+Scope: `packages/app/src/OnboardingChecklist/useOnboardingCompletion.ts:70-90`.
+
+Evidence: the hook asks for `sum(total_rows)` from `system.tables` with
+`table = '…' AND database = '…'` filters. Couchbase returns 400 "syntax error …
+at: database (reserved word)", and the browser logs it on every page. That
+causes 22 of the 24 `route-smoke.spec.ts` failures (section 14.2).
+
+Fix: check each source's collection with a bounded SQL++ query (for example
+`SELECT RAW 1 FROM <keyspace> LIMIT 1` through the existing Couchbase data
+layer), keeping the "has data" semantics.
+
+Acceptance: hook unit test; `./scripts/test-e2e.sh --quiet route-smoke` has no
+failures from this probe.
+
+#### D6: Alert connection resolution (investigate first, size S)
+
+Evidence: 21 alert evaluations in `checkAlerts.int.test.ts` log "A connection id
+is required for Couchbase queries"
+(`common-utils/src/couchbase/browser.ts:164`).
+
+Work: find out whether the alert task fails to pass the source's connection id
+(product defect) or the test sources have no connection (test defect). If it is
+the product, fix it and add a unit test in `tasks/checkAlerts`. If it is the
+test, write that down here, close D6 with no code change, and leave the fixture
+to R2b.
+
+Acceptance: root cause recorded in `docs/port-notes.md`; product fix and unit
+test if one applies.
+
+#### D7 onward
+
+Defects R2 finds while porting suites. Each gets its own PR, merged before the
+R2 sub-phase that found it.
 
 ### R0: Triage and quick fixes
 
@@ -427,26 +552,31 @@ P2 (delete `packages/api/migrations/ch/`). Unit tests: `blockedHosts.test.ts`
 (each env var, malformed connstr, IPv6, port expansion), `config.test.ts` for
 the CLI migration, an updated `useWhatsNew` test, the MCP server version test.
 
-Acceptance: `rg -n "CLICKHOUSE_(HOST|USER|PASSWORD)" packages .github` empty;
-webhook to `http://<metadata host>:8091` rejected in a unit test;
+Acceptance:
+`rg -n "CLICKHOUSE_(HOST|USER|PASSWORD)" packages .github -g '!packages/hdx-eval/**'`
+empty (hdx-eval passes those names to the third-party ClickHouse MCP server it
+benchmarks against, which reads exactly them); webhook to
+`http://<metadata host>:8091` rejected in a unit test;
 `rg -n "hyperdx" packages/cli/src/utils/config.ts` shows only
-`LEGACY_CONFIG_DIR`; `port/rebrand` verify and `port/remove-ch` verify still
-pass.
+`LEGACY_CONFIG_DIR`; `port/rebrand verify branding` and `port/remove-ch` verify
+report no problem that `main` does not already have (both fail on `main` today;
+see `docs/port-notes.md` R1).
 
 ### R2a / R2b / R2c: Deferred integration suites
 
 Per suite: remove it from `deferredChIntSuites`, port assertions to SQL++ (same
-inputs and result shapes), fix product bugs it exposes, keep the suite green in
-`yarn ci:int` sharded. Snapshots that contain ClickHouse SQL are regenerated
-only after a reviewer confirms the SQL++ text is equivalent. Cases that cannot
-keep the result shape are listed in the PR and the plan, and the phase stops for
-the user (rule 9).
+inputs and result shapes), keep the suite green in `yarn ci:int` sharded.
+Snapshots that contain ClickHouse SQL are regenerated only after a reviewer
+confirms the SQL++ text is equivalent. Product defects found while porting get
+their own PR first (D7 onward). Cases that cannot keep the result shape are
+listed in the PR and the plan, and the phase stops for the user (rule 9).
 
-Acceptance (end of R2c): `deferredChIntSuites` is an empty array and is then
-deleted; `yarn ci:int` reports 0 ignored suites; the skipped count equals the
-harness-only `metadata.couchbase.int.test.ts` count (51 today) and nothing else;
-CI integration shards green within the 55 minute timeout (if not, add shards;
-that is a workflow edit inside a CI-scoped phase).
+Order: R2a, then R2c, then R2b. Acceptance (end of R2b, the last R2 phase):
+`deferredChIntSuites` is an empty array and is then deleted; `yarn ci:int`
+reports 0 ignored suites; the skipped count equals the harness-only
+`metadata.couchbase.int.test.ts` count (51 today) and nothing else; CI
+integration shards green within the 55 minute timeout (if not, add shards; that
+is a workflow edit inside a CI-scoped phase).
 
 ### R3: Service map node latency
 
@@ -598,6 +728,12 @@ remain for the release as a whole; per-phase questions are raised in that phase.
 | --------------------------------------------------------------- | ---- |
 | R0 Triage and quick fixes                                       | M    |
 | R1 Correctness and branding fixes                               | M    |
+| D1 SQL++ chart renderer defects                                 | M    |
+| D2 MCP query and analysis tool defects                          | M    |
+| D3 MCP trace tool defects                                       | M    |
+| D4 Empty-collection schema inference                            | S    |
+| D5 Onboarding checklist probe                                   | S    |
+| D6 Alert connection resolution (investigate)                    | S    |
 | R2a Deferred API int suites (10 suites, 380 tests, 80 failing)  | L    |
 | R2b Deferred alert int suites (5 suites, 335 tests, 93 failing) | L    |
 | R2c Deferred MCP int suites (8 suites, 287 tests, 139 failing)  | L    |
@@ -608,8 +744,9 @@ remain for the release as a whole; per-phase questions are raised in that phase.
 | R7 Docs and acceptance                                          | M    |
 | R8 Release v1.0.0                                               | S    |
 
-Roughly four to six weeks for one engineer, dominated by R2 and R4. Every phase
-in the table blocks 1.0 (Q8).
+Roughly five to seven weeks for one engineer, dominated by R2 and R4. D1–D6 add
+about a week, but they take the product fixes out of R2a and R2c, which shrink
+to fixture and assertion work. Every phase in the table blocks 1.0 (Q8).
 
 ## 14. R0 triage results
 
@@ -689,9 +826,8 @@ Implications:
    id is required" errors come from alerts whose source has no connection on the
    Couchbase path; find out whether that is a test gap or a scheduler bug before
    closing R2b.
-4. Fix order: R2a, then R2c (shared `granularity: auto` and `count()` renderer
-   fixes land first), then R2b. This changes the section 9 order (R2a, R2b,
-   R2c); the phases stay independent PRs.
+4. Fix order (decided 2026-11-19): the defect-fix phases D1–D6 first (section
+   9.1), then R2a, R2c, R2b.
 
 ### 14.2 Playwright full-stack E2E (B2, R4 worklist)
 

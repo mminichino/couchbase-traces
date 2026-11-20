@@ -4,7 +4,6 @@ import {
 } from '@couchbase-traces/common-utils/dist/types';
 import { Client } from '@modelcontextprotocol/sdk/client/index.js';
 
-import * as config from '@/config';
 import {
   bucketExponentialHistogramObservations,
   bulkInsertMetricsGauge,
@@ -28,6 +27,7 @@ import {
   seedTeam,
   sourceField,
 } from '@/metadata/testing/seed';
+import { TEST_COUCHBASE_CONNECTION } from '@/testCouchbaseConnection';
 
 import { callTool, createTestClient, getFirstText } from './mcpTestUtils';
 
@@ -53,9 +53,9 @@ describe('MCP Source Tools', () => {
       kind: 'couchbase',
       team: team._id,
       name: 'Default',
-      host: config.CLICKHOUSE_HOST,
-      username: config.CLICKHOUSE_USER,
-      password: config.CLICKHOUSE_PASSWORD,
+      host: TEST_COUCHBASE_CONNECTION.host,
+      username: TEST_COUCHBASE_CONNECTION.username,
+      password: TEST_COUCHBASE_CONNECTION.password,
     });
 
     traceSource = await seedSource({
@@ -784,9 +784,9 @@ describe('MCP Source Tools', () => {
         kind: 'couchbase',
         team: otherTeam._id,
         name: 'Other Connection',
-        host: config.CLICKHOUSE_HOST,
-        username: config.CLICKHOUSE_USER,
-        password: config.CLICKHOUSE_PASSWORD,
+        host: TEST_COUCHBASE_CONNECTION.host,
+        username: TEST_COUCHBASE_CONNECTION.username,
+        password: TEST_COUCHBASE_CONNECTION.password,
       });
       const otherSource = await seedSource({
         kind: SourceKind.Trace,
@@ -1574,9 +1574,9 @@ describe('MCP Source Tools', () => {
         kind: 'couchbase',
         team: otherTeam._id,
         name: 'Other',
-        host: config.CLICKHOUSE_HOST,
-        username: config.CLICKHOUSE_USER,
-        password: config.CLICKHOUSE_PASSWORD,
+        host: TEST_COUCHBASE_CONNECTION.host,
+        username: TEST_COUCHBASE_CONNECTION.username,
+        password: TEST_COUCHBASE_CONNECTION.password,
       });
 
       const result = await callTool(client, 'cbt_save_source', {
@@ -1808,9 +1808,9 @@ describe('MCP Source Tools', () => {
         kind: 'couchbase',
         team: otherTeam._id,
         name: 'Other 3',
-        host: config.CLICKHOUSE_HOST,
-        username: config.CLICKHOUSE_USER,
-        password: config.CLICKHOUSE_PASSWORD,
+        host: TEST_COUCHBASE_CONNECTION.host,
+        username: TEST_COUCHBASE_CONNECTION.username,
+        password: TEST_COUCHBASE_CONNECTION.password,
       });
       const otherLogSource = await seedSource({
         kind: SourceKind.Log,
@@ -1886,9 +1886,9 @@ describe('MCP Source Tools', () => {
         kind: 'couchbase',
         team: otherTeam._id,
         name: 'Other 2',
-        host: config.CLICKHOUSE_HOST,
-        username: config.CLICKHOUSE_USER,
-        password: config.CLICKHOUSE_PASSWORD,
+        host: TEST_COUCHBASE_CONNECTION.host,
+        username: TEST_COUCHBASE_CONNECTION.username,
+        password: TEST_COUCHBASE_CONNECTION.password,
       });
       const otherSource = await seedSource({
         kind: SourceKind.Log,

@@ -4,8 +4,8 @@ describe('changelogUrl', () => {
   it('pins the link to the release tag, not main', () => {
     // Merging to main does not deploy, so main's changelog describes releases
     // this deployment may not be running.
-    expect(changelogUrl('2.36.0')).toBe(
-      'https://github.com/mminichino/couchbase-traces/blob/%40couchbase-traces%2Fapp%402.36.0/CHANGELOG.md',
+    expect(changelogUrl('1.0.0')).toBe(
+      'https://github.com/mminichino/couchbase-traces/blob/v1.0.0/CHANGELOG.md',
     );
   });
 

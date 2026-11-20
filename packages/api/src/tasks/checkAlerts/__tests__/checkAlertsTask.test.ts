@@ -1,4 +1,3 @@
-import * as config from '@/config';
 import { newId } from '@/metadata/ids';
 import {
   AlertSource,
@@ -18,6 +17,7 @@ import {
   loadProvider,
 } from '@/tasks/checkAlerts/providers';
 import { CheckAlertsTaskArgs, TaskName } from '@/tasks/types';
+import { TEST_COUCHBASE_CONNECTION } from '@/testCouchbaseConnection';
 
 jest.mock('@/tasks/checkAlerts/providers', () => {
   return {
@@ -135,8 +135,8 @@ describe('CheckAlertTask', () => {
           _id: 'c'.repeat(24),
           host: 'couchbase://localhost',
           kind: 'couchbase' as const,
-          username: config.CLICKHOUSE_USER,
-          password: config.CLICKHOUSE_PASSWORD,
+          username: TEST_COUCHBASE_CONNECTION.username,
+          password: TEST_COUCHBASE_CONNECTION.password,
           name: '',
           team: newId(),
           createdAt: new Date(),
@@ -222,8 +222,8 @@ describe('CheckAlertTask', () => {
           _id: 'c'.repeat(24),
           host: 'couchbase://localhost',
           kind: 'couchbase' as const,
-          username: config.CLICKHOUSE_USER,
-          password: config.CLICKHOUSE_PASSWORD,
+          username: TEST_COUCHBASE_CONNECTION.username,
+          password: TEST_COUCHBASE_CONNECTION.password,
           name: 'Team1 Connection',
           team: team1Id.toString(),
           createdAt: new Date(),
@@ -246,8 +246,8 @@ describe('CheckAlertTask', () => {
           _id: 'c'.repeat(24),
           host: 'couchbase://localhost',
           kind: 'couchbase' as const,
-          username: config.CLICKHOUSE_USER,
-          password: config.CLICKHOUSE_PASSWORD,
+          username: TEST_COUCHBASE_CONNECTION.username,
+          password: TEST_COUCHBASE_CONNECTION.password,
           name: 'Team2 Connection',
           team: team2Id.toString(),
           createdAt: new Date(),
@@ -374,8 +374,8 @@ describe('CheckAlertTask', () => {
             _id: newId(),
             host: 'couchbase://localhost',
             kind: 'couchbase' as const,
-            username: config.CLICKHOUSE_USER,
-            password: config.CLICKHOUSE_PASSWORD,
+            username: TEST_COUCHBASE_CONNECTION.username,
+            password: TEST_COUCHBASE_CONNECTION.password,
             name: '',
             team: teamId,
           },

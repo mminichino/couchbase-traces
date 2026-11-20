@@ -1,6 +1,5 @@
 import ms from 'ms';
 
-import * as config from '@/config';
 import { bulkInsertLogs } from '@/fixtures';
 import { IWebhook } from '@/metadata/schemas/webhook';
 import { getAlert, getAlertHydrated } from '@/metadata/testing/alertFixtures';
@@ -13,6 +12,7 @@ import {
 import { DataClient } from '@/query';
 import { processAlert } from '@/tasks/checkAlerts';
 import { AlertTaskType } from '@/tasks/checkAlerts/providers';
+import { TEST_COUCHBASE_CONNECTION } from '@/testCouchbaseConnection';
 
 // Shared setup for the multi-channel dispatch scenarios. Kept out of the spec
 // so each file stays under the repo's file-size limit and the scenarios read as
@@ -48,12 +48,12 @@ export const setupAlertFixtures = async (
 ) => {
   const team = await createTeam({ name: 'Test Team' });
   const connection = await seedConnection({
-    host: config.CLICKHOUSE_HOST,
+    host: TEST_COUCHBASE_CONNECTION.host,
     kind: 'couchbase',
     team: team._id,
     name: 'Test Connection',
-    username: config.CLICKHOUSE_USER,
-    password: config.CLICKHOUSE_PASSWORD,
+    username: TEST_COUCHBASE_CONNECTION.username,
+    password: TEST_COUCHBASE_CONNECTION.password,
   });
   const source = await seedSource({
     kind: 'log',

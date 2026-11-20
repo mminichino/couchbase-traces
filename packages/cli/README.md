@@ -198,7 +198,7 @@ cbt auth status                                   # Who am I + active team
 cbt auth logout
 ```
 
-The session is saved to `~/.config/hyperdx/cli/session.json` (mode `0600`) and
+The session is saved to `~/.config/couchbase-traces/cli/session.json` (mode `0600`) and
 reused by all commands until it expires.
 
 ### `cbt team` — Team switching

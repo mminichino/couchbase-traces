@@ -4,7 +4,6 @@ import {
 } from '@couchbase-traces/common-utils/dist/types';
 import { Client } from '@modelcontextprotocol/sdk/client/index.js';
 
-import * as config from '@/config';
 import {
   DEFAULT_DATABASE,
   DEFAULT_TRACES_TABLE,
@@ -28,6 +27,7 @@ import {
   seedSource,
   seedWebhook,
 } from '@/metadata/testing/seed';
+import { TEST_COUCHBASE_CONNECTION } from '@/testCouchbaseConnection';
 
 import { callTool, createTestClient, getFirstText } from './mcpTestUtils';
 
@@ -52,9 +52,9 @@ describe('MCP Alert Tools', () => {
       kind: 'couchbase',
       team: team._id,
       name: 'Default',
-      host: config.CLICKHOUSE_HOST,
-      username: config.CLICKHOUSE_USER,
-      password: config.CLICKHOUSE_PASSWORD,
+      host: TEST_COUCHBASE_CONNECTION.host,
+      username: TEST_COUCHBASE_CONNECTION.username,
+      password: TEST_COUCHBASE_CONNECTION.password,
     });
 
     traceSource = await seedSource({

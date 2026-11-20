@@ -34,7 +34,7 @@ export const swaggerOptions = {
       },
       {
         name: 'Connections',
-        description: 'Endpoints for managing legacy store connections',
+        description: 'Endpoints for managing Couchbase connections',
       },
       {
         name: 'Sources',

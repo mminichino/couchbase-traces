@@ -13,7 +13,6 @@
     "**/*.spec.tsx",
     "**/*.stories.tsx",
     "**/*.d.ts",
-    "packages/app/tests/e2e/**",
-    "packages/api/migrations/**"
+    "packages/app/tests/e2e/**"
   ]
 }

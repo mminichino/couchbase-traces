@@ -44,7 +44,7 @@ export const INGESTION_API_KEY = env.INGESTION_API_KEY ?? '';
 // Opt-in: emit the contrib `datadogreceiver` on the collector so a
 // Datadog Agent can ship APM traces (DD trace API -> OTLP -> legacy store).
 // Off by default because the receiver has no per-team bearer-token auth like
-// `otlp/hyperdx`, so enabling it opens an unauthenticated ingest port (:8126).
+// `otlp/cbt`, so enabling it opens an unauthenticated ingest port (:8126).
 export const ENABLE_DATADOG_RECEIVER = env.ENABLE_DATADOG_RECEIVER === 'true';
 export const CBT_API_KEY = env.CBT_API_KEY as string;
 export const CBT_LOG_LEVEL = env.CBT_LOG_LEVEL as string;
@@ -131,10 +131,11 @@ export const COUCHBASE_FRAME_ROWS = positiveIntEnv(
   500,
 );
 
-// FOR CI ONLY
-export const CLICKHOUSE_HOST = env.CLICKHOUSE_HOST as string;
-export const CLICKHOUSE_USER = env.CLICKHOUSE_USER as string;
-export const CLICKHOUSE_PASSWORD = env.CLICKHOUSE_PASSWORD as string;
+// Read here only so webhook validation can block these hosts; the services
+// that own them read them directly.
+export const CBT_METADATA_CONNSTR = env.CBT_METADATA_CONNSTR;
+export const CBT_COUCHBASE_CONNSTR = env.CBT_COUCHBASE_CONNSTR;
+export const OTEL_EXPORTER_OTLP_ENDPOINT = env.OTEL_EXPORTER_OTLP_ENDPOINT;
 
 // AI Assistant
 // Provider-agnostic configuration (preferred)

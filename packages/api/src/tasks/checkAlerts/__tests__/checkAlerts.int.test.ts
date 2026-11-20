@@ -9,7 +9,6 @@ import {
 } from '@couchbase-traces/common-utils/dist/types';
 import ms from 'ms';
 
-import * as config from '@/config';
 import { createAlert } from '@/controllers/alerts';
 import { createTeam } from '@/controllers/team';
 import {
@@ -79,6 +78,7 @@ import {
   renderAlertTemplate,
   translateExternalActionsToInternal,
 } from '@/tasks/checkAlerts/template';
+import { TEST_COUCHBASE_CONNECTION } from '@/testCouchbaseConnection';
 import * as slack from '@/utils/slack';
 
 // Create provider instance for tests
@@ -2073,12 +2073,12 @@ describe('checkAlerts', () => {
       ]);
 
       const connection = await seedConnection({
-        host: config.CLICKHOUSE_HOST,
+        host: TEST_COUCHBASE_CONNECTION.host,
         kind: 'couchbase',
         team: team._id,
         name: 'Default',
-        username: config.CLICKHOUSE_USER,
-        password: config.CLICKHOUSE_PASSWORD,
+        username: TEST_COUCHBASE_CONNECTION.username,
+        password: TEST_COUCHBASE_CONNECTION.password,
       });
 
       const source = await seedSource({
@@ -9968,12 +9968,12 @@ describe('checkAlerts', () => {
       ]);
 
       const connection = await seedConnection({
-        host: config.CLICKHOUSE_HOST,
+        host: TEST_COUCHBASE_CONNECTION.host,
         kind: 'couchbase',
         team: team._id,
         name: 'Default',
-        username: config.CLICKHOUSE_USER,
-        password: config.CLICKHOUSE_PASSWORD,
+        username: TEST_COUCHBASE_CONNECTION.username,
+        password: TEST_COUCHBASE_CONNECTION.password,
       });
 
       const source = await seedSource({
@@ -10073,12 +10073,12 @@ describe('checkAlerts', () => {
       ]);
 
       const connection = await seedConnection({
-        host: config.CLICKHOUSE_HOST,
+        host: TEST_COUCHBASE_CONNECTION.host,
         kind: 'couchbase',
         team: team._id,
         name: 'Default',
-        username: config.CLICKHOUSE_USER,
-        password: config.CLICKHOUSE_PASSWORD,
+        username: TEST_COUCHBASE_CONNECTION.username,
+        password: TEST_COUCHBASE_CONNECTION.password,
       });
 
       const source = await seedSource({
@@ -10169,12 +10169,12 @@ describe('checkAlerts', () => {
       ]);
 
       const connection = await seedConnection({
-        host: config.CLICKHOUSE_HOST,
+        host: TEST_COUCHBASE_CONNECTION.host,
         kind: 'couchbase',
         team: team._id,
         name: 'Default',
-        username: config.CLICKHOUSE_USER,
-        password: config.CLICKHOUSE_PASSWORD,
+        username: TEST_COUCHBASE_CONNECTION.username,
+        password: TEST_COUCHBASE_CONNECTION.password,
       });
 
       const source = await seedSource({
@@ -11614,12 +11614,12 @@ describe('checkAlerts', () => {
       ]);
 
       const connection = await seedConnection({
-        host: config.CLICKHOUSE_HOST,
+        host: TEST_COUCHBASE_CONNECTION.host,
         kind: 'couchbase',
         team: team._id,
         name: 'Default',
-        username: config.CLICKHOUSE_USER,
-        password: config.CLICKHOUSE_PASSWORD,
+        username: TEST_COUCHBASE_CONNECTION.username,
+        password: TEST_COUCHBASE_CONNECTION.password,
       });
 
       const source = await seedSource({

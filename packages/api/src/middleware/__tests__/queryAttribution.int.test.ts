@@ -2,7 +2,6 @@ import { Metadata } from '@couchbase-traces/common-utils/dist/core/metadata';
 import { buildLogComment } from '@couchbase-traces/common-utils/dist/query';
 import { SourceKind } from '@couchbase-traces/common-utils/dist/types';
 
-import * as config from '@/config';
 import {
   DEFAULT_DATABASE,
   dropTimeSeriesTable,
@@ -12,6 +11,7 @@ import {
   seedTimeSeriesTagsTable,
 } from '@/fixtures';
 import { seedConnection, seedSource } from '@/metadata/testing/seed';
+import { TEST_COUCHBASE_CONNECTION } from '@/testCouchbaseConnection';
 
 declare global {
   // Set by jest.setup.ts before it stubs `fetch`.
@@ -116,9 +116,9 @@ describe('request query attribution', () => {
       kind: 'couchbase',
       team: team._id,
       name: 'CH',
-      host: config.CLICKHOUSE_HOST,
-      username: config.CLICKHOUSE_USER,
-      password: config.CLICKHOUSE_PASSWORD,
+      host: TEST_COUCHBASE_CONNECTION.host,
+      username: TEST_COUCHBASE_CONNECTION.username,
+      password: TEST_COUCHBASE_CONNECTION.password,
     });
     const source = await seedSource({
       kind: SourceKind.Promql,
@@ -156,9 +156,9 @@ describe('request query attribution', () => {
       kind: 'couchbase',
       team: team._id,
       name: 'CH',
-      host: config.CLICKHOUSE_HOST,
-      username: config.CLICKHOUSE_USER,
-      password: config.CLICKHOUSE_PASSWORD,
+      host: TEST_COUCHBASE_CONNECTION.host,
+      username: TEST_COUCHBASE_CONNECTION.username,
+      password: TEST_COUCHBASE_CONNECTION.password,
     });
     const source = await seedSource({
       kind: SourceKind.Promql,
@@ -212,9 +212,9 @@ describe('request query attribution', () => {
       kind: 'couchbase',
       team: team._id,
       name: 'CH',
-      host: config.CLICKHOUSE_HOST,
-      username: config.CLICKHOUSE_USER,
-      password: config.CLICKHOUSE_PASSWORD,
+      host: TEST_COUCHBASE_CONNECTION.host,
+      username: TEST_COUCHBASE_CONNECTION.username,
+      password: TEST_COUCHBASE_CONNECTION.password,
     });
     const source = await seedSource({
       kind: SourceKind.Promql,

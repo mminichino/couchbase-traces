@@ -97,11 +97,11 @@ describe('opampController', () => {
     });
   });
 
-  describe('buildOtelCollectorConfig otlp/hyperdx CORS', () => {
+  describe('buildOtelCollectorConfig otlp/cbt CORS', () => {
     it('lets browsers cache preflights for 10 minutes', () => {
       const cfg = buildOtelCollectorConfig([]);
 
-      expect(cfg.receivers['otlp/hyperdx']?.protocols.http.cors).toEqual({
+      expect(cfg.receivers['otlp/cbt']?.protocols.http.cors).toEqual({
         allowed_origins: ['*'],
         allowed_headers: ['*'],
         max_age: 600,
@@ -109,14 +109,14 @@ describe('opampController', () => {
     });
   });
 
-  describe('buildOtelCollectorConfig otlp/hyperdx authentication', () => {
+  describe('buildOtelCollectorConfig otlp/cbt authentication', () => {
     it('accepts bare and bearer-prefixed authorization values for each API key', () => {
       const cfg = buildOtelCollectorConfig([
         { apiKey: 'k1', collectorAuthenticationEnforced: true },
         { apiKey: 'k2', collectorAuthenticationEnforced: true },
       ]);
 
-      expect(cfg.extensions['bearertokenauth/hyperdx']).toEqual({
+      expect(cfg.extensions['bearertokenauth/cbt']).toEqual({
         scheme: '',
         tokens: [
           'k1',
@@ -129,11 +129,11 @@ describe('opampController', () => {
           'BEARER k2',
         ],
       });
-      expect(cfg.receivers['otlp/hyperdx']?.protocols.grpc.auth).toEqual({
-        authenticator: 'bearertokenauth/hyperdx',
+      expect(cfg.receivers['otlp/cbt']?.protocols.grpc.auth).toEqual({
+        authenticator: 'bearertokenauth/cbt',
       });
-      expect(cfg.receivers['otlp/hyperdx']?.protocols.http.auth).toEqual({
-        authenticator: 'bearertokenauth/hyperdx',
+      expect(cfg.receivers['otlp/cbt']?.protocols.http.auth).toEqual({
+        authenticator: 'bearertokenauth/cbt',
       });
     });
 
@@ -145,7 +145,7 @@ describe('opampController', () => {
         { apiKey: 'k1', collectorAuthenticationEnforced: true },
       ]);
 
-      const tokens = cfg.extensions['bearertokenauth/hyperdx'].tokens;
+      const tokens = cfg.extensions['bearertokenauth/cbt'].tokens;
       expect(tokens).toEqual(
         expect.arrayContaining([
           'ingest-key',
@@ -233,7 +233,7 @@ describe('opampController', () => {
         authenticator: 'bearertokenauth/datadog',
       });
       expect(cfg.service.extensions).toContain('bearertokenauth/datadog');
-      expect(cfg.service.extensions).toContain('bearertokenauth/hyperdx');
+      expect(cfg.service.extensions).toContain('bearertokenauth/cbt');
     });
   });
 });

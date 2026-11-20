@@ -15,6 +15,7 @@ import {
   seedSavedSearch,
   seedSource,
 } from '@/metadata/testing/seed';
+import { TEST_COUCHBASE_CONNECTION } from '@/testCouchbaseConnection';
 
 import { callTool, createTestClient, getFirstText } from './mcpTestUtils';
 
@@ -39,9 +40,9 @@ describe('MCP Saved Search Tools', () => {
       kind: 'couchbase',
       team: team._id,
       name: 'Default',
-      host: config.CLICKHOUSE_HOST,
-      username: config.CLICKHOUSE_USER,
-      password: config.CLICKHOUSE_PASSWORD,
+      host: TEST_COUCHBASE_CONNECTION.host,
+      username: TEST_COUCHBASE_CONNECTION.username,
+      password: TEST_COUCHBASE_CONNECTION.password,
     });
 
     traceSource = await seedSource({

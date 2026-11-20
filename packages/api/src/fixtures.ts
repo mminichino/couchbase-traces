@@ -27,6 +27,7 @@ import {
 import { newId } from '@/metadata/ids';
 import { AlertInterval, AlertSource } from '@/metadata/schemas/alert';
 import Server from '@/server';
+import { TEST_COUCHBASE_CONNECTION } from '@/testCouchbaseConnection';
 import logger from '@/utils/logger';
 import { MetricModel } from '@/utils/logParser';
 
@@ -41,14 +42,10 @@ const MOCK_USER = {
 // use placeholder ids like "test-connection" or freshly minted ids with
 // no Connection doc — fall back to the CI compose cluster credentials.
 // When a Connection doc exists, still force CI compose host/user/password:
-// tests seed docs with config.CLICKHOUSE_* (or empty) which is not a working
+// some tests seed docs with placeholder credentials that are not a working
 // Couchbase login against docker-compose.ci.yml.
 if (config.IS_CI) {
-  const ciCreds = () => ({
-    host: process.env.CBT_COUCHBASE_CONNSTR || 'couchbase://127.0.0.1',
-    username: process.env.CBT_COUCHBASE_QUERY_USER || 'cbt_query',
-    password: process.env.CBT_COUCHBASE_QUERY_PASSWORD || 'dev-query-password',
-  });
+  const ciCreds = () => ({ ...TEST_COUCHBASE_CONNECTION });
   setCouchbaseConnectionLoader(async id => {
     const creds = ciCreds();
     try {

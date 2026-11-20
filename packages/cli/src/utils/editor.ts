@@ -3,7 +3,7 @@
  * The user edits the file, saves, and we parse the result back.
  *
  * File format:
- *   # HyperDX Time Range
+ *   # Couchbase Traces Time Range
  *   # Edit the start and end times below. Supports:
  *   #   - ISO 8601:  2026-03-18T05:00:00Z
  *   #   - Relative:  now-1h, now-30m, now-24h, now-7d

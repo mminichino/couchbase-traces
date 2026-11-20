@@ -42,18 +42,18 @@ function serverInstructions(_context: McpContext): string {
 
 // Served by the app; omitted when FRONTEND_URL is unset because MCP icon
 // sources must be absolute URLs. String concatenation (not `new URL`) keeps
-// any sub-path the app is mounted under. The HyperDX logo is intentional.
+// any sub-path the app is mounted under.
 const SERVER_ICON_URL = FRONTEND_URL
-  ? `${FRONTEND_URL.replace(/\/+$/, '')}/favicons/hyperdx/favicon.svg`
+  ? `${FRONTEND_URL.replace(/\/+$/, '')}/favicons/couchbase-traces/favicon.svg`
   : undefined;
 
 const SERVER_INFO: Implementation = {
   name: 'couchbase-traces',
   title: 'Couchbase Traces',
-  version: `${CODE_VERSION}-beta`,
+  version: CODE_VERSION,
   description:
     'Query and investigate logs, metrics, traces, and sessions stored in ' +
-    'legacy store, and manage Couchbase Traces dashboards, alerts, data sources, ' +
+    'Couchbase, and manage Couchbase Traces dashboards, alerts, data sources, ' +
     'and saved searches.',
   websiteUrl: 'https://github.com/mminichino/couchbase-traces/tree/main/docs',
   ...(SERVER_ICON_URL && {

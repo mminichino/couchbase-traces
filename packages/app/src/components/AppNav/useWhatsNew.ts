@@ -18,14 +18,12 @@ const REPO_URL = 'https://github.com/mminichino/couchbase-traces';
  * which mid-cycle is a version no tag was ever cut for. Falls back to main only
  * when there is no release to key on (the "unable to load" branch).
  *
- * Points at the file, not the Releases page: releases are cut per-package, which
- * scatters the notes for one release across several tags.
+ * Points at the repo-root CHANGELOG.md (the file whats-new.json is built from)
+ * at the release's single `v<version>` tag; packages are not tagged separately.
  */
 export const changelogUrl = (version?: string) =>
   version
-    ? `${REPO_URL}/blob/${encodeURIComponent(
-        `@couchbase-traces/app@${version}`,
-      )}/CHANGELOG.md`
+    ? `${REPO_URL}/blob/${encodeURIComponent(`v${version}`)}/CHANGELOG.md`
     : `${REPO_URL}/blob/main/CHANGELOG.md`;
 
 // Generated from CHANGELOG.md at build time (see next.config.mjs) and shipped as

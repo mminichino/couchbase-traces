@@ -33,7 +33,7 @@ describe('MCP server metadata', () => {
     });
     expect(info?.icons).toEqual([
       {
-        src: 'https://app.example.com/favicons/hyperdx/favicon.svg',
+        src: 'https://app.example.com/favicons/couchbase-traces/favicon.svg',
         mimeType: 'image/svg+xml',
         sizes: ['any'],
       },
@@ -41,11 +41,20 @@ describe('MCP server metadata', () => {
   });
 
   it('keeps the FRONTEND_URL sub-path in the icon URL', async () => {
-    const info = await getServerInfo('https://host.example.com/hyperdx');
+    const info = await getServerInfo('https://host.example.com/traces');
 
     expect(info?.icons?.[0]?.src).toBe(
-      'https://host.example.com/hyperdx/favicons/hyperdx/favicon.svg',
+      'https://host.example.com/traces/favicons/couchbase-traces/favicon.svg',
     );
+  });
+
+  it('reports the release version without a pre-release suffix', async () => {
+    const info = await getServerInfo('');
+    const { CODE_VERSION } =
+      jest.requireActual<typeof import('@/config')>('@/config');
+
+    expect(info?.version).toBe(CODE_VERSION);
+    expect(info?.version).not.toMatch(/-beta$/);
   });
 
   it('omits the icon when FRONTEND_URL is unset', async () => {
