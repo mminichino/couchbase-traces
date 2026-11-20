@@ -31,6 +31,7 @@ export type HealthSource = Pick<
   TTraceSource,
   | 'id'
   | 'timestampValueExpression'
+  | 'timestampFormat'
   | 'implicitColumnExpression'
   | 'useTextIndexForImplicitColumn'
   | 'sampleRateExpression'
@@ -64,7 +65,7 @@ export const sqlList = (values: string[]) =>
   values.map(v => `'${escapeSqlString(v)}'`).join(', ');
 
 export function baseConfig(
-  { source, input }: QueryContext,
+  { source, input }: Pick<QueryContext, 'source' | 'input'>,
   window: Window,
   extraFilters: Filter[],
 ): Omit<BuilderChartConfigWithDateRange, 'select'> {
@@ -78,7 +79,7 @@ export function baseConfig(
   if (input.services?.length) {
     filters.push({
       type: 'sql',
-      condition: `${source.serviceNameExpression} IN (${sqlList(input.services)})`,
+      condition: `${source.serviceNameExpression} IN [${sqlList(input.services)}]`,
     });
   }
   return {

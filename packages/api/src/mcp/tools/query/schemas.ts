@@ -11,8 +11,8 @@ const WHERE_DESCRIPTION =
   'FIRST: pick a language (whereLanguage):\n' +
   '  Lucene:           Column:value          e.g. level:error\n' +
   '  Lucene map attrs: Column.key:value      e.g. SpanAttributes.http.method:GET\n' +
-  "  SQL:              Column = 'value'       e.g. StatusCode = 500\n" +
-  "  SQL map attrs:    SpanAttributes['key'] = 'value'\n\n" +
+  "  SQL++:            Column = 'value'       e.g. StatusCode = 500\n" +
+  "  SQL++ map attrs:  SpanAttributes['key'] = 'value'\n\n" +
   'MAP ATTRIBUTES:\n' +
   '  Lucene uses DOT notation:    SpanAttributes.http.method:GET\n' +
   "  SQL uses BRACKET notation:   SpanAttributes['http.method'] = 'GET'\n\n" +
@@ -25,14 +25,14 @@ const WHERE_DESCRIPTION =
   'BODY TEXT: write the term or phrase without a field name, e.g. timeout or "connection refused".\n' +
   "  That searches the source's default search column (the body for logs) and uses its text index\n" +
   '  when the source has one. With an index it matches whole tokens: timeout does not match ConnectionTimeoutException.\n' +
-  "  For a substring inside a word, use SQL ILIKE '%timeout%' (reads the whole column).\n" +
-  '  Body:timeout, Body LIKE and Body ILIKE read the whole column, and Body:"..." is exact equality on the\n' +
+  "  For a substring inside a word, use SQL++ LOWER(Body) LIKE '%timeout%' (reads the whole column).\n" +
+  '  Body:timeout and Body LIKE read the whole column, and Body:"..." is exact equality on the\n' +
   '  whole body.';
 
 const WHERE_LANGUAGE_DESCRIPTION =
   'Language of the "where" filter. The syntax in "where" MUST match this setting.\n' +
   '  Lucene: Column:value, Column.mapKey:value, Column:>100\n' +
-  "  SQL:    Column = 'value', SpanAttributes['key'] = 'value'\n\n" +
+  "  SQL++:  Column = 'value', SpanAttributes['key'] = 'value'\n\n" +
   'Lucene supports comparisons (>= > < <=), wildcards (field:val*), ranges ([1 TO 5]), ' +
   'and map attributes via dot notation. Use "sql" for IN(...) lists, complex expressions, or function calls.\n' +
   'IMPORTANT: Lucene field:value is a SUBSTRING match (ilike), not exact equality. ' +
@@ -47,7 +47,7 @@ const WHERE_LANGUAGE_DESCRIPTION =
 /**
  * Aggregation function names exposed to MCP tool callers.
  * This is the single source of truth — used by both the Zod input schema
- * (mcpAggFnSchema) and the orderBy resolver in table.ts (AGG_FN_NAMES Set).
+ * (mcpAggFnSchema) and the orderBy resolver in orderBy.ts (AGG_FN_NAMES Set).
  */
 export const MCP_AGG_FN_OPTIONS = [
   'avg',
@@ -116,8 +116,8 @@ const mcpMetricTypeSchema = z
  * accepted for callers working from a cached schema, the value is coerced
  * back to a number before it reaches any consumer, and out-of-set values are
  * still rejected either way — so `level` remains a `number` everywhere
- * downstream, including the `quantile(<level>)(...)` SQL synthesis and the
- * stored dashboard config.
+ * downstream, including the quantile renderer and the stored dashboard
+ * config.
  */
 export const mcpQuantileLevelSchema = z
   .preprocess(
@@ -252,13 +252,13 @@ export const mcpSelectItemSchema = z.object({
     .string()
     .optional()
     .describe(
-      'legacy SQL expression to aggregate. Required for every aggFn except "count". ' +
+      'SQL++ expression to aggregate. Required for every aggFn except "count". ' +
         'Top-level columns are PascalCase (Duration, StatusCode); ' +
         "map attributes use bracket syntax: SpanAttributes['key'], ResourceAttributes['key']. " +
-        'Any legacy store expression is allowed — common useful forms: ' +
+        'Any SQL++ expression is allowed — common useful forms: ' +
         '"Duration / 1e6" (ns→ms), ' +
-        '"toFloat64OrZero(SpanAttributes[\'response.size_bytes\'])" (cast attribute), ' +
-        '"if(StatusCode = \'STATUS_CODE_ERROR\', 1, 0)" (boolean→numeric for ratios).\n\n' +
+        '"TONUMBER(SpanAttributes[\'response.size_bytes\'])" (cast attribute), ' +
+        '"CASE WHEN StatusCode = \'STATUS_CODE_ERROR\' THEN 1 ELSE 0 END" (boolean→numeric for ratios).\n\n' +
         'METRIC SOURCES: optional — defaults to "Value" (the metric value column) when ' +
         'metricType/metricName are set. Set explicitly only if you want to transform the ' +
         'metric value (e.g. "Value / 1e6").',
@@ -270,14 +270,14 @@ export const mcpSelectItemSchema = z.object({
     .describe(
       'Conditional aggregation filter — restricts which rows are included in THIS metric ' +
         '(combined with the top-level time/where filter via AND). ' +
-        'Compiles to <aggFn>If(...): e.g. quantile + where=Timestamp<X → quantileIf(0.99)(Duration, Timestamp<X). ' +
+        'Compiles to a conditional aggregate over the matching rows only (e.g. p99 of Duration where Timestamp < X). ' +
         'Use this to compute before/after deltas or per-segment metrics in a single query: ' +
         'set where: "Timestamp < \'2026-05-09T23:40:00Z\'" on one item and ' +
         '"Timestamp >= \'2026-05-09T23:40:00Z\'" on another to get baseline-vs-anomaly p99 ' +
         'in one round trip — much faster than re-running the same query with a different time range. ' +
         'Examples (lucene): "level:error", "service.name:api AND http.status_code:>=500". ' +
         'Set whereLanguage:"sql" for raw SQL conditions like ' +
-        "\"SpanAttributes['http.method'] = 'POST'\" or \"Timestamp < '2026-05-09 23:40:00'\".",
+        "\"SpanAttributes['http.method'] = 'POST'\" or \"Timestamp < '2026-05-09T23:40:00Z'\".",
     ),
   whereLanguage: z
     .enum(['lucene', 'sql'])
@@ -293,7 +293,7 @@ export const mcpSelectItemSchema = z.object({
     .describe(
       'Display label for this series, used in chart legends, table column headers, CSV exports, and onClick templates. ' +
         'Always set a short, readable label (e.g. "Requests", "P95 Latency", "Error Rate"); ' +
-        'without one the UI shows the raw expression, e.g. quantile(0.95)(Duration).',
+        'without one the UI shows a generated name, e.g. quantile(Duration).',
     ),
   level: mcpQuantileLevelSchema
     .optional()
@@ -422,19 +422,19 @@ export const groupBySchema = z
   .string()
   .optional()
   .describe(
-    'Column(s) or legacy store expression(s) to group/split by, as one entry or a ' +
+    'Column(s) or SQL++ expression(s) to group/split by, as one entry or a ' +
       'comma-delimited list. Multiple entries give a multi-dimensional breakdown ' +
       'in one query (e.g. "ServiceName, SpanName, StatusMessage") instead of one ' +
       'query per dimension; a table gets one row per distinct combination. ' +
       'Top-level columns use PascalCase ("SpanName", "StatusCode"). ' +
       "Map attributes: SpanAttributes['key'], ResourceAttributes['key'].\n\n" +
-      'Arbitrary legacy store expressions are also allowed in groupBy — useful when ' +
+      'Arbitrary SQL++ expressions are also allowed in groupBy — useful when ' +
       'you need to group by a derived column without falling back to raw SQL:\n' +
-      '  - "substring(Body, 1, 80)" — group by body prefix (log pattern bucketing)\n' +
-      '  - "toStartOfInterval(Timestamp, INTERVAL 5 MINUTE)" — explicit time bucketing ' +
+      '  - "SUBSTR(Body, 0, 80)" — group by body prefix (log pattern bucketing)\n' +
+      '  - "DATE_TRUNC_STR(Timestamp, \'hour\')" — explicit time bucketing ' +
       'in a table view, alongside another dimension (granularity only works for line/stacked_bar)\n' +
-      '  - "JSONExtractString(Body, \'event\')" — parse a JSON field from the body\n' +
-      "  - \"if(Duration > 1e9, 'slow', 'fast')\" — coarse boolean buckets\n" +
+      '  - "TOSTRING(DECODE_JSON(Body).`event`)" — parse a JSON field from the body\n' +
+      "  - \"CASE WHEN Duration > 1e9 THEN 'slow' ELSE 'fast' END\" — coarse boolean buckets\n" +
       'Comma splitting is bracket-aware, so multi-arg function calls work as single entries.',
   );
 

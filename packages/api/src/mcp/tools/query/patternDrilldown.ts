@@ -38,12 +38,16 @@ export function templateToRegex(template: string): string {
   return `^${WS}*${body}${WS}*$`;
 }
 
+/**
+ * SQL++ condition matching the template. REGEXP_CONTAINS takes Go RE2 syntax,
+ * so the `\x{FEFF}` and `\pZ` classes carry over from the ClickHouse match().
+ */
 export function buildPatternPredicate(
   valueExpression: string,
   template: string,
 ): string | null {
   if (template.length > MAX_PREDICATE_TEMPLATE_LENGTH) return null;
-  return `match(${valueExpression}, '${escapeSqlString(templateToRegex(template))}')`;
+  return `REGEXP_CONTAINS(${valueExpression}, '${escapeSqlString(templateToRegex(template))}')`;
 }
 
 export function andSql(...conditions: Array<string | undefined>): string {
@@ -68,7 +72,11 @@ export async function userWhereAsSql({
   where: string;
   whereLanguage: 'lucene' | 'sql';
   variables?: ChartVariable[];
-  metadata: Metadata;
+  metadata: {
+    getColumns: (
+      args: Parameters<Metadata['getColumns']>[0],
+    ) => Promise<{ name: string; type: string }[]>;
+  };
   databaseName: string;
   tableName: string;
   connectionId: string;
@@ -90,7 +98,8 @@ export async function userWhereAsSql({
       scopeName: 'default',
       tableName,
     },
-    alias: 't',
+    // Matches the keyspace alias of the SQL++ search query (render/from.ts).
+    alias: 'd',
     implicitColumnExpression,
     searchIndexName:
       useTextIndexForImplicitColumn !== undefined &&
@@ -99,8 +108,22 @@ export async function userWhereAsSql({
         : undefined,
   });
   try {
-    return await genWhereSQL(parse(expanded), serializer);
+    const sql = await genWhereSQL(parse(expanded), serializer);
+    return inlineParams(sql, serializer.params);
   } catch {
     return expanded;
   }
+}
+
+/**
+ * The snippet is returned to the agent as text and passed back as a SQL
+ * where, so the serializer's bound values cannot travel with it. Inline each
+ * as a JSON literal, which SQL++ reads as the same string or number.
+ * Generated names are `$sN`; the word boundary keeps `$s1` off `$s10`.
+ */
+function inlineParams(sql: string, params: Record<string, unknown>): string {
+  const values = new Map(Object.entries(params));
+  return sql.replace(/\$(s\d+)\b/g, (ref, name: string) =>
+    values.has(name) ? (JSON.stringify(values.get(name)) ?? 'NULL') : ref,
+  );
 }

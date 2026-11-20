@@ -1175,8 +1175,10 @@ describe('MCP Query Tools', () => {
         });
         expect(output.summary.totalCount).toBe(3);
         const p = findPattern(output, 'Timeout after <*> s');
+        // D2: the drill-down is SQL++, so the map reference is field access
+        // (SQL++ reads ['k'] as an array index) under REGEXP_CONTAINS.
         expect(p.whereSnippet).toContain(
-          "match(LogAttributes['exception.message'],",
+          'REGEXP_CONTAINS(LogAttributes.`exception.message`,',
         );
         expect(p.whereSnippet).not.toContain("']:");
 
@@ -1192,7 +1194,11 @@ describe('MCP Query Tools', () => {
           where: `ServiceName = 'json' AND ${expr} != ''`,
           whereLanguage: 'sql',
         });
-        expect(output.summary.bodyColumn).toBe(expr);
+        // D2: the summary reports the mined expression as SQL++, the form
+        // cbt_search accepts.
+        expect(output.summary.bodyColumn).toBe(
+          'TOSTRING(DECODE_JSON(Body).`message`)',
+        );
         // Non-JSON bodies and missing / null / empty values extract to '' and
         // are filtered out. How numbers and objects extract varies by
         // ClickHouse version, so only the payment strings are asserted.
@@ -1202,7 +1208,10 @@ describe('MCP Query Tools', () => {
 
         const p = findPattern(output, 'Payment <*> declined by issuer');
         expect(p.sampleCount).toBe(3);
-        expect(p.whereSnippet).toContain(`match(${expr},`);
+        // D2: the drill-down repeats the expression in its SQL++ form.
+        expect(p.whereSnippet).toContain(
+          'REGEXP_CONTAINS(TOSTRING(DECODE_JSON(Body).`message`),',
+        );
         const rows = await drill(output, p);
         expect(rows).toHaveLength(3);
         for (const r of rows) {

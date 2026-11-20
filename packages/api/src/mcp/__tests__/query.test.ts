@@ -22,7 +22,9 @@ import {
   normalizeBodyExpression,
   parseTimeRange,
   queryErrorResult,
+  whereWithBodyExpression,
 } from '@/mcp/tools/query/helpers';
+import { defaultOrderBy, resolveOrderBy } from '@/mcp/tools/query/orderBy';
 import {
   applyMetricSelectDefaults,
   getMetricSelectIssues,
@@ -31,7 +33,6 @@ import {
   whereLanguageSchema,
   whereSchema,
 } from '@/mcp/tools/query/schemas';
-import { defaultOrderBy, resolveOrderBy } from '@/mcp/tools/query/table';
 import { getErrorCategory } from '@/mcp/utils/errors';
 
 describe('parseTimeRange', () => {
@@ -109,34 +110,78 @@ describe('parseTimeRange', () => {
 
 // ─── mergeWhereIntoSelectItems ───────────────────────────────────────────────
 
+// D2: the deferred queryTool suite filters on the expression it mines
+// (where: "LogAttributes['exception.message'] != ''"); SQL++ reads the
+// bracket form as NULL and has no JSONExtractString.
+describe('whereWithBodyExpression', () => {
+  it.each([
+    [
+      "LogAttributes['exception.message'] != ''",
+      "LogAttributes['exception.message']",
+      "LogAttributes.`exception.message` != ''",
+    ],
+    [
+      "ServiceName = 'json' AND JSONExtractString(Body, 'message') != ''",
+      "JSONExtractString(Body, 'message')",
+      "ServiceName = 'json' AND TOSTRING(DECODE_JSON(Body).`message`) != ''",
+    ],
+  ])('rewrites %j', (where, bodyExpression, expected) => {
+    const bodyColumn = normalizeBodyExpression(bodyExpression)!;
+    expect(
+      whereWithBodyExpression(where, 'sql', bodyExpression, bodyColumn),
+    ).toBe(expected);
+  });
+
+  it('leaves Lucene, unrelated text and plain columns alone', () => {
+    const map = "SpanAttributes['k']";
+    const sqlpp = 'SpanAttributes.`k`';
+    expect(whereWithBodyExpression(`${map}:x`, 'lucene', map, sqlpp)).toBe(
+      `${map}:x`,
+    );
+    expect(whereWithBodyExpression("A = 'b'", 'sql', map, sqlpp)).toBe(
+      "A = 'b'",
+    );
+    expect(whereWithBodyExpression("Body != ''", 'sql', 'Body', 'Body')).toBe(
+      "Body != ''",
+    );
+    expect(whereWithBodyExpression(undefined, 'sql', map, sqlpp)).toBe(
+      undefined,
+    );
+  });
+});
+
 describe('normalizeBodyExpression', () => {
   it.each([
     ['Body', 'Body'],
     ['SpanName', 'SpanName'],
-    ["SpanAttributes['http.url']", "SpanAttributes['http.url']"],
+    // D2: SQL++ reads m['k'] as an array subscript (NULL on an object), so a
+    // map reference is rebuilt as field access.
+    ["SpanAttributes['http.url']", 'SpanAttributes.`http.url`'],
+    ["LogAttributes['exception.message']", 'LogAttributes.`exception.message`'],
+    // D2: the JSONExtractString shorthand is rebuilt as SQL++.
     [
       "JSONExtractString(Body, 'message')",
-      "JSONExtractString(Body, 'message')",
+      'TOSTRING(DECODE_JSON(Body).`message`)',
     ],
     [
       "JSONExtractString(Body,'error',  'message')",
-      "JSONExtractString(Body, 'error', 'message')",
+      'TOSTRING(DECODE_JSON(Body).`error`.`message`)',
     ],
     [
       "JSONExtractString(Body, 'app.user.currency')",
-      "JSONExtractString(Body, 'app.user.currency')",
+      'TOSTRING(DECODE_JSON(Body).`app.user.currency`)',
     ],
     [
       "JSONExtractString(LogAttributes['object'], 'regarding', 'kind')",
-      "JSONExtractString(LogAttributes['object'], 'regarding', 'kind')",
+      'TOSTRING(DECODE_JSON(LogAttributes.`object`).`regarding`.`kind`)',
     ],
     [
       String.raw`JSONExtractString(Body, 'it\'s, ok')`,
-      String.raw`JSONExtractString(Body, 'it\'s, ok')`,
+      "TOSTRING(DECODE_JSON(Body).`it's, ok`)",
     ],
     [
       "JSONExtractString(Body, 'it''s, ok')",
-      "JSONExtractString(Body, 'it''s, ok')",
+      "TOSTRING(DECODE_JSON(Body).`it's, ok`)",
     ],
   ])('accepts %s', (expr, expected) => {
     expect(normalizeBodyExpression(expr)).toBe(expected);
@@ -158,6 +203,9 @@ describe('normalizeBodyExpression', () => {
     // A stray quote in the column would pair with a key's quotes.
     "JSONExtractString(Body', ' OR 1=1 --')",
     "JSONExtractString(Body, 'm'' OR 1=1)",
+    // Rule 4: an identifier may not contain a backtick.
+    "JSONExtractString(Body, 'a`b')",
+    "LogAttributes['a`b']",
   ])('rejects %s', expr => {
     expect(normalizeBodyExpression(expr)).toBeNull();
   });
@@ -766,13 +814,13 @@ describe('resolveOrderBy', () => {
   });
 
   it('should synthesize count()', () => {
-    expect(resolveOrderBy('count', [{ aggFn: 'count' }])).toBe('count()');
+    expect(resolveOrderBy('count', [{ aggFn: 'count' }])).toBe('`count()`');
   });
 
   it('should synthesize avg(Duration)', () => {
     expect(
       resolveOrderBy('avg', [{ aggFn: 'avg', valueExpression: 'Duration' }]),
-    ).toBe('avg(Duration)');
+    ).toBe('`avg(Duration)`');
   });
 
   it('should synthesize quantile with level', () => {
@@ -780,7 +828,7 @@ describe('resolveOrderBy', () => {
       resolveOrderBy('quantile', [
         { aggFn: 'quantile', valueExpression: 'Duration', level: 0.99 },
       ]),
-    ).toBe('quantile(0.99)(Duration)');
+    ).toBe('`quantile(Duration)`');
   });
 
   it('should prefer alias over synthesized expression', () => {
@@ -792,7 +840,7 @@ describe('resolveOrderBy', () => {
   it('should quote a multi-word alias resolved from an aggFn match', () => {
     expect(
       resolveOrderBy('count', [{ aggFn: 'count', alias: 'Total Rows' }]),
-    ).toBe('"Total Rows"');
+    ).toBe('`Total Rows`');
   });
 
   it('should quote a multi-word alias matched directly', () => {
@@ -804,7 +852,7 @@ describe('resolveOrderBy', () => {
           alias: 'P95 Latency',
         },
       ]),
-    ).toBe('"P95 Latency"');
+    ).toBe('`P95 Latency`');
   });
 
   it('should quote a multi-word alias and preserve direction', () => {
@@ -816,7 +864,7 @@ describe('resolveOrderBy', () => {
           alias: 'P95 Latency',
         },
       ]),
-    ).toBe('"P95 Latency" DESC');
+    ).toBe('`P95 Latency` DESC');
   });
 
   it('should accept an already-quoted multi-word alias without double-quoting', () => {
@@ -828,10 +876,10 @@ describe('resolveOrderBy', () => {
           alias: 'P95 Latency',
         },
       ]),
-    ).toBe('"P95 Latency" DESC');
+    ).toBe('`P95 Latency` DESC');
   });
 
-  it('should normalize a backtick-quoted alias to double quotes', () => {
+  it('should keep a backtick-quoted alias in backticks', () => {
     expect(
       resolveOrderBy('`P95 Latency`', [
         {
@@ -840,7 +888,7 @@ describe('resolveOrderBy', () => {
           alias: 'P95 Latency',
         },
       ]),
-    ).toBe('"P95 Latency"');
+    ).toBe('`P95 Latency`');
   });
 
   it('should leave a bare single-word alias unquoted', () => {
@@ -850,10 +898,10 @@ describe('resolveOrderBy', () => {
   });
 
   it('should be case-insensitive for aggFn matching', () => {
-    expect(resolveOrderBy('Count', [{ aggFn: 'count' }])).toBe('count()');
+    expect(resolveOrderBy('Count', [{ aggFn: 'count' }])).toBe('`count()`');
     expect(
       resolveOrderBy('AVG', [{ aggFn: 'avg', valueExpression: 'Duration' }]),
-    ).toBe('avg(Duration)');
+    ).toBe('`avg(Duration)`');
   });
 
   it('should synthesize count(DISTINCT ...) for count_distinct', () => {
@@ -861,7 +909,7 @@ describe('resolveOrderBy', () => {
       resolveOrderBy('count_distinct', [
         { aggFn: 'count_distinct', valueExpression: 'UserId' },
       ]),
-    ).toBe('count(DISTINCT UserId)');
+    ).toBe('`count(distinct UserId)`');
   });
 
   it('should synthesize count(DISTINCT ...) with direction', () => {
@@ -869,7 +917,7 @@ describe('resolveOrderBy', () => {
       resolveOrderBy('count_distinct DESC', [
         { aggFn: 'count_distinct', valueExpression: 'UserId' },
       ]),
-    ).toBe('count(DISTINCT UserId) DESC');
+    ).toBe('`count(distinct UserId)` DESC');
   });
 
   it('should NOT synthesize for "none" aggFn', () => {
@@ -882,13 +930,13 @@ describe('resolveOrderBy', () => {
 
   it('should handle trailing ASC/DESC', () => {
     expect(resolveOrderBy('count DESC', [{ aggFn: 'count' }])).toBe(
-      'count() DESC',
+      '`count()` DESC',
     );
     expect(
       resolveOrderBy('avg ASC', [
         { aggFn: 'avg', valueExpression: 'Duration' },
       ]),
-    ).toBe('avg(Duration) ASC');
+    ).toBe('`avg(Duration)` ASC');
   });
 
   it('should pass through quantile without level unchanged', () => {
@@ -1483,9 +1531,10 @@ describe('where / whereLanguage descriptions', () => {
 });
 
 describe('defaultOrderBy', () => {
+  // SQL++ has no positional ORDER BY: `1 DESC` sorts by the constant 1.
   it('orders a grouped table by the first select item, descending', () => {
     expect(defaultOrderBy([{}, {}], 'SpanName', 'table')).toBe(
-      '1 DESC, SpanName ASC',
+      '`count()` DESC, SpanName ASC',
     );
   });
 
@@ -1495,15 +1544,15 @@ describe('defaultOrderBy', () => {
     );
     expect(
       defaultOrderBy([{ alias: 'P95 Latency' }], 'SpanName', 'table'),
-    ).toBe('"P95 Latency" DESC, SpanName ASC');
+    ).toBe('`P95 Latency` DESC, SpanName ASC');
   });
 
-  it('quotes an alias with surrounding spaces as SELECT renders it', () => {
+  it('names an alias with surrounding spaces as SELECT renders it (trimmed)', () => {
     expect(defaultOrderBy([{ alias: ' Errors' }], 'SpanName', 'table')).toBe(
-      '" Errors" DESC, SpanName ASC',
+      'Errors DESC, SpanName ASC',
     );
     expect(defaultOrderBy([{ alias: '  ' }], 'SpanName', 'table')).toBe(
-      '1 DESC, SpanName ASC',
+      '`count()` DESC, SpanName ASC',
     );
   });
 

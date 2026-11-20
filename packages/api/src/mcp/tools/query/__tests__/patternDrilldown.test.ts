@@ -1,3 +1,4 @@
+import { findClickhouseOnlyConstructs } from '@couchbase-traces/common-utils/dist/couchbase/clickhouseOnly';
 import { minePatterns } from '@couchbase-traces/common-utils/dist/drain';
 
 import {
@@ -5,11 +6,12 @@ import {
   buildPatternPredicate,
   MAX_PREDICATE_TEMPLATE_LENGTH,
   templateToRegex,
+  userWhereAsSql,
 } from '@/mcp/tools/query/patternDrilldown';
 
 // RE2 spells code points \x{HHHH} and categories \pZ; JS (with the u flag)
-// spells them \u{HHHH} and \p{Z}. ClickHouse behaviour is covered by
-// integration tests.
+// spells them \u{HHHH} and \p{Z}. SQL++ REGEXP_CONTAINS behaviour is covered
+// by integration tests.
 function toJsRegex(re2: string): RegExp {
   return RegExp(
     re2
@@ -148,12 +150,16 @@ describe('templateToRegex', () => {
 });
 
 describe('buildPatternPredicate', () => {
-  it('wraps the selected value expression in match() with an escaped literal', () => {
+  it('wraps the selected value expression in REGEXP_CONTAINS() with an escaped literal', () => {
     const predicate = buildPatternPredicate(
       "LogAttributes['exception.type']",
       String.raw`it's C:\x <*>`,
     );
-    expect(predicate).toMatch(/^match\(LogAttributes\['exception\.type'\], '/);
+    // D2: was ClickHouse match(), which SQL++ rejects as an invalid function.
+    expect(predicate).toMatch(
+      /^REGEXP_CONTAINS\(LogAttributes\['exception\.type'\], '/,
+    );
+    expect(findClickhouseOnlyConstructs(predicate ?? '')).toEqual([]);
     // Quote doubled for SQL, backslash doubled for SQL on top of the regex escape.
     expect(predicate).toContain("it''s");
     expect(predicate).toContain(String.raw`C:\\\\x`);
@@ -175,5 +181,52 @@ describe('andSql', () => {
     expect(andSql('a = 1 OR b = 2', '', 'c = 3')).toBe(
       '(a = 1 OR b = 2) AND (c = 3)',
     );
+  });
+});
+
+// D2: the Lucene filter in a drill-down whereSnippet was serialized with
+// bound parameters ($s0) that never reached cbt_search, and with alias `t`
+// where the search query aliases the keyspace `d`.
+describe('userWhereAsSql', () => {
+  const metadata: Parameters<typeof userWhereAsSql>[0]['metadata'] = {
+    getColumns: async () => [
+      { name: 'ServiceName', type: 'String' },
+      { name: 'Body', type: 'String' },
+    ],
+  };
+  const render = (where: string) =>
+    userWhereAsSql({
+      where,
+      whereLanguage: 'lucene',
+      metadata,
+      databaseName: 'otel',
+      tableName: 'otel_logs',
+      connectionId: 'c1',
+    });
+
+  it('inlines values and qualifies columns with the search alias', async () => {
+    const sql = await render('ServiceName:svc-a');
+    expect(sql).not.toMatch(/\$s\d/);
+    expect(sql).toContain('d.`ServiceName`');
+    expect(sql).toContain('"%svc-a%"');
+  });
+
+  it('escapes quotes and backslashes in inlined values', async () => {
+    const sql = await render('ServiceName:"it\'s \\"x\\""');
+    expect(sql).not.toMatch(/\$s\d/);
+    expect(sql).toContain(String.raw`\"x\"`);
+  });
+
+  it('passes SQL through unchanged', async () => {
+    expect(
+      await userWhereAsSql({
+        where: "ServiceName = 'a'",
+        whereLanguage: 'sql',
+        metadata,
+        databaseName: 'otel',
+        tableName: 'otel_logs',
+        connectionId: 'c1',
+      }),
+    ).toBe("ServiceName = 'a'");
   });
 });

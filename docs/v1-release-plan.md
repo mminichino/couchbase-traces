@@ -386,6 +386,8 @@ pushes to `main` directly.
 | D5    | Defects: onboarding checklist                             | ClickHouse `system.tables` row-count probe sent to Couchbase on every page (section 9.1)                                                                                  | S    | R1                            |
 | D6    | Defects: alert connection resolution (investigate)        | 21 alert runs fail with "A connection id is required for Couchbase queries" (section 9.1)                                                                                 | S    | R1                            |
 | D7    | Defects: hidden formula operands returned as null columns | Found in D1 (section 9.1)                                                                                                                                                 | S    | D1                            |
+| D8    | Defects: MCP reads miss freshly written rows (flaky)      | Found in D2 (section 9.1)                                                                                                                                                 | S    | D2                            |
+| D9    | Defects: builder expressions with `Map['k']` syntax       | Found in D2 (section 9.1)                                                                                                                                                 | M    | D2                            |
 | R2a   | Port deferred int suites: internal and external API       | B1 (10 suites: `routers/api/{dashboard,iac,sources,connections}`, `routers/external-api/{charts,search,sources,sources-crud,connections}`, `middleware/queryAttribution`) | L    | D1                            |
 | R2b   | Port deferred int suites: alerts                          | B1 (5 suites: `checkAlerts`, `multiChannelAlerts`, `renderAlertTemplate`, `singleInvocationAlert`, `providers/default`; 335 tests, 93 failing per R0)                     | L    | R2c, D1, D4, D6               |
 | R2c   | Port deferred int suites: MCP                             | B1 (8 suites under `mcp/__tests__/`; 287 tests, 139 failing per R0)                                                                                                       | L    | R2a, D1–D4                    |
@@ -568,10 +570,44 @@ passes locally.
 
 Depends on: D1. Size: S.
 
+Placement (Q12): after D6, not pulled forward.
+
 #### D8 onward
 
 Defects R2 finds while porting suites. Each gets its own PR, merged before the
 R2 sub-phase that found it.
+
+#### D8: MCP query reads can miss freshly written rows (found in D2, size S)
+
+Evidence: `mcp/__tests__/queryTool` `cbt_table` "applies having to the groups"
+and "applies having on shape \"pie\"" each failed once in D2's runs and passed
+on re-run with the same code: group `c` (3 rows) was missing. The rendered SQL++
+is correct. The suite's seed helpers return before the index has the rows, and
+MCP chart queries run with the default `not_bounded` scan consistency.
+
+Fix: decide whether the seed helpers wait (request_plus probe, as the
+common-utils live suites do) or the MCP tools use `request_plus`
+(`MCP_QUERY_SCAN_CONSISTENCY` exists in `helpers.ts` but chart queries do not
+pass it). Acceptance: the `cbt_table` having group passes 10 runs in a row.
+Depends on: D2. Size: S. Placement: before R2c.
+
+#### D9: Builder expressions with ClickHouse map syntax (found in D2, size M)
+
+Evidence: the builder renderer passes `SpanAttributes['k']` through unchanged in
+select `valueExpression`, `groupBy` and SQL `where`, and SQL++ reads `['k']` as
+an array index (NULL on an object), so those tiles return empty groups or no
+rows. The column alias for a map groupBy is built by splitting on dots
+(`` `SpanAttributes['http`.`route']` ``). D2 rewrites the form only in
+`cbt_event_patterns` bodyExpression and its where. The app, dashboard presets
+and upstream tests generate the bracket form, so the MCP builder docs still
+teach it.
+
+Fix: translate `Map['k']` to `` Map.`k` `` in the SQL++ renderer (one helper for
+select, groupBy, where, having and orderBy; string literals untouched) and alias
+map groupBy columns by the original expression. Then switch the MCP builder docs
+to whatever form the renderer documents. Acceptance: a live test groups and
+filters by `SpanAttributes['http.route']` and gets the seeded groups. Depends
+on: D2. Size: M. Placement: decide (Q14).
 
 ### R0: Triage and quick fixes
 
@@ -719,21 +755,32 @@ Acceptance: section 11 items 9–14.
 
 ## 10. Decisions
 
-All ten questions were answered by the user on 2026-11-19. No open questions
-remain for the release as a whole; per-phase questions are raised in that phase.
+Q1–Q10 were answered by the user on 2026-11-19, Q11–Q13 on 2026-11-20. Q14–Q15
+are open. No other open questions remain for the release as a whole; per-phase
+questions are raised in that phase.
 
-| ID  | Question                                                    | Decision                                                                                                                                                           | Affects        |
-| --- | ----------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------ | -------------- |
-| Q1  | Publish the all-in-one image (bundles Couchbase Server EE)? | No, not for 1.0. `make build-all-in-one` stays for local use; `DEPLOY.md` says so                                                                                  | R6, R7, R8     |
-| Q2  | Image tag scheme                                            | `1.0.0`, `1.0`, `1`, and `latest` for non-prerelease releases from `main`                                                                                          | R6, R8         |
-| Q3  | Git tag scheme and the `## v0.1.0` changelog entry          | Single product tag `v1.0.0`; fold the never-tagged 0.1.0 entry into 1.0.0                                                                                          | R1 (B9), R8    |
-| Q4  | Service map node latency (B6)                               | Blocker; fix before 1.0 (R3)                                                                                                                                       | R3             |
-| Q5  | Internal package versions                                   | Every package except `hdx-eval` moves to 1.0.0 and is lock-stepped (`api`, `app`, `ingest`, `otel-collector`, `common-utils`, `cli`, root); `hdx-eval` stays 0.3.3 | R6, R8         |
-| Q6  | Publish the CLI                                             | Attach binaries to the GitHub release; no npm publish                                                                                                              | R8             |
-| Q7  | OpenAPI `info.version`                                      | Stays `2.0.0` (versions the `/api/v2` contract, not the product)                                                                                                   | R8             |
-| Q8  | Do the test gaps block 1.0?                                 | Yes, all of them: the 23 deferred API int suites (R2a, R2b, R2c) and full-stack E2E back on in CI (R4, R5). No fallback                                            | R2a–R2c, R4–R5 |
-| Q9  | Changelog tooling                                           | Keep changesets for package changelogs; hand-write the root `CHANGELOG.md` release notes                                                                           | R6, R8         |
-| Q10 | Release automation                                          | Local `make release-images` and `gh release create`; no new release workflow                                                                                       | R6, R8         |
+| ID  | Question                                                                                                 | Decision                                                                                                                                                           | Affects        |
+| --- | -------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------ | -------------- |
+| Q1  | Publish the all-in-one image (bundles Couchbase Server EE)?                                              | No, not for 1.0. `make build-all-in-one` stays for local use; `DEPLOY.md` says so                                                                                  | R6, R7, R8     |
+| Q2  | Image tag scheme                                                                                         | `1.0.0`, `1.0`, `1`, and `latest` for non-prerelease releases from `main`                                                                                          | R6, R8         |
+| Q3  | Git tag scheme and the `## v0.1.0` changelog entry                                                       | Single product tag `v1.0.0`; fold the never-tagged 0.1.0 entry into 1.0.0                                                                                          | R1 (B9), R8    |
+| Q4  | Service map node latency (B6)                                                                            | Blocker; fix before 1.0 (R3)                                                                                                                                       | R3             |
+| Q5  | Internal package versions                                                                                | Every package except `hdx-eval` moves to 1.0.0 and is lock-stepped (`api`, `app`, `ingest`, `otel-collector`, `common-utils`, `cli`, root); `hdx-eval` stays 0.3.3 | R6, R8         |
+| Q6  | Publish the CLI                                                                                          | Attach binaries to the GitHub release; no npm publish                                                                                                              | R8             |
+| Q7  | OpenAPI `info.version`                                                                                   | Stays `2.0.0` (versions the `/api/v2` contract, not the product)                                                                                                   | R8             |
+| Q8  | Do the test gaps block 1.0?                                                                              | Yes, all of them: the 23 deferred API int suites (R2a, R2b, R2c) and full-stack E2E back on in CI (R4, R5). No fallback                                            | R2a–R2c, R4–R5 |
+| Q9  | Changelog tooling                                                                                        | Keep changesets for package changelogs; hand-write the root `CHANGELOG.md` release notes                                                                           | R6, R8         |
+| Q10 | Release automation                                                                                       | Local `make release-images` and `gh release create`; no new release workflow                                                                                       | R6, R8         |
+| Q11 | B17 "legacy store" text (2026-11-20)                                                                     | Blocks 1.0 as its own phase D2b, after D2                                                                                                                          | D2b            |
+| Q12 | Where D7 runs (2026-11-20)                                                                               | After D6, as section 9 orders it; not pulled forward                                                                                                               | D7             |
+| Q13 | External charts "process series from different sources" and the 8 empty log-series failures (2026-11-20) | Stay in R2a; no separate defect phase. R2a finds the cause, and if it is a product defect fixes it there                                                           | R2a            |
+
+Open (raised in D2, 2026-11-20):
+
+| #   | Question                                                                            | Options                                                                                                        | Affects |
+| --- | ----------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------- | ------- |
+| Q14 | Where D9 (builder `Map['k']` syntax) runs                                           | Before D2b (D2b then rewrites the builder docs once), or with D3–D7                                            | D9, D2b |
+| Q15 | D8 fix: wait in the test seed helpers, or run MCP chart queries with `request_plus` | Seed helpers only (no product change), or `request_plus` for MCP (read-your-writes for agents, slower queries) | D8      |
 
 ## 11. Acceptance criteria (v1.0.0 is done when)
 
@@ -847,7 +894,7 @@ Failure classes:
 | R2a   | `routers/api/__tests__/dashboard`                   |   150 |  149 |    1 |   0 |   0 |   1 | one `toContain` on a filter error message                                                                                                                                                                                                              |
 | R2a   | `routers/api/__tests__/iac`                         |    14 |   11 |    3 |   2 |   0 |   1 | `kind: 'clickhouse'` connection bodies                                                                                                                                                                                                                 |
 | R2a   | `routers/api/__tests__/connections`                 |     4 |    3 |    1 |   0 |   0 |   1 | one value assertion                                                                                                                                                                                                                                    |
-| R2a   | `routers/external-api/__tests__/charts`             |    28 |   10 |   18 |   0 |   9 |   9 | **P:** `granularity: 'auto'` throws "Unsupported granularity: auto" (500); ambiguous `__hdx_time_bucket` alias                                                                                                                                         |
+| R2a   | `routers/external-api/__tests__/charts`             |    28 |   10 |   18 |   0 |   9 |   9 | **P (fixed in D1):** `granularity: 'auto'` throw; ambiguous `__hdx_time_bucket`. After D1: 10 failing; the empty log-series results (8) and "process series from different sources" stay here (Q13)                                                    |
 | R2a   | `routers/external-api/__tests__/search`             |    29 |   27 |    2 |   0 |   0 |   2 | row-count assertions                                                                                                                                                                                                                                   |
 | R2a   | `routers/external-api/__tests__/sources`            |    29 |   27 |    2 |   0 |   0 |   2 | response shape                                                                                                                                                                                                                                         |
 | R2a   | `routers/external-api/__tests__/sources-crud`       |    35 |   24 |   11 |  11 |   0 |   0 | fixtures lack `scopeName` / `timestampFormat`                                                                                                                                                                                                          |

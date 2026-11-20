@@ -1,4 +1,3 @@
-import { getFirstTimestampValueExpression } from '@couchbase-traces/common-utils/dist/core/utils';
 import { getMetadata } from '@couchbase-traces/common-utils/dist/dataLayer';
 import {
   buildNoisyBodyMatcher,
@@ -6,8 +5,6 @@ import {
   minePatterns,
   selectNoisyPatterns,
 } from '@couchbase-traces/common-utils/dist/drain';
-import type { ChartConfigWithDateRange } from '@couchbase-traces/common-utils/dist/types';
-import { DisplayType } from '@couchbase-traces/common-utils/dist/types';
 
 import { getConnectionById } from '@/controllers/connection';
 import { getSource } from '@/controllers/sources';
@@ -16,6 +13,13 @@ import { assertMcpSliceForConnection } from '@/mcp/utils/mcpSlice';
 import { DataClient } from '@/query';
 
 import { resolveBodyExpression } from './helpers';
+import {
+  patternBody,
+  patternQueryConfigs,
+  patternQuerySource,
+  patternTimestamp,
+  patternTotal,
+} from './patternQueries';
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
@@ -93,56 +97,16 @@ export async function denoiseSearchResults(
   });
   const metadata = getMetadata(dataClient);
 
-  const tsExpr = getFirstTimestampValueExpression(
-    source.timestampValueExpression,
+  const { sampleConfig, countConfig } = patternQueryConfigs(
+    patternQuerySource(source),
+    {
+      bodyColumn,
+      sampleSize: DENOISE_SAMPLE_SIZE,
+      dateRange: [startDate, endDate],
+      where: options?.where,
+      whereLanguage: options?.whereLanguage,
+    },
   );
-  const implicitColumn =
-    'implicitColumnExpression' in source
-      ? source.implicitColumnExpression
-      : undefined;
-  const useTextIndexForImplicitColumn =
-    'useTextIndexForImplicitColumn' in source
-      ? source.useTextIndexForImplicitColumn
-      : undefined;
-
-  // ── Query: Random sample of events for pattern learning ──
-  const sampleConfig = {
-    displayType: DisplayType.Search,
-    source: source._id.toString(),
-    select: `${bodyColumn} as __hdx_pattern_body, ${tsExpr} as __hdx_pattern_ts`,
-    from: {
-      databaseName: source.from.databaseName,
-      tableName: source.from.tableName,
-    },
-    where: options?.where ?? '',
-    whereLanguage: options?.whereLanguage ?? ('lucene' as const),
-    connection: source.connection.toString(),
-    timestampValueExpression: source.timestampValueExpression,
-    implicitColumnExpression: implicitColumn,
-    useTextIndexForImplicitColumn,
-    orderBy: [{ ordering: 'DESC' as const, valueExpression: 'rand()' }],
-    limit: { limit: DENOISE_SAMPLE_SIZE, offset: 0 },
-    dateRange: [startDate, endDate] as [Date, Date],
-  } satisfies ChartConfigWithDateRange;
-
-  // ── Query: Total count for sample multiplier ──
-  const countConfig = {
-    displayType: DisplayType.Table,
-    source: source._id.toString(),
-    select: 'count() as total',
-    from: {
-      databaseName: source.from.databaseName,
-      tableName: source.from.tableName,
-    },
-    where: options?.where ?? '',
-    whereLanguage: options?.whereLanguage ?? ('lucene' as const),
-    connection: source.connection.toString(),
-    timestampValueExpression: source.timestampValueExpression,
-    implicitColumnExpression: implicitColumn,
-    useTextIndexForImplicitColumn,
-    limit: { limit: 1, offset: 0 },
-    dateRange: [startDate, endDate] as [Date, Date],
-  } satisfies ChartConfigWithDateRange;
 
   let sampleResult: Awaited<ReturnType<typeof dataClient.queryChartConfig>>;
   let countResult: Awaited<ReturnType<typeof dataClient.queryChartConfig>>;
@@ -167,7 +131,7 @@ export async function denoiseSearchResults(
   }
 
   const sampleRows = sampleResult.data;
-  const totalCount = Number(countResult.data?.[0]?.total ?? 0);
+  const totalCount = patternTotal(countResult.data);
 
   if (!sampleRows || sampleRows.length === 0) {
     return { rows, removedPatterns: [], skipped: 'no_sample_data' };
@@ -181,14 +145,8 @@ export async function denoiseSearchResults(
     startDate,
     endDate,
     maxSamples: 1,
-    getBody: row => {
-      const raw = row.__hdx_pattern_body;
-      return raw != null ? String(raw) : '';
-    },
-    getTimestamp: row => {
-      const tsRaw = row.__hdx_pattern_ts;
-      return tsRaw != null ? new Date(String(tsRaw)).getTime() : null;
-    },
+    getBody: patternBody,
+    getTimestamp: patternTimestamp,
   });
 
   if (patterns.length === 0) {

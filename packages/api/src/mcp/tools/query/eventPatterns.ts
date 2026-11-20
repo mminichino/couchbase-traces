@@ -43,7 +43,10 @@ const eventPatternsSchema = z.object({
         'Examples: "Body", "SpanName", "LogAttributes[\'exception.type\']", ' +
         "\"JSONExtractString(Body, 'error', 'message')\". Other function calls are rejected. " +
         "Rows where the value is '' (missing key, invalid JSON) are mined as an empty " +
-        'pattern; add where "<expression> != \'\'" (whereLanguage:"sql") to exclude them.',
+        'pattern; add where "<expression> != \'\'" (whereLanguage:"sql") to exclude them. ' +
+        'A SQL where may repeat bodyExpression exactly as written and it is translated to ' +
+        'SQL++; the rest of a SQL where must already be SQL++ ' +
+        '(map attributes as LogAttributes.`key`, REGEXP_CONTAINS for regex).',
     ),
   topN: z
     .number()

@@ -142,7 +142,8 @@ describe('MCP Service Health Tool', () => {
       sourceId: traceSource._id.toString(),
       startTime: new Date(now - HOUR).toISOString(),
       endTime: new Date(now).toISOString(),
-      where: `startsWith(ServiceName, '${RUN}')`,
+      // SQL++ has no startsWith; LIKE with a trailing % is the prefix form.
+      where: `ServiceName LIKE '${RUN}%'`,
       whereLanguage: 'sql',
       ...args,
     });

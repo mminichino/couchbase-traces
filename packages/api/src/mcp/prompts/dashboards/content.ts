@@ -185,7 +185,7 @@ Dashboards open with a 15-minute default window. There is no dashboard-level fie
 - Referencing a variable as a bare $var instead of $__filter(<expression>, $<var>) or $__conditionalAll(<condition>, $<var>). A bare reference renders as NULL with nothing selected, so the tile shows zero rows on a freshly-opened dashboard.
 - Dropping the $ from the variable argument of a macro. It is $__filter(ServiceName, $service), not $__filter(ServiceName, service).
 - Wrapping a variable reference in quotes. The default SQL format (sqlstring) already quotes each value.
-- Adding a redundant format specifier such as \${var:sqlstring}, or omitting a needed one such as \${var:regex} inside match() and \${var:csv} inside a literal.
+- Adding a redundant format specifier such as \${var:sqlstring}, or omitting a needed one such as \${var:regex} inside REGEXP_CONTAINS() and \${var:csv} inside a literal.
 - Using $__filter or $__conditionalAll in a Lucene where (they are matched as literal text; switch to whereLanguage: "sql", or write ServiceName:$var).
 - Chaining a filter's where off a filter that is not variable-enabled. Only isVariableEnabled: true publishes the $variableName token; without it the reference resolves to nothing and the downstream dropdown is unscoped or empty.
 - Referencing a filter's OWN variable in its where. That narrows its dropdown to the values already picked, so the rest of the options vanish from a multi-select. Reference a sibling filter's variable instead.
@@ -730,7 +730,7 @@ When to use: the user wants metric-like infrastructure visibility (request rate,
         displayType: "line",
         connectionId: "${connectionId}",
         sourceId: "${logSourceId}",
-        sqlTemplate: "SELECT $__timeInterval(Timestamp) AS ts, count() AS logs_per_interval FROM otel_logs WHERE $__timeFilter(Timestamp) AND $__filters GROUP BY ts ORDER BY ts"
+        sqlTemplate: "SELECT $__timeInterval(Timestamp) AS ts, COUNT(*) AS logs_per_interval FROM $__sourceTable WHERE $__timeFilter(Timestamp) AND $__filters GROUP BY $__timeInterval(Timestamp) ORDER BY ts"
       }
     },
     {
@@ -741,7 +741,7 @@ When to use: the user wants metric-like infrastructure visibility (request rate,
         displayType: "table",
         connectionId: "${connectionId}",
         sourceId: "${traceSourceId}",
-        sqlTemplate: "SELECT ServiceName, count() AS span_count, avg(Duration) AS avg_duration FROM otel_traces WHERE Timestamp >= fromUnixTimestamp64Milli({startDateMilliseconds:Int64}) AND Timestamp < fromUnixTimestamp64Milli({endDateMilliseconds:Int64}) AND $__filters GROUP BY ServiceName ORDER BY span_count DESC LIMIT 20"
+        sqlTemplate: "SELECT ServiceName, COUNT(*) AS span_count, AVG(Duration) AS avg_duration FROM $__sourceTable WHERE $__timeFilter_ms(Timestamp) AND $__filters GROUP BY ServiceName ORDER BY span_count DESC LIMIT 20"
       }
     },
     {
@@ -752,32 +752,32 @@ When to use: the user wants metric-like infrastructure visibility (request rate,
         displayType: "line",
         connectionId: "${connectionId}",
         sourceId: "${traceSourceId}",
-        sqlTemplate: "SELECT $__timeInterval(Timestamp) AS ts, ServiceName, countIf(StatusCode = 'STATUS_CODE_ERROR') / count() AS error_rate FROM otel_traces WHERE $__timeFilter(Timestamp) AND $__filters GROUP BY ServiceName, ts ORDER BY ts"
+        sqlTemplate: "SELECT $__timeInterval(Timestamp) AS ts, ServiceName, SUM(CASE WHEN StatusCode = 'STATUS_CODE_ERROR' THEN 1 ELSE 0 END) / COUNT(*) AS error_rate FROM $__sourceTable WHERE $__timeFilter(Timestamp) AND $__filters GROUP BY $__timeInterval(Timestamp), ServiceName ORDER BY ts"
       }
     }
   ]
 }
 
-SQL TEMPLATE REFERENCE:
+SQL TEMPLATE REFERENCE (templates are SQL++; GROUP BY repeats the bucket macro, not the ts alias):
   Macros (expanded before execution):
-    $__timeFilter(col)         col >= <start> AND col <= <end> (DateTime)
-    $__timeFilter_ms(col)      same with DateTime64 millisecond precision
-    $__dateFilter(col)         same with Date precision
-    $__timeInterval(col)       time bucket: toStartOfInterval(toDateTime(col), INTERVAL ...)
+    $__timeFilter(col)         col >= <start> AND col <= <end> (second precision)
+    $__timeFilter_ms(col)      same with millisecond precision
+    $__dateFilter(col)         same at day granularity
+    $__timeInterval(col)       time bucket of col sized to the selected interval
     $__timeInterval_ms(col)    same with millisecond precision
-    $__fromTime / $__toTime    start/end as DateTime values
-    $__fromTime_ms / $__toTime_ms  start/end as DateTime64 values
+    $__fromTime / $__toTime    start/end as ISO-8601 timestamp strings (second precision)
+    $__fromTime_ms / $__toTime_ms  start/end as ISO-8601 timestamp strings (millisecond precision)
     $__interval_s              raw interval in seconds
-    $__filters                 dashboard filter conditions (resolves to 1=1 when none).
+    $__filters                 dashboard filter conditions (resolves to TRUE when none).
                                REQUIRES sourceId on the tile. Without it, filters never apply.
     $__sourceTable             the source's \`database\`.\`table\`.
                                REQUIRES sourceId on the tile. Without it, the query fails to run.
 
-  Query parameters:
-    {startDateMilliseconds:Int64}  start of date range in milliseconds
-    {endDateMilliseconds:Int64}    end of date range in milliseconds
-    {intervalSeconds:Int64}        time bucket size in seconds
-    {intervalMilliseconds:Int64}   time bucket size in milliseconds
+  Query parameters (SQL++ named parameters):
+    $startDateMilliseconds     start of date range in epoch milliseconds
+    $endDateMilliseconds       end of date range in epoch milliseconds
+    $intervalSeconds           time bucket size in seconds
+    $intervalMilliseconds      time bucket size in milliseconds
 
   Available parameters by displayType:
     line / stacked_bar        startDate, endDate, interval (all available)
@@ -896,12 +896,12 @@ Lucene field:value does NOT mean exact equality. It translates to ilike(field, '
      Exact:    whereLanguage: "sql", where: "SpanKind = 'Server'"
      Prefix:   whereLanguage: "sql", where: "ServiceName LIKE 'api%'"
      Contains: whereLanguage: "sql", where: "StatusMessage LIKE '%timeout%'"
-     Regex:    whereLanguage: "sql", where: "match(ServiceName, '^api-v[0-9]+')"
+     Regex:    whereLanguage: "sql", where: "REGEXP_CONTAINS(ServiceName, '^api-v[0-9]+')"
 
   For text in the log body, write a bare Lucene term or phrase (timeout, "connection refused"). It searches the
   source's default search column (the body for logs) and uses its text index when the source has one. With an
   index it matches whole tokens (timeout does not match ConnectionTimeoutException); for a substring inside a word, use
-  SQL ILIKE. Body:timeout, Body LIKE and Body ILIKE read the whole column, and Body:"..." is exact equality on
+  SQL LOWER(Body) LIKE '%...%'. Body:timeout and Body LIKE read the whole column, and Body:"..." is exact equality on
   the whole body.
 
   When Lucene substring matching is FINE: free-text columns like StatusMessage where substring is the intent.
@@ -944,19 +944,23 @@ Alternative to Lucene. Set whereLanguage: "sql" when using SQL syntax.
 
 == RAW SQL TEMPLATES ==
 
-For configType: "sql" tiles, write legacy SQL with template macros:
+For configType: "sql" tiles, write SQL++ (Couchbase N1QL) with template macros. Raw SQL is
+not translated: use COUNT(*) (not count()), AVG/MIN/MAX/SUM, CASE WHEN ... THEN 1 ELSE 0 END
+for conditional counts, REGEXP_CONTAINS(col, 'pattern') for regex, and backtick field access
+for map attributes (SpanAttributes.\`http.route\`; SpanAttributes['key'] is an array index in
+SQL++ and reads NULL). Read from $__sourceTable, and in GROUP BY repeat the expression, not its alias.
 
   MACROS (expanded before execution):
-    $__timeFilter(col)         col >= <start> AND col <= <end>
-    $__timeFilter_ms(col)      same with DateTime64 millisecond precision
-    $__dateFilter(col)         same with Date precision
-    $__dateTimeFilter(d, t)    filters on both Date and DateTime columns
+    $__timeFilter(col)         col >= <start> AND col <= <end> (second precision)
+    $__timeFilter_ms(col)      same with millisecond precision
+    $__dateFilter(col)         same at day granularity
+    $__dateTimeFilter(d, t)    filters on both a date column and a timestamp column
     $__timeInterval(col)       time bucket expression for GROUP BY
     $__timeInterval_ms(col)    same with millisecond precision
-    $__fromTime / $__toTime    start/end as DateTime values
-    $__fromTime_ms / $__toTime_ms  start/end as DateTime64 values
+    $__fromTime / $__toTime    start/end as ISO-8601 timestamp strings (second precision)
+    $__fromTime_ms / $__toTime_ms  start/end as ISO-8601 timestamp strings (millisecond precision)
     $__interval_s              raw interval in seconds (for arithmetic)
-    $__filters                 dashboard filter conditions (1=1 when none).
+    $__filters                 dashboard filter conditions (TRUE when none).
                                REQUIRES sourceId on the tile. Set sourceId (unless the
                                query reads multiple tables) so dashboard filters apply.
     $__sourceTable             the source's \`database\`.\`table\`.
@@ -971,31 +975,30 @@ For configType: "sql" tiles, write legacy SQL with template macros:
                                        operators IN cannot express, such as NOT IN or LIKE.
     The variable argument carries the leading $, exactly as a bare reference would.
 
-  QUERY PARAMETERS (legacy store parameterized syntax):
-    {startDateMilliseconds:Int64}
-    {endDateMilliseconds:Int64}
-    {intervalSeconds:Int64}
-    {intervalMilliseconds:Int64}
+  QUERY PARAMETERS (SQL++ named parameters):
+    $startDateMilliseconds
+    $endDateMilliseconds
+    $intervalSeconds
+    $intervalMilliseconds
 
   TIME-SERIES EXAMPLE (line / stacked_bar):
     SELECT
       $__timeInterval(Timestamp) AS ts,
       ServiceName,
-      count() AS requests
-    FROM otel_traces
+      COUNT(*) AS requests
+    FROM $__sourceTable
     WHERE $__timeFilter(Timestamp)
-    GROUP BY ServiceName, ts
+    GROUP BY $__timeInterval(Timestamp), ServiceName
     ORDER BY ts
 
   TABLE EXAMPLE:
     SELECT
       ServiceName,
-      count() AS request_count,
-      avg(Duration) AS avg_duration,
-      quantile(0.95)(Duration) AS p95_duration
-    FROM otel_traces
-    WHERE Timestamp >= fromUnixTimestamp64Milli({startDateMilliseconds:Int64})
-      AND Timestamp < fromUnixTimestamp64Milli({endDateMilliseconds:Int64})
+      COUNT(*) AS request_count,
+      AVG(Duration) AS avg_duration,
+      MAX(Duration) AS max_duration
+    FROM $__sourceTable
+    WHERE $__timeFilter_ms(Timestamp)
     GROUP BY ServiceName
     ORDER BY request_count DESC
     LIMIT 50
@@ -1245,7 +1248,7 @@ Only add one when the default is wrong. \${service:sqlstring} is redundant in a 
   Format     Example Output       Empty state
   sqlstring  'a', 'b'             NULL        the default in SQL inputs
   lucene     ("a" OR "b")         ("")        the default in Lucene inputs; ("") is a match-all, so no guard is needed
-  regex      (a|b)                .*          use with match()
+  regex      (a|b)                .*          use with REGEXP_CONTAINS()
   promql     a  or  (a|b)         ""  or  .*  the default in PromQL; a single-select variable (maxSelections: 1) renders its raw value for {label="$var"}, a multi-select one an escaped regex for {label=~"$var"}
   csv        a,b                  <empty>     use INSIDE a string literal
   markdown   a, b                 <empty>     the default in markdown tiles; markdown syntax in values is escaped
@@ -1269,13 +1272,13 @@ The markdown field substitutes $variableName / \${variableName} / \${variableNam
 
 RAW SQL TILES (for advanced use-cases only)
 
-  SELECT $__timeInterval(Timestamp) AS ts, count() AS errors
+  SELECT $__timeInterval(Timestamp) AS ts, COUNT(*) AS errors
   FROM $__sourceTable
   WHERE $__timeFilter(Timestamp)
     AND $__filters
     AND $__filter(ServiceName, $service)
     AND $__conditionalAll(SpanName NOT IN (\${endpoint}), $endpoint)
-  GROUP BY ts
+  GROUP BY $__timeInterval(Timestamp)
   ORDER BY ts
 
 $__filters (plural) and $__filter (singular) are different macros. $__filters applies the BROADCAST filters with no arguments. $__filter takes an expression and a $-prefixed variable name.
@@ -1403,7 +1406,7 @@ Workaround: when you need a row-click drill-down from a map-attribute groupBy, a
   Raw SQL, alias the column:
     configType: "sql", displayType: "table",
     sourceId: "<trace-source-id>",
-    sqlTemplate: "SELECT SpanAttributes['http.route'] AS Route, count() AS Requests FROM otel_traces WHERE $__timeFilter(TimestampTime) AND $__filters GROUP BY Route ORDER BY Requests DESC LIMIT 100"
+    sqlTemplate: "SELECT SpanAttributes.\`http.route\` AS Route, COUNT(*) AS Requests FROM $__sourceTable WHERE $__timeFilter(Timestamp) AND $__filters GROUP BY SpanAttributes.\`http.route\` ORDER BY Requests DESC LIMIT 100"
     onClick: { type: "search", target: { mode: "id", id: "<trace-source-id>" },
                whereLanguage: "sql",
                filters: [{ kind: "expressionTemplate", expression: "SpanAttributes['http.route']", template: "{{Route}}" }] }
@@ -1556,7 +1559,7 @@ drill into a pattern with cbt_search.
     Correct: where: "SpanKind = 'Server'"          (whereLanguage: "sql"; exact match)
     Correct: where: 'SpanKind:"Server"'            (whereLanguage: "lucene"; a quoted value is an exact match)
     Correct: where: "ServiceName LIKE 'api%'"      (whereLanguage: "sql"; true prefix match)
-    Lucene field:value is a substring match (ilike with surrounding wildcards), not exact equality. Lucene field:value* is prefix-within-substring, not SQL LIKE 'value%'. Fine for free-text columns (StatusMessage; for Body use a bare term or phrase, which uses the index); wrong for enum-like columns where exact match matters (SpanKind, SeverityText, StatusCode) and wrong when true prefix matching is needed. Use SQL for exact match (=), prefix (LIKE 'x%'), contains (LIKE '%x%'), or regex (match(col, 'pattern')).
+    Lucene field:value is a substring match (ilike with surrounding wildcards), not exact equality. Lucene field:value* is prefix-within-substring, not SQL LIKE 'value%'. Fine for free-text columns (StatusMessage; for Body use a bare term or phrase, which uses the index); wrong for enum-like columns where exact match matters (SpanKind, SeverityText, StatusCode) and wrong when true prefix matching is needed. Use SQL for exact match (=), prefix (LIKE 'x%'), contains (LIKE '%x%'), or regex (REGEXP_CONTAINS(col, 'pattern')).
 
 16. Forgetting that map-attribute values are often empty strings
     Wrong:   groupBy on SpanAttributes['db.collection.name'] without filtering empty values; the result has an empty-string bucket alongside the real ones, which renders as a blank row in tables and an unlabelled slice in pies.

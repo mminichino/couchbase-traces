@@ -1,20 +1,13 @@
 import { getSourceTableFilters } from '@couchbase-traces/common-utils/dist/core/searchChartConfig';
 import {
   convertGranularityToSeconds,
-  getFirstTimestampValueExpression,
   type Granularity,
   splitAndTrimWithBracket,
 } from '@couchbase-traces/common-utils/dist/core/utils';
 import { getMetadata } from '@couchbase-traces/common-utils/dist/dataLayer';
 import { minePatterns } from '@couchbase-traces/common-utils/dist/drain';
-import type {
-  ChartConfigWithDateRange,
-  ChartVariable,
-} from '@couchbase-traces/common-utils/dist/types';
-import {
-  DisplayType,
-  SourceKind,
-} from '@couchbase-traces/common-utils/dist/types';
+import type { ChartVariable } from '@couchbase-traces/common-utils/dist/types';
+import { SourceKind } from '@couchbase-traces/common-utils/dist/types';
 import { trace } from '@opentelemetry/api';
 
 import { getConnectionById } from '@/controllers/connection';
@@ -35,6 +28,7 @@ import {
   normalizeBodyExpression,
   queryErrorResult,
   resolveBodyExpression,
+  whereWithBodyExpression,
 } from './helpers';
 import {
   andSql,
@@ -43,6 +37,13 @@ import {
   PATTERN_MATCH_SEMANTICS,
   userWhereAsSql,
 } from './patternDrilldown';
+import {
+  patternBody,
+  patternQueryConfigs,
+  patternQuerySource,
+  patternTimestamp,
+  patternTotal,
+} from './patternQueries';
 
 const drilldownWhereFailedCounter = getCounter(
   'cbt.mcp.event_patterns.drilldown_where_failed',
@@ -162,6 +163,13 @@ export async function mineWindowPatterns(
     };
   }
 
+  const where = whereWithBodyExpression(
+    options?.where,
+    options?.whereLanguage,
+    options?.bodyExpression,
+    bodyColumn,
+  );
+
   const filters = getSourceTableFilters(source);
   const tableFilterSql = andSql(
     ...filters.map(f => ('condition' in f ? f.condition : undefined)),
@@ -176,61 +184,19 @@ export async function mineWindowPatterns(
     requestTimeout: MCP_REQUEST_TIMEOUT,
   });
   const metadata = getMetadata(dataClient);
-  const tsExpr = getFirstTimestampValueExpression(
-    source.timestampValueExpression,
-  );
-  const implicitColumn =
-    'implicitColumnExpression' in source
-      ? source.implicitColumnExpression
-      : undefined;
+  const querySource = patternQuerySource(source);
+  const implicitColumn = querySource.implicitColumnExpression;
   const useTextIndexForImplicitColumn =
-    'useTextIndexForImplicitColumn' in source
-      ? source.useTextIndexForImplicitColumn
-      : undefined;
-
-  // `variables` rides on both configs so the renderer expands variable
-  // references and macros in `where` the same way it does for every other
-  // dashboard tile. Undefined (the standalone-tool case) is a no-op there.
-  const sampleConfig = {
-    displayType: DisplayType.Search,
-    source: source._id.toString(),
-    select: `${bodyColumn} as __hdx_pattern_body, ${tsExpr} as __hdx_pattern_ts`,
-    from: {
-      databaseName: source.from.databaseName,
-      tableName: source.from.tableName,
-    },
-    where: options?.where ?? '',
-    whereLanguage: options?.whereLanguage ?? ('lucene' as const),
+    querySource.useTextIndexForImplicitColumn;
+  const { sampleConfig, countConfig } = patternQueryConfigs(querySource, {
+    bodyColumn,
+    sampleSize,
+    dateRange: [startDate, endDate],
+    where,
+    whereLanguage: options?.whereLanguage,
     filters,
-    connection: source.connection.toString(),
-    timestampValueExpression: source.timestampValueExpression,
-    implicitColumnExpression: implicitColumn,
-    useTextIndexForImplicitColumn,
-    orderBy: [{ ordering: 'DESC' as const, valueExpression: 'rand()' }],
-    limit: { limit: sampleSize, offset: 0 },
-    dateRange: [startDate, endDate] as [Date, Date],
     variables: options?.variables,
-  } satisfies ChartConfigWithDateRange;
-
-  const countConfig = {
-    displayType: DisplayType.Table,
-    source: source._id.toString(),
-    select: 'count() as total',
-    from: {
-      databaseName: source.from.databaseName,
-      tableName: source.from.tableName,
-    },
-    where: options?.where ?? '',
-    whereLanguage: options?.whereLanguage ?? ('lucene' as const),
-    filters,
-    connection: source.connection.toString(),
-    timestampValueExpression: source.timestampValueExpression,
-    implicitColumnExpression: implicitColumn,
-    useTextIndexForImplicitColumn,
-    limit: { limit: 1, offset: 0 },
-    dateRange: [startDate, endDate] as [Date, Date],
-    variables: options?.variables,
-  } satisfies ChartConfigWithDateRange;
+  });
 
   // Drill-down is optional, so a caller filter that cannot be rendered as SQL
   // resolves to null instead of failing the mining. Once the queries fail the
@@ -239,7 +205,7 @@ export async function mineWindowPatterns(
   const userWherePromise: Promise<string | null | undefined> =
     options?.includeDrilldownWhere
       ? userWhereAsSql({
-          where: options.where ?? '',
+          where: where ?? '',
           whereLanguage: options.whereLanguage ?? 'lucene',
           variables: options.variables,
           metadata,
@@ -302,7 +268,7 @@ export async function mineWindowPatterns(
   }
 
   const sampleRows = sampleResult.data ?? [];
-  const totalCount = Number(countResult.data?.[0]?.total ?? 0);
+  const totalCount = patternTotal(countResult.data);
   const drilldown =
     userWhereSql === undefined
       ? undefined
@@ -324,14 +290,8 @@ export async function mineWindowPatterns(
       endDate,
       trendBuckets,
       maxSamples: 5,
-      getBody: row => {
-        const raw = row.__hdx_pattern_body;
-        return raw != null ? String(raw) : '';
-      },
-      getTimestamp: row => {
-        const tsRaw = row.__hdx_pattern_ts;
-        return tsRaw != null ? new Date(String(tsRaw)).getTime() : null;
-      },
+      getBody: patternBody,
+      getTimestamp: patternTimestamp,
     });
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err);
@@ -503,10 +463,7 @@ export async function runEventPatterns(
           }
         : {}),
       ...(formattedTrend ? { trend: formattedTrend } : {}),
-      samples: p.samples.map(row => {
-        const raw = row.__hdx_pattern_body;
-        return raw != null ? String(raw) : '';
-      }),
+      samples: p.samples.map(patternBody),
     };
   });
 

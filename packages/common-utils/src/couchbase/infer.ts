@@ -114,7 +114,12 @@ function wrap(type: string, nullable: boolean): string {
 }
 
 function unwrap(result: unknown): InferNode[] {
-  if (Array.isArray(result)) return result.filter(isNode);
+  // INFER's one result row is itself an array of flavor schemas.
+  if (Array.isArray(result)) {
+    return result
+      .flatMap(r => (Array.isArray(r) ? unwrap(r) : [r]))
+      .filter(isNode);
+  }
   if (isNode(result) && result.properties) return [result];
   if (isRecord(result) && Array.isArray(result.data)) {
     return unwrap(result.data);
@@ -126,6 +131,8 @@ function unwrap(result: unknown): InferNode[] {
 function walk(node: InferNode, path: string[], out: InferredField[]): void {
   if (node.properties) {
     for (const [name, child] of Object.entries(node.properties)) {
+      // INFER's synthetic document-metadata entry, not a field.
+      if (path.length === 0 && name === '~meta') continue;
       walk(child, [...path, name], out);
     }
     if (path.length > 0) out.push(toField(node, path));

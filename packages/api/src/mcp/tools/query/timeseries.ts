@@ -14,6 +14,7 @@ import {
   parseTimeRange,
   runConfigTile,
 } from './helpers';
+import { resolveOrderBy } from './orderBy';
 import {
   applyMetricSelectDefaults,
   endTimeSchema,
@@ -27,7 +28,6 @@ import {
   whereLanguageSchema,
   whereSchema,
 } from './schemas';
-import { resolveOrderBy } from './table';
 
 // ─── Schema ──────────────────────────────────────────────────────────────────
 

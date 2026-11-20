@@ -12,11 +12,11 @@ import {
   parseTimeRange,
   runConfigTile,
 } from './helpers';
+import { defaultOrderBy, resolveOrderBy } from './orderBy';
 import {
   applyMetricSelectDefaults,
   endTimeSchema,
   groupBySchema,
-  MCP_AGG_FN_OPTIONS,
   McpSelectItem,
   mcpSelectItemSchema,
   orderBySchema,
@@ -67,13 +67,14 @@ const tableSchema = z.object({
     .describe(
       'Post-aggregation SQL HAVING condition, applied after grouping. ' +
         'Give the select item an alias and reference it, e.g. alias "Errors" and having "Errors > 10". ' +
-        'A bare aggregate such as count() ignores the top-level where.',
+        'A bare SQL++ aggregate such as COUNT(*) ignores the top-level where.',
     ),
   orderBy: orderBySchema.describe(
     'Sort results by this column. For shape "table" on a non-metric source with groupBy set, ' +
       'defaults to the first select item descending, then the groupBy columns. ' +
       'When ordering by an alias that contains spaces or special characters, ' +
-      `wrap the alias in quotes: e.g. '"P95 Latency" DESC'.`,
+      "wrap the alias in backticks: e.g. '`P95 Latency` DESC'. " +
+      'An aggregation name such as "count" sorts by that select item.',
   ),
   limit: z
     .number()
@@ -88,170 +89,6 @@ const tableSchema = z.object({
   startTime: startTimeSchema,
   endTime: endTimeSchema,
 });
-
-// ─── orderBy resolution ──────────────────────────────────────────────────────
-
-/** Aggregation function names that legacy store cannot resolve as bare identifiers in ORDER BY.
- *  Excluded:
- *  - 'none' passes a raw expression through unchanged and has no synthesizable form.
- *  - 'increase' is a metric-only renderer marker that compiles to a multi-CTE
- *    sum(Rate) pipeline — there is no standalone SQL function to synthesize.
- *    The renderer auto-aliases the resulting column; agents should orderBy by alias. */
-const AGG_FN_NAMES: ReadonlySet<string> = new Set(
-  MCP_AGG_FN_OPTIONS.filter(fn => fn !== 'none' && fn !== 'increase'),
-);
-
-/** A bare legacy store identifier: a letter or underscore followed by word chars.
- *  Anything outside this shape (spaces, punctuation, leading digit) must be
- *  quoted to be valid in ORDER BY. */
-const BARE_IDENTIFIER = /^[A-Za-z_][A-Za-z0-9_]*$/;
-
-/** Strip one layer of surrounding double-quote or backtick quoting, if present. */
-function stripIdentifierQuotes(value: string): string {
-  const trimmed = value.trim();
-  if (
-    trimmed.length >= 2 &&
-    ((trimmed.startsWith('"') && trimmed.endsWith('"')) ||
-      (trimmed.startsWith('`') && trimmed.endsWith('`')))
-  ) {
-    return trimmed.slice(1, -1);
-  }
-  return trimmed;
-}
-
-/**
- * Quote an alias for use in ORDER BY when it is not a bare identifier.
- * Aliases are emitted into SELECT as `AS "alias"`, so we mirror that with
- * double-quote identifier quoting (escaping embedded double quotes). Bare
- * identifiers are returned unquoted to keep the common case readable.
- */
-function quoteAliasForOrderBy(alias: string): string {
-  if (BARE_IDENTIFIER.test(alias)) {
-    return alias;
-  }
-  return `"${alias.replace(/"/g, '""')}"`;
-}
-
-/**
- * Resolve an orderBy value that matches a bare aggregation function name
- * (e.g. "count") to something legacy store can resolve in ORDER BY.
- *
- * The model frequently writes `orderBy: "count"`, which generates
- * `ORDER BY count ASC` in legacy store — but legacy store can't resolve bare
- * `count` since it's a function, not a column. We fix this by finding
- * the select item whose aggFn matches and using its alias, or synthesizing
- * the legacy store expression (e.g. `count()`) when no alias is set.
- *
- * Resolution order:
- *   1. If orderBy matches a select item's alias → emit the canonical alias,
- *      quoting it when it is not a bare identifier (e.g. `"P95 Latency"`)
- *   2. If orderBy matches an aggFn name → use that item's alias if set
- *      (quoted as needed), otherwise synthesize the legacy store expression
- *      (e.g. `count()`)
- *   3. Otherwise → pass through unchanged
- */
-/** @internal Exported for testing only. */
-export function resolveOrderBy(
-  orderBy: string | undefined,
-  selectItems: {
-    aggFn: string;
-    alias?: string;
-    valueExpression?: string;
-    level?: number;
-  }[],
-): string | undefined {
-  if (!orderBy) return undefined;
-
-  // Strip an optional trailing ASC/DESC so we can resolve the identifier,
-  // then re-append the direction after resolution.
-  const dirMatch = orderBy.match(/^(.+?)\s+(ASC|DESC)\s*$/i);
-  const identifier = dirMatch ? dirMatch[1] : orderBy;
-  const direction = dirMatch ? ` ${dirMatch[2].toUpperCase()}` : '';
-
-  // Agents may pass the alias already quoted (per the orderBy docs) or bare.
-  // Strip any surrounding quotes before matching so both forms resolve, then
-  // re-quote on output based on the canonical alias.
-  const lower = stripIdentifierQuotes(identifier).toLowerCase();
-
-  // Already matches an alias? Return the canonical alias case so
-  // legacy store's case-sensitive identifier resolution works correctly.
-  // Multi-word / special-character aliases are quoted so the emitted
-  // ORDER BY is valid SQL even when the agent passed the alias unquoted.
-  const aliasMatch = selectItems.find(
-    s => s.alias && s.alias.toLowerCase() === lower,
-  );
-  if (aliasMatch && aliasMatch.alias) {
-    return `${quoteAliasForOrderBy(aliasMatch.alias)}${direction}`;
-  }
-
-  // Matches an aggFn name? Resolve to that item's alias or synthesize.
-  if (AGG_FN_NAMES.has(lower)) {
-    const match = selectItems.find(s => s.aggFn.toLowerCase() === lower);
-    if (match) {
-      // Prefer the explicit alias if set
-      if (match.alias) {
-        return `${quoteAliasForOrderBy(match.alias)}${direction}`;
-      }
-
-      // Synthesize the legacy store expression so ORDER BY works
-      if (match.aggFn === 'count') return `count()${direction}`;
-      // count_distinct compiles to count(DISTINCT expr) in legacy store,
-      // not count_distinct(expr) which is not a valid function.
-      if (match.aggFn === 'count_distinct' && match.valueExpression) {
-        return `count(DISTINCT ${match.valueExpression})${direction}`;
-      }
-      if (
-        match.aggFn === 'quantile' &&
-        match.level != null &&
-        match.valueExpression
-      ) {
-        return `quantile(${match.level})(${match.valueExpression})${direction}`;
-      }
-      // Skip synthesis for quantile without level — let it pass through
-      // rather than generating invalid SQL like quantile(Duration)
-      if (match.aggFn === 'quantile') {
-        return orderBy;
-      }
-      if (match.valueExpression) {
-        return `${match.aggFn}(${match.valueExpression})${direction}`;
-      }
-    }
-  }
-
-  return orderBy;
-}
-
-/**
- * Default ORDER BY for grouped tables when the caller sets none: the first
- * select item, descending, so trimmed or limited results keep the largest
- * groups. MCP only; dashboard tiles and the app are unchanged.
- *
- * Unaliased select items have no name to refer to, so the first one is
- * referenced by position (`1`): the rendered SELECT lists the select items
- * first, then the groupBy columns. Metric sources are skipped: their SQL is
- * built from CTEs, and `increase` already orders its top-N groups.
- *
- * The groupBy columns follow as a tiebreak, so a `limit` keeps the same groups
- * on every call, as convertToCategoricalChartConfig does for pie/bar.
- *
- * @internal Exported for testing only.
- */
-export function defaultOrderBy(
-  selectItems: { alias?: string; metricType?: string }[],
-  groupBy: string | undefined,
-  displayType: 'table' | 'number' | 'pie' | 'bar',
-): string | undefined {
-  if (displayType !== 'table' || !groupBy?.trim()) return undefined;
-  if (selectItems.length === 0 || selectItems.some(s => s.metricType)) {
-    return undefined;
-  }
-  // Quote the alias exactly as SELECT renders it; trim only to test emptiness.
-  const alias = selectItems[0].alias;
-  const first = alias?.trim()
-    ? `${quoteAliasForOrderBy(alias)} DESC`
-    : '1 DESC';
-  return `${first}, ${groupBy.trim()} ASC`;
-}
 
 // ─── Tool registration ───────────────────────────────────────────────────────
 
@@ -271,10 +108,10 @@ export function registerTable({ context, registerTool }: ToolRegistrar) {
         '\n\n' +
         'Requires sourceId — call cbt_list_sources then cbt_describe_source first.\n\n' +
         'The top-level "where" scopes the whole query. Each select item can add its own ' +
-        '"where" (compiles to <aggFn>If(...)) for per-metric cohort comparisons; both are ANDed.\n\n' +
+        '"where" (compiles to a conditional aggregate) for per-metric cohort comparisons; both are ANDed.\n\n' +
         'Columns: top-level columns are PascalCase (Duration, StatusCode). ' +
         "Map attributes use brackets, SpanAttributes['http.method'], and work in groupBy " +
-        "and valueExpression, e.g. toFloat64OrZero(SpanAttributes['key']).\n\n" +
+        "and valueExpression, e.g. TONUMBER(SpanAttributes['key']).\n\n" +
         'METRIC SOURCES: every select item MUST set metricType and metricName; ' +
         'valueExpression defaults to "Value". Discover metrics with cbt_describe_source ' +
         '(sample), cbt_list_metrics (full catalog), and cbt_describe_metric ' +
