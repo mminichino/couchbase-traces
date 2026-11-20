@@ -380,14 +380,14 @@ pushes to `main` directly.
 | R1    | Correctness and branding fixes                            | B5, B9, B11, B12, P2                                                                                                                                                      | M    | —                             |
 | D1    | Defects: SQL++ chart renderer                             | `granularity: 'auto'` throw; duplicate `__hdx_time_bucket` alias; `HAVING` on a select alias; ambiguous `group` alias (section 9.1)                                       | M    | R1                            |
 | D2    | Defects: MCP query and analysis tools                     | `count()`, `startsWith`, `toUnixTimestamp64Milli` in event patterns, denoise, emerging signals, service health; ClickHouse examples in tool descriptions (section 9.1)    | M    | D1                            |
-| D2b   | User-visible "legacy store" text (B17)                    | Rewrite user-visible strings (CLI help, OpenAPI, MCP prompts, UI, errors) and add a CI guard (section 9.1)                                                                | M    | D2                            |
+| D9    | Defects: builder expressions with `Map['k']` syntax       | Found in D2 (section 9.1)                                                                                                                                                 | M    | D2                            |
+| D8    | Defects: MCP reads miss freshly written rows (flaky)      | Found in D2 (section 9.1)                                                                                                                                                 | S    | D2                            |
+| D2b   | User-visible "legacy store" text (B17)                    | Rewrite user-visible strings (CLI help, OpenAPI, MCP prompts, UI, errors) and add a CI guard (section 9.1)                                                                | M    | D9                            |
 | D3    | Defects: MCP trace tools                                  | ClickHouse `{x:Type}` params, `toDateTime64`, `count()`, `toDate` in `waterfall.ts` and `breakdown.ts` (section 9.1)                                                      | M    | D1                            |
 | D4    | Defects: schema inference on empty collections            | INFER "No documents found" fails describe tools and alert column lookups (section 9.1)                                                                                    | S    | R1                            |
 | D5    | Defects: onboarding checklist                             | ClickHouse `system.tables` row-count probe sent to Couchbase on every page (section 9.1)                                                                                  | S    | R1                            |
 | D6    | Defects: alert connection resolution (investigate)        | 21 alert runs fail with "A connection id is required for Couchbase queries" (section 9.1)                                                                                 | S    | R1                            |
 | D7    | Defects: hidden formula operands returned as null columns | Found in D1 (section 9.1)                                                                                                                                                 | S    | D1                            |
-| D8    | Defects: MCP reads miss freshly written rows (flaky)      | Found in D2 (section 9.1)                                                                                                                                                 | S    | D2                            |
-| D9    | Defects: builder expressions with `Map['k']` syntax       | Found in D2 (section 9.1)                                                                                                                                                 | M    | D2                            |
 | R2a   | Port deferred int suites: internal and external API       | B1 (10 suites: `routers/api/{dashboard,iac,sources,connections}`, `routers/external-api/{charts,search,sources,sources-crud,connections}`, `middleware/queryAttribution`) | L    | D1                            |
 | R2b   | Port deferred int suites: alerts                          | B1 (5 suites: `checkAlerts`, `multiChannelAlerts`, `renderAlertTemplate`, `singleInvocationAlert`, `providers/default`; 335 tests, 93 failing per R0)                     | L    | R2c, D1, D4, D6               |
 | R2c   | Port deferred int suites: MCP                             | B1 (8 suites under `mcp/__tests__/`; 287 tests, 139 failing per R0)                                                                                                       | L    | R2a, D1–D4                    |
@@ -399,10 +399,10 @@ pushes to `main` directly.
 | R8    | Release v1.0.0                                            | version bump, changelog, tag, images, GitHub release                                                                                                                      | S    | R7, explicit user instruction |
 
 Order (user decisions 2026-11-19 and 2026-11-20): R1, then the defect-fix phases
-D1, D2, D2b (B17), D3–D7, then R2a, R2c, R2b. R3 and R6 are independent and can
-land at any point. Product defects found in R0 get their own PRs ahead of the
-test-porting phases. R2 no longer fixes product bugs; a defect R2 finds while
-porting gets its own PR first (D7 onward).
+D1, D2, D9 (with D8, Q14/Q15), D2b (B17), D3–D7, then R2a, R2c, R2b. R3 and R6
+are independent and can land at any point. Product defects found in R0 get their
+own PRs ahead of the test-porting phases. R2 no longer fixes product bugs; a
+defect R2 finds while porting gets its own PR first (D7 onward).
 
 ### 9.1 Defect-fix phases (D1–D6, D2b)
 
@@ -585,11 +585,12 @@ on re-run with the same code: group `c` (3 rows) was missing. The rendered SQL++
 is correct. The suite's seed helpers return before the index has the rows, and
 MCP chart queries run with the default `not_bounded` scan consistency.
 
-Fix: decide whether the seed helpers wait (request_plus probe, as the
-common-utils live suites do) or the MCP tools use `request_plus`
-(`MCP_QUERY_SCAN_CONSISTENCY` exists in `helpers.ts` but chart queries do not
-pass it). Acceptance: the `cbt_table` having group passes 10 runs in a row.
-Depends on: D2. Size: S. Placement: before R2c.
+Fix (Q15): the test seed helpers wait until seeded rows are visible to the index
+(a `request_plus` probe, as the common-utils live suites do). MCP tools keep
+their current scan consistency; no product change. Acceptance: the `cbt_table`
+having group passes 10 runs in a row. Depends on: D2. Size: S. Placement (Q15):
+a separate small commit in the D9 PR when it stays small, otherwise its own PR
+before R2c; the D9 port notes record which.
 
 #### D9: Builder expressions with ClickHouse map syntax (found in D2, size M)
 
@@ -607,7 +608,8 @@ select, groupBy, where, having and orderBy; string literals untouched) and alias
 map groupBy columns by the original expression. Then switch the MCP builder docs
 to whatever form the renderer documents. Acceptance: a live test groups and
 filters by `SpanAttributes['http.route']` and gets the seeded groups. Depends
-on: D2. Size: M. Placement: decide (Q14).
+on: D2. Size: M. Placement (Q14): next after D2, before D2b, so D2b rewrites the
+builder docs once in their final form.
 
 ### R0: Triage and quick fixes
 
@@ -755,9 +757,9 @@ Acceptance: section 11 items 9–14.
 
 ## 10. Decisions
 
-Q1–Q10 were answered by the user on 2026-11-19, Q11–Q13 on 2026-11-20. Q14–Q15
-are open. No other open questions remain for the release as a whole; per-phase
-questions are raised in that phase.
+Q1–Q10 were answered by the user on 2026-11-19, Q11–Q15 on 2026-11-20. No other
+open questions remain for the release as a whole; per-phase questions are raised
+in that phase.
 
 | ID  | Question                                                                                                 | Decision                                                                                                                                                           | Affects        |
 | --- | -------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------ | -------------- |
@@ -774,13 +776,8 @@ questions are raised in that phase.
 | Q11 | B17 "legacy store" text (2026-11-20)                                                                     | Blocks 1.0 as its own phase D2b, after D2                                                                                                                          | D2b            |
 | Q12 | Where D7 runs (2026-11-20)                                                                               | After D6, as section 9 orders it; not pulled forward                                                                                                               | D7             |
 | Q13 | External charts "process series from different sources" and the 8 empty log-series failures (2026-11-20) | Stay in R2a; no separate defect phase. R2a finds the cause, and if it is a product defect fixes it there                                                           | R2a            |
-
-Open (raised in D2, 2026-11-20):
-
-| #   | Question                                                                            | Options                                                                                                        | Affects |
-| --- | ----------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------- | ------- |
-| Q14 | Where D9 (builder `Map['k']` syntax) runs                                           | Before D2b (D2b then rewrites the builder docs once), or with D3–D7                                            | D9, D2b |
-| Q15 | D8 fix: wait in the test seed helpers, or run MCP chart queries with `request_plus` | Seed helpers only (no product change), or `request_plus` for MCP (read-your-writes for agents, slower queries) | D8      |
+| Q14 | Where D9 (builder `Map['k']` syntax) runs (2026-11-20)                                                   | Next after D2, before D2b, so D2b rewrites the builder docs once in final form                                                                                     | D9, D2b        |
+| Q15 | D8 fix: seed helpers or MCP `request_plus` (2026-11-20)                                                  | Test seed helpers only (wait for index visibility); MCP tools keep their consistency. Folded into the D9 PR as its own commit if small                             | D8, D9         |
 
 ## 11. Acceptance criteria (v1.0.0 is done when)
 
@@ -838,6 +835,8 @@ Open (raised in D2, 2026-11-20):
 | R1 Correctness and branding fixes                               | M    |
 | D1 SQL++ chart renderer defects                                 | M    |
 | D2 MCP query and analysis tool defects                          | M    |
+| D9 Builder `Map['k']` map access                                | M    |
+| D8 Seed helpers wait for index visibility                       | S    |
 | D2b User-visible "legacy store" text (B17)                      | M    |
 | D3 MCP trace tool defects                                       | M    |
 | D4 Empty-collection schema inference                            | S    |
