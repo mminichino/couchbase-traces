@@ -25,7 +25,7 @@ async function operationCounts(
     ...baseConfig(ctx, window, [
       {
         type: 'sql',
-        condition: `${source.serviceNameExpression} IN (${sqlList(services)})`,
+        condition: `${source.serviceNameExpression} IN [${sqlList(services)}]`,
       },
     ]),
     select: [{ aggFn: 'count', valueExpression: '', alias: 'requests' }],

@@ -76,6 +76,7 @@ export async function loadHealthSource(
       tableName: doc.from.tableName,
     },
     timestampValueExpression: doc.timestampValueExpression,
+    timestampFormat: doc.timestampFormat,
     implicitColumnExpression: doc.implicitColumnExpression,
     useTextIndexForImplicitColumn: doc.useTextIndexForImplicitColumn,
     sampleRateExpression: doc.sampleRateExpression,

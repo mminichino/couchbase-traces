@@ -261,7 +261,7 @@ const mcpTileSelectItemSchema = z
       .optional()
       .default('')
       .describe(
-        'Row filter for THIS series (compiles to `countIf(...)`). This is how ' +
+        'Row filter for THIS series (a conditional aggregate over matching rows). This is how ' +
           "you filter a builder tile: the chart editor renders it as the tile's " +
           'visible "Where" box, so the user can see and edit it. To scope the ' +
           'whole tile to a subset of rows, put the same `where` on every select ' +
@@ -1025,7 +1025,7 @@ const mcpHeatmapSelectItemSchema = z.object({
     .string()
     .optional()
     .describe(
-      'Custom count expression (e.g. "count()"). The renderer applies a default when omitted.',
+      'Custom count expression (e.g. "COUNT(*)"). The renderer applies a default when omitted.',
     ),
   heatmapScaleType: z
     .enum(['log', 'linear'])
@@ -1211,32 +1211,36 @@ export const mcpSqlTileSchema = mcpTileLayoutSchema.extend({
             'The sourceId must belong to the same connection as connectionId.',
         ),
       sqlTemplate: z.string().describe(`
-Raw legacy SQL query. SQL guidelines:
+Raw SQL++ (Couchbase N1QL) query. SQL++ guidelines:
 
 1. ALWAYS include a LIMIT clause to avoid excessive data.
 2. ALWAYS include a date/time filter in the WHERE clause using either macros or raw parameters to ensure the chart responds to user selected time range.
-    - $__timeFilter(col) expands to col >= toDateTime(fromUnixTimestamp64Milli({startDateMilliseconds:Int64})) AND col <= toDateTime(fromUnixTimestamp64Milli({endDateMilliseconds:Int64}))
-    - $__timeFilter_ms(col) is the same but should be used when col has millisecond precision (DateTime64 type)
-    - $__dateFilter(col) is the same but should be used when col has Day granularity (Date type)
-    - $__dateTimeFilter(dateCol, dateTimeCol) should be used when there are both Date and DateTime columns that should be filtered on.
+    - $__timeFilter(col) expands to a range predicate on col between the selected start and end (second precision)
+    - $__timeFilter_ms(col) is the same with millisecond precision
+    - $__dateFilter(col) is the same but compares at day granularity
+    - $__dateTimeFilter(dateCol, timeCol) should be used when there are both a date column and a timestamp column to filter on.
     - NEVER hardcode a fixed time range unless the user specifically asks for it.
-    - $__fromTime and $__toTime can be expanded to {startDateMilliseconds:Int64} and {endDateMilliseconds:Int64}, but prefer the full filter macros for readability.
+    - $__fromTime and $__toTime expand to the start and end as ISO-8601 strings; the named parameters $startDateMilliseconds and $endDateMilliseconds hold them as epoch milliseconds. Prefer the full filter macros for readability.
 3. ALWAYS include a granularity macro or parameter for time series (line or bar charts) to ensure the chart's granularity responds to user selected time bucket size.
-    - $__timeInterval(col) expands to toStartOfInterval(TimestampTime, INTERVAL {intervalSeconds:Int64} second)
-    - $__interval_s expands to {intervalSeconds:Int64}
+    - $__timeInterval(col) expands to a time bucket of col sized to the selected interval
+    - $__interval_s expands to $intervalSeconds
     - These macros are only available for time-series charts; do not use them for other display types.
 4. STRONGLY RECOMMENDED: use the $__filters and $__sourceTable macros to ensure the tile reacts to dashboard-level filters and source selectors.
     - $__filters and $__sourceTable both require sourceId to be set on this tile.
+5. SQL++ syntax: COUNT(*) (not count()), map attributes as SpanAttributes.\`key\`, and GROUP BY repeats the expression rather than its alias.
 
 Example:
 
 SELECT
-  $__timeInterval(TimestampTime) AS ts,
-  count()
+  $__timeInterval(Timestamp) AS ts,
+  ServiceName,
+  COUNT(*) AS n
 FROM $__sourceTable
-WHERE $__timeFilter(TimestampTime)
+WHERE $__timeFilter(Timestamp)
   AND $__filters
-GROUP BY ServiceName, ts
+GROUP BY $__timeInterval(Timestamp), ServiceName
+ORDER BY ts
+LIMIT 1000
 `),
       fillNulls: z
         .boolean()

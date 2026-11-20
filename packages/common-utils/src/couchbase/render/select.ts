@@ -189,11 +189,19 @@ function groupByExprForClause(expr: string): SqlPP {
   return sqlpp`${{ Raw: expr }}`;
 }
 
-function groupByExprForSelect(expr: string): SqlPP {
+/**
+ * A group-by column in the select list. An explicit alias names the output
+ * column, as upstream renders groupBy through the select-list renderer;
+ * without it, callers reading `row[alias]` (service health, heatmaps) got
+ * nothing.
+ */
+function groupByExprForSelect(expr: string, alias?: string): SqlPP {
+  const name = alias?.trim();
   if (!isMapKeyGroupExpression(expr)) {
+    if (name) return sqlpp`${{ Raw: expr }} AS ${{ Identifier: name }}`;
     return sqlpp`${{ Raw: expr }}`;
   }
-  return sqlpp`IFNULL(${{ Raw: expr }}, "") AS ${{ Identifier: expr }}`;
+  return sqlpp`IFNULL(${{ Raw: expr }}, "") AS ${{ Identifier: name || expr }}`;
 }
 
 export async function renderSelectListCouchbase(
@@ -412,7 +420,7 @@ export async function renderSelectCouchbase(
     } else {
       for (const col of chartConfig.groupBy) {
         const expr = col.valueExpression?.trim() ?? '';
-        if (expr) parts.push(groupByExprForSelect(expr));
+        if (expr) parts.push(groupByExprForSelect(expr, col.alias));
       }
     }
   }

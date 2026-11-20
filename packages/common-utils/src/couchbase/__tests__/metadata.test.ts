@@ -76,6 +76,24 @@ describe('infer', () => {
     expect(inferredToColumnType(tags!, fields)).toBe('Array(String)');
     expect(parseInfer({ data: [] })).toEqual([]);
   });
+
+  // D8: INFER returns one result row that is an array of flavor schemas
+  // (`results: [[schema, ...]]`). unwrap dropped arrays, so every live
+  // collection inferred no columns; Lucene field filters compiled to FALSE
+  // and the SELECT-sample fallback needs query_use_sequential_scans.
+  it('reads the flavor array INFER returns as its result row', () => {
+    const other = {
+      properties: {
+        Extra: { type: 'number', samples: [1] },
+        '~meta': { type: 'object', properties: { id: { type: 'string' } } },
+      },
+    };
+    const names = parseInfer([[inferDoc, other]]).map(f => f.path.join('.'));
+    expect(names).toEqual(expect.arrayContaining(['ServiceName', 'Extra']));
+    expect(names.filter(n => n.startsWith('~meta'))).toEqual([]);
+    expect(parseInfer({ data: [[inferDoc]] }).length).toBeGreaterThan(0);
+    expect(parseInfer([[]])).toEqual([]);
+  });
 });
 
 describe('couchbase metadata', () => {

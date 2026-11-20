@@ -5,6 +5,7 @@ import {
   isTimeSeriesDisplayType,
   splitAndTrimWithBracket,
 } from '@couchbase-traces/common-utils/dist/core/utils';
+import { quoteIdent } from '@couchbase-traces/common-utils/dist/couchbase/sqlpp';
 import {
   getMetadata,
   queryLanguageForConnection,
@@ -112,15 +113,16 @@ const SQL_STRING_LITERAL = /^'([^'\\]|\\.|'')*'$/;
 const JSON_EXTRACT_STRING_CALL = /^JSONExtractString\((.*)\)$/s;
 
 /**
- * Return a caller-supplied bodyExpression in a form that is safe to embed in
- * SQL, or null when it is not allowed. Accepts a column or map reference, or
- * JSONExtractString(<column or map reference>, '<key>', ...), the form the app
- * generates for JSON fields. The JSONExtractString form is rebuilt from its
- * validated arguments, so nothing else reaches the SQL.
+ * Return a caller-supplied bodyExpression as SQL++ that is safe to embed, or
+ * null when it is not allowed. Accepts a column or map reference, or
+ * JSONExtractString(<column or map reference>, '<key>', ...), the form agents
+ * and saved app configs use for JSON fields. That form is rebuilt from its
+ * validated arguments as `TOSTRING(DECODE_JSON(col).`key`...)`, so nothing
+ * else reaches the SQL and SQL++ never sees the ClickHouse function.
  */
 export function normalizeBodyExpression(expression: string): string | null {
   const trimmed = expression.trim();
-  if (SAFE_BODY_EXPR_CHARS.test(trimmed)) return trimmed;
+  if (SAFE_BODY_EXPR_CHARS.test(trimmed)) return mapRefToSqlpp(trimmed);
   const call = JSON_EXTRACT_STRING_CALL.exec(trimmed);
   if (!call) return null;
   const [column, ...keys] = splitAndTrimWithBracket(call[1]);
@@ -132,7 +134,55 @@ export function normalizeBodyExpression(expression: string): string | null {
   ) {
     return null;
   }
-  return `JSONExtractString(${[column, ...keys].join(', ')})`;
+  const names = keys.map(unquoteSqlString);
+  if (names.some(n => n.includes('`'))) return null;
+  const columnSql = mapRefToSqlpp(column);
+  if (columnSql == null) return null;
+  return `TOSTRING(${names.reduce(
+    (expr, name) => `${expr}.${quoteIdent(name)}`,
+    `DECODE_JSON(${columnSql})`,
+  )})`;
+}
+
+const MAP_REF = /^([A-Za-z_][\w.]*)\['([^'\\]*)'\]$/;
+
+/**
+ * A SQL where that filters on the same bodyExpression it mines, with each
+ * verbatim copy of that expression replaced by its SQL++ form. Agents are
+ * told to repeat the expression (`LogAttributes['k'] != ''`,
+ * `JSONExtractString(Body, 'k') != ''`), and SQL++ would read the bracket
+ * form as NULL and reject the function. Only the exact text the caller gave
+ * as bodyExpression is replaced; every other part of the where is untouched.
+ */
+export function whereWithBodyExpression(
+  where: string | undefined,
+  whereLanguage: 'lucene' | 'sql' | undefined,
+  bodyExpression: string | undefined,
+  bodyColumn: string,
+): string | undefined {
+  const original = bodyExpression?.trim();
+  if (!where || whereLanguage !== 'sql' || !original) return where;
+  if (original === bodyColumn) return where;
+  return where.split(original).join(bodyColumn);
+}
+
+/**
+ * SQL++ reads `m['k']` as an array subscript, which is NULL on an object, so
+ * a ClickHouse map reference becomes field access `m.`k``. Other accepted
+ * forms (a bare or dotted column) are already SQL++.
+ */
+function mapRefToSqlpp(ref: string): string | null {
+  const m = MAP_REF.exec(ref);
+  if (!m) return ref;
+  if (m[2] === '' || m[2].includes('`')) return null;
+  return `${m[1]}.${quoteIdent(m[2])}`;
+}
+
+/** The value of a literal accepted by SQL_STRING_LITERAL. */
+function unquoteSqlString(literal: string): string {
+  return literal
+    .slice(1, -1)
+    .replace(/''|\\(.)/g, (m, ch: string) => ch ?? "'");
 }
 
 // ─── Safety limits ───────────────────────────────────────────────────────────
@@ -186,7 +236,8 @@ function countDistinctGroups(
   if (resolvable.length === 0) return null;
   const seen = new Set<string>();
   for (const row of data) {
-    seen.add(JSON.stringify(resolvable.map(seg => row[seg])));
+    const cols = new Map(Object.entries(row));
+    seen.add(JSON.stringify(resolvable.map(seg => cols.get(seg))));
   }
   return seen.size;
 }

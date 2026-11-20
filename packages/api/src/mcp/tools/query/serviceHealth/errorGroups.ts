@@ -1,5 +1,11 @@
 import { errorStatusPredicateSql } from '@couchbase-traces/common-utils/dist/core/spanPredicates';
 import { getFirstTimestampValueExpression } from '@couchbase-traces/common-utils/dist/core/utils';
+import {
+  anyValue,
+  toString,
+} from '@couchbase-traces/common-utils/dist/couchbase/functions';
+import { tsMillisExpr } from '@couchbase-traces/common-utils/dist/couchbase/time';
+import type { BuilderChartConfigWithDateRange } from '@couchbase-traces/common-utils/dist/types';
 
 import {
   baseConfig,
@@ -26,7 +32,7 @@ export type ErrorGroup = {
   service: string;
   group: Record<string, string>;
   count: number;
-  /** cityHash64 of the group's key, used to look it up in another window. */
+  /** Hash of the group's key, used to look it up in another window. */
   hash?: string;
   /** Epoch ms of the first and last error in the window, if known. */
   firstSeenMs?: number;
@@ -51,34 +57,44 @@ export function errorGroupExpressions(
   );
 }
 
+/** Lowercase hex, the form SQL++ HASHBYTES returns. */
+const HASH_PATTERN = /^[0-9a-f]+$/;
+
 /**
- * Error counts per (service, group) in one window. `match` restricts rows to
- * exact (service, ...group) tuples, so the comparison window is looked up for
- * the groups found in the current window instead of its own top-N.
+ * The chart config behind {@link fetchErrorGroups}, in SQL++. `match`
+ * restricts rows to exact (service, ...group) tuples, so the comparison
+ * window is looked up for the groups found in the current window instead of
+ * its own top-N.
  */
-export async function fetchErrorGroups(
-  ctx: QueryContext,
+export function errorGroupsConfig(
+  ctx: Pick<QueryContext, 'source' | 'input'>,
   window: Window,
   groupExprs: string[],
   scope: { services: string[] } | { match: ErrorGroup[] },
-): Promise<ErrorGroup[]> {
+): BuilderChartConfigWithDateRange {
   const { source } = ctx;
   const keyExprs = [source.serviceNameExpression, ...groupExprs];
-  // Match groups across windows by a fixed-size hash. Inlining the raw key
-  // text (status messages can be stack traces) can exceed max_query_size.
-  const hashExpr = `cityHash64(${keyExprs.map(e => `toString(${e})`).join(', ')})`;
-  const epochMs = `toUnixTimestamp64Milli(toDateTime64(${getFirstTimestampValueExpression(source.timestampValueExpression)}, 3))`;
+  // Match groups across windows by a fixed-size hash: the raw key text
+  // (status messages can be stack traces) would bloat the statement. Upstream
+  // used ClickHouse cityHash64; HASHBYTES over the JSON array of the keys is
+  // the SQL++ form (Couchbase 8.0 metadata functions).
+  const hashExpr = `HASHBYTES([${keyExprs.map(toString).join(', ')}], {"algorithm":"md5"})`;
+  const epochMs = tsMillisExpr(
+    getFirstTimestampValueExpression(source.timestampValueExpression),
+    source.timestampFormat === 'epoch_millis' ? 'epoch_millis' : 'iso8601',
+  );
+  const hashes =
+    'match' in scope
+      ? scope.match
+          .map(g => g.hash)
+          .filter((h): h is string => !!h && HASH_PATTERN.test(h))
+      : [];
   const scopeCondition =
     'services' in scope
-      ? `${source.serviceNameExpression} IN (${sqlList(scope.services)})`
-      : `${hashExpr} IN (${
-          scope.match
-            .map(g => g.hash)
-            .filter((h): h is string => !!h && /^\d+$/.test(h))
-            .join(', ') || 'NULL'
-        })`;
+      ? `${source.serviceNameExpression} IN [${sqlList(scope.services)}]`
+      : `${hashExpr} IN [${hashes.map(h => `'${h}'`).join(', ')}]`;
 
-  const { rows } = await run(ctx, {
+  return {
     ...baseConfig(ctx, window, [
       {
         type: 'sql',
@@ -88,22 +104,36 @@ export async function fetchErrorGroups(
     ]),
     select: [
       { aggFn: 'count', valueExpression: '', alias: ERROR_COUNT_ALIAS },
-      // Epoch ms, because min/max cast their argument to Float64.
+      // Epoch ms, so first/last seen compare as numbers.
       { aggFn: 'min', valueExpression: epochMs, alias: FIRST_SEEN_ALIAS },
       { aggFn: 'max', valueExpression: epochMs, alias: LAST_SEEN_ALIAS },
-      // 'none' passes the expression through on the sample-weighted path too.
-      { aggFn: 'none', valueExpression: `any(${hashExpr})`, alias: HASH_ALIAS },
+      // The hash is constant per group; 'none' passes the expression through
+      // on the sample-weighted path too.
+      { aggFn: 'none', valueExpression: anyValue(hashExpr), alias: HASH_ALIAS },
     ],
     groupBy: [
       { valueExpression: source.serviceNameExpression, alias: SERVICE_ALIAS },
       ...groupExprs.map((e, i) => ({
-        valueExpression: `toString(${e})`,
+        valueExpression: toString(e),
         alias: errorKeyAlias(i),
       })),
     ],
     orderBy: `${ERROR_COUNT_ALIAS} DESC`,
     limit: { limit: MAX_ERROR_ROWS },
-  });
+  };
+}
+
+/** Error counts per (service, group) in one window. */
+export async function fetchErrorGroups(
+  ctx: QueryContext,
+  window: Window,
+  groupExprs: string[],
+  scope: { services: string[] } | { match: ErrorGroup[] },
+): Promise<ErrorGroup[]> {
+  const { rows } = await run(
+    ctx,
+    errorGroupsConfig(ctx, window, groupExprs, scope),
+  );
 
   return rows.map(row => {
     const c = columns(row);

@@ -4,34 +4,21 @@
  * HAVING errors are raised by the query engine, not by the renderer.
  * Requires port/couchbase-test (CBT_TEST_COUCHBASE_*).
  */
-import type { ChartConfigWithOptDateRangeEx } from '@/core/chartConfig';
 import { convertToCategoricalChartConfig } from '@/core/utils';
-import type { CouchbaseConnectionConfig } from '@/couchbase/node';
-import {
-  clusterCache,
-  CouchbaseNodeClient,
-  testConnection,
-} from '@/couchbase/node';
-import { renderChartConfigCouchbase } from '@/couchbase/render';
+import { clusterCache } from '@/couchbase/node';
 import { toIso30 } from '@/couchbase/time';
 import type { MetricTable } from '@/types';
 import { DisplayType, MetricsDataType } from '@/types';
 
-const CONNSTR =
-  process.env.CBT_TEST_COUCHBASE_CONNSTR || 'couchbase://localhost';
-const REQUIRED = process.env.CBT_TEST_COUCHBASE_REQUIRED === '1';
-const ADMIN_USER = process.env.CBT_TEST_COUCHBASE_ADMIN_USER || 'Administrator';
-const ADMIN_PASSWORD =
-  process.env.CBT_TEST_COUCHBASE_ADMIN_PASSWORD || 'cbt-test-admin';
+import {
+  ensureCollection,
+  liveConnection,
+  probeLive,
+  runChart,
+  seed,
+} from './liveCluster';
 
-const conn: CouchbaseConnectionConfig = {
-  id: 'd1-renderer',
-  host: CONNSTR,
-  username: ADMIN_USER,
-  password: ADMIN_PASSWORD,
-  wanProfile: false,
-  updatedAt: '2026-01-01T00:00:00.000Z',
-};
+const conn = liveConnection('d1-renderer');
 
 const COLLECTIONS = {
   logs: 'd1_logs',
@@ -39,7 +26,6 @@ const COLLECTIONS = {
   sum: 'd1_metrics_sum',
   histogram: 'd1_metrics_histogram',
 } as const;
-const ks = (c: string) => `\`test\`.\`app\`.\`${c}\``;
 const metricTables = {
   [MetricsDataType.Gauge.toLowerCase()]: COLLECTIONS.gauge,
   [MetricsDataType.Sum.toLowerCase()]: COLLECTIONS.sum,
@@ -53,81 +39,6 @@ const at = (s: number) =>
   toIso30(new Date(START.getTime() + 600_000 + s * 1000));
 
 let live = false;
-
-function queryPort(): number {
-  return 8093 + Number(process.env.CBT_TEST_COUCHBASE_PORT_OFFSET || 0);
-}
-
-async function adminMutate(statement: string, named?: Record<string, unknown>) {
-  const payload: Record<string, unknown> = { statement };
-  for (const [k, v] of Object.entries(named ?? {})) payload[`$${k}`] = v;
-  const auth = Buffer.from(`${ADMIN_USER}:${ADMIN_PASSWORD}`).toString(
-    'base64',
-  );
-  const res = await fetch(`http://127.0.0.1:${queryPort()}/query/service`, {
-    method: 'POST',
-    headers: {
-      authorization: `Basic ${auth}`,
-      'content-type': 'application/json',
-    },
-    body: JSON.stringify(payload),
-  });
-  const body = (await res.json()) as {
-    status?: string;
-    errors?: unknown;
-    results?: unknown[];
-  };
-  if (body.status !== 'success') {
-    throw new Error(`mutate failed: ${JSON.stringify(body.errors ?? body)}`);
-  }
-  return body.results ?? [];
-}
-
-async function ensureCollection(name: string) {
-  for (let i = 0; ; i++) {
-    try {
-      await adminMutate(`CREATE COLLECTION ${ks(name)} IF NOT EXISTS`);
-      await adminMutate(`CREATE PRIMARY INDEX IF NOT EXISTS ON ${ks(name)}`);
-      await adminMutate(`DELETE FROM ${ks(name)}`);
-      return;
-    } catch (err) {
-      // DDL can 12003 until the query service sees a new scope/collection.
-      if (i >= 30) throw err;
-      await new Promise(r => setTimeout(r, 1000));
-    }
-  }
-}
-
-async function seed(collection: string, docs: Record<string, unknown>[]) {
-  for (const [i, v] of docs.entries()) {
-    await adminMutate(
-      `UPSERT INTO ${ks(collection)} (KEY, VALUE) VALUES ($k, $v)`,
-      { k: `${collection}:${i}`, v },
-    );
-  }
-  // The primary index is eventually consistent after UPSERT.
-  for (let i = 0; i < 50; i++) {
-    const [n] = await adminMutate(`SELECT RAW COUNT(*) FROM ${ks(collection)}`);
-    if (Number(n) >= docs.length) return;
-    await new Promise(r => setTimeout(r, 100));
-  }
-  throw new Error(`${collection}: seeded docs not visible`);
-}
-
-async function run(config: unknown): Promise<Record<string, unknown>[]> {
-  const q = await renderChartConfigCouchbase(
-    config as ChartConfigWithOptDateRangeEx,
-    { getColumns: async () => [] },
-    undefined,
-  );
-  const result = await new CouchbaseNodeClient({ conn, team: null }).query({
-    query: q.sql,
-    query_params: q.params,
-    format: 'JSON',
-    queryContext: { bucket: 'test', scope: 'app' },
-  });
-  return (await result.json<Record<string, unknown>>()).data;
-}
 
 const metricConfig = (
   select: Record<string, unknown>,
@@ -154,14 +65,8 @@ const metricConfig = (
 });
 
 beforeAll(async () => {
-  const probe = await testConnection(conn, 15000);
-  live = probe.success;
-  if (!live) {
-    const msg = `Couchbase integration tests skipped: ${probe.success ? '' : probe.error.message}`;
-    if (REQUIRED) throw new Error(msg);
-    console.warn(msg);
-    return;
-  }
+  live = await probeLive(conn);
+  if (!live) return;
   for (const c of Object.values(COLLECTIONS)) await ensureCollection(c);
   const metric = (name: string, series: string, extra: object) => ({
     MetricName: name,
@@ -220,7 +125,10 @@ describe('D1 chart renderer on a live cluster', () => {
     "runs a %s series with granularity 'auto'",
     async (_kind, aggFn, metricName, metricType, expected) => {
       if (!live) return;
-      const rows = await run(metricConfig({ aggFn, metricName, metricType }));
+      const rows = await runChart(
+        conn,
+        metricConfig({ aggFn, metricName, metricType }),
+      );
       expect(rows).toHaveLength(1);
       expect(rows[0]).toHaveProperty('__hdx_time_bucket');
       expect(Number(rows[0]!.series_0)).toBe(expected);
@@ -236,7 +144,8 @@ describe('D1 chart renderer on a live cluster', () => {
     ],
   ])('runs a histogram quantile time series %s', async (_l, extra, keys) => {
     if (!live) return;
-    const rows = await run(
+    const rows = await runChart(
+      conn,
       metricConfig(
         {
           aggFn: 'quantile',
@@ -281,7 +190,7 @@ describe('D1 chart renderer on a live cluster', () => {
         displayType === DisplayType.Table
           ? tableConfig(displayType)
           : convertToCategoricalChartConfig(tableConfig(displayType) as never);
-      const rows = await run(config);
+      const rows = await runChart(conn, config);
       expect(rows.map(r => r.ServiceName).sort()).toEqual(['b', 'c']);
       expect(rows.map(r => Number(r.n)).sort()).toEqual([3, 5]);
     },
