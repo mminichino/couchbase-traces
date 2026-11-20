@@ -590,7 +590,8 @@ Fix (Q15): the test seed helpers wait until seeded rows are visible to the index
 their current scan consistency; no product change. Acceptance: the `cbt_table`
 having group passes 10 runs in a row. Depends on: D2. Size: S. Placement (Q15):
 a separate small commit in the D9 PR when it stays small, otherwise its own PR
-before R2c; the D9 port notes record which.
+before R2c. Done: folded into the D9 PR as its own commit (see the D8 port
+notes).
 
 #### D9: Builder expressions with ClickHouse map syntax (found in D2, size M)
 

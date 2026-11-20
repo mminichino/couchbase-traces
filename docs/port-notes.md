@@ -1277,6 +1277,12 @@ MongoDB is removed from the product. Nothing reads or writes Mongo, and no Mongo
 - **Docs.** The MCP builder docs teach `SpanAttributes['k']` for builder fields and backtick access for raw SQL; both are now true, so they are unchanged. Two dashboard-prompt sentences said a map group-by column comes back as `arrayElement(SpanAttributes, 'http.route')`; they now say the raw expression text, which is still not a Handlebars identifier, so the raw SQL alias advice stands. The full text sweep stays in D2b.
 - **Tests.** Unit: `couchbase/__tests__/mapAccess.test.ts` (rewriter: forms, escapes, literals, keywords, rejection), `render/__tests__/mapAccess.test.ts` (every emit point, upstream inputs: `Attributes['env']`, `ResourceAttributes['host']`, `orderBy: "ResourceAttributes['service.name'] DESC"`, `LogAttributes['path']` sql_ast, `SpanAttributes['service.name'] IN ('O\'Reilly API')`), `metadata.test.ts` (dropdown keys). Live (`port/couchbase-test/run.sh`): `mapAccess.couchbase.int.test.ts`, 6 cases, red before the fix and green after: group by a dotted key, where plus filters, aggCondition/having/orderBy, quoted and special-character keys, search column list, Kubernetes dropdown values. `groupByAlias.test.ts` (D2) pinned the bracket passthrough and now expects the SQL++ form.
 
+### D8: fixture reads of freshly seeded rows (2026-11-20, folded into the D9 PR as its own commit)
+
+- **Root cause.** `fixtureStore.ts` `insert` returned right after its UPSERTs; GSI indexes catch up asynchronously and MCP chart queries use the default `not_bounded` scan consistency, so a test querying at once could miss rows (`cbt_table` having group `c`).
+- **Fix (Q15).** Test seed helper only: after inserting, `insert` runs one `request_plus` count through each online GSI index on the keyspace (`USE INDEX`), which returns once that index holds every earlier mutation. Product queries are unchanged.
+- **Acceptance.** `queryTool` `-t having` (10 cases) passed 10 runs in a row on the `docker-compose.ci.yml` stack.
+
 ### D9 deferred-suite measurement (measurement only, still deferred)
 
 Same `docker-compose.ci.yml` stack, fresh for each run, `main` (6c708c0) vs this branch, every deferred suite run on its own with the ignore list overridden: 205 → 203 failing of 1002, no test pass → fail. R2a (10 suites) 65 → 65 of 380. R2c (8 suites) 99 → 98 of 287 (`queryTile` grouped bar over an exponential histogram now passes; the R2c "before" matches D2's 99). R2b (5 suites) 41 → 40 of 335 (`checkAlerts` INLINE group-by alert now notifies per group).
