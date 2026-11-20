@@ -11,12 +11,17 @@ import {
 } from '../utils/constants';
 import { setTeamFlag } from '../utils/db-helpers';
 
+// Couchbase connections replace ClickHouse's Database / Table pickers with
+// Bucket / Scope / Collection inputs and a timestamp format
+// (CouchbaseSourceFields).
 const COMMON_FIELDS = [
   'Name',
   'Source Data Type',
   'Server Connection',
-  'Database',
-  'Table',
+  'Bucket',
+  'Scope',
+  'Timestamp format',
+  'Collection',
 ];
 
 const LOG_FIELDS = [
@@ -69,7 +74,7 @@ const SESSION_FIELDS = [...COMMON_FIELDS, 'Correlated Trace Source'];
 // off by default. See "should show series Table field when isMetricsSeriesTableEnabled
 // is on" below for the flag-enabled case.
 const METRIC_FIELDS = [
-  ...COMMON_FIELDS.slice(0, -1), // Remove Table
+  ...COMMON_FIELDS.slice(0, -1), // Metric sources have no Collection field
   'gauge Table',
   'histogram Table',
   'sum Table',
@@ -394,6 +399,7 @@ test.describe('Sources Functionality', { tag: ['@sources'] }, () => {
               name: newSourceName,
               connection: existing.connection,
               from: existing.from,
+              timestampFormat: existing.timestampFormat,
               timestampValueExpression: existing.timestampValueExpression,
               resourceAttributesExpression:
                 existing.resourceAttributesExpression,

@@ -875,8 +875,8 @@ Completed requests: `system:completed_requests` requires `query_system_catalog`.
 
 ### Pending user decisions
 
-- Local mode supports ClickHouse connections only.
-- Publishing the all-in-one image, which bundles Couchbase Server Enterprise.
+- ~~Local mode supports ClickHouse connections only.~~ Closed: local mode was removed in Phase 10 (see the comment in `packages/app/src/config.ts`).
+- ~~Publishing the all-in-one image, which bundles Couchbase Server Enterprise.~~ Decided 2026-11-19 (v1 plan Q1): not published for 1.0; `make build-all-in-one` stays for local builds.
 
 ### Test environment
 
@@ -1220,3 +1220,15 @@ MongoDB is removed from the product. Nothing reads or writes Mongo, and no Mongo
 - **E2E smoke.** `./scripts/test-e2e.sh --quiet sources` boots the no-Mongo stack (Couchbase only), runs ingest setup, `clearMetadata`, user/team registration, and `DEFAULT_SOURCES` seeding through `cbt_meta`; 2 specs pass. 4 `sources.spec.ts` specs fail on ClickHouse-era UI expectations (`Database` field label, source form `Save anyway` flow, PUT with the GET payload), which belong to the deferred Playwright full-stack gap (Phase 11 K2). Note: a shell with exported `CBT_COUCHBASE_ADMIN_PASSWORD` makes `golden:init` use that password while `global-setup-fullstack.ts` uses `cbt-test-admin`, giving `authentication failure`; unset `CBT_*` before running E2E locally.
 - **CI follow-up.** First CI run failed in `main.yml` because `docker compose pull ... db` and the failure log dump still named the removed `db` service, and `docker-compose.capella.yml` kept `depends_on: db`. Fixed, and `check-no-mongo.sh` now fails on dangling `db` references in compose files, workflows, the Makefile, and scripts.
 - **Verification.** See the PR description for the run log: `make ci-lint`, `make ci-unit`, `make ci-int` (no Mongo container; 1,200 API int tests passed, 51 skipped from the existing deferred list), `bash port/couchbase-test/run.sh`, knip clean, `yarn install` leaves `yarn.lock` unchanged.
+
+## v1.0.0 release (planned)
+
+- Plan: [`docs/v1-release-plan.md`](v1-release-plan.md). Inventory of open items (blockers B1–B16, post-1.0 P1–P12), where versions live today, phases R0–R8, and the user's decisions on Q1–Q10 (recorded 2026-11-19). The "Pending user decisions" under Phase 4 are closed (B14 / Q1).
+
+### R0: triage and quick fixes (2026-11-19, `mm--v1-r0-triage`)
+
+- **Triage.** Results are in `docs/v1-release-plan.md` section 14. Deferred API int suites: 1,002 tests, 690 pass, 312 fail. R2a has 80 failures, R2b 93, and R2c 139; 72 of the 312 are product defects, mostly in MCP tools that still emit ClickHouse SQL (`{db:Identifier}` in `mcp/tools/trace/waterfall.ts`, `count()`, `startsWith`, `granularity: 'auto'`). Full Playwright: 457 tests, 325 passed, 115 failed, 8 flaky; the R4 worklist starts with the ClickHouse `system.tables` condition in `OnboardingChecklist/useOnboardingCompletion.ts`.
+- **B3.** `sources.spec.ts` expects the Couchbase source form (Bucket, Scope, Timestamp format, Collection instead of Database and Table). `packages/app/scripts/run-e2e.js` adds `timestampFormat: 'iso8601'` to the fixture sources: `validateSourceForConnectionKind` rejects a Couchbase source without one, so no edit-and-save from the form or PUT of a fixture source could succeed. Correction to the plan: the "Save anyway" pairing dialog is still current; the PUT never fired because form validation failed first.
+- **B4.** `scripts/e2e-env.sh` (sourced by `scripts/test-e2e.sh`) unsets inherited `CBT_*` (keeping `CBT_E2E_*`, `CBT_SLOT_FROM`, `CBT_PORTAL_*`) and `COUCHBASE_URL` / `COUCHBASE_USERNAME` / `COUCHBASE_PASSWORD`, then exports the E2E admin login. Unit test `scripts/__tests__/e2e-env.test.mjs` (in `make ci-unit`). Verified with `CBT_COUCHBASE_ADMIN_PASSWORD=wrong` exported.
+- **B16.** Docker Hub `couchbase/server` tags matching `enterprise-8.0` on 2026-11-19: 8.0.0, 8.0.1, 8.0.2, 8.0.3. `enterprise-8.0.3` is still the latest 8.0.x maintenance release; no pin changed.
+- **Lint caps.** Measured warnings: api 313 (cap 320 → 313), app 496 (568 → 496), common-utils 82 (100 → 82).
