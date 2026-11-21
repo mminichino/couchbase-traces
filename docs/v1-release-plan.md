@@ -504,6 +504,10 @@ Acceptance: the 21 P failures in `mcp/__tests__/trace` pass locally; a unit test
 renders the waterfall and breakdown SQL and checks it uses named parameters and
 quoted identifiers.
 
+Done (2026-11-21, `mm--v1-d3-mcp-trace`): `trace` 29 → 1 failing of 40 on a
+fresh stack; the one left also fails on `main` and depends on suite order (see
+the D3 port notes). Builders in `common-utils/src/couchbase/traceQueries.ts`.
+
 #### D4: Schema inference on empty collections (size S)
 
 Evidence: `INFER` on an empty collection fails with error 7014 "No documents
@@ -977,9 +981,9 @@ Failing or flaky specs (R4 worklist, ordered by failure count):
 | `search/side-panel-navigation.spec.ts`    |     3 |    1 |    2 |     0 | `side-panel-tab-trace` missing                                                                                                                                                                                                |
 | `services-dashboard.spec.ts`              |     3 |    1 |    2 |     0 | error-rate chart and top-endpoints link missing                                                                                                                                                                               |
 | `span-links.spec.ts`                      |     2 |    0 |    2 |     0 | no table rows                                                                                                                                                                                                                 |
-| `team.spec.ts`                            |    10 |    8 |    2 |     0 | connection card has no `Host:`/`Username:` text; timeout (still failing after D2b, Q20)                                                                                                                                                                                  |
+| `team.spec.ts`                            |    10 |    8 |    2 |     0 | connection card has no `Host:`/`Username:` text; timeout (still failing after D2b, Q20)                                                                                                                                       |
 | `alerts.spec.ts`                          |    25 |   20 |    1 |     4 | saved-search alert `table-row` never visible                                                                                                                                                                                  |
-| `dashboards-list.spec.ts`                 |     7 |    6 |    1 |     0 | `Cluster` card locator also matches the Kubernetes card ("Kubernetes cluster"), strict-mode violation (Q20)                                                                                                                                                                                       |
+| `dashboards-list.spec.ts`                 |     7 |    6 |    1 |     0 | `Cluster` card locator also matches the Kubernetes card ("Kubernetes cluster"), strict-mode violation (Q20)                                                                                                                   |
 | `search/histogram-group-by.spec.ts`       |    10 |    9 |    1 |     0 | group-by series values differ                                                                                                                                                                                                 |
 | `search/json-add-to-filter.spec.ts`       |     1 |    0 |    1 |     0 | no table rows                                                                                                                                                                                                                 |
 | `search/json-viewer-key-order.spec.ts`    |     1 |    0 |    1 |     0 | key order equals the alphabetical order the spec rejects                                                                                                                                                                      |
