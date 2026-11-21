@@ -525,6 +525,14 @@ Acceptance: unit test with a mocked 7014 response; the 7 P failures in
 `mcp/__tests__/sources` pass locally; an alert on an empty collection ends in
 `OK`, not an error.
 
+Done (2026-11-21, `mm--v1-d4-empty-infer`): 7014 no longer reaches any caller
+(22 logged before, 0 after); one predicate, `isEmptyInferError`, in
+`Metadata.inferFields`. `sources` 16 → 13, `checkAlerts` 27 → 24 on a fresh
+stack; an alert on an empty `otel_logs` ends in `OK` (`make ci-int`). Of the 7 P
+`sources` failures, the 3 that hit 7014 pass. The other 4, and 9 more, are the
+metric tools' leftover ClickHouse `sqlExpr` SQL, or describe cases that expect
+DDL columns on an empty collection. Both are open (see the D4 port notes).
+
 #### D5: Onboarding checklist probe (size S)
 
 Scope: `packages/app/src/OnboardingChecklist/useOnboardingCompletion.ts:70-90`.
