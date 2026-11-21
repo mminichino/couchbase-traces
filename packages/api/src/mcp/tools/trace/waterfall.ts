@@ -1,11 +1,15 @@
-import { pickBucketTimestampColumn } from '@couchbase-traces/common-utils/dist/core/utils';
+import { eventTimestampExpr } from '@couchbase-traces/common-utils/dist/couchbase/timestampColumns';
+import {
+  correlatedLogsQuery,
+  spanTreeQuery,
+  traceExtentQuery,
+  type TraceTable,
+} from '@couchbase-traces/common-utils/dist/couchbase/traceQueries';
 import { getMetadata } from '@couchbase-traces/common-utils/dist/dataLayer';
-import type { SqlFrag } from '@couchbase-traces/common-utils/dist/query';
 import {
   type BuilderChartConfigWithDateRange,
   type ChartConfigWithDateRange,
   DisplayType,
-  type QuerySettings,
   SourceKind,
 } from '@couchbase-traces/common-utils/dist/types';
 import { z } from 'zod';
@@ -16,9 +20,9 @@ import { parseTimeRange, queryErrorResult } from '@/mcp/tools/query/helpers';
 import {
   durationDivisor,
   getMcpDataClient,
-  inclusiveTimeFilter,
   requireMcpDataClient,
-  type TimeFilterParams,
+  runRows,
+  traceTable,
 } from '@/mcp/tools/trace/shared';
 import type { ToolRegistrar } from '@/mcp/tools/types';
 import { mcpUserError } from '@/mcp/utils/errors';
@@ -120,7 +124,7 @@ const traceSchema = z.object({
 type TraceInput = z.infer<typeof traceSchema>;
 
 // Probe-window tuning. The span/log fetch is time-bounded to the
-// trace's probed [min, max] extent so legacy store prunes partitions. The pads
+// trace's probed [min, max] extent so the time-range index bounds the scan. The pads
 // absorb clock skew between emitters; they do NOT cover trace duration — the
 // [min, max] extent already does. MAX_FETCH_WINDOW clamps the width so a
 // reused/sentinel id (e.g. an all-zero TraceId) whose min and max are days
@@ -188,31 +192,13 @@ function buildPreOrderTree(spans: SpanRow[]): TreeSpan[] {
   return ordered;
 }
 
-// min()/max() over an empty set yields the epoch, i.e. 0.
+// MIN/MAX over no rows is NULL in SQL++ (the epoch, 0, upstream).
 function parseProbeTimestamp(
-  value: string | number | undefined,
+  value: string | number | null | undefined,
 ): number | null {
   if (value == null) return null;
   const ms = Number(value);
   return isNaN(ms) || ms <= 0 ? null : ms;
-}
-
-type TimestampExprs = {
-  /** Highest-precision DateTime column, for event-time SELECT/ORDER BY. */
-  eventTs: string;
-  /** Inclusive filter over every configured timestamp column, so a
-   *  composite "EventDate, EventTime" source still prunes on its Date column. */
-  timeFilter: (start: Date, end: Date) => Promise<SqlFrag>;
-};
-
-async function resolveTimestampExprs(
-  params: TimeFilterParams,
-): Promise<TimestampExprs> {
-  const eventTs = await pickBucketTimestampColumn(params);
-  return {
-    eventTs,
-    timeFilter: (start, end) => inclusiveTimeFilter(params, start, end),
-  };
 }
 
 type ProbedWindow = { start: Date; end: Date; clamped: boolean };
@@ -232,50 +218,29 @@ type ProbedWindow = { start: Date; end: Date; clamped: boolean };
 async function probeTraceWindow(
   dataClient: DataClient,
   params: {
-    databaseName: string;
-    tableName: string;
+    table: TraceTable;
     connectionId: string;
     traceIdExpr: string;
-    ts: TimestampExprs;
     traceId: string;
     startDate: Date;
     endDate: Date;
-    querySettings: QuerySettings | undefined;
   },
 ): Promise<ProbedWindow | null> {
-  const timeFilter = await params.ts.timeFilter(
-    params.startDate,
-    params.endDate,
+  // Epoch ms, so the window does not depend on the API host's time zone.
+  const rows = await runRows<{
+    firstSeen: string | number | null;
+    lastSeen: string | number | null;
+  }>(
+    dataClient,
+    traceExtentQuery({
+      table: params.table,
+      traceIdExpression: params.traceIdExpr,
+      traceId: params.traceId,
+      start: params.startDate,
+      end: params.endDate,
+    }),
+    params.connectionId,
   );
-  // Return epoch ms: a rendered DateTime string has no zone, so parsing it
-  // with new Date() would shift the window on a non-UTC API host.
-  const probeQuery = `
-    SELECT
-      toUnixTimestamp64Milli(toDateTime64(min(${params.ts.eventTs}), 3)) AS firstSeen,
-      toUnixTimestamp64Milli(toDateTime64(max(${params.ts.eventTs}), 3)) AS lastSeen
-    FROM {db:Identifier}.{tbl:Identifier}
-    WHERE ${params.traceIdExpr} = {tid:String}
-      AND ${timeFilter.sql}
-  `;
-  const result = await dataClient.query({
-    query: probeQuery,
-    query_params: {
-      ...timeFilter.params,
-      db: params.databaseName,
-      tbl: params.tableName,
-      tid: params.traceId,
-    },
-    format: 'JSONEachRow',
-    connectionId: params.connectionId,
-  });
-  const rows =
-    (await (
-      result as {
-        json: () => Promise<
-          { firstSeen: string | number; lastSeen: string | number }[]
-        >;
-      }
-    ).json()) ?? [];
   const firstSeen = parseProbeTimestamp(rows[0]?.firstSeen);
   const lastSeen = parseProbeTimestamp(rows[0]?.lastSeen);
   if (firstSeen == null || lastSeen == null) return null;
@@ -360,23 +325,16 @@ export function registerTraceWaterfall({
       const metadata = getMetadata(dataClient);
 
       const traceIdExpr = source.traceIdExpression;
-      const spanIdExpr = source.spanIdExpression;
-      const parentSpanIdExpr = source.parentSpanIdExpression;
-      const spanNameExpr = source.spanNameExpression;
-      const spanKindExpr = source.spanKindExpression;
       const durationExpr = source.durationExpression;
       const tsExpr = source.timestampValueExpression;
-      const ts = await resolveTimestampExprs({
-        timestampValueExpression: tsExpr,
-        metadata,
-        databaseName: source.from.databaseName,
-        tableName: source.from.tableName,
-        connectionId: source.connection.toString(),
-      });
-      const serviceNameExpr = source.serviceNameExpression ?? "''";
+      const table = traceTable(source);
+      let eventTs: string;
+      try {
+        eventTs = eventTimestampExpr(tsExpr);
+      } catch (e) {
+        return queryErrorResult(e, 'Failed to read the trace timestamp');
+      }
       const statusCodeExpr = source.statusCodeExpression ?? "''";
-      const statusMessageExpr = source.statusMessageExpression ?? "''";
-      const attrsExpr = source.eventAttributesExpression ?? 'map()';
       const divisor = durationDivisor(source.durationPrecision);
 
       let pickedTraceId = input.traceId;
@@ -405,10 +363,10 @@ export function registerTraceWaterfall({
 
         const orderBy =
           input.pickBy === 'slowest'
-            ? `max(${durationExpr}) DESC`
+            ? `MAX(${durationExpr}) DESC`
             : input.pickBy === 'first_error'
-              ? `min(${ts.eventTs}) ASC`
-              : `max(${ts.eventTs}) DESC`;
+              ? `MIN(${eventTs}) ASC`
+              : `MAX(${eventTs}) DESC`;
 
         const pickConfig: BuilderChartConfigWithDateRange = {
           displayType: DisplayType.Table,
@@ -479,7 +437,8 @@ export function registerTraceWaterfall({
         pickedTraceId = String(candidate[1]);
       }
 
-      // The fetch must be time-bounded so legacy store prunes partitions, but the
+      // The fetch must be time-bounded so the time-range index bounds the
+      // scan, but the
       // [startDate, endDate] window is often too narrow to bound it safely:
       //   - an explicit traceId with the default window may be for an older
       //     trace outside it;
@@ -508,15 +467,12 @@ export function registerTraceWaterfall({
             ];
         try {
           const probed = await probeTraceWindow(dataClient, {
-            databaseName: source.from.databaseName,
-            tableName: source.from.tableName,
+            table,
             connectionId: source.connection.toString(),
             traceIdExpr,
-            ts,
             traceId: pickedTraceId,
             startDate: probeStart,
             endDate: probeEnd,
-            querySettings: source.querySettings,
           });
           if (probed) {
             fetchStart = probed.start;
@@ -542,46 +498,42 @@ export function registerTraceWaterfall({
 
       let rows: SpanRow[];
       try {
-        const timeFilter = await ts.timeFilter(fetchStart, fetchEnd);
-        const treeQuery = `
-          SELECT
-            ${spanIdExpr} AS spanId,
-            ${parentSpanIdExpr} AS parentSpanId,
-            ${serviceNameExpr} AS serviceName,
-            ${spanNameExpr} AS spanName,
-            ${spanKindExpr} AS spanKind,
-            ${durationExpr} / {divisor:Float64} AS durationMs,
-            ${statusCodeExpr} AS statusCode,
-            ${statusMessageExpr} AS statusMessage,
-            ${ts.eventTs} AS timestamp,
-            ${attrsExpr} AS spanAttributes
-          FROM {db:Identifier}.{tbl:Identifier}
-          WHERE ${traceIdExpr} = {tid:String}
-            AND ${timeFilter.sql}
-          ORDER BY ${ts.eventTs} ASC
-          LIMIT {n:UInt32}
-        `;
-        const result = await dataClient.query({
-          query: treeQuery,
-          query_params: {
-            ...timeFilter.params,
-            db: source.from.databaseName,
-            tbl: source.from.tableName,
-            tid: pickedTraceId,
-            n: input.maxSpans + 1, // +1 to detect truncation
+        rows = await runRows<SpanRow>(
+          dataClient,
+          spanTreeQuery({
+            table,
+            exprs: {
+              traceId: traceIdExpr,
+              spanId: source.spanIdExpression,
+              parentSpanId: source.parentSpanIdExpression,
+              serviceName: source.serviceNameExpression,
+              spanName: source.spanNameExpression,
+              spanKind: source.spanKindExpression,
+              duration: durationExpr,
+              statusCode: source.statusCodeExpression,
+              statusMessage: source.statusMessageExpression,
+              attributes: source.eventAttributesExpression,
+            },
+            traceId: pickedTraceId,
+            start: fetchStart,
+            end: fetchEnd,
             divisor,
-          },
-          format: 'JSONEachRow',
-          connectionId: source.connection.toString(),
-        });
-        rows =
-          (await (result as { json: () => Promise<SpanRow[]> }).json()) ?? [];
+            limit: input.maxSpans + 1, // +1 to detect truncation
+          }),
+          source.connection.toString(),
+        );
       } catch (e) {
         return queryErrorResult(e, `Failed to fetch trace ${pickedTraceId}`);
       }
 
-      const truncated = rows.length > input.maxSpans;
-      const spans = truncated ? rows.slice(0, input.maxSpans) : rows;
+      // Whole-ms durations come back as strings (Int64 JSON encoding);
+      // upstream's Float64 division returned numbers.
+      const spanRows = rows.map(r => ({
+        ...r,
+        durationMs: Number(r.durationMs),
+      }));
+      const truncated = spanRows.length > input.maxSpans;
+      const spans = truncated ? spanRows.slice(0, input.maxSpans) : spanRows;
 
       if (spans.length === 0) {
         // The window was often chosen by the probe, not the caller, so the hint
@@ -663,12 +615,6 @@ export function registerTraceWaterfall({
         } else if (logSource.kind !== SourceKind.Log) {
           logsNote = `logSourceId ${source.logSourceId} is kind="${logSource.kind}", not "log"`;
         } else {
-          const logTraceIdExpr = logSource.traceIdExpression ?? 'TraceId';
-          const logSpanIdExpr = logSource.spanIdExpression ?? "''";
-          const logBodyExpr = logSource.bodyExpression ?? "''";
-          const logSevExpr = logSource.severityTextExpression ?? "''";
-          const logSvcExpr = logSource.serviceNameExpression ?? "''";
-
           // Reuse the same connection only when the log source lives there.
           let logClient: DataClient | null = dataClient;
           if (
@@ -685,47 +631,24 @@ export function registerTraceWaterfall({
 
           if (logClient && !logsNote) {
             try {
-              const logTs = await resolveTimestampExprs({
-                timestampValueExpression: logSource.timestampValueExpression,
-                metadata:
-                  logClient === dataClient ? metadata : getMetadata(logClient),
-                databaseName: logSource.from.databaseName,
-                tableName: logSource.from.tableName,
-                connectionId: logSource.connection.toString(),
-              });
-              const logTimeFilter = await logTs.timeFilter(
-                fetchStart,
-                fetchEnd,
+              const allLogs = await runRows<LogRow>(
+                logClient,
+                correlatedLogsQuery({
+                  table: traceTable(logSource),
+                  exprs: {
+                    traceId: logSource.traceIdExpression,
+                    spanId: logSource.spanIdExpression,
+                    body: logSource.bodyExpression,
+                    severityText: logSource.severityTextExpression,
+                    serviceName: logSource.serviceNameExpression,
+                  },
+                  traceId: pickedTraceId,
+                  start: fetchStart,
+                  end: fetchEnd,
+                  limit: input.maxLogs + 1, // +1 to detect truncation
+                }),
+                logSource.connection.toString(),
               );
-              const logsQuery = `
-                SELECT
-                  ${logTs.eventTs} AS timestamp,
-                  ${logSevExpr} AS severityText,
-                  ${logBodyExpr} AS body,
-                  ${logSvcExpr} AS serviceName,
-                  ${logSpanIdExpr} AS spanId
-                FROM {db:Identifier}.{tbl:Identifier}
-                WHERE ${logTraceIdExpr} = {tid:String}
-                  AND ${logTimeFilter.sql}
-                ORDER BY ${logTs.eventTs} ASC
-                LIMIT {n:UInt32}
-              `;
-              const logResult = await logClient.query({
-                query: logsQuery,
-                query_params: {
-                  ...logTimeFilter.params,
-                  db: logSource.from.databaseName,
-                  tbl: logSource.from.tableName,
-                  tid: pickedTraceId,
-                  n: input.maxLogs + 1, // +1 to detect truncation
-                },
-                format: 'JSONEachRow',
-                connectionId: logSource.connection.toString(),
-              });
-              const allLogs =
-                (await (
-                  logResult as { json: () => Promise<LogRow[]> }
-                ).json()) ?? [];
               logsTruncated = allLogs.length > input.maxLogs;
               correlatedLogs = logsTruncated
                 ? allLogs.slice(0, input.maxLogs)

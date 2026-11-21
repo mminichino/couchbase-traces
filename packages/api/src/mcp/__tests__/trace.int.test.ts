@@ -1355,7 +1355,7 @@ describe('MCP Trace Tools', () => {
         expect(result.isError).toBe(true);
         const text = getFirstText(result);
         expect(text).toContain('Failed to compute breakdown');
-        expect(text).toContain('must be valid ClickHouse SQL');
+        expect(text).toContain('must be a valid SQL++ condition');
         expect(text).not.toContain('shorter startTime/endTime window');
       });
 
@@ -1375,7 +1375,7 @@ describe('MCP Trace Tools', () => {
         expect(text).toContain('execution-time limit');
         expect(text).toContain('shorter startTime/endTime window');
         expect(text).toContain('minParentDurationMs');
-        expect(text).not.toContain('must be valid ClickHouse SQL');
+        expect(text).not.toContain('must be a valid SQL++ condition');
       });
 
       it('gives no query-tuning or invalid-SQL advice on a socket timeout', async () => {
@@ -1385,7 +1385,7 @@ describe('MCP Trace Tools', () => {
         expect(text).toContain('Failed to compute breakdown');
         expect(text).not.toContain('execution-time limit');
         expect(text).not.toContain('shorter startTime/endTime window');
-        expect(text).not.toContain('must be valid ClickHouse SQL');
+        expect(text).not.toContain('must be a valid SQL++ condition');
       });
 
       async function callBreakdownWithFailingQuery(error: Error) {
