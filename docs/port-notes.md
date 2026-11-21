@@ -2639,3 +2639,61 @@ now passes; the R2c "before" matches D2's 99). R2b (5 suites) 41 → 40 of 335
   `main` too: the suite does not clear `otel_traces` between tests (upstream
   does not either), so spans that other suites seeded in the last hour get
   picked. It passes on an empty collection; left for R2c.
+
+### D4: schema inference on empty collections (2026-11-21, `mm--v1-d4-empty-infer`)
+
+- **Root cause.** `INFER` on a collection with no documents fails with SQL++
+  error 7014 "No documents found, unable to infer schema." The INFER reference
+  (`n1ql-language-reference/infer.html`, 8.0) documents `sample_size` and the
+  other options but not the empty case, and 7014 is not listed in the 8.0
+  error-code reference. The live suite pins the code (`sqlppCode: 7014`, mapped
+  to `INTERNAL`). `Metadata.inferFields` only tolerated `PERMISSION_DENIED`, so
+  7014 reached every column-metadata caller: `getColumns`, `getJSONKeys`,
+  `getAllFields`, and the renderer's `with`/Lucene column lookups. That covers
+  `cbt_describe_source`, `cbt_describe_metric`, `cbt_list_metrics` enrichment,
+  alert evaluation (rendering a saved search's Lucene filter, ending in
+  `ERROR`), the search field sidebar, and session/source pages. Upstream
+  `DESCRIBE TABLE` on an empty table succeeds.
+- **Fix.** `common-utils/src/couchbase/errors.ts` adds `INFER_NO_DOCUMENTS`
+  (7014) and `isEmptyInferError`: the SQL++ code, or the message when the code
+  was lost (`sqlppCode` null). `inferFields` treats it as "no inferred fields"
+  and falls through to the existing five-document sample, which is empty for an
+  empty collection. That is the only INFER call site, so every caller gets `[]`.
+  `getColumns` caches an empty list for `EMPTY_COLUMNS_CACHE_TTL_MS` (10 s)
+  instead of the 5-minute column TTL, so a collection that starts filling shows
+  its fields soon. A cache hit does not extend that TTL.
+- **`cbt_describe_table`.** "No columns" used to mean "not found". It now checks
+  `system:all_keyspaces` (through `Metadata.listKeyspaces`): an existing empty
+  collection is described with `columns: []` and a `note`; a missing one is
+  still "Collection … not found in bucket …", as is `KEYSPACE_NOT_FOUND` from
+  INFER.
+- **Tests.** `common-utils` `inferEmpty.test.ts` (mocked 7014, predicate edge
+  cases, fallback, short TTL, other errors still thrown); `api`
+  `tools/sources/__tests__/describeTableCouchbase.test.ts` (empty vs missing,
+  injection-style name, `KEYSPACE_NOT_FOUND`); `api`
+  `checkAlerts/__tests__/emptyCollectionAlert.int.test.ts` runs in
+  `make ci-int`: R2b's `setupSavedSearchAlertTest` inputs on an empty
+  `otel_logs` end in `OK`, 0 counts, no notification (on `main` it records
+  `ERROR` from 7014); `emptyInfer.couchbase.int.test.ts` covers an empty
+  collection (7014 and the predicate), one with documents, and one being
+  populated (4 live cases in `port/couchbase-test/run.sh`).
+- **Deferred-suite measurement** (fresh `docker-compose.ci.yml` stack per run,
+  `main` acf4ef4 vs this branch, same order; measurement only, still deferred).
+  7014 in logs: 22 → 0. R2c: 70 → 67 failing of 287: `sources` 16 → 13;
+  `describeTable` 11 → 11; the rest unchanged (`queryTool` 31, `trace` 1,
+  `queryTile` 8, `queryTiles` 3, `serviceHealthTool` 0, `emergingSignalsTool`
+  0). R2b: 40 → 37 failing of 335: `checkAlerts` 27 → 24 (the three saved-search
+  execution-error-recording cases that hit 7014); `renderAlertTemplate` 10,
+  `singleInvocationAlert` 1, `providers/default` 2, `multiChannelAlerts` 0
+  unchanged. No test went from pass to fail.
+- **Not D4.** All 11 `describeTable` cases still fail in `beforeAll`: the
+  fixture runs ClickHouse DDL (`CREATE DATABASE mcp_describe_table_test`,
+  MergeTree, `Distributed`), which the fixture store turns into a collection
+  under a scope that does not exist (12021). That is a fixture port (R2c). The
+  13 left in `sources` are the metric tools sending ClickHouse SQL through
+  `sqlExpr` (`{x:Identifier}` placeholders, `argMax`, `anyLast`, `mapKeys`):
+  "syntax error … near '…:Identifier}.'" in `cbt_list_metrics` and
+  `cbt_describe_metric`, plus the trace/log/metric "column schema" cases. Those
+  assert on columns, and the suite's `clearDBs` leaves `otel_logs` empty, so
+  they now get `[]` instead of an error. Upstream returns DDL columns there;
+  whether to fall back to the declared ingest schema is an open decision.

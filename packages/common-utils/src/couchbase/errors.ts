@@ -273,3 +273,18 @@ export function isMissingColumnError(_e: unknown): boolean {
 export function isAccessDeniedError(e: unknown): boolean {
   return e instanceof CouchbaseQueryError && e.code === 'PERMISSION_DENIED';
 }
+
+/** SQL++ error INFER raises when the keyspace has no documents to sample. */
+export const INFER_NO_DOCUMENTS = 7014;
+
+/**
+ * True for INFER's "No documents found, unable to infer schema". An empty
+ * collection has no schema yet, which is not a failure: upstream DESCRIBE
+ * TABLE on an empty table succeeds. The message check covers errors whose
+ * SQL++ code was dropped on the way (e.g. serialized by an older proxy).
+ */
+export function isEmptyInferError(e: unknown): boolean {
+  if (!(e instanceof CouchbaseQueryError)) return false;
+  if (e.sqlppCode === INFER_NO_DOCUMENTS) return true;
+  return e.sqlppCode == null && /unable to infer schema/i.test(e.message);
+}

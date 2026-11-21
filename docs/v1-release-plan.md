@@ -525,6 +525,14 @@ Acceptance: unit test with a mocked 7014 response; the 7 P failures in
 `mcp/__tests__/sources` pass locally; an alert on an empty collection ends in
 `OK`, not an error.
 
+Done (2026-11-21, `mm--v1-d4-empty-infer`): 7014 no longer reaches any caller
+(22 logged before, 0 after); one predicate, `isEmptyInferError`, in
+`Metadata.inferFields`. `sources` 16 → 13, `checkAlerts` 27 → 24 on a fresh
+stack; an alert on an empty `otel_logs` ends in `OK` (`make ci-int`). Of the 7 P
+`sources` failures, the 3 that hit 7014 pass. The other 4, and 9 more, are the
+metric tools' leftover ClickHouse `sqlExpr` SQL, or describe cases that expect
+DDL columns on an empty collection. Both are open (see the D4 port notes).
+
 #### D5: Onboarding checklist probe (size S)
 
 Scope: `packages/app/src/OnboardingChecklist/useOnboardingCompletion.ts:70-90`.
@@ -790,6 +798,8 @@ in that phase.
 | Q20 | Two Playwright failures found in D2b, also on `main` (2026-11-21)                                        | R4/R5 worklist: `dashboards-list` "Cluster" card locator also matches the Kubernetes card; `team` connection card lacks `Host:`/`Username:`                                           | R4, R5         |
 | Q21 | Dead non-Couchbase test-connection branch in `app/src/connection.ts` (2026-11-21)                        | Remove it (posts to the removed `evalstore-proxy/test` route); own commit in the D3 PR, tests updated                                                                                 | D3             |
 | Q22 | Couchbase-suite skip under `make ci-int` (2026-11-21)                                                    | Make it explicit: `make ci-int` sets `CBT_TEST_COUCHBASE_REQUIRED=0` and logs that the suite runs in `port/couchbase-test/run.sh`; own commit in the D3 PR                            | D3             |
+| Q23 | Leftover `trace` failure "no-match hint when no traces exist" (2026-11-21)                               | Fix in R2c: give the test its own time window; keep upstream's behavior of not clearing `otel_traces` between tests                                                                   | R2c            |
+| Q24 | Integer query results arrive as strings (Int64 JSON encoding) (2026-11-21)                               | Keep strings at the data-client level (current raw result shape); each tool converts with `Number()` where it needs a number                                                          | D3, D4, all    |
 
 ## 11. Acceptance criteria (v1.0.0 is done when)
 
