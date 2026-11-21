@@ -121,6 +121,7 @@ type QueryBody = {
 async function queryHttp(
   statement: string,
   named?: Record<string, unknown>,
+  scanConsistency?: 'request_plus',
 ): Promise<QueryBody> {
   if (!Number.isFinite(QUERY_PORT) || QUERY_PORT <= 0) {
     throw new Error(`invalid Couchbase query port: ${QUERY_PORT}`);
@@ -128,6 +129,7 @@ async function queryHttp(
   const payload: Record<string, unknown> = {
     statement,
     timeout: '60s',
+    ...(scanConsistency ? { scan_consistency: scanConsistency } : {}),
   };
   if (named) {
     for (const [k, v] of Object.entries(named)) {
@@ -163,6 +165,51 @@ async function queryHttp(
     );
   }
   return body;
+}
+
+type IndexRow = { name: string; key?: string; condition?: string };
+
+function isIndexRow(row: unknown): row is IndexRow {
+  return (
+    typeof row === 'object' &&
+    row != null &&
+    'name' in row &&
+    typeof row.name === 'string'
+  );
+}
+
+/**
+ * D8: GSI indexes update asynchronously after an UPSERT, so a test that
+ * queries right after seeding could miss rows (a `cbt_table` having group
+ * once came back without group `c`). Product queries keep their default scan
+ * consistency; the fixture instead runs one `request_plus` scan through each
+ * online index on the keyspace, which returns only once that index has every
+ * mutation made before the scan.
+ */
+async function waitForIndexes(table: string): Promise<void> {
+  const { bucket, scope, collection } = parseTableRef(table);
+  const { results } = await queryHttp(
+    `SELECT i.name, i.index_key[0] AS \`key\`, i.\`condition\`
+     FROM system:indexes AS i
+     WHERE i.bucket_id = $bucket AND i.scope_id = $scope
+       AND i.keyspace_id = $collection AND i.state = 'online'
+       AND i.\`using\` = 'gsi'`,
+    { bucket, scope, collection },
+  );
+  const ks = keyspace(table);
+  for (const index of (results ?? []).filter(isIndexRow)) {
+    const key = index.key?.replace(/\s+(ASC|DESC)$/i, '');
+    const where = [
+      key ? `${key} IS NOT MISSING` : 'META().id IS NOT MISSING',
+      ...(index.condition ? [`(${index.condition})`] : []),
+    ].join(' AND ');
+    const statement = `SELECT RAW COUNT(*) FROM ${ks} USE INDEX (${quoteIdent(index.name)} USING GSI) WHERE ${where}`;
+    try {
+      await queryHttp(statement, undefined, 'request_plus');
+    } catch {
+      // An index the probe cannot drive (array keys) is skipped.
+    }
+  }
 }
 
 export class FixtureDataClient {
@@ -207,6 +254,9 @@ export class FixtureDataClient {
         k: id,
         v: value,
       });
+    }
+    if (opts.values.length > 0) {
+      await waitForIndexes(opts.table.replace(/`/g, ''));
     }
   }
 

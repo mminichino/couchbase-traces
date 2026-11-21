@@ -1,5 +1,5 @@
 import { isNonEmptyWhereExpr } from '@/core/chartConfig';
-import { rewriteSqlInValueLists } from '@/couchbase/sqlInLists';
+import { rewriteSqlFragment } from '@/couchbase/mapAccess';
 import { concatSqlPP, type SqlPP, sqlpp } from '@/couchbase/sqlpp';
 import type { BuilderChartConfigWithOptDateRange } from '@/types';
 
@@ -48,7 +48,7 @@ export async function renderHavingCouchbase(
   // SQL++ HAVING cannot see select aliases (an alias reads as a field of the
   // grouped row: "must depend only on group keys or aggregates"), so each
   // alias is replaced by the aggregate it names.
-  const text = rewriteSqlInValueLists(chartConfig.having);
+  const text = rewriteSqlFragment(chartConfig.having);
   const aliases = await selectAliasExpressions(chartConfig, ctx);
   const pieces = splitOnAliasRefs(text, new Set(aliases.keys()));
   const parts = pieces.map(piece =>

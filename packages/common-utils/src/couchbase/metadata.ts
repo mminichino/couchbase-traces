@@ -26,7 +26,7 @@ import {
   versionStatement,
 } from './metadataSql';
 import { renderWhereCouchbase } from './render/where';
-import { type SqlPP, sqlpp } from './sqlpp';
+import { quoteIdent, type SqlPP, sqlpp } from './sqlpp';
 import type { TimeFormat } from './time';
 import type { DataClient, Keyspace } from './types';
 
@@ -714,7 +714,23 @@ function mapValueExpr(column: string, key?: string): string {
   return `${col}.\`${key.replace(/`/g, '')}\``;
 }
 
+/** `Map['k']` or `` Map.`k` `` keys: column, then one field under it. */
+const MAP_SUBSCRIPT_KEY = /^([A-Za-z_][\w]*)\[\s*'((?:[^'\\]|\\.|'')*)'\s*\]$/;
+
+/**
+ * A dropdown key as a value expression. Keys come in three forms: a column
+ * (`ServiceName`), a map key in ClickHouse form
+ * (`ResourceAttributes['k8s.pod.name']`, Kubernetes filters), or a
+ * dot-joined map key (`ResourceAttributes.service.name`) whose rest is one
+ * field. Splitting the subscript form on dots used to quote it as
+ * `` `ResourceAttributes['k8s`.`pod.name']` `` and read nothing.
+ */
 function qualifyValue(key: string): string {
+  const sub = MAP_SUBSCRIPT_KEY.exec(key.trim());
+  if (sub) {
+    const field = sub[2].replace(/''|\\(.)/g, (m, ch: string) => ch ?? "'");
+    return `d.${quoteIdent(sub[1])}.${quoteIdent(field)}`;
+  }
   if (key.includes('.')) {
     const [head, ...rest] = key.split('.');
     return `d.\`${head}\`.\`${rest.join('.')}\``;

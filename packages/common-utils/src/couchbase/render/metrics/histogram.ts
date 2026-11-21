@@ -5,6 +5,7 @@ import { CouchbaseUnsupportedError } from '@/couchbase/errors';
 import { histogramQuantile } from '@/couchbase/fn/quantile';
 import { lag } from '@/couchbase/fn/scalar';
 import { resolveGranularityInterval } from '@/couchbase/render/granularity';
+import { groupByItems } from '@/couchbase/render/groupBy';
 import { timestampFormatOf } from '@/couchbase/render/select';
 import { keyspace, quoteIdent } from '@/couchbase/sqlpp';
 import {
@@ -56,18 +57,7 @@ export function timeBucketSql(
 export function groupBySql(
   chartConfig: BuilderChartConfigWithOptDateRange,
 ): string | undefined {
-  if (!chartConfig.groupBy) return undefined;
-  if (typeof chartConfig.groupBy === 'string') {
-    const parts = chartConfig.groupBy
-      .split(',')
-      .map(s => s.trim())
-      .filter(Boolean);
-    if (parts.length === 0) return undefined;
-    return `[${parts.join(', ')}]`;
-  }
-  const parts = chartConfig.groupBy
-    .map(c => c.valueExpression?.trim())
-    .filter((x): x is string => !!x);
+  const parts = groupByItems(chartConfig).map(item => item.expr);
   if (parts.length === 0) return undefined;
   return `[${parts.join(', ')}]`;
 }

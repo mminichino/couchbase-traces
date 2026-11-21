@@ -5,6 +5,7 @@ import {
   isTimeSeriesDisplayType,
   splitAndTrimWithBracket,
 } from '@couchbase-traces/common-utils/dist/core/utils';
+import { rewriteMapSubscripts } from '@couchbase-traces/common-utils/dist/couchbase/mapAccess';
 import { quoteIdent } from '@couchbase-traces/common-utils/dist/couchbase/sqlpp';
 import {
   getMetadata,
@@ -144,8 +145,6 @@ export function normalizeBodyExpression(expression: string): string | null {
   )})`;
 }
 
-const MAP_REF = /^([A-Za-z_][\w.]*)\['([^'\\]*)'\]$/;
-
 /**
  * A SQL where that filters on the same bodyExpression it mines, with each
  * verbatim copy of that expression replaced by its SQL++ form. Agents are
@@ -172,10 +171,11 @@ export function whereWithBodyExpression(
  * forms (a bare or dotted column) are already SQL++.
  */
 function mapRefToSqlpp(ref: string): string | null {
-  const m = MAP_REF.exec(ref);
-  if (!m) return ref;
-  if (m[2] === '' || m[2].includes('`')) return null;
-  return `${m[1]}.${quoteIdent(m[2])}`;
+  try {
+    return rewriteMapSubscripts(ref);
+  } catch {
+    return null;
+  }
 }
 
 /** The value of a literal accepted by SQL_STRING_LITERAL. */

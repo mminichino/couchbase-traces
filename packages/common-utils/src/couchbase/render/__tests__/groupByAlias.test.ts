@@ -41,8 +41,9 @@ describe('D2 aliased groupBy columns', () => {
     const sql = await render([
       { valueExpression: "SpanAttributes['http.route']", alias: 'route' },
     ]);
+    // D9 rewrites the subscript to field access.
     expect(sql).toContain(
-      `IFNULL(SpanAttributes['http.route'], "") AS \`route\``,
+      'IFMISSINGORNULL(SpanAttributes.`http.route`, "") AS `route`',
     );
   });
 

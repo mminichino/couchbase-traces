@@ -9,10 +9,12 @@ import { compileFormulaAst, validateFormula } from '@/core/formula';
 import {
   getFirstTimestampValueExpression,
   resolvePercentileAggFn,
+  splitAndTrimWithBracket,
 } from '@/core/utils';
 import { CouchbaseUnsupportedError } from '@/couchbase/errors';
 import { quantile as quantileAgg } from '@/couchbase/fn/quantile';
 import { anyValue, argMax, count, uniq } from '@/couchbase/fn/scalar';
+import { rewriteMapSubscripts } from '@/couchbase/mapAccess';
 import { quoteIdent, type SqlPP, sqlpp } from '@/couchbase/sqlpp';
 import {
   timeBucketExpr as cbTimeBucketExpr,
@@ -21,6 +23,7 @@ import {
 import type { BuilderChartConfigWithOptDateRange, SelectList } from '@/types';
 
 import { resolveGranularity } from './granularity';
+import { groupByClauseExpr, groupByItems, groupBySelectExpr } from './groupBy';
 import { couchbaseSelectItemAlias } from './postprocess';
 import { ratioExprCouchbase } from './ratio';
 import { rowIdSelect } from './rowId';
@@ -174,34 +177,21 @@ function aggExprCouchbase(
   }
 }
 
-function isMapKeyGroupExpression(expr: string): boolean {
-  const t = expr.trim();
-  if (/\[[\s]*['"][^'"]+['"][\s]*\]/.test(t)) return true;
-  const bare = t.replace(/`/g, '');
-  const segments = bare.split('.');
-  return segments.length >= 2;
-}
-
-function groupByExprForClause(expr: string): SqlPP {
-  if (isMapKeyGroupExpression(expr)) {
-    return sqlpp`IFNULL(${{ Raw: expr }}, "")`;
-  }
-  return sqlpp`${{ Raw: expr }}`;
-}
-
 /**
- * A group-by column in the select list. An explicit alias names the output
- * column, as upstream renders groupBy through the select-list renderer;
- * without it, callers reading `row[alias]` (service health, heatmaps) got
- * nothing.
+ * A string select list (search columns) with map subscripts rewritten. An
+ * unaliased rewritten item keeps its source text as the column name, which
+ * is what upstream rows and the results table are keyed by.
  */
-function groupByExprForSelect(expr: string, alias?: string): SqlPP {
-  const name = alias?.trim();
-  if (!isMapKeyGroupExpression(expr)) {
-    if (name) return sqlpp`${{ Raw: expr }} AS ${{ Identifier: name }}`;
-    return sqlpp`${{ Raw: expr }}`;
-  }
-  return sqlpp`IFNULL(${{ Raw: expr }}, "") AS ${{ Identifier: name || expr }}`;
+function stringSelectList(list: string): string {
+  return splitAndTrimWithBracket(list)
+    .map(item => {
+      const expr = rewriteMapSubscripts(item);
+      if (expr === item || item.includes('`') || /\s+as\s+\S+$/i.test(item)) {
+        return expr;
+      }
+      return `${expr} AS ${quoteIdent(item)}`;
+    })
+    .join(', ');
 }
 
 export async function renderSelectListCouchbase(
@@ -216,7 +206,7 @@ export async function renderSelectListCouchbase(
     if (trimmed === '' || trimmed === '*') {
       return [sqlpp`${{ Raw: `${ALIAS}.*` }}`];
     }
-    return [sqlpp`${{ Raw: trimmed }}`];
+    return [sqlpp`${{ Raw: stringSelectList(trimmed) }}`];
   }
 
   const out: SqlPP[] = [];
@@ -243,7 +233,7 @@ export async function renderSelectListCouchbase(
           ctx,
         });
       } else {
-        expr = sqlpp`${{ Raw: select.valueExpression }}`;
+        expr = sqlpp`${{ Raw: rewriteMapSubscripts(select.valueExpression) }}`;
       }
     } else {
       const { fn, level } = normalizePercentileAgg(select.aggFn);
@@ -253,11 +243,12 @@ export async function renderSelectListCouchbase(
           : level;
       expr = aggExprCouchbase(
         fn,
-        select.valueExpression,
+        rewriteMapSubscripts(select.valueExpression),
         whereCond,
         qLevel,
         timestampExpr,
-        chartConfig.sampleWeightExpression,
+        chartConfig.sampleWeightExpression &&
+          rewriteMapSubscripts(chartConfig.sampleWeightExpression),
       );
     }
 
@@ -412,17 +403,7 @@ export async function renderSelectCouchbase(
   }
 
   if (isUsingGroupBy(chartConfig) && chartConfig.selectGroupBy !== false) {
-    if (typeof chartConfig.groupBy === 'string') {
-      for (const col of chartConfig.groupBy.split(',')) {
-        const trimmed = col.trim();
-        if (trimmed) parts.push(groupByExprForSelect(trimmed));
-      }
-    } else {
-      for (const col of chartConfig.groupBy) {
-        const expr = col.valueExpression?.trim() ?? '';
-        if (expr) parts.push(groupByExprForSelect(expr, col.alias));
-      }
-    }
+    parts.push(...groupByItems(chartConfig).map(groupBySelectExpr));
   }
 
   const bucket = ctx.timeBucket;
@@ -447,17 +428,7 @@ export async function renderGroupByCouchbase(
   }
   const parts: SqlPP[] = [];
   if (isUsingGroupBy(chartConfig)) {
-    if (typeof chartConfig.groupBy === 'string') {
-      for (const col of chartConfig.groupBy.split(',')) {
-        const trimmed = col.trim();
-        if (trimmed) parts.push(groupByExprForClause(trimmed));
-      }
-    } else {
-      for (const col of chartConfig.groupBy) {
-        const expr = col.valueExpression?.trim() ?? '';
-        if (expr) parts.push(groupByExprForClause(expr));
-      }
-    }
+    parts.push(...groupByItems(chartConfig).map(groupByClauseExpr));
   }
   // SQL++ cannot GROUP BY a select-list alias; use the bucket expression itself.
   const bucket = ctx.timeBucket;
