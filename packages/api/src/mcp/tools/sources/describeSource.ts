@@ -1,3 +1,4 @@
+import { describeColumns } from '@couchbase-traces/common-utils/dist/couchbase/describeColumns';
 import {
   getMetadata,
   queryLanguageForConnection,
@@ -250,7 +251,8 @@ async function describeSourceSchema(
   ];
 
   // ── 1. Column schema ──────────────────────────────────────────────────
-  const columns = await metadata.getColumns({
+  // An empty OTel collection reports its declared schema (Q25).
+  const { columns } = await describeColumns(metadata, {
     databaseName,
     tableName,
     connectionId,

@@ -1,4 +1,7 @@
-import { CouchbaseQueryError } from '@couchbase-traces/common-utils/dist/couchbase/errors';
+import {
+  type ColumnOrigin,
+  describeColumns,
+} from '@couchbase-traces/common-utils/dist/couchbase/describeColumns';
 import { keyspace } from '@couchbase-traces/common-utils/dist/couchbase/sqlpp';
 import { getMetadata } from '@couchbase-traces/common-utils/dist/dataLayer';
 import { columnTypeToJSType } from '@couchbase-traces/common-utils/dist/query';
@@ -14,6 +17,16 @@ import {
 } from './describeTableSchema';
 
 const DEFAULT_SCOPE = 'default';
+
+function emptyNoteFor(origin: ColumnOrigin): string | undefined {
+  if (origin === 'declared') {
+    return 'The collection has no documents yet. The columns are the declared OTel schema; describe it again after data arrives to see inferred columns.';
+  }
+  if (origin === 'empty') {
+    return 'The collection has no documents yet, so it has no inferred columns. Describe it again after data arrives, or use the source expressions.';
+  }
+  return undefined;
+}
 
 type CouchTableCtx = {
   dataClient: DataClient;
@@ -115,37 +128,14 @@ export async function describeCouchbaseTable(
     mcpUserError(
       `Collection "${input.table}" not found in bucket "${input.database}".`,
     );
-  let columns: Awaited<ReturnType<typeof metadata.getColumns>>;
-  try {
-    columns = await metadata.getColumns({
-      databaseName: input.database,
-      scopeName: scope,
-      tableName: collection,
-      connectionId: ctx.connectionId,
-    });
-  } catch (e) {
-    if (e instanceof CouchbaseQueryError && e.code === 'KEYSPACE_NOT_FOUND') {
-      return notFound();
-    }
-    throw e;
-  }
-  // No inferred columns: an empty collection (described, as upstream
-  // describes an empty table) or one that does not exist.
-  let emptyNote: string | undefined;
-  if (columns.length === 0) {
-    const spaces = await metadata.listKeyspaces({
-      connectionId: ctx.connectionId,
-    });
-    const exists = spaces.some(
-      k =>
-        k.bucket === input.database &&
-        k.scope === scope &&
-        k.collection === collection,
-    );
-    if (!exists) return notFound();
-    emptyNote =
-      'The collection has no documents yet, so it has no inferred columns. Describe it again after data arrives, or use the source expressions.';
-  }
+  const { columns, origin } = await describeColumns(metadata, {
+    databaseName: input.database,
+    scopeName: scope,
+    tableName: collection,
+    connectionId: ctx.connectionId,
+  });
+  if (origin === 'missing') return notFound();
+  const emptyNote = emptyNoteFor(origin);
 
   const qualified = ks(input.database, scope, collection);
   let sampleRows: Record<string, unknown>[] | undefined;
