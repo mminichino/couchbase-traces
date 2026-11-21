@@ -586,7 +586,7 @@ export function registerDescribeSource({
         'Workflow: call cbt_list_sources first to get source IDs, then call this tool ' +
         'for each source you plan to query.\n\n' +
         'Returns:\n' +
-        '- columns[]: column name, legacy store type, and JS type\n' +
+        '- columns[]: column name, inferred SQL++ type, and JS type\n' +
         '- mapAttributeKeys: discovered keys in Map columns (e.g. SpanAttributes, ResourceAttributes)\n' +
         '- lowCardinalityValues: sampled values for LowCardinality(String) columns ' +
         '(SeverityText, StatusCode, ServiceName, etc.) — use these in filters instead of guessing\n' +

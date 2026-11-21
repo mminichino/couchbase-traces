@@ -25,7 +25,7 @@ jest.mock('../savedSearch');
 jest.mock('../dashboard');
 jest.mock('../connection', () => ({
   useConnections: () => ({ data: [] }),
-  dataStoreLinks: () => ({ hasCouchbase: false, hasClickHouse: false }),
+  dataStoreLinks: () => ({ hasCouchbase: false }),
 }));
 
 const mockUseSavedSearches = useSavedSearches as jest.Mock;

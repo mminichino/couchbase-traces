@@ -33,8 +33,8 @@ cbt tui
 # Chart error volume by service for the past 3 hours
 cbt chart -s Logs --where 'SeverityText:error' --group-by ServiceName --since 3h
 
-# Run raw SQL against legacy store
-cbt query --connection-id "$CONN" --sql "SELECT count() FROM default.otel_logs"
+# Run raw SQL++ against Couchbase
+cbt query --connection-id "$CONN" --sql 'SELECT COUNT(*) AS n FROM `otel`.`default`.otel_logs'
 ```
 
 ## Features
@@ -45,8 +45,8 @@ cbt query --connection-id "$CONN" --sql "SELECT count() FROM default.otel_logs"
   and open-in-browser deep links
 - **Terminal charts** — render saved dashboard tiles or ad-hoc charts (line,
   stacked bar, number, table, bar, pie) as ANSI output
-- **Raw SQL** — query legacy store directly through the Couchbase Traces proxy, in any
-  legacy store output format
+- **Raw SQL++** — run read-only SQL++ against Couchbase through the Couchbase
+  Traces API, as NDJSON, JSON, CSV, or TSV
 - **Log pattern mining** — cluster query results into Drain log patterns to
   summarize large result sets
 - **Alerts & dashboards** — browse alerts (with trigger history) and dashboards
@@ -64,8 +64,8 @@ cbt chart -d <dashboard> [-t tile]  # Render dashboard tiles as ANSI charts
 cbt chart -s <source> [--agg ...]   # Ad-hoc chart over a source
 cbt chart --sql <query> -s <source> # Ad-hoc chart from raw SQL
 cbt query --connection-id <id> --sql <query>  # Raw SQL to stdout
-cbt sources                         # List data sources with table schemas
-cbt connections                     # List legacy store connections
+cbt sources                         # List data sources and their field mappings
+cbt connections                     # List Couchbase connections
 cbt dashboards                      # List dashboards with tile summaries
 cbt auth login|status|logout        # Manage authentication
 cbt team list|current|use <team>    # Switch between teams
@@ -137,8 +137,9 @@ cbt chart -s Logs --display bar --where 'SeverityText:error' --group-by ServiceN
 cbt chart -s Metrics --metric-type sum --metric-name otelcol_exporter_sent_spans
 
 # 3. Raw SQL — chart arbitrary queries with time macros
-cbt chart -s Logs --sql "SELECT \$__timeInterval(TimestampTime) AS ts, count()
-    FROM default.otel_logs WHERE \$__timeFilter(TimestampTime) GROUP BY ts ORDER BY ts"
+cbt chart -s Logs --sql 'SELECT $__timeInterval(Timestamp) AS ts, COUNT(*) AS n
+    FROM $__sourceTable WHERE $__timeFilter(Timestamp)
+    GROUP BY $__timeInterval(Timestamp) ORDER BY ts'
 ```
 
 - **Display types** (`--display`): `line` (default), `stacked_bar`, `number`,
@@ -152,15 +153,19 @@ cbt chart -s Logs --sql "SELECT \$__timeInterval(TimestampTime) AS ts, count()
 
 ### `cbt query` — Raw SQL
 
-Execute raw legacy SQL through the Couchbase Traces proxy. Output defaults to
-`JSONEachRow` (NDJSON — one JSON object per line), so results pipe cleanly into
-`jq` and friends. Any legacy store output format is accepted via `--format`
-(`JSON`, `TabSeparated`, `CSV`, ...).
+Execute read-only SQL++ (`SELECT`, `WITH`, or `INFER`; one statement per call)
+against a Couchbase connection through the Couchbase Traces API. Output defaults
+to `JSONEachRow` (NDJSON — one JSON object per line), so results pipe cleanly into
+`jq` and friends. `--format` also accepts `JSON`, `CSV`, `TabSeparatedRaw`, and
+`JSONCompactEachRowWithNamesAndTypes`.
+
+Name keyspaces in full and backtick-quote `default` (a reserved word). Read map
+attributes with field access, e.g. ``LogAttributes.`http.route` ``.
 
 ```bash
 CONN=$(cbt connections --json | jq -r '.[0].id')
-cbt query --connection-id "$CONN" --sql "SELECT count() FROM default.otel_logs"
-cbt query --connection-id "$CONN" --sql "SELECT * FROM default.otel_traces LIMIT 5"
+cbt query --connection-id "$CONN" --sql 'SELECT COUNT(*) AS n FROM `otel`.`default`.otel_logs'
+cbt query --connection-id "$CONN" --sql 'SELECT t.* FROM `otel`.`default`.otel_traces AS t LIMIT 5'
 ```
 
 **Pattern mining** (`--patterns`): cluster the result into templated log
@@ -170,7 +175,7 @@ of rows into a handful of templates:
 
 ```bash
 cbt query --connection-id "$CONN" --patterns \
-    --sql "SELECT Body FROM default.otel_logs LIMIT 10000" --body-column Body
+    --sql 'SELECT Body FROM `otel`.`default`.otel_logs LIMIT 10000' --body-column Body
 # {"pattern":"connection <*> closed","count":4823,"sample":"connection 10.0.3.7 closed"}
 ```
 
@@ -178,11 +183,11 @@ Exit codes: `0` on success (empty stdout means zero rows), `1` on failure.
 
 ### `cbt sources` / `cbt connections` / `cbt dashboards` — Discovery
 
-List the data sources, legacy store connections, and dashboards available to your
+List the data sources, Couchbase connections, and dashboards available to your
 team. All three support `--json` for structured output.
 
 ```bash
-cbt sources               # Sources with legacy store CREATE TABLE schemas
+cbt sources               # Sources with their bucket, scope, and collection
 cbt sources --json        # Includes column expression mappings per source
 cbt connections --json    # Connection IDs for `cbt query` / `cbt chart --sql`
 cbt dashboards            # Dashboards + tile names for `cbt chart -d`

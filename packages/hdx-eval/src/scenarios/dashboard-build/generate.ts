@@ -441,7 +441,7 @@ When someone clicks a service in the main dashboard, they should land on this da
 After creating both dashboards, verify tiles return data and report what you built. If any requested metrics aren't available in the data, note that. Also call out any data quality caveats you discovered — misleading signals, services that shouldn't be in headline metrics, severity inconsistencies, etc.`,
   description:
     'Dashboard creation eval — two dashboards with cross-dashboard onClick ' +
-    'drill-down, legacy store expressions (if/bracket syntax/avgIf), containers ' +
+    'drill-down, ClickHouse expressions (if/bracket syntax/avgIf), containers ' +
     'with tabs, dashboard filters, asRatio, numberFormat, multi-source ' +
     '(trace+log), diverse tile types (line, stacked_bar, number, table, pie, ' +
     'heatmap, search, markdown, raw SQL as table + line). 22 tiles total.',

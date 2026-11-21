@@ -206,7 +206,7 @@ const millisecondTimestampSchema = z
   });
 
 /**
- * Translates short granularity string (e.g., "30s", "1m") to legacy store INTERVAL syntax.
+ * Translates short granularity string (e.g., "30s", "1m") to the internal "<n> <unit>" interval form.
  */
 const translateGranularityToInterval = (
   granularity: string | undefined,

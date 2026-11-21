@@ -38,7 +38,7 @@ const highlightedAttributeExpressionsSchema = () =>
       sqlExpression: z
         .string()
         .describe(
-          "legacy SQL expression for the attribute, e.g. ResourceAttributes['http.host'].",
+          "SQL expression for the attribute, e.g. ResourceAttributes['http.host'] (translated to SQL++ field access ResourceAttributes.`http.host`).",
         ),
       luceneExpression: z
         .string()
@@ -78,7 +78,7 @@ const materializedViewsSchema = z.array(
     databaseName: z
       .string()
       .describe(
-        'legacy store database containing the materialized view table.',
+        'Couchbase bucket containing the materialized view collection.',
       ),
     tableName: z
       .string()
@@ -185,7 +185,7 @@ const mcpSaveSourceSchema = z.object({
     .string()
     .min(1)
     .describe(
-      'legacy store database containing the table (stored as from.databaseName). ' +
+      'Couchbase bucket containing the collection (stored as from.databaseName). ' +
         'For promql sources, use a placeholder such as "prometheus".',
     ),
   tableName: z

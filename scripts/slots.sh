@@ -54,7 +54,7 @@ hdx_dev_ports() {
   CBT_API_PORT=$((30100 + CBT_DEV_SLOT))
   CBT_APP_PORT=$((30200 + CBT_DEV_SLOT))
   CBT_OPAMP_PORT=$((30300 + CBT_DEV_SLOT))
-  # Kept for legacy store CI/parity tools until Phase 10.
+  # hdx-eval's ClickHouse eval store (packages/hdx-eval); nothing else uses them.
   CBT_DEV_CH_HTTP_PORT=$((30500 + CBT_DEV_SLOT))
   CBT_DEV_CH_NATIVE_PORT=$((30600 + CBT_DEV_SLOT))
   CBT_DEV_OTEL_HEALTH_PORT=$((30700 + CBT_DEV_SLOT))
@@ -83,8 +83,8 @@ hdx_dev_ports() {
     CBT_DEV_PROJECT
 }
 
-# Integration tests (make dev-int): legacy store 18123+,
-# API 19000+, OpAMP 14320+.
+# Integration tests (make dev-int): API 19000+, OpAMP 14320+. CBT_CI_CH_PORT
+# (18123+) is a ClickHouse-era leftover that only the Makefile banner prints.
 hdx_ci_ports() {
   CBT_CI_SLOT="${CBT_CI_SLOT:-$(_hdx_default_slot "$1")}"
   CBT_CI_CH_PORT=$((18123 + CBT_CI_SLOT))

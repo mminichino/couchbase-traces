@@ -45,7 +45,7 @@ export async function runSetup(opts: SetupOptions): Promise<SetupResult> {
   // 2. Fetch user accessKey for MCP Bearer auth.
   const me = await api.me();
 
-  // 3. Ensure eval Connection exists pointing at the local legacy store.
+  // 3. Ensure eval Connection exists pointing at the local ClickHouse.
   const connections = await api.listConnections();
   const chHost = `http://${opts.store.host}:${opts.store.port}`;
   let connection = connections.find(c => c.name === EVAL_CONNECTION_NAME);
@@ -186,8 +186,8 @@ export async function runSetup(opts: SetupOptions): Promise<SetupResult> {
       EVAL_STORE_SEND_RECEIVE_TIMEOUT: String(QUERY_TIMEOUT_SECONDS),
     },
     toolPattern: 'mcp__eval_store__*',
-    label: 'legacy store MCP',
-    brandTerms: ['legacy store MCP', 'clickhouse'],
+    label: 'ClickHouse MCP',
+    brandTerms: ['ClickHouse MCP', 'clickhouse'],
   };
 
   const config: EvalConfig = {
@@ -217,7 +217,7 @@ function sourceId(source: HyperdxSource): string {
 }
 
 // Apply a per-query max_execution_time to every Source so the HyperDX MCP
-// faces the same query timeout as the legacy store MCP. Simulates a busy
+// faces the same query timeout as the ClickHouse MCP. Simulates a busy
 // production cluster where queries that scan everything time out.
 const EVAL_QUERY_SETTINGS = [
   { setting: 'max_execution_time', value: String(QUERY_TIMEOUT_SECONDS) },
@@ -367,10 +367,10 @@ export async function runCheck(
           signal: AbortSignal.timeout(10_000),
         });
         chReachable = res.ok;
-        if (!chReachable) errors.push(`legacy store ping → ${res.status}`);
+        if (!chReachable) errors.push(`ClickHouse ping → ${res.status}`);
       } catch (e) {
         errors.push(
-          `legacy store not reachable: ${e instanceof Error ? e.message : e}`,
+          `ClickHouse not reachable: ${e instanceof Error ? e.message : e}`,
         );
       }
     }

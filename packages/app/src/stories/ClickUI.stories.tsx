@@ -30,8 +30,8 @@ type Story = StoryObj<typeof Link>;
 
 export const Playground: Story = {
   args: {
-    children: 'Open the legacy store docs',
-    href: 'https://evalstore.com/docs',
+    children: 'Open the Couchbase docs',
+    href: 'https://docs.couchbase.com/server/8.0/',
     target: '_blank',
     size: 'md',
     weight: 'normal',
@@ -40,8 +40,8 @@ export const Playground: Story = {
 
 export const WithIcon: Story = {
   args: {
-    children: 'View in legacy store',
-    href: 'https://evalstore.com',
+    children: 'View in Couchbase Capella',
+    href: 'https://cloud.couchbase.com',
     target: '_blank',
     icon: 'popout',
   },

@@ -50,7 +50,7 @@
       "Dashboard-level filters",
       "numberFormat for duration display",
       "asRatio or computed error rate percentage",
-      "legacy store expressions (if/avgIf/bracket syntax)"
+      "ClickHouse expressions (if/avgIf/bracket syntax)"
     ],
     "keyColumns": {
       "trace": {
@@ -174,7 +174,7 @@
         {
           "id": "computed_expressions",
           "weight": 2,
-          "description": "Did the agent use legacy store expressions where needed? (1) Error rate as a percentage requires either asRatio or a computed if() expression. (2) Latency buckets pie needs a groupBy expression with nanosecond thresholds. (3) HTTP status code groupBy needs map attribute bracket syntax. (4) SQL line chart should use conditional aggregation like avgIf(). Missing expressions or wrong thresholds are failures."
+          "description": "Did the agent use ClickHouse expressions where needed? (1) Error rate as a percentage requires either asRatio or a computed if() expression. (2) Latency buckets pie needs a groupBy expression with nanosecond thresholds. (3) HTTP status code groupBy needs map attribute bracket syntax. (4) SQL line chart should use conditional aggregation like avgIf(). Missing expressions or wrong thresholds are failures."
         },
         {
           "id": "cross_dashboard_drill",

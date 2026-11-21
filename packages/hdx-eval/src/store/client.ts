@@ -44,7 +44,7 @@ function parseEvalStoreErrorBody(text: string): Error {
       type: match.groups.type,
     });
   }
-  return new Error(text.trim() || 'legacy store request failed');
+  return new Error(text.trim() || 'ClickHouse request failed');
 }
 
 export function createEvalStoreClient(

@@ -10,14 +10,10 @@ export const LOCAL_STORE_CONNECTIONS_KEY = 'cbt-local-connections';
 
 export function dataStoreLinks(connections: { kind?: string }[] | undefined): {
   hasCouchbase: boolean;
-  hasClickHouse: boolean;
 } {
   const list = connections ?? [];
   return {
     hasCouchbase: list.some(connection => connection.kind === 'couchbase'),
-    hasClickHouse: list.some(
-      connection => (connection.kind ?? 'clickhouse') !== 'couchbase',
-    ),
   };
 }
 

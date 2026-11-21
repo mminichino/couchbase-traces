@@ -26,8 +26,8 @@ See https://github.com/mminichino/couchbase-traces/blob/main/CONTRIBUTING.md#rep
 
 <!--
 The all-in-one Docker image, Docker Compose, Helm, or a local
-dev stack — and which version or image tag. If you brought your own legacy store,
-say which version.
+dev stack — and which version or image tag. If you connect to your own Couchbase
+cluster or Capella, say which Couchbase Server version.
 -->
 
 **Where does it show up?**

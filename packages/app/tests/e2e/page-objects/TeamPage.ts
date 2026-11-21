@@ -2,7 +2,7 @@
  * TeamPage - Page object for the /team settings page
  * Encapsulates all interactions with team settings sections:
  * Sources, Connections, Integrations/Webhooks, Team Name,
- * legacy store Settings, API Keys, and Team Members.
+ * Query Settings, API Keys, and Team Members.
  */
 import { Locator, Page } from '@playwright/test';
 
@@ -93,7 +93,7 @@ export class TeamPage {
     this.securityPoliciesHeading = page.getByText('Security Policies', {
       exact: true,
     });
-    this.querySettingsHeading = page.getByText('legacy store Client Settings', {
+    this.querySettingsHeading = page.getByText('Query settings', {
       exact: true,
     });
 

@@ -743,7 +743,7 @@ export function TableSourceForm({
         <FormRow
           label={
             <Anchor
-              href="https://evalstore.com/docs/operations/settings/settings"
+              href="https://docs.couchbase.com/server/8.0/n1ql/n1ql-manage/query-settings.html"
               size="sm"
               target="_blank"
             >

@@ -104,29 +104,28 @@ function formatExternalConnection(connection: IConnection) {
  *         name:
  *           type: string
  *           description: Display name for the connection.
- *           example: Production legacy store
+ *           example: Production Couchbase
  *         kind:
  *           type: string
  *           enum: [clickhouse, couchbase]
- *           default: clickhouse
- *           description: Data store type. Defaults to `clickhouse` when omitted.
- *           example: clickhouse
+ *           description: Data store type. `couchbase` for every connection the product queries; `clickhouse` marks a connection stored by an earlier release, which is returned with `unsupported` set and is not queried.
+ *           example: couchbase
  *         host:
  *           type: string
- *           description: query HTTP endpoint URL, or a `couchbase://` / `couchbases://` connection string for Couchbase connections.
- *           example: https://clickhouse.example.com:8443
+ *           description: A `couchbase://` or `couchbases://` connection string.
+ *           example: couchbases://cb.example.com
  *         username:
  *           type: string
- *           description: legacy store username.
+ *           description: Couchbase user that runs queries.
  *           example: default
  *         hyperdxSettingPrefix:
  *           type: string
- *           description: Optional prefix for Couchbase Traces-specific legacy store settings. Must only contain alphanumeric characters and underscores.
+ *           description: Optional settings prefix kept from earlier releases. SQL++ queries do not use it. Must only contain alphanumeric characters and underscores.
  *           nullable: true
  *           example: hyperdx_
  *         isPrometheusEndpoint:
  *           type: boolean
- *           description: Optional. When true, `host` is treated as a Prometheus-compatible API endpoint (e.g. Prometheus or Thanos) and PromQL queries are proxied to it. When false or omitted, `host` is a query HTTP endpoint.
+ *           description: Not supported. PromQL sources are no longer available, so a request that sets it to `true` is rejected with 400.
  *           example: false
  *         wanProfile:
  *           type: boolean
@@ -148,38 +147,38 @@ function formatExternalConnection(connection: IConnection) {
  *         - name
  *         - host
  *         - username
+ *         - kind
  *       properties:
  *         name:
  *           type: string
  *           description: Display name for the connection.
- *           example: Production legacy store
+ *           example: Production Couchbase
  *         kind:
  *           type: string
- *           enum: [clickhouse, couchbase]
- *           default: clickhouse
- *           description: Data store type. Defaults to `clickhouse` when omitted.
- *           example: clickhouse
+ *           enum: [couchbase]
+ *           description: Data store type. Must be `couchbase`.
+ *           example: couchbase
  *         host:
  *           type: string
- *           description: query HTTP endpoint URL, or a `couchbase://` / `couchbases://` connection string for Couchbase connections.
- *           example: https://clickhouse.example.com:8443
+ *           description: A `couchbase://` or `couchbases://` connection string.
+ *           example: couchbases://cb.example.com
  *         username:
  *           type: string
- *           description: legacy store username.
+ *           description: Couchbase user that runs queries.
  *           example: default
  *         password:
  *           type: string
  *           writeOnly: true
- *           description: legacy store password. Never returned by the API.
+ *           description: Password for `username`. Never returned by the API.
  *           example: my-secret-password
  *         hyperdxSettingPrefix:
  *           type: string
- *           description: Optional prefix for Couchbase Traces-specific legacy store settings. Must only contain alphanumeric characters and underscores.
+ *           description: Optional settings prefix kept from earlier releases. SQL++ queries do not use it. Must only contain alphanumeric characters and underscores.
  *           nullable: true
  *           example: hyperdx_
  *         isPrometheusEndpoint:
  *           type: boolean
- *           description: Optional. When true, `host` is treated as a Prometheus-compatible API endpoint (e.g. Prometheus or Thanos) and PromQL queries are proxied to it. When false or omitted, `host` is a query HTTP endpoint.
+ *           description: Not supported. PromQL sources are no longer available, so a request that sets it to `true` is rejected with 400.
  *           example: false
  *         wanProfile:
  *           type: boolean
@@ -212,38 +211,38 @@ function formatExternalConnection(connection: IConnection) {
  *         - name
  *         - host
  *         - username
+ *         - kind
  *       properties:
  *         name:
  *           type: string
  *           description: Display name for the connection.
- *           example: Production legacy store
+ *           example: Production Couchbase
  *         kind:
  *           type: string
- *           enum: [clickhouse, couchbase]
- *           default: clickhouse
- *           description: Data store type. Defaults to `clickhouse` when omitted. Cannot change after creation.
- *           example: clickhouse
+ *           enum: [couchbase]
+ *           description: Data store type. Must be `couchbase`; it cannot change after creation.
+ *           example: couchbase
  *         host:
  *           type: string
- *           description: query HTTP endpoint URL, or a `couchbase://` / `couchbases://` connection string for Couchbase connections.
- *           example: https://clickhouse.example.com:8443
+ *           description: A `couchbase://` or `couchbases://` connection string.
+ *           example: couchbases://cb.example.com
  *         username:
  *           type: string
- *           description: legacy store username.
+ *           description: Couchbase user that runs queries.
  *           example: default
  *         password:
  *           type: string
  *           writeOnly: true
- *           description: legacy store password. If omitted or empty, the existing password is kept.
+ *           description: Password for `username`. If omitted or empty, the existing password is kept.
  *           example: my-new-secret-password
  *         hyperdxSettingPrefix:
  *           type: string
- *           description: Optional prefix for Couchbase Traces-specific legacy store settings. Set to null or an empty string to clear the existing value. If omitted, the existing value is kept.
+ *           description: Optional settings prefix kept from earlier releases. SQL++ queries do not use it. Set to null or an empty string to clear the existing value. If omitted, the existing value is kept.
  *           nullable: true
  *           example: hyperdx_
  *         isPrometheusEndpoint:
  *           type: boolean
- *           description: Optional. When true, `host` is treated as a Prometheus-compatible API endpoint. When false or omitted, `host` is a query HTTP endpoint. Omit to keep the existing value unchanged.
+ *           description: Not supported. PromQL sources are no longer available, so a request that sets it to `true` is rejected with 400.
  *           example: false
  *         wanProfile:
  *           type: boolean
@@ -452,7 +451,7 @@ router.get(
  * /api/v2/connections:
  *   post:
  *     summary: Create Connection
- *     description: Creates a new legacy store or Couchbase connection
+ *     description: Creates a new Couchbase connection
  *     operationId: createConnection
  *     tags: [Connections]
  *     requestBody:

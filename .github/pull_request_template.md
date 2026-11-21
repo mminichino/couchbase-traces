@@ -49,7 +49,7 @@ See CONTRIBUTING.md#reproducing-issues-and-prs.
 This section is consumed by the UI preview smoke-test agent
 (.github/workflows/ui-preview-smoke.yml). For PRs touching packages/app,
 fill it in carefully — the agent executes these steps verbatim against
-the Vercel preview build (LOCAL_MODE, demo legacy store pre-configured).
+the Vercel preview build (LOCAL_MODE, demo connection pre-configured).
 
 Format:
   - Preview routes: comma-separated paths to open (e.g. /search, /chart).

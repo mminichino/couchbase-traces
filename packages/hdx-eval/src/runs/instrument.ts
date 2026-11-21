@@ -185,7 +185,7 @@ function matchQueriesToCalls(
 
   let unmatched = 0;
   for (const q of queries) {
-    // legacy store returns toString(DateTime64(6)) as 'YYYY-MM-DD HH:MM:SS.uuuuuu'
+    // ClickHouse returns toString(DateTime64(6)) as 'YYYY-MM-DD HH:MM:SS.uuuuuu'
     // (UTC, space-separated). Convert to ISO so Date.parse() accepts it.
     const isoForm = q.event_time_microseconds.replace(' ', 'T') + 'Z';
     const ts = Date.parse(isoForm);

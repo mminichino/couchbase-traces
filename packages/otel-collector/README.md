@@ -3,7 +3,7 @@
 Custom-built OpenTelemetry Collector for Couchbase Traces, compiled via
 [OCB (OpenTelemetry Collector Builder)](https://github.com/open-telemetry/opentelemetry-collector/tree/main/cmd/builder).
 Telemetry leaves the collector through **OTLP HTTP** to the Couchbase ingest
-service (no legacy store or Prometheus remote-write exporters). The binary still
+service (no ClickHouse or Prometheus remote-write exporters). The binary still
 includes commonly-used core and contrib receivers/processors for user custom
 configs and OpAMP-managed pipelines.
 
@@ -168,8 +168,8 @@ Datadog Agent traces otherwise only get RED metrics the same way any other
 trace source does today: computed at query time from the traces table
 (`packages/app/src/serviceDashboard.ts`'s `getExpressions`). This connector
 precomputes them once at the collector instead of per query, and adds an
-exponential-histogram latency series Couchbase Traces's legacy store schema already
-has a dedicated table for (below). The component's config key is
+exponential-histogram latency series Couchbase Traces's data model already
+has a dedicated collection for (below). The component's config key is
 `span_metrics` (the module is still named
 `spanmetricsconnector`, and `spanmetrics` still works as a deprecated
 alias, but new configs should use the current name).
@@ -207,9 +207,9 @@ bare minimum:
 - `histogram.exponential.max_size: 160` — without it, the connector
   defaults to an *explicit*-bucket duration histogram
   (`otel_metrics_histogram`), not the exponential one
-  (`otel_metrics_exponential_histogram`) Couchbase Traces's legacy store schema
-  already has a dedicated table for; this is what actually gets you
-  that table instead of the default bucket set.
+  (`otel_metrics_exponential_histogram`) Couchbase Traces's data model
+  already has a dedicated collection for; this is what actually gets you
+  that collection instead of the default bucket set.
 - `aggregation_cardinality_limit` — `spanmetrics` aggregates unbounded by
   default, and its in-memory dimension map is a separate piece of state
   from the pipeline's own data flow, so `memory_limiter` does not protect
@@ -286,7 +286,7 @@ to inherit from, so `processors:` does need to be declared explicitly here
 its only exporter is the connector itself, not a network call, so batching
 a second copy of spans already batched in `traces` just adds latency
 (up to the batch timeout) and memory for no export benefit. `batch` earns
-its place on `metrics/spanmetrics`, which does export to legacy store:
+its place on `metrics/spanmetrics`, which does export to the ingest service:
 
 ```yaml
 connectors:
@@ -448,7 +448,7 @@ configured"` log line emitted at collector start.
 
 ### Example: tuning the `batch` processor
 
-The default `batch` processor is sized for legacy store
+The default `batch` processor is sized for the ingest service's bulk writes
 (`send_batch_size: 10000`, `timeout: 5s`). If your workload needs
 lower-latency exports — for example, latency-sensitive traces or a
 short-window smoke test that asserts shortly after emitting — define a
@@ -478,8 +478,8 @@ Notes:
   `batch`.
 - Processor list order matters. Keep `memory_limiter` ahead of the batch
   processor so back-pressure applies before batching.
-- Larger batches are friendlier to legacy store (fewer inserts, fewer
-  MergeTree parts). The defaults — `send_batch_size: 10000`, `timeout: 5s`
+- Larger batches are friendlier to the ingest service (fewer requests and
+  larger Couchbase bulk writes). The defaults — `send_batch_size: 10000`, `timeout: 5s`
   — are the recommended starting point; only tune them when you have a
   specific reason.
 - You can combine swap blocks. Define both `memory_limiter/custom` and
@@ -605,7 +605,7 @@ codebase without needing to publish a Go module tag on every change.
    ```yaml
    receivers:
      - gomod:
-         github.com/legacy store/Couchbase Traces/packages/otel-collector/receiver/myreceiver
+         github.com/mminichino/couchbase-traces/packages/otel-collector/receiver/myreceiver
          v0.0.0
        path: ./receiver/myreceiver
    ```

@@ -388,9 +388,9 @@ column headers, empty states, and toast/notification copy.
 
 **Keep the original casing of proper nouns, product names, and acronyms**
 anywhere in the string — sentence case only changes the words around them:
-Couchbase Traces, legacy store, OpenTelemetry/OTel, Lucene, SQL, PromQL,
+Couchbase Traces, Couchbase, Capella, SQL++, OpenTelemetry/OTel, Lucene, SQL, PromQL,
 MongoDB, Kubernetes, JSON, CSV, URL, ID, API, MCP, CPU, P95. For example:
-`Search your events w/ Lucene`, `Edit SQL`, `Copy as cURL`, `View in legacy store`.
+`Search your events w/ Lucene`, `Edit SQL`, `Copy as cURL`, `View in Couchbase`.
 
 Only sentence-case **static UI chrome**. Never rewrite dynamic/user data (column
 names, tag values, log/trace content, source or dashboard names a user typed) —

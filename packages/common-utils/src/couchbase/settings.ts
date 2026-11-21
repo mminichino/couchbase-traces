@@ -118,7 +118,7 @@ export function resolveQueryOptions(args: {
       loggedIgnoredSettings.add(key);
       logger?.debug(
         { setting: key },
-        'Ignoring legacy store setting on a Couchbase query',
+        'Ignoring a query setting that SQL++ does not support',
       );
     }
   }

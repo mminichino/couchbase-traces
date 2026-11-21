@@ -185,11 +185,11 @@ curl -s -o /dev/null -w "Main MCP: %{http_code}\n" \
 # Expected: 406 (SSE endpoint, wrong HTTP method — but proves auth works)
 ```
 
-### 5. Seed both legacy store instances
+### 5. Seed both ClickHouse eval store instances
 
 `setup-eval` creates the Couchbase Traces account and Sources but does **not** seed
 telemetry data. The `run` command's auto-seed only writes to the single
-legacy store in the top-level `evalstore` config, so you must seed each
+ClickHouse eval store in the top-level `evalstore` config, so you must seed each
 instance explicitly:
 
 ```bash
@@ -265,11 +265,11 @@ yarn workspace @couchbase-traces/hdx-eval dev run error-root-cause \
   --mcp hyperdx --model claude-opus-4-6 --runs 3
 ```
 
-### Non-Couchbase Traces MCP (e.g. raw legacy store)
+### Non-Couchbase Traces MCP (e.g. raw ClickHouse)
 
 The framework works with any MCP. The `evalstore` stdio MCP is included by
 default in `eval.config.json` after setup. Use it to compare Couchbase Traces's MCP
-against querying legacy store directly.
+against querying the ClickHouse eval store directly.
 
 ```bash
 yarn workspace @couchbase-traces/hdx-eval dev run error-root-cause \
@@ -341,7 +341,7 @@ The eval config files (`eval.config.json`, `eval.config.*.json`) are
 gitignored because they contain instance-specific access keys and Source IDs.
 They must be regenerated per environment using `setup-eval`.
 
-### legacy store data missing after container recreation
+### Eval store data missing after container recreation
 
 If Docker volumes are removed (e.g. `docker compose down -v`), seeded data is
 lost. The eval harness auto-seeds on the next run if it detects empty tables,
@@ -365,6 +365,6 @@ bash -c 'export CBT_DEV_SLOT=98 && source scripts/dev-env.sh 2>/dev/null && \
 bash -c 'export CBT_DEV_SLOT=99 && source scripts/dev-env.sh 2>/dev/null && \
   docker compose -p hdx-dev-99 -f docker-compose.dev.yml down'
 
-# Drop eval data from legacy store (optional)
+# Drop eval data from the ClickHouse eval store (optional)
 yarn workspace @couchbase-traces/hdx-eval dev drop <scenario>
 ```

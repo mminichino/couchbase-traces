@@ -47,7 +47,7 @@ export const listMetricsSchema = z.object({
     .string()
     .optional()
     .describe(
-      'legacy store ILIKE pattern (case-insensitive) matched against MetricName. ' +
+      'SQL++ LIKE pattern, matched case-insensitively against MetricName. ' +
         'Use % as the wildcard. Examples: "system.cpu.%", "%duration%", "http.server.%".',
     ),
   startTime: z

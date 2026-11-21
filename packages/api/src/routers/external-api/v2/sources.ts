@@ -145,8 +145,8 @@ function formatExternalSource(source: SourceDocument) {
  *       properties:
  *         setting:
  *           type: string
- *           description: legacy store setting name
- *           example: max_threads
+ *           description: SQL++ query option name. Couchbase sources accept scan_consistency, timeout_ms, max_parallelism, scan_cap, pipeline_batch, and pipeline_cap.
+ *           example: max_parallelism
  *         value:
  *           type: string
  *           description: Setting value
@@ -159,7 +159,7 @@ function formatExternalSource(source: SourceDocument) {
  *       properties:
  *         databaseName:
  *           type: string
- *           description: legacy store database name
+ *           description: Couchbase bucket name.
  *           example: otel
  *         scopeName:
  *           type: string
@@ -167,7 +167,7 @@ function formatExternalSource(source: SourceDocument) {
  *           example: _default
  *         tableName:
  *           type: string
- *           description: source table name
+ *           description: Couchbase collection name.
  *           example: otel_logs
  *     MetricSourceFrom:
  *       type: object
@@ -176,7 +176,7 @@ function formatExternalSource(source: SourceDocument) {
  *       properties:
  *         databaseName:
  *           type: string
- *           description: legacy store database name
+ *           description: Couchbase bucket name.
  *           example: otel
  *         scopeName:
  *           type: string
@@ -327,7 +327,7 @@ function formatExternalSource(source: SourceDocument) {
  *           example: log
  *         connection:
  *           type: string
- *           description: ID of the legacy connection used by this source.
+ *           description: ID of the Couchbase connection used by this source.
  *           example: 507f1f77bcf86cd799439012
  *         from:
  *           $ref: '#/components/schemas/SourceFrom'
@@ -438,7 +438,7 @@ function formatExternalSource(source: SourceDocument) {
  *         useTextIndexForImplicitColumn:
  *           type: string
  *           enum: [auto, enabled, disabled]
- *           description: Controls whether lucene rendering uses legacy store text indices via hasAllTokens() against the implicit column. "auto" detects a covering index at query time, "enabled" forces text index usage, "disabled" forces a LIKE/hasToken fallback.
+ *           description: Kept from earlier releases; Couchbase sources ignore it. Lucene terms on the implicit column use the source's Search index when it has one (SEARCH()), and a LIKE match otherwise.
  *           nullable: true
  *           example: auto
  *         highlightedTraceAttributeExpressions:
@@ -519,7 +519,7 @@ function formatExternalSource(source: SourceDocument) {
  *           example: trace
  *         connection:
  *           type: string
- *           description: ID of the legacy connection used by this source.
+ *           description: ID of the Couchbase connection used by this source.
  *           example: 507f1f77bcf86cd799439012
  *         from:
  *           $ref: '#/components/schemas/SourceFrom'
@@ -649,7 +649,7 @@ function formatExternalSource(source: SourceDocument) {
  *         useTextIndexForImplicitColumn:
  *           type: string
  *           enum: [auto, enabled, disabled]
- *           description: Controls whether lucene rendering uses legacy store text indices via hasAllTokens() against the implicit column. "auto" detects a covering index at query time, "enabled" forces text index usage, "disabled" forces a LIKE/hasToken fallback.
+ *           description: Kept from earlier releases; Couchbase sources ignore it. Lucene terms on the implicit column use the source's Search index when it has one (SEARCH()), and a LIKE match otherwise.
  *           nullable: true
  *           example: auto
  *         highlightedTraceAttributeExpressions:
@@ -732,7 +732,7 @@ function formatExternalSource(source: SourceDocument) {
  *           example: metric
  *         connection:
  *           type: string
- *           description: ID of the legacy connection used by this source.
+ *           description: ID of the Couchbase connection used by this source.
  *           example: 507f1f77bcf86cd799439012
  *         from:
  *           $ref: '#/components/schemas/MetricSourceFrom'
@@ -809,7 +809,7 @@ function formatExternalSource(source: SourceDocument) {
  *           example: session
  *         connection:
  *           type: string
- *           description: ID of the legacy connection used by this source.
+ *           description: ID of the Couchbase connection used by this source.
  *           example: 507f1f77bcf86cd799439012
  *         from:
  *           $ref: '#/components/schemas/SourceFrom'
@@ -879,11 +879,11 @@ function formatExternalSource(source: SourceDocument) {
  *           example: promql
  *         connection:
  *           type: string
- *           description: ID of the connection used by this source. Either a legacy connection holding the TimeSeries table, or a Prometheus-compatible connection.
+ *           description: ID of the connection used by this source. PromQL sources are no longer supported, so writes that use this kind are rejected with 400.
  *           example: 507f1f77bcf86cd799439012
  *         from:
  *           $ref: '#/components/schemas/SourceFrom'
- *           description: The database and TimeSeries table to query on a legacy connection. Not used for a Prometheus-compatible connection, but still required (empty strings are not accepted — use placeholder values such as "default").
+ *           description: Placeholder location, still required by the schema (empty strings are not accepted; use values such as "default"). PromQL sources are no longer supported.
  *         querySettings:
  *           type: array
  *           description: Optional SQL query settings applied when querying this source.

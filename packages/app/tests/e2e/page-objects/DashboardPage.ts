@@ -1562,7 +1562,7 @@ export class DashboardPage {
     });
   }
 
-  /** The ad hoc filter form's legacy store / Prometheus source type control. */
+  /** The ad hoc filter form's source type control (Couchbase / Prometheus). */
   getAdhocFilterSourceTypeControl(): Locator {
     return this.getFilterForm().getByTestId('adhoc-filter-source-type');
   }
@@ -1572,8 +1572,8 @@ export class DashboardPage {
     return this.getFilterForm().getByTestId('adhoc-filter-sources');
   }
 
-  /** Switch the ad hoc filter form between legacy store and Prometheus sources. */
-  async selectAdhocFilterSourceType(label: 'legacy store' | 'Prometheus') {
+  /** Switch the ad hoc filter form between Couchbase and Prometheus sources. */
+  async selectAdhocFilterSourceType(label: 'Couchbase' | 'Prometheus') {
     await this.getAdhocFilterSourceTypeControl()
       .getByText(label, { exact: true })
       .click();
@@ -1599,7 +1599,7 @@ export class DashboardPage {
     sourceNames: string[],
     options?: {
       variableName?: string;
-      sourceType?: 'legacy store' | 'Prometheus';
+      sourceType?: 'Couchbase' | 'Prometheus';
       where?: FilterWhereOptions;
     },
   ) {

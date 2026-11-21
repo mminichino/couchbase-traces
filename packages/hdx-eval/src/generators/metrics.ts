@@ -201,7 +201,7 @@ export function makeSummary(input: SummaryInput): SummaryMetricRow {
  * Build cumulative histogram bucket counts from raw samples given explicit
  * upper bounds. Returns `{ bucketCounts, count, sum, min, max }`. The returned
  * `bucketCounts` has `bounds.length + 1` entries (final entry is the +Inf
- * overflow bucket), matching the OTel/legacy store layout. Deterministic — a
+ * overflow bucket), matching the OTel/ClickHouse layout. Deterministic — a
  * pure function of its inputs.
  */
 export function bucketize(

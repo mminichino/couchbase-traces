@@ -70,25 +70,13 @@ function emptyStateTitle(tab: DashboardTab, hasFilters: boolean): string {
   return 'No dashboards yet';
 }
 
-function presetDashboards(links: {
-  hasCouchbase: boolean;
-  hasClickHouse: boolean;
-}) {
+function presetDashboards(links: { hasCouchbase: boolean }) {
   return [
     {
       name: 'Services',
       href: '/services',
       description: 'Monitor HTTP endpoints, latency, and error rates',
     },
-    ...(links.hasClickHouse
-      ? [
-          {
-            name: 'legacy store',
-            href: '/evalstore',
-            description: 'legacy store cluster health and query performance',
-          },
-        ]
-      : []),
     ...(links.hasCouchbase
       ? [
           {

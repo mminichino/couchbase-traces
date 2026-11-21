@@ -178,7 +178,7 @@ export async function runSearchConfig({
     !Array.isArray((result as { data: unknown }).data)
   ) {
     throw new Error(
-      'Unexpected legacy store response shape: missing data array',
+      'Unexpected Couchbase query response shape: missing data array',
     );
   }
 

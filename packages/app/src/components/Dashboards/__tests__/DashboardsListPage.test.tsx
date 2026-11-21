@@ -92,7 +92,7 @@ jest.mock('@/connection', () => ({
       },
     ],
   }),
-  dataStoreLinks: () => ({ hasCouchbase: false, hasClickHouse: true }),
+  dataStoreLinks: () => ({ hasCouchbase: false }),
 }));
 
 function makeDashboard(

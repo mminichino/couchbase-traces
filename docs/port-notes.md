@@ -2548,3 +2548,46 @@ branch, every deferred suite run on its own with the ignore list overridden: 205
 (8 suites) 99 → 98 of 287 (`queryTile` grouped bar over an exponential histogram
 now passes; the R2c "before" matches D2's 99). R2b (5 suites) 41 → 40 of 335
 (`checkAlerts` INLINE group-by alert now notifies per group).
+
+### D2b: user-visible "legacy store" text (B17, 2026-11-20)
+
+- **Count.** Non-test files, `git grep -ic`: 418 hits in 179 files on `main`
+  (fe676cb) → 228 in 120. Every remaining hit is a code comment, a
+  `.github/workflows` or `.github/scripts` comment, or a quoted mention of the
+  phrase in this file or `docs/v1-release-plan.md`.
+- **Rewritten.** CLI help and examples (`cbt connections`, `cbt query`,
+  `cbt chart`; examples now valid SQL++), the external API JSDoc and the
+  regenerated `openapi.json` (connections are `kind: couchbase`; the create body
+  requires it, which the old doc's `clickhouse` default contradicted), MCP tool
+  descriptions and the dashboards prompt (map access shown as
+  `SpanAttributes['k']` and stated to be SQL++ field access
+  ``SpanAttributes.`k` ``, Q16; missing keys are `MISSING`, grouped under `''`),
+  app UI strings and doc links, package READMEs and agent guides, `agent_docs/`,
+  the sentence-case rule, the Playwright skill, the issue and PR templates,
+  the review and changelog prompts, docker and collector config comments, and
+  `docs/data-model.md` (regenerated; column header "Upstream ClickHouse type").
+- **Removed (ClickHouse-only, dead).** The `/evalstore` preset links in
+  `AppNav`, `DashboardsListPage`, and `Spotlights` (the page was replaced by the
+  Couchbase cluster page in Phase 10), and the Prometheus scrape of `ch-server`
+  in `docker/prometheus/prometheus.yml` (no such service).
+- **Said "ClickHouse" on purpose.** `packages/hdx-eval` and its docs and
+  `.opencode` command: the eval harness still benchmarks against an upstream
+  ClickHouse eval store. The IaC migration notes: the old Terraform provider
+  is ClickHouse's. Upstream type columns in `docs/data-model.md`.
+- **Left, and why.** Code comments and identifiers in `packages/*/src` (about
+  190 hits): out of scope per the plan (P4), except comments next to edited
+  strings. `.github/workflows/docker-build.yml` and `.github/scripts/*`
+  comments: not user visible, and workflow files are out of scope for this
+  task. `port/state/inventory/*.json`: a point-in-time inventory. Test files:
+  the guard skips them; none assert on the phrase.
+- **Guard.** `scripts/ci/check-legacy-store-text.mjs`, run by `make ci-lint`;
+  its test `scripts/__tests__/check-legacy-store-text.test.mjs` runs in
+  `make ci-unit`. It scans what the plan named (string, template, and JSX text
+  in `packages/{app,api,cli,common-utils}/src` outside tests, `openapi.json`,
+  package READMEs) plus package `AGENTS.md`/`CONTRIBUTING.md`, root Markdown,
+  `docs/`, `agent_docs/`, `.cursor/rules`, `.claude/skills`, `.opencode`, the
+  GitHub issue and PR templates and prompts, `docker/`, and `smoke-tests/`.
+  Four allowlist entries (`scripts/ci/legacy-store-allowlist.json`) cover the
+  quoted mentions here and in the release plan; a stale entry fails the guard.
+  The CI lint job does not call `make ci-lint`, so on GitHub the guard runs
+  through the unit test's "the repository is clean" case.
