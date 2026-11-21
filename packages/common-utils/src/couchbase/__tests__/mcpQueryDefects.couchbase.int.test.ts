@@ -35,7 +35,7 @@ const from = { databaseName: 'test', scopeName: 'app', tableName: LOGS };
 let live = false;
 
 beforeAll(async () => {
-  live = await probeLive(conn);
+  live = await probeLive(conn, 'MCP query defects');
   if (!live) return;
   await ensureCollection(LOGS);
   const logs: Record<string, unknown>[] = [];

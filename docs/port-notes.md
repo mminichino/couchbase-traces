@@ -2563,8 +2563,8 @@ now passes; the R2c "before" matches D2's 99). R2b (5 suites) 41 → 40 of 335
   `SpanAttributes['k']` and stated to be SQL++ field access
   ``SpanAttributes.`k` ``, Q16; missing keys are `MISSING`, grouped under `''`),
   app UI strings and doc links, package READMEs and agent guides, `agent_docs/`,
-  the sentence-case rule, the Playwright skill, the issue and PR templates,
-  the review and changelog prompts, docker and collector config comments, and
+  the sentence-case rule, the Playwright skill, the issue and PR templates, the
+  review and changelog prompts, docker and collector config comments, and
   `docs/data-model.md` (regenerated; column header "Upstream ClickHouse type").
 - **Removed (ClickHouse-only, dead).** The `/evalstore` preset links in
   `AppNav`, `DashboardsListPage`, and `Spotlights` (the page was replaced by the
@@ -2572,22 +2572,70 @@ now passes; the R2c "before" matches D2's 99). R2b (5 suites) 41 → 40 of 335
   in `docker/prometheus/prometheus.yml` (no such service).
 - **Said "ClickHouse" on purpose.** `packages/hdx-eval` and its docs and
   `.opencode` command: the eval harness still benchmarks against an upstream
-  ClickHouse eval store. The IaC migration notes: the old Terraform provider
-  is ClickHouse's. Upstream type columns in `docs/data-model.md`.
+  ClickHouse eval store. The IaC migration notes: the old Terraform provider is
+  ClickHouse's. Upstream type columns in `docs/data-model.md`.
 - **Left, and why.** Code comments and identifiers in `packages/*/src` (about
   190 hits): out of scope per the plan (P4), except comments next to edited
   strings. `.github/workflows/docker-build.yml` and `.github/scripts/*`
-  comments: not user visible, and workflow files are out of scope for this
-  task. `port/state/inventory/*.json`: a point-in-time inventory. Test files:
-  the guard skips them; none assert on the phrase.
+  comments: not user visible, and workflow files are out of scope for this task.
+  `port/state/inventory/*.json`: a point-in-time inventory. Test files: the
+  guard skips them; none assert on the phrase.
 - **Guard.** `scripts/ci/check-legacy-store-text.mjs`, run by `make ci-lint`;
   its test `scripts/__tests__/check-legacy-store-text.test.mjs` runs in
   `make ci-unit`. It scans what the plan named (string, template, and JSX text
   in `packages/{app,api,cli,common-utils}/src` outside tests, `openapi.json`,
   package READMEs) plus package `AGENTS.md`/`CONTRIBUTING.md`, root Markdown,
   `docs/`, `agent_docs/`, `.cursor/rules`, `.claude/skills`, `.opencode`, the
-  GitHub issue and PR templates and prompts, `docker/`, and `smoke-tests/`.
-  Four allowlist entries (`scripts/ci/legacy-store-allowlist.json`) cover the
-  quoted mentions here and in the release plan; a stale entry fails the guard.
-  The CI lint job does not call `make ci-lint`, so on GitHub the guard runs
-  through the unit test's "the repository is clean" case.
+  GitHub issue and PR templates and prompts, `docker/`, and `smoke-tests/`. Four
+  allowlist entries (`scripts/ci/legacy-store-allowlist.json`) cover the quoted
+  mentions here and in the release plan; a stale entry fails the guard. The CI
+  lint job does not call `make ci-lint`, so on GitHub the guard runs through the
+  unit test's "the repository is clean" case.
+
+### D3: MCP trace tools (2026-11-21, `mm--v1-d3-mcp-trace`)
+
+- **Root causes.** `cbt_trace_waterfall` and
+  `cbt_trace_top_time_consuming_operations` still sent upstream ClickHouse:
+  `{db:Identifier}.{tbl:Identifier}` keyspaces, `{tid:String}`-style values (the
+  query service read `String` as a reserved word),
+  `toUnixTimestamp64Milli(toDateTime64(...))` for the extent probe, `count()`,
+  `uniqExact`, `quantile(p)(x)`, and `pickBucketTimestampColumn`'s `toDate`
+  column for composite `toDate(Timestamp), Timestamp` sources.
+- **Fix.** `common-utils/src/couchbase/traceQueries.ts` builds the four
+  statements (extent probe, span tree, correlated logs, breakdown) with `sqlpp`,
+  `keyspace()`, named parameters (`$tid`, `$limit`, `$divisor`,
+  `$minParentDuration`, `$maxParentTraces`, `$topN`, plus the `$pN` time bounds
+  from `timeRangePredicate`), the D9 map-access rewrite for source expressions
+  and `parentFilter`, and the shared `fn/scalar` (`count`, `uniq`) and
+  `fn/quantile` translators. Epoch ms come from `tsMillisExpr`
+  (`STR_TO_MILLIS`); epoch-ms sources serialize through `MILLIS_TO_UTC`; both
+  checked against the 8.0 date-function reference.
+  `common-utils/src/couchbase/timestampColumns.ts` filters on every column of a
+  composite timestamp expression and turns `toDate(x)` into a UTC day range on
+  `x` (same rows as upstream's day-precision comparison); any other function
+  call is reported as unsupported instead of reaching the engine. The tools in
+  `api/src/mcp/tools/trace/` now call those builders through `traceTable()` and
+  `runRows()` in `shared.ts`; the old ClickHouse `inclusiveTimeFilter` is gone.
+- **Result shape.** Integer results come back as strings (Int64 JSON encoding).
+  The breakdown already read them through `Number()`; the waterfall now does the
+  same for span `durationMs` (found by the live suite; upstream returned a
+  Float64). MIN/MAX over no rows is `NULL` here (upstream: the epoch, 0); the
+  probe treats both as "no extent".
+- **Error text.** The invalid-`parentFilter` hint says "must be a valid SQL++
+  condition"; the three `trace.int.test.ts` assertions on the old ClickHouse
+  wording were updated, nothing else in that suite changed.
+- **Tests.** `common-utils` `traceQueries.test.ts` (statements, parameters, no
+  ClickHouse-only constructs, map access, composite timestamps); `api`
+  `tools/trace/__tests__/traceSqlpp.test.ts` (both handlers against a recording
+  client: SQL++ only, every `$name` bound, quoted keyspaces; fails 3/3 on
+  `main`'s tool code); `traceDefects.couchbase.int.test.ts` (7 live cases in
+  `port/couchbase-test/run.sh`).
+- **Deferred-suite measurement** (fresh `docker-compose.ci.yml` stack per run,
+  `main` a66fcf0 vs this branch; measurement only, still deferred). R2c: 98 → 70
+  failing of 287. `trace` 29 → 1 of 40; the rest unchanged (`queryTool` 31,
+  `sources` 16, `describeTable` 11, `queryTile` 8, `queryTiles` 3,
+  `serviceHealthTool` 0, `emergingSignalsTool` 0); no test went pass → fail. The
+  remaining `trace` failure ("no-match hint when no traces exist") fails on
+  `main` too: the suite does not clear `otel_traces` between tests (upstream
+  does not either), so spans that other suites seeded in the last hour get
+  picked. It passes on an empty collection; left for R2c.

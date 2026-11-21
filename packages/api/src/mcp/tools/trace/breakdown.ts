@@ -1,7 +1,7 @@
 /**
- * clickstack_trace_top_time_consuming_operations
+ * cbt_trace_top_time_consuming_operations
  *
- * Aggregate counterpart to clickstack_trace_waterfall. Given a parent-span
+ * Aggregate counterpart to cbt_trace_waterfall. Given a parent-span
  * filter (a service + operation, optionally constrained to slow durations),
  * return the child operations consuming the most cumulative time across all
  * traces matching the parent filter — ranked by total_time_ms DESC.
@@ -15,8 +15,8 @@
  * endpoint" without dropping into raw SQL with self-JOINs. The builder
  * tools (table / timeseries / search) can't express the TraceId subselect.
  */
-import { getMetadata } from '@couchbase-traces/common-utils/dist/dataLayer';
-import type { SqlFrag } from '@couchbase-traces/common-utils/dist/query';
+import type { SqlPP } from '@couchbase-traces/common-utils/dist/couchbase/sqlpp';
+import { traceBreakdownQuery } from '@couchbase-traces/common-utils/dist/couchbase/traceQueries';
 import { SourceKind } from '@couchbase-traces/common-utils/dist/types';
 
 import { getSource } from '@/controllers/sources';
@@ -34,13 +34,15 @@ import {
 } from '@/mcp/tools/trace/breakdownSchema';
 import {
   durationDivisor,
-  inclusiveTimeFilter,
   requireMcpDataClient,
+  runRows,
+  traceTable,
 } from '@/mcp/tools/trace/shared';
 import type { ToolRegistrar } from '@/mcp/tools/types';
 import { mcpUserError } from '@/mcp/utils/errors';
 
-// The child stage looks spans up by TraceId, which is not in the sort key, so
+// The child stage looks spans up by TraceId, which no time-ordered index
+// covers, so
 // it reads every span in the window regardless of how few parents matched.
 // Cost tracks the window length, so that is the first thing to shrink.
 const TIMEOUT_SUFFIX =
@@ -97,91 +99,36 @@ export function registerTraceBreakdown({
         return dataClient;
       }
 
-      const timeFilterParams = {
-        connectionId: source.connection.toString(),
-        databaseName: source.from.databaseName,
-        tableName: source.from.tableName,
-        timestampValueExpression: source.timestampValueExpression,
-        metadata: getMetadata(dataClient),
-      };
-      const renderTimeFilter = (start: number, end: number) =>
-        inclusiveTimeFilter(timeFilterParams, new Date(start), new Date(end));
-      let parentTimeFilter: SqlFrag;
-      let childTimeFilter: SqlFrag;
-      try {
-        [parentTimeFilter, childTimeFilter] = await Promise.all([
-          renderTimeFilter(startDate.getTime(), endDate.getTime()),
-          // Widen the child window by 60s on each side to catch children
-          // that started slightly before / ended slightly after the parent
-          // sampling window.
-          renderTimeFilter(
-            startDate.getTime() - 60_000,
-            endDate.getTime() + 60_000,
-          ),
-        ]);
-      } catch (e) {
-        // Only the DESCRIBE lookups run here; they don't depend on the window or
-        // filters, so neither suffix applies.
-        return queryErrorResult(e, 'Failed to compute breakdown');
-      }
-
-      // Source-configured SQL expressions. These are trusted (set by the
-      // team admin in source config) and we substitute them into the
-      // generated SQL.
-      const traceIdExpr = source.traceIdExpression;
-      const spanNameExpr = source.spanNameExpression ?? "''";
-      const serviceNameExpr = source.serviceNameExpression ?? "''";
-      const durationExpr = source.durationExpression;
+      // Child spans can start slightly before or end slightly after the
+      // parent sampling window, so their window is 60s wider on each side.
       const divisor = durationDivisor(source.durationPrecision);
-      const dbName = source.from.databaseName;
-      const tableName = source.from.tableName;
-
-      // Build the SQL. parentFilter is SQL only (documented); time bounds
-      // and topN/maxParentTraces are parameterized.
-      // The CTE selects distinct parent TraceIds. The outer query joins
-      // back, excludes the parent rows themselves (so we measure child
-      // contribution), and aggregates by service+operation.
-      const minDurationClause =
-        input.minParentDurationMs != null
-          ? `AND ${durationExpr} >= ({minParentDurationStored:Float64})`
-          : '';
-
-      const sql = `
-WITH parent_traces AS (
-  SELECT DISTINCT ${traceIdExpr} AS _trace_id
-  FROM \`${dbName}\`.\`${tableName}\`
-  WHERE ${parentTimeFilter.sql}
-    AND (${input.parentFilter})
-    ${minDurationClause}
-  LIMIT {maxParentTraces:UInt32}
-)
-SELECT
-  ${serviceNameExpr} AS service,
-  ${spanNameExpr} AS operation,
-  sum(${durationExpr}) / {divisor:Float64} AS total_time_ms,
-  count() AS calls,
-  uniqExact(${traceIdExpr}) AS in_parents,
-  quantile(0.5)(${durationExpr}) / {divisor:Float64} AS p50_ms,
-  quantile(0.99)(${durationExpr}) / {divisor:Float64} AS p99_ms
-FROM \`${dbName}\`.\`${tableName}\`
-WHERE ${traceIdExpr} IN (SELECT _trace_id FROM parent_traces)
-  AND ${childTimeFilter.sql}
-  AND NOT (${input.parentFilter})
-GROUP BY service, operation
-ORDER BY total_time_ms DESC
-LIMIT {topN:UInt32}
-        `;
-
-      const params: Record<string, unknown> = {
-        ...parentTimeFilter.params,
-        ...childTimeFilter.params,
-        maxParentTraces: input.maxParentTraces,
-        topN: input.topN,
-        divisor,
-      };
-      if (input.minParentDurationMs != null) {
-        // Stored duration is divisor × ms.
-        params.minParentDurationStored = input.minParentDurationMs * divisor;
+      let query: SqlPP;
+      try {
+        query = traceBreakdownQuery({
+          table: traceTable(source),
+          exprs: {
+            traceId: source.traceIdExpression,
+            serviceName: source.serviceNameExpression,
+            spanName: source.spanNameExpression,
+            duration: source.durationExpression,
+          },
+          parentFilter: input.parentFilter,
+          parentStart: startDate,
+          parentEnd: endDate,
+          childStart: new Date(startDate.getTime() - 60_000),
+          childEnd: new Date(endDate.getTime() + 60_000),
+          minParentDurationStored:
+            input.minParentDurationMs != null
+              ? input.minParentDurationMs * divisor
+              : undefined,
+          divisor,
+          maxParentTraces: input.maxParentTraces,
+          topN: input.topN,
+        });
+      } catch (e) {
+        // Building fails only on the source's own expressions (an unsupported
+        // timestamp expression or an unquotable key), not on the window.
+        return queryErrorResult(e, 'Failed to compute breakdown');
       }
 
       type Row = {
@@ -196,16 +143,11 @@ LIMIT {topN:UInt32}
 
       let rows: Row[];
       try {
-        const result = await dataClient.query({
-          query: sql,
-          query_params: params,
-          format: 'JSON',
-          connectionId: source.connection.toString(),
-        });
-        const json = (await (
-          result as { json: () => Promise<{ data: Row[] }> }
-        ).json()) ?? { data: [] };
-        rows = json.data ?? [];
+        rows = await runRows<Row>(
+          dataClient,
+          query,
+          source.connection.toString(),
+        );
       } catch (e) {
         return queryErrorResult(e, {
           prefix: 'Failed to compute breakdown',
@@ -217,9 +159,8 @@ LIMIT {topN:UInt32}
         });
       }
 
-      // Normalise numerics — legacy store JSON sometimes returns strings for
-      // 64-bit integers. Cast everything to Number and compute share of
-      // total time at the same time.
+      // Normalise numerics (upstream JSON returned 64-bit integers as
+      // strings) and compute each row's share of total time.
       const operations = rows.map(r => ({
         service: r.service,
         operation: r.operation,

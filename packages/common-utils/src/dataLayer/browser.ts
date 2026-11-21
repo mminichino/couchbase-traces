@@ -16,14 +16,6 @@ export class DataClient extends CouchbaseClient implements DataClientLike {
     runChartValidity(this, args);
 }
 
-export async function testLocalConnection(_args: {
-  host: string;
-  username: string;
-  password: string;
-}): Promise<boolean> {
-  return false;
-}
-
 export function getDataClient(
   opts: DataClientOptions & {
     application?: string;

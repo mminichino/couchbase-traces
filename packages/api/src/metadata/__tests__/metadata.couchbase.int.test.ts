@@ -24,6 +24,11 @@ const META_PASSWORD = 'cbt-meta-test-password';
 jest.setTimeout(600_000);
 
 const maybe = REQUIRED ? describe : describe.skip;
+if (process.env.CBT_TEST_COUCHBASE_REQUIRED === '0') {
+  console.log(
+    'Metadata store contract: skipped on purpose (CBT_TEST_COUCHBASE_REQUIRED=0); it runs in port/couchbase-test/run.sh.',
+  );
+}
 
 let admin: Cluster | undefined;
 let store: CouchbaseMetadataStore | undefined;

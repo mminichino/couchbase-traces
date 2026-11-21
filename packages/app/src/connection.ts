@@ -73,39 +73,30 @@ export function useUpdateConnection() {
 
 export type ConnectionTestResult = { success: boolean; error?: string };
 
-export type ConnectionTestRequest =
-  | { kind: 'clickhouse'; host: string; username: string; password: string }
-  | {
-      kind: 'couchbase';
-      host: string;
-      username: string;
-      password?: string;
-      wanProfile?: boolean;
-      tlsCaCertificate?: string;
-      connectionId?: string;
-    };
+export type ConnectionTestRequest = {
+  kind: 'couchbase';
+  host: string;
+  username: string;
+  password?: string;
+  wanProfile?: boolean;
+  tlsCaCertificate?: string;
+  connectionId?: string;
+};
 
-/** Tests a connection through the API route for its kind. */
+/** Tests a Couchbase connection through `POST /couchbase/test`. */
 export async function testConnectionByKind(
   request: ConnectionTestRequest,
 ): Promise<ConnectionTestResult> {
-  if (request.kind === 'couchbase') {
-    const { kind: _kind, ...body } = request;
-    const res = await hdxServer('couchbase/test', {
-      method: 'POST',
-      json: body,
-      throwHttpErrors: false,
-    }).json<{ success: boolean; error?: SerializedQueryError }>();
-    return {
-      success: res.success === true,
-      error: res.error?.message,
-    };
-  }
-  const { host, username, password } = request;
-  return hdxServer('evalstore-proxy/test', {
+  const { kind: _kind, ...body } = request;
+  const res = await hdxServer('couchbase/test', {
     method: 'POST',
-    json: { host, username, password },
-  }).json<ConnectionTestResult>();
+    json: body,
+    throwHttpErrors: false,
+  }).json<{ success: boolean; error?: SerializedQueryError }>();
+  return {
+    success: res.success === true,
+    error: res.error?.message,
+  };
 }
 
 export function useTestConnectionByKind() {

@@ -73,7 +73,7 @@ const counts = (rows: Record<string, unknown>[], key: string) =>
 let live = false;
 
 beforeAll(async () => {
-  live = await probeLive(conn);
+  live = await probeLive(conn, 'Map access');
   if (!live) return;
   await ensureCollection(SPANS);
   await seed(SPANS, DOCS);

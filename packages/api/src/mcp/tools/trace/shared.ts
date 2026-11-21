@@ -1,6 +1,5 @@
-import type { Metadata } from '@couchbase-traces/common-utils/dist/core/metadata';
-import type { SqlFrag } from '@couchbase-traces/common-utils/dist/query';
-import { sqlExpr } from '@couchbase-traces/common-utils/dist/query';
+import type { SqlPP } from '@couchbase-traces/common-utils/dist/couchbase/sqlpp';
+import type { TraceTable } from '@couchbase-traces/common-utils/dist/couchbase/traceQueries';
 import type { QuerySettings } from '@couchbase-traces/common-utils/dist/types';
 
 import { getConnectionById } from '@/controllers/connection';
@@ -47,21 +46,30 @@ export function mcpQuerySettings(_querySettings: QuerySettings | undefined) {
   return undefined;
 }
 
-export type TimeFilterParams = {
+/** The keyspace and timestamp fields the trace SQL++ builders read. */
+export function traceTable(source: {
+  from: TraceTable['from'];
   timestampValueExpression: string;
-  metadata: Metadata;
-  databaseName: string;
-  tableName: string;
-  connectionId: string;
-};
+  timestampFormat?: TraceTable['timestampFormat'];
+}): TraceTable {
+  return {
+    from: source.from,
+    timestampValueExpression: source.timestampValueExpression,
+    timestampFormat: source.timestampFormat,
+  };
+}
 
-export function inclusiveTimeFilter(
-  params: TimeFilterParams,
-  start: Date,
-  end: Date,
-): Promise<SqlFrag> {
-  const expr = params.timestampValueExpression;
-  return Promise.resolve(
-    sqlExpr`(${expr} >= ${{ String: start.toISOString() }} AND ${expr} <= ${{ String: end.toISOString() }})`,
-  );
+/** Runs a built SQL++ statement and returns its rows. */
+export async function runRows<T>(
+  dataClient: DataClient,
+  q: SqlPP,
+  connectionId: string,
+): Promise<T[]> {
+  const result = await dataClient.query({
+    query: q.statement,
+    query_params: q.parameters,
+    format: 'JSONEachRow',
+    connectionId,
+  });
+  return (await (result as { json: () => Promise<T[]> }).json()) ?? [];
 }

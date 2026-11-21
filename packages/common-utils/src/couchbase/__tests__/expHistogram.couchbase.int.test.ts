@@ -3,11 +3,7 @@
  * Requires port/couchbase-test (CBT_TEST_COUCHBASE_*).
  */
 import type { CouchbaseConnectionConfig } from '@/couchbase/node';
-import {
-  clusterCache,
-  CouchbaseNodeClient,
-  testConnection,
-} from '@/couchbase/node';
+import { clusterCache, CouchbaseNodeClient } from '@/couchbase/node';
 import {
   type ExpHistPoint,
   referenceExpHistogramCount,
@@ -16,9 +12,10 @@ import {
 import { translateExponentialHistogramCouchbase } from '@/couchbase/render/metrics/expHistogram';
 import { quoteIdent } from '@/couchbase/sqlpp';
 
+import { probeLive } from './liveCluster';
+
 const CONNSTR =
   process.env.CBT_TEST_COUCHBASE_CONNSTR || 'couchbase://localhost';
-const REQUIRED = process.env.CBT_TEST_COUCHBASE_REQUIRED === '1';
 const ADMIN_USER = process.env.CBT_TEST_COUCHBASE_ADMIN_USER || 'Administrator';
 const ADMIN_PASSWORD =
   process.env.CBT_TEST_COUCHBASE_ADMIN_PASSWORD || 'cbt-test-admin';
@@ -38,15 +35,8 @@ const COLLECTION = 'otel_metrics_exponential_histogram';
 let live = false;
 
 beforeAll(async () => {
-  const probe = await testConnection(adminConn, 15000);
-  live = probe.success;
-  if (!live) {
-    const reason = probe.success ? '' : probe.error.message;
-    const msg = `Couchbase integration tests skipped: ${reason}`;
-    if (REQUIRED) throw new Error(msg);
-    console.warn(msg);
-    return;
-  }
+  live = await probeLive(adminConn, 'Exponential histogram');
+  if (!live) return;
   // DDL against a just-initialized cluster can 12003 until the query
   // service sees the scope; retry before failing the suite.
   let created = false;

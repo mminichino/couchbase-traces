@@ -21,7 +21,10 @@ const CONNSTR =
 const USER = process.env.CBT_TEST_COUCHBASE_USER || 'cbt_query';
 const PASSWORD =
   process.env.CBT_TEST_COUCHBASE_PASSWORD || 'cbt-query-password';
+// `1` (run.sh): an unreachable cluster fails the run. `0` (make ci-int, CI's
+// int job): skip without probing, since that stack has no `test` bucket.
 const REQUIRED = process.env.CBT_TEST_COUCHBASE_REQUIRED === '1';
+const OFF = process.env.CBT_TEST_COUCHBASE_REQUIRED === '0';
 
 function pointCount(section: {
   data?: { series?: { points: unknown[] }[] };
@@ -54,6 +57,12 @@ describe('Couchbase API integration', () => {
     });
 
   beforeAll(async () => {
+    if (OFF) {
+      console.log(
+        'Couchbase API integration: skipped on purpose (CBT_TEST_COUCHBASE_REQUIRED=0); it runs in port/couchbase-test/run.sh.',
+      );
+      return;
+    }
     const probe = await testConnection(
       { host: CONNSTR, username: USER, password: PASSWORD, wanProfile: false },
       15000,
@@ -105,10 +114,7 @@ describe('Couchbase API integration', () => {
   });
 
   it('creates a connection, queries it, and reads it with CouchbaseClient', async () => {
-    if (!available) {
-      console.warn('skipped (Couchbase unreachable): full API path');
-      return;
-    }
+    if (!available) return;
 
     const created = await api('/connections', {
       method: 'POST',

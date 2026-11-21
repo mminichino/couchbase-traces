@@ -10,13 +10,13 @@ import {
 } from '@/couchbase/node';
 import type { Frame } from '@/couchbase/types';
 
+import { probeLive } from './liveCluster';
+
 const CONNSTR =
   process.env.CBT_TEST_COUCHBASE_CONNSTR || 'couchbase://localhost';
 const USER = process.env.CBT_TEST_COUCHBASE_USER || 'cbt_query';
 const PASSWORD =
   process.env.CBT_TEST_COUCHBASE_PASSWORD || 'cbt-query-password';
-// run.sh sets this so an unreachable server fails the run instead of skipping.
-const REQUIRED = process.env.CBT_TEST_COUCHBASE_REQUIRED === '1';
 
 const EVENTS = '`test`.`app`.`events`';
 
@@ -66,16 +66,7 @@ function errorOf(frames: Frame[]) {
 let available = false;
 
 beforeAll(async () => {
-  const probe = await testConnection(conn, 15000);
-  available = probe.success;
-  if (!available) {
-    const reason = probe.success
-      ? ''
-      : `${probe.error.code}: ${probe.error.message}`;
-    const msg = `Couchbase integration tests skipped: ${CONNSTR} is unreachable (${reason}). Start it with port/couchbase-test/run.sh.`;
-    if (REQUIRED) throw new Error(msg);
-    console.warn(msg);
-  }
+  available = await probeLive(conn, 'Couchbase integration');
 }, 30000);
 
 afterAll(async () => {
@@ -87,10 +78,7 @@ function itLive(name: string, fn: () => Promise<void>, timeout = 30000) {
   it(
     name,
     async () => {
-      if (!available) {
-        console.warn(`skipped (Couchbase unreachable): ${name}`);
-        return;
-      }
+      if (!available) return;
       await fn();
     },
     timeout,

@@ -1,7 +1,6 @@
 import { useCallback, useState } from 'react';
 import { omit } from 'lodash';
 import { useForm, useWatch } from 'react-hook-form';
-import { testLocalConnection } from '@couchbase-traces/common-utils/dist/dataLayer/browser';
 import {
   Connection,
   isCouchbaseConnection,
@@ -18,7 +17,6 @@ import {
   InputControlled,
   PasswordInputControlled,
 } from '@/components/InputControlled';
-import { IS_LOCAL_MODE } from '@/config';
 import {
   testConnectionByKind,
   useCreateConnection,
@@ -68,58 +66,34 @@ function useTestConnection({
 
     setTestConnectionState(TestConnectionState.Loading);
 
-    if (IS_LOCAL_MODE) {
-      try {
-        const result = await testLocalConnection({ host, username, password });
-        if (result) {
-          setTestConnectionState(TestConnectionState.Valid);
-        } else {
-          setTestConnectionState(TestConnectionState.Invalid);
-          notifications.show({
-            color: 'red',
-            message: 'Connection test failed',
-            autoClose: 5000,
-          });
-        }
-      } catch (e) {
-        console.error(e);
+    try {
+      const result = await testConnectionByKind({
+        kind: 'couchbase',
+        host,
+        username,
+        password: password || undefined,
+        wanProfile: values.wanProfile,
+        tlsCaCertificate: values.tlsCaCertificate || undefined,
+        connectionId: isNew ? undefined : connectionId,
+      });
+      if (result.success) {
+        setTestConnectionState(TestConnectionState.Valid);
+      } else {
         setTestConnectionState(TestConnectionState.Invalid);
         notifications.show({
           color: 'red',
-          message: e.message,
+          message: result.error || 'Connection test failed',
           autoClose: 5000,
         });
       }
-    } else {
-      try {
-        const result = await testConnectionByKind({
-          kind: 'couchbase',
-          host,
-          username,
-          password: password || undefined,
-          wanProfile: values.wanProfile,
-          tlsCaCertificate: values.tlsCaCertificate || undefined,
-          connectionId: isNew ? undefined : connectionId,
-        });
-        if (result.success) {
-          setTestConnectionState(TestConnectionState.Valid);
-        } else {
-          setTestConnectionState(TestConnectionState.Invalid);
-          notifications.show({
-            color: 'red',
-            message: result.error || 'Connection test failed',
-            autoClose: 5000,
-          });
-        }
-      } catch (error: any) {
-        const body = await error.response?.json();
-        setTestConnectionState(TestConnectionState.Invalid);
-        notifications.show({
-          color: 'red',
-          message: body?.error ?? 'Failed to test connection',
-          autoClose: 5000,
-        });
-      }
+    } catch (error: any) {
+      const body = await error.response?.json();
+      setTestConnectionState(TestConnectionState.Invalid);
+      notifications.show({
+        color: 'red',
+        message: body?.error ?? 'Failed to test connection',
+        autoClose: 5000,
+      });
     }
 
     setTimeout(() => {
