@@ -14,7 +14,7 @@ import { columnTypeToJSType, JSDataType } from '@/query/columnTypes';
 import type { ColumnMeta } from '@/query/types';
 import type { Filter, UseTextIndex } from '@/types';
 
-import { isAccessDeniedError } from './errors';
+import { isAccessDeniedError, isEmptyInferError } from './errors';
 import { type InferredField, inferredToColumnType, parseInfer } from './infer';
 import {
   inferStatement,
@@ -29,6 +29,9 @@ import { renderWhereCouchbase } from './render/where';
 import { quoteIdent, type SqlPP, sqlpp } from './sqlpp';
 import type { TimeFormat } from './time';
 import type { DataClient, Keyspace } from './types';
+
+/** How long an empty column list (empty or unreadable collection) is cached. */
+export const EMPTY_COLUMNS_CACHE_TTL_MS = 10_000;
 
 const EMPTY_COLUMN = {
   codec_expression: '',
@@ -65,9 +68,12 @@ export class Metadata {
   }
 
   async getColumns(args: Tc): Promise<ColumnMeta[]> {
-    return this.cache.getOrFetch(
-      this.key(args, 'columns'),
+    const key = this.key(args, 'columns');
+    let fetched = false;
+    const columns = await this.cache.getOrFetch(
+      key,
       async () => {
+        fetched = true;
         const fields = await this.inferFields(args);
         return fields
           .filter(f => f.path.length === 1)
@@ -79,6 +85,12 @@ export class Metadata {
       },
       { ttlMs: COLUMNS_CACHE_TTL_MS },
     );
+    // An empty collection may be filling up; keep "no columns" briefly so its
+    // first documents show up without waiting out the full column TTL.
+    if (fetched && columns.length === 0) {
+      this.cache.set(key, columns, EMPTY_COLUMNS_CACHE_TTL_MS);
+    }
+    return columns;
   }
 
   async getColumn(args: Tc & { column: string; matchLowercase?: boolean }) {
@@ -454,11 +466,16 @@ export class Metadata {
       const fields = parseInfer(rows.map(raw));
       if (fields.length > 0) return fields;
     } catch (err) {
-      if (!isAccessDeniedError(err)) throw err;
-      console.warn('INFER failed for permissions', err);
+      // An empty collection (7014) has no schema yet: not an error, as with
+      // upstream DESCRIBE TABLE on an empty table.
+      if (!isEmptyInferError(err)) {
+        if (!isAccessDeniedError(err)) throw err;
+        console.warn('INFER failed for permissions', err);
+      }
     }
-    // INFER can return nothing (empty collection sample or denied). Fall back
-    // to field names from a few real documents so ad hoc key pickers still work.
+    // INFER can return nothing (empty collection, denied, or documents written
+    // after it sampled). Fall back to field names from a few real documents so
+    // ad hoc key pickers still work; an empty collection yields no fields.
     return this.inferFieldsFromSample(args);
   }
 

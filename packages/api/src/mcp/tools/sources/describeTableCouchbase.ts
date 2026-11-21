@@ -1,3 +1,4 @@
+import { CouchbaseQueryError } from '@couchbase-traces/common-utils/dist/couchbase/errors';
 import { keyspace } from '@couchbase-traces/common-utils/dist/couchbase/sqlpp';
 import { getMetadata } from '@couchbase-traces/common-utils/dist/dataLayer';
 import { columnTypeToJSType } from '@couchbase-traces/common-utils/dist/query';
@@ -110,16 +111,40 @@ export async function describeCouchbaseTable(
 ): Promise<ToolResult> {
   const { scope, collection } = parseCouchTable(input.table);
   const metadata = getMetadata(ctx.dataClient);
-  const columns = await metadata.getColumns({
-    databaseName: input.database,
-    scopeName: scope,
-    tableName: collection,
-    connectionId: ctx.connectionId,
-  });
-  if (columns.length === 0) {
-    return mcpUserError(
-      `Collection "${input.table}" not found in bucket "${input.database}", or INFER returned no fields.`,
+  const notFound = () =>
+    mcpUserError(
+      `Collection "${input.table}" not found in bucket "${input.database}".`,
     );
+  let columns: Awaited<ReturnType<typeof metadata.getColumns>>;
+  try {
+    columns = await metadata.getColumns({
+      databaseName: input.database,
+      scopeName: scope,
+      tableName: collection,
+      connectionId: ctx.connectionId,
+    });
+  } catch (e) {
+    if (e instanceof CouchbaseQueryError && e.code === 'KEYSPACE_NOT_FOUND') {
+      return notFound();
+    }
+    throw e;
+  }
+  // No inferred columns: an empty collection (described, as upstream
+  // describes an empty table) or one that does not exist.
+  let emptyNote: string | undefined;
+  if (columns.length === 0) {
+    const spaces = await metadata.listKeyspaces({
+      connectionId: ctx.connectionId,
+    });
+    const exists = spaces.some(
+      k =>
+        k.bucket === input.database &&
+        k.scope === scope &&
+        k.collection === collection,
+    );
+    if (!exists) return notFound();
+    emptyNote =
+      'The collection has no documents yet, so it has no inferred columns. Describe it again after data arrives, or use the source expressions.';
   }
 
   const qualified = ks(input.database, scope, collection);
@@ -153,6 +178,7 @@ export async function describeCouchbaseTable(
               type: c.type,
               jsType: columnTypeToJSType(c.type),
             })),
+            ...(emptyNote && { note: emptyNote }),
             ...(sampleRows && { sampleRows }),
             exampleQueries: {
               browse: `SELECT d.* FROM ${qualified} AS d LIMIT 20`,
