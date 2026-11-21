@@ -1,12 +1,10 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { escapeSqlString } from '@couchbase-traces/common-utils/dist/core/utils';
 import { isPersistableUserId } from '@couchbase-traces/common-utils/dist/types';
 
 import api from '@/api';
 import { useBrandDisplayName } from '@/brand';
 import { NOW } from '@/config';
 import { useConnections } from '@/connection';
-import { useQueriedChartConfig } from '@/hooks/useChartConfig';
 import { useSources } from '@/source';
 
 import {
@@ -14,12 +12,12 @@ import {
   PRODUCT_TASK_ORDER,
   PRODUCT_TASKS,
 } from './onboardingTasks';
+import { useSourceDataPresence } from './useSourceDataPresence';
 
 const DAY_MS = 1000 * 60 * 60 * 24;
 // Setup phase closes after 3 days, product-usage phase after 7.
 const SETUP_MAX_TEAM_AGE_DAYS = 3;
 const PRODUCT_MAX_TEAM_AGE_DAYS = 7;
-const SETUP_ROW_COUNT_STALE_MS = 5 * 60 * 1000;
 
 interface OnboardingCompletion {
   steps: OnboardingStep[];
@@ -67,24 +65,14 @@ export function useOnboardingCompletion(
     [sources, firstConnection],
   );
 
-  const sourceRowsConfig = useMemo(
-    () => ({
-      select: 'sum(total_rows) as total_rows',
-      from: {
-        databaseName: 'system',
-        tableName: 'tables',
-      },
-      where: '',
-      filtersLogicalOperator: 'OR' as const,
-      // tableName/databaseName come from user-configured Source docs and this
-      // `type: 'sql'` condition renders via UNSAFE_RAW_SQL, so escape both.
-      filters: (firstConnectionSources ?? []).map(source => ({
-        type: 'sql' as const,
-        condition: `table = '${escapeSqlString(source.from.tableName)}' AND database = '${escapeSqlString(source.from.databaseName)}'`,
+  const sourceKeyspaces = useMemo(
+    () =>
+      (firstConnectionSources ?? []).map(source => ({
+        databaseName: source.from.databaseName,
+        ...(source.from.scopeName ? { scopeName: source.from.scopeName } : {}),
+        tableName: source.from.tableName,
       })),
-      connection: firstConnection?.id ?? '',
-    }),
-    [firstConnectionSources, firstConnection],
+    [firstConnectionSources],
   );
   // `me == null` in, so the probe is skipped there.
   const isWithinAnyOnboardingWindow =
@@ -92,22 +80,19 @@ export function useOnboardingCompletion(
     teamAgeDays != null &&
     teamAgeDays < PRODUCT_MAX_TEAM_AGE_DAYS &&
     !onboardingData?.isDismissed;
-  // Empty `connection` fails evalstore-proxy Zod validation; an empty filters
-  // list (no enabled sources) would scan all of system.tables and wrongly count
-  // unrelated tables as data.
+  // No connection means nothing to ask; no enabled sources means no data to
+  // find, so the step stays open without a query.
   const isSourceRowsQueryEnabled =
     !!firstConnection?.id &&
-    (firstConnectionSources?.length ?? 0) > 0 &&
+    sourceKeyspaces.length > 0 &&
     isWithinAnyOnboardingWindow;
-  const { data: sourceRowsData, isLoading: isSourceRowsLoading } =
-    useQueriedChartConfig(sourceRowsConfig, {
+  const { hasData: sourceHasData, isLoading: isSourceRowsLoading } =
+    useSourceDataPresence({
+      connectionId: firstConnection?.id ?? '',
+      keyspaces: sourceKeyspaces,
       enabled: isSourceRowsQueryEnabled,
-      // Can't gate `enabled` on card visibility without circularity
-      // (isSetupComplete needs hasData), so staleTime avoids refetch-on-focus
-      // for in-window teams whose card is hidden.
-      staleTime: SETUP_ROW_COUNT_STALE_MS,
     });
-  const hasData = sourceRowsData?.data?.[0]?.total_rows > 0;
+  const hasData = sourceHasData === true;
 
   const setupSteps: OnboardingStep[] = useMemo(
     () => [

@@ -1,4 +1,17 @@
 import {
+  type CollectionName,
+  EXP_FIELDS,
+  type FieldSpec,
+  GAUGE_FIELDS,
+  HISTOGRAM_FIELDS,
+  LOG_FIELDS,
+  SESSION_FIELDS,
+  SUM_FIELDS,
+  SUMMARY_FIELDS,
+  TRACE_FIELDS,
+} from '@couchbase-traces/common-utils/dist/couchbase/otelSchema';
+
+import {
   LOG_MATERIALIZED,
   type MaterializedSpec,
   SESSION_MATERIALIZED,
@@ -6,32 +19,11 @@ import {
 } from '@/model/materialized';
 import { EPOCH_ISO } from '@/otlp/values';
 
-export type CollectionName =
-  | 'otel_logs'
-  | 'otel_traces'
-  | 'otel_metrics_gauge'
-  | 'otel_metrics_sum'
-  | 'otel_metrics_histogram'
-  | 'otel_metrics_exponential_histogram'
-  | 'otel_metrics_summary'
-  | 'otel_sessions';
-
-export type FieldEncoding =
-  | 'timestamp_ns'
-  | 'timestamp_s'
-  | 'string'
-  | 'number'
-  | 'bool'
-  | 'map'
-  | 'array'
-  | 'nested';
-
-export type FieldSpec = {
-  name: string;
-  columnType: string;
-  encoding: FieldEncoding;
-  nested?: FieldSpec[];
-};
+export type {
+  CollectionName,
+  FieldEncoding,
+  FieldSpec,
+} from '@couchbase-traces/common-utils/dist/couchbase/otelSchema';
 
 export type IndexSpec = { name: string; keys: string[] };
 
@@ -54,177 +46,6 @@ export type CollectionSpec = {
   indexes: IndexSpec[];
   search?: SearchIndexSpec;
 };
-
-const MAP = 'Map(LowCardinality(String), String)';
-
-const str = (name: string, type = 'String'): FieldSpec => ({
-  name,
-  columnType: type,
-  encoding: 'string',
-});
-const lc = (name: string): FieldSpec => str(name, 'LowCardinality(String)');
-const tsNs = (name: string): FieldSpec => ({
-  name,
-  columnType: 'DateTime64(9)',
-  encoding: 'timestamp_ns',
-});
-const tsS = (name: string): FieldSpec => ({
-  name,
-  columnType: 'DateTime',
-  encoding: 'timestamp_s',
-});
-const num = (name: string, type: string): FieldSpec => ({
-  name,
-  columnType: type,
-  encoding: 'number',
-});
-const map = (name: string): FieldSpec => ({
-  name,
-  columnType: MAP,
-  encoding: 'map',
-});
-const arr = (name: string, type: string): FieldSpec => ({
-  name,
-  columnType: type,
-  encoding: 'array',
-});
-const nested = (name: string, fields: FieldSpec[]): FieldSpec => ({
-  name,
-  columnType: 'Nested',
-  encoding: 'nested',
-  nested: fields,
-});
-
-const LOG_FIELDS: FieldSpec[] = [
-  tsNs('Timestamp'),
-  str('TraceId'),
-  str('SpanId'),
-  num('TraceFlags', 'UInt8'),
-  lc('SeverityText'),
-  num('SeverityNumber', 'UInt8'),
-  lc('ServiceName'),
-  str('Body'),
-  lc('ResourceSchemaUrl'),
-  map('ResourceAttributes'),
-  lc('ScopeSchemaUrl'),
-  str('ScopeName'),
-  lc('ScopeVersion'),
-  map('ScopeAttributes'),
-  map('LogAttributes'),
-  str('EventName'),
-];
-
-const SESSION_FIELDS: FieldSpec[] = LOG_FIELDS.filter(
-  f => f.name !== 'EventName',
-);
-
-const TRACE_FIELDS: FieldSpec[] = [
-  tsNs('Timestamp'),
-  str('TraceId'),
-  str('SpanId'),
-  str('ParentSpanId'),
-  str('TraceState'),
-  lc('SpanName'),
-  lc('SpanKind'),
-  lc('ServiceName'),
-  map('ResourceAttributes'),
-  str('ScopeName'),
-  str('ScopeVersion'),
-  map('SpanAttributes'),
-  num('Duration', 'UInt64'),
-  lc('StatusCode'),
-  str('StatusMessage'),
-  nested('Events', [
-    tsNs('Timestamp'),
-    lc('Name'),
-    { name: 'Attributes', columnType: `Array(${MAP})`, encoding: 'map' },
-  ]),
-  nested('Links', [
-    str('TraceId'),
-    str('SpanId'),
-    str('TraceState'),
-    { name: 'Attributes', columnType: `Array(${MAP})`, encoding: 'map' },
-  ]),
-];
-
-const EXEMPLARS = nested('Exemplars', [
-  {
-    name: 'FilteredAttributes',
-    columnType: `Array(${MAP})`,
-    encoding: 'map',
-  },
-  tsS('TimeUnix'),
-  num('Value', 'Float64'),
-  str('SpanId'),
-  str('TraceId'),
-]);
-
-const METRIC_COMMON: FieldSpec[] = [
-  map('ResourceAttributes'),
-  str('ResourceSchemaUrl'),
-  str('ScopeName'),
-  str('ScopeVersion'),
-  map('ScopeAttributes'),
-  num('ScopeDroppedAttrCount', 'UInt32'),
-  str('ScopeSchemaUrl'),
-  lc('ServiceName'),
-  lc('MetricName'),
-  str('MetricDescription'),
-  str('MetricUnit'),
-  map('Attributes'),
-  tsS('StartTimeUnix'),
-  tsS('TimeUnix'),
-];
-
-const GAUGE_FIELDS: FieldSpec[] = [
-  ...METRIC_COMMON,
-  num('Value', 'Float64'),
-  num('Flags', 'UInt32'),
-  EXEMPLARS,
-];
-const SUM_FIELDS: FieldSpec[] = [
-  ...GAUGE_FIELDS,
-  num('AggregationTemporality', 'Int32'),
-  { name: 'IsMonotonic', columnType: 'Bool', encoding: 'bool' },
-];
-const HISTOGRAM_FIELDS: FieldSpec[] = [
-  ...METRIC_COMMON,
-  num('Count', 'UInt64'),
-  num('Sum', 'Float64'),
-  arr('BucketCounts', 'Array(UInt64)'),
-  arr('ExplicitBounds', 'Array(Float64)'),
-  EXEMPLARS,
-  num('Flags', 'UInt32'),
-  num('Min', 'Float64'),
-  num('Max', 'Float64'),
-  num('AggregationTemporality', 'Int32'),
-];
-const EXP_FIELDS: FieldSpec[] = [
-  ...METRIC_COMMON,
-  num('Count', 'UInt64'),
-  num('Sum', 'Float64'),
-  num('Scale', 'Int32'),
-  num('ZeroCount', 'UInt64'),
-  num('PositiveOffset', 'Int32'),
-  arr('PositiveBucketCounts', 'Array(UInt64)'),
-  num('NegativeOffset', 'Int32'),
-  arr('NegativeBucketCounts', 'Array(UInt64)'),
-  EXEMPLARS,
-  num('Flags', 'UInt32'),
-  num('Min', 'Float64'),
-  num('Max', 'Float64'),
-  num('AggregationTemporality', 'Int32'),
-];
-const SUMMARY_FIELDS: FieldSpec[] = [
-  ...METRIC_COMMON,
-  num('Count', 'UInt64'),
-  num('Sum', 'Float64'),
-  nested('ValueAtQuantiles', [
-    num('Quantile', 'Float64'),
-    num('Value', 'Float64'),
-  ]),
-  num('Flags', 'UInt32'),
-];
 
 const LOG_INDEXES: IndexSpec[] = [
   ix('ix_logs_ts', ['`Timestamp` DESC']),

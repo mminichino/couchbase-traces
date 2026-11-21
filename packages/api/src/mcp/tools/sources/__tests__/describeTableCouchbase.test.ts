@@ -1,6 +1,7 @@
-// D4: cbt_describe_table on an empty collection describes it (no columns yet)
-// instead of reporting it missing; a collection that does not exist is still
-// a "not found" user error, as upstream.
+// D4: cbt_describe_table on an empty collection describes it instead of
+// reporting it missing; a collection that does not exist is still a "not
+// found" user error, as upstream. Q25: an empty OTel collection reports its
+// declared schema, as upstream DESCRIBE TABLE does for a table with no rows.
 
 const mockGetColumns = jest.fn();
 const mockListKeyspaces = jest.fn();
@@ -37,7 +38,7 @@ const otelLogs = { bucket: 'otel', scope: 'default', collection: 'otel_logs' };
 beforeEach(() => jest.clearAllMocks());
 
 describe('describeCouchbaseTable', () => {
-  it('describes an empty collection with no columns', async () => {
+  it('describes an empty OTel collection with its declared columns', async () => {
     mockGetColumns.mockResolvedValue([]);
     mockListKeyspaces.mockResolvedValue([otelLogs]);
 
@@ -50,6 +51,33 @@ describe('describeCouchbaseTable', () => {
       scope: 'default',
       name: 'otel_logs',
     });
+    expect(output.columns).toEqual(
+      expect.arrayContaining([
+        { name: 'Timestamp', type: 'DateTime64(9)', jsType: 'date' },
+        { name: 'Body', type: 'String', jsType: 'string' },
+        {
+          name: 'LogAttributes',
+          type: 'Map(LowCardinality(String), String)',
+          jsType: 'map',
+        },
+      ]),
+    );
+    expect(output.note).toMatch(/declared OTel schema/i);
+  });
+
+  it('describes an empty non-OTel collection with no columns', async () => {
+    mockGetColumns.mockResolvedValue([]);
+    mockListKeyspaces.mockResolvedValue([
+      { ...otelLogs, collection: 'my_events' },
+    ]);
+
+    const result = await describeCouchbaseTable(ctx, {
+      ...input,
+      table: 'my_events',
+    });
+
+    expect(result.isError).toBeFalsy();
+    const output = JSON.parse(result.content[0].text);
     expect(output.columns).toEqual([]);
     expect(output.note).toMatch(/no documents/i);
   });

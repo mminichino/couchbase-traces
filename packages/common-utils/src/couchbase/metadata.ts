@@ -9,6 +9,7 @@ import {
   type TableMetadata,
 } from '@/core/metadata';
 import { parseServerVersion, type ServerVersion } from '@/core/serverVersion';
+import { unwrapRawRow } from '@/couchbase/rawRow';
 import { type FilterState, filterStateToPredicate } from '@/filters';
 import { columnTypeToJSType, JSDataType } from '@/query/columnTypes';
 import type { ColumnMeta } from '@/query/types';
@@ -696,17 +697,7 @@ function rowCount(row: unknown): { value: string; count: number } {
   };
 }
 
-function raw(row: unknown): unknown {
-  if (
-    row != null &&
-    typeof row === 'object' &&
-    'value' in row &&
-    Object.keys(row).length === 1
-  ) {
-    return (row as { value: unknown }).value;
-  }
-  return row;
-}
+const raw = unwrapRawRow;
 
 /** Unwrap `SELECT d FROM … AS d` rows into the document object. */
 function sampleDoc(row: unknown): Record<string, unknown> | null {

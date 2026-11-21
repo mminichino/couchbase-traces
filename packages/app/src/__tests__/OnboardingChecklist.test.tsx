@@ -6,9 +6,9 @@ import userEvent from '@testing-library/user-event';
 
 import api from '@/api';
 import { useConnections } from '@/connection';
-import { useQueriedChartConfig } from '@/hooks/useChartConfig';
 import OnboardingChecklist from '@/OnboardingChecklist';
 import { PRODUCT_TASKS } from '@/OnboardingChecklist/onboardingTasks';
+import { useSourceDataPresence } from '@/OnboardingChecklist/useSourceDataPresence';
 import { useSources } from '@/source';
 
 jest.mock('@/api', () => ({
@@ -21,8 +21,8 @@ jest.mock('@/api', () => ({
 }));
 jest.mock('@/connection', () => ({ useConnections: jest.fn() }));
 jest.mock('@/source', () => ({ useSources: jest.fn() }));
-jest.mock('@/hooks/useChartConfig', () => ({
-  useQueriedChartConfig: jest.fn(),
+jest.mock('@/OnboardingChecklist/useSourceDataPresence', () => ({
+  useSourceDataPresence: jest.fn(),
 }));
 jest.mock('@/brand', () => ({
   useBrandDisplayName: () => 'Couchbase Traces',
@@ -33,7 +33,7 @@ const mockUseTeam = jest.mocked(api.useTeam);
 const mockUseDismiss = jest.mocked(api.useDismissOnboarding);
 const mockUseConnections = jest.mocked(useConnections);
 const mockUseSources = jest.mocked(useSources);
-const mockUseQueriedChartConfig = jest.mocked(useQueriedChartConfig);
+const mockUseSourceDataPresence = jest.mocked(useSourceDataPresence);
 
 const dismissMutate = jest.fn();
 
@@ -94,10 +94,10 @@ function setSetup(complete: boolean, loading = false) {
     data: loading ? undefined : src,
     isLoading: loading,
   } as unknown as ReturnType<typeof useSources>);
-  mockUseQueriedChartConfig.mockReturnValue({
-    data: loading ? undefined : { data: [{ total_rows: complete ? 10 : 0 }] },
+  mockUseSourceDataPresence.mockReturnValue({
+    hasData: loading ? undefined : complete,
     isLoading: loading,
-  } as unknown as ReturnType<typeof useQueriedChartConfig>);
+  });
 }
 
 function renderChecklist() {
@@ -363,13 +363,9 @@ describe('OnboardingChecklist', () => {
     ).not.toBeInTheDocument();
   });
 
-  it('escapes quotes and backslashes in source names in the has-data probe condition', () => {
-    // The probe's `type: 'sql'` filter renders via UNSAFE_RAW_SQL, so source
-    // names must be escaped or they break out of the string literal and inject
-    // arbitrary SQL run against ClickHouse for teammates. ClickHouse also honors
-    // C-style backslash escapes inside single-quoted literals, so a lone
-    // backslash must be doubled too — the table/database values below exercise
-    // both the quote and backslash paths independently.
+  it('probes the enabled sources of the first connection as keyspace values', () => {
+    // Source names reach the server as data (backtick-quoted keyspaces built
+    // there), never spliced into SQL text in the browser.
     setMe({ completedTasks: [], isDismissed: false });
     setSetup(true);
     mockUseSources.mockReturnValue({
@@ -379,16 +375,27 @@ describe('OnboardingChecklist', () => {
           connection: 'c1',
           from: { databaseName: 'db\\x', tableName: "t' OR 1=1 --" },
         },
+        {
+          id: 's2',
+          connection: 'c1',
+          disabled: true,
+          from: { databaseName: 'otel', tableName: 'otel_traces' },
+        },
+        {
+          id: 's3',
+          connection: 'c2',
+          from: { databaseName: 'otel', tableName: 'otel_logs' },
+        },
       ],
       isLoading: false,
     } as unknown as ReturnType<typeof useSources>);
 
     renderChecklist();
 
-    const filter =
-      mockUseQueriedChartConfig.mock.calls.at(-1)?.[0]?.filters?.[0];
-    const condition =
-      filter && 'condition' in filter ? filter.condition : undefined;
-    expect(condition).toBe("table = 't'' OR 1=1 --' AND database = 'db\\\\x'");
+    expect(mockUseSourceDataPresence).toHaveBeenLastCalledWith({
+      connectionId: 'c1',
+      keyspaces: [{ databaseName: 'db\\x', tableName: "t' OR 1=1 --" }],
+      enabled: true,
+    });
   });
 });

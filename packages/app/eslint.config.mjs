@@ -93,6 +93,13 @@ const SERVER_ONLY_IMPORT_PATTERNS = [
   '^couchbase/',
   '^@couchbase-traces/common-utils/dist/couchbase/node',
 ];
+// Server-side schema modules (the declared OTel collection model and the
+// describe-tool fallback built on it). Plain data, but kept out of the bundle.
+const SERVER_SCHEMA_MESSAGE =
+  'Server-only: the declared OTel schema is for API describe tools.';
+const SERVER_SCHEMA_IMPORT_PATTERNS = [
+  '^@couchbase-traces/common-utils/dist/couchbase/(otelSchema|describeColumns)',
+];
 
 export default [
   js.configs.recommended,
@@ -220,6 +227,10 @@ export default [
             ...SERVER_ONLY_IMPORT_PATTERNS.map(regex => ({
               regex,
               message: SERVER_ONLY_MESSAGE,
+            })),
+            ...SERVER_SCHEMA_IMPORT_PATTERNS.map(regex => ({
+              regex,
+              message: SERVER_SCHEMA_MESSAGE,
             })),
           ],
         },
