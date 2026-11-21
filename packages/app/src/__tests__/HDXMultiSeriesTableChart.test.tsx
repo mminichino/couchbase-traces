@@ -1,6 +1,7 @@
 import React from 'react';
 import type { ChartPaletteToken } from '@couchbase-traces/common-utils/dist/types';
-import { screen, waitFor } from '@testing-library/react';
+import { MantineProvider } from '@mantine/core';
+import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
 import { Table } from '@/HDXMultiSeriesTableChart';
@@ -581,15 +582,23 @@ describe('HDXMultiSeriesTableChart <Table>', () => {
       },
     ];
     const filterData = [{ ServiceName: 'web', Count: 10, Attrs: { a: '1' } }];
+    // Mantine shows the cell popover through an animation-frame transition,
+    // then Floating UI's hide middleware sets display: none, because every
+    // jsdom element has a zero-size rect and so reads as detached. findByRole
+    // found the button only if a poll landed between those two timers, which
+    // CPU load decides. env="test" is Mantine's test mode: no transition and
+    // no hide check, so the dropdown is accessible once hover resolves.
     const renderTable = (onCellFilter = jest.fn()) =>
-      renderWithMantine(
-        <Table
-          data={filterData}
-          columns={filterColumns}
-          onCellFilter={onCellFilter}
-          sorting={[]}
-          onSortingChange={() => {}}
-        />,
+      render(
+        <MantineProvider env="test">
+          <Table
+            data={filterData}
+            columns={filterColumns}
+            onCellFilter={onCellFilter}
+            sorting={[]}
+            onSortingChange={() => {}}
+          />
+        </MantineProvider>,
       );
 
     it('excludes a value by its column filter key', async () => {
@@ -598,7 +607,7 @@ describe('HDXMultiSeriesTableChart <Table>', () => {
 
       await userEvent.hover(screen.getByText('web'));
       await userEvent.click(
-        await screen.findByRole('button', { name: 'Exclude this value' }),
+        screen.getByRole('button', { name: 'Exclude this value' }),
       );
 
       expect(onCellFilter).toHaveBeenCalledWith(
@@ -631,10 +640,10 @@ describe('HDXMultiSeriesTableChart <Table>', () => {
 
       await userEvent.hover(screen.getByText('10'));
 
-      // The popover opens through a transition, so wait it out
-      await expect(
-        screen.findByRole('button', { name: 'Copy field value' }),
-      ).rejects.toThrow();
+      // In Mantine's test mode a popover would already be open.
+      expect(
+        screen.queryByRole('button', { name: 'Copy field value' }),
+      ).not.toBeInTheDocument();
     });
 
     it('offers no actions on Map values', async () => {
@@ -642,9 +651,9 @@ describe('HDXMultiSeriesTableChart <Table>', () => {
 
       await userEvent.hover(screen.getByText('{"a":"1"}'));
 
-      await expect(
-        screen.findByRole('button', { name: 'Copy field value' }),
-      ).rejects.toThrow();
+      expect(
+        screen.queryByRole('button', { name: 'Copy field value' }),
+      ).not.toBeInTheDocument();
     });
   });
 });
