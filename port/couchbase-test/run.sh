@@ -11,6 +11,12 @@ CB_PORTS="8091 8092 8093 8094 8095 8096 8097 11210 18091 18092 18093 18094 18095
 
 log() { printf '[couchbase-test] %s\n' "$*"; }
 
+# Ignore CBT_* / COUCHBASE_* left in the caller's shell (credentials, connection
+# strings) so the tests use this throwaway node. The port offset stays an input.
+# shellcheck source=../../scripts/e2e-env.sh
+. "$ROOT/scripts/e2e-env.sh"
+cbt_isolate_env couchbase-test CBT_TEST_COUCHBASE_PORT_OFFSET
+
 port_busy() { nc -z 127.0.0.1 "$1" >/dev/null 2>&1; }
 
 any_busy() {

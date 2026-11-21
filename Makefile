@@ -23,6 +23,10 @@ CBT_CI_OPAMP_PORT:= $(word 5,$(_hdx_ci))
 export CBT_CI_CH_PORT CBT_CI_API_PORT CBT_CI_OPAMP_PORT
 
 # Log directory for dev-portal visibility (integration tests)
+# Local integration runs ignore CBT_* / COUCHBASE_* left in the caller's shell
+# (keeps CBT_CI_*); see scripts/int-env.sh.
+INT_ENV := scripts/int-env.sh --
+
 CBT_CI_LOGS_DIR := $(HOME)/.config/hyperdx/dev-slots/$(CBT_CI_SLOT)/logs-int
 CBT_CI_HISTORY_DIR := $(HOME)/.config/hyperdx/dev-slots/$(CBT_CI_SLOT)/history
 
@@ -175,8 +179,8 @@ dev-int:
 	@echo "Using CI slot $(CBT_CI_SLOT) (project=$(CBT_CI_PROJECT) ch=$(CBT_CI_CH_PORT) api=$(CBT_CI_API_PORT))"
 	@mkdir -p $(CBT_CI_LOGS_DIR)
 	@bash scripts/ensure-dev-portal.sh
-	docker compose -p $(CBT_CI_PROJECT) -f ./docker-compose.ci.yml up -d
-	bash -c 'set -o pipefail; npx nx run @couchbase-traces/api:dev:int $(FILE) 2>&1 | tee $(CBT_CI_LOGS_DIR)/api-int.log'; ret=$$?; \
+	$(INT_ENV) docker compose -p $(CBT_CI_PROJECT) -f ./docker-compose.ci.yml up -d
+	$(INT_ENV) bash -c 'set -o pipefail; npx nx run @couchbase-traces/api:dev:int $(FILE) 2>&1 | tee $(CBT_CI_LOGS_DIR)/api-int.log'; ret=$$?; \
 	docker compose -p $(CBT_CI_PROJECT) -f ./docker-compose.ci.yml down -v; \
 	$(call archive-int-logs); \
 	exit $$ret
@@ -186,8 +190,8 @@ dev-int-common-utils:
 	@echo "Using CI slot $(CBT_CI_SLOT) (project=$(CBT_CI_PROJECT) ch=$(CBT_CI_CH_PORT))"
 	@mkdir -p $(CBT_CI_LOGS_DIR)
 	@bash scripts/ensure-dev-portal.sh
-	docker compose -p $(CBT_CI_PROJECT) -f ./docker-compose.ci.yml up -d
-	bash -c 'set -o pipefail; npx nx run @couchbase-traces/common-utils:dev:int $(FILE) 2>&1 | tee $(CBT_CI_LOGS_DIR)/common-utils-int.log'; ret=$$?; \
+	$(INT_ENV) docker compose -p $(CBT_CI_PROJECT) -f ./docker-compose.ci.yml up -d
+	$(INT_ENV) bash -c 'set -o pipefail; npx nx run @couchbase-traces/common-utils:dev:int $(FILE) 2>&1 | tee $(CBT_CI_LOGS_DIR)/common-utils-int.log'; ret=$$?; \
 	docker compose -p $(CBT_CI_PROJECT) -f ./docker-compose.ci.yml down -v; \
 	$(call archive-int-logs); \
 	exit $$ret
@@ -195,8 +199,8 @@ dev-int-common-utils:
 .PHONY: ci-int
 ci-int:
 	@mkdir -p $(CBT_CI_LOGS_DIR)
-	docker compose -p $(CBT_CI_PROJECT) -f ./docker-compose.ci.yml up -d --quiet-pull
-	bash -c 'set -o pipefail; npx nx run-many -t ci:int --parallel=false --output-style=stream 2>&1 | tee $(CBT_CI_LOGS_DIR)/ci-int.log'; ret=$$?; \
+	$(INT_ENV) docker compose -p $(CBT_CI_PROJECT) -f ./docker-compose.ci.yml up -d --quiet-pull
+	$(INT_ENV) bash -c 'set -o pipefail; npx nx run-many -t ci:int --parallel=false --output-style=stream 2>&1 | tee $(CBT_CI_LOGS_DIR)/ci-int.log'; ret=$$?; \
 	docker compose -p $(CBT_CI_PROJECT) -f ./docker-compose.ci.yml down -v; \
 	$(call archive-int-logs); \
 	exit $$ret
@@ -214,6 +218,7 @@ ci-unit:
 	node --test scripts/__tests__/slots.test.mjs
 	node --test scripts/__tests__/compose-config.test.mjs
 	node --test scripts/__tests__/e2e-env.test.mjs
+	node --test scripts/__tests__/int-env.test.mjs
 
 .PHONY: ci-triage
 ci-triage:
