@@ -49,7 +49,10 @@ export function renderDataModelMd(): string {
   ];
   for (const spec of COLLECTIONS) {
     lines.push(`## \`${spec.name}\``, '');
-    lines.push('| Field | legacy store | Document |', '|---|---|---|');
+    lines.push(
+      '| Field | Upstream ClickHouse type | Document |',
+      '|---|---|---|',
+    );
     for (const field of spec.fields) lines.push(fieldRow(field));
     for (const field of spec.materialized) {
       const doc =

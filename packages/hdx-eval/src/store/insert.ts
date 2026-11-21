@@ -263,7 +263,7 @@ export function insertSummaryMetricRows(
 }
 
 // Exported for unit tests so the CH row shape can be asserted without a live
-// legacy store. Not part of the public seeding API.
+// ClickHouse. Not part of the public seeding API.
 export const __metricMappers = {
   gauge: gaugeRowToCHObject,
   sum: sumRowToCHObject,

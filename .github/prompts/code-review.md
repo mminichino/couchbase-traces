@@ -1,4 +1,4 @@
-REPO: legacy store/Couchbase Traces
+REPO: mminichino/couchbase-traces
 PR: #{{PR_NUMBER}}
 
 Review this pull request.

@@ -10,7 +10,6 @@ import { useDisclosure, useFocusTrap, useLocalStorage } from '@mantine/hooks';
 import {
   IconBell,
   IconChartDots,
-  IconDatabase,
   IconDeviceFloppy,
   IconDeviceLaptop,
   IconLayoutGrid,
@@ -100,7 +99,7 @@ export default function AppNav({ fixed = false }: { fixed?: boolean }) {
   const wordmark = useWordmark();
   const logomark = useLogomark({ size: 22 });
   const { data: navConnections } = useConnections();
-  const { hasCouchbase, hasClickHouse } = dataStoreLinks(navConnections);
+  const { hasCouchbase } = dataStoreLinks(navConnections);
 
   useEffect(() => {
     let redirectUrl;
@@ -313,7 +312,6 @@ export default function AppNav({ fixed = false }: { fixed?: boolean }) {
     const isDashboardsPathname =
       pathname?.startsWith('/dashboards/') ||
       pathname === '/services' ||
-      pathname === '/evalstore' ||
       pathname === '/cluster' ||
       pathname === '/kubernetes' ||
       pathname === '/llm';
@@ -501,13 +499,6 @@ export default function AppNav({ fixed = false }: { fixed?: boolean }) {
                 label="Cluster"
                 href="/cluster"
                 icon={<IconServer size={16} />}
-              />
-            )}
-            {hasClickHouse && (
-              <AppNavLink
-                label="legacy store"
-                href="/evalstore"
-                icon={<IconDatabase size={16} />}
               />
             )}
 

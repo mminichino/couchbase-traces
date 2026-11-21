@@ -22,8 +22,7 @@ import { externalDashboardSearchRequestSchema } from '@/utils/zod';
 import { runSearchConfig, type SearchErrorCode } from './utils/search';
 
 const searchQueryDuration = getHistogram('cbt.search.query.duration_ms', {
-  description:
-    'Duration of external API v2 search queries against legacy store.',
+  description: 'Duration of external API v2 search queries against Couchbase.',
   unit: 'ms',
 });
 const searchQueryErrors = getCounter('cbt.search.query_errors', {
@@ -87,10 +86,12 @@ const CH_USER_INPUT_ERRORS = new Set([
  *               pipedream.pipeline_name:my-pipeline AND SeverityText:ERROR
  *               Body:timeout
  *
- *             SQL examples (whereLanguage: "sql", legacy SQL for legacy store
- *             sources; for Couchbase sources, write SQL++):
+ *             SQL examples (whereLanguage: "sql", SQL++ conditions):
  *               SeverityText = 'ERROR'
  *               `pipedream.pipeline_name` = 'my-pipeline'
+ *               LogAttributes['http.route'] = '/users'
+ *             The map form LogAttributes['k'] is translated to the SQL++ field
+ *             access LogAttributes.`k`.
  *           example: "SeverityText:ERROR"
  *         whereLanguage:
  *           type: string
@@ -103,13 +104,13 @@ const CH_USER_INPUT_ERRORS = new Set([
  *           maxLength: 4096
  *           default: ""
  *           description: |
- *             Comma-separated list of legacy store column expressions to include in
+ *             Comma-separated list of column expressions to include in
  *             each result row. When omitted the source's default select expression
  *             is used.
  *
- *             Each entry is a SQL expression executed under the team's database
- *             user (legacy SQL for legacy store sources; for Couchbase sources,
- *             write SQL++). Semicolons and subqueries (SELECT keyword) are
+ *             Each entry is a SQL++ expression executed under the connection's
+ *             query user. Map lookups such as LogAttributes['k'] are translated
+ *             to SQL++ field access. Semicolons and subqueries (SELECT keyword) are
  *             rejected; use column references, map lookups, or function calls only.
  *
  *             Couchbase Traces rewrites known attribute column names to their materialized
@@ -119,7 +120,7 @@ const CH_USER_INPUT_ERRORS = new Set([
  *           type: string
  *           maxLength: 1024
  *           description: |
- *             legacy store ORDER BY expression. When omitted the source's default
+ *             SQL++ ORDER BY expression. When omitted the source's default
  *             ordering (typically timestamp DESC) is used.
  *           example: "Timestamp DESC"
  *         maxResults:
@@ -145,7 +146,7 @@ const CH_USER_INPUT_ERRORS = new Set([
  *       description: >
  *         A single result row. Keys correspond to the requested columns (or the
  *         source default columns when columns was omitted). Values are strings
- *         or numbers as returned by legacy store.
+ *         or numbers as returned by the Couchbase query.
  *       additionalProperties: true
  *
  *     SearchResponse:

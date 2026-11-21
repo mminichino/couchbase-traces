@@ -70,7 +70,7 @@ export function TerraformHelperPanel({
         <Badge size="sm" text="Experimental" state="info" />
       </Group>
       <Text size="xs" style={{ color: 'var(--color-text-muted)' }}>
-        Couchbase Traces resources in the legacy store Terraform provider are in
+        Couchbase Traces resources in the ClickHouse Terraform provider are in
         alpha — behaviour may change between provider versions. Generate
         resource configuration with{' '}
         <Text span ff="monospace" size="xs">

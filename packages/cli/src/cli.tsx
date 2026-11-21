@@ -749,7 +749,7 @@ About:
   survives across CLI invocations.
 
   The CLI sends the chosen team ID as an ${chalk.bold('x-hdx-team')} HTTP
-  header on every API and legacy store-proxy request. The server validates
+  header on every API request, including queries. The server validates
   membership — switching to a team the authenticated user does not
   belong to fails with an auth error on the next request.
 
@@ -806,14 +806,16 @@ program
     'after',
     `
 About:
-  A "source" in Couchbase Traces is a named data source backed by a source table.
-  Each source has a kind (log, trace, session, or metric) and a set of
-  expression mappings that tell Couchbase Traces which columns hold timestamps, trace
-  IDs, span names, severity levels, etc.
+  A "source" in Couchbase Traces is a named data source backed by a
+  Couchbase collection (bucket.scope.collection). Each source has a kind
+  (log, trace, session, or metric) and a set of expression mappings that
+  tell Couchbase Traces which fields hold timestamps, trace IDs, span
+  names, severity levels, etc.
 
-  This command lists all sources and fetches the legacy store CREATE TABLE
-  schema for each (metric sources are skipped since their schema is not
-  useful for direct queries).
+  This command lists all sources and tries to fetch a schema for each
+  (metric sources are skipped). Couchbase collections have no CREATE TABLE
+  DDL, so the schema is currently unavailable; use the expression mappings
+  and 'cbt query' to explore fields.
 
   Use --json for structured output suitable for LLM / agent consumption.
 
@@ -822,10 +824,10 @@ JSON output schema (--json):
     id                  - Source ID (use with other cbt commands)
     name                - Human-readable source name
     kind                - "log" | "trace" | "session" | "metric"
-    database            - legacy store database name
-    table               - source table name
-    connection          - Connection ID for the legacy store proxy
-    schema              - Full CREATE TABLE DDL (null for metric sources)
+    database            - Couchbase bucket
+    table               - Couchbase collection
+    connection          - Connection ID (use with 'cbt query --connection-id')
+    schema              - Schema text, or null when unavailable
     expressions         - Column expression mappings:
         timestamp             - Primary timestamp column (e.g. "TimestampTime")
         displayedTimestamp    - High-precision display timestamp (DateTime64)
@@ -956,14 +958,14 @@ Examples:
 
 program
   .command('connections')
-  .description('List legacy store connections (id, name, host)')
+  .description('List Couchbase connections (id, name, host)')
   .option('-a, --app-url <url>', 'Couchbase Traces app URL')
   .option('--json', 'Output as JSON (for programmatic consumption)')
   .addHelpText(
     'after',
     `
 About:
-  Lists legacy store connections configured for the authenticated team.
+  Lists Couchbase connections configured for the authenticated team.
   Each connection is a named set of credentials that one or more
   sources point at (via the 'connection' field on a source).
 
@@ -973,7 +975,7 @@ JSON output schema (--json):
   Array of objects, each with:
     id    - Connection ID (matches source.connection)
     name  - Human-readable connection name
-    host  - legacy store host URL
+    host  - Couchbase connection string (couchbase:// or couchbases://)
 
 Examples:
   $ cbt connections
@@ -1263,7 +1265,7 @@ const dashboardsCmd = program
     `
 About:
   Lists all dashboards for the authenticated team. Each dashboard
-  contains tiles (charts/visualizations) that query legacy store sources.
+  contains tiles (charts/visualizations) that query Couchbase sources.
 
   Subcommands:
     list     List dashboards (default; same as bare 'cbt dashboards')
@@ -1844,10 +1846,10 @@ program
     (value: string, prev: string[]) => [...prev, value],
     [] as string[],
   )
-  .option('--sql <query>', 'Raw legacy SQL to chart (raw SQL mode)')
+  .option('--sql <query>', 'Raw SQL++ to chart (raw SQL mode)')
   .option(
     '--connection-id <id>',
-    'legacy connection for --sql (alternative to --source)',
+    'Couchbase connection for --sql (alternative to --source)',
   )
   .option('--since <duration>', 'Relative time range (e.g. 15m, 1h, 7d)', '1h')
   .option(
@@ -1891,10 +1893,12 @@ Modes (pick one):
      Charts an aggregation over a source. Use 'cbt sources --json' to
      discover sources (log, trace, and metric kinds all work).
   3. Ad-hoc raw SQL:   --sql <query> with -s <source> or --connection-id
-     Charts arbitrary SQL. Time-series SQL should produce a time bucket
+     Charts arbitrary SQL++. Time-series SQL should produce a time bucket
      column and numeric value column(s); macros are supported:
        $__timeFilter(col)    — expands to the --since/--from/--to range
        $__timeInterval(col)  — buckets by the chart granularity
+       $__sourceTable        — the source's keyspace (bucket.scope.collection)
+     SQL++ cannot GROUP BY a select alias: repeat the expression instead.
 
 Display types (--display):
   line (default), stacked_bar, number, table, bar, pie.
@@ -1936,8 +1940,9 @@ Examples:
   $ cbt chart -s Metrics --metric-type sum --metric-name otelcol_exporter_sent_spans
 
   # Ad-hoc: raw SQL over a time range
-  $ cbt chart -s Logs --sql "SELECT \\$__timeInterval(TimestampTime) AS ts, count()
-      FROM default.otel_logs WHERE \\$__timeFilter(TimestampTime) GROUP BY ts ORDER BY ts"
+  $ cbt chart -s Logs --sql 'SELECT $__timeInterval(Timestamp) AS ts, COUNT(*) AS n
+      FROM $__sourceTable WHERE $__timeFilter(Timestamp)
+      GROUP BY $__timeInterval(Timestamp) ORDER BY ts'
 
   # Agent-friendly structured output
   $ cbt chart -s Logs --group-by ServiceName --json | jq '.[0].data'
@@ -2230,7 +2235,7 @@ Examples:
 program
   .command('query')
   .description(
-    'Run raw SQL against a legacy connection (add --patterns to cluster result into Drain log patterns)',
+    'Run raw SQL++ against a Couchbase connection (add --patterns to cluster result into Drain log patterns)',
   )
   .requiredOption(
     '--connection-id <id>',
@@ -2238,7 +2243,7 @@ program
   )
   .requiredOption('--sql <query>', 'SQL query to execute')
   .option('-a, --app-url <url>', 'Couchbase Traces app URL')
-  .option('--format <format>', 'legacy store output format', 'JSONEachRow')
+  .option('--format <format>', 'Output format (see About)', 'JSONEachRow')
   .option(
     '--patterns',
     'Mine Drain log patterns from the query result instead of emitting rows',
@@ -2251,20 +2256,23 @@ program
     'after',
     `
 About:
-  Execute a raw legacy SQL query through the Couchbase Traces proxy, using
-  a configured legacy connection. Designed for ad-hoc exploration,
-  debugging, and agent-driven queries.
+  Execute a raw SQL++ query through the Couchbase Traces API, using a
+  configured Couchbase connection. Designed for ad-hoc exploration,
+  debugging, and agent-driven queries. Only read-only statements are
+  accepted (SELECT, WITH, INFER), one per call.
 
   The --connection-id flag takes a connection ID. Use 'cbt connections
   --json' to discover available connection IDs. Use 'cbt sources --json'
   to see which connection each source uses (the 'connection' field).
 
-  The query is sent as-is to legacy store — you are responsible for
-  writing valid SQL. Output is written to stdout. Use --format to
-  control the legacy store response format (JSONEachRow, JSON,
-  TabSeparated, CSV, etc.). The default is JSONEachRow (one JSON
-  object per line) — streamable and easy to consume from agents and
-  shell pipelines (e.g. \`jq -c\`).
+  The query is sent as-is to Couchbase: you are responsible for writing
+  valid SQL++. Name keyspaces in full (\`otel\`.\`default\`.otel_logs;
+  default is a reserved word, so it needs backticks) and read map
+  attributes with field access (LogAttributes.\`http.route\`). Output is
+  written to stdout. Use --format to choose the output format: JSONEachRow,
+  JSON, CSV, TabSeparatedRaw, or JSONCompactEachRowWithNamesAndTypes. The
+  default is JSONEachRow (one JSON object per line) — streamable and easy
+  to consume from agents and shell pipelines (e.g. \`jq -c\`).
 
 Pattern mining (--patterns):
   Cluster the result's text into log patterns using the Drain
@@ -2287,17 +2295,17 @@ Pattern mining (--patterns):
       single text column.
 
   Sampling tip:
-    For very large tables, prefer sampling over a tight LIMIT to
-    avoid biasing toward a single time slice. Append \`ORDER BY rand()\`
-    to your SQL, e.g.:
+    For very large collections, prefer sampling over a tight LIMIT to
+    avoid biasing toward a single time slice. Append \`ORDER BY RANDOM()\`
+    to your SQL++, e.g.:
 
-      --sql "SELECT Body FROM default.otel_logs
-             WHERE Timestamp > now() - INTERVAL 1 HOUR
-             ORDER BY rand() LIMIT 10000"
+      --sql 'SELECT Body FROM \`otel\`.\`default\`.otel_logs
+             WHERE Timestamp > DATE_ADD_STR(NOW_UTC(), -1, "hour")
+             ORDER BY RANDOM() LIMIT 10000'
 
-    Be aware: \`ORDER BY rand()\` forces legacy store to scan and sort
-    all rows matched by the WHERE clause before applying LIMIT, which
-    can be expensive on large tables. Always pair it with a selective
+    Be aware: \`ORDER BY RANDOM()\` makes Couchbase fetch and sort every
+    document matched by the WHERE clause before applying LIMIT, which
+    can be expensive on large collections. Always pair it with a selective
     WHERE (time range, service, severity, etc.) to bound the scan.
 
   Output forces JSON internally regardless of --format. Each line is:
@@ -2309,10 +2317,10 @@ Exit codes:
 
 Examples:
   $ CONN=$(cbt connections --json | jq -r '.[0].id')
-  $ cbt query --connection-id "$CONN" --sql "SELECT count() FROM default.otel_logs"
-  $ cbt query --connection-id "$CONN" --sql "SELECT * FROM default.otel_traces LIMIT 5"
+  $ cbt query --connection-id "$CONN" --sql 'SELECT COUNT(*) AS n FROM \`otel\`.\`default\`.otel_logs'
+  $ cbt query --connection-id "$CONN" --sql 'SELECT t.* FROM \`otel\`.\`default\`.otel_traces AS t LIMIT 5'
   $ cbt query --connection-id "$CONN" --patterns \\
-      --sql "SELECT Body FROM default.otel_logs LIMIT 10000" --body-column Body
+      --sql 'SELECT Body FROM \`otel\`.\`default\`.otel_logs LIMIT 10000' --body-column Body
 `,
   )
   .action(async opts => {

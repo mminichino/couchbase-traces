@@ -48,7 +48,7 @@ echo "Send OpenTelemetry data via:
   http/protobuf: OTEL_EXPORTER_OTLP_ENDPOINT=http://localhost:4318
   gRPC: OTEL_EXPORTER_OTLP_ENDPOINT=http://localhost:4317
 "
-echo "Exporting data to legacy store:
+echo "Exporting data to ClickHouse:
   Endpoint: $EVAL_STORE_ENDPOINT
 "
 
@@ -56,10 +56,10 @@ echo "Exporting data to legacy store:
 
 # Wait for Cluster to be ready
 while ! curl -s "http://ch-server:8123" > /dev/null; do
-  echo "Waiting for legacy store to be ready..."
+  echo "Waiting for ClickHouse to be ready..."
   sleep 1
 done
-echo "legacy store is ready!"
+echo "ClickHouse is ready!"
 
 # Start Otel Collector with entrypoint script for template rendering and log rotation
 /otel-entrypoint.sh /usr/local/bin/opampsupervisor > /var/log/otel-collector.log 2>&1 &

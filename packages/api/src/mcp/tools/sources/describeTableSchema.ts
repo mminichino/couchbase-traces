@@ -27,7 +27,7 @@ export const describeTableSchema = z.object({
     .describe(
       'Connection to inspect. Call cbt_list_sources to find connection IDs.',
     ),
-  database: z.string().min(1).describe('legacy store database name.'),
+  database: z.string().min(1).describe('Couchbase bucket name.'),
   table: z
     .string()
     .min(1)

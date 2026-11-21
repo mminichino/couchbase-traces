@@ -94,7 +94,7 @@ src/
 │                          # loading → login → pick-source → EventViewer
 ├── api/
 │   ├── client.ts          # ApiClient (REST + session cookies)
-│   │                      # ProxyDataClient (legacy store via /evalstore-proxy)
+│   │                      # CliDataClient (SQL++ via /couchbase/query)
 │   └── eventQuery.ts      # Query builders:
 │                          #   buildEventSearchQuery — table view (uses renderChartConfig)
 │                          #   buildTraceSpansSql — waterfall trace spans
@@ -125,8 +125,8 @@ src/
 ```
 User types search → buildEventSearchQuery()
   → renderChartConfig() from @couchbase-traces/common-utils
-  → ProxyDataClient.query()
-  → API /evalstore-proxy → legacy store
+  → CliDataClient.query()
+  → API /couchbase/query → Couchbase
   → JSON response with { data, meta }
   → Store sqlExpr in lastTableSqlFragRef, meta in lastTableMetaRef
   → Render dynamic table columns from row keys
@@ -154,16 +154,14 @@ User switches to Trace tab
   → j/k navigation highlights spans, fetches SELECT * for Event Details
 ```
 
-### legacy store Proxy Client
+### Couchbase Query Client
 
-`ProxyDataClient` extends `BaseDataClient` from common-utils:
+`CliDataClient` extends the browser-safe `DataClient` from common-utils:
 
-- Derives proxy pathname from API URL (e.g. `/api/evalstore-proxy` for Next.js
-  proxy, `/evalstore-proxy` for direct API)
-- Passes `origin` only to `createClient` (not the path, which data client
-  would interpret as a database name)
-- Injects session cookies + `x-hyperdx-connection-id` header
-- Forces `content-type: text/plain` to prevent Express body parser issues
+- Uses the API URL as its base (e.g. `/api` behind the Next.js proxy, or the
+  API root when pointed at Express directly) and posts to `couchbase/query`
+- Sends the connection ID in the request body, not a header
+- Injects session cookies + `x-hdx-team` when a team is selected
 
 ### App URL Resolution
 
@@ -287,12 +285,7 @@ or the server URL may have changed.
 
 The API URL may be pointing to the Next.js frontend instead of the Express API
 server. Both work — the CLI auto-detects the `/api` prefix in the URL and
-adjusts the legacy store proxy path accordingly.
-
-### "Database api does not exist"
-
-The `ProxyDataClient` was sending the URL path as a database name. This
-was fixed by passing `origin` only (without path) to `createClient`.
+adjusts the query path accordingly.
 
 ### Row detail shows partial data
 

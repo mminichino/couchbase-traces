@@ -70,7 +70,7 @@ export const E2E_PROMQL_TABLE = 'e2e_promql';
 export const E2E_PROMQL_METRIC_NAME = 'e2e_service_up';
 /** A classic histogram seeded into the PromQL table as `<name>_bucket` series. */
 export const E2E_PROMQL_HISTOGRAM_METRIC_NAME = 'e2e_request_duration_seconds';
-// Legacy second-database names (legacy store-only autofill tests; skipped on Couchbase).
+// Legacy second-database names (ClickHouse-only autofill tests; skipped on Couchbase).
 export const E2E_ALT_METRICS_DATABASE = 'e2e_metrics_alt';
 export const E2E_ALT_METRICS_GAUGE_TABLE = 'alt_otel_metrics_gauge';
 export const E2E_ALT_METRICS_SUM_TABLE = 'alt_otel_metrics_sum';

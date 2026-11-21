@@ -279,7 +279,7 @@ const mcpTileSelectItemSchema = z
       .describe(
         'Display label for this series — used in chart legends, table column headers, CSV exports, and onClick templates. ' +
           'Always set a short, human-readable alias (e.g. "Requests", "P95 Latency", "Error Rate"). ' +
-          'Without an alias the UI shows the raw legacy store expression (e.g. count(), quantile(0.95)(Duration)) which is hard to read. ' +
+          'Without an alias the UI shows a generated column name (e.g. count(), quantile(Duration)) which is hard to read. ' +
           'Heatmap select items are the only exception (no alias needed).',
       ),
     level: mcpQuantileLevelSchema
@@ -400,7 +400,7 @@ const tileFormulasDescription =
   'items via letter-ref arithmetic ("A" = select[0], "B" = select[1], ...). ' +
   'Example: [{ expression: "A / B * 100", alias: "Error rate %" }] with ' +
   'select = [errors count, total count]. Each formula adds one series ' +
-  'computed in legacy store. Cannot be combined with asRatio (express the ' +
+  'computed in the SQL++ query. Cannot be combined with asRatio (express the ' +
   'ratio as a formula instead). Rejected on other source kinds (e.g. session).';
 
 const mcpTileFormulasSchema = z

@@ -72,17 +72,6 @@ export const useSpotlightActions = () => {
         href: '/services',
         keywords: ['preset', 'dashboard', 'http', 'latency', 'errors'],
       },
-      ...(storeLinks.hasClickHouse
-        ? [
-            {
-              id: 'preset-evalstore',
-              label: 'legacy store',
-              description: 'legacy store cluster health and query performance',
-              href: '/evalstore',
-              keywords: ['preset', 'dashboard', 'database', 'queries'],
-            },
-          ]
-        : []),
       ...(storeLinks.hasCouchbase
         ? [
             {
@@ -212,13 +201,7 @@ export const useSpotlightActions = () => {
     );
 
     return logViewActions;
-  }, [
-    logViewsData,
-    dashboardsData,
-    router,
-    storeLinks.hasClickHouse,
-    storeLinks.hasCouchbase,
-  ]);
+  }, [logViewsData, dashboardsData, router, storeLinks.hasCouchbase]);
 
   return { actions };
 };

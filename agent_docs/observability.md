@@ -296,21 +296,13 @@ everything below it, including the materialized-view `EXPLAIN` probes.
 Order of precedence: the client's default, then the scope around the current
 request or job, then anything passed with an individual query.
 
-**Browser to API route** — for requests that reach legacy store through an API
-route instead of a data client. PromQL is the case today: the browser
-calls `/api/v1/prometheus/query{,_range}`, and `/labels` and
-`/label/:name/values` for autocomplete and dashboard filters (tagged with
-`useMetadataQueryAttribution()`), over fetch. The caller sends
-`buildLogComment(attribution)` in the `x-hyperdx-query-attribution` header
-(`QUERY_ATTRIBUTION_HEADER`), and the router parses it with `parseLogComment`
-into a `withQueryAttribution` scope layered over the auth middleware's `api`
-scope. The browser's surface and ids win; `trace` and `label` stay the
-server's. Queries the route runs through a data client (label lookups,
-and the `prometheusQuery()`/`prometheusQueryRange()` fallback) pick the scope
-up as usual. Requests proxied to legacy store's Prometheus HTTP API on 26.6+ are tagged
-by `clickhousePrometheusRequest`: `log_comment` as a URL setting, `query_id` as
-the `X-legacy store-Query-Id` header, because the handler rejects `query_id` as an
-unknown setting in the URL.
+**Browser to API route** — the browser's Couchbase data client sends its
+attribution in the `attribution` field of the `/couchbase/query` request body,
+and the route passes it to the server-side query so the scope is applied there.
+`QUERY_ATTRIBUTION_HEADER` (`x-hyperdx-query-attribution`) and
+`parseLogComment` remain for routes that cannot carry a body field; upstream
+used them for the PromQL route, which was removed with PromQL sources (see
+`docs/parity.md`).
 
 ### Rules
 

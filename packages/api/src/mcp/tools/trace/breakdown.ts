@@ -52,7 +52,7 @@ const TIMEOUT_SUFFIX =
   'maxParentTraces.';
 
 const INVALID_FILTER_SUFFIX =
-  "The parentFilter must be valid legacy SQL referencing columns on the trace table (e.g. ServiceName = 'X' AND SpanName = 'Y').";
+  "The parentFilter must be a valid SQL++ condition referencing columns on the trace table (e.g. ServiceName = 'X' AND SpanName = 'Y').";
 
 export function registerTraceBreakdown({
   context,

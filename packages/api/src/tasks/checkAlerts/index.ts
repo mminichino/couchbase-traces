@@ -1623,7 +1623,7 @@ export const processAlert = async (
         alertEvaluationsCounter.add(1, { outcome: 'empty_bucket' });
         logger.info(
           { alertId: alert.id, bucketStart },
-          'No data returned from legacy store for time bucket',
+          'No data returned from Couchbase for time bucket',
         );
 
         const zeroValueIsAlert = doesExceedThreshold(alert, 0);

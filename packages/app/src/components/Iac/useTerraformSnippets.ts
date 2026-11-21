@@ -67,7 +67,7 @@ export function useTerraformSnippets({
         // convenience. Tucked behind a toggle for the first-time case only.
         label: 'Provider setup',
         collapsible: true,
-        hint: `Add once per Terraform module. Skip if your project already declares the legacy store provider${
+        hint: `Add once per Terraform module. Skip if your project already declares the ClickHouse provider${
           tileAlert
             ? `, as long as it requires ${TERRAFORM_PROVIDER_TILE_ALERT_VERSION_CONSTRAINT} — earlier versions cannot model a tile alert`
             : ''

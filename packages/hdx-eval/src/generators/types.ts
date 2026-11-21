@@ -27,7 +27,7 @@ export type LogRow = {
   spanId?: string;
   serviceName: string;
   /**
-   * Severity text as written to legacy store `SeverityText`, verbatim.
+   * Severity text as written to ClickHouse `SeverityText`, verbatim.
    *
    * Most scenarios store canonical uppercase values. Scenarios that want to
    * exercise messy real-world severity (mixed case + aliases like `warning`,

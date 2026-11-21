@@ -86,6 +86,7 @@ Use RAW SQL tiles (with connectionId) only for queries the builder cannot expres
   NOTE: These are defaults for the standard Couchbase Traces schema. Custom sources may use different names.
   Always call cbt_describe_source to get the real column names, keyColumns, and sampled values for each source.
 - Map-type columns use bracket syntax: SpanAttributes['http.method'], ResourceAttributes['service.name'].
+  The builder translates it to SQL++ field access (SpanAttributes.\`http.method\`), so keys containing dots work.
   NEVER use dot notation for Map columns. Always use brackets.
 - JSON-type columns use dot notation: JsonColumn.key.subkey.
   Check the jsType returned by cbt_describe_source to determine whether a column is Map or JSON.
@@ -852,7 +853,9 @@ Map-type columns (bracket syntax, access keys via ['key']):
 
 IMPORTANT: Always use bracket syntax for Map-type columns. Never use dot notation for Maps.
   Correct:   SpanAttributes['http.method']
-  Incorrect: SpanAttributes.http.method
+  Incorrect: SpanAttributes.http.method   (reads a nested "http" object, not the "http.method" key)
+  The builder translates SpanAttributes['http.method'] to the SQL++ field access
+  SpanAttributes.\`http.method\` in select, where, groupBy, orderBy, having, and filters.
 
 JSON-type columns (dot notation, access nested keys via dot path):
   JsonColumn.key.subkey
@@ -1564,7 +1567,7 @@ drill into a pattern with cbt_search.
 16. Forgetting that map-attribute values are often empty strings
     Wrong:   groupBy on SpanAttributes['db.collection.name'] without filtering empty values; the result has an empty-string bucket alongside the real ones, which renders as a blank row in tables and an unlabelled slice in pies.
     Correct: add where: "SpanAttributes['db.collection.name'] != ''" alongside the groupBy.
-    legacy store map columns return '' (not NULL) for keys that were not set on a given row. Filter them out whenever you groupBy a map-attribute key that is not guaranteed populated on every event.
+    A key that was not set on a document is MISSING in SQL++, and the builder groups MISSING and NULL values under '' (IFMISSINGORNULL), so they land in the same empty bucket as values that really are ''. The != '' filter drops all three. Use it whenever you groupBy a map-attribute key that is not guaranteed populated on every event.
 
 17. onClick on a non-table tile
     Only table tiles (builder displayType: "table" and raw-SQL configType: "sql"

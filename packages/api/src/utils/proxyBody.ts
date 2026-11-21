@@ -31,10 +31,8 @@ export function writeProxyBody(proxyReq: ProxyRequest, req: ParsedRequest) {
     if (!req._body) return;
 
     // A drained stream would leave upstream waiting on the original length.
-    const err = new Error(
-      'legacy store proxy body was parsed but not captured',
-    );
-    logger.error({ err }, 'Unable to forward legacy store proxy body');
+    const err = new Error('proxy body was parsed but not captured');
+    logger.error({ err }, 'Unable to forward proxy body');
     proxyReq.destroy(err);
     return;
   }
@@ -48,7 +46,7 @@ export function writeProxyBody(proxyReq: ProxyRequest, req: ParsedRequest) {
     }
     proxyReq.write(body);
   } catch (err) {
-    logger.error({ err }, 'Unable to forward legacy store proxy body');
+    logger.error({ err }, 'Unable to forward proxy body');
     proxyReq.destroy(
       err instanceof Error ? err : new Error('Unable to forward proxy body'),
     );

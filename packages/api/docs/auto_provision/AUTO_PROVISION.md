@@ -28,35 +28,49 @@ To set default connections, provide a JSON array of connection objects as the
 include:
 
 - `name`: A descriptive name for the connection
-- `host`: The hostname or IP address of the database server
-- `username`: The username for authentication
-- `password`: (Optional) The password for authentication
+- `kind`: `couchbase`. A connection without it is stored as an unsupported
+  legacy connection and is never queried.
+- `host`: A `couchbase://` or `couchbases://` connection string
+- `username`: The Couchbase user that runs queries
+- `password`: (Optional) The password for `username`
+- `monitorUsername` / `monitorPassword`: (Optional) A separate user for cluster
+  status and infrastructure metrics
 
 Example:
 
 ```json
 [
   {
-    "name": "Local connection",
-    "host": "store:8123",
-    "username": "default",
-    "password": ""
+    "name": "Local Couchbase",
+    "kind": "couchbase",
+    "host": "couchbase://couchbase",
+    "username": "cbt_query",
+    "password": "<query user password>"
   }
 ]
 ```
 
 ### Setting Default Sources
 
-To set default sources, provide a JSON array of source objects as the
+The simplest option is the Couchbase preset: set
+`CBT_DEFAULT_SOURCES_PRESET=couchbase` and Couchbase Traces creates the Logs,
+Traces, Metrics, and Sessions sources on the team's first Couchbase connection,
+in the bucket and scope from `CBT_COUCHBASE_BUCKET` (default `otel`) and
+`CBT_COUCHBASE_SCOPE` (default `default`). The preset is ignored when
+`DEFAULT_SOURCES` is set.
+
+To define sources yourself, provide a JSON array of source objects as the
 `DEFAULT_SOURCES` environment variable. Each source object should include:
 
 - `name`: A descriptive name for the source
 - `kind`: The type of source (`log`, `trace`, `session`, or `metric`)
 - `connection`: The name of the connection to use (must match a connection name
   or ID)
-- `from`: An object specifying the database and table names
-  - `databaseName`: The name of the database
-  - `tableName`: The name of the table
+- `from`: Where the documents live
+  - `databaseName`: The Couchbase bucket
+  - `scopeName`: The scope in that bucket
+  - `tableName`: The collection (empty for metric sources, which name their
+    collections in `metricTables`)
 - Various expressions specific to the source type (see examples below)
 
 Example for logs:
@@ -64,21 +78,23 @@ Example for logs:
 ```json
 [
   {
-    "name": "Couchbase Traces Logs",
+    "name": "Logs",
     "kind": "log",
-    "connection": "Local connection",
+    "connection": "Local Couchbase",
     "from": {
-      "databaseName": "default",
-      "tableName": "logs"
+      "databaseName": "otel",
+      "scopeName": "default",
+      "tableName": "otel_logs"
     },
-    "timestampValueExpression": "timestamp",
-    "displayedTimestampValueExpression": "timestamp",
-    "bodyExpression": "body",
-    "severityTextExpression": "severity_text",
-    "serviceNameExpression": "service_name",
-    "resourceAttributesExpression": "resource",
-    "traceIdExpression": "trace_id",
-    "spanIdExpression": "span_id"
+    "timestampValueExpression": "Timestamp",
+    "displayedTimestampValueExpression": "Timestamp",
+    "bodyExpression": "Body",
+    "severityTextExpression": "SeverityText",
+    "serviceNameExpression": "ServiceName",
+    "resourceAttributesExpression": "ResourceAttributes",
+    "eventAttributesExpression": "LogAttributes",
+    "traceIdExpression": "TraceId",
+    "spanIdExpression": "SpanId"
   }
 ]
 ```
@@ -99,65 +115,64 @@ Example with correlated sources:
 ```json
 [
   {
-    "name": "Couchbase Traces Logs",
+    "name": "Logs",
     "kind": "log",
-    "connection": "Local connection",
+    "connection": "Local Couchbase",
     "from": {
-      "databaseName": "default",
-      "tableName": "logs"
+      "databaseName": "otel",
+      "scopeName": "default",
+      "tableName": "otel_logs"
     },
-    "timestampValueExpression": "timestamp",
-    "bodyExpression": "body",
-    "traceIdExpression": "trace_id",
-    "spanIdExpression": "span_id",
-    "traceSourceId": "Couchbase Traces Traces"
+    "timestampValueExpression": "Timestamp",
+    "bodyExpression": "Body",
+    "traceIdExpression": "TraceId",
+    "spanIdExpression": "SpanId",
+    "traceSourceId": "Traces"
   },
   {
-    "name": "Couchbase Traces Traces",
+    "name": "Traces",
     "kind": "trace",
-    "connection": "Local connection",
+    "connection": "Local Couchbase",
     "from": {
-      "databaseName": "default",
-      "tableName": "traces"
+      "databaseName": "otel",
+      "scopeName": "default",
+      "tableName": "otel_traces"
     },
-    "timestampValueExpression": "startTimeUnixNano / 1000000000",
-    "durationExpression": "durationNano",
-    "spanNameExpression": "name",
-    "traceIdExpression": "traceId",
-    "spanIdExpression": "spanId",
-    "logSourceId": "Couchbase Traces Logs"
+    "timestampValueExpression": "Timestamp",
+    "durationExpression": "Duration",
+    "durationPrecision": 9,
+    "spanNameExpression": "SpanName",
+    "traceIdExpression": "TraceId",
+    "spanIdExpression": "SpanId",
+    "parentSpanIdExpression": "ParentSpanId",
+    "logSourceId": "Logs"
   }
 ]
 ```
 
 In this example:
 
-- The log source "Couchbase Traces Logs" references the trace source by name with
-  `traceSourceId: "Couchbase Traces Traces"`
-- The trace source "Couchbase Traces Traces" references the log source by name with
-  `logSourceId: "Couchbase Traces Logs"`
+- The log source "Logs" references the trace source by name with
+  `traceSourceId: "Traces"`
+- The trace source "Traces" references the log source by name with
+  `logSourceId: "Logs"`
 
 These references are resolved automatically during source creation, allowing
 seamless navigation between correlated sources in the Couchbase Traces UI.
 
 ## Docker Compose Example
 
-Here's an example of how to set these variables in a Docker Compose file:
+Here's an example of how to set these variables in a Docker Compose file (the
+product `docker-compose.yml` does the same):
 
 ```yaml
-version: '3'
 services:
-  couchbase-traces-api:
-    image: ghcr.io/mminichino/couchbase-traces:2
+  app:
+    image: ghcr.io/mminichino/couchbase-traces:latest
     environment:
-      - DEFAULT_CONNECTIONS=[{"name":"Local
-        legacy store","host":"store:8123","username":"default","password":""}]
-      - DEFAULT_SOURCES=[{"name":"Couchbase Traces Logs","kind":"log","connection":"Local
-        legacy store","from":{"databaseName":"default","tableName":"logs"},"timestampValueExpression":"timestamp","bodyExpression":"body","traceSourceId":"Couchbase Traces
-        Traces"},{"name":"Couchbase Traces Traces","kind":"trace","connection":"Local
-        legacy store","from":{"databaseName":"default","tableName":"traces"},"timestampValueExpression":"startTimeUnixNano
-        / 1000000000","traceIdExpression":"traceId","logSourceId":"Couchbase Traces
-        Logs"}]
+      CBT_DEFAULT_SOURCES_PRESET: couchbase
+      DEFAULT_CONNECTIONS: >-
+        [{"name":"Local Couchbase","kind":"couchbase","host":"couchbase://couchbase","username":"${CBT_COUCHBASE_QUERY_USER}","password":"${CBT_COUCHBASE_QUERY_PASSWORD}"}]
 ```
 
 For more complex configurations, you can use environment files or Docker secrets

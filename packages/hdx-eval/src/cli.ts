@@ -168,8 +168,8 @@ program
     'Couchbase Traces eval framework — synthetic telemetry generators + agent harness',
   )
   .option('--ch-url <url>', 'query HTTP URL')
-  .option('--ch-user <user>', 'legacy store username', 'default')
-  .option('--ch-password <password>', 'legacy store password', '');
+  .option('--ch-user <user>', 'ClickHouse username', 'default')
+  .option('--ch-password <password>', 'ClickHouse password', '');
 
 program
   .command('list')
@@ -188,7 +188,7 @@ program
 
 program
   .command('seed <scenario>')
-  .description('Seed legacy store with synthetic data for the given scenario')
+  .description('Seed ClickHouse with synthetic data for the given scenario')
   .option('--seed <n>', 'PRNG seed', '42')
   .option('--now <iso>', 'Anchor "now" to a fixed ISO timestamp')
   .option(
@@ -336,7 +336,7 @@ program
           result.mcpReachable ? 'OK' : 'UNREACHABLE',
         );
         console.log(
-          'legacy store:       ',
+          'ClickHouse:       ',
           result.storeReachable ? 'OK' : 'UNREACHABLE',
         );
         console.log(
@@ -424,7 +424,7 @@ program
   )
   .option(
     '--reseed',
-    'Re-seed legacy store data before running (default: skip reseed and reuse ' +
+    'Re-seed ClickHouse data before running (default: skip reseed and reuse ' +
       'existing data). Use after changing seed parameters or when data is stale.',
   )
   .option(
@@ -1070,7 +1070,7 @@ program
 program
   .command('runs-instrument <batch>')
   .description(
-    'Enrich each run with per-tool-call query_log timings from legacy store',
+    'Enrich each run with per-tool-call query_log timings from ClickHouse',
   )
   .action(async (batch: string) => {
     const opts = program.opts<GlobalOpts>();

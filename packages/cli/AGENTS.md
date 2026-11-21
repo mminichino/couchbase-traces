@@ -7,16 +7,16 @@ Couchbase Traces. It provides both an interactive TUI (built with Ink — React 
 terminals) and non-interactive commands (`query`, `chart`, `sources`, …) for
 scripting and piping.
 
-The CLI connects to the Couchbase Traces API server and queries legacy store directly
-through the API's `/evalstore-proxy` endpoint, using the same query generation
-logic (`@couchbase-traces/common-utils`) as the web frontend.
+The CLI connects to the Couchbase Traces API server and runs SQL++ through the
+API's `/couchbase/query` endpoint, using the same query generation logic
+(`@couchbase-traces/common-utils`) as the web frontend.
 
 ## CLI Commands
 
 ```
 cbt tui -a <url>                    # Interactive TUI (main command)
 cbt sources -a <url>                # List available sources (with schemas)
-cbt connections                     # List legacy store connections (id, name, host)
+cbt connections                     # List Couchbase connections (id, name, host)
 cbt dashboards [list]               # List dashboards (--query, --format table|json|csv)
 cbt dashboards export --id <id>     # Export a dashboard definition as JSON
 cbt dashboards create               # Create from -f <json> or --name + --chart/--chart-file
@@ -56,7 +56,7 @@ src/
 │                        #   loading → login → pick-source → EventViewer
 ├── api/
 │   ├── client.ts        # ApiClient (REST + session cookies)
-│   │                    # ProxyDataClient (routes through /evalstore-proxy)
+│   │                    # CliDataClient (SQL++ via /couchbase/query)
 │   └── eventQuery.ts    # Query builders:
 │                        #   buildEventSearchQuery (table view, uses renderChartConfig)
 │                        #   buildTraceSpansSql (waterfall trace spans)
@@ -159,7 +159,7 @@ dashboard**:
 2. `shared/tileQuery.ts` executes it via `dataClient.queryChartConfig()`
    from common-utils — internally `setChartSelectsAlias → renderChartConfig`
    (one composed statement, even for multi-series metric charts and metric
-   formula tiles, whose derived `formulas` columns are computed in legacy store),
+   formula tiles, whose derived `formulas` columns are computed in the SQL++ query),
    identical to the web's `useQueriedChartConfig` core (minus chunking / MV
    optimization / PromQL).
 3. `shared/chartData.ts` shapes the response (ports of
@@ -296,19 +296,18 @@ Session is stored at `~/.config/couchbase-traces/cli/session.json` with mode `0o
 Contains `apiUrl` and `cookies[]`. The `ApiClient` constructor loads the saved
 session and checks if the stored `apiUrl` matches the requested one.
 
-### legacy store Proxy Client
+### Couchbase Query Client
 
-`ProxyDataClient` extends `BaseDataClient` from common-utils. It:
+`CliDataClient` (`src/api/client.ts`) extends the browser-safe `DataClient`
+from common-utils. It:
 
-- Routes queries through `/evalstore-proxy` (sets `pathname`)
-- Injects session cookies for auth
-- Passes `x-hyperdx-connection-id` header
-- Disables basic auth (`set_basic_auth_header: false`)
-- Forces `content-type: text/plain` to prevent Express body parser issues
+- Posts SQL++ to `<api>/couchbase/query` with the connection ID in the body
+- Injects session cookies for auth, and `x-hdx-team` when a team is selected
+- Tags every query with `surface: 'cli'` attribution
 
 ### Source Expressions
 
-Sources have many expression fields that map to legacy store column names. Key
+Sources have many expression fields that map to document field names. Key
 ones used in the CLI:
 
 - `timestampValueExpression` — Primary timestamp (often `TimestampTime`,

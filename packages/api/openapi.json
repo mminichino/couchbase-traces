@@ -757,7 +757,7 @@
           "name": {
             "type": "string",
             "description": "Display name for the connection.",
-            "example": "Production legacy store"
+            "example": "Production Couchbase"
           },
           "kind": {
             "type": "string",
@@ -765,29 +765,28 @@
               "clickhouse",
               "couchbase"
             ],
-            "default": "clickhouse",
-            "description": "Data store type. Defaults to `clickhouse` when omitted.",
-            "example": "clickhouse"
+            "description": "Data store type. `couchbase` for every connection the product queries; `clickhouse` marks a connection stored by an earlier release, which is returned with `unsupported` set and is not queried.",
+            "example": "couchbase"
           },
           "host": {
             "type": "string",
-            "description": "query HTTP endpoint URL, or a `couchbase://` / `couchbases://` connection string for Couchbase connections.",
-            "example": "https://clickhouse.example.com:8443"
+            "description": "A `couchbase://` or `couchbases://` connection string.",
+            "example": "couchbases://cb.example.com"
           },
           "username": {
             "type": "string",
-            "description": "legacy store username.",
+            "description": "Couchbase user that runs queries.",
             "example": "default"
           },
           "hyperdxSettingPrefix": {
             "type": "string",
-            "description": "Optional prefix for Couchbase Traces-specific legacy store settings. Must only contain alphanumeric characters and underscores.",
+            "description": "Optional settings prefix kept from earlier releases. SQL++ queries do not use it. Must only contain alphanumeric characters and underscores.",
             "nullable": true,
             "example": "hyperdx_"
           },
           "isPrometheusEndpoint": {
             "type": "boolean",
-            "description": "Optional. When true, `host` is treated as a Prometheus-compatible API endpoint (e.g. Prometheus or Thanos) and PromQL queries are proxied to it. When false or omitted, `host` is a query HTTP endpoint.",
+            "description": "Not supported. PromQL sources are no longer available, so a request that sets it to `true` is rejected with 400.",
             "example": false
           },
           "wanProfile": {
@@ -814,49 +813,48 @@
         "required": [
           "name",
           "host",
-          "username"
+          "username",
+          "kind"
         ],
         "properties": {
           "name": {
             "type": "string",
             "description": "Display name for the connection.",
-            "example": "Production legacy store"
+            "example": "Production Couchbase"
           },
           "kind": {
             "type": "string",
             "enum": [
-              "clickhouse",
               "couchbase"
             ],
-            "default": "clickhouse",
-            "description": "Data store type. Defaults to `clickhouse` when omitted.",
-            "example": "clickhouse"
+            "description": "Data store type. Must be `couchbase`.",
+            "example": "couchbase"
           },
           "host": {
             "type": "string",
-            "description": "query HTTP endpoint URL, or a `couchbase://` / `couchbases://` connection string for Couchbase connections.",
-            "example": "https://clickhouse.example.com:8443"
+            "description": "A `couchbase://` or `couchbases://` connection string.",
+            "example": "couchbases://cb.example.com"
           },
           "username": {
             "type": "string",
-            "description": "legacy store username.",
+            "description": "Couchbase user that runs queries.",
             "example": "default"
           },
           "password": {
             "type": "string",
             "writeOnly": true,
-            "description": "legacy store password. Never returned by the API.",
+            "description": "Password for `username`. Never returned by the API.",
             "example": "my-secret-password"
           },
           "hyperdxSettingPrefix": {
             "type": "string",
-            "description": "Optional prefix for Couchbase Traces-specific legacy store settings. Must only contain alphanumeric characters and underscores.",
+            "description": "Optional settings prefix kept from earlier releases. SQL++ queries do not use it. Must only contain alphanumeric characters and underscores.",
             "nullable": true,
             "example": "hyperdx_"
           },
           "isPrometheusEndpoint": {
             "type": "boolean",
-            "description": "Optional. When true, `host` is treated as a Prometheus-compatible API endpoint (e.g. Prometheus or Thanos) and PromQL queries are proxied to it. When false or omitted, `host` is a query HTTP endpoint.",
+            "description": "Not supported. PromQL sources are no longer available, so a request that sets it to `true` is rejected with 400.",
             "example": false
           },
           "wanProfile": {
@@ -896,49 +894,48 @@
         "required": [
           "name",
           "host",
-          "username"
+          "username",
+          "kind"
         ],
         "properties": {
           "name": {
             "type": "string",
             "description": "Display name for the connection.",
-            "example": "Production legacy store"
+            "example": "Production Couchbase"
           },
           "kind": {
             "type": "string",
             "enum": [
-              "clickhouse",
               "couchbase"
             ],
-            "default": "clickhouse",
-            "description": "Data store type. Defaults to `clickhouse` when omitted. Cannot change after creation.",
-            "example": "clickhouse"
+            "description": "Data store type. Must be `couchbase`; it cannot change after creation.",
+            "example": "couchbase"
           },
           "host": {
             "type": "string",
-            "description": "query HTTP endpoint URL, or a `couchbase://` / `couchbases://` connection string for Couchbase connections.",
-            "example": "https://clickhouse.example.com:8443"
+            "description": "A `couchbase://` or `couchbases://` connection string.",
+            "example": "couchbases://cb.example.com"
           },
           "username": {
             "type": "string",
-            "description": "legacy store username.",
+            "description": "Couchbase user that runs queries.",
             "example": "default"
           },
           "password": {
             "type": "string",
             "writeOnly": true,
-            "description": "legacy store password. If omitted or empty, the existing password is kept.",
+            "description": "Password for `username`. If omitted or empty, the existing password is kept.",
             "example": "my-new-secret-password"
           },
           "hyperdxSettingPrefix": {
             "type": "string",
-            "description": "Optional prefix for Couchbase Traces-specific legacy store settings. Set to null or an empty string to clear the existing value. If omitted, the existing value is kept.",
+            "description": "Optional settings prefix kept from earlier releases. SQL++ queries do not use it. Set to null or an empty string to clear the existing value. If omitted, the existing value is kept.",
             "nullable": true,
             "example": "hyperdx_"
           },
           "isPrometheusEndpoint": {
             "type": "boolean",
-            "description": "Optional. When true, `host` is treated as a Prometheus-compatible API endpoint. When false or omitted, `host` is a query HTTP endpoint. Omit to keep the existing value unchanged.",
+            "description": "Not supported. PromQL sources are no longer available, so a request that sets it to `true` is rejected with 400.",
             "example": false
           },
           "wanProfile": {
@@ -2685,7 +2682,7 @@
           },
           "connectionId": {
             "type": "string",
-            "description": "ID of the legacy connection to execute the query against.",
+            "description": "ID of the Couchbase connection to run the SQL++ query against.",
             "example": "65f5e4a3b9e77c001a567890"
           },
           "sqlTemplate": {
@@ -4059,7 +4056,7 @@
       },
       "QueryExpressionFilterInput": {
         "type": "object",
-        "description": "A filter whose dropdown values are queried from legacy store: \"expression\"\nnames the column and \"sourceId\" the source to read them from. Its\nselection can be broadcast into matching tiles' WHERE clauses.\n",
+        "description": "A filter whose dropdown values are queried from Couchbase: \"expression\"\nnames the column and \"sourceId\" the source to read them from. Its\nselection can be broadcast into matching tiles' WHERE clauses.\n",
         "required": [
           "type",
           "name",
@@ -4869,7 +4866,7 @@
             "type": "string",
             "maxLength": 8192,
             "default": "",
-            "description": "Row filter expression. The language is controlled by whereLanguage.\n\nLucene examples (default):\n  SeverityText:ERROR\n  pipedream.pipeline_name:my-pipeline AND SeverityText:ERROR\n  Body:timeout\n\nSQL examples (whereLanguage: \"sql\", legacy SQL for legacy store\nsources; for Couchbase sources, write SQL++):\n  SeverityText = 'ERROR'\n  `pipedream.pipeline_name` = 'my-pipeline'\n",
+            "description": "Row filter expression. The language is controlled by whereLanguage.\n\nLucene examples (default):\n  SeverityText:ERROR\n  pipedream.pipeline_name:my-pipeline AND SeverityText:ERROR\n  Body:timeout\n\nSQL examples (whereLanguage: \"sql\", SQL++ conditions):\n  SeverityText = 'ERROR'\n  `pipedream.pipeline_name` = 'my-pipeline'\n  LogAttributes['http.route'] = '/users'\nThe map form LogAttributes['k'] is translated to the SQL++ field\naccess LogAttributes.`k`.\n",
             "example": "SeverityText:ERROR"
           },
           "whereLanguage": {
@@ -4886,13 +4883,13 @@
             "type": "string",
             "maxLength": 4096,
             "default": "",
-            "description": "Comma-separated list of legacy store column expressions to include in\neach result row. When omitted the source's default select expression\nis used.\n\nEach entry is a SQL expression executed under the team's database\nuser (legacy SQL for legacy store sources; for Couchbase sources,\nwrite SQL++). Semicolons and subqueries (SELECT keyword) are\nrejected; use column references, map lookups, or function calls only.\n\nCouchbase Traces rewrites known attribute column names to their materialized\nequivalents automatically; you can still pass the logical name.\n",
+            "description": "Comma-separated list of column expressions to include in\neach result row. When omitted the source's default select expression\nis used.\n\nEach entry is a SQL++ expression executed under the connection's\nquery user. Map lookups such as LogAttributes['k'] are translated\nto SQL++ field access. Semicolons and subqueries (SELECT keyword) are\nrejected; use column references, map lookups, or function calls only.\n\nCouchbase Traces rewrites known attribute column names to their materialized\nequivalents automatically; you can still pass the logical name.\n",
             "example": "Timestamp,SeverityText,Body,pipedream.pipeline_name"
           },
           "orderBy": {
             "type": "string",
             "maxLength": 1024,
-            "description": "legacy store ORDER BY expression. When omitted the source's default\nordering (typically timestamp DESC) is used.\n",
+            "description": "SQL++ ORDER BY expression. When omitted the source's default\nordering (typically timestamp DESC) is used.\n",
             "example": "Timestamp DESC"
           },
           "maxResults": {
@@ -4913,7 +4910,7 @@
       },
       "SearchRow": {
         "type": "object",
-        "description": "A single result row. Keys correspond to the requested columns (or the source default columns when columns was omitted). Values are strings or numbers as returned by legacy store.\n",
+        "description": "A single result row. Keys correspond to the requested columns (or the source default columns when columns was omitted). Values are strings or numbers as returned by the Couchbase query.\n",
         "additionalProperties": true
       },
       "SearchResponse": {
@@ -4941,8 +4938,8 @@
         "properties": {
           "setting": {
             "type": "string",
-            "description": "legacy store setting name",
-            "example": "max_threads"
+            "description": "SQL++ query option name. Couchbase sources accept scan_consistency, timeout_ms, max_parallelism, scan_cap, pipeline_batch, and pipeline_cap.",
+            "example": "max_parallelism"
           },
           "value": {
             "type": "string",
@@ -4960,7 +4957,7 @@
         "properties": {
           "databaseName": {
             "type": "string",
-            "description": "legacy store database name",
+            "description": "Couchbase bucket name.",
             "example": "otel"
           },
           "scopeName": {
@@ -4970,7 +4967,7 @@
           },
           "tableName": {
             "type": "string",
-            "description": "source table name",
+            "description": "Couchbase collection name.",
             "example": "otel_logs"
           }
         }
@@ -4983,7 +4980,7 @@
         "properties": {
           "databaseName": {
             "type": "string",
-            "description": "legacy store database name",
+            "description": "Couchbase bucket name.",
             "example": "otel"
           },
           "scopeName": {
@@ -5177,7 +5174,7 @@
           },
           "connection": {
             "type": "string",
-            "description": "ID of the legacy connection used by this source.",
+            "description": "ID of the Couchbase connection used by this source.",
             "example": "507f1f77bcf86cd799439012"
           },
           "from": {
@@ -5319,7 +5316,7 @@
               "enabled",
               "disabled"
             ],
-            "description": "Controls whether lucene rendering uses legacy store text indices via hasAllTokens() against the implicit column. \"auto\" detects a covering index at query time, \"enabled\" forces text index usage, \"disabled\" forces a LIKE/hasToken fallback.",
+            "description": "Kept from earlier releases; Couchbase sources ignore it. Lucene terms on the implicit column use the source's Search index when it has one (SEARCH()), and a LIKE match otherwise.",
             "nullable": true,
             "example": "auto"
           },
@@ -5422,7 +5419,7 @@
           },
           "connection": {
             "type": "string",
-            "description": "ID of the legacy connection used by this source.",
+            "description": "ID of the Couchbase connection used by this source.",
             "example": "507f1f77bcf86cd799439012"
           },
           "from": {
@@ -5588,7 +5585,7 @@
               "enabled",
               "disabled"
             ],
-            "description": "Controls whether lucene rendering uses legacy store text indices via hasAllTokens() against the implicit column. \"auto\" detects a covering index at query time, \"enabled\" forces text index usage, \"disabled\" forces a LIKE/hasToken fallback.",
+            "description": "Kept from earlier releases; Couchbase sources ignore it. Lucene terms on the implicit column use the source's Search index when it has one (SEARCH()), and a LIKE match otherwise.",
             "nullable": true,
             "example": "auto"
           },
@@ -5695,7 +5692,7 @@
           },
           "connection": {
             "type": "string",
-            "description": "ID of the legacy connection used by this source.",
+            "description": "ID of the Couchbase connection used by this source.",
             "example": "507f1f77bcf86cd799439012"
           },
           "from": {
@@ -5796,7 +5793,7 @@
           },
           "connection": {
             "type": "string",
-            "description": "ID of the legacy connection used by this source.",
+            "description": "ID of the Couchbase connection used by this source.",
             "example": "507f1f77bcf86cd799439012"
           },
           "from": {
@@ -5888,12 +5885,12 @@
           },
           "connection": {
             "type": "string",
-            "description": "ID of the connection used by this source. Either a legacy connection holding the TimeSeries table, or a Prometheus-compatible connection.",
+            "description": "ID of the connection used by this source. PromQL sources are no longer supported, so writes that use this kind are rejected with 400.",
             "example": "507f1f77bcf86cd799439012"
           },
           "from": {
             "$ref": "#/components/schemas/SourceFrom",
-            "description": "The database and TimeSeries table to query on a legacy connection. Not used for a Prometheus-compatible connection, but still required (empty strings are not accepted — use placeholder values such as \"default\")."
+            "description": "Placeholder location, still required by the schema (empty strings are not accepted; use values such as \"default\"). PromQL sources are no longer supported."
           },
           "querySettings": {
             "type": "array",
@@ -7165,7 +7162,7 @@
       },
       "post": {
         "summary": "Create Connection",
-        "description": "Creates a new legacy store or Couchbase connection",
+        "description": "Creates a new Couchbase connection",
         "operationId": "createConnection",
         "tags": [
           "Connections"

@@ -32,7 +32,7 @@ jest.mock('@/utils/slack', () => ({
 
 // Mock global fetch for generic webhook calls. The real one is kept on
 // `globalThis.realFetch` so a test that needs to reach a live service (e.g.
-// legacy store's Prometheus API) can `mockFetch.mockImplementation(realFetch)`
+// the Couchbase cluster) can `mockFetch.mockImplementation(realFetch)`
 // for its duration.
 Object.assign(globalThis, { realFetch: global.fetch });
 global.fetch = jest.fn().mockResolvedValue({

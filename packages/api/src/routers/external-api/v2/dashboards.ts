@@ -1330,7 +1330,7 @@ import {
  *           example: "sql"
  *         connectionId:
  *           type: string
- *           description: ID of the legacy connection to execute the query against.
+ *           description: ID of the Couchbase connection to run the SQL++ query against.
  *           example: "65f5e4a3b9e77c001a567890"
  *         sqlTemplate:
  *           type: string
@@ -2363,7 +2363,7 @@ import {
  *     QueryExpressionFilterInput:
  *       type: object
  *       description: |
- *         A filter whose dropdown values are queried from legacy store: "expression"
+ *         A filter whose dropdown values are queried from Couchbase: "expression"
  *         names the column and "sourceId" the source to read them from. Its
  *         selection can be broadcast into matching tiles' WHERE clauses.
  *       required:

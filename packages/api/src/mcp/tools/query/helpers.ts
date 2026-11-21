@@ -1099,7 +1099,7 @@ export function errorHint(
   ) {
     return (
       'The query exceeded its execution-time limit. Narrow the time range so ' +
-      'legacy store can prune partitions, add filters to reduce the rows scanned, ' +
+      'the query scans fewer documents, add filters to reduce the rows scanned, ' +
       'or lower the requested LIMIT.'
     );
   }
@@ -1137,7 +1137,7 @@ export function errorHint(
   }
   if (/SETTING_CONSTRAINT_VIOLATION|shouldn't be greater than/i.test(msg)) {
     return (
-      'This legacy connection has a profile that restricts one or more ' +
+      'This connection has a profile that restricts one or more ' +
       'settings to a value lower than requested. This is a server-side ' +
       'constraint — the query cannot override it. Try running the query ' +
       'without the constrained setting, or contact the connection administrator.'

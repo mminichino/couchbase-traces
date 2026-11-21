@@ -39,7 +39,7 @@ export const Default: Story = {
       {
         label: 'Provider setup',
         collapsible: true,
-        hint: 'Add once per Terraform module. Skip if your project already declares the legacy store provider.',
+        hint: 'Add once per Terraform module. Skip if your project already declares the ClickHouse provider.',
         snippet: buildProviderBlock('https://couchbase-traces.example.com/api'),
       },
     ],

@@ -167,7 +167,7 @@ export function buildAdhocChartConfig(
     const connection = flags.connectionId ?? source?.connection;
     if (!connection) {
       throw new AdhocChartError(
-        '--sql requires --source <name|id> or --connection-id <id> to resolve the legacy connection.',
+        '--sql requires --source <name|id> or --connection-id <id> to resolve the Couchbase connection.',
       );
     }
     const config: SavedChartConfig = {

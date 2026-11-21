@@ -43,8 +43,8 @@
         "EVAL_STORE_SEND_RECEIVE_TIMEOUT": "10"
       },
       "toolPattern": "mcp__eval_store__*",
-      "label": "legacy store MCP",
-      "brandTerms": ["legacy store MCP", "evalstore"]
+      "label": "ClickHouse MCP",
+      "brandTerms": ["ClickHouse MCP", "evalstore"]
     }
   },
   "plugins": {

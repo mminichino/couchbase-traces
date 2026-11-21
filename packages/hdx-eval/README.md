@@ -5,25 +5,32 @@ Generates deterministic synthetic telemetry (traces + logs) with planted
 anomalies, spawns Claude Code as an SRE agent with access to any configured
 MCP, records full trajectories, and grades answers using programmatic checks and
 an LLM-as-judge. The framework is **MCP-agnostic** — compare any combination of
-MCPs: Couchbase Traces vs legacy store, feature-branch vs main, two different
+MCPs: Couchbase Traces vs a raw ClickHouse MCP, feature-branch vs main, two different
 Couchbase Traces instances, or any N-way comparison. MCPs are defined in a config registry and
 selected at run time.
+
+> **Status.** The eval store (synthetic telemetry, `seed`, `drop`, and
+> `runs-instrument`) is a ClickHouse server, inherited from upstream. Couchbase
+> Traces does not use ClickHouse, and `yarn dev` no longer starts one, so these
+> commands need a ClickHouse server you run yourself (point `CBT_EVAL_CH_URL` at
+> it). Commands that only read recorded runs (`runs-list`, `runs-show`, `grade`,
+> `report`) and the unit tests do not need it.
 
 ## Prerequisites
 
 - **`yarn dev` running** on at least one worktree — this handles
-  `yarn install`, `yarn build:common-utils`, Docker containers (legacy store,
-  Couchbase metadata), and the API server. See `agent_docs/development.md` for setup.
+  `yarn install`, `yarn build:common-utils`, Docker containers (Couchbase),
+  and the API server. See `agent_docs/development.md` for setup.
 - **`claude` CLI installed** (the harness spawns it in streaming JSON mode)
 - **`ANTHROPIC_API_KEY`** or **`AI_API_KEY`** in `.env.local` at the monorepo
   root (for `run` and `grade` commands)
 - **[`uv`](https://docs.astral.sh/uv/)** installed (only needed if you
-  configure a `stdio`-type legacy store MCP — it launches via
+  configure a `stdio`-type ClickHouse MCP — it launches via
   `uv run --with mcp-eval-store`)
 
 ## Quick Start
 
-All eval commands derive legacy store and API ports from the `CBT_DEV_SLOT`
+All eval commands derive the eval-store and API ports from the `CBT_DEV_SLOT`
 environment variable. If your dev stack is running in a different worktree,
 the auto-detected slot won't match. Set `CBT_DEV_SLOT` to the slot your dev
 stack is using — you can find this in the banner printed by `yarn dev`.
@@ -57,7 +64,7 @@ yarn workspace @couchbase-traces/hdx-eval viewer
 
 For reliable A/B comparison of two Couchbase Traces branches (e.g. feature vs main),
 we recommend reserving two fixed dev slots. This gives you two fully isolated
-Couchbase Traces stacks (separate legacy store, metadata bucket, API) that can run
+Couchbase Traces stacks (separate Couchbase node, metadata bucket, API) that can run
 simultaneously.
 
 ### 1. Start two dev stacks with fixed slots
@@ -76,7 +83,7 @@ This gives you:
 |---|---|---|
 | API | `http://localhost:30198` | `http://localhost:30199` |
 | App | `http://localhost:30298` | `http://localhost:30299` |
-| legacy store | `http://localhost:30598` | `http://localhost:30599` |
+| Eval store (ClickHouse, run separately) | `http://localhost:30598` | `http://localhost:30599` |
 | MCP | `http://localhost:30198/mcp` | `http://localhost:30199/mcp` |
 
 ### 2. Run `setup-hyperdx` against each instance
@@ -93,7 +100,7 @@ After setup, `eval.config.json` will have the `hyperdx` MCP pointing at the
 slot it was set up against. You can then manually add the second MCP entry
 (see [MCP Configuration](#mcp-configuration) below).
 
-### 3. Seed both legacy store instances
+### 3. Seed both eval stores
 
 Both instances need the eval data. Use `CBT_DEV_SLOT` to target each:
 
@@ -166,7 +173,7 @@ anonymize the MCP identity for fair LLM judging.
 | `plugins` | no | Claude Code plugin registry (see [Plugins](#plugins)) |
 | `scenarios` | no | Per-scenario Couchbase Traces Source IDs (populated by `setup-hyperdx`) |
 | `hyperdxApi` | no | Couchbase Traces API URL + access key (used only by `setup-hyperdx`) |
-| `evalstore` | no | legacy connection for `seed`, `drop`, `runs-instrument` commands |
+| `evalstore` | no | ClickHouse eval-store connection for `seed`, `drop`, `runs-instrument` commands |
 | `anchorTime` | no | Fixed "now" anchor (ISO 8601). Auto-generated and saved on first `run`. See [Anchor Time](#anchor-time). |
 
 ### Plugins
@@ -232,7 +239,7 @@ Each named plugin is loaded into the isolated agent session via `--plugin-url`
 }
 ```
 
-### Example: stdio MCP (raw legacy store)
+### Example: stdio MCP (raw ClickHouse)
 
 ```json
 {
@@ -246,14 +253,14 @@ Each named plugin is loaded into the isolated agent session via `--plugin-url`
     "EVAL_STORE_PASSWORD": ""
   },
   "toolPattern": "mcp__eval_store__*",
-  "label": "legacy store MCP",
-  "brandTerms": ["legacy store MCP", "evalstore"]
+  "label": "ClickHouse MCP",
+  "brandTerms": ["ClickHouse MCP", "evalstore"]
 }
 ```
 
 ## Scenarios
 
-Each scenario writes into its own legacy store tables
+Each scenario writes into its own eval-store (ClickHouse) tables
 (`eval_<scenario>_otel_traces` / `eval_<scenario>_otel_logs`) whose schema
 mirrors Couchbase Traces's `otel_traces` / `otel_logs` exactly.
 
@@ -332,7 +339,7 @@ dev runs-list                               # list recorded batches
 dev runs-show <path>                        # summary of a run
 dev runs-show <path> --queries              # every tool call + SQL
 dev runs-show <path> --final-answer         # print the agent's answer
-dev runs-instrument <batch>                 # enrich with legacy store query_log timings
+dev runs-instrument <batch>                 # enrich with eval-store (ClickHouse) query_log timings
 ```
 
 ### Grading & Reporting
@@ -491,4 +498,4 @@ yarn workspace @couchbase-traces/hdx-eval dev:unit  # watch mode
 
 Unit tests verify PRNG determinism, planted anomaly invariants, grading
 pipeline, stream parsing, prompt construction, blinding, and report
-aggregation. No legacy store needed.
+aggregation. No eval store needed.

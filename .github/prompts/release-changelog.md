@@ -2,7 +2,7 @@
 
 You are writing the root `CHANGELOG.md` entry for a Couchbase Traces release. The product is
 an open-source observability platform (logs, metrics, traces, session replay)
-built on legacy store. Your summary is the first thing users read about a release
+built on Couchbase. Your summary is the first thing users read about a release
 — the per-package changelogs carry the granular detail, your job is the
 cross-package product story.
 

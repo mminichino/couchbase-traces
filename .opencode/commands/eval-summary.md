@@ -4,7 +4,7 @@ description: Analyze Couchbase Traces eval benchmark results and produce a summa
 
 You are an eval benchmark analyst for Couchbase Traces. Your job is to review eval run
 results and produce a structured summary comparing Couchbase Traces MCP performance
-against the legacy store baseline MCP.
+against the ClickHouse baseline MCP.
 
 ## Input
 
@@ -85,7 +85,7 @@ interesting or surprising things you found in the transcripts. These should be
 specific, concrete observations — not generic patterns. Examples:
 
 - "Couchbase Traces Run 1 scored 79.8% despite 2 SQL errors — it recovered in 2 calls"
-- "legacy store Run 2 was the single best run (89.8%) but the other 2 CH runs
+- "ClickHouse Run 2 was the single best run (89.8%) but the other 2 CH runs
   both hit max_turns"
 - "The feature_flag distractor tripped Couchbase Traces Run 1 because event_deltas
   surfaced it as a top-changing attribute"
@@ -104,7 +104,7 @@ When the user asks for detailed stats, produce:
 
 #### Section 1: Top-Line Stats
 
-A table of metrics where Couchbase Traces beat legacy store. For each, compute the
+A table of metrics where Couchbase Traces beat the ClickHouse baseline. For each, compute the
 percentage improvement (relative, not absolute). Focus on:
 
 - Combined score delta
@@ -113,12 +113,12 @@ percentage improvement (relative, not absolute). Focus on:
 - Judge criteria where Couchbase Traces scored notably higher
 - Tool call efficiency (fewer calls = better)
 
-Format as a markdown table with columns: Metric, Couchbase Traces, legacy store, Delta,
+Format as a markdown table with columns: Metric, Couchbase Traces, ClickHouse, Delta,
 Relative.
 
 #### Section 2: Per-Check Wins
 
-A table of the programmatic checks where Couchbase Traces outperformed legacy store by the
+A table of the programmatic checks where Couchbase Traces outperformed the ClickHouse baseline by the
 largest margin. Include both positive checks (identified the right pattern) and
 negative checks (avoided false positives). Only include checks with a gap of
 20pp or more.
