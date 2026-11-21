@@ -581,7 +581,7 @@ export class DashboardPage {
 
     // Wait for query to complete
     await this.page.waitForResponse(
-      resp => resp.url().includes('/evalstore-proxy') && resp.status() === 200,
+      resp => resp.url().includes('/couchbase/query') && resp.status() === 200,
     );
     // Wait for tile to be added
     await this.saveTile();

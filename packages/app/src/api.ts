@@ -802,22 +802,5 @@ const api = {
         }).json<{ status: string }>(),
     });
   },
-  useTestConnection() {
-    return useMutation<
-      { success: boolean; error?: string },
-      Error,
-      { host: string; username: string; password: string }
-    >({
-      mutationFn: async ({ host, username, password }) =>
-        hdxServer(`evalstore-proxy/test`, {
-          method: 'POST',
-          json: {
-            host,
-            username,
-            password,
-          },
-        }).json<{ success: boolean; error?: string }>(),
-    });
-  },
 };
 export default api;
