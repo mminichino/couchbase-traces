@@ -10,10 +10,29 @@ import { renderChartConfigCouchbase } from '@/couchbase/render';
 
 const CONNSTR =
   process.env.CBT_TEST_COUCHBASE_CONNSTR || 'couchbase://localhost';
-const REQUIRED = process.env.CBT_TEST_COUCHBASE_REQUIRED === '1';
 const ADMIN_USER = process.env.CBT_TEST_COUCHBASE_ADMIN_USER || 'Administrator';
 const ADMIN_PASSWORD =
   process.env.CBT_TEST_COUCHBASE_ADMIN_PASSWORD || 'cbt-test-admin';
+
+/**
+ * `CBT_TEST_COUCHBASE_REQUIRED`: `1` (port/couchbase-test/run.sh) fails the
+ * run when the cluster is unreachable; `0` (make ci-int, make dev-int, CI's
+ * int job) skips without probing, because those stacks have no `test` bucket;
+ * unset probes and skips with a warning.
+ */
+export type LiveMode = 'required' | 'off' | 'probe';
+
+export function liveMode(
+  value = process.env.CBT_TEST_COUCHBASE_REQUIRED,
+): LiveMode {
+  if (value === '1') return 'required';
+  if (value === '0') return 'off';
+  return 'probe';
+}
+
+export function intentionalSkipNotice(suite: string): string {
+  return `${suite}: skipped on purpose (CBT_TEST_COUCHBASE_REQUIRED=0); it runs in port/couchbase-test/run.sh.`;
+}
 
 export const ks = (c: string) => `\`test\`.\`app\`.\`${c}\``;
 
@@ -28,14 +47,24 @@ export function liveConnection(id: string): CouchbaseConnectionConfig {
   };
 }
 
-/** True when the cluster answers; throws instead when the run requires it. */
+/**
+ * True when the cluster answers. With mode `off` it logs one notice and
+ * returns false without connecting; with `required` an unreachable cluster
+ * throws.
+ */
 export async function probeLive(
   conn: CouchbaseConnectionConfig,
+  suite = 'Couchbase live-cluster suite',
+  mode: LiveMode = liveMode(),
 ): Promise<boolean> {
+  if (mode === 'off') {
+    console.log(intentionalSkipNotice(suite));
+    return false;
+  }
   const probe = await testConnection(conn, 15000);
   if (probe.success) return true;
-  const msg = `Couchbase integration tests skipped: ${probe.error.message}`;
-  if (REQUIRED) throw new Error(msg);
+  const msg = `${suite} skipped: ${conn.host} is unreachable (${probe.error.code}: ${probe.error.message}). Start it with port/couchbase-test/run.sh.`;
+  if (mode === 'required') throw new Error(msg);
   console.warn(msg);
   return false;
 }

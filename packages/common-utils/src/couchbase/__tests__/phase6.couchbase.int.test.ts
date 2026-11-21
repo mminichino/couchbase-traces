@@ -1,18 +1,15 @@
 import { histogramQuantile, quantile } from '@/couchbase/fn/quantile';
 import { count, uniq } from '@/couchbase/fn/scalar';
 import type { CouchbaseConnectionConfig } from '@/couchbase/node';
-import {
-  clusterCache,
-  CouchbaseNodeClient,
-  testConnection,
-} from '@/couchbase/node';
+import { clusterCache, CouchbaseNodeClient } from '@/couchbase/node';
 import { CouchbaseSearchBuilder } from '@/couchbase/serializer';
 import { sqlpp } from '@/couchbase/sqlpp';
 import { parseGranularity, timeBucketExpr } from '@/couchbase/time';
 
+import { probeLive } from './liveCluster';
+
 const CONNSTR =
   process.env.CBT_TEST_COUCHBASE_CONNSTR || 'couchbase://localhost';
-const REQUIRED = process.env.CBT_TEST_COUCHBASE_REQUIRED === '1';
 const conn: CouchbaseConnectionConfig = {
   id: 'phase6',
   host: CONNSTR,
@@ -25,14 +22,7 @@ const conn: CouchbaseConnectionConfig = {
 let live = false;
 
 beforeAll(async () => {
-  const probe = await testConnection(conn, 15000);
-  live = probe.success;
-  if (!live) {
-    const reason = probe.success ? '' : probe.error.message;
-    const msg = `Couchbase integration tests skipped: ${reason}`;
-    if (REQUIRED) throw new Error(msg);
-    console.warn(msg);
-  }
+  live = await probeLive(conn, 'Phase 6 SQL++ builders');
 }, 30000);
 
 afterAll(async () => {

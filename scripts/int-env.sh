@@ -24,4 +24,8 @@ fi
 shift
 
 cbt_isolate_env int "${keep[@]}"
+# The compose stack these targets start has no `test` bucket, so the
+# *.couchbase.int.test.ts suites skip on purpose instead of failing auth.
+export CBT_TEST_COUCHBASE_REQUIRED=0
+echo "[int] CBT_TEST_COUCHBASE_REQUIRED=0: live-cluster suites (*.couchbase.int.test.ts) are skipped here; they run in port/couchbase-test/run.sh." >&2
 exec "$@"

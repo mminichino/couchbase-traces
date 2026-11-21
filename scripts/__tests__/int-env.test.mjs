@@ -68,7 +68,18 @@ test('keeps the CI slot, slot source, portal, and unrelated variables', () => {
   assert.equal(vars.CBT_SLOT_FROM, 'path');
   assert.equal(vars.CBT_PORTAL_PORT, '9901');
   assert.equal(vars.OTEL_COLLECTOR_VERSION, '0.1');
-  assert.equal(stderr, '');
+  // Nothing was stripped, so the only notice is the live-suite skip.
+  assert.doesNotMatch(stderr, /ignoring inherited/);
+});
+
+test('live-cluster suites skip on purpose, with a log line naming run.sh', () => {
+  // A leftover `1` from a run.sh shell must not make ci-int fail on auth.
+  const { vars, stderr } = run({ CBT_TEST_COUCHBASE_REQUIRED: '1' });
+  assert.equal(vars.CBT_TEST_COUCHBASE_REQUIRED, '0');
+  assert.match(
+    stderr,
+    /CBT_TEST_COUCHBASE_REQUIRED=0: live-cluster suites .* run in port\/couchbase-test\/run\.sh/,
+  );
 });
 
 test('extra keep patterns are honored (run.sh port offset)', () => {

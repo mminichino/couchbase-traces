@@ -65,7 +65,7 @@ const metricConfig = (
 });
 
 beforeAll(async () => {
-  live = await probeLive(conn);
+  live = await probeLive(conn, 'Chart builder defects');
   if (!live) return;
   for (const c of Object.values(COLLECTIONS)) await ensureCollection(c);
   const metric = (name: string, series: string, extra: object) => ({
