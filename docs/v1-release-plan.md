@@ -758,7 +758,7 @@ Acceptance: section 11 items 9–14.
 
 ## 10. Decisions
 
-Q1–Q10 were answered by the user on 2026-11-19, Q11–Q15 on 2026-11-20. No other
+Q1–Q10 were answered by the user on 2026-11-19, Q11–Q18 on 2026-11-20. No other
 open questions remain for the release as a whole; per-phase questions are raised
 in that phase.
 
@@ -779,6 +779,9 @@ in that phase.
 | Q13 | External charts "process series from different sources" and the 8 empty log-series failures (2026-11-20) | Stay in R2a; no separate defect phase. R2a finds the cause, and if it is a product defect fixes it there                                                           | R2a            |
 | Q14 | Where D9 (builder `Map['k']` syntax) runs (2026-11-20)                                                   | Next after D2, before D2b, so D2b rewrites the builder docs once in final form                                                                                     | D9, D2b        |
 | Q15 | D8 fix: seed helpers or MCP `request_plus` (2026-11-20)                                                  | Test seed helpers only (wait for index visibility); MCP tools keep their consistency. Folded into the D9 PR as its own commit if small                             | D8, D9         |
+| Q16 | How D2b docs and prompts show map access (2026-11-20)                                                    | Show the map form `SpanAttributes['k']` and say it is translated to SQL++ field access (``SpanAttributes.`k` ``)                                                   | D2b            |
+| Q17 | Name of map group-by result columns (2026-11-20)                                                         | The raw source expression, e.g. `SpanAttributes['http.route']` (current behavior; matches upstream)                                                                | D9, D2b        |
+| Q18 | Leftover `CBT_*`/`COUCHBASE_*` shell variables in local int runs (2026-11-20)                            | Local integration entry points (`make ci-int`, `make dev-int`, `port/couchbase-test/run.sh`) clear them through the `scripts/e2e-env.sh` logic; unit-tested; own commit in the D2b PR | D2b            |
 
 ## 11. Acceptance criteria (v1.0.0 is done when)
 
