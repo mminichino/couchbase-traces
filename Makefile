@@ -63,8 +63,8 @@ install-tools:
 #   API server        : 30100 + slot
 #   App (Next.js)     : 30200 + slot
 #   OpAMP             : 30300 + slot
-#   query HTTP   : 30500 + slot
-#   legacy store Native : 30600 + slot
+#   eval store HTTP   : 30500 + slot (hdx-eval's ClickHouse only)
+#   eval store native : 30600 + slot (hdx-eval's ClickHouse only)
 #   OTel health       : 30700 + slot
 #   OTel gRPC         : 30800 + slot
 #   OTel HTTP         : 30900 + slot
@@ -135,6 +135,7 @@ ci-lint:
 	-yarn dupes
 	scripts/ci/check-openapi-sync.sh
 	scripts/ci/check-no-mongo.sh
+	node scripts/ci/check-legacy-store-text.mjs
 
 .PHONY: ci-openapi
 ci-openapi:
@@ -219,6 +220,7 @@ ci-unit:
 	node --test scripts/__tests__/compose-config.test.mjs
 	node --test scripts/__tests__/e2e-env.test.mjs
 	node --test scripts/__tests__/int-env.test.mjs
+	node --test scripts/__tests__/check-legacy-store-text.test.mjs
 
 .PHONY: ci-triage
 ci-triage:

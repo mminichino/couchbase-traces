@@ -1,0 +1,22 @@
+[
+  {
+    "file": "docs/port-notes.md",
+    "match": "\"legacy store\"",
+    "reason": "Historical log of R0 and D2 quoting the phrase as defect B17."
+  },
+  {
+    "file": "docs/v1-release-plan.md",
+    "match": "\"legacy store\"",
+    "reason": "Plan rows and decisions name defect B17 by quoting the phrase."
+  },
+  {
+    "file": "docs/v1-release-plan.md",
+    "match": "List legacy store connections",
+    "reason": "B17 evidence quotes the old cbt connections help text."
+  },
+  {
+    "file": "docs/v1-release-plan.md",
+    "match": "/legacy store/i",
+    "reason": "D2b scope quotes the guard's own pattern."
+  }
+]
