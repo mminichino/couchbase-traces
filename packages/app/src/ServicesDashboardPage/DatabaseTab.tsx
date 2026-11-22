@@ -28,6 +28,7 @@ import { useSource } from '@/source';
 import {
   getScopedFilters,
   MAX_NUM_SERIES,
+  perMinuteExpr,
   pickSourceConfigFields,
 } from './helpers';
 import { AppliedConfig } from './types';
@@ -418,7 +419,11 @@ function DatabaseTab({
                     },
                     {
                       alias: 'Queries/Min',
-                      valueExpression: `total_queries / age('mi', toDateTime(${searchedTimeRange[0].getTime() / 1000}), toDateTime(${searchedTimeRange[1].getTime() / 1000}))`,
+                      valueExpression: perMinuteExpr(
+                        'total_queries',
+                        searchedTimeRange,
+                        dialect,
+                      ),
                       numberFormat: INTEGER_NUMBER_FORMAT,
                     },
                     {
@@ -503,7 +508,11 @@ function DatabaseTab({
                     },
                     {
                       alias: 'Queries/Min',
-                      valueExpression: `total_count / age('mi', toDateTime(${searchedTimeRange[0].getTime() / 1000}), toDateTime(${searchedTimeRange[1].getTime() / 1000}))`,
+                      valueExpression: perMinuteExpr(
+                        'total_count',
+                        searchedTimeRange,
+                        dialect,
+                      ),
                     },
                     {
                       alias: 'p95_duration_ns',

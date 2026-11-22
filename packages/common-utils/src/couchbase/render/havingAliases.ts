@@ -40,11 +40,14 @@ function nextNonSpace(text: string, i: number): string {
  * Splits a SQL `having` condition around references to select aliases.
  * An alias reference is a bare or backtick-quoted identifier equal to an
  * alias, not part of a path (`d.n`), not a function call (`n(1)`), and not
- * inside a string literal or a `$param`.
+ * inside a string literal or a `$param`. With `doubleQuoted`, a `"name"`
+ * equal to an alias is a reference too: ClickHouse expressions quote
+ * identifiers that way, and only an exact alias match is taken.
  */
 export function splitOnAliasRefs(
   text: string,
   aliases: ReadonlySet<string>,
+  opts?: { doubleQuoted?: boolean },
 ): HavingPiece[] {
   const pieces: HavingPiece[] = [];
   let textStart = 0;
@@ -61,7 +64,12 @@ export function splitOnAliasRefs(
 
   while (i < text.length) {
     const ch = text.charAt(i);
-    if (ch === "'" || ch === '"') {
+    if (ch === '"' && opts?.doubleQuoted) {
+      const end = skipQuoted(text, i, '"');
+      const name = text.slice(i + 1, end - 1).replace(/""/g, '"');
+      if (aliases.has(name) && isStandalone(i, end)) emitAlias(i, end, name);
+      i = end;
+    } else if (ch === "'" || ch === '"') {
       i = skipQuoted(text, i, ch);
     } else if (ch === '`') {
       const end = skipQuoted(text, i, '`');

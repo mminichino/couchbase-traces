@@ -2,6 +2,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import produce from 'immer';
 import type { Metadata } from '@couchbase-traces/common-utils/dist/core/metadata';
 import { getFirstTimestampValueExpression } from '@couchbase-traces/common-utils/dist/core/utils';
+import { disjointSqlParamsTuple } from '@couchbase-traces/common-utils/dist/couchbase/sqlpp';
 import { renderChartConfig } from '@couchbase-traces/common-utils/dist/dataLayer';
 import { resolveConnectionKind } from '@couchbase-traces/common-utils/dist/dataLayer';
 import type { DataClient } from '@couchbase-traces/common-utils/dist/dataLayer/browser';
@@ -435,7 +436,10 @@ export function useSessions(
               sessionSource.querySettings,
             )
           : undefined,
-      ]);
+      ]).then(frags =>
+        // The fragments are spliced into one statement below.
+        dialect === 'couchbase' ? disjointSqlParamsTuple(frags) : frags,
+      );
 
       const buildCtes =
         dialect === 'couchbase'
@@ -453,6 +457,15 @@ export function useSessions(
         withActivityFilter: !where,
       });
 
+      // SQL++ `SELECT *` nests each row under its keyspace alias and
+      // `IN (SELECT x …)` compares against {"x": …} objects; spell out the
+      // columns and select RAW ids there.
+      const rowColumns =
+        dialect === 'couchbase' ? `${SESSIONS_CTE_NAME}.*` : '*';
+      const idsOf = (cte: string) =>
+        dialect === 'couchbase'
+          ? `SELECT RAW ${cte}.sessionId FROM ${cte}`
+          : `SELECT ${cte}.sessionId FROM ${cte}`;
       const finalQuery =
         where && where.length > 0
           ? sqlExpr`
@@ -462,18 +475,18 @@ export function useSessions(
           otelSessionIdsWithRecordingsQuery,
         )}),
         sessionIdsWithUserActivity AS (${sessionIdsWithUserActivityQuery})
-        SELECT *
+        SELECT ${rowColumns}
         FROM ${SESSIONS_CTE_NAME}
         WHERE ${SESSIONS_CTE_NAME}.sessionId IN (
-          SELECT sessionIdsWithRecordings.sessionId FROM sessionIdsWithRecordings
+          ${idsOf('sessionIdsWithRecordings')}
         ) OR ${SESSIONS_CTE_NAME}.sessionId IN (
-          SELECT sessionIdsWithUserActivity.sessionId FROM sessionIdsWithUserActivity
+          ${idsOf('sessionIdsWithUserActivity')}
         )
         ORDER BY maxTimestamp DESC
       `
           : sqlExpr`
         ${sessionsCTE}
-        SELECT *
+        SELECT ${rowColumns}
         FROM ${SESSIONS_CTE_NAME}
         ORDER BY maxTimestamp DESC
         `;

@@ -642,6 +642,19 @@ unit test for the alert page not-found state (invalid id and unknown valid id).
 
 Depends on: D6, D7. Size: M. Placement (Q28): after D6 and D7, before R2a.
 
+Result (2026-11-21): route-smoke 25 of 25 (24 routes plus an "Alert not found"
+entry for a malformed id), no console errors. Fixed in the shared renderer and
+the presets that emit ClickHouse text: CRC-32 via `HASHBYTES`, whole-name
+quoting for dotted aliases, select aliases resolved within the SELECT and in
+GROUP BY, per-dialect LLM expressions, aliased FROM subqueries, flat
+`SELECT cte.*`, `IN (SELECT RAW …)`, and disjoint parameter names when separate
+renders are spliced into one statement. Two of D6's three metric tile alert
+cases now pass. Still failing, not query defects: the `kubernetes` and
+`sessions` page specs need k8s metric rows and OTel-SDK session spans, replay
+rows and log events in the Couchbase E2E seed (D15), and the grouped-ratio
+metric tile alert computes `share_of_total` per group (D16). See
+`docs/port-notes.md` (D10).
+
 #### D11: Alias WITH clauses render ClickHouse scalar WITH (found in D6, size S)
 
 Evidence: R2b `checkAlerts` "SAVED_SEARCH alert with alias in select and where"
@@ -701,6 +714,23 @@ later suites recovered), so the node went away while serving. `run.sh` now names
 the process or container on a busy port and, on a failed run, logs the node's
 state, memory, open ports and babysitter restarts before cleanup removes the
 container. See `docs/port-notes.md` (D14).
+
+#### D15: Couchbase E2E seed lacks k8s and OTel-SDK session rows (found in D10, size S)
+
+Evidence: after D10 the `/kubernetes` and `/sessions` queries succeed, but
+`kubernetes.spec.ts` fails 12 of 13 and `sessions.spec.ts` 5 of 7 on empty
+tables: `seed-couchbase.ts` writes no k8s metric or event rows, and for the
+OTel browser SDK sessions only the `otel_sessions` log documents (no spans,
+replay rows or browser log events). Fix: seed the rows the upstream ClickHouse
+seed writes for those specs. Proposed placement: with R2 fixture work, pending
+decision.
+
+#### D16: Grouped ratio metric tile alert, share of total (found in D10, size S)
+
+Evidence: `checkAlerts` "TILE alert (metrics, grouped ratio) - honors ratioMode
+share_of_total" now renders (it failed on a dotted alias before D10) and gets
+0.5 where 0.125 is expected, so the denominator is per group instead of across
+groups. Needs a decision on placement.
 
 #### D8 onward
 

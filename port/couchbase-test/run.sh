@@ -125,6 +125,10 @@ log "Running common-utils Couchbase integration tests"
 "${YARN[@]}" workspace @couchbase-traces/common-utils jest -c jest.int.config.js \
   --runInBand --testPathPatterns 'couchbase\.int\.test' || status=$?
 
+log "Running app Couchbase live-cluster tests"
+"${YARN[@]}" workspace @couchbase-traces/app jest --ci --coverage=false \
+  --runInBand --testPathPatterns 'live\.test' || status=$?
+
 log "Running api Couchbase integration tests"
 CBT_METADATA_CONNSTR=$CBT_TEST_COUCHBASE_CONNSTR \
   DOTENV_CONFIG_PATH=.env.test DOTENV_CONFIG_OVERRIDE=true \

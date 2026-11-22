@@ -431,6 +431,78 @@ function stripMetaIdExpressions(sql: string): string {
   return sql.replace(/\bMETA\s*\([^)]*\)\s*\.\s*id\b/gi, '__cbt_meta_id');
 }
 
+const CALL_PATH_TOKEN = '__cbt_call_path_';
+
+/**
+ * SQL++ reads a field of a call's result (`DECODE_JSON(x).type`); Postgresql
+ * has no such postfix and node-sql-parser stops at the dot. Each call that
+ * is followed by `.field` steps, with the steps, becomes one placeholder
+ * token. Runs after backticked identifiers are tokenized, so a step is a
+ * plain word and string literals are the only quoted text left.
+ */
+function replaceCallFieldAccess(sql: string): {
+  sql: string;
+  replacements: Map<string, string>;
+} {
+  const replacements = new Map<string, string>();
+  let out = sql;
+  let searchFrom = 0;
+  const STEP = /^\s*\.\s*[A-Za-z_][A-Za-z0-9_$]*/;
+  for (;;) {
+    const close = closingParenFollowedByStep(out, searchFrom, STEP);
+    if (close == null) break;
+    const open = matchingOpenParen(out, close);
+    let start = open;
+    while (start > 0 && /[A-Za-z0-9_$]/.test(out.charAt(start - 1))) start--;
+    let end = close + 1;
+    for (let m = STEP.exec(out.slice(end)); m; m = STEP.exec(out.slice(end))) {
+      end += m[0].length;
+    }
+    const token = `${CALL_PATH_TOKEN}${replacements.size}_`;
+    replacements.set(token, out.slice(start, end));
+    out = out.slice(0, start) + token + out.slice(end);
+    searchFrom = start + token.length;
+  }
+  return { sql: out, replacements };
+}
+
+/** Index of the next `)` outside string literals that a `.field` step follows. */
+function closingParenFollowedByStep(
+  sql: string,
+  from: number,
+  step: RegExp,
+): number | undefined {
+  for (let i = from; i < sql.length; i++) {
+    const c = sql.charAt(i);
+    if (c === "'" || c === '"') {
+      i = skipLiteral(sql, i);
+    } else if (c === ')' && step.test(sql.slice(i + 1))) {
+      return i;
+    }
+  }
+  return undefined;
+}
+
+function skipLiteral(sql: string, start: number): number {
+  const quote = sql.charAt(start);
+  for (let i = start + 1; i < sql.length; i++) {
+    const c = sql.charAt(i);
+    if (c === '\\') i++;
+    else if (c === quote) return i;
+  }
+  return sql.length;
+}
+
+function matchingOpenParen(sql: string, close: number): number {
+  let depth = 0;
+  for (let i = close; i >= 0; i--) {
+    const c = sql.charAt(i);
+    if (c === ')') depth++;
+    else if (c === '(' && --depth === 0) return i;
+  }
+  return 0;
+}
+
 function prepareSqlFragForParser(sqlExpr: SqlFrag) {
   const sql = parameterizedQueryToSql(sqlExpr);
 
@@ -446,9 +518,18 @@ function prepareSqlFragForParser(sqlExpr: SqlFrag) {
     replacements: identifierReplacements,
   } = replaceBacktickedIdentifiers(sqlWithoutMetaId);
 
+  const { sql: sqlWithoutCallPaths, replacements: callPathReplacements } =
+    replaceCallFieldAccess(sqlWithoutBackticks);
+
   // Replace JSON expressions with replacement tokens so that node-sql-parser can parse the SQL
   const { sqlWithReplacements, replacements: jsonReplacements } =
-    replaceJsonExpressions(sqlWithoutBackticks);
+    replaceJsonExpressions(sqlWithoutCallPaths);
+  // A call path's text holds identifier tokens but no JSON tokens, so it is
+  // restored with the JSON replacements, before identifiers. Its tokens end
+  // in `_`, so none is a prefix of another.
+  for (const [token, text] of callPathReplacements) {
+    jsonReplacements.set(token, text);
+  }
 
   return {
     sql: sqlWithReplacements,

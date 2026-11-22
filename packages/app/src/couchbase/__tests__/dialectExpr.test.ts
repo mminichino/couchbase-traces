@@ -1,4 +1,5 @@
 import {
+  elapsedMinutesExpr,
   groupArrayExpr,
   jsonExtractString,
   mapKeyAccess,
@@ -37,5 +38,21 @@ describe('dialectExpr', () => {
     expect(sql).toContain('UNNEST ARRAY_RANGE');
     expect(sql).toContain('AS zipped');
     expect(sql).not.toContain('arrayJoin');
+  });
+
+  describe('elapsedMinutesExpr', () => {
+    const start = new Date('2026-01-01T00:00:00.000Z');
+    const end = new Date('2026-01-01T01:00:59.999Z');
+
+    it('is the whole minutes between two instants for couchbase', () => {
+      // age('mi', …) counts whole elapsed minutes.
+      expect(elapsedMinutesExpr(start, end, 'couchbase')).toBe('60');
+    });
+
+    it('keeps the ClickHouse age() form', () => {
+      expect(elapsedMinutesExpr(start, end, 'clickhouse')).toBe(
+        "age('mi', toDateTime(1767225600), toDateTime(1767229259.999))",
+      );
+    });
   });
 });

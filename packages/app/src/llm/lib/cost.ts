@@ -1,4 +1,5 @@
 import { MODEL_PRICES, ModelPrice } from './modelPrices';
+import { llmSql, SqlDialect } from './sqlDialect';
 import { LLMSpanInfo, LLMUsage } from './types';
 
 const compiledPatterns = new Map<string, RegExp | null>();
@@ -118,6 +119,7 @@ export function generateCostSqlExpression({
   outputTokensExpr,
   providedCostExpr,
   maxModels = MODEL_PRICES.length,
+  dialect,
 }: {
   /** SQL expression producing the model name (String). */
   modelExpr: string;
@@ -132,17 +134,23 @@ export function generateCostSqlExpression({
   /** Optional SQL expression producing the provided cost (Float64, 0 = none). */
   providedCostExpr?: string;
   maxModels?: number;
+  dialect?: SqlDialect;
 }): string {
+  const sql = llmSql(dialect);
   const prices = MODEL_PRICES.slice(0, maxModels);
-  const rateMultiIf = (rateOf: (price: ModelPrice) => number): string => {
-    const branches = prices
-      .map(price => {
-        const pattern = escapeSqlString(`(?i)${price.pattern}`);
-        return `match(${modelExpr}, '${pattern}'), ${rateOf(price)}`;
-      })
-      .join(', ');
-    return `multiIf(${branches}, 0)`;
-  };
+  // SQL++ string literals decode the same backslash escapes, and its regex
+  // engine (Go RE2) accepts the `(?i)` flag, so the literal is shared.
+  const rateMultiIf = (rateOf: (price: ModelPrice) => number): string =>
+    sql.multiIf(
+      prices.map(price => [
+        sql.regexpMatches(
+          modelExpr,
+          `'${escapeSqlString(`(?i)${price.pattern}`)}'`,
+        ),
+        String(rateOf(price)),
+      ]),
+      '0',
+    );
 
   const estimate = [
     `(${uncachedInputTokensExpr}) * ${rateMultiIf(p => p.inputPricePerToken)}`,
@@ -151,5 +159,5 @@ export function generateCostSqlExpression({
     `(${outputTokensExpr}) * ${rateMultiIf(p => p.outputPricePerToken)}`,
   ].join(' + ');
   if (!providedCostExpr) return estimate;
-  return `if((${providedCostExpr}) > 0, ${providedCostExpr}, ${estimate})`;
+  return sql.ifElse(`(${providedCostExpr}) > 0`, providedCostExpr, estimate);
 }

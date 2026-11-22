@@ -1,8 +1,9 @@
 import { FIXED_TIME_BUCKET_EXPR_ALIAS } from '@/core/chartConfig';
 import { GROUP_ALIAS } from '@/core/histogram';
 import { CouchbaseUnsupportedError } from '@/couchbase/errors';
-import { argMax, lag } from '@/couchbase/fn/scalar';
+import { anyValue, argMax, lag } from '@/couchbase/fn/scalar';
 import { resolveGranularityInterval } from '@/couchbase/render/granularity';
+import { rewriteSqlInValueLists } from '@/couchbase/sqlInLists';
 import { keyspace, quoteIdent } from '@/couchbase/sqlpp';
 import type { BuilderChartConfigWithOptDateRange } from '@/types';
 import { MetricsDataType } from '@/types';
@@ -84,6 +85,53 @@ function clearMetricIdentity<T extends object>(
 }
 
 /**
+ * OTel columns the Bucketed CTEs carry through (upstream projects them with
+ * any()), so a groupBy or filter on e.g. ResourceAttributes['k8s.pod.name']
+ * reads the series' value instead of MISSING. Every row in an AttributesHash
+ * group shares them, so MIN picks that one value.
+ */
+const BUCKETED_COLUMNS = [
+  'ScopeAttributes',
+  'ResourceAttributes',
+  'Attributes',
+  'ResourceSchemaUrl',
+  'ScopeName',
+  'ScopeVersion',
+  'ScopeDroppedAttrCount',
+  'ScopeSchemaUrl',
+  'ServiceName',
+  'MetricName',
+  'MetricDescription',
+  'MetricUnit',
+  'StartTimeUnix',
+  'Flags',
+];
+const SUM_BUCKETED_COLUMNS = [
+  ...BUCKETED_COLUMNS,
+  'AggregationTemporality',
+  'IsMonotonic',
+];
+
+/** The Source → Bucketed CTE pair every non-histogram metric reads from. */
+function sourceAndBucketed(
+  sourceSql: string,
+  sourceParams: Record<string, unknown>,
+  bucketedSql: string,
+) {
+  return {
+    with: [
+      { name: 'Source', sql: { sql: sourceSql, params: sourceParams } },
+      { name: 'Bucketed', sql: { sql: bucketedSql, params: {} } },
+    ],
+    from: { databaseName: '', tableName: 'Bucketed' },
+  };
+}
+
+function bucketedColumns(columns: readonly string[]): string {
+  return columns.map(c => `, ${anyValue(c)} AS ${c}`).join('');
+}
+
+/**
  * Translate a metric chart config into a builder config with SQL++ CTEs.
  * Gauge: last Value per (series, bucket) then the requested agg.
  * Sum: per-point Rate via LAG (reset → clamp at 0), then SUM Rate per bucket.
@@ -123,8 +171,9 @@ export async function translateMetricChartConfigCouchbase(
     scope: from.scopeName || 'default',
     collection: table,
   });
+  // The app's semantic-convention migration sends `MetricName IN ('a', 'b')`.
   const nameFilter = first.metricNameSql?.trim()
-    ? first.metricNameSql
+    ? rewriteSqlInValueLists(first.metricNameSql)
     : `MetricName = '${metricName.replace(/'/g, "''")}'`;
 
   if (
@@ -146,20 +195,10 @@ export async function translateMetricChartConfigCouchbase(
     const sourceSql = `SELECT d.*, ${seriesKey} AS AttributesHash FROM ${ks} AS d WHERE ${where.sql}`;
     // GROUP BY the bucket expression itself — SQL++ rejects grouping by its
     // select-list alias (error 5370).
-    const bucketedSql = `SELECT ${bucketExpr} AS ${quoteIdent(timeBucketCol)}, AttributesHash, ${lastValue} AS LastValue FROM Source GROUP BY AttributesHash, ${bucketExpr}`;
+    const bucketedSql = `SELECT ${bucketExpr} AS ${quoteIdent(timeBucketCol)}, AttributesHash, ${lastValue} AS LastValue${bucketedColumns(BUCKETED_COLUMNS)} FROM Source GROUP BY AttributesHash, ${bucketExpr}`;
     return {
       ...chartConfig,
-      with: [
-        {
-          name: 'Source',
-          sql: { sql: sourceSql, params: where.params },
-        },
-        {
-          name: 'Bucketed',
-          sql: { sql: bucketedSql, params: {} },
-        },
-      ],
-      from: { databaseName: '', tableName: 'Bucketed' },
+      ...sourceAndBucketed(sourceSql, where.params, bucketedSql),
       select: [
         clearMetricIdentity(select[0], {
           valueExpression: 'LastValue',
@@ -197,24 +236,20 @@ export async function translateMetricChartConfigCouchbase(
     // by SUM — same as upstream greatest(Value - lagInFrame(...), 0).
     const rateExpr = `CASE WHEN AggregationTemporality = 1 THEN TONUMBER(\`Value\`) ELSE GREATEST(TONUMBER(\`Value\`) - ${lagExpr}, 0) END`;
     const sourceSql = `SELECT d.*, ${seriesKey} AS AttributesHash, ${rateExpr} AS Rate, TONUMBER(\`Value\`) AS Sum FROM ${ks} AS d WHERE ${where.sql}`;
-    const bucketedSql = `SELECT ${bucketExpr} AS ${quoteIdent(timeBucketCol)}, AttributesHash, SUM(Rate) AS Rate, ${argMax('Sum', 'TimeUnix')} AS Sum FROM Source GROUP BY AttributesHash, ${bucketExpr}`;
+    const bucketedSql = `SELECT ${bucketExpr} AS ${quoteIdent(timeBucketCol)}, AttributesHash, SUM(Rate) AS Rate, ${argMax('Sum', 'TimeUnix')} AS Sum${bucketedColumns(SUM_BUCKETED_COLUMNS)} FROM Source GROUP BY AttributesHash, ${bucketExpr}`;
     const useRate = first.aggFn != null && first.aggFn !== '';
     return {
       ...chartConfig,
-      with: [
-        {
-          name: 'Source',
-          sql: { sql: sourceSql, params: where.params },
-        },
-        {
-          name: 'Bucketed',
-          sql: { sql: bucketedSql, params: {} },
-        },
-      ],
-      from: { databaseName: '', tableName: 'Bucketed' },
+      ...sourceAndBucketed(sourceSql, where.params, bucketedSql),
       select: [
+        // No aggFn: the latest cumulative reading per output row, as
+        // upstream's last_value(Sum). A bare `Sum` is not a group key.
         clearMetricIdentity(select[0], {
-          aggFn: first.aggFn === 'increase' ? 'sum' : first.aggFn,
+          aggFn: useRate
+            ? first.aggFn === 'increase'
+              ? 'sum'
+              : first.aggFn
+            : 'last_value',
           valueExpression: useRate ? 'Rate' : 'Sum',
           aggCondition: '',
         }),

@@ -50,9 +50,9 @@ export async function renderWithCouchbase(
     }
 
     if (clause.isSubquery === false) {
-      parts.push(sqlpp`(${inner}) AS ${{ Identifier: clause.name }}`);
+      parts.push(sqlpp`(${inner}) AS ${{ Alias: clause.name }}`);
     } else {
-      parts.push(sqlpp`${{ Identifier: clause.name }} AS (${inner})`);
+      parts.push(sqlpp`${{ Alias: clause.name }} AS (${inner})`);
     }
   }
   if (parts.length === 0) return undefined;

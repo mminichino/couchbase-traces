@@ -1,5 +1,7 @@
 import type { Metadata } from '@couchbase-traces/common-utils/dist/core/metadata';
 import { errorStatusPredicateSql } from '@couchbase-traces/common-utils/dist/core/spanPredicates';
+import { crc32 } from '@couchbase-traces/common-utils/dist/couchbase/fn/scalar';
+import { disjointSqlParams } from '@couchbase-traces/common-utils/dist/couchbase/sqlpp';
 import { renderChartConfig } from '@couchbase-traces/common-utils/dist/dataLayer';
 import type { TTraceSource } from '@couchbase-traces/common-utils/dist/types';
 
@@ -8,7 +10,9 @@ function samplingPredicate(
   samplingFactor: number,
 ): string {
   if (samplingFactor <= 1) return 'TRUE';
-  return `MOD(BITAND(CRC32(TO_STRING(${traceIdExpression})), 2147483647), ${samplingFactor}) = 0`;
+  // Upstream samples on cityHash64(TraceId) % N; any uniform hash keeps whole
+  // traces together, which is what the map needs.
+  return `MOD(${crc32(traceIdExpression)}, ${samplingFactor}) = 0`;
 }
 
 function mergeParams(
@@ -138,7 +142,7 @@ export async function getServiceMapQueryCouchbase({
       metadata,
       source.querySettings,
     ),
-  ]);
+  ]).then(disjointSqlParams);
 
   const serviceNameFilter =
     serviceNames && serviceNames.length > 0

@@ -781,7 +781,12 @@ export function formatResponseForTimeChart({
     );
   }
 
-  if (valueColumns.length === 0) {
+  // An empty Couchbase result cannot type its value columns (SQL++ returns no
+  // schema), so only a non-empty result proves the value column is missing.
+  const hasRows =
+    currentPeriodResponse.data.length > 0 ||
+    (previousPeriodResponse?.data.length ?? 0) > 0;
+  if (valueColumns.length === 0 && hasRows) {
     throw new Error(
       `No value columns found in result column metadata. Make sure a numeric column exists in the result set.\n\nResult column metadata: ${JSON.stringify(meta)}`,
     );

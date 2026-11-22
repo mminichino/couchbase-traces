@@ -2,6 +2,7 @@ import { useCallback } from 'react';
 import Router from 'next/router';
 import type { HTTPError, Options, ResponsePromise } from 'ky';
 import ky from 'ky-universal';
+import { isMetadataId } from '@couchbase-traces/common-utils/dist/core/ids';
 import type {
   Alert,
   AlertApiResponse,
@@ -348,7 +349,9 @@ const api = {
     return useQuery({
       queryKey: api.getAlertQueryKey(alertId),
       queryFn: () => hdxServer(`alerts/${alertId}`).json<AlertApiResponse>(),
-      enabled: alertId != null,
+      // A malformed id can never exist; skipping the request lets the page
+      // show its not-found state instead of surfacing the API's 400.
+      enabled: isMetadataId(alertId),
     });
   },
   getAlertHistoryQueryKey: (

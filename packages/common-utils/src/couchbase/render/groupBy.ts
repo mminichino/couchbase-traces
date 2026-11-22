@@ -3,6 +3,8 @@ import { rewriteMapSubscripts } from '@/couchbase/mapAccess';
 import { quoteIdent, type SqlPP, sqlpp } from '@/couchbase/sqlpp';
 import type { BuilderChartConfigWithOptDateRange } from '@/types';
 
+import { groupableSelectAliases } from './selectAliases';
+
 /**
  * One group-by column: `source` is the expression as the user wrote it (the
  * upstream result column name when there is no alias), `expr` the SQL++ to
@@ -12,6 +14,11 @@ export type GroupByItem = {
   source: string;
   expr: string;
   alias?: string;
+  /**
+   * The item names a select alias and groups by that item's expression; the
+   * select list already projects it under that name.
+   */
+  fromSelectAlias?: boolean;
 };
 
 /** `x as y` in a string group-by list names its column `y` (upstream). */
@@ -25,21 +32,32 @@ function stringItemName(item: string): string {
   );
 }
 
+function unquoted(source: string): string {
+  return /^`[^`]+`$/.test(source) ? source.slice(1, -1) : source;
+}
+
 export function groupByItems(
-  chartConfig: Pick<BuilderChartConfigWithOptDateRange, 'groupBy'>,
+  chartConfig: Pick<BuilderChartConfigWithOptDateRange, 'groupBy' | 'select'>,
 ): GroupByItem[] {
   const { groupBy } = chartConfig;
   if (groupBy == null) return [];
+  const selectAliases = groupableSelectAliases(chartConfig.select);
+  const item = (source: string, alias?: string): GroupByItem => {
+    const aliased =
+      alias == null ? selectAliases.get(unquoted(source)) : undefined;
+    return aliased != null
+      ? { source, expr: aliased, fromSelectAlias: true }
+      : { source, expr: rewriteMapSubscripts(source), alias };
+  };
   if (typeof groupBy === 'string') {
     return splitAndTrimWithBracket(groupBy)
       .filter(Boolean)
-      .map(source => ({ source, expr: rewriteMapSubscripts(source) }));
+      .map(source => item(source));
   }
   return groupBy.flatMap(col => {
     const source = col.valueExpression?.trim() ?? '';
     if (!source) return [];
-    const alias = col.alias?.trim() || undefined;
-    return [{ source, expr: rewriteMapSubscripts(source), alias }];
+    return [item(source, col.alias?.trim() || undefined)];
   });
 }
 
@@ -59,7 +77,9 @@ function isNullableGroupExpression(expr: string): boolean {
 }
 
 export function groupByClauseExpr(item: GroupByItem): SqlPP {
-  if (isNullableGroupExpression(item.expr)) {
+  // The select item projects the expression unwrapped; SQL++ needs the select
+  // expression to match the group key exactly.
+  if (!item.fromSelectAlias && isNullableGroupExpression(item.expr)) {
     return sqlpp`IFMISSINGORNULL(${{ Raw: item.expr }}, "")`;
   }
   return sqlpp`${{ Raw: item.expr }}`;

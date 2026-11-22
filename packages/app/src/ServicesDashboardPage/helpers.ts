@@ -7,10 +7,20 @@ import {
   pickSampleWeightExpressionProps,
 } from '@couchbase-traces/common-utils/dist/types';
 
+import { elapsedMinutesExpr, SqlDialect } from '@/couchbase/dialectExpr';
 import { HARD_LINES_LIMIT } from '@/HDXMultiSeriesTimeChart';
 import { getExpressions } from '@/serviceDashboard';
 
 import { AppliedConfig } from './types';
+
+/** `count` per minute of the searched range (upstream `x / age('mi', …)`). */
+export function perMinuteExpr(
+  count: string,
+  [start, end]: [Date, Date],
+  dialect: SqlDialect,
+): string {
+  return `${count} / ${elapsedMinutesExpr(start, end, dialect)}`;
+}
 
 // Extract common chart config fields from a source.
 // This avoids union type issues with lodash `pick` on discriminated unions.

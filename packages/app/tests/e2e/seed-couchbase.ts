@@ -13,6 +13,7 @@ import {
   E2E_LOGS_TABLE,
   E2E_METRICS_EXP_HISTOGRAM_TABLE,
   E2E_METRICS_GAUGE_TABLE,
+  E2E_METRICS_SUM_TABLE,
   E2E_TRACES_TABLE,
 } from './utils/constants';
 import { parseValuesTuples } from './parseValuesTuples';
@@ -158,6 +159,9 @@ export async function seedCouchbase(): Promise<void> {
 
   await ensureMetricCollection(E2E_METRICS_GAUGE_TABLE);
   await ensureMetricCollection(E2E_METRICS_EXP_HISTOGRAM_TABLE);
+  // The metric source declares a sum collection; /kubernetes reads it for
+  // pod uptime even with nothing seeded (upstream's schema creates the table).
+  await ensureMetricCollection(E2E_METRICS_SUM_TABLE);
 
   const { startMs: metricStart } = getE2eSeedWindow();
   const gaugeNames = [

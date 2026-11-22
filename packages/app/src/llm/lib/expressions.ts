@@ -6,6 +6,12 @@ import {
 
 import { generateCostSqlExpression } from './cost';
 import { buildAnyKeyExistsSql, buildLLMSpanSqlPredicate } from './detect';
+import {
+  LLMSql,
+  llmSql,
+  perServiceElectionSql,
+  SqlDialect,
+} from './sqlDialect';
 
 /**
  * SQL expression derivation for the LLM dashboard, mirroring
@@ -14,24 +20,22 @@ import { buildAnyKeyExistsSql, buildLLMSpanSqlPredicate } from './detect';
  * handling both `Map(String, String)` and JSON-typed attribute columns.
  */
 
-function fieldAccess(
-  field: string,
-  key: string,
-  isJsonColumn: boolean,
-): string {
-  return isJsonColumn ? `toString(${field}.\`${key}\`)` : `${field}['${key}']`;
+type AttrCtx = { field: string; isJsonColumn: boolean; sql: LLMSql };
+
+function fieldAccess({ field, isJsonColumn, sql }: AttrCtx, key: string) {
+  return isJsonColumn && sql.dialect === 'clickhouse'
+    ? `toString(${field}.\`${key}\`)`
+    : sql.mapValue(field, key);
 }
 
 /** First non-empty string among the given attribute keys ('' when none). */
-function coalesceString(
-  field: string,
-  keys: readonly string[],
-  isJsonColumn: boolean,
-): string {
-  const args = keys.map(
-    key => `nullif(${fieldAccess(field, key, isJsonColumn)}, '')`,
-  );
-  return `coalesce(${args.join(', ')}, '')`;
+function coalesceString(ctx: AttrCtx, keys: readonly string[]): string {
+  const [nullif, coalesce] =
+    ctx.sql.dialect === 'clickhouse'
+      ? ['nullif', 'coalesce']
+      : ['NULLIF', 'COALESCE'];
+  const args = keys.map(key => `${nullif}(${fieldAccess(ctx, key)}, '')`);
+  return `${coalesce}(${args.join(', ')}, '')`;
 }
 
 /**
@@ -39,15 +43,9 @@ function coalesceString(
  * span that carries the same count under several conventions (e.g. Vercel AI
  * emitting both `gen_ai.usage.*` and `ai.usage.*`) isn't double-counted.
  */
-function greatestNumber(
-  field: string,
-  keys: readonly string[],
-  isJsonColumn: boolean,
-): string {
-  const args = keys.map(
-    key => `toFloat64OrZero(${fieldAccess(field, key, isJsonColumn)})`,
-  );
-  return args.length === 1 ? args[0] : `greatest(${args.join(', ')})`;
+function greatestNumber(ctx: AttrCtx, keys: readonly string[]): string {
+  const args = keys.map(key => ctx.sql.numberOrZero(fieldAccess(ctx, key)));
+  return args.length === 1 ? args[0] : ctx.sql.greatest(args);
 }
 
 const MODEL_KEYS = [
@@ -222,13 +220,20 @@ export function isLLMAttributeKey(flattenedKey: string): boolean {
 function getLLMAttributeExpressions({
   attributeField,
   isJsonColumn,
+  dialect,
 }: {
   attributeField: string;
   isJsonColumn: boolean;
+  dialect: SqlDialect;
 }) {
+  const sql = llmSql(dialect);
+  const ctx: AttrCtx = { field: attributeField, isJsonColumn, sql };
+  const str = (keys: readonly string[]) => coalesceString(ctx, keys);
+  const num = (keys: readonly string[]) => greatestNumber(ctx, keys);
+
   /** Rows carrying any of these keys. Index-friendly — see buildKeyExistsSql. */
   const anyKeyExists = (keys: readonly string[]) =>
-    buildAnyKeyExistsSql({ attributeField, keys, isJsonColumn });
+    buildAnyKeyExistsSql({ attributeField, keys, isJsonColumn, dialect });
 
   /**
    * Wrap a presence term that exists only to prune granules.
@@ -240,8 +245,8 @@ function getLLMAttributeExpressions({
    * Only safe when a value term follows that already implies presence. A bare
    * presence filter must not be wrapped — `indexHint` alone matches every row.
    */
-  const prunableKeys = (keys: readonly string[]) =>
-    `indexHint(${anyKeyExists(keys)})`;
+  const prunableKeys = (keys: readonly string[], hint: (x: string) => string) =>
+    hint(anyKeyExists(keys));
 
   /**
    * Pair a value term with a pruning hint over the keys it reads.
@@ -254,14 +259,15 @@ function getLLMAttributeExpressions({
    * value term through unhinted rather than pay the query-length cost.
    *
    * On JSON columns there is no key index to prune with, so the value term is
-   * emitted alone.
+   * emitted alone. Same on Couchbase, which has no skip-index hint.
    */
   const withKeyPruning = (keys: readonly string[], valueTerm: string) =>
-    isJsonColumn ? valueTerm : `(${prunableKeys(keys)} AND ${valueTerm})`;
+    isJsonColumn || !sql.indexHint
+      ? valueTerm
+      : `(${prunableKeys(keys, sql.indexHint)} AND ${valueTerm})`;
 
   /** "Any of these keys holds a non-empty value", before any pruning hint. */
-  const anyKeyNonEmpty = (keys: readonly string[]) =>
-    `${coalesceString(attributeField, keys, isJsonColumn)} != ''`;
+  const anyKeyNonEmpty = (keys: readonly string[]) => `${str(keys)} != ''`;
 
   /**
    * Gate for "any of these keys holds a non-empty value".
@@ -286,57 +292,45 @@ function getLLMAttributeExpressions({
   // reached. Widening LLM detection to a key that generic is its own decision.
   const TOOL_SPAN_KEYS = [...TOOL_NAME_KEYS, 'gen_ai.tool.call.id'];
   const isToolSpanMatch = `(${fieldAccess(
-    attributeField,
+    ctx,
     'openinference.span.kind',
-    isJsonColumn,
   )} = 'TOOL' OR ${anyKeyNonEmpty(TOOL_SPAN_KEYS)})`;
 
-  const model = coalesceString(attributeField, MODEL_KEYS, isJsonColumn);
-  const inputTokens = greatestNumber(
-    attributeField,
-    INPUT_TOKEN_KEYS,
-    isJsonColumn,
-  );
-  const outputTokens = greatestNumber(
-    attributeField,
-    OUTPUT_TOKEN_KEYS,
-    isJsonColumn,
-  );
-  const providedCost = greatestNumber(
-    attributeField,
-    PROVIDED_COST_KEYS,
-    isJsonColumn,
-  );
-  const cachedInput = greatestNumber(
-    attributeField,
-    CACHED_INPUT_TOKEN_KEYS,
-    isJsonColumn,
-  );
-  const cacheWriteInput = greatestNumber(
-    attributeField,
-    CACHE_WRITE_TOKEN_KEYS,
-    isJsonColumn,
-  );
+  const model = str(MODEL_KEYS);
+  const inputTokens = num(INPUT_TOKEN_KEYS);
+  const outputTokens = num(OUTPUT_TOKEN_KEYS);
+  const providedCost = num(PROVIDED_COST_KEYS);
+  const cachedInput = num(CACHED_INPUT_TOKEN_KEYS);
+  const cacheWriteInput = num(CACHE_WRITE_TOKEN_KEYS);
   /**
    * Total prompt context per convention: OpenAI/Vercel-style report cache
    * reads/writes as subsets of input_tokens; Anthropic/OpenInference-style
    * report input_tokens excluding both. Heuristic: when reads + writes
    * exceed input the row must be exclusive-style, so add them.
    */
-  const effectiveInputTokens = `if(${cachedInput} + ${cacheWriteInput} > ${inputTokens}, ${inputTokens} + ${cachedInput} + ${cacheWriteInput}, ${inputTokens})`;
-  const uncachedInputTokens = `greatest(if(${cachedInput} + ${cacheWriteInput} > ${inputTokens}, ${inputTokens}, ${inputTokens} - ${cachedInput} - ${cacheWriteInput}), 0)`;
+  const isExclusiveStyle = `${cachedInput} + ${cacheWriteInput} > ${inputTokens}`;
+  const effectiveInputTokens = sql.ifElse(
+    isExclusiveStyle,
+    `${inputTokens} + ${cachedInput} + ${cacheWriteInput}`,
+    inputTokens,
+  );
+  const uncachedInputTokens = sql.greatest([
+    sql.ifElse(
+      isExclusiveStyle,
+      inputTokens,
+      `${inputTokens} - ${cachedInput} - ${cacheWriteInput}`,
+    ),
+    '0',
+  ]);
 
   return {
+    dialect,
     model,
-    provider: coalesceString(attributeField, PROVIDER_KEYS, isJsonColumn),
-    operation: coalesceString(attributeField, OPERATION_KEYS, isJsonColumn),
-    conversationId: fieldAccess(
-      attributeField,
-      'gen_ai.conversation.id',
-      isJsonColumn,
-    ),
+    provider: str(PROVIDER_KEYS),
+    operation: str(OPERATION_KEYS),
+    conversationId: fieldAccess(ctx, 'gen_ai.conversation.id'),
     /** Session/conversation grouping id across dialects ('' when absent). */
-    sessionId: coalesceString(attributeField, SESSION_ID_KEYS, isJsonColumn),
+    sessionId: str(SESSION_ID_KEYS),
     inputTokens,
     outputTokens,
     /** Full context processed + output (see effectiveInputTokens). */
@@ -345,26 +339,22 @@ function getLLMAttributeExpressions({
     cacheWriteInputTokens: cacheWriteInput,
     effectiveInputTokens,
     uncachedInputTokens,
-    reasoningTokens: greatestNumber(
-      attributeField,
-      REASONING_TOKEN_KEYS,
-      isJsonColumn,
-    ),
-    ttftMs: greatestNumber(attributeField, TTFT_MS_KEYS, isJsonColumn),
-    toolName: coalesceString(attributeField, TOOL_NAME_KEYS, isJsonColumn),
-    agentName: coalesceString(attributeField, AGENT_NAME_KEYS, isJsonColumn),
+    reasoningTokens: num(REASONING_TOKEN_KEYS),
+    ttftMs: num(TTFT_MS_KEYS),
+    toolName: str(TOOL_NAME_KEYS),
+    agentName: str(AGENT_NAME_KEYS),
     hasAgentName: anyKeyHasValue(AGENT_NAME_KEYS),
     // Emitters disagree on encoding ('stop' vs '["stop"]'); strip the JSON
     // array wrapper so the group-by buckets align.
     // The char class is written backslash-free (leading ] in an RE2 class
     // is literal) so it survives legacy store string-literal escape decoding
     // verbatim.
-    finishReason: `replaceRegexpAll(${coalesceString(
-      attributeField,
-      FINISH_REASON_KEYS,
-      isJsonColumn,
-    )}, '[]["]', '')`,
-    userId: coalesceString(attributeField, USER_ID_KEYS, isJsonColumn),
+    finishReason: sql.regexpReplaceAll(
+      str(FINISH_REASON_KEYS),
+      `'[]["]'`,
+      `''`,
+    ),
+    userId: str(USER_ID_KEYS),
     /** Estimated USD cost per row (provided cost wins over the catalog). */
     costUsd: generateCostSqlExpression({
       modelExpr: model,
@@ -373,8 +363,13 @@ function getLLMAttributeExpressions({
       cacheWriteInputTokensExpr: cacheWriteInput,
       outputTokensExpr: outputTokens,
       providedCostExpr: providedCost,
+      dialect,
     }),
-    isLLMSpan: buildLLMSpanSqlPredicate({ attributeField, isJsonColumn }),
+    isLLMSpan: buildLLMSpanSqlPredicate({
+      attributeField,
+      isJsonColumn,
+      dialect,
+    }),
     /**
      * Rows carrying a cost stamped by the instrumentation itself. These are
      * an app's own authoritative per-call reporters — see llmGatedSumExpr.
@@ -391,10 +386,7 @@ function getLLMAttributeExpressions({
     // Numeric rather than non-empty: it feeds a latency percentile, and a
     // zero would drag p50/p95 down. Same shape as anyKeyHasValue otherwise —
     // `> 0` implies the key is present, so presence is pruning only.
-    hasTtft: withKeyPruning(
-      TTFT_MS_KEYS,
-      `${greatestNumber(attributeField, TTFT_MS_KEYS, isJsonColumn)} > 0`,
-    ),
+    hasTtft: withKeyPruning(TTFT_MS_KEYS, `${num(TTFT_MS_KEYS)} > 0`),
     hasUserId: anyKeyHasValue(USER_ID_KEYS),
     hasFinishReason: anyKeyHasValue(FINISH_REASON_KEYS),
     /**
@@ -424,7 +416,11 @@ function getLLMAttributeExpressions({
   };
 }
 
-export function getLLMExpressions(source: TTraceSource, jsonColumns: string[]) {
+export function getLLMExpressions(
+  source: TTraceSource,
+  jsonColumns: string[],
+  dialect: SqlDialect = 'clickhouse',
+) {
   const attributeField = source.eventAttributesExpression || 'SpanAttributes';
   const isJsonColumn = jsonColumns.includes(attributeField);
 
@@ -434,6 +430,7 @@ export function getLLMExpressions(source: TTraceSource, jsonColumns: string[]) {
   const attributeExpressions = getLLMAttributeExpressions({
     attributeField,
     isJsonColumn,
+    dialect,
   });
 
   const fieldExpressions = {
@@ -470,6 +467,7 @@ export type LLMExpressions = ReturnType<typeof getLLMExpressions>;
 export function getLLMLogExpressions(
   source: TLogSource,
   jsonColumns: string[],
+  dialect: SqlDialect = 'clickhouse',
 ) {
   const attributeField = source.eventAttributesExpression || 'LogAttributes';
   const isJsonColumn = jsonColumns.includes(attributeField);
@@ -477,6 +475,7 @@ export function getLLMLogExpressions(
   const attributeExpressions = getLLMAttributeExpressions({
     attributeField,
     isJsonColumn,
+    dialect,
   });
 
   const severityText = source.severityTextExpression || 'SeverityText';
@@ -516,7 +515,8 @@ export const LLM_COST_SQL_ALIAS = '__llm_cost_usd';
 type GateExpressions = Pick<
   LLMExpressions,
   'hasProvidedCost' | 'hasReportedTokens' | 'service'
->;
+> &
+  Partial<Pick<LLMExpressions, 'dialect'>>;
 
 /**
  * Per-service election over an aggregation scope: for each service, when
@@ -533,12 +533,11 @@ function perServiceElectionExpr(
   expressions: GateExpressions,
   valueExpression: string,
 ): string {
-  const { service, hasProvidedCost, hasReportedTokens } = expressions;
-  const providedCountMap = `sumMap(map(${service}, toUInt64(${hasProvidedCost})))`;
-  const tokenCountMap = `sumMap(map(${service}, toUInt64(${hasReportedTokens})))`;
-  const providedSumMap = `sumMap(map(${service}, if(${hasProvidedCost}, toFloat64(${valueExpression}), 0.)))`;
-  const tokenSumMap = `sumMap(map(${service}, if(${hasReportedTokens}, toFloat64(${valueExpression}), 0.)))`;
-  return `arraySum(arrayMap(k -> if(${providedCountMap}[k] > 0, ${providedSumMap}[k], ${tokenSumMap}[k]), arrayDistinct(arrayConcat(mapKeys(${providedCountMap}), mapKeys(${tokenCountMap})))))`;
+  return perServiceElectionSql(
+    llmSql(expressions.dialect),
+    expressions,
+    valueExpression,
+  );
 }
 
 /**
