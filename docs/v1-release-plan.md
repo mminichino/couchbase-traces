@@ -392,6 +392,7 @@ pushes to `main` directly.
 | D11   | Defects: alias WITH clauses in SQL++ (with D16, Q35)      | Found in D6 (section 9.1); D16 grouped-ratio `share_of_total` as its own commit in the same PR                                                                            | S    | D6, D10                       |
 | D12   | Defects: grouped alert history order                      | Found in D6 (section 9.1); product fix (Q31)                                                                                                                              | S    | —                             |
 | D13   | Defects: concurrent invite race (500)                     | Found in D6 (section 9.1)                                                                                                                                                 | S    | —                             |
+| D17   | Defects: multi-series HAVING and ORDER BY (Q36)           | Found in D16 (section 9.1); own PR after D13                                                                                                                              | S    | D13                           |
 | D14   | Dev tooling: live-test port offset fallback               | Found in D7 (section 9.1)                                                                                                                                                 | S    | —                             |
 | R2a   | Port deferred int suites: internal and external API       | B1 (10 suites: `routers/api/{dashboard,iac,sources,connections}`, `routers/external-api/{charts,search,sources,sources-crud,connections}`, `middleware/queryAttribution`) | L    | D1                            |
 | R2b   | Port deferred int suites: alerts                          | B1 (5 suites: `checkAlerts`, `multiChannelAlerts`, `renderAlertTemplate`, `singleInvocationAlert`, `providers/default`; 335 tests, 93 failing per R0)                     | L    | R2c, D1, D4, D6               |
@@ -750,7 +751,7 @@ Evidence: `couchbase/render/metrics/multiSeries.ts` renders each branch with
 so a multi-series or ratio metric tile ignores both. Upstream applies them to
 the joined result (and filters a `share_of_total` HAVING through a wrapper,
 since a window function cannot appear in HAVING). No deferred case covers it
-yet. Needs a decision on placement.
+yet. Decision Q36: its own PR, right after D13.
 
 #### D8 onward
 
@@ -992,6 +993,7 @@ in that phase.
 | Q33 | Live-test port offset fallback (D14)                                                                     | Not a 1.0 blocker; fixed as a separate commit at the start of the D10 PR, proven with a default port occupied                                                                                           | D14            |
 | Q34 | Couchbase E2E seed gaps (D15)                                                                            | Fixed with the Playwright work in R4; R4 acceptance includes the `kubernetes` and `sessions` specs                                                                                                      | R4, D15        |
 | Q35 | Grouped ratio alert `share_of_total` (D16)                                                               | Fixed with D11 in the same PR, as its own commit; both are alert query rendering                                                                                                                        | D11, D16       |
+| Q36 | Placement of D17: multi-series metric charts drop HAVING and ORDER BY (2026-11-22)                       | Its own PR, right after D13                                                                                                                                                                             | D17            |
 
 ## 11. Acceptance criteria (v1.0.0 is done when)
 
@@ -1061,6 +1063,7 @@ in that phase.
 | D11 Alias WITH clauses in SQL++                                 | S    |
 | D12 Grouped alert history order                                 | S    |
 | D13 Concurrent invite race                                      | S    |
+| D17 Multi-series HAVING and ORDER BY                            | S    |
 | D14 Live-test port offset fallback                              | S    |
 | R2a Deferred API int suites (10 suites, 380 tests, 80 failing)  | L    |
 | R2b Deferred alert int suites (5 suites, 335 tests, 93 failing) | L    |

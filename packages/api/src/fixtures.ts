@@ -199,12 +199,10 @@ class MockServer extends Server {
     if (!config.IS_CI) {
       throw new Error('ONLY execute this in CI env 😈 !!!');
     }
-    try {
-      await super.start();
-      await initCiEnvs();
-    } catch (err) {
-      console.error(err);
-    }
+    // Rethrown: a swallowed startup failure left every later hook to run to
+    // its own 30s timeout, which buffered silently for ~34 minutes on CI.
+    await super.start();
+    await initCiEnvs();
   }
 
   async stop() {

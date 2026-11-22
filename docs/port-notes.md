@@ -2970,3 +2970,87 @@ SQL++ functions used here, checked against the 8.0 reference: `HASHBYTES`
   `renderAlertTemplate` 0, `singleInvocationAlert` 1, `providers/default` 2,
   unchanged. Every other deferred suite is unchanged (152 of 1002 failing in
   total). No test went from pass to fail except the D12 flake.
+
+### PR #27 CI: lint timeout and integration shard 1 stall (2026-11-22, `mm--v1-d11-alert-aliases`)
+
+Run 45054418792 cancelled two jobs. Neither cause is in the D11/D16 code.
+
+**Lint (cancelled at 8m06s).** In 25 `Main` runs back to 2026-11-20, the job
+took 4m47s to 8m06s. Push runs on `main` took 7m25s to 7m48s, so the 8-minute
+limit was already marginal. This run's affected step took 6m43s, against 4m11s
+on PR #26. The same 6 projects and 1 build ran, and every task was slower by
+about the same factor, which points to runner speed, not a new step.
+`check-openapi-sync.sh` was simply the step running when time ran out. The
+real waste was the nx cache. Every run logged "Unrecognized Cache
+Artifacts": Nx 21+ (we pin 23.1.1) restores only artifacts recorded in its
+per-machine database, `.nx/workspace-data/<machine-id>-v3.db`. CI cached
+only `.nx/cache`, so every PR rejected the restored entry and ran cold, while
+each push uploaded about 1 GB. Caching `workspace-data` as well would not
+help, because the database is keyed to the machine and every runner is fresh.
+This is a CI config issue, so the workflow is the right place to fix it:
+
+- Removed the nx cache restore/save steps. Within one job, nx still reuses
+  `ci:build` for the `ci:lint` tasks that depend on it.
+- Set `timeout-minutes: 12` to fit the measured cold-run range.
+
+**Integration shard 1 (cancelled at 55m).** Output stopped right after
+`provisionDashboards` printed PASS (18:40:30). The next file in shard 1 is
+`mcp/dashboards/searchDashboards`, which never reported. `main` push run
+44880450404 (a66fcf0, 2026-11-21) had the same stall at the same spot: 33
+silent minutes after provisionDashboards, then cancelled. So the stall predates
+D11 and is intermittent: 2 of the last 30 shard 1 runs.
+
+Local reproduction ran on the `docker-compose.ci.yml` stack with the CI env,
+`--shard=1/4`, and a fresh jest cache, which gives the same file order as CI.
+None of it stalled:
+
+| Run | Result |
+|---|---|
+| Full shard 1 | 2× in 167 s, 225/225 passed |
+| `provisionDashboards` then `searchDashboards` | 15× in 15–19 s each |
+| Same pair, full GC forced at each file start | 3×, no stall |
+
+Ruled out: heap growth (peak 506 MB, `--logHeapUsage`), schedulers, and
+invite wait loops (neither suite starts them).
+
+How a stall stays silent: jest buffers a file's console output, including
+retry logs, until the file finishes. searchDashboards has 11 tests with one
+retry each. If every hook ran into its 30s timeout, the file would take about
+33 minutes, which matches both stalls. A blocked event loop would look the
+same.
+
+Two weaknesses turned the stall into a silent 55-minute cancel:
+
+1. `MockServer.start()` caught and logged its own errors. A failed or stuck
+   metadata connect left the suite running, and every later hook waited out
+   its own timeout. It now rethrows, so `beforeAll` fails at once.
+2. Nothing watched for a stall. `packages/api/jest.int.setup.ts`, loaded
+   only by the int config, now does:
+   - A worker thread tracks a main-thread heartbeat. If the event loop stops
+     for 120 s (`CBT_INT_BLOCKED_MS`), or one file runs longer than 25 min
+     (`CBT_INT_FILE_BUDGET_MS`), it writes the file, the test, and the active
+     resources to fd 2 and kills the process. A stall then fails the job
+     within minutes and names itself.
+   - Proved with a 60 s busy loop (fired at 15 s with a test budget) and a
+     never-resolving test (fired at the file budget). No false positives on
+     a full shard 1 run.
+   - The 25 min budget sits above the slowest legitimate CI file:
+     `external-api/dashboards`, 780 s on PR #26.
+
+The underlying trigger is still unconfirmed. The strongest lead is Couchbase
+Node SDK 4.8.0's JSCBC-1520: "terminating a worker thread or closing a
+cluster no longer aborts the process, hangs, or blocks the event loop while
+transactions close". Its changes also move transaction teardown off
+the JS thread (JSCBC-1522). We pin 4.7.2, and 4.7.2's notes do not include
+either fix. provisionDashboards opens and closes seven metadata clusters,
+because each `ProvisionDashboardsTask.execute()` calls
+`startMetadataStore()`, and earlier shard 1 suites run transactions
+(`deleteCascading`, `removeMember`). With forced GC, the first GC in the next
+file blocked the JS thread for 0.6–3.6 s; the first file's GC took 70–90 ms.
+
+Upgrading is a user decision. The Server compatibility matrix
+(nodejs-sdk/current/project-docs/compatibility.html) lists SDK 4.7 for
+Server 8.0 but not 4.8 yet, and the AGENTS.md platform rule requires a
+listed release. 4.8.0 also changes behavior: TLS hostname verification,
+HTTP 400 mapped to `InvalidArgumentError`, query error 2120 mapped to
+`AuthenticationFailureError`, and a Node 20.17 minimum.
