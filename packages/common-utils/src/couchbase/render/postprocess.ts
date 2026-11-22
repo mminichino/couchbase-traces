@@ -37,6 +37,26 @@ export function couchbaseSelectItemAlias(
   return expr || `series_${index}`;
 }
 
+/**
+ * Formula column names as the renderers project them (`select.ts`,
+ * `metrics/multiSeries.ts`): alias or expression, suffixed by column index on
+ * a collision with an operand alias or an earlier formula.
+ */
+function formulaColumnNames(
+  config: BuilderChartConfigWithOptDateRange,
+  select: { alias?: string }[],
+): string[] {
+  const seen = new Set(select.flatMap(s => (s.alias?.trim() ? [s.alias] : [])));
+  return (config.formulas ?? []).map((f, formulaIdx) => {
+    const base = f.alias || f.expression;
+    const name = seen.has(base)
+      ? `${base}__${select.length + formulaIdx}`
+      : base;
+    seen.add(name);
+    return name;
+  });
+}
+
 export function couchbaseResultColumnNames(
   config: BuilderChartConfigWithOptDateRange,
 ): string[] {
@@ -44,7 +64,15 @@ export function couchbaseResultColumnNames(
     return [];
   }
   const cols: string[] = [];
-  if (isRatioChartConfig(config.select, config)) {
+  if ((config.formulas?.length ?? 0) > 0) {
+    // Hidden operands are not projected; hinting them would add null columns.
+    if (config.showOperandSeries !== false) {
+      config.select.forEach((item, i) => {
+        cols.push(couchbaseSelectItemAlias(item, i));
+      });
+    }
+    cols.push(...formulaColumnNames(config, config.select));
+  } else if (isRatioChartConfig(config.select, config)) {
     const [a, b] = config.select;
     cols.push(a.alias?.trim() || b.alias?.trim() || 'ratio');
   } else {

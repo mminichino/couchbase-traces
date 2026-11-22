@@ -596,6 +596,14 @@ Depends on: D1. Size: S.
 
 Placement (Q12): after D6, not pulled forward.
 
+Result (2026-11-21): the pad is `inferMeta` (`couchbase/inferMeta.ts`). It seeds
+the result columns from the `columns` hint and `encodeRow` writes `null` for
+each hinted column a row lacks. `couchbaseResultColumnNames` listed the operand
+aliases whatever `showOperandSeries` was, and never the formula columns. It now
+follows the projection: operands only when shown, then each formula's name as
+the renderers derive it (alias or expression, `__<index>` on a collision). See
+`docs/port-notes.md` (D7).
+
 #### D10: Page queries and alert detail not-found (found in D5, size M)
 
 Evidence: the D5 route-smoke run (18 pass, 6 fail) shows SQL++ errors from page
