@@ -37,6 +37,8 @@ export type CouchbaseSerializerOptions = {
     tableName: string;
   };
   alias: string;
+  /** LET variables bound by the query (expression aliases, D11). */
+  letAliases?: readonly string[];
   implicitColumnExpression?: string;
   bodyExpression?: string;
   searchIndexName?: string;

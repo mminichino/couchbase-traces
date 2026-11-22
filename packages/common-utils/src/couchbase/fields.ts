@@ -58,6 +58,16 @@ function resolveAgainst(
   context?: FieldContext,
 ): ResolvedField {
   if (field === IMPLICIT_FIELD) return resolveImplicit(opts, columns, context);
+  // A query alias (LET variable) shadows a column of the same name, as a
+  // ClickHouse WITH alias does. Its type is unknown, so it compares as text.
+  if (opts.letAliases?.includes(field)) {
+    return {
+      kind: 'column',
+      expr: quoteIdent(field),
+      type: 'String',
+      jsType: JSDataType.String,
+    };
+  }
   const exact = columns.find(c => c.name === field);
   if (exact) return asColumn(exact, opts.alias);
   const parts = field.split('.');
