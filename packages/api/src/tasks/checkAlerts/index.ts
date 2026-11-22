@@ -174,7 +174,8 @@ export async function computeAliasWithClauses(
       source.defaultTableSelectExpression) ||
     '';
   const config: BuilderChartConfigWithOptDateRange = {
-    connection: '',
+    // The renderer reads column metadata through this connection (D6).
+    connection: source.connection,
     displayType: DisplayType.Search,
     from: source.from,
     select: resolvedSelect,

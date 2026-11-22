@@ -388,6 +388,10 @@ pushes to `main` directly.
 | D5    | Defects: onboarding checklist                             | ClickHouse `system.tables` row-count probe sent to Couchbase on every page (section 9.1)                                                                                  | S    | R1                            |
 | D6    | Defects: alert connection resolution (investigate)        | 21 alert runs fail with "A connection id is required for Couchbase queries" (section 9.1)                                                                                 | S    | R1                            |
 | D7    | Defects: hidden formula operands returned as null columns | Found in D1 (section 9.1)                                                                                                                                                 | S    | D1                            |
+| D10   | Defects: page queries and alert detail not-found          | `/service-map`, `/kubernetes`, `/llm`, `/services`, `/sessions` SQL++ failures; `/alerts/[id]` 400 on an unknown id (section 9.1)                                         | M    | D6, D7                        |
+| D11   | Defects: alias WITH clauses in SQL++                      | Found in D6 (section 9.1)                                                                                                                                                 | S    | D6                            |
+| D12   | Defects: grouped alert history order                      | Found in D6 (section 9.1); decision needed                                                                                                                                | S    | —                             |
+| D13   | Defects: concurrent invite race (500)                     | Found in D6 (section 9.1)                                                                                                                                                 | S    | —                             |
 | R2a   | Port deferred int suites: internal and external API       | B1 (10 suites: `routers/api/{dashboard,iac,sources,connections}`, `routers/external-api/{charts,search,sources,sources-crud,connections}`, `middleware/queryAttribution`) | L    | D1                            |
 | R2b   | Port deferred int suites: alerts                          | B1 (5 suites: `checkAlerts`, `multiChannelAlerts`, `renderAlertTemplate`, `singleInvocationAlert`, `providers/default`; 335 tests, 93 failing per R0)                     | L    | R2c, D1, D4, D6               |
 | R2c   | Port deferred int suites: MCP                             | B1 (8 suites under `mcp/__tests__/`; 287 tests, 139 failing per R0)                                                                                                       | L    | R2a, D1–D4                    |
@@ -399,10 +403,11 @@ pushes to `main` directly.
 | R8    | Release v1.0.0                                            | version bump, changelog, tag, images, GitHub release                                                                                                                      | S    | R7, explicit user instruction |
 
 Order (user decisions 2026-11-19 and 2026-11-20): R1, then the defect-fix phases
-D1, D2, D9 (with D8, Q14/Q15), D2b (B17), D3–D7, then R2a, R2c, R2b. R3 and R6
-are independent and can land at any point. Product defects found in R0 get their
-own PRs ahead of the test-porting phases. R2 no longer fixes product bugs; a
-defect R2 finds while porting gets its own PR first (D7 onward).
+D1, D2, D9 (with D8, Q14/Q15), D2b (B17), D3–D7, D10 (Q28), then D11 and D12
+(proposed after D10, pending decision), then R2a, R2c, R2b. R3 and R6 are
+independent and can land at any point. Product defects found in R0 get their own
+PRs ahead of the test-porting phases. R2 no longer fixes product bugs; a defect
+R2 finds while porting gets its own PR first (D7 onward).
 
 ### 9.1 Defect-fix phases (D1–D6, D2b)
 
@@ -564,6 +569,13 @@ to R2b.
 Acceptance: root cause recorded in `docs/port-notes.md`; product fix and unit
 test if one applies.
 
+Result (2026-11-21): a product defect. Every saved-search alert with a Lucene
+filter hit it: the sample rows in the notification body (and the alias WITH
+clauses) were rendered with `connection: ''`, so the column lookup failed, and
+the message went out with no sample lines. Fixed by passing `source.connection`;
+the sample query also goes back to upstream's CSV lines. See
+`docs/port-notes.md` (D6). Found while doing it: D11 and D12 below.
+
 #### D7: Hidden formula operands come back as null columns (found in D1, size S)
 
 Evidence: `mcp/__tests__/dashboards/queryTile` "should save and query a metric
@@ -583,6 +595,84 @@ passes locally.
 Depends on: D1. Size: S.
 
 Placement (Q12): after D6, not pulled forward.
+
+#### D10: Page queries and alert detail not-found (found in D5, size M)
+
+Evidence: the D5 route-smoke run (18 pass, 6 fail) shows SQL++ errors from page
+queries, read from the Playwright traces of `/api/couchbase/query`:
+
+- `/service-map`: `Invalid function CRC32` (code 3000).
+- `/kubernetes`: dotted aliases such as `` `avg(k8s.pod.cpu.utilization)` `` and
+  the `'k8s.pod.cpu.utilization'` metric name break the parse (code 3000).
+- `/llm`: ClickHouse `arraySum(arrayMap(k -> …))`, `sumMap`, `mapContains`,
+  `toFloat64OrZero`, `toUInt64`, `greatest` in the LLM preset expressions.
+- `/services`: a select alias reused in the same SELECT
+  (`error_requests / total_requests`, code 4210 "must depend only on group keys
+  or aggregates") and `toDateTime` (code 3000).
+- `/sessions`: "Subquery in FROM clause must have an alias" (code 3000).
+- `/alerts/[alertId]`: the smoke fixture id `smoke-alert` is not an ObjectId;
+  `GET /api/alerts/smoke-alert` returns 400 (Zod "Invalid id") and the page
+  surfaces it.
+
+Scope:
+
+1. Translate or rewrite each failing expression in the SQL++ renderer, or in the
+   preset that emits it when the preset text is ClickHouse-specific, keeping the
+   upstream result shape (rule 6). Stop and ask (rule 9) if one cannot keep its
+   shape.
+2. Alerts (Q29), both parts: the route-smoke fixture uses a real, valid alert id
+   (`port/acceptance/lib/routes.mjs` and the generated `route-smoke.spec.ts`),
+   and the alert detail page shows a not-found state for an invalid or unknown
+   id instead of surfacing the 400. It lives here, not in D6: D6 is alert
+   evaluation connection resolution, which shares no code with the detail page.
+
+Acceptance: `route-smoke` passes for `/service-map`, `/kubernetes`, `/llm`,
+`/services`, `/sessions` and `/alerts/[alertId]` (24 of 24 with no console
+errors); a live-cluster case (`port/couchbase-test`) per fixed query shape; a
+unit test for the alert page not-found state (invalid id and unknown valid id).
+
+Depends on: D6, D7. Size: M. Placement (Q28): after D6 and D7, before R2a.
+
+#### D11: Alias WITH clauses render ClickHouse scalar WITH (found in D6, size S)
+
+Evidence: R2b `checkAlerts` "SAVED_SEARCH alert with alias in select and where"
+(and "multiple aliases") record `OK` instead of `ALERT`. Once D6 lets the alias
+clauses render, the alert query starts
+``WITH (toString(Body)) AS `body` SELECT COUNT(*) …``, a ClickHouse scalar WITH,
+and Couchbase returns "syntax error - line 1, column 6, near 'WITH '" (the
+`isSubquery: false` branch in `couchbase/render/with.ts`). Before D6 the clauses
+were dropped (warn log), so the WHERE resolved `body` to an unknown field
+(`FALSE`).
+
+Fix: render non-subquery aliases so the alias is usable in WHERE (for example
+`LET` after FROM, or inlining the expression where the alias is referenced),
+with SQL++ functions for the expression (`toString` is ClickHouse). Acceptance:
+a renderer unit test; both R2b alias cases pass locally. Depends on: D6.
+
+#### D12: Grouped alert history order is not stable (found in D6, size S)
+
+Evidence: `checkAlerts` "INLINE alert (group by) - notifies per group" expects
+history groups in `['ServiceName:api', 'ServiceName:worker']` order and fails
+about 1 run in 5, on `main` and on the D6 branch alike (5 runs each,
+`-t 'notifies per group'`). Both rows share `createdAt`, so `buildHistoryRows`
+orders them by random document id. Upstream's Mongo ObjectIds sort by insertion
+order.
+
+Decision needed: sort the assertion (test-only, R2b) or give history ids an
+insertion order (product). Depends on: none.
+
+#### D13: Concurrent invites of one email can return 500 (found in D6, size S)
+
+Evidence: in one full `make ci-int` run on the D6 branch, `team.int.test.ts`
+"handles concurrent invites for the same email idempotently" got 500 from one
+request ("Duplicate key: invite_member"); 10 isolated runs passed.
+`teamInvites.getOrCreate` loses the `(team, email)` claim to a concurrent
+request, then reads the invite back before the winner has inserted it, finds
+nothing and rethrows the `DuplicateKeyError`.
+
+Fix: on a lost claim, wait for the winner's invite (bounded retry on the claim's
+owner id), or return 409 for the caller to retry. Acceptance: a unit test with a
+delayed winner insert; the int case passes under load. Depends on: none.
 
 #### D8 onward
 
@@ -811,6 +901,8 @@ in that phase.
 | Q25 | Describe tools on an empty collection (2026-11-21)                                                       | Fall back to the declared OTel schema (ingest collection model, shared via `common-utils`, server-only), as upstream `DESCRIBE TABLE` returns DDL columns; one shared function; own commit in the D5 PR | D5             |
 | Q26 | Metric tools' leftover ClickHouse SQL (`{x:Identifier}`, `argMax`, `anyLast`, `mapKeys`) (2026-11-21)    | Folded into R2c, not its own phase                                                                                                                                                                      | R2c            |
 | Q27 | Flaky app unit test `HDXMultiSeriesTableChart` "excludes a value by its column filter key" (2026-11-21)  | Own deterministic root-cause fix, own commit in the D5 PR, proven with repeated runs (30x and the full suite)                                                                                           | D5             |
+| Q28 | Page query failures found by route-smoke in D5 (2026-11-21)                                              | One bug-fix phase, D10 "page queries", after D6 and D7 and before R2                                                                                                                                    | D10            |
+| Q29 | `/alerts/[id]` returns 400 for the smoke fixture id (2026-11-21)                                         | Both: the smoke fixture uses a real valid id, and the page shows a not-found state for an invalid or unknown id instead of the 400. In D10 (unrelated to D6)                                            | D10            |
 
 ## 11. Acceptance criteria (v1.0.0 is done when)
 
@@ -876,6 +968,10 @@ in that phase.
 | D5 Onboarding checklist probe                                   | S    |
 | D6 Alert connection resolution (investigate)                    | S    |
 | D7 Hidden formula operands as null columns                      | S    |
+| D10 Page queries and alert detail not-found                     | M    |
+| D11 Alias WITH clauses in SQL++                                 | S    |
+| D12 Grouped alert history order                                 | S    |
+| D13 Concurrent invite race                                      | S    |
 | R2a Deferred API int suites (10 suites, 380 tests, 80 failing)  | L    |
 | R2b Deferred alert int suites (5 suites, 335 tests, 93 failing) | L    |
 | R2c Deferred MCP int suites (8 suites, 287 tests, 139 failing)  | L    |

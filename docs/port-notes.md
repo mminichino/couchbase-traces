@@ -2697,3 +2697,56 @@ now passes; the R2c "before" matches D2's 99). R2b (5 suites) 41 → 40 of 335
   assert on columns, and the suite's `clearDBs` leaves `otel_logs` empty, so
   they now get `[]` instead of an error. Upstream returns DDL columns there;
   whether to fall back to the declared ingest schema is an open decision.
+
+### D6: alert connection resolution (2026-11-21, `mm--v1-d6-alert-connection`)
+
+- **Root cause: product.** The deferred-suite logs trace every "A connection id
+  is required for Couchbase queries" to `fetchSampleLines` →
+  `computeAliasWithClauses` → `renderChartConfig` →
+  `CouchbaseSearchBuilder.loadColumns` → `metadata.getColumns` with
+  `connectionId: ''`. Both configs set `connection: ''`, carried over from the
+  ClickHouse port, where the client was bound to one server and the config's
+  connection went unused. On Couchbase, every metadata read picks its cluster by
+  connection id. A Lucene filter always reads columns, so every saved-search
+  alert with a Lucene filter (the default language) sent its notification with
+  no sample lines, and its alias WITH clauses were dropped (the evaluation
+  path's warn log is under `CBT_LOG_LEVEL=error` in tests). The evaluation query
+  itself was not affected: `getChartConfigFromAlert` already passes the
+  connection. No real alert can avoid this, so it is not a fixture gap.
+- **Fix.** `computeAliasWithClauses` and `fetchSampleLines` use
+  `source.connection`. The sample query goes back to upstream's
+  `format: 'CSV'` + `text()` (the port had switched it to JSON and joined values
+  with ", "), which the R2b `renderAlertTemplate` snapshots and the "sample rows
+  once" test (`format === 'CSV'`) specify. The app's `connection: ''` configs
+  (`useSessionLogEvents`, `useReleaseAnnotations`, `DBSearchPage`) are
+  placeholders for disabled queries and never run.
+- **Tests.** `checkAlerts/__tests__/aliasConnection.test.ts` (unit, failed
+  first: both helpers pass the source's connection to metadata, and the sample
+  query is CSV on that connection). `aliasConnectionAlert.int.test.ts` runs in
+  `make ci-int`: R2b's saved-search inputs on a live stack; the notification
+  quotes the two matching rows and not the other one. Without the fix it fails
+  ("Expected substring 'Oh no! Something went wrong!'", connection error
+  logged).
+- **Deferred-suite measurement** (fresh `docker-compose.ci.yml` stack per run,
+  `main` 08dbb5d vs this branch, measurement only, still deferred). Connection
+  errors in logs: 94 → 0. R2b: 37 → 26 failing of 335: `renderAlertTemplate` 10
+  → 0, `checkAlerts` 24 → 23 ("fetches the message body sample rows once"),
+  `singleInvocationAlert` 1, `providers/default` 2, `multiChannelAlerts` 0
+  unchanged. No test went from pass to fail. The plan's "21 runs" counted
+  evaluations, not tests: most of them were in tests that still fail for other
+  reasons.
+- **Not D6, still failing.** 18 raw-SQL tile cases (including
+  `singleInvocationAlert`) send ClickHouse SQL from the fixtures (`INTERVAL`,
+  `count()`, `countIf`), which is a test port for R2b. The two "alias in select
+  and where" cases hit D11. The three metric tile cases fail on an unquoted
+  dotted alias (``max(test`.`…``), the same defect class as D10's `/kubernetes`
+  aliases. "Saved filter whose column needs backtick-quoting" fails on
+  sequential-scan RBAC for an unindexed fixture collection (R2b fixture).
+  Materialized views is R2b. `providers/default` is unchanged (fixture enum).
+- **Flaky, found here.** "INLINE alert (group by) - notifies per group" fails
+  about 1 run in 5 on `main` and on this branch alike (D12).
+- **Flaky under load, found here.** `make ci-int` failed once on
+  `team.int.test.ts` "handles concurrent invites for the same email
+  idempotently" (500, "Duplicate key: invite_member"): the losing request reads
+  the invite back before the winner has inserted it. 10 isolated runs pass. Not
+  touched by D6; recorded as D13.

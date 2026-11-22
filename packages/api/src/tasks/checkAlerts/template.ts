@@ -560,7 +560,9 @@ export const fetchSampleLines = async ({
   }
   const chartConfig: ChartConfigWithOptDateRange = {
     ...buildSearchChartConfig(toQueryableTSource(source), {
-      connection: '', // no need for the connection id since evalstore client is already initialized
+      // Lucene filters read the source's columns; Couchbase metadata needs
+      // the source's connection (D6).
+      connection: source.connection,
       dateRange: [startTime, endTime],
       select: savedSearch.select,
       where: savedSearch.where,
@@ -588,20 +590,17 @@ export const fetchSampleLines = async ({
       metadata,
       source.querySettings,
     );
-    const json = await dataClient
+    // Upstream quotes the sample rows as CSV lines; the Couchbase result set
+    // renders CSV the same way (D6).
+    const raw = await dataClient
       .query({
         query: query.sql,
         query_params: query.params,
-        format: 'JSON',
+        format: 'CSV',
         connectionId: source.connection,
         scanConsistency: 'request_plus',
       })
-      .then(res => res.json());
-
-    const rows = Array.isArray(json)
-      ? (json as Record<string, unknown>[])
-      : ((json as { data?: Record<string, unknown>[] }).data ?? []);
-    const raw = rows.map(row => Object.values(row).join(', ')).join('\n');
+      .then(res => res.text());
 
     return truncateString(
       raw
