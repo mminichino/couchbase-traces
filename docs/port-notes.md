@@ -2901,3 +2901,72 @@ SQL++ functions used here, checked against the 8.0 reference: `HASHBYTES`
 - **jscpd.** The one clone the diff report shows (the `DatabaseTab` and
   `HttpTab` import blocks) exists on `main` too; adding one import shifted its
   span. Not new duplication.
+
+### D11: alias WITH clauses as SQL++ LET (2026-11-22, `mm--v1-d11-alert-aliases`)
+
+- **Root cause.** checkAlerts renders a saved search's select to find its
+  aliases (`toString(Body) AS body`) and passes them to the alert's count
+  query as `with` entries with `isSubquery: false`. `render/with.ts` turned
+  each into ClickHouse's scalar `WITH (toString(Body)) AS body`; SQL++ has
+  only subquery CTEs and fails "syntax error - line 1, column 6, near
+  'WITH '". Separately, the Lucene serializer resolved `body` against the
+  collection's columns only, so `body:wrong` rendered `FALSE`.
+- **Fix.** Expression aliases render as a LET after the FROM term
+  (`FROM … AS d LET body = (toString(Body)) WHERE …`); subquery clauses stay
+  CTEs. The 8.0 LET reference: a LET referenced in WHERE is evaluated first,
+  and a later binding may use an earlier one. ClickHouse resolves alias
+  references in either order, so each reference is inlined with D10's
+  `resolveSelectAliases` and the order does not matter. Each clause's params
+  are renamed into the statement's namespace by the sqlpp builder (the
+  mechanism behind D10's `disjointSqlParams`). The LET is part of the FROM
+  term, so the series-limit CTE that reuses FROM and WHERE binds it too. The
+  Lucene resolver checks LET aliases before columns, since a ClickHouse alias
+  shadows a column of the same name (`prefer_column_name_to_alias = 0`), and
+  compares them as text, since their type is unknown. No-op aliases
+  (`ServiceName AS ServiceName`) and one named `d` (the FROM alias) are not
+  bound. `toString` needs no rewrite: SQL++ function names are
+  case-insensitive and `TOSTRING` is an 8.0 function.
+- **Also affected.** The search page and alert preview (`aliasMapToWithClauses`)
+  and the LLM dashboard's cost alias (`__llm_cost_usd`) use the same
+  `isSubquery: false` form, and now render LET on Couchbase too.
+- **Tests.** `render/__tests__/aliasWith.test.ts` (6: single and multiple
+  aliases, CTE next to LET, alias params, alias-to-alias reference,
+  series-limit CTE; all failed first). `alertQueries.couchbase.int.test.ts`
+  runs the deferred checkAlerts inputs on a live cluster: alias in select and
+  where (2 rows), no match (no bucket), multiple aliases (2 rows). All 3 failed
+  on the old renderer with the syntax error.
+
+### D16: grouped ratio `share_of_total` (2026-11-22, second commit of `mm--v1-d11-alert-aliases`)
+
+- **Root cause.** `render/metrics/multiSeries.ts` never read `ratioMode`, so
+  every ratio divided each group by its own denominator (per_group). For the
+  checkAlerts inputs (service-a 5 / 10, service-b 3 / 30) that gives 0.5 and
+  0.1; upstream's `share_of_total` divides by the bucket's denominator total,
+  5 / 40 = 0.125 and 3 / 40 = 0.075. Not a grouping or window-bounds problem:
+  the window was simply missing.
+- **Fix.** As upstream, the denominator is
+  `SUM(<denominator>) OVER (PARTITION BY __hdx_time_bucket)`, or `OVER ()`
+  with no time bucket. In 8.0 Enterprise an aggregate used with OVER is a
+  window function, evaluated after GROUP BY and HAVING, so it sums the grouped
+  rows. SUM skips a group with no denominator, and that group's numerator still
+  divides by the total, as in upstream's `svc-d` case. per_group is unchanged.
+- **Tests.** `render/__tests__/ratioMode.test.ts` (3; the two
+  `share_of_total` cases failed first) and two live cases with the checkAlerts
+  inputs: `share_of_total` gives 0.125 and 0.075 (failed on the old renderer),
+  and per_group gives 0.5 and 0.1 (the control).
+- **Found here, not fixed.** The SQL++ multi-series path drops the chart's
+  `having` and user `orderBy` (each branch renders with `having: undefined,
+  orderBy: undefined` and the outer statement adds neither). Upstream applies
+  both to the joined result, and filters `share_of_total` HAVING through a
+  wrapper because a window cannot appear in HAVING. No deferred case covers
+  it yet; it is D17 in the release plan.
+- **Deferred-suite measurement** (fresh `docker-compose.ci.yml` stack per run,
+  `main` abdc57c vs this branch, measurement only, still deferred). R2b
+  `checkAlerts` 23 → 21 failing of 185: the two "alias in select and where"
+  cases and "grouped ratio - honors ratioMode share_of_total" now pass. "INLINE
+  alert (group by) - notifies per group" passed in the `main` run and failed in
+  this one with the D12 symptom (`api` and `worker` swapped, same
+  `createdAt`), so it is not counted either way. `multiChannelAlerts` 0,
+  `renderAlertTemplate` 0, `singleInvocationAlert` 1, `providers/default` 2,
+  unchanged. Every other deferred suite is unchanged (152 of 1002 failing in
+  total). No test went from pass to fail except the D12 flake.

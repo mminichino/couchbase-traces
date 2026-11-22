@@ -671,6 +671,12 @@ Fix: render non-subquery aliases so the alias is usable in WHERE (for example
 with SQL++ functions for the expression (`toString` is ClickHouse). Acceptance:
 a renderer unit test; both R2b alias cases pass locally. Depends on: D6.
 
+Result (2026-11-22): expression aliases render as a SQL++ `LET` after FROM
+(subquery clauses stay CTEs), alias-to-alias references are inlined with D10's
+select-alias resolver, and Lucene resolves a LET alias before columns. Both R2b
+alias cases pass; D16 ships in the same PR as its own commit (Q35). See
+`docs/port-notes.md` (D11, D16).
+
 #### D12: Grouped alert history order is not stable (found in D6, size S)
 
 Evidence: `checkAlerts` "INLINE alert (group by) - notifies per group" expects
@@ -732,6 +738,19 @@ share_of_total" now renders (it failed on a dotted alias before D10) and gets
 0.5 where 0.125 is expected, so the denominator is per group instead of across
 groups. Placement (Q35): fixed with D11 in the same PR, as its own commit; both
 are alert query rendering.
+
+Result (2026-11-22): the SQL++ multi-series renderer ignored `ratioMode`. The
+denominator is now `SUM(…) OVER (PARTITION BY __hdx_time_bucket)` for
+`share_of_total`, as upstream; the R2b case passes.
+
+#### D17: Multi-series metric charts drop HAVING and ORDER BY (found in D16, size S)
+
+Evidence: `couchbase/render/metrics/multiSeries.ts` renders each branch with
+`having: undefined, orderBy: undefined` and the joined statement adds neither,
+so a multi-series or ratio metric tile ignores both. Upstream applies them to
+the joined result (and filters a `share_of_total` HAVING through a wrapper,
+since a window function cannot appear in HAVING). No deferred case covers it
+yet. Needs a decision on placement.
 
 #### D8 onward
 
