@@ -2750,3 +2750,38 @@ now passes; the R2c "before" matches D2's 99). R2b (5 suites) 41 → 40 of 335
   idempotently" (500, "Duplicate key: invite_member"): the losing request reads
   the invite back before the winner has inserted it. 10 isolated runs pass. Not
   touched by D6; recorded as D13.
+
+### D7: hidden formula operands as null columns (2026-11-21, `mm--v1-d7-formula-nulls`)
+
+- **Root cause.** The SQL++ projection was already right (formula and time
+  bucket only). The null columns came from the result hints: `runChartQuery`
+  passes `couchbasePostprocessHints(config)` to the query, `inferMeta` seeds the
+  column order from `hints.columns`, and `encodeRow` writes every meta column,
+  so a hinted name with no value comes back as `null`.
+  `couchbaseResultColumnNames` listed the operand aliases (`Errors`, `Requests`)
+  even with `showOperandSeries: false` and left out the formula alias.
+  Upstream's ClickHouse JSON carries only the projected columns.
+- **Fix.** `couchbaseResultColumnNames` mirrors `select.ts` and
+  `metrics/multiSeries.ts`: with formulas, operands are listed only when shown,
+  then each formula's column name (alias or expression, suffixed `__<index>` on
+  a collision with an operand alias or an earlier formula). Ratio and plain
+  selects are unchanged.
+- **Tests.** `common-utils` `render/__tests__/formulaColumns.test.ts` (hidden,
+  shown, unaliased, colliding alias, and the `inferMeta` shape; all 5 failed
+  first). `api` `mcp/__tests__/dashboards/formulaColumns.int.test.ts` runs in
+  `make ci-int`: the deferred `queryTile` inputs with operands hidden (formula
+  5, no `Errors` or `Requests`) and shown (all three columns). The hidden case
+  fails on `main`.
+- **Deferred-suite measurement** (fresh `docker-compose.ci.yml` stack per run,
+  `main` 8649ebb vs this branch, measurement only, still deferred). R2c: 65 → 63
+  failing of 287: `queryTile` 8 → 6 (the metric formula tile and the log-source
+  formula tile, a number tile, which the tile conversion always gives
+  `showOperandSeries: false`); `queryTool` 31, `sources` 11, `describeTable` 11,
+  `queryTiles` 3, `trace` 1, `serviceHealthTool` 0, `emergingSignalsTool` 0
+  unchanged. No test went from pass to fail.
+- **Environment, found here.** Right after `make ci-int`,
+  `port/couchbase-test/run.sh` found a default Couchbase port busy, fell back to
+  host port offset 20000, and every live test then timed out on KV
+  `localhost:31210?network=external` (twice). With the ports free a run at
+  offset 0 passed 58 + 55 + 4. The offset fallback's external KV mapping does
+  not work on this host; tracked as D14 in the release plan.

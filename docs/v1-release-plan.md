@@ -390,8 +390,9 @@ pushes to `main` directly.
 | D7    | Defects: hidden formula operands returned as null columns | Found in D1 (section 9.1)                                                                                                                                                 | S    | D1                            |
 | D10   | Defects: page queries and alert detail not-found          | `/service-map`, `/kubernetes`, `/llm`, `/services`, `/sessions` SQL++ failures; `/alerts/[id]` 400 on an unknown id (section 9.1)                                         | M    | D6, D7                        |
 | D11   | Defects: alias WITH clauses in SQL++                      | Found in D6 (section 9.1)                                                                                                                                                 | S    | D6                            |
-| D12   | Defects: grouped alert history order                      | Found in D6 (section 9.1); decision needed                                                                                                                                | S    | —                             |
+| D12   | Defects: grouped alert history order                      | Found in D6 (section 9.1); product fix (Q31)                                                                                                                              | S    | —                             |
 | D13   | Defects: concurrent invite race (500)                     | Found in D6 (section 9.1)                                                                                                                                                 | S    | —                             |
+| D14   | Dev tooling: live-test port offset fallback               | Found in D7 (section 9.1)                                                                                                                                                 | S    | —                             |
 | R2a   | Port deferred int suites: internal and external API       | B1 (10 suites: `routers/api/{dashboard,iac,sources,connections}`, `routers/external-api/{charts,search,sources,sources-crud,connections}`, `middleware/queryAttribution`) | L    | D1                            |
 | R2b   | Port deferred int suites: alerts                          | B1 (5 suites: `checkAlerts`, `multiChannelAlerts`, `renderAlertTemplate`, `singleInvocationAlert`, `providers/default`; 335 tests, 93 failing per R0)                     | L    | R2c, D1, D4, D6               |
 | R2c   | Port deferred int suites: MCP                             | B1 (8 suites under `mcp/__tests__/`; 287 tests, 139 failing per R0)                                                                                                       | L    | R2a, D1–D4                    |
@@ -596,6 +597,14 @@ Depends on: D1. Size: S.
 
 Placement (Q12): after D6, not pulled forward.
 
+Result (2026-11-21): the pad is `inferMeta` (`couchbase/inferMeta.ts`). It seeds
+the result columns from the `columns` hint and `encodeRow` writes `null` for
+each hinted column a row lacks. `couchbaseResultColumnNames` listed the operand
+aliases whatever `showOperandSeries` was, and never the formula columns. It now
+follows the projection: operands only when shown, then each formula's name as
+the renderers derive it (alias or expression, `__<index>` on a collision). See
+`docs/port-notes.md` (D7).
+
 #### D10: Page queries and alert detail not-found (found in D5, size M)
 
 Evidence: the D5 route-smoke run (18 pass, 6 fail) shows SQL++ errors from page
@@ -658,8 +667,11 @@ about 1 run in 5, on `main` and on the D6 branch alike (5 runs each,
 orders them by random document id. Upstream's Mongo ObjectIds sort by insertion
 order.
 
-Decision needed: sort the assertion (test-only, R2b) or give history ids an
-insertion order (product). Depends on: none.
+Fix (Q31, product): alert history rows get a stable insertion order (a monotonic
+sequence or tie-breaker written with each row), and `buildHistoryRows` sorts on
+it after `createdAt`, so same-timestamp rows read back in insertion order.
+Acceptance: a unit test with same-`createdAt` rows; the int case passes
+repeatedly. Depends on: none.
 
 #### D13: Concurrent invites of one email can return 500 (found in D6, size S)
 
@@ -670,9 +682,20 @@ request ("Duplicate key: invite_member"); 10 isolated runs passed.
 request, then reads the invite back before the winner has inserted it, finds
 nothing and rethrows the `DuplicateKeyError`.
 
-Fix: on a lost claim, wait for the winner's invite (bounded retry on the claim's
-owner id), or return 409 for the caller to retry. Acceptance: a unit test with a
+Fix (Q32): on a lost claim, wait briefly (bounded retry) for the winner's invite
+and return it, idempotent like upstream; no 409. Acceptance: a unit test with a
 delayed winner insert; the int case passes under load. Depends on: none.
+
+#### D14: Live-test port offset fallback cannot reach KV (found in D7, size S)
+
+Evidence: when a default Couchbase port is busy, `port/couchbase-test/run.sh`
+moves the node to host port offset 20000 and sets the alternate address
+(kv=31210). Every live test then times out on
+`couchbase://localhost:31210?network=external` (D7, two runs: 19 and 95
+failures); the same run at offset 0 passes. Fix: make the offset mapping
+reachable (or wait for the default ports and fail clearly). Acceptance: a run
+with `CBT_TEST_COUCHBASE_PORT_OFFSET=20000` passes. Dev tooling only; does not
+block 1.0 unless decided otherwise. Depends on: none.
 
 #### D8 onward
 
@@ -903,6 +926,9 @@ in that phase.
 | Q27 | Flaky app unit test `HDXMultiSeriesTableChart` "excludes a value by its column filter key" (2026-11-21)  | Own deterministic root-cause fix, own commit in the D5 PR, proven with repeated runs (30x and the full suite)                                                                                           | D5             |
 | Q28 | Page query failures found by route-smoke in D5 (2026-11-21)                                              | One bug-fix phase, D10 "page queries", after D6 and D7 and before R2                                                                                                                                    | D10            |
 | Q29 | `/alerts/[id]` returns 400 for the smoke fixture id (2026-11-21)                                         | Both: the smoke fixture uses a real valid id, and the page shows a not-found state for an invalid or unknown id instead of the 400. In D10 (unrelated to D6)                                            | D10            |
+| Q30 | Placement of D11, D12, D13 (2026-11-21)                                                                  | After D10 in the phase order                                                                                                                                                                            | D11–D13        |
+| Q31 | Grouped alert history order (D12)                                                                        | Product fix: history rows get a stable insertion order so same-timestamp rows sort deterministically; not test-only                                                                                     | D12            |
+| Q32 | Concurrent invite race (D13)                                                                             | The losing request waits briefly and returns the winner's invite, idempotent like upstream; no 409                                                                                                      | D13            |
 
 ## 11. Acceptance criteria (v1.0.0 is done when)
 
@@ -972,6 +998,7 @@ in that phase.
 | D11 Alias WITH clauses in SQL++                                 | S    |
 | D12 Grouped alert history order                                 | S    |
 | D13 Concurrent invite race                                      | S    |
+| D14 Live-test port offset fallback                              | S    |
 | R2a Deferred API int suites (10 suites, 380 tests, 80 failing)  | L    |
 | R2b Deferred alert int suites (5 suites, 335 tests, 93 failing) | L    |
 | R2c Deferred MCP int suites (8 suites, 287 tests, 139 failing)  | L    |
