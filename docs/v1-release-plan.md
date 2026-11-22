@@ -391,6 +391,7 @@ pushes to `main` directly.
 | D10   | Defects: page queries and alert detail not-found          | `/service-map`, `/kubernetes`, `/llm`, `/services`, `/sessions` SQL++ failures; `/alerts/[id]` 400 on an unknown id (section 9.1)                                         | M    | D6, D7                        |
 | D11   | Defects: alias WITH clauses in SQL++                      | Found in D6 (section 9.1)                                                                                                                                                 | S    | D6                            |
 | D12   | Defects: grouped alert history order                      | Found in D6 (section 9.1); decision needed                                                                                                                                | S    | —                             |
+| D13   | Defects: concurrent invite race (500)                     | Found in D6 (section 9.1)                                                                                                                                                 | S    | —                             |
 | R2a   | Port deferred int suites: internal and external API       | B1 (10 suites: `routers/api/{dashboard,iac,sources,connections}`, `routers/external-api/{charts,search,sources,sources-crud,connections}`, `middleware/queryAttribution`) | L    | D1                            |
 | R2b   | Port deferred int suites: alerts                          | B1 (5 suites: `checkAlerts`, `multiChannelAlerts`, `renderAlertTemplate`, `singleInvocationAlert`, `providers/default`; 335 tests, 93 failing per R0)                     | L    | R2c, D1, D4, D6               |
 | R2c   | Port deferred int suites: MCP                             | B1 (8 suites under `mcp/__tests__/`; 287 tests, 139 failing per R0)                                                                                                       | L    | R2a, D1–D4                    |
@@ -659,6 +660,19 @@ order.
 
 Decision needed: sort the assertion (test-only, R2b) or give history ids an
 insertion order (product). Depends on: none.
+
+#### D13: Concurrent invites of one email can return 500 (found in D6, size S)
+
+Evidence: in one full `make ci-int` run on the D6 branch, `team.int.test.ts`
+"handles concurrent invites for the same email idempotently" got 500 from one
+request ("Duplicate key: invite_member"); 10 isolated runs passed.
+`teamInvites.getOrCreate` loses the `(team, email)` claim to a concurrent
+request, then reads the invite back before the winner has inserted it, finds
+nothing and rethrows the `DuplicateKeyError`.
+
+Fix: on a lost claim, wait for the winner's invite (bounded retry on the claim's
+owner id), or return 409 for the caller to retry. Acceptance: a unit test with a
+delayed winner insert; the int case passes under load. Depends on: none.
 
 #### D8 onward
 
@@ -957,6 +971,7 @@ in that phase.
 | D10 Page queries and alert detail not-found                     | M    |
 | D11 Alias WITH clauses in SQL++                                 | S    |
 | D12 Grouped alert history order                                 | S    |
+| D13 Concurrent invite race                                      | S    |
 | R2a Deferred API int suites (10 suites, 380 tests, 80 failing)  | L    |
 | R2b Deferred alert int suites (5 suites, 335 tests, 93 failing) | L    |
 | R2c Deferred MCP int suites (8 suites, 287 tests, 139 failing)  | L    |

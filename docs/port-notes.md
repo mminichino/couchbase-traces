@@ -2745,3 +2745,8 @@ now passes; the R2c "before" matches D2's 99). R2b (5 suites) 41 → 40 of 335
   Materialized views is R2b. `providers/default` is unchanged (fixture enum).
 - **Flaky, found here.** "INLINE alert (group by) - notifies per group" fails
   about 1 run in 5 on `main` and on this branch alike (D12).
+- **Flaky under load, found here.** `make ci-int` failed once on
+  `team.int.test.ts` "handles concurrent invites for the same email
+  idempotently" (500, "Duplicate key: invite_member"): the losing request reads
+  the invite back before the winner has inserted it. 10 isolated runs pass. Not
+  touched by D6; recorded as D13.
