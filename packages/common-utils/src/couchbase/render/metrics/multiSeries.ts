@@ -187,7 +187,19 @@ export async function renderMultiSeriesMetricChartConfigCouchbase(
     });
   } else if (isRatio) {
     const numerator = `IFNULL(${valueExprFor(0)}, 0)`;
-    const denominator = valueExprFor(1);
+    // per_group: each row divides by its own denominator. share_of_total:
+    // by the denominator total across the bucket's groups (upstream
+    // `sum(…) OVER (PARTITION BY bucket)`), so grouped lines sum to the
+    // ungrouped rate. SQL++ evaluates the window over the grouped rows; SUM
+    // skips a group with no denominator.
+    const denominator =
+      chartConfig.ratioMode === 'share_of_total'
+        ? `SUM(${valueExprFor(1)}) OVER (${
+            hasGranularity
+              ? `PARTITION BY ${quoteIdent(FIXED_TIME_BUCKET_EXPR_ALIAS)}`
+              : ''
+          })`
+        : valueExprFor(1);
     const ratioName = `${outputNames[0]}/${outputNames[1].replace(/__\d+$/, '')}`;
     projection.push(
       `(${numerator} / NULLIF(${denominator}, 0)) AS ${quoteIdent(ratioName)}`,

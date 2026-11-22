@@ -389,15 +389,16 @@ pushes to `main` directly.
 | D6    | Defects: alert connection resolution (investigate)        | 21 alert runs fail with "A connection id is required for Couchbase queries" (section 9.1)                                                                                 | S    | R1                            |
 | D7    | Defects: hidden formula operands returned as null columns | Found in D1 (section 9.1)                                                                                                                                                 | S    | D1                            |
 | D10   | Defects: page queries and alert detail not-found          | `/service-map`, `/kubernetes`, `/llm`, `/services`, `/sessions` SQL++ failures; `/alerts/[id]` 400 on an unknown id (section 9.1)                                         | M    | D6, D7                        |
-| D11   | Defects: alias WITH clauses in SQL++                      | Found in D6 (section 9.1)                                                                                                                                                 | S    | D6                            |
+| D11   | Defects: alias WITH clauses in SQL++ (with D16, Q35)      | Found in D6 (section 9.1); D16 grouped-ratio `share_of_total` as its own commit in the same PR                                                                            | S    | D6, D10                       |
 | D12   | Defects: grouped alert history order                      | Found in D6 (section 9.1); product fix (Q31)                                                                                                                              | S    | —                             |
 | D13   | Defects: concurrent invite race (500)                     | Found in D6 (section 9.1)                                                                                                                                                 | S    | —                             |
+| D17   | Defects: multi-series HAVING and ORDER BY (Q36)           | Found in D16 (section 9.1); own PR after D13                                                                                                                              | S    | D13                           |
 | D14   | Dev tooling: live-test port offset fallback               | Found in D7 (section 9.1)                                                                                                                                                 | S    | —                             |
 | R2a   | Port deferred int suites: internal and external API       | B1 (10 suites: `routers/api/{dashboard,iac,sources,connections}`, `routers/external-api/{charts,search,sources,sources-crud,connections}`, `middleware/queryAttribution`) | L    | D1                            |
 | R2b   | Port deferred int suites: alerts                          | B1 (5 suites: `checkAlerts`, `multiChannelAlerts`, `renderAlertTemplate`, `singleInvocationAlert`, `providers/default`; 335 tests, 93 failing per R0)                     | L    | R2c, D1, D4, D6               |
 | R2c   | Port deferred int suites: MCP                             | B1 (8 suites under `mcp/__tests__/`; 287 tests, 139 failing per R0)                                                                                                       | L    | R2a, D1–D4                    |
 | R3    | Service map node latency                                  | B6                                                                                                                                                                        | M    | —                             |
-| R4    | Fix failing Playwright specs on the Couchbase stack       | B2 (spec and app fixes)                                                                                                                                                   | L    | R2a, D5                       |
+| R4    | Fix failing Playwright specs on the Couchbase stack       | B2 (spec and app fixes); D15 Couchbase E2E seed rows (Q34)                                                                                                                | L    | R2a, D5                       |
 | R5    | Re-enable full-stack E2E on Main                          | B2 (restore `e2e-tests` `workflow_call` and report aggregator in `main.yml`)                                                                                              | S    | R4                            |
 | R6    | Release tooling                                           | B7, B8, B10; delete `version.sh`; add `ingest` to changesets `fixed`                                                                                                      | M    | —                             |
 | R7    | Docs and acceptance re-run                                | B13, B14, B15; `docs/release.md`                                                                                                                                          | M    | R1–R6, D1–D6, D2b             |
@@ -671,6 +672,12 @@ Fix: render non-subquery aliases so the alias is usable in WHERE (for example
 with SQL++ functions for the expression (`toString` is ClickHouse). Acceptance:
 a renderer unit test; both R2b alias cases pass locally. Depends on: D6.
 
+Result (2026-11-22): expression aliases render as a SQL++ `LET` after FROM
+(subquery clauses stay CTEs), alias-to-alias references are inlined with D10's
+select-alias resolver, and Lucene resolves a LET alias before columns. Both R2b
+alias cases pass; D16 ships in the same PR as its own commit (Q35). See
+`docs/port-notes.md` (D11, D16).
+
 #### D12: Grouped alert history order is not stable (found in D6, size S)
 
 Evidence: `checkAlerts` "INLINE alert (group by) - notifies per group" expects
@@ -719,18 +726,32 @@ container. See `docs/port-notes.md` (D14).
 
 Evidence: after D10 the `/kubernetes` and `/sessions` queries succeed, but
 `kubernetes.spec.ts` fails 12 of 13 and `sessions.spec.ts` 5 of 7 on empty
-tables: `seed-couchbase.ts` writes no k8s metric or event rows, and for the
-OTel browser SDK sessions only the `otel_sessions` log documents (no spans,
-replay rows or browser log events). Fix: seed the rows the upstream ClickHouse
-seed writes for those specs. Proposed placement: with R2 fixture work, pending
-decision.
+tables: `seed-couchbase.ts` writes no k8s metric or event rows, and for the OTel
+browser SDK sessions only the `otel_sessions` log documents (no spans, replay
+rows or browser log events). Fix: seed the rows the upstream ClickHouse seed
+writes for those specs. Placement (Q34): fixed with the Playwright work in R4,
+which owns its acceptance.
 
 #### D16: Grouped ratio metric tile alert, share of total (found in D10, size S)
 
 Evidence: `checkAlerts` "TILE alert (metrics, grouped ratio) - honors ratioMode
 share_of_total" now renders (it failed on a dotted alias before D10) and gets
 0.5 where 0.125 is expected, so the denominator is per group instead of across
-groups. Needs a decision on placement.
+groups. Placement (Q35): fixed with D11 in the same PR, as its own commit; both
+are alert query rendering.
+
+Result (2026-11-22): the SQL++ multi-series renderer ignored `ratioMode`. The
+denominator is now `SUM(…) OVER (PARTITION BY __hdx_time_bucket)` for
+`share_of_total`, as upstream; the R2b case passes.
+
+#### D17: Multi-series metric charts drop HAVING and ORDER BY (found in D16, size S)
+
+Evidence: `couchbase/render/metrics/multiSeries.ts` renders each branch with
+`having: undefined, orderBy: undefined` and the joined statement adds neither,
+so a multi-series or ratio metric tile ignores both. Upstream applies them to
+the joined result (and filters a `share_of_total` HAVING through a wrapper,
+since a window function cannot appear in HAVING). No deferred case covers it
+yet. Decision Q36: its own PR, right after D13.
 
 #### D8 onward
 
@@ -858,8 +879,13 @@ of the reference.
 Fix the spec or the product for each failure recorded in R0 (section 14.2: 115
 failures and 8 flaky tests across 29 specs; start with the onboarding
 checklist's ClickHouse `system.tables` query, which breaks `route-smoke`).
-Follow `.claude/skills/playwright/SKILL.md`. Acceptance: `make e2e` (all four
-shards) green twice in a row locally on a clean stack.
+Follow `.claude/skills/playwright/SKILL.md`. Includes D15 (Q34):
+`seed-couchbase.ts` writes the Kubernetes metric and event rows and the
+OpenTelemetry browser SDK session spans, replay rows and browser log events that
+the upstream ClickHouse seed writes for `kubernetes.spec.ts` and
+`sessions.spec.ts`. Acceptance: `make e2e` (all four shards) green twice in a
+row locally on a clean stack, including all 13 `kubernetes.spec.ts` and all 7
+`sessions.spec.ts` tests.
 
 ### R5: Re-enable E2E on Main
 
@@ -965,6 +991,9 @@ in that phase.
 | Q31 | Grouped alert history order (D12)                                                                        | Product fix: history rows get a stable insertion order so same-timestamp rows sort deterministically; not test-only                                                                                     | D12            |
 | Q32 | Concurrent invite race (D13)                                                                             | The losing request waits briefly and returns the winner's invite, idempotent like upstream; no 409                                                                                                      | D13            |
 | Q33 | Live-test port offset fallback (D14)                                                                     | Not a 1.0 blocker; fixed as a separate commit at the start of the D10 PR, proven with a default port occupied                                                                                           | D14            |
+| Q34 | Couchbase E2E seed gaps (D15)                                                                            | Fixed with the Playwright work in R4; R4 acceptance includes the `kubernetes` and `sessions` specs                                                                                                      | R4, D15        |
+| Q35 | Grouped ratio alert `share_of_total` (D16)                                                               | Fixed with D11 in the same PR, as its own commit; both are alert query rendering                                                                                                                        | D11, D16       |
+| Q36 | Placement of D17: multi-series metric charts drop HAVING and ORDER BY (2026-11-22)                       | Its own PR, right after D13                                                                                                                                                                             | D17            |
 
 ## 11. Acceptance criteria (v1.0.0 is done when)
 
@@ -1034,6 +1063,7 @@ in that phase.
 | D11 Alias WITH clauses in SQL++                                 | S    |
 | D12 Grouped alert history order                                 | S    |
 | D13 Concurrent invite race                                      | S    |
+| D17 Multi-series HAVING and ORDER BY                            | S    |
 | D14 Live-test port offset fallback                              | S    |
 | R2a Deferred API int suites (10 suites, 380 tests, 80 failing)  | L    |
 | R2b Deferred alert int suites (5 suites, 335 tests, 93 failing) | L    |

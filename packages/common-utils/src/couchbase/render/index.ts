@@ -30,7 +30,7 @@ import {
 } from './select';
 import { renderSeriesLimitCteCouchbase } from './seriesLimit';
 import { renderWhereCouchbase } from './where';
-import { renderWithCouchbase } from './with';
+import { renderLetCouchbase, renderWithCouchbase } from './with';
 
 export type SqlppQuery = {
   sql: string;
@@ -107,10 +107,14 @@ export async function renderChartConfigCouchbase(
     isNonEmptyWhereExpr(chartConfig.where)
       ? parseRowIdWhere(chartConfig.where ?? '')
       : undefined;
-  const from =
+  const fromTerm =
     pureRowId != null
       ? renderFromWithRowIdCouchbase(chartConfig, pureRowId)
       : renderFromCouchbase(chartConfig);
+  // Expression aliases bind after FROM so WHERE, GROUP BY, the select and the
+  // series-limit CTE (which reuses this FROM) all see them.
+  const letClause = renderLetCouchbase(chartConfig);
+  const from = letClause ? sqlpp`${fromTerm} LET ${letClause}` : fromTerm;
   let where =
     pureRowId != null
       ? await renderWhereCouchbase(

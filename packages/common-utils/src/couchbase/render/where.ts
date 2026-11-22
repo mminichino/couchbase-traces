@@ -15,6 +15,7 @@ import type {
 } from '@/types';
 
 import { getFirstTimestampColumn, timestampFormatOf } from './select';
+import { letAliasNames } from './with';
 
 const ALIAS = 'd';
 
@@ -70,6 +71,7 @@ export async function compileWhereExpressionCouchbase({
       tableName: from.tableName,
     },
     alias: ALIAS,
+    letAliases: letAliasNames(chartConfig),
     implicitColumnExpression: chartConfig.implicitColumnExpression,
     bodyExpression: chartConfig.bodyExpression,
     searchIndexName:

@@ -57,6 +57,12 @@ module.exports = {
   transformIgnorePatterns: [
     '/node_modules/(?!(ai|@ai-sdk|@workflow/serde|http-proxy-middleware|httpxy|is-plain-obj)/)',
   ],
+  // Hang watchdog: a stalled suite fails fast and names itself instead of
+  // running silently into the CI job timeout.
+  setupFilesAfterEnv: [
+    ...base.setupFilesAfterEnv,
+    '<rootDir>/../jest.int.setup.ts',
+  ],
   testMatch: ['**/__tests__/**/*.int.test.ts?(x)'],
   // Override the unit config's ignore list: it excludes `.int.test.ts`, which
   // would otherwise hide every integration test from this suite.

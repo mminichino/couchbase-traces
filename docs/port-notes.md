@@ -2901,3 +2901,156 @@ SQL++ functions used here, checked against the 8.0 reference: `HASHBYTES`
 - **jscpd.** The one clone the diff report shows (the `DatabaseTab` and
   `HttpTab` import blocks) exists on `main` too; adding one import shifted its
   span. Not new duplication.
+
+### D11: alias WITH clauses as SQL++ LET (2026-11-22, `mm--v1-d11-alert-aliases`)
+
+- **Root cause.** checkAlerts renders a saved search's select to find its
+  aliases (`toString(Body) AS body`) and passes them to the alert's count
+  query as `with` entries with `isSubquery: false`. `render/with.ts` turned
+  each into ClickHouse's scalar `WITH (toString(Body)) AS body`; SQL++ has
+  only subquery CTEs and fails "syntax error - line 1, column 6, near
+  'WITH '". Separately, the Lucene serializer resolved `body` against the
+  collection's columns only, so `body:wrong` rendered `FALSE`.
+- **Fix.** Expression aliases render as a LET after the FROM term
+  (`FROM … AS d LET body = (toString(Body)) WHERE …`); subquery clauses stay
+  CTEs. The 8.0 LET reference: a LET referenced in WHERE is evaluated first,
+  and a later binding may use an earlier one. ClickHouse resolves alias
+  references in either order, so each reference is inlined with D10's
+  `resolveSelectAliases` and the order does not matter. Each clause's params
+  are renamed into the statement's namespace by the sqlpp builder (the
+  mechanism behind D10's `disjointSqlParams`). The LET is part of the FROM
+  term, so the series-limit CTE that reuses FROM and WHERE binds it too. The
+  Lucene resolver checks LET aliases before columns, since a ClickHouse alias
+  shadows a column of the same name (`prefer_column_name_to_alias = 0`), and
+  compares them as text, since their type is unknown. No-op aliases
+  (`ServiceName AS ServiceName`) and one named `d` (the FROM alias) are not
+  bound. `toString` needs no rewrite: SQL++ function names are
+  case-insensitive and `TOSTRING` is an 8.0 function.
+- **Also affected.** The search page and alert preview (`aliasMapToWithClauses`)
+  and the LLM dashboard's cost alias (`__llm_cost_usd`) use the same
+  `isSubquery: false` form, and now render LET on Couchbase too.
+- **Tests.** `render/__tests__/aliasWith.test.ts` (6: single and multiple
+  aliases, CTE next to LET, alias params, alias-to-alias reference,
+  series-limit CTE; all failed first). `alertQueries.couchbase.int.test.ts`
+  runs the deferred checkAlerts inputs on a live cluster: alias in select and
+  where (2 rows), no match (no bucket), multiple aliases (2 rows). All 3 failed
+  on the old renderer with the syntax error.
+
+### D16: grouped ratio `share_of_total` (2026-11-22, second commit of `mm--v1-d11-alert-aliases`)
+
+- **Root cause.** `render/metrics/multiSeries.ts` never read `ratioMode`, so
+  every ratio divided each group by its own denominator (per_group). For the
+  checkAlerts inputs (service-a 5 / 10, service-b 3 / 30) that gives 0.5 and
+  0.1; upstream's `share_of_total` divides by the bucket's denominator total,
+  5 / 40 = 0.125 and 3 / 40 = 0.075. Not a grouping or window-bounds problem:
+  the window was simply missing.
+- **Fix.** As upstream, the denominator is
+  `SUM(<denominator>) OVER (PARTITION BY __hdx_time_bucket)`, or `OVER ()`
+  with no time bucket. In 8.0 Enterprise an aggregate used with OVER is a
+  window function, evaluated after GROUP BY and HAVING, so it sums the grouped
+  rows. SUM skips a group with no denominator, and that group's numerator still
+  divides by the total, as in upstream's `svc-d` case. per_group is unchanged.
+- **Tests.** `render/__tests__/ratioMode.test.ts` (3; the two
+  `share_of_total` cases failed first) and two live cases with the checkAlerts
+  inputs: `share_of_total` gives 0.125 and 0.075 (failed on the old renderer),
+  and per_group gives 0.5 and 0.1 (the control).
+- **Found here, not fixed.** The SQL++ multi-series path drops the chart's
+  `having` and user `orderBy` (each branch renders with `having: undefined,
+  orderBy: undefined` and the outer statement adds neither). Upstream applies
+  both to the joined result, and filters `share_of_total` HAVING through a
+  wrapper because a window cannot appear in HAVING. No deferred case covers
+  it yet; it is D17 in the release plan.
+- **Deferred-suite measurement** (fresh `docker-compose.ci.yml` stack per run,
+  `main` abdc57c vs this branch, measurement only, still deferred). R2b
+  `checkAlerts` 23 → 21 failing of 185: the two "alias in select and where"
+  cases and "grouped ratio - honors ratioMode share_of_total" now pass. "INLINE
+  alert (group by) - notifies per group" passed in the `main` run and failed in
+  this one with the D12 symptom (`api` and `worker` swapped, same
+  `createdAt`), so it is not counted either way. `multiChannelAlerts` 0,
+  `renderAlertTemplate` 0, `singleInvocationAlert` 1, `providers/default` 2,
+  unchanged. Every other deferred suite is unchanged (152 of 1002 failing in
+  total). No test went from pass to fail except the D12 flake.
+
+### PR #27 CI: lint timeout and integration shard 1 stall (2026-11-22, `mm--v1-d11-alert-aliases`)
+
+Run 45054418792 cancelled two jobs. Neither cause is in the D11/D16 code.
+
+**Lint (cancelled at 8m06s).** In 25 `Main` runs back to 2026-11-20, the job
+took 4m47s to 8m06s. Push runs on `main` took 7m25s to 7m48s, so the 8-minute
+limit was already marginal. This run's affected step took 6m43s, against 4m11s
+on PR #26. The same 6 projects and 1 build ran, and every task was slower by
+about the same factor, which points to runner speed, not a new step.
+`check-openapi-sync.sh` was simply the step running when time ran out. The
+real waste was the nx cache. Every run logged "Unrecognized Cache
+Artifacts": Nx 21+ (we pin 23.1.1) restores only artifacts recorded in its
+per-machine database, `.nx/workspace-data/<machine-id>-v3.db`. CI cached
+only `.nx/cache`, so every PR rejected the restored entry and ran cold, while
+each push uploaded about 1 GB. Caching `workspace-data` as well would not
+help, because the database is keyed to the machine and every runner is fresh.
+This is a CI config issue, so the workflow is the right place to fix it:
+
+- Removed the nx cache restore/save steps. Within one job, nx still reuses
+  `ci:build` for the `ci:lint` tasks that depend on it.
+- Set `timeout-minutes: 12` to fit the measured cold-run range.
+
+**Integration shard 1 (cancelled at 55m).** Output stopped right after
+`provisionDashboards` printed PASS (18:40:30). The next file in shard 1 is
+`mcp/dashboards/searchDashboards`, which never reported. `main` push run
+44880450404 (a66fcf0, 2026-11-21) had the same stall at the same spot: 33
+silent minutes after provisionDashboards, then cancelled. So the stall predates
+D11 and is intermittent: 2 of the last 30 shard 1 runs.
+
+Local reproduction ran on the `docker-compose.ci.yml` stack with the CI env,
+`--shard=1/4`, and a fresh jest cache, which gives the same file order as CI.
+None of it stalled:
+
+| Run | Result |
+|---|---|
+| Full shard 1 | 2× in 167 s, 225/225 passed |
+| `provisionDashboards` then `searchDashboards` | 15× in 15–19 s each |
+| Same pair, full GC forced at each file start | 3×, no stall |
+
+Ruled out: heap growth (peak 506 MB, `--logHeapUsage`), schedulers, and
+invite wait loops (neither suite starts them).
+
+How a stall stays silent: jest buffers a file's console output, including
+retry logs, until the file finishes. searchDashboards has 11 tests with one
+retry each. If every hook ran into its 30s timeout, the file would take about
+33 minutes, which matches both stalls. A blocked event loop would look the
+same.
+
+Two weaknesses turned the stall into a silent 55-minute cancel:
+
+1. `MockServer.start()` caught and logged its own errors. A failed or stuck
+   metadata connect left the suite running, and every later hook waited out
+   its own timeout. It now rethrows, so `beforeAll` fails at once.
+2. Nothing watched for a stall. `packages/api/jest.int.setup.ts`, loaded
+   only by the int config, now does:
+   - A worker thread tracks a main-thread heartbeat. If the event loop stops
+     for 120 s (`CBT_INT_BLOCKED_MS`), or one file runs longer than 25 min
+     (`CBT_INT_FILE_BUDGET_MS`), it writes the file, the test, and the active
+     resources to fd 2 and kills the process. A stall then fails the job
+     within minutes and names itself.
+   - Proved with a 60 s busy loop (fired at 15 s with a test budget) and a
+     never-resolving test (fired at the file budget). No false positives on
+     a full shard 1 run.
+   - The 25 min budget sits above the slowest legitimate CI file:
+     `external-api/dashboards`, 780 s on PR #26.
+
+The underlying trigger is still unconfirmed. The strongest lead is Couchbase
+Node SDK 4.8.0's JSCBC-1520: "terminating a worker thread or closing a
+cluster no longer aborts the process, hangs, or blocks the event loop while
+transactions close". Its changes also move transaction teardown off
+the JS thread (JSCBC-1522). We pin 4.7.2, and 4.7.2's notes do not include
+either fix. provisionDashboards opens and closes seven metadata clusters,
+because each `ProvisionDashboardsTask.execute()` calls
+`startMetadataStore()`, and earlier shard 1 suites run transactions
+(`deleteCascading`, `removeMember`). With forced GC, the first GC in the next
+file blocked the JS thread for 0.6–3.6 s; the first file's GC took 70–90 ms.
+
+Upgrading is a user decision. The Server compatibility matrix
+(nodejs-sdk/current/project-docs/compatibility.html) lists SDK 4.7 for
+Server 8.0 but not 4.8 yet, and the AGENTS.md platform rule requires a
+listed release. 4.8.0 also changes behavior: TLS hostname verification,
+HTTP 400 mapped to `InvalidArgumentError`, query error 2120 mapped to
+`AuthenticationFailureError`, and a Node 20.17 minimum.

@@ -9,7 +9,9 @@ concurrency:
   cancel-in-progress: true
 jobs:
   lint:
-    timeout-minutes: 8
+    # Cold every run (no cross-run nx cache, see below): 4m47s-8m06s measured
+    # over 25 runs to PR #27, so 8m cancelled at the tail of the distribution.
+    timeout-minutes: 12
     runs-on: ubuntu-24.04
     steps:
       - name: Checkout
@@ -31,19 +33,12 @@ jobs:
         run: yarn install --immutable
       - name: Install core libs
         run: sudo apt-get install --yes curl bc
-      # Restore-only on PRs: a PR-scoped cache entry can't be read by any other
-      # branch, so saving one buys nothing and just evicts other entries out of
-      # the repo's shared 10GB budget (including the integration job's buildx
-      # layer cache). Only push runs write, and PRs read main's entry.
-      - name: Restore nx computation cache
-        uses: actions/cache/restore@v4
-        with:
-          path: .nx/cache
-          key: nx-${{ runner.os }}-${{ github.sha }}
-          restore-keys: |
-            nx-${{ runner.os }}-
-      # Upstream `ci:build` runs automatically via the `dependsOn` wiring in
-      # nx.json, so unchanged projects are served from the nx cache.
+      # No cross-run nx cache. Nx 21+ restores only artifacts recorded in its
+      # per-machine database (.nx/workspace-data/<machine-id>-v3.db); a fresh
+      # runner has none, so every restored .nx/cache entry was rejected
+      # ("Unrecognized Cache Artifacts") and every PR ran cold anyway while
+      # each push uploaded ~1 GB. Within the job, nx still caches ci:build
+      # for the ci:lint tasks that depend on it.
       - name: Run lint + type check (affected)
         if: github.event_name == 'pull_request'
         env:
@@ -71,14 +66,6 @@ jobs:
       # never asserts on it, and nx can skip or cache-replay that task.
       - name: Check openapi.json is in sync with its sources
         run: scripts/ci/check-openapi-sync.sh
-      # Runs even when lint fails, so a red main still refreshes the cache that
-      # PR runs restore from.
-      - name: Save nx computation cache
-        if: always() && github.event_name == 'push'
-        uses: actions/cache/save@v4
-        with:
-          path: .nx/cache
-          key: nx-${{ runner.os }}-${{ github.sha }}
   unit:
     # 8m was marginal: install + build + coverage unit often lands near the
     # ceiling and GitHub marks the job cancelled (not failed) on timeout.
@@ -272,20 +259,28 @@ jobs:
             .env.example
             .github/workflows/main.yml
       - name: Skip when paths unchanged on PR
-        if: github.event_name == 'pull_request' && steps.changed-files.outputs.any_changed != 'true'
+        if:
+          github.event_name == 'pull_request' &&
+          steps.changed-files.outputs.any_changed != 'true'
         run: echo "No stack-smoke inputs changed; skipping."
       - name: Setup node
-        if: github.event_name == 'push' || steps.changed-files.outputs.any_changed == 'true'
+        if:
+          github.event_name == 'push' || steps.changed-files.outputs.any_changed
+          == 'true'
         uses: actions/setup-node@v6
         with:
           node-version-file: '.nvmrc'
           cache-dependency-path: 'yarn.lock'
           cache: 'yarn'
       - name: Install root dependencies
-        if: github.event_name == 'push' || steps.changed-files.outputs.any_changed == 'true'
+        if:
+          github.event_name == 'push' || steps.changed-files.outputs.any_changed
+          == 'true'
         run: yarn install --immutable
       - name: Run stack smoke
-        if: github.event_name == 'push' || steps.changed-files.outputs.any_changed == 'true'
+        if:
+          github.event_name == 'push' || steps.changed-files.outputs.any_changed
+          == 'true'
         env:
           CBT_STACK_SMOKE_PRUNE: '1'
           BUILDKIT_MAX_PARALLELISM: '1'
@@ -313,4 +308,3 @@ jobs:
       - name: E2E deferred (Couchbase port)
         run: |
           echo "::notice title=E2E deferred::Playwright full-stack E2E is deferred until Couchbase search/heatmap/k8s/chart-SQL suites pass (docs/port-notes.md). K2 hard gates: lint, unit, integration, Couchbase integration, product stack smoke."
-
