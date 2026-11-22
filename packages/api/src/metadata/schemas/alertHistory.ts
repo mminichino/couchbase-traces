@@ -97,6 +97,12 @@ export const AlertHistoryDocSchema = z.object({
     .optional(),
   errors: z.array(ErrorDocSchema).optional(),
   analytics: AlertHistoryAnalyticsSchema.optional(),
+  /**
+   * Write order (D12): every reader sorts rows sharing a createdAt on this.
+   * Absent on rows written before it existed; those fall back to key order.
+   * A storage detail, never part of IAlertHistory.
+   */
+  seq: z.number().int().nonnegative().optional(),
 });
 
 export type AlertHistoryDoc = z.infer<typeof AlertHistoryDocSchema>;

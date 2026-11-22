@@ -611,6 +611,14 @@ const computeHistoryMapKey = (alertId: string, groupKey: string): string => {
 };
 
 /**
+ * Byte order of UTF-8 group keys: SQL++ string collation, and the order
+ * upstream's `sort({ group: 1 })` history reads gave. Locale order would
+ * disagree with both on case and accents.
+ */
+const compareGroupKeys = (a: string, b: string): number =>
+  Buffer.compare(Buffer.from(a), Buffer.from(b));
+
+/**
  * Extract the group key from a composite history map key.
  * Safely handles group names that may contain colons or other special characters
  * by using the alert ID prefix with the delimiter to identify the split point.
@@ -1423,9 +1431,15 @@ export const processAlert = async (
           record.analytics = evaluationAnalytics;
         }
       }
+      // Rows of one evaluation share createdAt and read back in write order
+      // (D12). Write them in group order, as upstream's history reads sort by
+      // group, so the order does not follow the data store's row order.
+      const ordered = [...records].sort((a, b) =>
+        compareGroupKeys(a.group ?? '', b.group ?? ''),
+      );
       await alertProvider.updateAlertState(
         alert.id,
-        records,
+        ordered,
         [...executionErrors, ...extraErrors],
         dateRange,
       );

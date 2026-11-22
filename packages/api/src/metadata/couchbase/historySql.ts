@@ -32,10 +32,30 @@ function where(alert: Id, r: DateRange, errors: 'any' | 'only' | 'none') {
 
 const GROUP = sqlpp`h.${{ Identifier: 'group' }}`;
 
+/**
+ * Write order within one createdAt (D12): the seq stamped at write time, then
+ * the key for rows written before seq existed (MISSING sorts first, so old
+ * rows precede new ones in a window that mixes both).
+ */
+const WRITE_ORDER = sqlpp`h.seq, META(h).id`;
+const WRITE_ORDER_DESC = sqlpp`h.seq DESC, META(h).id DESC`;
+
+/**
+ * ARRAY_AGG has no ORDER BY in SQL++ 8.0 and its output order is unspecified.
+ * Aggregating `{"o": [seq, key], "v": value}` and sorting with ARRAY_SORT
+ * orders the array by write order: every element is a two-member object with
+ * the same keys, so collation compares `o` first ("o" < "v"), and [seq, key]
+ * compares element-wise (a MISSING seq becomes null inside the array, which
+ * sorts before any number). `.v` then strips the sort key again.
+ */
+function inWriteOrder(value: SqlPP): SqlPP {
+  return sqlpp`ARRAY e.v FOR e IN ARRAY_SORT(ARRAY_AGG({"o": [h.seq, META(h).id], "v": ${value}})) END`;
+}
+
 /** getPreviousAlertHistories: the newest non-ERROR row per group. */
 export function buildLatestPerGroup(t: Target, alert: Id, r: DateRange): SqlPP {
   // The partition expression is the one ix_alert_history_group indexes.
-  return sqlpp`SELECT x.createdAt, x.state, x.fired, x.groupValues, x.${{ Identifier: 'group' }} FROM (SELECT h.createdAt, h.state, h.fired, h.groupValues, ${GROUP}, ROW_NUMBER() OVER (PARTITION BY IFMISSINGORNULL(${GROUP}, ${{ Param: '' }}) ORDER BY h.createdAt DESC, META(h).id DESC) AS rn FROM ${source(t)} WHERE ${where(alert, r, 'none')}) AS x WHERE x.rn = ${{ Param: 1 }}`;
+  return sqlpp`SELECT x.createdAt, x.state, x.fired, x.groupValues, x.${{ Identifier: 'group' }} FROM (SELECT h.createdAt, h.state, h.fired, h.groupValues, ${GROUP}, ROW_NUMBER() OVER (PARTITION BY IFMISSINGORNULL(${GROUP}, ${{ Param: '' }}) ORDER BY h.createdAt DESC, ${WRITE_ORDER_DESC}) AS rn FROM ${source(t)} WHERE ${where(alert, r, 'none')}) AS x WHERE x.rn = ${{ Param: 1 }}`;
 }
 
 /** getConsecutiveWindowHistories: every non-ERROR row in range. */
@@ -44,7 +64,7 @@ export function buildRangeExcludingErrors(
   alert: Id,
   r: DateRange,
 ): SqlPP {
-  return sqlpp`SELECT h.createdAt, h.state, h.fired, h.groupValues, ${GROUP} FROM ${source(t)} WHERE ${where(alert, r, 'none')} ORDER BY ${GROUP}, h.createdAt DESC`;
+  return sqlpp`SELECT h.createdAt, h.state, h.fired, h.groupValues, ${GROUP} FROM ${source(t)} WHERE ${where(alert, r, 'none')} ORDER BY ${GROUP}, h.createdAt DESC, ${WRITE_ORDER_DESC}`;
 }
 
 /** One entry per createdAt, ERROR rows included, newest first. */
@@ -54,7 +74,9 @@ export function buildGroupedByWindow(
   r: DateRange,
   limit: number,
 ): SqlPP {
-  return sqlpp`SELECT h.createdAt, ARRAY_AGG(h.state) AS states, SUM(h.counts) AS counts, ARRAY_AGG(h.lastValues) AS lastValues, ARRAY_AGG(h.errors) AS errors FROM ${source(t)} WHERE ${where(alert, r, 'any')} GROUP BY h.createdAt ORDER BY h.createdAt DESC LIMIT ${{ Param: limit }}`;
+  // `errors` keeps ARRAY_AGG's MISSING-skipping: only rows that have errors
+  // contribute an entry, which is what the window's error list counts.
+  return sqlpp`SELECT h.createdAt, ${inWriteOrder(sqlpp`h.state`)} AS states, SUM(h.counts) AS counts, ${inWriteOrder(sqlpp`h.lastValues`)} AS lastValues, ARRAY e.v FOR e IN ARRAY_SORT(ARRAY_AGG(CASE WHEN h.errors IS NOT MISSING THEN {"o": [h.seq, META(h).id], "v": h.errors} ELSE MISSING END)) END AS errors FROM ${source(t)} WHERE ${where(alert, r, 'any')} GROUP BY h.createdAt ORDER BY h.createdAt DESC LIMIT ${{ Param: limit }}`;
 }
 
 /** As above, keeping each row with its group identity and analytics. */
@@ -66,7 +88,8 @@ export function buildStructuredWindows(
 ): SqlPP {
   // MISSING members are dropped from an object constructor, so absent
   // optional fields stay absent instead of becoming null.
-  return sqlpp`SELECT h.createdAt, ARRAY_AGG({"group": ${GROUP}, "state": h.state, "counts": h.counts, "lastValues": h.lastValues, "fired": h.fired, "errors": h.errors, "analytics": h.analytics}) AS \`rows\` FROM ${source(t)} WHERE ${where(alert, r, 'any')} GROUP BY h.createdAt ORDER BY h.createdAt DESC LIMIT ${{ Param: limit }}`;
+  const row = sqlpp`{"group": ${GROUP}, "state": h.state, "counts": h.counts, "lastValues": h.lastValues, "fired": h.fired, "errors": h.errors, "analytics": h.analytics}`;
+  return sqlpp`SELECT h.createdAt, ${inWriteOrder(row)} AS \`rows\` FROM ${source(t)} WHERE ${where(alert, r, 'any')} GROUP BY h.createdAt ORDER BY h.createdAt DESC LIMIT ${{ Param: limit }}`;
 }
 
 /** Per-window states and bucket starts, oldest first, ERROR rows excluded. */
@@ -75,12 +98,13 @@ export function buildTransitionWindows(
   alert: Id,
   r: DateRange,
 ): SqlPP {
-  return sqlpp`SELECT h.createdAt, ARRAY_AGG(h.state) AS states, ARRAY_AGG(ARRAY lv.startTime FOR lv IN IFMISSINGORNULL(h.lastValues, []) END) AS bucketStarts FROM ${source(t)} WHERE ${where(alert, r, 'none')} GROUP BY h.createdAt ORDER BY h.createdAt ASC`;
+  const starts = sqlpp`ARRAY lv.startTime FOR lv IN IFMISSINGORNULL(h.lastValues, []) END`;
+  return sqlpp`SELECT h.createdAt, ${inWriteOrder(sqlpp`h.state`)} AS states, ${inWriteOrder(starts)} AS bucketStarts FROM ${source(t)} WHERE ${where(alert, r, 'none')} GROUP BY h.createdAt ORDER BY h.createdAt ASC`;
 }
 
 /** Every row of the alert in range, oldest first, with its document key. */
 export function buildHistoryRows(t: Target, alert: Id, r: DateRange): SqlPP {
-  return sqlpp`SELECT META(h).id AS k, h AS v FROM ${source(t)} WHERE ${where(alert, r, 'any')} ORDER BY h.createdAt ASC, META(h).id ASC`;
+  return sqlpp`SELECT META(h).id AS k, h AS v FROM ${source(t)} WHERE ${where(alert, r, 'any')} ORDER BY h.createdAt ASC, ${WRITE_ORDER}`;
 }
 
 export function buildErrorRowKeys(t: Target, alert: Id, r: DateRange): SqlPP {
