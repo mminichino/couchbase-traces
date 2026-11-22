@@ -2785,3 +2785,22 @@ now passes; the R2c "before" matches D2's 99). R2b (5 suites) 41 → 40 of 335
   `localhost:31210?network=external` (twice). With the ports free a run at
   offset 0 passed 58 + 55 + 4. The offset fallback's external KV mapping does
   not work on this host; tracked as D14 in the release plan.
+
+### D14: live-test runs after `make ci-int` (2026-11-21, first commit of `mm--v1-d10-page-queries`)
+
+- **Not reproduced as described.** With 8091 held by a stray listener, `run.sh`
+  chose offset 20000 and passed 58 + 55 + 4. The alternate address (`kv=31210`)
+  and `couchbase://localhost:31210?network=external` work. A run started while
+  the CI stack was being torn down picked offset 0 and passed too.
+- **What the D7 logs show.** Both failing runs had a healthy node at `Ready` and
+  passing suites before the first timeout: at offset 0, `chartDefects` passed,
+  three suites timed out, then the rest passed; at offset 20000, three suites
+  passed, then every request failed, plain HTTP to the query port included
+  (`fetch failed`). So the node stopped answering while serving, at either
+  offset, right after a full `make ci-int` run. The container was removed by
+  `down -v` before anyone could look at it.
+- **Change.** `run.sh` logs the owner (process or container) of the busy port
+  before it shifts. When the tests fail it logs the container status, restart
+  count, OOM flag, memory, which of mgmt/query/KV accept connections, and
+  babysitter crash or restart lines, then cleans up. The next occurrence will
+  say whether the node restarted, was OOM-killed or stalled.

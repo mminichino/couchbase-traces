@@ -688,14 +688,19 @@ delayed winner insert; the int case passes under load. Depends on: none.
 
 #### D14: Live-test port offset fallback cannot reach KV (found in D7, size S)
 
-Evidence: when a default Couchbase port is busy, `port/couchbase-test/run.sh`
-moves the node to host port offset 20000 and sets the alternate address
-(kv=31210). Every live test then times out on
-`couchbase://localhost:31210?network=external` (D7, two runs: 19 and 95
-failures); the same run at offset 0 passes. Fix: make the offset mapping
-reachable (or wait for the default ports and fail clearly). Acceptance: a run
-with `CBT_TEST_COUCHBASE_PORT_OFFSET=20000` passes. Dev tooling only; does not
-block 1.0 unless decided otherwise. Depends on: none.
+Evidence (D7): two `port/couchbase-test/run.sh` runs right after `make ci-int`
+timed out on the live cluster, one at offset 20000 (95 failures) and one at
+offset 0 (19). Decision Q33: not a 1.0 blocker; fix it as a separate commit at
+the start of the D10 PR.
+
+Result (D10): the offset is not the cause. With 8091 held by another process,
+`run.sh` moves to offset 20000 and passes 58 + 55 + 4, and so does a run started
+while the CI stack is coming down. In both D7 runs the node stopped answering
+partway through, after earlier suites had passed (at offset 0 too; there the
+later suites recovered), so the node went away while serving. `run.sh` now names
+the process or container on a busy port and, on a failed run, logs the node's
+state, memory, open ports and babysitter restarts before cleanup removes the
+container. See `docs/port-notes.md` (D14).
 
 #### D8 onward
 
@@ -929,6 +934,7 @@ in that phase.
 | Q30 | Placement of D11, D12, D13 (2026-11-21)                                                                  | After D10 in the phase order                                                                                                                                                                            | D11–D13        |
 | Q31 | Grouped alert history order (D12)                                                                        | Product fix: history rows get a stable insertion order so same-timestamp rows sort deterministically; not test-only                                                                                     | D12            |
 | Q32 | Concurrent invite race (D13)                                                                             | The losing request waits briefly and returns the winner's invite, idempotent like upstream; no 409                                                                                                      | D13            |
+| Q33 | Live-test port offset fallback (D14)                                                                     | Not a 1.0 blocker; fixed as a separate commit at the start of the D10 PR, proven with a default port occupied                                                                                           | D14            |
 
 ## 11. Acceptance criteria (v1.0.0 is done when)
 
