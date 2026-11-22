@@ -389,6 +389,8 @@ pushes to `main` directly.
 | D6    | Defects: alert connection resolution (investigate)        | 21 alert runs fail with "A connection id is required for Couchbase queries" (section 9.1)                                                                                 | S    | R1                            |
 | D7    | Defects: hidden formula operands returned as null columns | Found in D1 (section 9.1)                                                                                                                                                 | S    | D1                            |
 | D10   | Defects: page queries and alert detail not-found          | `/service-map`, `/kubernetes`, `/llm`, `/services`, `/sessions` SQL++ failures; `/alerts/[id]` 400 on an unknown id (section 9.1)                                         | M    | D6, D7                        |
+| D11   | Defects: alias WITH clauses in SQL++                      | Found in D6 (section 9.1)                                                                                                                                                 | S    | D6                            |
+| D12   | Defects: grouped alert history order                      | Found in D6 (section 9.1); decision needed                                                                                                                                | S    | —                             |
 | R2a   | Port deferred int suites: internal and external API       | B1 (10 suites: `routers/api/{dashboard,iac,sources,connections}`, `routers/external-api/{charts,search,sources,sources-crud,connections}`, `middleware/queryAttribution`) | L    | D1                            |
 | R2b   | Port deferred int suites: alerts                          | B1 (5 suites: `checkAlerts`, `multiChannelAlerts`, `renderAlertTemplate`, `singleInvocationAlert`, `providers/default`; 335 tests, 93 failing per R0)                     | L    | R2c, D1, D4, D6               |
 | R2c   | Port deferred int suites: MCP                             | B1 (8 suites under `mcp/__tests__/`; 287 tests, 139 failing per R0)                                                                                                       | L    | R2a, D1–D4                    |
@@ -400,10 +402,11 @@ pushes to `main` directly.
 | R8    | Release v1.0.0                                            | version bump, changelog, tag, images, GitHub release                                                                                                                      | S    | R7, explicit user instruction |
 
 Order (user decisions 2026-11-19 and 2026-11-20): R1, then the defect-fix phases
-D1, D2, D9 (with D8, Q14/Q15), D2b (B17), D3–D7, D10 (Q28), then R2a, R2c, R2b.
-R3 and R6 are independent and can land at any point. Product defects found in R0
-get their own PRs ahead of the test-porting phases. R2 no longer fixes product
-bugs; a defect R2 finds while porting gets its own PR first (D7 onward).
+D1, D2, D9 (with D8, Q14/Q15), D2b (B17), D3–D7, D10 (Q28), then D11 and D12
+(proposed after D10, pending decision), then R2a, R2c, R2b. R3 and R6 are
+independent and can land at any point. Product defects found in R0 get their own
+PRs ahead of the test-porting phases. R2 no longer fixes product bugs; a defect
+R2 finds while porting gets its own PR first (D7 onward).
 
 ### 9.1 Defect-fix phases (D1–D6, D2b)
 
@@ -565,6 +568,13 @@ to R2b.
 Acceptance: root cause recorded in `docs/port-notes.md`; product fix and unit
 test if one applies.
 
+Result (2026-11-21): a product defect. Every saved-search alert with a Lucene
+filter hit it: the sample rows in the notification body (and the alias WITH
+clauses) were rendered with `connection: ''`, so the column lookup failed, and
+the message went out with no sample lines. Fixed by passing `source.connection`;
+the sample query also goes back to upstream's CSV lines. See
+`docs/port-notes.md` (D6). Found while doing it: D11 and D12 below.
+
 #### D7: Hidden formula operands come back as null columns (found in D1, size S)
 
 Evidence: `mcp/__tests__/dashboards/queryTile` "should save and query a metric
@@ -621,6 +631,34 @@ errors); a live-cluster case (`port/couchbase-test`) per fixed query shape; a
 unit test for the alert page not-found state (invalid id and unknown valid id).
 
 Depends on: D6, D7. Size: M. Placement (Q28): after D6 and D7, before R2a.
+
+#### D11: Alias WITH clauses render ClickHouse scalar WITH (found in D6, size S)
+
+Evidence: R2b `checkAlerts` "SAVED_SEARCH alert with alias in select and where"
+(and "multiple aliases") record `OK` instead of `ALERT`. Once D6 lets the alias
+clauses render, the alert query starts
+``WITH (toString(Body)) AS `body` SELECT COUNT(*) …``, a ClickHouse scalar WITH,
+and Couchbase returns "syntax error - line 1, column 6, near 'WITH '" (the
+`isSubquery: false` branch in `couchbase/render/with.ts`). Before D6 the clauses
+were dropped (warn log), so the WHERE resolved `body` to an unknown field
+(`FALSE`).
+
+Fix: render non-subquery aliases so the alias is usable in WHERE (for example
+`LET` after FROM, or inlining the expression where the alias is referenced),
+with SQL++ functions for the expression (`toString` is ClickHouse). Acceptance:
+a renderer unit test; both R2b alias cases pass locally. Depends on: D6.
+
+#### D12: Grouped alert history order is not stable (found in D6, size S)
+
+Evidence: `checkAlerts` "INLINE alert (group by) - notifies per group" expects
+history groups in `['ServiceName:api', 'ServiceName:worker']` order and fails
+about 1 run in 5, on `main` and on the D6 branch alike (5 runs each,
+`-t 'notifies per group'`). Both rows share `createdAt`, so `buildHistoryRows`
+orders them by random document id. Upstream's Mongo ObjectIds sort by insertion
+order.
+
+Decision needed: sort the assertion (test-only, R2b) or give history ids an
+insertion order (product). Depends on: none.
 
 #### D8 onward
 
@@ -917,6 +955,8 @@ in that phase.
 | D6 Alert connection resolution (investigate)                    | S    |
 | D7 Hidden formula operands as null columns                      | S    |
 | D10 Page queries and alert detail not-found                     | M    |
+| D11 Alias WITH clauses in SQL++                                 | S    |
+| D12 Grouped alert history order                                 | S    |
 | R2a Deferred API int suites (10 suites, 380 tests, 80 failing)  | L    |
 | R2b Deferred alert int suites (5 suites, 335 tests, 93 failing) | L    |
 | R2c Deferred MCP int suites (8 suites, 287 tests, 139 failing)  | L    |
