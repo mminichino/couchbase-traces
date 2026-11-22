@@ -1,5 +1,5 @@
 /**
- * D11: alert query shapes from the deferred checkAlerts cases, run on
+ * D11 and D16: alert query shapes from the deferred checkAlerts cases, run on
  * a live cluster. Requires port/couchbase-test (CBT_TEST_COUCHBASE_*).
  */
 import { aliasMapToWithClauses } from '@/core/utils';
@@ -7,7 +7,8 @@ import { clusterCache } from '@/couchbase/node';
 import { renderChartConfigCouchbase } from '@/couchbase/render';
 import { toIso30 } from '@/couchbase/time';
 import { sqlExprToAliasMap } from '@/query';
-import { DisplayType } from '@/types';
+import type { MetricTable } from '@/types';
+import { DisplayType, MetricsDataType } from '@/types';
 
 import {
   ensureCollection,
@@ -20,6 +21,7 @@ import {
 const conn = liveConnection('d11-alert-queries');
 
 const LOGS = 'd11_logs';
+const GAUGE = 'd16_metrics_gauge';
 const from = { databaseName: 'test', scopeName: 'app', tableName: LOGS };
 
 // checkAlerts: now 22:12, 5 minute window [22:05, 22:10), events at 22:05.
@@ -35,6 +37,23 @@ beforeAll(async () => {
   live = await probeLive(conn, 'D11 alert queries');
   if (!live) return;
   await ensureCollection(LOGS);
+  await ensureCollection(GAUGE);
+  // checkAlerts "grouped ratio - honors ratioMode share_of_total".
+  const point = (MetricName: string, Value: number, svc: string) => ({
+    MetricName,
+    Value,
+    TimeUnix: toIso30(new Date(WINDOW[0].getTime() + 60_000)),
+    ServiceName: svc,
+    Attributes: {},
+    ResourceAttributes: { 'service.name': svc },
+    ScopeAttributes: {},
+  });
+  await seed(GAUGE, [
+    point('test.errors', 5, 'service-a'),
+    point('test.requests', 10, 'service-a'),
+    point('test.errors', 3, 'service-b'),
+    point('test.requests', 30, 'service-b'),
+  ]);
   await seed(LOGS, [
     {
       Timestamp: EVENT,
@@ -122,5 +141,55 @@ describe('D11 saved-search alias alerts on a live cluster', () => {
         'svc:"api"',
       ),
     ).toEqual([2]);
+  });
+});
+
+describe('D16 grouped ratio alert on a live cluster', () => {
+  const ratioTile = (ratioMode?: string) =>
+    runChart(conn, {
+      connection: 'c',
+      displayType: DisplayType.Line,
+      from: { databaseName: 'test', scopeName: 'app', tableName: '' },
+      metricTables: {
+        [MetricsDataType.Gauge.toLowerCase()]: GAUGE,
+      } as MetricTable,
+      select: ['test.errors', 'test.requests'].map(metricName => ({
+        aggFn: 'max',
+        valueExpression: 'Value',
+        metricType: MetricsDataType.Gauge,
+        metricName,
+        aggCondition: '',
+        aggConditionLanguage: 'sql',
+      })),
+      seriesReturnType: 'ratio',
+      ratioMode,
+      groupBy: 'ServiceName',
+      timestampValueExpression: 'TimeUnix',
+      where: '',
+      dateRange: WINDOW,
+      granularity: '5 minute',
+    });
+  const byService = (rows: Record<string, unknown>[]) =>
+    Object.fromEntries(
+      rows.map(r => [
+        r.ServiceName,
+        Object.entries(r).find(([k]) => k.includes('/'))?.[1],
+      ]),
+    );
+
+  it('divides by the bucket total in share_of_total mode', async () => {
+    if (!live) return;
+    expect(byService(await ratioTile('share_of_total'))).toEqual({
+      'service-a': 0.125,
+      'service-b': 0.075,
+    });
+  });
+
+  it("divides by each group's own denominator in per_group mode", async () => {
+    if (!live) return;
+    expect(byService(await ratioTile())).toEqual({
+      'service-a': 0.5,
+      'service-b': 0.1,
+    });
   });
 });
