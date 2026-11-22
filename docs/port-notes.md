@@ -2775,6 +2775,7 @@ now passes; the R2c "before" matches D2's 99). R2b (5 suites) 41 → 40 of 335
 - **Deferred-suite measurement** (fresh `docker-compose.ci.yml` stack per run,
   `main` 8649ebb vs this branch, measurement only, still deferred). R2c: 65 → 63
   failing of 287: `queryTile` 8 → 6 (the metric formula tile and the log-source
-  formula tile, which also hides operands); `queryTool` 31, `sources` 11,
-  `describeTable` 11, `queryTiles` 3, `trace` 1, `serviceHealthTool` 0,
-  `emergingSignalsTool` 0 unchanged. No test went from pass to fail.
+  formula tile, a number tile, which the tile conversion always gives
+  `showOperandSeries: false`); `queryTool` 31, `sources` 11, `describeTable` 11,
+  `queryTiles` 3, `trace` 1, `serviceHealthTool` 0, `emergingSignalsTool` 0
+  unchanged. No test went from pass to fail.
