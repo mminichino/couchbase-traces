@@ -32,6 +32,10 @@ function inRange(createdAt: string, r: DateRange): boolean {
 
 const groupOf = (d: AlertHistoryDoc) => d.group ?? '';
 
+/** Write order within one createdAt, as WRITE_ORDER in historySql.ts. */
+const byWrite = (a: Row, b: Row) =>
+  compare(a.doc.seq ?? null, b.doc.seq ?? null) || compare(a.key, b.key);
+
 const errorsOf = (e: AlertHistoryDoc['errors']): IAlertError[] =>
   (e ?? []).map(x => ({ ...x, timestamp: asDate(x.timestamp) }));
 
@@ -116,7 +120,7 @@ export class MemoryAlertQueries implements MetaAlertQueries {
       if (
         !cur ||
         r.doc.createdAt > cur.doc.createdAt ||
-        (r.doc.createdAt === cur.doc.createdAt && r.key > cur.key)
+        (r.doc.createdAt === cur.doc.createdAt && byWrite(r, cur) > 0)
       ) {
         best.set(groupOf(r.doc), r);
       }
@@ -129,12 +133,13 @@ export class MemoryAlertQueries implements MetaAlertQueries {
       .sort(
         (a, b) =>
           compare(a.doc.group, b.doc.group) ||
-          compare(b.doc.createdAt, a.doc.createdAt),
+          compare(b.doc.createdAt, a.doc.createdAt) ||
+          byWrite(b, a),
       )
       .map(r => aggregated(alert, r.doc));
   }
 
-  /** Rows bucketed by createdAt, oldest or newest first. */
+  /** Rows bucketed by createdAt, oldest or newest first, in write order. */
   private windows(
     alert: Id,
     range: DateRange,
@@ -142,7 +147,7 @@ export class MemoryAlertQueries implements MetaAlertQueries {
     dir: 'asc' | 'desc',
   ): [string, AlertHistoryDoc[]][] {
     const by = new Map<string, AlertHistoryDoc[]>();
-    for (const { doc } of this.rows(alert, range, errors)) {
+    for (const { doc } of this.rows(alert, range, errors).sort(byWrite)) {
       by.set(doc.createdAt, [...(by.get(doc.createdAt) ?? []), doc]);
     }
     const sign = dir === 'asc' ? 1 : -1;
@@ -202,8 +207,7 @@ export class MemoryAlertQueries implements MetaAlertQueries {
   async historyRows(alert: Id, range: DateRange): Promise<Found<unknown>[]> {
     return this.rows(alert, range, 'any')
       .sort(
-        (a, b) =>
-          compare(a.doc.createdAt, b.doc.createdAt) || compare(a.key, b.key),
+        (a, b) => compare(a.doc.createdAt, b.doc.createdAt) || byWrite(a, b),
       )
       .map(r => ({ key: r.key, value: r.doc }));
   }

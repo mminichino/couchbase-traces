@@ -374,6 +374,54 @@ export function describeAlertRepos(
         expect(windows[1].rows.map(r => r.group).sort()).toEqual(['a', 'b']);
       });
 
+      // D12: rows sharing createdAt read back in write order everywhere,
+      // not in whatever order the data store aggregates or scans them.
+      it('reads same-window rows back in write order in every reader', async () => {
+        const alert = newId();
+        await store.alertHistory.createMany([
+          row(alert, 5, { group: 'c' }),
+          row(alert, 5, { group: 'a' }),
+          row(alert, 5, { group: 'b' }),
+        ]);
+        // A later write for the same window (a same-window re-evaluation).
+        await store.alertHistory.createMany([
+          row(alert, 5, { group: 'a', state: AlertState.ALERT }),
+        ]);
+        const range = { lte: at(20) };
+        const writeOrder = ['c', 'a', 'b', 'a'];
+
+        const rows = await store.alertHistory.rows(alert, range);
+        expect(rows.map(r => r.group)).toEqual(writeOrder);
+        // The sequence is a storage detail, not part of a history row.
+        expect(rows[0]).not.toHaveProperty('seq');
+
+        const [w] = await store.alertHistory.structuredWindows(
+          alert,
+          range,
+          10,
+        );
+        expect(w.rows.map(r => r.group)).toEqual(writeOrder);
+
+        const [g] = await store.alertHistory.groupedByWindow(alert, range, 10);
+        expect(g.states).toEqual(['OK', 'OK', 'OK', 'ALERT']);
+        expect(g.lastValues).toHaveLength(4);
+
+        const [t] = await store.alertHistory.transitionWindows(alert, range);
+        expect(t.states).toEqual(['OK', 'OK', 'OK', 'ALERT']);
+
+        const latest = await store.alertHistory.latestPerGroup(alert, range);
+        expect(latest.find(r => r.group === 'a')?.state).toBe(AlertState.ALERT);
+
+        // Per group, newest first: the later write leads.
+        const consecutive = await store.alertHistory.rangeExcludingErrors(
+          alert,
+          range,
+        );
+        expect(
+          consecutive.filter(r => r.group === 'a').map(r => r.state),
+        ).toEqual([AlertState.ALERT, AlertState.OK]);
+      });
+
       it('lists transitions oldest first without ERROR rows', async () => {
         const alert = newId();
         await store.alertHistory.createMany([

@@ -3054,3 +3054,78 @@ Server 8.0 but not 4.8 yet, and the AGENTS.md platform rule requires a
 listed release. 4.8.0 also changes behavior: TLS hostname verification,
 HTTP 400 mapped to `InvalidArgumentError`, query error 2120 mapped to
 `AuthenticationFailureError`, and a Node 20.17 minimum.
+
+### D12: alert history write order (2026-11-22, `mm--v1-d12-history-order`)
+
+"INLINE alert (group by) - notifies per group" failed 9 of 30 runs on `main`
+(3f0ef7f, `docker-compose.ci.yml` stack, `-t`), always with `ServiceName:api`
+and `ServiceName:worker` swapped. Both rows of one evaluation share `createdAt`,
+and two things left their order to chance:
+
+1. **Write order.** `processAlert` wrote a bucket's groups in the order the data
+   query returned them. SQL++ `GROUP BY` output order is unspecified without
+   `ORDER BY`, and the test's raw-SQL chart has none. Upstream's ClickHouse
+   result happened to be stable.
+2. **Read order.** Upstream's Mongo `_id` is an ObjectId, so `sort({createdAt})`
+   ties broke in insertion order. Here `buildHistoryRows` broke ties by document
+   key, and the windowed readers used `ARRAY_AGG`, whose order is unspecified. A
+   key is not write order either: its counter follows its seconds prefix, the
+   per-process random bytes differ between workers, and a clock step back gives
+   a later write a smaller key.
+
+Fix:
+
+- Each `alert_history` document carries `seq`, a write-order number:
+  microseconds of the repository clock, bumped past the last value this process
+  reserved, so it increases strictly within a process even across a clock step.
+  `createMany` reserves one block per call, so rows of one evaluation are
+  consecutive. An ERROR-row update keeps the row's first `seq`. `seq` is a
+  storage detail: `rows()` strips it, and `IAlertHistory` does not have it.
+- Every reader orders same-`createdAt` rows by `(seq, key)`: `buildHistoryRows`
+  and `buildRangeExcludingErrors` in `ORDER BY`, `buildLatestPerGroup` in the
+  `ROW_NUMBER()` window. SQL++ 8.0 `ARRAY_AGG` takes no `ORDER BY`, so
+  `buildGroupedByWindow`, `buildStructuredWindows` and `buildTransitionWindows`
+  aggregate `{"o": [seq, key], "v": value}` and `ARRAY_SORT` it. Objects of
+  equal size collate key by key, `o` before `v`, and arrays element-wise. A
+  MISSING `seq` becomes null inside the array, which sorts before numbers, so
+  rows written before `seq` keep key order ahead of newer rows. The errors
+  aggregate uses `CASE … ELSE MISSING END` so rows without errors stay out, as
+  before. The memory backend mirrors this order.
+- `processAlert` writes an evaluation's rows in byte order of the group key, the
+  collation SQL++ and upstream's `sort({ group: 1 })` use. The sort sits in
+  `persistHistories`, the one funnel for the threshold path and custom
+  evaluators.
+- No index change: the readers filter on `alert` first and sort within one
+  alert's rows.
+- Known limit: across processes, `seq` follows wall time, so two workers with
+  skewed clocks writing the same alert and window could still interleave. The
+  `lock::check-alerts` scheduler lease (D9) keeps a second worker from
+  evaluating alerts at the same time.
+
+Tests (written first, each failed before the fix):
+
+- Contract case "reads same-window rows back in write order in every reader":
+  all six readers, memory and live cluster (`metadata.couchbase.int.test.ts`,
+  run by `port/couchbase-test/run.sh`).
+- A memory case where the clock steps back between two writes for one window, so
+  the later row's key sorts first.
+- `tasks/checkAlerts/__tests__/historyOrder.test.ts`: `processAlert` writes a
+  bucket's groups in group order when the data query returns `worker` before
+  `api`, and an evaluator's rows likewise.
+
+Evidence: the int case passed 30 of 30 runs after the fix (21 of 30 before). R2b
+on one stack, `main` code vs this branch: 23 failing of 335 both times, same
+list (`checkAlerts` 20, `singleInvocationAlert` 1, `providers/default` 2). The
+flake passed in the `main` run too, as it does about 70% of the time. Still
+deferred.
+
+Found here, not fixed: in two of four `run.sh` runs, one common-utils live test
+failed with SDK "unambiguous timeout" after about 500 ms, a different test each
+run (`chartDefects` "gauge series with granularity 'auto'", then `mapAccess`
+"groups by a dotted map key"). A third run never reached the tests: port 8091
+was still held right after the previous stack's teardown, the run fell back to
+offset 20000, and cluster init failed on "rebalance in progress" and timeouts.
+The fourth run passed everything (70, 7, 56, 4), and the same common-utils
+suites passed 70 of 70 under `make ci-int`. Common-utils is unchanged on this
+branch, and the default query timeout is 60 s, so the source of the 500 ms
+cutoff is unknown.

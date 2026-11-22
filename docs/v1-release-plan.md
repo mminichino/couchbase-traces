@@ -693,6 +693,16 @@ it after `createdAt`, so same-timestamp rows read back in insertion order.
 Acceptance: a unit test with same-`createdAt` rows; the int case passes
 repeatedly. Depends on: none.
 
+Result (2026-11-22, `mm--v1-d12-history-order`): two causes, both fixed.
+`processAlert` wrote a bucket's group rows in the order the data query returned
+them (SQL++ `GROUP BY` output order is unspecified), and every history reader
+broke `createdAt` ties by document key or not at all (`ARRAY_AGG` order is
+unspecified too). Rows now carry `seq`, a per-process strictly increasing
+microsecond stamp taken at write time; all six readers order same-`createdAt`
+rows by `(seq, key)`, and `processAlert` writes an evaluation's rows in byte
+order of the group key. The int case passes 30 of 30 runs (21 of 30 before).
+Rows written before `seq` keep key order.
+
 #### D13: Concurrent invites of one email can return 500 (found in D6, size S)
 
 Evidence: in one full `make ci-int` run on the D6 branch, `team.int.test.ts`

@@ -22,6 +22,22 @@ export const errorRowKey = (alert: Id, windowStart: Date) =>
 
 const MIN_RETENTION_MS = 24 * 60 * 60 * 1000;
 
+let lastSeq = 0;
+
+/**
+ * Reserves `n` consecutive write-order numbers (D12). Microseconds of the
+ * repository clock, bumped past the last reservation, so they increase
+ * strictly within a process even when the clock steps back, and across
+ * processes follow wall time. Document keys cannot stand in: an id's
+ * counter follows its seconds prefix and per-process random bytes, so it
+ * is not write order across processes, after a clock step, or at a wrap.
+ */
+function reserveSeq(n: number, now: Date): number {
+  const first = Math.max(lastSeq + 1, now.getTime() * 1000);
+  lastSeq = first + n - 1;
+  return first;
+}
+
 /**
  * Rows expire 30 days after `createdAt`, as the Mongo TTL index did. A row
  * for a window older than the retention (a long backfill, a replayed clock)
@@ -36,9 +52,10 @@ const expiryOf = (createdAt: Date, now: Date) =>
     ),
   );
 
-function toDoc(h: IAlertHistory): AlertHistoryDoc {
+function toDoc(h: IAlertHistory, seq: number): AlertHistoryDoc {
   return AlertHistoryDocSchema.parse({
     ...h,
+    seq,
     createdAt: iso(h.createdAt),
     lastValues: h.lastValues.map(v => ({
       ...v,
@@ -68,14 +85,18 @@ export class AlertHistoryRepository {
 
   /**
    * Writes each row independently, so one failure does not lose the others.
-   * Results line up with `rows`.
+   * Results line up with `rows`, and rows read back in this order.
    */
   createMany(rows: IAlertHistory[]): Promise<PromiseSettledResult<void>[]> {
+    const first = reserveSeq(rows.length, this.now());
     return Promise.allSettled(
-      rows.map(async row => {
-        await this.kv.insert('alert_history', newId(this.now()), toDoc(row), {
-          expiry: expiryOf(row.createdAt, this.now()),
-        });
+      rows.map(async (row, i) => {
+        await this.kv.insert(
+          'alert_history',
+          newId(this.now()),
+          toDoc(row, first + i),
+          { expiry: expiryOf(row.createdAt, this.now()) },
+        );
       }),
     );
   }
@@ -97,15 +118,19 @@ export class AlertHistoryRepository {
       errors: errors.map(e => ({ ...e, timestamp: iso(e.timestamp) })),
       ...(analytics != null && { analytics }),
     });
-    const created = toDoc({
-      alert,
-      counts: 0,
-      createdAt: windowStart,
-      state: AlertState.ERROR,
-      lastValues: [],
-      errors,
-      ...(analytics != null && { analytics }),
-    });
+    // An update keeps the row's first-write seq (patch spreads `cur`).
+    const created = toDoc(
+      {
+        alert,
+        counts: 0,
+        createdAt: windowStart,
+        state: AlertState.ERROR,
+        lastValues: [],
+        errors,
+        ...(analytics != null && { analytics }),
+      },
+      reserveSeq(1, this.now()),
+    );
     for (let attempt = 0; attempt < 3; attempt++) {
       const updated = await mutateDoc(
         this.kv,
@@ -154,7 +179,7 @@ export class AlertHistoryRepository {
   ): Promise<(IAlertHistory & { _id: Id })[]> {
     const found = await this.deps.queries.historyRows(alert, range);
     return found.map(({ key, value }) => {
-      const { errors, ...d } = AlertHistoryDocSchema.parse(value);
+      const { errors, seq: _seq, ...d } = AlertHistoryDocSchema.parse(value);
       return {
         ...d,
         _id: key,
