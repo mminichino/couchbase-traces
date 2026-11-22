@@ -2779,3 +2779,9 @@ now passes; the R2c "before" matches D2's 99). R2b (5 suites) 41 → 40 of 335
   `showOperandSeries: false`); `queryTool` 31, `sources` 11, `describeTable` 11,
   `queryTiles` 3, `trace` 1, `serviceHealthTool` 0, `emergingSignalsTool` 0
   unchanged. No test went from pass to fail.
+- **Environment, found here.** Right after `make ci-int`,
+  `port/couchbase-test/run.sh` found a default Couchbase port busy, fell back to
+  host port offset 20000, and every live test then timed out on KV
+  `localhost:31210?network=external` (twice). With the ports free a run at
+  offset 0 passed 58 + 55 + 4. The offset fallback's external KV mapping does
+  not work on this host; tracked as D14 in the release plan.

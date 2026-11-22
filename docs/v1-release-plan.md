@@ -392,6 +392,7 @@ pushes to `main` directly.
 | D11   | Defects: alias WITH clauses in SQL++                      | Found in D6 (section 9.1)                                                                                                                                                 | S    | D6                            |
 | D12   | Defects: grouped alert history order                      | Found in D6 (section 9.1); product fix (Q31)                                                                                                                              | S    | —                             |
 | D13   | Defects: concurrent invite race (500)                     | Found in D6 (section 9.1)                                                                                                                                                 | S    | —                             |
+| D14   | Dev tooling: live-test port offset fallback               | Found in D7 (section 9.1)                                                                                                                                                 | S    | —                             |
 | R2a   | Port deferred int suites: internal and external API       | B1 (10 suites: `routers/api/{dashboard,iac,sources,connections}`, `routers/external-api/{charts,search,sources,sources-crud,connections}`, `middleware/queryAttribution`) | L    | D1                            |
 | R2b   | Port deferred int suites: alerts                          | B1 (5 suites: `checkAlerts`, `multiChannelAlerts`, `renderAlertTemplate`, `singleInvocationAlert`, `providers/default`; 335 tests, 93 failing per R0)                     | L    | R2c, D1, D4, D6               |
 | R2c   | Port deferred int suites: MCP                             | B1 (8 suites under `mcp/__tests__/`; 287 tests, 139 failing per R0)                                                                                                       | L    | R2a, D1–D4                    |
@@ -684,6 +685,17 @@ nothing and rethrows the `DuplicateKeyError`.
 Fix (Q32): on a lost claim, wait briefly (bounded retry) for the winner's invite
 and return it, idempotent like upstream; no 409. Acceptance: a unit test with a
 delayed winner insert; the int case passes under load. Depends on: none.
+
+#### D14: Live-test port offset fallback cannot reach KV (found in D7, size S)
+
+Evidence: when a default Couchbase port is busy, `port/couchbase-test/run.sh`
+moves the node to host port offset 20000 and sets the alternate address
+(kv=31210). Every live test then times out on
+`couchbase://localhost:31210?network=external` (D7, two runs: 19 and 95
+failures); the same run at offset 0 passes. Fix: make the offset mapping
+reachable (or wait for the default ports and fail clearly). Acceptance: a run
+with `CBT_TEST_COUCHBASE_PORT_OFFSET=20000` passes. Dev tooling only; does not
+block 1.0 unless decided otherwise. Depends on: none.
 
 #### D8 onward
 
@@ -986,6 +998,7 @@ in that phase.
 | D11 Alias WITH clauses in SQL++                                 | S    |
 | D12 Grouped alert history order                                 | S    |
 | D13 Concurrent invite race                                      | S    |
+| D14 Live-test port offset fallback                              | S    |
 | R2a Deferred API int suites (10 suites, 380 tests, 80 failing)  | L    |
 | R2b Deferred alert int suites (5 suites, 335 tests, 93 failing) | L    |
 | R2c Deferred MCP int suites (8 suites, 287 tests, 139 failing)  | L    |
