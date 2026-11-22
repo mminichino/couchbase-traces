@@ -28,6 +28,7 @@ import { couchbaseSelectItemAlias } from './postprocess';
 import { ratioExprCouchbase } from './ratio';
 import { rowIdSelect } from './rowId';
 import { includeRowIdInSelect } from './search';
+import { type PendingSelectItem, resolveSelectAliases } from './selectAliases';
 import type { RenderFilterContext } from './where';
 import { compileWhereExpressionCouchbase } from './where';
 
@@ -71,7 +72,7 @@ export function renderTimeBucketPartsCouchbase(
     const bucketExpr = sqlpp`${{ Raw: `$__timeInterval(${tsExpr})` }}`;
     return {
       expr: bucketExpr,
-      aliased: sqlpp`${bucketExpr} AS ${{ Identifier: FIXED_TIME_BUCKET_EXPR_ALIAS }}`,
+      aliased: sqlpp`${bucketExpr} AS ${{ Alias: FIXED_TIME_BUCKET_EXPR_ALIAS }}`,
     };
   }
   const format = timestampFormatOf(chartConfig);
@@ -79,7 +80,7 @@ export function renderTimeBucketPartsCouchbase(
   const bucketExpr = cbTimeBucketExpr(tsExpr, format, gran);
   return {
     expr: bucketExpr,
-    aliased: sqlpp`${bucketExpr} AS ${{ Identifier: FIXED_TIME_BUCKET_EXPR_ALIAS }}`,
+    aliased: sqlpp`${bucketExpr} AS ${{ Alias: FIXED_TIME_BUCKET_EXPR_ALIAS }}`,
   };
 }
 
@@ -210,7 +211,9 @@ export async function renderSelectListCouchbase(
   }
 
   const out: SqlPP[] = [];
-  for (const select of selectList.map(resolvePercentileAggFn)) {
+  const pending: PendingSelectItem[] = [];
+  const items = selectList.map(resolvePercentileAggFn);
+  for (const select of items) {
     let whereCond: SqlPP | undefined;
     if (isNonEmptyWhereExpr(select.aggCondition)) {
       whereCond = await compileWhereExpressionCouchbase({
@@ -223,17 +226,23 @@ export async function renderSelectListCouchbase(
 
     const tsCol = getFirstTimestampColumn(chartConfig);
     const timestampExpr = `${ALIAS}.${tsCol}`;
-    let expr: SqlPP;
+    const isStar =
+      select.aggFn == null && select.valueExpression?.trim() === '*';
+    const alias = isStar ? undefined : select.alias?.trim() || undefined;
     if (select.aggFn == null) {
       if (select.valueExpressionLanguage === 'lucene') {
-        expr = await compileWhereExpressionCouchbase({
+        const expr = await compileWhereExpressionCouchbase({
           condition: select.valueExpression,
           language: 'lucene',
           chartConfig,
           ctx,
         });
+        pending.push({ alias, expr });
       } else {
-        expr = sqlpp`${{ Raw: rewriteMapSubscripts(select.valueExpression) }}`;
+        pending.push({
+          alias,
+          text: rewriteMapSubscripts(select.valueExpression),
+        });
       }
     } else {
       const { fn, level } = normalizePercentileAgg(select.aggFn);
@@ -241,7 +250,7 @@ export async function renderSelectListCouchbase(
         'level' in select && typeof select.level === 'number'
           ? select.level
           : level;
-      expr = aggExprCouchbase(
+      const expr = aggExprCouchbase(
         fn,
         rewriteMapSubscripts(select.valueExpression),
         whereCond,
@@ -250,8 +259,15 @@ export async function renderSelectListCouchbase(
         chartConfig.sampleWeightExpression &&
           rewriteMapSubscripts(chartConfig.sampleWeightExpression),
       );
+      pending.push({ alias, expr });
     }
+  }
 
+  const resolved = resolveSelectAliases(pending);
+  items.forEach((select, i) => {
+    // An item whose alias references cannot resolve keeps its own text.
+    const item = pending.at(i);
+    const expr = resolved.at(i) ?? (item ? rawOrRendered(item) : sqlpp``);
     // SQL++ auto-names bare expressions `$1`, `$2`, … which breaks charts that
     // expect upstream-shaped names (`count()`, …). Alias top-level series;
     // formula/ratio nesting must stay bare (AS inside CASE/divide is invalid).
@@ -261,15 +277,20 @@ export async function renderSelectListCouchbase(
     if (isStar) {
       out.push(sqlpp`${{ Raw: `${ALIAS}.*` }}`);
     } else if (select.alias != null && select.alias.trim() !== '') {
-      out.push(sqlpp`${expr} AS ${{ Identifier: select.alias.trim() }}`);
+      out.push(sqlpp`${expr} AS ${{ Alias: select.alias.trim() }}`);
     } else if (autoAlias) {
       const alias = couchbaseSelectItemAlias(select, out.length);
-      out.push(sqlpp`${expr} AS ${{ Identifier: alias }}`);
+      out.push(sqlpp`${expr} AS ${{ Alias: alias }}`);
     } else {
       out.push(expr);
     }
-  }
+  });
   return out;
+}
+
+function rawOrRendered(item: PendingSelectItem): SqlPP {
+  if ('text' in item) return sqlpp`${{ Raw: item.text }}`;
+  return item.expr ?? sqlpp`NULL`;
 }
 
 function concatSelect(parts: SqlPP[]): SqlPP {
@@ -392,7 +413,7 @@ export async function renderSelectCouchbase(
     const ratio = ratioExprCouchbase(numParts[0], denParts[0]);
     // SQL++ needs an alias; parity remaps CH's unaliased divide(...) to this name.
     const alias = a.alias?.trim() || b.alias?.trim() || 'ratio';
-    parts.push(sqlpp`${ratio} AS ${{ Identifier: alias }}`);
+    parts.push(sqlpp`${ratio} AS ${{ Alias: alias }}`);
   } else {
     const selectParts = await renderSelectListCouchbase(
       chartConfig.select,
@@ -403,7 +424,11 @@ export async function renderSelectCouchbase(
   }
 
   if (isUsingGroupBy(chartConfig) && chartConfig.selectGroupBy !== false) {
-    parts.push(...groupByItems(chartConfig).map(groupBySelectExpr));
+    parts.push(
+      ...groupByItems(chartConfig)
+        .filter(item => !item.fromSelectAlias)
+        .map(groupBySelectExpr),
+    );
   }
 
   const bucket = ctx.timeBucket;

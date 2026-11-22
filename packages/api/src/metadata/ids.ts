@@ -1,5 +1,7 @@
 import { randomBytes } from 'node:crypto';
 
+import { isMetadataId } from '@couchbase-traces/common-utils/dist/core/ids';
+
 /**
  * 24-hex ids in the ObjectId layout (plan D5): 4-byte big-endian seconds,
  * 5-byte per-process random, 3-byte counter. The format is a wire contract
@@ -9,7 +11,6 @@ import { randomBytes } from 'node:crypto';
  */
 export type Id = string;
 
-const ID_RE = /^[0-9a-f]{24}$/i;
 const PROCESS_RANDOM = randomBytes(5);
 let counter = randomBytes(3).readUIntBE(0, 3);
 
@@ -27,7 +28,7 @@ export function newId(now: Date = new Date()): Id {
  * `isValidObjectId`, which also accepts any 12-character string.
  */
 export function isValidId(value: unknown): value is Id {
-  return typeof value === 'string' && ID_RE.test(value);
+  return isMetadataId(value);
 }
 
 /** Seconds since the epoch encoded in an id, as a Date. */

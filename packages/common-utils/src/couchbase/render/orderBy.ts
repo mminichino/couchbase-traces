@@ -109,7 +109,7 @@ export function renderOrderByCouchbase(
     if (bucket) {
       parts.push(bucket.expr);
     } else {
-      parts.push(sqlpp`${{ Identifier: FIXED_TIME_BUCKET_EXPR_ALIAS }}`);
+      parts.push(sqlpp`${{ Alias: FIXED_TIME_BUCKET_EXPR_ALIAS }}`);
     }
   }
   if (chartConfig.orderBy != null) {

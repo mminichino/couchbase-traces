@@ -81,7 +81,12 @@ export function couchbaseResultColumnNames(
     });
   }
   if (isUsingGroupBy(config) && config.selectGroupBy !== false) {
-    cols.push(...groupByItems(config).map(groupByItemName));
+    // A group-by naming a select alias is already in the list above.
+    cols.push(
+      ...groupByItems(config)
+        .filter(item => !item.fromSelectAlias)
+        .map(groupByItemName),
+    );
   }
   if (isUsingGranularity(config)) {
     cols.push(FIXED_TIME_BUCKET_EXPR_ALIAS);

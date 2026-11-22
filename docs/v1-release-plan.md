@@ -642,6 +642,19 @@ unit test for the alert page not-found state (invalid id and unknown valid id).
 
 Depends on: D6, D7. Size: M. Placement (Q28): after D6 and D7, before R2a.
 
+Result (2026-11-21): route-smoke 25 of 25 (24 routes plus an "Alert not found"
+entry for a malformed id), no console errors. Fixed in the shared renderer and
+the presets that emit ClickHouse text: CRC-32 via `HASHBYTES`, whole-name
+quoting for dotted aliases, select aliases resolved within the SELECT and in
+GROUP BY, per-dialect LLM expressions, aliased FROM subqueries, flat
+`SELECT cte.*`, `IN (SELECT RAW …)`, and disjoint parameter names when separate
+renders are spliced into one statement. Two of D6's three metric tile alert
+cases now pass. Still failing, not query defects: the `kubernetes` and
+`sessions` page specs need k8s metric rows and OTel-SDK session spans, replay
+rows and log events in the Couchbase E2E seed (D15), and the grouped-ratio
+metric tile alert computes `share_of_total` per group (D16). See
+`docs/port-notes.md` (D10).
+
 #### D11: Alias WITH clauses render ClickHouse scalar WITH (found in D6, size S)
 
 Evidence: R2b `checkAlerts` "SAVED_SEARCH alert with alias in select and where"
@@ -688,14 +701,36 @@ delayed winner insert; the int case passes under load. Depends on: none.
 
 #### D14: Live-test port offset fallback cannot reach KV (found in D7, size S)
 
-Evidence: when a default Couchbase port is busy, `port/couchbase-test/run.sh`
-moves the node to host port offset 20000 and sets the alternate address
-(kv=31210). Every live test then times out on
-`couchbase://localhost:31210?network=external` (D7, two runs: 19 and 95
-failures); the same run at offset 0 passes. Fix: make the offset mapping
-reachable (or wait for the default ports and fail clearly). Acceptance: a run
-with `CBT_TEST_COUCHBASE_PORT_OFFSET=20000` passes. Dev tooling only; does not
-block 1.0 unless decided otherwise. Depends on: none.
+Evidence (D7): two `port/couchbase-test/run.sh` runs right after `make ci-int`
+timed out on the live cluster, one at offset 20000 (95 failures) and one at
+offset 0 (19). Decision Q33: not a 1.0 blocker; fix it as a separate commit at
+the start of the D10 PR.
+
+Result (D10): the offset is not the cause. With 8091 held by another process,
+`run.sh` moves to offset 20000 and passes 58 + 55 + 4, and so does a run started
+while the CI stack is coming down. In both D7 runs the node stopped answering
+partway through, after earlier suites had passed (at offset 0 too; there the
+later suites recovered), so the node went away while serving. `run.sh` now names
+the process or container on a busy port and, on a failed run, logs the node's
+state, memory, open ports and babysitter restarts before cleanup removes the
+container. See `docs/port-notes.md` (D14).
+
+#### D15: Couchbase E2E seed lacks k8s and OTel-SDK session rows (found in D10, size S)
+
+Evidence: after D10 the `/kubernetes` and `/sessions` queries succeed, but
+`kubernetes.spec.ts` fails 12 of 13 and `sessions.spec.ts` 5 of 7 on empty
+tables: `seed-couchbase.ts` writes no k8s metric or event rows, and for the
+OTel browser SDK sessions only the `otel_sessions` log documents (no spans,
+replay rows or browser log events). Fix: seed the rows the upstream ClickHouse
+seed writes for those specs. Proposed placement: with R2 fixture work, pending
+decision.
+
+#### D16: Grouped ratio metric tile alert, share of total (found in D10, size S)
+
+Evidence: `checkAlerts` "TILE alert (metrics, grouped ratio) - honors ratioMode
+share_of_total" now renders (it failed on a dotted alias before D10) and gets
+0.5 where 0.125 is expected, so the denominator is per group instead of across
+groups. Needs a decision on placement.
 
 #### D8 onward
 
@@ -929,6 +964,7 @@ in that phase.
 | Q30 | Placement of D11, D12, D13 (2026-11-21)                                                                  | After D10 in the phase order                                                                                                                                                                            | D11–D13        |
 | Q31 | Grouped alert history order (D12)                                                                        | Product fix: history rows get a stable insertion order so same-timestamp rows sort deterministically; not test-only                                                                                     | D12            |
 | Q32 | Concurrent invite race (D13)                                                                             | The losing request waits briefly and returns the winner's invite, idempotent like upstream; no 409                                                                                                      | D13            |
+| Q33 | Live-test port offset fallback (D14)                                                                     | Not a 1.0 blocker; fixed as a separate commit at the start of the D10 PR, proven with a default port occupied                                                                                           | D14            |
 
 ## 11. Acceptance criteria (v1.0.0 is done when)
 

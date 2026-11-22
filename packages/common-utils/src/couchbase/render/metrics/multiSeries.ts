@@ -12,7 +12,7 @@ import {
 import { GROUP_ALIAS } from '@/core/histogram';
 import { CouchbaseUnsupportedError } from '@/couchbase/errors';
 import { groupByItems, groupByOutputRef } from '@/couchbase/render/groupBy';
-import { quoteIdent } from '@/couchbase/sqlpp';
+import { disjointSqlParams, quoteIdent } from '@/couchbase/sqlpp';
 import type {
   BuilderChartConfigWithOptDateRange,
   ChartConfigWithOptDateRange,
@@ -105,25 +105,31 @@ export async function renderMultiSeriesMetricChartConfigCouchbase(
     chartConfig.seriesReturnType === 'ratio' &&
     select.length === 2;
 
-  const branches = await Promise.all(
-    select.map(async (s, splitIdx) => {
-      const branchConfig: ChartConfigWithOptDateRange = {
-        ...chartConfig,
-        select: [{ ...s, alias: MULTI_SERIES_VALUE_ALIAS }],
-        formulas: undefined,
-        showOperandSeries: undefined,
-        having: undefined,
-        orderBy: undefined,
-        limit: undefined,
-      };
-      const rendered = await renderChart(branchConfig, metadata, querySettings);
-      return {
-        sql: rendered.sql,
-        params: rendered.params,
-        isHistogram: isHistogramClassSelect(s),
-        splitIdx,
-      };
-    }),
+  const branches = disjointSqlParams(
+    await Promise.all(
+      select.map(async (s, splitIdx) => {
+        const branchConfig: ChartConfigWithOptDateRange = {
+          ...chartConfig,
+          select: [{ ...s, alias: MULTI_SERIES_VALUE_ALIAS }],
+          formulas: undefined,
+          showOperandSeries: undefined,
+          having: undefined,
+          orderBy: undefined,
+          limit: undefined,
+        };
+        const rendered = await renderChart(
+          branchConfig,
+          metadata,
+          querySettings,
+        );
+        return {
+          sql: rendered.sql,
+          params: rendered.params,
+          isHistogram: isHistogramClassSelect(s),
+          splitIdx,
+        };
+      }),
+    ),
   );
 
   const wrappers = branches.map(branch => {

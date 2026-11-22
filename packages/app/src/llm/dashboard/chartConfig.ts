@@ -5,6 +5,7 @@ import {
 } from '@couchbase-traces/common-utils/dist/types';
 
 import { IS_LLM_COST_ENABLED } from '@/config';
+import type { SqlDialect } from '@/couchbase/dialectExpr';
 import { LLM_COST_SQL_ALIAS } from '@/llm/lib/expressions';
 
 import { LLMChartProps } from './types';
@@ -115,9 +116,15 @@ const BARE_IDENTIFIER = /^[A-Za-z_][A-Za-z0-9_]*$/;
 export function buildTrimmedDeltaSelect(
   source: LLMChartProps['source'],
   jsonColumns: string[] | undefined,
+  dialect: SqlDialect = 'clickhouse',
 ): string {
   const attrCol = source.eventAttributesExpression || 'SpanAttributes';
-  if (!BARE_IDENTIFIER.test(attrCol) || jsonColumns?.includes(attrCol)) {
+  // SQL++ has neither `* EXCEPT` nor mapFilter; sample untrimmed there.
+  if (
+    dialect === 'couchbase' ||
+    !BARE_IDENTIFIER.test(attrCol) ||
+    jsonColumns?.includes(attrCol)
+  ) {
     return '*';
   }
   return (

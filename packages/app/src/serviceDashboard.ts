@@ -11,7 +11,9 @@ import {
   TTraceSource,
 } from '@couchbase-traces/common-utils/dist/types';
 
+import { connectionKindFromList } from './couchbase/connection';
 import { useColumns, useJsonColumns } from './hooks/useMetadata';
+import { useConnections } from './connection';
 
 const COALESCE_FIELDS_LIMIT = 100;
 
@@ -187,6 +189,7 @@ export function getExpressions(
   source: TTraceSource,
   columns: ColumnMeta[],
   jsonColumns: string[],
+  dialect: 'clickhouse' | 'couchbase' = 'clickhouse',
 ) {
   const spanAttributeField =
     source?.eventAttributesExpression || 'SpanAttributes';
@@ -231,7 +234,12 @@ export function getExpressions(
   };
 
   const filterExpressions = {
-    isEndpointNonEmpty: `NOT empty(${auxExpressions.endpoint})`,
+    // SQL++ has no empty(); a missing or null endpoint counts as empty, as a
+    // ClickHouse String column's default '' does.
+    isEndpointNonEmpty:
+      dialect === 'couchbase'
+        ? `IFMISSINGORNULL(${auxExpressions.endpoint}, '') != ''`
+        : `NOT empty(${auxExpressions.endpoint})`,
     isError: errorStatusPredicateSql(fieldExpressions.severityText),
     isSpanKindServer: serverSpanKindPredicateSql(fieldExpressions.spanKind),
     isDbSpan: `${fieldExpressions.dbStatement} <> ''`,
@@ -255,15 +263,25 @@ export function useServiceDashboardExpressions({
     useJsonColumns(tableConnection);
   const { data: columns = [], isLoading: isColumnsLoading } =
     useColumns(tableConnection);
+  // Wait for the connection list so a Couchbase source never gets the
+  // ClickHouse expression set while it loads.
+  const { data: connections, isLoading: isConnectionsLoading } =
+    useConnections();
 
-  const isLoading = !source || isJsonColumnsLoading || isColumnsLoading;
+  const isLoading =
+    !source || isJsonColumnsLoading || isColumnsLoading || isConnectionsLoading;
 
   const expressions = useMemo(() => {
     if (isLoading || !jsonColumns || !columns) return undefined;
     if (source?.kind !== SourceKind.Trace) return undefined;
 
-    return getExpressions(source, columns, jsonColumns);
-  }, [source, columns, jsonColumns, isLoading]);
+    return getExpressions(
+      source,
+      columns,
+      jsonColumns,
+      connectionKindFromList(source.connection, connections),
+    );
+  }, [source, columns, jsonColumns, isLoading, connections]);
 
   return {
     expressions,

@@ -1,5 +1,6 @@
 import {
   concatSqlPP,
+  disjointSqlParams,
   keyspace,
   quoteIdent,
   quotePath,
@@ -88,5 +89,35 @@ describe('concatSqlPP', () => {
     const q = concatSqlPP(' AND ', a, [b, c]);
     expect(q.statement).toBe('a = $p0 AND b = $p1 AND c = $p2');
     expect(q.parameters).toEqual({ p0: 1, p1: 2, p2: 3 });
+  });
+});
+
+describe('disjointSqlParams', () => {
+  it('renames parameters of separate renders so they do not collide', () => {
+    const spans = { sql: 'a >= $p0 AND a < $p1', params: { p0: 'x', p1: 'y' } };
+    const recs = { sql: 'k = $p0 AND b >= $p1', params: { p0: 'k', p1: 'z' } };
+    const [s, r, none] = disjointSqlParams([spans, recs, undefined]);
+    expect(s).toEqual({
+      sql: 'a >= $p0 AND a < $p1',
+      params: { p0: 'x', p1: 'y' },
+    });
+    expect(r).toEqual({
+      sql: 'k = $p2 AND b >= $p3',
+      params: { p2: 'k', p3: 'z' },
+    });
+    expect(none).toBeUndefined();
+    expect({ ...s!.params, ...r!.params }).toEqual({
+      p0: 'x',
+      p1: 'y',
+      p2: 'k',
+      p3: 'z',
+    });
+  });
+
+  it('keeps extra fields and leaves unknown $ references alone', () => {
+    const [f] = disjointSqlParams([
+      { sql: '$p0 + $p9', params: { p0: 1 }, extra: true },
+    ]);
+    expect(f).toEqual({ sql: '$p0 + $p9', params: { p0: 1 }, extra: true });
   });
 });

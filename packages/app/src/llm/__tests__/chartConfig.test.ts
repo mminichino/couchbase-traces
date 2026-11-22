@@ -117,6 +117,10 @@ describe('buildTrimmedDeltaSelect', () => {
     };
     expect(buildTrimmedDeltaSelect(source, [])).toBe('*');
   });
+
+  it('falls back to * on Couchbase (no * EXCEPT or mapFilter in SQL++)', () => {
+    expect(buildTrimmedDeltaSelect(TRACE_SOURCE, [], 'couchbase')).toBe('*');
+  });
 });
 
 describe('baseLLMChartConfig session scoping', () => {

@@ -40,8 +40,8 @@ export function LatencyTab(
   // delta sampling rows server-side; see buildTrimmedDeltaSelect.
   const { data: jsonColumns } = useJsonColumns(tcFromSource(source));
   const deltaSelectExpression = useMemo(
-    () => buildTrimmedDeltaSelect(source, jsonColumns),
-    [source, jsonColumns],
+    () => buildTrimmedDeltaSelect(source, jsonColumns, expressions.dialect),
+    [source, jsonColumns, expressions.dialect],
   );
 
   // The heatmap and delta sampling queries never reference the cost alias;

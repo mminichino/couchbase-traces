@@ -37,4 +37,24 @@ describe('sqlExprToAliasMap META', () => {
     expect(map.$1).toBe('lower(ServiceName)');
     expect(map.$2).toBeUndefined();
   });
+
+  it('parses SQL++ field access on a function result (/kubernetes events)', () => {
+    const err = jest.spyOn(console, 'error').mockImplementation(() => {});
+    const map = sqlExprToAliasMap({
+      sql:
+        'SELECT Timestamp AS `Timestamp`, ' +
+        'TOSTRING(DECODE_JSON(`LogAttributes`.`object`).`type`) AS `Severity`, ' +
+        'TOSTRING(DECODE_JSON(`LogAttributes`.`object`).`regarding`.`kind`) AS `Kind` ' +
+        'FROM `otel`.`default`.`otel_logs` AS d ORDER BY `Timestamp` DESC',
+      params: {},
+    });
+    expect(err).not.toHaveBeenCalled();
+    err.mockRestore();
+    expect(map.Severity).toBe(
+      'TOSTRING(DECODE_JSON(`LogAttributes`.`object`).`type`)',
+    );
+    expect(map.Kind).toBe(
+      'TOSTRING(DECODE_JSON(`LogAttributes`.`object`).`regarding`.`kind`)',
+    );
+  });
 });

@@ -30,6 +30,16 @@ export function anyValue(x: string): string {
   return `MIN(${x})`;
 }
 
+/**
+ * CRC-32 (IEEE) of `TOSTRING(x)` as an unsigned integer, matching zlib's
+ * crc32. SQL++ has no CRC32 function; HASHBYTES returns the digest as 8 hex
+ * characters, decoded here digit by digit (TONUMBER does not parse hex).
+ */
+export function crc32(x: string): string {
+  const hex = `HASHBYTES(TOSTRING(${x}), {"algorithm":"crc32"})`;
+  return `FIRST ARRAY_SUM(ARRAY POSITION("0123456789abcdef", SUBSTR(h, i, 1)) * POWER(16, 7 - i) FOR i IN ARRAY_RANGE(0, 8) END) FOR h IN [${hex}] END`;
+}
+
 export function argMax(x: string, t: string): string {
   return `MAX([${t}, ${x}])[1]`;
 }

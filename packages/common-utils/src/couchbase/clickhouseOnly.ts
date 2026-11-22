@@ -13,6 +13,8 @@ const UNLISTED = [
   'startsWith',
   'endsWith',
   'cityHash64',
+  // Neither engine's name: written by hand for SQL++ before D10.
+  'CRC32',
   'sipHash64',
   'toDateTime',
   'toDateTime64',

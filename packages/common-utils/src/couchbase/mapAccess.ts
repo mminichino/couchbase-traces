@@ -1,4 +1,7 @@
-import { rewriteSqlInValueLists } from '@/couchbase/sqlInLists';
+import {
+  rewriteInSubqueriesToRaw,
+  rewriteSqlInValueLists,
+} from '@/couchbase/sqlInLists';
 import { quoteIdent } from '@/couchbase/sqlpp';
 
 /**
@@ -150,8 +153,11 @@ export function rewriteMapSubscripts(sql: string): string {
 
 /**
  * A user-written SQL condition (where, filter, having) as SQL++: map
- * subscripts become field access and `IN ('a')` value lists become arrays.
+ * subscripts become field access, `IN ('a')` value lists become arrays and
+ * single-column `IN (SELECT x …)` subqueries select RAW values.
  */
 export function rewriteSqlFragment(sql: string): string {
-  return rewriteSqlInValueLists(rewriteMapSubscripts(sql));
+  return rewriteInSubqueriesToRaw(
+    rewriteSqlInValueLists(rewriteMapSubscripts(sql)),
+  );
 }

@@ -38,6 +38,7 @@ import { useSource } from '@/source';
 import {
   getScopedFilters,
   MAX_NUM_SERIES,
+  perMinuteExpr,
   pickSourceConfigFields,
 } from './helpers';
 import { AppliedConfig } from './types';
@@ -206,8 +207,8 @@ function HttpTab({
     'time' | 'error'
   >('time');
 
-  const startTime = searchedTimeRange[0].getTime();
-  const endTime = searchedTimeRange[1].getTime();
+  const perMinute = (count: string) =>
+    perMinuteExpr(count, searchedTimeRange, dialect);
 
   const getRowSearchLink = useCallback((row: any) => {
     const searchParams = new URLSearchParams(window.location.search);
@@ -531,9 +532,7 @@ function HttpTab({
                   },
                   {
                     alias: 'Req/Min',
-                    valueExpression: `
-                      total_requests /
-                      age('mi', toDateTime(${startTime / 1000}), toDateTime(${endTime / 1000}))`,
+                    valueExpression: perMinute('total_requests'),
                   },
                   {
                     alias: 'duration_p95_ns',
@@ -568,8 +567,7 @@ function HttpTab({
                   },
                   {
                     alias: 'Errors/Min',
-                    valueExpression: `error_requests /
-                      age('mi', toDateTime(${startTime / 1000}), toDateTime(${endTime / 1000}))`,
+                    valueExpression: perMinute('error_requests'),
                   },
                 ],
                 selectGroupBy: false,
@@ -651,8 +649,7 @@ function HttpTab({
                   },
                   {
                     alias: 'Req/Min',
-                    valueExpression: `round(total_count /
-                        age('mi', toDateTime(${startTime / 1000}), toDateTime(${endTime / 1000})), 1)`,
+                    valueExpression: `round(${perMinute('total_count')}, 1)`,
                   },
                   {
                     alias: 'p95_duration_ns',
@@ -695,8 +692,7 @@ function HttpTab({
                   },
                   {
                     alias: 'Errors/Min',
-                    valueExpression: `round(error_count /
-                      age('mi', toDateTime(${startTime / 1000}), toDateTime(${endTime / 1000})), 1)`,
+                    valueExpression: `round(${perMinute('error_count')}, 1)`,
                     numberFormat: INTEGER_NUMBER_FORMAT,
                   },
                 ],

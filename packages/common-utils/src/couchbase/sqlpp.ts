@@ -3,7 +3,10 @@ import type { Keyspace } from './types';
 export type SqlPP = { statement: string; parameters: Record<string, unknown> };
 
 export type SqlPPValue =
+  // A dotted path: "a.b" renders `a`.`b`
   | { Identifier: string }
+  // One name, dots included: an AS alias such as `avg(k8s.pod.cpu)`
+  | { Alias: string }
   | { Keyspace: Keyspace }
   | { Param: unknown }
   // Inserted verbatim; for trusted fragments only
@@ -69,8 +72,18 @@ class Builder {
   }
 
   nested(child: SqlPP) {
+    const renamed = this.rename(child);
+    for (const [name, value] of Object.entries(renamed.parameters)) {
+      this.params.set(name, value);
+    }
+    this.parts.push(renamed.statement);
+  }
+
+  /** `child` with its parameters renamed from this builder's counter. */
+  rename(child: SqlPP): SqlPP {
     const childParams = new Map(Object.entries(child.parameters));
     const mapping = new Map<string, string>();
+    const parameters = new Map<string, unknown>();
     const statement = child.statement.replace(
       PARAM_REF_RE,
       (match, prefix: string, n: string) => {
@@ -80,7 +93,7 @@ class Builder {
         if (newName == null) {
           newName = `p${this.next++}`;
           mapping.set(oldName, newName);
-          this.params.set(newName, childParams.get(oldName));
+          parameters.set(newName, childParams.get(oldName));
         }
         return `$${newName}`;
       },
@@ -90,10 +103,10 @@ class Builder {
       if (!mapping.has(oldName)) {
         const newName = `p${this.next++}`;
         mapping.set(oldName, newName);
-        this.params.set(newName, value);
+        parameters.set(newName, value);
       }
     }
-    this.parts.push(statement);
+    return { statement, parameters: Object.fromEntries(parameters) };
   }
 
   value(v: SqlPPValue) {
@@ -101,6 +114,8 @@ class Builder {
       this.nested(v);
     } else if ('Identifier' in v) {
       this.text(quotePath(v.Identifier));
+    } else if ('Alias' in v) {
+      this.text(quoteIdent(v.Alias));
     } else if ('Keyspace' in v) {
       this.text(keyspace(v.Keyspace));
     } else if ('Param' in v) {
@@ -141,4 +156,45 @@ export function concatSqlPP(sep: string, ...parts: (SqlPP | SqlPP[])[]): SqlPP {
     b.nested(p);
   });
   return b.build();
+}
+
+/**
+ * Rename the parameters of separately rendered SQL++ fragments so no two
+ * share a name. Every render numbers from `$p0`; a caller that splices
+ * several renders into one statement and merges their params objects would
+ * otherwise bind one fragment's values into another (the ClickHouse
+ * counterpart names params by value hash, so it never collides).
+ */
+type SqlFragLike = { sql: string; params: Record<string, unknown> };
+
+export function disjointSqlParams<T extends SqlFragLike | undefined>(
+  frags: readonly T[],
+): T[] {
+  const b = new Builder();
+  return frags.map(f => (f == null ? f : renameFrag(b, f)));
+}
+
+function renameFrag<T extends SqlFragLike>(b: Builder, f: T): T {
+  const r = b.rename({ statement: f.sql, parameters: f.params });
+  return Object.assign({}, f, { sql: r.statement, params: r.parameters });
+}
+
+/** {@link disjointSqlParams} for a fixed tuple, keeping each element's type. */
+export function disjointSqlParamsTuple<
+  A extends SqlFragLike,
+  B extends SqlFragLike | undefined,
+  C extends SqlFragLike | undefined,
+  D extends SqlFragLike | undefined,
+  E extends SqlFragLike | undefined,
+>(frags: [A, B, C, D, E]): [A, B, C, D, E] {
+  const b = new Builder();
+  const opt = <X extends SqlFragLike | undefined>(f: X): X =>
+    f == null ? f : renameFrag(b, f);
+  return [
+    renameFrag(b, frags[0]),
+    opt(frags[1]),
+    opt(frags[2]),
+    opt(frags[3]),
+    opt(frags[4]),
+  ];
 }

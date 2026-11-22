@@ -1,6 +1,5 @@
-import SqlString from 'sqlstring';
-
 import { hasKeyWithPrefix } from './attributeUtils';
+import { llmSql, SqlDialect } from './sqlDialect';
 import { LLMSpanEvent, SpanAttributeMap } from './types';
 
 /**
@@ -119,14 +118,18 @@ function buildKeyExistsSql({
   attributeField,
   key,
   isJsonColumn,
+  dialect,
 }: {
   attributeField: string;
   key: string;
   isJsonColumn: boolean;
+  dialect?: SqlDialect;
 }): string {
-  return isJsonColumn
+  const sql = llmSql(dialect);
+  // Couchbase documents have no JSON-typed column distinction.
+  return isJsonColumn && sql.dialect === 'clickhouse'
     ? `toString(${attributeField}.\`${key}\`) != ''`
-    : `mapContains(${attributeField}, ${SqlString.escape(key)})`;
+    : sql.mapHasKey(attributeField, key);
 }
 
 /** SQL matching rows carrying any of the given attribute keys. */
@@ -134,10 +137,11 @@ export function buildAnyKeyExistsSql(args: {
   attributeField: string;
   keys: readonly string[];
   isJsonColumn: boolean;
+  dialect?: SqlDialect;
 }): string {
-  const { attributeField, keys, isJsonColumn } = args;
+  const { attributeField, keys, isJsonColumn, dialect } = args;
   const conditions = keys.map(key =>
-    buildKeyExistsSql({ attributeField, key, isJsonColumn }),
+    buildKeyExistsSql({ attributeField, key, isJsonColumn, dialect }),
   );
   return `(${conditions.join(' OR ')})`;
 }
@@ -154,14 +158,17 @@ export function buildAnyKeyExistsSql(args: {
 export function buildLLMSpanSqlPredicate({
   attributeField,
   isJsonColumn,
+  dialect,
 }: {
   /** SQL expression for the span attributes column (e.g. `SpanAttributes`). */
   attributeField: string;
   isJsonColumn: boolean;
+  dialect?: SqlDialect;
 }): string {
   return buildAnyKeyExistsSql({
     attributeField,
     keys: LLM_MARKER_ATTRIBUTE_KEYS,
     isJsonColumn,
+    dialect,
   });
 }

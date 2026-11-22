@@ -2785,3 +2785,119 @@ now passes; the R2c "before" matches D2's 99). R2b (5 suites) 41 → 40 of 335
   `localhost:31210?network=external` (twice). With the ports free a run at
   offset 0 passed 58 + 55 + 4. The offset fallback's external KV mapping does
   not work on this host; tracked as D14 in the release plan.
+
+### D14: live-test runs after `make ci-int` (2026-11-21, first commit of `mm--v1-d10-page-queries`)
+
+- **Not reproduced as described.** With 8091 held by a stray listener, `run.sh`
+  chose offset 20000 and passed 58 + 55 + 4. The alternate address (`kv=31210`)
+  and `couchbase://localhost:31210?network=external` work. A run started while
+  the CI stack was being torn down picked offset 0 and passed too.
+- **What the D7 logs show.** Both failing runs had a healthy node at `Ready` and
+  passing suites before the first timeout: at offset 0, `chartDefects` passed,
+  three suites timed out, then the rest passed; at offset 20000, three suites
+  passed, then every request failed, plain HTTP to the query port included
+  (`fetch failed`). So the node stopped answering while serving, at either
+  offset, right after a full `make ci-int` run. The container was removed by
+  `down -v` before anyone could look at it.
+- **Change.** `run.sh` logs the owner (process or container) of the busy port
+  before it shifts. When the tests fail it logs the container status, restart
+  count, OOM flag, memory, which of mgmt/query/KV accept connections, and
+  babysitter crash or restart lines, then cleans up. The next occurrence will
+  say whether the node restarted, was OOM-killed or stalled.
+
+### D10: page queries and alert detail not-found (2026-11-21, `mm--v1-d10-page-queries`)
+
+SQL++ functions used here, checked against the 8.0 reference: `HASHBYTES`
+(`{"algorithm":"crc32"}`), `POSITION`, `SUBSTR`, `POWER`, `ARRAY_RANGE`,
+`ARRAY_SUM`, `ARRAY_AGG`, `GREATEST`, `TONUMBER`, `TOSTRING`,
+`IFMISSINGORNULL`, `REGEXP_CONTAINS`, `REGEXP_REPLACE`, `FIRST … FOR … END`,
+`SELECT RAW`.
+
+- **`/service-map`.** The sampling filter called `CRC32`, which SQL++ does
+  not have (3000). `fn/scalar.ts` `crc32(x)` hashes with
+  `HASHBYTES(TOSTRING(x), {"algorithm":"crc32"})` and decodes the 8 hex digits
+  to an unsigned integer (`TONUMBER` does not parse hex), equal to zlib's
+  crc32. `CRC32` joins the ClickHouse-only guard list. The server and client
+  span CTEs were rendered separately and both numbered params from `$p0`, so
+  one CTE's time bounds overwrote the other's; `disjointSqlParams`
+  (`sqlpp.ts`) renames them apart.
+- **`/kubernetes`.** Aliases such as `avg(k8s.pod.cpu.utilization)` went
+  through `quotePath`, which splits on dots (``max(k8s`.`pod…``, 3000). A new
+  `{ Alias }` value in `sqlpp` quotes one name whole; `with.ts` and
+  `orderBy.ts` use it. The semantic-convention migration sends
+  `MetricName IN ('a', 'b')`; `metricNameSql` now goes through
+  `rewriteSqlInValueLists`. The gauge and sum `Bucketed` CTEs did not carry
+  the OTel columns, so a group-by on `ResourceAttributes['k8s.pod.name']`
+  read MISSING; they now project them with `MIN` (upstream `any()`). A sum
+  series with no `aggFn` projected a bare `Sum`, not a group key (4210); it
+  now uses `last_value`, as upstream does. Multi-series metric branches had
+  the same `$p0` collision as the service map and use `disjointSqlParams`.
+- **`/llm`.** The preset expressions were ClickHouse text (`mapContains`,
+  `arraySum(arrayMap(…))`, `sumMap`, `toFloat64OrZero`, `multiIf`,
+  `greatest`, `match`, `replaceRegexpAll`, `indexHint`). `llm/lib/sqlDialect.ts`
+  builds them per dialect; the ClickHouse output is byte-identical, and the
+  per-service gated sums use `ARRAY_AGG` bound with `FIRST … FOR a IN [agg]
+  END` (a correlated subquery over an aggregate is 4210). The cost table
+  references a select alias defined later in the list and a double-quoted
+  alias (`"Calls"`); `render/selectAliases.ts` `resolveSelectAliases` inlines
+  each referenced item's expression (cycles left as written), and a group-by
+  naming a select alias groups by that item's expression.
+- **`/services`.** `error_requests / total_requests` reused select aliases in
+  the same SELECT (4210), fixed by the same alias resolution. The request
+  rate divided by `age('mi', toDateTime(…), toDateTime(…))` (3000);
+  `elapsedMinutesExpr` emits the whole-minute count as a literal for SQL++,
+  and `perMinuteExpr` (`ServicesDashboardPage/helpers.ts`) shares it between
+  the HTTP and database tabs. `NOT empty(endpoint)` is
+  `IFMISSINGORNULL(endpoint, '') != ''` on Couchbase; the hook waits for the
+  connection list so a Couchbase source never gets the ClickHouse set. An
+  empty result no longer throws "No value columns found" in
+  `formatResponseForTimeChart` (with no rows SQL++ returns no column types).
+- **`/sessions`.** Five causes, found one after another: the merge
+  subqueries had no alias (3000); `HAVING interactionCount > 0` named select
+  aliases (4210), now the aggregates; the five rendered fragments collided on
+  `$p0`, now `disjointSqlParamsTuple`; `SELECT * FROM sessions` returns
+  `{"sessions": {…}}`, so `row.maxTimestamp` was undefined and the card threw
+  "Invalid time value", now `SELECT sessions.*`; and
+  `sessionId IN (SELECT sessionId FROM …)` compares a string to objects (always
+  false), now `SELECT RAW`, also applied to user SQL filters by
+  `rewriteInSubqueriesToRaw` in `rewriteSqlFragment`.
+- **`/alerts/[alertId]`.** The smoke fixture now opens the seeded error
+  alert's real id, and a second entry opens `/alerts/smoke-alert` and expects
+  "Alert not found". `useAlert` skips the request unless the id is a valid
+  metadata id (`isMetadataId`, `common-utils/core/ids.ts`, shared with the
+  API's `isValidId`), so a malformed id shows the page's existing not-found
+  state instead of the 400. An unknown valid id gets the API's 404 and the
+  same state.
+- **Tests.** Unit: `render/__tests__/pageQueries.test.ts` (16),
+  `crc32.test.ts`, `sqlpp.test.ts`, `sqlInLists.test.ts`,
+  `sqlExpr.meta.test.ts`, `ids.test.ts`, app `serviceMap.test.ts`,
+  `sessionsList.test.ts`, `dialectExpr.test.ts`,
+  `serviceDashboard.expressions.test.ts`, `llm/expressions.couchbase.test.ts`
+  (11), `chartConfig.test.ts`, `ChartUtils.test.ts`,
+  `AlertDetailPage.notFound.test.tsx` (malformed, unknown valid, loading),
+  `api.useAlert.test.tsx`, acceptance `routes.test.mjs`. Live (run by
+  `run.sh`): common-utils `pageQueries.couchbase.int.test.ts` (7) and app
+  `pageQueries.live.test.ts` (7); `run.sh` now runs app `*.live.test.ts`.
+- **Route smoke** (`scripts/e2e-env.sh`): 18 of 24 before, 25 of 25 after (24
+  routes plus the not-found entry), no console errors.
+- **Page specs, before → after.** `services-dashboard` 1 → 3 of 3,
+  `service-map-sampling` 2 → 2, `alerts` 25 → 25, `sessions` 1 → 2 of 7,
+  `kubernetes` 1 → 1 of 13. The remaining `kubernetes` failures are a fixture
+  gap: the Couchbase E2E seed writes no k8s metric or event rows, so the pod,
+  node and namespace tables are empty (now 11 fail fast instead of 7 timing
+  out). The remaining `sessions` failures need OTel-SDK session spans, replay
+  rows and browser log events, which the Couchbase seed does not write (it
+  writes only the `otel_sessions` log documents). Both are R2 fixture work.
+- **D6 metric tile alerts.** Of the three cases D6 traced to dotted aliases,
+  "TILE alert (metrics) - slack webhook" and "with groupBy - should track
+  per-group alerts" now pass. "Grouped ratio - honors ratioMode
+  share_of_total" now renders and gets 0.5 where 0.125 is expected: the
+  share-of-total denominator is per group, not across groups. A new defect.
+- **Deferred-suite measurement** (fresh `docker-compose.ci.yml` stack per run,
+  `main` 842cc41 vs this branch, measurement only, still deferred): 157 → 154
+  failing of 1002. `checkAlerts` 26 → 23 (the two metric tile cases and
+  "notifies per group", the D12 flake); every other suite unchanged; no test
+  went from pass to fail.
+- **jscpd.** The one clone the diff report shows (the `DatabaseTab` and
+  `HttpTab` import blocks) exists on `main` too; adding one import shifted its
+  span. Not new duplication.

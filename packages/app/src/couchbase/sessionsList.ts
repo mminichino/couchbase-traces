@@ -5,6 +5,7 @@ import { sqlExpr } from '@couchbase-traces/common-utils/dist/query';
  * SQL++ session-list CTE merge (Phase 7 §9.5).
  * Mirrors `buildSessionsCtes` / `unionSessionIds` with CASE/IFNULL instead of
  * legacy store `if` / `maxIf` / `ifNull`, and `UNION` instead of `UNION DISTINCT`.
+ * SQL++ requires an alias on every FROM subquery (error 3000).
  */
 
 export function unionSessionIdsCouchbase(
@@ -13,7 +14,7 @@ export function unionSessionIdsCouchbase(
 ): SqlFrag {
   return otelIds == null
     ? rumIds
-    : sqlExpr`SELECT sessionId FROM (${rumIds}) UNION SELECT sessionId FROM (${otelIds})`;
+    : sqlExpr`SELECT sessionId FROM (${rumIds}) AS rum_ids UNION SELECT sessionId FROM (${otelIds}) AS otel_ids`;
 }
 
 export function buildSessionsCtesCouchbase({
@@ -36,8 +37,10 @@ export function buildSessionsCtesCouchbase({
         '' AS tname, 1 AS fromReplay
       FROM _recordings`
       : '';
+  // Aggregates, not the select aliases: SQL++ would resolve
+  // `interactionCount` in HAVING as a field of `merged` (4210).
   const having = withActivityFilter
-    ? `HAVING ${recordings != null ? 'MAX(fromReplay) = 1 OR ' : ''}interactionCount > 0 OR recordingCount > 0`
+    ? `HAVING ${recordings != null ? 'MAX(fromReplay) = 1 OR ' : ''}SUM(interactions) > 0 OR SUM(recordInits) > 0`
     : '';
   return sqlExpr`
     WITH _spans AS (${spans}),
@@ -67,7 +70,7 @@ export function buildSessionsCtesCouchbase({
           teamName AS tname, 0 AS fromReplay
         FROM _spans
         ${recordingsUnion}
-      )
+      ) AS merged
       GROUP BY svc, sid
       ${having}
       ORDER BY maxTimestamp DESC

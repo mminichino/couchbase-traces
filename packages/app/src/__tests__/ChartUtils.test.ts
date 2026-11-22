@@ -86,6 +86,45 @@ describe('ChartUtils', () => {
       expect(actual.lineData).toEqual([]);
     });
 
+    it('returns empty results when an empty response cannot type its value columns', () => {
+      // A Couchbase result with no rows has no values to infer a type from, so
+      // a plain-SQL value column reads as String; ClickHouse would report it
+      // from the schema. With no rows there are no series either way.
+      const res = {
+        data: [],
+        meta: [
+          { name: 'Calls', type: 'Nullable(String)' },
+          { name: '__hdx_time_bucket', type: "DateTime64(9, 'UTC')" },
+        ],
+      };
+      const actual = formatResponseForTimeChart({
+        currentPeriodResponse: res,
+        dateRange: [new Date(), new Date()],
+        granularity: '1 minute',
+        generateEmptyBuckets: false,
+      });
+      expect(actual.graphResults).toEqual([]);
+      expect(actual.lineData).toEqual([]);
+    });
+
+    it('still rejects rows without a numeric value column', () => {
+      const res = {
+        data: [{ Calls: 'x', __hdx_time_bucket: '2025-11-26T11:12:00Z' }],
+        meta: [
+          { name: 'Calls', type: 'String' },
+          { name: '__hdx_time_bucket', type: 'DateTime' },
+        ],
+      };
+      expect(() =>
+        formatResponseForTimeChart({
+          currentPeriodResponse: res,
+          dateRange: [new Date(), new Date()],
+          granularity: '1 minute',
+          generateEmptyBuckets: false,
+        }),
+      ).toThrow('No value columns found in result column metadata');
+    });
+
     it('should format a response with a single value column and no group by', () => {
       const res = {
         data: [

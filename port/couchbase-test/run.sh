@@ -22,9 +22,35 @@ port_busy() { nc -z 127.0.0.1 "$1" >/dev/null 2>&1; }
 any_busy() {
   local offset=$1 p
   for p in $CB_PORTS; do
-    if port_busy $((p + offset)); then return 0; fi
+    if port_busy $((p + offset)); then
+      BUSY_PORT=$((p + offset))
+      return 0
+    fi
   done
   return 1
+}
+
+# Names the process or container holding a port, so a shifted run says why.
+port_owner() {
+  local owner
+  owner=$(lsof -nP -iTCP:"$1" -sTCP:LISTEN 2>/dev/null | awk 'NR == 2 { print $1 " (pid " $2 ")" }')
+  local ctr
+  ctr=$(docker ps --format '{{.Names}} {{.Ports}}' 2>/dev/null | grep -E "[:]$1->" | awk '{ print $1 }' | head -1)
+  printf '%s' "${ctr:+container $ctr}${ctr:+${owner:+, }}${owner:-${ctr:+}}"
+  [ -z "$owner$ctr" ] && printf 'unknown owner'
+  return 0
+}
+
+# On a failed run, record the node's state before cleanup removes it: a node
+# lost mid-run (D14) otherwise shows up only as client timeouts.
+diagnose() {
+  log "Node state: $(docker inspect -f 'status={{.State.Status}} restarts={{.RestartCount}} oom={{.State.OOMKilled}} started={{.State.StartedAt}}' cbt-couchbase-test 2>/dev/null || echo 'container missing')"
+  docker stats --no-stream --format 'mem={{.MemUsage}} cpu={{.CPUPerc}}' cbt-couchbase-test 2>/dev/null | sed 's/^/[couchbase-test] /' || true
+  for p in $((8091 + OFFSET)) $((8093 + OFFSET)) $((11210 + OFFSET)); do
+    if port_busy "$p"; then log "port $p: open"; else log "port $p: closed"; fi
+  done
+  docker exec cbt-couchbase-test sh -c 'tail -n 40 /opt/couchbase/var/lib/couchbase/logs/babysitter.log' 2>/dev/null |
+    grep -iE 'exited|restart|crash|killed|oom' | tail -n 10 | sed 's/^/[couchbase-test:babysitter] /' || true
 }
 
 compose() { docker compose -p "$PROJECT" -f "$HERE/docker-compose.yml" "$@"; }
@@ -51,10 +77,12 @@ OFFSET=${CBT_TEST_COUCHBASE_PORT_OFFSET:-}
 if [ -z "$OFFSET" ]; then
   OFFSET=0
   for candidate in 0 20000 21000 22000; do
+    BUSY_PORT=
     if ! any_busy "$candidate"; then
       OFFSET=$candidate
       break
     fi
+    log "Port $BUSY_PORT is in use by $(port_owner "$BUSY_PORT"); trying the next offset"
     OFFSET=
   done
   if [ -z "$OFFSET" ]; then
@@ -97,6 +125,10 @@ log "Running common-utils Couchbase integration tests"
 "${YARN[@]}" workspace @couchbase-traces/common-utils jest -c jest.int.config.js \
   --runInBand --testPathPatterns 'couchbase\.int\.test' || status=$?
 
+log "Running app Couchbase live-cluster tests"
+"${YARN[@]}" workspace @couchbase-traces/app jest --ci --coverage=false \
+  --runInBand --testPathPatterns 'live\.test' || status=$?
+
 log "Running api Couchbase integration tests"
 CBT_METADATA_CONNSTR=$CBT_TEST_COUCHBASE_CONNSTR \
   DOTENV_CONFIG_PATH=.env.test DOTENV_CONFIG_OVERRIDE=true \
@@ -107,5 +139,6 @@ log "Running ingest integration tests"
 "${YARN[@]}" workspace @couchbase-traces/ingest jest -c jest.int.config.js \
   --runInBand --forceExit --testPathPatterns 'ingest\.int\.test' || status=$?
 
+if [ "$status" != 0 ]; then diagnose; fi
 log "Integration tests finished with status $status"
 exit "$status"

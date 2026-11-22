@@ -36,4 +36,51 @@ describe('couchbase sessionsList', () => {
     expect(toUInt64OrZeroCouchbase('x')).toBe('IFNULL(TONUMBER(x), 0)');
     expect(ifNonEmptyCouchbase('a', 'b')).toContain('CASE WHEN');
   });
+
+  it.each([true, false])(
+    'aliases every FROM subquery (recordings: %s)',
+    withRecordings => {
+      const cte = buildSessionsCtesCouchbase({
+        name: 'sessions',
+        spans: { sql: 'SELECT 1 AS sessionId', params: {} },
+        recordings: withRecordings
+          ? { sql: 'SELECT 2 AS sessionId', params: {} }
+          : undefined,
+        withActivityFilter: false,
+      });
+      // SQL++ error 3000: "Subquery in FROM clause must have an alias".
+      expect(cte.sql).toMatch(/FROM \([\s\S]*\) AS merged\s+GROUP BY svc, sid/);
+    },
+  );
+
+  it('aliases both subqueries in the session id union', () => {
+    const a = { sql: "SELECT 'a' AS sessionId", params: {} };
+    const b = { sql: "SELECT 'b' AS sessionId", params: {} };
+    const sql = unionSessionIdsCouchbase(a, b).sql;
+    expect(sql).toBe(
+      "SELECT sessionId FROM (SELECT 'a' AS sessionId) AS rum_ids UNION SELECT sessionId FROM (SELECT 'b' AS sessionId) AS otel_ids",
+    );
+  });
+
+  it.each([
+    [
+      true,
+      'HAVING MAX(fromReplay) = 1 OR SUM(interactions) > 0 OR SUM(recordInits) > 0',
+    ],
+    [false, 'HAVING SUM(interactions) > 0 OR SUM(recordInits) > 0'],
+  ])(
+    'filters activity on aggregates, not select aliases (recordings: %s)',
+    (withRecordings, having) => {
+      // SQL++ resolves a HAVING alias as a field of `merged` (4210).
+      const cte = buildSessionsCtesCouchbase({
+        name: 'sessions',
+        spans: { sql: 'SELECT 1 AS sessionId', params: {} },
+        recordings: withRecordings
+          ? { sql: 'SELECT 2 AS sessionId', params: {} }
+          : undefined,
+        withActivityFilter: true,
+      });
+      expect(cte.sql).toContain(having);
+    },
+  );
 });

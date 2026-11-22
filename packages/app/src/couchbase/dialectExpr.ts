@@ -76,3 +76,19 @@ export function zipSeriesSqlpp({
   const t = quoteIdent(fromTable);
   return `SELECT s.${g} AS ${g}, [s.${v}[i], s.${b}[i]] AS zipped FROM ${t} AS s UNNEST ARRAY_RANGE(0, ARRAY_LENGTH(s.${v}) - 1) AS i`;
 }
+
+/**
+ * legacy store `age('mi', toDateTime(start), toDateTime(end))`: whole minutes
+ * between two fixed instants. The bounds are literals, so SQL++ gets the
+ * number itself (SQL++ has no toDateTime).
+ */
+export function elapsedMinutesExpr(
+  start: Date,
+  end: Date,
+  dialect: SqlDialect = 'clickhouse',
+): string {
+  if (dialect === 'couchbase') {
+    return String(Math.trunc((end.getTime() - start.getTime()) / 60_000));
+  }
+  return `age('mi', toDateTime(${start.getTime() / 1000}), toDateTime(${end.getTime() / 1000}))`;
+}
