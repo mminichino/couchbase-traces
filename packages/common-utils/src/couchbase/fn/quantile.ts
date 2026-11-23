@@ -76,10 +76,11 @@ export function histogramQuantileValue(
 }
 
 /**
- * SQL++ form of `histogramQuantileValue`. The points array is repeated
- * because a scalar expression cannot bind a LET, and each copy gets its own
- * comprehension variable: SQL++ rejects a repeated name in one statement.
- * Index 0 has no previous bucket, so its lower bound is 0.
+ * SQL++ form of `histogramQuantileValue`, same cases in the same order.
+ * The points array is repeated because a scalar expression cannot bind a
+ * LET, and each copy gets its own comprehension variable: SQL++ rejects a
+ * repeated name in one statement. Indexes are 0-based here; a NULL or
+ * missing bound is the +Inf overflow bucket.
  */
 export function histogramQuantile(
   p: number,
@@ -93,18 +94,33 @@ export function histogramQuantile(
   };
   const points = () => {
     const v = name();
-    return `(ARRAY {"c": ARRAY_SUM((${countsExpr})[0:${v}+1]), "b": IFMISSINGORNULL((${boundsExpr})[${v}], NULL)} FOR ${v} IN ARRAY_RANGE(0, ARRAY_LENGTH(${countsExpr})) END)`;
+    return `(ARRAY {"c": ARRAY_SUM((${countsExpr})[0:${v}+1]), "b": IFMISSINGORNULL((${boundsExpr})[${v}], NULL)} FOR ${v} IN ARRAY_RANGE(0, GREATEST(ARRAY_LENGTH(${countsExpr}), ARRAY_LENGTH(${boundsExpr}))) END)`;
   };
   const total = () =>
     `IFMISSINGORNULL(${points()}[ARRAY_LENGTH(${points()})-1].c, 0)`;
   const rank = () => `($p0 * ${total()})`;
+  // First index whose cumulative count exceeds the rank; MISSING when none.
   const upper = () => {
     const v = name();
     return `(ARRAY ${v} FOR ${v} IN ARRAY_RANGE(0, ARRAY_LENGTH(${points()})) WHEN ${points()}[${v}].c > ${rank()} END)[0]`;
   };
   const at = (index: string, field: 'b' | 'c') =>
     `${points()}[${index}].${field}`;
-  const last = () => `${points()}[ARRAY_LENGTH(${points()})-1].b`;
-  const statement = `CASE WHEN ARRAY_LENGTH(${countsExpr}) = 0 OR ARRAY_LENGTH(${points()}) <= 1 OR ${total()} <= 0 THEN NULL WHEN ${upper()} IS MISSING THEN ${last()} WHEN ${upper()} = 0 THEN CASE WHEN ${at(upper(), 'c')} = 0 THEN ${at(upper(), 'b')} ELSE (${rank()} * ${at(upper(), 'b')}) / ${at(upper(), 'c')} END WHEN (${at(upper(), 'c')} - ${at(upper() + '-1', 'c')}) = 0 THEN ${at(upper() + '-1', 'b')} ELSE ${at(upper() + '-1', 'b')} + ((${at(upper(), 'b')} - ${at(upper() + '-1', 'b')}) * (${rank()} - ${at(upper() + '-1', 'c')})) / (${at(upper(), 'c')} - ${at(upper() + '-1', 'c')}) END`;
+  const prev = () => `${upper()}-1`;
+  const lowerBound = () =>
+    `(CASE WHEN ${upper()} >= 1 THEN ${at(prev(), 'b')} ELSE 0 END)`;
+  const lowerCount = () =>
+    `(CASE WHEN ${lowerBound()} = 0 THEN 0 ELSE ${at(prev(), 'c')} END)`;
+  const span = () => `(${at(upper(), 'c')} - ${lowerCount()})`;
+  const statement = [
+    `CASE WHEN ARRAY_LENGTH(${countsExpr}) = 0 OR ARRAY_LENGTH(${points()}) <= 1 OR ${total()} <= 0 THEN NULL`,
+    // Upper bound +Inf: the previous bucket's bound (the first, if none).
+    `WHEN ${upper()} IS MISSING THEN ${at('0', 'b')}`,
+    `WHEN ${at(upper(), 'b')} IS NOT VALUED THEN ${at(`GREATEST(${prev()}, 0)`, 'b')}`,
+    // Lower bound +Inf: the first bucket's bound.
+    `WHEN (${upper()} >= 1 AND ${at(prev(), 'b')} IS NOT VALUED) OR (${upper()} = 0 AND NOT (${at('0', 'b')} > 0)) THEN ${at('0', 'b')}`,
+    `WHEN ${span()} = 0 THEN ${lowerBound()}`,
+    `ELSE ${lowerBound()} + ((${at(upper(), 'b')} - ${lowerBound()}) * (${rank()} - ${lowerCount()})) / ${span()} END`,
+  ].join(' ');
   return { statement, parameters: { p0: p } };
 }

@@ -396,7 +396,8 @@ pushes to `main` directly.
 | D18   | Defects: intermittent common-utils live tests (Q37)       | Found in D12 (section 9.1); seed lag fixed with D13; SDK timeout remainder in its own PR before D17 (Q39)                                                                 | S    | —                             |
 | D19   | Defects: `make ci-int` exits 1 after every test passed    | Found in D13 (section 9.1); with the D18 remainder (Q40)                                                                                                                  | S    | —                             |
 | D20   | Defects: mixed gauge/histogram charts drop scalar groups  | Found in D17 (section 9.1); next phase after D17 (Q42); fixed                                                                                                             | S    | D17                           |
-| D21   | Defects: cumulative histogram quantile zero-delta row     | Found in D20 (section 9.1); placement pending (Q43)                                                                                                                       | S    | D20                           |
+| D21   | Defects: cumulative histogram quantile zero-delta row     | Found in D20 (section 9.1); own PR before R2a (Q43); fixed                                                                                                                | S    | D20                           |
+| D22   | Defects: exp-histogram count partitions by a select alias | Found in D21 (section 9.1); placement pending (Q44)                                                                                                                       | S    | D21                           |
 | D14   | Dev tooling: live-test port offset fallback               | Found in D7 (section 9.1)                                                                                                                                                 | S    | —                             |
 | R2a   | Port deferred int suites: internal and external API       | B1 (10 suites: `routers/api/{dashboard,iac,sources,connections}`, `routers/external-api/{charts,search,sources,sources-crud,connections}`, `middleware/queryAttribution`) | L    | D1                            |
 | R2b   | Port deferred int suites: alerts                          | B1 (5 suites: `checkAlerts`, `multiChannelAlerts`, `renderAlertTemplate`, `singleInvocationAlert`, `providers/default`; 335 tests, 93 failing per R0)                     | L    | R2c, D1, D4, D6               |
@@ -851,7 +852,47 @@ baseline at minute 0, and its quantile emits no row there (`WHERE total > 0`).
 The SQL++ quantile emits a row with a NULL value for that bucket, so a chart
 gets an extra point-free row. Same values, one extra row. The D20 live test
 seeds the minute-1 counts as one delta point to stay on its own defect.
-Placement: pending (Q43).
+Placement (Q43): its own PR, before R2a.
+
+Result (2026-11-23, `mm--v1-d21-histogram-zero-bucket`): fixed, with three
+related defects found while porting upstream's histogram int cases (same
+renderer, same PR). Wrong values, not only the extra row:
+
+- Empty buckets: the quantile now drops a bucket or group with no
+  observations (upstream `WHERE length(point) > 1 AND total > 0`) through
+  a wrapper on the `metrics` CTE, so the number shape needs no GROUP BY.
+- Series partition: the delta `LAG` windows partitioned by the select's own
+  `AttributesHash` alias, which a SQL++ window clause cannot see (it reads
+  as MISSING, checked on 8.0.3), so every series of a metric shared one
+  partition and subtracted each other's counts. Histogram quantile and
+  count now partition by the expressions (group, attributes hash,
+  temporality; count adds the bucket layout, as upstream).
+- First point: a cumulative series' first visible point is now the zero
+  baseline (upstream `arrayWithConstant(…, 0)`), not its raw counts, and a
+  bucket-layout change takes the new counts as they are.
+- Interpolation: `histogramQuantile` now follows upstream (and the JS
+  `histogramQuantileValue`) for the first bucket and the +Inf overflow
+  bucket; the old form returned 0 or the 1e12 sentinel there. Buckets sort
+  by index as `[i, bound, rate]` tuples, since `ARRAY_SORT` orders objects
+  by field name and put the NULL overflow bound first.
+- Tests: `render/__tests__/histogramQuantile.test.ts` (9, all failed before)
+  and `histogramQuantile.couchbase.int.test.ts`, which ports upstream's
+  "Query Metrics - Histogram" two-timestamp, first-visible-baseline,
+  non-timeseries grouped and reset cases plus a bucket-layout change (8; 7
+  failed before). The D20 live test is back on upstream's cumulative seed
+  (3 of its 5 cases fail without this fix). `phase6.couchbase.int.test.ts`
+  expected 5 for p50 of [1, 1, 1] over [0, 10, 20]; upstream gives 7.5.
+- Found here, not fixed: D22.
+
+#### D22: Exponential-histogram count partitions deltas by a select alias (found in D21, size S)
+
+Evidence: `render/metrics/expHistogram.ts` count computes its `LAG` windows
+with `PARTITION BY \`group\`, MetricName, series_key, …`, where `group` and
+`series_key` are aliases of the same SELECT. A window clause reads them as
+MISSING (checked on 8.0.3), so every series of the metric shares one
+partition and a cumulative series subtracts another series' count: the D21
+partition defect, on the exponential-histogram count. The quantile path is
+not affected (it partitions in a later CTE). Placement: pending (Q44).
 
 #### D18: Common-utils live tests fail intermittently (found in D12, size S)
 
@@ -1172,7 +1213,8 @@ in that phase.
 | Q40 | One-off `make ci-int` exit 1 after every test passed (2026-11-22)                                        | Logged as defect D19 and investigated in the D18 remainder PR                                                                                                                                                                                                                                                                     | D18, D19       | F1             |
 | Q41 | SQL++ form of the D17 outer HAVING and group-by sort (2026-11-22)                                        | HAVING is a WHERE on a wrapper in every shape (SQL++ HAVING rejects aliases, windows, and a missing GROUP BY); group-by sorts read the named group column instead of companion columns. Same rows and columns as upstream; a `share_of_total` HAVING with an expression group-by sort now runs, where upstream fails. User kept this divergence (2026-11-23) | D17            |
 | Q42 | Placement of D20: mixed gauge/histogram charts drop scalar group columns (2026-11-23)                    | The next phase, right after D17                                                                                                                                                                                                                                                                                                   | D17, D20       |
-| Q43 | Placement of D21: cumulative histogram quantile emits a NULL row for a zero-delta bucket (2026-11-23)    | Pending; proposed: its own small PR before R2a                                                                                                                                                                                                                                                                                    | D21            |
+| Q43 | Placement of D21: cumulative histogram quantile emits a NULL row for a zero-delta bucket (2026-11-23)    | Its own PR, before R2a (user, 2026-11-23)                                                                                                                                                                                                                                                                                         | D21            |
+| Q44 | Placement of D22: exponential-histogram count partitions deltas by a select alias (2026-11-23)           | Pending; proposed: its own small PR before R2a                                                                                                                                                                                                                                                                                    | D22            |
 
 ## 11. Acceptance criteria (v1.0.0 is done when)
 
@@ -1248,6 +1290,7 @@ in that phase.
 | D19 `make ci-int` exit 1 after a green run                      | S    |
 | D20 Mixed gauge/histogram charts drop scalar group columns      | S    |
 | D21 Cumulative histogram quantile zero-delta row                | S    |
+| D22 Exp-histogram count partition by alias                      | S    |
 | D14 Live-test port offset fallback                              | S    |
 | R2a Deferred API int suites (10 suites, 380 tests, 80 failing)  | L    |
 | R2b Deferred alert int suites (5 suites, 335 tests, 93 failing) | L    |
