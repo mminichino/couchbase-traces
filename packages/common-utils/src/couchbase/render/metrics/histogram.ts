@@ -11,9 +11,10 @@ import { keyspace, quoteIdent } from '@/couchbase/sqlpp';
 import {
   parseGranularity,
   timeBucketExpr as cbTimeBucketExpr,
-  toIso30,
 } from '@/couchbase/time';
 import type { BuilderChartConfigWithOptDateRange } from '@/types';
+
+import { sourceWhereClause } from './sourceWhere';
 
 export type MetricSelect = {
   aggFn?: string | null;
@@ -128,41 +129,6 @@ export function dimProjectFrom(
 }
 
 /**
- * Name + date-range predicate for histogram / exp-hist source CTEs.
- * Mirrors upstream weaving `renderMetricWhere` into the CTE so the outer
- * query (which only has group/value) does not re-filter on TimeUnix.
- */
-export function sourceWhereClause(
-  chartConfig: BuilderChartConfigWithOptDateRange,
-  nameFilter: string,
-): { sql: string; params: Record<string, unknown> } {
-  const parts = [`(${nameFilter})`];
-  const params: Record<string, unknown> = {};
-  if (chartConfig.dateRange != null) {
-    const tsCol = getFirstTimestampValueExpression(
-      chartConfig.timestampValueExpression || 'TimeUnix',
-    );
-    // Qualify with d. — source CTEs always alias the keyspace as d.
-    const tsExpr = tsCol.includes('.') ? tsCol : `d.${tsCol}`;
-    const format = timestampFormatOf(chartConfig);
-    const startOp = chartConfig.dateRangeStartInclusive === false ? '>' : '>=';
-    const endOp = chartConfig.dateRangeEndInclusive === true ? '<=' : '<';
-    const from = chartConfig.dateRange[0];
-    const to = chartConfig.dateRange[1];
-    if (format === 'epoch_millis') {
-      params.p0 = from.getTime();
-      params.p1 = to.getTime();
-    } else {
-      params.p0 = toIso30(from);
-      params.p1 = toIso30(to);
-    }
-    parts.push(`${tsExpr} ${startOp} $p0`);
-    parts.push(`${tsExpr} ${endOp} $p1`);
-  }
-  return { sql: parts.join(' AND '), params };
-}
-
-/**
  * Keyspace and output dimensions every histogram translator starts from.
  */
 export function histSourceParts(input: {
@@ -198,7 +164,7 @@ function translateHistogramCountCouchbase(input: HistInput) {
     'TimeUnix',
   );
   const delta = `CASE WHEN AggregationTemporality = 1 THEN TONUMBER(\`Count\`) WHEN ${lagCount} IS NOT NULL THEN CASE WHEN TONUMBER(\`Count\`) < ${lagCount} THEN TONUMBER(\`Count\`) ELSE TONUMBER(\`Count\`) - ${lagCount} END ELSE 0 END`;
-  const where = sourceWhereClause(chartConfig, nameFilter);
+  const where = sourceWhereClause(chartConfig, nameFilter, { warmUp: true });
 
   const sourceSql = `SELECT ${dimSelect(bucket, group)}${sk} AS AttributesHash, AggregationTemporality, TONUMBER(\`Count\`) AS current_count, ${lagCount} AS prev_count, ${delta} AS delta FROM ${ks} AS d WHERE ${where.sql}`;
   const metricsSql = `SELECT ${dimProject(bucket, group)}SUM(delta) AS ${quoteIdent(valueAlias)} FROM source${dimGroupBy(bucket, group)}`;
@@ -231,7 +197,7 @@ function translateHistogramQuantileCouchbase(
   // current counts; otherwise subtract element-wise.
   const decreased = `ARRAY_LENGTH(ARRAY x FOR x IN ARRAY_RANGE(0, LEAST(ARRAY_LENGTH(d.BucketCounts), ARRAY_LENGTH(${lagCounts}))) WHEN TONUMBER(d.BucketCounts[x]) < TONUMBER((${lagCounts})[x]) END) > 0`;
   const rates = `CASE WHEN d.AggregationTemporality = 2 AND ${lagCounts} IS NULL THEN (ARRAY 0 FOR c IN d.BucketCounts END) WHEN d.AggregationTemporality = 1 OR ${lagCounts} IS NULL OR d.ExplicitBounds != ${lagBounds} OR ${decreased} THEN d.BucketCounts ELSE (ARRAY TONUMBER(d.BucketCounts[i]) - TONUMBER(IFNULL((${lagCounts})[i], 0)) FOR i IN ARRAY_RANGE(0, ARRAY_LENGTH(d.BucketCounts)) END) END`;
-  const where = sourceWhereClause(chartConfig, nameFilter);
+  const where = sourceWhereClause(chartConfig, nameFilter, { warmUp: true });
 
   const sourceSql = `SELECT ${dimSelect(bucket, group)}${sk} AS AttributesHash, d.ExplicitBounds AS ExplicitBounds, ${rates} AS rates FROM ${ks} AS d WHERE ${where.sql}`;
   // Alias source as s: under UNNEST every source column, the time bucket

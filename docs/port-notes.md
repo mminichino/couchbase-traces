@@ -3470,3 +3470,71 @@ a per-slot lock (`scripts/slot-lock.sh`) around `ci-int`, `dev-int`, and
   source `WHERE`; the port's `sourceWhereClause` filters to the requested
   range only. That is a separate behaviour (not a partition defect) and is
   logged as D23.
+
+### D23: metric source warm-up window (2026-11-23, `mm--v1-d23-metric-warmup-window`)
+
+- **Verified.** Against upstream `f172a489c818` `core/renderChartConfig.ts`.
+  The Sum (around line 2237) and Histogram / Exponential Histogram (around
+  line 2498) branches pass `includedDataInterval` to `renderMetricWhere`:
+  `convertDateRangeToGranularityString(dateRange, …, minGranularitySeconds)`
+  for 'auto', else `chartConfig.granularity`, so there is none without a
+  granularity. `timeFilterExpr` (around line 1037) turns it into
+  `ts >= toStartOfInterval(start, I) - I AND ts <= toStartOfInterval(end, I) + I`
+  (unit test "with includedDataInterval"). The Gauge branch has no
+  `includedDataInterval`. All three branches return `...restChartConfig`
+  with the time bucket as `timestampValueExpression`, so the outer query
+  keeps the requested `dateRange` on the bucket. The histogram branch says
+  so directly: "Timeseries queries discard padded buckets here". The
+  port's `sourceWhereClause` filtered to the requested range, and the Sum
+  outer query had `dateRange: undefined`.
+- **Fix.** `render/metrics/sourceWhere.ts` (moved out of `histogram.ts`,
+  which was over 300 lines) has `sourceDateRange(chartConfig, warmUp)` and
+  `sourceWhereClause(…, { warmUp })`. Sum, Histogram, and Exponential
+  Histogram pass `warmUp: true`; Gauge does not. The interval is
+  `resolveGranularityInterval` (same 'auto' sizing). New `time.ts` helpers
+  `bucketStart` and `shiftByIntervals` align bounds the way
+  `timeBucketExpr` buckets: epoch-aligned fixed intervals, Monday weeks
+  (`DATE_TRUNC_MILLIS` Sunday + `WEEK_ALIGN_OFFSET_MS`), and UTC months.
+  `translate.ts` `outerBucketRange` keeps the requested range on the
+  outer query for Sum (timeseries only) and both histogram types.
+- **ISO bucket bounds.** `outerBucketRange` also sets
+  `timestampFormat: 'iso8601'`: `__hdx_time_bucket` / `__hdx_time_bucket2`
+  are `MILLIS_TO_UTC` strings whatever the source's format. On an
+  `epoch_millis` source the histogram outer filter used to compare those
+  strings with numeric bounds, which in SQL++ matches nothing. Same fix,
+  since the new Sum outer filter would have the same fault.
+- **End operator.** The widened end keeps the port's `<` (or `<=` when
+  `dateRangeEndInclusive` is true). Upstream writes `<=` because its
+  `renderWhere` defaults the end to inclusive (D26). A point exactly at
+  `bucket(end) + I` falls in a bucket past the requested range, which the
+  outer filter drops, so the rows are the same.
+- **Unaligned start.** As upstream, the outer `bucket >= start` drops a
+  first bucket whose start is before an unaligned range start. Histograms
+  already did this; Sum timeseries now does too. Gauge still has no outer
+  range (upstream keeps one), which differs only for an unaligned start;
+  not changed here.
+- **Tests.** `render/metrics/__tests__/metricWarmup.test.ts` (12; 8 failed
+  before): widened bounds for all three types, 'auto' sizing (two days →
+  1 hour), week and month alignment, exclusive start kept, gauge and
+  non-timeseries unchanged, the Sum outer bucket range, and ISO bucket
+  bounds on an `epoch_millis` source. `metricWarmup.couchbase.int.test.ts`
+  (6; 4 failed before; the two stale-baseline cases pass either way, since an unread baseline and no warm-up give the same result) ports
+  upstream's exponential-histogram "subtracts cumulative counts using a
+  warm-up point outside the requested range" (D22 left it out; 0 before,
+  1 now), "uses a cumulative warm-up point outside the requested range as
+  the subtraction baseline" (no row before; √8 now), and "emits no value
+  when the cumulative baseline precedes the one-interval warm-up window".
+  Upstream has no Sum or explicit-histogram warm-up case, so the suite adds
+  one of each (first bucket 5 and 2, look-back and look-ahead buckets
+  dropped) and a Sum stale baseline. The D21 suite's non-timeseries
+  "first visible baseline" case still scans only the requested range, as
+  upstream. The exponential-histogram fixtures moved to
+  `__tests__/expHistogramFixtures.ts` and are shared with the D22 suite.
+- **Not ported here.** Upstream's "ignores other metrics, filtered
+  attribute series, and points outside the requested range" filters with a
+  chart `where`, which metric charts drop (D24).
+- **Found here.** D24: metric charts drop the chart `where`, and histogram
+  charts lose `filters`, because the outer `metrics` CTE has no OTel
+  columns. D25: the Sum select alias is not defaulted to `Value` (column
+  `sum(Rate)`). D26: the range end is exclusive by default where upstream's
+  is inclusive. See `docs/v1-release-plan.md` section 9.1.
