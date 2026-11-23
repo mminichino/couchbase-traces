@@ -2,8 +2,10 @@ import { authenticate } from '@/metadata/auth/localStrategy';
 import { AUTH_ERRORS, UserExistsError } from '@/metadata/auth/password';
 import { DuplicateKeyError } from '@/metadata/errors';
 import { isValidId } from '@/metadata/ids';
+import { INVITE_CLAIM_WAIT_MS } from '@/metadata/repos/teamInvites';
 import { hashOrgApiKey } from '@/metadata/repos/users';
 import { createMemoryStore } from '@/metadata/testing/memoryStore';
+import { claimUnique } from '@/metadata/unique';
 
 // scrypt at N=32768 is ~100ms per hash; a few per test is fine.
 jest.setTimeout(30_000);
@@ -308,5 +310,81 @@ describe('TeamInviteRepository', () => {
     expect(await store.teamInvites.deleteForTeam(team._id, invite._id)).toBe(
       false,
     );
+  });
+});
+
+describe('TeamInviteRepository concurrent creates (D13)', () => {
+  const sleep = (ms: number) => new Promise(r => setTimeout(r, ms));
+
+  /** Delays every team_invites insert, widening the claim-to-insert gap. */
+  function delayInviteInserts(
+    store: ReturnType<typeof setup>['store'],
+    ms: (n: number) => number,
+  ) {
+    const insert = store.kv.insert.bind(store.kv);
+    let n = 0;
+    jest
+      .spyOn(store.kv, 'insert')
+      .mockImplementation(async (c, key, value, o) => {
+        if (c === 'team_invites') await sleep(ms(n++));
+        return insert(c, key, value, o);
+      });
+  }
+
+  it('returns the winner’s invite to every concurrent caller', async () => {
+    const { store } = setup();
+    const team = await store.teams.createFirst({ name: 'A' });
+    delayInviteInserts(store, () => 50);
+
+    const results = await Promise.allSettled(
+      Array.from({ length: 20 }, () =>
+        store.teamInvites.getOrCreate(team._id, { email: 'race@x.io' }),
+      ),
+    );
+
+    expect(results.filter(r => r.status === 'rejected')).toEqual([]);
+    const ids = results.map(r => r.status === 'fulfilled' && r.value._id);
+    expect(new Set(ids).size).toBe(1);
+    expect(await store.teamInvites.listByTeam(team._id)).toHaveLength(1);
+  });
+
+  it('takes over a claim whose invite never appears', async () => {
+    const { store } = setup();
+    const team = await store.teams.createFirst({ name: 'A' });
+    // A crash between the member claim and the invite insert.
+    await claimUnique(
+      store.kv,
+      'invite_member',
+      [team._id, 'gone@x.io'],
+      '0'.repeat(24),
+    );
+
+    const started = Date.now();
+    const invite = await store.teamInvites.getOrCreate(team._id, {
+      email: 'gone@x.io',
+    });
+
+    expect(Date.now() - started).toBeLessThan(INVITE_CLAIM_WAIT_MS + 1000);
+    expect(
+      (await store.teamInvites.getByTeamEmail(team._id, 'gone@x.io'))?._id,
+    ).toBe(invite._id);
+    expect(await store.teamInvites.listByTeam(team._id)).toHaveLength(1);
+  });
+
+  it('a winner stalled past the bound yields to the caller that took over', async () => {
+    const { store } = setup();
+    const team = await store.teams.createFirst({ name: 'A' });
+    // The first insert stalls longer than a loser waits; later ones do not.
+    delayInviteInserts(store, n => (n === 0 ? INVITE_CLAIM_WAIT_MS + 300 : 0));
+
+    const slow = store.teamInvites.getOrCreate(team._id, { email: 's@x.io' });
+    await sleep(20);
+    const fast = store.teamInvites.getOrCreate(team._id, { email: 's@x.io' });
+    const [a, b] = await Promise.all([slow, fast]);
+
+    expect(a._id).toBe(b._id);
+    const invites = await store.teamInvites.listByTeam(team._id);
+    expect(invites.map(i => i._id)).toEqual([b._id]);
+    expect((await store.teamInvites.getByToken(a.token))?._id).toBe(b._id);
   });
 });

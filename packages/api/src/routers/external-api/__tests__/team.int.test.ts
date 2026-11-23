@@ -101,7 +101,7 @@ describe('External API v2 Team', () => {
     it('handles concurrent invites for the same email idempotently', async () => {
       const email = 'race@example.com';
       const responses = await Promise.all(
-        Array.from({ length: 5 }, () =>
+        Array.from({ length: 20 }, () =>
           authRequest('post', `${TEAM_BASE_URL}/invitation`).send({ email }),
         ),
       );

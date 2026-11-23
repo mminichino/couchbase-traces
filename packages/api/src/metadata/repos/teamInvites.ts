@@ -16,6 +16,13 @@ import { claimUnique, releaseUnique, resolveUnique } from '@/metadata/unique';
 const MEMBER = 'invite_member';
 const TOKEN = 'invite_token';
 
+/**
+ * Upper bound a request that lost the `{teamId, email}` claim waits for the
+ * winner's invite to appear (D13). The winner's claim and insert are two KV
+ * writes a few milliseconds apart; past this, the claim counts as abandoned.
+ */
+export const INVITE_CLAIM_WAIT_MS = 2000;
+
 function toInvite(id: Id, d: TeamInviteDoc): ITeamInvite {
   return {
     ...d,
@@ -42,6 +49,22 @@ export class TeamInviteRepository {
 
   private readonly inviteExists = async (id: string) =>
     (await this.kv.get('team_invites', id)) != null;
+
+  /**
+   * Stale-owner check for the member claim (D13). A claim with no invite yet
+   * is usually a winner between its claim and its insert, not a crash, so
+   * poll the invite by KV get (read-your-writes) for up to
+   * INVITE_CLAIM_WAIT_MS before treating the claim as abandoned.
+   */
+  private readonly inviteAppears = async (id: string) => {
+    const deadline = Date.now() + INVITE_CLAIM_WAIT_MS;
+    for (let delay = 10; ; delay = Math.min(delay * 2, 200)) {
+      if (await this.inviteExists(id)) return true;
+      const left = deadline - Date.now();
+      if (left <= 0) return false;
+      await new Promise(r => setTimeout(r, Math.min(delay, left)));
+    }
+  };
 
   async getById(id: Id): Promise<ITeamInvite | null> {
     if (!isValidId(id)) return null;
@@ -84,11 +107,13 @@ export class TeamInviteRepository {
     try {
       await claimUnique(this.kv, MEMBER, [teamId, email], id, {
         expiry,
-        ownerExists: this.inviteExists,
+        ownerExists: this.inviteAppears,
         now: this.now,
       });
     } catch (err) {
       if (!(err instanceof DuplicateKeyError)) throw err;
+      // The owner's invite appeared while we waited, or the claim moved to
+      // a newer owner whose invite did; read whichever holds the claim.
       const winner = await this.getByTeamEmail(teamId, email);
       if (winner) return winner;
       throw err;
@@ -100,7 +125,23 @@ export class TeamInviteRepository {
       await this.releaseClaims(id, doc);
       throw err;
     }
+    // A stall longer than INVITE_CLAIM_WAIT_MS between our claim and insert
+    // lets another request take the claim over. Its invite is the one
+    // getByTeamEmail resolves, so drop ours and return it.
+    const holder = await resolveUnique(this.kv, MEMBER, [teamId, email]);
+    if (holder !== id) {
+      await this.kv.remove('team_invites', id);
+      await releaseUnique(this.kv, TOKEN, [doc.token], id);
+      const winner = holder == null ? null : await this.waitForInvite(holder);
+      if (winner) return winner;
+      throw new DuplicateKeyError(MEMBER);
+    }
     return toInvite(id, doc);
+  }
+
+  /** The invite `id` once its insert lands, within INVITE_CLAIM_WAIT_MS. */
+  private async waitForInvite(id: Id): Promise<ITeamInvite | null> {
+    return (await this.inviteAppears(id)) ? this.getById(id) : null;
   }
 
   async listByTeam(teamId: Id): Promise<ITeamInvite[]> {
