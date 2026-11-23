@@ -3322,7 +3322,7 @@ a per-slot lock (`scripts/slot-lock.sh`) around `ci-int`, `dev-int`, and
   an expression group-by, upstream keeps the raw expression on its wrapper
   and the query fails. The SQL++ wrapper keeps the named group column, so
   the sort works. Upstream's test pins that failure; the port expects the
-  working sort.
+  working sort. The user kept this divergence (2026-11-23).
 - **Tests.** `render/__tests__/multiSeriesOuter.test.ts` (10) and
   `multiSeriesSort.test.ts` (11) port upstream's "outer HAVING / ORDER BY /
   LIMIT" block with the same inputs (`multiSeriesFixtures.ts`). 18 of the

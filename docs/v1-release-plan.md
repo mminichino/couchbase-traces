@@ -395,7 +395,7 @@ pushes to `main` directly.
 | D17   | Defects: multi-series HAVING and ORDER BY (Q36)           | Found in D16 (section 9.1); own PR after D13; fixed, Q41                                                                                                                  | S    | D13                           |
 | D18   | Defects: intermittent common-utils live tests (Q37)       | Found in D12 (section 9.1); seed lag fixed with D13; SDK timeout remainder in its own PR before D17 (Q39)                                                                 | S    | —                             |
 | D19   | Defects: `make ci-int` exits 1 after every test passed    | Found in D13 (section 9.1); with the D18 remainder (Q40)                                                                                                                  | S    | —                             |
-| D20   | Defects: mixed gauge/histogram charts drop scalar groups  | Found in D17 (section 9.1); placement not decided                                                                                                                         | S    | D17                           |
+| D20   | Defects: mixed gauge/histogram charts drop scalar groups  | Found in D17 (section 9.1); next phase after D17 (Q42)                                                                                                                    | S    | D17                           |
 | D14   | Dev tooling: live-test port offset fallback               | Found in D7 (section 9.1)                                                                                                                                                 | S    | —                             |
 | R2a   | Port deferred int suites: internal and external API       | B1 (10 suites: `routers/api/{dashboard,iac,sources,connections}`, `routers/external-api/{charts,search,sources,sources-crud,connections}`, `middleware/queryAttribution`) | L    | D1                            |
 | R2b   | Port deferred int suites: alerts                          | B1 (5 suites: `checkAlerts`, `multiChannelAlerts`, `renderAlertTemplate`, `singleInvocationAlert`, `providers/default`; 335 tests, 93 failing per R0)                     | L    | R2c, D1, D4, D6               |
@@ -817,7 +817,8 @@ Evidence: with a group-by, `multiSeries.ts` gives a gauge or sum branch only
 dropped and every scalar row of a bucket joins into one row. Upstream keeps
 the scalar branch's group columns, NULL-pads them in histogram branches, and
 keeps the two classes' rows apart. D17 sorts such a chart on `` `group`[i] ``,
-which matches what the branches project today. Placement: not decided.
+which matches what the branches project today. Placement (Q42): the next
+phase, right after D17.
 
 #### D18: Common-utils live tests fail intermittently (found in D12, size S)
 
@@ -1136,7 +1137,8 @@ in that phase.
 | Q38 | Couchbase Node SDK version (2026-11-22)                                                                  | Stay on 4.7.x until Couchbase lists 4.8 for Server 8.0; keep the int-test watchdog. Evidence: 4.8.0 fixes a teardown hang (JSCBC-1520, JSCBC-1522), the strongest lead for the PR #27 shard 1 stall, but the compatibility matrix lists 4.7, not 4.8, for 8.0 (AGENTS.md platform rule). Follow-up F1: revisit when 4.8 is listed | F1             |
 | Q39 | Placement of the D18 SDK-timeout remainder (2026-11-22)                                                  | Its own small PR (`mm--v1-d18-sdk-timeout`), merged before D17: SDK error-context logging on TIMEOUT, then `run.sh` loops with a fresh cluster each run                                                                                                                                                                          | D17, D18       |
 | Q40 | One-off `make ci-int` exit 1 after every test passed (2026-11-22)                                        | Logged as defect D19 and investigated in the D18 remainder PR                                                                                                                                                                                                                                                                     | D18, D19       | F1             |
-| Q41 | SQL++ form of the D17 outer HAVING and group-by sort (2026-11-22)                                        | HAVING is a WHERE on a wrapper in every shape (SQL++ HAVING rejects aliases, windows, and a missing GROUP BY); group-by sorts read the named group column instead of companion columns. Same rows and columns as upstream; a `share_of_total` HAVING with an expression group-by sort now runs, where upstream fails           | D17            |
+| Q41 | SQL++ form of the D17 outer HAVING and group-by sort (2026-11-22)                                        | HAVING is a WHERE on a wrapper in every shape (SQL++ HAVING rejects aliases, windows, and a missing GROUP BY); group-by sorts read the named group column instead of companion columns. Same rows and columns as upstream; a `share_of_total` HAVING with an expression group-by sort now runs, where upstream fails. User kept this divergence (2026-11-23) | D17            |
+| Q42 | Placement of D20: mixed gauge/histogram charts drop scalar group columns (2026-11-23)                    | The next phase, right after D17                                                                                                                                                                                                                                                                                                   | D17, D20       |
 
 ## 11. Acceptance criteria (v1.0.0 is done when)
 
