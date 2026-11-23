@@ -8,6 +8,7 @@ import { type Cluster, type ConnectOptions } from 'couchbase';
 import * as couchbase from 'couchbase';
 
 import { resolveWanProfile } from './connstr';
+import { dnsConfig } from './dnsConfig';
 import { CouchbaseQueryError } from './errors';
 import type { CouchbaseLogger } from './types';
 
@@ -144,6 +145,7 @@ export async function connectCluster(
     username: conn.username,
     password: conn.password ?? '',
     timeouts: { connectTimeout: connectTimeoutMs },
+    dnsConfig: dnsConfig(),
   };
   if (resolveWanProfile(conn.host, conn.wanProfile)) {
     options.configProfile = 'wanDevelopment';

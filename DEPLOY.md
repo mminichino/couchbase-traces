@@ -60,6 +60,7 @@ environment variables tune it; each takes a positive integer.
 | `CBT_COUCHBASE_DEFAULT_TIMEOUT_MS` | `60000`     | Query timeout when the request and source set none         |
 | `CBT_COUCHBASE_MAX_TIMEOUT_MS`     | `600000`    | Upper bound for any query timeout                          |
 | `CBT_COUCHBASE_CONNECT_TIMEOUT_MS` | `10000`     | Timeout for opening a cluster connection                   |
+| `CBT_COUCHBASE_DNS_SRV_TIMEOUT_MS` | `2000`      | DNS SRV lookup budget when a connstr names one hostname    |
 | `CBT_COUCHBASE_CLUSTER_IDLE_MS`    | `600000`    | Idle time before a cached cluster connection is closed     |
 | `CBT_COUCHBASE_MAX_CLUSTERS`       | `50`        | Cluster connections kept open per API process              |
 | `CBT_COUCHBASE_MAX_BUFFERED_BYTES` | `268435456` | Result size limit for formats that buffer the whole result |

@@ -62,6 +62,12 @@ describe('loadMetadataConfig', () => {
       collection: 'txn_meta',
     });
   });
+
+  it('gives DNS SRV the shared 2 s budget, not the SDK 500 ms (D18)', () => {
+    expect(connectOptions(loadMetadataConfig(base)).dnsConfig).toEqual({
+      dnsSrvTimeout: 2000,
+    });
+  });
 });
 
 describe('connectWithRetry', () => {

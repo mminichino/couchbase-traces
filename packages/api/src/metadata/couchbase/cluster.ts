@@ -1,3 +1,4 @@
+import { dnsConfig } from '@couchbase-traces/common-utils/dist/couchbase/dnsConfig';
 import {
   type Cluster,
   type Collection,
@@ -29,6 +30,9 @@ export function connectOptions(cfg: MetadataConfig): ConnectOptions {
       kvTimeout: cfg.kvTimeoutMs,
       queryTimeout: cfg.queryTimeoutMs,
     },
+    // SDK default SRV budget (500 ms) fails the connect on one slow DNS
+    // answer for a single-hostname connstr (D18).
+    dnsConfig: dnsConfig(),
     transactions: {
       durabilityLevel:
         cfg.txDurability === 'none'

@@ -15,6 +15,11 @@ const {
     { paths: [root] },
   ),
 );
+const { dnsConfig } = require(
+  require.resolve('@couchbase-traces/common-utils/dist/couchbase/dnsConfig', {
+    paths: [root],
+  }),
+);
 
 const env = process.env;
 
@@ -24,6 +29,7 @@ async function main() {
     {
       username: env.CBT_TEST_COUCHBASE_ADMIN_USER || 'Administrator',
       password: env.CBT_TEST_COUCHBASE_ADMIN_PASSWORD || 'cbt-test-admin',
+      dnsConfig: dnsConfig(),
     },
   );
   try {

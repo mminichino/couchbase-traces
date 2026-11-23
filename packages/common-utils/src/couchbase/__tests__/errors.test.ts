@@ -1,5 +1,6 @@
 import {
   CouchbaseQueryError,
+  describeSdkError,
   deserialize,
   fromSdkError,
   httpStatusForCode,
@@ -232,5 +233,39 @@ describe('helpers', () => {
       isAccessDeniedError(new CouchbaseQueryError('INTERNAL', 'x', 's')),
     ).toBe(false);
     expect(isAccessDeniedError(new Error('ACCESS_DENIED'))).toBe(false);
+  });
+});
+
+describe('describeSdkError', () => {
+  it('keeps the SDK class, core cause, and scrubbed request context', () => {
+    const err = sdkError('UnambiguousTimeoutError', 'unambiguous timeout', {
+      statement: 'SELECT 1',
+      last_dispatched_to: '127.0.0.1:8093',
+      retry_reasons: ['service_not_available'],
+      client_context_id: 'couchbase://admin:hunter2@db',
+    });
+    Object.defineProperty(err, 'cause', {
+      value: { code: 14, message: 'unambiguous_timeout' },
+    });
+    const wrapped = fromSdkError(err, 'SELECT 1');
+
+    expect(describeSdkError(wrapped, ['hunter2'])).toEqual({
+      name: 'UnambiguousTimeoutError',
+      message: 'unambiguous timeout',
+      cause: { code: 14, message: 'unambiguous_timeout' },
+      context: {
+        statement: 'SELECT 1',
+        last_dispatched_to: '127.0.0.1:8093',
+        retry_reasons: ['service_not_available'],
+        client_context_id: '[connection string]',
+      },
+    });
+  });
+
+  it('describes a bare error without cause or context', () => {
+    expect(describeSdkError(new Error('boom'))).toEqual({
+      name: 'Error',
+      message: 'boom',
+    });
   });
 });

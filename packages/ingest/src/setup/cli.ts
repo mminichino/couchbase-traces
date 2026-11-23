@@ -1,3 +1,4 @@
+import { dnsConfig } from '@couchbase-traces/common-utils/dist/couchbase/dnsConfig';
 import { connect, type ConnectOptions } from 'couchbase';
 
 import { isCapella, ttlByCollection, wanProfile } from '@/config';
@@ -234,6 +235,7 @@ async function connectAdmin(env: NodeJS.ProcessEnv, connstr: string) {
     username: env.CBT_COUCHBASE_ADMIN_USER,
     password: env.CBT_COUCHBASE_ADMIN_PASSWORD,
     timeouts: { connectTimeout: 10_000 },
+    dnsConfig: dnsConfig(env),
   };
   if (wanProfile(connstr, env.CBT_COUCHBASE_WAN_PROFILE)) {
     options.configProfile = 'wanDevelopment';

@@ -1,6 +1,7 @@
 import { execFile } from 'node:child_process';
 import { promisify } from 'node:util';
 
+import { dnsConfig } from '@couchbase-traces/common-utils/dist/couchbase/dnsConfig';
 import { type Cluster, connect } from 'couchbase';
 
 import { connectCluster, loadConfig } from '@/config';
@@ -180,6 +181,7 @@ describe('ingest integration', () => {
       username: setupEnv.CBT_COUCHBASE_ADMIN_USER,
       password: setupEnv.CBT_COUCHBASE_ADMIN_PASSWORD,
       timeouts: { connectTimeout: 20_000, queryTimeout: 60_000 },
+      dnsConfig: dnsConfig(),
     });
 
     const config = loadConfig(setupEnv);
@@ -346,6 +348,7 @@ describe('ingest integration', () => {
       username: 'cbt_otel_ingest',
       password: 'cbt-otel-ingest-password',
       timeouts: { connectTimeout: 20_000, queryTimeout: 20_000 },
+      dnsConfig: dnsConfig(),
     });
     await expect(
       reader.query(
@@ -358,6 +361,7 @@ describe('ingest integration', () => {
       username: 'cbt_otel_query',
       password: 'cbt-otel-query-password',
       timeouts: { connectTimeout: 20_000, kvTimeout: 20_000 },
+      dnsConfig: dnsConfig(),
     });
     await expect(
       writer
