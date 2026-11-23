@@ -11,7 +11,12 @@ import {
 } from '@/core/formula';
 import { GROUP_ALIAS } from '@/core/histogram';
 import { CouchbaseUnsupportedError } from '@/couchbase/errors';
-import { groupByItems, groupByOutputRef } from '@/couchbase/render/groupBy';
+import {
+  groupByItemName,
+  groupByItems,
+  groupByOutputRef,
+} from '@/couchbase/render/groupBy';
+import { couchbaseMetadataRef } from '@/couchbase/render/metadata';
 import { disjointSqlParams, quoteIdent } from '@/couchbase/sqlpp';
 import type {
   BuilderChartConfigWithOptDateRange,
@@ -19,6 +24,8 @@ import type {
   QuerySettings,
 } from '@/types';
 import { MetricsDataType } from '@/types';
+
+import { renderMultiSeriesOuterCouchbase } from './multiSeriesOuter';
 
 const MULTI_SERIES_VALUE_ALIAS = '__hdx_value';
 const MULTI_SERIES_IDX_ALIAS = '__hdx_series_idx';
@@ -95,9 +102,8 @@ export async function renderMultiSeriesMetricChartConfigCouchbase(
   const hasGranularity = isUsingGranularity(chartConfig);
   const includeGroupBy =
     isUsingGroupBy(chartConfig) && chartConfig.selectGroupBy !== false;
-  const groupExprs = includeGroupBy
-    ? groupByItems(chartConfig).map(groupByOutputRef)
-    : [];
+  const groupItems = includeGroupBy ? groupByItems(chartConfig) : [];
+  const groupExprs = groupItems.map(groupByOutputRef);
   const anyHistogram = select.some(isHistogramClassSelect);
   const hasFormulas = formulaColumns.length > 0;
   const isRatio =
@@ -108,6 +114,8 @@ export async function renderMultiSeriesMetricChartConfigCouchbase(
   const branches = disjointSqlParams(
     await Promise.all(
       select.map(async (s, splitIdx) => {
+        // HAVING, ORDER BY and LIMIT apply to the joined result, not to each
+        // series (renderMultiSeriesOuterCouchbase).
         const branchConfig: ChartConfigWithOptDateRange = {
           ...chartConfig,
           select: [{ ...s, alias: MULTI_SERIES_VALUE_ALIAS }],
@@ -172,6 +180,7 @@ export async function renderMultiSeriesMetricChartConfigCouchbase(
     `MAX(CASE WHEN ${quoteIdent(MULTI_SERIES_IDX_ALIAS)} = ${splitIdx} THEN ${quoteIdent(MULTI_SERIES_VALUE_ALIAS)} END)`;
 
   const projection: string[] = [];
+  let ratioColumn: string | undefined;
   if (hasFormulas) {
     if (chartConfig.showOperandSeries !== false) {
       outputNames.forEach((outputName, splitIdx) => {
@@ -200,9 +209,9 @@ export async function renderMultiSeriesMetricChartConfigCouchbase(
               : ''
           })`
         : valueExprFor(1);
-    const ratioName = `${outputNames[0]}/${outputNames[1].replace(/__\d+$/, '')}`;
+    ratioColumn = `${outputNames[0]}/${outputNames[1].replace(/__\d+$/, '')}`;
     projection.push(
-      `(${numerator} / NULLIF(${denominator}, 0)) AS ${quoteIdent(ratioName)}`,
+      `(${numerator} / NULLIF(${denominator}, 0)) AS ${quoteIdent(ratioColumn)}`,
     );
   } else {
     outputNames.forEach((outputName, splitIdx) => {
@@ -231,12 +240,29 @@ export async function renderMultiSeriesMetricChartConfigCouchbase(
   if (groupCols.length > 0) {
     sql += ` GROUP BY ${groupCols.join(', ')}`;
   }
-  if (hasGranularity) {
-    sql += ` ORDER BY ${quoteIdent(FIXED_TIME_BUCKET_EXPR_ALIAS)}`;
-  }
-  if (chartConfig.limit?.limit != null) {
-    sql += ` LIMIT ${Number(chartConfig.limit.limit)}`;
-  }
 
-  return { sql, params, dialect: 'sqlpp' };
+  const operandsProjected =
+    !isRatio && !(hasFormulas && chartConfig.showOperandSeries === false);
+  const outputColumns = [
+    ...(operandsProjected ? outputNames : []),
+    ...formulaColumns.map(f => f.name),
+    ...(ratioColumn != null ? [ratioColumn] : []),
+    ...(includeGroupBy && !anyHistogram ? groupItems.map(groupByItemName) : []),
+    ...(hasGranularity ? [FIXED_TIME_BUCKET_EXPR_ALIAS] : []),
+  ];
+  const rendered = await renderMultiSeriesOuterCouchbase({
+    chartConfig,
+    core: { statement: sql, parameters: params },
+    outputColumns,
+    groupItems,
+    packedGroups: anyHistogram,
+    hasGranularity,
+    ctx: { metadata: couchbaseMetadataRef(metadata) },
+  });
+
+  return {
+    sql: rendered.statement,
+    params: rendered.parameters,
+    dialect: 'sqlpp',
+  };
 }
