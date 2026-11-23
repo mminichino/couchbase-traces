@@ -399,9 +399,11 @@ pushes to `main` directly.
 | D21   | Defects: cumulative histogram quantile zero-delta row     | Found in D20 (section 9.1); own PR before R2a (Q43); fixed                                                                                                                | S    | D20                           |
 | D22   | Defects: exp-histogram count partitions by a select alias | Found in D21 (section 9.1); own PR before R2a (Q44); fixed                                                                                                                | S    | D21                           |
 | D23   | Defects: metric source CTEs omit the warm-up window       | Found in D22 (section 9.1); own PR before R2a (Q45); fixed                                                                                                                | M    | D22                           |
-| D24   | Defects: metric charts ignore `where`; histograms `filters`| Found in D23 (section 9.1); placement pending (Q46)                                                                                                                       | M    | —                             |
-| D25   | Defects: Sum select alias is not defaulted to `Value`     | Found in D23 (section 9.1); placement pending (Q47)                                                                                                                       | S    | —                             |
-| D26   | Defects: range end is exclusive where upstream is inclusive| Found in D23 (section 9.1); placement pending (Q48)                                                                                                                       | M    | —                             |
+| D24   | Defects: metric charts ignore `where`; histograms `filters`| Found in D23 (section 9.1); with D25 in one PR before R2a (Q46); fixed                                                                                                    | M    | —                             |
+| D25   | Defects: Sum select alias is not defaulted to `Value`     | Found in D23 (section 9.1); with D24 (Q47); fixed                                                                                                                         | S    | —                             |
+| D26   | Defects: range end is exclusive where upstream is inclusive| Found in D23 (section 9.1); own PR after D24/D25, before R2a (Q48)                                                                                                        | M    | —                             |
+| D27   | Defects: metric sources omit upstream `Flags` bit-0 filter | Found in D24 (section 9.1); placement pending (Q49)                                                                                                                       | S    | —                             |
+| D28   | Defects: unset `whereLanguage` is Lucene, not SQL          | Found in D24 (section 9.1); placement pending (Q50)                                                                                                                       | S    | —                             |
 | D14   | Dev tooling: live-test port offset fallback               | Found in D7 (section 9.1)                                                                                                                                                 | S    | —                             |
 | R2a   | Port deferred int suites: internal and external API       | B1 (10 suites: `routers/api/{dashboard,iac,sources,connections}`, `routers/external-api/{charts,search,sources,sources-crud,connections}`, `middleware/queryAttribution`) | L    | D1                            |
 | R2b   | Port deferred int suites: alerts                          | B1 (5 suites: `checkAlerts`, `multiChannelAlerts`, `renderAlertTemplate`, `singleInvocationAlert`, `providers/default`; 335 tests, 93 failing per R0)                     | L    | R2c, D1, D4, D6               |
@@ -963,14 +965,44 @@ four). `filters` survive only on the outer query: gauge and sum `Bucketed`
 carry the OTel columns, but histogram `metrics` has only bucket, group, and
 value, so a filtered histogram chart returns no rows. Blocks upstream's
 "ignores other metrics, filtered attribute series, and points outside the
-requested range". Placement: pending (Q46).
+requested range". Placement (Q46): with D25 in one PR, before R2a.
+
+Result (2026-11-23, `mm--v1-d24-metric-where-and-value-alias`): fixed.
+`render/metrics/sourceWhere.ts` `metricPredicate` renders the chart's
+`where` (language `?? 'sql'`, as upstream), `filters` (AND / OR), and
+select aggConditions through `renderWhereCouchbase` against the metric
+collection, and `sourceWhereClause` appends it after the name and (D23)
+date range, built with `sqlpp` so its parameters renumber after the
+range's. Every metric type passes it to its source CTE (histograms through
+`HistInput.predicate`); the outer query clears `where` and `filters`, as
+upstream destructures `filters` off. `renderChartConfigCouchbase` now
+passes its metadata to the translator so Lucene fields resolve. Tests:
+`render/metrics/__tests__/metricWhere.test.ts` (23; 20 failed before) and
+`metricWhere.couchbase.int.test.ts` (5; all failed before), which ports
+upstream's "ignores other metrics, filtered attribute series, and points
+outside the requested range" (the D23 warm-up case left for D24), "excludes
+lower-scale filtered series and unrelated metrics before choosing the
+normalized scale", and "sum values as without rate computation", and adds
+histogram `filters` and gauge `where` / aggCondition cases.
+Multi-series and formula charts render each select as a single-select
+branch, so each branch source has the chart `where` and only its own
+aggCondition (checked; `metricWhere.test.ts` pins it; 23 tests in all, 20
+failed before).
+- Found here, not fixed: D27, D28.
 
 #### D25: Sum select alias is not defaulted to `Value` (found in D23, size S)
 
 Evidence: upstream's Sum branch spreads `{ alias: 'Value', ..._select }`,
 so a select with no alias returns a `Value` column. The port's Sum branch
 keeps the caller's alias, so the column is `sum(Rate)` (seen live in D23).
-Gauge has no default upstream either. Placement: pending (Q47).
+Gauge has no default upstream either. Placement (Q47): with D24.
+
+Result (2026-11-23, same branch): fixed. The Sum select gets
+`alias: first.alias?.trim() || 'Value'` for every aggFn (and for no aggFn,
+upstream `last_value(Sum)`); a caller alias is kept and gauge is
+unchanged. Covered by `metricWhere.test.ts` (3 of the 23) and the live
+"sum values as without rate computation" case, whose rows are upstream's
+snapshot (950400 and 1641600).
 
 #### D26: Date-range end is exclusive by default; upstream is inclusive (found in D23, size M)
 
@@ -979,7 +1011,28 @@ Evidence: upstream `renderWhere` passes `dateRangeEndInclusive ?? true`, so
 do). The port's `where.ts` and metric `sourceWhereClause` use `< end`
 unless it is `true`. A row exactly at the range end is returned upstream
 and not here, in search, charts, and metrics. Not recorded as a decision in
-`docs/port-notes.md` or `docs/parity.md`. Placement: pending (Q48).
+`docs/port-notes.md` or `docs/parity.md`. Placement (Q48): match upstream,
+so a row exactly at the range end is included, in its own PR after the
+D24/D25 PR and before R2a.
+
+#### D27: Metric sources omit upstream's `Flags` no-recorded-value filter (found in D24, size S)
+
+Evidence: upstream `renderMetricWhere` appends `bitAnd(Flags, 1) = 0` when
+the metric table has a non-nullable integer `Flags` column, dropping
+points flagged "no recorded value" (OTLP `DataPointFlags` bit 0). The
+port's OTel schema declares `Flags` (UInt32) on the metric collections,
+but no metric source filters on it, so such points count toward deltas and
+quantiles. SQL++ form: `BITAND(IFMISSINGORNULL(d.Flags, 0), 1) = 0`.
+Placement: pending (Q49).
+
+#### D28: An unset `whereLanguage` compiles as Lucene; upstream defaults it to SQL (found in D24, size S)
+
+Evidence: upstream `renderWhere` uses `chartConfig.whereLanguage ?? 'sql'`.
+The port's `compileWhereExpressionCouchbase` treats only `'sql'` as SQL, so
+a `where` with no language goes to the Lucene builder. D24 defaults it for
+metric sources only. Changing it in `where.ts` passed all 2234
+common-utils unit tests, but it changes search, chart, and alert rendering,
+so it gets its own review. Placement: pending (Q50).
 
 #### D18: Common-utils live tests fail intermittently (found in D12, size S)
 
@@ -1303,9 +1356,11 @@ in that phase.
 | Q43 | Placement of D21: cumulative histogram quantile emits a NULL row for a zero-delta bucket (2026-11-23)    | Its own PR, before R2a (user, 2026-11-23)                                                                                                                                                                                                                                                                                         | D21            |
 | Q44 | Placement of D22: exponential-histogram count partitions deltas by a select alias (2026-11-23)           | Its own PR, before R2a (user, 2026-11-23)                                                                                                                                                                                                                                                                                         | D22            |
 | Q45 | Placement of D23: metric source CTEs omit upstream's one-interval warm-up window (2026-11-23)            | Its own PR, before R2a (user, 2026-11-23)                                                                                                                                                                                                                                                                                         | D23            |
-| Q46 | Placement of D24: metric charts ignore `where`; histograms lose `filters` (2026-11-23)                   | Pending; proposed: its own PR before R2a (filtered metric charts return wrong or no rows)                                                                                                                                                                                                                                         | D24            |
-| Q47 | Placement of D25: Sum select alias is not defaulted to `Value` (2026-11-23)                              | Pending; proposed: with D24                                                                                                                                                                                                                                                                                                       | D25            |
-| Q48 | D26: keep the exclusive range end, or default it to inclusive as upstream (2026-11-23)                   | Pending; proposed: match upstream in its own PR before R2a, since parity is the rule                                                                                                                                                                                                                                              | D26            |
+| Q46 | Placement of D24: metric charts ignore `where`; histograms lose `filters` (2026-11-23)                   | D24 and D25 together in one PR, before R2a (user, 2026-11-23)                                                                                                                                                                                                                                                                     | D24            |
+| Q47 | Placement of D25: Sum select alias is not defaulted to `Value` (2026-11-23)                              | With D24, in the same PR (user, 2026-11-23)                                                                                                                                                                                                                                                                                       | D25            |
+| Q48 | D26: keep the exclusive range end, or default it to inclusive as upstream (2026-11-23)                   | Match upstream (a row exactly at the range end is included), in its own PR after the D24/D25 PR, before R2a (user, 2026-11-23)                                                                                                                                                                                                    | D26            |
+| Q49 | Placement of D27: metric sources omit the `Flags` no-recorded-value filter (2026-11-23)                  | Pending; proposed: with D26, before R2a                                                                                                                                                                                                                                                                                           | D27            |
+| Q50 | Placement of D28: unset `whereLanguage` compiles as Lucene outside metrics (2026-11-23)                  | Pending; proposed: with D26, before R2a                                                                                                                                                                                                                                                                                           | D28            |
 
 ## 11. Acceptance criteria (v1.0.0 is done when)
 
@@ -1386,6 +1441,8 @@ in that phase.
 | D24 Metric `where` and histogram `filters` dropped              | M    |
 | D25 Sum alias default `Value`                                   | S    |
 | D26 Exclusive range end                                         | M    |
+| D27 Metric `Flags` bit-0 filter                                 | S    |
+| D28 Unset `whereLanguage` default                               | S    |
 | D14 Live-test port offset fallback                              | S    |
 | R2a Deferred API int suites (10 suites, 380 tests, 80 failing)  | L    |
 | R2b Deferred alert int suites (5 suites, 335 tests, 93 failing) | L    |

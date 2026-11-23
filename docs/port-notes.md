@@ -3538,3 +3538,69 @@ a per-slot lock (`scripts/slot-lock.sh`) around `ci-int`, `dev-int`, and
   columns. D25: the Sum select alias is not defaulted to `Value` (column
   `sum(Rate)`). D26: the range end is exclusive by default where upstream's
   is inclusive. See `docs/v1-release-plan.md` section 9.1.
+
+### D24 + D25: metric `where`, `filters`, and the Sum `Value` alias (2026-11-23, `mm--v1-d24-metric-where-and-value-alias`)
+
+- **Verified.** Against upstream `f172a489c818` `core/renderChartConfig.ts`.
+  `translateMetricChartConfig` destructures `filters` off the chart and
+  passes them (plus the metric-name filter) to `renderMetricWhere` for the
+  Gauge, Sum, and histogram sources. `renderMetricWhere` is `renderWhere`
+  (chart `where` with `whereLanguage ?? 'sql'`, `filters`, and every
+  select's aggCondition when all selects have one) plus `bitAnd(Flags, 1)
+  = 0` when the table has a non-nullable integer `Flags`. The returned
+  configs clear `where` and carry no `filters`. The Sum branch's outer
+  select spreads `{ alias: 'Value', ..._select }`; Gauge's does not.
+- **Port before.** `translateMetricChartConfigCouchbase` set `where: ''`
+  and left `filters` on the outer query; `sourceWhereClause` had only the
+  name and date range. A metric chart's `where` never reached SQL++. Gauge
+  and Sum `Bucketed` carry the OTel columns, so their outer `filters`
+  happened to work; histogram `metrics` has only bucket, group, and value,
+  so a filtered histogram chart compared MISSING and returned no rows. The
+  Sum select kept the caller's (absent) alias: `sum(Rate)`.
+- **Fix.** `sourceWhere.ts` `metricPredicate(chartConfig, from, metadata)`
+  calls `renderWhereCouchbase` on the chart with the metric collection as
+  `from`, no date range (the source range is `sourceWhereClause`'s, which
+  D23 widens), and `whereLanguage ?? 'sql'`. `sourceWhereClause(…,
+  { predicate })` appends it with `sqlpp`, so the predicate's `$pN`
+  renumber after the range's; the name and range come first.
+  `translateMetricChartConfigCouchbase(chartConfig, metadata)` computes it
+  once and passes it to gauge, sum, and (through `HistInput.predicate`)
+  both histogram translators. All four outer configs clear `filters`.
+  `renderChartConfigCouchbase` passes its metadata, so Lucene fields
+  resolve against the metric collection (with no columns, a Lucene field
+  compiles to `FALSE`). Sum select: `alias: first.alias?.trim() || 'Value'`.
+  `translate.ts` grew past 300 lines, so its outer-query helpers
+  (granularity, Source → Bucketed pair, outer range, histogram outer) moved
+  to `render/metrics/outer.ts`.
+  `translate.ts` grew past 300 lines, so its outer-query helpers
+  (granularity, Source → Bucketed pair, outer range, histogram outer) moved
+  to `render/metrics/outer.ts`.
+- **Language default.** Only the metric path defaults `whereLanguage` to
+  SQL. `compileWhereExpressionCouchbase` sends an undefined language to the
+  Lucene builder, unlike upstream's `?? 'sql'`. Defaulting it globally
+  passed every common-utils unit test, but it changes search behavior too,
+  so it is left out of this PR and logged as D28.
+- **Multi-series.** Multi-series and formula charts render each select as a
+  single-select branch, so each branch source has the chart `where` and
+  only its own aggCondition (matching upstream's per-branch translation).
+  `metricWhere.test.ts` pins this.
+- **Tests.** `render/metrics/__tests__/metricWhere.test.ts` (23; 20 failed
+  before): SQL `where` (no language), Lucene `where`, `filters` with OR, and
+  aggCondition, each in the source and not the outer query, for all four
+  types; predicate order; the multi-series branches; and the Sum alias
+  (`sum`, `increase`, no aggFn → `Value`; caller alias kept; gauge
+  unchanged). `metricWhere.couchbase.int.test.ts` (5; all failed before)
+  ports upstream's "ignores other metrics, filtered attribute series, and
+  points outside the requested range" (p50 2 at +1m), "excludes lower-scale
+  filtered series and unrelated metrics before choosing the normalized
+  scale" (2^0.75), and "sum values as without rate computation" (upstream's
+  podAgePoints, Lucene `ServiceName:api`, rows 950400 and 1641600 in a
+  `Value` column, plus one `other`-service series the `where` must drop).
+  Upstream writes that case's granularity as `'5 minutes'`, which
+  `SQLIntervalSchema` rejects; the port uses `'5 minute'`. Added: histogram
+  SQL and Lucene `filters`, and gauge `where` and aggCondition. `runChart`
+  (`__tests__/liveCluster.ts`) takes optional metadata; the suite maps its
+  collections to the declared OTel metric columns.
+- **Found here.** D27: no metric source applies upstream's `Flags` bit-0
+  ("no recorded value") filter; the port's schema declares `Flags` UInt32.
+  D28: an unset `whereLanguage` is Lucene outside metrics. See `docs/v1-release-plan.md` section 9.1.

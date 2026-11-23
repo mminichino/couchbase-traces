@@ -7,7 +7,7 @@ import { lag } from '@/couchbase/fn/scalar';
 import { resolveGranularityInterval } from '@/couchbase/render/granularity';
 import { groupByItems } from '@/couchbase/render/groupBy';
 import { timestampFormatOf } from '@/couchbase/render/select';
-import { keyspace, quoteIdent } from '@/couchbase/sqlpp';
+import { keyspace, quoteIdent, type SqlPP } from '@/couchbase/sqlpp';
 import {
   parseGranularity,
   timeBucketExpr as cbTimeBucketExpr,
@@ -30,6 +30,8 @@ export type HistInput = {
   table: string;
   nameFilter: string;
   from: { databaseName: string; scopeName?: string; tableName: string };
+  /** The chart's where / filters / aggConditions (D24); see sourceWhere. */
+  predicate?: SqlPP;
 };
 
 /**
@@ -164,7 +166,10 @@ function translateHistogramCountCouchbase(input: HistInput) {
     'TimeUnix',
   );
   const delta = `CASE WHEN AggregationTemporality = 1 THEN TONUMBER(\`Count\`) WHEN ${lagCount} IS NOT NULL THEN CASE WHEN TONUMBER(\`Count\`) < ${lagCount} THEN TONUMBER(\`Count\`) ELSE TONUMBER(\`Count\`) - ${lagCount} END ELSE 0 END`;
-  const where = sourceWhereClause(chartConfig, nameFilter, { warmUp: true });
+  const where = sourceWhereClause(chartConfig, nameFilter, {
+    warmUp: true,
+    predicate: input.predicate,
+  });
 
   const sourceSql = `SELECT ${dimSelect(bucket, group)}${sk} AS AttributesHash, AggregationTemporality, TONUMBER(\`Count\`) AS current_count, ${lagCount} AS prev_count, ${delta} AS delta FROM ${ks} AS d WHERE ${where.sql}`;
   const metricsSql = `SELECT ${dimProject(bucket, group)}SUM(delta) AS ${quoteIdent(valueAlias)} FROM source${dimGroupBy(bucket, group)}`;
@@ -197,7 +202,10 @@ function translateHistogramQuantileCouchbase(
   // current counts; otherwise subtract element-wise.
   const decreased = `ARRAY_LENGTH(ARRAY x FOR x IN ARRAY_RANGE(0, LEAST(ARRAY_LENGTH(d.BucketCounts), ARRAY_LENGTH(${lagCounts}))) WHEN TONUMBER(d.BucketCounts[x]) < TONUMBER((${lagCounts})[x]) END) > 0`;
   const rates = `CASE WHEN d.AggregationTemporality = 2 AND ${lagCounts} IS NULL THEN (ARRAY 0 FOR c IN d.BucketCounts END) WHEN d.AggregationTemporality = 1 OR ${lagCounts} IS NULL OR d.ExplicitBounds != ${lagBounds} OR ${decreased} THEN d.BucketCounts ELSE (ARRAY TONUMBER(d.BucketCounts[i]) - TONUMBER(IFNULL((${lagCounts})[i], 0)) FOR i IN ARRAY_RANGE(0, ARRAY_LENGTH(d.BucketCounts)) END) END`;
-  const where = sourceWhereClause(chartConfig, nameFilter, { warmUp: true });
+  const where = sourceWhereClause(chartConfig, nameFilter, {
+    warmUp: true,
+    predicate: input.predicate,
+  });
 
   const sourceSql = `SELECT ${dimSelect(bucket, group)}${sk} AS AttributesHash, d.ExplicitBounds AS ExplicitBounds, ${rates} AS rates FROM ${ks} AS d WHERE ${where.sql}`;
   // Alias source as s: under UNNEST every source column, the time bucket

@@ -1,23 +1,38 @@
-import { FIXED_TIME_BUCKET_EXPR_ALIAS } from '@/core/chartConfig';
-import { GROUP_ALIAS } from '@/core/histogram';
 import { CouchbaseUnsupportedError } from '@/couchbase/errors';
-import { anyValue, argMax, lag } from '@/couchbase/fn/scalar';
-import { resolveGranularityInterval } from '@/couchbase/render/granularity';
+import { argMax, lag } from '@/couchbase/fn/scalar';
 import { rewriteSqlInValueLists } from '@/couchbase/sqlInLists';
 import { keyspace, quoteIdent } from '@/couchbase/sqlpp';
 import type { BuilderChartConfigWithOptDateRange } from '@/types';
 import { MetricsDataType } from '@/types';
 
-import {
-  type SqlppWithClauses,
-  translateExponentialHistogramCouchbase,
-} from './expHistogram';
+import { translateExponentialHistogramCouchbase } from './expHistogram';
 import {
   seriesKeyExpr,
   timeBucketSql,
   translateHistogramCouchbase,
 } from './histogram';
-import { sourceWhereClause } from './sourceWhere';
+import {
+  BUCKETED_COLUMNS,
+  bucketedColumns,
+  clearMetricIdentity,
+  histogramOuter,
+  outerBucketRange,
+  outerGranularity,
+  sourceAndBucketed,
+  SUM_BUCKETED_COLUMNS,
+  withResolvedGranularity,
+} from './outer';
+import { metricPredicate, sourceWhereClause } from './sourceWhere';
+
+function asMetricsDataType(
+  value: string | undefined,
+): MetricsDataType | undefined {
+  if (value == null) return undefined;
+  for (const candidate of Object.values(MetricsDataType)) {
+    if (candidate === value) return candidate;
+  }
+  return undefined;
+}
 
 type MetricSelect = {
   metricType?: string;
@@ -33,153 +48,6 @@ type MetricSelect = {
 };
 
 /**
- * Gauge and sum always bucket their CTE (granularity || 'auto', as upstream
- * renderChartConfig does). 'auto' is sized here, while dateRange is known.
- */
-function withResolvedGranularity(
-  chartConfig: BuilderChartConfigWithOptDateRange,
-) {
-  return {
-    ...chartConfig,
-    granularity: asInterval(
-      resolveGranularityInterval({
-        ...chartConfig,
-        granularity: chartConfig.granularity || 'auto',
-      }),
-    ),
-  };
-}
-
-/** The outer query's granularity: the caller's, with 'auto' resolved. */
-function outerGranularity(
-  chartConfig: BuilderChartConfigWithOptDateRange,
-): BuilderChartConfigWithOptDateRange['granularity'] {
-  return asInterval(resolveGranularityInterval(chartConfig));
-}
-
-function asInterval(
-  interval: string | undefined,
-): BuilderChartConfigWithOptDateRange['granularity'] {
-  return interval as BuilderChartConfigWithOptDateRange['granularity'];
-}
-
-function asMetricsDataType(
-  value: string | undefined,
-): MetricsDataType | undefined {
-  if (value == null) return undefined;
-  for (const candidate of Object.values(MetricsDataType)) {
-    if (candidate === value) return candidate;
-  }
-  return undefined;
-}
-
-/** Drop metric identity fields after CTE rewrite so the outer select is plain. */
-function clearMetricIdentity<T extends object>(
-  row: T,
-  overrides: Record<string, unknown>,
-): T {
-  return {
-    ...row,
-    ...overrides,
-    metricType: undefined,
-    metricName: undefined,
-    metricNameSql: undefined,
-  };
-}
-
-/**
- * OTel columns the Bucketed CTEs carry through (upstream projects them with
- * any()), so a groupBy or filter on e.g. ResourceAttributes['k8s.pod.name']
- * reads the series' value instead of MISSING. Every row in an AttributesHash
- * group shares them, so MIN picks that one value.
- */
-const BUCKETED_COLUMNS = [
-  'ScopeAttributes',
-  'ResourceAttributes',
-  'Attributes',
-  'ResourceSchemaUrl',
-  'ScopeName',
-  'ScopeVersion',
-  'ScopeDroppedAttrCount',
-  'ScopeSchemaUrl',
-  'ServiceName',
-  'MetricName',
-  'MetricDescription',
-  'MetricUnit',
-  'StartTimeUnix',
-  'Flags',
-];
-const SUM_BUCKETED_COLUMNS = [
-  ...BUCKETED_COLUMNS,
-  'AggregationTemporality',
-  'IsMonotonic',
-];
-
-/** The Source → Bucketed CTE pair every non-histogram metric reads from. */
-function sourceAndBucketed(
-  sourceSql: string,
-  sourceParams: Record<string, unknown>,
-  bucketedSql: string,
-) {
-  return {
-    with: [
-      { name: 'Source', sql: { sql: sourceSql, params: sourceParams } },
-      { name: 'Bucketed', sql: { sql: bucketedSql, params: {} } },
-    ],
-    from: { databaseName: '', tableName: 'Bucketed' },
-  };
-}
-
-/**
- * The outer query's date range over a CTE time bucket. Bucket aliases are
- * ISO strings whatever the source's timestamp format, so the filter binds
- * ISO bounds (an epoch_millis source would otherwise compare a string to a
- * number and match nothing).
- */
-function outerBucketRange(
-  chartConfig: BuilderChartConfigWithOptDateRange,
-  keep: boolean,
-): Pick<BuilderChartConfigWithOptDateRange, 'dateRange'> & {
-  timestampFormat?: 'iso8601';
-} {
-  if (!keep || chartConfig.dateRange == null) return { dateRange: undefined };
-  return { dateRange: chartConfig.dateRange, timestampFormat: 'iso8601' };
-}
-
-/** The outer query over a histogram translator's `metrics` CTE. */
-function histogramOuter(
-  chartConfig: BuilderChartConfigWithOptDateRange,
-  translated: SqlppWithClauses,
-): BuilderChartConfigWithOptDateRange {
-  const selectParts = [
-    translated.hasBucket ? quoteIdent(FIXED_TIME_BUCKET_EXPR_ALIAS) : null,
-    translated.hasGroup ? quoteIdent(GROUP_ALIAS) : null,
-    quoteIdent(translated.valueAlias),
-  ].filter(Boolean);
-  return {
-    ...chartConfig,
-    with: translated.with,
-    select: selectParts.join(', '),
-    from: { databaseName: '', tableName: 'metrics' },
-    where: '',
-    groupBy: undefined,
-    // The source CTE scans the (warmed-up) range; timeseries queries drop
-    // the padded buckets here. Non-timeseries queries scan only the
-    // requested range and have no time column on `metrics` to re-filter.
-    ...outerBucketRange(chartConfig, translated.hasBucket),
-    granularity: undefined,
-    timestampValueExpression: translated.hasBucket
-      ? quoteIdent(FIXED_TIME_BUCKET_EXPR_ALIAS)
-      : chartConfig.timestampValueExpression,
-    orderBy: translated.hasGroup ? undefined : chartConfig.orderBy,
-  };
-}
-
-function bucketedColumns(columns: readonly string[]): string {
-  return columns.map(c => `, ${anyValue(c)} AS ${c}`).join('');
-}
-
-/**
  * Translate a metric chart config into a builder config with SQL++ CTEs.
  * Gauge: last Value per (series, bucket) then the requested agg.
  * Sum: per-point Rate via LAG (reset → clamp at 0), then SUM Rate per bucket.
@@ -188,6 +56,7 @@ function bucketedColumns(columns: readonly string[]): string {
  */
 export async function translateMetricChartConfigCouchbase(
   chartConfig: BuilderChartConfigWithOptDateRange,
+  metadata?: unknown,
 ): Promise<BuilderChartConfigWithOptDateRange> {
   const metricTables = chartConfig.metricTables;
   if (!metricTables) return chartConfig;
@@ -223,6 +92,9 @@ export async function translateMetricChartConfigCouchbase(
   const nameFilter = first.metricNameSql?.trim()
     ? rewriteSqlInValueLists(first.metricNameSql)
     : `MetricName = '${metricName.replace(/'/g, "''")}'`;
+  // The chart's where / filters / aggConditions go in the source (D24); the
+  // outer query keeps none of them (`where: ''`, `filters: undefined`).
+  const predicate = await metricPredicate(chartConfig, from, metadata);
 
   if (
     metricType === MetricsDataType.Gauge ||
@@ -237,7 +109,7 @@ export async function translateMetricChartConfigCouchbase(
     if (!bucketExpr) {
       throw new CouchbaseUnsupportedError('metrics: gauge time bucket');
     }
-    const where = sourceWhereClause(chartConfig, nameFilter);
+    const where = sourceWhereClause(chartConfig, nameFilter, { predicate });
     const seriesKey = seriesKeyExpr();
     const lastValue = argMax('TONUMBER(`Value`)', 'TimeUnix');
     const sourceSql = `SELECT d.*, ${seriesKey} AS AttributesHash FROM ${ks} AS d WHERE ${where.sql}`;
@@ -254,6 +126,7 @@ export async function translateMetricChartConfigCouchbase(
         }),
       ],
       where: '',
+      filters: undefined,
       // Date range already applied in Source. Keep the caller's granularity
       // (do not force 'auto') so a non-timeseries formula/agg averages
       // LastValue across buckets instead of re-bucketing — same as upstream.
@@ -276,7 +149,10 @@ export async function translateMetricChartConfigCouchbase(
     }
     const seriesKey = seriesKeyExpr();
     // Timeseries sums read one interval either side (D23); see sourceWhere.
-    const where = sourceWhereClause(chartConfig, nameFilter, { warmUp: true });
+    const where = sourceWhereClause(chartConfig, nameFilter, {
+      warmUp: true,
+      predicate,
+    });
     // Partition by the series-key expression (not the select alias) — SQL++
     // window functions cannot see sibling aliases in the same SELECT.
     const lagExpr = lag('TONUMBER(`Value`)', seriesKey, 'TimeUnix');
@@ -293,7 +169,9 @@ export async function translateMetricChartConfigCouchbase(
       select: [
         // No aggFn: the latest cumulative reading per output row, as
         // upstream's last_value(Sum). A bare `Sum` is not a group key.
+        // Upstream spreads `{ alias: 'Value', ..._select }` (D25).
         clearMetricIdentity(select[0], {
+          alias: first.alias?.trim() || 'Value',
           aggFn: useRate
             ? first.aggFn === 'increase'
               ? 'sum'
@@ -304,6 +182,7 @@ export async function translateMetricChartConfigCouchbase(
         }),
       ],
       where: '',
+      filters: undefined,
       granularity: outerGranularity(chartConfig),
       timestampValueExpression: timeBucketCol,
       // A warmed-up source has padded buckets; the requested range on the
@@ -322,7 +201,14 @@ export async function translateMetricChartConfigCouchbase(
         : translateExponentialHistogramCouchbase;
     return histogramOuter(
       chartConfig,
-      translate({ chartConfig, select: first, table, nameFilter, from }),
+      translate({
+        chartConfig,
+        select: first,
+        table,
+        nameFilter,
+        from,
+        predicate,
+      }),
     );
   }
 
