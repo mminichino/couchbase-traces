@@ -77,8 +77,9 @@ function queryPort(): number {
 export async function adminMutate(
   statement: string,
   named?: Record<string, unknown>,
+  options: Record<string, unknown> = {},
 ) {
-  const payload: Record<string, unknown> = { statement };
+  const payload: Record<string, unknown> = { statement, ...options };
   for (const [k, v] of Object.entries(named ?? {})) payload[`$${k}`] = v;
   const auth = Buffer.from(`${ADMIN_USER}:${ADMIN_PASSWORD}`).toString(
     'base64',
@@ -128,13 +129,18 @@ export async function seed(
       { k: `${collection}:${i}`, v },
     );
   }
-  // The primary index is eventually consistent after UPSERT.
-  for (let i = 0; i < 50; i++) {
-    const [n] = await adminMutate(`SELECT RAW COUNT(*) FROM ${ks(collection)}`);
-    if (Number(n) >= docs.length) return;
-    await new Promise(r => setTimeout(r, 100));
+  // COUNT(*) without a WHERE is answered from the collection's document
+  // count, not an index, so it can be complete while the primary index still
+  // lags and a not_bounded chart query then misses the last rows. A
+  // request_plus scan of the primary index waits for it to catch up.
+  const [n] = await adminMutate(
+    `SELECT RAW COUNT(*) FROM ${ks(collection)} AS d WHERE META(d).id IS NOT MISSING`,
+    {},
+    { scan_consistency: 'request_plus' },
+  );
+  if (Number(n) < docs.length) {
+    throw new Error(`${collection}: seeded docs not visible`);
   }
-  throw new Error(`${collection}: seeded docs not visible`);
 }
 
 /** Executes rendered SQL++ with the test scope as query context. */
