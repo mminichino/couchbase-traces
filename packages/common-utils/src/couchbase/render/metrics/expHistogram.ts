@@ -90,7 +90,10 @@ function expHistogramCount(input: ExpHistogramInput): SqlppWithClauses {
   const lagStart = lag('StartTimeUnix', part, 'TimeUnix');
   const lagTime = lag('TimeUnix', part, 'TimeUnix');
   const delta = `CASE WHEN AggregationTemporality = 1 THEN TONUMBER(\`Count\`) WHEN AggregationTemporality = 2 THEN CASE WHEN ${lagTime} IS NOT VALUED OR StartTimeUnix = TimeUnix THEN 0 WHEN StartTimeUnix != ${lagStart} OR TONUMBER(\`Count\`) < ${lagCount} THEN TONUMBER(\`Count\`) ELSE TONUMBER(\`Count\`) - ${lagCount} END ELSE 0 END`;
-  const where = sourceWhereClause(chartConfig, nameFilter, { warmUp: true });
+  const where = sourceWhereClause(chartConfig, nameFilter, {
+    warmUp: true,
+    predicate: input.predicate,
+  });
 
   const sourceSql = `SELECT ${dimSelect(bucket, group)}MetricName, ${sk} AS series_key, AggregationTemporality, TimeUnix, StartTimeUnix, TONUMBER(\`Count\`) AS current_count, ${delta} AS delta FROM ${ks} AS d WHERE ${where.sql}`;
   const metricsSql = `SELECT ${dimProject(bucket, group)}SUM(delta) AS ${quoteIdent(valueAlias)} FROM source${dimGroupBy(bucket, group)}`;
@@ -115,7 +118,10 @@ function expHistogramQuantile(
   const dimOut = dimProject(bucket, group);
   const part = partitionKeys(group, '');
 
-  const where = sourceWhereClause(chartConfig, nameFilter, { warmUp: true });
+  const where = sourceWhereClause(chartConfig, nameFilter, {
+    warmUp: true,
+    predicate: input.predicate,
+  });
   const filteredSql = `SELECT ${dimIn}MetricName, TimeUnix, StartTimeUnix, AggregationTemporality, Scale, ${sk} AS series_key, TONUMBER(ZeroCount) AS ZeroCount, PositiveOffset, IFNULL(PositiveBucketCounts, []) AS PositiveBucketCounts, NegativeOffset, IFNULL(NegativeBucketCounts, []) AS NegativeBucketCounts FROM ${ks} AS d WHERE ${where.sql}`;
 
   const posN = normalizeSideSql('PositiveOffset', 'PositiveBucketCounts');

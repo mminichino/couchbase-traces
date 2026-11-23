@@ -11,6 +11,7 @@ import {
   testConnection,
 } from '@/couchbase/node';
 import { renderChartConfigCouchbase } from '@/couchbase/render';
+import type { SerializerMetadata } from '@/couchbase/serializer';
 
 // Live suites otherwise run with the no-op logger, which drops the SDK
 // context the executor and probe log on a TIMEOUT (D18).
@@ -175,10 +176,11 @@ export async function runSql(
 export async function runChart(
   conn: CouchbaseConnectionConfig,
   config: unknown,
+  metadata: SerializerMetadata = { getColumns: async () => [] },
 ): Promise<Record<string, unknown>[]> {
   const q = await renderChartConfigCouchbase(
     config as ChartConfigWithOptDateRangeEx,
-    { getColumns: async () => [] },
+    metadata,
     undefined,
   );
   return runSql(conn, q.sql, q.params);
