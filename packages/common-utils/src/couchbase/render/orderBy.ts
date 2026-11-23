@@ -65,7 +65,11 @@ function mapDoubleQuotedName(expr: string): string | undefined {
   }
 }
 
-function mapOrderExpr(expr: string, groups: GroupKeys): string {
+/** One ORDER BY expression as SQL++; `groups` maps group-by source text. */
+export function mapOrderExpr(
+  expr: string,
+  groups: GroupKeys = new Map(),
+): string {
   const trimmed = expr.trim();
   if (trimmed === 'rand()') return 'RANDOM()';
   const cityHash = trimmed.match(/^cityHash64\((.+)\)$/i);

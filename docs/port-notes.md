@@ -3278,3 +3278,66 @@ slot, same compose project, same `/tmp` log) was finishing its teardown, and
 `archive-int-logs` removed `logs-int`. Nx and the tests exited 0. Fixed with
 a per-slot lock (`scripts/slot-lock.sh`) around `ci-int`, `dev-int`, and
 `dev-int-common-utils`.
+
+### D17: multi-series HAVING, ORDER BY and LIMIT (2026-11-22, `mm--v1-d17-multi-series-having-order`)
+
+- **Paths and symbols checked.** `render/metrics/multiSeries.ts`
+  (`renderMultiSeriesMetricChartConfigCouchbase`) against upstream
+  `renderMultiSeriesMetricChartConfig` in `core/renderChartConfig.ts` at
+  f172a489c818. Both render branches with `having`, `orderBy` and `limit`
+  unset. Upstream then adds HAVING (or a `share_of_total` WHERE wrapper),
+  ORDER BY (bucket first, then the user's sort), and LIMIT with OFFSET to the
+  joined statement. Ours added only the bucket ORDER BY and an inlined
+  `LIMIT n`, so the user's HAVING, ORDER BY and OFFSET were dropped. The
+  inlined value also broke rule 4.
+- **SQL++ constraints, measured on 8.0.3.** Over the joined pivot:
+  `HAVING <alias> > 4` fails ("must depend only on group keys or
+  aggregates"); HAVING with no GROUP BY is a syntax error; a window
+  aggregate in HAVING fails ("Window Aggregates not allowed in HAVING").
+  `ORDER BY <alias>` works, including the alias of a window projection. So
+  does `SELECT d.* FROM (<grouped>) AS d WHERE <alias> … ORDER BY <alias>`.
+- **Fix** (`render/metrics/multiSeriesOuter.ts`):
+  - HAVING is `SELECT d.* FROM (<joined>) AS d WHERE (<having>)` for every
+    shape. A `"name"`, `` `name` `` or bare name equal to an output column
+    (operands, formulas, the ratio, group columns, the bucket) becomes that
+    column. That is the ClickHouse reading of a double-quoted name;
+    `splitOnAliasRefs` with `doubleQuoted`. The executor rebuilds rows in
+    hint order, so `d.*` keeps the result shape. A Lucene HAVING compiles to
+    `d.<field>`, which the alias `d` resolves against the joined columns.
+  - ORDER BY: `` `__hdx_time_bucket` `` first, then each sort item. A
+    structured item's direction goes on its last comma-separated piece, as
+    upstream. An item that names a group-by expression or alias reads the
+    group column the branches project under that name (`groupByOutputRef`).
+    When any branch is histogram-class, it reads `` `group`[i] ``, the
+    0-based packed array. Upstream needs `__hdx_sort_<n>` companion columns
+    (HDX-5202) only because ClickHouse names unaliased expression columns
+    itself. Other items go through `mapOrderExpr` (now exported from
+    `orderBy.ts`): `"name"` becomes an identifier, bare names are quoted,
+    map subscripts are rewritten.
+  - LIMIT and OFFSET come from `renderLimitCouchbase`, as named parameters,
+    on the outermost statement. `concatSqlPP` renumbers the parameters, so
+    they never collide with the branches'.
+  - A chart with no HAVING, ORDER BY or LIMIT renders exactly as before.
+- **Divergence (Q41).** With `share_of_total`, a HAVING, and an ORDER BY on
+  an expression group-by, upstream keeps the raw expression on its wrapper
+  and the query fails. The SQL++ wrapper keeps the named group column, so
+  the sort works. Upstream's test pins that failure; the port expects the
+  working sort. The user kept this divergence (2026-11-23).
+- **Tests.** `render/__tests__/multiSeriesOuter.test.ts` (10) and
+  `multiSeriesSort.test.ts` (11) port upstream's "outer HAVING / ORDER BY /
+  LIMIT" block with the same inputs (`multiSeriesFixtures.ts`). 18 of the
+  first 20 failed before the fix; the 2 that passed are guards (parameter
+  binding, unchanged shape without outer clauses). The Lucene case was added
+  with the fix. Live: `multiSeriesOuter.couchbase.int.test.ts`,
+  with three services and an errors/requests gauge pair, covers operand
+  HAVING plus ORDER BY, LIMIT with OFFSET, `share_of_total` HAVING and
+  sort, formula HAVING, a map-key group-by sort, the bucket-first time
+  chart, and the number shape. 7 of 7 failed on the old renderer and pass
+  with the fix.
+- **Not covered live.** A Lucene HAVING: the live helper passes empty column
+  metadata, and the serializer compiles an unknown field to `FALSE`, as it
+  does for any Lucene filter. The unit case pins the compiled form.
+- **Found here, not fixed: D20.** When any branch is histogram-class, a
+  gauge or sum branch projects `[] AS group` and drops its own group
+  columns, so its rows collapse to one per bucket. Upstream keeps them, with
+  NULL pads in histogram branches. Logged in the release plan.

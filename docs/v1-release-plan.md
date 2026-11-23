@@ -392,9 +392,10 @@ pushes to `main` directly.
 | D11   | Defects: alias WITH clauses in SQL++ (with D16, Q35)      | Found in D6 (section 9.1); D16 grouped-ratio `share_of_total` as its own commit in the same PR                                                                            | S    | D6, D10                       |
 | D12   | Defects: grouped alert history order                      | Found in D6 (section 9.1); product fix (Q31)                                                                                                                              | S    | —                             |
 | D13   | Defects: concurrent invite race (500)                     | Found in D6 (section 9.1)                                                                                                                                                 | S    | —                             |
-| D17   | Defects: multi-series HAVING and ORDER BY (Q36)           | Found in D16 (section 9.1); own PR after D13                                                                                                                              | S    | D13                           |
+| D17   | Defects: multi-series HAVING and ORDER BY (Q36)           | Found in D16 (section 9.1); own PR after D13; fixed, Q41                                                                                                                  | S    | D13                           |
 | D18   | Defects: intermittent common-utils live tests (Q37)       | Found in D12 (section 9.1); seed lag fixed with D13; SDK timeout remainder in its own PR before D17 (Q39)                                                                 | S    | —                             |
 | D19   | Defects: `make ci-int` exits 1 after every test passed    | Found in D13 (section 9.1); with the D18 remainder (Q40)                                                                                                                  | S    | —                             |
+| D20   | Defects: mixed gauge/histogram charts drop scalar groups  | Found in D17 (section 9.1); next phase after D17 (Q42)                                                                                                                    | S    | D17                           |
 | D14   | Dev tooling: live-test port offset fallback               | Found in D7 (section 9.1)                                                                                                                                                 | S    | —                             |
 | R2a   | Port deferred int suites: internal and external API       | B1 (10 suites: `routers/api/{dashboard,iac,sources,connections}`, `routers/external-api/{charts,search,sources,sources-crud,connections}`, `middleware/queryAttribution`) | L    | D1                            |
 | R2b   | Port deferred int suites: alerts                          | B1 (5 suites: `checkAlerts`, `multiChannelAlerts`, `renderAlertTemplate`, `singleInvocationAlert`, `providers/default`; 335 tests, 93 failing per R0)                     | L    | R2c, D1, D4, D6               |
@@ -781,6 +782,44 @@ the joined result (and filters a `share_of_total` HAVING through a wrapper,
 since a window function cannot appear in HAVING). No deferred case covers it
 yet. Decision Q36: its own PR, right after D13.
 
+Result (2026-11-22, `mm--v1-d17-multi-series-having-order`, Q41): fixed.
+
+- Root cause confirmed against current source. As upstream, each branch
+  renders without `having`, `orderBy` and `limit`, but the joined statement
+  added only the time-bucket ORDER BY and a literal `LIMIT n`, dropping the
+  user's HAVING, ORDER BY and the OFFSET.
+- New `render/metrics/multiSeriesOuter.ts` applies them once, to the joined
+  result. HAVING is a `WHERE` on a `SELECT d.* FROM (…) AS d` wrapper for
+  every shape, not only `share_of_total`: checked on 8.0.3, SQL++ HAVING
+  rejects select aliases ("must depend only on group keys or aggregates"),
+  window aggregates ("Window Aggregates not allowed in HAVING"), and is a
+  syntax error with no GROUP BY (the number shape). A `"name"` naming an
+  output column (ClickHouse quoting) reads that column. Rows are rebuilt in
+  hint order, so the wrapper does not change the result shape.
+- ORDER BY is the time bucket first, then the user's sort (upstream). A sort
+  item naming a group-by expression or alias (HDX-5202) reads the named
+  group column the branches already project, or `` `group`[i] `` (0-based)
+  when groups travel packed for histogram branches. Upstream needs
+  `__hdx_sort_<n>` companion columns because ClickHouse names those columns
+  itself.
+- LIMIT and OFFSET are named parameters on the outermost statement.
+- Tests: `render/__tests__/multiSeriesOuter.test.ts` and
+  `multiSeriesSort.test.ts` port upstream's "outer HAVING / ORDER BY /
+  LIMIT" cases with the same inputs (21 cases, 18 failed before the fix), and
+  `couchbase/__tests__/multiSeriesOuter.couchbase.int.test.ts` runs 7 shapes
+  on a live cluster (7 of 7 failed on the old renderer).
+- Found here, not fixed: D20.
+
+#### D20: Mixed gauge and histogram charts drop scalar group columns (found in D17, size S)
+
+Evidence: with a group-by, `multiSeries.ts` gives a gauge or sum branch only
+`[] AS group` when any branch is histogram-class, so its group columns are
+dropped and every scalar row of a bucket joins into one row. Upstream keeps
+the scalar branch's group columns, NULL-pads them in histogram branches, and
+keeps the two classes' rows apart. D17 sorts such a chart on `` `group`[i] ``,
+which matches what the branches project today. Placement (Q42): the next
+phase, right after D17.
+
 #### D18: Common-utils live tests fail intermittently (found in D12, size S)
 
 Evidence: two of four `run.sh` runs on the D12 branch lost one common-utils live
@@ -1098,6 +1137,8 @@ in that phase.
 | Q38 | Couchbase Node SDK version (2026-11-22)                                                                  | Stay on 4.7.x until Couchbase lists 4.8 for Server 8.0; keep the int-test watchdog. Evidence: 4.8.0 fixes a teardown hang (JSCBC-1520, JSCBC-1522), the strongest lead for the PR #27 shard 1 stall, but the compatibility matrix lists 4.7, not 4.8, for 8.0 (AGENTS.md platform rule). Follow-up F1: revisit when 4.8 is listed | F1             |
 | Q39 | Placement of the D18 SDK-timeout remainder (2026-11-22)                                                  | Its own small PR (`mm--v1-d18-sdk-timeout`), merged before D17: SDK error-context logging on TIMEOUT, then `run.sh` loops with a fresh cluster each run                                                                                                                                                                          | D17, D18       |
 | Q40 | One-off `make ci-int` exit 1 after every test passed (2026-11-22)                                        | Logged as defect D19 and investigated in the D18 remainder PR                                                                                                                                                                                                                                                                     | D18, D19       | F1             |
+| Q41 | SQL++ form of the D17 outer HAVING and group-by sort (2026-11-22)                                        | HAVING is a WHERE on a wrapper in every shape (SQL++ HAVING rejects aliases, windows, and a missing GROUP BY); group-by sorts read the named group column instead of companion columns. Same rows and columns as upstream; a `share_of_total` HAVING with an expression group-by sort now runs, where upstream fails. User kept this divergence (2026-11-23) | D17            |
+| Q42 | Placement of D20: mixed gauge/histogram charts drop scalar group columns (2026-11-23)                    | The next phase, right after D17                                                                                                                                                                                                                                                                                                   | D17, D20       |
 
 ## 11. Acceptance criteria (v1.0.0 is done when)
 
@@ -1171,6 +1212,7 @@ in that phase.
 | D17 Multi-series HAVING and ORDER BY                            | S    |
 | D18 Intermittent common-utils live tests                        | S    |
 | D19 `make ci-int` exit 1 after a green run                      | S    |
+| D20 Mixed gauge/histogram charts drop scalar group columns      | S    |
 | D14 Live-test port offset fallback                              | S    |
 | R2a Deferred API int suites (10 suites, 380 tests, 80 failing)  | L    |
 | R2b Deferred alert int suites (5 suites, 335 tests, 93 failing) | L    |
