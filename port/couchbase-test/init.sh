@@ -263,9 +263,9 @@ provision_metadata() {
   local here connstr
   here=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
   if [ "$OFFSET" = "0" ]; then
-    connstr=couchbase://localhost
+    connstr='couchbase://localhost?enable_dns_srv=false'
   else
-    connstr="couchbase://localhost:$((11210 + OFFSET))?network=external"
+    connstr="couchbase://localhost:$((11210 + OFFSET))?network=external&enable_dns_srv=false"
   fi
   log "Provisioning metadata bucket cbt_meta"
   CBT_TEST_COUCHBASE_CONNSTR=${CBT_TEST_COUCHBASE_CONNSTR:-$connstr} \

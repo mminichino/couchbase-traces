@@ -5,8 +5,21 @@
  */
 import type { ChartConfigWithOptDateRangeEx } from '@/core/chartConfig';
 import type { CouchbaseConnectionConfig } from '@/couchbase/node';
-import { CouchbaseNodeClient, testConnection } from '@/couchbase/node';
+import {
+  CouchbaseNodeClient,
+  setCouchbaseLogger,
+  testConnection,
+} from '@/couchbase/node';
 import { renderChartConfigCouchbase } from '@/couchbase/render';
+
+// Live suites otherwise run with the no-op logger, which drops the SDK
+// context the executor and probe log on a TIMEOUT (D18).
+setCouchbaseLogger({
+  debug: () => {},
+  info: () => {},
+  warn: (...args: unknown[]) => console.warn('[couchbase]', ...args),
+  error: (...args: unknown[]) => console.error('[couchbase]', ...args),
+});
 
 const CONNSTR =
   process.env.CBT_TEST_COUCHBASE_CONNSTR || 'couchbase://localhost';

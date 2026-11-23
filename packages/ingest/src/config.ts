@@ -1,5 +1,6 @@
 import { existsSync } from 'node:fs';
 
+import { dnsConfig } from '@couchbase-traces/common-utils/dist/couchbase/dnsConfig';
 import { type Cluster, connect, type ConnectOptions } from 'couchbase';
 
 import type { CollectionName } from '@/model/collections';
@@ -124,6 +125,7 @@ export async function connectCluster(config: IngestConfig): Promise<Cluster> {
     username: config.username,
     password: config.password,
     timeouts: { connectTimeout: 10_000 },
+    dnsConfig: dnsConfig(),
   };
   if (config.wanProfile) options.configProfile = 'wanDevelopment';
   if (config.caCertPath)

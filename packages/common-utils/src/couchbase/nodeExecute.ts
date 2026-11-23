@@ -5,7 +5,12 @@ import { QueryScanConsistency } from 'couchbase';
 import type { TeamQuerySettings } from '@/types';
 
 import { normalizeParameters } from './browser';
-import { CouchbaseQueryError, fromSdkError, serialize } from './errors';
+import {
+  CouchbaseQueryError,
+  describeSdkError,
+  fromSdkError,
+  serialize,
+} from './errors';
 import { inferMeta, widenType } from './inferMeta';
 import {
   type CouchbaseConnectionConfig,
@@ -320,6 +325,14 @@ export async function* executeQuery(args: {
       { code: err.code, sqlppCode: err.sqlppCode, firstFrameSent },
       'Couchbase query failed',
     );
+    if (err.code === 'TIMEOUT') {
+      // The serialized frame keeps only code and message; the SDK context
+      // (node, retries, timings) says why it timed out (D18).
+      logger.warn(
+        { sdk: describeSdkError(e, secretsOf(conn)), connecting },
+        'Couchbase query timed out',
+      );
+    }
     yield { type: 'error', error: serialize(err) };
   } finally {
     events?.dispose();

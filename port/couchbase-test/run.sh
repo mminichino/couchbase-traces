@@ -96,10 +96,14 @@ for p in $CB_PORTS; do
 done
 log "Couchbase host port offset: $OFFSET"
 
+# enable_dns_srv=false: a one-hostname connstr makes the SDK look up DNS SRV
+# before every connect, and a slow answer from the LAN resolver fails the
+# connect about 500 ms in (D18). localhost has no SRV record to find, and a
+# hostname (not 127.0.0.1) keeps the API's private-IP guard satisfied.
 if [ "$OFFSET" = "0" ]; then
-  export CBT_TEST_COUCHBASE_CONNSTR=${CBT_TEST_COUCHBASE_CONNSTR:-couchbase://localhost}
+  export CBT_TEST_COUCHBASE_CONNSTR=${CBT_TEST_COUCHBASE_CONNSTR:-couchbase://localhost?enable_dns_srv=false}
 else
-  export CBT_TEST_COUCHBASE_CONNSTR=${CBT_TEST_COUCHBASE_CONNSTR:-"couchbase://localhost:$((11210 + OFFSET))?network=external"}
+  export CBT_TEST_COUCHBASE_CONNSTR=${CBT_TEST_COUCHBASE_CONNSTR:-"couchbase://localhost:$((11210 + OFFSET))?network=external&enable_dns_srv=false"}
 fi
 export CBT_TEST_COUCHBASE_REQUIRED=1
 export CBT_TEST_COUCHBASE_USER=${CBT_TEST_COUCHBASE_USER:-cbt_query}

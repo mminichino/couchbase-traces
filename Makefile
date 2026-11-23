@@ -29,6 +29,11 @@ INT_ENV := scripts/int-env.sh --
 
 CBT_CI_LOGS_DIR := $(HOME)/.config/hyperdx/dev-slots/$(CBT_CI_SLOT)/logs-int
 CBT_CI_HISTORY_DIR := $(HOME)/.config/hyperdx/dev-slots/$(CBT_CI_SLOT)/history
+# One integration run per slot at a time (D19): runs on a slot share its
+# compose project and logs-int, so one's teardown breaks the other. Each
+# recipe line's parent is make, so $$PPID names the run in every line.
+CBT_CI_LOCK := $(HOME)/.config/hyperdx/dev-slots/$(CBT_CI_SLOT)/int.lock
+SLOT_LOCK := bash scripts/slot-lock.sh
 
 # Archive integration logs to history (call at end of each test target)
 # Usage: $(call archive-int-logs)
@@ -178,32 +183,38 @@ dev-int-build:
 .PHONY: dev-int
 dev-int:
 	@echo "Using CI slot $(CBT_CI_SLOT) (project=$(CBT_CI_PROJECT) ch=$(CBT_CI_CH_PORT) api=$(CBT_CI_API_PORT))"
+	@$(SLOT_LOCK) acquire $(CBT_CI_LOCK) $$PPID
 	@mkdir -p $(CBT_CI_LOGS_DIR)
 	@bash scripts/ensure-dev-portal.sh
 	$(INT_ENV) docker compose -p $(CBT_CI_PROJECT) -f ./docker-compose.ci.yml up -d
 	$(INT_ENV) bash -c 'set -o pipefail; npx nx run @couchbase-traces/api:dev:int $(FILE) 2>&1 | tee $(CBT_CI_LOGS_DIR)/api-int.log'; ret=$$?; \
 	docker compose -p $(CBT_CI_PROJECT) -f ./docker-compose.ci.yml down -v; \
 	$(call archive-int-logs); \
+	$(SLOT_LOCK) release $(CBT_CI_LOCK) $$PPID; \
 	exit $$ret
 
 .PHONY: dev-int-common-utils
 dev-int-common-utils:
 	@echo "Using CI slot $(CBT_CI_SLOT) (project=$(CBT_CI_PROJECT) ch=$(CBT_CI_CH_PORT))"
+	@$(SLOT_LOCK) acquire $(CBT_CI_LOCK) $$PPID
 	@mkdir -p $(CBT_CI_LOGS_DIR)
 	@bash scripts/ensure-dev-portal.sh
 	$(INT_ENV) docker compose -p $(CBT_CI_PROJECT) -f ./docker-compose.ci.yml up -d
 	$(INT_ENV) bash -c 'set -o pipefail; npx nx run @couchbase-traces/common-utils:dev:int $(FILE) 2>&1 | tee $(CBT_CI_LOGS_DIR)/common-utils-int.log'; ret=$$?; \
 	docker compose -p $(CBT_CI_PROJECT) -f ./docker-compose.ci.yml down -v; \
 	$(call archive-int-logs); \
+	$(SLOT_LOCK) release $(CBT_CI_LOCK) $$PPID; \
 	exit $$ret
 
 .PHONY: ci-int
 ci-int:
+	@$(SLOT_LOCK) acquire $(CBT_CI_LOCK) $$PPID
 	@mkdir -p $(CBT_CI_LOGS_DIR)
 	$(INT_ENV) docker compose -p $(CBT_CI_PROJECT) -f ./docker-compose.ci.yml up -d --quiet-pull
 	$(INT_ENV) bash -c 'set -o pipefail; npx nx run-many -t ci:int --parallel=false --output-style=stream 2>&1 | tee $(CBT_CI_LOGS_DIR)/ci-int.log'; ret=$$?; \
 	docker compose -p $(CBT_CI_PROJECT) -f ./docker-compose.ci.yml down -v; \
 	$(call archive-int-logs); \
+	$(SLOT_LOCK) release $(CBT_CI_LOCK) $$PPID; \
 	exit $$ret
 
 .PHONY: dev-unit
@@ -220,6 +231,7 @@ ci-unit:
 	node --test scripts/__tests__/compose-config.test.mjs
 	node --test scripts/__tests__/e2e-env.test.mjs
 	node --test scripts/__tests__/int-env.test.mjs
+	node --test scripts/__tests__/slot-lock.test.mjs
 	node --test scripts/__tests__/check-legacy-store-text.test.mjs
 
 .PHONY: ci-triage

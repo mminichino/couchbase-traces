@@ -127,6 +127,41 @@ function str(v: unknown): string | undefined {
   return typeof v === 'string' && v !== '' ? v : undefined;
 }
 
+/**
+ * The SDK's own diagnosis of a failed operation, for logs (D18): its error
+ * class, the core error code and message, and the request context (last
+ * dispatched node, retry reasons, timings). `serialize` keeps none of it.
+ * Scrubbed of connection strings and `secrets`.
+ */
+export function describeSdkError(
+  err: unknown,
+  secrets: string[] = [],
+): Record<string, unknown> {
+  const sdk = err instanceof CouchbaseQueryError ? err.cause : err;
+  const cause = prop(sdk, 'cause');
+  const context = prop(sdk, 'context');
+  let ctx: unknown;
+  try {
+    ctx =
+      context == null
+        ? undefined
+        : JSON.parse(scrubMessage(JSON.stringify(context), secrets));
+  } catch {
+    ctx = '[unserializable context]';
+  }
+  return {
+    name: errorClassName(sdk),
+    message: scrubMessage(str(prop(sdk, 'message')) ?? String(sdk), secrets),
+    ...(cause != null && {
+      cause: {
+        code: prop(cause, 'code'),
+        message: scrubMessage(str(prop(cause, 'message')) ?? '', secrets),
+      },
+    }),
+    ...(ctx !== undefined && { context: ctx }),
+  };
+}
+
 function errorClassName(err: unknown): string {
   const ctorName = str(prop(prop(err, 'constructor'), 'name'));
   if (ctorName && ctorName !== 'Error' && ctorName !== 'Object') {

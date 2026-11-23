@@ -3,6 +3,7 @@ import type { Cluster } from 'couchbase';
 
 import {
   CouchbaseQueryError,
+  describeSdkError,
   fromSdkError,
   serialize,
   type SerializedQueryError,
@@ -11,6 +12,7 @@ import {
   caFiles,
   connectCluster,
   type CouchbaseConnectionConfig,
+  getCouchbaseLogger,
   secretsOf,
   withTimeout,
 } from './nodeCluster';
@@ -56,15 +58,20 @@ export async function testConnection(
     );
     return { success: true };
   } catch (e) {
-    return {
-      success: false,
-      error: serialize(
-        fromSdkError(e, statement, {
-          connecting: true,
-          secrets: secretsOf(conn),
-        }),
-      ),
-    };
+    const err = fromSdkError(e, statement, {
+      connecting: true,
+      secrets: secretsOf(conn),
+    });
+    if (err.code === 'TIMEOUT') {
+      getCouchbaseLogger().warn(
+        {
+          sdk: describeSdkError(e, secretsOf(conn)),
+          phase: opened.cluster ? 'query' : 'connect',
+        },
+        'Couchbase connection test timed out',
+      );
+    }
+    return { success: false, error: serialize(err) };
   } finally {
     if (opened.cluster) await opened.cluster.close().catch(() => {});
     if (caPath) caFiles.release(caPath);

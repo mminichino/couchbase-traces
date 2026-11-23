@@ -393,7 +393,8 @@ pushes to `main` directly.
 | D12   | Defects: grouped alert history order                      | Found in D6 (section 9.1); product fix (Q31)                                                                                                                              | S    | —                             |
 | D13   | Defects: concurrent invite race (500)                     | Found in D6 (section 9.1)                                                                                                                                                 | S    | —                             |
 | D17   | Defects: multi-series HAVING and ORDER BY (Q36)           | Found in D16 (section 9.1); own PR after D13                                                                                                                              | S    | D13                           |
-| D18   | Defects: intermittent common-utils live tests (Q37)       | Found in D12 (section 9.1); with D13                                                                                                                                      | S    | —                             |
+| D18   | Defects: intermittent common-utils live tests (Q37)       | Found in D12 (section 9.1); seed lag fixed with D13; SDK timeout remainder in its own PR before D17 (Q39)                                                                 | S    | —                             |
+| D19   | Defects: `make ci-int` exits 1 after every test passed    | Found in D13 (section 9.1); with the D18 remainder (Q40)                                                                                                                  | S    | —                             |
 | D14   | Dev tooling: live-test port offset fallback               | Found in D7 (section 9.1)                                                                                                                                                 | S    | —                             |
 | R2a   | Port deferred int suites: internal and external API       | B1 (10 suites: `routers/api/{dashboard,iac,sources,connections}`, `routers/external-api/{charts,search,sources,sources-crud,connections}`, `middleware/queryAttribution`) | L    | D1                            |
 | R2b   | Port deferred int suites: alerts                          | B1 (5 suites: `checkAlerts`, `multiChannelAlerts`, `renderAlertTemplate`, `singleInvocationAlert`, `providers/default`; 335 tests, 93 failing per R0)                     | L    | R2c, D1, D4, D6               |
@@ -808,6 +809,50 @@ cluster: 3 failed, with two different symptoms.
   (`e.context`, `e.cause`) when a live test or probe fails with TIMEOUT, then
   loop `run.sh` itself (fresh cluster per run) to catch one with that context.
 
+Result (2026-11-22, `mm--v1-d18-sdk-timeout`, Q39): root cause found and
+fixed. With SDK context logged, `run.sh` loop 7 caught it: `connecting: true`,
+`UnambiguousTimeoutError` about 500 ms in, from opening the cluster. A
+single-hostname connection string (`couchbase://localhost`) makes the SDK look
+up DNS SRV before bootstrap, with a 500 ms budget, and a lookup that misses it
+fails the connect rather than falling back. Reproduced with an unreachable
+nameserver (510 ms). Fix: every SDK connect, in the product and in the live
+harness, passes `dnsConfig.dnsSrvTimeout` 2000 ms
+(`CBT_COUCHBASE_DNS_SRV_TIMEOUT_MS`), which leaves room for the SDK's TCP retry
+after a lost UDP answer. That alone left 1 failure in 12 `run.sh` runs, so the
+harness connstr also sets `enable_dns_srv=false`. Details and the verification
+loops are in `docs/port-notes.md`.
+
+#### D19: `make ci-int` exits 1 after every test passed (found in D13, size S)
+
+Evidence: one D13 `make ci-int` run ended `make: *** [ci-int] Error 1` although
+all 1257 tests passed and Nx printed its success summary; the re-run exited 0.
+Placement (Q40): investigated with the D18 remainder, in its own PR.
+
+Result (2026-11-22, `mm--v1-d18-sdk-timeout`): root cause found and fixed.
+
+- Not Nx, the tests, or teardown. The Nx daemon log shows the client sending
+  `POST_TASKS_EXECUTION` and closing normally, so `nx run-many` returned 0.
+- The failing log has, near its start, `tee: …/dev-slots/47/logs-int/ci-int.log:
+No such file or directory`. With `set -o pipefail`, tee's exit 1 became the
+  pipeline status and so the target's. The directory was gone because another
+  `make ci-int` on slot 47 was still tearing down when this one started. This
+  run waited for port 8091 to close, so it began the moment the other run's
+  `down -v` released it, and that run's `archive-int-logs` (log archived to
+  `history/int-2026-11-22T23:56:59Z`, Nx done at 23:56:56) then ran
+  `rm -rf logs-int` under it. Both runs used compose project `int-47` and the
+  same `/tmp` redirect, so the other run was this same command launched twice
+  (the agent shell started it again while the first copy ran; the 8091 wait
+  held the copy until the first's teardown). That is why the failing log ends
+  in 78 NUL bytes and a second `Network int-47_internal Removed` line: the
+  first copy's last write landed at its own, larger offset before this copy
+  rewrote the file from the start.
+- Fix: one integration run per slot at a time. `scripts/slot-lock.sh` takes a
+  per-slot directory lock (`dev-slots/<slot>/int.lock`, holding make's PID) at
+  the start of `ci-int`, `dev-int`, and `dev-int-common-utils` and releases it
+  after teardown. A second run waits (`CBT_SLOT_LOCK_WAIT_S`, default 30 min)
+  with a message, or fails naming the holder; a lock whose PID has exited is
+  taken over. Tests: `scripts/__tests__/slot-lock.test.mjs`.
+
 #### D8 onward
 
 Defects R2 finds while porting suites. Each gets its own PR, merged before the
@@ -1051,6 +1096,8 @@ in that phase.
 | Q36 | Placement of D17: multi-series metric charts drop HAVING and ORDER BY (2026-11-22)                       | Its own PR, right after D13                                                                                                                                                                                                                                                                                                       | D17            |
 | Q37 | Placement of D18: intermittent common-utils live-cluster failures (2026-11-22)                           | Investigated alongside D13, in the same PR, own commit if a fix is found                                                                                                                                                                                                                                                          | D13, D18       |
 | Q38 | Couchbase Node SDK version (2026-11-22)                                                                  | Stay on 4.7.x until Couchbase lists 4.8 for Server 8.0; keep the int-test watchdog. Evidence: 4.8.0 fixes a teardown hang (JSCBC-1520, JSCBC-1522), the strongest lead for the PR #27 shard 1 stall, but the compatibility matrix lists 4.7, not 4.8, for 8.0 (AGENTS.md platform rule). Follow-up F1: revisit when 4.8 is listed | F1             |
+| Q39 | Placement of the D18 SDK-timeout remainder (2026-11-22)                                                  | Its own small PR (`mm--v1-d18-sdk-timeout`), merged before D17: SDK error-context logging on TIMEOUT, then `run.sh` loops with a fresh cluster each run                                                                                                                                                                          | D17, D18       |
+| Q40 | One-off `make ci-int` exit 1 after every test passed (2026-11-22)                                        | Logged as defect D19 and investigated in the D18 remainder PR                                                                                                                                                                                                                                                                     | D18, D19       | F1             |
 
 ## 11. Acceptance criteria (v1.0.0 is done when)
 
@@ -1123,6 +1170,7 @@ in that phase.
 | D13 Concurrent invite race                                      | S    |
 | D17 Multi-series HAVING and ORDER BY                            | S    |
 | D18 Intermittent common-utils live tests                        | S    |
+| D19 `make ci-int` exit 1 after a green run                      | S    |
 | D14 Live-test port offset fallback                              | S    |
 | R2a Deferred API int suites (10 suites, 380 tests, 80 failing)  | L    |
 | R2b Deferred alert int suites (5 suites, 335 tests, 93 failing) | L    |

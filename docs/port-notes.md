@@ -3206,4 +3206,75 @@ failed, with two symptoms.
 `make ci-int` on this branch exited 1 once after nx reported "Successfully
 ran target ci:int" with every test passing. The re-run exited 0. The exit
 came from the recipe's `bash -c … | tee` after the tests; the cause was not
-identified.
+identified. Found and fixed later as D19 (next section).
+
+### D18 remainder and D19 (2026-11-22, `mm--v1-d18-sdk-timeout`)
+
+**D18 root cause: DNS SRV lookups with the SDK's 500 ms budget.**
+
+- Logging first. The executor and `testConnection` now log the SDK's own
+  diagnosis on a TIMEOUT through the Couchbase logger (`describeSdkError`:
+  class, core cause, request context, scrubbed). The live helper installs a
+  console logger for warn and error, so it shows in jest output.
+- Caught in `run.sh` loop 7 of 7 (fresh cluster each run, port offset 0,
+  cluster up). Three `mapAccess` chart queries failed, each about 500 ms in,
+  with `UnambiguousTimeoutError`, cause `unambiguous_timeout (14)`, no
+  request context, and `connecting: true`. So the failure came from
+  `clusterCache.lease`, that is from opening the cluster, not from the
+  query.
+- Each failure took about 500 ms, but the connect timeout is 10 s. In the
+  C++ core (4.7.2, `deps/couchbase-cxx-client`), a connection string with
+  one hostname (`couchbase://localhost`) gets `enable_dns_srv` (an explicit
+  port does not turn it off). `cluster::open` then looks up
+  `_couchbase._tcp.<host>` before bootstrap, with
+  `timeout_defaults::dns_srv_timeout` = 500 ms: 250 ms for UDP, then TCP
+  for the rest (`dns_client.cxx`). NXDOMAIN falls back to the host. A
+  lookup that misses the deadline returns `errc::common::unambiguous_timeout`,
+  and `open` closes the cluster with that error instead of falling back. The
+  nameserver is the first one in `/etc/resolv.conf` (here the LAN router).
+- Reproduced: a connect to `couchbase://localhost` with an unreachable
+  nameserver fails with `UnambiguousTimeoutError` in 510 ms (2004 ms with
+  `dnsSrvTimeout: 2000`). `couchbase://127.0.0.1` and `enable_dns_srv=false`
+  skip SRV and fail only at the 10 s bootstrap timeout. 400 burst SRV queries
+  to the router had p99 6 ms and no loss, so the trigger is a rare dropped or
+  slow answer, which fits about 1 in 35 suites. Each suite opens fresh
+  clusters, and so does each `testConnection`, so each one is a fresh
+  chance to lose.
+- The same exposure exists in production for any single-hostname
+  `couchbase://` connstr, including Capella's `couchbases://cb.<id>.cloud…`,
+  which relies on SRV.
+- Fix:
+  - `dnsConfig()` (common-utils `couchbase/dnsConfig.ts`, no native import)
+    sets `dnsSrvTimeout` to 2000 ms. It is overridable with
+    `CBT_COUCHBASE_DNS_SRV_TIMEOUT_MS` (DEPLOY.md) and passed to every SDK
+    connect: data-source clusters (`connectCluster`), the metadata store
+    (`connectOptions`), and ingest (`connectCluster`, setup `connectAdmin`).
+    One lost UDP answer now leaves time for the TCP retry.
+  - The live harness's own raw SDK connects (`provision-metadata.js`, the
+    metadata suite's admin connect, the ingest suite's) pass the same
+    `dnsConfig()`.
+  - With the 2 s budget alone, 11 of 12 fresh-cluster `run.sh` runs passed;
+    run 8 lost the ingest setup connect to the same error. So the harness
+    connstr (`run.sh`, `init.sh`) now also sets `enable_dns_srv=false`:
+    `localhost` has no SRV record to find, and the tests should not depend on
+    the LAN resolver at all. It stays a hostname because management REST,
+    like the connection test, rejects private IP literals such as
+    `127.0.0.1` ("Invalid host"). A first attempt with `127.0.0.1` failed
+    the api cluster status suites in 12 of 12 runs. `enable_dns_srv=false`
+    is checked to skip SRV even with an unreachable nameserver.
+  - Verification: 12 of 12 fresh-cluster `run.sh` runs pass with both
+    changes (before: 1 SDK timeout in the first 7 runs of the loop that
+    caught it; 1 in 12 with the 2 s budget alone).
+  - Tests: `dnsConfig.test.ts`, `connectClusterDns.test.ts`,
+    `connectRetry.test.ts` (metadata options), and live
+    `timeoutContext.couchbase.int.test.ts`. The live test covers a forced
+    1 ms query timeout logging context, and the SDK failing a `localhost`
+    connect whose SRV lookup outlives its budget.
+
+**D19 root cause: two `make ci-int` runs on one CI slot.** See the D19
+entry in `docs/v1-release-plan.md`. The failing run's `tee` could not open
+`logs-int/ci-int.log` because an earlier copy of the same command (same
+slot, same compose project, same `/tmp` log) was finishing its teardown, and
+`archive-int-logs` removed `logs-int`. Nx and the tests exited 0. Fixed with
+a per-slot lock (`scripts/slot-lock.sh`) around `ci-int`, `dev-int`, and
+`dev-int-common-utils`.
