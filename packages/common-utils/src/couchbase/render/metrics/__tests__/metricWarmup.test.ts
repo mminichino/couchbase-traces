@@ -6,7 +6,7 @@ import { DisplayType, MetricsDataType } from '@/types';
 // granularity; 'auto' sized from the range) into the Sum, Histogram, and
 // Exponential Histogram source WHERE:
 //   ts >= toStartOfInterval(start, I) - I AND ts <= toStartOfInterval(end, I) + I
-// (`<=` is upstream's default-inclusive end; see the end-bound note below)
+// (`<=` is upstream's default-inclusive end, which the port matches since D26)
 // so the first bucket has a prior point to subtract, and the outer query
 // keeps the requested range on the time bucket so the look-back rows are not
 // returned. Gauge and non-timeseries charts read the requested range only.
@@ -83,11 +83,9 @@ describe('D23 metric source warm-up window', () => {
   ])(
     'reads one interval either side of a %s timeseries range',
     async metricType => {
-      // The port's end stays exclusive: a point on the widened end falls in
-      // a bucket past the requested range, which the outer filter drops.
       expect(await sourceBounds(metricType)).toMatchObject({
         startOp: '>=',
-        endOp: '<',
+        endOp: '<=',
         from: iso('2025-02-12T00:11:00Z'),
         to: iso('2025-02-14T00:13:00Z'),
       });
@@ -144,7 +142,7 @@ describe('D23 metric source warm-up window', () => {
   ])('reads only the requested range for %s', async (_l, metricType, extra) => {
     expect(await sourceBounds(metricType, extra)).toMatchObject({
       startOp: '>=',
-      endOp: '<',
+      endOp: '<=',
       from: toIso30(START),
       to: toIso30(END),
     });
@@ -154,7 +152,7 @@ describe('D23 metric source warm-up window', () => {
     const q = await render(MetricsDataType.Sum);
     const outer = q.sql.slice(q.sql.lastIndexOf('FROM `Bucketed`'));
     const m =
-      /d\.__hdx_time_bucket2 >= \$(p\d+) AND d\.__hdx_time_bucket2 < \$(p\d+)/.exec(
+      /d\.__hdx_time_bucket2 >= \$(p\d+) AND d\.__hdx_time_bucket2 <= \$(p\d+)/.exec(
         outer,
       );
     expect(m).not.toBeNull();

@@ -65,8 +65,9 @@ export function timestampColumnsFilter(
           format,
           floorDay(start),
           new Date(floorDay(end).getTime() + DAY_MS),
+          { inclusiveEnd: false },
         )
-      : timeRangePredicate(t.expr, format, start, end, { inclusiveEnd: true }),
+      : timeRangePredicate(t.expr, format, start, end),
   );
   return concatSqlPP(' AND ', parts);
 }

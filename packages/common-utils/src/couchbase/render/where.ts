@@ -114,9 +114,11 @@ function timeFilterForConfig(
   }
   const tsCol = getFirstTimestampColumn(chartConfig);
   const tsExpr = `${ALIAS}.${tsCol}`;
+  // Both ends default to inclusive, as upstream renderWhere's
+  // `dateRangeStartInclusive ?? true` / `dateRangeEndInclusive ?? true` (D26).
   if (chartConfig.isRenderingRawSqlTemplate) {
     const startOp = chartConfig.dateRangeStartInclusive !== false ? '>=' : '>';
-    const endOp = chartConfig.dateRangeEndInclusive === true ? '<=' : '<';
+    const endOp = chartConfig.dateRangeEndInclusive !== false ? '<=' : '<';
     return sqlpp`${{ Raw: `${tsExpr} ${startOp} $__fromTime_ms AND ${tsExpr} ${endOp} $__toTime_ms` }}`;
   }
   const format = timestampFormatOf(chartConfig);
@@ -127,7 +129,7 @@ function timeFilterForConfig(
     chartConfig.dateRange[1],
     {
       inclusiveStart: chartConfig.dateRangeStartInclusive !== false,
-      inclusiveEnd: chartConfig.dateRangeEndInclusive === true,
+      inclusiveEnd: chartConfig.dateRangeEndInclusive !== false,
     },
   );
 }
@@ -150,9 +152,12 @@ export async function renderWhereCouchbase(
     );
 
   if (isNonEmptyWhereExpr(chartConfig.where)) {
+    // Upstream renderWhere: `whereLanguage ?? 'sql'` (D28). An unset
+    // aggConditionLanguage is left alone: upstream reads it as Lucene in the
+    // -If copy and SQL here, and this port keeps both copies Lucene.
     const compiled = await compileFilter(
       chartConfig.where,
-      chartConfig.whereLanguage,
+      chartConfig.whereLanguage ?? 'sql',
       chartConfig,
       ctx,
     );
