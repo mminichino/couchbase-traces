@@ -395,7 +395,8 @@ pushes to `main` directly.
 | D17   | Defects: multi-series HAVING and ORDER BY (Q36)           | Found in D16 (section 9.1); own PR after D13; fixed, Q41                                                                                                                  | S    | D13                           |
 | D18   | Defects: intermittent common-utils live tests (Q37)       | Found in D12 (section 9.1); seed lag fixed with D13; SDK timeout remainder in its own PR before D17 (Q39)                                                                 | S    | —                             |
 | D19   | Defects: `make ci-int` exits 1 after every test passed    | Found in D13 (section 9.1); with the D18 remainder (Q40)                                                                                                                  | S    | —                             |
-| D20   | Defects: mixed gauge/histogram charts drop scalar groups  | Found in D17 (section 9.1); next phase after D17 (Q42)                                                                                                                    | S    | D17                           |
+| D20   | Defects: mixed gauge/histogram charts drop scalar groups  | Found in D17 (section 9.1); next phase after D17 (Q42); fixed                                                                                                             | S    | D17                           |
+| D21   | Defects: cumulative histogram quantile zero-delta row     | Found in D20 (section 9.1); placement pending (Q43)                                                                                                                       | S    | D20                           |
 | D14   | Dev tooling: live-test port offset fallback               | Found in D7 (section 9.1)                                                                                                                                                 | S    | —                             |
 | R2a   | Port deferred int suites: internal and external API       | B1 (10 suites: `routers/api/{dashboard,iac,sources,connections}`, `routers/external-api/{charts,search,sources,sources-crud,connections}`, `middleware/queryAttribution`) | L    | D1                            |
 | R2b   | Port deferred int suites: alerts                          | B1 (5 suites: `checkAlerts`, `multiChannelAlerts`, `renderAlertTemplate`, `singleInvocationAlert`, `providers/default`; 335 tests, 93 failing per R0)                     | L    | R2c, D1, D4, D6               |
@@ -820,6 +821,38 @@ keeps the two classes' rows apart. D17 sorts such a chart on `` `group`[i] ``,
 which matches what the branches project today. Placement (Q42): the next
 phase, right after D17.
 
+Result (2026-11-23, `mm--v1-d20-mixed-histogram-groups`): fixed.
+
+- Root cause confirmed against current source and upstream `f172a489c818`
+  (`renderChartConfig.ts`, the branch wrappers of the composed query).
+- A gauge or sum branch now projects its group columns and pads `group`
+  with `[]`; a histogram branch pads each scalar group column with `NULL`;
+  the joined statement groups by both. SQL++ UNION ALL merges rows by field
+  name, not position, so each pad takes its column's own name instead of
+  upstream's `__hdx_group_pad_<n>`. An all-histogram chart is unchanged.
+- A sort on a group-by of a mixed chart reads the scalar group column with
+  `NULLS LAST`, so histogram rows sort last as upstream's NULL companion
+  slots do in ClickHouse (SQL++ puts NULL first ascending). D17's
+  `` `group`[i] `` sort now applies to all-histogram charts only.
+- Result-column hints list the scalar group columns unless every series is
+  histogram-class (upstream "packs every group-by into one group column").
+- Tests: `render/__tests__/multiSeriesMixedGroups.test.ts` ports upstream's
+  "pads group columns across gauge and histogram branch classes" and the
+  mixed-class sort, HAVING and column-placement cases (11 cases, 8 failed
+  before the fix). Live: `multiSeriesMixedGroups.couchbase.int.test.ts`
+  ports upstream's `grpmix` int cases plus a two-service gauge beside a
+  histogram (5 of 5 failed before the fix).
+- Found here, not fixed: D21.
+
+#### D21: Cumulative histogram quantile emits a NULL row for a zero-delta bucket (found in D20, size S)
+
+Evidence: upstream's `grpmix.latency` fixture seeds a cumulative zero
+baseline at minute 0, and its quantile emits no row there (`WHERE total > 0`).
+The SQL++ quantile emits a row with a NULL value for that bucket, so a chart
+gets an extra point-free row. Same values, one extra row. The D20 live test
+seeds the minute-1 counts as one delta point to stay on its own defect.
+Placement: pending (Q43).
+
 #### D18: Common-utils live tests fail intermittently (found in D12, size S)
 
 Evidence: two of four `run.sh` runs on the D12 branch lost one common-utils live
@@ -1139,6 +1172,7 @@ in that phase.
 | Q40 | One-off `make ci-int` exit 1 after every test passed (2026-11-22)                                        | Logged as defect D19 and investigated in the D18 remainder PR                                                                                                                                                                                                                                                                     | D18, D19       | F1             |
 | Q41 | SQL++ form of the D17 outer HAVING and group-by sort (2026-11-22)                                        | HAVING is a WHERE on a wrapper in every shape (SQL++ HAVING rejects aliases, windows, and a missing GROUP BY); group-by sorts read the named group column instead of companion columns. Same rows and columns as upstream; a `share_of_total` HAVING with an expression group-by sort now runs, where upstream fails. User kept this divergence (2026-11-23) | D17            |
 | Q42 | Placement of D20: mixed gauge/histogram charts drop scalar group columns (2026-11-23)                    | The next phase, right after D17                                                                                                                                                                                                                                                                                                   | D17, D20       |
+| Q43 | Placement of D21: cumulative histogram quantile emits a NULL row for a zero-delta bucket (2026-11-23)    | Pending; proposed: its own small PR before R2a                                                                                                                                                                                                                                                                                    | D21            |
 
 ## 11. Acceptance criteria (v1.0.0 is done when)
 
@@ -1213,6 +1247,7 @@ in that phase.
 | D18 Intermittent common-utils live tests                        | S    |
 | D19 `make ci-int` exit 1 after a green run                      | S    |
 | D20 Mixed gauge/histogram charts drop scalar group columns      | S    |
+| D21 Cumulative histogram quantile zero-delta row                | S    |
 | D14 Live-test port offset fallback                              | S    |
 | R2a Deferred API int suites (10 suites, 380 tests, 80 failing)  | L    |
 | R2b Deferred alert int suites (5 suites, 335 tests, 93 failing) | L    |

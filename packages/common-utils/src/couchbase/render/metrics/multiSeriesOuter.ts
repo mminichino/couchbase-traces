@@ -33,8 +33,10 @@ export type MultiSeriesOuterInput = {
   outputColumns: string[];
   /** The chart's group-by items, in group-by order; empty when ungrouped. */
   groupItems: GroupByItem[];
-  /** Group values travel packed in the `group` array (histogram branches). */
+  /** Every branch is histogram-class: groups live only in `group`. */
   packedGroups: boolean;
+  /** Mixed chart: histogram rows carry NULL in the scalar group columns. */
+  paddedGroups?: boolean;
   hasGranularity: boolean;
   ctx: RenderFilterContext;
 };
@@ -123,8 +125,14 @@ function renderOuterOrderBy(input: MultiSeriesOuterInput): string | undefined {
     for (const item of sortItems(list)) {
       const dir = SORT_DIRECTION.exec(item);
       const body = dir ? item.slice(0, dir.index).trim() : item;
-      const column = groupColumnFor(body, input) ?? mapOrderExpr(body);
-      parts.push(dir ? `${column} ${dir[1].toUpperCase()}` : column);
+      const group = groupColumnFor(body, input);
+      const column = group ?? mapOrderExpr(body);
+      const sorted = dir ? `${column} ${dir[1].toUpperCase()}` : column;
+      // Upstream sorts histogram rows' NULL pads last (ClickHouse's default);
+      // SQL++ puts NULL first in ascending order.
+      parts.push(
+        group != null && input.paddedGroups ? `${sorted} NULLS LAST` : sorted,
+      );
     }
   }
   return parts.length ? parts.join(', ') : undefined;

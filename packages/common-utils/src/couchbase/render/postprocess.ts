@@ -1,5 +1,6 @@
 import {
   FIXED_TIME_BUCKET_EXPR_ALIAS,
+  isHistogramClassSelect,
   isRatioChartConfig,
   isUsingGranularity,
   isUsingGroupBy,
@@ -80,8 +81,13 @@ export function couchbaseResultColumnNames(
       cols.push(couchbaseSelectItemAlias(item, i));
     });
   }
-  if (isUsingGroupBy(config) && config.selectGroupBy !== false) {
-    // A group-by naming a select alias is already in the list above.
+  if (
+    isUsingGroupBy(config) &&
+    config.selectGroupBy !== false &&
+    !(config.select.length > 0 && config.select.every(isHistogramClassSelect))
+  ) {
+    // A group-by naming a select alias is already in the list above. An
+    // all-histogram chart packs every group-by into `group` instead.
     cols.push(
       ...groupByItems(config)
         .filter(item => !item.fromSelectAlias)
