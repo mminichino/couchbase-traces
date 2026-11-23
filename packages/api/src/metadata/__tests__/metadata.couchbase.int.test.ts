@@ -6,6 +6,7 @@ import { type Cluster, connect } from 'couchbase';
 
 import { loadMetadataConfig } from '@/metadata/couchbase/config';
 import { CouchbaseMetadataStore } from '@/metadata/couchbase/store';
+import { newId } from '@/metadata/ids';
 import { describeAlertRepos } from '@/metadata/testing/alertsContract';
 import { describeContentRepos } from '@/metadata/testing/contentContract';
 import { describeMetadataContract } from '@/metadata/testing/contract';
@@ -92,4 +93,23 @@ maybe('metadata on Couchbase', () => {
 
   describeContentRepos('couchbase', async () => store!);
   describeAlertRepos('couchbase', async () => store!);
+
+  // D13: the losing requests read the winner's invite by KV get while its
+  // insert is in flight, so every caller gets the one invite.
+  it('returns one invite to 20 concurrent creates, 30 times over', async () => {
+    const team = newId();
+    for (let round = 0; round < 30; round++) {
+      const email = `race-${round}@x.io`;
+      const results = await Promise.allSettled(
+        Array.from({ length: 20 }, () =>
+          store!.teamInvites.getOrCreate(team, { email }),
+        ),
+      );
+      expect(results.filter(r => r.status === 'rejected')).toEqual([]);
+      const ids = results.map(r => r.status === 'fulfilled' && r.value._id);
+      expect(new Set(ids).size).toBe(1);
+      const held = await store!.teamInvites.getByTeamEmail(team, email);
+      expect(held?._id).toBe(ids[0]);
+    }
+  }, 120_000);
 });

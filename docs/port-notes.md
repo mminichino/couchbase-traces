@@ -3129,3 +3129,81 @@ The fourth run passed everything (70, 7, 56, 4), and the same common-utils
 suites passed 70 of 70 under `make ci-int`. Common-utils is unchanged on this
 branch, and the default query timeout is 60 s, so the source of the 500 ms
 cutoff is unknown.
+
+### D13: concurrent invites of one email (2026-11-22, `mm--v1-d13-invite-race`)
+
+`teamInvites.getOrCreate` writes the `invite_member` claim, then the token
+claim, then the invite. A concurrent request that lost the claim called the
+claim's stale-owner check (`ownerExists`) during that gap and saw no invite.
+Two outcomes, both wrong:
+
+- It read the invite back, found nothing, and rethrew `DuplicateKeyError`:
+  the 500 in D6.
+- `claimUnique` took over the "abandoned" claim (`replace` on CAS), so both
+  requests created an invite, and the first winner's invite was orphaned.
+
+Fix, in `teamInvites.ts` only (`unique.ts` is unchanged): the stale-owner
+check polls the owner's invite by KV get (read-your-writes, no SQL++), with
+10, 20, 40 … 200 ms backoff, up to `INVITE_CLAIM_WAIT_MS` (2 s). If the
+invite appears, the claim is live and the loser returns it. If not, the
+claim is abandoned and taken over, as before. A winner stalled past the
+bound re-reads the claim after its insert. If another request now holds
+it, the winner deletes its own invite and token claim and returns the new
+holder's invite once that appears. Worst-case extra latency for a loser is
+the 2 s bound, and only when the winner crashed.
+
+Tests: three unit cases in `identityRepos.test.ts`:
+
+- 20 parallel calls with every invite insert delayed 50 ms.
+- An abandoned claim is taken over within the bound.
+- A first insert stalled 2.3 s yields to the request that took over.
+
+With the constant in place and the old logic, the first and third fail.
+The third leaves two invites. The second passes on both, since it pins the
+takeover. 30 of 30 repeats pass with the fix. The external-API int case
+now runs 20 in parallel, as `identity.int.test.ts` already did. A
+live-cluster case in `metadata.couchbase.int.test.ts` runs 30 rounds of 20
+concurrent creates.
+
+Unloaded, the race did not reproduce end to end. The HTTP int cases on the
+CI compose stack passed 30 of 30 on the old code and 30 of 30 on the new,
+and the live case passed on the old code too. The delayed-insert unit
+tests are the deterministic proof.
+
+### D18: intermittent common-utils live tests (2026-11-22, `mm--v1-d13-invite-race`)
+
+35 loops of the full common-utils live set against one `run.sh` cluster: 3
+failed, with two symptoms.
+
+- **Missing rows (2 of 35, `mapAccess`).** `seed()` polled
+  `SELECT RAW COUNT(*) FROM ks` until it reached the doc count. EXPLAIN
+  shows a `CountScan`, which reads the collection's document count and is
+  exact as soon as the KV writes land. It never waited for the primary
+  index. The chart query scans `#primary` at `not_bounded`, so it could
+  miss the last UPSERT (`"": 1`). Now `seed()` runs one `request_plus`
+  `COUNT(*) … WHERE META(d).id IS NOT MISSING`, which EXPLAIN shows as
+  `IndexScan3` on `#primary`. That waits for the index to catch up. After
+  the fix, 30 of 30 full-set loops and 3 of 3 `run.sh` runs pass.
+- **SDK "unambiguous timeout" (1 of 35, and both D12 `run.sh` failures).**
+  Root cause not found.
+  - In D12 it hit the first chart query of a suite after about 500 ms. In
+    the loop it hit `probeLive`'s `testConnection`, so the whole suite
+    failed.
+  - The query timeout resolves to 60 s, and connect to 10 s (15 s in the
+    probe), so neither is the cutoff.
+  - 300 fresh connect-and-query loops and 120 close-then-reconnect loops in
+    a plain Node process failed 0 times.
+  - `CBPPLOGLEVEL=debug` produced no core log under jest.
+  - Not seen in the 30 loops after the seed fix, but at about 1 in 35 that
+    proves nothing.
+  - Next steps: log `e.context` and `e.cause` when a live test or probe
+    fails with TIMEOUT, then loop `run.sh` itself, which starts a fresh
+    cluster each time, until one is caught.
+- My first attempt at cold-cluster cycles was invalid: `compose up` ran
+  without `run.sh`'s port env and the node never started. No result is
+  drawn from it.
+
+`make ci-int` on this branch exited 1 once after nx reported "Successfully
+ran target ci:int" with every test passing. The re-run exited 0. The exit
+came from the recipe's `bash -c … | tee` after the tests; the cause was not
+identified.
