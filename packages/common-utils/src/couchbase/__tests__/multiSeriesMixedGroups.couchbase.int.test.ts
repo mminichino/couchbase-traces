@@ -64,20 +64,17 @@ beforeAll(async () => {
     { ...common('grpmix.multi', 'svc-a', 1), Value: 1 },
     { ...common('grpmix.multi', 'svc-b', 1), Value: 2 },
   ]);
-  // 10 observations in (0, 10] at minute 1, so p50 interpolates to 5.
-  // Upstream seeds a cumulative zero baseline at minute 0 that emits no row;
-  // the SQL++ quantile still emits a NULL row there (D21), so this seeds the
-  // same minute-1 counts as one delta point.
-  await seed(COLLECTIONS.histogram, [
-    {
-      ...common('grpmix.latency', 'svc-a', 1),
-      AggregationTemporality: 1,
-      ExplicitBounds: [10, 30],
-      BucketCounts: [10, 0, 0],
-      Count: 10,
-      Sum: 0,
-    },
-  ]);
+  // Cumulative: the zero baseline, then 10 observations in (0, 10], so p50
+  // at minute 1 interpolates to 5 and the all-zero minute 0 has no row.
+  const hist = (m: number, counts: number[]) => ({
+    ...common('grpmix.latency', 'svc-a', m),
+    AggregationTemporality: 2,
+    ExplicitBounds: [10, 30],
+    BucketCounts: counts,
+    Count: counts.reduce((a, b) => a + b, 0),
+    Sum: 0,
+  });
+  await seed(COLLECTIONS.histogram, [hist(0, [0, 0, 0]), hist(1, [10, 0, 0])]);
 }, 120_000);
 
 afterAll(async () => {

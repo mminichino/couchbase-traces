@@ -118,7 +118,10 @@ describe('phase 6 SQL++', () => {
       `SELECT RAW ${hist.statement} FROM \`test\`.\`app\`.\`events\` AS d LIMIT 1`,
       hist.parameters,
     );
-    expect(Number(scalar(histRows[0]))).toBeCloseTo(5, 5);
+    // Upstream interpolates the first-bucket-above-zero case from a lower
+    // count of 0 (`if(lower_bound = 0, 0, …)`), as histogramQuantileValue
+    // does: rank 1.5 over [1, 2, 3] in (0, 10] is 7.5 (D21; was 5).
+    expect(Number(scalar(histRows[0]))).toBeCloseTo(7.5, 5);
 
     const roundExpr = await rows(
       'EXPLAIN SELECT ROUND(1/1000000) AS v FROM `test`.`app`.`events` AS d LIMIT 0',

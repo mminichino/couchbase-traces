@@ -2,7 +2,7 @@ import { FIXED_TIME_BUCKET_EXPR_ALIAS } from '@/core/chartConfig';
 import { GROUP_ALIAS } from '@/core/histogram';
 import { CouchbaseUnsupportedError } from '@/couchbase/errors';
 import { lag } from '@/couchbase/fn/scalar';
-import { keyspace, quoteIdent } from '@/couchbase/sqlpp';
+import { quoteIdent } from '@/couchbase/sqlpp';
 import type { BuilderChartConfigWithOptDateRange } from '@/types';
 
 import {
@@ -10,11 +10,9 @@ import {
   dimProject,
   dimProjectFrom,
   dimSelect,
-  groupBySql,
   type HistInput,
-  seriesKeyExpr,
+  histSourceParts,
   sourceWhereClause,
-  timeBucketSql,
 } from './histogram';
 
 export type SqlppWithClauses = {
@@ -78,16 +76,8 @@ export function translateExponentialHistogramCouchbase(
 }
 
 function expHistogramCount(input: ExpHistogramInput): SqlppWithClauses {
-  const { chartConfig, select, table, nameFilter, from } = input;
-  const ks = keyspace({
-    bucket: from.databaseName,
-    scope: from.scopeName || 'default',
-    collection: table,
-  });
-  const bucket = timeBucketSql(chartConfig);
-  const group = groupBySql(chartConfig);
-  const valueAlias = select.alias?.trim() || 'Value';
-  const sk = seriesKeyExpr();
+  const { chartConfig, nameFilter } = input;
+  const { ks, bucket, group, valueAlias, sk } = histSourceParts(input);
   const part = partitionKeys(group, 'AggregationTemporality');
   const lagCount = lag('TONUMBER(`Count`)', part, 'TimeUnix');
   const lagStart = lag('StartTimeUnix', part, 'TimeUnix');
@@ -112,16 +102,8 @@ function expHistogramCount(input: ExpHistogramInput): SqlppWithClauses {
 function expHistogramQuantile(
   input: ExpHistogramQuantileInput,
 ): SqlppWithClauses {
-  const { chartConfig, select, table, nameFilter, from, level } = input;
-  const ks = keyspace({
-    bucket: from.databaseName,
-    scope: from.scopeName || 'default',
-    collection: table,
-  });
-  const bucket = timeBucketSql(chartConfig);
-  const group = groupBySql(chartConfig);
-  const valueAlias = select.alias?.trim() || 'Value';
-  const sk = seriesKeyExpr();
+  const { chartConfig, nameFilter, level } = input;
+  const { ks, bucket, group, valueAlias, sk } = histSourceParts(input);
   const dimIn = dimSelect(bucket, group);
   const dimOut = dimProject(bucket, group);
   const part = partitionKeys(group, '');

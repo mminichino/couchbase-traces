@@ -40,6 +40,18 @@ export function seriesKeyExpr(): string {
   return `TOSTRING(ENCODE_JSON({"scope":IFNULL(ScopeAttributes, {}), "resource":IFNULL(ResourceAttributes, {}), "attrs":IFNULL(Attributes, {})}))`;
 }
 
+/**
+ * Window partition for one series, as expressions: a window clause cannot
+ * see the select's own aliases (an alias there reads as MISSING, so every
+ * series would share one partition). Upstream partitions by the group, the
+ * attributes hash, and the temporality (and the bounds hash for counts).
+ */
+function seriesPartition(group: string | undefined, ...extra: string[]) {
+  return [group, seriesKeyExpr(), 'd.AggregationTemporality', ...extra]
+    .filter(Boolean)
+    .join(', ');
+}
+
 export function timeBucketSql(
   chartConfig: BuilderChartConfigWithOptDateRange,
 ): string | undefined {
@@ -149,23 +161,38 @@ export function sourceWhereClause(
 }
 
 /**
+ * Keyspace and output dimensions every histogram translator starts from.
+ */
+export function histSourceParts(input: {
+  chartConfig: BuilderChartConfigWithOptDateRange;
+  select: MetricSelect;
+  table: string;
+  from: HistInput['from'];
+}) {
+  const { chartConfig, select, table, from } = input;
+  return {
+    ks: keyspace({
+      bucket: from.databaseName,
+      scope: from.scopeName || 'default',
+      collection: table,
+    }),
+    bucket: timeBucketSql(chartConfig),
+    group: groupBySql(chartConfig),
+    valueAlias: select.alias?.trim() || 'Value',
+    sk: seriesKeyExpr(),
+  };
+}
+
+/**
  * Explicit-bounds histogram count: per-series Count deltas (reset → current),
  * then SUM(delta) per output dimension.
  */
 function translateHistogramCountCouchbase(input: HistInput) {
-  const { chartConfig, select, table, nameFilter, from } = input;
-  const ks = keyspace({
-    bucket: from.databaseName,
-    scope: from.scopeName || 'default',
-    collection: table,
-  });
-  const bucket = timeBucketSql(chartConfig);
-  const group = groupBySql(chartConfig);
-  const valueAlias = select.alias?.trim() || 'Value';
-  const sk = seriesKeyExpr();
+  const { chartConfig, nameFilter } = input;
+  const { ks, bucket, group, valueAlias, sk } = histSourceParts(input);
   const lagCount = lag(
     'TONUMBER(`Count`)',
-    'AttributesHash, AggregationTemporality',
+    seriesPartition(group, 'd.ExplicitBounds'),
     'TimeUnix',
   );
   const delta = `CASE WHEN AggregationTemporality = 1 THEN TONUMBER(\`Count\`) WHEN ${lagCount} IS NOT NULL THEN CASE WHEN TONUMBER(\`Count\`) < ${lagCount} THEN TONUMBER(\`Count\`) ELSE TONUMBER(\`Count\`) - ${lagCount} END ELSE 0 END`;
@@ -192,33 +219,24 @@ function translateHistogramCountCouchbase(input: HistInput) {
 function translateHistogramQuantileCouchbase(
   input: HistInput & { level: number },
 ) {
-  const { chartConfig, select, table, nameFilter, from, level } = input;
-  const ks = keyspace({
-    bucket: from.databaseName,
-    scope: from.scopeName || 'default',
-    collection: table,
-  });
-  const bucket = timeBucketSql(chartConfig);
-  const group = groupBySql(chartConfig);
-  const valueAlias = select.alias?.trim() || 'Value';
-  const sk = seriesKeyExpr();
-  const lagCounts = lag(
-    'BucketCounts',
-    'AttributesHash, AggregationTemporality',
-    'TimeUnix',
-  );
-  // Delta temporality or reset / first point → use current counts; else element-wise subtract.
-  // Qualify keyspace columns with d. — the source CTE aliases the collection as d.
-  const rates = `CASE WHEN d.AggregationTemporality = 1 OR ${lagCounts} IS NULL THEN d.BucketCounts WHEN ARRAY_LENGTH(ARRAY x FOR x IN ARRAY_RANGE(0, LEAST(ARRAY_LENGTH(d.BucketCounts), ARRAY_LENGTH(${lagCounts}))) WHEN TONUMBER(d.BucketCounts[x]) < TONUMBER((${lagCounts})[x]) END) > 0 THEN d.BucketCounts ELSE (ARRAY TONUMBER(d.BucketCounts[i]) - TONUMBER(IFNULL((${lagCounts})[i], 0)) FOR i IN ARRAY_RANGE(0, ARRAY_LENGTH(d.BucketCounts)) END) END`;
+  const { chartConfig, nameFilter, level } = input;
+  const { ks, bucket, group, valueAlias, sk } = histSourceParts(input);
+  const part = seriesPartition(group);
+  const lagCounts = lag('d.BucketCounts', part, 'TimeUnix');
+  const lagBounds = lag('d.ExplicitBounds', part, 'TimeUnix');
+  // Upstream deltas: a cumulative series' first point is the zero baseline;
+  // delta temporality, a new bucket layout or a decrease (reset) takes the
+  // current counts; otherwise subtract element-wise.
+  const decreased = `ARRAY_LENGTH(ARRAY x FOR x IN ARRAY_RANGE(0, LEAST(ARRAY_LENGTH(d.BucketCounts), ARRAY_LENGTH(${lagCounts}))) WHEN TONUMBER(d.BucketCounts[x]) < TONUMBER((${lagCounts})[x]) END) > 0`;
+  const rates = `CASE WHEN d.AggregationTemporality = 2 AND ${lagCounts} IS NULL THEN (ARRAY 0 FOR c IN d.BucketCounts END) WHEN d.AggregationTemporality = 1 OR ${lagCounts} IS NULL OR d.ExplicitBounds != ${lagBounds} OR ${decreased} THEN d.BucketCounts ELSE (ARRAY TONUMBER(d.BucketCounts[i]) - TONUMBER(IFNULL((${lagCounts})[i], 0)) FOR i IN ARRAY_RANGE(0, ARRAY_LENGTH(d.BucketCounts)) END) END`;
   const where = sourceWhereClause(chartConfig, nameFilter);
 
   const sourceSql = `SELECT ${dimSelect(bucket, group)}${sk} AS AttributesHash, d.ExplicitBounds AS ExplicitBounds, ${rates} AS rates FROM ${ks} AS d WHERE ${where.sql}`;
   // Alias source as s: under UNNEST every source column, the time bucket
-  // and group included, must be read through it.
-  // OTel histograms have N+1 bucket counts for N explicit bounds; the last
-  // bucket's upper bound is +Inf. Use a large sentinel so quantile math can
-  // interpolate into that bucket (NULL breaks histogramQuantile).
-  const flatSql = `SELECT ${dimProjectFrom('s', bucket, group)}i, IFMISSINGORNULL(s.ExplicitBounds[i], 1e12) AS bound, TONUMBER(IFNULL(s.rates[i], 0)) AS rate FROM source AS s UNNEST ARRAY_RANGE(0, ARRAY_LENGTH(s.rates)) AS i`;
+  // and group included, must be read through it. OTel histograms have N+1
+  // bucket counts for N explicit bounds; the last bound is +Inf, carried as
+  // NULL into histogramQuantile.
+  const flatSql = `SELECT ${dimProjectFrom('s', bucket, group)}i, IFMISSING(s.ExplicitBounds[i], NULL) AS bound, TONUMBER(IFNULL(s.rates[i], 0)) AS rate FROM source AS s UNNEST ARRAY_RANGE(0, ARRAY_LENGTH(s.rates)) AS i`;
   const dimKeys = [
     bucket ? quoteIdent(FIXED_TIME_BUCKET_EXPR_ALIAS) : null,
     group ? quoteIdent(GROUP_ALIAS) : null,
@@ -227,9 +245,12 @@ function translateHistogramQuantileCouchbase(
     .filter(Boolean)
     .join(', ');
   const aggSql = `SELECT ${dimProject(bucket, group)}i, MAX(bound) AS bound, SUM(rate) AS rate FROM flat GROUP BY ${dimKeys}`;
-  const sorted = `ARRAY_SORT(ARRAY_AGG({"i": i, "b": bound, "c": rate}))`;
-  const boundsArr = `(ARRAY v.b FOR v IN ${sorted} END)`;
-  const countsArr = `(ARRAY v.c FOR v IN ${sorted} END)`;
+  // Sort [i, bound, rate] tuples: ARRAY_SORT compares objects field by
+  // field in name order ("b" before "i"), so the NULL overflow bound would
+  // sort first.
+  const sorted = `ARRAY_SORT(ARRAY_AGG([i, bound, rate]))`;
+  const boundsArr = `(ARRAY v[1] FOR v IN ${sorted} END)`;
+  const countsArr = `(ARRAY v[2] FOR v IN ${sorted} END)`;
   const q = histogramQuantile(level, boundsArr, countsArr);
   const rebuildGroup = [
     bucket ? quoteIdent(FIXED_TIME_BUCKET_EXPR_ALIAS) : null,
@@ -237,7 +258,11 @@ function translateHistogramQuantileCouchbase(
   ]
     .filter(Boolean)
     .join(', ');
-  const metricsSql = `SELECT ${dimProject(bucket, group)}${q.statement} AS ${quoteIdent(valueAlias)} FROM agg${rebuildGroup ? ` GROUP BY ${rebuildGroup}` : ''}`;
+  // Upstream `WHERE length(point) > 1 AND total > 0`: a bucket or group with
+  // no observations has no row, not a NULL one. A wrapper, since HAVING
+  // needs a GROUP BY and the number shape has none.
+  const quantilesSql = `SELECT ${dimProject(bucket, group)}${q.statement} AS ${quoteIdent(valueAlias)}, COUNT(1) AS n, SUM(rate) AS total FROM agg${rebuildGroup ? ` GROUP BY ${rebuildGroup}` : ''}`;
+  const metricsSql = `SELECT ${dimProjectFrom('m', bucket, group)}m.${quoteIdent(valueAlias)} AS ${quoteIdent(valueAlias)} FROM (${quantilesSql}) AS m WHERE m.n > 1 AND m.total > 0`;
 
   return {
     with: [

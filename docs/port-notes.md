@@ -3380,3 +3380,58 @@ a per-slot lock (`scripts/slot-lock.sh`) around `ci-int`, `dev-int`, and
   quantile drops (`WHERE total > 0`). The SQL++ quantile keeps that bucket
   as a row with a NULL value, so the row count differs by one. The D20 live
   test seeds the same minute-1 counts as a single delta point instead.
+
+### D21: explicit-bounds histogram quantile (2026-11-23, `mm--v1-d21-histogram-zero-bucket`)
+
+- **Verified.** Against upstream `f172a489c818` `core/histogram.ts`
+  `translateHistogramQuantile` / `translateHistogramCount` and the
+  "Query Metrics - Histogram" cases in
+  `api/src/clickhouse/__tests__/renderChartConfig.int.test.ts` (no port of
+  that suite existed; its snapshot was deleted in Phase 10). Ported live,
+  7 of 8 cases failed, with four causes in `render/metrics/histogram.ts`
+  and `fn/quantile.ts`:
+  1. **Empty buckets** (the logged defect): no equivalent of upstream's
+     `WHERE length(point) > 1 AND total > 0`, so a zero-delta bucket came
+     back as a row with `Value: null`. `metrics` now wraps the per-bucket
+     quantile with `COUNT(1) AS n, SUM(rate) AS total` and filters
+     `m.n > 1 AND m.total > 0`. A WHERE on a wrapper rather than HAVING,
+     because the number shape has no GROUP BY (same reason as D17).
+  2. **Partition by alias.** `LAG(…) OVER (PARTITION BY AttributesHash, …)`
+     named the select's own alias. SQL++ resolves a window clause before
+     projection, so the alias reads as MISSING and all series shared one
+     partition: checked on 8.0.3, `PARTITION BY kk` over `t.k AS kk` gave
+     `[null, 1, 2]` where `PARTITION BY t.k` gave `[null, null, 1]`. The
+     grouped reset case read `/normal` 6 instead of 8. Quantile and count
+     now partition by the expressions: `[group], <seriesKeyExpr>,
+     d.AggregationTemporality`, and count adds `d.ExplicitBounds` (upstream
+     `bounds_hash`). Upstream's quantile partitions by group and attribute
+     hash only and compares the bounds itself; partitioning by temporality
+     too only differs for a series that changes temporality mid-range.
+     The gauge and sum paths already partitioned by the expression. The
+     exponential-histogram count has the same alias partition (`series_key`,
+     `group` in its own SELECT): logged as D22, not fixed here. Its quantile
+     partitions in a later CTE, where `series_key` is a real column.
+  3. **First point.** Upstream's cumulative first point contributes zero
+     (`arrayWithConstant(length(counts), 0)`); the port used its raw counts,
+     so a series' whole history before the range counted. Now
+     `AggregationTemporality = 2 AND LAG IS NULL` gives zeros, and a new
+     bucket layout (`d.ExplicitBounds != LAG(d.ExplicitBounds)`) takes the
+     current counts, as upstream's `bounds_hash != prev_bounds_hash`.
+  4. **Interpolation.** `histogramQuantile` treated the first bucket as
+     `rank * bound / count` and returned the overflow bucket's 1e12
+     sentinel. It now matches upstream case for case (and the JS
+     `histogramQuantileValue`, which already did): +Inf upper bound returns
+     the previous bound, a first bucket with bound > 0 interpolates from
+     (0, 0), a zero span returns the lower bound. The overflow bound is
+     NULL instead of 1e12, and buckets sort as `[i, bound, rate]` arrays:
+     `ARRAY_SORT` orders objects by field name, so `{"i", "b", "c"}`
+     sorted by bound and put the NULL first.
+- **Values changed.** Charts on cumulative histograms show different
+  numbers after this, matching upstream: no pre-range counts, no
+  cross-series subtraction, upstream interpolation. `phase6` pinned p50 of
+  [1, 1, 1] over [0, 10, 20] at 5; upstream and the JS reference give 7.5.
+- **Tests.** `render/__tests__/histogramQuantile.test.ts` (9; 9 failed
+  before). `histogramQuantile.couchbase.int.test.ts` (8; 7 failed before,
+  the passing one is delta temporality, which none of the causes touch).
+  `multiSeriesMixedGroups.couchbase.int.test.ts` is back on upstream's
+  cumulative `grpmix.latency` seed; 3 of its 5 fail without the fix.
