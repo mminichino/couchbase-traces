@@ -3435,3 +3435,38 @@ a per-slot lock (`scripts/slot-lock.sh`) around `ci-int`, `dev-int`, and
   the passing one is delta temporality, which none of the causes touch).
   `multiSeriesMixedGroups.couchbase.int.test.ts` is back on upstream's
   cumulative `grpmix.latency` seed; 3 of its 5 fail without the fix.
+
+### D22: exponential-histogram count series partition (2026-11-23, `mm--v1-d22-exp-histogram-count-partition`)
+
+- **Verified.** Against upstream `f172a489c818` `core/histogram.ts`
+  `translateExponentialHistogramCount`: one `prev_row` window
+  `PARTITION BY [group,] MetricName, attr_hash, AggregationTemporality`.
+  The port's `expHistogramCount` partitioned its four `LAG` windows by
+  `` `group`, MetricName, series_key, AggregationTemporality``, where
+  `group` and `series_key` are aliases of the same SELECT. As D21 found,
+  a window clause reads those as MISSING, so all series of a metric (and
+  all groups) shared one partition ordered by time and took their previous
+  `Count` / `StartTimeUnix` / `TimeUnix` from whichever series came before.
+- **Fix.** Partition by `seriesPartition(group, 'd.MetricName')`, the D21
+  helper (now exported): the group expression, the attributes-hash
+  expression, `d.AggregationTemporality`, `d.MetricName`. Same set as
+  upstream; the order does not change which rows share a partition. The
+  quantile keeps `partitionKeys`: it partitions in a later CTE
+  (`series_with_normalized_scale`) where `group` and `series_key` are
+  columns, and its live cases already pass.
+- **Tests.** `render/metrics/__tests__/expHistogramPartition.test.ts` (3;
+  all failed before). `expHistogramCount.couchbase.int.test.ts` ports
+  upstream's "Query Metrics - Exponential Histogram" count cases with the
+  same inputs (upstream `bucketExponentialHistogramObservations` and
+  `seedExponentialHistogramMetric` defaults): delta, predecessor-less,
+  unknown-start reset, known reset, decrease reset, scale change, the
+  grouped sum (two series in host-a), and the non-timeseries reset modes
+  (count and its quantile half). 2 of 8 failed before, the two with more
+  than one series: host-a read 2 instead of 3. Phase 7a's count cases each
+  seed one cumulative series, which is why they passed.
+- **Not ported here.** Upstream's "subtracts cumulative counts using a
+  warm-up point outside the requested range" relies on the one-interval
+  `includedDataInterval` warm-up that upstream adds to the histogram
+  source `WHERE`; the port's `sourceWhereClause` filters to the requested
+  range only. That is a separate behaviour (not a partition defect) and is
+  logged as D23.

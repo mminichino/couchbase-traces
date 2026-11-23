@@ -12,6 +12,7 @@ import {
   dimSelect,
   type HistInput,
   histSourceParts,
+  seriesPartition,
   sourceWhereClause,
 } from './histogram';
 
@@ -25,6 +26,11 @@ export type SqlppWithClauses = {
 type ExpHistogramInput = HistInput;
 type ExpHistogramQuantileInput = HistInput & { level: number };
 
+/**
+ * Quantile window partition over a CTE that already carries `group` and
+ * `series_key` as columns, so the names resolve (unlike in the select that
+ * defines them; see seriesPartition).
+ */
 function partitionKeys(group: string | undefined, extra: string): string {
   return [
     group ? quoteIdent(GROUP_ALIAS) : null,
@@ -78,7 +84,8 @@ export function translateExponentialHistogramCouchbase(
 function expHistogramCount(input: ExpHistogramInput): SqlppWithClauses {
   const { chartConfig, nameFilter } = input;
   const { ks, bucket, group, valueAlias, sk } = histSourceParts(input);
-  const part = partitionKeys(group, 'AggregationTemporality');
+  // Expressions, not this select's `group` / `series_key` aliases (D22).
+  const part = seriesPartition(group, 'd.MetricName');
   const lagCount = lag('TONUMBER(`Count`)', part, 'TimeUnix');
   const lagStart = lag('StartTimeUnix', part, 'TimeUnix');
   const lagTime = lag('TimeUnix', part, 'TimeUnix');

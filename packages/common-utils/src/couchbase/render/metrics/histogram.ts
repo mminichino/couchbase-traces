@@ -44,9 +44,11 @@ export function seriesKeyExpr(): string {
  * Window partition for one series, as expressions: a window clause cannot
  * see the select's own aliases (an alias there reads as MISSING, so every
  * series would share one partition). Upstream partitions by the group, the
- * attributes hash, and the temporality (and the bounds hash for counts).
+ * attributes hash, and the temporality (plus the bounds hash for histogram
+ * counts, the metric name for exponential-histogram counts). Read through
+ * the keyspace alias `d`.
  */
-function seriesPartition(group: string | undefined, ...extra: string[]) {
+export function seriesPartition(group: string | undefined, ...extra: string[]) {
   return [group, seriesKeyExpr(), 'd.AggregationTemporality', ...extra]
     .filter(Boolean)
     .join(', ');

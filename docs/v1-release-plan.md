@@ -397,7 +397,8 @@ pushes to `main` directly.
 | D19   | Defects: `make ci-int` exits 1 after every test passed    | Found in D13 (section 9.1); with the D18 remainder (Q40)                                                                                                                  | S    | —                             |
 | D20   | Defects: mixed gauge/histogram charts drop scalar groups  | Found in D17 (section 9.1); next phase after D17 (Q42); fixed                                                                                                             | S    | D17                           |
 | D21   | Defects: cumulative histogram quantile zero-delta row     | Found in D20 (section 9.1); own PR before R2a (Q43); fixed                                                                                                                | S    | D20                           |
-| D22   | Defects: exp-histogram count partitions by a select alias | Found in D21 (section 9.1); placement pending (Q44)                                                                                                                       | S    | D21                           |
+| D22   | Defects: exp-histogram count partitions by a select alias | Found in D21 (section 9.1); own PR before R2a (Q44); fixed                                                                                                                | S    | D21                           |
+| D23   | Defects: metric source CTEs omit the warm-up window       | Found in D22 (section 9.1); placement pending (Q45)                                                                                                                       | M    | D22                           |
 | D14   | Dev tooling: live-test port offset fallback               | Found in D7 (section 9.1)                                                                                                                                                 | S    | —                             |
 | R2a   | Port deferred int suites: internal and external API       | B1 (10 suites: `routers/api/{dashboard,iac,sources,connections}`, `routers/external-api/{charts,search,sources,sources-crud,connections}`, `middleware/queryAttribution`) | L    | D1                            |
 | R2b   | Port deferred int suites: alerts                          | B1 (5 suites: `checkAlerts`, `multiChannelAlerts`, `renderAlertTemplate`, `singleInvocationAlert`, `providers/default`; 335 tests, 93 failing per R0)                     | L    | R2c, D1, D4, D6               |
@@ -892,7 +893,34 @@ with `PARTITION BY \`group\`, MetricName, series_key, …`, where `group` and
 MISSING (checked on 8.0.3), so every series of the metric shares one
 partition and a cumulative series subtracts another series' count: the D21
 partition defect, on the exponential-histogram count. The quantile path is
-not affected (it partitions in a later CTE). Placement: pending (Q44).
+not affected (it partitions in a later CTE). Placement (Q44): its own PR,
+before R2a.
+
+Result (2026-11-23, `mm--v1-d22-exp-histogram-count-partition`): fixed.
+The count's four `LAG` windows now partition by D21's `seriesPartition`
+expressions plus `d.MetricName` (upstream `group, MetricName, attr_hash,
+AggregationTemporality`). Tests: `render/metrics/__tests__/
+expHistogramPartition.test.ts` (3; all failed before) and
+`expHistogramCount.couchbase.int.test.ts`, which ports upstream's eight
+exponential-histogram count cases that need no warm-up window (2 failed
+before: the two with more than one series, i.e. the grouped sum and the
+non-timeseries reset modes). Single-series cases already passed; the
+Phase 7a suite's count cases each seed one cumulative series (its
+two-series cases only test the quantile), so it never caught this.
+- Found here, not fixed: D23.
+
+#### D23: Metric source CTEs omit upstream's one-interval warm-up window (found in D22, size M)
+
+Evidence: upstream renders the Sum, histogram, and exponential-histogram
+source `WHERE` with `includedDataInterval` set to the chart granularity,
+which reaches one interval before (and after) the requested range so the
+first visible bucket has a predecessor to subtract. The port's
+`sourceWhereClause` (shared by all three) filters to the requested range.
+Live, upstream's "subtracts cumulative counts using a warm-up point
+outside the requested range" returns 0 at the first bucket where upstream
+returns 1. Applies to timeseries charts only (no granularity, no warm-up
+upstream either). Needs care that the widened rows feed the deltas but
+not the output buckets. Placement: pending (Q45).
 
 #### D18: Common-utils live tests fail intermittently (found in D12, size S)
 
@@ -1214,7 +1242,8 @@ in that phase.
 | Q41 | SQL++ form of the D17 outer HAVING and group-by sort (2026-11-22)                                        | HAVING is a WHERE on a wrapper in every shape (SQL++ HAVING rejects aliases, windows, and a missing GROUP BY); group-by sorts read the named group column instead of companion columns. Same rows and columns as upstream; a `share_of_total` HAVING with an expression group-by sort now runs, where upstream fails. User kept this divergence (2026-11-23) | D17            |
 | Q42 | Placement of D20: mixed gauge/histogram charts drop scalar group columns (2026-11-23)                    | The next phase, right after D17                                                                                                                                                                                                                                                                                                   | D17, D20       |
 | Q43 | Placement of D21: cumulative histogram quantile emits a NULL row for a zero-delta bucket (2026-11-23)    | Its own PR, before R2a (user, 2026-11-23)                                                                                                                                                                                                                                                                                         | D21            |
-| Q44 | Placement of D22: exponential-histogram count partitions deltas by a select alias (2026-11-23)           | Pending; proposed: its own small PR before R2a                                                                                                                                                                                                                                                                                    | D22            |
+| Q44 | Placement of D22: exponential-histogram count partitions deltas by a select alias (2026-11-23)           | Its own PR, before R2a (user, 2026-11-23)                                                                                                                                                                                                                                                                                         | D22            |
+| Q45 | Placement of D23: metric source CTEs omit upstream's one-interval warm-up window (2026-11-23)            | Pending; proposed: its own PR before R2a (first-bucket values of cumulative sum/histogram charts differ)                                                                                                                                                                                                                          | D23            |
 
 ## 11. Acceptance criteria (v1.0.0 is done when)
 
@@ -1291,6 +1320,7 @@ in that phase.
 | D20 Mixed gauge/histogram charts drop scalar group columns      | S    |
 | D21 Cumulative histogram quantile zero-delta row                | S    |
 | D22 Exp-histogram count partition by alias                      | S    |
+| D23 Metric source warm-up window                                | M    |
 | D14 Live-test port offset fallback                              | S    |
 | R2a Deferred API int suites (10 suites, 380 tests, 80 failing)  | L    |
 | R2b Deferred alert int suites (5 suites, 335 tests, 93 failing) | L    |
