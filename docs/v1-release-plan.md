@@ -398,7 +398,10 @@ pushes to `main` directly.
 | D20   | Defects: mixed gauge/histogram charts drop scalar groups  | Found in D17 (section 9.1); next phase after D17 (Q42); fixed                                                                                                             | S    | D17                           |
 | D21   | Defects: cumulative histogram quantile zero-delta row     | Found in D20 (section 9.1); own PR before R2a (Q43); fixed                                                                                                                | S    | D20                           |
 | D22   | Defects: exp-histogram count partitions by a select alias | Found in D21 (section 9.1); own PR before R2a (Q44); fixed                                                                                                                | S    | D21                           |
-| D23   | Defects: metric source CTEs omit the warm-up window       | Found in D22 (section 9.1); placement pending (Q45)                                                                                                                       | M    | D22                           |
+| D23   | Defects: metric source CTEs omit the warm-up window       | Found in D22 (section 9.1); own PR before R2a (Q45); fixed                                                                                                                | M    | D22                           |
+| D24   | Defects: metric charts ignore `where`; histograms `filters`| Found in D23 (section 9.1); placement pending (Q46)                                                                                                                       | M    | —                             |
+| D25   | Defects: Sum select alias is not defaulted to `Value`     | Found in D23 (section 9.1); placement pending (Q47)                                                                                                                       | S    | —                             |
+| D26   | Defects: range end is exclusive where upstream is inclusive| Found in D23 (section 9.1); placement pending (Q48)                                                                                                                       | M    | —                             |
 | D14   | Dev tooling: live-test port offset fallback               | Found in D7 (section 9.1)                                                                                                                                                 | S    | —                             |
 | R2a   | Port deferred int suites: internal and external API       | B1 (10 suites: `routers/api/{dashboard,iac,sources,connections}`, `routers/external-api/{charts,search,sources,sources-crud,connections}`, `middleware/queryAttribution`) | L    | D1                            |
 | R2b   | Port deferred int suites: alerts                          | B1 (5 suites: `checkAlerts`, `multiChannelAlerts`, `renderAlertTemplate`, `singleInvocationAlert`, `providers/default`; 335 tests, 93 failing per R0)                     | L    | R2c, D1, D4, D6               |
@@ -920,7 +923,63 @@ Live, upstream's "subtracts cumulative counts using a warm-up point
 outside the requested range" returns 0 at the first bucket where upstream
 returns 1. Applies to timeseries charts only (no granularity, no warm-up
 upstream either). Needs care that the widened rows feed the deltas but
-not the output buckets. Placement: pending (Q45).
+not the output buckets. Placement (Q45): its own PR, before R2a.
+
+Result (2026-11-23, `mm--v1-d23-metric-warmup-window`): fixed. A new
+`render/metrics/sourceWhere.ts` (moved out of `histogram.ts`) widens the
+Sum, histogram, and exponential-histogram source scan to
+[bucket(start) − I, bucket(end) + I], where I is upstream's
+`includedDataInterval` (the chart granularity, 'auto' sized from the
+range); buckets align as `timeBucketExpr` does (Monday weeks, UTC months).
+Gauge and non-timeseries charts scan the requested range, as upstream. The
+outer query keeps the requested range on the time bucket, so the look-back
+and look-ahead buckets feed the deltas but are not returned: histograms
+already kept it; Sum now does (it had `dateRange: undefined`). That outer
+filter binds ISO bounds, because bucket aliases are ISO strings even for an
+`epoch_millis` source; before, a histogram on such a source compared a
+string with a number and returned no rows. The widened end keeps the
+port's exclusive `<` (upstream `<=` comes from its default-inclusive end,
+D26); a point on that bound lands in a bucket past the range, so output is
+the same. Tests: `render/metrics/__tests__/metricWarmup.test.ts` (12; 8
+failed before) and `metricWarmup.couchbase.int.test.ts` (6; 4 failed
+before), which ports upstream's three exponential-histogram warm-up cases
+(the count case left out of D22, the quantile baseline, and the stale
+baseline) and adds Sum and explicit-histogram cases, which upstream does
+not have. Upstream's fourth case ("ignores other metrics, filtered
+attribute series, and points outside the requested range") needs a chart
+`where`, so it waits on D24. The exponential-histogram fixtures moved to
+`__tests__/expHistogramFixtures.ts`, shared with the D22 suite.
+- Found here, not fixed: D24, D25, D26.
+
+#### D24: Metric charts ignore the chart `where`; histogram charts lose `filters` (found in D23, size M)
+
+Evidence: upstream builds every metric source `WHERE` with
+`renderMetricWhere`, which includes the chart's `where` (SQL or Lucene) and
+`filters`. `translateMetricChartConfigCouchbase` sets `where: ''` on every
+metric type and `sourceWhereClause` has only the metric name and date
+range, so a metric chart's `where` never reaches the SQL++ (rendered for
+gauge, sum, histogram, and exponential histogram: `where` absent in all
+four). `filters` survive only on the outer query: gauge and sum `Bucketed`
+carry the OTel columns, but histogram `metrics` has only bucket, group, and
+value, so a filtered histogram chart returns no rows. Blocks upstream's
+"ignores other metrics, filtered attribute series, and points outside the
+requested range". Placement: pending (Q46).
+
+#### D25: Sum select alias is not defaulted to `Value` (found in D23, size S)
+
+Evidence: upstream's Sum branch spreads `{ alias: 'Value', ..._select }`,
+so a select with no alias returns a `Value` column. The port's Sum branch
+keeps the caller's alias, so the column is `sum(Rate)` (seen live in D23).
+Gauge has no default upstream either. Placement: pending (Q47).
+
+#### D26: Date-range end is exclusive by default; upstream is inclusive (found in D23, size M)
+
+Evidence: upstream `renderWhere` passes `dateRangeEndInclusive ?? true`, so
+`ts <= end` unless the caller sets it false (alert windows after the first
+do). The port's `where.ts` and metric `sourceWhereClause` use `< end`
+unless it is `true`. A row exactly at the range end is returned upstream
+and not here, in search, charts, and metrics. Not recorded as a decision in
+`docs/port-notes.md` or `docs/parity.md`. Placement: pending (Q48).
 
 #### D18: Common-utils live tests fail intermittently (found in D12, size S)
 
@@ -1243,7 +1302,10 @@ in that phase.
 | Q42 | Placement of D20: mixed gauge/histogram charts drop scalar group columns (2026-11-23)                    | The next phase, right after D17                                                                                                                                                                                                                                                                                                   | D17, D20       |
 | Q43 | Placement of D21: cumulative histogram quantile emits a NULL row for a zero-delta bucket (2026-11-23)    | Its own PR, before R2a (user, 2026-11-23)                                                                                                                                                                                                                                                                                         | D21            |
 | Q44 | Placement of D22: exponential-histogram count partitions deltas by a select alias (2026-11-23)           | Its own PR, before R2a (user, 2026-11-23)                                                                                                                                                                                                                                                                                         | D22            |
-| Q45 | Placement of D23: metric source CTEs omit upstream's one-interval warm-up window (2026-11-23)            | Pending; proposed: its own PR before R2a (first-bucket values of cumulative sum/histogram charts differ)                                                                                                                                                                                                                          | D23            |
+| Q45 | Placement of D23: metric source CTEs omit upstream's one-interval warm-up window (2026-11-23)            | Its own PR, before R2a (user, 2026-11-23)                                                                                                                                                                                                                                                                                         | D23            |
+| Q46 | Placement of D24: metric charts ignore `where`; histograms lose `filters` (2026-11-23)                   | Pending; proposed: its own PR before R2a (filtered metric charts return wrong or no rows)                                                                                                                                                                                                                                         | D24            |
+| Q47 | Placement of D25: Sum select alias is not defaulted to `Value` (2026-11-23)                              | Pending; proposed: with D24                                                                                                                                                                                                                                                                                                       | D25            |
+| Q48 | D26: keep the exclusive range end, or default it to inclusive as upstream (2026-11-23)                   | Pending; proposed: match upstream in its own PR before R2a, since parity is the rule                                                                                                                                                                                                                                              | D26            |
 
 ## 11. Acceptance criteria (v1.0.0 is done when)
 
@@ -1321,6 +1383,9 @@ in that phase.
 | D21 Cumulative histogram quantile zero-delta row                | S    |
 | D22 Exp-histogram count partition by alias                      | S    |
 | D23 Metric source warm-up window                                | M    |
+| D24 Metric `where` and histogram `filters` dropped              | M    |
+| D25 Sum alias default `Value`                                   | S    |
+| D26 Exclusive range end                                         | M    |
 | D14 Live-test port offset fallback                              | S    |
 | R2a Deferred API int suites (10 suites, 380 tests, 80 failing)  | L    |
 | R2b Deferred alert int suites (5 suites, 335 tests, 93 failing) | L    |

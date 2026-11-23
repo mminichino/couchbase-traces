@@ -117,3 +117,38 @@ export function timeBucketExpr(
   const msLit = String(granularity.ms);
   return sqlpp`MILLIS_TO_UTC(FLOOR(${{ Raw: millis }} / ${{ Raw: msLit }}) * ${{ Raw: msLit }}, ${{ Raw: fmtLit }})`;
 }
+
+/** Start of `t`'s bucket, aligned exactly as `timeBucketExpr` aligns it. */
+export function bucketStart(t: Date, granularity: Granularity): Date {
+  const ms = t.getTime();
+  if (granularity.unit === 'month') {
+    return new Date(Date.UTC(t.getUTCFullYear(), t.getUTCMonth(), 1));
+  }
+  if (granularity.unit === 'week') {
+    // DATE_TRUNC_MILLIS(..., "week") is the UTC Sunday at 00:00.
+    const day = Math.floor(ms / 86_400_000);
+    const sunday = (day - ((day + 4) % 7)) * 86_400_000;
+    return new Date(sunday + WEEK_ALIGN_OFFSET_MS);
+  }
+  if (granularity.ms == null) {
+    throw new Error(`Cannot bucket by ${granularity.n} ${granularity.unit}`);
+  }
+  return new Date(Math.floor(ms / granularity.ms) * granularity.ms);
+}
+
+/** `t` moved by `k` whole intervals (calendar months for 'month'). */
+export function shiftByIntervals(
+  t: Date,
+  granularity: Granularity,
+  k: number,
+): Date {
+  if (granularity.unit === 'month') {
+    const shifted = new Date(t.getTime());
+    shifted.setUTCMonth(t.getUTCMonth() + k * granularity.n);
+    return shifted;
+  }
+  if (granularity.ms == null) {
+    throw new Error(`Cannot shift by ${granularity.n} ${granularity.unit}`);
+  }
+  return new Date(t.getTime() + k * granularity.ms);
+}

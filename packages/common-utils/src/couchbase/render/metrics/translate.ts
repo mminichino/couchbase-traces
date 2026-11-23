@@ -8,13 +8,16 @@ import { keyspace, quoteIdent } from '@/couchbase/sqlpp';
 import type { BuilderChartConfigWithOptDateRange } from '@/types';
 import { MetricsDataType } from '@/types';
 
-import { translateExponentialHistogramCouchbase } from './expHistogram';
+import {
+  type SqlppWithClauses,
+  translateExponentialHistogramCouchbase,
+} from './expHistogram';
 import {
   seriesKeyExpr,
-  sourceWhereClause,
   timeBucketSql,
   translateHistogramCouchbase,
 } from './histogram';
+import { sourceWhereClause } from './sourceWhere';
 
 type MetricSelect = {
   metricType?: string;
@@ -127,6 +130,51 @@ function sourceAndBucketed(
   };
 }
 
+/**
+ * The outer query's date range over a CTE time bucket. Bucket aliases are
+ * ISO strings whatever the source's timestamp format, so the filter binds
+ * ISO bounds (an epoch_millis source would otherwise compare a string to a
+ * number and match nothing).
+ */
+function outerBucketRange(
+  chartConfig: BuilderChartConfigWithOptDateRange,
+  keep: boolean,
+): Pick<BuilderChartConfigWithOptDateRange, 'dateRange'> & {
+  timestampFormat?: 'iso8601';
+} {
+  if (!keep || chartConfig.dateRange == null) return { dateRange: undefined };
+  return { dateRange: chartConfig.dateRange, timestampFormat: 'iso8601' };
+}
+
+/** The outer query over a histogram translator's `metrics` CTE. */
+function histogramOuter(
+  chartConfig: BuilderChartConfigWithOptDateRange,
+  translated: SqlppWithClauses,
+): BuilderChartConfigWithOptDateRange {
+  const selectParts = [
+    translated.hasBucket ? quoteIdent(FIXED_TIME_BUCKET_EXPR_ALIAS) : null,
+    translated.hasGroup ? quoteIdent(GROUP_ALIAS) : null,
+    quoteIdent(translated.valueAlias),
+  ].filter(Boolean);
+  return {
+    ...chartConfig,
+    with: translated.with,
+    select: selectParts.join(', '),
+    from: { databaseName: '', tableName: 'metrics' },
+    where: '',
+    groupBy: undefined,
+    // The source CTE scans the (warmed-up) range; timeseries queries drop
+    // the padded buckets here. Non-timeseries queries scan only the
+    // requested range and have no time column on `metrics` to re-filter.
+    ...outerBucketRange(chartConfig, translated.hasBucket),
+    granularity: undefined,
+    timestampValueExpression: translated.hasBucket
+      ? quoteIdent(FIXED_TIME_BUCKET_EXPR_ALIAS)
+      : chartConfig.timestampValueExpression,
+    orderBy: translated.hasGroup ? undefined : chartConfig.orderBy,
+  };
+}
+
 function bucketedColumns(columns: readonly string[]): string {
   return columns.map(c => `, ${anyValue(c)} AS ${c}`).join('');
 }
@@ -227,7 +275,8 @@ export async function translateMetricChartConfigCouchbase(
       throw new CouchbaseUnsupportedError('metrics: sum time bucket');
     }
     const seriesKey = seriesKeyExpr();
-    const where = sourceWhereClause(chartConfig, nameFilter);
+    // Timeseries sums read one interval either side (D23); see sourceWhere.
+    const where = sourceWhereClause(chartConfig, nameFilter, { warmUp: true });
     // Partition by the series-key expression (not the select alias) — SQL++
     // window functions cannot see sibling aliases in the same SELECT.
     const lagExpr = lag('TONUMBER(`Value`)', seriesKey, 'TimeUnix');
@@ -257,68 +306,24 @@ export async function translateMetricChartConfigCouchbase(
       where: '',
       granularity: outerGranularity(chartConfig),
       timestampValueExpression: timeBucketCol,
-      dateRange: undefined,
+      // A warmed-up source has padded buckets; the requested range on the
+      // bucket drops them, as upstream keeps dateRange on the outer query.
+      ...outerBucketRange(chartConfig, chartConfig.granularity != null),
     };
   }
 
-  if (metricType === MetricsDataType.Histogram) {
-    const translated = translateHistogramCouchbase({
+  if (
+    metricType === MetricsDataType.Histogram ||
+    metricType === MetricsDataType.ExponentialHistogram
+  ) {
+    const translate =
+      metricType === MetricsDataType.Histogram
+        ? translateHistogramCouchbase
+        : translateExponentialHistogramCouchbase;
+    return histogramOuter(
       chartConfig,
-      select: first,
-      table,
-      nameFilter,
-      from,
-    });
-    const selectParts = [
-      translated.hasBucket ? quoteIdent(FIXED_TIME_BUCKET_EXPR_ALIAS) : null,
-      translated.hasGroup ? quoteIdent(GROUP_ALIAS) : null,
-      quoteIdent(translated.valueAlias),
-    ].filter(Boolean);
-    return {
-      ...chartConfig,
-      with: translated.with,
-      select: selectParts.join(', '),
-      from: { databaseName: '', tableName: 'metrics' },
-      where: '',
-      groupBy: undefined,
-      // Date range is applied inside the source CTE (see sourceWhereClause).
-      // Non-timeseries queries have no time column on `metrics` to re-filter.
-      dateRange: translated.hasBucket ? chartConfig.dateRange : undefined,
-      granularity: undefined,
-      timestampValueExpression: translated.hasBucket
-        ? quoteIdent(FIXED_TIME_BUCKET_EXPR_ALIAS)
-        : chartConfig.timestampValueExpression,
-      orderBy: translated.hasGroup ? undefined : chartConfig.orderBy,
-    };
-  }
-
-  if (metricType === MetricsDataType.ExponentialHistogram) {
-    const translated = translateExponentialHistogramCouchbase({
-      chartConfig,
-      select: first,
-      table,
-      nameFilter,
-      from,
-    });
-    const selectParts = [
-      translated.hasBucket ? quoteIdent(FIXED_TIME_BUCKET_EXPR_ALIAS) : null,
-      translated.hasGroup ? quoteIdent(GROUP_ALIAS) : null,
-      quoteIdent(translated.valueAlias),
-    ].filter(Boolean);
-    return {
-      ...chartConfig,
-      with: translated.with,
-      select: selectParts.join(', '),
-      from: { databaseName: '', tableName: 'metrics' },
-      where: '',
-      groupBy: undefined,
-      dateRange: translated.hasBucket ? chartConfig.dateRange : undefined,
-      granularity: undefined,
-      timestampValueExpression: translated.hasBucket
-        ? quoteIdent(FIXED_TIME_BUCKET_EXPR_ALIAS)
-        : chartConfig.timestampValueExpression,
-      orderBy: translated.hasGroup ? undefined : chartConfig.orderBy,
-    };
+      translate({ chartConfig, select: first, table, nameFilter, from }),
+    );
   }
 
   throw new CouchbaseUnsupportedError(`metrics: ${metricType}`);
