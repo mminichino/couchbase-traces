@@ -1,7 +1,6 @@
 import { MetricsDataType } from '@/types';
 
 import {
-  gaugeSelect,
   histSelect,
   MAP_KEY,
   outer,
@@ -62,16 +61,8 @@ describe('D17 multi-series expression group-by ORDER BY', () => {
     expect(outer(sql)).toContain('ORDER BY `service` DESC');
   });
 
-  it('sorts a mixed gauge and histogram chart on the packed group array', async () => {
-    const sql = await sqlOf({
-      select: [gaugeSelect('metric.alpha'), histSelect('metric.latency', 0.5)],
-      groupBy: [{ aggCondition: '', valueExpression: MAP_KEY }],
-      orderBy: [{ valueExpression: MAP_KEY, ordering: 'ASC' }],
-    });
-    expect(outer(sql)).toContain(
-      'ORDER BY `__hdx_time_bucket`, `group`[0] ASC',
-    );
-  });
+  // A mixed gauge and histogram chart sorts on the scalar group column
+  // (multiSeriesMixedGroups.test.ts, D20).
 
   it('sorts an all-histogram chart positionally on the packed group array', async () => {
     const sql = await sqlOf({

@@ -46,6 +46,23 @@ function isHistogramClassSelect(select: { metricType?: string }): boolean {
   );
 }
 
+/**
+ * NULL pads for a histogram branch, one per scalar group column. SQL++
+ * UNION ALL merges rows by field name, so each pad takes its column's name
+ * (upstream's positional `__hdx_group_pad_<n>`). A group expression with no
+ * single name needs none: over a histogram row it evaluates to MISSING, and
+ * the packed `group` keeps those rows apart anyway.
+ */
+function groupPads(groupExprs: string[]): string[] {
+  return groupExprs.flatMap(ref => {
+    if (/^`[^`]+`$/.test(ref)) return [`NULL AS ${ref}`];
+    if (/^[A-Za-z_][A-Za-z0-9_]*$/.test(ref)) {
+      return [`NULL AS ${quoteIdent(ref)}`];
+    }
+    return [];
+  });
+}
+
 type RenderChartFn = (
   config: ChartConfigWithOptDateRange,
   metadata: unknown,
@@ -105,6 +122,12 @@ export async function renderMultiSeriesMetricChartConfigCouchbase(
   const groupItems = includeGroupBy ? groupByItems(chartConfig) : [];
   const groupExprs = groupItems.map(groupByOutputRef);
   const anyHistogram = select.some(isHistogramClassSelect);
+  // Scalar (gauge, sum) branches project each group column; histogram
+  // branches pack them into `group`. Upstream keeps both in a mixed chart:
+  // scalar branches pad `group` with [] and histogram branches pad each
+  // scalar group column with NULL, so the two classes never share a key.
+  const hasScalarGroups =
+    includeGroupBy && select.some(s => !isHistogramClassSelect(s));
   const hasFormulas = formulaColumns.length > 0;
   const isRatio =
     !hasFormulas &&
@@ -148,16 +171,12 @@ export async function renderMultiSeriesMetricChartConfigCouchbase(
       cols.push(quoteIdent(FIXED_TIME_BUCKET_EXPR_ALIAS));
     }
     if (includeGroupBy) {
-      if (branch.isHistogram || anyHistogram) {
-        cols.push(
-          branch.isHistogram
-            ? quoteIdent(GROUP_ALIAS)
-            : `[] AS ${quoteIdent(GROUP_ALIAS)}`,
-        );
+      if (branch.isHistogram) {
+        if (hasScalarGroups) cols.push(...groupPads(groupExprs));
+        cols.push(quoteIdent(GROUP_ALIAS));
       } else {
-        for (const expr of groupExprs) {
-          cols.push(expr);
-        }
+        cols.push(...groupExprs);
+        if (anyHistogram) cols.push(`[] AS ${quoteIdent(GROUP_ALIAS)}`);
       }
     }
     cols.push(`${branch.splitIdx} AS ${quoteIdent(MULTI_SERIES_IDX_ALIAS)}`);
@@ -224,16 +243,13 @@ export async function renderMultiSeriesMetricChartConfigCouchbase(
     projection.push(quoteIdent(FIXED_TIME_BUCKET_EXPR_ALIAS));
     groupCols.push(quoteIdent(FIXED_TIME_BUCKET_EXPR_ALIAS));
   }
-  if (includeGroupBy) {
-    if (anyHistogram) {
-      projection.push(quoteIdent(GROUP_ALIAS));
-      groupCols.push(quoteIdent(GROUP_ALIAS));
-    } else {
-      for (const expr of groupExprs) {
-        projection.push(expr);
-        groupCols.push(expr);
-      }
-    }
+  if (hasScalarGroups) {
+    projection.push(...groupExprs);
+    groupCols.push(...groupExprs);
+  }
+  if (includeGroupBy && anyHistogram) {
+    projection.push(quoteIdent(GROUP_ALIAS));
+    groupCols.push(quoteIdent(GROUP_ALIAS));
   }
 
   let sql = `SELECT ${projection.join(', ')} FROM (${unionSql}) AS multi`;
@@ -247,7 +263,7 @@ export async function renderMultiSeriesMetricChartConfigCouchbase(
     ...(operandsProjected ? outputNames : []),
     ...formulaColumns.map(f => f.name),
     ...(ratioColumn != null ? [ratioColumn] : []),
-    ...(includeGroupBy && !anyHistogram ? groupItems.map(groupByItemName) : []),
+    ...(hasScalarGroups ? groupItems.map(groupByItemName) : []),
     ...(hasGranularity ? [FIXED_TIME_BUCKET_EXPR_ALIAS] : []),
   ];
   const rendered = await renderMultiSeriesOuterCouchbase({
@@ -255,7 +271,8 @@ export async function renderMultiSeriesMetricChartConfigCouchbase(
     core: { statement: sql, parameters: params },
     outputColumns,
     groupItems,
-    packedGroups: anyHistogram,
+    packedGroups: includeGroupBy && !hasScalarGroups,
+    paddedGroups: hasScalarGroups && anyHistogram,
     hasGranularity,
     ctx: { metadata: couchbaseMetadataRef(metadata) },
   });

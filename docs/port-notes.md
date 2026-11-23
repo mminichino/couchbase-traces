@@ -3341,3 +3341,42 @@ a per-slot lock (`scripts/slot-lock.sh`) around `ci-int`, `dev-int`, and
   gauge or sum branch projects `[] AS group` and drops its own group
   columns, so its rows collapse to one per bucket. Upstream keeps them, with
   NULL pads in histogram branches. Logged in the release plan.
+
+### D20: mixed gauge and histogram group columns (2026-11-23, `mm--v1-d20-mixed-histogram-groups`)
+
+- **Verified.** Current `render/metrics/multiSeries.ts` gave every scalar
+  branch only `` [] AS `group` `` when any branch was histogram-class, and
+  the joined statement grouped by `group` alone. Live, two gauge services
+  in one bucket came back as one row with no `ServiceName`. Upstream
+  `f172a489c818` (`renderChartConfig.ts`, composed multi-series query) keeps
+  the scalar group columns, pads `group` with `[]` on scalar branches and
+  each scalar group slot with `NULL AS __hdx_group_pad_<j>` on histogram
+  branches, and pivots with `GROUP BY ALL`.
+- **Fix.** Same shape in SQL++. Scalar wrapper:
+  `…, ServiceName, [] AS group, 0 AS __hdx_series_idx`; histogram wrapper:
+  `…, NULL AS ServiceName, group, 1 AS __hdx_series_idx`; joined
+  `GROUP BY __hdx_time_bucket, ServiceName, group`. SQL++ UNION ALL merges
+  objects by field name, not position, so each pad is named after its
+  scalar column rather than `__hdx_group_pad_<j>`; a histogram row then
+  reads `ServiceName: null`, as the ClickHouse union gives it. A group
+  expression with no single result name gets no pad: it evaluates to
+  MISSING on histogram rows, and `group` keeps the classes apart.
+- **Sort.** Upstream's mixed-chart sort reads a companion the histogram
+  branch pads with NULL, and ClickHouse sorts NULL last. SQL++ sorts NULL
+  and MISSING first ascending (checked on 8.0.3), so a group-column sort on
+  a mixed chart adds `NULLS LAST`. Only padded charts get it; other outer
+  sorts are unchanged.
+- **Result hints.** `couchbaseResultColumnNames` no longer lists group-by
+  names when every series is histogram-class, so meta matches upstream
+  ("packs every group-by into one group column"); mixed charts list them.
+- **Tests.** `render/__tests__/multiSeriesMixedGroups.test.ts` (11; 8
+  failed before the fix, the 3 that passed are guards: all-histogram shape
+  and mixed hints). D17's `multiSeriesSort.test.ts` case that pinned the
+  mixed sort to `` `group`[0] `` encoded this defect and moved here with the
+  corrected expectation. Live: `multiSeriesMixedGroups.couchbase.int.test.ts`
+  (5; 5 failed before the fix).
+- **Found here, not fixed: D21.** Upstream's `grpmix.latency` fixture is a
+  cumulative histogram with a zero baseline at minute 0, which upstream's
+  quantile drops (`WHERE total > 0`). The SQL++ quantile keeps that bucket
+  as a row with a NULL value, so the row count differs by one. The D20 live
+  test seeds the same minute-1 counts as a single delta point instead.
