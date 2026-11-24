@@ -147,7 +147,9 @@ describe('MCP Dashboard Tools - cbt_query_tiles', () => {
           displayType: 'table',
           connectionId,
           sourceId,
-          // References a column that does not exist -> ClickHouse error.
+          // Upstream reads a column that does not exist, a ClickHouse error.
+          // SQL++ would read it as MISSING; the MCP unknown-column check
+          // (Q53) rejects it against the OTel schema instead.
           sqlTemplate:
             'SELECT does_not_exist FROM $__sourceTable WHERE $__timeFilter(Timestamp) AND $__filters LIMIT 1',
         },
@@ -183,7 +185,7 @@ describe('MCP Dashboard Tools - cbt_query_tiles', () => {
           configType: 'sql',
           displayType: 'table',
           connectionId,
-          sqlTemplate: 'SELECT 1 AS value LIMIT 1',
+          sqlTemplate: 'SELECT 1 AS `value` LIMIT 1',
         },
       },
     ]);
@@ -412,7 +414,7 @@ describe('MCP Dashboard Tools - cbt_query_tiles', () => {
               connectionId: ctx.connection._id.toString(),
               sourceId,
               sqlTemplate:
-                'SELECT count() AS c FROM $__sourceTable ' +
+                'SELECT COUNT(*) AS c FROM $__sourceTable ' +
                 'WHERE $__timeFilter(Timestamp) AND $__filters ' +
                 'AND $__filter(ServiceName, $service) LIMIT 1',
             },

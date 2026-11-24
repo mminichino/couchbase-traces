@@ -1,7 +1,9 @@
 import { type SqlPP, sqlpp } from '@/couchbase/sqlpp';
 import type { BuilderChartConfigWithOptDateRange } from '@/types';
 
-const ALIAS = 'd';
+/** The alias every rendered builder query gives its FROM keyspace. */
+export const FROM_KEYSPACE_ALIAS = 'd';
+const ALIAS = FROM_KEYSPACE_ALIAS;
 
 export function renderFromCouchbase(
   chartConfig: Pick<BuilderChartConfigWithOptDateRange, 'from'> & {

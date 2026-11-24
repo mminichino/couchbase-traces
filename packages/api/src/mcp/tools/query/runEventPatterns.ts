@@ -12,7 +12,7 @@ import { trace } from '@opentelemetry/api';
 
 import { getConnectionById } from '@/controllers/connection';
 import { getSource } from '@/controllers/sources';
-import { MCP_REQUEST_TIMEOUT } from '@/mcp/tools/query/helpers';
+import { MCP_DATA_CLIENT_OPTIONS } from '@/mcp/tools/query/helpers';
 import {
   type McpErrorResult,
   mcpServerError,
@@ -180,9 +180,7 @@ export async function mineWindowPatterns(
   );
   if (sliceErr) return { error: sliceErr };
 
-  const dataClient = new DataClient({
-    requestTimeout: MCP_REQUEST_TIMEOUT,
-  });
+  const dataClient = new DataClient(MCP_DATA_CLIENT_OPTIONS);
   const metadata = getMetadata(dataClient);
   const querySource = patternQuerySource(source);
   const implicitColumn = querySource.implicitColumnExpression;

@@ -658,7 +658,7 @@ describe('MCP Dashboard Tools - cbt_query_tile', () => {
               connectionId,
               // Runs fine against ClickHouse but uses no time-range /
               // filter / source macros.
-              sqlTemplate: 'SELECT 1 AS value LIMIT 1',
+              sqlTemplate: 'SELECT 1 AS `value` LIMIT 1',
             },
           },
         ],
@@ -699,7 +699,7 @@ describe('MCP Dashboard Tools - cbt_query_tile', () => {
               connectionId,
               sourceId,
               sqlTemplate:
-                'SELECT ServiceName, count() AS c FROM $__sourceTable ' +
+                'SELECT ServiceName, COUNT(*) AS c FROM $__sourceTable ' +
                 'WHERE $__timeFilter(Timestamp) AND $__filters GROUP BY ServiceName LIMIT 10',
             },
           },
@@ -801,7 +801,7 @@ describe('MCP Dashboard Tools - cbt_query_tile', () => {
         connectionId: ctx.connection._id.toString(),
         sourceId: logSourceId,
         sqlTemplate:
-          'SELECT ServiceName, count() AS c FROM $__sourceTable ' +
+          'SELECT ServiceName, COUNT(*) AS c FROM $__sourceTable ' +
           'WHERE $__timeFilter(Timestamp) AND $__filters ' +
           'AND $__filter(ServiceName, $service) ' +
           'GROUP BY ServiceName ORDER BY ServiceName LIMIT 10',
@@ -1037,7 +1037,7 @@ describe('MCP Dashboard Tools - cbt_query_tile', () => {
             connectionId: ctx.connection._id.toString(),
             sourceId: logSourceId,
             sqlTemplate:
-              'SELECT count() AS c FROM $__sourceTable ' +
+              'SELECT COUNT(*) AS c FROM $__sourceTable ' +
               'WHERE $__timeFilter(Timestamp) AND $__filter(ServiceName, $tenant) LIMIT 1',
           },
         },
@@ -1083,7 +1083,7 @@ describe('MCP Dashboard Tools - cbt_query_tile', () => {
           connectionId: ctx.connection._id.toString(),
           sourceId: logSourceId,
           sqlTemplate:
-            'SELECT ServiceName, count() AS c FROM $__sourceTable ' +
+            'SELECT ServiceName, COUNT(*) AS c FROM $__sourceTable ' +
             'WHERE $__timeFilter(Timestamp) AND $__filter(ServiceName, $svc) ' +
             'GROUP BY ServiceName ORDER BY ServiceName LIMIT 10',
         },

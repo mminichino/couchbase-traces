@@ -1,11 +1,14 @@
+import {
+  metricAttributeKeysQuery,
+  metricAttributeValuesQuery,
+  type MetricKindTable,
+  metricUnitsQuery,
+} from '@couchbase-traces/common-utils/dist/couchbase/metricQueries';
 import { getMetadata } from '@couchbase-traces/common-utils/dist/dataLayer';
 import {
   columnTypeToJSType,
-  concatSqlExpr,
   filterColumnMetaByType,
   JSDataType,
-  sqlExpr,
-  tableExpr,
 } from '@couchbase-traces/common-utils/dist/query';
 import { SourceKind } from '@couchbase-traces/common-utils/dist/types';
 import { z } from 'zod';
@@ -14,7 +17,7 @@ import { getConnectionById } from '@/controllers/connection';
 import { getSource } from '@/controllers/sources';
 import { READ_ONLY_TOOL } from '@/mcp/tools/annotations';
 import {
-  MCP_REQUEST_TIMEOUT,
+  MCP_DATA_CLIENT_OPTIONS,
   parseTimeRange,
   queryErrorResult,
 } from '@/mcp/tools/query/helpers';
@@ -35,6 +38,12 @@ import {
   type DiscoverableMetricKind,
   METRIC_DEFAULT_LOOKBACK_MS,
 } from './metricKinds';
+import {
+  assertMetricColumns,
+  metricKindColumns,
+  metricKindTable,
+  metricRows,
+} from './metricTable';
 
 const DESCRIBE_TIMEOUT_MS = MCP_TOOL_TIMEOUT_MS;
 
@@ -150,8 +159,7 @@ type FetchResult<T> = { ok: true; data: T } | { ok: false; error: string };
  */
 async function fetchUnitAndDescription({
   dataClient,
-  databaseName,
-  tableName,
+  table,
   connectionId,
   metricName,
   startDate,
@@ -161,8 +169,7 @@ async function fetchUnitAndDescription({
   signal,
 }: {
   dataClient: DataClient;
-  databaseName: string;
-  tableName: string;
+  table: MetricKindTable;
   connectionId: string;
   metricName: string;
   startDate: Date;
@@ -173,50 +180,23 @@ async function fetchUnitAndDescription({
 }): Promise<{ unit?: string; description?: string }> {
   if (!hasUnit && !hasDescription) return {};
 
-  const innerProjections = [
-    ...(hasUnit ? [sqlExpr`${{ Identifier: 'MetricUnit' }}`] : []),
-    ...(hasDescription
-      ? [sqlExpr`${{ Identifier: 'MetricDescription' }}`]
-      : []),
-  ];
-  const outerProjections = [
-    ...(hasUnit
-      ? [sqlExpr`anyLast(${{ Identifier: 'MetricUnit' }}) AS MetricUnit`]
-      : []),
-    ...(hasDescription
-      ? [
-          sqlExpr`anyLast(${{ Identifier: 'MetricDescription' }}) AS MetricDescription`,
-        ]
-      : []),
-  ];
-
-  // Wrap in a bounded subquery so legacy store stops scanning once it
-  // has enough rows — unit and description are typically constant per
-  // metric, so a small sample is sufficient. Mirrors the bounding
-  // pattern used by fetchAttributeKeys / sampleAttributeValues.
-  const sql = sqlExpr`
-    SELECT ${concatSqlExpr(', ', outerProjections)}
-    FROM (
-      SELECT ${concatSqlExpr(', ', innerProjections)}
-      FROM ${tableExpr({ database: databaseName, table: tableName })}
-      WHERE MetricName = ${{ String: metricName }}
-        AND TimeUnix >= fromUnixTimestamp64Milli(${{ Int64: startDate.getTime() }})
-        AND TimeUnix <= fromUnixTimestamp64Milli(${{ Int64: endDate.getTime() }})
-      LIMIT ${{ Int32: METRIC_ATTR_KEYS_SAMPLE_SIZE }}
-    )
-  `;
+  // A bounded sample: unit and description are typically constant per
+  // metric. Mirrors the bounding in fetchAttributeKeys.
+  const q = metricUnitsQuery({
+    table,
+    names: [metricName],
+    hasUnit,
+    hasDescription,
+    start: startDate,
+    end: endDate,
+    sampleSize: METRIC_ATTR_KEYS_SAMPLE_SIZE,
+  });
   try {
-    const response = await dataClient.query({
-      query: sql.sql,
-      query_params: sql.params,
-      format: 'JSON',
-      connectionId,
-      abort_signal: signal,
-    });
-    const result = (await response.json()) as {
-      data: Array<{ MetricUnit?: string; MetricDescription?: string }>;
-    };
-    const row = result.data[0];
+    const rows = await metricRows<{
+      MetricUnit?: string | null;
+      MetricDescription?: string | null;
+    }>(dataClient, q, connectionId, signal);
+    const row = rows[0];
     if (!row) return {};
     return {
       ...(row.MetricUnit ? { unit: row.MetricUnit } : {}),
@@ -224,7 +204,10 @@ async function fetchUnitAndDescription({
     };
   } catch (e) {
     logger.warn(
-      { tableName, error: e instanceof Error ? e.message : String(e) },
+      {
+        tableName: table.tableName,
+        error: e instanceof Error ? e.message : String(e),
+      },
       'fetchUnitAndDescription failed',
     );
     return {};
@@ -251,8 +234,7 @@ async function fetchUnitAndDescription({
  */
 async function fetchAttributeKeys({
   dataClient,
-  databaseName,
-  tableName,
+  table,
   connectionId,
   metricName,
   columns,
@@ -261,72 +243,59 @@ async function fetchAttributeKeys({
   signal,
 }: {
   dataClient: DataClient;
-  databaseName: string;
-  tableName: string;
+  table: MetricKindTable;
   connectionId: string;
   metricName: string;
-  columns: { name: string; type: string }[];
+  columns: Awaited<ReturnType<typeof metricKindColumns>>;
   startDate: Date;
   endDate: Date;
   signal: AbortSignal;
 }): Promise<FetchResult<Record<string, string[]>>> {
   const mapColumns =
-    filterColumnMetaByType(columns, [JSDataType.Map])?.filter(
+    filterColumnMetaByType(columns.columns, [JSDataType.Map])?.filter(
       c => columnTypeToJSType(c.type) === JSDataType.Map,
     ) ?? [];
   if (mapColumns.length === 0) return { ok: true, data: {} };
 
-  const sampleProjections = mapColumns.map(
-    col => sqlExpr`${{ Identifier: col.name }}`,
-  );
-
-  const aggProjections = mapColumns.map(
-    col =>
-      sqlExpr`arrayDistinct(arrayFlatten(groupArray(mapKeys(${{ Identifier: col.name }})))) AS ${{ Identifier: col.name }}`,
-  );
-
-  // Aggregate from a bounded sample of matching rows. The inner LIMIT
-  // lets legacy store stop scanning once it has SAMPLE_SIZE rows that
-  // match (MetricName, time range), which keeps the query fast on hot
-  // metric tables. ResourceAttributes / Attributes / ScopeAttributes
-  // are rarely keyed independently per row, so 100k rows surfaces
-  // every realistic key set.
-  const sql = sqlExpr`
-    SELECT ${concatSqlExpr(', ', aggProjections)}
-    FROM (
-      SELECT ${concatSqlExpr(', ', sampleProjections)}
-      FROM ${tableExpr({ database: databaseName, table: tableName })}
-      WHERE MetricName = ${{ String: metricName }}
-        AND TimeUnix >= fromUnixTimestamp64Milli(${{ Int64: startDate.getTime() }})
-        AND TimeUnix <= fromUnixTimestamp64Milli(${{ Int64: endDate.getTime() }})
-      LIMIT ${{ Int32: METRIC_ATTR_KEYS_SAMPLE_SIZE }}
-    )
-  `;
-
   try {
-    const response = await dataClient.query({
-      query: sql.sql,
-      query_params: sql.params,
-      format: 'JSON',
-      connectionId,
-      abort_signal: signal,
+    assertMetricColumns(table, columns);
+    // Aggregate from a bounded sample of matching rows, which keeps the
+    // query fast on hot metric collections. ResourceAttributes / Attributes
+    // / ScopeAttributes are rarely keyed independently per row, so 100k
+    // rows surfaces every realistic key set.
+    const q = metricAttributeKeysQuery({
+      table,
+      metricName,
+      mapColumns: mapColumns.map(c => c.name),
+      sampleSize: METRIC_ATTR_KEYS_SAMPLE_SIZE,
+      start: startDate,
+      end: endDate,
     });
-    const result = (await response.json()) as {
-      data: Array<Record<string, string[]>>;
-    };
-    const row = result.data[0];
+    const rows = await metricRows<Record<string, unknown>>(
+      dataClient,
+      q,
+      connectionId,
+      signal,
+    );
+    const row = rows[0];
     if (!row) return { ok: true, data: {} };
     const out: Record<string, string[]> = {};
     for (const col of mapColumns) {
       const keys = row[col.name];
       if (Array.isArray(keys) && keys.length > 0) {
-        out[col.name] = keys.filter(k => typeof k === 'string' && k.length > 0);
+        const named = keys.filter(
+          (k): k is string => typeof k === 'string' && k.length > 0,
+        );
+        if (named.length > 0) out[col.name] = named;
       }
     }
     return { ok: true, data: out };
   } catch (e) {
     logger.warn(
-      { tableName, error: e instanceof Error ? e.message : String(e) },
+      {
+        tableName: table.tableName,
+        error: e instanceof Error ? e.message : String(e),
+      },
       'fetchAttributeKeys failed',
     );
     return { ok: false, error: sanitizeFetchError(e) };
@@ -340,9 +309,8 @@ type SampleAttributeValuesData = {
 };
 
 /**
- * Sample distinct values per attribute key. Uses one composed
- * groupArray-per-key query so all keys are fetched in a single round
- * trip.
+ * Sample distinct values per attribute key. One ARRAY_AGG(DISTINCT ...) per
+ * key in a single query, so all keys are fetched in one round trip.
  *
  * The returned meta records which keys were actually queried
  * (`sampledKeys`) vs. skipped by the MAX_ATTR_KEYS_TO_SAMPLE cap
@@ -351,8 +319,7 @@ type SampleAttributeValuesData = {
  */
 async function sampleAttributeValues({
   dataClient,
-  databaseName,
-  tableName,
+  table,
   connectionId,
   metricName,
   attributeKeys,
@@ -361,8 +328,7 @@ async function sampleAttributeValues({
   signal,
 }: {
   dataClient: DataClient;
-  databaseName: string;
-  tableName: string;
+  table: MetricKindTable;
   connectionId: string;
   metricName: string;
   // attributeKeys is shape { mapColumn: keyName[] } e.g. { Attributes: ['http.method', 'http.route'] }
@@ -377,7 +343,11 @@ async function sampleAttributeValues({
   for (const [mapColumn, keys] of Object.entries(attributeKeys)) {
     for (const key of keys) {
       const display = `${mapColumn}['${key}']`;
-      if (flatKeyExprs.length >= MAX_ATTR_KEYS_TO_SAMPLE) {
+      // A key SQL++ cannot quote (backtick, NUL, newline) is never queried.
+      if (
+        flatKeyExprs.length >= MAX_ATTR_KEYS_TO_SAMPLE ||
+        /[`\0\n\r]/.test(key)
+      ) {
         truncatedKeys.push(display);
         continue;
       }
@@ -392,57 +362,30 @@ async function sampleAttributeValues({
     return { ok: true, data: { values: {}, meta } };
   }
 
-  const projections = flatKeyExprs.map(
-    ({ mapColumn, key }, idx) => sqlExpr`
-      groupUniqArray(${{ Int32: MAX_ATTR_VALUES }})(
-        ${{ Identifier: mapColumn }}[${{ String: key }}]
-      ) AS param${{ UNSAFE_RAW_SQL: String(idx) }}
-    `,
-  );
-
-  // Distinct set of map columns we need from each sampled row, so the
-  // inner subquery only projects what's required for the outer
-  // groupUniqArray aggregates.
-  const sampledMapColumns = Array.from(
-    new Set(flatKeyExprs.map(e => e.mapColumn)),
-  );
-  const sampleProjections = sampledMapColumns.map(
-    col => sqlExpr`${{ Identifier: col }}`,
-  );
-
-  // Aggregate from a bounded sample of matching rows. Mirrors
-  // fetchAttributeKeys: the inner LIMIT lets legacy store stop scanning
-  // once it has SAMPLE_SIZE rows that match (MetricName, time range),
-  // and the matching query_settings cap server-side execution so a
-  // hot metric cannot starve the wall-clock budget.
-  const sql = sqlExpr`
-    SELECT ${concatSqlExpr(', ', projections)}
-    FROM (
-      SELECT ${concatSqlExpr(', ', sampleProjections)}
-      FROM ${tableExpr({ database: databaseName, table: tableName })}
-      WHERE MetricName = ${{ String: metricName }}
-        AND TimeUnix >= fromUnixTimestamp64Milli(${{ Int64: startDate.getTime() }})
-        AND TimeUnix <= fromUnixTimestamp64Milli(${{ Int64: endDate.getTime() }})
-      LIMIT ${{ Int32: METRIC_ATTR_KEYS_SAMPLE_SIZE }}
-    )
-  `;
-
   try {
-    const response = await dataClient.query({
-      query: sql.sql,
-      query_params: sql.params,
-      format: 'JSON',
-      connectionId,
-      abort_signal: signal,
+    // Aggregate from a bounded sample of matching rows, as fetchAttributeKeys.
+    const q = metricAttributeValuesQuery({
+      table,
+      metricName,
+      keys: flatKeyExprs,
+      sampleSize: METRIC_ATTR_KEYS_SAMPLE_SIZE,
+      start: startDate,
+      end: endDate,
     });
-    const result = (await response.json()) as {
-      data: Array<Record<string, string[]>>;
-    };
-    const row = result.data[0];
+    const rows = await metricRows<Record<string, unknown>>(
+      dataClient,
+      q,
+      connectionId,
+      signal,
+    );
+    const row = rows[0];
     if (!row) return { ok: true, data: { values: {}, meta } };
     const values: Record<string, string[]> = {};
     flatKeyExprs.forEach((keyExpr, idx) => {
-      const sample = (row[`param${idx}`] ?? []).filter(v => v !== '');
+      const sampled = row[`param${idx}`];
+      const sample = (Array.isArray(sampled) ? sampled : [])
+        .filter((v): v is string => typeof v === 'string' && v !== '')
+        .slice(0, MAX_ATTR_VALUES);
       if (sample.length > 0) {
         values[keyExpr.display] = sample;
       }
@@ -450,7 +393,10 @@ async function sampleAttributeValues({
     return { ok: true, data: { values, meta } };
   } catch (e) {
     logger.warn(
-      { tableName, error: e instanceof Error ? e.message : String(e) },
+      {
+        tableName: table.tableName,
+        error: e instanceof Error ? e.message : String(e),
+      },
       'sampleAttributeValues failed',
     );
     return { ok: false, error: sanitizeFetchError(e) };
@@ -498,9 +444,7 @@ async function describeMetricImpl(
   );
   if (sliceErr) return sliceErr;
 
-  const dataClient = new DataClient({
-    requestTimeout: MCP_REQUEST_TIMEOUT,
-  });
+  const dataClient = new DataClient(MCP_DATA_CLIENT_OPTIONS);
   const metadata = getMetadata(dataClient);
   const databaseName = source.from.databaseName;
   const connectionId = source.connection.toString();
@@ -516,33 +460,30 @@ async function describeMetricImpl(
   }
 
   // Defensive column-presence check before referencing MetricUnit /
-  // MetricDescription on this kind's table.
-  let columns: { name: string; type: string }[];
+  // MetricDescription on this kind's collection. An empty OTel collection
+  // reports its declared schema (Q25), so the no-data hint still applies.
+  const table = metricKindTable(source, tableName);
+  let columns: Awaited<ReturnType<typeof metricKindColumns>>;
   try {
-    columns = await metadata.getColumns({
-      databaseName,
-      tableName,
-      connectionId,
-    });
+    columns = await metricKindColumns(metadata, connectionId, table);
   } catch (e) {
     logger.warn(
       { kind, error: e instanceof Error ? e.message : String(e) },
-      'describeMetric: getColumns failed',
+      'describeMetric: column lookup failed',
     );
     return queryErrorResult(e, {
       prefix: `Failed to load columns for "${tableName}"`,
       suffix: 'The metric table may be missing or unreachable.',
     });
   }
-  const columnNames = new Set(columns.map(c => c.name));
+  const columnNames = new Set(columns.columns.map(c => c.name));
   const hasUnit = columnNames.has('MetricUnit');
   const hasDescription = columnNames.has('MetricDescription');
 
   const [meta, attributeKeysResult] = await Promise.all([
     fetchUnitAndDescription({
       dataClient,
-      databaseName,
-      tableName,
+      table,
       connectionId,
       metricName: input.metricName,
       startDate,
@@ -553,8 +494,7 @@ async function describeMetricImpl(
     }),
     fetchAttributeKeys({
       dataClient,
-      databaseName,
-      tableName,
+      table,
       connectionId,
       metricName: input.metricName,
       columns,
@@ -589,8 +529,7 @@ async function describeMetricImpl(
   if (input.sampleValues && Object.keys(attributeKeys).length > 0) {
     const valuesResult = await sampleAttributeValues({
       dataClient,
-      databaseName,
-      tableName,
+      table,
       connectionId,
       metricName: input.metricName,
       attributeKeys,

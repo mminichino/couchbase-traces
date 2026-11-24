@@ -3,7 +3,7 @@ import type { TraceTable } from '@couchbase-traces/common-utils/dist/couchbase/t
 import type { QuerySettings } from '@couchbase-traces/common-utils/dist/types';
 
 import { getConnectionById } from '@/controllers/connection';
-import { MCP_REQUEST_TIMEOUT } from '@/mcp/tools/query/helpers';
+import { MCP_DATA_CLIENT_OPTIONS } from '@/mcp/tools/query/helpers';
 import type { McpErrorResult } from '@/mcp/utils/errors';
 import { mcpUserError } from '@/mcp/utils/errors';
 import { assertMcpSliceForConnection } from '@/mcp/utils/mcpSlice';
@@ -25,7 +25,7 @@ export async function getMcpDataClient(
   ) {
     return null;
   }
-  return new DataClient({ requestTimeout: MCP_REQUEST_TIMEOUT });
+  return new DataClient(MCP_DATA_CLIENT_OPTIONS);
 }
 
 /** Slice guard + connection resolution for trace MCP tools. */

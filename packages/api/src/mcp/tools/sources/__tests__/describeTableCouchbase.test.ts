@@ -5,6 +5,15 @@
 
 const mockGetColumns = jest.fn();
 const mockListKeyspaces = jest.fn();
+const mockIndexes = jest.fn();
+const mockCount = jest.fn();
+const mockSources = jest.fn();
+
+jest.mock('@/mcp/tools/sources/describeTableDetails', () => ({
+  collectionIndexes: (...args: unknown[]) => mockIndexes(...args),
+  approxDocumentCount: (...args: unknown[]) => mockCount(...args),
+  findSourcesForCollection: (...args: unknown[]) => mockSources(...args),
+}));
 
 jest.mock('@couchbase-traces/common-utils/dist/dataLayer', () => ({
   getMetadata: () => ({
@@ -35,7 +44,12 @@ const input = {
 
 const otelLogs = { bucket: 'otel', scope: 'default', collection: 'otel_logs' };
 
-beforeEach(() => jest.clearAllMocks());
+beforeEach(() => {
+  jest.clearAllMocks();
+  mockIndexes.mockResolvedValue([]);
+  mockCount.mockResolvedValue(0);
+  mockSources.mockResolvedValue([]);
+});
 
 describe('describeCouchbaseTable', () => {
   it('describes an empty OTel collection with its declared columns', async () => {
@@ -141,5 +155,42 @@ describe('describeCouchbaseTable', () => {
     ]);
     expect(output.note).toBeUndefined();
     expect(mockListKeyspaces).not.toHaveBeenCalled();
+  });
+
+  it('reports indexes, the document count, and the sources it backs', async () => {
+    mockGetColumns.mockResolvedValue([{ name: 'Body', type: 'String' }]);
+    mockIndexes.mockResolvedValue([
+      { name: 'ix_logs_ts', type: 'gsi', expression: '`Timestamp` DESC' },
+    ]);
+    mockCount.mockResolvedValue(3);
+    mockSources.mockResolvedValue([{ id: 's1', name: 'Logs', kind: 'log' }]);
+
+    const output = JSON.parse(
+      (await describeCouchbaseTable(ctx, input)).content[0].text,
+    );
+
+    expect(output.table.approxTotalRows).toBe(3);
+    expect(output.indexes).toEqual([
+      { name: 'ix_logs_ts', type: 'gsi', expression: '`Timestamp` DESC' },
+    ]);
+    expect(output.sources).toEqual([{ id: 's1', name: 'Logs', kind: 'log' }]);
+    expect(output.nextSteps.describeSource).toMatch(/cbt_describe_source/);
+    expect(output.nextSteps.query).toBeUndefined();
+    expect(mockSources).toHaveBeenCalledWith({
+      teamId: 'team-1',
+      connectionId: 'conn-1',
+      ref: otelLogs,
+    });
+  });
+
+  it('points at cbt_save_source when no source reads the collection', async () => {
+    mockGetColumns.mockResolvedValue([{ name: 'Body', type: 'String' }]);
+
+    const output = JSON.parse(
+      (await describeCouchbaseTable(ctx, input)).content[0].text,
+    );
+
+    expect(output.sources).toBeUndefined();
+    expect(output.nextSteps.query).toMatch(/cbt_save_source/);
   });
 });

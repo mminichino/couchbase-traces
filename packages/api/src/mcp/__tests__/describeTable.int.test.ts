@@ -2,6 +2,7 @@ import { SourceKind } from '@couchbase-traces/common-utils/dist/types';
 import { Client } from '@modelcontextprotocol/sdk/client/index.js';
 
 import {
+  DEFAULT_DATABASE,
   getLoggedInAgent,
   getServer,
   getTestFixtureDataClient,
@@ -13,9 +14,29 @@ import { TEST_COUCHBASE_CONNECTION } from '@/testCouchbaseConnection';
 
 import { callTool, createTestClient, getFirstText } from './mcpTestUtils';
 
-const DATABASE = 'mcp_describe_table_test';
-// Kept apart so the Distributed table does not change DATABASE's listing.
-const DIST_DATABASE = 'mcp_describe_table_dist_test';
+// Upstream creates a ClickHouse database; a Couchbase bucket needs RAM quota
+// the CI cluster does not have, so the fixture is a scope of the telemetry
+// bucket (database = bucket, table = scope.collection). Upstream's
+// events_view is a second collection: SQL++ has no views.
+const DATABASE = DEFAULT_DATABASE;
+const SCOPE = 'mcp_describe_table_test';
+const EVENTS = `${SCOPE}.events`;
+const SECOND = `${SCOPE}.events_view`;
+const ks = (collection: string) =>
+  `\`${DATABASE}\`.\`${SCOPE}\`.\`${collection}\``;
+
+/** DDL right after CREATE COLLECTION can race the collection manifest. */
+async function retry(run: () => Promise<void>, attempts = 20): Promise<void> {
+  for (let i = 1; ; i++) {
+    try {
+      await run();
+      return;
+    } catch (e) {
+      if (i >= attempts) throw e;
+      await new Promise(resolve => setTimeout(resolve, 500));
+    }
+  }
+}
 
 describe('cbt_describe_table', () => {
   const server = getServer();
@@ -24,42 +45,45 @@ describe('cbt_describe_table', () => {
 
   beforeAll(async () => {
     await server.start();
-    const ch = await getTestFixtureDataClient();
-    await ch.command({ query: `DROP DATABASE IF EXISTS ${DATABASE}` });
-    await ch.command({ query: `DROP DATABASE IF EXISTS ${DIST_DATABASE}` });
-    await ch.command({ query: `CREATE DATABASE ${DATABASE}` });
-    await ch.command({ query: `CREATE DATABASE ${DIST_DATABASE}` });
-    await ch.command({
-      query: `
-        CREATE TABLE ${DATABASE}.events (
-          Timestamp DateTime64(9),
-          ServiceName LowCardinality(String) COMMENT 'emitting service',
-          Body String,
-          Day Date MATERIALIZED toDate(Timestamp),
-          INDEX idx_body Body TYPE tokenbf_v1(8192, 3, 0) GRANULARITY 1
-        )
-        ENGINE = MergeTree
-        PARTITION BY toDate(Timestamp)
-        PRIMARY KEY ServiceName
-        ORDER BY (ServiceName, Timestamp)
-        COMMENT 'test events'
-      `,
+    const cb = await getTestFixtureDataClient();
+    await cb.command({
+      query: `DROP SCOPE \`${DATABASE}\`.\`${SCOPE}\` IF EXISTS`,
     });
-    await ch.command({
-      query: `CREATE VIEW ${DATABASE}.events_view AS SELECT ServiceName FROM ${DATABASE}.events`,
+    await cb.command({
+      query: `CREATE SCOPE \`${DATABASE}\`.\`${SCOPE}\``,
     });
-    await ch.command({
-      query: `CREATE TABLE ${DIST_DATABASE}.events AS ${DATABASE}.events ENGINE = Distributed(hdx_cluster, ${DATABASE}, events)`,
-    });
-    await ch.insert({
-      table: `${DATABASE}.events`,
-      values: [
-        { Timestamp: '2024-01-01 00:00:00', ServiceName: 'api', Body: 'a' },
-        { Timestamp: '2024-01-01 00:00:01', ServiceName: 'web', Body: 'b' },
-        { Timestamp: '2024-01-01 00:00:02', ServiceName: 'api', Body: 'c' },
-      ],
-      format: 'JSONEachRow',
-    });
+    await retry(() =>
+      cb.command({ query: `CREATE COLLECTION ${ks('events')}` }),
+    );
+    await retry(() =>
+      cb.command({ query: `CREATE COLLECTION ${ks('events_view')}` }),
+    );
+    await retry(() =>
+      cb.command({ query: `CREATE INDEX idx_body ON ${ks('events')}(Body)` }),
+    );
+    await retry(() =>
+      cb.insert({
+        table: `${DATABASE}.${SCOPE}.events`,
+        values: [
+          {
+            Timestamp: '2024-01-01T00:00:00.000000000Z',
+            ServiceName: 'api',
+            Body: 'a',
+          },
+          {
+            Timestamp: '2024-01-01T00:00:01.000000000Z',
+            ServiceName: 'web',
+            Body: 'b',
+          },
+          {
+            Timestamp: '2024-01-01T00:00:02.000000000Z',
+            ServiceName: 'api',
+            Body: 'c',
+          },
+        ],
+        format: 'JSONEachRow',
+      }),
+    );
   });
 
   beforeEach(async () => {
@@ -85,9 +109,10 @@ describe('cbt_describe_table', () => {
   });
 
   afterAll(async () => {
-    const ch = await getTestFixtureDataClient();
-    await ch.command({ query: `DROP DATABASE IF EXISTS ${DIST_DATABASE}` });
-    await ch.command({ query: `DROP DATABASE IF EXISTS ${DATABASE}` });
+    const cb = await getTestFixtureDataClient();
+    await cb.command({
+      query: `DROP SCOPE \`${DATABASE}\`.\`${SCOPE}\` IF EXISTS`,
+    });
     await server.stop();
   });
 
@@ -97,102 +122,77 @@ describe('cbt_describe_table', () => {
       ...args,
     });
 
-  it('describes columns, keys, indices, and size of a table', async () => {
-    const result = await call({ database: DATABASE, table: 'events' });
+  // Q54 (user, 2026-11-24): the GSI indexes and the document count are the
+  // Couchbase equivalent of upstream's table metadata. engine, sortingKey,
+  // primaryKey, partitionKey, comments and MATERIALIZED defaults do not apply
+  // to a collection (docs/parity.md).
+  it('describes columns, indexes, and size of a collection', async () => {
+    const result = await call({ database: DATABASE, table: EVENTS });
     expect(result.isError).toBeFalsy();
     const output = JSON.parse(getFirstText(result));
 
     expect(output.table).toMatchObject({
       database: DATABASE,
+      scope: SCOPE,
       name: 'events',
-      engine: 'MergeTree',
-      sortingKey: 'ServiceName, Timestamp',
-      primaryKey: 'ServiceName',
-      partitionKey: 'toDate(Timestamp)',
-      comment: 'test events',
+      keyspace: ks('events'),
       approxTotalRows: 3,
     });
-    expect(output.table.approxTotalBytes).toBeGreaterThan(0);
-
-    expect(output.columns).toEqual([
-      {
-        name: 'Timestamp',
-        type: 'DateTime64(9)',
-        inSortingKey: true,
-        inPrimaryKey: false,
-      },
-      {
-        name: 'ServiceName',
-        type: 'LowCardinality(String)',
-        comment: 'emitting service',
-        inSortingKey: true,
-        inPrimaryKey: true,
-      },
-      {
-        name: 'Body',
-        type: 'String',
-        inSortingKey: false,
-        inPrimaryKey: false,
-      },
-      {
-        name: 'Day',
-        type: 'Date',
-        defaultKind: 'MATERIALIZED',
-        defaultExpression: 'toDate(Timestamp)',
-        inSortingKey: false,
-        inPrimaryKey: false,
-      },
-    ]);
-    expect(output.dataSkippingIndices).toEqual([
-      { name: 'idx_body', type: 'tokenbf_v1', expression: 'Body' },
+    expect(output.columns).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ name: 'Timestamp' }),
+        expect.objectContaining({ name: 'ServiceName', jsType: 'string' }),
+        expect.objectContaining({ name: 'Body', jsType: 'string' }),
+      ]),
+    );
+    expect(output.indexes).toEqual([
+      { name: 'idx_body', type: 'gsi', expression: '`Body`' },
     ]);
     expect(output.sampleRows).toBeUndefined();
   });
 
-  it('reads keys and indices of a Distributed table from its local table', async () => {
-    const result = await call({ database: DIST_DATABASE, table: 'events' });
+  // Q54: upstream reads a Distributed table's keys and indices from its local
+  // table. A collection is already cluster-wide, so its own indexes are the
+  // answer and no ClickHouse-only key or engine field is reported.
+  it('reads indexes from the collection itself, with no Distributed or local table', async () => {
+    const result = await call({ database: DATABASE, table: EVENTS });
     expect(result.isError).toBeFalsy();
     const output = JSON.parse(getFirstText(result));
-    expect(output.table).toMatchObject({
-      engine: 'Distributed',
-      localTable: {
-        cluster: 'hdx_cluster',
-        database: DATABASE,
-        table: 'events',
-        engine: 'MergeTree',
-      },
-      sortingKey: 'ServiceName, Timestamp',
-      primaryKey: 'ServiceName',
-      partitionKey: 'toDate(Timestamp)',
-    });
-    expect(
-      output.columns.find((c: any) => c.name === 'ServiceName'),
-    ).toMatchObject({
-      inSortingKey: true,
-      inPrimaryKey: true,
-    });
-    expect(output.dataSkippingIndices).toEqual([
-      { name: 'idx_body', type: 'tokenbf_v1', expression: 'Body' },
+    for (const field of [
+      'engine',
+      'localTable',
+      'sortingKey',
+      'primaryKey',
+      'partitionKey',
+    ]) {
+      expect(output.table).not.toHaveProperty(field);
+    }
+    const svc = output.columns.find(
+      (c: { name: string }) => c.name === 'ServiceName',
+    );
+    expect(svc).not.toHaveProperty('inSortingKey');
+    expect(svc).not.toHaveProperty('inPrimaryKey');
+    expect(output).not.toHaveProperty('dataSkippingIndices');
+    expect(output.indexes).toEqual([
+      { name: 'idx_body', type: 'gsi', expression: '`Body`' },
     ]);
   });
 
   it('reflects an index added after a previous describe', async () => {
-    await call({ database: DATABASE, table: 'events' });
-    const ch = await getTestFixtureDataClient();
-    await ch.command({
-      query: `ALTER TABLE ${DATABASE}.events ADD INDEX idx_svc ServiceName TYPE set(10) GRANULARITY 1`,
+    await call({ database: DATABASE, table: EVENTS });
+    const cb = await getTestFixtureDataClient();
+    await cb.command({
+      query: `CREATE INDEX idx_svc ON ${ks('events')}(ServiceName)`,
     });
     try {
       const output = JSON.parse(
-        getFirstText(await call({ database: DATABASE, table: 'events' })),
+        getFirstText(await call({ database: DATABASE, table: EVENTS })),
       );
-      expect(
-        output.dataSkippingIndices.map((i: { name: string }) => i.name),
-      ).toContain('idx_svc');
+      expect(output.indexes.map((i: { name: string }) => i.name)).toContain(
+        'idx_svc',
+      );
     } finally {
-      await ch.command({
-        query: `ALTER TABLE ${DATABASE}.events DROP INDEX idx_svc`,
-      });
+      await cb.command({ query: `DROP INDEX idx_svc ON ${ks('events')}` });
     }
   });
 
@@ -200,7 +200,7 @@ describe('cbt_describe_table', () => {
     const source = await seedSource({
       kind: SourceKind.Log,
       team: connection.team,
-      from: { databaseName: DATABASE, tableName: 'events' },
+      from: { databaseName: DATABASE, scopeName: SCOPE, tableName: 'events' },
       timestampValueExpression: 'Timestamp',
       connection: connection._id,
       name: 'Events',
@@ -208,7 +208,7 @@ describe('cbt_describe_table', () => {
     const metricSource = await seedSource({
       kind: SourceKind.Metric,
       team: connection.team,
-      from: { databaseName: DATABASE, tableName: '' },
+      from: { databaseName: DATABASE, scopeName: SCOPE, tableName: '' },
       metricTables: { gauge: 'events' },
       timestampValueExpression: 'Timestamp',
       resourceAttributesExpression: 'ResourceAttributes',
@@ -217,7 +217,7 @@ describe('cbt_describe_table', () => {
     });
 
     const output = JSON.parse(
-      getFirstText(await call({ database: DATABASE, table: 'events' })),
+      getFirstText(await call({ database: DATABASE, table: EVENTS })),
     );
     expect(output.sources).toEqual(
       expect.arrayContaining([
@@ -246,14 +246,14 @@ describe('cbt_describe_table', () => {
     await seedSource({
       kind: SourceKind.Log,
       team: connection.team,
-      from: { databaseName: DATABASE, tableName: 'events' },
+      from: { databaseName: DATABASE, scopeName: SCOPE, tableName: 'events' },
       timestampValueExpression: 'Timestamp',
       connection: otherConnection._id,
       name: 'Events',
     });
 
     const output = JSON.parse(
-      getFirstText(await call({ database: DATABASE, table: 'events' })),
+      getFirstText(await call({ database: DATABASE, table: EVENTS })),
     );
     expect(output.sources).toBeUndefined();
     expect(output.nextSteps.query).toMatch(/cbt_save_source/);
@@ -262,7 +262,7 @@ describe('cbt_describe_table', () => {
   it('returns a capped sample of rows when asked', async () => {
     const result = await call({
       database: DATABASE,
-      table: 'events',
+      table: EVENTS,
       sampleRows: 2,
     });
     expect(result.isError).toBeFalsy();
@@ -274,34 +274,47 @@ describe('cbt_describe_table', () => {
   it('rejects more than 5 sample rows', async () => {
     const result = await call({
       database: DATABASE,
-      table: 'events',
+      table: EVENTS,
       sampleRows: 50,
     });
     expect(result.isError).toBe(true);
   });
 
+  // The bucket also holds the OTel collections, so the walk checks that the
+  // two fixture collections come one page apart and that paging ends. Q54:
+  // upstream's engine and approxTotalRows per listed table are not reported.
   it('lists tables in a database across pages', async () => {
-    const first = JSON.parse(
-      getFirstText(await call({ database: DATABASE, limit: 1 })),
-    );
-    expect(first.tables).toEqual([
-      { name: 'events', engine: 'MergeTree', approxTotalRows: 3 },
-    ]);
-    expect(first.nextCursor).toEqual(expect.any(String));
+    const names: string[] = [];
+    let cursor: string | undefined;
+    for (let page = 0; page < 100; page++) {
+      const output = JSON.parse(
+        getFirstText(
+          await call({
+            database: DATABASE,
+            limit: 1,
+            ...(cursor && { cursor }),
+          }),
+        ),
+      );
+      expect(output.tables).toHaveLength(1);
+      names.push(output.tables[0].name);
+      cursor = output.nextCursor;
+      if (cursor == null) break;
+      expect(cursor).toEqual(expect.any(String));
+    }
 
-    const second = JSON.parse(
-      getFirstText(
-        await call({ database: DATABASE, limit: 1, cursor: first.nextCursor }),
-      ),
-    );
-    expect(second.tables).toEqual([
-      { name: 'events_view', engine: 'View', approxTotalRows: null },
-    ]);
-    expect(second.nextCursor).toBeUndefined();
+    expect(cursor).toBeUndefined();
+    const at = names.indexOf(EVENTS);
+    expect(at).toBeGreaterThanOrEqual(0);
+    expect(names[at + 1]).toBe(SECOND);
+    expect(new Set(names).size).toBe(names.length);
   });
 
   it('returns user errors for a missing table or database', async () => {
-    const missingTable = await call({ database: DATABASE, table: 'nope' });
+    const missingTable = await call({
+      database: DATABASE,
+      table: `${SCOPE}.nope`,
+    });
     expect(missingTable.isError).toBe(true);
     expect(getFirstText(missingTable)).toMatch(/not found/);
 

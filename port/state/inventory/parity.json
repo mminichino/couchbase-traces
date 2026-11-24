@@ -25280,7 +25280,7 @@
           "file": "packages/otel-collector/builder-config.yaml"
         }
       ],
-      "closureSize": 62,
+      "closureSize": 64,
       "exclusiveFiles": [
         "docker/otel-collector/Dockerfile",
         "docker/otel-collector/config.standalone.auth.yaml",
@@ -25296,6 +25296,7 @@
         "packages/ingest/jest.int.config.js",
         "packages/ingest/package.json",
         "packages/ingest/src/__tests__/ingest.int.test.ts",
+        "packages/ingest/src/__tests__/metadataSetup.test.ts",
         "packages/ingest/src/__tests__/model.test.ts",
         "packages/ingest/src/__tests__/server.test.ts",
         "packages/ingest/src/__tests__/transform.test.ts",
@@ -25328,6 +25329,7 @@
         "packages/ingest/src/setup/errors.ts",
         "packages/ingest/src/setup/indexes.ts",
         "packages/ingest/src/setup/keyspace.ts",
+        "packages/ingest/src/setup/metadata.ts",
         "packages/ingest/src/setup/search.ts",
         "packages/ingest/src/setup/users.ts",
         "packages/ingest/src/transform/common.ts",

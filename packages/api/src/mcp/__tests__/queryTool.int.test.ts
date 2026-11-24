@@ -3,7 +3,12 @@ import {
   SourceKind,
 } from '@couchbase-traces/common-utils/dist/types';
 import { Client } from '@modelcontextprotocol/sdk/client/index.js';
+import * as couchbase from 'couchbase';
 
+import {
+  getCouchbaseConnectionLoader,
+  setCouchbaseConnectionLoader,
+} from '@/dataClient';
 import {
   bucketExponentialHistogramObservations,
   bulkInsertLogs,
@@ -32,6 +37,10 @@ import {
 import { TEST_COUCHBASE_CONNECTION } from '@/testCouchbaseConnection';
 
 import { callTool, createTestClient, getFirstText } from './mcpTestUtils';
+
+// SQL++ keyspaces for the fixture collections (bucket.scope.collection).
+const LOGS_KS = `\`${DEFAULT_DATABASE}\`.\`default\`.\`${DEFAULT_LOGS_TABLE}\``;
+const TRACES_KS = `\`${DEFAULT_DATABASE}\`.\`default\`.\`${DEFAULT_TRACES_TABLE}\``;
 
 describe('MCP Query Tools', () => {
   const server = getServer();
@@ -1345,7 +1354,7 @@ describe('MCP Query Tools', () => {
     it('should execute a raw SQL query', async () => {
       const result = await callTool(client, 'cbt_sql', {
         connectionId: connection._id.toString(),
-        sql: 'SELECT 1 AS value',
+        sql: 'SELECT 1 AS `value`',
         startTime: new Date(Date.now() - 60 * 60 * 1000).toISOString(),
         endTime: new Date().toISOString(),
       });
@@ -1357,7 +1366,7 @@ describe('MCP Query Tools', () => {
     it('should execute SQL with time macros', async () => {
       const result = await callTool(client, 'cbt_sql', {
         connectionId: connection._id.toString(),
-        sql: `SELECT count() AS cnt FROM ${DEFAULT_DATABASE}.${DEFAULT_TRACES_TABLE} WHERE $__timeFilter(Timestamp) LIMIT 10`,
+        sql: `SELECT COUNT(*) AS cnt FROM ${TRACES_KS} WHERE $__timeFilter(Timestamp) LIMIT 10`,
         startTime: new Date(Date.now() - 60 * 60 * 1000).toISOString(),
         endTime: new Date().toISOString(),
       });
@@ -1369,7 +1378,7 @@ describe('MCP Query Tools', () => {
     it('should use default time range when not provided', async () => {
       const result = await callTool(client, 'cbt_sql', {
         connectionId: connection._id.toString(),
-        sql: 'SELECT 1 AS value',
+        sql: 'SELECT 1 AS `value`',
       });
 
       expect(result.isError).toBeFalsy();
@@ -1398,7 +1407,7 @@ describe('MCP Query Tools', () => {
         // syntax error pointing at a '$'.
         const result = await callTool(client, 'cbt_sql', {
           connectionId: connection._id.toString(),
-          sql: `SELECT 1 AS value WHERE ${macro}`,
+          sql: `SELECT 1 AS \`value\` WHERE ${macro}`,
         });
 
         expect(result.isError).toBe(true);
@@ -1411,7 +1420,7 @@ describe('MCP Query Tools', () => {
     it('still allows $__filters, which needs no variable context', async () => {
       const result = await callTool(client, 'cbt_sql', {
         connectionId: connection._id.toString(),
-        sql: 'SELECT 1 AS value WHERE $__filters',
+        sql: 'SELECT 1 AS `value` WHERE $__filters',
       });
 
       expect(result.isError).toBeFalsy();
@@ -1424,8 +1433,8 @@ describe('MCP Query Tools', () => {
       const result = await callTool(client, 'cbt_sql', {
         connectionId: connection._id.toString(),
         sql:
-          'SELECT {intervalSeconds:Int64} AS s, ' +
-          '{intervalMilliseconds:Int64} AS ms, ' +
+          'SELECT $intervalSeconds AS s, ' +
+          '$intervalMilliseconds AS ms, ' +
           '$__interval_s AS macro_s',
         startTime: new Date(Date.now() - 60 * 60 * 1000).toISOString(),
         endTime: new Date().toISOString(),
@@ -1455,11 +1464,13 @@ describe('MCP Query Tools', () => {
         const result = await callTool(client, 'cbt_sql', {
           connectionId: connection._id.toString(),
           sql:
-            `SELECT ${macro}(Timestamp) AS ts, ` +
-            'toUnixTimestamp(ts) % $__interval_s AS offset, count() AS cnt ' +
-            `FROM ${DEFAULT_DATABASE}.${DEFAULT_LOGS_TABLE} ` +
+            // SQL++ projections cannot read a sibling alias, so the offset
+            // reads the GROUP BY alias (upstream: toUnixTimestamp(ts)).
+            'SELECT ts, (STR_TO_MILLIS(ts) / 1000) % $__interval_s AS `offset`, ' +
+            'COUNT(*) AS cnt ' +
+            `FROM ${LOGS_KS} ` +
             "WHERE $__timeFilter(Timestamp) AND ServiceName = 'sql-buckets' " +
-            'GROUP BY ts ORDER BY ts LIMIT 10',
+            `GROUP BY ${macro}(Timestamp) AS ts ORDER BY ts LIMIT 10`,
           startTime: new Date(now - 60 * 60 * 1000).toISOString(),
           endTime: new Date(now).toISOString(),
         });
@@ -1529,7 +1540,7 @@ describe('MCP Query Tools', () => {
         expect(examples).toHaveLength(2);
         for (const example of examples) {
           const sql = example
-            .replaceAll('<table>', `${DEFAULT_DATABASE}.${DEFAULT_LOGS_TABLE}`)
+            .replaceAll('<table>', LOGS_KS)
             .replaceAll('<timestampColumn>', 'Timestamp');
           const result = await callTool(client, 'cbt_sql', {
             connectionId: connection._id.toString(),
@@ -1548,7 +1559,7 @@ describe('MCP Query Tools', () => {
 
     describe('sourceId', () => {
       const countSql =
-        'SELECT count() AS n FROM $__sourceTable WHERE $__timeFilter(Timestamp)';
+        'SELECT COUNT(*) AS n FROM $__sourceTable WHERE $__timeFilter(Timestamp)';
 
       it('resolves $__sourceTable to the table of the given source', async () => {
         const now = Date.now();
@@ -1647,12 +1658,13 @@ describe('MCP Query Tools', () => {
     it('returns plain query rows unchanged', async () => {
       const result = await callTool(client, 'cbt_sql', {
         connectionId: connection._id.toString(),
-        sql: "SELECT 1 AS value, 'a' AS label",
+        sql: "SELECT 1 AS `value`, 'a' AS label",
       });
 
       expect(result.isError).toBeFalsy();
+      // Q24: integers arrive as strings, like upstream's 64-bit counts.
       expect(JSON.parse(getFirstText(result)).result.data).toEqual([
-        { value: 1, label: 'a' },
+        { value: '1', label: 'a' },
       ]);
     });
 
@@ -1661,9 +1673,9 @@ describe('MCP Query Tools', () => {
         const result = await callTool(client, 'cbt_sql', {
           connectionId: connection._id.toString(),
           queries: [
-            { id: 'one', sql: 'SELECT 1 AS value' },
+            { id: 'one', sql: 'SELECT 1 AS `value`' },
             { id: 'bad', sql: 'SELECTT 1' },
-            { id: 'two', sql: 'SELECT 2 AS value' },
+            { id: 'two', sql: 'SELECT 2 AS `value`' },
           ],
         });
 
@@ -1677,10 +1689,10 @@ describe('MCP Query Tools', () => {
         });
         const [one, bad, two] = parsed.results;
         expect(one).toMatchObject({ index: 0, id: 'one', status: 'ok' });
-        expect(one.result.data).toEqual([{ value: 1 }]);
+        expect(one.result.data).toEqual([{ value: '1' }]);
         expect(bad).toMatchObject({ index: 1, id: 'bad', status: 'error' });
         expect(bad.error).toMatch(/syntax/i);
-        expect(two.result.data).toEqual([{ value: 2 }]);
+        expect(two.result.data).toEqual([{ value: '2' }]);
       });
 
       it("expands $__sourceTable per query from that query's sourceId", async () => {
@@ -1701,10 +1713,10 @@ describe('MCP Query Tools', () => {
               id: 'logs',
               sourceId: logSource._id.toString(),
               sql:
-                'SELECT count() AS n FROM $__sourceTable ' +
+                'SELECT COUNT(*) AS n FROM $__sourceTable ' +
                 "WHERE $__timeFilter(Timestamp) AND ServiceName = 'sql-batch-source'",
             },
-            { id: 'noSource', sql: 'SELECT count() FROM $__sourceTable' },
+            { id: 'noSource', sql: 'SELECT COUNT(*) FROM $__sourceTable' },
           ],
           startTime: new Date(now - 60 * 60 * 1000).toISOString(),
           endTime: new Date(now).toISOString(),
@@ -1723,7 +1735,7 @@ describe('MCP Query Tools', () => {
           connectionId: connection._id.toString(),
           queries: [
             {
-              sql: `INSERT INTO ${DEFAULT_DATABASE}.${DEFAULT_LOGS_TABLE} (Body) VALUES ('x')`,
+              sql: `INSERT INTO ${LOGS_KS} (KEY, VALUE) VALUES ('x', {'Body': 'x'})`,
             },
           ],
         });
@@ -1731,7 +1743,7 @@ describe('MCP Query Tools', () => {
         expect(result.isError).toBe(true);
         const parsed = JSON.parse(getFirstText(result));
         expect(parsed.results[0].status).toBe('error');
-        expect(parsed.results[0].error).toMatch(/readonly/i);
+        expect(parsed.results[0].error).toMatch(/read-only/i);
       });
 
       it('rejects passing both sql and queries', async () => {
@@ -1775,10 +1787,13 @@ describe('MCP Query Tools', () => {
         );
       });
 
+      // Q53: SQL++ would read the field as MISSING; the MCP unknown-column
+      // check rejects it against the OTel schema, as upstream's
+      // UNKNOWN_IDENTIFIER did.
       it('should return isError for a nonexistent column', async () => {
         const result = await callTool(client, 'cbt_sql', {
           connectionId: connection._id.toString(),
-          sql: `SELECT nonexistent_column_xyz FROM ${DEFAULT_DATABASE}.${DEFAULT_LOGS_TABLE} LIMIT 1`,
+          sql: `SELECT nonexistent_column_xyz FROM ${LOGS_KS} LIMIT 1`,
         });
 
         expect(result.isError).toBe(true);
@@ -1790,12 +1805,12 @@ describe('MCP Query Tools', () => {
       it('should return isError for a nonexistent table', async () => {
         const result = await callTool(client, 'cbt_sql', {
           connectionId: connection._id.toString(),
-          sql: `SELECT 1 FROM ${DEFAULT_DATABASE}.nonexistent_table_xyz LIMIT 1`,
+          sql: `SELECT 1 FROM \`${DEFAULT_DATABASE}\`.\`default\`.nonexistent_table_xyz LIMIT 1`,
         });
 
         expect(result.isError).toBe(true);
         expect(getFirstText(result)).toMatch(
-          /UNKNOWN_TABLE|doesn.t exist|unknown/i,
+          /UNKNOWN_TABLE|doesn.t exist|unknown|Keyspace not found/i,
         );
       });
 
@@ -1816,6 +1831,9 @@ describe('MCP Query Tools', () => {
     });
 
     describe('cbt_table errors', () => {
+      // Q53: SQL++ would read the field as MISSING; the MCP unknown-column
+      // check rejects it against the OTel schema, as upstream's
+      // UNKNOWN_IDENTIFIER did.
       it('should return isError for a nonexistent valueExpression column', async () => {
         const result = await callTool(client, 'cbt_table', {
           sourceId: traceSource._id.toString(),
@@ -1855,6 +1873,9 @@ describe('MCP Query Tools', () => {
     });
 
     describe('cbt_timeseries errors', () => {
+      // Q53: SQL++ would read the field as MISSING; the MCP unknown-column
+      // check rejects it against the OTel schema, as upstream's
+      // UNKNOWN_IDENTIFIER did.
       it('should return isError for a nonexistent valueExpression column', async () => {
         const result = await callTool(client, 'cbt_timeseries', {
           sourceId: traceSource._id.toString(),
@@ -1878,19 +1899,40 @@ describe('MCP Query Tools', () => {
       expect(result).not.toHaveProperty('_errorCategory');
     });
 
-    describe('infrastructure errors (unreachable ClickHouse)', () => {
+    describe('infrastructure errors (unreachable Couchbase)', () => {
+      // Upstream's dead connection is http://localhost:1.
+      const DEAD_HOST = 'couchbase://127.0.0.1:1';
+      const realLoader = getCouchbaseConnectionLoader();
       let deadConnection: any;
       let deadSource: SourceDocument;
 
+      afterEach(() => {
+        setCouchbaseConnectionLoader(realLoader);
+      });
+
       beforeEach(async () => {
         deadConnection = await seedConnection({
-          host: TEST_COUCHBASE_CONNECTION.host,
+          host: DEAD_HOST,
           kind: 'couchbase',
           team: team._id,
           name: 'Dead',
           username: 'default',
           password: '',
         });
+        // The CI fixture loader points every stored connection at the
+        // compose cluster; this one must keep its unreachable host.
+        const deadId = deadConnection._id.toString();
+        setCouchbaseConnectionLoader(async id =>
+          id === deadId
+            ? {
+                id,
+                host: DEAD_HOST,
+                username: 'default',
+                password: '',
+                updatedAt: '',
+              }
+            : realLoader(id),
+        );
 
         deadSource = await seedSource({
           kind: SourceKind.Trace,
@@ -1944,86 +1986,103 @@ describe('MCP Query Tools', () => {
       it('should reject CREATE TABLE (DDL)', async () => {
         const result = await callTool(client, 'cbt_sql', {
           connectionId: connection._id.toString(),
-          sql: 'CREATE TABLE __mcp_test_ddl (id UInt64) ENGINE = Memory',
+          sql: `CREATE COLLECTION \`${DEFAULT_DATABASE}\`.\`default\`.__mcp_test_ddl`,
         });
 
         expect(result.isError).toBe(true);
         const text = getFirstText(result);
-        expect(text).toMatch(/readonly/i);
+        expect(text).toMatch(/read-only/i);
       });
 
       it('should reject INSERT (DML)', async () => {
         const result = await callTool(client, 'cbt_sql', {
           connectionId: connection._id.toString(),
-          sql: `INSERT INTO ${DEFAULT_DATABASE}.${DEFAULT_LOGS_TABLE} (Body) VALUES ('injected')`,
+          sql: `INSERT INTO ${LOGS_KS} (KEY, VALUE) VALUES ('injected', {'Body': 'injected'})`,
         });
 
         expect(result.isError).toBe(true);
         const text = getFirstText(result);
-        expect(text).toMatch(/readonly/i);
+        expect(text).toMatch(/read-only/i);
       });
 
       it('should reject DROP TABLE (DDL)', async () => {
         const result = await callTool(client, 'cbt_sql', {
           connectionId: connection._id.toString(),
-          sql: `DROP TABLE IF EXISTS ${DEFAULT_DATABASE}.${DEFAULT_LOGS_TABLE}`,
+          sql: `DROP COLLECTION ${LOGS_KS} IF EXISTS`,
         });
 
         expect(result.isError).toBe(true);
         const text = getFirstText(result);
-        expect(text).toMatch(/readonly/i);
+        expect(text).toMatch(/read-only/i);
       });
 
       it('should allow SELECT (read-only query)', async () => {
         const result = await callTool(client, 'cbt_sql', {
           connectionId: connection._id.toString(),
-          sql: 'SELECT 1 AS value',
+          sql: 'SELECT 1 AS `value`',
         });
 
         expect(result.isError).toBeFalsy();
       });
     });
 
+    // SQL++ has no getSetting(). The Query service lists each running
+    // request's timeout in system:active_requests, so the probe reads its
+    // own entry. readonly is a request flag the catalog does not show; the
+    // SDK call that carries it is checked instead.
     describe('settings propagation via cbt_sql', () => {
-      it('should propagate max_execution_time=30 to ClickHouse', async () => {
-        const result = await callTool(client, 'cbt_sql', {
-          connectionId: connection._id.toString(),
-          sql: "SELECT getSetting('max_execution_time') AS value",
-        });
+      const probe = (marker: string) =>
+        'SELECT r.`timeout` AS `value` FROM system:active_requests r ' +
+        `WHERE CONTAINS(r.statement, '${marker}')`;
+      // The SDK sends the Query service its timeout less 500 ms, so the
+      // service answers before the client gives up: 30 s arrives as 29.5s.
+      const serverSeconds = (result: Awaited<ReturnType<typeof callTool>>) =>
+        JSON.parse(getFirstText(result)).result?.data?.map(
+          (row: { value: string }) => Number.parseFloat(row.value),
+        );
+      const sdkOptions = () => jest.spyOn(couchbase.Cluster.prototype, 'query');
 
-        expect(result.isError).toBeFalsy();
-        const parsed = JSON.parse(getFirstText(result));
-        expect(parsed.result?.data?.[0]?.value).toBe(30);
+      afterEach(() => {
+        jest.restoreAllMocks();
       });
 
-      it('should propagate readonly=2 to ClickHouse', async () => {
+      it('should propagate a 30 s timeout to the Query service', async () => {
         const result = await callTool(client, 'cbt_sql', {
           connectionId: connection._id.toString(),
-          sql: "SELECT getSetting('readonly') AS value",
+          sql: probe('timeout-probe'),
         });
 
         expect(result.isError).toBeFalsy();
-        const parsed = JSON.parse(getFirstText(result));
-        expect(parsed.result?.data?.[0]?.value).toBe(2);
+        expect(serverSeconds(result)).toEqual([29.5]);
+      });
+
+      it('should send the query read-only', async () => {
+        const spy = sdkOptions();
+        const result = await callTool(client, 'cbt_sql', {
+          connectionId: connection._id.toString(),
+          sql: 'SELECT 1 AS `value`',
+        });
+
+        expect(result.isError).toBeFalsy();
+        expect(spy).toHaveBeenCalledWith(
+          expect.stringContaining('SELECT 1 AS `value`'),
+          expect.objectContaining({ readOnly: true }),
+        );
       });
 
       it('should apply all safety settings together without readonly conflicts', async () => {
-        // readonly=1 rejects setting changes, so max_execution_time
-        // would be silently ignored. readonly=2 allows setting changes
-        // while still blocking writes. This test verifies both settings
-        // are applied in a single query.
+        const spy = sdkOptions();
         const result = await callTool(client, 'cbt_sql', {
           connectionId: connection._id.toString(),
-          sql: `SELECT
-              getSetting('readonly') AS readonly_mode,
-              getSetting('max_execution_time') AS max_exec_time`,
+          sql: probe('both-probe'),
         });
 
         expect(result.isError).toBeFalsy();
-        const parsed = JSON.parse(getFirstText(result));
-        const row = parsed.result?.data?.[0];
-        expect(row?.readonly_mode).toBe(2);
-        expect(row?.max_exec_time).toBe(30);
+        expect(serverSeconds(result)).toEqual([29.5]);
+        expect(spy).toHaveBeenCalledWith(
+          expect.stringContaining('both-probe'),
+          expect.objectContaining({ readOnly: true, timeout: 30_000 }),
+        );
       });
     });
   });

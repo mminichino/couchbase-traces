@@ -11,6 +11,12 @@ import { mcpUserError } from '@/mcp/utils/errors';
 import type { DataClient } from '@/query';
 
 import {
+  approxDocumentCount,
+  collectionIndexes,
+  findSourcesForCollection,
+  sampleFilter,
+} from './describeTableDetails';
+import {
   decodeTableListCursor,
   type DescribeTableInput,
   encodeTableListCursor,
@@ -53,16 +59,20 @@ async function listKeyspaces(
   limit: number,
 ): Promise<Array<{ scope: string; collection: string }>> {
   const response = await ctx.dataClient.query({
+    // Object rows: the data client wraps a RAW scalar or array row as
+    // { value }, so SELECT RAW [...] rows never matched the bucket.
     query:
-      "SELECT RAW [k.`bucket`, k.`scope`, k.`name`] FROM system:all_keyspaces AS k WHERE k.`namespace` = 'default' AND k.`scope` IS VALUED AND k.`scope` != '_system'",
+      "SELECT k.`scope` AS `scope`, k.`name` AS `collection` FROM system:all_keyspaces AS k WHERE k.`namespace` = 'default' AND k.`bucket` = $bucket AND k.`scope` IS VALUED AND k.`scope` != '_system'",
+    query_params: { bucket },
     format: 'JSON',
     connectionId: ctx.connectionId,
     abort_signal: ctx.signal,
   });
-  const rows = (await response.json()) as { data: [string, string, string][] };
+  const rows = (await response.json()) as {
+    data: { scope: string; collection: string }[];
+  };
   const collections = rows.data
-    .filter(row => row[0] === bucket)
-    .map(row => ({ scope: row[1], collection: row[2] }))
+    .map(row => ({ scope: row.scope, collection: row.collection }))
     .sort((a, b) =>
       `${a.scope}.${a.collection}`.localeCompare(`${b.scope}.${b.collection}`),
     );
@@ -81,6 +91,11 @@ export async function listCouchbaseTables(
   const cursor = input.cursor ? decodeTableListCursor(input.cursor) : null;
   const afterName = cursor?.lastName;
   const rows = await listKeyspaces(ctx, input.database, afterName, input.limit);
+  if (rows.length === 0 && afterName == null) {
+    return mcpUserError(
+      `Bucket "${input.database}" not found or has no collections visible to this connection's Couchbase user.`,
+    );
+  }
   const page = rows.slice(0, input.limit);
   const nextCursor =
     rows.length > input.limit
@@ -138,10 +153,20 @@ export async function describeCouchbaseTable(
   const emptyNote = emptyNoteFor(origin);
 
   const qualified = ks(input.database, scope, collection);
+  const ref = { bucket: input.database, scope, collection };
+  const [indexes, approxTotalRows, sources] = await Promise.all([
+    collectionIndexes(ctx, ref),
+    approxDocumentCount(ctx, qualified),
+    findSourcesForCollection({
+      teamId: input.teamId,
+      connectionId: ctx.connectionId,
+      ref,
+    }),
+  ]);
   let sampleRows: Record<string, unknown>[] | undefined;
   if (input.sampleRows > 0) {
     const sample = await ctx.dataClient.query({
-      query: `SELECT META().id AS __cbt_id, d.* FROM ${qualified} AS d LIMIT ${input.sampleRows}`,
+      query: `SELECT META(d).id AS __cbt_id, d.* FROM ${qualified} AS d${sampleFilter(indexes)} LIMIT ${input.sampleRows}`,
       format: 'JSON',
       connectionId: ctx.connectionId,
       abort_signal: ctx.signal,
@@ -162,21 +187,34 @@ export async function describeCouchbaseTable(
               scope,
               name: collection,
               keyspace: qualified,
+              approxTotalRows,
             },
             columns: columns.map(c => ({
               name: c.name,
               type: c.type,
               jsType: columnTypeToJSType(c.type),
             })),
+            indexes,
             ...(emptyNote && { note: emptyNote }),
+            ...(sources.length > 0 && { sources }),
             ...(sampleRows && { sampleRows }),
             exampleQueries: {
               browse: `SELECT d.* FROM ${qualified} AS d LIMIT 20`,
               count: `SELECT COUNT(*) AS n FROM ${qualified} AS d LIMIT 1`,
             },
-            nextSteps: {
-              query: `Query with cbt_sql using connectionId "${ctx.connectionId}" and SQL++ against ${qualified}.`,
-            },
+            nextSteps:
+              sources.length > 0
+                ? {
+                    describeSource:
+                      `This collection backs ${sources.length === 1 ? 'a source' : 'sources'}. ` +
+                      `Call cbt_describe_source with sourceId "${sources[0]!.id}" for attribute keys and sampled values, ` +
+                      'then query it with the builder tools (cbt_table, cbt_timeseries, cbt_search) rather than cbt_sql.',
+                  }
+                : {
+                    query:
+                      `Query it with cbt_sql using connectionId "${ctx.connectionId}" and SQL++ against ${qualified}. ` +
+                      'To query it with the builder tools, register it as a source with cbt_save_source.',
+                  },
           },
           null,
           2,

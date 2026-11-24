@@ -8,6 +8,34 @@ export const ALLOWED_KEYWORDS = [
   'ADVISE',
 ] as const;
 
+/**
+ * Leading keywords of every SQL++ statement in Server 8.0 (COUCHBASE_DOCS,
+ * n1ql-language-reference). Anything else cannot parse.
+ */
+const SQLPP_STATEMENT_KEYWORDS: ReadonlySet<string> = new Set([
+  ...ALLOWED_KEYWORDS,
+  'INSERT',
+  'UPSERT',
+  'DELETE',
+  'UPDATE',
+  'MERGE',
+  'CREATE',
+  'DROP',
+  'ALTER',
+  'BUILD',
+  'GRANT',
+  'REVOKE',
+  'PREPARE',
+  'EXECUTE',
+  'BEGIN',
+  'START',
+  'COMMIT',
+  'ROLLBACK',
+  'SAVEPOINT',
+  'SET',
+  'ANALYZE',
+]);
+
 /** Index just past a comment starting at `i`, or `i` when there is none. */
 function skipComment(s: string, i: number): number {
   if (s.startsWith('--', i)) {
@@ -111,6 +139,15 @@ export function assertAllowedStatement(statement: string): void {
     );
   }
   const kw = leadingKeyword(statement);
+  if (kw != null && !SQLPP_STATEMENT_KEYWORDS.has(kw)) {
+    // A typo such as SELECTT is a syntax error, not a write; saying "only
+    // read-only statements" would send the caller looking for the wrong fix.
+    throw new CouchbaseQueryError(
+      'PARSING_FAILED',
+      `Syntax error: ${kw} is not a SQL++ statement keyword`,
+      statement,
+    );
+  }
   if (kw == null || !ALLOWED_KEYWORDS.some(k => k === kw)) {
     throw new CouchbaseQueryError(
       'STATEMENT_NOT_ALLOWED',

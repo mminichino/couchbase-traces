@@ -733,7 +733,11 @@
         "mcp_tool:cbt_save_source"
       ],
       "status": "ported",
-      "decision": null
+      "decision": {
+        "note": "cbt_describe_table reports a collection's GSI and primary indexes and its document count as the Couchbase equivalent of upstream's table metadata (Q54). The ClickHouse-only fields are not applicable to a collection and are not reported: engine, sortingKey, primaryKey and partitionKey (with the per-column inSortingKey/inPrimaryKey flags), table and column comments, MATERIALIZED and other column defaults, a Distributed table's localTable, and engine per listed table",
+        "signedOffBy": "Michael",
+        "date": "2026-11-24"
+      }
     },
     {
       "id": "mcp-trace",

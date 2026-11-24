@@ -15,6 +15,13 @@ export function setCouchbaseConnectionLoader(
   loadCouchbaseConnection = loader;
 }
 
+/** The registered loader, so a test can wrap it and restore it. */
+export function getCouchbaseConnectionLoader(): (
+  id: string,
+) => Promise<CouchbaseConnectionConfig> {
+  return loadCouchbaseConnection;
+}
+
 export class DataClient extends NodeDataClient {
   constructor(
     options: DataClientOptions & { team?: TeamQuerySettings | null },

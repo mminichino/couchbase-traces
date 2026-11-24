@@ -66,6 +66,16 @@ describe('assertAllowedStatement', () => {
     expect(codeOf(s)).toBe('STATEMENT_NOT_ALLOWED');
   });
 
+  // A word that starts no SQL++ statement is a syntax error, as the Query
+  // service reports it, not a refused write (upstream: SYNTAX_ERROR).
+  it.each(['SELECTT 1', 'FOO bar', '/* c */ SELEC 1'])(
+    'rejects %j as PARSING_FAILED',
+    s => {
+      expect(codeOf(s)).toBe('PARSING_FAILED');
+      expect(() => assertAllowedStatement(s)).toThrow(/Syntax error/);
+    },
+  );
+
   it.each(['SELECT 1; DELETE FROM x', 'SELECT 1;;', "SELECT ';'; SELECT 2"])(
     'rejects %j as MULTIPLE_STATEMENTS',
     s => {

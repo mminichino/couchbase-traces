@@ -64,4 +64,16 @@ describe('couchbaseConsumerMcpError', () => {
     const mapped = couchbaseConsumerMcpError(err);
     expect(mapped?.content[0].text).toContain('This source uses SQL++.');
   });
+
+  // Upstream's UNKNOWN_TABLE reads "doesn't exist"; callers match on that.
+  it("says a missing keyspace doesn't exist", () => {
+    const err = new CouchbaseQueryError(
+      'KEYSPACE_NOT_FOUND',
+      'Keyspace not found in CB datastore: default:otel.default.nope',
+      'SELECT 1 FROM nope',
+    );
+    const text = couchbaseConsumerMcpError(err)?.content[0].text ?? '';
+    expect(text).toMatch(/^Keyspace not found/);
+    expect(text).toContain("The keyspace doesn't exist.");
+  });
 });

@@ -29,7 +29,11 @@ import ms from 'ms';
 import { getConnectionById } from '@/controllers/connection';
 import { getSource } from '@/controllers/sources';
 import type { McpErrorResult } from '@/mcp/utils/errors';
-import { mcpServerError, mcpUserError } from '@/mcp/utils/errors';
+import {
+  getErrorCategory,
+  mcpServerError,
+  mcpUserError,
+} from '@/mcp/utils/errors';
 import { assertMcpSliceForConnection } from '@/mcp/utils/mcpSlice';
 import { MCP_TIMEOUT_GRACE_MS, MCP_TOOL_TIMEOUT_MS } from '@/mcp/utils/timeout';
 import { newId } from '@/metadata/ids';
@@ -48,6 +52,7 @@ import type { ExternalDashboardTileWithId } from '@/utils/zod';
 import { externalDashboardTileSchemaWithId } from '@/utils/zod';
 
 import { runEventPatterns } from './runEventPatterns';
+import { builderColumnsError, rawSqlColumnsError } from './unknownColumns';
 
 // ─── Source body expression helpers ──────────────────────────────────────────
 
@@ -195,6 +200,16 @@ export const MCP_QUERY_SCAN_CONSISTENCY = 'request_plus' as const;
  * connection is aborted.
  */
 export const MCP_REQUEST_TIMEOUT = MCP_TOOL_TIMEOUT_MS + MCP_TIMEOUT_GRACE_MS;
+
+/**
+ * Options for every MCP DataClient. `queryTimeoutMs` is upstream's
+ * `max_execution_time: 30` on each MCP query: the Query service stops the
+ * statement at 30 s, before the HTTP request timeout aborts it.
+ */
+export const MCP_DATA_CLIENT_OPTIONS = {
+  requestTimeout: MCP_REQUEST_TIMEOUT,
+  queryTimeoutMs: MCP_TOOL_TIMEOUT_MS,
+} as const;
 
 // ─── Increase top-N cap hint ────────────────────────────────────────────────
 
@@ -508,7 +523,20 @@ export async function mcpQueryErrorResult(
       },
 ): Promise<McpErrorResult> {
   const mapped = couchbaseConsumerMcpError(e);
-  if (mapped) return mapped;
+  if (mapped) {
+    // The Couchbase mapping keeps only the first message line; the raw SQL
+    // table hint still applies (a missing keyspace names the caller's FROM).
+    const rawSql = typeof context === 'object' && context?.rawSql;
+    const hint =
+      rawSql && e instanceof Error
+        ? errorHint(e.message, e, { rawSql: true })
+        : null;
+    if (!hint) return mapped;
+    const text = `${mapped.content[0].text}\n\nHINT: ${hint}`;
+    return getErrorCategory(mapped) === 'server'
+      ? mcpServerError(text)
+      : mcpUserError(text);
+  }
 
   const connId =
     typeof context === 'object' && context?.connectionId
@@ -631,9 +659,7 @@ export async function runConfigTile(
     );
     if (sliceErr) return sliceErr;
 
-    const dataClient = new DataClient({
-      requestTimeout: MCP_REQUEST_TIMEOUT,
-    });
+    const dataClient = new DataClient(MCP_DATA_CLIENT_OPTIONS);
 
     const isSearch = builderConfig.displayType === DisplayType.Search;
     const isMetricSource = source.kind === SourceKind.Metric;
@@ -751,6 +777,19 @@ export async function runConfigTile(
       : chartConfig;
 
     const metadata = getMetadata(dataClient);
+    if (!isMetricSource) {
+      const columnsErr = await builderColumnsError(
+        metadata,
+        {
+          connectionId: source.connection.toString(),
+          databaseName: source.from.databaseName,
+          scopeName: source.from.scopeName,
+          tableName: source.from.tableName,
+        },
+        builderConfig,
+      );
+      if (columnsErr) return queryErrorResult(columnsErr);
+    }
     try {
       const result = await dataClient.queryChartConfig({
         config: renderConfig,
@@ -770,7 +809,7 @@ export async function runConfigTile(
 
   // Raw SQL tile — hydrate source fields for macro support ($__sourceTable, $__filters)
   let sourceFields: {
-    from?: { databaseName: string; tableName: string };
+    from?: { databaseName: string; scopeName?: string; tableName: string };
     implicitColumnExpression?: string;
     useTextIndexForImplicitColumn?: UseTextIndex;
     metricTables?: MetricTable;
@@ -810,9 +849,7 @@ export async function runConfigTile(
   const sliceErr = await assertMcpSliceForConnection(savedConfig.connection);
   if (sliceErr) return sliceErr;
 
-  const dataClient = new DataClient({
-    requestTimeout: MCP_REQUEST_TIMEOUT,
-  });
+  const dataClient = new DataClient(MCP_DATA_CLIENT_OPTIONS);
 
   const chartConfig = {
     ...savedConfig,
@@ -822,6 +859,13 @@ export async function runConfigTile(
   } satisfies ChartConfigWithDateRange;
 
   const metadata = getMetadata(dataClient);
+  const columnsErr = await rawSqlColumnsError(
+    metadata,
+    savedConfig.sqlTemplate,
+    savedConfig.connection,
+    sourceFields.from,
+  );
+  if (columnsErr) return queryErrorResult(columnsErr, { rawSql: true });
   try {
     const result = await dataClient.queryChartConfig({
       config: chartConfig,
@@ -1115,14 +1159,15 @@ export function errorHint(
   // same source table that just failed.
   if (
     options?.rawSql &&
-    /Unknown table expression identifier|(Table|Database) \S+ does not exist|UNKNOWN_(TABLE|DATABASE)/.test(
+    /Unknown table expression identifier|(Table|Database) \S+ does not exist|UNKNOWN_(TABLE|DATABASE)|Keyspace not found|No bucket named|Ambiguous reference to field/.test(
       msg,
     )
   ) {
     return (
-      'Use the `table` of a source from cbt_list_sources, which is ' +
-      'qualified with its database. Unqualified names resolve only in the ' +
-      "connection's default database."
+      'Use the `table` of a source from cbt_list_sources. In SQL++ a ' +
+      '`table` of db.name is the keyspace `db`.`default`.`name` (bucket, ' +
+      'scope, collection); a bare name is read as a bucket, and db.name as ' +
+      'a field path.'
     );
   }
   if (

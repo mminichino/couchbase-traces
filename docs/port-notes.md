@@ -3791,3 +3791,53 @@ Admin on `POST /settings/querySettings`) that Capella database credentials
 cannot make. v1.0.1 backlog item P13 (`docs/v1-release-plan.md` 2.3) adds
 opt-in `CBT_COUCHBASE_COMPLETED_THRESHOLD_MS` / `CBT_COUCHBASE_COMPLETED_LIMIT`
 to the ingest setup CLI; unset means unchanged.
+
+### R2c: MCP integration suites (2026-11-24, `mm--v1-r2c-mcp-int-suites`)
+
+Eight suites leave `deferredChIntSuites`: `mcp/__tests__/{sources,
+describeTable,queryTool,trace,serviceHealthTool,emergingSignalsTool}` and
+`mcp/__tests__/dashboards/{queryTile,queryTiles}`, with no skipped case after
+the user's Q53 and Q54 decisions. The cause
+list and counts are in `docs/v1-release-plan.md` (R2c result). P13 placement
+(ingest setup step) is confirmed there.
+
+- **Unknown columns (Q53).** `mcp/tools/query/unknownColumns.ts` rejects an
+  MCP builder tile or raw SQL statement that reads a field root an OTel
+  collection lacks, with upstream's `UNKNOWN_IDENTIFIER` text, before sending
+  it. Roots come from `common-utils/src/couchbase/fieldRefs.ts` (a small
+  SQL++ tokenizer, reserved words from the 8.0 reference in
+  `reservedWords.ts`). It fails open: non-OTel collections, fields present in
+  inferred columns, lookup errors, metric sources, and text it cannot scope
+  (joins, UNNEST, LET, subqueries, …) all pass. Map subfields, functions,
+  aliases, parameters and range variables are not field roots.
+- **Table metadata (Q54).** The `mcp-sources` decision in `port/features.json`
+  records the ClickHouse-only describe fields as not applicable;
+  `port/inventory.sh render` writes it into `docs/parity.md`. That command
+  also rewrites the Phase 2 inventory block in this file, so only
+  `docs/parity.md` and `port/state/inventory/parity.json` were kept.
+
+- **Metric tools (Q26, Q25).** `cbt_list_metrics` and `cbt_describe_metric`
+  build SQL++ in `common-utils/src/couchbase/metricQueries.ts` and read
+  columns through `describeColumns` (`mcp/tools/sources/metricTable.ts`), so
+  empty OTel kind collections report the declared schema.
+- **Integers (Q24).** Strings at the data-client level; tools that need a
+  number (`cbt_describe_table` document count) call `Number()`.
+- **MCP query timeout.** `DataClientOptions.queryTimeoutMs` (30 s via
+  `MCP_DATA_CLIENT_OPTIONS`) mirrors upstream's `max_execution_time: 30`. The
+  SDK sends the server 500 ms less (`29.5s` in `system:active_requests`).
+- **Statement keywords.** `assertAllowedStatement` raises `PARSING_FAILED` for
+  a leading word that starts no SQL++ statement; known write keywords still
+  raise `STATEMENT_NOT_ALLOWED`.
+- **`cbt_describe_table`.** `describeTableDetails.ts` reads indexes from
+  `system:indexes`, counts documents, matches saved sources, and samples
+  through an online GSI index (`<leading key> IS NOT MISSING`), because the
+  least-privileged query user may not run sequential scans.
+- **Fixture isolation.** `clearFixtureTables()` still skips `otel_traces`, as
+  upstream's `clearClickhouseTables` does, so `trace.int.test.ts` counts
+  assume a fresh stack. A `make ci-int` that reuses an already running
+  compose project (here `int-47`, left up by `make dev-int`) fails 8 trace
+  cases on span counts (22 for an expected 2) from earlier runs' spans; a
+  fresh stack is green. Not a product defect.
+- **Fifth integration shard.** `.github/workflows/main.yml` runs
+  `integration-shards` as `[1, 2, 3, 4, 5]` (pre-approved policy): shard 1 had
+  reached 48m50s of 55. The `integration` aggregator needs no change.

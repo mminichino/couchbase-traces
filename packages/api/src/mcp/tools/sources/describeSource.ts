@@ -19,7 +19,7 @@ import { z } from 'zod';
 import { getConnectionById } from '@/controllers/connection';
 import { getSource } from '@/controllers/sources';
 import { READ_ONLY_TOOL } from '@/mcp/tools/annotations';
-import { MCP_REQUEST_TIMEOUT } from '@/mcp/tools/query/helpers';
+import { MCP_DATA_CLIENT_OPTIONS } from '@/mcp/tools/query/helpers';
 import type { McpContext, ToolRegistrar, ToolResult } from '@/mcp/tools/types';
 import { mcpServerError, mcpUserError } from '@/mcp/utils/errors';
 import { isHiddenSource } from '@/mcp/utils/legacySourceKinds';
@@ -233,9 +233,7 @@ async function describeSourceSchema(
     return mcpUserError(`Connection not found for source "${sourceId}".`);
   }
 
-  const dataClient = new DataClient({
-    requestTimeout: MCP_REQUEST_TIMEOUT,
-  });
+  const dataClient = new DataClient(MCP_DATA_CLIENT_OPTIONS);
   const metadata = getMetadata(dataClient);
   const databaseName = source.from.databaseName;
   const tableName = discoveryTableName;

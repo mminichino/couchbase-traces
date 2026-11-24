@@ -28,6 +28,7 @@ export class NodeDataClient implements DataClientLike {
     id: string,
   ) => Promise<CouchbaseConnectionConfig>;
   private readonly attribution?: DataClientOptions['attribution'];
+  private readonly queryTimeoutMs?: number;
   private readonly byConnection = new Map<
     string,
     Promise<CouchbaseNodeClient>
@@ -46,6 +47,7 @@ export class NodeDataClient implements DataClientLike {
     this.attribution = opts.attribution;
     this.metadataMaxRows = opts.team?.metadataMaxRowsToRead;
     this.requestTimeoutMs = opts.requestTimeout ?? 3600000;
+    this.queryTimeoutMs = opts.queryTimeoutMs;
   }
 
   async query(...args: Parameters<DataClientLike['query']>) {
@@ -79,6 +81,7 @@ export class NodeDataClient implements DataClientLike {
           conn,
           team: this.team,
           requestTimeout: this.requestTimeoutMs,
+          queryTimeoutMs: this.queryTimeoutMs,
           attribution: this.attribution,
         }),
     );
