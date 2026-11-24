@@ -94,6 +94,7 @@ no releases, and no git tags exist on `origin`).
 | P10 | Port scaffolding at the repo root                        | `PHASE_0_SPEC.md` … `PHASE_11_SPEC.md`; AGENTS.md cites `COUCHBASE_PORT_PLAN.md`, which is absent (Phase 0 waiver)                                                                                                                                                                                                                                                                                                                                             | Move specs to `docs/history/`, update AGENTS.md to point at this plan                               | S              |
 | P11 | `main.yml` also triggers on a `v1` branch                | `.github/workflows/main.yml:4,6` (`branches: [main, v1]`, upstream legacy)                                                                                                                                                                                                                                                                                                                                                                                     | Leave as is; if the user wants a `release/1.x` maintenance branch later, add it then                | S              |
 | P12 | Upstream TODOs                                           | 11 port-unrelated `TODO`s (e.g. `tasks/checkAlerts/transports/generic.ts:203` webhook signing, `controllers/ai.ts:122`)                                                                                                                                                                                                                                                                                                                                        | Track as normal backlog; webhook signing is the one with security value                             | —              |
+| P13 | Completed-requests log settings at startup (v1.0.1) | D29: `system:completed_requests` keeps only requests over `queryCompletedThreshold` (default 1000 ms) and at most `queryCompletedLimit` (default 4000), so fast attributed queries are not recorded; v1.0.0 leaves both as they are (Q52) | Optional `CBT_COUCHBASE_COMPLETED_THRESHOLD_MS` / `CBT_COUCHBASE_COMPLETED_LIMIT`, applied by `ingest` setup; see 2.3 | S |
 
 Accepted, no action: the 51 skipped `metadata.couchbase.int.test.ts` tests on
 the compose CI stack (user decision after C0; they run in the
@@ -102,6 +103,70 @@ the compose CI stack (user decision after C0; they run in the
 re-check in R4); duplicate-record collapse and exact quantiles (documented
 design, `docs/data-model.md`); retained `@opentelemetry/instrumentation-mongo*`
 license rows (idle, ship inside auto-instrumentations).
+
+### 2.3 P13: Completed-requests log settings at startup (v1.0.1)
+
+Decision (Q52, user 2026-11-24): v1.0.0 does not change the cluster's
+completed-requests settings at startup. D29 tags every query, but
+`system:completed_requests` records only requests slower than the threshold,
+so most attributed queries are visible only to operators who change the
+setting themselves (`docs/port-notes.md`, D29). v1.0.1 adds an opt-in setting.
+
+- **Settings (8.0 docs).** Cluster-level `queryCompletedThreshold` (ms; `0`
+  logs every request, negative logs none; default 1000) and
+  `queryCompletedLimit` (entries per query node; `0` tracks none, `-1` no
+  limit; default 4000), written with `POST /settings/querySettings` on the
+  cluster management port (8091/18091). Cluster level, not the node-level
+  `/admin/settings` the int suite uses, so every query node, including ones
+  added later, gets the value.
+- **Configuration.** `CBT_COUCHBASE_COMPLETED_THRESHOLD_MS` and
+  `CBT_COUCHBASE_COMPLETED_LIMIT`, both optional integers. Unset means "do not
+  touch", so an existing cluster keeps whatever its operator chose. No
+  per-team or UI setting: the value is cluster-wide.
+- **Where it lives.** The `ingest` setup CLI (`packages/ingest/src/setup/`),
+  a new `querySettings.ts` step run after users and indexes, using the
+  `CBT_COUCHBASE_ADMIN_*` credentials setup already requires. Not the API or
+  ingest server process: their runtime users do not hold the role, and a
+  cluster-wide write belongs with provisioning. `--dry-run` prints the
+  intended change. Documented in `docs/` next to the other setup variables
+  and `.env.example`.
+- **Signature.** `ensureQuerySettings(opts: { mgmtUrl: string; username:
+  string; password: string; wanted: { completedThresholdMs?: number;
+  completedLimit?: number }; dryRun: boolean; fetchImpl?: typeof fetch }):
+  Promise<{ changed: string[]; skipped?: 'unset' | 'capella' | 'forbidden'
+  }>`. It reads `GET /settings/querySettings` first and writes only the keys
+  that differ.
+
+Edge cases and errors:
+
+- **RBAC.** The write needs Full Admin or Cluster Admin. Without it the REST
+  call answers 403: setup logs a warning naming the role and continues (exit
+  code unchanged), since the setting is observability only.
+- **Capella.** Capella database credentials cannot call the cluster
+  management REST API, and the query settings are managed in the Capella UI
+  or support. When `isCapella(connstr)` is true, setup skips the step with a
+  notice telling the operator where to set it; it never fails setup.
+- **Invalid values.** Non-integers, a threshold below -1 or a limit below -1
+  fail fast at argument parsing with `SetupError` (exit code 1) before any
+  cluster call. A cluster 400 is reported with the server message.
+- **Cost.** A threshold of 0 with a high limit costs Query memory on busy
+  clusters; the doc says so and recommends a `completed` qualifier on
+  `statement` LIKE `%"surface":"alert"%` for production.
+- **Idempotent.** Re-running with the same values makes no write.
+- **Mixed versions.** 8.0 is the minimum, so both settings always exist.
+
+Acceptance criteria:
+
+1. With both variables unset, setup makes no `/settings/querySettings` call
+   (unit test with a recording management client).
+2. With `CBT_COUCHBASE_COMPLETED_THRESHOLD_MS=0`, a compose-stack test sees
+   `queryCompletedThreshold: 0` and a fast SQL++ query from the API appears in
+   `system:completed_requests` with its `hdx-` context id.
+3. A 403 is a warning and setup exits 0; a Capella connection string skips
+   the step with a notice; invalid values exit 1 without contacting the
+   cluster.
+4. A second run with the same values writes nothing.
+5. `--dry-run` lists the keys it would change.
 
 ## 3. Where versions live today
 
@@ -1519,6 +1584,7 @@ in that phase.
 | Q49 | Placement of D27: metric sources omit the `Flags` no-recorded-value filter (2026-11-23)                  | Fix in the D26 PR: drop metric points with `Flags` bit 0 (no recorded value), as upstream (user, 2026-11-23)                                                                                                                                                                                                                      | D27            |
 | Q50 | Placement of D28: unset `whereLanguage` compiles as Lucene outside metrics (2026-11-23)                  | Fix in the D26 PR: a chart `where` with no language is SQL, as upstream; audit callers so none that sets Lucene changes (user, 2026-11-23)                                                                                                                                                                                        | D28            |
 | Q51 | Placement of D29: request query attribution never reaches SQL++ queries (2026-11-23)                     | Its own PR right after R2a, before R2c and R2b (user, 2026-11-23); it ports `middleware/queryAttribution` onto a Couchbase route and picks the `clientContextId` tag format                                                                                                                                                       | D29            |
+| Q52 | Set the completed-requests log threshold/limit at startup? (2026-11-24) | Not for v1.0.0: keep the cluster's settings as they are. v1.0.1 backlog P13 adds opt-in `CBT_COUCHBASE_COMPLETED_THRESHOLD_MS` / `CBT_COUCHBASE_COMPLETED_LIMIT` in ingest setup (user, 2026-11-24) | P13 |
 
 ## 11. Acceptance criteria (v1.0.0 is done when)
 
