@@ -38,7 +38,7 @@ export function sourceDateRange(
 
 /**
  * The chart's own predicate for a metric source: `where` (SQL unless the
- * chart says Lucene, as upstream's `whereLanguage ?? 'sql'`), `filters`,
+ * chart says Lucene; renderWhereCouchbase defaults it, D28), `filters`,
  * and select aggConditions, rendered against the metric collection. Mirrors
  * upstream `renderMetricWhere`, which puts all three in the source CTE so
  * series and scale choices only see matching points (D24). The date range
@@ -50,12 +50,7 @@ export async function metricPredicate(
   metadata: unknown,
 ): Promise<SqlPP | undefined> {
   const rendered = await renderWhereCouchbase(
-    {
-      ...chartConfig,
-      from,
-      dateRange: undefined,
-      whereLanguage: chartConfig.whereLanguage ?? 'sql',
-    },
+    { ...chartConfig, from, dateRange: undefined },
     { metadata: couchbaseMetadataRef(metadata) },
   );
   return rendered?.statement.trim() ? rendered : undefined;
@@ -85,10 +80,21 @@ export function sourceWhereClause(
     const epoch = timestampFormatOf(chartConfig) === 'epoch_millis';
     const bound = (d: Date) => (epoch ? d.getTime() : toIso30(d));
     const startOp = chartConfig.dateRangeStartInclusive === false ? '>' : '>=';
-    const endOp = chartConfig.dateRangeEndInclusive === true ? '<=' : '<';
+    const endOp = chartConfig.dateRangeEndInclusive === false ? '<' : '<=';
     clause = sqlpp`${clause} AND ${{ Raw: `${tsExpr} ${startOp}` }} ${{ Param: bound(range[0]) }} AND ${{ Raw: `${tsExpr} ${endOp}` }} ${{ Param: bound(range[1]) }}`;
   }
   // renderWhereCouchbase already parenthesizes each part.
   if (opts.predicate) clause = sqlpp`${clause} AND ${opts.predicate}`;
+  clause = sqlpp`${clause} AND ${{ Raw: NO_RECORDED_VALUE_FILTER }}`;
   return { sql: clause.statement, params: clause.parameters };
 }
+
+/**
+ * Upstream renderMetricWhere's `bitAnd(Flags, 1) = 0` (D27): OTLP sets bit 0
+ * of Flags (FLAG_NO_RECORDED_VALUE) on a point with no value, such as a
+ * Prometheus staleness marker, which is stored as zeros. Upstream applies it
+ * only to a non-nullable integer Flags column; a document has no column
+ * type, so a missing, null, or non-integer Flags (BITAND is NULL for those)
+ * reads as 0 and the point is kept, as upstream reads such a table.
+ */
+const NO_RECORDED_VALUE_FILTER = 'IFMISSINGORNULL(BITAND(d.Flags, 1), 0) = 0';

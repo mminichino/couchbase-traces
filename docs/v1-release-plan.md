@@ -401,9 +401,9 @@ pushes to `main` directly.
 | D23   | Defects: metric source CTEs omit the warm-up window       | Found in D22 (section 9.1); own PR before R2a (Q45); fixed                                                                                                                | M    | D22                           |
 | D24   | Defects: metric charts ignore `where`; histograms `filters`| Found in D23 (section 9.1); with D25 in one PR before R2a (Q46); fixed                                                                                                    | M    | —                             |
 | D25   | Defects: Sum select alias is not defaulted to `Value`     | Found in D23 (section 9.1); with D24 (Q47); fixed                                                                                                                         | S    | —                             |
-| D26   | Defects: range end is exclusive where upstream is inclusive| Found in D23 (section 9.1); own PR after D24/D25, before R2a (Q48)                                                                                                        | M    | —                             |
-| D27   | Defects: metric sources omit upstream `Flags` bit-0 filter | Found in D24 (section 9.1); placement pending (Q49)                                                                                                                       | S    | —                             |
-| D28   | Defects: unset `whereLanguage` is Lucene, not SQL          | Found in D24 (section 9.1); placement pending (Q50)                                                                                                                       | S    | —                             |
+| D26   | Defects: range end is exclusive where upstream is inclusive| Found in D23 (section 9.1); own PR after D24/D25, before R2a (Q48); fixed                                                                                                 | M    | —                             |
+| D27   | Defects: metric sources omit upstream `Flags` bit-0 filter | Found in D24 (section 9.1); with D26 in one PR before R2a (Q49); fixed                                                                                                    | S    | —                             |
+| D28   | Defects: unset `whereLanguage` is Lucene, not SQL          | Found in D24 (section 9.1); with D26 in one PR before R2a (Q50); fixed                                                                                                    | S    | —                             |
 | D14   | Dev tooling: live-test port offset fallback               | Found in D7 (section 9.1)                                                                                                                                                 | S    | —                             |
 | R2a   | Port deferred int suites: internal and external API       | B1 (10 suites: `routers/api/{dashboard,iac,sources,connections}`, `routers/external-api/{charts,search,sources,sources-crud,connections}`, `middleware/queryAttribution`) | L    | D1                            |
 | R2b   | Port deferred int suites: alerts                          | B1 (5 suites: `checkAlerts`, `multiChannelAlerts`, `renderAlertTemplate`, `singleInvocationAlert`, `providers/default`; 335 tests, 93 failing per R0)                     | L    | R2c, D1, D4, D6               |
@@ -1015,6 +1015,19 @@ and not here, in search, charts, and metrics. Not recorded as a decision in
 so a row exactly at the range end is included, in its own PR after the
 D24/D25 PR and before R2a.
 
+Result (2026-11-23, `mm--v1-d26-range-end-flags-where-default`, with D27
+and D28): fixed. `timeRangePredicate`, `renderWhereCouchbase` (builder and
+raw SQL template), and the metric `sourceWhereClause` end `<=` unless
+`dateRangeEndInclusive` (or `inclusiveEnd`) is `false`. Callers that set
+it `false` (alert windows after the first, MCP service health, non-first
+query chunks, boundary-aligned tiles) are unchanged and match upstream.
+Metadata lookups are inclusive, as upstream. Day-precision timestamp
+columns keep their `< next midnight` bound explicitly. Covered by
+`rangeEndAndWhereLanguage.test.ts` (ports upstream's three
+`timeFilterExpr` inclusivity cases) and the live
+`rangeEndWhereLanguage.couchbase.int.test.ts` (search, count, and gauge
+rows at the end; exclusive when `false`). The D23 suites now expect `<=`.
+
 #### D27: Metric sources omit upstream's `Flags` no-recorded-value filter (found in D24, size S)
 
 Evidence: upstream `renderMetricWhere` appends `bitAnd(Flags, 1) = 0` when
@@ -1023,7 +1036,18 @@ points flagged "no recorded value" (OTLP `DataPointFlags` bit 0). The
 port's OTel schema declares `Flags` (UInt32) on the metric collections,
 but no metric source filters on it, so such points count toward deltas and
 quantiles. SQL++ form: `BITAND(IFMISSINGORNULL(d.Flags, 0), 1) = 0`.
-Placement: pending (Q49).
+Placement (Q49): with D26, in the same PR, before R2a.
+
+Result (2026-11-23, D26 branch): fixed. `sourceWhereClause` appends
+`IFMISSINGORNULL(BITAND(d.Flags, 1), 0) = 0` to every metric source scan,
+after the chart predicate, in upstream's order. The SQL++ form changed from
+the one above: `BITAND` returns NULL for a non-integer, so wrapping the
+result (not the argument) keeps points whose `Flags` is missing, null, or
+not an integer. Upstream likewise reads a table without an integer `Flags`
+column as before. `metricFlags.test.ts` ports upstream's six source-scan
+cases; `metricNoRecordedValue.couchbase.int.test.ts` ports upstream's
+`metricNoRecordedValue.int.test.ts` in full (10 cases, same fixtures and
+expectations).
 
 #### D28: An unset `whereLanguage` compiles as Lucene; upstream defaults it to SQL (found in D24, size S)
 
@@ -1032,7 +1056,17 @@ The port's `compileWhereExpressionCouchbase` treats only `'sql'` as SQL, so
 a `where` with no language goes to the Lucene builder. D24 defaults it for
 metric sources only. Changing it in `where.ts` passed all 2234
 common-utils unit tests, but it changes search, chart, and alert rendering,
-so it gets its own review. Placement: pending (Q50).
+so it gets its own review. Placement (Q50): with D26, in the same PR,
+before R2a, after an audit of callers that set Lucene.
+
+Result (2026-11-23, D26 branch): fixed. `renderWhereCouchbase` compiles
+`where` with `whereLanguage ?? 'sql'`, and the row-id fast path accepts an
+unset language. The audit (search, dashboards, sessions, service map,
+alerts, saved searches, MCP, external API, CLI, link builder, metadata key
+values) found no caller that leaves the language unset and expects Lucene.
+Each one sets Lucene explicitly or defaults to it, and all match upstream;
+see `docs/port-notes.md`. An unset `aggConditionLanguage` is out of scope
+and stays Lucene in both copies.
 
 #### D18: Common-utils live tests fail intermittently (found in D12, size S)
 
@@ -1359,8 +1393,8 @@ in that phase.
 | Q46 | Placement of D24: metric charts ignore `where`; histograms lose `filters` (2026-11-23)                   | D24 and D25 together in one PR, before R2a (user, 2026-11-23)                                                                                                                                                                                                                                                                     | D24            |
 | Q47 | Placement of D25: Sum select alias is not defaulted to `Value` (2026-11-23)                              | With D24, in the same PR (user, 2026-11-23)                                                                                                                                                                                                                                                                                       | D25            |
 | Q48 | D26: keep the exclusive range end, or default it to inclusive as upstream (2026-11-23)                   | Match upstream (a row exactly at the range end is included), in its own PR after the D24/D25 PR, before R2a (user, 2026-11-23)                                                                                                                                                                                                    | D26            |
-| Q49 | Placement of D27: metric sources omit the `Flags` no-recorded-value filter (2026-11-23)                  | Pending; proposed: with D26, before R2a                                                                                                                                                                                                                                                                                           | D27            |
-| Q50 | Placement of D28: unset `whereLanguage` compiles as Lucene outside metrics (2026-11-23)                  | Pending; proposed: with D26, before R2a                                                                                                                                                                                                                                                                                           | D28            |
+| Q49 | Placement of D27: metric sources omit the `Flags` no-recorded-value filter (2026-11-23)                  | Fix in the D26 PR: drop metric points with `Flags` bit 0 (no recorded value), as upstream (user, 2026-11-23)                                                                                                                                                                                                                      | D27            |
+| Q50 | Placement of D28: unset `whereLanguage` compiles as Lucene outside metrics (2026-11-23)                  | Fix in the D26 PR: a chart `where` with no language is SQL, as upstream; audit callers so none that sets Lucene changes (user, 2026-11-23)                                                                                                                                                                                        | D28            |
 
 ## 11. Acceptance criteria (v1.0.0 is done when)
 

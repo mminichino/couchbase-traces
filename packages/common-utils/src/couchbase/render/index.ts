@@ -103,7 +103,7 @@ export async function renderChartConfigCouchbase(
   );
   const select = await renderSelectCouchbase(chartConfig, ctx);
   const pureRowId =
-    chartConfig.whereLanguage === 'sql' &&
+    (chartConfig.whereLanguage ?? 'sql') === 'sql' &&
     isNonEmptyWhereExpr(chartConfig.where)
       ? parseRowIdWhere(chartConfig.where ?? '')
       : undefined;

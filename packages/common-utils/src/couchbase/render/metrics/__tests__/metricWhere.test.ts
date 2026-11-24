@@ -153,7 +153,9 @@ describe('D24 metric source WHERE', () => {
       where: "ServiceName != 'WWW'",
     });
     const wheres = [
-      ...q.sql.matchAll(/ AS d WHERE \(MetricName = '(a|b)'\)(.*?)\)\), `/g),
+      ...q.sql.matchAll(
+        / AS d WHERE \(MetricName = '(a|b)'\)(.*?)\) AND IFMISSINGORNULL\(BITAND\(d\.Flags, 1\), 0\) = 0\), `/g,
+      ),
     ];
     expect(wheres.map(m => [m[1], m[2]])).toEqual([
       [
@@ -177,7 +179,7 @@ describe('D24 metric source WHERE', () => {
       where: "ServiceName = 'api'",
     });
     expect(firstCte(q.sql)).toMatch(
-      /^\(MetricName = 'm'\) AND d\.TimeUnix >= \$p\d+ AND d\.TimeUnix < \$p\d+ AND \(ServiceName = 'api'\)$/,
+      /^\(MetricName = 'm'\) AND d\.TimeUnix >= \$p\d+ AND d\.TimeUnix <= \$p\d+ AND \(ServiceName = 'api'\) AND IFMISSINGORNULL\(BITAND\(d\.Flags, 1\), 0\) = 0$/,
     );
   });
 });

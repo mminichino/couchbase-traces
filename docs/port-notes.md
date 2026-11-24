@@ -3572,9 +3572,6 @@ a per-slot lock (`scripts/slot-lock.sh`) around `ci-int`, `dev-int`, and
   `translate.ts` grew past 300 lines, so its outer-query helpers
   (granularity, Source → Bucketed pair, outer range, histogram outer) moved
   to `render/metrics/outer.ts`.
-  `translate.ts` grew past 300 lines, so its outer-query helpers
-  (granularity, Source → Bucketed pair, outer range, histogram outer) moved
-  to `render/metrics/outer.ts`.
 - **Language default.** Only the metric path defaults `whereLanguage` to
   SQL. `compileWhereExpressionCouchbase` sends an undefined language to the
   Lucene builder, unlike upstream's `?? 'sql'`. Defaulting it globally
@@ -3604,3 +3601,85 @@ a per-slot lock (`scripts/slot-lock.sh`) around `ci-int`, `dev-int`, and
 - **Found here.** D27: no metric source applies upstream's `Flags` bit-0
   ("no recorded value") filter; the port's schema declares `Flags` UInt32.
   D28: an unset `whereLanguage` is Lucene outside metrics. See `docs/v1-release-plan.md` section 9.1.
+
+### D26 + D27 + D28: inclusive range end, `Flags` bit 0, SQL `where` default (2026-11-23, `mm--v1-d26-range-end-flags-where-default`)
+
+- **Verified.** Against upstream `f172a489c818`
+  `core/renderChartConfig.ts`: `renderWhere` passes
+  `dateRangeStartInclusive ?? true` and `dateRangeEndInclusive ?? true` to
+  `timeFilterExpr` (line 1499) and compiles `where` with
+  `whereLanguage ?? 'sql'` (1404). `renderMetricWhere` (2033) appends
+  `bitAnd(Flags, 1) = 0` when `Flags` is a non-nullable integer column;
+  it is used by the Gauge, Sum, and both histogram source CTEs. Upstream
+  metadata lookups (`getMetricNames`, map keys, key values) also pass
+  `dateRangeEndInclusive: true`.
+- **D26 fix.** `time.ts` `timeRangePredicate` ends `<=` unless
+  `inclusiveEnd: false`. `where.ts` (builder and raw SQL template) and
+  `metrics/sourceWhere.ts` end `<=` unless `dateRangeEndInclusive` is
+  `false`. Callers that set it `false` keep `<`: alert windows after the
+  first (`checkAlerts/index.ts`, `template.ts`), MCP service health,
+  non-first query chunks (`useChartConfig.tsx`), and the CLI and app
+  boundary-aligned tiles (`ChartUtils.tsx`, `tileConfig.ts`). These match
+  upstream line for line. Metadata lookups (`metadataSql.ts`) now end `<=`,
+  as upstream. `timestampColumns.ts` day-precision columns compare
+  `< next midnight`, so that call now passes `inclusiveEnd: false`. The
+  FTS time range was already inclusive at both ends.
+- **D23 note superseded.** The metric source's widened end is now `<=`,
+  as upstream. A point exactly at `bucket(end) + I` is read into a bucket
+  past the range, which the outer bucket filter drops, so the output is the
+  same. The outer bucket filter is now `<= end`. With an aligned end, the
+  bucket starting at `end` is returned, as upstream.
+- **D27 fix.** `sourceWhereClause` appends
+  `IFMISSINGORNULL(BITAND(d.Flags, 1), 0) = 0` after the name, range, and
+  chart predicate, as upstream's order. Every metric source CTE (gauge,
+  sum, histogram, exponential histogram, and each multi-series branch)
+  goes through it. A document has no column type, so upstream's "integer,
+  non-nullable column" gate cannot be checked. Per COUCHBASE_DOCS
+  (n1ql-language-reference/bitwisefun.html), `BITAND` returns NULL for a
+  non-integer and propagates MISSING and NULL. `IFMISSINGORNULL(…, 0)`
+  keeps those points, which is how upstream reads a table without such a
+  column. The fixed order differs from the D24 wording
+  (`BITAND(IFMISSINGORNULL(d.Flags, 0), 1)`): that form returned NULL on a
+  non-integer `Flags` and dropped the point.
+- **D28 fix.** `renderWhereCouchbase` compiles `chartConfig.where` with
+  `whereLanguage ?? 'sql'`. `render/index.ts` takes the row-id fast path
+  for an unset language as well. `metricPredicate` no longer defaults it
+  itself. Out of scope: an unset `aggConditionLanguage` stays Lucene in
+  both copies (`select.ts` -If and `where.ts` WHERE). Upstream reads it as
+  Lucene in the -If copy and SQL in the WHERE copy. Every caller sets it.
+- **D28 caller audit.** Nothing that relies on Lucene leaves the language
+  unset:
+  - app search, dashboards, sessions, service map, and alert modal pass
+    `searchedConfig.whereLanguage ?? getStoredLanguage() ?? 'lucene'`,
+    identical to upstream.
+  - `couchbase/serviceMap.ts` and `useServiceMap.tsx` default to Lucene.
+  - alerts pass the saved search's or tile's `whereLanguage`, as upstream.
+    `saveSavedSearch` stores `'lucene'` on create.
+  - MCP: `whereLanguageSchema` defaults to `'lucene'`, and
+    `patternQueryConfigs` applies `?? 'lucene'`. That covers the pattern
+    and denoise paths that drop upstream's own `?? 'lucene'`.
+  - external API: series map to `aggConditionLanguage: whereLanguage ??
+    'lucene'`. `translateExternalChartToTileConfig` defaults to Lucene.
+  - CLI: `eventQuery.ts` sets `'lucene'` or `'sql'` explicitly.
+  - `linkUrlBuilder` defaults to Lucene. `searchChartConfig` already
+    defaulted to SQL, as upstream.
+  - `couchbase/metadata.ts` key-value lookups pass the caller's language,
+    and an unset one is now SQL, as upstream `metadata.ts:1964`.
+- **Tests.** `__tests__/rangeEndAndWhereLanguage.test.ts` (13; 10 failed
+  before) ports upstream `timeFilterExpr` "with basic
+  timestampValueExpression", "with dateRangeEndInclusive=false", and "with
+  dateRangeStartInclusive=false", and adds epoch millis, raw SQL template,
+  search, time chart, `timeRangePredicate`, metric names, and the D28
+  cases. `render/metrics/__tests__/metricFlags.test.ts` (12; all failed
+  before) ports upstream "metric points with no recorded value" for all
+  six metric/aggFn cases, plus no-range histograms, multi-series branches,
+  and filter order. Upstream's column-type cases have no SQL++ equivalent;
+  `IFMISSINGORNULL` covers them. `metricNoRecordedValue.couchbase.int.test.ts`
+  (10; 9 failed before; the minute-before-marker control passes either way)
+  ports upstream `metricNoRecordedValue.int.test.ts` (same fixtures and
+  expectations). `rangeEndWhereLanguage.couchbase.int.test.ts` (6; 4 failed
+  before) checks live D26 rows (search, count, and gauge at the end;
+  exclusive when `false`) and D28 (SQL `where` with no language; explicit
+  Lucene kept).
+  `metricWarmup.test.ts`, `metricWhere.test.ts`, and `expHistogram.test.ts`
+  now expect `<=` and the trailing `Flags` filter.

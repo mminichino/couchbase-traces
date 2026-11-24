@@ -79,7 +79,9 @@ export function timeRangePredicate(
   opts?: { inclusiveStart?: boolean; inclusiveEnd?: boolean },
 ): SqlPP {
   const startOp = opts?.inclusiveStart === false ? '>' : '>=';
-  const endOp = opts?.inclusiveEnd ? '<=' : '<';
+  // Inclusive end by default, as upstream renderWhere's
+  // `dateRangeEndInclusive ?? true` (D26).
+  const endOp = opts?.inclusiveEnd === false ? '<' : '<=';
   if (format === 'epoch_millis') {
     return sqlpp`${{ Raw: tsExpr }} ${{ Raw: startOp }} ${{ Param: from.getTime() }} AND ${{ Raw: tsExpr }} ${{ Raw: endOp }} ${{ Param: to.getTime() }}`;
   }

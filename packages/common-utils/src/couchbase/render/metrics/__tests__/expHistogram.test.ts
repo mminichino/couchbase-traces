@@ -71,7 +71,7 @@ describe('translateExponentialHistogramCouchbase', () => {
       }),
     );
     expect(cteSql(result, 0).sql).toContain('d.TimeUnix >= $p0');
-    expect(cteSql(result, 0).sql).toContain('d.TimeUnix < $p1');
+    expect(cteSql(result, 0).sql).toContain('d.TimeUnix <= $p1');
     expect(cteSql(result, 0).params).toEqual({
       p0: '2026-01-01T00:00:00.000000000Z',
       p1: '2026-01-01T01:00:00.000000000Z',
