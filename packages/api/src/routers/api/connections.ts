@@ -92,6 +92,7 @@ router.post(
             ? body.managementPort
             : undefined,
         monitorPassword: body.monitorPassword || undefined,
+        hyperdxSettingPrefix: body.hyperdxSettingPrefix ?? undefined,
       });
 
       res.status(200).send({ id: connection._id.toString() });
@@ -134,7 +135,7 @@ router.put(
       }
 
       const { update: newConnection, unsetFields } =
-        buildCouchbaseConnectionUpdate(body, connection.password);
+        buildCouchbaseConnectionUpdate(body, connection);
 
       const updatedConnection = await updateConnection(
         teamId.toString(),

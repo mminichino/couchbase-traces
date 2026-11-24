@@ -116,22 +116,45 @@ export function updateConnection(
 /**
  * Shared by the internal and external PUT handlers. An empty password keeps
  * the stored one; optional secrets are only written when set; a null
- * `managementPort` clears the stored port.
+ * `managementPort` clears the stored port; `hyperdxSettingPrefix` is cleared
+ * by null or '' and kept when omitted (upstream PUT). A stored legacy
+ * `isPrometheusEndpoint` flag is turned off, as upstream's PUT with `false`:
+ * PromQL is dropped and `rejectPromqlBody` rejects writes that set it.
  */
 export function buildCouchbaseConnectionUpdate(
-  body: z.infer<typeof ConnectionSchema>,
-  storedPassword: string | undefined,
+  body: Omit<
+    z.infer<typeof ConnectionSchema>,
+    'id' | 'hyperdxSettingPrefix'
+  > & {
+    hyperdxSettingPrefix?: string | null;
+  },
+  stored: { password?: string; isPrometheusEndpoint?: boolean },
 ) {
-  const { tlsCaCertificate, monitorPassword, managementPort, ...rest } = body;
+  const {
+    tlsCaCertificate,
+    monitorPassword,
+    managementPort,
+    hyperdxSettingPrefix,
+    ...rest
+  } = body;
   const update = {
     ...rest,
     kind: 'couchbase' as const,
-    password: body.password || storedPassword,
+    password: body.password || stored.password,
     ...(tlsCaCertificate ? { tlsCaCertificate } : {}),
     ...(monitorPassword ? { monitorPassword } : {}),
     ...(typeof managementPort === 'number' ? { managementPort } : {}),
+    ...(hyperdxSettingPrefix ? { hyperdxSettingPrefix } : {}),
+    ...(stored.isPrometheusEndpoint != null
+      ? { isPrometheusEndpoint: false }
+      : {}),
   };
-  const unsetFields = managementPort === null ? ['managementPort'] : [];
+  const unsetFields = [
+    ...(managementPort === null ? ['managementPort'] : []),
+    ...(hyperdxSettingPrefix === null || hyperdxSettingPrefix === ''
+      ? ['hyperdxSettingPrefix']
+      : []),
+  ];
   return { update, unsetFields };
 }
 

@@ -241,7 +241,8 @@ describe('External API v2 Connections', () => {
       )
         .send({
           name: 'Updated Connection',
-          host: 'https://clickhouse-updated.example.com:8443',
+          kind: 'couchbase',
+          host: 'couchbases://cb-updated.example.com',
           username: 'updated-user',
         })
         .expect(200);
@@ -249,7 +250,7 @@ describe('External API v2 Connections', () => {
       expect(response.body.data).toMatchObject({
         id: connection._id.toString(),
         name: 'Updated Connection',
-        host: 'https://clickhouse-updated.example.com:8443',
+        host: 'couchbases://cb-updated.example.com',
         username: 'updated-user',
       });
       expect(response.body.data).not.toHaveProperty('password');
@@ -264,6 +265,7 @@ describe('External API v2 Connections', () => {
       await authRequest('put', `${CONNECTIONS_BASE_URL}/${connection._id}`)
         .send({
           name: 'Updated Connection',
+          kind: 'couchbase',
           host: MOCK_CONNECTION.host,
           username: MOCK_CONNECTION.username,
         })
@@ -351,6 +353,7 @@ describe('External API v2 Connections', () => {
       await authRequest('put', `${CONNECTIONS_BASE_URL}/${connection._id}`)
         .send({
           name: 'Updated Connection',
+          kind: 'couchbase',
           host: MOCK_CONNECTION.host,
           username: MOCK_CONNECTION.username,
         })

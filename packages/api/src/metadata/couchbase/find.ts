@@ -43,6 +43,10 @@ function predicate(spec: Filter): SqlPP {
     ...(spec.present ?? []).map(
       field => sqlpp`d.${{ Identifier: field }} IS NOT MISSING`,
     ),
+    ...(spec.notTrue ?? []).map(
+      field =>
+        sqlpp`IFMISSINGORNULL(d.${{ Identifier: field }}, FALSE) != TRUE`,
+    ),
     ...(spec.contains
       ? [
           sqlpp`CONTAINS(LOWER(d.${{ Identifier: spec.contains.field }}), LOWER(${{ Param: spec.contains.value }}))`,

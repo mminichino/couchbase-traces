@@ -98,11 +98,14 @@ export abstract class TeamDocs<D extends TeamDoc, Out> {
     return parseRows(this.schema, this.collection, rows, this.toOut);
   }
 
-  /** Creation order. `where` narrows by equality on indexed fields. */
+  /**
+   * Creation order. `where` narrows by equality on indexed fields;
+   * `o.notTrue` keeps rows whose flag is not TRUE (missing counts).
+   */
   list(
     team: Id,
     where: Record<string, FindScalar> = {},
-    o: { limit?: number; offset?: number } = {},
+    o: { limit?: number; offset?: number; notTrue?: string[] } = {},
   ): Promise<Out[]> {
     return this.findSpec(team, {
       where,
@@ -111,8 +114,15 @@ export abstract class TeamDocs<D extends TeamDoc, Out> {
     });
   }
 
-  async count(team: Id, where: Record<string, FindScalar> = {}) {
-    return this.deps.find.count(this.collection, { where: { ...where, team } });
+  async count(
+    team: Id,
+    where: Record<string, FindScalar> = {},
+    o: { notTrue?: string[] } = {},
+  ) {
+    return this.deps.find.count(this.collection, {
+      where: { ...where, team },
+      ...o,
+    });
   }
 
   /**

@@ -53,16 +53,20 @@ async function listBounded<T>(
     list(
       team: string,
       where?: Record<string, boolean>,
-      o?: { limit?: number },
+      o?: { limit?: number; notTrue?: string[] },
     ): Promise<T[]>;
-    count(team: string, where?: Record<string, boolean>): Promise<number>;
+    count(
+      team: string,
+      where?: Record<string, boolean>,
+      o?: { notTrue?: string[] },
+    ): Promise<number>;
   },
   team: string,
-  where: Record<string, boolean> = {},
+  filter: { notTrue?: string[] } = {},
 ): Promise<{ items: T[]; truncated: boolean }> {
   const [rows, total] = await Promise.all([
-    repo.list(team, where, { limit: IAC_MANIFEST_LIMIT + 1 }),
-    repo.count(team, where),
+    repo.list(team, {}, { ...filter, limit: IAC_MANIFEST_LIMIT + 1 }),
+    repo.count(team, {}, filter),
   ]);
   return {
     items: rows.slice(0, IAC_MANIFEST_LIMIT),
@@ -94,9 +98,10 @@ router.get('/import-manifest', async (req, res, next) => {
         // and would conflict with Terraform-managed state. Tile configs are
         // read whole: a dashboard containing a tile the import round trip
         // would destroy must not be offered, and that is only knowable from
-        // the configs.
+        // the configs. `notTrue`, as upstream's `provisioned: { $ne: true }`:
+        // a legacy document without the flag is not provisioned.
         listBounded(store.dashboards, teamId.toString(), {
-          provisioned: false,
+          notTrue: ['provisioned'],
         }),
         listBounded(store.alerts, teamId.toString()),
         listBounded(store.savedSearches, teamId.toString()),

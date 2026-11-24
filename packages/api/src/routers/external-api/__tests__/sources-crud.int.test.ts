@@ -74,9 +74,11 @@ describe('External API v2 Sources CRUD', () => {
     name: 'Created Log Source',
     from: {
       databaseName: DEFAULT_DATABASE,
+      scopeName: 'default',
       tableName: DEFAULT_LOGS_TABLE,
     },
     timestampValueExpression: 'Timestamp',
+    timestampFormat: 'iso8601',
     defaultTableSelectExpression: 'Timestamp, Body',
     connection: connection._id.toString(),
   });
@@ -87,9 +89,11 @@ describe('External API v2 Sources CRUD', () => {
     defaultTableSelectExpression: 'Timestamp, SpanName',
     from: {
       databaseName: DEFAULT_DATABASE,
+      scopeName: 'default',
       tableName: 'otel_traces',
     },
     timestampValueExpression: 'Timestamp',
+    timestampFormat: 'iso8601',
     durationExpression: 'Duration',
     durationPrecision: 3,
     traceIdExpression: 'TraceId',
@@ -103,8 +107,13 @@ describe('External API v2 Sources CRUD', () => {
   const metricSourceBody = () => ({
     kind: SourceKind.Metric,
     name: 'Created Metric Source',
-    from: { databaseName: DEFAULT_DATABASE, tableName: '' },
+    from: {
+      databaseName: DEFAULT_DATABASE,
+      scopeName: 'default',
+      tableName: '',
+    },
     timestampValueExpression: 'TimeUnix',
+    timestampFormat: 'iso8601',
     resourceAttributesExpression: 'ResourceAttributes',
     metricTables: { gauge: 'otel_metrics_gauge' },
     connection: connection._id.toString(),
@@ -129,9 +138,11 @@ describe('External API v2 Sources CRUD', () => {
       name: 'Other Team Source',
       from: {
         databaseName: DEFAULT_DATABASE,
+        scopeName: 'default',
         tableName: DEFAULT_LOGS_TABLE,
       },
       timestampValueExpression: 'Timestamp',
+      timestampFormat: 'iso8601',
       defaultTableSelectExpression: '*',
       connection: otherConnection._id,
     });
@@ -196,6 +207,7 @@ describe('External API v2 Sources CRUD', () => {
         kind: SourceKind.Log,
         connection: connection._id.toString(),
         timestampValueExpression: 'Timestamp',
+        timestampFormat: 'iso8601',
         defaultTableSelectExpression: 'Timestamp, Body',
       });
       expect(typeof response.body.data.id).toBe('string');
@@ -205,7 +217,10 @@ describe('External API v2 Sources CRUD', () => {
       expect(persisted!.team.toString()).toBe(team._id.toString());
     });
 
-    it('should accept external short-form granularities and store internal format', async () => {
+    // Materialized-view configuration was dropped with the other
+    // ClickHouse-only features (5f64b57): the request still succeeds, and the
+    // field is neither returned nor stored.
+    it('should accept and drop materializedViews', async () => {
       const response = await authRequest('post', BASE_URL)
         .send({
           ...traceSourceBody(),
@@ -222,14 +237,9 @@ describe('External API v2 Sources CRUD', () => {
         })
         .expect(200);
 
-      // Response echoes the external format
-      expect(response.body.data.materializedViews[0].minGranularity).toBe('5m');
-
-      // The database stores the internal SQL interval format
+      expect(response.body.data).not.toHaveProperty('materializedViews');
       const persisted = await findSource(response.body.data.id);
-      expect(
-        sourceField(persisted, 'metadataMaterializedViews')?.granularity,
-      ).toBe('5 minute');
+      expect(sourceField(persisted, 'materializedViews')).toBeUndefined();
     });
 
     it('should map metadataMaterializedViews granularity to internal format', async () => {
@@ -268,7 +278,7 @@ describe('External API v2 Sources CRUD', () => {
     });
 
     it('should reject a short-form minAutoGranularity', async () => {
-      // Unlike materializedViews[].minGranularity, this field is not mapped
+      // Unlike metadataMaterializedViews.granularity, this field is not mapped
       // from the short form, so the documented contract is the SQL interval.
       await authRequest('post', BASE_URL)
         .send({ ...metricSourceBody(), minAutoGranularity: '1m' })
@@ -305,8 +315,13 @@ describe('External API v2 Sources CRUD', () => {
     const promqlSourceBody = () => ({
       kind: SourceKind.Promql,
       name: 'Prometheus Metrics',
-      from: { databaseName: DEFAULT_DATABASE, tableName: 'default' },
+      from: {
+        databaseName: DEFAULT_DATABASE,
+        scopeName: 'default',
+        tableName: 'default',
+      },
       timestampValueExpression: 'timestamp',
+      timestampFormat: 'iso8601',
       connection: connection._id.toString(),
     });
 

@@ -404,8 +404,9 @@ pushes to `main` directly.
 | D26   | Defects: range end is exclusive where upstream is inclusive| Found in D23 (section 9.1); own PR after D24/D25, before R2a (Q48); fixed                                                                                                 | M    | —                             |
 | D27   | Defects: metric sources omit upstream `Flags` bit-0 filter | Found in D24 (section 9.1); with D26 in one PR before R2a (Q49); fixed                                                                                                    | S    | —                             |
 | D28   | Defects: unset `whereLanguage` is Lucene, not SQL          | Found in D24 (section 9.1); with D26 in one PR before R2a (Q50); fixed                                                                                                    | S    | —                             |
+| D29   | Defects: request query attribution never reaches SQL++     | Found in R2a (section 9.1); proposed: own PR right after R2a, before R2c (Q51); carries the `queryAttribution` int suite                                                   | M    | R2a                           |
 | D14   | Dev tooling: live-test port offset fallback               | Found in D7 (section 9.1)                                                                                                                                                 | S    | —                             |
-| R2a   | Port deferred int suites: internal and external API       | B1 (10 suites: `routers/api/{dashboard,iac,sources,connections}`, `routers/external-api/{charts,search,sources,sources-crud,connections}`, `middleware/queryAttribution`) | L    | D1                            |
+| R2a   | Port deferred int suites: internal and external API       | B1 (10 suites: `routers/api/{dashboard,iac,sources,connections}`, `routers/external-api/{charts,search,sources,sources-crud,connections}`, `middleware/queryAttribution`); 9 ported, `queryAttribution` moves to D29 | L    | D1                            |
 | R2b   | Port deferred int suites: alerts                          | B1 (5 suites: `checkAlerts`, `multiChannelAlerts`, `renderAlertTemplate`, `singleInvocationAlert`, `providers/default`; 335 tests, 93 failing per R0)                     | L    | R2c, D1, D4, D6               |
 | R2c   | Port deferred int suites: MCP                             | B1 (8 suites under `mcp/__tests__/`; 287 tests, 139 failing per R0)                                                                                                       | L    | R2a, D1–D4                    |
 | R3    | Service map node latency                                  | B6                                                                                                                                                                        | M    | —                             |
@@ -1068,6 +1069,30 @@ Each one sets Lucene explicitly or defaults to it, and all match upstream;
 see `docs/port-notes.md`. An unset `aggConditionLanguage` is out of scope
 and stays Lucene in both copies.
 
+#### D29: Request query attribution never reaches SQL++ queries (found in R2a, size M)
+
+Evidence: upstream's `ClickhouseClient.applyAttribution` merges the request's
+`AsyncLocalStorage` attribution (set by the auth middleware, alert task, and
+MCP tracing through `withQueryAttribution`) into every query, so each query
+carries `surface`, `label`, `dashboard`, `tile` and a `hdx-<surface>-` id. The
+port keeps `withQueryAttribution` and the store, but `NodeDataClient` and
+`CouchbaseNodeClient` never read it: they use only the client's constructor
+default or a per-query `attribution`. A query from an authenticated route
+therefore gets `cbt:adhoc:<hex>` as its `clientContextId`, not the route's
+attribution. `middleware/__tests__/queryAttribution.int.test.ts` pins this
+wiring, but every assertion reads ClickHouse `system.query_log` through PromQL
+routes, which are dropped (`docs/parity.md`).
+
+Fix: merge `getCurrentQueryAttribution()` into each query in
+`CouchbaseNodeClient.query` (client default, then request scope, then the
+query, as upstream), and decide how the tag is written. `clientContextId` is
+capped at 64 characters, so the full JSON does not fit. Then port the suite to
+a Couchbase route (for example `POST /couchbase/query` or a chart series call)
+and read `system:completed_requests` by `clientContextId`. The PromQL cases
+become one search or chart case (rule 6: same assertion on surface and label).
+Placement (Q51, proposed): its own PR right after R2a, before R2c, because
+R2c's MCP tools rely on the same wiring through `mcp/utils/tracing.ts`.
+
 #### D18: Common-utils live tests fail intermittently (found in D12, size S)
 
 Evidence: two of four `run.sh` runs on the D12 branch lost one common-utils live
@@ -1254,6 +1279,50 @@ turns the "No data found" hint into `partialFailure`. The third
 empty-`otel_logs` describe test ("surfaces partialFailure instead of the no-data
 hint") passes only with that switch, so it moves to R2c too.
 
+R2a result (2026-11-23, `mm--v1-r2a-api-int-suites`): 9 of the 10 suites
+ported and off `deferredChIntSuites`, 377 tests, all passing on the CI
+compose stack. `middleware/queryAttribution` stays deferred and moves to D29
+(below): its subject, request attribution on queries, is not wired on the
+Couchbase path. In R0 the 9 suites had 77 failures; at the start of R2a, after
+D1–D28, 62 were still failing (search had already gone green). Causes and
+fixes:
+
+- **Fixture shape (T), most failures.** Source bodies gain `from.scopeName` and
+  `timestampFormat` (`routers/api/sources`, `external-api/sources-crud`).
+  `querySettings` fixtures use Couchbase setting names (`timeout_ms`,
+  `scan_cap`, `max_parallelism`); the ClickHouse names are rejected by
+  `validateSourceSettings`. Connection bodies send `kind: 'couchbase'` and a
+  `couchbase://` / `couchbases://` host (`iac`, `external-api/connections`).
+  The local-app-mode cases seed their connection under `'_local_team_'`, the
+  id the request carries; Mongo cast that string and its hex form to one
+  ObjectId, the metadata store does not.
+- **Signed-off drops (T), 4 tests.** A PromQL ad-hoc filter is rejected with
+  the PromQL message before its sources are checked (`dashboard`).
+  `materializedViews` is accepted and dropped, no longer echoed
+  (`external-api/sources`, `sources-crud`; removed in 5f64b57 with the other
+  ClickHouse-only features), and its OpenAPI schema is removed.
+- **Error status (T), 1 test.** A SQL++ parse error in a chart `where` is 400,
+  not upstream's 500, per the Phase 8 error mapping
+  (`couchbaseConsumerHttpResponse`).
+- **Product fixes (P), 4 small defects, fixed here:**
+  1. Count columns came back as JSON numbers; upstream returns ClickHouse's
+     quoted 64-bit integers (`"1"`). `encodeValue` now quotes `UInt64` as it
+     already did `Int64` (4 external chart tests: grouped, multi-group, joined
+     series, column format). This is the Q13 cause: the "empty log series" and
+     "series from different sources" failures were this shape difference, not
+     empty results.
+  2. The IaC manifest listed dashboards with `provisioned = false`, so a stored
+     dashboard without the field vanished. Upstream uses
+     `provisioned: { $ne: true }`. `FindSpec.notTrue` adds that predicate to
+     both metadata backends (`IFMISSINGORNULL(d.f, FALSE) != TRUE`).
+  3. A connection PUT could not clear a legacy `isPrometheusEndpoint: true`
+     (the schema strips the key). `buildCouchbaseConnectionUpdate` now writes
+     `false` when the stored document has the flag, as upstream's PUT does.
+  4. `hyperdxSettingPrefix` was stripped by the Couchbase connection schema, so
+     the external API's documented create, clear and keep semantics failed. It is back in the schema and in both update paths. It stays
+     metadata only: upstream uses it to tag ClickHouse queries with the user's
+     email, and nothing on the SQL++ path reads it.
+
 ### R3: Service map node latency
 
 Add node p50/p95/p99 in `serviceMap.ts`; add a golden parity case to
@@ -1395,6 +1464,7 @@ in that phase.
 | Q48 | D26: keep the exclusive range end, or default it to inclusive as upstream (2026-11-23)                   | Match upstream (a row exactly at the range end is included), in its own PR after the D24/D25 PR, before R2a (user, 2026-11-23)                                                                                                                                                                                                    | D26            |
 | Q49 | Placement of D27: metric sources omit the `Flags` no-recorded-value filter (2026-11-23)                  | Fix in the D26 PR: drop metric points with `Flags` bit 0 (no recorded value), as upstream (user, 2026-11-23)                                                                                                                                                                                                                      | D27            |
 | Q50 | Placement of D28: unset `whereLanguage` compiles as Lucene outside metrics (2026-11-23)                  | Fix in the D26 PR: a chart `where` with no language is SQL, as upstream; audit callers so none that sets Lucene changes (user, 2026-11-23)                                                                                                                                                                                        | D28            |
+| Q51 | Placement of D29: request query attribution never reaches SQL++ queries (2026-11-23)                     | Pending. Proposed: its own PR right after R2a, before R2c; it ports `middleware/queryAttribution` onto a Couchbase route and picks the `clientContextId` tag format                                                                                                                                                               | D29            |
 
 ## 11. Acceptance criteria (v1.0.0 is done when)
 
@@ -1477,6 +1547,7 @@ in that phase.
 | D26 Exclusive range end                                         | M    |
 | D27 Metric `Flags` bit-0 filter                                 | S    |
 | D28 Unset `whereLanguage` default                               | S    |
+| D29 Request query attribution on SQL++                         | M    |
 | D14 Live-test port offset fallback                              | S    |
 | R2a Deferred API int suites (10 suites, 380 tests, 80 failing)  | L    |
 | R2b Deferred alert int suites (5 suites, 335 tests, 93 failing) | L    |

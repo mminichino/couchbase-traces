@@ -37,15 +37,6 @@ function mapRequestGranularitiesToInternalFormat(
 ) {
   const body = req.body;
   if (body != null && typeof body === 'object') {
-    if (Array.isArray(body.materializedViews)) {
-      for (const view of body.materializedViews) {
-        if (view != null && typeof view.minGranularity === 'string') {
-          view.minGranularity = mapGranularityToInternalFormat(
-            view.minGranularity,
-          );
-        }
-      }
-    }
     if (
       body.metadataMaterializedViews != null &&
       typeof body.metadataMaterializedViews.granularity === 'string'
@@ -230,67 +221,6 @@ function formatExternalSource(source: SourceDocument) {
  *           description: Optional alias for the attribute
  *           nullable: true
  *           example: HTTP Status Code
- *     AggregatedColumn:
- *       type: object
- *       required:
- *         - mvColumn
- *         - aggFn
- *       properties:
- *         sourceColumn:
- *           type: string
- *           description: Source column name
- *           nullable: true
- *           example: Duration
- *         aggFn:
- *           type: string
- *           description: Aggregation function (e.g., count, sum, avg)
- *           example: sum
- *         mvColumn:
- *           type: string
- *           description: Materialized view column name
- *           example: sum__Duration
- *     MaterializedView:
- *       type: object
- *       required:
- *         - databaseName
- *         - tableName
- *         - dimensionColumns
- *         - minGranularity
- *         - timestampColumn
- *         - aggregatedColumns
- *       properties:
- *         databaseName:
- *           type: string
- *           description: Database name for the materialized view
- *           example: otel
- *         tableName:
- *           type: string
- *           description: Table name for the materialized view
- *           example: otel_logs_mv_5m
- *         dimensionColumns:
- *           type: string
- *           description: Columns which are not pre-aggregated in the materialized view and can be used for filtering and grouping.
- *           example: ServiceName, SeverityText
- *         minGranularity:
- *           type: string
- *           description: "The granularity of the timestamp column: a positive integer followed by a unit (s, m, h, d). Common values: 1s, 15s, 30s, 1m, 5m, 15m, 30m, 1h, 2h, 6h, 12h, 1d, 2d, 7d, 30d."
- *           pattern: '^\d+(s|m|h|d)$'
- *           example: 5m
- *         minDate:
- *           type: string
- *           format: date-time
- *           description: (Optional) The earliest date and time for which the materialized view contains data. If not provided, then Couchbase Traces will assume that the materialized view contains data for all dates for which the source table contains data.
- *           nullable: true
- *           example: "2025-01-01T00:00:00Z"
- *         timestampColumn:
- *           type: string
- *           description: Timestamp column name
- *           example: Timestamp
- *         aggregatedColumns:
- *           type: array
- *           description: Columns which are pre-aggregated by the materialized view
- *           items:
- *             $ref: '#/components/schemas/AggregatedColumn'
  *     LogSource:
  *       type: object
  *       required:
@@ -452,12 +382,6 @@ function formatExternalSource(source: SourceDocument) {
  *           description: Expressions defining row-level attributes which are displayed in the row side panel for the selected row.
  *           items:
  *             $ref: '#/components/schemas/HighlightedAttributeExpression'
- *           nullable: true
- *         materializedViews:
- *           type: array
- *           description: Configure materialized views for query optimization. These pre-aggregated views can significantly improve query performance on aggregation queries.
- *           items:
- *             $ref: '#/components/schemas/MaterializedView'
  *           nullable: true
  *         metadataMaterializedViews:
  *           type: object
@@ -672,12 +596,6 @@ function formatExternalSource(source: SourceDocument) {
  *           type: string
  *           description: Custom ORDER BY expression that overrides the default ordering. Leave empty to use the auto-detected default.
  *           example: Timestamp DESC
- *         materializedViews:
- *           type: array
- *           description: Configure materialized views for query optimization. These pre-aggregated views can significantly improve query performance on aggregation queries.
- *           items:
- *             $ref: '#/components/schemas/MaterializedView'
- *           nullable: true
  *         metadataMaterializedViews:
  *           type: object
  *           description: Configure materialized views for fast field discovery and value autocomplete.
@@ -1080,9 +998,7 @@ router.get(
  *       The request body is a source object without the `id` field. If an
  *       `id` is sent anyway it is silently ignored (stripped before
  *       validation — the request is never rejected because of it).
- *       Granularity fields
- *       (`materializedViews[].minGranularity` and
- *       `metadataMaterializedViews.granularity`) accept the same short format
+ *       `metadataMaterializedViews.granularity` accepts the same short format
  *       the API returns (e.g. `5m`, `15s`, `1h`, `1d`).
  *     operationId: createSource
  *     tags: [Sources]
@@ -1169,9 +1085,8 @@ router.post(
  *       The request body is a source object without the `id` field. If an
  *       `id` is sent anyway it is silently ignored (stripped before
  *       validation — never a 400); the path parameter alone identifies the
- *       source. Granularity fields (`materializedViews[].minGranularity` and
- *       `metadataMaterializedViews.granularity`) accept the same short format
- *       the API returns (e.g. `5m`, `15s`, `1h`, `1d`).
+ *       source. `metadataMaterializedViews.granularity` accepts the same
+ *       short format the API returns (e.g. `5m`, `15s`, `1h`, `1d`).
  *     operationId: updateSource
  *     tags: [Sources]
  *     parameters:
