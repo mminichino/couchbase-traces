@@ -902,10 +902,27 @@ type ResponseMetadata =
       valueColumnNames: Set<string>;
     };
 
-const getResponseMetadata = (
+export const getResponseMetadata = (
   chartConfig: ChartConfigWithOptDateRange,
   data: ResponseJSON<Record<string, string | number>>,
 ): ResponseMetadata | undefined => {
+  const isRawSqlNumber =
+    isRawSqlChartConfig(chartConfig) &&
+    chartConfig.displayType === DisplayType.Number;
+
+  // SQL++ infers columns from returned rows, so a zero-row result has none,
+  // where ClickHouse still sends the column header. No row is read, so the
+  // column names are irrelevant: evaluate it as an empty window, as upstream does.
+  if ((data?.data?.length ?? 0) === 0 && (data?.meta?.length ?? 0) === 0) {
+    return isRawSqlNumber
+      ? { type: 'single_value', valueColumnNames: new Set() }
+      : {
+          type: 'time_series',
+          timestampColumnName: '',
+          valueColumnNames: new Set(),
+        };
+  }
+
   if (!data?.meta) {
     return undefined;
   }
@@ -928,10 +945,7 @@ const getResponseMetadata = (
 
   // Raw SQL charts with Number display type don't use interval parameters, so they cannot be treated as timeseries.
   // Number-type Builder Charts are rendered as time-series, to maintain legacy behavior for existing alerts.
-  if (
-    isRawSqlChartConfig(chartConfig) &&
-    chartConfig.displayType === DisplayType.Number
-  ) {
+  if (isRawSqlNumber) {
     return { type: 'single_value', valueColumnNames };
   } else {
     const timestampColumnName = meta.find(

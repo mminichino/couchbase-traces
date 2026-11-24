@@ -105,23 +105,29 @@ export type CouchbaseColumnType = string;
 export function couchbaseColumnTypesForConfig(
   config: BuilderChartConfigWithOptDateRange,
 ): Record<string, CouchbaseColumnType> {
-  const types: Record<string, CouchbaseColumnType> = {};
   if (!isBuilderChartConfig(config) || !Array.isArray(config.select)) {
-    return types;
+    return {};
   }
+  const types = new Map<string, CouchbaseColumnType>();
   config.select.forEach((item, i) => {
     const name = couchbaseSelectItemAlias(item, i);
     const fn = item.aggFn?.replace(/If(State|Merge)?$/i, '') ?? '';
     if (fn && COUNT_LIKE.has(fn)) {
-      types[name] = 'UInt64';
+      types.set(name, 'UInt64');
     } else if (fn) {
-      types[name] = 'Float64';
+      types.set(name, 'Float64');
     }
   });
-  if (isUsingGranularity(config)) {
-    types[FIXED_TIME_BUCKET_EXPR_ALIAS] = "DateTime64(9, 'UTC')";
+  // A formula is arithmetic over operands; ClickHouse types it Float64 even
+  // when every value is NULL (e.g. a zero denominator), so a NULL-only result
+  // still has a numeric value column.
+  for (const name of formulaColumnNames(config, config.select)) {
+    types.set(name, 'Nullable(Float64)');
   }
-  return types;
+  if (isUsingGranularity(config)) {
+    types.set(FIXED_TIME_BUCKET_EXPR_ALIAS, "DateTime64(9, 'UTC')");
+  }
+  return Object.fromEntries(types);
 }
 
 export function couchbasePostprocessHints(

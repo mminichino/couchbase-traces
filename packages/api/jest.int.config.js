@@ -14,18 +14,6 @@ const esmDepsTransformCfg = createJsWithTsPreset({
 });
 
 // rootDir is `./src` (from jest.config.js). Paths below are relative to that.
-//
-// Deferred CH-shaped suites still expect ClickHouse SQL dialect / result
-// shapes (INTERVAL, count arity, ALERT vs empty SQL++ windows, etc.).
-// Couchbase-native coverage stays in `*.couchbase.int.test.ts` (dedicated
-// CI job). Re-enable each file as its SQL++ port lands — see docs/port-notes.md.
-const deferredChIntSuites = [
-  '<rootDir>/tasks/checkAlerts/__tests__/checkAlerts.int.test.ts',
-  '<rootDir>/tasks/checkAlerts/__tests__/multiChannelAlerts.int.test.ts',
-  '<rootDir>/tasks/checkAlerts/__tests__/renderAlertTemplate.int.test.ts',
-  '<rootDir>/tasks/checkAlerts/__tests__/singleInvocationAlert.int.test.ts',
-  '<rootDir>/tasks/checkAlerts/providers/__tests__/default.int.test.ts',
-];
 
 /** @type {import("jest").Config} **/
 module.exports = {
@@ -48,5 +36,5 @@ module.exports = {
   testMatch: ['**/__tests__/**/*.int.test.ts?(x)'],
   // Override the unit config's ignore list: it excludes `.int.test.ts`, which
   // would otherwise hide every integration test from this suite.
-  testPathIgnorePatterns: ['<rootDir>/node_modules/', ...deferredChIntSuites],
+  testPathIgnorePatterns: ['<rootDir>/node_modules/'],
 };
