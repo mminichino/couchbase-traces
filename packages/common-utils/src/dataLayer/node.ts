@@ -1,36 +1,17 @@
-import { AsyncLocalStorage } from 'node:async_hooks';
-
 import {
   type CouchbaseConnectionConfig,
   CouchbaseNodeClient,
 } from '@/couchbase/node';
-import {
-  mergeQueryAttribution,
-  type QueryAttribution,
-} from '@/query/attribution';
 import type { TeamQuerySettings } from '@/types';
 
 import { runChartQuery, runChartValidity } from './chartQuery';
 import type { DataClientLike, DataClientOptions } from './clientLike';
 
 export type { DataClientOptions };
-
-const attributionStore = new AsyncLocalStorage<QueryAttribution>();
-
-export function withQueryAttribution<T>(
-  attribution: QueryAttribution,
-  fn: () => T,
-): T {
-  const merged = mergeQueryAttribution(
-    attributionStore.getStore(),
-    attribution,
-  );
-  return attributionStore.run(merged, fn);
-}
-
-export function getCurrentQueryAttribution(): QueryAttribution | undefined {
-  return attributionStore.getStore();
-}
+export {
+  getCurrentQueryAttribution,
+  withQueryAttribution,
+} from '@/couchbase/nodeAttribution';
 
 /** @deprecated Integration tests should use DataClient from the API package. */
 export function createNativeClient(_opts: Record<string, unknown> = {}): never {

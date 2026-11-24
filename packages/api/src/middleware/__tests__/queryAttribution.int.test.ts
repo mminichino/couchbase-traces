@@ -1,252 +1,213 @@
-import { Metadata } from '@couchbase-traces/common-utils/dist/core/metadata';
-import { buildLogComment } from '@couchbase-traces/common-utils/dist/query';
 import { SourceKind } from '@couchbase-traces/common-utils/dist/types';
 
 import {
   DEFAULT_DATABASE,
-  dropTimeSeriesTable,
+  DEFAULT_LOGS_TABLE,
   getLoggedInAgent,
   getServer,
-  getTestFixtureDataClient,
-  seedTimeSeriesTagsTable,
 } from '@/fixtures';
+import {
+  type CompletedRequest,
+  findCompletedRequests,
+  purgeCompletedRequests,
+  setCompletedThreshold,
+} from '@/fixtureStore';
 import { seedConnection, seedSource } from '@/metadata/testing/seed';
 import { TEST_COUCHBASE_CONNECTION } from '@/testCouchbaseConnection';
-
-declare global {
-  // Set by jest.setup.ts before it stubs `fetch`.
-  var realFetch: typeof fetch;
-}
 
 // Covers the wiring the unit tests can't: auth middleware opens the
 // AsyncLocalStorage scope, and a query issued deep inside the route handler
 // still reads it. If that scope is lost, queries fall back to hdx-unknown-*.
+//
+// Ported from upstream's ClickHouse `system.query_log` suite (D29). The tag
+// travels as the SQL++ client_context_id (upstream `query_id`) and a trailing
+// block comment on the statement (upstream `log_comment`), both kept by
+// `system:completed_requests`. Upstream's three cases ran over PromQL routes,
+// which are dropped; the same assertions run on an external chart (route
+// scope) and on `/couchbase/query` (browser attribution).
 describe('request query attribution', () => {
   const server = getServer();
-  // Unique per run so query_log rows from earlier runs can't match.
-  const TABLE = `query_attribution_${Date.now()}`;
+  let previousThreshold = 1000;
 
   beforeAll(async () => {
     await server.start();
-    await seedTimeSeriesTagsTable({
-      table: TABLE,
-      series: [
-        {
-          metricName: 'attribution_metric',
-          tags: { job: 'api' },
-          startSec: 1700000000,
-          endSec: 1700003600,
-        },
-      ],
-      withSamples: true,
-    });
+    // Completed requests faster than the threshold (1000 ms default) are
+    // not recorded; log everything for the length of this suite.
+    previousThreshold = await setCompletedThreshold(0);
   });
 
-  // jest.setup.ts installs `fetch` as a plain jest.fn(), not a spy, so
-  // restoreAllMocks can't put it back; and restoreAllMocks would also undo
-  // the setup's console spies. Each mock is reset by hand instead.
-  const fetchStub = jest.mocked(global.fetch).getMockImplementation();
-  let serverVersionSpy: jest.SpiedFunction<
-    Metadata['getServerVersion']
-  > | null = null;
+  beforeEach(async () => {
+    await purgeCompletedRequests();
+  });
 
   afterEach(async () => {
     await server.clearDBs();
-    jest.mocked(global.fetch).mockImplementation(fetchStub);
-    serverVersionSpy?.mockRestore();
-    serverVersionSpy = null;
   });
 
   afterAll(async () => {
-    await dropTimeSeriesTable({ table: TABLE });
+    await setCompletedThreshold(previousThreshold);
     await server.stop();
   });
 
-  // query_log is written asynchronously, so flush and poll.
-  async function findRouteQueries() {
-    const client = await getTestFixtureDataClient();
-    for (let attempt = 0; attempt < 10; attempt++) {
-      await client.command({ query: 'SYSTEM FLUSH LOGS' });
-      const result = await client.query({
-        query: `
-          SELECT query_id, log_comment
-          FROM system.query_log
-          WHERE type = 'QueryFinish'
-            AND query_kind = 'Select'
-            AND position(query, {table:String}) > 0`,
-        // Match on the text: timeSeriesTags() reads an inner table, so
-        // `tables` lists `.inner_id.tags.<uuid>`, not TABLE.
-        query_params: { table: TABLE },
-        format: 'JSON',
-      });
-      const { data }: { data: { query_id: string; log_comment: string }[] } =
-        await result.json();
-      if (data.length > 0) return data;
+  /** The JSON in the trailing attribution comment. */
+  function commentOf(row: CompletedRequest): Record<string, unknown> {
+    const m = /\n\/\* (\{.*\}) \*\/$/.exec(row.statement);
+    if (!m) throw new Error(`no attribution comment: ${row.statement}`);
+    return JSON.parse(m[1]);
+  }
+
+  // Requests are recorded as they complete, so poll.
+  async function findRouteQueries(pattern: string) {
+    for (let attempt = 0; attempt < 20; attempt++) {
+      const rows = await findCompletedRequests(pattern);
+      if (rows.length > 0) return rows;
       await new Promise(resolve => setTimeout(resolve, 250));
     }
     return [];
   }
 
-  // As findRouteQueries, for the PromQL evaluation a tile's request ran.
-  async function findTileQueries(queryText: string, tile: string) {
-    const client = await getTestFixtureDataClient();
-    for (let attempt = 0; attempt < 10; attempt++) {
-      await client.command({ query: 'SYSTEM FLUSH LOGS' });
-      const result = await client.query({
-        query: `
-          SELECT query_id, log_comment
-          FROM system.query_log
-          WHERE type = 'QueryFinish'
-            AND position(query, {queryText:String}) > 0
-            AND JSONExtractString(log_comment, 'tile') = {tile:String}`,
-        query_params: { queryText, tile },
-        format: 'JSON',
-      });
-      const { data }: { data: { query_id: string; log_comment: string }[] } =
-        await result.json();
-      if (data.length > 0) return data;
-      await new Promise(resolve => setTimeout(resolve, 250));
-    }
-    return [];
-  }
-
-  it('tags queries from an authenticated route with the api surface', async () => {
-    const { agent, team } = await getLoggedInAgent(server);
+  async function seedLogs() {
+    const { agent, team, user } = await getLoggedInAgent(server);
     const conn = await seedConnection({
       kind: 'couchbase',
       team: team._id,
-      name: 'CH',
+      name: 'Default',
       host: TEST_COUCHBASE_CONNECTION.host,
       username: TEST_COUCHBASE_CONNECTION.username,
       password: TEST_COUCHBASE_CONNECTION.password,
     });
     const source = await seedSource({
-      kind: SourceKind.Promql,
+      kind: SourceKind.Log,
       team: team._id,
       connection: conn._id,
-      name: 'PromQL',
-      from: { databaseName: DEFAULT_DATABASE, tableName: TABLE },
-      timestampValueExpression: 'timestamp',
+      name: 'Logs',
+      from: { databaseName: DEFAULT_DATABASE, tableName: DEFAULT_LOGS_TABLE },
+      timestampValueExpression: 'Timestamp',
     });
+    return { agent, user, conn, source };
+  }
+
+  it('tags queries from an authenticated route with the api surface', async () => {
+    const { agent, user, source } = await seedLogs();
+    const endTime = Date.now();
 
     await agent
-      .get('/v1/prometheus/labels')
-      .query({ sourceId: source._id.toString() })
+      .post('/api/v2/charts/series')
+      .set('Authorization', `Bearer ${user.accessKey}`)
+      .send({
+        startTime: endTime - 3600_000,
+        endTime,
+        series: [
+          {
+            sourceId: source._id.toString(),
+            dataSource: 'events',
+            aggFn: 'count',
+            where: '',
+            groupBy: [],
+          },
+        ],
+      })
       .expect(200);
 
-    const logged = await findRouteQueries();
+    const logged = await findRouteQueries(
+      `%${DEFAULT_LOGS_TABLE}%"label":"/api/v2/charts"%`,
+    );
     expect(logged.length).toBeGreaterThan(0);
     for (const row of logged) {
-      expect(row.query_id).toMatch(/^hdx-api-/);
-      expect(JSON.parse(row.log_comment)).toMatchObject({
+      expect(row.clientContextID).toMatch(/^hdx-api-/);
+      expect(commentOf(row)).toMatchObject({
         surface: 'api',
-        label: '/v1/prometheus',
+        label: '/api/v2/charts',
       });
     }
   });
 
-  it('tags PromQL table-function queries with the attribution the browser sent', async () => {
-    // Below 26.6 the router evaluates through prometheusQuery() rather than
-    // proxying to ClickHouse's Prometheus HTTP API.
-    serverVersionSpy = jest
-      .spyOn(Metadata.prototype, 'getServerVersion')
-      .mockResolvedValue([26, 5, 0, 0]);
-    const { agent, team } = await getLoggedInAgent(server);
-    const conn = await seedConnection({
-      kind: 'couchbase',
-      team: team._id,
-      name: 'CH',
-      host: TEST_COUCHBASE_CONNECTION.host,
-      username: TEST_COUCHBASE_CONNECTION.username,
-      password: TEST_COUCHBASE_CONNECTION.password,
-    });
-    const source = await seedSource({
-      kind: SourceKind.Promql,
-      team: team._id,
-      connection: conn._id,
-      name: 'PromQL',
-      from: { databaseName: DEFAULT_DATABASE, tableName: TABLE },
-      timestampValueExpression: 'timestamp',
-    });
+  it('tags /couchbase/query with the attribution the browser sent', async () => {
+    const { agent, conn } = await seedLogs();
     const tile = `tile-${Date.now()}`;
 
     await agent
-      .get('/v1/prometheus/query')
-      .set(
-        'x-hyperdx-query-attribution',
-        buildLogComment({
+      .post('/couchbase/query')
+      .send({
+        connectionId: conn._id.toString(),
+        statement: `SELECT RAW ${JSON.stringify(tile)}`,
+        attribution: {
           surface: 'dashboard',
           dashboard: 'dash-1',
           tile,
           label: 'from-browser',
           trace: 'from-browser',
-        })!,
-      )
-      .query({
-        query: 'attribution_metric',
-        time: '1700003600',
-        sourceId: source._id.toString(),
+        },
       })
       .expect(200);
 
-    const logged = await findTileQueries('prometheusQuery(', tile);
+    const logged = await findRouteQueries(`%"tile":"${tile}"%`);
 
     expect(logged).toHaveLength(1);
-    expect(logged[0].query_id).toMatch(/^hdx-dashboard-/);
-    expect(JSON.parse(logged[0].log_comment)).toMatchObject({
+    expect(logged[0].clientContextID).toMatch(/^hdx-dashboard-/);
+    expect(commentOf(logged[0])).toMatchObject({
       surface: 'dashboard',
       dashboard: 'dash-1',
       tile,
       // The server's, not the browser's.
-      label: '/v1/prometheus',
+      label: '/couchbase',
     });
-    expect(JSON.parse(logged[0].log_comment).trace).not.toBe('from-browser');
+    expect(commentOf(logged[0]).trace).not.toBe('from-browser');
   });
 
-  // The CI ClickHouse serves prometheus_api_v1, which evaluates the PromQL
-  // itself: this pins that it honours the log_comment and query_id we send.
-  it('tags PromQL proxied to the prometheus_api_v1 handler', async () => {
-    jest.mocked(global.fetch).mockImplementation(globalThis.realFetch);
-    const { agent, team } = await getLoggedInAgent(server);
-    const conn = await seedConnection({
-      kind: 'couchbase',
-      team: team._id,
-      name: 'CH',
-      host: TEST_COUCHBASE_CONNECTION.host,
-      username: TEST_COUCHBASE_CONNECTION.username,
-      password: TEST_COUCHBASE_CONNECTION.password,
-    });
-    const source = await seedSource({
-      kind: SourceKind.Promql,
-      team: team._id,
-      connection: conn._id,
-      name: 'PromQL',
-      from: { databaseName: DEFAULT_DATABASE, tableName: TABLE },
-      timestampValueExpression: 'timestamp',
-    });
-    const tile = `tile-${Date.now()}`;
+  it('sanitizes browser attribution before it reaches the statement', async () => {
+    const { agent, conn } = await seedLogs();
+    const marker = `m${Date.now()}`;
 
     await agent
-      .get('/v1/prometheus/query')
-      .set(
-        'x-hyperdx-query-attribution',
-        buildLogComment({ surface: 'dashboard', dashboard: 'dash-1', tile })!,
-      )
-      .query({
-        query: 'attribution_metric',
-        time: '1700003600',
-        sourceId: source._id.toString(),
+      .post('/couchbase/query')
+      .send({
+        connectionId: conn._id.toString(),
+        statement: `SELECT RAW ${JSON.stringify(marker)}`,
+        attribution: {
+          surface: 'search',
+          search: `${marker} */ DELETE FROM x /* "q" \\ é`,
+          // Not an attribution key: dropped, never recorded.
+          email: 'someone@example.com',
+        },
+        queryId: 'caller/"id"',
       })
       .expect(200);
 
-    const logged = await findTileQueries('prometheus_query_step', tile);
+    const logged = await findRouteQueries(`%${marker}%"search"%`);
+
     expect(logged).toHaveLength(1);
-    expect(logged[0].query_id).toMatch(/^hdx-dashboard-/);
-    expect(JSON.parse(logged[0].log_comment)).toMatchObject({
-      surface: 'dashboard',
-      dashboard: 'dash-1',
-      tile,
-      label: '/v1/prometheus',
-    });
+    const comment = commentOf(logged[0]);
+    expect(comment.search).toBe(`${marker} / DELETE FROM x / q`);
+    expect(comment).not.toHaveProperty('email');
+    expect(logged[0].statement).not.toContain('example.com');
+    // The statement's only comment terminator is the one we appended.
+    expect(logged[0].statement.indexOf('*/')).toBe(
+      logged[0].statement.length - 2,
+    );
+    // Couchbase rejects `/` and `"` in a client context id (error 1110).
+    expect(logged[0].clientContextID).toBe('callerid');
+  });
+
+  // Not in upstream: the comment is appended to the caller's text, so a
+  // trailing `;` or `--` comment must still parse.
+  it('keeps statements ending in a semicolon or line comment valid', async () => {
+    const { agent, conn } = await seedLogs();
+    const marker = `t${Date.now()}`;
+
+    const res = await agent
+      .post('/couchbase/query')
+      .send({
+        connectionId: conn._id.toString(),
+        statement: `SELECT RAW ${JSON.stringify(marker)}; -- trailing`,
+        attribution: { surface: 'search', search: marker },
+      })
+      .expect(200);
+
+    expect(res.text).toContain(marker);
+    expect(res.text).not.toContain('"type":"error"');
+    const logged = await findRouteQueries(`%${marker}%"search"%`);
+    expect(logged).toHaveLength(1);
+    expect(commentOf(logged[0])).toMatchObject({ search: marker });
   });
 });

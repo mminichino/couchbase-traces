@@ -21,6 +21,11 @@ import {
   type CouchbaseQueryInputs,
   type Frame,
 } from '@couchbase-traces/common-utils/dist/couchbase/types';
+import { getCurrentQueryAttribution } from '@couchbase-traces/common-utils/dist/dataLayer/node';
+import {
+  parseQueryAttribution,
+  type QueryAttribution,
+} from '@couchbase-traces/common-utils/dist/query/attribution';
 import type { TeamQuerySettings } from '@couchbase-traces/common-utils/dist/types';
 import express, { type Request, type Response } from 'express';
 import { performance } from 'perf_hooks';
@@ -269,6 +274,21 @@ const queryBodySchema = z.object({
   attribution: z.record(z.unknown()).optional(),
 });
 
+/**
+ * The tile, dashboard or search a browser query belongs to. Its surface and
+ * ids win over the `api` scope the auth middleware opened, but the route label
+ * and trace id are the server's to state (upstream's PromQL router rule): a
+ * client-sent trace would link the completed request to a trace that never
+ * ran it. Unknown keys and non-strings are dropped here; values are sanitized
+ * when the log comment is built.
+ */
+function browserAttribution(raw: unknown): QueryAttribution | undefined {
+  const parsed = parseQueryAttribution(raw);
+  if (!parsed) return undefined;
+  const scope = getCurrentQueryAttribution();
+  return { ...parsed, label: scope?.label, trace: scope?.trace };
+}
+
 function writeFrame(res: Response, frame: Frame) {
   res.write(`${JSON.stringify(frame)}\n`);
   // `compression()` buffers writes; flush so each frame reaches the client.
@@ -330,8 +350,7 @@ router.post('/query', async (req, res, next) => {
       queryContext: body.queryContext,
       sourceSettings: body.sourceSettings,
       queryId: body.queryId,
-
-      attribution: body.attribution as CouchbaseQueryInputs['attribution'],
+      attribution: browserAttribution(body.attribution),
     };
     // Acceptance: append NDJSON when CBT_QUERY_CAPTURE_FILE is set (disabled by default).
     appendQueryCapture({

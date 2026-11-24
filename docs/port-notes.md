@@ -3738,3 +3738,45 @@ deferred under D29. The full cause list and counts are in
   replay starts its own `cbt-golden-replay` compose project, so it needs nothing from
   the shard's stack. The `integration` aggregator requires it, so the required
   check still covers the replay.
+
+### D29: request query attribution on SQL++ (2026-11-23, `mm--v1-d29-query-attribution`)
+
+Upstream tags every ClickHouse query with `log_comment` (versioned JSON) and
+`query_id` (`hdx-<surface>-<uuid>`), merged from the client default, the
+request's `AsyncLocalStorage` scope and the query. The port kept the scope but
+never read it, and `buildLogComment` was an alias of `buildQueryId`.
+
+- **Mapping (checked against the 8.0 docs).** `query_id` becomes the SQL++
+  `client_context_id` (64-character cap; `/` or `"` is error 1110).
+  `log_comment` becomes a trailing block comment on its own line,
+  `\n/* {"v":1,...} */`, because `system:completed_requests` records the full
+  statement and no request-level metadata field exists (`query_context` is a
+  keyspace path). The comment does not change results or the plan.
+- **`system:completed_requests`.** Fields used: `clientContextID`,
+  `statement`. Only requests slower than `completed-threshold` (node-level
+  `/admin/settings`, default 1000 ms; cluster-level `queryCompletedThreshold`)
+  are kept, and `completed-limit` (default 4000) caps the count. To see every
+  tagged query in production, an operator sets the threshold to 0 or adds a
+  `completed` qualifier (for example `statement` LIKE `%"surface":"alert"%`).
+  The int suite sets 0, purges the keyspace per test, and restores the old
+  value.
+- **Store module.** `withQueryAttribution` / `getCurrentQueryAttribution` live
+  in `couchbase/nodeAttribution.ts` (server only, re-exported from
+  `dataLayer/node`), so `nodeExecute` reads the scope without an import cycle.
+  `executeQuery` reads it when called, not on first `next()`.
+- **Sanitizing.** Upstream's `sanitizeField` and `buildLogComment` are ported
+  verbatim (ASCII allowlist without `*`, so nothing can close the comment;
+  128-character fields; 1 KB cap). A caller `queryId` keeps
+  `[A-Za-z0-9._:-]` only. No team, user, email or credential is recorded.
+- **`/couchbase/query`.** The browser sends attribution in the JSON body (not
+  upstream's header, which only the PromQL router read). It goes through
+  `parseQueryAttribution` (same Zod schema as `parseLogComment`); `label` and
+  `trace` come from the server scope.
+- **Int suite.** Upstream's PromQL cases became `POST /api/v2/charts/series`
+  (route scope) and `POST /couchbase/query` (browser attribution), with the
+  same assertions on surface, ids, server label and dropped browser trace.
+  Two cases added: sanitization, and a statement ending in `;` and `--`.
+- **Unit tests.** Upstream `attribution.test.ts` (the client-agnostic part)
+  and `nodeAttribution.test.ts` ported to `query/__tests__` and
+  `couchbase/__tests__`, the `log_comment` assertions reading the statement
+  comment instead.

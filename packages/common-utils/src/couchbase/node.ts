@@ -1,8 +1,12 @@
 // Server only: the Couchbase SDK is a native addon. Browser code must not
 // import this module; packages/app enforces that with no-restricted-imports.
-import type { QueryAttribution } from '@/query/attribution';
+import {
+  mergeQueryAttribution,
+  type QueryAttribution,
+} from '@/query/attribution';
 import type { TeamQuerySettings } from '@/types';
 
+import { getCurrentQueryAttribution } from './nodeAttribution';
 import {
   type CouchbaseConnectionConfig,
   getCouchbaseLogger,
@@ -81,7 +85,11 @@ export class CouchbaseNodeClient implements DataClient {
     const signal = inputs.abort_signal
       ? AbortSignal.any([inputs.abort_signal, timeoutSignal])
       : timeoutSignal;
-    const attribution = inputs.attribution ?? this.attribution;
+    const attribution = mergeQueryAttribution(
+      this.attribution,
+      getCurrentQueryAttribution(),
+      inputs.attribution,
+    );
     const merged = {
       ...inputs,
       attribution,

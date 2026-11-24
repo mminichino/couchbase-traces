@@ -1,19 +1,17 @@
 /**
  * Tags each Couchbase query with what asked for it, so a row in
- * `system.query_log` points back to a tile, a search, or an alert.
+ * `system:completed_requests` points back to a tile, a search, or an alert.
  *
  * Records what was asked for, never who asked. No team, user or session id
  * goes in here.
  *
- * Two places carry the tag. `log_comment` holds the JSON and is what you query
- * later. `query_id` gets an `hdx-<surface>-<uuid>` prefix, which is readable in
- * `system.processes` while the query is still running.
+ * Two places carry the tag (upstream used ClickHouse `log_comment` and
+ * `query_id`). The `buildLogComment` JSON goes in a trailing block comment on
+ * the statement, which `completed_requests.statement` keeps. The
+ * `clientContextId` gets an `hdx-<surface>-<uuid>` id, readable in
+ * `system:active_requests` while the query is still running.
  *
  * None of this changes what a query returns, so it must never throw.
- *
- * One exception: queries that skip settings processing (the `system.settings`,
- * server version and Cloud-detection probes, and the onboarding connection
- * check) get a `query_id` but an empty `log_comment`.
  */
 
 import { z } from 'zod';
@@ -69,6 +67,63 @@ export const QUERY_ATTRIBUTION_VERSION = 1;
  */
 const MAX_LOG_COMMENT_BYTES = 1024;
 
+/** Longest any single value may be. */
+const MAX_FIELD_LENGTH = 128;
+
+/**
+ * Most useful first. If the payload runs out of room, fields at the end are
+ * dropped whole, so the result is still valid JSON. Built from an object
+ * literal so the `satisfies` fails to compile until a new id field is listed.
+ */
+function idFields(
+  attribution: QueryAttribution,
+): readonly (readonly [string, string | undefined])[] {
+  return Object.entries({
+    dashboard: attribution.dashboard,
+    tile: attribution.tile,
+    search: attribution.search,
+    alert: attribution.alert,
+    source: attribution.source,
+    trace: attribution.trace,
+    label: attribution.label,
+  } satisfies Record<Exclude<keyof QueryAttribution, 'surface'>, unknown>);
+}
+
+/**
+ * An allowlist of characters and a length cap. The browser sends this value
+ * in a header, and the server writes it into a SQL++ block comment, so `*`
+ * and `/` together must never survive (`/` alone is kept for route labels;
+ * `*` is not on the list). ASCII only, so the length cap counts bytes.
+ *
+ * Everything here is an id, a route or a name we chose, never a user, team,
+ * email or credential.
+ */
+function sanitizeField(value: string | undefined): string | undefined {
+  if (typeof value !== 'string') return undefined;
+
+  // By code point, not a regex, so no control character appears in this file.
+  const isAllowed = (code: number) =>
+    (code >= 0x61 && code <= 0x7a) || // a-z
+    (code >= 0x41 && code <= 0x5a) || // A-Z
+    (code >= 0x30 && code <= 0x39) || // 0-9
+    code === 0x20 || // space
+    code === 0x2d || // -
+    code === 0x2e || // .
+    code === 0x2f || // /
+    code === 0x3a || // :
+    code === 0x5f; // _
+
+  let kept = '';
+  for (const char of value) {
+    const code = char.codePointAt(0) ?? 0;
+    if (isAllowed(code)) kept += char;
+  }
+
+  const cleaned = kept.trim();
+  if (!cleaned) return undefined;
+  return cleaned.slice(0, MAX_FIELD_LENGTH);
+}
+
 function isQuerySurface(value: unknown): value is QuerySurface {
   return (
     typeof value === 'string' &&
@@ -103,6 +158,42 @@ export function mergeQueryAttribution(
   return merged;
 }
 
+function stringify(payload: Map<string, string | number>): string {
+  return JSON.stringify(Object.fromEntries(payload));
+}
+
+/** Returns undefined when there is nothing worth recording. */
+export function buildLogComment(
+  attribution: QueryAttribution | undefined,
+): string | undefined {
+  if (!attribution) return undefined;
+
+  // A Map: insertion order is the drop order.
+  const payload = new Map<string, string | number>([
+    ['v', QUERY_ATTRIBUTION_VERSION],
+  ]);
+  if (isQuerySurface(attribution.surface)) {
+    payload.set('surface', attribution.surface);
+  }
+
+  let serialized = stringify(payload);
+  for (const [field, raw] of idFields(attribution)) {
+    const cleaned = sanitizeField(raw);
+    if (!cleaned) continue;
+    payload.set(field, cleaned);
+    const candidate = stringify(payload);
+    // sanitizeField keeps only ASCII, so length is the byte count.
+    if (candidate.length > MAX_LOG_COMMENT_BYTES) {
+      payload.delete(field);
+      continue;
+    }
+    serialized = candidate;
+  }
+
+  // Only the version survived, so there is nothing to say.
+  return payload.size > 1 ? serialized : undefined;
+}
+
 export const QUERY_ATTRIBUTION_HEADER = 'x-hyperdx-query-attribution';
 
 const optionalString = z.string().optional().catch(undefined);
@@ -128,7 +219,18 @@ export function parseLogComment(
   } catch {
     return undefined;
   }
-  const parsed = wireAttributionSchema.safeParse(json);
+  return parseQueryAttribution(json);
+}
+
+/**
+ * An attribution object that arrived over the wire (the `/couchbase/query`
+ * body). Unknown keys and non-string values are dropped. Values are not
+ * sanitized here: `buildLogComment` does that before they reach SQL++.
+ */
+export function parseQueryAttribution(
+  value: unknown,
+): QueryAttribution | undefined {
+  const parsed = wireAttributionSchema.safeParse(value);
   if (!parsed.success) return undefined;
 
   const attribution = mergeQueryAttribution(parsed.data);

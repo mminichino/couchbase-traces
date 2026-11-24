@@ -151,8 +151,8 @@ export function setBusinessContext(context: BusinessContext): void {
 }
 
 /**
- * Trace id of the span in flight, if any. Tagged onto legacy store queries so a
- * row in `system.query_log` links back to the request that ran it.
+ * Trace id of the span in flight, if any. Tagged onto Couchbase queries so a
+ * row in `system:completed_requests` links back to the request that ran it.
  */
 export function getActiveTraceId(): string | undefined {
   try {

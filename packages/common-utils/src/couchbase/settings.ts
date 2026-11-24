@@ -1,4 +1,8 @@
-import type { QueryAttribution } from '@/query/attribution';
+import {
+  buildLogComment,
+  buildQueryId,
+  type QueryAttribution,
+} from '@/query/attribution';
 import type { TeamQuerySettings } from '@/types';
 
 import { CouchbaseQueryError } from './errors';
@@ -75,25 +79,37 @@ function positive(n: unknown): number | undefined {
   return typeof v === 'number' && Number.isFinite(v) && v > 0 ? v : undefined;
 }
 
-function randomHex(chars: number): string {
-  const bytes = new Uint8Array(Math.ceil(chars / 2));
-  globalThis.crypto.getRandomValues(bytes);
-  return Array.from(bytes, b => b.toString(16).padStart(2, '0'))
-    .join('')
-    .slice(0, chars);
-}
-
 const MAX_CLIENT_CONTEXT_ID = 64;
 
+/**
+ * The SQL++ `client_context_id`: the caller's id when it has one, else
+ * upstream's `hdx-<surface>-<uuid>` query id. Couchbase keeps 64 characters and
+ * rejects an id holding `/` or `"` (error 1110), and a caller id can come from
+ * the browser, so it keeps only ids-and-separators characters.
+ */
 export function buildClientContextId(
   queryId: string | undefined,
   attribution: QueryAttribution | undefined,
 ): string {
-  const id =
-    queryId != null && queryId !== ''
-      ? queryId
-      : `cbt:${attribution?.source || 'adhoc'}:${randomHex(12)}`;
+  const given = (queryId ?? '').replace(/[^A-Za-z0-9._:-]/g, '');
+  const id = given !== '' ? given : buildQueryId(attribution);
   return id.slice(0, MAX_CLIENT_CONTEXT_ID);
+}
+
+/**
+ * The statement with its attribution appended as a block comment, the SQL++
+ * stand-in for ClickHouse `log_comment`: `system:completed_requests` keeps the
+ * statement text. Trailing and on its own line, so a parse error's line and
+ * column still point into the caller's statement and a trailing `--` comment
+ * cannot swallow it. `buildLogComment` drops `*`, so the payload cannot end
+ * the comment early.
+ */
+export function withAttributionComment(
+  statement: string,
+  attribution: QueryAttribution | undefined,
+): string {
+  const comment = buildLogComment(attribution);
+  return comment ? `${statement}\n/* ${comment} */` : statement;
 }
 
 const loggedIgnoredSettings = new Set<string>();

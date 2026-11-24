@@ -1,14 +1,15 @@
 export {
+  buildLogComment,
   buildQueryId,
   mergeQueryAttribution,
   parseLogComment,
+  parseQueryAttribution,
   QUERY_ATTRIBUTION_HEADER,
   QUERY_ATTRIBUTION_VERSION,
   QUERY_SURFACES,
   type QueryAttribution,
   type QuerySurface,
 } from './attribution';
-export { buildQueryId as buildLogComment } from './attribution';
 export {
   type ColumnMetaType,
   columnTypeToJSType,
