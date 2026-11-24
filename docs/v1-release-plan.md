@@ -404,7 +404,7 @@ pushes to `main` directly.
 | D26   | Defects: range end is exclusive where upstream is inclusive| Found in D23 (section 9.1); own PR after D24/D25, before R2a (Q48); fixed                                                                                                 | M    | —                             |
 | D27   | Defects: metric sources omit upstream `Flags` bit-0 filter | Found in D24 (section 9.1); with D26 in one PR before R2a (Q49); fixed                                                                                                    | S    | —                             |
 | D28   | Defects: unset `whereLanguage` is Lucene, not SQL          | Found in D24 (section 9.1); with D26 in one PR before R2a (Q50); fixed                                                                                                    | S    | —                             |
-| D29   | Defects: request query attribution never reaches SQL++     | Found in R2a (section 9.1); proposed: own PR right after R2a, before R2c (Q51); carries the `queryAttribution` int suite                                                   | M    | R2a                           |
+| D29   | Defects: request query attribution never reaches SQL++     | Found in R2a (section 9.1); own PR right after R2a, before R2c and R2b (Q51); carries the `queryAttribution` int suite                                                     | M    | R2a                           |
 | D14   | Dev tooling: live-test port offset fallback               | Found in D7 (section 9.1)                                                                                                                                                 | S    | —                             |
 | R2a   | Port deferred int suites: internal and external API       | B1 (10 suites: `routers/api/{dashboard,iac,sources,connections}`, `routers/external-api/{charts,search,sources,sources-crud,connections}`, `middleware/queryAttribution`); 9 ported, `queryAttribution` moves to D29 | L    | D1                            |
 | R2b   | Port deferred int suites: alerts                          | B1 (5 suites: `checkAlerts`, `multiChannelAlerts`, `renderAlertTemplate`, `singleInvocationAlert`, `providers/default`; 335 tests, 93 failing per R0)                     | L    | R2c, D1, D4, D6               |
@@ -418,7 +418,7 @@ pushes to `main` directly.
 
 Order (user decisions 2026-11-19 and 2026-11-20): R1, then the defect-fix phases
 D1, D2, D9 (with D8, Q14/Q15), D2b (B17), D3–D7, D10 (Q28), then D11 and D12
-(proposed after D10, pending decision), then R2a, R2c, R2b. R3 and R6 are
+(proposed after D10, pending decision), then R2a, D29 (Q51), R2c, R2b. R3 and R6 are
 independent and can land at any point. Product defects found in R0 get their own
 PRs ahead of the test-porting phases. R2 no longer fixes product bugs; a defect
 R2 finds while porting gets its own PR first (D7 onward).
@@ -1090,8 +1090,9 @@ capped at 64 characters, so the full JSON does not fit. Then port the suite to
 a Couchbase route (for example `POST /couchbase/query` or a chart series call)
 and read `system:completed_requests` by `clientContextId`. The PromQL cases
 become one search or chart case (rule 6: same assertion on surface and label).
-Placement (Q51, proposed): its own PR right after R2a, before R2c, because
-R2c's MCP tools rely on the same wiring through `mcp/utils/tracing.ts`.
+Placement (Q51, user 2026-11-23): its own PR right after R2a, before R2c and
+R2b, because R2c's MCP tools rely on the same wiring through
+`mcp/utils/tracing.ts`.
 
 #### D18: Common-utils live tests fail intermittently (found in D12, size S)
 
@@ -1323,6 +1324,15 @@ fixes:
      metadata only: upstream uses it to tag ClickHouse queries with the user's
      email, and nothing on the SQL++ path reads it.
 
+CI change (user decision 2026-11-23, CI-only, in the R2a PR): the parity
+golden replay (`port/golden/run.sh --suite ingest`) moves from a shard-1 step
+into its own `parity-goldens` job in `.github/workflows/main.yml`, and the
+`integration` aggregator now needs it too. With the nine suites, shard 1's API
+tests grew from 225 tests (about 5 min) to 438 (about 17 min); with about 22 min
+of setup and about 13 min of replay, shard 1 was cancelled at its 55 minute
+timeout with every test passed. The shards now run tests only; the shard count
+and timeout are unchanged.
+
 ### R3: Service map node latency
 
 Add node p50/p95/p99 in `serviceMap.ts`; add a golden parity case to
@@ -1464,7 +1474,7 @@ in that phase.
 | Q48 | D26: keep the exclusive range end, or default it to inclusive as upstream (2026-11-23)                   | Match upstream (a row exactly at the range end is included), in its own PR after the D24/D25 PR, before R2a (user, 2026-11-23)                                                                                                                                                                                                    | D26            |
 | Q49 | Placement of D27: metric sources omit the `Flags` no-recorded-value filter (2026-11-23)                  | Fix in the D26 PR: drop metric points with `Flags` bit 0 (no recorded value), as upstream (user, 2026-11-23)                                                                                                                                                                                                                      | D27            |
 | Q50 | Placement of D28: unset `whereLanguage` compiles as Lucene outside metrics (2026-11-23)                  | Fix in the D26 PR: a chart `where` with no language is SQL, as upstream; audit callers so none that sets Lucene changes (user, 2026-11-23)                                                                                                                                                                                        | D28            |
-| Q51 | Placement of D29: request query attribution never reaches SQL++ queries (2026-11-23)                     | Pending. Proposed: its own PR right after R2a, before R2c; it ports `middleware/queryAttribution` onto a Couchbase route and picks the `clientContextId` tag format                                                                                                                                                               | D29            |
+| Q51 | Placement of D29: request query attribution never reaches SQL++ queries (2026-11-23)                     | Its own PR right after R2a, before R2c and R2b (user, 2026-11-23); it ports `middleware/queryAttribution` onto a Couchbase route and picks the `clientContextId` tag format                                                                                                                                                       | D29            |
 
 ## 11. Acceptance criteria (v1.0.0 is done when)
 

@@ -3728,5 +3728,13 @@ deferred under D29. The full cause list and counts are in
   custom setting carrying the user's email, which has no SQL++ counterpart.
 - **D29.** Request attribution (`withQueryAttribution`) is set but never read
   by `NodeDataClient` / `CouchbaseNodeClient`, so a route's queries get a
-  `cbt:adhoc:` client context id. See the plan's D29 for the proposed fix and
-  the port of `queryAttribution.int.test.ts` to a Couchbase route.
+  `cbt:adhoc:` client context id. See the plan's D29 for the fix and the port
+  of `queryAttribution.int.test.ts` to a Couchbase route. Placement (Q51): its
+  own PR right after R2a, before R2c and R2b.
+- **CI: parity goldens in their own job.** Shard 1 passed all 438 API tests
+  but was cancelled at the 55 minute timeout during the golden replay step.
+  `Replay parity goldens` is now the `parity-goldens` job (30 minute timeout,
+  frees runner disk, `make ci-build`); the
+  replay starts its own `cbt-golden-replay` compose project, so it needs nothing from
+  the shard's stack. The `integration` aggregator requires it, so the required
+  check still covers the replay.
