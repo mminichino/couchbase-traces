@@ -2,6 +2,7 @@
 import type { QueryMetaData, QueryOptions } from 'couchbase';
 import { QueryScanConsistency } from 'couchbase';
 
+import { mergeQueryAttribution } from '@/query/attribution';
 import type { TeamQuerySettings } from '@/types';
 
 import { normalizeParameters } from './browser';
@@ -12,6 +13,7 @@ import {
   serialize,
 } from './errors';
 import { inferMeta, widenType } from './inferMeta';
+import { getCurrentQueryAttribution } from './nodeAttribution';
 import {
   type CouchbaseConnectionConfig,
   getCouchbaseLogger,
@@ -24,7 +26,7 @@ import {
   clusterCache,
   type ClusterLease,
 } from './nodeClusterCache';
-import { resolveQueryOptions } from './settings';
+import { resolveQueryOptions, withAttributionComment } from './settings';
 import { assertAllowedStatement } from './statement';
 import type { ColumnMeta, CouchbaseQueryInputs, Frame } from './types';
 
@@ -217,13 +219,32 @@ function buildSdkOptions(
   return options;
 }
 
-export async function* executeQuery(args: {
+export function executeQuery(args: {
   conn: CouchbaseConnectionConfig;
   inputs: CouchbaseQueryInputs<any>;
   team: TeamQuerySettings | null;
   signal?: AbortSignal;
   frameRows: number;
   /** Tests only; never set by the API route or clients */
+  skipStatementCheck?: boolean;
+  logger?: Logger;
+  cache?: ClusterCache;
+}): AsyncGenerator<Frame> {
+  // Read the request scope now, not when the generator first runs: a caller
+  // may pull frames from outside the scope that issued the query.
+  const attribution = mergeQueryAttribution(
+    getCurrentQueryAttribution(),
+    args.inputs.attribution,
+  );
+  return runQuery({ ...args, inputs: { ...args.inputs, attribution } });
+}
+
+async function* runQuery(args: {
+  conn: CouchbaseConnectionConfig;
+  inputs: CouchbaseQueryInputs<any>;
+  team: TeamQuerySettings | null;
+  signal?: AbortSignal;
+  frameRows: number;
   skipStatementCheck?: boolean;
   logger?: Logger;
   cache?: ClusterCache;
@@ -251,7 +272,14 @@ export async function* executeQuery(args: {
     if (signal?.aborted) throw canceled();
 
     const cluster = lease.cluster;
-    events = queryEvents(() => cluster.query(statement, options), signal);
+    events = queryEvents(
+      () =>
+        cluster.query(
+          withAttributionComment(statement, inputs.attribution),
+          options,
+        ),
+      signal,
+    );
 
     let meta: ColumnMeta[] | null = null;
     let batch: Record<string, unknown>[] = [];

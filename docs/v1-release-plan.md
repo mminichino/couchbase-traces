@@ -404,7 +404,7 @@ pushes to `main` directly.
 | D26   | Defects: range end is exclusive where upstream is inclusive| Found in D23 (section 9.1); own PR after D24/D25, before R2a (Q48); fixed                                                                                                 | M    | —                             |
 | D27   | Defects: metric sources omit upstream `Flags` bit-0 filter | Found in D24 (section 9.1); with D26 in one PR before R2a (Q49); fixed                                                                                                    | S    | —                             |
 | D28   | Defects: unset `whereLanguage` is Lucene, not SQL          | Found in D24 (section 9.1); with D26 in one PR before R2a (Q50); fixed                                                                                                    | S    | —                             |
-| D29   | Defects: request query attribution never reaches SQL++     | Found in R2a (section 9.1); own PR right after R2a, before R2c and R2b (Q51); carries the `queryAttribution` int suite                                                     | M    | R2a                           |
+| D29   | Defects: request query attribution never reaches SQL++     | Found in R2a (section 9.1); own PR right after R2a, before R2c and R2b (Q51); carries the `queryAttribution` int suite; fixed                                              | M    | R2a                           |
 | D14   | Dev tooling: live-test port offset fallback               | Found in D7 (section 9.1)                                                                                                                                                 | S    | —                             |
 | R2a   | Port deferred int suites: internal and external API       | B1 (10 suites: `routers/api/{dashboard,iac,sources,connections}`, `routers/external-api/{charts,search,sources,sources-crud,connections}`, `middleware/queryAttribution`); 9 ported, `queryAttribution` moves to D29 | L    | D1                            |
 | R2b   | Port deferred int suites: alerts                          | B1 (5 suites: `checkAlerts`, `multiChannelAlerts`, `renderAlertTemplate`, `singleInvocationAlert`, `providers/default`; 335 tests, 93 failing per R0)                     | L    | R2c, D1, D4, D6               |
@@ -1094,6 +1094,47 @@ Placement (Q51, user 2026-11-23): its own PR right after R2a, before R2c and
 R2b, because R2c's MCP tools rely on the same wiring through
 `mcp/utils/tracing.ts`.
 
+D29 result (2026-11-23, `mm--v1-d29-query-attribution`): fixed.
+`queryAttribution.int.test.ts` leaves `deferredChIntSuites`, 4 tests, green
+on the CI compose stack (3 failed before the fix: 0 rows found, and a 500 on
+a caller id holding `/` and `"`).
+
+- **Where the tag goes (verified against the 8.0 docs).** Request-level
+  `client_context_id` is capped at 64 characters and rejected (error 1110)
+  when it holds `/` or `"`; `system:completed_requests` keeps it as
+  `clientContextID` with the full `statement`. The id is upstream's
+  `hdx-<surface>-<uuid>` `query_id` (at most 54 characters). The
+  `buildLogComment` JSON, upstream's `log_comment`, goes in a trailing block
+  comment on its own line: `<statement>\n/* {"v":1,...} */`. Trailing keeps
+  parse-error positions in the caller's text; its own line means a trailing
+  `--` comment or `;` still parses (tested live). `query_context` is a
+  keyspace path, not metadata, so it is not used.
+- **Ambient scope.** The `AsyncLocalStorage` store moves to
+  `couchbase/nodeAttribution.ts` (server only). `CouchbaseNodeClient.query`
+  merges client default, request scope, then the query (upstream order).
+  `executeQuery` also merges the scope, read at call time, so the API's
+  `/couchbase/query`, `/couchbase/cluster` and the alert, MCP and auth paths
+  all carry it.
+- **Browser attribution.** `/couchbase/query` parses the body's `attribution`
+  through the same Zod schema as upstream's header (`parseQueryAttribution`);
+  its surface and ids win, the route `label` and `trace` stay the server's
+  (upstream PromQL rule). A caller `queryId` keeps only `[A-Za-z0-9._:-]`.
+- **Sanitized, no PII.** `buildLogComment` is upstream's: an ASCII allowlist
+  (no `*`, quotes or backslash, so the payload cannot end the comment),
+  128-character fields, 1 KB total, unknown keys dropped. It records only
+  surface, dashboard, tile, search, alert, source, trace and route label,
+  never team, user, email or credentials. The port had aliased
+  `buildLogComment` to `buildQueryId`; the 13 upstream `buildLogComment` unit
+  tests now run against the real function.
+- **Test shape (rule 6).** Upstream's three cases read ClickHouse
+  `system.query_log` over the dropped PromQL routes. Ported: route scope on
+  `POST /api/v2/charts/series` (label `/api/v2/charts`, `hdx-api-` id),
+  browser attribution on `POST /couchbase/query` (label `/couchbase`, browser
+  trace dropped), plus a sanitization case and a trailing-`;`/`--` case. The
+  suite sets the query node's `completed-threshold` to 0 (default 1000 ms,
+  so fast requests are not recorded), purges `system:completed_requests`
+  before each test, and restores the threshold after.
+
 #### D18: Common-utils live tests fail intermittently (found in D12, size S)
 
 Evidence: two of four `run.sh` runs on the D12 branch lost one common-utils live
@@ -1269,8 +1310,11 @@ Order: R2a, then R2c, then R2b. Acceptance (end of R2b, the last R2 phase):
 `deferredChIntSuites` is an empty array and is then deleted; `yarn ci:int`
 reports 0 ignored suites; the skipped count equals the harness-only
 `metadata.couchbase.int.test.ts` count (51 today) and nothing else; CI
-integration shards green within the 55 minute timeout (if not, add shards; that
-is a workflow edit inside a CI-scoped phase).
+integration shards green within the 55 minute timeout. Shard policy (user,
+2026-11-23): add a fifth integration shard only if R2c or R2b brings a shard
+close to the 55 minute limit, as a small CI-only change in that phase's PR
+(pre-approved for R2c and R2b). After R2a the slowest shard took 45 minutes
+(shard 2).
 
 R2c also carries Q26 (the metric tools' leftover ClickHouse SQL). When it ports
 `cbt_describe_metric`'s unit/description query, switch that tool's column lookup

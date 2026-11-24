@@ -28,8 +28,6 @@ const deferredChIntSuites = [
   '<rootDir>/mcp/__tests__/describeTable.int.test.ts',
   '<rootDir>/mcp/__tests__/dashboards/queryTile.int.test.ts',
   '<rootDir>/mcp/__tests__/dashboards/queryTiles.int.test.ts',
-  // D29: request attribution never reaches Couchbase queries.
-  '<rootDir>/middleware/__tests__/queryAttribution.int.test.ts',
   '<rootDir>/tasks/checkAlerts/__tests__/checkAlerts.int.test.ts',
   '<rootDir>/tasks/checkAlerts/__tests__/multiChannelAlerts.int.test.ts',
   '<rootDir>/tasks/checkAlerts/__tests__/renderAlertTemplate.int.test.ts',

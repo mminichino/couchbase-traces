@@ -3,6 +3,7 @@ import {
   buildClientContextId,
   resolveQueryOptions,
   validateSourceSettings,
+  withAttributionComment,
 } from '@/couchbase/settings';
 
 const config = { defaultTimeoutMs: 60000, maxTimeoutMs: 600000 };
@@ -180,15 +181,36 @@ describe('buildClientContextId', () => {
     expect(buildClientContextId('x'.repeat(100), undefined)).toHaveLength(64);
   });
 
-  it('builds cbt:<source|adhoc>:<12 hex>', () => {
+  it('builds hdx-<surface>-<uuid>, as upstream query_id', () => {
     expect(buildClientContextId(undefined, undefined)).toMatch(
-      /^cbt:adhoc:[0-9a-f]{12}$/,
-    );
-    expect(buildClientContextId(undefined, { source: 'src1' })).toMatch(
-      /^cbt:src1:[0-9a-f]{12}$/,
+      /^hdx-unknown-[0-9a-f-]{36}$/,
     );
     expect(
-      buildClientContextId(undefined, { source: 's'.repeat(80) }),
-    ).toHaveLength(64);
+      buildClientContextId(undefined, { surface: 'service-dashboard' }),
+    ).toMatch(/^hdx-service-dashboard-[0-9a-f-]{36}$/);
+    // The longest surface still fits Couchbase's 64-character cap.
+    expect(
+      buildClientContextId(undefined, { surface: 'service-dashboard' }).length,
+    ).toBeLessThanOrEqual(64);
+  });
+
+  // Couchbase rejects a client_context_id holding `/` or `"` (error 1110);
+  // a caller-supplied id comes from the browser.
+  it('strips characters Couchbase rejects from a caller id', () => {
+    expect(buildClientContextId('a/b"c\\d e', undefined)).toBe('abcde');
+    expect(buildClientContextId('/"', { surface: 'api' })).toMatch(/^hdx-api-/);
+  });
+});
+
+describe('withAttributionComment', () => {
+  it('appends the log comment on its own line', () => {
+    expect(
+      withAttributionComment('SELECT 1 -- trailing', { surface: 'api' }),
+    ).toBe('SELECT 1 -- trailing\n/* {"v":1,"surface":"api"} */');
+  });
+
+  it('returns the statement unchanged when nothing is known', () => {
+    expect(withAttributionComment('SELECT 1', undefined)).toBe('SELECT 1');
+    expect(withAttributionComment('SELECT 1', { tile: ' ' })).toBe('SELECT 1');
   });
 });

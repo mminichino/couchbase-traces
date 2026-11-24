@@ -277,14 +277,6 @@ export class FixtureDataClient {
       }));
       return { json: async () => names };
     }
-    // ClickHouse-only probes (query_log / SYSTEM FLUSH) — empty result so
-    // attribution int tests that still call them do not crash the suite setup.
-    if (/system\.query_log|SYSTEM\s+FLUSH/i.test(opts.query)) {
-      if ((opts.format || '').toUpperCase() === 'JSON') {
-        return { json: async () => ({ data: [] }) };
-      }
-      return { json: async () => [] };
-    }
     const translated = translateCommand(opts.query);
     const body = await queryHttp(translated, opts.query_params);
     const rows = (body.results ?? []) as unknown[];
@@ -297,4 +289,55 @@ export class FixtureDataClient {
   async close(): Promise<void> {
     // Stateless HTTP client — nothing to close.
   }
+}
+
+/**
+ * Sets the query node's `completed-threshold` (ms) and returns the old value.
+ * `system:completed_requests` only keeps requests slower than it (1000 ms by
+ * default), so a test reading it sets 0 and restores the old value after.
+ */
+export async function setCompletedThreshold(ms: number): Promise<number> {
+  const url = `http://127.0.0.1:${QUERY_PORT}/admin/settings`;
+  const auth = `Basic ${Buffer.from(`${ADMIN_USER}:${ADMIN_PASSWORD}`).toString('base64')}`;
+  const current = await liveFetch()(url, { headers: { authorization: auth } });
+  const before: { 'completed-threshold'?: number } = await current.json();
+  const res = await liveFetch()(url, {
+    method: 'POST',
+    headers: { authorization: auth, 'content-type': 'application/json' },
+    body: JSON.stringify({ 'completed-threshold': ms }),
+  });
+  if (!res.ok) {
+    throw new Error(`completed-threshold update failed: HTTP ${res.status}`);
+  }
+  return before['completed-threshold'] ?? 1000;
+}
+
+export type CompletedRequest = { clientContextID?: string; statement: string };
+
+/** Clears `system:completed_requests` so a test sees only its own requests. */
+export async function purgeCompletedRequests(): Promise<void> {
+  await queryHttp('DELETE FROM system:completed_requests');
+}
+
+/** Completed requests whose statement matches the LIKE `pattern`. */
+export async function findCompletedRequests(
+  pattern: string,
+): Promise<CompletedRequest[]> {
+  const { results } = await queryHttp(
+    `SELECT r.clientContextID, r.statement
+     FROM system:completed_requests AS r
+     WHERE r.statement LIKE $pattern AND r.statement NOT LIKE $self`,
+    // This lookup's own statement holds the pattern too.
+    { pattern, self: '%system:completed_requests%' },
+  );
+  return (results ?? []).filter(isCompletedRequest);
+}
+
+function isCompletedRequest(row: unknown): row is CompletedRequest {
+  return (
+    typeof row === 'object' &&
+    row != null &&
+    'statement' in row &&
+    typeof row.statement === 'string'
+  );
 }
