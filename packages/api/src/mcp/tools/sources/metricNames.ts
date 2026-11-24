@@ -1,12 +1,13 @@
 import type { Metadata } from '@couchbase-traces/common-utils/dist/core/metadata';
 import {
-  concatSqlExpr,
-  sqlExpr,
-  tableExpr,
-} from '@couchbase-traces/common-utils/dist/query';
+  type MetricKindTable,
+  metricUnitsQuery,
+} from '@couchbase-traces/common-utils/dist/couchbase/metricQueries';
 
 import { DataClient } from '@/query';
 import logger from '@/utils/logger';
+
+import { metricKindColumns, metricRows } from './metricTable';
 
 // Max MetricName values returned per metric kind by the starter sample.
 // clickstack_list_metrics provides paginated discovery beyond this cap.
@@ -43,10 +44,12 @@ export async function sampleMetricNamesForKind({
   metadata,
   dataClient,
   databaseName,
+  scopeName,
   tableName,
   connectionId,
   dateRange,
   timestampValueExpression,
+  timestampFormat,
   signal,
   maxNames = MAX_METRIC_NAMES_PER_KIND,
   enrich = true,
@@ -54,10 +57,12 @@ export async function sampleMetricNamesForKind({
   metadata: Metadata;
   dataClient: DataClient;
   databaseName: string;
+  scopeName?: string;
   tableName: string;
   connectionId: string;
   dateRange: [Date, Date];
   timestampValueExpression: string;
+  timestampFormat?: MetricKindTable['timestampFormat'];
   signal: AbortSignal;
   maxNames?: number;
   enrich?: boolean;
@@ -69,6 +74,7 @@ export async function sampleMetricNamesForKind({
   // metric table on cold cache.
   const nameResults = await metadata.getAllKeyValues({
     databaseName,
+    scopeName,
     tableName,
     keyExpressions: ['MetricName'],
     maxValuesPerKey: maxNames,
@@ -84,13 +90,19 @@ export async function sampleMetricNamesForKind({
   }
 
   // Defensive column presence check for MetricUnit / MetricDescription.
-  // metadata.getColumns caches per (connection, db, table), so repeated
-  // calls for the same table are cheap.
-  const kindColumns = await metadata.getColumns({
+  // Column lookups are cached per (connection, keyspace).
+  const table: MetricKindTable = {
     databaseName,
+    scopeName,
     tableName,
+    timestampValueExpression,
+    timestampFormat,
+  };
+  const { columns: kindColumns } = await metricKindColumns(
+    metadata,
     connectionId,
-  });
+    table,
+  );
   const columnNames = new Set(kindColumns.map(c => c.name));
   const hasUnit = columnNames.has('MetricUnit');
   const hasDescription = columnNames.has('MetricDescription');
@@ -102,8 +114,7 @@ export async function sampleMetricNamesForKind({
     try {
       enrichments = await fetchMetricNameEnrichments({
         dataClient,
-        databaseName,
-        tableName,
+        table,
         connectionId,
         names,
         dateRange,
@@ -159,15 +170,12 @@ export async function sampleMetricNamesWithLookback({
 }
 
 /**
- * Fetch MetricUnit and MetricDescription for a batch of metric names.
- * Uses `argMax(col, TimeUnix)` so the most-recent value wins when a
- * metric has changed unit/description over time (`anyLast` would return
- * an arbitrary value — it depends on parallel read order, not time).
+ * Fetch MetricUnit and MetricDescription for a batch of metric names; the
+ * most recent value wins, as upstream's `argMax(col, TimeUnix)`.
  */
 async function fetchMetricNameEnrichments({
   dataClient,
-  databaseName,
-  tableName,
+  table,
   connectionId,
   names,
   dateRange,
@@ -176,8 +184,7 @@ async function fetchMetricNameEnrichments({
   signal,
 }: {
   dataClient: DataClient;
-  databaseName: string;
-  tableName: string;
+  table: MetricKindTable;
   connectionId: string;
   names: string[];
   dateRange: [Date, Date];
@@ -185,55 +192,25 @@ async function fetchMetricNameEnrichments({
   hasDescription: boolean;
   signal: AbortSignal;
 }): Promise<Map<string, { unit?: string; description?: string }>> {
-  // Build the projection fragments via the parameterised sqlExpr DSL so
-  // identifiers are quoted and the unit/description columns only appear
-  // when present on the source table.
-  const projections = [
-    sqlExpr`MetricName`,
-    ...(hasUnit
-      ? [
-          sqlExpr`argMax(${{ Identifier: 'MetricUnit' }}, TimeUnix) AS MetricUnit`,
-        ]
-      : []),
-    ...(hasDescription
-      ? [
-          sqlExpr`argMax(${{ Identifier: 'MetricDescription' }}, TimeUnix) AS MetricDescription`,
-        ]
-      : []),
-  ];
-  const namePlaceholders = concatSqlExpr(
-    ',',
-    names.map(name => sqlExpr`${{ String: name }}`),
-  );
-  const sql = sqlExpr`
-    SELECT ${concatSqlExpr(', ', projections)}
-    FROM ${tableExpr({ database: databaseName, table: tableName })}
-    WHERE MetricName IN (${namePlaceholders})
-      AND TimeUnix >= fromUnixTimestamp64Milli(${{ Int64: dateRange[0].getTime() }})
-      AND TimeUnix <= fromUnixTimestamp64Milli(${{ Int64: dateRange[1].getTime() }})
-    GROUP BY MetricName
-  `;
-
-  type EnrichmentRow = {
-    MetricName: string;
-    MetricUnit?: string;
-    MetricDescription?: string;
-  };
-
-  const response = await dataClient.query({
-    query: sql.sql,
-    query_params: sql.params,
-    format: 'JSON',
-    connectionId,
-    abort_signal: signal,
+  const q = metricUnitsQuery({
+    table,
+    names,
+    hasUnit,
+    hasDescription,
+    start: dateRange[0],
+    end: dateRange[1],
   });
-  const result = (await response.json()) as { data: EnrichmentRow[] };
+  const rows = await metricRows<{
+    MetricName: string;
+    MetricUnit?: string | null;
+    MetricDescription?: string | null;
+  }>(dataClient, q, connectionId, signal);
 
   const enrichments = new Map<
     string,
     { unit?: string; description?: string }
   >();
-  for (const row of result.data) {
+  for (const row of rows) {
     enrichments.set(row.MetricName, {
       ...(row.MetricUnit ? { unit: row.MetricUnit } : {}),
       ...(row.MetricDescription ? { description: row.MetricDescription } : {}),

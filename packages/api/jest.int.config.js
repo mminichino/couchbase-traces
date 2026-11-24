@@ -20,14 +20,6 @@ const esmDepsTransformCfg = createJsWithTsPreset({
 // Couchbase-native coverage stays in `*.couchbase.int.test.ts` (dedicated
 // CI job). Re-enable each file as its SQL++ port lands — see docs/port-notes.md.
 const deferredChIntSuites = [
-  '<rootDir>/mcp/__tests__/queryTool.int.test.ts',
-  '<rootDir>/mcp/__tests__/serviceHealthTool.int.test.ts',
-  '<rootDir>/mcp/__tests__/trace.int.test.ts',
-  '<rootDir>/mcp/__tests__/sources.int.test.ts',
-  '<rootDir>/mcp/__tests__/emergingSignalsTool.int.test.ts',
-  '<rootDir>/mcp/__tests__/describeTable.int.test.ts',
-  '<rootDir>/mcp/__tests__/dashboards/queryTile.int.test.ts',
-  '<rootDir>/mcp/__tests__/dashboards/queryTiles.int.test.ts',
   '<rootDir>/tasks/checkAlerts/__tests__/checkAlerts.int.test.ts',
   '<rootDir>/tasks/checkAlerts/__tests__/multiChannelAlerts.int.test.ts',
   '<rootDir>/tasks/checkAlerts/__tests__/renderAlertTemplate.int.test.ts',

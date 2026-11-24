@@ -36,13 +36,6 @@ const LIST_TIMEOUT_MS = MCP_TOOL_TIMEOUT_MS;
 // timed out and the kinds that finished are returned.
 const ENRICH_RESERVE_MS = 4_000;
 
-// Per-query legacy store caps. The names cap sits above the scan deadline
-// (LIST_TIMEOUT_MS - ENRICH_RESERVE_MS) so a slow kind is aborted and
-// reported as timed out, not cut short by legacy store. A partial name set
-// would look complete and the cursor would skip the names never read.
-const NAMES_MAX_EXEC_SECONDS = 28;
-const ENRICH_MAX_EXEC_SECONDS = 3;
-
 export function registerListMetrics({
   context,
   registerTool,
@@ -168,7 +161,6 @@ async function listMetricsImpl(
   const metadata = getMetadata(dataClient);
 
   const limit = input.limit ?? DEFAULT_LIMIT;
-  const databaseName = source.from.databaseName;
 
   const connectionId = source.connection.toString();
 
@@ -185,7 +177,8 @@ async function listMetricsImpl(
     fetchNames: ({ kind, afterName }, kindSignal) =>
       fetchMetricNames({
         dataClient,
-        databaseName,
+        metadata,
+        source,
         tableName: source.metricTables[kind]!,
         connectionId,
         startDate,
@@ -194,7 +187,6 @@ async function listMetricsImpl(
         afterName,
         // One extra row detects that more names remain for this kind.
         limit: limit + 1,
-        maxExecutionSeconds: NAMES_MAX_EXEC_SECONDS,
         signal: kindSignal,
       }),
   });
@@ -213,12 +205,11 @@ async function listMetricsImpl(
     entries: page.entries,
     dataClient,
     metadata,
-    databaseName,
+    source,
     metricTables: source.metricTables,
     connectionId,
     startDate,
     endDate,
-    maxExecutionSeconds: ENRICH_MAX_EXEC_SECONDS,
     signal: enrichSignal,
   });
 

@@ -23,9 +23,8 @@ export type ColumnOrigin = 'inferred' | 'declared' | 'empty' | 'missing';
 /**
  * Columns for the describe tools. INFER cannot read an empty collection, so an
  * existing empty OTel collection reports its declared schema, as upstream
- * DESCRIBE TABLE does for a table with zero rows (Q25). cbt_describe_metric
- * adopts it in R2c with its unit/description SQL: its columns only gate that
- * query, which still uses ClickHouse functions.
+ * DESCRIBE TABLE does for a table with zero rows (Q25). The metric discovery
+ * tools use it too, so an empty kind collection keeps the "no data" hint.
  */
 export async function describeColumns(
   metadata: ColumnSource,

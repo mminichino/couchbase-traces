@@ -1,53 +1,37 @@
-import type { getMetadata } from '@couchbase-traces/common-utils/dist/dataLayer';
 import {
-  concatSqlExpr,
-  sqlExpr,
-  type SqlFrag,
-  tableExpr,
-} from '@couchbase-traces/common-utils/dist/query';
-import SqlString from 'sqlstring';
+  metricNamesPageQuery,
+  metricUnitsQuery,
+} from '@couchbase-traces/common-utils/dist/couchbase/metricQueries';
+import type { getMetadata } from '@couchbase-traces/common-utils/dist/dataLayer';
 
 import type { DataClient } from '@/query';
 import logger from '@/utils/logger';
 
 import type { MetricEntry } from './listMetricsPage';
 import type { DiscoverableMetricKind } from './metricKinds';
+import {
+  assertMetricColumns,
+  metricKindColumns,
+  metricKindTable,
+  metricRows,
+  type MetricSourceFields,
+} from './metricTable';
 
-async function queryRows<T>({
-  dataClient,
-  sql,
-  connectionId,
-  maxExecutionSeconds: _maxExecutionSeconds,
-  timeoutOverflowMode: _timeoutOverflowMode,
-  signal,
-}: {
-  dataClient: Pick<DataClient, 'query'>;
-  sql: SqlFrag;
-  connectionId: string;
-  maxExecutionSeconds: number;
-  timeoutOverflowMode: 'break' | 'throw';
-  signal: AbortSignal;
-}): Promise<T[]> {
-  const response = await dataClient.query({
-    query: sql.sql,
-    query_params: sql.params,
-    format: 'JSON',
-    connectionId,
-    abort_signal: signal,
-  });
-  const result = (await response.json()) as { data: T[] };
-  return result.data;
-}
+type Metadata = ReturnType<typeof getMetadata>;
+
+// Unit and description are effectively constant per metric, so a bounded
+// sample of matching documents is enough (upstream: `LIMIT 1 BY MetricName`).
+const ENRICH_SAMPLE_PER_NAME = 50;
 
 /**
- * Distinct metric names for one kind. Reads only MetricName and TimeUnix;
- * unit and description are fetched separately for the returned page, since
- * aggregating those String columns across the whole window was the bulk of
- * the bytes read.
+ * Distinct metric names for one kind, ascending, after `afterName`. A kind
+ * whose collection is missing or lacks the metric columns throws, so the
+ * caller reports it in partialFailure instead of as "no metrics".
  */
 export async function fetchMetricNames({
   dataClient,
-  databaseName,
+  metadata,
+  source,
   tableName,
   connectionId,
   startDate,
@@ -55,11 +39,11 @@ export async function fetchMetricNames({
   namePattern,
   afterName,
   limit,
-  maxExecutionSeconds,
   signal,
 }: {
   dataClient: Pick<DataClient, 'query'>;
-  databaseName: string;
+  metadata: Metadata;
+  source: MetricSourceFields;
   tableName: string;
   connectionId: string;
   startDate: Date;
@@ -67,51 +51,34 @@ export async function fetchMetricNames({
   namePattern: string | undefined;
   afterName: string | undefined;
   limit: number;
-  maxExecutionSeconds: number;
   signal: AbortSignal;
 }): Promise<string[]> {
-  const whereParts = [
-    sqlExpr`TimeUnix >= fromUnixTimestamp64Milli(${{ Int64: startDate.getTime() }})`,
-    sqlExpr`TimeUnix <= fromUnixTimestamp64Milli(${{ Int64: endDate.getTime() }})`,
-    ...(afterName !== undefined
-      ? [sqlExpr`MetricName > ${{ String: afterName }}`]
-      : []),
-    ...(namePattern
-      ? [sqlExpr`MetricName ILIKE ${{ String: namePattern }}`]
-      : []),
-  ];
-
-  const sql = sqlExpr`
-    SELECT MetricName
-    FROM ${tableExpr({ database: databaseName, table: tableName })}
-    WHERE ${concatSqlExpr(' AND ', whereParts)}
-    GROUP BY MetricName
-    ORDER BY MetricName ASC
-    LIMIT ${{ Int32: limit }}
-  `;
-
-  const rows = await queryRows<{ MetricName: string }>({
-    dataClient,
-    sql,
-    connectionId,
-    maxExecutionSeconds,
-    // A truncated name set would be paged past as if complete.
-    timeoutOverflowMode: 'throw',
-    signal,
+  const table = metricKindTable(source, tableName);
+  assertMetricColumns(
+    table,
+    await metricKindColumns(metadata, connectionId, table),
+  );
+  const q = metricNamesPageQuery({
+    table,
+    start: startDate,
+    end: endDate,
+    namePattern,
+    afterName,
+    limit,
   });
+  const rows = await metricRows<{ MetricName: string }>(
+    dataClient,
+    q,
+    connectionId,
+    signal,
+  );
   return rows.map(row => row.MetricName);
 }
 
-/**
- * Unit and description for a page of metric names. `LIMIT 1 BY` plus the
- * outer LIMIT lets legacy store stop reading once every name has a row, instead
- * of aggregating every point in the window. The row picked is arbitrary, which
- * matches the `anyLast` this replaced; unit and description are effectively
- * constant per metric.
- */
+/** Most recent unit and description for a page of metric names. */
 async function fetchMetricUnitsAndDescriptions({
   dataClient,
-  databaseName,
+  source,
   tableName,
   connectionId,
   names,
@@ -119,11 +86,10 @@ async function fetchMetricUnitsAndDescriptions({
   endDate,
   hasUnit,
   hasDescription,
-  maxExecutionSeconds,
   signal,
 }: {
   dataClient: Pick<DataClient, 'query'>;
-  databaseName: string;
+  source: MetricSourceFields;
   tableName: string;
   connectionId: string;
   names: string[];
@@ -131,7 +97,6 @@ async function fetchMetricUnitsAndDescriptions({
   endDate: Date;
   hasUnit: boolean;
   hasDescription: boolean;
-  maxExecutionSeconds: number;
   signal: AbortSignal;
 }): Promise<Map<string, { unit?: string; description?: string }>> {
   const enrichments = new Map<
@@ -140,41 +105,20 @@ async function fetchMetricUnitsAndDescriptions({
   >();
   if (names.length === 0 || (!hasUnit && !hasDescription)) return enrichments;
 
-  const projections = [
-    sqlExpr`MetricName`,
-    ...(hasUnit ? [sqlExpr`${{ Identifier: 'MetricUnit' }}`] : []),
-    ...(hasDescription
-      ? [sqlExpr`${{ Identifier: 'MetricDescription' }}`]
-      : []),
-  ];
-  const sql = sqlExpr`
-    SELECT ${concatSqlExpr(', ', projections)}
-    FROM ${tableExpr({ database: databaseName, table: tableName })}
-    WHERE MetricName IN (${{
-      // Inline names as escaped literals: one bind param per name (up to
-      // 500) pushes the client into a multipart request that query proxies
-      // can reject.
-      UNSAFE_RAW_SQL: names.map(name => SqlString.escape(name)).join(','),
-    }})
-      AND TimeUnix >= fromUnixTimestamp64Milli(${{ Int64: startDate.getTime() }})
-      AND TimeUnix <= fromUnixTimestamp64Milli(${{ Int64: endDate.getTime() }})
-    LIMIT 1 BY MetricName
-    LIMIT ${{ Int32: names.length }}
-  `;
-
-  const rows = await queryRows<{
-    MetricName: string;
-    MetricUnit?: string;
-    MetricDescription?: string;
-  }>({
-    dataClient,
-    sql,
-    connectionId,
-    maxExecutionSeconds,
-    // Partial enrichment is fine; names without a row just lack unit/description.
-    timeoutOverflowMode: 'break',
-    signal,
+  const q = metricUnitsQuery({
+    table: metricKindTable(source, tableName),
+    names,
+    hasUnit,
+    hasDescription,
+    start: startDate,
+    end: endDate,
+    sampleSize: names.length * ENRICH_SAMPLE_PER_NAME,
   });
+  const rows = await metricRows<{
+    MetricName: string;
+    MetricUnit?: string | null;
+    MetricDescription?: string | null;
+  }>(dataClient, q, connectionId, signal);
   for (const row of rows) {
     enrichments.set(row.MetricName, {
       ...(row.MetricUnit ? { unit: row.MetricUnit } : {}),
@@ -194,27 +138,25 @@ export async function enrichEntries({
   entries,
   dataClient,
   metadata,
-  databaseName,
+  source,
   metricTables,
   connectionId,
   startDate,
   endDate,
-  maxExecutionSeconds,
   signal,
 }: {
   entries: MetricEntry[];
   dataClient: DataClient;
-  metadata: ReturnType<typeof getMetadata>;
-  databaseName: string;
+  metadata: Metadata;
+  source: MetricSourceFields;
   metricTables: Partial<Record<DiscoverableMetricKind, string>>;
   connectionId: string;
   startDate: Date;
   endDate: Date;
-  maxExecutionSeconds: number;
   signal: AbortSignal;
 }): Promise<MetricEntry[]> {
   const kinds = [...new Set(entries.map(e => e.kind))];
-  // metadata.getColumns takes no abort signal, so race the whole lookup
+  // The column lookup takes no abort signal, so race the whole lookup
   // against it; otherwise a slow schema lookup could outlast the call's
   // wall clock and discard the names already collected.
   const aborted = new Promise<undefined>(resolve => {
@@ -226,15 +168,15 @@ export async function enrichEntries({
       const tableName = metricTables[kind]!;
       try {
         // Skip MetricUnit / MetricDescription on non-OTel-default schemas.
-        const columns = await metadata.getColumns({
-          databaseName,
-          tableName,
+        const { columns } = await metricKindColumns(
+          metadata,
           connectionId,
-        });
+          metricKindTable(source, tableName),
+        );
         const columnNames = new Set(columns.map(c => c.name));
         const enrichments = await fetchMetricUnitsAndDescriptions({
           dataClient,
-          databaseName,
+          source,
           tableName,
           connectionId,
           names: entries.filter(e => e.kind === kind).map(e => e.name),
@@ -242,7 +184,6 @@ export async function enrichEntries({
           endDate,
           hasUnit: columnNames.has('MetricUnit'),
           hasDescription: columnNames.has('MetricDescription'),
-          maxExecutionSeconds,
           signal,
         });
         return [kind, enrichments];
