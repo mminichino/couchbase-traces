@@ -3780,3 +3780,14 @@ never read it, and `buildLogComment` was an alias of `buildQueryId`.
   and `nodeAttribution.test.ts` ported to `query/__tests__` and
   `couchbase/__tests__`, the `log_comment` assertions reading the statement
   comment instead.
+
+### Completed-requests log settings: v1.0.0 decision (2026-11-24)
+
+v1.0.0 leaves the cluster's completed-requests settings alone (Q52):
+`queryCompletedThreshold` stays 1000 ms and `queryCompletedLimit` 4000 unless
+the operator changes them, so `system:completed_requests` shows only slow
+attributed queries. Setting them is a cluster-wide write (Full Admin or Cluster
+Admin on `POST /settings/querySettings`) that Capella database credentials
+cannot make. v1.0.1 backlog item P13 (`docs/v1-release-plan.md` 2.3) adds
+opt-in `CBT_COUCHBASE_COMPLETED_THRESHOLD_MS` / `CBT_COUCHBASE_COMPLETED_LIMIT`
+to the ingest setup CLI; unset means unchanged.
