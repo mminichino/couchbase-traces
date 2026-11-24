@@ -57,12 +57,14 @@ export class CouchbaseNodeClient implements DataClient {
   private readonly team: TeamQuerySettings | null;
   private readonly logger: Logger;
   private readonly attribution?: QueryAttribution;
+  private readonly queryTimeoutMs?: number;
   private readonly open = new Set<CouchbaseResultSet<CouchbaseFormat>>();
 
   constructor(opts: {
     conn: CouchbaseConnectionConfig;
     team?: TeamQuerySettings | null;
     requestTimeout?: number;
+    queryTimeoutMs?: number;
     logger?: Logger;
     attribution?: QueryAttribution;
   }) {
@@ -70,6 +72,7 @@ export class CouchbaseNodeClient implements DataClient {
     this.team = opts.team ?? null;
     this.logger = opts.logger ?? getCouchbaseLogger();
     this.attribution = opts.attribution;
+    this.queryTimeoutMs = opts.queryTimeoutMs;
     this.metadataMaxRows = this.team?.metadataMaxRowsToRead;
     if (opts.requestTimeout != null && opts.requestTimeout >= 0) {
       this.requestTimeoutMs = opts.requestTimeout;
@@ -94,6 +97,7 @@ export class CouchbaseNodeClient implements DataClient {
       ...inputs,
       attribution,
       queryId: buildClientContextId(inputs.queryId, attribution),
+      timeoutMs: inputs.timeoutMs ?? this.defaultTimeoutFor(inputs),
     };
     // Acceptance: append NDJSON when CBT_QUERY_CAPTURE_FILE is set (disabled by default).
     appendQueryCapture({
@@ -116,6 +120,14 @@ export class CouchbaseNodeClient implements DataClient {
     });
     this.open.add(rs);
     return rs;
+  }
+
+  /** The client's query timeout, unless the query carries its own. */
+  private defaultTimeoutFor(
+    inputs: CouchbaseQueryInputs<CouchbaseFormat>,
+  ): number | undefined {
+    if (inputs.query_settings?.max_execution_time != null) return undefined;
+    return this.queryTimeoutMs;
   }
 
   async close(): Promise<void> {

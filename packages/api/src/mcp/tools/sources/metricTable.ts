@@ -89,6 +89,5 @@ export async function metricRows<T>(
     connectionId,
     abort_signal: signal,
   });
-  return ((await (result as { json: () => Promise<T[]> }).json()) ??
-    []) as T[];
+  return ((await (result as { json: () => Promise<T[]> }).json()) ?? []) as T[];
 }

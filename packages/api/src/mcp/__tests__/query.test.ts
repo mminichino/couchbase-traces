@@ -337,6 +337,9 @@ describe('errorHint', () => {
     "Unknown table expression identifier 'otel_logs' in scope SELECT count() FROM otel_logs",
     'Table default.otel_traces does not exist.',
     'Database o11y does not exist.',
+    // SQL++: a bare name is a bucket, db.name a field path.
+    'Keyspace not found in CB datastore: default:nonexistent_table_xyz (near line 1, column 15) - cause: No bucket named nonexistent_table_xyz',
+    "Ambiguous reference to field 'otel' (near line 1, column 15).",
   ];
 
   it.each(unknownTableErrors)(

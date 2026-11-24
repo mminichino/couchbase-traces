@@ -39,7 +39,9 @@ describe('metricNamesPageQuery', () => {
     expect(q.statement).toContain('FROM `otel`.`default`.`otel_metrics_gauge`');
     expect(q.statement).toContain('MetricName > $after');
     expect(q.statement).toContain('LOWER(MetricName) LIKE LOWER($pattern)');
-    expect(q.statement).toMatch(/GROUP BY MetricName\s+ORDER BY MetricName ASC/);
+    expect(q.statement).toMatch(
+      /GROUP BY MetricName\s+ORDER BY MetricName ASC/,
+    );
     expect(q.parameters).toMatchObject({
       after: 'a',
       pattern: 'system.%',

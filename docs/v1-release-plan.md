@@ -1442,6 +1442,85 @@ of setup and about 13 min of replay, shard 1 was cancelled at its 55 minute
 timeout with every test passed. The shards now run tests only; the shard count
 and timeout are unchanged.
 
+R2c result (2026-11-24, `mm--v1-r2c-mcp-int-suites`): all 8 MCP suites ported
+and off `deferredChIntSuites`. On the CI compose stack: `sources` 61/61,
+`trace` 40/40, `serviceHealthTool` 10/10, `emergingSignalsTool` 5/5,
+`queryTile` and `queryTiles` 47/47, `queryTool` 110 passed and 3 skipped,
+`describeTable` 10 passed and 1 skipped. The 4 skips wait on Q53 and Q54
+(rule 9, below). P13 placement confirmed by the user (2026-11-24): the ingest
+setup step, as written in section 2.3. Causes and fixes:
+
+- **Q26, metric tools (P).** `cbt_list_metrics` and `cbt_describe_metric` sent
+  ClickHouse SQL (`{x:Identifier}`, `argMax`, `anyLast`, `mapKeys`,
+  `groupUniqArray`, `fromUnixTimestamp64Milli`, `LIMIT 1 BY`). New
+  `common-utils/src/couchbase/metricQueries.ts` builds the SQL++ (named
+  parameters, `keyspace()` quoting): `MAX([ts, col])[1]` for the latest value,
+  `OBJECT_NAMES` over `ARRAY_AGG` for attribute keys, a bounded inner sample
+  grouped by `MetricName` for `LIMIT 1 BY`. Metric names are projected with
+  `SELECT MetricName`, not `RAW`, because the data client wraps a RAW scalar
+  row as `{ value }`.
+- **Q25, describe-metric columns (P).** Both metric tools read columns through
+  the shared `describeColumns` (`api/src/mcp/tools/sources/metricTable.ts`), so
+  an empty OTel kind collection reports its declared schema and keeps the
+  "No data found" hint. A kind collection that lacks `MetricName` or the
+  timestamp field fails as upstream's missing-column query did
+  (`partialFailure`), since SQL++ would read those fields as MISSING and look
+  empty.
+- **Q24, integers (T).** Integers stay strings at the data-client level.
+  `cbt_sql` row expectations (single and batch mode) expect `'1'`, matching
+  upstream's quoted 64-bit counts; `cbt_describe_table` converts its document
+  count with `Number()`. The trace failure noted earlier was already green at
+  the start of R2c.
+- **MCP query timeout (P).** Upstream sends `max_execution_time: 30` on every
+  MCP query; ours sent none, so the source, team or 60 s default applied. A new
+  `queryTimeoutMs` data-client option (`MCP_DATA_CLIENT_OPTIONS`, used by all
+  ten MCP `DataClient`s) applies 30 s to queries that set no timeout of their
+  own. The settings-propagation tests read the request's own timeout from
+  `system:active_requests` (29.5s: the SDK sends the server 500 ms less) and
+  check `readOnly: true` on the SDK call, since SQL++ has no `getSetting()`.
+- **Syntax errors (P).** `SELECTT 1` was refused as "Only read-only
+  statements", which reads as a refused write. A leading word that starts no
+  SQL++ statement now fails as `PARSING_FAILED` "Syntax error: …", as the
+  Query service would report it.
+- **Unknown-table hint (P).** The raw SQL hint now matches the SQL++ errors
+  ("Keyspace not found", "No bucket named", and "Ambiguous reference to field"
+  for a two-part `db.name`) and explains the keyspace form. It also reaches
+  `cbt_sql` through `mcpQueryErrorResult`, which returned the Couchbase mapping
+  without hints. `KEYSPACE_NOT_FOUND` adds "The keyspace doesn't exist."
+- **`cbt_describe_table` (P).** Listing read `SELECT RAW [bucket, scope,
+  name]` rows, which the data client wraps as `{ value }`, so no row matched
+  the bucket and every listing was empty; a missing bucket was not an error.
+  The describe output gains `indexes` (GSI and primary, read live from
+  `system:indexes`; upstream `dataSkippingIndices`), `table.approxTotalRows`,
+  and upstream's source matching (`sources`, then `nextSteps.describeSource`
+  or a `cbt_save_source` pointer). `sampleRows` reads through an online index
+  (`<leading key> IS NOT MISSING`), because the least-privileged query user is
+  refused sequential scans on collections without a primary index.
+- **Fixtures and inputs (T).** SQL++ inputs per rule 6: backtick-quoted
+  `` `value` `` (reserved word), `COUNT(*)`, three-part keyspaces for
+  `<table>`, `$intervalSeconds` for `{intervalSeconds:Int64}`, SQL++ DDL/DML
+  for the read-only cases, and the bucket offset computed from the
+  `GROUP BY … AS ts` alias. The dead connection points at
+  `couchbase://127.0.0.1:1` and bypasses the CI loader, which forces every
+  stored connection onto the compose cluster. `describeTable` builds its
+  fixture as a scope of the `otel` bucket (a new bucket needs RAM quota the CI
+  cluster does not have) with two collections and a GSI index. The failing
+  `queryTiles` tile calls an unknown function, since an unknown column is
+  MISSING in SQL++ (Q53).
+
+Rule 9 items (cannot keep the result shape; listed for the user):
+
+- **Q53.** Upstream fails a query on an unknown column (`UNKNOWN_IDENTIFIER`).
+  SQL++ is schemaless: an unknown field reads as MISSING, so the query
+  succeeds with MISSING/NULL values. Three `queryTool` cases are skipped
+  (`cbt_sql`, `cbt_table` and `cbt_timeseries` with `nonexistent_column_xyz`).
+- **Q54.** Upstream's `cbt_describe_table` reports ClickHouse table metadata:
+  `engine`, `sortingKey`, `primaryKey`, `partitionKey`, table and column
+  comments, MATERIALIZED defaults, a Distributed table's local table, and
+  `engine` and `approxTotalRows` per listed table. A collection has none of
+  these. One case is skipped (Distributed); the others assert the SQL++
+  equivalents (GSI indexes, document count) in place of those fields.
+
 ### R3: Service map node latency
 
 Add node p50/p95/p99 in `serviceMap.ts`; add a golden parity case to
@@ -1585,6 +1664,8 @@ in that phase.
 | Q50 | Placement of D28: unset `whereLanguage` compiles as Lucene outside metrics (2026-11-23)                  | Fix in the D26 PR: a chart `where` with no language is SQL, as upstream; audit callers so none that sets Lucene changes (user, 2026-11-23)                                                                                                                                                                                        | D28            |
 | Q51 | Placement of D29: request query attribution never reaches SQL++ queries (2026-11-23)                     | Its own PR right after R2a, before R2c and R2b (user, 2026-11-23); it ports `middleware/queryAttribution` onto a Couchbase route and picks the `clientContextId` tag format                                                                                                                                                       | D29            |
 | Q52 | Set the completed-requests log threshold/limit at startup? (2026-11-24) | Not for v1.0.0: keep the cluster's settings as they are. v1.0.1 backlog P13 adds opt-in `CBT_COUCHBASE_COMPLETED_THRESHOLD_MS` / `CBT_COUCHBASE_COMPLETED_LIMIT` in ingest setup (user, 2026-11-24) | P13 |
+| Q53 | Upstream fails a query on an unknown column (`UNKNOWN_IDENTIFIER`); SQL++ reads it as MISSING and succeeds (2026-11-24) | Open (rule 9). 3 `queryTool` cases skipped. Options: accept the schemaless result and drop the cases, or validate column names against the declared OTel schema before sending | — |
+| Q54 | `cbt_describe_table` reports ClickHouse table metadata (engine, sorting/partition/primary keys, comments, MATERIALIZED, Distributed local table) that collections lack (2026-11-24) | Open (rule 9). 1 case skipped (Distributed); the rest assert GSI indexes and document count instead. Options: accept the SQL++ equivalents as the parity shape, or drop the fields with sign-off in `docs/parity.md` | — |
 
 ## 11. Acceptance criteria (v1.0.0 is done when)
 

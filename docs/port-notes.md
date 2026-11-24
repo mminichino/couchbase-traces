@@ -3791,3 +3791,35 @@ Admin on `POST /settings/querySettings`) that Capella database credentials
 cannot make. v1.0.1 backlog item P13 (`docs/v1-release-plan.md` 2.3) adds
 opt-in `CBT_COUCHBASE_COMPLETED_THRESHOLD_MS` / `CBT_COUCHBASE_COMPLETED_LIMIT`
 to the ingest setup CLI; unset means unchanged.
+
+### R2c: MCP integration suites (2026-11-24, `mm--v1-r2c-mcp-int-suites`)
+
+Eight suites leave `deferredChIntSuites`: `mcp/__tests__/{sources,
+describeTable,queryTool,trace,serviceHealthTool,emergingSignalsTool}` and
+`mcp/__tests__/dashboards/{queryTile,queryTiles}`. Four cases are skipped
+pending Q53 (unknown column) and Q54 (ClickHouse table metadata). The cause
+list and counts are in `docs/v1-release-plan.md` (R2c result). P13 placement
+(ingest setup step) is confirmed there.
+
+- **Metric tools (Q26, Q25).** `cbt_list_metrics` and `cbt_describe_metric`
+  build SQL++ in `common-utils/src/couchbase/metricQueries.ts` and read
+  columns through `describeColumns` (`mcp/tools/sources/metricTable.ts`), so
+  empty OTel kind collections report the declared schema.
+- **Integers (Q24).** Strings at the data-client level; tools that need a
+  number (`cbt_describe_table` document count) call `Number()`.
+- **MCP query timeout.** `DataClientOptions.queryTimeoutMs` (30 s via
+  `MCP_DATA_CLIENT_OPTIONS`) mirrors upstream's `max_execution_time: 30`. The
+  SDK sends the server 500 ms less (`29.5s` in `system:active_requests`).
+- **Statement keywords.** `assertAllowedStatement` raises `PARSING_FAILED` for
+  a leading word that starts no SQL++ statement; known write keywords still
+  raise `STATEMENT_NOT_ALLOWED`.
+- **`cbt_describe_table`.** `describeTableDetails.ts` reads indexes from
+  `system:indexes`, counts documents, matches saved sources, and samples
+  through an online GSI index (`<leading key> IS NOT MISSING`), because the
+  least-privileged query user may not run sequential scans.
+- **Fixture isolation.** `clearFixtureTables()` still skips `otel_traces`, as
+  upstream's `clearClickhouseTables` does, so `trace.int.test.ts` counts
+  assume a fresh stack. A `make ci-int` that reuses an already running
+  compose project (here `int-47`, left up by `make dev-int`) fails 8 trace
+  cases on span counts (22 for an expected 2) from earlier runs' spans; a
+  fresh stack is green. Not a product defect.

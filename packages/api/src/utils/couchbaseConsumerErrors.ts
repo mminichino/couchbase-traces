@@ -49,7 +49,11 @@ export function couchbaseConsumerMcpError(err: unknown): McpErrorResult | null {
     const text =
       /parse|syntax/i.test(base) || err.code === 'PARSING_FAILED'
         ? `${base}\n\n${SQLPP_HINT}`
-        : base;
+        : err.code === 'KEYSPACE_NOT_FOUND'
+          ? // Upstream's UNKNOWN_TABLE says the table doesn't exist; the
+            // Query service's "Keyspace not found" names no such reason.
+            `${base}\n\nThe keyspace doesn't exist.`
+          : base;
     const category =
       err.httpStatus >= 500 ? ('server' as const) : ('user' as const);
     return category === 'server' ? mcpServerError(text) : mcpUserError(text);

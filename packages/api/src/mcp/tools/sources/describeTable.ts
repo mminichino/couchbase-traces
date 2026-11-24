@@ -2,7 +2,7 @@ import { trace } from '@opentelemetry/api';
 
 import { getConnectionById } from '@/controllers/connection';
 import { READ_ONLY_TOOL } from '@/mcp/tools/annotations';
-import { MCP_REQUEST_TIMEOUT } from '@/mcp/tools/query/helpers';
+import { MCP_DATA_CLIENT_OPTIONS } from '@/mcp/tools/query/helpers';
 import type { ToolRegistrar } from '@/mcp/tools/types';
 import { mcpServerError, mcpUserError, validateId } from '@/mcp/utils/errors';
 import { assertMcpSliceForConnection } from '@/mcp/utils/mcpSlice';
@@ -73,9 +73,7 @@ export function registerDescribeTable({
         );
       }
 
-      const dataClient = new DataClient({
-        requestTimeout: MCP_REQUEST_TIMEOUT,
-      });
+      const dataClient = new DataClient(MCP_DATA_CLIENT_OPTIONS);
 
       const outcome = await runWithTimeout(
         signal => {

@@ -17,7 +17,7 @@ import { getConnectionById } from '@/controllers/connection';
 import { getSource } from '@/controllers/sources';
 import { READ_ONLY_TOOL } from '@/mcp/tools/annotations';
 import {
-  MCP_REQUEST_TIMEOUT,
+  MCP_DATA_CLIENT_OPTIONS,
   parseTimeRange,
   queryErrorResult,
 } from '@/mcp/tools/query/helpers';
@@ -204,7 +204,10 @@ async function fetchUnitAndDescription({
     };
   } catch (e) {
     logger.warn(
-      { tableName: table.tableName, error: e instanceof Error ? e.message : String(e) },
+      {
+        tableName: table.tableName,
+        error: e instanceof Error ? e.message : String(e),
+      },
       'fetchUnitAndDescription failed',
     );
     return {};
@@ -289,7 +292,10 @@ async function fetchAttributeKeys({
     return { ok: true, data: out };
   } catch (e) {
     logger.warn(
-      { tableName: table.tableName, error: e instanceof Error ? e.message : String(e) },
+      {
+        tableName: table.tableName,
+        error: e instanceof Error ? e.message : String(e),
+      },
       'fetchAttributeKeys failed',
     );
     return { ok: false, error: sanitizeFetchError(e) };
@@ -387,7 +393,10 @@ async function sampleAttributeValues({
     return { ok: true, data: { values, meta } };
   } catch (e) {
     logger.warn(
-      { tableName: table.tableName, error: e instanceof Error ? e.message : String(e) },
+      {
+        tableName: table.tableName,
+        error: e instanceof Error ? e.message : String(e),
+      },
       'sampleAttributeValues failed',
     );
     return { ok: false, error: sanitizeFetchError(e) };
@@ -435,9 +444,7 @@ async function describeMetricImpl(
   );
   if (sliceErr) return sliceErr;
 
-  const dataClient = new DataClient({
-    requestTimeout: MCP_REQUEST_TIMEOUT,
-  });
+  const dataClient = new DataClient(MCP_DATA_CLIENT_OPTIONS);
   const metadata = getMetadata(dataClient);
   const databaseName = source.from.databaseName;
   const connectionId = source.connection.toString();

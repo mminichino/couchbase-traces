@@ -7,6 +7,12 @@ import type { Metadata } from './metadata';
 
 export type DataClientOptions = {
   requestTimeout?: number;
+  /**
+   * Server-side query timeout for queries that set none themselves (no
+   * `timeoutMs`, no `max_execution_time`). Ahead of the source and team
+   * timeouts, like upstream's per-client `max_execution_time` setting.
+   */
+  queryTimeoutMs?: number;
   attribution?: import('@/query/attribution').QueryAttribution;
   application?: string;
 };

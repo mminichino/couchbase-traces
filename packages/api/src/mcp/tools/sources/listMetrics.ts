@@ -6,7 +6,10 @@ import { z } from 'zod';
 import { getConnectionById } from '@/controllers/connection';
 import { getSource } from '@/controllers/sources';
 import { READ_ONLY_TOOL } from '@/mcp/tools/annotations';
-import { MCP_REQUEST_TIMEOUT, parseTimeRange } from '@/mcp/tools/query/helpers';
+import {
+  MCP_DATA_CLIENT_OPTIONS,
+  parseTimeRange,
+} from '@/mcp/tools/query/helpers';
 import type { ToolRegistrar } from '@/mcp/tools/types';
 import { mcpServerError, mcpUserError } from '@/mcp/utils/errors';
 import { assertMcpSliceForConnection } from '@/mcp/utils/mcpSlice';
@@ -155,9 +158,7 @@ async function listMetricsImpl(
   );
   if (sliceErr) return sliceErr;
 
-  const dataClient = new DataClient({
-    requestTimeout: MCP_REQUEST_TIMEOUT,
-  });
+  const dataClient = new DataClient(MCP_DATA_CLIENT_OPTIONS);
   const metadata = getMetadata(dataClient);
 
   const limit = input.limit ?? DEFAULT_LIMIT;

@@ -15,9 +15,11 @@ const gaugeColumns = ['MetricName', 'TimeUnix', 'Value'].map(name => ({
 function metadataWith(columns: typeof gaugeColumns) {
   return {
     getColumns: jest.fn().mockResolvedValue(columns),
-    listKeyspaces: jest.fn().mockResolvedValue([
-      { bucket: 'otel', scope: 'default', collection: 'otel_metrics_gauge' },
-    ]),
+    listKeyspaces: jest
+      .fn()
+      .mockResolvedValue([
+        { bucket: 'otel', scope: 'default', collection: 'otel_metrics_gauge' },
+      ]),
   } as unknown as Parameters<typeof fetchMetricNames>[0]['metadata'];
 }
 

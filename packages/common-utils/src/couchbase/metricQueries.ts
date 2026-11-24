@@ -113,7 +113,9 @@ export function metricUnitsQuery(
     .join(', ');
   const outer = [
     's.`MetricName`',
-    ...cols.map(c => `MAX([s.__ts, s.${quoteIdent(c)}])[1] AS ${quoteIdent(c)}`),
+    ...cols.map(
+      c => `MAX([s.__ts, s.${quoteIdent(c)}])[1] AS ${quoteIdent(c)}`,
+    ),
   ].join(', ');
   const sample = args.sampleSize != null ? raw(' LIMIT $sample') : raw('');
   return withNamed(
