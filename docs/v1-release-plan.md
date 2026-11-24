@@ -1374,7 +1374,8 @@ listed in the PR and the plan, and the phase stops for the user (rule 9).
 Order: R2a, then R2c, then R2b. Acceptance (end of R2b, the last R2 phase):
 `deferredChIntSuites` is an empty array and is then deleted; `yarn ci:int`
 reports 0 ignored suites; the skipped count equals the harness-only
-`metadata.couchbase.int.test.ts` count (51 today) and nothing else; CI
+`metadata.couchbase.int.test.ts` count (53; accepted by the user 2026-11-24,
+up from 51 because D12 and D13 added contract cases) and nothing else; CI
 integration shards green within the 55 minute timeout. Shard policy (user,
 2026-11-23): add a fifth integration shard only if R2c or R2b brings a shard
 close to the 55 minute limit, as a small CI-only change in that phase's PR
