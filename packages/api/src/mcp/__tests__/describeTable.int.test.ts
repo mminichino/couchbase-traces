@@ -122,10 +122,10 @@ describe('cbt_describe_table', () => {
       ...args,
     });
 
-  // Q54 (decision pending): upstream also reports engine, sortingKey,
-  // primaryKey, partitionKey, the table and column comments, and
-  // MATERIALIZED defaults. A collection has none of them; the SQL++
-  // equivalents asserted here are the GSI indexes and the document count.
+  // Q54 (user, 2026-11-24): the GSI indexes and the document count are the
+  // Couchbase equivalent of upstream's table metadata. engine, sortingKey,
+  // primaryKey, partitionKey, comments and MATERIALIZED defaults do not apply
+  // to a collection (docs/parity.md).
   it('describes columns, indexes, and size of a collection', async () => {
     const result = await call({ database: DATABASE, table: EVENTS });
     expect(result.isError).toBeFalsy();
@@ -151,9 +151,32 @@ describe('cbt_describe_table', () => {
     expect(output.sampleRows).toBeUndefined();
   });
 
-  // Q54 (decision pending): a Distributed table and its local table have no
-  // Couchbase counterpart (a collection is already cluster-wide).
-  it.skip('reads keys and indices of a Distributed table from its local table', () => {});
+  // Q54: upstream reads a Distributed table's keys and indices from its local
+  // table. A collection is already cluster-wide, so its own indexes are the
+  // answer and no ClickHouse-only key or engine field is reported.
+  it('reads indexes from the collection itself, with no Distributed or local table', async () => {
+    const result = await call({ database: DATABASE, table: EVENTS });
+    expect(result.isError).toBeFalsy();
+    const output = JSON.parse(getFirstText(result));
+    for (const field of [
+      'engine',
+      'localTable',
+      'sortingKey',
+      'primaryKey',
+      'partitionKey',
+    ]) {
+      expect(output.table).not.toHaveProperty(field);
+    }
+    const svc = output.columns.find(
+      (c: { name: string }) => c.name === 'ServiceName',
+    );
+    expect(svc).not.toHaveProperty('inSortingKey');
+    expect(svc).not.toHaveProperty('inPrimaryKey');
+    expect(output).not.toHaveProperty('dataSkippingIndices');
+    expect(output.indexes).toEqual([
+      { name: 'idx_body', type: 'gsi', expression: '`Body`' },
+    ]);
+  });
 
   it('reflects an index added after a previous describe', async () => {
     await call({ database: DATABASE, table: EVENTS });

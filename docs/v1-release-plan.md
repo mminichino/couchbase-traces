@@ -1445,9 +1445,9 @@ and timeout are unchanged.
 R2c result (2026-11-24, `mm--v1-r2c-mcp-int-suites`): all 8 MCP suites ported
 and off `deferredChIntSuites`. On the CI compose stack: `sources` 61/61,
 `trace` 40/40, `serviceHealthTool` 10/10, `emergingSignalsTool` 5/5,
-`queryTile` and `queryTiles` 47/47, `queryTool` 110 passed and 3 skipped,
-`describeTable` 10 passed and 1 skipped. The 4 skips wait on Q53 and Q54
-(rule 9, below). P13 placement confirmed by the user (2026-11-24): the ingest
+`queryTile` and `queryTiles` 47/47, `queryTool` 113/113,
+`describeTable` 11/11 (the 4 cases first skipped for Q53 and Q54 run after
+the user's decisions, below). P13 placement confirmed by the user (2026-11-24): the ingest
 setup step, as written in section 2.3. Causes and fixes:
 
 - **Q26, metric tools (P).** `cbt_list_metrics` and `cbt_describe_metric` sent
@@ -1504,22 +1504,45 @@ setup step, as written in section 2.3. Causes and fixes:
   `couchbase://127.0.0.1:1` and bypasses the CI loader, which forces every
   stored connection onto the compose cluster. `describeTable` builds its
   fixture as a scope of the `otel` bucket (a new bucket needs RAM quota the CI
-  cluster does not have) with two collections and a GSI index. The failing
-  `queryTiles` tile calls an unknown function, since an unknown column is
-  MISSING in SQL++ (Q53).
+  cluster does not have) with two collections and a GSI index.
 
-Rule 9 items (cannot keep the result shape; listed for the user):
+Rule 9 items, decided by the user on 2026-11-24:
 
-- **Q53.** Upstream fails a query on an unknown column (`UNKNOWN_IDENTIFIER`).
-  SQL++ is schemaless: an unknown field reads as MISSING, so the query
-  succeeds with MISSING/NULL values. Three `queryTool` cases are skipped
-  (`cbt_sql`, `cbt_table` and `cbt_timeseries` with `nonexistent_column_xyz`).
-- **Q54.** Upstream's `cbt_describe_table` reports ClickHouse table metadata:
-  `engine`, `sortingKey`, `primaryKey`, `partitionKey`, table and column
-  comments, MATERIALIZED defaults, a Distributed table's local table, and
-  `engine` and `approxTotalRows` per listed table. A collection has none of
-  these. One case is skipped (Distributed); the others assert the SQL++
-  equivalents (GSI indexes, document count) in place of those fields.
+- **Q53, unknown columns.** Upstream fails a query on an unknown column
+  (`UNKNOWN_IDENTIFIER`); SQL++ reads it as MISSING. Decision: check field
+  names before the MCP tools send a query, and fail with upstream's error.
+  `api/src/mcp/tools/query/unknownColumns.ts` checks builder tiles
+  (`cbt_table`, `cbt_timeseries`, dashboard tiles: select value
+  expressions, SQL aggregate conditions, groupBy, a SQL where) and raw SQL
+  (`cbt_sql`, SQL tiles; `$__sourceTable` reads as the source collection).
+  Field roots come from `common-utils/src/couchbase/fieldRefs.ts`. Behaviour:
+  - Only OTel collections (a declared schema in `otelSchema.ts`) are
+    checked. Any other collection is schemaless and passes.
+  - A root outside the declared schema still passes when the collection's
+    inferred columns (`describeColumns`) have it. A failed lookup or a
+    missing collection passes (the server reports the latter).
+  - Only field roots count: map and object subfields
+    (``SpanAttributes.`http.route` ``, `LogAttributes['k']`), functions,
+    aliases (`AS x` or a bare name after an operand), `$` parameters and
+    macros, string literals, and range variables (`FOR`/`ANY … IN`) are not
+    fields. Names are case-sensitive, as SQL++ fields are.
+  - Text the scanner cannot scope passes unchecked: joins, `UNNEST`, `NEST`,
+    `LET`, `WITH`, set operators, subqueries, object constructors,
+    namespaces (`system:`), and raw SQL without exactly one
+    bucket.scope.collection keyspace. Metric sources are not checked.
+  - The error reads ``UNKNOWN_IDENTIFIER: Unknown expression identifier
+    `x` in bucket.scope.collection``, with the describe-source hint.
+  The 3 `queryTool` cases run again, and `queryTiles` uses upstream's
+  `SELECT does_not_exist` bad tile.
+- **Q54, table metadata.** The GSI and primary indexes and the document count
+  are the Couchbase equivalent of upstream's table metadata. engine,
+  sortingKey, primaryKey, partitionKey (and the per-column key flags), table
+  and column comments, MATERIALIZED and other defaults, a Distributed table's
+  local table, and engine per listed table are not applicable. Recorded as the
+  `mcp-sources` decision in `port/features.json`, rendered into
+  `docs/parity.md` by `port/inventory.sh render`. The Distributed case now
+  asserts that none of these fields is reported and that the indexes come
+  from the collection itself.
 
 CI change (pre-approved shard policy, CI-only, in the R2c PR): with the MCP
 suites, shard 1 of PR #41's first run took 48m50s of its 55 minute timeout
@@ -1672,8 +1695,8 @@ in that phase.
 | Q50 | Placement of D28: unset `whereLanguage` compiles as Lucene outside metrics (2026-11-23)                  | Fix in the D26 PR: a chart `where` with no language is SQL, as upstream; audit callers so none that sets Lucene changes (user, 2026-11-23)                                                                                                                                                                                        | D28            |
 | Q51 | Placement of D29: request query attribution never reaches SQL++ queries (2026-11-23)                     | Its own PR right after R2a, before R2c and R2b (user, 2026-11-23); it ports `middleware/queryAttribution` onto a Couchbase route and picks the `clientContextId` tag format                                                                                                                                                       | D29            |
 | Q52 | Set the completed-requests log threshold/limit at startup? (2026-11-24) | Not for v1.0.0: keep the cluster's settings as they are. v1.0.1 backlog P13 adds opt-in `CBT_COUCHBASE_COMPLETED_THRESHOLD_MS` / `CBT_COUCHBASE_COMPLETED_LIMIT` in ingest setup (user, 2026-11-24) | P13 |
-| Q53 | Upstream fails a query on an unknown column (`UNKNOWN_IDENTIFIER`); SQL++ reads it as MISSING and succeeds (2026-11-24) | Open (rule 9). 3 `queryTool` cases skipped. Options: accept the schemaless result and drop the cases, or validate column names against the declared OTel schema before sending | — |
-| Q54 | `cbt_describe_table` reports ClickHouse table metadata (engine, sorting/partition/primary keys, comments, MATERIALIZED, Distributed local table) that collections lack (2026-11-24) | Open (rule 9). 1 case skipped (Distributed); the rest assert GSI indexes and document count instead. Options: accept the SQL++ equivalents as the parity shape, or drop the fields with sign-off in `docs/parity.md` | — |
+| Q53 | Upstream fails a query on an unknown column (`UNKNOWN_IDENTIFIER`); SQL++ reads it as MISSING and succeeds (2026-11-24) | Validate field names against the declared OTel schema, then the collection's inferred columns (`describeColumns`), before MCP queries are sent, and fail with upstream's error; the 3 `queryTool` cases are un-skipped (user, 2026-11-24) | — |
+| Q54 | `cbt_describe_table` reports ClickHouse table metadata that collections lack (2026-11-24) | GSI/primary indexes and the document count are the Couchbase equivalent; engine, sorting/partition/primary keys, comments, defaults and Distributed local tables are not applicable, recorded in `port/features.json` (`mcp-sources`) and so in `docs/parity.md`; the Distributed case asserts their absence (user, 2026-11-24) | — |
 
 ## 11. Acceptance criteria (v1.0.0 is done when)
 

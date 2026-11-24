@@ -52,6 +52,7 @@ import type { ExternalDashboardTileWithId } from '@/utils/zod';
 import { externalDashboardTileSchemaWithId } from '@/utils/zod';
 
 import { runEventPatterns } from './runEventPatterns';
+import { builderColumnsError, rawSqlColumnsError } from './unknownColumns';
 
 // ─── Source body expression helpers ──────────────────────────────────────────
 
@@ -776,6 +777,19 @@ export async function runConfigTile(
       : chartConfig;
 
     const metadata = getMetadata(dataClient);
+    if (!isMetricSource) {
+      const columnsErr = await builderColumnsError(
+        metadata,
+        {
+          connectionId: source.connection.toString(),
+          databaseName: source.from.databaseName,
+          scopeName: source.from.scopeName,
+          tableName: source.from.tableName,
+        },
+        builderConfig,
+      );
+      if (columnsErr) return queryErrorResult(columnsErr);
+    }
     try {
       const result = await dataClient.queryChartConfig({
         config: renderConfig,
@@ -795,7 +809,7 @@ export async function runConfigTile(
 
   // Raw SQL tile — hydrate source fields for macro support ($__sourceTable, $__filters)
   let sourceFields: {
-    from?: { databaseName: string; tableName: string };
+    from?: { databaseName: string; scopeName?: string; tableName: string };
     implicitColumnExpression?: string;
     useTextIndexForImplicitColumn?: UseTextIndex;
     metricTables?: MetricTable;
@@ -845,6 +859,13 @@ export async function runConfigTile(
   } satisfies ChartConfigWithDateRange;
 
   const metadata = getMetadata(dataClient);
+  const columnsErr = await rawSqlColumnsError(
+    metadata,
+    savedConfig.sqlTemplate,
+    savedConfig.connection,
+    sourceFields.from,
+  );
+  if (columnsErr) return queryErrorResult(columnsErr, { rawSql: true });
   try {
     const result = await dataClient.queryChartConfig({
       config: chartConfig,

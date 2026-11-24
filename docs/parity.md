@@ -300,6 +300,8 @@ Entry points:
 - `mcp_tool:cbt_list_sources`, `packages/api/src/mcp/tools/sources/listSources.ts`
 - `mcp_tool:cbt_save_source`, `packages/api/src/mcp/tools/sources/saveSource.ts`
 
+Decision: cbt_describe_table reports a collection's GSI and primary indexes and its document count as the Couchbase equivalent of upstream's table metadata (Q54). The ClickHouse-only fields are not applicable to a collection and are not reported: engine, sortingKey, primaryKey and partitionKey (with the per-column inSortingKey/inPrimaryKey flags), table and column comments, MATERIALIZED and other column defaults, a Distributed table's localTable, and engine per listed table. Signed off by Michael on 2026-11-24.
+
 ### MCP tools: trace analysis (`mcp-trace`)
 
 Let an AI client find the most time-consuming trace operations.

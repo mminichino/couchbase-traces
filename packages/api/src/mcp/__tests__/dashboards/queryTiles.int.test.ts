@@ -148,10 +148,10 @@ describe('MCP Dashboard Tools - cbt_query_tiles', () => {
           connectionId,
           sourceId,
           // Upstream reads a column that does not exist, a ClickHouse error.
-          // SQL++ reads that as MISSING (Q53), so the bad tile calls a
-          // function that does not exist, which fails at plan time.
+          // SQL++ would read it as MISSING; the MCP unknown-column check
+          // (Q53) rejects it against the OTel schema instead.
           sqlTemplate:
-            'SELECT does_not_exist(Body) AS x FROM $__sourceTable WHERE $__timeFilter(Timestamp) AND $__filters LIMIT 1',
+            'SELECT does_not_exist FROM $__sourceTable WHERE $__timeFilter(Timestamp) AND $__filters LIMIT 1',
         },
       },
     ]);

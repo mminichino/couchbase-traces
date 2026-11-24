@@ -3796,10 +3796,25 @@ to the ingest setup CLI; unset means unchanged.
 
 Eight suites leave `deferredChIntSuites`: `mcp/__tests__/{sources,
 describeTable,queryTool,trace,serviceHealthTool,emergingSignalsTool}` and
-`mcp/__tests__/dashboards/{queryTile,queryTiles}`. Four cases are skipped
-pending Q53 (unknown column) and Q54 (ClickHouse table metadata). The cause
+`mcp/__tests__/dashboards/{queryTile,queryTiles}`, with no skipped case after
+the user's Q53 and Q54 decisions. The cause
 list and counts are in `docs/v1-release-plan.md` (R2c result). P13 placement
 (ingest setup step) is confirmed there.
+
+- **Unknown columns (Q53).** `mcp/tools/query/unknownColumns.ts` rejects an
+  MCP builder tile or raw SQL statement that reads a field root an OTel
+  collection lacks, with upstream's `UNKNOWN_IDENTIFIER` text, before sending
+  it. Roots come from `common-utils/src/couchbase/fieldRefs.ts` (a small
+  SQL++ tokenizer, reserved words from the 8.0 reference in
+  `reservedWords.ts`). It fails open: non-OTel collections, fields present in
+  inferred columns, lookup errors, metric sources, and text it cannot scope
+  (joins, UNNEST, LET, subqueries, …) all pass. Map subfields, functions,
+  aliases, parameters and range variables are not field roots.
+- **Table metadata (Q54).** The `mcp-sources` decision in `port/features.json`
+  records the ClickHouse-only describe fields as not applicable;
+  `port/inventory.sh render` writes it into `docs/parity.md`. That command
+  also rewrites the Phase 2 inventory block in this file, so only
+  `docs/parity.md` and `port/state/inventory/parity.json` were kept.
 
 - **Metric tools (Q26, Q25).** `cbt_list_metrics` and `cbt_describe_metric`
   build SQL++ in `common-utils/src/couchbase/metricQueries.ts` and read

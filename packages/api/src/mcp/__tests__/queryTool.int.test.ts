@@ -1787,10 +1787,10 @@ describe('MCP Query Tools', () => {
         );
       });
 
-      // Q53 (decision pending): SQL++ reads a field no document has as
-      // MISSING, so this query succeeds where upstream's UNKNOWN_IDENTIFIER
-      // failed. Skipped until the user decides; see docs/v1-release-plan.md.
-      it.skip('should return isError for a nonexistent column', async () => {
+      // Q53: SQL++ would read the field as MISSING; the MCP unknown-column
+      // check rejects it against the OTel schema, as upstream's
+      // UNKNOWN_IDENTIFIER did.
+      it('should return isError for a nonexistent column', async () => {
         const result = await callTool(client, 'cbt_sql', {
           connectionId: connection._id.toString(),
           sql: `SELECT nonexistent_column_xyz FROM ${LOGS_KS} LIMIT 1`,
@@ -1831,10 +1831,10 @@ describe('MCP Query Tools', () => {
     });
 
     describe('cbt_table errors', () => {
-      // Q53 (decision pending): SQL++ reads a field no document has as
-      // MISSING, so this query succeeds where upstream's UNKNOWN_IDENTIFIER
-      // failed. Skipped until the user decides; see docs/v1-release-plan.md.
-      it.skip('should return isError for a nonexistent valueExpression column', async () => {
+      // Q53: SQL++ would read the field as MISSING; the MCP unknown-column
+      // check rejects it against the OTel schema, as upstream's
+      // UNKNOWN_IDENTIFIER did.
+      it('should return isError for a nonexistent valueExpression column', async () => {
         const result = await callTool(client, 'cbt_table', {
           sourceId: traceSource._id.toString(),
           select: [{ aggFn: 'avg', valueExpression: 'nonexistent_column_xyz' }],
@@ -1873,10 +1873,10 @@ describe('MCP Query Tools', () => {
     });
 
     describe('cbt_timeseries errors', () => {
-      // Q53 (decision pending): SQL++ reads a field no document has as
-      // MISSING, so this query succeeds where upstream's UNKNOWN_IDENTIFIER
-      // failed. Skipped until the user decides; see docs/v1-release-plan.md.
-      it.skip('should return isError for a nonexistent valueExpression column', async () => {
+      // Q53: SQL++ would read the field as MISSING; the MCP unknown-column
+      // check rejects it against the OTel schema, as upstream's
+      // UNKNOWN_IDENTIFIER did.
+      it('should return isError for a nonexistent valueExpression column', async () => {
         const result = await callTool(client, 'cbt_timeseries', {
           sourceId: traceSource._id.toString(),
           select: [{ aggFn: 'sum', valueExpression: 'nonexistent_column_xyz' }],
