@@ -96,7 +96,9 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        shard: [1, 2, 3, 4]
+        # Fifth shard (R2c, pre-approved): the MCP suites pushed shard 1 to
+        # 48m50s of its 55 minute timeout.
+        shard: [1, 2, 3, 4, 5]
     steps:
       - name: Checkout
         uses: actions/checkout@v6
@@ -205,7 +207,7 @@ jobs:
         run: make ci-build
       - name: Replay parity goldens
         run: GOLDEN_SKIP_GATE=1 bash port/golden/run.sh --suite ingest
-  # Stable aggregator context: `integration` is green only when all four shards
+  # Stable aggregator context: `integration` is green only when all five shards
   # and the golden replay pass. Merge-queue / required-status checks target this
   # single context, since the per-shard contexts (Integration - Shard N) are not
   # stable check names.

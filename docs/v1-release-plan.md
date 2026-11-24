@@ -1521,6 +1521,14 @@ Rule 9 items (cannot keep the result shape; listed for the user):
   these. One case is skipped (Distributed); the others assert the SQL++
   equivalents (GSI indexes, document count) in place of those fields.
 
+CI change (pre-approved shard policy, CI-only, in the R2c PR): with the MCP
+suites, shard 1 of PR #41's first run took 48m50s of its 55 minute timeout
+(21 min setup, 26.5 min tests), so `integration-shards` grows to five shards.
+On the same run, shards 2 and 4 failed in "Spin up docker services" before
+any test ran: `ocb` (`go mod tidy`) got a read error from proxy.golang.org on
+`dockerstatsreceiver@v0.155.0`. That was a transient network failure, not code;
+the push that adds the fifth shard re-runs every shard.
+
 ### R3: Service map node latency
 
 Add node p50/p95/p99 in `serviceMap.ts`; add a golden parity case to

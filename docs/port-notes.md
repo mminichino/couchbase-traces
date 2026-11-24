@@ -3823,3 +3823,6 @@ list and counts are in `docs/v1-release-plan.md` (R2c result). P13 placement
   compose project (here `int-47`, left up by `make dev-int`) fails 8 trace
   cases on span counts (22 for an expected 2) from earlier runs' spans; a
   fresh stack is green. Not a product defect.
+- **Fifth integration shard.** `.github/workflows/main.yml` runs
+  `integration-shards` as `[1, 2, 3, 4, 5]` (pre-approved policy): shard 1 had
+  reached 48m50s of 55. The `integration` aggregator needs no change.
