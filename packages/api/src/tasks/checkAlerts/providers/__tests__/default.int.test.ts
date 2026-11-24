@@ -10,7 +10,7 @@ import {
 } from '@/fixtures';
 import { newId } from '@/metadata/ids';
 import { AlertSource, AlertThresholdType } from '@/metadata/schemas/alert';
-import { seedAlert } from '@/metadata/testing/alertFixtures';
+import { seedAlert, seedAlertRaw } from '@/metadata/testing/alertFixtures';
 import {
   patchSource,
   seedConnection,
@@ -210,7 +210,8 @@ describe('DefaultAlertProvider', () => {
         expect(alertSource!.name).toBe('Test Source');
         expect(alertSource!.kind).toBe('log');
         expect(alertSource!.team).toBeDefined();
-        expect(alertSource!.from?.databaseName).toBe('default');
+        // The fixture's bucket (upstream: the ClickHouse database it seeded).
+        expect(alertSource!.from?.databaseName).toBe('otel');
         expect(alertSource!.from?.tableName).toBe('logs');
         expect(alertSource!.timestampValueExpression).toBe('timestamp');
 
@@ -601,10 +602,12 @@ describe('DefaultAlertProvider', () => {
     it('should skip alerts with unsupported source type', async () => {
       const team = await createTeam({ name: 'Test Team' });
 
-      // Create alert with invalid source
-      await seedAlert({
+      // Create alert with invalid source. Raw: the typed seed reads the alert
+      // back through the schema, which rejects the source.
+      await seedAlertRaw({
+        state: 'OK',
         team: team._id,
-        source: 'UNSUPPORTED_SOURCE' as any,
+        source: 'UNSUPPORTED_SOURCE',
         threshold: 10,
         thresholdType: AlertThresholdType.ABOVE,
         interval: '5m',

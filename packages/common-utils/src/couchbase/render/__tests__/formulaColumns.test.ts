@@ -86,4 +86,20 @@ describe('couchbaseResultColumnNames with formulas', () => {
       '__hdx_time_bucket',
     ]);
   });
+
+  // R2b: a zero denominator makes every formula value NULL; ClickHouse still
+  // types the column Float64, and the alert task needs a numeric value column.
+  it('types an all-NULL formula column as nullable Float64', () => {
+    const row = {
+      'Error rate %': null,
+      __hdx_time_bucket: '2026-01-01T00:00Z',
+    };
+    const meta = inferMeta(
+      [row],
+      couchbasePostprocessHints({ ...base, showOperandSeries: false }),
+    );
+    expect(meta.find(m => m.name === 'Error rate %')?.type).toBe(
+      'Nullable(Float64)',
+    );
+  });
 });

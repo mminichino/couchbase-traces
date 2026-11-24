@@ -837,14 +837,16 @@ export const makeRawSqlTile = (opts?: {
 });
 
 export const RAW_SQL_ALERT_TEMPLATE = [
-  'SELECT toStartOfInterval(Timestamp, INTERVAL {intervalSeconds:Int64} second) AS ts,',
-  ' count() AS cnt',
-  // databaseName == Couchbase bucket; keep CH interval helpers until raw-SQL
-  // templates are rewritten to SQL++ (alerts still exercise connection/auth).
-  ` FROM ${DEFAULT_DATABASE}.default.${DEFAULT_LOGS_TABLE}`,
-  ' WHERE Timestamp >= fromUnixTimestamp64Milli({startDateMilliseconds:Int64})',
-  ' AND Timestamp < fromUnixTimestamp64Milli({endDateMilliseconds:Int64})',
-  ' GROUP BY ts ORDER BY ts',
+  // Upstream: toStartOfInterval(Timestamp, INTERVAL {intervalSeconds:Int64}
+  // second) AS ts, count(); SQL++ buckets the ISO Timestamp in millis and
+  // reads the GROUP BY alias, since a projection alias is not a group key.
+  'SELECT ts,',
+  ' COUNT(*) AS cnt',
+  ` FROM \`${DEFAULT_DATABASE}\`.\`default\`.\`${DEFAULT_LOGS_TABLE}\``,
+  ' WHERE STR_TO_MILLIS(Timestamp) >= $startDateMilliseconds',
+  ' AND STR_TO_MILLIS(Timestamp) < $endDateMilliseconds',
+  ' GROUP BY MILLIS_TO_UTC(FLOOR(STR_TO_MILLIS(Timestamp) / ($intervalSeconds * 1000)) * ($intervalSeconds * 1000)) AS ts',
+  ' ORDER BY ts',
 ].join('');
 
 /** Raw SQL counterpart to {@link makeAlertChartConfig}. */
@@ -874,10 +876,10 @@ export const makeRawSqlAlertTile = (opts?: {
 });
 
 export const RAW_SQL_NUMBER_ALERT_TEMPLATE = [
-  'SELECT count() AS cnt',
-  ` FROM ${DEFAULT_DATABASE}.default.${DEFAULT_LOGS_TABLE}`,
-  ' WHERE Timestamp >= fromUnixTimestamp64Milli({startDateMilliseconds:Int64})',
-  ' AND Timestamp < fromUnixTimestamp64Milli({endDateMilliseconds:Int64})',
+  'SELECT COUNT(*) AS cnt',
+  ` FROM \`${DEFAULT_DATABASE}\`.\`default\`.\`${DEFAULT_LOGS_TABLE}\``,
+  ' WHERE STR_TO_MILLIS(Timestamp) >= $startDateMilliseconds',
+  ' AND STR_TO_MILLIS(Timestamp) < $endDateMilliseconds',
 ].join('');
 
 export const makeRawSqlNumberAlertTile = (opts?: {

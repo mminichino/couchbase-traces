@@ -3841,3 +3841,31 @@ list and counts are in `docs/v1-release-plan.md` (R2c result). P13 placement
 - **Fifth integration shard.** `.github/workflows/main.yml` runs
   `integration-shards` as `[1, 2, 3, 4, 5]` (pre-approved policy): shard 1 had
   reached 48m50s of 55. The `integration` aggregator needs no change.
+
+### R2b: alert integration suites (2026-11-24, `mm--v1-r2b-alert-int-suites`)
+
+The last five deferred suites (`tasks/checkAlerts/__tests__/{checkAlerts,
+multiChannelAlerts,renderAlertTemplate,singleInvocationAlert}` and
+`tasks/checkAlerts/providers/__tests__/default`) run in `yarn ci:int`, and
+`deferredChIntSuites` is deleted from `packages/api/jest.int.config.js`.
+Counts and causes are in `docs/v1-release-plan.md` (R2b result).
+
+- **Zero-row results.** `inferMeta` builds column metadata from rows, so an
+  empty SQL++ result has none; ClickHouse sends the header anyway.
+  `getResponseMetadata` (`tasks/checkAlerts/index.ts`) treats zero rows and
+  zero columns as an empty window instead of failing the evaluation, so
+  alerts resolve and backfill as upstream's do.
+- **Formula column type.** `couchbaseColumnTypesForConfig` hints formula
+  columns `Nullable(Float64)`, as ClickHouse types the arithmetic, so a
+  NULL-only formula (zero denominator) still has a numeric value column.
+- **Raw SQL alert inputs.** SQL++ per rule 6; the bucket expression is
+  `MILLIS_TO_UTC(FLOOR(STR_TO_MILLIS(ts) / ($intervalSeconds * 1000)) *
+  ($intervalSeconds * 1000))`, and the date range binds
+  `$startDateMilliseconds` / `$endDateMilliseconds` against
+  `STR_TO_MILLIS(Timestamp)`.
+- **Materialized views.** Dropped with sign-off in 5f64b57. The MV alert case
+  feeds the base collection the same counts upstream pre-aggregated into the
+  MV and keeps upstream's assertions.
+- **Fixture DDL.** The escaped-filter case creates its collection and a
+  `Timestamp` index with SQL++ and retries the index while the collection
+  manifest propagates; it drops the collection afterwards.

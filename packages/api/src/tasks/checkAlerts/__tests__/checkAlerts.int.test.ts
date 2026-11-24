@@ -16,6 +16,7 @@ import {
   bulkInsertLogs,
   bulkInsertMetricsGauge,
   DEFAULT_DATABASE,
+  DEFAULT_LOGS_TABLE,
   DEFAULT_METRICS_TABLE,
   getServer,
   getTestFixtureDataClient,
@@ -2645,15 +2646,26 @@ describe('checkAlerts', () => {
 
       // A table with a column whose name requires backtick-quoting. The default
       // otel_logs schema has no such column, so create a dedicated one.
+      // SQL++: a collection plus a Timestamp index, since the alert query
+      // user may not sequentially scan an unindexed collection.
       const nativeClient = await getTestFixtureDataClient();
       const ESCAPED_FILTER_TABLE = 'otel_logs_alert_escaped_filter';
+      const escapedKs = `\`${DEFAULT_DATABASE}\`.\`default\`.\`${ESCAPED_FILTER_TABLE}\``;
       await nativeClient.command({
-        query: `CREATE OR REPLACE TABLE ${DEFAULT_DATABASE}.${ESCAPED_FILTER_TABLE} (
-          Timestamp DateTime64(9),
-          \`service-name\` String,
-          Body String
-        ) ENGINE = MergeTree ORDER BY Timestamp`,
+        query: `CREATE COLLECTION ${escapedKs} IF NOT EXISTS`,
       });
+      // DDL right after CREATE COLLECTION can race the collection manifest.
+      for (let attempt = 1; ; attempt++) {
+        try {
+          await nativeClient.command({
+            query: `CREATE INDEX ix_escaped_ts IF NOT EXISTS ON ${escapedKs}(Timestamp)`,
+          });
+          break;
+        } catch (e) {
+          if (attempt >= 20) throw e;
+          await new Promise(resolve => setTimeout(resolve, 500));
+        }
+      }
 
       try {
         const source = await seedSource({
@@ -2742,7 +2754,7 @@ describe('checkAlerts', () => {
         ]);
       } finally {
         await nativeClient.command({
-          query: `DROP TABLE IF EXISTS ${DEFAULT_DATABASE}.${ESCAPED_FILTER_TABLE}`,
+          query: `DROP COLLECTION ${escapedKs} IF EXISTS`,
         });
       }
     });
@@ -5480,14 +5492,14 @@ describe('checkAlerts', () => {
         await seedLogs(['api', 'web', '$abc']);
 
         const sqlTemplate = [
-          'SELECT toStartOfInterval(Timestamp, INTERVAL {intervalSeconds:Int64} second) AS ts,',
-          ' count() AS cnt',
-          ' FROM default.otel_logs',
-          ' WHERE Timestamp >= fromUnixTimestamp64Milli({startDateMilliseconds:Int64})',
-          ' AND Timestamp < fromUnixTimestamp64Milli({endDateMilliseconds:Int64})',
+          'SELECT ts,',
+          ' COUNT(*) AS cnt',
+          ' FROM `otel`.`default`.`otel_logs`',
+          ' WHERE STR_TO_MILLIS(Timestamp) >= $startDateMilliseconds',
+          ' AND STR_TO_MILLIS(Timestamp) < $endDateMilliseconds',
           ' AND $__filter($svc)',
           " AND ServiceName != '$abc'",
-          ' GROUP BY ts ORDER BY ts',
+          ' GROUP BY MILLIS_TO_UTC(FLOOR(STR_TO_MILLIS(Timestamp) / ($intervalSeconds * 1000)) * ($intervalSeconds * 1000)) AS ts ORDER BY ts',
         ].join('');
 
         const dashboard = await seedDashboard({
@@ -5571,13 +5583,13 @@ describe('checkAlerts', () => {
       // each row independently against the threshold within a single history record.
       const groupedSqlTemplate = `
         SELECT
-          toStartOfInterval(Timestamp, INTERVAL {intervalSeconds:Int64} second) AS ts,
+          ts,
           ServiceName,
-          count() AS cnt
-        FROM default.otel_logs
-        WHERE Timestamp >= fromUnixTimestamp64Milli({startDateMilliseconds:Int64})
-          AND Timestamp < fromUnixTimestamp64Milli({endDateMilliseconds:Int64})
-        GROUP BY ts, ServiceName
+          COUNT(*) AS cnt
+        FROM \`${DEFAULT_DATABASE}\`.\`default\`.\`${DEFAULT_LOGS_TABLE}\`
+        WHERE STR_TO_MILLIS(Timestamp) >= $startDateMilliseconds
+          AND STR_TO_MILLIS(Timestamp) < $endDateMilliseconds
+        GROUP BY MILLIS_TO_UTC(FLOOR(STR_TO_MILLIS(Timestamp) / ($intervalSeconds * 1000)) * ($intervalSeconds * 1000)) AS ts, ServiceName
         ORDER BY ts`;
 
       const dashboard = await seedDashboard({
@@ -5683,13 +5695,13 @@ describe('checkAlerts', () => {
 
       const groupedSqlTemplate = `
         SELECT
-          toStartOfInterval(Timestamp, INTERVAL {intervalSeconds:Int64} second) AS ts,
+          ts,
           ServiceName,
-          count() AS cnt
-        FROM default.otel_logs
-        WHERE Timestamp >= fromUnixTimestamp64Milli({startDateMilliseconds:Int64})
-          AND Timestamp < fromUnixTimestamp64Milli({endDateMilliseconds:Int64})
-        GROUP BY ts, ServiceName
+          COUNT(*) AS cnt
+        FROM \`${DEFAULT_DATABASE}\`.\`default\`.\`${DEFAULT_LOGS_TABLE}\`
+        WHERE STR_TO_MILLIS(Timestamp) >= $startDateMilliseconds
+          AND STR_TO_MILLIS(Timestamp) < $endDateMilliseconds
+        GROUP BY MILLIS_TO_UTC(FLOOR(STR_TO_MILLIS(Timestamp) / ($intervalSeconds * 1000)) * ($intervalSeconds * 1000)) AS ts, ServiceName
         ORDER BY ts`;
 
       const dashboard = await seedDashboard({
@@ -5812,13 +5824,13 @@ describe('checkAlerts', () => {
               displayType: 'line',
               sqlTemplate: `
         SELECT
-          toStartOfInterval(Timestamp, INTERVAL {intervalSeconds:Int64} second) AS ts,
-          ServiceName AS "${alias}",
-          count() AS cnt
-        FROM default.otel_logs
-        WHERE Timestamp >= fromUnixTimestamp64Milli({startDateMilliseconds:Int64})
-          AND Timestamp < fromUnixTimestamp64Milli({endDateMilliseconds:Int64})
-        GROUP BY ts, "${alias}"
+          ts,
+          ServiceName AS \`${alias}\`,
+          COUNT(*) AS cnt
+        FROM \`${DEFAULT_DATABASE}\`.\`default\`.\`${DEFAULT_LOGS_TABLE}\`
+        WHERE STR_TO_MILLIS(Timestamp) >= $startDateMilliseconds
+          AND STR_TO_MILLIS(Timestamp) < $endDateMilliseconds
+        GROUP BY MILLIS_TO_UTC(FLOOR(STR_TO_MILLIS(Timestamp) / ($intervalSeconds * 1000)) * ($intervalSeconds * 1000)) AS ts, ServiceName
         ORDER BY ts`,
               connection: connection.id,
             },
@@ -6003,13 +6015,13 @@ describe('checkAlerts', () => {
       // The last numeric column (warn_count = 2) determines the alert.
       const multiSeriesSqlTemplate = `
         SELECT
-          toStartOfInterval(Timestamp, INTERVAL {intervalSeconds:Int64} second) AS ts,
-          countIf(SeverityText = 'error') AS error_count,
-          countIf(SeverityText = 'warn') AS warn_count
-        FROM default.otel_logs
-        WHERE Timestamp >= fromUnixTimestamp64Milli({startDateMilliseconds:Int64})
-          AND Timestamp < fromUnixTimestamp64Milli({endDateMilliseconds:Int64})
-        GROUP BY ts
+          ts,
+          COUNT(CASE WHEN SeverityText = 'error' THEN 1 END) AS error_count,
+          COUNT(CASE WHEN SeverityText = 'warn' THEN 1 END) AS warn_count
+        FROM \`${DEFAULT_DATABASE}\`.\`default\`.\`${DEFAULT_LOGS_TABLE}\`
+        WHERE STR_TO_MILLIS(Timestamp) >= $startDateMilliseconds
+          AND STR_TO_MILLIS(Timestamp) < $endDateMilliseconds
+        GROUP BY MILLIS_TO_UTC(FLOOR(STR_TO_MILLIS(Timestamp) / ($intervalSeconds * 1000)) * ($intervalSeconds * 1000)) AS ts
         ORDER BY ts`;
 
       const dashboard = await seedDashboard({
@@ -6113,11 +6125,12 @@ describe('checkAlerts', () => {
       // $__timeInterval(Timestamp) resolves to interval bucket expression
       const macroSqlTemplate = [
         'SELECT',
-        '  $__timeInterval(Timestamp) AS ts,',
-        '  count() AS cnt',
+        '  ts,',
+        '  COUNT(*) AS cnt',
         ' FROM $__sourceTable',
         ' WHERE $__timeFilter(Timestamp)',
-        ' GROUP BY ts',
+        // A SQL++ projection cannot read a sibling alias: group by the macro.
+        ' GROUP BY $__timeInterval(Timestamp) AS ts',
         ' ORDER BY ts',
       ].join('\n');
 
@@ -6517,11 +6530,11 @@ describe('checkAlerts', () => {
       // The last numeric column (warn_count = 2) should be used for threshold comparison.
       const multiNumericSql = [
         'SELECT',
-        " countIf(SeverityText = 'error') AS error_count,",
-        " countIf(SeverityText = 'warn') AS warn_count",
-        ' FROM default.otel_logs',
-        ' WHERE Timestamp >= fromUnixTimestamp64Milli({startDateMilliseconds:Int64})',
-        ' AND Timestamp < fromUnixTimestamp64Milli({endDateMilliseconds:Int64})',
+        " COUNT(CASE WHEN SeverityText = 'error' THEN 1 END) AS error_count,",
+        " COUNT(CASE WHEN SeverityText = 'warn' THEN 1 END) AS warn_count",
+        ' FROM `otel`.`default`.`otel_logs`',
+        ' WHERE STR_TO_MILLIS(Timestamp) >= $startDateMilliseconds',
+        ' AND STR_TO_MILLIS(Timestamp) < $endDateMilliseconds',
       ].join('');
 
       const dashboard = await seedDashboard({
@@ -6633,10 +6646,10 @@ describe('checkAlerts', () => {
       // SQL with GROUP BY that returns multiple rows.
       // ORDER BY cnt DESC ensures the first row is web (cnt=3).
       const groupBySql = [
-        'SELECT ServiceName, count() AS cnt',
-        ' FROM default.otel_logs',
-        ' WHERE Timestamp >= fromUnixTimestamp64Milli({startDateMilliseconds:Int64})',
-        ' AND Timestamp < fromUnixTimestamp64Milli({endDateMilliseconds:Int64})',
+        'SELECT ServiceName, COUNT(*) AS cnt',
+        ' FROM `otel`.`default`.`otel_logs`',
+        ' WHERE STR_TO_MILLIS(Timestamp) >= $startDateMilliseconds',
+        ' AND STR_TO_MILLIS(Timestamp) < $endDateMilliseconds',
         ' GROUP BY ServiceName',
         ' ORDER BY cnt DESC',
       ].join('');
@@ -11575,32 +11588,10 @@ describe('checkAlerts', () => {
     const MV_TABLE_NAME = 'otel_logs_rollup_5m';
     const server = getServer();
 
-    const createMV = async () => {
-      const client = await getTestFixtureDataClient();
-      await client.command({
-        query: `
-          CREATE TABLE IF NOT EXISTS ${DEFAULT_DATABASE}.${MV_TABLE_NAME}
-          (
-              Timestamp DateTime,
-              ServiceName LowCardinality(String),
-              SeverityText LowCardinality(String),
-              count SimpleAggregateFunction(sum, UInt64)
-          )
-          ENGINE = AggregatingMergeTree
-          PARTITION BY toDate(Timestamp)
-          ORDER BY (ServiceName, SeverityText, Timestamp)
-          SETTINGS index_granularity = 8192
-        `,
-      });
-    };
-
-    const clearMV = async () => {
-      const client = await getTestFixtureDataClient();
-      await client.command({
-        query: `TRUNCATE ${DEFAULT_DATABASE}.${MV_TABLE_NAME}`,
-      });
-    };
-
+    // Materialized-view configuration was removed with the other
+    // ClickHouse-only features (5f64b57, a signed-off drop): a source's
+    // `materializedViews` is dropped and alerts always read the base
+    // collection. Upstream created an AggregatingMergeTree rollup here.
     const createSavedSearchWithMVSource = async (savedSearchWhere: string) => {
       const team = await createTeam({ name: 'My Team' });
       const webhook = await seedWebhook({
@@ -11676,7 +11667,6 @@ describe('checkAlerts', () => {
 
     beforeAll(async () => {
       await server.start();
-      await createMV();
     });
 
     beforeEach(async () => {
@@ -11689,15 +11679,10 @@ describe('checkAlerts', () => {
 
     afterEach(async () => {
       await server.clearDBs();
-      await clearMV();
       jest.clearAllMocks();
     });
 
     afterAll(async () => {
-      const client = await getTestFixtureDataClient();
-      await client.command({
-        query: `DROP TABLE IF EXISTS ${DEFAULT_DATABASE}.${MV_TABLE_NAME}`,
-      });
       await server.stop();
     });
 
@@ -11743,28 +11728,22 @@ describe('checkAlerts', () => {
       const eventMs = new Date('2023-11-16T22:05:00.000Z');
       const eventNextMs = new Date('2023-11-16T22:10:00.000Z');
 
-      // Insert directly into the MV so that we can be sure the MV is being used
-      await bulkInsertData(`${DEFAULT_DATABASE}.${MV_TABLE_NAME}`, [
+      // Upstream inserted pre-aggregated rows into the MV (count 3, then 1
+      // error + 2 info). With MVs dropped the alert reads otel_logs, so insert
+      // the same events unaggregated; the expected counts are unchanged.
+      const logAt = (Timestamp: Date, SeverityText: string, n: number) =>
+        Array.from({ length: n }, (_, i) => ({
+          ServiceName: 'api',
+          Timestamp,
+          SeverityText,
+          Body: `${SeverityText} ${i}`,
+        }));
+      await bulkInsertLogs([
         // logs from 22:05 - 22:10
-        {
-          ServiceName: 'api',
-          Timestamp: eventMs,
-          SeverityText: 'error',
-          count: 3,
-        },
+        ...logAt(eventMs, 'error', 3),
         // logs from 22:10 - 22:15
-        {
-          ServiceName: 'api',
-          Timestamp: eventNextMs,
-          SeverityText: 'error',
-          count: 1,
-        },
-        {
-          ServiceName: 'api',
-          Timestamp: eventNextMs,
-          SeverityText: 'info',
-          count: 2,
-        },
+        ...logAt(eventNextMs, 'error', 1),
+        ...logAt(eventNextMs, 'info', 2),
       ]);
 
       // Act - Run alerts twice to cover two periods

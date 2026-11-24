@@ -1552,6 +1552,56 @@ any test ran: `ocb` (`go mod tidy`) got a read error from proxy.golang.org on
 `dockerstatsreceiver@v0.155.0`. That was a transient network failure, not code;
 the push that adds the fifth shard re-runs every shard.
 
+R2b result (2026-11-24, `mm--v1-r2b-alert-int-suites`): all 5 alert suites
+ported and `deferredChIntSuites` deleted from `packages/api/jest.int.config.js`
+(the R2 acceptance above). On the CI compose stack: `checkAlerts` 185/185,
+`renderAlertTemplate` 104/104 (its 9 snapshots match unchanged),
+`providers/default` 36/36, `singleInvocationAlert` 6/6,
+`multiChannelAlerts` 4/4; no skipped case. Causes and fixes:
+
+- **Raw SQL inputs (T).** The raw-SQL tile templates (`fixtures.ts`
+  `RAW_SQL_ALERT_TEMPLATE` and `RAW_SQL_NUMBER_ALERT_TEMPLATE`, plus the inline
+  ones in `checkAlerts` and `singleInvocationAlert`) are SQL++, as rule 6
+  requires: `COUNT(*)`, three-part keyspaces, `$startDateMilliseconds` /
+  `$endDateMilliseconds` on `STR_TO_MILLIS(Timestamp)`, and the bucket
+  `MILLIS_TO_UTC(FLOOR(STR_TO_MILLIS(Timestamp) / ($intervalSeconds * 1000)) * …) AS ts`
+  for `toStartOfInterval(…, INTERVAL {intervalSeconds:Int64} second)`. The
+  macro case keeps `$__timeInterval(Timestamp)`.
+- **Empty result windows (P).** A SQL++ result with no rows has no column
+  metadata (columns are inferred from rows), where ClickHouse still sends the
+  header. `getResponseMetadata` returned undefined, so the alert stopped
+  before writing history: a raw-SQL alert never resolved, missed windows were
+  not caught up, and an empty first window wrote nothing. A zero-row,
+  zero-column result is now an empty window (time series, or single value for
+  a Number tile), which is what upstream evaluates. Unit test:
+  `checkAlerts/__tests__/responseMetadata.test.ts`.
+- **All-NULL formula columns (P).** Formula columns had no type hint, so a
+  formula whose every value is NULL (zero denominator) was typed
+  `Nullable(String)` and the alert found no value column. ClickHouse types
+  the arithmetic `Float64`; `couchbaseColumnTypesForConfig` now hints each
+  formula column `Nullable(Float64)`. Fixes the metric zero-denominator case
+  and the event formula resolve.
+- **Backtick-quoted filter column (T).** The fixture collection for
+  `` `service-name` `` is created with SQL++ DDL (`CREATE COLLECTION` and a
+  `Timestamp` index, retried while the manifest settles) instead of
+  `MergeTree`; the assertions are upstream's.
+- **Materialized views (signed-off drop).** MV configuration was removed with
+  the other ClickHouse-only features (5f64b57), so a source's
+  `materializedViews` is dropped and alerts read the base collection. The
+  "compatible MV" case inserts upstream's pre-aggregated counts (3, then 1
+  error and 2 info) as individual `otel_logs` rows; the expected states,
+  counts and values are upstream's. The incompatible-MV case is unchanged.
+- **Provider fixtures (T).** The tile-alert source is seeded in the `otel`
+  bucket, so `from.databaseName` is `otel`. The unsupported-source alert is
+  written raw (`seedAlertRaw`): the typed seed reads the alert back through
+  the schema, which rejects it. `getAlertTasks` skips it, as upstream does.
+
+No new D-numbers: both product fixes are small and in scope. Shard timing is
+reported with PR CI. `make ci-int` on a fresh stack: api 2207 passed and 53
+skipped, all 53 in the harness-only `metadata.couchbase.int.test.ts` (the one
+skipped suite; it was 51 before the D12 and D13 contract cases), 0 ignored
+suites; common-utils 127 passed.
+
 ### R3: Service map node latency
 
 Add node p50/p95/p99 in `serviceMap.ts`; add a golden parity case to
