@@ -150,11 +150,15 @@ export function inferMeta(
   }));
 }
 
-/** Applies legacy store JSON output conventions to one value. */
+/**
+ * Applies legacy store JSON output conventions to one value. 64-bit integers,
+ * signed or not, are decimal strings, as ClickHouse JSON quotes them; count
+ * columns are typed UInt64 (render/postprocess.ts).
+ */
 export function encodeValue(type: string, v: unknown): unknown {
   if (v === null || v === undefined) return null;
   const { inner } = unwrapNullable(type);
-  if (inner === 'Int64') {
+  if (inner === 'Int64' || inner === 'UInt64') {
     if (typeof v === 'number' || typeof v === 'bigint') return String(v);
     return typeof v === 'string' ? v : JSON.stringify(v);
   }

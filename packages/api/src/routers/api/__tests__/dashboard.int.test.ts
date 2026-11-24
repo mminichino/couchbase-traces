@@ -2099,7 +2099,11 @@ describe('dashboard router', () => {
           })
           .expect(400);
 
-        expect(response.body.message).toContain(source);
+        // PromQL is dropped (docs/parity.md): a PromQL filter is rejected
+        // before its sources are checked, so the message names PromQL.
+        expect(response.body.message).toContain(
+          sourceType === 'promql' ? 'PromQL' : source,
+        );
       });
 
       it('rejects an applies-to source of the wrong type', async () => {

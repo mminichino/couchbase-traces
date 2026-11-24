@@ -450,9 +450,11 @@ describe('External API v2 Charts', () => {
           },
         ],
       });
+      // Upstream answers 500. A SQL++ parse failure is the caller's error
+      // here and maps to 400 (port-notes Phase 8, couchbaseConsumerHttpResponse).
       const response = await authRequest('post', BASE_URL)
         .send(payload)
-        .expect(500);
+        .expect(400);
       expect(response.body).toHaveProperty('error');
 
       // Restore console.error

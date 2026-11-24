@@ -3683,3 +3683,58 @@ a per-slot lock (`scripts/slot-lock.sh`) around `ci-int`, `dev-int`, and
   Lucene kept).
   `metricWarmup.test.ts`, `metricWhere.test.ts`, and `expHistogram.test.ts`
   now expect `<=` and the trailing `Flags` filter.
+
+### R2a: internal and external API integration suites (2026-11-23, `mm--v1-r2a-api-int-suites`)
+
+Nine suites leave `deferredChIntSuites` (`packages/api/jest.int.config.js`):
+`routers/api/{dashboard,iac,sources,connections}` and
+`routers/external-api/{charts,search,sources,sources-crud,connections}`, 377
+tests, green on the CI compose stack. `middleware/queryAttribution` stays
+deferred under D29. The full cause list and counts are in
+`docs/v1-release-plan.md` (R2a result).
+
+- **Couchbase source fixtures.** Every created or updated source sends
+  `from.scopeName` and `timestampFormat`; `validateSourceForConnectionKind`
+  requires both for a Couchbase connection. Valid `querySettings` fixtures use
+  the six Couchbase names (`couchbase/settings.ts`); the 10-item cap test
+  repeats three of them.
+- **Local app mode team id.** The string-team-id cases seed the connection
+  under `'_local_team_'`. Upstream seeded `new Types.ObjectId('_local_team_')`,
+  which Mongo matched against the string id on the request; the metadata store
+  compares strings, and `LOCAL_APP_TEAM._id` is the hex form.
+- **PromQL filter.** A dashboard filter with `sourceType: 'promql'` is rejected
+  by `rejectPromqlBody` with "PromQL sources are no longer supported." before
+  source checks run, so the case asserts that message, not the source id.
+- **`materializedViews`.** Accepted and dropped on create and update; absent
+  from responses and from `openapi.json` (5f64b57 removed the feature).
+  `metadataMaterializedViews` is unchanged.
+- **Chart SQL errors.** `whereLanguage: 'sql', where: 'invalid query'` answers
+  400 with `{ error }`; upstream answers 500. The status comes from
+  `CouchbaseQueryError.httpStatus` (`PARSING_FAILED` maps to 400, Phase 8).
+- **`UInt64` JSON.** `encodeValue` (`couchbase/inferMeta.ts`) quotes `UInt64`
+  like `Int64`, so count columns typed by `couchbaseColumnTypesForConfig`
+  return `"1"`, matching ClickHouse's quoted 64-bit integers. Raw SQL results
+  without type hints keep the inferred `Int64` and were already strings.
+- **`FindSpec.notTrue`.** Mongo `$ne: true` for flags older documents never
+  stored: SQL++ `IFMISSINGORNULL(d.f, FALSE) != TRUE`, and `!== true` in
+  `MemoryFind`. The IaC manifest uses it for `provisioned`; the team index
+  serves the equality and the flag filters the fetched rows.
+- **Connection PUT.** `buildCouchbaseConnectionUpdate(body, stored)` takes the
+  stored connection: it keeps the password, writes `isPrometheusEndpoint:
+  false` when the stored document has the flag, and clears
+  `hyperdxSettingPrefix` on `null` or `''`.
+- **`hyperdxSettingPrefix`.** Back in `CouchbaseConnectionSchema` (same regex
+  as upstream). Stored and returned only; upstream appends it as a ClickHouse
+  custom setting carrying the user's email, which has no SQL++ counterpart.
+- **D29.** Request attribution (`withQueryAttribution`) is set but never read
+  by `NodeDataClient` / `CouchbaseNodeClient`, so a route's queries get a
+  `cbt:adhoc:` client context id. See the plan's D29 for the fix and the port
+  of `queryAttribution.int.test.ts` to a Couchbase route. Placement (Q51): its
+  own PR right after R2a, before R2c and R2b.
+- **CI: parity goldens in their own job.** Shard 1 passed all 438 API tests
+  but was cancelled at the 55 minute timeout during the golden replay step.
+  `Replay parity goldens` is now the `parity-goldens` job (30 minute timeout,
+  frees runner disk, `make ci-build`); the
+  replay starts its own `cbt-golden-replay` compose project, so it needs nothing from
+  the shard's stack. The `integration` aggregator requires it, so the required
+  check still covers the replay.

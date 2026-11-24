@@ -424,8 +424,9 @@ describe('iac router', () => {
     await agent
       .post('/connections')
       .send({
-        name: 'Attacker ClickHouse',
-        host: 'http://localhost:8123',
+        name: 'Attacker Couchbase',
+        kind: 'couchbase',
+        host: 'couchbase://localhost',
         username: 'default',
         password: '',
         platformProvisioned: false,
@@ -457,7 +458,8 @@ describe('iac router', () => {
       .send({
         id: connection._id.toString(),
         name: 'Cloud ClickHouse',
-        host: 'https://abc.clickhouse.cloud:8443',
+        kind: 'couchbase',
+        host: 'couchbases://cb.abc.cloud.couchbase.com',
         username: 'default',
         password: '',
         platformProvisioned: false,

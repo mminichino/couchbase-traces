@@ -1,6 +1,5 @@
 import { clusterCache } from '@couchbase-traces/common-utils/dist/couchbase/node';
 import {
-  ConnectionSchema,
   ConnectionSchemaNoId,
   CouchbaseConnectionSchema,
   UnsupportedLegacyConnectionSchema,
@@ -41,7 +40,16 @@ const externalConnectionSchema = z.discriminatedUnion('kind', [
 ]);
 
 const createConnectionBodySchema = ConnectionSchemaNoId;
-const updateConnectionBodySchema = ConnectionSchema;
+// As upstream: the id comes from the path, and '' clears the prefix like
+// null ("set to an empty string" in the PUT docs below).
+const updateConnectionBodySchema = ConnectionSchemaNoId.extend({
+  hyperdxSettingPrefix: z
+    .string()
+    .regex(/^[a-z0-9_]+$/i)
+    .or(z.literal(''))
+    .optional()
+    .nullable(),
+});
 
 function toIsoTimestamp(value: unknown): string | undefined {
   if (value == null) return undefined;
@@ -507,6 +515,7 @@ router.post(
             ? body.managementPort
             : undefined,
         monitorPassword: body.monitorPassword || undefined,
+        hyperdxSettingPrefix: body.hyperdxSettingPrefix ?? undefined,
       });
 
       res.json({
@@ -615,7 +624,7 @@ router.put(
 
       const { update, unsetFields } = buildCouchbaseConnectionUpdate(
         body,
-        existingConnection.password,
+        existingConnection,
       );
 
       const updatedConnection = await updateConnection(

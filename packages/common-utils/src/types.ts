@@ -2463,6 +2463,12 @@ export const CouchbaseConnectionSchema = ConnectionBaseSchema.extend({
   monitorPassword: z.string().optional(),
   /** Management REST port. Default 8091 for couchbase:// and 18091 for couchbases://. Null clears it. */
   managementPort: z.number().int().min(1).max(65535).nullish(),
+  /** Kept from upstream's connection contract; SQL++ queries do not use it. */
+  hyperdxSettingPrefix: z
+    .string()
+    .regex(/^[a-z0-9_]+$/i)
+    .optional()
+    .nullable(),
 });
 
 export const ConnectionSchema = CouchbaseConnectionSchema;

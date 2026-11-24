@@ -89,9 +89,8 @@ jobs:
   integration-shards:
     name: Integration - Shard ${{ matrix.shard }}
     # Sequential bake + prune (ENOSPC mitigation) needs more than the old
-    # parallel-bake 16m budget. 35m covered compose + int tests but shard 1's
-    # golden replay step was cut mid-run (job cancelled ≈35m); 55m leaves
-    # room for goldens after a slow bake.
+    # parallel-bake 16m budget. The golden replay now runs in its own job
+    # (parity-goldens), so this covers bake + compose + int tests only.
     timeout-minutes: 55
     runs-on: ubuntu-24.04
     strategy:
@@ -179,14 +178,39 @@ jobs:
           yarn workspace @couchbase-traces/common-utils ci:int --shard=${{ matrix.shard }}/${{ strategy.job-total }} || status=1
           yarn workspace @couchbase-traces/api ci:int --shard=${{ matrix.shard }}/${{ strategy.job-total }} || status=1
           exit $status
+  # Own job (R2a): on shard 1 the replay ran after the int tests and pushed the
+  # shard past its timeout. The replay brings up its own compose project, so
+  # it needs none of the shard's stack.
+  parity-goldens:
+    name: Parity goldens
+    timeout-minutes: 30
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+      - name: Setup node
+        uses: actions/setup-node@v6
+        with:
+          node-version-file: '.nvmrc'
+          cache-dependency-path: 'yarn.lock'
+          cache: 'yarn'
+      - name: Install root dependencies
+        run: yarn install --immutable
+      - name: Free runner disk
+        run: |
+          sudo rm -rf /usr/share/dotnet /usr/local/lib/android /opt/ghc \
+            /opt/hostedtoolcache/CodeQL /usr/local/share/boost || true
+          df -h / || true
+      - name: Build dependencies
+        run: make ci-build
       - name: Replay parity goldens
-        if: matrix.shard == 1
         run: GOLDEN_SKIP_GATE=1 bash port/golden/run.sh --suite ingest
   # Stable aggregator context: `integration` is green only when all four shards
-  # pass. Merge-queue / required-status checks target this single context, since
-  # the per-shard contexts (Integration - Shard N) are not stable check names.
+  # and the golden replay pass. Merge-queue / required-status checks target this
+  # single context, since the per-shard contexts (Integration - Shard N) are not
+  # stable check names.
   integration:
-    needs: [integration-shards]
+    needs: [integration-shards, parity-goldens]
     if: always()
     runs-on: ubuntu-24.04
     timeout-minutes: 5
@@ -195,6 +219,11 @@ jobs:
         if: needs.integration-shards.result != 'success'
         run: |
           echo "::error::One or more integration shards failed"
+          exit 1
+      - name: Verify parity goldens passed
+        if: needs.parity-goldens.result != 'success'
+        run: |
+          echo "::error::Parity golden replay failed"
           exit 1
   otel-unit-test:
     timeout-minutes: 8

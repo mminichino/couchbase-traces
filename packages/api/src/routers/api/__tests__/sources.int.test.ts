@@ -6,7 +6,6 @@ import {
 import express from 'express';
 import request from 'supertest';
 
-import { LOCAL_APP_TEAM } from '@/controllers/team';
 import {
   getLoggedInAgent as getFixtureLoggedInAgent,
   getServer,
@@ -29,9 +28,11 @@ const MOCK_SOURCE: Omit<Extract<TSource, { kind: 'log' }>, 'id'> = {
   connection: newId(),
   from: {
     databaseName: 'test_db',
+    scopeName: 'default',
     tableName: 'test_table',
   },
   timestampValueExpression: 'timestamp',
+  timestampFormat: 'iso8601',
   defaultTableSelectExpression: 'body',
 };
 
@@ -41,9 +42,11 @@ const MOCK_METRIC_SOURCE: Omit<Extract<TSource, { kind: 'metric' }>, 'id'> = {
   connection: newId(),
   from: {
     databaseName: 'test_db',
+    scopeName: 'default',
     tableName: '',
   },
   timestampValueExpression: 'TimeUnix',
+  timestampFormat: 'iso8601',
   resourceAttributesExpression: 'ResourceAttributes',
   metricTables: {
     gauge: 'otel_metrics_gauge',
@@ -61,9 +64,11 @@ const MOCK_PROMQL_SOURCE = {
   connection: newId(),
   from: {
     databaseName: 'test_db',
+    scopeName: 'default',
     tableName: 'metrics_ts',
   },
   timestampValueExpression: 'timestamp',
+  timestampFormat: 'iso8601',
 } as import('@/metadata/schemas/source').ISourceInput;
 
 const createTestConnection = (team: string, id: string) =>
@@ -121,6 +126,7 @@ describe('sources router', () => {
       name: MOCK_SOURCE.name,
       from: MOCK_SOURCE.from,
       timestampValueExpression: MOCK_SOURCE.timestampValueExpression,
+      timestampFormat: 'iso8601',
     });
   });
 
@@ -142,6 +148,7 @@ describe('sources router', () => {
       name: MOCK_SOURCE.name,
       from: MOCK_SOURCE.from,
       timestampValueExpression: MOCK_SOURCE.timestampValueExpression,
+      timestampFormat: 'iso8601',
     });
 
     // Verify source was created in database
@@ -242,8 +249,8 @@ describe('sources router', () => {
       const { agent } = await getLoggedInAgent(server);
 
       const querySettings = [
-        { setting: 'max_execution_time', value: '60' },
-        { setting: 'max_memory_usage', value: '10000000000' },
+        { setting: 'timeout_ms', value: '60000' },
+        { setting: 'scan_cap', value: '10000' },
       ];
 
       const response = await agent
@@ -261,9 +268,11 @@ describe('sources router', () => {
     it('POST / - accepts querySettings at the limit of 10 items', async () => {
       const { agent } = await getLoggedInAgent(server);
 
+      // Couchbase allows six setting names (common-utils couchbase/settings);
+      // repeat them to reach the 10-item cap.
       const querySettings = Array.from({ length: 10 }, (_, i) => ({
-        setting: `setting_${i}`,
-        value: `value_${i}`,
+        setting: ['timeout_ms', 'max_parallelism', 'scan_cap'][i % 3],
+        value: `${i + 1}`,
       }));
 
       const response = await agent
@@ -322,7 +331,7 @@ describe('sources router', () => {
         team: team._id,
       });
 
-      const querySettings = [{ setting: 'max_execution_time', value: '120' }];
+      const querySettings = [{ setting: 'timeout_ms', value: '120000' }];
 
       await agent
         .put(`/sources/${source._id}`)
@@ -408,9 +417,11 @@ describe('sources router', () => {
       connection: MOCK_METRIC_SOURCE.connection,
       from: {
         databaseName: 'test_db',
+        scopeName: 'default',
         tableName: 'otel_metrics',
       },
       timestampValueExpression: 'TimeUnix',
+      timestampFormat: 'iso8601',
       resourceAttributesExpression: 'ResourceAttributes',
       metricTables: {
         gauge: 'otel_metrics_gauge',
@@ -431,9 +442,11 @@ describe('sources router', () => {
       connection: metricSource.connection,
       from: {
         databaseName: 'test_db',
+        scopeName: 'default',
         tableName: 'otel_traces',
       },
       timestampValueExpression: 'Timestamp',
+      timestampFormat: 'iso8601',
       durationExpression: 'Duration',
       durationPrecision: 9,
       traceIdExpression: 'TraceId',
@@ -470,9 +483,11 @@ describe('sources router', () => {
       connection: MOCK_METRIC_SOURCE.connection,
       from: {
         databaseName: 'test_db',
+        scopeName: 'default',
         tableName: 'otel_metrics',
       },
       timestampValueExpression: 'TimeUnix',
+      timestampFormat: 'iso8601',
       resourceAttributesExpression: 'ResourceAttributes',
       metricTables: {
         gauge: 'otel_metrics_gauge',
@@ -489,6 +504,7 @@ describe('sources router', () => {
       connection: metricSource.connection,
       from: metricSource.from,
       timestampValueExpression: 'TimeUnix',
+      timestampFormat: 'iso8601',
       resourceAttributesExpression: 'ResourceAttributes',
       metricTables: {
         gauge: 'otel_metrics_gauge_v2',
@@ -521,9 +537,11 @@ describe('sources router', () => {
       connection: metricSource.connection,
       from: {
         databaseName: 'test_db',
+        scopeName: 'default',
         tableName: 'otel_logs',
       },
       timestampValueExpression: 'Timestamp',
+      timestampFormat: 'iso8601',
       defaultTableSelectExpression: 'Body',
       severityTextExpression: 'SeverityText',
     };
@@ -578,8 +596,13 @@ describe('sources router', () => {
         // The suite provisions a real Connection for this id; POST now 400s on
         // one that doesn't exist for the team.
         connection: MOCK_SOURCE.connection,
-        from: { databaseName: 'test_db', tableName: 'otel_traces' },
+        from: {
+          databaseName: 'test_db',
+          scopeName: 'default',
+          tableName: 'otel_traces',
+        },
         timestampValueExpression: 'Timestamp',
+        timestampFormat: 'iso8601',
         defaultTableSelectExpression: 'Timestamp, SpanName',
         durationExpression: 'Duration',
         durationPrecision: 9,
@@ -923,7 +946,11 @@ describe('sources router', () => {
         name: 'Legacy Session',
         team: team._id,
         connection: newId(),
-        from: { databaseName: 'otel', tableName: 'otel_sessions' },
+        from: {
+          databaseName: 'otel',
+          scopeName: 'default',
+          tableName: 'otel_sessions',
+        },
         traceSourceId: newId(),
         // timestampValueExpression intentionally omitted
       });
@@ -945,8 +972,13 @@ describe('sources router', () => {
         name: 'Legacy Trace',
         team: team._id,
         connection: newId(),
-        from: { databaseName: 'otel', tableName: 'otel_traces' },
+        from: {
+          databaseName: 'otel',
+          scopeName: 'default',
+          tableName: 'otel_traces',
+        },
         timestampValueExpression: 'Timestamp',
+        timestampFormat: 'iso8601',
         durationExpression: 'Duration',
         durationPrecision: 9,
         traceIdExpression: 'TraceId',
@@ -972,8 +1004,13 @@ describe('sources router', () => {
         name: 'Trace with null logSourceId',
         team: team._id,
         connection: newId(),
-        from: { databaseName: 'otel', tableName: 'otel_traces' },
+        from: {
+          databaseName: 'otel',
+          scopeName: 'default',
+          tableName: 'otel_traces',
+        },
         timestampValueExpression: 'Timestamp',
+        timestampFormat: 'iso8601',
         defaultTableSelectExpression: '*',
         durationExpression: 'Duration',
         durationPrecision: 3,
@@ -1007,8 +1044,13 @@ describe('sources router', () => {
         name: 'Flat Model Log',
         team: team._id,
         connection: newId(),
-        from: { databaseName: 'otel', tableName: 'otel_logs' },
+        from: {
+          databaseName: 'otel',
+          scopeName: 'default',
+          tableName: 'otel_logs',
+        },
         timestampValueExpression: 'Timestamp',
+        timestampFormat: 'iso8601',
         defaultTableSelectExpression: 'Body',
         bodyExpression: 'Body',
         // These fields belong to other kinds but were stored in old flat model
@@ -1037,7 +1079,11 @@ describe('sources router', () => {
         name: 'Legacy Session',
         team: team._id,
         connection: newId(),
-        from: { databaseName: 'otel', tableName: 'otel_sessions' },
+        from: {
+          databaseName: 'otel',
+          scopeName: 'default',
+          tableName: 'otel_sessions',
+        },
         traceSourceId: 'some-trace-source-id',
       });
 
@@ -1049,7 +1095,11 @@ describe('sources router', () => {
           id: result,
           name: 'Updated Session',
           connection: newId(),
-          from: { databaseName: 'otel', tableName: 'otel_sessions' },
+          from: {
+            databaseName: 'otel',
+            scopeName: 'default',
+            tableName: 'otel_sessions',
+          },
           traceSourceId: 'some-trace-source-id',
           // timestampValueExpression intentionally omitted
         })
@@ -1065,7 +1115,11 @@ describe('sources router', () => {
         name: 'Legacy Session',
         team: team._id,
         connection: connectionId,
-        from: { databaseName: 'otel', tableName: 'otel_sessions' },
+        from: {
+          databaseName: 'otel',
+          scopeName: 'default',
+          tableName: 'otel_sessions',
+        },
         traceSourceId: 'some-trace-source-id',
       });
 
@@ -1076,9 +1130,14 @@ describe('sources router', () => {
           id: result,
           name: 'Updated Session',
           connection: connectionId.toString(),
-          from: { databaseName: 'otel', tableName: 'otel_sessions' },
+          from: {
+            databaseName: 'otel',
+            scopeName: 'default',
+            tableName: 'otel_sessions',
+          },
           traceSourceId: 'some-trace-source-id',
           timestampValueExpression: 'TimestampTime',
+          timestampFormat: 'iso8601',
         })
         .expect(200);
 
@@ -1096,8 +1155,13 @@ describe('sources router', () => {
         name: 'Flat Log',
         team: team._id,
         connection: newId(),
-        from: { databaseName: 'otel', tableName: 'otel_logs' },
+        from: {
+          databaseName: 'otel',
+          scopeName: 'default',
+          tableName: 'otel_logs',
+        },
         timestampValueExpression: 'Timestamp',
+        timestampFormat: 'iso8601',
         defaultTableSelectExpression: 'Body',
         metricTables: { gauge: 'otel_metrics_gauge' },
       });
@@ -1122,8 +1186,13 @@ describe('sources router', () => {
             name: 'Log',
             team: team._id,
             connection: connectionId,
-            from: { databaseName: 'otel', tableName: 'otel_logs' },
+            from: {
+              databaseName: 'otel',
+              scopeName: 'default',
+              tableName: 'otel_logs',
+            },
             timestampValueExpression: 'Timestamp',
+            timestampFormat: 'iso8601',
             defaultTableSelectExpression: 'Body',
           },
           {
@@ -1131,8 +1200,13 @@ describe('sources router', () => {
             name: 'Trace',
             team: team._id,
             connection: connectionId,
-            from: { databaseName: 'otel', tableName: 'otel_traces' },
+            from: {
+              databaseName: 'otel',
+              scopeName: 'default',
+              tableName: 'otel_traces',
+            },
             timestampValueExpression: 'Timestamp',
+            timestampFormat: 'iso8601',
             defaultTableSelectExpression: '*',
             durationExpression: 'Duration',
             durationPrecision: 3,
@@ -1147,8 +1221,13 @@ describe('sources router', () => {
             name: 'Session',
             team: team._id,
             connection: connectionId,
-            from: { databaseName: 'otel', tableName: 'otel_sessions' },
+            from: {
+              databaseName: 'otel',
+              scopeName: 'default',
+              tableName: 'otel_sessions',
+            },
             timestampValueExpression: 'TimestampTime',
+            timestampFormat: 'iso8601',
             traceSourceId: 'some-id',
           },
           {
@@ -1156,8 +1235,9 @@ describe('sources router', () => {
             name: 'Metric',
             team: team._id,
             connection: connectionId,
-            from: { databaseName: 'otel', tableName: '' },
+            from: { databaseName: 'otel', scopeName: 'default', tableName: '' },
             timestampValueExpression: 'TimeUnix',
+            timestampFormat: 'iso8601',
             resourceAttributesExpression: 'ResourceAttributes',
             metricTables: { gauge: 'otel_metrics_gauge' },
           },
@@ -1205,7 +1285,9 @@ describe('sources router', () => {
 
     it('POST / - creates a source when team id is a string', async () => {
       const app = getLocalAppModeApp();
-      await createTestConnection(LOCAL_APP_TEAM._id, MOCK_SOURCE.connection);
+      // Seed under the team id the request carries: Mongo cast '_local_team_'
+      // and its hex to one ObjectId, the metadata store keeps strings as is.
+      await createTestConnection(LOCAL_APP_TEAM_ID, MOCK_SOURCE.connection);
 
       const response = await request(app)
         .post('/sources')
@@ -1223,7 +1305,9 @@ describe('sources router', () => {
 
     it('PUT /:id - updates a source when team id is a string', async () => {
       const app = getLocalAppModeApp();
-      await createTestConnection(LOCAL_APP_TEAM._id, MOCK_SOURCE.connection);
+      // Seed under the team id the request carries: Mongo cast '_local_team_'
+      // and its hex to one ObjectId, the metadata store keeps strings as is.
+      await createTestConnection(LOCAL_APP_TEAM_ID, MOCK_SOURCE.connection);
 
       const source = await seedSource({
         ...MOCK_SOURCE,
@@ -1383,8 +1467,13 @@ describe('sources router', () => {
           kind: SourceKind.Trace,
           name: 'Test Trace Source',
           connection: MOCK_SOURCE.connection,
-          from: { databaseName: 'test_db', tableName: 'otel_traces' },
+          from: {
+            databaseName: 'test_db',
+            scopeName: 'default',
+            tableName: 'otel_traces',
+          },
           timestampValueExpression: 'Timestamp',
+          timestampFormat: 'iso8601',
           defaultTableSelectExpression: 'Timestamp, ServiceName',
           durationExpression: 'Duration',
           durationPrecision: 9,
@@ -1441,8 +1530,13 @@ describe('sources router', () => {
         kind: SourceKind.Trace,
         name: 'Trace with text index pref',
         connection: MOCK_SOURCE.connection,
-        from: { databaseName: 'test_db', tableName: 'otel_traces' },
+        from: {
+          databaseName: 'test_db',
+          scopeName: 'default',
+          tableName: 'otel_traces',
+        },
         timestampValueExpression: 'Timestamp',
+        timestampFormat: 'iso8601',
         defaultTableSelectExpression: '*',
         durationExpression: 'Duration',
         durationPrecision: 9,

@@ -114,7 +114,6 @@ describe('External API v2 Sources', () => {
         defaultTableSelectExpression: '*',
         highlightedTraceAttributeExpressions: [],
         highlightedRowAttributeExpressions: [],
-        materializedViews: [],
         querySettings: [],
       });
     });
@@ -222,34 +221,6 @@ describe('External API v2 Sources', () => {
             sqlExpression: 'TraceId',
             alias: 'trace_id',
             luceneExpression: 'TraceId',
-          },
-        ],
-        materializedViews: [
-          {
-            databaseName: DEFAULT_DATABASE,
-            tableName: 'traces_mv',
-            dimensionColumns: 'ServiceName',
-            minGranularity: '1m',
-            timestampColumn: 'Timestamp',
-            aggregatedColumns: [
-              {
-                mvColumn: 'count',
-                aggFn: 'count',
-              },
-            ],
-          },
-          {
-            databaseName: DEFAULT_DATABASE,
-            tableName: 'traces_mv_15s',
-            dimensionColumns: 'ServiceName',
-            minGranularity: '15s',
-            timestampColumn: 'Timestamp',
-            aggregatedColumns: [
-              {
-                mvColumn: 'count',
-                aggFn: 'count',
-              },
-            ],
           },
         ],
         querySettings: [

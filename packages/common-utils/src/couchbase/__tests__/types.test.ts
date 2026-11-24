@@ -33,10 +33,24 @@ describe('ConnectionSchema', () => {
       username: 'u',
       kind: 'couchbase',
       host: 'couchbase://localhost',
-      hyperdxSettingPrefix: 'x',
+      notAConnectionField: 'x',
     });
-    expect(parsed).not.toHaveProperty('hyperdxSettingPrefix');
+    expect(parsed).not.toHaveProperty('notAConnectionField');
     expect(parsed).not.toHaveProperty('id');
+  });
+
+  it('keeps hyperdxSettingPrefix, part of the upstream connection contract', () => {
+    const parsed = ConnectionSchemaNoId.parse({
+      name: 'n',
+      username: 'u',
+      kind: 'couchbase',
+      host: 'couchbase://localhost',
+      hyperdxSettingPrefix: 'hyperdx_',
+    });
+    expect(parsed.hyperdxSettingPrefix).toBe('hyperdx_');
+    expect(() =>
+      ConnectionSchemaNoId.parse({ ...parsed, hyperdxSettingPrefix: 'a-b' }),
+    ).toThrow();
   });
 });
 

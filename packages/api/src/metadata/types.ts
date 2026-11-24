@@ -87,6 +87,11 @@ export type FindScalar = string | number | boolean;
 export type FindSpec = {
   where?: Record<string, FindScalar>;
   present?: string[];
+  /**
+   * The field is not TRUE: missing, null, false, or any other value (Mongo
+   * `$ne: true`). For flags that older documents never stored.
+   */
+  notTrue?: string[];
   /** Case-insensitive substring match on a string field (literal, no regex). */
   contains?: { field: string; value: string };
   /** The array field holds every value (Mongo `$all`). */

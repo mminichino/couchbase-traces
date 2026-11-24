@@ -45,6 +45,7 @@ function matches(value: unknown, spec: Filter): boolean {
   return (
     Object.entries(spec.where ?? {}).every(([f, v]) => field(value, f) === v) &&
     (spec.present ?? []).every(f => field(value, f) !== undefined) &&
+    (spec.notTrue ?? []).every(f => field(value, f) !== true) &&
     (!contains ||
       String(field(value, contains.field) ?? '')
         .toLowerCase()
