@@ -1742,24 +1742,31 @@ Restore `e2e-tests` as a `workflow_call` without `if: false`, and the
 the K2 change). Acceptance: two consecutive Main runs conclude `success` with
 E2E shards executed, each under the 45 minute timeout.
 
-Status (2026-11-25, `mm--v1-r5-reenable-e2e-ci`, PR #46): blocked on runner
-capacity, Q58. `main.yml` restores `e2e-tests` and the `End-to-End Tests`
-aggregator from `019a42d^`. The aggregator is a hard gate (no
-`continue-on-error`, as for the shards), so it fails on any failed test and on a
-failed or cancelled shard. The repository is private, so `ubuntu-24.04` has 2
-vCPUs and 7 GB, shared by the Couchbase container (2 CPU, 4 GB limit), the API,
-Next.js and the Chromium workers. Locally, only Couchbase is capped.
+Status (2026-11-25, `mm--v1-r5-reenable-e2e-ci`, PR #46): acceptance met on runs
+3 and 4 after Q58 (repository made public). Earlier runs were blocked on runner
+capacity. `main.yml` restores `e2e-tests` and the `End-to-End Tests` aggregator
+from `019a42d^`. The aggregator is a hard gate (no `continue-on-error`, as for
+the shards), so it fails on any failed test and on a failed or cancelled shard.
+The repository is private, so `ubuntu-24.04` has 2 vCPUs and 7 GB, shared by the
+Couchbase container (2 CPU, 4 GB limit), the API, Next.js and the Chromium
+workers. Locally, only Couchbase is capped.
 
 | PR #46 run                    | Workers | Shard 1                                      | Shard 2                              | Shard 3                   | Shard 4                                       |
 | ----------------------------- | ------- | -------------------------------------------- | ------------------------------------ | ------------------------- | --------------------------------------------- |
 | 1 (`efe511e`-based)           | 4       | cancelled 45m                                | cancelled 45m                        | cancelled 45m             | 41m, 51 failed, 5 flaky, 48 passed            |
 | 2 (`3127b9d`)                 | 2       | 29.8m, 108 passed, 7 flaky                   | 25.7m, 113 passed, 1 failed, 1 flaky | cancelled 45m             | cancelled 45m                                 |
 | 3 (`35cd047`, public, 4 vCPU) | 2       | 13m40 job (11.7m tests), 114 passed, 1 flaky | 20m12 (17.9m), 115 passed            | 13m35 (11.8m), 114 passed | 13m25 (11.6m), 110 passed, 3 skipped, 1 flaky |
+| 4 (`c74cf32`, public, 4 vCPU) | 2       | 19m33 job (17.4m tests), 114 passed, 1 flaky | 16m41 (14.6m), 115 passed            | 14m12 (12.3m), 114 passed | 12m19 (10.5m), 110 passed, 3 skipped, 1 flaky |
 
-Run 3 (repository public: `ubuntu-24.04` has 4 vCPUs and 16 GB) passed every
-check. Two tests passed on retry: `correlated-metric-source` "should show alert
-when no correlated metric source is configured" (shard 1), and `team` "should
-cancel team name editing" (shard 4), the shared-team race seen in R4.
+Run 3 (repository public: `ubuntu-24.04` has 4 vCPUs and 16 GB) passed every Run
+4 also passed every check, so the acceptance condition (two consecutive green
+runs with E2E shards executed, each under 45 min) is met. Its retries were
+`dashboard-adhoc-click-filters` "raw SQL line chart series filter" (shard 1) and
+`sources` "should show source actions in kebab menu" (shard 4). No test was
+flaky in both runs, and none failed. check. Two tests passed on retry:
+`correlated-metric-source` "should show alert when no correlated metric source
+is configured" (shard 1), and `team` "should cancel team name editing" (shard
+4), the shared-team race seen in R4.
 
 E2E setup (install, build, Chromium, Couchbase) takes 2m10 to 2m35 per shard. In
 run 1, 154 of the failures were `TableComponent.waitForRowsToPopulate`'s 5s wait

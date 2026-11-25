@@ -4054,3 +4054,13 @@ to run outside the agent sandbox, which blocks `git init` in a temp dir.
   Secret scanning and push protection are on. Fork-PR approval stays at
   first-time contributors, and Dependabot security updates, branch protection
   and the wiki are unchanged (user decision).
+- R5 acceptance (2026-11-25): two consecutive green runs on PR #46 (`35cd047`
+  and `c74cf32`), all 24 checks, E2E shards 12–20 min against 45. Each run had 2
+  tests passing on retry, none the same across runs (timings and names in
+  `docs/v1-release-plan.md`). Secret scanning's first scan opened 3 alerts: 2
+  `slack_incoming_webhook_url` (`T00000000/B00000000/XXXX…` and
+  `T11111111/B11111111/YYYY…` in `WebhookForm.tsx`, the webhook routers and
+  their tests) and 1 `mongodb_atlas_db_uri_with_credentials`
+  (`mongodb+srv://svc:hunter2@cluster.mongodb.net` in `redactSecrets.test.ts`).
+  All 3 come from the upstream import (`adcb75c`) and are placeholders. They are
+  left open for the user to close as false positives or used in tests.
