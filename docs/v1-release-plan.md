@@ -1374,7 +1374,8 @@ listed in the PR and the plan, and the phase stops for the user (rule 9).
 Order: R2a, then R2c, then R2b. Acceptance (end of R2b, the last R2 phase):
 `deferredChIntSuites` is an empty array and is then deleted; `yarn ci:int`
 reports 0 ignored suites; the skipped count equals the harness-only
-`metadata.couchbase.int.test.ts` count (51 today) and nothing else; CI
+`metadata.couchbase.int.test.ts` count (53; accepted by the user 2026-11-24,
+up from 51 because D12 and D13 added contract cases) and nothing else; CI
 integration shards green within the 55 minute timeout. Shard policy (user,
 2026-11-23): add a fifth integration shard only if R2c or R2b brings a shard
 close to the 55 minute limit, as a small CI-only change in that phase's PR
@@ -1601,6 +1602,57 @@ reported with PR CI. `make ci-int` on a fresh stack: api 2207 passed and 53
 skipped, all 53 in the harness-only `metadata.couchbase.int.test.ts` (the one
 skipped suite; it was 51 before the D12 and D13 contract cases), 0 ignored
 suites; common-utils 127 passed.
+
+### CI: integration-shard startup (2026-11-24, `mm--v1-ci-int-startup`)
+
+CI-only, between R2b and R3 (user, 2026-11-24): on PR #42 shard 2 took
+49m28s of its 55 minutes, about 21 of them before the first test. The shard
+count and timeout are unchanged. Where shard 2's startup went (PR #42):
+
+| Startup phase                                            | PR #42 shard 2 |
+| -------------------------------------------------------- | -------------- |
+| Delete hosted toolcaches (`sudo rm -rf`)                 | 2m05           |
+| Pull `couchbase/server`                                  | 27s            |
+| Build `couchbase-init`                                   | 2m37           |
+| Build `ingest` (same build; the prune between wiped it)  | 2m37           |
+| Build `otel-collector` (OCB compile alone: 11m33)        | 12m50          |
+| `make ci-build`, compose up (cluster init 70 s)          | about 2m       |
+
+Changes in `.github/workflows/main.yml` (`integration-shards` only):
+
+- `couchbase-init` and `ingest` are one build (same context and Dockerfile,
+  no target or args): build `ingest`, `docker tag` it for `couchbase-init`.
+- `otel-collector` builds with `docker buildx bake` from the compose file
+  (same definition and `.env` args) on a `docker-container` builder with a
+  GHA layer cache, scope `ci-otel-collector`, `mode=max` so the OCB stage is
+  cached. Every shard reads it; shard 1 alone writes it (`ignore-error`). The
+  cache is about 80 MB. It misses when `builder-config.yaml`, the Dockerfile,
+  the version args or a base image change, and then costs one compile, as
+  before. PR runs read the cache `main` writes.
+- Toolcache deletion runs in the background behind node setup and
+  `yarn install`; the docker step waits for it.
+
+"Spin up docker services" per shard (seconds):
+
+| Shard | PR #42 | PR #43 cold cache | PR #43 warm cache |
+| ----- | -----: | ----------------: | ----------------: |
+| 1     |   1298 |               763 |               199 |
+| 2     |   1258 |               690 |               249 |
+| 3     |   1145 |               705 |               212 |
+| 4     |    862 |               874 |               250 |
+| 5     |   1310 |               902 |               259 |
+
+Cold, the compile took 504 s against 693 s, and the first PR #43 run's tests
+were faster too (shard 2 Jest 874 s against 1515 s for the same 623 tests,
+every suite about 1.7 times faster on the same runner image). That is runner
+speed, not this change: the next run's shard 2 tests took 1605 s (PR #42:
+1618 s). Warm (second PR #43 run): the OCB stage is `CACHED` and the
+collector step takes 7 s, so startup falls from 862–1310 s to 199–259 s,
+about 15 minutes per shard. Whole shards (startup and tests, so runner speed
+shows here too): 18m48, 32m39, 15m06, 16m52 and 24m16 against PR #42's
+46m18, 49m28, 29m02, 23m44 and 42m03. Shard 2 is now about 27 minutes of
+tests and 4 of startup; its longest suite is `external-api/dashboards`
+(788 s on PR #42).
 
 ### R3: Service map node latency
 

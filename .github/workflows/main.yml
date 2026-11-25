@@ -102,6 +102,15 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v6
+      # Startup (R2b PR #42, shard 2): deleting the hosted toolcaches took
+      # 2m05. Run it behind node setup and yarn install; the docker step
+      # waits for it before the first build.
+      - name: Free runner disk (background)
+        run: |
+          df -h / || true
+          nohup bash -c 'sudo rm -rf /usr/share/dotnet /usr/local/lib/android \
+            /opt/ghc /opt/hostedtoolcache/CodeQL /usr/local/share/boost; \
+            touch /tmp/cbt-disk-freed' > /tmp/cbt-disk-free.log 2>&1 &
       - name: Setup node
         uses: actions/setup-node@v6
         with:
@@ -112,28 +121,61 @@ jobs:
         run: yarn install --immutable
       - name: Expose GitHub Runtime
         uses: crazy-max/ghaction-github-runtime@v4
+      # A docker-container builder for the collector only: the default docker
+      # driver cannot import or export the GHA layer cache. `use: false`
+      # keeps `docker compose build` on the default driver, so the 4.7 GB
+      # ingest image is not copied out of a builder container.
+      - name: Set up buildx (collector cache)
+        id: buildx
+        uses: docker/setup-buildx-action@v3
+        with:
+          use: false
       - name: Spin up docker services
+        env:
+          CBT_BUILDX_BUILDER: ${{ steps.buildx.outputs.name }}
+          # One writer: every shard compiles the same collector, and five
+          # concurrent uploads of one cache scope only race.
+          CBT_COLLECTOR_CACHE_TO:
+            ${{ matrix.shard == 1 &&
+            'type=gha,mode=max,scope=ci-otel-collector,ignore-error=true' || ''
+            }}
         run: |
-          # Parallel bake of ingest (yarn) + otel (Go) fills the ~14 GiB
-          # runner disk (ENOSPC). Free hosted-tool caches, prune Docker,
-          # and bake one target at a time.
-          df -h / || true
-          sudo rm -rf /usr/share/dotnet /usr/local/lib/android /opt/ghc \
-            /opt/hostedtoolcache/CodeQL /usr/local/share/boost || true
+          # Parallel builds of ingest (yarn) + otel (Go) fill the runner disk
+          # (ENOSPC): prune Docker and build one target at a time.
+          for _ in $(seq 1 120); do
+            [ -f /tmp/cbt-disk-freed ] && break
+            sleep 5
+          done
+          cat /tmp/cbt-disk-free.log || true
           docker builder prune -af || true
           docker system prune -af --volumes || true
           df -h / || true
           export BUILDKIT_MAX_PARALLELISM=1
-          # Compose build (not bake): bake --load + a later plain `compose up`
-          # often rebuilds anyway and left ingest unhealthy. Sequential compose
-          # build keeps project image tags aligned with `up --no-build`.
+          # Compose build (not bake) for ingest: bake --load + a later plain
+          # `compose up` often rebuilt anyway and left ingest unhealthy.
+          # `up --no-build` uses the project tags (hdx-ci-<service>).
           docker compose -f ./docker-compose.ci.yml pull couchbase
-          for target in couchbase-init ingest otel-collector; do
-            echo "Building ${target}..."
-            docker compose -f ./docker-compose.ci.yml build "$target"
-            docker builder prune -af || true
-            df -h / || true
-          done
+          # couchbase-init and ingest are one build (same context and
+          # Dockerfile, no target or args): build once, tag for both.
+          echo "Building ingest (also couchbase-init)..."
+          docker compose -f ./docker-compose.ci.yml build ingest
+          docker tag hdx-ci-ingest:latest hdx-ci-couchbase-init:latest
+          docker builder prune -af || true
+          df -h / || true
+          # The OCB compile was 11m33 of shard 2's startup. The GHA layer
+          # cache skips it while builder-config.yaml, the Dockerfile, the
+          # version args and the base images are unchanged. Bake reads the
+          # build definition (and the .env args) from the compose file.
+          echo "Building otel-collector..."
+          set -- --set otel-collector.tags=hdx-ci-otel-collector \
+            --set otel-collector.cache-from=type=gha,scope=ci-otel-collector
+          if [ -n "$CBT_COLLECTOR_CACHE_TO" ]; then
+            set -- "$@" --set "otel-collector.cache-to=$CBT_COLLECTOR_CACHE_TO"
+          fi
+          docker buildx bake --builder "$CBT_BUILDX_BUILDER" \
+            -f ./docker-compose.ci.yml otel-collector --load "$@"
+          docker images --format '{{.Repository}}:{{.Tag}} {{.Size}}' | grep '^hdx-ci-' || true
+          df -h / || true
       - name: Build dependencies
         run: make ci-build
       # Integration tests boot a MockServer on fixed ports and share a single
