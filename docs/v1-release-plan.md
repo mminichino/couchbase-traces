@@ -1717,6 +1717,41 @@ the upstream ClickHouse seed writes for `kubernetes.spec.ts` and
 row locally on a clean stack, including all 13 `kubernetes.spec.ts` and all 7
 `sessions.spec.ts` tests.
 
+Done on `mm--v1-r4-playwright-couchbase` (2026-11-24); details and each spec
+adaptation are in `docs/port-notes.md` (R4):
+
+- Route smoke: the onboarding `system.tables` probe was already fixed by D5;
+  all `route-smoke` tests pass.
+- D15: `seed-couchbase.ts` (split into `seed-couchbase-client.ts`,
+  `seed-rows-k8s.ts`, `seed-rows-k8s-metrics.ts`, `seed-rows-sessions.ts`,
+  `seed-rows-filter-keys.ts`)
+  writes the Kubernetes gauge/sum rows and events, and the OTel browser SDK
+  session spans, replay rows and browser log events. All 13
+  `kubernetes.spec.ts` and all 7 `sessions.spec.ts` tests pass.
+- Product fixes (small, in scope): SQL++ translation of `JSONExtract*`,
+  `widthBucket`/`count()` in heatmaps, reserved-word aliases and path
+  segments, string-select group keys (4210), no synthetic `*` column,
+  bucket/collection listing from `system:keyspaces`, Kubernetes Map group-by
+  cells, trace/session panel expressions (duration, row id, exception
+  attributes), linked-span lookups, pattern rows without an id, dashboard
+  filter values for expression keys, the empty-first-page `meta` of paginated
+  search, new sources defaulting to the `otel` bucket, and empty metric
+  collections accepted by autofill.
+- Explicit skips, each with a reason, pending decisions Q55 to Q57:
+  `select-star-error-state.spec.ts` (ClickHouse Distributed tables) and
+  `metric-table-autofill` "database changes" (needs a second E2E bucket).
+  Upstream's `sources.spec.ts` full-stack skip is unchanged.
+- No new D-numbers: everything found was small and fixed here.
+- No workflow changes (R5 owns `main.yml`).
+- Local acceptance: `make e2e` on a clean stack, twice in a row on the final
+  code. Each run: 453 passed, 4 skipped, 0 failed, exit 0. Each run also had
+  one test that passed on its retry, a different one each time, and neither
+  touches a SQL++ query: `dashboard-static-filters` (a freeform value
+  submitted before the URL updated) and `team` "cancel team name editing"
+  (another `fullyParallel` test renamed the shared team). Both are upstream
+  UI races and are left unchanged. An earlier run had no retries
+  (454 passed).
+
 ### R5: Re-enable E2E on Main
 
 Restore `e2e-tests` as a `workflow_call` without `if: false`, and the
@@ -1842,6 +1877,9 @@ in that phase.
 | Q52 | Set the completed-requests log threshold/limit at startup? (2026-11-24) | Not for v1.0.0: keep the cluster's settings as they are. v1.0.1 backlog P13 adds opt-in `CBT_COUCHBASE_COMPLETED_THRESHOLD_MS` / `CBT_COUCHBASE_COMPLETED_LIMIT` in ingest setup (user, 2026-11-24) | P13 |
 | Q53 | Upstream fails a query on an unknown column (`UNKNOWN_IDENTIFIER`); SQL++ reads it as MISSING and succeeds (2026-11-24) | Validate field names against the declared OTel schema, then the collection's inferred columns (`describeColumns`), before MCP queries are sent, and fail with upstream's error; the 3 `queryTool` cases are un-skipped (user, 2026-11-24) | — |
 | Q54 | `cbt_describe_table` reports ClickHouse table metadata that collections lack (2026-11-24) | GSI/primary indexes and the document count are the Couchbase equivalent; engine, sorting/partition/primary keys, comments, defaults and Distributed local tables are not applicable, recorded in `port/features.json` (`mcp-sources`) and so in `docs/parity.md`; the Distributed case asserts their absence (user, 2026-11-24) | — |
+| Q55 | `select-star-error-state.spec.ts`: ClickHouse Distributed-table missing-column error (2026-11-24) | Open. Proposed: parity sign-off in `docs/parity.md`. Collections never report `isPointerTable`, and a schemaless `SELECT *` cannot fail on a shard's missing column, so the state is unreachable; skipped with that reason (R4) | R4 |
+| Q56 | `json-viewer-key-order.spec.ts`: "original" key order equals ascending on Couchbase (2026-11-24) | Open. Proposed: accept. The Query service returns object fields sorted by name, so documents have no stored column order; the spec asserts the same keys and no synthetic `*` instead of "original differs from ascending" (R4) | R4 |
+| Q57 | `metric-table-autofill` "database changes on a saved source" needs a second bucket (2026-11-24) | Open. Options: (a) carve an `e2e_metrics_alt` bucket (100 MB) out of the E2E data quota in the E2E compose only and seed two collections; (b) sign off. Skipped with a reason until decided (R4) | R4 |
 
 ## 11. Acceptance criteria (v1.0.0 is done when)
 

@@ -6,6 +6,8 @@ import {
 } from '@couchbase-traces/common-utils/dist/types';
 import { Loader } from '@mantine/core';
 
+import { useConnectionKind } from '@/couchbase/connection';
+import { ifNonEmptyThenExpr } from '@/couchbase/dialectExpr';
 import useFieldExpressionGenerator from '@/hooks/useFieldExpressionGenerator';
 import SessionSubpanel from '@/SessionSubpanel';
 import { useSource } from '@/source';
@@ -66,6 +68,7 @@ export const useSessionId = ({
   });
 
   const { getFieldExpression } = useFieldExpressionGenerator(source);
+  const dialect = useConnectionKind(source?.connection);
 
   const config = useMemo(() => {
     if (!source || !traceId || !getFieldExpression) {
@@ -89,7 +92,12 @@ export const useSessionId = ({
         {
           // Only browser SDK spans carry the page URL; other `session.id`
           // spans (AI agent conversations, backends) have no replay.
-          valueExpression: `if(${getFieldExpression(attrs, 'browser.document.url.full')} != '', ${getFieldExpression(attrs, 'session.id')}, '')`,
+          valueExpression: ifNonEmptyThenExpr(
+            getFieldExpression(attrs, 'browser.document.url.full'),
+            getFieldExpression(attrs, 'session.id'),
+            "''",
+            dialect,
+          ),
           alias: 'otelSessionId',
         },
       ],
@@ -100,7 +108,7 @@ export const useSessionId = ({
       where: `${source.traceIdExpression} = '${traceId}'`,
       whereLanguage: 'sql' as const,
     };
-  }, [source, traceId, getFieldExpression]);
+  }, [source, traceId, getFieldExpression, dialect]);
 
   const { data } = useEventsData({
     config: config!, // ok to force unwrap, the query will be disabled if config is null

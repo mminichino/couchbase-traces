@@ -77,7 +77,9 @@ export function couchbaseResultColumnNames(
     const [a, b] = config.select;
     cols.push(a.alias?.trim() || b.alias?.trim() || 'ratio');
   } else {
+    // `d.*` spreads the document's own fields; no column is named `*`.
     config.select.forEach((item, i) => {
+      if (item.aggFn == null && item.valueExpression?.trim() === '*') return;
       cols.push(couchbaseSelectItemAlias(item, i));
     });
   }

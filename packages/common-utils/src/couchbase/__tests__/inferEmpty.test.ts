@@ -102,7 +102,8 @@ describe('Metadata on an empty collection', () => {
     });
     const columns = await meta.getColumns(tc);
     expect(columns.map(c => [c.name, c.type])).toEqual([
-      ['ServiceName', 'String'],
+      // Declared LowCardinality in the OTel logs schema.
+      ['ServiceName', 'LowCardinality(String)'],
       ['Duration', 'Int64'],
     ]);
   });

@@ -95,9 +95,10 @@ test.describe('Search histogram group by', { tag: '@search' }, () => {
       const conditions = JSON.parse(decodeURIComponent(raw)).map(
         (f: { condition: string }) => f.condition,
       );
+      // SQL++ array literal (`IN [...]`), not a ClickHouse tuple.
       expect(conditions).toEqual([
-        expect.stringMatching(/^ServiceName IN \('.+'\)$/),
-        expect.stringMatching(/^lower\(SeverityText\) IN \('.+'\)$/),
+        expect.stringMatching(/^ServiceName IN \['.+'\]$/),
+        expect.stringMatching(/^lower\(SeverityText\) IN \['.+'\]$/),
       ]);
     }).toPass({ timeout: 10000 });
     await expect(searchPage.groupByButton).toHaveText('2 fields');

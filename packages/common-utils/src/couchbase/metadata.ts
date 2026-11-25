@@ -16,7 +16,9 @@ import type { ColumnMeta } from '@/query/types';
 import type { Filter, UseTextIndex } from '@/types';
 
 import { isAccessDeniedError, isEmptyInferError } from './errors';
+import { facetKeyValuePath } from './facetKey';
 import { type InferredField, inferredToColumnType, parseInfer } from './infer';
+import { rewriteSqlFragment } from './mapAccess';
 import {
   inferStatement,
   keyspaceList,
@@ -26,8 +28,9 @@ import {
   validateStatement,
   versionStatement,
 } from './metadataSql';
+import { declaredColumns } from './otelSchema';
 import { renderWhereCouchbase } from './render/where';
-import { quoteIdent, type SqlPP, sqlpp } from './sqlpp';
+import { type SqlPP, sqlpp } from './sqlpp';
 import type { TimeFormat } from './time';
 import type { DataClient, Keyspace } from './types';
 
@@ -48,6 +51,29 @@ type Tc = {
   tableName: string;
   scopeName?: string;
 };
+
+function declaredColumnTypes(collection: string): Map<string, string> {
+  return new Map(
+    (declaredColumns(collection) ?? []).map(c => [c.name, c.type]),
+  );
+}
+
+/**
+ * INFER sees only "string". Upstream's OTel tables declare some string
+ * columns LowCardinality, and the search sidebar lists those (SeverityText,
+ * ServiceName, ...) without "More filters", so a declared LowCardinality type
+ * replaces an inferred plain String. Other inferred types are kept.
+ */
+function withDeclaredStringType(
+  inferred: string,
+  declared: string | undefined,
+): string {
+  if (declared !== 'LowCardinality(String)') return inferred;
+  if (inferred === 'String') return declared;
+  if (inferred === 'Nullable(String)')
+    return 'LowCardinality(Nullable(String))';
+  return inferred;
+}
 
 export class Metadata {
   constructor(
@@ -76,12 +102,16 @@ export class Metadata {
       async () => {
         fetched = true;
         const fields = await this.inferFields(args);
+        const declared = declaredColumnTypes(args.tableName);
         return fields
           .filter(f => f.path.length === 1)
           .map(f => ({
             ...EMPTY_COLUMN,
             name: f.path[0],
-            type: inferredToColumnType(f, fields),
+            type: withDeclaredStringType(
+              inferredToColumnType(f, fields),
+              declared.get(f.path[0]),
+            ),
           }));
       },
       { ttlMs: COLUMNS_CACHE_TTL_MS },
@@ -229,6 +259,12 @@ export class Metadata {
     const baseWhere = await this.userWhere(args.chartConfig);
     const out: KeyValues[] = [];
     for (const [i, key] of args.keys.entries()) {
+      // A non-path key is a user-typed dashboard filter expression
+      // (`toString(ServiceName)`), which upstream sends as raw SQL; render it
+      // as the chart renderer renders that filter. If it does not run, the
+      // key gets no values rather than failing every facet.
+      const path = facetKeyValuePath(key);
+      const valuePath = path ?? rewriteSqlFragment(key);
       const facet = args.keyConditions?.at(i);
       const facetPred =
         facet != null
@@ -242,17 +278,23 @@ export class Metadata {
             ? sqlpp`(${extraWhere}) AND (${facetSql})`
             : facetSql;
       }
-      const values = await this.valueCounts(
-        {
-          ...tc,
-          dateRange: args.chartConfig.dateRange,
-          timestampValueExpression: args.chartConfig.timestampValueExpression,
-        },
-        qualifyValue(key),
-        args.limit ?? 20,
-        extraWhere,
-        args.disableRowLimit === true,
-      );
+      let values: { value: string; count: number }[];
+      try {
+        values = await this.valueCounts(
+          {
+            ...tc,
+            dateRange: args.chartConfig.dateRange,
+            timestampValueExpression: args.chartConfig.timestampValueExpression,
+          },
+          valuePath,
+          args.limit ?? 20,
+          extraWhere,
+          args.disableRowLimit === true,
+        );
+      } catch (err) {
+        if (path != null) throw err;
+        values = [];
+      }
       out.push({ key, value: values.map(v => v.value) });
     }
     return out;
@@ -722,28 +764,14 @@ function mapValueExpr(column: string, key?: string): string {
   return `${col}.\`${key.replace(/`/g, '')}\``;
 }
 
-/** `Map['k']` or `` Map.`k` `` keys: column, then one field under it. */
-const MAP_SUBSCRIPT_KEY = /^([A-Za-z_][\w]*)\[\s*'((?:[^'\\]|\\.|'')*)'\s*\]$/;
-
 /**
- * A dropdown key as a value expression. Keys come in three forms: a column
- * (`ServiceName`), a map key in ClickHouse form
- * (`ResourceAttributes['k8s.pod.name']`, Kubernetes filters), or a
- * dot-joined map key (`ResourceAttributes.service.name`) whose rest is one
- * field. Splitting the subscript form on dots used to quote it as
- * `` `ResourceAttributes['k8s`.`pod.name']` `` and read nothing.
+ * A facet key as a value path; throws on an unparseable key. Callers that
+ * read many keys skip such a key instead (see `getKeyValues`).
  */
 function qualifyValue(key: string): string {
-  const sub = MAP_SUBSCRIPT_KEY.exec(key.trim());
-  if (sub) {
-    const field = sub[2].replace(/''|\\(.)/g, (m, ch: string) => ch ?? "'");
-    return `d.${quoteIdent(sub[1])}.${quoteIdent(field)}`;
-  }
-  if (key.includes('.')) {
-    const [head, ...rest] = key.split('.');
-    return `d.\`${head}\`.\`${rest.join('.')}\``;
-  }
-  return `d.\`${key}\``;
+  const path = facetKeyValuePath(key);
+  if (path == null) throw new Error(`Unsupported facet key: ${key}`);
+  return path;
 }
 
 function quoteTimestamp(name: string): string {

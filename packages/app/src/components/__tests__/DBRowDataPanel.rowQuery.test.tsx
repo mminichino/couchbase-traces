@@ -13,6 +13,9 @@ const mockQueryChartConfig = jest.fn();
 jest.mock('@/query', () => ({
   useDataClient: () => ({ queryChartConfig: mockQueryChartConfig }),
 }));
+jest.mock('@/couchbase/connection', () => ({
+  useConnectionKind: () => 'clickhouse',
+}));
 jest.mock('@/hooks/useMetadata', () => ({
   useColumns: () => ({ data: undefined, isLoading: false }),
   useMetadataWithSettings: () => ({}),

@@ -1,4 +1,8 @@
-import { rewriteMapSubscripts } from '@/couchbase/mapAccess';
+import {
+  quoteReservedPathSegments,
+  rewriteMapSubscripts,
+  rewriteSqlFragment,
+} from '@/couchbase/mapAccess';
 
 describe('rewriteMapSubscripts', () => {
   it.each([
@@ -61,6 +65,34 @@ describe('rewriteMapSubscripts', () => {
     );
     expect(() => rewriteMapSubscripts("LogAttributes['']")).toThrow(
       /non-empty/,
+    );
+  });
+});
+
+// Filter-key edge cases: a ClickHouse JSON path whose segment is a SQL++
+// reserved word (`key`) is a parse error unless backticked.
+describe('quoteReservedPathSegments', () => {
+  it('quotes reserved words after a dot', () => {
+    expect(
+      quoteReservedPathSegments(
+        "toString(ResourceAttributesJSON.key.subKey.subSubKey) IN ['v']",
+      ),
+    ).toBe("toString(ResourceAttributesJSON.`key`.subKey.subSubKey) IN ['v']");
+    expect(quoteReservedPathSegments('a.value = 1 AND `b`.user = 2')).toBe(
+      'a.`value` = 1 AND `b`.`user` = 2',
+    );
+  });
+
+  it('leaves literals, quoted names, numbers and plain fields alone', () => {
+    const sql =
+      'x.`key` = \'a.key\' AND y = "b.value" AND z > 1.5 AND s.name = 1';
+    expect(quoteReservedPathSegments(sql)).toBe(sql);
+    expect(quoteReservedPathSegments('KEY = 1')).toBe('KEY = 1');
+  });
+
+  it('runs as part of rewriteSqlFragment', () => {
+    expect(rewriteSqlFragment("Attrs['k'].key IN ('x')")).toBe(
+      "Attrs.`k`.`key` IN ['x']",
     );
   });
 });

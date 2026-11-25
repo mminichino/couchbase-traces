@@ -215,6 +215,13 @@ export class TimePickerComponent {
       try {
         await intervalButton.waitFor({ state: 'visible', timeout: 5000 });
         await intervalButton.click({ timeout: 5000 });
+        // Selecting an interval closes the popover through a transition.
+        // Without this, a following open() can see the closing popover as
+        // open, return, and then lose it (waitForLoadState('networkidle')
+        // resolves at once after the first idle, so it does not cover this).
+        await this.pickerPopover
+          .waitFor({ state: 'hidden', timeout: 2000 })
+          .catch(() => {});
         return;
       } catch (error) {
         lastError = error;

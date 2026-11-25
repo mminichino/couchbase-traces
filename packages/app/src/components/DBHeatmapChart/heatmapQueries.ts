@@ -14,6 +14,7 @@ import {
 import { convertToTimeChartConfig, isAggregateFunction } from '@/ChartUtils';
 
 import { heatmapLowQuantile } from './heatmapBounds';
+import { logBucketSqlpp, widthBucketSqlpp } from './heatmapBucketSqlpp';
 import type { HeatmapScaleType } from './heatmapGrid';
 
 export type HeatmapChartConfig = {
@@ -206,17 +207,20 @@ export function buildHeatmapBucketConfig({
   nBuckets: number;
 }): BuilderChartConfigWithDateRange {
   const valueExpression = config.select[0].valueExpression;
-  const countExpression = config.select[0].countExpression?.trim() || 'count()';
+  const rawCount = config.select[0].countExpression?.trim();
+  // `count()` is the URL/editor default (upstream syntax); SQL++ needs `*`.
+  const countExpression =
+    !rawCount || /^count\(\s*\)$/i.test(rawCount) ? 'COUNT(*)' : rawCount;
   const isAggregateExpression = isAggregateFunction(valueExpression);
 
   const bucketExprAgg =
     scaleType === 'log'
-      ? `widthBucket(log(greatest(toFloat64(value_calc), ${effectiveMin})), log(${effectiveMin}), log(${max}), ${nBuckets})`
-      : `widthBucket(value_calc, ${effectiveMin}, ${max}, ${nBuckets})`;
+      ? logBucketSqlpp('value_calc', effectiveMin, max, nBuckets)
+      : widthBucketSqlpp('value_calc', effectiveMin, max, nBuckets);
   const bucketExprDirect =
     scaleType === 'log'
-      ? `widthBucket(log(greatest(toFloat64(${valueExpression}), ${effectiveMin})), log(${effectiveMin}), log(${max}), ${nBuckets})`
-      : `widthBucket(${valueExpression}, ${effectiveMin}, ${max}, ${nBuckets})`;
+      ? logBucketSqlpp(`(${valueExpression})`, effectiveMin, max, nBuckets)
+      : widthBucketSqlpp(`(${valueExpression})`, effectiveMin, max, nBuckets);
 
   return isAggregateExpression
     ? {

@@ -852,7 +852,7 @@ export async function isValidMetricTable({
   tableName?: string;
   connectionId: string;
   metricType: MetricsDataType | 'series';
-  metadata: Metadata;
+  metadata: Pick<Metadata, 'getColumns'>;
 }) {
   if (!tableName) {
     return false;
@@ -863,6 +863,15 @@ export async function isValidMetricTable({
     tableName,
     connectionId,
   });
+
+  // An empty Couchbase collection has no inferable schema (INFER 7014, D4),
+  // e.g. a provisioned `otel_metrics_*` collection before the collector
+  // writes. Upstream's empty ClickHouse table still carried its DDL, so treat
+  // "no schema yet" as valid rather than as a mismatch. The series table stays
+  // strict: its presence gates a feature.
+  if (columns.length === 0 && metricType !== 'series') {
+    return true;
+  }
 
   return hasAllColumns(columns, ReqMetricTableColumns[metricType]);
 }

@@ -1,3 +1,5 @@
+import { rewriteJsonExtract } from '@/couchbase/jsonExtract';
+import { SQLPP_RESERVED_WORDS } from '@/couchbase/reservedWords';
 import {
   rewriteInSubqueriesToRaw,
   rewriteSqlInValueLists,
@@ -152,12 +154,57 @@ export function rewriteMapSubscripts(sql: string): string {
 }
 
 /**
+ * Backtick a reserved word used as a path segment: ClickHouse JSON paths such
+ * as `ResourceAttributesJSON.key.subKey` read fine there, but SQL++ rejects
+ * `key`, `value`, `user`… after a dot unless quoted. A word straight after
+ * `ident.`, `` `x`. ``, `).` or `].` is always a field, so quoting it is safe.
+ */
+export function quoteReservedPathSegments(sql: string): string {
+  if (!sql.includes('.')) return sql;
+  let out = '';
+  let i = 0;
+  while (i < sql.length) {
+    const ch = sql.charAt(i);
+    if (ch === "'" || ch === '"' || ch === '`') {
+      const end = skipQuoted(sql, i);
+      out += sql.slice(i, end);
+      i = end;
+      continue;
+    }
+    if (ch === '.' && isPathBase(sql, i)) {
+      const word = /^[A-Za-z_][A-Za-z0-9_]*/.exec(sql.slice(i + 1))?.[0];
+      if (word && SQLPP_RESERVED_WORDS.has(word.toUpperCase())) {
+        out += `.${quoteIdent(word)}`;
+        i += 1 + word.length;
+        continue;
+      }
+    }
+    out += ch;
+    i++;
+  }
+  return out;
+}
+
+function isPathBase(sql: string, dot: number): boolean {
+  const prev = sql.charAt(dot - 1);
+  if (prev === '`' || prev === ')' || prev === ']') return true;
+  if (!/[A-Za-z0-9_]/.test(prev)) return false;
+  let start = dot - 1;
+  while (start > 0 && /[A-Za-z0-9_]/.test(sql.charAt(start - 1))) start--;
+  // `1.e5`, `3.key`: a number, not a path base.
+  return !/^\d/.test(sql.slice(start, dot));
+}
+
+/**
  * A user-written SQL condition (where, filter, having) as SQL++: map
- * subscripts become field access, `IN ('a')` value lists become arrays and
- * single-column `IN (SELECT x …)` subqueries select RAW values.
+ * subscripts become field access, reserved path segments are quoted,
+ * `IN ('a')` value lists become arrays and single-column `IN (SELECT x …)`
+ * subqueries select RAW values.
  */
 export function rewriteSqlFragment(sql: string): string {
   return rewriteInSubqueriesToRaw(
-    rewriteSqlInValueLists(rewriteMapSubscripts(sql)),
+    rewriteSqlInValueLists(
+      quoteReservedPathSegments(rewriteMapSubscripts(rewriteJsonExtract(sql))),
+    ),
   );
 }

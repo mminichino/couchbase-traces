@@ -11,6 +11,8 @@ import {
 import { Box, Center, Loader } from '@mantine/core';
 import type { Query } from '@tanstack/react-query';
 
+import { useConnectionKind } from '@/couchbase/connection';
+import { spanExceptionAttributesExpr } from '@/couchbase/dialectExpr';
 import { useQueriedChartConfig } from '@/hooks/useChartConfig';
 import {
   getKnownColumnsList,
@@ -77,6 +79,7 @@ export function useRowData({
   dateRange?: [Date, Date];
 }) {
   const eventBodyExpr = getEventBody(source);
+  const connectionKind = useConnectionKind(source.connection);
 
   const timestampValueExpr = source.timestampValueExpression?.trim()
     ? source.timestampValueExpression
@@ -232,7 +235,10 @@ export function useRowData({
       ...(source.kind === SourceKind.Trace && source.spanEventsValueExpression
         ? [
             {
-              valueExpression: `${source.spanEventsValueExpression}.Attributes[indexOf(${source.spanEventsValueExpression}.Name, 'exception')]`,
+              valueExpression: spanExceptionAttributesExpr(
+                source.spanEventsValueExpression,
+                connectionKind,
+              ),
               alias: ROW_DATA_ALIASES.EVENTS_EXCEPTION_ATTRIBUTES,
             },
             {

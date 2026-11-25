@@ -279,13 +279,17 @@ function flattenPages(pages: TQueryFnData[]) {
   return pages.flatMap(p => p.data);
 }
 
-function flattenData(data: TData | undefined): TQueryFnData | null {
+export function flattenData(data: TData | undefined): TQueryFnData | null {
   if (data == null || data.pages.length === 0) {
     return null;
   }
 
+  // Couchbase infers meta from returned rows, so an empty leading time window
+  // yields `meta: []`; use the first page that actually described columns.
+  const meta =
+    data.pages.find(p => p.meta.length > 0)?.meta ?? data.pages[0].meta;
   return {
-    meta: data.pages[0].meta,
+    meta,
     data: flattenPages(data.pages),
     sqlExpr: data.pages[0].sqlExpr,
     window: data.pages[data.pages.length - 1].window,

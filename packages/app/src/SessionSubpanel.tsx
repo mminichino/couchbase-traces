@@ -7,6 +7,7 @@ import { tcFromSource } from '@couchbase-traces/common-utils/dist/core/metadata'
 import {
   ChartConfigWithOptDateRange,
   DateRange,
+  DisplayType,
   pickSampleWeightExpressionProps,
   SearchConditionLanguage,
   TSessionSource,
@@ -30,6 +31,12 @@ import {
   IconToggleRight,
 } from '@tabler/icons-react';
 
+import { useConnectionKind } from '@/couchbase/connection';
+import {
+  durationMsExpr,
+  spanRowIdExpr,
+  stringLiteralExpr,
+} from '@/couchbase/dialectExpr';
 import { RowWhereResult } from '@/hooks/useRowWhere';
 import { useSessionLogEvents } from '@/hooks/useSessionLogEvents';
 import type { SessionIdKey } from '@/utils/sessionId';
@@ -69,6 +76,7 @@ function useSessionChartConfigs({
 }) {
   const { getFieldExpression: getTraceSourceFieldExpression } =
     useFieldExpressionGenerator(traceSource);
+  const dialect = useConnectionKind(traceSource.connection);
 
   // Should produce rows that match the `sessionRowSchema` in packages/app/src/utils/sessions.ts
   const select = useMemo(() => {
@@ -83,7 +91,11 @@ function useSessionChartConfigs({
         alias: 'component',
       },
       {
-        valueExpression: `toFloat64OrZero(toString(${traceSource.durationExpression})) * pow(10, 3) / pow(10, toInt8OrZero(toString(${traceSource.durationPrecision})))`,
+        valueExpression: durationMsExpr(
+          traceSource.durationExpression,
+          traceSource.durationPrecision,
+          dialect,
+        ),
         alias: 'durationInMs',
       },
       {
@@ -113,7 +125,14 @@ function useSessionChartConfigs({
       ),
       {
         // Using toString here because Javascript does not have the precision to accurately represent this
-        valueExpression: `toString(cityHash64(${traceSource.traceIdExpression}, ${traceSource.parentSpanIdExpression}, ${traceSource.spanIdExpression}))`,
+        valueExpression: spanRowIdExpr(
+          [
+            traceSource.traceIdExpression,
+            traceSource.parentSpanIdExpression,
+            traceSource.spanIdExpression,
+          ],
+          dialect,
+        ),
         alias: 'id',
       },
       {
@@ -149,11 +168,11 @@ function useSessionChartConfigs({
         alias: 'trace_id',
       },
       {
-        valueExpression: `CAST('span', 'String')`,
+        valueExpression: stringLiteralExpr('span', dialect),
         alias: 'type',
       },
     ];
-  }, [traceSource, getTraceSourceFieldExpression]);
+  }, [traceSource, getTraceSourceFieldExpression, dialect]);
 
   const eventFilters = useMemo(
     () =>
@@ -168,6 +187,9 @@ function useSessionChartConfigs({
   const eventsConfig = useMemo<ChartConfigWithOptDateRange | undefined>(() => {
     if (!getTraceSourceFieldExpression || !select) return undefined;
     return {
+      // A row search, so Couchbase rows carry the document key the event
+      // detail panel looks the span up by.
+      displayType: DisplayType.Search,
       select: select,
       from: traceSource.from,
       dateRange: [start, end],

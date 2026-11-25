@@ -103,7 +103,7 @@ export function TableSourceForm({
         name: defaultName,
         connection: connections?.[0]?.id,
         from: {
-          databaseName: 'default',
+          databaseName: DEFAULT_DATABASE,
           tableName: '',
         },
         querySettings: source?.querySettings,

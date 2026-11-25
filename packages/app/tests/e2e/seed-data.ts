@@ -204,9 +204,6 @@ export function buildE2eMainLogRows(
       ResourceAttributes: {
         'service.name': service,
         environment: 'test',
-        // Enough for the Infrastructure tab gate (k8s.pod.uid).
-        'k8s.pod.uid': `pod-uid-${i}`,
-        'k8s.pod.name': `pod-${service}`,
       },
       ScopeSchemaUrl: '',
       ScopeName: '',

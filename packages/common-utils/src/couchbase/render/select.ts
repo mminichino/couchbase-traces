@@ -15,6 +15,7 @@ import { CouchbaseUnsupportedError } from '@/couchbase/errors';
 import { quantile as quantileAgg } from '@/couchbase/fn/quantile';
 import { anyValue, argMax, count, uniq } from '@/couchbase/fn/scalar';
 import { rewriteMapSubscripts } from '@/couchbase/mapAccess';
+import { SQLPP_RESERVED_WORDS } from '@/couchbase/reservedWords';
 import { quoteIdent, type SqlPP, sqlpp } from '@/couchbase/sqlpp';
 import {
   timeBucketExpr as cbTimeBucketExpr,
@@ -178,6 +179,9 @@ function aggExprCouchbase(
   }
 }
 
+const DOUBLE_QUOTED_ALIAS = /^(.*\S)\s+AS\s+"([^"\\`]+)"$/is;
+const BARE_ALIAS = /^(.*\S)\s+AS\s+([A-Za-z_][A-Za-z0-9_]*)$/is;
+
 /**
  * A string select list (search columns) with map subscripts rewritten. An
  * unaliased rewritten item keeps its source text as the column name, which
@@ -186,8 +190,24 @@ function aggExprCouchbase(
 function stringSelectList(list: string): string {
   return splitAndTrimWithBracket(list)
     .map(item => {
+      // ClickHouse quotes identifiers with `"`; SQL++ reads `"x"` as a string.
+      const dq = DOUBLE_QUOTED_ALIAS.exec(item);
+      if (dq) {
+        return `${rewriteMapSubscripts(dq[1])} AS ${quoteIdent(dq[2])}`;
+      }
+      // A bare alias may be a SQL++ reserved word (`SeverityText as level`)
+      // that ClickHouse accepts unquoted.
+      const bare = BARE_ALIAS.exec(item);
+      if (bare && SQLPP_RESERVED_WORDS.has(bare[2].toUpperCase())) {
+        return `${rewriteMapSubscripts(bare[1])} AS ${quoteIdent(bare[2])}`;
+      }
       const expr = rewriteMapSubscripts(item);
-      if (expr === item || item.includes('`') || /\s+as\s+\S+$/i.test(item)) {
+      if (item.includes('`') || /\s+as\s+\S+$/i.test(item)) {
+        return expr;
+      }
+      // SQL++ names an unaliased computed item `$1`, `$2`, …; ClickHouse
+      // names it by its text, which the results table looks cells up by.
+      if (expr === item && /^(\*|[A-Za-z_][\w.]*(\.\*)?)$/.test(item)) {
         return expr;
       }
       return `${expr} AS ${quoteIdent(item)}`;

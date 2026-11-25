@@ -36,18 +36,37 @@ function unquoted(source: string): string {
   return /^`[^`]+`$/.test(source) ? source.slice(1, -1) : source;
 }
 
+/**
+ * Expressions a string select list projects (`x AS y` contributes `x`). A
+ * group key the select list already projects must stay unwrapped: SQL++
+ * rejects a projection that is not exactly a group key (error 4210).
+ */
+function stringSelectExprs(select: unknown): Set<string> {
+  if (typeof select !== 'string') return new Set();
+  return new Set(
+    splitAndTrimWithBracket(select).map(item =>
+      rewriteMapSubscripts(item.replace(/\s+as\s+[^\s]+$/i, '').trim()),
+    ),
+  );
+}
+
 export function groupByItems(
   chartConfig: Pick<BuilderChartConfigWithOptDateRange, 'groupBy' | 'select'>,
 ): GroupByItem[] {
   const { groupBy } = chartConfig;
   if (groupBy == null) return [];
   const selectAliases = groupableSelectAliases(chartConfig.select);
+  const projected = stringSelectExprs(chartConfig.select);
   const item = (source: string, alias?: string): GroupByItem => {
     const aliased =
       alias == null ? selectAliases.get(unquoted(source)) : undefined;
-    return aliased != null
-      ? { source, expr: aliased, fromSelectAlias: true }
-      : { source, expr: rewriteMapSubscripts(source), alias };
+    if (aliased != null) {
+      return { source, expr: aliased, fromSelectAlias: true };
+    }
+    const expr = rewriteMapSubscripts(source);
+    return alias == null && projected.has(expr)
+      ? { source, expr, fromSelectAlias: true }
+      : { source, expr, alias };
   };
   if (typeof groupBy === 'string') {
     return splitAndTrimWithBracket(groupBy)

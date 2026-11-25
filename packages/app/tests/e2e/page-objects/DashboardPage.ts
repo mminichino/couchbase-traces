@@ -2320,12 +2320,18 @@ export class DashboardPage {
    */
   async selectFullscreenRelativeTime(label: string) {
     const input = this.fullscreenTimePickerInput;
-    const popover = this.page.getByTestId('time-picker-popover');
-    const isOpen = await popover.isVisible();
-    if (!isOpen) {
+    if ((await input.getAttribute('aria-expanded')) !== 'true') {
       await input.click();
-      await popover.waitFor({ state: 'visible', timeout: 5000 });
     }
+    await expect(input).toHaveAttribute('aria-expanded', 'true');
+    // Scope to the fullscreen input's own dropdown: the dashboard picker's
+    // popover shares the test id, and while it is still closing a bare
+    // `time-picker-popover` lookup can resolve to it and change the
+    // dashboard's range instead.
+    const controls = await input.getAttribute('aria-controls');
+    const popover = controls
+      ? this.page.locator(`[id="${controls}"]`)
+      : this.page.getByTestId('time-picker-popover').last();
     const intervalButton = popover.getByRole('button', { name: label });
     await intervalButton.waitFor({ state: 'visible', timeout: 5000 });
     await intervalButton.click({ timeout: 10000 });

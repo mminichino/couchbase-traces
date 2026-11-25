@@ -16,6 +16,10 @@ jest.mock('@/hooks/useChartConfig', () => ({
   useQueriedChartConfig: jest.fn(),
 }));
 
+jest.mock('@/couchbase/connection', () => ({
+  useConnectionKind: jest.fn().mockReturnValue('clickhouse'),
+}));
+
 type ColumnsResult = {
   data?: { name: string; default_type: string }[];
   isLoading: boolean;

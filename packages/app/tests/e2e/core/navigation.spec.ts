@@ -263,11 +263,13 @@ test.describe('Navigation', { tag: ['@core'] }, () => {
       // The counted sections deep-link to that release's own changelog section,
       // at that release's tag — main's changelog describes whatever has shipped
       // since, which a deployment behind main is not running.
+      // Couchbase Traces tags releases `v<version>` (port-notes B9), not
+      // upstream's `@hyperdx/app@<version>` changeset tags.
       await expect(
         drawer.getByTestId('whats-new-counts').first(),
       ).toHaveAttribute(
         'href',
-        /blob\/%40couchbase-traces%2Fapp%409\.9\.9\/CHANGELOG\.md#v999--2026-08-21$/,
+        /blob\/v9\.9\.9\/CHANGELOG\.md#v999--2026-08-21$/,
       );
       await expect(drawer.getByTestId('drawer-github-link')).toHaveAttribute(
         'href',

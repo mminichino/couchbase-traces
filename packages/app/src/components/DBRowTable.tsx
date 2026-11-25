@@ -1225,8 +1225,10 @@ export const RawLogTable = memo(
                   >
                     <tr
                       // Row ids are SQL WHERE literals (`META(d).id = "…"`);
-                      // quotes would terminate the HTML attribute early.
-                      data-testid={`table-row-${rowId.replace(/"/g, "'")}`}
+                      // quotes would terminate the HTML attribute early. Rows
+                      // without an id (event pattern samples) keep upstream's
+                      // `table-row-undefined`.
+                      data-testid={`table-row-${String(rowId).replace(/"/g, "'")}`}
                       className={cx(styles.tableRow, {
                         [styles.tableRow__selected]:
                           highlightedLineId && highlightedLineId === rowId,

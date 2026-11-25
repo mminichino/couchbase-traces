@@ -1,8 +1,13 @@
 import {
+  durationMsExpr,
   elapsedMinutesExpr,
   groupArrayExpr,
+  groupByCell,
   jsonExtractString,
   mapKeyAccess,
+  spanExceptionAttributesExpr,
+  spanRowIdExpr,
+  stringLiteralExpr,
   tupleElementExpr,
   uuidExpr,
   zipSeriesSqlpp,
@@ -53,6 +58,63 @@ describe('dialectExpr', () => {
       expect(elapsedMinutesExpr(start, end, 'clickhouse')).toBe(
         "age('mi', toDateTime(1767225600), toDateTime(1767229259.999))",
       );
+    });
+  });
+  describe('groupByCell', () => {
+    it('reads the ClickHouse arrayElement column', () => {
+      const row = { "arrayElement(ResourceAttributes, 'k8s.pod.name')": 'p1' };
+      expect(groupByCell(row, 'ResourceAttributes', 'k8s.pod.name')).toBe('p1');
+    });
+
+    it('reads the SQL++ expression-text column', () => {
+      const row = { "ResourceAttributes['k8s.pod.name']": 'p2' };
+      expect(groupByCell(row, 'ResourceAttributes', 'k8s.pod.name')).toBe('p2');
+    });
+
+    it('is empty when the key is missing', () => {
+      expect(groupByCell({}, 'ResourceAttributes', 'k8s.pod.name')).toBe('');
+    });
+  });
+  describe('spanExceptionAttributesExpr', () => {
+    it('keeps the ClickHouse Nested index form', () => {
+      expect(spanExceptionAttributesExpr('Events')).toBe(
+        "Events.Attributes[indexOf(Events.Name, 'exception')]",
+      );
+    });
+
+    it('selects the first exception event over the event array', () => {
+      expect(spanExceptionAttributesExpr('Events', 'couchbase')).toBe(
+        "IFMISSINGORNULL(FIRST e.`Attributes` FOR e IN Events WHEN e.`Name` = 'exception' END, {})",
+      );
+    });
+  });
+  describe('session span columns', () => {
+    it('converts a duration to milliseconds', () => {
+      expect(durationMsExpr('Duration', 9, 'couchbase')).toBe(
+        'IFMISSINGORNULL(TONUMBER(Duration), 0) * 1000 / POWER(10, 9)',
+      );
+      expect(durationMsExpr('Duration', 9)).toBe(
+        'toFloat64OrZero(toString(Duration)) * pow(10, 3) / pow(10, toInt8OrZero(toString(9)))',
+      );
+    });
+
+    it('builds a span row id without cityHash64 on couchbase', () => {
+      const ids: [string, string, string] = [
+        'TraceId',
+        'ParentSpanId',
+        'SpanId',
+      ];
+      expect(spanRowIdExpr(ids, 'couchbase')).toBe(
+        "CONCAT2(':', IFMISSINGORNULL(TOSTRING(TraceId), ''), IFMISSINGORNULL(TOSTRING(ParentSpanId), ''), IFMISSINGORNULL(TOSTRING(SpanId), ''))",
+      );
+      expect(spanRowIdExpr(ids)).toBe(
+        'toString(cityHash64(TraceId, ParentSpanId, SpanId))',
+      );
+    });
+
+    it('quotes a constant string column', () => {
+      expect(stringLiteralExpr("it's", 'couchbase')).toBe("'it''s'");
+      expect(stringLiteralExpr('span')).toBe("CAST('span', 'String')");
     });
   });
 });

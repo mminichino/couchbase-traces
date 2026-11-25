@@ -28,9 +28,11 @@ import {
   E2E_ALT_METRICS_DATABASE,
   E2E_ALT_METRICS_SUM_TABLE,
   E2E_METRICS_GAUGE_TABLE,
-  E2E_METRICS_SUM_TABLE,
-  E2E_SOURCE_DATABASE,
 } from '../utils/constants';
+
+// Collections cluster provisioning creates in the `otel` bucket.
+const PROVISIONED_METRICS_GAUGE_TABLE = 'otel_metrics_gauge';
+const PROVISIONED_METRICS_SUM_TABLE = 'otel_metrics_sum';
 
 test.describe(
   'Metric Table Autofill',
@@ -56,10 +58,9 @@ test.describe(
           kind: 'metric',
           name,
           connection: existing.connection,
-          from: {
-            databaseName: E2E_SOURCE_DATABASE,
-            tableName: '',
-          },
+          // Couchbase sources need the bucket's scope and a timestamp format.
+          from: { ...existing.from, tableName: '' },
+          timestampFormat: existing.timestampFormat ?? 'iso8601',
           timestampValueExpression: existing.timestampValueExpression,
           resourceAttributesExpression: existing.resourceAttributesExpression,
           // Gauge only — sum is deliberately left unset.
@@ -84,11 +85,14 @@ test.describe(
       await sourceForm.selectSourceKind('OTel metrics');
 
       await sourceForm.waitForMetricTableAutofill();
+      // The `otel` bucket also holds the provisioned OTel collections, which
+      // autofill prefers by name (`otel_metrics_*`); upstream's E2E database
+      // only had the `e2e_` tables.
       await expect(sourceForm.getMetricTableInput('gauge')).toHaveValue(
-        E2E_METRICS_GAUGE_TABLE,
+        PROVISIONED_METRICS_GAUGE_TABLE,
       );
       await expect(sourceForm.getMetricTableInput('sum')).toHaveValue(
-        E2E_METRICS_SUM_TABLE,
+        PROVISIONED_METRICS_SUM_TABLE,
       );
 
       // Discard the new source without creating it.
@@ -124,9 +128,16 @@ test.describe(
       }
     });
 
-    test.skip('autofills when the database changes on a saved metrics source', async ({
+    test('autofills when the database changes on a saved metrics source', async ({
       page,
     }) => {
+      // The alternate database is a second bucket (`e2e_metrics_alt`); the E2E
+      // cluster's data quota goes entirely to `otel` and `cbt_meta`, so it is
+      // not provisioned. Pending decision (docs/v1-release-plan.md, R4).
+      test.skip(
+        true,
+        'Needs a second E2E bucket (e2e_metrics_alt); not provisioned on the Couchbase E2E cluster',
+      );
       const sourceForm = new SourceFormComponent(page);
       const sourceName = `E2E Metrics Autofill Switch ${Date.now()}`;
       let sourceId = '';

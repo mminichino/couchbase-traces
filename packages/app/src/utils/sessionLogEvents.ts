@@ -1,11 +1,12 @@
 import sortBy from 'lodash/sortBy';
 import uniqBy from 'lodash/uniqBy';
 import SqlString from 'sqlstring';
-import type {
-  BuilderChartConfigWithDateRange,
-  Filter,
-  SelectList,
-  TLogSource,
+import {
+  type BuilderChartConfigWithDateRange,
+  DisplayType,
+  type Filter,
+  type SelectList,
+  type TLogSource,
 } from '@couchbase-traces/common-utils/dist/types';
 
 import type { WithClause } from '@/hooks/useRowWhere';
@@ -218,6 +219,9 @@ export function buildSessionLogEventsQuery({
   return {
     aliasMap,
     config: {
+      // A row search, so Couchbase rows carry the document key the event
+      // panel opens them by.
+      displayType: DisplayType.Search,
       source: logSource.id,
       select,
       from: logSource.from,

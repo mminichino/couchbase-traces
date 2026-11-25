@@ -3926,3 +3926,112 @@ ingest image twice. Timings per phase and per shard are in
   tests moved to `src/couchbase/__fixtures__/liveQuery.ts`.
 - Shard 2 is left as it is (user, 2026-11-24). Shards change only if one
   actually times out.
+
+### R4: Playwright specs on Couchbase (2026-11-24, `mm--v1-r4-playwright-couchbase`)
+
+R0 left 115 failures and 8 flaky tests across 29 specs. The full local suite
+now passes on a clean stack; skips are listed below with their reasons.
+
+**Path corrections.** The onboarding `system.tables` probe named as R4's
+starting point was already fixed by D5, and `route-smoke` passes. The
+R4 text says "all four shards". `make e2e` runs the whole suite unsharded
+locally. The four shards are CI's split of the same suite (R5).
+
+**D15 seed.** `seed-couchbase.ts` was split so each file stays under 300
+lines. `seed-couchbase-client.ts` holds the query REST client.
+`seed-rows-k8s.ts` holds the Kubernetes logs and `k8s.event` logs, and
+`seed-rows-k8s-metrics.ts` the gauge/sum rows.
+`seed-rows-sessions.ts` and `seed-otel-sessions.ts` hold the OTel browser SDK
+spans, replay rows and browser log events. `seed-rows-filter-keys.ts` holds
+the interesting-filter-keys and metadata-MV logs. Regular log rows no longer
+carry a synthetic `k8s.pod.uid`, which put the Infrastructure tab on rows with
+no Kubernetes context.
+
+**Product fixes (all small, in scope):**
+
+- `rewriteSqlFragment` translates ClickHouse `JSONExtract{String,Int,Float,
+  Bool,Raw}(col, 'k', ...)` into `DECODE_JSON` field access with upstream's
+  empty defaults (`jsonExtract.ts`). It also backtick-quotes reserved words
+  used as path segments (`ResourceAttributesJSON.key`).
+- String select lists quote a bare alias that is a SQL++ reserved word
+  (`SeverityText as level`). A group key that the string select already
+  projects stays unwrapped. Wrapping it in `IFMISSINGORNULL(…, "")` failed
+  planning with 4210.
+- A `*` select item adds no hinted column, so rows get no `"*": null` key.
+- Heatmaps: `widthBucket` is a `CASE`, log scale uses `LN(GREATEST(…))`
+  (`heatmapBucketSqlpp.ts`), and the default `count()` becomes `COUNT(*)`.
+- `useDatabasesDirect` and `useTablesDirect` select buckets with
+  `scope IS MISSING` and collections with `scope IS VALUED`. `namespace` is the
+  pool (`default`), not a row kind, and `SELECT RAW` rows came back as
+  `{ value }`.
+- New sources default to the `otel` bucket, the same as the API's
+  `CBT_COUCHBASE_BUCKET`, instead of ClickHouse's `default` database.
+  `isValidMetricTable` accepts an empty collection (INFER 7014, D4), like an
+  empty ClickHouse table that still has DDL. The series table stays strict.
+- Dashboard filter values: a key that is not a path (`toString(ServiceName)`)
+  is rendered as a SQL fragment, as upstream sends it raw. Facet keys go
+  through `facetKeyValuePath`.
+- Kubernetes tables read Map group-by cells under either the ClickHouse name
+  (`arrayElement(…)`) or the SQL++ one. Trace, session and waterfall panels use
+  dialect expressions (`durationMsExpr`, `spanRowIdExpr`,
+  `spanExceptionAttributesExpr`, `ifNonEmptyThenExpr`) and run as row
+  searches, so rows carry `__cbt_id`. Linked-span lookups use SQL++
+  `ANY … SATISFIES` (`linkedSpansWhere.ts`).
+- Paginated search takes `meta` from the first page that has columns, not
+  from an empty leading window. Pattern sample rows with no id render
+  `table-row-undefined`, as upstream does.
+
+**Spec adaptations (Couchbase differs):**
+
+- `navigation`: changelog link is `blob/v9.9.9/…` (B9 tags).
+- `histogram-group-by`, `dashboard`: value lists are SQL++ arrays
+  (`IN ['…']`).
+- `team`: connection detail reads `Connection string:` instead of `Host:`.
+- `heatmap-series`: bucket-width assertions use the SQL++ interval text
+  (`utils/sqlpp-interval.ts`), and requests go to `/couchbase/query`.
+- `dashboard` raw-SQL tiles: SQL++ statements (`utils/sqlpp-raw.ts`) with the
+  same macros and the same results. The source payload carries
+  `timestampFormat`.
+- `json-viewer-key-order`: Couchbase returns fields sorted by name, so the
+  "original" order is ascending. The spec asserts the same keys and no `*`
+  (Q56).
+- `metric-table-autofill`: the new-source case expects the provisioned
+  `otel_metrics_gauge` and `otel_metrics_sum`, because the `otel` bucket holds
+  them next to the `e2e_` collections. The saved-source payload carries scope
+  and `timestampFormat`.
+- `DashboardsListPage`: preset cards are matched by title prefix, because the
+  Kubernetes card description contains "cluster".
+- `kubernetes` "filter by namespace": 10 s for the filtered pods table, the
+  same budget the spec's sorting tests use. It timed out at 5 s under four
+  workers.
+- `dashboard` "Number chart renders with Raw SQL query": 15 s for the value,
+  the same budget as the sibling raw SQL tile tests. The SQL++ range filter
+  scans the logs collection, and this test was flaky at 5 s on a full run.
+- `metric-name-streaming` (a Couchbase-only spec): polls until gauge names
+  arrive, because names stream in by type.
+
+**Test helpers (no assertion changes):** `TimePickerComponent.selectTimeInterval`
+waits for the popover to close, so the next `open()` does not catch the
+closing popover. `DashboardPage.selectFullscreenRelativeTime` scopes to the
+fullscreen input's own popover through `aria-controls`.
+`playwright.config.ts` uses 4 workers locally as well as in CI. Playwright's
+default is half the host's cores, which overloads the 2-CPU E2E Couchbase.
+
+**Explicit skips:**
+
+- `select-star-error-state.spec.ts`: a ClickHouse Distributed-table
+  missing-column error, which no Couchbase collection can reach (Q55).
+- `metric-table-autofill` "database changes": needs a second bucket
+  (`e2e_metrics_alt`), and the E2E data quota is split between `otel` and
+  `cbt_meta` (Q57). This was a bare `test.skip` from Phase 10 and now has a
+  reason.
+- `sources.spec.ts` source-form test: upstream's own full-stack skip,
+  unchanged.
+
+**Runs.** On the final code, two clean `make e2e` runs in a row each had 453
+passed, 4 skipped and exit 0. Each had one upstream UI race that passed on
+retry (`dashboard-static-filters` freeform submit, and `team` cancel-rename
+on the shared team). Neither involves a data query. Local gates: `make ci-lint`
+(app at its 496-warning cap), `make ci-unit`, `make ci-int`, and
+`port/couchbase-test/run.sh`, all green. `ci-unit`'s `changeset-hash` tests
+need to run outside the agent sandbox, which blocks `git init` in a temp dir.
