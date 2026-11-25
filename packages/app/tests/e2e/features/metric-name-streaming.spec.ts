@@ -37,11 +37,18 @@ test.describe(
         await expect(metricSelect).toBeVisible();
         await metricSelect.click();
         await expect(metricOptions.first()).toBeVisible({ timeout: 15000 });
-        const values = await metricOptions.evaluateAll(nodes =>
-          nodes.map(node => node.getAttribute('value') ?? ''),
-        );
-        const gauges = values.filter(v => v.endsWith(':::::::gauge'));
-        expect(gauges.length).toBeGreaterThan(0);
+        // Names stream in per metric type; poll until the gauges have landed.
+        await expect
+          .poll(
+            async () => {
+              const values = await metricOptions.evaluateAll(nodes =>
+                nodes.map(node => node.getAttribute('value') ?? ''),
+              );
+              return values.filter(v => v.endsWith(':::::::gauge')).length;
+            },
+            { timeout: 15000 },
+          )
+          .toBeGreaterThan(0);
       });
     });
   },

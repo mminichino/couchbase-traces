@@ -49,6 +49,8 @@ Entry points:
 - `app_page:/search/[savedSearchId]`, `packages/app/pages/search/[savedSearchId].tsx`
 - `app_page:/search/list`, `packages/app/pages/search/list.tsx`
 
+Decision: The search row panel's SELECT * failure state for ClickHouse Distributed tables (upstream select-star-error-state.spec.ts) is not applicable (Q55): collections never report isPointerTable, and a schemaless SELECT * cannot fail on a shard's missing column, so the state is unreachable and the spec is skipped with that reason. Signed off by Michael on 2026-11-25.
+
 ## charts
 
 | Feature | Visibility | Status | Entry points | Data layer | Tests (unit / int / e2e) |

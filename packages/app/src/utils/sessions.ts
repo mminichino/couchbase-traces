@@ -16,7 +16,9 @@ import { isSet } from './spanAttributeReaders';
 export const sessionRowSchema = z.object({
   body: z.string().nullish(),
   component: z.string().nullish(),
-  durationInMs: z.number(),
+  // Couchbase types a whole-number result Int64 and sends it quoted, as
+  // ClickHouse does for 64-bit integers; ClickHouse's Float64 is a number.
+  durationInMs: z.coerce.number(),
   'error.message': z.string().nullish(),
   'http.method': z.string().nullish(),
   'http.request.method': z.string().nullish(),
@@ -34,6 +36,8 @@ export const sessionRowSchema = z.object({
   trace_id: z.string(),
   type: z.string().nullish(),
   'url.full': z.string().nullish(),
+  // Couchbase document key (ROW_ID_ALIAS); useRowWhere looks the span up by it.
+  __cbt_id: z.string().optional(),
 });
 
 export type SessionRow = z.infer<typeof sessionRowSchema>;

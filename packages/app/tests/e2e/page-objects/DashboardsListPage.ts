@@ -4,6 +4,8 @@
  */
 import { Locator, Page } from '@playwright/test';
 
+const escapeRegExp = (s: string) => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+
 export class DashboardsListPage {
   readonly page: Page;
   readonly pageContainer: Locator;
@@ -141,7 +143,12 @@ export class DashboardsListPage {
   }
 
   getPresetDashboardCard(name: string) {
-    return this.pageContainer.locator('a').filter({ hasText: name });
+    // Match the card's title rather than any text: the Kubernetes card's
+    // description contains "cluster", which a substring match on the Couchbase
+    // "Cluster" card also hits (upstream's "ClickHouse" card was unique).
+    return this.pageContainer
+      .locator('a')
+      .filter({ hasText: new RegExp(`^${escapeRegExp(name)}`) });
   }
 
   getTab(tab: 'all' | 'favorites' | 'mine') {

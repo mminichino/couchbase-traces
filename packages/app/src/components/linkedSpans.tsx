@@ -1,5 +1,4 @@
 import { useMemo } from 'react';
-import SqlString from 'sqlstring';
 import {
   BuilderChartConfigWithDateRange,
   isTraceSource,
@@ -8,6 +7,12 @@ import {
 } from '@couchbase-traces/common-utils/dist/types';
 import { Group, Text } from '@mantine/core';
 
+import { useConnectionKind } from '@/couchbase/connection';
+import type { SqlDialect } from '@/couchbase/dialectExpr';
+import {
+  linkedSpanPairsWhere,
+  reverseSpanLinksWhere,
+} from '@/couchbase/linkedSpansWhere';
 import { useQueriedChartConfig } from '@/hooks/useChartConfig';
 import {
   getDisplayedTimestampValueExpression,
@@ -115,11 +120,13 @@ export function getReverseSpanLinksConfig({
   traceId,
   spanId,
   anchorDate,
+  dialect = 'clickhouse',
 }: {
   source: TSource;
   traceId: string | undefined;
   spanId: string | undefined;
   anchorDate: Date | undefined;
+  dialect?: SqlDialect;
 }): BuilderChartConfigWithDateRange | null {
   const exprs = getLinkedSpanSourceExpressions(source);
   if (
@@ -132,23 +139,11 @@ export function getReverseSpanLinksConfig({
     return null;
   }
 
-  const linkTraceIdExpr = SqlString.raw(`${exprs.spanLinksExpression}.TraceId`);
-  const linkSpanIdExpr = SqlString.raw(`${exprs.spanLinksExpression}.SpanId`);
-  // The WHERE has two conjuncts with different jobs:
-  // - `has(Links.SpanId, x)`: cheap filter, and the only shape a bloom_filter
-  //   skipping index can serve (an `arrayExists` lambda cannot).
-  // - `arrayExists(...)`: exact match on the (TraceId, SpanId) pair, since
-  //   `has()` alone would match the span id linked from any trace.
-  //
-  // No index serves the `has()` today — the default ClickStack schema has
-  // none on Links.SpanId — so this lookup is bounded only by its dateRange
-  // (a scan of ~2 daily partitions). If that gets slow (~1B spans/day),
-  // adding to otel_traces:
-  //   INDEX idx_link_span_id Links.SpanId TYPE bloom_filter(0.001)
-  // lets legacy store skip nearly all granules with no app change.
-  const where = SqlString.format(
-    'has(?, ?) AND arrayExists((lt, ls) -> lt = ? AND ls = ?, ?, ?)',
-    [linkSpanIdExpr, spanId, traceId, spanId, linkTraceIdExpr, linkSpanIdExpr],
+  const where = reverseSpanLinksWhere(
+    exprs.spanLinksExpression,
+    traceId,
+    spanId,
+    dialect,
   );
 
   return {
@@ -176,10 +171,12 @@ export function getLinkedSpansConfig({
   source,
   links,
   anchorDate,
+  dialect = 'clickhouse',
 }: {
   source: TSource;
   links: Pick<SpanLinkData, 'TraceId' | 'SpanId'>[];
   anchorDate: Date | undefined;
+  dialect?: SqlDialect;
 }): BuilderChartConfigWithDateRange | null {
   const exprs = getLinkedSpanSourceExpressions(source);
   if (!exprs || anchorDate == null || links.length === 0) {
@@ -199,17 +196,12 @@ export function getLinkedSpansConfig({
     }
   }
 
-  const traceIdExpr = SqlString.raw(exprs.traceIdExpression);
-  const spanIdExpr = SqlString.raw(exprs.spanIdExpression);
-  // The plain trace-id IN is servable by the default schema's bloom_filter
-  // index on TraceId; the tuple IN pins the exact (TraceId, SpanId) pairs.
-  const where = SqlString.format('? IN (?) AND (?, ?) IN (?)', [
-    traceIdExpr,
-    pairs.map(([linkTraceId]) => linkTraceId),
-    traceIdExpr,
-    spanIdExpr,
+  const where = linkedSpanPairsWhere(
+    exprs.traceIdExpression,
+    exprs.spanIdExpression,
     pairs,
-  ]);
+    dialect,
+  );
 
   return {
     connection: source.connection,
@@ -296,9 +288,17 @@ export function useReverseSpanLinks({
   anchorDate: Date | undefined;
   enabled?: boolean;
 }) {
+  const dialect = useConnectionKind(source.connection);
   const config = useMemo(
-    () => getReverseSpanLinksConfig({ source, traceId, spanId, anchorDate }),
-    [source, traceId, spanId, anchorDate],
+    () =>
+      getReverseSpanLinksConfig({
+        source,
+        traceId,
+        spanId,
+        anchorDate,
+        dialect,
+      }),
+    [source, traceId, spanId, anchorDate, dialect],
   );
 
   const placeholderConfig = usePlaceholderConfig(source);
@@ -355,9 +355,10 @@ export function useLinkedSpanDetails({
   anchorDate: Date | undefined;
   enabled?: boolean;
 }) {
+  const dialect = useConnectionKind(source.connection);
   const config = useMemo(
-    () => getLinkedSpansConfig({ source, links, anchorDate }),
-    [source, links, anchorDate],
+    () => getLinkedSpansConfig({ source, links, anchorDate, dialect }),
+    [source, links, anchorDate, dialect],
   );
 
   const placeholderConfig = usePlaceholderConfig(source);

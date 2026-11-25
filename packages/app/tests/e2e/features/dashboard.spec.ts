@@ -14,6 +14,13 @@ import {
 } from '../utils/constants';
 import { updateMetadataDoc } from '../utils/db-helpers';
 import { getSqlEditor } from '../utils/locators';
+import {
+  RAW_NESTED_MACRO_SQL,
+  RAW_NUMBER_SQL,
+  RAW_PIE_SQL,
+  rawLineSql,
+  rawServiceCountSql,
+} from '../utils/sqlpp-raw';
 
 test.describe('Dashboard', { tag: ['@dashboard'] }, () => {
   let dashboardPage: DashboardPage;
@@ -1507,13 +1514,13 @@ test.describe('Dashboard', { tag: ['@dashboard'] }, () => {
   );
 
   test.describe('Raw SQL Dashboard Tiles', () => {
-    const LINE_SQL = `SELECT toStartOfInterval(Timestamp, INTERVAL {intervalSeconds:Int64} SECOND) AS ts, count() AS count FROM default.e2e_otel_logs WHERE Timestamp >= fromUnixTimestamp64Milli({startDateMilliseconds:Int64}) AND Timestamp < fromUnixTimestamp64Milli({endDateMilliseconds:Int64}) GROUP BY ts ORDER BY ts ASC`;
+    const LINE_SQL = rawLineSql();
 
-    const TABLE_SQL = `SELECT ServiceName, count() AS count FROM default.e2e_otel_logs WHERE Timestamp >= fromUnixTimestamp64Milli({startDateMilliseconds:Int64}) AND Timestamp <= fromUnixTimestamp64Milli({endDateMilliseconds:Int64}) GROUP BY ServiceName LIMIT 200`;
+    const TABLE_SQL = rawServiceCountSql();
 
-    const NUMBER_SQL = `SELECT 1234 FROM default.e2e_otel_logs WHERE Timestamp >= fromUnixTimestamp64Milli({startDateMilliseconds:Int64}) AND Timestamp < fromUnixTimestamp64Milli({endDateMilliseconds:Int64})`;
+    const NUMBER_SQL = RAW_NUMBER_SQL;
 
-    const PIE_SQL = `SELECT ServiceName, count() FROM default.e2e_otel_logs WHERE Timestamp >= fromUnixTimestamp64Milli({startDateMilliseconds:Int64}) AND Timestamp < fromUnixTimestamp64Milli({endDateMilliseconds:Int64}) GROUP BY ServiceName`;
+    const PIE_SQL = RAW_PIE_SQL;
 
     test.beforeEach(async () => {
       await dashboardPage.createNewDashboard();
@@ -1604,7 +1611,9 @@ test.describe('Dashboard', { tag: ['@dashboard'] }, () => {
 
       await test.step('Verify the number chart renders on the dashboard', async () => {
         const tile = dashboardPage.getTiles().filter({ hasText: chartName });
-        await expect(tile).toContainText('1234');
+        // The same 15s the sibling raw SQL tile tests allow: the SQL++ range
+        // filter scans the logs collection on the shared 2-CPU E2E node.
+        await expect(tile).toContainText('1234', { timeout: 15000 });
       });
     });
 
@@ -1692,9 +1701,11 @@ test.describe('Dashboard', { tag: ['@dashboard'] }, () => {
   test.describe('Dashboard Variables in Raw SQL Tiles', () => {
     // Both `$__filter(<expr>, <name>)` and a bare `$name` reference, so one
     // query exercises the macro and the plain-reference form together.
-    const VARIABLE_SQL = `SELECT ServiceName, count() AS count FROM default.e2e_otel_logs WHERE Timestamp >= fromUnixTimestamp64Milli({startDateMilliseconds:Int64}) AND Timestamp <= fromUnixTimestamp64Milli({endDateMilliseconds:Int64}) AND $__filter(ServiceName, $svc) AND ServiceName IN ($svc) GROUP BY ServiceName LIMIT 200`;
+    const VARIABLE_SQL = rawServiceCountSql(
+      ' AND $__filter(ServiceName, $svc) AND ServiceName IN ($svc)',
+    );
 
-    const VARIABLE_LINE_SQL = `SELECT toStartOfInterval(Timestamp, INTERVAL {intervalSeconds:Int64} SECOND) AS ts, count() AS count FROM default.e2e_otel_logs WHERE Timestamp >= fromUnixTimestamp64Milli({startDateMilliseconds:Int64}) AND Timestamp < fromUnixTimestamp64Milli({endDateMilliseconds:Int64}) AND $__filter(ServiceName, $svc) GROUP BY ts ORDER BY ts ASC`;
+    const VARIABLE_LINE_SQL = rawLineSql(' AND $__filter(ServiceName, $svc)');
 
     test(
       'substitutes selected variable values in the tile editor previews',
@@ -1731,8 +1742,9 @@ test.describe('Dashboard', { tag: ['@dashboard'] }, () => {
             // $__filter(ServiceName, $svc) -> (ServiceName IN ['accounting'])
             expect(sql).toContain("(ServiceName IN ['accounting'])");
             // ServiceName IN ($svc) -> ServiceName IN ['accounting']
+            // SQL++ value lists are arrays (port-notes, Phase 11).
             expect(sql).toMatch(
-              /ServiceName IN \('accounting'\)[\s\S]*ServiceName IN \('accounting'\)/,
+              /ServiceName IN \['accounting'\][\s\S]*ServiceName IN \['accounting'\]/,
             );
             expect(sql).not.toContain('$svc');
           }).toPass({ timeout: 15000 });
@@ -1781,7 +1793,7 @@ test.describe('Dashboard', { tag: ['@dashboard'] }, () => {
 
         // `$__timeFilter` sits in a `$__conditionalAll` argument, so it only
         // expands if arguments are expanded before the enclosing macro runs.
-        const NESTED_MACRO_SQL = `SELECT ServiceName, count() AS count FROM default.e2e_otel_logs WHERE $__conditionalAll($__timeFilter(Timestamp), $svc) AND $__filter(ServiceName, $svc) GROUP BY ServiceName LIMIT 200`;
+        const NESTED_MACRO_SQL = RAW_NESTED_MACRO_SQL;
 
         await test.step('Create a dashboard with a selected variable value', async () => {
           await dashboardPage.createNewDashboard();
@@ -2690,6 +2702,8 @@ test.describe('Dashboard', { tag: ['@dashboard'] }, () => {
         connection,
         from,
         timestampValueExpression: 'Timestamp',
+        // Couchbase sources must declare how Timestamp is stored.
+        timestampFormat: logSources[0].timestampFormat ?? 'iso8601',
         defaultTableSelectExpression:
           'Timestamp, ServiceName, SeverityText, Body',
         serviceNameExpression: 'ServiceName',

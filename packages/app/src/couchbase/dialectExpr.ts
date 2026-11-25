@@ -92,3 +92,82 @@ export function elapsedMinutesExpr(
   }
   return `age('mi', toDateTime(${start.getTime() / 1000}), toDateTime(${end.getTime() / 1000}))`;
 }
+
+/**
+ * A row's value for a Map group-by key built as `col['key']`. ClickHouse
+ * names that result column `arrayElement(col, 'key')`; the SQL++ renderer
+ * keeps the expression text as its alias.
+ */
+export function groupByCell(
+  row: Record<string, unknown>,
+  column: string,
+  key: string,
+): string {
+  const value =
+    row[`arrayElement(${column}, '${key}')`] ?? row[`${column}['${key}']`];
+  return value == null ? '' : String(value);
+}
+
+/**
+ * Attributes of the first `exception` span event. ClickHouse indexes the
+ * Nested column's parallel arrays (index 0 yields an empty map); Couchbase
+ * stores events as an array of objects, so the miss case defaults to `{}`.
+ */
+export function spanExceptionAttributesExpr(
+  events: string,
+  dialect: SqlDialect = 'clickhouse',
+): string {
+  if (dialect === 'couchbase') {
+    return `IFMISSINGORNULL(FIRST e.\`Attributes\` FOR e IN ${events} WHEN e.\`Name\` = 'exception' END, {})`;
+  }
+  return `${events}.Attributes[indexOf(${events}.Name, 'exception')]`;
+}
+
+/** A span's duration in milliseconds from its raw duration and precision. */
+export function durationMsExpr(
+  duration: string,
+  precision: number | undefined,
+  dialect: SqlDialect = 'clickhouse',
+): string {
+  if (dialect === 'couchbase') {
+    return `IFMISSINGORNULL(TONUMBER(${duration}), 0) * 1000 / POWER(10, ${Number(precision ?? 9)})`;
+  }
+  return `toFloat64OrZero(toString(${duration})) * pow(10, 3) / pow(10, toInt8OrZero(toString(${precision})))`;
+}
+
+/**
+ * A stable string id per span. ClickHouse hashes the three ids; SQL++ has no
+ * cityHash64, and joining them is as unique as hashing them.
+ */
+export function spanRowIdExpr(
+  ids: [traceId: string, parentSpanId: string, spanId: string],
+  dialect: SqlDialect = 'clickhouse',
+): string {
+  if (dialect === 'couchbase') {
+    const parts = ids.map(id => `IFMISSINGORNULL(TOSTRING(${id}), '')`);
+    return `CONCAT2(':', ${parts.join(', ')})`;
+  }
+  return `toString(cityHash64(${ids.join(', ')}))`;
+}
+
+/** A constant string column. */
+export function stringLiteralExpr(
+  value: string,
+  dialect: SqlDialect = 'clickhouse',
+): string {
+  const quoted = `'${value.replace(/'/g, "''")}'`;
+  return dialect === 'couchbase' ? quoted : `CAST(${quoted}, 'String')`;
+}
+
+/** `then` when `cond` is a non-empty string, else `otherwise`. */
+export function ifNonEmptyThenExpr(
+  cond: string,
+  then: string,
+  otherwise: string,
+  dialect: SqlDialect = 'clickhouse',
+): string {
+  if (dialect === 'couchbase') {
+    return `CASE WHEN ${cond} != '' THEN ${then} ELSE ${otherwise} END`;
+  }
+  return `if(${cond} != '', ${then}, ${otherwise})`;
+}

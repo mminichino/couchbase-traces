@@ -398,7 +398,10 @@ test.describe('Team Settings Page', { tag: ['@team', '@full-stack'] }, () => {
     });
 
     await test.step('Verify connection details are visible', async () => {
-      await expect(teamPage.connections.getByText('Host:')).toBeVisible();
+      // Couchbase connections are configured by connection string, not host.
+      await expect(
+        teamPage.connections.getByText('Connection string:'),
+      ).toBeVisible();
       await expect(teamPage.connections.getByText('Username:')).toBeVisible();
     });
   });

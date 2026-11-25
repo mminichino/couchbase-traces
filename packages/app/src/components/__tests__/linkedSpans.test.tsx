@@ -14,6 +14,10 @@ import {
 } from '@/components/linkedSpans';
 
 const mockUseQueriedChartConfig = jest.fn();
+jest.mock('@/couchbase/connection', () => ({
+  useConnectionKind: () => 'clickhouse',
+}));
+
 jest.mock('@/hooks/useChartConfig', () => ({
   __esModule: true,
   useQueriedChartConfig: (config: unknown, options: unknown) =>

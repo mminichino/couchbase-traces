@@ -20,6 +20,15 @@ test.describe(
   'SELECT * failure on a Distributed table',
   { tag: '@search' },
   () => {
+    // Couchbase has no Distributed/Merge tables: collections never report
+    // `isPointerTable` and a schemaless `SELECT *` cannot fail on a missing
+    // shard column, so this error state is unreachable. Signed off as not
+    // applicable (Q55, `app-search` in docs/parity.md).
+    test.skip(
+      true,
+      'ClickHouse Distributed-table failure mode; not reachable on Couchbase',
+    );
+
     let searchPage: SearchPage;
 
     test.beforeEach(async ({ page }) => {

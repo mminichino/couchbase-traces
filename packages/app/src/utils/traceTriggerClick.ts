@@ -1,5 +1,8 @@
 import SqlString from 'sqlstring';
-import type { BuilderChartConfigWithDateRange } from '@couchbase-traces/common-utils/dist/types';
+import {
+  type BuilderChartConfigWithDateRange,
+  DisplayType,
+} from '@couchbase-traces/common-utils/dist/types';
 
 import { BROWSER_EVENT_NAMES } from '@/utils/browserEvents';
 import {
@@ -42,6 +45,9 @@ export function buildTriggerClickQuery({
   return {
     aliasMap,
     config: {
+      // A row search, so Couchbase rows carry the document key the event
+      // panel opens them by.
+      displayType: DisplayType.Search,
       source: logSource.id,
       select,
       from: logSource.from,

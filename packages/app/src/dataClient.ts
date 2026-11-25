@@ -59,8 +59,9 @@ export function useDatabasesDirect(
     queryFn: async () => {
       const json = await client
         .query({
+          // Bucket rows of system:keyspaces are the ones without a scope.
           query:
-            'SELECT RAW name FROM system:keyspaces WHERE `namespace` = "bucket"',
+            'SELECT k.name AS name FROM system:keyspaces k WHERE k.`scope` IS MISSING',
           connectionId,
         })
         .then(res => res.json<ResponseJSON<{ name: string }>>());
@@ -93,8 +94,10 @@ export function useTablesDirect(
     queryFn: async () => {
       const json = await client
         .query({
+          // Collection rows are the ones with a scope; `namespace` is the pool
+          // name (`default`), not a row kind.
           query:
-            'SELECT RAW c.name FROM system:keyspaces c WHERE c.`bucket` = $bucket AND c.`namespace` = "collection"',
+            'SELECT c.name AS name FROM system:keyspaces c WHERE c.`bucket` = $bucket AND c.`scope` IS VALUED',
           query_params: { bucket: database },
           connectionId,
         })

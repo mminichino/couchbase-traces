@@ -3,7 +3,10 @@ import {
   UseTextIndex,
 } from '@couchbase-traces/common-utils/dist/types';
 
-export const DEFAULT_DATABASE = 'default';
+// The bucket the collector and default sources write to (the API's
+// `CBT_COUCHBASE_BUCKET` default). Upstream used ClickHouse's `default` database,
+// which has no Couchbase counterpart.
+export const DEFAULT_DATABASE = 'otel';
 
 const MV_GRANULARITY_OPTIONS: { value: string; label: string }[] = [
   { value: '1 minute', label: '1 minute' },

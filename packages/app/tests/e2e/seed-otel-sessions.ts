@@ -1,7 +1,12 @@
 /**
  * Sessions keyed on `session.id`, as the OpenTelemetry browser SDK sends them.
  * The rest of the session seed uses the legacy SDK's `rum.sessionId`.
+ *
+ * Couchbase port: the same rows as upstream's generators, built as documents
+ * (D15) instead of ClickHouse VALUES tuples.
  */
+
+export type SeedRow = Record<string, unknown>;
 
 export const OTEL_SESSIONS = {
   /** `session.id` only: replay rows and one failed fetch span. */
@@ -12,12 +17,34 @@ export const OTEL_SESSIONS = {
 
 const SERVICE = 'browser';
 const PAGE_URL = 'http://localhost:8080/';
+const iso = (ms: number) => new Date(ms).toISOString();
+
+function logRow(ms: number, fields: Partial<SeedRow>): SeedRow {
+  return {
+    Timestamp: iso(ms),
+    TraceId: '',
+    SpanId: '',
+    TraceFlags: 0,
+    SeverityText: '',
+    SeverityNumber: 0,
+    ServiceName: SERVICE,
+    Body: '',
+    ResourceSchemaUrl: '',
+    ResourceAttributes: { 'service.name': SERVICE },
+    ScopeSchemaUrl: '',
+    ScopeName: '',
+    ScopeVersion: '',
+    ScopeAttributes: {},
+    LogAttributes: {},
+    ...fields,
+  };
+}
 
 function replayRows(
   startMs: number,
-  resourceAttributes: string,
+  resourceAttributes: Record<string, string>,
   sessionId: string,
-): string[] {
+): SeedRow[] {
   const events = [
     { type: 4, data: { href: PAGE_URL, width: 1280, height: 720 } },
     {
@@ -58,35 +85,96 @@ function replayRows(
   ];
   return events.map((event, i) => {
     const timestampMs = startMs + i * 1000;
-    const body = JSON.stringify({ ...event, timestamp: timestampMs });
-    return `('${timestampMs * 1_000_000}', '', '', 0, '', 0, '${SERVICE}', '${body}', '', ${resourceAttributes}, '', 'rum.rr-web', '', {}, {'session.id':'${sessionId}','rr-web.event':'${i + 1}','rr-web.offset':'${i + 1}','rr-web.chunk':'1','rr-web.total-chunks':'1'})`;
+    return logRow(timestampMs, {
+      Body: JSON.stringify({ ...event, timestamp: timestampMs }),
+      ResourceAttributes: resourceAttributes,
+      ScopeName: 'rum.rr-web',
+      LogAttributes: {
+        'session.id': sessionId,
+        'rr-web.event': `${i + 1}`,
+        'rr-web.offset': `${i + 1}`,
+        'rr-web.chunk': '1',
+        'rr-web.total-chunks': '1',
+      },
+    });
   });
 }
 
-export function generateOtelSessionReplayRows(seedRef: number): string {
+/** Replay rows for the sessions collection. */
+export function buildOtelSessionReplayRows(seedRef: number): SeedRow[] {
   const startMs = seedRef - 5 * 60 * 1000;
   return [
+    ...replayRows(startMs, { 'service.name': SERVICE }, OTEL_SESSIONS.newSdk),
     ...replayRows(
       startMs,
-      `{'service.name':'${SERVICE}'}`,
-      OTEL_SESSIONS.newSdk,
-    ),
-    ...replayRows(
-      startMs,
-      `{'rum.sessionId':'${OTEL_SESSIONS.bothKeys}','service.name':'${SERVICE}'}`,
+      { 'rum.sessionId': OTEL_SESSIONS.bothKeys, 'service.name': SERVICE },
       OTEL_SESSIONS.bothKeys,
     ),
-  ].join(',\n');
+  ];
 }
 
-export function generateOtelSessionSpans(seedRef: number): string {
-  const ns = (seedRef - 5 * 60 * 1000 + 500) * 1_000_000;
+function spanRow(ms: number, fields: Partial<SeedRow>): SeedRow {
+  return {
+    Timestamp: iso(ms),
+    TraceId: '',
+    SpanId: '',
+    ParentSpanId: '',
+    TraceState: '',
+    SpanName: '',
+    SpanKind: 'SPAN_KIND_INTERNAL',
+    ServiceName: SERVICE,
+    ResourceAttributes: { 'service.name': SERVICE },
+    ScopeName: '',
+    ScopeVersion: '',
+    SpanAttributes: {},
+    Duration: 0,
+    StatusCode: 'Unset',
+    StatusMessage: '',
+    Events: [],
+    Links: [],
+    ...fields,
+  };
+}
+
+/** Spans for the traces collection. */
+export function buildOtelSessionSpans(seedRef: number): SeedRow[] {
+  const ms = seedRef - 5 * 60 * 1000 + 500;
   const { newSdk, bothKeys } = OTEL_SESSIONS;
   return [
-    `('${ns}', '${newSdk}-trace', '${newSdk}-span', '', '', 'GET', 'SPAN_KIND_CLIENT', '${SERVICE}', {'service.name':'${SERVICE}'}, '@opentelemetry/instrumentation-fetch', '', {'session.id':'${newSdk}','browser.document.url.full':'${PAGE_URL}','url.full':'${PAGE_URL}api/error','http.request.method':'GET','http.response.status_code':'500','error.type':'500'}, 12000000, 'Error', '', [], [], [], [], [], [], [])`,
+    spanRow(ms, {
+      TraceId: `${newSdk}-trace`,
+      SpanId: `${newSdk}-span`,
+      SpanName: 'GET',
+      SpanKind: 'SPAN_KIND_CLIENT',
+      ScopeName: '@opentelemetry/instrumentation-fetch',
+      SpanAttributes: {
+        'session.id': newSdk,
+        'browser.document.url.full': PAGE_URL,
+        'url.full': `${PAGE_URL}api/error`,
+        'http.request.method': 'GET',
+        'http.response.status_code': '500',
+        'error.type': '500',
+      },
+      Duration: 12_000_000,
+      StatusCode: 'Error',
+    }),
     // url.full, which document-load sets, lists the span on the All tab.
-    `('${ns}', '${bothKeys}-trace', '${bothKeys}-span', '', '', 'documentFetch', 'SPAN_KIND_INTERNAL', '${SERVICE}', {'rum.sessionId':'${bothKeys}','service.name':'${SERVICE}'}, '', '', {'session.id':'${bothKeys}','component':'document-load','url.full':'${PAGE_URL}'}, 3000000, 'Unset', '', [], [], [], [], [], [], [])`,
-  ].join(',\n');
+    spanRow(ms, {
+      TraceId: `${bothKeys}-trace`,
+      SpanId: `${bothKeys}-span`,
+      SpanName: 'documentFetch',
+      ResourceAttributes: {
+        'rum.sessionId': bothKeys,
+        'service.name': SERVICE,
+      },
+      SpanAttributes: {
+        'session.id': bothKeys,
+        component: 'document-load',
+        'url.full': PAGE_URL,
+      },
+      Duration: 3_000_000,
+    }),
+  ];
 }
 
 // Four dots inside the 12 ms span.
@@ -101,25 +189,69 @@ const RESOURCE_TIMING = {
 };
 
 /**
- * OTel SDK log events around the +500 ms span: the click 3 ms before it that
- * triggers its trace, its request timing, a same-document navigation, and a
- * console error.
+ * OTel SDK log events around the +500 ms span, for the logs collection: the
+ * click 3 ms before it that triggers its trace, its request timing, a
+ * same-document navigation, and a console error.
  */
-export function generateOtelSessionLogEvents(seedRef: number): string {
-  const ns = (offsetMs: number) =>
-    (seedRef - 5 * 60 * 1000 + offsetMs) * 1_000_000;
-  const resource = `{'service.name':'${SERVICE}'}`;
+export function buildOtelSessionLogEvents(seedRef: number): SeedRow[] {
+  const at = (offsetMs: number) => seedRef - 5 * 60 * 1000 + offsetMs;
   const { newSdk, bothKeys } = OTEL_SESSIONS;
   const click = (sessionId: string) =>
-    `('${ns(497)}', '', '', 0, '', 9, '${SERVICE}', '', '', ${resource}, '', '', '', {}, {'session.id':'${sessionId}','browser.tag_name':'BUTTON','browser.css_selector':'#root > main > button.checkout','browser.document.url.full':'${PAGE_URL}','browser.element.attributes.testid':'checkout'}, 'browser.user_action.click')`;
-  const timing = Object.entries(RESOURCE_TIMING)
-    .map(([key, value]) => `'browser.resource_timing.${key}':'${value}'`)
-    .join(',');
+    logRow(at(497), {
+      SeverityNumber: 9,
+      LogAttributes: {
+        'session.id': sessionId,
+        'browser.tag_name': 'BUTTON',
+        'browser.css_selector': '#root > main > button.checkout',
+        'browser.document.url.full': PAGE_URL,
+        'browser.element.attributes.testid': 'checkout',
+      },
+      EventName: 'browser.user_action.click',
+    });
+  const timing = Object.fromEntries(
+    Object.entries(RESOURCE_TIMING).map(([k, v]) => [
+      `browser.resource_timing.${k}`,
+      v,
+    ]),
+  );
   return [
     click(newSdk),
-    `('${ns(520)}', '${newSdk}-trace', '${newSdk}-span', 0, '', 9, '${SERVICE}', '', '', ${resource}, '', '@opentelemetry/browser-instrumentation/resource-timing', '', {}, {'session.id':'${newSdk}','browser.document.url.full':'${PAGE_URL}','url.full':'${PAGE_URL}api/error',${timing}}, 'browser.resource_timing')`,
-    `('${ns(700)}', '', '', 0, '', 9, '${SERVICE}', '', '', ${resource}, '', '', '', {}, {'session.id':'${newSdk}','url.full':'${PAGE_URL}checkout','browser.document.url.full':'${PAGE_URL}checkout','browser.navigation.same_document':'true','browser.navigation.hash_change':'false','browser.navigation.type':'push'}, 'browser.navigation')`,
-    `('${ns(800)}', '', '', 0, 'error', 17, '${SERVICE}', 'Error: checkout failed', '', ${resource}, '', '', '', {}, {'session.id':'${newSdk}','browser.console.method':'error','browser.document.url.full':'${PAGE_URL}'}, 'browser.console')`,
+    logRow(at(520), {
+      TraceId: `${newSdk}-trace`,
+      SpanId: `${newSdk}-span`,
+      SeverityNumber: 9,
+      ScopeName: '@opentelemetry/browser-instrumentation/resource-timing',
+      LogAttributes: {
+        'session.id': newSdk,
+        'browser.document.url.full': PAGE_URL,
+        'url.full': `${PAGE_URL}api/error`,
+        ...timing,
+      },
+      EventName: 'browser.resource_timing',
+    }),
+    logRow(at(700), {
+      SeverityNumber: 9,
+      LogAttributes: {
+        'session.id': newSdk,
+        'url.full': `${PAGE_URL}checkout`,
+        'browser.document.url.full': `${PAGE_URL}checkout`,
+        'browser.navigation.same_document': 'true',
+        'browser.navigation.hash_change': 'false',
+        'browser.navigation.type': 'push',
+      },
+      EventName: 'browser.navigation',
+    }),
+    logRow(at(800), {
+      SeverityText: 'error',
+      SeverityNumber: 17,
+      Body: 'Error: checkout failed',
+      LogAttributes: {
+        'session.id': newSdk,
+        'browser.console.method': 'error',
+        'browser.document.url.full': PAGE_URL,
+      },
+      EventName: 'browser.console',
+    }),
     click(bothKeys),
-  ].join(',\n');
+  ];
 }

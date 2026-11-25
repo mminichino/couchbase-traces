@@ -2,95 +2,71 @@
  * Seeds Couchbase collections for full-stack E2E.
  */
 import {
-  fromShapedRow,
-  toIso30,
-} from '../../../ingest/src/model/fromShapedRow';
-
-import {
   E2E_CUSTOM_SERVICE_LOGS_TABLE,
   E2E_EXP_HISTOGRAM_METRIC_NAME,
   E2E_INTERESTING_FILTER_KEYS_TABLE,
   E2E_LOGS_TABLE,
+  E2E_METADATA_MV_LOGS_TABLE,
   E2E_METRICS_EXP_HISTOGRAM_TABLE,
   E2E_METRICS_GAUGE_TABLE,
   E2E_METRICS_SUM_TABLE,
   E2E_TRACES_TABLE,
 } from './utils/constants';
 import { parseValuesTuples } from './parseValuesTuples';
+import { ensureAltMetricsBucket } from './seed-alt-bucket';
 import {
-  getE2eSeedWindow,
-  INTERESTING_FILTER_KEYS_JSON_AT_KEY,
-  INTERESTING_FILTER_KEYS_ROWS,
-} from './seed-data';
-import { OTEL_SESSIONS } from './seed-otel-sessions';
-
-const QUERY_URL =
-  process.env.COUCHBASE_URL?.replace(/\/$/, '') ??
-  `http://127.0.0.1:${process.env.CBT_E2E_CB_QUERY_PORT ?? '28291'}`;
-const AUTH = Buffer.from(
-  `${process.env.COUCHBASE_USERNAME ?? 'Administrator'}:${process.env.COUCHBASE_PASSWORD ?? 'cbt-test-admin'}`,
-).toString('base64');
-
-async function runStatement(
-  statement: string,
-  parameters?: Record<string, unknown>,
-) {
-  const args: Record<string, unknown> = { statement };
-  if (parameters) {
-    for (const [k, v] of Object.entries(parameters)) {
-      args[`$${k}`] = v;
-    }
-  }
-  const res = await fetch(`${QUERY_URL}/query/service`, {
-    method: 'POST',
-    headers: {
-      authorization: `Basic ${AUTH}`,
-      'content-type': 'application/json',
-    },
-    body: JSON.stringify(args),
-  });
-  const body = await res.json();
-  if (body.status !== 'success') {
-    throw new Error(JSON.stringify(body.errors ?? body));
-  }
-}
-
-async function upsertDoc(
-  collection: string,
-  key: string,
-  value: Record<string, unknown>,
-) {
-  await runStatement(
-    `UPSERT INTO \`otel\`.\`default\`.\`${collection}\` (KEY, VALUE) VALUES ($key, $value)`,
-    { key, value },
-  );
-}
-
-export async function ensureE2eCustomServiceCollection(): Promise<void> {
-  await runStatement(
-    'CREATE COLLECTION `otel`.`default`.`e2e_custom_service_name` IF NOT EXISTS',
-  );
-  // Query engine can lag the catalog after CREATE COLLECTION.
-  let lastError: unknown;
-  for (let attempt = 1; attempt <= 30; attempt++) {
-    try {
-      await runStatement(
-        'CREATE PRIMARY INDEX IF NOT EXISTS ON `otel`.`default`.`e2e_custom_service_name`',
-      );
-      return;
-    } catch (err) {
-      lastError = err;
-      await new Promise(resolve => setTimeout(resolve, 1000));
-    }
-  }
-  throw lastError instanceof Error
-    ? lastError
-    : new Error(String(lastError ?? 'primary index create failed'));
-}
+  ensureCollection,
+  ensureMetricIndexes,
+  truncateSeededCollections,
+  upsertCustomServiceRows,
+  upsertDoc,
+  upsertMetrics,
+  upsertShaped,
+} from './seed-couchbase-client';
+import { getE2eSeedWindow } from './seed-data';
+import {
+  buildOtelSessionLogEvents,
+  buildOtelSessionReplayRows,
+  buildOtelSessionSpans,
+  OTEL_SESSIONS,
+} from './seed-otel-sessions';
+import {
+  buildInterestingFilterKeyDocs,
+  buildMetadataMvDocs,
+} from './seed-rows-filter-keys';
+import { buildK8sEventLogRows, buildK8sLogRows } from './seed-rows-k8s';
+import { buildK8sGaugeRows, buildK8sSumRows } from './seed-rows-k8s-metrics';
+import {
+  buildJsonBodyLogRow,
+  buildLegacySessionRows,
+  buildLegacySessionSpans,
+  buildSpanLinkTraceRows,
+} from './seed-rows-sessions';
 
 export async function seedCouchbase(): Promise<void> {
   console.log('Seeding Couchbase E2E documents...');
-  await ensureE2eCustomServiceCollection();
+  const seedCreated = [
+    E2E_CUSTOM_SERVICE_LOGS_TABLE,
+    E2E_METRICS_GAUGE_TABLE,
+    E2E_METRICS_EXP_HISTOGRAM_TABLE,
+    // The metric source declares a sum collection; /kubernetes reads it for
+    // pod uptime (upstream's schema creates the table).
+    E2E_METRICS_SUM_TABLE,
+    E2E_INTERESTING_FILTER_KEYS_TABLE,
+    E2E_METADATA_MV_LOGS_TABLE,
+  ];
+  for (const collection of seedCreated) {
+    await ensureCollection(collection);
+  }
+  for (const collection of [
+    E2E_METRICS_GAUGE_TABLE,
+    E2E_METRICS_EXP_HISTOGRAM_TABLE,
+    E2E_METRICS_SUM_TABLE,
+  ]) {
+    await ensureMetricIndexes(collection);
+  }
+  await truncateSeededCollections(seedCreated);
+  await ensureAltMetricsBucket();
 
   const { startMs, endMs, numDataPoints } = getE2eSeedWindow();
 
@@ -100,13 +76,7 @@ export async function seedCouchbase(): Promise<void> {
     startMs,
     endMs,
   );
-  for (const row of logRows) {
-    const doc = fromShapedRow(E2E_LOGS_TABLE, row, {
-      collection: 'otel_logs',
-    });
-    await upsertDoc(doc.collection, doc.key, doc.value);
-  }
-  console.log(`  ✓ Upserted ${logRows.length} log documents`);
+  await upsertShaped('otel_logs', logRows, 'log documents');
 
   const traceRows = parseValuesTuples(
     E2E_TRACES_TABLE,
@@ -114,13 +84,7 @@ export async function seedCouchbase(): Promise<void> {
     startMs,
     endMs,
   );
-  for (const row of traceRows) {
-    const doc = fromShapedRow(E2E_TRACES_TABLE, row, {
-      collection: 'otel_traces',
-    });
-    await upsertDoc(doc.collection, doc.key, doc.value);
-  }
-  console.log(`  ✓ Upserted ${traceRows.length} trace documents`);
+  await upsertShaped('otel_traces', traceRows, 'trace documents');
 
   const customRows = parseValuesTuples(
     E2E_CUSTOM_SERVICE_LOGS_TABLE,
@@ -128,40 +92,8 @@ export async function seedCouchbase(): Promise<void> {
     startMs,
     endMs,
   );
-  for (const row of customRows) {
-    const doc = fromShapedRow(E2E_CUSTOM_SERVICE_LOGS_TABLE, row, {
-      collection: 'e2e_custom_service_name',
-    });
-    await upsertDoc(doc.collection, doc.key, doc.value);
-  }
+  await upsertCustomServiceRows(customRows);
   console.log(`  ✓ Upserted ${customRows.length} custom service log documents`);
-
-  async function ensureMetricCollection(collection: string): Promise<void> {
-    await runStatement(
-      `CREATE COLLECTION \`otel\`.\`default\`.\`${collection}\` IF NOT EXISTS`,
-    );
-    let lastError: unknown;
-    for (let attempt = 1; attempt <= 30; attempt++) {
-      try {
-        await runStatement(
-          `CREATE PRIMARY INDEX IF NOT EXISTS ON \`otel\`.\`default\`.\`${collection}\``,
-        );
-        return;
-      } catch (err) {
-        lastError = err;
-        await new Promise(resolve => setTimeout(resolve, 1000));
-      }
-    }
-    throw lastError instanceof Error
-      ? lastError
-      : new Error(String(lastError ?? `${collection} primary index failed`));
-  }
-
-  await ensureMetricCollection(E2E_METRICS_GAUGE_TABLE);
-  await ensureMetricCollection(E2E_METRICS_EXP_HISTOGRAM_TABLE);
-  // The metric source declares a sum collection; /kubernetes reads it for
-  // pod uptime even with nothing seeded (upstream's schema creates the table).
-  await ensureMetricCollection(E2E_METRICS_SUM_TABLE);
 
   const { startMs: metricStart } = getE2eSeedWindow();
   const gaugeNames = [
@@ -217,73 +149,65 @@ export async function seedCouchbase(): Promise<void> {
     `  ✓ Upserted 40 ${E2E_EXP_HISTOGRAM_METRIC_NAME} exponential histogram points`,
   );
 
-  await ensureMetricCollection(E2E_INTERESTING_FILTER_KEYS_TABLE);
   // Place rows near "now" so default dashboard windows (e.g. Last 15 minutes)
   // still include them; startMs alone sits an hour back and misses short ranges.
   const { seedRef: interestingRef } = getE2eSeedWindow();
-  for (const [i, row] of INTERESTING_FILTER_KEYS_ROWS.entries()) {
-    // Match Phase 5 Timestamp shape (30-char ISO) so time filters compare.
-    const t = toIso30(new Date(interestingRef - i * 60_000));
-    await upsertDoc(E2E_INTERESTING_FILTER_KEYS_TABLE, `interesting::${i}`, {
-      Timestamp: t,
-      TimestampTime: t.slice(0, 19) + 'Z',
-      TraceId: '',
-      SpanId: '',
-      TraceFlags: 0,
-      SeverityText: 'info',
-      SeverityNumber: 9,
-      ServiceName: row.serviceName,
-      Body: row.body,
-      ResourceAttributes: {
-        'key.subKey.subSubKey': row.resourceAttrValue,
-      },
-      ResourceAttributesJSON: {
-        key: { subKey: { subSubKey: row.jsonValue } },
-        [INTERESTING_FILTER_KEYS_JSON_AT_KEY]: row.jsonAtKeyValue,
-      },
-      '__hdx_materialized_k8s.cluster.name': row.clusterName,
-      'service-name': row.serviceNameHyphen,
-      'Map-Attributes': { 'pod-name': row.mapHyphenValue },
-      'JSON-Attributes': { 'key-1': { 'key-2': row.jsonHyphenValue } },
-      ScopeAttributes: {},
-      LogAttributes: {},
-    });
+  for (const [table, docs] of [
+    [
+      E2E_INTERESTING_FILTER_KEYS_TABLE,
+      buildInterestingFilterKeyDocs(interestingRef),
+    ],
+    [E2E_METADATA_MV_LOGS_TABLE, buildMetadataMvDocs(interestingRef)],
+  ] as const) {
+    for (const { id, doc } of docs) {
+      await upsertDoc(table, id, doc);
+    }
+    console.log(`  ✓ Upserted ${docs.length} ${table} documents`);
   }
-  console.log(
-    `  ✓ Upserted ${INTERESTING_FILTER_KEYS_ROWS.length} interesting-filter-key documents`,
-  );
 
-  // Session source filters on TimestampTime; fromShapedRow fills that field.
-  const { seedRef: sessionRef } = getE2eSeedWindow();
-  for (const [i, sessionId] of Object.values(OTEL_SESSIONS).entries()) {
-    const t = toIso30(new Date(sessionRef - i * 60_000));
-    const doc = fromShapedRow(
-      'e2e_otel_sessions',
-      {
-        Timestamp: t,
-        TraceId: '',
-        SpanId: '',
-        TraceFlags: 0,
-        SeverityText: '',
-        SeverityNumber: 9,
-        ServiceName: 'browser',
-        Body: 'browser.user_action.click',
-        ResourceAttributes: {
-          'service.name': 'browser',
-          'rum.sessionId': sessionId,
-        },
-        ScopeAttributes: {},
-        LogAttributes: {
-          'session.id': sessionId,
-          'rum.sessionId': sessionId,
-          'browser.document.url.full': 'http://localhost:8080/',
-        },
-      },
-      { collection: 'otel_sessions' },
-    );
-    await upsertDoc(doc.collection, doc.key, doc.value);
-  }
-  console.log(
-    `  ✓ Upserted ${Object.keys(OTEL_SESSIONS).length} session documents`,
+  // Upstream seeds the sessions table with legacy-SDK rows and the OTel SDK
+  // replay rows; their spans and browser log events go to traces and logs.
+  const {
+    seedRef,
+    startMs: winStart,
+    endMs: winEnd,
+    numDataPoints: n,
+  } = getE2eSeedWindow();
+  await upsertShaped(
+    'otel_sessions',
+    [
+      ...buildLegacySessionRows(n, winStart, winEnd),
+      ...buildOtelSessionReplayRows(seedRef),
+    ],
+    `session documents (${Object.keys(OTEL_SESSIONS).length} OTel SDK sessions)`,
+  );
+  await upsertShaped(
+    'otel_traces',
+    [
+      ...buildLegacySessionSpans(n, winStart, winEnd),
+      ...buildOtelSessionSpans(seedRef),
+      ...buildSpanLinkTraceRows(seedRef),
+    ],
+    'session and span-link spans',
+  );
+  await upsertShaped(
+    'otel_logs',
+    [
+      buildJsonBodyLogRow(seedRef),
+      ...buildK8sLogRows(n, winStart, winEnd),
+      ...buildK8sEventLogRows(n, winStart, winEnd),
+      ...buildOtelSessionLogEvents(seedRef),
+    ],
+    'JSON-body, K8s, K8s event and OTel browser log documents',
+  );
+  await upsertMetrics(
+    E2E_METRICS_GAUGE_TABLE,
+    buildK8sGaugeRows(n, 12, winStart, winEnd),
+    'K8s gauge points',
+  );
+  await upsertMetrics(
+    E2E_METRICS_SUM_TABLE,
+    buildK8sSumRows(n, winStart, winEnd),
+    'K8s sum points',
   );
 }

@@ -9,6 +9,7 @@ import {
   DEFAULT_LOGS_SOURCE_NAME,
   DEFAULT_TRACES_SOURCE_NAME,
 } from '../utils/constants';
+import { sqlppBucketWidth } from '../utils/sqlpp-interval';
 
 test.describe('Heatmap modes', { tag: ['@full-stack', '@dashboard'] }, () => {
   test('switching a new tile to heatmap fills in the trace duration', async ({
@@ -84,13 +85,13 @@ test.describe('Heatmap modes', { tag: ['@full-stack', '@dashboard'] }, () => {
     await editor.openGeneratedSql();
     await expect
       .poll(() => editor.getAllGeneratedSqlText())
-      .toContain('INTERVAL 1 hour');
+      .toContain(sqlppBucketWidth('1 hour'));
 
     await editor.setHeatmapMode('Series');
     await editor.openGeneratedSql();
     await expect
       .poll(() => editor.getAllGeneratedSqlText())
-      .toContain('INTERVAL 1 hour');
+      .toContain(sqlppBucketWidth('1 hour'));
   });
 
   test('series heatmap with a group by renders and persists', async ({
@@ -320,7 +321,7 @@ test.describe('Heatmap modes', { tag: ['@full-stack', '@dashboard'] }, () => {
 
     const queries: string[] = [];
     page.on('request', request => {
-      if (request.url().includes('/clickhouse-proxy')) {
+      if (request.url().includes('/couchbase/query')) {
         queries.push(request.postData() ?? '');
       }
     });
@@ -328,7 +329,7 @@ test.describe('Heatmap modes', { tag: ['@full-stack', '@dashboard'] }, () => {
     // refresh interval (60 buckets) is 1 minute.
     const expectQueriesAt = async (interval: string) => {
       await expect.poll(() => queries.join('\n')).toContain(interval);
-      expect(queries.join('\n')).not.toContain('INTERVAL 1 minute');
+      expect(queries.join('\n')).not.toContain(sqlppBucketWidth('1 minute'));
     };
     const assertTileRenders = async (index: number) => {
       const heatmap = dashboardPage.getTileHeatmap(index);
@@ -341,12 +342,12 @@ test.describe('Heatmap modes', { tag: ['@full-stack', '@dashboard'] }, () => {
     await test.step('Both tiles render in live mode', async () => {
       // An explicit dashboard granularity makes turning live on re-query.
       await page.goto(`/dashboards/${dashboardId}?granularity=5+minute`);
-      await expectQueriesAt('INTERVAL 5 minute');
+      await expectQueriesAt(sqlppBucketWidth('5 minute'));
       await assertTileRenders(0);
       await assertTileRenders(1);
       queries.length = 0;
       await dashboardPage.toggleLiveMode();
-      await expectQueriesAt('INTERVAL 15 second');
+      await expectQueriesAt(sqlppBucketWidth('15 second'));
       await assertTileRenders(0);
       await assertTileRenders(1);
     });
@@ -365,7 +366,7 @@ test.describe('Heatmap modes', { tag: ['@full-stack', '@dashboard'] }, () => {
       );
       await expect(heatmap.canvas.first()).toBeVisible({ timeout: 20000 });
       await expect(heatmap.notEnoughDataText).toHaveCount(0);
-      await expectQueriesAt('INTERVAL 15 second');
+      await expectQueriesAt(sqlppBucketWidth('15 second'));
       await dashboardPage.closeFullscreen();
     });
   });

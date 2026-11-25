@@ -44,7 +44,11 @@ import { useVirtualizer } from '@tanstack/react-virtual';
 import { PageLayout } from '@/components/PageLayout';
 import { TimePicker } from '@/components/TimePicker';
 import { useConnectionKind } from '@/couchbase/connection';
-import { jsonExtractString, mapKeyAccess } from '@/couchbase/dialectExpr';
+import {
+  groupByCell,
+  jsonExtractString,
+  mapKeyAccess,
+} from '@/couchbase/dialectExpr';
 import { useIsSourceAllowedForSlice } from '@/couchbase/sources';
 import { useResolvedSourceParam } from '@/hooks/useResolvedSourceParam';
 import { useVirtualList } from '@/hooks/useVirtualList';
@@ -271,9 +275,9 @@ export const InfraPodsStatusTable = ({
     const transformedData = phaseFilteredData.map(
       (row: any, index: number) => ({
         id: `pod-${index}`, // Use index-based ID instead of random makeId()
-        name: row[`arrayElement(${resourceAttr}, 'k8s.pod.name')`],
-        namespace: row[`arrayElement(${resourceAttr}, 'k8s.namespace.name')`],
-        node: row[`arrayElement(${resourceAttr}, 'k8s.node.name')`],
+        name: groupByCell(row, resourceAttr, 'k8s.pod.name'),
+        namespace: groupByCell(row, resourceAttr, 'k8s.namespace.name'),
+        node: groupByCell(row, resourceAttr, 'k8s.node.name'),
         restarts: row['last_value(k8s.container.restarts)'],
         uptime: row['undefined(k8s.pod.uptime)'],
         cpuAvg: row['avg(k8s.pod.cpu.utilization)'],
@@ -615,7 +619,7 @@ const NodesTable = ({
 
     return data.data.map((row: any) => {
       return {
-        name: row[`arrayElement(${resourceAttr}, 'k8s.node.name')`],
+        name: groupByCell(row, resourceAttr, 'k8s.node.name'),
         cpuAvg: row['avg(k8s.node.cpu.utilization)'],
         memAvg: row['avg(k8s.node.memory.usage)'],
         ready: row['avg(k8s.node.condition_ready)'],
@@ -793,7 +797,7 @@ const NamespacesTable = ({
 
     return data.data.map((row: any) => {
       return {
-        name: row[`arrayElement(${resourceAttr}, 'k8s.namespace.name')`],
+        name: groupByCell(row, resourceAttr, 'k8s.namespace.name'),
         cpuAvg: row['sum(k8s.pod.cpu.utilization)'],
         memAvg: row['sum(k8s.pod.memory.usage)'],
         phase: row['last_value(k8s.namespace.phase)'],

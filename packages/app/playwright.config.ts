@@ -53,7 +53,10 @@ export default defineConfig({
     const raw = process.env.E2E_WORKERS;
     const parsed = raw ? Number(raw) : NaN;
     if (Number.isInteger(parsed) && parsed >= 1) return parsed;
-    return process.env.CI ? 4 : undefined;
+    // Local runs share the same 2-CPU Couchbase container as CI. Playwright's
+    // default (half the host's cores) queues the Kubernetes dashboard's metric
+    // queries past the 5s assertion timeout, so local matches CI.
+    return 4;
   })(),
   /* Reporter to use. See https://playwright.dev/docs/test-reporters */
   reporter: [

@@ -127,7 +127,9 @@ test.describe('Kubernetes Dashboard', { tag: ['@kubernetes'] }, () => {
     const firstPodNamespaceCell = k8sPage.page
       .locator('[data-testid^="k8s-pods-table-namespace-"]')
       .first();
-    await expect(firstPodNamespaceCell).toBeVisible();
+    // The filtered pods query re-runs on Couchbase's 2-CPU E2E node alongside
+    // three other workers; match the 10s the sorting tests below allow.
+    await expect(firstPodNamespaceCell).toBeVisible({ timeout: 10000 });
     await expect(firstPodNamespaceCell).toContainText('default');
 
     // Verify search box has filter query

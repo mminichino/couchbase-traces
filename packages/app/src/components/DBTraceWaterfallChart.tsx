@@ -8,6 +8,7 @@ import { isErrorStatusCode } from '@couchbase-traces/common-utils/dist/core/span
 import {
   ChartConfig,
   ChartConfigWithDateRange,
+  DisplayType,
   SelectList,
   SourceKind,
   TLogSource,
@@ -361,6 +362,9 @@ function getConfig(
     );
   }
   const config = {
+    // A row search: on Couchbase this also selects each row's document key,
+    // so useRowWhere targets the span by key rather than by column equality.
+    displayType: DisplayType.Search,
     select,
     from: source.from,
     timestampValueExpression: source.timestampValueExpression,

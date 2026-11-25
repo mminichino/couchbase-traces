@@ -35,11 +35,13 @@ test.describe('JSON viewer key order', { tag: ['@search'] }, () => {
       .poll(() => sidePanel.getJsonViewerTopLevelKeys(), { timeout: 5000 })
       .not.toEqual([...ascKeys].reverse());
 
-    // The seeded logs table's column order (Timestamp, TraceId, SpanId, …) is
-    // not alphabetical, so the same keys come back in a different sequence.
+    // Couchbase documents have no stored column order: the Query service
+    // returns object fields sorted by name, so "original" matches ascending
+    // here. Upstream asserts the ClickHouse column order differs; on Couchbase
+    // the same keys must come back, with no synthetic `*` column.
     const originalKeys = await sidePanel.getJsonViewerTopLevelKeys();
     expect(new Set(originalKeys)).toEqual(new Set(ascKeys));
-    expect(originalKeys).not.toEqual(ascKeys);
+    expect(originalKeys).not.toContain('*');
 
     const stored = await page.evaluate(
       key => localStorage.getItem(key),

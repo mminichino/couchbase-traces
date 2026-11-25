@@ -124,6 +124,25 @@ describe('couchbase metadata', () => {
     tableName: 'otel_logs',
   };
 
+  it('types inferred strings with the declared LowCardinality OTel type', async () => {
+    const { meta: m } = meta();
+    const types = new Map(
+      (await m.getColumns(tc)).map(column => [column.name, column.type]),
+    );
+    // Declared LowCardinality(String) in the OTel logs schema.
+    expect(types.get('ServiceName')).toBe('LowCardinality(String)');
+    // Not a declared OTel column: the inferred type stands.
+    expect(types.get('Duration')).toBe('Int64');
+    // A collection without a declared schema keeps plain String.
+    const custom = new Map(
+      (await m.getColumns({ ...tc, tableName: 'my_logs' })).map(column => [
+        column.name,
+        column.type,
+      ]),
+    );
+    expect(custom.get('ServiceName')).toBe('String');
+  });
+
   it('shapes columns, versions, keyspaces, and sampled values', async () => {
     const { meta: m, fake } = meta();
     const columns = await m.getColumns(tc);
@@ -248,7 +267,39 @@ describe('couchbase metadata', () => {
       'SELECT d.`ResourceAttributes`.`k8s.pod.name` AS v',
     );
     expect(fake.queries.join('\n')).toContain(
-      'SELECT d.`ResourceAttributes`.`service.name` AS v',
+      'SELECT IFMISSING(d.`ResourceAttributes`.`service.name`, d.`ResourceAttributes`.`service`.`name`) AS v',
+    );
+
+    // Facet keys the UI already backtick-quoted are not quoted again.
+    fake.queries.length = 0;
+    await m.getKeyValues({
+      chartConfig: chart,
+      keys: [
+        "`Map-Attributes`['pod-name']",
+        '`service-name`',
+        '`__hdx_materialized_k8s.cluster.name`',
+        '`ResourceAttributesJSON`.`key`.`subKey`',
+      ],
+    });
+    const quotedSql = fake.queries.join('\n');
+    expect(quotedSql).toContain('SELECT d.`Map-Attributes`.`pod-name` AS v');
+    expect(quotedSql).toContain('SELECT d.`service-name` AS v');
+    expect(quotedSql).toContain(
+      'SELECT d.`__hdx_materialized_k8s.cluster.name` AS v',
+    );
+    expect(quotedSql).toContain(
+      'SELECT d.`ResourceAttributesJSON`.`key`.`subKey` AS v',
+    );
+    expect(quotedSql).not.toContain('``');
+
+    // A dashboard filter expression (not a path) is read as SQL, as upstream.
+    fake.queries.length = 0;
+    await m.getKeyValues({
+      chartConfig: chart,
+      keys: ['toString(ServiceName)'],
+    });
+    expect(fake.queries.join('\n')).toContain(
+      'SELECT toString(ServiceName) AS v',
     );
 
     expect(
