@@ -1636,17 +1636,23 @@ Changes in `.github/workflows/main.yml` (`integration-shards` only):
 
 | Shard | PR #42 | PR #43 cold cache | PR #43 warm cache |
 | ----- | -----: | ----------------: | ----------------: |
-| 1     |   1298 |               763 | pending |
-| 2     |   1258 |               690 | pending |
-| 3     |   1145 |               705 | pending |
-| 4     |    862 |               874 | pending |
-| 5     |   1310 |               902 | pending |
+| 1     |   1298 |               763 |               199 |
+| 2     |   1258 |               690 |               249 |
+| 3     |   1145 |               705 |               212 |
+| 4     |    862 |               874 |               250 |
+| 5     |   1310 |               902 |               259 |
 
-Cold, the compile took 504 s against 693 s, and the test step also ran faster
-on PR #43 (shard 2 Jest 874 s against 1515 s for the same 623 tests, every
-suite about 1.7 times faster on the same runner image). That is runner
-variance, not this change; the warm-cache column is the comparison that
-measures it.
+Cold, the compile took 504 s against 693 s, and the first PR #43 run's tests
+were faster too (shard 2 Jest 874 s against 1515 s for the same 623 tests,
+every suite about 1.7 times faster on the same runner image). That is runner
+speed, not this change: the next run's shard 2 tests took 1605 s (PR #42:
+1618 s). Warm (second PR #43 run): the OCB stage is `CACHED` and the
+collector step takes 7 s, so startup falls from 862–1310 s to 199–259 s,
+about 15 minutes per shard. Whole shards (startup and tests, so runner speed
+shows here too): 18m48, 32m39, 15m06, 16m52 and 24m16 against PR #42's
+46m18, 49m28, 29m02, 23m44 and 42m03. Shard 2 is now about 27 minutes of
+tests and 4 of startup; its longest suite is `external-api/dashboards`
+(788 s on PR #42).
 
 ### R3: Service map node latency
 
