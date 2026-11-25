@@ -4045,3 +4045,12 @@ to run outside the agent sandbox, which blocks `git init` in a temp dir.
   vCPUs, the pairing `playwright.config.ts` documents (headroom for the app and
   Couchbase), or 2 on 4 vCPUs. No code change is needed: `e2e-tests.yml` already
   reads both, and `RUNNER_E2E` accepts a JSON label array.
+- Q58 resolved (2026-11-25): the repository is public, so `ubuntu-24.04` has 4
+  vCPUs and 16 GB. `RUNNER_E2E` and `E2E_WORKERS` are unset; the workflow
+  defaults to `ubuntu-24.04` and 2 workers. Before publication, gitleaks
+  (8.30.1, `--log-opts=--all`, 274 commits) reported 57 matches, all of them
+  fixtures, dev placeholders or upstream HyperDX test data (including upstream's
+  public usage-stats key). The committed `.env*` files hold dev values only.
+  Secret scanning and push protection are on. Fork-PR approval stays at
+  first-time contributors, and Dependabot security updates, branch protection
+  and the wiki are unchanged (user decision).
