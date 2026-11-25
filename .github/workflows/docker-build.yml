@@ -86,6 +86,9 @@ jobs:
           target: prod
           platforms: linux/amd64
           push: false
+          build-args: |
+            CODE_VERSION=pr-${{ github.event.pull_request.number || github.run_id }}
+            GIT_SHA=${{ github.sha }}
           cache-from: |
             type=gha,scope=otel-collector-nightly-amd64
             type=gha,scope=docker-build-pr-otel-collector
@@ -152,10 +155,66 @@ jobs:
             app=./packages/app
           build-args: |
             CODE_VERSION=pr-${{ github.event.pull_request.number || github.run_id }}
+            GIT_SHA=${{ github.sha }}
           cache-from: |
             type=gha,scope=app-nightly-amd64
             type=gha,scope=docker-build-pr-app
           cache-to: type=gha,mode=max,scope=docker-build-pr-app
+
+  # Ingest image (OTLP ingest service) — packages/ingest/Dockerfile.
+  ingest-image:
+    name: Build Ingest Image
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+      - name: Get changed files
+        id: changed-files
+        if: github.event_name == 'pull_request'
+        uses: tj-actions/changed-files@v47.0.6
+        with:
+          files: |
+            packages/ingest/**
+            packages/common-utils/**
+            package.json
+            yarn.lock
+            .yarn/**
+            .yarnrc.yml
+            tsconfig.base.json
+            scripts/ci/check-image-labels.sh
+      - name: Setup Docker Buildx
+        if:
+          github.event_name != 'pull_request' ||
+          steps.changed-files.outputs.any_changed == 'true'
+        uses: docker/setup-buildx-action@v3
+      - name: Build (no push)
+        if:
+          github.event_name != 'pull_request' ||
+          steps.changed-files.outputs.any_changed == 'true'
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: ./packages/ingest/Dockerfile
+          platforms: linux/amd64
+          push: false
+          load: true
+          tags: couchbase-traces-ingest-check:pr
+          build-args: |
+            CODE_VERSION=pr-${{ github.event.pull_request.number || github.run_id }}
+            GIT_SHA=${{ github.sha }}
+          cache-from: type=gha,scope=docker-build-pr-ingest
+          cache-to: type=gha,mode=max,scope=docker-build-pr-ingest
+      - name: Check version labels
+        if:
+          github.event_name != 'pull_request' ||
+          steps.changed-files.outputs.any_changed == 'true'
+        env:
+          EXPECTED_VERSION:
+            pr-${{ github.event.pull_request.number || github.run_id }}
+        run:
+          scripts/ci/check-image-labels.sh couchbase-traces-ingest-check:pr
+          "$EXPECTED_VERSION" "$GITHUB_SHA"
 
   # All-in-one image (Couchbase Server + ingest + OTel Collector).
   all-in-one-image:
@@ -183,6 +242,7 @@ jobs:
             docker/hyperdx/**
             docker/couchbase/**
             docker/otel-collector/**
+            scripts/ci/check-image-labels.sh
       - name: Setup Docker Buildx
         if:
           github.event_name != 'pull_request' ||
@@ -212,11 +272,22 @@ jobs:
             app=./packages/app
           build-args: |
             CODE_VERSION=pr-${{ github.event.pull_request.number || github.run_id }}
+            GIT_SHA=${{ github.sha }}
             COUCHBASE_IMAGE=couchbase/server:enterprise-8.0.3
           cache-from: |
             type=gha,scope=all-in-one-nightly-amd64
             type=gha,scope=docker-build-pr-all-in-one
           cache-to: type=gha,mode=max,scope=docker-build-pr-all-in-one
+      - name: Check version labels
+        if:
+          github.event_name != 'pull_request' ||
+          steps.changed-files.outputs.any_changed == 'true'
+        env:
+          EXPECTED_VERSION:
+            pr-${{ github.event.pull_request.number || github.run_id }}
+        run:
+          scripts/ci/check-image-labels.sh couchbase-traces-aio-smoke:pr
+          "$EXPECTED_VERSION" "$GITHUB_SHA"
       - name: Smoke test the built image
         if:
           github.event_name != 'pull_request' ||
