@@ -4090,11 +4090,14 @@ to run outside the agent sandbox, which blocks `git init` in a temp dir.
   comments and key order are untouched. JSON locations accept only a top-level
   two-space `"version"` line and are reparsed after the edit. Root
   `CBT_SET_VERSION_ROOT` (tests only) points it at a fixture copy.
-- `make version-check` is not in `make ci-lint` yet (Q59): today's versions are
-  not lock-stepped, so the gate would be red on `main` until R8's bump.
+- Q59 (user, 2026-11-25): `make version-check` stays out of `make ci-lint` until
+  R8, because today's versions are not lock-stepped and the gate would be red on
+  `main`. R8's bump commit adds it to `ci-lint` after
+  `make version VERSION=1.0.0`.
 - D30 (found here): one of two local all-in-one smokes failed with the ingest
   setup's SDK `authentication failure` right after `wait_for_admin` passed on
-  REST. The rerun passed. Proposed for its own PR before R7 (Q60).
+  REST. The rerun passed. Q60 (user, 2026-11-25): fixed in its own small PR
+  after R6 and before R7, started on the user's go-ahead.
 - Local images built and checked: app 1.07 GB, ingest 4.73 GB, otel-collector
   387 MB, all-in-one 4.77 GB. All carry
   `org.opencontainers.image.version=2.44.0` and the `HEAD` revision. The ingest
