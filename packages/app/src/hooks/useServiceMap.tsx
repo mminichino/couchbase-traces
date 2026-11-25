@@ -307,6 +307,48 @@ export function aggregateServiceMapData(data: SpanAggregationRow[]) {
   return services;
 }
 
+/** One query result row as a SpanAggregationRow, for either store. */
+export function spanAggregationRowFromJson(
+  row: Record<string, unknown>,
+): SpanAggregationRow {
+  // legacy store quantiles(...) returns [p50, p95, p99]; Couchbase
+  // projects named p50/p95/p99 columns.
+  const quantiles = Array.isArray(row.quantiles)
+    ? (row.quantiles as unknown[])
+    : undefined;
+  const p50 =
+    quantiles != null
+      ? Number(quantiles[0])
+      : row.p50 != null
+        ? Number(row.p50)
+        : undefined;
+  const p95 =
+    quantiles != null
+      ? Number(quantiles[1])
+      : row.p95 != null
+        ? Number(row.p95)
+        : undefined;
+  const p99 =
+    quantiles != null
+      ? Number(quantiles[2])
+      : row.p99 != null
+        ? Number(row.p99)
+        : undefined;
+  return {
+    serverServiceName: row.serverServiceName as string,
+    // serviceName is a non-nullable LowCardinality(String), so
+    // rolled-up node-level rows and unmatched LEFT JOINs come back as
+    // '' rather than null — normalize those to undefined (no edge).
+    clientServiceName: (row.clientServiceName as string) || undefined,
+    isNodeLevel: Number(row.isNodeLevel) === 1,
+    requestCount: Number.parseInt(String(row.requestCount), 10),
+    errorCount: Number.parseInt(String(row.errorCount), 10),
+    p50: Number.isFinite(p50) ? p50 : undefined,
+    p95: Number.isFinite(p95) ? p95 : undefined,
+    p99: Number.isFinite(p99) ? p99 : undefined,
+  };
+}
+
 export default function useServiceMap({
   source,
   dateRange,
@@ -363,46 +405,7 @@ export default function useServiceMap({
           },
         })
         .then(res => res.json<Record<string, unknown>>())
-        .then(data =>
-          data.data.map((row: Record<string, unknown>) => {
-            // legacy store quantiles(...) returns [p50, p95, p99]; Couchbase
-            // projects named p50/p95/p99 columns.
-            const quantiles = Array.isArray(row.quantiles)
-              ? (row.quantiles as unknown[])
-              : undefined;
-            const p50 =
-              quantiles != null
-                ? Number(quantiles[0])
-                : row.p50 != null
-                  ? Number(row.p50)
-                  : undefined;
-            const p95 =
-              quantiles != null
-                ? Number(quantiles[1])
-                : row.p95 != null
-                  ? Number(row.p95)
-                  : undefined;
-            const p99 =
-              quantiles != null
-                ? Number(quantiles[2])
-                : row.p99 != null
-                  ? Number(row.p99)
-                  : undefined;
-            return {
-              serverServiceName: row.serverServiceName as string,
-              // serviceName is a non-nullable LowCardinality(String), so
-              // rolled-up node-level rows and unmatched LEFT JOINs come back as
-              // '' rather than null — normalize those to undefined (no edge).
-              clientServiceName: (row.clientServiceName as string) || undefined,
-              isNodeLevel: Number(row.isNodeLevel) === 1,
-              requestCount: Number.parseInt(String(row.requestCount), 10),
-              errorCount: Number.parseInt(String(row.errorCount), 10),
-              p50: Number.isFinite(p50) ? p50 : undefined,
-              p95: Number.isFinite(p95) ? p95 : undefined,
-              p99: Number.isFinite(p99) ? p99 : undefined,
-            };
-          }),
-        );
+        .then(data => data.data.map(spanAggregationRowFromJson));
 
       return aggregateServiceMapData(data);
     },

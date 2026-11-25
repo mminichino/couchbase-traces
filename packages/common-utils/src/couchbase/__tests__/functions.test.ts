@@ -5,6 +5,7 @@ import {
   histogramQuantileValue,
   quantile,
   quantileValue,
+  sortedArrayQuantile,
 } from '@/couchbase/fn/quantile';
 import * as scalar from '@/couchbase/fn/scalar';
 import {
@@ -109,6 +110,18 @@ describe('function builders', () => {
     const nested = sqlpp`SELECT ${quantile(0.9, 'd.`v`')}`;
     expect(nested.statement).toContain('$p0');
     expect(nested.parameters.p0).toBe(0.9);
+  });
+
+  it('shares one interpolation between quantile and sortedArrayQuantile', () => {
+    const q = sortedArrayQuantile('a', '$lvl');
+    expect(q).toBe(
+      'CASE WHEN ARRAY_LENGTH(a) = 0 THEN NULL ELSE a[FLOOR(($lvl * (ARRAY_LENGTH(a) - 1)))] + (($lvl * (ARRAY_LENGTH(a) - 1)) - FLOOR(($lvl * (ARRAY_LENGTH(a) - 1)))) * (a[CEIL(($lvl * (ARRAY_LENGTH(a) - 1)))] - a[FLOOR(($lvl * (ARRAY_LENGTH(a) - 1)))]) END',
+    );
+    const sorted =
+      'ARRAY_SORT(ARRAY v FOR v IN ARRAY_AGG(CASE WHEN TRUE AND ISNUMBER(x) THEN x END) WHEN v IS NOT NULL END)';
+    expect(quantile(0.5, 'x').statement).toBe(
+      sortedArrayQuantile(sorted, '$p0'),
+    );
   });
 
   it('documents every catalog construct that appears outside tests', () => {

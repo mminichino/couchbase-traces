@@ -1338,9 +1338,13 @@ the test index.
 - Service map: Couchbase path in `packages/app/src/couchbase/serviceMap.ts` —
   CTEs via `renderChartConfig`, child→parent equi-join (KEYS-equivalent on
   `TraceId:ParentSpanId`), `UNION ALL` instead of `GROUPING SETS`, `CRC32`
-  sampling instead of `cityHash64`. Node-level latency percentiles are NULL
-  (edge percentiles retained); allowed until a follow-up if parity requires node
-  latency.
+  sampling instead of `cityHash64`. Node-level latency percentiles are
+  computed from the edges' sorted duration arrays (R3, B6); both levels use
+  linear interpolation like upstream's `quantiles(0.5, 0.95, 0.99)`. They were
+  NULL until R3. The parity check is `serviceMap.live.test.ts`, not a golden:
+  the query sits outside `renderChartConfig`, and `port/query-parity` was
+  replaced by `port/golden` in Phase 10 (see the R3 section of
+  `docs/v1-release-plan.md`).
 - `spanPredicates.errorStatusPredicateSql` uses `LOWER(...)` for ClickHouse and
   SQL++.
 - Query parity: `port/query-parity/run.sh --slice traces` (waterfall,
@@ -3891,3 +3895,34 @@ ingest image twice. Timings per phase and per shard are in
 - Not changed: shard count (5), timeout (55 min), the prune between builds
   (ENOSPC), ingest's compose build (bake `--load` of ingest had left it
   unhealthy), the Couchbase cluster init (70 s) and readiness polling.
+
+### R3: service map node latency (2026-11-24, `mm--v1-r3-service-map-latency`)
+
+- **Upstream** (`useServiceMap.tsx` at f172a489c818): one join of server spans
+  to client spans on `(traceId, parentSpanId = spanId)`, `GROUP BY GROUPING
+  SETS ((server, client), (server))`, `quantiles(0.5, 0.95, 0.99)` of the
+  server span duration. That gives node percentiles over every caller,
+  instrumented or not, with self-calls excluded.
+- **SQL++ 8.0** has `MEDIAN` but no percentile aggregate (checked in the 8.0
+  aggregate function reference). Edges keep `ARRAY_SORT` of their numeric
+  durations. Each node flattens its edges' arrays
+  (`ARRAY_FLATTEN(ARRAY_AGG(edge.durs), 1)`), the same span set as the
+  upstream node grouping set. Both use `sortedArrayQuantile`, the linear
+  interpolation already in `quantile()`, which ClickHouse's reservoir
+  `quantile` also uses for fewer than 8192 samples.
+- **Edge fixes:** nearest-rank switched to interpolation (p95 of 10…70: 60 →
+  67, as upstream). Non-numeric durations are dropped before sorting:
+  `ARRAY_AGG` keeps NULLs and `ARRAY_SORT` puts them first.
+- **Uninstrumented callers:** an unmatched LEFT JOIN leaves `c.serviceName`
+  MISSING, which `IS NULL` rejects, so those spans fell out of every row.
+  ClickHouse fills `''` and keeps them. The filter is now
+  `c.serviceName IS NOT VALUED OR s.serviceName != c.serviceName`.
+- **Parity:** `port/query-parity` was replaced by `port/golden` in Phase 10,
+  and its goldens can't cover a query built outside `renderChartConfig`.
+  `serviceMap.live.test.ts` runs the real statement on an inline span set and
+  checks upstream's rows and the hook's `IncomingRequestStats`.
+- `spanAggregationRowFromJson` was pulled out of the hook so the live test
+  parses rows exactly as the page does. The query REST client for app live
+  tests moved to `src/couchbase/__fixtures__/liveQuery.ts`.
+- Shard 2 is left as it is (user, 2026-11-24). Shards change only if one
+  actually times out.
