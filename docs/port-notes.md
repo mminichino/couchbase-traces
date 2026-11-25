@@ -3869,3 +3869,25 @@ Counts and causes are in `docs/v1-release-plan.md` (R2b result).
 - **Fixture DDL.** The escaped-filter case creates its collection and a
   `Timestamp` index with SQL++ and retries the index while the collection
   manifest propagates; it drops the collection afterwards.
+
+### CI: integration-shard startup (2026-11-24, `mm--v1-ci-int-startup`)
+
+`integration-shards` spent about 21 minutes before the first test on PR #42
+(shard 2), 12m50 of it compiling the OCB collector and 5m14 building the one
+ingest image twice. Timings per phase and per shard are in
+`docs/v1-release-plan.md` (CI: integration-shard startup).
+
+- **One ingest build.** `couchbase-init` reuses the `ingest` image
+  (`docker tag hdx-ci-ingest:latest hdx-ci-couchbase-init:latest`); compose
+  `up --no-build` finds both project tags.
+- **Collector layer cache.** `docker buildx bake -f docker-compose.ci.yml
+  otel-collector` on the `setup-buildx-action` builder (`use: false`, so
+  `docker compose build` stays on the default driver), `cache-from`
+  `type=gha,scope=ci-otel-collector`, `cache-to` with `mode=max` from shard 1
+  only. Needs `crazy-max/ghaction-github-runtime` (already in the job) for the
+  cache token.
+- **Background disk cleanup.** The toolcache `rm -rf` starts after checkout
+  and the docker step waits on `/tmp/cbt-disk-freed`.
+- Not changed: shard count (5), timeout (55 min), the prune between builds
+  (ENOSPC), ingest's compose build (bake `--load` of ingest had left it
+  unhealthy), the Couchbase cluster init (70 s) and readiness polling.

@@ -1603,6 +1603,51 @@ skipped, all 53 in the harness-only `metadata.couchbase.int.test.ts` (the one
 skipped suite; it was 51 before the D12 and D13 contract cases), 0 ignored
 suites; common-utils 127 passed.
 
+### CI: integration-shard startup (2026-11-24, `mm--v1-ci-int-startup`)
+
+CI-only, between R2b and R3 (user, 2026-11-24): on PR #42 shard 2 took
+49m28s of its 55 minutes, about 21 of them before the first test. The shard
+count and timeout are unchanged. Where shard 2's startup went (PR #42):
+
+| Startup phase                                            | PR #42 shard 2 |
+| -------------------------------------------------------- | -------------- |
+| Delete hosted toolcaches (`sudo rm -rf`)                 | 2m05           |
+| Pull `couchbase/server`                                  | 27s            |
+| Build `couchbase-init`                                   | 2m37           |
+| Build `ingest` (same build; the prune between wiped it)  | 2m37           |
+| Build `otel-collector` (OCB compile alone: 11m33)        | 12m50          |
+| `make ci-build`, compose up (cluster init 70 s)          | about 2m       |
+
+Changes in `.github/workflows/main.yml` (`integration-shards` only):
+
+- `couchbase-init` and `ingest` are one build (same context and Dockerfile,
+  no target or args): build `ingest`, `docker tag` it for `couchbase-init`.
+- `otel-collector` builds with `docker buildx bake` from the compose file
+  (same definition and `.env` args) on a `docker-container` builder with a
+  GHA layer cache, scope `ci-otel-collector`, `mode=max` so the OCB stage is
+  cached. Every shard reads it; shard 1 alone writes it (`ignore-error`). The
+  cache is about 80 MB. It misses when `builder-config.yaml`, the Dockerfile,
+  the version args or a base image change, and then costs one compile, as
+  before. PR runs read the cache `main` writes.
+- Toolcache deletion runs in the background behind node setup and
+  `yarn install`; the docker step waits for it.
+
+"Spin up docker services" per shard (seconds):
+
+| Shard | PR #42 | PR #43 cold cache | PR #43 warm cache |
+| ----- | -----: | ----------------: | ----------------: |
+| 1     |   1298 |               763 | pending |
+| 2     |   1258 |               690 | pending |
+| 3     |   1145 |               705 | pending |
+| 4     |    862 |               874 | pending |
+| 5     |   1310 |               902 | pending |
+
+Cold, the compile took 504 s against 693 s, and the test step also ran faster
+on PR #43 (shard 2 Jest 874 s against 1515 s for the same 623 tests, every
+suite about 1.7 times faster on the same runner image). That is runner
+variance, not this change; the warm-cache column is the comparison that
+measures it.
+
 ### R3: Service map node latency
 
 Add node p50/p95/p99 in `serviceMap.ts`; add a golden parity case to
