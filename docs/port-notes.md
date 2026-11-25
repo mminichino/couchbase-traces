@@ -4018,3 +4018,19 @@ shared team). Neither involves a data query. Local gates: `make ci-lint` (app at
 its 496-warning cap), `make ci-unit`, `make ci-int`, and
 `port/couchbase-test/run.sh`, all green. `ci-unit`'s `changeset-hash` tests need
 to run outside the agent sandbox, which blocks `git init` in a temp dir.
+
+### R5: re-enable E2E on Main (2026-11-25, `mm--v1-r5-reenable-e2e-ci`)
+
+- `main.yml`: `e2e-tests` and the `End-to-End Tests` aggregator are restored
+  from `019a42d^`, without the aggregator's old `continue-on-error`, so a failed
+  or cancelled shard fails Main. The shards' advisory `continue-on-error`
+  (removed in `019a42d`) stays removed.
+- `e2e-tests.yml`: `E2E_WORKERS` defaults to 2 (was 4 through
+  `playwright.config.ts`, with 2 only for forks). The repository is private, so
+  `ubuntu-24.04` has 2 vCPUs for Couchbase, the API, Next.js and Chromium. The
+  `E2E_WORKERS` variable still overrides.
+- CI timings and results are in `docs/v1-release-plan.md` (R5). Runner capacity
+  blocks acceptance (Q58): shards 3 and 4 hit the 45 min timeout with 2 workers.
+  Nearly every failure is a page-object wait (mostly the 5s first-row wait on
+  search) that expires before the rows render. Locally, the suite passes.
+- Integration shard 2 is unchanged.
