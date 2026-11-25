@@ -4034,3 +4034,14 @@ to run outside the agent sandbox, which blocks `git init` in a temp dir.
   Nearly every failure is a page-object wait (mostly the 5s first-row wait on
   search) that expires before the rows render. Locally, the suite passes.
 - Integration shard 2 is unchanged.
+- Q58 (a), larger E2E runner (2026-11-25): blocked on provisioning. The API
+  (`repos/mminichino/couchbase-traces`, `actions/runners`,
+  `actions/runner-groups`) shows a private, user-owned repository with no
+  self-hosted runners. GitHub docs: larger runners need an organization on Team
+  or Enterprise Cloud, and every standard Linux runner on a private repo has 2
+  vCPUs. `RUNNER_E2E` and `E2E_WORKERS` are not set. Once a runner exists:
+  `gh variable set RUNNER_E2E --body <label>` and
+  `gh variable set E2E_WORKERS --body <n>` with n at half the vCPUs: 4 on 8
+  vCPUs, the pairing `playwright.config.ts` documents (headroom for the app and
+  Couchbase), or 2 on 4 vCPUs. No code change is needed: `e2e-tests.yml` already
+  reads both, and `RUNNER_E2E` accepts a JSON label array.
