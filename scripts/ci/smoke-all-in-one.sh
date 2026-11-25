@@ -88,6 +88,15 @@ for i in $(seq 1 150); do
 done
 echo "app healthy"
 
+# /health reports the CODE_VERSION baked into the image (B10).
+image_version=$(docker image inspect "$IMAGE" --format '{{ range .Config.Env }}{{ println . }}{{ end }}' |
+  sed -n 's/^CODE_VERSION=//p')
+health_version=$(curl -fsS "${API_BASE}/health" | sed -n 's/.*"version":"\([^"]*\)".*/\1/p')
+if [ "$health_version" != "$image_version" ]; then
+  echo "::error::/health version '$health_version' != image CODE_VERSION '$image_version'"; exit 1
+fi
+echo "/health version ${health_version}"
+
 # App metadata lives in Couchbase (cbt_meta); the image must not carry MongoDB.
 if docker exec "$NAME" sh -c 'command -v mongod' >/dev/null 2>&1; then
   echo "::error::mongod found in the all-in-one image"; exit 1

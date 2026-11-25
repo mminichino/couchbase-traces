@@ -127,7 +127,12 @@ LABEL org.opencontainers.image.vendor="Couchbase Traces" \
       org.opencontainers.image.source="https://github.com/mminichino/couchbase-traces" \
       org.opencontainers.image.licenses="MIT"
 
+# Release version and commit (set by make build-* and
+# scripts/release/release-images.sh; empty for ad hoc builds).
 ARG CODE_VERSION
+ARG GIT_SHA
+LABEL org.opencontainers.image.version="$CODE_VERSION" \
+      org.opencontainers.image.revision="$GIT_SHA"
 
 ENV CODE_VERSION=$CODE_VERSION
 ENV OTEL_RESOURCE_ATTRIBUTES="service.version=$CODE_VERSION"
@@ -222,6 +227,13 @@ LABEL org.opencontainers.image.vendor="Couchbase Traces" \
       org.opencontainers.image.source="https://github.com/mminichino/couchbase-traces" \
       org.opencontainers.image.licenses="MIT"
 
+# Release version and commit (set by make build-* and
+# scripts/release/release-images.sh; empty for ad hoc builds).
+ARG CODE_VERSION
+ARG GIT_SHA
+LABEL org.opencontainers.image.version="$CODE_VERSION" \
+      org.opencontainers.image.revision="$GIT_SHA"
+
 COPY --from=hyperdx ./entry.local.noauth.sh /etc/local/entry.sh
 
 HEALTHCHECK --interval=30s --timeout=5s --start-period=60s --retries=3 \
@@ -237,6 +249,13 @@ LABEL org.opencontainers.image.vendor="Couchbase Traces" \
       org.opencontainers.image.description="Couchbase Traces all-in-one image with Couchbase Server and OTel Collector (with authentication)" \
       org.opencontainers.image.source="https://github.com/mminichino/couchbase-traces" \
       org.opencontainers.image.licenses="MIT"
+
+# Release version and commit (set by make build-* and
+# scripts/release/release-images.sh; empty for ad hoc builds).
+ARG CODE_VERSION
+ARG GIT_SHA
+LABEL org.opencontainers.image.version="$CODE_VERSION" \
+      org.opencontainers.image.revision="$GIT_SHA"
 
 COPY --from=hyperdx --chmod=755 ./entry.cbt.sh /etc/local/entry.sh
 

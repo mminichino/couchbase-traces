@@ -1,4 +1,3 @@
-LATEST_VERSION := $$(sed -n 's/.*"version": "\([^"]*\)".*/\1/p' package.json)
 BUILD_PLATFORMS = linux/arm64,linux/amd64
 
 include .env
@@ -233,6 +232,8 @@ ci-unit:
 	node --test scripts/__tests__/int-env.test.mjs
 	node --test scripts/__tests__/slot-lock.test.mjs
 	node --test scripts/__tests__/check-legacy-store-text.test.mjs
+	node --test scripts/__tests__/set-version.test.mjs
+	node --test scripts/__tests__/image-tags.test.mjs
 
 .PHONY: ci-triage
 ci-triage:
@@ -266,76 +267,78 @@ dev-e2e:
 
 
 
+# Release versioning (docs/v1-release-plan.md section 5.1).
 .PHONY: version
 version:
-	sh ./version.sh
+	@test -n "$(VERSION)" || { echo "usage: make version VERSION=X.Y.Z" >&2; exit 2; }
+	node scripts/release/set-version.mjs "$(VERSION)"
 
-# Build targets (local builds only)
+# Fails when any version location differs from the root package.json version.
+.PHONY: version-check
+version-check:
+	node scripts/release/set-version.mjs --check "$$(node -p "require('./package.json').version")"
+
+# Builds and pushes app, ingest and otel-collector to ghcr.io from a clean
+# checkout of the v$(VERSION) tag. Only on the maintainer's explicit
+# instruction (R8). DRY_RUN=1 prints the buildx commands instead.
+.PHONY: release-images
+release-images:
+	@test -n "$(VERSION)" || { echo "usage: make release-images VERSION=X.Y.Z [LATEST=1] [DRY_RUN=1]" >&2; exit 2; }
+	scripts/release/release-images.sh "$(VERSION)" --platforms "$(BUILD_PLATFORMS)" \
+		$(if $(filter 1,$(LATEST)),--latest) $(if $(filter 1,$(DRY_RUN)),--dry-run)
+
+# Build targets (local builds only). Each image is tagged with the full version
+# and with ${IMAGE_VERSION}, the tag docker-compose.yml pulls, so a local build
+# is what `docker compose up` runs.
+IMAGE_TAG := $(IMAGE_VERSION)$(IMAGE_VERSION_SUB_TAG)
+BUILD_GIT_SHA = $(shell git rev-parse HEAD 2>/dev/null)
+APP_IMAGE := $(CBT_IMAGE_REPO)/$(NEXT_IMAGE_NAME_DOCKERHUB)
+INGEST_IMAGE := $(CBT_IMAGE_REPO)/$(CBT_INGEST_IMAGE_NAME)
+OTEL_COLLECTOR_IMAGE := $(CBT_IMAGE_REPO)/$(NEXT_OTEL_COLLECTOR_IMAGE_NAME_DOCKERHUB)
+ALL_IN_ONE_IMAGE := $(CBT_IMAGE_REPO)/$(NEXT_ALL_IN_ONE_IMAGE_NAME_DOCKERHUB)
+VERSION_BUILD_ARGS = --build-arg CODE_VERSION=$(CODE_VERSION) --build-arg GIT_SHA=$(BUILD_GIT_SHA)
+APP_CONTEXTS := --build-context hyperdx=./docker/hyperdx --build-context api=./packages/api --build-context app=./packages/app
+ALL_IN_ONE_CONTEXTS := --build-context otel-collector=./docker/otel-collector $(APP_CONTEXTS) \
+	--build-arg COUCHBASE_IMAGE=$(COUCHBASE_IMAGE)
 
 .PHONY: build-otel-collector
 build-otel-collector:
-	docker build . -f docker/otel-collector/Dockerfile \
-		-t ${OTEL_COLLECTOR_IMAGE_NAME_DOCKERHUB}:${IMAGE_VERSION}${IMAGE_VERSION_SUB_TAG} \
-		-t ${NEXT_OTEL_COLLECTOR_IMAGE_NAME_DOCKERHUB}:${IMAGE_VERSION}${IMAGE_VERSION_SUB_TAG} \
+	docker build . -f docker/otel-collector/Dockerfile $(VERSION_BUILD_ARGS) \
+		-t $(OTEL_COLLECTOR_IMAGE):$(IMAGE_TAG) -t $(OTEL_COLLECTOR_IMAGE):$(IMAGE_VERSION) \
 		--target prod
 
 .PHONY: build-ingest
 build-ingest:
-	docker build . -f packages/ingest/Dockerfile \
-		-t ${CBT_IMAGE_REPO:-ghcr.io}/${CBT_INGEST_IMAGE_NAME:-mminichino/couchbase-traces-ingest}:${IMAGE_VERSION}${IMAGE_VERSION_SUB_TAG}
+	docker build . -f packages/ingest/Dockerfile $(VERSION_BUILD_ARGS) \
+		-t $(INGEST_IMAGE):$(IMAGE_TAG) -t $(INGEST_IMAGE):$(IMAGE_VERSION)
 
 .PHONY: build-all-in-one
 build-all-in-one:
-	docker build . -f ./docker/hyperdx/Dockerfile \
-		--build-context otel-collector=./docker/otel-collector \
-		--build-context hyperdx=./docker/hyperdx \
-		--build-context api=./packages/api \
-		--build-context app=./packages/app \
-		--build-arg CODE_VERSION=${CODE_VERSION} \
-		--build-arg COUCHBASE_IMAGE=${COUCHBASE_IMAGE:-couchbase/server:enterprise-8.0.3} \
-		-t ${CBT_IMAGE_REPO:-ghcr.io}/${ALL_IN_ONE_IMAGE_NAME_DOCKERHUB}:${IMAGE_VERSION}${IMAGE_VERSION_SUB_TAG} \
-		-t ${CBT_IMAGE_REPO:-ghcr.io}/${NEXT_ALL_IN_ONE_IMAGE_NAME_DOCKERHUB}:${IMAGE_VERSION}${IMAGE_VERSION_SUB_TAG} \
+	docker build . -f ./docker/hyperdx/Dockerfile $(ALL_IN_ONE_CONTEXTS) $(VERSION_BUILD_ARGS) \
+		-t $(ALL_IN_ONE_IMAGE):$(IMAGE_TAG) -t $(ALL_IN_ONE_IMAGE):$(IMAGE_VERSION) \
 		--target all-in-one-auth
 
 .PHONY: build-app
 build-app:
-	docker build . -f ./docker/hyperdx/Dockerfile \
-		--build-context hyperdx=./docker/hyperdx \
-		--build-context api=./packages/api \
-		--build-context app=./packages/app \
-		--build-arg CODE_VERSION=${CODE_VERSION} \
-		-t ${IMAGE_NAME_DOCKERHUB}:${IMAGE_VERSION}${IMAGE_VERSION_SUB_TAG} \
-		-t ${NEXT_IMAGE_NAME_DOCKERHUB}:${IMAGE_VERSION}${IMAGE_VERSION_SUB_TAG} \
+	docker build . -f ./docker/hyperdx/Dockerfile $(APP_CONTEXTS) $(VERSION_BUILD_ARGS) \
+		-t $(APP_IMAGE):$(IMAGE_TAG) -t $(APP_IMAGE):$(IMAGE_VERSION) \
 		--target prod
 
 .PHONY: build-otel-collector-nightly
 build-otel-collector-nightly:
-	docker build . -f docker/otel-collector/Dockerfile \
-		-t ${OTEL_COLLECTOR_IMAGE_NAME_DOCKERHUB}:${IMAGE_NIGHTLY_TAG} \
-		-t ${NEXT_OTEL_COLLECTOR_IMAGE_NAME_DOCKERHUB}:${IMAGE_NIGHTLY_TAG} \
+	docker build . -f docker/otel-collector/Dockerfile $(VERSION_BUILD_ARGS) \
+		-t $(OTEL_COLLECTOR_IMAGE):$(IMAGE_NIGHTLY_TAG) \
 		--target prod
 
 .PHONY: build-app-nightly
 build-app-nightly:
-	docker build . -f ./docker/hyperdx/Dockerfile \
-		--build-context hyperdx=./docker/hyperdx \
-		--build-context api=./packages/api \
-		--build-context app=./packages/app \
-		--build-arg CODE_VERSION=${CODE_VERSION} \
-		-t ${IMAGE_NAME_DOCKERHUB}:${IMAGE_NIGHTLY_TAG} \
-		-t ${NEXT_IMAGE_NAME_DOCKERHUB}:${IMAGE_NIGHTLY_TAG} \
+	docker build . -f ./docker/hyperdx/Dockerfile $(APP_CONTEXTS) $(VERSION_BUILD_ARGS) \
+		-t $(APP_IMAGE):$(IMAGE_NIGHTLY_TAG) \
 		--target prod
 
 .PHONY: build-all-in-one-nightly
 build-all-in-one-nightly:
-	docker build . -f ./docker/hyperdx/Dockerfile \
-		--build-context otel-collector=./docker/otel-collector \
-		--build-context hyperdx=./docker/hyperdx \
-		--build-context api=./packages/api \
-		--build-context app=./packages/app \
-		--build-arg CODE_VERSION=${CODE_VERSION} \
-		--build-arg COUCHBASE_IMAGE=${COUCHBASE_IMAGE:-couchbase/server:enterprise-8.0.3} \
-		-t ${CBT_IMAGE_REPO:-ghcr.io}/${ALL_IN_ONE_IMAGE_NAME_DOCKERHUB}:${IMAGE_NIGHTLY_TAG} \
-		-t ${CBT_IMAGE_REPO:-ghcr.io}/${NEXT_ALL_IN_ONE_IMAGE_NAME_DOCKERHUB}:${IMAGE_NIGHTLY_TAG} \
+	docker build . -f ./docker/hyperdx/Dockerfile $(ALL_IN_ONE_CONTEXTS) $(VERSION_BUILD_ARGS) \
+		-t $(ALL_IN_ONE_IMAGE):$(IMAGE_NIGHTLY_TAG) \
 		--target all-in-one-auth
 

@@ -4060,7 +4060,46 @@ to run outside the agent sandbox, which blocks `git init` in a temp dir.
   `docs/v1-release-plan.md`). Secret scanning's first scan opened 3 alerts: 2
   `slack_incoming_webhook_url` (`T00000000/B00000000/XXXX…` and
   `T11111111/B11111111/YYYY…` in `WebhookForm.tsx`, the webhook routers and
-  their tests) and 1 `mongodb_atlas_db_uri_with_credentials`
-  (`mongodb+srv://svc:hunter2@cluster.mongodb.net` in `redactSecrets.test.ts`).
-  All 3 come from the upstream import (`adcb75c`) and are placeholders. They are
-  left open for the user to close as false positives or used in tests.
+  their tests) and 1 `mongodb_atlas_db_uri_with_credentials` (the redaction
+  test's sample `mongodb+srv` URI with user `svc`, in `redactSecrets.test.ts`).
+  All 3 come from the upstream import (`adcb75c`) and are placeholders. Resolved
+  as "used in tests" (user, 2026-11-25). Quoting the full sample URI in this
+  file (`6cc9db4`) raised a 4th alert of the same type, also resolved; fixtures
+  are not quoted verbatim here any more.
+
+### R6: release tooling (2026-11-25, `mm--v1-r6-release-tooling`)
+
+- Secret scanning: alerts 1–3 resolved as "used in tests" (user decision). Alert
+  4, a `mongodb_atlas_db_uri_with_credentials`, was raised by R5's own note
+  above, which quoted the redaction test's sample URI. It is resolved the same
+  way, and the note now describes the fixture without quoting it.
+- Plan corrections (rule 2): the release-notes extractor already exists as
+  `.github/scripts/release-notes.mjs extract`, and its test pins it to
+  `parse-whats-new.js`, so no `scripts/release/release-notes.mjs` was added. The
+  doc tag lines are `DEPLOY.md:38,114` and `docs/development.md:73`. B9's
+  changelog link was already `blob/v<version>/CHANGELOG.md` (R1).
+- Makefile: make does not expand `${VAR:-default}` (it reads it as a variable
+  named `VAR:-default`, which is empty). `build-ingest` therefore tagged
+  `/:2.44.0` and `build-all-in-one` tagged `/mminichino/…`. Targets now use
+  plain `$(VAR)` from `.env`, which defines every name.
+- `"release": "npx changeset publish --no-git-tag && npx changeset tag"` is
+  removed from the root `package.json`: `@couchbase-traces/cli` is the only
+  package without `private: true`, so the script would publish it to npm (Q6
+  says no) and create per-package tags (Q3 says one `v<version>` tag).
+- `set-version.mjs` rewrites only the captured version text, so formatting,
+  comments and key order are untouched. JSON locations accept only a top-level
+  two-space `"version"` line and are reparsed after the edit. Root
+  `CBT_SET_VERSION_ROOT` (tests only) points it at a fixture copy.
+- Q59 (user, 2026-11-25): `make version-check` stays out of `make ci-lint` until
+  R8, because today's versions are not lock-stepped and the gate would be red on
+  `main`. R8's bump commit adds it to `ci-lint` after
+  `make version VERSION=1.0.0`.
+- D30 (found here): one of two local all-in-one smokes failed with the ingest
+  setup's SDK `authentication failure` right after `wait_for_admin` passed on
+  REST. The rerun passed. Q60 (user, 2026-11-25): fixed in its own small PR
+  after R6 and before R7, started on the user's go-ahead.
+- Local images built and checked: app 1.07 GB, ingest 4.73 GB, otel-collector
+  387 MB, all-in-one 4.77 GB. All carry
+  `org.opencontainers.image.version=2.44.0` and the `HEAD` revision. The ingest
+  image's size comes from the full workspace `yarn install`. It is not a release
+  blocker; slimming it is a candidate for post-1.0.

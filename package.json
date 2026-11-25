@@ -52,8 +52,7 @@
     "dupes:all": "node scripts/ci/dupes.mjs --all",
     "lint": "npx nx run-many -t ci:lint",
     "lint:fix": "npx nx run-many -t lint:fix",
-    "version": "make version",
-    "release": "npx changeset publish --no-git-tag && npx changeset tag"
+    "version": "make version"
   },
   "lint-staged": {
     "packages/api/src/{routers/external-api/**/*.ts,utils/swagger.ts}": [

@@ -22,5 +22,20 @@ RUN yarn workspace @couchbase-traces/common-utils build
 COPY packages/ingest packages/ingest
 RUN yarn workspace @couchbase-traces/ingest build
 
+LABEL org.opencontainers.image.vendor="Couchbase Traces" \
+      org.opencontainers.image.title="Couchbase Traces Ingest" \
+      org.opencontainers.image.description="Couchbase Traces OTLP ingest service writing to Couchbase" \
+      org.opencontainers.image.source="https://github.com/mminichino/couchbase-traces" \
+      org.opencontainers.image.licenses="MIT"
+
+# Release version and commit (set by make build-* and
+# scripts/release/release-images.sh; empty for ad hoc builds).
+ARG CODE_VERSION
+ARG GIT_SHA
+LABEL org.opencontainers.image.version="$CODE_VERSION" \
+      org.opencontainers.image.revision="$GIT_SHA"
+# Read by `setup` as the appVersion marker and reported by the service.
+ENV CODE_VERSION=$CODE_VERSION
+
 EXPOSE 4320
 CMD ["node", "packages/ingest/dist/index.js"]

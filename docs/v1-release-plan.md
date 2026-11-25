@@ -466,6 +466,7 @@ pushes to `main` directly.
 | D27   | Defects: metric sources omit upstream `Flags` bit-0 filter  | Found in D24 (section 9.1); with D26 in one PR before R2a (Q49); fixed                                                                                                                                               | S    | —                             |
 | D28   | Defects: unset `whereLanguage` is Lucene, not SQL           | Found in D24 (section 9.1); with D26 in one PR before R2a (Q50); fixed                                                                                                                                               | S    | —                             |
 | D29   | Defects: request query attribution never reaches SQL++      | Found in R2a (section 9.1); own PR right after R2a, before R2c and R2b (Q51); carries the `queryAttribution` int suite; fixed                                                                                        | M    | R2a                           |
+| D30   | Defects: all-in-one ingest setup races the admin password   | Found in R6 (section 9.1); own small PR after R6, before R7 (Q60)                                                                                                                                                    |
 | D14   | Dev tooling: live-test port offset fallback                 | Found in D7 (section 9.1)                                                                                                                                                                                            | S    | —                             |
 | R2a   | Port deferred int suites: internal and external API         | B1 (10 suites: `routers/api/{dashboard,iac,sources,connections}`, `routers/external-api/{charts,search,sources,sources-crud,connections}`, `middleware/queryAttribution`); 9 ported, `queryAttribution` moves to D29 | L    | D1                            |
 | R2b   | Port deferred int suites: alerts                            | B1 (5 suites: `checkAlerts`, `multiChannelAlerts`, `renderAlertTemplate`, `singleInvocationAlert`, `providers/default`; 335 tests, 93 failing per R0)                                                                | L    | R2c, D1, D4, D6               |
@@ -480,9 +481,10 @@ pushes to `main` directly.
 Order (user decisions 2026-11-19 and 2026-11-20): R1, then the defect-fix phases
 D1, D2, D9 (with D8, Q14/Q15), D2b (B17), D3–D7, D10 (Q28), then D11 and D12
 (proposed after D10, pending decision), then R2a, D29 (Q51), R2c, R2b. R3 and R6
-are independent and can land at any point. Product defects found in R0 get their
-own PRs ahead of the test-porting phases. R2 no longer fixes product bugs; a
-defect R2 finds while porting gets its own PR first (D7 onward).
+are independent and can land at any point. D30 lands after R6 and before R7
+(Q60). Product defects found in R0 get their own PRs ahead of the test-porting
+phases. R2 no longer fixes product bugs; a defect R2 finds while porting gets
+its own PR first (D7 onward).
 
 ### 9.1 Defect-fix phases (D1–D6, D2b)
 
@@ -1301,6 +1303,24 @@ filters by `SpanAttributes['http.route']` and gets the seeded groups. Depends
 on: D2. Size: M. Placement (Q14): next after D2, before D2b, so D2b rewrites the
 builder docs once in their final form.
 
+#### D30: All-in-one ingest setup races the admin password (found in R6, size S)
+
+Evidence: one of two local runs of `scripts/ci/smoke-all-in-one.sh` against the
+R6 all-in-one image exited during startup. In `docker/couchbase/init.sh`,
+`wait_for_admin` passed (REST `/pools/default` returned 200 with the new
+password), and then
+`node packages/ingest/dist/setup/cli.js --create-bucket --create-users` failed
+at once with the SDK's `authentication failure`. The second run passed. The
+script's own comment says that `clusterInit` returns before the SDK accepts the
+new password. REST accepting it is not enough evidence. A user's first
+`docker run` can hit the same race.
+
+Proposed fix: retry the setup's first SDK connect on
+`AuthenticationFailureError` for up to `WAIT_SECONDS` (bounded backoff), or have
+`wait_for_admin` probe with the SDK. Add a unit test for the retry. Placement:
+its own small PR after R6 merges and before R7 (Q60, user 2026-11-25), branch
+`mm--v1-d30-aio-setup-auth-race`; started only on the user's go-ahead.
+
 ### R0: Triage and quick fixes
 
 1. Run each of the 23 deferred suites alone on the CI compose stack
@@ -1792,6 +1812,58 @@ section 3 and nothing else; `make build-app` produces
 tags; `docker inspect` shows the version label on all four images. No push
 happens in this phase.
 
+Status (2026-11-25, `mm--v1-r6-release-tooling`): acceptance met locally, with
+the `make ci-lint` wiring deferred to R8 (Q59, decided). No image was pushed,
+and no tag or release was created.
+
+- `scripts/release/semver.mjs` (`parseSemver`, `imageTags`),
+  `version-locations.mjs` (16 locations) and `set-version.mjs`
+  (`planVersionEdits`, `applyEdits`, `verifyVersions`; `--check`, `--dry-run`).
+  `node --test scripts/__tests__/set-version.test.mjs`: 19 pass, run against
+  copies of the real files. `set-version.mjs 9.9.9 --dry-run` lists the 16
+  section 3 locations and nothing else.
+- `scripts/release/release-images.sh` and
+  `make release-images VERSION=… [LATEST=1] [DRY_RUN=1]`. It builds every image
+  and platform to the buildx cache, then pushes. It refuses `all-in-one` (Q1), a
+  dirty tree, a `HEAD` other than `v<version>`, a tag not on `origin/main` and a
+  partial bump. Only `--dry-run` was run.
+- `make version VERSION=…` replaces `version.sh` (deleted). The new
+  `make version-check` checks every location against the root `package.json`
+  version.
+- Makefile build targets: make has no `${VAR:-default}`, so `build-ingest`
+  tagged `/:2.44.0` and `build-all-in-one` tagged `/mminichino/…` (broken
+  references). `build-app` and `build-otel-collector` had no registry. No target
+  built the `:${IMAGE_VERSION}` tag compose pulls. Each target now tags
+  `ghcr.io/mminichino/<image>:<IMAGE_VERSION><SUB_TAG>` and `:<IMAGE_VERSION>`,
+  and passes `CODE_VERSION` and `GIT_SHA`.
+  `scripts/__tests__/image-tags.test.mjs` checks that every image
+  `docker-compose.yml` pulls is built (it fails on the old Makefile).
+- Images: `org.opencontainers.image.version` and `.revision` labels on app, both
+  all-in-one targets, otel-collector and ingest. Ingest also gets
+  vendor/title/source/license labels and `ENV CODE_VERSION` (B10), and the
+  collector gets `ENV CODE_VERSION`. `scripts/ci/check-image-labels.sh` checks
+  the labels and `CODE_VERSION`. `docker-build.yml` gains a `Build Ingest Image`
+  job (`push: false`, `load: true`), and the ingest and all-in-one jobs run the
+  label check. Every build passes `GIT_SHA`. `smoke-all-in-one.sh` now checks
+  that `/health` reports the image's `CODE_VERSION`.
+- Local builds (`make build-ingest`, `build-otel-collector`, `build-app`,
+  `build-all-in-one`): all four pass `check-image-labels.sh` at 2.44.0 and the
+  `HEAD` revision. `docker compose config --images` resolves
+  `ghcr.io/mminichino/couchbase-traces{,-ingest,-otel-collector}:2`, which
+  `make build-*` now tags. The full all-in-one smoke passed (health, version
+  2.44.0, no `mongod`, canary through collector, ingest, Couchbase and the API).
+  An earlier run failed at startup with D30.
+- `.changeset/config.json` `fixed` now includes `@couchbase-traces/ingest`. The
+  root `"release"` script (`changeset publish` + `changeset tag`) is removed:
+  `cli` is the only publishable package, so it would have published to npm
+  (against Q6) and created per-package tags (against Q3).
+- Plan corrections: `release-notes.mjs` already exists as
+  `.github/scripts/release-notes.mjs` (`extract`, pinned to `parse-whats-new.js`
+  by its test), so R8 step 6 uses
+  `node .github/scripts/release-notes.mjs extract --changelog CHANGELOG.md --version 1.0.0`.
+  No `scripts/release/release-notes.mjs` was added. The doc tag lines are
+  `DEPLOY.md:38,114` and `docs/development.md:73`. B9 was already fixed in R1.
+
 ### R7: Docs and acceptance
 
 Rewrite `README.md` status and quick start, `DEPLOY.md` image section,
@@ -1807,8 +1879,10 @@ H1–H3 branding green.
 On branch `mm--release-v1-0-0`:
 
 1. `make version VERSION=1.0.0` (writes section 3 locations), `yarn install`
-   (lockfile), OpenAPI `info.version` stays `2.0.0` (Q7), so `openapi.json` does
-   not change.
+   (lockfile). In the same commit, add `version-check` to the `ci-lint` target
+   in the `Makefile` (deferred from R6, Q59), then confirm `make ci-lint` is
+   green with every location at 1.0.0 and red if any one is reverted. OpenAPI
+   `info.version` stays `2.0.0` (Q7), so `openapi.json` does not change.
 2. Add `## v1.0.0 — <date>` to `CHANGELOG.md` with the release-notes marker:
    highlights (Couchbase Server 8.x / Capella, SQL++, metadata on Couchbase with
    no MongoDB, feature parity, dropped PromQL and careers page with sign-off),
@@ -1826,7 +1900,7 @@ On branch `mm--release-v1-0-0`:
    `latest`; app, ingest, and otel-collector only) from a clean checkout of the
    tag.
 6. **Only on explicit user instruction:**
-   `gh release create v1.0.0 --title "Couchbase Traces v1.0.0" --notes-file <(node scripts/release/release-notes.mjs 1.0.0) --verify-tag`,
+   `gh release create v1.0.0 --title "Couchbase Traces v1.0.0" --notes-file <(node .github/scripts/release-notes.mjs extract --changelog CHANGELOG.md --version 1.0.0) --verify-tag`,
    attaching the CLI binaries `cbt-linux-x64`, `cbt-darwin-arm64`, and
    `cbt-darwin-x64` (Q6).
 7. Smoke the published images: `docker compose pull && docker compose up` from a
@@ -1900,6 +1974,8 @@ in that phase.
 | Q56 | `json-viewer-key-order.spec.ts`: "original" key order equals ascending on Couchbase (2026-11-24)                        | Accepted: the Query service returns object fields sorted by name, so documents have no stored column order; the spec asserts the same keys and no synthetic `*` instead of "original differs from ascending" (user, 2026-11-25)                                                                                                                                                                                                                                                                                                                                                                                                                 | —              |
 | Q57 | `metric-table-autofill` "database changes on a saved source" needs a second bucket (2026-11-24)                         | The E2E seed creates a 100 MB Magma bucket `e2e_metrics_alt` (`default` scope, empty `alt_otel_metrics_gauge` and `alt_otel_metrics_sum`) inside the 2048 MB E2E data quota, next to `otel` (1024) and `cbt_meta` (256); the test is un-skipped and passes (user, 2026-11-25)                                                                                                                                                                                                                                                                                                                                                                   | —              |
 | Q58 | CI E2E shards exceed 45 min on the private repo's 2-vCPU `ubuntu-24.04` runner (2026-11-25)                             | Resolved: the repository was made public (user, 2026-11-25), so the standard `ubuntu-24.04` runner has 4 vCPUs and 16 GB. A larger runner (option (a)) was not available: the repository is personally owned, and larger runners need an organization on Team or Enterprise Cloud. `RUNNER_E2E` and `E2E_WORKERS` stay unset (workflow defaults: `ubuntu-24.04`, 2 workers). A pre-publication scan of all 274 commits (gitleaks and targeted searches) found only fixtures, dev placeholders and upstream test data. Secret scanning and push protection are on; fork-PR approval, Dependabot, branch protection and wiki are unchanged (user) | R5             |
+| Q59 | Wire `set-version --check` into `make ci-lint` in R6 (2026-11-25)?                                                      | Deferred to R8 (user, 2026-11-25). Nothing changes in R6 beyond adding `make version-check`. The versions are not lock-stepped today (root 2.0.0; api, app, ingest and collector 2.44.0; cli 0.9.0; common-utils 0.34.0), so the gate would fail on `main`. R8 must, in the bump commit: run `make version VERSION=1.0.0`, add `version-check` to the Makefile `ci-lint` target, and check that `make ci-lint` passes at 1.0.0 and fails on a single reverted location.                                                                                                                                                                         |
+| Q60 | Placement of D30, the all-in-one ingest setup race (2026-11-25)                                                         | Its own small PR after R6 and before R7 (user, 2026-11-25), so R7's acceptance run and the R8 image smoke don't hit it. Started only on the user's go-ahead.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
 
 ## 11. Acceptance criteria (v1.0.0 is done when)
 
@@ -1991,6 +2067,7 @@ in that phase.
 | R4 Playwright specs on Couchbase                                | L    |
 | R5 Re-enable E2E on Main                                        | S    |
 | R6 Release tooling                                              | M    |
+| D30 All-in-one ingest setup auth race                           | S    |
 | R7 Docs and acceptance                                          | M    |
 | R8 Release v1.0.0                                               | S    |
 
