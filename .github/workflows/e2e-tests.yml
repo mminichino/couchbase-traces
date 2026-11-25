@@ -31,9 +31,11 @@ jobs:
 
       - name: Run Playwright tests (full-stack mode)
         env:
-          E2E_WORKERS:
-            ${{ github.event.pull_request.head.repo.fork && '2' ||
-            vars.E2E_WORKERS }}
+          # The private repo's ubuntu-24.04 runner has 2 vCPUs for Couchbase,
+          # the API, Next.js and Chromium; 4 workers starve them and the 5s
+          # row waits time out (R5). A larger runner can raise this through
+          # the E2E_WORKERS repository variable.
+          E2E_WORKERS: ${{ vars.E2E_WORKERS || '2' }}
         run: |
           cd packages/app
           yarn test:e2e --shard=${{ matrix.shard }}/4

@@ -4018,3 +4018,49 @@ shared team). Neither involves a data query. Local gates: `make ci-lint` (app at
 its 496-warning cap), `make ci-unit`, `make ci-int`, and
 `port/couchbase-test/run.sh`, all green. `ci-unit`'s `changeset-hash` tests need
 to run outside the agent sandbox, which blocks `git init` in a temp dir.
+
+### R5: re-enable E2E on Main (2026-11-25, `mm--v1-r5-reenable-e2e-ci`)
+
+- `main.yml`: `e2e-tests` and the `End-to-End Tests` aggregator are restored
+  from `019a42d^`, without the aggregator's old `continue-on-error`, so a failed
+  or cancelled shard fails Main. The shards' advisory `continue-on-error`
+  (removed in `019a42d`) stays removed.
+- `e2e-tests.yml`: `E2E_WORKERS` defaults to 2 (was 4 through
+  `playwright.config.ts`, with 2 only for forks). The repository is private, so
+  `ubuntu-24.04` has 2 vCPUs for Couchbase, the API, Next.js and Chromium. The
+  `E2E_WORKERS` variable still overrides.
+- CI timings and results are in `docs/v1-release-plan.md` (R5). Runner capacity
+  blocks acceptance (Q58): shards 3 and 4 hit the 45 min timeout with 2 workers.
+  Nearly every failure is a page-object wait (mostly the 5s first-row wait on
+  search) that expires before the rows render. Locally, the suite passes.
+- Integration shard 2 is unchanged.
+- Q58 (a), larger E2E runner (2026-11-25): blocked on provisioning. The API
+  (`repos/mminichino/couchbase-traces`, `actions/runners`,
+  `actions/runner-groups`) shows a private, user-owned repository with no
+  self-hosted runners. GitHub docs: larger runners need an organization on Team
+  or Enterprise Cloud, and every standard Linux runner on a private repo has 2
+  vCPUs. `RUNNER_E2E` and `E2E_WORKERS` are not set. Once a runner exists:
+  `gh variable set RUNNER_E2E --body <label>` and
+  `gh variable set E2E_WORKERS --body <n>` with n at half the vCPUs: 4 on 8
+  vCPUs, the pairing `playwright.config.ts` documents (headroom for the app and
+  Couchbase), or 2 on 4 vCPUs. No code change is needed: `e2e-tests.yml` already
+  reads both, and `RUNNER_E2E` accepts a JSON label array.
+- Q58 resolved (2026-11-25): the repository is public, so `ubuntu-24.04` has 4
+  vCPUs and 16 GB. `RUNNER_E2E` and `E2E_WORKERS` are unset; the workflow
+  defaults to `ubuntu-24.04` and 2 workers. Before publication, gitleaks
+  (8.30.1, `--log-opts=--all`, 274 commits) reported 57 matches, all of them
+  fixtures, dev placeholders or upstream HyperDX test data (including upstream's
+  public usage-stats key). The committed `.env*` files hold dev values only.
+  Secret scanning and push protection are on. Fork-PR approval stays at
+  first-time contributors, and Dependabot security updates, branch protection
+  and the wiki are unchanged (user decision).
+- R5 acceptance (2026-11-25): two consecutive green runs on PR #46 (`35cd047`
+  and `c74cf32`), all 24 checks, E2E shards 12–20 min against 45. Each run had 2
+  tests passing on retry, none the same across runs (timings and names in
+  `docs/v1-release-plan.md`). Secret scanning's first scan opened 3 alerts: 2
+  `slack_incoming_webhook_url` (`T00000000/B00000000/XXXX…` and
+  `T11111111/B11111111/YYYY…` in `WebhookForm.tsx`, the webhook routers and
+  their tests) and 1 `mongodb_atlas_db_uri_with_credentials`
+  (`mongodb+srv://svc:hunter2@cluster.mongodb.net` in `redactSecrets.test.ts`).
+  All 3 come from the upstream import (`adcb75c`) and are placeholders. They are
+  left open for the user to close as false positives or used in tests.
