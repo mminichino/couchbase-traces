@@ -4120,3 +4120,12 @@ to run outside the agent sandbox, which blocks `git init` in a temp dir.
   already answering), the API metadata store (already retries all connect
   failures), and the E2E and golden harnesses (they use the setup CLI, so the
   fix covers them).
+- PR #48 first CI run: shard 3 failed on `kubernetes.spec.ts` only (namespace
+  metrics and Lucene autocomplete failed on all 3 attempts; pod and node metrics
+  passed on retry). The page snapshots show the CPU and memory charts still on
+  "Loading Chart Data…", and the autocomplete still waiting on its suggestions
+  query, when the 5–10 s assertion ran out. The namespace table had rows. The
+  setup retry did not fire in that run (no retry line in the log). `main` at the
+  same base passed every shard, and the spec passes locally (13/13). This is
+  slowness under CI load on the 42k-point K8s gauge queries, not a D30
+  regression; recorded as Q61.
