@@ -12,15 +12,27 @@ export function quantileValue(sorted: number[], p: number): number | null {
 }
 
 /**
+ * Linear-interpolation quantile of a sorted SQL++ array, as `quantileValue`
+ * and ClickHouse's `quantile` (reservoir, interpolated). `sorted` is repeated
+ * as text; NULL when the array is empty or NULL. `level` is an expression,
+ * normally a named parameter.
+ */
+export function sortedArrayQuantile(sorted: string, level: string): string {
+  const n = `ARRAY_LENGTH(${sorted})`;
+  const r = `(${level} * (${n} - 1))`;
+  return `CASE WHEN ${n} = 0 THEN NULL ELSE ${sorted}[FLOOR(${r})] + (${r} - FLOOR(${r})) * (${sorted}[CEIL(${r})] - ${sorted}[FLOOR(${r})]) END`;
+}
+
+/**
  * One aggregate expression. `<A>` is repeated as text; the engine computes
  * the aggregate once per group. `$p0` is the quantile level.
  */
 export function quantile(p: number, x: string, c = 'TRUE'): SqlPP {
   const sorted = `ARRAY_SORT(ARRAY v FOR v IN ARRAY_AGG(CASE WHEN ${c} AND ISNUMBER(${x}) THEN ${x} END) WHEN v IS NOT NULL END)`;
-  const n = `ARRAY_LENGTH(${sorted})`;
-  const r = `($p0 * (${n} - 1))`;
-  const statement = `CASE WHEN ${n} = 0 THEN NULL ELSE ${sorted}[FLOOR(${r})] + (${r} - FLOOR(${r})) * (${sorted}[CEIL(${r})] - ${sorted}[FLOOR(${r})]) END`;
-  return { statement, parameters: { p0: p } };
+  return {
+    statement: sortedArrayQuantile(sorted, '$p0'),
+    parameters: { p0: p },
+  };
 }
 
 /**

@@ -1,9 +1,23 @@
 import type { Metadata } from '@couchbase-traces/common-utils/dist/core/metadata';
 import { errorStatusPredicateSql } from '@couchbase-traces/common-utils/dist/core/spanPredicates';
+import { sortedArrayQuantile } from '@couchbase-traces/common-utils/dist/couchbase/fn/quantile';
 import { crc32 } from '@couchbase-traces/common-utils/dist/couchbase/fn/scalar';
 import { disjointSqlParams } from '@couchbase-traces/common-utils/dist/couchbase/sqlpp';
 import { renderChartConfig } from '@couchbase-traces/common-utils/dist/dataLayer';
 import type { TTraceSource } from '@couchbase-traces/common-utils/dist/types';
+
+// Named parameters for the percentile levels; disjointSqlParams renames the
+// CTE parameters, so these names cannot collide with them.
+const LATENCY_LEVEL_PARAMS = {
+  p50: 'serviceMapP50',
+  p95: 'serviceMapP95',
+  p99: 'serviceMapP99',
+} as const;
+const LATENCY_LEVELS: Record<string, number> = {
+  [LATENCY_LEVEL_PARAMS.p50]: 0.5,
+  [LATENCY_LEVEL_PARAMS.p95]: 0.95,
+  [LATENCY_LEVEL_PARAMS.p99]: 0.99,
+};
 
 function samplingPredicate(
   traceIdExpression: string,
@@ -151,16 +165,27 @@ export async function getServiceMapQueryCouchbase({
 
   const errorPred = errorStatusPredicateSql('s.statusCode');
   const hasDuration = Boolean(source.durationExpression);
+  // SQL++ 8.0 has no percentile aggregate (MEDIAN only), so each group keeps
+  // its sorted numeric durations. ARRAY_AGG keeps NULLs and ARRAY_SORT puts
+  // them first, so non-numeric durations are dropped before sorting.
   const latencyAgg = hasDuration
-    ? `, ARRAY_SORT(ARRAY_AGG(CASE WHEN ISNUMBER(s.duration) THEN TONUMBER(s.duration) END)) AS durs`
+    ? `, ARRAY_SORT(ARRAY v FOR v IN ARRAY_AGG(CASE WHEN ISNUMBER(s.duration) THEN s.duration END) WHEN ISNUMBER(v) END) AS durs`
     : '';
-  const latencyEdgeSelect = hasDuration
-    ? `, CASE WHEN ARRAY_LENGTH(edge.durs) = 0 THEN NULL ELSE edge.durs[FLOOR(0.5 * (ARRAY_LENGTH(edge.durs) - 1))] END AS p50
-      , CASE WHEN ARRAY_LENGTH(edge.durs) = 0 THEN NULL ELSE edge.durs[FLOOR(0.95 * (ARRAY_LENGTH(edge.durs) - 1))] END AS p95
-      , CASE WHEN ARRAY_LENGTH(edge.durs) = 0 THEN NULL ELSE edge.durs[FLOOR(0.99 * (ARRAY_LENGTH(edge.durs) - 1))] END AS p99`
-    : '';
-  const latencyNodeSelect = hasDuration
-    ? `, NULL AS p50, NULL AS p95, NULL AS p99`
+  // Upstream's quantiles(0.5, 0.95, 0.99) interpolates linearly between the
+  // neighbouring samples; sortedArrayQuantile does the same.
+  const percentiles = (arr: string) =>
+    hasDuration
+      ? (['p50', 'p95', 'p99'] as const)
+          .map(
+            p =>
+              `, ${sortedArrayQuantile(arr, `$${LATENCY_LEVEL_PARAMS[p]}`)} AS ${p}`,
+          )
+          .join('\n  ')
+      : '';
+  // The node row covers the same joined spans as upstream's (serverServiceName)
+  // grouping set, which is exactly the union of that service's edge groups.
+  const nodeDurs = hasDuration
+    ? `, ARRAY_SORT(ARRAY v FOR v IN ARRAY_FLATTEN(ARRAY_AGG(edge.durs), 1) WHEN ISNUMBER(v) END) AS durs`
     : '';
 
   const sql = `
@@ -176,7 +201,9 @@ WITH ServerSpans AS (${serverCTE.sql}),
        FROM ServerSpans AS s
        LEFT JOIN ClientSpans AS c
          ON s.traceId = c.traceId AND s.parentSpanId = c.spanId
-       WHERE (c.serviceName IS NULL OR s.serviceName != c.serviceName)
+       -- An unmatched LEFT JOIN leaves c.serviceName MISSING, which IS NULL
+       -- rejects; ClickHouse fills '' and keeps the span, so match that.
+       WHERE (c.serviceName IS NOT VALUED OR s.serviceName != c.serviceName)
          ${serviceNameFilter}
        GROUP BY s.serviceName, c.serviceName
      )
@@ -186,24 +213,34 @@ SELECT
   0 AS isNodeLevel,
   edge.requestCount AS requestCount,
   edge.errorCount AS errorCount
-  ${latencyEdgeSelect}
+  ${percentiles('edge.durs')}
 FROM edges AS edge
 UNION ALL
 SELECT
-  edge.serverServiceName AS serverServiceName,
+  node.serverServiceName AS serverServiceName,
   NULL AS clientServiceName,
   1 AS isNodeLevel,
-  SUM(edge.requestCount) AS requestCount,
-  SUM(edge.errorCount) AS errorCount
-  ${latencyNodeSelect}
-FROM edges AS edge
-GROUP BY edge.serverServiceName
+  node.requestCount AS requestCount,
+  node.errorCount AS errorCount
+  ${percentiles('node.durs')}
+FROM (
+  SELECT
+    edge.serverServiceName AS serverServiceName,
+    SUM(edge.requestCount) AS requestCount,
+    SUM(edge.errorCount) AS errorCount
+    ${nodeDurs}
+  FROM edges AS edge
+  GROUP BY edge.serverServiceName
+) AS node
 ORDER BY serverServiceName, isNodeLevel, clientServiceName
 `.trim();
 
   return {
     sql,
-    params: mergeParams(serverCTE, clientCTE),
+    params: {
+      ...mergeParams(serverCTE, clientCTE),
+      ...(hasDuration ? LATENCY_LEVELS : {}),
+    },
     dialect: 'sqlpp',
   };
 }

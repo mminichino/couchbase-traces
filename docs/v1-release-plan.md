@@ -1661,6 +1661,49 @@ Add node p50/p95/p99 in `serviceMap.ts`; add a golden parity case to
 node percentiles non-NULL on the parity dataset and within the parity tolerance
 of the reference.
 
+Done on `mm--v1-r3-service-map-latency` (2026-11-24):
+
+- Shard policy (user, 2026-11-24, on merging PR #43): shard 2 (about 30 min
+  of its 55) stays as it is. No further shard changes unless a shard actually
+  times out; then report before changing anything.
+- Path correction: `port/query-parity` no longer exists; Phase 10 replaced it
+  with `port/golden`, whose goldens were captured while ClickHouse was still
+  there and are chart configs replayed through `renderChartConfig`. The
+  service map query is built in `serviceMap.ts`, outside that renderer, so no
+  golden case can carry it, and a new reference cannot be captured. The
+  parity check is `packages/app/src/couchbase/__tests__/serviceMap.live.test.ts`,
+  run by `port/couchbase-test/run.sh`. It runs the real query on an inline
+  span set (12 server spans across `web`, `worker`, an uninstrumented caller
+  and a self-call into `api`, plus `api`→`db`) and expects upstream's rows:
+  the same columns, `ORDER BY`, counts, and percentiles from `quantileValue`.
+  That is ClickHouse's `quantiles` for fewer than 8192 samples per group:
+  exact reservoir, linear interpolation. Tolerance is 1e-6.
+- SQL++ (checked against the 8.0 aggregate and array function references):
+  8.0 has `MEDIAN` but no percentile aggregate, so each edge group keeps
+  `ARRAY_SORT` of its numeric durations. Each node takes
+  `ARRAY_FLATTEN(ARRAY_AGG(edge.durs), 1)` over its edges, which is the same
+  span set as upstream's `(ServerSpans.serviceName)` grouping set because the
+  edge groups partition it. Edge and node rows both use the new
+  `sortedArrayQuantile` (shared with `quantile()` in
+  `common-utils/src/couchbase/fn/quantile.ts`). Levels are bound as
+  `$serviceMapP50`/`P95`/`P99`. Result shape matches upstream: the same rows,
+  with `p50`/`p95`/`p99` as named columns where upstream returns a
+  `quantiles` array; the hook reads either.
+- In-scope fixes to the edge percentiles. They used nearest-rank
+  (`FLOOR(q * (n - 1))`) and not upstream's interpolation, so p95 of
+  10…70 was 60 where upstream gives 67. `ARRAY_AGG` keeps NULLs (8.0 docs),
+  and `ARRAY_SORT` puts them first, so any non-numeric duration in a group
+  pulled the low percentiles down to NULL. Both are fixed and covered by the
+  live test.
+- Found by the live test, fixed in scope: spans from uninstrumented callers
+  were dropped from the whole map. An unmatched LEFT JOIN leaves
+  `c.serviceName` MISSING, and `MISSING IS NULL` is not TRUE, so
+  `WHERE (c.serviceName IS NULL OR ...)` rejected them (8.0 comparison
+  operators: a comparison with MISSING is MISSING). Upstream keeps them
+  because ClickHouse fills `''`. Node request and error counts and latency
+  undercounted services with uninstrumented callers (on the fixture, `api`
+  showed 10 requests where upstream shows 11). Now `IS NOT VALUED`.
+
 ### R4: Playwright specs on Couchbase
 
 Fix the spec or the product for each failure recorded in R0 (section 14.2: 115
