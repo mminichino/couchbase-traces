@@ -466,7 +466,7 @@ pushes to `main` directly.
 | D27   | Defects: metric sources omit upstream `Flags` bit-0 filter  | Found in D24 (section 9.1); with D26 in one PR before R2a (Q49); fixed                                                                                                                                               | S    | —                             |
 | D28   | Defects: unset `whereLanguage` is Lucene, not SQL           | Found in D24 (section 9.1); with D26 in one PR before R2a (Q50); fixed                                                                                                                                               | S    | —                             |
 | D29   | Defects: request query attribution never reaches SQL++      | Found in R2a (section 9.1); own PR right after R2a, before R2c and R2b (Q51); carries the `queryAttribution` int suite; fixed                                                                                        | M    | R2a                           |
-| D30   | Defects: all-in-one ingest setup races the admin password   | Found in R6 (section 9.1); own small PR after R6, before R7 (Q60)                                                                                                                                                    |
+| D30   | Defects: all-in-one ingest setup races the admin password   | Found in R6 (section 9.1); own small PR after R6, before R7 (Q60); fixed                                                                                                                                             |
 | D14   | Dev tooling: live-test port offset fallback                 | Found in D7 (section 9.1)                                                                                                                                                                                            | S    | —                             |
 | R2a   | Port deferred int suites: internal and external API         | B1 (10 suites: `routers/api/{dashboard,iac,sources,connections}`, `routers/external-api/{charts,search,sources,sources-crud,connections}`, `middleware/queryAttribution`); 9 ported, `queryAttribution` moves to D29 | L    | D1                            |
 | R2b   | Port deferred int suites: alerts                            | B1 (5 suites: `checkAlerts`, `multiChannelAlerts`, `renderAlertTemplate`, `singleInvocationAlert`, `providers/default`; 335 tests, 93 failing per R0)                                                                | L    | R2c, D1, D4, D6               |
@@ -1320,6 +1320,40 @@ Proposed fix: retry the setup's first SDK connect on
 `wait_for_admin` probe with the SDK. Add a unit test for the retry. Placement:
 its own small PR after R6 merges and before R7 (Q60, user 2026-11-25), branch
 `mm--v1-d30-aio-setup-auth-race`; started only on the user's go-ahead.
+
+D30 result (2026-11-25, `mm--v1-d30-aio-setup-auth-race`): fixed.
+
+- **Root cause (measured).** Fresh `couchbase/server:enterprise-8.0.3`, POST
+  `/clusterInit`, then REST and an SDK connect sampled every 250 ms (3 runs).
+  `/pools/default` returned 200 with node `healthy` at +60–70 ms, while SDK
+  connects failed with `AuthenticationFailureError` until +1.0–1.1 s. ns_server
+  accepts the new password before the data service (memcached) has it, so a REST
+  probe is not a readiness signal for the SDK. `init.sh`'s `wait_for_admin`
+  passes in that window, and the all-in-one runs the setup CLI straight after.
+  The comment in `init.sh` is updated to say so.
+- **Fix.** `packages/ingest/src/setup/connect.ts` `connectWithAuthRetry` wraps
+  the setup CLI's `connect()` (telemetry and metadata clusters). It retries only
+  `AuthenticationFailureError`, with backoff 250 ms doubling to a 4 s cap and a
+  60 s total deadline. It logs one line without credentials, and past the
+  deadline it fails with exit 3 and a message naming `CBT_COUCHBASE_ADMIN_USER`
+  / `_PASSWORD`. Other errors are not retried, and a wrong password still fails
+  within 60 s. This is the real readiness signal (the data service accepting the
+  SDK's SASL auth), not a sleep.
+- **Tests.** `src/__tests__/connectRetry.test.ts` (5 tests, a fake connect that
+  fails N times and a fake clock) failed before `connect.ts` existed. Direct
+  repro (fresh node, `clusterInit`, setup CLI at once): before, 3/3
+  `authentication failure` exit 3 in 0 s; after, 3/3 exit 0 with one retry line.
+  The all-in-one smoke looped 10 times: 10/10 green, canary ingested, 77–112 s
+  per run.
+- **Other startup paths.** Compose `couchbase-init` and the all-in-one both run
+  `init.sh`, which runs the setup CLI, so both are covered. E2E
+  (`global-setup-fullstack.ts`) and the golden harness (`port/golden/lib/*`) run
+  the setup CLI after `couchbase-cli cluster-init` plus a REST health wait, so
+  they are covered too. `port/couchbase-test/init.sh` runs
+  `provision-metadata.js` only after buckets, collections and a SQL++ query have
+  succeeded, so the data service already has the password. The API's metadata
+  store (`connectWithRetry`) already retries every connect failure. No change
+  was needed there.
 
 ### R0: Triage and quick fixes
 
