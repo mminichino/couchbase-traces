@@ -1750,10 +1750,16 @@ failed or cancelled shard. The repository is private, so `ubuntu-24.04` has 2
 vCPUs and 7 GB, shared by the Couchbase container (2 CPU, 4 GB limit), the API,
 Next.js and the Chromium workers. Locally, only Couchbase is capped.
 
-| PR #46 run          | Workers | Shard 1                    | Shard 2                              | Shard 3       | Shard 4                            |
-| ------------------- | ------- | -------------------------- | ------------------------------------ | ------------- | ---------------------------------- |
-| 1 (`efe511e`-based) | 4       | cancelled 45m              | cancelled 45m                        | cancelled 45m | 41m, 51 failed, 5 flaky, 48 passed |
-| 2 (`3127b9d`)       | 2       | 29.8m, 108 passed, 7 flaky | 25.7m, 113 passed, 1 failed, 1 flaky | cancelled 45m | cancelled 45m                      |
+| PR #46 run                    | Workers | Shard 1                                      | Shard 2                              | Shard 3                   | Shard 4                                       |
+| ----------------------------- | ------- | -------------------------------------------- | ------------------------------------ | ------------------------- | --------------------------------------------- |
+| 1 (`efe511e`-based)           | 4       | cancelled 45m                                | cancelled 45m                        | cancelled 45m             | 41m, 51 failed, 5 flaky, 48 passed            |
+| 2 (`3127b9d`)                 | 2       | 29.8m, 108 passed, 7 flaky                   | 25.7m, 113 passed, 1 failed, 1 flaky | cancelled 45m             | cancelled 45m                                 |
+| 3 (`35cd047`, public, 4 vCPU) | 2       | 13m40 job (11.7m tests), 114 passed, 1 flaky | 20m12 (17.9m), 115 passed            | 13m35 (11.8m), 114 passed | 13m25 (11.6m), 110 passed, 3 skipped, 1 flaky |
+
+Run 3 (repository public: `ubuntu-24.04` has 4 vCPUs and 16 GB) passed every
+check. Two tests passed on retry: `correlated-metric-source` "should show alert
+when no correlated metric source is configured" (shard 1), and `team` "should
+cancel team name editing" (shard 4), the shared-team race seen in R4.
 
 E2E setup (install, build, Chromium, Couchbase) takes 2m10 to 2m35 per shard. In
 run 1, 154 of the failures were `TableComponent.waitForRowsToPopulate`'s 5s wait
