@@ -1338,12 +1338,12 @@ the test index.
 - Service map: Couchbase path in `packages/app/src/couchbase/serviceMap.ts` —
   CTEs via `renderChartConfig`, child→parent equi-join (KEYS-equivalent on
   `TraceId:ParentSpanId`), `UNION ALL` instead of `GROUPING SETS`, `CRC32`
-  sampling instead of `cityHash64`. Node-level latency percentiles are
-  computed from the edges' sorted duration arrays (R3, B6); both levels use
-  linear interpolation like upstream's `quantiles(0.5, 0.95, 0.99)`. They were
-  NULL until R3. The parity check is `serviceMap.live.test.ts`, not a golden:
-  the query sits outside `renderChartConfig`, and `port/query-parity` was
-  replaced by `port/golden` in Phase 10 (see the R3 section of
+  sampling instead of `cityHash64`. Node-level latency percentiles are computed
+  from the edges' sorted duration arrays (R3, B6); both levels use linear
+  interpolation like upstream's `quantiles(0.5, 0.95, 0.99)`. They were NULL
+  until R3. The parity check is `serviceMap.live.test.ts`, not a golden: the
+  query sits outside `renderChartConfig`, and `port/query-parity` was replaced
+  by `port/golden` in Phase 10 (see the R3 section of
   `docs/v1-release-plan.md`).
 - `spanPredicates.errorStatusPredicateSql` uses `LOWER(...)` for ClickHouse and
   SQL++.
@@ -2813,74 +2813,71 @@ now passes; the R2c "before" matches D2's 99). R2b (5 suites) 41 → 40 of 335
 
 SQL++ functions used here, checked against the 8.0 reference: `HASHBYTES`
 (`{"algorithm":"crc32"}`), `POSITION`, `SUBSTR`, `POWER`, `ARRAY_RANGE`,
-`ARRAY_SUM`, `ARRAY_AGG`, `GREATEST`, `TONUMBER`, `TOSTRING`,
-`IFMISSINGORNULL`, `REGEXP_CONTAINS`, `REGEXP_REPLACE`, `FIRST … FOR … END`,
-`SELECT RAW`.
+`ARRAY_SUM`, `ARRAY_AGG`, `GREATEST`, `TONUMBER`, `TOSTRING`, `IFMISSINGORNULL`,
+`REGEXP_CONTAINS`, `REGEXP_REPLACE`, `FIRST … FOR … END`, `SELECT RAW`.
 
-- **`/service-map`.** The sampling filter called `CRC32`, which SQL++ does
-  not have (3000). `fn/scalar.ts` `crc32(x)` hashes with
+- **`/service-map`.** The sampling filter called `CRC32`, which SQL++ does not
+  have (3000). `fn/scalar.ts` `crc32(x)` hashes with
   `HASHBYTES(TOSTRING(x), {"algorithm":"crc32"})` and decodes the 8 hex digits
-  to an unsigned integer (`TONUMBER` does not parse hex), equal to zlib's
-  crc32. `CRC32` joins the ClickHouse-only guard list. The server and client
-  span CTEs were rendered separately and both numbered params from `$p0`, so
-  one CTE's time bounds overwrote the other's; `disjointSqlParams`
-  (`sqlpp.ts`) renames them apart.
-- **`/kubernetes`.** Aliases such as `avg(k8s.pod.cpu.utilization)` went
-  through `quotePath`, which splits on dots (``max(k8s`.`pod…``, 3000). A new
-  `{ Alias }` value in `sqlpp` quotes one name whole; `with.ts` and
-  `orderBy.ts` use it. The semantic-convention migration sends
-  `MetricName IN ('a', 'b')`; `metricNameSql` now goes through
-  `rewriteSqlInValueLists`. The gauge and sum `Bucketed` CTEs did not carry
-  the OTel columns, so a group-by on `ResourceAttributes['k8s.pod.name']`
-  read MISSING; they now project them with `MIN` (upstream `any()`). A sum
-  series with no `aggFn` projected a bare `Sum`, not a group key (4210); it
-  now uses `last_value`, as upstream does. Multi-series metric branches had
-  the same `$p0` collision as the service map and use `disjointSqlParams`.
+  to an unsigned integer (`TONUMBER` does not parse hex), equal to zlib's crc32.
+  `CRC32` joins the ClickHouse-only guard list. The server and client span CTEs
+  were rendered separately and both numbered params from `$p0`, so one CTE's
+  time bounds overwrote the other's; `disjointSqlParams` (`sqlpp.ts`) renames
+  them apart.
+- **`/kubernetes`.** Aliases such as `avg(k8s.pod.cpu.utilization)` went through
+  `quotePath`, which splits on dots (``max(k8s`.`pod…``, 3000). A new
+  `{ Alias }` value in `sqlpp` quotes one name whole; `with.ts` and `orderBy.ts`
+  use it. The semantic-convention migration sends `MetricName IN ('a', 'b')`;
+  `metricNameSql` now goes through `rewriteSqlInValueLists`. The gauge and sum
+  `Bucketed` CTEs did not carry the OTel columns, so a group-by on
+  `ResourceAttributes['k8s.pod.name']` read MISSING; they now project them with
+  `MIN` (upstream `any()`). A sum series with no `aggFn` projected a bare `Sum`,
+  not a group key (4210); it now uses `last_value`, as upstream does.
+  Multi-series metric branches had the same `$p0` collision as the service map
+  and use `disjointSqlParams`.
 - **`/llm`.** The preset expressions were ClickHouse text (`mapContains`,
-  `arraySum(arrayMap(…))`, `sumMap`, `toFloat64OrZero`, `multiIf`,
-  `greatest`, `match`, `replaceRegexpAll`, `indexHint`). `llm/lib/sqlDialect.ts`
-  builds them per dialect; the ClickHouse output is byte-identical, and the
-  per-service gated sums use `ARRAY_AGG` bound with `FIRST … FOR a IN [agg]
-  END` (a correlated subquery over an aggregate is 4210). The cost table
-  references a select alias defined later in the list and a double-quoted
-  alias (`"Calls"`); `render/selectAliases.ts` `resolveSelectAliases` inlines
-  each referenced item's expression (cycles left as written), and a group-by
-  naming a select alias groups by that item's expression.
+  `arraySum(arrayMap(…))`, `sumMap`, `toFloat64OrZero`, `multiIf`, `greatest`,
+  `match`, `replaceRegexpAll`, `indexHint`). `llm/lib/sqlDialect.ts` builds them
+  per dialect; the ClickHouse output is byte-identical, and the per-service
+  gated sums use `ARRAY_AGG` bound with `FIRST … FOR a IN [agg] END` (a
+  correlated subquery over an aggregate is 4210). The cost table references a
+  select alias defined later in the list and a double-quoted alias (`"Calls"`);
+  `render/selectAliases.ts` `resolveSelectAliases` inlines each referenced
+  item's expression (cycles left as written), and a group-by naming a select
+  alias groups by that item's expression.
 - **`/services`.** `error_requests / total_requests` reused select aliases in
-  the same SELECT (4210), fixed by the same alias resolution. The request
-  rate divided by `age('mi', toDateTime(…), toDateTime(…))` (3000);
-  `elapsedMinutesExpr` emits the whole-minute count as a literal for SQL++,
-  and `perMinuteExpr` (`ServicesDashboardPage/helpers.ts`) shares it between
-  the HTTP and database tabs. `NOT empty(endpoint)` is
+  the same SELECT (4210), fixed by the same alias resolution. The request rate
+  divided by `age('mi', toDateTime(…), toDateTime(…))` (3000);
+  `elapsedMinutesExpr` emits the whole-minute count as a literal for SQL++, and
+  `perMinuteExpr` (`ServicesDashboardPage/helpers.ts`) shares it between the
+  HTTP and database tabs. `NOT empty(endpoint)` is
   `IFMISSINGORNULL(endpoint, '') != ''` on Couchbase; the hook waits for the
-  connection list so a Couchbase source never gets the ClickHouse set. An
-  empty result no longer throws "No value columns found" in
+  connection list so a Couchbase source never gets the ClickHouse set. An empty
+  result no longer throws "No value columns found" in
   `formatResponseForTimeChart` (with no rows SQL++ returns no column types).
-- **`/sessions`.** Five causes, found one after another: the merge
-  subqueries had no alias (3000); `HAVING interactionCount > 0` named select
-  aliases (4210), now the aggregates; the five rendered fragments collided on
-  `$p0`, now `disjointSqlParamsTuple`; `SELECT * FROM sessions` returns
+- **`/sessions`.** Five causes, found one after another: the merge subqueries
+  had no alias (3000); `HAVING interactionCount > 0` named select aliases
+  (4210), now the aggregates; the five rendered fragments collided on `$p0`, now
+  `disjointSqlParamsTuple`; `SELECT * FROM sessions` returns
   `{"sessions": {…}}`, so `row.maxTimestamp` was undefined and the card threw
   "Invalid time value", now `SELECT sessions.*`; and
   `sessionId IN (SELECT sessionId FROM …)` compares a string to objects (always
   false), now `SELECT RAW`, also applied to user SQL filters by
   `rewriteInSubqueriesToRaw` in `rewriteSqlFragment`.
-- **`/alerts/[alertId]`.** The smoke fixture now opens the seeded error
-  alert's real id, and a second entry opens `/alerts/smoke-alert` and expects
-  "Alert not found". `useAlert` skips the request unless the id is a valid
-  metadata id (`isMetadataId`, `common-utils/core/ids.ts`, shared with the
-  API's `isValidId`), so a malformed id shows the page's existing not-found
-  state instead of the 400. An unknown valid id gets the API's 404 and the
-  same state.
-- **Tests.** Unit: `render/__tests__/pageQueries.test.ts` (16),
-  `crc32.test.ts`, `sqlpp.test.ts`, `sqlInLists.test.ts`,
-  `sqlExpr.meta.test.ts`, `ids.test.ts`, app `serviceMap.test.ts`,
-  `sessionsList.test.ts`, `dialectExpr.test.ts`,
+- **`/alerts/[alertId]`.** The smoke fixture now opens the seeded error alert's
+  real id, and a second entry opens `/alerts/smoke-alert` and expects "Alert not
+  found". `useAlert` skips the request unless the id is a valid metadata id
+  (`isMetadataId`, `common-utils/core/ids.ts`, shared with the API's
+  `isValidId`), so a malformed id shows the page's existing not-found state
+  instead of the 400. An unknown valid id gets the API's 404 and the same state.
+- **Tests.** Unit: `render/__tests__/pageQueries.test.ts` (16), `crc32.test.ts`,
+  `sqlpp.test.ts`, `sqlInLists.test.ts`, `sqlExpr.meta.test.ts`, `ids.test.ts`,
+  app `serviceMap.test.ts`, `sessionsList.test.ts`, `dialectExpr.test.ts`,
   `serviceDashboard.expressions.test.ts`, `llm/expressions.couchbase.test.ts`
   (11), `chartConfig.test.ts`, `ChartUtils.test.ts`,
   `AlertDetailPage.notFound.test.tsx` (malformed, unknown valid, loading),
-  `api.useAlert.test.tsx`, acceptance `routes.test.mjs`. Live (run by
-  `run.sh`): common-utils `pageQueries.couchbase.int.test.ts` (7) and app
+  `api.useAlert.test.tsx`, acceptance `routes.test.mjs`. Live (run by `run.sh`):
+  common-utils `pageQueries.couchbase.int.test.ts` (7) and app
   `pageQueries.live.test.ts` (7); `run.sh` now runs app `*.live.test.ts`.
 - **Route smoke** (`scripts/e2e-env.sh`): 18 of 24 before, 25 of 25 after (24
   routes plus the not-found entry), no console errors.
@@ -2894,9 +2891,9 @@ SQL++ functions used here, checked against the 8.0 reference: `HASHBYTES`
   writes only the `otel_sessions` log documents). Both are R2 fixture work.
 - **D6 metric tile alerts.** Of the three cases D6 traced to dotted aliases,
   "TILE alert (metrics) - slack webhook" and "with groupBy - should track
-  per-group alerts" now pass. "Grouped ratio - honors ratioMode
-  share_of_total" now renders and gets 0.5 where 0.125 is expected: the
-  share-of-total denominator is per group, not across groups. A new defect.
+  per-group alerts" now pass. "Grouped ratio - honors ratioMode share_of_total"
+  now renders and gets 0.5 where 0.125 is expected: the share-of-total
+  denominator is per group, not across groups. A new defect.
 - **Deferred-suite measurement** (fresh `docker-compose.ci.yml` stack per run,
   `main` 842cc41 vs this branch, measurement only, still deferred): 157 → 154
   failing of 1002. `checkAlerts` 26 → 23 (the two metric tile cases and
@@ -2909,71 +2906,71 @@ SQL++ functions used here, checked against the 8.0 reference: `HASHBYTES`
 ### D11: alias WITH clauses as SQL++ LET (2026-11-22, `mm--v1-d11-alert-aliases`)
 
 - **Root cause.** checkAlerts renders a saved search's select to find its
-  aliases (`toString(Body) AS body`) and passes them to the alert's count
-  query as `with` entries with `isSubquery: false`. `render/with.ts` turned
-  each into ClickHouse's scalar `WITH (toString(Body)) AS body`; SQL++ has
-  only subquery CTEs and fails "syntax error - line 1, column 6, near
-  'WITH '". Separately, the Lucene serializer resolved `body` against the
-  collection's columns only, so `body:wrong` rendered `FALSE`.
+  aliases (`toString(Body) AS body`) and passes them to the alert's count query
+  as `with` entries with `isSubquery: false`. `render/with.ts` turned each into
+  ClickHouse's scalar `WITH (toString(Body)) AS body`; SQL++ has only subquery
+  CTEs and fails "syntax error - line 1, column 6, near 'WITH '". Separately,
+  the Lucene serializer resolved `body` against the collection's columns only,
+  so `body:wrong` rendered `FALSE`.
 - **Fix.** Expression aliases render as a LET after the FROM term
   (`FROM … AS d LET body = (toString(Body)) WHERE …`); subquery clauses stay
-  CTEs. The 8.0 LET reference: a LET referenced in WHERE is evaluated first,
-  and a later binding may use an earlier one. ClickHouse resolves alias
-  references in either order, so each reference is inlined with D10's
-  `resolveSelectAliases` and the order does not matter. Each clause's params
-  are renamed into the statement's namespace by the sqlpp builder (the
-  mechanism behind D10's `disjointSqlParams`). The LET is part of the FROM
-  term, so the series-limit CTE that reuses FROM and WHERE binds it too. The
-  Lucene resolver checks LET aliases before columns, since a ClickHouse alias
-  shadows a column of the same name (`prefer_column_name_to_alias = 0`), and
-  compares them as text, since their type is unknown. No-op aliases
+  CTEs. The 8.0 LET reference: a LET referenced in WHERE is evaluated first, and
+  a later binding may use an earlier one. ClickHouse resolves alias references
+  in either order, so each reference is inlined with D10's
+  `resolveSelectAliases` and the order does not matter. Each clause's params are
+  renamed into the statement's namespace by the sqlpp builder (the mechanism
+  behind D10's `disjointSqlParams`). The LET is part of the FROM term, so the
+  series-limit CTE that reuses FROM and WHERE binds it too. The Lucene resolver
+  checks LET aliases before columns, since a ClickHouse alias shadows a column
+  of the same name (`prefer_column_name_to_alias = 0`), and compares them as
+  text, since their type is unknown. No-op aliases
   (`ServiceName AS ServiceName`) and one named `d` (the FROM alias) are not
-  bound. `toString` needs no rewrite: SQL++ function names are
-  case-insensitive and `TOSTRING` is an 8.0 function.
+  bound. `toString` needs no rewrite: SQL++ function names are case-insensitive
+  and `TOSTRING` is an 8.0 function.
 - **Also affected.** The search page and alert preview (`aliasMapToWithClauses`)
   and the LLM dashboard's cost alias (`__llm_cost_usd`) use the same
   `isSubquery: false` form, and now render LET on Couchbase too.
 - **Tests.** `render/__tests__/aliasWith.test.ts` (6: single and multiple
-  aliases, CTE next to LET, alias params, alias-to-alias reference,
-  series-limit CTE; all failed first). `alertQueries.couchbase.int.test.ts`
-  runs the deferred checkAlerts inputs on a live cluster: alias in select and
-  where (2 rows), no match (no bucket), multiple aliases (2 rows). All 3 failed
-  on the old renderer with the syntax error.
+  aliases, CTE next to LET, alias params, alias-to-alias reference, series-limit
+  CTE; all failed first). `alertQueries.couchbase.int.test.ts` runs the deferred
+  checkAlerts inputs on a live cluster: alias in select and where (2 rows), no
+  match (no bucket), multiple aliases (2 rows). All 3 failed on the old renderer
+  with the syntax error.
 
 ### D16: grouped ratio `share_of_total` (2026-11-22, second commit of `mm--v1-d11-alert-aliases`)
 
 - **Root cause.** `render/metrics/multiSeries.ts` never read `ratioMode`, so
   every ratio divided each group by its own denominator (per_group). For the
   checkAlerts inputs (service-a 5 / 10, service-b 3 / 30) that gives 0.5 and
-  0.1; upstream's `share_of_total` divides by the bucket's denominator total,
-  5 / 40 = 0.125 and 3 / 40 = 0.075. Not a grouping or window-bounds problem:
-  the window was simply missing.
+  0.1; upstream's `share_of_total` divides by the bucket's denominator total, 5
+  / 40 = 0.125 and 3 / 40 = 0.075. Not a grouping or window-bounds problem: the
+  window was simply missing.
 - **Fix.** As upstream, the denominator is
-  `SUM(<denominator>) OVER (PARTITION BY __hdx_time_bucket)`, or `OVER ()`
-  with no time bucket. In 8.0 Enterprise an aggregate used with OVER is a
-  window function, evaluated after GROUP BY and HAVING, so it sums the grouped
-  rows. SUM skips a group with no denominator, and that group's numerator still
+  `SUM(<denominator>) OVER (PARTITION BY __hdx_time_bucket)`, or `OVER ()` with
+  no time bucket. In 8.0 Enterprise an aggregate used with OVER is a window
+  function, evaluated after GROUP BY and HAVING, so it sums the grouped rows.
+  SUM skips a group with no denominator, and that group's numerator still
   divides by the total, as in upstream's `svc-d` case. per_group is unchanged.
-- **Tests.** `render/__tests__/ratioMode.test.ts` (3; the two
-  `share_of_total` cases failed first) and two live cases with the checkAlerts
-  inputs: `share_of_total` gives 0.125 and 0.075 (failed on the old renderer),
-  and per_group gives 0.5 and 0.1 (the control).
+- **Tests.** `render/__tests__/ratioMode.test.ts` (3; the two `share_of_total`
+  cases failed first) and two live cases with the checkAlerts inputs:
+  `share_of_total` gives 0.125 and 0.075 (failed on the old renderer), and
+  per_group gives 0.5 and 0.1 (the control).
 - **Found here, not fixed.** The SQL++ multi-series path drops the chart's
-  `having` and user `orderBy` (each branch renders with `having: undefined,
-  orderBy: undefined` and the outer statement adds neither). Upstream applies
-  both to the joined result, and filters `share_of_total` HAVING through a
-  wrapper because a window cannot appear in HAVING. No deferred case covers
-  it yet; it is D17 in the release plan.
+  `having` and user `orderBy` (each branch renders with
+  `having: undefined, orderBy: undefined` and the outer statement adds neither).
+  Upstream applies both to the joined result, and filters `share_of_total`
+  HAVING through a wrapper because a window cannot appear in HAVING. No deferred
+  case covers it yet; it is D17 in the release plan.
 - **Deferred-suite measurement** (fresh `docker-compose.ci.yml` stack per run,
   `main` abdc57c vs this branch, measurement only, still deferred). R2b
   `checkAlerts` 23 → 21 failing of 185: the two "alias in select and where"
   cases and "grouped ratio - honors ratioMode share_of_total" now pass. "INLINE
   alert (group by) - notifies per group" passed in the `main` run and failed in
-  this one with the D12 symptom (`api` and `worker` swapped, same
-  `createdAt`), so it is not counted either way. `multiChannelAlerts` 0,
-  `renderAlertTemplate` 0, `singleInvocationAlert` 1, `providers/default` 2,
-  unchanged. Every other deferred suite is unchanged (152 of 1002 failing in
-  total). No test went from pass to fail except the D12 flake.
+  this one with the D12 symptom (`api` and `worker` swapped, same `createdAt`),
+  so it is not counted either way. `multiChannelAlerts` 0, `renderAlertTemplate`
+  0, `singleInvocationAlert` 1, `providers/default` 2, unchanged. Every other
+  deferred suite is unchanged (152 of 1002 failing in total). No test went from
+  pass to fail except the D12 flake.
 
 ### PR #27 CI: lint timeout and integration shard 1 stall (2026-11-22, `mm--v1-d11-alert-aliases`)
 
@@ -2984,14 +2981,14 @@ took 4m47s to 8m06s. Push runs on `main` took 7m25s to 7m48s, so the 8-minute
 limit was already marginal. This run's affected step took 6m43s, against 4m11s
 on PR #26. The same 6 projects and 1 build ran, and every task was slower by
 about the same factor, which points to runner speed, not a new step.
-`check-openapi-sync.sh` was simply the step running when time ran out. The
-real waste was the nx cache. Every run logged "Unrecognized Cache
-Artifacts": Nx 21+ (we pin 23.1.1) restores only artifacts recorded in its
-per-machine database, `.nx/workspace-data/<machine-id>-v3.db`. CI cached
-only `.nx/cache`, so every PR rejected the restored entry and ran cold, while
-each push uploaded about 1 GB. Caching `workspace-data` as well would not
-help, because the database is keyed to the machine and every runner is fresh.
-This is a CI config issue, so the workflow is the right place to fix it:
+`check-openapi-sync.sh` was simply the step running when time ran out. The real
+waste was the nx cache. Every run logged "Unrecognized Cache Artifacts": Nx 21+
+(we pin 23.1.1) restores only artifacts recorded in its per-machine database,
+`.nx/workspace-data/<machine-id>-v3.db`. CI cached only `.nx/cache`, so every PR
+rejected the restored entry and ran cold, while each push uploaded about 1 GB.
+Caching `workspace-data` as well would not help, because the database is keyed
+to the machine and every runner is fresh. This is a CI config issue, so the
+workflow is the right place to fix it:
 
 - Removed the nx cache restore/save steps. Within one job, nx still reuses
   `ci:build` for the `ci:lint` tasks that depend on it.
@@ -3000,64 +2997,63 @@ This is a CI config issue, so the workflow is the right place to fix it:
 **Integration shard 1 (cancelled at 55m).** Output stopped right after
 `provisionDashboards` printed PASS (18:40:30). The next file in shard 1 is
 `mcp/dashboards/searchDashboards`, which never reported. `main` push run
-44880450404 (a66fcf0, 2026-11-21) had the same stall at the same spot: 33
-silent minutes after provisionDashboards, then cancelled. So the stall predates
-D11 and is intermittent: 2 of the last 30 shard 1 runs.
+44880450404 (a66fcf0, 2026-11-21) had the same stall at the same spot: 33 silent
+minutes after provisionDashboards, then cancelled. So the stall predates D11 and
+is intermittent: 2 of the last 30 shard 1 runs.
 
 Local reproduction ran on the `docker-compose.ci.yml` stack with the CI env,
 `--shard=1/4`, and a fresh jest cache, which gives the same file order as CI.
 None of it stalled:
 
-| Run | Result |
-|---|---|
-| Full shard 1 | 2× in 167 s, 225/225 passed |
-| `provisionDashboards` then `searchDashboards` | 15× in 15–19 s each |
-| Same pair, full GC forced at each file start | 3×, no stall |
+| Run                                           | Result                      |
+| --------------------------------------------- | --------------------------- |
+| Full shard 1                                  | 2× in 167 s, 225/225 passed |
+| `provisionDashboards` then `searchDashboards` | 15× in 15–19 s each         |
+| Same pair, full GC forced at each file start  | 3×, no stall                |
 
-Ruled out: heap growth (peak 506 MB, `--logHeapUsage`), schedulers, and
-invite wait loops (neither suite starts them).
+Ruled out: heap growth (peak 506 MB, `--logHeapUsage`), schedulers, and invite
+wait loops (neither suite starts them).
 
-How a stall stays silent: jest buffers a file's console output, including
-retry logs, until the file finishes. searchDashboards has 11 tests with one
-retry each. If every hook ran into its 30s timeout, the file would take about
-33 minutes, which matches both stalls. A blocked event loop would look the
-same.
+How a stall stays silent: jest buffers a file's console output, including retry
+logs, until the file finishes. searchDashboards has 11 tests with one retry
+each. If every hook ran into its 30s timeout, the file would take about 33
+minutes, which matches both stalls. A blocked event loop would look the same.
 
 Two weaknesses turned the stall into a silent 55-minute cancel:
 
 1. `MockServer.start()` caught and logged its own errors. A failed or stuck
-   metadata connect left the suite running, and every later hook waited out
-   its own timeout. It now rethrows, so `beforeAll` fails at once.
-2. Nothing watched for a stall. `packages/api/jest.int.setup.ts`, loaded
-   only by the int config, now does:
-   - A worker thread tracks a main-thread heartbeat. If the event loop stops
-     for 120 s (`CBT_INT_BLOCKED_MS`), or one file runs longer than 25 min
+   metadata connect left the suite running, and every later hook waited out its
+   own timeout. It now rethrows, so `beforeAll` fails at once.
+2. Nothing watched for a stall. `packages/api/jest.int.setup.ts`, loaded only by
+   the int config, now does:
+   - A worker thread tracks a main-thread heartbeat. If the event loop stops for
+     120 s (`CBT_INT_BLOCKED_MS`), or one file runs longer than 25 min
      (`CBT_INT_FILE_BUDGET_MS`), it writes the file, the test, and the active
-     resources to fd 2 and kills the process. A stall then fails the job
-     within minutes and names itself.
+     resources to fd 2 and kills the process. A stall then fails the job within
+     minutes and names itself.
    - Proved with a 60 s busy loop (fired at 15 s with a test budget) and a
-     never-resolving test (fired at the file budget). No false positives on
-     a full shard 1 run.
+     never-resolving test (fired at the file budget). No false positives on a
+     full shard 1 run.
    - The 25 min budget sits above the slowest legitimate CI file:
      `external-api/dashboards`, 780 s on PR #26.
 
 The underlying trigger is still unconfirmed. The strongest lead is Couchbase
-Node SDK 4.8.0's JSCBC-1520: "terminating a worker thread or closing a
-cluster no longer aborts the process, hangs, or blocks the event loop while
-transactions close". Its changes also move transaction teardown off
-the JS thread (JSCBC-1522). We pin 4.7.2, and 4.7.2's notes do not include
-either fix. provisionDashboards opens and closes seven metadata clusters,
-because each `ProvisionDashboardsTask.execute()` calls
-`startMetadataStore()`, and earlier shard 1 suites run transactions
-(`deleteCascading`, `removeMember`). With forced GC, the first GC in the next
-file blocked the JS thread for 0.6–3.6 s; the first file's GC took 70–90 ms.
+Node SDK 4.8.0's JSCBC-1520: "terminating a worker thread or closing a cluster
+no longer aborts the process, hangs, or blocks the event loop while transactions
+close". Its changes also move transaction teardown off the JS thread
+(JSCBC-1522). We pin 4.7.2, and 4.7.2's notes do not include either fix.
+provisionDashboards opens and closes seven metadata clusters, because each
+`ProvisionDashboardsTask.execute()` calls `startMetadataStore()`, and earlier
+shard 1 suites run transactions (`deleteCascading`, `removeMember`). With forced
+GC, the first GC in the next file blocked the JS thread for 0.6–3.6 s; the first
+file's GC took 70–90 ms.
 
 Upgrading is a user decision. The Server compatibility matrix
-(nodejs-sdk/current/project-docs/compatibility.html) lists SDK 4.7 for
-Server 8.0 but not 4.8 yet, and the AGENTS.md platform rule requires a
-listed release. 4.8.0 also changes behavior: TLS hostname verification,
-HTTP 400 mapped to `InvalidArgumentError`, query error 2120 mapped to
-`AuthenticationFailureError`, and a Node 20.17 minimum.
+(nodejs-sdk/current/project-docs/compatibility.html) lists SDK 4.7 for Server
+8.0 but not 4.8 yet, and the AGENTS.md platform rule requires a listed release.
+4.8.0 also changes behavior: TLS hostname verification, HTTP 400 mapped to
+`InvalidArgumentError`, query error 2120 mapped to `AuthenticationFailureError`,
+and a Node 20.17 minimum.
 
 ### D12: alert history write order (2026-11-22, `mm--v1-d12-history-order`)
 
@@ -3138,23 +3134,22 @@ cutoff is unknown.
 
 `teamInvites.getOrCreate` writes the `invite_member` claim, then the token
 claim, then the invite. A concurrent request that lost the claim called the
-claim's stale-owner check (`ownerExists`) during that gap and saw no invite.
-Two outcomes, both wrong:
+claim's stale-owner check (`ownerExists`) during that gap and saw no invite. Two
+outcomes, both wrong:
 
-- It read the invite back, found nothing, and rethrew `DuplicateKeyError`:
-  the 500 in D6.
+- It read the invite back, found nothing, and rethrew `DuplicateKeyError`: the
+  500 in D6.
 - `claimUnique` took over the "abandoned" claim (`replace` on CAS), so both
   requests created an invite, and the first winner's invite was orphaned.
 
-Fix, in `teamInvites.ts` only (`unique.ts` is unchanged): the stale-owner
-check polls the owner's invite by KV get (read-your-writes, no SQL++), with
-10, 20, 40 … 200 ms backoff, up to `INVITE_CLAIM_WAIT_MS` (2 s). If the
-invite appears, the claim is live and the loser returns it. If not, the
-claim is abandoned and taken over, as before. A winner stalled past the
-bound re-reads the claim after its insert. If another request now holds
-it, the winner deletes its own invite and token claim and returns the new
-holder's invite once that appears. Worst-case extra latency for a loser is
-the 2 s bound, and only when the winner crashed.
+Fix, in `teamInvites.ts` only (`unique.ts` is unchanged): the stale-owner check
+polls the owner's invite by KV get (read-your-writes, no SQL++), with 10, 20, 40
+… 200 ms backoff, up to `INVITE_CLAIM_WAIT_MS` (2 s). If the invite appears, the
+claim is live and the loser returns it. If not, the claim is abandoned and taken
+over, as before. A winner stalled past the bound re-reads the claim after its
+insert. If another request now holds it, the winner deletes its own invite and
+token claim and returns the new holder's invite once that appears. Worst-case
+extra latency for a loser is the 2 s bound, and only when the winner crashed.
 
 Tests: three unit cases in `identityRepos.test.ts`:
 
@@ -3162,17 +3157,16 @@ Tests: three unit cases in `identityRepos.test.ts`:
 - An abandoned claim is taken over within the bound.
 - A first insert stalled 2.3 s yields to the request that took over.
 
-With the constant in place and the old logic, the first and third fail.
-The third leaves two invites. The second passes on both, since it pins the
-takeover. 30 of 30 repeats pass with the fix. The external-API int case
-now runs 20 in parallel, as `identity.int.test.ts` already did. A
-live-cluster case in `metadata.couchbase.int.test.ts` runs 30 rounds of 20
-concurrent creates.
+With the constant in place and the old logic, the first and third fail. The
+third leaves two invites. The second passes on both, since it pins the takeover.
+30 of 30 repeats pass with the fix. The external-API int case now runs 20 in
+parallel, as `identity.int.test.ts` already did. A live-cluster case in
+`metadata.couchbase.int.test.ts` runs 30 rounds of 20 concurrent creates.
 
-Unloaded, the race did not reproduce end to end. The HTTP int cases on the
-CI compose stack passed 30 of 30 on the old code and 30 of 30 on the new,
-and the live case passed on the old code too. The delayed-insert unit
-tests are the deterministic proof.
+Unloaded, the race did not reproduce end to end. The HTTP int cases on the CI
+compose stack passed 30 of 30 on the old code and 30 of 30 on the new, and the
+live case passed on the old code too. The delayed-insert unit tests are the
+deterministic proof.
 
 ### D18: intermittent common-utils live tests (2026-11-22, `mm--v1-d13-invite-race`)
 
@@ -3180,37 +3174,35 @@ tests are the deterministic proof.
 failed, with two symptoms.
 
 - **Missing rows (2 of 35, `mapAccess`).** `seed()` polled
-  `SELECT RAW COUNT(*) FROM ks` until it reached the doc count. EXPLAIN
-  shows a `CountScan`, which reads the collection's document count and is
-  exact as soon as the KV writes land. It never waited for the primary
-  index. The chart query scans `#primary` at `not_bounded`, so it could
-  miss the last UPSERT (`"": 1`). Now `seed()` runs one `request_plus`
+  `SELECT RAW COUNT(*) FROM ks` until it reached the doc count. EXPLAIN shows a
+  `CountScan`, which reads the collection's document count and is exact as soon
+  as the KV writes land. It never waited for the primary index. The chart query
+  scans `#primary` at `not_bounded`, so it could miss the last UPSERT (`"": 1`).
+  Now `seed()` runs one `request_plus`
   `COUNT(*) … WHERE META(d).id IS NOT MISSING`, which EXPLAIN shows as
-  `IndexScan3` on `#primary`. That waits for the index to catch up. After
-  the fix, 30 of 30 full-set loops and 3 of 3 `run.sh` runs pass.
-- **SDK "unambiguous timeout" (1 of 35, and both D12 `run.sh` failures).**
-  Root cause not found.
-  - In D12 it hit the first chart query of a suite after about 500 ms. In
-    the loop it hit `probeLive`'s `testConnection`, so the whole suite
-    failed.
-  - The query timeout resolves to 60 s, and connect to 10 s (15 s in the
-    probe), so neither is the cutoff.
-  - 300 fresh connect-and-query loops and 120 close-then-reconnect loops in
-    a plain Node process failed 0 times.
+  `IndexScan3` on `#primary`. That waits for the index to catch up. After the
+  fix, 30 of 30 full-set loops and 3 of 3 `run.sh` runs pass.
+- **SDK "unambiguous timeout" (1 of 35, and both D12 `run.sh` failures).** Root
+  cause not found.
+  - In D12 it hit the first chart query of a suite after about 500 ms. In the
+    loop it hit `probeLive`'s `testConnection`, so the whole suite failed.
+  - The query timeout resolves to 60 s, and connect to 10 s (15 s in the probe),
+    so neither is the cutoff.
+  - 300 fresh connect-and-query loops and 120 close-then-reconnect loops in a
+    plain Node process failed 0 times.
   - `CBPPLOGLEVEL=debug` produced no core log under jest.
   - Not seen in the 30 loops after the seed fix, but at about 1 in 35 that
     proves nothing.
-  - Next steps: log `e.context` and `e.cause` when a live test or probe
-    fails with TIMEOUT, then loop `run.sh` itself, which starts a fresh
-    cluster each time, until one is caught.
-- My first attempt at cold-cluster cycles was invalid: `compose up` ran
-  without `run.sh`'s port env and the node never started. No result is
-  drawn from it.
+  - Next steps: log `e.context` and `e.cause` when a live test or probe fails
+    with TIMEOUT, then loop `run.sh` itself, which starts a fresh cluster each
+    time, until one is caught.
+- My first attempt at cold-cluster cycles was invalid: `compose up` ran without
+  `run.sh`'s port env and the node never started. No result is drawn from it.
 
-`make ci-int` on this branch exited 1 once after nx reported "Successfully
-ran target ci:int" with every test passing. The re-run exited 0. The exit
-came from the recipe's `bash -c … | tee` after the tests; the cause was not
-identified. Found and fixed later as D19 (next section).
+`make ci-int` on this branch exited 1 once after nx reported "Successfully ran
+target ci:int" with every test passing. The re-run exited 0. The exit came from
+the recipe's `bash -c … | tee` after the tests; the cause was not identified.
+Found and fixed later as D19 (next section).
 
 ### D18 remainder and D19 (2026-11-22, `mm--v1-d18-sdk-timeout`)
 
@@ -3220,67 +3212,65 @@ identified. Found and fixed later as D19 (next section).
   diagnosis on a TIMEOUT through the Couchbase logger (`describeSdkError`:
   class, core cause, request context, scrubbed). The live helper installs a
   console logger for warn and error, so it shows in jest output.
-- Caught in `run.sh` loop 7 of 7 (fresh cluster each run, port offset 0,
-  cluster up). Three `mapAccess` chart queries failed, each about 500 ms in,
-  with `UnambiguousTimeoutError`, cause `unambiguous_timeout (14)`, no
-  request context, and `connecting: true`. So the failure came from
-  `clusterCache.lease`, that is from opening the cluster, not from the
-  query.
-- Each failure took about 500 ms, but the connect timeout is 10 s. In the
-  C++ core (4.7.2, `deps/couchbase-cxx-client`), a connection string with
-  one hostname (`couchbase://localhost`) gets `enable_dns_srv` (an explicit
-  port does not turn it off). `cluster::open` then looks up
-  `_couchbase._tcp.<host>` before bootstrap, with
-  `timeout_defaults::dns_srv_timeout` = 500 ms: 250 ms for UDP, then TCP
-  for the rest (`dns_client.cxx`). NXDOMAIN falls back to the host. A
-  lookup that misses the deadline returns `errc::common::unambiguous_timeout`,
-  and `open` closes the cluster with that error instead of falling back. The
-  nameserver is the first one in `/etc/resolv.conf` (here the LAN router).
+- Caught in `run.sh` loop 7 of 7 (fresh cluster each run, port offset 0, cluster
+  up). Three `mapAccess` chart queries failed, each about 500 ms in, with
+  `UnambiguousTimeoutError`, cause `unambiguous_timeout (14)`, no request
+  context, and `connecting: true`. So the failure came from
+  `clusterCache.lease`, that is from opening the cluster, not from the query.
+- Each failure took about 500 ms, but the connect timeout is 10 s. In the C++
+  core (4.7.2, `deps/couchbase-cxx-client`), a connection string with one
+  hostname (`couchbase://localhost`) gets `enable_dns_srv` (an explicit port
+  does not turn it off). `cluster::open` then looks up `_couchbase._tcp.<host>`
+  before bootstrap, with `timeout_defaults::dns_srv_timeout` = 500 ms: 250 ms
+  for UDP, then TCP for the rest (`dns_client.cxx`). NXDOMAIN falls back to the
+  host. A lookup that misses the deadline returns
+  `errc::common::unambiguous_timeout`, and `open` closes the cluster with that
+  error instead of falling back. The nameserver is the first one in
+  `/etc/resolv.conf` (here the LAN router).
 - Reproduced: a connect to `couchbase://localhost` with an unreachable
   nameserver fails with `UnambiguousTimeoutError` in 510 ms (2004 ms with
   `dnsSrvTimeout: 2000`). `couchbase://127.0.0.1` and `enable_dns_srv=false`
-  skip SRV and fail only at the 10 s bootstrap timeout. 400 burst SRV queries
-  to the router had p99 6 ms and no loss, so the trigger is a rare dropped or
-  slow answer, which fits about 1 in 35 suites. Each suite opens fresh
-  clusters, and so does each `testConnection`, so each one is a fresh
-  chance to lose.
-- The same exposure exists in production for any single-hostname
-  `couchbase://` connstr, including Capella's `couchbases://cb.<id>.cloud…`,
-  which relies on SRV.
+  skip SRV and fail only at the 10 s bootstrap timeout. 400 burst SRV queries to
+  the router had p99 6 ms and no loss, so the trigger is a rare dropped or slow
+  answer, which fits about 1 in 35 suites. Each suite opens fresh clusters, and
+  so does each `testConnection`, so each one is a fresh chance to lose.
+- The same exposure exists in production for any single-hostname `couchbase://`
+  connstr, including Capella's `couchbases://cb.<id>.cloud…`, which relies on
+  SRV.
 - Fix:
-  - `dnsConfig()` (common-utils `couchbase/dnsConfig.ts`, no native import)
-    sets `dnsSrvTimeout` to 2000 ms. It is overridable with
+  - `dnsConfig()` (common-utils `couchbase/dnsConfig.ts`, no native import) sets
+    `dnsSrvTimeout` to 2000 ms. It is overridable with
     `CBT_COUCHBASE_DNS_SRV_TIMEOUT_MS` (DEPLOY.md) and passed to every SDK
     connect: data-source clusters (`connectCluster`), the metadata store
-    (`connectOptions`), and ingest (`connectCluster`, setup `connectAdmin`).
-    One lost UDP answer now leaves time for the TCP retry.
+    (`connectOptions`), and ingest (`connectCluster`, setup `connectAdmin`). One
+    lost UDP answer now leaves time for the TCP retry.
   - The live harness's own raw SDK connects (`provision-metadata.js`, the
     metadata suite's admin connect, the ingest suite's) pass the same
     `dnsConfig()`.
-  - With the 2 s budget alone, 11 of 12 fresh-cluster `run.sh` runs passed;
-    run 8 lost the ingest setup connect to the same error. So the harness
-    connstr (`run.sh`, `init.sh`) now also sets `enable_dns_srv=false`:
-    `localhost` has no SRV record to find, and the tests should not depend on
-    the LAN resolver at all. It stays a hostname because management REST,
-    like the connection test, rejects private IP literals such as
-    `127.0.0.1` ("Invalid host"). A first attempt with `127.0.0.1` failed
-    the api cluster status suites in 12 of 12 runs. `enable_dns_srv=false`
-    is checked to skip SRV even with an unreachable nameserver.
-  - Verification: 12 of 12 fresh-cluster `run.sh` runs pass with both
-    changes (before: 1 SDK timeout in the first 7 runs of the loop that
-    caught it; 1 in 12 with the 2 s budget alone).
+  - With the 2 s budget alone, 11 of 12 fresh-cluster `run.sh` runs passed; run
+    8 lost the ingest setup connect to the same error. So the harness connstr
+    (`run.sh`, `init.sh`) now also sets `enable_dns_srv=false`: `localhost` has
+    no SRV record to find, and the tests should not depend on the LAN resolver
+    at all. It stays a hostname because management REST, like the connection
+    test, rejects private IP literals such as `127.0.0.1` ("Invalid host"). A
+    first attempt with `127.0.0.1` failed the api cluster status suites in 12 of
+    12 runs. `enable_dns_srv=false` is checked to skip SRV even with an
+    unreachable nameserver.
+  - Verification: 12 of 12 fresh-cluster `run.sh` runs pass with both changes
+    (before: 1 SDK timeout in the first 7 runs of the loop that caught it; 1 in
+    12 with the 2 s budget alone).
   - Tests: `dnsConfig.test.ts`, `connectClusterDns.test.ts`,
     `connectRetry.test.ts` (metadata options), and live
-    `timeoutContext.couchbase.int.test.ts`. The live test covers a forced
-    1 ms query timeout logging context, and the SDK failing a `localhost`
-    connect whose SRV lookup outlives its budget.
+    `timeoutContext.couchbase.int.test.ts`. The live test covers a forced 1 ms
+    query timeout logging context, and the SDK failing a `localhost` connect
+    whose SRV lookup outlives its budget.
 
-**D19 root cause: two `make ci-int` runs on one CI slot.** See the D19
-entry in `docs/v1-release-plan.md`. The failing run's `tee` could not open
-`logs-int/ci-int.log` because an earlier copy of the same command (same
-slot, same compose project, same `/tmp` log) was finishing its teardown, and
-`archive-int-logs` removed `logs-int`. Nx and the tests exited 0. Fixed with
-a per-slot lock (`scripts/slot-lock.sh`) around `ci-int`, `dev-int`, and
+**D19 root cause: two `make ci-int` runs on one CI slot.** See the D19 entry in
+`docs/v1-release-plan.md`. The failing run's `tee` could not open
+`logs-int/ci-int.log` because an earlier copy of the same command (same slot,
+same compose project, same `/tmp` log) was finishing its teardown, and
+`archive-int-logs` removed `logs-int`. Nx and the tests exited 0. Fixed with a
+per-slot lock (`scripts/slot-lock.sh`) around `ci-int`, `dev-int`, and
 `dev-int-common-utils`.
 
 ### D17: multi-series HAVING, ORDER BY and LIMIT (2026-11-22, `mm--v1-d17-multi-series-having-order`)
@@ -3288,155 +3278,151 @@ a per-slot lock (`scripts/slot-lock.sh`) around `ci-int`, `dev-int`, and
 - **Paths and symbols checked.** `render/metrics/multiSeries.ts`
   (`renderMultiSeriesMetricChartConfigCouchbase`) against upstream
   `renderMultiSeriesMetricChartConfig` in `core/renderChartConfig.ts` at
-  f172a489c818. Both render branches with `having`, `orderBy` and `limit`
-  unset. Upstream then adds HAVING (or a `share_of_total` WHERE wrapper),
-  ORDER BY (bucket first, then the user's sort), and LIMIT with OFFSET to the
-  joined statement. Ours added only the bucket ORDER BY and an inlined
-  `LIMIT n`, so the user's HAVING, ORDER BY and OFFSET were dropped. The
-  inlined value also broke rule 4.
+  f172a489c818. Both render branches with `having`, `orderBy` and `limit` unset.
+  Upstream then adds HAVING (or a `share_of_total` WHERE wrapper), ORDER BY
+  (bucket first, then the user's sort), and LIMIT with OFFSET to the joined
+  statement. Ours added only the bucket ORDER BY and an inlined `LIMIT n`, so
+  the user's HAVING, ORDER BY and OFFSET were dropped. The inlined value also
+  broke rule 4.
 - **SQL++ constraints, measured on 8.0.3.** Over the joined pivot:
-  `HAVING <alias> > 4` fails ("must depend only on group keys or
-  aggregates"); HAVING with no GROUP BY is a syntax error; a window
-  aggregate in HAVING fails ("Window Aggregates not allowed in HAVING").
-  `ORDER BY <alias>` works, including the alias of a window projection. So
-  does `SELECT d.* FROM (<grouped>) AS d WHERE <alias> … ORDER BY <alias>`.
+  `HAVING <alias> > 4` fails ("must depend only on group keys or aggregates");
+  HAVING with no GROUP BY is a syntax error; a window aggregate in HAVING fails
+  ("Window Aggregates not allowed in HAVING"). `ORDER BY <alias>` works,
+  including the alias of a window projection. So does
+  `SELECT d.* FROM (<grouped>) AS d WHERE <alias> … ORDER BY <alias>`.
 - **Fix** (`render/metrics/multiSeriesOuter.ts`):
   - HAVING is `SELECT d.* FROM (<joined>) AS d WHERE (<having>)` for every
     shape. A `"name"`, `` `name` `` or bare name equal to an output column
     (operands, formulas, the ratio, group columns, the bucket) becomes that
     column. That is the ClickHouse reading of a double-quoted name;
-    `splitOnAliasRefs` with `doubleQuoted`. The executor rebuilds rows in
-    hint order, so `d.*` keeps the result shape. A Lucene HAVING compiles to
+    `splitOnAliasRefs` with `doubleQuoted`. The executor rebuilds rows in hint
+    order, so `d.*` keeps the result shape. A Lucene HAVING compiles to
     `d.<field>`, which the alias `d` resolves against the joined columns.
-  - ORDER BY: `` `__hdx_time_bucket` `` first, then each sort item. A
-    structured item's direction goes on its last comma-separated piece, as
-    upstream. An item that names a group-by expression or alias reads the
-    group column the branches project under that name (`groupByOutputRef`).
-    When any branch is histogram-class, it reads `` `group`[i] ``, the
-    0-based packed array. Upstream needs `__hdx_sort_<n>` companion columns
-    (HDX-5202) only because ClickHouse names unaliased expression columns
-    itself. Other items go through `mapOrderExpr` (now exported from
-    `orderBy.ts`): `"name"` becomes an identifier, bare names are quoted,
-    map subscripts are rewritten.
-  - LIMIT and OFFSET come from `renderLimitCouchbase`, as named parameters,
-    on the outermost statement. `concatSqlPP` renumbers the parameters, so
-    they never collide with the branches'.
+  - ORDER BY: `` `__hdx_time_bucket` `` first, then each sort item. A structured
+    item's direction goes on its last comma-separated piece, as upstream. An
+    item that names a group-by expression or alias reads the group column the
+    branches project under that name (`groupByOutputRef`). When any branch is
+    histogram-class, it reads `` `group`[i] ``, the 0-based packed array.
+    Upstream needs `__hdx_sort_<n>` companion columns (HDX-5202) only because
+    ClickHouse names unaliased expression columns itself. Other items go through
+    `mapOrderExpr` (now exported from `orderBy.ts`): `"name"` becomes an
+    identifier, bare names are quoted, map subscripts are rewritten.
+  - LIMIT and OFFSET come from `renderLimitCouchbase`, as named parameters, on
+    the outermost statement. `concatSqlPP` renumbers the parameters, so they
+    never collide with the branches'.
   - A chart with no HAVING, ORDER BY or LIMIT renders exactly as before.
-- **Divergence (Q41).** With `share_of_total`, a HAVING, and an ORDER BY on
-  an expression group-by, upstream keeps the raw expression on its wrapper
-  and the query fails. The SQL++ wrapper keeps the named group column, so
-  the sort works. Upstream's test pins that failure; the port expects the
-  working sort. The user kept this divergence (2026-11-23).
+- **Divergence (Q41).** With `share_of_total`, a HAVING, and an ORDER BY on an
+  expression group-by, upstream keeps the raw expression on its wrapper and the
+  query fails. The SQL++ wrapper keeps the named group column, so the sort
+  works. Upstream's test pins that failure; the port expects the working sort.
+  The user kept this divergence (2026-11-23).
 - **Tests.** `render/__tests__/multiSeriesOuter.test.ts` (10) and
   `multiSeriesSort.test.ts` (11) port upstream's "outer HAVING / ORDER BY /
-  LIMIT" block with the same inputs (`multiSeriesFixtures.ts`). 18 of the
-  first 20 failed before the fix; the 2 that passed are guards (parameter
-  binding, unchanged shape without outer clauses). The Lucene case was added
-  with the fix. Live: `multiSeriesOuter.couchbase.int.test.ts`,
-  with three services and an errors/requests gauge pair, covers operand
-  HAVING plus ORDER BY, LIMIT with OFFSET, `share_of_total` HAVING and
-  sort, formula HAVING, a map-key group-by sort, the bucket-first time
-  chart, and the number shape. 7 of 7 failed on the old renderer and pass
-  with the fix.
+  LIMIT" block with the same inputs (`multiSeriesFixtures.ts`). 18 of the first
+  20 failed before the fix; the 2 that passed are guards (parameter binding,
+  unchanged shape without outer clauses). The Lucene case was added with the
+  fix. Live: `multiSeriesOuter.couchbase.int.test.ts`, with three services and
+  an errors/requests gauge pair, covers operand HAVING plus ORDER BY, LIMIT with
+  OFFSET, `share_of_total` HAVING and sort, formula HAVING, a map-key group-by
+  sort, the bucket-first time chart, and the number shape. 7 of 7 failed on the
+  old renderer and pass with the fix.
 - **Not covered live.** A Lucene HAVING: the live helper passes empty column
-  metadata, and the serializer compiles an unknown field to `FALSE`, as it
-  does for any Lucene filter. The unit case pins the compiled form.
-- **Found here, not fixed: D20.** When any branch is histogram-class, a
-  gauge or sum branch projects `[] AS group` and drops its own group
-  columns, so its rows collapse to one per bucket. Upstream keeps them, with
-  NULL pads in histogram branches. Logged in the release plan.
+  metadata, and the serializer compiles an unknown field to `FALSE`, as it does
+  for any Lucene filter. The unit case pins the compiled form.
+- **Found here, not fixed: D20.** When any branch is histogram-class, a gauge or
+  sum branch projects `[] AS group` and drops its own group columns, so its rows
+  collapse to one per bucket. Upstream keeps them, with NULL pads in histogram
+  branches. Logged in the release plan.
 
 ### D20: mixed gauge and histogram group columns (2026-11-23, `mm--v1-d20-mixed-histogram-groups`)
 
-- **Verified.** Current `render/metrics/multiSeries.ts` gave every scalar
-  branch only `` [] AS `group` `` when any branch was histogram-class, and
-  the joined statement grouped by `group` alone. Live, two gauge services
-  in one bucket came back as one row with no `ServiceName`. Upstream
-  `f172a489c818` (`renderChartConfig.ts`, composed multi-series query) keeps
-  the scalar group columns, pads `group` with `[]` on scalar branches and
-  each scalar group slot with `NULL AS __hdx_group_pad_<j>` on histogram
-  branches, and pivots with `GROUP BY ALL`.
+- **Verified.** Current `render/metrics/multiSeries.ts` gave every scalar branch
+  only `` [] AS `group` `` when any branch was histogram-class, and the joined
+  statement grouped by `group` alone. Live, two gauge services in one bucket
+  came back as one row with no `ServiceName`. Upstream `f172a489c818`
+  (`renderChartConfig.ts`, composed multi-series query) keeps the scalar group
+  columns, pads `group` with `[]` on scalar branches and each scalar group slot
+  with `NULL AS __hdx_group_pad_<j>` on histogram branches, and pivots with
+  `GROUP BY ALL`.
 - **Fix.** Same shape in SQL++. Scalar wrapper:
   `…, ServiceName, [] AS group, 0 AS __hdx_series_idx`; histogram wrapper:
   `…, NULL AS ServiceName, group, 1 AS __hdx_series_idx`; joined
   `GROUP BY __hdx_time_bucket, ServiceName, group`. SQL++ UNION ALL merges
-  objects by field name, not position, so each pad is named after its
-  scalar column rather than `__hdx_group_pad_<j>`; a histogram row then
-  reads `ServiceName: null`, as the ClickHouse union gives it. A group
-  expression with no single result name gets no pad: it evaluates to
-  MISSING on histogram rows, and `group` keeps the classes apart.
-- **Sort.** Upstream's mixed-chart sort reads a companion the histogram
-  branch pads with NULL, and ClickHouse sorts NULL last. SQL++ sorts NULL
-  and MISSING first ascending (checked on 8.0.3), so a group-column sort on
-  a mixed chart adds `NULLS LAST`. Only padded charts get it; other outer
-  sorts are unchanged.
-- **Result hints.** `couchbaseResultColumnNames` no longer lists group-by
-  names when every series is histogram-class, so meta matches upstream
-  ("packs every group-by into one group column"); mixed charts list them.
-- **Tests.** `render/__tests__/multiSeriesMixedGroups.test.ts` (11; 8
-  failed before the fix, the 3 that passed are guards: all-histogram shape
-  and mixed hints). D17's `multiSeriesSort.test.ts` case that pinned the
-  mixed sort to `` `group`[0] `` encoded this defect and moved here with the
-  corrected expectation. Live: `multiSeriesMixedGroups.couchbase.int.test.ts`
-  (5; 5 failed before the fix).
+  objects by field name, not position, so each pad is named after its scalar
+  column rather than `__hdx_group_pad_<j>`; a histogram row then reads
+  `ServiceName: null`, as the ClickHouse union gives it. A group expression with
+  no single result name gets no pad: it evaluates to MISSING on histogram rows,
+  and `group` keeps the classes apart.
+- **Sort.** Upstream's mixed-chart sort reads a companion the histogram branch
+  pads with NULL, and ClickHouse sorts NULL last. SQL++ sorts NULL and MISSING
+  first ascending (checked on 8.0.3), so a group-column sort on a mixed chart
+  adds `NULLS LAST`. Only padded charts get it; other outer sorts are unchanged.
+- **Result hints.** `couchbaseResultColumnNames` no longer lists group-by names
+  when every series is histogram-class, so meta matches upstream ("packs every
+  group-by into one group column"); mixed charts list them.
+- **Tests.** `render/__tests__/multiSeriesMixedGroups.test.ts` (11; 8 failed
+  before the fix, the 3 that passed are guards: all-histogram shape and mixed
+  hints). D17's `multiSeriesSort.test.ts` case that pinned the mixed sort to
+  `` `group`[0] `` encoded this defect and moved here with the corrected
+  expectation. Live: `multiSeriesMixedGroups.couchbase.int.test.ts` (5; 5 failed
+  before the fix).
 - **Found here, not fixed: D21.** Upstream's `grpmix.latency` fixture is a
   cumulative histogram with a zero baseline at minute 0, which upstream's
-  quantile drops (`WHERE total > 0`). The SQL++ quantile keeps that bucket
-  as a row with a NULL value, so the row count differs by one. The D20 live
-  test seeds the same minute-1 counts as a single delta point instead.
+  quantile drops (`WHERE total > 0`). The SQL++ quantile keeps that bucket as a
+  row with a NULL value, so the row count differs by one. The D20 live test
+  seeds the same minute-1 counts as a single delta point instead.
 
 ### D21: explicit-bounds histogram quantile (2026-11-23, `mm--v1-d21-histogram-zero-bucket`)
 
 - **Verified.** Against upstream `f172a489c818` `core/histogram.ts`
-  `translateHistogramQuantile` / `translateHistogramCount` and the
-  "Query Metrics - Histogram" cases in
-  `api/src/clickhouse/__tests__/renderChartConfig.int.test.ts` (no port of
-  that suite existed; its snapshot was deleted in Phase 10). Ported live,
-  7 of 8 cases failed, with four causes in `render/metrics/histogram.ts`
-  and `fn/quantile.ts`:
+  `translateHistogramQuantile` / `translateHistogramCount` and the "Query
+  Metrics - Histogram" cases in
+  `api/src/clickhouse/__tests__/renderChartConfig.int.test.ts` (no port of that
+  suite existed; its snapshot was deleted in Phase 10). Ported live, 7 of 8
+  cases failed, with four causes in `render/metrics/histogram.ts` and
+  `fn/quantile.ts`:
   1. **Empty buckets** (the logged defect): no equivalent of upstream's
-     `WHERE length(point) > 1 AND total > 0`, so a zero-delta bucket came
-     back as a row with `Value: null`. `metrics` now wraps the per-bucket
-     quantile with `COUNT(1) AS n, SUM(rate) AS total` and filters
-     `m.n > 1 AND m.total > 0`. A WHERE on a wrapper rather than HAVING,
-     because the number shape has no GROUP BY (same reason as D17).
+     `WHERE length(point) > 1 AND total > 0`, so a zero-delta bucket came back
+     as a row with `Value: null`. `metrics` now wraps the per-bucket quantile
+     with `COUNT(1) AS n, SUM(rate) AS total` and filters
+     `m.n > 1 AND m.total > 0`. A WHERE on a wrapper rather than HAVING, because
+     the number shape has no GROUP BY (same reason as D17).
   2. **Partition by alias.** `LAG(…) OVER (PARTITION BY AttributesHash, …)`
      named the select's own alias. SQL++ resolves a window clause before
      projection, so the alias reads as MISSING and all series shared one
      partition: checked on 8.0.3, `PARTITION BY kk` over `t.k AS kk` gave
-     `[null, 1, 2]` where `PARTITION BY t.k` gave `[null, null, 1]`. The
-     grouped reset case read `/normal` 6 instead of 8. Quantile and count
-     now partition by the expressions: `[group], <seriesKeyExpr>,
-     d.AggregationTemporality`, and count adds `d.ExplicitBounds` (upstream
-     `bounds_hash`). Upstream's quantile partitions by group and attribute
-     hash only and compares the bounds itself; partitioning by temporality
-     too only differs for a series that changes temporality mid-range.
-     The gauge and sum paths already partitioned by the expression. The
-     exponential-histogram count has the same alias partition (`series_key`,
-     `group` in its own SELECT): logged as D22, not fixed here. Its quantile
-     partitions in a later CTE, where `series_key` is a real column.
+     `[null, 1, 2]` where `PARTITION BY t.k` gave `[null, null, 1]`. The grouped
+     reset case read `/normal` 6 instead of 8. Quantile and count now partition
+     by the expressions: `[group], <seriesKeyExpr>, d.AggregationTemporality`,
+     and count adds `d.ExplicitBounds` (upstream `bounds_hash`). Upstream's
+     quantile partitions by group and attribute hash only and compares the
+     bounds itself; partitioning by temporality too only differs for a series
+     that changes temporality mid-range. The gauge and sum paths already
+     partitioned by the expression. The exponential-histogram count has the same
+     alias partition (`series_key`, `group` in its own SELECT): logged as D22,
+     not fixed here. Its quantile partitions in a later CTE, where `series_key`
+     is a real column.
   3. **First point.** Upstream's cumulative first point contributes zero
-     (`arrayWithConstant(length(counts), 0)`); the port used its raw counts,
-     so a series' whole history before the range counted. Now
-     `AggregationTemporality = 2 AND LAG IS NULL` gives zeros, and a new
-     bucket layout (`d.ExplicitBounds != LAG(d.ExplicitBounds)`) takes the
-     current counts, as upstream's `bounds_hash != prev_bounds_hash`.
+     (`arrayWithConstant(length(counts), 0)`); the port used its raw counts, so
+     a series' whole history before the range counted. Now
+     `AggregationTemporality = 2 AND LAG IS NULL` gives zeros, and a new bucket
+     layout (`d.ExplicitBounds != LAG(d.ExplicitBounds)`) takes the current
+     counts, as upstream's `bounds_hash != prev_bounds_hash`.
   4. **Interpolation.** `histogramQuantile` treated the first bucket as
-     `rank * bound / count` and returned the overflow bucket's 1e12
-     sentinel. It now matches upstream case for case (and the JS
-     `histogramQuantileValue`, which already did): +Inf upper bound returns
-     the previous bound, a first bucket with bound > 0 interpolates from
-     (0, 0), a zero span returns the lower bound. The overflow bound is
-     NULL instead of 1e12, and buckets sort as `[i, bound, rate]` arrays:
-     `ARRAY_SORT` orders objects by field name, so `{"i", "b", "c"}`
-     sorted by bound and put the NULL first.
-- **Values changed.** Charts on cumulative histograms show different
-  numbers after this, matching upstream: no pre-range counts, no
-  cross-series subtraction, upstream interpolation. `phase6` pinned p50 of
-  [1, 1, 1] over [0, 10, 20] at 5; upstream and the JS reference give 7.5.
-- **Tests.** `render/__tests__/histogramQuantile.test.ts` (9; 9 failed
-  before). `histogramQuantile.couchbase.int.test.ts` (8; 7 failed before,
-  the passing one is delta temporality, which none of the causes touch).
+     `rank * bound / count` and returned the overflow bucket's 1e12 sentinel. It
+     now matches upstream case for case (and the JS `histogramQuantileValue`,
+     which already did): +Inf upper bound returns the previous bound, a first
+     bucket with bound > 0 interpolates from (0, 0), a zero span returns the
+     lower bound. The overflow bound is NULL instead of 1e12, and buckets sort
+     as `[i, bound, rate]` arrays: `ARRAY_SORT` orders objects by field name, so
+     `{"i", "b", "c"}` sorted by bound and put the NULL first.
+- **Values changed.** Charts on cumulative histograms show different numbers
+  after this, matching upstream: no pre-range counts, no cross-series
+  subtraction, upstream interpolation. `phase6` pinned p50 of [1, 1, 1] over [0,
+  10, 20] at 5; upstream and the JS reference give 7.5.
+- **Tests.** `render/__tests__/histogramQuantile.test.ts` (9; 9 failed before).
+  `histogramQuantile.couchbase.int.test.ts` (8; 7 failed before, the passing one
+  is delta temporality, which none of the causes touch).
   `multiSeriesMixedGroups.couchbase.int.test.ts` is back on upstream's
   cumulative `grpmix.latency` seed; 3 of its 5 fail without the fix.
 
@@ -3444,249 +3430,244 @@ a per-slot lock (`scripts/slot-lock.sh`) around `ci-int`, `dev-int`, and
 
 - **Verified.** Against upstream `f172a489c818` `core/histogram.ts`
   `translateExponentialHistogramCount`: one `prev_row` window
-  `PARTITION BY [group,] MetricName, attr_hash, AggregationTemporality`.
-  The port's `expHistogramCount` partitioned its four `LAG` windows by
-  `` `group`, MetricName, series_key, AggregationTemporality``, where
-  `group` and `series_key` are aliases of the same SELECT. As D21 found,
-  a window clause reads those as MISSING, so all series of a metric (and
-  all groups) shared one partition ordered by time and took their previous
-  `Count` / `StartTimeUnix` / `TimeUnix` from whichever series came before.
-- **Fix.** Partition by `seriesPartition(group, 'd.MetricName')`, the D21
-  helper (now exported): the group expression, the attributes-hash
-  expression, `d.AggregationTemporality`, `d.MetricName`. Same set as
-  upstream; the order does not change which rows share a partition. The
-  quantile keeps `partitionKeys`: it partitions in a later CTE
-  (`series_with_normalized_scale`) where `group` and `series_key` are
-  columns, and its live cases already pass.
-- **Tests.** `render/metrics/__tests__/expHistogramPartition.test.ts` (3;
-  all failed before). `expHistogramCount.couchbase.int.test.ts` ports
-  upstream's "Query Metrics - Exponential Histogram" count cases with the
-  same inputs (upstream `bucketExponentialHistogramObservations` and
+  `PARTITION BY [group,] MetricName, attr_hash, AggregationTemporality`. The
+  port's `expHistogramCount` partitioned its four `LAG` windows by
+  `` `group`, MetricName, series_key, AggregationTemporality``, where `group`
+  and `series_key` are aliases of the same SELECT. As D21 found, a window clause
+  reads those as MISSING, so all series of a metric (and all groups) shared one
+  partition ordered by time and took their previous `Count` / `StartTimeUnix` /
+  `TimeUnix` from whichever series came before.
+- **Fix.** Partition by `seriesPartition(group, 'd.MetricName')`, the D21 helper
+  (now exported): the group expression, the attributes-hash expression,
+  `d.AggregationTemporality`, `d.MetricName`. Same set as upstream; the order
+  does not change which rows share a partition. The quantile keeps
+  `partitionKeys`: it partitions in a later CTE (`series_with_normalized_scale`)
+  where `group` and `series_key` are columns, and its live cases already pass.
+- **Tests.** `render/metrics/__tests__/expHistogramPartition.test.ts` (3; all
+  failed before). `expHistogramCount.couchbase.int.test.ts` ports upstream's
+  "Query Metrics - Exponential Histogram" count cases with the same inputs
+  (upstream `bucketExponentialHistogramObservations` and
   `seedExponentialHistogramMetric` defaults): delta, predecessor-less,
-  unknown-start reset, known reset, decrease reset, scale change, the
-  grouped sum (two series in host-a), and the non-timeseries reset modes
-  (count and its quantile half). 2 of 8 failed before, the two with more
-  than one series: host-a read 2 instead of 3. Phase 7a's count cases each
-  seed one cumulative series, which is why they passed.
-- **Not ported here.** Upstream's "subtracts cumulative counts using a
-  warm-up point outside the requested range" relies on the one-interval
-  `includedDataInterval` warm-up that upstream adds to the histogram
-  source `WHERE`; the port's `sourceWhereClause` filters to the requested
-  range only. That is a separate behaviour (not a partition defect) and is
-  logged as D23.
+  unknown-start reset, known reset, decrease reset, scale change, the grouped
+  sum (two series in host-a), and the non-timeseries reset modes (count and its
+  quantile half). 2 of 8 failed before, the two with more than one series:
+  host-a read 2 instead of 3. Phase 7a's count cases each seed one cumulative
+  series, which is why they passed.
+- **Not ported here.** Upstream's "subtracts cumulative counts using a warm-up
+  point outside the requested range" relies on the one-interval
+  `includedDataInterval` warm-up that upstream adds to the histogram source
+  `WHERE`; the port's `sourceWhereClause` filters to the requested range only.
+  That is a separate behaviour (not a partition defect) and is logged as D23.
 
 ### D23: metric source warm-up window (2026-11-23, `mm--v1-d23-metric-warmup-window`)
 
-- **Verified.** Against upstream `f172a489c818` `core/renderChartConfig.ts`.
-  The Sum (around line 2237) and Histogram / Exponential Histogram (around
+- **Verified.** Against upstream `f172a489c818` `core/renderChartConfig.ts`. The
+  Sum (around line 2237) and Histogram / Exponential Histogram (around
   line 2498) branches pass `includedDataInterval` to `renderMetricWhere`:
-  `convertDateRangeToGranularityString(dateRange, …, minGranularitySeconds)`
-  for 'auto', else `chartConfig.granularity`, so there is none without a
+  `convertDateRangeToGranularityString(dateRange, …, minGranularitySeconds)` for
+  'auto', else `chartConfig.granularity`, so there is none without a
   granularity. `timeFilterExpr` (around line 1037) turns it into
   `ts >= toStartOfInterval(start, I) - I AND ts <= toStartOfInterval(end, I) + I`
   (unit test "with includedDataInterval"). The Gauge branch has no
-  `includedDataInterval`. All three branches return `...restChartConfig`
-  with the time bucket as `timestampValueExpression`, so the outer query
-  keeps the requested `dateRange` on the bucket. The histogram branch says
-  so directly: "Timeseries queries discard padded buckets here". The
-  port's `sourceWhereClause` filtered to the requested range, and the Sum
-  outer query had `dateRange: undefined`.
-- **Fix.** `render/metrics/sourceWhere.ts` (moved out of `histogram.ts`,
-  which was over 300 lines) has `sourceDateRange(chartConfig, warmUp)` and
-  `sourceWhereClause(…, { warmUp })`. Sum, Histogram, and Exponential
-  Histogram pass `warmUp: true`; Gauge does not. The interval is
+  `includedDataInterval`. All three branches return `...restChartConfig` with
+  the time bucket as `timestampValueExpression`, so the outer query keeps the
+  requested `dateRange` on the bucket. The histogram branch says so directly:
+  "Timeseries queries discard padded buckets here". The port's
+  `sourceWhereClause` filtered to the requested range, and the Sum outer query
+  had `dateRange: undefined`.
+- **Fix.** `render/metrics/sourceWhere.ts` (moved out of `histogram.ts`, which
+  was over 300 lines) has `sourceDateRange(chartConfig, warmUp)` and
+  `sourceWhereClause(…, { warmUp })`. Sum, Histogram, and Exponential Histogram
+  pass `warmUp: true`; Gauge does not. The interval is
   `resolveGranularityInterval` (same 'auto' sizing). New `time.ts` helpers
-  `bucketStart` and `shiftByIntervals` align bounds the way
-  `timeBucketExpr` buckets: epoch-aligned fixed intervals, Monday weeks
-  (`DATE_TRUNC_MILLIS` Sunday + `WEEK_ALIGN_OFFSET_MS`), and UTC months.
-  `translate.ts` `outerBucketRange` keeps the requested range on the
-  outer query for Sum (timeseries only) and both histogram types.
+  `bucketStart` and `shiftByIntervals` align bounds the way `timeBucketExpr`
+  buckets: epoch-aligned fixed intervals, Monday weeks (`DATE_TRUNC_MILLIS`
+  Sunday + `WEEK_ALIGN_OFFSET_MS`), and UTC months. `translate.ts`
+  `outerBucketRange` keeps the requested range on the outer query for Sum
+  (timeseries only) and both histogram types.
 - **ISO bucket bounds.** `outerBucketRange` also sets
-  `timestampFormat: 'iso8601'`: `__hdx_time_bucket` / `__hdx_time_bucket2`
-  are `MILLIS_TO_UTC` strings whatever the source's format. On an
-  `epoch_millis` source the histogram outer filter used to compare those
-  strings with numeric bounds, which in SQL++ matches nothing. Same fix,
-  since the new Sum outer filter would have the same fault.
+  `timestampFormat: 'iso8601'`: `__hdx_time_bucket` / `__hdx_time_bucket2` are
+  `MILLIS_TO_UTC` strings whatever the source's format. On an `epoch_millis`
+  source the histogram outer filter used to compare those strings with numeric
+  bounds, which in SQL++ matches nothing. Same fix, since the new Sum outer
+  filter would have the same fault.
 - **End operator.** The widened end keeps the port's `<` (or `<=` when
   `dateRangeEndInclusive` is true). Upstream writes `<=` because its
   `renderWhere` defaults the end to inclusive (D26). A point exactly at
-  `bucket(end) + I` falls in a bucket past the requested range, which the
-  outer filter drops, so the rows are the same.
-- **Unaligned start.** As upstream, the outer `bucket >= start` drops a
-  first bucket whose start is before an unaligned range start. Histograms
-  already did this; Sum timeseries now does too. Gauge still has no outer
-  range (upstream keeps one), which differs only for an unaligned start;
-  not changed here.
+  `bucket(end) + I` falls in a bucket past the requested range, which the outer
+  filter drops, so the rows are the same.
+- **Unaligned start.** As upstream, the outer `bucket >= start` drops a first
+  bucket whose start is before an unaligned range start. Histograms already did
+  this; Sum timeseries now does too. Gauge still has no outer range (upstream
+  keeps one), which differs only for an unaligned start; not changed here.
 - **Tests.** `render/metrics/__tests__/metricWarmup.test.ts` (12; 8 failed
-  before): widened bounds for all three types, 'auto' sizing (two days →
-  1 hour), week and month alignment, exclusive start kept, gauge and
-  non-timeseries unchanged, the Sum outer bucket range, and ISO bucket
-  bounds on an `epoch_millis` source. `metricWarmup.couchbase.int.test.ts`
-  (6; 4 failed before; the two stale-baseline cases pass either way, since an unread baseline and no warm-up give the same result) ports
-  upstream's exponential-histogram "subtracts cumulative counts using a
-  warm-up point outside the requested range" (D22 left it out; 0 before,
-  1 now), "uses a cumulative warm-up point outside the requested range as
-  the subtraction baseline" (no row before; √8 now), and "emits no value
-  when the cumulative baseline precedes the one-interval warm-up window".
-  Upstream has no Sum or explicit-histogram warm-up case, so the suite adds
-  one of each (first bucket 5 and 2, look-back and look-ahead buckets
-  dropped) and a Sum stale baseline. The D21 suite's non-timeseries
-  "first visible baseline" case still scans only the requested range, as
-  upstream. The exponential-histogram fixtures moved to
+  before): widened bounds for all three types, 'auto' sizing (two days → 1
+  hour), week and month alignment, exclusive start kept, gauge and
+  non-timeseries unchanged, the Sum outer bucket range, and ISO bucket bounds on
+  an `epoch_millis` source. `metricWarmup.couchbase.int.test.ts` (6; 4 failed
+  before; the two stale-baseline cases pass either way, since an unread baseline
+  and no warm-up give the same result) ports upstream's exponential-histogram
+  "subtracts cumulative counts using a warm-up point outside the requested
+  range" (D22 left it out; 0 before, 1 now), "uses a cumulative warm-up point
+  outside the requested range as the subtraction baseline" (no row before; √8
+  now), and "emits no value when the cumulative baseline precedes the
+  one-interval warm-up window". Upstream has no Sum or explicit-histogram
+  warm-up case, so the suite adds one of each (first bucket 5 and 2, look-back
+  and look-ahead buckets dropped) and a Sum stale baseline. The D21 suite's
+  non-timeseries "first visible baseline" case still scans only the requested
+  range, as upstream. The exponential-histogram fixtures moved to
   `__tests__/expHistogramFixtures.ts` and are shared with the D22 suite.
-- **Not ported here.** Upstream's "ignores other metrics, filtered
-  attribute series, and points outside the requested range" filters with a
-  chart `where`, which metric charts drop (D24).
+- **Not ported here.** Upstream's "ignores other metrics, filtered attribute
+  series, and points outside the requested range" filters with a chart `where`,
+  which metric charts drop (D24).
 - **Found here.** D24: metric charts drop the chart `where`, and histogram
-  charts lose `filters`, because the outer `metrics` CTE has no OTel
-  columns. D25: the Sum select alias is not defaulted to `Value` (column
-  `sum(Rate)`). D26: the range end is exclusive by default where upstream's
-  is inclusive. See `docs/v1-release-plan.md` section 9.1.
+  charts lose `filters`, because the outer `metrics` CTE has no OTel columns.
+  D25: the Sum select alias is not defaulted to `Value` (column `sum(Rate)`).
+  D26: the range end is exclusive by default where upstream's is inclusive. See
+  `docs/v1-release-plan.md` section 9.1.
 
 ### D24 + D25: metric `where`, `filters`, and the Sum `Value` alias (2026-11-23, `mm--v1-d24-metric-where-and-value-alias`)
 
 - **Verified.** Against upstream `f172a489c818` `core/renderChartConfig.ts`.
-  `translateMetricChartConfig` destructures `filters` off the chart and
-  passes them (plus the metric-name filter) to `renderMetricWhere` for the
-  Gauge, Sum, and histogram sources. `renderMetricWhere` is `renderWhere`
-  (chart `where` with `whereLanguage ?? 'sql'`, `filters`, and every
-  select's aggCondition when all selects have one) plus `bitAnd(Flags, 1)
-  = 0` when the table has a non-nullable integer `Flags`. The returned
-  configs clear `where` and carry no `filters`. The Sum branch's outer
-  select spreads `{ alias: 'Value', ..._select }`; Gauge's does not.
-- **Port before.** `translateMetricChartConfigCouchbase` set `where: ''`
-  and left `filters` on the outer query; `sourceWhereClause` had only the
-  name and date range. A metric chart's `where` never reached SQL++. Gauge
-  and Sum `Bucketed` carry the OTel columns, so their outer `filters`
-  happened to work; histogram `metrics` has only bucket, group, and value,
-  so a filtered histogram chart compared MISSING and returned no rows. The
-  Sum select kept the caller's (absent) alias: `sum(Rate)`.
-- **Fix.** `sourceWhere.ts` `metricPredicate(chartConfig, from, metadata)`
-  calls `renderWhereCouchbase` on the chart with the metric collection as
-  `from`, no date range (the source range is `sourceWhereClause`'s, which
-  D23 widens), and `whereLanguage ?? 'sql'`. `sourceWhereClause(…,
-  { predicate })` appends it with `sqlpp`, so the predicate's `$pN`
-  renumber after the range's; the name and range come first.
-  `translateMetricChartConfigCouchbase(chartConfig, metadata)` computes it
-  once and passes it to gauge, sum, and (through `HistInput.predicate`)
-  both histogram translators. All four outer configs clear `filters`.
-  `renderChartConfigCouchbase` passes its metadata, so Lucene fields
-  resolve against the metric collection (with no columns, a Lucene field
-  compiles to `FALSE`). Sum select: `alias: first.alias?.trim() || 'Value'`.
-  `translate.ts` grew past 300 lines, so its outer-query helpers
-  (granularity, Source → Bucketed pair, outer range, histogram outer) moved
-  to `render/metrics/outer.ts`.
-- **Language default.** Only the metric path defaults `whereLanguage` to
-  SQL. `compileWhereExpressionCouchbase` sends an undefined language to the
-  Lucene builder, unlike upstream's `?? 'sql'`. Defaulting it globally
-  passed every common-utils unit test, but it changes search behavior too,
-  so it is left out of this PR and logged as D28.
+  `translateMetricChartConfig` destructures `filters` off the chart and passes
+  them (plus the metric-name filter) to `renderMetricWhere` for the Gauge, Sum,
+  and histogram sources. `renderMetricWhere` is `renderWhere` (chart `where`
+  with `whereLanguage ?? 'sql'`, `filters`, and every select's aggCondition when
+  all selects have one) plus `bitAnd(Flags, 1) = 0` when the table has a
+  non-nullable integer `Flags`. The returned configs clear `where` and carry no
+  `filters`. The Sum branch's outer select spreads
+  `{ alias: 'Value', ..._select }`; Gauge's does not.
+- **Port before.** `translateMetricChartConfigCouchbase` set `where: ''` and
+  left `filters` on the outer query; `sourceWhereClause` had only the name and
+  date range. A metric chart's `where` never reached SQL++. Gauge and Sum
+  `Bucketed` carry the OTel columns, so their outer `filters` happened to work;
+  histogram `metrics` has only bucket, group, and value, so a filtered histogram
+  chart compared MISSING and returned no rows. The Sum select kept the caller's
+  (absent) alias: `sum(Rate)`.
+- **Fix.** `sourceWhere.ts` `metricPredicate(chartConfig, from, metadata)` calls
+  `renderWhereCouchbase` on the chart with the metric collection as `from`, no
+  date range (the source range is `sourceWhereClause`'s, which D23 widens), and
+  `whereLanguage ?? 'sql'`. `sourceWhereClause(…, { predicate })` appends it
+  with `sqlpp`, so the predicate's `$pN` renumber after the range's; the name
+  and range come first.
+  `translateMetricChartConfigCouchbase(chartConfig, metadata)` computes it once
+  and passes it to gauge, sum, and (through `HistInput.predicate`) both
+  histogram translators. All four outer configs clear `filters`.
+  `renderChartConfigCouchbase` passes its metadata, so Lucene fields resolve
+  against the metric collection (with no columns, a Lucene field compiles to
+  `FALSE`). Sum select: `alias: first.alias?.trim() || 'Value'`. `translate.ts`
+  grew past 300 lines, so its outer-query helpers (granularity, Source →
+  Bucketed pair, outer range, histogram outer) moved to
+  `render/metrics/outer.ts`.
+- **Language default.** Only the metric path defaults `whereLanguage` to SQL.
+  `compileWhereExpressionCouchbase` sends an undefined language to the Lucene
+  builder, unlike upstream's `?? 'sql'`. Defaulting it globally passed every
+  common-utils unit test, but it changes search behavior too, so it is left out
+  of this PR and logged as D28.
 - **Multi-series.** Multi-series and formula charts render each select as a
-  single-select branch, so each branch source has the chart `where` and
-  only its own aggCondition (matching upstream's per-branch translation).
+  single-select branch, so each branch source has the chart `where` and only its
+  own aggCondition (matching upstream's per-branch translation).
   `metricWhere.test.ts` pins this.
 - **Tests.** `render/metrics/__tests__/metricWhere.test.ts` (23; 20 failed
   before): SQL `where` (no language), Lucene `where`, `filters` with OR, and
-  aggCondition, each in the source and not the outer query, for all four
-  types; predicate order; the multi-series branches; and the Sum alias
-  (`sum`, `increase`, no aggFn → `Value`; caller alias kept; gauge
-  unchanged). `metricWhere.couchbase.int.test.ts` (5; all failed before)
-  ports upstream's "ignores other metrics, filtered attribute series, and
-  points outside the requested range" (p50 2 at +1m), "excludes lower-scale
-  filtered series and unrelated metrics before choosing the normalized
-  scale" (2^0.75), and "sum values as without rate computation" (upstream's
-  podAgePoints, Lucene `ServiceName:api`, rows 950400 and 1641600 in a
-  `Value` column, plus one `other`-service series the `where` must drop).
-  Upstream writes that case's granularity as `'5 minutes'`, which
-  `SQLIntervalSchema` rejects; the port uses `'5 minute'`. Added: histogram
-  SQL and Lucene `filters`, and gauge `where` and aggCondition. `runChart`
-  (`__tests__/liveCluster.ts`) takes optional metadata; the suite maps its
-  collections to the declared OTel metric columns.
-- **Found here.** D27: no metric source applies upstream's `Flags` bit-0
-  ("no recorded value") filter; the port's schema declares `Flags` UInt32.
-  D28: an unset `whereLanguage` is Lucene outside metrics. See `docs/v1-release-plan.md` section 9.1.
+  aggCondition, each in the source and not the outer query, for all four types;
+  predicate order; the multi-series branches; and the Sum alias (`sum`,
+  `increase`, no aggFn → `Value`; caller alias kept; gauge unchanged).
+  `metricWhere.couchbase.int.test.ts` (5; all failed before) ports upstream's
+  "ignores other metrics, filtered attribute series, and points outside the
+  requested range" (p50 2 at +1m), "excludes lower-scale filtered series and
+  unrelated metrics before choosing the normalized scale" (2^0.75), and "sum
+  values as without rate computation" (upstream's podAgePoints, Lucene
+  `ServiceName:api`, rows 950400 and 1641600 in a `Value` column, plus one
+  `other`-service series the `where` must drop). Upstream writes that case's
+  granularity as `'5 minutes'`, which `SQLIntervalSchema` rejects; the port uses
+  `'5 minute'`. Added: histogram SQL and Lucene `filters`, and gauge `where` and
+  aggCondition. `runChart` (`__tests__/liveCluster.ts`) takes optional metadata;
+  the suite maps its collections to the declared OTel metric columns.
+- **Found here.** D27: no metric source applies upstream's `Flags` bit-0 ("no
+  recorded value") filter; the port's schema declares `Flags` UInt32. D28: an
+  unset `whereLanguage` is Lucene outside metrics. See `docs/v1-release-plan.md`
+  section 9.1.
 
 ### D26 + D27 + D28: inclusive range end, `Flags` bit 0, SQL `where` default (2026-11-23, `mm--v1-d26-range-end-flags-where-default`)
 
-- **Verified.** Against upstream `f172a489c818`
-  `core/renderChartConfig.ts`: `renderWhere` passes
-  `dateRangeStartInclusive ?? true` and `dateRangeEndInclusive ?? true` to
-  `timeFilterExpr` (line 1499) and compiles `where` with
-  `whereLanguage ?? 'sql'` (1404). `renderMetricWhere` (2033) appends
-  `bitAnd(Flags, 1) = 0` when `Flags` is a non-nullable integer column;
+- **Verified.** Against upstream `f172a489c818` `core/renderChartConfig.ts`:
+  `renderWhere` passes `dateRangeStartInclusive ?? true` and
+  `dateRangeEndInclusive ?? true` to `timeFilterExpr` (line 1499) and compiles
+  `where` with `whereLanguage ?? 'sql'` (1404). `renderMetricWhere` (2033)
+  appends `bitAnd(Flags, 1) = 0` when `Flags` is a non-nullable integer column;
   it is used by the Gauge, Sum, and both histogram source CTEs. Upstream
   metadata lookups (`getMetricNames`, map keys, key values) also pass
   `dateRangeEndInclusive: true`.
 - **D26 fix.** `time.ts` `timeRangePredicate` ends `<=` unless
   `inclusiveEnd: false`. `where.ts` (builder and raw SQL template) and
-  `metrics/sourceWhere.ts` end `<=` unless `dateRangeEndInclusive` is
-  `false`. Callers that set it `false` keep `<`: alert windows after the
-  first (`checkAlerts/index.ts`, `template.ts`), MCP service health,
-  non-first query chunks (`useChartConfig.tsx`), and the CLI and app
-  boundary-aligned tiles (`ChartUtils.tsx`, `tileConfig.ts`). These match
-  upstream line for line. Metadata lookups (`metadataSql.ts`) now end `<=`,
-  as upstream. `timestampColumns.ts` day-precision columns compare
-  `< next midnight`, so that call now passes `inclusiveEnd: false`. The
-  FTS time range was already inclusive at both ends.
-- **D23 note superseded.** The metric source's widened end is now `<=`,
-  as upstream. A point exactly at `bucket(end) + I` is read into a bucket
-  past the range, which the outer bucket filter drops, so the output is the
-  same. The outer bucket filter is now `<= end`. With an aligned end, the
-  bucket starting at `end` is returned, as upstream.
+  `metrics/sourceWhere.ts` end `<=` unless `dateRangeEndInclusive` is `false`.
+  Callers that set it `false` keep `<`: alert windows after the first
+  (`checkAlerts/index.ts`, `template.ts`), MCP service health, non-first query
+  chunks (`useChartConfig.tsx`), and the CLI and app boundary-aligned tiles
+  (`ChartUtils.tsx`, `tileConfig.ts`). These match upstream line for line.
+  Metadata lookups (`metadataSql.ts`) now end `<=`, as upstream.
+  `timestampColumns.ts` day-precision columns compare `< next midnight`, so that
+  call now passes `inclusiveEnd: false`. The FTS time range was already
+  inclusive at both ends.
+- **D23 note superseded.** The metric source's widened end is now `<=`, as
+  upstream. A point exactly at `bucket(end) + I` is read into a bucket past the
+  range, which the outer bucket filter drops, so the output is the same. The
+  outer bucket filter is now `<= end`. With an aligned end, the bucket starting
+  at `end` is returned, as upstream.
 - **D27 fix.** `sourceWhereClause` appends
-  `IFMISSINGORNULL(BITAND(d.Flags, 1), 0) = 0` after the name, range, and
-  chart predicate, as upstream's order. Every metric source CTE (gauge,
-  sum, histogram, exponential histogram, and each multi-series branch)
-  goes through it. A document has no column type, so upstream's "integer,
-  non-nullable column" gate cannot be checked. Per COUCHBASE_DOCS
+  `IFMISSINGORNULL(BITAND(d.Flags, 1), 0) = 0` after the name, range, and chart
+  predicate, as upstream's order. Every metric source CTE (gauge, sum,
+  histogram, exponential histogram, and each multi-series branch) goes through
+  it. A document has no column type, so upstream's "integer, non-nullable
+  column" gate cannot be checked. Per COUCHBASE_DOCS
   (n1ql-language-reference/bitwisefun.html), `BITAND` returns NULL for a
-  non-integer and propagates MISSING and NULL. `IFMISSINGORNULL(…, 0)`
-  keeps those points, which is how upstream reads a table without such a
-  column. The fixed order differs from the D24 wording
+  non-integer and propagates MISSING and NULL. `IFMISSINGORNULL(…, 0)` keeps
+  those points, which is how upstream reads a table without such a column. The
+  fixed order differs from the D24 wording
   (`BITAND(IFMISSINGORNULL(d.Flags, 0), 1)`): that form returned NULL on a
   non-integer `Flags` and dropped the point.
 - **D28 fix.** `renderWhereCouchbase` compiles `chartConfig.where` with
-  `whereLanguage ?? 'sql'`. `render/index.ts` takes the row-id fast path
-  for an unset language as well. `metricPredicate` no longer defaults it
-  itself. Out of scope: an unset `aggConditionLanguage` stays Lucene in
-  both copies (`select.ts` -If and `where.ts` WHERE). Upstream reads it as
-  Lucene in the -If copy and SQL in the WHERE copy. Every caller sets it.
-- **D28 caller audit.** Nothing that relies on Lucene leaves the language
-  unset:
+  `whereLanguage ?? 'sql'`. `render/index.ts` takes the row-id fast path for an
+  unset language as well. `metricPredicate` no longer defaults it itself. Out of
+  scope: an unset `aggConditionLanguage` stays Lucene in both copies
+  (`select.ts` -If and `where.ts` WHERE). Upstream reads it as Lucene in the -If
+  copy and SQL in the WHERE copy. Every caller sets it.
+- **D28 caller audit.** Nothing that relies on Lucene leaves the language unset:
   - app search, dashboards, sessions, service map, and alert modal pass
-    `searchedConfig.whereLanguage ?? getStoredLanguage() ?? 'lucene'`,
-    identical to upstream.
+    `searchedConfig.whereLanguage ?? getStoredLanguage() ?? 'lucene'`, identical
+    to upstream.
   - `couchbase/serviceMap.ts` and `useServiceMap.tsx` default to Lucene.
   - alerts pass the saved search's or tile's `whereLanguage`, as upstream.
     `saveSavedSearch` stores `'lucene'` on create.
-  - MCP: `whereLanguageSchema` defaults to `'lucene'`, and
-    `patternQueryConfigs` applies `?? 'lucene'`. That covers the pattern
-    and denoise paths that drop upstream's own `?? 'lucene'`.
-  - external API: series map to `aggConditionLanguage: whereLanguage ??
-    'lucene'`. `translateExternalChartToTileConfig` defaults to Lucene.
+  - MCP: `whereLanguageSchema` defaults to `'lucene'`, and `patternQueryConfigs`
+    applies `?? 'lucene'`. That covers the pattern and denoise paths that drop
+    upstream's own `?? 'lucene'`.
+  - external API: series map to
+    `aggConditionLanguage: whereLanguage ?? 'lucene'`.
+    `translateExternalChartToTileConfig` defaults to Lucene.
   - CLI: `eventQuery.ts` sets `'lucene'` or `'sql'` explicitly.
-  - `linkUrlBuilder` defaults to Lucene. `searchChartConfig` already
-    defaulted to SQL, as upstream.
-  - `couchbase/metadata.ts` key-value lookups pass the caller's language,
-    and an unset one is now SQL, as upstream `metadata.ts:1964`.
-- **Tests.** `__tests__/rangeEndAndWhereLanguage.test.ts` (13; 10 failed
-  before) ports upstream `timeFilterExpr` "with basic
-  timestampValueExpression", "with dateRangeEndInclusive=false", and "with
-  dateRangeStartInclusive=false", and adds epoch millis, raw SQL template,
-  search, time chart, `timeRangePredicate`, metric names, and the D28
-  cases. `render/metrics/__tests__/metricFlags.test.ts` (12; all failed
-  before) ports upstream "metric points with no recorded value" for all
-  six metric/aggFn cases, plus no-range histograms, multi-series branches,
-  and filter order. Upstream's column-type cases have no SQL++ equivalent;
-  `IFMISSINGORNULL` covers them. `metricNoRecordedValue.couchbase.int.test.ts`
-  (10; 9 failed before; the minute-before-marker control passes either way)
-  ports upstream `metricNoRecordedValue.int.test.ts` (same fixtures and
-  expectations). `rangeEndWhereLanguage.couchbase.int.test.ts` (6; 4 failed
-  before) checks live D26 rows (search, count, and gauge at the end;
-  exclusive when `false`) and D28 (SQL `where` with no language; explicit
-  Lucene kept).
-  `metricWarmup.test.ts`, `metricWhere.test.ts`, and `expHistogram.test.ts`
-  now expect `<=` and the trailing `Flags` filter.
+  - `linkUrlBuilder` defaults to Lucene. `searchChartConfig` already defaulted
+    to SQL, as upstream.
+  - `couchbase/metadata.ts` key-value lookups pass the caller's language, and an
+    unset one is now SQL, as upstream `metadata.ts:1964`.
+- **Tests.** `__tests__/rangeEndAndWhereLanguage.test.ts` (13; 10 failed before)
+  ports upstream `timeFilterExpr` "with basic timestampValueExpression", "with
+  dateRangeEndInclusive=false", and "with dateRangeStartInclusive=false", and
+  adds epoch millis, raw SQL template, search, time chart, `timeRangePredicate`,
+  metric names, and the D28 cases.
+  `render/metrics/__tests__/metricFlags.test.ts` (12; all failed before) ports
+  upstream "metric points with no recorded value" for all six metric/aggFn
+  cases, plus no-range histograms, multi-series branches, and filter order.
+  Upstream's column-type cases have no SQL++ equivalent; `IFMISSINGORNULL`
+  covers them. `metricNoRecordedValue.couchbase.int.test.ts` (10; 9 failed
+  before; the minute-before-marker control passes either way) ports upstream
+  `metricNoRecordedValue.int.test.ts` (same fixtures and expectations).
+  `rangeEndWhereLanguage.couchbase.int.test.ts` (6; 4 failed before) checks live
+  D26 rows (search, count, and gauge at the end; exclusive when `false`) and D28
+  (SQL `where` with no language; explicit Lucene kept). `metricWarmup.test.ts`,
+  `metricWhere.test.ts`, and `expHistogram.test.ts` now expect `<=` and the
+  trailing `Flags` filter.
 
 ### R2a: internal and external API integration suites (2026-11-23, `mm--v1-r2a-api-int-suites`)
 
@@ -3702,9 +3683,9 @@ deferred under D29. The full cause list and counts are in
   requires both for a Couchbase connection. Valid `querySettings` fixtures use
   the six Couchbase names (`couchbase/settings.ts`); the 10-item cap test
   repeats three of them.
-- **Local app mode team id.** The string-team-id cases seed the connection
-  under `'_local_team_'`. Upstream seeded `new Types.ObjectId('_local_team_')`,
-  which Mongo matched against the string id on the request; the metadata store
+- **Local app mode team id.** The string-team-id cases seed the connection under
+  `'_local_team_'`. Upstream seeded `new Types.ObjectId('_local_team_')`, which
+  Mongo matched against the string id on the request; the metadata store
   compares strings, and `LOCAL_APP_TEAM._id` is the hex form.
 - **PromQL filter.** A dashboard filter with `sourceType: 'promql'` is rejected
   by `rejectPromqlBody` with "PromQL sources are no longer supported." before
@@ -3716,32 +3697,32 @@ deferred under D29. The full cause list and counts are in
   400 with `{ error }`; upstream answers 500. The status comes from
   `CouchbaseQueryError.httpStatus` (`PARSING_FAILED` maps to 400, Phase 8).
 - **`UInt64` JSON.** `encodeValue` (`couchbase/inferMeta.ts`) quotes `UInt64`
-  like `Int64`, so count columns typed by `couchbaseColumnTypesForConfig`
-  return `"1"`, matching ClickHouse's quoted 64-bit integers. Raw SQL results
-  without type hints keep the inferred `Int64` and were already strings.
+  like `Int64`, so count columns typed by `couchbaseColumnTypesForConfig` return
+  `"1"`, matching ClickHouse's quoted 64-bit integers. Raw SQL results without
+  type hints keep the inferred `Int64` and were already strings.
 - **`FindSpec.notTrue`.** Mongo `$ne: true` for flags older documents never
   stored: SQL++ `IFMISSINGORNULL(d.f, FALSE) != TRUE`, and `!== true` in
   `MemoryFind`. The IaC manifest uses it for `provisioned`; the team index
   serves the equality and the flag filters the fetched rows.
 - **Connection PUT.** `buildCouchbaseConnectionUpdate(body, stored)` takes the
-  stored connection: it keeps the password, writes `isPrometheusEndpoint:
-  false` when the stored document has the flag, and clears
-  `hyperdxSettingPrefix` on `null` or `''`.
-- **`hyperdxSettingPrefix`.** Back in `CouchbaseConnectionSchema` (same regex
-  as upstream). Stored and returned only; upstream appends it as a ClickHouse
+  stored connection: it keeps the password, writes `isPrometheusEndpoint: false`
+  when the stored document has the flag, and clears `hyperdxSettingPrefix` on
+  `null` or `''`.
+- **`hyperdxSettingPrefix`.** Back in `CouchbaseConnectionSchema` (same regex as
+  upstream). Stored and returned only; upstream appends it as a ClickHouse
   custom setting carrying the user's email, which has no SQL++ counterpart.
-- **D29.** Request attribution (`withQueryAttribution`) is set but never read
-  by `NodeDataClient` / `CouchbaseNodeClient`, so a route's queries get a
-  `cbt:adhoc:` client context id. See the plan's D29 for the fix and the port
-  of `queryAttribution.int.test.ts` to a Couchbase route. Placement (Q51): its
-  own PR right after R2a, before R2c and R2b.
-- **CI: parity goldens in their own job.** Shard 1 passed all 438 API tests
-  but was cancelled at the 55 minute timeout during the golden replay step.
+- **D29.** Request attribution (`withQueryAttribution`) is set but never read by
+  `NodeDataClient` / `CouchbaseNodeClient`, so a route's queries get a
+  `cbt:adhoc:` client context id. See the plan's D29 for the fix and the port of
+  `queryAttribution.int.test.ts` to a Couchbase route. Placement (Q51): its own
+  PR right after R2a, before R2c and R2b.
+- **CI: parity goldens in their own job.** Shard 1 passed all 438 API tests but
+  was cancelled at the 55 minute timeout during the golden replay step.
   `Replay parity goldens` is now the `parity-goldens` job (30 minute timeout,
-  frees runner disk, `make ci-build`); the
-  replay starts its own `cbt-golden-replay` compose project, so it needs nothing from
-  the shard's stack. The `integration` aggregator requires it, so the required
-  check still covers the replay.
+  frees runner disk, `make ci-build`); the replay starts its own
+  `cbt-golden-replay` compose project, so it needs nothing from the shard's
+  stack. The `integration` aggregator requires it, so the required check still
+  covers the replay.
 
 ### D29: request query attribution on SQL++ (2026-11-23, `mm--v1-d29-query-attribution`)
 
@@ -3756,32 +3737,31 @@ never read it, and `buildLogComment` was an alias of `buildQueryId`.
   `\n/* {"v":1,...} */`, because `system:completed_requests` records the full
   statement and no request-level metadata field exists (`query_context` is a
   keyspace path). The comment does not change results or the plan.
-- **`system:completed_requests`.** Fields used: `clientContextID`,
-  `statement`. Only requests slower than `completed-threshold` (node-level
-  `/admin/settings`, default 1000 ms; cluster-level `queryCompletedThreshold`)
-  are kept, and `completed-limit` (default 4000) caps the count. To see every
-  tagged query in production, an operator sets the threshold to 0 or adds a
-  `completed` qualifier (for example `statement` LIKE `%"surface":"alert"%`).
-  The int suite sets 0, purges the keyspace per test, and restores the old
-  value.
+- **`system:completed_requests`.** Fields used: `clientContextID`, `statement`.
+  Only requests slower than `completed-threshold` (node-level `/admin/settings`,
+  default 1000 ms; cluster-level `queryCompletedThreshold`) are kept, and
+  `completed-limit` (default 4000) caps the count. To see every tagged query in
+  production, an operator sets the threshold to 0 or adds a `completed`
+  qualifier (for example `statement` LIKE `%"surface":"alert"%`). The int suite
+  sets 0, purges the keyspace per test, and restores the old value.
 - **Store module.** `withQueryAttribution` / `getCurrentQueryAttribution` live
   in `couchbase/nodeAttribution.ts` (server only, re-exported from
   `dataLayer/node`), so `nodeExecute` reads the scope without an import cycle.
   `executeQuery` reads it when called, not on first `next()`.
 - **Sanitizing.** Upstream's `sanitizeField` and `buildLogComment` are ported
   verbatim (ASCII allowlist without `*`, so nothing can close the comment;
-  128-character fields; 1 KB cap). A caller `queryId` keeps
-  `[A-Za-z0-9._:-]` only. No team, user, email or credential is recorded.
+  128-character fields; 1 KB cap). A caller `queryId` keeps `[A-Za-z0-9._:-]`
+  only. No team, user, email or credential is recorded.
 - **`/couchbase/query`.** The browser sends attribution in the JSON body (not
   upstream's header, which only the PromQL router read). It goes through
   `parseQueryAttribution` (same Zod schema as `parseLogComment`); `label` and
   `trace` come from the server scope.
 - **Int suite.** Upstream's PromQL cases became `POST /api/v2/charts/series`
-  (route scope) and `POST /couchbase/query` (browser attribution), with the
-  same assertions on surface, ids, server label and dropped browser trace.
-  Two cases added: sanitization, and a statement ending in `;` and `--`.
-- **Unit tests.** Upstream `attribution.test.ts` (the client-agnostic part)
-  and `nodeAttribution.test.ts` ported to `query/__tests__` and
+  (route scope) and `POST /couchbase/query` (browser attribution), with the same
+  assertions on surface, ids, server label and dropped browser trace. Two cases
+  added: sanitization, and a statement ending in `;` and `--`.
+- **Unit tests.** Upstream `attribution.test.ts` (the client-agnostic part) and
+  `nodeAttribution.test.ts` ported to `query/__tests__` and
   `couchbase/__tests__`, the `log_comment` assertions reading the statement
   comment instead.
 
@@ -3792,84 +3772,83 @@ v1.0.0 leaves the cluster's completed-requests settings alone (Q52):
 the operator changes them, so `system:completed_requests` shows only slow
 attributed queries. Setting them is a cluster-wide write (Full Admin or Cluster
 Admin on `POST /settings/querySettings`) that Capella database credentials
-cannot make. v1.0.1 backlog item P13 (`docs/v1-release-plan.md` 2.3) adds
-opt-in `CBT_COUCHBASE_COMPLETED_THRESHOLD_MS` / `CBT_COUCHBASE_COMPLETED_LIMIT`
-to the ingest setup CLI; unset means unchanged.
+cannot make. v1.0.1 backlog item P13 (`docs/v1-release-plan.md` 2.3) adds opt-in
+`CBT_COUCHBASE_COMPLETED_THRESHOLD_MS` / `CBT_COUCHBASE_COMPLETED_LIMIT` to the
+ingest setup CLI; unset means unchanged.
 
 ### R2c: MCP integration suites (2026-11-24, `mm--v1-r2c-mcp-int-suites`)
 
-Eight suites leave `deferredChIntSuites`: `mcp/__tests__/{sources,
-describeTable,queryTool,trace,serviceHealthTool,emergingSignalsTool}` and
-`mcp/__tests__/dashboards/{queryTile,queryTiles}`, with no skipped case after
-the user's Q53 and Q54 decisions. The cause
-list and counts are in `docs/v1-release-plan.md` (R2c result). P13 placement
-(ingest setup step) is confirmed there.
+Eight suites leave `deferredChIntSuites`:
+`mcp/__tests__/{sources, describeTable,queryTool,trace,serviceHealthTool,emergingSignalsTool}`
+and `mcp/__tests__/dashboards/{queryTile,queryTiles}`, with no skipped case
+after the user's Q53 and Q54 decisions. The cause list and counts are in
+`docs/v1-release-plan.md` (R2c result). P13 placement (ingest setup step) is
+confirmed there.
 
-- **Unknown columns (Q53).** `mcp/tools/query/unknownColumns.ts` rejects an
-  MCP builder tile or raw SQL statement that reads a field root an OTel
-  collection lacks, with upstream's `UNKNOWN_IDENTIFIER` text, before sending
-  it. Roots come from `common-utils/src/couchbase/fieldRefs.ts` (a small
-  SQL++ tokenizer, reserved words from the 8.0 reference in
-  `reservedWords.ts`). It fails open: non-OTel collections, fields present in
-  inferred columns, lookup errors, metric sources, and text it cannot scope
-  (joins, UNNEST, LET, subqueries, …) all pass. Map subfields, functions,
-  aliases, parameters and range variables are not field roots.
+- **Unknown columns (Q53).** `mcp/tools/query/unknownColumns.ts` rejects an MCP
+  builder tile or raw SQL statement that reads a field root an OTel collection
+  lacks, with upstream's `UNKNOWN_IDENTIFIER` text, before sending it. Roots
+  come from `common-utils/src/couchbase/fieldRefs.ts` (a small SQL++ tokenizer,
+  reserved words from the 8.0 reference in `reservedWords.ts`). It fails open:
+  non-OTel collections, fields present in inferred columns, lookup errors,
+  metric sources, and text it cannot scope (joins, UNNEST, LET, subqueries, …)
+  all pass. Map subfields, functions, aliases, parameters and range variables
+  are not field roots.
 - **Table metadata (Q54).** The `mcp-sources` decision in `port/features.json`
   records the ClickHouse-only describe fields as not applicable;
-  `port/inventory.sh render` writes it into `docs/parity.md`. That command
-  also rewrites the Phase 2 inventory block in this file, so only
-  `docs/parity.md` and `port/state/inventory/parity.json` were kept.
+  `port/inventory.sh render` writes it into `docs/parity.md`. That command also
+  rewrites the Phase 2 inventory block in this file, so only `docs/parity.md`
+  and `port/state/inventory/parity.json` were kept.
 
 - **Metric tools (Q26, Q25).** `cbt_list_metrics` and `cbt_describe_metric`
-  build SQL++ in `common-utils/src/couchbase/metricQueries.ts` and read
-  columns through `describeColumns` (`mcp/tools/sources/metricTable.ts`), so
-  empty OTel kind collections report the declared schema.
-- **Integers (Q24).** Strings at the data-client level; tools that need a
-  number (`cbt_describe_table` document count) call `Number()`.
+  build SQL++ in `common-utils/src/couchbase/metricQueries.ts` and read columns
+  through `describeColumns` (`mcp/tools/sources/metricTable.ts`), so empty OTel
+  kind collections report the declared schema.
+- **Integers (Q24).** Strings at the data-client level; tools that need a number
+  (`cbt_describe_table` document count) call `Number()`.
 - **MCP query timeout.** `DataClientOptions.queryTimeoutMs` (30 s via
   `MCP_DATA_CLIENT_OPTIONS`) mirrors upstream's `max_execution_time: 30`. The
   SDK sends the server 500 ms less (`29.5s` in `system:active_requests`).
-- **Statement keywords.** `assertAllowedStatement` raises `PARSING_FAILED` for
-  a leading word that starts no SQL++ statement; known write keywords still
-  raise `STATEMENT_NOT_ALLOWED`.
+- **Statement keywords.** `assertAllowedStatement` raises `PARSING_FAILED` for a
+  leading word that starts no SQL++ statement; known write keywords still raise
+  `STATEMENT_NOT_ALLOWED`.
 - **`cbt_describe_table`.** `describeTableDetails.ts` reads indexes from
-  `system:indexes`, counts documents, matches saved sources, and samples
-  through an online GSI index (`<leading key> IS NOT MISSING`), because the
+  `system:indexes`, counts documents, matches saved sources, and samples through
+  an online GSI index (`<leading key> IS NOT MISSING`), because the
   least-privileged query user may not run sequential scans.
 - **Fixture isolation.** `clearFixtureTables()` still skips `otel_traces`, as
-  upstream's `clearClickhouseTables` does, so `trace.int.test.ts` counts
-  assume a fresh stack. A `make ci-int` that reuses an already running
-  compose project (here `int-47`, left up by `make dev-int`) fails 8 trace
-  cases on span counts (22 for an expected 2) from earlier runs' spans; a
-  fresh stack is green. Not a product defect.
+  upstream's `clearClickhouseTables` does, so `trace.int.test.ts` counts assume
+  a fresh stack. A `make ci-int` that reuses an already running compose project
+  (here `int-47`, left up by `make dev-int`) fails 8 trace cases on span counts
+  (22 for an expected 2) from earlier runs' spans; a fresh stack is green. Not a
+  product defect.
 - **Fifth integration shard.** `.github/workflows/main.yml` runs
   `integration-shards` as `[1, 2, 3, 4, 5]` (pre-approved policy): shard 1 had
   reached 48m50s of 55. The `integration` aggregator needs no change.
 
 ### R2b: alert integration suites (2026-11-24, `mm--v1-r2b-alert-int-suites`)
 
-The last five deferred suites (`tasks/checkAlerts/__tests__/{checkAlerts,
-multiChannelAlerts,renderAlertTemplate,singleInvocationAlert}` and
-`tasks/checkAlerts/providers/__tests__/default`) run in `yarn ci:int`, and
-`deferredChIntSuites` is deleted from `packages/api/jest.int.config.js`.
-Counts and causes are in `docs/v1-release-plan.md` (R2b result).
+The last five deferred suites
+(`tasks/checkAlerts/__tests__/{checkAlerts, multiChannelAlerts,renderAlertTemplate,singleInvocationAlert}`
+and `tasks/checkAlerts/providers/__tests__/default`) run in `yarn ci:int`, and
+`deferredChIntSuites` is deleted from `packages/api/jest.int.config.js`. Counts
+and causes are in `docs/v1-release-plan.md` (R2b result).
 
 - **Zero-row results.** `inferMeta` builds column metadata from rows, so an
   empty SQL++ result has none; ClickHouse sends the header anyway.
-  `getResponseMetadata` (`tasks/checkAlerts/index.ts`) treats zero rows and
-  zero columns as an empty window instead of failing the evaluation, so
-  alerts resolve and backfill as upstream's do.
-- **Formula column type.** `couchbaseColumnTypesForConfig` hints formula
-  columns `Nullable(Float64)`, as ClickHouse types the arithmetic, so a
-  NULL-only formula (zero denominator) still has a numeric value column.
+  `getResponseMetadata` (`tasks/checkAlerts/index.ts`) treats zero rows and zero
+  columns as an empty window instead of failing the evaluation, so alerts
+  resolve and backfill as upstream's do.
+- **Formula column type.** `couchbaseColumnTypesForConfig` hints formula columns
+  `Nullable(Float64)`, as ClickHouse types the arithmetic, so a NULL-only
+  formula (zero denominator) still has a numeric value column.
 - **Raw SQL alert inputs.** SQL++ per rule 6; the bucket expression is
-  `MILLIS_TO_UTC(FLOOR(STR_TO_MILLIS(ts) / ($intervalSeconds * 1000)) *
-  ($intervalSeconds * 1000))`, and the date range binds
-  `$startDateMilliseconds` / `$endDateMilliseconds` against
-  `STR_TO_MILLIS(Timestamp)`.
+  `MILLIS_TO_UTC(FLOOR(STR_TO_MILLIS(ts) / ($intervalSeconds * 1000)) * ($intervalSeconds * 1000))`,
+  and the date range binds `$startDateMilliseconds` / `$endDateMilliseconds`
+  against `STR_TO_MILLIS(Timestamp)`.
 - **Materialized views.** Dropped with sign-off in 5f64b57. The MV alert case
-  feeds the base collection the same counts upstream pre-aggregated into the
-  MV and keeps upstream's assertions.
+  feeds the base collection the same counts upstream pre-aggregated into the MV
+  and keeps upstream's assertions.
 - **Fixture DDL.** The escaped-filter case creates its collection and a
   `Timestamp` index with SQL++ and retries the index while the collection
   manifest propagates; it drops the collection afterwards.
@@ -3884,14 +3863,14 @@ ingest image twice. Timings per phase and per shard are in
 - **One ingest build.** `couchbase-init` reuses the `ingest` image
   (`docker tag hdx-ci-ingest:latest hdx-ci-couchbase-init:latest`); compose
   `up --no-build` finds both project tags.
-- **Collector layer cache.** `docker buildx bake -f docker-compose.ci.yml
-  otel-collector` on the `setup-buildx-action` builder (`use: false`, so
-  `docker compose build` stays on the default driver), `cache-from`
-  `type=gha,scope=ci-otel-collector`, `cache-to` with `mode=max` from shard 1
-  only. Needs `crazy-max/ghaction-github-runtime` (already in the job) for the
-  cache token.
-- **Background disk cleanup.** The toolcache `rm -rf` starts after checkout
-  and the docker step waits on `/tmp/cbt-disk-freed`.
+- **Collector layer cache.**
+  `docker buildx bake -f docker-compose.ci.yml otel-collector` on the
+  `setup-buildx-action` builder (`use: false`, so `docker compose build` stays
+  on the default driver), `cache-from` `type=gha,scope=ci-otel-collector`,
+  `cache-to` with `mode=max` from shard 1 only. Needs
+  `crazy-max/ghaction-github-runtime` (already in the job) for the cache token.
+- **Background disk cleanup.** The toolcache `rm -rf` starts after checkout and
+  the docker step waits on `/tmp/cbt-disk-freed`.
 - Not changed: shard count (5), timeout (55 min), the prune between builds
   (ENOSPC), ingest's compose build (bake `--load` of ingest had left it
   unhealthy), the Couchbase cluster init (70 s) and readiness polling.
@@ -3899,64 +3878,64 @@ ingest image twice. Timings per phase and per shard are in
 ### R3: service map node latency (2026-11-24, `mm--v1-r3-service-map-latency`)
 
 - **Upstream** (`useServiceMap.tsx` at f172a489c818): one join of server spans
-  to client spans on `(traceId, parentSpanId = spanId)`, `GROUP BY GROUPING
-  SETS ((server, client), (server))`, `quantiles(0.5, 0.95, 0.99)` of the
-  server span duration. That gives node percentiles over every caller,
-  instrumented or not, with self-calls excluded.
+  to client spans on `(traceId, parentSpanId = spanId)`,
+  `GROUP BY GROUPING SETS ((server, client), (server))`,
+  `quantiles(0.5, 0.95, 0.99)` of the server span duration. That gives node
+  percentiles over every caller, instrumented or not, with self-calls excluded.
 - **SQL++ 8.0** has `MEDIAN` but no percentile aggregate (checked in the 8.0
   aggregate function reference). Edges keep `ARRAY_SORT` of their numeric
   durations. Each node flattens its edges' arrays
-  (`ARRAY_FLATTEN(ARRAY_AGG(edge.durs), 1)`), the same span set as the
-  upstream node grouping set. Both use `sortedArrayQuantile`, the linear
-  interpolation already in `quantile()`, which ClickHouse's reservoir
-  `quantile` also uses for fewer than 8192 samples.
-- **Edge fixes:** nearest-rank switched to interpolation (p95 of 10…70: 60 →
-  67, as upstream). Non-numeric durations are dropped before sorting:
-  `ARRAY_AGG` keeps NULLs and `ARRAY_SORT` puts them first.
+  (`ARRAY_FLATTEN(ARRAY_AGG(edge.durs), 1)`), the same span set as the upstream
+  node grouping set. Both use `sortedArrayQuantile`, the linear interpolation
+  already in `quantile()`, which ClickHouse's reservoir `quantile` also uses for
+  fewer than 8192 samples.
+- **Edge fixes:** nearest-rank switched to interpolation (p95 of 10…70: 60 → 67,
+  as upstream). Non-numeric durations are dropped before sorting: `ARRAY_AGG`
+  keeps NULLs and `ARRAY_SORT` puts them first.
 - **Uninstrumented callers:** an unmatched LEFT JOIN leaves `c.serviceName`
   MISSING, which `IS NULL` rejects, so those spans fell out of every row.
   ClickHouse fills `''` and keeps them. The filter is now
   `c.serviceName IS NOT VALUED OR s.serviceName != c.serviceName`.
-- **Parity:** `port/query-parity` was replaced by `port/golden` in Phase 10,
-  and its goldens can't cover a query built outside `renderChartConfig`.
+- **Parity:** `port/query-parity` was replaced by `port/golden` in Phase 10, and
+  its goldens can't cover a query built outside `renderChartConfig`.
   `serviceMap.live.test.ts` runs the real statement on an inline span set and
   checks upstream's rows and the hook's `IncomingRequestStats`.
 - `spanAggregationRowFromJson` was pulled out of the hook so the live test
-  parses rows exactly as the page does. The query REST client for app live
-  tests moved to `src/couchbase/__fixtures__/liveQuery.ts`.
+  parses rows exactly as the page does. The query REST client for app live tests
+  moved to `src/couchbase/__fixtures__/liveQuery.ts`.
 - Shard 2 is left as it is (user, 2026-11-24). Shards change only if one
   actually times out.
 
 ### R4: Playwright specs on Couchbase (2026-11-24, `mm--v1-r4-playwright-couchbase`)
 
-R0 left 115 failures and 8 flaky tests across 29 specs. The full local suite
-now passes on a clean stack; skips are listed below with their reasons.
+R0 left 115 failures and 8 flaky tests across 29 specs. The full local suite now
+passes on a clean stack; skips are listed below with their reasons.
 
 **Path corrections.** The onboarding `system.tables` probe named as R4's
-starting point was already fixed by D5, and `route-smoke` passes. The
-R4 text says "all four shards". `make e2e` runs the whole suite unsharded
-locally. The four shards are CI's split of the same suite (R5).
+starting point was already fixed by D5, and `route-smoke` passes. The R4 text
+says "all four shards". `make e2e` runs the whole suite unsharded locally. The
+four shards are CI's split of the same suite (R5).
 
-**D15 seed.** `seed-couchbase.ts` was split so each file stays under 300
-lines. `seed-couchbase-client.ts` holds the query REST client.
-`seed-rows-k8s.ts` holds the Kubernetes logs and `k8s.event` logs, and
-`seed-rows-k8s-metrics.ts` the gauge/sum rows.
-`seed-rows-sessions.ts` and `seed-otel-sessions.ts` hold the OTel browser SDK
-spans, replay rows and browser log events. `seed-rows-filter-keys.ts` holds
-the interesting-filter-keys and metadata-MV logs. Regular log rows no longer
-carry a synthetic `k8s.pod.uid`, which put the Infrastructure tab on rows with
-no Kubernetes context.
+**D15 seed.** `seed-couchbase.ts` was split so each file stays under 300 lines.
+`seed-couchbase-client.ts` holds the query REST client. `seed-rows-k8s.ts` holds
+the Kubernetes logs and `k8s.event` logs, and `seed-rows-k8s-metrics.ts` the
+gauge/sum rows. `seed-rows-sessions.ts` and `seed-otel-sessions.ts` hold the
+OTel browser SDK spans, replay rows and browser log events.
+`seed-rows-filter-keys.ts` holds the interesting-filter-keys and metadata-MV
+logs. Regular log rows no longer carry a synthetic `k8s.pod.uid`, which put the
+Infrastructure tab on rows with no Kubernetes context.
 
 **Product fixes (all small, in scope):**
 
-- `rewriteSqlFragment` translates ClickHouse `JSONExtract{String,Int,Float,
-  Bool,Raw}(col, 'k', ...)` into `DECODE_JSON` field access with upstream's
-  empty defaults (`jsonExtract.ts`). It also backtick-quotes reserved words
-  used as path segments (`ResourceAttributesJSON.key`).
+- `rewriteSqlFragment` translates ClickHouse
+  `JSONExtract{String,Int,Float, Bool,Raw}(col, 'k', ...)` into `DECODE_JSON`
+  field access with upstream's empty defaults (`jsonExtract.ts`). It also
+  backtick-quotes reserved words used as path segments
+  (`ResourceAttributesJSON.key`).
 - String select lists quote a bare alias that is a SQL++ reserved word
-  (`SeverityText as level`). A group key that the string select already
-  projects stays unwrapped. Wrapping it in `IFMISSINGORNULL(…, "")` failed
-  planning with 4210.
+  (`SeverityText as level`). A group key that the string select already projects
+  stays unwrapped. Wrapping it in `IFMISSINGORNULL(…, "")` failed planning
+  with 4210.
 - A `*` select item adds no hinted column, so rows get no `"*": null` key.
 - Heatmaps: `widthBucket` is a `CASE`, log scale uses `LN(GREATEST(…))`
   (`heatmapBucketSqlpp.ts`), and the default `count()` becomes `COUNT(*)`.
@@ -3968,24 +3947,23 @@ no Kubernetes context.
   `CBT_COUCHBASE_BUCKET`, instead of ClickHouse's `default` database.
   `isValidMetricTable` accepts an empty collection (INFER 7014, D4), like an
   empty ClickHouse table that still has DDL. The series table stays strict.
-- Dashboard filter values: a key that is not a path (`toString(ServiceName)`)
-  is rendered as a SQL fragment, as upstream sends it raw. Facet keys go
-  through `facetKeyValuePath`.
+- Dashboard filter values: a key that is not a path (`toString(ServiceName)`) is
+  rendered as a SQL fragment, as upstream sends it raw. Facet keys go through
+  `facetKeyValuePath`.
 - Kubernetes tables read Map group-by cells under either the ClickHouse name
   (`arrayElement(…)`) or the SQL++ one. Trace, session and waterfall panels use
   dialect expressions (`durationMsExpr`, `spanRowIdExpr`,
-  `spanExceptionAttributesExpr`, `ifNonEmptyThenExpr`) and run as row
-  searches, so rows carry `__cbt_id`. Linked-span lookups use SQL++
-  `ANY … SATISFIES` (`linkedSpansWhere.ts`).
-- Paginated search takes `meta` from the first page that has columns, not
-  from an empty leading window. Pattern sample rows with no id render
+  `spanExceptionAttributesExpr`, `ifNonEmptyThenExpr`) and run as row searches,
+  so rows carry `__cbt_id`. Linked-span lookups use SQL++ `ANY … SATISFIES`
+  (`linkedSpansWhere.ts`).
+- Paginated search takes `meta` from the first page that has columns, not from
+  an empty leading window. Pattern sample rows with no id render
   `table-row-undefined`, as upstream does.
 
 **Spec adaptations (Couchbase differs):**
 
 - `navigation`: changelog link is `blob/v9.9.9/…` (B9 tags).
-- `histogram-group-by`, `dashboard`: value lists are SQL++ arrays
-  (`IN ['…']`).
+- `histogram-group-by`, `dashboard`: value lists are SQL++ arrays (`IN ['…']`).
 - `team`: connection detail reads `Connection string:` instead of `Host:`.
 - `heatmap-series`: bucket-width assertions use the SQL++ interval text
   (`utils/sqlpp-interval.ts`), and requests go to `/couchbase/query`.
@@ -3993,45 +3971,50 @@ no Kubernetes context.
   same macros and the same results. The source payload carries
   `timestampFormat`.
 - `json-viewer-key-order`: Couchbase returns fields sorted by name, so the
-  "original" order is ascending. The spec asserts the same keys and no `*`
-  (Q56).
+  "original" order is ascending. The spec asserts the same keys and no `*` (Q56,
+  accepted).
 - `metric-table-autofill`: the new-source case expects the provisioned
   `otel_metrics_gauge` and `otel_metrics_sum`, because the `otel` bucket holds
   them next to the `e2e_` collections. The saved-source payload carries scope
-  and `timestampFormat`.
+  and `timestampFormat`. The "database changes" case types the bucket into the
+  Bucket input (`SourceFormComponent.selectDatabase`), since Couchbase has no
+  database dropdown, and reads from `e2e_metrics_alt` (Q57).
+- E2E alternate bucket (Q57): `seed-alt-bucket.ts` creates `e2e_metrics_alt`
+  through the management REST API (100 MiB, the 8.0 minimum, Magma with the
+  default 128 vBuckets, no replicas) plus the `default` scope and empty
+  `alt_otel_metrics_gauge` and `alt_otel_metrics_sum` with primary indexes,
+  matching upstream's empty `CREATE TABLE ... AS` copies. Quota: `otel` 1024 +
+  `cbt_meta` 256 + 100 of the node's 2048 MiB. E2E only; no product or compose
+  change.
 - `DashboardsListPage`: preset cards are matched by title prefix, because the
   Kubernetes card description contains "cluster".
-- `kubernetes` "filter by namespace": 10 s for the filtered pods table, the
-  same budget the spec's sorting tests use. It timed out at 5 s under four
-  workers.
-- `dashboard` "Number chart renders with Raw SQL query": 15 s for the value,
-  the same budget as the sibling raw SQL tile tests. The SQL++ range filter
-  scans the logs collection, and this test was flaky at 5 s on a full run.
+- `kubernetes` "filter by namespace": 10 s for the filtered pods table, the same
+  budget the spec's sorting tests use. It timed out at 5 s under four workers.
+- `dashboard` "Number chart renders with Raw SQL query": 15 s for the value, the
+  same budget as the sibling raw SQL tile tests. The SQL++ range filter scans
+  the logs collection, and this test was flaky at 5 s on a full run.
 - `metric-name-streaming` (a Couchbase-only spec): polls until gauge names
   arrive, because names stream in by type.
 
-**Test helpers (no assertion changes):** `TimePickerComponent.selectTimeInterval`
-waits for the popover to close, so the next `open()` does not catch the
-closing popover. `DashboardPage.selectFullscreenRelativeTime` scopes to the
-fullscreen input's own popover through `aria-controls`.
-`playwright.config.ts` uses 4 workers locally as well as in CI. Playwright's
-default is half the host's cores, which overloads the 2-CPU E2E Couchbase.
+**Test helpers (no assertion changes):**
+`TimePickerComponent.selectTimeInterval` waits for the popover to close, so the
+next `open()` does not catch the closing popover.
+`DashboardPage.selectFullscreenRelativeTime` scopes to the fullscreen input's
+own popover through `aria-controls`. `playwright.config.ts` uses 4 workers
+locally as well as in CI. Playwright's default is half the host's cores, which
+overloads the 2-CPU E2E Couchbase.
 
 **Explicit skips:**
 
 - `select-star-error-state.spec.ts`: a ClickHouse Distributed-table
-  missing-column error, which no Couchbase collection can reach (Q55).
-- `metric-table-autofill` "database changes": needs a second bucket
-  (`e2e_metrics_alt`), and the E2E data quota is split between `otel` and
-  `cbt_meta` (Q57). This was a bare `test.skip` from Phase 10 and now has a
-  reason.
-- `sources.spec.ts` source-form test: upstream's own full-stack skip,
-  unchanged.
+  missing-column error, which no Couchbase collection can reach. Signed off as
+  not applicable (Q55, `app-search` in `docs/parity.md`).
+- `sources.spec.ts` source-form test: upstream's own full-stack skip, unchanged.
 
 **Runs.** On the final code, two clean `make e2e` runs in a row each had 453
-passed, 4 skipped and exit 0. Each had one upstream UI race that passed on
-retry (`dashboard-static-filters` freeform submit, and `team` cancel-rename
-on the shared team). Neither involves a data query. Local gates: `make ci-lint`
-(app at its 496-warning cap), `make ci-unit`, `make ci-int`, and
-`port/couchbase-test/run.sh`, all green. `ci-unit`'s `changeset-hash` tests
-need to run outside the agent sandbox, which blocks `git init` in a temp dir.
+passed, 4 skipped and exit 0. Each had one upstream UI race that passed on retry
+(`dashboard-static-filters` freeform submit, and `team` cancel-rename on the
+shared team). Neither involves a data query. Local gates: `make ci-lint` (app at
+its 496-warning cap), `make ci-unit`, `make ci-int`, and
+`port/couchbase-test/run.sh`, all green. `ci-unit`'s `changeset-hash` tests need
+to run outside the agent sandbox, which blocks `git init` in a temp dir.

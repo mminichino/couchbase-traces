@@ -80,21 +80,21 @@ no releases, and no git tags exist on `origin`).
 
 ### 2.2 Post-1.0
 
-| ID  | Item                                                     | Evidence                                                                                                                                                                                                                                                                                                                                                                                                                                                       | Proposed fix                                                                                        | Size           |
-| --- | -------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------- | -------------- |
-| P1  | ClickHouse-named identifiers and legacy CH connection UI | `toQuotedClickHouseKeyExpression` (31 refs), `toClickHouseKeyExpression`, `cleanClickHouseExpression`, `ClickhouseSettingForm` / `useUpdateClickhouseSettings` (`TeamQueryConfigSection.tsx:53-67`), `hasClickHouse` in `connection.ts`, `AppNav.tsx:103,506`, `Spotlights.tsx`, `ConnectionForm.tsx:258` "ClickHouse (no longer supported)", `isClickhouseBuild` in `hdxDebug.ts`, parity title "ClickHouse query settings"; `cli/src/utils/parseError.ts:33` | Rename to neutral names; remove the legacy connection branch once no stored CH connection can exist | M              |
-| P2  | Leftover ClickHouse migrations                           | `packages/api/migrations/ch/` (4 SQL files, unreferenced)                                                                                                                                                                                                                                                                                                                                                                                                      | Delete                                                                                              | S              |
-| P3  | Retained `@clickhouse/*` packages                        | `@clickhouse/clickstack-node` (api, app), `@clickhouse/clickstack-browser`, `@clickhouse/click-ui` (app); allowlisted as `retained_dependency` (77 entries in `port/remove-ch/allowlist.json`)                                                                                                                                                                                                                                                                 | Replace self-telemetry with plain OpenTelemetry SDKs; replace click-ui components with Mantine      | L              |
-| P4  | Internal `hdx` / `HyperDX` naming                        | 134 `hdx`/`HDX` refs in 71 source files (`HDX_*` constants in `packages/app/src/config.ts`, `hdxMTViews.ts`, `hdxDebug.ts`, `x-hdx-team` header in the CLI), `packages/hdx-eval` package name, dev tooling paths `~/.config/hyperdx/{dev-slots,nx-cache}` (`scripts/dev-env.sh:31,44`, `scripts/test-e2e.sh:65`), `scripts/dev-portal/*`, `docker/hyperdx/` directory, comments                                                                                | Mechanical rename; the `x-hdx-team` header needs an alias period because it is wire-visible         | M              |
-| P5  | Lint warning caps and ratchet baselines                  | `--max-warnings` api 320 (313 measured at C5), app 568, common-utils 100; `scripts/ci/ratchet-baseline.json` `as-any` api 74 / app 150 / common-utils 21, `eslint-disable` api 32 / app 117 / common-utils 14                                                                                                                                                                                                                                                  | Lower caps to measured values now (free), ratchet down per release                                  | S then ongoing |
-| P6  | jscpd advisory clones                                    | `.github/workflows/jscpd.yml:35-38` `continue-on-error`; `Makefile` `-yarn dupes`                                                                                                                                                                                                                                                                                                                                                                              | Review the clone report the port introduced; fold real duplicates into helpers                      | M              |
-| P7  | common-utils coverage floors reset low                   | port-notes Phase 11: 76/63/72/77                                                                                                                                                                                                                                                                                                                                                                                                                               | Raise as tests land (B1 will raise them)                                                            | S              |
-| P8  | No rollup collections                                    | port-notes Phase 5: `otel_*_kv_rollup_15m` not built; value lists use sampling                                                                                                                                                                                                                                                                                                                                                                                 | Revisit only if field-value latency regresses at scale                                              | M              |
-| P9  | Harness flake: `UnambiguousTimeoutError` after rebalance | port-notes C1 "Harness flake seen once"                                                                                                                                                                                                                                                                                                                                                                                                                        | `init.sh` waits for rebalance before metadata provisioning                                          | S              |
-| P10 | Port scaffolding at the repo root                        | `PHASE_0_SPEC.md` … `PHASE_11_SPEC.md`; AGENTS.md cites `COUCHBASE_PORT_PLAN.md`, which is absent (Phase 0 waiver)                                                                                                                                                                                                                                                                                                                                             | Move specs to `docs/history/`, update AGENTS.md to point at this plan                               | S              |
-| P11 | `main.yml` also triggers on a `v1` branch                | `.github/workflows/main.yml:4,6` (`branches: [main, v1]`, upstream legacy)                                                                                                                                                                                                                                                                                                                                                                                     | Leave as is; if the user wants a `release/1.x` maintenance branch later, add it then                | S              |
-| P12 | Upstream TODOs                                           | 11 port-unrelated `TODO`s (e.g. `tasks/checkAlerts/transports/generic.ts:203` webhook signing, `controllers/ai.ts:122`)                                                                                                                                                                                                                                                                                                                                        | Track as normal backlog; webhook signing is the one with security value                             | —              |
-| P13 | Completed-requests log settings at startup (v1.0.1) | D29: `system:completed_requests` keeps only requests over `queryCompletedThreshold` (default 1000 ms) and at most `queryCompletedLimit` (default 4000), so fast attributed queries are not recorded; v1.0.0 leaves both as they are (Q52) | Optional `CBT_COUCHBASE_COMPLETED_THRESHOLD_MS` / `CBT_COUCHBASE_COMPLETED_LIMIT`, applied by `ingest` setup; see 2.3 | S |
+| ID  | Item                                                     | Evidence                                                                                                                                                                                                                                                                                                                                                                                                                                                       | Proposed fix                                                                                                          | Size           |
+| --- | -------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------- | -------------- |
+| P1  | ClickHouse-named identifiers and legacy CH connection UI | `toQuotedClickHouseKeyExpression` (31 refs), `toClickHouseKeyExpression`, `cleanClickHouseExpression`, `ClickhouseSettingForm` / `useUpdateClickhouseSettings` (`TeamQueryConfigSection.tsx:53-67`), `hasClickHouse` in `connection.ts`, `AppNav.tsx:103,506`, `Spotlights.tsx`, `ConnectionForm.tsx:258` "ClickHouse (no longer supported)", `isClickhouseBuild` in `hdxDebug.ts`, parity title "ClickHouse query settings"; `cli/src/utils/parseError.ts:33` | Rename to neutral names; remove the legacy connection branch once no stored CH connection can exist                   | M              |
+| P2  | Leftover ClickHouse migrations                           | `packages/api/migrations/ch/` (4 SQL files, unreferenced)                                                                                                                                                                                                                                                                                                                                                                                                      | Delete                                                                                                                | S              |
+| P3  | Retained `@clickhouse/*` packages                        | `@clickhouse/clickstack-node` (api, app), `@clickhouse/clickstack-browser`, `@clickhouse/click-ui` (app); allowlisted as `retained_dependency` (77 entries in `port/remove-ch/allowlist.json`)                                                                                                                                                                                                                                                                 | Replace self-telemetry with plain OpenTelemetry SDKs; replace click-ui components with Mantine                        | L              |
+| P4  | Internal `hdx` / `HyperDX` naming                        | 134 `hdx`/`HDX` refs in 71 source files (`HDX_*` constants in `packages/app/src/config.ts`, `hdxMTViews.ts`, `hdxDebug.ts`, `x-hdx-team` header in the CLI), `packages/hdx-eval` package name, dev tooling paths `~/.config/hyperdx/{dev-slots,nx-cache}` (`scripts/dev-env.sh:31,44`, `scripts/test-e2e.sh:65`), `scripts/dev-portal/*`, `docker/hyperdx/` directory, comments                                                                                | Mechanical rename; the `x-hdx-team` header needs an alias period because it is wire-visible                           | M              |
+| P5  | Lint warning caps and ratchet baselines                  | `--max-warnings` api 320 (313 measured at C5), app 568, common-utils 100; `scripts/ci/ratchet-baseline.json` `as-any` api 74 / app 150 / common-utils 21, `eslint-disable` api 32 / app 117 / common-utils 14                                                                                                                                                                                                                                                  | Lower caps to measured values now (free), ratchet down per release                                                    | S then ongoing |
+| P6  | jscpd advisory clones                                    | `.github/workflows/jscpd.yml:35-38` `continue-on-error`; `Makefile` `-yarn dupes`                                                                                                                                                                                                                                                                                                                                                                              | Review the clone report the port introduced; fold real duplicates into helpers                                        | M              |
+| P7  | common-utils coverage floors reset low                   | port-notes Phase 11: 76/63/72/77                                                                                                                                                                                                                                                                                                                                                                                                                               | Raise as tests land (B1 will raise them)                                                                              | S              |
+| P8  | No rollup collections                                    | port-notes Phase 5: `otel_*_kv_rollup_15m` not built; value lists use sampling                                                                                                                                                                                                                                                                                                                                                                                 | Revisit only if field-value latency regresses at scale                                                                | M              |
+| P9  | Harness flake: `UnambiguousTimeoutError` after rebalance | port-notes C1 "Harness flake seen once"                                                                                                                                                                                                                                                                                                                                                                                                                        | `init.sh` waits for rebalance before metadata provisioning                                                            | S              |
+| P10 | Port scaffolding at the repo root                        | `PHASE_0_SPEC.md` … `PHASE_11_SPEC.md`; AGENTS.md cites `COUCHBASE_PORT_PLAN.md`, which is absent (Phase 0 waiver)                                                                                                                                                                                                                                                                                                                                             | Move specs to `docs/history/`, update AGENTS.md to point at this plan                                                 | S              |
+| P11 | `main.yml` also triggers on a `v1` branch                | `.github/workflows/main.yml:4,6` (`branches: [main, v1]`, upstream legacy)                                                                                                                                                                                                                                                                                                                                                                                     | Leave as is; if the user wants a `release/1.x` maintenance branch later, add it then                                  | S              |
+| P12 | Upstream TODOs                                           | 11 port-unrelated `TODO`s (e.g. `tasks/checkAlerts/transports/generic.ts:203` webhook signing, `controllers/ai.ts:122`)                                                                                                                                                                                                                                                                                                                                        | Track as normal backlog; webhook signing is the one with security value                                               | —              |
+| P13 | Completed-requests log settings at startup (v1.0.1)      | D29: `system:completed_requests` keeps only requests over `queryCompletedThreshold` (default 1000 ms) and at most `queryCompletedLimit` (default 4000), so fast attributed queries are not recorded; v1.0.0 leaves both as they are (Q52)                                                                                                                                                                                                                      | Optional `CBT_COUCHBASE_COMPLETED_THRESHOLD_MS` / `CBT_COUCHBASE_COMPLETED_LIMIT`, applied by `ingest` setup; see 2.3 | S              |
 
 Accepted, no action: the 51 skipped `metadata.couchbase.int.test.ts` tests on
 the compose CI stack (user decision after C0; they run in the
@@ -108,44 +108,41 @@ license rows (idle, ship inside auto-instrumentations).
 
 Decision (Q52, user 2026-11-24): v1.0.0 does not change the cluster's
 completed-requests settings at startup. D29 tags every query, but
-`system:completed_requests` records only requests slower than the threshold,
-so most attributed queries are visible only to operators who change the
-setting themselves (`docs/port-notes.md`, D29). v1.0.1 adds an opt-in setting.
+`system:completed_requests` records only requests slower than the threshold, so
+most attributed queries are visible only to operators who change the setting
+themselves (`docs/port-notes.md`, D29). v1.0.1 adds an opt-in setting.
 
-- **Settings (8.0 docs).** Cluster-level `queryCompletedThreshold` (ms; `0`
-  logs every request, negative logs none; default 1000) and
-  `queryCompletedLimit` (entries per query node; `0` tracks none, `-1` no
-  limit; default 4000), written with `POST /settings/querySettings` on the
-  cluster management port (8091/18091). Cluster level, not the node-level
-  `/admin/settings` the int suite uses, so every query node, including ones
-  added later, gets the value.
+- **Settings (8.0 docs).** Cluster-level `queryCompletedThreshold` (ms; `0` logs
+  every request, negative logs none; default 1000) and `queryCompletedLimit`
+  (entries per query node; `0` tracks none, `-1` no limit; default 4000),
+  written with `POST /settings/querySettings` on the cluster management port
+  (8091/18091). Cluster level, not the node-level `/admin/settings` the int
+  suite uses, so every query node, including ones added later, gets the value.
 - **Configuration.** `CBT_COUCHBASE_COMPLETED_THRESHOLD_MS` and
   `CBT_COUCHBASE_COMPLETED_LIMIT`, both optional integers. Unset means "do not
-  touch", so an existing cluster keeps whatever its operator chose. No
-  per-team or UI setting: the value is cluster-wide.
-- **Where it lives.** The `ingest` setup CLI (`packages/ingest/src/setup/`),
-  a new `querySettings.ts` step run after users and indexes, using the
+  touch", so an existing cluster keeps whatever its operator chose. No per-team
+  or UI setting: the value is cluster-wide.
+- **Where it lives.** The `ingest` setup CLI (`packages/ingest/src/setup/`), a
+  new `querySettings.ts` step run after users and indexes, using the
   `CBT_COUCHBASE_ADMIN_*` credentials setup already requires. Not the API or
   ingest server process: their runtime users do not hold the role, and a
-  cluster-wide write belongs with provisioning. `--dry-run` prints the
-  intended change. Documented in `docs/` next to the other setup variables
-  and `.env.example`.
-- **Signature.** `ensureQuerySettings(opts: { mgmtUrl: string; username:
-  string; password: string; wanted: { completedThresholdMs?: number;
-  completedLimit?: number }; dryRun: boolean; fetchImpl?: typeof fetch }):
-  Promise<{ changed: string[]; skipped?: 'unset' | 'capella' | 'forbidden'
-  }>`. It reads `GET /settings/querySettings` first and writes only the keys
-  that differ.
+  cluster-wide write belongs with provisioning. `--dry-run` prints the intended
+  change. Documented in `docs/` next to the other setup variables and
+  `.env.example`.
+- **Signature.**
+  `ensureQuerySettings(opts: { mgmtUrl: string; username: string; password: string; wanted: { completedThresholdMs?: number; completedLimit?: number }; dryRun: boolean; fetchImpl?: typeof fetch }): Promise<{ changed: string[]; skipped?: 'unset' | 'capella' | 'forbidden' }>`.
+  It reads `GET /settings/querySettings` first and writes only the keys that
+  differ.
 
 Edge cases and errors:
 
 - **RBAC.** The write needs Full Admin or Cluster Admin. Without it the REST
   call answers 403: setup logs a warning naming the role and continues (exit
   code unchanged), since the setting is observability only.
-- **Capella.** Capella database credentials cannot call the cluster
-  management REST API, and the query settings are managed in the Capella UI
-  or support. When `isCapella(connstr)` is true, setup skips the step with a
-  notice telling the operator where to set it; it never fails setup.
+- **Capella.** Capella database credentials cannot call the cluster management
+  REST API, and the query settings are managed in the Capella UI or support.
+  When `isCapella(connstr)` is true, setup skips the step with a notice telling
+  the operator where to set it; it never fails setup.
 - **Invalid values.** Non-integers, a threshold below -1 or a limit below -1
   fail fast at argument parsing with `SetupError` (exit code 1) before any
   cluster call. A cluster 400 is reported with the server message.
@@ -162,9 +159,8 @@ Acceptance criteria:
 2. With `CBT_COUCHBASE_COMPLETED_THRESHOLD_MS=0`, a compose-stack test sees
    `queryCompletedThreshold: 0` and a fast SQL++ query from the API appears in
    `system:completed_requests` with its `hdx-` context id.
-3. A 403 is a warning and setup exits 0; a Capella connection string skips
-   the step with a notice; invalid values exit 1 without contacting the
-   cluster.
+3. A 403 is a warning and setup exits 0; a Capella connection string skips the
+   step with a notice; invalid values exit 1 without contacting the cluster.
 4. A second run with the same values writes nothing.
 5. `--dry-run` lists the keys it would change.
 
@@ -439,54 +435,54 @@ Each phase runs on its own `mm--…` branch, ends with `make ci-lint`,
 PR, and is merged before the next phase starts (AGENTS.md rule 1). No phase
 pushes to `main` directly.
 
-| Phase | Scope                                                     | Items                                                                                                                                                                     | Size | Depends on                    |
-| ----- | --------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---- | ----------------------------- |
-| R0    | Triage and quick fixes                                    | B3, B4, B16, B14 (local-mode half), P5 (lower caps to measured)                                                                                                           | M    | —                             |
-| R1    | Correctness and branding fixes                            | B5, B9, B11, B12, P2                                                                                                                                                      | M    | —                             |
-| D1    | Defects: SQL++ chart renderer                             | `granularity: 'auto'` throw; duplicate `__hdx_time_bucket` alias; `HAVING` on a select alias; ambiguous `group` alias (section 9.1)                                       | M    | R1                            |
-| D2    | Defects: MCP query and analysis tools                     | `count()`, `startsWith`, `toUnixTimestamp64Milli` in event patterns, denoise, emerging signals, service health; ClickHouse examples in tool descriptions (section 9.1)    | M    | D1                            |
-| D9    | Defects: builder expressions with `Map['k']` syntax       | Found in D2 (section 9.1)                                                                                                                                                 | M    | D2                            |
-| D8    | Defects: MCP reads miss freshly written rows (flaky)      | Found in D2 (section 9.1)                                                                                                                                                 | S    | D2                            |
-| D2b   | User-visible "legacy store" text (B17)                    | Rewrite user-visible strings (CLI help, OpenAPI, MCP prompts, UI, errors) and add a CI guard (section 9.1)                                                                | M    | D9                            |
-| D3    | Defects: MCP trace tools                                  | ClickHouse `{x:Type}` params, `toDateTime64`, `count()`, `toDate` in `waterfall.ts` and `breakdown.ts` (section 9.1)                                                      | M    | D1                            |
-| D4    | Defects: schema inference on empty collections            | INFER "No documents found" fails describe tools and alert column lookups (section 9.1)                                                                                    | S    | R1                            |
-| D5    | Defects: onboarding checklist                             | ClickHouse `system.tables` row-count probe sent to Couchbase on every page (section 9.1)                                                                                  | S    | R1                            |
-| D6    | Defects: alert connection resolution (investigate)        | 21 alert runs fail with "A connection id is required for Couchbase queries" (section 9.1)                                                                                 | S    | R1                            |
-| D7    | Defects: hidden formula operands returned as null columns | Found in D1 (section 9.1)                                                                                                                                                 | S    | D1                            |
-| D10   | Defects: page queries and alert detail not-found          | `/service-map`, `/kubernetes`, `/llm`, `/services`, `/sessions` SQL++ failures; `/alerts/[id]` 400 on an unknown id (section 9.1)                                         | M    | D6, D7                        |
-| D11   | Defects: alias WITH clauses in SQL++ (with D16, Q35)      | Found in D6 (section 9.1); D16 grouped-ratio `share_of_total` as its own commit in the same PR                                                                            | S    | D6, D10                       |
-| D12   | Defects: grouped alert history order                      | Found in D6 (section 9.1); product fix (Q31)                                                                                                                              | S    | —                             |
-| D13   | Defects: concurrent invite race (500)                     | Found in D6 (section 9.1)                                                                                                                                                 | S    | —                             |
-| D17   | Defects: multi-series HAVING and ORDER BY (Q36)           | Found in D16 (section 9.1); own PR after D13; fixed, Q41                                                                                                                  | S    | D13                           |
-| D18   | Defects: intermittent common-utils live tests (Q37)       | Found in D12 (section 9.1); seed lag fixed with D13; SDK timeout remainder in its own PR before D17 (Q39)                                                                 | S    | —                             |
-| D19   | Defects: `make ci-int` exits 1 after every test passed    | Found in D13 (section 9.1); with the D18 remainder (Q40)                                                                                                                  | S    | —                             |
-| D20   | Defects: mixed gauge/histogram charts drop scalar groups  | Found in D17 (section 9.1); next phase after D17 (Q42); fixed                                                                                                             | S    | D17                           |
-| D21   | Defects: cumulative histogram quantile zero-delta row     | Found in D20 (section 9.1); own PR before R2a (Q43); fixed                                                                                                                | S    | D20                           |
-| D22   | Defects: exp-histogram count partitions by a select alias | Found in D21 (section 9.1); own PR before R2a (Q44); fixed                                                                                                                | S    | D21                           |
-| D23   | Defects: metric source CTEs omit the warm-up window       | Found in D22 (section 9.1); own PR before R2a (Q45); fixed                                                                                                                | M    | D22                           |
-| D24   | Defects: metric charts ignore `where`; histograms `filters`| Found in D23 (section 9.1); with D25 in one PR before R2a (Q46); fixed                                                                                                    | M    | —                             |
-| D25   | Defects: Sum select alias is not defaulted to `Value`     | Found in D23 (section 9.1); with D24 (Q47); fixed                                                                                                                         | S    | —                             |
-| D26   | Defects: range end is exclusive where upstream is inclusive| Found in D23 (section 9.1); own PR after D24/D25, before R2a (Q48); fixed                                                                                                 | M    | —                             |
-| D27   | Defects: metric sources omit upstream `Flags` bit-0 filter | Found in D24 (section 9.1); with D26 in one PR before R2a (Q49); fixed                                                                                                    | S    | —                             |
-| D28   | Defects: unset `whereLanguage` is Lucene, not SQL          | Found in D24 (section 9.1); with D26 in one PR before R2a (Q50); fixed                                                                                                    | S    | —                             |
-| D29   | Defects: request query attribution never reaches SQL++     | Found in R2a (section 9.1); own PR right after R2a, before R2c and R2b (Q51); carries the `queryAttribution` int suite; fixed                                              | M    | R2a                           |
-| D14   | Dev tooling: live-test port offset fallback               | Found in D7 (section 9.1)                                                                                                                                                 | S    | —                             |
-| R2a   | Port deferred int suites: internal and external API       | B1 (10 suites: `routers/api/{dashboard,iac,sources,connections}`, `routers/external-api/{charts,search,sources,sources-crud,connections}`, `middleware/queryAttribution`); 9 ported, `queryAttribution` moves to D29 | L    | D1                            |
-| R2b   | Port deferred int suites: alerts                          | B1 (5 suites: `checkAlerts`, `multiChannelAlerts`, `renderAlertTemplate`, `singleInvocationAlert`, `providers/default`; 335 tests, 93 failing per R0)                     | L    | R2c, D1, D4, D6               |
-| R2c   | Port deferred int suites: MCP                             | B1 (8 suites under `mcp/__tests__/`; 287 tests, 139 failing per R0)                                                                                                       | L    | R2a, D1–D4                    |
-| R3    | Service map node latency                                  | B6                                                                                                                                                                        | M    | —                             |
-| R4    | Fix failing Playwright specs on the Couchbase stack       | B2 (spec and app fixes); D15 Couchbase E2E seed rows (Q34)                                                                                                                | L    | R2a, D5                       |
-| R5    | Re-enable full-stack E2E on Main                          | B2 (restore `e2e-tests` `workflow_call` and report aggregator in `main.yml`)                                                                                              | S    | R4                            |
-| R6    | Release tooling                                           | B7, B8, B10; delete `version.sh`; add `ingest` to changesets `fixed`                                                                                                      | M    | —                             |
-| R7    | Docs and acceptance re-run                                | B13, B14, B15; `docs/release.md`                                                                                                                                          | M    | R1–R6, D1–D6, D2b             |
-| R8    | Release v1.0.0                                            | version bump, changelog, tag, images, GitHub release                                                                                                                      | S    | R7, explicit user instruction |
+| Phase | Scope                                                       | Items                                                                                                                                                                                                                | Size | Depends on                    |
+| ----- | ----------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---- | ----------------------------- |
+| R0    | Triage and quick fixes                                      | B3, B4, B16, B14 (local-mode half), P5 (lower caps to measured)                                                                                                                                                      | M    | —                             |
+| R1    | Correctness and branding fixes                              | B5, B9, B11, B12, P2                                                                                                                                                                                                 | M    | —                             |
+| D1    | Defects: SQL++ chart renderer                               | `granularity: 'auto'` throw; duplicate `__hdx_time_bucket` alias; `HAVING` on a select alias; ambiguous `group` alias (section 9.1)                                                                                  | M    | R1                            |
+| D2    | Defects: MCP query and analysis tools                       | `count()`, `startsWith`, `toUnixTimestamp64Milli` in event patterns, denoise, emerging signals, service health; ClickHouse examples in tool descriptions (section 9.1)                                               | M    | D1                            |
+| D9    | Defects: builder expressions with `Map['k']` syntax         | Found in D2 (section 9.1)                                                                                                                                                                                            | M    | D2                            |
+| D8    | Defects: MCP reads miss freshly written rows (flaky)        | Found in D2 (section 9.1)                                                                                                                                                                                            | S    | D2                            |
+| D2b   | User-visible "legacy store" text (B17)                      | Rewrite user-visible strings (CLI help, OpenAPI, MCP prompts, UI, errors) and add a CI guard (section 9.1)                                                                                                           | M    | D9                            |
+| D3    | Defects: MCP trace tools                                    | ClickHouse `{x:Type}` params, `toDateTime64`, `count()`, `toDate` in `waterfall.ts` and `breakdown.ts` (section 9.1)                                                                                                 | M    | D1                            |
+| D4    | Defects: schema inference on empty collections              | INFER "No documents found" fails describe tools and alert column lookups (section 9.1)                                                                                                                               | S    | R1                            |
+| D5    | Defects: onboarding checklist                               | ClickHouse `system.tables` row-count probe sent to Couchbase on every page (section 9.1)                                                                                                                             | S    | R1                            |
+| D6    | Defects: alert connection resolution (investigate)          | 21 alert runs fail with "A connection id is required for Couchbase queries" (section 9.1)                                                                                                                            | S    | R1                            |
+| D7    | Defects: hidden formula operands returned as null columns   | Found in D1 (section 9.1)                                                                                                                                                                                            | S    | D1                            |
+| D10   | Defects: page queries and alert detail not-found            | `/service-map`, `/kubernetes`, `/llm`, `/services`, `/sessions` SQL++ failures; `/alerts/[id]` 400 on an unknown id (section 9.1)                                                                                    | M    | D6, D7                        |
+| D11   | Defects: alias WITH clauses in SQL++ (with D16, Q35)        | Found in D6 (section 9.1); D16 grouped-ratio `share_of_total` as its own commit in the same PR                                                                                                                       | S    | D6, D10                       |
+| D12   | Defects: grouped alert history order                        | Found in D6 (section 9.1); product fix (Q31)                                                                                                                                                                         | S    | —                             |
+| D13   | Defects: concurrent invite race (500)                       | Found in D6 (section 9.1)                                                                                                                                                                                            | S    | —                             |
+| D17   | Defects: multi-series HAVING and ORDER BY (Q36)             | Found in D16 (section 9.1); own PR after D13; fixed, Q41                                                                                                                                                             | S    | D13                           |
+| D18   | Defects: intermittent common-utils live tests (Q37)         | Found in D12 (section 9.1); seed lag fixed with D13; SDK timeout remainder in its own PR before D17 (Q39)                                                                                                            | S    | —                             |
+| D19   | Defects: `make ci-int` exits 1 after every test passed      | Found in D13 (section 9.1); with the D18 remainder (Q40)                                                                                                                                                             | S    | —                             |
+| D20   | Defects: mixed gauge/histogram charts drop scalar groups    | Found in D17 (section 9.1); next phase after D17 (Q42); fixed                                                                                                                                                        | S    | D17                           |
+| D21   | Defects: cumulative histogram quantile zero-delta row       | Found in D20 (section 9.1); own PR before R2a (Q43); fixed                                                                                                                                                           | S    | D20                           |
+| D22   | Defects: exp-histogram count partitions by a select alias   | Found in D21 (section 9.1); own PR before R2a (Q44); fixed                                                                                                                                                           | S    | D21                           |
+| D23   | Defects: metric source CTEs omit the warm-up window         | Found in D22 (section 9.1); own PR before R2a (Q45); fixed                                                                                                                                                           | M    | D22                           |
+| D24   | Defects: metric charts ignore `where`; histograms `filters` | Found in D23 (section 9.1); with D25 in one PR before R2a (Q46); fixed                                                                                                                                               | M    | —                             |
+| D25   | Defects: Sum select alias is not defaulted to `Value`       | Found in D23 (section 9.1); with D24 (Q47); fixed                                                                                                                                                                    | S    | —                             |
+| D26   | Defects: range end is exclusive where upstream is inclusive | Found in D23 (section 9.1); own PR after D24/D25, before R2a (Q48); fixed                                                                                                                                            | M    | —                             |
+| D27   | Defects: metric sources omit upstream `Flags` bit-0 filter  | Found in D24 (section 9.1); with D26 in one PR before R2a (Q49); fixed                                                                                                                                               | S    | —                             |
+| D28   | Defects: unset `whereLanguage` is Lucene, not SQL           | Found in D24 (section 9.1); with D26 in one PR before R2a (Q50); fixed                                                                                                                                               | S    | —                             |
+| D29   | Defects: request query attribution never reaches SQL++      | Found in R2a (section 9.1); own PR right after R2a, before R2c and R2b (Q51); carries the `queryAttribution` int suite; fixed                                                                                        | M    | R2a                           |
+| D14   | Dev tooling: live-test port offset fallback                 | Found in D7 (section 9.1)                                                                                                                                                                                            | S    | —                             |
+| R2a   | Port deferred int suites: internal and external API         | B1 (10 suites: `routers/api/{dashboard,iac,sources,connections}`, `routers/external-api/{charts,search,sources,sources-crud,connections}`, `middleware/queryAttribution`); 9 ported, `queryAttribution` moves to D29 | L    | D1                            |
+| R2b   | Port deferred int suites: alerts                            | B1 (5 suites: `checkAlerts`, `multiChannelAlerts`, `renderAlertTemplate`, `singleInvocationAlert`, `providers/default`; 335 tests, 93 failing per R0)                                                                | L    | R2c, D1, D4, D6               |
+| R2c   | Port deferred int suites: MCP                               | B1 (8 suites under `mcp/__tests__/`; 287 tests, 139 failing per R0)                                                                                                                                                  | L    | R2a, D1–D4                    |
+| R3    | Service map node latency                                    | B6                                                                                                                                                                                                                   | M    | —                             |
+| R4    | Fix failing Playwright specs on the Couchbase stack         | B2 (spec and app fixes); D15 Couchbase E2E seed rows (Q34)                                                                                                                                                           | L    | R2a, D5                       |
+| R5    | Re-enable full-stack E2E on Main                            | B2 (restore `e2e-tests` `workflow_call` and report aggregator in `main.yml`)                                                                                                                                         | S    | R4                            |
+| R6    | Release tooling                                             | B7, B8, B10; delete `version.sh`; add `ingest` to changesets `fixed`                                                                                                                                                 | M    | —                             |
+| R7    | Docs and acceptance re-run                                  | B13, B14, B15; `docs/release.md`                                                                                                                                                                                     | M    | R1–R6, D1–D6, D2b             |
+| R8    | Release v1.0.0                                              | version bump, changelog, tag, images, GitHub release                                                                                                                                                                 | S    | R7, explicit user instruction |
 
 Order (user decisions 2026-11-19 and 2026-11-20): R1, then the defect-fix phases
 D1, D2, D9 (with D8, Q14/Q15), D2b (B17), D3–D7, D10 (Q28), then D11 and D12
-(proposed after D10, pending decision), then R2a, D29 (Q51), R2c, R2b. R3 and R6 are
-independent and can land at any point. Product defects found in R0 get their own
-PRs ahead of the test-porting phases. R2 no longer fixes product bugs; a defect
-R2 finds while porting gets its own PR first (D7 onward).
+(proposed after D10, pending decision), then R2a, D29 (Q51), R2c, R2b. R3 and R6
+are independent and can land at any point. Product defects found in R0 get their
+own PRs ahead of the test-porting phases. R2 no longer fixes product bugs; a
+defect R2 finds while porting gets its own PR first (D7 onward).
 
 ### 9.1 Defect-fix phases (D1–D6, D2b)
 
@@ -858,289 +854,283 @@ yet. Decision Q36: its own PR, right after D13.
 
 Result (2026-11-22, `mm--v1-d17-multi-series-having-order`, Q41): fixed.
 
-- Root cause confirmed against current source. As upstream, each branch
-  renders without `having`, `orderBy` and `limit`, but the joined statement
-  added only the time-bucket ORDER BY and a literal `LIMIT n`, dropping the
-  user's HAVING, ORDER BY and the OFFSET.
+- Root cause confirmed against current source. As upstream, each branch renders
+  without `having`, `orderBy` and `limit`, but the joined statement added only
+  the time-bucket ORDER BY and a literal `LIMIT n`, dropping the user's HAVING,
+  ORDER BY and the OFFSET.
 - New `render/metrics/multiSeriesOuter.ts` applies them once, to the joined
-  result. HAVING is a `WHERE` on a `SELECT d.* FROM (…) AS d` wrapper for
-  every shape, not only `share_of_total`: checked on 8.0.3, SQL++ HAVING
-  rejects select aliases ("must depend only on group keys or aggregates"),
-  window aggregates ("Window Aggregates not allowed in HAVING"), and is a
-  syntax error with no GROUP BY (the number shape). A `"name"` naming an
-  output column (ClickHouse quoting) reads that column. Rows are rebuilt in
-  hint order, so the wrapper does not change the result shape.
+  result. HAVING is a `WHERE` on a `SELECT d.* FROM (…) AS d` wrapper for every
+  shape, not only `share_of_total`: checked on 8.0.3, SQL++ HAVING rejects
+  select aliases ("must depend only on group keys or aggregates"), window
+  aggregates ("Window Aggregates not allowed in HAVING"), and is a syntax error
+  with no GROUP BY (the number shape). A `"name"` naming an output column
+  (ClickHouse quoting) reads that column. Rows are rebuilt in hint order, so the
+  wrapper does not change the result shape.
 - ORDER BY is the time bucket first, then the user's sort (upstream). A sort
-  item naming a group-by expression or alias (HDX-5202) reads the named
-  group column the branches already project, or `` `group`[i] `` (0-based)
-  when groups travel packed for histogram branches. Upstream needs
-  `__hdx_sort_<n>` companion columns because ClickHouse names those columns
-  itself.
+  item naming a group-by expression or alias (HDX-5202) reads the named group
+  column the branches already project, or `` `group`[i] `` (0-based) when groups
+  travel packed for histogram branches. Upstream needs `__hdx_sort_<n>`
+  companion columns because ClickHouse names those columns itself.
 - LIMIT and OFFSET are named parameters on the outermost statement.
 - Tests: `render/__tests__/multiSeriesOuter.test.ts` and
-  `multiSeriesSort.test.ts` port upstream's "outer HAVING / ORDER BY /
-  LIMIT" cases with the same inputs (21 cases, 18 failed before the fix), and
-  `couchbase/__tests__/multiSeriesOuter.couchbase.int.test.ts` runs 7 shapes
-  on a live cluster (7 of 7 failed on the old renderer).
+  `multiSeriesSort.test.ts` port upstream's "outer HAVING / ORDER BY / LIMIT"
+  cases with the same inputs (21 cases, 18 failed before the fix), and
+  `couchbase/__tests__/multiSeriesOuter.couchbase.int.test.ts` runs 7 shapes on
+  a live cluster (7 of 7 failed on the old renderer).
 - Found here, not fixed: D20.
 
 #### D20: Mixed gauge and histogram charts drop scalar group columns (found in D17, size S)
 
 Evidence: with a group-by, `multiSeries.ts` gives a gauge or sum branch only
 `[] AS group` when any branch is histogram-class, so its group columns are
-dropped and every scalar row of a bucket joins into one row. Upstream keeps
-the scalar branch's group columns, NULL-pads them in histogram branches, and
-keeps the two classes' rows apart. D17 sorts such a chart on `` `group`[i] ``,
-which matches what the branches project today. Placement (Q42): the next
-phase, right after D17.
+dropped and every scalar row of a bucket joins into one row. Upstream keeps the
+scalar branch's group columns, NULL-pads them in histogram branches, and keeps
+the two classes' rows apart. D17 sorts such a chart on `` `group`[i] ``, which
+matches what the branches project today. Placement (Q42): the next phase, right
+after D17.
 
 Result (2026-11-23, `mm--v1-d20-mixed-histogram-groups`): fixed.
 
 - Root cause confirmed against current source and upstream `f172a489c818`
   (`renderChartConfig.ts`, the branch wrappers of the composed query).
-- A gauge or sum branch now projects its group columns and pads `group`
-  with `[]`; a histogram branch pads each scalar group column with `NULL`;
-  the joined statement groups by both. SQL++ UNION ALL merges rows by field
-  name, not position, so each pad takes its column's own name instead of
-  upstream's `__hdx_group_pad_<n>`. An all-histogram chart is unchanged.
+- A gauge or sum branch now projects its group columns and pads `group` with
+  `[]`; a histogram branch pads each scalar group column with `NULL`; the joined
+  statement groups by both. SQL++ UNION ALL merges rows by field name, not
+  position, so each pad takes its column's own name instead of upstream's
+  `__hdx_group_pad_<n>`. An all-histogram chart is unchanged.
 - A sort on a group-by of a mixed chart reads the scalar group column with
-  `NULLS LAST`, so histogram rows sort last as upstream's NULL companion
-  slots do in ClickHouse (SQL++ puts NULL first ascending). D17's
-  `` `group`[i] `` sort now applies to all-histogram charts only.
+  `NULLS LAST`, so histogram rows sort last as upstream's NULL companion slots
+  do in ClickHouse (SQL++ puts NULL first ascending). D17's `` `group`[i] ``
+  sort now applies to all-histogram charts only.
 - Result-column hints list the scalar group columns unless every series is
   histogram-class (upstream "packs every group-by into one group column").
 - Tests: `render/__tests__/multiSeriesMixedGroups.test.ts` ports upstream's
   "pads group columns across gauge and histogram branch classes" and the
-  mixed-class sort, HAVING and column-placement cases (11 cases, 8 failed
-  before the fix). Live: `multiSeriesMixedGroups.couchbase.int.test.ts`
-  ports upstream's `grpmix` int cases plus a two-service gauge beside a
-  histogram (5 of 5 failed before the fix).
+  mixed-class sort, HAVING and column-placement cases (11 cases, 8 failed before
+  the fix). Live: `multiSeriesMixedGroups.couchbase.int.test.ts` ports
+  upstream's `grpmix` int cases plus a two-service gauge beside a histogram (5
+  of 5 failed before the fix).
 - Found here, not fixed: D21.
 
 #### D21: Cumulative histogram quantile emits a NULL row for a zero-delta bucket (found in D20, size S)
 
-Evidence: upstream's `grpmix.latency` fixture seeds a cumulative zero
-baseline at minute 0, and its quantile emits no row there (`WHERE total > 0`).
-The SQL++ quantile emits a row with a NULL value for that bucket, so a chart
-gets an extra point-free row. Same values, one extra row. The D20 live test
-seeds the minute-1 counts as one delta point to stay on its own defect.
-Placement (Q43): its own PR, before R2a.
+Evidence: upstream's `grpmix.latency` fixture seeds a cumulative zero baseline
+at minute 0, and its quantile emits no row there (`WHERE total > 0`). The SQL++
+quantile emits a row with a NULL value for that bucket, so a chart gets an extra
+point-free row. Same values, one extra row. The D20 live test seeds the minute-1
+counts as one delta point to stay on its own defect. Placement (Q43): its own
+PR, before R2a.
 
 Result (2026-11-23, `mm--v1-d21-histogram-zero-bucket`): fixed, with three
 related defects found while porting upstream's histogram int cases (same
 renderer, same PR). Wrong values, not only the extra row:
 
-- Empty buckets: the quantile now drops a bucket or group with no
-  observations (upstream `WHERE length(point) > 1 AND total > 0`) through
-  a wrapper on the `metrics` CTE, so the number shape needs no GROUP BY.
+- Empty buckets: the quantile now drops a bucket or group with no observations
+  (upstream `WHERE length(point) > 1 AND total > 0`) through a wrapper on the
+  `metrics` CTE, so the number shape needs no GROUP BY.
 - Series partition: the delta `LAG` windows partitioned by the select's own
-  `AttributesHash` alias, which a SQL++ window clause cannot see (it reads
-  as MISSING, checked on 8.0.3), so every series of a metric shared one
-  partition and subtracted each other's counts. Histogram quantile and
-  count now partition by the expressions (group, attributes hash,
-  temporality; count adds the bucket layout, as upstream).
-- First point: a cumulative series' first visible point is now the zero
-  baseline (upstream `arrayWithConstant(…, 0)`), not its raw counts, and a
-  bucket-layout change takes the new counts as they are.
+  `AttributesHash` alias, which a SQL++ window clause cannot see (it reads as
+  MISSING, checked on 8.0.3), so every series of a metric shared one partition
+  and subtracted each other's counts. Histogram quantile and count now partition
+  by the expressions (group, attributes hash, temporality; count adds the bucket
+  layout, as upstream).
+- First point: a cumulative series' first visible point is now the zero baseline
+  (upstream `arrayWithConstant(…, 0)`), not its raw counts, and a bucket-layout
+  change takes the new counts as they are.
 - Interpolation: `histogramQuantile` now follows upstream (and the JS
-  `histogramQuantileValue`) for the first bucket and the +Inf overflow
-  bucket; the old form returned 0 or the 1e12 sentinel there. Buckets sort
-  by index as `[i, bound, rate]` tuples, since `ARRAY_SORT` orders objects
-  by field name and put the NULL overflow bound first.
-- Tests: `render/__tests__/histogramQuantile.test.ts` (9, all failed before)
-  and `histogramQuantile.couchbase.int.test.ts`, which ports upstream's
-  "Query Metrics - Histogram" two-timestamp, first-visible-baseline,
-  non-timeseries grouped and reset cases plus a bucket-layout change (8; 7
-  failed before). The D20 live test is back on upstream's cumulative seed
-  (3 of its 5 cases fail without this fix). `phase6.couchbase.int.test.ts`
-  expected 5 for p50 of [1, 1, 1] over [0, 10, 20]; upstream gives 7.5.
+  `histogramQuantileValue`) for the first bucket and the +Inf overflow bucket;
+  the old form returned 0 or the 1e12 sentinel there. Buckets sort by index as
+  `[i, bound, rate]` tuples, since `ARRAY_SORT` orders objects by field name and
+  put the NULL overflow bound first.
+- Tests: `render/__tests__/histogramQuantile.test.ts` (9, all failed before) and
+  `histogramQuantile.couchbase.int.test.ts`, which ports upstream's "Query
+  Metrics - Histogram" two-timestamp, first-visible-baseline, non-timeseries
+  grouped and reset cases plus a bucket-layout change (8; 7 failed before). The
+  D20 live test is back on upstream's cumulative seed (3 of its 5 cases fail
+  without this fix). `phase6.couchbase.int.test.ts` expected 5 for p50 of [1,
+  1, 1] over [0, 10, 20]; upstream gives 7.5.
 - Found here, not fixed: D22.
 
 #### D22: Exponential-histogram count partitions deltas by a select alias (found in D21, size S)
 
-Evidence: `render/metrics/expHistogram.ts` count computes its `LAG` windows
-with `PARTITION BY \`group\`, MetricName, series_key, …`, where `group` and
-`series_key` are aliases of the same SELECT. A window clause reads them as
-MISSING (checked on 8.0.3), so every series of the metric shares one
-partition and a cumulative series subtracts another series' count: the D21
-partition defect, on the exponential-histogram count. The quantile path is
-not affected (it partitions in a later CTE). Placement (Q44): its own PR,
-before R2a.
+Evidence: `render/metrics/expHistogram.ts` count computes its `LAG` windows with
+`PARTITION BY \`group\`, MetricName, series_key,
+…`, where `group`and`series_key` are aliases of the same SELECT. A window clause
+reads them as MISSING (checked on 8.0.3), so every series of the metric shares
+one partition and a cumulative series subtracts another series' count: the D21
+partition defect, on the exponential-histogram count. The quantile path is not
+affected (it partitions in a later CTE). Placement (Q44): its own PR, before
+R2a.
 
-Result (2026-11-23, `mm--v1-d22-exp-histogram-count-partition`): fixed.
-The count's four `LAG` windows now partition by D21's `seriesPartition`
-expressions plus `d.MetricName` (upstream `group, MetricName, attr_hash,
-AggregationTemporality`). Tests: `render/metrics/__tests__/
-expHistogramPartition.test.ts` (3; all failed before) and
-`expHistogramCount.couchbase.int.test.ts`, which ports upstream's eight
-exponential-histogram count cases that need no warm-up window (2 failed
-before: the two with more than one series, i.e. the grouped sum and the
-non-timeseries reset modes). Single-series cases already passed; the
-Phase 7a suite's count cases each seed one cumulative series (its
-two-series cases only test the quantile), so it never caught this.
+Result (2026-11-23, `mm--v1-d22-exp-histogram-count-partition`): fixed. The
+count's four `LAG` windows now partition by D21's `seriesPartition` expressions
+plus `d.MetricName` (upstream
+`group, MetricName, attr_hash, AggregationTemporality`). Tests:
+`render/metrics/__tests__/ expHistogramPartition.test.ts` (3; all failed before)
+and `expHistogramCount.couchbase.int.test.ts`, which ports upstream's eight
+exponential-histogram count cases that need no warm-up window (2 failed before:
+the two with more than one series, i.e. the grouped sum and the non-timeseries
+reset modes). Single-series cases already passed; the Phase 7a suite's count
+cases each seed one cumulative series (its two-series cases only test the
+quantile), so it never caught this.
+
 - Found here, not fixed: D23.
 
 #### D23: Metric source CTEs omit upstream's one-interval warm-up window (found in D22, size M)
 
-Evidence: upstream renders the Sum, histogram, and exponential-histogram
-source `WHERE` with `includedDataInterval` set to the chart granularity,
-which reaches one interval before (and after) the requested range so the
-first visible bucket has a predecessor to subtract. The port's
-`sourceWhereClause` (shared by all three) filters to the requested range.
-Live, upstream's "subtracts cumulative counts using a warm-up point
-outside the requested range" returns 0 at the first bucket where upstream
-returns 1. Applies to timeseries charts only (no granularity, no warm-up
-upstream either). Needs care that the widened rows feed the deltas but
-not the output buckets. Placement (Q45): its own PR, before R2a.
+Evidence: upstream renders the Sum, histogram, and exponential-histogram source
+`WHERE` with `includedDataInterval` set to the chart granularity, which reaches
+one interval before (and after) the requested range so the first visible bucket
+has a predecessor to subtract. The port's `sourceWhereClause` (shared by all
+three) filters to the requested range. Live, upstream's "subtracts cumulative
+counts using a warm-up point outside the requested range" returns 0 at the first
+bucket where upstream returns 1. Applies to timeseries charts only (no
+granularity, no warm-up upstream either). Needs care that the widened rows feed
+the deltas but not the output buckets. Placement (Q45): its own PR, before R2a.
 
 Result (2026-11-23, `mm--v1-d23-metric-warmup-window`): fixed. A new
-`render/metrics/sourceWhere.ts` (moved out of `histogram.ts`) widens the
-Sum, histogram, and exponential-histogram source scan to
-[bucket(start) − I, bucket(end) + I], where I is upstream's
-`includedDataInterval` (the chart granularity, 'auto' sized from the
-range); buckets align as `timeBucketExpr` does (Monday weeks, UTC months).
-Gauge and non-timeseries charts scan the requested range, as upstream. The
-outer query keeps the requested range on the time bucket, so the look-back
-and look-ahead buckets feed the deltas but are not returned: histograms
-already kept it; Sum now does (it had `dateRange: undefined`). That outer
-filter binds ISO bounds, because bucket aliases are ISO strings even for an
-`epoch_millis` source; before, a histogram on such a source compared a
-string with a number and returned no rows. The widened end keeps the
-port's exclusive `<` (upstream `<=` comes from its default-inclusive end,
-D26); a point on that bound lands in a bucket past the range, so output is
-the same. Tests: `render/metrics/__tests__/metricWarmup.test.ts` (12; 8
-failed before) and `metricWarmup.couchbase.int.test.ts` (6; 4 failed
-before), which ports upstream's three exponential-histogram warm-up cases
-(the count case left out of D22, the quantile baseline, and the stale
-baseline) and adds Sum and explicit-histogram cases, which upstream does
-not have. Upstream's fourth case ("ignores other metrics, filtered
-attribute series, and points outside the requested range") needs a chart
-`where`, so it waits on D24. The exponential-histogram fixtures moved to
-`__tests__/expHistogramFixtures.ts`, shared with the D22 suite.
+`render/metrics/sourceWhere.ts` (moved out of `histogram.ts`) widens the Sum,
+histogram, and exponential-histogram source scan to [bucket(start) − I,
+bucket(end) + I], where I is upstream's `includedDataInterval` (the chart granularity,
+'auto' sized from the range); buckets align as `timeBucketExpr` does (Monday weeks,
+UTC months). Gauge and non-timeseries charts scan the requested range, as upstream.
+The outer query keeps the requested range on the time bucket, so the look-back and
+look-ahead buckets feed the deltas but are not returned: histograms already kept
+it; Sum now does (it had `dateRange: undefined`). That outer filter binds ISO bounds,
+because bucket aliases are ISO strings even for an `epoch_millis` source; before,
+a histogram on such a source compared a string with a number and returned no rows.
+The widened end keeps the port's exclusive `<` (upstream `<=` comes from its default-inclusive
+end, D26); a point on that bound lands in a bucket past the range, so output is the
+same. Tests: `render/metrics/__tests__/metricWarmup.test.ts` (12; 8 failed before)
+and `metricWarmup.couchbase.int.test.ts` (6; 4 failed before), which ports upstream's
+three exponential-histogram warm-up cases (the count case left out of D22, the quantile
+baseline, and the stale baseline) and adds Sum and explicit-histogram cases, which
+upstream does not have. Upstream's fourth case ("ignores other metrics, filtered
+attribute series, and points outside the requested range") needs a chart `where`,
+so it waits on D24. The exponential-histogram fixtures moved to `__tests__/expHistogramFixtures.ts`,
+shared with the D22 suite.
+
 - Found here, not fixed: D24, D25, D26.
 
 #### D24: Metric charts ignore the chart `where`; histogram charts lose `filters` (found in D23, size M)
 
-Evidence: upstream builds every metric source `WHERE` with
-`renderMetricWhere`, which includes the chart's `where` (SQL or Lucene) and
-`filters`. `translateMetricChartConfigCouchbase` sets `where: ''` on every
-metric type and `sourceWhereClause` has only the metric name and date
-range, so a metric chart's `where` never reaches the SQL++ (rendered for
-gauge, sum, histogram, and exponential histogram: `where` absent in all
-four). `filters` survive only on the outer query: gauge and sum `Bucketed`
-carry the OTel columns, but histogram `metrics` has only bucket, group, and
-value, so a filtered histogram chart returns no rows. Blocks upstream's
-"ignores other metrics, filtered attribute series, and points outside the
-requested range". Placement (Q46): with D25 in one PR, before R2a.
+Evidence: upstream builds every metric source `WHERE` with `renderMetricWhere`,
+which includes the chart's `where` (SQL or Lucene) and `filters`.
+`translateMetricChartConfigCouchbase` sets `where: ''` on every metric type and
+`sourceWhereClause` has only the metric name and date range, so a metric chart's
+`where` never reaches the SQL++ (rendered for gauge, sum, histogram, and
+exponential histogram: `where` absent in all four). `filters` survive only on
+the outer query: gauge and sum `Bucketed` carry the OTel columns, but histogram
+`metrics` has only bucket, group, and value, so a filtered histogram chart
+returns no rows. Blocks upstream's "ignores other metrics, filtered attribute
+series, and points outside the requested range". Placement (Q46): with D25 in
+one PR, before R2a.
 
 Result (2026-11-23, `mm--v1-d24-metric-where-and-value-alias`): fixed.
-`render/metrics/sourceWhere.ts` `metricPredicate` renders the chart's
-`where` (language `?? 'sql'`, as upstream), `filters` (AND / OR), and
-select aggConditions through `renderWhereCouchbase` against the metric
-collection, and `sourceWhereClause` appends it after the name and (D23)
-date range, built with `sqlpp` so its parameters renumber after the
-range's. Every metric type passes it to its source CTE (histograms through
-`HistInput.predicate`); the outer query clears `where` and `filters`, as
-upstream destructures `filters` off. `renderChartConfigCouchbase` now
-passes its metadata to the translator so Lucene fields resolve. Tests:
-`render/metrics/__tests__/metricWhere.test.ts` (23; 20 failed before) and
-`metricWhere.couchbase.int.test.ts` (5; all failed before), which ports
-upstream's "ignores other metrics, filtered attribute series, and points
-outside the requested range" (the D23 warm-up case left for D24), "excludes
-lower-scale filtered series and unrelated metrics before choosing the
+`render/metrics/sourceWhere.ts` `metricPredicate` renders the chart's `where`
+(language `?? 'sql'`, as upstream), `filters` (AND / OR), and select
+aggConditions through `renderWhereCouchbase` against the metric collection, and
+`sourceWhereClause` appends it after the name and (D23) date range, built with
+`sqlpp` so its parameters renumber after the range's. Every metric type passes
+it to its source CTE (histograms through `HistInput.predicate`); the outer query
+clears `where` and `filters`, as upstream destructures `filters` off.
+`renderChartConfigCouchbase` now passes its metadata to the translator so Lucene
+fields resolve. Tests: `render/metrics/__tests__/metricWhere.test.ts` (23; 20
+failed before) and `metricWhere.couchbase.int.test.ts` (5; all failed before),
+which ports upstream's "ignores other metrics, filtered attribute series, and
+points outside the requested range" (the D23 warm-up case left for D24),
+"excludes lower-scale filtered series and unrelated metrics before choosing the
 normalized scale", and "sum values as without rate computation", and adds
-histogram `filters` and gauge `where` / aggCondition cases.
-Multi-series and formula charts render each select as a single-select
-branch, so each branch source has the chart `where` and only its own
-aggCondition (checked; `metricWhere.test.ts` pins it; 23 tests in all, 20
-failed before).
+histogram `filters` and gauge `where` / aggCondition cases. Multi-series and
+formula charts render each select as a single-select branch, so each branch
+source has the chart `where` and only its own aggCondition (checked;
+`metricWhere.test.ts` pins it; 23 tests in all, 20 failed before).
+
 - Found here, not fixed: D27, D28.
 
 #### D25: Sum select alias is not defaulted to `Value` (found in D23, size S)
 
-Evidence: upstream's Sum branch spreads `{ alias: 'Value', ..._select }`,
-so a select with no alias returns a `Value` column. The port's Sum branch
-keeps the caller's alias, so the column is `sum(Rate)` (seen live in D23).
-Gauge has no default upstream either. Placement (Q47): with D24.
+Evidence: upstream's Sum branch spreads `{ alias: 'Value', ..._select }`, so a
+select with no alias returns a `Value` column. The port's Sum branch keeps the
+caller's alias, so the column is `sum(Rate)` (seen live in D23). Gauge has no
+default upstream either. Placement (Q47): with D24.
 
 Result (2026-11-23, same branch): fixed. The Sum select gets
 `alias: first.alias?.trim() || 'Value'` for every aggFn (and for no aggFn,
-upstream `last_value(Sum)`); a caller alias is kept and gauge is
-unchanged. Covered by `metricWhere.test.ts` (3 of the 23) and the live
-"sum values as without rate computation" case, whose rows are upstream's
-snapshot (950400 and 1641600).
+upstream `last_value(Sum)`); a caller alias is kept and gauge is unchanged.
+Covered by `metricWhere.test.ts` (3 of the 23) and the live "sum values as
+without rate computation" case, whose rows are upstream's snapshot (950400 and
+1641600).
 
 #### D26: Date-range end is exclusive by default; upstream is inclusive (found in D23, size M)
 
 Evidence: upstream `renderWhere` passes `dateRangeEndInclusive ?? true`, so
-`ts <= end` unless the caller sets it false (alert windows after the first
-do). The port's `where.ts` and metric `sourceWhereClause` use `< end`
-unless it is `true`. A row exactly at the range end is returned upstream
-and not here, in search, charts, and metrics. Not recorded as a decision in
-`docs/port-notes.md` or `docs/parity.md`. Placement (Q48): match upstream,
-so a row exactly at the range end is included, in its own PR after the
-D24/D25 PR and before R2a.
+`ts <= end` unless the caller sets it false (alert windows after the first do).
+The port's `where.ts` and metric `sourceWhereClause` use `< end` unless it is
+`true`. A row exactly at the range end is returned upstream and not here, in
+search, charts, and metrics. Not recorded as a decision in `docs/port-notes.md`
+or `docs/parity.md`. Placement (Q48): match upstream, so a row exactly at the
+range end is included, in its own PR after the D24/D25 PR and before R2a.
 
-Result (2026-11-23, `mm--v1-d26-range-end-flags-where-default`, with D27
-and D28): fixed. `timeRangePredicate`, `renderWhereCouchbase` (builder and
-raw SQL template), and the metric `sourceWhereClause` end `<=` unless
-`dateRangeEndInclusive` (or `inclusiveEnd`) is `false`. Callers that set
-it `false` (alert windows after the first, MCP service health, non-first
-query chunks, boundary-aligned tiles) are unchanged and match upstream.
-Metadata lookups are inclusive, as upstream. Day-precision timestamp
-columns keep their `< next midnight` bound explicitly. Covered by
-`rangeEndAndWhereLanguage.test.ts` (ports upstream's three
-`timeFilterExpr` inclusivity cases) and the live
-`rangeEndWhereLanguage.couchbase.int.test.ts` (search, count, and gauge
-rows at the end; exclusive when `false`). The D23 suites now expect `<=`.
+Result (2026-11-23, `mm--v1-d26-range-end-flags-where-default`, with D27 and
+D28): fixed. `timeRangePredicate`, `renderWhereCouchbase` (builder and raw SQL
+template), and the metric `sourceWhereClause` end `<=` unless
+`dateRangeEndInclusive` (or `inclusiveEnd`) is `false`. Callers that set it
+`false` (alert windows after the first, MCP service health, non-first query
+chunks, boundary-aligned tiles) are unchanged and match upstream. Metadata
+lookups are inclusive, as upstream. Day-precision timestamp columns keep their
+`< next midnight` bound explicitly. Covered by
+`rangeEndAndWhereLanguage.test.ts` (ports upstream's three `timeFilterExpr`
+inclusivity cases) and the live `rangeEndWhereLanguage.couchbase.int.test.ts`
+(search, count, and gauge rows at the end; exclusive when `false`). The D23
+suites now expect `<=`.
 
 #### D27: Metric sources omit upstream's `Flags` no-recorded-value filter (found in D24, size S)
 
-Evidence: upstream `renderMetricWhere` appends `bitAnd(Flags, 1) = 0` when
-the metric table has a non-nullable integer `Flags` column, dropping
-points flagged "no recorded value" (OTLP `DataPointFlags` bit 0). The
-port's OTel schema declares `Flags` (UInt32) on the metric collections,
-but no metric source filters on it, so such points count toward deltas and
-quantiles. SQL++ form: `BITAND(IFMISSINGORNULL(d.Flags, 0), 1) = 0`.
-Placement (Q49): with D26, in the same PR, before R2a.
+Evidence: upstream `renderMetricWhere` appends `bitAnd(Flags, 1) = 0` when the
+metric table has a non-nullable integer `Flags` column, dropping points flagged
+"no recorded value" (OTLP `DataPointFlags` bit 0). The port's OTel schema
+declares `Flags` (UInt32) on the metric collections, but no metric source
+filters on it, so such points count toward deltas and quantiles. SQL++ form:
+`BITAND(IFMISSINGORNULL(d.Flags, 0), 1) = 0`. Placement (Q49): with D26, in the
+same PR, before R2a.
 
 Result (2026-11-23, D26 branch): fixed. `sourceWhereClause` appends
-`IFMISSINGORNULL(BITAND(d.Flags, 1), 0) = 0` to every metric source scan,
-after the chart predicate, in upstream's order. The SQL++ form changed from
-the one above: `BITAND` returns NULL for a non-integer, so wrapping the
-result (not the argument) keeps points whose `Flags` is missing, null, or
-not an integer. Upstream likewise reads a table without an integer `Flags`
-column as before. `metricFlags.test.ts` ports upstream's six source-scan
-cases; `metricNoRecordedValue.couchbase.int.test.ts` ports upstream's
+`IFMISSINGORNULL(BITAND(d.Flags, 1), 0) = 0` to every metric source scan, after
+the chart predicate, in upstream's order. The SQL++ form changed from the one
+above: `BITAND` returns NULL for a non-integer, so wrapping the result (not the
+argument) keeps points whose `Flags` is missing, null, or not an integer.
+Upstream likewise reads a table without an integer `Flags` column as before.
+`metricFlags.test.ts` ports upstream's six source-scan cases;
+`metricNoRecordedValue.couchbase.int.test.ts` ports upstream's
 `metricNoRecordedValue.int.test.ts` in full (10 cases, same fixtures and
 expectations).
 
 #### D28: An unset `whereLanguage` compiles as Lucene; upstream defaults it to SQL (found in D24, size S)
 
-Evidence: upstream `renderWhere` uses `chartConfig.whereLanguage ?? 'sql'`.
-The port's `compileWhereExpressionCouchbase` treats only `'sql'` as SQL, so
-a `where` with no language goes to the Lucene builder. D24 defaults it for
-metric sources only. Changing it in `where.ts` passed all 2234
-common-utils unit tests, but it changes search, chart, and alert rendering,
-so it gets its own review. Placement (Q50): with D26, in the same PR,
-before R2a, after an audit of callers that set Lucene.
+Evidence: upstream `renderWhere` uses `chartConfig.whereLanguage ?? 'sql'`. The
+port's `compileWhereExpressionCouchbase` treats only `'sql'` as SQL, so a
+`where` with no language goes to the Lucene builder. D24 defaults it for metric
+sources only. Changing it in `where.ts` passed all 2234 common-utils unit tests,
+but it changes search, chart, and alert rendering, so it gets its own review.
+Placement (Q50): with D26, in the same PR, before R2a, after an audit of callers
+that set Lucene.
 
-Result (2026-11-23, D26 branch): fixed. `renderWhereCouchbase` compiles
-`where` with `whereLanguage ?? 'sql'`, and the row-id fast path accepts an
-unset language. The audit (search, dashboards, sessions, service map,
-alerts, saved searches, MCP, external API, CLI, link builder, metadata key
-values) found no caller that leaves the language unset and expects Lucene.
-Each one sets Lucene explicitly or defaults to it, and all match upstream;
-see `docs/port-notes.md`. An unset `aggConditionLanguage` is out of scope
-and stays Lucene in both copies.
+Result (2026-11-23, D26 branch): fixed. `renderWhereCouchbase` compiles `where`
+with `whereLanguage ?? 'sql'`, and the row-id fast path accepts an unset
+language. The audit (search, dashboards, sessions, service map, alerts, saved
+searches, MCP, external API, CLI, link builder, metadata key values) found no
+caller that leaves the language unset and expects Lucene. Each one sets Lucene
+explicitly or defaults to it, and all match upstream; see `docs/port-notes.md`.
+An unset `aggConditionLanguage` is out of scope and stays Lucene in both copies.
 
 #### D29: Request query attribution never reaches SQL++ queries (found in R2a, size M)
 
 Evidence: upstream's `ClickhouseClient.applyAttribution` merges the request's
-`AsyncLocalStorage` attribution (set by the auth middleware, alert task, and
-MCP tracing through `withQueryAttribution`) into every query, so each query
-carries `surface`, `label`, `dashboard`, `tile` and a `hdx-<surface>-` id. The
-port keeps `withQueryAttribution` and the store, but `NodeDataClient` and
+`AsyncLocalStorage` attribution (set by the auth middleware, alert task, and MCP
+tracing through `withQueryAttribution`) into every query, so each query carries
+`surface`, `label`, `dashboard`, `tile` and a `hdx-<surface>-` id. The port
+keeps `withQueryAttribution` and the store, but `NodeDataClient` and
 `CouchbaseNodeClient` never read it: they use only the client's constructor
 default or a per-query `attribution`. A query from an authenticated route
 therefore gets `cbt:adhoc:<hex>` as its `clientContextId`, not the route's
@@ -1149,56 +1139,55 @@ wiring, but every assertion reads ClickHouse `system.query_log` through PromQL
 routes, which are dropped (`docs/parity.md`).
 
 Fix: merge `getCurrentQueryAttribution()` into each query in
-`CouchbaseNodeClient.query` (client default, then request scope, then the
-query, as upstream), and decide how the tag is written. `clientContextId` is
-capped at 64 characters, so the full JSON does not fit. Then port the suite to
-a Couchbase route (for example `POST /couchbase/query` or a chart series call)
-and read `system:completed_requests` by `clientContextId`. The PromQL cases
-become one search or chart case (rule 6: same assertion on surface and label).
-Placement (Q51, user 2026-11-23): its own PR right after R2a, before R2c and
-R2b, because R2c's MCP tools rely on the same wiring through
-`mcp/utils/tracing.ts`.
+`CouchbaseNodeClient.query` (client default, then request scope, then the query,
+as upstream), and decide how the tag is written. `clientContextId` is capped at
+64 characters, so the full JSON does not fit. Then port the suite to a Couchbase
+route (for example `POST /couchbase/query` or a chart series call) and read
+`system:completed_requests` by `clientContextId`. The PromQL cases become one
+search or chart case (rule 6: same assertion on surface and label). Placement
+(Q51, user 2026-11-23): its own PR right after R2a, before R2c and R2b, because
+R2c's MCP tools rely on the same wiring through `mcp/utils/tracing.ts`.
 
 D29 result (2026-11-23, `mm--v1-d29-query-attribution`): fixed.
-`queryAttribution.int.test.ts` leaves `deferredChIntSuites`, 4 tests, green
-on the CI compose stack (3 failed before the fix: 0 rows found, and a 500 on
-a caller id holding `/` and `"`).
+`queryAttribution.int.test.ts` leaves `deferredChIntSuites`, 4 tests, green on
+the CI compose stack (3 failed before the fix: 0 rows found, and a 500 on a
+caller id holding `/` and `"`).
 
 - **Where the tag goes (verified against the 8.0 docs).** Request-level
-  `client_context_id` is capped at 64 characters and rejected (error 1110)
-  when it holds `/` or `"`; `system:completed_requests` keeps it as
-  `clientContextID` with the full `statement`. The id is upstream's
-  `hdx-<surface>-<uuid>` `query_id` (at most 54 characters). The
-  `buildLogComment` JSON, upstream's `log_comment`, goes in a trailing block
-  comment on its own line: `<statement>\n/* {"v":1,...} */`. Trailing keeps
-  parse-error positions in the caller's text; its own line means a trailing
-  `--` comment or `;` still parses (tested live). `query_context` is a
-  keyspace path, not metadata, so it is not used.
+  `client_context_id` is capped at 64 characters and rejected (error 1110) when
+  it holds `/` or `"`; `system:completed_requests` keeps it as `clientContextID`
+  with the full `statement`. The id is upstream's `hdx-<surface>-<uuid>`
+  `query_id` (at most 54 characters). The `buildLogComment` JSON, upstream's
+  `log_comment`, goes in a trailing block comment on its own line:
+  `<statement>\n/* {"v":1,...} */`. Trailing keeps parse-error positions in the
+  caller's text; its own line means a trailing `--` comment or `;` still parses
+  (tested live). `query_context` is a keyspace path, not metadata, so it is not
+  used.
 - **Ambient scope.** The `AsyncLocalStorage` store moves to
   `couchbase/nodeAttribution.ts` (server only). `CouchbaseNodeClient.query`
   merges client default, request scope, then the query (upstream order).
   `executeQuery` also merges the scope, read at call time, so the API's
-  `/couchbase/query`, `/couchbase/cluster` and the alert, MCP and auth paths
-  all carry it.
+  `/couchbase/query`, `/couchbase/cluster` and the alert, MCP and auth paths all
+  carry it.
 - **Browser attribution.** `/couchbase/query` parses the body's `attribution`
   through the same Zod schema as upstream's header (`parseQueryAttribution`);
   its surface and ids win, the route `label` and `trace` stay the server's
   (upstream PromQL rule). A caller `queryId` keeps only `[A-Za-z0-9._:-]`.
-- **Sanitized, no PII.** `buildLogComment` is upstream's: an ASCII allowlist
-  (no `*`, quotes or backslash, so the payload cannot end the comment),
+- **Sanitized, no PII.** `buildLogComment` is upstream's: an ASCII allowlist (no
+  `*`, quotes or backslash, so the payload cannot end the comment),
   128-character fields, 1 KB total, unknown keys dropped. It records only
-  surface, dashboard, tile, search, alert, source, trace and route label,
-  never team, user, email or credentials. The port had aliased
-  `buildLogComment` to `buildQueryId`; the 13 upstream `buildLogComment` unit
-  tests now run against the real function.
+  surface, dashboard, tile, search, alert, source, trace and route label, never
+  team, user, email or credentials. The port had aliased `buildLogComment` to
+  `buildQueryId`; the 13 upstream `buildLogComment` unit tests now run against
+  the real function.
 - **Test shape (rule 6).** Upstream's three cases read ClickHouse
   `system.query_log` over the dropped PromQL routes. Ported: route scope on
-  `POST /api/v2/charts/series` (label `/api/v2/charts`, `hdx-api-` id),
-  browser attribution on `POST /couchbase/query` (label `/couchbase`, browser
-  trace dropped), plus a sanitization case and a trailing-`;`/`--` case. The
-  suite sets the query node's `completed-threshold` to 0 (default 1000 ms,
-  so fast requests are not recorded), purges `system:completed_requests`
-  before each test, and restores the threshold after.
+  `POST /api/v2/charts/series` (label `/api/v2/charts`, `hdx-api-` id), browser
+  attribution on `POST /couchbase/query` (label `/couchbase`, browser trace
+  dropped), plus a sanitization case and a trailing-`;`/`--` case. The suite
+  sets the query node's `completed-threshold` to 0 (default 1000 ms, so fast
+  requests are not recorded), purges `system:completed_requests` before each
+  test, and restores the threshold after.
 
 #### D18: Common-utils live tests fail intermittently (found in D12, size S)
 
@@ -1228,8 +1217,8 @@ cluster: 3 failed, with two different symptoms.
   (`e.context`, `e.cause`) when a live test or probe fails with TIMEOUT, then
   loop `run.sh` itself (fresh cluster per run) to catch one with that context.
 
-Result (2026-11-22, `mm--v1-d18-sdk-timeout`, Q39): root cause found and
-fixed. With SDK context logged, `run.sh` loop 7 caught it: `connecting: true`,
+Result (2026-11-22, `mm--v1-d18-sdk-timeout`, Q39): root cause found and fixed.
+With SDK context logged, `run.sh` loop 7 caught it: `connecting: true`,
 `UnambiguousTimeoutError` about 500 ms in, from opening the cluster. A
 single-hostname connection string (`couchbase://localhost`) makes the SDK look
 up DNS SRV before bootstrap, with a 500 ms budget, and a lookup that misses it
@@ -1251,20 +1240,20 @@ Result (2026-11-22, `mm--v1-d18-sdk-timeout`): root cause found and fixed.
 
 - Not Nx, the tests, or teardown. The Nx daemon log shows the client sending
   `POST_TASKS_EXECUTION` and closing normally, so `nx run-many` returned 0.
-- The failing log has, near its start, `tee: …/dev-slots/47/logs-int/ci-int.log:
-No such file or directory`. With `set -o pipefail`, tee's exit 1 became the
-  pipeline status and so the target's. The directory was gone because another
-  `make ci-int` on slot 47 was still tearing down when this one started. This
-  run waited for port 8091 to close, so it began the moment the other run's
-  `down -v` released it, and that run's `archive-int-logs` (log archived to
-  `history/int-2026-11-22T23:56:59Z`, Nx done at 23:56:56) then ran
-  `rm -rf logs-int` under it. Both runs used compose project `int-47` and the
-  same `/tmp` redirect, so the other run was this same command launched twice
-  (the agent shell started it again while the first copy ran; the 8091 wait
-  held the copy until the first's teardown). That is why the failing log ends
-  in 78 NUL bytes and a second `Network int-47_internal Removed` line: the
-  first copy's last write landed at its own, larger offset before this copy
-  rewrote the file from the start.
+- The failing log has, near its start,
+  `tee: …/dev-slots/47/logs-int/ci-int.log: No such file or directory`. With
+  `set -o pipefail`, tee's exit 1 became the pipeline status and so the
+  target's. The directory was gone because another `make ci-int` on slot 47 was
+  still tearing down when this one started. This run waited for port 8091 to
+  close, so it began the moment the other run's `down -v` released it, and that
+  run's `archive-int-logs` (log archived to `history/int-2026-11-22T23:56:59Z`,
+  Nx done at 23:56:56) then ran `rm -rf logs-int` under it. Both runs used
+  compose project `int-47` and the same `/tmp` redirect, so the other run was
+  this same command launched twice (the agent shell started it again while the
+  first copy ran; the 8091 wait held the copy until the first's teardown). That
+  is why the failing log ends in 78 NUL bytes and a second
+  `Network int-47_internal Removed` line: the first copy's last write landed at
+  its own, larger offset before this copy rewrote the file from the start.
 - Fix: one integration run per slot at a time. `scripts/slot-lock.sh` takes a
   per-slot directory lock (`dev-slots/<slot>/int.lock`, holding make's PID) at
   the start of `ci-int`, `dev-int`, and `dev-int-common-utils` and releases it
@@ -1374,8 +1363,8 @@ listed in the PR and the plan, and the phase stops for the user (rule 9).
 Order: R2a, then R2c, then R2b. Acceptance (end of R2b, the last R2 phase):
 `deferredChIntSuites` is an empty array and is then deleted; `yarn ci:int`
 reports 0 ignored suites; the skipped count equals the harness-only
-`metadata.couchbase.int.test.ts` count (53; accepted by the user 2026-11-24,
-up from 51 because D12 and D13 added contract cases) and nothing else; CI
+`metadata.couchbase.int.test.ts` count (53; accepted by the user 2026-11-24, up
+from 51 because D12 and D13 added contract cases) and nothing else; CI
 integration shards green within the 55 minute timeout. Shard policy (user,
 2026-11-23): add a fifth integration shard only if R2c or R2b brings a shard
 close to the 55 minute limit, as a small CI-only change in that phase's PR
@@ -1390,25 +1379,24 @@ turns the "No data found" hint into `partialFailure`. The third
 empty-`otel_logs` describe test ("surfaces partialFailure instead of the no-data
 hint") passes only with that switch, so it moves to R2c too.
 
-R2a result (2026-11-23, `mm--v1-r2a-api-int-suites`): 9 of the 10 suites
-ported and off `deferredChIntSuites`, 377 tests, all passing on the CI
-compose stack. `middleware/queryAttribution` stays deferred and moves to D29
-(below): its subject, request attribution on queries, is not wired on the
-Couchbase path. In R0 the 9 suites had 77 failures; at the start of R2a, after
-D1–D28, 62 were still failing (search had already gone green). Causes and
-fixes:
+R2a result (2026-11-23, `mm--v1-r2a-api-int-suites`): 9 of the 10 suites ported
+and off `deferredChIntSuites`, 377 tests, all passing on the CI compose stack.
+`middleware/queryAttribution` stays deferred and moves to D29 (below): its
+subject, request attribution on queries, is not wired on the Couchbase path. In
+R0 the 9 suites had 77 failures; at the start of R2a, after D1–D28, 62 were
+still failing (search had already gone green). Causes and fixes:
 
 - **Fixture shape (T), most failures.** Source bodies gain `from.scopeName` and
   `timestampFormat` (`routers/api/sources`, `external-api/sources-crud`).
   `querySettings` fixtures use Couchbase setting names (`timeout_ms`,
   `scan_cap`, `max_parallelism`); the ClickHouse names are rejected by
   `validateSourceSettings`. Connection bodies send `kind: 'couchbase'` and a
-  `couchbase://` / `couchbases://` host (`iac`, `external-api/connections`).
-  The local-app-mode cases seed their connection under `'_local_team_'`, the
-  id the request carries; Mongo cast that string and its hex form to one
-  ObjectId, the metadata store does not.
-- **Signed-off drops (T), 4 tests.** A PromQL ad-hoc filter is rejected with
-  the PromQL message before its sources are checked (`dashboard`).
+  `couchbase://` / `couchbases://` host (`iac`, `external-api/connections`). The
+  local-app-mode cases seed their connection under `'_local_team_'`, the id the
+  request carries; Mongo cast that string and its hex form to one ObjectId, the
+  metadata store does not.
+- **Signed-off drops (T), 4 tests.** A PromQL ad-hoc filter is rejected with the
+  PromQL message before its sources are checked (`dashboard`).
   `materializedViews` is accepted and dropped, no longer echoed
   (`external-api/sources`, `sources-crud`; removed in 5f64b57 with the other
   ClickHouse-only features), and its OpenAPI schema is removed.
@@ -1426,30 +1414,31 @@ fixes:
      dashboard without the field vanished. Upstream uses
      `provisioned: { $ne: true }`. `FindSpec.notTrue` adds that predicate to
      both metadata backends (`IFMISSINGORNULL(d.f, FALSE) != TRUE`).
-  3. A connection PUT could not clear a legacy `isPrometheusEndpoint: true`
-     (the schema strips the key). `buildCouchbaseConnectionUpdate` now writes
-     `false` when the stored document has the flag, as upstream's PUT does.
+  3. A connection PUT could not clear a legacy `isPrometheusEndpoint: true` (the
+     schema strips the key). `buildCouchbaseConnectionUpdate` now writes `false`
+     when the stored document has the flag, as upstream's PUT does.
   4. `hyperdxSettingPrefix` was stripped by the Couchbase connection schema, so
-     the external API's documented create, clear and keep semantics failed. It is back in the schema and in both update paths. It stays
-     metadata only: upstream uses it to tag ClickHouse queries with the user's
-     email, and nothing on the SQL++ path reads it.
+     the external API's documented create, clear and keep semantics failed. It
+     is back in the schema and in both update paths. It stays metadata only:
+     upstream uses it to tag ClickHouse queries with the user's email, and
+     nothing on the SQL++ path reads it.
 
-CI change (user decision 2026-11-23, CI-only, in the R2a PR): the parity
-golden replay (`port/golden/run.sh --suite ingest`) moves from a shard-1 step
-into its own `parity-goldens` job in `.github/workflows/main.yml`, and the
-`integration` aggregator now needs it too. With the nine suites, shard 1's API
-tests grew from 225 tests (about 5 min) to 438 (about 17 min); with about 22 min
-of setup and about 13 min of replay, shard 1 was cancelled at its 55 minute
-timeout with every test passed. The shards now run tests only; the shard count
-and timeout are unchanged.
+CI change (user decision 2026-11-23, CI-only, in the R2a PR): the parity golden
+replay (`port/golden/run.sh --suite ingest`) moves from a shard-1 step into its
+own `parity-goldens` job in `.github/workflows/main.yml`, and the `integration`
+aggregator now needs it too. With the nine suites, shard 1's API tests grew from
+225 tests (about 5 min) to 438 (about 17 min); with about 22 min of setup and
+about 13 min of replay, shard 1 was cancelled at its 55 minute timeout with
+every test passed. The shards now run tests only; the shard count and timeout
+are unchanged.
 
 R2c result (2026-11-24, `mm--v1-r2c-mcp-int-suites`): all 8 MCP suites ported
-and off `deferredChIntSuites`. On the CI compose stack: `sources` 61/61,
-`trace` 40/40, `serviceHealthTool` 10/10, `emergingSignalsTool` 5/5,
-`queryTile` and `queryTiles` 47/47, `queryTool` 113/113,
-`describeTable` 11/11 (the 4 cases first skipped for Q53 and Q54 run after
-the user's decisions, below). P13 placement confirmed by the user (2026-11-24): the ingest
-setup step, as written in section 2.3. Causes and fixes:
+and off `deferredChIntSuites`. On the CI compose stack: `sources` 61/61, `trace`
+40/40, `serviceHealthTool` 10/10, `emergingSignalsTool` 5/5, `queryTile` and
+`queryTiles` 47/47, `queryTool` 113/113, `describeTable` 11/11 (the 4 cases
+first skipped for Q53 and Q54 run after the user's decisions, below). P13
+placement confirmed by the user (2026-11-24): the ingest setup step, as written
+in section 2.3. Causes and fixes:
 
 - **Q26, metric tools (P).** `cbt_list_metrics` and `cbt_describe_metric` sent
   ClickHouse SQL (`{x:Identifier}`, `argMax`, `anyLast`, `mapKeys`,
@@ -1458,15 +1447,14 @@ setup step, as written in section 2.3. Causes and fixes:
   parameters, `keyspace()` quoting): `MAX([ts, col])[1]` for the latest value,
   `OBJECT_NAMES` over `ARRAY_AGG` for attribute keys, a bounded inner sample
   grouped by `MetricName` for `LIMIT 1 BY`. Metric names are projected with
-  `SELECT MetricName`, not `RAW`, because the data client wraps a RAW scalar
-  row as `{ value }`.
+  `SELECT MetricName`, not `RAW`, because the data client wraps a RAW scalar row
+  as `{ value }`.
 - **Q25, describe-metric columns (P).** Both metric tools read columns through
   the shared `describeColumns` (`api/src/mcp/tools/sources/metricTable.ts`), so
-  an empty OTel kind collection reports its declared schema and keeps the
-  "No data found" hint. A kind collection that lacks `MetricName` or the
-  timestamp field fails as upstream's missing-column query did
-  (`partialFailure`), since SQL++ would read those fields as MISSING and look
-  empty.
+  an empty OTel kind collection reports its declared schema and keeps the "No
+  data found" hint. A kind collection that lacks `MetricName` or the timestamp
+  field fails as upstream's missing-column query did (`partialFailure`), since
+  SQL++ would read those fields as MISSING and look empty.
 - **Q24, integers (T).** Integers stay strings at the data-client level.
   `cbt_sql` row expectations (single and batch mode) expect `'1'`, matching
   upstream's quoted 64-bit counts; `cbt_describe_table` converts its document
@@ -1479,77 +1467,76 @@ setup step, as written in section 2.3. Causes and fixes:
   own. The settings-propagation tests read the request's own timeout from
   `system:active_requests` (29.5s: the SDK sends the server 500 ms less) and
   check `readOnly: true` on the SDK call, since SQL++ has no `getSetting()`.
-- **Syntax errors (P).** `SELECTT 1` was refused as "Only read-only
-  statements", which reads as a refused write. A leading word that starts no
-  SQL++ statement now fails as `PARSING_FAILED` "Syntax error: …", as the
-  Query service would report it.
+- **Syntax errors (P).** `SELECTT 1` was refused as "Only read-only statements",
+  which reads as a refused write. A leading word that starts no SQL++ statement
+  now fails as `PARSING_FAILED` "Syntax error: …", as the Query service would
+  report it.
 - **Unknown-table hint (P).** The raw SQL hint now matches the SQL++ errors
   ("Keyspace not found", "No bucket named", and "Ambiguous reference to field"
   for a two-part `db.name`) and explains the keyspace form. It also reaches
   `cbt_sql` through `mcpQueryErrorResult`, which returned the Couchbase mapping
   without hints. `KEYSPACE_NOT_FOUND` adds "The keyspace doesn't exist."
-- **`cbt_describe_table` (P).** Listing read `SELECT RAW [bucket, scope,
-  name]` rows, which the data client wraps as `{ value }`, so no row matched
-  the bucket and every listing was empty; a missing bucket was not an error.
-  The describe output gains `indexes` (GSI and primary, read live from
-  `system:indexes`; upstream `dataSkippingIndices`), `table.approxTotalRows`,
-  and upstream's source matching (`sources`, then `nextSteps.describeSource`
-  or a `cbt_save_source` pointer). `sampleRows` reads through an online index
+- **`cbt_describe_table` (P).** Listing read `SELECT RAW [bucket, scope, name]`
+  rows, which the data client wraps as `{ value }`, so no row matched the bucket
+  and every listing was empty; a missing bucket was not an error. The describe
+  output gains `indexes` (GSI and primary, read live from `system:indexes`;
+  upstream `dataSkippingIndices`), `table.approxTotalRows`, and upstream's
+  source matching (`sources`, then `nextSteps.describeSource` or a
+  `cbt_save_source` pointer). `sampleRows` reads through an online index
   (`<leading key> IS NOT MISSING`), because the least-privileged query user is
   refused sequential scans on collections without a primary index.
 - **Fixtures and inputs (T).** SQL++ inputs per rule 6: backtick-quoted
-  `` `value` `` (reserved word), `COUNT(*)`, three-part keyspaces for
-  `<table>`, `$intervalSeconds` for `{intervalSeconds:Int64}`, SQL++ DDL/DML
-  for the read-only cases, and the bucket offset computed from the
-  `GROUP BY … AS ts` alias. The dead connection points at
-  `couchbase://127.0.0.1:1` and bypasses the CI loader, which forces every
-  stored connection onto the compose cluster. `describeTable` builds its
-  fixture as a scope of the `otel` bucket (a new bucket needs RAM quota the CI
-  cluster does not have) with two collections and a GSI index.
+  `` `value` `` (reserved word), `COUNT(*)`, three-part keyspaces for `<table>`,
+  `$intervalSeconds` for `{intervalSeconds:Int64}`, SQL++ DDL/DML for the
+  read-only cases, and the bucket offset computed from the `GROUP BY … AS ts`
+  alias. The dead connection points at `couchbase://127.0.0.1:1` and bypasses
+  the CI loader, which forces every stored connection onto the compose cluster.
+  `describeTable` builds its fixture as a scope of the `otel` bucket (a new
+  bucket needs RAM quota the CI cluster does not have) with two collections and
+  a GSI index.
 
 Rule 9 items, decided by the user on 2026-11-24:
 
 - **Q53, unknown columns.** Upstream fails a query on an unknown column
-  (`UNKNOWN_IDENTIFIER`); SQL++ reads it as MISSING. Decision: check field
-  names before the MCP tools send a query, and fail with upstream's error.
-  `api/src/mcp/tools/query/unknownColumns.ts` checks builder tiles
-  (`cbt_table`, `cbt_timeseries`, dashboard tiles: select value
-  expressions, SQL aggregate conditions, groupBy, a SQL where) and raw SQL
-  (`cbt_sql`, SQL tiles; `$__sourceTable` reads as the source collection).
-  Field roots come from `common-utils/src/couchbase/fieldRefs.ts`. Behaviour:
-  - Only OTel collections (a declared schema in `otelSchema.ts`) are
-    checked. Any other collection is schemaless and passes.
+  (`UNKNOWN_IDENTIFIER`); SQL++ reads it as MISSING. Decision: check field names
+  before the MCP tools send a query, and fail with upstream's error.
+  `api/src/mcp/tools/query/unknownColumns.ts` checks builder tiles (`cbt_table`,
+  `cbt_timeseries`, dashboard tiles: select value expressions, SQL aggregate
+  conditions, groupBy, a SQL where) and raw SQL (`cbt_sql`, SQL tiles;
+  `$__sourceTable` reads as the source collection). Field roots come from
+  `common-utils/src/couchbase/fieldRefs.ts`. Behaviour:
+  - Only OTel collections (a declared schema in `otelSchema.ts`) are checked.
+    Any other collection is schemaless and passes.
   - A root outside the declared schema still passes when the collection's
-    inferred columns (`describeColumns`) have it. A failed lookup or a
-    missing collection passes (the server reports the latter).
+    inferred columns (`describeColumns`) have it. A failed lookup or a missing
+    collection passes (the server reports the latter).
   - Only field roots count: map and object subfields
-    (``SpanAttributes.`http.route` ``, `LogAttributes['k']`), functions,
-    aliases (`AS x` or a bare name after an operand), `$` parameters and
-    macros, string literals, and range variables (`FOR`/`ANY … IN`) are not
-    fields. Names are case-sensitive, as SQL++ fields are.
+    (``SpanAttributes.`http.route` ``, `LogAttributes['k']`), functions, aliases
+    (`AS x` or a bare name after an operand), `$` parameters and macros, string
+    literals, and range variables (`FOR`/`ANY … IN`) are not fields. Names are
+    case-sensitive, as SQL++ fields are.
   - Text the scanner cannot scope passes unchecked: joins, `UNNEST`, `NEST`,
-    `LET`, `WITH`, set operators, subqueries, object constructors,
-    namespaces (`system:`), and raw SQL without exactly one
-    bucket.scope.collection keyspace. Metric sources are not checked.
-  - The error reads ``UNKNOWN_IDENTIFIER: Unknown expression identifier
-    `x` in bucket.scope.collection``, with the describe-source hint.
-  The 3 `queryTool` cases run again, and `queryTiles` uses upstream's
-  `SELECT does_not_exist` bad tile.
+    `LET`, `WITH`, set operators, subqueries, object constructors, namespaces
+    (`system:`), and raw SQL without exactly one bucket.scope.collection
+    keyspace. Metric sources are not checked.
+  - The error reads
+    ``UNKNOWN_IDENTIFIER: Unknown expression identifier   `x` in bucket.scope.collection``,
+    with the describe-source hint. The 3 `queryTool` cases run again, and
+    `queryTiles` uses upstream's `SELECT does_not_exist` bad tile.
 - **Q54, table metadata.** The GSI and primary indexes and the document count
-  are the Couchbase equivalent of upstream's table metadata. engine,
-  sortingKey, primaryKey, partitionKey (and the per-column key flags), table
-  and column comments, MATERIALIZED and other defaults, a Distributed table's
-  local table, and engine per listed table are not applicable. Recorded as the
-  `mcp-sources` decision in `port/features.json`, rendered into
-  `docs/parity.md` by `port/inventory.sh render`. The Distributed case now
-  asserts that none of these fields is reported and that the indexes come
-  from the collection itself.
+  are the Couchbase equivalent of upstream's table metadata. engine, sortingKey,
+  primaryKey, partitionKey (and the per-column key flags), table and column
+  comments, MATERIALIZED and other defaults, a Distributed table's local table,
+  and engine per listed table are not applicable. Recorded as the `mcp-sources`
+  decision in `port/features.json`, rendered into `docs/parity.md` by
+  `port/inventory.sh render`. The Distributed case now asserts that none of
+  these fields is reported and that the indexes come from the collection itself.
 
 CI change (pre-approved shard policy, CI-only, in the R2c PR): with the MCP
-suites, shard 1 of PR #41's first run took 48m50s of its 55 minute timeout
-(21 min setup, 26.5 min tests), so `integration-shards` grows to five shards.
-On the same run, shards 2 and 4 failed in "Spin up docker services" before
-any test ran: `ocb` (`go mod tidy`) got a read error from proxy.golang.org on
+suites, shard 1 of PR #41's first run took 48m50s of its 55 minute timeout (21
+min setup, 26.5 min tests), so `integration-shards` grows to five shards. On the
+same run, shards 2 and 4 failed in "Spin up docker services" before any test
+ran: `ocb` (`go mod tidy`) got a read error from proxy.golang.org on
 `dockerstatsreceiver@v0.155.0`. That was a transient network failure, not code;
 the push that adds the fifth shard re-runs every shard.
 
@@ -1557,8 +1544,8 @@ R2b result (2026-11-24, `mm--v1-r2b-alert-int-suites`): all 5 alert suites
 ported and `deferredChIntSuites` deleted from `packages/api/jest.int.config.js`
 (the R2 acceptance above). On the CI compose stack: `checkAlerts` 185/185,
 `renderAlertTemplate` 104/104 (its 9 snapshots match unchanged),
-`providers/default` 36/36, `singleInvocationAlert` 6/6,
-`multiChannelAlerts` 4/4; no skipped case. Causes and fixes:
+`providers/default` 36/36, `singleInvocationAlert` 6/6, `multiChannelAlerts`
+4/4; no skipped case. Causes and fixes:
 
 - **Raw SQL inputs (T).** The raw-SQL tile templates (`fixtures.ts`
   `RAW_SQL_ALERT_TEMPLATE` and `RAW_SQL_NUMBER_ALERT_TEMPLATE`, plus the inline
@@ -1566,36 +1553,36 @@ ported and `deferredChIntSuites` deleted from `packages/api/jest.int.config.js`
   requires: `COUNT(*)`, three-part keyspaces, `$startDateMilliseconds` /
   `$endDateMilliseconds` on `STR_TO_MILLIS(Timestamp)`, and the bucket
   `MILLIS_TO_UTC(FLOOR(STR_TO_MILLIS(Timestamp) / ($intervalSeconds * 1000)) * …) AS ts`
-  for `toStartOfInterval(…, INTERVAL {intervalSeconds:Int64} second)`. The
-  macro case keeps `$__timeInterval(Timestamp)`.
+  for `toStartOfInterval(…, INTERVAL {intervalSeconds:Int64} second)`. The macro
+  case keeps `$__timeInterval(Timestamp)`.
 - **Empty result windows (P).** A SQL++ result with no rows has no column
   metadata (columns are inferred from rows), where ClickHouse still sends the
-  header. `getResponseMetadata` returned undefined, so the alert stopped
-  before writing history: a raw-SQL alert never resolved, missed windows were
-  not caught up, and an empty first window wrote nothing. A zero-row,
-  zero-column result is now an empty window (time series, or single value for
-  a Number tile), which is what upstream evaluates. Unit test:
+  header. `getResponseMetadata` returned undefined, so the alert stopped before
+  writing history: a raw-SQL alert never resolved, missed windows were not
+  caught up, and an empty first window wrote nothing. A zero-row, zero-column
+  result is now an empty window (time series, or single value for a Number
+  tile), which is what upstream evaluates. Unit test:
   `checkAlerts/__tests__/responseMetadata.test.ts`.
 - **All-NULL formula columns (P).** Formula columns had no type hint, so a
   formula whose every value is NULL (zero denominator) was typed
-  `Nullable(String)` and the alert found no value column. ClickHouse types
-  the arithmetic `Float64`; `couchbaseColumnTypesForConfig` now hints each
-  formula column `Nullable(Float64)`. Fixes the metric zero-denominator case
-  and the event formula resolve.
+  `Nullable(String)` and the alert found no value column. ClickHouse types the
+  arithmetic `Float64`; `couchbaseColumnTypesForConfig` now hints each formula
+  column `Nullable(Float64)`. Fixes the metric zero-denominator case and the
+  event formula resolve.
 - **Backtick-quoted filter column (T).** The fixture collection for
   `` `service-name` `` is created with SQL++ DDL (`CREATE COLLECTION` and a
-  `Timestamp` index, retried while the manifest settles) instead of
-  `MergeTree`; the assertions are upstream's.
+  `Timestamp` index, retried while the manifest settles) instead of `MergeTree`;
+  the assertions are upstream's.
 - **Materialized views (signed-off drop).** MV configuration was removed with
   the other ClickHouse-only features (5f64b57), so a source's
   `materializedViews` is dropped and alerts read the base collection. The
-  "compatible MV" case inserts upstream's pre-aggregated counts (3, then 1
-  error and 2 info) as individual `otel_logs` rows; the expected states,
-  counts and values are upstream's. The incompatible-MV case is unchanged.
+  "compatible MV" case inserts upstream's pre-aggregated counts (3, then 1 error
+  and 2 info) as individual `otel_logs` rows; the expected states, counts and
+  values are upstream's. The incompatible-MV case is unchanged.
 - **Provider fixtures (T).** The tile-alert source is seeded in the `otel`
   bucket, so `from.databaseName` is `otel`. The unsupported-source alert is
-  written raw (`seedAlertRaw`): the typed seed reads the alert back through
-  the schema, which rejects it. `getAlertTasks` skips it, as upstream does.
+  written raw (`seedAlertRaw`): the typed seed reads the alert back through the
+  schema, which rejects it. `getAlertTasks` skips it, as upstream does.
 
 No new D-numbers: both product fixes are small and in scope. Shard timing is
 reported with PR CI. `make ci-int` on a fresh stack: api 2207 passed and 53
@@ -1605,30 +1592,30 @@ suites; common-utils 127 passed.
 
 ### CI: integration-shard startup (2026-11-24, `mm--v1-ci-int-startup`)
 
-CI-only, between R2b and R3 (user, 2026-11-24): on PR #42 shard 2 took
-49m28s of its 55 minutes, about 21 of them before the first test. The shard
-count and timeout are unchanged. Where shard 2's startup went (PR #42):
+CI-only, between R2b and R3 (user, 2026-11-24): on PR #42 shard 2 took 49m28s of
+its 55 minutes, about 21 of them before the first test. The shard count and
+timeout are unchanged. Where shard 2's startup went (PR #42):
 
-| Startup phase                                            | PR #42 shard 2 |
-| -------------------------------------------------------- | -------------- |
-| Delete hosted toolcaches (`sudo rm -rf`)                 | 2m05           |
-| Pull `couchbase/server`                                  | 27s            |
-| Build `couchbase-init`                                   | 2m37           |
-| Build `ingest` (same build; the prune between wiped it)  | 2m37           |
-| Build `otel-collector` (OCB compile alone: 11m33)        | 12m50          |
-| `make ci-build`, compose up (cluster init 70 s)          | about 2m       |
+| Startup phase                                           | PR #42 shard 2 |
+| ------------------------------------------------------- | -------------- |
+| Delete hosted toolcaches (`sudo rm -rf`)                | 2m05           |
+| Pull `couchbase/server`                                 | 27s            |
+| Build `couchbase-init`                                  | 2m37           |
+| Build `ingest` (same build; the prune between wiped it) | 2m37           |
+| Build `otel-collector` (OCB compile alone: 11m33)       | 12m50          |
+| `make ci-build`, compose up (cluster init 70 s)         | about 2m       |
 
 Changes in `.github/workflows/main.yml` (`integration-shards` only):
 
-- `couchbase-init` and `ingest` are one build (same context and Dockerfile,
-  no target or args): build `ingest`, `docker tag` it for `couchbase-init`.
-- `otel-collector` builds with `docker buildx bake` from the compose file
-  (same definition and `.env` args) on a `docker-container` builder with a
-  GHA layer cache, scope `ci-otel-collector`, `mode=max` so the OCB stage is
-  cached. Every shard reads it; shard 1 alone writes it (`ignore-error`). The
-  cache is about 80 MB. It misses when `builder-config.yaml`, the Dockerfile,
-  the version args or a base image change, and then costs one compile, as
-  before. PR runs read the cache `main` writes.
+- `couchbase-init` and `ingest` are one build (same context and Dockerfile, no
+  target or args): build `ingest`, `docker tag` it for `couchbase-init`.
+- `otel-collector` builds with `docker buildx bake` from the compose file (same
+  definition and `.env` args) on a `docker-container` builder with a GHA layer
+  cache, scope `ci-otel-collector`, `mode=max` so the OCB stage is cached. Every
+  shard reads it; shard 1 alone writes it (`ignore-error`). The cache is about
+  80 MB. It misses when `builder-config.yaml`, the Dockerfile, the version args
+  or a base image change, and then costs one compile, as before. PR runs read
+  the cache `main` writes.
 - Toolcache deletion runs in the background behind node setup and
   `yarn install`; the docker step waits for it.
 
@@ -1643,16 +1630,15 @@ Changes in `.github/workflows/main.yml` (`integration-shards` only):
 | 5     |   1310 |               902 |               259 |
 
 Cold, the compile took 504 s against 693 s, and the first PR #43 run's tests
-were faster too (shard 2 Jest 874 s against 1515 s for the same 623 tests,
-every suite about 1.7 times faster on the same runner image). That is runner
-speed, not this change: the next run's shard 2 tests took 1605 s (PR #42:
-1618 s). Warm (second PR #43 run): the OCB stage is `CACHED` and the
-collector step takes 7 s, so startup falls from 862–1310 s to 199–259 s,
-about 15 minutes per shard. Whole shards (startup and tests, so runner speed
-shows here too): 18m48, 32m39, 15m06, 16m52 and 24m16 against PR #42's
-46m18, 49m28, 29m02, 23m44 and 42m03. Shard 2 is now about 27 minutes of
-tests and 4 of startup; its longest suite is `external-api/dashboards`
-(788 s on PR #42).
+were faster too (shard 2 Jest 874 s against 1515 s for the same 623 tests, every
+suite about 1.7 times faster on the same runner image). That is runner speed,
+not this change: the next run's shard 2 tests took 1605 s (PR #42: 1618 s). Warm
+(second PR #43 run): the OCB stage is `CACHED` and the collector step takes 7 s,
+so startup falls from 862–1310 s to 199–259 s, about 15 minutes per shard. Whole
+shards (startup and tests, so runner speed shows here too): 18m48, 32m39, 15m06,
+16m52 and 24m16 against PR #42's 46m18, 49m28, 29m02, 23m44 and 42m03. Shard 2
+is now about 27 minutes of tests and 4 of startup; its longest suite is
+`external-api/dashboards` (788 s on PR #42).
 
 ### R3: Service map node latency
 
@@ -1663,23 +1649,23 @@ of the reference.
 
 Done on `mm--v1-r3-service-map-latency` (2026-11-24):
 
-- Shard policy (user, 2026-11-24, on merging PR #43): shard 2 (about 30 min
-  of its 55) stays as it is. No further shard changes unless a shard actually
-  times out; then report before changing anything.
+- Shard policy (user, 2026-11-24, on merging PR #43): shard 2 (about 30 min of
+  its 55) stays as it is. No further shard changes unless a shard actually times
+  out; then report before changing anything.
 - Path correction: `port/query-parity` no longer exists; Phase 10 replaced it
   with `port/golden`, whose goldens were captured while ClickHouse was still
-  there and are chart configs replayed through `renderChartConfig`. The
-  service map query is built in `serviceMap.ts`, outside that renderer, so no
-  golden case can carry it, and a new reference cannot be captured. The
-  parity check is `packages/app/src/couchbase/__tests__/serviceMap.live.test.ts`,
-  run by `port/couchbase-test/run.sh`. It runs the real query on an inline
-  span set (12 server spans across `web`, `worker`, an uninstrumented caller
-  and a self-call into `api`, plus `api`→`db`) and expects upstream's rows:
-  the same columns, `ORDER BY`, counts, and percentiles from `quantileValue`.
-  That is ClickHouse's `quantiles` for fewer than 8192 samples per group:
-  exact reservoir, linear interpolation. Tolerance is 1e-6.
-- SQL++ (checked against the 8.0 aggregate and array function references):
-  8.0 has `MEDIAN` but no percentile aggregate, so each edge group keeps
+  there and are chart configs replayed through `renderChartConfig`. The service
+  map query is built in `serviceMap.ts`, outside that renderer, so no golden
+  case can carry it, and a new reference cannot be captured. The parity check is
+  `packages/app/src/couchbase/__tests__/serviceMap.live.test.ts`, run by
+  `port/couchbase-test/run.sh`. It runs the real query on an inline span set (12
+  server spans across `web`, `worker`, an uninstrumented caller and a self-call
+  into `api`, plus `api`→`db`) and expects upstream's rows: the same columns,
+  `ORDER BY`, counts, and percentiles from `quantileValue`. That is ClickHouse's
+  `quantiles` for fewer than 8192 samples per group: exact reservoir, linear
+  interpolation. Tolerance is 1e-6.
+- SQL++ (checked against the 8.0 aggregate and array function references): 8.0
+  has `MEDIAN` but no percentile aggregate, so each edge group keeps
   `ARRAY_SORT` of its numeric durations. Each node takes
   `ARRAY_FLATTEN(ARRAY_AGG(edge.durs), 1)` over its edges, which is the same
   span set as upstream's `(ServerSpans.serviceName)` grouping set because the
@@ -1687,22 +1673,21 @@ Done on `mm--v1-r3-service-map-latency` (2026-11-24):
   `sortedArrayQuantile` (shared with `quantile()` in
   `common-utils/src/couchbase/fn/quantile.ts`). Levels are bound as
   `$serviceMapP50`/`P95`/`P99`. Result shape matches upstream: the same rows,
-  with `p50`/`p95`/`p99` as named columns where upstream returns a
-  `quantiles` array; the hook reads either.
+  with `p50`/`p95`/`p99` as named columns where upstream returns a `quantiles`
+  array; the hook reads either.
 - In-scope fixes to the edge percentiles. They used nearest-rank
-  (`FLOOR(q * (n - 1))`) and not upstream's interpolation, so p95 of
-  10…70 was 60 where upstream gives 67. `ARRAY_AGG` keeps NULLs (8.0 docs),
-  and `ARRAY_SORT` puts them first, so any non-numeric duration in a group
-  pulled the low percentiles down to NULL. Both are fixed and covered by the
-  live test.
-- Found by the live test, fixed in scope: spans from uninstrumented callers
-  were dropped from the whole map. An unmatched LEFT JOIN leaves
-  `c.serviceName` MISSING, and `MISSING IS NULL` is not TRUE, so
+  (`FLOOR(q * (n - 1))`) and not upstream's interpolation, so p95 of 10…70 was
+  60 where upstream gives 67. `ARRAY_AGG` keeps NULLs (8.0 docs), and
+  `ARRAY_SORT` puts them first, so any non-numeric duration in a group pulled
+  the low percentiles down to NULL. Both are fixed and covered by the live test.
+- Found by the live test, fixed in scope: spans from uninstrumented callers were
+  dropped from the whole map. An unmatched LEFT JOIN leaves `c.serviceName`
+  MISSING, and `MISSING IS NULL` is not TRUE, so
   `WHERE (c.serviceName IS NULL OR ...)` rejected them (8.0 comparison
-  operators: a comparison with MISSING is MISSING). Upstream keeps them
-  because ClickHouse fills `''`. Node request and error counts and latency
-  undercounted services with uninstrumented callers (on the fixture, `api`
-  showed 10 requests where upstream shows 11). Now `IS NOT VALUED`.
+  operators: a comparison with MISSING is MISSING). Upstream keeps them because
+  ClickHouse fills `''`. Node request and error counts and latency undercounted
+  services with uninstrumented callers (on the fixture, `api` showed 10 requests
+  where upstream shows 11). Now `IS NOT VALUED`.
 
 ### R4: Playwright specs on Couchbase
 
@@ -1720,37 +1705,35 @@ row locally on a clean stack, including all 13 `kubernetes.spec.ts` and all 7
 Done on `mm--v1-r4-playwright-couchbase` (2026-11-24); details and each spec
 adaptation are in `docs/port-notes.md` (R4):
 
-- Route smoke: the onboarding `system.tables` probe was already fixed by D5;
-  all `route-smoke` tests pass.
+- Route smoke: the onboarding `system.tables` probe was already fixed by D5; all
+  `route-smoke` tests pass.
 - D15: `seed-couchbase.ts` (split into `seed-couchbase-client.ts`,
   `seed-rows-k8s.ts`, `seed-rows-k8s-metrics.ts`, `seed-rows-sessions.ts`,
-  `seed-rows-filter-keys.ts`)
-  writes the Kubernetes gauge/sum rows and events, and the OTel browser SDK
-  session spans, replay rows and browser log events. All 13
-  `kubernetes.spec.ts` and all 7 `sessions.spec.ts` tests pass.
+  `seed-rows-filter-keys.ts`) writes the Kubernetes gauge/sum rows and events,
+  and the OTel browser SDK session spans, replay rows and browser log events.
+  All 13 `kubernetes.spec.ts` and all 7 `sessions.spec.ts` tests pass.
 - Product fixes (small, in scope): SQL++ translation of `JSONExtract*`,
-  `widthBucket`/`count()` in heatmaps, reserved-word aliases and path
-  segments, string-select group keys (4210), no synthetic `*` column,
-  bucket/collection listing from `system:keyspaces`, Kubernetes Map group-by
-  cells, trace/session panel expressions (duration, row id, exception
-  attributes), linked-span lookups, pattern rows without an id, dashboard
-  filter values for expression keys, the empty-first-page `meta` of paginated
-  search, new sources defaulting to the `otel` bucket, and empty metric
-  collections accepted by autofill.
-- Explicit skips, each with a reason, pending decisions Q55 to Q57:
-  `select-star-error-state.spec.ts` (ClickHouse Distributed tables) and
-  `metric-table-autofill` "database changes" (needs a second E2E bucket).
+  `widthBucket`/`count()` in heatmaps, reserved-word aliases and path segments,
+  string-select group keys (4210), no synthetic `*` column, bucket/collection
+  listing from `system:keyspaces`, Kubernetes Map group-by cells, trace/session
+  panel expressions (duration, row id, exception attributes), linked-span
+  lookups, pattern rows without an id, dashboard filter values for expression
+  keys, the empty-first-page `meta` of paginated search, new sources defaulting
+  to the `otel` bucket, and empty metric collections accepted by autofill.
+- Explicit skips, each with a reason: `select-star-error-state.spec.ts`
+  (ClickHouse Distributed tables; signed off, Q55). The `metric-table-autofill`
+  "database changes" case runs against a 100 MB `e2e_metrics_alt` bucket (Q57).
   Upstream's `sources.spec.ts` full-stack skip is unchanged.
 - No new D-numbers: everything found was small and fixed here.
 - No workflow changes (R5 owns `main.yml`).
 - Local acceptance: `make e2e` on a clean stack, twice in a row on the final
-  code. Each run: 453 passed, 4 skipped, 0 failed, exit 0. Each run also had
-  one test that passed on its retry, a different one each time, and neither
-  touches a SQL++ query: `dashboard-static-filters` (a freeform value
-  submitted before the URL updated) and `team` "cancel team name editing"
-  (another `fullyParallel` test renamed the shared team). Both are upstream
-  UI races and are left unchanged. An earlier run had no retries
-  (454 passed).
+  code. Each run: 453 passed, 4 skipped, 0 failed, exit 0. Each run also had one
+  test that passed on its retry, a different one each time, and neither touches
+  a SQL++ query: `dashboard-static-filters` (a freeform value submitted before
+  the URL updated) and `team` "cancel team name editing" (another
+  `fullyParallel` test renamed the shared team). Both are upstream UI races and
+  are left unchanged. After Q57, a further clean `make e2e`: 455 passed, 3
+  skipped, 0 failed, none on retry. An earlier run had no retries (454 passed).
 
 ### R5: Re-enable E2E on Main
 
@@ -1821,65 +1804,65 @@ Q1–Q10 were answered by the user on 2026-11-19, Q11–Q18 on 2026-11-20. No ot
 open questions remain for the release as a whole; per-phase questions are raised
 in that phase.
 
-| ID  | Question                                                                                                 | Decision                                                                                                                                                                                                                                                                                                                          | Affects        |
-| --- | -------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------- |
-| Q1  | Publish the all-in-one image (bundles Couchbase Server EE)?                                              | No, not for 1.0. `make build-all-in-one` stays for local use; `DEPLOY.md` says so                                                                                                                                                                                                                                                 | R6, R7, R8     |
-| Q2  | Image tag scheme                                                                                         | `1.0.0`, `1.0`, `1`, and `latest` for non-prerelease releases from `main`                                                                                                                                                                                                                                                         | R6, R8         |
-| Q3  | Git tag scheme and the `## v0.1.0` changelog entry                                                       | Single product tag `v1.0.0`; fold the never-tagged 0.1.0 entry into 1.0.0                                                                                                                                                                                                                                                         | R1 (B9), R8    |
-| Q4  | Service map node latency (B6)                                                                            | Blocker; fix before 1.0 (R3)                                                                                                                                                                                                                                                                                                      | R3             |
-| Q5  | Internal package versions                                                                                | Every package except `hdx-eval` moves to 1.0.0 and is lock-stepped (`api`, `app`, `ingest`, `otel-collector`, `common-utils`, `cli`, root); `hdx-eval` stays 0.3.3                                                                                                                                                                | R6, R8         |
-| Q6  | Publish the CLI                                                                                          | Attach binaries to the GitHub release; no npm publish                                                                                                                                                                                                                                                                             | R8             |
-| Q7  | OpenAPI `info.version`                                                                                   | Stays `2.0.0` (versions the `/api/v2` contract, not the product)                                                                                                                                                                                                                                                                  | R8             |
-| Q8  | Do the test gaps block 1.0?                                                                              | Yes, all of them: the 23 deferred API int suites (R2a, R2b, R2c) and full-stack E2E back on in CI (R4, R5). No fallback                                                                                                                                                                                                           | R2a–R2c, R4–R5 |
-| Q9  | Changelog tooling                                                                                        | Keep changesets for package changelogs; hand-write the root `CHANGELOG.md` release notes                                                                                                                                                                                                                                          | R6, R8         |
-| Q10 | Release automation                                                                                       | Local `make release-images` and `gh release create`; no new release workflow                                                                                                                                                                                                                                                      | R6, R8         |
-| Q11 | B17 "legacy store" text (2026-11-20)                                                                     | Blocks 1.0 as its own phase D2b, after D2                                                                                                                                                                                                                                                                                         | D2b            |
-| Q12 | Where D7 runs (2026-11-20)                                                                               | After D6, as section 9 orders it; not pulled forward                                                                                                                                                                                                                                                                              | D7             |
-| Q13 | External charts "process series from different sources" and the 8 empty log-series failures (2026-11-20) | Stay in R2a; no separate defect phase. R2a finds the cause, and if it is a product defect fixes it there                                                                                                                                                                                                                          | R2a            |
-| Q14 | Where D9 (builder `Map['k']` syntax) runs (2026-11-20)                                                   | Next after D2, before D2b, so D2b rewrites the builder docs once in final form                                                                                                                                                                                                                                                    | D9, D2b        |
-| Q15 | D8 fix: seed helpers or MCP `request_plus` (2026-11-20)                                                  | Test seed helpers only (wait for index visibility); MCP tools keep their consistency. Folded into the D9 PR as its own commit if small                                                                                                                                                                                            | D8, D9         |
-| Q16 | How D2b docs and prompts show map access (2026-11-20)                                                    | Show the map form `SpanAttributes['k']` and say it is translated to SQL++ field access (``SpanAttributes.`k` ``)                                                                                                                                                                                                                  | D2b            |
-| Q17 | Name of map group-by result columns (2026-11-20)                                                         | The raw source expression, e.g. `SpanAttributes['http.route']` (current behavior; matches upstream)                                                                                                                                                                                                                               | D9, D2b        |
-| Q18 | Leftover `CBT_*`/`COUCHBASE_*` shell variables in local int runs (2026-11-20)                            | Local integration entry points (`make ci-int`, `make dev-int`, `port/couchbase-test/run.sh`) clear them through the `scripts/e2e-env.sh` logic; unit-tested; own commit in the D2b PR                                                                                                                                             | D2b            |
-| Q19 | Scope of the legacy-store text guard (2026-11-21)                                                        | Keep the wider scope: package sources, `openapi.json`, package docs, `docs/`, `agent_docs/`, rules, skills, templates, prompts, `docker/`, `smoke-tests/`                                                                                                                                                                         | D2b            |
-| Q20 | Two Playwright failures found in D2b, also on `main` (2026-11-21)                                        | R4/R5 worklist: `dashboards-list` "Cluster" card locator also matches the Kubernetes card; `team` connection card lacks `Host:`/`Username:`                                                                                                                                                                                       | R4, R5         |
-| Q21 | Dead non-Couchbase test-connection branch in `app/src/connection.ts` (2026-11-21)                        | Remove it (posts to the removed `evalstore-proxy/test` route); own commit in the D3 PR, tests updated                                                                                                                                                                                                                             | D3             |
-| Q22 | Couchbase-suite skip under `make ci-int` (2026-11-21)                                                    | Make it explicit: `make ci-int` sets `CBT_TEST_COUCHBASE_REQUIRED=0` and logs that the suite runs in `port/couchbase-test/run.sh`; own commit in the D3 PR                                                                                                                                                                        | D3             |
-| Q23 | Leftover `trace` failure "no-match hint when no traces exist" (2026-11-21)                               | Fix in R2c: give the test its own time window; keep upstream's behavior of not clearing `otel_traces` between tests                                                                                                                                                                                                               | R2c            |
-| Q24 | Integer query results arrive as strings (Int64 JSON encoding) (2026-11-21)                               | Keep strings at the data-client level (current raw result shape); each tool converts with `Number()` where it needs a number                                                                                                                                                                                                      | D3, D4, all    |
-| Q25 | Describe tools on an empty collection (2026-11-21)                                                       | Fall back to the declared OTel schema (ingest collection model, shared via `common-utils`, server-only), as upstream `DESCRIBE TABLE` returns DDL columns; one shared function; own commit in the D5 PR                                                                                                                           | D5             |
-| Q26 | Metric tools' leftover ClickHouse SQL (`{x:Identifier}`, `argMax`, `anyLast`, `mapKeys`) (2026-11-21)    | Folded into R2c, not its own phase                                                                                                                                                                                                                                                                                                | R2c            |
-| Q27 | Flaky app unit test `HDXMultiSeriesTableChart` "excludes a value by its column filter key" (2026-11-21)  | Own deterministic root-cause fix, own commit in the D5 PR, proven with repeated runs (30x and the full suite)                                                                                                                                                                                                                     | D5             |
-| Q28 | Page query failures found by route-smoke in D5 (2026-11-21)                                              | One bug-fix phase, D10 "page queries", after D6 and D7 and before R2                                                                                                                                                                                                                                                              | D10            |
-| Q29 | `/alerts/[id]` returns 400 for the smoke fixture id (2026-11-21)                                         | Both: the smoke fixture uses a real valid id, and the page shows a not-found state for an invalid or unknown id instead of the 400. In D10 (unrelated to D6)                                                                                                                                                                      | D10            |
-| Q30 | Placement of D11, D12, D13 (2026-11-21)                                                                  | After D10 in the phase order                                                                                                                                                                                                                                                                                                      | D11–D13        |
-| Q31 | Grouped alert history order (D12)                                                                        | Product fix: history rows get a stable insertion order so same-timestamp rows sort deterministically; not test-only                                                                                                                                                                                                               | D12            |
-| Q32 | Concurrent invite race (D13)                                                                             | The losing request waits briefly and returns the winner's invite, idempotent like upstream; no 409                                                                                                                                                                                                                                | D13            |
-| Q33 | Live-test port offset fallback (D14)                                                                     | Not a 1.0 blocker; fixed as a separate commit at the start of the D10 PR, proven with a default port occupied                                                                                                                                                                                                                     | D14            |
-| Q34 | Couchbase E2E seed gaps (D15)                                                                            | Fixed with the Playwright work in R4; R4 acceptance includes the `kubernetes` and `sessions` specs                                                                                                                                                                                                                                | R4, D15        |
-| Q35 | Grouped ratio alert `share_of_total` (D16)                                                               | Fixed with D11 in the same PR, as its own commit; both are alert query rendering                                                                                                                                                                                                                                                  | D11, D16       |
-| Q36 | Placement of D17: multi-series metric charts drop HAVING and ORDER BY (2026-11-22)                       | Its own PR, right after D13                                                                                                                                                                                                                                                                                                       | D17            |
-| Q37 | Placement of D18: intermittent common-utils live-cluster failures (2026-11-22)                           | Investigated alongside D13, in the same PR, own commit if a fix is found                                                                                                                                                                                                                                                          | D13, D18       |
-| Q38 | Couchbase Node SDK version (2026-11-22)                                                                  | Stay on 4.7.x until Couchbase lists 4.8 for Server 8.0; keep the int-test watchdog. Evidence: 4.8.0 fixes a teardown hang (JSCBC-1520, JSCBC-1522), the strongest lead for the PR #27 shard 1 stall, but the compatibility matrix lists 4.7, not 4.8, for 8.0 (AGENTS.md platform rule). Follow-up F1: revisit when 4.8 is listed | F1             |
-| Q39 | Placement of the D18 SDK-timeout remainder (2026-11-22)                                                  | Its own small PR (`mm--v1-d18-sdk-timeout`), merged before D17: SDK error-context logging on TIMEOUT, then `run.sh` loops with a fresh cluster each run                                                                                                                                                                          | D17, D18       |
-| Q40 | One-off `make ci-int` exit 1 after every test passed (2026-11-22)                                        | Logged as defect D19 and investigated in the D18 remainder PR                                                                                                                                                                                                                                                                     | D18, D19       | F1             |
-| Q41 | SQL++ form of the D17 outer HAVING and group-by sort (2026-11-22)                                        | HAVING is a WHERE on a wrapper in every shape (SQL++ HAVING rejects aliases, windows, and a missing GROUP BY); group-by sorts read the named group column instead of companion columns. Same rows and columns as upstream; a `share_of_total` HAVING with an expression group-by sort now runs, where upstream fails. User kept this divergence (2026-11-23) | D17            |
-| Q42 | Placement of D20: mixed gauge/histogram charts drop scalar group columns (2026-11-23)                    | The next phase, right after D17                                                                                                                                                                                                                                                                                                   | D17, D20       |
-| Q43 | Placement of D21: cumulative histogram quantile emits a NULL row for a zero-delta bucket (2026-11-23)    | Its own PR, before R2a (user, 2026-11-23)                                                                                                                                                                                                                                                                                         | D21            |
-| Q44 | Placement of D22: exponential-histogram count partitions deltas by a select alias (2026-11-23)           | Its own PR, before R2a (user, 2026-11-23)                                                                                                                                                                                                                                                                                         | D22            |
-| Q45 | Placement of D23: metric source CTEs omit upstream's one-interval warm-up window (2026-11-23)            | Its own PR, before R2a (user, 2026-11-23)                                                                                                                                                                                                                                                                                         | D23            |
-| Q46 | Placement of D24: metric charts ignore `where`; histograms lose `filters` (2026-11-23)                   | D24 and D25 together in one PR, before R2a (user, 2026-11-23)                                                                                                                                                                                                                                                                     | D24            |
-| Q47 | Placement of D25: Sum select alias is not defaulted to `Value` (2026-11-23)                              | With D24, in the same PR (user, 2026-11-23)                                                                                                                                                                                                                                                                                       | D25            |
-| Q48 | D26: keep the exclusive range end, or default it to inclusive as upstream (2026-11-23)                   | Match upstream (a row exactly at the range end is included), in its own PR after the D24/D25 PR, before R2a (user, 2026-11-23)                                                                                                                                                                                                    | D26            |
-| Q49 | Placement of D27: metric sources omit the `Flags` no-recorded-value filter (2026-11-23)                  | Fix in the D26 PR: drop metric points with `Flags` bit 0 (no recorded value), as upstream (user, 2026-11-23)                                                                                                                                                                                                                      | D27            |
-| Q50 | Placement of D28: unset `whereLanguage` compiles as Lucene outside metrics (2026-11-23)                  | Fix in the D26 PR: a chart `where` with no language is SQL, as upstream; audit callers so none that sets Lucene changes (user, 2026-11-23)                                                                                                                                                                                        | D28            |
-| Q51 | Placement of D29: request query attribution never reaches SQL++ queries (2026-11-23)                     | Its own PR right after R2a, before R2c and R2b (user, 2026-11-23); it ports `middleware/queryAttribution` onto a Couchbase route and picks the `clientContextId` tag format                                                                                                                                                       | D29            |
-| Q52 | Set the completed-requests log threshold/limit at startup? (2026-11-24) | Not for v1.0.0: keep the cluster's settings as they are. v1.0.1 backlog P13 adds opt-in `CBT_COUCHBASE_COMPLETED_THRESHOLD_MS` / `CBT_COUCHBASE_COMPLETED_LIMIT` in ingest setup (user, 2026-11-24) | P13 |
-| Q53 | Upstream fails a query on an unknown column (`UNKNOWN_IDENTIFIER`); SQL++ reads it as MISSING and succeeds (2026-11-24) | Validate field names against the declared OTel schema, then the collection's inferred columns (`describeColumns`), before MCP queries are sent, and fail with upstream's error; the 3 `queryTool` cases are un-skipped (user, 2026-11-24) | — |
-| Q54 | `cbt_describe_table` reports ClickHouse table metadata that collections lack (2026-11-24) | GSI/primary indexes and the document count are the Couchbase equivalent; engine, sorting/partition/primary keys, comments, defaults and Distributed local tables are not applicable, recorded in `port/features.json` (`mcp-sources`) and so in `docs/parity.md`; the Distributed case asserts their absence (user, 2026-11-24) | — |
-| Q55 | `select-star-error-state.spec.ts`: ClickHouse Distributed-table missing-column error (2026-11-24) | Open. Proposed: parity sign-off in `docs/parity.md`. Collections never report `isPointerTable`, and a schemaless `SELECT *` cannot fail on a shard's missing column, so the state is unreachable; skipped with that reason (R4) | R4 |
-| Q56 | `json-viewer-key-order.spec.ts`: "original" key order equals ascending on Couchbase (2026-11-24) | Open. Proposed: accept. The Query service returns object fields sorted by name, so documents have no stored column order; the spec asserts the same keys and no synthetic `*` instead of "original differs from ascending" (R4) | R4 |
-| Q57 | `metric-table-autofill` "database changes on a saved source" needs a second bucket (2026-11-24) | Open. Options: (a) carve an `e2e_metrics_alt` bucket (100 MB) out of the E2E data quota in the E2E compose only and seed two collections; (b) sign off. Skipped with a reason until decided (R4) | R4 |
+| ID  | Question                                                                                                                | Decision                                                                                                                                                                                                                                                                                                                                                     | Affects        |
+| --- | ----------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | -------------- | --- |
+| Q1  | Publish the all-in-one image (bundles Couchbase Server EE)?                                                             | No, not for 1.0. `make build-all-in-one` stays for local use; `DEPLOY.md` says so                                                                                                                                                                                                                                                                            | R6, R7, R8     |
+| Q2  | Image tag scheme                                                                                                        | `1.0.0`, `1.0`, `1`, and `latest` for non-prerelease releases from `main`                                                                                                                                                                                                                                                                                    | R6, R8         |
+| Q3  | Git tag scheme and the `## v0.1.0` changelog entry                                                                      | Single product tag `v1.0.0`; fold the never-tagged 0.1.0 entry into 1.0.0                                                                                                                                                                                                                                                                                    | R1 (B9), R8    |
+| Q4  | Service map node latency (B6)                                                                                           | Blocker; fix before 1.0 (R3)                                                                                                                                                                                                                                                                                                                                 | R3             |
+| Q5  | Internal package versions                                                                                               | Every package except `hdx-eval` moves to 1.0.0 and is lock-stepped (`api`, `app`, `ingest`, `otel-collector`, `common-utils`, `cli`, root); `hdx-eval` stays 0.3.3                                                                                                                                                                                           | R6, R8         |
+| Q6  | Publish the CLI                                                                                                         | Attach binaries to the GitHub release; no npm publish                                                                                                                                                                                                                                                                                                        | R8             |
+| Q7  | OpenAPI `info.version`                                                                                                  | Stays `2.0.0` (versions the `/api/v2` contract, not the product)                                                                                                                                                                                                                                                                                             | R8             |
+| Q8  | Do the test gaps block 1.0?                                                                                             | Yes, all of them: the 23 deferred API int suites (R2a, R2b, R2c) and full-stack E2E back on in CI (R4, R5). No fallback                                                                                                                                                                                                                                      | R2a–R2c, R4–R5 |
+| Q9  | Changelog tooling                                                                                                       | Keep changesets for package changelogs; hand-write the root `CHANGELOG.md` release notes                                                                                                                                                                                                                                                                     | R6, R8         |
+| Q10 | Release automation                                                                                                      | Local `make release-images` and `gh release create`; no new release workflow                                                                                                                                                                                                                                                                                 | R6, R8         |
+| Q11 | B17 "legacy store" text (2026-11-20)                                                                                    | Blocks 1.0 as its own phase D2b, after D2                                                                                                                                                                                                                                                                                                                    | D2b            |
+| Q12 | Where D7 runs (2026-11-20)                                                                                              | After D6, as section 9 orders it; not pulled forward                                                                                                                                                                                                                                                                                                         | D7             |
+| Q13 | External charts "process series from different sources" and the 8 empty log-series failures (2026-11-20)                | Stay in R2a; no separate defect phase. R2a finds the cause, and if it is a product defect fixes it there                                                                                                                                                                                                                                                     | R2a            |
+| Q14 | Where D9 (builder `Map['k']` syntax) runs (2026-11-20)                                                                  | Next after D2, before D2b, so D2b rewrites the builder docs once in final form                                                                                                                                                                                                                                                                               | D9, D2b        |
+| Q15 | D8 fix: seed helpers or MCP `request_plus` (2026-11-20)                                                                 | Test seed helpers only (wait for index visibility); MCP tools keep their consistency. Folded into the D9 PR as its own commit if small                                                                                                                                                                                                                       | D8, D9         |
+| Q16 | How D2b docs and prompts show map access (2026-11-20)                                                                   | Show the map form `SpanAttributes['k']` and say it is translated to SQL++ field access (``SpanAttributes.`k` ``)                                                                                                                                                                                                                                             | D2b            |
+| Q17 | Name of map group-by result columns (2026-11-20)                                                                        | The raw source expression, e.g. `SpanAttributes['http.route']` (current behavior; matches upstream)                                                                                                                                                                                                                                                          | D9, D2b        |
+| Q18 | Leftover `CBT_*`/`COUCHBASE_*` shell variables in local int runs (2026-11-20)                                           | Local integration entry points (`make ci-int`, `make dev-int`, `port/couchbase-test/run.sh`) clear them through the `scripts/e2e-env.sh` logic; unit-tested; own commit in the D2b PR                                                                                                                                                                        | D2b            |
+| Q19 | Scope of the legacy-store text guard (2026-11-21)                                                                       | Keep the wider scope: package sources, `openapi.json`, package docs, `docs/`, `agent_docs/`, rules, skills, templates, prompts, `docker/`, `smoke-tests/`                                                                                                                                                                                                    | D2b            |
+| Q20 | Two Playwright failures found in D2b, also on `main` (2026-11-21)                                                       | R4/R5 worklist: `dashboards-list` "Cluster" card locator also matches the Kubernetes card; `team` connection card lacks `Host:`/`Username:`                                                                                                                                                                                                                  | R4, R5         |
+| Q21 | Dead non-Couchbase test-connection branch in `app/src/connection.ts` (2026-11-21)                                       | Remove it (posts to the removed `evalstore-proxy/test` route); own commit in the D3 PR, tests updated                                                                                                                                                                                                                                                        | D3             |
+| Q22 | Couchbase-suite skip under `make ci-int` (2026-11-21)                                                                   | Make it explicit: `make ci-int` sets `CBT_TEST_COUCHBASE_REQUIRED=0` and logs that the suite runs in `port/couchbase-test/run.sh`; own commit in the D3 PR                                                                                                                                                                                                   | D3             |
+| Q23 | Leftover `trace` failure "no-match hint when no traces exist" (2026-11-21)                                              | Fix in R2c: give the test its own time window; keep upstream's behavior of not clearing `otel_traces` between tests                                                                                                                                                                                                                                          | R2c            |
+| Q24 | Integer query results arrive as strings (Int64 JSON encoding) (2026-11-21)                                              | Keep strings at the data-client level (current raw result shape); each tool converts with `Number()` where it needs a number                                                                                                                                                                                                                                 | D3, D4, all    |
+| Q25 | Describe tools on an empty collection (2026-11-21)                                                                      | Fall back to the declared OTel schema (ingest collection model, shared via `common-utils`, server-only), as upstream `DESCRIBE TABLE` returns DDL columns; one shared function; own commit in the D5 PR                                                                                                                                                      | D5             |
+| Q26 | Metric tools' leftover ClickHouse SQL (`{x:Identifier}`, `argMax`, `anyLast`, `mapKeys`) (2026-11-21)                   | Folded into R2c, not its own phase                                                                                                                                                                                                                                                                                                                           | R2c            |
+| Q27 | Flaky app unit test `HDXMultiSeriesTableChart` "excludes a value by its column filter key" (2026-11-21)                 | Own deterministic root-cause fix, own commit in the D5 PR, proven with repeated runs (30x and the full suite)                                                                                                                                                                                                                                                | D5             |
+| Q28 | Page query failures found by route-smoke in D5 (2026-11-21)                                                             | One bug-fix phase, D10 "page queries", after D6 and D7 and before R2                                                                                                                                                                                                                                                                                         | D10            |
+| Q29 | `/alerts/[id]` returns 400 for the smoke fixture id (2026-11-21)                                                        | Both: the smoke fixture uses a real valid id, and the page shows a not-found state for an invalid or unknown id instead of the 400. In D10 (unrelated to D6)                                                                                                                                                                                                 | D10            |
+| Q30 | Placement of D11, D12, D13 (2026-11-21)                                                                                 | After D10 in the phase order                                                                                                                                                                                                                                                                                                                                 | D11–D13        |
+| Q31 | Grouped alert history order (D12)                                                                                       | Product fix: history rows get a stable insertion order so same-timestamp rows sort deterministically; not test-only                                                                                                                                                                                                                                          | D12            |
+| Q32 | Concurrent invite race (D13)                                                                                            | The losing request waits briefly and returns the winner's invite, idempotent like upstream; no 409                                                                                                                                                                                                                                                           | D13            |
+| Q33 | Live-test port offset fallback (D14)                                                                                    | Not a 1.0 blocker; fixed as a separate commit at the start of the D10 PR, proven with a default port occupied                                                                                                                                                                                                                                                | D14            |
+| Q34 | Couchbase E2E seed gaps (D15)                                                                                           | Fixed with the Playwright work in R4; R4 acceptance includes the `kubernetes` and `sessions` specs                                                                                                                                                                                                                                                           | R4, D15        |
+| Q35 | Grouped ratio alert `share_of_total` (D16)                                                                              | Fixed with D11 in the same PR, as its own commit; both are alert query rendering                                                                                                                                                                                                                                                                             | D11, D16       |
+| Q36 | Placement of D17: multi-series metric charts drop HAVING and ORDER BY (2026-11-22)                                      | Its own PR, right after D13                                                                                                                                                                                                                                                                                                                                  | D17            |
+| Q37 | Placement of D18: intermittent common-utils live-cluster failures (2026-11-22)                                          | Investigated alongside D13, in the same PR, own commit if a fix is found                                                                                                                                                                                                                                                                                     | D13, D18       |
+| Q38 | Couchbase Node SDK version (2026-11-22)                                                                                 | Stay on 4.7.x until Couchbase lists 4.8 for Server 8.0; keep the int-test watchdog. Evidence: 4.8.0 fixes a teardown hang (JSCBC-1520, JSCBC-1522), the strongest lead for the PR #27 shard 1 stall, but the compatibility matrix lists 4.7, not 4.8, for 8.0 (AGENTS.md platform rule). Follow-up F1: revisit when 4.8 is listed                            | F1             |
+| Q39 | Placement of the D18 SDK-timeout remainder (2026-11-22)                                                                 | Its own small PR (`mm--v1-d18-sdk-timeout`), merged before D17: SDK error-context logging on TIMEOUT, then `run.sh` loops with a fresh cluster each run                                                                                                                                                                                                      | D17, D18       |
+| Q40 | One-off `make ci-int` exit 1 after every test passed (2026-11-22)                                                       | Logged as defect D19 and investigated in the D18 remainder PR                                                                                                                                                                                                                                                                                                | D18, D19       | F1  |
+| Q41 | SQL++ form of the D17 outer HAVING and group-by sort (2026-11-22)                                                       | HAVING is a WHERE on a wrapper in every shape (SQL++ HAVING rejects aliases, windows, and a missing GROUP BY); group-by sorts read the named group column instead of companion columns. Same rows and columns as upstream; a `share_of_total` HAVING with an expression group-by sort now runs, where upstream fails. User kept this divergence (2026-11-23) | D17            |
+| Q42 | Placement of D20: mixed gauge/histogram charts drop scalar group columns (2026-11-23)                                   | The next phase, right after D17                                                                                                                                                                                                                                                                                                                              | D17, D20       |
+| Q43 | Placement of D21: cumulative histogram quantile emits a NULL row for a zero-delta bucket (2026-11-23)                   | Its own PR, before R2a (user, 2026-11-23)                                                                                                                                                                                                                                                                                                                    | D21            |
+| Q44 | Placement of D22: exponential-histogram count partitions deltas by a select alias (2026-11-23)                          | Its own PR, before R2a (user, 2026-11-23)                                                                                                                                                                                                                                                                                                                    | D22            |
+| Q45 | Placement of D23: metric source CTEs omit upstream's one-interval warm-up window (2026-11-23)                           | Its own PR, before R2a (user, 2026-11-23)                                                                                                                                                                                                                                                                                                                    | D23            |
+| Q46 | Placement of D24: metric charts ignore `where`; histograms lose `filters` (2026-11-23)                                  | D24 and D25 together in one PR, before R2a (user, 2026-11-23)                                                                                                                                                                                                                                                                                                | D24            |
+| Q47 | Placement of D25: Sum select alias is not defaulted to `Value` (2026-11-23)                                             | With D24, in the same PR (user, 2026-11-23)                                                                                                                                                                                                                                                                                                                  | D25            |
+| Q48 | D26: keep the exclusive range end, or default it to inclusive as upstream (2026-11-23)                                  | Match upstream (a row exactly at the range end is included), in its own PR after the D24/D25 PR, before R2a (user, 2026-11-23)                                                                                                                                                                                                                               | D26            |
+| Q49 | Placement of D27: metric sources omit the `Flags` no-recorded-value filter (2026-11-23)                                 | Fix in the D26 PR: drop metric points with `Flags` bit 0 (no recorded value), as upstream (user, 2026-11-23)                                                                                                                                                                                                                                                 | D27            |
+| Q50 | Placement of D28: unset `whereLanguage` compiles as Lucene outside metrics (2026-11-23)                                 | Fix in the D26 PR: a chart `where` with no language is SQL, as upstream; audit callers so none that sets Lucene changes (user, 2026-11-23)                                                                                                                                                                                                                   | D28            |
+| Q51 | Placement of D29: request query attribution never reaches SQL++ queries (2026-11-23)                                    | Its own PR right after R2a, before R2c and R2b (user, 2026-11-23); it ports `middleware/queryAttribution` onto a Couchbase route and picks the `clientContextId` tag format                                                                                                                                                                                  | D29            |
+| Q52 | Set the completed-requests log threshold/limit at startup? (2026-11-24)                                                 | Not for v1.0.0: keep the cluster's settings as they are. v1.0.1 backlog P13 adds opt-in `CBT_COUCHBASE_COMPLETED_THRESHOLD_MS` / `CBT_COUCHBASE_COMPLETED_LIMIT` in ingest setup (user, 2026-11-24)                                                                                                                                                          | P13            |
+| Q53 | Upstream fails a query on an unknown column (`UNKNOWN_IDENTIFIER`); SQL++ reads it as MISSING and succeeds (2026-11-24) | Validate field names against the declared OTel schema, then the collection's inferred columns (`describeColumns`), before MCP queries are sent, and fail with upstream's error; the 3 `queryTool` cases are un-skipped (user, 2026-11-24)                                                                                                                    | —              |
+| Q54 | `cbt_describe_table` reports ClickHouse table metadata that collections lack (2026-11-24)                               | GSI/primary indexes and the document count are the Couchbase equivalent; engine, sorting/partition/primary keys, comments, defaults and Distributed local tables are not applicable, recorded in `port/features.json` (`mcp-sources`) and so in `docs/parity.md`; the Distributed case asserts their absence (user, 2026-11-24)                              | —              |
+| Q55 | `select-star-error-state.spec.ts`: ClickHouse Distributed-table missing-column error (2026-11-24)                       | Not applicable, signed off in `docs/parity.md` (`app-search`): collections never report `isPointerTable`, and a schemaless `SELECT *` cannot fail on a shard's missing column, so the state is unreachable; the spec stays skipped with that reason (user, 2026-11-25)                                                                                       | —              |
+| Q56 | `json-viewer-key-order.spec.ts`: "original" key order equals ascending on Couchbase (2026-11-24)                        | Accepted: the Query service returns object fields sorted by name, so documents have no stored column order; the spec asserts the same keys and no synthetic `*` instead of "original differs from ascending" (user, 2026-11-25)                                                                                                                              | —              |
+| Q57 | `metric-table-autofill` "database changes on a saved source" needs a second bucket (2026-11-24)                         | The E2E seed creates a 100 MB Magma bucket `e2e_metrics_alt` (`default` scope, empty `alt_otel_metrics_gauge` and `alt_otel_metrics_sum`) inside the 2048 MB E2E data quota, next to `otel` (1024) and `cbt_meta` (256); the test is un-skipped and passes (user, 2026-11-25)                                                                                | —              |
 
 ## 11. Acceptance criteria (v1.0.0 is done when)
 
@@ -1962,7 +1945,7 @@ in that phase.
 | D26 Exclusive range end                                         | M    |
 | D27 Metric `Flags` bit-0 filter                                 | S    |
 | D28 Unset `whereLanguage` default                               | S    |
-| D29 Request query attribution on SQL++                         | M    |
+| D29 Request query attribution on SQL++                          | M    |
 | D14 Live-test port offset fallback                              | S    |
 | R2a Deferred API int suites (10 suites, 380 tests, 80 failing)  | L    |
 | R2b Deferred alert int suites (5 suites, 335 tests, 93 failing) | L    |

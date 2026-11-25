@@ -13,6 +13,7 @@ import {
   E2E_TRACES_TABLE,
 } from './utils/constants';
 import { parseValuesTuples } from './parseValuesTuples';
+import { ensureAltMetricsBucket } from './seed-alt-bucket';
 import {
   ensureCollection,
   ensureMetricIndexes,
@@ -65,6 +66,7 @@ export async function seedCouchbase(): Promise<void> {
     await ensureMetricIndexes(collection);
   }
   await truncateSeededCollections(seedCreated);
+  await ensureAltMetricsBucket();
 
   const { startMs, endMs, numDataPoints } = getE2eSeedWindow();
 

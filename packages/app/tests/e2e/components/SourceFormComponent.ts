@@ -79,20 +79,14 @@ export class SourceFormComponent {
     await this.page.getByLabel(label, { exact: true }).click();
   }
 
-  /**
-   * The Database select. Mantine keeps the form value on a hidden input and
-   * renders a separate combobox for interaction, so clicks have to target the
-   * combobox (its accessible name comes from the "Database" placeholder).
-   */
+  /** The Bucket input (Couchbase's counterpart of upstream's Database select). */
   get databaseSelect(): Locator {
-    return this.page.getByRole('combobox', { name: 'Database' });
+    return this.page.getByTestId('source-bucket-input');
   }
 
+  /** Couchbase names the bucket in a text input, not a database dropdown. */
   async selectDatabase(databaseName: string): Promise<void> {
-    await this.databaseSelect.click();
-    await this.page
-      .getByRole('option', { name: databaseName, exact: true })
-      .click();
+    await this.databaseSelect.fill(databaseName);
   }
 
   /**

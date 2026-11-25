@@ -7,8 +7,11 @@
  * selection changes, but never when a saved metrics source is opened —
  * otherwise the form silently gains unsaved changes the user never made.
  *
- * Couchbase E2E seeds gauge/sum collections in the `otel` bucket (`default`
- * scope). Alternate-database autofill is not exercised on Couchbase.
+ * Two buckets back these tests (`default` scope; see `seed-couchbase.ts` and
+ * `seed-alt-bucket.ts`):
+ *   - `otel`             — e2e_otel_metrics_gauge / e2e_otel_metrics_sum, and
+ *                          the provisioned otel_metrics_* collections
+ *   - `e2e_metrics_alt`  — alt_otel_metrics_gauge / alt_otel_metrics_sum
  *
  * The distinct table names let an assertion prove which database a detected
  * table came from.
@@ -131,13 +134,6 @@ test.describe(
     test('autofills when the database changes on a saved metrics source', async ({
       page,
     }) => {
-      // The alternate database is a second bucket (`e2e_metrics_alt`); the E2E
-      // cluster's data quota goes entirely to `otel` and `cbt_meta`, so it is
-      // not provisioned. Pending decision (docs/v1-release-plan.md, R4).
-      test.skip(
-        true,
-        'Needs a second E2E bucket (e2e_metrics_alt); not provisioned on the Couchbase E2E cluster',
-      );
       const sourceForm = new SourceFormComponent(page);
       const sourceName = `E2E Metrics Autofill Switch ${Date.now()}`;
       let sourceId = '';
