@@ -14,9 +14,8 @@ self-managed. Community Edition and 7.x are not supported. Dev and CI pin
 | RAM       | Plan data, index, and search quotas; dev compose uses 2 GB / 512 MB / 512 MB                                                                |
 | TLS       | Recommended in production; use `couchbases://` and provide the CA with `CBT_COUCHBASE_CA_CERT_PATH`                                         |
 
-There is no MongoDB or ClickHouse. Teams, users, sessions, dashboards, saved
-searches, alerts, and connections live in `cbt_meta`; the API does not start
-without it.
+No other database is needed: teams, users, sessions, dashboards, saved searches,
+alerts, and connections live in `cbt_meta`; the API does not start without it.
 
 ## Users
 
