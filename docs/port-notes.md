@@ -4182,3 +4182,18 @@ to run outside the agent sandbox, which blocks `git init` in a temp dir.
 - **Version locations.** `docs/development.md`, `DEPLOY.md`, and `LOCAL.md` keep
   exactly one tagged image reference each, so `set-version` still owns 16/16
   locations (`--dry-run 9.9.9` changes all 16).
+- **Gates at `574aac0`.** `make ci-lint`, `make ci-unit`, and `yarn lint:fix`
+  green. `make ci-int`: common-utils 20/20 suites, API 62/63 (the skipped one is
+  the harness-only metadata suite). `make e2e`: 454 passed, 3 skipped, 1 flaky
+  (`dashboard.spec.ts` "should warn when closing tile editor with unsaved
+  changes", passed on retry). Acceptance (`docs/acceptance.md`, `b2a5ef6`, Final
+  true): 20/23 pass, C1/C2 blocked (no Capella credentials), K2 blocked. PR #49
+  CI: 25/25 green, Main run 45758470165 succeeded.
+- **K2 not recorded.** `--record-ci` reuses committed results only when every
+  check other than K2 passed, so with C1/C2 blocked it would re-run the whole
+  suite and still report `blocked`. Record K2 together with the Capella run:
+  `node port/acceptance/run.mjs --capella`, push, then `--record-ci <Main run>`.
+- **First full run** failed K1 only: M1's E2E shard left its API web server
+  (`ts-node`, port 21047) running, so K1's shard could not bind. Killing the
+  orphan and re-running fixed it. Interrupted runs leave the same orphan; check
+  `lsof -iTCP:21047` before re-running.

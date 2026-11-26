@@ -1946,6 +1946,12 @@ H1–H3 branding green.
 R7 result (2026-11-25, `mm--v1-r7-docs-acceptance`): see "R7 findings" in
 section 9.1 and `docs/acceptance.md`.
 
+- **Acceptance** at `b2a5ef6`, Final true: 20/23 pass. Status **blocked**: C1
+  and C2 need Capella credentials (`--capella`), and K2 can be recorded only
+  after them (see `docs/port-notes.md`). Main CI for PR #49 succeeded.
+- **Open for R7 to reach pass:** a Capella 8.x cluster prepared per
+  `docs/capella.md` and the `CBT_ACCEPT_CAPELLA_*` variables (Q62).
+
 - **Plan corrections.** `run.mjs` has no `--final` flag: a run is final when no
   check is filtered (`--only` / `--skip`) or reused (`--reuse-stack`) and none
   is skipped, and the tree was clean at the start. Without `--capella`, C1 and
@@ -2065,6 +2071,7 @@ in that phase.
 | Q59 | Wire `set-version --check` into `make ci-lint` in R6 (2026-11-25)?                                                      | Deferred to R8 (user, 2026-11-25). Nothing changes in R6 beyond adding `make version-check`. The versions are not lock-stepped today (root 2.0.0; api, app, ingest and collector 2.44.0; cli 0.9.0; common-utils 0.34.0), so the gate would fail on `main`. R8 must, in the bump commit: run `make version VERSION=1.0.0`, add `version-check` to the Makefile `ci-lint` target, and check that `make ci-lint` passes at 1.0.0 and fails on a single reverted location.                                                                                                                                                                         |
 | Q60 | Placement of D30, the all-in-one ingest setup race (2026-11-25)                                                         | Its own small PR after R6 and before R7 (user, 2026-11-25), so R7's acceptance run and the R8 image smoke don't hit it. Started only on the user's go-ahead.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
 | Q61 | `kubernetes.spec.ts` chart and autocomplete waits time out under CI load (found on PR #48, 2026-11-25)                  | Accepted (user, 2026-11-25): watch it. If it recurs, open a D-numbered fix that makes the K8s chart and field-value queries cheaper (or seeds fewer gauge points); do not raise timeouts. One failing run so far; local 13/13 and `main` green.                                                                                                                                                                                                                                                                                                                                                                                                 |
+| Q62 | C1/C2 need a Capella cluster for R7 acceptance status **pass** (2026-11-25)                                             | Open: user to provide Capella 8.x credentials, or accept `blocked` (Capella untested in this run) for 1.0                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
 
 ## 11. Acceptance criteria (v1.0.0 is done when)
 
