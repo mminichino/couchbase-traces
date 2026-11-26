@@ -935,6 +935,10 @@ export class ChartEditorComponent {
    */
   async typeSqlQuery(sql: string) {
     await this.replaceSqlQuery(sql);
+    // Typing can leave the completion popup open over Run/Save, which then
+    // fails their actionability check (seen in CI on a slow shard). Callers
+    // that inspect the popup use replaceSqlQuery instead.
+    await dismissSqlAutocomplete(this.page);
   }
 
   /**
