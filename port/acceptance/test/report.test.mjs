@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import { describe, it } from 'node:test';
 
 import {
+  buildReport,
   computeReportStatus,
   renderAcceptanceMarkdown,
 } from '../lib/report.mjs';
@@ -90,5 +91,41 @@ describe('docs/acceptance.md rendering', () => {
     assert.match(md, /## Blocked requests/);
     assert.match(md, /Push this commit to origin/);
     assert.match(md, /"n": 1/);
+  });
+});
+
+describe('buildReport git state', () => {
+  const checks = [check('A1', 'pass')];
+  const root = '/nonexistent-acceptance-root';
+
+  it('uses the state captured at run start, not the tree after checks ran', () => {
+    const report = buildReport({
+      checks,
+      final: true,
+      environment: {},
+      root,
+      gitState: { gitSha: 'abc123', dirty: false },
+    });
+    assert.equal(report.gitSha, 'abc123');
+    assert.equal(report.dirty, false);
+    assert.equal(report.final, true);
+  });
+
+  it('is never final when the tree was dirty at start', () => {
+    const report = buildReport({
+      checks,
+      final: true,
+      environment: {},
+      root,
+      gitState: { gitSha: 'abc123', dirty: true },
+    });
+    assert.equal(report.final, false);
+  });
+
+  it('treats an unreadable repository as dirty', () => {
+    const report = buildReport({ checks, final: true, environment: {}, root });
+    assert.equal(report.gitSha, 'unknown');
+    assert.equal(report.dirty, true);
+    assert.equal(report.final, false);
   });
 });
