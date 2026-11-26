@@ -1,7 +1,7 @@
 {
   "status": "blocked",
-  "generatedAt": "2026-11-26T04:56:24.969Z",
-  "gitSha": "b2a5ef6218ca1410f01e7742c5dc5b4ba31a4dfa",
+  "generatedAt": "2026-11-26T18:28:57.328Z",
+  "gitSha": "606a45e732f0403bc0778658509483416438da86",
   "checks": [
     {
       "id": "A1",
@@ -30,13 +30,13 @@
     },
     {
       "id": "C1",
-      "status": "blocked",
-      "summary": "Capella checks require --capella"
+      "status": "pass",
+      "summary": "Capella connection and logs test-source succeeded"
     },
     {
       "id": "C2",
-      "status": "blocked",
-      "summary": "Capella checks require --capella"
+      "status": "pass",
+      "summary": "All 16 primary views show data on Capella"
     },
     {
       "id": "D1",
@@ -76,7 +76,7 @@
     {
       "id": "I1",
       "status": "pass",
-      "summary": "All 7256 browser requests stayed on origin"
+      "summary": "All 7240 browser requests stayed on origin"
     },
     {
       "id": "I2",

@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-11-26T04:56:24.969Z",
-  "gitSha": "b2a5ef6218ca1410f01e7742c5dc5b4ba31a4dfa",
+  "generatedAt": "2026-11-26T18:28:57.328Z",
+  "gitSha": "606a45e732f0403bc0778658509483416438da86",
   "dirty": false,
   "final": true,
   "environment": {
@@ -93,7 +93,7 @@
         "/Users/michael/IdeaProjects/couchbase-traces/port/state/acceptance/evidence/a3-couchbase-cluster-_cluster.png",
         "/Users/michael/IdeaProjects/couchbase-traces/port/state/acceptance/evidence/a3-app-benchmark-_benchmark.png"
       ],
-      "durationMs": 25202,
+      "durationMs": 24647,
       "id": "A3",
       "title": "Route smoke",
       "status": "pass"
@@ -101,13 +101,13 @@
     {
       "summary": "Product stack healthy (couchbase-init, app, ingest, otel-collector)",
       "details": {
-        "ps": "NAME                              IMAGE                                                  COMMAND                  SERVICE          CREATED              STATUS                                     PORTS\ncbt-acceptance-app-1              ghcr.io/mminichino/couchbase-traces:2                  \"sh /etc/local/entry…\"   app              About a minute ago   Up 5 seconds (healthy)                     0.0.0.0:18000->8000/tcp, [::]:18000->8000/tcp, 0.0.0.0:18080->8080/tcp, [::]:18080->8080/tcp\ncbt-acceptance-couchbase-1        couchbase/server:enterprise-8.0.3                      \"/entrypoint.sh couc…\"   couchbase        About a minute ago   Up About a minute (healthy)                8091-8097/tcp, 9123/tcp, 11207/tcp, 11210/tcp, 11280/tcp, 18091-18097/tcp\ncbt-acceptance-dns-1              coredns/coredns:1.11.3                                 \"/coredns -conf /Cor…\"   dns              About a minute ago   Up About a minute                          53/tcp, 53/udp\ncbt-acceptance-ingest-1           ghcr.io/mminichino/couchbase-traces-ingest:2           \"docker-entrypoint.s…\"   ingest           About a minute ago   Up 5 seconds (healthy)                     4320/tcp\ncbt-acceptance-otel-collector-1   ghcr.io/mminichino/couchbase-traces-otel-collector:2   \"/entrypoint.sh /opa…\"   otel-collector   About a minute ago   Up Less than a second (health: starting)   0.0.0.0:14317->4317/tcp, [::]:14317->4317/tcp, 0.0.0.0:14318->4318/tcp, [::]:14318->4318/tcp, 0.0.0.0:18888->8888/tcp, [::]:18888->8888/tcp, 0.0.0.0:23133->13133/tcp, [::]:23133->13133/tcp, 0.0.0.0:34225->24225/tcp, [::]:34225->24225/tcp\ncbt-acceptance-webhook-1          node:22-alpine                                         \"docker-entrypoint.s…\"   webhook          About a minute ago   Up About a minute                          8080/tcp\n\n"
+        "ps": "NAME                              IMAGE                                                  COMMAND                  SERVICE          CREATED              STATUS                                     PORTS\ncbt-acceptance-app-1              ghcr.io/mminichino/couchbase-traces:1                  \"sh /etc/local/entry…\"   app              About a minute ago   Up 5 seconds (healthy)                     0.0.0.0:18000->8000/tcp, [::]:18000->8000/tcp, 0.0.0.0:18080->8080/tcp, [::]:18080->8080/tcp\ncbt-acceptance-couchbase-1        couchbase/server:enterprise-8.0.3                      \"/entrypoint.sh couc…\"   couchbase        About a minute ago   Up About a minute (healthy)                8091-8097/tcp, 9123/tcp, 11207/tcp, 11210/tcp, 11280/tcp, 18091-18097/tcp\ncbt-acceptance-dns-1              coredns/coredns:1.11.3                                 \"/coredns -conf /Cor…\"   dns              About a minute ago   Up About a minute                          53/tcp, 53/udp\ncbt-acceptance-ingest-1           ghcr.io/mminichino/couchbase-traces-ingest:1           \"docker-entrypoint.s…\"   ingest           About a minute ago   Up 5 seconds (healthy)                     4320/tcp\ncbt-acceptance-otel-collector-1   ghcr.io/mminichino/couchbase-traces-otel-collector:1   \"/entrypoint.sh /opa…\"   otel-collector   About a minute ago   Up Less than a second (health: starting)   0.0.0.0:14317->4317/tcp, [::]:14317->4317/tcp, 0.0.0.0:14318->4318/tcp, [::]:14318->4318/tcp, 0.0.0.0:18888->8888/tcp, [::]:18888->8888/tcp, 0.0.0.0:23133->13133/tcp, [::]:23133->13133/tcp, 0.0.0.0:34225->24225/tcp, [::]:34225->24225/tcp\ncbt-acceptance-webhook-1          node:22-alpine                                         \"docker-entrypoint.s…\"   webhook          About a minute ago   Up About a minute                          8080/tcp\n\n"
       },
       "evidence": [
         "/Users/michael/IdeaProjects/couchbase-traces/port/state/acceptance/evidence/compose-ps.txt",
         "/Users/michael/IdeaProjects/couchbase-traces/port/state/acceptance/evidence/couchbase-init.log"
       ],
-      "durationMs": 0,
+      "durationMs": 1,
       "id": "B1",
       "title": "Fresh product stack",
       "status": "pass"
@@ -220,30 +220,153 @@
         "/Users/michael/IdeaProjects/couchbase-traces/port/state/acceptance/evidence/b2-alerts-list.png",
         "/Users/michael/IdeaProjects/couchbase-traces/port/state/acceptance/evidence/b2-couchbase-cluster.png"
       ],
-      "durationMs": 37724,
+      "durationMs": 65816,
       "id": "B2",
       "title": "Sample data views",
       "status": "pass"
     },
     {
+      "summary": "Capella connection and logs test-source succeeded",
+      "details": {
+        "connectionId": "6b086fae3ae8af55b421cb8f"
+      },
+      "evidence": [
+        "/Users/michael/IdeaProjects/couchbase-traces/port/state/acceptance/evidence/c1-couchbase-test.json",
+        "/Users/michael/IdeaProjects/couchbase-traces/port/state/acceptance/evidence/c1-test-source.json"
+      ],
+      "durationMs": 2254,
       "id": "C1",
       "title": "Capella connection",
-      "status": "blocked",
-      "summary": "Capella checks require --capella",
-      "details": null,
-      "evidence": [],
-      "durationMs": 0,
-      "request": "Provide a Capella 8.x cluster prepared per docs/capella.md and set the CBT_ACCEPT_CAPELLA_* variables, then run with --capella."
+      "status": "pass"
     },
     {
+      "summary": "All 16 primary views show data on Capella",
+      "details": {
+        "outcomes": [
+          {
+            "id": "log-search",
+            "ok": true,
+            "actual": 51,
+            "relaxedCluster": false
+          },
+          {
+            "id": "trace-search",
+            "ok": true,
+            "actual": 50,
+            "relaxedCluster": false
+          },
+          {
+            "id": "log-histogram",
+            "ok": true,
+            "actual": 3,
+            "relaxedCluster": false
+          },
+          {
+            "id": "chart-explorer-count-by-service",
+            "ok": true,
+            "actual": 3,
+            "relaxedCluster": false
+          },
+          {
+            "id": "dashboard-template",
+            "ok": true,
+            "actual": 1,
+            "relaxedCluster": false
+          },
+          {
+            "id": "trace-waterfall",
+            "ok": true,
+            "actual": "trace",
+            "relaxedCluster": false
+          },
+          {
+            "id": "service-map",
+            "ok": true,
+            "actual": "Sampling",
+            "relaxedCluster": false
+          },
+          {
+            "id": "metrics-chart",
+            "ok": true,
+            "actual": 1,
+            "relaxedCluster": false
+          },
+          {
+            "id": "sessions-list",
+            "ok": true,
+            "actual": "session",
+            "relaxedCluster": false
+          },
+          {
+            "id": "session-replay",
+            "ok": true,
+            "actual": "session",
+            "relaxedCluster": false
+          },
+          {
+            "id": "kubernetes-dashboard",
+            "ok": true,
+            "actual": 3,
+            "relaxedCluster": false
+          },
+          {
+            "id": "services-dashboard",
+            "ok": true,
+            "actual": 13,
+            "relaxedCluster": false
+          },
+          {
+            "id": "event-patterns",
+            "ok": true,
+            "actual": 1,
+            "relaxedCluster": false
+          },
+          {
+            "id": "event-deltas",
+            "ok": true,
+            "actual": "Results Table",
+            "relaxedCluster": false
+          },
+          {
+            "id": "alerts-list",
+            "ok": true,
+            "actual": "Alert",
+            "relaxedCluster": false
+          },
+          {
+            "id": "couchbase-cluster",
+            "ok": true,
+            "actual": "Queries",
+            "relaxedCluster": false
+          }
+        ]
+      },
+      "evidence": [
+        "/Users/michael/IdeaProjects/couchbase-traces/port/state/acceptance/evidence/c2-otlp-wait.json",
+        "/Users/michael/IdeaProjects/couchbase-traces/port/state/acceptance/evidence/c2-sample-data.log",
+        "/Users/michael/IdeaProjects/couchbase-traces/port/state/acceptance/evidence/c2-row-wait.json",
+        "/Users/michael/IdeaProjects/couchbase-traces/port/state/acceptance/evidence/c2-dashboard.json",
+        "/Users/michael/IdeaProjects/couchbase-traces/port/state/acceptance/evidence/c2-log-search.png",
+        "/Users/michael/IdeaProjects/couchbase-traces/port/state/acceptance/evidence/c2-trace-search.png",
+        "/Users/michael/IdeaProjects/couchbase-traces/port/state/acceptance/evidence/c2-log-histogram.png",
+        "/Users/michael/IdeaProjects/couchbase-traces/port/state/acceptance/evidence/c2-chart-explorer-count-by-service.png",
+        "/Users/michael/IdeaProjects/couchbase-traces/port/state/acceptance/evidence/c2-dashboard-template.png",
+        "/Users/michael/IdeaProjects/couchbase-traces/port/state/acceptance/evidence/c2-trace-waterfall.png",
+        "/Users/michael/IdeaProjects/couchbase-traces/port/state/acceptance/evidence/c2-service-map.png",
+        "/Users/michael/IdeaProjects/couchbase-traces/port/state/acceptance/evidence/c2-metrics-chart.png",
+        "/Users/michael/IdeaProjects/couchbase-traces/port/state/acceptance/evidence/c2-sessions-list.png",
+        "/Users/michael/IdeaProjects/couchbase-traces/port/state/acceptance/evidence/c2-session-replay.png",
+        "/Users/michael/IdeaProjects/couchbase-traces/port/state/acceptance/evidence/c2-kubernetes-dashboard.png",
+        "/Users/michael/IdeaProjects/couchbase-traces/port/state/acceptance/evidence/c2-services-dashboard.png",
+        "/Users/michael/IdeaProjects/couchbase-traces/port/state/acceptance/evidence/c2-event-patterns.png",
+        "/Users/michael/IdeaProjects/couchbase-traces/port/state/acceptance/evidence/c2-event-deltas.png",
+        "/Users/michael/IdeaProjects/couchbase-traces/port/state/acceptance/evidence/c2-alerts-list.png",
+        "/Users/michael/IdeaProjects/couchbase-traces/port/state/acceptance/evidence/c2-couchbase-cluster.png"
+      ],
+      "durationMs": 108360,
       "id": "C2",
       "title": "Capella views",
-      "status": "blocked",
-      "summary": "Capella checks require --capella",
-      "details": null,
-      "evidence": [],
-      "durationMs": 0,
-      "request": "Provide a Capella 8.x cluster prepared per docs/capella.md and set the CBT_ACCEPT_CAPELLA_* variables, then run with --capella."
+      "status": "pass"
     },
     {
       "summary": "96 statements use indexes/key lookups (7 exempt)",
@@ -254,7 +377,7 @@
       "evidence": [
         "/Users/michael/IdeaProjects/couchbase-traces/port/state/acceptance/evidence/statements.ndjson"
       ],
-      "durationMs": 823,
+      "durationMs": 807,
       "id": "D1",
       "title": "Index use",
       "status": "pass"
@@ -354,7 +477,7 @@
         ]
       },
       "evidence": [],
-      "durationMs": 184,
+      "durationMs": 187,
       "id": "E1",
       "title": "Mutations rejected",
       "status": "pass"
@@ -424,7 +547,7 @@
       "evidence": [
         "/Users/michael/IdeaProjects/couchbase-traces/port/state/acceptance/evidence/f1-latency.json"
       ],
-      "durationMs": 182943,
+      "durationMs": 183167,
       "id": "F1",
       "title": "Search latency",
       "status": "pass"
@@ -436,16 +559,16 @@
           {
             "source": "saved_search",
             "type": "above",
-            "measured": 1562,
+            "measured": 1568,
             "firing": {
-              "threshold": 1405.8
+              "threshold": 1411.2
             },
             "control": {
-              "threshold": 1718.2
+              "threshold": 1724.8
             },
             "webhook": "generic",
-            "fireId": "6b07b52ec388cb1cb5b68562",
-            "ctrlId": "6b07b52ec388cb1cb5b68563",
+            "fireId": "6b08730d12b5fb05d9e5c2e9",
+            "ctrlId": "6b08730d12b5fb05d9e5c2ea",
             "firingState": "ALERT",
             "controlState": "OK",
             "payloadSeen": false
@@ -453,16 +576,16 @@
           {
             "source": "saved_search",
             "type": "below",
-            "measured": 1562,
+            "measured": 1568,
             "firing": {
-              "threshold": 1718.2
+              "threshold": 1724.8
             },
             "control": {
-              "threshold": 1405.8
+              "threshold": 1411.2
             },
             "webhook": "slack",
-            "fireId": "6b07b52ec388cb1cb5b68564",
-            "ctrlId": "6b07b52ec388cb1cb5b68565",
+            "fireId": "6b08730d12b5fb05d9e5c2eb",
+            "ctrlId": "6b08730d12b5fb05d9e5c2ec",
             "firingState": "ALERT",
             "controlState": "OK",
             "payloadSeen": false
@@ -470,16 +593,16 @@
           {
             "source": "saved_search",
             "type": "above_exclusive",
-            "measured": 1562,
+            "measured": 1568,
             "firing": {
-              "threshold": 1405.8
+              "threshold": 1411.2
             },
             "control": {
-              "threshold": 1718.2
+              "threshold": 1724.8
             },
             "webhook": "incidentio",
-            "fireId": "6b07b52ec388cb1cb5b68566",
-            "ctrlId": "6b07b52ec388cb1cb5b68567",
+            "fireId": "6b08730d12b5fb05d9e5c2ed",
+            "ctrlId": "6b08730d12b5fb05d9e5c2ee",
             "firingState": "ALERT",
             "controlState": "OK",
             "payloadSeen": false
@@ -487,16 +610,16 @@
           {
             "source": "saved_search",
             "type": "below_or_equal",
-            "measured": 1562,
+            "measured": 1568,
             "firing": {
-              "threshold": 1562
+              "threshold": 1568
             },
             "control": {
-              "threshold": 1405.8
+              "threshold": 1411.2
             },
             "webhook": "generic",
-            "fireId": "6b07b52ec388cb1cb5b68568",
-            "ctrlId": "6b07b52ec388cb1cb5b68569",
+            "fireId": "6b08730d12b5fb05d9e5c2ef",
+            "ctrlId": "6b08730d12b5fb05d9e5c2f0",
             "firingState": "ALERT",
             "controlState": "OK",
             "payloadSeen": false
@@ -504,16 +627,16 @@
           {
             "source": "saved_search",
             "type": "equal",
-            "measured": 1562,
+            "measured": 1568,
             "firing": {
-              "threshold": 1562
+              "threshold": 1568
             },
             "control": {
-              "threshold": 1563
+              "threshold": 1569
             },
             "webhook": "slack",
-            "fireId": "6b07b52ec388cb1cb5b6856a",
-            "ctrlId": "6b07b52ec388cb1cb5b6856b",
+            "fireId": "6b08730d12b5fb05d9e5c2f1",
+            "ctrlId": "6b08730d12b5fb05d9e5c2f2",
             "firingState": "ALERT",
             "controlState": "OK",
             "payloadSeen": false
@@ -521,16 +644,16 @@
           {
             "source": "saved_search",
             "type": "not_equal",
-            "measured": 1562,
+            "measured": 1568,
             "firing": {
-              "threshold": 1563
+              "threshold": 1569
             },
             "control": {
-              "threshold": 1562
+              "threshold": 1568
             },
             "webhook": "incidentio",
-            "fireId": "6b07b52ec388cb1cb5b6856c",
-            "ctrlId": "6b07b52ec388cb1cb5b6856d",
+            "fireId": "6b08730d12b5fb05d9e5c2f3",
+            "ctrlId": "6b08730d12b5fb05d9e5c2f4",
             "firingState": "ALERT",
             "controlState": "OK",
             "payloadSeen": false
@@ -538,18 +661,18 @@
           {
             "source": "saved_search",
             "type": "between",
-            "measured": 1562,
+            "measured": 1568,
             "firing": {
-              "threshold": 1405.8,
-              "thresholdMax": 1718.2
+              "threshold": 1411.2,
+              "thresholdMax": 1724.8
             },
             "control": {
-              "threshold": 1718.2,
-              "thresholdMax": 1874.4
+              "threshold": 1724.8,
+              "thresholdMax": 1881.6
             },
             "webhook": "generic",
-            "fireId": "6b07b52ec388cb1cb5b6856e",
-            "ctrlId": "6b07b52ec388cb1cb5b6856f",
+            "fireId": "6b08730d12b5fb05d9e5c2f5",
+            "ctrlId": "6b08730d12b5fb05d9e5c2f6",
             "firingState": "ALERT",
             "controlState": "OK",
             "payloadSeen": false
@@ -557,18 +680,18 @@
           {
             "source": "saved_search",
             "type": "not_between",
-            "measured": 1562,
+            "measured": 1568,
             "firing": {
-              "threshold": 1718.2,
-              "thresholdMax": 1874.4
+              "threshold": 1724.8,
+              "thresholdMax": 1881.6
             },
             "control": {
-              "threshold": 1405.8,
-              "thresholdMax": 1718.2
+              "threshold": 1411.2,
+              "thresholdMax": 1724.8
             },
             "webhook": "slack",
-            "fireId": "6b07b52ec388cb1cb5b68570",
-            "ctrlId": "6b07b52ec388cb1cb5b68571",
+            "fireId": "6b08730d12b5fb05d9e5c2f7",
+            "ctrlId": "6b08730d12b5fb05d9e5c2f8",
             "firingState": "ALERT",
             "controlState": "OK",
             "payloadSeen": false
@@ -576,16 +699,16 @@
           {
             "source": "tile",
             "type": "above",
-            "measured": 1562,
+            "measured": 1568,
             "firing": {
-              "threshold": 1405.8
+              "threshold": 1411.2
             },
             "control": {
-              "threshold": 1718.2
+              "threshold": 1724.8
             },
             "webhook": "incidentio",
-            "fireId": "6b07b52ec388cb1cb5b68572",
-            "ctrlId": "6b07b52ec388cb1cb5b68573",
+            "fireId": "6b08730d12b5fb05d9e5c2f9",
+            "ctrlId": "6b08730d12b5fb05d9e5c2fa",
             "firingState": "ALERT",
             "controlState": "OK",
             "payloadSeen": false
@@ -593,16 +716,16 @@
           {
             "source": "tile",
             "type": "below",
-            "measured": 1562,
+            "measured": 1568,
             "firing": {
-              "threshold": 1718.2
+              "threshold": 1724.8
             },
             "control": {
-              "threshold": 1405.8
+              "threshold": 1411.2
             },
             "webhook": "generic",
-            "fireId": "6b07b52ec388cb1cb5b68574",
-            "ctrlId": "6b07b52ec388cb1cb5b68575",
+            "fireId": "6b08730d12b5fb05d9e5c2fb",
+            "ctrlId": "6b08730d12b5fb05d9e5c2fc",
             "firingState": "ALERT",
             "controlState": "OK",
             "payloadSeen": false
@@ -610,16 +733,16 @@
           {
             "source": "tile",
             "type": "above_exclusive",
-            "measured": 1562,
+            "measured": 1568,
             "firing": {
-              "threshold": 1405.8
+              "threshold": 1411.2
             },
             "control": {
-              "threshold": 1718.2
+              "threshold": 1724.8
             },
             "webhook": "slack",
-            "fireId": "6b07b52ec388cb1cb5b68576",
-            "ctrlId": "6b07b52ec388cb1cb5b68577",
+            "fireId": "6b08730d12b5fb05d9e5c2fd",
+            "ctrlId": "6b08730d12b5fb05d9e5c2fe",
             "firingState": "ALERT",
             "controlState": "OK",
             "payloadSeen": false
@@ -627,16 +750,16 @@
           {
             "source": "tile",
             "type": "below_or_equal",
-            "measured": 1562,
+            "measured": 1568,
             "firing": {
-              "threshold": 1562
+              "threshold": 1568
             },
             "control": {
-              "threshold": 1405.8
+              "threshold": 1411.2
             },
             "webhook": "incidentio",
-            "fireId": "6b07b52ec388cb1cb5b68578",
-            "ctrlId": "6b07b52ec388cb1cb5b68579",
+            "fireId": "6b08730d12b5fb05d9e5c2ff",
+            "ctrlId": "6b08730d12b5fb05d9e5c300",
             "firingState": "ALERT",
             "controlState": "OK",
             "payloadSeen": false
@@ -644,16 +767,16 @@
           {
             "source": "tile",
             "type": "equal",
-            "measured": 1562,
+            "measured": 1568,
             "firing": {
-              "threshold": 1562
+              "threshold": 1568
             },
             "control": {
-              "threshold": 1563
+              "threshold": 1569
             },
             "webhook": "generic",
-            "fireId": "6b07b52ec388cb1cb5b6857a",
-            "ctrlId": "6b07b52ec388cb1cb5b6857b",
+            "fireId": "6b08730d12b5fb05d9e5c301",
+            "ctrlId": "6b08730d12b5fb05d9e5c302",
             "firingState": "ALERT",
             "controlState": "OK",
             "payloadSeen": false
@@ -661,16 +784,16 @@
           {
             "source": "tile",
             "type": "not_equal",
-            "measured": 1562,
+            "measured": 1568,
             "firing": {
-              "threshold": 1563
+              "threshold": 1569
             },
             "control": {
-              "threshold": 1562
+              "threshold": 1568
             },
             "webhook": "slack",
-            "fireId": "6b07b52ec388cb1cb5b6857c",
-            "ctrlId": "6b07b52ec388cb1cb5b6857d",
+            "fireId": "6b08730d12b5fb05d9e5c303",
+            "ctrlId": "6b08730d12b5fb05d9e5c304",
             "firingState": "ALERT",
             "controlState": "OK",
             "payloadSeen": false
@@ -678,18 +801,18 @@
           {
             "source": "tile",
             "type": "between",
-            "measured": 1562,
+            "measured": 1568,
             "firing": {
-              "threshold": 1405.8,
-              "thresholdMax": 1718.2
+              "threshold": 1411.2,
+              "thresholdMax": 1724.8
             },
             "control": {
-              "threshold": 1718.2,
-              "thresholdMax": 1874.4
+              "threshold": 1724.8,
+              "thresholdMax": 1881.6
             },
             "webhook": "incidentio",
-            "fireId": "6b07b52ec388cb1cb5b6857e",
-            "ctrlId": "6b07b52ec388cb1cb5b6857f",
+            "fireId": "6b08730d12b5fb05d9e5c305",
+            "ctrlId": "6b08730d12b5fb05d9e5c306",
             "firingState": "ALERT",
             "controlState": "OK",
             "payloadSeen": false
@@ -697,18 +820,18 @@
           {
             "source": "tile",
             "type": "not_between",
-            "measured": 1562,
+            "measured": 1568,
             "firing": {
-              "threshold": 1718.2,
-              "thresholdMax": 1874.4
+              "threshold": 1724.8,
+              "thresholdMax": 1881.6
             },
             "control": {
-              "threshold": 1405.8,
-              "thresholdMax": 1718.2
+              "threshold": 1411.2,
+              "thresholdMax": 1724.8
             },
             "webhook": "generic",
-            "fireId": "6b07b52ec388cb1cb5b68580",
-            "ctrlId": "6b07b52ec388cb1cb5b68581",
+            "fireId": "6b08730d12b5fb05d9e5c307",
+            "ctrlId": "6b08730d12b5fb05d9e5c308",
             "firingState": "ALERT",
             "controlState": "OK",
             "payloadSeen": false
@@ -716,16 +839,16 @@
           {
             "source": "inline",
             "type": "above",
-            "measured": 1562,
+            "measured": 1568,
             "firing": {
-              "threshold": 1405.8
+              "threshold": 1411.2
             },
             "control": {
-              "threshold": 1718.2
+              "threshold": 1724.8
             },
             "webhook": "slack",
-            "fireId": "6b07b52ec388cb1cb5b68582",
-            "ctrlId": "6b07b52ec388cb1cb5b68583",
+            "fireId": "6b08730d12b5fb05d9e5c309",
+            "ctrlId": "6b08730d12b5fb05d9e5c30a",
             "firingState": "ALERT",
             "controlState": "OK",
             "payloadSeen": false
@@ -733,16 +856,16 @@
           {
             "source": "inline",
             "type": "below",
-            "measured": 1562,
+            "measured": 1568,
             "firing": {
-              "threshold": 1718.2
+              "threshold": 1724.8
             },
             "control": {
-              "threshold": 1405.8
+              "threshold": 1411.2
             },
             "webhook": "incidentio",
-            "fireId": "6b07b52ec388cb1cb5b68584",
-            "ctrlId": "6b07b52ec388cb1cb5b68585",
+            "fireId": "6b08730d12b5fb05d9e5c30b",
+            "ctrlId": "6b08730d12b5fb05d9e5c30c",
             "firingState": "ALERT",
             "controlState": "OK",
             "payloadSeen": false
@@ -750,16 +873,16 @@
           {
             "source": "inline",
             "type": "above_exclusive",
-            "measured": 1562,
+            "measured": 1568,
             "firing": {
-              "threshold": 1405.8
+              "threshold": 1411.2
             },
             "control": {
-              "threshold": 1718.2
+              "threshold": 1724.8
             },
             "webhook": "generic",
-            "fireId": "6b07b52ec388cb1cb5b68586",
-            "ctrlId": "6b07b52ec388cb1cb5b68587",
+            "fireId": "6b08730d12b5fb05d9e5c30d",
+            "ctrlId": "6b08730d12b5fb05d9e5c30e",
             "firingState": "ALERT",
             "controlState": "OK",
             "payloadSeen": false
@@ -767,16 +890,16 @@
           {
             "source": "inline",
             "type": "below_or_equal",
-            "measured": 1562,
+            "measured": 1568,
             "firing": {
-              "threshold": 1562
+              "threshold": 1568
             },
             "control": {
-              "threshold": 1405.8
+              "threshold": 1411.2
             },
             "webhook": "slack",
-            "fireId": "6b07b52ec388cb1cb5b68588",
-            "ctrlId": "6b07b52ec388cb1cb5b68589",
+            "fireId": "6b08730d12b5fb05d9e5c30f",
+            "ctrlId": "6b08730d12b5fb05d9e5c310",
             "firingState": "ALERT",
             "controlState": "OK",
             "payloadSeen": false
@@ -784,16 +907,16 @@
           {
             "source": "inline",
             "type": "equal",
-            "measured": 1562,
+            "measured": 1568,
             "firing": {
-              "threshold": 1562
+              "threshold": 1568
             },
             "control": {
-              "threshold": 1563
+              "threshold": 1569
             },
             "webhook": "incidentio",
-            "fireId": "6b07b52ec388cb1cb5b6858a",
-            "ctrlId": "6b07b52ec388cb1cb5b6858b",
+            "fireId": "6b08730d12b5fb05d9e5c311",
+            "ctrlId": "6b08730d12b5fb05d9e5c312",
             "firingState": "ALERT",
             "controlState": "OK",
             "payloadSeen": false
@@ -801,16 +924,16 @@
           {
             "source": "inline",
             "type": "not_equal",
-            "measured": 1562,
+            "measured": 1568,
             "firing": {
-              "threshold": 1563
+              "threshold": 1569
             },
             "control": {
-              "threshold": 1562
+              "threshold": 1568
             },
             "webhook": "generic",
-            "fireId": "6b07b52ec388cb1cb5b6858c",
-            "ctrlId": "6b07b52ec388cb1cb5b6858d",
+            "fireId": "6b08730d12b5fb05d9e5c313",
+            "ctrlId": "6b08730d12b5fb05d9e5c314",
             "firingState": "ALERT",
             "controlState": "OK",
             "payloadSeen": false
@@ -818,18 +941,18 @@
           {
             "source": "inline",
             "type": "between",
-            "measured": 1562,
+            "measured": 1568,
             "firing": {
-              "threshold": 1405.8,
-              "thresholdMax": 1718.2
+              "threshold": 1411.2,
+              "thresholdMax": 1724.8
             },
             "control": {
-              "threshold": 1718.2,
-              "thresholdMax": 1874.4
+              "threshold": 1724.8,
+              "thresholdMax": 1881.6
             },
             "webhook": "slack",
-            "fireId": "6b07b52ec388cb1cb5b6858e",
-            "ctrlId": "6b07b52ec388cb1cb5b6858f",
+            "fireId": "6b08730d12b5fb05d9e5c315",
+            "ctrlId": "6b08730d12b5fb05d9e5c316",
             "firingState": "ALERT",
             "controlState": "OK",
             "payloadSeen": false
@@ -837,18 +960,18 @@
           {
             "source": "inline",
             "type": "not_between",
-            "measured": 1562,
+            "measured": 1568,
             "firing": {
-              "threshold": 1718.2,
-              "thresholdMax": 1874.4
+              "threshold": 1724.8,
+              "thresholdMax": 1881.6
             },
             "control": {
-              "threshold": 1405.8,
-              "thresholdMax": 1718.2
+              "threshold": 1411.2,
+              "thresholdMax": 1724.8
             },
             "webhook": "incidentio",
-            "fireId": "6b07b52ec388cb1cb5b68590",
-            "ctrlId": "6b07b52ec388cb1cb5b68591",
+            "fireId": "6b08730d12b5fb05d9e5c317",
+            "ctrlId": "6b08730d12b5fb05d9e5c318",
             "firingState": "ALERT",
             "controlState": "OK",
             "payloadSeen": false
@@ -857,51 +980,51 @@
         "webhooks": [
           {
             "service": "generic",
-            "id": "6b07b52dc388cb1cb5b6855e",
+            "id": "6b08730d12b5fb05d9e5c2e5",
             "status": 200,
             "body": {
               "data": {
                 "service": "generic",
-                "name": "accept-generic-1795667245971",
+                "name": "accept-generic-1795715853636",
                 "url": "http://webhook:8080/****",
-                "createdAt": "2026-11-26T04:27:25.974Z",
-                "updatedAt": "2026-11-26T04:27:25.974Z",
-                "_id": "6b07b52dc388cb1cb5b6855e"
+                "createdAt": "2026-11-26T17:57:33.639Z",
+                "updatedAt": "2026-11-26T17:57:33.639Z",
+                "_id": "6b08730d12b5fb05d9e5c2e5"
               }
             },
-            "text": "{\"data\":{\"service\":\"generic\",\"name\":\"accept-generic-1795667245971\",\"url\":\"http://webhook:8080/****\",\"createdAt\":\"2026-11-26T04:27:25.974Z\",\"updatedAt\":\"2026-11-26T04:27:25.974Z\",\"_id\":\"6b07b52dc388cb1cb5b6855e\"}}"
+            "text": "{\"data\":{\"service\":\"generic\",\"name\":\"accept-generic-1795715853636\",\"url\":\"http://webhook:8080/****\",\"createdAt\":\"2026-11-26T17:57:33.639Z\",\"updatedAt\":\"2026-11-26T17:57:33.639Z\",\"_id\":\"6b08730d12b5fb05d9e5c2e5\"}}"
           },
           {
             "service": "slack",
-            "id": "6b07b52dc388cb1cb5b6855f",
+            "id": "6b08730d12b5fb05d9e5c2e6",
             "status": 200,
             "body": {
               "data": {
                 "service": "slack",
-                "name": "accept-slack-1795667245977",
+                "name": "accept-slack-1795715853641",
                 "url": "http://hooks.slack.com:8080/****",
-                "createdAt": "2026-11-26T04:27:25.987Z",
-                "updatedAt": "2026-11-26T04:27:25.987Z",
-                "_id": "6b07b52dc388cb1cb5b6855f"
+                "createdAt": "2026-11-26T17:57:33.649Z",
+                "updatedAt": "2026-11-26T17:57:33.649Z",
+                "_id": "6b08730d12b5fb05d9e5c2e6"
               }
             },
-            "text": "{\"data\":{\"service\":\"slack\",\"name\":\"accept-slack-1795667245977\",\"url\":\"http://hooks.slack.com:8080/****\",\"createdAt\":\"2026-11-26T04:27:25.987Z\",\"updatedAt\":\"2026-11-26T04:27:25.987Z\",\"_id\":\"6b07b52dc388cb1cb5b6855f\"}}"
+            "text": "{\"data\":{\"service\":\"slack\",\"name\":\"accept-slack-1795715853641\",\"url\":\"http://hooks.slack.com:8080/****\",\"createdAt\":\"2026-11-26T17:57:33.649Z\",\"updatedAt\":\"2026-11-26T17:57:33.649Z\",\"_id\":\"6b08730d12b5fb05d9e5c2e6\"}}"
           },
           {
             "service": "incidentio",
-            "id": "6b07b52dc388cb1cb5b68560",
+            "id": "6b08730d12b5fb05d9e5c2e7",
             "status": 200,
             "body": {
               "data": {
                 "service": "incidentio",
-                "name": "accept-incidentio-1795667245991",
+                "name": "accept-incidentio-1795715853651",
                 "url": "http://api.incident.io:8080/****",
-                "createdAt": "2026-11-26T04:27:25.997Z",
-                "updatedAt": "2026-11-26T04:27:25.997Z",
-                "_id": "6b07b52dc388cb1cb5b68560"
+                "createdAt": "2026-11-26T17:57:33.658Z",
+                "updatedAt": "2026-11-26T17:57:33.658Z",
+                "_id": "6b08730d12b5fb05d9e5c2e7"
               }
             },
-            "text": "{\"data\":{\"service\":\"incidentio\",\"name\":\"accept-incidentio-1795667245991\",\"url\":\"http://api.incident.io:8080/****\",\"createdAt\":\"2026-11-26T04:27:25.997Z\",\"updatedAt\":\"2026-11-26T04:27:25.997Z\",\"_id\":\"6b07b52dc388cb1cb5b68560\"}}"
+            "text": "{\"data\":{\"service\":\"incidentio\",\"name\":\"accept-incidentio-1795715853651\",\"url\":\"http://api.incident.io:8080/****\",\"createdAt\":\"2026-11-26T17:57:33.658Z\",\"updatedAt\":\"2026-11-26T17:57:33.658Z\",\"_id\":\"6b08730d12b5fb05d9e5c2e7\"}}"
           }
         ],
         "payloadCount": 0
@@ -909,7 +1032,7 @@
       "evidence": [
         "/Users/michael/IdeaProjects/couchbase-traces/port/state/acceptance/evidence/g1-alerts.json"
       ],
-      "durationMs": 6749,
+      "durationMs": 6724,
       "id": "G1",
       "title": "Alerts",
       "status": "pass"
@@ -929,7 +1052,7 @@
         }
       },
       "evidence": [],
-      "durationMs": 8029,
+      "durationMs": 7853,
       "id": "H1",
       "title": "Static branding",
       "status": "pass"
@@ -949,19 +1072,19 @@
       "summary": "No brand terms in image/container/env names",
       "details": null,
       "evidence": [],
-      "durationMs": 134,
+      "durationMs": 230,
       "id": "H3",
       "title": "Runtime branding",
       "status": "pass"
     },
     {
-      "summary": "All 7256 browser requests stayed on origin",
+      "summary": "All 7240 browser requests stayed on origin",
       "details": {
         "origin": "http://localhost:18080",
-        "count": 7256
+        "count": 7240
       },
       "evidence": [],
-      "durationMs": 6,
+      "durationMs": 5,
       "id": "I1",
       "title": "Outbound browser",
       "status": "pass"
@@ -985,7 +1108,7 @@
         "sha": "f172a489c81888099d70c799478c9a9cfbed25b6"
       },
       "evidence": [],
-      "durationMs": 13,
+      "durationMs": 12,
       "id": "J1",
       "title": "Legal files",
       "status": "pass"
@@ -996,7 +1119,7 @@
         "reviewNeeded": []
       },
       "evidence": [],
-      "durationMs": 501853,
+      "durationMs": 485828,
       "id": "J2",
       "title": "License report current",
       "status": "pass"
@@ -1035,46 +1158,46 @@
             "cmd": "./scripts/test-e2e.sh --shard=1/4",
             "status": 0,
             "signal": null,
-            "out": "ium] › tests/e2e/features/dashboard-table-linking.spec.ts:138:9 › Dashboard Table Linking › Search mode: WHERE template referencing unknown column shows Link error @dashboard @full-stack (3.5s)\n  ✓  107 [chromium] › tests/e2e/features/dashboard-table-linking.spec.ts:173:9 › Dashboard Table Linking › Default mode: row click filters search by the row group-by value @dashboard @full-stack (2.8s)\n  ✓  109 [chromium] › tests/e2e/features/dashboard-table-linking.spec.ts:310:9 › Dashboard Table Linking › Dashboard mode: unknown dashboard name shows Link error notification @dashboard @full-stack (3.3s)\n  ✓  111 [chromium] › tests/e2e/features/dashboard-table-linking.spec.ts:384:9 › Dashboard Table Linking › Search mode (ID): selecting a source from dropdown navigates to /search using that source id @dashboard @full-stack (3.6s)\n  ✓  108 [chromium] › tests/e2e/features/dashboard-table-linking.spec.ts:233:9 › Dashboard Table Linking › Dashboard mode: valid link navigates to target dashboard with rendered WHERE @dashboard @full-stack (4.9s)\n  ✓  110 [chromium] › tests/e2e/features/dashboard-table-linking.spec.ts:339:9 › Dashboard Table Linking › Dashboard mode: WHERE template referencing unknown column shows Link error @dashboard @full-stack (4.8s)\n  ✓  113 [chromium] › tests/e2e/features/dashboard-table-linking.spec.ts:520:9 › Dashboard Table Linking › Search mode: filter templates render into the /search URL filters param @dashboard @full-stack (3.4s)\n  ✓  112 [chromium] › tests/e2e/features/dashboard-table-linking.spec.ts:446:9 › Dashboard Table Linking › Dashboard mode (ID): selecting a dashboard from dropdown navigates to that dashboard id @dashboard @full-stack (5.0s)\n  ✓  114 [chromium] › tests/e2e/features/dashboard-table-linking.spec.ts:583:9 › Dashboard Table Linking › Dashboard mode: filter templates render into the destination dashboard URL filters param @dashboard @full-stack (5.4s)\n  ✓  115 [chromium] › tests/e2e/features/dashboard-table-linking.spec.ts:676:9 › Dashboard Table Linking › Dashboard mode: a variable-enabled target filter still receives an expression-keyed link @dashboard @full-stack (5.7s)\n::notice title=🎭 Playwright Run Summary::  115 passed (4.9m)\n\n  115 passed (4.9m)\nStopping E2E services and removing volumes...\n Container e2e-47-couchbase-1 Stopping \n Container e2e-47-couchbase-1 Stopped \n Container e2e-47-couchbase-1 Removing \n Container e2e-47-couchbase-1 Removed \n Network e2e-47_internal Removing \n Network e2e-47_internal Removed \n",
-            "err": ""
+            "out": "Tabs URL param survives reload and restores the active tab @dashboard \n\n    Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoHaveCount\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m failed\n\n    Locator:  locator('[data-testid^=\"group-container-\"]')\n    Expected: \u001b[32m1\u001b[39m\n    Received: \u001b[31m0\u001b[39m\n    Timeout:  5000ms\n\n    Call log:\n    \u001b[2m  - Expect \"toHaveCount\" with timeout 5000ms\u001b[22m\n    \u001b[2m  - waiting for locator('[data-testid^=\"group-container-\"]')\u001b[22m\n    \u001b[2m    9 × locator resolved to 0 elements\u001b[22m\n    \u001b[2m      - unexpected value \"0\"\u001b[22m\n\n\n      42 |     const before = await dashboardPage.getGroupOrder();\n      43 |     await dashboardPage.addGroup();\n    > 44 |     await expect(dashboardPage.getGroups()).toHaveCount(before.length + 1);\n         |                                             ^\n      45 |     const after = await dashboardPage.getGroupOrder();\n      46 |     const newId = after.find(id => !before.includes(id));\n      47 |     if (!newId) throw new Error('Newly added group id not found');\n        at addGroupAndGetId (/Users/michael/IdeaProjects/couchbase-traces/packages/app/tests/e2e/features/dashboard-container.spec.ts:44:45)\n        at /Users/michael/IdeaProjects/couchbase-traces/packages/app/tests/e2e/features/dashboard-container.spec.ts:196:16\n\n    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────\n    test-results/features-dashboard-contain-dff54-and-restores-the-active-tab-chromium/test-failed-1.png\n    ────────────────────────────────────────────────────────────────────────────────────────────────\n\n    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────\n    test-results/features-dashboard-contain-dff54-and-restores-the-active-tab-chromium/video.webm\n    ────────────────────────────────────────────────────────────────────────────────────────────────\n\n    Error Context: test-results/features-dashboard-contain-dff54-and-restores-the-active-tab-chromium/error-context.md\n\n  1 flaky\n    [chromium] › tests/e2e/features/dashboard-container.spec.ts:195:7 › Dashboard container › ?activeTabs URL param survives reload and restores the active tab @dashboard \n  114 passed (5.8m)\nStopping E2E services and removing volumes...\n Container e2e-47-couchbase-1 Stopping \n Container e2e-47-couchbase-1 Stopped \n Container e2e-47-couchbase-1 Removing \n Container e2e-47-couchbase-1 Removed \n Network e2e-47_internal Removing \n Network e2e-47_internal Removed \n",
+            "err": "E2E: ignoring inherited CBT_ACCEPT_CAPELLA_ADMIN_PASSWORD CBT_ACCEPT_CAPELLA_ADMIN_USER CBT_ACCEPT_CAPELLA_API_KEY CBT_ACCEPT_CAPELLA_CONNSTR CBT_ACCEPT_CAPELLA_INGEST_PASSWORD CBT_ACCEPT_CAPELLA_INGEST_USER CBT_ACCEPT_CAPELLA_ORG_ID CBT_ACCEPT_CAPELLA_QUERY_PASSWORD CBT_ACCEPT_CAPELLA_QUERY_USER\n"
           },
           {
             "cmd": "yarn install --immutable",
             "status": 0,
             "signal": null,
-            "out": "➤ YN0000: · Yarn 4.13.0\n➤ YN0000: ┌ Resolution step\n➤ YN0000: └ Completed\n➤ YN0000: ┌ Post-resolution validation\n➤ YN0060: │ next is listed by your project with version 16.4.3 (p3136ed), which doesn't satisfy what nuqs and other dependencies request (^14.1.0).\n➤ YN0060: │ react is listed by your project with version 19.2.3 (p3f853f), which doesn't satisfy what @tanstack/react-virtual and other dependencies request (but they have non-overlapping ranges!).\n➤ YN0060: │ react-dom is listed by your project with version 19.2.3 (pab2548), which doesn't satisfy what @tanstack/react-virtual and other dependencies request (but they have non-overlapping ranges!).\n➤ YN0060: │ typescript is listed by your project with version 6.0.3 (p94b729), which doesn't satisfy what @typescript-eslint/type-utils (via @eslint-react/eslint-plugin) and other dependencies request (>=4.9.5 <6.0.0).\n➤ YN0060: │ typescript is listed by your project with version 6.0.3 (p9d1ffc), which doesn't satisfy what typescript-eslint and other dependencies request (>=4.8.4 <6.0.0).\n➤ YN0002: │ @couchbase-traces/app@workspace:packages/app doesn't provide @codemirror/language (pf661ef), requested by @codemirror/autocomplete.\n➤ YN0002: │ @couchbase-traces/app@workspace:packages/app doesn't provide @codemirror/view (pccec3f), requested by @uiw/react-codemirror.\n➤ YN0002: │ @couchbase-traces/app@workspace:packages/app doesn't provide @lezer/common (p378570), requested by @codemirror/autocomplete.\n➤ YN0002: │ @couchbase-traces/app@workspace:packages/app doesn't provide eslint (p6bc99f), requested by @eslint-react/eslint-plugin and other dependencies.\n➤ YN0002: │ @couchbase-traces/app@workspace:packages/app doesn't provide webpack (p2359d5), requested by @storybook/addon-styling-webpack and other dependencies.\n➤ YN0002: │ couchbase-traces@workspace:. doesn't provide typescript (p5bf4c3), requested by typescript-eslint.\n➤ YN0086: │ Some peer dependencies are incorrectly met by your project; run yarn explain peer-requirements <hash> for details, where <hash> is the six-letter p-prefixed code.\n➤ YN0086: │ Some peer dependencies are incorrectly met by dependencies; run yarn explain peer-requirements for details.\n➤ YN0000: └ Completed\n➤ YN0000: ┌ Fetch step\n➤ YN0000: └ Completed in 0s 899ms\n➤ YN0000: ┌ Link step\n➤ YN0000: └ Completed in 0s 322ms\n➤ YN0000: · Done with warnings in 1s 559ms\n",
+            "out": "➤ YN0000: · Yarn 4.13.0\n➤ YN0000: ┌ Resolution step\n➤ YN0000: └ Completed\n➤ YN0000: ┌ Post-resolution validation\n➤ YN0060: │ next is listed by your project with version 16.4.3 (p3136ed), which doesn't satisfy what nuqs and other dependencies request (^14.1.0).\n➤ YN0060: │ react is listed by your project with version 19.2.3 (p3f853f), which doesn't satisfy what @tanstack/react-virtual and other dependencies request (but they have non-overlapping ranges!).\n➤ YN0060: │ react-dom is listed by your project with version 19.2.3 (pab2548), which doesn't satisfy what @tanstack/react-virtual and other dependencies request (but they have non-overlapping ranges!).\n➤ YN0060: │ typescript is listed by your project with version 6.0.3 (p94b729), which doesn't satisfy what @typescript-eslint/type-utils (via @eslint-react/eslint-plugin) and other dependencies request (>=4.9.5 <6.0.0).\n➤ YN0060: │ typescript is listed by your project with version 6.0.3 (p9d1ffc), which doesn't satisfy what typescript-eslint and other dependencies request (>=4.8.4 <6.0.0).\n➤ YN0002: │ @couchbase-traces/app@workspace:packages/app doesn't provide @codemirror/language (pf661ef), requested by @codemirror/autocomplete.\n➤ YN0002: │ @couchbase-traces/app@workspace:packages/app doesn't provide @codemirror/view (pccec3f), requested by @uiw/react-codemirror.\n➤ YN0002: │ @couchbase-traces/app@workspace:packages/app doesn't provide @lezer/common (p378570), requested by @codemirror/autocomplete.\n➤ YN0002: │ @couchbase-traces/app@workspace:packages/app doesn't provide eslint (p6bc99f), requested by @eslint-react/eslint-plugin and other dependencies.\n➤ YN0002: │ @couchbase-traces/app@workspace:packages/app doesn't provide webpack (p2359d5), requested by @storybook/addon-styling-webpack and other dependencies.\n➤ YN0002: │ couchbase-traces@workspace:. doesn't provide typescript (p5bf4c3), requested by typescript-eslint.\n➤ YN0086: │ Some peer dependencies are incorrectly met by your project; run yarn explain peer-requirements <hash> for details, where <hash> is the six-letter p-prefixed code.\n➤ YN0086: │ Some peer dependencies are incorrectly met by dependencies; run yarn explain peer-requirements for details.\n➤ YN0000: └ Completed\n➤ YN0000: ┌ Fetch step\n➤ YN0000: └ Completed in 0s 922ms\n➤ YN0000: ┌ Link step\n➤ YN0000: └ Completed in 0s 352ms\n➤ YN0000: · Done with warnings in 1s 615ms\n",
             "err": ""
           },
           {
             "cmd": "make ci-build",
             "status": 0,
             "signal": null,
-            "out": "                      859.00 B\nCJS dist/core/handlebarsEnv.js                        424.00 B\nCJS dist/chunk-B2S6X7OI.js                            102.00 B\nCJS dist/core/histogram.js                            170.00 B\nCJS dist/queryParser.js                               614.00 B\nCJS dist/chunk-MZEI2YWT.js                            2.70 KB\nCJS dist/macros.js                                    788.00 B\nCJS dist/rawSqlParams.js                              588.00 B\nCJS dist/macroErrors.js                               282.00 B\nCJS dist/sqlFormatter.js                              164.00 B\nCJS dist/chunk-DTAQPK3V.js                            645.00 B\nCJS dist/types.js                                     11.48 KB\nCJS dist/selfTelemetry.js                             1.10 KB\nCJS dist/alerts.js                                    1.03 KB\nCJS dist/validation.js                                888.00 B\nCJS dist/dashboardFilterValues.js                     3.95 KB\nCJS dist/filters.js                                   2.23 KB\nCJS dist/dashboardValidation.js                       5.47 KB\nCJS dist/externalSource.js                            1.27 KB\nCJS dist/chunk-QTEPC2P4.js                            61.32 KB\nCJS dist/chunk-3YFGLGWG.js                            1.77 KB\nCJS dist/chunk-5UIQNMF7.js                            6.18 KB\nCJS dist/chunk-4F2FGPBX.js                            743.00 B\nCJS dist/chunk-YQ4HQSDK.js                            487.00 B\nCJS dist/iac.js                                       8.33 KB\nCJS dist/guards.js                                    792.00 B\nCJS dist/chunk-FPZE3IWW.js                            1.73 KB\nCJS dist/iacEligibility.js                            550.00 B\nCJS dist/chunk-7PXVCGQS.js                            45.43 KB\nCJS dist/chunk-D44GSP73.js                            2.65 KB\nCJS ⚡️ Build success in 147ms\n\n> nx run @couchbase-traces/cli:\"ci:build\"  [local cache]\n\nCLI Building entry: src/cli.tsx\nCLI Using tsconfig: tsconfig.json\nCLI tsup v8.4.0\nCLI Using tsup config: /Users/michael/IdeaProjects/couchbase-traces/packages/cli/tsup.config.ts\nCLI Target: es2022\nCLI Cleaning output folder\nESM Build start\nESM dist/cli.js 8.58 MB\nESM ⚡️ Build success in 257ms\n\n\n\n NX   Successfully ran target ci:build for 2 projects\n\nNx read the output from the cache instead of running the command for 2 out of 2 tasks.\n\n  Run duration:      191ms\n  Cache:             2/2 hit (100%)\n  Critical path:     142ms (1 task)\n  Recoverable time:  <1ms\n",
+            "out": "                     859.00 B\nCJS dist/chunk-B2S6X7OI.js                            102.00 B\nCJS dist/core/histogram.js                            170.00 B\nCJS dist/chunk-MZEI2YWT.js                            2.70 KB\nCJS dist/macroErrors.js                               282.00 B\nCJS dist/core/handlebarsEnv.js                        424.00 B\nCJS dist/macros.js                                    788.00 B\nCJS dist/queryParser.js                               614.00 B\nCJS dist/rawSqlParams.js                              588.00 B\nCJS dist/selfTelemetry.js                             1.10 KB\nCJS dist/sqlFormatter.js                              164.00 B\nCJS dist/chunk-DTAQPK3V.js                            645.00 B\nCJS dist/validation.js                                888.00 B\nCJS dist/alerts.js                                    1.03 KB\nCJS dist/types.js                                     11.48 KB\nCJS dist/dashboardFilterValues.js                     3.95 KB\nCJS dist/dashboardValidation.js                       5.47 KB\nCJS dist/chunk-5UIQNMF7.js                            6.18 KB\nCJS dist/filters.js                                   2.23 KB\nCJS dist/externalSource.js                            1.27 KB\nCJS dist/guards.js                                    792.00 B\nCJS dist/chunk-YQ4HQSDK.js                            487.00 B\nCJS dist/chunk-QTEPC2P4.js                            61.32 KB\nCJS dist/chunk-3YFGLGWG.js                            1.77 KB\nCJS dist/chunk-4F2FGPBX.js                            743.00 B\nCJS dist/chunk-FPZE3IWW.js                            1.73 KB\nCJS dist/iacEligibility.js                            550.00 B\nCJS dist/iac.js                                       8.33 KB\nCJS dist/chunk-D44GSP73.js                            2.65 KB\nCJS dist/chunk-7PXVCGQS.js                            45.43 KB\nCJS ⚡️ Build success in 145ms\n\n> nx run @couchbase-traces/cli:\"ci:build\"  [local cache]\n\nCLI Building entry: src/cli.tsx\nCLI Using tsconfig: tsconfig.json\nCLI tsup v8.4.0\nCLI Using tsup config: /Users/michael/IdeaProjects/couchbase-traces/packages/cli/tsup.config.ts\nCLI Target: es2022\nCLI Cleaning output folder\nESM Build start\nESM dist/cli.js 8.58 MB\nESM ⚡️ Build success in 251ms\n\n\n\n NX   Successfully ran target ci:build for 2 projects\n\nNx read the output from the cache instead of running the command for 2 out of 2 tasks.\n\n  Run duration:      193ms\n  Cache:             2/2 hit (100%)\n  Critical path:     145ms (2 tasks)\n  Recoverable time:  <1ms\n",
             "err": ""
           },
           {
             "cmd": "make ci-unit",
             "status": 0,
             "signal": null,
-            "out": "excluded (Q5)\n    ok 1 - pins the location list (section 3); hdx-eval is excluded (Q5)\n      ---\n      duration_ms: 3.786791\n      type: 'test'\n      ...\n    # Subtest: every location in the repo matches exactly once\n    ok 2 - every location in the repo matches exactly once\n      ---\n      duration_ms: 4.404292\n      type: 'test'\n      ...\n    1..2\nok 3 - version locations\n  ---\n  duration_ms: 8.236292\n  type: 'suite'\n  ...\n# Subtest: set-version\n    # Subtest: writes every location and then checks clean\n    ok 1 - writes every location and then checks clean\n      ---\n      duration_ms: 6.539959\n      type: 'test'\n      ...\n    # Subtest: changes only the version text\n    ok 2 - changes only the version text\n      ---\n      duration_ms: 6.699125\n      type: 'test'\n      ...\n    # Subtest: derives prerelease values\n    ok 3 - derives prerelease values\n      ---\n      duration_ms: 5.853459\n      type: 'test'\n      ...\n    # Subtest: reports a location that no longer matches once, and writes nothing\n    ok 4 - reports a location that no longer matches once, and writes nothing\n      ---\n      duration_ms: 3.793208\n      type: 'test'\n      ...\n    # Subtest: restores written files when a later write fails\n    ok 5 - restores written files when a later write fails\n      ---\n      duration_ms: 6.65475\n      type: 'test'\n      ...\n    1..5\nok 4 - set-version\n  ---\n  duration_ms: 29.628125\n  type: 'suite'\n  ...\n# Subtest: CLI\n    # Subtest: exits 2 on invalid input\n    ok 1 - exits 2 on invalid input\n      ---\n      duration_ms: 49.914125\n      type: 'test'\n      ...\n    # Subtest: --dry-run lists every location and writes nothing\n    ok 2 - --dry-run lists every location and writes nothing\n      ---\n      duration_ms: 28.685\n      type: 'test'\n      ...\n    # Subtest: --check exits 1 on a mismatch and 0 once consistent\n    ok 3 - --check exits 1 on a mismatch and 0 once consistent\n      ---\n      duration_ms: 80.26325\n      type: 'test'\n      ...\n    1..3\nok 5 - CLI\n  ---\n  duration_ms: 158.935583\n  type: 'suite'\n  ...\n1..5\n# tests 19\n# suites 5\n# pass 19\n# fail 0\n# cancelled 0\n# skipped 0\n# todo 0\n# duration_ms 267.816083\nnode --test scripts/__tests__/image-tags.test.mjs\nTAP version 13\n# Subtest: make build-* tags the images docker-compose.yml pulls\nok 1 - make build-* tags the images docker-compose.yml pulls\n  ---\n  duration_ms: 64.382208\n  type: 'test'\n  ...\n1..1\n# tests 1\n# suites 0\n# pass 1\n# fail 0\n# cancelled 0\n# skipped 0\n# todo 0\n# duration_ms 96.949125\n",
+            "out": " excluded (Q5)\n    ok 1 - pins the location list (section 3); hdx-eval is excluded (Q5)\n      ---\n      duration_ms: 3.568334\n      type: 'test'\n      ...\n    # Subtest: every location in the repo matches exactly once\n    ok 2 - every location in the repo matches exactly once\n      ---\n      duration_ms: 4.87775\n      type: 'test'\n      ...\n    1..2\nok 3 - version locations\n  ---\n  duration_ms: 8.4885\n  type: 'suite'\n  ...\n# Subtest: set-version\n    # Subtest: writes every location and then checks clean\n    ok 1 - writes every location and then checks clean\n      ---\n      duration_ms: 5.099375\n      type: 'test'\n      ...\n    # Subtest: changes only the version text\n    ok 2 - changes only the version text\n      ---\n      duration_ms: 6.837292\n      type: 'test'\n      ...\n    # Subtest: derives prerelease values\n    ok 3 - derives prerelease values\n      ---\n      duration_ms: 5.464708\n      type: 'test'\n      ...\n    # Subtest: reports a location that no longer matches once, and writes nothing\n    ok 4 - reports a location that no longer matches once, and writes nothing\n      ---\n      duration_ms: 4.019417\n      type: 'test'\n      ...\n    # Subtest: restores written files when a later write fails\n    ok 5 - restores written files when a later write fails\n      ---\n      duration_ms: 6.807375\n      type: 'test'\n      ...\n    1..5\nok 4 - set-version\n  ---\n  duration_ms: 28.309875\n  type: 'suite'\n  ...\n# Subtest: CLI\n    # Subtest: exits 2 on invalid input\n    ok 1 - exits 2 on invalid input\n      ---\n      duration_ms: 50.572\n      type: 'test'\n      ...\n    # Subtest: --dry-run lists every location and writes nothing\n    ok 2 - --dry-run lists every location and writes nothing\n      ---\n      duration_ms: 28.351459\n      type: 'test'\n      ...\n    # Subtest: --check exits 1 on a mismatch and 0 once consistent\n    ok 3 - --check exits 1 on a mismatch and 0 once consistent\n      ---\n      duration_ms: 81.383833\n      type: 'test'\n      ...\n    1..3\nok 5 - CLI\n  ---\n  duration_ms: 160.382167\n  type: 'suite'\n  ...\n1..5\n# tests 19\n# suites 5\n# pass 19\n# fail 0\n# cancelled 0\n# skipped 0\n# todo 0\n# duration_ms 270.761792\nnode --test scripts/__tests__/image-tags.test.mjs\nTAP version 13\n# Subtest: make build-* tags the images docker-compose.yml pulls\nok 1 - make build-* tags the images docker-compose.yml pulls\n  ---\n  duration_ms: 65.391708\n  type: 'test'\n  ...\n1..1\n# tests 1\n# suites 0\n# pass 1\n# fail 0\n# cancelled 0\n# skipped 0\n# todo 0\n# duration_ms 97.688542\n",
             "err": ""
           },
           {
             "cmd": "docker build . -f ./docker/hyperdx/Dockerfile --build-context otel-collector=./docker/otel-collector --build-context hyperdx=./docker/hyperdx --build-context api=./packages/api --build-context app=./packages/app --build-arg CODE_VERSION=acceptance-local --build-arg COUCHBASE_IMAGE=couchbase/server:enterprise-8.0.3 -t couchbase-traces-aio-smoke:pr --target all-in-one-auth",
             "status": 0,
             "out": "",
-            "err": "e:node --from=builder /app/packages/app/public ./packages/app/packages/app/public\n#101 DONE 0.0s\n\n#102 [prod 12/13] COPY --chown=node:node --from=hyperdx ./refresh-env.js /etc/local/refresh-env.js\n#102 DONE 0.0s\n\n#103 [prod 13/13] COPY --chown=node:node --from=hyperdx ./entry.prod.sh /etc/local/entry.sh\n#103 DONE 0.0s\n\n#104 [all-in-one-base 14/16] COPY --from=prod /app /app\n#104 DONE 2.7s\n\n#105 [all-in-one-base 15/16] COPY --from=hyperdx ./refresh-env.js /etc/local/refresh-env.js\n#105 DONE 0.1s\n\n#106 [all-in-one-base 16/16] WORKDIR /app\n#106 DONE 0.0s\n\n#107 [all-in-one-auth 1/1] COPY --from=hyperdx --chmod=755 ./entry.cbt.sh /etc/local/entry.sh\n#107 DONE 0.0s\n\n#108 exporting to image\n#108 exporting layers\n#108 exporting layers 9.5s done\n#108 exporting manifest sha256:b763cedf54f64688b79e5caa3b9b0ece05a87437ed83979fc8b2877ffa485f23 done\n#108 exporting config sha256:deac96886b55593c5130f3c16725aea214146a5a0047c5d21d12ec1f33eb6cc5 done\n#108 exporting attestation manifest sha256:f7d3642c2637c2f7020e41dc5d9256a4a71fca101e6b881f509e09074eb3c88b done\n#108 exporting manifest list sha256:f561c61daebd181bf20f71fea8c6c840a41912b69335b7231010ca911ce2c1d6 done\n#108 naming to docker.io/library/couchbase-traces-aio-smoke:pr done\n#108 unpacking to docker.io/library/couchbase-traces-aio-smoke:pr\n#108 unpacking to docker.io/library/couchbase-traces-aio-smoke:pr 4.9s done\n#108 DONE 14.5s\n\nView build details: docker-desktop://dashboard/build/desktop-linux/desktop-linux/55q27rqbhjgglw2imcpctve45\n"
+            "err": "e:node --from=builder /app/packages/app/public ./packages/app/packages/app/public\n#101 DONE 0.0s\n\n#102 [prod 12/13] COPY --chown=node:node --from=hyperdx ./refresh-env.js /etc/local/refresh-env.js\n#102 DONE 0.0s\n\n#103 [prod 13/13] COPY --chown=node:node --from=hyperdx ./entry.prod.sh /etc/local/entry.sh\n#103 DONE 0.0s\n\n#104 [all-in-one-base 14/16] COPY --from=prod /app /app\n#104 DONE 3.1s\n\n#105 [all-in-one-base 15/16] COPY --from=hyperdx ./refresh-env.js /etc/local/refresh-env.js\n#105 DONE 0.2s\n\n#106 [all-in-one-base 16/16] WORKDIR /app\n#106 DONE 0.0s\n\n#107 [all-in-one-auth 1/1] COPY --from=hyperdx --chmod=755 ./entry.cbt.sh /etc/local/entry.sh\n#107 DONE 0.0s\n\n#108 exporting to image\n#108 exporting layers\n#108 exporting layers 9.3s done\n#108 exporting manifest sha256:7612133d4372bc9db4134ae104e9438986474749e36c86acd95020c5682bdb37 done\n#108 exporting config sha256:e44ca21fed7bbc367080d2bd682524257a9a61069d4effb198b43c67e11f3a53 done\n#108 exporting attestation manifest sha256:6738a0e8a522e1aab936511ade0c39cb6df48541592f45b10961510f24c09e3e done\n#108 exporting manifest list sha256:36d6c0de70dc34b2584cf50cf70c19c5e6199264b0e3ff2cac1dc7511b163b1b done\n#108 naming to docker.io/library/couchbase-traces-aio-smoke:pr done\n#108 unpacking to docker.io/library/couchbase-traces-aio-smoke:pr\n#108 unpacking to docker.io/library/couchbase-traces-aio-smoke:pr 4.8s done\n#108 DONE 14.2s\n\nView build details: docker-desktop://dashboard/build/desktop-linux/desktop-linux/uolsxqghaklr8rgstgwgtzelb\n"
           },
           {
             "cmd": "scripts/ci/smoke-all-in-one.sh couchbase-traces-aio-smoke:pr",
             "status": 0,
-            "out": "using locally-loaded image couchbase-traces-aio-smoke:pr (skipping pull)\n42eb448f485276be46b9cd3610679413df491fead5d35fb2f7d69d7c06514f6f\nwaiting for app health (up to 300s)...\napp healthy\n/health version acceptance-local\nno mongod in image\nregistering smoke user...\nsending canary (collector may still be starting)...\ncanary sent\nwaiting for canary via Couchbase query API (up to 120s)...\ncanary ingested end-to-end: collector -> ingest -> couchbase -> API\n",
+            "out": "using locally-loaded image couchbase-traces-aio-smoke:pr (skipping pull)\nd3a25f04055ec5609a3dc1314fed66b4350ceece0b55dee39b1d31eec54a95c5\nwaiting for app health (up to 300s)...\napp healthy\n/health version acceptance-local\nno mongod in image\nregistering smoke user...\nsending canary (collector may still be starting)...\ncanary sent\nwaiting for canary via Couchbase query API (up to 120s)...\ncanary ingested end-to-end: collector -> ingest -> couchbase -> API\n",
             "err": ""
           }
         ]
       },
       "evidence": [],
-      "durationMs": 606351,
+      "durationMs": 646408,
       "id": "K1",
       "title": "Local CI",
       "status": "pass"
@@ -1095,7 +1218,7 @@
       "evidence": [
         "/Users/michael/IdeaProjects/couchbase-traces/port/state/acceptance/evidence/gitleaks.json"
       ],
-      "durationMs": 4072,
+      "durationMs": 4503,
       "id": "L1",
       "title": "Secrets",
       "status": "pass"
@@ -1114,24 +1237,24 @@
             "name": "port/golden/run.sh",
             "status": 0,
             "out": "exponential_histogram_attr_items\ncreated index ix_metrics_summary_ts\ncreated index ix_metrics_summary_name_ts\ncreated index ix_metrics_summary_svc_name_ts\ncreated index ix_metrics_summary_attr_items\ncreated index ix_sessions_ts\ncreated index ix_sessions_svc_ts\ncreated index ix_sessions_session\ncreated index ix_sessions_rum_session\ncreated search fts_otel_logs\ncreated search fts_otel_traces\ncreated user cbt_query\ncreated user cbt_ingest\ncreated user cbt_monitor\nskipped metadata user (set CBT_METADATA_USER and CBT_METADATA_PASSWORD)\ncreated bucket cbt_meta\ncreated scope app\ncreated collection teams\ncreated collection users\ncreated collection team_invites\ncreated collection connections\ncreated collection sources\ncreated collection saved_searches\ncreated collection dashboards\ncreated collection alerts\ncreated collection alert_history\ncreated collection webhooks\ncreated collection favorites\ncreated collection pinned_filters\ncreated collection preset_dashboard_filters\ncreated collection unique_keys\ncreated collection sessions\ncreated collection system\ncreated collection txn_meta\ncreated index ix_teams_created\ncreated index ix_users_team\ncreated index ix_users_orgkeys\ncreated index ix_invites_team\ncreated index ix_connections_team\ncreated index ix_sources_team\ncreated index ix_sources_connection\ncreated index ix_saved_searches_team\ncreated index ix_saved_searches_tags\ncreated index ix_dashboards_team\ncreated index ix_dashboards_tags\ncreated index ix_dashboards_provisioned\ncreated index ix_alerts_team\ncreated index ix_alerts_page\ncreated index ix_alerts_tags\ncreated index ix_alerts_saved_search\ncreated index ix_alerts_dashboard\ncreated index ix_alerts_created_by\ncreated index ix_alert_history_alert\ncreated index ix_alert_history_group\ncreated index ix_webhooks_team\ncreated index ix_favorites_user\ncreated index ix_favorites_resource\ncreated index ix_pinned_filters_team\ncreated index ix_preset_filters\nindex build on favorites queued in the background\ncreated schema version 1\n",
-            "err": " exporting manifest sha256:24476cad13e4e152f32d512f5de0de5d2574c4ed1b45ea7b316787b95a10a667 done\n#32 exporting config sha256:d0c778eb495b297393d458d430c3e369764dbd0c72d5627c59748074e70eb018 done\n#32 exporting attestation manifest sha256:5baebb21d2b4f205577bf6e376aefa1d744f99890793a210c721d8da6f03463c done\n#32 exporting manifest list sha256:a185a9a6698c245bee5f0a7c3a2f65b3cd2533e58eaf4b02b2144717d6839faf done\n#32 naming to docker.io/library/cbt-golden-collector:local done\n#32 unpacking to docker.io/library/cbt-golden-collector:local done\n#32 naming to docker.io/library/cbt-ingest-parity-collector:local done\n#32 unpacking to docker.io/library/cbt-ingest-parity-collector:local done\n#32 DONE 0.0s\n\nView build details: docker-desktop://dashboard/build/desktop-linux/desktop-linux/laxqfz83djhcqegdwltcpuazj\n Network cbt-golden-replay_default Creating \n Network cbt-golden-replay_default Created \n Container cbt-golden-replay-couchbase Creating \n Container cbt-golden-replay-couchbase Created \n Container cbt-golden-replay-couchbase Starting \n Container cbt-golden-replay-couchbase Started \n Container cbt-golden-replay-ingest-run-87233c58c5b0 Creating \n Container cbt-golden-replay-ingest-run-87233c58c5b0 Created \n Container cbt-golden-replay-couchbase Running \n Container cbt-golden-replay-ingest-1 Creating \n Container cbt-golden-replay-ingest-1 Created \n Container cbt-golden-replay-collector-1 Creating \n Container cbt-golden-replay-collector-1 Created \n Container cbt-golden-replay-ingest-1 Starting \n Container cbt-golden-replay-ingest-1 Started \n Container cbt-golden-replay-collector-1 Starting \n Container cbt-golden-replay-collector-1 Started \n[replay-ingest] ok\n[golden-replay] Clearing collections after ingest suite\n[replay-query] ok\n[replay-charts] search ok (17 cases)\n[replay-charts] traces ok (5 cases)\n[replay-charts] sessions ok (3 cases)\n[replay-charts] metrics ok (13 cases)\n[replay-charts] charts ok (34 cases)\n[replay-charts] presets ok (3 cases)\n[golden-replay] replay ok\n"
+            "err": " exporting manifest sha256:24476cad13e4e152f32d512f5de0de5d2574c4ed1b45ea7b316787b95a10a667 done\n#33 exporting config sha256:d0c778eb495b297393d458d430c3e369764dbd0c72d5627c59748074e70eb018 done\n#33 exporting attestation manifest sha256:36e2fab51e675eb85a99f894e03bdcdb533d4960bb7648a8e42e5bb6f84b8cf0 done\n#33 exporting manifest list sha256:0d2c2c5ae6dc76bcc5600db17403a51598e0c9331b7dfd172bd295ee1087f907 done\n#33 naming to docker.io/library/cbt-golden-collector:local done\n#33 unpacking to docker.io/library/cbt-golden-collector:local done\n#33 naming to docker.io/library/cbt-ingest-parity-collector:local done\n#33 unpacking to docker.io/library/cbt-ingest-parity-collector:local done\n#33 DONE 0.0s\n\nView build details: docker-desktop://dashboard/build/desktop-linux/desktop-linux/tcyyo5y3cb4uhoug7o6nayzqi\n Network cbt-golden-replay_default Creating \n Network cbt-golden-replay_default Created \n Container cbt-golden-replay-couchbase Creating \n Container cbt-golden-replay-couchbase Created \n Container cbt-golden-replay-couchbase Starting \n Container cbt-golden-replay-couchbase Started \n Container cbt-golden-replay-ingest-run-2a00f523168e Creating \n Container cbt-golden-replay-ingest-run-2a00f523168e Created \n Container cbt-golden-replay-couchbase Running \n Container cbt-golden-replay-ingest-1 Creating \n Container cbt-golden-replay-ingest-1 Created \n Container cbt-golden-replay-collector-1 Creating \n Container cbt-golden-replay-collector-1 Created \n Container cbt-golden-replay-ingest-1 Starting \n Container cbt-golden-replay-ingest-1 Started \n Container cbt-golden-replay-collector-1 Starting \n Container cbt-golden-replay-collector-1 Started \n[replay-ingest] ok\n[golden-replay] Clearing collections after ingest suite\n[replay-query] ok\n[replay-charts] search ok (17 cases)\n[replay-charts] traces ok (5 cases)\n[replay-charts] sessions ok (3 cases)\n[replay-charts] metrics ok (13 cases)\n[replay-charts] charts ok (34 cases)\n[replay-charts] presets ok (3 cases)\n[golden-replay] replay ok\n"
           },
           {
             "name": "port/couchbase-test/run.sh",
             "status": 0,
-            "out": "tadata] created index ix_webhooks_team\n[couchbase-test:metadata] created index ix_favorites_user\n[couchbase-test:metadata] created index ix_favorites_resource\n[couchbase-test:metadata] created index ix_pinned_filters_team\n[couchbase-test:metadata] created index ix_preset_filters\n[couchbase-test:metadata] index build on favorites queued in the background\n[couchbase-test:metadata] created user cbt_meta\n[couchbase-test:metadata] created schema version 1\n[couchbase-test:metadata] created 44 resources\n[couchbase-test:init] Ready\n[couchbase-test] Running common-utils Couchbase integration tests\n[couchbase-test] Running app Couchbase live-cluster tests\n[couchbase-test] Running api Couchbase integration tests\n  console.log\n    CPU utilization per node available=true points=72  \n    Free memory per node available=true points=79  \n    Data service operations available=true points=4660  \n    Bucket memory used available=true points=250  \n    Disk write queue available=true points=250  \n    Query requests available=true points=74  \n    Query errors available=true points=74  \n    Query average request time available=true points=78  \n    Index service requests available=true points=3634  \n    Search service queries available=true points=73\n\n      at Object.<anonymous> (routers/api/__tests__/couchbase.int.test.ts:278:13)\n\n  console.log\n    completed-requests recent=39 users=[\"local:cbt_query\",\"builtin:Administrator\"] buckets=21 indexes=38\n\n      at Object.<anonymous> (routers/api/__tests__/couchbase.int.test.ts:299:13)\n\n  console.log\n    limited-query indexes available=true rows=0  recent available=false rows=0 User does not have credentials to run queries accessing the system tables. Add role query_system_catalog to allow the statement to run.\n\n      at Object.<anonymous> (routers/api/__tests__/couchbase.int.test.ts:374:13)\n\n[couchbase-test] Running ingest integration tests\n[couchbase-test] Integration tests finished with status 0\n[couchbase-test] Removing containers and volumes\n",
-            "err": " ✓ removes a member and hands their alerts over atomically (164 ms)\n      alert history\n        ✓ expires rows 30 days after createdAt and keeps the expiry on update (3 ms)\n        ✓ keeps rows for windows older than the retention for a day (2 ms)\n        ✓ writes rows independently\n        ✓ returns the newest non-ERROR row per group (9 ms)\n        ✓ groups rows into windows, newest first, ERROR included (12 ms)\n        ✓ reads same-window rows back in write order in every reader (26 ms)\n        ✓ lists transitions oldest first without ERROR rows (9 ms)\n        ✓ deletes ERROR rows in a range, exclusive at the start (30 ms)\n\nPASS src/routers/api/__tests__/couchbase.int.test.ts\n  Couchbase API integration\n    ✓ creates a connection, queries it, and reads it with CouchbaseClient (69 ms)\n    ✓ serves cluster status, infrastructure, and queries (115 ms)\n    ✓ restricts status and infrastructure for a monitor user with no roles (17 ms)\n    ✓ restricts system queries for a user without query_system_catalog (29 ms)\n\nTest Suites: 2 passed, 2 total\nTests:       57 passed, 57 total\nSnapshots:   0 total\nTime:        76.109 s\nRan all test suites matching couchbase\\.int\\.test.\nForce exiting Jest: Have you considered using `--detectOpenHandles` to detect async operations that kept running after all tests finished?\nPASS src/__tests__/ingest.int.test.ts (23.622 s)\n  ingest integration\n    ✓ brings GSI online and creates both search indexes (12 ms)\n    ✓ writes a log, uses ix_logs_ts, finds the body, and sets expiry (642 ms)\n    ✓ refuses query access to the ingest user and writes to the query user (33 ms)\n    ✓ returns 503 while Couchbase is down and accepts the batch after restart (13205 ms)\n\nTest Suites: 1 passed, 1 total\nTests:       4 passed, 4 total\nSnapshots:   0 total\nTime:        23.646 s\nRan all test suites matching ingest\\.int\\.test.\nForce exiting Jest: Have you considered using `--detectOpenHandles` to detect async operations that kept running after all tests finished?\n"
+            "out": "tadata] created index ix_webhooks_team\n[couchbase-test:metadata] created index ix_favorites_user\n[couchbase-test:metadata] created index ix_favorites_resource\n[couchbase-test:metadata] created index ix_pinned_filters_team\n[couchbase-test:metadata] created index ix_preset_filters\n[couchbase-test:metadata] index build on favorites queued in the background\n[couchbase-test:metadata] created user cbt_meta\n[couchbase-test:metadata] created schema version 1\n[couchbase-test:metadata] created 44 resources\n[couchbase-test:init] Ready\n[couchbase-test] Running common-utils Couchbase integration tests\n[couchbase-test] Running app Couchbase live-cluster tests\n[couchbase-test] Running api Couchbase integration tests\n  console.log\n    CPU utilization per node available=true points=53  \n    Free memory per node available=true points=58  \n    Data service operations available=true points=3040  \n    Bucket memory used available=true points=169  \n    Disk write queue available=true points=169  \n    Query requests available=true points=55  \n    Query errors available=true points=55  \n    Query average request time available=true points=59  \n    Index service requests available=true points=1891  \n    Search service queries available=true points=53\n\n      at Object.<anonymous> (routers/api/__tests__/couchbase.int.test.ts:278:13)\n\n  console.log\n    completed-requests recent=39 users=[\"local:cbt_query\",\"builtin:Administrator\"] buckets=22 indexes=38\n\n      at Object.<anonymous> (routers/api/__tests__/couchbase.int.test.ts:299:13)\n\n  console.log\n    limited-query indexes available=true rows=0  recent available=false rows=0 User does not have credentials to run queries accessing the system tables. Add role query_system_catalog to allow the statement to run.\n\n      at Object.<anonymous> (routers/api/__tests__/couchbase.int.test.ts:374:13)\n\n[couchbase-test] Running ingest integration tests\n[couchbase-test] Integration tests finished with status 0\n[couchbase-test] Removing containers and volumes\n",
+            "err": "hands their alerts over atomically (165 ms)\n      alert history\n        ✓ expires rows 30 days after createdAt and keeps the expiry on update (3 ms)\n        ✓ keeps rows for windows older than the retention for a day (1 ms)\n        ✓ writes rows independently (1 ms)\n        ✓ returns the newest non-ERROR row per group (16 ms)\n        ✓ groups rows into windows, newest first, ERROR included (11 ms)\n        ✓ reads same-window rows back in write order in every reader (27 ms)\n        ✓ lists transitions oldest first without ERROR rows (9 ms)\n        ✓ deletes ERROR rows in a range, exclusive at the start (30 ms)\n\nPASS src/routers/api/__tests__/couchbase.int.test.ts\n  Couchbase API integration\n    ✓ creates a connection, queries it, and reads it with CouchbaseClient (59 ms)\n    ✓ serves cluster status, infrastructure, and queries (106 ms)\n    ✓ restricts status and infrastructure for a monitor user with no roles (19 ms)\n    ✓ restricts system queries for a user without query_system_catalog (30 ms)\n\nTest Suites: 2 passed, 2 total\nTests:       57 passed, 57 total\nSnapshots:   0 total\nTime:        17.233 s, estimated 20 s\nRan all test suites matching couchbase\\.int\\.test.\nForce exiting Jest: Have you considered using `--detectOpenHandles` to detect async operations that kept running after all tests finished?\nPASS src/__tests__/ingest.int.test.ts (24.781 s)\n  ingest integration\n    ✓ brings GSI online and creates both search indexes (13 ms)\n    ✓ writes a log, uses ix_logs_ts, finds the body, and sets expiry (648 ms)\n    ✓ refuses query access to the ingest user and writes to the query user (34 ms)\n    ✓ returns 503 while Couchbase is down and accepts the batch after restart (14285 ms)\n\nTest Suites: 1 passed, 1 total\nTests:       4 passed, 4 total\nSnapshots:   0 total\nTime:        24.807 s\nRan all test suites matching ingest\\.int\\.test.\nForce exiting Jest: Have you considered using `--detectOpenHandles` to detect async operations that kept running after all tests finished?\n"
           },
           {
             "name": "./scripts/test-e2e.sh --shard=1/4",
             "status": 0,
-            "out": "ements\u001b[22m\n    \u001b[2m      - unexpected value \"0\"\u001b[22m\n\n\n      42 |     const before = await dashboardPage.getGroupOrder();\n      43 |     await dashboardPage.addGroup();\n    > 44 |     await expect(dashboardPage.getGroups()).toHaveCount(before.length + 1);\n         |                                             ^\n      45 |     const after = await dashboardPage.getGroupOrder();\n      46 |     const newId = after.find(id => !before.includes(id));\n      47 |     if (!newId) throw new Error('Newly added group id not found');\n        at addGroupAndGetId (/Users/michael/IdeaProjects/couchbase-traces/packages/app/tests/e2e/features/dashboard-container.spec.ts:44:45)\n        at /Users/michael/IdeaProjects/couchbase-traces/packages/app/tests/e2e/features/dashboard-container.spec.ts:151:16\n\n    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────\n    test-results/features-dashboard-contain-66d76-estores-the-collapsed-state-chromium/test-failed-1.png\n    ────────────────────────────────────────────────────────────────────────────────────────────────\n\n    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────\n    test-results/features-dashboard-contain-66d76-estores-the-collapsed-state-chromium/video.webm\n    ────────────────────────────────────────────────────────────────────────────────────────────────\n\n    Error Context: test-results/features-dashboard-contain-66d76-estores-the-collapsed-state-chromium/error-context.md\n\n  1 flaky\n    [chromium] › tests/e2e/features/dashboard-container.spec.ts:150:7 › Dashboard container › ?collapsed URL param survives reload and restores the collapsed state @dashboard \n  114 passed (4.8m)\nStopping E2E services and removing volumes...\n Container e2e-47-couchbase-1 Stopping \n Container e2e-47-couchbase-1 Stopped \n Container e2e-47-couchbase-1 Removing \n Container e2e-47-couchbase-1 Removed \n Network e2e-47_internal Removing \n Network e2e-47_internal Removed \n",
+            "out": "ashboard-table-linking.spec.ts:310:9 › Dashboard Table Linking › Dashboard mode: unknown dashboard name shows Link error notification @dashboard @full-stack (2.8s)\n  ✓  108 [chromium] › tests/e2e/features/dashboard-table-linking.spec.ts:233:9 › Dashboard Table Linking › Dashboard mode: valid link navigates to target dashboard with rendered WHERE @dashboard @full-stack (4.8s)\n  ✓  111 [chromium] › tests/e2e/features/dashboard-table-linking.spec.ts:384:9 › Dashboard Table Linking › Search mode (ID): selecting a source from dropdown navigates to /search using that source id @dashboard @full-stack (3.6s)\n  ✓  110 [chromium] › tests/e2e/features/dashboard-table-linking.spec.ts:339:9 › Dashboard Table Linking › Dashboard mode: WHERE template referencing unknown column shows Link error @dashboard @full-stack (4.7s)\n  ✓  112 [chromium] › tests/e2e/features/dashboard-table-linking.spec.ts:446:9 › Dashboard Table Linking › Dashboard mode (ID): selecting a dashboard from dropdown navigates to that dashboard id @dashboard @full-stack (4.9s)\n  ✓  113 [chromium] › tests/e2e/features/dashboard-table-linking.spec.ts:520:9 › Dashboard Table Linking › Search mode: filter templates render into the /search URL filters param @dashboard @full-stack (3.3s)\n  ✓  115 [chromium] › tests/e2e/features/dashboard-table-linking.spec.ts:676:9 › Dashboard Table Linking › Dashboard mode: a variable-enabled target filter still receives an expression-keyed link @dashboard @full-stack (5.5s)\n  ✓  114 [chromium] › tests/e2e/features/dashboard-table-linking.spec.ts:583:9 › Dashboard Table Linking › Dashboard mode: filter templates render into the destination dashboard URL filters param @dashboard @full-stack (5.6s)\n\n  115 passed (5.7m)\nStopping E2E services and removing volumes...\n Container e2e-47-couchbase-1 Stopping \n Container e2e-47-couchbase-1 Stopped \n Container e2e-47-couchbase-1 Removing \n Container e2e-47-couchbase-1 Removed \n Network e2e-47_internal Removing \n Network e2e-47_internal Removed \n",
             "err": ""
           }
         ]
       },
       "evidence": [],
-      "durationMs": 936380,
+      "durationMs": 911582,
       "id": "M1",
       "title": "Regression",
       "status": "pass"
@@ -1151,7 +1274,7 @@
         ]
       },
       "evidence": [],
-      "durationMs": 5,
+      "durationMs": 4,
       "id": "M2",
       "title": "Docs",
       "status": "pass"
