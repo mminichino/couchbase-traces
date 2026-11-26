@@ -4221,4 +4221,24 @@ to run outside the agent sandbox, which blocks `git init` in a temp dir.
 - **D32 (Q61 recurred).** `kubernetes.spec.ts` failed on Main for `main`
   `4b54ca9` and `6922b3b` and for PR #50 `868e13b` (pod details, node and
   namespace metrics, all retries). R8 stops before the merge and tag until D32
-  lands.
+  lands. Fixed in PR #51; see the D32 section below.
+
+## D32: Kubernetes E2E seed cost (2026-11-26)
+
+- **Root cause.** D15 seeded K8s gauge series for `numDataPoints` (500) pods,
+  42,366 gauge points. Each `/kubernetes` load runs the pod-table query (12,065
+  fetches), the `k8s.pod.name` field-value query (10,928 fetches), and `INFER`
+  on the gauge collection; on the 2-CPU E2E Couchbase node these reached 6-7 s
+  per statement when several workers opened the page at once, past the 5 s chart
+  waits. Plans used the `TimeUnix` / `MetricName` GSI indexes, with no primary
+  scans.
+- **Fix.** `K8S_METRIC_PODS = 100` in `packages/app/tests/e2e/seed-couchbase.ts`
+  (8,736 gauge points). Timeouts are unchanged (Q61). Upstream also seeds one
+  pod per log row; the reduction is a Couchbase E2E sizing choice, not a product
+  change.
+- **No production index.** Field-value and key queries are capped by
+  `sampleSize` and already use the time index; they read whole
+  `ResourceAttributes` objects with dynamic keys, so a covering index would not
+  apply. Nothing to add to `docker/couchbase` setup.
+- **Verification.** `kubernetes.spec.ts --repeat-each=10`, four workers, 130/130
+  passed; the slowest gauge statement averaged 2.0 s afterwards.
