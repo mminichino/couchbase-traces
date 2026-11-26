@@ -2011,6 +2011,32 @@ On branch `mm--release-v1-0-0`:
 
 Acceptance: section 11 items 9–14.
 
+R8 result (2026-11-26, `mm--v1-r8-release-1-0-0`; branch name per the user's
+instruction rather than `mm--release-v1-0-0` above). Steps 1–3 done; steps 4–7
+await the user.
+
+- **Step 1.** `make version VERSION=1.0.0` updated all 16 locations; `yarn.lock`
+  did not change (workspace versions are not recorded in it). `make ci-lint` now
+  runs `version-check` (Q59). It passes at 1.0.0, and each of the 16 locations
+  reverted alone fails it, as does the root `package.json`. `openapi.json` is
+  unchanged (Q7).
+- **Defect fixed.** Two `set-version` unit tests planned an edit to 1.0.0 and
+  expected a change, so they failed once the repo was at 1.0.0. They now target
+  a version the repo is never at; they pass before and after the bump.
+- **Step 2.** `CHANGELOG.md` has `## v1.0.0 — 2026-11-26`, written with
+  `release-notes.mjs insert`. The body passes `validate` and comes back from
+  `extract`. The 0.1.0 section is folded in (Q3). Each lock-stepped package
+  changelog has `## 1.0.0`; `packages/ingest/CHANGELOG.md` is new. Brand and
+  removal allowlists cover the upstream names in the notes.
+- **Gates.** `yarn lint:fix`, `make ci-lint`, `make ci-unit`, and `make ci-int`
+  (common-utils 20/20 suites, API 62/63) are green. `make e2e`: 455 passed, 3
+  skipped. All-in-one smoke at `CODE_VERSION=1.0.0` passed (canary ingested end
+  to end). `make release-images VERSION=1.0.0 DRY_RUN=1` printed the three
+  images with tags `1.0.0 1.0 1` and pushed nothing.
+- **Not done (Q62).** Capella acceptance (C1, C2) and K2 are still open: the
+  Capella cluster has no `cbt_meta` bucket. This should be fixed and acceptance
+  re-run before step 4.
+
 ## 10. Decisions
 
 Q1–Q10 were answered by the user on 2026-11-19, Q11–Q18 on 2026-11-20. No other

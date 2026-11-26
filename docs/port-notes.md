@@ -4197,3 +4197,19 @@ to run outside the agent sandbox, which blocks `git init` in a temp dir.
   (`ts-node`, port 21047) running, so K1's shard could not bind. Killing the
   orphan and re-running fixed it. Interrupted runs leave the same orphan; check
   `lsof -iTCP:21047` before re-running.
+
+## R8: Release v1.0.0 (2026-11-26)
+
+- **Capella (Q62).** Credentials are in the ignored, untracked `.env.local` and
+  were loaded only into single subshells. A read-only probe found all three
+  users connect, Query is 8.0.3 Enterprise, and `otel` is fully prepared, but
+  the `cbt_meta` bucket does not exist. Setup does not create Capella buckets,
+  so C1/C2 were not run. No host, user or password is recorded in the repo.
+- **D31** moved to the v1.0.1 backlog as P14 (user, 2026-11-26).
+- **Version bump.** All 16 locations at 1.0.0; `make ci-lint` runs
+  `version-check` and fails on any single reverted location.
+- **`set-version` tests depended on the repo's version.** Two tests expected an
+  edit to 1.0.0 to change files, so they broke at 1.0.0. They now use 9.8.7.
+- **Gates.** Lint, unit, integration, E2E (455 passed, 3 skipped), all-in-one
+  smoke, and the release-images dry run all passed. No tag, image push, or
+  GitHub release.
