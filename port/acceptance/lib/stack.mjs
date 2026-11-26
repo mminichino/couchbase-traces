@@ -255,6 +255,15 @@ export function prepareCapellaEnv(root) {
     CBT_COUCHBASE_QUERY_PASSWORD: process.env.CBT_ACCEPT_CAPELLA_QUERY_PASSWORD,
     CBT_COUCHBASE_INGEST_USER: process.env.CBT_ACCEPT_CAPELLA_INGEST_USER,
     CBT_COUCHBASE_INGEST_PASSWORD: process.env.CBT_ACCEPT_CAPELLA_INGEST_PASSWORD,
+    // Capella users are created in the Capella UI, so the example metadata
+    // user does not exist there. Use a dedicated credential when given, else
+    // the setup credential, which docs/capella.md requires on cbt_meta.
+    CBT_METADATA_USER:
+      process.env.CBT_ACCEPT_CAPELLA_METADATA_USER ||
+      process.env.CBT_ACCEPT_CAPELLA_ADMIN_USER,
+    CBT_METADATA_PASSWORD:
+      process.env.CBT_ACCEPT_CAPELLA_METADATA_PASSWORD ||
+      process.env.CBT_ACCEPT_CAPELLA_ADMIN_PASSWORD,
     CBT_COUCHBASE_WAN_PROFILE:
       process.env.CBT_COUCHBASE_WAN_PROFILE || 'true',
   };
