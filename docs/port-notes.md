@@ -61,518 +61,687 @@ Generated: 2026-11-12T19:09:07Z. Status: pass.
 <!-- phase1:end -->
 
 <!-- phase2:start -->
+
 ## Phase 2: Inventory
 
 Inventory of commit adcb75c16715. Full detail is in `port/state/inventory/`.
 
 ### Workspace map
 
-| Package | Directory | Role | Languages | Source files | Test files | CI targets |
-|---|---|---|---|---|---|---|
-| @couchbase-traces/api | packages/api | API server and tasks | javascript, typescript | 233 | 141 | ci:int, ci:lint, ci:unit |
-| @couchbase-traces/app | packages/app | web UI | javascript, typescript | 673 | 492 | ci:lint, ci:unit |
-| @couchbase-traces/cli | packages/cli | command-line client | javascript, typescript | 61 | 5 | ci:build, ci:lint, ci:unit |
-| @couchbase-traces/common-utils | packages/common-utils | shared query and data layer | javascript, typescript | 116 | 50 | ci:build, ci:int, ci:lint, ci:unit |
-| @couchbase-traces/hdx-eval | packages/hdx-eval | evaluation harness | javascript, typescript | 56 | 31 | ci:lint, ci:unit |
-| @couchbase-traces/ingest | packages/ingest | ingestion service | javascript, typescript | 37 | 8 | ci:lint, ci:unit |
-| @couchbase-traces/otel-collector | packages/otel-collector | ingestion collector |  | 0 | 0 |  |
+| Package                          | Directory               | Role                        | Languages              | Source files | Test files | CI targets                         |
+| -------------------------------- | ----------------------- | --------------------------- | ---------------------- | ------------ | ---------- | ---------------------------------- |
+| @couchbase-traces/api            | packages/api            | API server and tasks        | javascript, typescript | 233          | 141        | ci:int, ci:lint, ci:unit           |
+| @couchbase-traces/app            | packages/app            | web UI                      | javascript, typescript | 673          | 492        | ci:lint, ci:unit                   |
+| @couchbase-traces/cli            | packages/cli            | command-line client         | javascript, typescript | 61           | 5          | ci:build, ci:lint, ci:unit         |
+| @couchbase-traces/common-utils   | packages/common-utils   | shared query and data layer | javascript, typescript | 116          | 50         | ci:build, ci:int, ci:lint, ci:unit |
+| @couchbase-traces/hdx-eval       | packages/hdx-eval       | evaluation harness          | javascript, typescript | 56           | 31         | ci:lint, ci:unit                   |
+| @couchbase-traces/ingest         | packages/ingest         | ingestion service           | javascript, typescript | 37           | 8          | ci:lint, ci:unit                   |
+| @couchbase-traces/otel-collector | packages/otel-collector | ingestion collector         |                        | 0            | 0          |                                    |
 
 ### Entry points
 
-| Kind | Count |
-|---|---|
-| app_page | 24 |
-| app_api_route | 2 |
-| api_route | 112 |
-| mcp_tool | 31 |
-| task | 3 |
-| cli_command | 24 |
-| ingestion | 1 |
+| Kind          | Count |
+| ------------- | ----- |
+| app_page      | 24    |
+| app_api_route | 2     |
+| api_route     | 112   |
+| mcp_tool      | 31    |
+| task          | 3     |
+| cli_command   | 24    |
+| ingestion     | 1     |
 
 ### Data layer
 
-| Module | Reasons | Exports | Importers | Server-side |
-|---|---|---|---|---|
-| `packages/common-utils/src/types.ts` | seed, sql_builder | 365 | 652 | yes |
-| `packages/common-utils/src/core/metadata.ts` | seed | 23 | 93 | yes |
-| `packages/api/src/fixtures.ts` | sql_builder | 44 | 55 | yes |
-| `packages/common-utils/src/filters.ts` | sql_builder | 47 | 52 | yes |
-| `packages/common-utils/src/couchbase/sqlpp.ts` | seed | 8 | 37 | yes |
-| `packages/common-utils/src/couchbase/metadata.ts` | seed | 1 | 36 | yes |
-| `packages/common-utils/src/couchbase/errors.ts` | seed | 14 | 33 | yes |
-| `packages/app/src/components/DBRowSidePanel.tsx` | clickhouse_client | 8 | 28 | no |
-| `packages/app/src/hooks/useRowWhere.tsx` | sql_builder | 6 | 27 | no |
-| `packages/api/src/mcp/tools/query/helpers.ts` | sql_builder | 20 | 26 | yes |
-| `packages/common-utils/src/query/sqlExpr.ts` | sql_builder | 10 | 23 | yes |
-| `packages/app/src/llm/lib/expressions.ts` | sql_builder | 8 | 19 | no |
-| `packages/common-utils/src/couchbase/types.ts` | seed | 15 | 19 | yes |
-| `packages/common-utils/src/couchbase/render/index.ts` | seed, sql_builder | 9 | 18 | yes |
-| `packages/app/src/components/TimePicker/TimePicker.tsx` | clickhouse_client, sql_builder | 1 | 13 | no |
-| `packages/common-utils/src/couchbase/node.ts` | seed | 16 | 13 | yes |
-| `packages/common-utils/src/core/renderChartConfig.ts` | seed | 1 | 12 | yes |
-| `packages/common-utils/src/couchbase/nodeCluster.ts` | seed | 12 | 12 | yes |
-| `packages/app/src/components/DBHeatmapChart/heatmapQueries.ts` | sql_builder | 8 | 11 | no |
-| `packages/common-utils/src/couchbase/nodeClusterCache.ts` | seed | 4 | 11 | yes |
-| `packages/common-utils/src/couchbase/time.ts` | seed, sql_builder | 9 | 11 | no |
-| `packages/app/src/serviceDashboard.ts` | sql_builder | 5 | 10 | no |
-| `packages/api/src/mcp/tools/query/schemas.ts` | sql_builder | 14 | 9 | yes |
-| `packages/common-utils/src/macros.ts` | sql_builder | 12 | 9 | yes |
-| `packages/hdx-eval/src/store/schema.ts` | sql_builder | 8 | 9 | no |
-| `packages/common-utils/src/couchbase/render.ts` | seed | 8 | 8 | yes |
-| `packages/common-utils/src/couchbase/render/rowId.ts` | seed, sql_builder | 6 | 8 | yes |
-| `packages/api/src/mcp/tools/dashboards/schemas.ts` | sql_builder | 13 | 7 | yes |
-| `packages/app/src/components/DBRowJsonViewer.tsx` | sql_builder | 3 | 7 | no |
-| `packages/common-utils/src/couchbase/connstr.ts` | seed | 7 | 7 | yes |
-| `packages/common-utils/src/couchbase/fn/scalar.ts` | seed, sql_builder | 46 | 7 | no |
-| `packages/app/src/DBSearchPage.tsx` | sql_builder | 7 | 6 | no |
-| `packages/app/src/components/ExceptionSubpanel.tsx` | clickhouse_client | 3 | 6 | no |
-| `packages/common-utils/src/couchbase/nodeTest.ts` | seed | 4 | 6 | yes |
-| `packages/common-utils/src/couchbase/serializer.ts` | seed, sql_builder | 4 | 6 | yes |
-| `packages/common-utils/src/couchbase/settings.ts` | seed | 6 | 6 | no |
-| `packages/common-utils/src/queryParser.ts` | seed, sql_builder | 9 | 6 | yes |
-| `packages/api/src/mcp/tools/query/serviceHealth/errorGroups.ts` | sql_builder | 6 | 5 | yes |
-| `packages/app/src/components/Iac/TerraformHelperPanel.tsx` | clickhouse_client, sql_builder | 2 | 5 | no |
-| `packages/app/src/couchbase/dialectExpr.ts` | sql_builder | 7 | 5 | no |
-| `packages/app/src/hooks/useServiceMap.tsx` | sql_builder | 6 | 5 | no |
-| `packages/common-utils/src/couchbase/fn/quantile.ts` | seed, sql_builder | 4 | 5 | no |
-| `packages/common-utils/src/couchbase/source.ts` | seed | 3 | 5 | yes |
-| `packages/api/src/mcp/tools/query/runEventPatterns.ts` | sql_builder | 4 | 4 | yes |
-| `packages/app/src/KubernetesDashboardPage.tsx` | clickhouse_client, sql_builder | 3 | 4 | no |
-| `packages/app/src/components/AppNav/AppNav.components.tsx` | clickhouse_client | 4 | 4 | no |
-| `packages/app/src/components/ContactSupportText.tsx` | clickhouse_client | 1 | 4 | no |
-| `packages/app/src/components/KubeComponents.tsx` | clickhouse_client | 3 | 4 | no |
-| `packages/app/src/components/Sources/SourcesList.tsx` | clickhouse_client, sql_builder | 2 | 4 | no |
-| `packages/app/src/components/alerts/AlertStateBadge.tsx` | clickhouse_client | 1 | 4 | no |
-| `packages/app/src/components/infraCorrelations.ts` | sql_builder | 4 | 4 | no |
-| `packages/app/src/llm/lib/cost.ts` | sql_builder | 4 | 4 | no |
-| `packages/app/src/utils/browserTelemetry.ts` | clickhouse_client | 2 | 4 | no |
-| `packages/common-utils/src/couchbase/browser.ts` | seed | 5 | 4 | no |
-| `packages/common-utils/src/couchbase/inferMeta.ts` | seed, sql_builder | 7 | 4 | no |
-| `packages/common-utils/src/couchbase/nodeExecute.ts` | seed | 1 | 4 | yes |
-| `packages/common-utils/src/couchbase/render/where.ts` | seed, sql_builder | 4 | 4 | no |
-| `packages/common-utils/src/couchbase/statement.ts` | seed, sql_builder | 4 | 4 | yes |
-| `packages/api/src/mcp/tools/query/table.ts` | sql_builder | 3 | 3 | yes |
-| `packages/app/src/ServicesDashboardPage/HttpTab.tsx` | sql_builder | 2 | 3 | no |
-| `packages/app/src/components/AppNav/AppNav.tsx` | clickhouse_client | 1 | 3 | no |
-| `packages/app/src/components/AppNav/InstanceLabel.tsx` | clickhouse_client | 1 | 3 | no |
-| `packages/app/src/components/AppNav/WhatsNewHighlightRow.tsx` | clickhouse_client | 1 | 3 | no |
-| `packages/app/src/components/ChartDisplaySettingsDrawer.tsx` | clickhouse_client, sql_builder | 2 | 3 | no |
-| `packages/app/src/components/DBEditTimeChartForm/TileAlertEditor.tsx` | clickhouse_client | 1 | 3 | no |
-| `packages/app/src/components/SearchTotalCountChart.tsx` | sql_builder | 2 | 3 | no |
-| `packages/app/src/components/TeamSettings/IacMigrationSection.tsx` | clickhouse_client, sql_builder | 3 | 3 | no |
-| `packages/app/src/hooks/useMetricCatalog.ts` | sql_builder | 2 | 3 | no |
-| `packages/app/src/llm/dashboard/LLMSessionPanel.tsx` | clickhouse_client | 2 | 3 | no |
-| `packages/app/src/sessions.ts` | sql_builder | 7 | 3 | no |
-| `packages/common-utils/src/couchbase/defaultSources.ts` | seed | 5 | 3 | yes |
-| `packages/common-utils/src/couchbase/rawSqlLimit.ts` | seed | 3 | 3 | yes |
-| `packages/common-utils/src/couchbase/render/metrics/expHistogram.ts` | seed, sql_builder | 2 | 3 | no |
-| `packages/common-utils/src/couchbase/render/metrics/histogram.ts` | seed, sql_builder | 10 | 3 | no |
-| `packages/common-utils/src/couchbase/render/select.ts` | seed, sql_builder | 7 | 3 | no |
-| `packages/common-utils/src/couchbase/resultset.ts` | seed, sql_builder | 2 | 3 | no |
-| `packages/hdx-eval/src/scenarios/metric-saturation/generate.ts` | sql_builder | 1 | 3 | no |
-| `packages/api/src/mcp/prompts/dashboards/content.ts` | sql_builder | 4 | 2 | yes |
-| `packages/api/src/mcp/tools/query/sqlDescriptions.ts` | sql_builder | 2 | 2 | yes |
-| `packages/api/src/mcp/tools/sources/listMetricsQueries.ts` | sql_builder | 2 | 2 | yes |
-| `packages/api/src/mcp/tools/sources/metricNames.ts` | sql_builder | 3 | 2 | yes |
-| `packages/api/src/mcp/tools/sources/schemas.ts` | sql_builder | 4 | 2 | yes |
-| `packages/api/src/server.ts` | clickhouse_client | 1 | 2 | yes |
-| `packages/app/src/ThemeWrapper.tsx` | clickhouse_client | 1 | 2 | no |
-| `packages/app/src/UserPreferencesModal.tsx` | clickhouse_client | 1 | 2 | no |
-| `packages/app/src/components/AppNav/WhatsNewDrawer.tsx` | clickhouse_client | 2 | 2 | no |
-| `packages/app/src/components/ChartEditor/constants.tsx` | sql_builder | 2 | 2 | no |
-| `packages/app/src/components/DBEditTimeChartForm/ChartSeriesEditor.tsx` | clickhouse_client | 1 | 2 | no |
-| `packages/app/src/components/ListingCard.tsx` | clickhouse_client | 1 | 2 | no |
-| `packages/app/src/components/ListingListRow.tsx` | clickhouse_client | 1 | 2 | no |
-| `packages/app/src/components/MetricAttributeHelperPanel.tsx` | clickhouse_client | 6 | 2 | no |
-| `packages/app/src/components/NetworkPropertyPanel.tsx` | clickhouse_client | 1 | 2 | no |
-| `packages/app/src/components/RequestLine.tsx` | clickhouse_client | 4 | 2 | no |
-| `packages/app/src/components/SQLEditor/constants.ts` | sql_builder | 4 | 2 | no |
-| `packages/app/src/components/SeriesNumberFormatDrawer.tsx` | clickhouse_client | 1 | 2 | no |
-| `packages/app/src/components/ServiceMap/ServiceMapTooltip.tsx` | clickhouse_client, sql_builder | 1 | 2 | no |
-| `packages/app/src/components/TeamSettings/ApiKeysSection.tsx` | clickhouse_client | 1 | 2 | no |
-| `packages/app/src/components/TeamSettings/McpServerSection.tsx` | clickhouse_client | 1 | 2 | no |
-| `packages/app/src/components/TeamSettings/OrgApiKeysSection.tsx` | clickhouse_client | 1 | 2 | no |
-| `packages/app/src/components/TeamSettings/TeamQueryConfigSection.tsx` | clickhouse_client, sql_builder | 1 | 2 | no |
+| Module                                                                  | Reasons                        | Exports | Importers | Server-side |
+| ----------------------------------------------------------------------- | ------------------------------ | ------- | --------- | ----------- |
+| `packages/common-utils/src/types.ts`                                    | seed, sql_builder              | 365     | 652       | yes         |
+| `packages/common-utils/src/core/metadata.ts`                            | seed                           | 23      | 93        | yes         |
+| `packages/api/src/fixtures.ts`                                          | sql_builder                    | 44      | 55        | yes         |
+| `packages/common-utils/src/filters.ts`                                  | sql_builder                    | 47      | 52        | yes         |
+| `packages/common-utils/src/couchbase/sqlpp.ts`                          | seed                           | 8       | 37        | yes         |
+| `packages/common-utils/src/couchbase/metadata.ts`                       | seed                           | 1       | 36        | yes         |
+| `packages/common-utils/src/couchbase/errors.ts`                         | seed                           | 14      | 33        | yes         |
+| `packages/app/src/components/DBRowSidePanel.tsx`                        | clickhouse_client              | 8       | 28        | no          |
+| `packages/app/src/hooks/useRowWhere.tsx`                                | sql_builder                    | 6       | 27        | no          |
+| `packages/api/src/mcp/tools/query/helpers.ts`                           | sql_builder                    | 20      | 26        | yes         |
+| `packages/common-utils/src/query/sqlExpr.ts`                            | sql_builder                    | 10      | 23        | yes         |
+| `packages/app/src/llm/lib/expressions.ts`                               | sql_builder                    | 8       | 19        | no          |
+| `packages/common-utils/src/couchbase/types.ts`                          | seed                           | 15      | 19        | yes         |
+| `packages/common-utils/src/couchbase/render/index.ts`                   | seed, sql_builder              | 9       | 18        | yes         |
+| `packages/app/src/components/TimePicker/TimePicker.tsx`                 | clickhouse_client, sql_builder | 1       | 13        | no          |
+| `packages/common-utils/src/couchbase/node.ts`                           | seed                           | 16      | 13        | yes         |
+| `packages/common-utils/src/core/renderChartConfig.ts`                   | seed                           | 1       | 12        | yes         |
+| `packages/common-utils/src/couchbase/nodeCluster.ts`                    | seed                           | 12      | 12        | yes         |
+| `packages/app/src/components/DBHeatmapChart/heatmapQueries.ts`          | sql_builder                    | 8       | 11        | no          |
+| `packages/common-utils/src/couchbase/nodeClusterCache.ts`               | seed                           | 4       | 11        | yes         |
+| `packages/common-utils/src/couchbase/time.ts`                           | seed, sql_builder              | 9       | 11        | no          |
+| `packages/app/src/serviceDashboard.ts`                                  | sql_builder                    | 5       | 10        | no          |
+| `packages/api/src/mcp/tools/query/schemas.ts`                           | sql_builder                    | 14      | 9         | yes         |
+| `packages/common-utils/src/macros.ts`                                   | sql_builder                    | 12      | 9         | yes         |
+| `packages/hdx-eval/src/store/schema.ts`                                 | sql_builder                    | 8       | 9         | no          |
+| `packages/common-utils/src/couchbase/render.ts`                         | seed                           | 8       | 8         | yes         |
+| `packages/common-utils/src/couchbase/render/rowId.ts`                   | seed, sql_builder              | 6       | 8         | yes         |
+| `packages/api/src/mcp/tools/dashboards/schemas.ts`                      | sql_builder                    | 13      | 7         | yes         |
+| `packages/app/src/components/DBRowJsonViewer.tsx`                       | sql_builder                    | 3       | 7         | no          |
+| `packages/common-utils/src/couchbase/connstr.ts`                        | seed                           | 7       | 7         | yes         |
+| `packages/common-utils/src/couchbase/fn/scalar.ts`                      | seed, sql_builder              | 46      | 7         | no          |
+| `packages/app/src/DBSearchPage.tsx`                                     | sql_builder                    | 7       | 6         | no          |
+| `packages/app/src/components/ExceptionSubpanel.tsx`                     | clickhouse_client              | 3       | 6         | no          |
+| `packages/common-utils/src/couchbase/nodeTest.ts`                       | seed                           | 4       | 6         | yes         |
+| `packages/common-utils/src/couchbase/serializer.ts`                     | seed, sql_builder              | 4       | 6         | yes         |
+| `packages/common-utils/src/couchbase/settings.ts`                       | seed                           | 6       | 6         | no          |
+| `packages/common-utils/src/queryParser.ts`                              | seed, sql_builder              | 9       | 6         | yes         |
+| `packages/api/src/mcp/tools/query/serviceHealth/errorGroups.ts`         | sql_builder                    | 6       | 5         | yes         |
+| `packages/app/src/components/Iac/TerraformHelperPanel.tsx`              | clickhouse_client, sql_builder | 2       | 5         | no          |
+| `packages/app/src/couchbase/dialectExpr.ts`                             | sql_builder                    | 7       | 5         | no          |
+| `packages/app/src/hooks/useServiceMap.tsx`                              | sql_builder                    | 6       | 5         | no          |
+| `packages/common-utils/src/couchbase/fn/quantile.ts`                    | seed, sql_builder              | 4       | 5         | no          |
+| `packages/common-utils/src/couchbase/source.ts`                         | seed                           | 3       | 5         | yes         |
+| `packages/api/src/mcp/tools/query/runEventPatterns.ts`                  | sql_builder                    | 4       | 4         | yes         |
+| `packages/app/src/KubernetesDashboardPage.tsx`                          | clickhouse_client, sql_builder | 3       | 4         | no          |
+| `packages/app/src/components/AppNav/AppNav.components.tsx`              | clickhouse_client              | 4       | 4         | no          |
+| `packages/app/src/components/ContactSupportText.tsx`                    | clickhouse_client              | 1       | 4         | no          |
+| `packages/app/src/components/KubeComponents.tsx`                        | clickhouse_client              | 3       | 4         | no          |
+| `packages/app/src/components/Sources/SourcesList.tsx`                   | clickhouse_client, sql_builder | 2       | 4         | no          |
+| `packages/app/src/components/alerts/AlertStateBadge.tsx`                | clickhouse_client              | 1       | 4         | no          |
+| `packages/app/src/components/infraCorrelations.ts`                      | sql_builder                    | 4       | 4         | no          |
+| `packages/app/src/llm/lib/cost.ts`                                      | sql_builder                    | 4       | 4         | no          |
+| `packages/app/src/utils/browserTelemetry.ts`                            | clickhouse_client              | 2       | 4         | no          |
+| `packages/common-utils/src/couchbase/browser.ts`                        | seed                           | 5       | 4         | no          |
+| `packages/common-utils/src/couchbase/inferMeta.ts`                      | seed, sql_builder              | 7       | 4         | no          |
+| `packages/common-utils/src/couchbase/nodeExecute.ts`                    | seed                           | 1       | 4         | yes         |
+| `packages/common-utils/src/couchbase/render/where.ts`                   | seed, sql_builder              | 4       | 4         | no          |
+| `packages/common-utils/src/couchbase/statement.ts`                      | seed, sql_builder              | 4       | 4         | yes         |
+| `packages/api/src/mcp/tools/query/table.ts`                             | sql_builder                    | 3       | 3         | yes         |
+| `packages/app/src/ServicesDashboardPage/HttpTab.tsx`                    | sql_builder                    | 2       | 3         | no          |
+| `packages/app/src/components/AppNav/AppNav.tsx`                         | clickhouse_client              | 1       | 3         | no          |
+| `packages/app/src/components/AppNav/InstanceLabel.tsx`                  | clickhouse_client              | 1       | 3         | no          |
+| `packages/app/src/components/AppNav/WhatsNewHighlightRow.tsx`           | clickhouse_client              | 1       | 3         | no          |
+| `packages/app/src/components/ChartDisplaySettingsDrawer.tsx`            | clickhouse_client, sql_builder | 2       | 3         | no          |
+| `packages/app/src/components/DBEditTimeChartForm/TileAlertEditor.tsx`   | clickhouse_client              | 1       | 3         | no          |
+| `packages/app/src/components/SearchTotalCountChart.tsx`                 | sql_builder                    | 2       | 3         | no          |
+| `packages/app/src/components/TeamSettings/IacMigrationSection.tsx`      | clickhouse_client, sql_builder | 3       | 3         | no          |
+| `packages/app/src/hooks/useMetricCatalog.ts`                            | sql_builder                    | 2       | 3         | no          |
+| `packages/app/src/llm/dashboard/LLMSessionPanel.tsx`                    | clickhouse_client              | 2       | 3         | no          |
+| `packages/app/src/sessions.ts`                                          | sql_builder                    | 7       | 3         | no          |
+| `packages/common-utils/src/couchbase/defaultSources.ts`                 | seed                           | 5       | 3         | yes         |
+| `packages/common-utils/src/couchbase/rawSqlLimit.ts`                    | seed                           | 3       | 3         | yes         |
+| `packages/common-utils/src/couchbase/render/metrics/expHistogram.ts`    | seed, sql_builder              | 2       | 3         | no          |
+| `packages/common-utils/src/couchbase/render/metrics/histogram.ts`       | seed, sql_builder              | 10      | 3         | no          |
+| `packages/common-utils/src/couchbase/render/select.ts`                  | seed, sql_builder              | 7       | 3         | no          |
+| `packages/common-utils/src/couchbase/resultset.ts`                      | seed, sql_builder              | 2       | 3         | no          |
+| `packages/hdx-eval/src/scenarios/metric-saturation/generate.ts`         | sql_builder                    | 1       | 3         | no          |
+| `packages/api/src/mcp/prompts/dashboards/content.ts`                    | sql_builder                    | 4       | 2         | yes         |
+| `packages/api/src/mcp/tools/query/sqlDescriptions.ts`                   | sql_builder                    | 2       | 2         | yes         |
+| `packages/api/src/mcp/tools/sources/listMetricsQueries.ts`              | sql_builder                    | 2       | 2         | yes         |
+| `packages/api/src/mcp/tools/sources/metricNames.ts`                     | sql_builder                    | 3       | 2         | yes         |
+| `packages/api/src/mcp/tools/sources/schemas.ts`                         | sql_builder                    | 4       | 2         | yes         |
+| `packages/api/src/server.ts`                                            | clickhouse_client              | 1       | 2         | yes         |
+| `packages/app/src/ThemeWrapper.tsx`                                     | clickhouse_client              | 1       | 2         | no          |
+| `packages/app/src/UserPreferencesModal.tsx`                             | clickhouse_client              | 1       | 2         | no          |
+| `packages/app/src/components/AppNav/WhatsNewDrawer.tsx`                 | clickhouse_client              | 2       | 2         | no          |
+| `packages/app/src/components/ChartEditor/constants.tsx`                 | sql_builder                    | 2       | 2         | no          |
+| `packages/app/src/components/DBEditTimeChartForm/ChartSeriesEditor.tsx` | clickhouse_client              | 1       | 2         | no          |
+| `packages/app/src/components/ListingCard.tsx`                           | clickhouse_client              | 1       | 2         | no          |
+| `packages/app/src/components/ListingListRow.tsx`                        | clickhouse_client              | 1       | 2         | no          |
+| `packages/app/src/components/MetricAttributeHelperPanel.tsx`            | clickhouse_client              | 6       | 2         | no          |
+| `packages/app/src/components/NetworkPropertyPanel.tsx`                  | clickhouse_client              | 1       | 2         | no          |
+| `packages/app/src/components/RequestLine.tsx`                           | clickhouse_client              | 4       | 2         | no          |
+| `packages/app/src/components/SQLEditor/constants.ts`                    | sql_builder                    | 4       | 2         | no          |
+| `packages/app/src/components/SeriesNumberFormatDrawer.tsx`              | clickhouse_client              | 1       | 2         | no          |
+| `packages/app/src/components/ServiceMap/ServiceMapTooltip.tsx`          | clickhouse_client, sql_builder | 1       | 2         | no          |
+| `packages/app/src/components/TeamSettings/ApiKeysSection.tsx`           | clickhouse_client              | 1       | 2         | no          |
+| `packages/app/src/components/TeamSettings/McpServerSection.tsx`         | clickhouse_client              | 1       | 2         | no          |
+| `packages/app/src/components/TeamSettings/OrgApiKeysSection.tsx`        | clickhouse_client              | 1       | 2         | no          |
+| `packages/app/src/components/TeamSettings/TeamQueryConfigSection.tsx`   | clickhouse_client, sql_builder | 1       | 2         | no          |
 
 Plus 71 more in datalayer.json.
 
 ### Server-side data-store callers
 
 - `packages/api/scripts/seed-alerts.ts`: `packages/common-utils/src/types.ts`
-- `packages/api/src/controllers/ai.ts`: `packages/api/src/mcp/tools/query/helpers.ts`, `packages/common-utils/src/core/metadata.ts`, `packages/common-utils/src/types.ts`
-- `packages/api/src/controllers/aiPrompts.ts`: `packages/common-utils/src/types.ts`
-- `packages/api/src/controllers/aiSummarize.ts`: `packages/common-utils/src/couchbase/render.ts`, `packages/common-utils/src/couchbase/render/rowId.ts`
-- `packages/api/src/controllers/aiValidation.ts`: `packages/common-utils/src/couchbase/metadata.ts`, `packages/common-utils/src/types.ts`
-- `packages/api/src/controllers/alertHistory.ts`: `packages/common-utils/src/types.ts`
+- `packages/api/src/controllers/ai.ts`:
+  `packages/api/src/mcp/tools/query/helpers.ts`,
+  `packages/common-utils/src/core/metadata.ts`,
+  `packages/common-utils/src/types.ts`
+- `packages/api/src/controllers/aiPrompts.ts`:
+  `packages/common-utils/src/types.ts`
+- `packages/api/src/controllers/aiSummarize.ts`:
+  `packages/common-utils/src/couchbase/render.ts`,
+  `packages/common-utils/src/couchbase/render/rowId.ts`
+- `packages/api/src/controllers/aiValidation.ts`:
+  `packages/common-utils/src/couchbase/metadata.ts`,
+  `packages/common-utils/src/types.ts`
+- `packages/api/src/controllers/alertHistory.ts`:
+  `packages/common-utils/src/types.ts`
 - `packages/api/src/controllers/alerts.ts`: `packages/common-utils/src/types.ts`
-- `packages/api/src/controllers/alertsPage.ts`: `packages/common-utils/src/types.ts`
-- `packages/api/src/controllers/connection.ts`: `packages/common-utils/src/couchbase/node.ts`, `packages/common-utils/src/couchbase/nodeCluster.ts`
-- `packages/api/src/controllers/dashboard.ts`: `packages/common-utils/src/types.ts`
-- `packages/api/src/controllers/orgApiKey.ts`: `packages/common-utils/src/types.ts`
-- `packages/api/src/controllers/pinnedFilter.ts`: `packages/common-utils/src/types.ts`
-- `packages/api/src/controllers/presetDashboardFilters.ts`: `packages/common-utils/src/types.ts`
-- `packages/api/src/controllers/savedSearch.ts`: `packages/common-utils/src/types.ts`
-- `packages/api/src/controllers/sources.ts`: `packages/common-utils/src/types.ts`
+- `packages/api/src/controllers/alertsPage.ts`:
+  `packages/common-utils/src/types.ts`
+- `packages/api/src/controllers/connection.ts`:
+  `packages/common-utils/src/couchbase/node.ts`,
+  `packages/common-utils/src/couchbase/nodeCluster.ts`
+- `packages/api/src/controllers/dashboard.ts`:
+  `packages/common-utils/src/types.ts`
+- `packages/api/src/controllers/orgApiKey.ts`:
+  `packages/common-utils/src/types.ts`
+- `packages/api/src/controllers/pinnedFilter.ts`:
+  `packages/common-utils/src/types.ts`
+- `packages/api/src/controllers/presetDashboardFilters.ts`:
+  `packages/common-utils/src/types.ts`
+- `packages/api/src/controllers/savedSearch.ts`:
+  `packages/common-utils/src/types.ts`
+- `packages/api/src/controllers/sources.ts`:
+  `packages/common-utils/src/types.ts`
 - `packages/api/src/controllers/team.ts`: `packages/common-utils/src/types.ts`
 - `packages/api/src/controllers/user.ts`: `packages/common-utils/src/types.ts`
-- `packages/api/src/controllers/webhook.ts`: `packages/common-utils/src/types.ts`
-- `packages/api/src/dataClient.ts`: `packages/common-utils/src/couchbase/node.ts`, `packages/common-utils/src/couchbase/nodeCluster.ts`, `packages/common-utils/src/types.ts`
-- `packages/api/src/fixtures.ts`: `packages/api/src/server.ts`, `packages/common-utils/src/types.ts`
+- `packages/api/src/controllers/webhook.ts`:
+  `packages/common-utils/src/types.ts`
+- `packages/api/src/dataClient.ts`:
+  `packages/common-utils/src/couchbase/node.ts`,
+  `packages/common-utils/src/couchbase/nodeCluster.ts`,
+  `packages/common-utils/src/types.ts`
+- `packages/api/src/fixtures.ts`: `packages/api/src/server.ts`,
+  `packages/common-utils/src/types.ts`
 - `packages/api/src/index.ts`: `packages/api/src/server.ts`
-- `packages/api/src/mcp/prompts/dashboards/index.ts`: `packages/api/src/mcp/prompts/dashboards/content.ts`
-- `packages/api/src/mcp/tools/alerts/getAlert.ts`: `packages/common-utils/src/types.ts`
-- `packages/api/src/mcp/tools/alerts/saveAlert.ts`: `packages/common-utils/src/types.ts`
-- `packages/api/src/mcp/tools/alerts/saveWebhook.ts`: `packages/common-utils/src/types.ts`
-- `packages/api/src/mcp/tools/alerts/schemas.ts`: `packages/api/src/mcp/tools/dashboards/schemas.ts`, `packages/common-utils/src/types.ts`
-- `packages/api/src/mcp/tools/dashboards/index.ts`: `packages/api/src/mcp/tools/dashboards/schemas.ts`
-- `packages/api/src/mcp/tools/dashboards/patchDashboard.ts`: `packages/api/src/mcp/tools/dashboards/schemas.ts`
-- `packages/api/src/mcp/tools/dashboards/queryTile.ts`: `packages/api/src/mcp/tools/query/helpers.ts`
-- `packages/api/src/mcp/tools/dashboards/queryTiles.ts`: `packages/api/src/mcp/tools/query/helpers.ts`
-- `packages/api/src/mcp/tools/dashboards/saveDashboard.ts`: `packages/api/src/mcp/tools/dashboards/schemas.ts`, `packages/common-utils/src/filters.ts`, `packages/common-utils/src/types.ts`
-- `packages/api/src/mcp/tools/dashboards/schemas.ts`: `packages/api/src/mcp/tools/query/schemas.ts`, `packages/common-utils/src/types.ts`
-- `packages/api/src/mcp/tools/dashboards/searchDashboards.ts`: `packages/api/src/mcp/tools/dashboards/schemas.ts`
-- `packages/api/src/mcp/tools/dashboards/validation.ts`: `packages/api/src/mcp/tools/dashboards/schemas.ts`, `packages/common-utils/src/filters.ts`, `packages/common-utils/src/macros.ts`, `packages/common-utils/src/types.ts`
-- `packages/api/src/mcp/tools/dashboards/variables.ts`: `packages/common-utils/src/filters.ts`, `packages/common-utils/src/types.ts`
-- `packages/api/src/mcp/tools/query/denoise.ts`: `packages/api/src/mcp/tools/query/helpers.ts`, `packages/common-utils/src/types.ts`
-- `packages/api/src/mcp/tools/query/emergingSignals.ts`: `packages/api/src/mcp/tools/query/helpers.ts`, `packages/api/src/mcp/tools/query/runEventPatterns.ts`, `packages/api/src/mcp/tools/query/schemas.ts`
-- `packages/api/src/mcp/tools/query/eventDeltas.ts`: `packages/api/src/mcp/tools/query/helpers.ts`, `packages/common-utils/src/couchbase/render/index.ts`, `packages/common-utils/src/types.ts`
-- `packages/api/src/mcp/tools/query/eventPatterns.ts`: `packages/api/src/mcp/tools/query/helpers.ts`, `packages/api/src/mcp/tools/query/runEventPatterns.ts`, `packages/api/src/mcp/tools/query/schemas.ts`
-- `packages/api/src/mcp/tools/query/helpers.ts`: `packages/api/src/mcp/tools/query/runEventPatterns.ts`, `packages/common-utils/src/types.ts`
-- `packages/api/src/mcp/tools/query/index.ts`: `packages/api/src/mcp/tools/query/eventPatterns.ts`, `packages/api/src/mcp/tools/query/table.ts`
-- `packages/api/src/mcp/tools/query/patternDrilldown.ts`: `packages/common-utils/src/core/metadata.ts`, `packages/common-utils/src/couchbase/metadata.ts`, `packages/common-utils/src/couchbase/serializer.ts`, `packages/common-utils/src/queryParser.ts`, `packages/common-utils/src/types.ts`
-- `packages/api/src/mcp/tools/query/prepareSql.ts`: `packages/api/src/mcp/tools/query/helpers.ts`, `packages/common-utils/src/couchbase/rawSqlLimit.ts`, `packages/common-utils/src/macros.ts`
-- `packages/api/src/mcp/tools/query/runEventPatterns.ts`: `packages/api/src/mcp/tools/query/helpers.ts`, `packages/common-utils/src/types.ts`
-- `packages/api/src/mcp/tools/query/search.ts`: `packages/api/src/mcp/tools/query/helpers.ts`, `packages/api/src/mcp/tools/query/schemas.ts`
-- `packages/api/src/mcp/tools/query/serviceHealth/collect.ts`: `packages/api/src/mcp/tools/query/serviceHealth/errorGroups.ts`
-- `packages/api/src/mcp/tools/query/serviceHealth/index.ts`: `packages/api/src/mcp/tools/query/helpers.ts`, `packages/api/src/mcp/tools/query/serviceHealth/errorGroups.ts`
-- `packages/api/src/mcp/tools/query/serviceHealth/queries.ts`: `packages/common-utils/src/core/metadata.ts`, `packages/common-utils/src/couchbase/metadata.ts`, `packages/common-utils/src/types.ts`
-- `packages/api/src/mcp/tools/query/serviceHealth/report.ts`: `packages/api/src/mcp/tools/query/serviceHealth/errorGroups.ts`
-- `packages/api/src/mcp/tools/query/serviceHealth/schema.ts`: `packages/api/src/mcp/tools/query/schemas.ts`
-- `packages/api/src/mcp/tools/query/serviceHealth/source.ts`: `packages/common-utils/src/types.ts`
-- `packages/api/src/mcp/tools/query/serviceHealth/summary.ts`: `packages/api/src/mcp/tools/query/serviceHealth/errorGroups.ts`
-- `packages/api/src/mcp/tools/query/sql.ts`: `packages/api/src/mcp/tools/query/helpers.ts`, `packages/api/src/mcp/tools/query/schemas.ts`, `packages/api/src/mcp/tools/query/sqlDescriptions.ts`
-- `packages/api/src/mcp/tools/query/sqlBatch.ts`: `packages/api/src/mcp/tools/query/helpers.ts`, `packages/api/src/mcp/tools/query/sqlDescriptions.ts`
-- `packages/api/src/mcp/tools/query/table.ts`: `packages/api/src/mcp/tools/query/helpers.ts`, `packages/api/src/mcp/tools/query/schemas.ts`
-- `packages/api/src/mcp/tools/query/timeseries.ts`: `packages/api/src/mcp/tools/query/helpers.ts`, `packages/api/src/mcp/tools/query/schemas.ts`, `packages/api/src/mcp/tools/query/table.ts`, `packages/common-utils/src/core/renderChartConfig.ts`
-- `packages/api/src/mcp/tools/savedSearches/schemas.ts`: `packages/common-utils/src/types.ts`
-- `packages/api/src/mcp/tools/sources/describeMetric.ts`: `packages/api/src/mcp/tools/query/helpers.ts`, `packages/common-utils/src/query/sqlExpr.ts`, `packages/common-utils/src/types.ts`
-- `packages/api/src/mcp/tools/sources/describeSource.ts`: `packages/api/src/mcp/tools/query/helpers.ts`, `packages/api/src/mcp/tools/sources/metricNames.ts`, `packages/api/src/mcp/tools/sources/schemas.ts`, `packages/common-utils/src/types.ts`
-- `packages/api/src/mcp/tools/sources/describeTable.ts`: `packages/api/src/mcp/tools/query/helpers.ts`, `packages/api/src/mcp/tools/sources/describeTableCouchbase.ts`
-- `packages/api/src/mcp/tools/sources/describeTableCouchbase.ts`: `packages/common-utils/src/couchbase/sqlpp.ts`
-- `packages/api/src/mcp/tools/sources/index.ts`: `packages/api/src/mcp/tools/sources/describeMetric.ts`
-- `packages/api/src/mcp/tools/sources/listMetrics.ts`: `packages/api/src/mcp/tools/query/helpers.ts`, `packages/api/src/mcp/tools/sources/listMetricsQueries.ts`, `packages/common-utils/src/types.ts`
-- `packages/api/src/mcp/tools/sources/listMetricsQueries.ts`: `packages/common-utils/src/query/sqlExpr.ts`
-- `packages/api/src/mcp/tools/sources/listSources.ts`: `packages/api/src/mcp/tools/sources/metricNames.ts`, `packages/common-utils/src/core/metadata.ts`, `packages/common-utils/src/couchbase/metadata.ts`, `packages/common-utils/src/types.ts`
-- `packages/api/src/mcp/tools/sources/metricKinds.ts`: `packages/common-utils/src/types.ts`
-- `packages/api/src/mcp/tools/sources/metricNames.ts`: `packages/common-utils/src/core/metadata.ts`, `packages/common-utils/src/couchbase/metadata.ts`, `packages/common-utils/src/query/sqlExpr.ts`
-- `packages/api/src/mcp/tools/sources/saveSource.ts`: `packages/api/src/mcp/tools/sources/schemas.ts`, `packages/common-utils/src/types.ts`
-- `packages/api/src/mcp/tools/sources/schemas.ts`: `packages/common-utils/src/types.ts`
-- `packages/api/src/mcp/tools/trace/breakdown.ts`: `packages/api/src/mcp/tools/query/helpers.ts`, `packages/common-utils/src/query/sqlExpr.ts`, `packages/common-utils/src/types.ts`
-- `packages/api/src/mcp/tools/trace/index.ts`: `packages/api/src/mcp/tools/trace/waterfall.ts`
-- `packages/api/src/mcp/tools/trace/shared.ts`: `packages/api/src/mcp/tools/query/helpers.ts`, `packages/common-utils/src/core/metadata.ts`, `packages/common-utils/src/couchbase/metadata.ts`, `packages/common-utils/src/query/sqlExpr.ts`, `packages/common-utils/src/types.ts`
-- `packages/api/src/mcp/tools/trace/waterfall.ts`: `packages/api/src/mcp/tools/query/helpers.ts`, `packages/common-utils/src/query/sqlExpr.ts`, `packages/common-utils/src/types.ts`
-- `packages/api/src/mcp/utils/legacySourceKinds.ts`: `packages/common-utils/src/types.ts`
+- `packages/api/src/mcp/prompts/dashboards/index.ts`:
+  `packages/api/src/mcp/prompts/dashboards/content.ts`
+- `packages/api/src/mcp/tools/alerts/getAlert.ts`:
+  `packages/common-utils/src/types.ts`
+- `packages/api/src/mcp/tools/alerts/saveAlert.ts`:
+  `packages/common-utils/src/types.ts`
+- `packages/api/src/mcp/tools/alerts/saveWebhook.ts`:
+  `packages/common-utils/src/types.ts`
+- `packages/api/src/mcp/tools/alerts/schemas.ts`:
+  `packages/api/src/mcp/tools/dashboards/schemas.ts`,
+  `packages/common-utils/src/types.ts`
+- `packages/api/src/mcp/tools/dashboards/index.ts`:
+  `packages/api/src/mcp/tools/dashboards/schemas.ts`
+- `packages/api/src/mcp/tools/dashboards/patchDashboard.ts`:
+  `packages/api/src/mcp/tools/dashboards/schemas.ts`
+- `packages/api/src/mcp/tools/dashboards/queryTile.ts`:
+  `packages/api/src/mcp/tools/query/helpers.ts`
+- `packages/api/src/mcp/tools/dashboards/queryTiles.ts`:
+  `packages/api/src/mcp/tools/query/helpers.ts`
+- `packages/api/src/mcp/tools/dashboards/saveDashboard.ts`:
+  `packages/api/src/mcp/tools/dashboards/schemas.ts`,
+  `packages/common-utils/src/filters.ts`, `packages/common-utils/src/types.ts`
+- `packages/api/src/mcp/tools/dashboards/schemas.ts`:
+  `packages/api/src/mcp/tools/query/schemas.ts`,
+  `packages/common-utils/src/types.ts`
+- `packages/api/src/mcp/tools/dashboards/searchDashboards.ts`:
+  `packages/api/src/mcp/tools/dashboards/schemas.ts`
+- `packages/api/src/mcp/tools/dashboards/validation.ts`:
+  `packages/api/src/mcp/tools/dashboards/schemas.ts`,
+  `packages/common-utils/src/filters.ts`, `packages/common-utils/src/macros.ts`,
+  `packages/common-utils/src/types.ts`
+- `packages/api/src/mcp/tools/dashboards/variables.ts`:
+  `packages/common-utils/src/filters.ts`, `packages/common-utils/src/types.ts`
+- `packages/api/src/mcp/tools/query/denoise.ts`:
+  `packages/api/src/mcp/tools/query/helpers.ts`,
+  `packages/common-utils/src/types.ts`
+- `packages/api/src/mcp/tools/query/emergingSignals.ts`:
+  `packages/api/src/mcp/tools/query/helpers.ts`,
+  `packages/api/src/mcp/tools/query/runEventPatterns.ts`,
+  `packages/api/src/mcp/tools/query/schemas.ts`
+- `packages/api/src/mcp/tools/query/eventDeltas.ts`:
+  `packages/api/src/mcp/tools/query/helpers.ts`,
+  `packages/common-utils/src/couchbase/render/index.ts`,
+  `packages/common-utils/src/types.ts`
+- `packages/api/src/mcp/tools/query/eventPatterns.ts`:
+  `packages/api/src/mcp/tools/query/helpers.ts`,
+  `packages/api/src/mcp/tools/query/runEventPatterns.ts`,
+  `packages/api/src/mcp/tools/query/schemas.ts`
+- `packages/api/src/mcp/tools/query/helpers.ts`:
+  `packages/api/src/mcp/tools/query/runEventPatterns.ts`,
+  `packages/common-utils/src/types.ts`
+- `packages/api/src/mcp/tools/query/index.ts`:
+  `packages/api/src/mcp/tools/query/eventPatterns.ts`,
+  `packages/api/src/mcp/tools/query/table.ts`
+- `packages/api/src/mcp/tools/query/patternDrilldown.ts`:
+  `packages/common-utils/src/core/metadata.ts`,
+  `packages/common-utils/src/couchbase/metadata.ts`,
+  `packages/common-utils/src/couchbase/serializer.ts`,
+  `packages/common-utils/src/queryParser.ts`,
+  `packages/common-utils/src/types.ts`
+- `packages/api/src/mcp/tools/query/prepareSql.ts`:
+  `packages/api/src/mcp/tools/query/helpers.ts`,
+  `packages/common-utils/src/couchbase/rawSqlLimit.ts`,
+  `packages/common-utils/src/macros.ts`
+- `packages/api/src/mcp/tools/query/runEventPatterns.ts`:
+  `packages/api/src/mcp/tools/query/helpers.ts`,
+  `packages/common-utils/src/types.ts`
+- `packages/api/src/mcp/tools/query/search.ts`:
+  `packages/api/src/mcp/tools/query/helpers.ts`,
+  `packages/api/src/mcp/tools/query/schemas.ts`
+- `packages/api/src/mcp/tools/query/serviceHealth/collect.ts`:
+  `packages/api/src/mcp/tools/query/serviceHealth/errorGroups.ts`
+- `packages/api/src/mcp/tools/query/serviceHealth/index.ts`:
+  `packages/api/src/mcp/tools/query/helpers.ts`,
+  `packages/api/src/mcp/tools/query/serviceHealth/errorGroups.ts`
+- `packages/api/src/mcp/tools/query/serviceHealth/queries.ts`:
+  `packages/common-utils/src/core/metadata.ts`,
+  `packages/common-utils/src/couchbase/metadata.ts`,
+  `packages/common-utils/src/types.ts`
+- `packages/api/src/mcp/tools/query/serviceHealth/report.ts`:
+  `packages/api/src/mcp/tools/query/serviceHealth/errorGroups.ts`
+- `packages/api/src/mcp/tools/query/serviceHealth/schema.ts`:
+  `packages/api/src/mcp/tools/query/schemas.ts`
+- `packages/api/src/mcp/tools/query/serviceHealth/source.ts`:
+  `packages/common-utils/src/types.ts`
+- `packages/api/src/mcp/tools/query/serviceHealth/summary.ts`:
+  `packages/api/src/mcp/tools/query/serviceHealth/errorGroups.ts`
+- `packages/api/src/mcp/tools/query/sql.ts`:
+  `packages/api/src/mcp/tools/query/helpers.ts`,
+  `packages/api/src/mcp/tools/query/schemas.ts`,
+  `packages/api/src/mcp/tools/query/sqlDescriptions.ts`
+- `packages/api/src/mcp/tools/query/sqlBatch.ts`:
+  `packages/api/src/mcp/tools/query/helpers.ts`,
+  `packages/api/src/mcp/tools/query/sqlDescriptions.ts`
+- `packages/api/src/mcp/tools/query/table.ts`:
+  `packages/api/src/mcp/tools/query/helpers.ts`,
+  `packages/api/src/mcp/tools/query/schemas.ts`
+- `packages/api/src/mcp/tools/query/timeseries.ts`:
+  `packages/api/src/mcp/tools/query/helpers.ts`,
+  `packages/api/src/mcp/tools/query/schemas.ts`,
+  `packages/api/src/mcp/tools/query/table.ts`,
+  `packages/common-utils/src/core/renderChartConfig.ts`
+- `packages/api/src/mcp/tools/savedSearches/schemas.ts`:
+  `packages/common-utils/src/types.ts`
+- `packages/api/src/mcp/tools/sources/describeMetric.ts`:
+  `packages/api/src/mcp/tools/query/helpers.ts`,
+  `packages/common-utils/src/query/sqlExpr.ts`,
+  `packages/common-utils/src/types.ts`
+- `packages/api/src/mcp/tools/sources/describeSource.ts`:
+  `packages/api/src/mcp/tools/query/helpers.ts`,
+  `packages/api/src/mcp/tools/sources/metricNames.ts`,
+  `packages/api/src/mcp/tools/sources/schemas.ts`,
+  `packages/common-utils/src/types.ts`
+- `packages/api/src/mcp/tools/sources/describeTable.ts`:
+  `packages/api/src/mcp/tools/query/helpers.ts`,
+  `packages/api/src/mcp/tools/sources/describeTableCouchbase.ts`
+- `packages/api/src/mcp/tools/sources/describeTableCouchbase.ts`:
+  `packages/common-utils/src/couchbase/sqlpp.ts`
+- `packages/api/src/mcp/tools/sources/index.ts`:
+  `packages/api/src/mcp/tools/sources/describeMetric.ts`
+- `packages/api/src/mcp/tools/sources/listMetrics.ts`:
+  `packages/api/src/mcp/tools/query/helpers.ts`,
+  `packages/api/src/mcp/tools/sources/listMetricsQueries.ts`,
+  `packages/common-utils/src/types.ts`
+- `packages/api/src/mcp/tools/sources/listMetricsQueries.ts`:
+  `packages/common-utils/src/query/sqlExpr.ts`
+- `packages/api/src/mcp/tools/sources/listSources.ts`:
+  `packages/api/src/mcp/tools/sources/metricNames.ts`,
+  `packages/common-utils/src/core/metadata.ts`,
+  `packages/common-utils/src/couchbase/metadata.ts`,
+  `packages/common-utils/src/types.ts`
+- `packages/api/src/mcp/tools/sources/metricKinds.ts`:
+  `packages/common-utils/src/types.ts`
+- `packages/api/src/mcp/tools/sources/metricNames.ts`:
+  `packages/common-utils/src/core/metadata.ts`,
+  `packages/common-utils/src/couchbase/metadata.ts`,
+  `packages/common-utils/src/query/sqlExpr.ts`
+- `packages/api/src/mcp/tools/sources/saveSource.ts`:
+  `packages/api/src/mcp/tools/sources/schemas.ts`,
+  `packages/common-utils/src/types.ts`
+- `packages/api/src/mcp/tools/sources/schemas.ts`:
+  `packages/common-utils/src/types.ts`
+- `packages/api/src/mcp/tools/trace/breakdown.ts`:
+  `packages/api/src/mcp/tools/query/helpers.ts`,
+  `packages/common-utils/src/query/sqlExpr.ts`,
+  `packages/common-utils/src/types.ts`
+- `packages/api/src/mcp/tools/trace/index.ts`:
+  `packages/api/src/mcp/tools/trace/waterfall.ts`
+- `packages/api/src/mcp/tools/trace/shared.ts`:
+  `packages/api/src/mcp/tools/query/helpers.ts`,
+  `packages/common-utils/src/core/metadata.ts`,
+  `packages/common-utils/src/couchbase/metadata.ts`,
+  `packages/common-utils/src/query/sqlExpr.ts`,
+  `packages/common-utils/src/types.ts`
+- `packages/api/src/mcp/tools/trace/waterfall.ts`:
+  `packages/api/src/mcp/tools/query/helpers.ts`,
+  `packages/common-utils/src/query/sqlExpr.ts`,
+  `packages/common-utils/src/types.ts`
+- `packages/api/src/mcp/utils/legacySourceKinds.ts`:
+  `packages/common-utils/src/types.ts`
 - `packages/api/src/middleware/auth.ts`: `packages/common-utils/src/types.ts`
 - `packages/api/src/models/alert.ts`: `packages/common-utils/src/types.ts`
-- `packages/api/src/models/alertHistory.ts`: `packages/common-utils/src/types.ts`
+- `packages/api/src/models/alertHistory.ts`:
+  `packages/common-utils/src/types.ts`
 - `packages/api/src/models/dashboard.ts`: `packages/common-utils/src/types.ts`
-- `packages/api/src/models/pinnedFilter.ts`: `packages/common-utils/src/types.ts`
-- `packages/api/src/models/presetDashboardFilter.ts`: `packages/common-utils/src/types.ts`
+- `packages/api/src/models/pinnedFilter.ts`:
+  `packages/common-utils/src/types.ts`
+- `packages/api/src/models/presetDashboardFilter.ts`:
+  `packages/common-utils/src/types.ts`
 - `packages/api/src/models/savedSearch.ts`: `packages/common-utils/src/types.ts`
 - `packages/api/src/models/source.ts`: `packages/common-utils/src/types.ts`
 - `packages/api/src/models/team.ts`: `packages/common-utils/src/types.ts`
 - `packages/api/src/models/user.ts`: `packages/common-utils/src/types.ts`
 - `packages/api/src/models/webhook.ts`: `packages/common-utils/src/types.ts`
-- `packages/api/src/routers/api/ai.ts`: `packages/api/src/mcp/tools/query/helpers.ts`
+- `packages/api/src/routers/api/ai.ts`:
+  `packages/api/src/mcp/tools/query/helpers.ts`
 - `packages/api/src/routers/api/alerts.ts`: `packages/common-utils/src/types.ts`
-- `packages/api/src/routers/api/connections.ts`: `packages/common-utils/src/couchbase/node.ts`, `packages/common-utils/src/couchbase/nodeClusterCache.ts`, `packages/common-utils/src/types.ts`
-- `packages/api/src/routers/api/couchbase.ts`: `packages/common-utils/src/couchbase/connstr.ts`, `packages/common-utils/src/couchbase/errors.ts`, `packages/common-utils/src/couchbase/node.ts`, `packages/common-utils/src/couchbase/nodeCluster.ts`, `packages/common-utils/src/couchbase/nodeExecute.ts`, `packages/common-utils/src/couchbase/nodeTest.ts`, `packages/common-utils/src/couchbase/statement.ts`, `packages/common-utils/src/couchbase/types.ts`, `packages/common-utils/src/types.ts`
-- `packages/api/src/routers/api/couchbaseCluster.ts`: `packages/common-utils/src/couchbase/cluster.ts`, `packages/common-utils/src/couchbase/management.ts`, `packages/common-utils/src/couchbase/node.ts`, `packages/common-utils/src/couchbase/nodeExecute.ts`, `packages/common-utils/src/couchbase/sqlpp.ts`, `packages/common-utils/src/types.ts`
-- `packages/api/src/routers/api/dashboards.ts`: `packages/common-utils/src/filters.ts`, `packages/common-utils/src/types.ts`
+- `packages/api/src/routers/api/connections.ts`:
+  `packages/common-utils/src/couchbase/node.ts`,
+  `packages/common-utils/src/couchbase/nodeClusterCache.ts`,
+  `packages/common-utils/src/types.ts`
+- `packages/api/src/routers/api/couchbase.ts`:
+  `packages/common-utils/src/couchbase/connstr.ts`,
+  `packages/common-utils/src/couchbase/errors.ts`,
+  `packages/common-utils/src/couchbase/node.ts`,
+  `packages/common-utils/src/couchbase/nodeCluster.ts`,
+  `packages/common-utils/src/couchbase/nodeExecute.ts`,
+  `packages/common-utils/src/couchbase/nodeTest.ts`,
+  `packages/common-utils/src/couchbase/statement.ts`,
+  `packages/common-utils/src/couchbase/types.ts`,
+  `packages/common-utils/src/types.ts`
+- `packages/api/src/routers/api/couchbaseCluster.ts`:
+  `packages/common-utils/src/couchbase/cluster.ts`,
+  `packages/common-utils/src/couchbase/management.ts`,
+  `packages/common-utils/src/couchbase/node.ts`,
+  `packages/common-utils/src/couchbase/nodeExecute.ts`,
+  `packages/common-utils/src/couchbase/sqlpp.ts`,
+  `packages/common-utils/src/types.ts`
+- `packages/api/src/routers/api/dashboards.ts`:
+  `packages/common-utils/src/filters.ts`, `packages/common-utils/src/types.ts`
 - `packages/api/src/routers/api/iac.ts`: `packages/common-utils/src/types.ts`
 - `packages/api/src/routers/api/me.ts`: `packages/common-utils/src/types.ts`
-- `packages/api/src/routers/api/orgApiKeys.ts`: `packages/common-utils/src/types.ts`
-- `packages/api/src/routers/api/pinnedFilters.ts`: `packages/common-utils/src/types.ts`
+- `packages/api/src/routers/api/orgApiKeys.ts`:
+  `packages/common-utils/src/types.ts`
+- `packages/api/src/routers/api/pinnedFilters.ts`:
+  `packages/common-utils/src/types.ts`
 - `packages/api/src/routers/api/root.ts`: `packages/common-utils/src/types.ts`
-- `packages/api/src/routers/api/savedSearch.ts`: `packages/common-utils/src/types.ts`
-- `packages/api/src/routers/api/sources.ts`: `packages/common-utils/src/couchbase/source.ts`, `packages/common-utils/src/types.ts`
+- `packages/api/src/routers/api/savedSearch.ts`:
+  `packages/common-utils/src/types.ts`
+- `packages/api/src/routers/api/sources.ts`:
+  `packages/common-utils/src/couchbase/source.ts`,
+  `packages/common-utils/src/types.ts`
 - `packages/api/src/routers/api/team.ts`: `packages/common-utils/src/types.ts`
-- `packages/api/src/routers/api/webhooks.ts`: `packages/common-utils/src/types.ts`
+- `packages/api/src/routers/api/webhooks.ts`:
+  `packages/common-utils/src/types.ts`
 
 Plus 29 more in datalayer.json.
 
 ### UI code with raw SQL or ClickHouse type names
 
-| File | SQL literals | Type names |
-|---|---|---|
-| `packages/app/src/components/Sources/SourceForm/TraceTableModelForm.tsx` | 12 | 16 |
-| `packages/app/src/KubernetesDashboardPage.tsx` | 22 | 0 |
-| `packages/app/src/components/ChartEditor/constants.tsx` | 4 | 9 |
-| `packages/app/src/ServicesDashboardPage/HttpTab.tsx` | 9 | 0 |
-| `packages/app/src/components/AppNav/KeyboardShortcutsModal.tsx` | 9 | 0 |
-| `packages/app/src/llm/lib/expressions.ts` | 9 | 0 |
-| `packages/app/src/utils/sourceFieldSuggestions.tsx` | 0 | 9 |
-| `packages/app/src/components/SearchInput/SyntaxReferenceModal.tsx` | 5 | 2 |
-| `packages/app/src/hooks/useRowWhere.tsx` | 6 | 1 |
-| `packages/app/src/hooks/useServiceMap.tsx` | 6 | 1 |
-| `packages/app/src/components/SQLEditor/constants.ts` | 6 | 0 |
-| `packages/app/src/components/ServiceMap/ServiceMapTooltip.tsx` | 6 | 0 |
-| `packages/app/src/hdxMTViews.ts` | 2 | 4 |
-| `packages/app/src/hooks/__fixtures__/browserTraceEvents.ts` | 0 | 6 |
-| `packages/app/src/hooks/useMetricCatalog.ts` | 4 | 2 |
-| `packages/app/src/sessions.ts` | 5 | 1 |
-| `packages/app/src/components/ChartDisplaySettingsDrawer.tsx` | 5 | 0 |
-| `packages/app/src/components/TimePicker/TimePicker.tsx` | 5 | 0 |
-| `packages/app/src/hooks/useFetchMetricAttributeValues.tsx` | 3 | 2 |
-| `packages/app/src/sessionsListQuery.ts` | 5 | 0 |
-| `packages/app/src/DBSearchPage.tsx` | 4 | 0 |
-| `packages/app/src/ServicesDashboardPage/DatabaseTab.tsx` | 4 | 0 |
-| `packages/app/src/components/DBEditTimeChartForm/OnClickForm/OnClickDrawer.tsx` | 4 | 0 |
-| `packages/app/src/components/DBRowDataPanel.tsx` | 0 | 4 |
-| `packages/app/src/components/MetricExplorer/MetricDetailPanel.tsx` | 4 | 0 |
-| `packages/app/src/components/SearchTotalCountChart.tsx` | 4 | 0 |
-| `packages/app/src/components/ServiceDashboardEndpointPerformanceChart.tsx` | 4 | 0 |
-| `packages/app/src/components/TeamSettings/TeamQueryConfigSection.tsx` | 4 | 0 |
-| `packages/app/src/components/deltaChartUtils.ts` | 0 | 4 |
-| `packages/app/src/couchbase/dialectExpr.ts` | 3 | 1 |
-| `packages/app/src/couchbase/sessionsList.ts` | 4 | 0 |
-| `packages/app/src/NodeDetailsSidePanel.tsx` | 3 | 0 |
-| `packages/app/src/components/DBEditTimeChartForm/ChartEditorControls.tsx` | 3 | 0 |
-| `packages/app/src/components/DBEditTimeChartForm/ChartFormulaEditor.tsx` | 3 | 0 |
-| `packages/app/src/components/DBHeatmapChart/heatmapQueries.ts` | 3 | 0 |
-| `packages/app/src/components/DBRowJsonViewer.tsx` | 3 | 0 |
-| `packages/app/src/components/Iac/TerraformHelperPanel.tsx` | 3 | 0 |
-| `packages/app/src/components/MaterializedViews/MVOptimizationModal.tsx` | 3 | 0 |
-| `packages/app/src/components/Sources/SourcesList.tsx` | 3 | 0 |
-| `packages/app/src/components/TeamSettings/IacMigrationSection.tsx` | 3 | 0 |
-| `packages/app/src/components/infraCorrelations.ts` | 3 | 0 |
-| `packages/app/src/hooks/useFetchMetricMetadata.tsx` | 1 | 2 |
-| `packages/app/src/hooks/useFetchMetricResourceAttrs.tsx` | 1 | 2 |
-| `packages/app/src/llm/lib/cost.ts` | 3 | 0 |
-| `packages/app/src/serviceDashboard.ts` | 3 | 0 |
-| `packages/app/src/source.ts` | 1 | 2 |
-| `packages/app/src/utils/materializedViews.ts` | 1 | 2 |
-| `packages/app/src/BenchmarkPage.tsx` | 1 | 1 |
-| `packages/app/src/NamespaceDetailsSidePanel.tsx` | 2 | 0 |
-| `packages/app/src/SessionSubpanel.tsx` | 2 | 0 |
-| `packages/app/src/components/DBDeltaChart.tsx` | 2 | 0 |
-| `packages/app/src/components/DBEditTimeChartForm/TileAlertEditor.tsx` | 2 | 0 |
-| `packages/app/src/components/DBRowSidePanel.tsx` | 2 | 0 |
-| `packages/app/src/components/DBSearchPageFilters.tsx` | 2 | 0 |
-| `packages/app/src/components/DBTable/TableSearchInput.tsx` | 2 | 0 |
-| `packages/app/src/components/MaterializedViews/MVOptimizationIndicator.tsx` | 2 | 0 |
-| `packages/app/src/components/MetricAttributeHelperPanel.tsx` | 2 | 0 |
-| `packages/app/src/components/PatternSidePanel.tsx` | 0 | 2 |
-| `packages/app/src/components/Search/DBSearchHeatmapChart.tsx` | 2 | 0 |
-| `packages/app/src/components/SearchResultsToolbar/ColumnsPopover.tsx` | 2 | 0 |
-| `packages/app/src/components/SearchResultsToolbar/SortPopover.tsx` | 2 | 0 |
-| `packages/app/src/components/alerts/AlertDetails.tsx` | 2 | 0 |
-| `packages/app/src/hdxDebug.ts` | 2 | 0 |
-| `packages/app/src/llm/dashboard/SessionsTab.tsx` | 2 | 0 |
-| `packages/app/src/useUserPreferences.tsx` | 1 | 1 |
-| `packages/app/src/utils/resourceTimingMarkers.ts` | 2 | 0 |
-| `packages/app/public/pyodide/pyodide.asm.js` | 0 | 1 |
-| `packages/app/src/ClickhousePage.tsx` | 1 | 0 |
-| `packages/app/src/DBDashboardPage.tsx` | 1 | 0 |
-| `packages/app/src/DBServiceMapPage.tsx` | 1 | 0 |
-| `packages/app/src/UserPreferencesModal.tsx` | 1 | 0 |
-| `packages/app/src/clickhouse.ts` | 1 | 0 |
-| `packages/app/src/components/DBEditTimeChartForm/ChartActionBar.tsx` | 1 | 0 |
-| `packages/app/src/components/DBEditTimeChartForm/ChartPreviewPanel.tsx` | 1 | 0 |
-| `packages/app/src/components/DBEditTimeChartForm/ChartSeriesEditor.tsx` | 1 | 0 |
-| `packages/app/src/components/DBEditTimeChartForm/EditTimeChartForm.tsx` | 1 | 0 |
-| `packages/app/src/components/DBEditTimeChartForm/HeatmapSeriesEditor.tsx` | 1 | 0 |
-| `packages/app/src/components/DBRowOverviewPanel.tsx` | 1 | 0 |
-| `packages/app/src/components/DBRowTable.tsx` | 1 | 0 |
-| `packages/app/src/components/DBSearchPageFilters/hooks.ts` | 0 | 1 |
-| `packages/app/src/components/DBSearchPageFilters/utils.ts` | 0 | 1 |
-| `packages/app/src/components/DBSessionPanel.tsx` | 1 | 0 |
-| `packages/app/src/components/ExceptionSubpanel.tsx` | 1 | 0 |
-| `packages/app/src/components/HeatmapSettingsDrawer.tsx` | 1 | 0 |
-| `packages/app/src/components/OnboardingModal.tsx` | 1 | 0 |
-| `packages/app/src/components/Patterns/PatternColumnSelector.tsx` | 1 | 0 |
-| `packages/app/src/components/SearchInput/SearchWhereInput.tsx` | 1 | 0 |
-| `packages/app/src/components/ServiceMap/ServiceMapSidePanel.tsx` | 1 | 0 |
-| `packages/app/src/components/Sources/SourceForm/LogTableModelForm.tsx` | 1 | 0 |
-| `packages/app/src/components/Sources/SourceForm/MaterializedViews.tsx` | 1 | 0 |
-| `packages/app/src/components/Sources/SourceForm/OrderByFormRow.tsx` | 1 | 0 |
-| `packages/app/src/components/Sources/SourceForm/UseTextIndexFormRow.tsx` | 1 | 0 |
-| `packages/app/src/components/Sources/SourceForm/constants.ts` | 1 | 0 |
-| `packages/app/src/components/TeamSettings/TeamMembersSection.tsx` | 1 | 0 |
-| `packages/app/src/components/charts/HiddenSeriesIndicator.tsx` | 1 | 0 |
-| `packages/app/src/components/linkedSpans.tsx` | 1 | 0 |
-| `packages/app/src/couchbase/serviceMap.ts` | 1 | 0 |
-| `packages/app/src/hooks/useAutoCompleteOptions.tsx` | 0 | 1 |
-| `packages/app/src/hooks/useResultColumnFilterKeys.ts` | 1 | 0 |
-| `packages/app/src/llm/__fixtures__/sources.ts` | 1 | 0 |
+| File                                                                            | SQL literals | Type names |
+| ------------------------------------------------------------------------------- | ------------ | ---------- |
+| `packages/app/src/components/Sources/SourceForm/TraceTableModelForm.tsx`        | 12           | 16         |
+| `packages/app/src/KubernetesDashboardPage.tsx`                                  | 22           | 0          |
+| `packages/app/src/components/ChartEditor/constants.tsx`                         | 4            | 9          |
+| `packages/app/src/ServicesDashboardPage/HttpTab.tsx`                            | 9            | 0          |
+| `packages/app/src/components/AppNav/KeyboardShortcutsModal.tsx`                 | 9            | 0          |
+| `packages/app/src/llm/lib/expressions.ts`                                       | 9            | 0          |
+| `packages/app/src/utils/sourceFieldSuggestions.tsx`                             | 0            | 9          |
+| `packages/app/src/components/SearchInput/SyntaxReferenceModal.tsx`              | 5            | 2          |
+| `packages/app/src/hooks/useRowWhere.tsx`                                        | 6            | 1          |
+| `packages/app/src/hooks/useServiceMap.tsx`                                      | 6            | 1          |
+| `packages/app/src/components/SQLEditor/constants.ts`                            | 6            | 0          |
+| `packages/app/src/components/ServiceMap/ServiceMapTooltip.tsx`                  | 6            | 0          |
+| `packages/app/src/hdxMTViews.ts`                                                | 2            | 4          |
+| `packages/app/src/hooks/__fixtures__/browserTraceEvents.ts`                     | 0            | 6          |
+| `packages/app/src/hooks/useMetricCatalog.ts`                                    | 4            | 2          |
+| `packages/app/src/sessions.ts`                                                  | 5            | 1          |
+| `packages/app/src/components/ChartDisplaySettingsDrawer.tsx`                    | 5            | 0          |
+| `packages/app/src/components/TimePicker/TimePicker.tsx`                         | 5            | 0          |
+| `packages/app/src/hooks/useFetchMetricAttributeValues.tsx`                      | 3            | 2          |
+| `packages/app/src/sessionsListQuery.ts`                                         | 5            | 0          |
+| `packages/app/src/DBSearchPage.tsx`                                             | 4            | 0          |
+| `packages/app/src/ServicesDashboardPage/DatabaseTab.tsx`                        | 4            | 0          |
+| `packages/app/src/components/DBEditTimeChartForm/OnClickForm/OnClickDrawer.tsx` | 4            | 0          |
+| `packages/app/src/components/DBRowDataPanel.tsx`                                | 0            | 4          |
+| `packages/app/src/components/MetricExplorer/MetricDetailPanel.tsx`              | 4            | 0          |
+| `packages/app/src/components/SearchTotalCountChart.tsx`                         | 4            | 0          |
+| `packages/app/src/components/ServiceDashboardEndpointPerformanceChart.tsx`      | 4            | 0          |
+| `packages/app/src/components/TeamSettings/TeamQueryConfigSection.tsx`           | 4            | 0          |
+| `packages/app/src/components/deltaChartUtils.ts`                                | 0            | 4          |
+| `packages/app/src/couchbase/dialectExpr.ts`                                     | 3            | 1          |
+| `packages/app/src/couchbase/sessionsList.ts`                                    | 4            | 0          |
+| `packages/app/src/NodeDetailsSidePanel.tsx`                                     | 3            | 0          |
+| `packages/app/src/components/DBEditTimeChartForm/ChartEditorControls.tsx`       | 3            | 0          |
+| `packages/app/src/components/DBEditTimeChartForm/ChartFormulaEditor.tsx`        | 3            | 0          |
+| `packages/app/src/components/DBHeatmapChart/heatmapQueries.ts`                  | 3            | 0          |
+| `packages/app/src/components/DBRowJsonViewer.tsx`                               | 3            | 0          |
+| `packages/app/src/components/Iac/TerraformHelperPanel.tsx`                      | 3            | 0          |
+| `packages/app/src/components/MaterializedViews/MVOptimizationModal.tsx`         | 3            | 0          |
+| `packages/app/src/components/Sources/SourcesList.tsx`                           | 3            | 0          |
+| `packages/app/src/components/TeamSettings/IacMigrationSection.tsx`              | 3            | 0          |
+| `packages/app/src/components/infraCorrelations.ts`                              | 3            | 0          |
+| `packages/app/src/hooks/useFetchMetricMetadata.tsx`                             | 1            | 2          |
+| `packages/app/src/hooks/useFetchMetricResourceAttrs.tsx`                        | 1            | 2          |
+| `packages/app/src/llm/lib/cost.ts`                                              | 3            | 0          |
+| `packages/app/src/serviceDashboard.ts`                                          | 3            | 0          |
+| `packages/app/src/source.ts`                                                    | 1            | 2          |
+| `packages/app/src/utils/materializedViews.ts`                                   | 1            | 2          |
+| `packages/app/src/BenchmarkPage.tsx`                                            | 1            | 1          |
+| `packages/app/src/NamespaceDetailsSidePanel.tsx`                                | 2            | 0          |
+| `packages/app/src/SessionSubpanel.tsx`                                          | 2            | 0          |
+| `packages/app/src/components/DBDeltaChart.tsx`                                  | 2            | 0          |
+| `packages/app/src/components/DBEditTimeChartForm/TileAlertEditor.tsx`           | 2            | 0          |
+| `packages/app/src/components/DBRowSidePanel.tsx`                                | 2            | 0          |
+| `packages/app/src/components/DBSearchPageFilters.tsx`                           | 2            | 0          |
+| `packages/app/src/components/DBTable/TableSearchInput.tsx`                      | 2            | 0          |
+| `packages/app/src/components/MaterializedViews/MVOptimizationIndicator.tsx`     | 2            | 0          |
+| `packages/app/src/components/MetricAttributeHelperPanel.tsx`                    | 2            | 0          |
+| `packages/app/src/components/PatternSidePanel.tsx`                              | 0            | 2          |
+| `packages/app/src/components/Search/DBSearchHeatmapChart.tsx`                   | 2            | 0          |
+| `packages/app/src/components/SearchResultsToolbar/ColumnsPopover.tsx`           | 2            | 0          |
+| `packages/app/src/components/SearchResultsToolbar/SortPopover.tsx`              | 2            | 0          |
+| `packages/app/src/components/alerts/AlertDetails.tsx`                           | 2            | 0          |
+| `packages/app/src/hdxDebug.ts`                                                  | 2            | 0          |
+| `packages/app/src/llm/dashboard/SessionsTab.tsx`                                | 2            | 0          |
+| `packages/app/src/useUserPreferences.tsx`                                       | 1            | 1          |
+| `packages/app/src/utils/resourceTimingMarkers.ts`                               | 2            | 0          |
+| `packages/app/public/pyodide/pyodide.asm.js`                                    | 0            | 1          |
+| `packages/app/src/ClickhousePage.tsx`                                           | 1            | 0          |
+| `packages/app/src/DBDashboardPage.tsx`                                          | 1            | 0          |
+| `packages/app/src/DBServiceMapPage.tsx`                                         | 1            | 0          |
+| `packages/app/src/UserPreferencesModal.tsx`                                     | 1            | 0          |
+| `packages/app/src/clickhouse.ts`                                                | 1            | 0          |
+| `packages/app/src/components/DBEditTimeChartForm/ChartActionBar.tsx`            | 1            | 0          |
+| `packages/app/src/components/DBEditTimeChartForm/ChartPreviewPanel.tsx`         | 1            | 0          |
+| `packages/app/src/components/DBEditTimeChartForm/ChartSeriesEditor.tsx`         | 1            | 0          |
+| `packages/app/src/components/DBEditTimeChartForm/EditTimeChartForm.tsx`         | 1            | 0          |
+| `packages/app/src/components/DBEditTimeChartForm/HeatmapSeriesEditor.tsx`       | 1            | 0          |
+| `packages/app/src/components/DBRowOverviewPanel.tsx`                            | 1            | 0          |
+| `packages/app/src/components/DBRowTable.tsx`                                    | 1            | 0          |
+| `packages/app/src/components/DBSearchPageFilters/hooks.ts`                      | 0            | 1          |
+| `packages/app/src/components/DBSearchPageFilters/utils.ts`                      | 0            | 1          |
+| `packages/app/src/components/DBSessionPanel.tsx`                                | 1            | 0          |
+| `packages/app/src/components/ExceptionSubpanel.tsx`                             | 1            | 0          |
+| `packages/app/src/components/HeatmapSettingsDrawer.tsx`                         | 1            | 0          |
+| `packages/app/src/components/OnboardingModal.tsx`                               | 1            | 0          |
+| `packages/app/src/components/Patterns/PatternColumnSelector.tsx`                | 1            | 0          |
+| `packages/app/src/components/SearchInput/SearchWhereInput.tsx`                  | 1            | 0          |
+| `packages/app/src/components/ServiceMap/ServiceMapSidePanel.tsx`                | 1            | 0          |
+| `packages/app/src/components/Sources/SourceForm/LogTableModelForm.tsx`          | 1            | 0          |
+| `packages/app/src/components/Sources/SourceForm/MaterializedViews.tsx`          | 1            | 0          |
+| `packages/app/src/components/Sources/SourceForm/OrderByFormRow.tsx`             | 1            | 0          |
+| `packages/app/src/components/Sources/SourceForm/UseTextIndexFormRow.tsx`        | 1            | 0          |
+| `packages/app/src/components/Sources/SourceForm/constants.ts`                   | 1            | 0          |
+| `packages/app/src/components/TeamSettings/TeamMembersSection.tsx`               | 1            | 0          |
+| `packages/app/src/components/charts/HiddenSeriesIndicator.tsx`                  | 1            | 0          |
+| `packages/app/src/components/linkedSpans.tsx`                                   | 1            | 0          |
+| `packages/app/src/couchbase/serviceMap.ts`                                      | 1            | 0          |
+| `packages/app/src/hooks/useAutoCompleteOptions.tsx`                             | 0            | 1          |
+| `packages/app/src/hooks/useResultColumnFilterKeys.ts`                           | 1            | 0          |
+| `packages/app/src/llm/__fixtures__/sources.ts`                                  | 1            | 0          |
 
 Plus 6 more in sql-catalog.json.
 
 ### ClickHouse constructs without a SQL++ mapping
 
-| Category | Name | Occurrences | Files |
-|---|---|---|---|
-| type | `JSON` | 131 | 41 |
-| type | `String` | 94 | 20 |
-| type | `Int64` | 58 | 12 |
-| function | `fromUnixTimestamp64Milli` | 56 | 14 |
-| function | `var` | 43 | 15 |
-| function | `IFNULL` | 40 | 8 |
-| function | `toString` | 40 | 23 |
-| function | `TONUMBER` | 39 | 9 |
-| parameter_type | `Int64` | 39 | 7 |
-| function | `ARRAY_LENGTH` | 36 | 6 |
-| type | `Map` | 35 | 16 |
-| function | `if` | 33 | 15 |
-| type | `Array` | 31 | 10 |
-| type | `Float64` | 31 | 9 |
-| clause | `INTERVAL` | 27 | 11 |
-| type | `LowCardinality` | 27 | 13 |
-| function | `CAST` | 23 | 4 |
-| function | `toDateTime` | 23 | 7 |
-| setting | `max_execution_time` | 22 | 14 |
-| function | `__filter` | 20 | 1 |
-| type | `DateTime64` | 19 | 13 |
-| type | `Nullable` | 18 | 7 |
-| clause | `->` | 17 | 5 |
-| function | `ARRAY_RANGE` | 17 | 4 |
-| function | `match` | 17 | 8 |
-| function | `toStartOfFifteenMinutes` | 17 | 1 |
-| function | `__timeFilter` | 13 | 5 |
-| function | `SUBSTR` | 12 | 1 |
-| function | `__timeInterval` | 12 | 5 |
-| setting | `timeout_overflow_mode` | 12 | 6 |
-| type | `DateTime` | 12 | 7 |
-| type | `UInt32` | 12 | 6 |
-| function | `MILLIS_TO_UTC` | 11 | 3 |
-| function | `STR_TO_MILLIS` | 11 | 2 |
-| function | `rate` | 11 | 2 |
-| parameter_type | `String` | 11 | 3 |
-| type | `UInt64` | 11 | 6 |
-| function | `tiles` | 10 | 1 |
-| function | `toDateTime64` | 10 | 6 |
-| function | `ARRAY_AGG` | 9 | 5 |
-| function | `column` | 9 | 2 |
-| function | `last_value` | 9 | 4 |
-| function | `tile` | 9 | 3 |
-| setting | `max_rows_to_read` | 9 | 1 |
-| type | `Int32` | 9 | 3 |
-| function | `groupUniqArray` | 8 | 3 |
-| function | `range` | 8 | 3 |
-| function | `toInt64` | 8 | 1 |
-| function | `toJSONString` | 8 | 2 |
-| type | `Date` | 8 | 5 |
-| dynamic_suffix | `arrayExists` | 7 | 1 |
-| function | `ARRAY_SUM` | 7 | 2 |
-| function | `arrayElement` | 7 | 2 |
-| function | `arraySum` | 7 | 2 |
-| function | `has` | 7 | 5 |
-| function | `map` | 7 | 4 |
-| function | `multiIf` | 7 | 2 |
-| clause | `::` | 6 | 1 |
-| function | `META` | 6 | 3 |
-| function | `OBJECT_NAMES` | 6 | 4 |
-| function | `__conditionalAll` | 6 | 1 |
-| function | `age` | 6 | 2 |
-| function | `arrayConcat` | 6 | 3 |
-| function | `cityHash64` | 6 | 4 |
-| function | `clause` | 6 | 5 |
-| function | `increase` | 6 | 3 |
-| function | `log` | 6 | 1 |
-| function | `sumMap` | 6 | 2 |
-| function | `toDate` | 6 | 4 |
-| parameter_type | `Identifier` | 6 | 1 |
-| function | `ARRAY_SORT` | 5 | 4 |
-| function | `NULLIF` | 5 | 3 |
-| function | `anyLast` | 5 | 3 |
-| function | `calc` | 5 | 2 |
-| function | `columns` | 5 | 1 |
-| function | `mapKeys` | 5 | 4 |
-| function | `notEmpty` | 5 | 3 |
-| function | `only` | 5 | 1 |
-| function | `rand` | 5 | 3 |
-| function | `replaceRegexpAll` | 5 | 1 |
-| function | `series` | 5 | 2 |
-| function | `toFloat64` | 5 | 3 |
-| parameter_type | `UInt32` | 5 | 3 |
-| setting | `allow_experimental_time_series_table` | 5 | 3 |
-| setting | `wait_end_of_query` | 5 | 2 |
-| type | `UInt8` | 5 | 3 |
-| function | `IFMISSINGORNULL` | 4 | 3 |
-| function | `TOSTRING` | 4 | 3 |
-| function | `arrayMap` | 4 | 3 |
-| function | `arrayZip` | 4 | 3 |
-| function | `cbt_describe_source` | 4 | 3 |
-| function | `emptyArrayInt64` | 4 | 1 |
-| function | `exp2` | 4 | 1 |
-| function | `hasAllTokens` | 4 | 2 |
-| function | `isNull` | 4 | 2 |
-| function | `mapContains` | 4 | 2 |
-| function | `mergeTreeTextIndex` | 4 | 1 |
-| function | `rotate` | 4 | 2 |
-| function | `time` | 4 | 2 |
-| function | `toFloat64OrZero` | 4 | 4 |
+| Category       | Name                                   | Occurrences | Files |
+| -------------- | -------------------------------------- | ----------- | ----- |
+| type           | `JSON`                                 | 131         | 41    |
+| type           | `String`                               | 94          | 20    |
+| type           | `Int64`                                | 58          | 12    |
+| function       | `fromUnixTimestamp64Milli`             | 56          | 14    |
+| function       | `var`                                  | 43          | 15    |
+| function       | `IFNULL`                               | 40          | 8     |
+| function       | `toString`                             | 40          | 23    |
+| function       | `TONUMBER`                             | 39          | 9     |
+| parameter_type | `Int64`                                | 39          | 7     |
+| function       | `ARRAY_LENGTH`                         | 36          | 6     |
+| type           | `Map`                                  | 35          | 16    |
+| function       | `if`                                   | 33          | 15    |
+| type           | `Array`                                | 31          | 10    |
+| type           | `Float64`                              | 31          | 9     |
+| clause         | `INTERVAL`                             | 27          | 11    |
+| type           | `LowCardinality`                       | 27          | 13    |
+| function       | `CAST`                                 | 23          | 4     |
+| function       | `toDateTime`                           | 23          | 7     |
+| setting        | `max_execution_time`                   | 22          | 14    |
+| function       | `__filter`                             | 20          | 1     |
+| type           | `DateTime64`                           | 19          | 13    |
+| type           | `Nullable`                             | 18          | 7     |
+| clause         | `->`                                   | 17          | 5     |
+| function       | `ARRAY_RANGE`                          | 17          | 4     |
+| function       | `match`                                | 17          | 8     |
+| function       | `toStartOfFifteenMinutes`              | 17          | 1     |
+| function       | `__timeFilter`                         | 13          | 5     |
+| function       | `SUBSTR`                               | 12          | 1     |
+| function       | `__timeInterval`                       | 12          | 5     |
+| setting        | `timeout_overflow_mode`                | 12          | 6     |
+| type           | `DateTime`                             | 12          | 7     |
+| type           | `UInt32`                               | 12          | 6     |
+| function       | `MILLIS_TO_UTC`                        | 11          | 3     |
+| function       | `STR_TO_MILLIS`                        | 11          | 2     |
+| function       | `rate`                                 | 11          | 2     |
+| parameter_type | `String`                               | 11          | 3     |
+| type           | `UInt64`                               | 11          | 6     |
+| function       | `tiles`                                | 10          | 1     |
+| function       | `toDateTime64`                         | 10          | 6     |
+| function       | `ARRAY_AGG`                            | 9           | 5     |
+| function       | `column`                               | 9           | 2     |
+| function       | `last_value`                           | 9           | 4     |
+| function       | `tile`                                 | 9           | 3     |
+| setting        | `max_rows_to_read`                     | 9           | 1     |
+| type           | `Int32`                                | 9           | 3     |
+| function       | `groupUniqArray`                       | 8           | 3     |
+| function       | `range`                                | 8           | 3     |
+| function       | `toInt64`                              | 8           | 1     |
+| function       | `toJSONString`                         | 8           | 2     |
+| type           | `Date`                                 | 8           | 5     |
+| dynamic_suffix | `arrayExists`                          | 7           | 1     |
+| function       | `ARRAY_SUM`                            | 7           | 2     |
+| function       | `arrayElement`                         | 7           | 2     |
+| function       | `arraySum`                             | 7           | 2     |
+| function       | `has`                                  | 7           | 5     |
+| function       | `map`                                  | 7           | 4     |
+| function       | `multiIf`                              | 7           | 2     |
+| clause         | `::`                                   | 6           | 1     |
+| function       | `META`                                 | 6           | 3     |
+| function       | `OBJECT_NAMES`                         | 6           | 4     |
+| function       | `__conditionalAll`                     | 6           | 1     |
+| function       | `age`                                  | 6           | 2     |
+| function       | `arrayConcat`                          | 6           | 3     |
+| function       | `cityHash64`                           | 6           | 4     |
+| function       | `clause`                               | 6           | 5     |
+| function       | `increase`                             | 6           | 3     |
+| function       | `log`                                  | 6           | 1     |
+| function       | `sumMap`                               | 6           | 2     |
+| function       | `toDate`                               | 6           | 4     |
+| parameter_type | `Identifier`                           | 6           | 1     |
+| function       | `ARRAY_SORT`                           | 5           | 4     |
+| function       | `NULLIF`                               | 5           | 3     |
+| function       | `anyLast`                              | 5           | 3     |
+| function       | `calc`                                 | 5           | 2     |
+| function       | `columns`                              | 5           | 1     |
+| function       | `mapKeys`                              | 5           | 4     |
+| function       | `notEmpty`                             | 5           | 3     |
+| function       | `only`                                 | 5           | 1     |
+| function       | `rand`                                 | 5           | 3     |
+| function       | `replaceRegexpAll`                     | 5           | 1     |
+| function       | `series`                               | 5           | 2     |
+| function       | `toFloat64`                            | 5           | 3     |
+| parameter_type | `UInt32`                               | 5           | 3     |
+| setting        | `allow_experimental_time_series_table` | 5           | 3     |
+| setting        | `wait_end_of_query`                    | 5           | 2     |
+| type           | `UInt8`                                | 5           | 3     |
+| function       | `IFMISSINGORNULL`                      | 4           | 3     |
+| function       | `TOSTRING`                             | 4           | 3     |
+| function       | `arrayMap`                             | 4           | 3     |
+| function       | `arrayZip`                             | 4           | 3     |
+| function       | `cbt_describe_source`                  | 4           | 3     |
+| function       | `emptyArrayInt64`                      | 4           | 1     |
+| function       | `exp2`                                 | 4           | 1     |
+| function       | `hasAllTokens`                         | 4           | 2     |
+| function       | `isNull`                               | 4           | 2     |
+| function       | `mapContains`                          | 4           | 2     |
+| function       | `mergeTreeTextIndex`                   | 4           | 1     |
+| function       | `rotate`                               | 4           | 2     |
+| function       | `time`                                 | 4           | 2     |
+| function       | `toFloat64OrZero`                      | 4           | 4     |
 
 Plus 352 more in sql-catalog.json.
 
 ### Mapped constructs in use
 
-| Name | Occurrences | SQL++ approach |
-|---|---|---|
-| `ARRAY JOIN` | 7 | UNNEST over the array field |
-| `FORMAT` | 24 | Omit; the SDK returns JSON rows |
-| `PREWHERE` | 3 | WHERE; the query planner chooses the access path |
-| `SAMPLE` | 3 | WHERE RANDOM() < rate, or omit |
-| `SETTINGS` | 17 | Query options passed through the SDK (timeout, scan consistency, named parameters); drop engine-specific settings |
-| `If` | 1 | COUNT(*) FILTER (WHERE cond) |
-| `JSONExtract` | 4 | Field path access on the JSON document, with TONUMBER, TOSTRING, or TOBOOLEAN for typing |
-| `JSONExtractString` | 8 | Field path access on the JSON document, with TONUMBER, TOSTRING, or TOBOOLEAN for typing |
-| `any` | 17 | ARRAY_AGG(expr)[0], or MIN(expr) when any value is acceptable |
-| `argMax` | 5 | FIRST_VALUE(value) OVER (PARTITION BY group ORDER BY key DESC), or a subquery ordered by key DESC LIMIT 1 |
-| `arrayJoin` | 5 | UNNEST over the array field |
-| `count()` | 54 | COUNT(*) |
-| `countIf` | 3 | COUNT(*) FILTER (WHERE cond) |
-| `hasToken` | 3 | SEARCH(field, token) over a Search index, or REGEXP_CONTAINS(field, word-boundary pattern) |
-| `quantile` | 10 | PERCENTILE_CONT(expr, p) aggregate; MEDIAN for p = 0.5 |
-| `quantileIf` | 1 | PERCENTILE_CONT(expr, p) aggregate; MEDIAN for p = 0.5 |
-| `quantileTDigestWeighted` | 1 | PERCENTILE_CONT(expr, p) aggregate; MEDIAN for p = 0.5 |
-| `quantileTDigestWeightedIf` | 1 | PERCENTILE_CONT(expr, p) aggregate; MEDIAN for p = 0.5 |
-| `quantiles` | 2 | PERCENTILE_CONT(expr, p) aggregate; MEDIAN for p = 0.5 |
-| `sumIf` | 6 | SUM(expr) FILTER (WHERE cond) |
-| `toStartOfInterval` | 15 | Bucket epoch milliseconds: FLOOR(MILLIS(ts) / interval_ms) * interval_ms, converted back with MILLIS_TO_UTC; DATE_TRUNC_STR for calendar units |
-| `uniqExact` | 1 | COUNT(DISTINCT expr) |
+| Name                        | Occurrences | SQL++ approach                                                                                                                                  |
+| --------------------------- | ----------- | ----------------------------------------------------------------------------------------------------------------------------------------------- |
+| `ARRAY JOIN`                | 7           | UNNEST over the array field                                                                                                                     |
+| `FORMAT`                    | 24          | Omit; the SDK returns JSON rows                                                                                                                 |
+| `PREWHERE`                  | 3           | WHERE; the query planner chooses the access path                                                                                                |
+| `SAMPLE`                    | 3           | WHERE RANDOM() < rate, or omit                                                                                                                  |
+| `SETTINGS`                  | 17          | Query options passed through the SDK (timeout, scan consistency, named parameters); drop engine-specific settings                               |
+| `If`                        | 1           | COUNT(\*) FILTER (WHERE cond)                                                                                                                   |
+| `JSONExtract`               | 4           | Field path access on the JSON document, with TONUMBER, TOSTRING, or TOBOOLEAN for typing                                                        |
+| `JSONExtractString`         | 8           | Field path access on the JSON document, with TONUMBER, TOSTRING, or TOBOOLEAN for typing                                                        |
+| `any`                       | 17          | ARRAY_AGG(expr)[0], or MIN(expr) when any value is acceptable                                                                                   |
+| `argMax`                    | 5           | FIRST_VALUE(value) OVER (PARTITION BY group ORDER BY key DESC), or a subquery ordered by key DESC LIMIT 1                                       |
+| `arrayJoin`                 | 5           | UNNEST over the array field                                                                                                                     |
+| `count()`                   | 54          | COUNT(\*)                                                                                                                                       |
+| `countIf`                   | 3           | COUNT(\*) FILTER (WHERE cond)                                                                                                                   |
+| `hasToken`                  | 3           | SEARCH(field, token) over a Search index, or REGEXP_CONTAINS(field, word-boundary pattern)                                                      |
+| `quantile`                  | 10          | PERCENTILE_CONT(expr, p) aggregate; MEDIAN for p = 0.5                                                                                          |
+| `quantileIf`                | 1           | PERCENTILE_CONT(expr, p) aggregate; MEDIAN for p = 0.5                                                                                          |
+| `quantileTDigestWeighted`   | 1           | PERCENTILE_CONT(expr, p) aggregate; MEDIAN for p = 0.5                                                                                          |
+| `quantileTDigestWeightedIf` | 1           | PERCENTILE_CONT(expr, p) aggregate; MEDIAN for p = 0.5                                                                                          |
+| `quantiles`                 | 2           | PERCENTILE_CONT(expr, p) aggregate; MEDIAN for p = 0.5                                                                                          |
+| `sumIf`                     | 6           | SUM(expr) FILTER (WHERE cond)                                                                                                                   |
+| `toStartOfInterval`         | 15          | Bucket epoch milliseconds: FLOOR(MILLIS(ts) / interval_ms) \* interval_ms, converted back with MILLIS_TO_UTC; DATE_TRUNC_STR for calendar units |
+| `uniqExact`                 | 1           | COUNT(DISTINCT expr)                                                                                                                            |
 
 ### Schema
 
-| Table | Columns | Engine | Order by | TTL |
-|---|---|---|---|---|
-| `hyperdx_sessions` | 18 | MergeTree | (ServiceName, TimestampTime, Timestamp) | TimestampTime + SESSIONS_TTL |
-| `metrics_ts` | 0 | TimeSeries |  |  |
-| `otel_logs` | 25 | MergeTree | (toStartOfFiveMinutes(Timestamp), ServiceName, Timestamp) | toDateTime(Timestamp) + LOGS_TTL |
-| `otel_logs_kv_rollup_15m` | 5 | SummingMergeTree | (ColumnIdentifier, Key, Timestamp, Value) | Timestamp + LOGS_TTL |
-| `otel_metrics_exponential_histogram` | 31 | MergeTree | (ServiceName, MetricName, toStartOfHour(TimeUnix), cityHash64(Attributes), TimeUnix) | toDateTime(TimeUnix) + METRICS_TTL |
-| `otel_metrics_gauge` | 21 | MergeTree | (ServiceName, MetricName, toStartOfHour(TimeUnix), cityHash64(Attributes), TimeUnix) | toDateTime(TimeUnix) + METRICS_TTL |
-| `otel_metrics_histogram` | 27 | MergeTree | (ServiceName, MetricName, toStartOfHour(TimeUnix), cityHash64(Attributes), TimeUnix) | toDateTime(TimeUnix) + METRICS_TTL |
-| `otel_metrics_sum` | 23 | MergeTree | (ServiceName, MetricName, toStartOfHour(TimeUnix), cityHash64(Attributes), TimeUnix) | toDateTime(TimeUnix) + METRICS_TTL |
-| `otel_metrics_summary` | 19 | MergeTree | (ServiceName, MetricName, toStartOfHour(TimeUnix), cityHash64(Attributes), TimeUnix) | toDateTime(TimeUnix) + METRICS_TTL |
-| `otel_traces` | 24 | MergeTree | (ServiceName, SpanName, toDateTime(Timestamp)) | toDate(Timestamp) + TRACES_TTL |
-| `otel_traces_kv_rollup_15m` | 5 | SummingMergeTree | (ColumnIdentifier, Key, Timestamp, Value) | Timestamp + TRACES_TTL |
+| Table                                | Columns | Engine           | Order by                                                                             | TTL                                |
+| ------------------------------------ | ------- | ---------------- | ------------------------------------------------------------------------------------ | ---------------------------------- |
+| `hyperdx_sessions`                   | 18      | MergeTree        | (ServiceName, TimestampTime, Timestamp)                                              | TimestampTime + SESSIONS_TTL       |
+| `metrics_ts`                         | 0       | TimeSeries       |                                                                                      |                                    |
+| `otel_logs`                          | 25      | MergeTree        | (toStartOfFiveMinutes(Timestamp), ServiceName, Timestamp)                            | toDateTime(Timestamp) + LOGS_TTL   |
+| `otel_logs_kv_rollup_15m`            | 5       | SummingMergeTree | (ColumnIdentifier, Key, Timestamp, Value)                                            | Timestamp + LOGS_TTL               |
+| `otel_metrics_exponential_histogram` | 31      | MergeTree        | (ServiceName, MetricName, toStartOfHour(TimeUnix), cityHash64(Attributes), TimeUnix) | toDateTime(TimeUnix) + METRICS_TTL |
+| `otel_metrics_gauge`                 | 21      | MergeTree        | (ServiceName, MetricName, toStartOfHour(TimeUnix), cityHash64(Attributes), TimeUnix) | toDateTime(TimeUnix) + METRICS_TTL |
+| `otel_metrics_histogram`             | 27      | MergeTree        | (ServiceName, MetricName, toStartOfHour(TimeUnix), cityHash64(Attributes), TimeUnix) | toDateTime(TimeUnix) + METRICS_TTL |
+| `otel_metrics_sum`                   | 23      | MergeTree        | (ServiceName, MetricName, toStartOfHour(TimeUnix), cityHash64(Attributes), TimeUnix) | toDateTime(TimeUnix) + METRICS_TTL |
+| `otel_metrics_summary`               | 19      | MergeTree        | (ServiceName, MetricName, toStartOfHour(TimeUnix), cityHash64(Attributes), TimeUnix) | toDateTime(TimeUnix) + METRICS_TTL |
+| `otel_traces`                        | 24      | MergeTree        | (ServiceName, SpanName, toDateTime(Timestamp))                                       | toDate(Timestamp) + TRACES_TTL     |
+| `otel_traces_kv_rollup_15m`          | 5       | SummingMergeTree | (ColumnIdentifier, Key, Timestamp, Value)                                            | Timestamp + TRACES_TTL             |
 
 Materialized views:
 
-- `otel_logs_attr_kv_rollup_15m_mv` → `otel_logs_kv_rollup_15m`, from `elements`, `otel_logs`.
-- `otel_traces_kv_rollup_15m_mv` → `otel_traces_kv_rollup_15m`, from `elements`, `otel_traces`.
+- `otel_logs_attr_kv_rollup_15m_mv` → `otel_logs_kv_rollup_15m`, from
+  `elements`, `otel_logs`.
+- `otel_traces_kv_rollup_15m_mv` → `otel_traces_kv_rollup_15m`, from `elements`,
+  `otel_traces`.
 
 ### Ingestion
 
 Collector components, pipelines, ClickHouse exporters, and management code.
 
 - Builder manifest `packages/otel-collector/builder-config.yaml`: no components.
-- Collector config `docker/otel-collector/config.standalone.auth.yaml`: 1 receivers, 0 processors, 0 exporters; pipelines: none.
-- Collector config `docker/otel-collector/config.standalone.oidc.yaml`: 1 receivers, 0 processors, 0 exporters; pipelines: none.
-- Collector config `docker/otel-collector/config.standalone.yaml`: 1 receivers, 0 processors, 2 exporters; pipelines: logs/in, logs/out-default, logs/out-rrweb, metrics, traces.
-- Collector config `docker/otel-collector/config.yaml`: 0 receivers, 5 processors, 0 exporters; pipelines: logs/out-default, logs/out-rrweb, metrics, traces.
-- Collector config `docker/otel-collector/custom.config.yaml`: 1 receivers, 0 processors, 0 exporters; pipelines: none.
+- Collector config `docker/otel-collector/config.standalone.auth.yaml`: 1
+  receivers, 0 processors, 0 exporters; pipelines: none.
+- Collector config `docker/otel-collector/config.standalone.oidc.yaml`: 1
+  receivers, 0 processors, 0 exporters; pipelines: none.
+- Collector config `docker/otel-collector/config.standalone.yaml`: 1 receivers,
+  0 processors, 2 exporters; pipelines: logs/in, logs/out-default,
+  logs/out-rrweb, metrics, traces.
+- Collector config `docker/otel-collector/config.yaml`: 0 receivers, 5
+  processors, 0 exporters; pipelines: logs/out-default, logs/out-rrweb, metrics,
+  traces.
+- Collector config `docker/otel-collector/custom.config.yaml`: 1 receivers, 0
+  processors, 0 exporters; pipelines: none.
 - Management code `packages/api/src/config.ts`.
 - Management code `packages/api/src/opamp/app.ts`.
 - Management code `packages/api/src/opamp/controllers/opampController.ts`.
@@ -583,44 +752,45 @@ Collector components, pipelines, ClickHouse exporters, and management code.
 - Management code `packages/api/src/server.ts`.
 - Management code `packages/app/src/components/ExceptionSubpanel.tsx`.
 - Management code `packages/app/src/components/Iac/TerraformHelperPanel.tsx`.
-- Management code `packages/app/src/components/TeamSettings/McpServerSection.tsx`.
+- Management code
+  `packages/app/src/components/TeamSettings/McpServerSection.tsx`.
 - Management code `packages/app/src/config.ts`.
 - Management code `packages/app/src/stories/docs/AgentDoc.tsx`.
 
 ### Integration test dependencies
 
-| Workspace | Script | Command |
-|---|---|---|
-| @couchbase-traces/api | `ci:int` | `DOTENV_CONFIG_PATH=.env.test DOTENV_CONFIG_OVERRIDE=true jest --config jest.int.config.js --runInBand --ci --forceExit --passWithNoTests` |
-| @couchbase-traces/api | `dev:int` | `DOTENV_CONFIG_PATH=.env.test DOTENV_CONFIG_OVERRIDE=true jest --config jest.int.config.js --runInBand --coverage --forceExit` |
-| @couchbase-traces/common-utils | `ci:int` | `DOTENV_CONFIG_PATH=.env.test jest --config jest.int.config.js --runInBand --ci --coverage --passWithNoTests` |
-| @couchbase-traces/common-utils | `dev:int` | `DOTENV_CONFIG_PATH=.env.test jest --config jest.int.config.js --watchAll --runInBand` |
+| Workspace                      | Script    | Command                                                                                                                                    |
+| ------------------------------ | --------- | ------------------------------------------------------------------------------------------------------------------------------------------ |
+| @couchbase-traces/api          | `ci:int`  | `DOTENV_CONFIG_PATH=.env.test DOTENV_CONFIG_OVERRIDE=true jest --config jest.int.config.js --runInBand --ci --forceExit --passWithNoTests` |
+| @couchbase-traces/api          | `dev:int` | `DOTENV_CONFIG_PATH=.env.test DOTENV_CONFIG_OVERRIDE=true jest --config jest.int.config.js --runInBand --coverage --forceExit`             |
+| @couchbase-traces/common-utils | `ci:int`  | `DOTENV_CONFIG_PATH=.env.test jest --config jest.int.config.js --runInBand --ci --coverage --passWithNoTests`                              |
+| @couchbase-traces/common-utils | `dev:int` | `DOTENV_CONFIG_PATH=.env.test jest --config jest.int.config.js --watchAll --runInBand`                                                     |
 
 ### Branding
 
-| Category | hyperdx | clickstack | clickhouse | deploysentinel | hdx |
-|---|---|---|---|---|---|
-| package_names | 0 | 0 | 0 | 0 | 1 |
-| external_dependencies | 7 | 18 | 85 | 0 | 0 |
-| env_vars | 6 | 7 | 203 | 0 | 35 |
-| telemetry_endpoints | 18 | 0 | 26 | 0 | 2 |
-| assets | 0 | 0 | 0 | 0 | 3 |
-| docker | 39 | 0 | 0 | 0 | 18 |
-| docs | 480 | 282 | 1188 | 2 | 208 |
-| ui_strings | 6 | 5 | 44 | 0 | 122 |
-| code_identifiers | 98 | 12 | 267 | 0 | 420 |
-| other | 536 | 170 | 486 | 2 | 1123 |
+| Category              | hyperdx | clickstack | clickhouse | deploysentinel | hdx  |
+| --------------------- | ------- | ---------- | ---------- | -------------- | ---- |
+| package_names         | 0       | 0          | 0          | 0              | 1    |
+| external_dependencies | 7       | 18         | 85         | 0              | 0    |
+| env_vars              | 6       | 7          | 203        | 0              | 35   |
+| telemetry_endpoints   | 18      | 0          | 26         | 0              | 2    |
+| assets                | 0       | 0          | 0          | 0              | 3    |
+| docker                | 39      | 0          | 0          | 0              | 18   |
+| docs                  | 480     | 282        | 1188       | 2              | 208  |
+| ui_strings            | 6       | 5          | 44         | 0              | 122  |
+| code_identifiers      | 98      | 12         | 267        | 0              | 420  |
+| other                 | 536     | 170        | 486        | 2              | 1123 |
 
 ### Feature status
 
-| Status | Features |
-|---|---|
-| not_started | 0 |
-| in_progress | 0 |
-| ported | 51 |
-| needs_decision | 0 |
-| dropped | 2 |
-| replaced | 2 |
+| Status         | Features |
+| -------------- | -------- |
+| not_started    | 0        |
+| in_progress    | 0        |
+| ported         | 51       |
+| needs_decision | 0        |
+| dropped        | 2        |
+| replaced       | 2        |
 
 ### Plan corrections
 
@@ -628,131 +798,137 @@ Collector components, pipelines, ClickHouse exporters, and management code.
 
 ### Warnings
 
-- W_DYNAMIC_IMPORT: 6 occurrences. First: Non-literal dynamic import at line 10 (packages/app/public/pyodide/pyodide.asm.js)
-- W_FILE_TOO_LARGE: 1 occurrences. First: File is 3004059 bytes, over the 2 MB limit; skipped (.yarn/releases/yarn-4.13.0.cjs)
-- W_PLAN_MISSING: 1 occurrences. First: COUCHBASE_PORT_PLAN.md not found at the project root; plan check skipped (COUCHBASE_PORT_PLAN.md)
-- W_UNRESOLVED_IMPORT: 1 occurrences. First: Cannot resolve "@couchbase-traces/api/build/serverless" (packages/app/pages/api/[...all].ts)
-- W_UNRESOLVED_MOUNT: 1 occurrences. First: Cannot resolve router for mount "/v1/opamp" at line 13 (packages/api/src/opamp/app.ts)
+- W_DYNAMIC_IMPORT: 6 occurrences. First: Non-literal dynamic import at line 10
+  (packages/app/public/pyodide/pyodide.asm.js)
+- W_FILE_TOO_LARGE: 1 occurrences. First: File is 3004059 bytes, over the 2 MB
+  limit; skipped (.yarn/releases/yarn-4.13.0.cjs)
+- W_PLAN_MISSING: 1 occurrences. First: COUCHBASE_PORT_PLAN.md not found at the
+  project root; plan check skipped (COUCHBASE_PORT_PLAN.md)
+- W_UNRESOLVED_IMPORT: 1 occurrences. First: Cannot resolve
+  "@couchbase-traces/api/build/serverless" (packages/app/pages/api/[...all].ts)
+- W_UNRESOLVED_MOUNT: 1 occurrences. First: Cannot resolve router for mount
+"/v1/opamp" at line 13 (packages/api/src/opamp/app.ts)
 <!-- phase2:end -->
 
 <!-- phase3:start -->
+
 ## Phase 3: Rebrand
 
 ### Package renames
 
-| From | To | Directory |
-|---|---|---|
-| `@hyperdx/api` | `@couchbase-traces/api` | `packages/api` |
-| `@hyperdx/app` | `@couchbase-traces/app` | `packages/app` |
-| `@hyperdx/cli` | `@couchbase-traces/cli` | `packages/cli` |
-| `@hyperdx/common-utils` | `@couchbase-traces/common-utils` | `packages/common-utils` |
-| `@hyperdx/hdx-eval` | `@couchbase-traces/hdx-eval` | `packages/hdx-eval` |
+| From                      | To                                 | Directory                 |
+| ------------------------- | ---------------------------------- | ------------------------- |
+| `@hyperdx/api`            | `@couchbase-traces/api`            | `packages/api`            |
+| `@hyperdx/app`            | `@couchbase-traces/app`            | `packages/app`            |
+| `@hyperdx/cli`            | `@couchbase-traces/cli`            | `packages/cli`            |
+| `@hyperdx/common-utils`   | `@couchbase-traces/common-utils`   | `packages/common-utils`   |
+| `@hyperdx/hdx-eval`       | `@couchbase-traces/hdx-eval`       | `packages/hdx-eval`       |
 | `@hyperdx/otel-collector` | `@couchbase-traces/otel-collector` | `packages/otel-collector` |
 
 ### Environment variable map
 
-| From | To |
-|---|---|
-| `HDX_CI_API_PORT` | `CBT_CI_API_PORT` |
-| `HDX_CI_CH_PORT` | `CBT_CI_CH_PORT` |
-| `HDX_CI_HISTORY_DIR` | `CBT_CI_HISTORY_DIR` |
-| `HDX_CI_LOGS_DIR` | `CBT_CI_LOGS_DIR` |
-| `HDX_CI_MONGO_PORT` | `CBT_CI_MONGO_PORT` |
-| `HDX_CI_OPAMP_PORT` | `CBT_CI_OPAMP_PORT` |
-| `HDX_CI_PROJECT` | `CBT_CI_PROJECT` |
-| `HDX_CI_SLOT` | `CBT_CI_SLOT` |
-| `HDX_DEV_API_PORT` | `CBT_DEV_API_PORT` |
-| `HDX_DEV_BRANCH` | `CBT_DEV_BRANCH` |
-| `HDX_DEV_CH_HTTP_PORT` | `CBT_DEV_CH_HTTP_PORT` |
-| `HDX_DEV_CH_NATIVE_PORT` | `CBT_DEV_CH_NATIVE_PORT` |
-| `HDX_DEV_LOGS_DIR` | `CBT_DEV_LOGS_DIR` |
-| `HDX_DEV_MONGO_PORT` | `CBT_DEV_MONGO_PORT` |
-| `HDX_DEV_OTEL_GRPC_PORT` | `CBT_DEV_OTEL_GRPC_PORT` |
-| `HDX_DEV_OTEL_HEALTH_PORT` | `CBT_DEV_OTEL_HEALTH_PORT` |
-| `HDX_DEV_OTEL_HTTP_PORT` | `CBT_DEV_OTEL_HTTP_PORT` |
-| `HDX_DEV_OTEL_JSON_HTTP_PORT` | `CBT_DEV_OTEL_JSON_HTTP_PORT` |
-| `HDX_DEV_OTEL_METRICS_PORT` | `CBT_DEV_OTEL_METRICS_PORT` |
-| `HDX_DEV_OTEL_STATSD_PORT` | `CBT_DEV_OTEL_STATSD_PORT` |
-| `HDX_DEV_PROJECT` | `CBT_DEV_PROJECT` |
-| `HDX_DEV_PROMETHEUS_PORT` | `CBT_DEV_PROMETHEUS_PORT` |
-| `HDX_DEV_SLOT` | `CBT_DEV_SLOT` |
-| `HDX_DEV_SLOTS_DIR` | `CBT_DEV_SLOTS_DIR` |
-| `HDX_DEV_WORKTREE` | `CBT_DEV_WORKTREE` |
-| `HDX_E2E_API_PORT` | `CBT_E2E_API_PORT` |
-| `HDX_E2E_APP_LOCAL_PORT` | `CBT_E2E_APP_LOCAL_PORT` |
-| `HDX_E2E_APP_PORT` | `CBT_E2E_APP_PORT` |
-| `HDX_E2E_CH_NATIVE_PORT` | `CBT_E2E_CH_NATIVE_PORT` |
-| `HDX_E2E_CH_PORT` | `CBT_E2E_CH_PORT` |
-| `HDX_E2E_LOGS_DIR` | `CBT_E2E_LOGS_DIR` |
-| `HDX_E2E_MONGO_PORT` | `CBT_E2E_MONGO_PORT` |
-| `HDX_E2E_OPAMP_PORT` | `CBT_E2E_OPAMP_PORT` |
-| `HDX_E2E_REPORT_PORT` | `CBT_E2E_REPORT_PORT` |
-| `HDX_E2E_SLOT` | `CBT_E2E_SLOT` |
-| `HDX_E2E_SLOTS_DIR` | `CBT_E2E_SLOTS_DIR` |
-| `HDX_EVAL_API_URL` | `CBT_EVAL_API_URL` |
-| `HDX_EVAL_CH_URL` | `CBT_EVAL_CH_URL` |
-| `HDX_EXPORTER_ENABLED` | `CBT_EXPORTER_ENABLED` |
-| `HDX_IMAGE_REPO` | `CBT_IMAGE_REPO` |
-| `HDX_INLINE_API_STRIP_PREFIX` | `CBT_INLINE_API_STRIP_PREFIX` |
-| `HDX_PORTAL_PID` | `CBT_PORTAL_PID` |
-| `HDX_PORTAL_PORT` | `CBT_PORTAL_PORT` |
-| `HDX_PREVIEW_INLINE_API` | `CBT_PREVIEW_INLINE_API` |
-| `HDX_SLOT_FROM` | `CBT_SLOT_FROM` |
-| `HYPERDX_API_KEY` | `CBT_API_KEY` |
-| `HYPERDX_API_PORT` | `CBT_API_PORT` |
-| `HYPERDX_APP_LISTEN_HOSTNAME` | `CBT_APP_LISTEN_HOSTNAME` |
-| `HYPERDX_APP_PORT` | `CBT_APP_PORT` |
-| `HYPERDX_APP_URL` | `CBT_APP_URL` |
-| `HYPERDX_BASE_PATH` | `CBT_BASE_PATH` |
-| `HYPERDX_IMAGE` | `CBT_IMAGE` |
-| `HYPERDX_LOG_LEVEL` | `CBT_LOG_LEVEL` |
-| `HYPERDX_OPAMP_PORT` | `CBT_OPAMP_PORT` |
-| `HYPERDX_OTEL_BATCH_SEND_BATCH_MAX_SIZE` | `CBT_OTEL_BATCH_SEND_BATCH_MAX_SIZE` |
-| `HYPERDX_OTEL_BATCH_SEND_BATCH_SIZE` | `CBT_OTEL_BATCH_SEND_BATCH_SIZE` |
-| `HYPERDX_OTEL_BATCH_TIMEOUT` | `CBT_OTEL_BATCH_TIMEOUT` |
-| `HYPERDX_OTEL_EXPORTER_CLICKHOUSE_DATABASE` | `CBT_OTEL_EXPORTER_CLICKHOUSE_DATABASE` |
-| `HYPERDX_OTEL_EXPORTER_CLICKHOUSE_JSON_ENABLE` | `CBT_OTEL_EXPORTER_CLICKHOUSE_JSON_ENABLE` |
-| `HYPERDX_OTEL_EXPORTER_CREATE_LEGACY_SCHEMA` | `CBT_OTEL_EXPORTER_CREATE_LEGACY_SCHEMA` |
-| `HYPERDX_OTEL_EXPORTER_LOGS_TTL` | `CBT_OTEL_EXPORTER_LOGS_TTL` |
-| `HYPERDX_OTEL_EXPORTER_METRICS_TTL` | `CBT_OTEL_EXPORTER_METRICS_TTL` |
-| `HYPERDX_OTEL_EXPORTER_RECONCILE_TABLE_TTL` | `CBT_OTEL_EXPORTER_RECONCILE_TABLE_TTL` |
-| `HYPERDX_OTEL_EXPORTER_SESSIONS_TTL` | `CBT_OTEL_EXPORTER_SESSIONS_TTL` |
-| `HYPERDX_OTEL_EXPORTER_TABLES_TTL` | `CBT_OTEL_EXPORTER_TABLES_TTL` |
-| `HYPERDX_OTEL_EXPORTER_TIMEOUT` | `CBT_OTEL_EXPORTER_TIMEOUT` |
-| `HYPERDX_OTEL_EXPORTER_TRACES_TTL` | `CBT_OTEL_EXPORTER_TRACES_TTL` |
-| `HYPERDX_PROMETHEUS_SCHEME` | `CBT_PROMETHEUS_SCHEME` |
-| `HYPERDX_PROMETHEUS_TLS_INSECURE` | `CBT_PROMETHEUS_TLS_INSECURE` |
-| `HYPERDX_SERVICE_KEY` | `CBT_SERVICE_KEY` |
-| `NEXT_PUBLIC_HDX_LOCAL_DEFAULT_CONNECTIONS` | `NEXT_PUBLIC_CBT_LOCAL_DEFAULT_CONNECTIONS` |
-| `NEXT_PUBLIC_HDX_LOCAL_DEFAULT_SOURCES` | `NEXT_PUBLIC_CBT_LOCAL_DEFAULT_SOURCES` |
-| `NEXT_PUBLIC_HYPERDX_BASE_PATH` | `NEXT_PUBLIC_CBT_BASE_PATH` |
+| From                                           | To                                          |
+| ---------------------------------------------- | ------------------------------------------- |
+| `HDX_CI_API_PORT`                              | `CBT_CI_API_PORT`                           |
+| `HDX_CI_CH_PORT`                               | `CBT_CI_CH_PORT`                            |
+| `HDX_CI_HISTORY_DIR`                           | `CBT_CI_HISTORY_DIR`                        |
+| `HDX_CI_LOGS_DIR`                              | `CBT_CI_LOGS_DIR`                           |
+| `HDX_CI_MONGO_PORT`                            | `CBT_CI_MONGO_PORT`                         |
+| `HDX_CI_OPAMP_PORT`                            | `CBT_CI_OPAMP_PORT`                         |
+| `HDX_CI_PROJECT`                               | `CBT_CI_PROJECT`                            |
+| `HDX_CI_SLOT`                                  | `CBT_CI_SLOT`                               |
+| `HDX_DEV_API_PORT`                             | `CBT_DEV_API_PORT`                          |
+| `HDX_DEV_BRANCH`                               | `CBT_DEV_BRANCH`                            |
+| `HDX_DEV_CH_HTTP_PORT`                         | `CBT_DEV_CH_HTTP_PORT`                      |
+| `HDX_DEV_CH_NATIVE_PORT`                       | `CBT_DEV_CH_NATIVE_PORT`                    |
+| `HDX_DEV_LOGS_DIR`                             | `CBT_DEV_LOGS_DIR`                          |
+| `HDX_DEV_MONGO_PORT`                           | `CBT_DEV_MONGO_PORT`                        |
+| `HDX_DEV_OTEL_GRPC_PORT`                       | `CBT_DEV_OTEL_GRPC_PORT`                    |
+| `HDX_DEV_OTEL_HEALTH_PORT`                     | `CBT_DEV_OTEL_HEALTH_PORT`                  |
+| `HDX_DEV_OTEL_HTTP_PORT`                       | `CBT_DEV_OTEL_HTTP_PORT`                    |
+| `HDX_DEV_OTEL_JSON_HTTP_PORT`                  | `CBT_DEV_OTEL_JSON_HTTP_PORT`               |
+| `HDX_DEV_OTEL_METRICS_PORT`                    | `CBT_DEV_OTEL_METRICS_PORT`                 |
+| `HDX_DEV_OTEL_STATSD_PORT`                     | `CBT_DEV_OTEL_STATSD_PORT`                  |
+| `HDX_DEV_PROJECT`                              | `CBT_DEV_PROJECT`                           |
+| `HDX_DEV_PROMETHEUS_PORT`                      | `CBT_DEV_PROMETHEUS_PORT`                   |
+| `HDX_DEV_SLOT`                                 | `CBT_DEV_SLOT`                              |
+| `HDX_DEV_SLOTS_DIR`                            | `CBT_DEV_SLOTS_DIR`                         |
+| `HDX_DEV_WORKTREE`                             | `CBT_DEV_WORKTREE`                          |
+| `HDX_E2E_API_PORT`                             | `CBT_E2E_API_PORT`                          |
+| `HDX_E2E_APP_LOCAL_PORT`                       | `CBT_E2E_APP_LOCAL_PORT`                    |
+| `HDX_E2E_APP_PORT`                             | `CBT_E2E_APP_PORT`                          |
+| `HDX_E2E_CH_NATIVE_PORT`                       | `CBT_E2E_CH_NATIVE_PORT`                    |
+| `HDX_E2E_CH_PORT`                              | `CBT_E2E_CH_PORT`                           |
+| `HDX_E2E_LOGS_DIR`                             | `CBT_E2E_LOGS_DIR`                          |
+| `HDX_E2E_MONGO_PORT`                           | `CBT_E2E_MONGO_PORT`                        |
+| `HDX_E2E_OPAMP_PORT`                           | `CBT_E2E_OPAMP_PORT`                        |
+| `HDX_E2E_REPORT_PORT`                          | `CBT_E2E_REPORT_PORT`                       |
+| `HDX_E2E_SLOT`                                 | `CBT_E2E_SLOT`                              |
+| `HDX_E2E_SLOTS_DIR`                            | `CBT_E2E_SLOTS_DIR`                         |
+| `HDX_EVAL_API_URL`                             | `CBT_EVAL_API_URL`                          |
+| `HDX_EVAL_CH_URL`                              | `CBT_EVAL_CH_URL`                           |
+| `HDX_EXPORTER_ENABLED`                         | `CBT_EXPORTER_ENABLED`                      |
+| `HDX_IMAGE_REPO`                               | `CBT_IMAGE_REPO`                            |
+| `HDX_INLINE_API_STRIP_PREFIX`                  | `CBT_INLINE_API_STRIP_PREFIX`               |
+| `HDX_PORTAL_PID`                               | `CBT_PORTAL_PID`                            |
+| `HDX_PORTAL_PORT`                              | `CBT_PORTAL_PORT`                           |
+| `HDX_PREVIEW_INLINE_API`                       | `CBT_PREVIEW_INLINE_API`                    |
+| `HDX_SLOT_FROM`                                | `CBT_SLOT_FROM`                             |
+| `HYPERDX_API_KEY`                              | `CBT_API_KEY`                               |
+| `HYPERDX_API_PORT`                             | `CBT_API_PORT`                              |
+| `HYPERDX_APP_LISTEN_HOSTNAME`                  | `CBT_APP_LISTEN_HOSTNAME`                   |
+| `HYPERDX_APP_PORT`                             | `CBT_APP_PORT`                              |
+| `HYPERDX_APP_URL`                              | `CBT_APP_URL`                               |
+| `HYPERDX_BASE_PATH`                            | `CBT_BASE_PATH`                             |
+| `HYPERDX_IMAGE`                                | `CBT_IMAGE`                                 |
+| `HYPERDX_LOG_LEVEL`                            | `CBT_LOG_LEVEL`                             |
+| `HYPERDX_OPAMP_PORT`                           | `CBT_OPAMP_PORT`                            |
+| `HYPERDX_OTEL_BATCH_SEND_BATCH_MAX_SIZE`       | `CBT_OTEL_BATCH_SEND_BATCH_MAX_SIZE`        |
+| `HYPERDX_OTEL_BATCH_SEND_BATCH_SIZE`           | `CBT_OTEL_BATCH_SEND_BATCH_SIZE`            |
+| `HYPERDX_OTEL_BATCH_TIMEOUT`                   | `CBT_OTEL_BATCH_TIMEOUT`                    |
+| `HYPERDX_OTEL_EXPORTER_CLICKHOUSE_DATABASE`    | `CBT_OTEL_EXPORTER_CLICKHOUSE_DATABASE`     |
+| `HYPERDX_OTEL_EXPORTER_CLICKHOUSE_JSON_ENABLE` | `CBT_OTEL_EXPORTER_CLICKHOUSE_JSON_ENABLE`  |
+| `HYPERDX_OTEL_EXPORTER_CREATE_LEGACY_SCHEMA`   | `CBT_OTEL_EXPORTER_CREATE_LEGACY_SCHEMA`    |
+| `HYPERDX_OTEL_EXPORTER_LOGS_TTL`               | `CBT_OTEL_EXPORTER_LOGS_TTL`                |
+| `HYPERDX_OTEL_EXPORTER_METRICS_TTL`            | `CBT_OTEL_EXPORTER_METRICS_TTL`             |
+| `HYPERDX_OTEL_EXPORTER_RECONCILE_TABLE_TTL`    | `CBT_OTEL_EXPORTER_RECONCILE_TABLE_TTL`     |
+| `HYPERDX_OTEL_EXPORTER_SESSIONS_TTL`           | `CBT_OTEL_EXPORTER_SESSIONS_TTL`            |
+| `HYPERDX_OTEL_EXPORTER_TABLES_TTL`             | `CBT_OTEL_EXPORTER_TABLES_TTL`              |
+| `HYPERDX_OTEL_EXPORTER_TIMEOUT`                | `CBT_OTEL_EXPORTER_TIMEOUT`                 |
+| `HYPERDX_OTEL_EXPORTER_TRACES_TTL`             | `CBT_OTEL_EXPORTER_TRACES_TTL`              |
+| `HYPERDX_PROMETHEUS_SCHEME`                    | `CBT_PROMETHEUS_SCHEME`                     |
+| `HYPERDX_PROMETHEUS_TLS_INSECURE`              | `CBT_PROMETHEUS_TLS_INSECURE`               |
+| `HYPERDX_SERVICE_KEY`                          | `CBT_SERVICE_KEY`                           |
+| `NEXT_PUBLIC_HDX_LOCAL_DEFAULT_CONNECTIONS`    | `NEXT_PUBLIC_CBT_LOCAL_DEFAULT_CONNECTIONS` |
+| `NEXT_PUBLIC_HDX_LOCAL_DEFAULT_SOURCES`        | `NEXT_PUBLIC_CBT_LOCAL_DEFAULT_SOURCES`     |
+| `NEXT_PUBLIC_HYPERDX_BASE_PATH`                | `NEXT_PUBLIC_CBT_BASE_PATH`                 |
 
 ### Token map by status
 
-| Key | Count |
-|---|---|
-| allowed | 99 |
-| approved | 211 |
+| Key      | Count |
+| -------- | ----- |
+| allowed  | 99    |
+| approved | 211   |
 
 ### Allowlist by reason
 
-| Key | Count |
-|---|---|
-| engine_reference | 1 |
-| external_dependency | 57 |
-| internal_identifier | 291 |
-| pending_decision | 1 |
-| test_fixture | 17 |
-| upstream_attribution | 5 |
+| Key                  | Count |
+| -------------------- | ----- |
+| engine_reference     | 1     |
+| external_dependency  | 57    |
+| internal_identifier  | 291   |
+| pending_decision     | 1     |
+| test_fixture         | 17    |
+| upstream_attribution | 5     |
 
 ### URL actions by rule
 
-| Key | Count |
-|---|---|
-| rule 1 keep | 1 |
-| rule 5 keep | 3 |
-| rule 6 review | 20 |
-| rule 7 review | 9 |
+| Key           | Count |
+| ------------- | ----- |
+| rule 1 keep   | 1     |
+| rule 5 keep   | 3     |
+| rule 6 review | 20    |
+| rule 7 review | 9     |
 
 ### Outbound hits by context
 
@@ -761,12 +937,13 @@ None.
 ### Workflow classes
 
 | Key | Count |
-|---|---|
-| ci | 6 |
+| --- | ----- |
+| ci  | 6     |
 
 ### Features pending a decision
 
 None.
+
 <!-- phase3:end -->
 
 ### Phase 5a
@@ -3958,29 +4135,29 @@ to run outside the agent sandbox, which blocks `git init` in a temp dir.
 ### R7: docs and acceptance (2026-11-25, `mm--v1-r7-docs-acceptance`)
 
 - **Plan corrections.** `port/acceptance/run.mjs` has no `--final` flag. A run
-  is final when nothing is filtered or reused, no check is skipped, and the
-  tree was clean at the start. Without `--capella`, C1 and C2 are `blocked`, so
-  the status stays `blocked` until a Capella run. B14 ("Pending user
-  decisions") was already closed in R6.
+  is final when nothing is filtered or reused, no check is skipped, and the tree
+  was clean at the start. Without `--capella`, C1 and C2 are `blocked`, so the
+  status stays `blocked` until a Capella run. B14 ("Pending user decisions") was
+  already closed in R6.
 - **H1 was red on `main`.** Both branding verifiers had drifted since the last
   acceptance run (`6599628`, 2026-11-18). `port/rebrand.sh verify branding`
   failed on 22 allowlist entries for lines the Mongo elimination deleted. It
   also failed on new `hyperdx` hits: R6's `release-images.sh` and `Makefile`
   build contexts, `docker-compose.build-local.yml`, the CLI legacy config dir
   test, `hyperdxSettingPrefix`, and the two port plans.
-  `port/remove-ch/verify.mjs` failed on 23 stale entries and about 320
-  uncovered "ClickHouse" lines in 124 files. Nearly all are comments explaining
-  the upstream behavior the SQL++ code reproduces, plus the `SqlDialect`
-  vocabulary, hdx-eval (which still benchmarks a ClickHouse eval store), and
-  the Terraform provider name (ClickHouse's, kept on purpose in D2b). Fix:
-  prune stale entries, allowlist each new file with a reason, and exempt
-  `docs/v1-release-plan.md` and `docs/mongo-elimination-plan.md` in
-  `isExempt` like the phase specs.
+  `port/remove-ch/verify.mjs` failed on 23 stale entries and about 320 uncovered
+  "ClickHouse" lines in 124 files. Nearly all are comments explaining the
+  upstream behavior the SQL++ code reproduces, plus the `SqlDialect` vocabulary,
+  hdx-eval (which still benchmarks a ClickHouse eval store), and the Terraform
+  provider name (ClickHouse's, kept on purpose in D2b). Fix: prune stale
+  entries, allowlist each new file with a reason, and exempt
+  `docs/v1-release-plan.md` and `docs/mongo-elimination-plan.md` in `isExempt`
+  like the phase specs.
 - **Final could never be true.** H1 rewrites `docs/acceptance.md`, this file's
   rebrand section, and `port/state/rebrand/verify.json`, and J2 rewrites the
-  date in `docs/licenses.md`. `buildReport` read `git status` after the
-  checks, so every run was dirty. The runner now records the git state before
-  any check (`readGitState`).
+  date in `docs/licenses.md`. `buildReport` read `git status` after the checks,
+  so every run was dirty. The runner now records the git state before any check
+  (`readGitState`).
 - **Acceptance stack.** `port/acceptance/docker-compose.observe.yml` still
   overrode the removed Mongo `db` service, so `docker compose` rejected the
   project and every product-stack check failed. Removed it (and `db` from I2's
@@ -3992,17 +4169,16 @@ to run outside the agent sandbox, which blocks `git init` in a temp dir.
 - **Rebrand unit tests** fail 17/37 inside the agent sandbox (they create temp
   repos) and pass 60/60 outside it. Not a product issue.
 - **Docs drift fixed.** `agent_docs/observability.md` documented ClickHouse
-  `log_comment` / `query_id` attribution over `system.query_log`, and pointed
-  at the deleted `evalstore/attribution.ts`, `prometheus.ts`,
-  `clickhouseProxy.ts`, and `models/index.ts`. It now describes the SQL++
-  trailing comment and `clientContextId`. `agent_docs/development.md` named
+  `log_comment` / `query_id` attribution over `system.query_log`, and pointed at
+  the deleted `evalstore/attribution.ts`, `prometheus.ts`, `clickhouseProxy.ts`,
+  and `models/index.ts`. It now describes the SQL++ trailing comment and
+  `clientContextId`. `agent_docs/development.md` named
   `packages/api/src/models/`, now `packages/api/src/metadata/`, and
   `data_viz_colors.md` named the old `DBHeatmapChart.tsx`.
 - **D31** (new): the `all-in-one-noauth` Dockerfile stage copies the deleted
   `entry.local.noauth.sh`, `docker/hyperdx/build.sh` builds it from a missing
-  `docker/evalstore` context, and `entry.local.base.sh` /
-  `entry.local.auth.sh` are unused. Nothing builds or ships them. Proposed
-  after 1.0.
-- **Version locations.** `docs/development.md`, `DEPLOY.md`, and `LOCAL.md`
-  keep exactly one tagged image reference each, so `set-version` still owns
-  16/16 locations (`--dry-run 9.9.9` changes all 16).
+  `docker/evalstore` context, and `entry.local.base.sh` / `entry.local.auth.sh`
+  are unused. Nothing builds or ships them. Proposed after 1.0.
+- **Version locations.** `docs/development.md`, `DEPLOY.md`, and `LOCAL.md` keep
+  exactly one tagged image reference each, so `set-version` still owns 16/16
+  locations (`--dry-run 9.9.9` changes all 16).

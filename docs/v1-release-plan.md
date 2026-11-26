@@ -1310,10 +1310,10 @@ builder docs once in their final form.
   failed on 22 allowlist entries whose lines the Mongo elimination deleted, and
   on new `hyperdx` hits in R6's `release-images.sh`, the `Makefile`, and
   `docs/v1-release-plan.md`. `port/remove-ch/verify.mjs` failed on 23 stale
-  entries and about 300 uncovered "ClickHouse" lines added since Phase 10
-  (code comments explaining upstream behavior, the `SqlDialect` vocabulary,
-  hdx-eval, port plans). The last acceptance run (`6599628`) predates them.
-  Fix: prune the stale entries, allowlist the new ones with reasons, and exempt
+  entries and about 300 uncovered "ClickHouse" lines added since Phase 10 (code
+  comments explaining upstream behavior, the `SqlDialect` vocabulary, hdx-eval,
+  port plans). The last acceptance run (`6599628`) predates them. Fix: prune the
+  stale entries, allowlist the new ones with reasons, and exempt
   `docs/v1-release-plan.md` and `docs/mongo-elimination-plan.md` from the
   rebrand scan like the `PHASE_*_SPEC.md` files (`port/rebrand/lib/names.mjs`,
   test `port/rebrand/test/exempt.test.mjs`).
@@ -1334,9 +1334,9 @@ builder docs once in their final form.
   deleted, so the stage cannot build. `docker/hyperdx/build.sh` builds that
   stage with a `docker/evalstore` context that no longer exists, and
   `entry.local.base.sh` / `entry.local.auth.sh` are used by nothing. No make
-  target, workflow, or release script touches them, and the shipped images
-  are unaffected. Fix: delete the stage, `build.sh`, and both scripts, and
-  drop the `IS_LOCAL_IMAGE` branch in `packages/api/src/config.ts`.
+  target, workflow, or release script touches them, and the shipped images are
+  unaffected. Fix: delete the stage, `build.sh`, and both scripts, and drop the
+  `IS_LOCAL_IMAGE` branch in `packages/api/src/config.ts`.
 
 #### D30: All-in-one ingest setup races the admin password (found in R6, size S)
 
@@ -1955,13 +1955,12 @@ section 9.1 and `docs/acceptance.md`.
 - **Docs.** `README.md` (status, supported versions, images, upgrading from the
   upstream project), `DEPLOY.md` (published image table and tags, new app
   metadata and ingest settings tables), `LOCAL.md`, `docs/self-managed.md`
-  (buckets, users and roles, setup flags, the D30 auth retry),
-  `docs/capella.md` (`cbt_meta` bucket, credential roles, `.env.local`),
-  `docs/development.md` (tag example and memory note), and the new
-  `docs/release.md` runbook. Agent docs: `observability.md` described ClickHouse
-  `log_comment`/`query_id` attribution and named deleted files; now SQL++
-  comment plus `clientContextId`. `development.md` and `data_viz_colors.md`
-  named deleted paths.
+  (buckets, users and roles, setup flags, the D30 auth retry), `docs/capella.md`
+  (`cbt_meta` bucket, credential roles, `.env.local`), `docs/development.md`
+  (tag example and memory note), and the new `docs/release.md` runbook. Agent
+  docs: `observability.md` described ClickHouse `log_comment`/`query_id`
+  attribution and named deleted files; now SQL++ comment plus `clientContextId`.
+  `development.md` and `data_viz_colors.md` named deleted paths.
 
 ### R8: Release v1.0.0
 
