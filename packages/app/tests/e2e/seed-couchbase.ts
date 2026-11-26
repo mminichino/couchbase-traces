@@ -43,6 +43,16 @@ import {
   buildSpanLinkTraceRows,
 } from './seed-rows-sessions';
 
+/**
+ * Pods with gauge and sum series (D32). Upstream seeds one per log row (500,
+ * about 42k gauge points), but every /kubernetes load runs pod-table and
+ * field-value queries that fetch each point in range; on the 2-CPU E2E
+ * Couchbase node those queued past the 5s chart waits under four workers.
+ * 100 pods still cover every phase, restart count, node, namespace, and the
+ * 30 pods the K8s log rows reference.
+ */
+const K8S_METRIC_PODS = 100;
+
 export async function seedCouchbase(): Promise<void> {
   console.log('Seeding Couchbase E2E documents...');
   const seedCreated = [
@@ -202,12 +212,12 @@ export async function seedCouchbase(): Promise<void> {
   );
   await upsertMetrics(
     E2E_METRICS_GAUGE_TABLE,
-    buildK8sGaugeRows(n, 12, winStart, winEnd),
+    buildK8sGaugeRows(K8S_METRIC_PODS, 12, winStart, winEnd),
     'K8s gauge points',
   );
   await upsertMetrics(
     E2E_METRICS_SUM_TABLE,
-    buildK8sSumRows(n, winStart, winEnd),
+    buildK8sSumRows(K8S_METRIC_PODS, winStart, winEnd),
     'K8s sum points',
   );
 }

@@ -469,6 +469,7 @@ pushes to `main` directly.
 | D29   | Defects: request query attribution never reaches SQL++      | Found in R2a (section 9.1); own PR right after R2a, before R2c and R2b (Q51); carries the `queryAttribution` int suite; fixed                                                                                        | M    | R2a                           |
 | D30   | Defects: all-in-one ingest setup races the admin password   | Found in R6 (section 9.1); own small PR after R6, before R7 (Q60); fixed                                                                                                                                             |
 | D31   | Cleanup: dead `all-in-one-noauth` stage and entry scripts   | Found in R7 (section 9.1); v1.0.1 backlog P14 (user, 2026-11-26)                                                                                                                                                     |
+| D32   | Defects: K8s E2E chart waits time out under CI load       | Found on PR #50 (Q61 recurrence); own PR from `main` before the v1.0.0 tag (user, 2026-11-26); fixed                                                                                                                   |
 | D14   | Dev tooling: live-test port offset fallback                 | Found in D7 (section 9.1)                                                                                                                                                                                            | S    | —                             |
 | R2a   | Port deferred int suites: internal and external API         | B1 (10 suites: `routers/api/{dashboard,iac,sources,connections}`, `routers/external-api/{charts,search,sources,sources-crud,connections}`, `middleware/queryAttribution`); 9 ported, `queryAttribution` moves to D29 | L    | D1                            |
 | R2b   | Port deferred int suites: alerts                            | B1 (5 suites: `checkAlerts`, `multiChannelAlerts`, `renderAlertTemplate`, `singleInvocationAlert`, `providers/default`; 335 tests, 93 failing per R0)                                                                | L    | R2c, D1, D4, D6               |
@@ -1338,6 +1339,36 @@ builder docs once in their final form.
   target, workflow, or release script touches them, and the shipped images are
   unaffected. Fix: delete the stage, `build.sh`, and both scripts, and drop the
   `IS_LOCAL_IMAGE` branch in `packages/api/src/config.ts`.
+- **D32** (new, size S, fixed before the v1.0.0 tag): Q61 recurred on
+  E2E shard 3 for PR #50 and on `main` at `4b54ca9` and `6922b3b`
+  (`kubernetes.spec.ts` "should show pod details", "node metrics",
+  "namespace metrics"). See the D32 section below.
+
+#### D32: Kubernetes E2E chart waits time out under CI load (found on PR #50, size S)
+
+Evidence: `system:completed_requests` from a local four-worker run of
+`kubernetes.spec.ts` against the 2-CPU E2E Couchbase container (CI runs two
+workers on the same limit). The seed held 42,366 gauge points: D15 passed the
+500-row `numDataPoints` as the pod count, so 500 pods x 12 samples x 7 gauges.
+Every dashboard load runs the pod-table query (12,065 documents fetched per
+call, up to 7.2 s), the `k8s.pod.name` field-value query (11,413 index keys and
+10,928 fetches, up to 7.2 s), and `INFER` on the gauge collection (up to 6.6 s).
+With the four tests that open the page running together, they queued past the
+5 s chart waits. The plans use the `TimeUnix` and `MetricName` GSI indexes and
+no primary scan; the cost is the number of documents in range.
+
+Fix (Q61: no timeout changes): the seed gives gauge and sum series to 100 pods
+(`K8S_METRIC_PODS` in `seed-couchbase.ts`), which still covers every phase,
+restart count, node, namespace, and the 30 pods the K8s log rows reference.
+8,736 gauge points. No index was added to production setup: the field-value and
+key queries are already bounded by `sampleSize` (10,000) and use the time index,
+and the pod table reads one metric name per series through `MetricName,
+TimeUnix`. A covering index cannot help either, since both read whole
+`ResourceAttributes` objects with dynamic keys.
+
+Verification: `kubernetes.spec.ts --repeat-each=10` with four workers, 130/130
+passed (before: 39/39 at `--repeat-each=3`, with the same queries at 6-7 s).
+After the fix the slowest gauge statement averaged 2.0 s and INFER 1.6 s.
 
 #### D30: All-in-one ingest setup races the admin password (found in R6, size S)
 
@@ -2079,7 +2110,7 @@ in that phase.
 | Q58 | CI E2E shards exceed 45 min on the private repo's 2-vCPU `ubuntu-24.04` runner (2026-11-25)                             | Resolved: the repository was made public (user, 2026-11-25), so the standard `ubuntu-24.04` runner has 4 vCPUs and 16 GB. A larger runner (option (a)) was not available: the repository is personally owned, and larger runners need an organization on Team or Enterprise Cloud. `RUNNER_E2E` and `E2E_WORKERS` stay unset (workflow defaults: `ubuntu-24.04`, 2 workers). A pre-publication scan of all 274 commits (gitleaks and targeted searches) found only fixtures, dev placeholders and upstream test data. Secret scanning and push protection are on; fork-PR approval, Dependabot, branch protection and wiki are unchanged (user) | R5             |
 | Q59 | Wire `set-version --check` into `make ci-lint` in R6 (2026-11-25)?                                                      | Deferred to R8 (user, 2026-11-25). Nothing changes in R6 beyond adding `make version-check`. The versions are not lock-stepped today (root 2.0.0; api, app, ingest and collector 2.44.0; cli 0.9.0; common-utils 0.34.0), so the gate would fail on `main`. R8 must, in the bump commit: run `make version VERSION=1.0.0`, add `version-check` to the Makefile `ci-lint` target, and check that `make ci-lint` passes at 1.0.0 and fails on a single reverted location.                                                                                                                                                                         |
 | Q60 | Placement of D30, the all-in-one ingest setup race (2026-11-25)                                                         | Its own small PR after R6 and before R7 (user, 2026-11-25), so R7's acceptance run and the R8 image smoke don't hit it. Started only on the user's go-ahead.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
-| Q61 | `kubernetes.spec.ts` chart and autocomplete waits time out under CI load (found on PR #48, 2026-11-25)                  | Accepted (user, 2026-11-25): watch it. If it recurs, open a D-numbered fix that makes the K8s chart and field-value queries cheaper (or seeds fewer gauge points); do not raise timeouts. One failing run so far; local 13/13 and `main` green.                                                                                                                                                                                                                                                                                                                                                                                                 |
+| Q61 | `kubernetes.spec.ts` chart and autocomplete waits time out under CI load (found on PR #48, 2026-11-25)                  | Accepted (user, 2026-11-25): watch it. If it recurs, open a D-numbered fix that makes the K8s chart and field-value queries cheaper (or seeds fewer gauge points); do not raise timeouts. Recurred on PR #50 and `main` (2026-11-26): fixed as D32 by seeding 100 K8s metric pods instead of 500.                                                                                                                                                                                                                                                                                                                                                                                                 |
 | Q62 | C1/C2 need a Capella cluster for R7 acceptance status **pass** (2026-11-25)                                             | Credentials provided (user, 2026-11-26). Cluster lacks the `cbt_meta` bucket; user to create it (Magma, 256 MB or more), then re-run acceptance with `--capella` before the v1.0.0 tag                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
 
 ## 11. Acceptance criteria (v1.0.0 is done when)
