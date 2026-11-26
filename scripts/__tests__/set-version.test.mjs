@@ -25,6 +25,8 @@ const REPO = path.resolve(
 );
 const SCRIPT = path.join(REPO, 'scripts/release/set-version.mjs');
 const FILES = [...new Set(VERSION_LOCATIONS.map(l => l.file))];
+// Never the repo's own version, so an edit always has something to change.
+const OTHER = '9.8.7';
 
 let root;
 
@@ -143,7 +145,7 @@ describe('set-version', () => {
 
   it('changes only the version text', () => {
     const before = Object.fromEntries(FILES.map(f => [f, read(f)]));
-    applyEdits(planVersionEdits(root, '1.0.0'), root);
+    applyEdits(planVersionEdits(root, OTHER), root);
     for (const file of FILES) {
       const a = before[file].split('\n');
       const b = read(file).split('\n');
@@ -181,7 +183,7 @@ describe('set-version', () => {
   });
 
   it('restores written files when a later write fails', () => {
-    const edits = planVersionEdits(root, '1.0.0');
+    const edits = planVersionEdits(root, OTHER);
     const before = Object.fromEntries(FILES.map(f => [f, read(f)]));
     // A directory in place of the last file's temp path makes its write fail.
     const last = edits.at(-1).location.file;
