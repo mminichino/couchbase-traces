@@ -467,6 +467,7 @@ pushes to `main` directly.
 | D28   | Defects: unset `whereLanguage` is Lucene, not SQL           | Found in D24 (section 9.1); with D26 in one PR before R2a (Q50); fixed                                                                                                                                               | S    | —                             |
 | D29   | Defects: request query attribution never reaches SQL++      | Found in R2a (section 9.1); own PR right after R2a, before R2c and R2b (Q51); carries the `queryAttribution` int suite; fixed                                                                                        | M    | R2a                           |
 | D30   | Defects: all-in-one ingest setup races the admin password   | Found in R6 (section 9.1); own small PR after R6, before R7 (Q60); fixed                                                                                                                                             |
+| D31   | Cleanup: dead `all-in-one-noauth` stage and entry scripts   | Found in R7 (section 9.1); proposed after 1.0, not a release blocker                                                                                                                                                 |
 | D14   | Dev tooling: live-test port offset fallback                 | Found in D7 (section 9.1)                                                                                                                                                                                            | S    | —                             |
 | R2a   | Port deferred int suites: internal and external API         | B1 (10 suites: `routers/api/{dashboard,iac,sources,connections}`, `routers/external-api/{charts,search,sources,sources-crud,connections}`, `middleware/queryAttribution`); 9 ported, `queryAttribution` moves to D29 | L    | D1                            |
 | R2b   | Port deferred int suites: alerts                            | B1 (5 suites: `checkAlerts`, `multiChannelAlerts`, `renderAlertTemplate`, `singleInvocationAlert`, `providers/default`; 335 tests, 93 failing per R0)                                                                | L    | R2c, D1, D4, D6               |
@@ -1303,6 +1304,40 @@ filters by `SpanAttributes['http.route']` and gets the seeded groups. Depends
 on: D2. Size: M. Placement (Q14): next after D2, before D2b, so D2b rewrites the
 builder docs once in their final form.
 
+#### R7 findings
+
+- **H1 was red on `main`** (fixed here). `port/rebrand.sh verify branding`
+  failed on 22 allowlist entries whose lines the Mongo elimination deleted, and
+  on new `hyperdx` hits in R6's `release-images.sh`, the `Makefile`, and
+  `docs/v1-release-plan.md`. `port/remove-ch/verify.mjs` failed on 23 stale
+  entries and about 300 uncovered "ClickHouse" lines added since Phase 10
+  (code comments explaining upstream behavior, the `SqlDialect` vocabulary,
+  hdx-eval, port plans). The last acceptance run (`6599628`) predates them.
+  Fix: prune the stale entries, allowlist the new ones with reasons, and exempt
+  `docs/v1-release-plan.md` and `docs/mongo-elimination-plan.md` from the
+  rebrand scan like the `PHASE_*_SPEC.md` files (`port/rebrand/lib/names.mjs`,
+  test `port/rebrand/test/exempt.test.mjs`).
+- **The acceptance report could never be final** (fixed here). H1 rewrites
+  tracked files (`docs/acceptance.md`, `docs/port-notes.md`,
+  `port/state/rebrand/verify.json`), and `buildReport` read `git status` after
+  the checks, so `dirty` was always true. The runner now reads the git state
+  before any check runs (`readGitState`, 3 new tests in `report.test.mjs`).
+- **The acceptance product stack could not start** (fixed here).
+  `port/acceptance/docker-compose.observe.yml` still overrode the Mongo `db`
+  service that the Mongo elimination removed from `docker-compose.yml`, so
+  compose rejected the project ("service db has neither an image nor a build
+  context") and B1, B2, A3, D1, E1, F1, G1, H2, H3, I1, and I2 all failed. The
+  override and I2's service list drop `db`, and `scripts/ci/check-no-mongo.sh`
+  now scans `port/acceptance` (it flags the old override).
+- **D31** (new, size S, proposed after 1.0): the `all-in-one-noauth` stage in
+  `docker/hyperdx/Dockerfile` copies `entry.local.noauth.sh`, which Phase 10
+  deleted, so the stage cannot build. `docker/hyperdx/build.sh` builds that
+  stage with a `docker/evalstore` context that no longer exists, and
+  `entry.local.base.sh` / `entry.local.auth.sh` are used by nothing. No make
+  target, workflow, or release script touches them, and the shipped images
+  are unaffected. Fix: delete the stage, `build.sh`, and both scripts, and
+  drop the `IS_LOCAL_IMAGE` branch in `packages/api/src/config.ts`.
+
 #### D30: All-in-one ingest setup races the admin password (found in R6, size S)
 
 Evidence: one of two local runs of `scripts/ci/smoke-all-in-one.sh` against the
@@ -1907,6 +1942,26 @@ regenerate `docs/acceptance.md` with `port/acceptance/run.mjs --final` at the
 release-candidate commit and record the Main CI run (K2). Acceptance: acceptance
 status **pass** at a commit no older than R6; M2 (docs, no TODO/TBD) green;
 H1–H3 branding green.
+
+R7 result (2026-11-25, `mm--v1-r7-docs-acceptance`): see "R7 findings" in
+section 9.1 and `docs/acceptance.md`.
+
+- **Plan corrections.** `run.mjs` has no `--final` flag: a run is final when no
+  check is filtered (`--only` / `--skip`) or reused (`--reuse-stack`) and none
+  is skipped, and the tree was clean at the start. Without `--capella`, C1 and
+  C2 are reported `blocked`, so the report status is `blocked` until a Capella
+  run. `docs/port-notes.md` "Pending user decisions" was already closed in R6
+  (both items struck through), so B14 needed no change.
+- **Docs.** `README.md` (status, supported versions, images, upgrading from the
+  upstream project), `DEPLOY.md` (published image table and tags, new app
+  metadata and ingest settings tables), `LOCAL.md`, `docs/self-managed.md`
+  (buckets, users and roles, setup flags, the D30 auth retry),
+  `docs/capella.md` (`cbt_meta` bucket, credential roles, `.env.local`),
+  `docs/development.md` (tag example and memory note), and the new
+  `docs/release.md` runbook. Agent docs: `observability.md` described ClickHouse
+  `log_comment`/`query_id` attribution and named deleted files; now SQL++
+  comment plus `clientContextId`. `development.md` and `data_viz_colors.md`
+  named deleted paths.
 
 ### R8: Release v1.0.0
 
