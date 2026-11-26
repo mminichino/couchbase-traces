@@ -915,20 +915,20 @@ Collector components, pipelines, ClickHouse exporters, and management code.
 | Key                  | Count |
 | -------------------- | ----- |
 | engine_reference     | 1     |
-| external_dependency  | 57    |
-| internal_identifier  | 291   |
+| external_dependency  | 59    |
+| internal_identifier  | 348   |
 | pending_decision     | 1     |
-| test_fixture         | 17    |
-| upstream_attribution | 5     |
+| test_fixture         | 14    |
+| upstream_attribution | 1     |
 
 ### URL actions by rule
 
 | Key           | Count |
 | ------------- | ----- |
-| rule 1 keep   | 1     |
+| rule 1 keep   | 13    |
 | rule 5 keep   | 3     |
-| rule 6 review | 20    |
-| rule 7 review | 9     |
+| rule 6 review | 21    |
+| rule 7 review | 11    |
 
 ### Outbound hits by context
 
