@@ -29,7 +29,7 @@ fi
 # changelogs, and this script.
 paths=(packages scripts docker docker-compose.yml docker-compose.dev.yml
   docker-compose.ci.yml Makefile .github port/couchbase-test port/golden
-  port/stack-smoke .env .env.example)
+  port/stack-smoke port/acceptance .env .env.example)
 
 import_pattern="(from|require\\()[[:space:]]*['\"](mongoose|mongodb|bson|migrate-mongo|connect-mongo)(['\"/])"
 if hits=$(git grep -nE "$import_pattern" -- "${paths[@]}" ':!scripts/ci/check-no-mongo.sh'); then
@@ -44,7 +44,7 @@ fi
 # The Mongo compose service was named `db`; a leftover reference (depends_on,
 # `compose pull/logs ... db`) breaks stack startup only at run time.
 db_pattern='^[[:space:]]+db:[[:space:]]*$|(pull|logs|up|build|exec)[^#]*[[:space:]]db([[:space:]]|$)'
-if hits=$(git grep -nE "$db_pattern" -- docker-compose*.yml packages/app/tests/e2e/docker-compose.yml port/golden/docker-compose.yml .github/workflows Makefile scripts ':!scripts/ci/check-no-mongo.sh'); then
+if hits=$(git grep -nE "$db_pattern" -- docker-compose*.yml packages/app/tests/e2e/docker-compose.yml port/golden/docker-compose.yml 'port/acceptance/*.yml' .github/workflows Makefile scripts ':!scripts/ci/check-no-mongo.sh'); then
   fail "Dangling reference to the removed Mongo \`db\` compose service:"$'\n'"$hits"
 fi
 

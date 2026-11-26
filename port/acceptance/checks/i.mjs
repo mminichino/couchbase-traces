@@ -81,7 +81,6 @@ async function i2(ctx) {
   }
   const names = parseCoreDnsLog(readFileSync(logPath, 'utf8'));
   const composeServices = [
-    'db',
     'couchbase',
     'couchbase-init',
     'ingest',

@@ -112,12 +112,6 @@ services:
     dns:
       - 172.28.0.53
 
-  db:
-    volumes: !override
-      - ./.volumes/cbt-acceptance/db:/data/db
-    dns:
-      - 172.28.0.53
-
 networks:
   internal:
     ipam:
